@@ -19,17 +19,21 @@ import { ResourcePermissionSelector } from "@/features/Permissions";
 
 
 export function Page() {
-  const { spaceID } = useLoadedData();
+  const { spaceID, company } = useLoadedData();
 
-  if (spaceID) {
-    return <NewProjectForSpacePage />;
-  } else {
-    return <NewProjectPage />;
-  }
+  return (
+    <PermissionsProvider company={company} >
+      {spaceID ?
+        <NewProjectForSpacePage />
+      :
+        <NewProjectPage />
+      }
+    </PermissionsProvider>
+  );
 }
 
 function NewProjectForSpacePage() {
-  const { space, spaceID, company } = useLoadedData();
+  const { space, spaceID } = useLoadedData();
   const form = useForm();
 
   const spaceProjectsPath = Paths.spaceProjectsPath(spaceID!);
@@ -44,9 +48,7 @@ function NewProjectForSpacePage() {
         <h1 className="mb-4 font-bold text-3xl text-center">Start a new project in {space!.name}</h1>
 
         <Paper.Body minHeight="300px">
-          <PermissionsProvider company={company} space={space}>
             <Form form={form} />
-          </PermissionsProvider>
         </Paper.Body>
 
         <SubmitButton form={form} />
@@ -56,7 +58,6 @@ function NewProjectForSpacePage() {
 }
 
 function NewProjectPage() {
-  const { company } = useLoadedData();
   const form = useForm();
 
   return (
@@ -69,9 +70,7 @@ function NewProjectPage() {
         <h1 className="mb-4 font-bold text-3xl text-center">Start a new project</h1>
 
         <Paper.Body minHeight="300px">
-          <PermissionsProvider company={company} space={form.fields.space || undefined} >
             <Form form={form} />
-          </PermissionsProvider>
         </Paper.Body>
 
         <SubmitButton form={form} />
@@ -104,7 +103,7 @@ function SubmitButton({ form }: { form: FormState }) {
 }
 
 function Form({ form }: { form: FormState }) {
-  const { allowSpaceSelection } = useLoadedData();
+  const { allowSpaceSelection, space } = useLoadedData();
   const showWillYouContribute = !form.fields.amIChampion && !form.fields.amIReviewer;
 
   return (
@@ -176,7 +175,7 @@ function Form({ form }: { form: FormState }) {
           </div>
         )}
 
-        <ResourcePermissionSelector />
+        <ResourcePermissionSelector space={space || form.fields.space} />
       </div>
     </Forms.Form>
   );

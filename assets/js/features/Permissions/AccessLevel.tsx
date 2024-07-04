@@ -4,6 +4,7 @@ import { SelectBoxNoLabel } from "@/components/Form";
 import { IconBuildingCommunity, IconNetwork } from "@tabler/icons-react";
 import { usePermissionsContext, ReducerActions } from "./PermissionsContext";
 import { PermissionLevels, PERMISSIONS_LIST, PUBLIC_PERMISSIONS_LIST } from ".";
+import { Space } from "@/models/spaces";
 
 import { IconRocket } from "@tabler/icons-react";
 import * as Icons from "@tabler/icons-react";
@@ -16,6 +17,7 @@ interface DropdownOption {
 
 interface ResourceAccessLevelProps {
   companySpaceSelected: boolean;
+  space: Space | null;
 }
 
 
@@ -43,13 +45,13 @@ export function AccessLevel() {
 }
 
 
-export function ResourceAccessLevel({ companySpaceSelected }: ResourceAccessLevelProps) {
+export function ResourceAccessLevel({ companySpaceSelected, space }: ResourceAccessLevelProps) {
   const { permissions } = usePermissionsContext();
 
   if (permissions.public !== PermissionLevels.NO_ACCESS) {
       return (
         <AccessLevelContainer>
-          {!companySpaceSelected && <SpaceAccessLevel />}
+          {!companySpaceSelected && <SpaceAccessLevel space={space} />}
           <CompanyAccessLevel />
           <PublicAccessLevel />
         </AccessLevelContainer>
@@ -59,7 +61,7 @@ export function ResourceAccessLevel({ companySpaceSelected }: ResourceAccessLeve
   if(permissions.company !== PermissionLevels.NO_ACCESS) {
     return (
       <AccessLevelContainer>
-        {!companySpaceSelected && <SpaceAccessLevel />}
+        {!companySpaceSelected && <SpaceAccessLevel space={space} />}
         <CompanyAccessLevel />
       </AccessLevelContainer>
     );
@@ -68,7 +70,7 @@ export function ResourceAccessLevel({ companySpaceSelected }: ResourceAccessLeve
   if(permissions.space !== PermissionLevels.NO_ACCESS && !companySpaceSelected) {
     return (
       <AccessLevelContainer>
-        <SpaceAccessLevel />
+        <SpaceAccessLevel space={space} />
       </AccessLevelContainer>
     );
   }
@@ -77,8 +79,8 @@ export function ResourceAccessLevel({ companySpaceSelected }: ResourceAccessLeve
 }
 
 
-function SpaceAccessLevel() {
-  const { dispatch, permissions, space } = usePermissionsContext();
+function SpaceAccessLevel({space}: {space: Space | null}) {
+  const { dispatch, permissions } = usePermissionsContext();
 
   const currentPermission = useMemo(() => {
     return PERMISSIONS_LIST.find(option => option.value === permissions.space);

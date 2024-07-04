@@ -10,6 +10,9 @@ defmodule OperatelyWeb.Graphql.Mutations.Projects do
     field :creator_is_contributor, non_null(:string)
     field :creator_role, :string
     field :goal_id, :id
+    field :anonymous_access_level, non_null(:integer)
+    field :company_access_level, non_null(:integer)
+    field :space_access_level, non_null(:integer)
   end
 
   input_object :add_key_resource_input do
@@ -178,7 +181,10 @@ defmodule OperatelyWeb.Graphql.Mutations.Projects do
           creator_id: person.id,
           company_id: person.company_id,
           group_id: args.input.space_id,
-          goal_id: args.input[:goal_id]
+          goal_id: args.input[:goal_id],
+          anonymous_access_level: args.input.anonymous_access_level,
+          company_access_level: args.input.company_access_level,
+          space_access_level: args.input.space_access_level,
         }
         |> Operately.Projects.create_project()
       end
@@ -236,8 +242,8 @@ defmodule OperatelyWeb.Graphql.Mutations.Projects do
           {:ok, project} = Operately.Projects.update_project(project, %{started_at: parse_date(args.start_date)})
           {:ok, _} = Operately.Projects.update_phase_history(history, %{start_time: parse_date(args.start_date)})
           {:ok, _} = Operately.Updates.record_project_start_time_changed(
-            person, 
-            project, 
+            person,
+            project,
             old_start_date,
             parse_date(args.start_date)
           )
@@ -260,8 +266,8 @@ defmodule OperatelyWeb.Graphql.Mutations.Projects do
           old_due_date = project.deadline
 
           {:ok, _} = Operately.Updates.record_project_end_time_changed(
-            person, 
-            project, 
+            person,
+            project,
             old_due_date,
             parse_date(args.due_date)
           )
@@ -320,7 +326,7 @@ defmodule OperatelyWeb.Graphql.Mutations.Projects do
           {:ok, contrib} = Operately.Projects.delete_contributor(contrib)
 
           {:ok, _} = Operately.Updates.record_project_contributor_removed(
-            person, 
+            person,
             contrib.project_id,
             contrib
           )

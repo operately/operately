@@ -9,6 +9,7 @@ import * as Spaces from "@/models/spaces";
 import * as Goals from "@/models/goals";
 
 import { useLoadedData } from "./loader";
+import { usePermissionsContext } from "@/features/Permissions/PermissionsContext";
 import { useMe } from "@/contexts/CurrentUserContext";
 import { Paths } from "@/routes/paths";
 
@@ -131,6 +132,7 @@ export function useForm(): FormState {
 
 function useSubmit(fields: Fields, cancelPath: string) {
   const navigate = useNavigate();
+  const { permissions } = usePermissionsContext();
 
   const [errors, setErrors] = React.useState<Error[]>([]);
 
@@ -159,6 +161,9 @@ function useSubmit(fields: Fields, cancelPath: string) {
           creatorRole: fields.creatorRole,
           spaceId: fields.space!.value,
           goalId: fields.goal?.id,
+          anonymousAccessLevel: permissions.public,
+          companyAccessLevel: permissions.company,
+          spaceAccessLevel: permissions.space,
         },
       },
     });
