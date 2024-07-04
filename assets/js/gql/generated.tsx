@@ -178,12 +178,6 @@ export type EditGoalTimeframeInput = {
   timeframe: TimeframeInput;
 };
 
-export type EditGroupInput = {
-  id: Scalars['ID']['input'];
-  mission: Scalars['String']['input'];
-  name: Scalars['String']['input'];
-};
-
 export type EditKeyResourceInput = {
   id: Scalars['ID']['input'];
   link: Scalars['String']['input'];
@@ -494,7 +488,6 @@ export type RootMutationType = {
   editComment?: Maybe<Comment>;
   editGoalDiscussion: Goal;
   editGoalTimeframe: Goal;
-  editGroup?: Maybe<Group>;
   editKeyResource: ProjectKeyResource;
   editProjectCheckIn: ProjectCheckIn;
   editProjectName: Project;
@@ -671,11 +664,6 @@ export type RootMutationTypeEditGoalDiscussionArgs = {
 
 export type RootMutationTypeEditGoalTimeframeArgs = {
   input: EditGoalTimeframeInput;
-};
-
-
-export type RootMutationTypeEditGroupArgs = {
-  input: EditGroupInput;
 };
 
 

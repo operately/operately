@@ -1524,11 +1524,13 @@ export interface EditGoalUpdateResult {
 
 
 export interface EditGroupInput {
-
+  id?: string | null;
+  name?: string | null;
+  mission?: string | null;
 }
 
 export interface EditGroupResult {
-
+  space?: Space | null;
 }
 
 

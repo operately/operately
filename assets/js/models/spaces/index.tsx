@@ -2,7 +2,7 @@ import * as api from "@/api";
 import { gql, useMutation, ApolloClient } from "@apollo/client";
 
 export type { Space } from "@/api";
-export { useCreateGroup, useJoinSpace } from "@/api";
+export { useCreateGroup, useJoinSpace, useEditGroup } from "@/api";
 
 export { useEditSpaceMutation } from "./useEditSpaceMutation";
 
