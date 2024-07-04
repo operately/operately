@@ -3,7 +3,6 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
 
   import OperatelyWeb.Api.Serializer
   import Operately.ProjectsFixtures
-  import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
   import Operately.GoalsFixtures
   import Operately.GroupsFixtures
@@ -17,9 +16,8 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
       ctx = register_and_log_in_account(ctx)
       project = create_project(ctx)
 
-      other_company = company_fixture()
-      other_person = person_fixture(company_id: other_company.id)
-      other_project = create_project(ctx, company_id: other_company.id, creator_id: other_person.id)
+      other_ctx = register_and_log_in_account(ctx)
+      other_project = create_project(other_ctx, company_id: other_ctx.company.id, creator_id: other_ctx.person.id)
 
       assert {404, "Not found"} = query(ctx.conn, :get_project, %{id: other_project.id})
       assert {200, _} = query(ctx.conn, :get_project, %{id: project.id})
@@ -146,12 +144,12 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
 
   def create_project(ctx, attrs \\ %{}) do
     attrs = Map.merge(%{
-      company_id: ctx.company.id, 
-      name: "Project 1", 
-      creator_id: ctx.person.id, 
+      company_id: ctx.company.id,
+      name: "Project 1",
+      creator_id: ctx.person.id,
       group_id: ctx.company.company_space_id
     }, Enum.into(attrs, %{}))
 
     project_fixture(attrs)
   end
-end 
+end
