@@ -18,8 +18,9 @@ defmodule Operately.Operations.ProjectCreation do
     :visibility,
     :group_id,
     :goal_id,
-    :member_access,
-    :anonymous_access
+    :anonymous_access_level,
+    :company_access_level,
+    :space_access_level
   ]
 
   def run(%__MODULE__{} = params) do
@@ -108,7 +109,8 @@ defmodule Operately.Operations.ProjectCreation do
 
   defp insert_bindings(multi, params) do
     multi
-    |> Access.insert_bindings_to_company(params.company_id, params.member_access, params.anonymous_access)
+    |> Access.insert_bindings_to_company(params.company_id, params.company_access_level, params.anonymous_access_level)
+    |> Access.insert_bindings_to_space(params.group_id, params.space_access_level)
   end
 
   defp insert_activity(multi, params) do

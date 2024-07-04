@@ -33,11 +33,12 @@ defmodule Operately.Operations.ProjectCreationTest do
       creator_id: creator.id,
       company_id: company.id,
       group_id: space.id,
-      member_access: Binding.comment_access(),
-      anonymous_access: Binding.view_access()
+      anonymous_access_level: Binding.view_access(),
+      company_access_level: Binding.comment_access(),
+      space_access_level: Binding.edit_access(),
     }
 
-    {:ok, company: company, creator: creator, reviewer: reviewer, champion: champion, project_attrs: project_attrs}
+    {:ok, company: company, space: space, creator: creator, reviewer: reviewer, champion: champion, project_attrs: project_attrs}
   end
 
   test "ProjectCreation operation creates project", ctx do
@@ -66,6 +67,17 @@ defmodule Operately.Operations.ProjectCreationTest do
     assert Access.get_binding(group_id: full_access.id, context_id: context.id, access_level: Binding.full_access())
     assert Access.get_binding(group_id: members.id, context_id: context.id, access_level: Binding.comment_access())
     assert Access.get_binding(group_id: anonymous.id, context_id: context.id, access_level: Binding.view_access())
+  end
+
+  test "ProjectCreation operation creates bindings to space", ctx do
+    {:ok, project} = Operately.Operations.ProjectCreation.run(ctx.project_attrs)
+
+    context = Access.get_context!(project_id: project.id)
+    full_access = Access.get_group!(group_id: ctx.space.id, tag: :full_access)
+    members = Access.get_group!(group_id: ctx.space.id, tag: :standard)
+
+    assert Access.get_binding(group_id: full_access.id, context_id: context.id, access_level: Binding.full_access())
+    assert Access.get_binding(group_id: members.id, context_id: context.id, access_level: Binding.edit_access())
   end
 
   test "ProjectCreation operation creates activity and notification", ctx do

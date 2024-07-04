@@ -117,6 +117,15 @@ defmodule Operately.Access do
     |> maybe_insert_anonymous_binding(company_id, anonymous_access_level)
   end
 
+  def insert_bindings_to_space(multi, space_id, members_access_level) do
+    full_access = get_group!(group_id: space_id, tag: :full_access)
+    standard = get_group!(group_id: space_id, tag: :standard)
+
+    multi
+    |> insert_binding(:space_full_access_binding, full_access, Binding.full_access())
+    |> insert_binding(:space_members_binding, standard, members_access_level)
+  end
+
   defp insert_binding(multi, name, access_group, access_level) do
     Multi.insert(multi, name, fn %{context: context} ->
       Binding.changeset(%{
