@@ -13,7 +13,7 @@ defmodule Operately.Companies.ShortIdTest do
     Enum.each(companies, fn company ->
       assert company.short_id >= 1024
       assert company.short_id <= 18446744073709551615
-      assert String.length(encode(company.short_id)) == 3
+      assert String.length(encode(company.short_id)) == 4
     end)
 
     Enum.each(1..99, fn index ->
@@ -22,16 +22,17 @@ defmodule Operately.Companies.ShortIdTest do
   end
 
   test "conversion" do
-    assert encode(0) == "a"
-    assert encode(1023) == "99"
-    assert encode(1024) == "baa"
-    assert encode(1025) == "bab"
+    assert encode(0) == "0a"
+    assert encode(1023) == "099"
+    assert encode(1024) == "0baa"
+    assert encode(1025) == "0bab"
 
-    assert decode("a") == {:ok, 0}
-    assert decode("99") == {:ok, 1023}  
-    assert decode("baa") == {:ok, 1024}
-    assert decode("bab") == {:ok, 1025}
+    assert decode("0a") == {:ok, 0}
+    assert decode("099") == {:ok, 1023}  
+    assert decode("0baa") == {:ok, 1024}
+    assert decode("0bab") == {:ok, 1025}
 
+    assert decode("0Z") == :error
     assert decode("Z") == :error
   end
 end

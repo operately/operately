@@ -37,7 +37,13 @@ defmodule Operately.Companies.ShortId do
     use CustomBase, 'abcdefghijklmnopqrstuv0123456789'
   end
 
-  def encode(int), do: Base32.encode(int)
-  def decode(str), do: Base32.decode(str)
+  def encode(int), do: "0" <> Base32.encode(int)
+  def decode(str) do
+    if String.starts_with?(str, "0") do
+      Base32.decode(String.slice(str, 1..-1))
+    else
+      :error
+    end
+  end
 
 end
