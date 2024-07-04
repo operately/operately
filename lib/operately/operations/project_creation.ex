@@ -1,9 +1,9 @@
 defmodule Operately.Operations.ProjectCreation do
   alias Operately.Repo
-  alias Operately.Projects
   alias Operately.Projects.Contributor
   alias Operately.Projects.Project
   alias Operately.Activities
+  alias Operately.Access
   alias Operately.Access.Context
   alias Ecto.Multi
 
@@ -17,12 +17,27 @@ defmodule Operately.Operations.ProjectCreation do
     :creator_is_contributor,
     :visibility,
     :group_id,
-    :goal_id
+    :goal_id,
+    :member_access,
+    :anonymous_access
   ]
 
   def run(%__MODULE__{} = params) do
     Multi.new()
-    |> Multi.insert(:project, fn _changes ->
+    |> insert_project(params)
+    |> Multi.insert(:context, fn changes ->
+      Context.changeset(%{project_id: changes.project.id})
+    end)
+    |> insert_contributors(params)
+    |> Multi.run(:phases, fn _repo, changes -> record_phase_histories(changes.project) end)
+    |> insert_bindings(params)
+    |> insert_activity(params)
+    |> Repo.transaction()
+    |> Repo.extract_result(:project)
+  end
+
+  defp insert_project(multi, params) do
+    Multi.insert(multi, :project, fn _changes ->
       Project.changeset(%{
         :company_id => params.company_id,
         :group_id => params.group_id,
@@ -35,11 +50,10 @@ defmodule Operately.Operations.ProjectCreation do
         :health => :on_track,
       })
     end)
-    |> Multi.insert(:context, fn changes ->
-      Context.changeset(%{
-        project_id: changes.project.id,
-      })
-    end)
+  end
+
+  defp insert_contributors(multi, params) do
+    multi
     |> Multi.insert(:champion, fn changes ->
       Contributor.changeset(%{
         project_id: changes.project.id,
@@ -56,36 +70,21 @@ defmodule Operately.Operations.ProjectCreation do
         role: :reviewer
       })
     end)
-    |> Multi.run(:creator_role, fn _repo, changes -> assign_creator_role(changes.project, params) end)
-    |> Multi.run(:phases, fn _repo, changes -> record_phase_histories(changes.project) end)
-    |> Activities.insert_sync(params.creator_id, :project_created, fn changes -> %{
-      company_id: changes.project.company_id,
-      project_id: changes.project.id
-    } end)
-    |> Repo.transaction()
-    |> Repo.extract_result(:project)
+    |> maybe_insert_creator_as_contributor(params)
   end
 
-  defp assign_creator_role(project, %__MODULE__{} = params) do
-    cond do
-      params.champion_id == params.creator_id ->
-        {:ok, "Champion"}
-
-      params.reviewer_id == params.creator_id ->
-        {:ok, "Reviewer"}
-
-      params.creator_is_contributor == "no" ->
-        {:ok, "not contributing"}
-
-      params.creator_is_contributor == "yes" ->
-        {:ok, _} = Projects.create_contributor(%{
-          project_id: project.id,
+  defp maybe_insert_creator_as_contributor(multi, params) do
+    if is_creator_a_contributor?(params) do
+      Multi.insert(multi, :creator, fn changes ->
+        Contributor.changeset(%{
+          project_id: changes.project.id,
           person_id: params.creator_id,
           responsibility: params.creator_role,
           role: :contributor
         })
-
-        {:ok, params.creator_role}
+      end)
+    else
+      multi
     end
   end
 
@@ -105,6 +104,29 @@ defmodule Operately.Operations.ProjectCreation do
       project_id: project.id,
       phase: :control
     })
+  end
+
+  defp insert_bindings(multi, params) do
+    multi
+    |> Access.insert_bindings_to_company(params.company_id, params.member_access, params.anonymous_access)
+  end
+
+  defp insert_activity(multi, params) do
+    Activities.insert_sync(multi, params.creator_id, :project_created, fn changes ->
+      %{
+        company_id: changes.project.company_id,
+        project_id: changes.project.id
+      }
+    end)
+  end
+
+  defp is_creator_a_contributor?(%__MODULE__{} = params) do
+    cond do
+      params.champion_id == params.creator_id -> false
+      params.reviewer_id == params.creator_id -> false
+      params.creator_is_contributor == "no" -> false
+      params.creator_is_contributor == "yes" -> true
+    end
   end
 
   defp is_private(visibility) do

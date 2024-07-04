@@ -1,7 +1,8 @@
 defmodule Operately.Access do
   import Ecto.Query, warn: false
-  alias Operately.Repo
 
+  alias Ecto.Multi
+  alias Operately.Repo
   alias Operately.Access.Context
 
   def list_contexts do
@@ -104,6 +105,35 @@ defmodule Operately.Access do
 
   def change_binding(%Binding{} = binding, attrs \\ %{}) do
     Binding.changeset(binding, attrs)
+  end
+
+  def insert_bindings_to_company(multi, company_id, members_access_level, anonymous_access_level \\ 0) do
+    full_access = get_group!(company_id: company_id, tag: :full_access)
+    standard = get_group!(company_id: company_id, tag: :standard)
+
+    multi
+    |> insert_binding(:company_full_access_binding, full_access, Binding.full_access())
+    |> insert_binding(:company_members_binding, standard, members_access_level)
+    |> maybe_insert_anonymous_binding(company_id, anonymous_access_level)
+  end
+
+  defp insert_binding(multi, name, access_group, access_level) do
+    Multi.insert(multi, name, fn %{context: context} ->
+      Binding.changeset(%{
+        group_id: access_group.id,
+        context_id: context.id,
+        access_level: access_level,
+      })
+    end)
+  end
+
+  defp maybe_insert_anonymous_binding(multi, company_id, access_level) do
+    if access_level == Binding.view_access() do
+      anonymous = get_group!(company_id: company_id, tag: :anonymous)
+      insert_binding(multi, :anonymous_binding, anonymous, Binding.view_access())
+    else
+      multi
+    end
   end
 
 

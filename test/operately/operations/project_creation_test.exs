@@ -10,6 +10,8 @@ defmodule Operately.Operations.ProjectCreationTest do
 
   alias Operately.Repo
   alias Operately.Projects
+  alias Operately.Access
+  alias Operately.Access.Binding
   alias Operately.Activities.Activity
 
   setup do
@@ -19,25 +21,27 @@ defmodule Operately.Operations.ProjectCreationTest do
     reviewer = person_fixture_with_account(%{company_id: company.id})
     champion = person_fixture_with_account(%{company_id: company.id})
 
-    group = group_fixture(creator)
+    space = group_fixture(creator)
 
-    {:ok, company: company, creator: creator, reviewer: reviewer, champion: champion, group: group}
-  end
-
-  test "ProjectCreation operation creates project", ctx do
-    attrs = %Operately.Operations.ProjectCreation{
+    project_attrs = %Operately.Operations.ProjectCreation{
       name: "my project",
-      champion_id: ctx.champion.id,
-      reviewer_id: ctx.reviewer.id,
+      champion_id: champion.id,
+      reviewer_id: reviewer.id,
       creator_is_contributor: "yes",
       creator_role: "developer",
       visibility: "everyone",
-      creator_id: ctx.creator.id,
-      company_id: ctx.company.id,
-      group_id: ctx.group.id,
+      creator_id: creator.id,
+      company_id: company.id,
+      group_id: space.id,
+      member_access: Binding.comment_access(),
+      anonymous_access: Binding.view_access()
     }
 
-    {:ok, project} = Operately.Operations.ProjectCreation.run(attrs)
+    {:ok, company: company, creator: creator, reviewer: reviewer, champion: champion, project_attrs: project_attrs}
+  end
+
+  test "ProjectCreation operation creates project", ctx do
+    {:ok, project} = Operately.Operations.ProjectCreation.run(ctx.project_attrs)
 
     contributors = Projects.list_project_contributors(project)
 
@@ -50,21 +54,23 @@ defmodule Operately.Operations.ProjectCreationTest do
     assert Enum.member?(contributors, {ctx.champion.id, :champion})
   end
 
-  test "ProjectCreation operation creates activity and notification", ctx do
-    attrs = %Operately.Operations.ProjectCreation{
-      name: "my project",
-      champion_id: ctx.champion.id,
-      reviewer_id: ctx.reviewer.id,
-      creator_is_contributor: "yes",
-      creator_role: "developer",
-      visibility: "everyone",
-      creator_id: ctx.creator.id,
-      company_id: ctx.company.id,
-      group_id: ctx.group.id,
-    }
+  test "ProjectCreation operation creates bindings to company", ctx do
+    {:ok, project} = Operately.Operations.ProjectCreation.run(ctx.project_attrs)
 
+    context = Access.get_context!(project_id: project.id)
+
+    full_access = Access.get_group!(company_id: ctx.company.id, tag: :full_access)
+    members = Access.get_group!(company_id: ctx.company.id, tag: :standard)
+    anonymous = Access.get_group!(company_id: ctx.company.id, tag: :anonymous)
+
+    assert Access.get_binding(group_id: full_access.id, context_id: context.id, access_level: Binding.full_access())
+    assert Access.get_binding(group_id: members.id, context_id: context.id, access_level: Binding.comment_access())
+    assert Access.get_binding(group_id: anonymous.id, context_id: context.id, access_level: Binding.view_access())
+  end
+
+  test "ProjectCreation operation creates activity and notification", ctx do
     {:ok, project} = Oban.Testing.with_testing_mode(:manual, fn ->
-      Operately.Operations.ProjectCreation.run(attrs)
+      Operately.Operations.ProjectCreation.run(ctx.project_attrs)
     end)
 
     activity = from(a in Activity, where: a.action == "project_created" and a.content["project_id"] == ^project.id) |> Repo.one()
