@@ -90,7 +90,7 @@ function AddTask({ onClick }) {
 function TaskSection({ milestone }) {
   const [newTaskModalOpen, setNewTaskModalOpen] = React.useState(false);
   const { data, loading, error, refetch } = Tasks.useGetTasks({
-    milestone_id: milestone.id,
+    milestoneId: milestone.id!,
     includeAssignees: true,
   });
 
@@ -100,7 +100,7 @@ function TaskSection({ milestone }) {
         <AddTask onClick={() => setNewTaskModalOpen(true)} />
       </PageSection>
 
-      {!loading && !error && data.tasks!.length === 0 && (
+      {!loading && !error && data!.tasks!.length === 0 && (
         <div className="flex justify-between mb-6">
           <FilledButton size="xs" type="secondary" onClick={() => setNewTaskModalOpen(true)}>
             Add First Task
@@ -116,7 +116,7 @@ function TaskSection({ milestone }) {
         milestone={milestone}
       />
 
-      {!loading && !error && <TaskBoard tasks={data.tasks!} kanbanState={JSON.parse(milestone.tasksKanbanState)} />}
+      {!loading && !error && <TaskBoard tasks={data!.tasks!} kanbanState={JSON.parse(milestone.tasksKanbanState)} />}
     </div>
   );
 }
@@ -271,9 +271,9 @@ function TaskColumn(props: TaskColumnProps) {
     let res = {};
 
     if (!isOver) {
-      props.tasks.forEach((t, i) => (res[t.id] = i));
+      props.tasks.forEach((t, i) => (res[t.id!] = i));
     } else {
-      props.tasks.filter((t) => t.id !== draggedId).forEach((t, i) => (res[t.id] = i));
+      props.tasks.filter((t) => t.id !== draggedId).forEach((t, i) => (res[t.id!] = i));
     }
 
     return res;
@@ -287,7 +287,7 @@ function TaskColumn(props: TaskColumnProps) {
 
       <div className="flex flex-col mt-2" ref={ref} style={style}>
         {props.tasks.map((task) => (
-          <TaskItem key={task.id} task={task} zoneId={props.status} style={taskStyle(visibleIndexes[task.id])} />
+          <TaskItem key={task.id} task={task} zoneId={props.status} style={taskStyle(visibleIndexes[task.id!])} />
         ))}
 
         {props.tasks.length === 0 && <PlaceholderTask />}
@@ -297,14 +297,14 @@ function TaskColumn(props: TaskColumnProps) {
 }
 
 function TaskItem({ task, zoneId, style }: { task: Tasks.Task; zoneId: string; style: React.CSSProperties }) {
-  const { ref, isDragging } = useDraggable({ id: task.id, zoneId });
+  const { ref, isDragging } = useDraggable({ id: task.id!, zoneId });
 
   return (
     <div className="w-full" ref={ref}>
       <div className="my-1" style={isDragging ? {} : style}>
         <DivLink
           className="text-sm bg-surface rounded p-2 border border-stroke-base flex items-start justify-between cursor-pointer"
-          to={Paths.taskPath(task.id)}
+          to={Paths.taskPath(task.id!)}
         >
           <div className="font-medium">{task.name}</div>
 
