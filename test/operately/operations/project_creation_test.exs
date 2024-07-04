@@ -38,6 +38,7 @@ defmodule Operately.Operations.ProjectCreationTest do
       space_access_level: Binding.edit_access(),
     }
 
+
     {:ok, company: company, space: space, creator: creator, reviewer: reviewer, champion: champion, project_attrs: project_attrs}
   end
 
@@ -91,6 +92,35 @@ defmodule Operately.Operations.ProjectCreationTest do
     assert Access.get_binding(group_id: creator.id, context_id: context.id, access_level: Binding.full_access())
     assert Access.get_binding(group_id: reviewer.id, context_id: context.id, access_level: Binding.full_access())
     assert Access.get_binding(group_id: champion.id, context_id: context.id, access_level: Binding.full_access())
+  end
+
+  test "ProjectCreation operation doesn't add creator as contributor", ctx do
+    attrs = Map.merge(ctx.project_attrs, %{creator_is_contributor: "no"})
+
+    {:ok, project} = Operately.Operations.ProjectCreation.run(attrs)
+
+    contributors = Projects.list_project_contributors(project) |> Enum.map(fn c -> c.person_id end)
+
+    assert 2 == length(contributors)
+    refute Enum.member?(contributors, {ctx.creator.id, :contributor})
+
+    context = Access.get_context!(project_id: project.id)
+    creator = Access.get_group!(person_id: ctx.creator.id)
+
+    refute Access.get_binding(group_id: creator.id, context_id: context.id)
+  end
+
+  test "ProjectCreation operation doesn't create bindings to space", ctx do
+    attrs = Map.merge(ctx.project_attrs, %{group_id: ctx.company.company_space_id})
+
+    {:ok, project} = Operately.Operations.ProjectCreation.run(attrs)
+
+    context = Access.get_context!(project_id: project.id)
+    full_access = Access.get_group!(group_id: ctx.space.id, tag: :full_access)
+    members = Access.get_group!(group_id: ctx.space.id, tag: :standard)
+
+    refute Access.get_binding(group_id: full_access.id, context_id: context.id)
+    refute Access.get_binding(group_id: members.id, context_id: context.id)
   end
 
   test "ProjectCreation operation creates activity and notification", ctx do

@@ -1,20 +1,6 @@
 defmodule OperatelyWeb.Graphql.Mutations.Projects do
   use Absinthe.Schema.Notation
 
-  # input_object :create_project_input do
-  #   field :space_id, non_null(:id)
-  #   field :name, non_null(:string)
-  #   field :champion_id, non_null(:id)
-  #   field :reviewer_id, non_null(:id)
-  #   field :visibility, non_null(:string)
-  #   field :creator_is_contributor, non_null(:string)
-  #   field :creator_role, :string
-  #   field :goal_id, :id
-  #   field :anonymous_access_level, non_null(:integer)
-  #   field :company_access_level, non_null(:integer)
-  #   field :space_access_level, non_null(:integer)
-  # end
-
   input_object :add_key_resource_input do
     field :project_id, non_null(:id)
     field :title, non_null(:string)
@@ -147,31 +133,6 @@ defmodule OperatelyWeb.Graphql.Mutations.Projects do
         Operately.Projects.EditTimelineOperation.run(author, project, attrs)
       end
     end
-
-    # field :create_project, non_null(:project) do
-    #   arg :input, non_null(:create_project_input)
-
-    #   resolve fn args, %{context: context} ->
-    #     person = context.current_account.person
-
-    #     %Operately.Operations.ProjectCreation{
-    #       name: args.input.name,
-    #       champion_id: args.input.champion_id,
-    #       reviewer_id: args.input.reviewer_id,
-    #       creator_is_contributor: args.input[:creator_is_contributor],
-    #       creator_role: args.input[:creator_role],
-    #       visibility: args.input.visibility,
-    #       creator_id: person.id,
-    #       company_id: person.company_id,
-    #       group_id: args.input.space_id,
-    #       goal_id: args.input[:goal_id],
-    #       anonymous_access_level: args.input.anonymous_access_level,
-    #       company_access_level: args.input.company_access_level,
-    #       space_access_level: args.input.space_access_level,
-    #     }
-    #     |> Operately.Projects.create_project()
-    #   end
-    # end
 
     field :add_key_resource, non_null(:project_key_resource) do
       arg :input, non_null(:add_key_resource_input)

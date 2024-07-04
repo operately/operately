@@ -11,6 +11,9 @@ defmodule OperatelyWeb.Api.Mutations.CreateProject do
     field :creator_is_contributor, :string
     field :creator_role, :string
     field :goal_id, :string
+    field :anonymous_access_level, :integer
+    field :company_access_level, :integer
+    field :space_access_level, :integer
   end
 
   outputs do
@@ -19,7 +22,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateProject do
 
   def call(conn, inputs) do
     person = me(conn)
-    
+
     {:ok, space_id} = decode_id(inputs.space_id, :allow_nil)
 
     args = %Operately.Operations.ProjectCreation{
@@ -32,9 +35,12 @@ defmodule OperatelyWeb.Api.Mutations.CreateProject do
       creator_id: person.id,
       company_id: person.company_id,
       group_id: space_id,
-      goal_id: inputs[:goal_id]
+      goal_id: inputs[:goal_id],
+      anonymous_access_level: inputs.anonymous_access_level,
+      company_access_level: inputs.company_access_level,
+      space_access_level: inputs.space_access_level,
     }
-    
+
     {:ok, project} = Operately.Projects.create_project(args)
 
     {:ok, %{project: Serializer.serialize(project, level: :essential)}}
