@@ -131,6 +131,48 @@ export type CreateCommentInput = {
   entityType: Scalars['String']['input'];
 };
 
+export type CreateGoalInput = {
+  championId: Scalars['ID']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  parentGoalId?: InputMaybe<Scalars['ID']['input']>;
+  reviewerId: Scalars['ID']['input'];
+  spaceId: Scalars['ID']['input'];
+  targets: Array<InputMaybe<CreateTargetInput>>;
+  timeframe: TimeframeInput;
+};
+
+export type CreateGroupInput = {
+  color: Scalars['String']['input'];
+  companyPermissions: Scalars['Int']['input'];
+  icon: Scalars['String']['input'];
+  mission: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+  publicPermissions: Scalars['Int']['input'];
+};
+
+export type CreateProjectInput = {
+  anonymousAccessLevel: Scalars['Int']['input'];
+  championId: Scalars['ID']['input'];
+  companyAccessLevel: Scalars['Int']['input'];
+  creatorIsContributor: Scalars['String']['input'];
+  creatorRole?: InputMaybe<Scalars['String']['input']>;
+  goalId?: InputMaybe<Scalars['ID']['input']>;
+  name: Scalars['String']['input'];
+  reviewerId: Scalars['ID']['input'];
+  spaceAccessLevel: Scalars['Int']['input'];
+  spaceId: Scalars['ID']['input'];
+  visibility: Scalars['String']['input'];
+};
+
+export type CreateTargetInput = {
+  from: Scalars['Float']['input'];
+  index: Scalars['Int']['input'];
+  name: Scalars['String']['input'];
+  to: Scalars['Float']['input'];
+  unit: Scalars['String']['input'];
+};
+
 export type CreateTaskInput = {
   assigneeIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   description?: InputMaybe<Scalars['String']['input']>;
