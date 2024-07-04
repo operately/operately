@@ -4,7 +4,7 @@ defmodule Operately.Operations.ProjectCreation do
   alias Operately.Projects.Project
   alias Operately.Activities
   alias Operately.Access
-  alias Operately.Access.Context
+  alias Operately.Access.{Binding, Context}
   alias Ecto.Multi
 
   defstruct [
@@ -111,6 +111,27 @@ defmodule Operately.Operations.ProjectCreation do
     multi
     |> Access.insert_bindings_to_company(params.company_id, params.company_access_level, params.anonymous_access_level)
     |> Access.insert_bindings_to_space(params.group_id, params.space_access_level)
+    |> insert_bindings_to_contributors(params)
+    |> maybe_insert_binding_to_creator(params)
+  end
+
+  defp insert_bindings_to_contributors(multi, params) do
+    reviewer_group = Access.get_group!(person_id: params.reviewer_id)
+    champion_group = Access.get_group!(person_id: params.champion_id)
+
+    multi
+    |> Access.insert_binding(:reviewer_binding, reviewer_group, Binding.full_access())
+    |> Access.insert_binding(:champion_binding, champion_group, Binding.full_access())
+  end
+
+  defp maybe_insert_binding_to_creator(multi, params) do
+    if is_creator_a_contributor?(params) do
+      creator_group = Access.get_group!(person_id: params.creator_id)
+
+      Access.insert_binding(multi, :creator_binding, creator_group, Binding.full_access())
+    else
+      multi
+    end
   end
 
   defp insert_activity(multi, params) do

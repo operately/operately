@@ -80,6 +80,19 @@ defmodule Operately.Operations.ProjectCreationTest do
     assert Access.get_binding(group_id: members.id, context_id: context.id, access_level: Binding.edit_access())
   end
 
+  test "ProjectCreation operation creates bindings to contributors", ctx do
+    {:ok, project} = Operately.Operations.ProjectCreation.run(ctx.project_attrs)
+
+    context = Access.get_context!(project_id: project.id)
+    creator = Access.get_group!(person_id: ctx.creator.id)
+    reviewer = Access.get_group!(person_id: ctx.reviewer.id)
+    champion = Access.get_group!(person_id: ctx.champion.id)
+
+    assert Access.get_binding(group_id: creator.id, context_id: context.id, access_level: Binding.full_access())
+    assert Access.get_binding(group_id: reviewer.id, context_id: context.id, access_level: Binding.full_access())
+    assert Access.get_binding(group_id: champion.id, context_id: context.id, access_level: Binding.full_access())
+  end
+
   test "ProjectCreation operation creates activity and notification", ctx do
     {:ok, project} = Oban.Testing.with_testing_mode(:manual, fn ->
       Operately.Operations.ProjectCreation.run(ctx.project_attrs)
