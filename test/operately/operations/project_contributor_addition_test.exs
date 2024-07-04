@@ -7,6 +7,8 @@ defmodule Operately.Operations.ProjectContributorAdditionTest do
   import Operately.ProjectsFixtures
 
   alias Operately.Projects
+  alias Operately.Access
+  alias Operately.Access.Binding
   alias Operately.Activities.Activity
 
   setup do
@@ -23,6 +25,7 @@ defmodule Operately.Operations.ProjectContributorAdditionTest do
       project_id: ctx.project.id,
       person_id: ctx.contributor.id,
       responsibility: "Developer",
+      permissions: Binding.edit_access(),
     })
 
     contributors = Projects.list_project_contributors(ctx.project) |> Enum.map(fn c -> {c.person_id, c.role} end)
@@ -31,12 +34,30 @@ defmodule Operately.Operations.ProjectContributorAdditionTest do
     assert Enum.member?(contributors, {ctx.contributor.id, :contributor})
   end
 
+  test "ProjectContributorAddition operation creates access binding", ctx do
+    context = Access.get_context!(project_id: ctx.project.id)
+    group = Access.get_group!(person_id: ctx.contributor.id)
+
+    refute Access.get_binding(context_id: context.id, group_id: group.id)
+
+    Operately.Operations.ProjectContributorAddition.run(ctx.creator, %{
+      project_id: ctx.project.id,
+      person_id: ctx.contributor.id,
+      responsibility: "Developer",
+      permissions: Binding.edit_access(),
+    })
+
+    assert Access.get_binding(context_id: context.id, group_id: group.id)
+    assert Access.get_binding(context_id: context.id, group_id: group.id, access_level: Binding.edit_access())
+  end
+
   test "ProjectContributorAddition operation creates activity and notification", ctx do
     Oban.Testing.with_testing_mode(:manual, fn ->
       Operately.Operations.ProjectContributorAddition.run(ctx.creator, %{
         project_id: ctx.project.id,
         person_id: ctx.contributor.id,
         responsibility: "Developer",
+        permissions: Binding.edit_access(),
       })
     end)
 
