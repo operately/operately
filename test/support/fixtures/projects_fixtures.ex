@@ -1,4 +1,6 @@
 defmodule Operately.ProjectsFixtures do
+  alias Operately.Access.Binding
+
   @moduledoc """
   This module defines test helpers for creating
   entities via the `Operately.Projects` context.
@@ -14,7 +16,9 @@ defmodule Operately.ProjectsFixtures do
       name: "some name",
       visibility: "everyone",
       champion_id: attrs[:champion_id] || attrs[:creator_id],
-      reviewer_id: attrs[:reviewer_id] || attrs[:creator_id]
+      reviewer_id: attrs[:reviewer_id] || attrs[:creator_id],
+      company_access_level: Binding.view_access(),
+      space_access_level: Binding.comment_access(),
     }, attrs)
 
     attrs = struct!(Operately.Operations.ProjectCreation, attrs)

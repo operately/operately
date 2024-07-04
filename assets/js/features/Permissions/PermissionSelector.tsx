@@ -2,6 +2,7 @@ import React, { useEffect, useMemo } from "react";
 import PrivacyLevel from "./PrivacyLevel";
 import { AccessLevel, ResourceAccessLevel } from "./AccessLevel";
 import { ReducerActions, usePermissionsContext } from "./PermissionsContext";
+import { Space } from "@/models/spaces";
 
 
 export enum PermissionOptions {
@@ -31,8 +32,8 @@ export function SpacePermissionSelector() {
   )
 }
 
-export function ResourcePermissionSelector() {
-  const { space, company, dispatch } = usePermissionsContext();
+export function ResourcePermissionSelector({space}: {space: Space | null}) {
+  const { company, dispatch } = usePermissionsContext();
 
   const companySpaceSelected = company.companySpaceId === space?.id;
 
@@ -65,6 +66,7 @@ export function ResourcePermissionSelector() {
       />
       <ResourceAccessLevel
         companySpaceSelected={companySpaceSelected}
+        space={space}
       />
     </>
   )

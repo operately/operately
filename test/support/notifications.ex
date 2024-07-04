@@ -23,6 +23,10 @@ defmodule Operately.Support.Notifications do
     from(n in Notification, where: n.activity_id == ^activity_id) |> Repo.one()
   end
 
+  def fetch_notifications(activity_id) do
+    from(n in Notification, where: n.activity_id == ^activity_id) |> Repo.all()
+  end
+
   def notification_message(%Person{id: id, full_name: full_name}) do
     %{
       type: :doc,
