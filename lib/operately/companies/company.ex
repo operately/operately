@@ -5,7 +5,7 @@ defmodule Operately.Companies.Company do
     has_one :access_context, Operately.Access.Context, foreign_key: :company_id
 
     has_many :access_groups, Operately.Access.Group, foreign_key: :company_id
-    has_many :people, Operately.People.Person, foreign_key: :company_id
+    has_many :people, Operately.People.Person, foreign_key: :company_id, where: [suspended_at: nil]
 
     field :mission, :string
     field :name, :string
