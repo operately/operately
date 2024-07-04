@@ -448,7 +448,6 @@ export type RootMutationType = {
   addCompanyTrustedEmailDomain: Company;
   addFirstCompany: Company;
   addKeyResource: ProjectKeyResource;
-  addProjectContributor: ProjectContributor;
   addProjectMilestone: Milestone;
   addReaction?: Maybe<Reaction>;
   archiveGoal?: Maybe<Goal>;
@@ -530,14 +529,6 @@ export type RootMutationTypeAddFirstCompanyArgs = {
 
 export type RootMutationTypeAddKeyResourceArgs = {
   input: AddKeyResourceInput;
-};
-
-
-export type RootMutationTypeAddProjectContributorArgs = {
-  personId: Scalars['ID']['input'];
-  projectId: Scalars['ID']['input'];
-  responsibility: Scalars['String']['input'];
-  role: Scalars['String']['input'];
 };
 
 

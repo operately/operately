@@ -225,24 +225,6 @@ defmodule OperatelyWeb.Graphql.Mutations.Projects do
     # Contributors
     #
 
-    field :add_project_contributor, non_null(:project_contributor) do
-      arg :project_id, non_null(:id)
-      arg :person_id, non_null(:id)
-      arg :responsibility, non_null(:string)
-      arg :role, non_null(:string)
-
-      resolve fn args, %{context: context} ->
-        person = context.current_account.person
-
-        Operately.Operations.ProjectContributorAddition.run(person, %{
-          project_id: args.project_id,
-          person_id: args.person_id,
-          responsibility: args.responsibility,
-          role: args.role
-        })
-      end
-    end
-
     field :update_project_contributor, non_null(:project_contributor) do
       arg :contrib_id, non_null(:id)
       arg :person_id, non_null(:id)
@@ -318,7 +300,6 @@ defmodule OperatelyWeb.Graphql.Mutations.Projects do
         Operately.Operations.ProjectGoalDisconnection.run(person, project, goal)
       end
     end
-
   end
 
   defp parse_date(date) do

@@ -2,8 +2,10 @@ import * as React from "react";
 import * as Projects from "@/models/projects";
 
 import { useRefresh } from "./loader";
+import { useAddProjectContributor } from "@/api";
 
-interface FormState {
+
+export interface FormState {
   project: Projects.Project;
   addContrib: AddColobState;
 }
@@ -30,6 +32,7 @@ interface AddColobState {
 
   submit: () => void;
   submittable: boolean;
+  submitting: boolean;
 }
 
 function useAddContrib(project: Projects.Project): AddColobState {
@@ -46,12 +49,17 @@ function useAddContrib(project: Projects.Project): AddColobState {
 
   const submittable = !!personID && !!responsibility;
 
-  const [addColab, _s] = Projects.useAddProjectContributorMutation(project.id!);
+  const [add, { loading: submitting }] = useAddProjectContributor();
 
   const submit = async () => {
     if (!submittable) return;
 
-    await addColab(personID, responsibility);
+    await add({
+      projectId: project.id,
+      personId: personID,
+      responsibility: responsibility,
+    });
+
     refresh();
     deactivate();
   };
@@ -69,5 +77,6 @@ function useAddContrib(project: Projects.Project): AddColobState {
 
     submit,
     submittable,
+    submitting,
   };
 }
