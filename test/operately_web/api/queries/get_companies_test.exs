@@ -61,6 +61,16 @@ defmodule OperatelyWeb.Api.Queries.GetGoalsTest do
       assert find_in_response(res, company1) == Serializer.serialize(c2, level: :full)
       assert find_in_response(res, company2) == Serializer.serialize(c3, level: :full)
     end
+
+    test "include_member_count doesn't include suspended members", ctx do
+      person_fixture(company_id: ctx.company.id)
+      person_fixture(company_id: ctx.company.id, suspended_at: DateTime.utc_now())
+
+      assert {200, res} = query(ctx.conn, :get_companies, %{include_member_count: true})
+      assert length(res.companies) == 1
+      
+      assert hd(res.companies).member_count == 2
+    end
   end
 
   defp find_in_response(res, company) do
