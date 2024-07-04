@@ -7,13 +7,13 @@ interface ContextType {
   company: Company;
   permissions: Permissions;
   dispatch: Dispatch<ActionOptions>;
-  space?: Space;
+  space?: Space | null;
 }
 
 interface Props {
   children: NonNullable<ReactNode>;
   company: Company;
-  space?: Space;
+  space?: Space | null;
 }
 
 export enum ReducerActions {
@@ -35,7 +35,7 @@ type ActionOptions = { type: ReducerActions.SET_PUBLIC } |
   { type: ReducerActions.SET_SPACE_ACCESS, access_level: PermissionLevels }
 
 
-interface Permissions {
+export interface Permissions {
   public: PermissionLevels;
   company: PermissionLevels;
   space: PermissionLevels;
