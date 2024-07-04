@@ -94,13 +94,16 @@ function TaskSection({ milestone }) {
     includeAssignees: true,
   });
 
+  const tasks = data?.tasks || [];
+  const showAddFirstTask = !loading && !error && tasks.length === 0;
+
   return (
     <div>
       <PageSection title="Tasks">
         <AddTask onClick={() => setNewTaskModalOpen(true)} />
       </PageSection>
 
-      {!loading && !error && data!.tasks!.length === 0 && (
+      {showAddFirstTask && (
         <div className="flex justify-between mb-6">
           <FilledButton size="xs" type="secondary" onClick={() => setNewTaskModalOpen(true)}>
             Add First Task
@@ -116,7 +119,7 @@ function TaskSection({ milestone }) {
         milestone={milestone}
       />
 
-      {!loading && !error && <TaskBoard tasks={data!.tasks!} kanbanState={JSON.parse(milestone.tasksKanbanState)} />}
+      {<TaskBoard tasks={tasks} kanbanState={JSON.parse(milestone.tasksKanbanState)} />}
     </div>
   );
 }
