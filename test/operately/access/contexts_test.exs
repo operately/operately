@@ -65,25 +65,25 @@ defmodule Operately.AccessContextsTest do
     test "create access_context for a company" do
       company = company_fixture()
 
-      assert nil != Access.get_context!(company_id: company.id)
+      assert Access.get_context!(company_id: company.id)
     end
 
     test "create access_context for a group", ctx do
       group = group_fixture(ctx.creator)
 
-      assert nil != Access.get_context!(group_id: group.id)
+      assert Access.get_context!(group_id: group.id)
     end
 
     test "create access_context for a goal", ctx do
       goal = goal_fixture(ctx.creator, %{space_id: ctx.group.id, targets: []})
 
-      assert nil != Access.get_context!(goal_id: goal.id)
+      assert Access.get_context!(goal_id: goal.id)
     end
 
     test "create access_context for a project", ctx do
       project = project_fixture(%{company_id: ctx.company.id, group_id: ctx.group.id, creator_id: ctx.creator.id})
 
-      assert nil != Access.get_context!(project_id: project.id)
+      assert Access.get_context!(project_id: project.id)
     end
 
     test "access_context cannot be attached to more than one entity", ctx do
@@ -140,6 +140,10 @@ defmodule Operately.AccessContextsTest do
       color: "come color",
     })
     |> Repo.insert()
+
+    Access.create_group(%{group_id: group.id, tag: :full_access})
+    Access.create_group(%{group_id: group.id, tag: :standard})
+
     group
   end
 
