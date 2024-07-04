@@ -1289,11 +1289,14 @@ export interface AddKeyResourceResult {
 
 
 export interface AddProjectContributorInput {
-
+  projectId?: string | null;
+  personId?: string | null;
+  responsibility?: string | null;
+  permissions?: number | null;
 }
 
 export interface AddProjectContributorResult {
-
+  projectContributor?: ProjectContributor | null;
 }
 
 

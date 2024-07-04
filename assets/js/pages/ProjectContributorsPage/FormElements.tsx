@@ -5,6 +5,8 @@ import * as Icons from "@tabler/icons-react";
 
 import Button from "@/components/Button";
 import PeopleSearch from "@/components/PeopleSearch";
+import { SelectBox } from "@/components/Form";
+import { PERMISSIONS_LIST } from "@/features/Permissions";
 
 export function ContributorSearch({ projectID, title, onSelect, defaultValue = undefined }) {
   const loader = Projects.useProjectContributorCandidatesQuery(projectID);
@@ -26,7 +28,7 @@ export function ContributorSearch({ projectID, title, onSelect, defaultValue = u
 
 export function ResponsibilityInput({ value, onChange }) {
   return (
-    <div className="">
+    <div className="mb-6">
       <label className="font-bold mb-1 block">What are the responsibilities of this contributor?</label>
       <div className="flex-1">
         <input
@@ -40,6 +42,17 @@ export function ResponsibilityInput({ value, onChange }) {
       </div>
     </div>
   );
+}
+
+export function PermissionsInput({value, onChange}) {
+  return (
+    <SelectBox
+      label="What are the permissions of this contributor"
+      onChange={onChange}
+      options={PERMISSIONS_LIST}
+      value={value}
+    />
+  )
 }
 
 export function RemoveButton({ onClick }) {
@@ -68,9 +81,9 @@ export function SaveButton({ disabled, onClick }) {
   );
 }
 
-export function AddContribButton({ disabled, onClick }) {
+export function AddContribButton({ disabled, onClick, loading }) {
   return (
-    <Button variant="success" disabled={disabled} onClick={onClick} data-test-id="save-contributor">
+    <Button loading={loading} variant="success" disabled={disabled} onClick={onClick} data-test-id="save-contributor">
       <Icons.IconPlus size={20} />
       Add Contributor
     </Button>
