@@ -1,5 +1,4 @@
 import React, { Dispatch, ReactNode, createContext, useContext, useReducer } from "react"
-import { Space } from "@/models/spaces";
 import { Company } from "@/models/companies";
 import { PermissionLevels } from ".";
 
@@ -7,13 +6,11 @@ interface ContextType {
   company: Company;
   permissions: Permissions;
   dispatch: Dispatch<ActionOptions>;
-  space?: Space;
 }
 
 interface Props {
   children: NonNullable<ReactNode>;
   company: Company;
-  space?: Space;
 }
 
 export enum ReducerActions {
@@ -92,12 +89,11 @@ function reducerFunction(state: Permissions, action: ActionOptions) {
 }
 
 
-function PermissionsProvider({children, company, space}: Props) {
+function PermissionsProvider({children, company}: Props) {
   const [permissions, dispatch] = useReducer(reducerFunction, {...DEFAULT_PERMISSIONS});
 
   const data = {
     company,
-    space,
     permissions,
     dispatch,
   }
