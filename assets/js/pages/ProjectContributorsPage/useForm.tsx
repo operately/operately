@@ -2,8 +2,11 @@ import * as React from "react";
 import * as Projects from "@/models/projects";
 
 import { useRefresh } from "./loader";
+import { useAddProjectContributor } from "@/api";
+import { VIEW_ACCESS, PermissionOption } from "@/features/Permissions";
 
-interface FormState {
+
+export interface FormState {
   project: Projects.Project;
   addContrib: AddColobState;
 }
@@ -27,9 +30,12 @@ interface AddColobState {
   setPersonID: (id: string) => void;
   responsibility: string;
   setResponsibility: (responsibility: string) => void;
+  permissions: PermissionOption,
+  setPermissions: (permission: PermissionOption) => void,
 
   submit: () => void;
   submittable: boolean;
+  submitting: boolean;
 }
 
 function useAddContrib(project: Projects.Project): AddColobState {
@@ -43,15 +49,22 @@ function useAddContrib(project: Projects.Project): AddColobState {
 
   const [personID, setPersonID] = React.useState<string | null>(null);
   const [responsibility, setResponsibility] = React.useState("");
+  const [permissions, setPermissions] = React.useState(VIEW_ACCESS);
 
   const submittable = !!personID && !!responsibility;
 
-  const [addColab, _s] = Projects.useAddProjectContributorMutation(project.id!);
+  const [add, { loading: submitting }] = useAddProjectContributor();
 
   const submit = async () => {
     if (!submittable) return;
 
-    await addColab(personID, responsibility);
+    await add({
+      projectId: project.id,
+      personId: personID,
+      responsibility: responsibility,
+      permissions: permissions.value,
+    });
+
     refresh();
     deactivate();
   };
@@ -66,8 +79,11 @@ function useAddContrib(project: Projects.Project): AddColobState {
     setPersonID,
     responsibility,
     setResponsibility,
+    permissions,
+    setPermissions,
 
     submit,
     submittable,
+    submitting,
   };
 }

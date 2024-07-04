@@ -6,12 +6,13 @@ import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
-import { ContributorSearch, ResponsibilityInput, CancelButton, AddContribButton } from "./FormElements";
+import { ContributorSearch, ResponsibilityInput, CancelButton, AddContribButton, PermissionsInput } from "./FormElements";
 import ContributorItem from "./ContributorItem";
 import { FilledButton } from "@/components/Button";
 
 import { useLoadedData, useRefresh } from "./loader";
-import { useForm } from "./useForm";
+import { useForm, FormState } from "./useForm";
+
 
 export function Page() {
   const { project } = useLoadedData();
@@ -33,7 +34,7 @@ export function Page() {
   );
 }
 
-function Title({ form }) {
+function Title({ form }: { form: FormState }) {
   return (
     <div className="rounded-t-[20px] pb-12">
       <div className="flex items-center justify-between">
@@ -50,15 +51,21 @@ function Title({ form }) {
   );
 }
 
-function AddContribForm({ form }) {
+function AddContribForm({ form }: { form: FormState }) {
   return (
     <div className="bg-surface-dimmed border-y border-surface-outline -mx-12 px-12 mt-4 py-8">
       <ContributorSearch title="Contributor" projectID={form.project.id} onSelect={form.addContrib.setPersonID} />
 
       <ResponsibilityInput value={form.addContrib.responsibility} onChange={form.addContrib.setResponsibility} />
 
+      <PermissionsInput value={form.addContrib.permissions} onChange={form.addContrib.setPermissions} />
+
       <div className="flex mt-8 gap-2">
-        <AddContribButton onClick={form.addContrib.submit} disabled={!form.addContrib.submittable} />
+        <AddContribButton
+          onClick={form.addContrib.submit}
+          loading={form.addContrib.submitting}
+          disabled={!form.addContrib.submittable}
+        />
         <CancelButton onClick={form.addContrib.deactivate} />
       </div>
     </div>
