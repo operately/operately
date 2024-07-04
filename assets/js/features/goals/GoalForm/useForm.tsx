@@ -214,13 +214,8 @@ function useSubmit(fields: Fields, config: FormConfig): [() => Promise<boolean>,
 
   const cancel = useNavigateTo(createCancelPath(config));
 
-  const [create, { loading: submittingCreate }] = Goals.useCreateGoalMutation({
-    onCompleted: (data: any) => navigate(Paths.goalPath(data.createGoal.id)),
-  });
-
-  const [edit, { loading: submittingEdit }] = Goals.useEditGoalMutation({
-    onCompleted: (data: any) => navigate(Paths.goalPath(data.editGoal.id)),
-  });
+  const [create, { loading: submittingCreate }] = Goals.useCreateGoal();
+  const [edit, { loading: submittingEdit }] = Goals.useEditGoal();
 
   const submitting = submittingCreate || submittingEdit;
 
@@ -235,67 +230,61 @@ function useSubmit(fields: Fields, config: FormConfig): [() => Promise<boolean>,
     }
 
     if (config.mode === "create") {
-      await create({
-        variables: {
-          input: {
-            name: fields.name,
-            spaceId: fields.space!.value,
-            championID: fields.champion!.id,
-            reviewerID: fields.reviewer!.id,
-            timeframe: Timeframes.serialize(fields.timeframe),
-            description: prepareDescriptionForSave(fields),
-            parentGoalId: config.parentGoal?.id,
-            targets: fields.targets
-              .filter((t) => t.name.trim() !== "")
-              .map((t, index) => ({
-                name: t.name,
-                from: parseInt(t.from),
-                to: parseInt(t.to),
-                unit: t.unit,
-                index: index,
-              })),
-          },
-        },
+      const res = await create({
+        name: fields.name,
+        spaceId: fields.space!.value,
+        championID: fields.champion!.id,
+        reviewerID: fields.reviewer!.id,
+        timeframe: Timeframes.serialize(fields.timeframe),
+        description: prepareDescriptionForSave(fields),
+        parentGoalId: config.parentGoal?.id,
+        targets: fields.targets
+          .filter((t) => t.name.trim() !== "")
+          .map((t, index) => ({
+            name: t.name,
+            from: parseInt(t.from),
+            to: parseInt(t.to),
+            unit: t.unit,
+            index: index,
+          })),
       });
 
+      navigate(Paths.goalPath(res.goal.id!));
       return true;
     } else {
-      await edit({
-        variables: {
-          input: {
-            goalId: config.goal!.id,
-            name: fields.name,
-            championID: fields.champion!.id,
-            reviewerID: fields.reviewer!.id,
-            timeframe: Timeframes.serialize(fields.timeframe),
-            description: prepareDescriptionForSave(fields),
-            addedTargets: fields.targets
-              .filter((t) => t.name.trim() !== "")
-              .filter((t) => t.isNew)
-              .map((t, index) => ({
-                name: t.name,
-                from: parseInt(t.from),
-                to: parseInt(t.to),
-                unit: t.unit,
-                index: index,
-              })),
-            updatedTargets: fields.targets
-              .filter((t) => t.name.trim() !== "")
-              .filter((t) => !t.isNew)
-              .map((t, index) => ({
-                id: t.id,
-                name: t.name,
-                from: parseInt(t.from),
-                to: parseInt(t.to),
-                unit: t.unit,
-                index: index,
-              })),
-          },
-        },
+      const res = await edit({
+        goalId: config.goal!.id,
+        name: fields.name,
+        championID: fields.champion!.id,
+        reviewerID: fields.reviewer!.id,
+        timeframe: Timeframes.serialize(fields.timeframe),
+        description: prepareDescriptionForSave(fields),
+        addedTargets: fields.targets
+          .filter((t) => t.name.trim() !== "")
+          .filter((t) => t.isNew)
+          .map((t, index) => ({
+            name: t.name,
+            from: parseInt(t.from),
+            to: parseInt(t.to),
+            unit: t.unit,
+            index: index,
+          })),
+        updatedTargets: fields.targets
+          .filter((t) => t.name.trim() !== "")
+          .filter((t) => !t.isNew)
+          .map((t, index) => ({
+            id: t.id,
+            name: t.name,
+            from: parseInt(t.from),
+            to: parseInt(t.to),
+            unit: t.unit,
+            index: index,
+          })),
       });
-    }
 
-    return true;
+      navigate(Paths.goalPath(res.goal.id!));
+      return true;
+    }
   };
 
   return [submit, cancel, submitting, errors];

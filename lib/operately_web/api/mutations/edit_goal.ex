@@ -1,16 +1,16 @@
-defmodule OperatelyWeb.Api.Mutations.CreateGoal do
+defmodule OperatelyWeb.Api.Mutations.EditGoal do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
   inputs do
-    field :space_id, :string
+    field :goal_id, :string
     field :name, :string
     field :champion_id, :string
     field :reviewer_id, :string
     field :timeframe, :timeframe
-    field :targets, list_of(:create_target_input)
+    field :added_targets, list_of(:create_target_input)
+    field :updated_targets, list_of(:update_target_input)
     field :description, :string
-    field :parent_goal_id, :string
   end
 
   outputs do
@@ -18,7 +18,9 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoal do
   end
 
   def call(conn, inputs) do
-    {:ok, goal} = Operately.Operations.GoalCreation.run(me(conn), inputs)
+    goal = Operately.Goals.get_goal!(inputs.goal_id)
+    {:ok, goal} = Operately.Operations.GoalEditing.run(me(conn), goal, inputs)
+
     {:ok, %{goal: Serializer.serialize(goal, level: :essential)}}
   end
 end

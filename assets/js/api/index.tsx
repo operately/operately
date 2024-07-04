@@ -491,6 +491,14 @@ export interface Company {
   memberCount?: number | null;
 }
 
+export interface CreateTargetInput {
+  name?: string | null;
+  from?: number | null;
+  to?: number | null;
+  unit?: number | null;
+  index?: number | null;
+}
+
 export interface Discussion {
   id?: string | null;
   name?: string | null;
@@ -865,6 +873,15 @@ export interface UpdateContentStatusUpdate {
   projectStartTime?: string | null;
   projectEndTime?: string | null;
   health?: ProjectHealth | null;
+}
+
+export interface UpdateTargetInput {
+  id?: string | null;
+  name?: string | null;
+  from?: number | null;
+  to?: number | null;
+  unit?: string | null;
+  index?: number | null;
 }
 
 export type ActivityContent = ActivityContentCommentAdded | ActivityContentDiscussionCommentSubmitted | ActivityContentDiscussionEditing | ActivityContentDiscussionPosting | ActivityContentGoalArchived | ActivityContentGoalCheckIn | ActivityContentGoalCheckInAcknowledgement | ActivityContentGoalCheckInEdit | ActivityContentGoalClosing | ActivityContentGoalCreated | ActivityContentGoalDiscussionCreation | ActivityContentGoalDiscussionEditing | ActivityContentGoalEditing | ActivityContentGoalReopening | ActivityContentGoalReparent | ActivityContentGoalTimeframeEditing | ActivityContentGroupEdited | ActivityContentProjectArchived | ActivityContentProjectCheckInAcknowledged | ActivityContentProjectCheckInCommented | ActivityContentProjectCheckInEdit | ActivityContentProjectCheckInSubmitted | ActivityContentProjectClosed | ActivityContentProjectContributorAddition | ActivityContentProjectCreated | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectGoalConnection | ActivityContentProjectGoalDisconnection | ActivityContentProjectMilestoneCommented | ActivityContentProjectMoved | ActivityContentProjectPausing | ActivityContentProjectRenamed | ActivityContentProjectResuming | ActivityContentProjectReviewAcknowledged | ActivityContentProjectReviewCommented | ActivityContentProjectReviewRequestSubmitted | ActivityContentProjectReviewSubmitted | ActivityContentProjectTimelineEdited | ActivityContentSpaceJoining | ActivityContentTaskAdding | ActivityContentTaskAssigneeAssignment | ActivityContentTaskClosing | ActivityContentTaskDescriptionChange | ActivityContentTaskNameEditing | ActivityContentTaskPriorityChange | ActivityContentTaskReopening | ActivityContentTaskSizeChange | ActivityContentTaskStatusChange | ActivityContentTaskUpdate;
@@ -1360,11 +1377,18 @@ export interface CreateCommentResult {
 
 
 export interface CreateGoalInput {
-
+  spaceId?: string | null;
+  name?: string | null;
+  championId?: string | null;
+  reviewerId?: string | null;
+  timeframe?: Timeframe | null;
+  targets?: CreateTargetInput[] | null;
+  description?: string | null;
+  parentGoalId?: string | null;
 }
 
 export interface CreateGoalResult {
-
+  goal?: Goal | null;
 }
 
 
@@ -1446,11 +1470,13 @@ export interface EditCommentResult {
 
 
 export interface EditDiscussionInput {
-
+  discussionId?: string | null;
+  title?: string | null;
+  body?: string | null;
 }
 
 export interface EditDiscussionResult {
-
+  discussion?: Discussion | null;
 }
 
 
@@ -1564,11 +1590,13 @@ export interface PauseProjectResult {
 
 
 export interface PostDiscussionInput {
-
+  spaceId?: string | null;
+  title?: string | null;
+  body?: string | null;
 }
 
 export interface PostDiscussionResult {
-
+  discussion?: Discussion | null;
 }
 
 
