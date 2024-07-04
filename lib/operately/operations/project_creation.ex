@@ -1,10 +1,11 @@
 defmodule Operately.Operations.ProjectCreation do
+  import Ecto.Query, only: [from: 2]
+
   alias Operately.Repo
-  alias Operately.Projects.Contributor
-  alias Operately.Projects.Project
   alias Operately.Activities
   alias Operately.Access
   alias Operately.Access.{Binding, Context}
+  alias Operately.Projects.{Project, Contributor}
   alias Ecto.Multi
 
   defstruct [
@@ -110,9 +111,19 @@ defmodule Operately.Operations.ProjectCreation do
   defp insert_bindings(multi, params) do
     multi
     |> Access.insert_bindings_to_company(params.company_id, params.company_access_level, params.anonymous_access_level)
-    |> Access.insert_bindings_to_space(params.group_id, params.space_access_level)
+    |> maybe_insert_bindings_to_space(params)
     |> insert_bindings_to_contributors(params)
     |> maybe_insert_binding_to_creator(params)
+  end
+
+  defp maybe_insert_bindings_to_space(multi, params) do
+    company_space_id = Repo.one!(from(c in Operately.Companies.Company, where: c.id == ^params.company_id, select: c.company_space_id))
+
+    if params.group_id != company_space_id do
+      Access.insert_bindings_to_space(multi, params.group_id, params.space_access_level)
+    else
+      multi
+    end
   end
 
   defp insert_bindings_to_contributors(multi, params) do

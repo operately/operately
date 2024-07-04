@@ -2,6 +2,7 @@ defmodule Operately.ProjectsTest do
   use Operately.DataCase
 
   alias Operately.Projects
+  alias Operately.Access.Binding
 
   import Operately.ProjectsFixtures
   import Operately.GroupsFixtures
@@ -48,6 +49,8 @@ defmodule Operately.ProjectsTest do
         champion_id: ctx.champion.id,
         reviewer_id: ctx.reviewer.id,
         creator_id: ctx.champion.id,
+        company_access_level: Binding.view_access(),
+        space_access_level: Binding.comment_access(),
       }
 
       assert {:ok, %Project{} = project} = Projects.create_project(project_attrs)
