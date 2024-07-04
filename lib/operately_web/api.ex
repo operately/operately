@@ -33,6 +33,7 @@ defmodule OperatelyWeb.Api do
   query :get_unread_notification_count, OperatelyWeb.Api.Queries.GetUnreadNotificationCount
   query :search_people, OperatelyWeb.Api.Queries.SearchPeople
   query :search_project_contributor_candidates, OperatelyWeb.Api.Queries.SearchProjectContributorCandidates
+  query :search_potential_space_members, OperatelyWeb.Api.Queries.SearchPotentialSpaceMembers
 
   mutation :acknowledge_goal_check_in, OperatelyWeb.Api.Mutations.AcknowledgeGoalCheckIn
   mutation :acknowledge_project_check_in, OperatelyWeb.Api.Mutations.AcknowledgeProjectCheckIn

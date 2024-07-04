@@ -99,6 +99,7 @@ defmodule Operately.Features.SpacesTest do
     |> UI.click(testid: "add-remove-members")
     |> UI.assert_text(person.full_name)
     |> UI.click(testid: "remove-member-#{person.id}")
+    |> UI.sleep(100)
     |> UI.refute_text(person.full_name)
   end
 

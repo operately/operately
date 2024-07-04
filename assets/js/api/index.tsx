@@ -450,6 +450,11 @@ export interface ActivityEventDataProjectCreate {
   champion?: Person | null;
 }
 
+export interface AddMemberInput {
+  id?: string | null;
+  permissions?: number | null;
+}
+
 export interface Assignment {
   type?: string | null;
   due?: string | null;
@@ -1183,6 +1188,18 @@ export interface SearchPeopleResult {
 }
 
 
+export interface SearchPotentialSpaceMembersInput {
+  groupId?: string | null;
+  query?: string | null;
+  excludeIds?: string[] | null;
+  limit?: number | null;
+}
+
+export interface SearchPotentialSpaceMembersResult {
+  people?: Person[] | null;
+}
+
+
 export interface SearchProjectContributorCandidatesInput {
 
 }
@@ -1246,7 +1263,8 @@ export interface AddFirstCompanyResult {
 
 
 export interface AddGroupMembersInput {
-
+  groupId?: string | null;
+  members?: AddMemberInput[] | null;
 }
 
 export interface AddGroupMembersResult {
@@ -1664,7 +1682,8 @@ export interface RemoveCompanyTrustedEmailDomainResult {
 
 
 export interface RemoveGroupMemberInput {
-
+  groupId?: string | null;
+  memberId?: string | null;
 }
 
 export interface RemoveGroupMemberResult {
@@ -1727,11 +1746,13 @@ export interface SetMilestoneDeadlineResult {
 
 
 export interface UpdateGroupAppearanceInput {
-
+  id?: string | null;
+  icon?: string | null;
+  color?: string | null;
 }
 
 export interface UpdateGroupAppearanceResult {
-
+  space?: Space | null;
 }
 
 
@@ -1928,6 +1949,10 @@ export class ApiClient {
 
   async searchPeople(input: SearchPeopleInput): Promise<SearchPeopleResult> {
     return axios.get(this.getBasePath() + "/search_people", { params: toSnake(input)}).then(({ data }) => toCamel(data));
+  }
+
+  async searchPotentialSpaceMembers(input: SearchPotentialSpaceMembersInput): Promise<SearchPotentialSpaceMembersResult> {
+    return axios.get(this.getBasePath() + "/search_potential_space_members", { params: toSnake(input)}).then(({ data }) => toCamel(data));
   }
 
   async searchProjectContributorCandidates(input: SearchProjectContributorCandidatesInput): Promise<SearchProjectContributorCandidatesResult> {
@@ -2271,6 +2296,9 @@ export async function getUnreadNotificationCount(input: GetUnreadNotificationCou
 export async function searchPeople(input: SearchPeopleInput) : Promise<SearchPeopleResult> {
   return defaultApiClient.searchPeople(input);
 }
+export async function searchPotentialSpaceMembers(input: SearchPotentialSpaceMembersInput) : Promise<SearchPotentialSpaceMembersResult> {
+  return defaultApiClient.searchPotentialSpaceMembers(input);
+}
 export async function searchProjectContributorCandidates(input: SearchProjectContributorCandidatesInput) : Promise<SearchProjectContributorCandidatesResult> {
   return defaultApiClient.searchProjectContributorCandidates(input);
 }
@@ -2570,6 +2598,10 @@ export function useGetUnreadNotificationCount(input: GetUnreadNotificationCountI
 
 export function useSearchPeople(input: SearchPeopleInput) : UseQueryHookResult<SearchPeopleResult> {
   return useQuery<SearchPeopleResult>(() => defaultApiClient.searchPeople(input));
+}
+
+export function useSearchPotentialSpaceMembers(input: SearchPotentialSpaceMembersInput) : UseQueryHookResult<SearchPotentialSpaceMembersResult> {
+  return useQuery<SearchPotentialSpaceMembersResult>(() => defaultApiClient.searchPotentialSpaceMembers(input));
 }
 
 export function useSearchProjectContributorCandidates(input: SearchProjectContributorCandidatesInput) : UseQueryHookResult<SearchProjectContributorCandidatesResult> {
@@ -2885,6 +2917,8 @@ export default {
   useGetUnreadNotificationCount,
   searchPeople,
   useSearchPeople,
+  searchPotentialSpaceMembers,
+  useSearchPotentialSpaceMembers,
   searchProjectContributorCandidates,
   useSearchProjectContributorCandidates,
   acknowledgeGoalCheckIn,

@@ -47,13 +47,5 @@ defmodule OperatelyWeb.Graphql.Types.Groups do
         {:ok, people}
       end
     end
-
-    field :points_of_contact, list_of(non_null(:group_contact)) do
-      resolve fn group, _, _ ->
-        contacts = Operately.Groups.list_contacts(group)
-
-        {:ok, contacts}
-      end
-    end
   end
 end

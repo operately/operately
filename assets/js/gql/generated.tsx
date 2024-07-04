@@ -57,11 +57,6 @@ export type AddKeyResourceInput = {
   title: Scalars['String']['input'];
 };
 
-export type AddMemberInput = {
-  id: Scalars['ID']['input'];
-  permissions: Scalars['Int']['input'];
-};
-
 export type AddReactionInput = {
   emoji: Scalars['String']['input'];
   entityId: Scalars['ID']['input'];
@@ -128,12 +123,6 @@ export type Company = {
   name: Scalars['String']['output'];
   people?: Maybe<Array<Maybe<Person>>>;
   trustedEmailDomains?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-};
-
-export type ContactInput = {
-  name: Scalars['String']['input'];
-  type: Scalars['String']['input'];
-  value: Scalars['String']['input'];
 };
 
 export type CreateCommentInput = {
@@ -256,16 +245,7 @@ export type Group = {
   members?: Maybe<Array<Person>>;
   mission?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
-  pointsOfContact?: Maybe<Array<GroupContact>>;
   privateSpace: Scalars['Boolean']['output'];
-};
-
-export type GroupContact = {
-  __typename?: 'GroupContact';
-  id: Scalars['ID']['output'];
-  name: Scalars['String']['output'];
-  type: Scalars['String']['output'];
-  value: Scalars['String']['output'];
 };
 
 export type Invitation = {
@@ -467,8 +447,6 @@ export type RootMutationType = {
   addCompanyMember: Invitation;
   addCompanyTrustedEmailDomain: Company;
   addFirstCompany: Company;
-  addGroupContact?: Maybe<Group>;
-  addGroupMembers?: Maybe<Scalars['Boolean']['output']>;
   addKeyResource: ProjectKeyResource;
   addProjectContributor: ProjectContributor;
   addProjectMilestone: Milestone;
@@ -500,18 +478,15 @@ export type RootMutationType = {
   removeCompanyAdmin?: Maybe<Person>;
   removeCompanyMember?: Maybe<Person>;
   removeCompanyTrustedEmailDomain: Company;
-  removeGroupMember?: Maybe<Scalars['Boolean']['output']>;
   removeKeyResource: ProjectKeyResource;
   removeProjectContributor: ProjectContributor;
   removeProjectMilestone: Milestone;
   reopenGoal: Goal;
   resumeProject: Project;
-  setGroupMission?: Maybe<Group>;
   setMilestoneDeadline: Milestone;
   setMilestoneStatus: Milestone;
   setProjectDueDate: Project;
   setProjectStartDate: Project;
-  updateGroupAppearance: Group;
   updateMilestone: Milestone;
   updateMilestoneDescription: Milestone;
   updateMilestoneTitle: Milestone;
@@ -550,18 +525,6 @@ export type RootMutationTypeAddCompanyTrustedEmailDomainArgs = {
 
 export type RootMutationTypeAddFirstCompanyArgs = {
   input: AddFirstCompanyInput;
-};
-
-
-export type RootMutationTypeAddGroupContactArgs = {
-  contact: ContactInput;
-  groupId: Scalars['ID']['input'];
-};
-
-
-export type RootMutationTypeAddGroupMembersArgs = {
-  groupId: Scalars['ID']['input'];
-  members: Array<InputMaybe<AddMemberInput>>;
 };
 
 
@@ -728,12 +691,6 @@ export type RootMutationTypeRemoveCompanyTrustedEmailDomainArgs = {
 };
 
 
-export type RootMutationTypeRemoveGroupMemberArgs = {
-  groupId: Scalars['ID']['input'];
-  memberId: Scalars['ID']['input'];
-};
-
-
 export type RootMutationTypeRemoveKeyResourceArgs = {
   id: Scalars['ID']['input'];
 };
@@ -759,12 +716,6 @@ export type RootMutationTypeResumeProjectArgs = {
 };
 
 
-export type RootMutationTypeSetGroupMissionArgs = {
-  groupId: Scalars['ID']['input'];
-  mission: Scalars['String']['input'];
-};
-
-
 export type RootMutationTypeSetMilestoneDeadlineArgs = {
   deadlineAt?: InputMaybe<Scalars['Date']['input']>;
   milestoneId: Scalars['ID']['input'];
@@ -786,11 +737,6 @@ export type RootMutationTypeSetProjectDueDateArgs = {
 export type RootMutationTypeSetProjectStartDateArgs = {
   projectId: Scalars['ID']['input'];
   startDate?: InputMaybe<Scalars['Date']['input']>;
-};
-
-
-export type RootMutationTypeUpdateGroupAppearanceArgs = {
-  input: UpdateGroupAppearanceInput;
 };
 
 
@@ -842,7 +788,6 @@ export type RootQueryType = {
   keyResource?: Maybe<ProjectKeyResource>;
   milestone?: Maybe<Milestone>;
   person?: Maybe<Person>;
-  potentialGroupMembers?: Maybe<Array<Maybe<Person>>>;
   projectCheckIn: ProjectCheckIn;
   projectCheckIns?: Maybe<Array<ProjectCheckIn>>;
   projectContributorCandidates?: Maybe<Array<Maybe<Person>>>;
@@ -899,14 +844,6 @@ export type RootQueryTypeMilestoneArgs = {
 
 export type RootQueryTypePersonArgs = {
   id: Scalars['ID']['input'];
-};
-
-
-export type RootQueryTypePotentialGroupMembersArgs = {
-  excludeIds?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  groupId: Scalars['ID']['input'];
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  query?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -1121,12 +1058,6 @@ export type UpdateContentStatusUpdate = {
   phaseStart?: Maybe<Scalars['String']['output']>;
   projectEndTime?: Maybe<Scalars['String']['output']>;
   projectStartTime?: Maybe<Scalars['String']['output']>;
-};
-
-export type UpdateGroupAppearanceInput = {
-  color: Scalars['String']['input'];
-  icon: Scalars['String']['input'];
-  id: Scalars['ID']['input'];
 };
 
 export type UpdateMilestoneDescriptionInput = {

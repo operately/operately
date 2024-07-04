@@ -877,4 +877,9 @@ defmodule OperatelyWeb.Api.Types do
     field :index, :integer
   end
 
+  object :add_member_input do 
+    field :id, :string
+    field :permissions, :integer
+  end
+
 end
