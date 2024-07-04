@@ -59,12 +59,12 @@ export function createAppRoutes() {
         pageRoute("spaces/:id/projects/new", pages.ProjectAddPage),
         pageRoute("spaces/:id/projects", pages.SpaceProjectsPage),
         pageRoute("spaces/:id/discussions", pages.SpaceDiscussionsPage),
+        pageRoute("spaces/:id/discussions/new", pages.DiscussionNewPage),
         pageRoute("spaces/:id/goals/new", pages.GoalAddPage),
         pageRoute("spaces/:id/goals", pages.SpaceGoalsPage),
 
         pageRoute("tasks/:id", pages.TaskPage),
 
-        pageRoute("discussions/new", pages.DiscussionNewPage),
         pageRoute("discussions/:id", pages.DiscussionPage),
         pageRoute("discussions/:id/edit", pages.DiscussionEditPage),
 

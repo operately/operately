@@ -64,7 +64,6 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Mutations.Accounts
   import_types OperatelyWeb.Graphql.Mutations.Comments
   import_types OperatelyWeb.Graphql.Mutations.Companies
-  import_types OperatelyWeb.Graphql.Mutations.Discussions
   import_types OperatelyWeb.Graphql.Mutations.Goals
   import_types OperatelyWeb.Graphql.Mutations.Groups
   import_types OperatelyWeb.Graphql.Mutations.Milestones
@@ -97,7 +96,6 @@ defmodule OperatelyWeb.Graphql.Schema do
     import_fields :account_mutations
     import_fields :comment_mutations
     import_fields :company_mutations
-    import_fields :discussion_mutations
     import_fields :goal_mutations
     import_fields :group_mutations
     import_fields :milestone_mutations

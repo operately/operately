@@ -16,7 +16,7 @@ interface LoaderResult {
 
 export async function loader({ params }): Promise<LoaderResult> {
   return {
-    space: await Spaces.getSpace({ id: params.spaceId }),
+    space: await Spaces.getSpace({ id: params.id }),
   };
 }
 
