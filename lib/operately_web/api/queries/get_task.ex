@@ -17,7 +17,7 @@ defmodule OperatelyWeb.Api.Queries.GetTask do
   end
 
   def call(conn, inputs) do
-    id = decode_id(inputs[:id])
+    {:ok, id} = decode_id(inputs[:id])
     task = load(me(conn), id, inputs)
     {:ok, %{task: Serializer.serialize(task, level: :full)}}
   end
@@ -28,13 +28,13 @@ defmodule OperatelyWeb.Api.Queries.GetTask do
     (from p in Task, where: p.id == ^id)
     |> Task.scope_company(person.company_id)
     |> include_requested(include_filters)
-    |> Repo.all()
+    |> Repo.one()
   end
 
   defp include_requested(query, requested) do
     Enum.reduce(requested, query, fn include, q ->
       case include do
-        :include_assignees -> from p in q, preload: [:assigneed_people]
+        :include_assignees -> from p in q, preload: [:assigned_people]
         :include_milestone -> from p in q, preload: [:milestone]
         :include_project -> from p in q, preload: [:project]
         e -> raise "Unknown include filter: #{e}"

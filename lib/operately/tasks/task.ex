@@ -10,7 +10,7 @@ defmodule Operately.Tasks.Task do
     has_one :project, through: [:milestone, :project]
 
     has_many :assignees, Operately.Tasks.Assignee
-    has_many :assignee_people, through: [:assignees, :person]
+    has_many :assigned_people, through: [:assignees, :person]
 
     field :name, :string
     field :priority, :string
@@ -43,5 +43,9 @@ defmodule Operately.Tasks.Task do
 
   def scope_company(query, company_id) do
     from t in query, join: c in assoc(t, :company), where: c.id == ^company_id
+  end
+
+  def scope_milestone(query, milestone_id) do
+    from t in query, where: t.milestone_id == ^milestone_id
   end
 end

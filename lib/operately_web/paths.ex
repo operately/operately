@@ -126,6 +126,11 @@ defmodule OperatelyWeb.Paths do
     project.id
   end
 
+  def task_id(task) do
+    id = Operately.ShortUuid.encode(task.id)
+    OperatelyWeb.Api.Helpers.id_with_comments(task.name, id)
+  end
+
   #
   # Path Construction Helpers
   #

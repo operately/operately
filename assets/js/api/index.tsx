@@ -1164,20 +1164,24 @@ export interface GetSpacesResult {
 
 
 export interface GetTaskInput {
-
+  id?: string | null;
+  includeAssignees?: boolean | null;
+  includeMilestone?: boolean | null;
+  includeProject?: boolean | null;
 }
 
 export interface GetTaskResult {
-
+  task?: Task | null;
 }
 
 
 export interface GetTasksInput {
-
+  milestoneId?: string | null;
+  includeAssignees?: boolean | null;
 }
 
 export interface GetTasksResult {
-
+  tasks?: Task[] | null;
 }
 
 

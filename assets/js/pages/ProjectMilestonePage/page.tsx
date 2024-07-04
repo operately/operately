@@ -89,7 +89,10 @@ function AddTask({ onClick }) {
 
 function TaskSection({ milestone }) {
   const [newTaskModalOpen, setNewTaskModalOpen] = React.useState(false);
-  const { data, loading, error, refetch } = Tasks.useTasks(milestone.id);
+  const { data, loading, error, refetch } = Tasks.useGetTasks({
+    milestone_id: milestone.id,
+    includeAssignees: true,
+  });
 
   return (
     <div>
@@ -97,7 +100,7 @@ function TaskSection({ milestone }) {
         <AddTask onClick={() => setNewTaskModalOpen(true)} />
       </PageSection>
 
-      {!loading && !error && data.tasks.length === 0 && (
+      {!loading && !error && data.tasks!.length === 0 && (
         <div className="flex justify-between mb-6">
           <FilledButton size="xs" type="secondary" onClick={() => setNewTaskModalOpen(true)}>
             Add First Task
@@ -113,7 +116,7 @@ function TaskSection({ milestone }) {
         milestone={milestone}
       />
 
-      {!loading && !error && <TaskBoard tasks={data.tasks} kanbanState={JSON.parse(milestone.tasksKanbanState)} />}
+      {!loading && !error && <TaskBoard tasks={data.tasks!} kanbanState={JSON.parse(milestone.tasksKanbanState)} />}
     </div>
   );
 }
