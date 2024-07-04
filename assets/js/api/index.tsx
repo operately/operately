@@ -1453,6 +1453,9 @@ export interface CreateProjectInput {
   creatorIsContributor?: string | null;
   creatorRole?: string | null;
   goalId?: string | null;
+  anonymousAccessLevel?: number | null;
+  companyAccessLevel?: number | null;
+  spaceAccessLevel?: number | null;
 }
 
 export interface CreateProjectResult {

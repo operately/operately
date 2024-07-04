@@ -6,6 +6,8 @@ defmodule OperatelyEmail.ProjectCreatedEmailTest do
   import Operately.GroupsFixtures
   import Operately.CompaniesFixtures
 
+  alias Operately.Access.Binding
+
   setup do
     company = company_fixture()
 
@@ -21,11 +23,13 @@ defmodule OperatelyEmail.ProjectCreatedEmailTest do
       champion_id: champion.id,
       reviewer_id: reviewer.id,
       group_id: group.id,
+      company_access_level: Binding.view_access(),
+      space_access_level: Binding.comment_access(),
     })
 
     {:ok, %{
-      company: company, 
-      project: project, 
+      company: company,
+      project: project,
       champion: champion,
       reviewer: reviewer,
     }}

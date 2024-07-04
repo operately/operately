@@ -186,8 +186,8 @@ defmodule OperatelyWeb.Graphql.Mutations.Projects do
           {:ok, project} = Operately.Projects.update_project(project, %{started_at: parse_date(args.start_date)})
           {:ok, _} = Operately.Projects.update_phase_history(history, %{start_time: parse_date(args.start_date)})
           {:ok, _} = Operately.Updates.record_project_start_time_changed(
-            person, 
-            project, 
+            person,
+            project,
             old_start_date,
             parse_date(args.start_date)
           )
@@ -210,8 +210,8 @@ defmodule OperatelyWeb.Graphql.Mutations.Projects do
           old_due_date = project.deadline
 
           {:ok, _} = Operately.Updates.record_project_end_time_changed(
-            person, 
-            project, 
+            person,
+            project,
             old_due_date,
             parse_date(args.due_date)
           )
@@ -270,7 +270,7 @@ defmodule OperatelyWeb.Graphql.Mutations.Projects do
           {:ok, contrib} = Operately.Projects.delete_contributor(contrib)
 
           {:ok, _} = Operately.Updates.record_project_contributor_removed(
-            person, 
+            person,
             contrib.project_id,
             contrib
           )
