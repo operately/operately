@@ -53,20 +53,27 @@ function toSnake(o : any) {
   return newO
 }
 
-type UseQueryHookResult<ResultT> = { data: ResultT | null, loading: boolean, error: Error | null };
+type UseQueryHookResult<ResultT> = { data: ResultT | null, loading: boolean, error: Error | null, refetch: () => void };
 
 export function useQuery<ResultT>(fn: () => Promise<ResultT>) : UseQueryHookResult<ResultT> {
   const [data, setData] = React.useState<ResultT | null>(null);
   const [loading, setLoading] = React.useState<boolean>(true);
   const [error, setError] = React.useState<Error | null>(null);
 
-  React.useEffect(() => {
+  const fetchData = React.useCallback(() => {
     setError(null);
 
     fn().then(setData).catch(setError).finally(() => setLoading(false));
   }, []);
 
-  return { data, loading, error };
+  React.useEffect(() => fetchData(), []);
+
+  const refetch = React.useCallback(() => {
+    setLoading(true);
+    fetchData();
+  }, []);
+
+  return { data, loading, error, refetch };
 }
 
 type UseMutationHookResult<InputT, ResultT> = [
