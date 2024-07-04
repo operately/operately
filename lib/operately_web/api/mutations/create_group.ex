@@ -9,11 +9,11 @@ defmodule OperatelyWeb.Api.Mutations.CreateGroup do
     field :color, :string
 
     field :company_permissions, :integer
-    field :internet_permissions, :integer
+    field :public_permissions, :integer
   end
 
   outputs do
-    field :group, :group
+    field :space, :space
   end
 
   def call(conn, inputs) do

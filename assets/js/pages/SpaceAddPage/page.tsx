@@ -59,7 +59,7 @@ function Form() {
       icon: icon,
       color: color,
       companyPermissions: permissions.company,
-      internetPermissions: permissions.internet,
+      publicPermissions: permissions.public,
     });
 
     navigate(Paths.spacePath(res.group.id!));

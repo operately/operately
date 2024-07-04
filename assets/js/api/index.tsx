@@ -1394,11 +1394,11 @@ export interface CreateGroupInput {
   icon?: string | null;
   color?: string | null;
   companyPermissions?: number | null;
-  internetPermissions?: number | null;
+  publicPermissions?: number | null;
 }
 
 export interface CreateGroupResult {
-  group?: Group | null;
+  space?: Space | null;
 }
 
 
