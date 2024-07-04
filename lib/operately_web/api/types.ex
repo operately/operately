@@ -864,7 +864,7 @@ defmodule OperatelyWeb.Api.Types do
     field :name, :string
     field :from, :float
     field :to, :float
-    field :unit, :float
+    field :unit, :string
     field :index, :integer
   end
 

@@ -495,7 +495,7 @@ export interface CreateTargetInput {
   name?: string | null;
   from?: number | null;
   to?: number | null;
-  unit?: number | null;
+  unit?: string | null;
   index?: number | null;
 }
 
@@ -1480,6 +1480,22 @@ export interface EditDiscussionResult {
 }
 
 
+export interface EditGoalInput {
+  goalId?: string | null;
+  name?: string | null;
+  championId?: string | null;
+  reviewerId?: string | null;
+  timeframe?: Timeframe | null;
+  addedTargets?: CreateTargetInput[] | null;
+  updatedTargets?: UpdateTargetInput[] | null;
+  description?: string | null;
+}
+
+export interface EditGoalResult {
+  goal?: Goal | null;
+}
+
+
 export interface EditGoalDiscussionInput {
 
 }
@@ -2032,6 +2048,10 @@ export class ApiClient {
     return axios.post(this.getBasePath() + "/edit_discussion", toSnake(input)).then(({ data }) => toCamel(data));
   }
 
+  async editGoal(input: EditGoalInput): Promise<EditGoalResult> {
+    return axios.post(this.getBasePath() + "/edit_goal", toSnake(input)).then(({ data }) => toCamel(data));
+  }
+
   async editGoalDiscussion(input: EditGoalDiscussionInput): Promise<EditGoalDiscussionResult> {
     return axios.post(this.getBasePath() + "/edit_goal_discussion", toSnake(input)).then(({ data }) => toCamel(data));
   }
@@ -2338,6 +2358,9 @@ export async function editComment(input: EditCommentInput) : Promise<EditComment
 }
 export async function editDiscussion(input: EditDiscussionInput) : Promise<EditDiscussionResult> {
   return defaultApiClient.editDiscussion(input);
+}
+export async function editGoal(input: EditGoalInput) : Promise<EditGoalResult> {
+  return defaultApiClient.editGoal(input);
 }
 export async function editGoalDiscussion(input: EditGoalDiscussionInput) : Promise<EditGoalDiscussionResult> {
   return defaultApiClient.editGoalDiscussion(input);
@@ -2667,6 +2690,10 @@ export function useEditDiscussion() : UseMutationHookResult<EditDiscussionInput,
   return useMutation<EditDiscussionInput, EditDiscussionResult>((input) => defaultApiClient.editDiscussion(input));
 }
 
+export function useEditGoal() : UseMutationHookResult<EditGoalInput, EditGoalResult> {
+  return useMutation<EditGoalInput, EditGoalResult>((input) => defaultApiClient.editGoal(input));
+}
+
 export function useEditGoalDiscussion() : UseMutationHookResult<EditGoalDiscussionInput, EditGoalDiscussionResult> {
   return useMutation<EditGoalDiscussionInput, EditGoalDiscussionResult>((input) => defaultApiClient.editGoalDiscussion(input));
 }
@@ -2916,6 +2943,8 @@ export default {
   useEditComment,
   editDiscussion,
   useEditDiscussion,
+  editGoal,
+  useEditGoal,
   editGoalDiscussion,
   useEditGoalDiscussion,
   editGoalTimeframe,
