@@ -55,6 +55,7 @@ defmodule OperatelyWeb.Api do
   mutation :create_blob, OperatelyWeb.Api.Mutations.CreateBlob
   mutation :create_comment, OperatelyWeb.Api.Mutations.CreateComment
   mutation :create_goal, OperatelyWeb.Api.Mutations.CreateGoal
+  mutation :edit_goal, OperatelyWeb.Api.Mutations.EditGoal
   mutation :create_goal_discussion, OperatelyWeb.Api.Mutations.CreateGoalDiscussion
   mutation :create_goal_update, OperatelyWeb.Api.Mutations.CreateGoalUpdate
   mutation :create_group, OperatelyWeb.Api.Mutations.CreateGroup
