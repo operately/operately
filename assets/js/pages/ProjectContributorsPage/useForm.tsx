@@ -3,6 +3,7 @@ import * as Projects from "@/models/projects";
 
 import { useRefresh } from "./loader";
 import { useAddProjectContributor } from "@/api";
+import { VIEW_ACCESS, PermissionOption } from "@/features/Permissions";
 
 
 export interface FormState {
@@ -29,6 +30,8 @@ interface AddColobState {
   setPersonID: (id: string) => void;
   responsibility: string;
   setResponsibility: (responsibility: string) => void;
+  permissions: PermissionOption,
+  setPermissions: (permission: PermissionOption) => void,
 
   submit: () => void;
   submittable: boolean;
@@ -46,6 +49,7 @@ function useAddContrib(project: Projects.Project): AddColobState {
 
   const [personID, setPersonID] = React.useState<string | null>(null);
   const [responsibility, setResponsibility] = React.useState("");
+  const [permissions, setPermissions] = React.useState(VIEW_ACCESS);
 
   const submittable = !!personID && !!responsibility;
 
@@ -58,6 +62,7 @@ function useAddContrib(project: Projects.Project): AddColobState {
       projectId: project.id,
       personId: personID,
       responsibility: responsibility,
+      permissions: permissions.value,
     });
 
     refresh();
@@ -74,6 +79,8 @@ function useAddContrib(project: Projects.Project): AddColobState {
     setPersonID,
     responsibility,
     setResponsibility,
+    permissions,
+    setPermissions,
 
     submit,
     submittable,

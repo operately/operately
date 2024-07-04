@@ -8,13 +8,23 @@ export enum PermissionLevels {
   NO_ACCESS=0,
 };
 
+export interface PermissionOption {
+  value: PermissionLevels,
+  label: string,
+}
+
+export const VIEW_ACCESS = {
+  value: PermissionLevels.VIEW_ACCESS,
+  label: "Can View",
+};
+
 export const PERMISSIONS_LIST = [
   {value: PermissionLevels.FULL_ACCESS, label: "Has Full Access"},
   {value: PermissionLevels.EDIT_ACCESS, label: "Can Edit"},
   {value: PermissionLevels.COMMENT_ACCESS, label: "Can Comment"},
-  {value: PermissionLevels.VIEW_ACCESS, label: "Can View"},
+  VIEW_ACCESS,
 ]
 
 export const PUBLIC_PERMISSIONS_LIST = [
-  {value: PermissionLevels.VIEW_ACCESS, label: "Can View"},
+  VIEW_ACCESS,
 ]
