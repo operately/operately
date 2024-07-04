@@ -1,5 +1,6 @@
 defmodule Operately.Support.Features.ProjectSteps do
   use Operately.FeatureCase
+  alias Operately.Access.Binding
   alias Operately.Support.Features.UI
   alias Operately.Support.Features.EmailSteps
   alias Operately.Support.Features.NotificationsSteps
@@ -57,6 +58,8 @@ defmodule Operately.Support.Features.ProjectSteps do
       creator_role: nil,
       visibility: "everyone",
       group_id: group.id,
+      company_access_level: Binding.view_access(),
+      space_access_level: Binding.comment_access(),
     }
 
     {:ok, project} = Operately.Projects.create_project(params)
