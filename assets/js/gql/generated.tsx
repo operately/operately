@@ -163,12 +163,15 @@ export type CreateGroupInput = {
 };
 
 export type CreateProjectInput = {
+  anonymousAccessLevel: Scalars['Int']['input'];
   championId: Scalars['ID']['input'];
+  companyAccessLevel: Scalars['Int']['input'];
   creatorIsContributor: Scalars['String']['input'];
   creatorRole?: InputMaybe<Scalars['String']['input']>;
   goalId?: InputMaybe<Scalars['ID']['input']>;
   name: Scalars['String']['input'];
   reviewerId: Scalars['ID']['input'];
+  spaceAccessLevel: Scalars['Int']['input'];
   spaceId: Scalars['ID']['input'];
   visibility: Scalars['String']['input'];
 };

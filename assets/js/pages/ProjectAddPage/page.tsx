@@ -14,23 +14,27 @@ import { FilledButton } from "@/components/Button";
 import { DimmedLink } from "@/components/Link";
 import { GoalSelectorDropdown } from "@/features/goals/GoalTree/GoalSelectorDropdown";
 import { Paths } from "@/routes/paths";
-import { PermissionsProvider } from "@/features/Permissions/PermissionsContext";
+import { PermissionsProvider, usePermissionsContext } from "@/features/Permissions/PermissionsContext";
 import { ResourcePermissionSelector } from "@/features/Permissions";
 
 
 export function Page() {
-  const { spaceID } = useLoadedData();
+  const { spaceID, company, space } = useLoadedData();
+  const form = useForm();
 
-  if (spaceID) {
-    return <NewProjectForSpacePage />;
-  } else {
-    return <NewProjectPage />;
-  }
+  return (
+    <PermissionsProvider company={company} space={space || form.fields.space} >
+      {spaceID ?
+        <NewProjectForSpacePage form={form} />
+      :
+        <NewProjectPage form={form} />
+      }
+    </PermissionsProvider>
+  );
 }
 
-function NewProjectForSpacePage() {
-  const { space, spaceID, company } = useLoadedData();
-  const form = useForm();
+function NewProjectForSpacePage({ form }: { form: FormState }) {
+  const { space, spaceID } = useLoadedData();
 
   const spaceProjectsPath = Paths.spaceProjectsPath(spaceID!);
 
@@ -44,9 +48,7 @@ function NewProjectForSpacePage() {
         <h1 className="mb-4 font-bold text-3xl text-center">Start a new project in {space!.name}</h1>
 
         <Paper.Body minHeight="300px">
-          <PermissionsProvider company={company} space={space}>
             <Form form={form} />
-          </PermissionsProvider>
         </Paper.Body>
 
         <SubmitButton form={form} />
@@ -55,10 +57,7 @@ function NewProjectForSpacePage() {
   );
 }
 
-function NewProjectPage() {
-  const { company } = useLoadedData();
-  const form = useForm();
-
+function NewProjectPage({ form }: { form: FormState }) {
   return (
     <Pages.Page title="New Project">
       <Paper.Root size="small">
@@ -69,9 +68,7 @@ function NewProjectPage() {
         <h1 className="mb-4 font-bold text-3xl text-center">Start a new project</h1>
 
         <Paper.Body minHeight="300px">
-          <PermissionsProvider company={company} space={form.fields.space || undefined} >
             <Form form={form} />
-          </PermissionsProvider>
         </Paper.Body>
 
         <SubmitButton form={form} />
@@ -81,6 +78,8 @@ function NewProjectPage() {
 }
 
 function SubmitButton({ form }: { form: FormState }) {
+  const { permissions } = usePermissionsContext();
+
   return (
     <div className="mt-8">
       {form.errors.length > 0 && (
@@ -90,7 +89,7 @@ function SubmitButton({ form }: { form: FormState }) {
       <div className="flex items-center justify-center gap-4">
         <FilledButton
           type="primary"
-          onClick={form.submit}
+          onClick={() => form.submit(permissions)}
           loading={form.submitting}
           size="lg"
           testId="save"
@@ -108,7 +107,7 @@ function Form({ form }: { form: FormState }) {
   const showWillYouContribute = !form.fields.amIChampion && !form.fields.amIReviewer;
 
   return (
-    <Forms.Form onSubmit={form.submit} loading={form.submitting} isValid={true} onCancel={form.cancel}>
+    <Forms.Form onSubmit={()=>{}} loading={form.submitting} isValid={true} onCancel={form.cancel}>
       <div className="flex flex-col gap-8">
         <div>
           <Forms.TextInput
