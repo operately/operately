@@ -359,3 +359,22 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Companies.Company do
     }
   end
 end
+
+defimpl OperatelyWeb.Api.Serializable, for: Operately.Tasks.Task do
+  def serialize(task, level: :full) do
+    %{
+      id: task.id,
+      name: task.name,
+      description: task.description,
+      priority: task.description,
+      size: task.size,
+      status: task.status,
+      due_date: OperatelyWeb.Api.Serializer.serialize(task.due_date),
+      inserted_at: OperatelyWeb.Api.Serializer.serialize(task.inserted_at),
+      updated_at: OperatelyWeb.Api.Serializer.serialize(task.updated_at),
+      assignees: OperatelyWeb.Api.Serializer.serialize(task.assignees),
+      milestone: OperatelyWeb.Api.Serializer.serialize(task.milestone),
+      project: OperatelyWeb.Api.Serializer.serialize(task.project)
+    }
+  end
+end
