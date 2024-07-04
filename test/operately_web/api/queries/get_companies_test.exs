@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Queries.GetGoalsTest do
+defmodule OperatelyWeb.Api.Queries.GetCompaniesTest do
   use OperatelyWeb.TurboCase
 
   import Operately.CompaniesFixtures
@@ -52,11 +52,11 @@ defmodule OperatelyWeb.Api.Queries.GetGoalsTest do
       assert length(res.companies) == 3
 
       # reload companies with member count so that we can compare the serialized response
-      [c1, c2, c3] = 
-        [ctx.company, company1, company2] 
+      [c1, c2, c3] =
+        [ctx.company, company1, company2]
         |> Enum.map(fn c -> Operately.Companies.get_company!(c.id) end)
         |> Company.load_member_count()
-      
+
       assert find_in_response(res, ctx.company) == Serializer.serialize(c1, level: :full)
       assert find_in_response(res, company1) == Serializer.serialize(c2, level: :full)
       assert find_in_response(res, company2) == Serializer.serialize(c3, level: :full)

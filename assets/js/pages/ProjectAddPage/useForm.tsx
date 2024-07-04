@@ -9,6 +9,7 @@ import * as Spaces from "@/models/spaces";
 import * as Goals from "@/models/goals";
 
 import { useLoadedData } from "./loader";
+import { Permissions } from "@/features/Permissions/PermissionsContext";
 import { useMe } from "@/contexts/CurrentUserContext";
 import { Paths } from "@/routes/paths";
 
@@ -16,7 +17,7 @@ export interface FormState {
   fields: Fields;
   errors: Error[];
   submitting: boolean;
-  submit: () => Promise<boolean>;
+  submit: (permissions: Permissions) => Promise<boolean>;
   cancel: () => void;
 }
 
@@ -136,7 +137,7 @@ function useSubmit(fields: Fields, cancelPath: string) {
 
   const [add, { loading: submitting }] = Projects.useCreateProject();
 
-  const submit = async () => {
+  const submit = async (permissions: Permissions) => {
     let errors = validate(fields);
 
     if (errors.length > 0) {
@@ -153,6 +154,9 @@ function useSubmit(fields: Fields, cancelPath: string) {
       creatorRole: fields.creatorRole,
       spaceId: fields.space!.value,
       goalId: fields.goal?.id,
+      anonymousAccessLevel: permissions.public,
+      companyAccessLevel: permissions.company,
+      spaceAccessLevel: permissions.space,
     });
 
     navigate(Paths.projectPath(res.project.id!));
