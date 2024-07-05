@@ -7,22 +7,22 @@ if pr_name.nil?
   exit 0
 end
 
-if pr_name.starts_with?("feat: ") 
+if pr_name.start_with?("feat: ") 
   puts "This is a feature PR. Everything is fine."
   exit 0
 end
 
-if pr_name.starts_with?("fix: ") 
+if pr_name.start_with?("fix: ") 
   puts "This is a fix PR. Everything is fine."
   exit 0
 end
 
-if pr_name.starts_with?("chore: ") 
+if pr_name.start_with?("chore: ") 
   puts "This is a chore PR. Everything is fine."
   exit 0
 end
 
-if pr_name.starts_with?("docs: ")
+if pr_name.start_with?("docs: ")
   puts "This is a docs PR. Everything is fine."
   exit 0
 end
