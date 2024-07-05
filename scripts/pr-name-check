@@ -1,0 +1,38 @@
+#!/usr/local/bin ruby
+
+pr_name = ENV["SEMAPHORE_GIT_PR_NAME"]
+
+if pr_name.nil?
+  puts "No PR name found. No need to check the PR name."
+  exit 0
+end
+
+if pr_name.starts_with?("feat: ") 
+  puts "This is a feature PR. Everything is fine."
+  exit 0
+end
+
+if pr_name.starts_with?("fix: ") 
+  puts "This is a fix PR. Everything is fine."
+  exit 0
+end
+
+if pr_name.starts_with?("chore: ") 
+  puts "This is a chore PR. Everything is fine."
+  exit 0
+end
+
+if pr_name.starts_with?("docs: ")
+  puts "This is a docs PR. Everything is fine."
+  exit 0
+end
+
+puts "PR name is not in the correct format. Please use one of the following formats:"
+puts ""
+puts " - feat: Description of the feature or enhancement that is being added"
+puts " - fix: Description of the bug that is being fixed"
+puts " - chore: Description of the chore that is being done"
+puts " - docs: Description of the documentation that is being added"
+puts ""
+
+exit 1
