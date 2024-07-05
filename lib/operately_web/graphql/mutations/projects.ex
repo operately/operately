@@ -240,28 +240,6 @@ defmodule OperatelyWeb.Graphql.Mutations.Projects do
       end
     end
 
-    field :remove_project_contributor, non_null(:project_contributor) do
-      arg :contrib_id, non_null(:id)
-
-      resolve fn args, %{context: context} ->
-        person = context.current_account.person
-
-        Operately.Repo.transaction(fn ->
-          contrib = Operately.Projects.get_contributor!(args.contrib_id)
-
-          {:ok, contrib} = Operately.Projects.delete_contributor(contrib)
-
-          {:ok, _} = Operately.Updates.record_project_contributor_removed(
-            person,
-            contrib.project_id,
-            contrib
-          )
-
-          contrib
-        end)
-      end
-    end
-
     field :archive_project, non_null(:project) do
       arg :project_id, non_null(:id)
 
