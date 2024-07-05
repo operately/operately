@@ -7,6 +7,8 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
   import Operately.GoalsFixtures
   import Operately.GroupsFixtures
 
+  alias Operately.Access.Binding
+
   describe "security" do
     test "it requires authentication", ctx do
       assert {401, _} = query(ctx.conn, :get_projects, %{})
@@ -69,7 +71,12 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
       assert res.project.contributors == serialize(Operately.Projects.list_project_contributors(project), level: :essential)
 
       dev = person_fixture(company_id: ctx.company.id)
-      {:ok, _} = Operately.Projects.create_contributor(%{person_id: dev.id, role: :contributor, project_id: project.id})
+      {:ok, _} = Operately.Projects.create_contributor(dev, %{
+        person_id: dev.id,
+        responsibility: "some responsibility",
+        project_id: project.id,
+        permissions: Binding.edit_access()
+      })
 
       assert {200, res} = query(ctx.conn, :get_project, %{id: project.id, include_contributors: true})
       assert length(res.project.contributors) == 3

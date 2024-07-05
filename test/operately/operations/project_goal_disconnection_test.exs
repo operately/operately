@@ -21,7 +21,9 @@ defmodule Operately.Operations.ProjectGoalDisconnectionTest do
     goal = goal_fixture(creator, %{space_id: group.id, targets: []})
     project = project_fixture(%{company_id: company.id, creator_id: creator.id, group_id: group.id, goal_id: goal.id})
 
-    contributor_fixture(%{project_id: project.id, person_id: contributor.id})
+    Oban.Testing.with_testing_mode(:manual, fn ->
+      contributor_fixture(creator, %{project_id: project.id, person_id: contributor.id})
+    end)
 
     {:ok, creator: creator, contributor: contributor, project: project, goal: goal}
   end

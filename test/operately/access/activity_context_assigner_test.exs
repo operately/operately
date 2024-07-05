@@ -449,7 +449,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
     end
 
     test "project_contributor_addition action", ctx do
-      contributor = contributor_fixture(%{person_id: ctx.author.id, project_id: ctx.project.id})
+      contributor = contributor_fixture(ctx.author, %{person_id: ctx.author.id, project_id: ctx.project.id})
 
       attrs = %{
         action: "project_contributor_addition",

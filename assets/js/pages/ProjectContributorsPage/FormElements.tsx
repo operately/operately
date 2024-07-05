@@ -55,10 +55,10 @@ export function PermissionsInput({value, onChange}) {
   )
 }
 
-export function RemoveButton({ onClick }) {
+export function RemoveButton({ onClick, loading }) {
   return (
     <div className="flex gap-2">
-      <Button variant="danger" onClick={onClick} data-test-id="remove-contributor">
+      <Button variant="danger" onClick={onClick} loading={loading} data-test-id="remove-contributor">
         Remove
       </Button>
     </div>
