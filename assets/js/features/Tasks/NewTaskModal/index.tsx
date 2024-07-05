@@ -29,9 +29,7 @@ function useForm({ onSubmit, milestone }) {
     className: "min-h-[250px] p-2 py-1",
   });
 
-  const [create] = Tasks.useCreateTaskMutation({
-    onCompleted: () => onSubmit(),
-  });
+  const [create] = Tasks.useCreateTask();
 
   const submit = async (): Promise<boolean> => {
     if (!name) {
@@ -40,17 +38,14 @@ function useForm({ onSubmit, milestone }) {
     }
 
     await create({
-      variables: {
-        input: {
-          name,
-          description: JSON.stringify(editor.getJSON()),
-          assignee_ids: assignees.map((a) => a.id),
-          milestone_id: milestone.id,
-        },
-      },
+      name,
+      description: JSON.stringify(editor.getJSON()),
+      assignee_ids: assignees.map((a) => a.id),
+      milestone_id: milestone.id,
     });
 
     reset();
+    onSubmit();
 
     return true;
   };

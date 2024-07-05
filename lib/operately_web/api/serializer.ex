@@ -361,6 +361,13 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Companies.Company do
 end
 
 defimpl OperatelyWeb.Api.Serializable, for: Operately.Tasks.Task do
+  def serialize(task, level: :essential) do
+    %{
+      id: OperatelyWeb.Paths.task_id(task),
+      name: task.name,
+    }
+  end 
+
   def serialize(task, level: :full) do
     %{
       id: OperatelyWeb.Paths.task_id(task),

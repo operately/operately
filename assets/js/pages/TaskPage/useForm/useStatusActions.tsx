@@ -9,18 +9,14 @@ export interface StatusActions {
 }
 
 export function useStatusActions(fields: Fields): StatusActions {
-  const [update] = Tasks.useUpdateTaskStatusMutation({});
+  const [update] = Tasks.useUpdateTaskStatus();
 
   const changeStatus = React.useCallback(
     (newStatus: string) => {
       update({
-        variables: {
-          input: {
-            taskId: fields.taskID,
-            status: newStatus,
-            columnIndex: 0,
-          },
-        },
+        taskId: fields.taskID,
+        status: newStatus,
+        columnIndex: 0,
       });
 
       fields.setStatus(newStatus);

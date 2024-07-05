@@ -131,13 +131,6 @@ export type CreateCommentInput = {
   entityType: Scalars['String']['input'];
 };
 
-export type CreateTaskInput = {
-  assigneeIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  milestoneId?: InputMaybe<Scalars['ID']['input']>;
-  name: Scalars['String']['input'];
-};
-
 export type CreateUpdateInput = {
   content: Scalars['String']['input'];
   health?: InputMaybe<Scalars['String']['input']>;
@@ -459,7 +452,6 @@ export type RootMutationType = {
   closeProject: Project;
   connectGoalToProject: Project;
   createComment?: Maybe<Comment>;
-  createTask?: Maybe<Task>;
   createUpdate: Update;
   disconnectGoalFromProject: Project;
   editComment?: Maybe<Comment>;
@@ -492,7 +484,6 @@ export type RootMutationType = {
   updateProjectContributor: ProjectContributor;
   updateProjectDescription: Project;
   updateTask: Task;
-  updateTaskStatus: Task;
 };
 
 
@@ -587,11 +578,6 @@ export type RootMutationTypeConnectGoalToProjectArgs = {
 
 export type RootMutationTypeCreateCommentArgs = {
   input: CreateCommentInput;
-};
-
-
-export type RootMutationTypeCreateTaskArgs = {
-  input: CreateTaskInput;
 };
 
 
@@ -761,11 +747,6 @@ export type RootMutationTypeUpdateProjectDescriptionArgs = {
 
 export type RootMutationTypeUpdateTaskArgs = {
   input: UpdateTaskInput;
-};
-
-
-export type RootMutationTypeUpdateTaskStatusArgs = {
-  input: UpdateTaskStatusInput;
 };
 
 export type RootQueryType = {
@@ -1064,12 +1045,6 @@ export type UpdateMilestoneTitleInput = {
 export type UpdateTaskInput = {
   assignedIds: Array<InputMaybe<Scalars['String']['input']>>;
   name: Scalars['String']['input'];
-  taskId: Scalars['String']['input'];
-};
-
-export type UpdateTaskStatusInput = {
-  columnIndex: Scalars['Int']['input'];
-  status: Scalars['String']['input'];
   taskId: Scalars['String']['input'];
 };
 

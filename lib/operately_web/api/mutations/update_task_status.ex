@@ -1,15 +1,25 @@
 defmodule OperatelyWeb.Api.Mutations.UpdateTaskStatus do
   use TurboConnect.Mutation
+  use OperatelyWeb.Api.Helpers
 
   inputs do
-    # TODO: Define input fields
+    field :task_id, :string
+    field :status, :string
+    field :column_index, :integer
   end
 
   outputs do
-    # TODO: Define output fields
+    field :task, :task
   end
 
-  def call(_conn, _inputs) do
-    raise "Not implemented"
+  def call(conn, inputs) do
+    {:ok, id} = decode_id(inputs.task_id)
+
+    author = me(conn)
+    status = inputs.status
+    column_index = inputs.column_index
+
+    {:ok, task} = Operately.Operations.TaskStatusChange.run(author, id, status, column_index)
+    {:ok, %{task: Serializer.serialize(task, level: :essential)}}
   end
 end

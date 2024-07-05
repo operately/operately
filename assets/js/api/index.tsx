@@ -1483,11 +1483,14 @@ export interface CreateProjectResult {
 
 
 export interface CreateTaskInput {
-
+  name?: string | null;
+  assigneeIds?: string[] | null;
+  description?: string | null;
+  milestoneId?: string | null;
 }
 
 export interface CreateTaskResult {
-
+  task?: Task | null;
 }
 
 
@@ -1839,11 +1842,13 @@ export interface UpdateTaskResult {
 
 
 export interface UpdateTaskStatusInput {
-
+  taskId?: string | null;
+  status?: string | null;
+  columnIndex?: number | null;
 }
 
 export interface UpdateTaskStatusResult {
-
+  task?: Task | null;
 }
 
 interface ApiClientConfig {

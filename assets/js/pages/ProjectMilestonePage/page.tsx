@@ -161,7 +161,7 @@ function TaskBoard({ tasks, kanbanState }: { tasks: Tasks.Task[]; kanbanState: a
     });
   }, [tasks]);
 
-  const [changeStatus] = Tasks.useUpdateTaskStatusMutation({});
+  const [changeStatus] = Tasks.useUpdateTaskStatus();
 
   const onTaskDrop = (dropZoneId: string, taskId: string, indexInDropZone: number) => {
     setTaskBoardState((prev) => {
@@ -189,13 +189,9 @@ function TaskBoard({ tasks, kanbanState }: { tasks: Tasks.Task[]; kanbanState: a
       }
 
       changeStatus({
-        variables: {
-          input: {
-            taskId,
-            status: dropZoneId,
-            columnIndex: indexInDropZone,
-          },
-        },
+        taskId,
+        status: dropZoneId,
+        columnIndex: indexInDropZone,
       });
 
       return { todoTasks: newTodoTasks, inProgressTasks: newInProgressTasks, doneTasks: newDoneTasks };
