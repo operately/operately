@@ -53,66 +53,10 @@ defmodule Operately.Operations.GroupCreation do
     company_members = Map.get(attrs, :company_permissions, Binding.no_access())
     anonymous_users = Map.get(attrs, :public_permissions, nil)
 
+    creator_group = Access.get_group!(person_id: creator.id)
+
     multi
-    |> insert_company_admins_binding()
-    |> insert_company_members_binding(company_members)
-    |> insert_anonymous_users_binding(anonymous_users)
-    |> insert_creator_group_binding(creator)
-  end
-
-  defp insert_company_admins_binding(multi) do
-    multi
-    |> Multi.insert(:company_admins_group_binding, fn changes ->
-      access_group = Access.get_group!(company_id: changes.group.company_id, tag: :full_access)
-
-      Binding.changeset(%{
-        group_id: access_group.id,
-        context_id: changes.context.id,
-        access_level: Binding.full_access(),
-      })
-    end)
-  end
-
-  defp insert_company_members_binding(multi, company_members) do
-    multi
-    |> Multi.insert(:company_members_group_binding, fn changes ->
-      access_group = Access.get_group!(company_id: changes.group.company_id, tag: :standard)
-
-      Binding.changeset(%{
-        group_id: access_group.id,
-        context_id: changes.context.id,
-        access_level: company_members,
-      })
-    end)
-  end
-
-  defp insert_anonymous_users_binding(multi, anonymous_users) do
-    if anonymous_users == Binding.view_access() do
-      multi
-      |> Multi.insert(:anonymous_users_binding, fn changes ->
-        access_group = Access.get_group!(company_id: changes.group.company_id, tag: :anonymous)
-
-        Binding.changeset(%{
-          group_id: access_group.id,
-          context_id: changes.context.id,
-          access_level: Binding.view_access(),
-        })
-      end)
-    else
-      multi
-    end
-  end
-
-  defp insert_creator_group_binding(multi, creator) do
-    multi
-    |> Multi.insert(:creator_group_binding, fn changes ->
-      access_group = Access.get_group!(person_id: creator.id)
-
-      Binding.changeset(%{
-        group_id: access_group.id,
-        context_id: changes.context.id,
-        access_level: Binding.full_access(),
-      })
-    end)
+    |> Access.insert_bindings_to_company(attrs.company_id, company_members, anonymous_users)
+    |> Access.insert_binding(:creator_group_binding, creator_group, Binding.full_access())
   end
 end
