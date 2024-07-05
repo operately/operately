@@ -26,8 +26,8 @@ export function isResponsibilityRemovable(role: ContributorRole) {
 }
 
 export function splitByRole(contributors: ProjectContributor[]) {
-  const champion = contributors.find((c) => c.role === "champion");
-  const reviewer = contributors.find((c) => c.role === "reviewer");
+  const champion = contributors.find((c) => c.role === "champion")!;
+  const reviewer = contributors.find((c) => c.role === "reviewer")!;
   const rest = contributors.filter((c) => c.role === "contributor");
 
   return { champion, reviewer, contributors: rest };
