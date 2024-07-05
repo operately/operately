@@ -12,6 +12,7 @@ blocks:
       jobs:
         - name: PR Name Check
           commands:
+            - checkout
             - make test.pr.name
 
   - name: Tests
