@@ -27,7 +27,6 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Types.ProjectPermissions
   import_types OperatelyWeb.Graphql.Types.Projects
   import_types OperatelyWeb.Graphql.Types.Reactions
-  import_types OperatelyWeb.Graphql.Types.Tasks
   import_types OperatelyWeb.Graphql.Types.Timeframe
   import_types OperatelyWeb.Graphql.Types.UpdateContentGoalCheckIn
   import_types OperatelyWeb.Graphql.Types.UpdateContentMessage
@@ -55,7 +54,6 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Queries.People
   import_types OperatelyWeb.Graphql.Queries.ProjectCheckIns
   import_types OperatelyWeb.Graphql.Queries.Projects
-  import_types OperatelyWeb.Graphql.Queries.Tasks
   import_types OperatelyWeb.Graphql.Queries.Updates
 
   # Mutations
@@ -67,7 +65,6 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Mutations.ProjectCheckIns
   import_types OperatelyWeb.Graphql.Mutations.Projects
   import_types OperatelyWeb.Graphql.Mutations.Reactions
-  import_types OperatelyWeb.Graphql.Mutations.Tasks
   import_types OperatelyWeb.Graphql.Mutations.Updates
 
   # Subscriptions
@@ -83,7 +80,6 @@ defmodule OperatelyWeb.Graphql.Schema do
     import_fields :person_queries
     import_fields :project_check_in_queries
     import_fields :project_queries
-    import_fields :task_queries
     import_fields :update_queries
   end
 
@@ -96,7 +92,6 @@ defmodule OperatelyWeb.Graphql.Schema do
     import_fields :project_check_in_mutations
     import_fields :project_mutations
     import_fields :reaction_mutations
-    import_fields :task_mutations
     import_fields :update_mutations
   end
 
