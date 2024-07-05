@@ -165,6 +165,9 @@ test.js.dead.code:
 test.tsc.lint:
 	./devenv bash -c "cd assets && npx tsc --noEmit -p ."
 
+test.pr.name:
+	ruby scripts/pr-name-check
+
 #
 # Building a docker image
 #
