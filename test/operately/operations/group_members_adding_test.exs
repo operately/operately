@@ -50,24 +50,24 @@ defmodule Operately.Operations.GroupMembersAddingTest do
     managers = Access.get_group(group_id: ctx.group.id, tag: :full_access)
 
     Enum.each(ctx.members, fn %{id: person_id} ->
-      assert nil == Access.get_group_membership(group_id: members.id, person_id: person_id)
-      assert nil == Access.get_group_membership(group_id: managers.id, person_id: person_id)
+      refute Access.get_group_membership(group_id: members.id, person_id: person_id)
+      refute Access.get_group_membership(group_id: managers.id, person_id: person_id)
     end)
     Enum.each(ctx.managers, fn %{id: person_id} ->
-      assert nil == Access.get_group_membership(group_id: members.id, person_id: person_id)
-      assert nil == Access.get_group_membership(group_id: managers.id, person_id: person_id)
+      refute Access.get_group_membership(group_id: members.id, person_id: person_id)
+      refute Access.get_group_membership(group_id: managers.id, person_id: person_id)
     end)
 
     Operately.Operations.GroupMembersAdding.run(ctx.group.id, ctx.members)
     Operately.Operations.GroupMembersAdding.run(ctx.group.id, ctx.managers)
 
     Enum.each(ctx.members, fn %{id: person_id} ->
-      assert nil != Access.get_group_membership(group_id: members.id, person_id: person_id)
-      assert nil == Access.get_group_membership(group_id: managers.id, person_id: person_id)
+      assert Access.get_group_membership(group_id: members.id, person_id: person_id)
+      refute Access.get_group_membership(group_id: managers.id, person_id: person_id)
     end)
     Enum.each(ctx.managers, fn %{id: person_id} ->
-      assert nil == Access.get_group_membership(group_id: members.id, person_id: person_id)
-      assert nil != Access.get_group_membership(group_id: managers.id, person_id: person_id)
+      refute Access.get_group_membership(group_id: members.id, person_id: person_id)
+      assert Access.get_group_membership(group_id: managers.id, person_id: person_id)
     end)
   end
 
@@ -75,10 +75,10 @@ defmodule Operately.Operations.GroupMembersAddingTest do
     all_members = ctx.members ++ ctx.managers
     access_context = Access.get_context!(group_id: ctx.group.id)
 
-    Enum.each(all_members, fn %{id: person_id, permissions: permissions} ->
+    Enum.each(all_members, fn %{id: person_id} ->
       access_group = Access.get_group!(person_id: person_id)
 
-      assert nil == Access.get_binding(group_id: access_group.id, context_id: access_context.id, access_level: permissions)
+      refute Access.get_binding(group_id: access_group.id, context_id: access_context.id)
     end)
 
     Operately.Operations.GroupMembersAdding.run(ctx.group.id, all_members)
@@ -86,7 +86,8 @@ defmodule Operately.Operations.GroupMembersAddingTest do
     Enum.each(all_members, fn %{id: person_id, permissions: permissions} ->
       access_group = Access.get_group!(person_id: person_id)
 
-      assert nil != Access.get_binding(group_id: access_group.id, context_id: access_context.id, access_level: permissions)
+      assert Access.get_binding(group_id: access_group.id, context_id: access_context.id, access_level: permissions)
+      assert Access.get_binding(group_id: access_group.id, context_id: access_context.id)
     end)
   end
 end
