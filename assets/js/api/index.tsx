@@ -1053,11 +1053,13 @@ export interface GetMeResult {
 
 
 export interface GetMilestoneInput {
-
+  id?: string | null;
+  includeComments?: boolean | null;
+  includeTasksKanban?: boolean | null;
 }
 
 export interface GetMilestoneResult {
-
+  milestone?: Milestone | null;
 }
 
 

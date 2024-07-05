@@ -29,7 +29,7 @@ function StartDate({ project }: { project: Projects.Project }) {
     <div>
       <DimmedLabel>Start Date</DimmedLabel>
       <div className="font-semibold">
-        <FormattedTime time={project.startedAt} format="short-date" />
+        <FormattedTime time={project.startedAt!} format="short-date" />
       </div>
     </div>
   );

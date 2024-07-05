@@ -29,4 +29,10 @@ defmodule Operately.Projects.Milestone do
     |> cast(attrs, [:title, :deadline_at, :project_id, :status, :completed_at, :deleted_at, :description, :tasks_kanban_state])
     |> validate_required([:title, :tasks_kanban_state, :project_id])
   end
+
+  def cast_tasks_kanban_state(milestone) do
+    state = Operately.Tasks.KanbanState.load(milestone.tasks_kanban_state)
+
+    %{milestone | tasks_kanban_state: state}
+  end
 end

@@ -4,55 +4,8 @@ import * as Time from "@/utils/time";
 import * as Gql from "@/gql";
 import * as Api from "@/api";
 
-export type Milestone = Api.Milestone | Gql.Milestone;
-
-export const FRAGMENT = `
-  {
-    id
-    title
-    status
-
-    deadlineAt
-    completedAt
-    description
-    insertedAt  
-
-    tasksKanbanState
-
-    comments {
-      id
-      action
-      comment {
-        id
-        insertedAt
-        content
-        author {
-          id
-          fullName
-          avatarUrl
-          title
-        }
-
-        reactions {
-          id
-          emoji
-          person {
-            id
-            fullName
-            avatarUrl
-            title 
-          }
-        }
-      }
-    }
-  }
-`;
-
-export const GET_MILESTONE = gql`
-  query GetMilestone($id: ID!) {
-    milestone(id: $id) ${FRAGMENT}
-  }
-`;
+export type Milestone = Api.Milestone;
+export { getMilestone } from "@/api";
 
 export function filterPending(milestones: Milestone[]) {
   return milestones.filter((m) => m.status === "pending");
@@ -69,11 +22,11 @@ export function sortByDeadline(milestones: Milestone[] | Gql.Maybe<Milestone>[],
   let result: Milestone[] = [];
 
   return result.concat(milestones.map((m: Milestone) => m!)).sort((m1, m2) => {
-    let d1 = +new Date(m1.deadlineAt);
-    let d2 = +new Date(m2.deadlineAt);
+    let d1 = +Time.parse(m1.deadlineAt)!;
+    let d2 = +Time.parse(m2.deadlineAt)!;
 
     if (reverse) {
-      return d2 - d1;
+      return d2! - d1;
     } else {
       return d1 - d2;
     }
@@ -96,14 +49,14 @@ export function sortByDoneAt(milestones: Milestone[], { reverse = false } = {}) 
 }
 
 export function daysOverdue(milestone: Milestone) {
-  let deadline = +new Date(milestone.deadlineAt);
+  let deadline = +Time.parse(milestone.deadlineAt)!;
   let now = +Time.today();
 
   return Math.ceil((now - deadline) / (1000 * 60 * 60 * 24));
 }
 
 export function isOverdue(milestone: Milestone) {
-  let deadline = +new Date(milestone.deadlineAt);
+  let deadline = +Time.parse(milestone.deadlineAt)!;
   let now = +Time.today();
 
   return !isDone(milestone) && deadline < now;
@@ -113,7 +66,7 @@ export function isUpcoming(milestone: Milestone) {
   if (isDone(milestone)) return false;
   if (isOverdue(milestone)) return false;
 
-  let deadline = +new Date(milestone.deadlineAt);
+  let deadline = +Time.parse(milestone.deadlineAt)!;
   let now = +Time.today();
 
   return deadline > now;
