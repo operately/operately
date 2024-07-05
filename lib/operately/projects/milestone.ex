@@ -16,6 +16,8 @@ defmodule Operately.Projects.Milestone do
     field :description, :map
     field :tasks_kanban_state, :map, default: Operately.Tasks.KanbanState.initialize()
 
+    has_many :comments, Operately.Comments.MilestoneComment
+
     timestamps()
     soft_delete()
   end

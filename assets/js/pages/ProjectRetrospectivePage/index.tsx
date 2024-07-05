@@ -37,7 +37,7 @@ export function Page() {
           <div className="flex items-center gap-2 font-medium justify-center mt-2">
             {project.closedBy && <AvatarWithName person={project.closedBy!} size={16} />}
             {project.closedBy && <span>&middot;</span>}
-            <FormattedTime time={project.closedAt} format="long-date" />
+            <FormattedTime time={project.closedAt!} format="long-date" />
           </div>
           <Content project={project} />
         </Paper.Body>

@@ -1,11 +1,10 @@
 import * as Time from "@/utils/time";
 import * as api from "@/api";
-import * as gql from "@/gql";
 
-export type Project = api.Project | gql.Project;
-export type ProjectContributor = api.ProjectContributor | gql.ProjectContributor;
-export type Milestone = api.Milestone | gql.Milestone;
-export type KeyResource = api.ProjectKeyResource | gql.ProjectKeyResource;
+export type Project = api.Project;
+export type ProjectContributor = api.ProjectContributor;
+export type Milestone = api.Milestone;
+export type KeyResource = api.ProjectKeyResource;
 
 export { getProject, getProjects, useMoveProjectToSpace, useCreateProject } from "@/api";
 

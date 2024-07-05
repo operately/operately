@@ -35,7 +35,10 @@ export class ProjectNode extends Node {
   }
 
   compareTimeframe(b: Node): number {
-    return Time.compareAsc(this.project.deadline, (b as ProjectNode).project.deadline);
+    const aTime = Time.parseDate(this.project.deadline);
+    const bTime = Time.parseDate((b as ProjectNode).project.deadline);
+
+    return Time.compareAsc(aTime, bTime);
   }
 
   private calculateProgress(): number {

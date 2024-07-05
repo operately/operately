@@ -162,7 +162,7 @@ function MilestoneLink({ projectId, milestone }: { projectId: string; milestone:
     <div className="font-medium">
       <Icons.IconFlag3Filled size={14} className="inline-block mr-1" />
       <Link to={path}>{title}</Link> <span className="">&middot;</span> Due date on{" "}
-      <FormattedTime time={milestone.deadlineAt} format="long-date" />
+      <FormattedTime time={milestone.deadlineAt!} format="long-date" />
     </div>
   );
 }

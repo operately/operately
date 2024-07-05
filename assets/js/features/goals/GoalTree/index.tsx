@@ -290,7 +290,7 @@ function ProjectLastCheckInDateWithPopover({ project }: { project: Projects.Proj
     <Popover.Root>
       <Popover.Trigger className="cursor-pointer pt-0.5 flex items-center gap-1">
         <Icons.IconCalendar size={14} />
-        <DaysAgo date={project.lastCheckIn!.insertedAt} className="font-medium" />
+        <DaysAgo date={project.lastCheckIn!.insertedAt!} className="font-medium" />
       </Popover.Trigger>
 
       <Popover.Content
