@@ -6,7 +6,7 @@ defmodule Operately.Updates.Update do
   @foreign_key_type :binary_id
   schema "updates" do
     has_many :reactions, Operately.Updates.Reaction, where: [entity_type: :update], foreign_key: :entity_id
-    has_many :comments, Operately.Updates.Comment
+    has_many :comments, Operately.Updates.Comment, where: [entity_type: :update], foreign_key: :entity_id
     belongs_to :author, Operately.People.Person
 
     field :updatable_id, Ecto.UUID
@@ -103,7 +103,7 @@ defmodule Operately.Updates.Update do
     change.errors |> Enum.map(fn {key, value} -> "#{inspect(key)} #{inspect(value)}" end) |> Enum.join(", ")
   end
 
-  def preload_space(update) do
+  def preload_space(update) when update.updatable_type == :space do
     %{update | space: Operately.Groups.get_group!(update.updatable_id)}
   end
 
