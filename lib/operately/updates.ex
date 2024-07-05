@@ -331,7 +331,6 @@ defmodule Operately.Updates do
   end
 
   def create_comment(author, update, content) do
-    IO.puts("\nHere...\n")
     changeset = Comment.changeset(%{
       author_id: author.id,
       update_id: update.id,
