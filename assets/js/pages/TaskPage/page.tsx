@@ -23,7 +23,7 @@ export function Page() {
   const form = useForm(task);
 
   return (
-    <Pages.Page title={[task.name]}>
+    <Pages.Page title={[task.name!]}>
       <Paper.Root size="medium">
         <Navigation task={task} />
 
@@ -45,14 +45,14 @@ export function Page() {
 }
 
 export function Navigation({ task }: { task: Tasks.Task }) {
-  const projectPath = Paths.projectPath(task.project.id);
-  const milestonePath = Paths.projectMilestonePath(task.project.id, task.milestone.id);
+  const projectPath = Paths.projectPath(task.project!.id!);
+  const milestonePath = Paths.projectMilestonePath(task.project!.id!, task.milestone!.id!);
 
   return (
     <Paper.Navigation>
-      <Paper.NavItem linkTo={projectPath}>{truncateString(task.project.name, 40)}</Paper.NavItem>
+      <Paper.NavItem linkTo={projectPath}>{truncateString(task.project!.name!, 40)}</Paper.NavItem>
       <Paper.NavSeparator />
-      <Paper.NavItem linkTo={milestonePath}>{truncateString(task.milestone.title, 40)}</Paper.NavItem>
+      <Paper.NavItem linkTo={milestonePath}>{truncateString(task.milestone!.title!, 40)}</Paper.NavItem>
     </Paper.Navigation>
   );
 }

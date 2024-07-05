@@ -180,7 +180,7 @@ function useTitleAndDeadlineState(milestone: Milestones.Milestone): TitleAndDead
 
   const [state, setState] = React.useState<"show" | "edit">("show");
   const [title, setTitle] = React.useState(milestone.title);
-  const [date, setDate] = React.useState(Time.parseDate(milestone.deadlineAt));
+  const [date, setDate] = React.useState(Time.parse(milestone.deadlineAt));
 
   const [titleError, setTitleError] = React.useState(false);
   const [dateError, setDateError] = React.useState(false);

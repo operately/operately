@@ -1164,20 +1164,24 @@ export interface GetSpacesResult {
 
 
 export interface GetTaskInput {
-
+  id?: string | null;
+  includeAssignees?: boolean | null;
+  includeMilestone?: boolean | null;
+  includeProject?: boolean | null;
 }
 
 export interface GetTaskResult {
-
+  task?: Task | null;
 }
 
 
 export interface GetTasksInput {
-
+  milestoneId?: string | null;
+  includeAssignees?: boolean | null;
 }
 
 export interface GetTasksResult {
-
+  tasks?: Task[] | null;
 }
 
 
@@ -1479,11 +1483,14 @@ export interface CreateProjectResult {
 
 
 export interface CreateTaskInput {
-
+  name?: string | null;
+  assigneeIds?: string[] | null;
+  description?: string | null;
+  milestoneId?: string | null;
 }
 
 export interface CreateTaskResult {
-
+  task?: Task | null;
 }
 
 
@@ -1835,11 +1842,13 @@ export interface UpdateTaskResult {
 
 
 export interface UpdateTaskStatusInput {
-
+  taskId?: string | null;
+  status?: string | null;
+  columnIndex?: number | null;
 }
 
 export interface UpdateTaskStatusResult {
-
+  task?: Task | null;
 }
 
 interface ApiClientConfig {

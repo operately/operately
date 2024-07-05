@@ -208,7 +208,11 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Milestone do
       inserted_at: OperatelyWeb.Api.Serializer.serialize(milestone.inserted_at),
       deadline_at: OperatelyWeb.Api.Serializer.serialize(milestone.deadline_at),
       completed_at: OperatelyWeb.Api.Serializer.serialize(milestone.completed_at),
-      tasksKanbanState: Jason.encode!(milestone.tasks_kanban_state),
+      tasks_kanban_state: %{
+        todo: milestone.tasks_kanban_state["todo"] |> Enum.map(&Operately.ShortUuid.encode/1),
+        in_progress: milestone.tasks_kanban_state["in_progress"] |> Enum.map(&Operately.ShortUuid.encode/1),
+        done: milestone.tasks_kanban_state["done"] |> Enum.map(&Operately.ShortUuid.encode/1),
+      },
       comments: OperatelyWeb.Api.Serializer.serialize(milestone.comments),
     }
   end
@@ -356,6 +360,32 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Companies.Company do
       id: OperatelyWeb.Paths.company_id(company),
       name: company.name,
       member_count: company.member_count
+    }
+  end
+end
+
+defimpl OperatelyWeb.Api.Serializable, for: Operately.Tasks.Task do
+  def serialize(task, level: :essential) do
+    %{
+      id: OperatelyWeb.Paths.task_id(task),
+      name: task.name,
+    }
+  end 
+
+  def serialize(task, level: :full) do
+    %{
+      id: OperatelyWeb.Paths.task_id(task),
+      name: task.name,
+      description: task.description && Jason.encode!(task.description),
+      priority: task.priority,
+      size: task.size,
+      status: task.status,
+      due_date: OperatelyWeb.Api.Serializer.serialize(task.due_date),
+      inserted_at: OperatelyWeb.Api.Serializer.serialize(task.inserted_at),
+      updated_at: OperatelyWeb.Api.Serializer.serialize(task.updated_at),
+      assignees: OperatelyWeb.Api.Serializer.serialize(task.assigned_people),
+      milestone: OperatelyWeb.Api.Serializer.serialize(task.milestone),
+      project: OperatelyWeb.Api.Serializer.serialize(task.project)
     }
   end
 end

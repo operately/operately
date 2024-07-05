@@ -27,9 +27,7 @@ export function useHeaderForm(fields: Fields): HeaderFormState {
 
   const [error, setError] = React.useState<string[]>([]);
 
-  const [update] = Tasks.useUpdateTaskMutation({
-    onCompleted: () => setEditing(false),
-  });
+  const [update] = Tasks.useUpdateTask();
 
   const submit = React.useCallback(async (): Promise<boolean> => {
     if (name.trim() === "") {
@@ -40,17 +38,15 @@ export function useHeaderForm(fields: Fields): HeaderFormState {
     const idList = assignedPeople!.map((person) => person.id);
 
     await update({
-      variables: {
-        input: {
-          taskId: fields.taskID,
-          name,
-          assignedIds: idList,
-        },
-      },
+      taskId: fields.taskID,
+      name,
+      assignedIds: idList,
     });
 
     fields.setName(name);
     fields.setAssignedPeople(assignedPeople);
+
+    setEditing(false);
 
     return true;
   }, [name, assignedPeople]);

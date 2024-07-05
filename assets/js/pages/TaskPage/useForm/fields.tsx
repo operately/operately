@@ -22,9 +22,8 @@ export function useFields(task: Tasks.Task): Fields {
   const [description, setDescription] = React.useState(task.description);
 
   return {
-    taskID: task.id,
-
-    name,
+    taskID: task.id!,
+    name: name!,
     status,
     description,
     assignedPeople,

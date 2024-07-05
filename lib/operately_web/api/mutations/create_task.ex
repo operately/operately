@@ -1,15 +1,21 @@
 defmodule OperatelyWeb.Api.Mutations.CreateTask do
   use TurboConnect.Mutation
+  use OperatelyWeb.Api.Helpers
 
   inputs do
-    # TODO: Define input fields
+    field :name, :string
+    field :assignee_ids, list_of(:string)
+    field :description, :string
+    field :milestone_id, :string
   end
 
   outputs do
-    # TODO: Define output fields
+    field :task, :task
   end
 
-  def call(_conn, _inputs) do
-    raise "Not implemented"
+  def call(conn, inputs) do
+    creator = me(conn)
+    {:ok, task} = Operately.Operations.TaskAdding.run(creator, inputs)
+    {:ok, %{task: Serializer.serialize(task, level: :essential)}}
   end
 end
