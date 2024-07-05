@@ -119,7 +119,7 @@ function TaskSection({ milestone }) {
         milestone={milestone}
       />
 
-      {<TaskBoard tasks={tasks} kanbanState={JSON.parse(milestone.tasksKanbanState)} />}
+      {tasks.length > 0 && <TaskBoard tasks={tasks} kanbanState={JSON.parse(milestone.tasksKanbanState)} />}
     </div>
   );
 }
@@ -147,8 +147,6 @@ function orderTasksByKanbanState(tasks: Tasks.Task[], kanbanState: any, status: 
 }
 
 function TaskBoard({ tasks, kanbanState }: { tasks: Tasks.Task[]; kanbanState: any }) {
-  if (tasks.length === 0) return null;
-
   const [taskBoardState, setTaskBoardState] = React.useState<TaskBoardState>({
     todoTasks: orderTasksByKanbanState(tasks, kanbanState, "todo"),
     inProgressTasks: orderTasksByKanbanState(tasks, kanbanState, "in_progress"),
