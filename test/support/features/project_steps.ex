@@ -459,11 +459,12 @@ defmodule Operately.Support.Features.ProjectSteps do
   step :given_the_project_has_contributor, ctx, name: name do
     contrib = person_fixture_with_account(%{full_name: name, title: "Manager", company_id: ctx.company.id})
 
-    {:ok, _} = Operately.Projects.create_contributor(%{
+    {:ok, _} = Operately.Projects.create_contributor(contrib, %{
       person_id: contrib.id,
       role: "contributor",
       project_id: ctx.project.id,
-      responsibility: "Lead the backend implementation"
+      responsibility: "Lead the backend implementation",
+      permissions: Binding.edit_access(),
     })
 
     ctx

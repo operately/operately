@@ -46,13 +46,10 @@ defmodule Operately.ProjectsFixtures do
   @doc """
   Generate a contributor.
   """
-  def contributor_fixture(attrs \\ %{}) do
-    {:ok, contributor} =
-      attrs
-      |> Enum.into(%{
-        responsibility: "some responsibility"
-      })
-      |> Operately.Projects.create_contributor()
+  def contributor_fixture(creator, attrs \\ %{}) do
+    attrs = Enum.into(attrs, %{ responsibility: "some responsibility", permissions: Binding.edit_access() })
+
+    {:ok, contributor} = Operately.Projects.create_contributor(creator, attrs)
 
     contributor
   end

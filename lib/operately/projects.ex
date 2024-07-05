@@ -244,22 +244,7 @@ defmodule Operately.Projects do
     Repo.all(query)
   end
 
-  def create_contributor(attrs \\ %{}) do
-    %Contributor{}
-    |> Contributor.changeset(attrs)
-    |> Repo.insert()
-  end
-
-  def create_contributor_if_provided(nil, _project_id) do
-    {:ok, nil}
-  end
-
-  def create_contributor_if_provided(attrs, project_id) do
-    create_contributor(Map.merge(attrs, %{
-      project_id: project_id,
-      role: :champion
-    }))
-  end
+  defdelegate create_contributor(author, attrs), to: Operately.Operations.ProjectContributorAddition, as: :run
 
   def update_contributor(%Contributor{} = contributor, attrs) do
     contributor

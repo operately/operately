@@ -19,10 +19,10 @@ defmodule MyAppWeb.GraphQL.Queries.AssignmentTest do
       next_update_scheduled_at: DateTime.utc_now() |> DateTime.add(-2, :day)
     })
 
-    contributor_fixture(%{
+    contributor_fixture(ctx.person, %{
       project_id: project.id,
       person_id: ctx.person.id,
-      role: :champion
+      role: :champion,
     })
 
     milestone = milestone_fixture(ctx.person, %{
@@ -77,7 +77,7 @@ defmodule MyAppWeb.GraphQL.Queries.AssignmentTest do
             },
             %{
               "due" => Date.to_iso8601(ctx.project.next_update_scheduled_at),
-              "resource" => %{"name" => "some name"}, 
+              "resource" => %{"name" => "some name"},
               "type" => "project_status_update"
             }
           ]
@@ -85,7 +85,7 @@ defmodule MyAppWeb.GraphQL.Queries.AssignmentTest do
       }
     }
   end
-      
+
   defp graphql(conn, query, variables) do
     conn |> post("/api/gql", %{query: query, variables: variables})
   end
