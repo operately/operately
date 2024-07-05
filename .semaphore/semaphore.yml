@@ -6,8 +6,15 @@ agent:
     os_image: ubuntu2004
 
 blocks:
+  - name: Pre-Flight-Check
+    task:
+      jobs:
+        - name: PR Name Check
+          commands:
+            - make test.pr.name
+
   - name: Tests
-    dependencies: []
+    dependencies: ["Pre-Flight-Check"]
     task:
       prologue:
         commands:
@@ -38,13 +45,12 @@ blocks:
 
         - name: Linters
           commands:
-            - make test.pr.name
             - make test.license.check
             - make test.js.dead.code
             - make test.tsc.lint
 
   - name: Docker Build
-    dependencies: []
+    dependencies: ["Pre-Flight-Check"]
     run:
       when: "branch = 'main'"
     task:
