@@ -9,7 +9,8 @@ defmodule Operately.Operations.GroupMembersAdding do
     Multi.new()
     |> insert_members(group_id, members)
     |> insert_access_group_memberships(group_id, members)
-    |> insert_access_bindings(group_id, members)
+    |> Multi.run(:context, fn _, _ -> {:ok, Access.get_context!(group_id: group_id)} end)
+    |> insert_access_bindings(members)
     |> Repo.transaction()
   end
 
@@ -45,23 +46,14 @@ defmodule Operately.Operations.GroupMembersAdding do
     end)
   end
 
-  defp insert_access_bindings(multi, group_id, members) do
+  defp insert_access_bindings(multi, members) do
     members
-    |> Enum.map(fn %{id: person_id, permissions: access_level} ->
-      access_group = Access.get_group!(person_id: person_id)
-      access_context = Access.get_context!(group_id: group_id)
-
-      Binding.changeset(%{
-        group_id: access_group.id,
-        context_id: access_context.id,
-        access_level: access_level,
-      })
-    end)
     |> Enum.with_index()
-    |> Enum.reduce(multi, fn ({changeset, index}, multi) ->
+    |> Enum.reduce(multi, fn ({%{id: person_id, permissions: access_level}, index}, multi) ->
+      access_group = Access.get_group!(person_id: person_id)
       name = Integer.to_string(index) <> "_binding"
 
-      Multi.insert(multi, name, changeset)
+      Access.insert_binding(multi, name, access_group, access_level)
     end)
   end
 
