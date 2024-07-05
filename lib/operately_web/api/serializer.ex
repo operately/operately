@@ -208,18 +208,29 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Milestone do
       inserted_at: OperatelyWeb.Api.Serializer.serialize(milestone.inserted_at),
       deadline_at: OperatelyWeb.Api.Serializer.serialize(milestone.deadline_at),
       completed_at: OperatelyWeb.Api.Serializer.serialize(milestone.completed_at),
-      tasksKanbanState: OperatelyWeb.Api.Serializer.serialize(milestone.tasks_kanban_state),
+      tasksKanbanState: Jason.encode!(milestone.tasks_kanban_state),
       comments: OperatelyWeb.Api.Serializer.serialize(milestone.comments),
     }
   end
 end
 
-defimpl OperatelyWeb.Api.Serializable, for: Operately.Tasks.KanbanState do
-  def serialize(kanban_state, _opts) do
+defimpl OperatelyWeb.Api.Serializable, for: Operately.Updates.Comment do
+  def serialize(comment, level: :essential) do
     %{
-      :todo => kanban_state.todo,
-      :in_progress => kanban_state.in_progress,
-      :done => kanban_state.done
+      id: comment.id,
+      content: Jason.encode!(comment.content),
+      inserted_at: OperatelyWeb.Api.Serializer.serialize(comment.inserted_at),
+      author: OperatelyWeb.Api.Serializer.serialize(comment.author),
+      reactions: OperatelyWeb.Api.Serializer.serialize(comment.reactions),
+    }
+  end
+end
+
+defimpl OperatelyWeb.Api.Serializable, for: Operately.Comments.MilestoneComment do
+  def serialize(comment, level: :essential) do
+    %{
+      action: Atom.to_string(comment.action),
+      comment: OperatelyWeb.Api.Serializer.serialize(comment.comment),
     }
   end
 end

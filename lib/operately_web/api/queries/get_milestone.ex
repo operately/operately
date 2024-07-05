@@ -14,8 +14,8 @@ defmodule OperatelyWeb.Api.Queries.GetMilestone do
 
   def call(_conn, inputs) do
     milestone = Operately.Projects.get_milestone!(inputs.id)
-    milestone = Operately.Repo.preload(milestone, [comments: [comment: [:person, reactions: :person]]])
+    milestone = Operately.Repo.preload(milestone, [comments: [comment: [:author, reactions: :person]]])
 
-    {:ok, %{serialize: Serializer.serialize(milestone)}}
+    {:ok, %{milestone: Serializer.serialize(milestone)}}
   end
 end

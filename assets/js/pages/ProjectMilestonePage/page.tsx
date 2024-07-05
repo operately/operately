@@ -89,7 +89,6 @@ function AddTask({ onClick }) {
 
 function TaskSection({ milestone }) {
   const [newTaskModalOpen, setNewTaskModalOpen] = React.useState(false);
-
   const { data, loading, error, refetch } = Tasks.useTasks(milestone.id);
 
   return (
