@@ -208,7 +208,11 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Milestone do
       inserted_at: OperatelyWeb.Api.Serializer.serialize(milestone.inserted_at),
       deadline_at: OperatelyWeb.Api.Serializer.serialize(milestone.deadline_at),
       completed_at: OperatelyWeb.Api.Serializer.serialize(milestone.completed_at),
-      tasksKanbanState: Jason.encode!(milestone.tasks_kanban_state),
+      tasks_kanban_state: %{
+        todo: milestone.tasks_kanban_state["todo"] |> Enum.map(&Operately.ShortUuid.encode/1),
+        in_progress: milestone.tasks_kanban_state["in_progress"] |> Enum.map(&Operately.ShortUuid.encode/1),
+        done: milestone.tasks_kanban_state["done"] |> Enum.map(&Operately.ShortUuid.encode/1),
+      },
       comments: OperatelyWeb.Api.Serializer.serialize(milestone.comments),
     }
   end
