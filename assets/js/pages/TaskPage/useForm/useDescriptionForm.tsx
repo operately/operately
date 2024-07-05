@@ -24,11 +24,7 @@ export function useDescriptionState(fields: Fields): DescriptionFormState {
     content: fields.description && JSON.parse(fields.description),
   });
 
-  const [editName] = Tasks.useChangeTaskDescriptionMutation({
-    onCompleted: () => {
-      setEditing(false);
-    },
-  });
+  const [editName] = Tasks.useChangeTaskDescription();
 
   const submit = React.useCallback(async () => {
     if (!editor) return false;
@@ -36,15 +32,12 @@ export function useDescriptionState(fields: Fields): DescriptionFormState {
     const content = JSON.stringify(editor.getJSON());
 
     await editName({
-      variables: {
-        input: {
-          taskId: fields.taskID,
-          description: content,
-        },
-      },
+      taskId: fields.taskID,
+      description: content,
     });
 
     fields.setDescription(content);
+    setEditing(false);
 
     return true;
   }, [editor]);

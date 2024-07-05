@@ -13,7 +13,7 @@ defmodule OperatelyWeb.Api.Mutations.ChangeTaskDescription do
 
   def call(conn, inputs) do
     author = me(conn)
-    task_id = inputs.task_id
+    {:ok, task_id} = decode_id(inputs.task_id)
     description = inputs.description && Jason.decode!(inputs.description)
 
     {:ok, task} = Operately.Operations.TaskDescriptionChange.run(author, task_id, description)
