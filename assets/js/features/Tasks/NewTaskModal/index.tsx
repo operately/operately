@@ -40,8 +40,8 @@ function useForm({ onSubmit, milestone }) {
     await create({
       name,
       description: JSON.stringify(editor.getJSON()),
-      assignee_ids: assignees.map((a) => a.id),
-      milestone_id: milestone.id,
+      assigneeIds: assignees.map((a) => a.id!),
+      milestoneId: milestone.id,
     });
 
     reset();
