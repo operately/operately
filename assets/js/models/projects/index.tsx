@@ -16,7 +16,6 @@ export { useEditTimelineMutation } from "./useEditTimelineMutation";
 export { useArchiveMutation } from "./useArchiveMutation";
 
 export { useProjectContributorCandidatesQuery } from "./useProjectContributorCandidatesQuery";
-export { useAddProjectContributorMutation } from "./useAddProjectContributorMutation";
 export { useUpdateProjectContributorMutation } from "./useUpdateProjectContributorMutation";
 export { useResumeProjectMutation } from "./useResumeProjectMutation";
 export { usePauseProjectMutation } from "./usePauseProjectMutation";

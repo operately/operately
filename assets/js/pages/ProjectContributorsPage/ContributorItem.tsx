@@ -2,7 +2,7 @@ import React from "react";
 
 import * as Icons from "@tabler/icons-react";
 
-import ContributorAvatar, { ChampionPlaceholder, ReviewerPlaceholder } from "@/components/ContributorAvatar";
+import ContributorAvatar from "@/components/ContributorAvatar";
 
 import * as ProjectContributors from "@/models/projectContributors";
 import * as Projects from "@/models/projects";
@@ -16,26 +16,23 @@ import { useRemoveProjectContributor } from "@/api";
 interface Props {
   project: Projects.Project;
   contributor?: ProjectContributors.ProjectContributor;
-  role: ProjectContributors.ContributorRole;
   refetch: any;
 }
 
-export default function ContributorItem({ project, contributor, role, refetch }: Props) {
+export default function ContributorItem({ project, contributor, refetch }: Props) {
   return (
     <div data-test-id={`contributor-${contributor?.person.id}`}>
-      <ContributorItemContent contributor={contributor} role={role} project={project} refetch={refetch} />
+      <ContributorItemContent contributor={contributor} project={project} refetch={refetch} />
     </div>
   );
 }
 
 function ContributorItemContent({
-  contributor = undefined,
-  role,
+  contributor,
   project,
   refetch,
 }: {
   contributor?: ProjectContributors.ProjectContributor;
-  role: ProjectContributors.ContributorRole;
   project: Projects.Project;
   refetch: any;
 }) {
@@ -49,27 +46,20 @@ function ContributorItemContent({
   };
 
   if (state === "view") {
-    if (contributor) {
-      return <Assignment project={project} contributor={contributor} onEdit={activateEdit} />;
-    } else {
-      return <Placeholder project={project} role={role} onEdit={activateEdit} />;
-    }
+    return <Assignment project={project} contributor={contributor} onEdit={activateEdit} />;
   }
 
   if (state === "edit") {
-    if (contributor) {
-      return (
-        <EditAssignment
-          project={project}
-          contributor={contributor}
-          onSave={onChange}
-          onRemove={onChange}
-          onClose={deactivateEdit}
-        />
-      );
-    } else {
-      return <ChooseAssignment role={role} projectId={project.id} onSave={onChange} onClose={deactivateEdit} />;
-    }
+    return (
+      <EditAssignment
+        project={project}
+        contributor={contributor}
+        onSave={onChange}
+        onRemove={onChange}
+        onClose={deactivateEdit}
+      />
+    );
+    
   }
 
   throw new Error("Invalid state");
@@ -85,28 +75,6 @@ function Assignment({ project, contributor, onEdit }) {
       onEdit={onEdit}
     />
   );
-}
-
-function Placeholder({ project, role, onEdit }) {
-  if (role !== "champion" && role !== "reviewer") {
-    throw new Error("Only champion and reviewer roles are supported for ContributorItemPlaceholder");
-  }
-
-  let avatar: React.ReactNode = null;
-  let responsibility: string | null = null;
-  let name = `No ${role}`;
-
-  if (role === "champion") {
-    avatar = <ChampionPlaceholder />;
-    responsibility = ProjectContributors.CHAMPION_RESPONSIBILITY;
-  }
-
-  if (role === "reviewer") {
-    avatar = <ReviewerPlaceholder />;
-    responsibility = ProjectContributors.REVIEWER_RESPONSIBILITY;
-  }
-
-  return <ViewState project={project} avatar={avatar} name={name} responsibility={responsibility} onEdit={onEdit} />;
 }
 
 function ViewState({ project, avatar, name, responsibility, onEdit }) {
@@ -182,35 +150,6 @@ function EditAssignment({ contributor, project, onSave, onRemove, onClose }) {
         </div>
 
         {ProjectContributors.isResponsibilityRemovable(contributor.role) && <RemoveButton onClick={handleRemove} loading={loading} />}
-      </div>
-    </div>
-  );
-}
-
-function ChooseAssignment({ role, projectId, onSave, onClose }) {
-  if (role !== "champion" && role !== "reviewer") {
-    throw new Error("Only champion and reviewer roles are supported for ContributorItemPlaceholder");
-  }
-
-  const [add, _s1] = Projects.useAddProjectContributorMutation(projectId);
-  const [personID, setPersonID] = React.useState<any>(null);
-
-  const disabled = !personID;
-
-  const handleSave = async () => {
-    await add(personID, " ", role);
-    onSave();
-  };
-
-  return (
-    <div className="bg-surface-dimmed border-y border-surface-outline -mx-12 px-12 py-8">
-      <ContributorSearch projectID={projectId} title={role} onSelect={setPersonID} />
-
-      <div className="flex justify-between mt-8">
-        <div className="flex gap-2">
-          <SaveButton disabled={disabled} onClick={handleSave} />
-          <CancelButton onClick={onClose} />
-        </div>
       </div>
     </div>
   );

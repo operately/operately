@@ -87,11 +87,11 @@ function ContributorList({ project, refetch }: { project: Projects.Project; refe
 
   return (
     <div className="flex flex-col border-t border-stroke-base">
-      <ContributorItem contributor={champion} role="champion" project={project} refetch={refetch} />
-      <ContributorItem contributor={reviewer} role="reviewer" project={project} refetch={refetch} />
+      <ContributorItem contributor={champion} project={project} refetch={refetch} />
+      <ContributorItem contributor={reviewer} project={project} refetch={refetch} />
 
       {contributors.map((c) => (
-        <ContributorItem key={c.id} contributor={c} role="contributor" project={project} refetch={refetch} />
+        <ContributorItem key={c.id} contributor={c} project={project} refetch={refetch} />
       ))}
     </div>
   );
