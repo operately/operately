@@ -1719,11 +1719,11 @@ export interface RemoveKeyResourceResult {
 
 
 export interface RemoveProjectContributorInput {
-
+  contribId?: string | null;
 }
 
 export interface RemoveProjectContributorResult {
-
+  projectContributor?: ProjectContributor | null;
 }
 
 

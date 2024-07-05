@@ -478,7 +478,6 @@ export type RootMutationType = {
   removeCompanyMember?: Maybe<Person>;
   removeCompanyTrustedEmailDomain: Company;
   removeKeyResource: ProjectKeyResource;
-  removeProjectContributor: ProjectContributor;
   removeProjectMilestone: Milestone;
   reopenGoal: Goal;
   resumeProject: Project;
@@ -684,11 +683,6 @@ export type RootMutationTypeRemoveCompanyTrustedEmailDomainArgs = {
 
 export type RootMutationTypeRemoveKeyResourceArgs = {
   id: Scalars['ID']['input'];
-};
-
-
-export type RootMutationTypeRemoveProjectContributorArgs = {
-  contribId: Scalars['ID']['input'];
 };
 
 

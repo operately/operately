@@ -1,15 +1,20 @@
 defmodule OperatelyWeb.Api.Mutations.RemoveProjectContributor do
   use TurboConnect.Mutation
+  use OperatelyWeb.Api.Helpers
 
   inputs do
-    # TODO: Define input fields
+    field :contrib_id, :string
   end
 
   outputs do
-    # TODO: Define output fields
+    field :project_contributor, :project_contributor
   end
 
-  def call(_conn, _inputs) do
-    raise "Not implemented"
+  def call(conn, inputs) do
+    person = me(conn)
+
+    {:ok, contributor} = Operately.Operations.ProjectContributorRemoving.run(person, inputs.contrib_id)
+
+    {:ok, %{contributor: Serializer.serialize(contributor, level: :essential)}}
   end
 end

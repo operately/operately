@@ -175,7 +175,7 @@ defmodule Operately.ProjectsTest do
     alias Operately.Projects.Contributor
 
     setup ctx do
-      contributor = contributor_fixture(%{
+      contributor = contributor_fixture(ctx.champion, %{
         project_id: ctx.project.id,
         person_id: ctx.champion.id
       })
@@ -191,14 +191,15 @@ defmodule Operately.ProjectsTest do
       assert Projects.get_contributor!(ctx.contributor.id) == ctx.contributor
     end
 
-    test "create_contributor/1 with valid data creates a contributor", ctx do
+    test "create_contributor/2 with valid data creates a contributor", ctx do
       valid_attrs = %{
         project_id: ctx.project.id,
         person_id: ctx.champion.id,
-        responsibility: "some responsibility"
+        responsibility: "some responsibility",
+        permissions: Binding.edit_access()
       }
 
-      assert {:ok, %Contributor{} = contributor} = Projects.create_contributor(valid_attrs)
+      assert {:ok, %Contributor{} = contributor} = Projects.create_contributor(ctx.champion, valid_attrs)
       assert contributor.responsibility == "some responsibility"
     end
 

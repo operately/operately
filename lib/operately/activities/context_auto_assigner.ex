@@ -70,6 +70,7 @@ defmodule Operately.Activities.ContextAutoAssigner do
     "project_check_in_submitted",
     "project_closed",
     "project_contributor_addition",
+    "project_contributor_removed",
     "project_discussion_submitted",
     "project_goal_connection",
     "project_goal_disconnection",

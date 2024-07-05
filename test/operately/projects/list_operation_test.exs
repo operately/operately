@@ -6,6 +6,8 @@ defmodule Operately.Projects.ListOperationTest do
   import Operately.ProjectsFixtures
   import Operately.GroupsFixtures
 
+  alias Operately.Access.Binding
+
   describe "visibility filters" do
     setup do
       company = company_fixture()
@@ -37,10 +39,11 @@ defmodule Operately.Projects.ListOperationTest do
     end
 
     test "colaborator can see the public and private projects they are a contributor of", ctx do
-      Operately.Projects.create_contributor(%{
+      Operately.Projects.create_contributor(ctx.creator, %{
         project_id: ctx.project2.id,
         person_id: ctx.colaborator.id,
-        role: :contributor
+        responsibility: "some responsibility",
+        permissions: Binding.comment_access()
       })
 
       projects_ids = load_ids(ctx.colaborator, %{})
