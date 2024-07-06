@@ -25,7 +25,7 @@ export function CommentSection(props: CommentSectionProps) {
       <div className="flex flex-col">
         {props.form.items.map((item, index) => {
           if (item.type === "comment") {
-            return <Comment key={index} comment={item.value} form={props.form} />;
+            return <Comment key={index} comment={item.value} form={props.form} refresh={props.refresh} />;
           } else if (item.type === "milestone-completed") {
             return <MilestoneCompleted key={index} comment={item.value} />;
           } else if (item.type === "milestone-reopened") {
@@ -41,17 +41,17 @@ export function CommentSection(props: CommentSectionProps) {
   );
 }
 
-function Comment({ comment, form }) {
+function Comment({ comment, form, refresh }) {
   const [editing, _, startEditing, stopEditing] = useBoolState(false);
 
   if (editing) {
-    return <EditComment comment={comment} onCancel={stopEditing} form={form} />;
+    return <EditComment comment={comment} onCancel={stopEditing} form={form} refresh={refresh} />;
   } else {
     return <ViewComment comment={comment} onEdit={startEditing} />;
   }
 }
 
-function EditComment({ comment, onCancel, form }) {
+function EditComment({ comment, onCancel, form, refresh }) {
   const me = useMe();
 
   const { editor, uploading } = TipTapEditor.useEditor({
@@ -65,6 +65,7 @@ function EditComment({ comment, onCancel, form }) {
     if (uploading) return;
 
     await form.editComment(comment.id, editor.getJSON());
+    await refresh();
     await onCancel();
   };
 
@@ -79,7 +80,13 @@ function EditComment({ comment, onCancel, form }) {
 
             <div className="flex justify-between items-center m-4">
               <div className="flex items-center gap-2">
-                <FilledButton onClick={handlePost} type="primary" testId="post-comment" size="xs">
+                <FilledButton
+                  onClick={handlePost}
+                  type="primary"
+                  testId="post-comment"
+                  size="xs"
+                  loading={form.submitting}
+                >
                   {uploading ? "Uploading..." : "Save Changes"}
                 </FilledButton>
 

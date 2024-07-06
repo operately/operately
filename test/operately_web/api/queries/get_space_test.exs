@@ -16,7 +16,7 @@ defmodule OperatelyWeb.Api.Queries.GetGroupTest do
     setup :register_and_log_in_account
 
     test "space does not exist", ctx do
-      id = Operately.ShortUuid.encode(Ecto.UUID.generate())
+      id = Operately.ShortUuid.encode!(Ecto.UUID.generate())
       assert {404, _} = query(ctx.conn, :get_space, %{id: id})
     end
 
