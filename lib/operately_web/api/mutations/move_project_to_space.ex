@@ -13,7 +13,8 @@ defmodule OperatelyWeb.Api.Mutations.MoveProjectToSpace do
     project = Operately.Projects.get_project!(project_id)
 
     {:ok, space_id} = decode_id(inputs.space_id)
+    {:ok, _project} = Operately.Projects.move_project_to_space(author, project, space_id)
 
-    Operately.Projects.move_project_to_space(author, project, space_id)
+    {:ok, %{}}
   end
 end
