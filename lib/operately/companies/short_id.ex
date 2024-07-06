@@ -17,6 +17,20 @@ defmodule Operately.Companies.ShortId do
     gen_next(start)
   end
 
+  @spec encode!(Number.t()) :: String.t()
+  def encode!(int), do: encode(int) |> elem(1)
+
+  @spec encode(Number.t()) :: {:ok, String.t()} | :error
+  def encode(int), do: {:ok, "0" <> __MODULE__.Base32.encode(int)}
+
+  def decode(str) do
+    if String.starts_with?(str, "0") do
+      __MODULE__.Base32.decode(String.slice(str, 1..-1))
+    else
+      :error
+    end
+  end
+
   defp gen_next(prev) do
     next = prev + @min_increment + :rand.uniform(@max_increment - @min_increment)
     next = Integer.mod(next, @max_64_bit)
@@ -36,14 +50,4 @@ defmodule Operately.Companies.ShortId do
   defmodule Base32 do
     use CustomBase, 'abcdefghijklmnopqrstuv0123456789'
   end
-
-  def encode(int), do: "0" <> Base32.encode(int)
-  def decode(str) do
-    if String.starts_with?(str, "0") do
-      Base32.decode(String.slice(str, 1..-1))
-    else
-      :error
-    end
-  end
-
 end
