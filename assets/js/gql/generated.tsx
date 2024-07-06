@@ -913,7 +913,6 @@ export type UpdateMilestoneTitleInput = {
 
 export type UpdatesFilter = {
   goalId?: InputMaybe<Scalars['ID']['input']>;
-  projectId?: InputMaybe<Scalars['ID']['input']>;
   type?: InputMaybe<Scalars['String']['input']>;
 };
 
