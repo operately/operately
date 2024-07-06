@@ -21,13 +21,6 @@ export type Scalars = {
    */
   Date: { input: any; output: any; }
   /**
-   * The `DateTime` scalar type represents a date and time in the UTC
-   * timezone. The DateTime appears in a JSON response as an ISO8601 formatted
-   * string, including UTC timezone ("Z"). The parsed date and time string will
-   * be converted to UTC if there is an offset.
-   */
-  DateTime: { input: any; output: any; }
-  /**
    * The `Naive DateTime` scalar type represents a naive date and time without
    * timezone. The DateTime appears in a JSON response as an ISO8601 formatted
    * string.
@@ -61,20 +54,6 @@ export type AddReactionInput = {
   emoji: Scalars['String']['input'];
   entityId: Scalars['ID']['input'];
   entityType: Scalars['String']['input'];
-};
-
-export type Assignment = {
-  __typename?: 'Assignment';
-  due: Scalars['Date']['output'];
-  resource: AssignmentResource;
-  type: Scalars['String']['output'];
-};
-
-export type AssignmentResource = Milestone | Project;
-
-export type Assignments = {
-  __typename?: 'Assignments';
-  assignments?: Maybe<Array<Maybe<Assignment>>>;
 };
 
 export type ChangeGoalParentInput = {
@@ -705,24 +684,16 @@ export type RootMutationTypeUpdateProjectDescriptionArgs = {
 
 export type RootQueryType = {
   __typename?: 'RootQueryType';
-  assignments: Assignments;
   company: Company;
   goal: Goal;
   goals?: Maybe<Array<Maybe<Goal>>>;
   invitation: Invitation;
   keyResource?: Maybe<ProjectKeyResource>;
-  person?: Maybe<Person>;
   projectCheckIn: ProjectCheckIn;
   projectCheckIns?: Maybe<Array<ProjectCheckIn>>;
   projectContributorCandidates?: Maybe<Array<Maybe<Person>>>;
   update: Update;
   updates: Array<Maybe<Update>>;
-};
-
-
-export type RootQueryTypeAssignmentsArgs = {
-  rangeEnd: Scalars['DateTime']['input'];
-  rangeStart: Scalars['DateTime']['input'];
 };
 
 
@@ -749,11 +720,6 @@ export type RootQueryTypeInvitationArgs = {
 
 
 export type RootQueryTypeKeyResourceArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
-export type RootQueryTypePersonArgs = {
   id: Scalars['ID']['input'];
 };
 
