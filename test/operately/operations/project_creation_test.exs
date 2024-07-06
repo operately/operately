@@ -123,6 +123,20 @@ defmodule Operately.Operations.ProjectCreationTest do
     refute Access.get_binding(group_id: members.id, context_id: context.id)
   end
 
+  test "ProjectCreation operation doesn't create work without champion or reviewer", ctx do
+    {_, attrs} = Map.pop(ctx.project_attrs, :champion_id)
+
+    assert_raise KeyError, ~r/^key :champion_id not found in:/, fn ->
+      Operately.Operations.ProjectCreation.run(attrs)
+    end
+
+    {_, attrs} = Map.pop(ctx.project_attrs, :reviewer_id)
+
+    assert_raise KeyError, ~r/^key :reviewer_id not found in:/, fn ->
+      Operately.Operations.ProjectCreation.run(attrs)
+    end
+  end
+
   test "ProjectCreation operation creates activity and notification", ctx do
     {:ok, project} = Oban.Testing.with_testing_mode(:manual, fn ->
       Operately.Operations.ProjectCreation.run(ctx.project_attrs)
