@@ -8,7 +8,7 @@ export function useForProjectCheckIn(checkIn: ProjectCheckIns.ProjectCheckIn): F
 
   const { data, loading, error, refetch } = Comments.useComments({ entity });
 
-  const [post, { loading: submittingPost }] = Comments.usePostComment();
+  const [post, { loading: submittingPost }] = Comments.useCreateComment();
   const [edit, { loading: submittingEdit }] = Comments.useEditComment();
 
   if (loading)
@@ -43,13 +43,9 @@ export function useForProjectCheckIn(checkIn: ProjectCheckIns.ProjectCheckIn): F
 
   const postComment = async (content: string) => {
     await post({
-      variables: {
-        input: {
-          entityId: entity.id,
-          entityType: entity.type,
-          content: JSON.stringify(content),
-        },
-      },
+      entityId: entity.id,
+      entityType: entity.type,
+      content: JSON.stringify(content),
     });
 
     await refetch();
@@ -57,12 +53,8 @@ export function useForProjectCheckIn(checkIn: ProjectCheckIns.ProjectCheckIn): F
 
   const editComment = async (commentID: string, content: string) => {
     await edit({
-      variables: {
-        input: {
-          commentId: commentID,
-          content: JSON.stringify(content),
-        },
-      },
+      commentId: commentID,
+      content: JSON.stringify(content),
     });
 
     await refetch();
