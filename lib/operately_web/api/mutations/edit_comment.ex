@@ -13,7 +13,7 @@ defmodule OperatelyWeb.Api.Mutations.EditComment do
 
   def call(_conn, inputs) do
     {:ok, comment_id} = decode_id(inputs.comment_id)
-    {:ok, content} = Jason.decode(inputs.input.content)
+    {:ok, content} = Jason.decode(inputs.content)
 
     {:ok, comment} = Operately.Operations.CommentEditing.run(comment_id, content)
     {:ok, %{comment: Serializer.serialize(comment, level: :essential)}}
