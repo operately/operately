@@ -46,7 +46,6 @@ defmodule OperatelyWeb.Graphql.Schema do
 
   # Queries
   import_types OperatelyWeb.Graphql.Queries.Companies
-  import_types OperatelyWeb.Graphql.Queries.Goals
   import_types OperatelyWeb.Graphql.Queries.Invitations
   import_types OperatelyWeb.Graphql.Queries.KeyResources
   import_types OperatelyWeb.Graphql.Queries.ProjectCheckIns
@@ -67,7 +66,6 @@ defmodule OperatelyWeb.Graphql.Schema do
 
   query do
     import_fields :company_queries
-    import_fields :goal_queries
     import_fields :invitation_queries
     import_fields :key_resource_queries
     import_fields :project_check_in_queries

@@ -685,8 +685,6 @@ export type RootMutationTypeUpdateProjectDescriptionArgs = {
 export type RootQueryType = {
   __typename?: 'RootQueryType';
   company: Company;
-  goal: Goal;
-  goals?: Maybe<Array<Maybe<Goal>>>;
   invitation: Invitation;
   keyResource?: Maybe<ProjectKeyResource>;
   projectCheckIn: ProjectCheckIn;
@@ -699,18 +697,6 @@ export type RootQueryType = {
 
 export type RootQueryTypeCompanyArgs = {
   id: Scalars['ID']['input'];
-};
-
-
-export type RootQueryTypeGoalArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
-export type RootQueryTypeGoalsArgs = {
-  includeLongerTimeframes?: InputMaybe<Scalars['Boolean']['input']>;
-  spaceId?: InputMaybe<Scalars['ID']['input']>;
-  timeframe?: InputMaybe<Scalars['String']['input']>;
 };
 
 
