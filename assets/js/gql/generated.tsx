@@ -50,12 +50,6 @@ export type AddKeyResourceInput = {
   title: Scalars['String']['input'];
 };
 
-export type AddReactionInput = {
-  emoji: Scalars['String']['input'];
-  entityId: Scalars['ID']['input'];
-  entityType: Scalars['String']['input'];
-};
-
 export type ChangeGoalParentInput = {
   goalId: Scalars['String']['input'];
   parentGoalId?: InputMaybe<Scalars['String']['input']>;
@@ -101,11 +95,8 @@ export type Company = {
 
 export type CreateUpdateInput = {
   content: Scalars['String']['input'];
-  health?: InputMaybe<Scalars['String']['input']>;
   messageType?: InputMaybe<Scalars['String']['input']>;
   newTargetValues?: InputMaybe<Scalars['String']['input']>;
-  phase?: InputMaybe<Scalars['String']['input']>;
-  reviewRequestId?: InputMaybe<Scalars['String']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
   updatableId: Scalars['ID']['input'];
   updatableType: Scalars['String']['input'];
@@ -150,7 +141,6 @@ export type EditProjectTimelineInput = {
 
 export type EditUpdateInput = {
   content: Scalars['String']['input'];
-  health?: InputMaybe<Scalars['String']['input']>;
   newTargetValues?: InputMaybe<Scalars['String']['input']>;
   updateId: Scalars['ID']['input'];
 };
@@ -405,7 +395,6 @@ export type RootMutationType = {
   addFirstCompany: Company;
   addKeyResource: ProjectKeyResource;
   addProjectMilestone: Milestone;
-  addReaction?: Maybe<Reaction>;
   archiveGoal?: Maybe<Goal>;
   archiveProject: Project;
   changeGoalParent: Goal;
@@ -485,11 +474,6 @@ export type RootMutationTypeAddProjectMilestoneArgs = {
   deadlineAt?: InputMaybe<Scalars['Date']['input']>;
   projectId: Scalars['ID']['input'];
   title: Scalars['String']['input'];
-};
-
-
-export type RootMutationTypeAddReactionArgs = {
-  input: AddReactionInput;
 };
 
 
