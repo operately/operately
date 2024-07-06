@@ -45,19 +45,15 @@ export function useReactionsForm(entity: Entity, initial: api.Reaction[] | React
 
     try {
       const res = await add({
-        variables: {
-          input: {
-            entityId: entity.id,
-            entityType: entity.type,
-            emoji: emoji,
-          },
-        },
+        entityId: entity.id,
+        entityType: entity.type,
+        emoji: emoji,
       });
 
       setReactions((prev) => {
         return prev.map((r) => {
           if (r.id === tempId) {
-            return { ...r, id: res.data!.addReaction.id };
+            return { ...r, id: res.reaction!.id! };
           } else {
             return r;
           }
