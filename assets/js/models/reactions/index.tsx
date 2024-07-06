@@ -1,2 +1,4 @@
-export { useAddReaction } from "./useAddReaction";
-export type { Reaction } from "@/gql";
+import * as api from "@/api";
+
+export type Reaction = api.Reaction;
+export { useAddReaction } from "@/api";
