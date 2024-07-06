@@ -1312,11 +1312,13 @@ export interface AddProjectContributorResult {
 
 
 export interface AddReactionInput {
-
+  entityId?: string | null;
+  entityType?: string | null;
+  emoji?: string | null;
 }
 
 export interface AddReactionResult {
-
+  reaction?: Reaction | null;
 }
 
 

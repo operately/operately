@@ -21,13 +21,6 @@ export type Scalars = {
    */
   Date: { input: any; output: any; }
   /**
-   * The `DateTime` scalar type represents a date and time in the UTC
-   * timezone. The DateTime appears in a JSON response as an ISO8601 formatted
-   * string, including UTC timezone ("Z"). The parsed date and time string will
-   * be converted to UTC if there is an offset.
-   */
-  DateTime: { input: any; output: any; }
-  /**
    * The `Naive DateTime` scalar type represents a naive date and time without
    * timezone. The DateTime appears in a JSON response as an ISO8601 formatted
    * string.
@@ -55,26 +48,6 @@ export type AddKeyResourceInput = {
   projectId: Scalars['ID']['input'];
   resourceType: Scalars['String']['input'];
   title: Scalars['String']['input'];
-};
-
-export type AddReactionInput = {
-  emoji: Scalars['String']['input'];
-  entityId: Scalars['ID']['input'];
-  entityType: Scalars['String']['input'];
-};
-
-export type Assignment = {
-  __typename?: 'Assignment';
-  due: Scalars['Date']['output'];
-  resource: AssignmentResource;
-  type: Scalars['String']['output'];
-};
-
-export type AssignmentResource = Milestone | Project;
-
-export type Assignments = {
-  __typename?: 'Assignments';
-  assignments?: Maybe<Array<Maybe<Assignment>>>;
 };
 
 export type ChangeGoalParentInput = {
@@ -122,11 +95,8 @@ export type Company = {
 
 export type CreateUpdateInput = {
   content: Scalars['String']['input'];
-  health?: InputMaybe<Scalars['String']['input']>;
   messageType?: InputMaybe<Scalars['String']['input']>;
   newTargetValues?: InputMaybe<Scalars['String']['input']>;
-  phase?: InputMaybe<Scalars['String']['input']>;
-  reviewRequestId?: InputMaybe<Scalars['String']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
   updatableId: Scalars['ID']['input'];
   updatableType: Scalars['String']['input'];
@@ -171,7 +141,6 @@ export type EditProjectTimelineInput = {
 
 export type EditUpdateInput = {
   content: Scalars['String']['input'];
-  health?: InputMaybe<Scalars['String']['input']>;
   newTargetValues?: InputMaybe<Scalars['String']['input']>;
   updateId: Scalars['ID']['input'];
 };
@@ -426,7 +395,6 @@ export type RootMutationType = {
   addFirstCompany: Company;
   addKeyResource: ProjectKeyResource;
   addProjectMilestone: Milestone;
-  addReaction?: Maybe<Reaction>;
   archiveGoal?: Maybe<Goal>;
   archiveProject: Project;
   changeGoalParent: Goal;
@@ -506,11 +474,6 @@ export type RootMutationTypeAddProjectMilestoneArgs = {
   deadlineAt?: InputMaybe<Scalars['Date']['input']>;
   projectId: Scalars['ID']['input'];
   title: Scalars['String']['input'];
-};
-
-
-export type RootMutationTypeAddReactionArgs = {
-  input: AddReactionInput;
 };
 
 
@@ -705,13 +668,9 @@ export type RootMutationTypeUpdateProjectDescriptionArgs = {
 
 export type RootQueryType = {
   __typename?: 'RootQueryType';
-  assignments: Assignments;
   company: Company;
-  goal: Goal;
-  goals?: Maybe<Array<Maybe<Goal>>>;
   invitation: Invitation;
   keyResource?: Maybe<ProjectKeyResource>;
-  person?: Maybe<Person>;
   projectCheckIn: ProjectCheckIn;
   projectCheckIns?: Maybe<Array<ProjectCheckIn>>;
   projectContributorCandidates?: Maybe<Array<Maybe<Person>>>;
@@ -720,26 +679,8 @@ export type RootQueryType = {
 };
 
 
-export type RootQueryTypeAssignmentsArgs = {
-  rangeEnd: Scalars['DateTime']['input'];
-  rangeStart: Scalars['DateTime']['input'];
-};
-
-
 export type RootQueryTypeCompanyArgs = {
   id: Scalars['ID']['input'];
-};
-
-
-export type RootQueryTypeGoalArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
-export type RootQueryTypeGoalsArgs = {
-  includeLongerTimeframes?: InputMaybe<Scalars['Boolean']['input']>;
-  spaceId?: InputMaybe<Scalars['ID']['input']>;
-  timeframe?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -749,11 +690,6 @@ export type RootQueryTypeInvitationArgs = {
 
 
 export type RootQueryTypeKeyResourceArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
-export type RootQueryTypePersonArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -961,7 +897,6 @@ export type UpdateMilestoneTitleInput = {
 
 export type UpdatesFilter = {
   goalId?: InputMaybe<Scalars['ID']['input']>;
-  projectId?: InputMaybe<Scalars['ID']['input']>;
   type?: InputMaybe<Scalars['String']['input']>;
 };
 
