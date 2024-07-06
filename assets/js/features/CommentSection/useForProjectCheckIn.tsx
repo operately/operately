@@ -1,12 +1,14 @@
 import * as ProjectCheckIns from "@/models/projectCheckIns";
 import * as Comments from "@/models/comments";
+import * as Time from "@/utils/time";
 
 import { Item, ItemType, FormState } from "./form";
 
 export function useForProjectCheckIn(checkIn: ProjectCheckIns.ProjectCheckIn): FormState {
-  const entity = { id: checkIn.id, type: "project_check_in" };
-
-  const { data, loading, error, refetch } = Comments.useComments({ entity });
+  const { data, loading, error, refetch } = Comments.useGetComments({
+    entityId: checkIn.id!,
+    entityType: "project_check_in",
+  });
 
   const [post, { loading: submittingPost }] = Comments.useCreateComment();
   const [edit, { loading: submittingEdit }] = Comments.useEditComment();
@@ -21,12 +23,12 @@ export function useForProjectCheckIn(checkIn: ProjectCheckIns.ProjectCheckIn): F
 
   if (error) throw error;
 
-  const { before, after } = Comments.splitComments(data.comments, checkIn.acknowledgedAt);
+  const { before, after } = Comments.splitComments(data!.comments!, checkIn.acknowledgedAt);
 
   let items: Item[] = [];
 
   before.forEach((c) => {
-    items.push({ type: "comment" as ItemType, insertedAt: c!.insertedAt, value: c });
+    items.push({ type: "comment" as ItemType, insertedAt: Time.parse(c.insertedAt)!, value: c });
   });
 
   if (checkIn.acknowledgedAt) {
@@ -38,17 +40,17 @@ export function useForProjectCheckIn(checkIn: ProjectCheckIns.ProjectCheckIn): F
   }
 
   after.forEach((c) => {
-    items.push({ type: "comment" as ItemType, insertedAt: c!.insertedAt, value: c });
+    items.push({ type: "comment" as ItemType, insertedAt: Time.parse(c.insertedAt)!, value: c });
   });
 
   const postComment = async (content: string) => {
     await post({
-      entityId: entity.id,
-      entityType: entity.type,
+      entityId: checkIn.id,
+      entityType: "project_check_in",
       content: JSON.stringify(content),
     });
 
-    await refetch();
+    refetch();
   };
 
   const editComment = async (commentID: string, content: string) => {
@@ -57,7 +59,7 @@ export function useForProjectCheckIn(checkIn: ProjectCheckIns.ProjectCheckIn): F
       content: JSON.stringify(content),
     });
 
-    await refetch();
+    refetch();
   };
 
   const submitting = submittingPost || submittingEdit;

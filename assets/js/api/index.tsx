@@ -930,11 +930,12 @@ export interface GetActivityResult {
 
 
 export interface GetCommentsInput {
-
+  entityId?: string | null;
+  entityType?: string | null;
 }
 
 export interface GetCommentsResult {
-
+  comments?: Comment[] | null;
 }
 
 

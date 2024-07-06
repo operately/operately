@@ -231,6 +231,10 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Updates.Comment do
       reactions: OperatelyWeb.Api.Serializer.serialize(comment.reactions),
     }
   end
+
+  def serialize(comment, level: :full) do
+    serialize(comment, level: :essential)
+  end
 end
 
 defimpl OperatelyWeb.Api.Serializable, for: Operately.Comments.MilestoneComment do
