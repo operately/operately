@@ -711,7 +711,6 @@ export type RootQueryType = {
   goals?: Maybe<Array<Maybe<Goal>>>;
   invitation: Invitation;
   keyResource?: Maybe<ProjectKeyResource>;
-  person?: Maybe<Person>;
   projectCheckIn: ProjectCheckIn;
   projectCheckIns?: Maybe<Array<ProjectCheckIn>>;
   projectContributorCandidates?: Maybe<Array<Maybe<Person>>>;
@@ -749,11 +748,6 @@ export type RootQueryTypeInvitationArgs = {
 
 
 export type RootQueryTypeKeyResourceArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
-export type RootQueryTypePersonArgs = {
   id: Scalars['ID']['input'];
 };
 
