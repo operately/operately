@@ -66,7 +66,7 @@ defmodule OperatelyWeb.Paths do
   end
 
   def discussion_path(company = %Company{}, discussion) do
-    create_path([company_id(company), "discussions", discussion.id])
+    create_path([company_id(company), "discussions", discussion_id(discussion)])
   end
 
   def project_path(company = %Company{}, project = %Project{}) do

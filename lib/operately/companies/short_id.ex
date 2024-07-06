@@ -17,7 +17,7 @@ defmodule Operately.Companies.ShortId do
     gen_next(start)
   end
 
-  @spec encode!(Number.t()) :: String.t()
+  @spec encode!(any) :: String.t()
   def encode!(int), do: encode(int) |> elem(1)
 
   @spec encode(Number.t()) :: {:ok, String.t()} | :error

@@ -13,10 +13,11 @@ defmodule OperatelyWeb.Api.Mutations.EditDiscussion do
   end
 
   def call(conn, inputs) do
+    {:ok, id} = decode_id(inputs.discussion_id)
     person = me(conn)
     title = inputs.title
     body = inputs.body
-    discussion = Operately.Updates.get_update!(inputs.discussion_id)
+    discussion = Operately.Updates.get_update!(id)
 
     {:ok, discussion} = Operately.Operations.DiscussionEditing.run(person, discussion, title, body)
     {:ok, %{discussion: Serializer.serialize(discussion, level: :essential)}}

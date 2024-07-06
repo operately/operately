@@ -35,7 +35,7 @@ export function useHeaderForm(fields: Fields): HeaderFormState {
       return false;
     }
 
-    const idList = assignedPeople!.map((person) => person.id);
+    const idList = assignedPeople!.map((person) => person.id!);
 
     await update({
       taskId: fields.taskID,
