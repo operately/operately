@@ -209,13 +209,16 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Milestone do
       deadline_at: OperatelyWeb.Api.Serializer.serialize(milestone.deadline_at),
       completed_at: OperatelyWeb.Api.Serializer.serialize(milestone.completed_at),
       tasks_kanban_state: %{
-        todo: milestone.tasks_kanban_state["todo"] |> Enum.map(&Operately.ShortUuid.encode/1),
-        in_progress: milestone.tasks_kanban_state["in_progress"] |> Enum.map(&Operately.ShortUuid.encode/1),
-        done: milestone.tasks_kanban_state["done"] |> Enum.map(&Operately.ShortUuid.encode/1),
+        todo: encode_task_ids(milestone.tasks_kanban_state["todo"]),
+        in_progress: encode_task_ids(milestone.tasks_kanban_state["in_progress"]),
+        done: encode_task_ids(milestone.tasks_kanban_state["done"]),
       },
       comments: OperatelyWeb.Api.Serializer.serialize(milestone.comments),
     }
   end
+
+  defp encode_task_ids(nil), do: nil
+  defp encode_task_ids(task_ids), do: Enum.map(task_ids, &Operately.ShortUuid.encode/1)
 end
 
 defimpl OperatelyWeb.Api.Serializable, for: Operately.Updates.Comment do
