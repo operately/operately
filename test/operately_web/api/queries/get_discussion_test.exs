@@ -2,8 +2,6 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionTest do
   alias Operately.Support.RichText
   use OperatelyWeb.TurboCase
 
-  import Operately.CompaniesFixtures
-  import Operately.PeopleFixtures
   import Operately.UpdatesFixtures
 
   describe "security" do
@@ -18,20 +16,20 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionTest do
     test "include_author", ctx do
       discussion = create_discussion(ctx)
 
-      assert {200, res} = query(ctx.conn, :get_discussion, %{id: discussion.id})
+      assert {200, res} = query(ctx.conn, :get_discussion, %{id: Paths.discussion_id(discussion)})
       assert res.discussion.author == nil
 
-      assert {200, res} = query(ctx.conn, :get_discussion, %{id: discussion.id, include_author: true})
+      assert {200, res} = query(ctx.conn, :get_discussion, %{id: Paths.discussion_id(discussion), include_author: true})
       assert res.discussion.author == Serializer.serialize(ctx.person, level: :essential)
     end
 
     test "include_reactions", ctx do
       discussion = create_discussion(ctx)
 
-      assert {200, res} = query(ctx.conn, :get_discussion, %{id: discussion.id})
+      assert {200, res} = query(ctx.conn, :get_discussion, %{id: Paths.discussion_id(discussion)})
       assert res.discussion.reactions == nil
 
-      assert {200, res} = query(ctx.conn, :get_discussion, %{id: discussion.id, include_reactions: true})
+      assert {200, res} = query(ctx.conn, :get_discussion, %{id: Paths.discussion_id(discussion), include_reactions: true})
       assert res.discussion.reactions == []
 
       {:ok, reaction} = Operately.Updates.create_reaction(%{
@@ -43,21 +41,21 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionTest do
 
       reaction = Operately.Repo.preload(reaction, [:person])
 
-      assert {200, res} = query(ctx.conn, :get_discussion, %{id: discussion.id, include_reactions: true})
+      assert {200, res} = query(ctx.conn, :get_discussion, %{id: Paths.discussion_id(discussion), include_reactions: true})
       assert res.discussion.reactions == [Serializer.serialize(reaction, level: :essential)]
     end
 
     test "include_comments", ctx do
       discussion = create_discussion(ctx)
 
-      assert {200, res} = query(ctx.conn, :get_discussion, %{id: discussion.id})
+      assert {200, res} = query(ctx.conn, :get_discussion, %{id: Paths.discussion_id(discussion)})
       assert res.discussion.comments == nil
 
-      assert {200, res} = query(ctx.conn, :get_discussion, %{id: discussion.id, include_comments: true})
+      assert {200, res} = query(ctx.conn, :get_discussion, %{id: Paths.discussion_id(discussion), include_comments: true})
       assert res.discussion.comments == []
 
       {:ok, comment} = add_comment(ctx, discussion, "Hello World")
-      {:ok, reaction} = Operately.Updates.create_reaction(%{
+      {:ok, _reaction} = Operately.Updates.create_reaction(%{
         person_id: ctx.person.id,
         entity_id: comment.id,
         entity_type: :comment,
@@ -66,7 +64,7 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionTest do
 
       comment = Operately.Repo.preload(comment, [:author, [reactions: :person]])
 
-      assert {200, res} = query(ctx.conn, :get_discussion, %{id: discussion.id, include_comments: true})
+      assert {200, res} = query(ctx.conn, :get_discussion, %{id: Paths.discussion_id(discussion), include_comments: true})
       assert res.discussion.comments == [Serializer.serialize(comment, level: :essential)]
     end
   end

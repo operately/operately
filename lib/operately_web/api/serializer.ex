@@ -113,7 +113,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Updates.Update do
 
   def serialize(update = %{type: :project_discussion}, level: :essential) do
     %{
-      id: update.id,
+      id: OperatelyWeb.Paths.discussion_id(update),
       title: update.content["title"],
       body: Jason.encode!(update.content["body"]),
       inserted_at: OperatelyWeb.Api.Serializer.serialize(update.inserted_at),
@@ -124,7 +124,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Updates.Update do
 
   def serialize(update = %{type: :project_discussion}, level: :full) do
     %{
-      id: update.id,
+      id: OperatelyWeb.Paths.discussion_id(update),
       title: update.content["title"],
       body: Jason.encode!(update.content["body"]),
       inserted_at: OperatelyWeb.Api.Serializer.serialize(update.inserted_at),
