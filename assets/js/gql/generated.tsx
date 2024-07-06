@@ -706,7 +706,6 @@ export type RootMutationTypeUpdateProjectDescriptionArgs = {
 export type RootQueryType = {
   __typename?: 'RootQueryType';
   assignments: Assignments;
-  comments?: Maybe<Array<Maybe<Comment>>>;
   company: Company;
   goal: Goal;
   goals?: Maybe<Array<Maybe<Goal>>>;
@@ -724,12 +723,6 @@ export type RootQueryType = {
 export type RootQueryTypeAssignmentsArgs = {
   rangeEnd: Scalars['DateTime']['input'];
   rangeStart: Scalars['DateTime']['input'];
-};
-
-
-export type RootQueryTypeCommentsArgs = {
-  entityId?: InputMaybe<Scalars['ID']['input']>;
-  entityType?: InputMaybe<Scalars['String']['input']>;
 };
 
 
