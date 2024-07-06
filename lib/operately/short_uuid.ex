@@ -6,6 +6,15 @@ defmodule Operately.ShortUuid do
   22 characters.
   """
 
+  @doc """
+  Generates a new short-encoded UUID. Mostly used for testing.
+  """
+  def generate() do 
+    id = Ecto.UUID.generate() 
+    encode!(id)
+  end
+
+  @spec encode!(Ecto.UUID.t()) :: String.t()
   def encode!(uuid) do
     case encode(uuid) do
       {:ok, short_uuid} -> short_uuid
@@ -13,6 +22,7 @@ defmodule Operately.ShortUuid do
     end
   end
 
+  @spec decode!(String.t()) :: Ecto.UUID.t()
   def decode!(short_uuid) do
     case decode(short_uuid) do
       {:ok, uuid} -> uuid
@@ -23,7 +33,8 @@ defmodule Operately.ShortUuid do
   @spec encode(Ecto.UUID.t()) :: {:ok, String.t()} | {:error, String.t()}
   def encode(uuid) do
     case Ecto.UUID.dump(uuid) do
-      {:ok, binary} -> binary |> :binary.decode_unsigned() |> __MODULE__.Base62.encode()
+      {:ok, binary} -> 
+        {:ok, binary |> :binary.decode_unsigned() |> __MODULE__.Base62.encode()}
       :error -> {:error, "Invalid UUID"}
     end
   end
