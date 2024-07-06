@@ -10,7 +10,7 @@ defmodule OperatelyWeb.Graphql.Types.Companies do
 
     field :company_space_id, :string do
       resolve fn company, _, _ ->
-        {:ok, Operately.ShortUuid.encode(company.company_space_id)}
+        {:ok, Operately.ShortUuid.encode!(company.company_space_id)}
       end
     end
 

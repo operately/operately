@@ -41,12 +41,8 @@ export function useForMilestone(milestone: Milestones.Milestone): FormState {
 
   const editComment = async (commentID: string, content: string) => {
     await edit({
-      variables: {
-        input: {
-          commentId: commentID,
-          content: JSON.stringify(content),
-        },
-      },
+      commentId: commentID,
+      content: JSON.stringify(content),
     });
   };
 

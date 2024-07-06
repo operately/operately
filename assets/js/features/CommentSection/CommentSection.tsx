@@ -79,7 +79,13 @@ function EditComment({ comment, onCancel, form }) {
 
             <div className="flex justify-between items-center m-4">
               <div className="flex items-center gap-2">
-                <FilledButton onClick={handlePost} type="primary" testId="post-comment" size="xs">
+                <FilledButton
+                  onClick={handlePost}
+                  type="primary"
+                  testId="post-comment"
+                  size="xs"
+                  loading={form.submitting}
+                >
                   {uploading ? "Uploading..." : "Save Changes"}
                 </FilledButton>
 

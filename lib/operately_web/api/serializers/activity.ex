@@ -1,6 +1,7 @@
 defmodule OperatelyWeb.Api.Serializers.Activity do
   alias OperatelyWeb.Api.Serializers.Timeframe
   alias Operately.Activities.Content.GoalEditing
+  alias OperatelyWeb.Paths
 
   def serialize(activities) when is_list(activities) do
     Enum.map(activities, fn activity ->
@@ -93,8 +94,8 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
     %{
       space: serialize_space(content["space"]),
       discussion: serialize_discussion(content["discussion"]),
-      space_id: content["space_id"],
-      discussion_id: content["discussion_id"],
+      space_id: Paths.space_id(content["space"]),
+      discussion_id: Paths.discussion_id(content["discussion"]),
       title: content["title"]
     }
   end
