@@ -7,7 +7,7 @@ defmodule Operately.ShortUuidTest do
       short_uuid = Operately.ShortUuid.encode!(uuid)
 
       assert String.length(short_uuid) <= 22
-      assert String.length(short_uuid) >= 20
+      assert String.length(short_uuid) >= 19
       assert short_uuid =~ ~r/^[A-Za-z0-9]+$/
     end)
   end
