@@ -3,6 +3,7 @@ import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as Icons from "@tabler/icons-react";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
+import * as api from "@/api";
 
 import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
@@ -57,7 +58,7 @@ function Comments() {
 
 function Reactions() {
   const { checkIn } = useLoadedData();
-  const reactions = checkIn.reactions.map((r) => r!);
+  const reactions = checkIn.reactions.map((r) => r!) as api.Reaction[];
   const entity = { id: checkIn.id, type: "project_check_in" };
   const form = useReactionsForm(entity, reactions);
 
