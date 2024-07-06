@@ -25,10 +25,15 @@ export function useForDiscussion(discussion: Discussions.Discussion): FormState 
   };
 
   const editComment = async (commentID: string, content: string) => {
-    await edit({
-      commentId: commentID,
-      content: JSON.stringify(content),
-    });
+    try {
+      await edit({
+        commentId: commentID,
+        content: JSON.stringify(content),
+      });
+    } catch (e) {
+      console.log(submittingEdit);
+      throw e;
+    }
   };
 
   return {

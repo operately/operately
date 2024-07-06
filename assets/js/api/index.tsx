@@ -98,6 +98,7 @@ export function useMutation<InputT, ResultT>(fn: (input: InputT) => Promise<Resu
       return data;
     } catch (error) {
       setError(error);
+      throw error;
     } finally {
       setLoading(false);
     }

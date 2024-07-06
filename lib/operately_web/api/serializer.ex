@@ -218,7 +218,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Milestone do
   end
 
   defp encode_task_ids(nil), do: nil
-  defp encode_task_ids(task_ids), do: Enum.map(task_ids, &Operately.ShortUuid.encode/1)
+  defp encode_task_ids(task_ids), do: Enum.map(task_ids, &Operately.ShortUuid.encode!/1)
 end
 
 defimpl OperatelyWeb.Api.Serializable, for: Operately.Updates.Comment do

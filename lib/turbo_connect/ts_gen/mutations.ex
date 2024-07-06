@@ -80,6 +80,7 @@ defmodule TurboConnect.TsGen.Mutations do
           return data;
         } catch (error) {
           setError(error);
+          throw error;
         } finally {
           setLoading(false);
         }
