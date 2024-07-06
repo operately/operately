@@ -17,7 +17,7 @@ export function Page() {
     .filter((space) => !compareIds(space.id!, company.companySpaceId!));
 
   return (
-    <Pages.Page title="Lobby">
+    <Pages.Page title="Home">
       <Paper.Root size="large">
         <div className="flex justify-center gap-4 pt-16 flex-wrap">
           <div className="relative w-64 px-4 py-3">
