@@ -1,6 +1,18 @@
-export type { Comment } from "@/gql";
+import * as api from "@/api";
+import * as Time from "@/utils/time";
 
-export { useCreateComment, useEditComment } from "@/api";
+export type Comment = api.Comment;
 
-export { useComments } from "./useComments";
-export { splitComments } from "./splitComments";
+export { useCreateComment, useEditComment, useGetComments } from "@/api";
+
+export function splitComments(comments: Comment[], timestamp: string): { before: Comment[]; after: Comment[] } {
+  const before = comments.filter((comment) => {
+    return Time.parse(comment.insertedAt)! < Time.parse(timestamp)!;
+  });
+
+  const after = comments.filter((comment) => {
+    return Time.parse(comment.insertedAt)! >= Time.parse(timestamp)!;
+  });
+
+  return { before, after };
+}

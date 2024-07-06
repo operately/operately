@@ -1,11 +1,14 @@
 import * as GoalCheckIns from "@/models/goalCheckIns";
 import * as Comments from "@/models/comments";
+import * as Time from "@/utils/time";
 
 import { Item, ItemType } from "./form";
 
 export function useForGoalCheckIn(update: GoalCheckIns.GoalCheckIn) {
-  const entity = { id: update.id!, type: "update" };
-  const { data, loading, error, refetch } = Comments.useComments({ entity });
+  const { data, loading, error, refetch } = Comments.useGetComments({
+    entityId: update.id!,
+    entityType: "update",
+  });
 
   const [post, { loading: submittingPost }] = Comments.useCreateComment();
   const [edit, { loading: submittingEdit }] = Comments.useEditComment();
@@ -20,12 +23,12 @@ export function useForGoalCheckIn(update: GoalCheckIns.GoalCheckIn) {
 
   if (error) throw error;
 
-  const { before, after } = Comments.splitComments(data.comments, update.acknowledgedAt);
+  const { before, after } = Comments.splitComments(data!.comments!, update.acknowledgedAt);
 
   let items: Item[] = [];
 
   before.forEach((c) => {
-    items.push({ type: "comment" as ItemType, insertedAt: c!.insertedAt, value: c });
+    items.push({ type: "comment" as ItemType, insertedAt: Time.parse(c.insertedAt)!, value: c });
   });
 
   if (update.acknowledged) {
@@ -37,7 +40,7 @@ export function useForGoalCheckIn(update: GoalCheckIns.GoalCheckIn) {
   }
 
   after.forEach((c) => {
-    items.push({ type: "comment" as ItemType, insertedAt: c!.insertedAt, value: c });
+    items.push({ type: "comment" as ItemType, insertedAt: Time.parse(c.insertedAt)!, value: c });
   });
 
   const postComment = async (content: string) => {
@@ -47,7 +50,7 @@ export function useForGoalCheckIn(update: GoalCheckIns.GoalCheckIn) {
       content: JSON.stringify(content),
     });
 
-    await refetch();
+    refetch();
   };
 
   const editComment = async (commentID: string, content: string) => {
@@ -56,7 +59,7 @@ export function useForGoalCheckIn(update: GoalCheckIns.GoalCheckIn) {
       content: JSON.stringify(content),
     });
 
-    await refetch();
+    refetch();
   };
 
   return {
