@@ -24,7 +24,7 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussion do
   end
 
   defp load(inputs) do
-    id = inputs.id
+    {:ok, id} = decode_id(inputs.id)
     requested = extract_include_filters(inputs)
 
     query = from u in Operately.Updates.Update, where: u.id == ^id

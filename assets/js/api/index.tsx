@@ -1355,11 +1355,12 @@ export interface ChangePasswordFirstTimeResult {
 
 
 export interface ChangeTaskDescriptionInput {
-
+  taskId?: string | null;
+  description?: string | null;
 }
 
 export interface ChangeTaskDescriptionResult {
-
+  task?: Task | null;
 }
 
 
@@ -1405,11 +1406,13 @@ export interface CreateBlobResult {
 
 
 export interface CreateCommentInput {
-
+  entityId?: string | null;
+  entityType?: string | null;
+  content?: string | null;
 }
 
 export interface CreateCommentResult {
-
+  comment?: Comment | null;
 }
 
 
@@ -1504,11 +1507,12 @@ export interface DisconnectGoalFromProjectResult {
 
 
 export interface EditCommentInput {
-
+  content?: string | null;
+  commentId?: string | null;
 }
 
 export interface EditCommentResult {
-
+  comment?: Comment | null;
 }
 
 
@@ -1833,11 +1837,13 @@ export interface UpdateProjectDescriptionResult {
 
 
 export interface UpdateTaskInput {
-
+  taskId?: string | null;
+  name?: string | null;
+  assignedIds?: string[] | null;
 }
 
 export interface UpdateTaskResult {
-
+  task?: Task | null;
 }
 
 

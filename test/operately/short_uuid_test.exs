@@ -4,7 +4,7 @@ defmodule Operately.ShortUuidTest do
   test "encode/1 encodes a UUID to a short UUID" do
     1..1000 |> Enum.each(fn _ ->
       uuid = Ecto.UUID.generate()
-      short_uuid = Operately.ShortUuid.encode(uuid)
+      short_uuid = Operately.ShortUuid.encode!(uuid)
 
       assert String.length(short_uuid) <= 22
       assert String.length(short_uuid) >= 20
@@ -19,7 +19,7 @@ defmodule Operately.ShortUuidTest do
   test "decode/1 decodes a short UUID to a UUID" do
     1..1000 |> Enum.each(fn _ ->
       uuid = Ecto.UUID.generate()
-      short_uuid = Operately.ShortUuid.encode(uuid)
+      short_uuid = Operately.ShortUuid.encode!(uuid)
 
       assert Operately.ShortUuid.decode(short_uuid) == {:ok, uuid}
     end)
@@ -37,7 +37,7 @@ defmodule Operately.ShortUuidTest do
     {time, _} = :timer.tc(fn ->
       1..1000 |> Enum.each(fn _ ->
         uuid = Ecto.UUID.generate()
-        encoded = Operately.ShortUuid.encode(uuid)
+        encoded = Operately.ShortUuid.encode!(uuid)
         Operately.ShortUuid.decode(encoded)
       end)
     end)

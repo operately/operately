@@ -7,7 +7,7 @@ export function useForGoalCheckIn(update: GoalCheckIns.GoalCheckIn) {
   const entity = { id: update.id!, type: "update" };
   const { data, loading, error, refetch } = Comments.useComments({ entity });
 
-  const [post, { loading: submittingPost }] = Comments.usePostComment();
+  const [post, { loading: submittingPost }] = Comments.useCreateComment();
   const [edit, { loading: submittingEdit }] = Comments.useEditComment();
 
   if (loading)
@@ -42,13 +42,9 @@ export function useForGoalCheckIn(update: GoalCheckIns.GoalCheckIn) {
 
   const postComment = async (content: string) => {
     await post({
-      variables: {
-        input: {
-          entityType: "update",
-          entityId: update.id,
-          content: JSON.stringify(content),
-        },
-      },
+      entityType: "update",
+      entityId: update.id,
+      content: JSON.stringify(content),
     });
 
     await refetch();
@@ -56,12 +52,8 @@ export function useForGoalCheckIn(update: GoalCheckIns.GoalCheckIn) {
 
   const editComment = async (commentID: string, content: string) => {
     await edit({
-      variables: {
-        input: {
-          commentId: commentID,
-          content: JSON.stringify(content),
-        },
-      },
+      commentId: commentID,
+      content: JSON.stringify(content),
     });
 
     await refetch();

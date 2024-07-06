@@ -66,7 +66,7 @@ defmodule OperatelyWeb.Paths do
   end
 
   def discussion_path(company = %Company{}, discussion) do
-    create_path([company_id(company), "discussions", discussion.id])
+    create_path([company_id(company), "discussions", discussion_id(discussion)])
   end
 
   def project_path(company = %Company{}, project = %Project{}) do
@@ -109,12 +109,12 @@ defmodule OperatelyWeb.Paths do
   #
 
   def company_id(company) do
-    short_id = Operately.Companies.ShortId.encode(company.short_id)
+    short_id = Operately.Companies.ShortId.encode!(company.short_id)
     OperatelyWeb.Api.Helpers.id_with_comments(company.name, short_id)
   end
 
   def space_id(space) do
-    id = Operately.ShortUuid.encode(space.id)
+    id = Operately.ShortUuid.encode!(space.id)
     OperatelyWeb.Api.Helpers.id_with_comments(space.name, id)
   end
 
@@ -127,8 +127,14 @@ defmodule OperatelyWeb.Paths do
   end
 
   def task_id(task) do
-    id = Operately.ShortUuid.encode(task.id)
+    id = Operately.ShortUuid.encode!(task.id)
     OperatelyWeb.Api.Helpers.id_with_comments(task.name, id)
+  end
+
+  def discussion_id(discussion) do
+    id = Operately.ShortUuid.encode!(discussion.id)
+    title = discussion.content[:title] || discussion.content["title"] || ""
+    OperatelyWeb.Api.Helpers.id_with_comments(title, id)
   end
 
   #
