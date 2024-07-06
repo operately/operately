@@ -14,6 +14,7 @@ defmodule Operately.ShortUuid do
     encode!(id)
   end
 
+  @spec encode!(Ecto.UUID.t()) :: String.t()
   def encode!(uuid) do
     case encode(uuid) do
       {:ok, short_uuid} -> short_uuid
@@ -21,6 +22,7 @@ defmodule Operately.ShortUuid do
     end
   end
 
+  @spec decode!(String.t()) :: Ecto.UUID.t()
   def decode!(short_uuid) do
     case decode(short_uuid) do
       {:ok, uuid} -> uuid
