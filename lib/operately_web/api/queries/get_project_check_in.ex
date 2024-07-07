@@ -32,7 +32,9 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckIn do
   defp load(person, id, inputs) do
     requested = extract_include_filters(inputs)
 
-    query = from p in CheckIn, where: p.id == ^id, preload: [:acknowledged_by]
+    query = from p in CheckIn, 
+      where: p.id == ^id, 
+      preload: [:acknowledged_by]
 
     query
     |> CheckIn.scope_company(person.company_id)

@@ -26,12 +26,4 @@ defmodule Operately.Projects.CheckIn do
     |> cast(attrs, [:author_id, :project_id, :description, :status, :acknowledged_by_id, :acknowledged_at])
     |> validate_required([:author_id, :project_id, :description, :status])
   end
-
-  # Scopes
-
-  import Ecto.Query, only: [from: 2]
-
-  def scope_company(query, company_id) do
-    from p in query, where: p.company_id == ^company_id
-  end
 end
