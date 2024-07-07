@@ -15,22 +15,21 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckIns do
     field :project_check_ins, list_of(:project_check_in)
   end
 
-  def call(conn, inputs) do
+  def call(_conn, inputs) do
     case decode_id(inputs[:project_id]) do
       {:ok, id} -> 
-        project_check_ins = load(me(conn), id, inputs)
+        project_check_ins = load(id, inputs)
         {:ok, %{project_check_ins: Serializer.serialize(project_check_ins, level: :essential)}}
       {:error, _} -> {:error, :bad_request}
     end
   end
 
-  defp load(person, id, inputs) do
+  defp load(id, inputs) do
     requested = extract_include_filters(inputs)
 
-    query = from p in CheckIn, where: p.id == ^id, preload: [:acknowledged_by]
+    query = from p in CheckIn, where: p.project_id == ^id, preload: [:acknowledged_by]
 
     query
-    |> CheckIn.scope_company(person.company_id)
     |> include_requested(requested)
     |> Repo.all()
   end

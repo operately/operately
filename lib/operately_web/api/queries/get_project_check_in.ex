@@ -37,26 +37,25 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckIn do
       preload: [:acknowledged_by]
 
     query
-    |> CheckIn.scope_company(person.company_id)
     |> include_requested(requested)
     |> Repo.one()
-    |> preload_project_permissions()
+    |> preload_project_permissions(person)
   end
 
   def include_requested(query, requested) do
     Enum.reduce(requested, query, fn include, q ->
       case include do
         :include_author -> from p in q, preload: [:author]
-        :include_project -> from p in q, preload: [project: [:reviewer], contributors: :person]
+        :include_project -> from p in q, preload: [project: [:reviewer, [contributors: :person]]]
         :include_reactions -> from p in q, preload: [reactions: :person]
         _ -> raise ArgumentError, "Unknown include filter: #{inspect(include)}"
       end
     end)
   end
 
-  def preload_project_permissions(nil), do: nil
-  def preload_project_permissions(check_in = %{project: %Ecto.Association.NotLoaded{}} = check_in), do: check_in
-  def preload_project_permissions(check_in = %{project: project} = check_in) do
-    %{check_in | project: Operately.Projects.Project.set_permissions(project, me(check_in))}
+  def preload_project_permissions(nil, _), do: nil
+  def preload_project_permissions(check_in = %{project: %Ecto.Association.NotLoaded{}}, _), do: check_in
+  def preload_project_permissions(check_in = %{project: project}, person) do
+    %{check_in | project: Operately.Projects.Project.set_permissions(project, person)}
   end
 end
