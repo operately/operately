@@ -1,15 +1,22 @@
 defmodule OperatelyWeb.Api.Queries.SearchProjectContributorCandidates do
   use TurboConnect.Query
+  use OperatelyWeb.Api.Helpers
+
+  alias Operately.Projects
 
   inputs do
-    # TODO: Define input fields
+    field :project_id, :string
+    field :query, :string
   end
 
   outputs do
-    # TODO: Define output fields
+    field :people, list_of(:person)
   end
 
-  def call(_conn, _inputs) do
-    raise "Not implemented"
+  def call(_conn, inputs) do
+    {:ok, project_id} = decode_id(inputs.project_id)
+    people = Projects.list_project_contributor_candidates(project_id, inputs.query, [], 10)
+
+    {:ok, %{people: Serializer.serialize(people)}}
   end
 end
