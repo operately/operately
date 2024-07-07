@@ -1,30 +1,25 @@
-defmodule OperatelyWeb.Api.Queries.GetProjectCheckIn do
+defmodule OperatelyWeb.Api.Queries.GetProjectCheckIns do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
   alias Operately.Projects.CheckIn
 
   inputs do
-    field :id, :string
+    field :project_id, :string
     field :include_author, :boolean
     field :include_project, :boolean
     field :include_reactions, :boolean
   end
 
   outputs do
-    field :project_check_in, :project_check_in
+    field :project_check_ins, list_of(:project_check_in)
   end
 
   def call(conn, inputs) do
-    case decode_id(inputs[:id]) do
+    case decode_id(inputs[:project_id]) do
       {:ok, id} -> 
-        project_check_in = load(me(conn), id, inputs)
-
-        if nil == project_check_in do
-          {:error, :not_found}
-        else
-          {:ok, %{project_check_in: Serializer.serialize(project_check_in, level: :full)}}
-        end
+        project_check_ins = load(me(conn), id, inputs)
+        {:ok, %{project_check_ins: Serializer.serialize(project_check_ins, level: :essential)}}
       {:error, _} -> {:error, :bad_request}
     end
   end
@@ -37,7 +32,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckIn do
     query
     |> CheckIn.scope_company(person.company_id)
     |> include_requested(requested)
-    |> Repo.one()
+    |> Repo.all()
   end
 
   def include_requested(query, requested) do
