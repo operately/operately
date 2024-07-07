@@ -12,7 +12,7 @@ export function AckCTA() {
   const ackHandler = useAcknowledgeHandler(checkIn, ackOnLoad);
 
   if (checkIn.acknowledgedAt) return null;
-  if (!checkIn.project.permissions.canAcknowledgeCheckIn) return null;
+  if (!checkIn.project!.permissions!.canAcknowledgeCheckIn) return null;
   if (ackOnLoad) return null;
 
   return (
@@ -30,7 +30,7 @@ function useAcknowledgeHandler(checkIn: ProjectCheckIns.ProjectCheckIn, ackOnLoa
 
   const handleAck = async () => {
     if (checkIn.acknowledgedAt) return;
-    if (!checkIn.project.permissions.canAcknowledgeCheckIn) return;
+    if (!checkIn.project!.permissions!.canAcknowledgeCheckIn) return;
 
     await ack({
       variables: {
