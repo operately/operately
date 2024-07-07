@@ -9,7 +9,7 @@ import { SelectBox } from "@/components/Form";
 import { PERMISSIONS_LIST } from "@/features/Permissions";
 
 export function ContributorSearch({ projectID, title, onSelect, defaultValue = undefined }) {
-  const loader = Projects.useProjectContributorCandidatesQuery(projectID);
+  const loader = Projects.useProjectContributorCandidates(projectID);
 
   return (
     <div className="mb-6">
@@ -44,7 +44,7 @@ export function ResponsibilityInput({ value, onChange }) {
   );
 }
 
-export function PermissionsInput({value, onChange}) {
+export function PermissionsInput({ value, onChange }) {
   return (
     <SelectBox
       label="What are the permissions of this contributor"
@@ -52,7 +52,7 @@ export function PermissionsInput({value, onChange}) {
       options={PERMISSIONS_LIST}
       value={value}
     />
-  )
+  );
 }
 
 export function RemoveButton({ onClick, loading }) {

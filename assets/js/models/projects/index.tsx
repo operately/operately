@@ -15,10 +15,10 @@ export { useUpdateDescriptionMutation } from "./useUpdateDescriptionMutation";
 export { useEditTimelineMutation } from "./useEditTimelineMutation";
 export { useArchiveMutation } from "./useArchiveMutation";
 
-export { useProjectContributorCandidatesQuery } from "./useProjectContributorCandidatesQuery";
 export { useUpdateProjectContributorMutation } from "./useUpdateProjectContributorMutation";
 export { useResumeProjectMutation } from "./useResumeProjectMutation";
 export { usePauseProjectMutation } from "./usePauseProjectMutation";
+export { useProjectContributorCandidates } from "./useProjectContributorCandidates";
 
 export function sortByName(projects: Project[]) {
   return [...projects].sort((a, b) => a.name!.localeCompare(b.name!));
