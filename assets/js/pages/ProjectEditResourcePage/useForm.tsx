@@ -24,8 +24,8 @@ interface FormState {
 export function useForm(project: Projects.Project, keyResource: KeyResources.KeyResource): FormState {
   const gotoResourceList = useNavigateTo(Paths.projectEditResourcesPath(project.id!));
 
-  const [name, setName] = React.useState(keyResource.title);
-  const [url, setUrl] = React.useState(keyResource.link);
+  const [name, setName] = React.useState<string>(keyResource.title!);
+  const [url, setUrl] = React.useState<string>(keyResource.link!);
 
   const isValid = React.useMemo(() => {
     return name.length > 0 && url.length > 0;
@@ -49,7 +49,7 @@ export function useForm(project: Projects.Project, keyResource: KeyResources.Key
 
   return {
     projectId: project.id!,
-    resourceType: keyResource.resourceType,
+    resourceType: keyResource.resourceType!,
 
     name,
     setName,

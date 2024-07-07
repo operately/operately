@@ -286,6 +286,16 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.KeyResource do
       inserted_at: OperatelyWeb.Api.Serializer.serialize(key_resource.inserted_at),
     }
   end
+
+  def serialize(key_resource, level: :full) do
+    %{
+      id: key_resource.id,
+      title: key_resource.title,
+      link: key_resource.link,
+      resource_type: key_resource.resource_type,
+      inserted_at: OperatelyWeb.Api.Serializer.serialize(key_resource.inserted_at),
+    }
+  end
 end
 
 defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Contributor do
