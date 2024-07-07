@@ -1,7 +1,8 @@
-export type { ProjectCheckIn } from "@/gql";
+import * as api from "@/api";
 
-export { getCheckIn } from "./getCheckIn";
-export { getCheckIns } from "./getCheckIns";
+export type ProjectCheckIn = api.ProjectCheckIn;
+
+export { getProjectCheckIn, getProjectCheckIns } from "@/api";
 
 export { useAckMutation } from "./useAckMutation";
 export { useEditMutation } from "./useEditMutation";

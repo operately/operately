@@ -25,6 +25,7 @@ defmodule OperatelyWeb.Api do
   query :get_person, OperatelyWeb.Api.Queries.GetPerson
   query :get_project, OperatelyWeb.Api.Queries.GetProject
   query :get_project_check_in, OperatelyWeb.Api.Queries.GetProjectCheckIn
+  query :get_project_check_ins, OperatelyWeb.Api.Queries.GetProjectCheckIns
   query :get_projects, OperatelyWeb.Api.Queries.GetProjects
   query :get_space, OperatelyWeb.Api.Queries.GetSpace
   query :get_spaces, OperatelyWeb.Api.Queries.GetSpaces

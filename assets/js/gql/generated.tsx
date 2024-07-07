@@ -671,8 +671,6 @@ export type RootQueryType = {
   company: Company;
   invitation: Invitation;
   keyResource?: Maybe<ProjectKeyResource>;
-  projectCheckIn: ProjectCheckIn;
-  projectCheckIns?: Maybe<Array<ProjectCheckIn>>;
   update: Update;
   updates: Array<Maybe<Update>>;
 };
@@ -690,16 +688,6 @@ export type RootQueryTypeInvitationArgs = {
 
 export type RootQueryTypeKeyResourceArgs = {
   id: Scalars['ID']['input'];
-};
-
-
-export type RootQueryTypeProjectCheckInArgs = {
-  id?: InputMaybe<Scalars['ID']['input']>;
-};
-
-
-export type RootQueryTypeProjectCheckInsArgs = {
-  projectId: Scalars['ID']['input'];
 };
 
 

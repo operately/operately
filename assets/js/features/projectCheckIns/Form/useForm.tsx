@@ -43,13 +43,13 @@ export interface FormState {
 export function useForm({ mode, project, checkIn, author }: UseFormOptions): FormState {
   const navigate = useNavigate();
 
-  const [status, setStatus] = React.useState<string | null>(mode === "edit" ? checkIn!.status : null);
+  const [status, setStatus] = React.useState<string | null>(mode === "edit" ? checkIn!.status! : null);
   const [errors, setErrors] = React.useState<Error[]>([]);
 
   const editor = TipTapEditor.useEditor({
     placeholder: `Write your updates here...`,
     className: "min-h-[250px] py-2 font-medium",
-    content: checkIn && JSON.parse(checkIn.description),
+    content: checkIn?.description && JSON.parse(checkIn.description),
   });
 
   const [post] = ProjectCheckIns.usePostMutation({
@@ -112,7 +112,7 @@ export function useForm({ mode, project, checkIn, author }: UseFormOptions): For
   const submitDisabled = !editor.editor || editor.uploading;
 
   const cancelPath =
-    mode === "create" ? Paths.projectCheckInsPath(project.id!) : Paths.projectCheckInPath(project.id!, checkIn!.id);
+    mode === "create" ? Paths.projectCheckInsPath(project.id!) : Paths.projectCheckInPath(project.id!, checkIn!.id!);
 
   return {
     mode,
