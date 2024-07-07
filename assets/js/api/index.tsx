@@ -1219,11 +1219,12 @@ export interface SearchPotentialSpaceMembersResult {
 
 
 export interface SearchProjectContributorCandidatesInput {
-
+  projectId?: string | null;
+  query?: string | null;
 }
 
 export interface SearchProjectContributorCandidatesResult {
-
+  people?: Person[] | null;
 }
 
 export interface AcknowledgeGoalCheckInInput {
