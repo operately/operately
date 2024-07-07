@@ -17,14 +17,14 @@ export function Page() {
   const form = useForm(project, keyResource);
 
   return (
-    <Pages.Page title={["Edit", keyResource.title, project.name!]}>
+    <Pages.Page title={["Edit", keyResource.title!, project.name!]}>
       <Paper.Root size="small">
         <ProjectPageNavigation project={project} />
 
         <Paper.Body minHeight="none">
           <div className="flex items-start justify-between">
             <h1 className="text-xl font-extrabold mb-8">Editing {keyResource.title}</h1>
-            <ResourceIcon resourceType={keyResource.resourceType} size={48} />
+            <ResourceIcon resourceType={keyResource.resourceType!} size={48} />
           </div>
 
           <Form project={project} form={form} />

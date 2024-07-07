@@ -47,7 +47,6 @@ defmodule OperatelyWeb.Graphql.Schema do
   # Queries
   import_types OperatelyWeb.Graphql.Queries.Companies
   import_types OperatelyWeb.Graphql.Queries.Invitations
-  import_types OperatelyWeb.Graphql.Queries.KeyResources
   import_types OperatelyWeb.Graphql.Queries.Updates
 
   # Mutations
@@ -65,7 +64,6 @@ defmodule OperatelyWeb.Graphql.Schema do
   query do
     import_fields :company_queries
     import_fields :invitation_queries
-    import_fields :key_resource_queries
     import_fields :update_queries
   end
 

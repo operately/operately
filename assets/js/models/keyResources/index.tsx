@@ -1,11 +1,11 @@
-import { ProjectKeyResource } from "@/gql/generated";
+import * as api from "@/api";
+export type KeyResource = api.ProjectKeyResource;
 
-export { getKeyResource } from "./queries";
+export { getKeyResource } from "@/api";
+
 export { useRemoveResource } from "./useRemoveResource";
 export { useEditResource } from "./useEditResource";
 export { useAddResource } from "./useAddResource";
-
-export type KeyResource = ProjectKeyResource;
 
 export const SupportedTypes = [
   "slack-channel",
