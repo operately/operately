@@ -60,16 +60,16 @@ function ResourceListItem({ resource }: { resource: KeyResources.KeyResource }) 
   const remove = useRemoveAction(resource!);
 
   const title = resource!.title;
-  const icon = <ResourceIcon resourceType={resource!.resourceType} size={32} />;
-  const removeId = createTestId("remove-resource", title);
+  const icon = <ResourceIcon resourceType={resource!.resourceType!} size={32} />;
+  const removeId = createTestId("remove-resource", title!);
 
-  const editPath = Paths.projectEditResourcePath(project.id!, resource!.id);
-  const editId = createTestId("edit-resource", title);
+  const editPath = Paths.projectEditResourcePath(project.id!, resource!.id!);
+  const editId = createTestId("edit-resource", title!);
 
   return (
     <div className="rounded border border-stroke-base text-center flex flex-col">
       <DivLink
-        to={resource!.link}
+        to={resource!.link!}
         className="flex flex-col items-center justify-center text-center border border-transparent hover:border-surface-outline flex-1"
         target="_blank"
       >

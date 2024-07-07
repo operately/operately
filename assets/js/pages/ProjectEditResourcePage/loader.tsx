@@ -8,13 +8,17 @@ interface LoaderResult {
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
+  const projectPromise = Projects.getProject({
+    id: params.projectID,
+    includeSpace: true,
+    includePermissions: true,
+  }).then((data) => data.project!);
+
+  const resourcePromise = KeyResources.getKeyResource({ id: params.id }).then((d) => d.keyResource!);
+
   return {
-    project: await Projects.getProject({
-      id: params.projectID,
-      includeSpace: true,
-      includePermissions: true,
-    }).then((data) => data.project!),
-    keyResource: await KeyResources.getKeyResource(params.id),
+    project: await projectPromise,
+    keyResource: await resourcePromise,
   };
 }
 
