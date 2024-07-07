@@ -17,7 +17,7 @@ defmodule OperatelyWeb.Api do
   query :get_goal_check_ins, OperatelyWeb.Api.Queries.GetGoalCheckIns
   query :get_goals, OperatelyWeb.Api.Queries.GetGoals
   query :get_invitation, OperatelyWeb.Api.Queries.GetInvitation
-  query :get_key_resources, OperatelyWeb.Api.Queries.GetKeyResources
+  query :get_key_resource, OperatelyWeb.Api.Queries.GetKeyResource
   query :get_me, OperatelyWeb.Api.Queries.GetMe
   query :get_milestone, OperatelyWeb.Api.Queries.GetMilestone
   query :get_notifications, OperatelyWeb.Api.Queries.GetNotifications

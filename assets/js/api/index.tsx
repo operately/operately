@@ -1039,11 +1039,11 @@ export interface GetInvitationResult {
 }
 
 
-export interface GetKeyResourcesInput {
+export interface GetKeyResourceInput {
   id?: string | null;
 }
 
-export interface GetKeyResourcesResult {
+export interface GetKeyResourceResult {
   keyResource?: ProjectKeyResource | null;
 }
 
@@ -1944,8 +1944,8 @@ export class ApiClient {
     return axios.get(this.getBasePath() + "/get_invitation", { params: toSnake(input)}).then(({ data }) => toCamel(data));
   }
 
-  async getKeyResources(input: GetKeyResourcesInput): Promise<GetKeyResourcesResult> {
-    return axios.get(this.getBasePath() + "/get_key_resources", { params: toSnake(input)}).then(({ data }) => toCamel(data));
+  async getKeyResource(input: GetKeyResourceInput): Promise<GetKeyResourceResult> {
+    return axios.get(this.getBasePath() + "/get_key_resource", { params: toSnake(input)}).then(({ data }) => toCamel(data));
   }
 
   async getMe(input: GetMeInput): Promise<GetMeResult> {
@@ -2308,8 +2308,8 @@ export async function getGoals(input: GetGoalsInput) : Promise<GetGoalsResult> {
 export async function getInvitation(input: GetInvitationInput) : Promise<GetInvitationResult> {
   return defaultApiClient.getInvitation(input);
 }
-export async function getKeyResources(input: GetKeyResourcesInput) : Promise<GetKeyResourcesResult> {
-  return defaultApiClient.getKeyResources(input);
+export async function getKeyResource(input: GetKeyResourceInput) : Promise<GetKeyResourceResult> {
+  return defaultApiClient.getKeyResource(input);
 }
 export async function getMe(input: GetMeInput) : Promise<GetMeResult> {
   return defaultApiClient.getMe(input);
@@ -2600,8 +2600,8 @@ export function useGetInvitation(input: GetInvitationInput) : UseQueryHookResult
   return useQuery<GetInvitationResult>(() => defaultApiClient.getInvitation(input));
 }
 
-export function useGetKeyResources(input: GetKeyResourcesInput) : UseQueryHookResult<GetKeyResourcesResult> {
-  return useQuery<GetKeyResourcesResult>(() => defaultApiClient.getKeyResources(input));
+export function useGetKeyResource(input: GetKeyResourceInput) : UseQueryHookResult<GetKeyResourceResult> {
+  return useQuery<GetKeyResourceResult>(() => defaultApiClient.getKeyResource(input));
 }
 
 export function useGetMe(input: GetMeInput) : UseQueryHookResult<GetMeResult> {
@@ -2951,8 +2951,8 @@ export default {
   useGetGoals,
   getInvitation,
   useGetInvitation,
-  getKeyResources,
-  useGetKeyResources,
+  getKeyResource,
+  useGetKeyResource,
   getMe,
   useGetMe,
   getMilestone,
