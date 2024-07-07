@@ -98,8 +98,8 @@ function isCurrentYear(year: number) {
 export function CheckInCard({ checkIn }: { checkIn: ProjectCheckIns.ProjectCheckIn }) {
   const { project } = useLoadedData();
 
-  const author = checkIn.author;
-  const path = Paths.projectCheckInPath(project.id!, checkIn.id);
+  const author = checkIn.author!;
+  const path = Paths.projectCheckInPath(project.id!, checkIn.id!);
 
   return (
     <DivLink className="flex items-start gap-2 rounded-lg cursor-pointer border border-stroke-base" to={path}>
@@ -111,7 +111,7 @@ export function CheckInCard({ checkIn }: { checkIn: ProjectCheckIns.ProjectCheck
               <div className="flex flex-col">
                 <span className="font-bold text-content-accent leading-snug">{author.fullName}</span>
                 <span className="text-content-dimmed text-sm leading-snug">
-                  <FormattedTime time={checkIn.insertedAt} format="long-date" />
+                  <FormattedTime time={checkIn.insertedAt!} format="long-date" />
                 </span>
               </div>
             </div>
@@ -123,7 +123,7 @@ export function CheckInCard({ checkIn }: { checkIn: ProjectCheckIns.ProjectCheck
         </div>
 
         <div className="font-medium p-3 bg-surface-accent border-t border-stroke-base">
-          <SmallStatusIndicator status={checkIn.status} />
+          <SmallStatusIndicator status={checkIn.status!} />
         </div>
       </div>
     </DivLink>

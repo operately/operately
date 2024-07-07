@@ -23,7 +23,7 @@ export function useForProjectCheckIn(checkIn: ProjectCheckIns.ProjectCheckIn): F
 
   if (error) throw error;
 
-  const { before, after } = Comments.splitComments(data!.comments!, checkIn.acknowledgedAt);
+  const { before, after } = Comments.splitComments(data!.comments!, checkIn.acknowledgedAt!);
 
   let items: Item[] = [];
 
@@ -34,7 +34,7 @@ export function useForProjectCheckIn(checkIn: ProjectCheckIns.ProjectCheckIn): F
   if (checkIn.acknowledgedAt) {
     items.push({
       type: "acknowledgement" as ItemType,
-      insertedAt: checkIn.acknowledgedAt,
+      insertedAt: Time.parse(checkIn.acknowledgedAt)!,
       value: checkIn.acknowledgedBy,
     });
   }

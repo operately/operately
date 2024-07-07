@@ -1119,11 +1119,26 @@ export interface GetProjectResult {
 
 
 export interface GetProjectCheckInInput {
-
+  id?: string | null;
+  includeAuthor?: boolean | null;
+  includeProject?: boolean | null;
+  includeReactions?: boolean | null;
 }
 
 export interface GetProjectCheckInResult {
+  projectCheckIn?: ProjectCheckIn | null;
+}
 
+
+export interface GetProjectCheckInsInput {
+  projectId?: string | null;
+  includeAuthor?: boolean | null;
+  includeProject?: boolean | null;
+  includeReactions?: boolean | null;
+}
+
+export interface GetProjectCheckInsResult {
+  projectCheckIns?: ProjectCheckIn[] | null;
 }
 
 
@@ -1961,6 +1976,10 @@ export class ApiClient {
     return axios.get(this.getBasePath() + "/get_project_check_in", { params: toSnake(input)}).then(({ data }) => toCamel(data));
   }
 
+  async getProjectCheckIns(input: GetProjectCheckInsInput): Promise<GetProjectCheckInsResult> {
+    return axios.get(this.getBasePath() + "/get_project_check_ins", { params: toSnake(input)}).then(({ data }) => toCamel(data));
+  }
+
   async getProjects(input: GetProjectsInput): Promise<GetProjectsResult> {
     return axios.get(this.getBasePath() + "/get_projects", { params: toSnake(input)}).then(({ data }) => toCamel(data));
   }
@@ -2313,6 +2332,9 @@ export async function getProject(input: GetProjectInput) : Promise<GetProjectRes
 export async function getProjectCheckIn(input: GetProjectCheckInInput) : Promise<GetProjectCheckInResult> {
   return defaultApiClient.getProjectCheckIn(input);
 }
+export async function getProjectCheckIns(input: GetProjectCheckInsInput) : Promise<GetProjectCheckInsResult> {
+  return defaultApiClient.getProjectCheckIns(input);
+}
 export async function getProjects(input: GetProjectsInput) : Promise<GetProjectsResult> {
   return defaultApiClient.getProjects(input);
 }
@@ -2608,6 +2630,10 @@ export function useGetProject(input: GetProjectInput) : UseQueryHookResult<GetPr
 
 export function useGetProjectCheckIn(input: GetProjectCheckInInput) : UseQueryHookResult<GetProjectCheckInResult> {
   return useQuery<GetProjectCheckInResult>(() => defaultApiClient.getProjectCheckIn(input));
+}
+
+export function useGetProjectCheckIns(input: GetProjectCheckInsInput) : UseQueryHookResult<GetProjectCheckInsResult> {
+  return useQuery<GetProjectCheckInsResult>(() => defaultApiClient.getProjectCheckIns(input));
 }
 
 export function useGetProjects(input: GetProjectsInput) : UseQueryHookResult<GetProjectsResult> {
@@ -2941,6 +2967,8 @@ export default {
   useGetProject,
   getProjectCheckIn,
   useGetProjectCheckIn,
+  getProjectCheckIns,
+  useGetProjectCheckIns,
   getProjects,
   useGetProjects,
   getSpace,

@@ -14,7 +14,7 @@ export function groupCheckInsByMonth(checkIns: ProjectCheckIn[]): CheckInGroupBy
   const sorted = sortByDate(checkIns);
 
   sorted.forEach((update) => {
-    const date = Time.parseISO(update.insertedAt);
+    const date = Time.parseISO(update.insertedAt!);
     const year = date.getFullYear();
     const month = Time.getMonthName(date);
     const key = `${year}-${month}`;
@@ -37,8 +37,8 @@ export function groupCheckInsByMonth(checkIns: ProjectCheckIn[]): CheckInGroupBy
 
 function sortByDate(checkIns: ProjectCheckIn[]): ProjectCheckIn[] {
   return [...checkIns].sort((a, b) => {
-    const aDate = Time.parseISO(a.insertedAt);
-    const bDate = Time.parseISO(b.insertedAt);
+    const aDate = Time.parseISO(a.insertedAt!);
+    const bDate = Time.parseISO(b.insertedAt!);
 
     if (aDate > bDate) return -1;
     if (aDate < bDate) return 1;

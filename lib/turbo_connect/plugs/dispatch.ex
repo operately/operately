@@ -32,7 +32,9 @@ defmodule TurboConnect.Plugs.Dispatch do
     end
   rescue
     e -> 
-      Logger.error("\nErorr while processing #{conn.assigns.turbo_req_name} \n" <> Exception.format(:error, e, __STACKTRACE__))
+      Logger.error("\nErorr while processing #{conn.assigns.turbo_req_name} \n")
+      Logger.error(Exception.format_banner(:error, e))
+      Logger.error(Exception.format_stacktrace(__STACKTRACE__))
       send_resp(conn, 500, "Internal Server Error")
   end
 end
