@@ -1040,11 +1040,11 @@ export interface GetInvitationResult {
 
 
 export interface GetKeyResourcesInput {
-
+  id?: string | null;
 }
 
 export interface GetKeyResourcesResult {
-
+  keyResource?: ProjectKeyResource | null;
 }
 
 
