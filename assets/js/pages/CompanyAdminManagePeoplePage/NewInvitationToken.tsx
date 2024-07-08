@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import * as People from "@/models/people";
+import * as Companies from "@/models/companies";
 
 import { GhostButton } from "@/components/Button";
 import Modal from "@/components/Modal";
-import { InvitationUrl, createInvitationUrl } from "@/features/CompanyAdmin";
-import { useNewInvitationTokenMutation } from "@/gql";
+import { createInvitationUrl } from "@/features/CompanyAdmin";
 import { createTestId } from "@/utils/testid";
 
 export default function NewInvitationToken({ person }: { person: People.Person }) {
@@ -14,14 +14,7 @@ export default function NewInvitationToken({ person }: { person: People.Person }
   const [url, setUrl] = useState("");
   const [error, setError] = useState("");
 
-  const [create, { loading }] = useNewInvitationTokenMutation({
-    onCompleted: (res) => {
-      const result = createInvitationUrl(res["newInvitationToken"]["token"]);
-
-      setUrl(result);
-      setShowToken(true);
-    },
-  });
+  const [create, { loading }] = Companies.useNewInvitationToken();
 
   const handleHideModal = () => {
     setUrl("");
@@ -31,11 +24,11 @@ export default function NewInvitationToken({ person }: { person: People.Person }
 
   const handleTokenCreation = async () => {
     try {
-      await create({
-        variables: {
-          personId: person.id!,
-        },
-      });
+      const res = await create({ personId: person.id! });
+      const result = createInvitationUrl(res.invitation!.token!);
+
+      setUrl(result);
+      setShowToken(true);
     } catch (e) {
       if (e.message) {
         setError(e.message);
@@ -53,7 +46,7 @@ export default function NewInvitationToken({ person }: { person: People.Person }
       </GhostButton>
 
       <Modal title="New Invitation URL" isOpen={showToken} hideModal={handleHideModal} minHeight="120px">
-        {error ? <div>{error}</div> : <InvitationUrl url={url} />}
+        {error ? <div>{error}</div> : 1 / 0}
       </Modal>
     </>
   );

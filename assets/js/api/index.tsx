@@ -1274,7 +1274,7 @@ export interface AddCompanyAdminsResult {
 export interface AddCompanyMemberInput {
   fullName?: string | null;
   email?: string | null;
-  role?: string | null;
+  title?: string | null;
 }
 
 export interface AddCompanyMemberResult {

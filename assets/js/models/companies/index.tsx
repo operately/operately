@@ -11,6 +11,7 @@ export {
   useRemoveCompanyMember,
   useAddFirstCompany,
   useAddCompanyMember,
+  useNewInvitationToken,
 } from "@/api";
 
 export function hasFeature(company: Company, feature: string): boolean {

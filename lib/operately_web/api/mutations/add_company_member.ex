@@ -5,7 +5,7 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyMember do
   inputs do
     field :full_name, :string
     field :email, :string
-    field :role, :string
+    field :title, :string
   end
 
   outputs do
@@ -17,24 +17,32 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyMember do
     allowed = person.company_role == :admin
 
     if allowed do
-      {:ok, invitation} = Operately.Operations.CompanyMemberAdding.run(person, inputs)
+      invitation = create_invitation(person, inputs)
 
-      value = Operately.Invitations.InvitationToken.build_token()
-
-      {:ok, _} = Operately.Invitations.create_invitation_token!(%{
-        token: value,
-        invitation_id: invitation.id,
-      })
-
-      invitation = Repo.one(
-        from i in Operately.Invitations.Invitation,
-        where: i.id == ^invitation.id,
-        preload: [:company, :person, :token]
-      )
-
-      {:ok, %{invitation: OperatelyWeb.Api.Serializer.serialize(invitation, :full)}}
+      {:ok, %{invitation: OperatelyWeb.Api.Serializer.serialize(invitation, level: :full)}}
     else
-      {:error, "Only admins can add members"}
+      {:error, :bad_request, "Only admins can add members"}
     end
+  end
+
+  defp create_invitation(person, inputs) do
+    {:ok, invitation} = Operately.Operations.CompanyMemberAdding.run(person, inputs)
+
+    value = Operately.Invitations.InvitationToken.build_token()
+
+    {:ok, token} = Operately.Invitations.create_invitation_token!(%{
+      token: value,
+      invitation_id: invitation.id,
+    })
+
+    invitation = Repo.one(
+      from i in Operately.Invitations.Invitation,
+        where: i.id == ^invitation.id,
+        preload: [:member, :invitation_token, :admin]
+    )
+
+    # the token is a virtual field, so we need to update the struct after reaload
+    token = %{token | token: value}
+    %{invitation | invitation_token: token}
   end
 end

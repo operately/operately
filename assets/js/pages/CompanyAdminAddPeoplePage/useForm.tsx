@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import * as Companies from "@/models/companies";
 
 import { camelCaseToSpacedWords, snakeCaseToSpacedWords } from "@/utils/strings";
@@ -10,6 +10,7 @@ interface FormState {
   submitting: boolean;
   submit: () => Promise<boolean>;
   result: string;
+  reset: () => void;
 }
 
 interface FormFields {
@@ -41,7 +42,14 @@ export function useForm(): FormState {
     setTitle,
   };
 
-  const { submit, submitting, errors, result } = useSubmit(fields);
+  const { submit, submitting, errors, result, reset: submitReset } = useSubmit(fields);
+
+  const reset = useCallback(() => {
+    setFullName("");
+    setEmail("");
+    setTitle("");
+    submitReset();
+  }, []);
 
   return {
     fields,
@@ -49,6 +57,7 @@ export function useForm(): FormState {
     submit,
     errors,
     submitting,
+    reset,
   };
 }
 
@@ -67,7 +76,7 @@ function useSubmit(fields: FormFields) {
     }
 
     try {
-      const res = await add({ fullName: fields.fullName, email: fields.email, title: fields.title });
+      const res = await add({ fullName: fields.fullName, email: fields.email, title: fields.title! });
       const url = createInvitationUrl(res.invitation!.token!);
 
       setResult(url);
@@ -87,11 +96,17 @@ function useSubmit(fields: FormFields) {
     return true;
   };
 
+  const reset = useCallback(() => {
+    setErrors([]);
+    setResult("");
+  }, []);
+
   return {
     submit,
     submitting,
     errors,
     result,
+    reset,
   };
 }
 
