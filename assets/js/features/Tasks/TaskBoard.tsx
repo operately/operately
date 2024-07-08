@@ -7,6 +7,7 @@ import { DivLink } from "@/components/Link";
 import { insertAt } from "@/utils/array";
 import { DragAndDropProvider, useDraggable, useDropZone, useDragAndDropContext } from "@/features/DragAndDrop";
 import { Paths, compareIds } from "@/routes/paths";
+import { match } from "ts-pattern";
 
 interface TaskBoardState {
   todoTasks: Tasks.Task[];
@@ -196,8 +197,14 @@ function orderTasksByKanbanState(tasks: Tasks.Task[], kanbanState: any, status: 
   return tasks
     .filter((t) => t.status === status)
     .sort((a, b) => {
-      const aIndex = kanbanState[status].findIndex((id: string) => compareIds(id, a.id!)) || 0;
-      const bIndex = kanbanState[status].findIndex((id: string) => compareIds(id, b.id!)) || 0;
+      const column = match(status)
+        .with("todo", () => kanbanState.todo)
+        .with("in_progress", () => kanbanState.inProgress)
+        .with("done", () => kanbanState.done)
+        .otherwise(() => []);
+
+      const aIndex = column.findIndex((id: string) => compareIds(id, a.id!)) || 0;
+      const bIndex = column.findIndex((id: string) => compareIds(id, b.id!)) || 0;
 
       return aIndex - bIndex;
     });
