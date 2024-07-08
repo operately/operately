@@ -17,7 +17,7 @@ defmodule OperatelyWeb.Api.Mutations.RemoveCompanyMember do
       {:ok, person} = Operately.Operations.CompanyMemberRemoving.run(person, inputs.person_id)
       {:ok, %{person: Serializer.serialize(person)}}
     else
-      {:error, "Only admins can remove members"}
+      {:error, :bad_request, "Only admins can remove members"}
     end
   end
 end

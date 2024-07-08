@@ -17,11 +17,11 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
     setup :register_and_log_in_account
 
     test "when id is not provided", ctx do
-      assert {400, "Bad request"} = query(ctx.conn, :get_goal, %{})
+      assert query(ctx.conn, :get_goal, %{}) == bad_request_response()
     end
 
     test "when goal does not exist", ctx do
-      assert {404, "Not found"} = query(ctx.conn, :get_goal, %{id: Ecto.UUID.generate()})
+      assert query(ctx.conn, :get_goal, %{id: Ecto.UUID.generate()}) == not_found_response()
     end
 
     test "with no includes", ctx do

@@ -21,7 +21,7 @@ defmodule OperatelyWeb.Api.Mutations.AddFirstCompany do
       {:ok, company} = Operately.Operations.CompanyAdding.run(inputs, create_admin: true)
       {:ok, %{company: OperatelyWeb.Api.Serializer.serialize(company)}}
     else
-      {:error, nil}
+      {:error, :bad_request}
     end
   end
 end

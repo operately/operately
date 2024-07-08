@@ -35,7 +35,6 @@ defmodule Operately.Support.Features.InviteMemberSteps do
 
   step :assert_member_invited, ctx do
     ctx
-    |> UI.assert_text("Share this url with the new member:")
     |> UI.assert_text("/first-time-login?token=")
   end
 

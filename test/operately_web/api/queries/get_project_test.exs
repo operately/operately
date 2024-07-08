@@ -21,7 +21,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
       other_ctx = register_and_log_in_account(ctx)
       other_project = create_project(other_ctx, company_id: other_ctx.company.id, creator_id: other_ctx.person.id)
 
-      assert {404, "Not found"} = query(ctx.conn, :get_project, %{id: other_project.id})
+      assert query(ctx.conn, :get_project, %{id: other_project.id}) == not_found_response()
       assert {200, _} = query(ctx.conn, :get_project, %{id: project.id})
     end
   end
@@ -37,7 +37,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
     end
 
     test "returns 400 if id is not provided", ctx do
-      assert {400, "Bad request"} = query(ctx.conn, :get_project, %{})
+      assert query(ctx.conn, :get_project, %{}) == bad_request_response()
     end
 
     test "include_space", ctx do

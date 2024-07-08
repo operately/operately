@@ -18,10 +18,10 @@ defmodule OperatelyWeb.Api.Mutations.MarkNotificationsAsReadTest do
       n1 = notification_fixture(person_id: ctx.person.id, read: false, activity_id: a1.id)
 
       a2 = activity_fixture(author_id: someone_else.id)
-      n2 = notification_fixture(person_id: someone_else.id, read: false, activity_id: a1.id)
+      n2 = notification_fixture(person_id: someone_else.id, read: false, activity_id: a2.id)
 
       assert {200, %{}} = mutation(ctx.conn, :mark_notification_as_read, %{id: n1.id})
-      assert {404, "Not found"} = mutation(ctx.conn, :mark_notification_as_read, %{id: n2.id})
+      assert mutation(ctx.conn, :mark_notification_as_read, %{id: n2.id}) == not_found_response()
 
       assert Operately.Notifications.get_notification!(n1.id).read
       refute Operately.Notifications.get_notification!(n2.id).read

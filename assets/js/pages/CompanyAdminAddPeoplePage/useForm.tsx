@@ -81,16 +81,11 @@ function useSubmit(fields: FormFields) {
 
       setResult(url);
     } catch (e) {
-      const errors = e.graphQLErrors.map((error) => {
-        const name = snakeCaseToSpacedWords(error.field, { capitalizeFirst: true });
-
-        return {
-          field: error.field,
-          message: name + " " + error.message,
-        };
-      });
-
-      setErrors(errors);
+      if (e.response?.data?.message) {
+        setErrors([{ field: "email", message: e.response.data.message }]);
+      } else {
+        throw e;
+      }
     }
 
     return true;
