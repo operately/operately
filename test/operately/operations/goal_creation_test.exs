@@ -7,6 +7,7 @@ defmodule Operately.Operations.GoalCreationTest do
   import Operately.GroupsFixtures
 
   alias Operately.Access
+  alias Operately.Access.Binding
   alias Operately.Goals
   alias Operately.Activities.Activity
 
@@ -26,9 +27,12 @@ defmodule Operately.Operations.GoalCreationTest do
       reviewer_id: reviewer.id,
       timeframe: %{ type: "days", start_date: Date.utc_today(), end_date: Date.add(Date.utc_today(), 2) },
       targets: [ @target_attrs ],
+      company_access_level: Binding.comment_access(),
+      space_access_level: Binding.edit_access(),
+      anonymous_access_level: Binding.view_access(),
     }
 
-    {:ok, attrs: attrs, creator: creator}
+    {:ok, attrs: attrs, company: company, space: space, creator: creator, reviewer: reviewer, champion: champion}
   end
 
   test "GoalCreation operation creates goal and context", ctx do
@@ -54,6 +58,55 @@ defmodule Operately.Operations.GoalCreationTest do
     assert target.to == @target_attrs[:to]
     assert target.unit == @target_attrs[:unit]
     assert target.index == @target_attrs[:index]
+  end
+
+  test "GoalCreation operation creates bindings to company", ctx do
+    {:ok, goal} = Operately.Operations.GoalCreation.run(ctx.creator, ctx.attrs)
+
+    context = Access.get_context!(goal_id: goal.id)
+    full_access = Access.get_group!(company_id: ctx.company.id, tag: :full_access)
+    standard = Access.get_group!(company_id: ctx.company.id, tag: :standard)
+
+    assert Access.get_binding(context_id: context.id, group_id: full_access.id, access_level: Binding.full_access())
+    assert Access.get_binding(context_id: context.id, group_id: standard.id, access_level: Binding.comment_access())
+  end
+
+  test "GoalCreation operation creates bindings to space", ctx do
+    {:ok, goal} = Operately.Operations.GoalCreation.run(ctx.creator, ctx.attrs)
+
+    context = Access.get_context!(goal_id: goal.id)
+    full_access = Access.get_group!(group_id: ctx.space.id, tag: :full_access)
+    standard = Access.get_group!(group_id: ctx.space.id, tag: :standard)
+
+    assert Access.get_binding(context_id: context.id, group_id: full_access.id, access_level: Binding.full_access())
+    assert Access.get_binding(context_id: context.id, group_id: standard.id, access_level: Binding.edit_access())
+  end
+
+  test "GoalCreation operation doesn't create bindings to space when it's company space", ctx do
+    company_space_id = ctx.company.company_space_id
+    attrs = Map.merge(ctx.attrs, %{space_id: company_space_id})
+
+    {:ok, goal} = Operately.Operations.GoalCreation.run(ctx.creator, attrs)
+
+    context = Access.get_context!(goal_id: goal.id)
+    full_access = Access.get_group!(group_id: ctx.space.id, tag: :full_access)
+    standard = Access.get_group!(group_id: ctx.space.id, tag: :standard)
+
+    refute Access.get_binding(context_id: context.id, group_id: full_access.id)
+    refute Access.get_binding(context_id: context.id, group_id: standard.id)
+
+    refute Access.get_group(group_id: company_space_id)
+  end
+
+  test "GoalCreation operation creates bindings to reviewer and champion", ctx do
+    {:ok, goal} = Operately.Operations.GoalCreation.run(ctx.creator, ctx.attrs)
+
+    context = Access.get_context!(goal_id: goal.id)
+    reviewer_group = Access.get_group!(person_id: ctx.reviewer.id)
+    champion_group = Access.get_group!(person_id: ctx.champion.id)
+
+    assert Access.get_binding(context_id: context.id, group_id: reviewer_group.id, access_level: Binding.full_access())
+    assert Access.get_binding(context_id: context.id, group_id: champion_group.id, access_level: Binding.full_access())
   end
 
   test "GoalCreation operation creates activity and notification", ctx do
