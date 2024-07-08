@@ -1,7 +1,9 @@
 defmodule OperatelyWeb.Api do
   use TurboConnect.Api
 
-  plug OperatelyWeb.Api.Plugs.RequireAuthenticatedAccount
+  plug OperatelyWeb.Api.Plugs.RequireAuthenticatedAccount, except: [
+    {:mutation, :add_first_company}
+  ]
 
   use_types OperatelyWeb.Api.Types
 

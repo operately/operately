@@ -5,6 +5,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivities do
   alias Operately.Repo
   alias Operately.Activities.Activity
   alias Operately.Activities.Preloader
+  alias Operately.Companies.ShortId
 
   import Ecto.Query, only: [from: 2, limit: 2, preload: 2]
 
@@ -35,6 +36,12 @@ defmodule OperatelyWeb.Api.Queries.GetActivities do
       "space" -> 
         {:ok, id} = decode_id(scope_id)
         {:ok, scope_type, id}
+
+      "company" -> 
+        scope_id = id_without_comments(scope_id)
+        {:ok, id} = ShortId.decode(scope_id)
+        company = Operately.Repo.get_by(Operately.Companies.Company, short_id: id)
+        {:ok, scope_type, company.id}
 
       _ -> {:ok, scope_type, scope_id}
     end

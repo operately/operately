@@ -12,20 +12,23 @@ interface LoaderResult {
   activeFilter: Filter;
 }
 
-export async function loader({ request }): Promise<LoaderResult> {
+export async function loader({ params, request }): Promise<LoaderResult> {
   const searchParams = new URL(request.url).searchParams;
   const filter = parseFilter(searchParams);
 
+  const companyPromise = Companies.getCompany({ id: params.companyId }).then((d) => d.company!);
+  const projectsPromise = Projects.getProjects({
+    includeSpace: true,
+    includeContributors: true,
+    includeMilestones: true,
+    includeLastCheckIn: true,
+    onlyMyProjects: filter === "my-projects",
+    onlyReviewedByMe: filter === "reviewed-by-me",
+  }).then((data) => data.projects!);
+
   return {
-    company: await Companies.getCompany(),
-    projects: await Projects.getProjects({
-      includeSpace: true,
-      includeContributors: true,
-      includeMilestones: true,
-      includeLastCheckIn: true,
-      onlyMyProjects: filter === "my-projects",
-      onlyReviewedByMe: filter === "reviewed-by-me",
-    }).then((data) => data.projects!),
+    company: await companyPromise,
+    projects: await projectsPromise,
     activeFilter: filter,
   };
 }

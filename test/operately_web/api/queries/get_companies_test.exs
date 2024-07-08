@@ -23,9 +23,6 @@ defmodule OperatelyWeb.Api.Queries.GetCompaniesTest do
       add_as_admin(ctx.person, company1)
       add_as_admin(ctx.person, company2)
 
-      company1 = Operately.Repo.preload(company1, [:people])
-      company2 = Operately.Repo.preload(company2, [:people])
-
       person_fixture(company_id: company1.id)
       person_fixture(company_id: company1.id)
       person_fixture(company_id: company2.id)

@@ -7,10 +7,13 @@ interface LoaderResult {
   people: People.Person[];
 }
 
-export async function loader(): Promise<LoaderResult> {
+export async function loader({ params }): Promise<LoaderResult> {
+  const companyPromise = Companies.getCompany({ id: params.companyId }).then((d) => d.company!);
+  const peoplePromise = People.getPeople({}).then((d) => People.sortByName(d.people!));
+
   return {
-    company: await Companies.getCompany(),
-    people: await People.getPeople({}).then((data) => People.sortByName(data.people!)),
+    company: await companyPromise,
+    people: await peoplePromise,
   };
 }
 

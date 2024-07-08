@@ -15,7 +15,7 @@ defmodule OperatelyWeb.Api.Queries.GetPersonTest do
       company2 = company_fixture(name: "Company 2")
       person_from_other_company = person_fixture(%{company_id: company2.id})
 
-      assert {404, "Not found"} = query(ctx.conn, :get_person, %{id: person_from_other_company.id})
+      assert query(ctx.conn, :get_person, %{id: person_from_other_company.id}) == not_found_response()
     end
   end
 
