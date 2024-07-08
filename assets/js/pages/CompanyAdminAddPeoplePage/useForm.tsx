@@ -1,9 +1,8 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
+import * as Companies from "@/models/companies";
 
-import { useAddCompanyMemberMutation } from "@/gql";
 import { camelCaseToSpacedWords, snakeCaseToSpacedWords } from "@/utils/strings";
 import { createInvitationUrl } from "@/features/CompanyAdmin";
-
 
 interface FormState {
   fields: FormFields;
@@ -11,13 +10,14 @@ interface FormState {
   submitting: boolean;
   submit: () => Promise<boolean>;
   result: string;
+  reset: () => void;
 }
 
 interface FormFields {
   fullName: string;
   email: string;
   title: string;
-  
+
   setFullName: (value: string) => void;
   setEmail: (value: string) => void;
   setTitle: (value: string) => void;
@@ -34,12 +34,22 @@ export function useForm(): FormState {
   const [title, setTitle] = useState("");
 
   const fields = {
-    fullName, setFullName,
-    email, setEmail,
-    title, setTitle,
+    fullName,
+    setFullName,
+    email,
+    setEmail,
+    title,
+    setTitle,
   };
 
-  const { submit, submitting, errors, result } = useSubmit(fields);
+  const { submit, submitting, errors, result, reset: submitReset } = useSubmit(fields);
+
+  const reset = useCallback(() => {
+    setFullName("");
+    setEmail("");
+    setTitle("");
+    submitReset();
+  }, []);
 
   return {
     fields,
@@ -47,20 +57,15 @@ export function useForm(): FormState {
     submit,
     errors,
     submitting,
+    reset,
   };
 }
 
 function useSubmit(fields: FormFields) {
   const [errors, setErrors] = useState<FormError[]>([]);
   const [result, setResult] = useState("");
-  
-  const [add, { loading: submitting }] = useAddCompanyMemberMutation({
-    onCompleted: (res) => {
-      const url = createInvitationUrl(res['addCompanyMember']['token']);
-      
-      setResult(url);
-    },
-  });
+
+  const [add, { loading: submitting }] = Companies.useAddCompanyMember();
 
   const submit = async () => {
     const errors = validate(fields);
@@ -71,37 +76,32 @@ function useSubmit(fields: FormFields) {
     }
 
     try {
-      await add({
-        variables: {
-          input: {
-            fullName: fields.fullName,
-            email: fields.email,
-            title: fields.title,
-          },
-        },
-      });
-    }
-    catch (e) {
-      const errors = e.graphQLErrors.map((error) => {
-        const name = snakeCaseToSpacedWords(error.field, { capitalizeFirst: true });
+      const res = await add({ fullName: fields.fullName, email: fields.email, title: fields.title! });
+      const url = createInvitationUrl(res.invitation!.token!);
 
-        return {
-          field: error.field,
-          message: name + " " + error.message,
-        }
-      });
-
-      setErrors(errors);
+      setResult(url);
+    } catch (e) {
+      if (e.response?.data?.message) {
+        setErrors([{ field: "email", message: e.response.data.message }]);
+      } else {
+        throw e;
+      }
     }
 
     return true;
-  }
+  };
+
+  const reset = useCallback(() => {
+    setErrors([]);
+    setResult("");
+  }, []);
 
   return {
     submit,
     submitting,
     errors,
     result,
+    reset,
   };
 }
 
@@ -111,16 +111,16 @@ function validate(fields: FormFields): FormError[] {
   for (let key in fields) {
     const field = fields[key];
 
-    if(typeof field === "string" && !field.trim()) {
+    if (typeof field === "string" && !field.trim()) {
       const fieldName = camelCaseToSpacedWords(key, { capitalizeFirst: true });
       result.push({ field: key, message: `${fieldName} is required` });
     }
   }
-  
+
   if (!fields.email.includes("@")) {
     result.push({ field: "email", message: "Email must have the @ sign and no spaces" });
   }
-  
+
   if (fields.email.length > 160) {
     result.push({ field: "email", message: "Email must not have more than 160 characters" });
   }

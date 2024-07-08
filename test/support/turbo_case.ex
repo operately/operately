@@ -66,5 +66,13 @@ defmodule OperatelyWeb.TurboCase do
   defp request_path(name) when is_binary(name) do
     "/api/v2/#{name}"
   end
+
+  def bad_request_response do
+    {400, %{error: "Bad request", message: "The request was malformed"}}
+  end
+
+  def not_found_response do
+    {404, %{error: "Not found", message: "The requested resource was not found"}}
+  end
   
 end

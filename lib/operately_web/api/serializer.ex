@@ -414,7 +414,12 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Companies.Company do
     %{
       id: OperatelyWeb.Paths.company_id(company),
       name: company.name,
-      member_count: company.member_count
+      member_count: company.member_count,
+      trusted_email_domains: company.trusted_email_domains,
+      enabled_experimental_features: company.enabled_experimental_features,
+      company_space_id: company.company_space_id && Operately.ShortUuid.encode!(company.company_space_id),
+      admins: OperatelyWeb.Api.Serializer.serialize(company.admins),
+      people: OperatelyWeb.Api.Serializer.serialize(company.people),
     }
   end
 end
@@ -441,6 +446,18 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Tasks.Task do
       assignees: OperatelyWeb.Api.Serializer.serialize(task.assigned_people),
       milestone: OperatelyWeb.Api.Serializer.serialize(task.milestone),
       project: OperatelyWeb.Api.Serializer.serialize(task.project)
+    }
+  end
+end
+
+defimpl OperatelyWeb.Api.Serializable, for: Operately.Invitations.Invitation do
+  def serialize(inv, level: :full) do
+    %{
+      id: inv.id,
+      admin_name: inv.admin.full_name,
+      admin: OperatelyWeb.Api.Serializer.serialize(inv.admin),
+      member: OperatelyWeb.Api.Serializer.serialize(inv.member),
+      token: inv.invitation_token.token,
     }
   end
 end

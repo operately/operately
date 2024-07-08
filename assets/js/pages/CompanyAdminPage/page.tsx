@@ -15,7 +15,7 @@ export function Page() {
   const { company } = useLoadedData();
 
   return (
-    <Pages.Page title={[company.name, "Admininstration"]}>
+    <Pages.Page title={[company.name!, "Admininstration"]}>
       <Paper.Root size="small">
         <NavigationBackToLobby />
 

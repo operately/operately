@@ -2,39 +2,80 @@ import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 
-import { GhostButton } from "@/components/Button";
+import { FilledButton } from "@/components/Button";
 import { TextInputNoLabel } from "@/components/Form";
 
 import { useLoadedData } from "./loader";
 import { useForm } from "./useForm";
-import { InvitationUrl } from "@/features/CompanyAdmin";
 import { Paths } from "@/routes/paths";
+import { CopyToClipboard } from "@/components/CopyToClipboard";
 
 export function Page() {
   const { company } = useLoadedData();
+  const form = useForm();
 
   return (
-    <Pages.Page title={["Add People", company.name]}>
-      <Paper.Root size="small">
-        <Paper.Navigation>
-          <Paper.NavItem linkTo={Paths.companyAdminPath()}>Company Administration</Paper.NavItem>
-          <Paper.NavSeparator />
-          <Paper.NavItem linkTo={Paths.companyManagePeoplePath()} testId="manage-people-link">
-            Manage People
-          </Paper.NavItem>
-        </Paper.Navigation>
+    <Pages.Page title={["Invite new Member", company.name!]}>
+      {!form.result && (
+        <Paper.Root size="small">
+          <Navigation />
+          <Paper.Body minHeight="none">
+            <div className="text-content-accent text-2xl font-extrabold">Invite a new Member</div>
+            <PersonForm {...form} />
+          </Paper.Body>
 
-        <Paper.Body minHeight="none">
-          <div className="text-content-accent text-2xl font-extrabold">Add a new Member</div>
-          <PersonForm />
-        </Paper.Body>
-      </Paper.Root>
+          <div className="my-8 text-center px-20">
+            <span className="font-bold">What happens next?</span> You will get a invitation link to share with the new
+            member which will allow them to join your company. It will be valid for 24 hours.
+          </div>
+        </Paper.Root>
+      )}
+
+      {form.result && (
+        <Paper.Root size="medium">
+          <Navigation />
+          <Paper.Body minHeight="none">
+            <div className="text-content-accent text-2xl font-extrabold">
+              {form.fields.fullName} has been invited 🎉
+            </div>
+
+            <div className="mt-4">
+              Share this link with them to allow them to join your company.
+              <div className="mt-4 font-bold text-content-accent mb-1">Invitation Link</div>
+              <div className="text-content-primary border border-surface-outline rounded-lg px-3 py-1 font-medium flex items-center justify-between">
+                {form.result}
+
+                <CopyToClipboard text={form.result} size={25} padding={1} containerClass="" />
+              </div>
+            </div>
+
+            <div className="mt-2">This link will expire in 24 hours.</div>
+          </Paper.Body>
+
+          <div className="flex items-center gap-3 mt-8 justify-center">
+            <FilledButton onClick={form.reset} type="primary" size="base">
+              Invite Another Member
+            </FilledButton>
+          </div>
+        </Paper.Root>
+      )}
     </Pages.Page>
   );
 }
 
-function PersonForm() {
-  const { fields, result, submit, errors } = useForm();
+function Navigation() {
+  return (
+    <Paper.Navigation>
+      <Paper.NavItem linkTo={Paths.companyAdminPath()}>Company Administration</Paper.NavItem>
+      <Paper.NavSeparator />
+      <Paper.NavItem linkTo={Paths.companyManagePeoplePath()} testId="manage-people-link">
+        Manage People
+      </Paper.NavItem>
+    </Paper.Navigation>
+  );
+}
+
+function PersonForm({ fields, errors, submit, submitting }: ReturnType<typeof useForm>) {
   const managePeoplePath = Paths.companyManagePeoplePath();
 
   return (
@@ -87,16 +128,14 @@ function PersonForm() {
         </div>
       ))}
 
-      <InvitationUrl url={result} />
+      <div className="flex items-center gap-3 mt-8">
+        <FilledButton onClick={submit} type="primary" testId="submit" loading={submitting}>
+          Invite Member
+        </FilledButton>
 
-      <div className="flex items-center justify-end gap-2 mt-8">
-        <GhostButton linkTo={managePeoplePath} type="secondary">
-          Discard
-        </GhostButton>
-
-        <GhostButton onClick={submit} type="primary" testId="submit">
-          Add Member
-        </GhostButton>
+        <FilledButton linkTo={managePeoplePath} type="secondary">
+          Cancel
+        </FilledButton>
       </div>
     </div>
   );

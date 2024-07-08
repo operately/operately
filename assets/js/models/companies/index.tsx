@@ -1,14 +1,18 @@
-export type { Company } from "@/gql/generated";
+import * as api from "@/api";
 
-export { getCompany, useCompany } from "./getCompany";
-export { useAddTrustedEmailDomainMutation } from "./useAddTrustedEmailMutation";
-export { useRemoveTrustedEmailDomainMutation } from "./useRemoveTrustedEmailMutation";
-export { useRemoveAdminMutation } from "./useRemoveAdminMutation";
-export { useAddAdminsMutation } from "./useAddAdminsMutation";
-export { useRemoveMemberMutation } from "./useRemoveMemberMutation";
-export { useAddFirstCompanyMutation } from "./useAddFirstCompanyMutation";
+export type Company = api.Company;
 
-import { Company } from "@/gql/generated";
+export {
+  getCompany,
+  useAddCompanyTrustedEmailDomain,
+  useRemoveCompanyTrustedEmailDomain,
+  useRemoveCompanyAdmin,
+  useAddCompanyAdmins,
+  useRemoveCompanyMember,
+  useAddFirstCompany,
+  useAddCompanyMember,
+  useNewInvitationToken,
+} from "@/api";
 
 export function hasFeature(company: Company, feature: string): boolean {
   return company.enabledExperimentalFeatures!.includes(feature);

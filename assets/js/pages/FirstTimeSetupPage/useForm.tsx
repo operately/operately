@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { useAddFirstCompanyMutation } from "@/models/companies";
+import * as Companies from "@/models/companies";
 import { logIn } from "@/models/people";
 import { camelCaseToSpacedWords } from "@/utils/strings";
 
@@ -68,13 +68,7 @@ export function useForm(): FormState {
 function useSubmit(fields: FormFields) {
   const [errors, setErrors] = useState<FormError[]>([]);
 
-  const [add, { loading: submitting }] = useAddFirstCompanyMutation({
-    onCompleted: () => {
-      logIn(fields.email, fields.password).then(() => {
-        window.location.href = "/";
-      });
-    },
-  });
+  const [add, { loading: submitting }] = Companies.useAddFirstCompany();
 
   const submit = async () => {
     let errors = validate(fields);
@@ -95,6 +89,10 @@ function useSubmit(fields: FormFields) {
           passwordConfirmation: fields.passwordConfirmation,
         },
       },
+    });
+
+    logIn(fields.email, fields.password).then(() => {
+      window.location.href = "/";
     });
 
     return true;
