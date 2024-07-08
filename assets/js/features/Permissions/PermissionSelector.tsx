@@ -2,6 +2,7 @@ import React, { useEffect, useMemo } from "react";
 import PrivacyLevel from "./PrivacyLevel";
 import { AccessLevel, ResourceAccessLevel } from "./AccessLevel";
 import { ReducerActions, usePermissionsContext } from "./PermissionsContext";
+import { compareIds } from "@/routes/paths";
 
 
 export enum PermissionOptions {
@@ -34,7 +35,7 @@ export function SpacePermissionSelector() {
 export function ResourcePermissionSelector() {
   const { space, company, dispatch } = usePermissionsContext();
 
-  const companySpaceSelected = company.companySpaceId === space?.id;
+  const companySpaceSelected = (!company.companySpaceId || !space?.id) ? false : compareIds(company.companySpaceId, space.id);
 
   useEffect(() => {
     dispatch({type: ReducerActions.SET_SECRET});

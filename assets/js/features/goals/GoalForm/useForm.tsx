@@ -10,6 +10,8 @@ import { useNavigateTo } from "@/routes/useNavigateTo";
 import { useNavigate } from "react-router-dom";
 import { useListState } from "@/utils/useListState";
 import { Paths } from "@/routes/paths";
+import { Permissions } from "@/features/Permissions/PermissionsContext";
+
 
 export interface FormState {
   config: FormConfig;
@@ -17,7 +19,7 @@ export interface FormState {
   errors: Error[];
   submitting: boolean;
 
-  submit: () => Promise<boolean>;
+  submit: (permissions: Permissions) => Promise<boolean>;
   cancel: () => void;
 }
 
@@ -53,7 +55,7 @@ interface Fields {
   setParentGoal: (goal: Goals.Goal | null) => void;
 }
 
-interface SpaceOption {
+interface SpaceOption extends Spaces.Space {
   value: string;
   label: string;
 }
@@ -152,7 +154,7 @@ function useSpaces(config: FormConfig): [SpaceOption | null, (space: SpaceOption
     if (config.allowSpaceSelection || config.mode === "edit") {
       return null;
     } else {
-      return { value: config.space!.id!, label: config.space!.name! };
+      return { ...config.space, value: config.space!.id!, label: config.space!.name! };
     }
   });
 
@@ -160,9 +162,9 @@ function useSpaces(config: FormConfig): [SpaceOption | null, (space: SpaceOption
     if (config.mode === "edit") return [];
 
     if (config.allowSpaceSelection) {
-      const spaces = Spaces.sortSpaces(config.spaces!);
+      const spaces = Spaces.sortSpaces(config.spaces!) as Spaces.Space[];
 
-      return spaces.map((space) => ({ value: space.id!, label: space.name! }));
+      return spaces.map((space) => ({ ...space, value: space.id!, label: space.name! }));
     } else {
       return [];
     }
@@ -209,7 +211,7 @@ function newEmptyTarget() {
   };
 }
 
-function useSubmit(fields: Fields, config: FormConfig): [() => Promise<boolean>, () => void, boolean, Error[]] {
+function useSubmit(fields: Fields, config: FormConfig): [(permissions: Permissions) => Promise<boolean>, () => void, boolean, Error[]] {
   const navigate = useNavigate();
 
   const cancel = useNavigateTo(createCancelPath(config));
@@ -221,7 +223,7 @@ function useSubmit(fields: Fields, config: FormConfig): [() => Promise<boolean>,
 
   const [errors, setErrors] = React.useState<Error[]>([]);
 
-  const submit = async () => {
+  const submit = async (permissions: Permissions) => {
     const errors = validateForm(fields, config);
 
     if (errors.length > 0) {
@@ -247,11 +249,15 @@ function useSubmit(fields: Fields, config: FormConfig): [() => Promise<boolean>,
             unit: t.unit,
             index: index,
           })),
+        anonymousAccessLevel: permissions.public,
+        companyAccessLevel: permissions.company,
+        spaceAccessLevel: permissions.space,
       });
 
       navigate(Paths.goalPath(res.goal.id!));
       return true;
-    } else {
+    }
+    else {
       const res = await edit({
         goalId: config.goal!.id,
         name: fields.name,
