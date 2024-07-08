@@ -1,9 +1,8 @@
 import * as api from "@/api";
+
 export type Company = api.Company;
 
-export const useCompany = {};
-
-export { useGetCompany, getCompany } from "@/api";
+export { getCompany } from "@/api";
 
 export { useAddTrustedEmailDomainMutation } from "./useAddTrustedEmailMutation";
 export { useRemoveTrustedEmailDomainMutation } from "./useRemoveTrustedEmailMutation";

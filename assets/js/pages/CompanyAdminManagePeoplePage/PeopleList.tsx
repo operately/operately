@@ -1,12 +1,10 @@
-import React from "react";
+import * as React from "react";
+import * as People from "@/models/people";
 
 import { useLoadedData } from "./loader";
-import { Person } from "@/gql";
 import Avatar from "@/components/Avatar";
 import RemoveMember from "./RemoveMember";
 import NewInvitationToken from "./NewInvitationToken";
-
-
 
 export function PeopleList() {
   const { company } = useLoadedData();
@@ -20,7 +18,7 @@ export function PeopleList() {
   );
 }
 
-function PersonRow({ person }: { person: Person }) {
+function PersonRow({ person }: { person: People.Person }) {
   return (
     <div className="flex flex-col gap-4 items-center border border-stroke-base rounded-lg p-4 py-6">
       <Avatar person={person} size="xlarge" />

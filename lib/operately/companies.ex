@@ -1,6 +1,5 @@
 defmodule Operately.Companies do
   import Ecto.Query, warn: false
-  alias Operately.Companies.ShortId
   alias Operately.Repo
 
   alias Operately.Companies.Company

@@ -14,7 +14,7 @@ export function Page() {
   const { company } = useLoadedData();
 
   return (
-    <Pages.Page title={["Add People", company.name]}>
+    <Pages.Page title={["Add People", company.name!]}>
       <Paper.Root size="small">
         <Paper.Navigation>
           <Paper.NavItem linkTo={Paths.companyAdminPath()}>Company Administration</Paper.NavItem>

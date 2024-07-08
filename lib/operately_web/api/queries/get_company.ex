@@ -4,6 +4,7 @@ defmodule OperatelyWeb.Api.Queries.GetCompany do
 
   alias OperatelyWeb.Api.Serializer
   alias Operately.Companies.ShortId
+  alias Operately.Companies.Company
 
   inputs do
     field :id, :string
@@ -23,7 +24,7 @@ defmodule OperatelyWeb.Api.Queries.GetCompany do
 
         case company do
           nil -> {:error, :not_found}
-          company -> {:ok, Serializer.serialize(company, level: :full)}
+          company -> {:ok, %{company: Serializer.serialize(company, level: :full)}}
         end
       e -> e
     end
@@ -52,8 +53,8 @@ defmodule OperatelyWeb.Api.Queries.GetCompany do
   def include_requested(query, requested) do
     Enum.reduce(requested, query, fn include, q ->
       case include do
-        :include_admins -> from c in q, preload: [admins: :person]
-        :include_people -> from c in q, preload: [people: :person]
+        :include_admins -> from c in q, preload: [:admins]
+        :include_people -> from c in q, preload: [:people]
         _ -> raise ArgumentError, "Unknown include filter: #{inspect(include)}"
       end
     end)

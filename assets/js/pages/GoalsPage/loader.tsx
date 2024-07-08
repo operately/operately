@@ -9,8 +9,8 @@ interface LoaderResult {
   projects: Projects.Project[];
 }
 
-export async function loader(): Promise<LoaderResult> {
-  const companyPromise = Companies.getCompany();
+export async function loader({ params }): Promise<LoaderResult> {
+  const companyPromise = Companies.getCompany({ id: params.companyId }).then((data) => data.company!);
 
   const goalsPromise = Goals.getGoals({
     includeTargets: true,

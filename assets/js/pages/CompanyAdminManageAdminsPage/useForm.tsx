@@ -1,14 +1,13 @@
 import * as React from "react";
 import * as People from "@/models/people";
-import { Company } from "@/gql/generated";
-import { useRefresh, useLoadedData } from "./loader";
-
 import * as Companies from "@/models/companies";
+
+import { useRefresh, useLoadedData } from "./loader";
 import { useMe } from "@/contexts/CurrentUserContext";
 
 export interface FormState {
   me: People.Person;
-  company: Company;
+  company: Companies.Company;
 
   addAdmins: (peopleIds: string[]) => Promise<void>;
   removeAdmin: (personId: string) => Promise<void>;
