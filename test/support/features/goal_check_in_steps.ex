@@ -1,6 +1,7 @@
 defmodule Operately.Support.Features.GoalCheckInSteps do
   use Operately.FeatureCase
 
+  alias Operately.Access.Binding
   alias Operately.Support.Features.UI
   alias Operately.Support.Features.FeedSteps
   alias Operately.Support.Features.EmailSteps
@@ -42,7 +43,10 @@ defmodule Operately.Support.Features.GoalCheckInSteps do
           unit: "percent",
           index: 1
         }
-      ]
+      ],
+      company_access_level: Binding.comment_access(),
+      space_access_level: Binding.edit_access(),
+      anonymous_access_level: Binding.view_access(),
     })
 
     ctx = Map.merge(ctx, %{company: company, champion: champion, reviewer: reviewer, group: group, goal: goal})
@@ -83,8 +87,8 @@ defmodule Operately.Support.Features.GoalCheckInSteps do
     ctx
     |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.goal.name,
-      to: ctx.reviewer, 
-      author: ctx.champion, 
+      to: ctx.reviewer,
+      author: ctx.champion,
       action: "updated the progress"
     })
   end
@@ -94,7 +98,7 @@ defmodule Operately.Support.Features.GoalCheckInSteps do
     |> UI.login_as(ctx.reviewer)
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.assert_activity_notification(%{
-      author: ctx.champion, 
+      author: ctx.champion,
       action: "updated the progress"
     })
   end
