@@ -45,7 +45,6 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Types.Updates
 
   # Queries
-  import_types OperatelyWeb.Graphql.Queries.Companies
   import_types OperatelyWeb.Graphql.Queries.Invitations
   import_types OperatelyWeb.Graphql.Queries.Updates
 
@@ -62,7 +61,6 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Subscriptions.Notifications
 
   query do
-    import_fields :company_queries
     import_fields :invitation_queries
     import_fields :update_queries
   end

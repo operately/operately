@@ -29,16 +29,6 @@ defmodule Operately.Companies do
   def get_company!(id), do: Repo.get!(Company, id)
   def get_company_by_name(name), do: Repo.get_by(Company, name: name)
 
-  def get_company_by_short_id(person = %Person{} = person, short_id) do
-    case ShortId.decode(short_id) do
-      {:ok, short_id} ->
-        query = from c in Company, join: p in assoc(c, :people), where: c.short_id == ^short_id and p.id == ^person.id
-        Repo.one(query)
-      :error ->
-        nil
-    end
-  end
-
   defdelegate create_company(attrs \\ %{}),to: Operately.Operations.CompanyAdding, as: :run
 
   def update_company(%Company{} = company, attrs) do

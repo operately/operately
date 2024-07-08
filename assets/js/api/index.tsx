@@ -950,6 +950,8 @@ export interface GetCompaniesResult {
 
 export interface GetCompanyInput {
   id?: string | null;
+  includeAdmins?: boolean | null;
+  includePeople?: boolean | null;
 }
 
 export interface GetCompanyResult {

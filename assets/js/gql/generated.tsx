@@ -668,15 +668,9 @@ export type RootMutationTypeUpdateProjectDescriptionArgs = {
 
 export type RootQueryType = {
   __typename?: 'RootQueryType';
-  company: Company;
   invitation: Invitation;
   update: Update;
   updates: Array<Maybe<Update>>;
-};
-
-
-export type RootQueryTypeCompanyArgs = {
-  id: Scalars['ID']['input'];
 };
 
 
