@@ -30,8 +30,9 @@ export default function NewInvitationToken({ person }: { person: People.Person }
       setUrl(result);
       setShowToken(true);
     } catch (e) {
-      if (e.message) {
-        setError(e.message);
+      console.log(e.response?.data);
+      if (e.response?.data?.message) {
+        setError(e.response.data.message);
       } else {
         setError("There was an unexpected error. Please try again.");
       }
@@ -46,7 +47,7 @@ export default function NewInvitationToken({ person }: { person: People.Person }
       </GhostButton>
 
       <Modal title="New Invitation URL" isOpen={showToken} hideModal={handleHideModal} minHeight="120px">
-        {error ? <div>{error}</div> : 1 / 0}
+        {error ? <div>{error}</div> : <div>{url}</div>}
       </Modal>
     </>
   );
