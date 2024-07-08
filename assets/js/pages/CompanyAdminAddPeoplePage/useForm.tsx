@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import * as Companies from "@/models/companies";
 
-import { camelCaseToSpacedWords, snakeCaseToSpacedWords } from "@/utils/strings";
+import { camelCaseToSpacedWords } from "@/utils/strings";
 import { createInvitationUrl } from "@/features/CompanyAdmin";
 
 interface FormState {
