@@ -1569,6 +1569,9 @@ export interface EditGoalInput {
   addedTargets?: CreateTargetInput[] | null;
   updatedTargets?: UpdateTargetInput[] | null;
   description?: string | null;
+  anonymousAccessLevel?: number | null;
+  companyAccessLevel?: number | null;
+  spaceAccessLevel?: number | null;
 }
 
 export interface EditGoalResult {
