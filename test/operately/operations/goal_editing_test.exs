@@ -7,6 +7,8 @@ defmodule Operately.Operations.GoalEditingTest do
   import Operately.GroupsFixtures
   import Operately.GoalsFixtures
 
+  alias Operately.Access
+  alias Operately.Access.Binding
   alias Operately.Goals
   alias Operately.Activities.Activity
 
@@ -40,12 +42,15 @@ defmodule Operately.Operations.GoalEditingTest do
       timeframe: %{ type: "days", start_date: Date.utc_today(), end_date: Date.add(Date.utc_today(), 2) },
       added_targets: [ %{ name: "new target", from: 30, to: 15, unit: "minutes", index: 1 } ],
       updated_targets: [],
+      company_access_level: Binding.view_access(),
+      space_access_level: Binding.comment_access(),
+      anonymous_access_level: Binding.no_access(),
     }
 
     {:ok, attrs: attrs, company: company, space: space, goal: goal, creator: creator, champion: champion, reviewer: reviewer}
   end
 
-  test "GoalEditing operation edits goal", ctx do
+  test "GoalEditing operation updates goal", ctx do
     assert ctx.goal.name == "some name"
     assert ctx.goal.champion_id == ctx.creator.id
     assert ctx.goal.reviewer_id == ctx.creator.id
@@ -67,6 +72,35 @@ defmodule Operately.Operations.GoalEditingTest do
     assert goal.reviewer_id == ctx.reviewer.id
     assert length(Goals.list_targets(goal.id)) == 2
     assert target.name == "updated target"
+  end
+
+  test "GoalEditing operation updates goal's bindings to company", ctx do
+    context = Access.get_context!(goal_id: ctx.goal.id)
+    standard = Access.get_group!(company_id: ctx.company.id, tag: :standard)
+    anonymous = Access.get_group!(company_id: ctx.company.id, tag: :anonymous)
+
+    assert Access.get_binding(context_id: context.id, group_id: standard.id, access_level: Binding.comment_access())
+    assert Access.get_binding(context_id: context.id, group_id: anonymous.id, access_level: Binding.view_access())
+
+    Operately.Operations.GoalEditing.run(ctx.creator, ctx.goal, ctx.attrs)
+
+    refute Access.get_binding(context_id: context.id, group_id: standard.id, access_level: Binding.comment_access())
+    refute Access.get_binding(context_id: context.id, group_id: anonymous.id, access_level: Binding.view_access())
+
+    assert Access.get_binding(context_id: context.id, group_id: standard.id, access_level: Binding.view_access())
+    assert Access.get_binding(context_id: context.id, group_id: anonymous.id, access_level: Binding.no_access())
+  end
+
+  test "GoalEditing operation updates goal's bindings to space", ctx do
+    context = Access.get_context!(goal_id: ctx.goal.id)
+    standard = Access.get_group!(group_id: ctx.space.id, tag: :standard)
+
+    assert Access.get_binding(context_id: context.id, group_id: standard.id, access_level: Binding.edit_access())
+
+    Operately.Operations.GoalEditing.run(ctx.creator, ctx.goal, ctx.attrs)
+
+    refute Access.get_binding(context_id: context.id, group_id: standard.id, access_level: Binding.edit_access())
+    assert Access.get_binding(context_id: context.id, group_id: standard.id, access_level: Binding.comment_access())
   end
 
   test "GoalEditing operation creates activity and notification", ctx do

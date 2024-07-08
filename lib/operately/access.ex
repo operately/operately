@@ -145,6 +145,48 @@ defmodule Operately.Access do
     end
   end
 
+  def update_bindings_to_company(multi, company_id, members_access_level, anonymous_access_level) do
+    standard = get_group!(company_id: company_id, tag: :standard)
+
+    multi
+    |> update_or_insert_binding(:company_members_binding, standard, members_access_level)
+    |> maybe_update_anonymous_binding(company_id, anonymous_access_level)
+  end
+
+  def update_bindings_to_space(multi, space_id, members_access_level) do
+    standard = get_group!(group_id: space_id, tag: :standard)
+
+    multi
+    |> update_or_insert_binding(:space_members_binding, standard, members_access_level)
+  end
+
+  def update_or_insert_binding(multi, name, access_group, access_level) do
+    multi
+    |> Multi.run(name, fn repo, %{context: context} ->
+      case get_binding(context_id: context.id, group_id: access_group.id) do
+        nil ->
+          Binding.changeset(%{
+            context_id: context.id,
+            group_id: access_group.id,
+            access_level: access_level,
+          })
+          |> repo.insert()
+
+        binding ->
+          Binding.changeset(binding, %{access_level: access_level})
+          |> repo.update()
+      end
+    end)
+  end
+
+  def maybe_update_anonymous_binding(multi, company_id, access_level) do
+    if access_level == Binding.view_access() or access_level == Binding.no_access() do
+      anonymous = get_group!(company_id: company_id, tag: :anonymous)
+      update_or_insert_binding(multi, :anonymous_binding, anonymous, access_level)
+    else
+      multi
+    end
+  end
 
   alias Operately.Access.GroupMembership
 
