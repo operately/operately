@@ -79,16 +79,12 @@ function useSubmit(fields: FormFields) {
     }
 
     await add({
-      variables: {
-        input: {
-          companyName: fields.companyName,
-          fullName: fields.fullName,
-          email: fields.email,
-          role: fields.role,
-          password: fields.password,
-          passwordConfirmation: fields.passwordConfirmation,
-        },
-      },
+      companyName: fields.companyName,
+      fullName: fields.fullName,
+      email: fields.email,
+      role: fields.role,
+      password: fields.password,
+      passwordConfirmation: fields.passwordConfirmation,
     });
 
     logIn(fields.email, fields.password).then(() => {
