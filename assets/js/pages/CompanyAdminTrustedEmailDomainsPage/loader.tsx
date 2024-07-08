@@ -5,9 +5,9 @@ interface LoaderResult {
   company: Companies.Company;
 }
 
-export async function loader(): Promise<LoaderResult> {
+export async function loader({ params }): Promise<LoaderResult> {
   return {
-    company: await Companies.getCompany({ include: ["admins"] }),
+    company: await Companies.getCompany({ id: params.companyId, includePeople: true }).then((d) => d.company!),
   };
 }
 

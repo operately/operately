@@ -1,15 +1,15 @@
 defmodule OperatelyWeb.Api.Mutations.AddCompanyAdmins do
   use TurboConnect.Mutation
+  use OperatelyWeb.Api.Helpers
 
   inputs do
-    # TODO: Define input fields
+    field :people_ids, list_of(:string)
   end
 
-  outputs do
-    # TODO: Define output fields
-  end
+  def call(conn, inputs) do
+    {:ok, ids} = decode_id(inputs.people_ids)
+    Operately.Companies.add_admins(me(conn), ids)
 
-  def call(_conn, _inputs) do
-    raise "Not implemented"
+    {:ok, %{}}
   end
 end

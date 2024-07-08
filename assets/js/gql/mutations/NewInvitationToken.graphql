@@ -1,6 +1,0 @@
-mutation NewInvitationToken($personId: ID!) {
-  newInvitationToken(personId: $personId) {
-    id
-    token
-  }
-}

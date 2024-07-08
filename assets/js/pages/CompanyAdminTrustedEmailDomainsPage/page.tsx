@@ -15,7 +15,7 @@ export function Page() {
   const form = useForm({ company });
 
   return (
-    <Pages.Page title={["Trusted Email Domains", company.name]}>
+    <Pages.Page title={["Trusted Email Domains", company.name!]}>
       <Paper.Root size="small">
         <Paper.Navigation>
           <Paper.NavItem linkTo={Paths.companyAdminPath()}>Company Administration</Paper.NavItem>

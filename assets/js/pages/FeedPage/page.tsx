@@ -23,7 +23,7 @@ export function Page() {
 
 function CompanyFeed() {
   const { company } = useLoadedData();
-  const { data, loading, error } = useItemsQuery("company", company.id);
+  const { data, loading, error } = useItemsQuery("company", company.id!);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error</div>;
