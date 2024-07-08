@@ -7,7 +7,7 @@ import { FilledButton } from "@/components/Button";
 import { useLoadedData } from "./loader";
 import { FormState, useForm, Form } from "@/features/goals/GoalForm";
 import { useMe } from "@/contexts/CurrentUserContext";
-import { PermissionsProvider } from "@/features/Permissions/PermissionsContext";
+import { PermissionsProvider, usePermissionsContext } from "@/features/Permissions/PermissionsContext";
 
 
 export function Page() {
@@ -38,6 +38,12 @@ export function Page() {
 }
 
 function Header({ form }: { form: FormState }) {
+  const { permissions } = usePermissionsContext();
+
+  const handleSubmit = () => {
+    form.submit(permissions);
+  }
+
   return (
     <Paper.Header className="bg-surface-dimmed">
       <div className="flex items-end justify-between my-2">
@@ -50,7 +56,7 @@ function Header({ form }: { form: FormState }) {
 
           <FilledButton
             type="primary"
-            onClick={form.submit}
+            onClick={handleSubmit}
             loading={form.submitting}
             size="sm"
             testId="save-changes"

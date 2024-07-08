@@ -1,6 +1,7 @@
 defmodule Operately.Operations.GoalEditing do
   alias Ecto.Multi
   alias Operately.Repo
+  alias Operately.Access
   alias Operately.Activities
   alias Operately.Goals.{Goal, Target}
 
@@ -10,6 +11,8 @@ defmodule Operately.Operations.GoalEditing do
     Multi.new()
     |> update_goal(goal, attrs)
     |> update_targets(goal, targets, attrs)
+    |> fetch_context()
+    |> update_bindings(goal, attrs)
     |> insert_activity(author, goal, targets)
     |> Repo.transaction()
     |> Repo.extract_result(:goal)
@@ -53,6 +56,19 @@ defmodule Operately.Operations.GoalEditing do
     multi
   end
 
+  defp fetch_context(multi) do
+    multi
+    |> Multi.run(:context, fn _, changes ->
+      {:ok, Access.get_context!(goal_id: changes.goal.id)}
+    end)
+  end
+
+  defp update_bindings(multi, goal, attrs) do
+    multi
+    |> Access.update_bindings_to_company(goal.company_id, attrs.company_access_level, attrs.anonymous_access_level)
+    |> Access.update_bindings_to_space(goal.group_id, attrs.space_access_level)
+  end
+
   defp insert_activity(multi, author, goal, targets) do
     Activities.insert_sync(multi, author.id, :goal_editing, fn changes ->
       %{
@@ -89,7 +105,7 @@ defmodule Operately.Operations.GoalEditing do
   defp serialize_updated_targets(targets, changes) do
     changes
     |> Enum.filter(fn {key, _} -> is_binary(key) && String.starts_with?(key, "updated_target_") end)
-    |> Enum.map(fn {_, target} -> 
+    |> Enum.map(fn {_, target} ->
       old = Enum.find(targets, fn t -> t.id == target.id end)
 
       %{
@@ -104,14 +120,14 @@ defmodule Operately.Operations.GoalEditing do
         new_unit: target.unit,
         old_index: old.index,
         new_index: target.index,
-      } 
+      }
     end)
   end
 
   defp serialize_deleted_targets(changes) do
     changes
     |> Enum.filter(fn {key, _} -> is_binary(key) && String.starts_with?(key, "deleted_target_") end)
-    |> Enum.map(fn {_, target} -> 
+    |> Enum.map(fn {_, target} ->
       %{
         id: target.id,
         name: target.name,
@@ -119,7 +135,7 @@ defmodule Operately.Operations.GoalEditing do
         to: target.to,
         unit: target.unit,
         index: target.index,
-      } 
+      }
     end)
   end
 end
