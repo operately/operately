@@ -1,15 +1,24 @@
 defmodule OperatelyWeb.Api.Mutations.RemoveCompanyTrustedEmailDomain do
   use TurboConnect.Mutation
+  use OperatelyWeb.Api.Helpers
 
   inputs do
-    # TODO: Define input fields
+    field :company_id, :string
+    field :domain, :string
   end
 
   outputs do
-    # TODO: Define output fields
+    field :company, :company
   end
 
-  def call(_conn, _inputs) do
-    raise "Not implemented"
+  def call(conn, inputs) do
+    {:ok, id} = decode_company_id(inputs.company_id)
+
+    person = me(conn)
+    company = Operately.Companies.get_company!(id)
+    domain = inputs.domain
+
+    {:ok, company} = Operately.Companies.remove_trusted_email_domain(company, person, domain)
+    {:ok, %{company: OperatelyWeb.Api.Serializer.serialize(company)}}
   end
 end

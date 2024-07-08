@@ -449,3 +449,15 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Tasks.Task do
     }
   end
 end
+
+defimpl OperatelyWeb.Api.Serializable, for: Operately.Invitations.Invitation do
+  def serialize(inv, level: :full) do
+    %{
+      id: inv.id,
+      admin_name: inv.admin_name,
+      admin: OperatelyWeb.Api.Serializer.serialize(inv.admin),
+      member: OperatelyWeb.Api.Serializer.serialize(inv.member),
+      token: inv.token.token,
+    }
+  end
+end

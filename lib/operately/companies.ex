@@ -25,7 +25,14 @@ defmodule Operately.Companies do
     Repo.all(from t in Tenet, where: t.company_id == ^id)
   end
 
-  def get_company!(id), do: Repo.get!(Company, id)
+  def get_company!(id) when is_integer(id) do
+    Repo.get_by!(Company, short_id: id)
+  end
+
+  def get_company!(id) when is_binary(id) do
+    Repo.get_by!(Company, id: id)
+  end
+
   def get_company_by_name(name), do: Repo.get_by(Company, name: name)
 
   defdelegate create_company(attrs \\ %{}),to: Operately.Operations.CompanyAdding, as: :run

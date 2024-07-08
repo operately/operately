@@ -12,37 +12,26 @@ export interface FormState {
 export function useForm({ company }): FormState {
   const refresh = useRefresh();
 
-  const [add] = Companies.useAddTrustedEmailDomainMutation({
-    onCompleted: () => refresh(),
-  });
-
-  const [remove] = Companies.useRemoveTrustedEmailDomainMutation({
-    onCompleted: () => refresh(),
-  });
+  const [add] = Companies.useAddCompanyTrustedEmailDomain();
+  const [remove] = Companies.useRemoveCompanyTrustedEmailDomain();
 
   const addDomain = React.useCallback(
     async (domain: string) => {
       if (domain.length === 0) return;
       if (company.trustedEmailDomains!.includes(domain)) return;
 
-      await add({
-        variables: {
-          companyID: company.id,
-          domain,
-        },
-      });
+      await add({ companyId: company.id, domain });
+
+      refresh();
     },
     [company],
   );
 
   const removeDomain = React.useCallback(
     async (domain: string) => {
-      await remove({
-        variables: {
-          companyID: company.id,
-          domain,
-        },
-      });
+      await remove({ companyId: company.id, domain });
+
+      refresh();
     },
     [company],
   );

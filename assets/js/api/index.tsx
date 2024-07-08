@@ -1263,7 +1263,7 @@ export interface AcknowledgeProjectCheckInResult {
 
 
 export interface AddCompanyAdminsInput {
-
+  peopleIds?: string[] | null;
 }
 
 export interface AddCompanyAdminsResult {
@@ -1272,29 +1272,37 @@ export interface AddCompanyAdminsResult {
 
 
 export interface AddCompanyMemberInput {
-
+  fullName?: string | null;
+  email?: string | null;
+  role?: string | null;
 }
 
 export interface AddCompanyMemberResult {
-
+  invitation?: Invitation | null;
 }
 
 
 export interface AddCompanyTrustedEmailDomainInput {
-
+  companyId?: string | null;
+  domain?: string | null;
 }
 
 export interface AddCompanyTrustedEmailDomainResult {
-
+  company?: Company | null;
 }
 
 
 export interface AddFirstCompanyInput {
-
+  companyName?: string | null;
+  fullName?: string | null;
+  email?: string | null;
+  role?: string | null;
+  password?: string | null;
+  passwordConfirmation?: string | null;
 }
 
 export interface AddFirstCompanyResult {
-
+  company?: Company | null;
 }
 
 
@@ -1663,7 +1671,7 @@ export interface NewInvitationTokenInput {
 }
 
 export interface NewInvitationTokenResult {
-
+  invitation?: Invitation | null;
 }
 
 
@@ -1706,29 +1714,30 @@ export interface PostProjectCheckInResult {
 
 
 export interface RemoveCompanyAdminInput {
-
+  personId?: string | null;
 }
 
 export interface RemoveCompanyAdminResult {
-
+  person?: Person | null;
 }
 
 
 export interface RemoveCompanyMemberInput {
-
+  personId?: string | null;
 }
 
 export interface RemoveCompanyMemberResult {
-
+  person?: Person | null;
 }
 
 
 export interface RemoveCompanyTrustedEmailDomainInput {
-
+  companyId?: string | null;
+  domain?: string | null;
 }
 
 export interface RemoveCompanyTrustedEmailDomainResult {
-
+  company?: Company | null;
 }
 
 

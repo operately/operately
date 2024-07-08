@@ -59,6 +59,20 @@ defmodule OperatelyWeb.Api.Helpers do
     parts <> "-" <> id
   end
 
+  def decode_company_id(id) do
+    id_without_comments(id) 
+    |> Operately.Companies.ShortId.decode()
+  end
+
+  def decode_id(ids) when is_list(ids) do
+    Enum.reduce(ids, {:ok, []}, fn id, {:ok, acc} ->
+      case decode_id(id) do
+        {:ok, id} -> {:ok, [id | acc]}
+        e -> e
+      end
+    end)
+  end
+
   def decode_id(id) do
     require Logger
 

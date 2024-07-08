@@ -1,6 +1,0 @@
-mutation AddCompanyMember($input: AddCompanyMemberInput!) {
-  addCompanyMember(input: $input) {
-    id
-    token
-  }
-}

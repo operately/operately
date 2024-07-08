@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import * as People from "@/models/people";
+import * as Companies from "@/models/companies";
 import { useNavigate } from "react-router-dom";
 
-import { useRemoveMemberMutation } from "@/models/companies";
 import { createTestId } from "@/utils/testid";
 import { FilledButton, GhostButton } from "@/components/Button";
 import Modal from "@/components/Modal";
@@ -12,16 +12,12 @@ export default function RemoveMember({ person }: { person: People.Person }) {
   const [showRemoveMember, setShowRemoveMember] = useState(false);
 
   const navigate = useNavigate();
-  const [remove, { loading }] = useRemoveMemberMutation({
-    onCompleted: () => {
-      navigate(0);
-    },
-  });
+  const [remove, { loading }] = Companies.useRemoveCompanyMember();
 
   const handleRemoveMember = async () => {
-    await remove({
-      variables: { personId: person.id },
-    });
+    await remove({ personId: person.id });
+
+    navigate(0);
   };
 
   return (

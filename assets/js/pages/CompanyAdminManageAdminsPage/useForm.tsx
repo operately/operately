@@ -30,31 +30,21 @@ export function useFrom(): FormState {
 function useRemoveAdmin() {
   const refresh = useRefresh();
 
-  const [remove] = Companies.useRemoveAdminMutation({
-    onCompleted: refresh,
-  });
+  const [remove] = Companies.useRemoveCompanyAdmin();
 
   return React.useCallback(async (personId: string) => {
-    await remove({
-      variables: {
-        personId,
-      },
-    });
+    await remove({ personId });
+    refresh();
   }, []);
 }
 
 function useAddAdmins() {
   const refresh = useRefresh();
 
-  const [remove] = Companies.useAddAdminsMutation({
-    onCompleted: refresh,
-  });
+  const [remove] = Companies.useAddCompanyAdmins();
 
   return React.useCallback(async (peopleIds: string[]) => {
-    await remove({
-      variables: {
-        peopleIds,
-      },
-    });
+    await remove({ peopleIds });
+    refresh();
   }, []);
 }
