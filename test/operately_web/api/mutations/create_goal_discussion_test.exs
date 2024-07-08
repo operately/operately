@@ -30,11 +30,11 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoalDiscussionTest do
     end
 
     test "if goal does not exist, it returns an error", ctx do
-      assert {404, "Not found"} = mutation(ctx.conn, :create_goal_discussion, %{
+      assert mutation(ctx.conn, :create_goal_discussion, %{
         goal_id: Ecto.UUID.generate(),
         title: "Some title",
         message: rich_text("Hello World") |> Jason.encode!()
-      })
+      }) == not_found_response()
     end
   end
 end 

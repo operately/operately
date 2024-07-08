@@ -1,8 +1,7 @@
-import * as Api from "@/api";
+import * as Companies from "@/models/companies";
 
-export async function companyLoader({ params }) {
-  const id = params.companyId;
-  const company = await Api.getCompany({ id: id });
+export async function companyLoader({ params }): Promise<{ company: Companies.Company }> {
+  const company = await Companies.getCompany({ id: params.companyId }).then((d) => d.company!);
 
   return { company };
 }
