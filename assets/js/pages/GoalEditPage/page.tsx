@@ -7,6 +7,8 @@ import { FilledButton } from "@/components/Button";
 import { useLoadedData } from "./loader";
 import { FormState, useForm, Form } from "@/features/goals/GoalForm";
 import { useMe } from "@/contexts/CurrentUserContext";
+import { PermissionsProvider } from "@/features/Permissions/PermissionsContext";
+
 
 export function Page() {
   const me = useMe();
@@ -24,9 +26,11 @@ export function Page() {
     <Pages.Page title={["Edit", goal.name!]}>
       <Paper.Root size="medium">
         <Paper.Body minHeight="300px">
-          <Header form={form} />
-          <ErrorMessage form={form} />
-          <Form form={form} />
+          <PermissionsProvider company={company} space={goal.space} >
+            <Header form={form} />
+            <ErrorMessage form={form} />
+            <Form form={form} />
+          </PermissionsProvider>
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
