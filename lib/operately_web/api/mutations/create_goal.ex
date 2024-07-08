@@ -11,6 +11,9 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoal do
     field :targets, list_of(:create_target_input)
     field :description, :string
     field :parent_goal_id, :string
+    field :anonymous_access_level, :integer
+    field :company_access_level, :integer
+    field :space_access_level, :integer
   end
 
   outputs do
@@ -20,7 +23,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoal do
   def call(conn, inputs) do
     {:ok, space_id} = decode_id(inputs.space_id)
     inputs = Map.put(inputs, :space_id, space_id)
-    
+
     {:ok, goal} = Operately.Operations.GoalCreation.run(me(conn), inputs)
     {:ok, %{goal: Serializer.serialize(goal, level: :essential)}}
   end

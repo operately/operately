@@ -1445,6 +1445,9 @@ export interface CreateGoalInput {
   targets?: CreateTargetInput[] | null;
   description?: string | null;
   parentGoalId?: string | null;
+  anonymousAccessLevel?: number | null;
+  companyAccessLevel?: number | null;
+  spaceAccessLevel?: number | null;
 }
 
 export interface CreateGoalResult {

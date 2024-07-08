@@ -9,30 +9,38 @@ import { useLoadedData } from "./loader";
 import { FormState, useForm, Form } from "@/features/goals/GoalForm";
 import { useMe } from "@/contexts/CurrentUserContext";
 import { Paths } from "@/routes/paths";
+import { PermissionsProvider, usePermissionsContext } from "@/features/Permissions/PermissionsContext";
+
 
 export function Page() {
-  const { spaceID } = useLoadedData();
-
-  if (spaceID) {
-    return <NewGoalForSpacePage />;
-  } else {
-    return <NewGoalPage />;
-  }
-}
-
-function NewGoalForSpacePage() {
   const me = useMe();
-  const { company, space, parentGoal, goals } = useLoadedData();
+  const { spaceID, space, spaces, company, parentGoal, goals, isCompanyWide } = useLoadedData();
 
   const form = useForm({
     mode: "create",
     company: company,
     me: me,
-    allowSpaceSelection: false,
+    allowSpaceSelection: Boolean(isCompanyWide || !space),
     space: space,
+    spaces: spaces,
     parentGoal,
     parentGoalOptions: goals,
+    isCompanyWide,
   });
+
+  return (
+    <PermissionsProvider company={company} space={space || form.fields.space} >
+      {spaceID ?
+        <NewGoalForSpacePage form={form} />
+      :
+        <NewGoalPage form={form} />
+      }
+    </PermissionsProvider>
+  );
+}
+
+function NewGoalForSpacePage({ form }: { form: FormState }) {
+  const { space } = useLoadedData();
 
   return (
     <Pages.Page title="New Goal">
@@ -53,20 +61,8 @@ function NewGoalForSpacePage() {
   );
 }
 
-function NewGoalPage() {
-  const me = useMe();
-  const { company, spaces, parentGoal, goals, isCompanyWide } = useLoadedData();
-
-  const form = useForm({
-    mode: "create",
-    company: company,
-    me: me,
-    allowSpaceSelection: true,
-    spaces: spaces,
-    parentGoal,
-    parentGoalOptions: goals,
-    isCompanyWide,
-  });
+function NewGoalPage({ form }: { form: FormState }) {
+  const { isCompanyWide } = useLoadedData();
 
   return (
     <Pages.Page title="New Goal">
@@ -90,6 +86,12 @@ function NewGoalPage() {
 }
 
 function SubmitButton({ form }: { form: FormState }) {
+  const { permissions } = usePermissionsContext();
+
+  const handleSubmit = () => {
+    form.submit(permissions);
+  }
+
   return (
     <div className="mt-8">
       {form.errors.length > 0 && (
@@ -99,7 +101,7 @@ function SubmitButton({ form }: { form: FormState }) {
       <div className="flex items-center justify-center gap-4">
         <FilledButton
           type="primary"
-          onClick={form.submit}
+          onClick={handleSubmit}
           loading={form.submitting}
           size="lg"
           testId="add-goal-button"

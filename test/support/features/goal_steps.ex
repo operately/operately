@@ -1,6 +1,7 @@
 defmodule Operately.Support.Features.GoalSteps do
   use Operately.FeatureCase
 
+  alias Operately.Access.Binding
   alias Operately.Support.Features.UI
   alias Operately.Support.Features.FeedSteps
   alias Operately.Support.Features.EmailSteps
@@ -44,7 +45,10 @@ defmodule Operately.Support.Features.GoalSteps do
           unit: "percent",
           index: 1
         }
-      ]
+      ],
+      company_access_level: Binding.comment_access(),
+      space_access_level: Binding.edit_access(),
+      anonymous_access_level: Binding.view_access(),
     })
 
     Map.merge(ctx, %{company: company, champion: champion, reviewer: reviewer, group: group, goal: goal})
@@ -70,7 +74,10 @@ defmodule Operately.Support.Features.GoalSteps do
           unit: goal_params.unit,
           index: 0
         }
-      ]
+      ],
+      company_access_level: Binding.comment_access(),
+      space_access_level: Binding.edit_access(),
+      anonymous_access_level: Binding.view_access(),
     })
 
     ctx
@@ -84,7 +91,7 @@ defmodule Operately.Support.Features.GoalSteps do
   end
 
   step :assert_goal_parent_changed, ctx, parent_goal_name do
-    ctx 
+    ctx
     |> UI.assert_page(Paths.goal_path(ctx.company, ctx.goal))
     |> UI.assert_text(parent_goal_name)
   end
@@ -117,8 +124,8 @@ defmodule Operately.Support.Features.GoalSteps do
     ctx
     |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.group.name,
-      to: ctx.reviewer, 
-      author: ctx.champion, 
+      to: ctx.reviewer,
+      author: ctx.champion,
       action: "archived the #{ctx.goal.name} goal"
     })
   end
@@ -134,7 +141,7 @@ defmodule Operately.Support.Features.GoalSteps do
 
   step :edit_goal, ctx do
     values = %{
-      name: "New Goal Name", 
+      name: "New Goal Name",
       new_champion: person_fixture_with_account(%{company_id: ctx.company.id, full_name: "John New Champion"}),
       new_reviewer: person_fixture_with_account(%{company_id: ctx.company.id, full_name: "Leonardo New Reviewer"}),
       new_targets: [%{name: "Sold 1000 units", current: 0, target: 1000, unit: "units"}]
@@ -180,7 +187,7 @@ defmodule Operately.Support.Features.GoalSteps do
       end)
     end)
   end
-  
+
   step :assert_goal_edited_email_sent, ctx do
     ctx
     |> EmailSteps.assert_activity_email_sent(%{
@@ -223,7 +230,7 @@ defmodule Operately.Support.Features.GoalSteps do
   step :assert_goal_timeframe_edited_feed_posted, ctx do
     ctx
     |> FeedSteps.assert_feed_item_exists(%{
-      author: ctx.champion, 
+      author: ctx.champion,
       title: "extended the timeframe",
       subtitle: "Extending the timeframe by 1 month to allow for more time to complete it."
     })
@@ -348,7 +355,7 @@ defmodule Operately.Support.Features.GoalSteps do
     assert goal.closed_by_id == ctx.champion.id
     assert goal.success == success
 
-    ctx 
+    ctx
     |> UI.assert_page(Paths.goal_path(ctx.company, ctx.goal))
     |> UI.assert_text("This goal was closed on")
   end
@@ -359,7 +366,7 @@ defmodule Operately.Support.Features.GoalSteps do
     refute goal.closed_at
     refute goal.closed_by_id
 
-    ctx 
+    ctx
     |> UI.assert_page(Paths.goal_path(ctx.company, ctx.goal))
     |> UI.refute_text("This goal was closed on")
   end

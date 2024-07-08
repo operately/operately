@@ -1,6 +1,7 @@
 defmodule Operately.Support.Features.ProjectCreationSteps do
   use Operately.FeatureCase
 
+  alias Operately.Access.Binding
   alias Operately.People.Person
   alias Operately.Support.Features.UI
   alias Operately.Support.Features.EmailSteps
@@ -30,7 +31,10 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
         type: "year",
         start_date: ~D[2021-01-01],
         end_date: ~D[2021-12-31]
-      }
+      },
+      company_access_level: Binding.comment_access(),
+      space_access_level: Binding.edit_access(),
+      anonymous_access_level: Binding.view_access(),
     })
 
     ctx = Map.merge(ctx, %{

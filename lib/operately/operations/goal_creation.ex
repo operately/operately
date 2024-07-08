@@ -1,15 +1,20 @@
 defmodule Operately.Operations.GoalCreation do
+  import Ecto.Query, only: [from: 2]
+
   alias Ecto.Multi
   alias Operately.Repo
   alias Operately.Goals.{Goal, Target}
   alias Operately.Activities
-  alias Operately.Access.Context
+  alias Operately.Access
+  alias Operately.Access.{Context, Binding}
+  alias Operately.Companies.Company
 
   def run(creator, attrs) do
     Multi.new()
     |> insert_goal(creator, attrs)
     |> insert_context()
     |> insert_targets(attrs[:targets] || [])
+    |> insert_bindings(creator, attrs)
     |> insert_activity(creator)
     |> Repo.transaction()
     |> Repo.extract_result(:goal)
@@ -36,6 +41,27 @@ defmodule Operately.Operations.GoalCreation do
         goal_id: changes.goal.id,
       })
     end)
+  end
+
+  defp insert_bindings(multi, creator, attrs) do
+    reviewer_group = Access.get_group!(person_id: attrs.reviewer_id)
+    champion_group = Access.get_group!(person_id: attrs.champion_id)
+
+    multi
+    |> Access.insert_bindings_to_company(creator.company_id, attrs.company_access_level, attrs.anonymous_access_level)
+    |> maybe_insert_bindings_to_space(creator, attrs)
+    |> Access.insert_binding(:reviewer_binding, reviewer_group, Binding.full_access())
+    |> Access.insert_binding(:champion_binding, champion_group, Binding.full_access())
+  end
+
+  defp maybe_insert_bindings_to_space(multi, creator, attrs) do
+    company_space_id = Repo.one!(from(c in Company, where: c.id == ^creator.company_id, select: c.company_space_id))
+
+    if attrs.space_id != company_space_id do
+      Access.insert_bindings_to_space(multi, attrs.space_id, attrs.space_access_level)
+    else
+      multi
+    end
   end
 
   defp insert_activity(multi, creator) do
