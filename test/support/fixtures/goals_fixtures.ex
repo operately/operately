@@ -1,4 +1,6 @@
 defmodule Operately.GoalsFixtures do
+  alias Operately.Access.Binding
+
   def goal_fixture(creator, attrs \\ %{}) do
     attrs = Enum.into(attrs, %{
       name: "some name",
@@ -20,7 +22,10 @@ defmodule Operately.GoalsFixtures do
           unit: "percent",
           index: 1
         }
-      ]
+      ],
+      company_access_level: Binding.comment_access(),
+      space_access_level: Binding.edit_access(),
+      anonymous_access_level: Binding.view_access(),
     })
 
     {:ok, goal} = Operately.Goals.create_goal(creator, attrs)
