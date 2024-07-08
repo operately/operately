@@ -316,14 +316,18 @@ export class Paths {
   }
 }
 
-function createCompanyPath(elements: string[]) {
-  const companyID = window.location.pathname.split("/")[1];
+export function getCompanyID(): string {
+  const parts = window.location.pathname.split("/") as string[];
 
-  if (!companyID) {
+  if (parts.length >= 2) {
+    return parts[1]!;
+  } else {
     throw new Error("Company ID not found in path");
   }
+}
 
-  return createPath([companyID, ...elements]);
+function createCompanyPath(elements: string[]) {
+  return createPath([getCompanyID(), ...elements]);
 }
 
 function createPath(elements: string[]) {

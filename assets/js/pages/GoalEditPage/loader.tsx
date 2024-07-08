@@ -9,16 +9,20 @@ interface LoaderResult {
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
+  const companyPromise = Companies.getCompany({ id: params.companyId }).then((data) => data.company!);
+
+  const goalPromise = Goals.getGoal({
+    id: params.goalId,
+    includeTargets: true,
+    includeChampion: true,
+    includeReviewer: true,
+    includeSpace: true,
+  }).then((data) => data.goal!);
+
   return {
     spaceID: params.id,
-    company: await Companies.getCompany(),
-    goal: await Goals.getGoal({
-      id: params.goalId,
-      includeTargets: true,
-      includeChampion: true,
-      includeReviewer: true,
-      includeSpace: true,
-    }).then((data) => data.goal!),
+    company: await companyPromise,
+    goal: await goalPromise,
   };
 }
 

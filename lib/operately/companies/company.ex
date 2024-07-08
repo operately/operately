@@ -6,6 +6,7 @@ defmodule Operately.Companies.Company do
 
     has_many :access_groups, Operately.Access.Group, foreign_key: :company_id
     has_many :people, Operately.People.Person, foreign_key: :company_id, where: [suspended_at: nil]
+    has_many :admins, Operately.People.Person, foreign_key: :company_id, where: [company_role: "admin", suspended_at: nil]
 
     field :mission, :string
     field :name, :string

@@ -1,6 +1,5 @@
 defmodule Operately.Companies do
   import Ecto.Query, warn: false
-  alias Operately.Companies.ShortId
   alias Operately.Repo
 
   alias Operately.Companies.Company
@@ -26,18 +25,15 @@ defmodule Operately.Companies do
     Repo.all(from t in Tenet, where: t.company_id == ^id)
   end
 
-  def get_company!(id), do: Repo.get!(Company, id)
-  def get_company_by_name(name), do: Repo.get_by(Company, name: name)
-
-  def get_company_by_short_id(person = %Person{} = person, short_id) do
-    case ShortId.decode(short_id) do
-      {:ok, short_id} ->
-        query = from c in Company, join: p in assoc(c, :people), where: c.short_id == ^short_id and p.id == ^person.id
-        Repo.one(query)
-      :error ->
-        nil
-    end
+  def get_company!(id) when is_integer(id) do
+    Repo.get_by!(Company, short_id: id)
   end
+
+  def get_company!(id) when is_binary(id) do
+    Repo.get_by!(Company, id: id)
+  end
+
+  def get_company_by_name(name), do: Repo.get_by(Company, name: name)
 
   defdelegate create_company(attrs \\ %{}),to: Operately.Operations.CompanyAdding, as: :run
 

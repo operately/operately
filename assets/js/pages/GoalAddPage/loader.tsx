@@ -29,7 +29,7 @@ export async function loader({ request, params }): Promise<LoaderResult> {
   const isCompanyWide = searchParams.get("company-wide") === "true";
 
   const spaceID = params.id;
-  const company = await Companies.getCompany();
+  const company = await Companies.getCompany({ id: params.companyId }).then((data) => data.company!);
   const allowSpaceSelection = !spaceID;
 
   let loadedData: LoaderResult = { company, allowSpaceSelection, spaceID, isCompanyWide };

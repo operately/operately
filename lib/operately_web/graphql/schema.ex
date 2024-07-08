@@ -45,13 +45,11 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Types.Updates
 
   # Queries
-  import_types OperatelyWeb.Graphql.Queries.Companies
   import_types OperatelyWeb.Graphql.Queries.Invitations
   import_types OperatelyWeb.Graphql.Queries.Updates
 
   # Mutations
   import_types OperatelyWeb.Graphql.Mutations.Accounts
-  import_types OperatelyWeb.Graphql.Mutations.Companies
   import_types OperatelyWeb.Graphql.Mutations.Goals
   import_types OperatelyWeb.Graphql.Mutations.Milestones
   import_types OperatelyWeb.Graphql.Mutations.ProjectCheckIns
@@ -62,14 +60,12 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Subscriptions.Notifications
 
   query do
-    import_fields :company_queries
     import_fields :invitation_queries
     import_fields :update_queries
   end
 
   mutation do
     import_fields :account_mutations
-    import_fields :company_mutations
     import_fields :goal_mutations
     import_fields :milestone_mutations
     import_fields :project_check_in_mutations
