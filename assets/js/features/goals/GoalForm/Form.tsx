@@ -13,10 +13,12 @@ import { AddTarget, Target, TargetHeader } from "./Target";
 import { FormState } from "./useForm";
 import { GoalSelectorDropdown } from "@/features/goals/GoalTree/GoalSelectorDropdown";
 import { TimeframeSelector } from "@/components/TimeframeSelector";
+import { ResourcePermissionSelector } from "@/features/Permissions";
+
 
 export function Form({ form }: { form: FormState }) {
   return (
-    <Forms.Form onSubmit={form.submit} loading={form.submitting} onCancel={form.cancel} isValid={true}>
+    <Forms.Form onSubmit={()=>{}} loading={form.submitting} onCancel={form.cancel} isValid={true}>
       <FormMain form={form} />
       <FormFooter form={form} />
     </Forms.Form>
@@ -121,6 +123,10 @@ function FormFooter({ form }: { form: FormState }) {
             <SpaceSelector form={form} />
           </div>
         )}
+      </div>
+
+      <div className="flex flex-col gap-4 mt-10">
+        <ResourcePermissionSelector />
       </div>
     </Paper.DimmedSection>
   );
