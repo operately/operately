@@ -127,6 +127,7 @@ defmodule Operately.AccessContextsTest do
 
     Access.create_group(%{company_id: company.id, tag: :full_access})
     Access.create_group(%{company_id: company.id, tag: :standard})
+    Access.create_group(%{company_id: company.id, tag: :anonymous})
 
     company
   end

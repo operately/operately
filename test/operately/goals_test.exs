@@ -3,6 +3,7 @@ defmodule Operately.GoalsTest do
 
   alias Operately.Goals
   alias Operately.Goals.Goal
+  alias Operately.Access.Binding
 
   import Operately.GroupsFixtures
   import Operately.PeopleFixtures
@@ -29,7 +30,7 @@ defmodule Operately.GoalsTest do
 
     test "create_goal/2 with valid data creates a goal", ctx do
       valid_attrs = %{
-        name: "some name", 
+        name: "some name",
         space_id: ctx.group.id,
         champion_id: ctx.person.id,
         reviewer_id: ctx.person.id,
@@ -38,6 +39,9 @@ defmodule Operately.GoalsTest do
           end_date: ~D[2020-12-31],
           type: "year",
         },
+        company_access_level: Binding.comment_access(),
+        space_access_level: Binding.edit_access(),
+        anonymous_access_level: Binding.view_access(),
       }
 
       assert {:ok, %Goal{} = goal} = Goals.create_goal(ctx.person, valid_attrs)
@@ -47,6 +51,11 @@ defmodule Operately.GoalsTest do
     test "create_goal/2 with invalid data returns error changeset", ctx do
       assert {:error, :goal, %Ecto.Changeset{}, _} = Goals.create_goal(ctx.person, %{
         space_id: ctx.group.id,
+        champion_id: ctx.person.id,
+        reviewer_id: ctx.person.id,
+        company_access_level: Binding.comment_access(),
+        space_access_level: Binding.edit_access(),
+        anonymous_access_level: Binding.view_access(),
       })
     end
 

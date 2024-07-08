@@ -37,7 +37,10 @@ defmodule Operately.Support.Features.ProjectSteps do
           unit: "percent",
           index: 1
         }
-      ]
+      ],
+      company_access_level: Binding.comment_access(),
+      space_access_level: Binding.edit_access(),
+      anonymous_access_level: Binding.view_access(),
     })
 
     Map.put(ctx, :goal, goal)

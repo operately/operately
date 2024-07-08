@@ -20,7 +20,7 @@ export function Page() {
     mode: "create",
     company: company,
     me: me,
-    allowSpaceSelection: isCompanyWide || false,
+    allowSpaceSelection: Boolean(isCompanyWide || !space),
     space: space,
     spaces: spaces,
     parentGoal,
