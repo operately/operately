@@ -387,6 +387,7 @@ defmodule OperatelyWeb.Api.Types do
     field :can_edit_goal, :boolean
     field :can_edit_name, :boolean
     field :can_edit_space, :boolean
+    field :can_edit_permissions, :boolean
     field :can_pause, :boolean
     field :can_check_in, :boolean
     field :can_acknowledge_check_in, :boolean

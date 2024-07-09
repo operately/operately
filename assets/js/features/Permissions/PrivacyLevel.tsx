@@ -13,6 +13,11 @@ interface PrivacyLevelProps {
 }
 
 
+const parseTestId = (name: string) => {
+  return "privacy-level-" + name.split(" ")[0]?.toLocaleLowerCase();
+}
+
+
 export default function PrivacyLevel({description, options, defaultValue}: PrivacyLevelProps) {
   const { dispatch } = usePermissionsContext();
 
@@ -42,7 +47,7 @@ export default function PrivacyLevel({description, options, defaultValue}: Priva
 
       <RadioGroup name="privacy-level" onChange={handleChange} defaultValue={defaultValue} >
         {options.map((option, idx) => (
-          <Radio {...option} key={idx} />
+          <Radio {...option} key={idx} testId={parseTestId(option.label)} />
         ))}
       </RadioGroup>
     </div>

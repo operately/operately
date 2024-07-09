@@ -75,6 +75,7 @@ defmodule OperatelyWeb.Api do
   mutation :edit_key_resource, OperatelyWeb.Api.Mutations.EditKeyResource
   mutation :edit_project_check_in, OperatelyWeb.Api.Mutations.EditProjectCheckIn
   mutation :edit_project_name, OperatelyWeb.Api.Mutations.EditProjectName
+  mutation :edit_project_permissions, OperatelyWeb.Api.Mutations.EditProjectPermissions
   mutation :edit_project_timeline, OperatelyWeb.Api.Mutations.EditProjectTimeline
   mutation :join_space, OperatelyWeb.Api.Mutations.JoinSpace
   mutation :mark_all_notifications_as_read, OperatelyWeb.Api.Mutations.MarkAllNotificationsAsRead
