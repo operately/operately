@@ -10,8 +10,8 @@ defmodule OperatelyWeb.Api do
   query :get_activities, OperatelyWeb.Api.Queries.GetActivities
   query :get_activity, OperatelyWeb.Api.Queries.GetActivity
   query :get_comments, OperatelyWeb.Api.Queries.GetComments
-  query :get_company, OperatelyWeb.Api.Queries.GetCompany
   query :get_companies, OperatelyWeb.Api.Queries.GetCompanies
+  query :get_company, OperatelyWeb.Api.Queries.GetCompany
   query :get_discussion, OperatelyWeb.Api.Queries.GetDiscussion
   query :get_discussions, OperatelyWeb.Api.Queries.GetDiscussions
   query :get_goal, OperatelyWeb.Api.Queries.GetGoal
@@ -35,8 +35,8 @@ defmodule OperatelyWeb.Api do
   query :get_tasks, OperatelyWeb.Api.Queries.GetTasks
   query :get_unread_notification_count, OperatelyWeb.Api.Queries.GetUnreadNotificationCount
   query :search_people, OperatelyWeb.Api.Queries.SearchPeople
-  query :search_project_contributor_candidates, OperatelyWeb.Api.Queries.SearchProjectContributorCandidates
   query :search_potential_space_members, OperatelyWeb.Api.Queries.SearchPotentialSpaceMembers
+  query :search_project_contributor_candidates, OperatelyWeb.Api.Queries.SearchProjectContributorCandidates
 
   mutation :acknowledge_goal_check_in, OperatelyWeb.Api.Mutations.AcknowledgeGoalCheckIn
   mutation :acknowledge_project_check_in, OperatelyWeb.Api.Mutations.AcknowledgeProjectCheckIn
@@ -59,7 +59,6 @@ defmodule OperatelyWeb.Api do
   mutation :create_blob, OperatelyWeb.Api.Mutations.CreateBlob
   mutation :create_comment, OperatelyWeb.Api.Mutations.CreateComment
   mutation :create_goal, OperatelyWeb.Api.Mutations.CreateGoal
-  mutation :edit_goal, OperatelyWeb.Api.Mutations.EditGoal
   mutation :create_goal_discussion, OperatelyWeb.Api.Mutations.CreateGoalDiscussion
   mutation :create_goal_update, OperatelyWeb.Api.Mutations.CreateGoalUpdate
   mutation :create_group, OperatelyWeb.Api.Mutations.CreateGroup
@@ -68,10 +67,13 @@ defmodule OperatelyWeb.Api do
   mutation :disconnect_goal_from_project, OperatelyWeb.Api.Mutations.DisconnectGoalFromProject
   mutation :edit_comment, OperatelyWeb.Api.Mutations.EditComment
   mutation :edit_discussion, OperatelyWeb.Api.Mutations.EditDiscussion
+  mutation :edit_goal, OperatelyWeb.Api.Mutations.EditGoal
   mutation :edit_goal_discussion, OperatelyWeb.Api.Mutations.EditGoalDiscussion
   mutation :edit_goal_timeframe, OperatelyWeb.Api.Mutations.EditGoalTimeframe
   mutation :edit_goal_update, OperatelyWeb.Api.Mutations.EditGoalUpdate
   mutation :edit_group, OperatelyWeb.Api.Mutations.EditGroup
+  mutation :edit_key_resource, OperatelyWeb.Api.Mutations.EditKeyResource
+  mutation :edit_project_check_in, OperatelyWeb.Api.Mutations.EditProjectCheckIn
   mutation :edit_project_name, OperatelyWeb.Api.Mutations.EditProjectName
   mutation :edit_project_timeline, OperatelyWeb.Api.Mutations.EditProjectTimeline
   mutation :join_space, OperatelyWeb.Api.Mutations.JoinSpace

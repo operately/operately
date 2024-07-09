@@ -32,6 +32,7 @@ export interface FormState {
   setStatus: (status: string) => void;
 
   submit: () => Promise<boolean>;
+  submitting: boolean;
   submitDisabled?: boolean;
   submitButtonLabel?: string;
 
@@ -52,13 +53,10 @@ export function useForm({ mode, project, checkIn, author }: UseFormOptions): For
     content: checkIn?.description && JSON.parse(checkIn.description),
   });
 
-  const [post] = ProjectCheckIns.usePostMutation({
-    onCompleted: (data: any) => navigate(Paths.projectCheckInPath(project.id!, data.postProjectCheckIn.id)),
-  });
+  const [post, { loading: postLoading }] = ProjectCheckIns.usePostProjectCheckIn();
+  const [edit, { loading: editLoading }] = ProjectCheckIns.useEditProjectCheckIn();
 
-  const [edit] = ProjectCheckIns.useEditMutation({
-    onCompleted: (data: any) => navigate(Paths.projectCheckInPath(project.id!, data.editProjectCheckIn.id)),
-  });
+  const submitting = postLoading || editLoading;
 
   const submit = async (): Promise<boolean> => {
     if (!editor.editor) return false;
@@ -72,30 +70,24 @@ export function useForm({ mode, project, checkIn, author }: UseFormOptions): For
     }
 
     if (mode === "create") {
-      await post({
-        variables: {
-          input: {
-            projectId: project.id,
-            status,
-            description: JSON.stringify(editor.editor.getJSON()),
-          },
-        },
+      const res = await post({
+        projectId: project.id,
+        status,
+        description: JSON.stringify(editor.editor.getJSON()),
       });
 
+      navigate(Paths.projectCheckInPath(project.id!, res.checkIn.id));
       return true;
     }
 
     if (mode === "edit") {
-      await edit({
-        variables: {
-          input: {
-            checkInId: checkIn!.id,
-            status,
-            description: JSON.stringify(editor.editor.getJSON()),
-          },
-        },
+      const res = await edit({
+        checkInId: checkIn!.id,
+        status,
+        description: JSON.stringify(editor.editor.getJSON()),
       });
 
+      navigate(Paths.projectCheckInPath(project.id!, res.checkIn.id));
       return true;
     }
 
@@ -124,6 +116,7 @@ export function useForm({ mode, project, checkIn, author }: UseFormOptions): For
     setStatus,
 
     submit,
+    submitting,
     submitDisabled,
     submitButtonLabel,
 

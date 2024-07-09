@@ -3,7 +3,6 @@ import * as Projects from "@/models/projects";
 import * as KeyResources from "@/models/keyResources";
 
 import { useNavigateTo } from "@/routes/useNavigateTo";
-import { useEditResource } from "@/models/keyResources";
 import { Paths } from "@/routes/paths";
 
 interface FormState {
@@ -31,20 +30,11 @@ export function useForm(project: Projects.Project, keyResource: KeyResources.Key
     return name.length > 0 && url.length > 0;
   }, [name, url]);
 
-  const [edit, { loading }] = useEditResource({
-    onCompleted: gotoResourceList,
-  });
+  const [edit, { loading }] = KeyResources.useEditKeyResource();
 
   const submit = React.useCallback(async () => {
-    await edit({
-      variables: {
-        input: {
-          id: keyResource.id,
-          title: name,
-          link: url,
-        },
-      },
-    });
+    await edit({ id: keyResource.id, title: name, link: url });
+    gotoResourceList();
   }, [name, url, keyResource.id]);
 
   return {
