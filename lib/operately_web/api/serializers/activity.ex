@@ -449,7 +449,7 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
     Enum.map(milestones, fn milestone -> 
       %{
         id: milestone["milestone_id"], 
-        title: milestone["title"], 
+        title: milestone["new_title"], 
         deadline_at: serialize_date(milestone["new_due_date"])
       }
     end)
