@@ -332,7 +332,7 @@ end
 defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Project do
   def serialize(project, level: :essential) do
     %{
-      id: project.id,
+      id: OperatelyWeb.Paths.project_id(project),
       name: project.name,
       private: project.private,
       status: project.status,
@@ -341,7 +341,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Project do
 
   def serialize(project, level: :full) do
     %{
-      id: project.id,
+      id: OperatelyWeb.Paths.project_id(project),
       name: project.name,
       private: project.private,
       status: project.status,

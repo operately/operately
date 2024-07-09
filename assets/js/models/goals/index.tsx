@@ -3,13 +3,18 @@ import * as api from "@/api";
 export type Goal = api.Goal;
 export type Target = api.Target;
 
-export { getGoal, getGoals, useCreateGoal, useEditGoal } from "@/api";
+export {
+  getGoal,
+  getGoals,
+  useCreateGoal,
+  useEditGoal,
+  useConnectGoalToProject,
+  useDisconnectGoalFromProject,
+} from "@/api";
 
 export { useEditGoalTimeframeMutation, useEditGoalDiscussionMutation } from "@/gql/generated";
 export { useCloseGoalMutation } from "./useCloseGoalMutation";
 export { useArchiveGoalMutation } from "./useArchiveGoalMutation";
-export { useDisconnectGoalFromProjectMutation } from "./useDisconnectGoalFromProjectMutation";
-export { useConnectGoalToProjectMutation } from "./useConnectGoalToProjectMutation";
 export { useChangeGoalParentMutation } from "./useChangeGoalParentMutation";
 export { useReopenGoalMutation } from "./useReopenGoalMutation";
 

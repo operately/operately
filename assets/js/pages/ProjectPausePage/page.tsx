@@ -44,14 +44,15 @@ function PauseProject({ project }) {
   const path = Paths.projectPath(project.id);
   const onSuccess = useNavigateTo(path);
 
-  const [pause] = Projects.usePauseProjectMutation({ onCompleted: onSuccess });
+  const [pause, { loading }] = Projects.usePauseProject();
 
   const handleClick = async () => {
-    await pause({ variables: { input: { projectId: project.id } } });
+    await pause({ projectId: project.id });
+    onSuccess();
   };
 
   return (
-    <FilledButton onClick={handleClick} testId="pause-project-button">
+    <FilledButton onClick={handleClick} testId="pause-project-button" type="primary" loading={loading}>
       Pause the Project
     </FilledButton>
   );

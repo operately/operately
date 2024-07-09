@@ -1,8 +1,8 @@
 import * as React from "react";
 import * as Projects from "@/models/projects";
+import * as KeyResources from "@/models/keyResources";
 
 import { useNavigateTo } from "@/routes/useNavigateTo";
-import { useAddResource } from "@/models/keyResources";
 import { Paths } from "@/routes/paths";
 
 interface FormState {
@@ -30,21 +30,16 @@ export function useForm(project: Projects.Project, resourceType: string): FormSt
     return name.length > 0 && url.length > 0;
   }, [name, url]);
 
-  const [add, { loading }] = useAddResource({
-    onCompleted: gotoResourceList,
-  });
+  const [add, { loading }] = KeyResources.useAddKeyResource();
 
   const submit = React.useCallback(async () => {
     await add({
-      variables: {
-        input: {
-          project_id: project.id,
-          title: name,
-          link: url,
-          resourceType,
-        },
-      },
+      projectId: project.id!,
+      title: name,
+      link: url,
+      resourceType,
     });
+    gotoResourceList();
   }, [name, url, resourceType]);
 
   return {

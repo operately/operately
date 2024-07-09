@@ -33,9 +33,7 @@ export function useForm(project: Projects.Project): FormState {
 
   const goToProject = useNavigateTo(Paths.projectPath(project.id!));
 
-  const [post, { loading }] = Projects.useCloseProjectMutation({
-    onCompleted: goToProject,
-  });
+  const [post, { loading }] = Projects.useCloseProject();
 
   const submit = React.useCallback(async () => {
     if (!submittable) return false;
@@ -47,17 +45,15 @@ export function useForm(project: Projects.Project): FormState {
     }
 
     await post({
-      variables: {
-        input: {
-          projectId: project.id,
-          retrospective: JSON.stringify({
-            whatWentWell: whatWentWell.editor.getJSON(),
-            whatCouldHaveGoneBetter: whatCouldHaveGoneBetter.editor.getJSON(),
-            whatDidYouLearn: whatDidYouLearn.editor.getJSON(),
-          }),
-        },
-      },
+      projectId: project.id,
+      retrospective: JSON.stringify({
+        whatWentWell: whatWentWell.editor.getJSON(),
+        whatCouldHaveGoneBetter: whatCouldHaveGoneBetter.editor.getJSON(),
+        whatDidYouLearn: whatDidYouLearn.editor.getJSON(),
+      }),
     });
+
+    goToProject();
 
     return true;
   }, [project.id, whatWentWell.editor, whatCouldHaveGoneBetter.editor, whatDidYouLearn.editor]);

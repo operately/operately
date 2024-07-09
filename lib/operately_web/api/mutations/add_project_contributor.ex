@@ -15,10 +15,12 @@ defmodule OperatelyWeb.Api.Mutations.AddProjectContributor do
 
   def call(conn, inputs) do
     person = me(conn)
+    {:ok, project_id} = decode_id(inputs.project_id)
+    {:ok, person_id} = decode_id(inputs.person_id)
 
     {:ok, contributor} = Operately.Operations.ProjectContributorAddition.run(person, %{
-      project_id: inputs.project_id,
-      person_id: inputs.person_id,
+      project_id: project_id,
+      person_id: person_id,
       responsibility: inputs.responsibility,
       permissions: inputs.permissions,
     })
