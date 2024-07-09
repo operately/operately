@@ -96,15 +96,15 @@ defmodule Operately.Goals.Goal do
       group_by: [u.updatable_id, u.updatable_type],
       where: u.type == :goal_check_in,
       select: %{
-        updatable_type: u.updatable_type, 
+        updatable_type: u.updatable_type,
         updatable_id: u.updatable_id,
         max_inserted_at: max(u.inserted_at)
       }
 
     query = from u in Update,
       join: c in subquery(latest_updates),
-      on: u.updatable_id == c.updatable_id 
-        and u.updatable_type == c.updatable_type 
+      on: u.updatable_id == c.updatable_id
+        and u.updatable_type == c.updatable_type
         and u.inserted_at == c.max_inserted_at,
       preload: [:author, [reactions: :person]]
 
@@ -124,5 +124,12 @@ defmodule Operately.Goals.Goal do
     persmissions = Operately.Goals.Permissions.calculate(goal, person)
 
     Map.put(goal, :permissions, persmissions)
+  end
+
+  def preload_access_levels(goal) do
+    context = Operately.Access.get_context!(goal_id: goal.id)
+    access_levels = Operately.Access.AccessLevelsLoader.load(context.id, goal.company_id, goal.group_id)
+
+    Map.put(goal, :access_levels, access_levels)
   end
 end
