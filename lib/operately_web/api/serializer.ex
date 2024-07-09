@@ -310,8 +310,6 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Project do
   end
 
   def serialize(project, level: :full) do
-    IO.inspect(project.last_check_in)
-
     %{
       id: OperatelyWeb.Paths.project_id(project),
       name: project.name,

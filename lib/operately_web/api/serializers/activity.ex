@@ -457,7 +457,7 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
 
   def serialize_check_in(check_in) do
     %{
-      id: check_in.id,
+      id: OperatelyWeb.Paths.project_check_in_id(check_in),
       inserted_at: check_in.inserted_at,
       status: check_in.status,
       description: check_in.description
