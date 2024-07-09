@@ -17,7 +17,7 @@ const ProjectCheckInSubmitted: ActivityHandler = {
   },
 
   pagePath(activity: Activity): string {
-    return Paths.projectCheckInPath(content(activity).project!.id!, content(activity).checkIn!.id!);
+    return Paths.projectCheckInPath(content(activity).checkIn!.id!);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -36,7 +36,7 @@ const ProjectCheckInSubmitted: ActivityHandler = {
     const project = content(activity).project!;
     const checkIn = content(activity).checkIn!;
 
-    const checkInPath = Paths.projectCheckInPath(project.id!, checkIn.id!);
+    const checkInPath = Paths.projectCheckInPath(checkIn.id!);
     const checkInLink = <Link to={checkInPath}>Check-In</Link>;
 
     if (page === "project") {

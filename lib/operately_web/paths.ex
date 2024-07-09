@@ -73,8 +73,8 @@ defmodule OperatelyWeb.Paths do
     create_path([company_id(company), "projects", project_id(project)])
   end
 
-  def project_check_in_path(company = %Company{}, project = %Project{}, check_in) do
-    create_path([company_id(company), "projects", project_id(project), "check-ins", project_check_in_id(check_in)])
+  def project_check_in_path(company = %Company{}, check_in) do
+    create_path([company_id(company), "project-check-ins", project_check_in_id(check_in)])
   end
 
   def project_check_in_new_path(company = %Company{}, project = %Project{}) do

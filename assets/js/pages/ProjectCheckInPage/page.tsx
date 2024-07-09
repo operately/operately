@@ -153,7 +153,7 @@ function Options() {
       <PageOptions.Link
         icon={Icons.IconEdit}
         title="Edit check-in"
-        to={Paths.projectCheckInEditPath(checkIn!.project!.id!, checkIn.id!)}
+        to={Paths.projectCheckInEditPath(checkIn.id!)}
         dataTestId="edit-check-in"
       />
     </PageOptions.Root>
