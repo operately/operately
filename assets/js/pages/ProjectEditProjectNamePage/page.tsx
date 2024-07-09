@@ -36,19 +36,11 @@ function Form({ project }: { project: Projects.Project }) {
   const navigateToProject = useNavigateTo(Paths.projectPath(project.id!));
   const [projectName, setProjectName] = React.useState(project.name);
 
-  const [edit, { loading }] = Projects.useEditNameMutation({
-    onCompleted: () => navigateToProject(),
-  });
+  const [edit, { loading }] = Projects.useEditProjectName();
 
-  const handleSubmit = () => {
-    edit({
-      variables: {
-        input: {
-          projectId: project.id,
-          name: projectName,
-        },
-      },
-    });
+  const handleSubmit = async () => {
+    await edit({ projectId: project.id, name: projectName });
+    navigateToProject();
   };
 
   const handleCancel = () => navigateToProject();

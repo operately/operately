@@ -43,6 +43,14 @@ defmodule OperatelyWeb.Api.Queries.GetActivities do
         company = Operately.Repo.get_by(Operately.Companies.Company, short_id: id)
         {:ok, scope_type, company.id}
 
+      "project" -> 
+        {:ok, id} = decode_id(scope_id)
+        {:ok, scope_type, id}
+
+      "goal" -> 
+        {:ok, id} = decode_id(scope_id)
+        {:ok, scope_type, id}
+
       _ -> {:ok, scope_type, scope_id}
     end
   end

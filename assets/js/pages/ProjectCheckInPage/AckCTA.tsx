@@ -26,17 +26,13 @@ export function AckCTA() {
 
 function useAcknowledgeHandler(checkIn: ProjectCheckIns.ProjectCheckIn, ackOnLoad: boolean) {
   const refresh = useRefresh();
-  const [ack] = ProjectCheckIns.useAckMutation();
+  const [ack] = ProjectCheckIns.useAcknowledgeProjectCheckIn();
 
   const handleAck = async () => {
     if (checkIn.acknowledgedAt) return;
     if (!checkIn.project!.permissions!.canAcknowledgeCheckIn) return;
 
-    await ack({
-      variables: {
-        id: checkIn.id,
-      },
-    });
+    await ack({ id: checkIn.id });
 
     refresh();
   };

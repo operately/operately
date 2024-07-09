@@ -28,13 +28,6 @@ export type Scalars = {
   NaiveDateTime: { input: any; output: any; }
 };
 
-export type AddKeyResourceInput = {
-  link: Scalars['String']['input'];
-  projectId: Scalars['ID']['input'];
-  resourceType: Scalars['String']['input'];
-  title: Scalars['String']['input'];
-};
-
 export type ChangeGoalParentInput = {
   goalId: Scalars['String']['input'];
   parentGoalId?: InputMaybe<Scalars['String']['input']>;
@@ -50,11 +43,6 @@ export type CloseGoalInput = {
   goalId: Scalars['String']['input'];
   retrospective: Scalars['String']['input'];
   success: Scalars['String']['input'];
-};
-
-export type CloseProjectInput = {
-  projectId: Scalars['ID']['input'];
-  retrospective: Scalars['String']['input'];
 };
 
 export type Comment = {
@@ -97,31 +85,6 @@ export type EditGoalTimeframeInput = {
   comment?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['String']['input'];
   timeframe: TimeframeInput;
-};
-
-export type EditKeyResourceInput = {
-  id: Scalars['ID']['input'];
-  link: Scalars['String']['input'];
-  title: Scalars['String']['input'];
-};
-
-export type EditProjectCheckInInput = {
-  checkInId: Scalars['ID']['input'];
-  description: Scalars['String']['input'];
-  status: Scalars['String']['input'];
-};
-
-export type EditProjectNameInput = {
-  name: Scalars['String']['input'];
-  projectId: Scalars['ID']['input'];
-};
-
-export type EditProjectTimelineInput = {
-  milestoneUpdates?: InputMaybe<Array<InputMaybe<MilestoneUpdateInput>>>;
-  newMilestones?: InputMaybe<Array<InputMaybe<NewMilestoneInput>>>;
-  projectDueDate?: InputMaybe<Scalars['Date']['input']>;
-  projectId: Scalars['ID']['input'];
-  projectStartDate?: InputMaybe<Scalars['Date']['input']>;
 };
 
 export type EditUpdateInput = {
@@ -208,23 +171,6 @@ export type MilestoneComment = {
   id: Scalars['ID']['output'];
 };
 
-export type MilestoneUpdateInput = {
-  description?: InputMaybe<Scalars['String']['input']>;
-  dueTime: Scalars['Date']['input'];
-  id: Scalars['ID']['input'];
-  title: Scalars['String']['input'];
-};
-
-export type NewMilestoneInput = {
-  description?: InputMaybe<Scalars['String']['input']>;
-  dueTime: Scalars['Date']['input'];
-  title: Scalars['String']['input'];
-};
-
-export type PauseProjectInput = {
-  projectId: Scalars['String']['input'];
-};
-
 export type Person = {
   __typename?: 'Person';
   avatarBlobId?: Maybe<Scalars['ID']['output']>;
@@ -251,12 +197,6 @@ export type PostMilestoneCommentInput = {
   action: Scalars['String']['input'];
   content?: InputMaybe<Scalars['String']['input']>;
   milestoneId: Scalars['ID']['input'];
-};
-
-export type PostProjectCheckInInput = {
-  description: Scalars['String']['input'];
-  projectId: Scalars['ID']['input'];
-  status: Scalars['String']['input'];
 };
 
 export type Project = {
@@ -366,63 +306,31 @@ export type ReopenGoalInput = {
   message: Scalars['String']['input'];
 };
 
-export type ResumeProjectInput = {
-  projectId: Scalars['String']['input'];
-};
-
 export type RootMutationType = {
   __typename?: 'RootMutationType';
   acknowledge?: Maybe<Update>;
-  acknowledgeProjectCheckIn: ProjectCheckIn;
-  addKeyResource: ProjectKeyResource;
   addProjectMilestone: Milestone;
   archiveGoal?: Maybe<Goal>;
-  archiveProject: Project;
   changeGoalParent: Goal;
   changePasswordFirstTime?: Maybe<Scalars['String']['output']>;
   closeGoal: Goal;
-  closeProject: Project;
-  connectGoalToProject: Project;
   createUpdate: Update;
-  disconnectGoalFromProject: Project;
   editGoalDiscussion: Goal;
   editGoalTimeframe: Goal;
-  editKeyResource: ProjectKeyResource;
-  editProjectCheckIn: ProjectCheckIn;
-  editProjectName: Project;
-  editProjectTimeline: Project;
   editUpdate: Update;
-  pauseProject: Project;
   postMilestoneComment: MilestoneComment;
-  postProjectCheckIn: ProjectCheckIn;
-  removeKeyResource: ProjectKeyResource;
   removeProjectMilestone: Milestone;
   reopenGoal: Goal;
-  resumeProject: Project;
   setMilestoneDeadline: Milestone;
   setMilestoneStatus: Milestone;
-  setProjectDueDate: Project;
-  setProjectStartDate: Project;
   updateMilestone: Milestone;
   updateMilestoneDescription: Milestone;
   updateMilestoneTitle: Milestone;
-  updateProjectContributor: ProjectContributor;
-  updateProjectDescription: Project;
 };
 
 
 export type RootMutationTypeAcknowledgeArgs = {
   id: Scalars['ID']['input'];
-};
-
-
-export type RootMutationTypeAcknowledgeProjectCheckInArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
-export type RootMutationTypeAddKeyResourceArgs = {
-  input: AddKeyResourceInput;
 };
 
 
@@ -435,11 +343,6 @@ export type RootMutationTypeAddProjectMilestoneArgs = {
 
 export type RootMutationTypeArchiveGoalArgs = {
   goalId: Scalars['ID']['input'];
-};
-
-
-export type RootMutationTypeArchiveProjectArgs = {
-  projectId: Scalars['ID']['input'];
 };
 
 
@@ -458,25 +361,8 @@ export type RootMutationTypeCloseGoalArgs = {
 };
 
 
-export type RootMutationTypeCloseProjectArgs = {
-  input: CloseProjectInput;
-};
-
-
-export type RootMutationTypeConnectGoalToProjectArgs = {
-  goalId: Scalars['ID']['input'];
-  projectId: Scalars['ID']['input'];
-};
-
-
 export type RootMutationTypeCreateUpdateArgs = {
   input: CreateUpdateInput;
-};
-
-
-export type RootMutationTypeDisconnectGoalFromProjectArgs = {
-  goalId: Scalars['ID']['input'];
-  projectId: Scalars['ID']['input'];
 };
 
 
@@ -490,48 +376,13 @@ export type RootMutationTypeEditGoalTimeframeArgs = {
 };
 
 
-export type RootMutationTypeEditKeyResourceArgs = {
-  input: EditKeyResourceInput;
-};
-
-
-export type RootMutationTypeEditProjectCheckInArgs = {
-  input: EditProjectCheckInInput;
-};
-
-
-export type RootMutationTypeEditProjectNameArgs = {
-  input: EditProjectNameInput;
-};
-
-
-export type RootMutationTypeEditProjectTimelineArgs = {
-  input: EditProjectTimelineInput;
-};
-
-
 export type RootMutationTypeEditUpdateArgs = {
   input: EditUpdateInput;
 };
 
 
-export type RootMutationTypePauseProjectArgs = {
-  input: PauseProjectInput;
-};
-
-
 export type RootMutationTypePostMilestoneCommentArgs = {
   input: PostMilestoneCommentInput;
-};
-
-
-export type RootMutationTypePostProjectCheckInArgs = {
-  input: PostProjectCheckInInput;
-};
-
-
-export type RootMutationTypeRemoveKeyResourceArgs = {
-  id: Scalars['ID']['input'];
 };
 
 
@@ -542,11 +393,6 @@ export type RootMutationTypeRemoveProjectMilestoneArgs = {
 
 export type RootMutationTypeReopenGoalArgs = {
   input: ReopenGoalInput;
-};
-
-
-export type RootMutationTypeResumeProjectArgs = {
-  input: ResumeProjectInput;
 };
 
 
@@ -562,18 +408,6 @@ export type RootMutationTypeSetMilestoneStatusArgs = {
 };
 
 
-export type RootMutationTypeSetProjectDueDateArgs = {
-  dueDate?: InputMaybe<Scalars['Date']['input']>;
-  projectId: Scalars['ID']['input'];
-};
-
-
-export type RootMutationTypeSetProjectStartDateArgs = {
-  projectId: Scalars['ID']['input'];
-  startDate?: InputMaybe<Scalars['Date']['input']>;
-};
-
-
 export type RootMutationTypeUpdateMilestoneArgs = {
   input: UpdateMilestoneInput;
 };
@@ -586,19 +420,6 @@ export type RootMutationTypeUpdateMilestoneDescriptionArgs = {
 
 export type RootMutationTypeUpdateMilestoneTitleArgs = {
   input: UpdateMilestoneTitleInput;
-};
-
-
-export type RootMutationTypeUpdateProjectContributorArgs = {
-  contribId: Scalars['ID']['input'];
-  personId: Scalars['ID']['input'];
-  responsibility: Scalars['String']['input'];
-};
-
-
-export type RootMutationTypeUpdateProjectDescriptionArgs = {
-  description?: InputMaybe<Scalars['String']['input']>;
-  projectId: Scalars['ID']['input'];
 };
 
 export type RootQueryType = {

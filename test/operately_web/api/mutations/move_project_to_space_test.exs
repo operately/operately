@@ -24,7 +24,7 @@ defmodule OperatelyWeb.Api.Mutations.MoveProjectToSpaceTest do
       space = group_fixture(person, %{company_id: ctx.company.id})
 
       assert {200, %{}} = mutation(ctx.conn, :move_project_to_space, %{
-        project_id: project.id,
+        project_id: Paths.project_id(project),
         space_id: Paths.space_id(space)
       })
 
