@@ -27,7 +27,7 @@ defmodule OperatelyEmail.Emails.ProjectCheckInSubmittedEmail do
 
   defp contruct_cta_text_and_url(person, company, project, check_in) do
     reviewer = Projects.get_person_by_role(project, :reviewer)
-    url = Paths.project_check_in_path(company, project, check_in) |> Paths.to_url()
+    url = Paths.project_check_in_path(company, check_in) |> Paths.to_url()
 
     if person.id == reviewer.id do
       {"Acknowledge", url <> "?acknowledge=true"}

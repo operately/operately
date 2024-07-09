@@ -12,12 +12,12 @@ import { ProjectCheckIn } from "@/api";
 
 export function Page() {
   const me = useMe();
-  const { checkIn, project } = useLoadedData();
+  const { checkIn } = useLoadedData();
 
-  const form = useForm({ project, checkIn, mode: "edit", author: me });
+  const form = useForm({ checkIn, mode: "edit", author: me });
 
   return (
-    <Pages.Page title={["Edit Project Check-In", project.name!]}>
+    <Pages.Page title={["Edit Project Check-In", checkIn.project!.name!]}>
       <Paper.Root>
         <Paper.Body>
           <Header form={form} checkIn={checkIn} />
