@@ -17,6 +17,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
     field :include_reviewer, :boolean
     field :include_space, :boolean
     field :include_targets, :boolean
+    field :include_access_levels, :boolean
   end
 
   outputs do
@@ -48,6 +49,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
     |> Repo.one(with_deleted: true)
     |> load_last_check_in(inputs[:include_last_check_in])
     |> load_permissions(person, inputs[:include_permissions])
+    |> load_access_levels(inputs[:include_access_levels])
   end
 
   defp include_requested(query, requested) do
@@ -62,6 +64,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
         :include_reviewer -> from p in q, preload: [:reviewer]
         :include_space -> from p in q, preload: [:group]
         :include_targets -> from p in q, preload: [:targets]
+        :include_access_levels -> q # this is done after the load
         _ -> raise "Unknown include filter: #{inspect(include)}"
       end
     end)
@@ -74,4 +77,8 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
   defp load_permissions(nil, _, _), do: nil
   defp load_permissions(goal, person, true), do: Goal.preload_permissions(goal, person)
   defp load_permissions(goal, _, _), do: goal
+
+  defp load_access_levels(nil, _), do: nil
+  defp load_access_levels(goal, true), do: Goal.preload_access_levels(goal)
+  defp load_access_levels(goal, _), do: goal
 end
