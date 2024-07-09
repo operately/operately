@@ -1,15 +1,19 @@
 defmodule OperatelyWeb.Api.Mutations.ResumeProject do
   use TurboConnect.Mutation
+  use OperatelyWeb.Api.Helpers
 
   inputs do
-    # TODO: Define input fields
+    field :project_id, :string
   end
 
   outputs do
-    # TODO: Define output fields
+    field :project, :project
   end
 
-  def call(_conn, _inputs) do
-    raise "Not implemented"
+  def call(conn, inputs) do
+    {:ok, id} = decode_id(inputs.project_id)
+    {:ok, project} = Operately.Operations.ProjectResuming.run(me(conn), id)
+
+    {:ok, %{project: OperatelyWeb.Api.Serializer.serialize(project)}}
   end
 end

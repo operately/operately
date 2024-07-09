@@ -22,6 +22,7 @@ defmodule Operately.Features.ProjectsTimelineTest do
     |> add_milestone(title: "Contract Signed", due_day: 15)
     |> add_milestone(title: "Website Launched", due_day: 16)
     |> UI.click(testid: "save-changes")
+    |> UI.sleep(300)
 
     ctx
     |> ProjectSteps.visit_project_page()
@@ -92,6 +93,7 @@ defmodule Operately.Features.ProjectsTimelineTest do
     |> choose_day(field: "project-due", day: 20)
     |> edit_milestone("contract-signed", "Contract Updated with Provider", 16)
     |> UI.click(testid: "save-changes")
+    |> UI.sleep(300)
 
     ctx
     |> ProjectSteps.visit_project_page()

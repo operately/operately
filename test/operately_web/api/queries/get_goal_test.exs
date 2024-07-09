@@ -129,8 +129,8 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
       # requested, but the goal has no projects
       assert {200, res} = query(ctx.conn, :get_goal, %{id: goal.id, include_projects: true})
       assert length(res.goal.projects) == 2
-      assert Enum.find(res.goal.projects, fn p -> p.id == project1.id end) == serialize(project1, level: :full)
-      assert Enum.find(res.goal.projects, fn p -> p.id == project2.id end) == serialize(project2, level: :full)
+      assert Enum.find(res.goal.projects, fn p -> p.id == Paths.project_id(project1) end) == serialize(project1, level: :full)
+      assert Enum.find(res.goal.projects, fn p -> p.id == Paths.project_id(project2) end) == serialize(project2, level: :full)
     end
 
     test "include_reviewer", ctx do

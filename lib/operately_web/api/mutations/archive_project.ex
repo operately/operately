@@ -1,15 +1,22 @@
 defmodule OperatelyWeb.Api.Mutations.ArchiveProject do
   use TurboConnect.Mutation
+  use OperatelyWeb.Api.Helpers
 
   inputs do
-    # TODO: Define input fields
+    field :project_id, :string
   end
 
   outputs do
-    # TODO: Define output fields
+    field :project, :project
   end
 
-  def call(_conn, _inputs) do
-    raise "Not implemented"
+  def call(conn, inputs) do
+    person = me(conn)
+    {:ok, project_id} = decode_id(inputs.project_id)
+
+    project = Operately.Projects.get_project!(project_id)
+    {:ok, project} = Operately.Projects.archive_project(person, project)
+
+    {:ok, %{project: OperatelyWeb.Api.Serializer.serialize(project)}}
   end
 end

@@ -55,34 +55,28 @@ export function useForm(project: Projects.Project): FormState {
     return false;
   }, [startTime, dueDate, milestoneList]);
 
-  const [edit, { loading }] = Projects.useEditTimelineMutation({
-    onCompleted: () => {
-      submitted.current = true;
-      navigate(milestonesPath);
-    },
-  });
+  const [edit, { loading }] = Projects.useEditProjectTimeline();
 
   const submit = async () => {
     await edit({
-      variables: {
-        input: {
-          projectID: project.id,
-          projectStartDate: startTime && Time.toDateWithoutTime(startTime),
-          projectDueDate: dueDate && Time.toDateWithoutTime(dueDate),
-          newMilestones: milestoneList.newMilestones.map((m) => ({
-            title: m.title,
-            description: m.description,
-            dueTime: m.deadlineAt && Time.toDateWithoutTime(Time.parseISO(m.deadlineAt)),
-          })),
-          milestoneUpdates: milestoneList.updatedMilestones.map((m) => ({
-            id: m.id,
-            title: m.title,
-            description: m.description,
-            dueTime: m.deadlineAt && Time.toDateWithoutTime(Time.parseISO(m.deadlineAt)),
-          })),
-        },
-      },
+      projectId: project.id,
+      projectStartDate: startTime && Time.toDateWithoutTime(startTime),
+      projectDueDate: dueDate && Time.toDateWithoutTime(dueDate),
+      newMilestones: milestoneList.newMilestones.map((m) => ({
+        title: m.title,
+        description: m.description,
+        dueTime: m.deadlineAt && Time.toDateWithoutTime(Time.parseISO(m.deadlineAt)),
+      })),
+      milestoneUpdates: milestoneList.updatedMilestones.map((m) => ({
+        id: m.id,
+        title: m.title,
+        description: m.description,
+        dueTime: m.deadlineAt && Time.toDateWithoutTime(Time.parseISO(m.deadlineAt)),
+      })),
     });
+
+    submitted.current = true;
+    navigate(milestonesPath);
   };
 
   const cancel = () => {
