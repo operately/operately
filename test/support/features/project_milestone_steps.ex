@@ -23,6 +23,7 @@ defmodule Operately.Support.Features.ProjectMilestoneSteps do
     |> UI.click(testid: "add-comment")
     |> UI.fill_rich_text(comment)
     |> UI.click(testid: "post-comment")
+    |> UI.sleep(300)
   end
 
   def assert_comment_visible_in_project_feed(ctx, comment) do
