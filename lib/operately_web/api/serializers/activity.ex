@@ -218,7 +218,7 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
   def serialize_content("project_check_in_acknowledged", content) do
     %{
       project_id: OperatelyWeb.Paths.project_id(content["project"]),
-      check_in_id: content["check_in_id"],
+      check_in_id: OperatelyWeb.Paths.project_check_in_id(content["check_in"]),
       project: serialize_project(content["project"]),
       check_in: serialize_check_in(content["check_in"])
     }

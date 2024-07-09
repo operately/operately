@@ -74,7 +74,7 @@ defmodule OperatelyWeb.Paths do
   end
 
   def project_check_in_path(company = %Company{}, project = %Project{}, check_in) do
-    create_path([company_id(company), "projects", project_id(project), "check-ins", check_in.id])
+    create_path([company_id(company), "projects", project_id(project), "check-ins", project_check_in_id(check_in.id)])
   end
 
   def project_check_in_new_path(company = %Company{}, project = %Project{}) do
@@ -136,6 +136,12 @@ defmodule OperatelyWeb.Paths do
     id = Operately.ShortUuid.encode!(discussion.id)
     title = discussion.content[:title] || discussion.content["title"] || ""
     OperatelyWeb.Api.Helpers.id_with_comments(title, id)
+  end
+
+  def project_check_in_id(check_in) do
+    id = Operately.ShortUuid.encode!(check_in.id)
+    date = check_in.inserted_at |> NaiveDateTime.to_date() |> Date.to_string()
+    OperatelyWeb.Api.Helpers.id_with_comments(date, id)
   end
 
   #
