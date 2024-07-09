@@ -107,6 +107,12 @@ export function useMutation<InputT, ResultT>(fn: (input: InputT) => Promise<Resu
   return [execute, { data, loading, error }];
 }
 
+export interface AccessLevels {
+  anonymousUsers?: number | null;
+  companyMembers?: number | null;
+  spaceMembers?: number | null;
+}
+
 export interface Activity {
   id?: string | null;
   scopeType?: string | null;
@@ -549,6 +555,7 @@ export interface Goal {
   archivedAt?: string | null;
   space?: Space | null;
   myRole?: string | null;
+  accessLevels?: AccessLevels | null;
 }
 
 export interface GoalEditingUpdatedTarget {
@@ -991,6 +998,7 @@ export interface GetGoalInput {
   includeReviewer?: boolean | null;
   includeSpace?: boolean | null;
   includeTargets?: boolean | null;
+  includeAccessLevels?: boolean | null;
 }
 
 export interface GetGoalResult {
@@ -1673,7 +1681,7 @@ export interface MoveProjectToSpaceResult {
 
 
 export interface NewInvitationTokenInput {
-
+  personId?: string | null;
 }
 
 export interface NewInvitationTokenResult {
