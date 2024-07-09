@@ -7,9 +7,9 @@ import * as Icons from "@tabler/icons-react";
 import { useLoadedData } from "./loader";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 
-import { GhostButton } from "@/components/Button";
 import { DimmedLink } from "@/components/Link";
 import { Paths } from "@/routes/paths";
+import { FilledButton } from "@/components/Button";
 
 export function Page() {
   const { project } = useLoadedData();
@@ -43,16 +43,16 @@ export function Page() {
 function ArchiveButton({ project }) {
   const navigateToProjectArchive = useNavigateTo(Paths.projectPath(project.id!));
 
-  const archiveForm = Projects.useArchiveMutation({
-    variables: {
-      projectId: project.id,
-    },
-    onSuccess: () => navigateToProjectArchive(),
-  });
+  const [archive, { loading }] = Projects.useArchiveProject();
+
+  const submit = async () => {
+    await archive({ projectId: project.id });
+    navigateToProjectArchive();
+  };
 
   return (
-    <GhostButton onClick={archiveForm.submit} testId="archive-project-button">
+    <FilledButton onClick={submit} testId="archive-project-button" type="primary" loading={loading}>
       Archive the Project
-    </GhostButton>
+    </FilledButton>
   );
 }

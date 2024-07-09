@@ -11,8 +11,8 @@ import { Link, ButtonLink, DivLink } from "@/components/Link";
 
 import { createTestId } from "@/utils/testid";
 import { useLoadedData } from "./loader";
-import { useRemoveAction } from "./useRemoveAction";
 import { Paths } from "@/routes/paths";
+import { useNavigateTo } from "@/routes/useNavigateTo";
 
 export function Page() {
   const { project } = useLoadedData();
@@ -56,8 +56,8 @@ function ResourcesListWithData({ project }: { project: Projects.Project }) {
 
 function ResourceListItem({ resource }: { resource: KeyResources.KeyResource }) {
   const { project } = useLoadedData();
-
-  const remove = useRemoveAction(resource!);
+  const gotoResourceList = useNavigateTo(Paths.projectEditResourcesPath(project.id!));
+  const [remove] = KeyResources.useRemoveKeyResource();
 
   const title = resource!.title;
   const icon = <ResourceIcon resourceType={resource!.resourceType!} size={32} />;
@@ -65,6 +65,11 @@ function ResourceListItem({ resource }: { resource: KeyResources.KeyResource }) 
 
   const editPath = Paths.projectEditResourcePath(project.id!, resource!.id!);
   const editId = createTestId("edit-resource", title!);
+
+  const submit = React.useCallback(async () => {
+    await remove({ id: resource!.id });
+    gotoResourceList();
+  }, [resource!.id]);
 
   return (
     <div className="rounded border border-stroke-base text-center flex flex-col">
@@ -84,7 +89,7 @@ function ResourceListItem({ resource }: { resource: KeyResources.KeyResource }) 
           Edit
         </Link>
         <span className="mx-1">&middot;</span>
-        <ButtonLink onClick={remove} testId={removeId}>
+        <ButtonLink onClick={submit} testId={removeId}>
           Remove
         </ButtonLink>
       </div>

@@ -53,7 +53,6 @@ defmodule OperatelyWeb.Graphql.Schema do
   import_types OperatelyWeb.Graphql.Mutations.Goals
   import_types OperatelyWeb.Graphql.Mutations.Milestones
   import_types OperatelyWeb.Graphql.Mutations.ProjectCheckIns
-  import_types OperatelyWeb.Graphql.Mutations.Projects
   import_types OperatelyWeb.Graphql.Mutations.Updates
 
   # Subscriptions
@@ -69,7 +68,6 @@ defmodule OperatelyWeb.Graphql.Schema do
     import_fields :goal_mutations
     import_fields :milestone_mutations
     import_fields :project_check_in_mutations
-    import_fields :project_mutations
     import_fields :update_mutations
   end
 

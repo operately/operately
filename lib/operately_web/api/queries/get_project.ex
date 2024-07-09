@@ -28,8 +28,9 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
     if inputs[:id] == nil do
       {:error, :bad_request}
     else
+      {:ok, id} = decode_id(inputs[:id])
       include_filters = extract_include_filters(inputs)
-      project = load(me(conn), inputs[:id], include_filters)
+      project = load(me(conn), id, include_filters)
 
       if nil == project do
         {:error, :not_found}
