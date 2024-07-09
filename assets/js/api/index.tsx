@@ -525,6 +525,19 @@ export interface Discussion {
   comments?: Comment[] | null;
 }
 
+export interface EditProjectTimelineMilestoneUpdateInput {
+  id?: string | null;
+  title?: string | null;
+  description?: string | null;
+  dueTime?: string | null;
+}
+
+export interface EditProjectTimelineNewMilestoneInput {
+  title?: string | null;
+  description?: string | null;
+  dueTime?: string | null;
+}
+
 export interface Goal {
   id?: string | null;
   name?: string | null;
@@ -1317,11 +1330,14 @@ export interface AddGroupMembersResult {
 
 
 export interface AddKeyResourceInput {
-
+  projectId?: string | null;
+  title?: string | null;
+  link?: string | null;
+  resourceType?: string | null;
 }
 
 export interface AddKeyResourceResult {
-
+  keyResource?: ProjectKeyResource | null;
 }
 
 
@@ -1358,11 +1374,11 @@ export interface ArchiveGoalResult {
 
 
 export interface ArchiveProjectInput {
-
+  projectId?: string | null;
 }
 
 export interface ArchiveProjectResult {
-
+  project?: Project | null;
 }
 
 
@@ -1404,20 +1420,22 @@ export interface CloseGoalResult {
 
 
 export interface CloseProjectInput {
-
+  projectId?: string | null;
+  retrospective?: string | null;
 }
 
 export interface CloseProjectResult {
-
+  project?: Project | null;
 }
 
 
 export interface ConnectGoalToProjectInput {
-
+  projectId?: string | null;
+  goalId?: string | null;
 }
 
 export interface ConnectGoalToProjectResult {
-
+  project?: Project | null;
 }
 
 
@@ -1531,11 +1549,12 @@ export interface CreateTaskResult {
 
 
 export interface DisconnectGoalFromProjectInput {
-
+  projectId?: string | null;
+  goalId?: string | null;
 }
 
 export interface DisconnectGoalFromProjectResult {
-
+  project?: Project | null;
 }
 
 
@@ -1617,21 +1636,37 @@ export interface EditGroupResult {
 }
 
 
-export interface EditProjectNameInput {
+export interface EditKeyResourceInput {
+  id?: string | null;
+  title?: string | null;
+  link?: string | null;
+}
 
+export interface EditKeyResourceResult {
+  keyResource?: ProjectKeyResource | null;
+}
+
+
+export interface EditProjectNameInput {
+  projectId?: string | null;
+  name?: string | null;
 }
 
 export interface EditProjectNameResult {
-
+  project?: Project | null;
 }
 
 
 export interface EditProjectTimelineInput {
-
+  projectId?: string | null;
+  projectStartDate?: string | null;
+  projectDueDate?: string | null;
+  milestoneUpdates?: EditProjectTimelineMilestoneUpdateInput[] | null;
+  newMilestones?: EditProjectTimelineNewMilestoneInput[] | null;
 }
 
 export interface EditProjectTimelineResult {
-
+  project?: Project | null;
 }
 
 
@@ -1673,7 +1708,7 @@ export interface MoveProjectToSpaceResult {
 
 
 export interface NewInvitationTokenInput {
-
+  personId?: string | null;
 }
 
 export interface NewInvitationTokenResult {
@@ -1682,11 +1717,11 @@ export interface NewInvitationTokenResult {
 
 
 export interface PauseProjectInput {
-
+  projectId?: string | null;
 }
 
 export interface PauseProjectResult {
-
+  project?: Project | null;
 }
 
 
@@ -1758,11 +1793,11 @@ export interface RemoveGroupMemberResult {
 
 
 export interface RemoveKeyResourceInput {
-
+  id?: string | null;
 }
 
 export interface RemoveKeyResourceResult {
-
+  keyResource?: ProjectKeyResource | null;
 }
 
 
@@ -1794,11 +1829,11 @@ export interface ReopenGoalResult {
 
 
 export interface ResumeProjectInput {
-
+  projectId?: string | null;
 }
 
 export interface ResumeProjectResult {
-
+  project?: Project | null;
 }
 
 
@@ -1856,20 +1891,23 @@ export interface UpdateMyProfileResult {
 
 
 export interface UpdateProjectContributorInput {
-
+  contribId?: string | null;
+  personId?: string | null;
+  responsibility?: string | null;
 }
 
 export interface UpdateProjectContributorResult {
-
+  contributor?: ProjectContributor | null;
 }
 
 
 export interface UpdateProjectDescriptionInput {
-
+  projectId?: string | null;
+  description?: string | null;
 }
 
 export interface UpdateProjectDescriptionResult {
-
+  project?: Project | null;
 }
 
 
@@ -2167,6 +2205,10 @@ export class ApiClient {
 
   async editGroup(input: EditGroupInput): Promise<EditGroupResult> {
     return axios.post(this.getBasePath() + "/edit_group", toSnake(input)).then(({ data }) => toCamel(data));
+  }
+
+  async editKeyResource(input: EditKeyResourceInput): Promise<EditKeyResourceResult> {
+    return axios.post(this.getBasePath() + "/edit_key_resource", toSnake(input)).then(({ data }) => toCamel(data));
   }
 
   async editProjectName(input: EditProjectNameInput): Promise<EditProjectNameResult> {
@@ -2480,6 +2522,9 @@ export async function editGoalUpdate(input: EditGoalUpdateInput) : Promise<EditG
 }
 export async function editGroup(input: EditGroupInput) : Promise<EditGroupResult> {
   return defaultApiClient.editGroup(input);
+}
+export async function editKeyResource(input: EditKeyResourceInput) : Promise<EditKeyResourceResult> {
+  return defaultApiClient.editKeyResource(input);
 }
 export async function editProjectName(input: EditProjectNameInput) : Promise<EditProjectNameResult> {
   return defaultApiClient.editProjectName(input);
@@ -2825,6 +2870,10 @@ export function useEditGroup() : UseMutationHookResult<EditGroupInput, EditGroup
   return useMutation<EditGroupInput, EditGroupResult>((input) => defaultApiClient.editGroup(input));
 }
 
+export function useEditKeyResource() : UseMutationHookResult<EditKeyResourceInput, EditKeyResourceResult> {
+  return useMutation<EditKeyResourceInput, EditKeyResourceResult>((input) => defaultApiClient.editKeyResource(input));
+}
+
 export function useEditProjectName() : UseMutationHookResult<EditProjectNameInput, EditProjectNameResult> {
   return useMutation<EditProjectNameInput, EditProjectNameResult>((input) => defaultApiClient.editProjectName(input));
 }
@@ -3072,6 +3121,8 @@ export default {
   useEditGoalUpdate,
   editGroup,
   useEditGroup,
+  editKeyResource,
+  useEditKeyResource,
   editProjectName,
   useEditProjectName,
   editProjectTimeline,
