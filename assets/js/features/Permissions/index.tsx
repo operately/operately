@@ -8,6 +8,13 @@ export enum PermissionLevels {
   NO_ACCESS=0,
 };
 
+export enum PermissionOptions {
+  PUBLIC="public",
+  INTERNAL="internal",
+  CONFIDENTIAL="confidential",
+  SECRET="secret",
+}
+
 export interface PermissionOption {
   value: PermissionLevels,
   label: string,

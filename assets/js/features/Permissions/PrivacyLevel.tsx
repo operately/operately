@@ -3,7 +3,7 @@ import React from "react";
 import { Spacer } from "@/components/Spacer";
 import { Radio, RadioGroup } from "@/components/Form";
 import { usePermissionsContext, ReducerActions } from "./PermissionsContext";
-import { PermissionOptions } from "./PermissionSelector";
+import { PermissionOptions } from ".";
 
 
 interface PrivacyLevelProps {
