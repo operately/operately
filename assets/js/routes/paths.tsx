@@ -79,10 +79,6 @@ export class Paths {
     return createCompanyPath(["projects", projectId]);
   }
 
-  static projectCheckInPath(projectId: string, checkInId: string) {
-    return createCompanyPath(["projects", projectId, "check-ins", checkInId]);
-  }
-
   static projectCheckInNewPath(projectId: string) {
     return createCompanyPath(["projects", projectId, "check-ins", "new"]);
   }
@@ -91,8 +87,12 @@ export class Paths {
     return createCompanyPath(["projects", "new"]) + "?goalId=" + goalId;
   }
 
-  static projectCheckInEditPath(projectId: string, checkInId: string) {
-    return createCompanyPath(["projects", projectId, "check-ins", checkInId, "edit"]);
+  static projectCheckInPath(checkInId: string) {
+    return createCompanyPath(["project-check-ins", checkInId]);
+  }
+
+  static projectCheckInEditPath(checkInId: string) {
+    return createCompanyPath(["project-check-ins", checkInId, "edit"]);
   }
 
   static projectCheckInsPath(projectId: string) {

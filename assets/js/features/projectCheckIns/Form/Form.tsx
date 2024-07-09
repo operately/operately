@@ -45,7 +45,7 @@ export function StatusSection({ form }: { form: FormState }) {
         <StatusDropdown
           onStatusSelected={form.setStatus}
           status={form.status}
-          reviewer={form.project.reviewer!}
+          reviewer={form.reviewer!}
           error={error}
         />
       </div>

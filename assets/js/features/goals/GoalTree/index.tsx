@@ -307,7 +307,7 @@ function ProjectLastCheckInDateWithPopover({ project }: { project: Projects.Proj
             <FilledButton
               size="xs"
               type="secondary"
-              linkTo={Paths.projectCheckInPath(project.id!, project.lastCheckIn!.id!)}
+              linkTo={Paths.projectCheckInPath(project.lastCheckIn!.id!)}
               linkTarget="_blank"
             >
               Open <Icons.IconArrowUpRight size={14} className="ml-1 inline-block" />
