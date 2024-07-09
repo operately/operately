@@ -12,7 +12,8 @@ import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 interface UseFormOptions {
   mode: "create" | "edit";
   author: People.Person;
-  project: Projects.Project;
+
+  project?: Projects.Project;
   checkIn?: ProjectCheckIns.ProjectCheckIn;
 }
 
@@ -24,7 +25,7 @@ export interface Error {
 export interface FormState {
   mode: "create" | "edit";
   author: People.Person;
-  project: Projects.Project;
+  project?: Projects.Project;
 
   editor: TipTapEditor.EditorState;
 
@@ -71,12 +72,12 @@ export function useForm({ mode, project, checkIn, author }: UseFormOptions): For
 
     if (mode === "create") {
       const res = await post({
-        projectId: project.id,
+        projectId: project!.id!,
         status,
         description: JSON.stringify(editor.editor.getJSON()),
       });
 
-      navigate(Paths.projectCheckInPath(project.id!, res.checkIn.id));
+      navigate(Paths.projectCheckInPath(res.checkIn.id));
       return true;
     }
 
@@ -87,7 +88,7 @@ export function useForm({ mode, project, checkIn, author }: UseFormOptions): For
         description: JSON.stringify(editor.editor.getJSON()),
       });
 
-      navigate(Paths.projectCheckInPath(project.id!, res.checkIn.id));
+      navigate(Paths.projectCheckInPath(res.checkIn.id));
       return true;
     }
 
@@ -104,7 +105,7 @@ export function useForm({ mode, project, checkIn, author }: UseFormOptions): For
   const submitDisabled = !editor.editor || editor.uploading;
 
   const cancelPath =
-    mode === "create" ? Paths.projectCheckInsPath(project.id!) : Paths.projectCheckInPath(project.id!, checkIn!.id!);
+    mode === "create" ? Paths.projectCheckInsPath(project!.id!) : Paths.projectCheckInPath(checkIn!.id!);
 
   return {
     mode,
