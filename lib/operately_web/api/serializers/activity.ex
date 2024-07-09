@@ -217,7 +217,7 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
 
   def serialize_content("project_check_in_acknowledged", content) do
     %{
-      project_id: content["project_id"],
+      project_id: OperatelyWeb.Paths.project_id(content["project"]),
       check_in_id: content["check_in_id"],
       project: serialize_project(content["project"]),
       check_in: serialize_check_in(content["check_in"])
@@ -289,7 +289,7 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
         title: content["milestone"].title,
       },
       project: serialize_project(content["project"]),
-      project_id: content["project_id"],
+      project_id: OperatelyWeb.Paths.project_id(content["project"]),
     }
   end
 
@@ -386,7 +386,7 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
   def serialize_project(nil), do: nil
   def serialize_project(project) do
     %{
-      id: project.id,
+      id: OperatelyWeb.Paths.project_id(project),
       name: project.name,
     }
   end
@@ -402,14 +402,14 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
 
   def serialize_space(space) do
     %{
-      id: space.id,
+      id: OperatelyWeb.Paths.space_id(space),
       name: space.name,
     }
   end
 
   def serialize_discussion(discussion) do
     %{
-      id: discussion.id,
+      id: OperatelyWeb.Paths.discussion_id(discussion),
       title: discussion.content["title"],
       body: discussion.content["body"],
     }
