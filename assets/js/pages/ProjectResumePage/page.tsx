@@ -44,14 +44,15 @@ function ResumeButton({ project }) {
   const path = Paths.projectPath(project.id);
   const onSuccess = useNavigateTo(path);
 
-  const [resume] = Projects.useResumeProjectMutation({ onCompleted: onSuccess });
+  const [resume, { loading }] = Projects.useResumeProject();
 
   const handleClick = async () => {
-    await resume({ variables: { input: { projectId: project.id } } });
+    await resume({ projectId: project.id });
+    onSuccess();
   };
 
   return (
-    <FilledButton onClick={handleClick} testId="resume-project-button">
+    <FilledButton onClick={handleClick} testId="resume-project-button" type="primary" loading={loading}>
       Resume the Project
     </FilledButton>
   );

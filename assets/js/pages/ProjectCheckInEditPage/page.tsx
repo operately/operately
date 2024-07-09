@@ -8,6 +8,7 @@ import { useLoadedData } from "./loader";
 
 import FormattedTime from "@/components/FormattedTime";
 import { useMe } from "@/contexts/CurrentUserContext";
+import { ProjectCheckIn } from "@/api";
 
 export function Page() {
   const me = useMe();
@@ -27,13 +28,13 @@ export function Page() {
   );
 }
 
-function Header({ form, checkIn }) {
+function Header({ form, checkIn }: { form: ReturnType<typeof useForm>; checkIn: ProjectCheckIn }) {
   return (
     <div className="">
       <Paper.Header className="bg-surface-dimmed">
         <div className="flex items-end justify-between my-2">
           <h1 className="text-xl font-extrabold">
-            Editing the Check-In from <FormattedTime time={checkIn.insertedAt} format="long-date" />
+            Editing the Check-In from <FormattedTime time={checkIn.insertedAt!} format="long-date" />
           </h1>
 
           <div className="flex items-center gap-2">
