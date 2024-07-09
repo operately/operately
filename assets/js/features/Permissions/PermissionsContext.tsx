@@ -2,10 +2,12 @@ import React, { Dispatch, ReactNode, createContext, useContext, useReducer } fro
 import { Space } from "@/models/spaces";
 import { Company } from "@/models/companies";
 import { PermissionLevels } from ".";
+import { AccessLevels } from "@/api";
 
 interface ContextType {
   company: Company;
   permissions: Permissions;
+  hasPermissions: boolean;
   dispatch: Dispatch<ActionOptions>;
   space?: Space | null;
 }
@@ -14,6 +16,7 @@ interface Props {
   children: NonNullable<ReactNode>;
   company: Company;
   space?: Space | null;
+  currentPermissions?: AccessLevels | null;
 }
 
 export enum ReducerActions {
@@ -92,14 +95,15 @@ function reducerFunction(state: Permissions, action: ActionOptions) {
 }
 
 
-function PermissionsProvider({children, company, space}: Props) {
-  const [permissions, dispatch] = useReducer(reducerFunction, {...DEFAULT_PERMISSIONS});
+function PermissionsProvider({children, company, space, currentPermissions}: Props) {
+  const [permissions, dispatch] = useReducer(reducerFunction, currentPermissions ? ({...currentPermissions} as Permissions) : {...DEFAULT_PERMISSIONS});
 
   const data = {
     company,
     space,
     permissions,
     dispatch,
+    hasPermissions: Boolean(currentPermissions),
   }
 
   return (

@@ -3,7 +3,8 @@ import React, { createElement, useMemo } from "react";
 import { SelectBoxNoLabel } from "@/components/Form";
 import { IconBuildingCommunity, IconNetwork } from "@tabler/icons-react";
 import { usePermissionsContext, ReducerActions } from "./PermissionsContext";
-import { PermissionLevels, PERMISSIONS_LIST, PUBLIC_PERMISSIONS_LIST } from ".";
+import { PermissionLevels, PermissionOptions, PERMISSIONS_LIST, PUBLIC_PERMISSIONS_LIST } from ".";
+import { calculatePrivacyLevel } from "./utils";
 
 import { IconRocket } from "@tabler/icons-react";
 import * as Icons from "@tabler/icons-react";
@@ -22,31 +23,33 @@ interface ResourceAccessLevelProps {
 export function AccessLevel() {
   const { permissions } = usePermissionsContext();
 
-  if (permissions.public !== PermissionLevels.NO_ACCESS) {
-    return (
-      <AccessLevelContainer>
-        <CompanyAccessLevel />
-        <PublicAccessLevel />
-      </AccessLevelContainer>
-    );
+  switch(calculatePrivacyLevel(permissions)) {
+    case PermissionOptions.PUBLIC:
+      return (
+        <AccessLevelContainer>
+          <CompanyAccessLevel />
+          <PublicAccessLevel />
+        </AccessLevelContainer>
+      );
+    case PermissionOptions.INTERNAL:
+      return (
+        <AccessLevelContainer>
+          <CompanyAccessLevel />
+        </AccessLevelContainer>
+      );
+    case PermissionOptions.CONFIDENTIAL:
+      return <></>;
+    case PermissionOptions.SECRET:
+      return <></>;
   }
-
-  if(permissions.company !== PermissionLevels.NO_ACCESS) {
-    return (
-      <AccessLevelContainer>
-        <CompanyAccessLevel />
-      </AccessLevelContainer>
-    );
-  }
-
-  return <></>;
 }
 
 
 export function ResourceAccessLevel({ companySpaceSelected }: ResourceAccessLevelProps) {
   const { permissions } = usePermissionsContext();
 
-  if (permissions.public !== PermissionLevels.NO_ACCESS) {
+  switch(calculatePrivacyLevel(permissions)) {
+    case PermissionOptions.PUBLIC:
       return (
         <AccessLevelContainer>
           {!companySpaceSelected && <SpaceAccessLevel />}
@@ -54,26 +57,22 @@ export function ResourceAccessLevel({ companySpaceSelected }: ResourceAccessLeve
           <PublicAccessLevel />
         </AccessLevelContainer>
       );
+    case PermissionOptions.INTERNAL:
+      return (
+        <AccessLevelContainer>
+          {!companySpaceSelected && <SpaceAccessLevel />}
+          <CompanyAccessLevel />
+        </AccessLevelContainer>
+      );
+    case PermissionOptions.CONFIDENTIAL:
+      return (
+        <AccessLevelContainer>
+          <SpaceAccessLevel />
+        </AccessLevelContainer>
+      );
+    case PermissionOptions.SECRET:
+      return <></>;
   }
-
-  if(permissions.company !== PermissionLevels.NO_ACCESS) {
-    return (
-      <AccessLevelContainer>
-        {!companySpaceSelected && <SpaceAccessLevel />}
-        <CompanyAccessLevel />
-      </AccessLevelContainer>
-    );
-  }
-
-  if(permissions.space !== PermissionLevels.NO_ACCESS && !companySpaceSelected) {
-    return (
-      <AccessLevelContainer>
-        <SpaceAccessLevel />
-      </AccessLevelContainer>
-    );
-  }
-
-  return <></>;
 }
 
 

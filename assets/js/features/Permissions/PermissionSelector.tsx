@@ -3,14 +3,8 @@ import PrivacyLevel from "./PrivacyLevel";
 import { AccessLevel, ResourceAccessLevel } from "./AccessLevel";
 import { ReducerActions, usePermissionsContext } from "./PermissionsContext";
 import { compareIds } from "@/routes/paths";
-
-
-export enum PermissionOptions {
-  PUBLIC="public",
-  INTERNAL="internal",
-  CONFIDENTIAL="confidential",
-  SECRET="secret",
-}
+import { PermissionOptions } from ".";
+import { calculatePrivacyLevel } from "./utils";
 
 
 export function SpacePermissionSelector() {
@@ -33,15 +27,17 @@ export function SpacePermissionSelector() {
 }
 
 export function ResourcePermissionSelector() {
-  const { space, company, dispatch } = usePermissionsContext();
+  const { space, company, dispatch, hasPermissions, permissions } = usePermissionsContext();
 
   const companySpaceSelected = (!company.companySpaceId || !space?.id) ? false : compareIds(company.companySpaceId, space.id);
 
   useEffect(() => {
-    dispatch({type: ReducerActions.SET_SECRET});
+    if(!hasPermissions) {
+      dispatch({type: ReducerActions.SET_SECRET});
+    }
   }, [space]);
 
-  const privacy_options = useMemo(() => {
+  const privacyOptions = useMemo(() => {
     let options = [
       {label: "Public - Anyone on the internet", value: PermissionOptions.PUBLIC},
       {label: "Internal - All organization members", value: PermissionOptions.INTERNAL},
@@ -56,12 +52,21 @@ export function ResourcePermissionSelector() {
     return options;
   }, [companySpaceSelected]);
 
+  const defaultPrivacyLevel = useMemo(() => {
+    if(hasPermissions) {
+      return calculatePrivacyLevel(permissions);
+    }
+    else {
+      return PermissionOptions.SECRET;
+    }
+  }, []);
+
   return (
     <>
       <PrivacyLevel
         description="Who can access this project?"
-        options={privacy_options}
-        defaultValue={PermissionOptions.SECRET}
+        options={privacyOptions}
+        defaultValue={defaultPrivacyLevel}
         key={space?.id}
       />
       <ResourceAccessLevel
