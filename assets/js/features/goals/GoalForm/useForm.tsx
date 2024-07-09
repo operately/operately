@@ -286,6 +286,9 @@ function useSubmit(fields: Fields, config: FormConfig): [(permissions: Permissio
             unit: t.unit,
             index: index,
           })),
+        anonymousAccessLevel: permissions.public,
+        companyAccessLevel: permissions.company,
+        spaceAccessLevel: permissions.space,
       });
 
       navigate(Paths.goalPath(res.goal.id!));
