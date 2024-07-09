@@ -345,7 +345,8 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Project do
       last_check_in: OperatelyWeb.Api.Serializer.serialize(project.last_check_in),
       next_milestone: OperatelyWeb.Api.Serializer.serialize(project.next_milestone),
       permissions: OperatelyWeb.Api.Serializer.serialize(project.permissions),
-      key_resources: OperatelyWeb.Api.Serializer.serialize(project.key_resources)
+      key_resources: OperatelyWeb.Api.Serializer.serialize(project.key_resources),
+      access_levels: OperatelyWeb.Api.Serializer.serialize(project.access_levels, level: :full),
     }
   end
 end

@@ -147,6 +147,25 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
       assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(project), include_key_resources: true})
       assert res.project.key_resources == [serialize(key_resource, level: :essential)]
     end
+
+    test "include_access_levels", ctx do
+      space = group_fixture(ctx.person)
+      project = create_project(ctx, %{
+        group_id: space.id,
+        anonymous_access_level: Binding.view_access(),
+        company_access_level: Binding.edit_access(),
+        space_access_level: Binding.full_access(),
+      })
+
+      assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(project)})
+      refute res.project.access_levels
+
+      assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(project), include_access_levels: true})
+
+      assert res.project.access_levels.public == Binding.view_access()
+      assert res.project.access_levels.company == Binding.edit_access()
+      assert res.project.access_levels.space == Binding.full_access()
+    end
   end
 
   def create_project(ctx, attrs \\ %{}) do

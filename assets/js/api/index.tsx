@@ -676,6 +676,7 @@ export interface Project {
   archivedAt?: string | null;
   champion?: Person | null;
   reviewer?: Person | null;
+  accessLevels?: AccessLevels | null;
 }
 
 export interface ProjectCheckIn {
@@ -1134,6 +1135,7 @@ export interface GetProjectInput {
   includeChampion?: boolean | null;
   includeReviewer?: boolean | null;
   includeSpace?: boolean | null;
+  includeAccessLevels?: boolean | null;
 }
 
 export interface GetProjectResult {

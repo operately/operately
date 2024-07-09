@@ -12,14 +12,13 @@ defmodule Operately.Projects.Project do
     has_many :key_resources, Operately.Projects.KeyResource, foreign_key: :project_id
     has_many :milestones, Operately.Projects.Milestone, foreign_key: :project_id
     has_many :check_ins, Operately.Projects.CheckIn, foreign_key: :project_id
-    
+
     has_one :champion_contributor, Operately.Projects.Contributor, foreign_key: :project_id, where: [role: "champion"]
     has_one :reviewer_contributor, Operately.Projects.Contributor, foreign_key: :project_id, where: [role: "reviewer"]
 
     has_one :access_context, Operately.Access.Context, foreign_key: :project_id
     has_one :champion, through: [:champion_contributor, :person]
     has_one :reviewer, through: [:reviewer_contributor, :person]
-    field :next_milestone, :any, virtual: true
 
     field :description, :map
     field :name, :string
@@ -40,7 +39,10 @@ defmodule Operately.Projects.Project do
     field :closed_at, :utc_datetime
     belongs_to :closed_by, Operately.People.Person, foreign_key: :closed_by_id
 
+    # populated with after load hooks
+    field :next_milestone, :any, virtual: true
     field :permissions, :any, virtual: true
+    field :access_levels, :any, virtual: true
 
     timestamps()
     soft_delete()
@@ -91,8 +93,8 @@ defmodule Operately.Projects.Project do
 
   def scope_visibility(query, person_id) do
     alias Operately.Projects.Contributor
-    
-    sub = from c in Contributor, 
+
+    sub = from c in Contributor,
        where: c.project_id == parent_as(:project).id,
        where: c.person_id == ^person_id
 
@@ -102,7 +104,7 @@ defmodule Operately.Projects.Project do
   def scope_role(query, person_id, roles) do
     alias Operately.Projects.Contributor
 
-    sub = from c in Contributor, 
+    sub = from c in Contributor,
       where: c.project_id == parent_as(:project).id,
       where: c.person_id == ^person_id,
       where: c.role in ^roles
@@ -144,8 +146,8 @@ defmodule Operately.Projects.Project do
       %Ecto.Association.NotLoaded{} -> project
 
       milestones ->
-        next = 
-          milestones 
+        next =
+          milestones
           |> Enum.filter(fn milestone -> milestone.status == :pending end)
           |> Enum.sort_by(fn milestone -> milestone.deadline_at end)
           |> List.first()
@@ -157,5 +159,12 @@ defmodule Operately.Projects.Project do
   def set_permissions(project = %__MODULE__{}, user) do
     persmission = Operately.Projects.Permissions.calculate_permissions(project, user)
     Map.put(project, :permissions, persmission)
+  end
+
+  def preload_access_levels(project) do
+    context = Operately.Access.get_context!(project_id: project.id)
+    access_levels = Operately.Access.AccessLevels.load(context.id, project.company_id, project.group_id)
+
+    Map.put(project, :access_levels, access_levels)
   end
 end

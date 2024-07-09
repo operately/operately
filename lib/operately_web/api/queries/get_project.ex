@@ -18,6 +18,7 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
     field :include_champion, :boolean
     field :include_reviewer, :boolean
     field :include_space, :boolean
+    field :include_access_levels, :boolean
   end
 
   outputs do
@@ -29,8 +30,8 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
       {:error, :bad_request}
     else
       {:ok, id} = decode_id(inputs[:id])
-      include_filters = extract_include_filters(inputs)
-      project = load(me(conn), id, include_filters)
+
+      project = load(me(conn), id, inputs)
 
       if nil == project do
         {:error, :not_found}
@@ -40,7 +41,8 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
     end
   end
 
-  def load(person, id, include_filters) do
+  def load(person, id, inputs) do
+    include_filters = extract_include_filters(inputs)
     query = from p in Project, as: :project, where: p.id == ^id
 
     query
@@ -50,6 +52,7 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
     |> Repo.one(with_deleted: true)
     |> Project.after_load_hooks()
     |> include_permissions(person, include_filters)
+    |> load_access_levels(inputs[:include_access_levels])
   end
 
   def include_requested(query, requested) do
@@ -65,6 +68,7 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
         :include_champion -> from p in q, preload: [:champion]
         :include_reviewer -> from p in q, preload: [:reviewer]
         :include_permissions -> q # this is done after loading
+        :include_access_levels -> q # this is done after the load
         _ -> raise ArgumentError, "Unknown include filter: #{inspect(include)}"
       end
     end)
@@ -77,4 +81,8 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
       project
     end
   end
+
+  defp load_access_levels(nil, _), do: nil
+  defp load_access_levels(project, true), do: Project.preload_access_levels(project)
+  defp load_access_levels(project, _), do: project
 end

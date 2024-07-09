@@ -150,6 +150,7 @@ defmodule OperatelyWeb.Api.Types do
     field :archived_at, :date
     field :champion, :person
     field :reviewer, :person
+    field :access_levels, :access_levels
   end
 
   object :discussion do
