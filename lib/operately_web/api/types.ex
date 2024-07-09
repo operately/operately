@@ -1,6 +1,12 @@
 defmodule OperatelyWeb.Api.Types do
   use TurboConnect.Types
 
+  object :access_levels do
+    field :public, :integer
+    field :company, :integer
+    field :space, :integer
+  end
+
   object :activity_content_space_joining do
     field :company_id, :string
     field :space_id, :string
@@ -510,6 +516,7 @@ defmodule OperatelyWeb.Api.Types do
     field :archived_at, :date
     field :space, :space
     field :my_role, :string
+    field :access_levels, :access_levels
   end
 
   object :activity_content_project_resuming do
@@ -877,7 +884,7 @@ defmodule OperatelyWeb.Api.Types do
     field :index, :integer
   end
 
-  object :add_member_input do 
+  object :add_member_input do
     field :id, :string
     field :permissions, :integer
   end

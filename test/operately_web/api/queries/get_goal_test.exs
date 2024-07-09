@@ -1,7 +1,10 @@
 defmodule OperatelyWeb.Api.Queries.GetGoalTest do
   alias Operately.Support.RichText
+  alias Operately.Access.Binding
+
   use OperatelyWeb.TurboCase
 
+  import Operately.GroupsFixtures
   import Operately.GoalsFixtures
   import Operately.UpdatesFixtures
   import Operately.ProjectsFixtures
@@ -169,5 +172,26 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
       assert {200, res} = query(ctx.conn, :get_goal, %{id: goal.id, include_targets: true})
       assert res.goal.targets == serialize(goal.targets, level: :essential)
     end
+
+    test "include_access_levels", ctx do
+      space = group_fixture(ctx.person)
+      goal = goal_fixture(ctx.person, %{
+        company_id: ctx.company.id,
+        space_id: space.id,
+        anonymous_access_level: Binding.view_access(),
+        company_access_level: Binding.edit_access(),
+        space_access_level: Binding.full_access(),
+      })
+
+      # not requested
+      assert {200, res} = query(ctx.conn, :get_goal, %{id: goal.id})
+      refute res.goal.access_levels
+
+      assert {200, res} = query(ctx.conn, :get_goal, %{id: goal.id, include_access_levels: true})
+
+      assert res.goal.access_levels.public == Binding.view_access()
+      assert res.goal.access_levels.company == Binding.edit_access()
+      assert res.goal.access_levels.space == Binding.full_access()
+    end
   end
-end 
+end

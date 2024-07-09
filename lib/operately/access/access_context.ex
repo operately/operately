@@ -8,6 +8,7 @@ defmodule Operately.Access.Context do
     belongs_to :goal, Operately.Goals.Goal, foreign_key: :goal_id
 
     has_many :activities, Operately.Activities.Activity, foreign_key: :context_id
+    has_many :bindings, Operately.Access.Binding, foreign_key: :context_id
 
     timestamps()
   end
