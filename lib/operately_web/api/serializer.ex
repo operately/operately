@@ -201,7 +201,7 @@ end
 defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.CheckIn do
   def serialize(check_in, level: :essential) do
     %{
-      id: check_in.id,
+      id: OperatelyWeb.Paths.project_check_in_id(check_in),
       status: check_in.status,
       description: check_in.description,
       inserted_at: OperatelyWeb.Api.Serializer.serialize(check_in.inserted_at),
@@ -215,7 +215,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.CheckIn do
 
   def serialize(check_in, level: :full) do
     %{
-      id: check_in.id,
+      id: OperatelyWeb.Paths.project_check_in_id(check_in),
       status: check_in.status,
       description: check_in.description,
       inserted_at: OperatelyWeb.Api.Serializer.serialize(check_in.inserted_at),
