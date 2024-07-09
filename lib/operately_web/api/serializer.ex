@@ -35,6 +35,16 @@ defimpl OperatelyWeb.Api.Serializable, for: List do
   def serialize(data, opts), do: Enum.map(data, fn item -> OperatelyWeb.Api.Serializer.serialize(item, opts) end)
 end
 
+defimpl OperatelyWeb.Api.Serializable, for: Operately.Access.AccessLevels do
+  def serialize(data, level: :full) do
+    %{
+      anonymous_users: data.anonymous_users,
+      company_members: data.company_members,
+      space_members: data.space_members,
+    }
+  end
+end
+
 defimpl OperatelyWeb.Api.Serializable, for: Operately.People.Person do
   def serialize(data, level: :essential) do
     %{
@@ -170,6 +180,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Goals.Goal do
       last_check_in: OperatelyWeb.Api.Serializer.serialize(data.last_check_in, level: :full),
       targets: OperatelyWeb.Api.Serializer.serialize(data.targets),
       permissions: OperatelyWeb.Api.Serializer.serialize(data.permissions, level: :full),
+      access_levels: OperatelyWeb.Api.Serializer.serialize(data.access_levels, level: :full),
     }
   end
 end
@@ -225,7 +236,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.CheckIn do
       reactions: OperatelyWeb.Api.Serializer.serialize(check_in.reactions),
       author: OperatelyWeb.Api.Serializer.serialize(check_in.author)
     }
-  end 
+  end
 end
 
 defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Milestone do
@@ -430,7 +441,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Tasks.Task do
       id: OperatelyWeb.Paths.task_id(task),
       name: task.name,
     }
-  end 
+  end
 
   def serialize(task, level: :full) do
     %{
