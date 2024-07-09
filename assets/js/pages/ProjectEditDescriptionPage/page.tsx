@@ -66,7 +66,7 @@ function Editor() {
           <TipTapEditor.EditorContent editor={editor.editor} />
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
           <FilledButton onClick={submit} testId="save" loading={loading} type="primary">
             Save
           </FilledButton>
