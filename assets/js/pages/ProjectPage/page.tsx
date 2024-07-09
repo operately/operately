@@ -154,7 +154,7 @@ function LastCheckIn({ project }) {
   const time = project.lastCheckIn.insertedAt;
   const description = project.lastCheckIn.description;
   const status = project.lastCheckIn.status;
-  const path = Paths.projectCheckInPath(project.id, project.lastCheckIn.id);
+  const path = Paths.projectCheckInPath(project.lastCheckIn.id);
 
   return (
     <div>

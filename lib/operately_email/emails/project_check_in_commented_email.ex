@@ -8,7 +8,7 @@ defmodule OperatelyEmail.Emails.ProjectCheckInCommentedEmail do
     project = Projects.get_project!(activity.content["project_id"])
     comment = Updates.get_comment!(activity.content["comment_id"])
     company = Repo.preload(project, :company).company
-    link = OperatelyWeb.Paths.project_check_in_path(company, project, check_in) |> OperatelyWeb.Paths.to_url()
+    link = OperatelyWeb.Paths.project_check_in_path(company, check_in) |> OperatelyWeb.Paths.to_url()
 
     company
     |> new()

@@ -7,7 +7,7 @@ import { FormState } from "./useForm";
 import { InlinePeopleList } from "@/components/InlinePeopleList";
 
 export function NotificationSection({ form }: { form: FormState }) {
-  const regularContributors = form.project.contributors!.filter(
+  const regularContributors = form.project!.contributors!.filter(
     (contrib) => contrib!.role !== "reviewer" && contrib!.person!.id! !== form.author.id,
   ) as Projects.ProjectContributor[];
 
@@ -17,7 +17,7 @@ export function NotificationSection({ form }: { form: FormState }) {
 
       <div className="mt-2 gap-2 flex flex-col">
         <WhoWillBeNotified contributors={regularContributors!} />
-        <WhoWillNeedToAcknowledge reviewer={form.project.reviewer!} />
+        <WhoWillNeedToAcknowledge reviewer={form.reviewer!} />
       </div>
     </div>
   );

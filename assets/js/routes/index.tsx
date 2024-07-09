@@ -98,8 +98,6 @@ export function createAppRoutes() {
         pageRoute("projects/:projectID/milestones/:id", pages.ProjectMilestonePage),
         pageRoute("projects/:projectID/check-ins", pages.ProjectCheckInsPage),
         pageRoute("projects/:projectID/check-ins/new", pages.ProjectCheckInNewPage),
-        pageRoute("projects/:projectID/check-ins/:id", pages.ProjectCheckInPage),
-        pageRoute("projects/:projectID/check-ins/:id/edit", pages.ProjectCheckInEditPage),
         pageRoute("projects/:projectID/edit/name", pages.ProjectEditProjectNamePage),
         pageRoute("projects/:projectID/edit/timeline", pages.ProjectEditTimelinePage),
         pageRoute("projects/:projectID/edit/description", pages.ProjectEditDescriptionPage),
@@ -109,6 +107,9 @@ export function createAppRoutes() {
         pageRoute("projects/:projectID/resources/:id/edit", pages.ProjectEditResourcePage),
         pageRoute("projects/:projectID/contributors", pages.ProjectContributorsPage),
         pageRoute("projects/:id", pages.ProjectPage),
+
+        pageRoute("project-check-ins/:id", pages.ProjectCheckInPage),
+        pageRoute("project-check-ins/:id/edit", pages.ProjectCheckInEditPage),
 
         pageRoute("*", pages.NotFoundPage),
       ],

@@ -96,10 +96,8 @@ function isCurrentYear(year: number) {
 }
 
 export function CheckInCard({ checkIn }: { checkIn: ProjectCheckIns.ProjectCheckIn }) {
-  const { project } = useLoadedData();
-
   const author = checkIn.author!;
-  const path = Paths.projectCheckInPath(project.id!, checkIn.id!);
+  const path = Paths.projectCheckInPath(checkIn.id!);
 
   return (
     <DivLink className="flex items-start gap-2 rounded-lg cursor-pointer border border-stroke-base" to={path}>
