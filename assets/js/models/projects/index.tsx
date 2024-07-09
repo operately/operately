@@ -6,19 +6,29 @@ export type ProjectContributor = api.ProjectContributor;
 export type Milestone = api.Milestone;
 export type KeyResource = api.ProjectKeyResource;
 
-export { getProject, getProjects, useMoveProjectToSpace, useCreateProject } from "@/api";
+export {
+  getProject,
+  getProjects,
+  useMoveProjectToSpace,
+  useCreateProject,
+  useCloseProject,
+  useEditProjectName,
+  useUpdateProjectDescription,
+  useEditProjectTimeline,
+  useArchiveProject,
+  useUpdateProjectContributor,
+  useResumeProject,
+  usePauseProject,
+  useRemoveProjectContributor,
+} from "@/api";
 
 export { groupBySpace } from "./groupBySpace";
-export { useCloseProjectMutation } from "./useCloseProjectMutation";
-export { useEditNameMutation } from "./useEditNameMutation";
-export { useUpdateDescriptionMutation } from "./useUpdateDescriptionMutation";
-export { useEditTimelineMutation } from "./useEditTimelineMutation";
-export { useArchiveMutation } from "./useArchiveMutation";
 
-export { useUpdateProjectContributorMutation } from "./useUpdateProjectContributorMutation";
-export { useResumeProjectMutation } from "./useResumeProjectMutation";
-export { usePauseProjectMutation } from "./usePauseProjectMutation";
-export { useProjectContributorCandidates } from "./useProjectContributorCandidates";
+export function useProjectContributorCandidates(id: string): (query: string) => Promise<api.Person[]> {
+  return async (query: string) => {
+    return await api.searchProjectContributorCandidates({ projectId: id, query: query }).then((r) => r.people!);
+  };
+}
 
 export function sortByName(projects: Project[]) {
   return [...projects].sort((a, b) => a.name!.localeCompare(b.name!));

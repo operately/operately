@@ -7,8 +7,7 @@ import * as Projects from "@/models/projects";
 
 import { useLoadedData } from "./loader";
 import { useNavigateTo } from "@/routes/useNavigateTo";
-import { GhostButton } from "@/components/Button";
-import { DimmedLink } from "@/components/Link";
+import { FilledButton } from "@/components/Button";
 import { Paths } from "@/routes/paths";
 
 export function Page() {
@@ -40,9 +39,7 @@ function Editor() {
 
   const goToProjectPage = useNavigateTo(Paths.projectPath(project.id!));
 
-  const [post] = Projects.useUpdateDescriptionMutation({
-    onCompleted: goToProjectPage,
-  });
+  const [post, { loading }] = Projects.useUpdateProjectDescription();
 
   const editor = TipTapEditor.useEditor({
     placeholder: `Write your updates here...`,
@@ -53,12 +50,11 @@ function Editor() {
   const submit = React.useCallback(async () => {
     if (!editor.editor) return;
 
-    await post({
-      variables: {
-        projectId: project.id,
-        description: JSON.stringify(editor.editor.getJSON()),
-      },
-    });
+    const description = JSON.stringify(editor.editor.getJSON());
+
+    await post({ projectId: project.id, description: description });
+
+    goToProjectPage();
   }, [editor.editor, post, project.id]);
 
   return (
@@ -70,11 +66,13 @@ function Editor() {
           <TipTapEditor.EditorContent editor={editor.editor} />
         </div>
 
-        <div className="flex items-center gap-4">
-          <GhostButton onClick={submit} testId="save">
-            Save Project Overview
-          </GhostButton>
-          <DimmedLink to={Paths.projectPath(project.id!)}>Discard Changes</DimmedLink>
+        <div className="flex items-center gap-2">
+          <FilledButton onClick={submit} testId="save" loading={loading} type="primary">
+            Save
+          </FilledButton>
+          <FilledButton linkTo={Paths.projectPath(project.id!)} type="secondary">
+            Cancel
+          </FilledButton>
         </div>
       </TipTapEditor.Root>
     </div>

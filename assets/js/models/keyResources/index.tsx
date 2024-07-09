@@ -1,11 +1,7 @@
 import * as api from "@/api";
 export type KeyResource = api.ProjectKeyResource;
 
-export { getKeyResource } from "@/api";
-
-export { useRemoveResource } from "./useRemoveResource";
-export { useEditResource } from "./useEditResource";
-export { useAddResource } from "./useAddResource";
+export { getKeyResource, useEditKeyResource, useAddKeyResource, useRemoveKeyResource } from "@/api";
 
 export const SupportedTypes = [
   "slack-channel",

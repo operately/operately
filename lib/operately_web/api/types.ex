@@ -889,4 +889,17 @@ defmodule OperatelyWeb.Api.Types do
     field :permissions, :integer
   end
 
+  object :edit_project_timeline_milestone_update_input do
+    field :id, :string
+    field :title, :string
+    field :description, :string
+    field :due_time, :date
+  end
+
+  object :edit_project_timeline_new_milestone_input do
+    field :title, :string
+    field :description, :string
+    field :due_time, :date
+  end
+
 end

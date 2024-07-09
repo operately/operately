@@ -79,7 +79,7 @@ function SubmitActions({ form }: { form: FormState }) {
           {form.submitButtonLabel}
         </FilledButton>
 
-        <FilledButton type="secondary" linkTo={form.cancelPath} data-test-id="cancel">
+        <FilledButton type="secondary" linkTo={form.cancelPath} data-test-id="cancel" loading={form.submitting}>
           Cancel
         </FilledButton>
       </div>
