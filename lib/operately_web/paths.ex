@@ -140,7 +140,7 @@ defmodule OperatelyWeb.Paths do
 
   def project_check_in_id(check_in) do
     id = Operately.ShortUuid.encode!(check_in.id)
-    date = check_in.inserted_at |> Timex.format!("{YYYY}-{0M}-{0D}")
+    date = check_in.inserted_at |> NaiveDateTime.to_date() |> Date.to_string()
     OperatelyWeb.Api.Helpers.id_with_comments(date, id)
   end
 
