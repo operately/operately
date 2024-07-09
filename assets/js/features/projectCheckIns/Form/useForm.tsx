@@ -26,6 +26,7 @@ export interface FormState {
   mode: "create" | "edit";
   author: People.Person;
   project?: Projects.Project;
+  reviewer?: People.Person;
 
   editor: TipTapEditor.EditorState;
 
@@ -104,13 +105,22 @@ export function useForm({ mode, project, checkIn, author }: UseFormOptions): For
 
   const submitDisabled = !editor.editor || editor.uploading;
 
-  const cancelPath =
-    mode === "create" ? Paths.projectCheckInsPath(project!.id!) : Paths.projectCheckInPath(checkIn!.id!);
+  let cancelPath = "";
+  let reviewer: People.Person | undefined;
+
+  if (mode === "create") {
+    cancelPath = Paths.projectCheckInsPath(project!.id!);
+    reviewer = project?.reviewer!;
+  } else {
+    cancelPath = Paths.projectCheckInPath(checkIn!.id!);
+    reviewer = checkIn?.project?.reviewer!;
+  }
 
   return {
     mode,
     author,
     project,
+    reviewer,
     editor,
 
     status,
