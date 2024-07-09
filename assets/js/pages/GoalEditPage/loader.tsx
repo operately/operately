@@ -17,6 +17,7 @@ export async function loader({ params }): Promise<LoaderResult> {
     includeChampion: true,
     includeReviewer: true,
     includeSpace: true,
+    includeAccessLevels: true,
   }).then((data) => data.goal!);
 
   return {
