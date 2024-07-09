@@ -51,6 +51,7 @@ defmodule Operately.Features.ProjectResourcesTest do
     |> UI.fill("Name", with: "#product")
     |> UI.fill("URL", with: "https://operately.slack.com")
     |> UI.click(testid: "save")
+    |> UI.sleep(300)
 
     ctx
     |> ProjectSteps.visit_project_page()
