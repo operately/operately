@@ -1,17 +1,12 @@
-import React from "react";
-
+import * as React from "react";
 import * as Icons from "@tabler/icons-react";
-
-import ContributorAvatar from "@/components/ContributorAvatar";
-
 import * as ProjectContributors from "@/models/projectContributors";
 import * as Projects from "@/models/projects";
 
+import ContributorAvatar from "@/components/ContributorAvatar";
+
 import { ContributorSearch, RemoveButton, SaveButton, CancelButton, ResponsibilityInput } from "./FormElements";
-
 import { createTestId } from "@/utils/testid";
-import { useRemoveProjectContributor } from "@/api";
-
 
 interface Props {
   project: Projects.Project;
@@ -59,7 +54,6 @@ function ContributorItemContent({
         onClose={deactivateEdit}
       />
     );
-    
   }
 
   throw new Error("Invalid state");
@@ -110,8 +104,8 @@ function ViewState({ project, avatar, name, responsibility, onEdit }) {
 }
 
 function EditAssignment({ contributor, project, onSave, onRemove, onClose }) {
-  const [update, _s1] = Projects.useUpdateProjectContributorMutation(contributor.id);
-  const [remove, { loading }] = useRemoveProjectContributor();
+  const [update, _s1] = Projects.useUpdateProjectContributor();
+  const [remove, { loading }] = Projects.useRemoveProjectContributor();
 
   const responsibility = ProjectContributors.responsibility(contributor, contributor.role);
 
@@ -121,7 +115,12 @@ function EditAssignment({ contributor, project, onSave, onRemove, onClose }) {
   const disabled = !personID || !newResp;
 
   const handleSave = async () => {
-    await update(personID, newResp);
+    await update({
+      contribId: contributor.id,
+      personId: personID,
+      responsibility: newResp,
+    });
+
     onSave();
   };
 
@@ -149,7 +148,9 @@ function EditAssignment({ contributor, project, onSave, onRemove, onClose }) {
           <CancelButton onClick={onClose} />
         </div>
 
-        {ProjectContributors.isResponsibilityRemovable(contributor.role) && <RemoveButton onClick={handleRemove} loading={loading} />}
+        {ProjectContributors.isResponsibilityRemovable(contributor.role) && (
+          <RemoveButton onClick={handleRemove} loading={loading} />
+        )}
       </div>
     </div>
   );
