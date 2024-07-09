@@ -34,7 +34,7 @@ export function useForm(project: Projects.Project, resourceType: string): FormSt
 
   const submit = React.useCallback(async () => {
     await add({
-      project_id: project.id,
+      projectId: project.id!,
       title: name,
       link: url,
       resourceType,
