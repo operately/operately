@@ -87,12 +87,6 @@ export type EditGoalTimeframeInput = {
   timeframe: TimeframeInput;
 };
 
-export type EditProjectCheckInInput = {
-  checkInId: Scalars['ID']['input'];
-  description: Scalars['String']['input'];
-  status: Scalars['String']['input'];
-};
-
 export type EditUpdateInput = {
   content: Scalars['String']['input'];
   newTargetValues?: InputMaybe<Scalars['String']['input']>;
@@ -205,12 +199,6 @@ export type PostMilestoneCommentInput = {
   milestoneId: Scalars['ID']['input'];
 };
 
-export type PostProjectCheckInInput = {
-  description: Scalars['String']['input'];
-  projectId: Scalars['ID']['input'];
-  status: Scalars['String']['input'];
-};
-
 export type Project = {
   __typename?: 'Project';
   archivedAt?: Maybe<Scalars['Date']['output']>;
@@ -321,7 +309,6 @@ export type ReopenGoalInput = {
 export type RootMutationType = {
   __typename?: 'RootMutationType';
   acknowledge?: Maybe<Update>;
-  acknowledgeProjectCheckIn: ProjectCheckIn;
   addProjectMilestone: Milestone;
   archiveGoal?: Maybe<Goal>;
   changeGoalParent: Goal;
@@ -330,10 +317,8 @@ export type RootMutationType = {
   createUpdate: Update;
   editGoalDiscussion: Goal;
   editGoalTimeframe: Goal;
-  editProjectCheckIn: ProjectCheckIn;
   editUpdate: Update;
   postMilestoneComment: MilestoneComment;
-  postProjectCheckIn: ProjectCheckIn;
   removeProjectMilestone: Milestone;
   reopenGoal: Goal;
   setMilestoneDeadline: Milestone;
@@ -345,11 +330,6 @@ export type RootMutationType = {
 
 
 export type RootMutationTypeAcknowledgeArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
-export type RootMutationTypeAcknowledgeProjectCheckInArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -396,11 +376,6 @@ export type RootMutationTypeEditGoalTimeframeArgs = {
 };
 
 
-export type RootMutationTypeEditProjectCheckInArgs = {
-  input: EditProjectCheckInInput;
-};
-
-
 export type RootMutationTypeEditUpdateArgs = {
   input: EditUpdateInput;
 };
@@ -408,11 +383,6 @@ export type RootMutationTypeEditUpdateArgs = {
 
 export type RootMutationTypePostMilestoneCommentArgs = {
   input: PostMilestoneCommentInput;
-};
-
-
-export type RootMutationTypePostProjectCheckInArgs = {
-  input: PostProjectCheckInInput;
 };
 
 

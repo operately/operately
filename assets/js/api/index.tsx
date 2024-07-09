@@ -1267,11 +1267,11 @@ export interface AcknowledgeGoalCheckInResult {
 
 
 export interface AcknowledgeProjectCheckInInput {
-
+  id?: string | null;
 }
 
 export interface AcknowledgeProjectCheckInResult {
-
+  checkIn?: ProjectCheckIn | null;
 }
 
 
@@ -1647,6 +1647,17 @@ export interface EditKeyResourceResult {
 }
 
 
+export interface EditProjectCheckInInput {
+  checkInId?: string | null;
+  status?: string | null;
+  description?: string | null;
+}
+
+export interface EditProjectCheckInResult {
+  checkIn?: ProjectCheckIn | null;
+}
+
+
 export interface EditProjectNameInput {
   projectId?: string | null;
   name?: string | null;
@@ -1746,11 +1757,13 @@ export interface PostMilestoneCommentResult {
 
 
 export interface PostProjectCheckInInput {
-
+  projectId?: string | null;
+  status?: string | null;
+  description?: string | null;
 }
 
 export interface PostProjectCheckInResult {
-
+  checkIn?: ProjectCheckIn | null;
 }
 
 
@@ -2211,6 +2224,10 @@ export class ApiClient {
     return axios.post(this.getBasePath() + "/edit_key_resource", toSnake(input)).then(({ data }) => toCamel(data));
   }
 
+  async editProjectCheckIn(input: EditProjectCheckInInput): Promise<EditProjectCheckInResult> {
+    return axios.post(this.getBasePath() + "/edit_project_check_in", toSnake(input)).then(({ data }) => toCamel(data));
+  }
+
   async editProjectName(input: EditProjectNameInput): Promise<EditProjectNameResult> {
     return axios.post(this.getBasePath() + "/edit_project_name", toSnake(input)).then(({ data }) => toCamel(data));
   }
@@ -2525,6 +2542,9 @@ export async function editGroup(input: EditGroupInput) : Promise<EditGroupResult
 }
 export async function editKeyResource(input: EditKeyResourceInput) : Promise<EditKeyResourceResult> {
   return defaultApiClient.editKeyResource(input);
+}
+export async function editProjectCheckIn(input: EditProjectCheckInInput) : Promise<EditProjectCheckInResult> {
+  return defaultApiClient.editProjectCheckIn(input);
 }
 export async function editProjectName(input: EditProjectNameInput) : Promise<EditProjectNameResult> {
   return defaultApiClient.editProjectName(input);
@@ -2874,6 +2894,10 @@ export function useEditKeyResource() : UseMutationHookResult<EditKeyResourceInpu
   return useMutation<EditKeyResourceInput, EditKeyResourceResult>((input) => defaultApiClient.editKeyResource(input));
 }
 
+export function useEditProjectCheckIn() : UseMutationHookResult<EditProjectCheckInInput, EditProjectCheckInResult> {
+  return useMutation<EditProjectCheckInInput, EditProjectCheckInResult>((input) => defaultApiClient.editProjectCheckIn(input));
+}
+
 export function useEditProjectName() : UseMutationHookResult<EditProjectNameInput, EditProjectNameResult> {
   return useMutation<EditProjectNameInput, EditProjectNameResult>((input) => defaultApiClient.editProjectName(input));
 }
@@ -3123,6 +3147,8 @@ export default {
   useEditGroup,
   editKeyResource,
   useEditKeyResource,
+  editProjectCheckIn,
+  useEditProjectCheckIn,
   editProjectName,
   useEditProjectName,
   editProjectTimeline,
