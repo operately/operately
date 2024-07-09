@@ -33,15 +33,11 @@ function GoalList() {
   const navigate = useNavigate();
   const projectPath = Paths.projectPath(project.id!);
 
-  const [connect] = Goals.useConnectGoalToProjectMutation({ onCompleted: () => navigate(projectPath) });
+  const [connect] = Goals.useConnectGoalToProject();
 
   const handleSelect = React.useCallback(async (selectedGoal: Goals.Goal) => {
-    connect({
-      variables: {
-        goalId: selectedGoal.id,
-        projectId: project.id,
-      },
-    });
+    await connect({ goalId: selectedGoal.id, projectId: project.id });
+    navigate(projectPath);
   }, []);
 
   return <GoalSelector goals={goals} onSelect={handleSelect} />;
