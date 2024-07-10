@@ -676,6 +676,7 @@ export interface Project {
   archivedAt?: string | null;
   champion?: Person | null;
   reviewer?: Person | null;
+  accessLevels?: AccessLevels | null;
 }
 
 export interface ProjectCheckIn {
@@ -729,6 +730,7 @@ export interface ProjectPermissions {
   canEditGoal?: boolean | null;
   canEditName?: boolean | null;
   canEditSpace?: boolean | null;
+  canEditPermissions?: boolean | null;
   canPause?: boolean | null;
   canCheckIn?: boolean | null;
   canAcknowledgeCheckIn?: boolean | null;
@@ -1134,6 +1136,7 @@ export interface GetProjectInput {
   includeChampion?: boolean | null;
   includeReviewer?: boolean | null;
   includeSpace?: boolean | null;
+  includeAccessLevels?: boolean | null;
 }
 
 export interface GetProjectResult {
@@ -1673,6 +1676,16 @@ export interface EditProjectNameInput {
 
 export interface EditProjectNameResult {
   project?: Project | null;
+}
+
+
+export interface EditProjectPermissionsInput {
+  projectId?: string | null;
+  accessLevels?: AccessLevels | null;
+}
+
+export interface EditProjectPermissionsResult {
+  success?: boolean | null;
 }
 
 
@@ -2240,6 +2253,10 @@ export class ApiClient {
     return axios.post(this.getBasePath() + "/edit_project_name", toSnake(input)).then(({ data }) => toCamel(data));
   }
 
+  async editProjectPermissions(input: EditProjectPermissionsInput): Promise<EditProjectPermissionsResult> {
+    return axios.post(this.getBasePath() + "/edit_project_permissions", toSnake(input)).then(({ data }) => toCamel(data));
+  }
+
   async editProjectTimeline(input: EditProjectTimelineInput): Promise<EditProjectTimelineResult> {
     return axios.post(this.getBasePath() + "/edit_project_timeline", toSnake(input)).then(({ data }) => toCamel(data));
   }
@@ -2556,6 +2573,9 @@ export async function editProjectCheckIn(input: EditProjectCheckInInput) : Promi
 }
 export async function editProjectName(input: EditProjectNameInput) : Promise<EditProjectNameResult> {
   return defaultApiClient.editProjectName(input);
+}
+export async function editProjectPermissions(input: EditProjectPermissionsInput) : Promise<EditProjectPermissionsResult> {
+  return defaultApiClient.editProjectPermissions(input);
 }
 export async function editProjectTimeline(input: EditProjectTimelineInput) : Promise<EditProjectTimelineResult> {
   return defaultApiClient.editProjectTimeline(input);
@@ -2910,6 +2930,10 @@ export function useEditProjectName() : UseMutationHookResult<EditProjectNameInpu
   return useMutation<EditProjectNameInput, EditProjectNameResult>((input) => defaultApiClient.editProjectName(input));
 }
 
+export function useEditProjectPermissions() : UseMutationHookResult<EditProjectPermissionsInput, EditProjectPermissionsResult> {
+  return useMutation<EditProjectPermissionsInput, EditProjectPermissionsResult>((input) => defaultApiClient.editProjectPermissions(input));
+}
+
 export function useEditProjectTimeline() : UseMutationHookResult<EditProjectTimelineInput, EditProjectTimelineResult> {
   return useMutation<EditProjectTimelineInput, EditProjectTimelineResult>((input) => defaultApiClient.editProjectTimeline(input));
 }
@@ -3159,6 +3183,8 @@ export default {
   useEditProjectCheckIn,
   editProjectName,
   useEditProjectName,
+  editProjectPermissions,
+  useEditProjectPermissions,
   editProjectTimeline,
   useEditProjectTimeline,
   joinSpace,

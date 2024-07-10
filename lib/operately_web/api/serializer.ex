@@ -345,7 +345,8 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Project do
       last_check_in: OperatelyWeb.Api.Serializer.serialize(project.last_check_in),
       next_milestone: OperatelyWeb.Api.Serializer.serialize(project.next_milestone),
       permissions: OperatelyWeb.Api.Serializer.serialize(project.permissions),
-      key_resources: OperatelyWeb.Api.Serializer.serialize(project.key_resources)
+      key_resources: OperatelyWeb.Api.Serializer.serialize(project.key_resources),
+      access_levels: OperatelyWeb.Api.Serializer.serialize(project.access_levels, level: :full),
     }
   end
 end
@@ -364,6 +365,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Permissions do
       can_edit_name: permissions.can_edit_name,
       can_edit_space: permissions.can_edit_space,
       can_edit_contributors: permissions.can_edit_contributors,
+      can_edit_permissions: permissions.can_edit_permissions,
       can_pause: permissions.can_pause,
       can_check_in: permissions.can_check_in,
       can_acknowledge_check_in: permissions.can_acknowledge_check_in,

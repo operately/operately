@@ -173,8 +173,10 @@ defmodule Operately.Access do
           |> repo.insert()
 
         binding ->
-          Binding.changeset(binding, %{access_level: access_level})
+          {:ok, updated} = Binding.changeset(binding, %{access_level: access_level})
           |> repo.update()
+
+          {:ok, %{previous: binding, updated: updated}}
       end
     end)
   end

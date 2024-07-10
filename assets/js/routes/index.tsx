@@ -99,6 +99,7 @@ export function createAppRoutes() {
         pageRoute("projects/:projectID/check-ins", pages.ProjectCheckInsPage),
         pageRoute("projects/:projectID/check-ins/new", pages.ProjectCheckInNewPage),
         pageRoute("projects/:projectID/edit/name", pages.ProjectEditProjectNamePage),
+        pageRoute("projects/:projectID/edit/permissions", pages.ProjectEditAccessLevelsPage),
         pageRoute("projects/:projectID/edit/timeline", pages.ProjectEditTimelinePage),
         pageRoute("projects/:projectID/edit/description", pages.ProjectEditDescriptionPage),
         pageRoute("projects/:projectID/edit/resources", pages.ProjectEditResourcesPage),
