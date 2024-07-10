@@ -281,16 +281,7 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
   end
 
   def serialize_content("project_milestone_commented", content) do
-    %{
-      comment: serialize_comment(content["comment"]),
-      comment_action: content["comment_action"],
-      milestone: %{
-        id: content["milestone"].id,
-        title: content["milestone"].title,
-      },
-      project: serialize_project(content["project"]),
-      project_id: OperatelyWeb.Paths.project_id(content["project"]),
-    }
+    OperatelyWeb.Api.Serializer.serialize(content)
   end
 
   def serialize_content("project_moved", content) do
@@ -323,13 +314,13 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
 
   def serialize_content("project_timeline_edited", content) do
     %{
-      project: serialize_project(content["project"]),
-      old_start_date: serialize_date(content["old_start_date"]),
-      new_start_date: serialize_date(content["new_start_date"]),
-      old_end_date: serialize_date(content["old_end_date"]),
-      new_end_date: serialize_date(content["new_end_date"]),
-      new_milestones: serialize_new_milestones(content["new_milestones"]),
-      updated_milestones: serialize_updated_milestones(content["milestone_updates"])
+      project: OperatelyWeb.Api.Serializer.serialize(content.project),
+      old_start_date: OperatelyWeb.Api.Serializer.serialize(content.old_start_date),
+      new_start_date: OperatelyWeb.Api.Serializer.serialize(content.new_start_date),
+      old_end_date: OperatelyWeb.Api.Serializer.serialize(content.old_end_date),
+      new_end_date: OperatelyWeb.Api.Serializer.serialize(content.new_end_date),
+      new_milestones: OperatelyWeb.Api.Serializer.serialize(content.new_milestones),
+      updated_milestones: OperatelyWeb.Api.Serializer.serialize(content.milestone_updates)
     }
   end
 
@@ -433,28 +424,6 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
     end)
   end
 
-  def serialize_new_milestones(nil), do: []
-  def serialize_new_milestones(milestones) do
-    Enum.map(milestones, fn milestone -> 
-      %{id: 
-        milestone["milestone_id"], 
-        title: milestone["title"], 
-        deadline_at: serialize_date(milestone["due_date"])
-      }
-    end)
-  end
-
-  def serialize_updated_milestones(nil), do: []
-  def serialize_updated_milestones(milestones) do
-    Enum.map(milestones, fn milestone -> 
-      %{
-        id: milestone["milestone_id"], 
-        title: milestone["new_title"], 
-        deadline_at: serialize_date(milestone["new_due_date"])
-      }
-    end)
-  end
-
   def serialize_check_in(check_in) do
     %{
       id: OperatelyWeb.Paths.project_check_in_id(check_in),
@@ -500,11 +469,6 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
         end)
       }
     }
-  end
-
-  defp serialize_date(nil), do: nil
-  defp serialize_date(date) do
-    date |> DateTime.to_date()
   end
 
   defp serialize_comment(nil), do: nil
