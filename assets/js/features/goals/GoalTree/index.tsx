@@ -509,8 +509,8 @@ function ProjectProgress({ node }: { node: ProjectNode }) {
             <div className="text-accent-1 font-extrabold">{Math.round(progress)}% Complete</div>
           </div>
 
-          <PendingMilestones project={project} pending={pending} />
-          <DoneMilestones project={project} done={done} />
+          <PendingMilestones pending={pending} />
+          <DoneMilestones done={done} />
         </div>
         <Popover.Arrow className="bg-surface" />
       </Popover.Content>
@@ -518,7 +518,7 @@ function ProjectProgress({ node }: { node: ProjectNode }) {
   );
 }
 
-function PendingMilestones({ project, pending }: { project: Projects.Project; pending: Milestones.Milestone[] }) {
+function PendingMilestones({ pending }: { pending: Milestones.Milestone[] }) {
   if (pending.length === 0) return null;
 
   return (
@@ -530,10 +530,7 @@ function PendingMilestones({ project, pending }: { project: Projects.Project; pe
           <div className="flex items-center gap-3 w-full not-first:border-t border-stroke-base py-1 justify-between">
             <div className="inline-flex items-center gap-1 flex-1 truncate">
               <MilestoneIcon milestone={{ status: "pending", deadlineAt: milestone!.deadlineAt! }} />
-              <DivLink
-                className="truncate hover:underline"
-                to={Paths.projectMilestonePath(project.id!, milestone!.id!)}
-              >
+              <DivLink className="truncate hover:underline" to={Paths.projectMilestonePath(milestone!.id!)}>
                 {milestone!.title}
               </DivLink>
             </div>
@@ -548,7 +545,7 @@ function PendingMilestones({ project, pending }: { project: Projects.Project; pe
   );
 }
 
-function DoneMilestones({ project, done }: { project: Projects.Project; done: Milestones.Milestone[] }) {
+function DoneMilestones({ done }: { done: Milestones.Milestone[] }) {
   if (done.length === 0) return null;
 
   return (
@@ -560,10 +557,7 @@ function DoneMilestones({ project, done }: { project: Projects.Project; done: Mi
           <div className="flex items-center gap-3 w-full not-first:border-t border-stroke-base py-1 justify-between">
             <div className="inline-flex items-center gap-1 truncate">
               <MilestoneIcon milestone={{ status: "done", deadlineAt: milestone!.completedAt! }} />
-              <DivLink
-                className="truncate hover:underline"
-                to={Paths.projectMilestonePath(project.id!, milestone!.id!)}
-              >
+              <DivLink className="truncate hover:underline" to={Paths.projectMilestonePath(milestone!.id!)}>
                 {milestone!.title}
               </DivLink>
             </div>

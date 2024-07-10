@@ -88,7 +88,7 @@ defmodule OperatelyEmail.Assignments.Loader do
       %{
         type: :milestone,
         due: relative_due(milestone.deadline_at),
-        url: Paths.project_milestone_path(project.company, project, milestone) |> Paths.to_url(),
+        url: Paths.project_milestone_path(project.company, milestone) |> Paths.to_url(),
         name: milestone.title
       }
     end)

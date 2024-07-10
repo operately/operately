@@ -130,7 +130,7 @@ function AddedMilestones({ content }: { content: Content }) {
       {title}:
       <div className="flex flex-col gap-1">
         {content.newMilestones.map((m) => (
-          <MilestoneLink key={m.id} projectId={content.projectId} milestone={m} />
+          <MilestoneLink key={m.id} milestone={m} />
         ))}
       </div>
     </div>
@@ -147,15 +147,15 @@ function UpdatedMilestones({ content }: { content: Content }) {
       {title}:
       <div className="flex flex-col gap-1">
         {content.updatedMilestones.map((m) => (
-          <MilestoneLink key={m.id} projectId={content.projectId} milestone={m} />
+          <MilestoneLink key={m.id} milestone={m} />
         ))}
       </div>
     </div>
   );
 }
 
-function MilestoneLink({ projectId, milestone }: { projectId: string; milestone: Milestones.Milestone }) {
-  const path = Paths.projectMilestonePath(projectId, milestone.id!);
+function MilestoneLink({ milestone }: { milestone: Milestones.Milestone }) {
+  const path = Paths.projectMilestonePath(milestone.id!);
   const title = milestone.title;
 
   return (

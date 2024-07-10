@@ -102,7 +102,7 @@ function MilestoneList({ project }) {
 
       <div>
         {pending.map((m) => (
-          <PendingItem key={m.id} project={project} milestone={m} />
+          <PendingItem key={m.id} milestone={m} />
         ))}
       </div>
 
@@ -110,15 +110,15 @@ function MilestoneList({ project }) {
 
       <div>
         {done.map((m) => (
-          <DoneItem key={m.id} project={project} milestone={m} />
+          <DoneItem key={m.id} milestone={m} />
         ))}
       </div>
     </div>
   );
 }
 
-function PendingItem({ project, milestone }) {
-  const path = Paths.projectMilestonePath(project.id, milestone.id);
+function PendingItem({ milestone }) {
+  const path = Paths.projectMilestonePath(milestone.id);
 
   return (
     <div className="flex flex-col border-b border-stroke-base first:border-t first:border-stroke-base py-1">
@@ -145,8 +145,8 @@ function PendingItem({ project, milestone }) {
   );
 }
 
-function DoneItem({ project, milestone }) {
-  const path = Paths.projectMilestonePath(project.id, milestone.id);
+function DoneItem({ milestone }) {
+  const path = Paths.projectMilestonePath(milestone.id);
 
   return (
     <div className="flex flex-col border-b border-stroke-base first:border-t first:border-stroke-base py-1">
