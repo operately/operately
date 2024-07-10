@@ -67,7 +67,19 @@ export function parseDate(date: Date | string | null | undefined): Date | null {
   if (date === null || date === undefined) return null;
   if (date.constructor.name === "Date") return date as Date;
 
-  return datefsn.parse(date as string, "yyyy-MM-dd", new Date());
+  const d = date as string;
+
+  if (d.match(/^\d{4}-\d{2}-\d{2}$/)) {
+    return datefsn.parse(date as string, "yyyy-MM-dd", new Date());
+  }
+
+  // parse dates like "2024-07-15T00:00:00Z"
+  if (d.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z?$/)) {
+    const shorted = d.slice(0, 10);
+    return datefsn.parse(shorted, "yyyy-MM-dd", new Date());
+  }
+
+  throw new Error("Invalid date " + date);
 }
 
 export function parseISO(date: string) {
