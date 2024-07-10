@@ -24,18 +24,14 @@ export function useForMilestone(milestone: Milestones.Milestone): FormState {
     throw new Error("Invalid comment action " + action);
   });
 
-  const [post, { loading: submittingPost }] = Milestones.usePostComment();
+  const [post, { loading: submittingPost }] = Milestones.usePostMilestoneComment();
   const [edit, { loading: submittingEdit }] = Comments.useEditComment();
 
   const postComment = async (content: string) => {
     await post({
-      variables: {
-        input: {
-          milestoneID: milestone.id,
-          content: JSON.stringify(content),
-          action: "none",
-        },
-      },
+      milestoneId: milestone.id,
+      content: JSON.stringify(content),
+      action: "none",
     });
   };
 

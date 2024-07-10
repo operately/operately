@@ -1756,11 +1756,13 @@ export interface PostDiscussionResult {
 
 
 export interface PostMilestoneCommentInput {
-
+  milestoneId?: string | null;
+  content?: string | null;
+  action?: string | null;
 }
 
 export interface PostMilestoneCommentResult {
-
+  comment?: MilestoneComment | null;
 }
 
 
@@ -1832,11 +1834,11 @@ export interface RemoveProjectContributorResult {
 
 
 export interface RemoveProjectMilestoneInput {
-
+  milestoneId?: string | null;
 }
 
 export interface RemoveProjectMilestoneResult {
-
+  milestone?: Milestone | null;
 }
 
 
@@ -1879,20 +1881,23 @@ export interface UpdateGroupAppearanceResult {
 
 
 export interface UpdateMilestoneInput {
-
+  milestoneId?: string | null;
+  title?: string | null;
+  deadlineAt?: string | null;
 }
 
 export interface UpdateMilestoneResult {
-
+  milestone?: Milestone | null;
 }
 
 
 export interface UpdateMilestoneDescriptionInput {
-
+  id?: string | null;
+  description?: string | null;
 }
 
 export interface UpdateMilestoneDescriptionResult {
-
+  milestone?: Milestone | null;
 }
 
 
