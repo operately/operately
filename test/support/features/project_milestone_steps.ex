@@ -14,7 +14,7 @@ defmodule Operately.Support.Features.ProjectMilestoneSteps do
   end
 
   def visit_milestone_page(ctx) do
-    path = Paths.project_milestone_path(ctx.company, ctx.project, ctx.milestone)
+    path = Paths.project_milestone_path(ctx.company, ctx.milestone)
     UI.visit(ctx, path)
   end
 
