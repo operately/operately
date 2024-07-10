@@ -21,11 +21,12 @@ defmodule OperatelyWeb.Api.Queries.GetTasks do
   end
 
   defp load(person, inputs) do
+    {:ok, milestone_id} = decode_id(inputs.milestone_id)
     include_filters = extract_include_filters(inputs)
 
     (from t in Task, as: :task)
     |> Task.scope_company(person.company_id)
-    |> Task.scope_milestone(inputs[:milestone_id])
+    |> Task.scope_milestone(milestone_id)
     |> include_requested(include_filters)
     |> Repo.all()
   end
