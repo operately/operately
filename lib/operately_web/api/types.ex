@@ -687,6 +687,7 @@ defmodule OperatelyWeb.Api.Types do
 
   object :milestone do
     field :id, :string
+    field :project_id, :string
     field :title, :string
     field :status, :string
     field :inserted_at, :date

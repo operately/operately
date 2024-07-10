@@ -6,6 +6,7 @@ defmodule OperatelyWeb.Api.Queries.GetMilestone do
     field :id, :string
     field :include_comments, :boolean
     field :include_tasks_kanban, :boolean
+    field :include_project, :boolean
   end
 
   outputs do

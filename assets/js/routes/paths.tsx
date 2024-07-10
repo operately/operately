@@ -107,8 +107,8 @@ export class Paths {
     return createCompanyPath(["projects", projectId, "milestones"]);
   }
 
-  static projectMilestonePath(projectId: string, milestoneId: string) {
-    return createCompanyPath(["projects", projectId, "milestones", milestoneId]);
+  static projectMilestonePath(milestoneId: string) {
+    return createCompanyPath(["milestones", milestoneId]);
   }
 
   static projectContributorsPath(projectId: string) {

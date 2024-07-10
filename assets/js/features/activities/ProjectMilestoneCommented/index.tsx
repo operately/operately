@@ -16,7 +16,7 @@ const ProjectMilestoneCommented: ActivityHandler = {
   },
 
   pagePath(activity: Activity): string {
-    return Paths.projectMilestonePath(content(activity).project!.id!, content(activity).milestone!.id!);
+    return Paths.projectMilestonePath(content(activity).milestone!.id!);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -34,7 +34,7 @@ const ProjectMilestoneCommented: ActivityHandler = {
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const project = content(activity).project!;
     const milestone = content(activity).milestone!;
-    const path = Paths.projectMilestonePath(project.id!, milestone.id!);
+    const path = Paths.projectMilestonePath(milestone.id!);
     const link = <Link to={path}>{milestone!.title!}</Link>;
     const what = didWhat(content(activity).commentAction!);
 

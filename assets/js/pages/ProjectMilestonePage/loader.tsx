@@ -8,16 +8,16 @@ interface LoaderResult {
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
-  const milestonePromise = Milestones.getMilestone({ id: params.id });
-  const projectPromise = Projects.getProject({
-    id: params.projectID,
+  const milestone = await Milestones.getMilestone({ id: params.id }).then((data) => data.milestone!);
+  const project = await Projects.getProject({
+    id: milestone.projectId,
     includeSpace: true,
     includePermissions: true,
-  });
+  }).then((data) => data.project!);
 
   return {
-    project: await projectPromise.then((data) => data.project!),
-    milestone: await milestonePromise.then((data) => data.milestone!),
+    project: project,
+    milestone: milestone,
   };
 }
 

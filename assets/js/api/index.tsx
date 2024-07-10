@@ -595,6 +595,7 @@ export interface Invitation {
 
 export interface Milestone {
   id?: string | null;
+  projectId?: string | null;
   title?: string | null;
   status?: string | null;
   insertedAt?: string | null;
@@ -1086,6 +1087,7 @@ export interface GetMilestoneInput {
   id?: string | null;
   includeComments?: boolean | null;
   includeTasksKanban?: boolean | null;
+  includeProject?: boolean | null;
 }
 
 export interface GetMilestoneResult {

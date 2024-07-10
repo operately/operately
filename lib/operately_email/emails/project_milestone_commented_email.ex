@@ -9,7 +9,7 @@ defmodule OperatelyEmail.Emails.ProjectMilestoneCommentedEmail do
     milestone = Projects.get_milestone!(activity.content["milestone_id"])
     comment = Updates.get_comment!(activity.content["comment_id"])
     action = activity.content["comment_action"]
-    link = OperatelyWeb.Paths.project_milestone_path(company, project, milestone) |> OperatelyWeb.Paths.to_url()
+    link = OperatelyWeb.Paths.project_milestone_path(company, milestone) |> OperatelyWeb.Paths.to_url()
 
     company
     |> new()

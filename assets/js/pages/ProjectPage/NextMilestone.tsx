@@ -23,7 +23,7 @@ export function NextMilestone({ project }) {
     return <AllMilestonesCompleted project={project} />;
   }
 
-  return <NextMilestoneList project={project} nextMilestones={nextMilestones} />;
+  return <NextMilestoneList nextMilestones={nextMilestones} />;
 }
 
 function MilestonesZeroState({ project }) {
@@ -58,26 +58,20 @@ function AllMilestonesCompleted({ project }) {
   );
 }
 
-function NextMilestoneList({
-  project,
-  nextMilestones,
-}: {
-  project: Projects.Project;
-  nextMilestones: Projects.Milestone[];
-}) {
+function NextMilestoneList({ nextMilestones }: { nextMilestones: Projects.Milestone[] }) {
   return (
     <div>
       <DimmedLabel>Upcoming Milestones</DimmedLabel>
 
       {nextMilestones.map((milestone) => (
-        <MilestoneLink key={milestone.id} project={project} milestone={milestone} />
+        <MilestoneLink key={milestone.id} milestone={milestone} />
       ))}
     </div>
   );
 }
 
-function MilestoneLink({ project, milestone }) {
-  const path = Paths.projectMilestonePath(project.id!, milestone.id!);
+function MilestoneLink({ milestone }) {
+  const path = Paths.projectMilestonePath(milestone.id!);
   const title = milestone.title;
   const deadline = milestone.deadlineAt;
 
