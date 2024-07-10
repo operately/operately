@@ -62,7 +62,7 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
         :include_contributors -> from p in q, preload: [contributors: :person]
         :include_key_resources -> from p in q, preload: [:key_resources]
         :include_last_check_in -> from p in q, preload: [last_check_in: :author]
-        :include_milestones -> from p in q, preload: [:milestones]
+        :include_milestones -> from p in q, preload: [milestones: :project]
         :include_goal -> from p in q, preload: [:goal]
         :include_space -> from p in q, preload: [:group]
         :include_champion -> from p in q, preload: [:champion]
