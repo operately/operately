@@ -193,12 +193,6 @@ export type Person = {
   title?: Maybe<Scalars['String']['output']>;
 };
 
-export type PostMilestoneCommentInput = {
-  action: Scalars['String']['input'];
-  content?: InputMaybe<Scalars['String']['input']>;
-  milestoneId: Scalars['ID']['input'];
-};
-
 export type Project = {
   __typename?: 'Project';
   archivedAt?: Maybe<Scalars['Date']['output']>;
@@ -309,7 +303,6 @@ export type ReopenGoalInput = {
 export type RootMutationType = {
   __typename?: 'RootMutationType';
   acknowledge?: Maybe<Update>;
-  addProjectMilestone: Milestone;
   archiveGoal?: Maybe<Goal>;
   changeGoalParent: Goal;
   changePasswordFirstTime?: Maybe<Scalars['String']['output']>;
@@ -318,26 +311,12 @@ export type RootMutationType = {
   editGoalDiscussion: Goal;
   editGoalTimeframe: Goal;
   editUpdate: Update;
-  postMilestoneComment: MilestoneComment;
-  removeProjectMilestone: Milestone;
   reopenGoal: Goal;
-  setMilestoneDeadline: Milestone;
-  setMilestoneStatus: Milestone;
-  updateMilestone: Milestone;
-  updateMilestoneDescription: Milestone;
-  updateMilestoneTitle: Milestone;
 };
 
 
 export type RootMutationTypeAcknowledgeArgs = {
   id: Scalars['ID']['input'];
-};
-
-
-export type RootMutationTypeAddProjectMilestoneArgs = {
-  deadlineAt?: InputMaybe<Scalars['Date']['input']>;
-  projectId: Scalars['ID']['input'];
-  title: Scalars['String']['input'];
 };
 
 
@@ -381,45 +360,8 @@ export type RootMutationTypeEditUpdateArgs = {
 };
 
 
-export type RootMutationTypePostMilestoneCommentArgs = {
-  input: PostMilestoneCommentInput;
-};
-
-
-export type RootMutationTypeRemoveProjectMilestoneArgs = {
-  milestoneId: Scalars['ID']['input'];
-};
-
-
 export type RootMutationTypeReopenGoalArgs = {
   input: ReopenGoalInput;
-};
-
-
-export type RootMutationTypeSetMilestoneDeadlineArgs = {
-  deadlineAt?: InputMaybe<Scalars['Date']['input']>;
-  milestoneId: Scalars['ID']['input'];
-};
-
-
-export type RootMutationTypeSetMilestoneStatusArgs = {
-  milestoneId: Scalars['ID']['input'];
-  status: Scalars['String']['input'];
-};
-
-
-export type RootMutationTypeUpdateMilestoneArgs = {
-  input: UpdateMilestoneInput;
-};
-
-
-export type RootMutationTypeUpdateMilestoneDescriptionArgs = {
-  input: UpdateMilestoneDescriptionInput;
-};
-
-
-export type RootMutationTypeUpdateMilestoneTitleArgs = {
-  input: UpdateMilestoneTitleInput;
 };
 
 export type RootQueryType = {
@@ -602,22 +544,6 @@ export type UpdateContentStatusUpdate = {
   phaseStart?: Maybe<Scalars['String']['output']>;
   projectEndTime?: Maybe<Scalars['String']['output']>;
   projectStartTime?: Maybe<Scalars['String']['output']>;
-};
-
-export type UpdateMilestoneDescriptionInput = {
-  description?: InputMaybe<Scalars['String']['input']>;
-  id: Scalars['ID']['input'];
-};
-
-export type UpdateMilestoneInput = {
-  deadlineAt?: InputMaybe<Scalars['Date']['input']>;
-  milestoneId: Scalars['ID']['input'];
-  title: Scalars['String']['input'];
-};
-
-export type UpdateMilestoneTitleInput = {
-  id: Scalars['ID']['input'];
-  title: Scalars['String']['input'];
 };
 
 export type UpdatesFilter = {

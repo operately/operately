@@ -1,11 +1,14 @@
-import { gql, useMutation } from "@apollo/client";
 import * as Time from "@/utils/time";
-
-import * as Gql from "@/gql";
 import * as Api from "@/api";
 
 export type Milestone = Api.Milestone;
-export { getMilestone } from "@/api";
+export {
+  getMilestone,
+  useUpdateMilestone,
+  useRemoveProjectMilestone,
+  useUpdateMilestoneDescription,
+  usePostMilestoneComment,
+} from "@/api";
 
 export function filterPending(milestones: Milestone[]) {
   return milestones.filter((m) => m.status === "pending");
@@ -18,7 +21,7 @@ export function splitByStatus(milestones: Milestone[]) {
   };
 }
 
-export function sortByDeadline(milestones: Milestone[] | Gql.Maybe<Milestone>[], { reverse = false } = {}) {
+export function sortByDeadline(milestones: Milestone[], { reverse = false } = {}) {
   let result: Milestone[] = [];
 
   return result.concat(milestones.map((m: Milestone) => m!)).sort((m1, m2) => {
@@ -74,64 +77,4 @@ export function isUpcoming(milestone: Milestone) {
 
 export function isDone(milestone: Milestone) {
   return milestone.status === "done";
-}
-
-const SET_MILESTONE_DEADLINE = gql`
-  mutation SetMilestoneDeadline($milestoneId: ID!, $deadlineAt: Date) {
-    setMilestoneDeadline(milestoneId: $milestoneId, deadlineAt: $deadlineAt) {
-      id
-    }
-  }
-`;
-
-export function useSetDeadline(options = {}) {
-  return useMutation(SET_MILESTONE_DEADLINE, options);
-}
-
-const REMOVE_MILESTONE = gql`
-  mutation RemoveProjectMilestone($milestoneId: ID!) {
-    removeProjectMilestone(milestoneId: $milestoneId) {
-      id
-    }
-  }
-`;
-
-export function useRemoveMilestone(options = {}) {
-  return useMutation(REMOVE_MILESTONE, options);
-}
-
-const UPDATE_MILESTONE_DESCRIPTION = gql`
-  mutation UpdateMilestoneDescription($input: UpdateMilestoneDescriptionInput!) {
-    updateMilestoneDescription(input: $input) {
-      id
-    }
-  }
-`;
-
-export function useUpdateDescription(options = {}) {
-  return useMutation(UPDATE_MILESTONE_DESCRIPTION, options);
-}
-
-const POST_MILESTONE_COMMENT = gql`
-  mutation PostMilestoneComment($input: PostMilestoneCommentInput!) {
-    postMilestoneComment(input: $input) {
-      id
-    }
-  }
-`;
-
-export function usePostComment(options = {}) {
-  return useMutation(POST_MILESTONE_COMMENT, options);
-}
-
-const UPDATE_MILESTONE = gql`
-  mutation UpdateMilestone($input: UpdateMilestoneInput!) {
-    updateMilestone(input: $input) {
-      id
-    }
-  }
-`;
-
-export function useUpdateMilestone(options = {}) {
-  return useMutation(UPDATE_MILESTONE, options);
 }
