@@ -285,7 +285,7 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
       comment: serialize_comment(content["comment"]),
       comment_action: content["comment_action"],
       milestone: %{
-        id: OperatelyWeb.Paths.milestone_id(content["milestone"]),
+        id: OperatelyWeb.Paths.milestone_id(content["milestone"].milestone_id, content["milestone"].title),
         title: content["milestone"].title,
       },
       project: serialize_project(content["project"]),
@@ -437,7 +437,7 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
   def serialize_new_milestones(milestones) do
     Enum.map(milestones, fn milestone -> 
       %{
-        id: OperatelyWeb.Paths.milestone_id(milestone),
+        id: OperatelyWeb.Paths.milestone_id(milestone["id"], milestone["title"]),
         title: milestone["title"], 
         deadline_at: serialize_date(milestone["due_date"])
       }
@@ -448,7 +448,7 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
   def serialize_updated_milestones(milestones) do
     Enum.map(milestones, fn milestone -> 
       %{
-        id: OperatelyWeb.Paths.milestone_id(milestone),
+        id: OperatelyWeb.Paths.milestone_id(milestone["id"], milestone["new_title"]),
         title: milestone["new_title"], 
         deadline_at: serialize_date(milestone["new_due_date"])
       }

@@ -145,8 +145,12 @@ defmodule OperatelyWeb.Paths do
   end
 
   def milestone_id(milestone) do
-    id = Operately.ShortUuid.encode!(milestone.id)
-    OperatelyWeb.Api.Helpers.id_with_comments(milestone.title, id)
+    milestone_id(milestone.id, milestone.title)
+  end
+
+  def milestone_id(id, title) do
+    id = Operately.ShortUuid.encode!(id)
+    OperatelyWeb.Api.Helpers.id_with_comments(title, id)
   end
 
   #
