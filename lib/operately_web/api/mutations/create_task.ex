@@ -14,6 +14,9 @@ defmodule OperatelyWeb.Api.Mutations.CreateTask do
   end
 
   def call(conn, inputs) do
+    {:ok, milestone_id} = decode_id(inputs.milestone_id)
+    inputs = %{inputs | milestone_id: milestone_id}
+
     creator = me(conn)
     {:ok, task} = Operately.Operations.TaskAdding.run(creator, inputs)
     {:ok, %{task: Serializer.serialize(task, level: :essential)}}

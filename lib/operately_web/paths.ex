@@ -86,7 +86,7 @@ defmodule OperatelyWeb.Paths do
   end
 
   def project_milestone_path(company = %Company{}, project = %Project{}, milestone) do
-    create_path([company_id(company), "projects", project_id(project), "milestones", milestone.id])
+    create_path([company_id(company), "projects", project_id(project), "milestones", milestone_id(milestone)])
   end
 
   def company_admin_path(company = %Company{}) do
@@ -142,6 +142,15 @@ defmodule OperatelyWeb.Paths do
     id = Operately.ShortUuid.encode!(check_in.id)
     date = check_in.inserted_at |> NaiveDateTime.to_date() |> Date.to_string()
     OperatelyWeb.Api.Helpers.id_with_comments(date, id)
+  end
+
+  def milestone_id(milestone) do
+    milestone_id(milestone.id, milestone.title)
+  end
+
+  def milestone_id(id, title) do
+    id = Operately.ShortUuid.encode!(id)
+    OperatelyWeb.Api.Helpers.id_with_comments(title, id)
   end
 
   #
