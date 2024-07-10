@@ -37,17 +37,13 @@ export function useFormState(project: Projects.Project, milestone: Milestones.Mi
 
 const useCompleteMilestone = (milestone: Milestones.Milestone) => {
   const refresh = useRefresh();
-  const [post] = Milestones.usePostComment();
+  const [post] = Milestones.usePostMilestoneComment();
 
   return async () => {
     await post({
-      variables: {
-        input: {
-          milestoneID: milestone.id,
-          content: null,
-          action: "complete",
-        },
-      },
+      milestoneId: milestone.id,
+      content: null,
+      action: "complete",
     });
 
     refresh();
@@ -56,17 +52,13 @@ const useCompleteMilestone = (milestone: Milestones.Milestone) => {
 
 const useReopenMilestone = (milestone: Milestones.Milestone) => {
   const refresh = useRefresh();
-  const [post] = Milestones.usePostComment();
+  const [post] = Milestones.usePostMilestoneComment();
 
   return async () => {
     await post({
-      variables: {
-        input: {
-          milestoneID: milestone.id,
-          content: null,
-          action: "reopen",
-        },
-      },
+      milestoneId: milestone.id,
+      content: null,
+      action: "reopen",
     });
 
     refresh();
@@ -77,16 +69,13 @@ const useArchiveMilestone = (project: Projects.Project, milestone: Milestones.Mi
   const refresh = useRefresh();
   const gotoProject = useNavigateTo(Paths.projectPath(project.id!));
 
-  const [post] = Milestones.useRemoveMilestone({ onCompleted: gotoProject });
+  const [post] = Milestones.useRemoveProjectMilestone();
 
   return async () => {
-    await post({
-      variables: {
-        milestoneId: milestone.id,
-      },
-    });
+    await post({ milestoneId: milestone.id });
 
     refresh();
+    gotoProject();
   };
 };
 
@@ -123,7 +112,7 @@ function useDescriptionState(milestone: Milestones.Milestone): DescriptionState 
     setState("show");
   }, [editor]);
 
-  const [post, { loading }] = Milestones.useUpdateDescription();
+  const [post, { loading }] = Milestones.useUpdateMilestoneDescription();
 
   const submit = React.useCallback(async () => {
     if (!editor) return;
@@ -132,14 +121,7 @@ function useDescriptionState(milestone: Milestones.Milestone): DescriptionState 
 
     const content = empty ? null : JSON.stringify(editor.getJSON());
 
-    await post({
-      variables: {
-        input: {
-          id: milestone.id,
-          description: content,
-        },
-      },
-    });
+    await post({ id: milestone.id, description: content });
 
     refresh();
     stopEditing();
@@ -187,9 +169,7 @@ function useTitleAndDeadlineState(milestone: Milestones.Milestone): TitleAndDead
 
   const startEditing = React.useCallback(() => setState("edit"), []);
 
-  const [post, { loading }] = Milestones.useUpdateMilestone({
-    onCompleted: refresh,
-  });
+  const [post, { loading }] = Milestones.useUpdateMilestone();
 
   const submit = React.useCallback(async () => {
     if (loading) return false;
@@ -205,16 +185,13 @@ function useTitleAndDeadlineState(milestone: Milestones.Milestone): TitleAndDead
     }
 
     await post({
-      variables: {
-        input: {
-          milestoneID: milestone.id,
-          title,
-          deadlineAt: Time.toDateWithoutTime(date),
-        },
-      },
+      milestoneId: milestone.id,
+      title: title,
+      deadlineAt: Time.toDateWithoutTime(date),
     });
 
     setState("show");
+    refresh();
     return true;
   }, [title, date, post, loading, milestone]);
 
