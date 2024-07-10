@@ -78,6 +78,7 @@ defmodule Operately.Activities.ContextAutoAssigner do
     "project_moved",
     "project_pausing",
     "project_renamed",
+    "project_permissions_edited",
     "project_resuming",
     "project_timeline_edited",
   ]

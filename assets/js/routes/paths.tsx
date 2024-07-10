@@ -123,6 +123,10 @@ export class Paths {
     return createCompanyPath(["projects", projectId, "edit", "name"]);
   }
 
+  static editProjectAccessLevelsPath(projectId: string) {
+    return createCompanyPath(["projects", projectId, "edit", "permissions"]);
+  }
+
   static moveProjectPath(projectId: string) {
     return createCompanyPath(["projects", projectId, "move"]);
   }
