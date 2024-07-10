@@ -16,7 +16,7 @@ defmodule OperatelyWeb.Api.Mutations.UpdateMilestone do
     {:ok, milestone_id} = decode_id(inputs.milestone_id)
 
     title = inputs.title
-    deadline_at = inputs.deadline_at
+    deadline_at = Date.from_iso8601!(inputs.deadline_at)
 
     milestone = Operately.Projects.get_milestone!(milestone_id)
     deadline = deadline_at && NaiveDateTime.new!(deadline_at, ~T[00:00:00])
