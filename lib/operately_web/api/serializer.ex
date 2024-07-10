@@ -232,7 +232,7 @@ end
 defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Milestone do
   def serialize(milestone, level: :essential) do
     %{
-      id: milestone.id,
+      id: OperatelyWeb.Paths.milestone_id(milestone),
       title: milestone.title,
       status: milestone.status,
       description: milestone.description && Jason.encode!(milestone.description),
