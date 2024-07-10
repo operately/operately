@@ -255,7 +255,7 @@ defmodule Operately.Support.Features.ProjectSteps do
   def visit_project_milestones_page(ctx, milestone_name) do
     {:ok, milestone} = Operately.Projects.get_milestone_by_name(ctx.project, milestone_name)
 
-    ctx |> UI.visit(Paths.project_milestone_path(ctx.company, ctx.project, milestone))
+    ctx |> UI.visit(Paths.project_milestone_path(ctx.company, milestone))
   end
 
   def follow_last_check_in(ctx) do

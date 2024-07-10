@@ -67,7 +67,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjects do
         :include_key_resources -> from p in q, preload: [:key_resources]
         :include_champion -> from p in q, preload: [:champion]
         :include_reviewer -> from p in q, preload: [:reviewer]
-        :include_milestones -> from p in q, preload: [:milestones]
+        :include_milestones -> from p in q, preload: [milestones: :project]
         _ -> q 
       end
     end)
