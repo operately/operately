@@ -16,7 +16,7 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectPermissions do
 
     project = Operately.Projects.get_project!(id)
 
-    # todo
+    Operately.Operations.ProjectPermissionsEditing.run(me(conn), project, inputs.access_levels)
 
     {:ok, %{project: OperatelyWeb.Api.Serializer.serialize(project)}}
   end
