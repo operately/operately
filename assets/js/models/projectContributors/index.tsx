@@ -1,6 +1,5 @@
-import { ProjectContributor } from "@/gql";
-
-export type { ProjectContributor };
+import * as api from "@/api";
+export type ProjectContributor = api.ProjectContributor;
 export type ContributorRole = "champion" | "reviewer" | "contributor";
 
 export const CHAMPION_RESPONSIBILITY = "Champion - Responsible for the success of the project";

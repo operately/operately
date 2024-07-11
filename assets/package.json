@@ -1,7 +1,5 @@
 {
   "dependencies": {
-    "@apollo/client": "^3.7.11",
-    "@graphql-codegen/typescript-react-apollo": "^4.0.0",
     "@radix-ui/react-popover": "^1.0.5",
     "@radix-ui/react-tooltip": "^1.0.6",
     "@sentry/react": "^7.76.0",
@@ -19,8 +17,6 @@
     "axios": "^1.5.0",
     "classnames": "^2.3.2",
     "date-fns": "^2.30.0",
-    "graphql": "^16.8.1",
-    "graphql-ws": "^5.12.1",
     "i18next": "^22.4.14",
     "nprogress": "^0.2.0",
     "prosemirror-state": "^1.4.1",
@@ -33,12 +29,10 @@
     "react-select": "^5.7.1",
     "react-spinners": "^0.13.8",
     "tippy.js": "^6.3.7",
-    "ts-pattern": "^5.0.8"
+    "ts-pattern": "^5.0.8",
+    "phoenix": "^1.7.14"
   },
   "devDependencies": {
-    "@graphql-codegen/cli": "5.0.0",
-    "@graphql-codegen/typescript": "4.0.1",
-    "@graphql-codegen/typescript-operations": "4.0.1",
     "@types/jest": "^29.5.12",
     "@types/nprogress": "^0.2.0",
     "@types/react": "^18.0.28",
@@ -57,7 +51,6 @@
   },
   "scripts": {
     "test": "jest",
-    "codegen": "graphql-codegen --config codegen.ts",
     "knip": "knip --no-progress"
   },
   "jest": {

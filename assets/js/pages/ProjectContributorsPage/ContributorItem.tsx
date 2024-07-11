@@ -16,7 +16,7 @@ interface Props {
 
 export default function ContributorItem({ project, contributor, refetch }: Props) {
   return (
-    <div data-test-id={`contributor-${contributor?.person.id}`}>
+    <div data-test-id={`contributor-${contributor?.person!.id}`}>
       <ContributorItemContent contributor={contributor} project={project} refetch={refetch} />
     </div>
   );
