@@ -585,6 +585,28 @@ export interface GoalPermissions {
   canArchive?: boolean | null;
 }
 
+export interface GoalProgressUpdate {
+  id?: string | null;
+  message?: string | null;
+  insertedAt?: string | null;
+  author?: Person | null;
+  acknowledged?: boolean | null;
+  acknowledgedAt?: string | null;
+  acknowledgingPerson?: Person | null;
+  reactions?: Reaction[] | null;
+  goalTargetUpdates?: GoalTargetUpdates[] | null;
+}
+
+export interface GoalTargetUpdates {
+  id?: string | null;
+  name?: string | null;
+  from?: number | null;
+  to?: number | null;
+  unit?: string | null;
+  value?: number | null;
+  previousValue?: number | null;
+}
+
 export interface Invitation {
   id?: string | null;
   adminName?: string | null;
@@ -1040,6 +1062,24 @@ export interface GetGoalCheckInsResult {
 }
 
 
+export interface GetGoalProgressUpdateInput {
+  id?: string | null;
+}
+
+export interface GetGoalProgressUpdateResult {
+  update?: GoalProgressUpdate | null;
+}
+
+
+export interface GetGoalProgressUpdatesInput {
+  goalId?: string | null;
+}
+
+export interface GetGoalProgressUpdatesResult {
+  updates?: GoalProgressUpdate | null;
+}
+
+
 export interface GetGoalsInput {
   spaceId?: string | null;
   includeTargets?: boolean | null;
@@ -1270,12 +1310,12 @@ export interface SearchProjectContributorCandidatesResult {
   people?: Person[] | null;
 }
 
-export interface AcknowledgeGoalCheckInInput {
-
+export interface AcknowledgeGoalProgressUpdateInput {
+  id?: string | null;
 }
 
-export interface AcknowledgeGoalCheckInResult {
-
+export interface AcknowledgeGoalProgressUpdateResult {
+  update?: GoalProgressUpdate | null;
 }
 
 
@@ -1405,11 +1445,13 @@ export interface ChangeGoalParentResult {
 
 
 export interface ChangePasswordFirstTimeInput {
-
+  token?: string | null;
+  password?: string | null;
+  passwordConfirmation?: string | null;
 }
 
 export interface ChangePasswordFirstTimeResult {
-
+  result?: string | null;
 }
 
 
@@ -1620,20 +1662,22 @@ export interface EditGoalDiscussionResult {
 }
 
 
+export interface EditGoalProgressUpdateInput {
+  id?: string | null;
+  content?: string | null;
+  newTargetValues?: string | null;
+}
+
+export interface EditGoalProgressUpdateResult {
+  update?: GoalProgressUpdate | null;
+}
+
+
 export interface EditGoalTimeframeInput {
 
 }
 
 export interface EditGoalTimeframeResult {
-
-}
-
-
-export interface EditGoalUpdateInput {
-
-}
-
-export interface EditGoalUpdateResult {
 
 }
 
@@ -1767,6 +1811,17 @@ export interface PostDiscussionInput {
 
 export interface PostDiscussionResult {
   discussion?: Discussion | null;
+}
+
+
+export interface PostGoalProgressUpdateInput {
+  content?: string | null;
+  goalId?: string | null;
+  newTargetValues?: string | null;
+}
+
+export interface PostGoalProgressUpdateResult {
+  update?: GoalProgressUpdate | null;
 }
 
 
@@ -2032,6 +2087,14 @@ export class ApiClient {
     return axios.get(this.getBasePath() + "/get_goal_check_ins", { params: toSnake(input)}).then(({ data }) => toCamel(data));
   }
 
+  async getGoalProgressUpdate(input: GetGoalProgressUpdateInput): Promise<GetGoalProgressUpdateResult> {
+    return axios.get(this.getBasePath() + "/get_goal_progress_update", { params: toSnake(input)}).then(({ data }) => toCamel(data));
+  }
+
+  async getGoalProgressUpdates(input: GetGoalProgressUpdatesInput): Promise<GetGoalProgressUpdatesResult> {
+    return axios.get(this.getBasePath() + "/get_goal_progress_updates", { params: toSnake(input)}).then(({ data }) => toCamel(data));
+  }
+
   async getGoals(input: GetGoalsInput): Promise<GetGoalsResult> {
     return axios.get(this.getBasePath() + "/get_goals", { params: toSnake(input)}).then(({ data }) => toCamel(data));
   }
@@ -2112,8 +2175,8 @@ export class ApiClient {
     return axios.get(this.getBasePath() + "/search_project_contributor_candidates", { params: toSnake(input)}).then(({ data }) => toCamel(data));
   }
 
-  async acknowledgeGoalCheckIn(input: AcknowledgeGoalCheckInInput): Promise<AcknowledgeGoalCheckInResult> {
-    return axios.post(this.getBasePath() + "/acknowledge_goal_check_in", toSnake(input)).then(({ data }) => toCamel(data));
+  async acknowledgeGoalProgressUpdate(input: AcknowledgeGoalProgressUpdateInput): Promise<AcknowledgeGoalProgressUpdateResult> {
+    return axios.post(this.getBasePath() + "/acknowledge_goal_progress_update", toSnake(input)).then(({ data }) => toCamel(data));
   }
 
   async acknowledgeProjectCheckIn(input: AcknowledgeProjectCheckInInput): Promise<AcknowledgeProjectCheckInResult> {
@@ -2236,12 +2299,12 @@ export class ApiClient {
     return axios.post(this.getBasePath() + "/edit_goal_discussion", toSnake(input)).then(({ data }) => toCamel(data));
   }
 
-  async editGoalTimeframe(input: EditGoalTimeframeInput): Promise<EditGoalTimeframeResult> {
-    return axios.post(this.getBasePath() + "/edit_goal_timeframe", toSnake(input)).then(({ data }) => toCamel(data));
+  async editGoalProgressUpdate(input: EditGoalProgressUpdateInput): Promise<EditGoalProgressUpdateResult> {
+    return axios.post(this.getBasePath() + "/edit_goal_progress_update", toSnake(input)).then(({ data }) => toCamel(data));
   }
 
-  async editGoalUpdate(input: EditGoalUpdateInput): Promise<EditGoalUpdateResult> {
-    return axios.post(this.getBasePath() + "/edit_goal_update", toSnake(input)).then(({ data }) => toCamel(data));
+  async editGoalTimeframe(input: EditGoalTimeframeInput): Promise<EditGoalTimeframeResult> {
+    return axios.post(this.getBasePath() + "/edit_goal_timeframe", toSnake(input)).then(({ data }) => toCamel(data));
   }
 
   async editGroup(input: EditGroupInput): Promise<EditGroupResult> {
@@ -2294,6 +2357,10 @@ export class ApiClient {
 
   async postDiscussion(input: PostDiscussionInput): Promise<PostDiscussionResult> {
     return axios.post(this.getBasePath() + "/post_discussion", toSnake(input)).then(({ data }) => toCamel(data));
+  }
+
+  async postGoalProgressUpdate(input: PostGoalProgressUpdateInput): Promise<PostGoalProgressUpdateResult> {
+    return axios.post(this.getBasePath() + "/post_goal_progress_update", toSnake(input)).then(({ data }) => toCamel(data));
   }
 
   async postMilestoneComment(input: PostMilestoneCommentInput): Promise<PostMilestoneCommentResult> {
@@ -2410,6 +2477,12 @@ export async function getGoalCheckIn(input: GetGoalCheckInInput) : Promise<GetGo
 export async function getGoalCheckIns(input: GetGoalCheckInsInput) : Promise<GetGoalCheckInsResult> {
   return defaultApiClient.getGoalCheckIns(input);
 }
+export async function getGoalProgressUpdate(input: GetGoalProgressUpdateInput) : Promise<GetGoalProgressUpdateResult> {
+  return defaultApiClient.getGoalProgressUpdate(input);
+}
+export async function getGoalProgressUpdates(input: GetGoalProgressUpdatesInput) : Promise<GetGoalProgressUpdatesResult> {
+  return defaultApiClient.getGoalProgressUpdates(input);
+}
 export async function getGoals(input: GetGoalsInput) : Promise<GetGoalsResult> {
   return defaultApiClient.getGoals(input);
 }
@@ -2470,8 +2543,8 @@ export async function searchPotentialSpaceMembers(input: SearchPotentialSpaceMem
 export async function searchProjectContributorCandidates(input: SearchProjectContributorCandidatesInput) : Promise<SearchProjectContributorCandidatesResult> {
   return defaultApiClient.searchProjectContributorCandidates(input);
 }
-export async function acknowledgeGoalCheckIn(input: AcknowledgeGoalCheckInInput) : Promise<AcknowledgeGoalCheckInResult> {
-  return defaultApiClient.acknowledgeGoalCheckIn(input);
+export async function acknowledgeGoalProgressUpdate(input: AcknowledgeGoalProgressUpdateInput) : Promise<AcknowledgeGoalProgressUpdateResult> {
+  return defaultApiClient.acknowledgeGoalProgressUpdate(input);
 }
 export async function acknowledgeProjectCheckIn(input: AcknowledgeProjectCheckInInput) : Promise<AcknowledgeProjectCheckInResult> {
   return defaultApiClient.acknowledgeProjectCheckIn(input);
@@ -2563,11 +2636,11 @@ export async function editGoal(input: EditGoalInput) : Promise<EditGoalResult> {
 export async function editGoalDiscussion(input: EditGoalDiscussionInput) : Promise<EditGoalDiscussionResult> {
   return defaultApiClient.editGoalDiscussion(input);
 }
+export async function editGoalProgressUpdate(input: EditGoalProgressUpdateInput) : Promise<EditGoalProgressUpdateResult> {
+  return defaultApiClient.editGoalProgressUpdate(input);
+}
 export async function editGoalTimeframe(input: EditGoalTimeframeInput) : Promise<EditGoalTimeframeResult> {
   return defaultApiClient.editGoalTimeframe(input);
-}
-export async function editGoalUpdate(input: EditGoalUpdateInput) : Promise<EditGoalUpdateResult> {
-  return defaultApiClient.editGoalUpdate(input);
 }
 export async function editGroup(input: EditGroupInput) : Promise<EditGroupResult> {
   return defaultApiClient.editGroup(input);
@@ -2607,6 +2680,9 @@ export async function pauseProject(input: PauseProjectInput) : Promise<PauseProj
 }
 export async function postDiscussion(input: PostDiscussionInput) : Promise<PostDiscussionResult> {
   return defaultApiClient.postDiscussion(input);
+}
+export async function postGoalProgressUpdate(input: PostGoalProgressUpdateInput) : Promise<PostGoalProgressUpdateResult> {
+  return defaultApiClient.postGoalProgressUpdate(input);
 }
 export async function postMilestoneComment(input: PostMilestoneCommentInput) : Promise<PostMilestoneCommentResult> {
   return defaultApiClient.postMilestoneComment(input);
@@ -2709,6 +2785,14 @@ export function useGetGoalCheckIns(input: GetGoalCheckInsInput) : UseQueryHookRe
   return useQuery<GetGoalCheckInsResult>(() => defaultApiClient.getGoalCheckIns(input));
 }
 
+export function useGetGoalProgressUpdate(input: GetGoalProgressUpdateInput) : UseQueryHookResult<GetGoalProgressUpdateResult> {
+  return useQuery<GetGoalProgressUpdateResult>(() => defaultApiClient.getGoalProgressUpdate(input));
+}
+
+export function useGetGoalProgressUpdates(input: GetGoalProgressUpdatesInput) : UseQueryHookResult<GetGoalProgressUpdatesResult> {
+  return useQuery<GetGoalProgressUpdatesResult>(() => defaultApiClient.getGoalProgressUpdates(input));
+}
+
 export function useGetGoals(input: GetGoalsInput) : UseQueryHookResult<GetGoalsResult> {
   return useQuery<GetGoalsResult>(() => defaultApiClient.getGoals(input));
 }
@@ -2789,8 +2873,8 @@ export function useSearchProjectContributorCandidates(input: SearchProjectContri
   return useQuery<SearchProjectContributorCandidatesResult>(() => defaultApiClient.searchProjectContributorCandidates(input));
 }
 
-export function useAcknowledgeGoalCheckIn() : UseMutationHookResult<AcknowledgeGoalCheckInInput, AcknowledgeGoalCheckInResult> {
-  return useMutation<AcknowledgeGoalCheckInInput, AcknowledgeGoalCheckInResult>((input) => defaultApiClient.acknowledgeGoalCheckIn(input));
+export function useAcknowledgeGoalProgressUpdate() : UseMutationHookResult<AcknowledgeGoalProgressUpdateInput, AcknowledgeGoalProgressUpdateResult> {
+  return useMutation<AcknowledgeGoalProgressUpdateInput, AcknowledgeGoalProgressUpdateResult>((input) => defaultApiClient.acknowledgeGoalProgressUpdate(input));
 }
 
 export function useAcknowledgeProjectCheckIn() : UseMutationHookResult<AcknowledgeProjectCheckInInput, AcknowledgeProjectCheckInResult> {
@@ -2913,12 +2997,12 @@ export function useEditGoalDiscussion() : UseMutationHookResult<EditGoalDiscussi
   return useMutation<EditGoalDiscussionInput, EditGoalDiscussionResult>((input) => defaultApiClient.editGoalDiscussion(input));
 }
 
-export function useEditGoalTimeframe() : UseMutationHookResult<EditGoalTimeframeInput, EditGoalTimeframeResult> {
-  return useMutation<EditGoalTimeframeInput, EditGoalTimeframeResult>((input) => defaultApiClient.editGoalTimeframe(input));
+export function useEditGoalProgressUpdate() : UseMutationHookResult<EditGoalProgressUpdateInput, EditGoalProgressUpdateResult> {
+  return useMutation<EditGoalProgressUpdateInput, EditGoalProgressUpdateResult>((input) => defaultApiClient.editGoalProgressUpdate(input));
 }
 
-export function useEditGoalUpdate() : UseMutationHookResult<EditGoalUpdateInput, EditGoalUpdateResult> {
-  return useMutation<EditGoalUpdateInput, EditGoalUpdateResult>((input) => defaultApiClient.editGoalUpdate(input));
+export function useEditGoalTimeframe() : UseMutationHookResult<EditGoalTimeframeInput, EditGoalTimeframeResult> {
+  return useMutation<EditGoalTimeframeInput, EditGoalTimeframeResult>((input) => defaultApiClient.editGoalTimeframe(input));
 }
 
 export function useEditGroup() : UseMutationHookResult<EditGroupInput, EditGroupResult> {
@@ -2971,6 +3055,10 @@ export function usePauseProject() : UseMutationHookResult<PauseProjectInput, Pau
 
 export function usePostDiscussion() : UseMutationHookResult<PostDiscussionInput, PostDiscussionResult> {
   return useMutation<PostDiscussionInput, PostDiscussionResult>((input) => defaultApiClient.postDiscussion(input));
+}
+
+export function usePostGoalProgressUpdate() : UseMutationHookResult<PostGoalProgressUpdateInput, PostGoalProgressUpdateResult> {
+  return useMutation<PostGoalProgressUpdateInput, PostGoalProgressUpdateResult>((input) => defaultApiClient.postGoalProgressUpdate(input));
 }
 
 export function usePostMilestoneComment() : UseMutationHookResult<PostMilestoneCommentInput, PostMilestoneCommentResult> {
@@ -3076,6 +3164,10 @@ export default {
   useGetGoalCheckIn,
   getGoalCheckIns,
   useGetGoalCheckIns,
+  getGoalProgressUpdate,
+  useGetGoalProgressUpdate,
+  getGoalProgressUpdates,
+  useGetGoalProgressUpdates,
   getGoals,
   useGetGoals,
   getInvitation,
@@ -3116,8 +3208,8 @@ export default {
   useSearchPotentialSpaceMembers,
   searchProjectContributorCandidates,
   useSearchProjectContributorCandidates,
-  acknowledgeGoalCheckIn,
-  useAcknowledgeGoalCheckIn,
+  acknowledgeGoalProgressUpdate,
+  useAcknowledgeGoalProgressUpdate,
   acknowledgeProjectCheckIn,
   useAcknowledgeProjectCheckIn,
   addCompanyAdmins,
@@ -3178,10 +3270,10 @@ export default {
   useEditGoal,
   editGoalDiscussion,
   useEditGoalDiscussion,
+  editGoalProgressUpdate,
+  useEditGoalProgressUpdate,
   editGoalTimeframe,
   useEditGoalTimeframe,
-  editGoalUpdate,
-  useEditGoalUpdate,
   editGroup,
   useEditGroup,
   editKeyResource,
@@ -3208,6 +3300,8 @@ export default {
   usePauseProject,
   postDiscussion,
   usePostDiscussion,
+  postGoalProgressUpdate,
+  usePostGoalProgressUpdate,
   postMilestoneComment,
   usePostMilestoneComment,
   postProjectCheckIn,
