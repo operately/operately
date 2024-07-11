@@ -18,6 +18,8 @@ import "./i18n";
 import { setupTestErrorLogger } from "@/utils/errorLogger";
 import { ThemeProvider } from "./theme";
 
+import "@/api/socket";
+
 setupTestErrorLogger();
 
 Api.configureDefault({ basePath: "/api/v2" });

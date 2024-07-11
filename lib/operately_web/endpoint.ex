@@ -1,6 +1,5 @@
 defmodule OperatelyWeb.Endpoint do
   use SiteEncrypt.Phoenix.Endpoint, otp_app: :operately
-  use Absinthe.Phoenix.Endpoint
 
   # Allow running wallaby tests in parallel
   if sandbox = Application.compile_env(:operately, :sandbox) do
@@ -20,8 +19,7 @@ defmodule OperatelyWeb.Endpoint do
 
   socket "/live", Phoenix.LiveView.Socket, websocket: [connect_info: [:user_agent, session: @session_options]]
 
-  socket "/api/graphql-ws", OperatelyWeb.GraphqlWSSocket,
-    websocket: [path: "", subprotocols: ["graphql-transport-ws"]]
+  socket "/api/v2/subscriptions", OperatelyWeb.ApiSocket, websocket: true, longpoll: false
 
   # Serve at "/" the static files from "priv/static" directory.
   #

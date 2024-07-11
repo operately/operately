@@ -36,7 +36,7 @@ defmodule Operately.Notifications do
       read_at: DateTime.utc_now()
     })
 
-    # OperatelyWeb.Api.publish(:unread_notification_count_changed, %{person_id: notification.person_id})
+    OperatelyWeb.ApiSocket.broadcast!("api:unread_notification_count:#{notification.person_id}")
 
     {:ok, notification}
   end
@@ -48,7 +48,7 @@ defmodule Operately.Notifications do
 
     Repo.update_all(query, [set: [read: true, read_at: now]])
 
-    # OperatelyWeb.Api.publish(:unread_notification_count_changed, %{person_id: person.id})
+    OperatelyWeb.ApiSocket.broadcast!("api:unread_notification_count:#{person.id}")
 
     {:ok, true}
   end
@@ -82,11 +82,11 @@ defmodule Operately.Notifications do
     |> Repo.transaction()
     |> case do
       {:ok, %{notifications: notifications}} -> 
-        # unique_person_ids = Enum.uniq(Enum.map(notifications, &(&1.person_id)))
+        unique_person_ids = Enum.uniq(Enum.map(notifications, &(&1.person_id)))
 
-        # Enum.each(unique_person_ids, fn person_id ->
-          # OperatelyWeb.Api.publish(:unread_notification_count_changed, %{person_id: person_id})
-        # end)
+        Enum.each(unique_person_ids, fn person_id ->
+          OperatelyWeb.ApiSocket.broadcast!("api:unread_notification_count:#{person_id}")
+        end)
 
         {:ok, notifications}
       {:error, _} -> 

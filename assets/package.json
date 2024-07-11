@@ -29,7 +29,8 @@
     "react-select": "^5.7.1",
     "react-spinners": "^0.13.8",
     "tippy.js": "^6.3.7",
-    "ts-pattern": "^5.0.8"
+    "ts-pattern": "^5.0.8",
+    "phoenix": "^1.7.14"
   },
   "devDependencies": {
     "@types/jest": "^29.5.12",

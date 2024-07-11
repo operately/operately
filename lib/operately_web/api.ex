@@ -9,6 +9,7 @@ defmodule OperatelyWeb.Api do
 
   alias OperatelyWeb.Api.Queries, as: Q
   alias OperatelyWeb.Api.Mutations, as: M
+  alias OperatelyWeb.Api.Subscriptions, as: S
 
   query :get_activities, Q.GetActivities
   query :get_activity, Q.GetActivity
@@ -110,4 +111,6 @@ defmodule OperatelyWeb.Api do
   mutation :update_project_description, M.UpdateProjectDescription
   mutation :update_task, M.UpdateTask
   mutation :update_task_status, M.UpdateTaskStatus
+
+  subscription :unread_notifications_count, S.UnreadNotificationsCount
 end
