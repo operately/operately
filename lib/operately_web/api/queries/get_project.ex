@@ -19,6 +19,7 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
     field :include_reviewer, :boolean
     field :include_space, :boolean
     field :include_access_levels, :boolean
+    field :include_contributors_access_levels, :boolean
   end
 
   outputs do
@@ -49,6 +50,7 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
     |> Project.scope_company(person.company_id)
     |> Project.scope_visibility(person.id)
     |> include_requested(include_filters)
+    |> load_contributors_access_level(inputs[:include_contributors_access_levels], id)
     |> Repo.one(with_deleted: true)
     |> Project.after_load_hooks()
     |> include_permissions(person, include_filters)
@@ -60,6 +62,7 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
       case include do
         :include_closed_by -> from p in q, preload: [:closed_by]
         :include_contributors -> from p in q, preload: [contributors: :person]
+        :include_contributors_access_levels -> q # this is done in a separate function
         :include_key_resources -> from p in q, preload: [:key_resources]
         :include_last_check_in -> from p in q, preload: [last_check_in: :author]
         :include_milestones -> from p in q, preload: [milestones: :project]
@@ -85,4 +88,21 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
   defp load_access_levels(nil, _), do: nil
   defp load_access_levels(project, true), do: Project.preload_access_levels(project)
   defp load_access_levels(project, _), do: project
+
+  defp load_contributors_access_level(query, true, project_id) do
+    subquery = from(b in Operately.Access.Binding,
+      join: c in assoc(b, :context),
+      where: c.project_id == ^project_id,
+      select: b
+    )
+
+    from(p in query,
+      join: contribs in assoc(p, :contributors),
+      join: person in assoc(contribs, :person),
+      join: group in assoc(person, :access_group),
+      where: p.id == ^project_id,
+      preload: [contributors: {contribs, [person: {person, [access_group: {group, [bindings: ^subquery]}]}]}]
+    )
+  end
+  defp load_contributors_access_level(query, _, _), do: query
 end

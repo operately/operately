@@ -697,6 +697,7 @@ export interface ProjectContributor {
   responsibility?: string | null;
   role?: string | null;
   person?: Person | null;
+  accessLevel?: number | null;
 }
 
 export interface ProjectHealth {
@@ -1139,6 +1140,7 @@ export interface GetProjectInput {
   includeReviewer?: boolean | null;
   includeSpace?: boolean | null;
   includeAccessLevels?: boolean | null;
+  includeContributorsAccessLevels?: boolean | null;
 }
 
 export interface GetProjectResult {
