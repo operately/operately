@@ -81,6 +81,7 @@ defmodule Operately.Activities.ContextAutoAssigner do
     "project_permissions_edited",
     "project_resuming",
     "project_timeline_edited",
+    "project_contributor_edited",
   ]
 
   @task_actions [
