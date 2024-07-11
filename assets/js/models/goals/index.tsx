@@ -10,13 +10,13 @@ export {
   useEditGoal,
   useConnectGoalToProject,
   useDisconnectGoalFromProject,
+  useEditGoalTimeframe,
+  useEditGoalDiscussion,
+  useCloseGoal,
+  useArchiveGoal,
+  useChangeGoalParent,
+  useReopenGoal,
 } from "@/api";
-
-export { useEditGoalTimeframeMutation, useEditGoalDiscussionMutation } from "@/gql/generated";
-export { useCloseGoalMutation } from "./useCloseGoalMutation";
-export { useArchiveGoalMutation } from "./useArchiveGoalMutation";
-export { useChangeGoalParentMutation } from "./useChangeGoalParentMutation";
-export { useReopenGoalMutation } from "./useReopenGoalMutation";
 
 export { groupBySpace } from "./groupBySpace";
 export { filterPossibleParentGoals } from "./filterPossibleParentGoals";

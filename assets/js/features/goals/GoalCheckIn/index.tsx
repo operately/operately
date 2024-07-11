@@ -129,8 +129,11 @@ function AcknowledgeButton({ goal }: { goal: Goals.Goal }) {
   if (goal.lastCheckIn.acknowledged) return null;
 
   const refresh = Pages.useRefresh();
-  const [ack] = GoalCheckIns.useAckUpdate({ onCompleted: refresh });
-  const handleAcknowledge = () => ack({ variables: { id: goal.lastCheckIn!.id } });
+  const [ack] = GoalCheckIns.useAcknowledgeGoalProgressUpdate();
+  const handleAcknowledge = async () => {
+    await ack({ id: goal.lastCheckIn!.id });
+    refresh();
+  };
 
   return (
     <div className="flex items-center gap-1">
