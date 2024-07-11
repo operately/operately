@@ -63,7 +63,7 @@ function ResourceListItem({ resource }: { resource: KeyResources.KeyResource }) 
   const icon = <ResourceIcon resourceType={resource!.resourceType!} size={32} />;
   const removeId = createTestId("remove-resource", title!);
 
-  const editPath = Paths.projectEditResourcePath(project.id!, resource!.id!);
+  const editPath = Paths.projectEditResourcePath(resource!.id!);
   const editId = createTestId("edit-resource", title!);
 
   const submit = React.useCallback(async () => {

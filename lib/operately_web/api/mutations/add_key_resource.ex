@@ -18,6 +18,7 @@ defmodule OperatelyWeb.Api.Mutations.AddKeyResource do
 
     inputs = Map.put(inputs, :project_id, project_id)
     {:ok, resource} = Operately.Projects.create_key_resource(inputs)
+    resource = Operately.Repo.preload(resource, :project)
 
     {:ok, %{key_resource: OperatelyWeb.Api.Serializer.serialize(resource)}}
   end

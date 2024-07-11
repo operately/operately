@@ -740,6 +740,7 @@ export interface ProjectHealth {
 
 export interface ProjectKeyResource {
   id?: string | null;
+  projectId?: string | null;
   title?: string | null;
   link?: string | null;
   resourceType?: string | null;
