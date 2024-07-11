@@ -128,6 +128,22 @@ defmodule Operately.Projects.Project do
     from p in query, order_by: [asc: p.name]
   end
 
+  def preload_contributors_access_level(query, project_id) do
+    subquery = from(b in Operately.Access.Binding,
+      join: c in assoc(b, :context),
+      where: c.project_id == ^project_id,
+      select: b
+    )
+
+    from(p in query,
+      join: contribs in assoc(p, :contributors),
+      join: person in assoc(contribs, :person),
+      join: group in assoc(person, :access_group),
+      where: p.id == ^project_id,
+      preload: [contributors: {contribs, [person: {person, [access_group: {group, [bindings: ^subquery]}]}]}]
+    )
+  end
+
   # After load hooks
 
   def after_load_hooks(projects) when is_list(projects) do

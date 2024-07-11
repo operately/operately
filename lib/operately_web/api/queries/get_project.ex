@@ -89,20 +89,6 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
   defp load_access_levels(project, true), do: Project.preload_access_levels(project)
   defp load_access_levels(project, _), do: project
 
-  defp load_contributors_access_level(query, true, project_id) do
-    subquery = from(b in Operately.Access.Binding,
-      join: c in assoc(b, :context),
-      where: c.project_id == ^project_id,
-      select: b
-    )
-
-    from(p in query,
-      join: contribs in assoc(p, :contributors),
-      join: person in assoc(contribs, :person),
-      join: group in assoc(person, :access_group),
-      where: p.id == ^project_id,
-      preload: [contributors: {contribs, [person: {person, [access_group: {group, [bindings: ^subquery]}]}]}]
-    )
-  end
+  defp load_contributors_access_level(query, true, project_id), do: Project.preload_contributors_access_level(query, project_id)
   defp load_contributors_access_level(query, _, _), do: query
 end

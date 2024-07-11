@@ -114,6 +114,7 @@ function EditAssignment({ contributor, project, onSave, onRemove, onClose }) {
       contribId: contributor.id,
       personId: personID,
       responsibility: newResp,
+      permissions: permissions?.value || 0,
     });
 
     onSave();
