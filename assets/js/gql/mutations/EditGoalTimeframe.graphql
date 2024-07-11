@@ -1,5 +1,0 @@
-mutation EditGoalTimeframe($input: EditGoalTimeframeInput!) {
-  editGoalTimeframe(input: $input) {
-    id
-  }
-}

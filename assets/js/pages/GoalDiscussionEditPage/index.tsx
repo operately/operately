@@ -87,13 +87,11 @@ function useForm({ goal, activity }: { goal: Goals.Goal; activity: Activities.Ac
       formValidator("editor", "Body is required", Validators.nonEmptyRichText),
     ],
     action: useFormMutationAction({
-      mutationHook: Goals.useEditGoalDiscussionMutation,
+      mutationHook: Goals.useEditGoalDiscussion,
       variables: (fields) => ({
-        input: {
-          activityId: activity.id,
-          title: fields.title,
-          message: JSON.stringify(fields.editor.editor.getJSON()),
-        },
+        activityId: activity.id,
+        title: fields.title,
+        message: JSON.stringify(fields.editor.editor.getJSON()),
       }),
       onCompleted: (_data, navigate) => navigate(Paths.goalActivityPath(goal.id!, activity.id!)),
     }),
