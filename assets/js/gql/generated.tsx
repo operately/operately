@@ -142,15 +142,6 @@ export type Group = {
   privateSpace: Scalars['Boolean']['output'];
 };
 
-export type Invitation = {
-  __typename?: 'Invitation';
-  admin: Person;
-  adminName: Scalars['String']['output'];
-  id: Scalars['ID']['output'];
-  member: Person;
-  token: Scalars['String']['output'];
-};
-
 export type Milestone = {
   __typename?: 'Milestone';
   comments?: Maybe<Array<Maybe<MilestoneComment>>>;
@@ -366,14 +357,8 @@ export type RootMutationTypeReopenGoalArgs = {
 
 export type RootQueryType = {
   __typename?: 'RootQueryType';
-  invitation: Invitation;
   update: Update;
   updates: Array<Maybe<Update>>;
-};
-
-
-export type RootQueryTypeInvitationArgs = {
-  token: Scalars['String']['input'];
 };
 
 
@@ -565,13 +550,6 @@ export type EditGoalTimeframeMutationVariables = Exact<{
 
 export type EditGoalTimeframeMutation = { __typename?: 'RootMutationType', editGoalTimeframe: { __typename?: 'Goal', id: string } };
 
-export type GetInvitationQueryVariables = Exact<{
-  token: Scalars['String']['input'];
-}>;
-
-
-export type GetInvitationQuery = { __typename?: 'RootQueryType', invitation: { __typename?: 'Invitation', admin: { __typename?: 'Person', fullName: string, company: { __typename?: 'Company', name: string } }, member: { __typename?: 'Person', fullName: string, email?: string | null } } };
-
 
 export const EditGoalDiscussionDocument = gql`
     mutation EditGoalDiscussion($input: EditGoalDiscussionInput!) {
@@ -639,47 +617,3 @@ export function useEditGoalTimeframeMutation(baseOptions?: Apollo.MutationHookOp
 export type EditGoalTimeframeMutationHookResult = ReturnType<typeof useEditGoalTimeframeMutation>;
 export type EditGoalTimeframeMutationResult = Apollo.MutationResult<EditGoalTimeframeMutation>;
 export type EditGoalTimeframeMutationOptions = Apollo.BaseMutationOptions<EditGoalTimeframeMutation, EditGoalTimeframeMutationVariables>;
-export const GetInvitationDocument = gql`
-    query GetInvitation($token: String!) {
-  invitation(token: $token) {
-    admin {
-      fullName
-      company {
-        name
-      }
-    }
-    member {
-      fullName
-      email
-    }
-  }
-}
-    `;
-
-/**
- * __useGetInvitationQuery__
- *
- * To run a query within a React component, call `useGetInvitationQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetInvitationQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetInvitationQuery({
- *   variables: {
- *      token: // value for 'token'
- *   },
- * });
- */
-export function useGetInvitationQuery(baseOptions: Apollo.QueryHookOptions<GetInvitationQuery, GetInvitationQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetInvitationQuery, GetInvitationQueryVariables>(GetInvitationDocument, options);
-      }
-export function useGetInvitationLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetInvitationQuery, GetInvitationQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetInvitationQuery, GetInvitationQueryVariables>(GetInvitationDocument, options);
-        }
-export type GetInvitationQueryHookResult = ReturnType<typeof useGetInvitationQuery>;
-export type GetInvitationLazyQueryHookResult = ReturnType<typeof useGetInvitationLazyQuery>;
-export type GetInvitationQueryResult = Apollo.QueryResult<GetInvitationQuery, GetInvitationQueryVariables>;

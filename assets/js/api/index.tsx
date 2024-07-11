@@ -1057,11 +1057,11 @@ export interface GetGoalsResult {
 
 
 export interface GetInvitationInput {
-
+  token?: string | null;
 }
 
 export interface GetInvitationResult {
-
+  invitation?: Invitation | null;
 }
 
 
