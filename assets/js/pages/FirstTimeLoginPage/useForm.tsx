@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { useChangePasswordMutation } from "@/models/accounts";
+import * as Accounts from "@/models/accounts";
 import { logIn } from "@/models/people";
 import { useLoadedData } from "./loader";
 
@@ -50,13 +50,7 @@ function useSubmit(fields: FormFields) {
   const { invitation, token } = useLoadedData();
   const [errors, setErrors] = useState<FormError[]>([]);
 
-  const [add, { loading: submitting }] = useChangePasswordMutation({
-    onCompleted: () => {
-      logIn(invitation.member!.email!, fields.password).then(() => {
-        window.location.href = "/";
-      });
-    },
-  });
+  const [add, { loading: submitting }] = Accounts.useChangePasswordFirstTime();
 
   const submit = async () => {
     let errors = validate(fields);
@@ -67,13 +61,13 @@ function useSubmit(fields: FormFields) {
     }
 
     await add({
-      variables: {
-        input: {
-          token: token,
-          password: fields.password,
-          passwordConfirmation: fields.passwordConfirmation,
-        },
-      },
+      token: token,
+      password: fields.password,
+      passwordConfirmation: fields.passwordConfirmation,
+    });
+
+    logIn(invitation.member!.email!, fields.password).then(() => {
+      window.location.href = "/";
     });
 
     return true;
