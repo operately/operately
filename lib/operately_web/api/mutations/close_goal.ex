@@ -14,7 +14,7 @@ defmodule OperatelyWeb.Api.Mutations.CloseGoal do
 
   def call(conn, inputs) do
     author = me(conn)
-    {:ok, goal_id} = decode_id(inputs.id)
+    {:ok, goal_id} = decode_id(inputs.goal_id)
     {:ok, goal} = Operately.Operations.GoalClosing.run(author, goal_id, inputs.success, inputs.retrospective)
 
     {:ok, %{goal: OperatelyWeb.Api.Serializer.serialize(goal)}}

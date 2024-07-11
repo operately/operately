@@ -125,7 +125,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Updates.Update do
       acknowledging_person: OperatelyWeb.Api.Serializer.serialize(update.acknowledging_person),
       reactions: OperatelyWeb.Api.Serializer.serialize(update.reactions),
       comments_count: Operately.Updates.count_comments(update.id, :update),
-      goal_target_updates: Enum.map(update.content["targets"], fn t ->
+      goal_target_updates: update.content["targets"] && Enum.map(update.content["targets"], fn t ->
         %{
           id: t["id"],
           name: t["name"],
