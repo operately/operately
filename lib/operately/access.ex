@@ -165,12 +165,15 @@ defmodule Operately.Access do
     |> Multi.run(name, fn repo, %{context: context} ->
       case get_binding(context_id: context.id, group_id: access_group.id) do
         nil ->
-          Binding.changeset(%{
+          {:ok, binding} = Binding.changeset(%{
             context_id: context.id,
             group_id: access_group.id,
             access_level: access_level,
           })
           |> repo.insert()
+
+          {:ok, %{previous: %{access_level: 0}, updated: binding}}
+
 
         binding ->
           {:ok, updated} = Binding.changeset(binding, %{access_level: access_level})
