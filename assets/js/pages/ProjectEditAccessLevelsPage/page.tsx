@@ -17,7 +17,7 @@ export function Page() {
   const { project, company } = useLoadedData();
   
   return (
-    <Pages.Page title={["Edit Project Name", project.name!]}>
+    <Pages.Page title={["Edit Project Permissions", project.name!]}>
       <Paper.Root>
         <Paper.Navigation>
           <Paper.NavItem linkTo={Paths.projectPath(project.id!)}>
@@ -27,7 +27,7 @@ export function Page() {
         </Paper.Navigation>
 
         <Paper.Body>
-          <h1 className="mb-8 font-extrabold text-content-accent text-3xl">Editing the project's permissions</h1>
+          <h1 className="mb-8 font-extrabold text-content-accent text-3xl">Editing the project&apos;s permissions</h1>
           <PermissionsProvider company={company} space={project.space} currentPermissions={project.accessLevels} >
             <Form project={project} />
           </PermissionsProvider>
