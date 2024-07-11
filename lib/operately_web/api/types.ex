@@ -905,4 +905,27 @@ defmodule OperatelyWeb.Api.Types do
     field :due_time, :date
   end
 
+  object :goal_progress_update do
+    field :id, :string
+    field :message, :string
+    field :inserted_at, :datetime
+    field :author, :person
+    field :acknowledged, :boolean
+    field :acknowledged_at, :datetime
+    field :acknowledging_person, :person
+    field :reactions, list_of(:reaction)
+    field :goal_target_updates, list_of(:goal_target_updates)
+  end
+
+  object :goal_target_updates do
+    field :id, :string
+    field :index, :integer
+    field :name, :string
+    field :from, :float
+    field :to, :float
+    field :unit, :string
+    field :value, :float
+    field :previous_value, :float
+  end
+
 end

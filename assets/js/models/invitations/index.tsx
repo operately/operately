@@ -1,1 +1,4 @@
-export { getInvitation } from "./getInvitation";
+import * as api from "@/api";
+export { getInvitation } from "@/api";
+
+export type Invitation = api.Invitation;

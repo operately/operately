@@ -4,7 +4,7 @@ import * as Time from "@/utils/time";
 
 import { Item, ItemType } from "./form";
 
-export function useForGoalCheckIn(update: GoalCheckIns.GoalCheckIn) {
+export function useForGoalCheckIn(update: GoalCheckIns.Update) {
   const { data, loading, error, refetch } = Comments.useGetComments({
     entityId: update.id!,
     entityType: "update",
@@ -23,7 +23,7 @@ export function useForGoalCheckIn(update: GoalCheckIns.GoalCheckIn) {
 
   if (error) throw error;
 
-  const { before, after } = Comments.splitComments(data!.comments!, update.acknowledgedAt);
+  const { before, after } = Comments.splitComments(data!.comments!, update.acknowledgedAt!);
 
   let items: Item[] = [];
 
@@ -34,7 +34,7 @@ export function useForGoalCheckIn(update: GoalCheckIns.GoalCheckIn) {
   if (update.acknowledged) {
     items.push({
       type: "acknowledgement" as ItemType,
-      insertedAt: update.acknowledgedAt,
+      insertedAt: Time.parse(update.acknowledgedAt)!,
       value: update.acknowledgingPerson,
     });
   }
