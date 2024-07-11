@@ -32,7 +32,8 @@ defmodule OperatelyWeb.Api.Queries.GetGroupTest do
         color: space.color,
         is_company_space: ctx.company.company_space_id == space.id,
         is_member: true,
-        members: nil
+        members: nil,
+        access_levels: nil
       }
     end
 
@@ -49,7 +50,8 @@ defmodule OperatelyWeb.Api.Queries.GetGroupTest do
         color: space.color,
         is_company_space: ctx.company.company_space_id == space.id,
         is_member: false,
-        members: nil
+        members: nil,
+        access_levels: nil
       }
     end
 
@@ -73,6 +75,19 @@ defmodule OperatelyWeb.Api.Queries.GetGroupTest do
       |> Enum.each(fn {m, res} ->
         assert res == %{id: m.id, full_name: m.full_name, avatar_url: m.avatar_url, title: m.title}
       end)
+    end
+
+    test "include_access_levels", ctx do
+      space = group_fixture(ctx.person, company_id: ctx.company.id, company_permissions: Binding.comment_access(), public_permissions: Binding.view_access())
+
+      assert {200, res} = query(ctx.conn, :get_space, %{id: Paths.space_id(space)})
+
+      refute res.space.access_levels
+
+      assert {200, res} = query(ctx.conn, :get_space, %{id: Paths.space_id(space), include_access_levels: true})
+
+      assert res.space.access_levels.public == Binding.view_access()
+      assert res.space.access_levels.company == Binding.comment_access()
     end
   end
 end

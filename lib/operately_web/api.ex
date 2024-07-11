@@ -83,6 +83,7 @@ defmodule OperatelyWeb.Api do
   mutation :edit_project_name, M.EditProjectName
   mutation :edit_project_permissions, M.EditProjectPermissions
   mutation :edit_project_timeline, M.EditProjectTimeline
+  mutation :edit_space_permissions, M.EditSpacePermissions
   mutation :join_space, M.JoinSpace
   mutation :mark_all_notifications_as_read, M.MarkAllNotificationsAsRead
   mutation :mark_notification_as_read, M.MarkNotificationAsRead
