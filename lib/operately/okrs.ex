@@ -95,11 +95,6 @@ defmodule Operately.Okrs do
   end
 
   def publish_objective_added(%Objective{} = objective) do
-    Absinthe.Subscription.publish(
-      OperatelyWeb.Endpoint,
-      objective,
-      objective_added: "*")
-
     {:ok, objective}
   end
 
