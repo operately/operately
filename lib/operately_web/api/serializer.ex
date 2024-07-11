@@ -435,14 +435,19 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Tasks.Task do
 end
 
 defimpl OperatelyWeb.Api.Serializable, for: Operately.Invitations.Invitation do
-  def serialize(inv, level: :full) do
+  def serialize(inv, level: :essential) do
     %{
       id: inv.id,
       admin_name: inv.admin.full_name,
       admin: OperatelyWeb.Api.Serializer.serialize(inv.admin),
       member: OperatelyWeb.Api.Serializer.serialize(inv.member),
-      token: inv.invitation_token.token,
     }
+  end
+
+  def serialize(inv, level: :full) do
+    serialize(inv, level: :essential) |> Map.merge(%{
+      token: inv.invitation_token && inv.invitation_token.token,
+    })
   end
 end
 
