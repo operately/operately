@@ -1,15 +1,19 @@
 defmodule OperatelyWeb.Api.Queries.GetInvitation do
   use TurboConnect.Query
+  use OperatelyWeb.Api.Helpers
 
   inputs do
-    # TODO: Define input fields
+    field :token, :string
   end
 
   outputs do
-    # TODO: Define output fields
+    field :invitation, :invitation
   end
 
-  def call(_conn, _inputs) do
-    raise "Not implemented"
+  def call(_conn, inputs) do
+    invitation = Operately.Invitations.get_invitation_by_token(inputs[:token])
+    invitation = Operately.Repo.preload(invitation, [:member, :admin])
+
+    {:ok, %{invitation: Serializer.serialize(invitation, level: :essential)}}
   end
 end

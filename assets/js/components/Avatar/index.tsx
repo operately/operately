@@ -2,8 +2,7 @@ import React from "react";
 import classnames from "classnames";
 
 import * as Icons from "@tabler/icons-react";
-import * as api from "@/api";
-import { Person } from "@/gql";
+import * as People from "@/models/people";
 
 export enum AvatarSize {
   Tiny = "tiny",
@@ -17,7 +16,7 @@ export enum AvatarSize {
 type AvatarSizeString = "tiny" | "small" | "normal" | "large" | "xlarge" | "xxlarge";
 
 interface AvatarProps {
-  person: Person | api.Person | null;
+  person: People.Person | null;
   size: AvatarSize | AvatarSizeString | number;
 }
 
@@ -136,11 +135,19 @@ function ImageAvatar({ person, size }: AvatarProps): JSX.Element {
   const sizeClass = SizeClasses({ size });
   const className = `${baseClass} ${sizeClass}`;
 
-  const style = typeof size === 'number' ? { width: `${size}px`, height: '100%' } : {};
+  const style = typeof size === "number" ? { width: `${size}px`, height: "100%" } : {};
 
-  const image = React.useMemo(() => (
-    <img src={person.avatarUrl!} alt={person.fullName!} referrerPolicy="no-referrer" style={{ height: '100%', width: '100%' }} />
-  ), [person.avatarUrl, person.fullName]);
+  const image = React.useMemo(
+    () => (
+      <img
+        src={person.avatarUrl!}
+        alt={person.fullName!}
+        referrerPolicy="no-referrer"
+        style={{ height: "100%", width: "100%" }}
+      />
+    ),
+    [person.avatarUrl, person.fullName],
+  );
 
   return (
     <div title={person.fullName!} className={className} style={style}>

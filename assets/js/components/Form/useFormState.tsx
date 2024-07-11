@@ -40,16 +40,13 @@ export function useFormMutationAction<F>(props: {
   const navigate = useNavigate();
   const useMutation = props.mutationHook;
 
-  const [run, { loading: submitting }] = useMutation({
-    onCompleted: (data: any) => {
-      props.onCompleted(data, navigate);
-    },
-  });
+  const [run, { loading: submitting }] = useMutation();
 
   const action = async (fields: F): Promise<void> => {
     const variables = props.variables(fields);
+    const data = await run(variables);
 
-    await run({ variables });
+    props.onCompleted(data, navigate);
   };
 
   return [action, submitting];

@@ -36,17 +36,15 @@ function GoalList() {
   const navigate = useNavigate();
   const goalPath = Paths.goalPath(goal.id!);
 
-  const [select] = Goals.useChangeGoalParentMutation({ onCompleted: () => navigate(goalPath) });
+  const [select] = Goals.useChangeGoalParent();
 
   const handleSelect = React.useCallback(async (selectedGoal: Goals.Goal) => {
     await select({
-      variables: {
-        input: {
-          goalId: goal.id,
-          parentGoalId: selectedGoal.id,
-        },
-      },
+      goalId: goal.id,
+      parentGoalId: selectedGoal.id,
     });
+
+    navigate(goalPath);
   }, []);
 
   const selectableGoals = Goals.filterPossibleParentGoals(goals, goal);

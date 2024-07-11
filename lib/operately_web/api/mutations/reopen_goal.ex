@@ -1,15 +1,22 @@
 defmodule OperatelyWeb.Api.Mutations.ReopenGoal do
   use TurboConnect.Mutation
+  use OperatelyWeb.Api.Helpers
 
   inputs do
-    # TODO: Define input fields
+    field :id, :string
+    field :message, :string
   end
 
   outputs do
-    # TODO: Define output fields
+    field :goal, :goal
   end
 
-  def call(_conn, _inputs) do
-    raise "Not implemented"
+  def call(conn, inputs) do
+    author = me(conn)
+    {:ok, goal_id} = decode_id(inputs.id)
+    message = inputs.message
+
+    {:ok, goal} = Operately.Operations.GoalReopening.run(author, goal_id, message)
+    {:ok, %{goal: OperatelyWeb.Api.Serializer.serialize(goal)}}
   end
 end
