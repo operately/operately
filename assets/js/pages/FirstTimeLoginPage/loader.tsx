@@ -2,10 +2,9 @@ import { redirect } from "react-router-dom";
 
 import * as Pages from "@/components/Pages";
 import * as Invitations from "@/models/invitations";
-import { Invitation } from "@/gql";
 
 interface LoaderResult {
-  invitation: Invitation;
+  invitation: Invitations.Invitation;
   token: string;
 }
 
