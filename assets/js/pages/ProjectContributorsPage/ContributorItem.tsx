@@ -5,12 +5,14 @@ import * as Projects from "@/models/projects";
 
 import ContributorAvatar from "@/components/ContributorAvatar";
 
-import { ContributorSearch, RemoveButton, SaveButton, CancelButton, ResponsibilityInput } from "./FormElements";
+import { PERMISSIONS_LIST } from "@/features/Permissions";
+import { ContributorSearch, RemoveButton, SaveButton, CancelButton, ResponsibilityInput, PermissionsInput } from "./FormElements";
 import { createTestId } from "@/utils/testid";
+
 
 interface Props {
   project: Projects.Project;
-  contributor?: ProjectContributors.ProjectContributor;
+  contributor: ProjectContributors.ProjectContributor;
   refetch: any;
 }
 
@@ -22,15 +24,7 @@ export default function ContributorItem({ project, contributor, refetch }: Props
   );
 }
 
-function ContributorItemContent({
-  contributor,
-  project,
-  refetch,
-}: {
-  contributor?: ProjectContributors.ProjectContributor;
-  project: Projects.Project;
-  refetch: any;
-}) {
+function ContributorItemContent({ contributor, project, refetch }: Props) {
   const [state, setState] = React.useState<"view" | "edit">("view");
 
   const activateEdit = () => setState("edit");
@@ -109,6 +103,7 @@ function EditAssignment({ contributor, project, onSave, onRemove, onClose }) {
 
   const responsibility = ProjectContributors.responsibility(contributor, contributor.role);
 
+  const [permissions, setPermissions] = React.useState(PERMISSIONS_LIST.find(p => p.value === contributor.accessLevel));
   const [personID, setPersonID] = React.useState<any>(contributor.person.id);
   const [newResp, setNewResp] = React.useState(responsibility);
 
@@ -140,6 +135,10 @@ function EditAssignment({ contributor, project, onSave, onRemove, onClose }) {
 
       {ProjectContributors.isResponsibilityEditable(contributor.role) && (
         <ResponsibilityInput value={newResp} onChange={setNewResp} />
+      )}
+
+      {ProjectContributors.isPermissionsEditable(contributor.role) && (
+        <PermissionsInput value={permissions} onChange={setPermissions} />
       )}
 
       <div className="flex justify-between mt-8">
