@@ -3,7 +3,15 @@ import * as Time from "@/utils/time";
 
 export type Update = api.GoalProgressUpdate;
 
-export { getGoalProgressUpdate, getGoalProgressUpdates, postGoalProgressUpdate, editGoalProgressUpdate } from "@/api";
+export {
+  getGoalProgressUpdate,
+  getGoalProgressUpdates,
+  postGoalProgressUpdate,
+  editGoalProgressUpdate,
+  usePostGoalProgressUpdate,
+  useEditGoalProgressUpdate,
+  useAcknowledgeGoalProgressUpdate,
+} from "@/api";
 
 function sortByDate(updates: Update[]): Update[] {
   return [...updates].sort((a, b) => {

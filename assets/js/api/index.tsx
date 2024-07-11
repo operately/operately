@@ -599,6 +599,7 @@ export interface GoalProgressUpdate {
 
 export interface GoalTargetUpdates {
   id?: string | null;
+  index?: number | null;
   name?: string | null;
   from?: number | null;
   to?: number | null;
@@ -1418,11 +1419,11 @@ export interface AddReactionResult {
 
 
 export interface ArchiveGoalInput {
-
+  goalId?: string | null;
 }
 
 export interface ArchiveGoalResult {
-
+  goal?: Goal | null;
 }
 
 
@@ -1436,11 +1437,12 @@ export interface ArchiveProjectResult {
 
 
 export interface ChangeGoalParentInput {
-
+  goalId?: string | null;
+  parentGoalId?: string | null;
 }
 
 export interface ChangeGoalParentResult {
-
+  goal?: Goal | null;
 }
 
 
@@ -1466,11 +1468,13 @@ export interface ChangeTaskDescriptionResult {
 
 
 export interface CloseGoalInput {
-
+  goalId?: string | null;
+  success?: string | null;
+  retrospective?: string | null;
 }
 
 export interface CloseGoalResult {
-
+  goal?: Goal | null;
 }
 
 
@@ -1654,11 +1658,13 @@ export interface EditGoalResult {
 
 
 export interface EditGoalDiscussionInput {
-
+  activityId?: string | null;
+  title?: string | null;
+  message?: string | null;
 }
 
 export interface EditGoalDiscussionResult {
-
+  activity?: Activity | null;
 }
 
 
@@ -1674,11 +1680,13 @@ export interface EditGoalProgressUpdateResult {
 
 
 export interface EditGoalTimeframeInput {
-
+  id?: string | null;
+  timeframe?: Timeframe | null;
+  comment?: string | null;
 }
 
 export interface EditGoalTimeframeResult {
-
+  goal?: Goal | null;
 }
 
 
@@ -1913,11 +1921,12 @@ export interface RemoveProjectMilestoneResult {
 
 
 export interface ReopenGoalInput {
-
+  id?: string | null;
+  message?: string | null;
 }
 
 export interface ReopenGoalResult {
-
+  goal?: Goal | null;
 }
 
 

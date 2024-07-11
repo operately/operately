@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Person } from "@/gql";
+import * as People from "@/models/people";
 
 import Avatar from "@/components/Avatar";
 
@@ -14,14 +14,14 @@ export function CompanyAdmins() {
 
       <div className="flex flex-wrap mt-2 gap-4">
         {company.admins!.map((admin) => (
-          <CompanyAdmin key={admin!.id} admin={admin! as Person} />
+          <CompanyAdmin key={admin!.id} admin={admin!} />
         ))}
       </div>
     </div>
   );
 }
 
-function CompanyAdmin({ admin }: { admin: Person }) {
+function CompanyAdmin({ admin }: { admin: People.Person }) {
   return (
     <div className="flex items-center gap-2">
       <Avatar person={admin} size="small" />

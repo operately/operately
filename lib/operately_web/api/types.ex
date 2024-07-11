@@ -919,6 +919,7 @@ defmodule OperatelyWeb.Api.Types do
 
   object :goal_target_updates do
     field :id, :string
+    field :index, :integer
     field :name, :string
     field :from, :float
     field :to, :float

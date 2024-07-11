@@ -4,7 +4,7 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalTimeframe do
 
   inputs do
     field :id, :string
-    field :timeframe, :timeframe_input
+    field :timeframe, :timeframe
     field :comment, :string
   end
 

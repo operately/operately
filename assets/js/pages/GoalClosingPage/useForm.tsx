@@ -24,7 +24,7 @@ export function useForm(goal: Goals.Goal): FormData {
     { label: "No", value: "no" },
   ]);
 
-  const [close] = Goals.useCloseGoalMutation({ onCompleted: navigateToGoal });
+  const [close] = Goals.useCloseGoal();
 
   const retrospectiveEditor = Editor.useEditor({
     placeholder: "What went well? What could've gone better?",
@@ -33,14 +33,11 @@ export function useForm(goal: Goals.Goal): FormData {
 
   const submit = async () => {
     await close({
-      variables: {
-        input: {
-          goalId: goal.id,
-          success: success,
-          retrospective: JSON.stringify(retrospectiveEditor.editor.getJSON()),
-        },
-      },
+      goalId: goal.id,
+      success: success,
+      retrospective: JSON.stringify(retrospectiveEditor.editor.getJSON()),
     });
+    navigateToGoal();
   };
 
   return {
