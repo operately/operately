@@ -789,6 +789,7 @@ export interface Space {
   icon?: string | null;
   color?: string | null;
   members?: Person[] | null;
+  accessLevels?: AccessLevels | null;
 }
 
 export interface Target {
@@ -1235,6 +1236,7 @@ export interface GetProjectsResult {
 export interface GetSpaceInput {
   id?: string | null;
   includeMembers?: boolean | null;
+  includeAccessLevels?: boolean | null;
 }
 
 export interface GetSpaceResult {

@@ -13,7 +13,9 @@ defmodule Operately.Groups.Group do
     field :icon, :string, default: "IconPlanet"
     field :color, :string, default: "text-green-500"
 
-    field :is_member, :boolean, virtual: true # populated by an after_query hook
+    # populated by after load hooks
+    field :is_member, :boolean, virtual: true
+    field :access_levels, :any, virtual: true
 
     timestamps()
     soft_delete()
@@ -44,7 +46,14 @@ defmodule Operately.Groups.Group do
   #
   def load_is_member(group, person) do
     is_member = Operately.Groups.is_member?(group, person)
-    
+
     %{group | is_member: is_member}
+  end
+
+  def preload_access_levels(group) do
+    context = Operately.Access.get_context!(group_id: group.id)
+    access_levels = Operately.Access.AccessLevels.load(context.id, group.company_id, group.id)
+
+    Map.put(group, :access_levels, access_levels)
   end
 end
