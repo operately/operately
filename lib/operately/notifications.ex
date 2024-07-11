@@ -36,7 +36,7 @@ defmodule Operately.Notifications do
       read_at: DateTime.utc_now()
     })
 
-    Absinthe.Subscription.publish(OperatelyWeb.Endpoint, true, on_unread_notification_count_changed: "notifications:#{notification.person_id}")
+    # OperatelyWeb.Api.publish(:unread_notification_count_changed, %{person_id: notification.person_id})
 
     {:ok, notification}
   end
@@ -48,7 +48,7 @@ defmodule Operately.Notifications do
 
     Repo.update_all(query, [set: [read: true, read_at: now]])
 
-    Absinthe.Subscription.publish(OperatelyWeb.Endpoint, true, on_unread_notification_count_changed: "notifications:#{person.id}")
+    # OperatelyWeb.Api.publish(:unread_notification_count_changed, %{person_id: person.id})
 
     {:ok, true}
   end
@@ -82,11 +82,11 @@ defmodule Operately.Notifications do
     |> Repo.transaction()
     |> case do
       {:ok, %{notifications: notifications}} -> 
-        unique_person_ids = Enum.uniq(Enum.map(notifications, &(&1.person_id)))
+        # unique_person_ids = Enum.uniq(Enum.map(notifications, &(&1.person_id)))
 
-        Enum.each(unique_person_ids, fn person_id ->
-          Absinthe.Subscription.publish(OperatelyWeb.Endpoint, true, on_unread_notification_count_changed: "notifications:#{person_id}")
-        end)
+        # Enum.each(unique_person_ids, fn person_id ->
+          # OperatelyWeb.Api.publish(:unread_notification_count_changed, %{person_id: person_id})
+        # end)
 
         {:ok, notifications}
       {:error, _} -> 

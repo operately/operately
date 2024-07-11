@@ -65,17 +65,14 @@ function useForm(goal: Goals.Goal): FormState {
 
   const goalPath = Paths.goalPath(goal.id!);
 
-  const [reopen] = Goals.useReopenGoalMutation({ onCompleted: () => navigate(goalPath) });
+  const [reopen] = Goals.useReopenGoal();
 
   const submit = async () => {
     await reopen({
-      variables: {
-        input: {
-          id: goal.id,
-          message: JSON.stringify(messageEditor.editor.getJSON()),
-        },
-      },
+      id: goal.id,
+      message: JSON.stringify(messageEditor.editor.getJSON()),
     });
+    navigate(goalPath);
   };
 
   return {

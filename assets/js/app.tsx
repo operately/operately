@@ -13,9 +13,6 @@ import {
 import { createAppRoutes } from "./routes";
 
 import Api from "@/api";
-
-import { ApolloProvider } from "@apollo/client";
-import client from "./graphql/client";
 import "./i18n";
 
 import { setupTestErrorLogger } from "@/utils/errorLogger";
@@ -48,11 +45,9 @@ const routes = createAppRoutes();
 
 const App: JSX.Element = (
   <React.StrictMode>
-    <ApolloProvider client={client}>
-      <ThemeProvider>
-        <RouterProvider router={routes} />
-      </ThemeProvider>
-    </ApolloProvider>
+    <ThemeProvider>
+      <RouterProvider router={routes} />
+    </ThemeProvider>
   </React.StrictMode>
 );
 

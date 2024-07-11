@@ -57,12 +57,13 @@ defmodule Operately.Support.Features.GoalCheckInSteps do
 
   step :update_progress, ctx, params do
     ctx
-    |> visit_page()
+    |> UI.visit(Paths.goal_path(ctx.company, ctx.goal))
     |> UI.click(testid: "update-progress-button")
     |> UI.fill_rich_text(params.message)
     |> UI.fill(testid: "target-first-response-time", with: to_string(Enum.at(params.target_values, 0)))
     |> UI.fill(testid: "target-increase-feedback-score-to-90-", with: to_string(Enum.at(params.target_values, 1)))
     |> UI.click(testid: "submit-update")
+    |> UI.sleep(500)
   end
 
   step :assert_progress_updated, ctx, %{message: message, target_values: target_values} do

@@ -1,12 +1,11 @@
 import * as React from "react";
 import * as GoalCheckIns from "@/models/goalCheckIns";
 
-export function ConditionChanges({ update }: { update: GoalCheckIns.GoalCheckIn }) {
-  const content = update.content as GoalCheckIns.GoalCheckInContent;
-  const targets = (content.targets || [])
+export function ConditionChanges({ update }: { update: GoalCheckIns.Update }) {
+  const targets = (update.goalTargetUpdates ?? [])
     .map((t) => t!)
     .slice()
-    .sort((a, b) => a.index - b.index);
+    .sort((a, b) => a.index! - b.index!);
 
   return (
     <div className="flex flex-col gap-2">

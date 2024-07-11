@@ -251,13 +251,6 @@ defmodule Operately.Updates do
     })
   end
 
-  def publish_update_added(update) do
-    Absinthe.Subscription.publish(
-      OperatelyWeb.Endpoint,
-      update,
-      update_added: "*")
-  end
-
   def acknowledge_update(author, update) do
     changeset = change_update(update, %{
       acknowledged: true,

@@ -3,10 +3,9 @@ import React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Icons from "@tabler/icons-react";
 import * as Spaces from "@/models/spaces";
-import * as gql from "@/gql";
 import { Paths } from "@/routes/paths";
 
-export default function Navigation({ space }: { space: Spaces.Space | gql.Group }) {
+export default function Navigation({ space }: { space: Spaces.Space }) {
   return (
     <Paper.Navigation>
       <Paper.NavItem linkTo={Paths.spaceProjectsPath(space.id!)}>

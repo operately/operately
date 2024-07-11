@@ -4,7 +4,7 @@ import * as GoalCheckIns from "@/models/goalCheckIns";
 
 interface LoaderResult {
   goal: Goals.Goal;
-  update: GoalCheckIns.GoalCheckIn;
+  update: GoalCheckIns.Update;
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
@@ -13,7 +13,7 @@ export async function loader({ params }): Promise<LoaderResult> {
     includeTargets: true,
     includePermissions: true,
   }).then((data) => data.goal!);
-  const updatePromise = GoalCheckIns.getCheckIn(params.id, {});
+  const updatePromise = GoalCheckIns.getGoalProgressUpdate({ id: params.id }).then((data) => data.update!);
 
   return {
     goal: await goalPromise,
