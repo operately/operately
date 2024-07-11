@@ -4,7 +4,7 @@ declare global {
     enabled: boolean;
   }
 
-  interface GraphqlConfig {
+  interface ApiConfig {
     socketToken: string;
   }
 
@@ -13,7 +13,7 @@ declare global {
     companyID: string;
 
     sentry: SentryConfig;
-    graphql: GraphqlConfig;
+    api: ApiConfig;
   }
 
   interface Window {

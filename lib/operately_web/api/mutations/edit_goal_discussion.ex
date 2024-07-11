@@ -1,15 +1,24 @@
 defmodule OperatelyWeb.Api.Mutations.EditGoalDiscussion do
   use TurboConnect.Mutation
+  use OperatelyWeb.Api.Helpers
 
   inputs do
-    # TODO: Define input fields
+    field :activity_id, :string
+    field :title, :string
+    field :message, :string
   end
 
   outputs do
-    # TODO: Define output fields
+    field :activity, :activity
   end
 
-  def call(_conn, _inputs) do
-    raise "Not implemented"
+  def call(conn, inputs) do
+    author = me(conn)
+    {:ok, activity_id} = decode_id(inputs.activity_id)
+    title = inputs.title
+    message = inputs.message
+    {:ok, activity} = Operately.Operations.GoalDiscussionEditing.run(author, activity_id, title, message)
+
+    {:ok, %{activity: OperatelyWeb.Api.Serializer.serialize(activity)}}
   end
 end
