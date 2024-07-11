@@ -301,7 +301,7 @@ end
 defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.KeyResource do
   def serialize(key_resource, level: :essential) do
     %{
-      id: key_resource.id,
+      id: OperatelyWeb.Paths.key_resource_id(key_resource),
       title: key_resource.title,
       link: key_resource.link,
       resource_type: key_resource.resource_type,
@@ -311,7 +311,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.KeyResource do
 
   def serialize(key_resource, level: :full) do
     %{
-      id: key_resource.id,
+      id: OperatelyWeb.Paths.key_resource_id(key_resource),
       title: key_resource.title,
       link: key_resource.link,
       resource_type: key_resource.resource_type,
