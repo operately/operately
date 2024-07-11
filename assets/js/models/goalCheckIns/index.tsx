@@ -1,4 +1,3 @@
-import client from "@/graphql/client";
 import { gql, useMutation } from "@apollo/client";
 
 import * as Time from "@/utils/time";
@@ -10,6 +9,8 @@ type GoalCheckIn = Update | api.Update;
 type GoalCheckInContent = UpdateContentGoalCheckIn;
 
 export type { GoalCheckIn, GoalCheckInContent };
+
+export { getGoalProgressUpdate, getGoalProgressUpdates } from "@/api";
 
 export function usePostUpdate(options: any) {
   return useMutation(
@@ -37,139 +38,139 @@ export function useEditUpdate(options: any) {
   );
 }
 
-export async function getCheckIn(id: string, options: any) {
-  const res = await client.query({
-    query: gql`
-      query GetCheckIn($id: ID!) {
-        update(id: $id) {
-          id
-          title
-          message
-          messageType
-          updatableId
+// export async function getCheckIn(id: string, options: any) {
+//   const res = await client.query({
+//     query: gql`
+//       query GetCheckIn($id: ID!) {
+//         update(id: $id) {
+//           id
+//           title
+//           message
+//           messageType
+//           updatableId
 
-          insertedAt
+//           insertedAt
 
-          author {
-            id
-            fullName
-            avatarUrl
-            title
-          }
+//           author {
+//             id
+//             fullName
+//             avatarUrl
+//             title
+//           }
 
-          acknowledgingPerson {
-            id
-            fullName
-            avatarUrl
-            title
-          }
+//           acknowledgingPerson {
+//             id
+//             fullName
+//             avatarUrl
+//             title
+//           }
 
-          acknowledged
-          acknowledgedAt
+//           acknowledged
+//           acknowledgedAt
 
-          reactions {
-            id
-            emoji
+//           reactions {
+//             id
+//             emoji
 
-            person {
-              id
-              fullName
-              avatarUrl
-              title
-            }
-          }
+//             person {
+//               id
+//               fullName
+//               avatarUrl
+//               title
+//             }
+//           }
 
-          content {
-            __typename
+//           content {
+//             __typename
 
-            ... on UpdateContentGoalCheckIn {
-              message
+//             ... on UpdateContentGoalCheckIn {
+//               message
 
-              targets {
-                id
-                name
-                value
-                previousValue
-                unit
-                from
-                to
-              }
-            }
-          }
-        }
-      }
-    `,
-    variables: { id },
-    fetchPolicy: "network-only",
-    ...options,
-  });
+//               targets {
+//                 id
+//                 name
+//                 value
+//                 previousValue
+//                 unit
+//                 from
+//                 to
+//               }
+//             }
+//           }
+//         }
+//       }
+//     `,
+//     variables: { id },
+//     fetchPolicy: "network-only",
+//     ...options,
+//   });
 
-  return res.data.update;
-}
+//   return res.data.update;
+// }
 
-export async function getCheckIns(goalId: string) {
-  const res = await client.query({
-    query: gql`
-      query GetCheckIns($filter: UpdatesFilter!) {
-        updates(filter: $filter) {
-          id
-          title
-          message
-          messageType
-          updatableId
+// export async function getCheckIns(goalId: string) {
+//   const res = await client.query({
+//     query: gql`
+//       query GetCheckIns($filter: UpdatesFilter!) {
+//         updates(filter: $filter) {
+//           id
+//           title
+//           message
+//           messageType
+//           updatableId
 
-          insertedAt
+//           insertedAt
 
-          author {
-            id
-            fullName
-            avatarUrl
-            title
-          }
+//           author {
+//             id
+//             fullName
+//             avatarUrl
+//             title
+//           }
 
-          acknowledgingPerson {
-            id
-            fullName
-            avatarUrl
-            title
-          }
+//           acknowledgingPerson {
+//             id
+//             fullName
+//             avatarUrl
+//             title
+//           }
 
-          acknowledged
-          acknowledgedAt
+//           acknowledged
+//           acknowledgedAt
 
-          reactions {
-            id
-            emoji
+//           reactions {
+//             id
+//             emoji
 
-            person {
-              id
-              fullName
-              avatarUrl
-              title
-            }
-          }
+//             person {
+//               id
+//               fullName
+//               avatarUrl
+//               title
+//             }
+//           }
 
-          content {
-            __typename
+//           content {
+//             __typename
 
-            ... on UpdateContentGoalCheckIn {
-              message
-            }
-          }
-        }
-      }
-    `,
-    variables: {
-      filter: {
-        goalId: goalId,
-        type: "goal_check_in",
-      },
-    },
-    fetchPolicy: "network-only",
-  });
+//             ... on UpdateContentGoalCheckIn {
+//               message
+//             }
+//           }
+//         }
+//       }
+//     `,
+//     variables: {
+//       filter: {
+//         goalId: goalId,
+//         type: "goal_check_in",
+//       },
+//     },
+//     fetchPolicy: "network-only",
+//   });
 
-  return res.data.updates;
-}
+//   return res.data.updates;
+// }
 
 function sortByDate(updates: Update[]): Update[] {
   return [...updates].sort((a, b) => {
