@@ -22,7 +22,7 @@ export function Page() {
           <Spacer size={8} />
 
           <div className="text-content-accent">
-            You were invited by {invitation.admin!.fullName} to join {invitation.admin!.company!.name}.
+            You were invited by {invitation.admin!.fullName} to join {invitation.company!.name}.
           </div>
           <div className="text-content-accent">Please choose a password to activate your account.</div>
 

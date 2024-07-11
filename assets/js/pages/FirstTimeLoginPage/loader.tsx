@@ -14,7 +14,7 @@ export async function loader({ request }): Promise<any> {
 
   if (!token) return redirect("/");
 
-  const invitation = await Invitations.getInvitation({ token: token });
+  const invitation = await Invitations.getInvitation({ token: token }).then((res) => res.invitation!);
 
   if (!invitation) return redirect("/");
 

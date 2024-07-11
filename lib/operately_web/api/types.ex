@@ -511,7 +511,7 @@ defmodule OperatelyWeb.Api.Types do
     field :projects, list_of(:project)
     field :parent_goal, :goal
     field :progress_percentage, :float
-    field :last_check_in, :update
+    field :last_check_in, :goal_progress_update
     field :permissions, :goal_permissions
     field :is_archived, :boolean
     field :is_closed, :boolean

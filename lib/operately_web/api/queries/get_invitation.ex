@@ -12,7 +12,7 @@ defmodule OperatelyWeb.Api.Queries.GetInvitation do
 
   def call(_conn, inputs) do
     invitation = Operately.Invitations.get_invitation_by_token(inputs[:token])
-    invitation = Operately.Repo.preload(invitation, [:member, :admin])
+    invitation = Operately.Repo.preload(invitation, [:member, :admin, :company])
 
     {:ok, %{invitation: Serializer.serialize(invitation, level: :essential)}}
   end

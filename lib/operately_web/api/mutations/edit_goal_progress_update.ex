@@ -22,6 +22,6 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalProgressUpdate do
     goal = Operately.Goals.get_goal!(update.updatable_id)
     {:ok, update} = Operately.Operations.GoalCheckInEdit.run(author, goal, update, content, target_values)
 
-    {:ok, %{update: OperatelyWeb.Api.Serializer.serialize(update)}}
+    {:ok, %{update: OperatelyWeb.Api.Serializer.serialize(update, level: :full)}}  
   end
 end

@@ -13,6 +13,6 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdates do
   def call(_conn, inputs) do
     {:ok, id} = decode_id(inputs.goal_id)
     updates = Operately.Updates.list_updates(id, "goal", "status_update")
-    {:ok, %{updates: OperatelyWeb.Api.Serializer.serialize(updates)}}
+    {:ok, %{updates: OperatelyWeb.Api.Serializer.serialize(updates, level: :full)}}
   end
 end
