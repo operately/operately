@@ -166,6 +166,22 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
       assert res.project.access_levels.company == Binding.edit_access()
       assert res.project.access_levels.space == Binding.full_access()
     end
+
+    test "include_contributors_access_levels", ctx do
+      project = create_project(ctx)
+
+      assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(project)})
+
+      refute Map.has_key?(res.project, :contributor)
+
+      assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(project), include_contributors_access_levels: true})
+
+      assert length(res.project.contributors) > 0
+
+      Enum.each(res.project.contributors, fn contributor ->
+        assert Map.has_key?(contributor, :access_level)
+      end)
+    end
   end
 
   def create_project(ctx, attrs \\ %{}) do

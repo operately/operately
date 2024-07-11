@@ -6,20 +6,18 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProjectContributor do
     field :contrib_id, :string
     field :person_id, :string
     field :responsibility, :string
+    field :permissions, :integer
   end
 
   outputs do
     field :contributor, :project_contributor
   end
 
-  def call(_conn, inputs) do
+  def call(conn, inputs) do
     {:ok, id} = decode_id(inputs.contrib_id)
     contrib = Operately.Projects.get_contributor!(id)
 
-    {:ok, contrib} = Operately.Projects.update_contributor(contrib, %{
-      person_id: inputs.person_id,
-      responsibility: inputs.responsibility
-    })
+    {:ok, contrib} = Operately.Operations.ProjectContributorEditing.run(me(conn), contrib, inputs)
 
     {:ok, %{contributor: OperatelyWeb.Api.Serializer.serialize(contrib)}}
   end

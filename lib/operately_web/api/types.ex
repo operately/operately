@@ -869,6 +869,7 @@ defmodule OperatelyWeb.Api.Types do
     field :responsibility, :string
     field :role, :string
     field :person, :person
+    field :access_level, :integer
   end
 
   object :create_target_input do

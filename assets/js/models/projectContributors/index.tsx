@@ -16,6 +16,17 @@ export function responsibility(contributor: ProjectContributor | undefined, role
   }
 }
 
+export function isPermissionsEditable(role: ContributorRole) {
+  switch (role) {
+    case "champion":
+      return false;
+    case "reviewer":
+      return false;
+    default:
+      return true;
+  }
+}
+
 export function isResponsibilityEditable(role: ContributorRole) {
   return role !== "champion" && role !== "reviewer";
 }
