@@ -52,7 +52,7 @@ function useSubmit(fields: FormFields) {
 
   const [add, { loading: submitting }] = useChangePasswordMutation({
     onCompleted: () => {
-      logIn(invitation.member.email!, fields.password).then(() => {
+      logIn(invitation.member!.email!, fields.password).then(() => {
         window.location.href = "/";
       });
     },

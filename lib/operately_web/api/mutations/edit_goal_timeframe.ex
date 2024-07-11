@@ -1,15 +1,24 @@
 defmodule OperatelyWeb.Api.Mutations.EditGoalTimeframe do
   use TurboConnect.Mutation
+  use OperatelyWeb.Api.Helpers
 
   inputs do
-    # TODO: Define input fields
+    field :id, :string
+    field :timeframe, :timeframe_input
+    field :comment, :string
   end
 
   outputs do
-    # TODO: Define output fields
+    field :goal, :goal
   end
 
-  def call(_conn, _inputs) do
-    raise "Not implemented"
+  def call(conn, inputs) do
+    author = me(conn)
+    {:ok, goal_id} = decode_id(inputs.id)
+
+    inputs = Map.put(inputs, :goal_id, goal_id)
+
+    {:ok, goal} = Operately.Operations.GoalTimeframeEditing.run(author, inputs)
+    {:ok, %{goal: OperatelyWeb.Api.Serializer.serialize(goal)}}
   end
 end

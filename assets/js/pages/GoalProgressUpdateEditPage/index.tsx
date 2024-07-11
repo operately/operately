@@ -11,12 +11,12 @@ import { DimmedLink } from "@/components/Link";
 
 interface LoaderResult {
   goal: Goals.Goal;
-  checkIn: GoalCheckIns.GoalCheckIn;
+  checkIn: GoalCheckIns.Update;
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
   const goalPromise = Goals.getGoal({ id: params.goalId, includeTargets: true }).then((data) => data.goal!);
-  const checkInPromise = GoalCheckIns.getCheckIn(params.id, {});
+  const checkInPromise = GoalCheckIns.getGoalProgressUpdate({ id: params.id }).then((data) => data.update!);
 
   return {
     goal: await goalPromise,
