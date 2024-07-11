@@ -17,7 +17,7 @@ interface Error {
 interface UseFormOptions {
   mode: "create" | "edit";
   goal: Goals.Goal;
-  checkIn?: GoalCheckIns.GoalCheckIn;
+  checkIn?: GoalCheckIns.Update;
 }
 
 export interface FormState {
@@ -48,13 +48,8 @@ export function useForm(options: UseFormOptions): FormState {
 
   const [targets, { update: updateTarget }] = useTargetListState(goal);
 
-  const [post, { loading: submittingPost }] = GoalCheckIns.usePostUpdate({
-    onCompleted: (data: any) => navigate(Paths.goalProgressUpdatePath(goal.id!, data.createUpdate.id)),
-  });
-
-  const [edit, { loading: submittingEdit }] = GoalCheckIns.useEditUpdate({
-    onCompleted: (data: any) => navigate(Paths.goalProgressUpdatePath(goal.id!, data.editUpdate.id)),
-  });
+  const [post, { loading: submittingPost }] = GoalCheckIns.usePostGoalProgressUpdate();
+  const [edit, { loading: submittingEdit }] = GoalCheckIns.useEditGoalProgressUpdate();
 
   const submit = async (): Promise<boolean> => {
     if (!editor.editor) return false;
@@ -67,29 +62,23 @@ export function useForm(options: UseFormOptions): FormState {
     }
 
     if (options.mode === "create") {
-      await post({
-        variables: {
-          input: {
-            updatableType: "goal",
-            updatableId: goal.id,
-            content: JSON.stringify(editor.editor.getJSON()),
-            messageType: "goal-check-in",
-            newTargetValues: JSON.stringify(targets.map((target) => ({ id: target.id, value: target.value }))),
-          },
-        },
+      const res = await post({
+        goalId: goal.id,
+        content: JSON.stringify(editor.editor.getJSON()),
+        newTargetValues: JSON.stringify(targets.map((target) => ({ id: target.id, value: target.value }))),
       });
+
+      navigate(Paths.goalProgressUpdatePath(goal.id!, res.activity!.id));
 
       return true;
     } else {
-      await edit({
-        variables: {
-          input: {
-            updateId: options.checkIn!.id,
-            content: JSON.stringify(editor.editor.getJSON()),
-            newTargetValues: JSON.stringify(targets.map((target) => ({ id: target.id, value: target.value }))),
-          },
-        },
+      const res = await edit({
+        id: options.checkIn!.id,
+        content: JSON.stringify(editor.editor.getJSON()),
+        newTargetValues: JSON.stringify(targets.map((target) => ({ id: target.id, value: target.value }))),
       });
+
+      navigate(Paths.goalProgressUpdatePath(goal.id!, res.activity!.id));
 
       return true;
     }

@@ -39,15 +39,15 @@ export function Page() {
 function ArchiveButton({ goal }) {
   const navigateToGoal = useNavigateTo(Paths.goalPath(goal.id!));
 
-  const [archive, { loading: loading }] = Goals.useArchiveGoalMutation({
-    variables: {
-      goalId: goal.id,
-    },
-    onCompleted: () => navigateToGoal(),
-  });
+  const [archive, { loading: loading }] = Goals.useArchiveGoal();
+
+  const submit = async () => {
+    await archive({ goalId: goal.id });
+    navigateToGoal();
+  };
 
   return (
-    <FilledButton onClick={archive} testId="confirm-archive-goal" loading={loading}>
+    <FilledButton onClick={submit} testId="confirm-archive-goal" loading={loading}>
       Archive the Goal
     </FilledButton>
   );

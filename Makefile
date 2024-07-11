@@ -38,11 +38,7 @@ test.seed.env:
 	echo 'OPERATELY_BLOB_TOKEN_SECRET_KEY="lPEuB9ITpbHP1GTf98TPWcHb/CrdeNLzqLcm0zF5mfo="' >> .env
 
 gen:
-	@rm -f lib/operately_web/graphql/schema.ex
-	@./devenv mix operately.gen.elixir.graphql.schema
-	@./devenv mix operately.gen.typescript.graphql.schema
-	@./devenv mix operately.gen.page.index
-	@./devenv mix operately.gen.typescript.api
+	./devenv bash -c "mix operately.gen.page.index && mix operately.gen.typescript.api"
 
 gen.migration:
 	./devenv mix ecto.gen.migration $(NAME)

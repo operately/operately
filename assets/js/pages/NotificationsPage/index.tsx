@@ -15,8 +15,6 @@ import ActivityHandler from "@/features/activities";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { TextSeparator } from "@/components/TextSeparator";
 
-import { gql, useSubscription } from "@apollo/client";
-
 interface LoaderResult {
   notifications: Api.Notification[];
 }
@@ -49,7 +47,7 @@ export function Page() {
 }
 
 function UnreadNotifications() {
-  useSubscribeToChanges();
+  // useSubscribeToChanges();
 
   const { notifications } = Pages.useLoadedData<LoaderResult>();
 
@@ -160,14 +158,12 @@ function NotificationItem({ notification }: any) {
   );
 }
 
-export function useSubscribeToChanges() {
-  const refresh = Pages.useRefresh();
-
-  const subscription = gql`
-    subscription NotificationsChanged {
-      onUnreadNotificationCountChanged
-    }
-  `;
-
-  useSubscription(subscription, { onData: refresh });
-}
+// export function useSubscribeToChanges() {
+// const refresh = Pages.useRefresh();
+// const subscription = gql`
+//   subscription NotificationsChanged {
+//     onUnreadNotificationCountChanged
+//   }
+// `;
+// useSubscription(subscription, { onData: refresh });
+// }
