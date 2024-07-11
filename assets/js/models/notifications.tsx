@@ -6,17 +6,14 @@ import { useUnreadNotificationCount } from "@/api/socket";
 export function useUnreadCount() {
   const [unread, setUnread] = React.useState(0);
 
-  const fetch = () => {
-    console.log("Fetching unread count");
+  const fetch = React.useCallback(() => {
     Api.getUnreadNotificationCount({}).then((data) => {
       setUnread(data.unread!);
     });
-  };
+  }, []);
 
   React.useEffect(() => fetch(), []);
-  useUnreadNotificationCount(() => {
-    setTimeout(fetch, 500);
-  });
+  useUnreadNotificationCount(fetch);
 
   return unread;
 }

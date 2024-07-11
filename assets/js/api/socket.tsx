@@ -17,6 +17,7 @@ function useSubscription(channelName: string, callback: (payload: any) => void) 
   React.useEffect(() => {
     let socket = connect();
     const channel = socket.channel(channelName, {});
+
     channel.on("event", callback);
 
     channel

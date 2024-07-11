@@ -109,7 +109,6 @@ defmodule OperatelyWeb.ApiSocket do
           acc
         else
           :ok = OperatelyWeb.Endpoint.subscribe(topic)
-          IO.inspect("Subscribed to #{topic}")
           assign(acc, :topics, [topic | topics])
         end
       end)
@@ -125,7 +124,6 @@ defmodule OperatelyWeb.ApiSocket do
   end
 
   def broadcast!(topic) do
-    IO.inspect("Broadcasting to #{topic}")
     OperatelyWeb.Endpoint.broadcast!(topic, "event", %{})
   end
 end

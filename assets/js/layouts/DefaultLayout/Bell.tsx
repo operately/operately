@@ -29,8 +29,6 @@ export function Bell() {
 function UnreadIndicator({ count }: { count: number }) {
   if (count === 0) return null;
 
-  console.log("Unread count", count);
-
   return (
     <div
       className="absolute -top-1 -right-1 rounded-full bg-orange-600 flex items-center justify-center text-content-accent leading-none group-hover:bg-orange-500 transition-all"
