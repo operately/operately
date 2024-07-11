@@ -12,7 +12,6 @@ defmodule Mix.Tasks.Operately.Gen.Activity.Type do
     fields = parse_fields(fields)
 
     gen_operation(name, fields)
-    gen_graphql_type(name, fields)
     gen_activity_content_schema(name, fields)
     gen_notificaiton_dispatcher(name)
     gen_notification_item(name)
@@ -45,34 +44,6 @@ defmodule Mix.Tasks.Operately.Gen.Activity.Type do
           # end)
           # |> Repo.transaction()
           # |> Repo.extract_result(:something)
-        end
-      end
-      """
-    end)
-  end
-
-  def gen_graphql_type(name, fields) do
-    module_name = "ActivityContent#{name}"
-    file_name = Macro.underscore(module_name)
-    object_name = Macro.underscore(module_name)
-
-    field_fragments = Enum.map(fields, fn {field_name, field_type} ->
-      """
-      field :#{field_name}, non_null(:#{field_type}) do
-        resolve fn activity, _, _ ->
-          {:ok, activity.content["#{field_name}"]}
-        end
-      end
-      """
-    end)
-
-    generate_file("lib/operately_web/graphql/types/#{file_name}.ex", fn _ ->
-      """
-      defmodule OperatelyWeb.Graphql.Types.#{module_name} do
-        use Absinthe.Schema.Notation
-
-        object :#{object_name} do
-          #{field_fragments |> Enum.join("\n\n") |> indent(4)}
         end
       end
       """

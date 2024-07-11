@@ -261,9 +261,7 @@ function useForm({ goal }): Form {
   const [timeframe, setTimeframe] = React.useState<Timeframes.Timeframe>(originalTimeframe);
 
   const navigateToGoalPage = useNavigateTo(Paths.goalPath(goal.id));
-  const [editTimeframe, { loading: submitting }] = Goals.useEditGoalTimeframeMutation({
-    onCompleted: navigateToGoalPage,
-  });
+  const [editTimeframe, { loading: submitting }] = Goals.useEditGoalTimeframe();
 
   const commentEditor = TipTapEditor.useEditor({
     placeholder: "Explain the reason for the change here...",
@@ -287,14 +285,12 @@ function useForm({ goal }): Form {
     }
 
     await editTimeframe({
-      variables: {
-        input: {
-          id: goal.id,
-          timeframe: Timeframes.serialize(timeframe),
-          comment: JSON.stringify(commentEditor.editor.getJSON()),
-        },
-      },
+      id: goal.id,
+      timeframe: Timeframes.serialize(timeframe),
+      comment: JSON.stringify(commentEditor.editor.getJSON()),
     });
+
+    navigateToGoalPage();
 
     return true;
   }
