@@ -27,8 +27,8 @@
 
       <%= if @current_account && @current_account.person do %>
         window.appConfig.companyID = "<%= @current_account.person.company_id %>";
-        window.appConfig.graphql = {};
-        window.appConfig.graphql.socketToken = "<%= OperatelyWeb.GraphqlWSSocket.gen_token(@conn) %>";
+        window.appConfig.api= {};
+        window.appConfig.api.socketToken = "<%= OperatelyWeb.ApiSocket.gen_token(@conn) %>";
       <% end %>
 
       window.appConfig.sentry = {};

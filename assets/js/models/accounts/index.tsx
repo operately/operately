@@ -1,1 +1,1 @@
-export { useChangePasswordMutation } from "./useChangePasswordMutation";
+export { useChangePasswordFirstTime } from "@/api";

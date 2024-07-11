@@ -21,7 +21,7 @@ import { DivLink } from "@/components/Link";
 export function LastCheckInMessage({ goal }) {
   if (!goal.lastCheckIn) return null;
 
-  const message = goal.lastCheckIn.content.message;
+  const message = goal.lastCheckIn.message;
   const path = Paths.goalProgressUpdatePath(goal.id, goal.lastCheckIn.id);
   const author = goal.lastCheckIn.author;
 
@@ -129,8 +129,11 @@ function AcknowledgeButton({ goal }: { goal: Goals.Goal }) {
   if (goal.lastCheckIn.acknowledged) return null;
 
   const refresh = Pages.useRefresh();
-  const [ack] = GoalCheckIns.useAckUpdate({ onCompleted: refresh });
-  const handleAcknowledge = () => ack({ variables: { id: goal.lastCheckIn!.id } });
+  const [ack] = GoalCheckIns.useAcknowledgeGoalProgressUpdate();
+  const handleAcknowledge = async () => {
+    await ack({ id: goal.lastCheckIn!.id });
+    refresh();
+  };
 
   return (
     <div className="flex items-center gap-1">

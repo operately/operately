@@ -1,5 +1,0 @@
-mutation EditGoalDiscussion($input: EditGoalDiscussionInput!) {
-  editGoalDiscussion(input: $input) {
-    id
-  }
-}

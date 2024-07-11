@@ -13,7 +13,6 @@ defmodule Operately.Application do
       {Phoenix.PubSub, name: Operately.PubSub},
       {Finch, name: Operately.Finch},
       OperatelyWeb.Endpoint,
-      {Absinthe.Subscription, OperatelyWeb.Endpoint},
       {Oban, Application.fetch_env!(:operately, Oban)}
     ]
 

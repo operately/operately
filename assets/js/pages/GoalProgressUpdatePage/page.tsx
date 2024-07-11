@@ -3,7 +3,6 @@ import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as Icons from "@tabler/icons-react";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
-import * as GoalCheckIns from "@/models/goalCheckIns";
 
 import { useLoadedData, useRefresh } from "./loader";
 import FormattedTime from "@/components/FormattedTime";
@@ -25,7 +24,6 @@ export function Page() {
   const refresh = useRefresh();
 
   const commentsForm = useForGoalCheckIn(update);
-  const content = update.content as GoalCheckIns.GoalCheckInContent;
 
   return (
     <Pages.Page title={["Goal Progress Update", goal.name!]}>
@@ -47,7 +45,7 @@ export function Page() {
           </div>
 
           <Spacer size={4} />
-          <RichContent jsonContent={content.message} className="text-lg" />
+          <RichContent jsonContent={update.message!} className="text-lg" />
           <Spacer size={4} />
 
           <Targets />
@@ -121,11 +119,10 @@ function Options() {
 
 function Targets() {
   const { update } = useLoadedData();
-  const content = update.content as GoalCheckIns.GoalCheckInContent;
-  const targets = (content.targets || [])
-    .map((t) => t!)
+  const targets = update
+    .goalTargetUpdates!.map((t) => t!)
     .slice()
-    .sort((a, b) => a.index - b.index);
+    .sort((a, b) => a.index! - b.index!);
 
   return (
     <div className="flex flex-col gap-2">

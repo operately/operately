@@ -59,10 +59,6 @@ defmodule Operately.MixProject do
       {:ex_aws_s3, "~> 2.0"},
       {:custom_base, "~> 0.2"},
 
-      {:absinthe, "~> 1.7"},
-      {:absinthe_plug, "~> 1.5"},
-      {:absinthe_graphql_ws, github: "geometerio/absinthe_graphql_ws"},
-
       {:oban, "~> 2.14"},
       {:bamboo, "~> 2.3.0"},
       {:site_encrypt, "~> 0.6.0"},
