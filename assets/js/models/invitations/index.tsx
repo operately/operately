@@ -1,1 +1,1 @@
-export { getInvitation } from "./getInvitation";
+export { getInvitation } from "@/api";
