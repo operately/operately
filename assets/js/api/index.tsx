@@ -1760,6 +1760,16 @@ export interface EditProjectTimelineResult {
 }
 
 
+export interface EditSpacePermissionsInput {
+  spaceId?: string | null;
+  accessLevels?: AccessLevels | null;
+}
+
+export interface EditSpacePermissionsResult {
+  success?: boolean | null;
+}
+
+
 export interface JoinSpaceInput {
   spaceId?: string | null;
 }
@@ -2344,6 +2354,10 @@ export class ApiClient {
     return axios.post(this.getBasePath() + "/edit_project_timeline", toSnake(input)).then(({ data }) => toCamel(data));
   }
 
+  async editSpacePermissions(input: EditSpacePermissionsInput): Promise<EditSpacePermissionsResult> {
+    return axios.post(this.getBasePath() + "/edit_space_permissions", toSnake(input)).then(({ data }) => toCamel(data));
+  }
+
   async joinSpace(input: JoinSpaceInput): Promise<JoinSpaceResult> {
     return axios.post(this.getBasePath() + "/join_space", toSnake(input)).then(({ data }) => toCamel(data));
   }
@@ -2672,6 +2686,9 @@ export async function editProjectPermissions(input: EditProjectPermissionsInput)
 }
 export async function editProjectTimeline(input: EditProjectTimelineInput) : Promise<EditProjectTimelineResult> {
   return defaultApiClient.editProjectTimeline(input);
+}
+export async function editSpacePermissions(input: EditSpacePermissionsInput) : Promise<EditSpacePermissionsResult> {
+  return defaultApiClient.editSpacePermissions(input);
 }
 export async function joinSpace(input: JoinSpaceInput) : Promise<JoinSpaceResult> {
   return defaultApiClient.joinSpace(input);
@@ -3042,6 +3059,10 @@ export function useEditProjectTimeline() : UseMutationHookResult<EditProjectTime
   return useMutation<EditProjectTimelineInput, EditProjectTimelineResult>((input) => defaultApiClient.editProjectTimeline(input));
 }
 
+export function useEditSpacePermissions() : UseMutationHookResult<EditSpacePermissionsInput, EditSpacePermissionsResult> {
+  return useMutation<EditSpacePermissionsInput, EditSpacePermissionsResult>((input) => defaultApiClient.editSpacePermissions(input));
+}
+
 export function useJoinSpace() : UseMutationHookResult<JoinSpaceInput, JoinSpaceResult> {
   return useMutation<JoinSpaceInput, JoinSpaceResult>((input) => defaultApiClient.joinSpace(input));
 }
@@ -3299,6 +3320,8 @@ export default {
   useEditProjectPermissions,
   editProjectTimeline,
   useEditProjectTimeline,
+  editSpacePermissions,
+  useEditSpacePermissions,
   joinSpace,
   useJoinSpace,
   markAllNotificationsAsRead,
