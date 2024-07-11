@@ -108,16 +108,35 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Updates.Reaction do
 end
 
 defimpl OperatelyWeb.Api.Serializable, for: Operately.Updates.Update do
+  def serialize(update = %{type: :goal_check_in}, level: :essential) do
+    %{
+      id: update.id
+    }
+  end
+
   def serialize(update = %{type: :goal_check_in}, level: :full) do
     %{
       id: update.id,
+      message: Jason.encode!(update.content["message"]),
       inserted_at: OperatelyWeb.Api.Serializer.serialize(update.inserted_at),
       author: OperatelyWeb.Api.Serializer.serialize(update.author),
-      content: %{
-        message: Jason.encode!(update.content["message"]),
-      },
+      acknowledged: update.acknowledged,
+      acknowledged_at: OperatelyWeb.Api.Serializer.serialize(update.acknowledged_at),
+      acknowledging_person: OperatelyWeb.Api.Serializer.serialize(update.acknowledging_person),
       reactions: OperatelyWeb.Api.Serializer.serialize(update.reactions),
-      comments_count: Operately.Updates.count_comments(update.id, :update)
+      comments_count: Operately.Updates.count_comments(update.id, :update),
+      goal_target_updates: Enum.map(update.content["targets"], fn t ->
+        %{
+          id: t["id"],
+          name: t["name"],
+          from: t["from"],
+          to: t["to"],
+          value: t["value"],
+          unit: t["unit"],
+          previous_value: t["previous_value"],
+          index: t["index"],
+        }
+      end)
     }
   end
 
@@ -435,14 +454,20 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Tasks.Task do
 end
 
 defimpl OperatelyWeb.Api.Serializable, for: Operately.Invitations.Invitation do
-  def serialize(inv, level: :full) do
+  def serialize(inv, level: :essential) do
     %{
       id: inv.id,
       admin_name: inv.admin.full_name,
       admin: OperatelyWeb.Api.Serializer.serialize(inv.admin),
       member: OperatelyWeb.Api.Serializer.serialize(inv.member),
-      token: inv.invitation_token.token,
+      company: OperatelyWeb.Api.Serializer.serialize(inv.company),
     }
+  end
+
+  def serialize(inv, level: :full) do
+    serialize(inv, level: :essential) |> Map.merge(%{
+      token: inv.invitation_token && inv.invitation_token.token,
+    })
   end
 end
 

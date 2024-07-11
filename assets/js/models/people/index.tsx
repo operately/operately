@@ -1,9 +1,7 @@
+import * as api from "@/api";
 import Api, { GetMeInput } from "@/api";
 
-import * as gql from "@/gql";
-import * as api from "@/api";
-
-export type Person = gql.Person | api.Person;
+export type Person = api.Person;
 
 export { useGetMe, getPerson, getPeople, updateMyProfile } from "@/api";
 
@@ -94,7 +92,7 @@ export function logIn(email: string, password: string) {
   });
 }
 
-export function sortByName(people: Person[] | gql.Maybe<Person>[]): Person[] {
+export function sortByName(people: Person[]): Person[] {
   return people
     .slice()
     .map((p) => p!)
