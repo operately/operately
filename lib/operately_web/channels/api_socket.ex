@@ -1,7 +1,7 @@
-defmodule OperatelyWeb.GraphqlWSSocket do
-  use Absinthe.GraphqlWS.Socket, schema: OperatelyWeb.Graphql.Schema
+defmodule OperatelyWeb.ApiSocket do
+  use Phoenix.Socket
 
-  @token_name "graphql socket token"
+  @token_name "api-socket-token"
 
   def gen_token(conn) do
     if conn.assigns[:current_account] do
@@ -12,8 +12,7 @@ defmodule OperatelyWeb.GraphqlWSSocket do
     end
   end
 
-  @impl true
-  def handle_init(params, socket) do
+  def connect(params, socket, _connect_info) do
     token = params["token"]
 
     if token do
@@ -23,7 +22,8 @@ defmodule OperatelyWeb.GraphqlWSSocket do
           account = Operately.Repo.preload(account, :person)
 
           if account do
-            socket = assign_context(socket, :current_account, account)
+            IO.inspect("HERE -------------------------------------------------------------------------------------------------------------------------------------------------------")
+            # socket = assign_context(socket, :current_account, account)
 
             {:ok, %{}, socket}
           else
