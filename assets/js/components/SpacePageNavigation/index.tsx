@@ -90,6 +90,14 @@ export function Settings({ space }) {
       />
       {!space.isCompanySpace && (
         <PageOptions.Link
+          icon={Icons.IconLock}
+          title="Edit space permissions"
+          to={Paths.spaceEditPermissionsPath(space.id)}
+          dataTestId="edit-space-permissions-button"
+        />
+      )}
+      {!space.isCompanySpace && (
+        <PageOptions.Link
           icon={Icons.IconUserPlus}
           title="Add/Remove members"
           to={Paths.spaceMembersPath(space.id)}

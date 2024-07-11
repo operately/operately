@@ -225,6 +225,7 @@ defmodule OperatelyWeb.Api.Types do
     field :icon, :string
     field :color, :string
     field :members, list_of(:person)
+    field :access_levels, :access_levels
   end
 
   object :panel do

@@ -71,6 +71,7 @@ import * as ProjectsPage from "./ProjectsPage";
 import * as SpaceAddPage from "./SpaceAddPage";
 import * as SpaceDiscussionsPage from "./SpaceDiscussionsPage";
 import * as SpaceEditPage from "./SpaceEditPage";
+import * as SpaceEditPermissionsPage from "./SpaceEditPermissionsPage";
 import * as SpaceGoalsPage from "./SpaceGoalsPage";
 import * as SpaceListPage from "./SpaceListPage";
 import * as SpacePage from "./SpacePage";
@@ -353,6 +354,10 @@ export default {
   SpaceEditPage: {
     loader: SpaceEditPage.loader,
     Page: SpaceEditPage.Page
+  },
+  SpaceEditPermissionsPage: {
+    loader: SpaceEditPermissionsPage.loader,
+    Page: SpaceEditPermissionsPage.Page
   },
   SpaceGoalsPage: {
     loader: SpaceGoalsPage.loader,

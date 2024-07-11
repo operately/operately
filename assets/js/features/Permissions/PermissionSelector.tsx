@@ -8,18 +8,29 @@ import { calculatePrivacyLevel } from "./utils";
 
 
 export function SpacePermissionSelector() {
+  const { hasPermissions, permissions } = usePermissionsContext();
+
   const PRIVACY_OPTIONS = [
     {label: "Public - Anyone on the internet", value: PermissionOptions.PUBLIC},
     {label: "Internal - Only organization members", value: PermissionOptions.INTERNAL},
     {label: "Confidential - Only people invited to the space", value: PermissionOptions.CONFIDENTIAL},
   ]
 
+  const defaultPrivacyLevel = useMemo(() => {
+    if(hasPermissions) {
+      return calculatePrivacyLevel(permissions);
+    }
+    else {
+      return PermissionOptions.CONFIDENTIAL;
+    }
+  }, []);
+
   return (
     <>
       <PrivacyLevel
         description="Who can view information in this space?"
         options={PRIVACY_OPTIONS}
-        defaultValue={PermissionOptions.CONFIDENTIAL}
+        defaultValue={defaultPrivacyLevel}
       />
       <AccessLevel />
     </>
