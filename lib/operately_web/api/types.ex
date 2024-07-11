@@ -59,6 +59,7 @@ defmodule OperatelyWeb.Api.Types do
 
   object :project_key_resource do
     field :id, :string
+    field :project_id, :string
     field :title, :string
     field :link, :string
     field :resource_type, :string

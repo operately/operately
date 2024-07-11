@@ -105,12 +105,12 @@ export function createAppRoutes() {
         pageRoute("projects/:projectID/edit/resources", pages.ProjectEditResourcesPage),
         pageRoute("projects/:projectID/edit/goal", pages.ProjectEditGoalPage),
         pageRoute("projects/:projectID/resources/new", pages.ProjectAddResourcePage),
-        pageRoute("projects/:projectID/resources/:id/edit", pages.ProjectEditResourcePage),
         pageRoute("projects/:projectID/contributors", pages.ProjectContributorsPage),
         pageRoute("projects/:id", pages.ProjectPage),
 
         pageRoute("project-check-ins/:id", pages.ProjectCheckInPage),
         pageRoute("project-check-ins/:id/edit", pages.ProjectCheckInEditPage),
+        pageRoute("project-resources/:id/edit", pages.ProjectEditResourcePage),
 
         pageRoute("milestones/:id", pages.ProjectMilestonePage),
 

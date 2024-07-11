@@ -17,6 +17,7 @@ defmodule OperatelyWeb.Api.Mutations.EditKeyResource do
     resource = Operately.Projects.get_key_resource!(id)
 
     {:ok, resource} = Operately.Projects.update_key_resource(resource, inputs)
+    resource = Operately.Repo.preload(resource, :project)
 
     {:ok, %{key_resource: OperatelyWeb.Api.Serializer.serialize(resource)}}
   end
