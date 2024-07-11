@@ -46,11 +46,15 @@ defmodule Operately.Operations.ProjectContributorEditing do
         company_id: project.company_id,
         space_id: project.group_id,
         project_id: project.id,
-        previous_contributor_id: contributor.person_id,
-        previous_role: Atom.to_string(contributor.role),
-        new_contributor_id: changes.contributor.person_id,
-        new_role: Atom.to_string(changes.contributor.role),
-        new_permissions: find_permissions(changes.contributor, attrs),
+        previous_contributor: %{
+          person_id: contributor.person_id,
+          role: Atom.to_string(contributor.role),
+        },
+        updated_contributor: %{
+          person_id: changes.contributor.person_id,
+          role: Atom.to_string(changes.contributor.role),
+          permissions: find_permissions(changes.contributor, attrs),
+        }
       }
     end)
   end

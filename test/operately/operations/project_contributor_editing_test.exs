@@ -125,8 +125,11 @@ defmodule Operately.Operations.ProjectContributorEditingTest do
 
     activity = from(a in Activity, where: a.action == "project_contributor_edited" and a.content["project_id"] == ^ctx.project.id) |> Repo.one()
 
-    assert activity.content["previous_contributor_id"] == contributor.person_id
-    assert activity.content["new_contributor_id"] == new_person.id
-    assert activity.content["new_permissions"] == Binding.view_access()
+    assert activity.content["previous_contributor"]["person_id"] == contributor.person_id
+    assert activity.content["previous_contributor"]["role"] == "contributor"
+
+    assert activity.content["updated_contributor"]["person_id"] == new_person.id
+    assert activity.content["updated_contributor"]["permissions"] == Binding.view_access()
+    assert activity.content["updated_contributor"]["role"] == "contributor"
   end
 end
