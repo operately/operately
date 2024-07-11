@@ -470,6 +470,7 @@ defmodule OperatelyWeb.Api.Types do
     field :admin_name, :string
     field :admin, :person
     field :member, :person
+    field :company, :company
     field :token, :string
   end
 
@@ -915,6 +916,7 @@ defmodule OperatelyWeb.Api.Types do
     field :acknowledging_person, :person
     field :reactions, list_of(:reaction)
     field :goal_target_updates, list_of(:goal_target_updates)
+    field :comments_count, :integer
   end
 
   object :goal_target_updates do

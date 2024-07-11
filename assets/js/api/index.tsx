@@ -561,7 +561,7 @@ export interface Goal {
   projects?: Project[] | null;
   parentGoal?: Goal | null;
   progressPercentage?: number | null;
-  lastCheckIn?: Update | null;
+  lastCheckIn?: GoalProgressUpdate | null;
   permissions?: GoalPermissions | null;
   isArchived?: boolean | null;
   isClosed?: boolean | null;
@@ -595,6 +595,7 @@ export interface GoalProgressUpdate {
   acknowledgingPerson?: Person | null;
   reactions?: Reaction[] | null;
   goalTargetUpdates?: GoalTargetUpdates[] | null;
+  commentsCount?: number | null;
 }
 
 export interface GoalTargetUpdates {
@@ -613,6 +614,7 @@ export interface Invitation {
   adminName?: string | null;
   admin?: Person | null;
   member?: Person | null;
+  company?: Company | null;
   token?: string | null;
 }
 

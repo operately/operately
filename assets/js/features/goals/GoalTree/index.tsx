@@ -385,7 +385,7 @@ function GoalLastCheckInDateWithPopover({ goal }: { goal: Goals.Goal }) {
           </div>
 
           <div className="overflow-y-auto border-y border-surface-outline mt-2 px-4 py-2">
-            <RichContent jsonContent={goal.lastCheckIn?.content!["message"]!} />
+            <RichContent jsonContent={goal.lastCheckIn?.message!} />
           </div>
         </div>
 
