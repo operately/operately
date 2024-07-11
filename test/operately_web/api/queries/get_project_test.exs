@@ -144,6 +144,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
       assert res.project.key_resources == nil
 
       key_resource = key_resource_fixture(project_id: project.id)
+      key_resource = Operately.Repo.preload(key_resource, :project)
       assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(project), include_key_resources: true})
       assert res.project.key_resources == [serialize(key_resource, level: :essential)]
     end

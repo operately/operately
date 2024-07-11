@@ -15,6 +15,7 @@ defmodule OperatelyWeb.Api.Mutations.RemoveKeyResource do
 
     resource = Operately.Projects.get_key_resource!(id)
     Operately.Projects.delete_key_resource(resource)
+    resource = Operately.Repo.preload(resource, :project)
 
     {:ok, %{key_resource: OperatelyWeb.Api.Serializer.serialize(resource)}}
   end

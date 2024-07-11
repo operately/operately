@@ -64,7 +64,7 @@ defmodule OperatelyWeb.Endpoint do
         body = inspect(conn.resp_body)
 
         if String.contains?(body, "error") do
-          IO.inspect(body, label: "GQL ERROR")
+          IO.inspect(body, label: "API ERROR")
         end
 
         conn
