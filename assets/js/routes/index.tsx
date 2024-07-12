@@ -83,11 +83,11 @@ export function createAppRoutes() {
         pageRoute("goals/:goalId/progress-updates/new", pages.GoalProgressUpdateNewPage),
         pageRoute("goals/:goalId/discussions", pages.GoalDiscussionsPage),
         pageRoute("goals/:goalId/discussions/new", pages.GoalDiscussionNewPage),
-        pageRoute("goals/:goalId/discussions/:id/edit", pages.GoalDiscussionEditPage),
-        pageRoute("goals/:goalId/activities/:id", pages.GoalActivityPage),
 
         pageRoute("goal-updates/:id", pages.GoalProgressUpdatePage),
         pageRoute("goal-updates/:id/edit", pages.GoalProgressUpdateEditPage),
+        pageRoute("goal-activities/:id", pages.GoalActivityPage),
+        pageRoute("goal-activities/:id/edit", pages.GoalDiscussionEditPage),
 
         pageRoute("projects", pages.ProjectsPage),
         pageRoute("projects/new", pages.ProjectAddPage),

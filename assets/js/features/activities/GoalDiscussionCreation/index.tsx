@@ -20,7 +20,7 @@ const GoalDiscussionCreation: ActivityHandler = {
   },
 
   pagePath(activity: Activity): string {
-    return Paths.goalActivityPath(content(activity).goal!.id!, activity.id!);
+    return Paths.goalActivityPath(activity.id!);
   },
 
   PageTitle({ activity }: { activity: Activity }) {
@@ -46,7 +46,7 @@ const GoalDiscussionCreation: ActivityHandler = {
           <PageOptions.Link
             icon={Icons.IconEdit}
             title="Edit"
-            to={Paths.goalDiscussionEditPath(content(activity).goal!.id!, activity.id!)}
+            to={Paths.goalDiscussionEditPath(activity.id!)}
             dataTestId="edit"
           />
         )}
@@ -65,7 +65,7 @@ const GoalDiscussionCreation: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    const path = Paths.goalActivityPath(content(activity).goal!.id!, activity.id!);
+    const path = Paths.goalActivityPath(activity.id!);
     const link = <Link to={path}>{activity.commentThread!.title}</Link>;
 
     if (page === "goal") {

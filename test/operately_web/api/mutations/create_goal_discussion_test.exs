@@ -23,6 +23,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoalDiscussionTest do
         message: rich_text("Hello World") |> Jason.encode!()
       })
 
+      {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(id)
       activity = Operately.Activities.get_activity!(id) |> Operately.Repo.preload(:comment_thread)
 
       assert activity.comment_thread_id != nil

@@ -25,18 +25,9 @@ const CommentAdded: ActivityHandler = {
     const commentedActivity = content(activity).activity!;
 
     return match(commentedActivity.action)
-      .with("goal_timeframe_editing", () => {
-        const content = commentedActivity.content as ActivityContentGoalTimeframeEditing;
-        return Paths.goalActivityPath(content.goal!.id!, commentedActivity.id!);
-      })
-      .with("goal_closing", () => {
-        const content = commentedActivity.content as ActivityContentGoalClosing;
-        return Paths.goalActivityPath(content.goal!.id!, commentedActivity.id!);
-      })
-      .with("goal_discussion_creation", () => {
-        const content = commentedActivity.content as ActivityContentGoalDiscussionCreation;
-        return Paths.goalActivityPath(content.goal!.id!, commentedActivity.id!);
-      })
+      .with("goal_timeframe_editing", () => Paths.goalActivityPath(commentedActivity.id!))
+      .with("goal_closing", () => Paths.goalActivityPath(commentedActivity.id!))
+      .with("goal_discussion_creation", () => Paths.goalActivityPath(commentedActivity.id!))
       .otherwise(() => {
         throw new Error("Comment added not implemented for action: " + commentedActivity.action);
       });
@@ -61,7 +52,7 @@ const CommentAdded: ActivityHandler = {
       .with("goal_timeframe_editing", () => {
         const c = commentedActivity.content as ActivityContentGoalTimeframeEditing;
         const goal = c.goal!;
-        const path = Paths.goalActivityPath(goal.id!, commentedActivity.id!);
+        const path = Paths.goalActivityPath(commentedActivity.id!);
         const activityLink = <Link to={path}>timeframe change</Link>;
 
         if (page === "goal") {
@@ -73,7 +64,7 @@ const CommentAdded: ActivityHandler = {
       .with("goal_closing", () => {
         const c = commentedActivity.content as ActivityContentGoalClosing;
         const goal = c.goal!;
-        const path = Paths.goalActivityPath(goal.id!, commentedActivity.id!);
+        const path = Paths.goalActivityPath(commentedActivity.id!);
         const activityLink = <Link to={path}>goal closing</Link>;
 
         if (page === "goal") {
@@ -85,7 +76,7 @@ const CommentAdded: ActivityHandler = {
       .with("goal_discussion_creation", () => {
         const c = commentedActivity.content as ActivityContentGoalDiscussionCreation;
         const goal = c.goal!;
-        const path = Paths.goalActivityPath(goal.id!, commentedActivity.id!);
+        const path = Paths.goalActivityPath(commentedActivity.id!);
         const activityLink = <Link to={path}>{commentedActivity.commentThread!.title}</Link>;
 
         if (page === "goal") {

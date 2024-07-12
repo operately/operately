@@ -9,7 +9,7 @@ defmodule OperatelyEmail.Emails.GoalClosingEmail do
     goal = Goals.get_goal!(activity.content["goal_id"])
     space = Operately.Groups.get_group!(goal.group_id)
     activity = Operately.Repo.preload(activity, :comment_thread)
-    link = Paths.goal_activity_path(company, goal, activity) |> Paths.to_url()
+    link = Paths.goal_activity_path(company, activity) |> Paths.to_url()
 
     success = activity.content["success"]
     message = activity.comment_thread.message

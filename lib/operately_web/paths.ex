@@ -30,8 +30,8 @@ defmodule OperatelyWeb.Paths do
     create_path([company_id(company), "goals", goal_id(goal), "progress-updates", "new"])
   end
 
-  def goal_activity_path(company = %Company{}, goal = %Goal{}, activity) do
-    create_path([company_id(company), "goals", goal_id(goal), "activities", activity_id(activity)])
+  def goal_activity_path(company = %Company{}, activity) do
+    create_path([company_id(company), "goal-activities", activity_id(activity)])
   end
 
   def goal_discussions_path(company = %Company{}, goal = %Goal{}) do
@@ -168,7 +168,12 @@ defmodule OperatelyWeb.Paths do
 
   def activity_id(activity) do
     id = Operately.ShortUuid.encode!(activity.id)
-    comment = activity.action |> String.replace("_", "-") |> String.replace("goal-", "")
+
+    comment = case activity.action do
+      "goal_discussion_creation" -> activity.comment_thread.title
+      _ -> activity.action |> String.replace("_", "-") |> String.replace("goal-", "")
+    end
+
     OperatelyWeb.Api.Helpers.id_with_comments(comment, id)
   end
 
