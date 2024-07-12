@@ -2,6 +2,7 @@ import React from "react";
 
 import * as Projects from "@/models/projects";
 import * as Time from "@/utils/time";
+import { compareIds } from "@/routes/paths";
 
 interface Milestone {
   id: string;
@@ -84,7 +85,7 @@ function getExistingMilestones(project: Projects.Project): Milestone[] {
 function hasMilestoneChanged(m: Milestone, project: Projects.Project): boolean {
   if (m.deletable) return false;
 
-  const original = project.milestones!.find((om) => om!.id === m.id);
+  const original = project.milestones!.find((om) => compareIds(om!.id, m.id));
   if (!original) return false;
 
   const originalTitle = original.title;
