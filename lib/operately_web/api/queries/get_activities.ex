@@ -51,7 +51,9 @@ defmodule OperatelyWeb.Api.Queries.GetActivities do
         {:ok, id} = decode_id(scope_id)
         {:ok, scope_type, id}
 
-      _ -> {:ok, scope_type, scope_id}
+      _ -> 
+        {:ok, id} = decode_id(scope_id)
+        {:ok, scope_type, id}
     end
   end
 

@@ -8,7 +8,7 @@ import * as Icons from "@tabler/icons-react";
 
 import { useOrgChart, OrgChart, OrgChartNode } from "./useOrgChart";
 import classNames from "classnames";
-import { Paths } from "@/routes/paths";
+import { Paths, compareIds } from "@/routes/paths";
 
 export function Page() {
   const { people } = useLoadedData();
@@ -49,7 +49,7 @@ function Reports({ reports, chart }: { reports: OrgChartNode[]; chart: OrgChart 
 }
 
 function Subtree({ node, chart }: { node: OrgChartNode; chart: OrgChart }) {
-  const reports = chart.nodes.filter((n) => n.person.managerId === node.person.id);
+  const reports = chart.nodes.filter((n) => compareIds(n.person.manager?.id, node.person.id));
   const sortedReports = sortNodes(reports);
 
   return (
