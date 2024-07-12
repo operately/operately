@@ -172,6 +172,8 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Goals.Goal do
     %{
       id: OperatelyWeb.Paths.goal_id(goal),
       name: goal.name,
+      permissions: OperatelyWeb.Api.Serializer.serialize(goal.permissions, level: :full),
+      targets: OperatelyWeb.Api.Serializer.serialize(goal.targets)
     }
   end
 

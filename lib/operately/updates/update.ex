@@ -109,7 +109,10 @@ defmodule Operately.Updates.Update do
   end
 
   def preload_goal(update) when update.updatable_type == :goal do
-    %{update | goal: Operately.Goals.get_goal!(update.updatable_id)}
+    import Ecto.Query
+    query = from(g in Operately.Goals.Goal, where: g.id == ^update.updatable_id, preload: [:targets])
+
+    %{update | goal: Operately.Repo.one(query)}
   end
 
 end
