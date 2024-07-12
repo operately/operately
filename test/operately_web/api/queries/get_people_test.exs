@@ -18,8 +18,8 @@ defmodule OperatelyWeb.Api.Queries.GetPeopleTest do
 
       assert {200, %{people: people}} = query(ctx.conn, :get_people, %{})
       assert length(people) == 1
-      assert Enum.at(people, 0).id == me.id
-      refute Enum.find(people, fn person -> person.id == person_from_other_company.id end)
+      assert Enum.at(people, 0).id == Paths.person_id(me)
+      refute find_person_in_response(people, person_from_other_company)
     end
   end
 
@@ -34,25 +34,35 @@ defmodule OperatelyWeb.Api.Queries.GetPeopleTest do
       all_people = [ctx.person, person1, person2, person3] |> Enum.sort_by(&(&1.full_name))
 
       assert {200, res} = query(ctx.conn, :get_people, %{})
-      assert res == %{people: Serializer.serialize(all_people, level: :essential)}
+      assert res == %{people: Serializer.serialize(all_people, level: :full)}
     end
 
-    test "it doesn't return suspended accounts", ctx do
-      suspended_person = person_fixture(company_id: ctx.company.id, suspended: true)
+    test "include_suspeded", ctx do
+      suspended_person = person_fixture(company_id: ctx.company.id, suspended_at: DateTime.utc_now())
       active_person = person_fixture(company_id: ctx.company.id)
 
       assert {200, %{people: people}} = query(ctx.conn, :get_people, %{})
-      assert Enum.find(people, fn person -> person.id == active_person.id end)
-      refute Enum.find(people, fn person -> person.id == suspended_person.id end)
-    end
-
-    test "it returns suspended accounts if include_suspended is true", ctx do
-      suspended_person = person_fixture(company_id: ctx.company.id, suspended: true)
-      active_person = person_fixture(company_id: ctx.company.id)
+      assert find_person_in_response(people, active_person)
+      refute find_person_in_response(people, suspended_person)
 
       assert {200, %{people: people}} = query(ctx.conn, :get_people, %{include_suspended: true})
-      assert Enum.find(people, fn person -> person.id == active_person.id end)
-      assert Enum.find(people, fn person -> person.id == suspended_person.id end)
+      assert find_person_in_response(people, suspended_person)
+      assert find_person_in_response(people, active_person)
     end
+
+    test "include_manager", ctx do
+      person1 = person_fixture(company_id: ctx.company.id, full_name: "John Doe")
+      person2 = person_fixture(company_id: ctx.company.id, full_name: "Jane Doe")
+      person3 = person_fixture(company_id: ctx.company.id, full_name: "Michael Johnson", manager_id: person1.id)
+
+      assert {200, res} = query(ctx.conn, :get_people, %{include_manager: true})
+      assert find_person_in_response(res.people, person1).manager == nil
+      assert find_person_in_response(res.people, person2).manager == nil
+      assert find_person_in_response(res.people, person3).manager == Serializer.serialize(person1, level: :essential)
+    end
+  end
+
+  defp find_person_in_response(people, person) do
+    Enum.find(people, fn p -> p.id == Paths.person_id(person) end)
   end
 end 

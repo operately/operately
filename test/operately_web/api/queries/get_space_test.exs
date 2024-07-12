@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Queries.GetGroupTest do
+defmodule OperatelyWeb.Api.Queries.GetSpaceTest do
   use OperatelyWeb.TurboCase
 
   import Operately.PeopleFixtures
@@ -73,7 +73,7 @@ defmodule OperatelyWeb.Api.Queries.GetGroupTest do
       |> Enum.with_index()
       |> Enum.map(fn {m, i} -> {m, Enum.at(res.space.members, i)} end)
       |> Enum.each(fn {m, res} ->
-        assert res == %{id: m.id, full_name: m.full_name, avatar_url: m.avatar_url, title: m.title}
+        assert res == %{id: Paths.person_id(m), full_name: m.full_name, avatar_url: m.avatar_url, title: m.title}
       end)
     end
 

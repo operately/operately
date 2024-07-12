@@ -17,7 +17,7 @@ defmodule OperatelyEmail.Emails.GoalCheckInEmail do
     |> assign(:author, author)
     |> assign(:goal, goal)
     |> assign(:update, update)
-    |> assign(:cta_url, Paths.goal_check_in_path(company, goal, update) |> Paths.to_url())
+    |> assign(:cta_url, Paths.goal_check_in_path(company, update) |> Paths.to_url())
     |> render("goal_check_in")
   end
 end

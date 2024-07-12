@@ -15,15 +15,15 @@ defmodule OperatelyWeb.Paths do
   end
 
   def profile_path(company = %Company{}, person = %Person{}) do
-    create_path([company_id(company), "people", person.id])
+    create_path([company_id(company), "people", person_id(person)])
   end
 
   def goal_path(company = %Company{}, goal = %Goal{}) do
     create_path([company_id(company), "goals", goal_id(goal)])
   end
 
-  def goal_check_in_path(company = %Company{}, goal = %Goal{}, update) do
-    create_path([company_id(company), "goals", goal_id(goal), "progress-updates", goal_update_id(update)])
+  def goal_check_in_path(company = %Company{}, update) do
+    create_path([company_id(company), "goal-updates", goal_update_id(update)])
   end
 
   def goal_check_in_new_path(company = %Company{}, goal = %Goal{}) do
@@ -175,6 +175,11 @@ defmodule OperatelyWeb.Paths do
     end
 
     OperatelyWeb.Api.Helpers.id_with_comments(comment, id)
+  end
+
+  def person_id(person) do
+    id = Operately.ShortUuid.encode!(person.id)
+    OperatelyWeb.Api.Helpers.id_with_comments(person.full_name, id)
   end
 
   #
