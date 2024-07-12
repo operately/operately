@@ -4,6 +4,7 @@ import { Project } from "@/models/projects";
 import { Node } from "./node";
 import { GoalNode } from "./goalNode";
 import { ProjectNode } from "./projectNode";
+import { compareIds } from "@/routes/paths";
 
 export type SortColumn = "name" | "space" | "timeframe" | "progress" | "lastCheckIn" | "champion";
 export type SortDirection = "asc" | "desc";
@@ -62,8 +63,8 @@ class TreeBuilder {
 
   private connectNodes(): void {
     this.nodes.forEach((n) => {
-      const children = this.nodes.filter((c) => c.parentId === n.id);
-      const parent = this.nodes.find((c) => c.id === n.parentId);
+      const children = this.nodes.filter((c) => compareIds(c.parentId, n.id));
+      const parent = this.nodes.find((c) => compareIds(n.parentId, c.id));
 
       n.addChildren(children);
       n.setParent(parent);
@@ -85,15 +86,16 @@ class TreeBuilder {
   private rootNodesForSpace(): Node[] {
     return this.nodes.filter(
       (n) =>
-        n.space.id === this.options.spaceId! && n.hasNoParentWith((node) => node.space.id === this.options.spaceId),
+        compareIds(n.space.id, this.options.spaceId!) &&
+        n.hasNoParentWith((node) => compareIds(node.space.id, this.options.spaceId)),
     );
   }
 
   private rootNodesForPerson(): Node[] {
     return this.nodes.filter(
       (n) =>
-        n.champion.id === this.options.personId &&
-        n.hasNoParentWith((node) => node.champion.id === this.options.personId),
+        compareIds(n.champion.id, this.options.personId!) &&
+        n.hasNoParentWith((node) => compareIds(node.champion.id, this.options.personId)),
     );
   }
 
@@ -102,7 +104,7 @@ class TreeBuilder {
   }
 
   private rootNodesForGoal(): Node[] {
-    return this.nodes.filter((n) => n.parentId === this.options.goalId);
+    return this.nodes.filter((n) => compareIds(n.parentId, this.options.goalId));
   }
 
   private setDepth(): void {

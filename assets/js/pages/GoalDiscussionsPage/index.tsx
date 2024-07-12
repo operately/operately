@@ -27,7 +27,6 @@ export const loader = async function ({ params }): Promise<LoaderResult> {
   const goalPromise = Goals.getGoal({
     id: params.goalId,
     includeSpace: true,
-    includeParentGoal: true,
     includePermissions: true,
   }).then((data) => data.goal!);
 

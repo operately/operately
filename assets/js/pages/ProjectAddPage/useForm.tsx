@@ -11,7 +11,7 @@ import * as Goals from "@/models/goals";
 import { useLoadedData } from "./loader";
 import { Permissions } from "@/features/Permissions/PermissionsContext";
 import { useMe } from "@/contexts/CurrentUserContext";
-import { Paths } from "@/routes/paths";
+import { Paths, compareIds } from "@/routes/paths";
 
 export interface FormState {
   fields: Fields;
@@ -73,8 +73,8 @@ export function useForm(): FormState {
   const [space, setSpace, spaceOptions] = useSpaces();
   const [goal, setGoal] = React.useState<Goals.Goal | null>(initialGoal || null);
 
-  const amIChampion = champion?.id === me.id;
-  const amIReviewer = reviewer?.id === me.id;
+  const amIChampion = compareIds(champion?.id, me.id);
+  const amIReviewer = compareIds(reviewer?.id, me.id);
   const amIContributor = amIChampion || amIReviewer || creatorIsContributor === "yes";
 
   //

@@ -16,7 +16,7 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalTimeframe do
     author = me(conn)
     {:ok, goal_id} = decode_id(inputs.id)
 
-    inputs = Map.put(inputs, :goal_id, goal_id)
+    inputs = Map.put(inputs, :id, goal_id)
 
     {:ok, goal} = Operately.Operations.GoalTimeframeEditing.run(author, inputs)
     {:ok, %{goal: OperatelyWeb.Api.Serializer.serialize(goal)}}
