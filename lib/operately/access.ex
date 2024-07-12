@@ -161,26 +161,27 @@ defmodule Operately.Access do
     |> update_or_insert_binding(:space_members_binding, standard, members_access_level)
   end
 
-  def update_or_insert_binding(multi, name, access_group, access_level) do
+  def update_or_insert_binding(multi, name, access_group, access_level, tag \\ nil) do
     multi
-    |> Multi.run(name, fn repo, %{context: context} ->
-      case get_binding(context_id: context.id, group_id: access_group.id) do
+    |> Multi.run(name, fn _, %{context: context} ->
+      case tag do
+        nil -> get_binding(context_id: context.id, group_id: access_group.id)
+        _ -> get_binding(context_id: context.id, group_id: access_group.id, tag: tag)
+      end
+      |> case do
         nil ->
-          {:ok, binding} = Binding.changeset(%{
-            context_id: context.id,
-            group_id: access_group.id,
-            access_level: access_level,
-          })
-          |> repo.insert()
-
-          {:ok, %{previous: %{access_level: 0}, updated: binding}}
-
+          {:ok, binding} = create_binding(%{context_id: context.id, group_id: access_group.id, access_level: access_level, tag: tag})
+          {:ok, %{
+            previous: %{access_level: Binding.no_access()},
+            updated: binding
+          }}
 
         binding ->
-          {:ok, updated} = Binding.changeset(binding, %{access_level: access_level})
-          |> repo.update()
-
-          {:ok, %{previous: binding, updated: updated}}
+          {:ok, updated} = update_binding(binding, %{access_level: access_level})
+          {:ok, %{
+            previous: binding,
+            updated: updated
+          }}
       end
     end)
   end
