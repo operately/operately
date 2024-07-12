@@ -16,7 +16,9 @@ defmodule OperatelyWeb.Api.Queries.GetPerson do
   end
 
   def call(conn, inputs) do
-    case load(inputs[:id], me(conn).company_id, inputs) do
+    {:ok, id} = decode_id(inputs[:id])
+
+    case load(id, me(conn).company_id, inputs) do
       nil -> {:error, :not_found}
       person -> {:ok, %{person: Serializer.serialize(person, level: :full)}}
     end

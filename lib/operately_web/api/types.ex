@@ -580,7 +580,6 @@ defmodule OperatelyWeb.Api.Types do
 
   object :person do
     field :id, :string
-    field :manager_id, :string
     field :full_name, :string
     field :title, :string
     field :avatar_url, :string
