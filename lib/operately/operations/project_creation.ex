@@ -131,8 +131,8 @@ defmodule Operately.Operations.ProjectCreation do
     champion_group = Access.get_group!(person_id: params.champion_id)
 
     multi
-    |> Access.insert_binding(:reviewer_binding, reviewer_group, Binding.full_access())
-    |> Access.insert_binding(:champion_binding, champion_group, Binding.full_access())
+    |> Access.insert_binding(:reviewer_binding, reviewer_group, Binding.full_access(), :reviewer)
+    |> Access.insert_binding(:champion_binding, champion_group, Binding.full_access(), :champion)
   end
 
   defp maybe_insert_binding_to_creator(multi, params) do

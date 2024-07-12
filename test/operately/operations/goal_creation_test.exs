@@ -109,6 +109,20 @@ defmodule Operately.Operations.GoalCreationTest do
     assert Access.get_binding(context_id: context.id, group_id: champion_group.id, access_level: Binding.full_access())
   end
 
+  test "GoalCreation operation adds tags to reviewer's and champion's bindings", ctx do
+    {:ok, goal} = Operately.Operations.GoalCreation.run(ctx.creator, ctx.attrs)
+
+    context = Access.get_context!(goal_id: goal.id)
+    reviewer_group = Access.get_group!(person_id: ctx.reviewer.id)
+    champion_group = Access.get_group!(person_id: ctx.champion.id)
+
+    assert Access.get_binding(context_id: context.id, group_id: reviewer_group.id)
+    assert Access.get_binding(tag: :reviewer, context_id: context.id, group_id: reviewer_group.id, access_level: Binding.full_access())
+
+    assert Access.get_binding(context_id: context.id, group_id: champion_group.id)
+    assert Access.get_binding(tag: :champion, context_id: context.id, group_id: champion_group.id, access_level: Binding.full_access())
+  end
+
   test "GoalCreation operation creates activity and notification", ctx do
     {:ok, goal} = Oban.Testing.with_testing_mode(:manual, fn ->
       Operately.Operations.GoalCreation.run(ctx.creator, ctx.attrs)
