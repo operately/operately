@@ -30,8 +30,8 @@ defmodule OperatelyWeb.Paths do
     create_path([company_id(company), "goals", goal_id(goal), "progress-updates", "new"])
   end
 
-  def goal_activity_path(company = %Company{}, goal = %Goal{}, activity) do
-    create_path([company_id(company), "goals", goal_id(goal), "activities", activity_id(activity)])
+  def goal_activity_path(company = %Company{}, activity) do
+    create_path([company_id(company), "goal-activities", activity_id(activity)])
   end
 
   def goal_discussions_path(company = %Company{}, goal = %Goal{}) do

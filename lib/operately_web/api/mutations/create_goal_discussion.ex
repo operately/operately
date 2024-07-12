@@ -13,7 +13,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoalDiscussion do
   end
 
   def call(conn, inputs) do
-    author = conn.assigns.current_account.person
+    author = me(conn)
     title = inputs.title
     message = inputs.message
 
@@ -23,7 +23,8 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoalDiscussion do
 
     if goal do
       {:ok, activity} = Operately.Operations.GoalDiscussionCreation.run(author, goal, title, message)
-      {:ok, %{id: activity.id}}
+      activity = Operately.Repo.preload(activity, :comment_thread)
+      {:ok, %{id: OperatelyWeb.Paths.activity_id(activity)}}
     else
       {:error, :not_found}
     end
