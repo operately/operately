@@ -20,15 +20,15 @@ import { useMe } from "@/contexts/CurrentUserContext";
 
 export function Page() {
   const me = useMe();
-  const { goal, update } = useLoadedData();
+  const { update } = useLoadedData();
   const refresh = useRefresh();
 
   const commentsForm = useForGoalCheckIn(update);
 
   return (
-    <Pages.Page title={["Goal Progress Update", goal.name!]}>
+    <Pages.Page title={["Goal Progress Update", update.goal!.name!]}>
       <Paper.Root>
-        <Navigation goal={goal} />
+        <Navigation goal={update.goal!} />
 
         <Paper.Body>
           {compareIds(me.id, update.author?.id) && <Options />}
@@ -103,14 +103,14 @@ function Navigation({ goal }) {
 }
 
 function Options() {
-  const { goal, update } = useLoadedData();
+  const { update } = useLoadedData();
 
   return (
     <PageOptions.Root position="top-right" testId="options-button">
       <PageOptions.Link
         icon={Icons.IconEdit}
         title="Edit Update"
-        to={Paths.goalEditProgressUpdatePath(goal.id!, update.id!)}
+        to={Paths.goalEditProgressUpdatePath(update.id!)}
         dataTestId="edit-update"
       />
     </PageOptions.Root>

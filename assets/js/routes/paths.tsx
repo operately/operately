@@ -235,16 +235,16 @@ export class Paths {
     return createCompanyPath(["goals", "new"]) + "?parentGoalId=" + parentGoalId;
   }
 
-  static goalProgressUpdatePath(goalId: string, checkInId: string) {
-    return createCompanyPath(["goals", goalId, "progress-updates", checkInId]);
+  static goalProgressUpdatePath(checkInId: string) {
+    return createCompanyPath(["goal-updates", checkInId]);
   }
 
   static goalProgressUpdateNewPath(goalId: string) {
     return createCompanyPath(["goals", goalId, "progress-updates", "new"]);
   }
 
-  static goalEditProgressUpdatePath(goalId: string, checkInId: string) {
-    return createCompanyPath(["goals", goalId, "progress-updates", checkInId, "edit"]);
+  static goalEditProgressUpdatePath(checkInId: string) {
+    return createCompanyPath(["goal-updates", checkInId, "edit"]);
   }
 
   static newGoalDiscussionPath(goalId: string) {
