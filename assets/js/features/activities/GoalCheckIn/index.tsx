@@ -14,7 +14,7 @@ import { feedTitle, goalLink } from "../feedItemLinks";
 
 const GoalCheckIn: ActivityHandler = {
   pagePath(activity: Activity): string {
-    return Paths.goalProgressUpdatePath(content(activity).goal!.id!, content(activity).update!.id!);
+    return Paths.goalProgressUpdatePath(content(activity).update!.id!);
   },
 
   pageHtmlTitle(_activity: Activity): string {
@@ -48,7 +48,7 @@ const GoalCheckIn: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }) {
-    const path = Paths.goalProgressUpdatePath(content(activity).goal!.id!, content(activity).update!.id!);
+    const path = Paths.goalProgressUpdatePath(content(activity).update!.id!);
     const link = <Link to={path}>updated the progress</Link>;
 
     if (page === "goal") {
