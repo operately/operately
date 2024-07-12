@@ -8,17 +8,14 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalDiscussion do
     field :message, :string
   end
 
-  outputs do
-    field :activity, :activity
-  end
-
   def call(conn, inputs) do
     author = me(conn)
     {:ok, activity_id} = decode_id(inputs.activity_id)
     title = inputs.title
     message = inputs.message
-    {:ok, activity} = Operately.Operations.GoalDiscussionEditing.run(author, activity_id, title, message)
 
-    {:ok, %{activity: OperatelyWeb.Api.Serializer.serialize(activity)}}
+    {:ok, _} = Operately.Operations.GoalDiscussionEditing.run(author, activity_id, title, message)
+
+    {:ok, %{}}
   end
 end

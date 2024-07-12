@@ -168,7 +168,12 @@ defmodule OperatelyWeb.Paths do
 
   def activity_id(activity) do
     id = Operately.ShortUuid.encode!(activity.id)
-    comment = activity.action |> String.replace("_", "-") |> String.replace("goal-", "")
+
+    comment = case activity.action do
+      "goal_discussion_creation" -> activity.comment_thread.title
+      _ -> activity.action |> String.replace("_", "-") |> String.replace("goal-", "")
+    end
+
     OperatelyWeb.Api.Helpers.id_with_comments(comment, id)
   end
 
