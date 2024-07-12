@@ -177,6 +177,11 @@ defmodule OperatelyWeb.Paths do
     OperatelyWeb.Api.Helpers.id_with_comments(comment, id)
   end
 
+  def person_id(person) do
+    id = Operately.ShortUuid.encode!(person.id)
+    OperatelyWeb.Api.Helpers.id_with_comments(person.full_name, id)
+  end
+
   #
   # Path Construction Helpers
   #
