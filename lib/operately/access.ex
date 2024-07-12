@@ -126,12 +126,13 @@ defmodule Operately.Access do
     |> insert_binding(:space_members_binding, standard, members_access_level)
   end
 
-  def insert_binding(multi, name, access_group, access_level) do
+  def insert_binding(multi, name, access_group, access_level, tag \\ nil) do
     Multi.insert(multi, name, fn %{context: context} ->
       Binding.changeset(%{
         group_id: access_group.id,
         context_id: context.id,
         access_level: access_level,
+        tag: tag,
       })
     end)
   end
