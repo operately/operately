@@ -22,7 +22,7 @@ export function LastCheckInMessage({ goal }) {
   if (!goal.lastCheckIn) return null;
 
   const message = goal.lastCheckIn.message;
-  const path = Paths.goalProgressUpdatePath(goal.id, goal.lastCheckIn.id);
+  const path = Paths.goalProgressUpdatePath(goal.lastCheckIn.id);
   const author = goal.lastCheckIn.author;
 
   return (
@@ -53,7 +53,7 @@ export function LastCheckInMessage({ goal }) {
 function LastMessageComments({ goal }: { goal: Goals.Goal }) {
   if (!goal.lastCheckIn) return null;
 
-  const path = Paths.goalProgressUpdatePath(goal.id!, goal.lastCheckIn!.id!);
+  const path = Paths.goalProgressUpdatePath(goal.lastCheckIn!.id!);
 
   return (
     <div className="flex items-center gap-1 text-sm leading-none text-content-dimmed">
@@ -180,7 +180,7 @@ function CheckInButton({ goal }) {
   if (!goal.permissions.canCheckIn) return null;
   if (goal.isClosed || goal.isArchived) return null;
 
-  const newCheckInPath = Paths.goalCheckInNewPath(goal.id);
+  const newCheckInPath = Paths.goalProgressUpdateNewPath(goal.id);
 
   return (
     <div className="flex flex-col gap-4">
