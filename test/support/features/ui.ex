@@ -40,6 +40,8 @@ defmodule Operately.Support.Features.UI do
     path = URI.encode("/accounts/auth/test_login?email=#{person.email}&full_name=#{person.full_name}")
 
     execute(state, fn _ ->
+      :ok = Wallaby.end_session(state[:session])
+
       metadata = Phoenix.Ecto.SQL.Sandbox.metadata_for(Operately.Repo, self())
       {:ok, session} = Wallaby.start_session([metadata: metadata])
 
