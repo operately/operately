@@ -46,6 +46,7 @@ defmodule Operately.Updates.Update do
     field :title, :string
 
     field :space, :any, virtual: true # loaded by preload_space
+    field :goal, :any, virtual: true # loaded by preload_goal
 
     timestamps()
   end
@@ -105,6 +106,10 @@ defmodule Operately.Updates.Update do
 
   def preload_space(update) when update.updatable_type == :space do
     %{update | space: Operately.Groups.get_group!(update.updatable_id)}
+  end
+
+  def preload_goal(update) when update.updatable_type == :goal do
+    %{update | goal: Operately.Goals.get_goal!(update.updatable_id)}
   end
 
 end
