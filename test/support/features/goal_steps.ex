@@ -345,6 +345,7 @@ defmodule Operately.Support.Features.GoalSteps do
     |> UI.assert_text("Reopening Goal")
     |> UI.fill_rich_text(params.message)
     |> UI.click(testid: "confirm-reopen-goal")
+    |> UI.sleep(300)
     |> UI.assert_page(Paths.goal_path(ctx.company, ctx.goal))
   end
 
