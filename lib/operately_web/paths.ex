@@ -31,7 +31,7 @@ defmodule OperatelyWeb.Paths do
   end
 
   def goal_activity_path(company = %Company{}, goal = %Goal{}, activity) do
-    create_path([company_id(company), "goals", goal_id(goal), "activities", activity.id])
+    create_path([company_id(company), "goals", goal_id(goal), "activities", activity_id(activity)])
   end
 
   def goal_discussions_path(company = %Company{}, goal = %Goal{}) do
@@ -164,6 +164,12 @@ defmodule OperatelyWeb.Paths do
   def key_resource_id(resource) do
     id = Operately.ShortUuid.encode!(resource.id)
     OperatelyWeb.Api.Helpers.id_with_comments(resource.title, id)
+  end
+
+  def activity_id(activity) do
+    id = Operately.ShortUuid.encode!(activity.id)
+    comment = activity.action |> String.replace("_", "-") |> String.replace("goal-", "")
+    OperatelyWeb.Api.Helpers.id_with_comments(comment, id)
   end
 
   #

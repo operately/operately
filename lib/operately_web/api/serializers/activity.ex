@@ -11,7 +11,7 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
 
   def serialize(activity, [comment_thread: comment_thread]) do
     %{
-      id: activity.id,
+      id: OperatelyWeb.Paths.activity_id(activity),
       inserted_at: activity.inserted_at,
       action: activity.action,
       author: serialize_author(activity.author),
