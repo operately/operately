@@ -37,15 +37,15 @@ export function TaskBoard({ tasks, kanbanState }: { tasks: Tasks.Task[]; kanbanS
       const { todoTasks, inProgressTasks, doneTasks } = prev;
 
       const task =
-        todoTasks.find((t) => t.id === taskId) ||
-        inProgressTasks.find((t) => t.id === taskId) ||
-        doneTasks.find((t) => t.id === taskId);
+        todoTasks.find((t) => compareIds(t.id, taskId)) ||
+        inProgressTasks.find((t) => compareIds(t.id, taskId)) ||
+        doneTasks.find((t) => compareIds(t.id, taskId));
 
       if (!task) return prev;
 
-      let newTodoTasks = todoTasks.filter((t) => t.id !== taskId);
-      let newInProgressTasks = inProgressTasks.filter((t) => t.id !== taskId);
-      let newDoneTasks = doneTasks.filter((t) => t.id !== taskId);
+      let newTodoTasks = todoTasks.filter((t) => !compareIds(t.id, taskId));
+      let newInProgressTasks = inProgressTasks.filter((t) => !compareIds(t.id, taskId));
+      let newDoneTasks = doneTasks.filter((t) => !compareIds(t.id, taskId));
 
       task.status = dropZoneId;
 

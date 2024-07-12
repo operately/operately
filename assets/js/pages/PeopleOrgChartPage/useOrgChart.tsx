@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Person } from "@/models/people";
+import { compareIds } from "@/routes/paths";
 
 type ExpandNodeFn = (personId: string) => void;
 type CollapseNodeFn = (personId: string) => void;
@@ -28,7 +29,7 @@ export function useOrgChart(people: Person[]): OrgChart {
   const [expanded, setExpanded] = React.useState<string[]>([]);
 
   const expand = (personId: string) => {
-    const managerId = nodes.find((n) => n.person.id === personId)?.person.managerId;
+    const managerId = nodes.find((n) => compareIds(n.person.id, personId))?.person.managerId;
     const indexOfManager = expanded.indexOf(managerId!);
 
     setExpanded((ids) => [...ids.slice(0, indexOfManager + 1), personId]);

@@ -13,6 +13,7 @@ import { FormState } from "./form";
 import { useBoolState } from "@/utils/useBoolState";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { useMe } from "@/contexts/CurrentUserContext";
+import { compareIds } from "@/routes/paths";
 
 interface CommentSectionProps {
   form: FormState;
@@ -178,7 +179,7 @@ function ViewComment({ comment, onEdit }) {
                 <FormattedTime time={comment.insertedAt} format="relative" />
               </span>
 
-              {me.id === comment.author.id && (
+              {compareIds(me.id, comment.author.id) && (
                 <PageOptions.Root testId="comment-options" noBorder>
                   <PageOptions.Action
                     onClick={onEdit}

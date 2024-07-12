@@ -120,7 +120,8 @@ defmodule OperatelyWeb.Paths do
   end
 
   def goal_id(goal) do
-    goal.id
+    id = Operately.ShortUuid.encode!(goal.id)
+    OperatelyWeb.Api.Helpers.id_with_comments(goal.name, id)
   end
 
   def project_id(project) do

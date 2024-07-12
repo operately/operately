@@ -18,7 +18,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoalDiscussionTest do
       goal = goal_fixture(person, %{space_id: ctx.company.company_space_id})
 
       assert {200, %{id: id}} = mutation(ctx.conn, :create_goal_discussion, %{
-        goal_id: goal.id,
+        goal_id: Paths.goal_id(goal),
         title: "Some title",
         message: rich_text("Hello World") |> Jason.encode!()
       })
@@ -31,7 +31,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoalDiscussionTest do
 
     test "if goal does not exist, it returns an error", ctx do
       assert mutation(ctx.conn, :create_goal_discussion, %{
-        goal_id: Ecto.UUID.generate(),
+        goal_id: "goal-abc-#{Operately.ShortUuid.encode!(Ecto.UUID.generate())}",
         title: "Some title",
         message: rich_text("Hello World") |> Jason.encode!()
       }) == not_found_response()

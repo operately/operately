@@ -23,7 +23,8 @@ defmodule OperatelyWeb.Api.Mutations.CreateProject do
   def call(conn, inputs) do
     person = me(conn)
 
-    {:ok, space_id} = decode_id(inputs.space_id, :allow_nil)
+    {:ok, goal_id} = decode_id(inputs[:goal_id], :allow_nil)
+    {:ok, space_id} = decode_id(inputs[:space_id], :allow_nil)
 
     args = %Operately.Operations.ProjectCreation{
       name: inputs.name,
@@ -35,7 +36,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateProject do
       creator_id: person.id,
       company_id: person.company_id,
       group_id: space_id,
-      goal_id: inputs[:goal_id],
+      goal_id: goal_id,
       anonymous_access_level: inputs.anonymous_access_level,
       company_access_level: inputs.company_access_level,
       space_access_level: inputs.space_access_level,
