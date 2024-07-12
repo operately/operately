@@ -15,7 +15,6 @@ defmodule OperatelyWeb.Api.Queries.GetGoals do
 
     field :include_champion, :boolean
     field :include_reviewer, :boolean
-    field :include_parent_goal, :boolean
   end
 
   outputs do
@@ -23,6 +22,9 @@ defmodule OperatelyWeb.Api.Queries.GetGoals do
   end
 
   def call(conn, inputs) do
+    {:ok, space_id} = decode_id(inputs[:space_id], :allow_nil)
+    inputs = Map.put(inputs, :space_id, space_id)
+
     goals = load(me(conn), inputs)
     output = %{goals: Serializer.serialize(goals, level: :full)}
 
@@ -32,7 +34,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoals do
   defp load(person, inputs) do
     include_filters = extract_include_filters(inputs)
 
-    (from p in Goal, as: :goal)
+    (from p in Goal, as: :goal, preload: [:parent_goal])
     |> Goal.scope_space(inputs[:space_id])
     |> Goal.scope_company(person.company_id)
     |> include_requested(include_filters)
@@ -48,7 +50,6 @@ defmodule OperatelyWeb.Api.Queries.GetGoals do
         :include_space -> from p in q, preload: [:group]
         :include_champion -> from p in q, preload: [:champion]
         :include_reviewer -> from p in q, preload: [:reviewer]
-        :include_parent_goal -> from p in q, preload: [:parent_goal]
         :include_last_check_in -> q # this is done after the load
         _ -> q 
       end

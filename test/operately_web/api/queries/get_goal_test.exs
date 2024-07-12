@@ -31,6 +31,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
 
     test "with no includes", ctx do
       goal = goal_fixture(ctx.person, company_id: ctx.company.id, space_id: ctx.company.company_space_id)
+      goal = Operately.Repo.preload(goal, [:parent_goal])
 
       assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal)})
       assert res.goal == serialize(goal, level: :full)
@@ -80,22 +81,6 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
 
       assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal), include_last_check_in: true})
       assert res.goal.last_check_in == serialize(update, level: :full)
-    end
-
-    test "include_parent_goal", ctx do
-      parent_goal = goal_fixture(ctx.person, company_id: ctx.company.id, space_id: ctx.company.company_space_id)
-      goal = goal_fixture(ctx.person, company_id: ctx.company.id, space_id: ctx.company.company_space_id, parent_goal_id: parent_goal.id)
-
-      # not requested
-      assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal)})
-      assert res.goal.parent_goal == nil
-
-      # requested, but the goal has no parent goal
-      assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(parent_goal), include_parent_goal: true})
-      assert res.goal.parent_goal == nil
-
-      assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal), include_parent_goal: true})
-      assert res.goal.parent_goal == serialize(parent_goal, level: :essential)
     end
 
     test "include_permissions", ctx do
