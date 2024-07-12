@@ -110,13 +110,13 @@ end
 defimpl OperatelyWeb.Api.Serializable, for: Operately.Updates.Update do
   def serialize(update = %{type: :goal_check_in}, level: :essential) do
     %{
-      id: update.id
+      id: OperatelyWeb.Paths.goal_update_id(update),
     }
   end
 
   def serialize(update = %{type: :goal_check_in}, level: :full) do
     %{
-      id: update.id,
+      id: OperatelyWeb.Paths.goal_update_id(update),
       message: Jason.encode!(update.content["message"]),
       inserted_at: OperatelyWeb.Api.Serializer.serialize(update.inserted_at),
       author: OperatelyWeb.Api.Serializer.serialize(update.author),

@@ -23,7 +23,7 @@ defmodule OperatelyWeb.Paths do
   end
 
   def goal_check_in_path(company = %Company{}, goal = %Goal{}, update) do
-    create_path([company_id(company), "goals", goal_id(goal), "progress-updates", update.id])
+    create_path([company_id(company), "goals", goal_id(goal), "progress-updates", goal_update_id(update)])
   end
 
   def goal_check_in_new_path(company = %Company{}, goal = %Goal{}) do
@@ -143,6 +143,12 @@ defmodule OperatelyWeb.Paths do
   def project_check_in_id(check_in) do
     id = Operately.ShortUuid.encode!(check_in.id)
     date = check_in.inserted_at |> NaiveDateTime.to_date() |> Date.to_string()
+    OperatelyWeb.Api.Helpers.id_with_comments(date, id)
+  end
+
+  def goal_update_id(update) do
+    id = Operately.ShortUuid.encode!(update.id)
+    date = update.inserted_at |> NaiveDateTime.to_date() |> Date.to_string()
     OperatelyWeb.Api.Helpers.id_with_comments(date, id)
   end
 

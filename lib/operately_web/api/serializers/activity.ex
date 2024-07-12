@@ -445,7 +445,7 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
 
   defp serialize_goal_check_in_update(update) do
     %{
-      id: update.id,
+      id: OperatelyWeb.Paths.goal_update_id(update),
       title: update.title,
       message: Jason.encode!(update.content["message"]),
       message_type: update.type || "status_update",
