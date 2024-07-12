@@ -19,27 +19,22 @@ defmodule OperatelyWeb.Api.Queries.GetPeople do
   end
 
   defp load_people(company_id, inputs) do
-    requested = extract_include_filters(inputs)
-
     query = from p in Operately.People.Person, where: p.company_id == ^company_id
+
     query = if inputs[:include_suspended] do 
       query
     else 
-      from p in query, where: not p.suspended
+      from p in query, where: is_nil(p.suspended_at)
     end
-    query = include_requested(query, requested)
+
+    query = if inputs[:include_manager] do
+      from p in query, preload: [:manager]
+    else
+      query
+    end
+
     query = from p in query, order_by: [asc: p.full_name]
 
     Repo.all(query)
-  end
-
-  def include_requested(query, requested) do
-    Enum.reduce(requested, query, fn include, q ->
-      case include do
-        :include_suspended -> q
-        :include_manager -> from p in q, preload: [:manager]
-        _ -> raise ArgumentError, "Unknown include filter: #{inspect(include)}"
-      end
-    end)
   end
 end
