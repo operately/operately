@@ -15,7 +15,7 @@ import { AckCTA } from "./AckCTA";
 import Avatar from "@/components/Avatar";
 import RichContent from "@/components/RichContent";
 import { CommentSection, useForGoalCheckIn } from "@/features/CommentSection";
-import { Paths } from "@/routes/paths";
+import { Paths, compareIds } from "@/routes/paths";
 import { useMe } from "@/contexts/CurrentUserContext";
 
 export function Page() {
@@ -31,7 +31,7 @@ export function Page() {
         <Navigation goal={goal} />
 
         <Paper.Body>
-          {me.id === update.author?.id && <Options />}
+          {compareIds(me.id, update.author?.id) && <Options />}
 
           <div className="flex flex-col items-center">
             <Title update={update} />

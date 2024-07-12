@@ -1,5 +1,6 @@
 defmodule OperatelyWeb.Api.Mutations.CreateGoalDiscussion do
   use TurboConnect.Mutation
+  use OperatelyWeb.Api.Helpers
 
   inputs do
     field :goal_id, :string
@@ -16,7 +17,9 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoalDiscussion do
     title = inputs.title
     message = inputs.message
 
-    goal = Operately.Goals.get_goal!(inputs.goal_id)
+    {:ok, goal_id} = decode_id(inputs.goal_id)
+
+    goal = Operately.Goals.get_goal!(goal_id)
 
     if goal do
       {:ok, activity} = Operately.Operations.GoalDiscussionCreation.run(author, goal, title, message)

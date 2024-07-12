@@ -11,7 +11,6 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
     field :include_champion, :boolean
     field :include_closed_by, :boolean
     field :include_last_check_in, :boolean
-    field :include_parent_goal, :boolean
     field :include_permissions, :boolean
     field :include_projects, :boolean
     field :include_reviewer, :boolean
@@ -25,6 +24,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
   end
 
   def call(conn, %{id: id} = inputs) do
+    {:ok, id} = decode_id(id)
     goal = load(id, me(conn), inputs)
 
     if goal do
@@ -41,7 +41,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
 
   defp load(id, person, inputs) do
     include_filters = extract_include_filters(inputs)
-    query = from(g in Goal, as: :goal, where: g.id == ^id)
+    query = from(g in Goal, as: :goal, where: g.id == ^id, preload: [:parent_goal])
 
     query
     |> Goal.scope_company(person.company_id)
@@ -58,7 +58,6 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
         :include_champion -> from p in q, preload: [:champion]
         :include_closed_by -> from p in q, preload: [:closed_by]
         :include_last_check_in -> q # this is done after the load
-        :include_parent_goal -> from p in q, preload: [:parent_goal]
         :include_permissions -> q # this is done after the load
         :include_projects -> from p in q, preload: [projects: [:champion, :reviewer]]
         :include_reviewer -> from p in q, preload: [:reviewer]

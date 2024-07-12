@@ -1,3 +1,4 @@
+import { compareIds } from "@/routes/paths";
 import { Project } from ".";
 
 import * as Spaces from "@/models/spaces";
@@ -13,14 +14,14 @@ export function groupBySpace(projects: Project[]): ProjectGroup[] {
   for (const project of projects) {
     const space = project.space;
 
-    if (!groups.find((group) => group.space.id === space!.id!)) {
+    if (!groups.find((group) => compareIds(group.space.id, space!.id!))) {
       groups.push({
         space: space as Spaces.Space,
         projects: [],
       });
     }
 
-    groups.find((group) => group!.space!.id === space!.id)!.projects.push(project);
+    groups.find((group) => compareIds(group!.space!.id, space!.id))!.projects.push(project);
   }
 
   groups.sort((a, b) => {

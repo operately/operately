@@ -21,7 +21,8 @@ defmodule OperatelyWeb.Api.Mutations.EditGoal do
   end
 
   def call(conn, inputs) do
-    goal = Operately.Goals.get_goal!(inputs.goal_id)
+    {:ok, id} = decode_id(inputs.goal_id)
+    goal = Operately.Goals.get_goal!(id)
     {:ok, goal} = Operately.Operations.GoalEditing.run(me(conn), goal, inputs)
 
     {:ok, %{goal: Serializer.serialize(goal, level: :essential)}}
