@@ -9,7 +9,7 @@ defmodule Operately.People.Person do
     belongs_to(:account, Operately.People.Account)
     belongs_to(:company, Operately.Companies.Company)
 
-    belongs_to(:manager, Operately.People.Person)
+    belongs_to(:manager, Operately.People.Person, foreign_key: :manager_id)
     has_many(:reports, Operately.People.Person, foreign_key: :manager_id)
     field :peers, :any, virtual: true # loaded in a custom preload
 

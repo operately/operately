@@ -6,7 +6,7 @@ import type { Activity } from "@/models/activities";
 import type { ActivityContentGoalEditing } from "@/api";
 import type { ActivityHandler } from "../interfaces";
 
-import { Paths } from "@/routes/paths";
+import { Paths, compareIds } from "@/routes/paths";
 import { goalLink, feedTitle } from "../feedItemLinks";
 
 const GoalEditing: ActivityHandler = {
@@ -92,13 +92,13 @@ function Timeframe({ content }: { content: ActivityContentGoalEditing }) {
 }
 
 function Champion({ content }: { content: ActivityContentGoalEditing }) {
-  if (content.oldChampionId === content.newChampionId) return null;
+  if (compareIds(content.oldChampionId, content.newChampionId)) return null;
 
   return <div>The champion was changed to {content.newChampion!.fullName}.</div>;
 }
 
 function Reviewer({ content }: { content: ActivityContentGoalEditing }) {
-  if (content.oldReviewerId === content.newReviewerId) return null;
+  if (compareIds(content.oldReviewerId, content.newReviewerId)) return null;
 
   return <div>The reviewer was changed to {content.newReviewer!.fullName}.</div>;
 }

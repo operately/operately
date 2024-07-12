@@ -16,7 +16,7 @@ defmodule OperatelyWeb.Api.Queries.GetMeTest do
       assert {200, %{me: data}} = query(ctx.conn, :get_me, %{})
 
       assert data == %{
-        id: ctx.person.id,
+        id: Paths.person_id(ctx.person),
         full_name: ctx.person.full_name,
         email: ctx.person.email,
         title: ctx.person.title,
@@ -39,7 +39,7 @@ defmodule OperatelyWeb.Api.Queries.GetMeTest do
       assert {200, %{me: data}} = query(ctx.conn, :get_me, %{include_manager: true})
 
       assert data == %{
-        id: me.id,
+        id: Paths.person_id(ctx.person),
         full_name: me.full_name,
         email: me.email,
         title: ctx.person.title,
@@ -52,7 +52,7 @@ defmodule OperatelyWeb.Api.Queries.GetMeTest do
         companyRole: Atom.to_string(me.company_role),
         theme: "system",
         manager: %{
-          id: manager.id,
+          id: Paths.person_id(manager),
           full_name: manager.full_name,
           email: manager.email,
           title: manager.title,
@@ -65,7 +65,7 @@ defmodule OperatelyWeb.Api.Queries.GetMeTest do
       assert {200, %{me: data}} = query(ctx.conn, :get_me, %{include_manager: true})
 
       assert data == %{
-        id: ctx.person.id,
+        id: Paths.person_id(ctx.person),
         full_name: ctx.person.full_name,
         email: ctx.person.email,
         title: ctx.person.title,

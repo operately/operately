@@ -654,7 +654,6 @@ export interface Panel {
 
 export interface Person {
   id?: string | null;
-  managerId?: string | null;
   fullName?: string | null;
   title?: string | null;
   avatarUrl?: string | null;
@@ -1153,6 +1152,7 @@ export interface GetNotificationsResult {
 
 export interface GetPeopleInput {
   includeSuspended?: boolean | null;
+  includeManager?: boolean | null;
 }
 
 export interface GetPeopleResult {
@@ -1671,7 +1671,7 @@ export interface EditGoalDiscussionInput {
 }
 
 export interface EditGoalDiscussionResult {
-  activity?: Activity | null;
+
 }
 
 
