@@ -48,7 +48,6 @@ export async function loader({ request, params }): Promise<LoaderResult> {
     includeTargets: true,
     includeProjects: true,
     includeLastCheckIn: true,
-    includeParentGoal: true,
     includeChampion: true,
     includeSpace: true,
   }).then((data) => data.goals!);

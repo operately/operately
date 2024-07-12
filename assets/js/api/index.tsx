@@ -1036,7 +1036,6 @@ export interface GetGoalInput {
   includeChampion?: boolean | null;
   includeClosedBy?: boolean | null;
   includeLastCheckIn?: boolean | null;
-  includeParentGoal?: boolean | null;
   includePermissions?: boolean | null;
   includeProjects?: boolean | null;
   includeReviewer?: boolean | null;
@@ -1094,7 +1093,6 @@ export interface GetGoalsInput {
   includeLastCheckIn?: boolean | null;
   includeChampion?: boolean | null;
   includeReviewer?: boolean | null;
-  includeParentGoal?: boolean | null;
 }
 
 export interface GetGoalsResult {
