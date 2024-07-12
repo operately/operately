@@ -1,5 +1,6 @@
 defmodule OperatelyWeb.Api.Queries.GetActivity do
   use TurboConnect.Query
+  use OperatelyWeb.Api.Helpers
 
   alias Operately.Repo
   alias Operately.Activities
@@ -17,7 +18,8 @@ defmodule OperatelyWeb.Api.Queries.GetActivity do
   end
 
   def call(_conn, inputs) do
-    activity = load(inputs[:id])
+    {:ok, id} = decode_id(inputs[:id])
+    activity = load(id)
     serialized = OperatelyWeb.Api.Serializers.Activity.serialize(activity, [comment_thread: :full])
 
     {:ok, %{activity: serialized}}
