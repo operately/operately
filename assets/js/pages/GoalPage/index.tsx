@@ -21,7 +21,6 @@ export async function loader({ params }): Promise<LoaderResult> {
       includeTargets: true,
       includeProjects: true,
       includeLastCheckIn: true,
-      includeParentGoal: true,
       includePermissions: true,
     }).then((data) => data.goal!),
   };
