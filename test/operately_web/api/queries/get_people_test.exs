@@ -38,7 +38,7 @@ defmodule OperatelyWeb.Api.Queries.GetPeopleTest do
     end
 
     test "include_suspeded", ctx do
-      suspended_person = person_fixture(company_id: ctx.company.id, suspended: true)
+      suspended_person = person_fixture(company_id: ctx.company.id, suspended_at: DateTime.utc_now())
       active_person = person_fixture(company_id: ctx.company.id)
 
       assert {200, %{people: people}} = query(ctx.conn, :get_people, %{})
