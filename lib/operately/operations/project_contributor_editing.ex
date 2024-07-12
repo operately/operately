@@ -33,9 +33,17 @@ defmodule Operately.Operations.ProjectContributorEditing do
     new_group = Access.get_group!(person_id: attrs.person_id)
     permissions = find_permissions(contributor, attrs)
 
-    multi
-    |> delete_binding(previous_group)
-    |> Access.update_or_insert_binding(:contributor_binding, new_group, permissions)
+    if is_reviewer_or_contributor?(contributor) do
+      tag = contributor.role
+
+      multi
+      |> delete_binding(previous_group, tag)
+      |> Access.update_or_insert_binding(:contributor_binding, new_group, permissions, tag)
+    else
+      multi
+      |> delete_binding(previous_group)
+      |> Access.update_or_insert_binding(:contributor_binding, new_group, permissions)
+    end
   end
 
   defp insert_activity(multi, creator, contributor, attrs) do
@@ -63,9 +71,12 @@ defmodule Operately.Operations.ProjectContributorEditing do
   # Helpers
   #
 
-  defp delete_binding(multi, group) do
+  defp delete_binding(multi, group, tag \\ nil) do
     Multi.run(multi, :deleted_binding, fn _, changes ->
-      Access.get_binding!(context_id: changes.context.id, group_id: group.id)
+      case tag do
+        nil -> Access.get_binding!(context_id: changes.context.id, group_id: group.id)
+        _ -> Access.get_binding!(context_id: changes.context.id, group_id: group.id, tag: tag)
+      end
       |> Repo.delete()
     end)
   end

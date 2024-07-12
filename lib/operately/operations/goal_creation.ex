@@ -50,8 +50,8 @@ defmodule Operately.Operations.GoalCreation do
     multi
     |> Access.insert_bindings_to_company(creator.company_id, attrs.company_access_level, attrs.anonymous_access_level)
     |> maybe_insert_bindings_to_space(creator, attrs)
-    |> Access.insert_binding(:reviewer_binding, reviewer_group, Binding.full_access())
-    |> Access.insert_binding(:champion_binding, champion_group, Binding.full_access())
+    |> Access.insert_binding(:reviewer_binding, reviewer_group, Binding.full_access(), :reviewer)
+    |> Access.insert_binding(:champion_binding, champion_group, Binding.full_access(), :champion)
   end
 
   defp maybe_insert_bindings_to_space(multi, creator, attrs) do
