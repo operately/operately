@@ -4,7 +4,9 @@ defmodule Operately.Access.Binding do
   schema "access_bindings" do
     belongs_to :group, Operately.Access.Group
     belongs_to :context, Operately.Access.Context
+
     field :access_level, :integer
+    field :tag, Ecto.Enum, values: [:champion, :reviewer]
 
     timestamps()
   end
@@ -23,7 +25,7 @@ defmodule Operately.Access.Binding do
 
   def changeset(binding, attrs) do
     binding
-    |> cast(attrs, [:group_id, :context_id, :access_level])
+    |> cast(attrs, [:group_id, :context_id, :access_level, :tag])
     |> validate_inclusion(:access_level, @valid_access_levels, message: "invalid access level")
     |> validate_required([:group_id, :context_id, :access_level])
   end
