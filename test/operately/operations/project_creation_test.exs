@@ -123,7 +123,7 @@ defmodule Operately.Operations.ProjectCreationTest do
     refute Access.get_binding(group_id: members.id, context_id: context.id)
   end
 
-  test "ProjectCreation operation doesn't create work without champion or reviewer", ctx do
+  test "ProjectCreation operation doesn't create without champion or reviewer", ctx do
     {_, attrs} = Map.pop(ctx.project_attrs, :champion_id)
 
     assert_raise KeyError, ~r/^key :champion_id not found in:/, fn ->
@@ -135,6 +135,20 @@ defmodule Operately.Operations.ProjectCreationTest do
     assert_raise KeyError, ~r/^key :reviewer_id not found in:/, fn ->
       Operately.Operations.ProjectCreation.run(attrs)
     end
+  end
+
+  test "ProjectCreation operation adds tags to reviewer's and champion's bindings", ctx do
+    {:ok, project} = Operately.Operations.ProjectCreation.run(ctx.project_attrs)
+
+    context = Access.get_context!(project_id: project.id)
+    reviewer = Access.get_group!(person_id: ctx.reviewer.id)
+    champion = Access.get_group!(person_id: ctx.champion.id)
+
+    assert Access.get_binding(group_id: reviewer.id, context_id: context.id)
+    assert Access.get_binding(tag: :reviewer, group_id: reviewer.id, context_id: context.id, access_level: Binding.full_access())
+
+    assert Access.get_binding(group_id: champion.id, context_id: context.id)
+    assert Access.get_binding(tag: :champion, group_id: champion.id, context_id: context.id, access_level: Binding.full_access())
   end
 
   test "ProjectCreation operation creates activity and notification", ctx do
