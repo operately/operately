@@ -48,7 +48,7 @@ end
 defimpl OperatelyWeb.Api.Serializable, for: Operately.People.Person do
   def serialize(data, level: :essential) do
     %{
-      id: data.id,
+      id: OperatelyWeb.Paths.person_id(data),
       full_name: data.full_name,
       avatar_url: data.avatar_url,
       title: data.title,
@@ -57,12 +57,11 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.People.Person do
 
   def serialize(data, level: :full) do
     %{
-      id: data.id,
+      id: OperatelyWeb.Paths.person_id(data),
       full_name: data.full_name,
       email: data.email,
       avatar_url: data.avatar_url,
       title: data.title,
-      manager_id: data.manager_id,
       suspended: data.suspended,
       manager: OperatelyWeb.Api.Serializer.serialize(data.manager),
       reports: OperatelyWeb.Api.Serializer.serialize(data.reports),

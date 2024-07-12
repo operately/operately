@@ -18,7 +18,7 @@ defmodule OperatelyWeb.Api.Queries.GetPeopleTest do
 
       assert {200, %{people: people}} = query(ctx.conn, :get_people, %{})
       assert length(people) == 1
-      assert Enum.at(people, 0).id == me.id
+      assert Enum.at(people, 0).id == Paths.person_id(me)
       refute Enum.find(people, fn person -> person.id == person_from_other_company.id end)
     end
   end
@@ -42,8 +42,8 @@ defmodule OperatelyWeb.Api.Queries.GetPeopleTest do
       active_person = person_fixture(company_id: ctx.company.id)
 
       assert {200, %{people: people}} = query(ctx.conn, :get_people, %{})
-      assert Enum.find(people, fn person -> person.id == active_person.id end)
-      refute Enum.find(people, fn person -> person.id == suspended_person.id end)
+      assert Enum.find(people, fn person -> person.id == Paths.person_id(active_person) end)
+      refute Enum.find(people, fn person -> person.id == Paths.person_id(suspended_person) end)
     end
 
     test "it returns suspended accounts if include_suspended is true", ctx do
@@ -51,8 +51,8 @@ defmodule OperatelyWeb.Api.Queries.GetPeopleTest do
       active_person = person_fixture(company_id: ctx.company.id)
 
       assert {200, %{people: people}} = query(ctx.conn, :get_people, %{include_suspended: true})
-      assert Enum.find(people, fn person -> person.id == active_person.id end)
-      assert Enum.find(people, fn person -> person.id == suspended_person.id end)
+      assert Enum.find(people, fn person -> person.id == Paths.person_id(active_person) end)
+      assert Enum.find(people, fn person -> person.id == Paths.person_id(suspended_person) end)
     end
   end
 end 
