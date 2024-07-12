@@ -2,6 +2,7 @@ defmodule Operately.Operations.GoalEditing do
   alias Ecto.Multi
   alias Operately.Repo
   alias Operately.Access
+  alias Operately.Access.Binding
   alias Operately.Activities
   alias Operately.Goals.{Goal, Target}
 
@@ -67,6 +68,24 @@ defmodule Operately.Operations.GoalEditing do
     multi
     |> Access.update_bindings_to_company(goal.company_id, attrs.company_access_level, attrs.anonymous_access_level)
     |> Access.update_bindings_to_space(goal.group_id, attrs.space_access_level)
+    |> maybe_update_binding_to_person(goal.champion_id, attrs.champion_id, :champion)
+    |> maybe_update_binding_to_person(goal.reviewer_id, attrs.reviewer_id, :reviewer)
+  end
+
+  defp maybe_update_binding_to_person(multi, previous, current, _tag) when previous == current, do: multi
+  defp maybe_update_binding_to_person(multi, previous, current, tag) when previous != current do
+    current_group = Access.get_group!(person_id: current)
+    previous_group = Access.get_group!(person_id: previous)
+
+    current_name = Atom.to_string(tag) <> "_binding"
+    previous_name = Atom.to_string(tag) <> "_binding_deleted"
+
+    multi
+    |> Access.update_or_insert_binding(current_name, current_group, Binding.full_access(), tag)
+    |> Multi.run(previous_name, fn repo, changes ->
+      get_binding(changes.context, previous_group, tag)
+      |> repo.delete()
+    end)
   end
 
   defp insert_activity(multi, author, goal, targets) do
@@ -138,4 +157,21 @@ defmodule Operately.Operations.GoalEditing do
       }
     end)
   end
+
+  #
+  # We need both get_binding/3 and get_binding/2 because,
+  # if the data migration 023 wasn't run yet, using
+  # Access.get_binding!/1 directly could possibly fail.
+  #
+  # After we are sure that the data migration 023 has been
+  # run, both get_binding/3 and get_binding/2 can be deleted
+  # and Access.get_binding!/1 can be used directly instead.
+  #
+  defp get_binding(context, group, tag) do
+    case Access.get_binding(context_id: context.id, group_id: group.id, tag: tag) do
+      nil -> get_binding(context, group)
+      binding -> binding
+    end
+  end
+  defp get_binding(context, group), do: Access.get_binding!(context_id: context.id, group_id: group.id)
 end
