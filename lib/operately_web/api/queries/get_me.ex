@@ -24,7 +24,7 @@ defmodule OperatelyWeb.Api.Queries.GetMe do
   defp serialize(me, include_manager) do
     %{me:
       %{
-        id: me.id,
+        id: OperatelyWeb.Paths.person_id(me),
         full_name: me.full_name,
         email: me.email,
         title: me.title,
@@ -46,7 +46,7 @@ defmodule OperatelyWeb.Api.Queries.GetMe do
   defp serialize_manager(nil), do: nil
   defp serialize_manager(manager) do
     %{
-      id: manager.id,
+      id: OperatelyWeb.Paths.person_id(manager),
       full_name: manager.full_name,
       email: manager.email,
       title: manager.title,
