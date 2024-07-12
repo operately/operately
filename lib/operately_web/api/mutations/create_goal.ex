@@ -21,7 +21,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoal do
   end
 
   def call(conn, inputs) do
-    {:ok, parent_goal_id} = decode_id(inputs.parent_goal_id, :allow_nil)
+    {:ok, parent_goal_id} = decode_id(inputs[:parent_goal_id], :allow_nil)
     {:ok, space_id} = decode_id(inputs.space_id)
 
     inputs = Map.put(inputs, :space_id, space_id)

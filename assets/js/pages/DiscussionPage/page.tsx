@@ -17,7 +17,7 @@ import { CommentSection, useForDiscussion } from "@/features/CommentSection";
 
 import { useRefresh, useLoadedData } from "./loader";
 import { useMe } from "@/contexts/CurrentUserContext";
-import { Paths } from "@/routes/paths";
+import { Paths, compareIds } from "@/routes/paths";
 
 export function Page() {
   const me = useMe();
@@ -33,7 +33,7 @@ export function Page() {
 
         <Paper.Body>
           <div className="px-16">
-            {me.id === discussion.author!.id && <Options />}
+            {compareIds(me.id, discussion.author!.id) && <Options />}
             <Title discussion={discussion} />
 
             <Spacer size={4} />
