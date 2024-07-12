@@ -59,19 +59,17 @@ defmodule OperatelyEmail.Emails.CommentAddedEmail do
   def get_link(company, activity) do
     comment_thread = Operately.Comments.get_thread!(activity.content["comment_thread_id"])
     activity = Operately.Activities.get_activity!(comment_thread.parent_id)
+    activity = Repo.preload(activity, :comment_thread)
 
     cond do
       activity.action == "goal_timeframe_editing" ->
-        goal = Operately.Goals.get_goal!(activity.content["goal_id"])
-        Paths.goal_activity_path(company, goal, activity) |> Paths.to_url()
+        Paths.goal_activity_path(company, activity) |> Paths.to_url()
 
       activity.action == "goal_closing" ->
-        goal = Operately.Goals.get_goal!(activity.content["goal_id"])
-        Paths.goal_activity_path(company, goal, activity) |> Paths.to_url()
+        Paths.goal_activity_path(company, activity) |> Paths.to_url()
 
       activity.action == "goal_discussion_creation" ->
-        goal = Operately.Goals.get_goal!(activity.content["goal_id"])
-        Paths.goal_activity_path(company, goal, activity) |> Paths.to_url()
+        Paths.goal_activity_path(company, activity) |> Paths.to_url()
 
       true ->
         raise "Unsupported action"

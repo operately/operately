@@ -19,7 +19,7 @@ export const GoalTimeframeEditing: ActivityHandler = {
   },
 
   pagePath(activity: Activity) {
-    return Paths.goalActivityPath(content(activity).goal!.id!, activity.id!);
+    return Paths.goalActivityPath(activity.id!);
   },
 
   PageTitle({ activity }) {
@@ -66,7 +66,7 @@ export const GoalTimeframeEditing: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }) {
-    const path = Paths.goalActivityPath(content(activity).goal!.id!, activity.id!);
+    const path = Paths.goalActivityPath(activity.id!);
     const activityLink = <Link to={path}>{extendedOrShortened(activity)} the timeframe</Link>;
 
     if (page === "goal") {

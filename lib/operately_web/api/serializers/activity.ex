@@ -31,7 +31,7 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
 
   def serialize_comment_thread(comment_thread, :minimal) do
     %{
-      id: comment_thread.id,
+      id: Operately.ShortUuid.encode!(comment_thread.id),
       message: Jason.encode!(comment_thread.message),
       title: comment_thread.title,
     }
@@ -39,7 +39,7 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
 
   def serialize_comment_thread(comment_thread, :full) do
     %{
-      id: comment_thread.id,
+      id: Operately.ShortUuid.encode!(comment_thread.id),
       message: Jason.encode!(comment_thread.message),
       title: comment_thread.title,
       reactions: Enum.map(comment_thread.reactions, fn r ->

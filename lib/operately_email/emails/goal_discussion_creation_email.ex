@@ -8,10 +8,11 @@ defmodule OperatelyEmail.Emails.GoalDiscussionCreationEmail do
     company = Repo.preload(author, :company).company
     goal = Goals.get_goal!(activity.content["goal_id"])
 
-    comment_thread = Repo.preload(activity, :comment_thread).comment_thread
+    activity = Repo.preload(activity, :comment_thread)
+    comment_thread = activity.comment_thread
     title = comment_thread.title
     message = comment_thread.message
-    link = Paths.goal_activity_path(company, goal, activity) |> Paths.to_url()
+    link = Paths.goal_activity_path(company, activity) |> Paths.to_url()
 
     company
     |> new()
