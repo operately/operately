@@ -247,8 +247,8 @@ export class Paths {
     return createCompanyPath(["goals", goalId, "discussions", activityId, "edit"]);
   }
 
-  static goalActivityPath(goalId: string, activityId: string) {
-    return createCompanyPath(["goals", goalId, "activities", activityId]);
+  static goalActivityPath(activityId: string) {
+    return createCompanyPath(["goal-activities", activityId]);
   }
 
   static createCompanyPath(goalId: string) {
