@@ -169,12 +169,12 @@ defmodule Operately.Support.Features.GoalSteps do
       end)
     end)
     |> UI.click(testid: "save-changes")
-    |> UI.assert_page(Paths.goal_path(ctx.company, ctx.goal))
+    |> UI.sleep(300) # Wait for the page to update
   end
 
   step :assert_goal_edited, ctx do
     ctx
-    |> UI.assert_page(Paths.goal_path(ctx.company, ctx.goal))
+    |> UI.assert_page(Paths.goal_path(ctx.company, Operately.Goals.get_goal!(ctx.goal.id)))
     |> UI.assert_text(ctx.edit_values.name)
     |> UI.assert_text(ctx.edit_values.new_champion.full_name)
     |> UI.assert_text(ctx.edit_values.new_reviewer.full_name)
