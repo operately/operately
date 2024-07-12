@@ -68,7 +68,7 @@ export function useForm(options: UseFormOptions): FormState {
         newTargetValues: JSON.stringify(targets.map((target) => ({ id: target.id, value: target.value }))),
       });
 
-      navigate(Paths.goalProgressUpdatePath(goal.id!, res.update!.id));
+      navigate(Paths.goalProgressUpdatePath(res.update!.id));
 
       return true;
     } else {
@@ -78,7 +78,7 @@ export function useForm(options: UseFormOptions): FormState {
         newTargetValues: JSON.stringify(targets.map((target) => ({ id: target.id, value: target.value }))),
       });
 
-      navigate(Paths.goalProgressUpdatePath(goal.id!, res.update!.id));
+      navigate(Paths.goalProgressUpdatePath(res.update!.id));
 
       return true;
     }
@@ -87,9 +87,7 @@ export function useForm(options: UseFormOptions): FormState {
   const submitting = submittingPost || submittingEdit;
   const submitButtonLabel = options.mode === "create" ? "Submit" : "Save Changes";
   const cancelPath =
-    options.mode === "create"
-      ? Paths.goalCheckInsPath(goal.id!)
-      : Paths.goalCheckInPath(goal.id!, options.checkIn!.id!);
+    options.mode === "create" ? Paths.goalPath(goal.id!) : Paths.goalProgressUpdatePath(options.checkIn!.id!);
 
   return {
     editor,

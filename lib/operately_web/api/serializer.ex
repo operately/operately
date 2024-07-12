@@ -117,6 +117,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Updates.Update do
   def serialize(update = %{type: :goal_check_in}, level: :full) do
     %{
       id: OperatelyWeb.Paths.goal_update_id(update),
+      goal: OperatelyWeb.Api.Serializer.serialize(update.goal),
       message: Jason.encode!(update.content["message"]),
       inserted_at: OperatelyWeb.Api.Serializer.serialize(update.inserted_at),
       author: OperatelyWeb.Api.Serializer.serialize(update.author),
@@ -171,6 +172,8 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Goals.Goal do
     %{
       id: OperatelyWeb.Paths.goal_id(goal),
       name: goal.name,
+      permissions: OperatelyWeb.Api.Serializer.serialize(goal.permissions, level: :full),
+      targets: OperatelyWeb.Api.Serializer.serialize(goal.targets)
     }
   end
 

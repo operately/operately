@@ -1,7 +1,6 @@
 import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
-import * as Goals from "@/models/goals";
 import * as GoalCheckIns from "@/models/goalCheckIns";
 
 import { FilledButton } from "@/components/Button";
@@ -10,36 +9,36 @@ import { Paths } from "@/routes/paths";
 import { DimmedLink } from "@/components/Link";
 
 interface LoaderResult {
-  goal: Goals.Goal;
   checkIn: GoalCheckIns.Update;
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
-  const goalPromise = Goals.getGoal({ id: params.goalId, includeTargets: true }).then((data) => data.goal!);
-  const checkInPromise = GoalCheckIns.getGoalProgressUpdate({ id: params.id }).then((data) => data.update!);
+  const checkInPromise = GoalCheckIns.getGoalProgressUpdate({
+    id: params.id,
+    includeGoal: true,
+  }).then((data) => data.update!);
 
   return {
-    goal: await goalPromise,
     checkIn: await checkInPromise,
   };
 }
 
 export function Page() {
-  const { goal, checkIn } = Pages.useLoadedData<LoaderResult>();
+  const { checkIn } = Pages.useLoadedData<LoaderResult>();
 
-  const form = useForm({ goal, checkIn, mode: "edit" });
+  const form = useForm({ goal: checkIn.goal!, checkIn, mode: "edit" });
 
   return (
-    <Pages.Page title={["Edit Goal Progress Update", goal.name!]}>
+    <Pages.Page title={["Edit Goal Progress Update", checkIn.goal!.name!]}>
       <Paper.Root>
-        <Navigation goal={goal} checkin={checkIn} />
+        <Navigation goal={checkIn.goal!} checkin={checkIn} />
 
         <Paper.Body>
           <Form form={form} />
 
           <div className="flex items-center gap-4 mt-8">
             <SubmitButton form={form} />
-            <CancelLink goal={goal} checkin={checkIn} />
+            <CancelLink checkin={checkIn} />
           </div>
         </Paper.Body>
       </Paper.Root>
@@ -52,7 +51,7 @@ function Navigation({ goal, checkin }) {
     <Paper.Navigation>
       <Paper.NavItem linkTo={Paths.goalPath(goal.id)}>{goal.name}</Paper.NavItem>
       <Paper.NavSeparator />
-      <Paper.NavItem linkTo={Paths.goalProgressUpdatePath(goal.id, checkin.id)}>Progress Update</Paper.NavItem>
+      <Paper.NavItem linkTo={Paths.goalProgressUpdatePath(checkin.id)}>Progress Update</Paper.NavItem>
     </Paper.Navigation>
   );
 }
@@ -71,6 +70,6 @@ function SubmitButton({ form }) {
   );
 }
 
-function CancelLink({ goal, checkin }: { goal: Goals.Goal; checkin: GoalCheckIns.Update }) {
-  return <DimmedLink to={Paths.goalProgressUpdatePath(goal.id!, checkin.id!)}>Cancel</DimmedLink>;
+function CancelLink({ checkin }: { checkin: GoalCheckIns.Update }) {
+  return <DimmedLink to={Paths.goalProgressUpdatePath(checkin.id!)}>Cancel</DimmedLink>;
 }

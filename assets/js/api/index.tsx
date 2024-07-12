@@ -596,6 +596,7 @@ export interface GoalProgressUpdate {
   reactions?: Reaction[] | null;
   goalTargetUpdates?: GoalTargetUpdates[] | null;
   commentsCount?: number | null;
+  goal?: Goal | null;
 }
 
 export interface GoalTargetUpdates {
@@ -1069,6 +1070,7 @@ export interface GetGoalCheckInsResult {
 
 export interface GetGoalProgressUpdateInput {
   id?: string | null;
+  includeGoal?: boolean | null;
 }
 
 export interface GetGoalProgressUpdateResult {

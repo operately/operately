@@ -920,6 +920,7 @@ defmodule OperatelyWeb.Api.Types do
     field :reactions, list_of(:reaction)
     field :goal_target_updates, list_of(:goal_target_updates)
     field :comments_count, :integer
+    field :goal, :goal
   end
 
   object :goal_target_updates do

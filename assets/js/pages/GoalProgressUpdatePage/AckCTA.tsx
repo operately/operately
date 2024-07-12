@@ -6,13 +6,13 @@ import { FilledButton } from "@/components/Button";
 import { useLoadedData, useRefresh } from "./loader";
 
 export function AckCTA() {
-  const { goal, update } = useLoadedData();
+  const { update } = useLoadedData();
   const refresh = useRefresh();
 
   const [ack] = GoalCheckIns.useAcknowledgeGoalProgressUpdate();
 
   if (update.acknowledged) return null;
-  if (!goal.permissions!.canAcknowledgeCheckIn) return null;
+  if (!update.goal!.permissions!.canAcknowledgeCheckIn) return null;
 
   const handleAck = async () => {
     await ack({ id: update.id });
