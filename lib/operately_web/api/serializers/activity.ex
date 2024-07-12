@@ -14,18 +14,9 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
       id: OperatelyWeb.Paths.activity_id(activity),
       inserted_at: activity.inserted_at,
       action: activity.action,
-      author: serialize_author(activity.author),
+      author: OperatelyWeb.Api.Serializer.serialize(activity.author, level: :essential),
       comment_thread: activity.comment_thread && serialize_comment_thread(activity.comment_thread, comment_thread),
       content: serialize_content(activity.action, activity.content),
-    }
-  end
-
-  def serialize_author(author) do
-    %{
-      id: author.id,
-      full_name: author.full_name,
-      avatar_url: author.avatar_url,
-      timezone: author.timezone
     }
   end
 
@@ -42,26 +33,14 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
       id: Operately.ShortUuid.encode!(comment_thread.id),
       message: Jason.encode!(comment_thread.message),
       title: comment_thread.title,
-      reactions: Enum.map(comment_thread.reactions, fn r ->
-        %{
-          id: r.id,
-          emoji: r.emoji,
-          person: serialize_person(r.person)
-        }
-      end),
+      reactions: OperatelyWeb.Api.Serializer.serialize(comment_thread.reactions),
       comments: Enum.map(comment_thread.comments, fn c ->
         %{
           id: c.id,
           content: Jason.encode!(c.content),
           inserted_at: c.inserted_at,
-          author: serialize_person(c.author),
-          reactions: Enum.map(c.reactions, fn r ->
-            %{
-              id: r.id,
-              emoji: r.emoji,
-              person: serialize_person(r.person)
-            }
-          end)
+          author: OperatelyWeb.Api.Serializer.serialize(c.author, level: :essential),
+          reactions: OperatelyWeb.Api.Serializer.serialize(c.reactions),
         }
       end),
     }
@@ -171,12 +150,12 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
       old_timeframe: Timeframe.serialize(GoalEditing.current_timeframe(content)),
       new_champion_id: content["new_champion_id"],
       old_champion_id: content["old_champion_id"],
-      new_champion: serialize_person(content["new_champion"]),
-      old_champion: serialize_person(content["old_champion"]),
+      new_champion: OperatelyWeb.Api.Serializer.serialize(content["new_champion"], level: :essential),
+      old_champion: OperatelyWeb.Api.Serializer.serialize(content["old_champion"], level: :essential),
       old_reviewer_id: content["old_reviewer_id"],
       new_reviewer_id: content["new_reviewer_id"],
-      old_reviewer: serialize_person(content["old_reviewer"]),
-      new_reviewer: serialize_person(content["new_reviewer"]),
+      old_reviewer: OperatelyWeb.Api.Serializer.serialize(content["old_reviewer"], level: :essential),
+      new_reviewer: OperatelyWeb.Api.Serializer.serialize(content["new_reviewer"], level: :essential),
       added_targets: serialize_added_targets(content),
       updated_targets: serialize_updated_targets(content),
       deleted_targets: serialize_deleted_targets(content)
@@ -251,7 +230,7 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
 
   def serialize_content("project_contributor_addition", content) do
     %{
-      person: serialize_person(content["person"]),
+      person: OperatelyWeb.Api.Serializer.serialize(content["person"], level: :essential),
       project: serialize_project(content["project"])
     }
   end
@@ -430,16 +409,6 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
       inserted_at: check_in.inserted_at,
       status: check_in.status,
       description: check_in.description
-    }
-  end
-
-  defp serialize_person(nil), do: nil
-  defp serialize_person(person) do
-    %{
-      id: person.id,
-      full_name: person.full_name,
-      avatar_url: person.avatar_url,
-      title: person.title
     }
   end
 
