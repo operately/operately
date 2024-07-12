@@ -17,7 +17,7 @@ const GoalClosing: ActivityHandler = {
   },
 
   pagePath(activity: Activity): string {
-    return Paths.goalActivityPath(content(activity).goal!.id!, activity.id!);
+    return Paths.goalActivityPath(activity.id!);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -39,7 +39,7 @@ const GoalClosing: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; content: any; page: any }) {
-    const path = Paths.goalActivityPath(content(activity).goal!.id!, activity.id!);
+    const path = Paths.goalActivityPath(activity.id!);
     const link = <Link to={path}>reopened</Link>;
 
     if (page === "goal") {

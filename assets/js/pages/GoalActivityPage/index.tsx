@@ -1,7 +1,6 @@
 import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
-import * as Goals from "@/models/goals";
 import * as Activities from "@/models/activities";
 
 import { CommentThread } from "@/api";
@@ -14,19 +13,18 @@ import FormattedTime from "@/components/FormattedTime";
 import ActivityHandler from "@/features/activities";
 
 interface LoaderResult {
-  goal: Goals.Goal;
   activity: Activities.Activity;
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
   return {
-    goal: await Goals.getGoal({ id: params.goalId }).then((data) => data.goal!),
     activity: await Activities.getActivity({ id: params.id }),
   };
 }
 
 export function Page() {
-  const { goal, activity } = Pages.useLoadedData<LoaderResult>();
+  const { activity } = Pages.useLoadedData<LoaderResult>();
+  const goal = Activities.getGoal(activity);
 
   return (
     <Pages.Page title={[ActivityHandler.pageHtmlTitle(activity), goal.name!]}>

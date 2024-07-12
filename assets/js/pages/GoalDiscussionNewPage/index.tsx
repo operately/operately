@@ -104,7 +104,7 @@ function useForm({ goal }: { goal: Goals.Goal }) {
           title: fields.title,
           message: JSON.stringify(fields.editor.editor.getJSON()),
         })
-          .then((data) => navigate(Paths.goalActivityPath(goal.id!, data.id!)))
+          .then((data) => navigate(Paths.goalActivityPath(data.id!)))
           .finally(() => setSubmitting(false));
       },
       submitting,
