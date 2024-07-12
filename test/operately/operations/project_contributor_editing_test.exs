@@ -89,6 +89,42 @@ defmodule Operately.Operations.ProjectContributorEditingTest do
     assert Access.get_binding(context_id: context.id, group_id: new_champion_group.id, access_level: Binding.full_access())
   end
 
+  test "ProjectContributorEditing operation handles reviewer's and champion's tags correctly", ctx do
+    project = project_fixture(%{
+      company_id: ctx.company.id,
+      creator_id: ctx.creator.id,
+      creator_is_contributor: "yes",
+      group_id: ctx.company.company_space_id,
+    })
+
+    # Reviewer and Champion are the same person
+    context = Access.get_context!(project_id: project.id)
+    reviewer_champion_group = Access.get_group!(person_id: ctx.creator.id)
+
+    assert_raise Ecto.MultipleResultsError, ~r/^expected at most one result but got 2 in query:/, fn ->
+      Access.get_binding(context_id: context.id, group_id: reviewer_champion_group.id)
+    end
+    assert Access.get_binding(tag: :reviewer, context_id: context.id, group_id: reviewer_champion_group.id)
+    assert Access.get_binding(tag: :champion, context_id: context.id, group_id: reviewer_champion_group.id)
+
+    # Reviewer is updated
+    reviewer = person_fixture_with_account(%{company_id: ctx.company.id})
+    contributor = Repo.preload(project, :reviewer_contributor).reviewer_contributor
+
+    {:ok, _} = Operately.Operations.ProjectContributorEditing.run(ctx.creator, contributor, %{
+      person_id: reviewer.id,
+    })
+
+    # Reviewer and Champion are different people
+    reviewer_group = Access.get_group!(person_id: reviewer.id)
+
+    assert Access.get_binding(context_id: context.id, group_id: reviewer_group.id)
+    assert Access.get_binding(tag: :reviewer, context_id: context.id, group_id: reviewer_group.id)
+
+    assert Access.get_binding(context_id: context.id, group_id: reviewer_champion_group.id)
+    assert Access.get_binding(tag: :champion, context_id: context.id, group_id: reviewer_champion_group.id)
+  end
+
   test "ProjectContributorEditing operation updates contributor with a different person", ctx do
     {:ok, contributor} = Projects.create_contributor(ctx.creator, Map.merge(ctx.attrs, %{
       person_id: ctx.contributor.id,
