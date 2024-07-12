@@ -15,20 +15,19 @@ import { Validators } from "@/utils/validators";
 import { useFormState, formValidator, useFormMutationAction } from "@/components/Form/useFormState";
 
 interface LoaderResult {
-  goal: Goals.Goal;
   activity: Activities.Activity;
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
   return {
-    goal: await Goals.getGoal({ id: params.goalId }).then((data) => data.goal!),
     activity: await Activities.getActivity({ id: params.id }),
   };
 }
 
 export function Page() {
-  const { goal, activity } = Pages.useLoadedData<LoaderResult>();
-  const form = useForm({ goal, activity: activity });
+  const { activity } = Pages.useLoadedData<LoaderResult>();
+  const form = useForm({ activity: activity });
+  const goal = Activities.getGoal(activity);
 
   return (
     <Pages.Page title={["New Discussion", goal.name!]}>
@@ -52,7 +51,7 @@ export function Page() {
               Save
             </FilledButton>
 
-            <DimmedLink to={Paths.goalActivityPath(goal.id!, activity.id!)}>Cancel</DimmedLink>
+            <DimmedLink to={Paths.goalActivityPath(activity.id!)}>Cancel</DimmedLink>
           </div>
         </Paper.Body>
       </Paper.Root>
@@ -66,7 +65,7 @@ type FormFields = {
   editor: TipTapEditor.EditorState;
 };
 
-function useForm({ goal, activity }: { goal: Goals.Goal; activity: Activities.Activity }) {
+function useForm({ activity }: { activity: Activities.Activity }) {
   const commentThread = activity.commentThread!;
   const [title, setTitle] = React.useState(commentThread.title!);
 
@@ -93,7 +92,7 @@ function useForm({ goal, activity }: { goal: Goals.Goal; activity: Activities.Ac
         title: fields.title,
         message: JSON.stringify(fields.editor.editor.getJSON()),
       }),
-      onCompleted: (_data, navigate) => navigate(Paths.goalActivityPath(goal.id!, activity.id!)),
+      onCompleted: (_data, navigate) => navigate(Paths.goalActivityPath(activity.id!)),
     }),
   });
 }

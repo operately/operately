@@ -37,6 +37,7 @@ defmodule Operately.Support.Features.GoalDiscussionsSteps do
     |> UI.fill(testid: "discussion-title", with: params.title)
     |> UI.fill_rich_text(params.message)
     |> UI.click(testid: "post-discussion")
+    |> UI.sleep(300)
   end
 
   step :assert_discussion_submitted, ctx, params do
@@ -112,7 +113,7 @@ defmodule Operately.Support.Features.GoalDiscussionsSteps do
     |> UI.click(testid: "add-comment")
     |> UI.fill_rich_text(message)
     |> UI.click(testid: "post-comment")
-    |> UI.sleep(100) # give it a moment for the comment to be submitted
+    |> UI.sleep(500) # give it a moment for the comment to be submitted
   end
 
   step :assert_comment_submitted, ctx, message do
