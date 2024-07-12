@@ -25,6 +25,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
   end
 
   def call(conn, %{id: id} = inputs) do
+    {:ok, id} = decode_id(id)
     goal = load(id, me(conn), inputs)
 
     if goal do
