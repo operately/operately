@@ -1,3 +1,4 @@
+import { compareIds } from "@/routes/paths";
 import { Goal } from "./index";
 
 export function filterPossibleParentGoals(goals: Goal[], goal: Goal): Goal[] {
@@ -11,7 +12,7 @@ export function filterPossibleParentGoals(goals: Goal[], goal: Goal): Goal[] {
     nonSelectableGoals.add(currentGoal!.id!);
 
     goals.forEach((g) => {
-      if (g.parentGoalId === currentGoal?.id) {
+      if (compareIds(g.parentGoalId, currentGoal?.id)) {
         queue.push(g);
       }
     });

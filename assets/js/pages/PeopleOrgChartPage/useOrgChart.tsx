@@ -24,12 +24,12 @@ export interface OrgChart {
 
 export function useOrgChart(people: Person[]): OrgChart {
   const nodes = React.useMemo(() => peopleToNodes(people), [people]);
-  const root = nodes.filter((node) => !node.person.managerId);
+  const root = nodes.filter((node) => !node.person.manager?.id);
 
   const [expanded, setExpanded] = React.useState<string[]>([]);
 
   const expand = (personId: string) => {
-    const managerId = nodes.find((n) => compareIds(n.person.id, personId))?.person.managerId;
+    const managerId = nodes.find((n) => compareIds(n.person.id, personId))?.person.manager?.id;
     const indexOfManager = expanded.indexOf(managerId!);
 
     setExpanded((ids) => [...ids.slice(0, indexOfManager + 1), personId]);
@@ -56,7 +56,7 @@ function peopleToNodes(people: Person[]): OrgChartNode[] {
   const nodes = people.map((person) => ({ person, directReports: 0, totalReports: 0 }));
 
   nodes.forEach((node) => {
-    const reports = nodes.filter((n) => n.person.managerId === node.person.id);
+    const reports = nodes.filter((n) => compareIds(n.person.manager?.id, node.person.id));
     node.directReports = reports.length;
   });
 
@@ -68,7 +68,7 @@ function peopleToNodes(people: Person[]): OrgChartNode[] {
 }
 
 function calcTotalReports(node: OrgChartNode, nodes: OrgChartNode[]): number {
-  const reports = nodes.filter((n) => n.person.managerId === node.person.id);
+  const reports = nodes.filter((n) => compareIds(n.person.manager?.id, node.person.id));
 
   let res = 0;
 

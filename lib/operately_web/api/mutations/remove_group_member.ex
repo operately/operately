@@ -9,7 +9,9 @@ defmodule OperatelyWeb.Api.Mutations.RemoveGroupMember do
 
   def call(_, inputs) do
     {:ok, id} = decode_id(inputs.group_id)
-    {:ok, _} = Operately.Operations.GroupMemberRemoving.run(id, inputs.member_id)
+    {:ok, member_id} = decode_id(inputs.member_id)
+
+    {:ok, _} = Operately.Operations.GroupMemberRemoving.run(id, member_id)
 
 
     {:ok, %{}}

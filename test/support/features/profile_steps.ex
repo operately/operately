@@ -47,7 +47,7 @@ defmodule Operately.Support.Features.ProfileSteps do
   end
 
   step :click_manager, ctx do
-    UI.click(ctx, testid: "person-card-#{ctx.manager.id}")
+    UI.click(ctx, testid: "person-card-#{OperatelyWeb.Paths.person_id(ctx.manager)}")
   end
 
   step :assert_on_manager_profile, ctx do
