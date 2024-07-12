@@ -68,7 +68,7 @@ export function useForm(options: UseFormOptions): FormState {
         newTargetValues: JSON.stringify(targets.map((target) => ({ id: target.id, value: target.value }))),
       });
 
-      navigate(Paths.goalProgressUpdatePath(goal.id!, res.update!.id));
+      navigate(Paths.goalProgressUpdatePath(res.update!.id));
 
       return true;
     } else {
