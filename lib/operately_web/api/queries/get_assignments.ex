@@ -17,4 +17,14 @@ defmodule OperatelyWeb.Api.Queries.GetAssignments do
     )
     |> Repo.all()
   end
+
+  def get_due_goals(person) do
+    from(g in Operately.Goals.Goal,
+      where: g.next_update_scheduled_at <= ^DateTime.utc_now(),
+      where: is_nil(g.closed_at),
+      where: g.champion_id == ^person.id,
+      select: g
+    )
+    |> Repo.all()
+  end
 end
