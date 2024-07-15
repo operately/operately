@@ -470,8 +470,12 @@ export interface AddMemberInput {
 }
 
 export interface Assignment {
-  type?: string | null;
+  id?: string | null;
+  name?: string | null;
   due?: string | null;
+  type?: string | null;
+  championId?: string | null;
+  championName?: string | null;
   resource?: AssignmentResource | null;
 }
 
@@ -977,6 +981,15 @@ export interface GetActivityInput {
 
 export interface GetActivityResult {
   activity?: Activity | null;
+}
+
+
+export interface GetAssignmentsInput {
+
+}
+
+export interface GetAssignmentsResult {
+  assignments?: Assignment[] | null;
 }
 
 
@@ -2082,6 +2095,10 @@ export class ApiClient {
     return axios.get(this.getBasePath() + "/get_activity", { params: toSnake(input)}).then(({ data }) => toCamel(data));
   }
 
+  async getAssignments(input: GetAssignmentsInput): Promise<GetAssignmentsResult> {
+    return axios.get(this.getBasePath() + "/get_assignments", { params: toSnake(input)}).then(({ data }) => toCamel(data));
+  }
+
   async getComments(input: GetCommentsInput): Promise<GetCommentsResult> {
     return axios.get(this.getBasePath() + "/get_comments", { params: toSnake(input)}).then(({ data }) => toCamel(data));
   }
@@ -2484,6 +2501,9 @@ export async function getActivities(input: GetActivitiesInput) : Promise<GetActi
 export async function getActivity(input: GetActivityInput) : Promise<GetActivityResult> {
   return defaultApiClient.getActivity(input);
 }
+export async function getAssignments(input: GetAssignmentsInput) : Promise<GetAssignmentsResult> {
+  return defaultApiClient.getAssignments(input);
+}
 export async function getComments(input: GetCommentsInput) : Promise<GetCommentsResult> {
   return defaultApiClient.getComments(input);
 }
@@ -2785,6 +2805,10 @@ export function useGetActivities(input: GetActivitiesInput) : UseQueryHookResult
 
 export function useGetActivity(input: GetActivityInput) : UseQueryHookResult<GetActivityResult> {
   return useQuery<GetActivityResult>(() => defaultApiClient.getActivity(input));
+}
+
+export function useGetAssignments(input: GetAssignmentsInput) : UseQueryHookResult<GetAssignmentsResult> {
+  return useQuery<GetAssignmentsResult>(() => defaultApiClient.getAssignments(input));
 }
 
 export function useGetComments(input: GetCommentsInput) : UseQueryHookResult<GetCommentsResult> {
@@ -3186,6 +3210,8 @@ export default {
   useGetActivities,
   getActivity,
   useGetActivity,
+  getAssignments,
+  useGetAssignments,
   getComments,
   useGetComments,
   getCompanies,
