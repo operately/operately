@@ -9,8 +9,8 @@ defmodule OperatelyWeb.Api.Queries.GetAssignments do
 
   def get_due_projects(person) do
     from(p in Operately.Projects.Project,
-      join: a in assoc(p, :contributors),
-      where: a.person_id == ^person.id and a.role == :champion,
+      join: c in assoc(p, :contributors),
+      where: c.person_id == ^person.id and c.role == :champion,
       where: p.next_check_in_scheduled_at <= ^DateTime.utc_now(),
       where: p.status == "active",
       select: p
@@ -24,6 +24,17 @@ defmodule OperatelyWeb.Api.Queries.GetAssignments do
       where: is_nil(g.closed_at),
       where: g.champion_id == ^person.id,
       select: g
+    )
+    |> Repo.all()
+  end
+
+  def get_due_project_check_ins(person) do
+    from(c in Operately.Projects.CheckIn,
+      join: p in assoc(c, :project),
+      join: contrib in assoc(p, :contributors),
+      where: contrib.person_id == ^person.id and contrib.role == :reviewer,
+      where: is_nil(c.acknowledged_by_id),
+      select: c
     )
     |> Repo.all()
   end
