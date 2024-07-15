@@ -59,6 +59,22 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
 
       assert [due_goal] == OperatelyWeb.Api.Queries.GetAssignments.get_due_goals(ctx.person)
     end
+
+    test "get_due_project_check_ins", ctx do
+      another_person = person_fixture_with_account(%{company_id: ctx.company.id})
+      project = create_project(ctx, upcoming_date(), %{reviewer_id: another_person.id})
+
+      c1 = create_check_in(project)
+      c2 = create_check_in(project)
+
+      another_project = create_project(ctx, upcoming_date(), %{champion_id: another_person.id, reviewer_id: ctx.person.id})
+
+      c3 = create_check_in(another_project)
+      c4 = create_check_in(another_project)
+
+      assert [c1, c2] == OperatelyWeb.Api.Queries.GetAssignments.get_due_project_check_ins(another_person)
+      assert [c3, c4] == OperatelyWeb.Api.Queries.GetAssignments.get_due_project_check_ins(ctx.person)
+    end
   end
 
   #
@@ -120,5 +136,13 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
       |> Repo.update()
 
     goal
+  end
+
+  defp create_check_in(project) do
+    project = Repo.preload(project, :champion)
+    check_in_fixture(%{
+      author_id: project.champion.id,
+      project_id: project.id,
+    })
   end
 end
