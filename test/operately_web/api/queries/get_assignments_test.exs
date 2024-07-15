@@ -37,12 +37,12 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
 
       [p1, p2] = assignments
 
-      assert p1.id == due_project.id
-      assert p1.name == "3 days ago"
+      assert p1.id == today_project.id
+      assert p1.name == "today"
       assert p1.due
       assert p1.type == "project"
-      assert p2.id == today_project.id
-      assert p2.name == "today"
+      assert p2.id == due_project.id
+      assert p2.name == "3 days ago"
       assert p2.due
       assert p2.type == "project"
     end
@@ -82,12 +82,12 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
 
       [g1, g2] = assignments
 
-      assert g1.id == due_goal.id
-      assert g1.name == "3 days ago"
+      assert g1.id == today_goal.id
+      assert g1.name == "today"
       assert g1.due
       assert g1.type == "goal"
-      assert g2.id == today_goal.id
-      assert g2.name == "today"
+      assert g2.id == due_goal.id
+      assert g2.name == "3 days ago"
       assert g2.due
       assert g2.type == "goal"
     end
