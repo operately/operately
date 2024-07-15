@@ -4,6 +4,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
   import Operately.PeopleFixtures
   import Operately.ProjectsFixtures
   import Operately.GoalsFixtures
+  import Operately.UpdatesFixtures
 
   alias Operately.Repo
   alias Operately.Projects.Project
@@ -75,6 +76,22 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
       assert [c1, c2] == OperatelyWeb.Api.Queries.GetAssignments.get_due_project_check_ins(another_person)
       assert [c3, c4] == OperatelyWeb.Api.Queries.GetAssignments.get_due_project_check_ins(ctx.person)
     end
+
+    test "get_due_goal_updates", ctx do
+      another_person = person_fixture_with_account(%{company_id: ctx.company.id})
+      goal = create_goal(ctx.person, ctx.company, upcoming_date(), %{reviewer_id: another_person.id})
+
+      u1 = create_update(goal)
+      u2 = create_update(goal)
+
+      another_goal = create_goal(another_person, ctx.company, upcoming_date(), %{reviewer_id: ctx.person.id})
+
+      u3 = create_update(another_goal)
+      u4 = create_update(another_goal)
+
+      assert [u1, u2] == OperatelyWeb.Api.Queries.GetAssignments.get_due_goal_updates(another_person)
+      assert [u3, u4] == OperatelyWeb.Api.Queries.GetAssignments.get_due_goal_updates(ctx.person)
+    end
   end
 
   #
@@ -118,9 +135,9 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
     project
   end
 
-  defp create_goal(person, company, date) do
+  defp create_goal(person, company, date, attrs \\ %{}) do
     {:ok, goal} =
-      goal_fixture(person, %{space_id: company.company_space_id})
+      goal_fixture(person, Map.merge(%{space_id: company.company_space_id}, attrs))
       |> Goal.changeset(%{next_update_scheduled_at: date})
       |> Repo.update()
 
@@ -144,5 +161,15 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
       author_id: project.champion.id,
       project_id: project.id,
     })
+  end
+
+  defp create_update(goal) do
+    update_fixture(%{
+      updatable_type: :goal,
+      updatable_id: goal.id,
+      author_id: goal.champion_id,
+      type: :goal_check_in,
+    })
+    |> Repo.reload()
   end
 end

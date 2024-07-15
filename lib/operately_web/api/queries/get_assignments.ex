@@ -38,4 +38,14 @@ defmodule OperatelyWeb.Api.Queries.GetAssignments do
     )
     |> Repo.all()
   end
+
+  def get_due_goal_updates(person) do
+    from(u in Operately.Updates.Update,
+      join: g in Operately.Goals.Goal, on: u.updatable_id == g.id,
+      where: g.reviewer_id == ^person.id,
+      where: u.type == :goal_check_in and is_nil(u.acknowledging_person_id),
+      select: u
+    )
+    |> Repo.all()
+  end
 end
