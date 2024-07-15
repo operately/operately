@@ -13,6 +13,7 @@ defmodule OperatelyWeb.Api do
 
   query :get_activities, Q.GetActivities
   query :get_activity, Q.GetActivity
+  query :get_assignments, Q.GetAssignments
   query :get_comments, Q.GetComments
   query :get_companies, Q.GetCompanies
   query :get_company, Q.GetCompany
