@@ -1,51 +1,103 @@
 defmodule OperatelyWeb.Api.Queries.GetAssignments do
-  import Ecto.Query, only: [from: 2]
+  use TurboConnect.Query
+  use OperatelyWeb.Api.Helpers
 
   alias Operately.Repo
 
-  # def call() do
+  import Ecto.Query, only: [from: 2]
 
-  # end
+  outputs do
+    field :success, :boolean
+  end
 
-  def get_due_projects(person) do
+  def call(conn, _inputs) do
+    person = me(conn)
+
+    load_assignments(person)
+    |> IO.inspect()
+
+    {:ok, %{success: true}}
+  end
+
+  #
+  # Loading data
+  #
+
+  defp load_assignments(person) do
+    load_projects(person)
+    |> load_goals(person)
+    |> get_due_project_check_ins(person)
+    |> get_due_goal_updates(person)
+  end
+
+  defp load_projects(person) do
     from(p in Operately.Projects.Project,
       join: c in assoc(p, :contributors),
       where: c.person_id == ^person.id and c.role == :champion,
       where: p.next_check_in_scheduled_at <= ^DateTime.utc_now(),
       where: p.status == "active",
-      select: p
+      select: %{
+        id: p.id,
+        name: p.name,
+        due: p.next_check_in_scheduled_at,
+        type: :project,
+      }
     )
     |> Repo.all()
   end
 
-  def get_due_goals(person) do
+  defp load_goals(result, person) do
     from(g in Operately.Goals.Goal,
       where: g.next_update_scheduled_at <= ^DateTime.utc_now(),
       where: is_nil(g.closed_at),
       where: g.champion_id == ^person.id,
-      select: g
+      select: %{
+        id: g.id,
+        name: g.name,
+        due: g.next_update_scheduled_at,
+        type: :goal,
+      }
     )
     |> Repo.all()
+    |> Enum.concat(result)
   end
 
-  def get_due_project_check_ins(person) do
+  defp get_due_project_check_ins(result, person) do
     from(c in Operately.Projects.CheckIn,
       join: p in assoc(c, :project),
       join: contrib in assoc(p, :contributors),
+      join: champion in assoc(p, :champion),
       where: contrib.person_id == ^person.id and contrib.role == :reviewer,
       where: is_nil(c.acknowledged_by_id),
-      select: c
+      select: %{
+        id: c.id,
+        name: p.name,
+        due: c.inserted_at,
+        type: :check_in,
+        champion_id: champion.id,
+        champion_name: champion.full_name,
+      }
     )
     |> Repo.all()
+    |> Enum.concat(result)
   end
 
-  def get_due_goal_updates(person) do
+  defp get_due_goal_updates(result, person) do
     from(u in Operately.Updates.Update,
       join: g in Operately.Goals.Goal, on: u.updatable_id == g.id,
+      join: champion in assoc(g, :champion),
       where: g.reviewer_id == ^person.id,
       where: u.type == :goal_check_in and is_nil(u.acknowledging_person_id),
-      select: u
+      select: %{
+        id: u.id,
+        name: g.name,
+        due: u.inserted_at,
+        type: :goal_update,
+        champion_id: champion.id,
+        champion_name: champion.full_name,
+      }
     )
     |> Repo.all()
+    |> Enum.concat(result)
   end
 end
