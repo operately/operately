@@ -1,0 +1,132 @@
+import * as React from "react";
+import * as Pages from "@/components/Pages";
+import * as Paper from "@/components/PaperContainer";
+
+import { Assignment } from "@/api";
+import { useLoadedData } from "./loader";
+import { IconTarget, IconHexagons } from "@tabler/icons-react";
+
+
+type AssignmentType = "goal" | "project" | "goal_update" | "check_in";
+
+
+export function Page() {
+  const { assignmentsCount } = useLoadedData();
+
+  const noAssignments = assignmentsCount === 0;
+  const title = noAssignments ? "Review" : `Review (${assignmentsCount})`;
+
+  return (
+    <Pages.Page title={title}>
+      <Paper.Root size="large">
+        <Paper.Body minHeight="600px">
+          <div className="text-content-accent text-3xl font-bold">{title}</div>
+          <p className="mt-2">Your due actions as a champion and/or reviewer{noAssignments ? " will appear here." : "."}</p>
+        
+          <AssignmentsList />
+        </Paper.Body>
+      </Paper.Root>
+    </Pages.Page>
+  );
+}
+
+
+function AssignmentsList() {
+  const { assignments } = useLoadedData();
+
+  return (
+    <div className="flex flex-col pt-10">
+      {assignments.map((assignment) => (
+        <div className="flex gap-4 items-center pt-6 pb-6 border-b first:border-t" key={assignment.id}>
+          <DueDate date={assignment.due!} />
+          <div className="flex gap-4 items-center">
+            <AssignmentIcon type={assignment.type as AssignmentType} />
+            <AssignmentInfo assignment={assignment} />
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+
+function DueDate({ date }: { date: string }) {
+  const [isRed, daysAgo] = calculateDaysAgo(date);
+  
+  return (
+    <div className="flex flex-col min-w-[110px]">
+      <span className="font-bold">{formatDate(date)}</span>
+      <span className={`text-sm ${isRed ? "text-red-500" : "text-content-dimmed"}`}>
+        {daysAgo}
+      </span>
+    </div>
+  )
+}
+
+function AssignmentIcon({ type }: { type: AssignmentType }) {
+  const SIZE = 50;
+
+  switch(type) {
+    case "project":
+      return <IconHexagons size={SIZE} />;
+    case "check_in":
+      return <IconHexagons size={SIZE} />;
+    case "goal_update":
+      return <IconTarget size={SIZE} />;
+    case "goal":
+      return <IconTarget size={SIZE} />;
+  }
+}
+
+function AssignmentInfo({ assignment }: { assignment: Assignment }) {
+  const [title, message] = parseInformation(assignment.type as AssignmentType);
+
+  return (
+    <div>
+      <p className="mb-1"><b>{title}</b> {assignment.name}</p>
+      {message && (
+        <p className="text-sm">{assignment.championName} {message}</p>
+      )}
+    </div>
+  );
+}
+
+
+function formatDate(dateString: string) {
+  const date = new Date(dateString);
+  const options = { month: 'long', day: 'numeric' } as Intl.DateTimeFormatOptions;
+  return date.toLocaleDateString('en-US', options);
+}
+
+function calculateDaysAgo(dateString: string) {
+  const date = new Date(dateString);
+  const today = new Date();
+  
+  date.setHours(0, 0, 0, 0);
+  today.setHours(0, 0, 0, 0);
+  
+  const delta = today.getTime() - date.getTime();
+  const days = Math.floor(delta / (1000 * 60 * 60 * 24));
+
+  switch(days) {
+    case 0:
+      return [false, "Today"];
+    case 1:
+      return [true, "Yesterday"];
+    default:
+      return [true, `${days} days ago`];
+  }
+}
+
+function parseInformation(type: AssignmentType) {
+  switch(type) {
+    case "project":
+      return ["Write the weekly check-in:", undefined];
+    case "goal":
+      return ["Update progress:", undefined];
+    case "check_in":
+      return ["Review:", "submitted a weekly check-in"];
+    case "goal_update":
+      return ["Review:", "submitted an update"];
+  }
+}
