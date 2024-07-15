@@ -476,8 +476,6 @@ export interface Assignment {
   type?: string | null;
   championId?: string | null;
   championName?: string | null;
-  type?: string | null;
-  due?: string | null;
   resource?: AssignmentResource | null;
 }
 
