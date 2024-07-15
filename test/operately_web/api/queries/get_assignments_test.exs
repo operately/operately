@@ -7,90 +7,182 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
   import Operately.UpdatesFixtures
 
   alias Operately.Repo
-  alias Operately.Projects.Project
   alias Operately.Goals.Goal
+  alias Operately.Updates.Update
+  alias Operately.Projects.{Project, CheckIn}
+
+  describe "security" do
+    test "it requires authentication", ctx do
+      assert {401, _} = query(ctx.conn, :get_assignments, %{})
+    end
+  end
 
   describe "get_due_assignments" do
     setup :register_and_log_in_account
 
     test "get_due_projects", ctx do
-      # Projects for one person
-      today_project = create_project(ctx, DateTime.utc_now())
-      due_project = create_project(ctx, past_date())
+      today_project = create_project(ctx, DateTime.utc_now(), %{name: "today"})
+      due_project = create_project(ctx, past_date(), %{name: "3 days ago"})
       create_project(ctx, upcoming_date())
 
       # Projects for another person
       another_person = person_fixture_with_account(%{company_id: ctx.company.id})
-
-      another_due_project = create_project(ctx, past_date(), %{creator_id: another_person.id})
+      create_project(ctx, past_date(), %{creator_id: another_person.id})
       create_project(ctx, upcoming_date(), %{creator_id: another_person.id})
 
-      assert [today_project, due_project] == OperatelyWeb.Api.Queries.GetAssignments.get_due_projects(ctx.person)
-      assert [another_due_project] == OperatelyWeb.Api.Queries.GetAssignments.get_due_projects(another_person)
+      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments, %{})
+
+      assert Repo.aggregate(Project, :count, :id) == 5
+      assert length(assignments) == 2
+
+      [p1, p2] = assignments
+
+      assert p1.id == due_project.id
+      assert p1.name == "3 days ago"
+      assert p1.due
+      assert p1.type == "project"
+      assert p2.id == today_project.id
+      assert p2.name == "today"
+      assert p2.due
+      assert p2.type == "project"
     end
 
     test "get_due_projects ignores closed projects", ctx do
       create_project(ctx, upcoming_date())
       create_project(ctx, past_date()) |> close_project()
-      due_project = create_project(ctx, past_date())
+      due_project = create_project(ctx, past_date(), %{name: "single project"})
 
-      assert [due_project] == OperatelyWeb.Api.Queries.GetAssignments.get_due_projects(ctx.person)
+      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments, %{})
+
+      assert Repo.aggregate(Project, :count, :id) == 3
+      assert length(assignments) == 1
+
+      [p] = assignments
+
+      assert p.id == due_project.id
+      assert p.name == "single project"
+      assert p.due
+      assert p.type == "project"
     end
 
     test "get_due_goals", ctx do
-      # Goals for one person
-      today_goal = create_goal(ctx.person, ctx.company, DateTime.utc_now())
-      due_goal = create_goal(ctx.person, ctx.company, past_date())
+      today_goal = create_goal(ctx.person, ctx.company, DateTime.utc_now(), %{name: "today"})
+      due_goal = create_goal(ctx.person, ctx.company, past_date(), %{name: "3 days ago"})
       create_goal(ctx.person, ctx.company, upcoming_date())
 
       # Goals for another person
       another_person = person_fixture_with_account(%{company_id: ctx.company.id})
-
-      another_due_goal = create_goal(another_person, ctx.company, past_date())
+      create_goal(another_person, ctx.company, past_date())
       create_goal(another_person, ctx.company, upcoming_date())
 
-      assert [today_goal, due_goal] == OperatelyWeb.Api.Queries.GetAssignments.get_due_goals(ctx.person)
-      assert [another_due_goal] == OperatelyWeb.Api.Queries.GetAssignments.get_due_goals(another_person)
+      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments, %{})
+
+      assert Repo.aggregate(Goal, :count, :id) == 5
+      assert length(assignments) == 2
+
+      [g1, g2] = assignments
+
+      assert g1.id == due_goal.id
+      assert g1.name == "3 days ago"
+      assert g1.due
+      assert g1.type == "goal"
+      assert g2.id == today_goal.id
+      assert g2.name == "today"
+      assert g2.due
+      assert g2.type == "goal"
     end
 
     test "get_due_goals ignores closed goals", ctx do
       create_goal(ctx.person, ctx.company, upcoming_date())
       create_goal(ctx.person, ctx.company, past_date()) |> close_goal()
-      due_goal = create_goal(ctx.person, ctx.company, past_date())
+      due_goal = create_goal(ctx.person, ctx.company, past_date(), %{name: "single goal"})
 
-      assert [due_goal] == OperatelyWeb.Api.Queries.GetAssignments.get_due_goals(ctx.person)
+      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments, %{})
+
+      assert Repo.aggregate(Goal, :count, :id) == 3
+      assert length(assignments) == 1
+
+      [g] = assignments
+
+      assert g.id == due_goal.id
+      assert g.name == "single goal"
+      assert g.due
+      assert g.type == "goal"
     end
 
     test "get_due_project_check_ins", ctx do
-      another_person = person_fixture_with_account(%{company_id: ctx.company.id})
-      project = create_project(ctx, upcoming_date(), %{reviewer_id: another_person.id})
+      another_person = person_fixture_with_account(%{full_name: "champion", company_id: ctx.company.id})
+      project = create_project(ctx, upcoming_date(), %{
+        name: "project",
+        reviewer_id: ctx.person.id,
+        champion_id: another_person.id,
+      })
+      check_in1 = create_check_in(project)
+      check_in2 = create_check_in(project)
 
-      c1 = create_check_in(project)
-      c2 = create_check_in(project)
+      # Check-ins for another person
+      another_project = create_project(ctx, upcoming_date(), %{reviewer_id: another_person.id, champion_id: ctx.person.id})
+      create_check_in(another_project)
+      create_check_in(another_project)
 
-      another_project = create_project(ctx, upcoming_date(), %{champion_id: another_person.id, reviewer_id: ctx.person.id})
+      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments, %{})
 
-      c3 = create_check_in(another_project)
-      c4 = create_check_in(another_project)
+      assert Repo.aggregate(CheckIn, :count, :id) == 4
+      assert length(assignments) == 2
 
-      assert [c1, c2] == OperatelyWeb.Api.Queries.GetAssignments.get_due_project_check_ins(another_person)
-      assert [c3, c4] == OperatelyWeb.Api.Queries.GetAssignments.get_due_project_check_ins(ctx.person)
+      [c1, c2] = assignments
+
+      assert c1.id == check_in2.id
+      assert c1.name == "project"
+      assert c1.due
+      assert c1.type == "check_in"
+      assert c1.champion_id == another_person.id
+      assert c1.champion_name == "champion"
+
+      assert c2.id == check_in1.id
+      assert c2.name == "project"
+      assert c2.due
+      assert c2.type == "check_in"
+      assert c2.champion_id == another_person.id
+      assert c2.champion_name == "champion"
     end
 
     test "get_due_goal_updates", ctx do
-      another_person = person_fixture_with_account(%{company_id: ctx.company.id})
-      goal = create_goal(ctx.person, ctx.company, upcoming_date(), %{reviewer_id: another_person.id})
+      another_person = person_fixture_with_account(%{full_name: "champion", company_id: ctx.company.id})
+      goal = create_goal(ctx.person, ctx.company, upcoming_date(), %{
+        name: "goal",
+        reviewer_id: ctx.person.id,
+        champion_id: another_person.id,
+      })
 
-      u1 = create_update(goal)
-      u2 = create_update(goal)
+      update1 = create_update(goal)
+      update2 = create_update(goal)
 
-      another_goal = create_goal(another_person, ctx.company, upcoming_date(), %{reviewer_id: ctx.person.id})
+      # Updates for another person
+      another_goal = create_goal(another_person, ctx.company, upcoming_date(), %{reviewer_id: another_person.id})
+      create_update(another_goal)
+      create_update(another_goal)
 
-      u3 = create_update(another_goal)
-      u4 = create_update(another_goal)
+      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments, %{})
 
-      assert [u1, u2] == OperatelyWeb.Api.Queries.GetAssignments.get_due_goal_updates(another_person)
-      assert [u3, u4] == OperatelyWeb.Api.Queries.GetAssignments.get_due_goal_updates(ctx.person)
+      assert Repo.aggregate(Update, :count, :id) == 4
+      assert length(assignments) == 2
+
+      [u1, u2] = assignments
+
+      assert u1.id == update2.id
+      assert u1.name == "goal"
+      assert u1.due
+      assert u1.type == "goal_update"
+      assert u1.champion_id == another_person.id
+      assert u1.champion_name == "champion"
+
+      assert u2.id == update1.id
+      assert u2.name == "goal"
+      assert u2.due
+      assert u2.type == "goal_update"
+      assert u2.champion_id == another_person.id
+      assert u2.champion_name == "champion"
     end
   end
 

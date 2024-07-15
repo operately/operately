@@ -7,16 +7,13 @@ defmodule OperatelyWeb.Api.Queries.GetAssignments do
   import Ecto.Query, only: [from: 2]
 
   outputs do
-    field :success, :boolean
+    field :assignments, list_of(:assignment)
   end
 
   def call(conn, _inputs) do
-    person = me(conn)
+    assignments = load_assignments(me(conn))
 
-    load_assignments(person)
-    |> IO.inspect()
-
-    {:ok, %{success: true}}
+    {:ok, %{assignments: assignments}}
   end
 
   #
@@ -28,6 +25,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignments do
     |> load_goals(person)
     |> get_due_project_check_ins(person)
     |> get_due_goal_updates(person)
+    |> Enum.sort(&(&1.due > &2.due))
   end
 
   defp load_projects(person) do
@@ -79,6 +77,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignments do
       }
     )
     |> Repo.all()
+    |> normalize_date()
     |> Enum.concat(result)
   end
 
@@ -98,6 +97,13 @@ defmodule OperatelyWeb.Api.Queries.GetAssignments do
       }
     )
     |> Repo.all()
+    |> normalize_date()
     |> Enum.concat(result)
+  end
+
+  defp normalize_date(items) do
+    Enum.map(items, fn item ->
+      Map.merge(item, %{due: DateTime.from_naive!(item.due, "Etc/UTC")})
+    end)
   end
 end
