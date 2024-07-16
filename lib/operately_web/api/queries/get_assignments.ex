@@ -7,7 +7,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignments do
   import Ecto.Query, only: [from: 2]
 
   outputs do
-    field :assignments, list_of(:assignment)
+    field :assignments, list_of(:review_assignment)
   end
 
   def call(conn, _inputs) do
