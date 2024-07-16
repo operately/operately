@@ -5,7 +5,7 @@ import * as Paper from "@/components/PaperContainer";
 import { IconTarget, IconHexagons } from "@tabler/icons-react";
 
 import { Paths } from "@/routes/paths";
-import { Assignment } from "@/api";
+import { ReviewAssignment } from "@/api";
 import { useLoadedData } from "./loader";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 
@@ -46,7 +46,7 @@ function AssignmentsList() {
   )
 }
 
-function AssignmentItem({ assignment }: { assignment: Assignment }) {
+function AssignmentItem({ assignment }: { assignment: ReviewAssignment }) {
   const { link } = parseInformation(assignment);
 
   const navigate = useNavigateTo(link);
@@ -98,7 +98,7 @@ function AssignmentIcon({ type }: { type: AssignmentType }) {
   }
 }
 
-function AssignmentInfo({ assignment, isHovered }: { assignment: Assignment; isHovered: boolean }) {
+function AssignmentInfo({ assignment, isHovered }: { assignment: ReviewAssignment; isHovered: boolean }) {
   const { title, content } = parseInformation(assignment);
 
   const className = `mb-1 transition-colors duration-300 ${isHovered && "text-link-base"}`;
@@ -140,7 +140,7 @@ function calculateDaysAgo(dateString: string) {
   }
 }
 
-function parseInformation(assignment: Assignment) {
+function parseInformation(assignment: ReviewAssignment) {
   switch(assignment.type as AssignmentType) {
     case "project":
       return {

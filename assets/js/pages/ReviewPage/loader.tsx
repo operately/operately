@@ -1,8 +1,8 @@
 import * as Pages from "@/components/Pages";
-import { Assignment, getAssignments } from "@/api";
+import { ReviewAssignment, getAssignments } from "@/api";
 
 interface LoaderResult {
-  assignments: Assignment[];
+  assignments: ReviewAssignment[];
   assignmentsCount: number;
 }
 
