@@ -24,11 +24,18 @@ defmodule Operately.Operations.GoalCheckIn do
     |> record_activity(author, goal)
     |> Repo.transaction()
     |> Repo.extract_result(:update)
+    |> case do
+      {:ok, update} ->
+        OperatelyWeb.ApiSocket.broadcast!("api:assignments_count:#{author.id}")
+        {:ok, update}
+
+      error -> error
+    end
   end
 
   defp update_goal_next_check_in(multi, goal) do
     next_check_in = Operately.Time.calculate_next_monthly_check_in(
-      goal.next_update_scheduled_at, 
+      goal.next_update_scheduled_at,
       DateTime.utc_now()
     )
 
@@ -42,7 +49,7 @@ defmodule Operately.Operations.GoalCheckIn do
     |> Activities.insert_sync(author.id, :goal_check_in, fn changes -> %{
       company_id: goal.company_id,
       goal_id: goal.id,
-      update_id: changes.update.id, 
+      update_id: changes.update.id,
     } end)
   end
 
@@ -57,7 +64,7 @@ defmodule Operately.Operations.GoalCheckIn do
   end
 
   defp encode_new_target_values(targets, new_target_values) do
-    Enum.map(new_target_values, fn target_value -> 
+    Enum.map(new_target_values, fn target_value ->
       target = Enum.find(targets, fn target -> target.id == target_value["id"] end)
 
       %{
@@ -69,7 +76,7 @@ defmodule Operately.Operations.GoalCheckIn do
         "unit" => target.unit,
         "index" => target.index,
         "previous_value" => target.value
-      } 
+      }
     end)
   end
 end

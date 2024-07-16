@@ -274,6 +274,13 @@ defmodule Operately.Updates do
     end)
     |> Repo.transaction()
     |> Repo.extract_result(:update)
+    |> case do
+      {:ok, update} ->
+        OperatelyWeb.ApiSocket.broadcast!("api:assignments_count:#{author.id}")
+        {:ok, update}
+
+      error -> error
+    end
   end
 
   def update_update(%Update{} = update, attrs) do
