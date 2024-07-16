@@ -25,11 +25,13 @@ defmodule OperatelyWeb.Api.Mutations.CreateProject do
 
     {:ok, goal_id} = decode_id(inputs[:goal_id], :allow_nil)
     {:ok, space_id} = decode_id(inputs[:space_id], :allow_nil)
+    {:ok, champion_id} = decode_id(inputs[:champion_id], :allow_nil)
+    {:ok, reviewer_id} = decode_id(inputs[:reviewer_id], :allow_nil)
 
     args = %Operately.Operations.ProjectCreation{
       name: inputs.name,
-      champion_id: inputs.champion_id,
-      reviewer_id: inputs.reviewer_id,
+      champion_id: champion_id,
+      reviewer_id: reviewer_id,
       creator_is_contributor: inputs[:creator_is_contributor],
       creator_role: inputs[:creator_role],
       visibility: inputs.visibility,
