@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useState } from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
@@ -37,18 +37,29 @@ function AssignmentsList() {
   return (
     <div className="flex flex-col pt-10">
       {assignments.map((assignment) => (
-        <div className="flex gap-4 items-center pt-6 pb-6 border-b first:border-t" key={assignment.id}>
-          <DueDate date={assignment.due!} />
-          <div className="flex gap-4 items-center">
-            <AssignmentIcon type={assignment.type as AssignmentType} />
-            <AssignmentInfo assignment={assignment} />
-          </div>
-        </div>
+        <AssignmentItem assignment={assignment} key={assignment.id} />
       ))}
     </div>
   )
 }
 
+function AssignmentItem({ assignment }: { assignment: Assignment }) {
+  const [isHovered, setIsHovered] = useState(false);
+
+  return (
+    <div
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className="flex gap-4 items-center pt-6 pb-6 border-b first:border-t hover:cursor-pointer"
+    >
+      <DueDate date={assignment.due!} />
+      <div className="flex gap-4 items-center">
+        <AssignmentIcon type={assignment.type as AssignmentType} />
+        <AssignmentInfo assignment={assignment} isHovered={isHovered} />
+      </div>
+    </div>
+  );
+}
 
 function DueDate({ date }: { date: string }) {
   const [isRed, daysAgo] = calculateDaysAgo(date);
@@ -78,12 +89,14 @@ function AssignmentIcon({ type }: { type: AssignmentType }) {
   }
 }
 
-function AssignmentInfo({ assignment }: { assignment: Assignment }) {
+function AssignmentInfo({ assignment, isHovered }: { assignment: Assignment; isHovered: boolean }) {
   const [title, message] = parseInformation(assignment.type as AssignmentType);
+
+  const className = `mb-1 transition-colors duration-300 ${isHovered && "text-link-base"}`;
 
   return (
     <div>
-      <p className="mb-1"><b>{title}</b> {assignment.name}</p>
+      <p className={className}><b>{title}</b> {assignment.name}</p>
       {message && (
         <p className="text-sm">{assignment.championName} {message}</p>
       )}
