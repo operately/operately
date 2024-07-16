@@ -2,9 +2,12 @@ import React, { useState } from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
+import { IconTarget, IconHexagons } from "@tabler/icons-react";
+
+import { Paths } from "@/routes/paths";
 import { Assignment } from "@/api";
 import { useLoadedData } from "./loader";
-import { IconTarget, IconHexagons } from "@tabler/icons-react";
+import { useNavigateTo } from "@/routes/useNavigateTo";
 
 
 type AssignmentType = "goal" | "project" | "goal_update" | "check_in";
@@ -44,10 +47,14 @@ function AssignmentsList() {
 }
 
 function AssignmentItem({ assignment }: { assignment: Assignment }) {
+  const { link } = parseInformation(assignment);
+
+  const navigate = useNavigateTo(link);
   const [isHovered, setIsHovered] = useState(false);
 
   return (
     <div
+      onClick={navigate}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       className="flex gap-4 items-center pt-6 pb-6 border-b first:border-t hover:cursor-pointer"
@@ -90,15 +97,15 @@ function AssignmentIcon({ type }: { type: AssignmentType }) {
 }
 
 function AssignmentInfo({ assignment, isHovered }: { assignment: Assignment; isHovered: boolean }) {
-  const [title, message] = parseInformation(assignment.type as AssignmentType);
+  const { title, content } = parseInformation(assignment);
 
   const className = `mb-1 transition-colors duration-300 ${isHovered && "text-link-base"}`;
 
   return (
     <div>
       <p className={className}><b>{title}</b> {assignment.name}</p>
-      {message && (
-        <p className="text-sm">{assignment.championName} {message}</p>
+      {content && (
+        <p className="text-sm">{assignment.championName} {content}</p>
       )}
     </div>
   );
@@ -131,15 +138,29 @@ function calculateDaysAgo(dateString: string) {
   }
 }
 
-function parseInformation(type: AssignmentType) {
-  switch(type) {
+function parseInformation(assignment: Assignment) {
+  switch(assignment.type as AssignmentType) {
     case "project":
-      return ["Write the weekly check-in:", undefined];
+      return {
+        title: "Write the weekly check-in:",
+        link: Paths.projectCheckInNewPath(assignment.id!),
+      };
     case "goal":
-      return ["Update progress:", undefined];
+      return {
+        title: "Update progress:",
+        link: Paths.goalProgressUpdateNewPath(assignment.id!),
+      };
     case "check_in":
-      return ["Review:", "submitted a weekly check-in"];
+      return {
+        title: "Review:",
+        content: "submitted a weekly check-in",
+        link: Paths.projectCheckInPath(assignment.id!),
+      };
     case "goal_update":
-      return ["Review:", "submitted an update"];
+      return {
+        title: "Review:",
+        content: "submitted an update",
+        link: Paths.goalProgressUpdatePath(assignment.id!),
+      };
   }
 }
