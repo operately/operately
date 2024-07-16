@@ -23,7 +23,16 @@ defmodule OperatelyWeb.Api.Mutations.EditGoal do
   def call(conn, inputs) do
     {:ok, id} = decode_id(inputs.goal_id)
     goal = Operately.Goals.get_goal!(id)
-    {:ok, goal} = Operately.Operations.GoalEditing.run(me(conn), goal, inputs)
+
+    {:ok, champion_id} = decode_id(inputs.champion_id)
+    {:ok, reviewer_id} = decode_id(inputs.reviewer_id)
+
+    attrs = Map.merge(inputs, %{
+      champion_id: champion_id,
+      reviewer_id: reviewer_id,
+    })
+
+    {:ok, goal} = Operately.Operations.GoalEditing.run(me(conn), goal, attrs)
 
     {:ok, %{goal: Serializer.serialize(goal, level: :essential)}}
   end
