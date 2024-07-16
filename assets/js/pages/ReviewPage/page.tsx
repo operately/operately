@@ -60,7 +60,7 @@ function AssignmentItem({ assignment }: { assignment: Assignment }) {
       className="flex gap-4 items-center pt-6 pb-6 border-b first:border-t hover:cursor-pointer"
     >
       <DueDate date={assignment.due!} />
-      <div className="flex gap-4 items-center">
+      <div className="flex gap-4 items-start">
         <AssignmentIcon type={assignment.type as AssignmentType} />
         <AssignmentInfo assignment={assignment} isHovered={isHovered} />
       </div>
@@ -82,17 +82,19 @@ function DueDate({ date }: { date: string }) {
 }
 
 function AssignmentIcon({ type }: { type: AssignmentType }) {
-  const SIZE = 50;
+  const SIZE = 26;
+  const GOAL_COLOR = "text-red-500 shrink-0";
+  const PROJECT_COLOR = "text-indigo-500 shrink-0";
 
   switch(type) {
     case "project":
-      return <IconHexagons size={SIZE} />;
+      return <IconHexagons size={SIZE} className={PROJECT_COLOR} />;
     case "check_in":
-      return <IconHexagons size={SIZE} />;
+      return <IconHexagons size={SIZE} className={PROJECT_COLOR} />;
     case "goal_update":
-      return <IconTarget size={SIZE} />;
+      return <IconTarget size={SIZE} className={GOAL_COLOR} />;
     case "goal":
-      return <IconTarget size={SIZE} />;
+      return <IconTarget size={SIZE} className={GOAL_COLOR} />;
   }
 }
 
