@@ -470,12 +470,8 @@ export interface AddMemberInput {
 }
 
 export interface Assignment {
-  id?: string | null;
-  name?: string | null;
-  due?: string | null;
   type?: string | null;
-  championId?: string | null;
-  championName?: string | null;
+  due?: string | null;
   resource?: AssignmentResource | null;
 }
 
@@ -785,6 +781,15 @@ export interface Reaction {
   person?: Person | null;
 }
 
+export interface ReviewAssignment {
+  id?: string | null;
+  name?: string | null;
+  due?: string | null;
+  type?: string | null;
+  championId?: string | null;
+  championName?: string | null;
+}
+
 export interface Space {
   id?: string | null;
   name?: string | null;
@@ -989,7 +994,7 @@ export interface GetAssignmentsInput {
 }
 
 export interface GetAssignmentsResult {
-  assignments?: Assignment[] | null;
+  assignments?: ReviewAssignment[] | null;
 }
 
 

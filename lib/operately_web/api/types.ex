@@ -30,7 +30,7 @@ defmodule OperatelyWeb.Api.Types do
     field :check_in, :project_check_in
   end
 
-  object :assignment do
+  object :review_assignment do
     field :id, :string
     field :name, :string
     field :due, :date
