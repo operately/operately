@@ -998,6 +998,15 @@ export interface GetAssignmentsResult {
 }
 
 
+export interface GetAssignmentsCountInput {
+
+}
+
+export interface GetAssignmentsCountResult {
+  count?: number | null;
+}
+
+
 export interface GetCommentsInput {
   entityId?: string | null;
   entityType?: string | null;
@@ -2104,6 +2113,10 @@ export class ApiClient {
     return axios.get(this.getBasePath() + "/get_assignments", { params: toSnake(input)}).then(({ data }) => toCamel(data));
   }
 
+  async getAssignmentsCount(input: GetAssignmentsCountInput): Promise<GetAssignmentsCountResult> {
+    return axios.get(this.getBasePath() + "/get_assignments_count", { params: toSnake(input)}).then(({ data }) => toCamel(data));
+  }
+
   async getComments(input: GetCommentsInput): Promise<GetCommentsResult> {
     return axios.get(this.getBasePath() + "/get_comments", { params: toSnake(input)}).then(({ data }) => toCamel(data));
   }
@@ -2509,6 +2522,9 @@ export async function getActivity(input: GetActivityInput) : Promise<GetActivity
 export async function getAssignments(input: GetAssignmentsInput) : Promise<GetAssignmentsResult> {
   return defaultApiClient.getAssignments(input);
 }
+export async function getAssignmentsCount(input: GetAssignmentsCountInput) : Promise<GetAssignmentsCountResult> {
+  return defaultApiClient.getAssignmentsCount(input);
+}
 export async function getComments(input: GetCommentsInput) : Promise<GetCommentsResult> {
   return defaultApiClient.getComments(input);
 }
@@ -2814,6 +2830,10 @@ export function useGetActivity(input: GetActivityInput) : UseQueryHookResult<Get
 
 export function useGetAssignments(input: GetAssignmentsInput) : UseQueryHookResult<GetAssignmentsResult> {
   return useQuery<GetAssignmentsResult>(() => defaultApiClient.getAssignments(input));
+}
+
+export function useGetAssignmentsCount(input: GetAssignmentsCountInput) : UseQueryHookResult<GetAssignmentsCountResult> {
+  return useQuery<GetAssignmentsCountResult>(() => defaultApiClient.getAssignmentsCount(input));
 }
 
 export function useGetComments(input: GetCommentsInput) : UseQueryHookResult<GetCommentsResult> {
@@ -3217,6 +3237,8 @@ export default {
   useGetActivity,
   getAssignments,
   useGetAssignments,
+  getAssignmentsCount,
+  useGetAssignmentsCount,
   getComments,
   useGetComments,
   getCompanies,
