@@ -9,6 +9,7 @@ import { Outlet } from "react-router-dom";
 import { User } from "./User";
 import { Bell } from "./Bell";
 import { Logo } from "./Logo";
+import { Review } from "./Review";
 import { CompanyDropdown } from "./CompanyDropdown";
 
 import { PerfBar } from "@/features/PerfBar";
@@ -43,6 +44,10 @@ function Navigation({ company }: { company: Api.Company }) {
             <SectionLink to={Paths.projectsPath()} icon={Icons.IconTable}>
               Projects
             </SectionLink>
+          </div>
+
+          <div className="border-l border-surface-outline pl-4">
+            <Review />
           </div>
         </div>
         <div className="flex-1"></div>
