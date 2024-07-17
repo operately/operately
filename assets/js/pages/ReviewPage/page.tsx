@@ -104,7 +104,7 @@ function AssignmentInfo({ assignment, isHovered }: { assignment: ReviewAssignmen
   const className = `mb-1 transition-colors duration-300 ${isHovered && "text-link-base"}`;
 
   return (
-    <div>
+    <div data-test-id={assignment.id}>
       <p className={className}><b>{title}</b> {assignment.name}</p>
       {content && (
         <p className="text-sm">{assignment.championName} {content}</p>
