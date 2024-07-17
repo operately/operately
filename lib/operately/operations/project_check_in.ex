@@ -14,8 +14,8 @@ defmodule Operately.Operations.ProjectCheckIn do
     |> Multi.insert(:check_in, fn _ ->
       CheckIn.changeset(%{
         author_id: author.id,
-        project_id: project.id, 
-        status: status, 
+        project_id: project.id,
+        status: status,
         description: description,
       })
     end)
@@ -26,14 +26,21 @@ defmodule Operately.Operations.ProjectCheckIn do
         next_check_in_scheduled_at: next_check_in,
       })
     end)
-    |> Activities.insert_sync(author.id, :project_check_in_submitted, fn changes -> 
+    |> Activities.insert_sync(author.id, :project_check_in_submitted, fn changes ->
       %{
         company_id: project.company_id,
         project_id: project.id,
         check_in_id: changes.check_in.id
-      } 
+      }
     end)
     |> Repo.transaction()
     |> Repo.extract_result(:check_in)
+    |> case do
+      {:ok, check_in} ->
+        OperatelyWeb.ApiSocket.broadcast!("api:assignments_count:#{author.id}")
+        {:ok, check_in}
+
+      error -> error
+    end
   end
 end

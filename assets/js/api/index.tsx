@@ -781,6 +781,15 @@ export interface Reaction {
   person?: Person | null;
 }
 
+export interface ReviewAssignment {
+  id?: string | null;
+  name?: string | null;
+  due?: string | null;
+  type?: string | null;
+  championId?: string | null;
+  championName?: string | null;
+}
+
 export interface Space {
   id?: string | null;
   name?: string | null;
@@ -977,6 +986,24 @@ export interface GetActivityInput {
 
 export interface GetActivityResult {
   activity?: Activity | null;
+}
+
+
+export interface GetAssignmentsInput {
+
+}
+
+export interface GetAssignmentsResult {
+  assignments?: ReviewAssignment[] | null;
+}
+
+
+export interface GetAssignmentsCountInput {
+
+}
+
+export interface GetAssignmentsCountResult {
+  count?: number | null;
 }
 
 
@@ -2082,6 +2109,14 @@ export class ApiClient {
     return axios.get(this.getBasePath() + "/get_activity", { params: toSnake(input)}).then(({ data }) => toCamel(data));
   }
 
+  async getAssignments(input: GetAssignmentsInput): Promise<GetAssignmentsResult> {
+    return axios.get(this.getBasePath() + "/get_assignments", { params: toSnake(input)}).then(({ data }) => toCamel(data));
+  }
+
+  async getAssignmentsCount(input: GetAssignmentsCountInput): Promise<GetAssignmentsCountResult> {
+    return axios.get(this.getBasePath() + "/get_assignments_count", { params: toSnake(input)}).then(({ data }) => toCamel(data));
+  }
+
   async getComments(input: GetCommentsInput): Promise<GetCommentsResult> {
     return axios.get(this.getBasePath() + "/get_comments", { params: toSnake(input)}).then(({ data }) => toCamel(data));
   }
@@ -2484,6 +2519,12 @@ export async function getActivities(input: GetActivitiesInput) : Promise<GetActi
 export async function getActivity(input: GetActivityInput) : Promise<GetActivityResult> {
   return defaultApiClient.getActivity(input);
 }
+export async function getAssignments(input: GetAssignmentsInput) : Promise<GetAssignmentsResult> {
+  return defaultApiClient.getAssignments(input);
+}
+export async function getAssignmentsCount(input: GetAssignmentsCountInput) : Promise<GetAssignmentsCountResult> {
+  return defaultApiClient.getAssignmentsCount(input);
+}
 export async function getComments(input: GetCommentsInput) : Promise<GetCommentsResult> {
   return defaultApiClient.getComments(input);
 }
@@ -2785,6 +2826,14 @@ export function useGetActivities(input: GetActivitiesInput) : UseQueryHookResult
 
 export function useGetActivity(input: GetActivityInput) : UseQueryHookResult<GetActivityResult> {
   return useQuery<GetActivityResult>(() => defaultApiClient.getActivity(input));
+}
+
+export function useGetAssignments(input: GetAssignmentsInput) : UseQueryHookResult<GetAssignmentsResult> {
+  return useQuery<GetAssignmentsResult>(() => defaultApiClient.getAssignments(input));
+}
+
+export function useGetAssignmentsCount(input: GetAssignmentsCountInput) : UseQueryHookResult<GetAssignmentsCountResult> {
+  return useQuery<GetAssignmentsCountResult>(() => defaultApiClient.getAssignmentsCount(input));
 }
 
 export function useGetComments(input: GetCommentsInput) : UseQueryHookResult<GetCommentsResult> {
@@ -3186,6 +3235,10 @@ export default {
   useGetActivities,
   getActivity,
   useGetActivity,
+  getAssignments,
+  useGetAssignments,
+  getAssignmentsCount,
+  useGetAssignmentsCount,
   getComments,
   useGetComments,
   getCompanies,
