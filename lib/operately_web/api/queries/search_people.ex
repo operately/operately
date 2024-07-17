@@ -1,5 +1,6 @@
 defmodule OperatelyWeb.Api.Queries.SearchPeople do
   use TurboConnect.Query
+  use OperatelyWeb.Api.Helpers
 
   import Ecto.Query, only: [from: 2, limit: 2]
 
@@ -20,7 +21,7 @@ defmodule OperatelyWeb.Api.Queries.SearchPeople do
   def call(conn, inputs) do
     Person
     |> match_by_full_name_or_title(inputs)
-    |> limit_to_company(conn.assigns.current_account.person.company_id)
+    |> limit_to_company((me(conn)).company_id)
     |> ignore_ids(inputs[:ignored_ids] || [])
     |> order_asc_by_match_position(inputs)
     |> exclude_suspended()
@@ -36,7 +37,7 @@ defmodule OperatelyWeb.Api.Queries.SearchPeople do
 
   defp order_asc_by_match_position(query, inputs) do
     from p in query, order_by: [
-      asc: fragment("POSITION(LOWER(?) IN LOWER(?))", ^inputs.query, p.full_name), 
+      asc: fragment("POSITION(LOWER(?) IN LOWER(?))", ^inputs.query, p.full_name),
       asc: fragment("POSITION(LOWER(?) IN LOWER(?))", ^inputs.query, p.title),
       asc: p.full_name
     ]
@@ -59,15 +60,6 @@ defmodule OperatelyWeb.Api.Queries.SearchPeople do
   end
 
   def serialize(people) when is_list(people) do
-    %{people: Enum.map(people, &serialize/1)}
-  end
-
-  def serialize(person) do
-    %{
-      id: person.id,
-      full_name: person.full_name,
-      title: person.title,
-      avatar_url: person.avatar_url
-    }
+    %{people: Serializer.serialize(people, level: :essential)}
   end
 end

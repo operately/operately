@@ -15,9 +15,12 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProjectContributor do
 
   def call(conn, inputs) do
     {:ok, id} = decode_id(inputs.contrib_id)
+    {:ok, person_id} = decode_id(inputs.person_id)
     contrib = Operately.Projects.get_contributor!(id)
 
-    {:ok, contrib} = Operately.Operations.ProjectContributorEditing.run(me(conn), contrib, inputs)
+    attrs = Map.merge(inputs, %{person_id: person_id})
+
+    {:ok, contrib} = Operately.Operations.ProjectContributorEditing.run(me(conn), contrib, attrs)
 
     {:ok, %{contributor: OperatelyWeb.Api.Serializer.serialize(contrib)}}
   end
