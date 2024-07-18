@@ -69,6 +69,7 @@ import * as ProjectResumePage from "./ProjectResumePage";
 import * as ProjectRetrospectivePage from "./ProjectRetrospectivePage";
 import * as ProjectsPage from "./ProjectsPage";
 import * as ReviewPage from "./ReviewPage";
+import * as SpaceAccessManagementPage from "./SpaceAccessManagementPage";
 import * as SpaceAddPage from "./SpaceAddPage";
 import * as SpaceDiscussionsPage from "./SpaceDiscussionsPage";
 import * as SpaceEditPage from "./SpaceEditPage";
@@ -347,6 +348,10 @@ export default {
   ReviewPage: {
     loader: ReviewPage.loader,
     Page: ReviewPage.Page
+  },
+  SpaceAccessManagementPage: {
+    loader: SpaceAccessManagementPage.loader,
+    Page: SpaceAccessManagementPage.Page
   },
   SpaceAddPage: {
     loader: SpaceAddPage.loader,
