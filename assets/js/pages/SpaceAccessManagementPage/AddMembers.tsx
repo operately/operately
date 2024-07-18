@@ -1,6 +1,7 @@
 import React, { useState } from "react";
+import { useRevalidator } from "react-router-dom";
 
-import { Person, Space, searchPotentialSpaceMembers } from "@/api";
+import { Person, Space, searchPotentialSpaceMembers, useAddGroupMembers } from "@/api";
 import { MemberContainer } from "./components";
 
 import { PERMISSIONS_LIST, PermissionLevels, VIEW_ACCESS } from "@/features/Permissions";
@@ -9,10 +10,13 @@ import { GhostButton } from "@/components/Button";
 import PeopleSearch from "@/components/PeopleSearch";
 
 
-
 export function AddMembers({ space }: { space: Space }) {
+  const [peopleSearchKey, setPeopleSearchKey] = useState(0);
   const [member, setMember] = useState<Person>();
   const [permissions, setPermissions] = useState(VIEW_ACCESS);
+
+  const { revalidate } = useRevalidator();
+  const [ addMembers, { loading } ] = useAddGroupMembers();
 
   const search = async (value: string) => {
     const result = await searchPotentialSpaceMembers({
@@ -31,7 +35,22 @@ export function AddMembers({ space }: { space: Space }) {
     return people;
   };
 
+  const handleAddMember = () => {
+    if(!member) return;
 
+    addMembers({
+      groupId: space.id,
+      members: [{
+        id: member.id,
+        permissions: permissions.value,
+      }],
+    })
+    .then(() => {
+      revalidate();
+      setMember(undefined);
+      setPeopleSearchKey(prev => prev + 1);
+    })
+  }
 
   return (
     <div className="flex flex-col gap-4">
@@ -42,6 +61,7 @@ export function AddMembers({ space }: { space: Space }) {
           onChange={option => setMember(option?.person)}
           placeholder="Search for person..."
           loader={search}
+          key={peopleSearchKey}
         />
 
         {member && (
@@ -49,22 +69,24 @@ export function AddMembers({ space }: { space: Space }) {
         )}
       </MemberContainer>
 
-      <Button member={member} permissions={permissions} />
+      <Button member={member} loading={loading} handleAddMember={handleAddMember} />
     </div>
   );
 }
 
-function Button({member, permissions}) {
-  const handleAddMember = () => {
-    permissions
-    // Todo
-  }
 
+function Button({ member, loading, handleAddMember }) {
   if(!member) return <></>;
 
   return (
     <div className="w-[140px]">
-      <GhostButton size="sm" onClick={handleAddMember}>Add member</GhostButton>
+      <GhostButton
+        loading={loading}
+        size="sm"
+        onClick={handleAddMember}
+      >
+        Add member
+      </GhostButton>
     </div>
   );
 }
