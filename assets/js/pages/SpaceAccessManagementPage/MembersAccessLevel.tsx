@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 
+import { useRevalidator } from "react-router-dom";
 import * as Icons from "@tabler/icons-react";
 import { useLoadedData } from "./loader";
 import { MemberContainer } from "./components";
 
-import { Person } from "@/api";
+import { Person, useRemoveGroupMember } from "@/api";
 import Avatar from "@/components/Avatar";
 import { SelectBoxNoLabel } from "@/components/Form";
 import { DropdownMenu } from "@/components/DropdownMenu";
@@ -43,9 +44,16 @@ function MemberListItem({ member }: { member: Person }) {
 function MemberDropdownAction({ member }: { member: Person }) {
   const [open, setOpen] = useState(false);
 
-  const handleRemove = () => {
-    // TODO
-  }
+  const { revalidate } = useRevalidator();
+  const { space } = useLoadedData();
+  const [remove] = useRemoveGroupMember();
+
+  const handleRemove = async () => {
+    remove({ groupId: space.id, memberId: member.id })
+    .then(() => {
+      revalidate();
+    });
+  };
 
   return (
     <DropdownMenu
