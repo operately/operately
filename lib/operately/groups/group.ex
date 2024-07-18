@@ -41,6 +41,22 @@ defmodule Operately.Groups.Group do
     from g in query, where: g.company_id == ^company_id
   end
 
+  def preload_members_access_level(query, space_id) do
+    subquery = from(b in Operately.Access.Binding,
+      join: c in assoc(b, :context),
+      where: c.group_id == ^space_id,
+      select: b
+    )
+
+    from(s in query,
+      join: members in assoc(s, :memberships),
+      join: person in assoc(members, :person),
+      join: group in assoc(person, :access_group),
+      where: s.id == ^space_id,
+      preload: [memberships: {members, [person: {person, [access_group: {group, [bindings: ^subquery]}]}]}]
+    )
+  end
+
   #
   # After Query Hooks
   #

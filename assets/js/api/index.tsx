@@ -669,6 +669,7 @@ export interface Person {
   reports?: Person[] | null;
   peers?: Person[] | null;
   theme?: string | null;
+  accessLevel?: number | null;
   hasOpenInvitation?: boolean | null;
 }
 
@@ -1269,6 +1270,7 @@ export interface GetSpaceInput {
   id?: string | null;
   includeMembers?: boolean | null;
   includeAccessLevels?: boolean | null;
+  includeMembersAccessLevels?: boolean | null;
 }
 
 export interface GetSpaceResult {
