@@ -76,11 +76,6 @@ defmodule OperatelyWeb.Api.Queries.SearchPeopleTest do
   end
 
   def serialized(person) do
-    %{
-      id: person.id,
-      full_name: person.full_name,
-      title: person.title,
-      avatar_url: person.avatar_url
-    }
+    OperatelyWeb.Api.Serializer.serialize(person, level: :essential)
   end
-end 
+end
