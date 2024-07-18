@@ -15,6 +15,7 @@ defmodule OperatelyWeb.Api do
 
   query :get_activities, Q.GetActivities
   query :get_activity, Q.GetActivity
+  query :get_assignments_count, Q.GetAssignmentsCount
   query :get_comments, Q.GetComments
   query :get_companies, Q.GetCompanies
   query :get_company, Q.GetCompany
@@ -115,5 +116,6 @@ defmodule OperatelyWeb.Api do
   mutation :update_task, M.UpdateTask
   mutation :update_task_status, M.UpdateTaskStatus
 
+  subscription :assignments_count, S.AssignmentsCount
   subscription :unread_notifications_count, S.UnreadNotificationsCount
 end

@@ -34,6 +34,10 @@ function useSubscription(channelName: string, callback: (payload: any) => void) 
   }, [channelName, callback]);
 }
 
+export function useAssignmentsCount(callback: (payload: any) => void) {
+  return useSubscription("api:assignments_count", callback);
+}
+
 export function useUnreadNotificationCount(callback: (payload: any) => void) {
   return useSubscription("api:unread_notifications_count", callback);
 }
