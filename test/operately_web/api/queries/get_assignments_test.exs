@@ -6,6 +6,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
   import Operately.GoalsFixtures
   import Operately.UpdatesFixtures
 
+  alias OperatelyWeb.Paths
   alias Operately.Repo
   alias Operately.Goals.Goal
   alias Operately.Updates.Update
@@ -37,11 +38,11 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
 
       [p1, p2] = assignments
 
-      assert p1.id == today_project.id
+      assert p1.id == Paths.project_id(today_project)
       assert p1.name == "today"
       assert p1.due
       assert p1.type == "project"
-      assert p2.id == due_project.id
+      assert p2.id == Paths.project_id(due_project)
       assert p2.name == "3 days ago"
       assert p2.due
       assert p2.type == "project"
@@ -59,7 +60,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
 
       [p] = assignments
 
-      assert p.id == due_project.id
+      assert p.id == Paths.project_id(due_project)
       assert p.name == "single project"
       assert p.due
       assert p.type == "project"
@@ -82,11 +83,11 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
 
       [g1, g2] = assignments
 
-      assert g1.id == today_goal.id
+      assert g1.id == Paths.goal_id(today_goal)
       assert g1.name == "today"
       assert g1.due
       assert g1.type == "goal"
-      assert g2.id == due_goal.id
+      assert g2.id == Paths.goal_id(due_goal)
       assert g2.name == "3 days ago"
       assert g2.due
       assert g2.type == "goal"
@@ -104,7 +105,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
 
       [g] = assignments
 
-      assert g.id == due_goal.id
+      assert g.id == Paths.goal_id(due_goal)
       assert g.name == "single goal"
       assert g.due
       assert g.type == "goal"
@@ -132,14 +133,14 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
 
       [c1, c2] = assignments
 
-      assert c1.id == check_in2.id
+      assert c1.id == Paths.project_check_in_id(check_in2)
       assert c1.name == "project"
       assert c1.due
       assert c1.type == "check_in"
       assert c1.champion_id == another_person.id
       assert c1.champion_name == "champion"
 
-      assert c2.id == check_in1.id
+      assert c2.id == Paths.project_check_in_id(check_in1)
       assert c2.name == "project"
       assert c2.due
       assert c2.type == "check_in"
@@ -170,14 +171,14 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
 
       [u1, u2] = assignments
 
-      assert u1.id == update2.id
+      assert u1.id == Paths.goal_update_id(update2)
       assert u1.name == "goal"
       assert u1.due
       assert u1.type == "goal_update"
       assert u1.champion_id == another_person.id
       assert u1.champion_name == "champion"
 
-      assert u2.id == update1.id
+      assert u2.id == Paths.goal_update_id(update1)
       assert u2.name == "goal"
       assert u2.due
       assert u2.type == "goal_update"

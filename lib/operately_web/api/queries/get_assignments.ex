@@ -2,6 +2,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignments do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
+  alias OperatelyWeb.Paths
   alias Operately.Repo
 
   import Ecto.Query, only: [from: 2]
@@ -23,8 +24,9 @@ defmodule OperatelyWeb.Api.Queries.GetAssignments do
   defp load_assignments(person) do
     load_projects(person)
     |> load_goals(person)
-    |> get_due_project_check_ins(person)
-    |> get_due_goal_updates(person)
+    |> load_due_project_check_ins(person)
+    |> load_due_goal_updates(person)
+    |> convert_id()
     |> Enum.sort(&(&1.due > &2.due))
   end
 
@@ -60,7 +62,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignments do
     |> Enum.concat(result)
   end
 
-  defp get_due_project_check_ins(result, person) do
+  defp load_due_project_check_ins(result, person) do
     from(c in Operately.Projects.CheckIn,
       join: p in assoc(c, :project),
       join: contrib in assoc(p, :contributors),
@@ -81,7 +83,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignments do
     |> Enum.concat(result)
   end
 
-  defp get_due_goal_updates(result, person) do
+  defp load_due_goal_updates(result, person) do
     from(u in Operately.Updates.Update,
       join: g in Operately.Goals.Goal, on: u.updatable_id == g.id,
       join: champion in assoc(g, :champion),
@@ -105,5 +107,21 @@ defmodule OperatelyWeb.Api.Queries.GetAssignments do
     Enum.map(items, fn item ->
       Map.merge(item, %{due: DateTime.from_naive!(item.due, "Etc/UTC")})
     end)
+  end
+
+  defp convert_id([]), do: []
+  defp convert_id([head | tail]) do
+    [ Map.merge(head, %{id: convert_id(head)}) | convert_id(tail) ]
+  end
+  defp convert_id(%{type: :project} = project), do: Paths.project_id(project)
+  defp convert_id(%{type: :goal} = goal), do: Paths.goal_id(goal)
+  defp convert_id(%{type: :check_in} = check_in), do: Paths.project_check_in_id(normalize_for_short_id(check_in))
+  defp convert_id(%{type: :goal_update} = goal_update), do: Paths.goal_update_id(normalize_for_short_id(goal_update))
+
+  defp normalize_for_short_id(resource) do
+    %{
+      id: resource.id,
+      inserted_at: resource.due,
+    }
   end
 end
