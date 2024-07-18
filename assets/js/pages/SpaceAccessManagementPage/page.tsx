@@ -4,24 +4,34 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Icons from "@tabler/icons-react";
 
-import { useLoadedData } from "./loader";
-
-import { Space } from "@/api";
 import { Paths } from "@/routes/paths";
+import { Space } from "@/api";
+
+import { useLoadedData } from "./loader";
+import { MembersAccessLevel } from "./MembersAccessLevel";
+import { AddMembers } from "./AddMembers";
+import { SpaceAccessLevel } from "./SpaceAccessLevel";
+
+import { PermissionsProvider } from "@/features/Permissions/PermissionsContext";
+import { Spacer } from "@/components/Spacer";
 
 
 export function Page() {
-  const { space } = useLoadedData();
+  const { space, company } = useLoadedData();
 
   return (
-    <Pages.Page title={"SpaceAccessManagementPage"}>
+    <Pages.Page title={space.name!}>
       <Paper.Root>
         <Navigation space={space} />
 
         <Paper.Body>
-          <AddMembers />
+          <AddMembers space={space} />
+          <Spacer size={4} />
           <MembersAccessLevel />
-          <SpaceAccessLevel />
+          <SpacesWithLine />
+          <PermissionsProvider company={company} space={space} currentPermissions={space.accessLevels} >
+            <SpaceAccessLevel />
+          </PermissionsProvider>
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
@@ -39,20 +49,6 @@ function Navigation({ space }: { space: Space }) {
   );
 }
 
-function AddMembers() {
-  return (
-    <div></div>
-  );
-}
-
-function MembersAccessLevel() {
-  return (
-    <div></div>
-  );
-}
-
-function SpaceAccessLevel() {
-  return (
-    <div></div>
-  );
+function SpacesWithLine() {
+  return <div className="bg-content-subtle h-[1px] w-full mt-12 mb-10" />;
 }
