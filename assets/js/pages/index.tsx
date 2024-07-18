@@ -68,6 +68,7 @@ import * as ProjectPausePage from "./ProjectPausePage";
 import * as ProjectResumePage from "./ProjectResumePage";
 import * as ProjectRetrospectivePage from "./ProjectRetrospectivePage";
 import * as ProjectsPage from "./ProjectsPage";
+import * as SpaceAccessManagementPage from "./SpaceAccessManagementPage";
 import * as SpaceAddPage from "./SpaceAddPage";
 import * as SpaceDiscussionsPage from "./SpaceDiscussionsPage";
 import * as SpaceEditPage from "./SpaceEditPage";
@@ -342,6 +343,10 @@ export default {
   ProjectsPage: {
     loader: ProjectsPage.loader,
     Page: ProjectsPage.Page
+  },
+  SpaceAccessManagementPage: {
+    loader: SpaceAccessManagementPage.loader,
+    Page: SpaceAccessManagementPage.Page
   },
   SpaceAddPage: {
     loader: SpaceAddPage.loader,
