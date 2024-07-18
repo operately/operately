@@ -179,6 +179,10 @@ export class Paths {
     return createCompanyPath(["spaces", spaceId, "appearance"]);
   }
 
+  static spaceAccessManagementPath(spaceId: string) {
+    return createCompanyPath(["spaces", spaceId, "access-management"]);
+  }
+
   static goalClosePath(goalId: string) {
     return createCompanyPath(["goals", goalId, "complete"]);
   }
