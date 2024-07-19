@@ -5,6 +5,7 @@ export {
   useCreateGroup,
   useJoinSpace,
   useEditGroup,
+  useEditSpacePermissions,
   useRemoveGroupMember,
   useAddGroupMembers,
   useUpdateGroupAppearance,
