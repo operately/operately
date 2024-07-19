@@ -905,6 +905,11 @@ defmodule OperatelyWeb.Api.Types do
     field :permissions, :integer
   end
 
+  object :edit_member_permissions_input do
+    field :id, :string
+    field :access_level, :integer
+  end
+
   object :edit_project_timeline_milestone_update_input do
     field :id, :string
     field :title, :string
