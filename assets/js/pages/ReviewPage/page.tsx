@@ -1,16 +1,16 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
 import { IconTarget, IconHexagons } from "@tabler/icons-react";
+import FormattedTime from "@/components/FormattedTime";
 
 import { Paths } from "@/routes/paths";
 import { ReviewAssignment } from "@/api";
-import { useLoadedData } from "./loader";
+import { AssignmentType } from "@/models/assignments";
 import { useNavigateTo } from "@/routes/useNavigateTo";
-
-
-type AssignmentType = "goal" | "project" | "goal_update" | "check_in";
+import { calculateHowManyDaysAgo } from "@/utils/time";
+import { useLoadedData } from "./loader";
 
 
 export function Page() {
@@ -69,11 +69,14 @@ function AssignmentItem({ assignment }: { assignment: ReviewAssignment }) {
 }
 
 function DueDate({ date }: { date: string }) {
-  const [isRed, daysAgo] = calculateDaysAgo(date);
+  const daysAgo = calculateHowManyDaysAgo(date);
+  const isRed = useMemo(() => !["Today", "Yesterday"].includes(daysAgo), []);
   
   return (
     <div className="flex flex-col min-w-[110px]">
-      <span className="font-bold">{formatDate(date)}</span>
+      <b>
+        <FormattedTime time={date} format="short-date" />
+      </b>
       <span className={`text-sm ${isRed ? "text-red-500" : "text-content-dimmed"}`}>
         {daysAgo}
       </span>
@@ -113,32 +116,6 @@ function AssignmentInfo({ assignment, isHovered }: { assignment: ReviewAssignmen
   );
 }
 
-
-function formatDate(dateString: string) {
-  const date = new Date(dateString);
-  const options = { month: 'long', day: 'numeric' } as Intl.DateTimeFormatOptions;
-  return date.toLocaleDateString('en-US', options);
-}
-
-function calculateDaysAgo(dateString: string) {
-  const date = new Date(dateString);
-  const today = new Date();
-  
-  date.setHours(0, 0, 0, 0);
-  today.setHours(0, 0, 0, 0);
-  
-  const delta = today.getTime() - date.getTime();
-  const days = Math.floor(delta / (1000 * 60 * 60 * 24));
-
-  switch(days) {
-    case 0:
-      return [false, "Today"];
-    case 1:
-      return [true, "Yesterday"];
-    default:
-      return [true, `${days} days ago`];
-  }
-}
 
 function parseInformation(assignment: ReviewAssignment) {
   switch(assignment.type as AssignmentType) {
