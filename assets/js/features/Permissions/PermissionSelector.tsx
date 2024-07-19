@@ -18,7 +18,7 @@ export function SpacePermissionSelector() {
 
   const defaultPrivacyLevel = useMemo(() => {
     if(hasPermissions) {
-      return calculatePrivacyLevel(permissions);
+      return calculatePrivacyLevel(permissions, { forSpace: true });
     }
     else {
       return PermissionOptions.CONFIDENTIAL;

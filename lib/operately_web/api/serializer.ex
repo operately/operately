@@ -46,6 +46,16 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Access.AccessLevels do
 end
 
 defimpl OperatelyWeb.Api.Serializable, for: Operately.People.Person do
+  def serialize(%{access_group: %{bindings: bindings}} = data, level: :essential) do
+    %{
+      id: OperatelyWeb.Paths.person_id(data),
+      full_name: data.full_name,
+      avatar_url: data.avatar_url,
+      title: data.title,
+      access_level: find_access_level(bindings),
+    }
+  end
+
   def serialize(data, level: :essential) do
     %{
       id: OperatelyWeb.Paths.person_id(data),
@@ -67,6 +77,10 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.People.Person do
       reports: OperatelyWeb.Api.Serializer.serialize(data.reports),
       peers: OperatelyWeb.Api.Serializer.serialize(data.peers)
     }
+  end
+
+  defp find_access_level(bindings) do
+    Enum.max_by(bindings, &(&1.access_level)).access_level
   end
 end
 
