@@ -21,7 +21,7 @@ export function MembersAccessLevel() {
   useEffect(() => setMembers([...space.members!]), [space.members]);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4" data-test-id="members-list">
       <div className="font-bold">Members</div>
 
       {members.map((member) => (
@@ -63,7 +63,7 @@ function ActionButtons({ members, setMembers }: ActionButtonsProps) {
     else {
       return members.some((item, index) => item.accessLevel !== space.members![index]!.accessLevel);
     }
-  }, [members, space.members])
+  }, [members, space.members]);
 
   if (hasChanged) return (
     <div className="flex gap-2">
@@ -88,7 +88,7 @@ interface MemberListItemProps {
 function MemberListItem({ member, setMembers }: MemberListItemProps) {
   const permissions = useMemo(() => {
     return PERMISSIONS_LIST.find((obj) => obj.value === member.accessLevel);
-  }, [member])
+  }, [member]);
 
   const handlePermissionsChange = (payload: PermissionOption) => {
     setMembers(members => members.map((obj) => {
@@ -98,7 +98,7 @@ function MemberListItem({ member, setMembers }: MemberListItemProps) {
       else {
         return {...obj, accessLevel: payload.value};
       }
-    }))
+    }));
   }
 
   return (
@@ -129,12 +129,12 @@ function MemberDropdownAction({ member }: { member: Person }) {
 
   return (
     <DropdownMenu
-        testId={"remove-" + member.id}
+        testId={"options-" + member.id}
         open={open}
         setOpen={setOpen}
         trigger={<Icons.IconDots size={14} className="cursor-pointer" />}
         options={[
-          <DropdownOption title="Remove member" onClick={handleRemove} key="remeve-member-option" />
+          <DropdownOption title="Remove member" onClick={handleRemove} testId={"remove-" + member.id} key="remeve-member-option" />
         ]}
       />
   );

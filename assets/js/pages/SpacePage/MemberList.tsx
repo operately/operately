@@ -36,7 +36,14 @@ export default function MemberList({ space }: { space: Spaces.Space }) {
             <Avatar key={m.id} person={m} size={32} />
           ))}
         </div>
-        <Button onClick={gotoSpaceAccessManagementPage} size="small" variant="success">Manage Access</Button>
+        <Button
+          onClick={gotoSpaceAccessManagementPage}
+          size="small"
+          variant="success"
+          data-test-id="access-management"
+        >
+          Manage Access
+        </Button>
       </div>
     );
   }
