@@ -604,6 +604,7 @@ defmodule OperatelyWeb.Api.Types do
     field :reports, list_of(:person)
     field :peers, list_of(:person)
     field :theme, :string
+    field :access_level, :integer
   end
 
   object :project_health do
@@ -902,6 +903,11 @@ defmodule OperatelyWeb.Api.Types do
   object :add_member_input do
     field :id, :string
     field :permissions, :integer
+  end
+
+  object :edit_member_permissions_input do
+    field :id, :string
+    field :access_level, :integer
   end
 
   object :edit_project_timeline_milestone_update_input do
