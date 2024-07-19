@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { useRevalidator } from "react-router-dom";
 
-import { Person, Space, searchPotentialSpaceMembers, useAddGroupMembers } from "@/api";
+import { Person } from "@/models/people";
+import { Space, searchPotentialSpaceMembers, useAddGroupMembers } from "@/models/spaces";
 import { MemberContainer } from "./components";
 
 import { PERMISSIONS_LIST, PermissionLevels, VIEW_ACCESS } from "@/features/Permissions";
 import { SelectBoxNoLabel } from "@/components/Form";
-import { GhostButton } from "@/components/Button";
+import Button from "@/components/Button";
 import PeopleSearch from "@/components/PeopleSearch";
 
 
@@ -69,24 +70,25 @@ export function AddMembers({ space }: { space: Space }) {
         )}
       </MemberContainer>
 
-      <Button member={member} loading={loading} handleAddMember={handleAddMember} />
+      <AddMemberButton member={member} loading={loading} handleAddMember={handleAddMember} />
     </div>
   );
 }
 
 
-function Button({ member, loading, handleAddMember }) {
+function AddMemberButton({ member, loading, handleAddMember }) {
   if(!member) return <></>;
 
   return (
-    <div className="w-[140px]">
-      <GhostButton
+    <div>
+      <Button
         loading={loading}
-        size="sm"
+        size="small"
+        variant="success"
         onClick={handleAddMember}
       >
         Add member
-      </GhostButton>
+      </Button>
     </div>
   );
 }

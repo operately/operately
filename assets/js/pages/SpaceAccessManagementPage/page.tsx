@@ -5,7 +5,7 @@ import * as Paper from "@/components/PaperContainer";
 import * as Icons from "@tabler/icons-react";
 
 import { Paths } from "@/routes/paths";
-import { Space } from "@/api";
+import { Space } from "@/models/spaces";
 
 import { useLoadedData } from "./loader";
 import { MembersAccessLevel } from "./MembersAccessLevel";
@@ -28,7 +28,7 @@ export function Page() {
           <AddMembers space={space} />
           <Spacer size={4} />
           <MembersAccessLevel />
-          <SpacesWithLine />
+          <SpacerWithLine />
           <PermissionsProvider company={company} space={space} currentPermissions={space.accessLevels} >
             <SpaceAccessLevel />
           </PermissionsProvider>
@@ -49,6 +49,6 @@ function Navigation({ space }: { space: Space }) {
   );
 }
 
-function SpacesWithLine() {
+function SpacerWithLine() {
   return <div className="bg-content-subtle h-[1px] w-full mt-12 mb-10" />;
 }

@@ -1,5 +1,6 @@
 import * as Pages from "@/components/Pages";
-import { Company, Space, getCompany, getSpace } from "@/api"
+import { Company, getCompany } from "@/models/companies"
+import { Space, getSpace } from "@/models/spaces"
 
 interface LoaderResult {
   space: Space;
@@ -19,7 +20,7 @@ export async function loader({params}) : Promise<LoaderResult> {
 
   return {
     company: company.company!,
-    space: space.space!,
+    space: space!,
   };
 }
 
