@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 import { useRevalidator } from "react-router-dom";
 import * as Icons from "@tabler/icons-react";
@@ -6,7 +6,7 @@ import { useLoadedData } from "./loader";
 import { MemberContainer } from "./components";
 
 import { Person } from "@/models/people";
-import { useRemoveGroupMember } from "@/models/spaces";
+import { useEditSpaceMembersPermissions, useRemoveGroupMember } from "@/models/spaces";
 import Avatar from "@/components/Avatar";
 import { SelectBoxNoLabel } from "@/components/Form";
 import { DropdownMenu } from "@/components/DropdownMenu";
@@ -14,16 +14,11 @@ import { PERMISSIONS_LIST, PermissionOption,  } from "@/features/Permissions";
 import Button from "@/components/Button";
 
 
-type SetMembers = Dispatch<SetStateAction<Person[]>>;
-
-
 export function MembersAccessLevel() {
   const { space } = useLoadedData();
   const [members, setMembers] = useState(space.members ? [...space.members] : []);
 
-  const hasChanged = useMemo(() => {
-    return members.some((item, index) => item.accessLevel !== space.members![index]!.accessLevel);
-  }, [members])
+  useEffect(() => setMembers([...space.members!]), [space.members])
 
   return (
     <div className="flex flex-col gap-4">
@@ -33,42 +28,64 @@ export function MembersAccessLevel() {
         <MemberListItem member={member} setMembers={setMembers} key={member.id} />
       ))}
 
-      {hasChanged && (
-        <Actions setMembers={setMembers} />
-      )}
+      <ActionButtons members={members} setMembers={setMembers} />
     </div>
   );
 }
 
 
-function Actions({ setMembers }: { setMembers: SetMembers }) {
-  const { space } = useLoadedData();
+interface ActionButtonsProps {
+  members: Person[];
+  setMembers: React.Dispatch<React.SetStateAction<Person[]>>;
+}
 
-  const resetMembers = () => {
+function ActionButtons({ members, setMembers }: ActionButtonsProps) {
+  const { space } = useLoadedData();
+  const { revalidate } = useRevalidator();
+  const [editMembers, { loading }] = useEditSpaceMembersPermissions();
+
+  const handleReset = () => {
     setMembers([...space.members!]);
   }
 
-  return (
+  const handleEditMembers = () => {
+    editMembers({
+      groupId: space.id,
+      members: members.map(member => ({ id: member.id, accessLevel: member.accessLevel })),
+    })
+    .then(() => revalidate());
+  }
+
+  const hasChanged = useMemo(() => {
+    if (members.length !== space.members?.length) {
+      return false;
+    }
+    else {
+      return members.some((item, index) => item.accessLevel !== space.members![index]!.accessLevel);
+    }
+  }, [members, space.members])
+
+  if (hasChanged) return (
     <div className="flex gap-2">
-      <Button
-        variant="success"
-        size="small"
-      >
+      <Button loading={loading} variant="success" size="small" onClick={handleEditMembers} >
         Save
       </Button>
-      <Button
-        variant="secondary"
-        size="small"
-        onClick={resetMembers}
-      >
+      <Button variant="secondary" size="small" onClick={handleReset} >
         Cancel
       </Button>
     </div>
   );
+
+  return <></>;
 }
 
 
-function MemberListItem({ member, setMembers }: { member: Person; setMembers: SetMembers }) {
+interface MemberListItemProps {
+  member: Person;
+  setMembers: React.Dispatch<React.SetStateAction<Person[]>>;
+}
+
+function MemberListItem({ member, setMembers }: MemberListItemProps) {
   const permissions = useMemo(() => {
     return PERMISSIONS_LIST.find((obj) => obj.value === member.accessLevel);
   }, [member])
