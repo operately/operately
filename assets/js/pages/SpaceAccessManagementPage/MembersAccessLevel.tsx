@@ -18,7 +18,7 @@ export function MembersAccessLevel() {
   const { space } = useLoadedData();
   const [members, setMembers] = useState(space.members ? [...space.members] : []);
 
-  useEffect(() => setMembers([...space.members!]), [space.members])
+  useEffect(() => setMembers([...space.members!]), [space.members]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -96,8 +96,7 @@ function MemberListItem({ member, setMembers }: MemberListItemProps) {
         return obj;
       }
       else {
-        obj.accessLevel
-        return {...obj, accessLevel: payload.value}
+        return {...obj, accessLevel: payload.value};
       }
     }))
   }
