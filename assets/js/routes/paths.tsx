@@ -155,10 +155,6 @@ export class Paths {
     return createCompanyPath(["spaces", spaceId, "edit"]);
   }
 
-  static spaceEditPermissionsPath(spaceId: string) {
-    return createCompanyPath(["spaces", spaceId, "edit", "permissions"]);
-  }
-
   static spaceGoalsPath(spaceId: string) {
     return createCompanyPath(["spaces", spaceId, "goals"]);
   }
