@@ -8,6 +8,7 @@ export {
   useRemoveGroupMember,
   useAddGroupMembers,
   useUpdateGroupAppearance,
+  useEditSpaceMembersPermissions,
   searchPotentialSpaceMembers,
 } from "@/api";
 
