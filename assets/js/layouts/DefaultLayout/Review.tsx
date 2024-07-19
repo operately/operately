@@ -1,7 +1,6 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React from "react";
 
-import { getAssignmentsCount } from "@/api";
-import { useAssignmentsCount } from "@/api/socket";
+import { useAssignmentsCount } from "@/models/assignments";
 
 import { DivLink } from "@/components/Link";
 import { Paths } from "@/routes/paths";
@@ -9,7 +8,7 @@ import { IconCoffee } from "@tabler/icons-react";
 
 
 export function Review() {
-  const count = useCount();
+  const count = useAssignmentsCount();
 
   return (
     <DivLink
@@ -46,20 +45,4 @@ function AssignmentsCount({ count }: { count: number }) {
       {count}
     </div>
   );
-}
-
-function useCount() {
-  const [count, setCount] = useState(0);
-
-  const fetch = useCallback(() => {
-    getAssignmentsCount({})
-    .then((data) => {
-      setCount(data.count!);
-    })
-  }, []);
-
-  useEffect(() => fetch(), []);
-  useAssignmentsCount(fetch);
-
-  return count;
 }
