@@ -131,4 +131,30 @@ defmodule Operately.Features.SpacesTest do
     |> UI.assert_has(Query.text("Marketing 2", count: 2))
     |> UI.assert_has(Query.text("Let the world know about our products 2"))
   end
+
+  feature "adding space members (access management page)", ctx do
+    group = group_fixture(ctx.person, %{name: "Marketing"})
+
+    name = "Mati Aharoni"
+    person_fixture(%{full_name: name, company_id: ctx.company.id})
+
+    ctx
+    |> Steps.visit_home()
+    |> Steps.visit_access_management(group.name)
+    |> Steps.add_new_member(search: "Mati", name: name)
+    |> Steps.assert_member_added(name)
+  end
+
+  feature "removing space members (access management page)", ctx do
+    [space, member] = Steps.given_space_with_member_exists(ctx, %{
+      person_name: "Mati Aharoni",
+      space_name: "Marketing",
+    })
+
+    ctx
+    |> Steps.visit_home()
+    |> Steps.visit_access_management(space.name)
+    |> Steps.remove_member(member)
+    |> Steps.assert_member_removed(member)
+  end
 end

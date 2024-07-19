@@ -86,6 +86,7 @@ function AddMemberButton({ member, loading, handleAddMember }) {
         size="small"
         variant="success"
         onClick={handleAddMember}
+        data-test-id="submit-space-members"
       >
         Add member
       </Button>
