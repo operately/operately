@@ -30,6 +30,15 @@ defmodule OperatelyWeb.Api.Types do
     field :check_in, :project_check_in
   end
 
+  object :review_assignment do
+    field :id, :string
+    field :name, :string
+    field :due, :date
+    field :type, :string
+    field :champion_id, :string
+    field :champion_name, :string
+  end
+
   union :update_content, types: [
     :update_content_project_created,
     :update_content_project_start_time_changed,
