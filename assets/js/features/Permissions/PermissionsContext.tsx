@@ -27,6 +27,7 @@ export enum ReducerActions {
   SET_PUBLIC_ACCESS,
   SET_COMPANY_ACCESS,
   SET_SPACE_ACCESS,
+  SET_ALL,
 }
 
 type ActionOptions = { type: ReducerActions.SET_PUBLIC } |
@@ -35,7 +36,8 @@ type ActionOptions = { type: ReducerActions.SET_PUBLIC } |
   { type: ReducerActions.SET_SECRET } |
   { type: ReducerActions.SET_PUBLIC_ACCESS, access_level: PermissionLevels } |
   { type: ReducerActions.SET_COMPANY_ACCESS, access_level: PermissionLevels } |
-  { type: ReducerActions.SET_SPACE_ACCESS, access_level: PermissionLevels }
+  { type: ReducerActions.SET_SPACE_ACCESS, access_level: PermissionLevels } |
+  { type: ReducerActions.SET_ALL, payload: Permissions }
 
 
 export interface Permissions {
@@ -90,6 +92,11 @@ function reducerFunction(state: Permissions, action: ActionOptions) {
       return {
         ...state,
         space: action.access_level,
+      };
+
+    case ReducerActions.SET_ALL:
+      return {
+        ...action.payload,
       };
   }
 }
