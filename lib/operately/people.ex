@@ -1,7 +1,11 @@
 defmodule Operately.People do
   import Ecto.Query, warn: false
 
+<<<<<<< HEAD
   alias Operately.Repo
+=======
+  alias Operately.Access
+>>>>>>> e7310082 (Fix Operately.People.create_person/1)
   alias Operately.People.{Person, Account}
 
   def list_people(company_id) do
@@ -33,10 +37,13 @@ defmodule Operately.People do
   def create_person(attrs \\ %{}) do
     changeset = Person.changeset(%Person{}, attrs)
 
-    case Repo.insert(changeset) do
-      {:ok, person} ->
-        Operately.Access.create_group(%{person_id: person.id})
-        {:ok, person}
+    with {:ok, person} <- Repo.insert(changeset),
+         {:ok, group} <- Access.create_group(%{person_id: person.id}),
+         {:ok, _} <- Access.create_group_membership(%{group_id: group.id, person_id: person.id}),
+         company_group <- Access.get_group(company_id: person.company_id, tag: :standard),
+         {:ok, _} <- Access.create_group_membership(%{ group_id: company_group.id, person_id: person.id }) do
+      {:ok, person}
+    else
       error -> error
     end
   end
