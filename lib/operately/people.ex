@@ -3,6 +3,7 @@ defmodule Operately.People do
   alias Ecto.Multi
   alias Operately.Repo
 
+  alias Operately.Access
   alias Operately.People.{Person, Account}
 
   def list_people(company_id) do
@@ -38,10 +39,10 @@ defmodule Operately.People do
   defp insert_person_access_group(multi) do
     multi
     |> Multi.insert(:person_access_group, fn changes ->
-      Operately.Access.Group.changeset(%{person_id: changes.person.id})
+      Access.Group.changeset(%{person_id: changes.person.id})
     end)
     |> Multi.insert(:person_access_membership, fn changes ->
-      Operately.Access.GroupMembership.changeset(%{
+      Access.GroupMembership.changeset(%{
         group_id: changes.person_access_group.id,
         person_id: changes.person.id,
       })
@@ -51,10 +52,13 @@ defmodule Operately.People do
   def create_person(attrs \\ %{}) do
     changeset = Person.changeset(%Person{}, attrs)
 
-    case Repo.insert(changeset) do
-      {:ok, person} ->
-        Operately.Access.create_group(%{person_id: person.id})
-        {:ok, person}
+    with {:ok, person} <- Repo.insert(changeset),
+         {:ok, group} <- Access.create_group(%{person_id: person.id}),
+         {:ok, _} <- Access.create_group_membership(%{group_id: group.id, person_id: person.id}),
+         company_group <- Access.get_group(company_id: person.company_id, tag: :standard),
+         {:ok, _} <- Access.create_group_membership(%{ group_id: company_group.id, person_id: person.id }) do
+      {:ok, person}
+    else
       error -> error
     end
   end
