@@ -6,6 +6,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivities do
   alias Operately.Activities.Activity
   alias Operately.Activities.Preloader
   alias Operately.Companies.ShortId
+  alias Operately.Access.Binding
 
   import Ecto.Query, only: [from: 2, limit: 2, preload: 2]
 
@@ -20,10 +21,11 @@ defmodule OperatelyWeb.Api.Queries.GetActivities do
   end
 
   def call(conn, inputs) do
-    company_id = conn.assigns.current_account.person.company_id
     actions = inputs[:actions] || []
     {:ok, scope_type, scope_id} = decode_scope(inputs)
-    activities = load_activities(company_id, scope_type, scope_id, actions)
+    activities = load_activities(me(conn), scope_type, scope_id, actions)
+
+    # IO.inspect(activities)
 
     {:ok, %{activities: OperatelyWeb.Api.Serializers.Activity.serialize(activities)}}
   end
@@ -33,25 +35,25 @@ defmodule OperatelyWeb.Api.Queries.GetActivities do
     scope_type = inputs[:scope_type]
 
     case scope_type do
-      "space" -> 
+      "space" ->
         {:ok, id} = decode_id(scope_id)
         {:ok, scope_type, id}
 
-      "company" -> 
+      "company" ->
         scope_id = id_without_comments(scope_id)
         {:ok, id} = ShortId.decode(scope_id)
         company = Operately.Repo.get_by(Operately.Companies.Company, short_id: id)
         {:ok, scope_type, company.id}
 
-      "project" -> 
+      "project" ->
         {:ok, id} = decode_id(scope_id)
         {:ok, scope_type, id}
 
-      "goal" -> 
+      "goal" ->
         {:ok, id} = decode_id(scope_id)
         {:ok, scope_type, id}
 
-      _ -> 
+      _ ->
         {:ok, id} = decode_id(scope_id)
         {:ok, scope_type, id}
     end
@@ -61,11 +63,12 @@ defmodule OperatelyWeb.Api.Queries.GetActivities do
   # Loading data
   #
 
-  def load_activities(company_id, scope_type, scope_id, actions) do
+  def load_activities(person, scope_type, scope_id, actions) do
     Activity
-    |> limit_search_to_current_company(company_id)
+    |> limit_search_to_current_company(person.company_id)
     |> scope_query(scope_type, scope_id)
     |> filter_by_action(actions)
+    |> filter_by_permissions(person)
     |> order_desc()
     |> limit(100)
     |> preload([:comment_thread, :author])
@@ -98,4 +101,14 @@ defmodule OperatelyWeb.Api.Queries.GetActivities do
     from a in query, where: a.action in ^actions and a.action not in ^Activity.deprecated_actions()
   end
 
+  def filter_by_permissions(query, person) do
+    from(a in query,
+      join: c in assoc(a, :context),
+      join: b in assoc(c, :bindings),
+      join: g in assoc(b, :group),
+      join: m in assoc(g, :memberships),
+      where: m.person_id == ^person.id and b.access_level >= ^Binding.view_access(),
+      distinct: true
+    )
+  end
 end
