@@ -39,6 +39,7 @@ defmodule OperatelyWeb.PageController do
       render(conn, :home)
     else
       conn
+      |> put_session(:redirect_to, conn.request_path)
       |> redirect(to: ~p"/accounts/log_in")
       |> halt()
     end

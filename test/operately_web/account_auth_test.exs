@@ -4,6 +4,7 @@ defmodule OperatelyWeb.AccountAuthTest do
   alias Phoenix.LiveView
   alias Operately.People
   alias OperatelyWeb.AccountAuth
+  import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
 
   @remember_me_cookie "_operately_web_account_remember_me"
@@ -259,6 +260,46 @@ defmodule OperatelyWeb.AccountAuthTest do
       conn = conn |> assign(:current_account, account) |> AccountAuth.require_authenticated_account([])
       refute conn.halted
       refute conn.status
+    end
+  end
+
+  describe "redirect to previously visited page after login" do
+    setup ctx do
+      company_id = company_fixture() |> OperatelyWeb.Paths.company_id()
+
+      {:ok, Map.merge(ctx, %{company_id: company_id})}
+    end
+
+    test "redirects to login, then to goals page", %{conn: conn, account: account, company_id: company_id} do
+      original_path = "/#{company_id}/goals"
+
+      conn = get(conn, original_path)
+
+      assert conn.halted
+      assert redirected_to(conn) == ~p"/accounts/log_in"
+
+      conn = build_conn()
+        |> init_test_session(%{})
+        |> put_session(:redirect_to, conn.request_path)
+        |> AccountAuth.log_in_account(account)
+
+      assert redirected_to(conn) == original_path
+    end
+
+    test "redirects to login, then to projects page", %{conn: conn, account: account, company_id: company_id} do
+      original_path = "/#{company_id}/projects"
+
+      conn = get(conn, original_path)
+
+      assert conn.halted
+      assert redirected_to(conn) == ~p"/accounts/log_in"
+
+      conn = build_conn()
+        |> init_test_session(%{})
+        |> put_session(:redirect_to, conn.request_path)
+        |> AccountAuth.log_in_account(account)
+
+      assert redirected_to(conn) == original_path
     end
   end
 end
