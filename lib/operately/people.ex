@@ -3,6 +3,7 @@ defmodule Operately.People do
   alias Ecto.Multi
   alias Operately.Repo
 
+  alias Operately.Access
   alias Operately.People.{Person, Account}
 
   def list_people(company_id) do
@@ -33,6 +34,7 @@ defmodule Operately.People do
     multi
     |> Multi.insert(:person, fn changes -> callback.(changes) end)
     |> insert_person_access_group()
+    |> insert_membership_with_company_group()
   end
 
   defp insert_person_access_group(multi) do
@@ -43,6 +45,19 @@ defmodule Operately.People do
     |> Multi.insert(:person_access_membership, fn changes ->
       Operately.Access.GroupMembership.changeset(%{
         group_id: changes.person_access_group.id,
+        person_id: changes.person.id,
+      })
+    end)
+  end
+
+  defp insert_membership_with_company_group(multi) do
+    multi
+    |> Multi.run(:company_access_group, fn _, %{person: person} ->
+      {:ok, Access.get_group!(company_id: person.company_id, tag: :standard)}
+    end)
+    |> Multi.insert(:company_access_membership, fn changes ->
+      Access.GroupMembership.changeset(%{
+        group_id: changes.company_access_group.id,
         person_id: changes.person.id,
       })
     end)

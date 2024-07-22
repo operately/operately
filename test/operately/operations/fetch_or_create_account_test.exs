@@ -21,7 +21,7 @@ defmodule Operately.Operations.FetchOrCreateAccountTest do
   end
 
   test "FetchOrCreateAccountOperation creates person and account", ctx do
-    assert nil == People.get_person_by_email(ctx.company, @email)
+    refute People.get_person_by_email(ctx.company, @email)
 
     Operately.People.FetchOrCreateAccountOperation.call(ctx.company, @attrs)
 
@@ -30,7 +30,7 @@ defmodule Operately.Operations.FetchOrCreateAccountTest do
     assert person.full_name == "John Doe"
     assert person.email == @email
     assert person.company_role == :member
-    assert nil != People.get_account_by_email(@email)
+    assert People.get_account_by_email(@email)
   end
 
   test "FetchOrCreateAccountOperation creates person's access group", ctx do
@@ -39,8 +39,11 @@ defmodule Operately.Operations.FetchOrCreateAccountTest do
     person = People.get_person_by_email(ctx.company, @email)
     group = Access.get_group!(person_id: person.id)
 
-    assert nil != group
-    assert nil != Access.get_group_membership(group_id: group.id, person_id: person.id)
+    assert Access.get_group_membership(group_id: group.id, person_id: person.id)
+
+    company_group = Access.get_group!(company_id: ctx.company.id, tag: :standard)
+
+    assert Access.get_group_membership(group_id: company_group.id, person_id: person.id)
   end
 
   test "FetchOrCreateAccountOperation doesn't create account for non-trusted email domain", ctx do
@@ -52,6 +55,6 @@ defmodule Operately.Operations.FetchOrCreateAccountTest do
       :image => "",
     })
 
-    assert nil == People.get_person_by_email(ctx.company, email)
+    refute People.get_person_by_email(ctx.company, email)
   end
 end
