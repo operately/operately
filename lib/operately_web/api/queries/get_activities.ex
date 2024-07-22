@@ -25,8 +25,6 @@ defmodule OperatelyWeb.Api.Queries.GetActivities do
     {:ok, scope_type, scope_id} = decode_scope(inputs)
     activities = load_activities(me(conn), scope_type, scope_id, actions)
 
-    # IO.inspect(activities)
-
     {:ok, %{activities: OperatelyWeb.Api.Serializers.Activity.serialize(activities)}}
   end
 
