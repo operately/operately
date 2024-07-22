@@ -1,11 +1,8 @@
 defmodule Operately.People do
   import Ecto.Query, warn: false
 
-<<<<<<< HEAD
   alias Operately.Repo
-=======
   alias Operately.Access
->>>>>>> e7310082 (Fix Operately.People.create_person/1)
   alias Operately.People.{Person, Account}
 
   def list_people(company_id) do
