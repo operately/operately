@@ -252,6 +252,12 @@ defmodule Operately.Support.Features.ProjectSteps do
     ctx |> UI.visit(Paths.project_path(ctx.company, ctx.project))
   end
 
+  step :visit_close_project_page, ctx do
+    ctx
+    |> UI.click(testid: "project-options-button")
+    |> UI.click(testid: "close-project")
+  end
+
   def visit_project_milestones_page(ctx, milestone_name) do
     {:ok, milestone} = Operately.Projects.get_milestone_by_name(ctx.project, milestone_name)
 

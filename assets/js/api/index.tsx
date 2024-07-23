@@ -759,6 +759,7 @@ export interface ProjectPermissions {
   canEditName?: boolean | null;
   canEditSpace?: boolean | null;
   canEditPermissions?: boolean | null;
+  canClose?: boolean | null;
   canPause?: boolean | null;
   canCheckIn?: boolean | null;
   canAcknowledgeCheckIn?: boolean | null;

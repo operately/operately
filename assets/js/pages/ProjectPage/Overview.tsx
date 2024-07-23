@@ -1,22 +1,16 @@
 import React from "react";
 
-import { DimmedLabel } from "./Label";
-
 import * as Projects from "@/models/projects";
-import { GhostButton } from "@/components/Button";
 import { StatusIndicator } from "@/features/ProjectListItem/StatusIndicator";
 import { MiniPieChart } from "@/components/MiniPieChart";
-import { Paths } from "@/routes/paths";
+import { DimmedLabel } from "./Label";
+
 
 export default function Overview({ project }) {
   return (
-    <div className="flex items-center justify-between">
-      <div className="flex items-start gap-12 text-sm">
-        <Status project={project} />
-        <Completion project={project} />
-      </div>
-
-      <CloseButton project={project} />
+    <div className="flex items-start gap-12 text-sm">
+      <Status project={project} />
+      <Completion project={project} />
     </div>
   );
 }
@@ -67,19 +61,5 @@ function CompletionPieChart({ done, total }) {
         {done}/{total} milestones completed
       </span>
     </div>
-  );
-}
-
-function CloseButton({ project }: { project: Projects.Project }) {
-  if (project.status === "closed") return null;
-  if (project.isArchived) return null;
-
-  const type = Projects.allMilestonesCompleted(project) ? "primary" : "secondary";
-  const linkTo = Paths.projectClosePath(project.id!);
-
-  return (
-    <GhostButton type={type} linkTo={linkTo} size="sm" testId="close-project-button">
-      Close Project
-    </GhostButton>
   );
 }
