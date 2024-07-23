@@ -504,9 +504,9 @@ function ProjectProgress({ node }: { node: ProjectNode }) {
         className="z-[1000] relative w-[550px]"
       >
         <div className="bg-surface rounded border border-surface-outline shadow-xl">
-          <div className="font-bold px-4 pt-4 flex items-center justify-between">
+          <div className="font-bold p-4 flex items-center justify-between">
             <div className="font-bold">Project Progress</div>
-            <div className="text-accent-1 font-extrabold">{Math.round(progress)}% Complete</div>
+            <div className="text-accent-1 font-extrabold">{progress ? Math.round(progress) : 0}% Complete</div>
           </div>
 
           <PendingMilestones pending={pending} />
@@ -523,11 +523,11 @@ function PendingMilestones({ pending }: { pending: Milestones.Milestone[] }) {
 
   return (
     <div className="px-4 pb-4 text-sm">
-      <div className="uppercase text-xs font-bold mb-1 mt-4 tracking-wide">Upcoming Milestones</div>
+      <div className="uppercase text-xs font-bold mb-1 tracking-wide">Upcoming Milestones</div>
 
       <div>
         {pending!.map((milestone) => (
-          <div className="flex items-center gap-3 w-full not-first:border-t border-stroke-base py-1 justify-between">
+          <div key={milestone.id} className="flex items-center gap-3 w-full not-first:border-t border-stroke-base py-1 justify-between">
             <div className="inline-flex items-center gap-1 flex-1 truncate">
               <MilestoneIcon milestone={{ status: "pending", deadlineAt: milestone!.deadlineAt! }} />
               <DivLink className="truncate hover:underline" to={Paths.projectMilestonePath(milestone!.id!)}>
