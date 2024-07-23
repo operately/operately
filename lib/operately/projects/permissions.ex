@@ -12,6 +12,7 @@ defmodule Operately.Projects.Permissions do
     :can_edit_space,
     :can_edit_contributors,
     :can_edit_permissions,
+    :can_close,
     :can_pause,
     :can_check_in,
     :can_acknowledge_check_in
@@ -35,6 +36,7 @@ defmodule Operately.Projects.Permissions do
       can_edit_contributors: is_contributor?(project, user),
       can_edit_permissions: is_contributor?(project, user),
 
+      can_close: is_contributor?(project, user),
       can_pause: is_contributor?(project, user),
       can_check_in: is_contributor?(project, user),
       can_acknowledge_check_in: is_reviewer?(project, user)
