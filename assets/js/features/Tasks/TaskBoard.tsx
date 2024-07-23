@@ -3,6 +3,7 @@ import * as Tasks from "@/models/tasks";
 
 import Avatar from "@/components/Avatar";
 
+import { useIsDarkMode } from "@/theme";
 import { DivLink } from "@/components/Link";
 import { insertAt } from "@/utils/array";
 import { DragAndDropProvider, useDraggable, useDropZone, useDragAndDropContext } from "@/features/DragAndDrop";
@@ -105,6 +106,7 @@ interface TaskColumnProps {
 }
 
 function TaskColumn(props: TaskColumnProps) {
+  const isDarkMode = useIsDarkMode();
   const { draggedId } = useDragAndDropContext();
   const { ref, isOver, isSourceZone, dropIndex, draggedElementHeight } = useDropZone({ id: props.status });
 
@@ -147,7 +149,7 @@ function TaskColumn(props: TaskColumnProps) {
 
   return (
     <div className={columnClassName}>
-      <div className="text-xs uppercase font-semibold">
+      <div className={`text-xs uppercase font-semibold ${isDarkMode && "text-gray-800"}`}>
         {props.title} {props.tasks.length > 0 && <span>({props.tasks.length})</span>}
       </div>
 
@@ -188,8 +190,10 @@ function TaskItem({ task, zoneId, style }: { task: Tasks.Task; zoneId: string; s
 }
 
 function PlaceholderTask() {
+  const isDarkMode = useIsDarkMode();
+
   return (
-    <div className="text-sm rounded p-2 border-2 border-stroke-base flex items-start justify-between border-dashed h-8"></div>
+    <div className={`text-sm rounded p-2 border-2 flex items-start justify-between border-dashed h-8 ${!isDarkMode && "border-stroke-base"}`}></div>
   );
 }
 
