@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useMemo } from "react";
 
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
@@ -26,6 +26,8 @@ import { useLoadedData } from "./loader";
 import { Paths } from "@/routes/paths";
 import { SmallStatusIndicator } from "@/features/projectCheckIns/SmallStatusIndicator";
 import Options from "./Options";
+import { countCharacters, truncate } from "@/utils/richText";
+
 
 export function Page() {
   const { project } = useLoadedData();
@@ -251,8 +253,34 @@ function Resource({ icon, title, href }) {
 }
 
 function Description({ project }) {
+  const LIMIT = 250;
+
+  const [showMore, setShowMore] = useState(false);
+  const length = useMemo(() => project.description ? countCharacters(project.description) : 0, []);
+
+  const truncatedDescription = useMemo(() => {
+    if(!project?.description) return;
+
+    return truncate(project.description, LIMIT, { suffix: "..." });
+  }, []);
+
   if (project.description) {
-    return <RichContent jsonContent={project.description} />;
+    if(length < LIMIT) {
+      return <RichContent jsonContent={project.description} />;
+    }
+    else {
+      return (
+        <div>
+          <RichContent jsonContent={showMore ? project.description : truncatedDescription} />
+          <span
+            onClick={() => setShowMore(!showMore)}
+            className="text-sm text-link-base underline underline-offset-2 cursor-pointer"
+          >
+            {showMore ? "Collapse" : "Expand"}
+          </span>
+        </div>
+      )
+    }
   } else {
     return <DescriptionZeroState project={project} />;
   }
