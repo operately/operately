@@ -506,7 +506,7 @@ function ProjectProgress({ node }: { node: ProjectNode }) {
         <div className="bg-surface rounded border border-surface-outline shadow-xl">
           <div className="font-bold p-4 flex items-center justify-between">
             <div className="font-bold">Project Progress</div>
-            <div className="text-accent-1 font-extrabold">{Math.round(progress)}% Complete</div>
+            <div className="text-accent-1 font-extrabold">{progress ? Math.round(progress) : 0}% Complete</div>
           </div>
 
           <PendingMilestones pending={pending} />
