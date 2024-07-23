@@ -275,6 +275,7 @@ function Description({ project }) {
           <span
             onClick={() => setShowMore(!showMore)}
             className="text-sm text-link-base underline underline-offset-2 cursor-pointer"
+            data-test-id="expand-project-description"
           >
             {showMore ? "Collapse" : "Expand"}
           </span>
