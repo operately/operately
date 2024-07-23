@@ -527,7 +527,7 @@ function PendingMilestones({ pending }: { pending: Milestones.Milestone[] }) {
 
       <div>
         {pending!.map((milestone) => (
-          <div className="flex items-center gap-3 w-full not-first:border-t border-stroke-base py-1 justify-between">
+          <div key={milestone.id} className="flex items-center gap-3 w-full not-first:border-t border-stroke-base py-1 justify-between">
             <div className="inline-flex items-center gap-1 flex-1 truncate">
               <MilestoneIcon milestone={{ status: "pending", deadlineAt: milestone!.deadlineAt! }} />
               <DivLink className="truncate hover:underline" to={Paths.projectMilestonePath(milestone!.id!)}>
