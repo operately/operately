@@ -504,7 +504,7 @@ function ProjectProgress({ node }: { node: ProjectNode }) {
         className="z-[1000] relative w-[550px]"
       >
         <div className="bg-surface rounded border border-surface-outline shadow-xl">
-          <div className="font-bold px-4 pt-4 flex items-center justify-between">
+          <div className="font-bold p-4 flex items-center justify-between">
             <div className="font-bold">Project Progress</div>
             <div className="text-accent-1 font-extrabold">{Math.round(progress)}% Complete</div>
           </div>
@@ -523,7 +523,7 @@ function PendingMilestones({ pending }: { pending: Milestones.Milestone[] }) {
 
   return (
     <div className="px-4 pb-4 text-sm">
-      <div className="uppercase text-xs font-bold mb-1 mt-4 tracking-wide">Upcoming Milestones</div>
+      <div className="uppercase text-xs font-bold mb-1 tracking-wide">Upcoming Milestones</div>
 
       <div>
         {pending!.map((milestone) => (
