@@ -64,6 +64,12 @@ export function useColorMode() {
   return colorMode;
 }
 
+export function useIsDarkMode() {
+  const { colorMode } = React.useContext(ThemeContext);
+
+  return colorMode === "dark";
+}
+
 export function useTheme() {
   const { theme } = React.useContext(ThemeContext);
 
