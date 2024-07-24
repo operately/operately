@@ -9,6 +9,7 @@ defmodule Operately.Operations.CompanyMemberAddingTest do
   alias Operately.Access
   alias Operately.People
   alias Operately.People.Person
+  alias Operately.Groups
   alias Operately.Invitations
   alias Operately.Invitations.Invitation
   alias Operately.Activities.Activity
@@ -34,7 +35,7 @@ defmodule Operately.Operations.CompanyMemberAddingTest do
     Operately.Operations.CompanyMemberAdding.run(ctx.admin, @member_attrs)
 
     assert 2 == Repo.aggregate(Person, :count, :id)
-    assert nil != People.get_account_by_email(@email)
+    assert People.get_account_by_email(@email)
 
     person = People.get_person_by_email(ctx.company, @email)
 
@@ -49,8 +50,11 @@ defmodule Operately.Operations.CompanyMemberAddingTest do
     person = People.get_person_by_email(ctx.company, @email)
     group = Access.get_group!(person_id: person.id)
 
-    assert nil != group
-    assert nil != Access.get_group_membership(group_id: group.id, person_id: person.id)
+    assert Access.get_group_membership(group_id: group.id, person_id: person.id)
+
+    company_group = Access.get_group!(company_id: ctx.company.id, tag: :standard)
+
+    assert Access.get_group_membership(group_id: company_group.id, person_id: person.id)
   end
 
   test "CompanyMemberAdding operation creates invitation for person", ctx do
@@ -59,7 +63,17 @@ defmodule Operately.Operations.CompanyMemberAddingTest do
     person = People.get_person_by_email(ctx.company, @email)
 
     assert 1 == Repo.aggregate(Invitation, :count, :id)
-    assert nil != Invitations.get_invitation_by_member(person)
+    assert Invitations.get_invitation_by_member(person)
+  end
+
+  test "CompanyMemberAdding operation creates company space member", ctx do
+    company_space = Groups.get_group!(ctx.company.company_space_id)
+
+    assert length(Groups.list_members(company_space)) == 0
+
+    {:ok, _} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, @member_attrs)
+
+    assert length(Groups.list_members(company_space)) == 1
   end
 
   test "CompanyMemberAdding operation creates activity", ctx do

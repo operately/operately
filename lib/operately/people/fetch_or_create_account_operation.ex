@@ -1,6 +1,7 @@
 defmodule Operately.People.FetchOrCreateAccountOperation do
   alias Ecto.Multi
   alias Operately.Repo
+  alias Operately.Companies
   alias Operately.People
   alias Operately.People.Person
   alias Operately.People.Account
@@ -54,8 +55,11 @@ defmodule Operately.People.FetchOrCreateAccountOperation do
   end
 
   defp create_new_account(company, attrs) do
-    if Operately.Companies.is_email_allowed?(company, attrs.email) do
+    if Companies.is_email_allowed?(company, attrs.email) do
       Multi.new()
+      |> Multi.run(:company_space, fn _, _ ->
+        {:ok, Companies.get_company_space!(company.id)}
+      end)
       |> Multi.insert(:account, Account.registration_changeset(%{email: attrs.email, password: random_password()}))
       |> People.insert_person(fn %{account: account} -> build_person_for_account(account, attrs) end)
       |> Repo.transaction()
@@ -91,7 +95,7 @@ defmodule Operately.People.FetchOrCreateAccountOperation do
   end
 
   defp build_person_for_account(account, attrs) do
-    company = hd(Operately.Companies.list_companies())
+    company = hd(Companies.list_companies())
 
     Person.changeset(%{
       company_id: company.id,
