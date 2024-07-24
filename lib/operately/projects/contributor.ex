@@ -6,7 +6,7 @@ defmodule Operately.Projects.Contributor do
   @foreign_key_type :binary_id
   schema "project_contributors" do
     belongs_to :project, Operately.Projects.Project, foreign_key: :project_id
-    belongs_to :person, Operately.People.Person, foreign_key: :person_id
+    belongs_to :person, Operately.People.Person, foreign_key: :person_id, where: [suspended_at: nil]
 
     field :responsibility, :string
     field :role, Ecto.Enum, values: [:champion, :reviewer, :contributor], default: :contributor
@@ -28,7 +28,7 @@ defmodule Operately.Projects.Contributor do
   end
 
   def changeset(contributor, attrs) do
-    contributor 
+    contributor
     |> cast(attrs, [:responsibility, :project_id, :person_id, :role])
     |> validate_required([:project_id, :person_id])
   end
