@@ -114,7 +114,7 @@ function ContribList({ project, size }) {
   const sortedContributors = Projects.sortContributorsByRole(project.contributors as Projects.ProjectContributor[]);
 
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center gap-1 mb-3">
       {sortedContributors.map((contributor) => (
         <Avatar key={contributor!.id} person={contributor!.person!} size={size} />
       ))}
