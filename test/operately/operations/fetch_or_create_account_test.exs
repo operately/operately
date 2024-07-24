@@ -4,6 +4,7 @@ defmodule Operately.Operations.FetchOrCreateAccountTest do
   import Operately.CompaniesFixtures
 
   alias Operately.People
+  alias Operately.Groups
   alias Operately.Access
 
   @email "john@allowed_email.com"
@@ -56,5 +57,15 @@ defmodule Operately.Operations.FetchOrCreateAccountTest do
     })
 
     refute People.get_person_by_email(ctx.company, email)
+  end
+
+  test "FetchOrCreateAccountOperation creates company space member", ctx do
+    company_space = Groups.get_group!(ctx.company.company_space_id)
+
+    assert length(Groups.list_members(company_space)) == 0
+
+    {:ok, _} = Operately.People.FetchOrCreateAccountOperation.call(ctx.company, @attrs)
+
+    assert length(Groups.list_members(company_space)) == 1
   end
 end

@@ -9,6 +9,7 @@ defmodule Operately.Operations.CompanyMemberAddingTest do
   alias Operately.Access
   alias Operately.People
   alias Operately.People.Person
+  alias Operately.Groups
   alias Operately.Invitations
   alias Operately.Invitations.Invitation
   alias Operately.Activities.Activity
@@ -63,6 +64,16 @@ defmodule Operately.Operations.CompanyMemberAddingTest do
 
     assert 1 == Repo.aggregate(Invitation, :count, :id)
     assert Invitations.get_invitation_by_member(person)
+  end
+
+  test "CompanyMemberAdding operation creates company space member", ctx do
+    company_space = Groups.get_group!(ctx.company.company_space_id)
+
+    assert length(Groups.list_members(company_space)) == 0
+
+    {:ok, _} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, @member_attrs)
+
+    assert length(Groups.list_members(company_space)) == 1
   end
 
   test "CompanyMemberAdding operation creates activity", ctx do

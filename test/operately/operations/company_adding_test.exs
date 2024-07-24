@@ -82,4 +82,13 @@ defmodule Operately.Operations.CompanyAddingTest do
     assert Access.get_context!(company_id: company.id)
     assert Access.get_context!(group_id: company.company_space_id)
   end
+
+  test "CompanyAdding operation creates company company space member" do
+    {:ok, company} = Operately.Operations.CompanyAdding.run(@company_attrs, create_admin: true)
+
+    members = Groups.get_group!(company.company_space_id) |> Groups.list_members()
+
+    assert length(members) == 1
+    assert hd(members).full_name == @company_attrs.full_name
+  end
 end

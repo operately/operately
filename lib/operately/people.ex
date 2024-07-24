@@ -35,6 +35,7 @@ defmodule Operately.People do
     |> Multi.insert(:person, fn changes -> callback.(changes) end)
     |> insert_person_access_group()
     |> insert_membership_with_company_group()
+    |> insert_company_space_member()
   end
 
   defp insert_person_access_group(multi) do
@@ -58,6 +59,16 @@ defmodule Operately.People do
     |> Multi.insert(:company_access_membership, fn changes ->
       Access.GroupMembership.changeset(%{
         group_id: changes.company_access_group.id,
+        person_id: changes.person.id,
+      })
+    end)
+  end
+
+  defp insert_company_space_member(multi) do
+    multi
+    |> Multi.insert(:company_space_member, fn changes ->
+      Operately.Groups.Member.changeset(%{
+        group_id: changes.company_space.id,
         person_id: changes.person.id,
       })
     end)

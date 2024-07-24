@@ -31,7 +31,11 @@ defmodule Operately.Operations.CompanyMemberAdding do
     attrs = Map.put(attrs, :company_id, admin.company_id)
     attrs = Map.put(attrs, :company_role, :member)
 
-    Operately.People.insert_person(multi, fn changes ->
+    multi
+    |> Multi.run(:company_space, fn _, _ ->
+      {:ok, Operately.Companies.get_company_space!(admin.company_id)}
+    end)
+    |> Operately.People.insert_person(fn changes ->
       Operately.People.Person.changeset(%{
         company_id: admin.company_id,
         account_id: changes[:account].id,
