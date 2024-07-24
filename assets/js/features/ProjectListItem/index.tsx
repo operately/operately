@@ -103,7 +103,7 @@ function NextMilestone({ project }) {
   return (
     <div className="flex items-center gap-2">
       <MilestoneIcon milestone={project.nextMilestone} />
-      <div className="flex-1 truncate pr-2 w-96">
+      <div className="flex-1 truncate">
         <FormattedTime time={project.nextMilestone.deadlineAt} format="short-date" />: {project.nextMilestone.title}
       </div>
     </div>
