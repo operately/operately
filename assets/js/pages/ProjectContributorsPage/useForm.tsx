@@ -55,18 +55,22 @@ function useAddContrib(project: Projects.Project): AddColobState {
 
   const [add, { loading: submitting }] = useAddProjectContributor();
 
-  const submit = async () => {
+  const submit = () => {
     if (!submittable) return;
 
-    await add({
+    add({
       projectId: project.id,
       personId: personID,
       responsibility: responsibility,
       permissions: permissions.value,
+    })
+    .then(() => {
+      setPersonID(null);
+      setResponsibility("");
+      setPermissions(VIEW_ACCESS);
+      refresh();
+      deactivate();
     });
-
-    refresh();
-    deactivate();
   };
 
   return {
