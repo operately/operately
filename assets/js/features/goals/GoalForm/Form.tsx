@@ -84,7 +84,8 @@ function Description({ form }: { form: FormState }) {
 function FormFooter({ form }: { form: FormState }) {
   const bottomGridStyle = classnames({
     "grid grid-cols-1 sm:grid-cols-2 gap-4": true,
-    "lg:grid-cols-2": !form.config.allowSpaceSelection,
+    "lg:grid-cols-2": !form.config.allowSpaceSelection && form.config.mode !== "create",
+    "lg:grid-cols-3": !form.config.allowSpaceSelection && form.config.mode === "create",
     "lg:grid-cols-4": form.config.allowSpaceSelection,
   });
 
