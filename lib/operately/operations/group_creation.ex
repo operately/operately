@@ -1,6 +1,7 @@
 defmodule Operately.Operations.GroupCreation do
   alias Ecto.Multi
   alias Operately.Repo
+  alias Operately.Activities
   alias Operately.Groups
   alias Operately.Groups.Member
   alias Operately.Access
@@ -19,6 +20,7 @@ defmodule Operately.Operations.GroupCreation do
     |> insert_bindings(creator, attrs)
     |> insert_members_access_group()
     |> insert_managers_access_group(creator)
+    |> insert_activity(creator)
     |> Repo.transaction()
     |> Repo.extract_result(:group)
   end
@@ -58,5 +60,15 @@ defmodule Operately.Operations.GroupCreation do
     multi
     |> Access.insert_bindings_to_company(attrs.company_id, company_members, anonymous_users)
     |> Access.insert_binding(:creator_group_binding, creator_group, Binding.full_access())
+  end
+
+  defp insert_activity(multi, creator) do
+    Activities.insert_sync(multi, creator.id, :space_added, fn %{group: group} ->
+      %{
+        company_id: group.company_id,
+        space_id: group.id,
+        name: group.name,
+      }
+    end)
   end
 end
