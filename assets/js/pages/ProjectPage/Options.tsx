@@ -61,6 +61,15 @@ export default function Options({ project }) {
           dataTestId="move-project-link"
         />
       )}
+
+      {project.permissions.canClose && project.status !== "closed" && (
+        <PageOptions.Link
+          icon={Icons.IconCircleCheck}
+          title="Close the project"
+          to={Paths.projectClosePath(project.id)}
+          dataTestId="close-project"
+        />
+      )}
     </PageOptions.Root>
   );
 }

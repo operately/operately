@@ -21,7 +21,7 @@ defmodule Operately.Features.ProjectRetrospectivesTest do
 
     ctx
     |> ProjectSteps.visit_project_page()
-    |> UI.click(testid: "close-project-button")
+    |> ProjectSteps.visit_close_project_page()
     |> fill_rich_text_in("what-went-well", "We built the thing")
     |> fill_rich_text_in("what-could-ve-gone-better", "We built the thing")
     |> fill_rich_text_in("what-did-you-learn", "We learned the thing")
@@ -40,8 +40,8 @@ defmodule Operately.Features.ProjectRetrospectivesTest do
     ctx
     |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.project.name,
-      to: ctx.reviewer, 
-      author: ctx.champion, 
+      to: ctx.reviewer,
+      author: ctx.champion,
       action: "closed the project and submitted a retrospective"
     })
 
@@ -59,7 +59,7 @@ defmodule Operately.Features.ProjectRetrospectivesTest do
   feature "can't close a project with an emtpy retrospective", ctx do
     ctx
     |> ProjectSteps.visit_project_page()
-    |> UI.click(testid: "close-project-button")
+    |> ProjectSteps.visit_close_project_page()
     |> UI.click(testid: "submit")
     |> UI.assert_text("Please fill in this field")
   end
@@ -87,5 +87,4 @@ defmodule Operately.Features.ProjectRetrospectivesTest do
       UI.fill_rich_text(el, content)
     end)
   end
-
 end
