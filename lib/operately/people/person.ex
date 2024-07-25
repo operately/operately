@@ -32,6 +32,7 @@ defmodule Operately.People.Person do
     field :suspended_at, :utc_datetime
 
     field :avatar_blob_id, :binary_id
+    field :has_open_invitation, :boolean, default: false
 
     timestamps()
   end
@@ -59,7 +60,8 @@ defmodule Operately.People.Person do
       :theme,
       :suspended,
       :suspended_at,
-      :avatar_blob_id
+      :avatar_blob_id,
+      :has_open_invitation
     ])
     |> validate_required([:full_name, :company_id])
     |> foreign_key_constraint(:avatar_blob_id, name: :people_avatar_blob_id_fkey)

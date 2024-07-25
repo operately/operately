@@ -605,6 +605,7 @@ defmodule OperatelyWeb.Api.Types do
     field :reports, list_of(:person)
     field :peers, list_of(:person)
     field :theme, :string
+    field :has_open_invitation, :boolean
   end
 
   object :project_health do

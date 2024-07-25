@@ -1,23 +1,26 @@
 defmodule Operately.Operations.PasswordFirstTimeChanging do
   alias Ecto.Multi
   alias Operately.Repo
+  alias Operately.People.{Account, Person}
 
   def run(attrs, invitation) do
     invitation = Repo.preload(invitation, [:admin, member: [:account]])
 
     Multi.new()
-    |> change_password(attrs, invitation)
+    |> change_password(attrs, invitation.member.account)
+    |> update_member(invitation.member)
     |> insert_activity(invitation)
     |> Repo.transaction()
   end
 
-  defp change_password(multi, attrs, invitation) do
-    changeset = Operately.People.Account.password_changeset(
-      invitation.member.account,
-      attrs
-    )
+  defp change_password(multi, attrs, account) do
+    multi
+    |> Multi.update(:member_account, Account.password_changeset(account, attrs))
+  end
 
-    Multi.update(multi, :password, changeset)
+  defp update_member(multi, member) do
+    multi
+    |> Multi.update(:member, Person.changeset(member, %{has_open_invitation: false}))
   end
 
   defp insert_activity(multi, invitation) do

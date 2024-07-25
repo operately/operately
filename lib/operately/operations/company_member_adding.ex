@@ -41,7 +41,8 @@ defmodule Operately.Operations.CompanyMemberAdding do
         account_id: changes[:account].id,
         full_name: attrs.full_name,
         email: attrs.email,
-        title: attrs.title
+        title: attrs.title,
+        has_open_invitation: true,
       })
     end)
   end
