@@ -7,6 +7,7 @@ defmodule Operately.Operations.GroupCreationTest do
   alias Operately.Groups
   alias Operately.Access
   alias Operately.Access.Binding
+  alias Operately.Activities.Activity
 
   @group_attrs %{
     name: "my group",
@@ -110,5 +111,14 @@ defmodule Operately.Operations.GroupCreationTest do
     managers = Access.get_group(group_id: group.id, tag: :full_access)
 
     assert Access.get_group_membership!(group_id: managers.id, person_id: ctx.creator.id)
+  end
+
+  test "GroupCreation operation creates activity", ctx do
+    {:ok, group} = Operately.Operations.GroupCreation.run(ctx.creator, @group_attrs)
+
+    activity = from(a in Activity, where: a.action == "space_added" and a.content["space_id"] == ^group.id) |> Repo.one!()
+
+    assert activity.content["company_id"] == ctx.company.id
+    assert activity.content["name"] == group.name
   end
 end
