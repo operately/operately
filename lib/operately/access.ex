@@ -197,10 +197,6 @@ defmodule Operately.Access do
 
   alias Operately.Access.GroupMembership
 
-  def list_group_memberships do
-    Repo.all(GroupMembership)
-  end
-
   def get_group_membership!(id) when is_binary(id), do: Repo.get!(GroupMembership, id)
 
   def get_group_membership!(attrs) when is_list(attrs), do: Repo.get_by!(GroupMembership, attrs)
