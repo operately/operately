@@ -12,8 +12,8 @@ defmodule Operately.Companies do
 
   def list_companies(account = %Operately.People.Account{}) do
     Repo.all(
-      from c in Company, 
-        join: p in assoc(c, :people), 
+      from c in Company,
+        join: p in assoc(c, :people),
         where: p.account_id == ^account.id)
   end
 
@@ -34,6 +34,15 @@ defmodule Operately.Companies do
   end
 
   def get_company_by_name(name), do: Repo.get_by(Company, name: name)
+
+  def get_company_space!(company_id) do
+    from(c in Company,
+      join: g in Operately.Groups.Group, on: g.id == c.company_space_id,
+      where: c.id == ^company_id,
+      select: g
+    )
+    |> Repo.one!()
+  end
 
   defdelegate create_company(attrs \\ %{}),to: Operately.Operations.CompanyAdding, as: :run
 

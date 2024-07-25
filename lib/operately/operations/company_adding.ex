@@ -111,7 +111,9 @@ defmodule Operately.Operations.CompanyAdding do
     create_admin = Keyword.get(opts, :create_admin, false)
 
     if create_admin do
-      Operately.People.insert_person(multi, fn changes ->
+      multi
+      |> Multi.run(:company_space, fn _, changes -> {:ok, changes.group} end)
+      |> Operately.People.insert_person(fn changes ->
         Person.changeset(%{
           company_id: changes[:company].id,
           account_id: changes[:account].id,
