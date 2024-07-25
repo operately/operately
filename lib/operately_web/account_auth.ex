@@ -27,7 +27,7 @@ defmodule OperatelyWeb.AccountAuth do
   """
   def log_in_account(conn, account, params \\ %{}) do
     token = People.generate_account_session_token(account)
-    path = after_login_path(account)
+    path = get_session(conn, :redirect_to) || after_login_path(account)
 
     conn
     |> renew_session()
