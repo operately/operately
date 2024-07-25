@@ -20,7 +20,7 @@ defmodule OperatelyWeb.Api.Mutations.EditSpaceMembersPermissions do
 
     {:ok, _} = Operately.Operations.GroupMembersPermissionsEditing.run(author, group, members)
 
-    {:ok, true}
+    {:ok, %{success: true}}
   end
 
   defp decode_ids(members) do
