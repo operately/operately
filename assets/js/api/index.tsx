@@ -531,6 +531,11 @@ export interface Discussion {
   comments?: Comment[] | null;
 }
 
+export interface EditMemberPermissionsInput {
+  id?: string | null;
+  accessLevel?: number | null;
+}
+
 export interface EditProjectTimelineMilestoneUpdateInput {
   id?: string | null;
   title?: string | null;
@@ -669,6 +674,7 @@ export interface Person {
   reports?: Person[] | null;
   peers?: Person[] | null;
   theme?: string | null;
+  accessLevel?: number | null;
   hasOpenInvitation?: boolean | null;
 }
 
@@ -1269,6 +1275,7 @@ export interface GetSpaceInput {
   id?: string | null;
   includeMembers?: boolean | null;
   includeAccessLevels?: boolean | null;
+  includeMembersAccessLevels?: boolean | null;
 }
 
 export interface GetSpaceResult {
@@ -1789,6 +1796,16 @@ export interface EditProjectTimelineInput {
 
 export interface EditProjectTimelineResult {
   project?: Project | null;
+}
+
+
+export interface EditSpaceMembersPermissionsInput {
+  groupId?: string | null;
+  members?: EditMemberPermissionsInput[] | null;
+}
+
+export interface EditSpaceMembersPermissionsResult {
+  success?: boolean | null;
 }
 
 
@@ -2395,6 +2412,10 @@ export class ApiClient {
     return axios.post(this.getBasePath() + "/edit_project_timeline", toSnake(input)).then(({ data }) => toCamel(data));
   }
 
+  async editSpaceMembersPermissions(input: EditSpaceMembersPermissionsInput): Promise<EditSpaceMembersPermissionsResult> {
+    return axios.post(this.getBasePath() + "/edit_space_members_permissions", toSnake(input)).then(({ data }) => toCamel(data));
+  }
+
   async editSpacePermissions(input: EditSpacePermissionsInput): Promise<EditSpacePermissionsResult> {
     return axios.post(this.getBasePath() + "/edit_space_permissions", toSnake(input)).then(({ data }) => toCamel(data));
   }
@@ -2733,6 +2754,9 @@ export async function editProjectPermissions(input: EditProjectPermissionsInput)
 }
 export async function editProjectTimeline(input: EditProjectTimelineInput) : Promise<EditProjectTimelineResult> {
   return defaultApiClient.editProjectTimeline(input);
+}
+export async function editSpaceMembersPermissions(input: EditSpaceMembersPermissionsInput) : Promise<EditSpaceMembersPermissionsResult> {
+  return defaultApiClient.editSpaceMembersPermissions(input);
 }
 export async function editSpacePermissions(input: EditSpacePermissionsInput) : Promise<EditSpacePermissionsResult> {
   return defaultApiClient.editSpacePermissions(input);
@@ -3114,6 +3138,10 @@ export function useEditProjectTimeline() : UseMutationHookResult<EditProjectTime
   return useMutation<EditProjectTimelineInput, EditProjectTimelineResult>((input) => defaultApiClient.editProjectTimeline(input));
 }
 
+export function useEditSpaceMembersPermissions() : UseMutationHookResult<EditSpaceMembersPermissionsInput, EditSpaceMembersPermissionsResult> {
+  return useMutation<EditSpaceMembersPermissionsInput, EditSpaceMembersPermissionsResult>((input) => defaultApiClient.editSpaceMembersPermissions(input));
+}
+
 export function useEditSpacePermissions() : UseMutationHookResult<EditSpacePermissionsInput, EditSpacePermissionsResult> {
   return useMutation<EditSpacePermissionsInput, EditSpacePermissionsResult>((input) => defaultApiClient.editSpacePermissions(input));
 }
@@ -3379,6 +3407,8 @@ export default {
   useEditProjectPermissions,
   editProjectTimeline,
   useEditProjectTimeline,
+  editSpaceMembersPermissions,
+  useEditSpaceMembersPermissions,
   editSpacePermissions,
   useEditSpacePermissions,
   joinSpace,
