@@ -13,7 +13,7 @@ import { GhostButton } from "@/components/Button";
 
 import FormattedTime from "@/components/FormattedTime";
 import Avatar from "@/components/Avatar";
-import RichContent, { Summary } from "@/components/RichContent";
+import RichContent, { countCharacters, shortenContent, Summary } from "@/components/RichContent";
 import { ResourceIcon } from "@/components/KeyResourceIcon";
 
 import { Feed, useItemsQuery } from "@/features/Feed";
@@ -26,7 +26,7 @@ import { useLoadedData } from "./loader";
 import { Paths } from "@/routes/paths";
 import { SmallStatusIndicator } from "@/features/projectCheckIns/SmallStatusIndicator";
 import Options from "./Options";
-import { countCharacters, truncate } from "@/utils/richText";
+
 
 
 export function Page() {
@@ -261,7 +261,7 @@ function Description({ project }) {
   const truncatedDescription = useMemo(() => {
     if(!project?.description) return;
 
-    return truncate(project.description, LIMIT, { suffix: "..." });
+    return shortenContent(project.description, LIMIT, { suffix: "..." });
   }, []);
 
   if (project.description) {
