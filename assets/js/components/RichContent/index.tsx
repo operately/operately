@@ -41,3 +41,4 @@ RichContent.defaultProps = {
 };
 
 export * from "./Summary";
+export * from "./contentOps";

@@ -16,6 +16,7 @@ defmodule Operately.Features.ProjectsDescriptionTest do
     |> Steps.visit_project_page()
     |> Steps.assert_project_description_absent()
     |> Steps.submit_project_description(description: project_description())
+    |> UI.click(testid: "expand-project-description")
     |> Steps.assert_project_description_present(description: project_description())
   end
 
@@ -23,6 +24,7 @@ defmodule Operately.Features.ProjectsDescriptionTest do
   feature "editing a project description", ctx do
     ctx
     |> Steps.given_project_has_description(description: "Old description")
+    |> Steps.visit_project_page()
     |> Steps.assert_project_description_present(description: "Old description")
     |> Steps.edit_project_description(description: "New description")
     |> Steps.assert_project_description_present(description: "New description")
