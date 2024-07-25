@@ -213,3 +213,23 @@ export function dateChanged(old: Date | null, current: Date | null): boolean {
 
   return !isSameDay(old!, current!);
 }
+
+export function calculateHowManyDaysAgo(dateString: string) {
+  const date = new Date(dateString);
+  const today = new Date();
+
+  date.setHours(0, 0, 0, 0);
+  today.setHours(0, 0, 0, 0);
+
+  const delta = today.getTime() - date.getTime();
+  const days = Math.floor(delta / (1000 * 60 * 60 * 24));
+
+  switch(days) {
+    case 0:
+      return "Today";
+    case 1:
+      return "Yesterday";
+    default:
+      return `${days} days ago`;
+  }
+}

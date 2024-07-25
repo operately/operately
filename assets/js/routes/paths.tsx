@@ -31,6 +31,10 @@ export class Paths {
     return createCompanyPath(["notifications"]);
   }
 
+  static reviewPath() {
+    return createCompanyPath(["review"]);
+  }
+
   static accountProfilePath() {
     return createCompanyPath(["account", "profile"]);
   }

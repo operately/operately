@@ -33,6 +33,7 @@ export function createAppRoutes() {
       children: [
         pageRoute("", pages.SpaceListPage),
         pageRoute("feed", pages.FeedPage),
+        pageRoute("review", pages.ReviewPage),
 
         pageRoute("admin", pages.CompanyAdminPage),
         pageRoute("admin/manage-admins", pages.CompanyAdminManageAdminsPage),
