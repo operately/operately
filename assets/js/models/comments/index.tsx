@@ -4,6 +4,7 @@ import * as Time from "@/utils/time";
 export type Comment = api.Comment;
 
 export { useCreateComment, useEditComment, useGetComments } from "@/api";
+export { useDiscussionCommentsChangeSignal } from "@/api/socket";
 
 export function splitComments(comments: Comment[], timestamp: string): { before: Comment[]; after: Comment[] } {
   const before = comments.filter((comment) => {

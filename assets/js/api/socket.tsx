@@ -1,6 +1,8 @@
 import { Socket } from "phoenix";
 import * as React from "react";
 
+type Payload = {[ key: string ]: any};
+
 var socket: Socket | null = null;
 
 function connect(): Socket {
@@ -13,10 +15,10 @@ function connect(): Socket {
   return newSocket;
 }
 
-function useSubscription(channelName: string, callback: (payload: any) => void) {
+function useSubscription(channelName: string, callback: () => void, payload: Payload={}) {
   React.useEffect(() => {
     let socket = connect();
-    const channel = socket.channel(channelName, {});
+    const channel = socket.channel(channelName, payload);
 
     channel.on("event", callback);
 
@@ -34,10 +36,14 @@ function useSubscription(channelName: string, callback: (payload: any) => void) 
   }, [channelName, callback]);
 }
 
-export function useAssignmentsCount(callback: (payload: any) => void) {
+export function useAssignmentsCount(callback: () => void) {
   return useSubscription("api:assignments_count", callback);
 }
 
-export function useUnreadNotificationCount(callback: (payload: any) => void) {
+export function useDiscussionCommentsChangeSignal(callback: () => void, payload: { discussionId: string }) {
+  return useSubscription("api:discussion_comments", callback, payload);
+}
+
+export function useUnreadNotificationCount(callback: () => void) {
   return useSubscription("api:unread_notifications_count", callback);
 }
