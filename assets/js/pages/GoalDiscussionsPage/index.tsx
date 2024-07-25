@@ -81,6 +81,7 @@ function ActivityList() {
 
 function ActivityItem({ activity }: { activity: Activities.Activity }) {
   const path = ActivityHandler.pagePath(activity);
+  const authorProfilePath = Paths.profilePath(activity.author!.id!);
 
   return (
     <div className="flex items-start border-t border-stroke-base py-6">
@@ -94,7 +95,9 @@ function ActivityItem({ activity }: { activity: Activities.Activity }) {
       </div>
 
       <div className="flex items-start gap-3 flex-1">
-        <Avatar person={activity.author!} size={40} />
+        <DivLink to={authorProfilePath}>
+          <Avatar person={activity.author!} size={40} />
+        </DivLink>
 
         <div className="flex items-start justify-between gap-4 flex-1">
           <div className="flex flex-col gap-1 w-full">
