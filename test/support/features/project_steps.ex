@@ -514,7 +514,6 @@ defmodule Operately.Support.Features.ProjectSteps do
 
   step :assert_project_description_present, ctx, description: description do
     ctx
-    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
     |> UI.assert_text(description)
   end
 

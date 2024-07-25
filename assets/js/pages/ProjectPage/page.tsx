@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useMemo } from "react";
 
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
@@ -13,7 +13,7 @@ import { GhostButton } from "@/components/Button";
 
 import FormattedTime from "@/components/FormattedTime";
 import Avatar from "@/components/Avatar";
-import RichContent, { Summary } from "@/components/RichContent";
+import RichContent, { countCharacters, shortenContent, Summary } from "@/components/RichContent";
 import { ResourceIcon } from "@/components/KeyResourceIcon";
 
 import { Feed, useItemsQuery } from "@/features/Feed";
@@ -26,6 +26,8 @@ import { useLoadedData } from "./loader";
 import { Paths } from "@/routes/paths";
 import { SmallStatusIndicator } from "@/features/projectCheckIns/SmallStatusIndicator";
 import Options from "./Options";
+
+
 
 export function Page() {
   const { project } = useLoadedData();
@@ -251,8 +253,35 @@ function Resource({ icon, title, href }) {
 }
 
 function Description({ project }) {
+  const LIMIT = 250;
+
+  const [showMore, setShowMore] = useState(false);
+  const length = useMemo(() => project.description ? countCharacters(project.description) : 0, []);
+
+  const truncatedDescription = useMemo(() => {
+    if(!project?.description) return;
+
+    return shortenContent(project.description, LIMIT, { suffix: "..." });
+  }, []);
+
   if (project.description) {
-    return <RichContent jsonContent={project.description} />;
+    if(length < LIMIT) {
+      return <RichContent jsonContent={project.description} />;
+    }
+    else {
+      return (
+        <div>
+          <RichContent jsonContent={showMore ? project.description : truncatedDescription} />
+          <span
+            onClick={() => setShowMore(!showMore)}
+            className="text-sm text-link-base underline underline-offset-2 cursor-pointer"
+            data-test-id="expand-project-description"
+          >
+            {showMore ? "Collapse" : "Expand"}
+          </span>
+        </div>
+      )
+    }
   } else {
     return <DescriptionZeroState project={project} />;
   }
