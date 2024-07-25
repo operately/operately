@@ -65,14 +65,10 @@ defmodule Operately.Operations.GroupMembersPermissionsEditingTest do
     assert length(content["members"]) == 2
 
     member1 = Enum.at(ctx.members, 1)
-    reconrd1 = Enum.at(content["members"], 0)
-
-    assert member1.id == reconrd1["person_id"]
-
     member2 = Enum.at(ctx.members, 2)
-    reconrd2 = Enum.at(content["members"], 1)
 
-    assert member2.id == reconrd2["person_id"]
+    assert Enum.find(content["members"], fn m -> m["person_id"] == member1.id end)
+    assert Enum.find(content["members"], fn m -> m["person_id"] == member2.id end)
   end
 
   #
