@@ -52,6 +52,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.People.Person do
       full_name: data.full_name,
       avatar_url: data.avatar_url,
       title: data.title,
+      has_open_invitation: data.has_open_invitation,
     }
   end
 
