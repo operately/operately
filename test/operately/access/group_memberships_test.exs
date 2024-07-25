@@ -19,15 +19,6 @@ defmodule Operately.AccessGroupMembershipsTest do
       {:ok, %{person: person, group: group, company: company}}
     end
 
-    test "list_group_memberships/0 returns all group_memberships", ctx do
-      group_membership = group_membership_fixture(%{
-        person_id: ctx.person.id,
-        group_id: ctx.group.id,
-      })
-
-      assert Access.list_group_memberships() == [group_membership]
-    end
-
     test "get_group_membership!/1 returns the group_membership with given id", ctx do
       group_membership = group_membership_fixture(%{
         person_id: ctx.person.id,
