@@ -20,6 +20,13 @@ defmodule Operately.Operations.CommentAdding do
     |> insert_activity(creator, action, entity)
     |> Repo.transaction()
     |> Repo.extract_result(:comment)
+    |> case do
+      {:ok, comment} ->
+        OperatelyWeb.ApiSocket.broadcast!("api:discussion_comments:#{comment.entity_id}")
+        {:ok, comment}
+
+      error -> error
+    end
   end
 
   def insert_activity(multi, creator, action = :discussion_comment_submitted, entity) do

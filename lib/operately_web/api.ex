@@ -119,5 +119,6 @@ defmodule OperatelyWeb.Api do
   mutation :update_task_status, M.UpdateTaskStatus
 
   subscription :assignments_count, S.AssignmentsCount
+  subscription :discussion_comments, S.DiscussionComments
   subscription :unread_notifications_count, S.UnreadNotificationsCount
 end

@@ -16,8 +16,10 @@ import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { CommentSection, useForDiscussion } from "@/features/CommentSection";
 
 import { useRefresh, useLoadedData } from "./loader";
+import { useDiscussionCommentsChangeSignal } from "@/models/comments";
 import { useMe } from "@/contexts/CurrentUserContext";
 import { Paths, compareIds } from "@/routes/paths";
+
 
 export function Page() {
   const me = useMe();
@@ -25,6 +27,7 @@ export function Page() {
 
   const refresh = useRefresh();
   const commentsForm = useForDiscussion(discussion);
+  useDiscussionCommentsChangeSignal(refresh, {discussionId: discussion.id!});
 
   return (
     <Pages.Page title={discussion.title!}>
