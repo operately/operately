@@ -669,6 +669,7 @@ export interface Person {
   reports?: Person[] | null;
   peers?: Person[] | null;
   theme?: string | null;
+  hasOpenInvitation?: boolean | null;
 }
 
 export interface Project {

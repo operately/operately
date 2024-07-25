@@ -41,6 +41,7 @@ defmodule Operately.Operations.CompanyMemberAddingTest do
     assert person.company_role == :member
     assert person.full_name == "John Doe"
     assert person.title == "Developer"
+    assert person.has_open_invitation
   end
 
   test "CompanyMemberAdding operation creates members's access group and membership", ctx do

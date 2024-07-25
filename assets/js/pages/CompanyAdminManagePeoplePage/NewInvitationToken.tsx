@@ -6,6 +6,7 @@ import { GhostButton } from "@/components/Button";
 import Modal from "@/components/Modal";
 import { createInvitationUrl } from "@/features/CompanyAdmin";
 import { createTestId } from "@/utils/testid";
+import { CopyToClipboard } from "@/components/CopyToClipboard";
 
 export default function NewInvitationToken({ person }: { person: People.Person }) {
   const newTokenTestId = createTestId("new-token", person.fullName!);
@@ -47,7 +48,16 @@ export default function NewInvitationToken({ person }: { person: People.Person }
       </GhostButton>
 
       <Modal title="New Invitation URL" isOpen={showToken} hideModal={handleHideModal} minHeight="120px">
-        {error ? <div>{error}</div> : <div>{url}</div>}
+        {error ?
+          <div>{error}</div>
+        :
+          <div className="text-content-primary border border-surface-outline rounded-lg px-3 py-1 font-medium flex items-center justify-between">
+            <span className="break-all">
+              {url}
+            </span>
+            <CopyToClipboard text={url} size={25} padding={1} containerClass="" />
+          </div>
+        }
       </Modal>
     </>
   );
