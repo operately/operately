@@ -370,13 +370,20 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Project do
       reviewer: OperatelyWeb.Api.Serializer.serialize(project.reviewer),
       goal: OperatelyWeb.Api.Serializer.serialize(project.goal),
       milestones: OperatelyWeb.Api.Serializer.serialize(project.milestones),
-      contributors: OperatelyWeb.Api.Serializer.serialize(project.contributors),
+      contributors: OperatelyWeb.Api.Serializer.serialize(exclude_suspended(project)),
       last_check_in: OperatelyWeb.Api.Serializer.serialize(project.last_check_in),
       next_milestone: OperatelyWeb.Api.Serializer.serialize(project.next_milestone),
       permissions: OperatelyWeb.Api.Serializer.serialize(project.permissions),
       key_resources: OperatelyWeb.Api.Serializer.serialize(project.key_resources),
       access_levels: OperatelyWeb.Api.Serializer.serialize(project.access_levels, level: :full),
     }
+  end
+
+  defp exclude_suspended(project) do
+    case project.contributors do
+      %Ecto.Association.NotLoaded{} -> []
+      contributors -> Enum.filter(contributors, &(not is_nil(&1.person)))
+    end
   end
 end
 
