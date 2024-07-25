@@ -159,10 +159,6 @@ export class Paths {
     return createCompanyPath(["spaces", spaceId, "edit"]);
   }
 
-  static spaceEditPermissionsPath(spaceId: string) {
-    return createCompanyPath(["spaces", spaceId, "edit", "permissions"]);
-  }
-
   static spaceGoalsPath(spaceId: string) {
     return createCompanyPath(["spaces", spaceId, "goals"]);
   }
@@ -181,6 +177,10 @@ export class Paths {
 
   static spaceAppearancePath(spaceId: string) {
     return createCompanyPath(["spaces", spaceId, "appearance"]);
+  }
+
+  static spaceAccessManagementPath(spaceId: string) {
+    return createCompanyPath(["spaces", spaceId, "access-management"]);
   }
 
   static goalClosePath(goalId: string) {
