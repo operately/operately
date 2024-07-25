@@ -69,10 +69,10 @@ import * as ProjectResumePage from "./ProjectResumePage";
 import * as ProjectRetrospectivePage from "./ProjectRetrospectivePage";
 import * as ProjectsPage from "./ProjectsPage";
 import * as ReviewPage from "./ReviewPage";
+import * as SpaceAccessManagementPage from "./SpaceAccessManagementPage";
 import * as SpaceAddPage from "./SpaceAddPage";
 import * as SpaceDiscussionsPage from "./SpaceDiscussionsPage";
 import * as SpaceEditPage from "./SpaceEditPage";
-import * as SpaceEditPermissionsPage from "./SpaceEditPermissionsPage";
 import * as SpaceGoalsPage from "./SpaceGoalsPage";
 import * as SpaceListPage from "./SpaceListPage";
 import * as SpacePage from "./SpacePage";
@@ -348,6 +348,10 @@ export default {
     loader: ReviewPage.loader,
     Page: ReviewPage.Page
   },
+  SpaceAccessManagementPage: {
+    loader: SpaceAccessManagementPage.loader,
+    Page: SpaceAccessManagementPage.Page
+  },
   SpaceAddPage: {
     loader: SpaceAddPage.loader,
     Page: SpaceAddPage.Page
@@ -359,10 +363,6 @@ export default {
   SpaceEditPage: {
     loader: SpaceEditPage.loader,
     Page: SpaceEditPage.Page
-  },
-  SpaceEditPermissionsPage: {
-    loader: SpaceEditPermissionsPage.loader,
-    Page: SpaceEditPermissionsPage.Page
   },
   SpaceGoalsPage: {
     loader: SpaceGoalsPage.loader,

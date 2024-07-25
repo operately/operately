@@ -5,9 +5,11 @@ export {
   useCreateGroup,
   useJoinSpace,
   useEditGroup,
+  useEditSpacePermissions,
   useRemoveGroupMember,
   useAddGroupMembers,
   useUpdateGroupAppearance,
+  useEditSpaceMembersPermissions,
   searchPotentialSpaceMembers,
 } from "@/api";
 
