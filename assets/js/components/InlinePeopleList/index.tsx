@@ -1,7 +1,10 @@
 import * as React from "react";
 import * as People from "@/models/people";
 
+import { Paths } from "@/routes/paths";
+import { DivLink } from "@/components/Link";
 import Avatar from "@/components/Avatar";
+
 
 interface InlinePeopleListProps {
   people: People.Person[];
@@ -22,11 +25,15 @@ export function InlinePeopleList({ people, nameFormat }: InlinePeopleListProps) 
 }
 
 function PersonWithAvatarAndName({ person, nameFormat }: { person: People.Person; nameFormat?: People.NameFormat }) {
+  const profilePath = Paths.profilePath(person.id!);
+
   return (
-    <div className="flex items-center gap-1 shrink-0">
-      <Avatar person={person} size={18} />
-      {People.formattedName(person, nameFormat || "first")}
-    </div>
+    <DivLink to={profilePath}>
+      <div className="flex items-center gap-1 shrink-0">
+        <Avatar person={person} size={18} />
+        {People.formattedName(person, nameFormat || "first")}
+      </div>
+    </DivLink>
   );
 }
 

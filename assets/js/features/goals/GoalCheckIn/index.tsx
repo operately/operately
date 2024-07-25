@@ -24,10 +24,13 @@ export function LastCheckInMessage({ goal }) {
   const message = goal.lastCheckIn.message;
   const path = Paths.goalProgressUpdatePath(goal.lastCheckIn.id);
   const author = goal.lastCheckIn.author;
+  const championProfilePath = Paths.profilePath(author.id!)
 
   return (
     <div className="flex items-start gap-4">
-      <Avatar person={author} size={40} />
+      <DivLink to={championProfilePath}>
+        <Avatar person={author} size={40} />
+      </DivLink>
       <div className="flex flex-col gap-1 -mt-1">
         <div className="font-semibold">
           Last progress update from <FormattedTime time={goal.lastCheckIn.insertedAt} format="short-date" />
