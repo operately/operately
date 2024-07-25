@@ -10,6 +10,9 @@ import RichContent from "@/components/RichContent";
 
 import { useLoadedData } from "./loader";
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
+import { Paths } from "@/routes/paths";
+import { DivLink } from "@/components/Link";
+
 
 export function Page() {
   const { goal } = useLoadedData();
@@ -35,12 +38,18 @@ const DimmedLabel = ({ children }) => (
   <div className="text-xs uppercase font-medium mb-1 tracking-wider">{children}</div>
 );
 
-const AvatarAndName = ({ person }) => (
-  <div className="flex items-center gap-1.5">
-    <Avatar person={person} size="tiny" />
-    <div className="font-medium">{person.fullName}</div>
-  </div>
-);
+const AvatarAndName = ({ person }) => {
+  const profilePath = Paths.profilePath(person.id)
+
+  return (
+    <DivLink to={profilePath}>
+      <div className="flex items-center gap-1.5">
+          <Avatar person={person} size="tiny" />
+        <div className="font-medium">{person.fullName}</div>
+      </div>
+    </DivLink>
+  );
+};
 
 function Description({ goal }) {
   return (
