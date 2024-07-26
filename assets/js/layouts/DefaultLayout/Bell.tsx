@@ -31,7 +31,7 @@ function UnreadIndicator({ count }: { count: number }) {
 
   return (
     <div
-      className="absolute -top-1 -right-1 rounded-full bg-orange-600 flex items-center justify-center text-content-accent leading-none group-hover:bg-orange-500 transition-all"
+      className="absolute -top-1 -right-1 rounded-full bg-orange-600 flex items-center justify-center text-white-1 leading-none group-hover:bg-orange-500 transition-all"
       style={{
         height: "17px",
         width: "17px",
