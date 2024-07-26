@@ -70,4 +70,69 @@ defmodule Operately.Features.ProjectTasksTest do
     |> Steps.add_task(attrs)
     |> Steps.assert_task_added(attrs)
   end
+
+  @tag login_as: :champion
+  feature "edit task name and description", ctx do
+    attrs = %{
+      title: "My task",
+      description: "Some description",
+      test_id: "todo_0",
+    }
+    name = "new name"
+    description = " - new description"
+
+    ctx
+    |> Steps.visit_milestone_page()
+    |> Steps.add_task(attrs)
+    |> Steps.assert_task_added(attrs)
+    |> Steps.click_on_task(attrs)
+    |> UI.refute_text(name)
+    |> Steps.edit_task_name(name)
+    |> UI.assert_text(name)
+    |> UI.refute_text(description)
+    |> Steps.edit_task_description(description)
+    |> UI.assert_text(attrs.description <> description)
+  end
+
+  @tag login_as: :champion
+  feature "edit task assignees", ctx do
+    attrs = %{
+      title: "My task",
+      description: "Some description",
+      test_id: "todo_0",
+    }
+    assignees = [ ctx.champion.full_name, ctx.reviewer.full_name ]
+
+    ctx
+    |> Steps.visit_milestone_page()
+    |> Steps.add_task(attrs)
+    |> Steps.assert_task_added(attrs)
+    |> Steps.click_on_task(attrs)
+    |> Steps.assert_no_assignee()
+    |> Steps.edit_task_assignees(assignees)
+    |> Steps.assert_assignees(assignees)
+  end
+
+  @tag login_as: :champion
+  feature "remove task assignees", ctx do
+    assignees = [ ctx.champion.full_name, ctx.reviewer.full_name ]
+    attrs = %{
+      title: "My task",
+      description: "Some description",
+      assignees: assignees,
+      test_id: "todo_0",
+    }
+
+    ctx
+    |> Steps.visit_milestone_page()
+    |> Steps.add_task(attrs)
+    |> Steps.assert_task_added(attrs)
+    |> Steps.click_on_task(attrs)
+    |> Steps.assert_assignees(assignees)
+    |> Steps.remove_assignee(ctx.champion.full_name)
+    |> Steps.assert_assignees([ctx.reviewer.full_name])
+    |> Steps.assert_no_specific_assignee(ctx.champion.full_name)
+    |> Steps.remove_assignee(ctx.reviewer.full_name)
+    |> Steps.assert_no_assignee()
+  end
 end
