@@ -187,6 +187,80 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
     end
   end
 
+  describe "get_due_assignments exclude soft-deleted" do
+    setup :register_and_log_in_account
+
+    test "projects", ctx do
+      to_be_deleted = create_project(ctx, past_date())
+      create_project(ctx, past_date())
+
+      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments, %{})
+      assert length(assignments) == 2
+
+      Repo.soft_delete(to_be_deleted)
+
+      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments, %{})
+      assert length(assignments) == 1
+    end
+
+    test "goals", ctx do
+      to_be_deleted = create_goal(ctx.person, ctx.company, past_date())
+      create_goal(ctx.person, ctx.company, past_date())
+
+      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments, %{})
+      assert length(assignments) == 2
+
+      Repo.soft_delete(to_be_deleted)
+
+      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments, %{})
+      assert length(assignments) == 1
+    end
+
+    test "project check-ins", ctx do
+      p1 = create_project(ctx, upcoming_date())
+      create_check_in(p1)
+      create_check_in(p1)
+      p2 = create_project(ctx, upcoming_date())
+      create_check_in(p2)
+      create_check_in(p2)
+
+      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments, %{})
+      assert length(assignments) == 4
+
+      Repo.soft_delete(p2)
+
+      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments, %{})
+      assert length(assignments) == 2
+
+      Repo.soft_delete(p1)
+
+      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments, %{})
+      assert length(assignments) == 0
+    end
+
+    test "goal updates", ctx do
+      g1 = create_goal(ctx.person, ctx.company, upcoming_date())
+      create_update(g1)
+      create_update(g1)
+      g2 = create_goal(ctx.person, ctx.company, upcoming_date())
+      create_update(g2)
+      create_update(g2)
+
+      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments, %{})
+      assert length(assignments) == 4
+
+      Repo.soft_delete(g1)
+
+      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments, %{})
+      assert length(assignments) == 2
+
+      Repo.soft_delete(g2)
+
+      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments, %{})
+      assert length(assignments) == 0
+    end
+  end
+
   #
   # Helpers
   #

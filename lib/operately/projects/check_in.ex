@@ -3,7 +3,7 @@ defmodule Operately.Projects.CheckIn do
 
   schema "project_check_ins" do
     belongs_to :author, Operately.People.Person, foreign_key: :author_id
-    belongs_to :project, Operately.Projects.Project, foreign_key: :project_id
+    belongs_to :project, Operately.Projects.Project, foreign_key: :project_id, where: [deleted_at: nil]
 
     field :status, :string
     field :description, :map

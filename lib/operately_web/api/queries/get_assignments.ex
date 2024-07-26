@@ -88,6 +88,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignments do
       join: g in Operately.Goals.Goal, on: u.updatable_id == g.id,
       join: champion in assoc(g, :champion),
       where: g.reviewer_id == ^person.id,
+      where: is_nil(g.deleted_at),
       where: u.type == :goal_check_in and is_nil(u.acknowledging_person_id),
       select: %{
         id: u.id,
