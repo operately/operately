@@ -77,6 +77,7 @@ function HeaderEditor({ form }: { form: FormState }) {
           onChange={form.headerForm.setName}
           placeholder="Task Name"
           error={form.headerForm.errors.includes("name")}
+          data-test-id="task-name-input"
         />
       </div>
 
@@ -94,7 +95,7 @@ function HeaderEditor({ form }: { form: FormState }) {
           Cancel
         </FilledButton>
 
-        <FilledButton size="sm" type="primary" onClick={form.headerForm.submit} bzzzOnClickFailure>
+        <FilledButton size="sm" type="primary" onClick={form.headerForm.submit} bzzzOnClickFailure testId="submit-edited-task">
           Save
         </FilledButton>
       </div>
@@ -133,7 +134,7 @@ function TopActions({ form }: { form: FormState }) {
     <div className="flex gap-2 items-center shrink-0">
       {form.fields.status !== "done" ? <MarkAsDoneButton form={form} /> : <ReopenButton form={form} />}
 
-      <FilledButton size="sm" type="secondary" onClick={form.headerForm.startEditing}>
+      <FilledButton size="sm" type="secondary" onClick={form.headerForm.startEditing} testId="edit-task">
         Edit
       </FilledButton>
     </div>
@@ -178,7 +179,7 @@ function DescriptionEditor({ form }: { form: FormState }) {
             Cancel
           </FilledButton>
 
-          <FilledButton size="xs" type="primary" onClick={form.descriptionForm.submit}>
+          <FilledButton size="xs" type="primary" onClick={form.descriptionForm.submit} testId="submit-edited-task-description">
             Save
           </FilledButton>
         </div>
@@ -216,7 +217,7 @@ function AssignedPeopleList({ form }: { form: FormState }) {
   }
 
   return (
-    <div className="flex items-center gap-2 flex-wrap mx-10">
+    <div className="flex items-center gap-2 flex-wrap mx-10" data-test-id="assignees-container">
       {form.fields.assignedPeople!.map((person) => (
         <div className="flex items-center gap-1" key={person.id}>
           <Avatar person={person} size={32} />
@@ -250,6 +251,7 @@ function EditDescription({ form, color }: { form: FormState; color: string }) {
           "text-sm font-bold rounded-full p-1 hover:scale-110 transition cursor-pointer" + " " + color + " " + textColor
         }
         onClick={form.descriptionForm.startEditing}
+        data-test-id="edit-description"
       >
         <Icons.IconPencil size={12} />
       </div>

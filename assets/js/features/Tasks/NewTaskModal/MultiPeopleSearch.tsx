@@ -6,6 +6,8 @@ import * as People from "@/models/people";
 import * as Icons from "@tabler/icons-react";
 
 import Avatar from "@/components/Avatar";
+import { createTestId } from "@/utils/testid";
+
 
 interface MultiPeopleSearchProps {
   addedPeople: People.Person[];
@@ -92,6 +94,7 @@ export function MultiPeopleSearch(props: MultiPeopleSearchProps) {
             size={12}
             onClick={() => props.setAddedPeople((people) => people.filter((p) => p.id !== person.id))}
             className="cursor-pointer ml-1"
+            data-test-id={createTestId("remove", person.fullName!)}
           />
         </div>
       ))}
@@ -105,6 +108,7 @@ export function MultiPeopleSearch(props: MultiPeopleSearchProps) {
           onKeyDown={handleKeyDown}
           onBlur={handleBlur}
           value={searchTerm}
+          id="task-assignees-input"
         />
 
         <div className="absolute flex items-center justify-center z-[1000]" style={{ top: "30px", left: 0 }}>

@@ -80,6 +80,7 @@ function AddTask({ onClick }) {
       <div
         className={"text-sm font-bold rounded-full p-1 hover:scale-110 transition cursor-pointer bg-sky-200"}
         onClick={onClick}
+        data-test-id="add-task"
       >
         <Icons.IconPlus size={14} />
       </div>

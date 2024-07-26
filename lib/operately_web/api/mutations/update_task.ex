@@ -17,9 +17,16 @@ defmodule OperatelyWeb.Api.Mutations.UpdateTask do
 
     author = me(conn)
     name = inputs.name
-    assigned_ids = inputs.assigned_ids
+    assigned_ids = decode_assignees(inputs.assigned_ids)
 
     {:ok, task} = Operately.Operations.TaskUpdate.run(author, task_id, name, assigned_ids)
     {:ok, %{task: Serializer.serialize(task, level: :essential)}}
+  end
+
+  defp decode_assignees(ids) do
+    Enum.map(ids, fn id ->
+      {:ok, id} = decode_id(id)
+      id
+    end)
   end
 end
