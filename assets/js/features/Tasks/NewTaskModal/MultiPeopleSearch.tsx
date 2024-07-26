@@ -105,6 +105,7 @@ export function MultiPeopleSearch(props: MultiPeopleSearchProps) {
           onKeyDown={handleKeyDown}
           onBlur={handleBlur}
           value={searchTerm}
+          id="task-assignees-input"
         />
 
         <div className="absolute flex items-center justify-center z-[1000]" style={{ top: "30px", left: 0 }}>

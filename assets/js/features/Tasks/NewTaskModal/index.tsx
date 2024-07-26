@@ -89,7 +89,7 @@ export function NewTaskModal({ isOpen, hideModal, modalTitle, milestone, onSubmi
             Cancel
           </FilledButton>
 
-          <FilledButton size="base" type="primary" onClick={form.submit}>
+          <FilledButton size="base" type="primary" onClick={form.submit} testId="submit-new-task" >
             Add Task
           </FilledButton>
         </div>
@@ -117,7 +117,7 @@ function Form({ form }: { form: ReturnType<typeof useForm> }) {
               })}
               placeholder="Title of the task"
               value={form.fields.name}
-              data-test-id="new-milestone-title"
+              data-test-id="new-task-title"
               onChange={(e) => form.fields.setName(e.target.value)}
             />
           </div>
