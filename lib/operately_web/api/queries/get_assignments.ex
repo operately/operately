@@ -27,7 +27,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignments do
     |> load_due_project_check_ins(person)
     |> load_due_goal_updates(person)
     |> convert_id()
-    |> Enum.sort(&(&1.due > &2.due))
+    |> Enum.sort(&(DateTime.compare(&1.due, &2.due) == :gt))
   end
 
   defp load_projects(person) do
