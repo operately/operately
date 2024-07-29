@@ -309,6 +309,13 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
     }
   end
 
+  def serialize_content("space_member_removed", content) do
+    %{
+      space: serialize_space(content["space"]),
+      member: %{id: content["member"].id, full_name: content["member"].full_name},
+    }
+  end
+
   def serialize_content("space_members_added", content) do
     %{
       space: serialize_space(content["space"]),

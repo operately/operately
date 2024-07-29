@@ -13,6 +13,11 @@ defmodule OperatelyWeb.Api.Types do
     field :space, :space
   end
 
+  object :activity_content_space_member_removed do
+    field :space, :space
+    field :member, :person
+  end
+
   object :activity_content_space_members_added do
     field :space, :space
     field :members, list_of(:person)
