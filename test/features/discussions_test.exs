@@ -18,15 +18,11 @@ defmodule Operately.Features.DiscussionsTest do
 
     space = group_fixture(author, %{name: "Marketing", mission: "Let the world know about our products"})
 
-    Operately.Groups.add_members(space.id, [
+    Operately.Groups.add_members(author, space.id, [
       %{
         id: reader.id,
         permissions: Binding.view_access(),
       },
-      %{
-        id: author.id,
-        permissions: Binding.full_access(),
-      }
     ])
 
     ctx = Map.merge(ctx, %{company: company, author: author, reader: reader, space: space})

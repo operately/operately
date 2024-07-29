@@ -16,7 +16,7 @@ defmodule Operately.Operations.GroupMemberRemovingTest do
 
     member = person_fixture_with_account(%{company_id: company.id})
 
-    Operately.Operations.GroupMembersAdding.run(group.id, [%{
+    Groups.add_members(creator, group.id, [%{
       id: member.id,
       permissions: Binding.comment_access(),
     }])
