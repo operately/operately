@@ -1,5 +1,6 @@
 defmodule Operately.Operations.GroupMembersAddingTest do
   use Operately.DataCase
+  use Operately.Support.Notifications
 
   import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
@@ -112,5 +113,20 @@ defmodule Operately.Operations.GroupMembersAddingTest do
     assert Map.has_key?(member, "person_id")
     assert Map.has_key?(member, "person_name")
     assert Map.has_key?(member, "access_level")
+  end
+
+  test "GroupMembersAdding operation creates notification", ctx do
+    all_members = ctx.members ++ ctx.managers
+
+    Oban.Testing.with_testing_mode(:manual, fn ->
+      {:ok, _} = Operately.Operations.GroupMembersAdding.run(ctx.creator, ctx.group.id, all_members)
+    end)
+    activity_id = from(a in Activity, where: a.action == "space_members_added" and a.content["space_id"] == ^ctx.group.id, select: a.id) |> Repo.one!()
+
+    assert notifications_count() == 0
+
+    perform_job(activity_id)
+
+    assert notifications_count() == 6
   end
 end
