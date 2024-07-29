@@ -4,19 +4,21 @@ defmodule Operately.Operations.GroupMemberRemoving do
   alias Ecto.Multi
   alias Operately.Repo
   alias Operately.Access
+  alias Operately.Activities
   alias Operately.Groups.Member
   alias Operately.Access.Group
 
-  def run(group_id, person_id) do
+  def run(author, group_id, person_id) do
     Multi.new()
     |> delete_member(group_id, person_id)
     |> delete_access_group_memberships(group_id, person_id)
     |> delete_access_binding(group_id, person_id)
+    |> insert_activity(author)
     |> Repo.transaction()
   end
 
   defp delete_member(multi, group_id, person_id) do
-    Multi.run(multi, :member_deleted, fn repo, _ ->
+    Multi.run(multi, :member, fn repo, _ ->
       case repo.get_by(Member, group_id: group_id, person_id: person_id) do
         nil ->
           {:error, nil}
@@ -46,5 +48,15 @@ defmodule Operately.Operations.GroupMemberRemoving do
     binding = Access.get_binding!(context_id: access_context.id, group_id: access_group.id)
 
     Multi.delete(multi, :binding_deleted, binding)
+  end
+
+  defp insert_activity(multi, author) do
+    Activities.insert_sync(multi, author.id, :space_member_removed, fn %{member: member} ->
+      %{
+        company_id: author.company_id,
+        space_id: member.group_id,
+        member_id: member.person_id,
+      }
+    end)
   end
 end

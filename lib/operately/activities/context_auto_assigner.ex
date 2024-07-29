@@ -32,6 +32,7 @@ defmodule Operately.Activities.ContextAutoAssigner do
     "space_added",
     "space_members_permissions_edited",
     "space_members_added",
+    "space_member_removed",
 
     "goal_archived",
 
