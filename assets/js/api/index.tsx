@@ -384,6 +384,11 @@ export interface ActivityContentSpaceJoining {
   space?: Space | null;
 }
 
+export interface ActivityContentSpaceMembersAdded {
+  space?: Space | null;
+  members?: Person[] | null;
+}
+
 export interface ActivityContentTaskAdding {
   name?: string | null;
   taskId?: string | null;

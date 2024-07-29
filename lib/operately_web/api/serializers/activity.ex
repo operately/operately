@@ -309,6 +309,13 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
     }
   end
 
+  def serialize_content("space_members_added", content) do
+    %{
+      space: serialize_space(content["space"]),
+      members: Enum.map(content["members"], fn m -> %{id: m.person_id, full_name: m.person_name} end),
+    }
+  end
+
   def serialize_content("task_adding", _content) do
     %{}
   end
@@ -386,20 +393,20 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
   end
 
   def serialize_added_targets(content) do
-    Enum.map(content["added_targets"], fn target -> 
-      %{id: target["id"], name: target["name"]} 
+    Enum.map(content["added_targets"], fn target ->
+      %{id: target["id"], name: target["name"]}
     end)
   end
 
   def serialize_updated_targets(content) do
-    Enum.map(content["updated_targets"], fn target -> 
-      %{id: target["id"], old_name: target["old_name"], new_name: target["new_name"]} 
+    Enum.map(content["updated_targets"], fn target ->
+      %{id: target["id"], old_name: target["old_name"], new_name: target["new_name"]}
     end)
   end
 
   def serialize_deleted_targets(content) do
-    Enum.map(content["deleted_targets"], fn target -> 
-      %{id: target["id"], name: target["name"]} 
+    Enum.map(content["deleted_targets"], fn target ->
+      %{id: target["id"], name: target["name"]}
     end)
   end
 
