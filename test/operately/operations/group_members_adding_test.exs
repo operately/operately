@@ -106,5 +106,11 @@ defmodule Operately.Operations.GroupMembersAddingTest do
 
     assert length(g1) == 3
     assert length(g2) == 3
+
+    member = hd(g1)
+
+    assert Map.has_key?(member, "person_id")
+    assert Map.has_key?(member, "person_name")
+    assert Map.has_key?(member, "access_level")
   end
 end

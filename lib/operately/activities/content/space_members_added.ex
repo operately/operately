@@ -6,6 +6,7 @@ defmodule Operately.Activities.Content.SpaceMembersAdded do
 
     embedded_schema do
       field :person_id, :string
+      field :person_name, :string
       field :access_level, :integer
     end
 

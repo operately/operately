@@ -1,4 +1,6 @@
 defmodule Operately.Operations.GroupMembersAdding do
+  import Ecto.Query, only: [from: 2]
+
   alias Ecto.Multi
   alias Operately.Repo
   alias Operately.Groups.Member
@@ -93,10 +95,24 @@ defmodule Operately.Operations.GroupMembersAdding do
         access_level: find_access_level(key, changes)
       }
     end)
+    |> fetch_members_name()
   end
 
   defp find_access_level(membership_key, changes) do
     key = String.replace(membership_key, "_membership", "_binding")
     changes[key].access_level
+  end
+
+  defp fetch_members_name(people) do
+    ids = Enum.map(people, &(&1.person_id))
+
+    name_tuples =
+      from(p in Operately.People.Person, where: p.id in ^ids, select: %{id: p.id, full_name: p.full_name})
+      |> Repo.all()
+      |> Map.new(fn %{id: id, full_name: full_name} -> {id, full_name} end)
+
+    Enum.map(people, fn person ->
+      Map.put(person, :person_name, Map.get(name_tuples, person.person_id))
+    end)
   end
 end
