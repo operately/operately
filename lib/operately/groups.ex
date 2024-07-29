@@ -136,7 +136,7 @@ defmodule Operately.Groups do
     Repo.one(query) != nil
   end
 
-  defdelegate add_members(group_id, people_ids), to: Operately.Operations.GroupMembersAdding, as: :run
+  defdelegate add_members(author, group_id, people_ids), to: Operately.Operations.GroupMembersAdding, as: :run
 
   def add_contact(group, name, value, type) do
     contact = %Contact{

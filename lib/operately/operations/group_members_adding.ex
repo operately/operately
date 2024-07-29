@@ -4,13 +4,15 @@ defmodule Operately.Operations.GroupMembersAdding do
   alias Operately.Groups.Member
   alias Operately.Access
   alias Operately.Access.{Binding, GroupMembership}
+  alias Operately.Activities
 
-  def run(group_id, members) do
+  def run(author, group_id, members) do
     Multi.new()
     |> insert_members(group_id, members)
     |> insert_access_group_memberships(group_id, members)
     |> Multi.run(:context, fn _, _ -> {:ok, Access.get_context!(group_id: group_id)} end)
     |> insert_access_bindings(members)
+    |> insert_activities(author, group_id)
     |> Repo.transaction()
   end
 
@@ -57,6 +59,20 @@ defmodule Operately.Operations.GroupMembersAdding do
     end)
   end
 
+  defp insert_activities(multi, author, group_id) do
+    Activities.insert_sync(multi, author.id, :space_members_added, fn changes ->
+      %{
+        company_id: author.company_id,
+        space_id: group_id,
+        members: serialize_created_members(changes),
+      }
+    end)
+  end
+
+  #
+  # Helpers
+  #
+
   defp fetch_access_group(group_id, access_level) do
     cond do
       access_level == Binding.full_access() ->
@@ -66,5 +82,21 @@ defmodule Operately.Operations.GroupMembersAdding do
       true ->
         :error
     end
+  end
+
+  defp serialize_created_members(changes) do
+    changes
+    |> Enum.filter(fn {key, _} -> is_binary(key) && String.ends_with?(key, "_membership") end)
+    |> Enum.map(fn {key, target} ->
+      %{
+        person_id: target.person_id,
+        access_level: find_access_level(key, changes)
+      }
+    end)
+  end
+
+  defp find_access_level(membership_key, changes) do
+    key = String.replace(membership_key, "_membership", "_binding")
+    changes[key].access_level
   end
 end

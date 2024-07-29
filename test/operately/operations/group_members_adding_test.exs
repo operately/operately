@@ -8,6 +8,7 @@ defmodule Operately.Operations.GroupMembersAddingTest do
   alias Operately.Groups
   alias Operately.Access
   alias Operately.Access.Binding
+  alias Operately.Activities.Activity
 
   setup do
     company = company_fixture()
@@ -31,11 +32,11 @@ defmodule Operately.Operations.GroupMembersAddingTest do
       }
     end)
 
-    {:ok, group: group, creator: creator, members: members, managers: managers}
+    {:ok, company: company, group: group, creator: creator, members: members, managers: managers}
   end
 
   test "GroupMembersAdding operation adds members to group", ctx do
-    Operately.Operations.GroupMembersAdding.run(ctx.group.id, ctx.members)
+    Operately.Operations.GroupMembersAdding.run(ctx.creator, ctx.group.id, ctx.members)
 
     members = Groups.list_members(ctx.group)
     people_ids = [ctx.creator.id | Enum.map(ctx.members, fn %{id: id} -> id end)]
@@ -58,8 +59,8 @@ defmodule Operately.Operations.GroupMembersAddingTest do
       refute Access.get_group_membership(group_id: managers.id, person_id: person_id)
     end)
 
-    Operately.Operations.GroupMembersAdding.run(ctx.group.id, ctx.members)
-    Operately.Operations.GroupMembersAdding.run(ctx.group.id, ctx.managers)
+    Operately.Operations.GroupMembersAdding.run(ctx.creator, ctx.group.id, ctx.members)
+    Operately.Operations.GroupMembersAdding.run(ctx.creator, ctx.group.id, ctx.managers)
 
     Enum.each(ctx.members, fn %{id: person_id} ->
       assert Access.get_group_membership(group_id: members.id, person_id: person_id)
@@ -81,7 +82,7 @@ defmodule Operately.Operations.GroupMembersAddingTest do
       refute Access.get_binding(group_id: access_group.id, context_id: access_context.id)
     end)
 
-    Operately.Operations.GroupMembersAdding.run(ctx.group.id, all_members)
+    Operately.Operations.GroupMembersAdding.run(ctx.creator, ctx.group.id, all_members)
 
     Enum.each(all_members, fn %{id: person_id, permissions: permissions} ->
       access_group = Access.get_group!(person_id: person_id)
@@ -89,5 +90,21 @@ defmodule Operately.Operations.GroupMembersAddingTest do
       assert Access.get_binding(group_id: access_group.id, context_id: access_context.id, access_level: permissions)
       assert Access.get_binding(group_id: access_group.id, context_id: access_context.id)
     end)
+  end
+
+  test "GroupMembersAdding operation creates activity", ctx do
+    all_members = ctx.members ++ ctx.managers
+
+    {:ok, _} = Operately.Operations.GroupMembersAdding.run(ctx.creator, ctx.group.id, all_members)
+
+    activity = from(a in Activity, where: a.action == "space_members_added" and a.content["space_id"] == ^ctx.group.id) |> Repo.one!()
+
+    assert activity.content["company_id"] == ctx.company.id
+    assert length(activity.content["members"]) == 6
+
+    [g1, g2] = Enum.chunk_by(activity.content["members"], &(&1["access_level"]))
+
+    assert length(g1) == 3
+    assert length(g2) == 3
   end
 end
