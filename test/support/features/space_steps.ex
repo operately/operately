@@ -36,7 +36,7 @@ defmodule Operately.Support.Features.SpaceSteps do
     space = group_fixture(ctx.person, %{name: attrs.space_name})
     member = person_fixture_with_account(%{full_name: attrs.person_name, company_id: ctx.company.id})
 
-    Operately.Groups.add_members(space.id, [%{
+    Operately.Groups.add_members(ctx.person, space.id, [%{
       id: member.id,
       permissions: Operately.Access.Binding.comment_access(),
     }])

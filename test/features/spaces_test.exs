@@ -38,7 +38,7 @@ defmodule Operately.Features.SpacesTest do
     group = group_fixture(ctx.person, %{name: "Marketing"})
     person = person_fixture(%{full_name: "Mati Aharoni", company_id: ctx.company.id})
 
-    Operately.Groups.add_members(group.id, [%{
+    Operately.Groups.add_members(ctx.person, group.id, [%{
       id: person.id,
       permissions: Binding.edit_access(),
     }])
@@ -88,7 +88,7 @@ defmodule Operately.Features.SpacesTest do
     group = group_fixture(ctx.person, %{name: "Marketing"})
     person = person_fixture(%{full_name: "Mati Aharoni", company_id: ctx.company.id})
 
-    Operately.Groups.add_members(group.id, [%{
+    Operately.Groups.add_members(ctx.person, group.id, [%{
       id: person.id,
       permissions: Binding.edit_access(),
     }])
