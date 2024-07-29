@@ -15,10 +15,21 @@ defmodule OperatelyWeb.Api.Mutations.CreateTask do
 
   def call(conn, inputs) do
     {:ok, milestone_id} = decode_id(inputs.milestone_id)
-    inputs = %{inputs | milestone_id: milestone_id}
+
+    inputs = Map.merge(inputs, %{
+      milestone_id: milestone_id,
+      assignee_ids: decode_assignees(inputs.assignee_ids),
+    })
 
     creator = me(conn)
     {:ok, task} = Operately.Operations.TaskAdding.run(creator, inputs)
     {:ok, %{task: Serializer.serialize(task, level: :essential)}}
+  end
+
+  defp decode_assignees(ids) do
+    Enum.map(ids, fn id ->
+      {:ok, id} = decode_id(id)
+      id
+    end)
   end
 end

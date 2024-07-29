@@ -44,6 +44,11 @@ defmodule OperatelyWeb.Api.Queries.SearchPeople do
   end
 
   defp ignore_ids(query, ignored_ids) do
+    ignored_ids = Enum.map(ignored_ids, fn id ->
+      {:ok, decoded_id} = decode_id(id)
+      decoded_id
+    end)
+
     from p in query, where: p.id not in ^ignored_ids
   end
 

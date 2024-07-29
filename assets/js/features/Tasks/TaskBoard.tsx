@@ -154,8 +154,8 @@ function TaskColumn(props: TaskColumnProps) {
       </div>
 
       <div className="flex flex-col mt-2" ref={ref} style={style}>
-        {props.tasks.map((task) => (
-          <TaskItem key={task.id} task={task} zoneId={props.status} style={taskStyle(visibleIndexes[task.id!])} />
+        {props.tasks.map((task, idx) => (
+          <TaskItem key={task.id} task={task} zoneId={props.status} style={taskStyle(visibleIndexes[task.id!])} testId={`${props.status}_${idx}`} />
         ))}
 
         {props.tasks.length === 0 && <PlaceholderTask />}
@@ -164,12 +164,12 @@ function TaskColumn(props: TaskColumnProps) {
   );
 }
 
-function TaskItem({ task, zoneId, style }: { task: Tasks.Task; zoneId: string; style: React.CSSProperties }) {
+function TaskItem({ task, zoneId, style, testId }: { task: Tasks.Task; zoneId: string; style: React.CSSProperties; testId: string }) {
   const { ref, isDragging } = useDraggable({ id: task.id!, zoneId });
 
   return (
     <div className="w-full" ref={ref}>
-      <div className="my-1" style={isDragging ? {} : style}>
+      <div className="my-1" style={isDragging ? {} : style} data-test-id={testId}>
         <DivLink
           className="text-sm bg-surface rounded p-2 border border-stroke-base flex items-start justify-between cursor-pointer"
           to={Paths.taskPath(task.id!)}
