@@ -103,6 +103,44 @@ defmodule Operately.Operations.GoalEditingTest do
     assert Access.get_binding(context_id: context.id, group_id: standard.id, access_level: Binding.comment_access())
   end
 
+  test "GoalEditing operation updates goal's bindings to champion and reviewer with tags", ctx do
+    context = Access.get_context!(goal_id: ctx.goal.id)
+
+    # New reviewer and champion have no bindings to goal
+    champion_group = Access.get_group!(person_id: ctx.champion.id)
+    reviewer_group = Access.get_group!(person_id: ctx.reviewer.id)
+
+    refute Access.get_binding(context_id: context.id, group_id: champion_group.id)
+    refute Access.get_binding(context_id: context.id, group_id: reviewer_group.id)
+
+    # Bindings to goal are successfully created and deleted
+    creator_group = Access.get_group!(person_id: ctx.creator.id)
+
+    Operately.Operations.GoalEditing.run(ctx.creator, ctx.goal, ctx.attrs)
+
+    assert Access.get_binding(context_id: context.id, group_id: champion_group.id)
+    assert Access.get_binding(tag: :champion, context_id: context.id, group_id: champion_group.id, access_level: Binding.full_access())
+
+    assert Access.get_binding(context_id: context.id, group_id: reviewer_group.id)
+    assert Access.get_binding(tag: :reviewer, context_id: context.id, group_id: reviewer_group.id, access_level: Binding.full_access())
+
+    refute Access.get_binding(context_id: context.id, group_id: creator_group.id)
+
+    # A person can have reviewer and champion bindings with the right tags
+    goal = Repo.reload(ctx.goal)
+    attrs = Map.merge(ctx.attrs, %{ reviewer_id: ctx.champion.id })
+
+    Operately.Operations.GoalEditing.run(ctx.creator, goal, attrs)
+
+    assert_raise Ecto.MultipleResultsError, ~r/^expected at most one result but got 2 in query:/, fn ->
+      Access.get_binding(context_id: context.id, group_id: champion_group.id)
+    end
+    assert Access.get_binding(tag: :champion, context_id: context.id, group_id: champion_group.id, access_level: Binding.full_access())
+    assert Access.get_binding(tag: :reviewer, context_id: context.id, group_id: champion_group.id, access_level: Binding.full_access())
+
+    refute Access.get_binding(context_id: context.id, group_id: reviewer_group.id)
+  end
+
   test "GoalEditing operation creates activity and notification", ctx do
     Oban.Testing.with_testing_mode(:manual, fn ->
       Operately.Operations.GoalEditing.run(ctx.creator, ctx.goal, ctx.attrs)
