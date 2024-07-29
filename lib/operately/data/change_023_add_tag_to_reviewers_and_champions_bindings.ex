@@ -28,6 +28,8 @@ defmodule Operately.Data.Change023AddTagToReviewersAndChampionsBindings do
     end)
   end
 
+  defp update_tag(_, nil, _), do: :ok
+
   defp update_tag(context, person, tag) do
     binding = get_binding(context, person, tag)
 
