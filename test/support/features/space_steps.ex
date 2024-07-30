@@ -2,6 +2,8 @@ defmodule Operately.Support.Features.SpaceSteps do
   use Operately.FeatureCase
 
   alias Operately.Support.Features.UI
+  alias Operately.Support.Features.NotificationsSteps
+  alias Operately.Support.Features.EmailSteps
 
   import Operately.CompaniesFixtures
   import Operately.GroupsFixtures
@@ -36,7 +38,7 @@ defmodule Operately.Support.Features.SpaceSteps do
     space = group_fixture(ctx.person, %{name: attrs.space_name})
     member = person_fixture_with_account(%{full_name: attrs.person_name, company_id: ctx.company.id})
 
-    Operately.Groups.add_members(space.id, [%{
+    Operately.Groups.add_members(ctx.person, space.id, [%{
       id: member.id,
       permissions: Operately.Access.Binding.comment_access(),
     }])
@@ -112,5 +114,16 @@ defmodule Operately.Support.Features.SpaceSteps do
   step :assert_member_removed, ctx, person do
     ctx
     |> UI.refute_text(person.full_name, testid: "members-list")
+  end
+
+  step :assert_members_added_notification_sent, ctx, params do
+    ctx
+    |> UI.login_as(params[:member])
+    |> NotificationsSteps.assert_space_members_added_sent(author: ctx.person, title: params[:title])
+  end
+
+  step :assert_members_added_email_sent, ctx, params do
+    ctx
+    |> EmailSteps.assert_space_members_added_sent(author: ctx.person, to: params[:member], title: params[:title])
   end
 end

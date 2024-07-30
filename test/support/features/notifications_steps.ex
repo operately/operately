@@ -116,4 +116,7 @@ defmodule Operately.Support.Features.NotificationsSteps do
     ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} re-opened: #{title}")
   end
 
+  def assert_space_members_added_sent(ctx, author: author, title: title) do
+    ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} added you to the #{title} space")
+  end
 end
