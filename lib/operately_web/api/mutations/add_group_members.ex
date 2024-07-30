@@ -7,11 +7,11 @@ defmodule OperatelyWeb.Api.Mutations.AddGroupMembers do
     field :members, list_of(:add_member_input)
   end
 
-  def call(_conn, inputs) do
+  def call(conn, inputs) do
     {:ok, id} = decode_id(inputs.group_id)
     inputs = decode_member_ids(inputs)
 
-    Operately.Operations.GroupMembersAdding.run(id, inputs.members)
+    Operately.Operations.GroupMembersAdding.run(me(conn), id, inputs.members)
 
     {:ok, %{}}
   end

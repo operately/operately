@@ -16,9 +16,9 @@ defmodule Operately.Operations.GroupMembersPermissionsEditingTest do
     space = group_fixture(creator)
 
     members = [
-      create_group_member(space, Binding.comment_access()),
-      create_group_member(space, Binding.edit_access()),
-      create_group_member(space, Binding.full_access()),
+      create_group_member(creator, space, Binding.comment_access()),
+      create_group_member(creator, space, Binding.edit_access()),
+      create_group_member(creator, space, Binding.full_access()),
     ]
 
     {:ok, space: space, creator: creator, members: members}
@@ -75,10 +75,10 @@ defmodule Operately.Operations.GroupMembersPermissionsEditingTest do
   # Helpers
   #
 
-  defp create_group_member(space, permissions) do
+  defp create_group_member(creator, space, permissions) do
     person = person_fixture(%{company_id: space.company_id})
 
-    Groups.add_members(space.id, [%{
+    Groups.add_members(creator, space.id, [%{
       id: person.id,
       permissions: permissions,
     }])
