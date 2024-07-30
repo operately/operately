@@ -7,6 +7,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivity do
   alias Operately.Activities.Activity
   alias Operately.Activities.Preloader
 
+  import Operately.Access.Filters, only: [filter_by_view_access: 2]
   import Ecto.Query, only: [from: 2]
 
   inputs do
@@ -17,22 +18,39 @@ defmodule OperatelyWeb.Api.Queries.GetActivity do
     field :activity, :activity
   end
 
-  def call(_conn, inputs) do
-    {:ok, id} = decode_id(inputs[:id])
-    activity = load(id)
-    serialized = OperatelyWeb.Api.Serializers.Activity.serialize(activity, [comment_thread: :full])
+  def call(conn, inputs) do
+    {:ok, activity_id} = decode_id(inputs[:id])
 
-    {:ok, %{activity: serialized}}
+    load(me(conn), activity_id)
+    |> preload_content()
+    |> serialize()
+    |> case do
+      nil ->
+        {:error, :not_found, "Activity not found"}
+      activity ->
+        {:ok, %{activity: activity}}
+    end
   end
 
-  def load(id) do
-    query = from a in Activity, 
-      where: a.id == ^id, 
+  defp load(person, id) do
+    query = from a in Activity,
+      where: a.id == ^id,
       preload: [:author, comment_thread: [comments: [:author, reactions: :person], reactions: :person]]
 
-    query 
-    |> Repo.one() 
-    |> Activities.cast_content() 
+    query
+    |> filter_by_view_access(person.id)
+    |> Repo.one()
+  end
+
+  defp preload_content(nil), do: nil
+  defp preload_content(activity) do
+    activity
+    |> Activities.cast_content()
     |> Preloader.preload()
+  end
+
+  defp serialize(nil), do: nil
+  defp serialize(activity) do
+    OperatelyWeb.Api.Serializers.Activity.serialize(activity, [comment_thread: :full])
   end
 end
