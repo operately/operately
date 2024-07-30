@@ -2,7 +2,7 @@ import { Activity, ActivityContentSpaceMembersAdded } from "@/api";
 import { ActivityHandler } from "../interfaces";
 import { feedTitle, spaceLink } from "../feedItemLinks";
 import { Paths } from "@/routes/paths";
-import { shortName, Person } from "@/models/people";
+import { shortName, Person, firstName } from "@/models/people";
 
 
 const SpaceMembersAdded: ActivityHandler = {
@@ -49,12 +49,12 @@ const SpaceMembersAdded: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  NotificationTitle(_props: { activity: Activity }) {
-    throw new Error("Not implemented");
+  NotificationTitle({ activity }: { activity: Activity }) {
+    return firstName(activity.author!) + " added you to the " + content(activity).space?.name + " space"
   },
 
-  NotificationLocation(_props: { activity: Activity }) {
-    throw new Error("Not implemented");
+  NotificationLocation({ activity }: { activity: Activity }) {
+    return content(activity).space!.name!;
   },
 };
 
