@@ -100,8 +100,7 @@ defmodule Operately.Features.SpacesTest do
     |> UI.click(testid: "add-remove-members")
     |> UI.assert_text(person.full_name)
     |> UI.click(testid: "remove-member-#{Paths.person_id(person)}")
-    |> UI.sleep(100)
-    |> UI.refute_text(person.full_name)
+    |> UI.refute_text(person.full_name, attempts: [50, 150, 250, 500])
   end
 
   feature "listing projects in a space", ctx do
