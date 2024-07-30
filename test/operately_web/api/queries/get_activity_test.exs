@@ -45,7 +45,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivityTest do
     end
 
     test "space members have no access", ctx do
-      Groups.add_members(ctx.space.id, [%{
+      Groups.add_members(ctx.person, ctx.space.id, [%{
         id: ctx.person.id,
         permissions: Binding.edit_access(),
       }])
@@ -60,7 +60,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivityTest do
     end
 
     test "space members have access", ctx do
-      Groups.add_members(ctx.space.id, [%{
+      Groups.add_members(ctx.person, ctx.space.id, [%{
         id: ctx.person.id,
         permissions: Binding.edit_access(),
       }])
