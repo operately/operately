@@ -6,8 +6,8 @@ defmodule OperatelyWeb.Api.Queries.GetActivities do
   alias Operately.Activities.Activity
   alias Operately.Activities.Preloader
   alias Operately.Companies.ShortId
-  alias Operately.Access.Binding
 
+  import Operately.Access.Filters, only: [filter_by_view_access: 2]
   import Ecto.Query, only: [from: 2, limit: 2, preload: 2]
 
   inputs do
@@ -66,7 +66,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivities do
     |> limit_search_to_current_company(person.company_id)
     |> scope_query(scope_type, scope_id)
     |> filter_by_action(actions)
-    |> filter_by_permissions(person)
+    |> filter_by_view_access(person.id)
     |> order_desc()
     |> limit(100)
     |> preload([:comment_thread, :author])
@@ -97,16 +97,5 @@ defmodule OperatelyWeb.Api.Queries.GetActivities do
 
   def filter_by_action(query, actions) do
     from a in query, where: a.action in ^actions and a.action not in ^Activity.deprecated_actions()
-  end
-
-  def filter_by_permissions(query, person) do
-    from(a in query,
-      join: c in assoc(a, :context),
-      join: b in assoc(c, :bindings),
-      join: g in assoc(b, :group),
-      join: m in assoc(g, :memberships),
-      where: m.person_id == ^person.id and b.access_level >= ^Binding.view_access(),
-      distinct: true
-    )
   end
 end
