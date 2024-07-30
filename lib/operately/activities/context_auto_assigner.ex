@@ -101,7 +101,7 @@ defmodule Operately.Activities.ContextAutoAssigner do
     |> Multi.update(:updated_activity, fn %{activity: activity} ->
       context_id = fetch_context(activity)
 
-      Activity.changeset(activity, %{context_id: context_id})
+      Activity.changeset(activity, %{access_context_id: context_id})
     end)
   end
 
@@ -195,7 +195,7 @@ defmodule Operately.Activities.ContextAutoAssigner do
       join: t in Operately.Comments.CommentThread,
       on: a.id == t.parent_id,
       where: t.id == ^comment.entity_id,
-      select: a.context_id
+      select: a.access_context_id
     )
     |> Repo.one()
   end
