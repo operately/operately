@@ -84,7 +84,7 @@ defmodule Operately.Support.Features.UI do
 
   defp list_all_testids(state) do
     script = """
-      return Array.from(document.querySelectorAll('[data-test-id]')).map(function(e) { 
+      return Array.from(document.querySelectorAll('[data-test-id]')).map(function(e) {
         return e.attributes['data-test-id'].value;
       })
     """
@@ -107,7 +107,7 @@ defmodule Operately.Support.Features.UI do
     end)
   end
 
-  def send_keys(state, keys) do 
+  def send_keys(state, keys) do
     execute(state, fn session ->
       session |> Browser.send_keys(keys)
     end)
@@ -250,6 +250,21 @@ defmodule Operately.Support.Features.UI do
     end)
   end
 
+  def refute_text(state, text, attempts: [delay | attempts]) do
+    execute(state, fn session ->
+      :timer.sleep(delay)
+
+      visible_text = session |> Browser.text()
+      text_found = String.contains?(visible_text, text)
+
+      cond do
+        not text_found -> session
+        attempts == [] -> refute_text(state, text)
+        true -> refute_text(state, text, attempts: attempts)
+      end
+    end)
+  end
+
   def assert_page(state, path) do
     execute(state, fn session ->
       require ExUnit.Assertions
@@ -282,7 +297,7 @@ defmodule Operately.Support.Features.UI do
 
   def find(state, %Wallaby.Query{} = query, callback) do
     execute(state, fn session ->
-      session 
+      session
       |> Browser.find(query, fn element ->
         callback.(%{state | session: element})
       end)
@@ -302,7 +317,7 @@ defmodule Operately.Support.Features.UI do
           {:error, :not_yet}
         end
       end)
-      
+
       session
     end)
   end
@@ -315,12 +330,12 @@ defmodule Operately.Support.Features.UI do
         {:delivered_email, _} -> true
         _ -> false
       end
-    end) 
+    end)
     |> Enum.map(fn {:delivered_email, email} -> email end)
   end
 
   def assert_email_sent(state, title, to: to) do
-    emails = 
+    emails =
       state
       |> list_sent_emails()
       |> Enum.map(fn email -> {email.subject, elem(hd(email.to), 1)} end)

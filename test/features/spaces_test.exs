@@ -38,7 +38,7 @@ defmodule Operately.Features.SpacesTest do
     group = group_fixture(ctx.person, %{name: "Marketing"})
     person = person_fixture(%{full_name: "Mati Aharoni", company_id: ctx.company.id})
 
-    Operately.Groups.add_members(group.id, [%{
+    Operately.Groups.add_members(ctx.person, group.id, [%{
       id: person.id,
       permissions: Binding.edit_access(),
     }])
@@ -88,7 +88,7 @@ defmodule Operately.Features.SpacesTest do
     group = group_fixture(ctx.person, %{name: "Marketing"})
     person = person_fixture(%{full_name: "Mati Aharoni", company_id: ctx.company.id})
 
-    Operately.Groups.add_members(group.id, [%{
+    Operately.Groups.add_members(ctx.person, group.id, [%{
       id: person.id,
       permissions: Binding.edit_access(),
     }])
@@ -100,8 +100,7 @@ defmodule Operately.Features.SpacesTest do
     |> UI.click(testid: "add-remove-members")
     |> UI.assert_text(person.full_name)
     |> UI.click(testid: "remove-member-#{Paths.person_id(person)}")
-    |> UI.sleep(100)
-    |> UI.refute_text(person.full_name)
+    |> UI.refute_text(person.full_name, attempts: [50, 150, 250, 500])
   end
 
   feature "listing projects in a space", ctx do
@@ -134,15 +133,15 @@ defmodule Operately.Features.SpacesTest do
 
   feature "adding space members (access management page)", ctx do
     group = group_fixture(ctx.person, %{name: "Marketing"})
-
-    name = "Mati Aharoni"
-    person_fixture(%{full_name: name, company_id: ctx.company.id})
+    member = person_fixture_with_account(%{full_name: "Mati Aharoni", company_id: ctx.company.id})
 
     ctx
     |> Steps.visit_home()
     |> Steps.visit_access_management(group.name)
-    |> Steps.add_new_member(search: "Mati", name: name)
-    |> Steps.assert_member_added(name)
+    |> Steps.add_new_member(search: "Mati", name: member.full_name)
+    |> Steps.assert_member_added(member.full_name)
+    |> Steps.assert_members_added_notification_sent(member: member, title: group.name)
+    |> Steps.assert_members_added_email_sent(member: member, title: group.name)
   end
 
   feature "removing space members (access management page)", ctx do

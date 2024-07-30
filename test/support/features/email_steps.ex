@@ -60,6 +60,10 @@ defmodule Operately.Support.Features.EmailSteps do
     ctx |> assert_sent_to_all_project_contributors(subject: "#{Person.short_name(author)} posted an check-in for #{ctx.project.name}", except: [author])
   end
 
+  def assert_space_members_added_sent(ctx, author: author, to: to, title: title) do
+    ctx |> assert_sent(to: to, subject: "(#{title}) #{Person.short_name(author)} added you to the #{title} space")
+  end
+
   #
   # Private
   #

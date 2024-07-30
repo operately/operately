@@ -88,6 +88,8 @@ export const DISPLAYED_IN_FEED = [
   "project_resuming",
   "project_timeline_edited",
   "space_joining",
+  "space_member_removed",
+  "space_members_added",
 ];
 
 //
@@ -127,6 +129,8 @@ import ProjectRenamed from "@/features/activities/ProjectRenamed";
 import ProjectResuming from "@/features/activities/ProjectResuming";
 import ProjectTimelineEdited from "@/features/activities/ProjectTimelineEdited";
 import SpaceJoining from "@/features/activities/SpaceJoining";
+import SpaceMemberRemoved from "@/features/activities/SpaceMemberRemoved";
+import SpaceMembersAdded from "@/features/activities/SpaceMembersAdded";
 
 function handler(activity: Activity) {
   return match(activity.action)
@@ -159,6 +163,8 @@ function handler(activity: Activity) {
     .with("project_resuming", () => ProjectResuming)
     .with("project_timeline_edited", () => ProjectTimelineEdited)
     .with("space_joining", () => SpaceJoining)
+    .with("space_member_removed", () => SpaceMemberRemoved)
+    .with("space_members_added", () => SpaceMembersAdded)
     .otherwise(() => {
       throw new Error("Unknown activity action: " + activity.action);
     });
