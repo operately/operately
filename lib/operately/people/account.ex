@@ -1,10 +1,8 @@
 defmodule Operately.People.Account do
-  use Ecto.Schema
-  import Ecto.Changeset
-  @primary_key {:id, :binary_id, autogenerate: true}
-  @foreign_key_type :binary_id
+  use Operately.Schema
+
   schema "accounts" do
-    has_one(:person, Operately.People.Person, foreign_key: :account_id)
+    has_many :people, Operately.People.Person, foreign_key: :account_id
 
     field :email, :string
     field :password, :string, virtual: true, redact: true
