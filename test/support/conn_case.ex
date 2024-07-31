@@ -78,9 +78,9 @@ defmodule OperatelyWeb.ConnCase do
   def log_in_account(conn, account = %Operately.People.Account{}, company = %Operately.Companies.Company{}) do
     token = Operately.People.generate_account_session_token(account)
 
-    conn = conn
-      |> Phoenix.ConnTest.init_test_session(%{})
-      |> Plug.Conn.put_session(:account_token, token)
-      |> Plug.Conn.put_req_header("X-Company-Id", OperatelyWeb.Paths.company_id(company))
+    conn
+    |> Phoenix.ConnTest.init_test_session(%{})
+    |> Plug.Conn.put_session(:account_token, token)
+    |> Plug.Conn.put_req_header("x-company-id", OperatelyWeb.Paths.company_id(company))
   end
 end
