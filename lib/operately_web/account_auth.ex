@@ -102,6 +102,7 @@ defmodule OperatelyWeb.AccountAuth do
   def fetch_current_account(conn, _opts) do
     {account_token, conn} = ensure_account_token(conn)
     account = account_token && People.get_account_by_session_token(account_token)
+
     assign(conn, :current_account, account)
   end
 

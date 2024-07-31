@@ -10,7 +10,6 @@ declare global {
 
   interface AppConfig {
     environment: string;
-    companyID: string;
 
     sentry: SentryConfig;
     api: ApiConfig;
