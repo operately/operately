@@ -18,7 +18,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContext do
 
   defp query do
     from(a in Activity,
-      where: is_nil(a.context_id),
+      where: is_nil(a.access_context_id),
       where: a.action not in ^Activity.deprecated_actions(),
       order_by: [asc: a.inserted_at])
   end
@@ -183,7 +183,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContext do
 
   defp update_activity(parent, activity) do
     activity
-    |> Activity.changeset(%{context_id: parent.access_context.id})
+    |> Activity.changeset(%{access_context_id: parent.access_context.id})
     |> Repo.update()
   end
 
@@ -196,7 +196,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContext do
     |> Repo.one!()
 
     activity
-    |> Activity.changeset(%{context_id: parent.context_id})
+    |> Activity.changeset(%{access_context_id: parent.access_context_id})
     |> Repo.update()
   end
 end

@@ -7,7 +7,7 @@ defmodule Operately.Access.Filters do
 
   defp filter(query, person_id, access_level) do
     from(item in query,
-      join: c in assoc(item, :context),
+      join: c in assoc(item, :access_context),
       join: b in assoc(c, :bindings),
       join: g in assoc(b, :group),
       join: m in assoc(g, :memberships),
