@@ -30,7 +30,6 @@ defmodule Operately.Support.Features.InviteMemberSteps do
   step :reissue_invitation_token, ctx, params do
     ctx
     |> UI.click(testid: params[:newTokenTestId])
-
   end
 
   step :assert_member_invited, ctx do
@@ -48,10 +47,10 @@ defmodule Operately.Support.Features.InviteMemberSteps do
 
   step :assert_password_changed, ctx, params do
     account = Operately.People.get_account_by_email_and_password(params[:email], params[:password])
-    account = Operately.Repo.preload(account, :person)
+    person = Operately.Repo.preload(account, :people).people |> hd()
 
     assert is_struct(account, Operately.People.Account)
-    assert account.person.full_name == params[:fullName]
+    assert person.full_name == params[:fullName]
 
     ctx
   end
