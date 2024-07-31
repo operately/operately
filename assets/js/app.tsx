@@ -22,7 +22,7 @@ import "@/api/socket";
 
 setupTestErrorLogger();
 
-Api.configureDefault({ basePath: "/api/v2" });
+Api.default.setBasePath("/api/v2");
 
 if (window.appConfig.sentry.enabled) {
   Sentry.init({

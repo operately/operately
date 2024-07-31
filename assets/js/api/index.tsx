@@ -2111,15 +2111,11 @@ export interface UpdateTaskStatusResult {
   task?: Task | null;
 }
 
-interface ApiClientConfig {
-  basePath: string;
-}
-
 export class ApiClient {
   private basePath: string;
 
-  configure(config: ApiClientConfig) {
-    this.basePath = config.basePath;
+  setBasePath(basePath: string) {
+    this.basePath = basePath;
   }
 
   getBasePath() {
@@ -2130,416 +2126,426 @@ export class ApiClient {
     return this.basePath;
   }
 
+  private async post(path: string, data: any) {
+    const response = await axios.post(this.getBasePath() + path, toSnake(data));
+    return toCamel(response.data);
+  } 
+
+  private async get(path: string, params: any) {
+    const response = await axios.get(this.getBasePath() + path, { params: toSnake(params) });
+    return toCamel(response.data);
+  }
+
   async getActivities(input: GetActivitiesInput): Promise<GetActivitiesResult> {
-    return axios.get(this.getBasePath() + "/get_activities", { params: toSnake(input)}).then(({ data }) => toCamel(data));
+    return this.get("/get_activities", input);
   }
 
   async getActivity(input: GetActivityInput): Promise<GetActivityResult> {
-    return axios.get(this.getBasePath() + "/get_activity", { params: toSnake(input)}).then(({ data }) => toCamel(data));
+    return this.get("/get_activity", input);
   }
 
   async getAssignments(input: GetAssignmentsInput): Promise<GetAssignmentsResult> {
-    return axios.get(this.getBasePath() + "/get_assignments", { params: toSnake(input)}).then(({ data }) => toCamel(data));
+    return this.get("/get_assignments", input);
   }
 
   async getAssignmentsCount(input: GetAssignmentsCountInput): Promise<GetAssignmentsCountResult> {
-    return axios.get(this.getBasePath() + "/get_assignments_count", { params: toSnake(input)}).then(({ data }) => toCamel(data));
+    return this.get("/get_assignments_count", input);
   }
 
   async getComments(input: GetCommentsInput): Promise<GetCommentsResult> {
-    return axios.get(this.getBasePath() + "/get_comments", { params: toSnake(input)}).then(({ data }) => toCamel(data));
+    return this.get("/get_comments", input);
   }
 
   async getCompanies(input: GetCompaniesInput): Promise<GetCompaniesResult> {
-    return axios.get(this.getBasePath() + "/get_companies", { params: toSnake(input)}).then(({ data }) => toCamel(data));
+    return this.get("/get_companies", input);
   }
 
   async getCompany(input: GetCompanyInput): Promise<GetCompanyResult> {
-    return axios.get(this.getBasePath() + "/get_company", { params: toSnake(input)}).then(({ data }) => toCamel(data));
+    return this.get("/get_company", input);
   }
 
   async getDiscussion(input: GetDiscussionInput): Promise<GetDiscussionResult> {
-    return axios.get(this.getBasePath() + "/get_discussion", { params: toSnake(input)}).then(({ data }) => toCamel(data));
+    return this.get("/get_discussion", input);
   }
 
   async getDiscussions(input: GetDiscussionsInput): Promise<GetDiscussionsResult> {
-    return axios.get(this.getBasePath() + "/get_discussions", { params: toSnake(input)}).then(({ data }) => toCamel(data));
+    return this.get("/get_discussions", input);
   }
 
   async getGoal(input: GetGoalInput): Promise<GetGoalResult> {
-    return axios.get(this.getBasePath() + "/get_goal", { params: toSnake(input)}).then(({ data }) => toCamel(data));
+    return this.get("/get_goal", input);
   }
 
   async getGoalCheckIn(input: GetGoalCheckInInput): Promise<GetGoalCheckInResult> {
-    return axios.get(this.getBasePath() + "/get_goal_check_in", { params: toSnake(input)}).then(({ data }) => toCamel(data));
+    return this.get("/get_goal_check_in", input);
   }
 
   async getGoalCheckIns(input: GetGoalCheckInsInput): Promise<GetGoalCheckInsResult> {
-    return axios.get(this.getBasePath() + "/get_goal_check_ins", { params: toSnake(input)}).then(({ data }) => toCamel(data));
+    return this.get("/get_goal_check_ins", input);
   }
 
   async getGoalProgressUpdate(input: GetGoalProgressUpdateInput): Promise<GetGoalProgressUpdateResult> {
-    return axios.get(this.getBasePath() + "/get_goal_progress_update", { params: toSnake(input)}).then(({ data }) => toCamel(data));
+    return this.get("/get_goal_progress_update", input);
   }
 
   async getGoalProgressUpdates(input: GetGoalProgressUpdatesInput): Promise<GetGoalProgressUpdatesResult> {
-    return axios.get(this.getBasePath() + "/get_goal_progress_updates", { params: toSnake(input)}).then(({ data }) => toCamel(data));
+    return this.get("/get_goal_progress_updates", input);
   }
 
   async getGoals(input: GetGoalsInput): Promise<GetGoalsResult> {
-    return axios.get(this.getBasePath() + "/get_goals", { params: toSnake(input)}).then(({ data }) => toCamel(data));
+    return this.get("/get_goals", input);
   }
 
   async getInvitation(input: GetInvitationInput): Promise<GetInvitationResult> {
-    return axios.get(this.getBasePath() + "/get_invitation", { params: toSnake(input)}).then(({ data }) => toCamel(data));
+    return this.get("/get_invitation", input);
   }
 
   async getKeyResource(input: GetKeyResourceInput): Promise<GetKeyResourceResult> {
-    return axios.get(this.getBasePath() + "/get_key_resource", { params: toSnake(input)}).then(({ data }) => toCamel(data));
+    return this.get("/get_key_resource", input);
   }
 
   async getMe(input: GetMeInput): Promise<GetMeResult> {
-    return axios.get(this.getBasePath() + "/get_me", { params: toSnake(input)}).then(({ data }) => toCamel(data));
+    return this.get("/get_me", input);
   }
 
   async getMilestone(input: GetMilestoneInput): Promise<GetMilestoneResult> {
-    return axios.get(this.getBasePath() + "/get_milestone", { params: toSnake(input)}).then(({ data }) => toCamel(data));
+    return this.get("/get_milestone", input);
   }
 
   async getNotifications(input: GetNotificationsInput): Promise<GetNotificationsResult> {
-    return axios.get(this.getBasePath() + "/get_notifications", { params: toSnake(input)}).then(({ data }) => toCamel(data));
+    return this.get("/get_notifications", input);
   }
 
   async getPeople(input: GetPeopleInput): Promise<GetPeopleResult> {
-    return axios.get(this.getBasePath() + "/get_people", { params: toSnake(input)}).then(({ data }) => toCamel(data));
+    return this.get("/get_people", input);
   }
 
   async getPerson(input: GetPersonInput): Promise<GetPersonResult> {
-    return axios.get(this.getBasePath() + "/get_person", { params: toSnake(input)}).then(({ data }) => toCamel(data));
+    return this.get("/get_person", input);
   }
 
   async getProject(input: GetProjectInput): Promise<GetProjectResult> {
-    return axios.get(this.getBasePath() + "/get_project", { params: toSnake(input)}).then(({ data }) => toCamel(data));
+    return this.get("/get_project", input);
   }
 
   async getProjectCheckIn(input: GetProjectCheckInInput): Promise<GetProjectCheckInResult> {
-    return axios.get(this.getBasePath() + "/get_project_check_in", { params: toSnake(input)}).then(({ data }) => toCamel(data));
+    return this.get("/get_project_check_in", input);
   }
 
   async getProjectCheckIns(input: GetProjectCheckInsInput): Promise<GetProjectCheckInsResult> {
-    return axios.get(this.getBasePath() + "/get_project_check_ins", { params: toSnake(input)}).then(({ data }) => toCamel(data));
+    return this.get("/get_project_check_ins", input);
   }
 
   async getProjects(input: GetProjectsInput): Promise<GetProjectsResult> {
-    return axios.get(this.getBasePath() + "/get_projects", { params: toSnake(input)}).then(({ data }) => toCamel(data));
+    return this.get("/get_projects", input);
   }
 
   async getSpace(input: GetSpaceInput): Promise<GetSpaceResult> {
-    return axios.get(this.getBasePath() + "/get_space", { params: toSnake(input)}).then(({ data }) => toCamel(data));
+    return this.get("/get_space", input);
   }
 
   async getSpaces(input: GetSpacesInput): Promise<GetSpacesResult> {
-    return axios.get(this.getBasePath() + "/get_spaces", { params: toSnake(input)}).then(({ data }) => toCamel(data));
+    return this.get("/get_spaces", input);
   }
 
   async getTask(input: GetTaskInput): Promise<GetTaskResult> {
-    return axios.get(this.getBasePath() + "/get_task", { params: toSnake(input)}).then(({ data }) => toCamel(data));
+    return this.get("/get_task", input);
   }
 
   async getTasks(input: GetTasksInput): Promise<GetTasksResult> {
-    return axios.get(this.getBasePath() + "/get_tasks", { params: toSnake(input)}).then(({ data }) => toCamel(data));
+    return this.get("/get_tasks", input);
   }
 
   async getUnreadNotificationCount(input: GetUnreadNotificationCountInput): Promise<GetUnreadNotificationCountResult> {
-    return axios.get(this.getBasePath() + "/get_unread_notification_count", { params: toSnake(input)}).then(({ data }) => toCamel(data));
+    return this.get("/get_unread_notification_count", input);
   }
 
   async searchPeople(input: SearchPeopleInput): Promise<SearchPeopleResult> {
-    return axios.get(this.getBasePath() + "/search_people", { params: toSnake(input)}).then(({ data }) => toCamel(data));
+    return this.get("/search_people", input);
   }
 
   async searchPotentialSpaceMembers(input: SearchPotentialSpaceMembersInput): Promise<SearchPotentialSpaceMembersResult> {
-    return axios.get(this.getBasePath() + "/search_potential_space_members", { params: toSnake(input)}).then(({ data }) => toCamel(data));
+    return this.get("/search_potential_space_members", input);
   }
 
   async searchProjectContributorCandidates(input: SearchProjectContributorCandidatesInput): Promise<SearchProjectContributorCandidatesResult> {
-    return axios.get(this.getBasePath() + "/search_project_contributor_candidates", { params: toSnake(input)}).then(({ data }) => toCamel(data));
+    return this.get("/search_project_contributor_candidates", input);
   }
 
   async acknowledgeGoalProgressUpdate(input: AcknowledgeGoalProgressUpdateInput): Promise<AcknowledgeGoalProgressUpdateResult> {
-    return axios.post(this.getBasePath() + "/acknowledge_goal_progress_update", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/acknowledge_goal_progress_update", input);
   }
 
   async acknowledgeProjectCheckIn(input: AcknowledgeProjectCheckInInput): Promise<AcknowledgeProjectCheckInResult> {
-    return axios.post(this.getBasePath() + "/acknowledge_project_check_in", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/acknowledge_project_check_in", input);
   }
 
   async addCompanyAdmins(input: AddCompanyAdminsInput): Promise<AddCompanyAdminsResult> {
-    return axios.post(this.getBasePath() + "/add_company_admins", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/add_company_admins", input);
   }
 
   async addCompanyMember(input: AddCompanyMemberInput): Promise<AddCompanyMemberResult> {
-    return axios.post(this.getBasePath() + "/add_company_member", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/add_company_member", input);
   }
 
   async addCompanyTrustedEmailDomain(input: AddCompanyTrustedEmailDomainInput): Promise<AddCompanyTrustedEmailDomainResult> {
-    return axios.post(this.getBasePath() + "/add_company_trusted_email_domain", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/add_company_trusted_email_domain", input);
   }
 
   async addFirstCompany(input: AddFirstCompanyInput): Promise<AddFirstCompanyResult> {
-    return axios.post(this.getBasePath() + "/add_first_company", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/add_first_company", input);
   }
 
   async addGroupMembers(input: AddGroupMembersInput): Promise<AddGroupMembersResult> {
-    return axios.post(this.getBasePath() + "/add_group_members", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/add_group_members", input);
   }
 
   async addKeyResource(input: AddKeyResourceInput): Promise<AddKeyResourceResult> {
-    return axios.post(this.getBasePath() + "/add_key_resource", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/add_key_resource", input);
   }
 
   async addProjectContributor(input: AddProjectContributorInput): Promise<AddProjectContributorResult> {
-    return axios.post(this.getBasePath() + "/add_project_contributor", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/add_project_contributor", input);
   }
 
   async addReaction(input: AddReactionInput): Promise<AddReactionResult> {
-    return axios.post(this.getBasePath() + "/add_reaction", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/add_reaction", input);
   }
 
   async archiveGoal(input: ArchiveGoalInput): Promise<ArchiveGoalResult> {
-    return axios.post(this.getBasePath() + "/archive_goal", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/archive_goal", input);
   }
 
   async archiveProject(input: ArchiveProjectInput): Promise<ArchiveProjectResult> {
-    return axios.post(this.getBasePath() + "/archive_project", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/archive_project", input);
   }
 
   async changeGoalParent(input: ChangeGoalParentInput): Promise<ChangeGoalParentResult> {
-    return axios.post(this.getBasePath() + "/change_goal_parent", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/change_goal_parent", input);
   }
 
   async changePasswordFirstTime(input: ChangePasswordFirstTimeInput): Promise<ChangePasswordFirstTimeResult> {
-    return axios.post(this.getBasePath() + "/change_password_first_time", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/change_password_first_time", input);
   }
 
   async changeTaskDescription(input: ChangeTaskDescriptionInput): Promise<ChangeTaskDescriptionResult> {
-    return axios.post(this.getBasePath() + "/change_task_description", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/change_task_description", input);
   }
 
   async closeGoal(input: CloseGoalInput): Promise<CloseGoalResult> {
-    return axios.post(this.getBasePath() + "/close_goal", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/close_goal", input);
   }
 
   async closeProject(input: CloseProjectInput): Promise<CloseProjectResult> {
-    return axios.post(this.getBasePath() + "/close_project", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/close_project", input);
   }
 
   async connectGoalToProject(input: ConnectGoalToProjectInput): Promise<ConnectGoalToProjectResult> {
-    return axios.post(this.getBasePath() + "/connect_goal_to_project", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/connect_goal_to_project", input);
   }
 
   async createBlob(input: CreateBlobInput): Promise<CreateBlobResult> {
-    return axios.post(this.getBasePath() + "/create_blob", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/create_blob", input);
   }
 
   async createComment(input: CreateCommentInput): Promise<CreateCommentResult> {
-    return axios.post(this.getBasePath() + "/create_comment", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/create_comment", input);
   }
 
   async createGoal(input: CreateGoalInput): Promise<CreateGoalResult> {
-    return axios.post(this.getBasePath() + "/create_goal", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/create_goal", input);
   }
 
   async createGoalDiscussion(input: CreateGoalDiscussionInput): Promise<CreateGoalDiscussionResult> {
-    return axios.post(this.getBasePath() + "/create_goal_discussion", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/create_goal_discussion", input);
   }
 
   async createGoalUpdate(input: CreateGoalUpdateInput): Promise<CreateGoalUpdateResult> {
-    return axios.post(this.getBasePath() + "/create_goal_update", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/create_goal_update", input);
   }
 
   async createGroup(input: CreateGroupInput): Promise<CreateGroupResult> {
-    return axios.post(this.getBasePath() + "/create_group", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/create_group", input);
   }
 
   async createProject(input: CreateProjectInput): Promise<CreateProjectResult> {
-    return axios.post(this.getBasePath() + "/create_project", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/create_project", input);
   }
 
   async createTask(input: CreateTaskInput): Promise<CreateTaskResult> {
-    return axios.post(this.getBasePath() + "/create_task", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/create_task", input);
   }
 
   async disconnectGoalFromProject(input: DisconnectGoalFromProjectInput): Promise<DisconnectGoalFromProjectResult> {
-    return axios.post(this.getBasePath() + "/disconnect_goal_from_project", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/disconnect_goal_from_project", input);
   }
 
   async editComment(input: EditCommentInput): Promise<EditCommentResult> {
-    return axios.post(this.getBasePath() + "/edit_comment", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/edit_comment", input);
   }
 
   async editDiscussion(input: EditDiscussionInput): Promise<EditDiscussionResult> {
-    return axios.post(this.getBasePath() + "/edit_discussion", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/edit_discussion", input);
   }
 
   async editGoal(input: EditGoalInput): Promise<EditGoalResult> {
-    return axios.post(this.getBasePath() + "/edit_goal", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/edit_goal", input);
   }
 
   async editGoalDiscussion(input: EditGoalDiscussionInput): Promise<EditGoalDiscussionResult> {
-    return axios.post(this.getBasePath() + "/edit_goal_discussion", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/edit_goal_discussion", input);
   }
 
   async editGoalProgressUpdate(input: EditGoalProgressUpdateInput): Promise<EditGoalProgressUpdateResult> {
-    return axios.post(this.getBasePath() + "/edit_goal_progress_update", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/edit_goal_progress_update", input);
   }
 
   async editGoalTimeframe(input: EditGoalTimeframeInput): Promise<EditGoalTimeframeResult> {
-    return axios.post(this.getBasePath() + "/edit_goal_timeframe", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/edit_goal_timeframe", input);
   }
 
   async editGroup(input: EditGroupInput): Promise<EditGroupResult> {
-    return axios.post(this.getBasePath() + "/edit_group", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/edit_group", input);
   }
 
   async editKeyResource(input: EditKeyResourceInput): Promise<EditKeyResourceResult> {
-    return axios.post(this.getBasePath() + "/edit_key_resource", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/edit_key_resource", input);
   }
 
   async editProjectCheckIn(input: EditProjectCheckInInput): Promise<EditProjectCheckInResult> {
-    return axios.post(this.getBasePath() + "/edit_project_check_in", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/edit_project_check_in", input);
   }
 
   async editProjectName(input: EditProjectNameInput): Promise<EditProjectNameResult> {
-    return axios.post(this.getBasePath() + "/edit_project_name", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/edit_project_name", input);
   }
 
   async editProjectPermissions(input: EditProjectPermissionsInput): Promise<EditProjectPermissionsResult> {
-    return axios.post(this.getBasePath() + "/edit_project_permissions", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/edit_project_permissions", input);
   }
 
   async editProjectTimeline(input: EditProjectTimelineInput): Promise<EditProjectTimelineResult> {
-    return axios.post(this.getBasePath() + "/edit_project_timeline", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/edit_project_timeline", input);
   }
 
   async editSpaceMembersPermissions(input: EditSpaceMembersPermissionsInput): Promise<EditSpaceMembersPermissionsResult> {
-    return axios.post(this.getBasePath() + "/edit_space_members_permissions", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/edit_space_members_permissions", input);
   }
 
   async editSpacePermissions(input: EditSpacePermissionsInput): Promise<EditSpacePermissionsResult> {
-    return axios.post(this.getBasePath() + "/edit_space_permissions", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/edit_space_permissions", input);
   }
 
   async joinSpace(input: JoinSpaceInput): Promise<JoinSpaceResult> {
-    return axios.post(this.getBasePath() + "/join_space", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/join_space", input);
   }
 
   async markAllNotificationsAsRead(input: MarkAllNotificationsAsReadInput): Promise<MarkAllNotificationsAsReadResult> {
-    return axios.post(this.getBasePath() + "/mark_all_notifications_as_read", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/mark_all_notifications_as_read", input);
   }
 
   async markNotificationAsRead(input: MarkNotificationAsReadInput): Promise<MarkNotificationAsReadResult> {
-    return axios.post(this.getBasePath() + "/mark_notification_as_read", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/mark_notification_as_read", input);
   }
 
   async moveProjectToSpace(input: MoveProjectToSpaceInput): Promise<MoveProjectToSpaceResult> {
-    return axios.post(this.getBasePath() + "/move_project_to_space", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/move_project_to_space", input);
   }
 
   async newInvitationToken(input: NewInvitationTokenInput): Promise<NewInvitationTokenResult> {
-    return axios.post(this.getBasePath() + "/new_invitation_token", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/new_invitation_token", input);
   }
 
   async pauseProject(input: PauseProjectInput): Promise<PauseProjectResult> {
-    return axios.post(this.getBasePath() + "/pause_project", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/pause_project", input);
   }
 
   async postDiscussion(input: PostDiscussionInput): Promise<PostDiscussionResult> {
-    return axios.post(this.getBasePath() + "/post_discussion", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/post_discussion", input);
   }
 
   async postGoalProgressUpdate(input: PostGoalProgressUpdateInput): Promise<PostGoalProgressUpdateResult> {
-    return axios.post(this.getBasePath() + "/post_goal_progress_update", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/post_goal_progress_update", input);
   }
 
   async postMilestoneComment(input: PostMilestoneCommentInput): Promise<PostMilestoneCommentResult> {
-    return axios.post(this.getBasePath() + "/post_milestone_comment", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/post_milestone_comment", input);
   }
 
   async postProjectCheckIn(input: PostProjectCheckInInput): Promise<PostProjectCheckInResult> {
-    return axios.post(this.getBasePath() + "/post_project_check_in", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/post_project_check_in", input);
   }
 
   async removeCompanyAdmin(input: RemoveCompanyAdminInput): Promise<RemoveCompanyAdminResult> {
-    return axios.post(this.getBasePath() + "/remove_company_admin", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/remove_company_admin", input);
   }
 
   async removeCompanyMember(input: RemoveCompanyMemberInput): Promise<RemoveCompanyMemberResult> {
-    return axios.post(this.getBasePath() + "/remove_company_member", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/remove_company_member", input);
   }
 
   async removeCompanyTrustedEmailDomain(input: RemoveCompanyTrustedEmailDomainInput): Promise<RemoveCompanyTrustedEmailDomainResult> {
-    return axios.post(this.getBasePath() + "/remove_company_trusted_email_domain", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/remove_company_trusted_email_domain", input);
   }
 
   async removeGroupMember(input: RemoveGroupMemberInput): Promise<RemoveGroupMemberResult> {
-    return axios.post(this.getBasePath() + "/remove_group_member", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/remove_group_member", input);
   }
 
   async removeKeyResource(input: RemoveKeyResourceInput): Promise<RemoveKeyResourceResult> {
-    return axios.post(this.getBasePath() + "/remove_key_resource", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/remove_key_resource", input);
   }
 
   async removeProjectContributor(input: RemoveProjectContributorInput): Promise<RemoveProjectContributorResult> {
-    return axios.post(this.getBasePath() + "/remove_project_contributor", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/remove_project_contributor", input);
   }
 
   async removeProjectMilestone(input: RemoveProjectMilestoneInput): Promise<RemoveProjectMilestoneResult> {
-    return axios.post(this.getBasePath() + "/remove_project_milestone", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/remove_project_milestone", input);
   }
 
   async reopenGoal(input: ReopenGoalInput): Promise<ReopenGoalResult> {
-    return axios.post(this.getBasePath() + "/reopen_goal", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/reopen_goal", input);
   }
 
   async resumeProject(input: ResumeProjectInput): Promise<ResumeProjectResult> {
-    return axios.post(this.getBasePath() + "/resume_project", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/resume_project", input);
   }
 
   async setMilestoneDeadline(input: SetMilestoneDeadlineInput): Promise<SetMilestoneDeadlineResult> {
-    return axios.post(this.getBasePath() + "/set_milestone_deadline", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/set_milestone_deadline", input);
   }
 
   async updateGroupAppearance(input: UpdateGroupAppearanceInput): Promise<UpdateGroupAppearanceResult> {
-    return axios.post(this.getBasePath() + "/update_group_appearance", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/update_group_appearance", input);
   }
 
   async updateMilestone(input: UpdateMilestoneInput): Promise<UpdateMilestoneResult> {
-    return axios.post(this.getBasePath() + "/update_milestone", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/update_milestone", input);
   }
 
   async updateMilestoneDescription(input: UpdateMilestoneDescriptionInput): Promise<UpdateMilestoneDescriptionResult> {
-    return axios.post(this.getBasePath() + "/update_milestone_description", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/update_milestone_description", input);
   }
 
   async updateMyProfile(input: UpdateMyProfileInput): Promise<UpdateMyProfileResult> {
-    return axios.post(this.getBasePath() + "/update_my_profile", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/update_my_profile", input);
   }
 
   async updateProjectContributor(input: UpdateProjectContributorInput): Promise<UpdateProjectContributorResult> {
-    return axios.post(this.getBasePath() + "/update_project_contributor", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/update_project_contributor", input);
   }
 
   async updateProjectDescription(input: UpdateProjectDescriptionInput): Promise<UpdateProjectDescriptionResult> {
-    return axios.post(this.getBasePath() + "/update_project_description", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/update_project_description", input);
   }
 
   async updateTask(input: UpdateTaskInput): Promise<UpdateTaskResult> {
-    return axios.post(this.getBasePath() + "/update_task", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/update_task", input);
   }
 
   async updateTaskStatus(input: UpdateTaskStatusInput): Promise<UpdateTaskStatusResult> {
-    return axios.post(this.getBasePath() + "/update_task_status", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/update_task_status", input);
   }
 
 }
@@ -3269,7 +3275,7 @@ export function useUpdateTaskStatus() : UseMutationHookResult<UpdateTaskStatusIn
 }
 
 export default {
-  configureDefault: (config: ApiClientConfig) => defaultApiClient.configure(config),
+  default: defaultApiClient,
 
   getActivities,
   useGetActivities,
