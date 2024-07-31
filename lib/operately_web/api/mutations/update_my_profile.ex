@@ -1,5 +1,6 @@
 defmodule OperatelyWeb.Api.Mutations.UpdateMyProfile do
   use TurboConnect.Mutation
+  use OperatelyWeb.Api.Helpers
 
   inputs do
     field :full_name, :string
@@ -16,9 +17,7 @@ defmodule OperatelyWeb.Api.Mutations.UpdateMyProfile do
   end
 
   def call(conn, inputs) do
-    me = conn.assigns.current_account.person
-
-    {:ok, me} = Operately.People.update_person(me, inputs)
+    {:ok, me} = Operately.People.update_person(me(conn), inputs)
     {:ok, serialize(me)}
   end
 
