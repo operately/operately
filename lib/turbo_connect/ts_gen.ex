@@ -40,26 +40,32 @@ defmodule TurboConnect.TsGen do
     """
     export class ApiClient {
       private basePath: string;
+      private headers: any;
 
       setBasePath(basePath: string) {
         this.basePath = basePath;
       }
 
       getBasePath() {
-        if (!this.basePath) {
-          throw new Error("ApiClient is not configured");
-        }
-
+        if (!this.basePath) throw new Error("ApiClient is not configured");
         return this.basePath;
       }
 
+      setHeaders(headers: any) {
+        this.headers = headers;
+      }
+
+      getHeaders() {
+        return this.headers || {};
+      }
+
       private async post(path: string, data: any) {
-        const response = await axios.post(this.getBasePath() + path, toSnake(data));
+        const response = await axios.post(this.getBasePath() + path, toSnake(data), { headers: this.getHeaders() });
         return toCamel(response.data);
       } 
 
       private async get(path: string, params: any) {
-        const response = await axios.get(this.getBasePath() + path, { params: toSnake(params) });
+        const response = await axios.get(this.getBasePath() + path, { params: toSnake(params), headers: this.getHeaders() });
         return toCamel(response.data);
       }
 
