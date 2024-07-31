@@ -1,5 +1,6 @@
 defmodule OperatelyWeb.Api.Queries.GetNotifications do
   use TurboConnect.Query
+  use OperatelyWeb.Api.Helpers
 
   alias Operately.Notifications.Notification
   alias Operately.Activities.Activity
@@ -19,11 +20,10 @@ defmodule OperatelyWeb.Api.Queries.GetNotifications do
   @default_per_page 100
 
   def call(conn, inputs) do
-    me = conn.assigns.current_account.person
     page = inputs[:page] || 1
     per_page = inputs[:per_page] || @default_per_page
 
-    notifications = load(page, per_page, me)
+    notifications = load(page, per_page, me(conn))
 
     {:ok, %{notifications: serialize(notifications)}}
   end

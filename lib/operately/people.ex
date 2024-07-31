@@ -161,12 +161,7 @@ defmodule Operately.People do
   def get_account_by_session_token(token) do
     {:ok, query} = AccountToken.verify_session_token_query(token)
 
-    case Repo.one(query) do
-      %Account{} = account ->
-        Repo.preload(account, [:person])
-      nil ->
-        nil
-    end
+    Repo.one(query)
   end
 
   def delete_account_session_token(token) do

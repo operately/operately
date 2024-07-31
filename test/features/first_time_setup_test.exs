@@ -50,8 +50,8 @@ defmodule Operately.Features.FirstTimeSetupTest do
     assert Operately.Companies.count_companies() == 1
     assert account != nil
 
-    account = Operately.Repo.preload(account, :person)
+    person = Operately.Repo.preload(account, :people).people |> hd()
 
-    assert account.person.company_role == :admin
+    assert person.company_role == :admin
   end
 end
