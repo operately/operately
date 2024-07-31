@@ -1,5 +1,6 @@
 defmodule OperatelyWeb.Api.Queries.GetMe do
   use TurboConnect.Query
+  use OperatelyWeb.Api.Helpers
 
   alias Operately.Repo
 
@@ -12,7 +13,7 @@ defmodule OperatelyWeb.Api.Queries.GetMe do
   end
 
   def call(conn, inputs) do
-    conn.assigns.current_account.person
+    me(conn)
     |> preload_manager(inputs[:include_manager])
     |> serialize(inputs[:include_manager])
     |> ok_tuple()

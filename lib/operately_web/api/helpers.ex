@@ -10,10 +10,10 @@ defmodule OperatelyWeb.Api.Helpers do
   end
 
   def me(conn) do
-    if conn.assigns.current_account do
-      conn.assigns.current_account.person
+    if conn.assigns.current_person do
+      conn.assigns.current_person
     else
-      raise "No account associated with the connection, maybe you forgot to load the account in a plug?"
+      raise "No person associated with the connection, maybe you forgot to load the person in a plug?"
     end
   end
 
