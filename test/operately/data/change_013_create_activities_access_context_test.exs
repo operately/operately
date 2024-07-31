@@ -910,7 +910,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
 
   def assert_no_context(activities) do
     Enum.each(activities, fn activity ->
-      assert activity.context_id == nil
+      assert activity.access_context_id == nil
     end)
     activities
   end
@@ -925,7 +925,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
 
   def assert_context_assigned(activities, context_id) do
     Enum.each(activities, fn activity ->
-      assert activity.context_id == context_id
+      assert activity.access_context_id == context_id
     end)
   end
 end

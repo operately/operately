@@ -307,7 +307,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
 
       activity = Repo.reload(activity)
 
-      assert activity.context_id == ctx.goal.access_context.id
+      assert activity.access_context_id == ctx.goal.access_context.id
     end
 
     test "goal_discussion_editing action", ctx do
@@ -344,7 +344,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       )
       |> Repo.one()
 
-      assert activity.context_id == ctx.goal.access_context.id
+      assert activity.access_context_id == ctx.goal.access_context.id
     end
 
     test "goal_timeframe_editing action", ctx do
@@ -366,7 +366,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       )
       |> Repo.one()
 
-      assert activity.context_id == ctx.goal.access_context.id
+      assert activity.access_context_id == ctx.goal.access_context.id
     end
   end
 
@@ -622,7 +622,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
         content: %{
           project_id: ctx.project.id,
         },
-        context_id: ctx.project.access_context.id,
+        access_context_id: ctx.project.access_context.id,
       }
 
       parent_activity = activity_fixture(attrs)
@@ -687,6 +687,6 @@ defmodule Operately.AccessActivityContextAssignerTest do
   def assert_context_assigned(result, context_id) do
     {:ok, activity} = result
 
-    assert activity.context_id == context_id
+    assert activity.access_context_id == context_id
   end
 end
