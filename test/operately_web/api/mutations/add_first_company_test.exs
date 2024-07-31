@@ -23,8 +23,8 @@ defmodule OperatelyWeb.Api.Mutations.AddFirstCompanyTest do
       assert account
       assert group
 
-      account = Operately.Repo.preload(account, :person)
-      assert account.person.company_role == :admin
+      person = Operately.Repo.preload(account, :people).people |> hd()
+      assert person.company_role == :admin
     end
 
     test "allows company and admin account creation only once", ctx do

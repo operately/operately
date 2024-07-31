@@ -26,11 +26,13 @@ defmodule Operately.People.FetchOrCreateAccountOperation do
     if account == nil do
       {:error, "Not found"}
     else
-      person = Operately.Repo.preload(account, :person).person
+      people = Operately.Repo.preload(account, :people).people
 
-      if person.avatar_url != image do
-        {:ok, _} = Operately.People.update_person(person, %{avatar_url: image})
-      end
+      Enum.each(people, fn person ->
+        if person.avatar_url != image do
+          {:ok, _} = Operately.People.update_person(person, %{avatar_url: image})
+        end
+      end)
 
       {:ok, account}
     end

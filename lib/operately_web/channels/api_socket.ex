@@ -69,10 +69,12 @@ defmodule OperatelyWeb.ApiSocket do
 
   defp assign_current_account(account_id, socket) do
     account = Operately.People.get_account!(account_id)
-    account = Operately.Repo.preload(account, :person)
+    people = Operately.Repo.preload(account, :people).people
 
     if account do
       socket = assign(socket, :account, account)
+      socket = assign(socket, :person, List.first(people))
+
       {:ok, socket}
     else
       {:error, :unauthorized}

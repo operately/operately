@@ -9,8 +9,7 @@ defmodule OperatelyWeb.Api.Queries.GetSpaces do
   end
 
   def call(conn, _inputs) do
-    me = conn.assigns.current_account.person
-    spaces = load(me)
+    spaces = load(me(conn))
 
     {:ok, %{spaces: Serializer.serialize(spaces, level: :full)}}
   end

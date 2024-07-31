@@ -1,9 +1,5 @@
 defmodule Operately.People.Person do
-  use Ecto.Schema
-  import Ecto.Changeset
-
-  @primary_key {:id, :binary_id, autogenerate: true}
-  @foreign_key_type :binary_id
+  use Operately.Schema
 
   schema "people" do
     belongs_to(:account, Operately.People.Account)
