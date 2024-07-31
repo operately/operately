@@ -2,6 +2,8 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
+  import Operately.Access.Filters, only: [filter_by_view_access: 2]
+
   alias OperatelyWeb.Api.Serializer
   alias Operately.Goals.Goal
 
@@ -46,6 +48,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
     query
     |> Goal.scope_company(person.company_id)
     |> include_requested(include_filters)
+    |> filter_by_view_access(person.id)
     |> Repo.one(with_deleted: true)
     |> load_last_check_in(inputs[:include_last_check_in])
     |> load_permissions(person, inputs[:include_permissions])
