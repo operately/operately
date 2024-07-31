@@ -2,7 +2,6 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdates do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
-  import Ecto.Query, only: [from: 2]
   import Operately.Access.Filters, only: [filter_by_view_access: 2]
 
   alias Operately.Repo
