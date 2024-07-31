@@ -6,6 +6,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdate do
 
   alias Operately.Repo
   alias Operately.Goals.Goal
+  alias Operately.Updates.Update
 
   inputs do
     field :id, :string
@@ -28,14 +29,14 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdate do
   end
 
   defp load(person, id) do
-    goal_query = from(g in Goal, select: g) |> filter_by_view_access(person.id)
-
-    from(u in Operately.Updates.Update,
-      join: g in subquery(goal_query), on: g.id == u.updatable_id,
+    from(g in Goal,
+      join: u in Update, on: g.id == u.updatable_id,
       where: u.id == ^id,
+      preload: :targets,
       order_by: [desc: u.inserted_at],
       select: %{update: u, goal: g}
     )
+    |> filter_by_view_access(person.id)
     |> Repo.one()
     |> preload_resources()
     |> load_goal_permissions(person)
@@ -44,13 +45,12 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdate do
   defp preload_resources(nil), do: nil
   defp preload_resources(%{update: update, goal: goal}) do
     update = Repo.preload(update, [:author, :acknowledging_person, reactions: [:person]])
-
     %{update | goal: goal}
   end
 
   defp load_goal_permissions(nil, _), do: nil
   defp load_goal_permissions(update, person) do
     goal = Goal.preload_permissions(update.goal, person)
-    Map.put(update, :goal, goal)
+    %{update | goal: goal}
   end
 end

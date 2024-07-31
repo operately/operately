@@ -92,6 +92,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdateTest do
     assert update.author
     assert update.goal
     assert update.goal.permissions
+    assert update.goal.targets
   end
 
   defp forbidden_request(conn, update_id) do
