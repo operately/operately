@@ -28,6 +28,7 @@ defmodule OperatelyWeb.TurboCase do
 
   defdelegate register_and_log_in_account(context), to: OperatelyWeb.ConnCase
   defdelegate log_in_account(conn, account), to: OperatelyWeb.ConnCase
+  defdelegate log_in_account(conn, account, company), to: OperatelyWeb.ConnCase
 
   def query(conn, query_name, inputs) do
     conn = Phoenix.ConnTest.dispatch(
