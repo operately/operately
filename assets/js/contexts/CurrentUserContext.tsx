@@ -10,6 +10,7 @@ const CurrentUserContext = React.createContext<CurrentUserContextProps>({
 });
 
 export function CurrentUserProvider({ children }) {
+  console.log("fetching me");
   const { data, loading, error } = People.useGetMe({});
 
   if (loading) return null;
@@ -23,6 +24,7 @@ export function CurrentUserProvider({ children }) {
 }
 
 export function useMe(): People.Person {
+  console.log("useMe");
   return React.useContext(CurrentUserContext).me as People.Person;
 }
 

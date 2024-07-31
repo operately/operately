@@ -107,13 +107,27 @@ defmodule OperatelyWeb.AccountAuth do
   end
 
   def fetch_current_company(conn, _opts) do
-    assign(conn, :current_company, nil)
+    case get_req_header(conn, "x-company-id") do
+      [company_id] ->
+        id = OperatelyWeb.Api.Helpers.id_without_comments(company_id)
+        {:ok, id} = Operately.Companies.ShortId.decode(id)
+
+        company = Operately.Companies.get_company!(id)
+        assign(conn, :current_company, company)
+
+      _ ->
+        conn
+    end
   end
 
   def fetch_current_person(conn, _opts) do
-    if conn.assigns[:current_account] do
-      people = Operately.Repo.preload(conn.assigns.current_account, :people).people
-      assign(conn, :current_person, List.first(people))
+    if conn.assigns[:current_account] && conn.assigns[:current_company] do
+      account = conn.assigns[:current_account]
+      company = conn.assigns[:current_company]
+
+      person = Operately.People.get_person!(account, company)
+
+      assign(conn, :current_person, person)
     else
       conn
     end
