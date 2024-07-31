@@ -1,9 +1,12 @@
 defmodule OperatelyWeb.Api.Queries.GetGoalTest do
   alias Operately.Support.RichText
   alias Operately.Access.Binding
+  alias OperatelyWeb.Paths
+  alias Operately.Repo
 
   use OperatelyWeb.TurboCase
 
+  import Operately.PeopleFixtures
   import Operately.GroupsFixtures
   import Operately.GoalsFixtures
   import Operately.UpdatesFixtures
@@ -13,6 +16,102 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
   describe "security" do
     test "it requires authentication", ctx do
       assert {401, _} = query(ctx.conn, :get_goal, %{})
+    end
+  end
+
+  describe "permissions" do
+    setup ctx do
+      ctx = register_and_log_in_account(ctx)
+      creator = person_fixture(%{company_id: ctx.company.id})
+      space = group_fixture(creator, %{company_id: ctx.company.id})
+
+      Map.merge(ctx, %{space: space, creator: creator})
+    end
+
+    test "company members have no access", ctx do
+      goal = goal_fixture(ctx.creator, %{
+        space_id: ctx.space.id,
+        company_access_level: Binding.no_access(),
+      })
+      goal_id = Paths.goal_id(goal)
+
+      assert {404, %{message: msg} = _res} = query(ctx.conn, :get_goal, %{id: goal_id})
+      assert msg == "The requested resource was not found"
+    end
+
+    test "company members have access", ctx do
+      goal = goal_fixture(ctx.creator, %{
+        space_id: ctx.space.id,
+        company_access_level: Binding.view_access(),
+      })
+      goal_id = Paths.goal_id(goal)
+
+      assert {200, res} = query(ctx.conn, :get_goal, %{id: goal_id})
+      assert res.goal.id == goal_id
+    end
+
+    test "space members have no access", ctx do
+      add_person_to_space(ctx)
+
+      goal = goal_fixture(ctx.creator, %{
+        space_id: ctx.space.id,
+        company_access_level: Binding.no_access(),
+        space_access_level: Binding.no_access(),
+      })
+      goal_id = Paths.goal_id(goal)
+
+      assert {404, %{message: msg} = _res} = query(ctx.conn, :get_goal, %{id: goal_id})
+      assert msg == "The requested resource was not found"
+    end
+
+    test "space members have access", ctx do
+      add_person_to_space(ctx)
+
+      goal = goal_fixture(ctx.creator, %{
+        space_id: ctx.space.id,
+        company_access_level: Binding.no_access(),
+        space_access_level: Binding.view_access(),
+      })
+      goal_id = Paths.goal_id(goal)
+
+      assert {200, res} = query(ctx.conn, :get_goal, %{id: goal_id})
+      assert res.goal.id == goal_id
+    end
+
+    test "champions have access", ctx do
+      champion = person_fixture_with_account(%{company_id: ctx.company.id})
+      goal = goal_fixture(ctx.creator, %{
+        space_id: ctx.space.id,
+        champion_id: champion.id,
+        company_access_level: Binding.no_access(),
+        space_access_level: Binding.no_access(),
+      })
+      goal_id = Paths.goal_id(goal)
+
+      account = Repo.preload(champion, :account).account
+      conn = log_in_account(ctx.conn, account)
+
+      assert {404, _} = query(ctx.conn, :get_goal, %{id: goal_id})
+      assert {200, res} = query(conn, :get_goal, %{id: goal_id})
+      assert res.goal.id == goal_id
+    end
+
+    test "reviewers have access", ctx do
+      reviewer = person_fixture_with_account(%{company_id: ctx.company.id})
+      goal = goal_fixture(ctx.creator, %{
+        space_id: ctx.space.id,
+        reviewer_id: reviewer.id,
+        company_access_level: Binding.no_access(),
+        space_access_level: Binding.no_access(),
+      })
+      goal_id = Paths.goal_id(goal)
+
+      account = Repo.preload(reviewer, :account).account
+      conn = log_in_account(ctx.conn, account)
+
+      assert {404, _} = query(ctx.conn, :get_goal, %{id: goal_id})
+      assert {200, res} = query(conn, :get_goal, %{id: goal_id})
+      assert res.goal.id == goal_id
     end
   end
 
@@ -55,7 +154,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
       assert res.goal.closed_by == nil
 
       # requested, but the goal is not closed
-      assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal), include_closed_by: true}) 
+      assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal), include_closed_by: true})
       assert res.goal.closed_by == nil
 
       retrospective = Jason.encode!(RichText.rich_text("Writing a retrospective"))
@@ -180,5 +279,16 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
       assert res.goal.access_levels.company == Binding.edit_access()
       assert res.goal.access_levels.space == Binding.full_access()
     end
+  end
+
+  #
+  # Helpers
+  #
+
+  defp add_person_to_space(ctx) do
+    Operately.Groups.add_members(ctx.person, ctx.space.id, [%{
+      id: ctx.person.id,
+      permissions: Binding.edit_access(),
+    }])
   end
 end

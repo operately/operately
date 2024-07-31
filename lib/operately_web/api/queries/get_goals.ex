@@ -2,6 +2,8 @@ defmodule OperatelyWeb.Api.Queries.GetGoals do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
+  import Operately.Access.Filters, only: [filter_by_view_access: 2]
+
   alias OperatelyWeb.Api.Serializer
   alias Operately.Goals.Goal
 
@@ -38,6 +40,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoals do
     |> Goal.scope_space(inputs[:space_id])
     |> Goal.scope_company(person.company_id)
     |> include_requested(include_filters)
+    |> filter_by_view_access(person.id)
     |> Repo.all()
     |> Goal.preload_last_check_in()
   end
@@ -51,7 +54,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoals do
         :include_champion -> from p in q, preload: [:champion]
         :include_reviewer -> from p in q, preload: [:reviewer]
         :include_last_check_in -> q # this is done after the load
-        _ -> q 
+        _ -> q
       end
     end)
   end
