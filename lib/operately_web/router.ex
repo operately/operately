@@ -11,12 +11,16 @@ defmodule OperatelyWeb.Router do
     plug :protect_from_forgery
     plug :put_secure_browser_headers
     plug :fetch_current_account
+    plug :fetch_current_company
+    plug :fetch_current_person
   end
 
   pipeline :api do
     plug :accepts, ["json"]
     plug :fetch_session
     plug :fetch_current_account
+    plug :fetch_current_company
+    plug :fetch_current_person
   end
 
   #

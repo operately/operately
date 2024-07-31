@@ -106,6 +106,19 @@ defmodule OperatelyWeb.AccountAuth do
     assign(conn, :current_account, account)
   end
 
+  def fetch_current_company(conn, _opts) do
+    assign(conn, :current_company, nil)
+  end
+
+  def fetch_current_person(conn, _opts) do
+    if conn.assigns[:current_account] do
+      people = Operately.Repo.preload(conn.assigns.current_account, :people).people
+      assign(conn, :current_person, List.first(people))
+    else
+      conn
+    end
+  end
+
   defp ensure_account_token(conn) do
     if token = get_session(conn, :account_token) do
       {token, conn}
