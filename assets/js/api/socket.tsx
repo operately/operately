@@ -1,9 +1,10 @@
 import { Socket } from "phoenix";
 import * as React from "react";
 
-type Payload = {[ key: string ]: any};
+type Payload = { [key: string]: any };
 
 var socket: Socket | null = null;
+var sharedHeaders: Payload = {};
 
 function connect(): Socket {
   if (socket) return socket!;
@@ -15,10 +16,15 @@ function connect(): Socket {
   return newSocket;
 }
 
-function useSubscription(channelName: string, callback: () => void, payload: Payload={}) {
+export function setHeaders(headers: Payload) {
+  sharedHeaders = headers;
+}
+
+function useSubscription(channelName: string, callback: () => void, payload: Payload = {}) {
   React.useEffect(() => {
     let socket = connect();
-    const channel = socket.channel(channelName, payload);
+    let data = { ...sharedHeaders, ...payload };
+    const channel = socket.channel(channelName, data);
 
     channel.on("event", callback);
 
