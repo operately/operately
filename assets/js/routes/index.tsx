@@ -25,6 +25,7 @@ function PublicRoutes() {
 export function createAppRoutes() {
   return createBrowserRouter([
     pageRoute("/", pages.LobbyPage),
+    pageRoute("/new", pages.NewCompanyPage),
     {
       path: "/:companyId",
       loader: companyLoader,
