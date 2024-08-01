@@ -3,6 +3,7 @@ defmodule Operately.People do
 
   alias Operately.Repo
   alias Operately.Access
+  alias Operately.Companies.Company
   alias Operately.People.{Person, Account}
 
   def list_people(company_id) do
@@ -11,6 +12,10 @@ defmodule Operately.People do
 
   def get_account!(id), do: Repo.get!(Account, id)
   def get_person!(id), do: Repo.get!(Person, id)
+
+  def get_person!(account = %Account{}, company = %Company{}) do
+    Repo.one!(from p in Person, where: p.account_id == ^account.id and p.company_id == ^company.id)
+  end
 
   def get_person_by_name!(company, name) do
     Repo.one!(from p in Person, where: p.full_name == ^name and p.company_id == ^company.id)

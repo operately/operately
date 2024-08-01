@@ -47,7 +47,7 @@ defmodule TurboConnect.TsGenTest do
       field :user, :user
     end
 
-    def call(%{user_id: user_id}) do
+    def call(%{user_id: _user_id}) do
       user = %{
         full_name: "John Doe",
         address: %{
@@ -152,31 +152,43 @@ defmodule TurboConnect.TsGenTest do
   """
 
   @ts_api_client """
-  interface ApiClientConfig {
-    basePath: string;
-  }
-
   export class ApiClient {
     private basePath: string;
+    private headers: any;
 
-    configure(config: ApiClientConfig) {
-      this.basePath = config.basePath;
+    setBasePath(basePath: string) {
+      this.basePath = basePath;
     }
 
     getBasePath() {
-      if (!this.basePath) {
-        throw new Error("ApiClient is not configured");
-      }
-
+      if (!this.basePath) throw new Error("ApiClient is not configured");
       return this.basePath;
     }
 
+    setHeaders(headers: any) {
+      this.headers = headers;
+    }
+
+    getHeaders() {
+      return this.headers || {};
+    }
+
+    private async post(path: string, data: any) {
+      const response = await axios.post(this.getBasePath() + path, toSnake(data), { headers: this.getHeaders() });
+      return toCamel(response.data);
+    } 
+
+    private async get(path: string, params: any) {
+      const response = await axios.get(this.getBasePath() + path, { params: toSnake(params), headers: this.getHeaders() });
+      return toCamel(response.data);
+    }
+
     async getUser(input: GetUserInput): Promise<GetUserResult> {
-      return axios.get(this.getBasePath() + "/get_user", { params: toSnake(input)}).then(({ data }) => toCamel(data));
+      return this.get("/get_user", input);
     }
 
     async createUser(input: CreateUserInput): Promise<CreateUserResult> {
-      return axios.post(this.getBasePath() + "/create_user", toSnake(input)).then(({ data }) => toCamel(data));
+      return this.post("/create_user", input);
     }
 
   }
@@ -201,7 +213,7 @@ defmodule TurboConnect.TsGenTest do
   }
 
   export default {
-    configureDefault: (config: ApiClientConfig) => defaultApiClient.configure(config),
+    default: defaultApiClient,
 
     getUser,
     useGetUser,
