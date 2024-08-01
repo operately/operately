@@ -2,6 +2,8 @@ defmodule OperatelyWeb.Api.Queries.GetProjects do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
+  import Operately.Access.Filters, only: [filter_by_view_access: 2]
+
   alias OperatelyWeb.Api.Serializer
   alias Operately.Projects.Project
 
@@ -43,13 +45,14 @@ defmodule OperatelyWeb.Api.Queries.GetProjects do
     |> Project.scope_visibility(person.id)
     |> Project.scope_space(space_id)
     |> Project.scope_goal(goal_id)
+    |> filter_by_view_access(person.id)
     |> apply_role_filter(person, inputs)
     |> include_requested(include_filters)
     |> Project.order_by_name()
     |> Repo.all(with_deleted: inputs[:include_archived] == true)
     |> Project.after_load_hooks()
   end
-  
+
   defp apply_role_filter(query, person, inputs) do
     cond do
       inputs[:only_reviewed_by_me] -> Project.scope_role(query, person.id, [:reviewer])
@@ -70,7 +73,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjects do
         :include_champion -> from p in q, preload: [:champion]
         :include_reviewer -> from p in q, preload: [:reviewer]
         :include_milestones -> from p in q, preload: [milestones: :project]
-        _ -> q 
+        _ -> q
       end
     end)
   end
