@@ -20,7 +20,7 @@ defmodule OperatelyWeb.AccountSessionControllerTest do
 
     test "redirects if already logged in", %{conn: conn, account: account} do
       conn = conn |> log_in_account(account) |> get(~p"/accounts/log_in")
-      assert redirecteT_to(conn) == ~p"/"
+      assert redirected_to(conn) == ~p"/"
     end
   end
 
