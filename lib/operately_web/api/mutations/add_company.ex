@@ -3,8 +3,6 @@ defmodule OperatelyWeb.Api.Mutations.AddCompany do
 
   inputs do
     field :company_name, :string
-
-    field :full_name, :string
     field :role, :string
   end
 

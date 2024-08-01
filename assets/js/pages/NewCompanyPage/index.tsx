@@ -9,16 +9,11 @@ import { TextInput } from "@/components/Form";
 import { FilledButton } from "@/components/Button";
 import { Logo } from "@/layouts/DefaultLayout/Logo";
 
-interface LoaderResult {
-  // TODO: Define what is loaded when you visit this page
-}
-
-export async function loader({}): Promise<LoaderResult> {
-  return {}; // TODO: Load data here
+export async function loader({}): Promise<null> {
+  return null;
 }
 
 export function Page() {
-  // const data = Pages.useLoadedData<LoaderResult>();
   const form = useForm();
 
   return (
