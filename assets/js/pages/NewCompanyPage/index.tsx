@@ -22,7 +22,7 @@ export function Page() {
   const form = useForm();
 
   return (
-    <Pages.Page title={"NewCompanyPage"}>
+    <Pages.Page title={"New Company"}>
       <Paper.Root size="small">
         <div className="flex items-center justify-center mb-4 mt-24">
           <Link to={Paths.lobbyPath()}>
