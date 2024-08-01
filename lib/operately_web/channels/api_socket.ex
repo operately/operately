@@ -69,11 +69,9 @@ defmodule OperatelyWeb.ApiSocket do
 
   defp assign_current_account(account_id, socket) do
     account = Operately.People.get_account!(account_id)
-    people = Operately.Repo.preload(account, :people).people
 
     if account do
       socket = assign(socket, :account, account)
-      socket = assign(socket, :person, List.first(people))
 
       {:ok, socket}
     else
@@ -88,10 +86,13 @@ defmodule OperatelyWeb.ApiSocket do
     def join("api:" <> topic, payload, socket) do
       topic = String.to_existing_atom(topic)
       handler = OperatelyWeb.Api.__subscriptions__()[topic]
+      IO.inspect("Joining topic: #{topic} with #{inspect(payload)}")
+      socket = assign_company_and_person(socket, payload)
 
       {:ok, socket, topics} = apply(handler, :join, [topic, payload, socket])
 
       topics = Enum.map(topics, fn t -> "api:#{topic}:#{t}" end)
+      socket = put_new_topics(socket, topics)
 
       {:ok, put_new_topics(socket, topics)}
     end
@@ -122,6 +123,25 @@ defmodule OperatelyWeb.ApiSocket do
     def handle_info(%Broadcast{topic: _, event: event, payload: payload}, socket) do
       push(socket, event, payload)
       {:noreply, socket}
+    end
+
+    defp assign_company_and_person(socket, payload) do
+      if payload["x-company-id"] do
+        id = OperatelyWeb.Api.Helpers.id_without_comments(payload["x-company-id"])
+        {:ok, id} = Operately.Companies.ShortId.decode(id)
+
+        company = Operately.Companies.get_company!(id)
+        socket = assign(socket, :company, company)
+        
+        if socket.assigns[:account] do
+          person = Operately.People.get_person!(socket.assigns.account, company)
+          assign(socket, :person, person)
+        else
+          socket
+        end
+      else
+        socket
+      end
     end
   end
 
