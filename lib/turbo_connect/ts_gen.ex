@@ -38,23 +38,35 @@ defmodule TurboConnect.TsGen do
 
   def generate_api_client_class(api_module) do
     """
-    interface ApiClientConfig {
-      basePath: string;
-    }
-
     export class ApiClient {
       private basePath: string;
+      private headers: any;
 
-      configure(config: ApiClientConfig) {
-        this.basePath = config.basePath;
+      setBasePath(basePath: string) {
+        this.basePath = basePath;
       }
 
       getBasePath() {
-        if (!this.basePath) {
-          throw new Error("ApiClient is not configured");
-        }
-
+        if (!this.basePath) throw new Error("ApiClient is not configured");
         return this.basePath;
+      }
+
+      setHeaders(headers: any) {
+        this.headers = headers;
+      }
+
+      getHeaders() {
+        return this.headers || {};
+      }
+
+      private async post(path: string, data: any) {
+        const response = await axios.post(this.getBasePath() + path, toSnake(data), { headers: this.getHeaders() });
+        return toCamel(response.data);
+      } 
+
+      private async get(path: string, params: any) {
+        const response = await axios.get(this.getBasePath() + path, { params: toSnake(params), headers: this.getHeaders() });
+        return toCamel(response.data);
       }
 
     #{Queries.generate_class_functions(api_module.__queries__())}
@@ -144,7 +156,7 @@ defmodule TurboConnect.TsGen do
     #{Queries.generate_hooks(api_module.__queries__())}
     #{Mutations.generate_hooks(api_module.__mutations__())}
     export default {
-      configureDefault: (config: ApiClientConfig) => defaultApiClient.configure(config),
+      default: defaultApiClient,
 
     #{Queries.generate_default_exports(api_module.__queries__())}
     #{Mutations.generate_default_exports(api_module.__mutations__())}

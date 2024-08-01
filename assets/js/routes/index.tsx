@@ -9,17 +9,24 @@ import ErrorPage from "./ErrorPage";
 import DefaultLayout from "@/layouts/DefaultLayout";
 
 import { CurrentUserProvider } from "@/contexts/CurrentUserContext";
+import { ThemeProvider } from "@/theme";
 
 function ProtectedRoutes() {
   return (
-    <CurrentUserProvider>
-      <DefaultLayout />
-    </CurrentUserProvider>
+    <ThemeProvider>
+      <CurrentUserProvider>
+        <DefaultLayout />
+      </CurrentUserProvider>
+    </ThemeProvider>
   );
 }
 
 function PublicRoutes() {
-  return <Outlet />;
+  return (
+    <ThemeProvider>
+      <Outlet />
+    </ThemeProvider>
+  );
 }
 
 export function createAppRoutes() {
