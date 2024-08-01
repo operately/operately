@@ -118,7 +118,7 @@ defmodule Operately.Operations.CompanyAdding do
       Person.changeset(%{
         company_id: changes[:company].id,
         account_id: changes[:account].id,
-        full_name: attrs.full_name,
+        full_name: changes[:account].full_name,
         email: changes[:account].email,
         avatar_url: "",
         title: attrs.role,
