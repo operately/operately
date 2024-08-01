@@ -2,7 +2,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckIns do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
-  import Operately.Access.Filters, only: [filter_by_view_access: 3]
+  import Operately.Access.Filters
 
   alias Operately.Projects.CheckIn
 
@@ -33,7 +33,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckIns do
 
     query
     |> include_requested(requested)
-    |> filter_by_view_access(person.id, project_child: true)
+    |> filter_by_view_access(person.id, join_parent: :project)
     |> Repo.all()
   end
 

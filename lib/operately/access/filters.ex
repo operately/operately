@@ -7,9 +7,9 @@ defmodule Operately.Access.Filters do
     filter(query, person_id, Binding.view_access(), opts)
   end
 
-  defp filter(query, person_id, access_level, project_child: true) do
+  defp filter(query, person_id, access_level, join_parent: parent) do
     from(item in query,
-      join: p in assoc(item, :project),
+      join: p in assoc(item, ^parent),
       join: c in assoc(p, :access_context),
       join: b in assoc(c, :bindings),
       join: g in assoc(b, :group),
