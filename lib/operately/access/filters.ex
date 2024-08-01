@@ -5,7 +5,7 @@ defmodule Operately.Access.Filters do
 
   def filter_by_view_access(query, person_id, opts \\ []) do
     query
-    |> maybe_join_parent(opts)
+    |> join_context(opts)
     |> filter(person_id, Binding.view_access())
   end
 
@@ -19,13 +19,18 @@ defmodule Operately.Access.Filters do
     )
   end
 
-  defp maybe_join_parent(query, join_parent: parent) do
+  defp join_context(query, join_parent: parent) do
     from(item in query,
       join: p in assoc(item, ^parent),
       join: c in assoc(p, :access_context), as: :context
     )
   end
-  defp maybe_join_parent(query, _) do
+  defp join_context(query, named_binding: name) do
+    from([{^name, item}] in query,
+      join: c in assoc(item, :access_context), as: :context
+    )
+  end
+  defp join_context(query, _) do
     from(item in query, join: c in assoc(item, :access_context), as: :context)
   end
 end

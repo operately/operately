@@ -17,6 +17,14 @@ defmodule OperatelyWeb.Api.Helpers do
     end
   end
 
+  def company(conn) do
+    if conn.assigns.current_company do
+      conn.assigns.current_company
+    else
+      raise "No company associated with the connection, maybe you forgot to load the company in a plug?"
+    end
+  end
+
   def extend_query(query, nil, _), do: query
   def extend_query(query, false, _), do: query
   def extend_query(query, _, fun), do: fun.(query)
@@ -48,7 +56,7 @@ defmodule OperatelyWeb.Api.Helpers do
       |> String.trim_trailing("-")
       |> String.replace(~r/-+/, "-")
 
-    parts = comments |> String.split("-") |> Enum.reduce("", fn part, acc -> 
+    parts = comments |> String.split("-") |> Enum.reduce("", fn part, acc ->
       cond do
         acc == "" -> part
         String.length(acc) + String.length(part) + 1 > @max_comment_length -> acc
@@ -60,7 +68,7 @@ defmodule OperatelyWeb.Api.Helpers do
   end
 
   def decode_company_id(id) do
-    id_without_comments(id) 
+    id_without_comments(id)
     |> Operately.Companies.ShortId.decode()
   end
 
@@ -77,7 +85,7 @@ defmodule OperatelyWeb.Api.Helpers do
     require Logger
 
     case Ecto.UUID.cast(id) do
-      {:ok, id} -> 
+      {:ok, id} ->
         Logger.warn("Using UUIDs for IDs is deprecated, please use short UUIDs instead.")
         {:ok, id}
       :error -> decode_short_id(id)
