@@ -20,6 +20,10 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
     project_manager = person_fixture_with_account(%{company_id: company.id, full_name: "Project Manager"})
 
     group = group_fixture(champion, %{company_id: company.id, name: "Test Group"})
+    Operately.Groups.add_members(non_contributor, group.id, [%{
+      id: non_contributor.id,
+      permissions: Binding.full_access(),
+    }])
 
     {:ok, goal} = Operately.Goals.create_goal(champion, %{
       company_id: company.id,

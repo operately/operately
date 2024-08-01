@@ -2,6 +2,8 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckIn do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
+  import Operately.Access.Filters, only: [filter_by_view_access: 3]
+
   alias Operately.Projects.CheckIn
 
   inputs do
@@ -17,7 +19,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckIn do
 
   def call(conn, inputs) do
     case decode_id(inputs[:id]) do
-      {:ok, id} -> 
+      {:ok, id} ->
         project_check_in = load(me(conn), id, inputs)
 
         if nil == project_check_in do
@@ -32,12 +34,13 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckIn do
   defp load(person, id, inputs) do
     requested = extract_include_filters(inputs)
 
-    query = from p in CheckIn, 
-      where: p.id == ^id, 
+    query = from p in CheckIn,
+      where: p.id == ^id,
       preload: [:acknowledged_by]
 
     query
     |> include_requested(requested)
+    |> filter_by_view_access(person.id, project_child: true)
     |> Repo.one()
     |> preload_project_permissions(person)
   end
