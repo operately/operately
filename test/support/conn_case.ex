@@ -68,19 +68,25 @@ defmodule OperatelyWeb.ConnCase do
   def log_in_account(conn, account = %Operately.People.Account{}) do
     people = Operately.Repo.preload(account, [people: :company]).people
 
-    if length(people) == 1 do
-      log_in_account(conn, account, hd(people).company)
-    else
-      throw "Account has multiple associated companies, please specify the company with log_in_account(conn, account, company)"
+    cond do
+      length(people) == 0 -> create_conn_with_session_token(conn, account)
+      length(people) == 1 -> log_in_account(conn, account, hd(people).company)
+
+      true ->
+        throw "Account has multiple associated companies, please specify the company with log_in_account(conn, account, company)"
     end
   end
 
   def log_in_account(conn, account = %Operately.People.Account{}, company = %Operately.Companies.Company{}) do
+    create_conn_with_session_token(conn, account)
+    |> Plug.Conn.put_req_header("x-company-id", OperatelyWeb.Paths.company_id(company))
+  end
+
+  defp create_conn_with_session_token(conn, account) do
     token = Operately.People.generate_account_session_token(account)
 
     conn
     |> Phoenix.ConnTest.init_test_session(%{})
     |> Plug.Conn.put_session(:account_token, token)
-    |> Plug.Conn.put_req_header("x-company-id", OperatelyWeb.Paths.company_id(company))
   end
 end
