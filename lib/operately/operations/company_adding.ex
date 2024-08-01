@@ -8,15 +8,15 @@ defmodule Operately.Operations.CompanyAdding do
   alias Operately.Groups
   alias Operately.Access.{Context, Group, Binding, GroupMembership}
 
-  def run(attrs, opts \\ []) do
+  def run(attrs, account \\ nil) do
     Multi.new()
     |> insert_company(attrs)
     |> insert_access_context()
     |> insert_group()
     |> insert_access_groups()
     |> insert_access_bindings()
-    |> insert_account(attrs, opts)
-    |> insert_person(attrs, opts)
+    |> insert_account_if_doesnt_exists(attrs, account)
+    |> insert_person(attrs)
     |> Repo.transaction()
     |> Repo.extract_result(:updated_company)
   end
@@ -96,42 +96,40 @@ defmodule Operately.Operations.CompanyAdding do
     end)
   end
 
-  defp insert_account(multi, attrs, opts) do
-    create_admin = Keyword.get(opts, :create_admin, false)
-
-    if create_admin do
+  #
+  # If we are setting up a self-hosted instance, we need to create an account
+  # for the person who is setting up the company. Otherwise, if we are setting
+  # up a new company in Operately Cloud, we use the account that was passed in
+  # as an argument.
+  #
+  defp insert_account_if_doesnt_exists(multi, attrs, account) do
+    if account do
+      Multi.put(multi, :account, account)
+    else
       changeset = Account.registration_changeset(%{email: attrs.email, password: attrs.password})
       Multi.insert(multi, :account, changeset)
-    else
-      multi
     end
   end
 
-  defp insert_person(multi, attrs, opts) do
-    create_admin = Keyword.get(opts, :create_admin, false)
-
-    if create_admin do
-      multi
-      |> Multi.run(:company_space, fn _, changes -> {:ok, changes.group} end)
-      |> Operately.People.insert_person(fn changes ->
-        Person.changeset(%{
-          company_id: changes[:company].id,
-          account_id: changes[:account].id,
-          full_name: attrs.full_name,
-          email: changes[:account].email,
-          avatar_url: "",
-          title: attrs.role,
-          company_role: :admin,
-        })
-      end)
-      |> Multi.insert(:admin_access_membership, fn changes ->
-        GroupMembership.changeset(%{
-          group_id: changes.admins_access_group.id,
-          person_id: changes.person.id,
-        })
-      end)
-    else
-      multi
-    end
+  defp insert_person(multi, attrs) do
+    multi
+    |> Multi.run(:company_space, fn _, changes -> {:ok, changes.group} end)
+    |> Operately.People.insert_person(fn changes ->
+      Person.changeset(%{
+        company_id: changes[:company].id,
+        account_id: changes[:account].id,
+        full_name: attrs.full_name,
+        email: changes[:account].email,
+        avatar_url: "",
+        title: attrs.role,
+        company_role: :admin,
+      })
+    end)
+    |> Multi.insert(:admin_access_membership, fn changes ->
+      GroupMembership.changeset(%{
+        group_id: changes.admins_access_group.id,
+        person_id: changes.person.id,
+      })
+    end)
   end
 end
