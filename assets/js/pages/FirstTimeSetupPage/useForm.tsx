@@ -15,14 +15,14 @@ export interface FormFields {
   companyName: string;
   fullName: string;
   email: string;
-  role: string;
+  title: string;
   password: string;
   passwordConfirmation: string;
 
   setCompanyName: (name: string) => void;
   setFullName: (content: string) => void;
   setEmail: (content: string) => void;
-  setRole: (content: string) => void;
+  setTitle: (content: string) => void;
   setPassword: (content: string) => void;
   setPasswordConfirmation: (content: string) => void;
 }
@@ -36,7 +36,7 @@ export function useForm(): FormState {
   const [companyName, setCompanyName] = useState("");
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState("");
+  const [title, setTitle] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
 
@@ -47,8 +47,8 @@ export function useForm(): FormState {
     setFullName,
     email,
     setEmail,
-    role,
-    setRole,
+    title,
+    setTitle,
     password,
     setPassword,
     passwordConfirmation,
@@ -82,7 +82,7 @@ function useSubmit(fields: FormFields) {
       companyName: fields.companyName,
       fullName: fields.fullName,
       email: fields.email,
-      role: fields.role,
+      title: fields.title,
       password: fields.password,
       passwordConfirmation: fields.passwordConfirmation,
     });

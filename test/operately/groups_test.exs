@@ -21,11 +21,12 @@ defmodule Operately.GroupsTest do
     end
 
     test "list_potential_members returns members that are not in the group", ctx do
+      person0 = Ecto.assoc(ctx.company, :people) |> Repo.all() |> hd()
       person1 = person_fixture(full_name: "John Doe", title: "CEO", company_id: ctx.company.id)
       person2 = person_fixture(full_name: "Mike Smith", title: "CTO", company_id: ctx.company.id)
 
-      assert Groups.list_potential_members(ctx.group.id, "", [], 10) == [person1, person2]
-      assert Groups.list_potential_members(ctx.group.id, "", [person1.id], 10) == [person2]
+      assert Groups.list_potential_members(ctx.group.id, "", [], 10) == [person0, person1, person2]
+      assert Groups.list_potential_members(ctx.group.id, "", [person0.id, person1.id], 10) == [person2]
       assert Groups.list_potential_members(ctx.group.id, "Doe", [], 10) == [person1]
       assert Groups.list_potential_members(ctx.group.id, "CTO", [], 10) == [person2]
     end

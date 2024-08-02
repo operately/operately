@@ -210,7 +210,7 @@ defmodule Operately.PeopleTest do
   describe "change_account_registration/2" do
     test "returns a changeset" do
       assert %Ecto.Changeset{} = changeset = People.change_account_registration(%Account{})
-      assert changeset.required == [:password, :email]
+      assert changeset.required == [:full_name, :password, :email]
     end
 
     test "allows fields to be set" do

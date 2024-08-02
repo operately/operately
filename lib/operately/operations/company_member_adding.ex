@@ -23,7 +23,11 @@ defmodule Operately.Operations.CompanyMemberAdding do
     password = :crypto.strong_rand_bytes(64) |> Base.encode64 |> binary_part(0, 64)
 
     Multi.insert(multi, :account,
-      Operately.People.Account.registration_changeset(%{email: attrs.email, password: password})
+      Operately.People.Account.registration_changeset(%{
+        email: attrs.email, 
+        password: password,
+        full_name: attrs.full_name
+      })
     )
   end
 
