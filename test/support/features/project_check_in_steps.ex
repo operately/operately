@@ -75,12 +75,20 @@ defmodule Operately.Support.Features.ProjectCheckInSteps do
     })
   end
 
+  @days ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+  @months ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+
   step :assert_next_check_in_scheduled, ctx, %{status: _status, description: _description} do
     project = Operately.Projects.get_project!(ctx.project.id)
 
     assert Date.diff(project.next_check_in_scheduled_at, Date.utc_today()) >= 7
 
+    day = Enum.at(@days, Date.day_of_week(project.next_check_in_scheduled_at))
+    month = Enum.at(@months, project.next_check_in_scheduled_at.month - 1)
+
     ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> UI.assert_text("Scheduled for #{day}, #{month} #{project.next_check_in_scheduled_at.day}")
   end
 
   step :open_check_in_from_notifications, ctx, %{status: _status, description: _description} do

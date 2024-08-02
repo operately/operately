@@ -27,8 +27,6 @@ import { Paths } from "@/routes/paths";
 import { SmallStatusIndicator } from "@/features/projectCheckIns/SmallStatusIndicator";
 import Options from "./Options";
 
-
-
 export function Page() {
   const { project } = useLoadedData();
 
@@ -256,19 +254,18 @@ function Description({ project }) {
   const LIMIT = 250;
 
   const [showMore, setShowMore] = useState(false);
-  const length = useMemo(() => project.description ? countCharacters(project.description) : 0, []);
+  const length = useMemo(() => (project.description ? countCharacters(project.description) : 0), []);
 
   const truncatedDescription = useMemo(() => {
-    if(!project?.description) return;
+    if (!project?.description) return;
 
     return shortenContent(project.description, LIMIT, { suffix: "..." });
   }, []);
 
   if (project.description) {
-    if(length < LIMIT) {
+    if (length < LIMIT) {
       return <RichContent jsonContent={project.description} />;
-    }
-    else {
+    } else {
       return (
         <div>
           <RichContent jsonContent={showMore ? project.description : truncatedDescription} />
@@ -280,7 +277,7 @@ function Description({ project }) {
             {showMore ? "Collapse" : "Expand"}
           </span>
         </div>
-      )
+      );
     }
   } else {
     return <DescriptionZeroState project={project} />;
