@@ -15,6 +15,7 @@ defmodule OperatelyWeb.Api.Queries.SearchProjectContributorCandidates do
 
   def call(_conn, inputs) do
     {:ok, project_id} = decode_id(inputs.project_id)
+
     people = Projects.list_project_contributor_candidates(project_id, inputs.query, [], 10)
 
     {:ok, %{people: Serializer.serialize(people)}}
