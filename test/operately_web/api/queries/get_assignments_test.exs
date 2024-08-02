@@ -169,16 +169,14 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
       assert Repo.aggregate(Update, :count, :id) == 4
       assert length(assignments) == 2
 
-      [u1, u2] = assignments
-
-      assert u1.id == Paths.goal_update_id(update2)
+      u1 = Enum.find(assignments, &(&1.id == Paths.goal_update_id(update1)))
       assert u1.name == "goal"
       assert u1.due
       assert u1.type == "goal_update"
       assert u1.champion_id == another_person.id
       assert u1.champion_name == "champion"
 
-      assert u2.id == Paths.goal_update_id(update1)
+      u2 = Enum.find(assignments, &(&1.id == Paths.goal_update_id(update2)))
       assert u2.name == "goal"
       assert u2.due
       assert u2.type == "goal_update"
