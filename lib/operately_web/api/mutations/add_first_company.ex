@@ -5,7 +5,7 @@ defmodule OperatelyWeb.Api.Mutations.AddFirstCompany do
     field :company_name, :string
     field :full_name, :string
     field :email, :string
-    field :role, :string
+    field :title, :string
     field :password, :string
     field :password_confirmation, :string
   end

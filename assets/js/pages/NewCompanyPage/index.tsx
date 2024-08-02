@@ -2,6 +2,7 @@ import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Icons from "@tabler/icons-react";
+import * as Api from "@/api";
 
 import { Link } from "@/components/Link";
 import { Paths } from "@/routes/paths";
@@ -70,7 +71,13 @@ export function Page() {
           </div>
 
           <div className="mt-10 flex justify-center gap-4">
-            <FilledButton type="primary" onClick={form.submit} bzzzOnClickFailure testId="submit">
+            <FilledButton
+              type="primary"
+              onClick={form.submit}
+              bzzzOnClickFailure
+              testId="submit"
+              loading={form.loading}
+            >
               Create Company
             </FilledButton>
           </div>
@@ -84,6 +91,8 @@ function useForm() {
   const [companyName, setCompanyName] = React.useState("");
   const [title, setTitle] = React.useState("");
   const [errors, setErrors] = React.useState<{ field: string; message: string }[]>([]);
+
+  const [add, { loading: loading }] = Api.useAddCompany();
 
   const submit = async (): Promise<boolean> => {
     const foundErrors: { field: string; message: string }[] = [];
@@ -103,7 +112,12 @@ function useForm() {
       setErrors([]);
     }
 
-    return true;
+    try {
+      await add({ companyName, title });
+      return true;
+    } catch (e) {
+      return false;
+    }
   };
 
   return {
@@ -113,5 +127,6 @@ function useForm() {
     setTitle,
     submit,
     errors,
+    loading,
   };
 }
