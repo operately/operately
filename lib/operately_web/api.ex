@@ -54,6 +54,7 @@ defmodule OperatelyWeb.Api do
   mutation :add_company_member, M.AddCompanyMember
   mutation :add_company_trusted_email_domain, M.AddCompanyTrustedEmailDomain
   mutation :add_first_company, M.AddFirstCompany
+  mutation :add_company, M.AddCompany
   mutation :add_group_members, M.AddGroupMembers
   mutation :add_key_resource, M.AddKeyResource
   mutation :add_project_contributor, M.AddProjectContributor

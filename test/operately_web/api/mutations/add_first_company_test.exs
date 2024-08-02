@@ -5,7 +5,7 @@ defmodule OperatelyWeb.Api.Mutations.AddFirstCompanyTest do
     company_name: "Acme Co.",
     full_name: "John Doe",
     email: "john@your-company.com",
-    role: "CEO",
+    title: "CEO",
     password: "Aa12345#&!123",
     password_confirmation: "Aa12345#&!123"
   }

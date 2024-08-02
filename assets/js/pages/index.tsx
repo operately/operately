@@ -38,6 +38,7 @@ import * as GoalsPage from "./GoalsPage";
 import * as GroupAppearancePage from "./GroupAppearancePage";
 import * as GroupMembersPage from "./GroupMembersPage";
 import * as LobbyPage from "./LobbyPage";
+import * as NewCompanyPage from "./NewCompanyPage";
 import * as NotFoundPage from "./NotFoundPage";
 import * as NotificationsPage from "./NotificationsPage";
 import * as PeopleOrgChartPage from "./PeopleOrgChartPage";
@@ -223,6 +224,10 @@ export default {
   LobbyPage: {
     loader: LobbyPage.loader,
     Page: LobbyPage.Page
+  },
+  NewCompanyPage: {
+    loader: NewCompanyPage.loader,
+    Page: NewCompanyPage.Page
   },
   NotFoundPage: {
     loader: NotFoundPage.loader,
