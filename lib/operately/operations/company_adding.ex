@@ -106,7 +106,12 @@ defmodule Operately.Operations.CompanyAdding do
     if account do
       Multi.put(multi, :account, account)
     else
-      changeset = Account.registration_changeset(%{email: attrs.email, password: attrs.password})
+      changeset = Account.registration_changeset(%{
+        email: attrs.email, 
+        password: attrs.password,
+        full_name: attrs.full_name
+      })
+
       Multi.insert(multi, :account, changeset)
     end
   end

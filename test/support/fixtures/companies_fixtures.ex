@@ -8,7 +8,7 @@ defmodule Operately.CompaniesFixtures do
       mission: "some mission",
       company_name: "some name",
       trusted_email_domains: [],
-      role: "Founder"
+      title: "Founder",
     })
 
     {:ok, company} = Operately.Companies.create_company(attrs, creator)
