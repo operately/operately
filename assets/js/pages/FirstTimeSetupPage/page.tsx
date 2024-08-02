@@ -7,7 +7,6 @@ import * as Forms from "@/components/Form";
 import { Spacer } from "@/components/Spacer";
 import { useForm } from "./useForm";
 
-
 export function Page() {
   return (
     <Pages.Page title="Welcome to Operately!">
@@ -29,12 +28,8 @@ function Form() {
   const { fields, submit, submitting, errors } = useForm();
 
   return (
-    <Forms.Form
-      isValid={true}
-      loading={submitting}
-      onSubmit={submit}
-    >
-      <Forms.TextInput 
+    <Forms.Form isValid={true} loading={submitting} onSubmit={submit}>
+      <Forms.TextInput
         label="Name of the company"
         placeholder="e.g. Acme Co."
         onChange={fields.setCompanyName}
@@ -47,7 +42,7 @@ function Form() {
       <AdminAccountTitle />
       <Spacer />
 
-      <Forms.TextInput 
+      <Forms.TextInput
         label="Full name"
         placeholder="e.g. John Johnson"
         onChange={fields.setFullName}
@@ -55,16 +50,15 @@ function Form() {
         error={!!errors.find((e) => e.field === "fullName")?.message}
         testId="full-name"
       />
-      
-      <Forms.TextInput 
-        label="Role in the company"
+      <Forms.TextInput
+        label="Title in the company"
         placeholder="e.g. Founder"
-        onChange={fields.setRole}
-        value={fields.role}
-        error={!!errors.find((e) => e.field === "role")?.message}
-        testId="role"
+        onChange={fields.setTitle}
+        value={fields.title}
+        error={!!errors.find((e) => e.field === "title")?.message}
+        testId="title"
       />
-      <Forms.TextInput 
+      <Forms.TextInput
         label="Email"
         placeholder="e.g. john@your-company.com"
         onChange={fields.setEmail}
@@ -72,7 +66,7 @@ function Form() {
         error={!!errors.find((e) => e.field === "email")?.message}
         testId="email"
       />
-      <Forms.TextInput 
+      <Forms.TextInput
         label="Password"
         onChange={fields.setPassword}
         value={fields.password}
@@ -80,7 +74,7 @@ function Form() {
         type="password"
         testId="password"
       />
-      <Forms.TextInput 
+      <Forms.TextInput
         label="Repeat password"
         onChange={fields.setPasswordConfirmation}
         value={fields.passwordConfirmation}
@@ -90,16 +84,16 @@ function Form() {
       />
 
       {errors.map((e, idx) => (
-        <div key={idx} className="text-red-500 text-sm">{e.message}</div>
+        <div key={idx} className="text-red-500 text-sm">
+          {e.message}
+        </div>
       ))}
 
       <div className="flex items-center justify-center">
-        <Forms.SubmitButton data-test-id="submit-form">
-          Submit
-        </Forms.SubmitButton>
+        <Forms.SubmitButton data-test-id="submit-form">Submit</Forms.SubmitButton>
       </div>
     </Forms.Form>
-  )
+  );
 }
 
 function AdminAccountTitle() {
@@ -109,5 +103,5 @@ function AdminAccountTitle() {
       <span className="text-content-accent text-center">ADMIN ACCOUNT</span>
       <div className="bg-content-accent flex-1 h-[1px] bg-black"></div>
     </div>
-  )
+  );
 }
