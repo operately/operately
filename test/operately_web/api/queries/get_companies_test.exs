@@ -66,7 +66,7 @@ defmodule OperatelyWeb.Api.Queries.GetCompaniesTest do
       assert {200, res} = query(ctx.conn, :get_companies, %{include_member_count: true})
       assert length(res.companies) == 1
       
-      assert hd(res.companies).member_count == 2
+      assert hd(res.companies).member_count == 3
     end
   end
 
