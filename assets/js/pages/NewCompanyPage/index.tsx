@@ -38,6 +38,7 @@ export function Page() {
           <div className="mt-8 flex flex-col gap-6">
             <div className="">
               <TextInput
+                testId="company-name-input"
                 label="Name of the company"
                 placeholder="e.g. Acme Co."
                 value={form.companyName}
@@ -54,21 +55,22 @@ export function Page() {
 
             <div className="">
               <TextInput
-                label="What's your role in the company?"
+                testId="title-input"
+                label="What's your title in the company?"
                 placeholder="e.g. Founder"
-                value={form.role}
-                onChange={form.setRole}
-                error={form.errors.some((e) => e.field === "role")}
+                value={form.title}
+                onChange={form.setTitle}
+                error={form.errors.some((e) => e.field === "title")}
               />
 
-              {form.errors.some((e) => e.field === "role") && (
-                <div className="text-red-500 text-sm mt-1">{form.errors.find((e) => e.field === "role")?.message}</div>
+              {form.errors.some((e) => e.field === "title") && (
+                <div className="text-red-500 text-sm mt-1">{form.errors.find((e) => e.field === "title")?.message}</div>
               )}
             </div>
           </div>
 
           <div className="mt-10 flex justify-center gap-4">
-            <FilledButton type="primary" onClick={form.submit} bzzzOnClickFailure>
+            <FilledButton type="primary" onClick={form.submit} bzzzOnClickFailure testId="submit">
               Create Company
             </FilledButton>
           </div>
@@ -80,7 +82,7 @@ export function Page() {
 
 function useForm() {
   const [companyName, setCompanyName] = React.useState("");
-  const [role, setRole] = React.useState("");
+  const [title, setTitle] = React.useState("");
   const [errors, setErrors] = React.useState<{ field: string; message: string }[]>([]);
 
   const submit = async (): Promise<boolean> => {
@@ -90,8 +92,8 @@ function useForm() {
       foundErrors.push({ field: "companyName", message: "Company name can't be blank" });
     }
 
-    if (!role) {
-      foundErrors.push({ field: "role", message: "Role can't be blank" });
+    if (!title) {
+      foundErrors.push({ field: "title", message: "Title can't be blank" });
     }
 
     if (foundErrors.length > 0) {
@@ -107,8 +109,8 @@ function useForm() {
   return {
     companyName,
     setCompanyName,
-    role,
-    setRole,
+    title,
+    setTitle,
     submit,
     errors,
   };
