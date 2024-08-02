@@ -17,18 +17,13 @@ import { Paths } from "@/routes/paths";
 import { PermissionsProvider, usePermissionsContext } from "@/features/Permissions/PermissionsContext";
 import { ResourcePermissionSelector } from "@/features/Permissions";
 
-
 export function Page() {
   const { spaceID, company, space } = useLoadedData();
   const form = useForm();
 
   return (
-    <PermissionsProvider company={company} space={space || form.fields.space} >
-      {spaceID ?
-        <NewProjectForSpacePage form={form} />
-      :
-        <NewProjectPage form={form} />
-      }
+    <PermissionsProvider company={company} space={space || form.fields.space}>
+      {spaceID ? <NewProjectForSpacePage form={form} /> : <NewProjectPage form={form} />}
     </PermissionsProvider>
   );
 }
@@ -48,7 +43,7 @@ function NewProjectForSpacePage({ form }: { form: FormState }) {
         <h1 className="mb-4 font-bold text-3xl text-center">Start a new project in {space!.name}</h1>
 
         <Paper.Body minHeight="300px">
-            <Form form={form} />
+          <Form form={form} />
         </Paper.Body>
 
         <SubmitButton form={form} />
@@ -68,7 +63,7 @@ function NewProjectPage({ form }: { form: FormState }) {
         <h1 className="mb-4 font-bold text-3xl text-center">Start a new project</h1>
 
         <Paper.Body minHeight="300px">
-            <Form form={form} />
+          <Form form={form} />
         </Paper.Body>
 
         <SubmitButton form={form} />
@@ -107,7 +102,7 @@ function Form({ form }: { form: FormState }) {
   const showWillYouContribute = !form.fields.amIChampion && !form.fields.amIReviewer;
 
   return (
-    <Forms.Form onSubmit={()=>{}} loading={form.submitting} isValid={true} onCancel={form.cancel}>
+    <Forms.Form onSubmit={() => {}} loading={form.submitting} isValid={true} onCancel={form.cancel}>
       <div className="flex flex-col gap-8">
         <div>
           <Forms.TextInput

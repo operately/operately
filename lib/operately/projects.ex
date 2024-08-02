@@ -215,6 +215,7 @@ defmodule Operately.Projects do
       where: is_nil(contrib.project_id),
       where: person.id not in ^exclude_ids,
       where: ilike(person.full_name, ^ilike_pattern) or ilike(person.title, ^ilike_pattern),
+      where: not person.suspended,
       limit: ^limit
     )
 
