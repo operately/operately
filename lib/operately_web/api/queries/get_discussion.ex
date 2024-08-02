@@ -2,6 +2,11 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussion do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
+  import Operately.Access.Filters
+
+  alias Operately.Updates.Update
+  alias Operately.Groups.Group
+
   inputs do
     field :id, :string
     field :include_author, :boolean
@@ -13,8 +18,9 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussion do
     field :discussion, :discussion
   end
 
-  def call(_conn, inputs) do
-    update = load(inputs)
+  def call(conn, inputs) do
+    update = load_update(inputs)
+    update = preload_space(update, company(conn), me(conn))
 
     if update do
       {:ok, %{discussion: OperatelyWeb.Api.Serializer.serialize(update, level: :full)}}
@@ -23,18 +29,13 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussion do
     end
   end
 
-  defp load(inputs) do
+  defp load_update(inputs) do
     {:ok, id} = decode_id(inputs.id)
     requested = extract_include_filters(inputs)
 
-    query = from u in Operately.Updates.Update, where: u.id == ^id
-    query = query |> include_requested(requested)
-
-    Repo.one(query)
-    |> case do
-      nil -> nil
-      update -> Operately.Updates.Update.preload_space(update)
-    end
+    from(u in Update, where: u.id == ^id)
+    |> include_requested(requested)
+    |> Repo.one()
   end
 
   defp include_requested(query, requested) do
@@ -49,4 +50,24 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussion do
     end)
   end
 
+  defp preload_space(nil, _, _), do: nil
+  defp preload_space(%{updatable_id: id} = update, company, person) do
+    from(s in Group, where: s.id == ^id)
+    |> view_access_filter(id, company, person)
+    |> Repo.one()
+    |> space_into_update(update)
+  end
+
+  defp view_access_filter(q, id, company, person) do
+    if id == company.company_space_id do
+      filter_by_view_access(q, person.id, join_parent: :company)
+    else
+      filter_by_view_access(q, person.id)
+    end
+  end
+
+  defp space_into_update(nil, _), do: nil
+  defp space_into_update(space, update) do
+    %{update | space: space}
+  end
 end
