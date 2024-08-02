@@ -1,12 +1,57 @@
 defmodule OperatelyWeb.Api.Queries.GetDiscussionTest do
-  alias Operately.Support.RichText
   use OperatelyWeb.TurboCase
 
+  import Operately.PeopleFixtures
+  import Operately.GroupsFixtures
   import Operately.UpdatesFixtures
+
+  alias Operately.Support.RichText
+  alias Operately.Access.Binding
 
   describe "security" do
     test "it requires authentication", ctx do
       assert {401, _} = query(ctx.conn, :get_people, %{})
+    end
+  end
+
+  describe "permissions" do
+    setup ctx do
+      ctx = register_and_log_in_account(ctx)
+      creator = person_fixture(%{company_id: ctx.company.id})
+
+      Map.merge(ctx, %{creator: creator})
+    end
+
+    test "(company space) - company members have access", ctx do
+      discussion = create_discussion(ctx, space_id: ctx.company.company_space_id)
+
+      assert {200, res} = query(ctx.conn, :get_discussion, %{id: Paths.discussion_id(discussion)})
+      assert_discussion(res)
+    end
+
+    test "company members have no access", ctx do
+      space = create_space(ctx, company_access: Binding.no_access())
+      discussion = create_discussion(ctx, space_id: space.id)
+
+      assert {404, %{message: msg} = _res} = query(ctx.conn, :get_discussion, %{id: Paths.discussion_id(discussion)})
+      assert msg == "The requested resource was not found"
+    end
+
+    test "company members have access", ctx do
+      space = create_space(ctx, company_access: Binding.view_access())
+      discussion = create_discussion(ctx, space_id: space.id)
+
+      assert {200, res} = query(ctx.conn, :get_discussion, %{id: Paths.discussion_id(discussion)})
+      assert_discussion(res)
+    end
+
+    test "space members have access", ctx do
+      space = create_space(ctx, company_access: Binding.no_access())
+      discussion = create_discussion(ctx, space_id: space.id)
+      add_person_to_space(ctx, space)
+
+      assert {200, res} = query(ctx.conn, :get_discussion, %{id: Paths.discussion_id(discussion)})
+      assert_discussion(res)
     end
   end
 
@@ -69,20 +114,44 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionTest do
     end
   end
 
-  def create_discussion(ctx, title \\ "Hello World", body \\ "How are you doing?") do
+  #
+  # Helpers
+  #
+
+  defp assert_discussion(res) do
+    assert res.discussion.title
+    assert res.discussion.body
+    assert res.discussion.space
+  end
+
+  defp create_space(ctx, opts) do
+    group_fixture(ctx.creator, %{
+      company_id: ctx.company.id,
+      company_permissions: Keyword.get(opts, :company_access, Binding.no_access())
+    })
+  end
+
+  defp add_person_to_space(ctx, space) do
+    Operately.Groups.add_members(ctx.person, space.id, [%{
+      id: ctx.person.id,
+      permissions: Binding.view_access(),
+    }])
+  end
+
+  defp create_discussion(ctx, opts \\ []) do
     update_fixture(%{
       author_id: ctx.person.id,
-      updatable_id: ctx.company.company_space_id,
+      updatable_id: Keyword.get(opts, :space_id, ctx.company.company_space_id),
       updatable_type: :space,
       type: :project_discussion,
       content: %{
-        title: title,
-        body: RichText.rich_text(body)
+        title: Keyword.get(opts, :title, "Hello World"),
+        body: Keyword.get(opts, :body, "How are you doing?") |> RichText.rich_text()
       }
     })
   end
 
-  def add_comment(ctx, discussion, content) do
+  defp add_comment(ctx, discussion, content) do
     Operately.Operations.CommentAdding.run(ctx.person, discussion.id, "update", RichText.rich_text(content))
   end
-end 
+end
