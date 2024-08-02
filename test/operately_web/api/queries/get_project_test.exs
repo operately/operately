@@ -7,6 +7,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
   import Operately.GoalsFixtures
   import Operately.GroupsFixtures
 
+  alias Operately.Repo
   alias Operately.Access.Binding
 
   describe "security" do
@@ -23,6 +24,78 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
 
       assert query(ctx.conn, :get_project, %{id: Paths.project_id(other_project)}) == not_found_response()
       assert {200, _} = query(ctx.conn, :get_project, %{id: Paths.project_id(project)})
+    end
+  end
+
+  describe "permissions" do
+    setup ctx do
+      ctx = register_and_log_in_account(ctx)
+      creator = person_fixture(%{company_id: ctx.company.id})
+      space = group_fixture(creator, %{company_id: ctx.company.id})
+
+      Map.merge(ctx, %{space: space, space_id: space.id, creator_id: creator.id})
+    end
+
+    test "company members have no access", ctx do
+      p = create_project(ctx, company_access_level: Binding.no_access())
+
+      assert {404, %{message: msg} = _res} = query(ctx.conn, :get_project, %{id: Paths.project_id(p)})
+      assert msg == "The requested resource was not found"
+    end
+
+    test "company members have access", ctx do
+      p = create_project(ctx, company_access_level: Binding.view_access())
+
+      assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(p)})
+      assert res.project == serialize(p, level: :full)
+    end
+
+    test "space members have no access", ctx do
+      add_person_to_space(ctx)
+      p = create_project(ctx, space_access_level: Binding.no_access())
+
+      assert {404, %{message: msg} = _res} = query(ctx.conn, :get_project, %{id: Paths.project_id(p)})
+      assert msg == "The requested resource was not found"
+    end
+
+    test "space members have access", ctx do
+      add_person_to_space(ctx)
+      p = create_project(ctx, space_access_level: Binding.view_access())
+
+      assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(p)})
+      assert res.project == serialize(p, level: :full)
+    end
+
+    test "champions have access", ctx do
+      champion = person_fixture_with_account(%{company_id: ctx.company.id})
+      p = create_project(ctx, champion_id: champion.id)
+
+      # champion's request
+      account = Repo.preload(champion, :account).account
+      conn = log_in_account(ctx.conn, account)
+
+      assert {200, res} = query(conn, :get_project, %{id: Paths.project_id(p)})
+      assert res.project == serialize(p, level: :full)
+
+      # another user's request
+      assert {404, %{message: msg} = _res} = query(ctx.conn, :get_project, %{id: Paths.project_id(p)})
+      assert msg == "The requested resource was not found"
+    end
+
+    test "reviewers have access", ctx do
+      reviewer = person_fixture_with_account(%{company_id: ctx.company.id})
+      p = create_project(ctx, reviewer_id: reviewer.id)
+
+      # reviewer's request
+      account = Repo.preload(reviewer, :account).account
+      conn = log_in_account(ctx.conn, account)
+
+      assert {200, res} = query(conn, :get_project, %{id: Paths.project_id(p)})
+      assert res.project == serialize(p, level: :full)
+
+      # another user's request
+      assert {404, %{message: msg} = _res} = query(ctx.conn, :get_project, %{id: Paths.project_id(p)})
+      assert msg == "The requested resource was not found"
     end
   end
 
@@ -185,14 +258,27 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
     end
   end
 
+  #
+  # Helpers
+  #
+
   def create_project(ctx, attrs \\ %{}) do
     attrs = Map.merge(%{
       company_id: ctx.company.id,
       name: "Project 1",
-      creator_id: ctx.person.id,
-      group_id: ctx.company.company_space_id
+      creator_id: ctx[:creator_id] || ctx.person.id,
+      group_id: ctx[:space_id] || ctx.company.company_space_id,
+      company_access_level: Binding.no_access(),
+      space_access_level: Binding.no_access(),
     }, Enum.into(attrs, %{}))
 
     project_fixture(attrs)
+  end
+
+  defp add_person_to_space(ctx) do
+    Operately.Groups.add_members(ctx.person, ctx.space.id, [%{
+      id: ctx.person.id,
+      permissions: Binding.edit_access(),
+    }])
   end
 end

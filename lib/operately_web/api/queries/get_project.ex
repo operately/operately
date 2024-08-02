@@ -2,6 +2,8 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
+  import Operately.Access.Filters, only: [filter_by_view_access: 2]
+
   alias Operately.Projects.Project
   alias OperatelyWeb.Api.Serializer
 
@@ -51,6 +53,7 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
     |> Project.scope_visibility(person.id)
     |> include_requested(include_filters)
     |> load_contributors_access_level(inputs[:include_contributors_access_levels], id)
+    |> filter_by_view_access(person.id)
     |> Repo.one(with_deleted: true)
     |> Project.after_load_hooks()
     |> include_permissions(person, include_filters)
@@ -77,6 +80,7 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
     end)
   end
 
+  def include_permissions(nil, _, _), do: nil
   def include_permissions(project, person, include_filters) do
     if Enum.member?(include_filters, :include_permissions) do
       Project.set_permissions(project, person)
