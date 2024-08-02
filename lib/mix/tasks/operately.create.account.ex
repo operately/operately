@@ -1,5 +1,5 @@
 defmodule Mix.Tasks.Operately.Create.Account do
-  def run([email, password]) do
+  def run([name, email, password]) do
     Mix.Task.run("app.start")
     Application.ensure_started(Operately.Repo, [])
 
@@ -8,6 +8,7 @@ defmodule Mix.Tasks.Operately.Create.Account do
 
     {:ok, _} = 
       Operately.People.Account.registration_changeset(%{
+        full_name: name,
         email: email, 
         password: password
       })

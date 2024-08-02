@@ -47,12 +47,13 @@ defmodule OperatelyWeb.ConnCase do
   def register_and_log_in_account(%{conn: conn}) do
     account = Operately.PeopleFixtures.account_fixture()
     company = Operately.CompaniesFixtures.company_fixture(%{}, account)
-    person = Operately.People.get_person!(account, company)
-    {:ok, person} = Operately.People.update_person(person, %{company_role: :member})
+    company_creator = Ecto.assoc(company, :people) |> Operately.Repo.all() |> hd()
+    person = Operately.PeopleFixtures.person_fixture(%{company_id: company.id})
 
     %{
       conn: log_in_account(conn, account, company),
       account: account, 
+      company_creator: company_creator,
       company: company, 
       person: person
     }
