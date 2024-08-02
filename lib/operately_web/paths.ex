@@ -152,6 +152,12 @@ defmodule OperatelyWeb.Paths do
     OperatelyWeb.Api.Helpers.id_with_comments(date, id)
   end
 
+  def comment_thread_id(comment_thread) do
+    id = Operately.ShortUuid.encode!(comment_thread.id)
+    date = comment_thread.inserted_at |> NaiveDateTime.to_date() |> Date.to_string()
+    OperatelyWeb.Api.Helpers.id_with_comments(date, id)
+  end
+
   def milestone_id(milestone) do
     milestone_id(milestone.id, milestone.title)
   end
