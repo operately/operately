@@ -1,8 +1,8 @@
 defmodule Operately.CompaniesFixtures do
   import Operately.PeopleFixtures
 
-  def company_fixture(attrs \\ %{}) do
-    creator = account_fixture()
+  def company_fixture(attrs \\ %{}, creator \\ nil) do
+    creator = creator || account_fixture()
 
     attrs = attrs |> Enum.into(%{
       mission: "some mission",

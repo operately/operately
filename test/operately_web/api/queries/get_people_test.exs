@@ -18,7 +18,7 @@ defmodule OperatelyWeb.Api.Queries.GetPeopleTest do
 
       assert {200, %{people: people}} = query(ctx.conn, :get_people, %{})
       assert length(people) == 1
-      assert Enum.at(people, 0).id == Paths.person_id(me)
+      assert Enum.any?(people, fn p -> p.id == Paths.person_id(me) end)
       refute find_person_in_response(people, person_from_other_company)
     end
   end
