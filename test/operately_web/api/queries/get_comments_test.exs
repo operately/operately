@@ -152,7 +152,7 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
 
       assert {200, res} = query(ctx.conn, :get_comments, %{
         entity_id: Paths.goal_update_id(update),
-        entity_type: "update",
+        entity_type: "goal_update",
       })
       assert length(res.comments) == 0
     end
@@ -165,7 +165,7 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
 
       assert {200, res} = query(ctx.conn, :get_comments, %{
         entity_id: Paths.goal_update_id(update),
-        entity_type: "update",
+        entity_type: "goal_update",
       })
       assert_comments(res, comments)
     end
@@ -179,7 +179,7 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
 
       assert {200, res} = query(ctx.conn, :get_comments, %{
         entity_id: Paths.goal_update_id(update),
-        entity_type: "update",
+        entity_type: "goal_update",
       })
       assert length(res.comments) == 0
     end
@@ -193,7 +193,7 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
 
       assert {200, res} = query(ctx.conn, :get_comments, %{
         entity_id: Paths.goal_update_id(update),
-        entity_type: "update",
+        entity_type: "goal_update",
       })
       assert_comments(res, comments)
     end
@@ -211,14 +211,14 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
       # champion's request
       assert {200, res} = query(conn, :get_comments, %{
         entity_id: Paths.goal_update_id(update),
-        entity_type: "update",
+        entity_type: "goal_update",
       })
       assert_comments(res, comments)
 
       # another user's request
       assert {200, res} = query(ctx.conn, :get_comments, %{
         entity_id: Paths.goal_update_id(update),
-        entity_type: "update",
+        entity_type: "goal_update",
       })
       assert length(res.comments) == 0
     end
@@ -236,16 +236,90 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
       # reviewer's request
       assert {200, res} = query(conn, :get_comments, %{
         entity_id: Paths.goal_update_id(update),
-        entity_type: "update",
+        entity_type: "goal_update",
       })
       assert_comments(res, comments)
 
       # another user's request
       assert {200, res} = query(ctx.conn, :get_comments, %{
         entity_id: Paths.goal_update_id(update),
-        entity_type: "update",
+        entity_type: "goal_update",
       })
       assert length(res.comments) == 0
+    end
+  end
+
+  describe "permissions - discussions" do
+    setup ctx do
+      ctx = register_and_log_in_account(ctx)
+      creator = person_fixture(%{company_id: ctx.company.id})
+
+      Map.merge(ctx, %{creator: creator})
+    end
+
+    test "company space - company members have access", ctx do
+      discussion = create_discussion(ctx, space_id: ctx.company.company_space_id)
+      comments = Enum.map(1..3, fn _ ->
+        add_comment(ctx, discussion.id, "update")
+      end)
+
+      assert {200, res} = query(ctx.conn, :get_comments, %{
+        entity_id: Paths.discussion_id(discussion),
+        entity_type: "discussion",
+      })
+      assert_comments(res, comments)
+    end
+
+    test "company members have no access", ctx do
+      space = create_space(ctx, company_permissions: Binding.no_access())
+      discussion = create_discussion(ctx, space_id: space.id)
+      Enum.each(1..3, fn _ ->
+        add_comment(ctx, discussion.id, "update")
+      end)
+
+      assert {200, res} = query(ctx.conn, :get_comments, %{
+        entity_id: Paths.discussion_id(discussion),
+        entity_type: "discussion",
+      })
+      assert length(res.comments) == 0
+    end
+
+    test "company members have access", ctx do
+      space = create_space(ctx, company_permissions: Binding.view_access())
+      discussion = create_discussion(ctx, space_id: space.id)
+      comments = Enum.map(1..3, fn _ ->
+        add_comment(ctx, discussion.id, "update")
+      end)
+
+      assert {200, res} = query(ctx.conn, :get_comments, %{
+        entity_id: Paths.discussion_id(discussion),
+        entity_type: "discussion",
+      })
+      assert_comments(res, comments)
+    end
+
+    test "space members have access", ctx do
+      space = create_space(ctx, company_permissions: Binding.no_access())
+      discussion = create_discussion(ctx, space_id: space.id)
+      comments = Enum.map(1..3, fn _ ->
+        add_comment(ctx, discussion.id, "update")
+      end)
+
+      # Outside of space
+      assert {200, res} = query(ctx.conn, :get_comments, %{
+        entity_id: Paths.discussion_id(discussion),
+        entity_type: "discussion",
+      })
+      assert length(res.comments) == 0
+
+      # Inside space
+      add_person_to_space(ctx, space.id)
+
+      assert {200, res} = query(ctx.conn, :get_comments, %{
+        entity_id: Paths.discussion_id(discussion),
+        entity_type: "discussion",
+      })
+      assert_comments(res, comments)
     end
   end
 
@@ -369,16 +443,22 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
 
   defp assert_comments(res, comments) do
     assert length(res.comments) == length(comments)
-    assert Enum.each(res.comments, fn c ->
-      Enum.find(comments, &(&1 == c))
+    Enum.each(res.comments, fn c1 ->
+      assert Enum.find(comments, &(&1.id == c1.id))
+      assert c1.author
+      assert c1.reactions
     end)
   end
 
-  defp add_person_to_space(ctx) do
-    Operately.Groups.add_members(ctx.person, ctx.space.id, [%{
+  defp add_person_to_space(ctx, space_id \\ nil) do
+    Operately.Groups.add_members(ctx.person, space_id || ctx.space.id, [%{
       id: ctx.person.id,
       permissions: Binding.edit_access(),
     }])
+  end
+
+  defp create_space(ctx, attrs) do
+    group_fixture(ctx.creator, Enum.into(attrs, %{company_id: ctx.company.id}))
   end
 
   defp create_check_in(ctx, opts) do
@@ -404,6 +484,19 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
       space_access_level: Keyword.get(opts, :space_access, Binding.no_access()),
     })
     update_fixture(%{type: :goal_check_in, updatable_id: goal.id, updatable_type: :goal, author_id: ctx.creator.id})
+  end
+
+  defp create_discussion(ctx, attrs) do
+    update_fixture(%{
+      author_id: ctx.creator.id,
+      updatable_id: Keyword.get(attrs, :space_id, ctx.company.company_space_id),
+      updatable_type: :space,
+      type: :project_discussion,
+      content: %{
+        title: "Hello World",
+        body: RichText.rich_text("How are you doing?")
+      }
+    })
   end
 
   defp create_comment_thread(ctx, opts) do
