@@ -24,7 +24,11 @@ defmodule Operately.PeopleFixtures do
     email = attrs[:email] || unique_account_email(attrs[:full_name])
     password = attrs[:password] || valid_account_password()
 
-    account = account_fixture(%{email: email, password: password})
+    account = account_fixture(%{
+      email: email, 
+      password: password,
+      full_name: attrs[:full_name]
+    })
 
     person_fixture(Map.merge(attrs, %{account_id: account.id, email: email}))
   end
@@ -42,7 +46,8 @@ defmodule Operately.PeopleFixtures do
   def valid_account_attributes(attrs \\ %{}) do
     Enum.into(attrs, %{
       email: unique_account_email(),
-      password: valid_account_password()
+      password: valid_account_password(),
+      full_name: "Kjell Morgenstern"
     })
   end
 

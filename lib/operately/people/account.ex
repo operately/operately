@@ -4,6 +4,7 @@ defmodule Operately.People.Account do
   schema "accounts" do
     has_many :people, Operately.People.Person, foreign_key: :account_id
 
+    field :full_name, :string
     field :email, :string
     field :password, :string, virtual: true, redact: true
     field :hashed_password, :string, redact: true
@@ -41,9 +42,10 @@ defmodule Operately.People.Account do
 
   def registration_changeset(account, attrs, opts \\ []) do
     account
-    |> cast(attrs, [:email, :password]) 
+    |> cast(attrs, [:email, :password, :full_name])
     |> validate_email(opts)
     |> validate_password(opts)
+    |> validate_required([:full_name])
   end
 
   defp validate_email(changeset, opts) do
