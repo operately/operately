@@ -82,7 +82,7 @@ function AddCompanyCard() {
   );
 
   return (
-    <DivLink to={Paths.newCompanyPath()} className={className}>
+    <DivLink to={Paths.newCompanyPath()} className={className} testId="add-company-card">
       <div className="font-bold text-lg">+ Create new</div>
       <div className="text-sm font-medium">Add new organization</div>
       <div className="flex justify-end mt-3">
