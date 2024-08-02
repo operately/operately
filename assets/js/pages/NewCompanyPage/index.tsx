@@ -9,6 +9,7 @@ import { Paths } from "@/routes/paths";
 import { TextInput } from "@/components/Form";
 import { FilledButton } from "@/components/Button";
 import { Logo } from "@/layouts/DefaultLayout/Logo";
+import { useNavigate } from "react-router-dom";
 
 export async function loader({}): Promise<null> {
   return null;
@@ -88,6 +89,8 @@ export function Page() {
 }
 
 function useForm() {
+  const navigate = useNavigate();
+
   const [companyName, setCompanyName] = React.useState("");
   const [title, setTitle] = React.useState("");
   const [errors, setErrors] = React.useState<{ field: string; message: string }[]>([]);
@@ -113,7 +116,9 @@ function useForm() {
     }
 
     try {
-      await add({ companyName, title });
+      const res = await add({ companyName, title });
+      navigate(Paths.companyHomePath(res.company.id));
+
       return true;
     } catch (e) {
       return false;
