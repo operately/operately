@@ -1,6 +1,12 @@
 defmodule OperatelyWeb.Api.Mutations.AddCompanyMemberTest do
   use OperatelyWeb.TurboCase
 
+  @add_company_member_input %{
+    :full_name => "John Doe",
+    :email => "john@your-company.com",
+    :title => "Developer",
+  }
+
   describe "security" do
     test "it requires authentication", ctx do
       assert {401, _} = mutation(ctx.conn, :add_company_member, %{})
@@ -14,12 +20,6 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyMemberTest do
       assert res == %{:error => "Bad request", :message => "Only admins can add members"}
     end
   end
-
-  @add_company_member_input %{
-    :full_name => "John Doe",
-    :email => "john@your-company.com",
-    :title => "Developer",
-  }
 
   describe "add_company_member functionality" do
     setup :register_and_log_in_account

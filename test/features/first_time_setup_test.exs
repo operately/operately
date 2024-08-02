@@ -5,12 +5,12 @@ defmodule Operately.Features.FirstTimeSetupTest do
   alias Operately.Support.Features.UI
 
   @company_info %{
-    :companyName => "Acme Co.",
-    :fullName => "John Doe",
-    :email => "john@your-company.com",
-    :role => "CEO",
-    :password => "Aa12345#&!123",
-    :passwordConfirmation => "Aa12345#&!123"
+    companyName: "Acme Co.",
+    fullName: "John Doe",
+    email: "john@your-company.com",
+    title: "CEO",
+    password: "Aa12345#&!123",
+    passwordConfirmation: "Aa12345#&!123"
   }
 
   feature "redirects to /first-time-setup", ctx do
@@ -39,7 +39,7 @@ defmodule Operately.Features.FirstTimeSetupTest do
     |> UI.fill(testid: "company-name", with: @company_info[:companyName])
     |> UI.fill(testid: "full-name", with: @company_info[:fullName])
     |> UI.fill(testid: "email", with: @company_info[:email])
-    |> UI.fill(testid: "role", with: @company_info[:role])
+    |> UI.fill(testid: "title", with: @company_info[:title])
     |> UI.fill(testid: "password", with: @company_info[:password])
     |> UI.fill(testid: "password-confirmation", with: @company_info[:passwordConfirmation])
     |> UI.click(testid: "submit-form")

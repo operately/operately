@@ -86,7 +86,6 @@ defmodule OperatelyWeb.ApiSocket do
     def join("api:" <> topic, payload, socket) do
       topic = String.to_existing_atom(topic)
       handler = OperatelyWeb.Api.__subscriptions__()[topic]
-      IO.inspect("Joining topic: #{topic} with #{inspect(payload)}")
       socket = assign_company_and_person(socket, payload)
 
       {:ok, socket, topics} = apply(handler, :join, [topic, payload, socket])

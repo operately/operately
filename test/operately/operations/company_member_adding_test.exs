@@ -30,11 +30,11 @@ defmodule Operately.Operations.CompanyMemberAddingTest do
   end
 
   test "CompanyMemberAdding operation creates person", ctx do
-    assert 1 == Repo.aggregate(Person, :count, :id)
+    assert Repo.aggregate(Person, :count, :id) == 2 # company creator + company admin
 
-    Operately.Operations.CompanyMemberAdding.run(ctx.admin, @member_attrs)
+    {:ok, _} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, @member_attrs)
 
-    assert 2 == Repo.aggregate(Person, :count, :id)
+    assert Repo.aggregate(Person, :count, :id) == 3 # company creator + company admin + new member
     assert People.get_account_by_email(@email)
 
     person = People.get_person_by_email(ctx.company, @email)
@@ -59,22 +59,22 @@ defmodule Operately.Operations.CompanyMemberAddingTest do
   end
 
   test "CompanyMemberAdding operation creates invitation for person", ctx do
-    Operately.Operations.CompanyMemberAdding.run(ctx.admin, @member_attrs)
+    {:ok, _} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, @member_attrs)
 
     person = People.get_person_by_email(ctx.company, @email)
 
-    assert 1 == Repo.aggregate(Invitation, :count, :id)
+    assert Repo.aggregate(Invitation, :count, :id) == 1
     assert Invitations.get_invitation_by_member(person)
   end
 
   test "CompanyMemberAdding operation creates company space member", ctx do
     company_space = Groups.get_group!(ctx.company.company_space_id)
 
-    assert length(Groups.list_members(company_space)) == 0
+    assert length(Groups.list_members(company_space)) == 1 # company creator
 
     {:ok, _} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, @member_attrs)
 
-    assert length(Groups.list_members(company_space)) == 1
+    assert length(Groups.list_members(company_space)) == 2 # company creator + new member
   end
 
   test "CompanyMemberAdding operation creates activity", ctx do

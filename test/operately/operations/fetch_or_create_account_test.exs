@@ -62,10 +62,10 @@ defmodule Operately.Operations.FetchOrCreateAccountTest do
   test "FetchOrCreateAccountOperation creates company space member", ctx do
     company_space = Groups.get_group!(ctx.company.company_space_id)
 
-    assert length(Groups.list_members(company_space)) == 0
+    assert length(Groups.list_members(company_space)) == 1 # company creator
 
     {:ok, _} = Operately.People.FetchOrCreateAccountOperation.call(ctx.company, @attrs)
 
-    assert length(Groups.list_members(company_space)) == 1
+    assert length(Groups.list_members(company_space)) == 2 # company creator + new person
   end
 end

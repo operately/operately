@@ -45,16 +45,15 @@ defmodule OperatelyWeb.ConnCase do
   test context.
   """
   def register_and_log_in_account(%{conn: conn}) do
-    company = Operately.CompaniesFixtures.company_fixture()
     account = Operately.PeopleFixtures.account_fixture()
-    person = Operately.PeopleFixtures.person_fixture(%{
-      account_id: account.id,
-      company_id: company.id
-    })
+    company = Operately.CompaniesFixtures.company_fixture(%{}, account)
+    company_creator = Ecto.assoc(company, :people) |> Operately.Repo.all() |> hd()
+    person = Operately.PeopleFixtures.person_fixture(%{company_id: company.id})
 
     %{
       conn: log_in_account(conn, account, company),
       account: account, 
+      company_creator: company_creator,
       company: company, 
       person: person
     }
