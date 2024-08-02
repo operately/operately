@@ -62,7 +62,11 @@ defmodule Operately.People.FetchOrCreateAccountOperation do
       |> Multi.run(:company_space, fn _, _ ->
         {:ok, Companies.get_company_space!(company.id)}
       end)
-      |> Multi.insert(:account, Account.registration_changeset(%{email: attrs.email, password: random_password()}))
+      |> Multi.insert(:account, Account.registration_changeset(%{
+        full_name: attrs.name,
+        email: attrs.email, 
+        password: random_password()
+      }))
       |> People.insert_person(fn %{account: account} -> build_person_for_account(account, attrs) end)
       |> Repo.transaction()
       |> Repo.extract_result(:account)
