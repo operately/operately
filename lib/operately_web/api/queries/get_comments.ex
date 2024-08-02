@@ -7,6 +7,8 @@ defmodule OperatelyWeb.Api.Queries.GetComments do
   alias Operately.Updates.{Update, Comment}
   alias Operately.Goals.Goal
   alias Operately.Projects.CheckIn
+  alias Operately.Comments.CommentThread
+  alias Operately.Activities.Activity
 
   inputs do
     field :entity_id, :string
@@ -49,8 +51,15 @@ defmodule OperatelyWeb.Api.Queries.GetComments do
     |> Repo.all()
   end
 
-  defp load(_person, id, type) do
-    Operately.Updates.list_comments(id, type)
-    |> Operately.Repo.preload([:author, reactions: :person])
+  defp load(person, id, :comment_thread) do
+    from(c in Comment,
+      join: t in CommentThread, on: c.entity_id == t.id,
+      join: a in Activity, on: t.parent_id == a.id, as: :activity,
+      where: c.entity_id == ^id and c.entity_type == :comment_thread,
+      preload: [:author, reactions: :person],
+      order_by: [asc: c.inserted_at]
+    )
+    |> filter_by_view_access(person.id, named_binding: :activity)
+    |> Repo.all()
   end
 end

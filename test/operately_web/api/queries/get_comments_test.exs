@@ -1,15 +1,19 @@
 defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
   use OperatelyWeb.TurboCase
 
+  import Ecto.Query, only: [from: 2]
   import OperatelyWeb.Api.Serializer
   import Operately.PeopleFixtures
   import Operately.GroupsFixtures
-  # import Operately.UpdatesFixtures
+  import Operately.UpdatesFixtures
+  import Operately.GoalsFixtures
   import Operately.ProjectsFixtures
+  import Operately.CommentsFixtures
 
   alias Operately.Repo
   alias Operately.Support.RichText
   alias Operately.Access.Binding
+  alias Operately.Activities.Activity
 
   describe "security" do
     test "it requires authentication", ctx do
@@ -131,6 +135,234 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
     end
   end
 
+  describe "permissions - goal update" do
+    setup ctx do
+      ctx = register_and_log_in_account(ctx)
+      creator = person_fixture(%{company_id: ctx.company.id})
+      space = group_fixture(creator, %{company_id: ctx.company.id})
+
+      Map.merge(ctx, %{creator: creator, space: space})
+    end
+
+    test "company members have no access", ctx do
+      update = create_goal_update(ctx, company_access: Binding.no_access())
+      Enum.each(1..3, fn _ ->
+        add_comment(ctx, update.id, "update")
+      end)
+
+      assert {200, res} = query(ctx.conn, :get_comments, %{
+        entity_id: Paths.goal_update_id(update),
+        entity_type: "update",
+      })
+      assert length(res.comments) == 0
+    end
+
+    test "company members have access", ctx do
+      update = create_goal_update(ctx, company_access: Binding.view_access())
+      comments = Enum.map(1..3, fn _ ->
+        add_comment(ctx, update.id, "update")
+      end)
+
+      assert {200, res} = query(ctx.conn, :get_comments, %{
+        entity_id: Paths.goal_update_id(update),
+        entity_type: "update",
+      })
+      assert_comments(res, comments)
+    end
+
+    test "space members have no access", ctx do
+      add_person_to_space(ctx)
+      update = create_goal_update(ctx, space_access: Binding.no_access())
+      Enum.each(1..3, fn _ ->
+        add_comment(ctx, update.id, "update")
+      end)
+
+      assert {200, res} = query(ctx.conn, :get_comments, %{
+        entity_id: Paths.goal_update_id(update),
+        entity_type: "update",
+      })
+      assert length(res.comments) == 0
+    end
+
+    test "space members have access", ctx do
+      add_person_to_space(ctx)
+      update = create_goal_update(ctx, space_access: Binding.view_access())
+      comments = Enum.map(1..3, fn _ ->
+        add_comment(ctx, update.id, "update")
+      end)
+
+      assert {200, res} = query(ctx.conn, :get_comments, %{
+        entity_id: Paths.goal_update_id(update),
+        entity_type: "update",
+      })
+      assert_comments(res, comments)
+    end
+
+    test "champions have access", ctx do
+      champion = person_fixture_with_account(%{company_id: ctx.company.id})
+      update = create_goal_update(ctx, champion_id: champion.id)
+      comments = Enum.map(1..3, fn _ ->
+        add_comment(ctx, update.id, "update")
+      end)
+
+      account = Repo.preload(champion, :account).account
+      conn = log_in_account(ctx.conn, account)
+
+      # champion's request
+      assert {200, res} = query(conn, :get_comments, %{
+        entity_id: Paths.goal_update_id(update),
+        entity_type: "update",
+      })
+      assert_comments(res, comments)
+
+      # another user's request
+      assert {200, res} = query(ctx.conn, :get_comments, %{
+        entity_id: Paths.goal_update_id(update),
+        entity_type: "update",
+      })
+      assert length(res.comments) == 0
+    end
+
+    test "reviewers have access", ctx do
+      reviewer = person_fixture_with_account(%{company_id: ctx.company.id})
+      update = create_goal_update(ctx, reviewer_id: reviewer.id)
+      comments = Enum.map(1..3, fn _ ->
+        add_comment(ctx, update.id, "update")
+      end)
+
+      account = Repo.preload(reviewer, :account).account
+      conn = log_in_account(ctx.conn, account)
+
+      # reviewer's request
+      assert {200, res} = query(conn, :get_comments, %{
+        entity_id: Paths.goal_update_id(update),
+        entity_type: "update",
+      })
+      assert_comments(res, comments)
+
+      # another user's request
+      assert {200, res} = query(ctx.conn, :get_comments, %{
+        entity_id: Paths.goal_update_id(update),
+        entity_type: "update",
+      })
+      assert length(res.comments) == 0
+    end
+  end
+
+  describe "permissions - comment-thread" do
+    setup ctx do
+      ctx = register_and_log_in_account(ctx)
+      creator = person_fixture(%{company_id: ctx.company.id})
+      space = group_fixture(creator, %{company_id: ctx.company.id})
+
+      Map.merge(ctx, %{creator: creator, space: space})
+    end
+
+    test "company members have no access", ctx do
+      thread = create_comment_thread(ctx, company_access: Binding.no_access())
+      Enum.each(1..3, fn _ ->
+        add_comment(ctx, thread.id, "comment_thread")
+      end)
+
+      assert {200, res} = query(ctx.conn, :get_comments, %{
+        entity_id: Paths.comment_thread_id(thread),
+        entity_type: "comment_thread",
+      })
+      assert length(res.comments) == 0
+    end
+
+    test "company members have access", ctx do
+      thread = create_comment_thread(ctx, company_access: Binding.view_access())
+      comments = Enum.map(1..3, fn _ ->
+        add_comment(ctx, thread.id, "comment_thread")
+      end)
+
+      assert {200, res} = query(ctx.conn, :get_comments, %{
+        entity_id: Paths.comment_thread_id(thread),
+        entity_type: "comment_thread",
+      })
+      assert_comments(res, comments)
+    end
+
+    test "space members have no access", ctx do
+      add_person_to_space(ctx)
+      thread = create_comment_thread(ctx, space_access: Binding.no_access())
+      Enum.each(1..3, fn _ ->
+        add_comment(ctx, thread.id, "comment_thread")
+      end)
+
+      assert {200, res} = query(ctx.conn, :get_comments, %{
+        entity_id: Paths.comment_thread_id(thread),
+        entity_type: "comment_thread",
+      })
+      assert length(res.comments) == 0
+    end
+
+    test "space members have access", ctx do
+      add_person_to_space(ctx)
+      thread = create_comment_thread(ctx, space_access: Binding.view_access())
+      comments = Enum.map(1..3, fn _ ->
+        add_comment(ctx, thread.id, "comment_thread")
+      end)
+
+      assert {200, res} = query(ctx.conn, :get_comments, %{
+        entity_id: Paths.comment_thread_id(thread),
+        entity_type: "comment_thread",
+      })
+      assert_comments(res, comments)
+    end
+
+    test "champions have access", ctx do
+      champion = person_fixture_with_account(%{company_id: ctx.company.id})
+      thread = create_comment_thread(ctx, champion_id: champion.id)
+      comments = Enum.map(1..3, fn _ ->
+        add_comment(ctx, thread.id, "comment_thread")
+      end)
+
+      account = Repo.preload(champion, :account).account
+      conn = log_in_account(ctx.conn, account)
+
+      # champion's request
+      assert {200, res} = query(conn, :get_comments, %{
+        entity_id: Paths.comment_thread_id(thread),
+        entity_type: "comment_thread",
+      })
+      assert_comments(res, comments)
+
+      # another user's request
+      assert {200, res} = query(ctx.conn, :get_comments, %{
+        entity_id: Paths.comment_thread_id(thread),
+        entity_type: "comment_thread",
+      })
+      assert length(res.comments) == 0
+    end
+
+    test "reviewers have access", ctx do
+      reviewer = person_fixture_with_account(%{company_id: ctx.company.id})
+      thread = create_comment_thread(ctx, reviewer_id: reviewer.id)
+      comments = Enum.map(1..3, fn _ ->
+        add_comment(ctx, thread.id, "comment_thread")
+      end)
+
+      account = Repo.preload(reviewer, :account).account
+      conn = log_in_account(ctx.conn, account)
+
+      # reviewer's request
+      assert {200, res} = query(conn, :get_comments, %{
+        entity_id: Paths.comment_thread_id(thread),
+        entity_type: "comment_thread",
+      })
+      assert_comments(res, comments)
+
+      # another user's request
+      assert {200, res} = query(ctx.conn, :get_comments, %{
+        entity_id: Paths.comment_thread_id(thread),
+        entity_type: "comment_thread",
+      })
+      assert length(res.comments) == 0
+    end
+  end
+
   #
   # Helpers
   #
@@ -163,17 +395,27 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
     check_in_fixture(%{author_id: ctx.creator.id, project_id: project.id})
   end
 
-  defp create_discussion(ctx, attrs) do
-    update_fixture(%{
-      author_id: ctx.creator.id,
-      updatable_id: Keyword.get(attrs, :space_id, ctx.company.company_space_id),
-      updatable_type: :space,
-      type: :project_discussion,
-      content: %{
-        title: "Hello World",
-        body: "How are you doing?"
-      }
+  defp create_goal_update(ctx, opts) do
+    goal = goal_fixture(ctx.creator, %{
+      space_id: ctx.space.id,
+      champion_id: Keyword.get(opts, :champion_id, ctx.creator.id),
+      reviewer_id: Keyword.get(opts, :reviewer_id, ctx.creator.id),
+      company_access_level: Keyword.get(opts, :company_access, Binding.no_access()),
+      space_access_level: Keyword.get(opts, :space_access, Binding.no_access()),
     })
+    update_fixture(%{type: :goal_check_in, updatable_id: goal.id, updatable_type: :goal, author_id: ctx.creator.id})
+  end
+
+  defp create_comment_thread(ctx, opts) do
+    goal = goal_fixture(ctx.creator, %{
+      space_id: ctx.space.id,
+      champion_id: Keyword.get(opts, :champion_id, ctx.creator.id),
+      reviewer_id: Keyword.get(opts, :reviewer_id, ctx.creator.id),
+      company_access_level: Keyword.get(opts, :company_access, Binding.no_access()),
+      space_access_level: Keyword.get(opts, :space_access, Binding.no_access()),
+    })
+    activity = from(a in Activity, where: a.content["goal_id"] == ^goal.id) |> Repo.one!()
+    comment_thread_fixture(%{parent_id: activity.id})
   end
 
   defp add_comment(ctx, entity_id, entity_type, content \\ "Hello World") do
