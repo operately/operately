@@ -4,8 +4,7 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyTest do
 
   @input %{
     company_name: "Acme Co.",
-    role: "Founder",
-    full_name: "John Doe"
+    title: "Founder"
   }
 
   describe "security" do
@@ -29,7 +28,7 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyTest do
 
       person = hd(people)
       assert person.company_role == :admin
-      assert person.full_name == "John Doe"
+      assert person.full_name == account.full_name
       assert person.title == "Founder"
       assert person.account_id == account.id
       assert person.company_id == company.id

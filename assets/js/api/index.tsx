@@ -1384,8 +1384,7 @@ export interface AcknowledgeProjectCheckInResult {
 
 export interface AddCompanyInput {
   companyName?: string | null;
-  fullName?: string | null;
-  role?: string | null;
+  title?: string | null;
 }
 
 export interface AddCompanyResult {
@@ -1427,7 +1426,7 @@ export interface AddFirstCompanyInput {
   companyName?: string | null;
   fullName?: string | null;
   email?: string | null;
-  role?: string | null;
+  title?: string | null;
   password?: string | null;
   passwordConfirmation?: string | null;
 }
