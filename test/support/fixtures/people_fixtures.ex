@@ -27,7 +27,7 @@ defmodule Operately.PeopleFixtures do
     account = account_fixture(%{
       email: email, 
       password: password,
-      full_name: attrs[:full_name]
+      full_name: attrs[:full_name] || "John Doe"
     })
 
     person_fixture(Map.merge(attrs, %{account_id: account.id, email: email}))
