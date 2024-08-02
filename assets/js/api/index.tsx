@@ -1382,6 +1382,16 @@ export interface AcknowledgeProjectCheckInResult {
 }
 
 
+export interface AddCompanyInput {
+  companyName?: string | null;
+  title?: string | null;
+}
+
+export interface AddCompanyResult {
+  company?: Company | null;
+}
+
+
 export interface AddCompanyAdminsInput {
   peopleIds?: string[] | null;
 }
@@ -1416,7 +1426,7 @@ export interface AddFirstCompanyInput {
   companyName?: string | null;
   fullName?: string | null;
   email?: string | null;
-  role?: string | null;
+  title?: string | null;
   password?: string | null;
   passwordConfirmation?: string | null;
 }
@@ -2286,6 +2296,10 @@ export class ApiClient {
     return this.post("/acknowledge_project_check_in", input);
   }
 
+  async addCompany(input: AddCompanyInput): Promise<AddCompanyResult> {
+    return axios.post(this.getBasePath() + "/add_company", toSnake(input)).then(({ data }) => toCamel(data));
+  }
+
   async addCompanyAdmins(input: AddCompanyAdminsInput): Promise<AddCompanyAdminsResult> {
     return this.post("/add_company_admins", input);
   }
@@ -2666,6 +2680,9 @@ export async function acknowledgeGoalProgressUpdate(input: AcknowledgeGoalProgre
 export async function acknowledgeProjectCheckIn(input: AcknowledgeProjectCheckInInput) : Promise<AcknowledgeProjectCheckInResult> {
   return defaultApiClient.acknowledgeProjectCheckIn(input);
 }
+export async function addCompany(input: AddCompanyInput) : Promise<AddCompanyResult> {
+  return defaultApiClient.addCompany(input);
+}
 export async function addCompanyAdmins(input: AddCompanyAdminsInput) : Promise<AddCompanyAdminsResult> {
   return defaultApiClient.addCompanyAdmins(input);
 }
@@ -3012,6 +3029,10 @@ export function useAcknowledgeProjectCheckIn() : UseMutationHookResult<Acknowled
   return useMutation<AcknowledgeProjectCheckInInput, AcknowledgeProjectCheckInResult>((input) => defaultApiClient.acknowledgeProjectCheckIn(input));
 }
 
+export function useAddCompany() : UseMutationHookResult<AddCompanyInput, AddCompanyResult> {
+  return useMutation<AddCompanyInput, AddCompanyResult>((input) => defaultApiClient.addCompany(input));
+}
+
 export function useAddCompanyAdmins() : UseMutationHookResult<AddCompanyAdminsInput, AddCompanyAdminsResult> {
   return useMutation<AddCompanyAdminsInput, AddCompanyAdminsResult>((input) => defaultApiClient.addCompanyAdmins(input));
 }
@@ -3355,6 +3376,8 @@ export default {
   useAcknowledgeGoalProgressUpdate,
   acknowledgeProjectCheckIn,
   useAcknowledgeProjectCheckIn,
+  addCompany,
+  useAddCompany,
   addCompanyAdmins,
   useAddCompanyAdmins,
   addCompanyMember,
