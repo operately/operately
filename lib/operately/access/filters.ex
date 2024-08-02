@@ -19,6 +19,12 @@ defmodule Operately.Access.Filters do
     )
   end
 
+  defp join_context(query, join_parent: parent, named_binding: name) do
+    from([{^name, item}] in query,
+      join: p in assoc(item, ^parent),
+      join: c in assoc(p, :access_context), as: :context
+    )
+  end
   defp join_context(query, join_parent: parent) do
     from(item in query,
       join: p in assoc(item, ^parent),
