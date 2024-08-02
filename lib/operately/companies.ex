@@ -44,7 +44,7 @@ defmodule Operately.Companies do
     |> Repo.one!()
   end
 
-  defdelegate create_company(attrs \\ %{}),to: Operately.Operations.CompanyAdding, as: :run
+  defdelegate create_company(attrs \\ %{}, account \\ nil), to: Operately.Operations.CompanyAdding, as: :run
 
   def update_company(%Company{} = company, attrs) do
     company

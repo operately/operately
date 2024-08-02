@@ -13,15 +13,15 @@ defmodule OperatelyWeb.AccountOauthControllerTest do
 
   describe "callback/2" do
     test "when a person with the given email exists in the company", ctx do
-      assert Operately.People.list_people(ctx.company.id) == []
+      assert Operately.Repo.aggregate(Operately.People.Person, :count, :id) == 1 # company creator
 
-      person = person_fixture(%{company_id: ctx.company.id, email: "i.exist@text.com"})
+      person = person_fixture_with_account(%{company_id: ctx.company.id, email: "i.exist@text.com"})
 
       conn = Plug.Conn.assign(ctx.conn, :ueberauth_auth, %{
         info: %{
           email: person.email,
           image: "http://example.com/image.png",
-          name: "Test User"
+          name: "Michael Bolton"
         }
       })
 
@@ -29,9 +29,9 @@ defmodule OperatelyWeb.AccountOauthControllerTest do
       assert conn.status == 302
 
       people = Operately.People.list_people(ctx.company.id)
-      assert length(people) == 1
+      assert length(people) == 2 # company creator + person
 
-      saved_person = hd(people)
+      saved_person = Operately.People.get_person_by_email(ctx.company, person.email)
       assert saved_person.email == "i.exist@text.com"
       assert saved_person.id == person.id
       assert saved_person.avatar_url == "http://example.com/image.png"
@@ -40,16 +40,16 @@ defmodule OperatelyWeb.AccountOauthControllerTest do
       assert saved_account.email == "i.exist@text.com"
     end
 
-    test "when a person with the given doesn't exists and the email is allowed => it creates a new person/account combo", ctx do
+    test "when a person with the given email doesn't exists and the email is allowed => it creates a new person/account combo", ctx do
       {:ok, _} = Operately.Companies.update_company(ctx.company, %{trusted_email_domains: ["@text.com"]})
 
-      assert Operately.People.list_people(ctx.company.id) == []
+      assert Operately.Repo.aggregate(Operately.People.Person, :count, :id) == 1 # company creator
 
       conn = Plug.Conn.assign(ctx.conn, :ueberauth_auth, %{
         info: %{
           email: "new-email@text.com",
           image: "http://example.com/image.png",
-          name: "Test User"
+          name: "Michael Bolton"
         }
       })
 
@@ -57,9 +57,9 @@ defmodule OperatelyWeb.AccountOauthControllerTest do
       assert conn.status == 302
 
       people = Operately.People.list_people(ctx.company.id)
-      assert length(people) == 1
+      assert length(people) == 2 # company creator + new person
 
-      saved_person = hd(people)
+      saved_person = Operately.People.get_person_by_email(ctx.company, "new-email@text.com")
       assert saved_person.email == "new-email@text.com"
       assert saved_person.account_id != nil
       assert saved_person.title == "Unknown Role"
@@ -71,13 +71,13 @@ defmodule OperatelyWeb.AccountOauthControllerTest do
     test "when a person with the given doesn't exists, but the email is not allowed => it rejects the request", ctx do
       {:ok, _} = Operately.Companies.update_company(ctx.company, %{trusted_email_domains: ["@text.com"]})
 
-      assert Operately.People.list_people(ctx.company.id) == []
+      assert Operately.Repo.aggregate(Operately.People.Person, :count, :id) == 1 # company creator
 
       conn = Plug.Conn.assign(ctx.conn, :ueberauth_auth, %{
         info: %{
           email: "new-email@dmif.com",
           image: "http://example.com/image.png",
-          name: "Test User"
+          name: "Michael Bolton"
         }
       })
 
@@ -85,11 +85,11 @@ defmodule OperatelyWeb.AccountOauthControllerTest do
       assert conn.status == 302
       assert conn.assigns.flash == %{"error" => "Authentication failed"}
 
-      assert Operately.People.list_people(ctx.company.id) == []
+      assert Operately.Repo.aggregate(Operately.People.Person, :count, :id) == 1 # company creator
     end
 
     test "when the account exists, but the avatar_url is different, it updates the avatar_url", ctx do
-      assert Operately.People.list_people(ctx.company.id) == []
+      assert Operately.Repo.aggregate(Operately.People.Person, :count, :id) == 1 # company creator
 
       person = person_fixture_with_account(%{
         company_id: ctx.company.id, 
@@ -108,10 +108,9 @@ defmodule OperatelyWeb.AccountOauthControllerTest do
       conn = get(conn, ~p"/accounts/auth/google/callback", %{"provider" => "google"})
       assert conn.status == 302
 
-      people = Operately.People.list_people(ctx.company.id)
-      assert length(people) == 1
+      assert Operately.Repo.aggregate(Operately.People.Person, :count, :id) == 2 # company creator + person
 
-      saved_person = hd(people)
+      saved_person = Operately.People.get_person_by_email(ctx.company, person.email)
       assert saved_person.avatar_url == "http://example.com/new-image.png"
     end
   end

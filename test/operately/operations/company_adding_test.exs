@@ -7,37 +7,46 @@ defmodule Operately.Operations.CompanyAddingTest do
   alias Operately.Access
   alias Operately.Access.Binding
 
+  import Operately.PeopleFixtures
+
   @email "john@your-company.com"
 
   @company_attrs %{
-    :company_name => "Acme Co.",
-    :full_name => "John Doe",
-    :email => @email,
-    :role => "CEO",
-    :password => "Aa12345#&!123",
-    :password_confirmation => "Aa12345#&!123"
+    company_name: "Acme Co.",
+    full_name: "John Doe",
+    email: @email,
+    title: "CEO",
+    password: "Aa12345#&!123",
+    password_confirmation: "Aa12345#&!123"
   }
 
-  test "CompanyAdding operation creates company without admin" do
-    assert 0 == Companies.count_companies()
+  test "CompanyAdding operation creates company for an existing account" do
+    account = account_fixture()
 
-    {:ok, company} = Operately.Operations.CompanyAdding.run(@company_attrs)
+    assert Companies.count_companies() == 0
 
-    assert 1 == Companies.count_companies()
+    {:ok, company} = Operately.Operations.CompanyAdding.run(@company_attrs, account)
+
+    assert Companies.count_companies() == 1
     assert Companies.get_company_by_name("Acme Co.")
-    assert [] == People.list_people(company.id)
+    assert length(People.list_people(company.id)) == 1
+
+    person = People.list_people(company.id) |> hd()
+    assert person.company_role == :admin
+    assert person.full_name == account.full_name
+    assert person.title == "CEO"
   end
 
   test "CompanyAdding operation creates company with admin" do
-    assert 0 == Companies.count_companies()
+    assert Companies.count_companies() == 0
 
-    {:ok, company} = Operately.Operations.CompanyAdding.run(@company_attrs, create_admin: true)
+    {:ok, company} = Operately.Operations.CompanyAdding.run(@company_attrs)
     person = People.get_person_by_email(company, @email)
 
-    assert 1 == Companies.count_companies()
+    assert Companies.count_companies() == 1
     assert Companies.get_company_by_name("Acme Co.")
 
-    assert 1 == length(People.list_people(company.id))
+    assert length(People.list_people(company.id)) == 1
     assert person.company_role == :admin
     assert person.full_name == "John Doe"
     assert person.title == "CEO"
@@ -53,7 +62,7 @@ defmodule Operately.Operations.CompanyAddingTest do
   end
 
   test "CompanyAdding operation creates admin user's access group and membership" do
-    {:ok, company} = Operately.Operations.CompanyAdding.run(@company_attrs, create_admin: true)
+    {:ok, company} = Operately.Operations.CompanyAdding.run(@company_attrs)
 
     person = People.get_person_by_email(company, @email)
     group = Access.get_group!(person_id: person.id)
@@ -62,7 +71,7 @@ defmodule Operately.Operations.CompanyAddingTest do
   end
 
   test "CompanyAdding operation creates access groups, bindings and group_memberships for admins and members" do
-    {:ok, company} = Operately.Operations.CompanyAdding.run(@company_attrs, create_admin: true)
+    {:ok, company} = Operately.Operations.CompanyAdding.run(@company_attrs)
 
     person = People.get_person_by_email(company, @email)
     full_access = Access.get_group!(company_id: company.id, tag: :full_access)
@@ -84,7 +93,7 @@ defmodule Operately.Operations.CompanyAddingTest do
   end
 
   test "CompanyAdding operation creates company company space member" do
-    {:ok, company} = Operately.Operations.CompanyAdding.run(@company_attrs, create_admin: true)
+    {:ok, company} = Operately.Operations.CompanyAdding.run(@company_attrs)
 
     members = Groups.get_group!(company.company_space_id) |> Groups.list_members()
 
