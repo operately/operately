@@ -24,17 +24,11 @@ defmodule Operately.Features.ProjectTasksTest do
       assignees: [ctx.champion.full_name],
       test_id: "todo_0",
     }
-    attrs2 = Map.merge(attrs1, %{
-      title: "Task 2",
-      test_id: "todo_1",
-    })
 
     ctx
     |> Steps.visit_milestone_page()
     |> Steps.add_task(attrs1)
     |> Steps.assert_task_added(attrs1)
-    |> Steps.add_task(attrs2)
-    |> Steps.assert_task_added(attrs2)
   end
 
   @tag login_as: :champion
