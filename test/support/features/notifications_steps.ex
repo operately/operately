@@ -7,8 +7,8 @@ defmodule Operately.Support.Features.NotificationsSteps do
     UI.visit(ctx, Paths.notifications_path(ctx.company))
   end
 
-  def click_on_first_notification(ctx) do
-    UI.click(ctx, testid: "notification-item-project_created")
+  def click_on_notification(ctx, testid) do
+    UI.click(ctx, testid: testid)
   end
 
   def click_on_first_mark_all_as_read(ctx) do
