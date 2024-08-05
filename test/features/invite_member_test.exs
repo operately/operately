@@ -11,13 +11,6 @@ defmodule Operately.Features.InviteMemberTest do
   setup ctx do
     company = company_fixture()
     admin = person_fixture_with_account(%{company_id: company.id, full_name: "John Admin", company_role: :admin})
-
-    #
-    # Although currently not supported, ideally UI.login_as
-    # should be moved out of setup so that when we test how
-    # the user resets their password, no one is logged in
-    #
-    ctx = UI.login_as(ctx, admin)
     ctx = Map.merge(ctx, %{company: company, admin: admin})
 
     {:ok, ctx}
@@ -33,6 +26,7 @@ defmodule Operately.Features.InviteMemberTest do
 
   feature "admin account can invite members", ctx do
     ctx
+    |> UI.login_as(ctx.admin)
     |> Steps.navigate_to_invitation_page()
     |> Steps.invite_member(@new_member)
     |> Steps.assert_member_invited()
@@ -61,6 +55,7 @@ defmodule Operately.Features.InviteMemberTest do
     title_missing = Map.put(@new_member, :title, " ")
 
     ctx
+    |> UI.login_as(ctx.admin)
     |> Steps.navigate_to_invitation_page()
     |> Steps.invite_member(name_missing)
     |> UI.assert_text("Full name is required")
@@ -75,6 +70,7 @@ defmodule Operately.Features.InviteMemberTest do
 
   feature "admin can reissue tokens", ctx do
     ctx
+    |> UI.login_as(ctx.admin)
     |> Steps.navigate_to_invitation_page()
     |> Steps.invite_member(@new_member)
     |> Steps.assert_member_invited()
