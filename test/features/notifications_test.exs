@@ -5,6 +5,7 @@ defmodule Operately.Features.NotificationsTest do
   import Operately.GroupsFixtures
   import Operately.PeopleFixtures
 
+  alias Operately.Access.Binding
   alias Operately.Support.Features.NotificationsSteps
 
   setup ctx do
@@ -13,24 +14,32 @@ defmodule Operately.Features.NotificationsTest do
     ctx = Map.put(ctx, :reviewer, person_fixture_with_account(%{company_id: ctx.company.id, full_name: "John Reviewer"}))
     ctx = Map.put(ctx, :group, group_fixture(ctx.champion, %{company_id: ctx.company.id, name: "Designers"}))
 
-    ctx = UI.login_as(ctx, ctx.reviewer)
+    Operately.Groups.add_members(ctx.reviewer, ctx.group.id, [
+      %{
+        id: ctx.reviewer.id,
+        permissions: Binding.view_access(),
+      },
+      %{
+        id: ctx.champion.id,
+        permissions: Binding.view_access(),
+      }
+    ])
 
     {:ok, ctx}
   end
 
   feature "unread notifications count", ctx do
     ctx
-    |> given_a_project_creation_notification_exists()
     |> UI.login_as(ctx.champion)
     |> NotificationsSteps.assert_notification_count(1)
     |> NotificationsSteps.visit_notifications_page()
-    |> NotificationsSteps.click_on_first_notification()
+    |> NotificationsSteps.click_on_notification("notification-item-space_members_added")
     |> NotificationsSteps.assert_no_unread_notifications()
   end
 
   feature "mark all unread notifications as read", ctx do
     ctx
-    |> given_a_project_creation_notification_exists()
+    |> UI.login_as(ctx.reviewer)
     |> given_a_project_creation_notification_exists()
     |> UI.login_as(ctx.champion)
     |> NotificationsSteps.assert_notification_count(2)
@@ -50,5 +59,4 @@ defmodule Operately.Features.NotificationsTest do
     |> UI.click(testid: "save")
     |> UI.assert_text("Website Redesign")
   end
-
 end
