@@ -492,7 +492,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Invitations.Invitation do
       id: inv.id,
       admin_name: inv.admin.full_name,
       admin: OperatelyWeb.Api.Serializer.serialize(inv.admin),
-      member: OperatelyWeb.Api.Serializer.serialize(inv.member),
+      member: OperatelyWeb.Api.Serializer.serialize(inv.member, level: :full),
       company: OperatelyWeb.Api.Serializer.serialize(inv.company),
     }
   end
