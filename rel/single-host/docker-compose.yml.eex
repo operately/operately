@@ -1,0 +1,33 @@
+version: "3"
+
+services:
+  app:
+    image: operately/operately:<%= @version %>
+    ports:
+      - "80:4000"
+    depends_on:
+      - db
+    environment:
+      - MIX_ENV=prod
+      - DB_HOST=db
+    env_file:
+      - operately.env
+    volumes:
+      - media:/media
+
+  db:
+    image: postgres:14.5
+    environment:
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_DB: operately-prod
+    env_file:
+      - operately.env
+    restart: always
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+volumes:
+  postgres-data:
+    driver: local
+  media:
+    driver: local
