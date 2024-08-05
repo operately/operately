@@ -32,19 +32,16 @@ defmodule Operately.Features.InviteMemberTest do
     |> Steps.assert_member_invited()
   end
 
-  feature "new member can reset their password", ctx do
+  feature "following invitation link and choosing password", ctx do
     member = person_fixture_with_account(%{company_id: ctx.company.id, full_name: @new_member[:fullName], email: @new_member[:email]})
     invitation = invitation_fixture(%{member_id: member.id, admin_id: ctx.admin.id})
     token = invitation_token_fixture_unhashed(invitation.id)
 
-    path = "/first-time-login?token=" <> token
-
     ctx
-    |> UI.visit(path)
-    |> Steps.assert_wrong_password(@new_member)
-    |> Steps.change_password(@new_member[:password])
-    |> UI.assert_page("/")
-    |> Steps.assert_password_changed(@new_member)
+    |> Steps.goto_invitation_page(%{token: token})
+    |> Steps.assert_invitation_form()
+    |> Steps.submit_password(@new_member[:password])
+    |> Steps.assert_password_set_for_new_member(@new_member)
   end
 
   feature "new member invitation errors", ctx do
