@@ -4,11 +4,61 @@ defmodule OperatelyWeb.Api.Queries.GetSpaceTest do
   import Operately.PeopleFixtures
   import Operately.GroupsFixtures
 
+  alias Operately.{Repo, Groups}
   alias Operately.Access.Binding
 
   describe "security" do
     test "it requires authentication", ctx do
       assert {401, _} = query(ctx.conn, :get_space, %{id: "1"})
+    end
+  end
+
+  describe "permissions" do
+    setup ctx do
+      ctx = register_and_log_in_account(ctx)
+      creator = person_fixture(%{company_id: ctx.company.id})
+
+      Map.merge(ctx, %{creator: creator})
+    end
+
+    test "member has access to company space", ctx do
+      space = Groups.get_group!(ctx.company.company_space_id)
+
+      assert {200, %{space: space} = _res} = query(ctx.conn, :get_space, %{id: Paths.space_id(space)})
+      assert space.name == "Company"
+      assert space.mission == "Everyone in the company"
+      assert space.is_company_space
+    end
+
+    test "member doesn't have access to space they are not part of", ctx do
+      space = group_fixture(ctx.creator, company_id: ctx.company.id) |> Repo.preload(:company)
+
+      assert {404, res} = query(ctx.conn, :get_space, %{id: Paths.space_id(space)})
+      assert res.message == "The requested resource was not found"
+    end
+
+    test "members has access to space they are part of", ctx do
+      space = group_fixture(ctx.creator, company_id: ctx.company.id) |> Repo.preload(:company)
+      add_person_to_space(ctx, space)
+      space = Groups.Group.load_is_member(space, ctx.person)
+
+      assert {200, res} = query(ctx.conn, :get_space, %{id: Paths.space_id(space)})
+      assert res.space == Serializer.serialize(space, level: :full)
+    end
+
+    test "member has access to space they are NOT part of", ctx do
+      space =
+        group_fixture(ctx.creator, [
+          company_id: ctx.company.id,
+          company_permissions: Binding.view_access(),
+        ])
+        |> Repo.preload(:company)
+        |> Groups.Group.load_is_member(ctx.person)
+        |> Serializer.serialize(level: :full)
+
+      assert {200, res} = query(ctx.conn, :get_space, %{id: space.id})
+      assert res.space == space
+      refute res.space.is_member
     end
   end
 
@@ -39,7 +89,10 @@ defmodule OperatelyWeb.Api.Queries.GetSpaceTest do
 
     test "get_space when not a member", ctx do
       creator = person_fixture(company_id: ctx.company.id)
-      space = group_fixture(creator, company_id: ctx.company.id)
+      space = group_fixture(creator, [
+        company_id: ctx.company.id,
+        company_permissions: Binding.view_access(),
+      ])
 
       assert {200, res} = query(ctx.conn, :get_space, %{id: Paths.space_id(space)})
       assert res.space == %{
@@ -89,5 +142,16 @@ defmodule OperatelyWeb.Api.Queries.GetSpaceTest do
       assert res.space.access_levels.public == Binding.view_access()
       assert res.space.access_levels.company == Binding.comment_access()
     end
+  end
+
+  #
+  # Helpers
+  #
+
+  defp add_person_to_space(ctx, space) do
+    Operately.Groups.add_members(ctx.person, space.id, [%{
+      id: ctx.person.id,
+      permissions: Binding.view_access(),
+    }])
   end
 end
