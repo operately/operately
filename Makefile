@@ -90,15 +90,6 @@ dev.run.script:
 	cp -f $(FILE) tmp/
 	./devenv mix run tmp/$$(basename $(FILE))
 
-dev.create.account:
-	./devenv mix operately.create.account "$(NAME)" "$(EMAIL)" "$(PASSWORD)"
-
-dev.create.company:
-	./devenv mix operately.create.company "$(NAME)"
-
-dev.add.account.to.company:
-	./devenv mix operately.add.account.to.company "$(ACCOUNT_EMAIL)" "$(COMPANY_NAME)" "$(NAME)" "$(ROLE)"
-
 #
 # Testing tasks
 #
