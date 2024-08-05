@@ -66,9 +66,9 @@ function useSubmit(fields: FormFields) {
       passwordConfirmation: fields.passwordConfirmation,
     });
 
-    logIn(invitation.member!.email!, fields.password).then(() => {
-      window.location.href = "/";
-    });
+    await logIn(invitation.member!.email!, fields.password);
+
+    window.location.href = "/" + invitation.company!.id;
 
     return true;
   };
