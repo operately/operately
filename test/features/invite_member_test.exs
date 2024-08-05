@@ -11,13 +11,6 @@ defmodule Operately.Features.InviteMemberTest do
   setup ctx do
     company = company_fixture()
     admin = person_fixture_with_account(%{company_id: company.id, full_name: "John Admin", company_role: :admin})
-
-    #
-    # Although currently not supported, ideally UI.login_as
-    # should be moved out of setup so that when we test how
-    # the user resets their password, no one is logged in
-    #
-    ctx = UI.login_as(ctx, admin)
     ctx = Map.merge(ctx, %{company: company, admin: admin})
 
     {:ok, ctx}
@@ -33,24 +26,22 @@ defmodule Operately.Features.InviteMemberTest do
 
   feature "admin account can invite members", ctx do
     ctx
+    |> UI.login_as(ctx.admin)
     |> Steps.navigate_to_invitation_page()
     |> Steps.invite_member(@new_member)
     |> Steps.assert_member_invited()
   end
 
-  feature "new member can reset their password", ctx do
+  feature "following invitation link and choosing password", ctx do
     member = person_fixture_with_account(%{company_id: ctx.company.id, full_name: @new_member[:fullName], email: @new_member[:email]})
     invitation = invitation_fixture(%{member_id: member.id, admin_id: ctx.admin.id})
     token = invitation_token_fixture_unhashed(invitation.id)
 
-    path = "/first-time-login?token=" <> token
-
     ctx
-    |> UI.visit(path)
-    |> Steps.assert_wrong_password(@new_member)
-    |> Steps.change_password(@new_member[:password])
-    |> UI.assert_page("/")
-    |> Steps.assert_password_changed(@new_member)
+    |> Steps.goto_invitation_page(%{token: token})
+    |> Steps.assert_invitation_form()
+    |> Steps.submit_password(@new_member[:password])
+    |> Steps.assert_password_set_for_new_member(@new_member)
   end
 
   feature "new member invitation errors", ctx do
@@ -61,6 +52,7 @@ defmodule Operately.Features.InviteMemberTest do
     title_missing = Map.put(@new_member, :title, " ")
 
     ctx
+    |> UI.login_as(ctx.admin)
     |> Steps.navigate_to_invitation_page()
     |> Steps.invite_member(name_missing)
     |> UI.assert_text("Full name is required")
@@ -75,6 +67,7 @@ defmodule Operately.Features.InviteMemberTest do
 
   feature "admin can reissue tokens", ctx do
     ctx
+    |> UI.login_as(ctx.admin)
     |> Steps.navigate_to_invitation_page()
     |> Steps.invite_member(@new_member)
     |> Steps.assert_member_invited()
