@@ -36,17 +36,27 @@ defmodule Operately.Support.Features.UI do
     passthrough_result
   end
 
-  def login_as(state, person) do
-    path = URI.encode("/accounts/auth/test_login?email=#{person.email}&full_name=#{person.full_name}")
-
+  def new_session(state) do
     execute(state, fn _ ->
-      :ok = Wallaby.end_session(state[:session])
-
       metadata = Phoenix.Ecto.SQL.Sandbox.metadata_for(Operately.Repo, self())
       {:ok, session} = Wallaby.start_session([metadata: metadata])
 
       session
       |> Wallaby.Browser.resize_window(1920, 2000)
+    end)
+  end
+
+  def login_as(state, person) do
+    path = URI.encode("/accounts/auth/test_login?email=#{person.email}&full_name=#{person.full_name}")
+
+    if state[:session] do
+      :ok = Wallaby.end_session(state[:session])
+    end
+
+    state
+    |> new_session()
+    |> execute(fn session ->
+      session
       |> Browser.visit(path)
       |> Browser.assert_text("Company Space") # Ensure we are logged in and that the lobby is loaded
     end)
