@@ -6,7 +6,7 @@ Pre-requisites:
 
 - [Pick a server](#pick-a-server)
 - [Point a domain to your server](#point-a-domain-to-your-server)
-- [Set up a mailbox](#set-up-a-mailbox)
+- [Set up mail server](#set-up-mail-server)
 
 Installation steps:
 
@@ -40,7 +40,7 @@ and Docker Compose, follow the instructions for your operating system:
 - [Docker](https://docs.docker.com/get-docker/)
 - [Docker Compose](https://docs.docker.com/compose/install/)
 
-### Set up a mailbox
+### Set up a mail server
 
 Operately uses SendGrid to send emails. You need to set up a SendGrid account and create an API key.
 Follow the instructions on the [SendGrid documentation](https://sendgrid.com/docs/ui/account-and-settings/api-keys/).
