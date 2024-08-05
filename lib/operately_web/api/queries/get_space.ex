@@ -2,6 +2,8 @@ defmodule OperatelyWeb.Api.Queries.GetSpace do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
+  import Operately.Access.Filters, only: [filter_by_view_access: 2, filter_by_view_access: 3]
+
   alias Operately.Repo
   alias Operately.Groups.Group
 
@@ -19,8 +21,7 @@ defmodule OperatelyWeb.Api.Queries.GetSpace do
   end
 
   def call(conn, inputs) do
-    {:ok, id} = decode_id(inputs[:id])
-    space = load(id, me(conn), inputs)
+    space = load(me(conn), company(conn), inputs)
 
     if space do
       {:ok, %{space: Serializer.serialize(space, level: :full)}}
@@ -29,13 +30,15 @@ defmodule OperatelyWeb.Api.Queries.GetSpace do
     end
   end
 
-  defp load(id, person, inputs) do
+  defp load(person, company, inputs) do
     requested = extract_include_filters(inputs)
+    {:ok, id} = decode_id(inputs[:id])
 
     (from s in Group, where: s.id == ^id, preload: [:company])
     |> Group.scope_company(person.company_id)
     |> include_requested(requested)
     |> load_members_access_level(inputs[:include_members_access_levels], id)
+    |> view_access_filter(person, company_space: company.company_space_id == id)
     |> Repo.one()
     |> preload_is_member(person)
     |> sort_members()
@@ -67,4 +70,11 @@ defmodule OperatelyWeb.Api.Queries.GetSpace do
 
   defp load_members_access_level(query, true, space_id), do: Group.preload_members_access_level(query, space_id)
   defp load_members_access_level(query, _, _), do: query
+
+  defp view_access_filter(q, person, company_space: true) do
+    filter_by_view_access(q, person.id, join_parent: :company)
+  end
+  defp view_access_filter(q, person, company_space: false) do
+    filter_by_view_access(q, person.id)
+  end
 end
