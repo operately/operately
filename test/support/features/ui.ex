@@ -49,11 +49,14 @@ defmodule Operately.Support.Features.UI do
   def login_as(state, person) do
     path = URI.encode("/accounts/auth/test_login?email=#{person.email}&full_name=#{person.full_name}")
 
-    execute(state, fn _ ->
+    if state[:session] do
       :ok = Wallaby.end_session(state[:session])
+    end
 
-      state
-      |> new_session()
+    state
+    |> new_session()
+    |> execute(fn session ->
+      session
       |> Browser.visit(path)
       |> Browser.assert_text("Company Space") # Ensure we are logged in and that the lobby is loaded
     end)
