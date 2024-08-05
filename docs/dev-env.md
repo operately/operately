@@ -10,8 +10,7 @@ This document describes how to set up a development environment for the Operatel
 - [Start the development environment](#3-start-the-development-environment)
 - [Set up the development environment (install dependencies)](#4-set-up-the-development-environment-install-dependencies)
 - [Create the dev and test databases and run the migrations](#5-create-the-dev-and-test-databases-and-run-the-migrations)
-- [Create a development user and company](#6-create-a-development-user-and-company)
-- [Start the Phoenix server](#7-start-the-phoenix-server)
+- [Start the Phoenix server](#6-start-the-phoenix-server)
 
 ## 0. Pre-requisites
 
@@ -100,35 +99,7 @@ make test.db.create
 make migrate
 ```
 
-## 6. Create a development user and company
-
-First, create an account:
-
-``` bash
-make dev.create.account NAME="<your-name>" EMAIL="<your-email>" PASSWORD="<your-password>" # password must be at least 12 characters long
-```
-
-Then, create a company:
-
-``` bash
-make dev.create.company NAME=<your-company-name>
-```
-
-Finally, add the account to the company:
-
-``` bash
-make dev.add.account.to.company ACCOUNT_EMAIL=<your-email> COMPANY_NAME=<your-company-name> NAME=<your-full-name> ROLE=<your-role-in-the-company>
-```
-
-Example:
-
-``` bash
-make dev.create.account NAME="John Doe" EMAIL="john@localhost.dev" PASSWORD="keyboardcat123!!!"
-make dev.create.company NAME="Acme Inc."
-make dev.add.account.to.company ACCOUNT_EMAIL="john@localhost.dev" COMPANY_NAME="Acme Inc." NAME="John Doe" ROLE="Software Engineer"
-```
-
-## 7. Start the Phoenix server
+## 6. Start the Phoenix server
 
 To start the Phoenix server, run the following command:
 
