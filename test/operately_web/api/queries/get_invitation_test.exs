@@ -15,7 +15,7 @@ defmodule OperatelyWeb.Api.Queries.GetInvitationTest do
       assert {200, res} = query(conn, :get_invitation, %{"token" => token})
 
       assert res.invitation.admin == Serializer.serialize(invitation.admin, level: :essential)
-      assert res.invitation.member == Serializer.serialize(invitation.member, level: :essential)
+      assert res.invitation.member == Serializer.serialize(invitation.member, level: :full)
     end
   end
 
