@@ -105,7 +105,7 @@ make migrate
 First, create an account:
 
 ``` bash
-make dev.create.account EMAIL=<your-email> PASSWORD=<your-password>
+make dev.create.account NAME="<your-name>" EMAIL="<your-email>" PASSWORD="<your-password>" # password must be at least 12 characters long
 ```
 
 Then, create a company:
@@ -123,7 +123,7 @@ make dev.add.account.to.company ACCOUNT_EMAIL=<your-email> COMPANY_NAME=<your-co
 Example:
 
 ``` bash
-make dev.create.account EMAIL="john@localhost.dev" PASSWORD="keyboardcat123!!!"
+make dev.create.account NAME="John Doe" EMAIL="john@localhost.dev" PASSWORD="keyboardcat123!!!"
 make dev.create.company NAME="Acme Inc."
 make dev.add.account.to.company ACCOUNT_EMAIL="john@localhost.dev" COMPANY_NAME="Acme Inc." NAME="John Doe" ROLE="Software Engineer"
 ```
