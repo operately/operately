@@ -4,7 +4,6 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Forms from "@/components/Form";
 
-import { Spacer } from "@/components/Spacer";
 import { useLoadedData } from "./loader";
 import { useForm } from "./useForm";
 import { Logo } from "@/layouts/DefaultLayout/Logo";
