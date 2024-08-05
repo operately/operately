@@ -52,7 +52,7 @@ defmodule Operately.Features.SpacesTest do
   end
 
   feature "joining a space", ctx do
-    group = group_fixture(ctx.person, %{name: "Marketing"})
+    group = group_fixture(ctx.person, %{name: "Marketing", company_permissions: Binding.view_access()})
     person = person_fixture_with_account(%{full_name: "Mati Aharoni", company_id: ctx.company.id})
 
     ctx
