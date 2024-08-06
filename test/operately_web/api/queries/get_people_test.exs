@@ -4,6 +4,8 @@ defmodule OperatelyWeb.Api.Queries.GetPeopleTest do
   import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
 
+  alias Operately.{Repo, People}
+
   describe "security" do
     test "it requires authentication", ctx do
       assert {401, _} = query(ctx.conn, :get_people, %{})
@@ -21,6 +23,52 @@ defmodule OperatelyWeb.Api.Queries.GetPeopleTest do
       assert Enum.any?(people, fn p -> p.id == Paths.person_id(me) end)
       assert Enum.any?(people, fn p -> p.id == Paths.person_id(ctx.company_creator) end)
       refute find_person_in_response(people, person_from_other_company)
+    end
+  end
+
+  describe "permissions" do
+    setup :register_and_log_in_account
+
+    test "company member can query people from the same company", ctx do
+      assert {200, res} = query(ctx.conn, :get_people, %{})
+      assert length(res.people) == 2 # created in the setup
+
+      people = Enum.map(1..3, fn _ ->
+        person_fixture(%{company_id: ctx.company.id})
+      end)
+
+      assert {200, res} = query(ctx.conn, :get_people, %{})
+      assert length(res.people) == 5
+
+      Enum.each(people, fn p ->
+        assert Enum.find(res.people, &(&1 == Serializer.serialize(p, level: :full)))
+      end)
+    end
+
+    test "company member can't query people from another company", ctx do
+      %{company: company2, conn: conn2} = register_and_log_in_account(ctx)
+
+      Enum.each(1..3, fn _ ->
+        person_fixture(%{company_id: company2.id})
+      end)
+
+      assert {200, res} = query(conn2, :get_people, %{})
+      assert length(res.people) == 5 # 2 from setup2 + 3 just created
+
+      assert {200, res} = query(ctx.conn, :get_people, %{})
+      assert length(res.people) == 2 # only 2 from the setup
+
+      assert Repo.aggregate(People.Person, :count, :id) == 7 # total
+    end
+
+    test "suspended people don't have access", ctx do
+      assert {200, res} = query(ctx.conn, :get_people, %{})
+      assert length(res.people) == 2
+
+      People.update_person(ctx.person, %{suspended_at: DateTime.utc_now()})
+
+      assert {200, res} = query(ctx.conn, :get_people, %{})
+      assert length(res.people) == 0
     end
   end
 
@@ -68,4 +116,4 @@ defmodule OperatelyWeb.Api.Queries.GetPeopleTest do
   defp find_person_in_response(people, person) do
     Enum.find(people, fn p -> p.id == Paths.person_id(person) end)
   end
-end 
+end
