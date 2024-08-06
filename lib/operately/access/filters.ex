@@ -14,7 +14,9 @@ defmodule Operately.Access.Filters do
       join: b in assoc(c, :bindings),
       join: g in assoc(b, :group),
       join: m in assoc(g, :memberships),
+      join: p in assoc(m, :person),
       where: m.person_id == ^person_id and b.access_level >= ^access_level,
+      where: is_nil(p.suspended_at),
       distinct: true
     )
   end

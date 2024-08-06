@@ -3,7 +3,7 @@ defmodule Operately.Access.GroupMembership do
 
   schema "access_group_memberships" do
     belongs_to :group, Operately.Access.Group
-    belongs_to :person, Operately.People.Person
+    belongs_to :person, Operately.People.Person, where: [suspended_at: nil]
 
     timestamps()
   end
