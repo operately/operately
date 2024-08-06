@@ -4,6 +4,8 @@ defmodule OperatelyWeb.Api.Queries.GetPersonTest do
   import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
 
+  alias Operately.People
+
   describe "security" do
     test "it requires authentication", ctx do
       assert {401, _} = query(ctx.conn, :get_person, %{})
@@ -16,6 +18,29 @@ defmodule OperatelyWeb.Api.Queries.GetPersonTest do
       person_from_other_company = person_fixture(%{company_id: company2.id})
 
       assert query(ctx.conn, :get_person, %{id: Paths.person_id(person_from_other_company)}) == not_found_response()
+    end
+  end
+
+  describe "permissions" do
+    setup ctx do
+      ctx = register_and_log_in_account(ctx)
+      company_member =
+        person_fixture(%{company_id: ctx.company.id})
+        |> Serializer.serialize(level: :full)
+
+      Map.merge(ctx, %{company_member: company_member})
+    end
+
+    test "company member can query people from the same company", ctx do
+      assert {200, res} = query(ctx.conn, :get_person, %{id: ctx.company_member.id})
+      assert res.person == ctx.company_member
+    end
+
+    test "suspended people don't have access", ctx do
+      People.update_person(ctx.person, %{suspended_at: DateTime.utc_now()})
+
+      assert {404, res} = query(ctx.conn, :get_person, %{id: ctx.company_member.id})
+      assert res.message == "The requested resource was not found"
     end
   end
 
@@ -63,4 +88,4 @@ defmodule OperatelyWeb.Api.Queries.GetPersonTest do
       assert Enum.find(res.person.peers, fn p -> p.id == Paths.person_id(peer2) end) == Serializer.serialize(peer2, level: :essential)
     end
   end
-end 
+end

@@ -4,6 +4,9 @@ defmodule OperatelyWeb.Api.Queries.SearchPeopleTest do
   import Operately.PeopleFixtures
   import Operately.CompaniesFixtures
 
+  alias Operately.People
+  alias OperatelyWeb.Paths
+
   describe "security" do
     test "it requires authentication", ctx do
       assert {401, _} = query(ctx.conn, :search_people, query: "John", ignored_ids: [])
@@ -18,6 +21,19 @@ defmodule OperatelyWeb.Api.Queries.SearchPeopleTest do
 
       assert {200, res} = query(ctx.conn, :search_people, query: "John", ignored_ids: [])
       assert res == %{people: [serialized(person1)]}
+    end
+
+    test "suspended people don't have access", ctx do
+      ctx = register_and_log_in_account(ctx)
+      person = person_fixture(company_id: ctx.company.id, full_name: "John Doe")
+
+      assert {200, res} = query(ctx.conn, :search_people, query: "Doe", ignored_ids: [])
+      assert res.people == [serialized(person)]
+
+      People.update_person(ctx.person, %{suspended_at: DateTime.utc_now()})
+
+      assert {200, res} = query(ctx.conn, :search_people, query: "Doe", ignored_ids: [])
+      assert res.people == []
     end
   end
 
@@ -62,7 +78,7 @@ defmodule OperatelyWeb.Api.Queries.SearchPeopleTest do
       person1 = person_fixture(company_id: ctx.company.id, full_name: "John Doe")
       person2 = person_fixture(company_id: ctx.company.id, full_name: "John Doe")
 
-      assert {200, res} = query(ctx.conn, :search_people, query: "John", ignored_ids: [person1.id])
+      assert {200, res} = query(ctx.conn, :search_people, query: "John", ignored_ids: [Paths.person_id(person1)])
       assert res == %{people: [serialized(person2)]}
     end
 
