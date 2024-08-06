@@ -2,6 +2,8 @@ defmodule OperatelyWeb.Api.Queries.GetPerson do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
+  import Operately.Access.Filters, only: [filter_by_view_access: 3]
+
   alias Operately.People.Person
 
   inputs do
@@ -18,18 +20,19 @@ defmodule OperatelyWeb.Api.Queries.GetPerson do
   def call(conn, inputs) do
     {:ok, id} = decode_id(inputs[:id])
 
-    case load(id, me(conn).company_id, inputs) do
+    case load(id, me(conn), inputs) do
       nil -> {:error, :not_found}
       person -> {:ok, %{person: Serializer.serialize(person, level: :full)}}
     end
   end
 
-  defp load(id, company_id, inputs) do
+  defp load(id, person, inputs) do
     requested = extract_include_filters(inputs)
 
     (from p in Person, where: p.id == ^id)
-    |> Person.scope_company(company_id)
+    |> Person.scope_company(person.company_id)
     |> include_requested(requested)
+    |> filter_by_view_access(person.id, join_parent: :company)
     |> Repo.one()
     |> preload_peers(inputs[:include_peers])
   end
