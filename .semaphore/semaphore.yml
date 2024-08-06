@@ -81,3 +81,14 @@ promotions:
     pipeline_file: deploy.yml
     auto_promote:
       when: "result = 'passed' and branch = 'main'"
+
+  - name: Release
+    pipeline_file: release.yml
+    env_vars:
+      - required: true
+        options:
+          - Patch
+          - Minor
+          - Major
+        description: "Select the type of release"
+        name: RELEASE_TYPE
