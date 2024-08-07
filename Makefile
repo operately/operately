@@ -167,3 +167,18 @@ docker.build:
 docker.push:
 	docker push operately/operately:$(DOCKER_IMAGE_TAG)
 	docker push operately/operately:latest
+
+#
+# Release related tasks
+#
+
+release.tag.docker:
+	docker pull operately/operately:$(DOCKER_IMAGE_TAG)
+	docker tag operately/operately:$(DOCKER_IMAGE_TAG) operately/operately:$(VERSION)
+	docker push operately/operately:$(VERSION)
+
+release.build.singlehost:
+	elixir rel/single-host/build.exs $(VERSION)
+
+release.push.github.release:
+  elixir rel/make-github-release.exs $(VERSION)
