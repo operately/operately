@@ -47,7 +47,7 @@ defmodule Uploader do
     headers = build_header("application/octet-stream")
 
     case Req.post(url, headers: headers, body: file) do
-      {:ok, %{status: 201}} -> IO.puts("* single-host-#{version}.zip uploaded successfully")
+      {:ok, %{status: 201}} -> IO.puts("* single-host-#{version()}.zip uploaded successfully")
       {:ok, %{status: code} = res} -> raise "Error: #{code} #{inspect(res)}"
       {:error, reason} -> raise "Error: #{reason}"
     end
@@ -76,7 +76,7 @@ defmodule Uploader do
 
   def validate_zip do
     if !File.exists?(single_host_zip_path()) do
-      raise "Error: #{path} does not exist"
+      raise "Error: #{single_host_zip_path()} does not exist"
     end
   end
 end
