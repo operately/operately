@@ -2,6 +2,8 @@ defmodule OperatelyWeb.Api.Queries.GetCompany do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
+  import Operately.Access.Filters, only: [filter_by_view_access: 2]
+
   alias OperatelyWeb.Api.Serializer
   alias Operately.Companies.ShortId
   alias Operately.Companies.Company
@@ -44,10 +46,11 @@ defmodule OperatelyWeb.Api.Queries.GetCompany do
 
   defp load(person, id, inputs) do
     requested = extract_include_filters(inputs)
-    query = from c in Company, join: p in assoc(c, :people), where: c.short_id == ^id and p.id == ^person.id
-    query = include_requested(query, requested)
 
-    Repo.one(query)
+    (from c in Company, join: p in assoc(c, :people), where: c.short_id == ^id and p.id == ^person.id)
+    |> filter_by_view_access(person.id)
+    |> include_requested(requested)
+    |> Repo.one()
   end
 
   def include_requested(query, requested) do
