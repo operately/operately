@@ -6,6 +6,8 @@ agent:
     os_image: ubuntu2004
 blocks:
   - name: Deploy
+    run:
+      when: "branch = 'main'"
     task:
       secrets:
         - name: infra-repository-ssh-keys
