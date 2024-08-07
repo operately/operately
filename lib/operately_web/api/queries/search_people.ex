@@ -3,8 +3,10 @@ defmodule OperatelyWeb.Api.Queries.SearchPeople do
   use OperatelyWeb.Api.Helpers
 
   import Ecto.Query, only: [from: 2, limit: 2]
+  import Operately.Access.Filters, only: [filter_by_view_access: 2]
 
   alias Operately.Repo
+  alias Operately.Companies.Company
   alias Operately.People.Person
 
   inputs do
@@ -19,16 +21,31 @@ defmodule OperatelyWeb.Api.Queries.SearchPeople do
   @limit 10
 
   def call(conn, inputs) do
+    check_permissions(me(conn))
+    |> load_people(inputs)
+    |> serialize()
+    |> ok_tuple()
+  end
+
+  defp check_permissions(person) do
+    from(c in Company,
+      where: c.id == ^person.company_id,
+      select: c.id
+    )
+    |> filter_by_view_access(person.id)
+    |> Repo.one()
+  end
+
+  defp load_people(nil, _), do: []
+  defp load_people(company_id, inputs) do
     Person
     |> match_by_full_name_or_title(inputs)
-    |> limit_to_company((me(conn)).company_id)
+    |> limit_to_company(company_id)
     |> ignore_ids(inputs[:ignored_ids] || [])
     |> order_asc_by_match_position(inputs)
     |> exclude_suspended()
     |> limit(@limit)
     |> Repo.all()
-    |> serialize()
-    |> ok_tuple()
   end
 
   defp match_by_full_name_or_title(query, inputs) do
