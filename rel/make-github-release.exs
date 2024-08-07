@@ -3,6 +3,7 @@ Mix.install([:req, :jason])
 defmodule Uploader do
   def version(), do: System.argv() |> List.first()
   def token(), do: System.get_env("GITHUB_TOKEN")
+  def single_host_zip_path(), do: "build/single-host-#{version()}/operately.zip"
 
   def run do
     validate_version()
@@ -41,8 +42,8 @@ defmodule Uploader do
   end
 
   def upload_single_host_zip(id) do
-    file = File.read!("build/single-host-#{version()}.zip")
-    url = "https://uploads.github.com/repos/operately/operately/releases/#{id}/assets?name=single-host-#{version()}.zip"
+    file = File.read!(single_host_zip_path())
+    url = "https://uploads.github.com/repos/operately/operately/releases/#{id}/assets?name=operately-single-host-#{version()}.zip"
     headers = build_header("application/octet-stream")
 
     case Req.post(url, headers: headers, body: file) do
@@ -74,7 +75,7 @@ defmodule Uploader do
   end
 
   def validate_zip do
-    if !File.exists?("build/single-host-#{version()}.zip") do
+    if !File.exists?(single_host_zip_path()) do
       raise "Error: #{path} does not exist"
     end
   end

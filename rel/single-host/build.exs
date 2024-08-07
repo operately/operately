@@ -19,12 +19,13 @@ defmodule ReleaseBuilder do
   def create_build_dir(path) do
     IO.puts("* Creating build directory")
     File.mkdir_p!(path)
+    File.mkdir_p!(Path.join([path, "operately"]))
   end
 
   def build_docker_compose_file(build_path, version) do
     IO.puts("* Injecting docker-compose.yml")
     template_path = get_template_path("docker-compose.yml.eex")
-    output_path = Path.join([build_path, "docker-compose.yml"])
+    output_path = Path.join([build_path, "operately", "docker-compose.yml"])
     content = EEx.eval_file(template_path, [version: version])
     File.write!(output_path, content)
   end
@@ -32,7 +33,7 @@ defmodule ReleaseBuilder do
   def build_docker_env_file(build_path) do
     IO.puts("* Injecting operately.env")
     template_path = get_template_path("operately.env")
-    output_path = Path.join([build_path, "operately.env"])
+    output_path = Path.join([build_path, "operately", "operately.env"])
     content = File.read!(template_path)
     File.write!(output_path, content)
   end
@@ -45,7 +46,7 @@ defmodule ReleaseBuilder do
   def zip_build_dir(build_path) do
     zip_path = "#{build_path}.zip"
     IO.puts("* Zipping to #{zip_path}")
-    System.cmd("zip", ["-r", "-q", zip_path, build_path])
+    System.cmd("bash", ["-c", "cd #{build_path} && zip -r operately.zip operately"])
   end
 
   def validate_version(version) do
