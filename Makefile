@@ -181,4 +181,4 @@ release.build.singlehost:
 	elixir rel/single-host/build.exs $(VERSION)
 
 release.push.github.release:
-  elixir rel/make-github-release.exs $(VERSION)
+	elixir rel/make-github-release.exs $(VERSION)
