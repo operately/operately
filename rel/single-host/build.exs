@@ -4,7 +4,7 @@ defmodule ReleaseBuilder do
   def run(version) do
     validate_version(version)
 
-    path = "build/#{version}"
+    path = "build/single-host-#{version}"
 
     IO.puts("Building release in #{path}")
 
