@@ -11,5 +11,5 @@ blocks:
         - name: "Release"
           commands:
             - checkout
-            - elixir rel/single-host/build.ex 0.0.1
-            - echo $RELEASE_TYPE
+            - export VERSION=$(bash scripts/calc_next_tag.sh $RELEASE_TYPE)
+            - elixir rel/single-host/build.ex $VERSION
