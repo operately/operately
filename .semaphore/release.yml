@@ -16,6 +16,7 @@ blocks:
         - name: "Release"
           commands:
             - checkout
+            - mix local.rebar --force
             - export VERSION=$(bash scripts/calc_next_tag.sh $RELEASE_TYPE)
             - make release.tag.docker VERSION=$VERSION
             - make release.build.singlehost VERSION=$VERSION
