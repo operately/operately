@@ -1,11 +1,13 @@
 version: v1.0
-name: Release
+name: '${{parameters.RELEASE_TYPE}} Release'
 agent:
   machine:
     type: e1-standard-2
     os_image: ubuntu2004
 blocks:
   - name: Release
+    run:
+      when: "branch = 'main'"
     task:
       jobs:
         - name: "Release"

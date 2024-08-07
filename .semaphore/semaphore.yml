@@ -77,12 +77,12 @@ after_pipeline:
           - test-results gen-pipeline-report
 
 promotions:
-  - name: Deploy
+  - name: Production Deployment
     pipeline_file: deploy.yml
     auto_promote:
       when: "result = 'passed' and branch = 'main'"
 
-  - name: Release
+  - name: GitHub Release
     pipeline_file: release.yml
     parameters:
       env_vars:
