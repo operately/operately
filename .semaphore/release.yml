@@ -11,6 +11,7 @@ blocks:
     task:
       secrets:
         - name: github-release-api-key
+        - name: docker-push
       jobs:
         - name: "Release"
           commands:
