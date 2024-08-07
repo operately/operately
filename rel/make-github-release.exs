@@ -1,6 +1,6 @@
 Mix.install([:req, :jason])
 
-version = System.get_env("VERSION") || raise "VERSION is required"
+version = System.argv() |> List.first() || raise "Version is required, e.g elixir rel/github-release.exs 1.0.0"
 token = System.get_env("GITHUB_TOKEN") || raise "GITHUB_TOKEN is required"
 
 url = "https://api.github.com/repos/operately/operately/releases"

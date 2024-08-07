@@ -9,9 +9,13 @@ blocks:
     run:
       when: "branch = 'main'"
     task:
+      secrets:
+        - name: github-release-api-key
       jobs:
         - name: "Release"
           commands:
             - checkout
             - export VERSION=$(bash scripts/calc_next_tag.sh $RELEASE_TYPE)
-            - elixir rel/single-host/build.ex $VERSION
+            - make release.tag.docker VERSION=$VERSION
+            - make release.build.singlehost VERSION=$VERSION
+            - make release.push.github.release VERSION=$VERSION
