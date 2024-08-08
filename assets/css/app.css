@@ -19,7 +19,7 @@
 }
 
 body[data-theme="light"] {
-  --color-base: rgba(247, 244, 237, 1);
+  --color-base: #FFF5F0;
   --color-base-accent: rgba(255, 255, 255, 0.9);
 
   --color-surface: rgba(255, 255, 255, 1);
