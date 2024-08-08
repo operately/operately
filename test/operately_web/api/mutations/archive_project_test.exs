@@ -24,7 +24,7 @@ defmodule OperatelyWeb.Api.Mutations.ArchiveProjectTest do
       Map.merge(ctx, %{creator: creator, creator_id: creator.id, space_id: space.id})
     end
 
-    test "company members CAN'T see resource", ctx do
+    test "company members who don't have view access can't see a project", ctx do
       project = create_project(ctx, company_access_level: Binding.no_access())
 
       assert {404, %{message: message}} = mutation(ctx.conn, :archive_project, %{project_id: Paths.project_id(project)})
@@ -32,7 +32,7 @@ defmodule OperatelyWeb.Api.Mutations.ArchiveProjectTest do
       refute_project_archived(project)
     end
 
-    test "company members CAN'T perfrom action", ctx do
+    test "company members who don't have full access can't archive a project", ctx do
       project = create_project(ctx, company_access_level: Binding.edit_access())
 
       assert {403, %{message: message}} = mutation(ctx.conn, :archive_project, %{project_id: Paths.project_id(project)})
@@ -40,14 +40,14 @@ defmodule OperatelyWeb.Api.Mutations.ArchiveProjectTest do
       refute_project_archived(project)
     end
 
-    test "company members have access", ctx do
+    test "company members who have full access can archive a project", ctx do
       project = create_project(ctx, company_access_level: Binding.full_access())
 
       assert {200, _} = mutation(ctx.conn, :archive_project, %{project_id: Paths.project_id(project)})
       assert_project_archived(project)
     end
 
-    test "company admins have access", ctx do
+    test "company admins can archive a project", ctx do
       project = create_project(ctx, company_access_level: Binding.view_access())
 
       # Not admin
@@ -62,7 +62,7 @@ defmodule OperatelyWeb.Api.Mutations.ArchiveProjectTest do
       assert_project_archived(project)
     end
 
-    test "space members CAN'T see resource", ctx do
+    test "space members who don't have view access can't see a project", ctx do
       add_person_to_space(ctx)
       project = create_project(ctx, space_access_level: Binding.no_access())
 
@@ -71,7 +71,7 @@ defmodule OperatelyWeb.Api.Mutations.ArchiveProjectTest do
       refute_project_archived(project)
     end
 
-    test "space members CAN'T perfrom action", ctx do
+    test "space members who don't have full access can't archive a project", ctx do
       add_person_to_space(ctx)
       project = create_project(ctx, space_access_level: Binding.edit_access())
 
@@ -80,7 +80,7 @@ defmodule OperatelyWeb.Api.Mutations.ArchiveProjectTest do
       refute_project_archived(project)
     end
 
-    test "space members have access", ctx do
+    test "space members who have full access can archive a project", ctx do
       add_person_to_space(ctx)
       project = create_project(ctx, space_access_level: Binding.full_access())
 
@@ -88,7 +88,7 @@ defmodule OperatelyWeb.Api.Mutations.ArchiveProjectTest do
       assert_project_archived(project)
     end
 
-    test "space managers have access", ctx do
+    test "space managers can archive a project", ctx do
       add_person_to_space(ctx)
       project = create_project(ctx, space_access_level: Binding.view_access())
 
@@ -102,7 +102,7 @@ defmodule OperatelyWeb.Api.Mutations.ArchiveProjectTest do
       assert_project_archived(project)
     end
 
-    test "contributors CAN'T perfrom action", ctx do
+    test "contributors who don't have full access can't archive a project", ctx do
       project = create_project(ctx)
       contributor = create_contributor(ctx, project, Binding.edit_access())
 
@@ -114,7 +114,7 @@ defmodule OperatelyWeb.Api.Mutations.ArchiveProjectTest do
       refute_project_archived(project)
     end
 
-    test "contributors have access", ctx do
+    test "contributors who have full access can archive a project", ctx do
       project = create_project(ctx)
       contributor = create_contributor(ctx, project, Binding.full_access())
 
@@ -125,7 +125,7 @@ defmodule OperatelyWeb.Api.Mutations.ArchiveProjectTest do
       assert_project_archived(project)
     end
 
-    test "champions have access", ctx do
+    test "champions can archive a project", ctx do
       champion = person_fixture_with_account(%{company_id: ctx.company.id})
       project = create_project(ctx, champion_id: champion.id, company_access_level: Binding.view_access())
 
@@ -141,7 +141,7 @@ defmodule OperatelyWeb.Api.Mutations.ArchiveProjectTest do
       assert_project_archived(project)
     end
 
-    test "reviewers have access", ctx do
+    test "reviewers can archive a project", ctx do
       reviewer = person_fixture_with_account(%{company_id: ctx.company.id})
       project = create_project(ctx, reviewer_id: reviewer.id, company_access_level: Binding.view_access())
 
