@@ -49,18 +49,12 @@ Follow the instructions on the [SendGrid documentation](https://sendgrid.com/doc
 
 ### Download the latest release of Operately
 
-First, create a directory for Operately and navigate to it:
-
-```bash
-mkdir /opt/operately
-cd /opt/operately
-```
-
-Next, download the latest release of Operately:
+Download the latest release of Operately:
 
 ```bash
 curl -L https://github.com/opera/operately/releases/latest/download/operately.tar.gz
-tar -xvf operately.tar.gz
+tar -xvf operately-single-host.tar.gz
+cd operately
 ```
 
 ### Configure Operately
