@@ -52,7 +52,7 @@ Follow the instructions on the [SendGrid documentation](https://sendgrid.com/doc
 Download the latest release of Operately:
 
 ```bash
-curl -L https://github.com/opera/operately/releases/latest/download/operately.tar.gz
+curl -L https://github.com/operately/operately/releases/latest/download/operately.tar.gz
 tar -xvf operately-single-host.tar.gz
 cd operately
 ```
