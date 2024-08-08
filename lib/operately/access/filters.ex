@@ -1,6 +1,7 @@
 defmodule Operately.Access.Filters do
   import Ecto.Query, only: [from: 2]
 
+  alias Operately.Repo
   alias Operately.Access.Binding
 
   def filter_by_view_access(query, person_id, opts \\ []) do
@@ -13,6 +14,16 @@ defmodule Operately.Access.Filters do
     query
     |> join_context(opts)
     |> filter(person_id, Binding.full_access())
+  end
+
+  def forbidden_or_not_found(query, person_id, opts \\ []) do
+    query = filter_by_view_access(query, person_id, opts)
+
+    if Repo.exists?(query) do
+      {:error, :forbidden}
+    else
+      {:error, :not_found}
+    end
   end
 
   defp filter(query, person_id, access_level) do
