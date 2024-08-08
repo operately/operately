@@ -44,9 +44,8 @@ defmodule ReleaseBuilder do
   end
 
   def zip_build_dir(build_path) do
-    zip_path = "#{build_path}.zip"
-    IO.puts("* Zipping to #{zip_path}")
-    System.cmd("bash", ["-c", "cd #{build_path} && zip -r operately.zip operately"])
+    IO.puts("* Zipping to operately.tar.gz")
+    System.cmd("bash", ["-c", "cd #{build_path} && tar czf operately.tar.gz operately"])
   end
 
   def validate_version(version) do

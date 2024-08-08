@@ -3,7 +3,7 @@ Mix.install([:req, :jason])
 defmodule Uploader do
   def version(), do: System.argv() |> List.first()
   def token(), do: System.get_env("GITHUB_TOKEN")
-  def single_host_zip_path(), do: "build/single-host-#{version()}/operately.zip"
+  def single_host_zip_path(), do: "build/single-host-#{version()}/operately.tar.gz"
 
   def run do
     validate_version()
@@ -43,11 +43,12 @@ defmodule Uploader do
 
   def upload_single_host_zip(id) do
     file = File.read!(single_host_zip_path())
-    url = "https://uploads.github.com/repos/operately/operately/releases/#{id}/assets?name=operately-single-host-#{version()}.zip"
+    asset_name = "operately-single-host.tar.gz"
+    url = "https://uploads.github.com/repos/operately/operately/releases/#{id}/assets?name=#{asset_name}"
     headers = build_header("application/octet-stream")
 
     case Req.post(url, headers: headers, body: file) do
-      {:ok, %{status: 201}} -> IO.puts("* single-host-#{version()}.zip uploaded successfully")
+      {:ok, %{status: 201}} -> IO.puts("* #{asset_name} uploaded successfully")
       {:ok, %{status: code} = res} -> raise "Error: #{code} #{inspect(res)}"
       {:error, reason} -> raise "Error: #{reason}"
     end
