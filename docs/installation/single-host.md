@@ -79,7 +79,7 @@ openssl rand -hex 32
 Start Operately with Docker Compose:
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 Operately should now be running on your server. You can access it by navigating to the domain you
