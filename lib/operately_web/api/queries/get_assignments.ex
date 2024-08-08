@@ -66,7 +66,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignments do
     from(c in Operately.Projects.CheckIn,
       join: p in assoc(c, :project),
       join: contrib in assoc(p, :contributors),
-      join: champion in assoc(p, :champion),
+      join: champion in assoc(c, :author),
       where: contrib.person_id == ^person.id and contrib.role == :reviewer,
       where: is_nil(c.acknowledged_by_id),
       select: %{
@@ -86,7 +86,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignments do
   defp load_due_goal_updates(result, person) do
     from(u in Operately.Updates.Update,
       join: g in Operately.Goals.Goal, on: u.updatable_id == g.id,
-      join: champion in assoc(g, :champion),
+      join: champion in assoc(u, :author),
       where: g.reviewer_id == ^person.id,
       where: is_nil(g.deleted_at),
       where: u.type == :goal_check_in and is_nil(u.acknowledging_person_id),
