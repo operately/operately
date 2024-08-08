@@ -7,7 +7,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
   import Operately.UpdatesFixtures
 
   alias OperatelyWeb.Paths
-  alias Operately.Repo
+  alias Operately.{Repo, Goals, Projects}
   alias Operately.Goals.Goal
   alias Operately.Updates.Update
   alias Operately.Projects.{Project, CheckIn}
@@ -182,6 +182,55 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
       assert u2.type == "goal_update"
       assert u2.champion_id == another_person.id
       assert u2.champion_name == "champion"
+    end
+
+    test "returns project check-in creator, not current champion", ctx do
+      champion1 = person_fixture_with_account(%{full_name: "first", company_id: ctx.company.id})
+      p = create_project(ctx, upcoming_date(), %{
+        name: "project",
+        reviewer_id: ctx.person.id,
+        champion_id: champion1.id,
+      })
+      create_check_in(p)
+
+      # Before updating champion
+      assert {200, %{assignments: [check_in]}} = query(ctx.conn, :get_assignments, %{})
+      assert check_in.champion_name == "first"
+      assert check_in.champion_id == champion1.id
+
+      # Update champion
+      champion2 = person_fixture_with_account(%{full_name: "second", company_id: ctx.company.id})
+      {:ok, _} = Projects.get_contributor!(person_id: champion1.id, project_id: p.id)
+        |> Projects.update_contributor(%{person_id: champion2.id})
+
+      # After updating champion
+      assert {200, %{assignments: [check_in]}} = query(ctx.conn, :get_assignments, %{})
+      assert check_in.champion_name == "first"
+      assert check_in.champion_id == champion1.id
+    end
+
+    test "returns goal update creator, not current champion", ctx do
+      champion1 = person_fixture_with_account(%{full_name: "first", company_id: ctx.company.id})
+      goal = create_goal(ctx.person, ctx.company, upcoming_date(), %{
+        name: "goal",
+        reviewer_id: ctx.person.id,
+        champion_id: champion1.id,
+      })
+      create_update(goal)
+
+      # Before updating champion
+      assert {200, %{assignments: [update]}} = query(ctx.conn, :get_assignments, %{})
+      assert update.champion_name == "first"
+      assert update.champion_id == champion1.id
+
+      # Update champion
+      champion2 = person_fixture_with_account(%{full_name: "second", company_id: ctx.company.id})
+      {:ok, _} = Goals.update_goal(goal, %{champion_id: champion2.id})
+
+      # After updating champion
+      assert {200, %{assignments: [update]}} = query(ctx.conn, :get_assignments, %{})
+      assert update.champion_name == "first"
+      assert update.champion_id == champion1.id
     end
   end
 
