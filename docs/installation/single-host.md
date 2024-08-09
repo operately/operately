@@ -52,8 +52,8 @@ Follow the instructions on the [SendGrid documentation](https://sendgrid.com/doc
 Download the latest release of Operately:
 
 ```bash
-wget https://github.com/operately/operately/releases/latest/download/operately-single-host.tar.gz
-tar -xvf operately-single-host.tar.gz
+wget -q https://github.com/operately/operately/releases/latest/download/operately-single-host.tar.gz
+tar -xf operately-single-host.tar.gz
 cd operately
 ```
 
