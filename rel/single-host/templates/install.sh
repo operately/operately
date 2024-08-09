@@ -1,5 +1,7 @@
 #/bin/bash
 
+set -euo pipefail
+
 docker compose build --force
 
 docker compose run --rm --user root app sh -c "chown -R nodody:root /certs"
