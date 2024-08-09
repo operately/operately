@@ -1,0 +1,3 @@
+Your admin privileges have been revoked by <%=  short_name(@author) %>.
+
+Link: <%= @link %>

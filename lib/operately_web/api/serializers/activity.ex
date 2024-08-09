@@ -57,6 +57,13 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
     }
   end
 
+  def serialize_content("company_admin_removed", content) do
+    %{
+      company: OperatelyWeb.Api.Serializer.serialize(content["company"], level: :essential),
+      person: OperatelyWeb.Api.Serializer.serialize(content["person"], level: :essential),
+    }
+  end
+
   def serialize_content("company_invitation_token_created", _content) do
     %{}
   end
