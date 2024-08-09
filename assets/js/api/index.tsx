@@ -140,6 +140,11 @@ export interface ActivityContentCompanyAdminAdded {
   people?: Person[] | null;
 }
 
+export interface ActivityContentCompanyAdminRemoved {
+  company?: Company | null;
+  person?: Person | null;
+}
+
 export interface ActivityContentDiscussionCommentSubmitted {
   spaceId?: string | null;
   discussionId?: string | null;
