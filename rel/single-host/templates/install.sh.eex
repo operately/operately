@@ -23,7 +23,34 @@ echo -e "1. What domain will youu be using to run Operately? ${LBLUE}e.g. operat
 printf "   Domain: "
 read DOMAIN
 
-sed -i 's/^
+echo -e ""
+echo -e "2. What is your Sendgrid API token? ${LBLUE}docs: https://www.twilio.com/docs/sendgrid/ui/account-and-settings/api-keys${CLEAR}"
+printf "   TOKEN: "
+read SENDGRID_TOKEN
+
+echo ""
+echo "Please verify the following:"
+echo "- Operately will be accessible from: https://${DOMAIN}"
+echo "- Operately Emails will be sent from: notifications@${DOMAIN} via SendGrid".
+echo ""
+echo "The next step is to pull the Docker images, set up the database and"
+echo "configure web application based on this configuration."
+echo ""
+echo "Continue the installation? (y/n)"
+read YN
+
+case $YN in
+        y|yes|Y) echo "Starting the installation..." && sleep 3
+        *) echo "Stopping the installtion" && exit 1
+esac
+
+POSTGRES_PASSWORD=$(openssl rand -hex 32)
+NOTIFICATIONS_EMAIL="notifications@${DOMAIN}"
+
+sed -i "s/^OPERATELY_HOST=.*$/OPERATELY_HOST=\"${DOMAIN}\"/g" operately.env
+sed -i "s/^SENDGRID_API_KEY=.*$/SENDGRID_API_KEY=\"${SENDGRID_TOKEN}\"/g" operately.env
+sed -i "s/^NOTIFICATIONS_EMAIL=.*$/NOTIFICATIONS_EMAIL=\"${NOTIFICATIONS_EMAIL}\"/g" operately.env
+sed -i "s/^POSTGRES_PASSWORD=.*$/POSTGRES_PASSWORD=\"${POSTGRES_PASSWORD}\"/g" operately.env
 
 docker compose build
 
@@ -32,3 +59,9 @@ docker compose run --rm --user root app sh -c "chown -R nodody:root /media"
 
 docker compose run --rm app sh -c "/app/bin/create_db"
 docker compose run --rm app sh -c "/app/bin/migrate"
+
+echo ""
+echo "Operately is ready to be started! Run:"
+echo ""
+echo "  docker compose up -d"
+echo ""
