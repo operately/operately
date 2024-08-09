@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-docker compose build --force
+docker compose build
 
 docker compose run --rm --user root app sh -c "chown -R nodody:root /certs"
 docker compose run --rm --user root app sh -c "chown -R nodody:root /media"
