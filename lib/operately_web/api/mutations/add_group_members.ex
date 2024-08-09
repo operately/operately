@@ -2,6 +2,8 @@ defmodule OperatelyWeb.Api.Mutations.AddGroupMembers do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
+  import Operately.Access.Filters, only: [filter_by_full_access: 2, forbidden_or_not_found: 2]
+
   inputs do
     field :group_id, :string
     field :members, list_of(:add_member_input)
@@ -9,20 +11,34 @@ defmodule OperatelyWeb.Api.Mutations.AddGroupMembers do
 
   def call(conn, inputs) do
     {:ok, id} = decode_id(inputs.group_id)
-    inputs = decode_member_ids(inputs)
+    members = decode_member_ids(inputs)
 
-    Operately.Operations.GroupMembersAdding.run(me(conn), id, inputs.members)
+    case check_permissions(me(conn), id) do
+      {:error, reason} ->
+        {:error, reason}
 
-    {:ok, %{}}
+      :ok ->
+        Operately.Operations.GroupMembersAdding.run(me(conn), id, members)
+        {:ok, %{}}
+    end
   end
 
   defp decode_member_ids(inputs) do
-    members = Enum.map(inputs.members, fn member ->
+    Enum.map(inputs.members, fn member ->
       {:ok, id} = decode_id(member.id)
 
-      %{id: id, permissions: member.permissions}
+      %{member | id: id}
     end)
+  end
 
-    %{inputs | members: members}
+  defp check_permissions(person, space_id) do
+    query = from(s in Operately.Groups.Group, where: s.id == ^space_id)
+    has_permissions = filter_by_full_access(query, person.id) |> Repo.exists?()
+
+    if has_permissions do
+      :ok
+    else
+      forbidden_or_not_found(query, person.id)
+    end
   end
 end
