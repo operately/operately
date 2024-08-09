@@ -135,6 +135,11 @@ export interface ActivityContentCommentAdded {
   activity?: Activity | null;
 }
 
+export interface ActivityContentCompanyAdminRemoved {
+  company?: Company | null;
+  person?: Person | null;
+}
+
 export interface ActivityContentDiscussionCommentSubmitted {
   spaceId?: string | null;
   discussionId?: string | null;
@@ -2297,7 +2302,7 @@ export class ApiClient {
   }
 
   async addCompany(input: AddCompanyInput): Promise<AddCompanyResult> {
-    return axios.post(this.getBasePath() + "/add_company", toSnake(input)).then(({ data }) => toCamel(data));
+    return this.post("/add_company", input);
   }
 
   async addCompanyAdmins(input: AddCompanyAdminsInput): Promise<AddCompanyAdminsResult> {
