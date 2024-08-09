@@ -1,11 +1,12 @@
 defmodule Operately.Activities.Notifications.CompanyAdminAdded do
   def dispatch(activity) do
-    Operately.Notifications.bulk_create([
+    Enum.map(activity.content["people"], fn p ->
       %{
-        person_id: activity.content["person_id"],
+        person_id: p["id"],
         activity_id: activity.id,
         should_send_email: true,
       }
-    ])
+    end)
+    |> Operately.Notifications.bulk_create()
   end
 end

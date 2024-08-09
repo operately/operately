@@ -1,15 +1,32 @@
 defmodule Operately.Activities.Content.CompanyAdminAdded do
   use Operately.Activities.Content
 
+  defmodule Person do
+    use Operately.Activities.Content
+
+    embedded_schema do
+      field :id, :string
+      field :full_name, :string
+      field :email, :string
+    end
+
+    def changeset(update, attrs) do
+      update
+      |> cast(attrs, __schema__(:fields))
+      |> validate_required(__schema__(:fields))
+    end
+  end
+
   embedded_schema do
     belongs_to :company, Operately.Companies.Company
-    belongs_to :person, Operately.People.Person
+    embeds_many :people, Person
   end
 
   def changeset(attrs) do
     %__MODULE__{}
-    |> cast(attrs, __schema__(:fields))
-    |> validate_required([:company_id, :person_id])
+    |> cast(attrs, [:company_id])
+    |> cast_embed(:people)
+    |> validate_required([:company_id])
   end
 
   def build(params) do
