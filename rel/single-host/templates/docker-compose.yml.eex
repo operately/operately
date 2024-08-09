@@ -3,6 +3,7 @@ version: "3"
 services:
   app:
     image: operately/operately:<%= version %>
+    command: ["/entrypoint.sh"]
     ports:
       - "80:4000"
     depends_on:
@@ -14,6 +15,7 @@ services:
       - operately.env
     volumes:
       - media:/media
+      - ./entrypoint.sh:/entrypoint.sh
 
   db:
     image: postgres:14.5
