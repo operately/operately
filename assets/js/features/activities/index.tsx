@@ -61,6 +61,7 @@ export default ActivityHandler;
 
 export const DISPLAYED_IN_FEED = [
   "comment_added",
+  "company_admin_added",
   "discussion_posting",
   "goal_archived",
   "goal_check_in",
@@ -102,6 +103,7 @@ export const DISPLAYED_IN_FEED = [
 import { match } from "ts-pattern";
 
 import CommentAdded from "@/features/activities/CommentAdded";
+import CompanyAdminAdded from "@/features/activities/CompanyAdminAdded";
 import DiscussionPosting from "@/features/activities/DiscussionPosting";
 import DiscussionCommentSubmitted from "@/features/activities/DiscussionCommentSubmitted";
 import GoalArchived from "@/features/activities/GoalArchived";
@@ -135,6 +137,7 @@ import SpaceMembersAdded from "@/features/activities/SpaceMembersAdded";
 function handler(activity: Activity) {
   return match(activity.action)
     .with("comment_added", () => CommentAdded)
+    .with("company_admin_added", () => CompanyAdminAdded)
     .with("discussion_posting", () => DiscussionPosting)
     .with("discussion_comment_submitted", () => DiscussionCommentSubmitted)
     .with("goal_archived", () => GoalArchived)

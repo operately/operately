@@ -62,6 +62,21 @@ export function formattedName(person: Pick<Person, "fullName">, nameFormat: Name
   return person.fullName!;
 }
 
+export function namesListToString(members: Person[]) {
+  const names = members.map(person => shortName(person));
+
+  if (names.length === 2) {
+    return `${names[0]} and ${names[1]}`;
+  }
+  else if (names.length > 2) {
+    const last = names.pop();
+    return `${names.join(', ')} and ${last}`;
+  }
+  else {
+    return names[0]!;
+  }
+}
+
 export function logOut() {
   const csrfToken = document.querySelector<HTMLMetaElement>("meta[name=csrf-token]")?.content;
 
