@@ -1,0 +1,34 @@
+set -euo pipefail
+
+BLUE="\033[0;34m"
+LBLUE="\033[1;34m"
+CLEAR="\033[0m"
+
+echo -e "                                                                                        "
+echo -e "${BLUE}       =${LBLUE}=======${BLUE}=        ${CLEAR}                                  "
+echo -e "${BLUE}     ===${LBLUE}  =====${BLUE}====     ${CLEAR}                                  "
+echo -e "${BLUE}   =====${LBLUE}     ==${BLUE}=====    ${CLEAR}    Operately <%= version %>      "
+echo -e "${BLUE} =======${LBLUE}      =${BLUE}=======  ${CLEAR}    Single-Host Installation      "
+echo -e "${BLUE}========${LBLUE}       ${BLUE}=======  ${CLEAR}                                  "
+echo -e "${BLUE} =======${LBLUE}=      ${BLUE}======   ${CLEAR}    OS: $(uname -o)               "
+echo -e "${BLUE}   =====${LBLUE}==     ${BLUE}====     ${CLEAR}    Architecture: $(uname -m)     "
+echo -e "${BLUE}     ===${LBLUE}====   ${BLUE}===      ${CLEAR}                                  "
+echo -e "${BLUE}       =${LBLUE}=======${BLUE}=        ${CLEAR}                                  "
+echo -e "                                                                                        "
+
+echo -e "Operately Installation Script"
+echo -e "Please answer the following questions before the installtion:"
+echo -e ""
+echo -e "1. What domain will youu be using to run Operately? ${LBLUE}e.g. operately.example.com${CLEAR}"
+printf "   Domain: "
+read DOMAIN
+
+sed -i 's/^
+
+docker compose build
+
+docker compose run --rm --user root app sh -c "chown -R nodody:root /certs"
+docker compose run --rm --user root app sh -c "chown -R nodody:root /media"
+
+docker compose run --rm app sh -c "/app/bin/create_db"
+docker compose run --rm app sh -c "/app/bin/migrate"
