@@ -40,8 +40,12 @@ echo "Continue the installation? (y/n)"
 read YN
 
 case $YN in
-        y|yes|Y) echo "Starting the installation..." && sleep 3
-        *) echo "Stopping the installtion" && exit 1
+        y|yes|Y)
+                echo "Starting the installation..." && sleep 3
+                ;;
+        *)
+                echo "Stopping the installtion" && exit 1
+                ;;
 esac
 
 POSTGRES_PASSWORD=$(openssl rand -hex 32)
