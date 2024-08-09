@@ -11,6 +11,7 @@ defmodule ReleaseBuilder do
     create_build_dir(path)
     build_docker_compose_file(path, version)
     build_docker_env_file(path)
+    build_docker_entrypoiint(path)
     zip_build_dir(path)
 
     IO.puts("\nRelease built! 🎉")
@@ -31,11 +32,11 @@ defmodule ReleaseBuilder do
   end
 
   def build_docker_env_file(build_path) do
-    IO.puts("* Injecting operately.env")
-    template_path = get_template_path("operately.env")
-    output_path = Path.join([build_path, "operately", "operately.env"])
-    content = File.read!(template_path)
-    File.write!(output_path, content)
+    move_file("operately.env", Path.join([build_path, "operately", "operately.env"]))
+  end
+
+  def build_docker_entrypoint(build_path) do
+    move_file("entrypoint.sh", Path.join([build_path, "operately", "entrypoint.sh"]))
   end
 
   def get_template_path(file_name) do
@@ -53,6 +54,13 @@ defmodule ReleaseBuilder do
       IO.puts("Error: Version is required, e.g elixir rel/single-host/build.ex 1.0.0")
       System.halt(1)
     end
+  end
+
+  def move_file(template_path, output_path) do
+    IO.puts("* Injecting #{template_path}")
+    full_template_path = get_template_path("operately.env")
+    content = File.read!(full_template_path)
+    File.write!(output_path, content)
   end
 end
 
