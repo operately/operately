@@ -15,16 +15,6 @@ blocks:
             - checkout
             - make test.pr.name
 
-  - name: Release Tests
-    dependencies: ["Pre-Flight-Check"]
-    task:
-      jobs:
-        - name: Building Single Host Release
-          commands:
-            - checkout
-            - elixir rel/single-host/build.exs $(git rev-parse HEAD)
-            - test -f build/single-host-$(git rev-parse HEAD).tar.gz
-
   - name: Tests
     dependencies: ["Pre-Flight-Check"]
     task:
@@ -78,6 +68,16 @@ blocks:
             - docker pull operately/operately:latest
             - make docker.build
             - make docker.push
+
+  - name: Release Tests
+    dependencies: ["Pre-Flight-Check"]
+    task:
+      jobs:
+        - name: Single Host Release
+          commands:
+            - checkout
+            - elixir rel/single-host/build.exs $(git rev-parse HEAD)
+            - test -f build/single-host/operately.tar.gz
 
 after_pipeline:
   task:
