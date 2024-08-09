@@ -11,7 +11,7 @@ defmodule ReleaseBuilder do
     create_build_dir(path)
     build_docker_compose_file(path, version)
     build_docker_env_file(path)
-    build_docker_entrypoint(path)
+    build_install_script(path)
     zip_build_dir(path)
 
     IO.puts("\nRelease built! 🎉")
@@ -35,8 +35,8 @@ defmodule ReleaseBuilder do
     move_file("operately.env", Path.join([build_path, "operately", "operately.env"]))
   end
 
-  def build_docker_entrypoint(build_path) do
-    move_file("entrypoint.sh", Path.join([build_path, "operately", "entrypoint.sh"]))
+  def build_install_script(build_path) do
+    move_file("install.sh", Path.join([build_path, "install.sh"]))
   end
 
   def get_template_path(file_name) do

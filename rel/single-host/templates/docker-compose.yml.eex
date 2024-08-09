@@ -1,19 +1,20 @@
 services:
   app:
     image: operately/operately:<%= version %>
-    command: "sh -c /entrypoint.sh"
     ports:
       - "80:4000"
+      - "443:4001"
     depends_on:
       - db
     environment:
       - MIX_ENV=prod
       - DB_HOST=db
+      - CERT_DB_DIR=/certs
     env_file:
       - operately.env
     volumes:
       - media:/media
-      - ${PWD}/entrypoint.sh:/entrypoint.sh
+      - certs:/certs
 
   db:
     image: postgres:14.5
@@ -30,4 +31,6 @@ volumes:
   postgres-data:
     driver: local
   media:
+    driver: local
+  certs:
     driver: local
