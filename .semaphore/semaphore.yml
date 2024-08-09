@@ -69,6 +69,16 @@ blocks:
             - make docker.build
             - make docker.push
 
+  - name: Release Tests
+    dependencies: ["Pre-Flight-Check"]
+    task:
+      jobs:
+        - name: Single Host Release
+          commands:
+            - checkout
+            - elixir rel/single-host/build.exs $(git rev-parse HEAD)
+            - test -f build/single-host/operately.tar.gz
+
 after_pipeline:
   task:
     jobs:
