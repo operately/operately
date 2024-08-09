@@ -1,5 +1,6 @@
 defmodule Operately.Operations.CompanyAdminAddingTest do
   use Operately.DataCase
+  use Operately.Support.Notifications
 
   import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
@@ -38,7 +39,6 @@ defmodule Operately.Operations.CompanyAdminAddingTest do
 
   test "CompanyAdminAdding operation creates activity", ctx do
     person = person_fixture_with_account(%{company_id: ctx.company.id})
-
     {:ok, _} = Operately.Operations.CompanyAdminAdding.run(ctx.admin, person.id)
 
     activity = from(a in Activity, where: a.action == "company_admin_added" and a.content["company_id"] == ^ctx.company.id) |> Repo.one()
@@ -46,5 +46,21 @@ defmodule Operately.Operations.CompanyAdminAddingTest do
     assert activity.author_id == ctx.admin.id
     assert activity.content["company_id"] == ctx.company.id
     assert activity.content["person_id"] == person.id
+  end
+
+  test "CompanyAdminAdding operation creates notification", ctx do
+    Oban.Testing.with_testing_mode(:manual, fn ->
+      person = person_fixture_with_account(%{company_id: ctx.company.id})
+      {:ok, _} = Operately.Operations.CompanyAdminAdding.run(ctx.admin, person.id)
+    end)
+
+    activity = from(a in Activity, where: a.action == "company_admin_added" and a.content["company_id"] == ^ctx.company.id) |> Repo.one()
+
+    assert notifications_count() == 0
+
+    perform_job(activity.id)
+
+    assert fetch_notification(activity.id)
+    assert notifications_count() == 1
   end
 end

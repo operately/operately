@@ -1,6 +1,11 @@
 defmodule Operately.Activities.Notifications.CompanyAdminAdded do
-  def dispatch(_activity) do
-    # Notification dispatcher for CompanyAdminAdded not implemented yet
-    {:ok, []}
+  def dispatch(activity) do
+    Operately.Notifications.bulk_create([
+      %{
+        person_id: activity.content["person_id"],
+        activity_id: activity.id,
+        should_send_email: true,
+      }
+    ])
   end
 end
