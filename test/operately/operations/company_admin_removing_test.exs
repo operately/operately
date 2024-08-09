@@ -1,6 +1,6 @@
 defmodule Operately.Operations.CompanyAdminRemovingTest do
   use Operately.DataCase
-  # use Operately.Support.Notifications
+  use Operately.Support.Notifications
 
   import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
@@ -56,5 +56,20 @@ defmodule Operately.Operations.CompanyAdminRemovingTest do
 
     assert activity.author_id == ctx.admin.id
     assert activity.content["person_id"] == ctx.member.id
+  end
+
+  test "CompanyAdminAdding operation creates notification", ctx do
+    Oban.Testing.with_testing_mode(:manual, fn ->
+      {:ok, _} = Operately.Operations.CompanyAdminRemoving.run(ctx.admin, ctx.member.id)
+    end)
+
+    activity = from(a in Activity, where: a.action == "company_admin_removed" and a.content["company_id"] == ^ctx.company.id) |> Repo.one()
+
+    assert notifications_count() == 0
+
+    perform_job(activity.id)
+
+    assert fetch_notification(activity.id)
+    assert notifications_count() == 1
   end
 end

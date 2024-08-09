@@ -10,6 +10,7 @@ defmodule Operately.Operations.CompanyAdminRemoving do
     |> insert_member_permissions(admin)
     |> insert_activity(admin)
     |> Repo.transaction()
+    |> Repo.extract_result(:person)
   end
 
   defp update_person(multi, person_id) do
