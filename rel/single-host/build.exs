@@ -58,7 +58,7 @@ defmodule ReleaseBuilder do
 
   def move_file(template_path, output_path) do
     IO.puts("* Injecting #{template_path}")
-    full_template_path = get_template_path("operately.env")
+    full_template_path = get_template_path(template_path)
     content = File.read!(full_template_path)
     File.write!(output_path, content)
   end
