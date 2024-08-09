@@ -57,22 +57,19 @@ tar -xvf operately-single-host.tar.gz
 cd operately
 ```
 
-### Configure Operately
+### Run the installation script
 
-Operately uses environment variables to configure the application. Edit the `operately.env` and
-fill in the required values:
+Run the installtion script to configure Operately:
 
-```bash
-OPERATELY_HOST="operately.example.com"
-SENDGRID_API_KEY="your-sendgrid-api-key"
-OPERATELY_BLOB_TOKEN_SECRET="generate-a-random-string"
+```
+./install.sh
 ```
 
-To generate a random string for `OPERATELY_BLOB_TOKEN_SECRET`, you can use the following command:
+The script will build the Docker images and configure the environment, 
+and ask you for the following information:
 
-```bash
-openssl rand -hex 32
-```
+- *Domain*: The domain you pointed to your server (e.g. `operately.example.com`)
+- *SendGrid API key*: The API key you created in the SendGrid dashboard
 
 ### Start Operately
 
