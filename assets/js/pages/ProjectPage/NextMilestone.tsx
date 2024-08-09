@@ -30,14 +30,12 @@ function MilestonesZeroState({ project }) {
   const editPath = Paths.projectEditTimelinePath(project.id!);
 
   const editLink = (
-    <GhostButton linkTo={editPath} testId="add-milestones-link" size="xs" type="secondary">
-      Edit Timeline
-    </GhostButton>
+    <a href="" class="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">Edit timeline</a>
   );
 
   return (
     <div className="text-sm">
-      No milestones defined yet.
+      Outline your project timeline with milestones.
       {project.permissions.canEditMilestone && <div className="mt-2 flex">{editLink}</div>}
     </div>
   );
