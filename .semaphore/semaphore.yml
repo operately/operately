@@ -15,6 +15,16 @@ blocks:
             - checkout
             - make test.pr.name
 
+  - name: Release Tests
+    dependencies: ["Pre-Flight-Check"]
+    task:
+      jobs:
+        - name: Building Single Host Release
+          commands:
+            - checkout
+            - elixir rel/single-host/build.exs $(git rev-parse HEAD)
+            - test -f build/sindle-host-$(git rev-parse HEAD).tar.gz
+
   - name: Tests
     dependencies: ["Pre-Flight-Check"]
     task:
