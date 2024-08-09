@@ -58,8 +58,8 @@ sed -i "s/^POSTGRES_PASSWORD=.*$/POSTGRES_PASSWORD=\"${POSTGRES_PASSWORD}\"/g" o
 
 docker compose build
 
-docker compose run --rm --user root app sh -c "chown -R nodody:root /certs"
-docker compose run --rm --user root app sh -c "chown -R nodody:root /media"
+docker compose run --rm --user root app sh -c "chown -R nobody:root /certs"
+docker compose run --rm --user root app sh -c "chown -R nobody:root /media"
 
 docker compose run --rm app sh -c "/app/bin/create_db"
 docker compose run --rm app sh -c "/app/bin/migrate"
