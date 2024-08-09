@@ -11,7 +11,7 @@ defmodule ReleaseBuilder do
     create_build_dir(path)
     build_docker_compose_file(path, version)
     build_docker_env_file(path)
-    build_docker_entrypoiint(path)
+    build_docker_entrypoint(path)
     zip_build_dir(path)
 
     IO.puts("\nRelease built! 🎉")
