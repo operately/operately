@@ -1,0 +1,119 @@
+set -euo pipefail
+
+BLUE="\033[0;34m"
+LBLUE="\033[1;34m"
+CLEAR="\033[0m"
+
+echo -e "                                                                                        "
+echo -e "${BLUE}       =${LBLUE}=======${BLUE}=        ${CLEAR}                                  "
+echo -e "${BLUE}     ===${LBLUE}  =====${BLUE}====     ${CLEAR}                                  "
+echo -e "${BLUE}   =====${LBLUE}     ==${BLUE}=====    ${CLEAR}    Operately <%= version %>      "
+echo -e "${BLUE} =======${LBLUE}      =${BLUE}=======  ${CLEAR}    Single-Host Installation      "
+echo -e "${BLUE}========${LBLUE}       ${BLUE}=======  ${CLEAR}                                  "
+echo -e "${BLUE} =======${LBLUE}=      ${BLUE}======   ${CLEAR}    OS: $(uname -o)               "
+echo -e "${BLUE}   =====${LBLUE}==     ${BLUE}====     ${CLEAR}    Architecture: $(uname -m)     "
+echo -e "${BLUE}     ===${LBLUE}====   ${BLUE}===      ${CLEAR}                                  "
+echo -e "${BLUE}       =${LBLUE}=======${BLUE}=        ${CLEAR}                                  "
+echo -e "                                                                                        "
+
+echo -e "Please answer the following questions before installation:"
+
+echo -e ""
+echo -e "1. What domain will you be using to run Operately? ${LBLUE}e.g. operately.example.com${CLEAR}"
+read -p "   Domain: " DOMAIN
+
+echo -e ""
+echo -e "2. What is your Sendgrid API token? ${LBLUE}docs: https://www.twilio.com/docs/sendgrid/ui/account-and-settings/api-keys${CLEAR}"
+read -p "   Token: " SENDGRID_TOKEN
+
+echo -e ""
+echo -e "3. Do you want Operately to issue and auto-renew a Let's Encrypt SSL certificate?"
+read -p "   Manage SSL certs? (y/n): " MANAGE_CERTS_YN
+
+case $MANAGE_CERTS_YN in
+        y|yes|Y) read -p "   Administrator email for Let's Encrypt: " ADMIN_EMAIL ;;
+        *) ;;
+esac
+
+echo -e ""
+echo -e "Please verify the following:"
+echo -e ""
+case $MANAGE_CERTS_YN in
+        y|yes|Y)
+                echo -e "- Operately will be accessible from: ${LBLUE}https://${DOMAIN}${CLEAR}"
+                echo -e "- Operately will issue and auto-renew SSL certs from Let's Encrytp."
+                echo -e "- Let's encrypt will send emails to ${ADMIN_EMAIL}"
+                ;;
+        *)
+                echo -e "- Operately will be accessible from: ${LBLUE}http://${DOMAIN}${CLEAR}"
+                echo -e "- Operately emails will be sent from: ${LBLUE}notifications@${DOMAIN}${CLEAR} via SendGrid".
+                ;;
+esac
+echo -e "- Operately emails will be sent from: ${LBLUE}notifications@${DOMAIN}${CLEAR} via SendGrid".
+echo -e "- The installation script will pull the Docker images for running Operately"
+echo -e "- It will set up the database and run the migrations"
+echo -e ""
+read -p "Run the installation? (y/n) " YN
+
+case $YN in
+        y|yes|Y) echo "Starting the installation..." && sleep 3 ;;
+        *)       echo "Stopping the installtion" && exit 1      ;;
+esac
+
+# Questions finished - Starting with writting configuration --------------------------
+
+OPERATELY_HOST=${DOMAIN}
+case $MANAGE_CERTS_YN in
+        y|yes|Y)
+                CERT_DOMAIN=${DOMAIN}
+                CERT_AUTO_RENEW="yes"
+                CERT_EMAILS=$ADMIN_EMAIL
+                OPERATELY_URL_SCHEME="https"
+                ;;
+        *)
+                CERT_DOMAIN=""
+                CERT_AUTO_RENEW="no"
+                CERT_EMAILS=""
+                OPERATELY_URL_SCHEME="http"
+                sed -i '/443:4001/d' docker-compose.yml
+                ;;
+esac
+OPERATELY_BLOB_TOKEN_SECRET_KEY=$(openssl rand -hex 32)
+SECRET_KEY_BASE=$(openssl rand -hex 32)
+
+DB_USERNAME="operately"
+POSTGRES_USER="operately"
+POSTGRES_PASSWORD=$(openssl rand -hex 32)
+DATABASE_URL="ecto://${DB_USERNAME}:${POSTGRES_PASSWORD}@db/operately"
+SENDGRID_API_KEY=$SENDGRID_TOKEN
+NOTIFICATION_EMAIL="notifications@${DOMAIN}"
+
+echo "OPERATELY_HOST=\"${DOMAIN}\"" >> operately.env
+echo "CERT_DOMAIN=\"${CERT_DOMAIN}\"" >> operately.env
+echo "CERT_AUTO_RENEW=\"${CERT_AUTO_RENEW}\"" >> operately.env
+echo "CERT_EMAILS=\"${CERT_EMAILS}\"" >> operately.env
+echo "OPERATELY_URL_SCHEME=\"${OPERATELY_URL_SCHEME}\"" >> operately.env
+echo "SECRET_KEY_BASE=\"${SECRET_KEY_BASE}\"" >> operately.env
+
+echo "DB_USERNAME=\"${DB_USERNAME}\"" >> operately.env
+echo "POSTGRES_USER=\"${POSTGRES_USER}\"" >> operately.env
+echo "POSTGRES_PASSWORD=\"${POSTGRES_PASSWORD}\"" >> operately.env
+echo "DATABASE_URL=\"${DATABASE_URL}\"" >> operately.env
+echo "SENDGRID_API_KEY=\"${SENDGRID_API_KEY}\"" >> operately.env
+echo "NOTIFICATION_EMAIL=\"${NOTIFICATION_EMAIL}\"" >> operately.env
+
+# Pulling and building docker images --------------------------------------------------
+
+docker compose build
+
+docker compose run --rm --user root app sh -c "chown -R nobody:root /certs"
+docker compose run --rm --user root app sh -c "chown -R nobody:root /media"
+
+docker compose run --rm app sh -c "/app/bin/create_db"
+docker compose run --rm app sh -c "/app/bin/migrate"
+
+echo ""
+echo "Operately is ready to be started! Run:"
+echo ""
+echo "  docker compose up -d"
+echo ""

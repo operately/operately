@@ -30,14 +30,7 @@ defmodule OperatelyWeb.Router do
     pipe_through [:browser, :redirect_if_account_is_authenticated]
 
     get "/accounts/log_in", AccountSessionController, :new
-
-    #
-    # In development, we use the following route to log in as a user
-    # during development. The route is not available in production.
-    #
-    if Application.compile_env(:operately, :dev_routes) do
-      post "/accounts/log_in", AccountSessionController, :create
-    end
+    post "/accounts/log_in", AccountSessionController, :create
 
     #
     # In feature tests, we use the following route to log in as a user

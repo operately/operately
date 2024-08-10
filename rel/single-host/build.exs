@@ -10,8 +10,7 @@ defmodule ReleaseBuilder do
 
     create_build_dir(path)
     build_docker_compose_file(path, version)
-    build_docker_env_file(path)
-    build_install_script(path)
+    build_install_script(path, version)
     zip_build_dir(path)
 
     IO.puts("\nRelease built! 🎉")
@@ -31,12 +30,13 @@ defmodule ReleaseBuilder do
     File.write!(output_path, content)
   end
 
-  def build_docker_env_file(build_path) do
-    move_file("operately.env", Path.join([build_path, "operately", "operately.env"]))
-  end
-
-  def build_install_script(build_path) do
-    move_file("install.sh", Path.join([build_path, "install.sh"]))
+  def build_install_script(build_path, version) do
+    IO.puts("* Injecting install.sh")
+    template_path = get_template_path("install.sh.eex")
+    output_path = Path.join([build_path, "operately", "install.sh"])
+    content = EEx.eval_file(template_path, [version: version])
+    File.write!(output_path, content)
+    System.cmd("chmod", ["+x", output_path])
   end
 
   def get_template_path(file_name) do
