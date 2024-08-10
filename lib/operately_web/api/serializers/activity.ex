@@ -59,8 +59,15 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
 
   def serialize_content("company_admin_added", content) do
     %{
-      company: serialize_company(content["company"]),
+      company: OperatelyWeb.Api.Serializer.serialize(content["company"], level: :essential),
       people: content["people"]
+    }
+  end
+
+  def serialize_content("company_admin_removed", content) do
+    %{
+      company: OperatelyWeb.Api.Serializer.serialize(content["company"], level: :essential),
+      person: OperatelyWeb.Api.Serializer.serialize(content["person"], level: :essential),
     }
   end
 
@@ -388,13 +395,6 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
       id: goal.id,
       name: goal.name,
       my_role: goal.my_role,
-    }
-  end
-
-  def serialize_company(company) do
-    %{
-      id: OperatelyWeb.Paths.company_id(company),
-      name: company.name,
     }
   end
 

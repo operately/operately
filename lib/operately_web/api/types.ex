@@ -817,6 +817,11 @@ defmodule OperatelyWeb.Api.Types do
     field :people, list_of(:person)
   end
 
+  object :activity_content_company_admin_removed do
+    field :company, :company
+    field :person, :person
+  end
+
   object :activity_content_project_renamed do
     field :project, :project
     field :old_name, :string
