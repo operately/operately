@@ -75,6 +75,7 @@ case $MANAGE_CERTS_YN in
                 CERT_AUTO_RENEW="no"
                 CERT_EMAILS=""
                 OPERATELY_URL_SCHEME="http"
+                sed -i '/443:4001/d' docker-compose.yml
                 ;;
 esac
 OPERATELY_BLOB_TOKEN_SECRET_KEY=$(openssl rand -hex 32)
