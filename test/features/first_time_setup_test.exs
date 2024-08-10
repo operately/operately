@@ -43,7 +43,7 @@ defmodule Operately.Features.FirstTimeSetupTest do
     |> UI.fill(testid: "password", with: @company_info[:password])
     |> UI.fill(testid: "password-confirmation", with: @company_info[:passwordConfirmation])
     |> UI.click(testid: "submit-form")
-    |> UI.assert_page("/accounts/log_in")
+    |> UI.assert_page("/")
 
     account = Operately.People.get_account_by_email_and_password(@company_info[:email], @company_info[:password])
 
