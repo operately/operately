@@ -4,7 +4,7 @@ defmodule Operately.Activities.Preloader do
   """
 
   import Ecto.Query, only: [from: 2]
-  
+
   alias Operately.Repo
   alias Operately.Activities.Activity
 
@@ -18,6 +18,7 @@ defmodule Operately.Activities.Preloader do
     |> preload(Operately.Projects.CheckIn)
     |> preload(Operately.Projects.Milestone)
     |> preload(Operately.Updates.Comment)
+    |> preload(Operately.Companies.Company)
     |> preload_sub_activities()
   end
 
@@ -44,7 +45,7 @@ defmodule Operately.Activities.Preloader do
   # The lookup is done by checking the content of the activity
   # and looking for fields that are not yet loaded and are related
   # to the given schema.
-  # 
+  #
   # The references are returned as a list of tuples with the following
   # structure:
   #
@@ -77,7 +78,7 @@ defmodule Operately.Activities.Preloader do
   end
 
   defp inject(activities, references, records) when is_list(activities) do
-    Enum.map(activities, fn a -> 
+    Enum.map(activities, fn a ->
       inject(a, references, records)
     end)
   end
@@ -88,7 +89,7 @@ defmodule Operately.Activities.Preloader do
     content = Enum.reduce(keys, activity.content, fn k, acc ->
       case find_ref(references, activity.id, k) do
         nil -> acc
-        {_, _, _, id} -> 
+        {_, _, _, id} ->
           Map.put(acc, k, Map.get(records, id))
       end
     end)
@@ -105,7 +106,7 @@ defmodule Operately.Activities.Preloader do
     |> preload(Operately.Activities.Activity)
     |> map_fields(fn _k, v ->
       case v do
-        %Activity{} -> 
+        %Activity{} ->
           v
           |> Operately.Activities.cast_content()
           |> Operately.Repo.preload([:author, comment_thread: [comments: :author, reactions: :person]])
@@ -120,7 +121,7 @@ defmodule Operately.Activities.Preloader do
   # of the content using the given function.
   #
   defp map_fields(activities, fun) do
-    Enum.map(activities, fn a -> 
+    Enum.map(activities, fn a ->
       keys = Map.keys(Map.from_struct(a.content))
 
       content = Enum.reduce(keys, a.content, fn k, acc ->

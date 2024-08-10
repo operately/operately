@@ -1,6 +1,6 @@
-import { Activity, ActivityContentSpaceMembersAdded } from "@/api";
+import { Activity, ActivityContentCompanyAdminAdded } from "@/api";
 import { ActivityHandler } from "../interfaces";
-import { feedTitle, spaceLink } from "../feedItemLinks";
+import { feedTitle } from "../feedItemLinks";
 import { Paths } from "@/routes/paths";
 import { firstName, namesListToString } from "@/models/people";
 
@@ -10,8 +10,8 @@ const SpaceMembersAdded: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  pagePath(activity: Activity): string {
-    return Paths.spacePath(content(activity).space!.id!);
+  pagePath(): string {
+    return Paths.orgChartPath();
   },
 
   PageTitle(_props: { activity: any }) {
@@ -26,15 +26,10 @@ const SpaceMembersAdded: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    const names = namesListToString(content(activity).members!);
-    const space = spaceLink(content(activity).space!);
+  FeedItemTitle({ activity }: { activity: Activity; page: any }) {
+    const names = namesListToString(content(activity).people!);
 
-    if (page === "space") {
-      return feedTitle(activity, "added", names, "to the space");
-    } else {
-      return feedTitle(activity, "added", names, "to the", space, "space");
-    }
+    return feedTitle(activity, "has granted admin privileges to", names);
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {
@@ -50,16 +45,16 @@ const SpaceMembersAdded: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return firstName(activity.author!) + " added you to the " + content(activity).space?.name + " space"
+    return firstName(activity.author!) + " granted you admin privileges"
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
-    return content(activity).space!.name!;
+    return content(activity).company!.name!;
   },
 };
 
 export default SpaceMembersAdded;
 
-function content(activity: Activity): ActivityContentSpaceMembersAdded {
-  return activity.content as ActivityContentSpaceMembersAdded;
+function content(activity: Activity): ActivityContentCompanyAdminAdded {
+  return activity.content as ActivityContentCompanyAdminAdded;
 }

@@ -57,6 +57,13 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
     }
   end
 
+  def serialize_content("company_admin_added", content) do
+    %{
+      company: serialize_company(content["company"]),
+      people: content["people"]
+    }
+  end
+
   def serialize_content("company_invitation_token_created", _content) do
     %{}
   end
@@ -381,6 +388,13 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
       id: goal.id,
       name: goal.name,
       my_role: goal.my_role,
+    }
+  end
+
+  def serialize_company(company) do
+    %{
+      id: OperatelyWeb.Paths.company_id(company),
+      name: company.name,
     }
   end
 
