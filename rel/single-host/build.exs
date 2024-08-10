@@ -10,7 +10,6 @@ defmodule ReleaseBuilder do
 
     create_build_dir(path)
     build_docker_compose_file(path, version)
-    build_docker_env_file(path)
     build_install_script(path, version)
     zip_build_dir(path)
 
@@ -29,10 +28,6 @@ defmodule ReleaseBuilder do
     output_path = Path.join([build_path, "operately", "docker-compose.yml"])
     content = EEx.eval_file(template_path, [version: version])
     File.write!(output_path, content)
-  end
-
-  def build_docker_env_file(build_path) do
-    move_file("operately.env", Path.join([build_path, "operately", "operately.env"]))
   end
 
   def build_install_script(build_path, version) do

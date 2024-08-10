@@ -27,12 +27,31 @@ echo -e "2. What is your Sendgrid API token? ${LBLUE}docs: https://www.twilio.co
 read -p "   Token: " SENDGRID_TOKEN
 
 echo -e ""
+echo -e "3. Do you want Operately to issue and auto-renew a Let's Encrypt SSL certificate?"
+read -p "   Manage SSL certs? (y/n): " MANAGE_CERTS_YN
+
+case $MANAGE_CERTS_YN in
+        y|yes|Y) read -p "   Administrator email for Let's Encrypt: " ADMIN_EMAIL ;;
+        *) ;;
+esac
+
+echo -e ""
 echo -e "Please verify the following:"
 echo -e ""
-echo -e "- Operately will be accessible from: ${LBLUE}https://${DOMAIN}${CLEAR}"
-echo -e "- Operately emails will be sent from: ${LBLUE}notifications@${DOMAIN} via SendGrid${CLEAR}".
-echo -e "- The installation script will pull the Docker images"
-echo -e "- The installation script will create a new database and run the migrations"
+case $MANAGE_CERTS_YN in
+        y|yes|Y)
+                echo -e "- Operately will be accessible from: ${LBLUE}https://${DOMAIN}${CLEAR}"
+                echo -e "- Operately will issue and auto-renew SSL certs from Let's Encrytp."
+                echo -e "- Let's encrypt will send emails to ${ADMIN_EMAIL}"
+                ;;
+        *)
+                echo -e "- Operately will be accessible from: ${LBLUE}http://${DOMAIN}${CLEAR}"
+                echo -e "- Operately emails will be sent from: ${LBLUE}notifications@${DOMAIN}${CLEAR} via SendGrid".
+                ;;
+esac
+echo -e "- Operately emails will be sent from: ${LBLUE}notifications@${DOMAIN}${CLEAR} via SendGrid".
+echo -e "- The installation script will pull the Docker images for running Operately"
+echo -e "- It will set up the database and run the migrations"
 echo -e ""
 read -p "Run the installation? (y/n) " YN
 
@@ -44,8 +63,20 @@ esac
 # Questions finished - Starting with writting configuration --------------------------
 
 OPERATELY_HOST=${DOMAIN}
-CERT_DOMAIN=${DOMAIN}
-OPERATELY_URL_SCHEME="https"
+case $MANAGE_CERTS_YN in
+        y|yes|Y)
+                CERT_DOMAIN=${DOMAIN}
+                CERT_AUTO_RENEW="yes"
+                CERT_EMAILS=$ADMIN_EMAIL
+                OPERATELY_URL_SCHEME="https"
+                ;;
+        *)
+                CERT_DOMAIN=""
+                CERT_AUTO_RENEW="no"
+                CERT_EMAILS=""
+                OPERATELY_URL_SCHEME="http"
+                ;;
+esac
 OPERATELY_BLOB_TOKEN_SECRET_KEY=$(openssl rand -hex 32)
 SECRET_KEY_BASE=$(openssl rand -hex 32)
 
@@ -58,6 +89,8 @@ NOTIFICATION_EMAIL="notifications@${DOMAIN}"
 
 echo "OPERATELY_HOST=\"${DOMAIN}\"" >> operately.env
 echo "CERT_DOMAIN=\"${CERT_DOMAIN}\"" >> operately.env
+echo "CERT_AUTO_RENEW=\"${CERT_AUTO_RENEW}\"" >> operately.env
+echo "CERT_EMAILS=\"${CERT_EMAILS}\"" >> operately.env
 echo "OPERATELY_URL_SCHEME=\"${OPERATELY_URL_SCHEME}\"" >> operately.env
 echo "SECRET_KEY_BASE=\"${SECRET_KEY_BASE}\"" >> operately.env
 
