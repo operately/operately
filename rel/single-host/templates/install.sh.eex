@@ -16,45 +16,59 @@ echo -e "${BLUE}     ===${LBLUE}====   ${BLUE}===      ${CLEAR}                 
 echo -e "${BLUE}       =${LBLUE}=======${BLUE}=        ${CLEAR}                                  "
 echo -e "                                                                                        "
 
-echo -e "Operately Installation Script"
-echo -e "Please answer the following questions before the installtion:"
+echo -e "Please answer the following questions before installation:"
+
 echo -e ""
-echo -e "1. What domain will youu be using to run Operately? ${LBLUE}e.g. operately.example.com${CLEAR}"
-printf "   Domain: "
-read DOMAIN
+echo -e "1. What domain will you be using to run Operately? ${LBLUE}e.g. operately.example.com${CLEAR}"
+read -p "   Domain: " DOMAIN
 
 echo -e ""
 echo -e "2. What is your Sendgrid API token? ${LBLUE}docs: https://www.twilio.com/docs/sendgrid/ui/account-and-settings/api-keys${CLEAR}"
-printf "   TOKEN: "
-read SENDGRID_TOKEN
+read -p "   Token: " SENDGRID_TOKEN
 
-echo ""
-echo "Please verify the following:"
-echo "- Operately will be accessible from: https://${DOMAIN}"
-echo "- Operately Emails will be sent from: notifications@${DOMAIN} via SendGrid".
-echo ""
-echo "The next step is to pull the Docker images, set up the database and"
-echo "configure web application based on this configuration."
-echo ""
-echo "Continue the installation? (y/n)"
-read YN
+echo -e ""
+echo -e "Please verify the following:"
+echo -e ""
+echo -e "- Operately will be accessible from: ${LBLUE}https://${DOMAIN}${CLEAR}"
+echo -e "- Operately emails will be sent from: ${LBLUE}notifications@${DOMAIN} via SendGrid${CLEAR}".
+echo -e "- The installation script will pull the Docker images"
+echo -e "- The installation script will create a new database and run the migrations"
+echo -e ""
+echo -p "Run the installation? (y/n) " YN
 
 case $YN in
-        y|yes|Y)
-                echo "Starting the installation..." && sleep 3
-                ;;
-        *)
-                echo "Stopping the installtion" && exit 1
-                ;;
+        y|yes|Y) echo "Starting the installation..." && sleep 3 ;;
+        *)       echo "Stopping the installtion" && exit 1      ;;
 esac
 
-POSTGRES_PASSWORD=$(openssl rand -hex 32)
-NOTIFICATIONS_EMAIL="notifications@${DOMAIN}"
+# Questions finished - Starting with writting configuration --------------------------
 
-sed -i "s/^OPERATELY_HOST=.*$/OPERATELY_HOST=\"${DOMAIN}\"/g" operately.env
-sed -i "s/^SENDGRID_API_KEY=.*$/SENDGRID_API_KEY=\"${SENDGRID_TOKEN}\"/g" operately.env
-sed -i "s/^NOTIFICATIONS_EMAIL=.*$/NOTIFICATIONS_EMAIL=\"${NOTIFICATIONS_EMAIL}\"/g" operately.env
-sed -i "s/^POSTGRES_PASSWORD=.*$/POSTGRES_PASSWORD=\"${POSTGRES_PASSWORD}\"/g" operately.env
+OPERATELY_HOST=${DOMAIN}
+CERT_DOMAIN=${DOMAIN}
+OPERATELY_URL_SCHEME="https"
+OPERATELY_BLOB_TOKEN_SECRET_KEY=$(openssl rand -hex 32)
+SECRET_KEY_BASE=$(openssl rand -hex 32)
+
+DB_USERNAME="operately"
+POSTGRES_USER="operately"
+POSTGRES_PASSWORD=$(openssl rand -hex 32)
+DATABASE_URL="ecto://${DB_USERNAME}:${POSTGRES_PASSWORD}@db/operately"
+SENDGRID_API_KEY=$SENDGRID_TOKEN
+NOTIFICATION_EMAIL="notifications@${DOMAIN}"
+
+echo "OPERATELY_HOST=\"${DOMAIN}\"" >> operately.env
+echo "CERT_DOMAIN=\"${CERT_DOMAIN}\"" >> operately.env
+echo "OPERATELY_URL_SCHEME=\"${OPERATELY_URL_SCHEME}\"" >> operately.env
+echo "SECRET_KEY_BASE=\"${SECRET_KEY_BASE}\"" >> operately.env
+
+echo "DB_USERNAME=\"${DB_USERNAME}\"" >> operately.env
+echo "POSTGRES_USER=\"${POSTGRES_USER}\"" >> operately.env
+echo "POSTGRES_PASSWORD=\"${POSTGRES_PASSWORD}\"" >> operately.env
+echo "DATABASE_URL=\"${DATABASE_URL}\"" >> operately.env
+echo "SENDGRID_API_KEY=\"${SENDGRID_API_KEY}\"" >> operately.env
+echo "NOTIFICATION_EMAIL=\"${NOTIFICATION_EMAIL}\"" >> operately.env
+
+# Pulling and building docker images --------------------------------------------------
 
 docker compose build
 
