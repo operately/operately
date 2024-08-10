@@ -34,7 +34,7 @@ echo -e "- Operately emails will be sent from: ${LBLUE}notifications@${DOMAIN} v
 echo -e "- The installation script will pull the Docker images"
 echo -e "- The installation script will create a new database and run the migrations"
 echo -e ""
-echo -p "Run the installation? (y/n) " YN
+read -p "Run the installation? (y/n) " YN
 
 case $YN in
         y|yes|Y) echo "Starting the installation..." && sleep 3 ;;
