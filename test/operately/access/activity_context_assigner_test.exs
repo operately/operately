@@ -214,20 +214,20 @@ defmodule Operately.AccessActivityContextAssignerTest do
       create_activity(attrs)
       |> assert_context_assigned(ctx.group.access_context.id)
     end
+  end
 
+  describe "assigns access_context to goal activities" do
     test "goal_reparent action", ctx do
       attrs = %{
         action: "goal_reparent",
         author_id: ctx.author.id,
-        content: %{ new_parent_goal_id: ctx.group.id, company_id: "-", old_parent_goal_id: "-" }
+        content: %{ new_parent_goal_id: ctx.goal.id, company_id: "-", old_parent_goal_id: "-" }
       }
 
       create_activity(attrs)
-      |> assert_context_assigned(ctx.group.access_context.id)
+      |> assert_context_assigned(ctx.goal.access_context.id)
     end
-  end
 
-  describe "assigns access_context to goal activities" do
     test "goal_check_in action", ctx do
       attrs = %{
         action: "goal_check_in",
