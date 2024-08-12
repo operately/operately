@@ -35,9 +35,9 @@ RUN mix archive.install hex phx_new 1.7.0-rc.0 --force
 # This is where we will mount the source code from the host machine.
 # The source code will be owned by the 'dev' user inside the container.
 
-ENV APP_HOME /home/dev/app
-RUN mkdir $APP_HOME
-WORKDIR $APP_HOME
+ENV CACHE_DIR /home/dev/cache
+RUN mkdir $CACHE_DIR
+WORKDIR $CACHE_DIR
 
 # Set a simple prompt that shows the current directory.
 # This is useful when you are inside the container and you want to know
@@ -55,12 +55,16 @@ RUN mkdir -p "/home/dev/.config/chromium/Crash Reports/pending"
 
 # Install development dependencies.
 ENV MIX_ENV=dev
-COPY --chown=dev:dev mix.exs mix.lock /home/dev/app/
+COPY --chown=dev:dev mix.exs mix.lock /home/dev/cache/
 RUN mix deps.get
 RUN mkdir config
 
-COPY --chown=dev:dev assets/package.json /home/dev/app/assets/package.json
-COPY --chown=dev:dev assets/package-lock.json /home/dev/app/assets/package-lock.json
+COPY --chown=dev:dev assets/package.json /home/dev/cache/assets/package.json
+COPY --chown=dev:dev assets/package-lock.json /home/dev/cache/assets/package-lock.json
 RUN cd assets && npm install
+
+ENV APP_DIR /home/dev/app
+RUN mkdir $APP_DIR
+WORKDIR $APP_DIR
 
 CMD ["sleep", "infinity"]

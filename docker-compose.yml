@@ -1,12 +1,6 @@
 services:
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile.dev
-      args:
-        - USER_ID
-        - GROUP_ID
-    user: ${USER_ID}:${GROUP_ID}
+    image: operately/operately-dev:latest
     volumes:
       - ./:/home/dev/app
       - ./media:/media
