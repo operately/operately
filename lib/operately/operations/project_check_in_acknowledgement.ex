@@ -5,9 +5,7 @@ defmodule Operately.Operations.ProjectCheckInAcknowledgement do
   alias Operately.Activities
   alias Operately.Projects.CheckIn
 
-  def run(author, check_in_id) do
-    check_in = Operately.Projects.get_check_in!(check_in_id)
-
+  def run(author, check_in) do
     changeset = CheckIn.changeset(check_in, %{
       acknowledged_at: NaiveDateTime.utc_now(),
       acknowledged_by_id: author.id
