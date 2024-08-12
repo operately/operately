@@ -85,29 +85,8 @@ defmodule Operately.Companies do
     end
   end
 
-  def add_admin(admin, person_id) do
-    person = Operately.People.get_person!(person_id)
-
-    cond do
-      person == nil ->
-        {:error, "Person not found"}
-
-      admin.company_role != :admin ->
-        {:error, "Only admins can add other admins"}
-
-      admin.company_id != person.company_id ->
-        {:error, "Person is not in the same company"}
-
-      true ->
-        {:ok, _} = Operately.People.update_person(person, %{company_role: :admin})
-    end
-  end
-
-  def add_admins(admin, people_ids) do
-    Enum.map(people_ids, fn person_id ->
-      add_admin(admin, person_id)
-    end)
-  end
+  def add_admin(admin, person_id), do: add_admins(admin, [person_id])
+  defdelegate add_admins(admin, people_ids), to: Operately.Operations.CompanyAdminAdding, as: :run
 
   def add_trusted_email_domain(company, admin, domain) do
     cond do
