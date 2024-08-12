@@ -8,13 +8,7 @@ defmodule Operately.Features.CompanyAdminTest do
 
   setup ctx do
     company = company_fixture(%{name: "Dunder Mifflin"})
-
-    admin = person_fixture_with_account(%{
-      full_name: "Dwight Schrute",
-      company_id: company.id,
-      title: "Assistant to the Regional Manager",
-      company_role: "admin"
-    })
+    admin = Operately.Companies.list_admins(company.id) |> hd()
 
     ctx = Map.put(ctx, :company, company)
     ctx = Map.put(ctx, :admin, admin)
@@ -65,8 +59,9 @@ defmodule Operately.Features.CompanyAdminTest do
 
     ctx
     |> UI.click(testid: "manage-company-administrators")
+    |> UI.assert_text("Michael Scott")
     |> UI.click(testid: "remove-michael-scott")
-    |> UI.sleep(300)
+    |> UI.refute_text("Michael Scott", attempts: [50, 150, 250, 400])
 
     person = Operately.People.get_person_by_name!(ctx.company, "Michael Scott")
 
@@ -93,8 +88,9 @@ defmodule Operately.Features.CompanyAdminTest do
 
     ctx
     |> UI.click(testid: "manage-trusted-email-domains")
+    |> UI.assert_text("@dmif.com")
     |> UI.click(testid: "remove-trusted-email-domain--dmif-com")
-    |> UI.sleep(300)
+    |> UI.refute_text("@dmif.com", attempts: [50, 150, 250, 400])
 
     company = Operately.Companies.get_company!(ctx.company.id)
 
@@ -103,13 +99,14 @@ defmodule Operately.Features.CompanyAdminTest do
   end
 
   feature "remove members from the company", ctx do
+    person_fixture(%{full_name: "Dwight Schrute", company_id: ctx.company.id})
+
     ctx
     |> UI.click(testid: "add-remove-people-manually")
     |> UI.assert_text("Dwight Schrute")
     |> UI.click(testid: "remove-dwight-schrute")
     |> UI.click(testid: "remove-member")
-    |> UI.sleep(300)
-    |> UI.refute_text("Dwight Schrute")
+    |> UI.refute_text("Dwight Schrute", attempts: [50, 150, 250, 400])
 
     person = Operately.People.get_person_by_name!(ctx.company, "Dwight Schrute")
 
