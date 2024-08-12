@@ -53,8 +53,14 @@ RUN echo "export PS1='\w $ '" >> /home/dev/.bashrc
 # find: ‘/home/dev/.config/chromium/Crash Reports/pending/’: No such file or directory.
 RUN mkdir -p "/home/dev/.config/chromium/Crash Reports/pending"
 
-# Set the default command to run when the container starts.
-# Start the phoenix server.
+# Install development dependencies.
+ENV MIX_ENV=dev
+COPY --chown=dev:dev mix.exs mix.lock /home/dev/app/
+RUN mix deps.get
+RUN mkdir config
 
-# CMD ["mix", "phx.server"]
+COPY --chown=dev:dev assets/package.json /home/dev/app/assets/package.json
+COPY --chown=dev:dev assets/package-lock.json /home/dev/app/assets/package-lock.json
+RUN cd assets && npm install
+
 CMD ["sleep", "infinity"]
