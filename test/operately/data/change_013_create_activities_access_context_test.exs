@@ -270,21 +270,6 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
       |> assign_activity_context
       |> assert_context_assigned(ctx.group.access_context.id)
     end
-
-    test "goal_reparent action", ctx do
-      attrs = %{
-        action: "goal_reparent",
-        author_id: ctx.author.id,
-        content: %{
-          new_parent_goal_id: ctx.group.id,
-        }
-      }
-
-      create_activities(attrs)
-      |> assert_no_context
-      |> assign_activity_context
-      |> assert_context_assigned(ctx.group.access_context.id)
-    end
   end
 
   describe "assigns access_context to goal activities" do
@@ -295,6 +280,22 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
       goal = Repo.preload(goal, :access_context)
 
       Map.merge(ctx, %{goal: goal})
+    end
+
+    test "goal_reparent action", ctx do
+      attrs = %{
+        action: "goal_reparent",
+        author_id: ctx.author.id,
+        content: %{
+          company_id: ctx.company.id,
+          new_parent_goal_id: ctx.goal.id,
+        }
+      }
+
+      create_activities(attrs)
+      |> assert_no_context
+      |> assign_activity_context
+      |> assert_context_assigned(ctx.goal.access_context.id)
     end
 
     test "goal_check_in action", ctx do
