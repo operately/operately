@@ -97,6 +97,8 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContext do
   end
 
   defp assign_context(activity) do
+    Logger.info("Assigning access context to activity: #{activity.id}")
+
     cond do
       activity.action in Activity.deprecated_actions() -> :ok
       activity.action in @company_actions -> assign_company_context(activity)
