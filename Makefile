@@ -7,6 +7,9 @@ MEDIA_DIR ?= $(PWD)/media
 SCREENSHOTS_DIR ?= $(PWD)/screenshots
 CERTS_DIR ?= $(PWD)/tmp/certs
 
+devimage:
+	docker build --build-arg USER_ID=$(shell id -u) --build-arg GROUP_ID=$(shell id -g) -t operately/operately-dev:latest -f Dockerfile.dev .
+
 build:
 	@touch .env
 	./devenv build
