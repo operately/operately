@@ -3,9 +3,7 @@ defmodule Operately.Operations.GoalReparent do
   alias Operately.Repo
   alias Operately.Activities
 
-  def run(author, goal_id, parent_goal_id) do
-    goal = Operately.Goals.get_goal!(goal_id)
-    
+  def run(author, goal, parent_goal_id) do
     Multi.new()
     |> Multi.update(:goal, Operately.Goals.Goal.changeset(goal, %{parent_goal_id: parent_goal_id}))
     |> Activities.insert_sync(author.id, :goal_reparent, fn changes ->
