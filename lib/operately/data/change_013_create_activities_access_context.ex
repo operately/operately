@@ -48,7 +48,6 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContext do
 
     # exceptions
     "group_edited",
-    "goal_reparent",
   ]
 
   @goal_actions [
@@ -107,6 +106,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContext do
       activity.action in @project_actions -> assign_project_context(activity, activity.content.project_id)
       activity.action in @task_actions -> assign_task_project_context(activity)
       activity.action == "comment_added" -> assign_context_to_comment_added(activity)
+      activity.action == "goal_reparent" -> assign_goal_context(activity, activity.content.new_parent_goal_id)
       true ->
         Logger.error("Unhandled activity: #{inspect(activity)}")
         raise "Activity not handled in the data migration #{activity.action}"
@@ -126,8 +126,6 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContext do
     space_id = case activity.action do
       "group_edited" ->
         activity.content.group_id
-      "goal_reparent" ->
-        activity.content.new_parent_goal_id
       _ ->
         activity.content.space_id
     end

@@ -51,7 +51,6 @@ defmodule Operately.Activities.ContextAutoAssigner do
 
     # exceptions
     "group_edited",
-    "goal_reparent",
   ]
 
   @goal_actions [
@@ -66,6 +65,9 @@ defmodule Operately.Activities.ContextAutoAssigner do
     "goal_editing",
     "goal_reopening",
     "goal_timeframe_editing",
+
+    # exceptions
+    "goal_reparent",
   ]
 
   @project_actions [
@@ -112,7 +114,7 @@ defmodule Operately.Activities.ContextAutoAssigner do
       activity.action in @deprecated_actions -> :ok
       activity.action in @company_actions -> fetch_company_context(activity.content.company_id)
       activity.action in @space_actions -> fetch_space_context(activity)
-      activity.action in @goal_actions -> fetch_goal_context(activity.content.goal_id)
+      activity.action in @goal_actions -> fetch_goal_context(activity.content)
       activity.action in @project_actions -> fetch_project_context(activity.content.project_id)
       activity.action in @task_actions -> fetch_task_project_context(activity.content.task_id)
       activity.action == "comment_added" -> fetch_comment_added_context(activity)
@@ -149,6 +151,9 @@ defmodule Operately.Activities.ContextAutoAssigner do
     |> Repo.one()
   end
 
+
+  defp fetch_goal_context(%{new_parent_goal_id: goal_id}), do: fetch_goal_context(goal_id)
+  defp fetch_goal_context(%{goal_id: goal_id}), do: fetch_goal_context(goal_id)
   defp fetch_goal_context(goal_id) do
     from(c in Context,
       join: g in assoc(c, :goal),
