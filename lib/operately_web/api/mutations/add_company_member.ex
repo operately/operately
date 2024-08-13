@@ -3,6 +3,7 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyMember do
   use OperatelyWeb.Api.Helpers
 
   require Logger
+  import Operately.Access.Filters, only: [filter_by_full_access: 2]
 
   inputs do
     field :full_name, :string
@@ -16,9 +17,8 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyMember do
 
   def call(conn, inputs) do
     person = me(conn)
-    allowed = person.company_role == :admin
 
-    if allowed do
+    if has_permissions?(person) do
       case create_invitation(person, inputs) do
         {:ok, invitation} ->
           {:ok, %{invitation: OperatelyWeb.Api.Serializer.serialize(invitation, level: :full)}}
@@ -26,8 +26,14 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyMember do
           {:error, :bad_request, message}
       end
     else
-      {:error, :bad_request, "Only admins can add members"}
+      {:error, :forbidden}
     end
+  end
+
+  defp has_permissions?(person) do
+    from(c in Operately.Companies.Company, where: c.id == ^person.company_id)
+    |> filter_by_full_access(person.id)
+    |> Repo.exists?()
   end
 
   defp create_invitation(person, inputs) do
