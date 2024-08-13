@@ -5,9 +5,7 @@ defmodule Operately.Operations.GoalClosing do
   alias Operately.Activities
   alias Operately.Comments.CommentThread
 
-  def run(author, goal_id, success, retrospective) do
-    goal = Goals.get_goal!(goal_id)
-
+  def run(author, goal, success, retrospective) do
     changeset = Goals.Goal.changeset(goal, %{
       closed_at: DateTime.utc_now(),
       closed_by_id: author.id,
@@ -20,7 +18,7 @@ defmodule Operately.Operations.GoalClosing do
       %{
         company_id: author.company_id,
         space_id: goal.group_id,
-        goal_id: goal_id,
+        goal_id: goal.id,
         success: success
       }
     end, include_notification: false)
