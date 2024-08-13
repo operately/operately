@@ -19,7 +19,9 @@ defmodule Operately.Operations.TaskDescriptionChangeTest do
     group = group_fixture(person)
     project = project_fixture(%{company_id: company.id, creator_id: person.id, group_id: group.id})
     milestone = milestone_fixture(person, %{project_id: project.id, title: "Some milestone"})
+
     task = task_fixture(%{creator_id: person.id, milestone_id: milestone.id, name: "name"})
+      |> Repo.preload(:group)
 
     {:ok, person: person, task: task, group: group}
   end
@@ -28,7 +30,7 @@ defmodule Operately.Operations.TaskDescriptionChangeTest do
     description_text = "some description"
     description = rich_text(description_text)
 
-    Operately.Operations.TaskDescriptionChange.run(ctx.person, ctx.task.id, description)
+    Operately.Operations.TaskDescriptionChange.run(ctx.person, ctx.task, description)
 
     task = Repo.reload(ctx.task)
 
@@ -36,7 +38,7 @@ defmodule Operately.Operations.TaskDescriptionChangeTest do
   end
 
   test "TaskDescriptionChange operation creates activity", ctx do
-    Operately.Operations.TaskDescriptionChange.run(ctx.person, ctx.task.id, rich_text("some description"))
+    Operately.Operations.TaskDescriptionChange.run(ctx.person, ctx.task, rich_text("some description"))
 
     activity = from(a in Activity, where: a.action == "task_description_change" and a.content["task_id"] == ^ctx.task.id) |> Repo.one()
 
