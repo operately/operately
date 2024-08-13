@@ -12,12 +12,12 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyMemberTest do
       assert {401, _} = mutation(ctx.conn, :add_company_member, %{})
     end
 
-    test "member account can't invite other members", ctx do
+    test "member account without full access can't invite other members", ctx do
       ctx = register_and_log_in_account(ctx)
 
-      assert {400, res} = mutation(ctx.conn, :add_company_member, @add_company_member_input)
+      assert {403, res} = mutation(ctx.conn, :add_company_member, @add_company_member_input)
 
-      assert res == %{:error => "Bad request", :message => "Only admins can add members"}
+      assert res == %{:error => "Forbidden", :message => "You don't have permission to perform this action"}
     end
   end
 
@@ -54,7 +54,7 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyMemberTest do
   end
 
   defp promote_to_admin(ctx) do
-    {:ok, person} = Operately.People.update_person(ctx.person, %{company_role: :admin})
-    %{ctx | person: person}
+    {:ok, _} = Operately.Companies.add_admin(ctx.company_creator, ctx.person.id)
+    ctx
   end
-end 
+end
