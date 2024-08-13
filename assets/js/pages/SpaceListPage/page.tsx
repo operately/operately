@@ -20,10 +20,10 @@ export function Page() {
     <Pages.Page title="Home">
       <Paper.Root size="large">
         <div className="flex justify-center gap-4 pt-16 flex-wrap">
-          <div className="relative w-64 px-4 py-3">
-            <div className="font-bold">Welcome Back!</div>
+          <div className="relative w-80 px-4 py-3">
+            <div className="font-bold">Your {company.name} spaces</div>
             <div className="text-sm mt-4">
-              You are in the lobby of {company.name}. This is where you can find all the spaces you are a part of.
+            Manage projects, track goals, and access company-wide information through your team spaces. Each space represents a department or team initiative.
             </div>
           </div>
 
@@ -33,7 +33,7 @@ export function Page() {
               color: "text-cyan-500",
               icon: "IconBuildingEstate",
               id: company.companySpaceId!,
-              mission: "Everyone in the company",
+              mission: "Organization-wide announcements and resources",
               privateSpace: false,
               isCompanySpace: true,
               isMember: true,
@@ -45,7 +45,7 @@ export function Page() {
           <div className="flex-1 mx-4 border-t border-surface-outline"></div>
 
           <GhostButton testId="add-space" linkTo={Paths.newSpacePath()} type="primary">
-            Add a new Space
+            Add a new space
           </GhostButton>
 
           <div className="flex-1 mx-4 border-t border-surface-outline"></div>

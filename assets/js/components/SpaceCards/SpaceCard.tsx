@@ -43,7 +43,7 @@ export function SpaceCard(props: SpaceCardProps) {
       <div className="mt-2"></div>
       {React.createElement(iconElement, { size: 40, className: color, strokeWidth: 1 })}
       <div className="font-semibold mt-2">{name}</div>
-      <div className="text-content-dimmed text-xs truncate">{mission}</div>
+      <div className="text-content-dimmed text-xs line-clamp-3">{mission}</div>
 
       {privateSpace && (
         <div className="absolute top-2 right-2 text-accent-1">
