@@ -5,15 +5,18 @@ defmodule Operately.Features.InviteMemberTest do
   import Operately.PeopleFixtures
   import Operately.InvitationsFixtures
 
+  alias Operately.Companies
   alias Operately.Support.Features.UI
   alias Operately.Support.Features.InviteMemberSteps, as: Steps
 
   setup ctx do
     company = company_fixture()
-    admin = person_fixture_with_account(%{company_id: company.id, full_name: "John Admin", company_role: :admin})
-    ctx = Map.merge(ctx, %{company: company, admin: admin})
+    creator = hd(Companies.list_admins(company.id))
 
-    {:ok, ctx}
+    admin = person_fixture_with_account(%{company_id: company.id, full_name: "John Admin"})
+    Companies.add_admin(creator, admin.id)
+
+    Map.merge(ctx, %{company: company, admin: admin})
   end
 
   @new_member %{

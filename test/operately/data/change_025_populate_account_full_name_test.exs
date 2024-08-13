@@ -1,4 +1,4 @@
-defmodule Operately.Data.Change024RemovePrivateProjectsBindingsTest do
+defmodule Operately.Data.Change025PopulateAccountFullNameTest do
   use Operately.DataCase
 
   import Operately.CompaniesFixtures
