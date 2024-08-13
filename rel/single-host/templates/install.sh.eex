@@ -41,17 +41,16 @@ echo -e ""
 case $MANAGE_CERTS_YN in
         y|yes|Y)
                 echo -e "- Operately will be accessible from: ${LBLUE}https://${DOMAIN}${CLEAR}"
-                echo -e "- Operately will issue and auto-renew SSL certs from Let's Encrytp."
-                echo -e "- Let's encrypt will send emails to ${ADMIN_EMAIL}"
+                echo -e "- Operately will issue and auto-renew SSL certificates from Let's Encrypt."
+                echo -e "- Let's Encrypt will send emails to ${ADMIN_EMAIL}"
                 ;;
         *)
                 echo -e "- Operately will be accessible from: ${LBLUE}http://${DOMAIN}${CLEAR}"
-                echo -e "- Operately emails will be sent from: ${LBLUE}notifications@${DOMAIN}${CLEAR} via SendGrid".
                 ;;
 esac
 echo -e "- Operately emails will be sent from: ${LBLUE}notifications@${DOMAIN}${CLEAR} via SendGrid".
 echo -e "- The installation script will pull the Docker images for running Operately"
-echo -e "- It will set up the database and run the migrations"
+echo -e "- A PostgreSQL database will be created for Operately as a Docker container"
 echo -e ""
 read -p "Run the installation? (y/n) " YN
 
