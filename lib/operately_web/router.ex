@@ -24,6 +24,13 @@ defmodule OperatelyWeb.Router do
   end
 
   #
+  # Health check endpoint
+  #
+  scope "/health", OperatelyWeb do
+    get "/", HealthController, :index
+  end
+
+  #
   # Account authentication and creation routes
   #
   scope "/", OperatelyWeb do

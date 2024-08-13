@@ -23,6 +23,21 @@ defmodule OperatelyWeb.Certification do
     end
   end
 
+  @lets_encrypt "Let's Encrypt"
+
+  @spec status() :: :ready | :not_ready
+  def status do
+    if mode() == :auto do
+      if find_issuer_name() == @lets_encrypt do
+        :ready
+      else
+        :not_ready
+      end
+    else
+      :ready
+    end
+  end
+
   def verify_config_presence do
     if mode() != :manual do
       unless domain() do
@@ -51,6 +66,28 @@ defmodule OperatelyWeb.Certification do
         folder is writable by the user running the server.
         """
       end
+    end
+  end
+
+  #
+  # Returns the name of the issuer of the certificate
+  # or :not_ready if the certificate is not yet available
+  #
+  # In production environment, the certificate is fetched from Let's Encrypt
+  # and if everything is OK, the "Let's Encrypt" issuer is returned.
+  #
+  defp find_issuer_name() do
+    config = SiteEncrypt.Registry.config(OperatelyWeb.Endpoint)
+
+    case SiteEncrypt.client(config).pems(config) do
+      :error -> :not_ready
+
+      {:ok, pems} ->
+        pems.cert 
+        |> X509.Certificate.from_pem!() 
+        |> X509.Certificate.issuer()
+        |> X509.RDNSequence.get_attr("O")
+        |> List.first()
     end
   end
 
