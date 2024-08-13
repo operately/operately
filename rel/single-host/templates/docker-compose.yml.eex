@@ -15,9 +15,16 @@ services:
     volumes:
       - media:/media
       - certs:/certs
+    restart: always
+    healthcheck:
+      test: "curl -f http://localhost:4000/health || exit 1"
+      interval: 5s
+      timeout: 10s
+      retries: 10
 
   db:
     image: postgres:14.5
+    restart: always
     environment:
       PGDATA: /var/lib/postgresql/data/pgdata
       POSTGRES_DB: operately-prod
