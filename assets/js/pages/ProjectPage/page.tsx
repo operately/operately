@@ -296,6 +296,11 @@ function ResourcesListv2() {
             </div>
           </li>
         </ul>
+        <div className="mt-2 text-xs text-gray-500 flex justify-end items-center space-x-2 mr-2">
+          <span>Showing 3 most recent</span>
+          <span>•</span>
+          <a href="#" className="text-link-base hover:text-link-hover">View all</a>
+        </div>
       </dd>
     </div>
   )
