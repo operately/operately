@@ -1,11 +1,11 @@
 defmodule Operately.Operations.CompanyAdminRemoving do
   alias Ecto.Multi
-  alias Operately.{Repo, Access, Activities, People}
+  alias Operately.{Repo, Access, Activities}
   alias Operately.People.Person
 
-  def run(%Person{company_role: :admin} = admin, person_id) do
+  def run(%Person{company_role: :admin} = admin, person) do
     Multi.new()
-    |> update_person(person_id)
+    |> update_person(person)
     |> remove_admin_permissions(admin)
     |> insert_member_permissions(admin)
     |> insert_activity(admin)
@@ -13,12 +13,9 @@ defmodule Operately.Operations.CompanyAdminRemoving do
     |> Repo.extract_result(:person)
   end
 
-  defp update_person(multi, person_id) do
+  defp update_person(multi, person) do
     multi
-    |> Multi.run(:person, fn _, _ ->
-      {:ok, People.get_person!(person_id)}
-    end)
-    |> Multi.update(:updated_person, fn %{person: person} ->
+    |> Multi.update(:person, fn _ ->
       Person.changeset(person, %{company_role: :member})
     end)
   end

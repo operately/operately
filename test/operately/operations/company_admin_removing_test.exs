@@ -19,7 +19,7 @@ defmodule Operately.Operations.CompanyAdminRemovingTest do
   test "CompanyAdminRemoving operation updates admin to member", ctx do
     assert ctx.member.company_role == :admin
 
-    {:ok, _} = Operately.Operations.CompanyAdminRemoving.run(ctx.admin, ctx.member.id)
+    {:ok, _} = Operately.Operations.CompanyAdminRemoving.run(ctx.admin, ctx.member)
 
     member = Repo.reload(ctx.member)
     assert member.company_role == :member
@@ -30,7 +30,7 @@ defmodule Operately.Operations.CompanyAdminRemovingTest do
 
     assert Access.get_group_membership(group_id: group.id, person_id: ctx.member.id)
 
-    {:ok, _} = Operately.Operations.CompanyAdminRemoving.run(ctx.admin, ctx.member.id)
+    {:ok, _} = Operately.Operations.CompanyAdminRemoving.run(ctx.admin, ctx.member)
 
     refute Access.get_group_membership(group_id: group.id, person_id: ctx.member.id)
   end
@@ -42,15 +42,15 @@ defmodule Operately.Operations.CompanyAdminRemovingTest do
 
     refute Access.get_group_membership(group_id: group.id, person_id: ctx.member.id)
 
-    {:ok, _} = Operately.Operations.CompanyAdminRemoving.run(ctx.admin, ctx.member.id)
+    {:ok, _} = Operately.Operations.CompanyAdminRemoving.run(ctx.admin, ctx.member)
     assert Access.get_group_membership(group_id: group.id, person_id: ctx.member.id)
 
-    {:ok, _} = Operately.Operations.CompanyAdminRemoving.run(ctx.admin, ctx.member.id)
+    {:ok, _} = Operately.Operations.CompanyAdminRemoving.run(ctx.admin, ctx.member)
     assert Access.get_group_membership(group_id: group.id, person_id: ctx.member.id)
   end
 
   test "CompanyAdminRemoving operation creates activity", ctx do
-    {:ok, _} = Operately.Operations.CompanyAdminRemoving.run(ctx.admin, ctx.member.id)
+    {:ok, _} = Operately.Operations.CompanyAdminRemoving.run(ctx.admin, ctx.member)
 
     activity = from(a in Activity, where: a.action == "company_admin_removed" and a.content["company_id"] == ^ctx.company.id) |> Repo.one()
 
@@ -60,7 +60,7 @@ defmodule Operately.Operations.CompanyAdminRemovingTest do
 
   test "CompanyAdminAdding operation creates notification", ctx do
     Oban.Testing.with_testing_mode(:manual, fn ->
-      {:ok, _} = Operately.Operations.CompanyAdminRemoving.run(ctx.admin, ctx.member.id)
+      {:ok, _} = Operately.Operations.CompanyAdminRemoving.run(ctx.admin, ctx.member)
     end)
 
     activity = from(a in Activity, where: a.action == "company_admin_removed" and a.content["company_id"] == ^ctx.company.id) |> Repo.one()
