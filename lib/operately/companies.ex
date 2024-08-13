@@ -64,26 +64,7 @@ defmodule Operately.Companies do
     Repo.all(from p in Person, where: p.company_role == :admin and p.company_id == ^company_id and not p.suspended)
   end
 
-  def remove_admin(admin, person_id) do
-    person = Operately.People.get_person!(person_id)
-
-    cond do
-      person == nil ->
-        {:error, "Person not found"}
-
-      admin.id == person.id ->
-        {:error, "Admins cannot remove themselves"}
-
-      admin.company_role != :admin ->
-        {:error, "Only admins can remove other admins"}
-
-      admin.company_id != person.company_id ->
-        {:error, "Person is not in the same company"}
-
-      true ->
-        Operately.People.update_person(person, %{company_role: :member})
-    end
-  end
+  defdelegate remove_admin(admin, person), to: Operately.Operations.CompanyAdminRemoving, as: :run
 
   def add_admin(admin, person_id), do: add_admins(admin, [person_id])
   defdelegate add_admins(admin, people_ids), to: Operately.Operations.CompanyAdminAdding, as: :run
