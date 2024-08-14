@@ -3,19 +3,21 @@ Mix.install([:req, :jason])
 defmodule Uploader do
   def version(), do: System.argv() |> List.first()
   def token(), do: System.get_env("GITHUB_TOKEN")
+  def repo(), do: System.get_env("GITHUB_REPOSITORY")
   def single_host_zip_path(), do: "build/single-host-#{version()}/operately.tar.gz"
 
   def run do
     validate_version()
     validate_token()
     validate_zip()
+    validate_repo()
 
     id = create_release()
     upload_single_host_zip(id)
   end
 
   def create_release do
-    url = "https://api.github.com/repos/operately/operately/releases"
+    url = "https://api.github.com/repos/#{repo()}/releases"
     headers = build_header("application/json")
 
     payload = %{
@@ -78,6 +80,12 @@ defmodule Uploader do
   def validate_zip do
     if !File.exists?(single_host_zip_path()) do
       raise "Error: #{single_host_zip_path()} does not exist"
+    end
+  end
+
+  def validate_repo do
+    if repo() == nil || repo() == "" do
+      raise "Error: GITHUB_REPOSITORY is required, e.g operately/nightly"
     end
   end
 end
