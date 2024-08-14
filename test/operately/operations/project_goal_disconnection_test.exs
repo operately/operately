@@ -31,7 +31,7 @@ defmodule Operately.Operations.ProjectGoalDisconnectionTest do
   test "ProjectGoalDisconnection operation updates project.goal_id to nil", ctx do
     assert ctx.project.goal_id == ctx.goal.id
 
-    Operately.Operations.ProjectGoalDisconnection.run(ctx.creator, ctx.project, ctx.goal)
+    Operately.Operations.ProjectGoalDisconnection.run(ctx.creator, ctx.project)
 
     project = Repo.reload(ctx.project)
 
@@ -40,7 +40,7 @@ defmodule Operately.Operations.ProjectGoalDisconnectionTest do
 
   test "ProjectGoalDisconnection operation creates activity and notification", ctx do
     Oban.Testing.with_testing_mode(:manual, fn ->
-      Operately.Operations.ProjectGoalDisconnection.run(ctx.creator, ctx.project, ctx.goal)
+      Operately.Operations.ProjectGoalDisconnection.run(ctx.creator, ctx.project)
     end)
 
     activity = from(a in Activity, where: a.action == "project_goal_disconnection" and a.content["goal_id"] == ^ctx.goal.id) |> Repo.one()
