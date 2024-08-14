@@ -2,6 +2,8 @@ defmodule OperatelyWeb.Api.Mutations.CreateProject do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
+  import Operately.Access.Filters, only: [filter_by_edit_access: 2, forbidden_or_not_found: 2]
+
   inputs do
     field :space_id, :string
     field :name, :string
@@ -22,6 +24,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateProject do
 
   def call(conn, inputs) do
     person = me(conn)
+    company = company(conn)
 
     {:ok, goal_id} = decode_id(inputs[:goal_id], :allow_nil)
     {:ok, space_id} = decode_id(inputs[:space_id], :allow_nil)
@@ -44,8 +47,26 @@ defmodule OperatelyWeb.Api.Mutations.CreateProject do
       space_access_level: inputs.space_access_level,
     }
 
-    {:ok, project} = Operately.Projects.create_project(args)
+    if has_permissions?(person, company, space_id) do
+      {:ok, project} = Operately.Projects.create_project(args)
+      {:ok, %{project: Serializer.serialize(project, level: :essential)}}
+    else
+      query(company, space_id)
+      |> forbidden_or_not_found(person.id)
+    end
+  end
 
-    {:ok, %{project: Serializer.serialize(project, level: :essential)}}
+  defp has_permissions?(person, company, space_id) do
+    query(company, space_id)
+    |> filter_by_edit_access(person.id)
+    |> Repo.exists?()
+  end
+
+  defp query(company, space_id) when company.company_space_id != space_id do
+    from(s in Operately.Groups.Group, where: s.id == ^space_id)
+  end
+
+  defp query(company, space_id) when company.company_space_id == space_id do
+    from(c in Operately.Companies.Company, where: c.id == ^company.id)
   end
 end
