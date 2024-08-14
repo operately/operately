@@ -76,7 +76,7 @@ and ask you for the following information:
 Start Operately with Docker Compose:
 
 ```bash
-docker compose up -d
+docker compose up --wait --detach
 ```
 
 Operately should now be running on your server. You can access it by navigating to the domain you
