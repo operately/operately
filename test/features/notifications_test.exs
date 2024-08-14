@@ -17,7 +17,7 @@ defmodule Operately.Features.NotificationsTest do
     Operately.Groups.add_members(ctx.reviewer, ctx.group.id, [
       %{
         id: ctx.reviewer.id,
-        permissions: Binding.view_access(),
+        permissions: Binding.edit_access(),
       },
       %{
         id: ctx.champion.id,
