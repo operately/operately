@@ -1,6 +1,7 @@
 defmodule Operately.Support.Features.SpaceSteps do
   use Operately.FeatureCase
 
+  alias Operately.Companies
   alias Operately.Support.Features.UI
   alias Operately.Support.Features.NotificationsSteps
   alias Operately.Support.Features.EmailSteps
@@ -11,7 +12,10 @@ defmodule Operately.Support.Features.SpaceSteps do
 
   step :setup, ctx do
     company = company_fixture(%{name: "Test Org"})
+    admin = hd(Companies.list_admins(company.id))
+
     person = person_fixture_with_account(%{full_name: "Kevin Kernel", company_id: company.id})
+    Companies.add_admin(admin, person.id)
 
     ctx = Map.merge(ctx, %{company: company, person: person})
     ctx = UI.login_as(ctx, ctx.person)
