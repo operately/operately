@@ -46,7 +46,7 @@ defmodule Uploader do
   def upload_single_host_zip(id) do
     file = File.read!(single_host_zip_path())
     asset_name = "operately-single-host.tar.gz"
-    url = "https://uploads.github.com/repos/operately/operately/releases/#{id}/assets?name=#{asset_name}"
+    url = "https://uploads.github.com/repos/#{repo()}/releases/#{id}/assets?name=#{asset_name}"
     headers = build_header("application/octet-stream")
 
     case Req.post(url, headers: headers, body: file) do
