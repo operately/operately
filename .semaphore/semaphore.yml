@@ -95,15 +95,3 @@ promotions:
     pipeline_file: deploy.yml
     auto_promote:
       when: "result = 'passed' and branch = 'main'"
-
-  - name: GitHub Release
-    pipeline_file: release.yml
-    parameters:
-      env_vars:
-        - required: true
-          options:
-            - Patch
-            - Minor
-            - Major
-          description: "Select the type of release"
-          name: RELEASE_TYPE
