@@ -24,33 +24,50 @@ export function Header({ goal, activeTab }: HeaderProps) {
     <div>
       <Options goal={goal} />
       <Banner goal={goal} />
+      <ParentGoal goal={goal.parentGoal} />
+      <GoalTitleRow goal={goal} />
+      <GoalTabs activeTab={activeTab} goal={goal} />
+    </div>
+  );
+}
 
-      <div className="flex-1">
-        <ParentGoal goal={goal.parentGoal} />
+function GoalTitleRow({ goal }: { goal: Goals.Goal }) {
+  return (
+    <div className="flex items-start gap-3">
+      <GoalIcon />
 
-        <div className="flex items-start text-content-accent gap-3">
-          <div className="bg-red-500/10 p-1.5 rounded-lg">
-            <Icons.IconTarget size={24} className="text-red-500" />
-          </div>
-
-          <div className="gap-2 mt-1 w-full">
-            <div className="flex items-start gap-4 justify-between">
-              <div className="font-bold text-2xl text-content-accent flex-1">{goal.name}</div>
-              <UpdateProgressButton goal={goal} />
-            </div>
-
-            <Timeframe goal={goal} />
-          </div>
+      <div className="gap-2 mt-1 w-full text-content-accent">
+        <div className="flex items-start gap-4 justify-between">
+          <GoalTitle goal={goal} />
+          <UpdateProgressButton goal={goal} />
         </div>
 
-        <Tabs.Root activeTab={activeTab}>
-          <Tabs.Tab id="status" title="Current Status" linkTo={Paths.goalPath(goal.id!)} />
-          <Tabs.Tab id="subgoals" title="Sub-Goals and Projects" linkTo={Paths.goalSubgoalsPath(goal.id!)} />
-          <Tabs.Tab id="discussions" title="Discussions" linkTo={Paths.goalDiscussionsPath(goal.id!)} />
-          <Tabs.Tab id="about" title="About" linkTo={Paths.goalAboutPath(goal.id!)} />
-        </Tabs.Root>
+        <Timeframe goal={goal} />
       </div>
     </div>
+  );
+}
+
+function GoalTitle({ goal }: { goal: Goals.Goal }) {
+  return <div className="font-bold text-2xl text-content-accent flex-1">{goal.name}</div>;
+}
+
+function GoalIcon() {
+  return (
+    <div className="bg-red-500/10 p-1.5 rounded-lg">
+      <Icons.IconTarget size={24} className="text-red-500" />
+    </div>
+  );
+}
+
+function GoalTabs({ activeTab, goal }: { activeTab: HeaderProps["activeTab"]; goal: Goals.Goal }) {
+  return (
+    <Tabs.Root activeTab={activeTab}>
+      <Tabs.Tab id="status" title="Current Status" linkTo={Paths.goalPath(goal.id!)} />
+      <Tabs.Tab id="subgoals" title="Sub-Goals and Projects" linkTo={Paths.goalSubgoalsPath(goal.id!)} />
+      <Tabs.Tab id="discussions" title="Discussions" linkTo={Paths.goalDiscussionsPath(goal.id!)} />
+      <Tabs.Tab id="about" title="About" linkTo={Paths.goalAboutPath(goal.id!)} />
+    </Tabs.Root>
   );
 }
 
