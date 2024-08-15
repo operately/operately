@@ -13,14 +13,15 @@ defmodule OperatelyWeb.TurboCase do
 
       alias OperatelyWeb.Api.Serializer
       alias OperatelyWeb.Paths
+      alias Operately.Repo
     end
   end
 
   setup tags do
     Operately.DataCase.setup_sandbox(tags)
 
-    conn = 
-      Phoenix.ConnTest.build_conn() 
+    conn =
+      Phoenix.ConnTest.build_conn()
       |> Plug.Conn.put_req_header("content-type", "application/json")
 
     {:ok, conn: conn}
@@ -75,5 +76,5 @@ defmodule OperatelyWeb.TurboCase do
   def not_found_response do
     {404, %{error: "Not found", message: "The requested resource was not found"}}
   end
-  
+
 end

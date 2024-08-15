@@ -5,14 +5,11 @@ defmodule Operately.Operations.GoalDiscussionEditing do
 
   @action :goal_discussion_editing
 
-  def run(author, activity_id, title, message) do
-    activity = Operately.Activities.get_activity!(activity_id)
+  def run(author, activity, attrs) do
     goal = Operately.Goals.get_goal!(activity.content["goal_id"])
-    comment_thread = Operately.Comments.get_thread!(activity.comment_thread_id)
-
-    change = Operately.Comments.CommentThread.changeset(comment_thread, %{
-      title: title,
-      message: Jason.decode!(message),
+    change = Operately.Comments.CommentThread.changeset(activity.comment_thread, %{
+      title: attrs.title,
+      message: Jason.decode!(attrs.message),
     })
 
     Multi.new()
@@ -22,7 +19,7 @@ defmodule Operately.Operations.GoalDiscussionEditing do
         company_id: goal.company_id,
         space_id: goal.group_id,
         goal_id: goal.id,
-        activity_id: activity_id,
+        activity_id: activity.id,
       }
     end)
     |> Repo.transaction()
