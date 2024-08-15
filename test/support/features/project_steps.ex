@@ -501,7 +501,7 @@ defmodule Operately.Support.Features.ProjectSteps do
 
   step :assert_project_description_absent, ctx do
     ctx
-    |> UI.assert_text("Project description is not yet set")
+    |> UI.assert_text("Describe your project to provide context and clarity.")
     |> UI.assert_text("Write project description")
   end
 

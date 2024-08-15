@@ -14,7 +14,7 @@ defmodule Operately.Features.ProjectMilestonesTest do
   feature "adding first milestones to a project", ctx do
     ctx
     |> ProjectSteps.visit_project_page()
-    |> UI.assert_text("No milestones defined yet")
+    |> UI.assert_text("Outline your project timeline with milestones.")
   end
 
   feature "write a comment on a milestones", ctx do
