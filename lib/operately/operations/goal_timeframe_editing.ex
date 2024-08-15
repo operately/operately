@@ -3,13 +3,10 @@ defmodule Operately.Operations.GoalTimeframeEditing do
   alias Operately.Repo
 
   alias Operately.Activities
-  alias Operately.Goals
   alias Operately.Goals.Goal
   alias Operately.Comments.CommentThread
 
-  def run(author, attrs) do
-    goal = Goals.get_goal!(attrs.id)
-
+  def run(author, goal, attrs) do
     Multi.new()
     |> Multi.update(:goal, Goal.changeset(goal, %{timeframe: attrs.timeframe}))
     |> Activities.insert_sync(author.id, :goal_timeframe_editing, fn changes ->
