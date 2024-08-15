@@ -3,12 +3,11 @@ defmodule Operately.Operations.DiscussionEditing do
   alias Operately.Repo
   alias Operately.Activities
 
-  def run(creator, discussion, title, message) do
-    space = Operately.Groups.get_group!(discussion.updatable_id)
+  def run(creator, discussion, space, attrs) do
     update = Operately.Updates.Update.changeset(discussion, %{
       content: %{
-        title: title,
-        body: Jason.decode!(message)
+        title: attrs.title,
+        body: Jason.decode!(attrs.body)
       }
     })
 
