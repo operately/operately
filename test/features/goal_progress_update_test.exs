@@ -1,6 +1,6 @@
-defmodule Operately.Features.GoalCheckInTest do
+defmodule Operately.Features.GoalProgressUpdateTest do
   use Operately.FeatureCase
-  alias Operately.Support.Features.GoalCheckInSteps, as: Steps
+  alias Operately.Support.Features.GoalProgressUpdateSteps, as: Steps
 
   setup ctx, do: Steps.setup(ctx)
 
@@ -39,6 +39,17 @@ defmodule Operately.Features.GoalCheckInTest do
     |> Steps.update_progress(params)
     |> Steps.edit_progress_update(edit_params)
     |> Steps.assert_progress_update_edited(edit_params)
+  end
+
+  @tag login_as: :champion
+  feature "commenting on a progress update", ctx do
+    params = %{message: "Checking-in on my goal", target_values: [20, 80]}
+
+    ctx
+    |> Steps.visit_page()
+    |> Steps.update_progress(params)
+    |> Steps.comment_on_progress_update_as_reviewer("Great job!")
+    |> Steps.assert_comment_email_sent()
   end
   
 end

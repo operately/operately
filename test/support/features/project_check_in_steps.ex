@@ -134,8 +134,8 @@ defmodule Operately.Support.Features.ProjectCheckInSteps do
   end
 
   step :acknowledge_check_in_from_email, ctx, %{status: _status, description: _description} do
-    last_email = ctx |> UI.list_sent_emails() |> List.last()
-    link = find_acknowledgement_url(last_email)
+    email = UI.Emails.last_sent_email()
+    link = UI.Emails.find_link(email, "Acknowledge")
 
     UI.visit(ctx, link)
   end
@@ -165,14 +165,5 @@ defmodule Operately.Support.Features.ProjectCheckInSteps do
       action: "commented on a check-in",
       author: ctx.reviewer,
     })
-  end
-
-  defp find_acknowledgement_url(email) do
-    email.html_body
-    |> Floki.find("a[href]") 
-    |> Enum.find(fn el -> Floki.text(el) == "Acknowledge" end)
-    |> Floki.attribute("href")
-    |> hd()
-    |> String.replace(OperatelyWeb.Endpoint.url(), "")
   end
 end

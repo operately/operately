@@ -32,7 +32,7 @@ defmodule Operately.Companies.ShortIdTest do
     assert decode("0baa") == {:ok, 1024}
     assert decode("0bab") == {:ok, 1025}
 
-    assert decode("0Z") == :error
-    assert decode("Z") == :error
+    assert decode("0Z") == {:error, "invalid short id '0Z'"}
+    assert decode("Z") == {:error, "invalid short id 'Z'"}
   end
 end
