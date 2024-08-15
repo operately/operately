@@ -1,12 +1,12 @@
 import React from "react";
-import pages from "@/pages";
-
-import { Outlet, createBrowserRouter } from "react-router-dom";
-import { pageRoute } from "./pageRoute";
-
-import { companyLoader } from "./companyLoader";
 import ErrorPage from "./ErrorPage";
 import DefaultLayout from "@/layouts/DefaultLayout";
+
+import pages from "@/pages";
+
+import { createBrowserRouter } from "react-router-dom";
+import { companyLoader } from "./companyLoader";
+import { pageRoute } from "./pageRoute";
 
 import { CurrentUserProvider } from "@/contexts/CurrentUserContext";
 import { ThemeProvider } from "@/theme";
@@ -21,18 +21,12 @@ function ProtectedRoutes() {
   );
 }
 
-function PublicRoutes() {
-  return (
-    <ThemeProvider>
-      <Outlet />
-    </ThemeProvider>
-  );
-}
-
 export function createAppRoutes() {
   return createBrowserRouter([
     pageRoute("/", pages.LobbyPage),
     pageRoute("/new", pages.NewCompanyPage),
+    pageRoute("/setup", pages.SetupPage),
+    pageRoute("/join", pages.JoinPage),
     {
       path: "/:companyId",
       loader: companyLoader,
@@ -125,15 +119,6 @@ export function createAppRoutes() {
         pageRoute("milestones/:id", pages.ProjectMilestonePage),
 
         pageRoute("*", pages.NotFoundPage),
-      ],
-    },
-    {
-      path: "/",
-      element: <PublicRoutes />,
-      errorElement: <ErrorPage />,
-      children: [
-        pageRoute("/first-time-setup", pages.FirstTimeSetupPage),
-        pageRoute("/first-time-login", pages.FirstTimeLoginPage),
       ],
     },
   ]);
