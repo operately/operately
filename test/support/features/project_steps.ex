@@ -300,7 +300,9 @@ defmodule Operately.Support.Features.ProjectSteps do
   end
 
   step :assert_project_paused, ctx do
-    ctx |> UI.assert_text("Paused")
+    ctx 
+    |> UI.assert_text("Paused")
+    |> UI.assert_has(testid: "project-paused-banner")
   end
 
   step :assert_pause_notification_sent_to_reviewer, ctx do
