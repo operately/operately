@@ -65,7 +65,7 @@ function ParentGoal({ project }: { project: Projects.Project }) {
       </>
     );
   } else {
-    content = <div className="text-sm text-content-dimmed mx-1 font-medium">Not yet connected to a goal</div>;
+    content = <div className="text-sm text-content-dimmed mx-1 font-medium"><a href={Paths.editProjectGoalPath(project.id)} className="underline hover:text-link-hover">Link this project to a goal</a> for context and purpose</div>;
   }
 
   return (
