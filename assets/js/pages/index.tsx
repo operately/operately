@@ -15,8 +15,6 @@ import * as DiscussionEditPage from "./DiscussionEditPage";
 import * as DiscussionNewPage from "./DiscussionNewPage";
 import * as DiscussionPage from "./DiscussionPage";
 import * as FeedPage from "./FeedPage";
-import * as FirstTimeLoginPage from "./FirstTimeLoginPage";
-import * as FirstTimeSetupPage from "./FirstTimeSetupPage";
 import * as GoalAboutPage from "./GoalAboutPage";
 import * as GoalActivityPage from "./GoalActivityPage";
 import * as GoalAddPage from "./GoalAddPage";
@@ -37,6 +35,7 @@ import * as GoalSubgoalsPage from "./GoalSubgoalsPage";
 import * as GoalsPage from "./GoalsPage";
 import * as GroupAppearancePage from "./GroupAppearancePage";
 import * as GroupMembersPage from "./GroupMembersPage";
+import * as JoinPage from "./JoinPage";
 import * as LobbyPage from "./LobbyPage";
 import * as NewCompanyPage from "./NewCompanyPage";
 import * as NotFoundPage from "./NotFoundPage";
@@ -70,6 +69,7 @@ import * as ProjectResumePage from "./ProjectResumePage";
 import * as ProjectRetrospectivePage from "./ProjectRetrospectivePage";
 import * as ProjectsPage from "./ProjectsPage";
 import * as ReviewPage from "./ReviewPage";
+import * as SetupPage from "./SetupPage";
 import * as SpaceAccessManagementPage from "./SpaceAccessManagementPage";
 import * as SpaceAddPage from "./SpaceAddPage";
 import * as SpaceDiscussionsPage from "./SpaceDiscussionsPage";
@@ -132,14 +132,6 @@ export default {
   FeedPage: {
     loader: FeedPage.loader,
     Page: FeedPage.Page
-  },
-  FirstTimeLoginPage: {
-    loader: FirstTimeLoginPage.loader,
-    Page: FirstTimeLoginPage.Page
-  },
-  FirstTimeSetupPage: {
-    loader: FirstTimeSetupPage.loader,
-    Page: FirstTimeSetupPage.Page
   },
   GoalAboutPage: {
     loader: GoalAboutPage.loader,
@@ -220,6 +212,10 @@ export default {
   GroupMembersPage: {
     loader: GroupMembersPage.loader,
     Page: GroupMembersPage.Page
+  },
+  JoinPage: {
+    loader: JoinPage.loader,
+    Page: JoinPage.Page
   },
   LobbyPage: {
     loader: LobbyPage.loader,
@@ -352,6 +348,10 @@ export default {
   ReviewPage: {
     loader: ReviewPage.loader,
     Page: ReviewPage.Page
+  },
+  SetupPage: {
+    loader: SetupPage.loader,
+    Page: SetupPage.Page
   },
   SpaceAccessManagementPage: {
     loader: SpaceAccessManagementPage.loader,
