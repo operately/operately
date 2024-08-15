@@ -3,22 +3,30 @@ defmodule OperatelyWeb.PageController do
 
   @public_pages [
     "/accounts/log_in",
-    "/first-time-login",
+    "/join",
   ]
 
   def index(conn, _params) do
     if configured?() do
-      cond do
-        conn.request_path == "/first-time-setup" -> redirect_to_homepage(conn)
-        conn.request_path in @public_pages -> public_page(conn)
-        true -> private_page(conn)
-      end
+      handle_operately_is_configured(conn)
     else
-      if conn.request_path == "/first-time-setup" do
-        render(conn, :home)
-      else
-        redirect_to_first_time_setup(conn)
-      end
+      handle_operately_is_not_configured(conn)
+    end
+  end
+
+  defp handle_operately_is_configured(conn) do
+    cond do
+      conn.request_path == "/setup" -> redirect_to_homepage(conn)
+      conn.request_path in @public_pages -> public_page(conn)
+      true -> private_page(conn)
+    end
+  end
+
+  defp handle_operately_is_not_configured(conn) do
+    if conn.request_path == "/setup" do
+      render(conn, :home)
+    else
+      conn |> redirect(to: ~p"/setup") |> halt()
     end
   end
 
@@ -54,15 +62,13 @@ defmodule OperatelyWeb.PageController do
     Operately.Companies.count_companies() > 0
   end
 
-  defp redirect_to_first_time_setup(conn) do
-    conn
-    |> redirect(to: ~p"/first-time-setup")
-    |> halt()
-  end
-
   defp redirect_to_homepage(conn) do
-    conn
-    |> redirect(to: ~p"/")
-    |> halt()
+    if conn.assigns[:current_account] do
+      account = conn.assigns[:current_account]
+      path = OperatelyWeb.AccountAuth.after_login_path(account)
+      conn |> redirect(to: path) |> halt()
+    else
+      conn |> redirect(to: "/") |> halt()
+    end
   end
 end
