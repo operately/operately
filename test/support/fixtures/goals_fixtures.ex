@@ -33,7 +33,7 @@ defmodule Operately.GoalsFixtures do
     Operately.Goals.get_goal!(goal.id)
   end
 
-  defp current_quarter do
+  def current_quarter do
     today = Date.utc_today()
     year = today.year
 
