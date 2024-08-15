@@ -15,24 +15,11 @@ defmodule Operately.Features.AssignmentsEmailTest do
     champion_with_account = Operately.Repo.preload(ctx.champion, :account)
     OperatelyEmail.Emails.AssignmentsEmail.send(champion_with_account)
 
-    email = UI.list_sent_emails(ctx) |> List.last()
-    link = find_check_in_link(email)
+    email = UI.Emails.last_sent_email()
+    link = UI.Emails.find_link(email, "Check-In")
 
     ctx
     |> UI.visit(link)
     |> UI.assert_text("What's new since the last check-in?")
-  end
-
-  #
-  # Utility Functions
-  #
-
-  defp find_check_in_link(email) do
-    email.html_body
-    |> Floki.find("a[href]") 
-    |> Enum.find(fn el -> Floki.text(el) == "Check-In" end)
-    |> Floki.attribute("href")
-    |> hd()
-    |> String.replace(OperatelyWeb.Endpoint.url(), "")
   end
 end

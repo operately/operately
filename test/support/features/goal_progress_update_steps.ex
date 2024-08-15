@@ -1,4 +1,4 @@
-defmodule Operately.Support.Features.GoalCheckInSteps do
+defmodule Operately.Support.Features.GoalProgressUpdateSteps do
   use Operately.FeatureCase
 
   alias Operately.Access.Binding
@@ -17,33 +17,37 @@ defmodule Operately.Support.Features.GoalCheckInSteps do
     reviewer = person_fixture_with_account(%{company_id: company.id, full_name: "Leonardo Reviewer"})
     group = group_fixture(champion, %{company_id: company.id, name: "Test Group"})
 
+    timeframe = %{
+      start_date: ~D[2023-01-01],
+      end_date: ~D[2023-12-31],
+      type: "year"
+    }
+
+    targets = [
+      %{
+        name: "First response time",
+        from: 30,
+        to: 15,
+        unit: "minutes",
+        index: 0
+      },
+      %{
+        name: "Increase feedback score to 90%",
+        from: 80,
+        to: 90,
+        unit: "percent",
+        index: 1
+      }
+    ]
+
     {:ok, goal} = Operately.Goals.create_goal(champion, %{
       company_id: company.id,
       space_id: group.id,
       name: "Improve support first response time",
       champion_id: champion.id,
       reviewer_id: reviewer.id,
-      timeframe: %{
-        start_date: ~D[2023-01-01],
-        end_date: ~D[2023-12-31],
-        type: "year"
-      },
-      targets: [
-        %{
-          name: "First response time",
-          from: 30,
-          to: 15,
-          unit: "minutes",
-          index: 0
-        },
-        %{
-          name: "Increase feedback score to 90%",
-          from: 80,
-          to: 90,
-          unit: "percent",
-          index: 1
-        }
-      ],
+      timeframe: timeframe,
+      targets: targets,
       company_access_level: Binding.comment_access(),
       space_access_level: Binding.edit_access(),
       anonymous_access_level: Binding.view_access(),
@@ -159,4 +163,24 @@ defmodule Operately.Support.Features.GoalCheckInSteps do
     |> UI.assert_text(params.message)
   end
 
+  step :comment_on_progress_update_as_reviewer, ctx, message do
+    ctx
+    |> UI.login_as(ctx.reviewer)
+    |> UI.login_as(ctx.reviewer)
+    |> NotificationsSteps.visit_notifications_page()
+    |> UI.click(testid: "notification-item-goal_check_in")
+    |> UI.click(testid: "add-comment")
+    |> UI.fill_rich_text(message)
+    |> UI.click(testid: "post-comment")
+  end
+
+  step :assert_comment_email_sent, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.goal.name,
+      to: ctx.champion,
+      author: ctx.reviewer,
+      action: "commented on the progress update"
+    })
+  end
 end
