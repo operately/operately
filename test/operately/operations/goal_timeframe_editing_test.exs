@@ -28,8 +28,8 @@ defmodule Operately.Operations.GoalTimeframeEditingTest do
     Oban.Testing.with_testing_mode(:manual, fn ->
       Operately.Operations.GoalTimeframeEditing.run(
         ctx.author,
+        ctx.goal,
         %{
-          id: ctx.goal.id,
           timeframe: %{ type: "days", start_date: ~D[2024-04-15], end_date: ~D[2024-08-30]},
           comment: "{}"
         }
@@ -47,8 +47,8 @@ defmodule Operately.Operations.GoalTimeframeEditingTest do
     Oban.Testing.with_testing_mode(:manual, fn ->
       Operately.Operations.GoalTimeframeEditing.run(
         ctx.author,
+        ctx.goal,
         %{
-          id: ctx.goal.id,
           timeframe: %{type: "days", start_date: Date.utc_today(), end_date: Date.add(Date.utc_today(), 5)},
           comment: notification_message(ctx.reader)
         }
