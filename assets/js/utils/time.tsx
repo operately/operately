@@ -46,14 +46,18 @@ export function parse(date: string | Date | null | undefined) {
     return null;
   }
 
-  if (typeof date === "string") {
-    let parsed = parseISO(date);
-
-    return new Date(parsed);
-  }
-
   if (date instanceof Date) {
     return date;
+  }
+
+  if (typeof date === "string") {
+    if (date.length === 10) {
+      return parseDate(date);
+    } else {
+      let res = parseISO(date);
+      if (isNaN(res.getTime())) throw new Error("Invalid date");
+      return res;
+    }
   }
 
   throw new Error("Invalid date");
