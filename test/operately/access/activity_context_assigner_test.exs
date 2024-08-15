@@ -350,8 +350,8 @@ defmodule Operately.AccessActivityContextAssignerTest do
     test "goal_timeframe_editing action", ctx do
       Operately.Operations.GoalTimeframeEditing.run(
         ctx.author,
+        ctx.goal,
         %{
-          id: ctx.goal.id,
           timeframe: %{
             type: "days",
             start_date: Date.utc_today(),
