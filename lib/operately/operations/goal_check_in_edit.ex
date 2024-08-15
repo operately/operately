@@ -21,10 +21,10 @@ defmodule Operately.Operations.GoalCheckInEdit do
   end
 
   defp encode_new_target_values(new_target_values, update) do
-    Enum.map(new_target_values, fn target_value -> 
+    Enum.map(new_target_values, fn target_value ->
       target = update.content["targets"] |> Enum.find(fn target -> target["id"] == target_value["id"] end)
 
-      target |> Map.merge(%{value: target_value["value"]})
+      target |> Map.merge(%{"value" => target_value["value"]})
     end)
   end
 
@@ -43,7 +43,7 @@ defmodule Operately.Operations.GoalCheckInEdit do
     |> Activities.insert_sync(author.id, :goal_check_in_edit, fn changes -> %{
       company_id: goal.company_id,
       goal_id: goal.id,
-      check_in_id: changes.update.id, 
+      check_in_id: changes.update.id,
     } end)
   end
 end
