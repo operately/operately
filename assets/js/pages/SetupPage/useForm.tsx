@@ -1,7 +1,9 @@
-import { useState } from "react";
-
+import Api from "@/api";
+import * as Socket from "@/api/socket";
 import * as Companies from "@/models/companies";
+
 import { logIn } from "@/models/people";
+import { useState } from "react";
 import { camelCaseToSpacedWords } from "@/utils/strings";
 
 export interface FormState {
@@ -78,7 +80,7 @@ function useSubmit(fields: FormFields) {
       return false;
     }
 
-    await add({
+    const res = await add({
       companyName: fields.companyName,
       fullName: fields.fullName,
       email: fields.email,
@@ -88,7 +90,10 @@ function useSubmit(fields: FormFields) {
     });
 
     logIn(fields.email, fields.password).then(() => {
-      window.location.href = "/";
+      Api.default.setHeaders({ "x-company-id": res.company.id });
+      Socket.setHeaders({ "x-company-id": res.company.id });
+
+      window.location.href = "/" + res.company.id;
     });
 
     return true;

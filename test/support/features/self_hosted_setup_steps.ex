@@ -42,16 +42,12 @@ defmodule Operately.Support.Features.SelfHostedSetupSteps do
   end
 
   step :assert_on_company_home, ctx do
-    company = Operately.Companies.list_companies() |> hd()
-
-    ctx
-    |> UI.assert_page(OperatelyWeb.Paths.home_path(company))
-    |> UI.assert_text("Your #{company.name} spaces")
+    ctx |> UI.assert_has(testid: "company-home")
   end
 
-  step :setup_page_is_no_longer_accessible, ctx do
+  step :assert_setup_page_is_no_longer_accessible, ctx do
     ctx 
     |> UI.visit("/setup") 
-    |> UI.assert_page("/setup")
+    |> UI.assert_has(testid: "company-home")
   end
 end

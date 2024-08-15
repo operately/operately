@@ -17,13 +17,14 @@ export function Page() {
     .filter((space) => !compareIds(space.id!, company.companySpaceId!));
 
   return (
-    <Pages.Page title="Home">
+    <Pages.Page title="Home" testID="company-home">
       <Paper.Root size="large">
         <div className="flex justify-center gap-4 pt-16 flex-wrap">
           <div className="relative w-80 px-4 py-3">
             <div className="font-bold">Your {company.name} spaces</div>
             <div className="text-sm mt-4">
-            Manage projects, track goals, and access company-wide information through your team spaces. Each space represents a department or team initiative.
+              Manage projects, track goals, and access company-wide information through your team spaces. Each space
+              represents a department or team initiative.
             </div>
           </div>
 

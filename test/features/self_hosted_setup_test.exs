@@ -17,9 +17,9 @@ defmodule Operately.Features.SelfHostedSetupTest do
     |> Steps.assert_on_the_setup_page()
     |> Steps.fill_out_setup_form(@company_info)
     |> Steps.submit_setup_form()
-    |> Steps.assert_account_and_company_created(@company_info)
     |> Steps.assert_on_company_home()
-    |> Steps.setup_page_is_no_longer_accessible()
+    |> Steps.assert_account_and_company_created(@company_info)
+    |> Steps.assert_setup_page_is_no_longer_accessible()
   end
 
 end

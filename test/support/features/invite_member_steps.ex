@@ -35,13 +35,13 @@ defmodule Operately.Support.Features.InviteMemberSteps do
 
   step :assert_member_invited, ctx do
     ctx
-    |> UI.assert_text("/first-time-login?token=")
+    |> UI.assert_text("/join?token=")
   end
 
   step :goto_invitation_page, ctx, %{token: token} do
     ctx
     |> UI.new_session()
-    |> UI.visit("/first-time-login?token=#{token}")
+    |> UI.visit("/join?token=#{token}")
   end
 
   step :assert_invitation_form, ctx do
