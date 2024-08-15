@@ -80,7 +80,7 @@ function ActivityItem({ activity, page }: { activity: Activities.Activity; page:
       </div>
 
       <div className="shrink-0 text-xs text-content-dimmed w-16 text-right">
-        <FormattedTime time={time} format="time-only" timezone={author.timezone!} />
+        <FormattedTime time={time} format="time-only" />
       </div>
     </div>
   );
