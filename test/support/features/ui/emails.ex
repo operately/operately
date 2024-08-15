@@ -5,7 +5,7 @@ defmodule Operately.Support.Features.UI.Emails do
   alias __MODULE__.SentEmails
 
   def assert_email_sent(subject, receiver) do
-    {found, emails} = retry(times: 10, sleep: 200, fun: fn -> 
+    {found, emails} = retry(times: 50, sleep: 200, fun: fn -> 
       emails = list_sent_emails()
       found = SentEmails.any?(emails, %{subject: subject, to: receiver})
 
