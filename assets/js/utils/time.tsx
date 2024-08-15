@@ -46,18 +46,18 @@ export function parse(date: string | Date | null | undefined) {
     return null;
   }
 
-  if (typeof date === "string") {
-    let parsed = Date.parse(date);
-
-    if (isNaN(parsed)) {
-      throw new Error("Invalid date");
-    }
-
-    return new Date(parsed);
-  }
-
   if (date instanceof Date) {
     return date;
+  }
+
+  if (typeof date === "string") {
+    if (date.length === 10) {
+      return parseDate(date);
+    } else {
+      let res = parseISO(date);
+      if (isNaN(res.getTime())) throw new Error("Invalid date");
+      return res;
+    }
   }
 
   throw new Error("Invalid date");
@@ -224,7 +224,7 @@ export function calculateHowManyDaysAgo(dateString: string) {
   const delta = today.getTime() - date.getTime();
   const days = Math.floor(delta / (1000 * 60 * 60 * 24));
 
-  switch(days) {
+  switch (days) {
     case 0:
       return "Today";
     case 1:

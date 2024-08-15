@@ -12,7 +12,7 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
   def serialize(activity, [comment_thread: comment_thread]) do
     %{
       id: OperatelyWeb.Paths.activity_id(activity),
-      inserted_at: activity.inserted_at,
+      inserted_at: OperatelyWeb.Api.Serializer.serialize(activity.inserted_at),
       action: activity.action,
       author: OperatelyWeb.Api.Serializer.serialize(activity.author, level: :essential),
       comment_thread: activity.comment_thread && serialize_comment_thread(activity.comment_thread, comment_thread),
@@ -38,7 +38,7 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
         %{
           id: c.id,
           content: Jason.encode!(c.content),
-          inserted_at: c.inserted_at,
+          inserted_at: OperatelyWeb.Api.Serializer.serialize(c.inserted_at),
           author: OperatelyWeb.Api.Serializer.serialize(c.author, level: :essential),
           reactions: OperatelyWeb.Api.Serializer.serialize(c.reactions),
         }
@@ -434,7 +434,7 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
   def serialize_check_in(check_in) do
     %{
       id: OperatelyWeb.Paths.project_check_in_id(check_in),
-      inserted_at: check_in.inserted_at,
+      inserted_at: OperatelyWeb.Api.Serializer.serialize(check_in.inserted_at),
       status: check_in.status,
       description: check_in.description
     }
@@ -448,7 +448,7 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
       message_type: update.type || "status_update",
       updatable_id: update.updatable_id,
       updatable_type: update.updatable_type,
-      inserted_at: update.inserted_at,
+      inserted_at: OperatelyWeb.Api.Serializer.serialize(update.inserted_at),
       comments_count: Operately.Updates.count_comments(update.id, :update),
       content: %{
         "__typename" => "UpdateContentGoalCheckIn",
@@ -473,7 +473,7 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
     %{
       id: comment.id,
       content: Jason.encode!(comment.content),
-      inserted_at: comment.inserted_at,
+      inserted_at: OperatelyWeb.Api.Serializer.serialize(comment.inserted_at),
     }
   end
 end
