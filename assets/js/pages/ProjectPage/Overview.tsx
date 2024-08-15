@@ -1,12 +1,13 @@
-import React from "react";
-
+import * as React from "react";
 import * as Projects from "@/models/projects";
+
 import { StatusIndicator } from "@/features/ProjectListItem/StatusIndicator";
 import { MiniPieChart } from "@/components/MiniPieChart";
 import { DimmedLabel } from "./Label";
 
-
 export default function Overview({ project }) {
+  if (project.status === "closed") return;
+
   return (
     <div className="flex items-start gap-12 text-sm">
       <Status project={project} />
