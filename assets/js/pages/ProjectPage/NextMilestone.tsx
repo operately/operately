@@ -37,7 +37,7 @@ function MilestonesZeroState({ project }) {
 
   return (
     <div className="text-sm">
-      No milestones defined yet.
+      Outline your project timeline with milestones.
       {project.permissions.canEditMilestone && <div className="mt-2 flex">{editLink}</div>}
     </div>
   );

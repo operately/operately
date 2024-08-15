@@ -214,7 +214,7 @@ function ResourcesZeroState({ project }) {
 
   return (
     <div className="text-sm">
-      No resources have been added yet.
+      Pin links to external resources.
       {project.permissions.canEditResources && <div className="mt-2 flex">{editLink}</div>}
     </div>
   );
@@ -295,7 +295,7 @@ function DescriptionZeroState({ project }) {
 
   return (
     <div className="text-sm">
-      Project description is not yet set.
+      Describe your project to provide context and clarity.
       {project.permissions.canEditDescription && <div className="mt-2 flex">{editLink}</div>}
     </div>
   );
