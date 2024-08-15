@@ -332,35 +332,19 @@ defmodule Operately.Support.Features.UI do
     end)
   end
 
-  def list_sent_emails(_state) do
-    {:messages, messages} = Process.info(self(), :messages)
+  alias Operately.Support.Features.UI.Emails, as: Emails
 
-    Enum.filter(messages, fn m ->
-      case m do
-        {:delivered_email, _} -> true
-        _ -> false
-      end
-    end)
-    |> Enum.map(fn {:delivered_email, email} -> email end)
+  def list_sent_emails(_state) do 
+    Emails.list_sent_emails()
   end
 
   def assert_email_sent(state, title, to: to) do
-    emails =
-      state
-      |> list_sent_emails()
-      |> Enum.map(fn email -> {email.subject, elem(hd(email.to), 1)} end)
+    Emails.assert_email_sent(title, to)
+    state
+  end
 
-    found = {title, to} in emails
-
-    assert found, """
-    Expected email to be sent:
-      - Title: #{inspect(title)}
-        To: #{inspect(to)}
-
-    Sent emails:
-    #{emails |> Enum.map(fn {title, to} -> "  - Title: #{inspect(title)}\n    To: #{inspect(to)}" end) |> Enum.join("\n")}
-    """
-
+  def refute_email_sent(state, title, to: to) do
+    Emails.refute_email_sent(title, to)
     state
   end
 
@@ -370,15 +354,6 @@ defmodule Operately.Support.Features.UI do
     execute(state, fn session ->
       session |> Browser.attach_file(query, path: path)
     end)
-  end
-
-  def refute_email_sent(state, title, to: to) do
-    emails =
-      state
-      |> list_sent_emails()
-      |> Enum.map(fn email -> {email.subject, elem(hd(email.to), 1)} end)
-
-    refute {title, to} in emails
   end
 
   defp execute(state, callback) do
