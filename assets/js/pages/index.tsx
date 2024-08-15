@@ -15,7 +15,6 @@ import * as DiscussionEditPage from "./DiscussionEditPage";
 import * as DiscussionNewPage from "./DiscussionNewPage";
 import * as DiscussionPage from "./DiscussionPage";
 import * as FeedPage from "./FeedPage";
-import * as FirstTimeLoginPage from "./FirstTimeLoginPage";
 import * as GoalAboutPage from "./GoalAboutPage";
 import * as GoalActivityPage from "./GoalActivityPage";
 import * as GoalAddPage from "./GoalAddPage";
@@ -36,6 +35,7 @@ import * as GoalSubgoalsPage from "./GoalSubgoalsPage";
 import * as GoalsPage from "./GoalsPage";
 import * as GroupAppearancePage from "./GroupAppearancePage";
 import * as GroupMembersPage from "./GroupMembersPage";
+import * as JoinPage from "./JoinPage";
 import * as LobbyPage from "./LobbyPage";
 import * as NewCompanyPage from "./NewCompanyPage";
 import * as NotFoundPage from "./NotFoundPage";
@@ -133,10 +133,6 @@ export default {
     loader: FeedPage.loader,
     Page: FeedPage.Page
   },
-  FirstTimeLoginPage: {
-    loader: FirstTimeLoginPage.loader,
-    Page: FirstTimeLoginPage.Page
-  },
   GoalAboutPage: {
     loader: GoalAboutPage.loader,
     Page: GoalAboutPage.Page
@@ -216,6 +212,10 @@ export default {
   GroupMembersPage: {
     loader: GroupMembersPage.loader,
     Page: GroupMembersPage.Page
+  },
+  JoinPage: {
+    loader: JoinPage.loader,
+    Page: JoinPage.Page
   },
   LobbyPage: {
     loader: LobbyPage.loader,
