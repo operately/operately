@@ -12,6 +12,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
   import Operately.UpdatesFixtures
   import Operately.ProjectsFixtures
   import OperatelyWeb.Api.Serializer
+  import Ecto.Query, only: [from: 2]
 
   describe "security" do
     test "it requires authentication", ctx do
@@ -212,8 +213,8 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
       Operately.Operations.ProjectGoalConnection.run(ctx.person, project1, goal)
       Operately.Operations.ProjectGoalConnection.run(ctx.person, project2, goal)
 
-      project1 = Operately.Repo.preload(project1, [:champion, :reviewer])
-      project2 = Operately.Repo.preload(project2, [:champion, :reviewer])
+      project1 = Operately.Repo.one(from p in Operately.Projects.Project, where: p.id == ^project1.id, preload: [:champion, :reviewer])
+      project2 = Operately.Repo.one(from p in Operately.Projects.Project, where: p.id == ^project2.id, preload: [:champion, :reviewer])
 
       # requested, but the goal has no projects
       assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal), include_projects: true})
