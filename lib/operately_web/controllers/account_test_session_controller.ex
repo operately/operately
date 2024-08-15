@@ -18,7 +18,9 @@ defmodule OperatelyWeb.AccountTestSessionController do
       account = People.get_account_by_email(params["email"])
 
       if account do
-        AccountAuth.log_in_account(conn, account)
+        conn
+        |> clear_session() # make sure that redirect_to is not in the session
+        |> AccountAuth.log_in_account(account)
       else
         conn
         |> put_flash(:error, "Authentication failed")
