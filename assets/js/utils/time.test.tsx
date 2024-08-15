@@ -22,8 +22,8 @@ describe("Time.parse", () => {
 
 describe("Time.toDateWithoutTime", () => {
   it("converts to a date without time", () => {
-    let date = Time.parse("Wed Sep 27 2023 00:00:00")!;
+    let date = Time.parse("2023-09-27T00:00:00Z");
 
-    expect(Time.toDateWithoutTime(date)).toEqual("2023-09-27");
+    expect(Time.toDateWithoutTime(date!)).toEqual("2023-09-27");
   });
 });
