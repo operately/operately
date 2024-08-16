@@ -14,7 +14,6 @@ import FormattedTime from "@/components/FormattedTime";
 import Api from "@/api";
 
 export type Page = "company" | "project" | "goal" | "space" | "profile";
-
 type ScopeType = "company" | "project" | "goal" | "space" | "person";
 
 export function useItemsQuery(scopeType: ScopeType, scopeId: string) {
@@ -39,23 +38,32 @@ export function Feed({ items, testId, page }: { items: Activity[]; testId?: stri
 
 function ActivityGroup({ group, page }: { group: Activities.ActivityGroup; page: string }) {
   return (
-    <div className="w-full border-t border-stroke-base py-4">
-      <div className="flex items-start gap-2">
-        <div className="w-1/5">
-          <div className="text-sm text-content-accent font-bold">
-            <FormattedTime time={group.date} format="long-date" />
-          </div>
-          <div className="text-content-dimmed text-sm">{Time.relativeDay(group.date)}</div>
-        </div>
+    <div className="w-full border-t border-stroke-base py-4 flex items-start gap-2">
+      <ActivityGroupDate group={group} />
+      <ActivityGroupItems group={group} page={page} />
+    </div>
+  );
+}
 
-        <div className="flex-1 flex flex-col gap-4">
-          {group.activities.map((activity) => (
-            <ErrorBoundary key={activity.id} fallback={<div>{activity.action}</div>}>
-              <ActivityItem key={activity.id} activity={activity} page={page} />
-            </ErrorBoundary>
-          ))}
-        </div>
+function ActivityGroupDate({ group }: { group: Activities.ActivityGroup }) {
+  return (
+    <div className="w-1/5 shrink-0">
+      <div className="text-sm text-content-accent font-bold">
+        <FormattedTime time={group.date} format="long-date" />
       </div>
+      <div className="text-content-dimmed text-sm">{Time.relativeDay(group.date)}</div>
+    </div>
+  );
+}
+
+function ActivityGroupItems({ group, page }: { group: Activities.ActivityGroup; page: string }) {
+  return (
+    <div className="flex-1 flex flex-col gap-4">
+      {group.activities.map((activity) => (
+        <ErrorBoundary key={activity.id} fallback={<div>{activity.action}</div>}>
+          <ActivityItem key={activity.id} activity={activity} page={page} />
+        </ErrorBoundary>
+      ))}
     </div>
   );
 }
@@ -74,8 +82,8 @@ function ActivityItem({ activity, page }: { activity: Activities.Activity; page:
         <Avatar person={author!} size="small" />
       </DivLink>
 
-      <div className="flex-1">
-        <div className="text-sm w-full font-bold text-content-accent">{title}</div>
+      <div className="w-full break-all">
+        <div className="text-sm font-bold text-content-accent">{title}</div>
         {content && <div className="text-sm w-full mt-1">{content}</div>}
       </div>
 
