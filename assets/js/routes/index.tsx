@@ -27,6 +27,7 @@ export function createAppRoutes() {
     pageRoute("/new", pages.NewCompanyPage),
     pageRoute("/setup", pages.SetupPage),
     pageRoute("/join", pages.JoinPage),
+    pageRoute("/__design__", pages.DesignPage),
     {
       path: "/:companyId",
       loader: companyLoader,
