@@ -3,6 +3,7 @@ import Select from "react-select";
 import classnames from "classnames";
 
 import { getFormContext } from "./FormContext";
+import { FieldGroupItem } from "./FieldGroup";
 import { ErrorMessage } from "./ErrorMessage";
 import { Label } from "./Label";
 
@@ -11,11 +12,11 @@ export function SelectBox({ field, label, placeholder }: { field: string; label?
   const error = form.errors[field];
 
   return (
-    <div className="flex flex-col gap-0.5">
-      {label ? <Label field={field} label={label} /> : null}
-      <SelectBoxInput field={field} placeholder={placeholder} error={!!error} />
-      {error ? <ErrorMessage error={error} /> : null}
-    </div>
+    <FieldGroupItem
+      label={label ? <Label field={field} label={label} /> : null}
+      input={<SelectBoxInput field={field} placeholder={placeholder} error={!!error} />}
+      error={error ? <ErrorMessage error={error} /> : null}
+    />
   );
 }
 

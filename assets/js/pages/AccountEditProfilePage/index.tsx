@@ -60,7 +60,7 @@ function ProfileForm({ me }: { me: People.Person }) {
       name: Forms.useTextField(me.fullName),
       title: Forms.useTextField(me.title),
       timezone: Forms.useSelectField(me.timezone, timezones, { optional: true }),
-      manager: Forms.useSelectPersonField(me.manager),
+      manager: Forms.useSelectPersonField(me.manager, { optional: true }),
       managerStatus: Forms.useSelectField(managerStatus, managerOptions),
     },
     submit: async (form) => {
@@ -81,7 +81,7 @@ function ProfileForm({ me }: { me: People.Person }) {
 
       <Forms.FieldGroup>
         <Forms.TextInput field={"name"} label="Name" />
-        <Forms.TextInput field={"title"} label="Title in Company" />
+        <Forms.TextInput field={"title"} label="Title" />
         <Forms.SelectBox field={"timezone"} label="Timezone" />
         <Forms.SelectBox field={"managerStatus"} label="Manager" />
       </Forms.FieldGroup>

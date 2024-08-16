@@ -3,6 +3,7 @@ import * as React from "react";
 import { getFormContext } from "./FormContext";
 import { Label } from "./Label";
 import { ErrorMessage } from "./ErrorMessage";
+import { FieldGroupItem } from "./FieldGroup";
 
 import classNames from "classnames";
 
@@ -26,10 +27,10 @@ export function TextInput({ field, label }: { field: string; label?: string }) {
   });
 
   return (
-    <div className="flex flex-col gap-0.5">
-      {label ? <Label field={field} label={label} /> : null}
-      <input name={field} className={className} type="text" value={f.value} onChange={onChange} />
-      {error ? <ErrorMessage error={error} /> : null}
-    </div>
+    <FieldGroupItem
+      label={label ? <Label field={field} label={label} /> : null}
+      input={<input name={field} className={className} type="text" value={f.value} onChange={onChange} />}
+      error={error ? <ErrorMessage error={error} /> : null}
+    />
   );
 }
