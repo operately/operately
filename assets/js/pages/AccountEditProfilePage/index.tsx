@@ -8,11 +8,9 @@ import { useGetMe } from "@/models/people";
 import { Paths } from "@/routes/paths";
 
 import Avatar from "@/components/Avatar";
-import Forms from "./Forms";
+import Forms from "@/components/Forms";
 
-export async function loader() {
-  return null;
-}
+export const loader = Pages.emptyLoader;
 
 export function Page() {
   const { data } = useGetMe({ includeManager: true });
@@ -68,7 +66,7 @@ function ProfileForm({ me }: { me: People.Person }) {
         fullName: form.fields.name.value,
         title: form.fields.title.value,
         timezone: form.fields.timezone.value,
-        managerId: form.fields.managerStatus.value === "select-from-list" ? form.fields.manager.value?.id : null,
+        managerId: form.fields.managerStatus.value === "select-from-list" ? form.fields.manager!.value?.id : null,
       });
 
       navigateToAccount();

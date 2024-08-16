@@ -7,7 +7,13 @@ import { FieldGroupItem } from "./FieldGroup";
 import { ErrorMessage } from "./ErrorMessage";
 import { Label } from "./Label";
 
-export function SelectBox({ field, label, placeholder }: { field: string; label?: string; placeholder?: string }) {
+interface SelectBoxProps {
+  field: string;
+  label?: string;
+  placeholder?: string;
+}
+
+export function SelectBox({ field, label, placeholder }: SelectBoxProps) {
   const form = getFormContext();
   const error = form.errors[field];
 
@@ -20,7 +26,7 @@ export function SelectBox({ field, label, placeholder }: { field: string; label?
   );
 }
 
-function SelectBoxInput({ field, placeholder, error }: { field: string; placeholder?: string; error: boolean }) {
+function SelectBoxInput({ field, placeholder, error }: SelectBoxProps & { error: boolean }) {
   const form = getFormContext();
   const f = form.fields[field];
 
@@ -33,7 +39,7 @@ function SelectBoxInput({ field, placeholder, error }: { field: string; placehol
       unstyled={true}
       className="flex-1"
       placeholder={placeholder}
-      classNames={selectBoxClassNames(!!error)}
+      classNames={selectBoxClassNames(error)}
       value={f.options.find(({ value }) => value === f.value)}
       onChange={onChange}
       options={f.options}
