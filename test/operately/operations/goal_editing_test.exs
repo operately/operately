@@ -74,6 +74,21 @@ defmodule Operately.Operations.GoalEditingTest do
     assert target.name == "updated target"
   end
 
+  test "GoalEditing operation updates company space goal", ctx do
+    goal = goal_fixture(ctx.creator, %{space_id: ctx.company.company_space_id})
+
+    refute goal.name == "new name"
+    refute goal.champion_id == ctx.champion.id
+    refute goal.reviewer_id == ctx.reviewer.id
+
+    {:ok, _} = Operately.Operations.GoalEditing.run(ctx.creator, goal, ctx.attrs)
+    goal = Repo.reload(goal)
+
+    assert goal.name == "new name"
+    assert goal.champion_id == ctx.champion.id
+    assert goal.reviewer_id == ctx.reviewer.id
+  end
+
   test "GoalEditing operation updates goal's bindings to company", ctx do
     context = Access.get_context!(goal_id: ctx.goal.id)
     standard = Access.get_group!(company_id: ctx.company.id, tag: :standard)

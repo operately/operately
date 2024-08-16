@@ -2,6 +2,8 @@ defmodule OperatelyWeb.Api.Mutations.EditGoal do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
+  import Operately.Access.Filters, only: [filter_by_edit_access: 2, forbidden_or_not_found: 2]
+
   inputs do
     field :goal_id, :string
     field :name, :string
@@ -21,19 +23,35 @@ defmodule OperatelyWeb.Api.Mutations.EditGoal do
   end
 
   def call(conn, inputs) do
+    person = me(conn)
     {:ok, id} = decode_id(inputs.goal_id)
-    goal = Operately.Goals.get_goal!(id)
 
-    {:ok, champion_id} = decode_id(inputs.champion_id)
-    {:ok, reviewer_id} = decode_id(inputs.reviewer_id)
+    case load_goal(person, id) do
+      nil ->
+        query(id)
+        |> forbidden_or_not_found(person.id)
 
-    attrs = Map.merge(inputs, %{
-      champion_id: champion_id,
-      reviewer_id: reviewer_id,
-    })
+      goal ->
+        {:ok, champion_id} = decode_id(inputs.champion_id)
+        {:ok, reviewer_id} = decode_id(inputs.reviewer_id)
 
-    {:ok, goal} = Operately.Operations.GoalEditing.run(me(conn), goal, attrs)
+        attrs = Map.merge(inputs, %{
+          champion_id: champion_id,
+          reviewer_id: reviewer_id,
+        })
 
-    {:ok, %{goal: Serializer.serialize(goal, level: :essential)}}
+        {:ok, goal} = Operately.Operations.GoalEditing.run(person, goal, attrs)
+        {:ok, %{goal: Serializer.serialize(goal, level: :essential)}}
+    end
+  end
+
+  defp load_goal(person, goal_id) do
+    query(goal_id)
+    |> filter_by_edit_access(person.id)
+    |> Repo.one()
+  end
+
+  defp query(goal_id) do
+    from(g in Operately.Goals.Goal, where: g.id == ^goal_id)
   end
 end
