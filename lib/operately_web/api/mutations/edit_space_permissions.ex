@@ -2,6 +2,9 @@ defmodule OperatelyWeb.Api.Mutations.EditSpacePermissions do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
+  alias Operately.Groups
+  alias Operately.Groups.Permissions
+
   inputs do
     field :space_id, :string
     field :access_levels, :access_levels
@@ -12,12 +15,22 @@ defmodule OperatelyWeb.Api.Mutations.EditSpacePermissions do
   end
 
   def call(conn, inputs) do
-    {:ok, id} = decode_id(inputs.space_id)
+    person = me(conn)
 
-    space = Operately.Groups.get_group!(id)
+    with {:ok, space_id} <- decode_id(inputs.space_id),
+        {:ok, space, access_level} <- Groups.get_group_and_access_level(space_id, person.id),
+        true <- Permissions.can_edit_permissions(access_level)
+    do
+      execute(person, space, inputs)
+    else
+      nil -> {:error, :not_found}
+      false -> {:error, :forbidden}
+      _ -> {:error, :bad_request}
+    end
+  end
 
-    {:ok, _} = Operately.Operations.GroupPermissionsEditing.run(me(conn), space, inputs.access_levels)
-
-    {:ok, true}
+  defp execute(person, space, inputs) do
+    {:ok, _} = Operately.Operations.GroupPermissionsEditing.run(person, space, inputs.access_levels)
+    {:ok, %{success: true}}
   end
 end
