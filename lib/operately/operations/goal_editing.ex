@@ -1,4 +1,6 @@
 defmodule Operately.Operations.GoalEditing do
+  import Ecto.Query, only: [from: 2]
+
   alias Ecto.Multi
   alias Operately.Repo
   alias Operately.Access
@@ -13,7 +15,7 @@ defmodule Operately.Operations.GoalEditing do
     |> update_goal(goal, attrs)
     |> update_targets(goal, targets, attrs)
     |> fetch_context()
-    |> update_bindings(goal, attrs)
+    |> update_bindings(author, goal, attrs)
     |> insert_activity(author, goal, targets)
     |> Repo.transaction()
     |> Repo.extract_result(:goal)
@@ -64,12 +66,22 @@ defmodule Operately.Operations.GoalEditing do
     end)
   end
 
-  defp update_bindings(multi, goal, attrs) do
+  defp update_bindings(multi, author, goal, attrs) do
     multi
     |> Access.update_bindings_to_company(goal.company_id, attrs.company_access_level, attrs.anonymous_access_level)
-    |> Access.update_bindings_to_space(goal.group_id, attrs.space_access_level)
+    |> maybe_update_binding_to_space(author, goal, attrs)
     |> maybe_update_binding_to_person(goal.champion_id, attrs.champion_id, :champion)
     |> maybe_update_binding_to_person(goal.reviewer_id, attrs.reviewer_id, :reviewer)
+  end
+
+  defp maybe_update_binding_to_space(multi, author, goal, attrs) do
+    company_space_id = Repo.one!(from(c in Operately.Companies.Company, where: c.id == ^author.company_id, select: c.company_space_id))
+
+    if goal.group_id != company_space_id do
+      Access.update_bindings_to_space(multi, goal.group_id, attrs.space_access_level)
+    else
+      multi
+    end
   end
 
   defp maybe_update_binding_to_person(multi, previous, current, _tag) when previous == current, do: multi
@@ -107,6 +119,10 @@ defmodule Operately.Operations.GoalEditing do
       }
     end)
   end
+
+  #
+  # Helpers
+  #
 
   defp serialize_added_targets(changes) do
     changes
