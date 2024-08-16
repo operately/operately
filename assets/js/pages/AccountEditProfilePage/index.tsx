@@ -1,225 +1,100 @@
-import React, { useRef, useState } from "react";
-
+import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as People from "@/models/people";
-import * as Forms from "@/components/Form";
 import * as Pages from "@/components/Pages";
 
-import PeopleSearch from "@/components/PeopleSearch";
-
-import { FilledButton } from "@/components/Button";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { useGetMe } from "@/models/people";
-
-import classNames from "classnames";
-import moment from "moment-timezone";
-import Avatar from "@/components/Avatar";
 import { Paths } from "@/routes/paths";
+
+import Avatar from "@/components/Avatar";
+import Forms from "./Forms";
 
 export async function loader() {
   return null;
 }
 
-const dimmedClassName = classNames(
-  "text-content-dimmed hover:text-content-hover",
-  "underline underline-offset-2",
-  "cursor-pointer",
-  "transition-colors",
-  "text-sm",
-);
-
 export function Page() {
   const { data } = useGetMe({ includeManager: true });
-
-  if (!data) {
-    return null;
-  }
-
-  const me = data.me;
+  if (!data || !data.me) return null;
 
   return (
     <Pages.Page title="Edit Profile">
       <Paper.Root size="small">
-        <Paper.Navigation>
-          <Paper.NavItem linkTo={Paths.accountPath()}>Account</Paper.NavItem>
-        </Paper.Navigation>
-
+        <Navigation />
         <Paper.Body minHeight="300px">
-          <div className="mt-8 flex flex-col gap-8">
-            <ProfileForm me={me} />
-          </div>
+          <ProfileForm me={data.me} />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
   );
 }
 
-function FileInput({ onChange }) {
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleClick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
-  };
-
+function Navigation() {
   return (
-    <div>
-      <div className="flex items-center justify-center">
-        <FilledButton type="secondary" onClick={handleClick}>
-          Upload Photo
-        </FilledButton>
-
-        <input ref={fileInputRef} onChange={onChange} type="file" accept="image/*" style={{ display: "none" }} />
-      </div>
-    </div>
+    <Paper.Navigation>
+      <Paper.NavItem linkTo={Paths.accountPath()}>Account</Paper.NavItem>
+    </Paper.Navigation>
   );
 }
 
-function ProfileForm({ me }) {
+function ProfileForm({ me }: { me: People.Person }) {
   const navigateToAccount = useNavigateTo(Paths.accountPath());
+  const timezones = [
+    { value: "America/New_York", label: "America/New_York" },
+    { value: "America/Chicago", label: "America/Chicago" },
+    { value: "America/Denver", label: "America/Denver" },
+    { value: "America/Los_Angeles", label: "America/Los_Angeles" },
+    { value: "America/Anchorage", label: "America/Anchorage" },
+    { value: "Pacific/Honolulu", label: "Pacific/Honolulu" },
+  ];
 
-  const [name, setName] = useState(me.fullName);
-  const [title, setTitle] = useState(me.title);
-  const [manager, setManager] = useState(me.manager);
-  const [managerStatus, setManagerStatus] = useState(me.manager ? "select-from-list" : "no-manager");
-  const [avatarUrl, setAvatarUrl] = useState(me.avatarUrl ? me.avatarUrl : "");
-  const [blobId] = useState(me.avatarBlobId ? me.avatarBlobId : "");
+  const managerStatus = me.manager ? "select-from-list" : "no-manager";
+  const managerOptions = [
+    { value: "no-manager", label: "I don't have a manager" },
+    { value: "select-from-list", label: "Select from list" },
+  ];
 
-  const [loading, setLoading] = useState(false);
+  const form = Forms.useForm({
+    fields: {
+      name: Forms.useTextField(me.fullName),
+      title: Forms.useTextField(me.title),
+      timezone: Forms.useSelectField(me.timezone, timezones, { optional: true }),
+      manager: Forms.useSelectPersonField(me.manager, { optional: true }),
+      managerStatus: Forms.useSelectField(managerStatus, managerOptions),
+    },
+    submit: async (form) => {
+      await People.updateMyProfile({
+        fullName: form.fields.name.value,
+        title: form.fields.title.value,
+        timezone: form.fields.timezone.value,
+        managerId: form.fields.managerStatus.value === "select-from-list" ? form.fields.manager.value?.id : null,
+      });
 
-  const [timezone, setTimezone] = useState(() => {
-    if (me.timezone) {
-      return { value: me.timezone, label: formatTimezone(me.timezone) };
-    } else {
-      return null;
-    }
+      navigateToAccount();
+    },
   });
 
-  const timezones = moment.tz.names().map((tz) => ({
-    value: tz,
-    label: formatTimezone(tz),
-  }));
-
-  const verifyFields = () => {
-    if (name.length === 0) {
-      return false;
-    }
-    if (title.length === 0) {
-      return false;
-    }
-    if (!timezone) {
-      return false;
-    }
-    return true;
-  };
-
-  const handleSubmit = async () => {
-    if (!verifyFields()) return;
-
-    setLoading(true);
-
-    await People.updateMyProfile({
-      fullName: name,
-      title: title,
-      timezone: timezone?.value,
-      managerId: managerStatus === "select-from-list" ? manager?.id : null,
-      avatarUrl: avatarUrl,
-      avatarBlobId: blobId,
-    }).finally(() => setLoading(false));
-
-    navigateToAccount();
-  };
-
-  const isValid = name.length > 0 && title.length > 0;
-
-  const handleRemoveAvatar = () => {
-    setAvatarUrl(null);
-  };
-
   return (
-    <Forms.Form onSubmit={handleSubmit} loading={loading} isValid={isValid}>
-      <section className="flex flex-col w-full justify-center items-center text-center mt-4">
-        <Avatar person={{ ...me, avatarUrl: avatarUrl }} size="xxlarge" />
-        <div className="mt-2 flex flex-col gap-1">
-          <FileInput onChange={async () => {}} />
-          <button className={dimmedClassName} type="button" onClick={handleRemoveAvatar}>
-            Remove Avatar and use my initials
-          </button>
-        </div>
-      </section>
+    <Forms.Form form={form}>
+      <BigAvatar person={me} />
 
-      <div>
-        <Forms.TextInput value={name} onChange={setName} label="Name" error={name.length === 0} />
-        {name.length === 0 && <div className="text-red-500">Name is required</div>}
-      </div>
+      <Forms.FieldGroup>
+        <Forms.TextInput field={"name"} label="Name" />
+        <Forms.TextInput field={"title"} label="Title" />
+        <Forms.SelectBox field={"timezone"} label="Timezone" />
+        <Forms.SelectBox field={"managerStatus"} label="Manager" />
+      </Forms.FieldGroup>
 
-      <div>
-        <Forms.TextInput value={title} onChange={setTitle} label="Title in the Company" error={title.length === 0} />
-        {title.length === 0 && <div className="text-red-500">Role is required</div>}
-      </div>
-
-      <div>
-        <Forms.SelectBox
-          label={`Timezone`}
-          placeholder="Select your timezone..."
-          value={timezone}
-          defaultValue={timezone}
-          onChange={(option) => setTimezone(option)}
-          options={timezones}
-          data-test-id="timezone-selector"
-        />
-        {!timezone && <div className="text-red-500">Timezone is required</div>}
-      </div>
-
-      <ManagerSearch
-        manager={manager}
-        setManager={setManager}
-        managerStatus={managerStatus}
-        setManagerStatus={setManagerStatus}
-      />
-
-      <Forms.SubmitArea>
-        <FilledButton type="primary" onClick={handleSubmit} loading={loading}>
-          Save Changes
-        </FilledButton>
-      </Forms.SubmitArea>
+      <Forms.Submit saveText="Save Changes" />
     </Forms.Form>
   );
 }
 
-function ManagerSearch({ manager, setManager, managerStatus, setManagerStatus }) {
-  const loader = People.usePeopleSearch();
-
+function BigAvatar({ person }: { person: People.Person }) {
   return (
-    <div>
-      <label className="font-semibold block mb-1">Who is your manager?</label>
-      <div className="flex-1">
-        <Forms.RadioGroup name="manager-status" defaultValue={managerStatus} onChange={setManagerStatus}>
-          <Forms.Radio value="no-manager" label="I don't have a manager" />
-          <Forms.Radio value="select-from-list" label="Select my manager from a list" />
-        </Forms.RadioGroup>
-
-        {managerStatus === "select-from-list" && (
-          <div className="mt-2">
-            <PeopleSearch
-              onChange={(option) => setManager(option?.person)}
-              defaultValue={manager}
-              placeholder="Search for person..."
-              inputId="manager-search"
-              loader={loader}
-            />
-          </div>
-        )}
-      </div>
-    </div>
+    <section className="flex flex-col w-full justify-center items-center text-center my-8">
+      <Avatar person={person} size="xxlarge" />
+    </section>
   );
-}
-
-function formatTimezone(timezone: string) {
-  if (!timezone) return "";
-
-  const offset = moment.tz(timezone).format("Z");
-  const cities = timezone.split("/")!.slice(-1)![0]!.replace(/_/g, " ");
-  return `(UTC${offset}) ${cities}`;
 }
