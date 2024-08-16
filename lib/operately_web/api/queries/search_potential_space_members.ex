@@ -22,7 +22,7 @@ defmodule OperatelyWeb.Api.Queries.SearchPotentialSpaceMembers do
     {:ok, space_id} = decode_id(inputs.group_id)
 
     if has_permissions?(me(conn), space_id) do
-      people = load_members(inputs, space_id)
+      people = load_members(inputs, space_id, company(conn))
       {:ok, %{people: Serializer.serialize(people)}}
     else
       {:ok, %{people: []}}
@@ -35,12 +35,12 @@ defmodule OperatelyWeb.Api.Queries.SearchPotentialSpaceMembers do
     |> Repo.exists?()
   end
 
-  defp load_members(inputs, space_id) do
+  defp load_members(inputs, space_id, company) do
     limit = inputs[:limit] || 10
 
     from(p in Person,
       left_join: m in Member, on: p.id == m.person_id and m.group_id == ^space_id,
-      where: is_nil(m) and not p.suspended,
+      where: is_nil(m) and p.company_id == ^company.id and not p.suspended,
       limit: ^limit
     )
     |> exclude_ids(inputs[:exclude_ids])

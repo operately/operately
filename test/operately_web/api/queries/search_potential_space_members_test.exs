@@ -12,6 +12,36 @@ defmodule OperatelyWeb.Api.Queries.SearchPotentialSpaceMembersTest do
     test "it requires authentication", ctx do
       assert {401, _} = query(ctx.conn, :search_potential_space_members, %{})
     end
+
+    test "it doesn't return people from other companies", ctx do
+      ctx = register_and_log_in_account(ctx)
+      space = group_fixture(ctx.person, company_id: ctx.company.id)
+      p1 = person_fixture_with_account(%{company_id: ctx.company.id})
+      p2 = person_fixture_with_account(%{company_id: ctx.company.id})
+      p3 = person_fixture_with_account(%{company_id: ctx.company.id})
+
+      other_ctx = register_and_log_in_account(ctx)
+      other_space = group_fixture(other_ctx.person, company_id: other_ctx.company.id)
+      p4 = person_fixture_with_account(%{company_id: other_ctx.company.id})
+      p5 = person_fixture_with_account(%{company_id: other_ctx.company.id})
+      p6 = person_fixture_with_account(%{company_id: other_ctx.company.id})
+
+      assert {200, res} = query(ctx.conn, :search_potential_space_members, %{group_id: Paths.space_id(space)})
+      assert length(res.people) == 4
+
+      [p1, p2, p3, ctx.company_creator]
+      |> Enum.each(fn person ->
+        assert Enum.find(res.people, &(&1 == Serializer.serialize(person)))
+      end)
+
+      assert {200, res} = query(other_ctx.conn, :search_potential_space_members, %{group_id: Paths.space_id(other_space)})
+      assert length(res.people) == 4
+
+      [p4, p5, p6, other_ctx.company_creator]
+      |> Enum.each(fn person ->
+        assert Enum.find(res.people, &(&1 == Serializer.serialize(person)))
+      end)
+    end
   end
 
   describe "permissions" do
