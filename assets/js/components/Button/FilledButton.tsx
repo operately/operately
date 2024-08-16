@@ -13,6 +13,7 @@ interface FilledButtonProps {
   loading?: boolean;
   bzzzOnClickFailure?: boolean;
   inlineBlock?: boolean;
+  submit?: boolean;
 }
 
 export function FilledButton(props: FilledButtonProps) {
@@ -38,14 +39,23 @@ export function FilledButton(props: FilledButtonProps) {
         <Spinner active={props.loading} />
       </DivLink>
     );
-  } else {
+  }
+
+  if (props.submit) {
     return (
-      <div className={klass} onClick={handleClick} data-test-id={props.testId}>
+      <button type="submit" className={klass} onClick={handleClick} data-test-id={props.testId}>
         {props.children}
         <Spinner active={props.loading} />
-      </div>
+      </button>
     );
   }
+
+  return (
+    <div className={klass} onClick={handleClick} data-test-id={props.testId}>
+      {props.children}
+      <Spinner active={props.loading} />
+    </div>
+  );
 }
 
 function Spinner({ active }: { active?: boolean }) {
