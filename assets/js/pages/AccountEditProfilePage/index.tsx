@@ -7,8 +7,8 @@ import { useNavigateTo } from "@/routes/useNavigateTo";
 import { useGetMe } from "@/models/people";
 import { Paths } from "@/routes/paths";
 
-import Forms from "./Forms";
 import Avatar from "@/components/Avatar";
+import Forms from "./Forms";
 
 export async function loader() {
   return null;
@@ -57,11 +57,11 @@ function ProfileForm({ me }: { me: People.Person }) {
 
   const form = Forms.useForm({
     fields: {
-      name: Forms.textField(me.fullName),
-      title: Forms.textField(me.title),
-      timezone: Forms.selectField(me.timezone, timezones, { optional: true }),
-      manager: Forms.selectPersonField(me.manager),
-      managerStatus: Forms.selectField(managerStatus, managerOptions),
+      name: Forms.useTextField(me.fullName),
+      title: Forms.useTextField(me.title),
+      timezone: Forms.useSelectField(me.timezone, timezones, { optional: true }),
+      manager: Forms.useSelectPersonField(me.manager),
+      managerStatus: Forms.useSelectField(managerStatus, managerOptions),
     },
     submit: async (form) => {
       await People.updateMyProfile({
@@ -86,14 +86,14 @@ function ProfileForm({ me }: { me: People.Person }) {
         <Forms.SelectBox field={"managerStatus"} label="Manager" />
       </Forms.FieldGroup>
 
-      <Forms.Submit />
+      <Forms.Submit saveText="Save Changes" />
     </Forms.Form>
   );
 }
 
 function BigAvatar({ person }: { person: People.Person }) {
   return (
-    <section className="flex flex-col w-full justify-center items-center text-center">
+    <section className="flex flex-col w-full justify-center items-center text-center my-8">
       <Avatar person={person} size="xxlarge" />
     </section>
   );

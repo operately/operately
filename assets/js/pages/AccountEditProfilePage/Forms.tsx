@@ -1,72 +1,60 @@
-import { Person } from "@/api";
 import * as React from "react";
 
-interface FormState {
-  fields: any;
-  setValue: (fieldName: string, value: any) => void;
-  submit: (form: FormState) => Promise<void>;
-}
-
-type BaseField<T> = {
-  value: T | null | undefined;
-  initial: T | null | undefined;
-  optional?: boolean;
-};
-
-type TextField = BaseField<string> & {
-  type: "text";
-};
-
-type SelectField = BaseField<string> & {
-  type: "select";
-  options: { value: string; label: string }[];
-};
-
-type SelectPersonField = BaseField<Person> & {
-  type: "select-person";
-};
-
-type Field = TextField | SelectField | SelectPersonField;
+import { FormState, Field, useTextField, useSelectField, useSelectPersonField } from "./FormState";
+import { FormContext, getFormContext } from "./FormContext";
+import { TextInput } from "./TextInput";
+import { FieldGroup } from "./FieldGroup";
+import { SelectBox } from "./SelectBox";
+import { FilledButton } from "@/components/Button";
 
 interface UseFormProps {
   fields: Record<string, Field>;
   submit: (form: FormState) => Promise<void>;
 }
 
-const FormContext = React.createContext<FormState | null>(null);
-
-function getFormContext(): FormState {
-  const form = React.useContext(FormContext);
-  if (!form) throw new Error("Form fields must be used within a Form component");
-  return form;
-}
-
 function useForm(props: UseFormProps): FormState {
-  const [fields, setFields] = React.useState(props.fields);
+  const [state, setState] = React.useState<"idle" | "submitting">("idle");
+  const [errors, setErrors] = React.useState<Record<string, string>>({});
 
-  const setValue = (fieldName: string, value: any) => {
-    const f = fields[fieldName];
-    if (!f) throw new Error(`Field ${fieldName} does not exist`);
+  const clearErrors = () => setErrors({});
 
-    setFields((fields) => ({
-      ...fields,
-      [fieldName]: {
-        ...fields[fieldName],
-        value: value,
-      },
-    }));
+  const validate = (): boolean => {
+    const newErrors: Record<string, string> = {};
+
+    for (const key in props.fields) {
+      const field = props.fields[key]!;
+      const error = field.validate();
+
+      if (error) {
+        newErrors[key] = error;
+      }
+    }
+
+    setErrors(newErrors);
+
+    return Object.keys(newErrors).length === 0;
   };
 
   return {
-    fields: fields,
-    setValue: setValue,
+    state: state,
+    fields: props.fields,
+    errors,
+    setErrors,
+    clearErrors,
+    validate,
+    setState,
     submit: props.submit,
   };
 }
 
 function Form({ form, children }: { form: FormState; children: React.ReactNode }) {
-  const onSubmit = async () => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!form.validate()) return;
+
+    form.setState("submitting");
     await form.submit(form);
+    form.setState("idle");
   };
 
   return (
@@ -76,92 +64,16 @@ function Form({ form, children }: { form: FormState; children: React.ReactNode }
   );
 }
 
-function TextInput({ field, label }: { field: string; label?: string }) {
-  const form = getFormContext();
-
-  if (label) {
-    return (
-      <div className="flex flex-col gap-0.5">
-        <label className="font-bold" htmlFor={field}>
-          {label}
-        </label>
-        <input
-          name={field}
-          type="text"
-          value={form.fields[field].value}
-          onChange={(e) => form.setValue(field, e.target.value)}
-        />
-      </div>
-    );
-  } else {
-    return (
-      <div>
-        <input
-          name={field}
-          type="text"
-          value={form.fields[field].value}
-          onChange={(e) => form.setValue(field, e.target.value)}
-        />
-      </div>
-    );
-  }
-}
-
-function SelectBox({ field }: { field: string }) {
+function Submit({ saveText }: { saveText: string }) {
   const form = getFormContext();
 
   return (
-    <select value={form.fields[field].value} onChange={(e) => form.setValue(field, e.target.value)}>
-      {form.fields[field].options.map((option: { value: string; label: string }) => (
-        <option key={option.value} value={option.value}>
-          {option.label}
-        </option>
-      ))}
-    </select>
+    <div className="flex items-center gap-2 mt-8">
+      <FilledButton type="primary" submit loading={form.state === "submitting"}>
+        {saveText}
+      </FilledButton>
+    </div>
   );
-}
-
-function FieldGroup({ children }: { children: React.ReactNode }) {
-  return <div className="flex flex-col gap-4">{children}</div>;
-}
-
-function Submit() {
-  const form = getFormContext();
-
-  return <button type="submit">Submit</button>;
-}
-
-interface TextFieldConfig {
-  optional?: boolean;
-}
-
-function textField(initial: string | null | undefined, config?: TextFieldConfig): TextField {
-  return { type: "text", initial, optional: config?.optional, value: initial };
-}
-
-interface SelectFieldConfig {
-  optional?: boolean;
-}
-
-interface SelectFieldOption {
-  value: string;
-  label: string;
-}
-
-function selectField(
-  initial: string | null | undefined,
-  options: SelectFieldOption[],
-  config?: SelectFieldConfig,
-): SelectField {
-  return { type: "select", initial, options, optional: config?.optional, value: initial };
-}
-
-interface SelectPersonFieldConfig {
-  optional?: boolean;
-}
-
-function selectPersonField(initial: Person | null | undefined, config?: SelectPersonFieldConfig): SelectPersonField {
-  return { type: "select-person", initial, optional: config?.optional, value: initial };
 }
 
 export default {
@@ -171,7 +83,7 @@ export default {
   SelectBox,
   FieldGroup,
   Submit,
-  textField,
-  selectField,
-  selectPersonField,
+  useTextField,
+  useSelectField,
+  useSelectPersonField,
 };
