@@ -4,6 +4,25 @@ defmodule Operately.Access.Filters do
   alias Operately.Repo
   alias Operately.Access.Binding
 
+  def get_resource_and_access_level(query, person_id) do
+    from([resource: r] in query,
+      join: c in assoc(r, :access_context),
+      join: b in assoc(c, :bindings),
+      join: g in assoc(b, :group),
+      join: m in assoc(g, :memberships),
+      join: p in assoc(m, :person),
+      where: m.person_id == ^person_id and b.access_level >= ^Binding.view_access(),
+      where: is_nil(p.suspended_at),
+      group_by: r.id,
+      select: {r, max(b.access_level)}
+    )
+    |> Repo.one()
+    |> case do
+      nil -> {:error, :not_found}
+      {r, level} -> {:ok, r, level}
+    end
+  end
+
   def filter_by_view_access(query, person_id, opts \\ []) do
     query
     |> join_context(opts)
