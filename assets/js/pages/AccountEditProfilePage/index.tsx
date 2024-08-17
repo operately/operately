@@ -43,7 +43,7 @@ function ProfileForm({ me }: { me: People.Person }) {
   const managerStatus = me.manager ? "select-from-list" : "no-manager";
   const managerOptions = [
     { value: "no-manager", label: "I don't have a manager" },
-    { value: "select-from-list", label: "Select from list" },
+    { value: "select-from-list", label: "Select my manager from a list" },
   ];
 
   const form = Forms.useForm({
@@ -72,9 +72,9 @@ function ProfileForm({ me }: { me: People.Person }) {
 
       <Forms.FieldGroup>
         <Forms.TextInput field={"name"} label="Name" />
-        <Forms.TextInput field={"title"} label="Title" />
+        <Forms.TextInput field={"title"} label="Title in Company" />
         <Forms.SelectBox field={"timezone"} label="Timezone" />
-        <Forms.SelectBox field={"managerStatus"} label="Manager" />
+        <Forms.RadioButtons field={"managerStatus"} label="Who is your manager?" />
       </Forms.FieldGroup>
 
       <Forms.Submit saveText="Save Changes" />
