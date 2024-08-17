@@ -20,11 +20,41 @@ defmodule Operately.Support.Features.AccountSettingsSteps do
     |> UI.click(testid: "appearance-link")
     |> UI.click(testid: "color-mode-#{theme}")
     |> UI.click(testid: "save")
-    |> UI.wait_for_page_to_load(Paths.account_path(ctx.company))
+    |> UI.assert_has(testid: "my-account-page")
   end
 
   step :assert_person_has_theme, ctx, theme do
     assert Operately.People.get_person!(ctx.person.id).theme == theme
+    ctx
+  end
+
+  step :open_account_settings, ctx do
+    ctx
+    |> UI.visit(Paths.account_path(ctx.company))
+    |> UI.click(testid: "profile-link")
+  end
+
+  step :change_name, ctx, name do
+    ctx
+    |> UI.fill(testid: "name", with: name)
+    |> UI.click(testid: "submit")
+    |> UI.assert_has(testid: "my-account-page")
+  end
+
+  step :assert_person_name_changed, ctx, name do
+    assert Operately.People.get_person!(ctx.person.id).full_name == name
+    ctx
+  end
+
+  step :change_title, ctx, title do
+    ctx
+    |> UI.fill(testid: "title", with: title)
+    |> UI.click(testid: "submit")
+    |> UI.assert_has(testid: "my-account-page")
+  end
+
+  step :assert_person_title_changed, ctx, title do
+    assert Operately.People.get_person!(ctx.person.id).title == title
     ctx
   end
 

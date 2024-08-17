@@ -13,6 +13,7 @@ export function TextInput({ field, label }: { field: string; label?: string }) {
     <InputField field={field} label={label} error={error}>
       <input
         name={field}
+        data-test-id={field}
         className={styles(!!error)}
         type="text"
         value={f.value}

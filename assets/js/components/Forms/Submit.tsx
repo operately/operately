@@ -8,7 +8,7 @@ export function Submit({ saveText }: { saveText: string }) {
 
   return (
     <div className="flex items-center gap-2 mt-8">
-      <FilledButton type="primary" submit loading={form.state === "submitting"}>
+      <FilledButton type="primary" submit loading={form.state === "submitting"} testId="submit">
         {saveText}
       </FilledButton>
     </div>
