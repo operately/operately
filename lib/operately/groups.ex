@@ -1,14 +1,11 @@
 defmodule Operately.Groups do
   import Ecto.Query, warn: false
+
   alias Operately.Repo
-
-  alias Operately.Groups.Group
-  alias Operately.Groups.Member
-  alias Operately.Groups.Contact
-  alias Operately.Access.Context
-
-  alias Operately.People.Person
   alias Ecto.Multi
+  alias Operately.Groups.{Group, Member, Contact}
+  alias Operately.Access.{Context, Filters}
+  alias Operately.People.Person
   alias Operately.Activities
 
   def archive(group) do
@@ -50,6 +47,11 @@ defmodule Operately.Groups do
   def get_group(nil), do: nil
   def get_group(id), do: Repo.get(Group, id)
   def get_group!(id), do: Repo.get!(Group, id)
+
+  def get_group_and_access_level(group_id, person_id) do
+    from(g in Group, as: :resource, where: g.id == ^group_id)
+    |> Filters.get_resource_and_access_level(person_id)
+  end
 
   def get_group_by_name(name) do
     Repo.one(from g in Group, where: g.name == ^name)
