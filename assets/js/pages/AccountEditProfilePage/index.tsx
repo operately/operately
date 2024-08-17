@@ -6,6 +6,7 @@ import * as Pages from "@/components/Pages";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { useGetMe } from "@/models/people";
 import { Paths } from "@/routes/paths";
+import { Timezones } from "./timezones";
 
 import Avatar from "@/components/Avatar";
 import Forms from "@/components/Forms";
@@ -38,14 +39,6 @@ function Navigation() {
 
 function ProfileForm({ me }: { me: People.Person }) {
   const navigateToAccount = useNavigateTo(Paths.accountPath());
-  const timezones = [
-    { value: "America/New_York", label: "America/New_York" },
-    { value: "America/Chicago", label: "America/Chicago" },
-    { value: "America/Denver", label: "America/Denver" },
-    { value: "America/Los_Angeles", label: "America/Los_Angeles" },
-    { value: "America/Anchorage", label: "America/Anchorage" },
-    { value: "Pacific/Honolulu", label: "Pacific/Honolulu" },
-  ];
 
   const managerStatus = me.manager ? "select-from-list" : "no-manager";
   const managerOptions = [
@@ -57,7 +50,7 @@ function ProfileForm({ me }: { me: People.Person }) {
     fields: {
       name: Forms.useTextField(me.fullName),
       title: Forms.useTextField(me.title),
-      timezone: Forms.useSelectField(me.timezone, timezones, { optional: true }),
+      timezone: Forms.useSelectField(me.timezone, Timezones, { optional: true }),
       manager: Forms.useSelectPersonField(me.manager, { optional: true }),
       managerStatus: Forms.useSelectField(managerStatus, managerOptions),
     },
