@@ -17,16 +17,16 @@ defmodule OperatelyWeb.Api.Mutations.EditGroup do
 
   def call(conn, inputs) do
     person = me(conn)
+    {:ok, space_id} = decode_id(inputs.id)
 
-    with {:ok, space_id} <- decode_id(inputs.id),
-        {:ok, space, access_level} <- Groups.get_group_and_access_level(space_id, person.id),
-        true <- Permissions.can_edit(access_level)
-    do
-      execute(person, space, inputs)
-    else
+    case Groups.get_group_and_access_level(space_id, person.id) do
+      {:ok, space, access_level} ->
+        if Permissions.can_edit(access_level) do
+          execute(person, space, inputs)
+        else
+          {:error, :forbidden}
+        end
       nil -> {:error, :not_found}
-      false -> {:error, :forbidden}
-      _ -> {:error, :bad_request}
     end
   end
 
