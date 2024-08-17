@@ -257,7 +257,7 @@ function MilestoneForm({ form, id, initialTitle, initialDueDate, initialDescript
           minDate={form.startTime}
           maxDate={form.dueDate}
           placeholder="Select due date"
-          testID="new-milestone-due"
+          testId="new-milestone-due"
           error={errors.includes("dueDate")}
         />
       </div>

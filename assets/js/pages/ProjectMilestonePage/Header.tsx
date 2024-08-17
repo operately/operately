@@ -108,7 +108,7 @@ function Edit({ form }: { form: FormState }) {
         minDate={null}
         maxDate={null}
         placeholder="Not set"
-        testID="due-date"
+        testId="due-date"
         error={form.titleAndDeadline.errors.date}
       />
 

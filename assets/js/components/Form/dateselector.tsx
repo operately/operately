@@ -14,7 +14,7 @@ interface DateSelectorProps {
   minDate: Date | null;
   maxDate: Date | null;
   placeholder: string;
-  testID: string;
+  testId: string;
   error: boolean;
 }
 

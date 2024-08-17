@@ -39,7 +39,7 @@ export function Page() {
             value={form.fields.title}
             onChange={form.fields.setTitle}
             error={false}
-            testID="discussion-title"
+            testId="discussion-title"
           />
 
           <div className="mt-2 border-y border-stroke-base text-content-base font-medium ">
