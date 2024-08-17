@@ -27,6 +27,7 @@ function RadioButton({ field, value, label }: { field: string; value: string; la
   return (
     <label className="flex items-start gap-2">
       <input
+        data-test-id={field + "-" + value}
         name={field}
         type="radio"
         className={RadioClass}

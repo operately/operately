@@ -16,7 +16,7 @@ export function SelectBox({ field, label, placeholder }: SelectBoxProps) {
   const error = form.errors[field];
 
   return (
-    <InputField field={field} label={label} placeholder={placeholder} error={error}>
+    <InputField field={field} label={label} error={error}>
       <SelectBoxInput field={field} placeholder={placeholder} error={!!error} />
     </InputField>
   );
@@ -31,16 +31,18 @@ function SelectBoxInput({ field, placeholder, error }: SelectBoxProps & { error:
   };
 
   return (
-    <Select
-      unstyled={true}
-      className="flex-1"
-      placeholder={placeholder}
-      classNames={selectBoxClassNames(error)}
-      value={f.options.find(({ value }) => value === f.value)}
-      onChange={onChange}
-      options={f.options}
-      styles={selectBoxStyles()}
-    />
+    <div data-test-id={field} className="flex-1">
+      <Select
+        unstyled={true}
+        className="flex-1"
+        placeholder={placeholder}
+        classNames={selectBoxClassNames(error)}
+        value={f.options.find(({ value }) => value === f.value)}
+        onChange={onChange}
+        options={f.options}
+        styles={selectBoxStyles()}
+      />
+    </div>
   );
 }
 

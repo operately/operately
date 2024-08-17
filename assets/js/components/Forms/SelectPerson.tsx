@@ -31,7 +31,13 @@ function SelectPersonInput({ field }: { field: string }) {
 
   return (
     <div className="flex-1">
-      <PeopleSearch onChange={onChange} placeholder="Search for person..." loader={loader} error={!!error} />
+      <PeopleSearch
+        inputId={field}
+        onChange={onChange}
+        placeholder="Search for person..."
+        loader={loader}
+        error={!!error}
+      />
     </div>
   );
 }
