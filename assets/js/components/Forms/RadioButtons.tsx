@@ -1,8 +1,7 @@
 import * as React from "react";
 
 import { getFormContext } from "./FormContext";
-import { Label } from "./Label";
-import { FieldGroupItem } from "./FieldGroup";
+import { InputField } from "./FieldGroup";
 
 import classNames from "classnames";
 
@@ -11,17 +10,13 @@ export function RadioButtons({ field, label }: { field: string; label?: string }
   const f = form.fields[field];
 
   return (
-    <FieldGroupItem
-      label={label ? <Label field={field} label={label} /> : null}
-      input={
-        <div className="flex flex-col gap-2 mt-1">
-          {f.options.map((option: { value: string; label: string }) => (
-            <RadioButton key={option.value} field={field} value={option.value} label={option.label} />
-          ))}
-        </div>
-      }
-      error={null}
-    />
+    <InputField field={field} label={label}>
+      <div className="flex flex-col gap-2 mt-1">
+        {f.options.map((option: { value: string; label: string }) => (
+          <RadioButton key={option.value} field={field} value={option.value} label={option.label} />
+        ))}
+      </div>
+    </InputField>
   );
 }
 

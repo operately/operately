@@ -3,7 +3,7 @@ import * as Paper from "@/components/PaperContainer";
 import * as People from "@/models/people";
 import * as Pages from "@/components/Pages";
 
-import { useNavigateTo } from "@/routes/useNavigateTo";
+import { useNavigate } from "react-router-dom";
 import { useGetMe } from "@/models/people";
 import { Paths } from "@/routes/paths";
 import { Timezones } from "./timezones";
@@ -37,14 +37,14 @@ function Navigation() {
   );
 }
 
-function ProfileForm({ me }: { me: People.Person }) {
-  const navigateToAccount = useNavigateTo(Paths.accountPath());
+const ManagerOptions = [
+  { value: "no-manager", label: "I don't have a manager" },
+  { value: "select-from-list", label: "Select my manager from a list" },
+];
 
+function ProfileForm({ me }: { me: People.Person }) {
+  const navigate = useNavigate();
   const managerStatus = me.manager ? "select-from-list" : "no-manager";
-  const managerOptions = [
-    { value: "no-manager", label: "I don't have a manager" },
-    { value: "select-from-list", label: "Select my manager from a list" },
-  ];
 
   const form = Forms.useForm({
     fields: {
@@ -52,7 +52,7 @@ function ProfileForm({ me }: { me: People.Person }) {
       title: Forms.useTextField(me.title),
       timezone: Forms.useSelectField(me.timezone, Timezones, { optional: true }),
       manager: Forms.useSelectPersonField(me.manager, { optional: true }),
-      managerStatus: Forms.useSelectField(managerStatus, managerOptions),
+      managerStatus: Forms.useSelectField(managerStatus, ManagerOptions),
     },
     submit: async (form) => {
       await People.updateMyProfile({
@@ -62,7 +62,7 @@ function ProfileForm({ me }: { me: People.Person }) {
         managerId: form.fields.managerStatus.value === "select-from-list" ? form.fields.manager!.value?.id : null,
       });
 
-      navigateToAccount();
+      navigate(Paths.accountPath());
     },
   });
 
@@ -74,10 +74,11 @@ function ProfileForm({ me }: { me: People.Person }) {
         <Forms.TextInput field={"name"} label="Name" />
         <Forms.TextInput field={"title"} label="Title in Company" />
         <Forms.SelectBox field={"timezone"} label="Timezone" />
-        <Forms.RadioButtons field={"managerStatus"} label="Who is your manager?" />
-        {form.fields.managerStatus.value === "select-from-list" && (
-          <Forms.SelectBox field={"manager"} label="Manager" />
-        )}
+
+        <Forms.FieldGroup>
+          <Forms.RadioButtons field={"managerStatus"} label="Who is your manager?" />
+          <Forms.SelectPerson field={"manager"} hidden={form.fields.managerStatus.value !== "select-from-list"} />
+        </Forms.FieldGroup>
       </Forms.FieldGroup>
 
       <Forms.Submit saveText="Save Changes" />

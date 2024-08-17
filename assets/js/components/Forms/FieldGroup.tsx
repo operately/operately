@@ -1,5 +1,8 @@
 import React from "react";
 
+import { Label } from "./Label";
+import { ErrorMessage } from "./ErrorMessage";
+
 //
 // A field group is a container for form fields. It can either lay out its children
 // horizontally or vertically.
@@ -43,33 +46,41 @@ export function FieldGroup({ layout, children }: { layout?: LayoutDirection; chi
   );
 }
 
-interface FieldGroupItemProps {
-  label: React.ReactNode;
-  input: React.ReactNode;
-  error: React.ReactNode;
+interface InputFieldProps {
+  field: string;
+  children: React.ReactNode;
+
+  hidden?: boolean;
+  label?: string;
+  error?: string;
 }
 
-export function FieldGroupItem(props: FieldGroupItemProps) {
+export function InputField(props: InputFieldProps) {
+  if (props.hidden) return null;
+
   const config = React.useContext(FieldGroupContext);
   if (!config) throw new Error("FieldGroupItem must be used within a FieldGroup component");
 
   if (config.layout === "horizontal") {
-    return <HorizontalFieldGroupItem {...props} />;
+    return <HorizontalFieldGroupInput {...props} />;
   }
 
   if (config.layout === "vertical") {
-    return <VerticalFieldGroupItem {...props} />;
+    return <VerticalFieldGroupInput {...props} />;
   }
 
   throw new Error("Invalid layout");
 }
 
-function HorizontalFieldGroupItem({ label, input, error }: FieldGroupItemProps) {
+function HorizontalFieldGroupInput(props: InputFieldProps) {
+  const label = props.label ? <Label field={props.field} label={props.label} /> : null;
+  const error = props.error ? <ErrorMessage error={props.error} /> : null;
+
   return (
     <div>
       <div className="flex gap-4 items-center">
         <div className="w-1/5 shrink-0">{label}</div>
-        <div className="flex flex-col gap-0.5 w-4/5 flex-1">{input}</div>
+        <div className="flex flex-col gap-0.5 w-4/5 flex-1">{props.children}</div>
       </div>
 
       <div className="flex gap-4 items-center mt-0.5">
@@ -80,12 +91,12 @@ function HorizontalFieldGroupItem({ label, input, error }: FieldGroupItemProps) 
   );
 }
 
-function VerticalFieldGroupItem({ label, input, error }: FieldGroupItemProps) {
+function VerticalFieldGroupInput(props: InputFieldProps) {
   return (
     <div className="flex flex-col gap-0.5">
-      {label}
-      {input}
-      {error}
+      {props.label ? <Label field={props.field} label={props.label} /> : null}
+      {props.children}
+      {props.error ? <ErrorMessage error={props.error} /> : null}
     </div>
   );
 }

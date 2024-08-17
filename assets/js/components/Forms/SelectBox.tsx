@@ -3,9 +3,7 @@ import Select from "react-select";
 import classnames from "classnames";
 
 import { getFormContext } from "./FormContext";
-import { FieldGroupItem } from "./FieldGroup";
-import { ErrorMessage } from "./ErrorMessage";
-import { Label } from "./Label";
+import { InputField } from "./FieldGroup";
 
 interface SelectBoxProps {
   field: string;
@@ -18,11 +16,9 @@ export function SelectBox({ field, label, placeholder }: SelectBoxProps) {
   const error = form.errors[field];
 
   return (
-    <FieldGroupItem
-      label={label ? <Label field={field} label={label} /> : null}
-      input={<SelectBoxInput field={field} placeholder={placeholder} error={!!error} />}
-      error={error ? <ErrorMessage error={error} /> : null}
-    />
+    <InputField field={field} label={label} placeholder={placeholder} error={error}>
+      <SelectBoxInput field={field} placeholder={placeholder} error={!!error} />
+    </InputField>
   );
 }
 

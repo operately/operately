@@ -1,23 +1,29 @@
 import * as React from "react";
 
-import { getFormContext } from "./FormContext";
-import { Label } from "./Label";
-import { ErrorMessage } from "./ErrorMessage";
-import { FieldGroupItem } from "./FieldGroup";
-
 import classNames from "classnames";
+import { getFormContext } from "./FormContext";
+import { InputField } from "./FieldGroup";
 
 export function TextInput({ field, label }: { field: string; label?: string }) {
   const form = getFormContext();
+  const error = form.errors[field];
   const f = form.fields[field];
 
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    f.setValue(e.target.value);
-  };
+  return (
+    <InputField field={field} label={label} error={error}>
+      <input
+        name={field}
+        className={styles(!!error)}
+        type="text"
+        value={f.value}
+        onChange={(e) => f.setValue(e.target.value)}
+      />
+    </InputField>
+  );
+}
 
-  const error = form.errors[field];
-
-  const className = classNames({
+function styles(error: boolean | undefined) {
+  return classNames({
     "w-full": true,
     "bg-surface text-content-accent placeholder-content-subtle": true,
     "border rounded-lg": true,
@@ -25,12 +31,4 @@ export function TextInput({ field, label }: { field: string; label?: string }) {
     "border-surface-outline": !error,
     "border-red-500": error,
   });
-
-  return (
-    <FieldGroupItem
-      label={label ? <Label field={field} label={label} /> : null}
-      input={<input name={field} className={className} type="text" value={f.value} onChange={onChange} />}
-      error={error ? <ErrorMessage error={error} /> : null}
-    />
-  );
 }
