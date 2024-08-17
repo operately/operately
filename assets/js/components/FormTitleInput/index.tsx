@@ -6,10 +6,10 @@ interface FormTitleInputProps {
   value: string;
   onChange: (value: string) => void;
   error: boolean;
-  testID?: string;
+  testId?: string;
 }
 
-export function FormTitleInput({ value, onChange, error, testID }: FormTitleInputProps) {
+export function FormTitleInput({ value, onChange, error, testId }: FormTitleInputProps) {
   const className = classnames(
     "bg-surface",
     "text-3xl",
@@ -45,7 +45,7 @@ export function FormTitleInput({ value, onChange, error, testID }: FormTitleInpu
       placeholder="Title&hellip;"
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      data-test-id={testID}
+      data-test-id={testId}
     ></textarea>
   );
 }

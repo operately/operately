@@ -11,19 +11,16 @@ interface Props {
 
 interface LinkProps extends Props {
   to: string;
-  testID?: string;
   underline?: boolean;
 }
 
 interface ButtonLinkProps extends Props {
   onClick: () => void;
-  testId?: string;
 }
 
 interface DivLinkProps extends Props {
   to: string;
   className?: string;
-  testID?: string;
   style?: React.CSSProperties;
 }
 
@@ -74,9 +71,9 @@ export function DimmedLink({ to, children, target, testId }: LinkProps) {
   );
 }
 
-export function DivLink({ to, children, testID, target, ...props }: DivLinkProps) {
+export function DivLink({ to, children, testId, target, ...props }: DivLinkProps) {
   return (
-    <Router.Link to={to} data-test-id={testID} {...props} target={target}>
+    <Router.Link to={to} data-test-id={testId} {...props} target={target}>
       {children}
     </Router.Link>
   );

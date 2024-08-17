@@ -5,7 +5,7 @@ import * as Popover from "@radix-ui/react-popover";
 import DatePicker from "react-datepicker";
 import FormattedTime from "@/components/FormattedTime";
 
-export function DateSelector({ date, onChange, minDate, maxDate, placeholder = "Not set", testID, error = false }) {
+export function DateSelector({ date, onChange, minDate, maxDate, placeholder = "Not set", testId, error = false }) {
   const [open, setOpen] = React.useState(false);
 
   const onChangeDate = React.useCallback((date: Date) => {
@@ -34,7 +34,7 @@ export function DateSelector({ date, onChange, minDate, maxDate, placeholder = "
   return (
     <Popover.Root open={open} onOpenChange={setOpen}>
       <Popover.Trigger asChild>
-        <div className={className} onClick={onLabelClick} data-test-id={testID}>
+        <div className={className} onClick={onLabelClick} data-test-id={testId}>
           {date ? (
             <span className="text-content-accent">
               <FormattedTime time={date} format="short-date" />
