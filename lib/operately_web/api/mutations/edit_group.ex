@@ -20,12 +20,11 @@ defmodule OperatelyWeb.Api.Mutations.EditGroup do
 
     with {:ok, space_id} <- decode_id(inputs.id),
         {:ok, space, access_level} <- Groups.get_group_and_access_level(space_id, person.id),
-        true <- Permissions.can_edit(access_level)
+        {:ok, :allowed} <- Permissions.can_edit(access_level)
     do
       execute(person, space, inputs)
     else
-      nil -> {:error, :not_found}
-      false -> {:error, :forbidden}
+      {:error, reason} -> {:error, reason}
       _ -> {:error, :bad_request}
     end
   end

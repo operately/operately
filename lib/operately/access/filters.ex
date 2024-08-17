@@ -14,9 +14,13 @@ defmodule Operately.Access.Filters do
       where: m.person_id == ^person_id and b.access_level >= ^Binding.view_access(),
       where: is_nil(p.suspended_at),
       group_by: r.id,
-      select: {:ok, r, max(b.access_level)}
+      select: {r, max(b.access_level)}
     )
     |> Repo.one()
+    |> case do
+      nil -> {:error, :not_found}
+      {r, level} -> {:ok, r, level}
+    end
   end
 
   def filter_by_view_access(query, person_id, opts \\ []) do
