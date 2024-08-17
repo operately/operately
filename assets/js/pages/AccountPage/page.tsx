@@ -2,11 +2,12 @@ import React from "react";
 
 import * as Icons from "@tabler/icons-react";
 import * as Paper from "@/components/PaperContainer";
+import * as Pages from "@/components/Pages";
 
 import { logOut } from "@/models/people";
 
 import { PuffLoader } from "react-spinners";
-import { Link } from "react-router-dom";
+import { DivLink } from "@/components/Link";
 import { Paths } from "@/routes/paths";
 
 export async function loader(): Promise<null> {
@@ -15,45 +16,48 @@ export async function loader(): Promise<null> {
 
 export function Page() {
   return (
-    <Paper.Root size="small">
-      <Paper.Body minHeight="500px">
-        <Paper.Title>My Account</Paper.Title>
+    <Pages.Page title="My Account" testID="my-account-page">
+      <Paper.Root size="small">
+        <Paper.Body minHeight="500px">
+          <Paper.Title>My Account</Paper.Title>
 
-        <div className="flex flex-col gap-8">
-          <div className="bg-surface-dimmed rounded-lg overflow-hidden divide-y divide-surface-outline border border-surface-outline">
-            <ProfileLink />
-            <AppearanceLink />
-          </div>
+          <div className="flex flex-col gap-8">
+            <div className="bg-surface-dimmed rounded-lg overflow-hidden divide-y divide-surface-outline border border-surface-outline">
+              <ProfileLink />
+              <AppearanceLink />
+            </div>
 
-          <div className="bg-surface-dimmed rounded-lg overflow-hidden border border-surface-outline">
-            <LogOutButton />
+            <div className="bg-surface-dimmed rounded-lg overflow-hidden border border-surface-outline">
+              <LogOutButton />
+            </div>
           </div>
-        </div>
-      </Paper.Body>
-    </Paper.Root>
+        </Paper.Body>
+      </Paper.Root>
+    </Pages.Page>
   );
 }
 
 function ProfileLink() {
   return (
-    <Link
+    <DivLink
       to={Paths.accountProfilePath()}
       className="flex items-center gap-4 hover:bg-surface-accent cursor-pointer px-4 py-3 font-bold text-lg"
+      testID="profile-link"
     >
       <Icons.IconUserCircle size={24} /> Profile
-    </Link>
+    </DivLink>
   );
 }
 
 function AppearanceLink() {
   return (
-    <Link
+    <DivLink
       to={Paths.accountAppearancePath()}
       className="flex items-center gap-4 hover:bg-surface-accent cursor-pointer px-4 py-3 font-bold text-lg"
-      data-test-id="appearance-link"
+      testID="appearance-link"
     >
       <Icons.IconPaint size={24} /> Appearance
-    </Link>
+    </DivLink>
   );
 }
 
