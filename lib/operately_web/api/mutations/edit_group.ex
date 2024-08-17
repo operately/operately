@@ -26,7 +26,7 @@ defmodule OperatelyWeb.Api.Mutations.EditGroup do
         else
           {:error, :forbidden}
         end
-      nil -> {:error, :not_found}
+      {:error, reason} -> {:error, reason}
     end
   end
 
