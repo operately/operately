@@ -102,7 +102,7 @@ function StartDate({ form }) {
           onChange={form.setStartTime}
           minDate={null}
           maxDate={form.dueDate}
-          testID={"project-start"}
+          testId="project-start"
         />
       </div>
     </div>
@@ -119,7 +119,7 @@ function DueDate({ form }) {
           onChange={form.setDueDate}
           minDate={form.startTime}
           maxDate={null}
-          testID={"project-due"}
+          testId="project-due"
         />
       </div>
     </div>

@@ -78,14 +78,14 @@ function ParentGoal({ goal }: { goal: Goals.Goal | null | undefined }) {
     content = (
       <div className="flex items-center gap-1">
         <Icons.IconTarget size={14} className="text-red-500" />
-        <GhostLink to={Paths.goalPath(goal.id!)} text={goal.name!} testID="project-goal-link" dimmed size="sm" />
+        <GhostLink to={Paths.goalPath(goal.id!)} text={goal.name!} testId="project-goal-link" dimmed size="sm" />
       </div>
     );
   } else {
     content = (
       <div className="flex items-center gap-1">
         <Icons.IconBuildingEstate size={14} />
-        <GhostLink to={Paths.goalsPath()} text="Company-wide goal" testID="company-goals-link" dimmed size="sm" />
+        <GhostLink to={Paths.goalsPath()} text="Company-wide goal" testId="company-goals-link" dimmed size="sm" />
       </div>
     );
   }

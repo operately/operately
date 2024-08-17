@@ -5,7 +5,7 @@ import classNames from "classnames";
 export interface GhostLinkProps {
   to: string;
   text: string;
-  testID?: string;
+  testId?: string;
   dimmed?: boolean;
   size?: "base" | "sm" | "xs";
   className?: string;
@@ -23,5 +23,5 @@ export function GhostLink(props: GhostLinkProps) {
     props.className,
   );
 
-  return <DivLink to={props.to} className={classname} testId={props.testID} children={props.text} />;
+  return <DivLink to={props.to} className={classname} testId={props.testId} children={props.text} />;
 }
