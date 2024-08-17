@@ -1,42 +1,54 @@
 defmodule Operately.Features.AccountSettingsTest do
   use Operately.FeatureCase
+  alias Operately.Support.Features.AccountSettingsSteps, as: Steps
 
-  alias Operately.Support.Features.UI
-
-  import Operately.CompaniesFixtures
-  import Operately.PeopleFixtures
-
-  setup ctx do
-    company = company_fixture(%{name: "Test Org"})
-    person = person_fixture_with_account(%{company_id: company.id, full_name: "John Johnson"})
-
-    ctx = UI.init_ctx(ctx, %{company: company, person: person})
-    ctx = UI.login_as(ctx, ctx.person)
-
-    ctx
-  end
+  setup ctx, do: Steps.setup(ctx)
 
   feature "changing operately's theme", ctx do
     ctx
-    |> change_theme("light")
-    |> assert_person_has_theme("light")
-    |> change_theme("dark")
-    |> assert_person_has_theme("dark")
-    |> change_theme("system")
-    |> assert_person_has_theme("system")
+    |> Steps.change_theme("light")
+    |> Steps.assert_person_has_theme("light")
+    |> Steps.change_theme("dark")
+    |> Steps.assert_person_has_theme("dark")
+    |> Steps.change_theme("system")
+    |> Steps.assert_person_has_theme("system")
   end
 
-  defp change_theme(ctx, theme) do
+  feature "changing name in account settings", ctx do
     ctx
-    |> UI.visit(Paths.account_path(ctx.company))
-    |> UI.click(testid: "appearance-link")
-    |> UI.click(testid: "color-mode-#{theme}")
-    |> UI.click(testid: "save")
-    |> UI.wait_for_page_to_load(Paths.account_path(ctx.company))
+    |> Steps.open_account_settings()
+    |> Steps.change_name("John Doe")
+    |> Steps.assert_person_name_changed("John Doe")
   end
 
-  defp assert_person_has_theme(ctx, theme) do
-    assert Operately.People.get_person!(ctx.person.id).theme == theme
+  feature "changing title in company via account settings", ctx do
     ctx
+    |> Steps.open_account_settings()
+    |> Steps.change_title("Founder")
+    |> Steps.assert_person_title_changed("Founder")
+  end
+
+  feature "changing the timezone in account settings", ctx do
+    ctx
+    |> Steps.open_account_settings()
+    |> Steps.change_timezone("(UTC+01:00) Belgrade, Bratislava, Budapest, Ljubljana, Prague")
+    |> Steps.assert_person_timezone_changed("Europe/Belgrade")
+  end
+
+  feature "setting my manager in account settings", ctx do
+    ctx
+    |> Steps.open_account_settings()
+    |> Steps.given_a_person_exists_in_company("John Adams")
+    |> Steps.set_select_manager_from_list()
+    |> Steps.set_manager("John Adams")
+    |> Steps.assert_person_manager_set("John Adams")
+  end
+
+  feature "setting that I don't have a manager in account settings", ctx do
+    ctx
+    |> Steps.given_that_i_have_a_manager()
+    |> Steps.open_account_settings()
+    |> Steps.set_no_manager()
+    |> Steps.assert_person_has_no_manager()
   end
 end

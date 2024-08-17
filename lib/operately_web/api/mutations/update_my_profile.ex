@@ -17,6 +17,9 @@ defmodule OperatelyWeb.Api.Mutations.UpdateMyProfile do
   end
 
   def call(conn, inputs) do
+    {:ok, manager_id} = decode_id(inputs[:manager_id], :allow_nil)
+    inputs = Map.put(inputs, :manager_id, manager_id)
+
     {:ok, me} = Operately.People.update_person(me(conn), inputs)
     {:ok, serialize(me)}
   end
