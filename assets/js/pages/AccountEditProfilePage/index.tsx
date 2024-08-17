@@ -75,6 +75,9 @@ function ProfileForm({ me }: { me: People.Person }) {
         <Forms.TextInput field={"title"} label="Title in Company" />
         <Forms.SelectBox field={"timezone"} label="Timezone" />
         <Forms.RadioButtons field={"managerStatus"} label="Who is your manager?" />
+        {form.fields.managerStatus.value === "select-from-list" && (
+          <Forms.SelectBox field={"manager"} label="Manager" />
+        )}
       </Forms.FieldGroup>
 
       <Forms.Submit saveText="Save Changes" />
