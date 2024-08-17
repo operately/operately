@@ -2,6 +2,9 @@ defmodule OperatelyWeb.Api.Mutations.EditGroup do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
+  alias Operately.Groups
+  alias Operately.Groups.Permissions
+
   inputs do
     field :id, :string
     field :name, :string
@@ -13,14 +16,21 @@ defmodule OperatelyWeb.Api.Mutations.EditGroup do
   end
 
   def call(conn, inputs) do
-    {:ok, space_id} = decode_id(inputs.id)
-    space = Operately.Groups.get_group!(space_id)
+    person = me(conn)
 
-    {:ok, space} = Operately.Groups.edit_group_name_and_purpose(me(conn), space, %{
-      name: inputs.name,
-      mission: inputs.mission
-    })
+    with {:ok, space_id} <- decode_id(inputs.id),
+        {:ok, space, access_level} <- Groups.get_group_and_access_level(space_id, person.id),
+        {:ok, :allowed} <- Permissions.can_edit(access_level)
+    do
+      execute(person, space, inputs)
+    else
+      {:error, reason} -> {:error, reason}
+      _ -> {:error, :bad_request}
+    end
+  end
 
+  defp execute(person, space, inputs) do
+    {:ok, space} = Groups.edit_group_name_and_purpose(person, space, inputs)
     {:ok, %{space: Serializer.serialize(space)}}
   end
 end
