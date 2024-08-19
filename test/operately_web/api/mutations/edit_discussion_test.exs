@@ -160,7 +160,7 @@ defmodule OperatelyWeb.Api.Mutations.EditDiscussionTest do
 
   defp give_person_edit_access(ctx) do
     group = Access.get_group!(company_id: ctx.company.id, tag: :standard)
-    context = Access.get_context!(company_id: ctx.company.id)
+    context = Access.get_context!(group_id: ctx.company.company_space_id)
 
     Access.get_binding!(group_id: group.id, context_id: context.id)
     |> Access.update_binding(%{access_level: Binding.edit_access()})

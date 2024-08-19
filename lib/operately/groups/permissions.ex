@@ -3,6 +3,7 @@ defmodule Operately.Groups.Permissions do
 
   defstruct [
     :can_edit,
+    :can_edit_discussions,
     :can_edit_members_permissions,
     :can_edit_permissions,
     :can_join,
@@ -15,6 +16,7 @@ defmodule Operately.Groups.Permissions do
       can_view: can_view(access_level),
       can_edit: can_edit(access_level),
       can_remove_member: can_remove_member(access_level),
+      can_edit_discussions: can_edit_discussions(access_level),
       can_edit_members_permissions: can_edit_members_permissions(access_level),
       can_edit_permissions: can_edit_permissions(access_level),
       can_join: can_join(access_level),
@@ -23,6 +25,7 @@ defmodule Operately.Groups.Permissions do
 
   def can_view(access_level), do: access_level >= Binding.view_access()
   def can_edit(access_level), do: access_level >= Binding.edit_access()
+  def can_edit_discussions(access_level), do: access_level >= Binding.edit_access()
   def can_edit_members_permissions(access_level), do: access_level >= Binding.full_access()
   def can_edit_permissions(access_level), do: access_level >= Binding.full_access()
   def can_join(access_level), do: access_level >= Binding.full_access()
@@ -35,6 +38,6 @@ defmodule Operately.Groups.Permissions do
       {:ok, :allowed}
     else
       {:error, :forbidden}
-    end 
+    end
   end
 end
