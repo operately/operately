@@ -20,7 +20,7 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectPermissions do
     |> run(:me, fn -> find_me(conn) end)
     |> run(:id, fn -> decode_id(inputs.project_id) end)
     |> run(:project, fn ctx -> Projects.get_project_with_access_level(ctx.id, ctx.me.id) end)
-    |> run(:check_permissions, fn ctx -> check_permissions(ctx.project) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.project.requester_access_level, :can_edit_permissions) end)
     |> run(:operation, fn ctx -> ProjectPermissionsEditing.run(ctx.me, ctx.project, inputs.access_levels) end)
     |> respond()
   end
@@ -33,14 +33,6 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectPermissions do
       {:error, :project, _} -> {:error, :not_found}
       {:error, :check_permissions, _} -> {:error, :forbidden}
       _ -> {:error, :internal_server_error}
-    end
-  end
-
-  defp check_permissions(project) do
-    if Permissions.can_edit_permissions(project.requester_access_level) do
-      {:ok, :allowed}
-    else
-      {:error, :forbidden}
     end
   end
 end
