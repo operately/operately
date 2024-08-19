@@ -1,12 +1,9 @@
 defmodule Operately.Support.Tabletest do
-  defmacro tabletest(description, table, ctx, block) do
+  defmacro tabletest(table, do: block) do
     quote do
-      ExUnit.CaseTemplate.test "tabletest: #{unquote(description)}", unquote(ctx) do
-        quote do
-          for t <- table do
-            block.(ctx, t)
-          end
-        end
+      for testrow <- unquote(table) do
+        @test testrow
+        unquote(block)
       end
     end
   end

@@ -14,44 +14,44 @@ defmodule OperatelyWeb.Api.Mutations.RemoveGroupMemberTest do
     end
   end
 
-  @expectation_table [
-    %{company: Binding.no_access(),      space: Binding.no_access(),      expected: 404},
-    %{company: Binding.no_access(),      space: Binding.comment_access(), expected: 403},
-    %{company: Binding.no_access(),      space: Binding.edit_access(),    expected: 403},
-    %{company: Binding.no_access(),      space: Binding.full_access(),    expected: 200},
-    %{company: Binding.comment_access(), space: Binding.no_access(),      expected: 403},
-    %{company: Binding.edit_access(),    space: Binding.no_access(),      expected: 403},
-    %{company: Binding.full_access(),    space: Binding.no_access(),      expected: 200},
-  ]
-
   describe "permissions" do
+    @table [
+      %{company: Binding.no_access(),      space: Binding.no_access(),      expected: 404},
+      %{company: Binding.no_access(),      space: Binding.comment_access(), expected: 403},
+      %{company: Binding.no_access(),      space: Binding.edit_access(),    expected: 403},
+      %{company: Binding.no_access(),      space: Binding.full_access(),    expected: 200},
+      %{company: Binding.comment_access(), space: Binding.no_access(),      expected: 403},
+      %{company: Binding.edit_access(),    space: Binding.no_access(),      expected: 403},
+      %{company: Binding.full_access(),    space: Binding.no_access(),      expected: 200},
+    ]
+
     setup ctx do
       ctx = register_and_log_in_account(ctx)
       creator = person_fixture(%{company_id: ctx.company.id})
 
       Map.merge(ctx, %{creator: creator})
-
     end
 
-    Enum.each(@expectation_table, fn values ->
-      @values values
-      test "if caller has #{@values.company} and #{@values.space}, then expect #{@values.expected}", ctx do
-        space = group_fixture(ctx.creator, %{company_id: ctx.company.id, company_permissions: @values.company})
+    tabletest @table do
+      test "if caller has levels company=#{@test.company} and space=#{@test.space} on the space, then expect code=#{@test.expected}", ctx do
+        space = group_fixture(ctx.creator, %{company_id: ctx.company.id, company_permissions: @test.company})
         member = person_fixture(%{company_id: ctx.company.id})
 
-        # member for removal
+        # add the member that will be removed to the space
         add_member(ctx, space, member, Binding.comment_access())
-        add_member(ctx, space, ctx.person, @values.space)
 
-        # remove member
+        # add the caller to the space
+        add_member(ctx, space, ctx.person, @test.space)
+
+        # run the mutation
         assert {code, res} = mutation(ctx.conn, :remove_group_member, %{
           group_id: Paths.space_id(space),
           member_id: Paths.person_id(member)
         })
 
-        assert code == @values.expected
+        assert code == @test.expected
 
-        case @values.expected do
+        case @test.expected do
           200 -> 
             assert res == %{}
             refute Groups.is_member?(space, member)
@@ -65,7 +65,7 @@ defmodule OperatelyWeb.Api.Mutations.RemoveGroupMemberTest do
             assert Groups.is_member?(space, member)
         end
       end
-    end)
+    end
   end
 
   defp add_member(ctx, space, person, permissions) do
