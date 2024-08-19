@@ -10,6 +10,7 @@ defmodule OperatelyWeb.TurboCase do
     quote do
       import Plug.Conn
       import OperatelyWeb.TurboCase
+      import Operately.Support.Tabletest
 
       alias OperatelyWeb.Api.Serializer
       alias OperatelyWeb.Paths
