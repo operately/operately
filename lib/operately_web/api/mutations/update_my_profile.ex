@@ -21,6 +21,9 @@ defmodule OperatelyWeb.Api.Mutations.UpdateMyProfile do
     inputs = Map.put(inputs, :manager_id, manager_id)
 
     {:ok, me} = Operately.People.update_person(me(conn), inputs)
+
+    OperatelyWeb.ApiSocket.broadcast!("api:profile_updated:#{me.id}")
+
     {:ok, serialize(me)}
   end
 
