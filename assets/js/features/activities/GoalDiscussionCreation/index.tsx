@@ -38,7 +38,7 @@ const GoalDiscussionCreation: ActivityHandler = {
   },
 
   PageOptions({ activity }: { activity: Activity }) {
-    const me = useMe();
+    const me = useMe()!;
 
     return (
       <PageOptions.Root testId="options" position="top-right">

@@ -9,9 +9,8 @@ import { FormState, useForm, Form } from "@/features/goals/GoalForm";
 import { useMe } from "@/contexts/CurrentUserContext";
 import { PermissionsProvider, usePermissionsContext } from "@/features/Permissions/PermissionsContext";
 
-
 export function Page() {
-  const me = useMe();
+  const me = useMe()!;
   const { company, goal } = useLoadedData();
 
   const form = useForm({
@@ -26,7 +25,7 @@ export function Page() {
     <Pages.Page title={["Edit", goal.name!]}>
       <Paper.Root size="medium">
         <Paper.Body minHeight="300px">
-          <PermissionsProvider company={company} space={goal.space} currentPermissions={goal.accessLevels} >
+          <PermissionsProvider company={company} space={goal.space} currentPermissions={goal.accessLevels}>
             <Header form={form} />
             <ErrorMessage form={form} />
             <Form form={form} />
@@ -42,7 +41,7 @@ function Header({ form }: { form: FormState }) {
 
   const handleSubmit = () => {
     form.submit(permissions);
-  }
+  };
 
   return (
     <Paper.Header className="bg-surface-dimmed">

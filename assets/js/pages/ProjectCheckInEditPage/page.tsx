@@ -11,7 +11,7 @@ import { useMe } from "@/contexts/CurrentUserContext";
 import { ProjectCheckIn } from "@/api";
 
 export function Page() {
-  const me = useMe();
+  const me = useMe()!;
   const { checkIn } = useLoadedData();
 
   const form = useForm({ checkIn, mode: "edit", author: me });
