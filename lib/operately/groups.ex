@@ -48,9 +48,9 @@ defmodule Operately.Groups do
   def get_group(id), do: Repo.get(Group, id)
   def get_group!(id), do: Repo.get!(Group, id)
 
-  def get_group_and_access_level(group_id, person_id) do
+  def get_group_with_access_level(group_id, person_id) do
     from(g in Group, as: :resource, where: g.id == ^group_id)
-    |> Fetch.get_resource_and_access_level(person_id)
+    |> Fetch.get_resource_with_access_level(person_id)
   end
 
   def get_access_level(group_id, person_id) do
