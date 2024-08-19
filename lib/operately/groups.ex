@@ -53,6 +53,11 @@ defmodule Operately.Groups do
     |> Fetch.get_resource_and_access_level(person_id)
   end
 
+  def get_access_level(group_id, person_id) do
+    from(g in Group, as: :resource, where: g.id == ^group_id)
+    |> Fetch.get_access_level(person_id)
+  end
+
   def get_group_by_name(name) do
     Repo.one(from g in Group, where: g.name == ^name)
   end

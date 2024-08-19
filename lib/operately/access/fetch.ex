@@ -24,7 +24,7 @@ defmodule Operately.Access.Fetch do
 
     from([binding: b] in query,
       where: b.access_level >= ^Binding.view_access(),
-      select: b.access_level
+      select: max(b.access_level)
     )
     |> Repo.one()
     |> case do
