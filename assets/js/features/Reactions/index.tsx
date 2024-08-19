@@ -26,7 +26,7 @@ interface ReactionListItem {
 }
 
 export function useReactionsForm(entity: Entity, initial: api.Reaction[] | Reactions.Reaction[]): ReactionsFormState {
-  const me = useMe();
+  const me = useMe()!;
   const [add] = Reactions.useAddReaction();
 
   const [reactions, setReactions] = React.useState<ReactionListItem[]>(() => {

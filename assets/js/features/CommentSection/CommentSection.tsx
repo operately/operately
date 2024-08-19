@@ -53,7 +53,7 @@ function Comment({ comment, form, refresh }) {
 }
 
 function EditComment({ comment, onCancel, form, refresh }) {
-  const me = useMe();
+  const me = useMe()!;
 
   const { editor, uploading } = TipTapEditor.useEditor({
     placeholder: "Write a comment here...",
@@ -154,7 +154,7 @@ function MilestoneReopened({ comment }) {
 }
 
 function ViewComment({ comment, onEdit }) {
-  const me = useMe();
+  const me = useMe()!;
   const entity = { id: comment.id, type: "comment" };
   const addReactionForm = useReactionsForm(entity, comment.reactions);
   const testId = "comment-" + comment.id;
@@ -242,7 +242,7 @@ function CommentBox({ refresh, form }) {
 }
 
 function AddCommentNonActive({ onClick }) {
-  const me = useMe();
+  const me = useMe()!;
 
   return (
     <div
@@ -257,7 +257,7 @@ function AddCommentNonActive({ onClick }) {
 }
 
 function AddCommentActive({ onBlur, onPost, form }) {
-  const me = useMe();
+  const me = useMe()!;
 
   const { editor, uploading } = TipTapEditor.useEditor({
     placeholder: "Write a comment here...",

@@ -122,4 +122,5 @@ defmodule OperatelyWeb.Api do
   subscription :assignments_count, S.AssignmentsCount
   subscription :discussion_comments, S.DiscussionComments
   subscription :unread_notifications_count, S.UnreadNotificationsCount
+  subscription :profile_updated, S.ProfileUpdated
 end

@@ -19,7 +19,7 @@ export async function loader(): Promise<null> {
 }
 
 export function Page() {
-  const me = useMe();
+  const me = useMe()!;
 
   return (
     <Pages.Page title={["Apperance", "Account"]}>

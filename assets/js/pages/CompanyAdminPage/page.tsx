@@ -11,7 +11,7 @@ import { useMe } from "@/contexts/CurrentUserContext";
 import { Paths } from "@/routes/paths";
 
 export function Page() {
-  const me = useMe();
+  const me = useMe()!;
   const { company } = useLoadedData();
 
   return (

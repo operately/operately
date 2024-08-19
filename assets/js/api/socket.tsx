@@ -53,3 +53,7 @@ export function useDiscussionCommentsChangeSignal(callback: () => void, payload:
 export function useUnreadNotificationCount(callback: () => void) {
   return useSubscription("api:unread_notifications_count", callback);
 }
+
+export function useProfileUpdatedSignal(callback: () => void) {
+  return useSubscription("api:profile_updated", callback);
+}
