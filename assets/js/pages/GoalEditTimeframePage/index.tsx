@@ -31,7 +31,7 @@ export async function loader({ params }): Promise<LoaderResult> {
 }
 
 export function Page() {
-  const me = useMe();
+  const me = useMe()!;
   const { goal } = Pages.useLoadedData<LoaderResult>();
   const form = useForm({ goal });
 

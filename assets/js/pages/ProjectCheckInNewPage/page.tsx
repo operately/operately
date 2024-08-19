@@ -10,7 +10,7 @@ import { Paths } from "@/routes/paths";
 import { useMe } from "@/contexts/CurrentUserContext";
 
 export function Page() {
-  const me = useMe();
+  const me = useMe()!;
   const { project } = useLoadedData();
 
   const form = useForm({ project, mode: "create", author: me });

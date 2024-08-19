@@ -19,7 +19,7 @@ import { Paths, compareIds } from "@/routes/paths";
 import { useMe } from "@/contexts/CurrentUserContext";
 
 export function Page() {
-  const me = useMe();
+  const me = useMe()!;
   const { update } = useLoadedData();
   const refresh = useRefresh();
 

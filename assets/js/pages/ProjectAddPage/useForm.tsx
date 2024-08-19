@@ -61,7 +61,7 @@ interface Error {
 }
 
 export function useForm(): FormState {
-  const me = useMe();
+  const me = useMe()!;
   const { company, spaceID, goal: initialGoal, goals } = useLoadedData();
 
   const [name, setName] = React.useState("");

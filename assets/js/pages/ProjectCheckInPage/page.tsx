@@ -144,7 +144,7 @@ function DescriptionSection() {
 
 function Options() {
   const { checkIn } = useLoadedData();
-  const me = useMe();
+  const me = useMe()!;
 
   if (!compareIds(me.id!, checkIn.author!.id!)) return null;
 

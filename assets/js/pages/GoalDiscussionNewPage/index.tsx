@@ -113,7 +113,7 @@ function useForm({ goal }: { goal: Goals.Goal }) {
 }
 
 function WhoWillBeNotified({ goal }: { goal: Goals.Goal }) {
-  const me = useMe();
+  const me = useMe()!;
   const people = [goal.champion!, goal.reviewer!].filter((person) => person.id !== me!.id);
 
   return (

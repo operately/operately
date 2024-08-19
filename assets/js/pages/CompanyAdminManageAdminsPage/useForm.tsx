@@ -14,7 +14,7 @@ export interface FormState {
 }
 
 export function useFrom(): FormState {
-  const me = useMe();
+  const me = useMe()!;
   const { company } = useLoadedData();
   const removeAdmin = useRemoveAdmin();
   const addAdmins = useAddAdmins();

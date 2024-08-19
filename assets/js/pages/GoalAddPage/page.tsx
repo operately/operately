@@ -11,9 +11,8 @@ import { useMe } from "@/contexts/CurrentUserContext";
 import { Paths } from "@/routes/paths";
 import { PermissionsProvider, usePermissionsContext } from "@/features/Permissions/PermissionsContext";
 
-
 export function Page() {
-  const me = useMe();
+  const me = useMe()!;
   const { spaceID, space, spaces, company, parentGoal, goals, isCompanyWide } = useLoadedData();
 
   const form = useForm({
@@ -29,12 +28,8 @@ export function Page() {
   });
 
   return (
-    <PermissionsProvider company={company} space={space || form.fields.space} >
-      {spaceID ?
-        <NewGoalForSpacePage form={form} />
-      :
-        <NewGoalPage form={form} />
-      }
+    <PermissionsProvider company={company} space={space || form.fields.space}>
+      {spaceID ? <NewGoalForSpacePage form={form} /> : <NewGoalPage form={form} />}
     </PermissionsProvider>
   );
 }
@@ -90,7 +85,7 @@ function SubmitButton({ form }: { form: FormState }) {
 
   const handleSubmit = () => {
     form.submit(permissions);
-  }
+  };
 
   return (
     <div className="mt-8">
