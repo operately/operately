@@ -1,22 +1,23 @@
 import React from "react";
-import { useGetMe } from "@/models/people";
+import { useMe } from "@/contexts/CurrentUserContext";
 
-const ThemeContext = React.createContext({
+interface ThemeContextProps {
+  theme: string;
+  colorMode: "dark" | "light";
+  setTheme: (theme: string) => void;
+}
+
+const ThemeContext = React.createContext<ThemeContextProps>({
   theme: "dark",
   colorMode: "dark",
   setTheme: (_theme: string) => {},
 });
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const { data, loading, error } = useGetMe({});
+  const me = useMe();
+  const theme = me?.theme || "system";
 
-  if (loading) return null;
-
-  if (!error) {
-    return <Context userTheme={data!.me!.theme!}>{children}</Context>;
-  } else {
-    return <Context userTheme={"system"}>{children}</Context>;
-  }
+  return <Context userTheme={theme}>{children}</Context>;
 }
 
 function Context({ userTheme, children }: { userTheme: string; children: React.ReactNode }) {
@@ -45,9 +46,8 @@ function useSystemColorModeListener(theme: string, setColorMode: (mode: "dark" |
     const isDark = window.matchMedia("(prefers-color-scheme:dark)");
 
     const listener = (e: MediaQueryListEvent) => {
-      if (theme === "system") {
-        setColorMode(e.matches ? "dark" : "light");
-      }
+      if (theme !== "system") return;
+      setColorMode(e.matches ? "dark" : "light");
     };
 
     isDark.addEventListener("change", listener);
@@ -58,28 +58,24 @@ function useSystemColorModeListener(theme: string, setColorMode: (mode: "dark" |
   }, [theme, setColorMode]);
 }
 
-export function useColorMode() {
-  const { colorMode } = React.useContext(ThemeContext);
+function useContext(): ThemeContextProps {
+  return React.useContext(ThemeContext) as ThemeContextProps;
+}
 
-  return colorMode;
+export function useColorMode() {
+  return useContext().colorMode;
 }
 
 export function useIsDarkMode() {
-  const { colorMode } = React.useContext(ThemeContext);
-
-  return colorMode === "dark";
+  return useContext().colorMode === "dark";
 }
 
 export function useTheme() {
-  const { theme } = React.useContext(ThemeContext);
-
-  return theme;
+  return useContext().theme;
 }
 
 export function useSetTheme() {
-  const { setTheme } = React.useContext(ThemeContext);
-
-  return setTheme;
+  return useContext().setTheme;
 }
 
 function getSystemMode(): "dark" | "light" {

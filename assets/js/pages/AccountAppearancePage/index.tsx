@@ -7,7 +7,7 @@ import * as People from "@/models/people";
 import classnames from "classnames";
 import Avatar from "@/components/Avatar";
 
-import { useTheme, useSetTheme } from "@/theme";
+import { useTheme, useSetTheme } from "@/contexts/ThemeContext";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 
 import { FilledButton } from "@/components/Button";
