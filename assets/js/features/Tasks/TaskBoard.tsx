@@ -3,7 +3,7 @@ import * as Tasks from "@/models/tasks";
 
 import Avatar from "@/components/Avatar";
 
-import { useIsDarkMode } from "@/theme";
+import { useIsDarkMode } from "@/contexts/ThemeContext";
 import { DivLink } from "@/components/Link";
 import { insertAt } from "@/utils/array";
 import { DragAndDropProvider, useDraggable, useDropZone, useDragAndDropContext } from "@/features/DragAndDrop";
@@ -155,7 +155,13 @@ function TaskColumn(props: TaskColumnProps) {
 
       <div className="flex flex-col mt-2" ref={ref} style={style}>
         {props.tasks.map((task, idx) => (
-          <TaskItem key={task.id} task={task} zoneId={props.status} style={taskStyle(visibleIndexes[task.id!])} testId={`${props.status}_${idx}`} />
+          <TaskItem
+            key={task.id}
+            task={task}
+            zoneId={props.status}
+            style={taskStyle(visibleIndexes[task.id!])}
+            testId={`${props.status}_${idx}`}
+          />
         ))}
 
         {props.tasks.length === 0 && <PlaceholderTask />}
@@ -164,7 +170,17 @@ function TaskColumn(props: TaskColumnProps) {
   );
 }
 
-function TaskItem({ task, zoneId, style, testId }: { task: Tasks.Task; zoneId: string; style: React.CSSProperties; testId: string }) {
+function TaskItem({
+  task,
+  zoneId,
+  style,
+  testId,
+}: {
+  task: Tasks.Task;
+  zoneId: string;
+  style: React.CSSProperties;
+  testId: string;
+}) {
   const { ref, isDragging } = useDraggable({ id: task.id!, zoneId });
 
   return (
@@ -193,7 +209,11 @@ function PlaceholderTask() {
   const isDarkMode = useIsDarkMode();
 
   return (
-    <div className={`text-sm rounded p-2 border-2 flex items-start justify-between border-dashed h-8 ${!isDarkMode && "border-stroke-base"}`}></div>
+    <div
+      className={`text-sm rounded p-2 border-2 flex items-start justify-between border-dashed h-8 ${
+        !isDarkMode && "border-stroke-base"
+      }`}
+    ></div>
   );
 }
 

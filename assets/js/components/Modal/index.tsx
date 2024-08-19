@@ -2,7 +2,7 @@ import React from "react";
 import ReactModal from "react-modal";
 import * as Icons from "@tabler/icons-react";
 
-import { useColorMode } from "@/theme";
+import { useColorMode } from "@/contexts/ThemeContext";
 
 export default function Modal({ isOpen, hideModal, title, children, minHeight = "600px" }) {
   const mode = useColorMode();
