@@ -1,5 +1,5 @@
 import React from "react";
-import { useColorMode } from "@/theme";
+import { useColorMode } from "@/contexts/ThemeContext";
 
 export function Github({ size = 16 }) {
   const mode = useColorMode();
