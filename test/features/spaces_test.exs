@@ -55,6 +55,9 @@ defmodule Operately.Features.SpacesTest do
     group = group_fixture(ctx.person, %{name: "Marketing", company_permissions: Binding.view_access()})
     person = person_fixture_with_account(%{full_name: "Mati Aharoni", company_id: ctx.company.id})
 
+    admin = hd(Operately.Companies.list_admins(ctx.company.id))
+    Operately.Companies.add_admin(admin, person.id)
+
     ctx
     |> UI.login_as(person)
     |> UI.visit(Paths.space_path(ctx.company, group))
