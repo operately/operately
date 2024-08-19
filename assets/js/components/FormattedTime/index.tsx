@@ -7,6 +7,7 @@ import ShortDate from "./ShortDate";
 import RelativeTime from "./RelativeTime";
 import ShortDateWithWeekday from "./ShortDateWithWeekday";
 import RelativeWeekdayOrDate from "./RelativeWeekdayOrDate";
+import { useTimezone } from "@/contexts/TimezoneContext";
 
 type Format =
   | "relative"
@@ -33,23 +34,31 @@ interface FormattedTimeProps {
 }
 
 export default function FormattedTime(props: FormattedTimeProps): JSX.Element {
+  const timezone = useTimezone();
+
   const parsedTime = Time.parse(props.time);
   if (!parsedTime) throw "Invalid date " + props.time;
 
+  const time = applyTimezone(parsedTime, timezone);
+
   switch (props.format) {
     case "relative":
-      return <RelativeTime time={parsedTime} />;
+      return <RelativeTime time={time} />;
     case "relative-weekday-or-date":
-      return <RelativeWeekdayOrDate time={parsedTime} />;
+      return <RelativeWeekdayOrDate time={time} />;
     case "short-date":
-      return <ShortDate time={parsedTime} weekday={false} />;
+      return <ShortDate time={time} weekday={false} />;
     case "short-date-with-weekday":
-      return <ShortDateWithWeekday time={parsedTime} />;
+      return <ShortDateWithWeekday time={time} />;
     case "time-only":
-      return <TimeOnly time={parsedTime} />;
+      return <TimeOnly time={time} />;
     case "long-date":
-      return <LongDate time={parsedTime} />;
+      return <LongDate time={time} />;
     default:
       throw "Unknown format " + props.format;
   }
+}
+
+function applyTimezone(time: Date, timezone: string): Date {
+  return new Date(time.toLocaleString("en-US", { timeZone: timezone }));
 }
