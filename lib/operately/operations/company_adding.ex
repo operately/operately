@@ -5,16 +5,16 @@ defmodule Operately.Operations.CompanyAdding do
   alias Operately.Companies.Company
   alias Operately.People.Account
   alias Operately.People.Person
-  alias Operately.Groups
+  alias Operately.{Access, Groups}
   alias Operately.Access.{Context, Group, Binding, GroupMembership}
 
   def run(attrs, account \\ nil) do
     Multi.new()
     |> insert_company(attrs)
     |> insert_access_context()
-    |> insert_group()
     |> insert_access_groups()
     |> insert_access_bindings()
+    |> insert_group()
     |> insert_account_if_doesnt_exists(attrs, account)
     |> insert_person(attrs)
     |> Repo.transaction()
@@ -46,7 +46,8 @@ defmodule Operately.Operations.CompanyAdding do
       name: "Company",
       mission: "Everyone in the company",
       icon: "IconBuildingEstate",
-      color: "text-cyan-500"
+      color: "text-cyan-500",
+      company_permissions: Binding.view_access(),
     }
 
     multi
@@ -107,7 +108,7 @@ defmodule Operately.Operations.CompanyAdding do
       Multi.put(multi, :account, account)
     else
       changeset = Account.registration_changeset(%{
-        email: attrs.email, 
+        email: attrs.email,
         password: attrs.password,
         full_name: attrs.full_name
       })
@@ -134,6 +135,27 @@ defmodule Operately.Operations.CompanyAdding do
       GroupMembership.changeset(%{
         group_id: changes.admins_access_group.id,
         person_id: changes.person.id,
+      })
+    end)
+    |> Multi.insert(:creator_managers_membership, fn changes ->
+      GroupMembership.changeset(%{
+        group_id: changes.space_managers_access_group.id,
+        person_id: changes.person.id,
+      })
+    end)
+    |> Multi.insert(:creator_members_membership, fn changes ->
+      GroupMembership.changeset(%{
+        group_id: changes.space_members_access_group.id,
+        person_id: changes.person.id,
+      })
+    end)
+    |> Multi.run(:creator_space_group_binding, fn _, changes  ->
+      group = Access.get_group!(person_id: changes.person.id)
+
+      Access.create_binding(%{
+        group_id: group.id,
+        context_id: changes.context.id,
+        access_level: Binding.full_access(),
       })
     end)
   end

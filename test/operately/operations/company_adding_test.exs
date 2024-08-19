@@ -74,12 +74,23 @@ defmodule Operately.Operations.CompanyAddingTest do
     {:ok, company} = Operately.Operations.CompanyAdding.run(@company_attrs)
 
     person = People.get_person_by_email(company, @email)
+
+    # Company
+    context = Access.get_context!(company_id: company.id)
     full_access = Access.get_group!(company_id: company.id, tag: :full_access)
     standard = Access.get_group!(company_id: company.id, tag: :standard)
 
     assert Access.get_group(company_id: company.id, tag: :anonymous)
-    assert Access.get_binding!(group_id: full_access.id, access_level: Binding.full_access())
-    assert Access.get_binding!(group_id: standard.id, access_level: Binding.view_access())
+    assert Access.get_binding!(context_id: context.id, group_id: full_access.id, access_level: Binding.full_access())
+    assert Access.get_binding!(context_id: context.id, group_id: standard.id, access_level: Binding.view_access())
+
+    assert Access.get_group_membership(group_id: full_access.id, person_id: person.id)
+    assert Access.get_group_membership(group_id: standard.id, person_id: person.id)
+
+    # Company Space
+    space = Groups.get_group!(company.company_space_id)
+    full_access = Access.get_group!(group_id: space.id, tag: :full_access)
+    standard = Access.get_group!(group_id: space.id, tag: :standard)
 
     assert Access.get_group_membership(group_id: full_access.id, person_id: person.id)
     assert Access.get_group_membership(group_id: standard.id, person_id: person.id)

@@ -46,7 +46,7 @@ defmodule Operately.Operations.GroupCreationTest do
     context = Access.get_context!(group_id: group.id)
 
     assert context
-    assert length(access_groups) == 7 # 2 company's + 2 space's + 2 user's + 1 anonymous
+    assert length(access_groups) == 9 # 4 company and company space's + 2 space's + 2 user's + 1 anonymous
 
     assert Access.get_group(group_id: group.id, tag: :standard)
     assert Access.get_group(group_id: group.id, tag: :full_access)
