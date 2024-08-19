@@ -1,16 +1,20 @@
 import * as React from "react";
 import * as People from "@/models/people";
 
+import { useProfileUpdatedSignal } from "@/api/socket";
+
 interface CurrentUserContextProps {
   me: People.Person | null;
 }
 
-const CurrentUserContext = React.createContext<CurrentUserContextProps>({
-  me: null,
-});
+const CurrentUserContext = React.createContext<CurrentUserContextProps | null>(null);
 
 export function CurrentUserProvider({ children }) {
-  const { data, loading, error } = People.useGetMe({});
+  const { data, loading, error, refetch } = People.useGetMe({});
+
+  useProfileUpdatedSignal(() => {
+    refetch();
+  });
 
   if (loading) return null;
   if (error) return null;
@@ -22,8 +26,8 @@ export function CurrentUserProvider({ children }) {
   return <Context me={data.me}>{children}</Context>;
 }
 
-export function useMe(): People.Person {
-  return React.useContext(CurrentUserContext).me as People.Person;
+export function useMe(): People.Person | null {
+  return React.useContext(CurrentUserContext)?.me || null;
 }
 
 function Context({ me, children }) {
