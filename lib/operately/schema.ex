@@ -1,15 +1,4 @@
 defmodule Operately.Schema do
-  defmacro __using__(_) do
-    quote do
-      use Ecto.Schema
-      import Ecto.Changeset
-      import Operately.Schema.Helpers
-
-      @primary_key {:id, :binary_id, autogenerate: true}
-      @foreign_key_type :binary_id
-    end
-  end
-
   defmodule Helpers do
     #
     # For solf deletable resources
@@ -32,15 +21,32 @@ defmodule Operately.Schema do
       end
     end
 
-    def set_requester_access_level(schema, level) do
-      if schema.__schema__(:fields)[:requester_access_level] do
-        schema |> Map.put(:requester_access_level, level)
-      else
-        raise """
-        The #{__MODULE__} schema does not support setting the requester access level. 
-        Maybe you forgot to add the requester_access_level() to the schema?
-        """
+    defmacro requester_access_level_setter do
+      quote do
+        def set_requester_access_level(record, level) do
+          if record.__struct__.__schema__(:virtual_fields) |> Enum.member?(:requester_access_level) do
+            record |> Map.put(:requester_access_level, level)
+          else
+            raise """
+            The #{__MODULE__} schema does not support setting the requester access level. 
+            Maybe you forgot to add the requester_access_level() to the schema?
+            """
+          end
+        end
       end
+    end
+  end
+
+  defmacro __using__(_) do
+    quote do
+      use Ecto.Schema
+      import Ecto.Changeset
+      import Operately.Schema.Helpers
+
+      @primary_key {:id, :binary_id, autogenerate: true}
+      @foreign_key_type :binary_id
+
+      requester_access_level_setter()
     end
   end
 end

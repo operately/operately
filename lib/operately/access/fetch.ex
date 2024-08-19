@@ -15,7 +15,7 @@ defmodule Operately.Access.Fetch do
     |> Repo.one()
     |> case do
       nil -> {:error, :not_found}
-      {r, level} -> {:ok, apply(r, r.__struct__.set_requester_access_level(level))}
+      {r, level} -> {:ok, apply(r.__struct__, :set_requester_access_level, [r, level])}
     end
   end
 

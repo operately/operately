@@ -1,39 +1,27 @@
 defmodule OperatelyWeb.Api.Action do
   def new(), do: {:ok, %{}}
 
-  def run(action, key, f) do
-    if duplicate_key?(action, key) do
+  def run({:ok, ctx}, key, f) do
+    if Map.has_key?(ctx, key) do
       raise_no_duplicate_keys(key)
     else
-      res = run_action(action, f) 
-      process_result(res, action, key)
+      run_action(f, ctx) |> process_result(ctx, key)
     end
   end
 
-  defp run_action(_action = {:ok, _ctx}, f) when is_function(f, 0), do: f.()
-  defp run_action(action = {:ok, ctx}, f) when is_function(f, 1), do: f.(ctx)
-  defp run_action(action = {:error, _, _}, _), do: action
+  def run(err, _key, _f), do: err
 
-  defp process_result(res, action, key) do
-    cond do
-      is_res_ok?(res) -> {:ok, Map.put(action, key, Tuple.delete_at(res, 0))}
-      is_res_error?(res) -> {:error, key, Tuple.delete_at(res, 0)}
-      true -> raise_bad_result(res)
+  # Helpers
+
+  defp run_action(f, _ctx) when is_function(f, 0), do: f.()
+  defp run_action(f, ctx) when is_function(f, 1), do: f.(ctx)
+
+  defp process_result(res, ctx, key) do
+    case res do
+      {:ok, res} -> {:ok, Map.put(ctx, key, res)}
+      {:error, e} -> {:error, key, %{error: e, context: ctx}}
+      _ -> raise_bad_result(res)
     end
-  end
-
-  defp duplicate_key?({:ok, ctx}, key) do
-    Map.has_key?(ctx, key)
-  end
-
-  defp duplicate_key?(_, _), do: false
-
-  defp is_res_ok?(res) do
-    is_tuple(res) && elem(res, 0) == :ok
-  end
-
-  defp is_res_error?(res) do
-    is_tuple(res) && elem(res, 0) == :error
   end
 
   defp raise_no_duplicate_keys(key) do

@@ -13,7 +13,7 @@ defmodule OperatelyWeb.Api.Mutations.RemoveGroupMember do
 
   def call(conn, inputs) do
     Action.new()
-    |> run(:me, fn -> me(conn) end)
+    |> run(:me, fn -> find_me(conn) end)
     |> run(:group_id, fn -> decode_id(inputs.group_id) end)
     |> run(:member_id, fn -> decode_id(inputs.member_id) end)
     |> run(:space, fn ctx -> Groups.get_group_with_access_level(ctx.group_id, ctx.me.id) end)

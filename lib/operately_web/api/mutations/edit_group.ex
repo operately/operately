@@ -22,6 +22,7 @@ defmodule OperatelyWeb.Api.Mutations.EditGroup do
     |> run(:space, fn ctx -> Groups.get_group_with_access_level(ctx.inputs.id, ctx.me.id) end)
     |> run(:check_permissions, fn ctx -> Permissions.check(ctx.space.requester_access_level, :can_edit) end)
     |> run(:operation, fn ctx -> Groups.edit_group_name_and_purpose(ctx.me, ctx.space, ctx.inputs) end)
+    |> run(:serialized, fn ctx -> {:ok, %{space: Serializer.serialize(ctx.operation)}} end)
     |> respond()
   end
 
@@ -34,7 +35,7 @@ defmodule OperatelyWeb.Api.Mutations.EditGroup do
 
   def respond(result) do
     case result do
-      {:ok, _} -> {:ok, %{space: Serializer.serialize(result.operation)}}
+      {:ok, ctx} -> {:ok, ctx.serialized}
       {:error, :space_id, _} -> {:error, :bad_request}
       {:error, :space, _} -> {:error, :not_found}
       {:error, :check_permissions, _} -> {:error, :forbidden}

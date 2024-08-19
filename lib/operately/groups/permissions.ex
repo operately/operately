@@ -31,7 +31,7 @@ defmodule Operately.Groups.Permissions do
   def check(access_level, permission) do
     permissions = calculate_permissions(access_level)
 
-    if permissions[permission] do
+    if Map.get(permissions, permission) == true do
       {:ok, :allowed}
     else
       {:error, :forbidden}
