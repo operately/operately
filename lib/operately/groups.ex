@@ -4,7 +4,7 @@ defmodule Operately.Groups do
   alias Operately.Repo
   alias Ecto.Multi
   alias Operately.Groups.{Group, Member, Contact}
-  alias Operately.Access.{Context, Fetch}
+  alias Operately.Access.Fetch
   alias Operately.People.Person
   alias Operately.Activities
 
@@ -91,33 +91,7 @@ defmodule Operately.Groups do
     Group.changeset(group, attrs)
   end
 
-  def insert_group(multi, attrs) do
-    cond do
-      Map.has_key?(attrs, :company_id) ->
-        multi
-        |> Multi.insert(:group, Group.changeset(attrs))
-        |> insert_group_context
-
-      MapSet.member?(multi.names, :company) ->
-        multi
-        |> Multi.insert(:group, fn changes ->
-          Group.changeset(Map.merge(attrs, %{ company_id: changes[:company].id }))
-        end)
-        |> insert_group_context
-
-      true ->
-        raise "Include company_id in attrs or company in multi's operations"
-    end
-  end
-
-  defp insert_group_context(multi) do
-    multi
-    |> Multi.insert(:context, fn changes ->
-      Context.changeset(%{
-        group_id: changes.group.id,
-      })
-    end)
-  end
+  defdelegate insert_group(multi, attrs), to: Operately.Groups.InsertGroup, as: :insert
 
   alias Operately.Groups.Member
 
