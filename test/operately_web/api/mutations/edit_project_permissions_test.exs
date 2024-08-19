@@ -147,7 +147,7 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectPermissionsTest do
     end
   end
 
-  describe "edit_group functionality" do
+  describe "edit_project_permissions functionality" do
     setup :register_and_log_in_account
 
     test "edits project permissions", ctx do
