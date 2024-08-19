@@ -1,5 +1,6 @@
-import { useColorMode } from "@/theme";
 import React from "react";
+
+import { useColorMode } from "@/contexts/ThemeContext";
 
 export function MiniPieChart({ completed, total, size = 14 }) {
   const mode = useColorMode();

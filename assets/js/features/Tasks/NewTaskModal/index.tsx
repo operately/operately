@@ -10,7 +10,7 @@ import { MultiPeopleSearch } from "./MultiPeopleSearch";
 
 import ReactModal from "react-modal";
 
-import { useColorMode } from "@/theme";
+import { useColorMode } from "@/contexts/ThemeContext";
 
 function useForm({ onSubmit, milestone }) {
   const [name, setName] = React.useState("");
@@ -89,7 +89,7 @@ export function NewTaskModal({ isOpen, hideModal, modalTitle, milestone, onSubmi
             Cancel
           </FilledButton>
 
-          <FilledButton size="base" type="primary" onClick={form.submit} testId="submit-new-task" >
+          <FilledButton size="base" type="primary" onClick={form.submit} testId="submit-new-task">
             Add Task
           </FilledButton>
         </div>
