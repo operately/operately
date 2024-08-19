@@ -6,6 +6,9 @@ defmodule OperatelyWeb.Api.Helpers do
 
       alias Operately.Repo
       alias OperatelyWeb.Api.Serializer
+
+      alias OperatelyWeb.Api.Action
+      import OperatelyWeb.Api.Action, only: [run: 3]
     end
   end
 
@@ -22,6 +25,14 @@ defmodule OperatelyWeb.Api.Helpers do
       conn.assigns.current_company
     else
       raise "No company associated with the connection, maybe you forgot to load the company in a plug?"
+    end
+  end
+
+  def find_me(conn) do
+    if conn.assigns.current_person do
+      {:ok, conn.assigns.current_person}
+    else
+      {:error, :not_found}
     end
   end
 
