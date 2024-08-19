@@ -28,7 +28,7 @@ defmodule Operately.Operations.GroupMemberRemovingTest do
   test "GroupMemberRemoving operation removes member from group", ctx do
     assert Groups.is_member?(ctx.group, ctx.member)
 
-    Operately.Operations.GroupMemberRemoving.run(ctx.creator, ctx.group.id, ctx.member.id)
+    Operately.Operations.GroupMemberRemoving.run(ctx.creator, ctx.group, ctx.member.id)
 
     refute Groups.is_member?(ctx.group, ctx.member)
   end
@@ -41,14 +41,14 @@ defmodule Operately.Operations.GroupMemberRemovingTest do
     assert Access.get_group_membership(group_id: access_group.id, person_id: ctx.member.id)
     assert Access.get_binding(context_id: access_context.id, group_id: person_access_group.id)
 
-    Operately.Operations.GroupMemberRemoving.run(ctx.creator, ctx.group.id, ctx.member.id)
+    Operately.Operations.GroupMemberRemoving.run(ctx.creator, ctx.group, ctx.member.id)
 
     refute Access.get_group_membership(group_id: access_group.id, person_id: ctx.member.id)
     refute Access.get_binding(context_id: access_context.id, group_id: person_access_group.id)
   end
 
   test "GroupMemberRemoving operation creates activity", ctx do
-    {:ok, _} = Operately.Operations.GroupMemberRemoving.run(ctx.creator, ctx.group.id, ctx.member.id)
+    {:ok, _} = Operately.Operations.GroupMemberRemoving.run(ctx.creator, ctx.group, ctx.member.id)
 
     activity = from(a in Activity, where: a.action == "space_member_removed" and a.content["space_id"] == ^ctx.group.id) |> Repo.one!()
 
