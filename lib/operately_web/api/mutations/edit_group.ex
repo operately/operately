@@ -16,22 +16,30 @@ defmodule OperatelyWeb.Api.Mutations.EditGroup do
   end
 
   def call(conn, inputs) do
-    person = me(conn)
-    {:ok, space_id} = decode_id(inputs.id)
+    Action.new()
+    |> run(:me, fn -> find_me(conn) end)
+    |> run(:inputs, fn -> parse_inputs(inputs) end)
+    |> run(:space, fn ctx -> Groups.get_group_with_access_level(ctx.inputs.id, ctx.me.id) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.space.requester_access_level, :can_edit) end)
+    |> run(:operation, fn ctx -> Groups.edit_group_name_and_purpose(ctx.me, ctx.space, ctx.inputs) end)
+    |> respond()
+  end
 
-    case Groups.get_group_and_access_level(space_id, person.id) do
-      {:ok, space, access_level} ->
-        if Permissions.can_edit(access_level) do
-          execute(person, space, inputs)
-        else
-          {:error, :forbidden}
-        end
-      {:error, reason} -> {:error, reason}
+  def parse_inputs(inputs) do
+    case decode_id(inputs.id) do
+      {:ok, id} -> {:ok, Map.put(inputs, :id, id)}
+      {:error, _} -> {:error, :bad_request}
     end
   end
 
-  defp execute(person, space, inputs) do
-    {:ok, space} = Groups.edit_group_name_and_purpose(person, space, inputs)
-    {:ok, %{space: Serializer.serialize(space)}}
-  end
+  def respond(result) do
+    case result do
+      {:ok, _} -> {:ok, %{space: Serializer.serialize(result.operation)}}
+      {:error, :space_id, _} -> {:error, :bad_request}
+      {:error, :space, _} -> {:error, :not_found}
+      {:error, :check_permissions, _} -> {:error, :forbidden}
+      {:error, :operation, _} -> {:error, :internal_server_error}
+      _ -> {:error, :internal_server_error}
+    end
+  end 
 end

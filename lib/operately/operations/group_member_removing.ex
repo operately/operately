@@ -8,11 +8,11 @@ defmodule Operately.Operations.GroupMemberRemoving do
   alias Operately.Groups.Member
   alias Operately.Access.Group
 
-  def run(author, group_id, person_id) do
+  def run(author, space, person_id) do
     Multi.new()
-    |> delete_member(group_id, person_id)
-    |> delete_access_group_memberships(group_id, person_id)
-    |> delete_access_binding(group_id, person_id)
+    |> delete_member(space.id, person_id)
+    |> delete_access_group_memberships(space.id, person_id)
+    |> delete_access_binding(space.id, person_id)
     |> insert_activity(author)
     |> Repo.transaction()
   end
