@@ -1,4 +1,6 @@
 defmodule Operately.Projects.Permissions do
+  alias Operately.Access.Binding
+
   defstruct [
     :can_view,
     :can_create_milestone,
@@ -61,4 +63,5 @@ defmodule Operately.Projects.Permissions do
     is_public?(project) || is_contributor?(project, user)
   end
 
+  def can_edit_name(access_level), do: access_level >= Binding.edit_access()
 end
