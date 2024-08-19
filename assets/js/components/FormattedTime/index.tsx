@@ -16,6 +16,17 @@ type Format =
   | "relative-weekday-or-date"
   | "long-date";
 
+//
+// Formats:
+//
+// time-only: "5:00pm"
+// short-date: "Apr 5", "Apr 5, 2021"
+// short-date-with-weekday: "Mon, Apr 5", "Mon, Apr 5, 2021"
+// relative: "just now", "5 minutes ago"
+// relative-weekday-or-date: "Today", "Yesterday", "Mon", "Apr 5"
+// long-date: "April 5, 2021"
+//
+
 interface FormattedTimeProps {
   time: string | Date;
   format: Format;
