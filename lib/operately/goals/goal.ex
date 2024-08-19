@@ -1,9 +1,6 @@
 defmodule Operately.Goals.Goal do
   use Operately.Schema
 
-  import Ecto.Changeset
-  import Operately.SoftDelete.Schema
-
   schema "goals" do
     belongs_to :company, Operately.Companies.Company, foreign_key: :company_id
     belongs_to :group, Operately.Groups.Group, foreign_key: :group_id

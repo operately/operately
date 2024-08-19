@@ -4,6 +4,7 @@ defmodule OperatelyWeb.Api.Mutations.EditSpacePermissions do
 
   alias Operately.Groups
   alias Operately.Groups.Permissions
+  alias Operately.Operations.GroupPermissionsEditing
 
   inputs do
     field :space_id, :string
@@ -15,22 +16,24 @@ defmodule OperatelyWeb.Api.Mutations.EditSpacePermissions do
   end
 
   def call(conn, inputs) do
-    person = me(conn)
-    {:ok, space_id} = decode_id(inputs.space_id)
-
-    case Groups.get_group_and_access_level(space_id, person.id) do
-      {:ok, space, access_level} ->
-        if Permissions.can_edit_permissions(access_level) do
-          execute(person, space, inputs)
-        else
-          {:error, :forbidden}
-        end
-      {:error, reason} -> {:error, reason}
-    end
+    Action.new()
+    |> run(:me, fn -> find_me(conn) end)
+    |> run(:space_id, fn -> decode_id(inputs.space_id) end)
+    |> run(:space, fn ctx -> Groups.get_group_with_access_level(ctx.space_id, ctx.me.id) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.space.requester_access_level, :can_edit_permissions) end)
+    |> run(:operation, fn ctx -> GroupPermissionsEditing.run(ctx.me, ctx.space, inputs.access_levels) end)
+    |> run(:serialized, fn -> {:ok, %{success: true}} end)
+    |> respond()
   end
 
-  defp execute(person, space, inputs) do
-    {:ok, _} = Operately.Operations.GroupPermissionsEditing.run(person, space, inputs.access_levels)
-    {:ok, %{success: true}}
+  def respond(result) do
+    case result do
+      {:ok, ctx} -> {:ok, ctx.serialized}
+      {:error, :space_id, _} -> {:error, :bad_request}
+      {:error, :space, _} -> {:error, :not_found}
+      {:error, :check_permissions, _} -> {:error, :forbidden}
+      {:error, :operation, _} -> {:error, :internal_server_error}
+      _ -> {:error, :internal_server_error}
+    end
   end
 end

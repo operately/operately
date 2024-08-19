@@ -4,7 +4,7 @@ defmodule Operately.Access.Fetch do
   alias Operately.Repo
   alias Operately.Access.Binding
 
-  def get_resource_and_access_level(query, person_id) do
+  def get_resource_with_access_level(query, person_id) do
     query = join_resources(query, person_id)
 
     from([resource: r, binding: b] in query,
@@ -15,7 +15,7 @@ defmodule Operately.Access.Fetch do
     |> Repo.one()
     |> case do
       nil -> {:error, :not_found}
-      {r, level} -> {:ok, r, level}
+      {r, level} -> {:ok, apply(r.__struct__, :set_requester_access_level, [r, level])}
     end
   end
 
