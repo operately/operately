@@ -3,6 +3,7 @@ defmodule Operately.Projects.Milestone do
 
   schema "project_milestones" do
     belongs_to :project, Operately.Projects.Project
+    has_one :access_context, through: [:project, :access_context]
 
     has_many :tasks, Operately.Tasks.Task
 
@@ -20,6 +21,7 @@ defmodule Operately.Projects.Milestone do
 
     timestamps()
     soft_delete()
+    requester_access_level()
   end
 
   def changeset(attrs) do
