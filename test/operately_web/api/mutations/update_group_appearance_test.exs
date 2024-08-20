@@ -35,18 +35,19 @@ defmodule OperatelyWeb.Api.Mutations.UpdateGroupAppearanceTest do
         add_person_to_space(ctx, ctx.person, space.id, permissions: @test.space)
 
         assert {code, res} = mutation(ctx.conn, :update_group_appearance, %{
-          group_id: Paths.space_id(space),
+          id: Paths.space_id(space),
           icon: "IconBuilding",
           color: "text-blue-500",
         })
 
         assert code == @test.expected
+        space = Operately.Repo.reload(space)
         
         case @test.expected do
           200 -> 
-            assert res == %{}
-            assert Groups.get(space.id).icon == "IconBuilding"
-            assert Groups.get(space.id).color == "text-blue-500"
+            assert res == %{space: Serializer.serialize(space)}
+            assert space.icon == "IconBuilding"
+            assert space.color == "text-blue-500"
 
           403 -> 
             assert res.message == "You don't have permission to perform this action"
@@ -62,14 +63,14 @@ defmodule OperatelyWeb.Api.Mutations.UpdateGroupAppearanceTest do
   # Steps
   #
 
-  defp create_space(ctx, company_permissions) do
+  defp create_space(ctx, company_permissions: permission) do
     group_fixture(ctx.creator, %{
       company_id: ctx.company.id,
-      company_permissions: Binding.from_atom(company_permissions),
+      company_permissions: Binding.from_atom(permission),
     })
   end
 
-  defp add_person_to_space(ctx, person, space_id, access_level) do
+  defp add_person_to_space(ctx, person, space_id, permissions: access_level) do
     Operately.Groups.add_members(ctx.creator, space_id, [%{
       id: person.id,
       permissions: Binding.from_atom(access_level),
