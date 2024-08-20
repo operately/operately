@@ -42,6 +42,7 @@ body[data-theme="light"] {
   --color-stale-selection: var(--color-sky-100);
 
   --color-accent-1: rgba(37, 155, 105, 1);
+  --color-accent-1-light: rgba(37,155,105,0.8);
 }
 
 body[data-theme="dark"] {
@@ -68,6 +69,7 @@ body[data-theme="dark"] {
   --color-stale-selection: var(--color-sky-900);
 
   --color-accent-1: rgba(37, 155, 105, 1);
+  --color-accent-1-light: rgba(37,155,105,0.8);
 }
 
 body {

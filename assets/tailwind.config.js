@@ -30,6 +30,7 @@ module.exports = {
         "toggle-active": "var(--color-toggle-active)",
 
         "accent-1": "var(--color-accent-1)",
+        "accent-1-light": "var(--color-accent-1-light)",
 
         brand: {
           1: "#3185FF",
