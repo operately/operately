@@ -103,7 +103,7 @@ defmodule Operately.Data.Change021CreateProjectBindingsToCompanyAndSpaceTest do
     end)
   end
 
-  test "doesn't create access binding to spaces when it's the company space", ctx do
+  test "creates access binding to spaces when it's the company space", ctx do
     space_id = ctx.company.company_space_id
 
     projects_no_space = Enum.map(1..3, fn _ ->
@@ -117,10 +117,12 @@ defmodule Operately.Data.Change021CreateProjectBindingsToCompanyAndSpaceTest do
     Operately.Data.Change021CreateProjectBindingsToCompanyAndSpace.run()
 
     Enum.each(projects_no_space, fn project ->
-      refute Access.get_group(group_id: space_id, tag: :full_access)
-      refute Access.get_group(group_id: space_id, tag: :standard)
-
       context = Access.get_context!(project_id: project.id)
+      space_full_access = Access.get_group!(group_id: space_id, tag: :full_access)
+      space_standard = Access.get_group!(group_id: space_id, tag: :standard)
+
+      assert Access.get_binding(context_id: context.id, group_id: space_full_access.id)
+      assert Access.get_binding(context_id: context.id, group_id: space_standard.id)
 
       full_access = Access.get_group!(company_id: ctx.company.id, tag: :full_access)
       standard = Access.get_group!(company_id: ctx.company.id, tag: :standard)
