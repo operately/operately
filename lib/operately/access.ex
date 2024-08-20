@@ -135,13 +135,6 @@ defmodule Operately.Access do
     |> maybe_update_anonymous_binding(company_id, anonymous_access_level)
   end
 
-  def update_bindings_to_space(multi, space_id, members_access_level) do
-    standard = get_group!(group_id: space_id, tag: :standard)
-
-    multi
-    |> update_or_insert_binding(:space_members_binding, standard, members_access_level)
-  end
-
   def update_or_insert_binding(multi, name, access_group, access_level, tag \\ nil) do
     multi
     |> Multi.run(name, fn _, %{context: context} ->
