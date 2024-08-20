@@ -121,7 +121,7 @@ defmodule OperatelyWeb.Api.Queries.GetTaskTest do
       milestone = Repo.preload(task, [milestone: :project]).milestone
 
       assert {200, res} = query(ctx.conn, :get_task, %{id: Paths.task_id(task), include_milestone: true})
-      m = %{res.task.milestone | status: String.to_atom(res.task.milestone.status)}
+      m = %{res.task.milestone | status: to_string(res.task.milestone.status)}
       assert m == serialize(milestone)
 
       assert {200, res} = query(ctx.conn, :get_task, %{id: Paths.task_id(task)})
