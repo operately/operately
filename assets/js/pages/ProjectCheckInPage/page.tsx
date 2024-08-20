@@ -154,7 +154,7 @@ function Options() {
         icon={Icons.IconEdit}
         title="Edit check-in"
         to={Paths.projectCheckInEditPath(checkIn.id!)}
-        dataTestId="edit-check-in"
+        testId="edit-check-in"
       />
     </PageOptions.Root>
   );
