@@ -2,8 +2,7 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussion do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
-  import Operately.Access.Filters
-
+  alias Operately.Access.Filters
   alias Operately.Updates.Update
   alias Operately.Groups.Group
 
@@ -20,7 +19,7 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussion do
 
   def call(conn, inputs) do
     update = load_update(inputs)
-    update = preload_space(update, company(conn), me(conn))
+    update = preload_space(update, me(conn))
 
     if update do
       {:ok, %{discussion: OperatelyWeb.Api.Serializer.serialize(update, level: :full)}}
@@ -50,20 +49,12 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussion do
     end)
   end
 
-  defp preload_space(nil, _, _), do: nil
-  defp preload_space(%{updatable_id: id} = update, company, person) do
-    from(s in Group, where: s.id == ^id)
-    |> view_access_filter(id, company, person)
+  defp preload_space(nil, _), do: nil
+  defp preload_space(update, person) do
+    from(s in Group, where: s.id == ^update.updatable_id)
+    |> Filters.filter_by_view_access(person.id)
     |> Repo.one()
     |> space_into_update(update)
-  end
-
-  defp view_access_filter(q, id, company, person) do
-    if id == company.company_space_id do
-      filter_by_view_access(q, person.id, join_parent: :company)
-    else
-      filter_by_view_access(q, person.id)
-    end
   end
 
   defp space_into_update(nil, _), do: nil

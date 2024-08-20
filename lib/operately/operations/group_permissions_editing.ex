@@ -9,9 +9,17 @@ defmodule Operately.Operations.GroupPermissionsEditing do
     |> Multi.run(:context, fn _, _ ->
       {:ok, Access.get_context!(group_id: space.id)}
     end)
-    |> Access.update_bindings_to_company(space.company_id, attrs.company, attrs.public)
+    |> update_bindings(space.company_id, attrs)
     |> insert_activity(author, space)
     |> Repo.transaction()
+  end
+
+  defp update_bindings(multi, company_id, attrs) do
+    standard = Access.get_group!(company_id: company_id, tag: :standard)
+
+    multi
+    |> Access.update_or_insert_binding(:company_members_binding, standard, attrs.company)
+    |> Access.maybe_update_anonymous_binding(company_id, attrs.public)
   end
 
   defp insert_activity(multi, author, space) do

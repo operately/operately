@@ -4,6 +4,7 @@ defmodule Operately.Goals do
   alias Operately.Repo
   alias Operately.Goals.Goal
   alias Operately.Goals.Target
+  alias Operately.Access.Fetch
 
   def list_goals do
     Repo.all(Goal)
@@ -11,11 +12,11 @@ defmodule Operately.Goals do
 
   def list_goals(filter) do
     from(goal in Goal)
-    |> apply_if(filter.space_id, fn query -> 
-      from(goal in query, where: goal.group_id == ^filter.space_id) 
+    |> apply_if(filter.space_id, fn query ->
+      from(goal in query, where: goal.group_id == ^filter.space_id)
     end)
-    |> apply_if(filter.company_id, fn query -> 
-      from(goal in query, where: goal.company_id == ^filter.company_id) 
+    |> apply_if(filter.company_id, fn query ->
+      from(goal in query, where: goal.company_id == ^filter.company_id)
     end)
     |> Repo.all()
   end
@@ -25,6 +26,11 @@ defmodule Operately.Goals do
   end
 
   def get_goal!(id), do: Repo.get_by_id(Goal, id, :with_deleted)
+
+  def get_goal_with_access_level(goal_id, person_id) do
+    from(g in Goal, as: :resource, where: g.id == ^goal_id)
+    |> Fetch.get_resource_with_access_level(person_id)
+  end
 
   defdelegate create_goal(creator, attrs), to: Operately.Operations.GoalCreation, as: :run
   defdelegate archive_goal(author, goal), to: Operately.Operations.GoalArchived, as: :run

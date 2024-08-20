@@ -34,6 +34,7 @@ defmodule Operately.Goals.Goal do
 
     timestamps()
     soft_delete()
+    requester_access_level()
   end
 
   def changeset(attrs) do
