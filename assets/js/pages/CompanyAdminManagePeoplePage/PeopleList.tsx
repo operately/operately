@@ -78,6 +78,8 @@ function MemberRow({ person }: { person: People.Person }) {
       </div>
 
       <div className="flex gap-2 items-center">
+        {person.hasOpenInvitation && <div className="text-content-dimmed text-sm mr-2">6 hours left to accept</div>}
+
         <FilledButton linkTo="/" size="xs" type="secondary" testId="edit-profile-link">
           Edit Profile
         </FilledButton>
