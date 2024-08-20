@@ -696,6 +696,7 @@ export interface Person {
   theme?: string | null;
   accessLevel?: number | null;
   hasOpenInvitation?: boolean | null;
+  insertedAt?: string | null;
 }
 
 export interface Project {

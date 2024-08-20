@@ -47,7 +47,7 @@ const GoalDiscussionCreation: ActivityHandler = {
             icon={Icons.IconEdit}
             title="Edit"
             to={Paths.goalDiscussionEditPath(activity.id!)}
-            dataTestId="edit"
+            testId="edit"
           />
         )}
       </PageOptions.Root>

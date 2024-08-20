@@ -8,3 +8,7 @@ function sanitizeName(name: string) {
     .replace(/[^a-z0-9-]/gi, "-")
     .toLowerCase();
 }
+
+export type TestableElement = {
+  testId?: string;
+};
