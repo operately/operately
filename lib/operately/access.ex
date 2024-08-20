@@ -107,25 +107,6 @@ defmodule Operately.Access do
     Binding.changeset(binding, attrs)
   end
 
-  def insert_bindings_to_company(multi, company_id, members_access_level, anonymous_access_level \\ 0) do
-    full_access = get_group!(company_id: company_id, tag: :full_access)
-    standard = get_group!(company_id: company_id, tag: :standard)
-
-    multi
-    |> insert_binding(:company_full_access_binding, full_access, Binding.full_access())
-    |> insert_binding(:company_members_binding, standard, members_access_level)
-    |> maybe_insert_anonymous_binding(company_id, anonymous_access_level)
-  end
-
-  def insert_bindings_to_space(multi, space_id, members_access_level) do
-    full_access = get_group!(group_id: space_id, tag: :full_access)
-    standard = get_group!(group_id: space_id, tag: :standard)
-
-    multi
-    |> insert_binding(:space_full_access_binding, full_access, Binding.full_access())
-    |> insert_binding(:space_members_binding, standard, members_access_level)
-  end
-
   def insert_binding(multi, name, access_group, access_level, tag \\ nil) do
     Multi.insert(multi, name, fn %{context: context} ->
       Binding.changeset(%{
@@ -137,7 +118,7 @@ defmodule Operately.Access do
     end)
   end
 
-  defp maybe_insert_anonymous_binding(multi, company_id, access_level) do
+  def maybe_insert_anonymous_binding(multi, company_id, access_level) do
     if access_level == Binding.view_access() do
       anonymous = get_group!(company_id: company_id, tag: :anonymous)
       insert_binding(multi, :anonymous_binding, anonymous, Binding.view_access())
@@ -152,13 +133,6 @@ defmodule Operately.Access do
     multi
     |> update_or_insert_binding(:company_members_binding, standard, members_access_level)
     |> maybe_update_anonymous_binding(company_id, anonymous_access_level)
-  end
-
-  def update_bindings_to_space(multi, space_id, members_access_level) do
-    standard = get_group!(group_id: space_id, tag: :standard)
-
-    multi
-    |> update_or_insert_binding(:space_members_binding, standard, members_access_level)
   end
 
   def update_or_insert_binding(multi, name, access_group, access_level, tag \\ nil) do

@@ -1,6 +1,4 @@
 defmodule Operately.Operations.ProjectSpaceMoving do
-  import Ecto.Query, only: [from: 2]
-
   alias Ecto.Multi
   alias Operately.Repo
   alias Operately.Access
@@ -9,15 +7,43 @@ defmodule Operately.Operations.ProjectSpaceMoving do
   alias Operately.Projects.Project
 
   def run(author, project, space_id) do
-    context = Access.get_context!(project_id: project.id)
-
     Multi.new()
     |> Multi.update(:project, Project.changeset(project, %{group_id: space_id}))
-    |> Multi.run(:context, fn _, _ -> {:ok, context} end)
-    |> update_bindings(context, project, space_id)
+    |> Multi.run(:context, fn _, _ ->
+      {:ok, Access.get_context!(project_id: project.id)}
+    end)
+    |> delete_old_binding(project.group_id)
+    |> insert_new_binding(space_id)
     |> insert_activity(author, project)
     |> Repo.transaction()
     |> Repo.extract_result(:project)
+  end
+
+  defp delete_old_binding(multi, space_id) do
+    group = Access.get_group!(group_id: space_id, tag: :standard)
+
+    multi
+    |> Multi.run(:old_members_binding, fn _, %{context: context} ->
+      case Access.get_binding(context_id: context.id, group_id: group.id) do
+        nil -> {:ok, nil}
+        binding -> Access.delete_binding(binding)
+      end
+    end)
+  end
+
+  defp insert_new_binding(multi, space_id) do
+    group = Access.get_group!(group_id: space_id, tag: :standard)
+
+    multi
+    |> Multi.run(:new_members_binding, fn _, changes ->
+      access_level = find_access_level(changes.old_members_binding)
+      attrs = [context_id: changes.context.id, group_id: group.id]
+
+      case Access.get_binding(attrs) do
+        nil -> Access.create_binding(Enum.into(attrs, %{access_level: access_level}))
+        binding -> Access.update_binding(binding, %{access_level: access_level})
+      end
+    end)
   end
 
   defp insert_activity(multi, author, project) do
@@ -29,41 +55,11 @@ defmodule Operately.Operations.ProjectSpaceMoving do
     } end)
   end
 
-  defp update_bindings(multi, context, project, new_space_id) do
-    company_space_id = Repo.one!(from(c in Operately.Companies.Company, where: c.id == ^project.company_id, select: c.company_space_id))
-    previous_space_id = project.group_id
+  #
+  # Helpers
+  #
 
-    binding = get_current_binding(context, previous_space_id, company_space_id)
-
-    multi
-    |> maybe_delete_binding_to_space(binding)
-    |> maybe_update_binding_to_space(new_space_id, company_space_id, get_current_access_level(binding))
-  end
-
-  defp maybe_update_binding_to_space(multi, space_id, company_space_id, access_level) do
-    if space_id != company_space_id do
-      Access.update_bindings_to_space(multi, space_id, access_level)
-    else
-      multi
-    end
-  end
-
-  defp maybe_delete_binding_to_space(multi, binding) do
-    if binding do
-      Multi.delete(multi, :deleted_space_binding, binding)
-    else
-      multi
-    end
-  end
-
-  defp get_current_binding(context, space_id, company_space_id) do
-    if space_id != company_space_id do
-      group = Access.get_group!(group_id: space_id, tag: :standard)
-      Access.get_binding!(context_id: context.id, group_id: group.id)
-    end
-  end
-
-  defp get_current_access_level(binding) do
+  defp find_access_level(binding) do
     case binding do
       nil -> Binding.no_access()
       binding -> binding.access_level
