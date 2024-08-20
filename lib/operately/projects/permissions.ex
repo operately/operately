@@ -2,22 +2,23 @@ defmodule Operately.Projects.Permissions do
   alias Operately.Access.Binding
 
   defstruct [
-    :can_view,
+    :can_acknowledge_check_in,
+    :can_check_in,
+    :can_close,
     :can_create_milestone,
     :can_delete_milestone,
-    :can_edit_milestone,
-    :can_edit_description,
-    :can_edit_timeline,
-    :can_edit_resources,
-    :can_edit_goal,
-    :can_edit_name,
-    :can_edit_space,
     :can_edit_contributors,
+    :can_edit_description,
+    :can_edit_goal,
+    :can_edit_milestone,
+    :can_edit_name,
     :can_edit_permissions,
-    :can_close,
+    :can_edit_resources,
+    :can_edit_space,
+    :can_edit_task,
+    :can_edit_timeline,
     :can_pause,
-    :can_check_in,
-    :can_acknowledge_check_in
+    :can_view,
   ]
 
   def calculate_permissions(project, user) do
@@ -41,7 +42,8 @@ defmodule Operately.Projects.Permissions do
       can_close: is_contributor?(project, user),
       can_pause: is_contributor?(project, user),
       can_check_in: is_contributor?(project, user),
-      can_acknowledge_check_in: is_reviewer?(project, user)
+      can_acknowledge_check_in: is_reviewer?(project, user),
+      can_edit_task: is_contributor?(project, user),
     }
   end
 
@@ -49,6 +51,7 @@ defmodule Operately.Projects.Permissions do
     %__MODULE__{
       can_edit_name: can_edit_name(access_level),
       can_edit_permissions: can_edit_permissions(access_level),
+      can_edit_task: can_edit_task(access_level),
     }
   end
 
@@ -72,6 +75,7 @@ defmodule Operately.Projects.Permissions do
 
   def can_edit_name(access_level), do: access_level >= Binding.edit_access()
   def can_edit_permissions(access_level), do: access_level >= Binding.full_access()
+  def can_edit_task(access_level), do: access_level >= Binding.edit_access()
 
   def check(access_level, permission) do
     permissions = calculate_permissions(access_level)
