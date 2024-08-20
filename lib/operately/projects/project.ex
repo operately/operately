@@ -1,6 +1,5 @@
 defmodule Operately.Projects.Project do
   use Operately.Schema
-  import Operately.SoftDelete.Schema
 
   schema "projects" do
     belongs_to :company, Operately.Companies.Company, foreign_key: :company_id
