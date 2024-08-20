@@ -617,6 +617,7 @@ defmodule OperatelyWeb.Api.Types do
     field :theme, :string
     field :access_level, :integer
     field :has_open_invitation, :boolean
+    field :inserted_at, :date
   end
 
   object :project_health do

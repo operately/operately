@@ -23,6 +23,7 @@ module.exports = {
         "content-subtle": "var(--color-content-subtle)",
 
         "stroke-base": "var(--color-stroke-base)",
+        "stroke-dimmed": "var(--color-stroke-dimmed)",
 
         "link-base": "var(--color-link-base)",
         "link-hover": "var(--color-link-hover)",
