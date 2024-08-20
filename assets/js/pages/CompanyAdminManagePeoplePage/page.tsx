@@ -9,6 +9,7 @@ import { useLoadedData } from "./loader";
 import { Paths } from "@/routes/paths";
 import { FilledButton } from "@/components/Button";
 import { BlackLink } from "@/components/Link";
+import { Menu, MenuItem } from "@/components/Menu";
 
 import Avatar from "@/components/Avatar";
 
@@ -143,13 +144,14 @@ function PersonActions({ person }: { person: People.Person }) {
 
 function PersonOptions({ person }: { person: People.Person }) {
   return (
-    <PageOptions.Root testId="person-options" noBorder>
-      <PageOptions.Link
-        to={Paths.profilePath(person.id!)}
-        icon={Icons.IconTrash}
-        title="Remove"
-        testId="remove-person"
-      />
-    </PageOptions.Root>
+    <Menu>
+      <MenuItem icon={Icons.IconId} testId="view-profile" linkTo={Paths.profilePath(person.id!)}>
+        View Profile
+      </MenuItem>
+
+      <MenuItem icon={Icons.IconTrash} testId="remove-person" linkTo={Paths.profilePath(person.id!)} danger>
+        Remove
+      </MenuItem>
+    </Menu>
   );
 }
