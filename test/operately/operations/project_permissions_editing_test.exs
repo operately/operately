@@ -47,19 +47,20 @@ defmodule Operately.Operations.ProjectPermissionsEditingTest do
     assert Access.get_binding(context_id: context.id, group_id: space.id, access_level: Binding.full_access())
   end
 
-  test "ProjectPermissionsEditing operation ignores company space", ctx do
-    attrs = Map.merge(ctx.attrs, %{
-      group_id: ctx.company.company_space_id
-    })
-    project = project_fixture(attrs)
+  test "ProjectPermissionsEditing operation edits bindings to company space", ctx do
+    project = project_fixture(Map.merge(ctx.attrs, %{group_id: ctx.company.company_space_id}))
+    context = Access.get_context!(project_id: project.id)
+    group = Access.get_group(group_id: ctx.company.company_space_id, tag: :standard)
 
-    Operately.Operations.ProjectPermissionsEditing.run(ctx.creator, project, %{
+    assert Access.get_binding(context_id: context.id, group_id: group.id, access_level: Binding.edit_access())
+
+    {:ok, _} = Operately.Operations.ProjectPermissionsEditing.run(ctx.creator, project, %{
       public: Binding.no_access(),
       company: Binding.view_access(),
       space: Binding.full_access(),
     })
 
-    refute Access.get_group(group_id: project.group_id, tag: :standard)
+    assert Access.get_binding(context_id: context.id, group_id: group.id, access_level: Binding.full_access())
   end
 
   test "ProjectPermissionsEditing operation creates activity", ctx do
