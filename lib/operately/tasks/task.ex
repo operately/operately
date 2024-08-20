@@ -8,6 +8,7 @@ defmodule Operately.Tasks.Task do
     has_one :group, through: [:milestone, :project, :group]
     has_one :company, through: [:creator, :company]
     has_one :project, through: [:milestone, :project]
+    has_one :access_context, through: [:project, :access_context]
 
     has_many :assignees, Operately.Tasks.Assignee
     has_many :assigned_people, through: [:assignees, :person]
@@ -23,6 +24,7 @@ defmodule Operately.Tasks.Task do
     field :reopened_at, :naive_datetime
 
     timestamps()
+    requester_access_level()
   end
 
   def changeset(attrs) do
