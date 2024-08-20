@@ -7,8 +7,7 @@ defmodule Operately.Operations.GoalReopening do
 
   @action :goal_reopening
 
-  def run(author, goal_id, message) do
-    goal = Goals.get_goal!(goal_id)
+  def run(author, goal, message) do
     changeset = Goals.Goal.changeset(goal, %{closed_at: nil, closed_by_id: nil})
 
     Multi.new()
@@ -17,7 +16,7 @@ defmodule Operately.Operations.GoalReopening do
       %{
         company_id: author.company_id,
         space_id: goal.group_id,
-        goal_id: goal_id,
+        goal_id: goal.id,
       }
     end, include_notification: false)
     |> Multi.insert(:thread, fn changes -> CommentThread.changeset(%{
