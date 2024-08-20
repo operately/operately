@@ -35,7 +35,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoal do
     |> respond()
   end
 
-  def respond(result) do
+  defp respond(result) do
     case result do
       {:ok, ctx} -> {:ok, ctx.serialized}
       {:error, :attrs, _} -> {:error, :bad_request}
