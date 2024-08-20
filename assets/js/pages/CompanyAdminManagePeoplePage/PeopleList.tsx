@@ -23,11 +23,17 @@ export function PeopleList() {
 }
 
 function invitations(company: Companies.Company) {
-  return company.people!.filter((person) => person!.hasOpenInvitation);
+  return company
+    .people!.filter((person) => person!.hasOpenInvitation)
+    .slice(0)
+    .sort((a, b) => a.fullName!.localeCompare(b.fullName!));
 }
 
 function regularMembers(company: Companies.Company) {
-  return company.people!.filter((person) => !person!.hasOpenInvitation);
+  return company
+    .people!.filter((person) => !person!.hasOpenInvitation)
+    .slice(0)
+    .sort((a, b) => a.fullName!.localeCompare(b.fullName!));
 }
 
 function InvitationList({ people }: { people: People.Person[] }) {
