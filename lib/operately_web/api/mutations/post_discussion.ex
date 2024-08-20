@@ -2,7 +2,9 @@ defmodule OperatelyWeb.Api.Mutations.PostDiscussion do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
-  import Operately.Access.Filters
+  alias Operately.Groups
+  alias Operately.Groups.Permissions
+  alias Operately.Operations.DiscussionPosting
 
   inputs do
     field :space_id, :string
@@ -15,41 +17,24 @@ defmodule OperatelyWeb.Api.Mutations.PostDiscussion do
   end
 
   def call(conn, inputs) do
-    person = me(conn)
+    Action.new()
+    |> run(:me, fn -> find_me(conn) end)
+    |> run(:space_id, fn -> decode_id(inputs.space_id) end)
+    |> run(:space, fn ctx -> Groups.get_group_with_access_level(ctx.space_id, ctx.me.id) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.space.requester_access_level, :can_post_discussions) end)
+    |> run(:operation, fn ctx -> DiscussionPosting.run(ctx.me, ctx.space, inputs.title, inputs.body) end)
+    |> run(:serialized, fn ctx -> {:ok, %{discussion: Serializer.serialize(ctx.operation, level: :essential)}} end)
+    |> respond()
+  end
 
-    {:ok, space_id} = decode_id(inputs.space_id)
-
-    case load_space(person, space_id, is_company_space?(conn, space_id)) do
-      nil ->
-        query(space_id)
-        |> return_error(person, is_company_space?(conn, space_id))
-
-      space ->
-        {:ok, discussion} = Operately.Operations.DiscussionPosting.run(person, space, inputs.title, inputs.body)
-        {:ok, %{discussion: Serializer.serialize(discussion, level: :essential)}}
+  defp respond(result) do
+    case result do
+      {:ok, ctx} -> {:ok, ctx.serialized}
+      {:error, :space_id, _} -> {:error, :bad_request}
+      {:error, :space, _} -> {:error, :not_found}
+      {:error, :check_permissions, _} -> {:error, :forbidden}
+      {:error, :operation, _} -> {:error, :internal_server_error}
+      _ -> {:error, :internal_server_error}
     end
-  end
-
-  defp load_space(person, space_id, false) do
-    query(space_id)
-    |> filter_by_edit_access(person.id)
-    |> Repo.one()
-  end
-
-  defp load_space(person, space_id, true) do
-    query(space_id)
-    |> filter_by_edit_access(person.id, join_parent: :company)
-    |> Repo.one()
-  end
-
-  defp return_error(q, person, false), do: forbidden_or_not_found(q, person.id)
-  defp return_error(q, person, true), do: forbidden_or_not_found(q, person.id, join_parent: :company)
-
-  defp query(space_id) do
-    from(s in Operately.Groups.Group, where: s.id == ^space_id)
-  end
-
-  defp is_company_space?(conn, space_id) do
-    company(conn).company_space_id == space_id
   end
 end

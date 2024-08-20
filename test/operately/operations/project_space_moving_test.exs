@@ -55,36 +55,36 @@ defmodule Operately.Operations.ProjectSpaceMovingTest do
     assert Access.get_binding(context_id: context.id, group_id: new_space_group.id, access_level: Binding.edit_access())
   end
 
-  test "ProjectSpaceMoving operation ignores new space when it's the company's space and deletes old binding", ctx do
+  test "ProjectSpaceMoving operation creates new binding when it's to the company's space", ctx do
     project = project_fixture(ctx.attrs)
     context = Access.get_context!(project_id: project.id)
 
-    unused_space_group = Access.get_group!(group_id: ctx.new_space.id, tag: :standard)
-    old_space_group = Access.get_group!(group_id: ctx.space.id, tag: :standard)
+    new_space_group = Access.get_group!(group_id: ctx.company.company_space_id, tag: :standard)
+    old_space_group = Access.get_group!(group_id: ctx.attrs.group_id, tag: :standard)
 
-    refute Access.get_binding(context_id: context.id, group_id: unused_space_group.id)
+    refute Access.get_binding(context_id: context.id, group_id: new_space_group.id)
     assert Access.get_binding(context_id: context.id, group_id: old_space_group.id, access_level: Binding.edit_access())
 
-    Operately.Operations.ProjectSpaceMoving.run(ctx.creator, project, ctx.company.company_space_id)
+    {:ok, _} = Operately.Operations.ProjectSpaceMoving.run(ctx.creator, project, ctx.company.company_space_id)
 
-    refute Access.get_binding(context_id: context.id, group_id: unused_space_group.id)
+    assert Access.get_binding(context_id: context.id, group_id: new_space_group.id, access_level: Binding.edit_access())
     refute Access.get_binding(context_id: context.id, group_id: old_space_group.id)
   end
 
-  test "ProjectSpaceMoving operation creates binding to new space and ignores old space when it's the company's space", ctx do
+  test "ProjectSpaceMoving operation deletes old binding when it's to the company's space", ctx do
     project = project_fixture(Map.merge(ctx.attrs, %{group_id: ctx.company.company_space_id}))
     context = Access.get_context!(project_id: project.id)
 
-    unused_space_group = Access.get_group!(group_id: ctx.space.id, tag: :standard)
+    old_space_group = Access.get_group!(group_id: ctx.company.company_space_id, tag: :standard)
     new_space_group = Access.get_group!(group_id: ctx.new_space.id, tag: :standard)
 
-    refute Access.get_binding(context_id: context.id, group_id: unused_space_group.id)
+    assert Access.get_binding(context_id: context.id, group_id: old_space_group.id, access_level: Binding.edit_access())
     refute Access.get_binding(context_id: context.id, group_id: new_space_group.id)
 
-    Operately.Operations.ProjectSpaceMoving.run(ctx.creator, project, ctx.new_space.id)
+    {:ok, _} = Operately.Operations.ProjectSpaceMoving.run(ctx.creator, project, ctx.new_space.id)
 
-    refute Access.get_binding(context_id: context.id, group_id: unused_space_group.id)
-    assert Access.get_binding(context_id: context.id, group_id: new_space_group.id, access_level: Binding.no_access())
+    refute Access.get_binding(context_id: context.id, group_id: old_space_group.id)
+    assert Access.get_binding(context_id: context.id, group_id: new_space_group.id, access_level: Binding.edit_access())
   end
 
   test "ProjectSpaceMoving operation creates activity and notification", ctx do
