@@ -4,6 +4,7 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectPermissions do
 
   alias Operately.Projects
   alias Operately.Projects.Permissions
+  alias Operately.Operations.ProjectPermissionsEditing
 
   inputs do
     field :project_id, :string
@@ -15,22 +16,31 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectPermissions do
   end
 
   def call(conn, inputs) do
-    person = me(conn)
-    {:ok, id} = decode_id(inputs.project_id)
+    Action.new()
+    |> run(:me, fn -> find_me(conn) end)
+    |> run(:id, fn -> decode_id(inputs.project_id) end)
+    |> run(:project, fn ctx -> Projects.get_project_with_access_level(ctx.id, ctx.me.id) end)
+    |> run(:check_permissions, fn ctx -> check_permissions(ctx.project) end)
+    |> run(:operation, fn ctx -> ProjectPermissionsEditing.run(ctx.me, ctx.project, inputs.access_levels) end)
+    |> respond()
+  end
 
-    case Projects.get_project_and_access_level(id, person.id) do
-      {:ok, project, access_level} ->
-        if Permissions.can_edit_permissions(access_level) do
-          execute(person, project, inputs)
-        else
-          {:error, :forbidden}
-        end
-      {:error, reason} -> {:error, reason}
+  def respond(result) do
+    case result do
+      {:ok, _} -> {:ok, %{success: true}}
+      {:error, :me, _} -> {:error, :not_found}
+      {:error, :id, _} -> {:error, :bad_request}
+      {:error, :project, _} -> {:error, :not_found}
+      {:error, :check_permissions, _} -> {:error, :forbidden}
+      _ -> {:error, :internal_server_error}
     end
   end
 
-  defp execute(person, project, inputs) do
-    Operately.Operations.ProjectPermissionsEditing.run(person, project, inputs.access_levels)
-    {:ok, %{success: true}}
+  defp check_permissions(project) do
+    if Permissions.can_edit_permissions(project.requester_access_level) do
+      {:ok, :allowed}
+    else
+      {:error, :forbidden}
+    end
   end
 end

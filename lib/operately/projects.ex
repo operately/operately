@@ -26,9 +26,9 @@ defmodule Operately.Projects do
     Repo.one(query, with_deleted: true)
   end
 
-  def get_project_and_access_level(project_id, person_id) do
+  def get_project_with_access_level(project_id, person_id) do
     from(p in Project, as: :resource, where: p.id == ^project_id)
-    |> Fetch.get_resource_and_access_level(person_id)
+    |> Fetch.get_resource_with_access_level(person_id)
   end
 
   def get_check_in!(id) do
