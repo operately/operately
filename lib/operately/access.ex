@@ -137,7 +137,7 @@ defmodule Operately.Access do
     end)
   end
 
-  defp maybe_insert_anonymous_binding(multi, company_id, access_level) do
+  def maybe_insert_anonymous_binding(multi, company_id, access_level) do
     if access_level == Binding.view_access() do
       anonymous = get_group!(company_id: company_id, tag: :anonymous)
       insert_binding(multi, :anonymous_binding, anonymous, Binding.view_access())
