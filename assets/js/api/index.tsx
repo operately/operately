@@ -2032,15 +2032,6 @@ export interface ResumeProjectResult {
 }
 
 
-export interface SetMilestoneDeadlineInput {
-
-}
-
-export interface SetMilestoneDeadlineResult {
-
-}
-
-
 export interface UpdateGroupAppearanceInput {
   id?: string | null;
   icon?: string | null;
@@ -2542,10 +2533,6 @@ export class ApiClient {
     return this.post("/resume_project", input);
   }
 
-  async setMilestoneDeadline(input: SetMilestoneDeadlineInput): Promise<SetMilestoneDeadlineResult> {
-    return this.post("/set_milestone_deadline", input);
-  }
-
   async updateGroupAppearance(input: UpdateGroupAppearanceInput): Promise<UpdateGroupAppearanceResult> {
     return this.post("/update_group_appearance", input);
   }
@@ -2866,9 +2853,6 @@ export async function reopenGoal(input: ReopenGoalInput) : Promise<ReopenGoalRes
 }
 export async function resumeProject(input: ResumeProjectInput) : Promise<ResumeProjectResult> {
   return defaultApiClient.resumeProject(input);
-}
-export async function setMilestoneDeadline(input: SetMilestoneDeadlineInput) : Promise<SetMilestoneDeadlineResult> {
-  return defaultApiClient.setMilestoneDeadline(input);
 }
 export async function updateGroupAppearance(input: UpdateGroupAppearanceInput) : Promise<UpdateGroupAppearanceResult> {
   return defaultApiClient.updateGroupAppearance(input);
@@ -3275,10 +3259,6 @@ export function useResumeProject() : UseMutationHookResult<ResumeProjectInput, R
   return useMutation<ResumeProjectInput, ResumeProjectResult>((input) => defaultApiClient.resumeProject(input));
 }
 
-export function useSetMilestoneDeadline() : UseMutationHookResult<SetMilestoneDeadlineInput, SetMilestoneDeadlineResult> {
-  return useMutation<SetMilestoneDeadlineInput, SetMilestoneDeadlineResult>((input) => defaultApiClient.setMilestoneDeadline(input));
-}
-
 export function useUpdateGroupAppearance() : UseMutationHookResult<UpdateGroupAppearanceInput, UpdateGroupAppearanceResult> {
   return useMutation<UpdateGroupAppearanceInput, UpdateGroupAppearanceResult>((input) => defaultApiClient.updateGroupAppearance(input));
 }
@@ -3504,8 +3484,6 @@ export default {
   useReopenGoal,
   resumeProject,
   useResumeProject,
-  setMilestoneDeadline,
-  useSetMilestoneDeadline,
   updateGroupAppearance,
   useUpdateGroupAppearance,
   updateMilestone,
