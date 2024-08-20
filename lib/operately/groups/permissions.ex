@@ -2,6 +2,7 @@ defmodule Operately.Groups.Permissions do
   alias Operately.Access.Binding
 
   defstruct [
+    :can_create_goal,
     :can_edit,
     :can_edit_discussions,
     :can_edit_members_permissions,
@@ -14,6 +15,7 @@ defmodule Operately.Groups.Permissions do
 
   def calculate_permissions(access_level) do
     %__MODULE__{
+      can_create_goal: can_create_goal(access_level),
       can_edit: can_edit(access_level),
       can_edit_discussions: can_edit_discussions(access_level),
       can_edit_members_permissions: can_edit_members_permissions(access_level),
@@ -25,6 +27,7 @@ defmodule Operately.Groups.Permissions do
     }
   end
 
+  def can_create_goal(access_level), do: access_level >= Binding.edit_access()
   def can_edit(access_level), do: access_level >= Binding.edit_access()
   def can_edit_discussions(access_level), do: access_level >= Binding.edit_access()
   def can_edit_members_permissions(access_level), do: access_level >= Binding.full_access()
