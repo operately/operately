@@ -66,9 +66,11 @@ defmodule Operately.Operations.GoalCreationTest do
     context = Access.get_context!(goal_id: goal.id)
     full_access = Access.get_group!(company_id: ctx.company.id, tag: :full_access)
     standard = Access.get_group!(company_id: ctx.company.id, tag: :standard)
+    anonymous = Access.get_group!(company_id: ctx.company.id, tag: :anonymous)
 
     assert Access.get_binding(context_id: context.id, group_id: full_access.id, access_level: Binding.full_access())
     assert Access.get_binding(context_id: context.id, group_id: standard.id, access_level: Binding.comment_access())
+    assert Access.get_binding(context_id: context.id, group_id: anonymous.id, access_level: Binding.view_access())
   end
 
   test "GoalCreation operation creates bindings to space", ctx do
@@ -82,20 +84,18 @@ defmodule Operately.Operations.GoalCreationTest do
     assert Access.get_binding(context_id: context.id, group_id: standard.id, access_level: Binding.edit_access())
   end
 
-  test "GoalCreation operation doesn't create bindings to space when it's company space", ctx do
+  test "GoalCreation operation creates bindings to space when it's company space", ctx do
     company_space_id = ctx.company.company_space_id
     attrs = Map.merge(ctx.attrs, %{space_id: company_space_id})
 
     {:ok, goal} = Operately.Operations.GoalCreation.run(ctx.creator, attrs)
 
     context = Access.get_context!(goal_id: goal.id)
-    full_access = Access.get_group!(group_id: ctx.space.id, tag: :full_access)
-    standard = Access.get_group!(group_id: ctx.space.id, tag: :standard)
+    full_access = Access.get_group!(group_id: company_space_id, tag: :full_access)
+    standard = Access.get_group!(group_id: company_space_id, tag: :standard)
 
-    refute Access.get_binding(context_id: context.id, group_id: full_access.id)
-    refute Access.get_binding(context_id: context.id, group_id: standard.id)
-
-    refute Access.get_group(group_id: company_space_id)
+    assert Access.get_binding(context_id: context.id, group_id: full_access.id, access_level: Binding.full_access())
+    assert Access.get_binding(context_id: context.id, group_id: standard.id, access_level: Binding.edit_access())
   end
 
   test "GoalCreation operation creates bindings to reviewer and champion", ctx do

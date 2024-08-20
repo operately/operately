@@ -2,7 +2,9 @@ defmodule OperatelyWeb.Api.Mutations.EditGoal do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
-  import Operately.Access.Filters, only: [filter_by_edit_access: 2, forbidden_or_not_found: 2]
+  alias Operately.Goals
+  alias Operately.Goals.Permissions
+  alias Operately.Operations.GoalEditing
 
   inputs do
     field :goal_id, :string
@@ -23,35 +25,36 @@ defmodule OperatelyWeb.Api.Mutations.EditGoal do
   end
 
   def call(conn, inputs) do
-    person = me(conn)
-    {:ok, id} = decode_id(inputs.goal_id)
+    Action.new()
+    |> run(:me, fn -> find_me(conn) end)
+    |> run(:attrs, fn -> decode_inputs(inputs) end)
+    |> run(:goal, fn ctx -> Goals.get_goal_with_access_level(ctx.attrs.goal_id, ctx.me.id) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.goal.requester_access_level, :can_edit) end)
+    |> run(:operation, fn ctx -> GoalEditing.run(ctx.me, ctx.goal, ctx.attrs) end)
+    |> run(:serialized, fn ctx -> {:ok, %{goal: Serializer.serialize(ctx.operation, level: :essential)}} end)
+    |> respond()
+  end
 
-    case load_goal(person, id) do
-      nil ->
-        query(id)
-        |> forbidden_or_not_found(person.id)
-
-      goal ->
-        {:ok, champion_id} = decode_id(inputs.champion_id)
-        {:ok, reviewer_id} = decode_id(inputs.reviewer_id)
-
-        attrs = Map.merge(inputs, %{
-          champion_id: champion_id,
-          reviewer_id: reviewer_id,
-        })
-
-        {:ok, goal} = Operately.Operations.GoalEditing.run(person, goal, attrs)
-        {:ok, %{goal: Serializer.serialize(goal, level: :essential)}}
+  defp respond(result) do
+    case result do
+      {:ok, ctx} -> {:ok, ctx.serialized}
+      {:error, :attrs, _} -> {:error, :bad_request}
+      {:error, :goal, _} -> {:error, :not_found}
+      {:error, :check_permissions, _} -> {:error, :forbidden}
+      {:error, :operation, _} -> {:error, :internal_server_error}
+      _ -> {:error, :internal_server_error}
     end
   end
 
-  defp load_goal(person, goal_id) do
-    query(goal_id)
-    |> filter_by_edit_access(person.id)
-    |> Repo.one()
-  end
+  defp decode_inputs(inputs) do
+    {:ok, goal_id} = decode_id(inputs.goal_id)
+    {:ok, champion_id} = decode_id(inputs.champion_id)
+    {:ok, reviewer_id} = decode_id(inputs.reviewer_id)
 
-  defp query(goal_id) do
-    from(g in Operately.Goals.Goal, where: g.id == ^goal_id)
+    {:ok, Map.merge(inputs, %{
+      goal_id: goal_id,
+      champion_id: champion_id,
+      reviewer_id: reviewer_id,
+    })}
   end
 end

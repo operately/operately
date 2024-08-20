@@ -32,7 +32,9 @@ defmodule Operately.Data.Change019CreateAccessGroupsForSpacesTest do
     Enum.each(ctx.companies, fn company ->
       spaces = Groups.list_groups_for_company(company.id)
 
-      Enum.each(spaces, fn space ->
+      spaces
+      |> Enum.filter(&(&1.id != company.company_space_id))
+      |> Enum.each(fn space ->
         context = Access.get_context!(group_id: space.id)
         standard = Access.get_group!(company_id: company.id, tag: :standard)
         full_access = Access.get_group!(company_id: company.id, tag: :full_access)
