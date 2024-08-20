@@ -1,4 +1,6 @@
 defmodule Operately.Goals.Permissions do
+  alias Operately.Access.Binding
+
   defstruct [
     :can_edit,
     :can_check_in,
@@ -17,6 +19,12 @@ defmodule Operately.Goals.Permissions do
     }
   end
 
+  defp calculate_permissions(access_level) do
+    %__MODULE__{
+      can_edit: can_edit(access_level),
+    }
+  end
+
   # ---
 
   defp is_champion?(goal, user) do
@@ -25,5 +33,17 @@ defmodule Operately.Goals.Permissions do
 
   defp is_reviewer?(goal, user) do
     goal.reviewer_id == user.id
+  end
+
+  def can_edit(access_level), do: access_level >= Binding.edit_access()
+
+  def check(access_level, permission) do
+    permissions = calculate_permissions(access_level)
+
+    if Map.get(permissions, permission) == true do
+      {:ok, :allowed}
+    else
+      {:error, :forbidden}
+    end
   end
 end

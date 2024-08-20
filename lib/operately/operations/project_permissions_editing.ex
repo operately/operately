@@ -1,6 +1,4 @@
 defmodule Operately.Operations.ProjectPermissionsEditing do
-  import Ecto.Query, only: [from: 2]
-
   alias Ecto.Multi
   alias Operately.Repo
   alias Operately.Access
@@ -11,21 +9,19 @@ defmodule Operately.Operations.ProjectPermissionsEditing do
     |> Multi.run(:context, fn _, _ ->
       {:ok, Access.get_context!(project_id: project.id)}
     end)
-    |> Access.update_bindings_to_company(project.company_id, attrs.company, attrs.public)
-    |> maybe_update_bidings_to_space(project, attrs)
+    |> update_bindings(project, attrs)
     |> insert_activity(author, project)
     |> Repo.transaction()
   end
 
-  defp maybe_update_bidings_to_space(multi, project, attrs) do
-    company_space_id = Repo.one!(from(c in Operately.Companies.Company, where: c.id == ^project.company_id, select: c.company_space_id))
+  defp update_bindings(multi, project, attrs) do
+    standard = Access.get_group!(company_id: project.company_id, tag: :standard)
+    space_standard = Access.get_group!(group_id: project.group_id, tag: :standard)
 
-    if project.group_id != company_space_id do
-      multi
-      |> Access.update_bindings_to_space(project.group_id, attrs.space)
-    else
-      multi
-    end
+    multi
+    |> Access.maybe_update_anonymous_binding(project.company_id, attrs.public)
+    |> Access.update_or_insert_binding(:company_members_binding, standard, attrs.company)
+    |> Access.update_or_insert_binding(:space_members_binding, space_standard, attrs.space)
   end
 
   defp insert_activity(multi, author, project) do

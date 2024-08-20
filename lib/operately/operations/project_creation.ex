@@ -1,6 +1,4 @@
 defmodule Operately.Operations.ProjectCreation do
-  import Ecto.Query, only: [from: 2]
-
   alias Operately.Repo
   alias Operately.Activities
   alias Operately.Access
@@ -109,30 +107,22 @@ defmodule Operately.Operations.ProjectCreation do
   end
 
   defp insert_bindings(multi, params) do
-    multi
-    |> Access.insert_bindings_to_company(params.company_id, params.company_access_level, params.anonymous_access_level)
-    |> maybe_insert_bindings_to_space(params)
-    |> insert_bindings_to_contributors(params)
-    |> maybe_insert_binding_to_creator(params)
-  end
-
-  defp maybe_insert_bindings_to_space(multi, params) do
-    company_space_id = Repo.one!(from(c in Operately.Companies.Company, where: c.id == ^params.company_id, select: c.company_space_id))
-
-    if params.group_id != company_space_id do
-      Access.insert_bindings_to_space(multi, params.group_id, params.space_access_level)
-    else
-      multi
-    end
-  end
-
-  defp insert_bindings_to_contributors(multi, params) do
+    full_access = Access.get_group!(company_id: params.company_id, tag: :full_access)
+    standard = Access.get_group!(company_id: params.company_id, tag: :standard)
+    space_full_access = Access.get_group!(group_id: params.group_id, tag: :full_access)
+    space_standard = Access.get_group!(group_id: params.group_id, tag: :standard)
     reviewer_group = Access.get_group!(person_id: params.reviewer_id)
     champion_group = Access.get_group!(person_id: params.champion_id)
 
     multi
+    |> Access.maybe_insert_anonymous_binding(params.company_id, params.anonymous_access_level)
+    |> Access.insert_binding(:company_full_access_binding, full_access, Binding.full_access())
+    |> Access.insert_binding(:company_members_binding, standard, params.company_access_level)
+    |> Access.insert_binding(:space_full_access_binding, space_full_access, Binding.full_access())
+    |> Access.insert_binding(:space_members_binding, space_standard, params.space_access_level)
     |> Access.insert_binding(:reviewer_binding, reviewer_group, Binding.full_access(), :reviewer)
     |> Access.insert_binding(:champion_binding, champion_group, Binding.full_access(), :champion)
+    |> maybe_insert_binding_to_creator(params)
   end
 
   defp maybe_insert_binding_to_creator(multi, params) do

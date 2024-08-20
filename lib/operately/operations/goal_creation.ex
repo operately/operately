@@ -1,13 +1,10 @@
 defmodule Operately.Operations.GoalCreation do
-  import Ecto.Query, only: [from: 2]
-
   alias Ecto.Multi
   alias Operately.Repo
   alias Operately.Goals.{Goal, Target}
   alias Operately.Activities
   alias Operately.Access
   alias Operately.Access.{Context, Binding}
-  alias Operately.Companies.Company
 
   def run(creator, attrs) do
     Multi.new()
@@ -44,24 +41,21 @@ defmodule Operately.Operations.GoalCreation do
   end
 
   defp insert_bindings(multi, creator, attrs) do
+    full_access = Access.get_group!(company_id: creator.company_id, tag: :full_access)
+    standard = Access.get_group!(company_id: creator.company_id, tag: :standard)
+    space_full_access = Access.get_group!(group_id: attrs.space_id, tag: :full_access)
+    space_standard = Access.get_group!(group_id: attrs.space_id, tag: :standard)
     reviewer_group = Access.get_group!(person_id: attrs.reviewer_id)
     champion_group = Access.get_group!(person_id: attrs.champion_id)
 
     multi
-    |> Access.insert_bindings_to_company(creator.company_id, attrs.company_access_level, attrs.anonymous_access_level)
-    |> maybe_insert_bindings_to_space(creator, attrs)
+    |> Access.maybe_insert_anonymous_binding(creator.company_id, attrs.anonymous_access_level)
+    |> Access.insert_binding(:company_full_access_binding, full_access, Binding.full_access())
+    |> Access.insert_binding(:company_members_binding, standard, attrs.company_access_level)
+    |> Access.insert_binding(:space_full_access_binding, space_full_access, Binding.full_access())
+    |> Access.insert_binding(:space_members_binding, space_standard, attrs.space_access_level)
     |> Access.insert_binding(:reviewer_binding, reviewer_group, Binding.full_access(), :reviewer)
     |> Access.insert_binding(:champion_binding, champion_group, Binding.full_access(), :champion)
-  end
-
-  defp maybe_insert_bindings_to_space(multi, creator, attrs) do
-    company_space_id = Repo.one!(from(c in Company, where: c.id == ^creator.company_id, select: c.company_space_id))
-
-    if attrs.space_id != company_space_id do
-      Access.insert_bindings_to_space(multi, attrs.space_id, attrs.space_access_level)
-    else
-      multi
-    end
   end
 
   defp insert_activity(multi, creator) do

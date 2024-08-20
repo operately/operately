@@ -2,7 +2,9 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoal do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
-  import Operately.Access.Filters, only: [filter_by_edit_access: 2, forbidden_or_not_found: 2]
+  alias Operately.Groups
+  alias Operately.Groups.Permissions
+  alias Operately.Operations.GoalCreation
 
   inputs do
     field :space_id, :string
@@ -23,40 +25,38 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoal do
   end
 
   def call(conn, inputs) do
-    person = me(conn)
-    company = company(conn)
+    Action.new()
+    |> run(:me, fn -> find_me(conn) end)
+    |> run(:attrs, fn -> decode_inputs(inputs) end)
+    |> run(:space, fn ctx -> Groups.get_group_with_access_level(ctx.attrs.space_id, ctx.me.id) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.space.requester_access_level, :can_create_goal) end)
+    |> run(:operation, fn ctx -> GoalCreation.run(ctx.me, ctx.attrs) end)
+    |> run(:serialized, fn ctx -> {:ok, %{goal: Serializer.serialize(ctx.operation, level: :essential)}} end)
+    |> respond()
+  end
+
+  defp respond(result) do
+    case result do
+      {:ok, ctx} -> {:ok, ctx.serialized}
+      {:error, :attrs, _} -> {:error, :bad_request}
+      {:error, :space, _} -> {:error, :not_found}
+      {:error, :check_permissions, _} -> {:error, :forbidden}
+      {:error, :operation, _} -> {:error, :internal_server_error}
+      _ -> {:error, :internal_server_error}
+    end
+  end
+
+  defp decode_inputs(inputs) do
     {:ok, space_id} = decode_id(inputs.space_id)
     {:ok, champion_id} = decode_id(inputs[:champion_id], :allow_nil)
     {:ok, reviewer_id} = decode_id(inputs[:reviewer_id], :allow_nil)
     {:ok, parent_goal_id} = decode_id(inputs[:parent_goal_id], :allow_nil)
 
-    attrs = Map.merge(inputs, %{
+    {:ok, Map.merge(inputs, %{
       space_id: space_id,
       champion_id: champion_id,
       reviewer_id: reviewer_id,
       parent_goal_id: parent_goal_id,
-    })
-
-    if has_permissions?(person, company, space_id) do
-      {:ok, goal} = Operately.Operations.GoalCreation.run(me(conn), attrs)
-      {:ok, %{goal: Serializer.serialize(goal, level: :essential)}}
-    else
-      query(company, space_id)
-      |> forbidden_or_not_found(person.id)
-    end
-  end
-
-  defp has_permissions?(person, company, space_id) do
-    query(company, space_id)
-    |> filter_by_edit_access(person.id)
-    |> Repo.exists?()
-  end
-
-  defp query(company, space_id) when company.company_space_id != space_id do
-    from(s in Operately.Groups.Group, where: s.id == ^space_id)
-  end
-
-  defp query(company, space_id) when company.company_space_id == space_id do
-    from(c in Operately.Companies.Company, where: c.id == ^company.id)
+    })}
   end
 end
