@@ -36,4 +36,10 @@ defmodule Operately.Access.Binding do
   def edit_access, do: @edit_access
   def full_access, do: @full_access
   def valid_access_levels, do: @valid_access_levels
+
+  def from_atom(:no_access), do: @no_access
+  def from_atom(:view_access), do: @view_access
+  def from_atom(:comment_access), do: @comment_access
+  def from_atom(:edit_access), do: @edit_access
+  def from_atom(:full_access), do: @full_access
 end
