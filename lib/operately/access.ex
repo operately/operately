@@ -118,23 +118,6 @@ defmodule Operately.Access do
     end)
   end
 
-  def maybe_insert_anonymous_binding(multi, company_id, access_level) do
-    if access_level == Binding.view_access() do
-      anonymous = get_group!(company_id: company_id, tag: :anonymous)
-      insert_binding(multi, :anonymous_binding, anonymous, Binding.view_access())
-    else
-      multi
-    end
-  end
-
-  def update_bindings_to_company(multi, company_id, members_access_level, anonymous_access_level) do
-    standard = get_group!(company_id: company_id, tag: :standard)
-
-    multi
-    |> update_or_insert_binding(:company_members_binding, standard, members_access_level)
-    |> maybe_update_anonymous_binding(company_id, anonymous_access_level)
-  end
-
   def update_or_insert_binding(multi, name, access_group, access_level, tag \\ nil) do
     multi
     |> Multi.run(name, fn _, %{context: context} ->
@@ -158,6 +141,15 @@ defmodule Operately.Access do
           }}
       end
     end)
+  end
+
+  def maybe_insert_anonymous_binding(multi, company_id, access_level) do
+    if access_level == Binding.view_access() do
+      anonymous = get_group!(company_id: company_id, tag: :anonymous)
+      insert_binding(multi, :anonymous_binding, anonymous, Binding.view_access())
+    else
+      multi
+    end
   end
 
   def maybe_update_anonymous_binding(multi, company_id, access_level) do
