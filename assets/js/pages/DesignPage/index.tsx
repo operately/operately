@@ -5,6 +5,7 @@ import * as Icons from "@tabler/icons-react";
 
 import { Logo } from "@/layouts/DefaultLayout/Logo";
 import { Colors } from "./Colors";
+import { Buttons } from "./Buttons";
 import { Link } from "@/components/Link";
 
 export async function loader({}): Promise<null> {
@@ -19,6 +20,7 @@ export function Page() {
         <Paper.Body>
           <TitleRow />
           <Colors />
+          <Buttons />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
