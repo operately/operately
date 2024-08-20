@@ -7,6 +7,7 @@ defmodule Operately.Goals.Permissions do
     :can_acknowledge_check_in,
     :can_close,
     :can_archive,
+    :can_reopen,
   ]
 
   def calculate(goal, user) do
@@ -22,6 +23,7 @@ defmodule Operately.Goals.Permissions do
   defp calculate_permissions(access_level) do
     %__MODULE__{
       can_edit: can_edit(access_level),
+      can_reopen: can_edit(access_level),
     }
   end
 
@@ -36,6 +38,7 @@ defmodule Operately.Goals.Permissions do
   end
 
   def can_edit(access_level), do: access_level >= Binding.edit_access()
+  def can_reopen(access_level), do: access_level >= Binding.edit_access()
 
   def check(access_level, permission) do
     permissions = calculate_permissions(access_level)
