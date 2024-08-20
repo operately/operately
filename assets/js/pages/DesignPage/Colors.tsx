@@ -26,6 +26,7 @@ export function Colors() {
         <Color color="bg-link-base" usage="Default color for links" />
         <Color color="bg-link-hover" usage="Hover color for links" />
         <Color color="bg-accent-1" usage="Primary accent color in the application" />
+        <Color color="bg-accent-1-light" usage="A lighter shade of the primary accent color for hover effects" />
         <Color color="bg-red-500" usage="Error color for alerts and notifications" />
       </div>
     </div>
