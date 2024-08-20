@@ -97,7 +97,7 @@ function Options({ person }: { person: People.Person }) {
         to={Paths.profilePath(person.id!)}
         icon={Icons.IconTrash}
         title="Remove"
-        dataTestId="remove-person"
+        testId="remove-person"
       />
     </PageOptions.Root>
   );
