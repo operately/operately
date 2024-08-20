@@ -45,6 +45,13 @@ defmodule Operately.Projects.Permissions do
     }
   end
 
+  defp calculate_permissions(access_level) do
+    %__MODULE__{
+      can_edit_name: can_edit_name(access_level),
+      can_edit_permissions: can_edit_permissions(access_level),
+    }
+  end
+
   # ---
 
   defp is_contributor?(project, user) do
@@ -63,5 +70,16 @@ defmodule Operately.Projects.Permissions do
     is_public?(project) || is_contributor?(project, user)
   end
 
+  def can_edit_name(access_level), do: access_level >= Binding.edit_access()
   def can_edit_permissions(access_level), do: access_level >= Binding.full_access()
+
+  def check(access_level, permission) do
+    permissions = calculate_permissions(access_level)
+
+    if Map.get(permissions, permission) == true do
+      {:ok, :allowed}
+    else
+      {:error, :forbidden}
+    end
+  end
 end
