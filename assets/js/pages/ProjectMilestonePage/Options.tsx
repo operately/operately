@@ -11,13 +11,13 @@ export function Options({ form }) {
         icon={Icons.IconEdit}
         title="Edit Name and Due Date"
         onClick={form.titleAndDeadline.startEditing}
-        dataTestId="edit-project-name-button"
+        testId="edit-project-name-button"
       />
       <PageOptions.Action
         icon={Icons.IconArchive}
         title="Archive this milestone"
         onClick={form.archive}
-        dataTestId="archive-milestone-button"
+        testId="archive-milestone-button"
       />
     </PageOptions.Root>
   );
