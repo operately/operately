@@ -4,8 +4,7 @@ defmodule Operately.Operations.ProjectPausing do
   alias Operately.Projects
   alias Operately.Activities
 
-  def run(author, project_id) do
-    project = Operately.Projects.get_project!(project_id)
+  def run(author, project) do
     changeset = Projects.Project.changeset(project, %{status: "paused"})
 
     Multi.new()
