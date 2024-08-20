@@ -91,7 +91,7 @@ defmodule OperatelyWeb.Api.Queries.GetMilestoneTest do
   #
 
   defp assert_response(res, milestone) do
-    m = %{res.milestone | status: String.to_atom(res.milestone.status)}
+    m = %{res.milestone | status: to_string(res.milestone.status)}
     assert milestone == m
   end
 
