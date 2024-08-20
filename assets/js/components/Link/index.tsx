@@ -2,11 +2,13 @@ import React from "react";
 import classnames from "classnames";
 
 import * as Router from "react-router-dom";
+import classNames from "classnames";
 
 interface Props {
   children: React.ReactNode;
   target?: string;
   testId?: string;
+  className?: string;
 }
 
 interface LinkProps extends Props {
@@ -24,35 +26,36 @@ interface DivLinkProps extends Props {
   style?: React.CSSProperties;
 }
 
-const baseClassNoUnderline = classnames(
-  "text-link-base hover:text-link-hover",
-  "hover:underline underline-offset-2",
-  "cursor-pointer",
-  "transition-colors",
-);
+const baseLinkClass = classnames("cursor-pointer", "transition-colors");
 
-const baseClassName = classnames(
-  "text-link-base hover:text-link-hover",
-  "underline underline-offset-2",
-  "cursor-pointer",
-  "transition-colors",
-);
-
-const dimmedClassName = classnames(
-  "text-content-dimmed hover:text-content-hover",
-  "underline underline-offset-2",
-  "cursor-pointer",
-  "transition-colors",
-);
-
-export function Link({ to, children, target, underline = true, testId }: LinkProps) {
-  const className = underline ? baseClassName : baseClassNoUnderline;
-
+export function UnstyledLink(props: LinkProps) {
   return (
-    <Router.Link to={to} className={className} data-test-id={testId} target={target}>
-      {children}
+    <Router.Link to={props.to} className={props.className} data-test-id={props.testId} target={props.target}>
+      {props.children}
     </Router.Link>
   );
+}
+
+export function Link(props: LinkProps) {
+  const className = classNames(
+    baseLinkClass,
+    underlineClass(props.underline),
+    "text-link-base hover:text-link-hover",
+    props.className,
+  );
+
+  return <UnstyledLink {...props} className={className} />;
+}
+
+export function BlackLink(props: LinkProps) {
+  const className = classNames(
+    baseLinkClass,
+    underlineClass(props.underline),
+    "text-content-base hover:text-content-base",
+    props.className,
+  );
+
+  return <UnstyledLink {...props} className={className} />;
 }
 
 export function ButtonLink({ onClick, children, testId }: ButtonLinkProps) {
@@ -63,12 +66,10 @@ export function ButtonLink({ onClick, children, testId }: ButtonLinkProps) {
   );
 }
 
-export function DimmedLink({ to, children, target, testId }: LinkProps) {
-  return (
-    <Router.Link to={to} className={dimmedClassName} data-test-id={testId} target={target}>
-      {children}
-    </Router.Link>
-  );
+export function DimmedLink(props: LinkProps) {
+  const className = classnames(baseLinkClass, underlineClass(props.underline), "text-content-dimmed", props.className);
+
+  return <UnstyledLink {...props} className={className} />;
 }
 
 export function DivLink({ to, children, testId, target, ...props }: DivLinkProps) {
@@ -77,4 +78,8 @@ export function DivLink({ to, children, testId, target, ...props }: DivLinkProps
       {children}
     </Router.Link>
   );
+}
+
+function underlineClass(underline?: boolean) {
+  return underline ? "underline underline-offset-2" : "hover:underline underline-offset-2";
 }
