@@ -40,7 +40,7 @@ function Navigation() {
 
 function Header() {
   return (
-    <div className="flex items-start justify-between">
+    <div className="flex items-center justify-between">
       <Title />
       <AddMemberButton />
     </div>
@@ -118,7 +118,7 @@ function PersonRow({ person }: { person: People.Person }) {
 function PersonInfo({ person }: { person: People.Person }) {
   return (
     <div>
-      <BlackLink to={Paths.profilePath(person.id!)} className="font-bold">
+      <BlackLink to={Paths.profilePath(person.id!)} className="font-bold" underline="hover">
         {person.fullName}
       </BlackLink>
 
