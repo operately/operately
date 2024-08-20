@@ -69,6 +69,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.People.Person do
   def serialize(data, level: :full) do
     %{
       id: OperatelyWeb.Paths.person_id(data),
+      inserted_at: OperatelyWeb.Api.Serializer.serialize(data.inserted_at),
       full_name: data.full_name,
       email: data.email,
       avatar_url: data.avatar_url,
@@ -76,7 +77,8 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.People.Person do
       suspended: data.suspended,
       manager: OperatelyWeb.Api.Serializer.serialize(data.manager),
       reports: OperatelyWeb.Api.Serializer.serialize(data.reports),
-      peers: OperatelyWeb.Api.Serializer.serialize(data.peers)
+      peers: OperatelyWeb.Api.Serializer.serialize(data.peers),
+      has_open_invitation: data.has_open_invitation
     }
   end
 
@@ -457,7 +459,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Companies.Company do
       enabled_experimental_features: company.enabled_experimental_features,
       company_space_id: company.company_space_id && Operately.ShortUuid.encode!(company.company_space_id),
       admins: OperatelyWeb.Api.Serializer.serialize(company.admins),
-      people: OperatelyWeb.Api.Serializer.serialize(company.people),
+      people: OperatelyWeb.Api.Serializer.serialize(company.people, level: :full),
     }
   end
 end

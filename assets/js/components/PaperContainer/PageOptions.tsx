@@ -5,9 +5,9 @@ import classNames from "classnames";
 
 interface RootProps {
   position?: "top-right";
-  noBorder?: boolean;
   children: React.ReactNode;
   testId?: string;
+  noBorder?: boolean;
 }
 
 export const Context = React.createContext({
