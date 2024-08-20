@@ -13,7 +13,7 @@ interface Props {
 
 interface LinkProps extends Props {
   to: string;
-  underline?: boolean;
+  underline?: "always" | "hover" | "never";
 }
 
 interface ButtonLinkProps extends Props {
@@ -60,7 +60,7 @@ export function BlackLink(props: LinkProps) {
 
 export function ButtonLink({ onClick, children, testId }: ButtonLinkProps) {
   return (
-    <span onClick={onClick} className={baseClassName} data-test-id={testId}>
+    <span onClick={onClick} className={baseLinkClass} data-test-id={testId}>
       {children}
     </span>
   );
@@ -80,6 +80,10 @@ export function DivLink({ to, children, testId, target, ...props }: DivLinkProps
   );
 }
 
-function underlineClass(underline?: boolean) {
-  return underline ? "underline underline-offset-2" : "hover:underline underline-offset-2";
+function underlineClass(underline: "always" | "hover" | "never" | undefined) {
+  if (!underline || underline === "always") return "underline underline-offset-2";
+  if (underline === "hover") return "hover:underline underline-offset-2";
+  if (underline === "never") return "";
+
+  throw new Error("Invalid underline prop");
 }
