@@ -109,7 +109,6 @@ defmodule OperatelyWeb.Api do
   mutation :remove_project_milestone, M.RemoveProjectMilestone
   mutation :reopen_goal, M.ReopenGoal
   mutation :resume_project, M.ResumeProject
-  mutation :set_milestone_deadline, M.SetMilestoneDeadline
   mutation :update_group_appearance, M.UpdateGroupAppearance
   mutation :update_milestone, M.UpdateMilestone
   mutation :update_milestone_description, M.UpdateMilestoneDescription
