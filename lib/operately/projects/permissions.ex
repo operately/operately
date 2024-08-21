@@ -52,6 +52,7 @@ defmodule Operately.Projects.Permissions do
   defp calculate_permissions(access_level) do
     %__MODULE__{
       can_edit_check_in: can_edit_check_in(access_level),
+      can_edit_timeline: can_edit_timeline(access_level),
       can_edit_resources: can_edit_resources(access_level),
       can_edit_name: can_edit_name(access_level),
       can_edit_permissions: can_edit_permissions(access_level),
@@ -81,6 +82,7 @@ defmodule Operately.Projects.Permissions do
   end
 
   def can_edit_check_in(access_level), do: access_level >= Binding.full_access()
+  def can_edit_timeline(access_level), do: access_level >= Binding.edit_access()
   def can_edit_resources(access_level), do: access_level >= Binding.edit_access()
   def can_edit_name(access_level), do: access_level >= Binding.edit_access()
   def can_edit_permissions(access_level), do: access_level >= Binding.full_access()

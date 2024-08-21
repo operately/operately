@@ -2,6 +2,10 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectTimeline do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
+  alias Operately.Projects
+  alias Operately.Projects.Permissions
+  alias Operately.Projects.EditTimelineOperation
+
   inputs do
     field :project_id, :string
 
@@ -17,13 +21,32 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectTimeline do
   end
 
   def call(conn, inputs) do
-    {:ok, id} = decode_id(inputs.project_id)
+    Action.new()
+    |> run(:me, fn -> find_me(conn) end)
+    |> run(:id, fn -> decode_id(inputs.project_id) end)
+    |> run(:attrs, fn ctx -> parse_attrs(ctx.id, inputs) end)
+    |> run(:project, fn ctx -> Projects.get_project_with_access_level(ctx.id, ctx.me.id) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.project.requester_access_level, :can_edit_timeline) end)
+    |> run(:operation, fn ctx -> EditTimelineOperation.run(ctx.me, ctx.project, ctx.attrs) end)
+    |> run(:serialized, fn ctx -> {:ok, %{project: Serializer.serialize(ctx.operation)}} end)
+    |> respond()
+  end
 
-    author = me(conn)
-    project = Operately.Projects.get_project!(id)
+  defp respond(result) do
+    case result do
+      {:ok, ctx} -> {:ok, ctx.serialized}
+      {:error, :id, _} -> {:error, :bad_request}
+      {:error, :attrs, _} -> {:error, :bad_request}
+      {:error, :project, _} -> {:error, :not_found}
+      {:error, :check_permissions, _} -> {:error, :forbidden}
+      {:error, :operation, _} -> {:error, :internal_server_error}
+      _ -> {:error, :internal_server_error}
+    end
+  end
 
-    attrs = %{
-      project_id: project.id,
+  defp parse_attrs(project_id, inputs) do
+    {:ok, %{
+      project_id: project_id,
 
       project_start_date: parse_date(inputs.project_start_date),
       project_due_date: parse_date(inputs.project_due_date),
@@ -46,10 +69,7 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectTimeline do
           due_time: parse_date(milestone.due_time)
         }
       end)
-    }
-
-    {:ok, project} = Operately.Projects.EditTimelineOperation.run(author, project, attrs)
-    {:ok, %{project: OperatelyWeb.Api.Serializer.serialize(project)}}
+    }}
   end
 
   defp parse_date(date) do
