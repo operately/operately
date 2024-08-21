@@ -99,10 +99,12 @@ function initials(fullName: string): string {
 function BackupAvatar({ person, size }: AvatarProps): JSX.Element {
   const baseClass = classnames(
     "flex items-center justify-center",
-    "text-dark-1",
-    "bg-sky-200",
+    "text-white-1",
+    "bg-gray-500",
     "rounded-full",
     "shrink-0",
+    "tracking-wider",
+    "font-semibold",
   );
 
   const sizeClass = SizeClasses({ size });
@@ -131,7 +133,7 @@ function BackupAvatar({ person, size }: AvatarProps): JSX.Element {
 function ImageAvatar({ person, size }: AvatarProps): JSX.Element {
   if (!person) return <></>;
 
-  const baseClass = "rounded-full overflow-hidden bg-white shrink-0";
+  const baseClass = "rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base";
   const sizeClass = SizeClasses({ size });
   const className = `${baseClass} ${sizeClass}`;
 
