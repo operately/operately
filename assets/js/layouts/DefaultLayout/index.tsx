@@ -11,6 +11,7 @@ import { Bell } from "./Bell";
 import { Logo } from "./Logo";
 import { Review } from "./Review";
 import { CompanyDropdown } from "./CompanyDropdown";
+import { NewDropdown } from "./NewDropdown";
 
 import { PerfBar } from "@/features/PerfBar";
 import { Paths } from "@/routes/paths";
@@ -55,6 +56,7 @@ function Navigation({ company }: { company: Api.Company }) {
         <div className="flex items-center gap-2 flex-row-reverse">
           <User />
           <Bell />
+          <NewDropdown />
         </div>
       </div>
     </NavigationContainer>
