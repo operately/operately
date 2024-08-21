@@ -17,4 +17,8 @@ defmodule Operately.Support.RichText do
     |> Jason.encode!() 
     |> Jason.decode!()
   end
+
+  def rich_text(text, :as_string) do
+    rich_text(text) |> Jason.encode!()
+  end
 end
