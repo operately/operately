@@ -185,7 +185,7 @@ function ViewComment({ comment, onEdit }) {
                     onClick={onEdit}
                     icon={Icons.IconEdit}
                     title="Edit Comment"
-                    dataTestId="edit-comment"
+                    testId="edit-comment"
                   />
                 </PageOptions.Root>
               )}
