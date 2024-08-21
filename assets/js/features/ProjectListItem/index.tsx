@@ -47,7 +47,7 @@ function ProjectNameLine({ project }) {
 
   return (
     <div className="font-extrabold flex items-center gap-2">
-      <Link to={path} underline={false}>
+      <Link to={path} underline="never">
         {project.name}
       </Link>
 
