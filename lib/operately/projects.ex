@@ -98,6 +98,11 @@ defmodule Operately.Projects do
     Repo.one(query)
   end
 
+  def get_milestone_with_access_level(milestone_id, person_id) do
+    from(m in Milestone, as: :resource, where: m.id == ^milestone_id)
+    |> Fetch.get_resource_with_access_level(person_id)
+  end
+
   def list_project_milestones(project) do
     query = from m in Milestone,
       where: m.project_id == ^project.id,
