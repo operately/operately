@@ -4,9 +4,11 @@ import * as Paper from "@/components/PaperContainer";
 import * as Icons from "@tabler/icons-react";
 
 import { Logo } from "@/layouts/DefaultLayout/Logo";
-import { Colors } from "./Colors";
-import { Buttons } from "./Buttons";
 import { Link } from "@/components/Link";
+
+import { Colors } from "./Colors";
+import { Links } from "./Links";
+import { Buttons } from "./Buttons";
 import { Menus } from "./Menus";
 
 export const loader = Pages.emptyLoader;
@@ -19,6 +21,7 @@ export function Page() {
         <Paper.Body>
           <TitleRow />
           <Colors />
+          <Links />
           <Buttons />
           <Menus />
         </Paper.Body>
@@ -40,7 +43,7 @@ function BackToLobbyLink() {
 
 function TitleRow() {
   return (
-    <div className="flex items-center gap-4 border-b border-stroke-base pb-6">
+    <div className="flex items-center gap-4 mb-8">
       <Logo width="30px" height="30px" />
       <div className="text-content-accent text-2xl font-semibold">Operately Design System</div>
     </div>

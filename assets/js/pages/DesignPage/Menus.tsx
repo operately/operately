@@ -2,11 +2,12 @@ import * as React from "react";
 import * as Icons from "@tabler/icons-react";
 
 import { Menu, MenuItem } from "@/components/Menu";
+import { Section, SectionTitle } from "./Section";
 
 export function Menus() {
   return (
-    <div className="mt-10">
-      <div className="text-content-accent text-xl font-bold">Menus</div>
+    <Section>
+      <SectionTitle>Menus</SectionTitle>
 
       <div className="max-w-2xl mt-2 mb-10">
         Operately uses menus for actions that are not immediately useful for the user on a given page. Every menu item
@@ -37,6 +38,6 @@ export function Menus() {
           </div>
         </div>
       </div>
-    </div>
+    </Section>
   );
 }
