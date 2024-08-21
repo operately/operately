@@ -1,9 +1,10 @@
 import * as React from "react";
+import { Section, SectionTitle } from "./Section";
 
 export function Colors() {
   return (
-    <div className="mt-10">
-      <div className="text-content-accent text-xl font-bold">Colors</div>
+    <Section>
+      <SectionTitle>Colors</SectionTitle>
 
       <div className="max-w-2xl mt-2 mb-10">
         Operately uses semantic color names to define the color palette, which means that the color names are based on
@@ -29,7 +30,7 @@ export function Colors() {
         <Color color="bg-accent-1-light" usage="A lighter shade of the primary accent color for hover effects" />
         <Color color="bg-red-500" usage="Error color for alerts and notifications" />
       </div>
-    </div>
+    </Section>
   );
 }
 

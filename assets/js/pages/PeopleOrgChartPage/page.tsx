@@ -89,7 +89,7 @@ function PersonCard({ node, chart }: { node: OrgChartNode; chart: OrgChart }) {
       <div className="bg-surface border border-stroke-base rounded-2xl w-52 -mt-[25px] pt-[25px] -mb-3 pb-3">
         <div className="my-3">
           <div className="font-semibold leading-tight text-center text-sm px-4 mb-1">
-            <Link to={path} underline={false}>
+            <Link to={path} underline="never">
               {person.fullName}
             </Link>
           </div>
