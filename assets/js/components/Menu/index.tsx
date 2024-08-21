@@ -22,7 +22,7 @@ const menuItemClass = classNames(
   "cursor-pointer",
   "flex items-center gap-3",
   "block px-3 py-1 text-sm leading-6",
-  "text-content-dimmed hover:text-content-base hover:bg-surface-highlight",
+  "text-content-dimmed hover:bg-surface-highlight",
   "min-w-[150px]",
   "font-medium",
 );
@@ -58,6 +58,7 @@ export function MenuItem(props: MenuItemProps) {
 
 function MenuItemContent(props: MenuItemProps) {
   const className = classNames(menuItemClass, {
+    "hover:text-content-base": !props.danger,
     "hover:text-red-500": props.danger,
   });
 
