@@ -6,14 +6,13 @@ defmodule Operately.Operations.ProjectCheckInEdit do
   alias Operately.Projects.CheckIn
   alias Operately.Repo
 
-  def run(author, check_in_id, status, description) do
-    check_in = Operately.Projects.get_check_in!(check_in_id)
+  def run(author, check_in, status, description) do
     project = Operately.Projects.get_project!(check_in.project_id)
 
     Multi.new()
     |> Multi.update(:check_in, fn _ ->
       CheckIn.changeset(check_in, %{
-        status: status, 
+        status: status,
         description: description
       })
     end)
