@@ -39,6 +39,11 @@ defmodule Operately.Projects do
     Repo.all(from c in CheckIn, where: c.project_id == ^project_id, order_by: [desc: c.inserted_at])
   end
 
+  def get_check_in_with_access_level(check_in_id, person_id) do
+    from(c in CheckIn, as: :resource, where: c.id == ^check_in_id)
+    |> Fetch.get_resource_with_access_level(person_id)
+  end
+
   defdelegate create_project(params), to: Operately.Operations.ProjectCreation, as: :run
   defdelegate list_projects(person, filters), to: Operately.Projects.ListOperation, as: :run
 

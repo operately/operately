@@ -7,6 +7,7 @@ defmodule Operately.Projects.Permissions do
     :can_close,
     :can_create_milestone,
     :can_delete_milestone,
+    :can_edit_check_in,
     :can_edit_contributors,
     :can_edit_description,
     :can_edit_goal,
@@ -30,6 +31,7 @@ defmodule Operately.Projects.Permissions do
       can_create_milestone: is_contributor?(project, user),
       can_delete_milestone: is_contributor?(project, user),
       can_edit_milestone: is_contributor?(project, user),
+      can_edit_check_in: is_contributor?(project, user),
       can_edit_description: is_contributor?(project, user),
       can_edit_timeline: is_contributor?(project, user),
       can_edit_resources: is_contributor?(project, user),
@@ -49,6 +51,7 @@ defmodule Operately.Projects.Permissions do
 
   defp calculate_permissions(access_level) do
     %__MODULE__{
+      can_edit_check_in: can_edit_check_in(access_level),
       can_edit_resources: can_edit_resources(access_level),
       can_edit_name: can_edit_name(access_level),
       can_edit_permissions: can_edit_permissions(access_level),
@@ -77,6 +80,7 @@ defmodule Operately.Projects.Permissions do
     is_public?(project) || is_contributor?(project, user)
   end
 
+  def can_edit_check_in(access_level), do: access_level >= Binding.full_access()
   def can_edit_resources(access_level), do: access_level >= Binding.edit_access()
   def can_edit_name(access_level), do: access_level >= Binding.edit_access()
   def can_edit_permissions(access_level), do: access_level >= Binding.full_access()

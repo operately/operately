@@ -11,10 +11,12 @@ defmodule Operately.Projects.CheckIn do
     belongs_to :acknowledged_by, Operately.People.Person, foreign_key: :acknowledged_by_id
     field :acknowledged_at, :utc_datetime
 
+    has_one :access_context, through: [:project, :access_context]
     has_many :reactions, Operately.Updates.Reaction, foreign_key: :entity_id, where: [entity_type: :project_check_in]
     has_many :comments, Operately.Updates.Comment, foreign_key: :entity_id, where: [entity_type: :project_check_in]
 
     timestamps()
+    requester_access_level()
   end
 
   def changeset(attrs) do
