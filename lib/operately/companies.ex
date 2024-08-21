@@ -5,6 +5,7 @@ defmodule Operately.Companies do
   alias Operately.Companies.Company
   alias Operately.Tenets.Tenet
   alias Operately.People.Person
+  alias Operately.Access.Fetch
 
   def list_companies do
     Repo.all(Company)
@@ -44,6 +45,11 @@ defmodule Operately.Companies do
     |> Repo.one!()
   end
 
+  def get_company_with_access_level(short_id, person_id) do
+    from(c in Company, as: :resource, where: c.short_id == ^short_id)
+    |> Fetch.get_resource_with_access_level(person_id)
+  end
+
   defdelegate create_company(attrs \\ %{}, account \\ nil), to: Operately.Operations.CompanyAdding, as: :run
 
   def update_company(%Company{} = company, attrs) do
@@ -69,34 +75,16 @@ defmodule Operately.Companies do
   def add_admin(admin, person_id), do: add_admins(admin, [person_id])
   defdelegate add_admins(admin, people_ids), to: Operately.Operations.CompanyAdminAdding, as: :run
 
-  def add_trusted_email_domain(company, admin, domain) do
-    cond do
-      admin.company_role != :admin ->
-        {:error, "Only admins can add trusted email domains"}
-      admin.company_id != company.id ->
-        {:error, "Admin is not in the same company"}
-      domain == "" ->
-        {:error, "Domain cannot be empty"}
-      String.at(domain, 0) != "@" ->
-        {:error, "Domain must start with @"}
-      true ->
-        company
-        |> Company.changeset(%{trusted_email_domains: [domain | company.trusted_email_domains]})
-        |> Repo.update()
-    end
+  def add_trusted_email_domain(company, domain) do
+    company
+    |> Company.changeset(%{trusted_email_domains: [domain | company.trusted_email_domains]})
+    |> Repo.update()
   end
 
-  def remove_trusted_email_domain(company, admin, domain) do
-    cond do
-      admin.company_role != :admin ->
-        {:error, "Only admins can remove trusted email domains"}
-      admin.company_id != company.id ->
-        {:error, "Admin is not in the same company"}
-      true ->
-        company
-        |> Company.changeset(%{trusted_email_domains: List.delete(company.trusted_email_domains, domain)})
-        |> Repo.update()
-    end
+  def remove_trusted_email_domain(company, domain) do
+    company
+    |> Company.changeset(%{trusted_email_domains: List.delete(company.trusted_email_domains, domain)})
+    |> Repo.update()
   end
 
   def is_email_allowed?(company, email) do

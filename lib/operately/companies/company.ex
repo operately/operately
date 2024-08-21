@@ -18,6 +18,7 @@ defmodule Operately.Companies.Company do
     field :member_count, :integer, virtual: true
 
     timestamps()
+    requester_access_level()
   end
 
   def changeset(attrs) do
