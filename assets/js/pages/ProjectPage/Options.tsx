@@ -13,7 +13,7 @@ export default function Options({ project }) {
           icon={Icons.IconPlayerPlayFilled}
           title="Resume the project"
           to={Paths.resumeProjectPath(project.id)}
-          dataTestId="resume-project-link"
+          testId="resume-project-link"
         />
       )}
 
@@ -22,7 +22,7 @@ export default function Options({ project }) {
           icon={Icons.IconEdit}
           title="Edit project name"
           to={Paths.editProjectNamePath(project.id)}
-          dataTestId="edit-project-name-button"
+          testId="edit-project-name-button"
         />
       )}
 
@@ -31,7 +31,7 @@ export default function Options({ project }) {
           icon={Icons.IconLock}
           title="Edit project permissions"
           to={Paths.editProjectAccessLevelsPath(project.id)}
-          dataTestId="edit-project-permissions-button"
+          testId="edit-project-permissions-button"
         />
       )}
 
@@ -40,7 +40,7 @@ export default function Options({ project }) {
           icon={Icons.IconPlayerPauseFilled}
           title="Pause the project"
           to={Paths.pauseProjectPath(project.id)}
-          dataTestId="pause-project-link"
+          testId="pause-project-link"
         />
       )}
 
@@ -49,7 +49,7 @@ export default function Options({ project }) {
           icon={Icons.IconExchange}
           title="Change Parent Goal"
           to={Paths.editProjectGoalPath(project.id)}
-          dataTestId="connect-project-to-goal-link"
+          testId="connect-project-to-goal-link"
         />
       )}
 
@@ -58,7 +58,7 @@ export default function Options({ project }) {
           icon={Icons.IconReplace}
           title="Move project to another space"
           to={Paths.moveProjectPath(project.id)}
-          dataTestId="move-project-link"
+          testId="move-project-link"
         />
       )}
 
@@ -67,7 +67,7 @@ export default function Options({ project }) {
           icon={Icons.IconCircleCheck}
           title="Close the project"
           to={Paths.projectClosePath(project.id)}
-          dataTestId="close-project"
+          testId="close-project"
         />
       )}
     </PageOptions.Root>

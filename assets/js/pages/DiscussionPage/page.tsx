@@ -100,7 +100,7 @@ function Options() {
         icon={Icons.IconEdit}
         title="Edit Post"
         to={Paths.discussionEditPath(discussion.id!)}
-        dataTestId="edit-discussion"
+        testId="edit-discussion"
       />
     </PageOptions.Root>
   );
