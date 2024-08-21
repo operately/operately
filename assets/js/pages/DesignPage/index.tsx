@@ -7,10 +7,9 @@ import { Logo } from "@/layouts/DefaultLayout/Logo";
 import { Colors } from "./Colors";
 import { Buttons } from "./Buttons";
 import { Link } from "@/components/Link";
+import { Menus } from "./Menus";
 
-export async function loader({}): Promise<null> {
-  return null;
-}
+export const loader = Pages.emptyLoader;
 
 export function Page() {
   return (
@@ -21,6 +20,7 @@ export function Page() {
           <TitleRow />
           <Colors />
           <Buttons />
+          <Menus />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
