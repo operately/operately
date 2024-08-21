@@ -86,21 +86,21 @@ export function Settings({ space }) {
         icon={Icons.IconEdit}
         title="Edit name and purpose"
         to={Paths.spaceEditPath(space.id)}
-        dataTestId="edit-name-and-purpose"
+        testId="edit-name-and-purpose"
       />
       {!space.isCompanySpace && (
         <PageOptions.Link
           icon={Icons.IconUserPlus}
           title="Add/Remove members"
           to={Paths.spaceMembersPath(space.id)}
-          dataTestId="add-remove-members"
+          testId="add-remove-members"
         />
       )}
       <PageOptions.Link
         icon={Icons.IconPaint}
         title="Change Appearance"
         to={Paths.spaceAppearancePath(space.id)}
-        dataTestId="change-appearance"
+        testId="change-appearance"
       />
     </PageOptions.Root>
   );
