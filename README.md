@@ -24,7 +24,6 @@
   <a href="https://twitter.com/operately">Twitter</a>
 </p>
 
-
 <p align="center">
   <a href="https://github.com/operately/operately/blob/main/LICENSE"><img src="https://img.shields.io/github/license/operately/operately" alt="License"></a>
   <a href="https://operately.semaphoreci.com/projects/operately"><img src="https://operately.semaphoreci.com/badges/operately/branches/main.svg?style=shields" alt="CI/CD Status" /></a>
