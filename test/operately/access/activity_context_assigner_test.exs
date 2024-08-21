@@ -335,7 +335,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
     test "goal_reopening action", ctx do
       Operately.Operations.GoalReopening.run(
         ctx.author,
-        ctx.goal.id,
+        ctx.goal,
         "{}"
       )
 

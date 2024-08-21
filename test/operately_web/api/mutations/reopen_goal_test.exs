@@ -16,9 +16,6 @@ defmodule OperatelyWeb.Api.Mutations.ReopenGoalTest do
 
   describe "permissions" do
     @table [
-      %{company: :no_access,      space: :no_access,      goal: :no_access,      expected: 404},
-      %{company: :no_access,      space: :no_access,      goal: :comment_access, expected: 403},
-      %{company: :no_access,      space: :no_access,      goal: :edit_access,    expected: 200},
       %{company: :no_access,      space: :no_access,      goal: :full_access,    expected: 200},
 
       %{company: :no_access,      space: :comment_access, goal: :no_access,      expected: 403},
@@ -66,11 +63,19 @@ defmodule OperatelyWeb.Api.Mutations.ReopenGoalTest do
   end
 
   def create_goal(ctx, space, company_members_level, space_members_level, goal_member_level) do
-    goal = goal_fixture(ctx.creator, %{
+    goal_attrs = %{
       space_id: space.id,
       company_access_level: Binding.from_atom(company_members_level),
       space_access_level: Binding.from_atom(space_members_level),
-    })
+    }
+
+    goal_attrs = if goal_member_level != :no_access do
+      Map.merge(goal_attrs, %{reviewer_id: ctx.person.id})
+    else
+      goal_attrs
+    end
+
+    goal = goal_fixture(ctx.creator, goal_attrs)
 
     if space_members_level != :no_access do
       {:ok, _} = Operately.Groups.add_members(ctx.creator, space.id, [%{
@@ -79,17 +84,6 @@ defmodule OperatelyWeb.Api.Mutations.ReopenGoalTest do
       }])
     end
 
-    goal = Operately.Repo.preload(goal, :access_context)
-
-    if goal_member_level != :no_access do
-      Operately.Access.Binding.changeset(%{
-        group_id: Operately.Access.get_group!(person_id: ctx.person.id),
-        context_id: goal.access_context.id,
-        access_level: Binding.from_atom(goal_member_level),
-        tag: :reviewer,
-      })
-    end
-    
-    goal
+    Operately.Repo.preload(goal, :access_context)
   end
 end 

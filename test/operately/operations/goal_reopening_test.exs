@@ -34,7 +34,7 @@ defmodule Operately.Operations.GoalReopeningTest do
     assert ctx.goal.closed_by_id == ctx.author.id
 
     Oban.Testing.with_testing_mode(:manual, fn ->
-      Operately.Operations.GoalReopening.run(ctx.author, ctx.goal.id, "{}")
+      Operately.Operations.GoalReopening.run(ctx.author, ctx.goal, "{}")
     end)
 
     goal = Repo.reload(ctx.goal)
@@ -46,7 +46,7 @@ defmodule Operately.Operations.GoalReopeningTest do
   test "GoalReopening operation creates activity, thread and notification", ctx do
     Oban.Testing.with_testing_mode(:manual, fn ->
       message = notification_message(ctx.reader)
-      Operately.Operations.GoalReopening.run(ctx.author, ctx.goal.id, message)
+      Operately.Operations.GoalReopening.run(ctx.author, ctx.goal, message)
     end)
 
     activity = from(a in Activity, where: a.action == "goal_reopening" and a.content["goal_id"] == ^ctx.goal.id) |> Repo.one()
