@@ -1,11 +1,11 @@
 import * as React from "react";
 
+import { Section, SectionTitle } from "./Section";
+
 export function Buttons() {
   return (
-    <div className="mt-10">
-      <div className="text-content-accent text-xl font-bold">
-        <h2>Buttons</h2>
-      </div>
+    <Section>
+      <SectionTitle>Buttons</SectionTitle>
 
       <div className="max-w-2xl mb-8">
         <p className="mt-2">
@@ -84,6 +84,6 @@ export function Buttons() {
           Button text
         </button>
       </div>
-    </div>
+    </Section>
   );
 }
