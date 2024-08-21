@@ -69,7 +69,6 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.People.Person do
   def serialize(data, level: :full) do
     %{
       id: OperatelyWeb.Paths.person_id(data),
-      inserted_at: OperatelyWeb.Api.Serializer.serialize(data.inserted_at),
       full_name: data.full_name,
       email: data.email,
       avatar_url: data.avatar_url,
