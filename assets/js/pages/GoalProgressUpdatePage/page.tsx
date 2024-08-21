@@ -111,7 +111,7 @@ function Options() {
         icon={Icons.IconEdit}
         title="Edit Update"
         to={Paths.goalEditProgressUpdatePath(update.id!)}
-        dataTestId="edit-update"
+        testId="edit-update"
       />
     </PageOptions.Root>
   );

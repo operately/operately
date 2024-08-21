@@ -126,7 +126,7 @@ function Options({ goal }) {
           icon={Icons.IconEdit}
           title="Edit Goal Definition"
           to={Paths.goalEditPath(goal.id)}
-          dataTestId="edit-goal-definition"
+          testId="edit-goal-definition"
         />
       )}
 
@@ -135,7 +135,7 @@ function Options({ goal }) {
           icon={Icons.IconCalendar}
           title="Edit Timeframe"
           to={Paths.goalEditTimeframePath(goal.id)}
-          dataTestId="edit-goal-timeframe"
+          testId="edit-goal-timeframe"
         />
       )}
 
@@ -144,7 +144,7 @@ function Options({ goal }) {
           icon={Icons.IconExchange}
           title="Change Parent"
           to={Paths.goalEditParentPath(goal.id)}
-          dataTestId="change-parent-goal"
+          testId="change-parent-goal"
         />
       )}
 
@@ -153,7 +153,7 @@ function Options({ goal }) {
           icon={Icons.IconCircleCheck}
           title="Close Goal"
           to={Paths.goalClosePath(goal.id)}
-          dataTestId="close-goal"
+          testId="close-goal"
         />
       )}
 
@@ -162,7 +162,7 @@ function Options({ goal }) {
           icon={Icons.IconRotateDot}
           title="Reopen Goal"
           to={Paths.goalReopenPath(goal.id)}
-          dataTestId="reopen-goal"
+          testId="reopen-goal"
         />
       )}
 
@@ -171,7 +171,7 @@ function Options({ goal }) {
           icon={Icons.IconTrash}
           title="Archive"
           to={Paths.goalArchivePath(goal.id)}
-          dataTestId="archive-goal"
+          testId="archive-goal"
         />
       )}
     </PageOptions.Root>

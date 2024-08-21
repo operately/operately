@@ -2,13 +2,14 @@ import * as React from "react";
 import * as Icons from "@tabler/icons-react";
 import { DivLink } from "../Link";
 import classNames from "classnames";
+import { TestableElement } from "@/utils/testid";
 
-interface RootProps {
+type RootProps = TestableElement & {
+  children: React.ReactNode;
+
   position?: "top-right";
   noBorder?: boolean;
-  children: React.ReactNode;
-  testId?: string;
-}
+};
 
 export const Context = React.createContext({
   close: () => {},
@@ -43,12 +44,18 @@ export function Root(props: RootProps) {
   );
 }
 
-export function Link({ icon, title, to, dataTestId }) {
+type LinkProps = TestableElement & {
+  icon: React.ElementType;
+  title: string;
+  to: string;
+};
+
+export function Link({ icon, title, to, testId }: LinkProps) {
   return (
     <DivLink
       to={to}
       className="flex items-center gap-2 py-2 px-4 hover:bg-shade-1 cursor-pointer"
-      data-test-id={dataTestId}
+      data-test-id={testId}
     >
       {React.createElement(icon, { size: 20 })}
       {title}
@@ -85,7 +92,13 @@ function Dropdown({ closeOptions, children }) {
   );
 }
 
-function Open({ onClick, noBorder, testId, position }) {
+type OpenProps = TestableElement & {
+  onClick: () => void;
+  noBorder?: boolean;
+  position?: "top-right";
+};
+
+function Open({ onClick, noBorder, testId, position }: OpenProps) {
   const className = classNames({
     "rounded-full border border-stroke-base cursor-pointer": true,
     "border-transparent": noBorder,
