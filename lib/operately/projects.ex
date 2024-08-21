@@ -311,6 +311,11 @@ defmodule Operately.Projects do
 
   def get_key_resource!(id), do: Repo.get!(KeyResource, id)
 
+  def get_key_resource_with_access_level(key_resource_id, person_id) do
+    from(r in KeyResource, as: :resource, where: r.id == ^key_resource_id)
+    |> Fetch.get_resource_with_access_level(person_id)
+  end
+
   def create_key_resource(attrs \\ %{}) do
     %KeyResource{}
     |> KeyResource.changeset(attrs)

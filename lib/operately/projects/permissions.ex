@@ -49,6 +49,7 @@ defmodule Operately.Projects.Permissions do
 
   defp calculate_permissions(access_level) do
     %__MODULE__{
+      can_edit_resources: can_edit_resources(access_level),
       can_edit_name: can_edit_name(access_level),
       can_edit_permissions: can_edit_permissions(access_level),
       can_edit_description: can_edit_description(access_level),
@@ -76,6 +77,7 @@ defmodule Operately.Projects.Permissions do
     is_public?(project) || is_contributor?(project, user)
   end
 
+  def can_edit_resources(access_level), do: access_level >= Binding.edit_access()
   def can_edit_name(access_level), do: access_level >= Binding.edit_access()
   def can_edit_permissions(access_level), do: access_level >= Binding.full_access()
   def can_edit_task(access_level), do: access_level >= Binding.edit_access()
