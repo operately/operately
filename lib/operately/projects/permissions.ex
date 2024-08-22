@@ -51,6 +51,7 @@ defmodule Operately.Projects.Permissions do
 
   defp calculate_permissions(access_level) do
     %__MODULE__{
+      can_check_in: can_check_in(access_level),
       can_edit_check_in: can_edit_check_in(access_level),
       can_edit_description: can_edit_description(access_level),
       can_edit_milestone: can_edit_milestone(access_level),
@@ -82,6 +83,7 @@ defmodule Operately.Projects.Permissions do
     is_public?(project) || is_contributor?(project, user)
   end
 
+  def can_check_in(access_level), do: access_level >= Binding.full_access()
   def can_edit_check_in(access_level), do: access_level >= Binding.full_access()
   def can_edit_description(access_level), do: access_level >= Binding.edit_access()
   def can_edit_milestone(access_level), do: access_level >= Binding.edit_access()
