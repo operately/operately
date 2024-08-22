@@ -32,7 +32,7 @@ defmodule Operately.Operations.ProjectContributorRemovingTest do
     assert 3 == length(contributors)
     assert Enum.member?(contributors, {ctx.person.id, :contributor})
 
-    Operately.Operations.ProjectContributorRemoving.run(ctx.creator, ctx.contributor.id)
+    Operately.Operations.ProjectContributorRemoving.run(ctx.creator, ctx.contributor)
 
     contributors = get_contributors(ctx.project)
 
@@ -46,7 +46,7 @@ defmodule Operately.Operations.ProjectContributorRemovingTest do
 
     assert Access.get_binding(context_id: context.id, group_id: group.id)
 
-    Operately.Operations.ProjectContributorRemoving.run(ctx.creator, ctx.contributor.id)
+    Operately.Operations.ProjectContributorRemoving.run(ctx.creator, ctx.contributor)
 
     refute Access.get_binding(context_id: context.id, group_id: group.id)
   end
@@ -56,7 +56,7 @@ defmodule Operately.Operations.ProjectContributorRemovingTest do
 
     refute Repo.one(query)
 
-    Operately.Operations.ProjectContributorRemoving.run(ctx.creator, ctx.contributor.id)
+    Operately.Operations.ProjectContributorRemoving.run(ctx.creator, ctx.contributor)
 
     assert Repo.one(query)
   end
