@@ -18,7 +18,7 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyTrustedEmailDomain do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:id, fn -> decode_company_id(inputs.company_id) end)
-    |> run(:company, fn ctx -> Companies.get_company_with_access_level(ctx.id, ctx.me.id) end)
+    |> run(:company, fn ctx -> Companies.get_company_with_access_level(ctx.me.id, short_id: ctx.id) end)
     |> run(:check_permissions, fn ctx -> Permissions.check(ctx.company.requester_access_level, :can_edit_trusted_email_domains) end)
     |> run(:operation, fn ctx -> Companies.add_trusted_email_domain(ctx.company, inputs.domain) end)
     |> run(:serialized, fn ctx -> {:ok, %{company: Serializer.serialize(ctx.company)}} end)
