@@ -2,27 +2,15 @@ defmodule Operately.Operations.ProjectContributorRemoving do
   alias Ecto.Multi
   alias Operately.Repo
   alias Operately.Access
-  alias Operately.Projects
   alias Operately.Activities
 
-  def run(author, contrib_id) do
+  def run(author, contrib) do
     Multi.new()
-    |> delete_contributor(contrib_id)
+    |> Multi.delete(:contributor, fn _ -> contrib end)
     |> delete_binding()
     |> insert_activity(author)
     |> Repo.transaction()
     |> Repo.extract_result(:contributor)
-  end
-
-  defp delete_contributor(multi, contrib_id) do
-    multi
-    |> Multi.run(:contributor, fn _, _ ->
-      contributor = Projects.get_contributor!(contrib_id)
-      {:ok, contributor}
-    end)
-    |> Multi.delete(:contributor_deleted, fn %{contributor: contributor} ->
-      contributor
-    end)
   end
 
   defp delete_binding(multi) do
