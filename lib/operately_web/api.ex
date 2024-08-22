@@ -23,8 +23,6 @@ defmodule OperatelyWeb.Api do
   query :get_discussion, Q.GetDiscussion
   query :get_discussions, Q.GetDiscussions
   query :get_goal, Q.GetGoal
-  query :get_goal_check_in, Q.GetGoalCheckIn
-  query :get_goal_check_ins, Q.GetGoalCheckIns
   query :get_goal_progress_update, Q.GetGoalProgressUpdate
   query :get_goal_progress_updates, Q.GetGoalProgressUpdates
   query :get_goals, Q.GetGoals
@@ -71,7 +69,6 @@ defmodule OperatelyWeb.Api do
   mutation :create_comment, M.CreateComment
   mutation :create_goal, M.CreateGoal
   mutation :create_goal_discussion, M.CreateGoalDiscussion
-  mutation :create_goal_update, M.CreateGoalUpdate
   mutation :create_group, M.CreateGroup
   mutation :create_project, M.CreateProject
   mutation :create_task, M.CreateTask

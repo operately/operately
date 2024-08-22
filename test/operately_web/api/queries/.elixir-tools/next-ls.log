@@ -1,0 +1,209 @@
+
+09:03:04.723 [info] Loading 137 CA(s) from :otp store
+
+09:03:04.947 id=1 [debug] handled request client -> server initialize in 73ms
+
+09:03:04.950 [debug] sent notification server -> client window/logMessage
+
+09:03:04.952 [debug] NextLS v0.23.1 has initialized!
+
+09:03:04.952 [debug] sent notification server -> client window/logMessage
+
+09:03:04.952 [debug] Log file located at /home/dev/code/operately/test/operately_web/api/queries/.elixir-tools/next-ls.log
+
+09:03:04.954 [debug] sent notification server -> client window/logMessage
+
+09:03:04.954 [info] [extension] Credo initializing with options %NextLS.InitOpts.Extensions.Credo{enable: true, cli_options: []}
+
+09:03:07.045 [debug] sent notification server -> client window/logMessage
+
+09:03:07.045 [debug] Booting runtimes...
+
+09:03:07.047 id=834 [debug] sent request server -> client window/workDoneProgress/create
+
+09:03:07.051 [debug] sent notification server -> client $/progress
+
+09:03:07.060 [debug] sent notification server -> client window/logMessage
+
+09:03:07.060 [info] Beginning DB migration...
+
+09:03:07.064 [debug] sent notification server -> client window/logMessage
+
+09:03:07.064 [info] Database is on the latest version: 7
+
+09:03:07.064 [debug] sent notification server -> client window/logMessage
+
+09:03:07.064 [info] Finished DB migration...
+
+09:03:07.064 [debug] sent notification server -> client window/logMessage
+
+09:03:07.064 [info] Booting runtime for operately.
+
+- elixir: /home/dev/.asdf/shims/elixir
+- zombie wrapper script: /home/dev/.local/share/.burrito/next_ls_erts-15.0_0.23.1/lib/next_ls-0.23.1/priv/cmd
+- working_dir: /home/dev/code/operately
+- command: /home/dev/.asdf/shims/elixir --no-halt --sname nextls-runtime-1724317387064339403 --cookie OAA6TYMANQMNSHHOJFXLYUZMPBVXMWZLJY462D4HNFCTZYFVU5SQ==== -S mix loadpaths --no-compile
+
+Environment: 
+
+LSP=nextls
+NEXTLS_PARENT_PID=g1h3H25leHQtbHMtMTcyNDMxNzM4NDczMjM1NjczMEBkZXYAAADjAAAAAGbG/sk=
+MIX_ENV=dev
+MIX_TARGET=host
+MIX_BUILD_ROOT=.elixir-tools/_build
+ROOTDIR=false
+BINDIR=false
+RELEASE_ROOT=false
+RELEASE_SYS_CONFIG=false
+PATH=/home/dev/.asdf/shims:/home/dev/.local/share/.burrito/next_ls_erts-15.0_0.23.1/bin:/home/dev/.asdf/shims:/home/dev/.asdf/bin:/usr/local/go/bin:/home/dev/go/bin:/home/dev/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/opt/istio-1.0.3/bin
+
+
+09:03:07.064 [debug] handled notification client -> server initialized in 2116ms
+
+09:03:07.066 [debug] handled notification client -> server textDocument/didOpen in 2ms
+
+09:03:08.084 [debug] sent notification server -> client window/logMessage
+
+09:03:08.084 [info] Connected to node nextls-runtime-1724317387064339403@dev
+
+09:03:08.354 [debug] sent notification server -> client $/progress
+
+09:03:08.355 [debug] sent notification server -> client window/logMessage
+
+09:03:08.355 [debug] Runtime for folder operately is ready...
+
+09:03:08.357 id=914 [debug] sent request server -> client window/workDoneProgress/create
+
+09:03:08.357 [debug] sent notification server -> client $/progress
+
+09:03:08.556 [debug] sent notification server -> client $/progress
+
+09:03:08.556 [debug] sent notification server -> client window/logMessage
+
+09:03:08.556 [info] Compiled operately!
+
+09:03:08.557 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:08.559 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:08.560 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:08.561 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:08.561 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:08.561 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:08.561 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:08.561 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:08.561 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:08.561 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:08.561 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:08.561 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:08.561 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:08.561 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:08.561 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:08.561 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:08.561 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:08.562 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:08.561 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:08.562 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:08.562 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:08.562 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:08.562 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:08.562 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:08.562 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:08.562 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:08.562 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:08.562 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:08.562 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:08.562 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:08.562 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:08.562 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:08.563 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:08.563 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:08.563 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:08.563 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:08.563 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:08.563 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:08.563 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:08.563 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:08.563 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:08.563 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:08.563 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:08.563 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:08.563 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:08.564 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:08.564 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:08.564 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:08.564 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:08.564 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:08.564 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:08.564 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:08.566 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:08.567 [debug] sent notification server -> client textDocument/publishDiagnostics
+
+09:03:10.402 [debug] handled notification client -> server textDocument/didClose in 1ms
+
+09:03:11.824 [debug] handled notification client -> server textDocument/didOpen in 92µs
+
+09:03:19.866 [debug] handled notification client -> server textDocument/didClose in 69µs
+
+09:03:21.838 [debug] handled notification client -> server textDocument/didOpen in 477µs
+
+09:03:22.933 id=83 [debug] sent request server -> client window/workDoneProgress/create
+
+09:03:22.933 [debug] handled notification client -> server textDocument/didSave in 2ms
+
+09:03:22.935 id=2 [debug] handled request client -> server shutdown in 1ms
+
+09:03:22.952 [debug] sent notification server -> client $/progress
+
+09:03:22.952 [error] Writer crashed (:epipe)
