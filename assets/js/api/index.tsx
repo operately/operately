@@ -1104,24 +1104,6 @@ export interface GetGoalResult {
 }
 
 
-export interface GetGoalCheckInInput {
-
-}
-
-export interface GetGoalCheckInResult {
-
-}
-
-
-export interface GetGoalCheckInsInput {
-
-}
-
-export interface GetGoalCheckInsResult {
-
-}
-
-
 export interface GetGoalProgressUpdateInput {
   id?: string | null;
   includeGoal?: boolean | null;
@@ -1623,15 +1605,6 @@ export interface CreateGoalDiscussionInput {
 
 export interface CreateGoalDiscussionResult {
   id?: string | null;
-}
-
-
-export interface CreateGoalUpdateInput {
-
-}
-
-export interface CreateGoalUpdateResult {
-
 }
 
 
@@ -2193,14 +2166,6 @@ export class ApiClient {
     return this.get("/get_goal", input);
   }
 
-  async getGoalCheckIn(input: GetGoalCheckInInput): Promise<GetGoalCheckInResult> {
-    return this.get("/get_goal_check_in", input);
-  }
-
-  async getGoalCheckIns(input: GetGoalCheckInsInput): Promise<GetGoalCheckInsResult> {
-    return this.get("/get_goal_check_ins", input);
-  }
-
   async getGoalProgressUpdate(input: GetGoalProgressUpdateInput): Promise<GetGoalProgressUpdateResult> {
     return this.get("/get_goal_progress_update", input);
   }
@@ -2379,10 +2344,6 @@ export class ApiClient {
 
   async createGoalDiscussion(input: CreateGoalDiscussionInput): Promise<CreateGoalDiscussionResult> {
     return this.post("/create_goal_discussion", input);
-  }
-
-  async createGoalUpdate(input: CreateGoalUpdateInput): Promise<CreateGoalUpdateResult> {
-    return this.post("/create_goal_update", input);
   }
 
   async createGroup(input: CreateGroupInput): Promise<CreateGroupResult> {
@@ -2599,12 +2560,6 @@ export async function getDiscussions(input: GetDiscussionsInput) : Promise<GetDi
 export async function getGoal(input: GetGoalInput) : Promise<GetGoalResult> {
   return defaultApiClient.getGoal(input);
 }
-export async function getGoalCheckIn(input: GetGoalCheckInInput) : Promise<GetGoalCheckInResult> {
-  return defaultApiClient.getGoalCheckIn(input);
-}
-export async function getGoalCheckIns(input: GetGoalCheckInsInput) : Promise<GetGoalCheckInsResult> {
-  return defaultApiClient.getGoalCheckIns(input);
-}
 export async function getGoalProgressUpdate(input: GetGoalProgressUpdateInput) : Promise<GetGoalProgressUpdateResult> {
   return defaultApiClient.getGoalProgressUpdate(input);
 }
@@ -2739,9 +2694,6 @@ export async function createGoal(input: CreateGoalInput) : Promise<CreateGoalRes
 }
 export async function createGoalDiscussion(input: CreateGoalDiscussionInput) : Promise<CreateGoalDiscussionResult> {
   return defaultApiClient.createGoalDiscussion(input);
-}
-export async function createGoalUpdate(input: CreateGoalUpdateInput) : Promise<CreateGoalUpdateResult> {
-  return defaultApiClient.createGoalUpdate(input);
 }
 export async function createGroup(input: CreateGroupInput) : Promise<CreateGroupResult> {
   return defaultApiClient.createGroup(input);
@@ -2917,14 +2869,6 @@ export function useGetDiscussions(input: GetDiscussionsInput) : UseQueryHookResu
 
 export function useGetGoal(input: GetGoalInput) : UseQueryHookResult<GetGoalResult> {
   return useQuery<GetGoalResult>(() => defaultApiClient.getGoal(input));
-}
-
-export function useGetGoalCheckIn(input: GetGoalCheckInInput) : UseQueryHookResult<GetGoalCheckInResult> {
-  return useQuery<GetGoalCheckInResult>(() => defaultApiClient.getGoalCheckIn(input));
-}
-
-export function useGetGoalCheckIns(input: GetGoalCheckInsInput) : UseQueryHookResult<GetGoalCheckInsResult> {
-  return useQuery<GetGoalCheckInsResult>(() => defaultApiClient.getGoalCheckIns(input));
 }
 
 export function useGetGoalProgressUpdate(input: GetGoalProgressUpdateInput) : UseQueryHookResult<GetGoalProgressUpdateResult> {
@@ -3105,10 +3049,6 @@ export function useCreateGoal() : UseMutationHookResult<CreateGoalInput, CreateG
 
 export function useCreateGoalDiscussion() : UseMutationHookResult<CreateGoalDiscussionInput, CreateGoalDiscussionResult> {
   return useMutation<CreateGoalDiscussionInput, CreateGoalDiscussionResult>((input) => defaultApiClient.createGoalDiscussion(input));
-}
-
-export function useCreateGoalUpdate() : UseMutationHookResult<CreateGoalUpdateInput, CreateGoalUpdateResult> {
-  return useMutation<CreateGoalUpdateInput, CreateGoalUpdateResult>((input) => defaultApiClient.createGoalUpdate(input));
 }
 
 export function useCreateGroup() : UseMutationHookResult<CreateGroupInput, CreateGroupResult> {
@@ -3314,10 +3254,6 @@ export default {
   useGetDiscussions,
   getGoal,
   useGetGoal,
-  getGoalCheckIn,
-  useGetGoalCheckIn,
-  getGoalCheckIns,
-  useGetGoalCheckIns,
   getGoalProgressUpdate,
   useGetGoalProgressUpdate,
   getGoalProgressUpdates,
@@ -3408,8 +3344,6 @@ export default {
   useCreateGoal,
   createGoalDiscussion,
   useCreateGoalDiscussion,
-  createGoalUpdate,
-  useCreateGoalUpdate,
   createGroup,
   useCreateGroup,
   createProject,
