@@ -7,6 +7,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
   import Operately.ProjectsFixtures
   import Operately.GoalsFixtures
   import Operately.CommentsFixtures
+  import Operately.UpdatesFixtures
 
   alias Operately.Updates
   alias Operately.Activities.Activity
@@ -83,7 +84,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
     end
 
     tabletest @goal_table do
-      test "if caller has levels company=#{@test.company}, space=#{@test.space}, project=#{@test.goal} on the comment thread, then expect code=#{@test.expected}", ctx do
+      test "if caller has levels company=#{@test.company}, space=#{@test.space}, goal=#{@test.goal} on the comment thread, then expect code=#{@test.expected}", ctx do
         space = create_space(ctx)
         goal = create_goal(ctx, space, @test.company, @test.space, @test.goal)
         thread = create_comment_thread(goal)
@@ -98,6 +99,28 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
 
         case @test.expected do
           200 -> assert Updates.count_comments(thread.id, :comment_thread) == 1
+          403 -> assert res.message == "You don't have permission to perform this action"
+          404 -> assert res.message == "The requested resource was not found"
+        end
+      end
+    end
+
+    tabletest @goal_table do
+      test "if caller has levels company=#{@test.company}, space=#{@test.space}, goal=#{@test.goal} on the goal, then expect code=#{@test.expected}", ctx do
+        space = create_space(ctx)
+        goal = create_goal(ctx, space, @test.company, @test.space, @test.goal)
+        update = create_goal_update(ctx, goal)
+
+        assert {code, res} = mutation(ctx.conn, :create_comment, %{
+          entity_id: Paths.goal_update_id(update),
+          entity_type: "goal_update",
+          content: RichText.rich_text("Content", :as_string)
+        })
+
+        assert code == @test.expected
+
+        case @test.expected do
+          200 -> assert Updates.count_comments(update.id, :update) == 1
           403 -> assert res.message == "You don't have permission to perform this action"
           404 -> assert res.message == "The requested resource was not found"
         end
@@ -192,5 +215,9 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
   defp create_comment_thread(goal) do
     activity = from(a in Activity, where: a.action == "goal_created" and a.content["goal_id"] == ^goal.id) |> Repo.one!()
     comment_thread_fixture(%{parent_id: activity.id})
+  end
+
+  defp create_goal_update(ctx, goal) do
+    update_fixture(%{type: :goal_check_in, updatable_id: goal.id, updatable_type: :goal, author_id: ctx.creator.id})
   end
 end

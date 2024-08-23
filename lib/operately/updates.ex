@@ -7,8 +7,10 @@ defmodule Operately.Updates do
 
   alias Operately.Activities
   alias Operately.Updates.Update
+  alias Operately.Goals.Goal
   alias Operately.Projects.Project
   alias Operately.Projects.ReviewRequest
+  alias Operately.Access.{Binding, Fetch}
 
   alias Operately.Repo
   alias Ecto.Multi
@@ -49,6 +51,28 @@ defmodule Operately.Updates do
   end
 
   def get_update!(id), do: Repo.get!(Update, id)
+
+  def get_update_with_goal_and_access_level(id, person_id) do
+    query = from(u in Update, as: :update,
+        join: g in Goal, on: g.id == u.updatable_id, as: :resource,
+        where: u.id == ^id
+      )
+      |> Fetch.join_access_level(person_id)
+
+
+    from([update: u, resource: g, binding: b] in query,
+      where: b.access_level >= ^Binding.view_access(),
+      group_by: [u.id, g.id],
+      select: {u, g, max(b.access_level)}
+    )
+    |> Repo.one()
+    |> case do
+      nil -> {:error, :not_found}
+      {update, goal, level} ->
+        goal = apply(goal.__struct__, :set_requester_access_level, [goal, level])
+        {:ok, Map.put(update, :goal, goal)}
+    end
+  end
 
   def create_update(attrs \\ %{}) do
     %Update{} |> Update.changeset(attrs) |> Repo.insert()
