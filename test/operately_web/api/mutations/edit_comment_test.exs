@@ -204,7 +204,7 @@ defmodule OperatelyWeb.Api.Mutations.EditCommentTest do
     test "edits comment", ctx do
       project = project_fixture(%{company_id: ctx.company.id, creator_id: ctx.person.id, group_id: ctx.company.company_space_id})
       check_in = create_check_in(ctx.person, project)
-      {:ok, comment} = Operately.Operations.CommentAdding.run(ctx.person, check_in, "project_check_in", RichText.rich_text("Content"))
+      {:ok, comment} = Operately.Operations.CommentAdding.run(ctx.person, check_in.id, "project_check_in", RichText.rich_text("Content"))
 
       assert comment.content["message"] == RichText.rich_text("Content")
 
@@ -224,7 +224,7 @@ defmodule OperatelyWeb.Api.Mutations.EditCommentTest do
   #
 
   defp create_comment(ctx, parent, type) do
-    {:ok, comment} = Operately.Operations.CommentAdding.run(ctx.creator, parent, type, RichText.rich_text("Content"))
+    {:ok, comment} = Operately.Operations.CommentAdding.run(ctx.creator, parent.id, type, RichText.rich_text("Content"))
     comment
   end
 

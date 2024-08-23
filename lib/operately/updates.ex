@@ -9,6 +9,7 @@ defmodule Operately.Updates do
   alias Operately.Updates.Update
   alias Operately.Projects.Project
   alias Operately.Projects.ReviewRequest
+  alias Operately.Access.{Binding, Fetch}
 
   alias Operately.Repo
   alias Ecto.Multi
