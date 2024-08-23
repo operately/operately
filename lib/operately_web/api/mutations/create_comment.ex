@@ -2,7 +2,11 @@ defmodule OperatelyWeb.Api.Mutations.CreateComment do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
-  alias Operately.Projects
+  alias Operately.{
+    Activities,
+    Comments,
+    Projects
+  }
   alias Operately.Operations.CommentAdding
 
   inputs do
@@ -44,10 +48,14 @@ defmodule OperatelyWeb.Api.Mutations.CreateComment do
   defp check_permissions(parent, type) do
     case type do
       :project_check_in -> Projects.Permissions.check(parent.requester_access_level, :can_comment_on_check_in)
+      :comment_thread -> Activities.Permissions.check(parent.activity.requester_access_level, :can_comment_on_thread)
     end
   end
 
-  defp fetch_parent(person_id, id, :project_check_in) do
-    Projects.get_check_in_with_access_level(id, person_id)
+  defp fetch_parent(person_id, id, type) do
+    case type do
+      :project_check_in -> Projects.get_check_in_with_access_level(id, person_id)
+      :comment_thread -> Comments.get_thread_with_activity_and_access_level(id, person_id)
+    end
   end
 end

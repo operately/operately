@@ -1,11 +1,15 @@
 defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
   use OperatelyWeb.TurboCase
 
+  import Ecto.Query, only: [from: 2]
   import Operately.PeopleFixtures
   import Operately.GroupsFixtures
   import Operately.ProjectsFixtures
+  import Operately.GoalsFixtures
+  import Operately.CommentsFixtures
 
   alias Operately.Updates
+  alias Operately.Activities.Activity
   alias Operately.Access.Binding
   alias Operately.Support.RichText
 
@@ -16,7 +20,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
   end
 
   describe "permissions" do
-    @table [
+    @project_table [
       %{company: :no_access,      space: :no_access,      project: :no_access,      expected: 404},
       %{company: :no_access,      space: :no_access,      project: :view_access,    expected: 403},
       %{company: :no_access,      space: :no_access,      project: :comment_access, expected: 200},
@@ -34,13 +38,29 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
       %{company: :full_access,    space: :no_access,      project: :no_access,      expected: 200},
     ]
 
+    @goal_table [
+      %{company: :no_access,      space: :no_access,      goal: :no_access,      expected: 404},
+      %{company: :no_access,      space: :no_access,      goal: :champion,       expected: 200},
+      %{company: :no_access,      space: :no_access,      goal: :reviewer,       expected: 200},
+
+      %{company: :no_access,      space: :view_access,    goal: :no_access,      expected: 403},
+      %{company: :no_access,      space: :comment_access, goal: :no_access,      expected: 200},
+      %{company: :no_access,      space: :edit_access,    goal: :no_access,      expected: 200},
+      %{company: :no_access,      space: :full_access,    goal: :no_access,      expected: 200},
+
+      %{company: :view_access,    space: :no_access,      goal: :no_access,      expected: 403},
+      %{company: :comment_access, space: :no_access,      goal: :no_access,      expected: 200},
+      %{company: :edit_access,    space: :no_access,      goal: :no_access,      expected: 200},
+      %{company: :full_access,    space: :no_access,      goal: :no_access,      expected: 200},
+    ]
+
     setup ctx do
       ctx = register_and_log_in_account(ctx)
       creator = person_fixture(%{company_id: ctx.company.id})
       Map.merge(ctx, %{creator: creator})
     end
 
-    tabletest @table do
+    tabletest @project_table do
       test "if caller has levels company=#{@test.company}, space=#{@test.space}, project=#{@test.project} on the project, then expect code=#{@test.expected}", ctx do
         space = create_space(ctx)
         project = create_project(ctx, space, @test.company, @test.space, @test.project)
@@ -56,6 +76,28 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
 
         case @test.expected do
           200 -> assert Updates.count_comments(check_in.id, :project_check_in) == 1
+          403 -> assert res.message == "You don't have permission to perform this action"
+          404 -> assert res.message == "The requested resource was not found"
+        end
+      end
+    end
+
+    tabletest @goal_table do
+      test "if caller has levels company=#{@test.company}, space=#{@test.space}, project=#{@test.goal} on the comment thread, then expect code=#{@test.expected}", ctx do
+        space = create_space(ctx)
+        goal = create_goal(ctx, space, @test.company, @test.space, @test.goal)
+        thread = create_comment_thread(goal)
+
+        assert {code, res} = mutation(ctx.conn, :create_comment, %{
+          entity_id: Paths.comment_thread_id(thread),
+          entity_type: "comment_thread",
+          content: RichText.rich_text("Content", :as_string)
+        })
+
+        assert code == @test.expected
+
+        case @test.expected do
+          200 -> assert Updates.count_comments(thread.id, :comment_thread) == 1
           403 -> assert res.message == "You don't have permission to perform this action"
           404 -> assert res.message == "The requested resource was not found"
         end
@@ -82,7 +124,6 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
       comment = hd(Updates.list_comments(check_in.id, :project_check_in))
       assert res.comment == Serializer.serialize(comment, level: :essential)
     end
-
   end
 
   #
@@ -123,5 +164,33 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
 
   def create_check_in(author, project) do
     check_in_fixture(%{author_id: author.id, project_id: project.id})
+  end
+
+  def create_goal(ctx, space, company_members_level, space_members_level, goal_member_level) do
+    attrs = case goal_member_level do
+      :champion -> [champion_id: ctx.person.id]
+      :reviewer -> [reviewer_id: ctx.person.id]
+      _ -> []
+    end
+
+    goal = goal_fixture(ctx.creator, Enum.into(attrs, %{
+      space_id: space.id,
+      company_access_level: Binding.from_atom(company_members_level),
+      space_access_level: Binding.from_atom(space_members_level),
+    }))
+
+    if space_members_level != :no_access do
+      {:ok, _} = Operately.Groups.add_members(ctx.creator, space.id, [%{
+        id: ctx.person.id,
+        permissions: Binding.from_atom(space_members_level)
+      }])
+    end
+
+    goal
+  end
+
+  defp create_comment_thread(goal) do
+    activity = from(a in Activity, where: a.action == "goal_created" and a.content["goal_id"] == ^goal.id) |> Repo.one!()
+    comment_thread_fixture(%{parent_id: activity.id})
   end
 end
