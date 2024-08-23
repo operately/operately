@@ -1666,6 +1666,7 @@ export interface DisconnectGoalFromProjectResult {
 export interface EditCommentInput {
   content?: string | null;
   commentId?: string | null;
+  parentType?: string | null;
 }
 
 export interface EditCommentResult {

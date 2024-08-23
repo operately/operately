@@ -28,6 +28,7 @@ export function useForDiscussion(discussion: Discussions.Discussion): FormState 
     await edit({
       commentId: commentID,
       content: JSON.stringify(content),
+      parentType: "discussion",
     });
   };
 
