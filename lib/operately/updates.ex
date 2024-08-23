@@ -368,6 +368,43 @@ defmodule Operately.Updates do
 
   def get_comment!(id), do: Repo.get!(Comment, id)
 
+  def get_comment_with_access_level(id, person_id, type) do
+    case type do
+      :project_check_in ->
+        from(comment in Comment, as: :comment,
+          join: check_in in Operately.Projects.CheckIn, on: check_in.id == comment.entity_id,
+          join: project in assoc(check_in, :project), as: :resource,
+          where: comment.id == ^id
+        )
+      :comment_thread ->
+        from(c in Comment, as: :comment,
+          join: t in Operately.Comments.CommentThread, on: t.id == c.entity_id,
+          join: a in Activities.Activity, on: t.parent_id == a.id, as: :resource,
+          where: c.id == ^id
+        )
+      :goal_update ->
+        from(c in Comment, as: :comment,
+          join: u in Update, on: u.id == c.entity_id,
+          join: g in Operately.Goals.Goal, on: u.updatable_id == g.id, as: :resource,
+          where: c.id == ^id
+        )
+      :discussion ->
+        from(c in Comment, as: :comment,
+          join: u in Update, on: u.id == c.entity_id,
+          join: s in Operately.Groups.Group, on: u.updatable_id == s.id, as: :resource,
+          where: c.id == ^id
+        )
+      :milestone ->
+        from(mc in Operately.Comments.MilestoneComment,
+          join: c in assoc(mc, :comment), as: :comment,
+          join: m in assoc(mc, :milestone),
+          join: p in assoc(m, :project), as: :resource,
+          where: c.id == ^id
+        )
+    end
+    |> Fetch.get_resource_with_access_level(person_id, selected_resource: :comment)
+  end
+
   # old version. TODO: remove
   def create_comment(_update, attrs) do
     changeset = Comment.changeset(attrs)

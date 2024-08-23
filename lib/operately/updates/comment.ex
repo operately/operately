@@ -14,6 +14,7 @@ defmodule Operately.Updates.Comment do
     has_many :reactions, Operately.Updates.Reaction, foreign_key: :entity_id, where: [entity_type: :comment]
 
     timestamps()
+    requester_access_level()
   end
 
   def changeset(attrs) do
