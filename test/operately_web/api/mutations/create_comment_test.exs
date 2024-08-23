@@ -55,6 +55,19 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
       %{company: :full_access,    space: :no_access,      goal: :no_access,      expected: 200},
     ]
 
+    @space_table [
+      %{company: :no_access,      space: :no_access,      expected: 404},
+      %{company: :no_access,      space: :view_access,    expected: 403},
+      %{company: :no_access,      space: :comment_access, expected: 200},
+      %{company: :no_access,      space: :edit_access,    expected: 200},
+      %{company: :no_access,      space: :full_access,    expected: 200},
+
+      %{company: :view_access,    space: :no_access,      expected: 403},
+      %{company: :comment_access, space: :no_access,      expected: 200},
+      %{company: :edit_access,    space: :no_access,      expected: 200},
+      %{company: :full_access,    space: :no_access,      expected: 200},
+    ]
+
     setup ctx do
       ctx = register_and_log_in_account(ctx)
       creator = person_fixture(%{company_id: ctx.company.id})
@@ -126,6 +139,27 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
         end
       end
     end
+
+    tabletest @space_table do
+      test "if caller has levels company=#{@test.company}, space=#{@test.space} on the space, then expect code=#{@test.expected}", ctx do
+        space = create_space(ctx, @test.company, @test.space)
+        discussion = create_discussion(ctx, space)
+
+        assert {code, res} = mutation(ctx.conn, :create_comment, %{
+          entity_id: Paths.discussion_id(discussion),
+          entity_type: "discussion",
+          content: RichText.rich_text("Content", :as_string)
+        })
+
+        assert code == @test.expected
+
+        case @test.expected do
+          200 -> assert Updates.count_comments(discussion.id, :update) == 1
+          403 -> assert res.message == "You don't have permission to perform this action"
+          404 -> assert res.message == "The requested resource was not found"
+        end
+      end
+    end
   end
 
   describe "create_comment functionality" do
@@ -155,6 +189,22 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
 
   def create_space(ctx) do
     group_fixture(ctx.creator, %{company_id: ctx.company.id, company_permissions: Binding.no_access()})
+  end
+
+  def create_space(ctx, company_members_level, space_members_level) do
+    space = group_fixture(ctx.creator, %{
+      company_id: ctx.company.id,
+      company_permissions: Binding.from_atom(company_members_level),
+    })
+
+    if space_members_level != :no_access do
+      {:ok, _} = Operately.Groups.add_members(ctx.creator, space.id, [%{
+        id: ctx.person.id,
+        permissions: Binding.from_atom(space_members_level)
+      }])
+    end
+
+    space
   end
 
   def create_project(ctx, space, company_members_level, space_members_level, project_member_level) do
@@ -219,5 +269,18 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
 
   defp create_goal_update(ctx, goal) do
     update_fixture(%{type: :goal_check_in, updatable_id: goal.id, updatable_type: :goal, author_id: ctx.creator.id})
+  end
+
+  defp create_discussion(ctx, space) do
+    update_fixture(%{
+      author_id: ctx.creator.id,
+      updatable_id: space.id,
+      updatable_type: :space,
+      type: :project_discussion,
+      content: %{
+        title: "Title",
+        body: RichText.rich_text("Content")
+      }
+    })
   end
 end
