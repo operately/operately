@@ -45,7 +45,7 @@ export function useForGoalCheckIn(update: GoalCheckIns.Update) {
 
   const postComment = async (content: string) => {
     await post({
-      entityType: "update",
+      entityType: "goal_update",
       entityId: update.id,
       content: JSON.stringify(content),
     });

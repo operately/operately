@@ -26,6 +26,7 @@ defmodule Operately.Activities.Activity do
     field :resource_type, :string
 
     timestamps()
+    requester_access_level()
   end
 
   def changeset(attrs) do
