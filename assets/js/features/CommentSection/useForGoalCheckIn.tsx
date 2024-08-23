@@ -45,7 +45,7 @@ export function useForGoalCheckIn(update: GoalCheckIns.Update) {
 
   const postComment = async (content: string) => {
     await post({
-      entityType: "update",
+      entityType: "goal_update",
       entityId: update.id,
       content: JSON.stringify(content),
     });
@@ -57,6 +57,7 @@ export function useForGoalCheckIn(update: GoalCheckIns.Update) {
     await edit({
       commentId: commentID,
       content: JSON.stringify(content),
+      parentType: "goal_update",
     });
 
     refetch();

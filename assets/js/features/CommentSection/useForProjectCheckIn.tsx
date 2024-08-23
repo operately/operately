@@ -57,6 +57,7 @@ export function useForProjectCheckIn(checkIn: ProjectCheckIns.ProjectCheckIn): F
     await edit({
       commentId: commentID,
       content: JSON.stringify(content),
+      parentType: "project_check_in",
     });
 
     refetch();

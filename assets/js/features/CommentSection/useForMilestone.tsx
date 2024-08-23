@@ -39,6 +39,7 @@ export function useForMilestone(milestone: Milestones.Milestone): FormState {
     await edit({
       commentId: commentID,
       content: JSON.stringify(content),
+      parentType: "milestone",
     });
   };
 
