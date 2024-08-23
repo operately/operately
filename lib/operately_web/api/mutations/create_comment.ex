@@ -68,9 +68,9 @@ defmodule OperatelyWeb.Api.Mutations.CreateComment do
 
   defp execute(ctx, inputs, type) do
     case type do
-      :goal_update -> CommentAdding.run(ctx.me, ctx.id, "update", ctx.content)
-      :discussion -> CommentAdding.run(ctx.me, ctx.id, "update", ctx.content)
-      _ -> CommentAdding.run(ctx.me, ctx.id, inputs.entity_type, ctx.content)
+      :goal_update -> CommentAdding.run(ctx.me, ctx.parent, "update", ctx.content)
+      :discussion -> CommentAdding.run(ctx.me, ctx.parent, "update", ctx.content)
+      _ -> CommentAdding.run(ctx.me, ctx.parent, inputs.entity_type, ctx.content)
     end
   end
 end
