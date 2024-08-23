@@ -45,7 +45,12 @@ defmodule Operately.Companies do
     |> Repo.one!()
   end
 
-  def get_company_with_access_level(short_id, person_id) do
+  def get_company_with_access_level(person_id, id: id) do
+    from(c in Company, as: :resource, where: c.id == ^id)
+    |> Fetch.get_resource_with_access_level(person_id)
+  end
+
+  def get_company_with_access_level(person_id, short_id: short_id) do
     from(c in Company, as: :resource, where: c.short_id == ^short_id)
     |> Fetch.get_resource_with_access_level(person_id)
   end
