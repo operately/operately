@@ -19,7 +19,7 @@ export function useForDiscussion(discussion: Discussions.Discussion): FormState 
   const postComment = async (content: string) => {
     await post({
       entityId: discussion.id,
-      entityType: "update",
+      entityType: "discussion",
       content: JSON.stringify(content),
     });
   };
