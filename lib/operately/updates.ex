@@ -9,6 +9,7 @@ defmodule Operately.Updates do
   alias Operately.Updates.Update
   alias Operately.Projects.Project
   alias Operately.Projects.ReviewRequest
+  alias Operately.Access.{Binding, Fetch}
 
   alias Operately.Repo
   alias Ecto.Multi
@@ -49,6 +50,50 @@ defmodule Operately.Updates do
   end
 
   def get_update!(id), do: Repo.get!(Update, id)
+
+  def get_update_with_goal_and_access_level(id, person_id) do
+    query = from(u in Update, as: :update,
+        join: g in Operately.Goals.Goal, on: g.id == u.updatable_id, as: :resource,
+        where: u.id == ^id
+      )
+      |> Fetch.join_access_level(person_id)
+
+
+    from([update: u, resource: g, binding: b] in query,
+      where: b.access_level >= ^Binding.view_access(),
+      group_by: [u.id, g.id],
+      select: {u, g, max(b.access_level)}
+    )
+    |> Repo.one()
+    |> case do
+      nil -> {:error, :not_found}
+      {update, goal, level} ->
+        goal = apply(goal.__struct__, :set_requester_access_level, [goal, level])
+        {:ok, Map.put(update, :goal, goal)}
+    end
+  end
+
+  def get_update_with_space_and_access_level(id, person_id) do
+    query = from(u in Update, as: :update,
+        join: s in Operately.Groups.Group, on: s.id == u.updatable_id, as: :resource,
+        where: u.id == ^id
+      )
+      |> Fetch.join_access_level(person_id)
+
+
+    from([update: u, resource: s, binding: b] in query,
+      where: b.access_level >= ^Binding.view_access(),
+      group_by: [u.id, s.id],
+      select: {u, s, max(b.access_level)}
+    )
+    |> Repo.one()
+    |> case do
+      nil -> {:error, :not_found}
+      {update, space, level} ->
+        space = apply(space.__struct__, :set_requester_access_level, [space, level])
+        {:ok, Map.put(update, :space, space)}
+    end
+  end
 
   def create_update(attrs \\ %{}) do
     %Update{} |> Update.changeset(attrs) |> Repo.insert()
@@ -322,6 +367,43 @@ defmodule Operately.Updates do
   end
 
   def get_comment!(id), do: Repo.get!(Comment, id)
+
+  def get_comment_with_access_level(id, person_id, type) do
+    case type do
+      :project_check_in ->
+        from(comment in Comment, as: :comment,
+          join: check_in in Operately.Projects.CheckIn, on: check_in.id == comment.entity_id,
+          join: project in assoc(check_in, :project), as: :resource,
+          where: comment.id == ^id
+        )
+      :comment_thread ->
+        from(c in Comment, as: :comment,
+          join: t in Operately.Comments.CommentThread, on: t.id == c.entity_id,
+          join: a in Activities.Activity, on: t.parent_id == a.id, as: :resource,
+          where: c.id == ^id
+        )
+      :goal_update ->
+        from(c in Comment, as: :comment,
+          join: u in Update, on: u.id == c.entity_id,
+          join: g in Operately.Goals.Goal, on: u.updatable_id == g.id, as: :resource,
+          where: c.id == ^id
+        )
+      :discussion ->
+        from(c in Comment, as: :comment,
+          join: u in Update, on: u.id == c.entity_id,
+          join: s in Operately.Groups.Group, on: u.updatable_id == s.id, as: :resource,
+          where: c.id == ^id
+        )
+      :milestone ->
+        from(mc in Operately.Comments.MilestoneComment,
+          join: c in assoc(mc, :comment), as: :comment,
+          join: m in assoc(mc, :milestone),
+          join: p in assoc(m, :project), as: :resource,
+          where: c.id == ^id
+        )
+    end
+    |> Fetch.get_resource_with_access_level(person_id, selected_resource: :comment)
+  end
 
   # old version. TODO: remove
   def create_comment(_update, attrs) do
