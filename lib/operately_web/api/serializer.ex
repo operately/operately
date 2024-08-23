@@ -414,6 +414,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Permissions do
       can_create_milestone: permissions.can_create_milestone,
       can_delete_milestone: permissions.can_delete_milestone,
       can_edit_milestone: permissions.can_edit_milestone,
+      can_comment_on_check_in: permissions.can_comment_on_check_in,
       can_edit_check_in: permissions.can_edit_check_in,
       can_edit_description: permissions.can_edit_description,
       can_edit_timeline: permissions.can_edit_timeline,
