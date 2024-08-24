@@ -63,8 +63,8 @@ defmodule Operately.Projects.Permissions do
       can_comment_on_milestone: can_comment_on_milestone(access_level),
       can_complete_milestone: can_complete_milestone(access_level),
       can_reopen_milestone: can_reopen_milestone(access_level),
-
       can_comment_on_check_in: can_comment_on_check_in(access_level),
+      can_check_in: can_check_in(access_level),
       can_edit_check_in: can_edit_check_in(access_level),
       can_edit_contributors: can_edit_contributors(access_level),
       can_edit_description: can_edit_description(access_level),
@@ -97,13 +97,12 @@ defmodule Operately.Projects.Permissions do
     is_public?(project) || is_contributor?(project, user)
   end
 
-
   def can_comment_on_milestone(access_level), do: access_level >= Binding.comment_access()
   def can_complete_milestone(access_level), do: access_level >= Binding.edit_access()
   def can_edit_milestone(access_level), do: access_level >= Binding.edit_access()
   def can_reopen_milestone(access_level), do: access_level >= Binding.edit_access()
-
   def can_comment_on_check_in(access_level), do: access_level >= Binding.comment_access()
+  def can_check_in(access_level), do: access_level >= Binding.full_access()
   def can_edit_check_in(access_level), do: access_level >= Binding.full_access()
   def can_edit_contributors(access_level), do: access_level >= Binding.full_access()
   def can_edit_description(access_level), do: access_level >= Binding.edit_access()

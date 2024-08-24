@@ -4,12 +4,14 @@ defmodule Operately.Companies.Permissions do
   defstruct [
     :can_edit_trusted_email_domains,
     :can_invite_members,
+    :can_remove_members,
   ]
 
   defp calculate_permissions(access_level) do
     %__MODULE__{
       can_edit_trusted_email_domains: access_level >= Binding.full_access(),
       can_invite_members: access_level >= Binding.full_access(),
+      can_remove_members: access_level >= Binding.full_access(),
     }
   end
 
