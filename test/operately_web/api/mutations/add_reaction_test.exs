@@ -178,7 +178,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
         assert {code, res} = mutation(ctx.conn, :add_reaction, %{
           entity_id: Paths.comment_id(comment),
           entity_type: "comment",
-          parent_type: "comment_project_check_in",
+          parent_type: "project_check_in",
           emoji: "👍"
         })
 
@@ -204,7 +204,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
         assert {code, res} = mutation(ctx.conn, :add_reaction, %{
           entity_id: Paths.comment_id(comment),
           entity_type: "comment",
-          parent_type: "comment_comment_thread",
+          parent_type: "comment_thread",
           emoji: "👍"
         })
 
@@ -230,7 +230,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
         assert {code, res} = mutation(ctx.conn, :add_reaction, %{
           entity_id: Paths.comment_id(comment),
           entity_type: "comment",
-          parent_type: "comment_goal_update",
+          parent_type: "goal_update",
           emoji: "👍"
         })
 
@@ -255,7 +255,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
         assert {code, res} = mutation(ctx.conn, :add_reaction, %{
           entity_id: Paths.comment_id(comment),
           entity_type: "comment",
-          parent_type: "comment_discussion",
+          parent_type: "discussion",
           emoji: "👍"
         })
 
