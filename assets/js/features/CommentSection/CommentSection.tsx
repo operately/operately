@@ -18,7 +18,7 @@ import { compareIds } from "@/routes/paths";
 interface CommentSectionProps {
   form: FormState;
   refresh: () => void;
-  commentParentType: "project_check_in" | "comment_thread" | "goal_update" | "discussion";
+  commentParentType: "project_check_in" | "comment_thread" | "goal_update" | "discussion" | "milestone";
 }
 
 export function CommentSection(props: CommentSectionProps) {
