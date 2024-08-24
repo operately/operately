@@ -28,6 +28,7 @@ export function useForCommentThread(thread: CommentThread): FormState {
     await edit({
       commentId: commentID,
       content: JSON.stringify(content),
+      parentType: "comment_thread",
     });
   };
 
