@@ -4,15 +4,13 @@ defmodule Operately.Operations.CommentAdding do
   alias Operately.Activities
   alias Ecto.Multi
 
-  def run(creator, entity_id, entity_type, content) do
+  def run(creator, entity, entity_type, content) do
     changeset = Comment.changeset(%{
       author_id: creator.id,
-      entity_id: entity_id,
+      entity_id: entity.id,
       entity_type: String.to_existing_atom(entity_type),
       content: %{"message" => content}
     })
-
-    entity = find_entity(entity_id, entity_type)
     action = find_action(entity)
 
     Multi.new()
@@ -93,15 +91,6 @@ defmodule Operately.Operations.CommentAdding do
 
       fields
     end)
-  end
-
-  def find_entity(entity_id, entity_type) do
-    case entity_type do
-      "update" -> Operately.Updates.get_update!(entity_id)
-      "project_check_in" -> Operately.Projects.get_check_in!(entity_id)
-      "comment_thread" -> Operately.Comments.get_thread!(entity_id)
-      _ -> raise "Unknown entity type: #{entity_type}"
-    end
   end
 
   def find_action(%Operately.Updates.Update{type: :project_discussion}), do: :discussion_comment_submitted
