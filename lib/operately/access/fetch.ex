@@ -5,9 +5,13 @@ defmodule Operately.Access.Fetch do
   alias Operately.Access.Binding
 
   def get_resource_with_access_level(query, person_id) do
+    get_resource_with_access_level(query, person_id, selected_resource: :resource)
+  end
+
+  def get_resource_with_access_level(query, person_id, selected_resource: selected_resource) do
     query = join_access_level(query, person_id)
 
-    from([resource: r, binding: b] in query,
+    from([{^selected_resource, r}, binding: b] in query,
       where: b.access_level >= ^Binding.view_access(),
       group_by: r.id,
       select: {r, max(b.access_level)}

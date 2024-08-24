@@ -57,6 +57,7 @@ export function useForGoalCheckIn(update: GoalCheckIns.Update) {
     await edit({
       commentId: commentID,
       content: JSON.stringify(content),
+      parentType: "goal_update",
     });
 
     refetch();
