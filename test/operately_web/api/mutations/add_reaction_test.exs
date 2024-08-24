@@ -169,7 +169,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
     end
 
     tabletest @project_table do
-      test "comment - if caller has levels company=#{@test.company}, space=#{@test.space}, project=#{@test.project} on the project, then expect code=#{@test.expected}", ctx do
+      test "check-in comment - if caller has levels company=#{@test.company}, space=#{@test.space}, project=#{@test.project} on the project, then expect code=#{@test.expected}", ctx do
         space = create_space(ctx)
         project = create_project(ctx, space, @test.company, @test.space, @test.project)
         check_in = create_check_in(ctx.creator, project)
@@ -193,9 +193,34 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
         end
       end
     end
+    tabletest @project_table do
+      test "milestone comment - if caller has levels company=#{@test.company}, space=#{@test.space}, project=#{@test.project} on the project, then expect code=#{@test.expected}", ctx do
+        space = create_space(ctx)
+        project = create_project(ctx, space, @test.company, @test.space, @test.project)
+        milestone = milestone_fixture(ctx.creator, %{project_id: project.id})
+        comment = create_milestone_comment(ctx, milestone)
+
+        assert {code, res} = mutation(ctx.conn, :add_reaction, %{
+          entity_id: Paths.comment_id(comment),
+          entity_type: "comment",
+          parent_type: "milestone",
+          emoji: "👍"
+        })
+
+        assert code == @test.expected
+
+        case @test.expected do
+          200 ->
+            reaction = get_reaction(comment.id, :comment)
+            assert res.reaction == Serializer.serialize(reaction, level: :essential)
+          403 -> assert res.message == "You don't have permission to perform this action"
+          404 -> assert res.message == "The requested resource was not found"
+        end
+      end
+    end
 
     tabletest @goal_table do
-      test "comment - if caller has levels company=#{@test.company}, space=#{@test.space}, goal=#{@test.goal} on the thread, then expect code=#{@test.expected}", ctx do
+      test "goal discussion comment - if caller has levels company=#{@test.company}, space=#{@test.space}, goal=#{@test.goal} on the goal, then expect code=#{@test.expected}", ctx do
         space = create_space(ctx)
         goal = create_goal(ctx, space, @test.company, @test.space, @test.goal)
         thread = create_comment_thread(goal)
@@ -221,7 +246,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
     end
 
     tabletest @goal_table do
-      test "comment - if caller has levels company=#{@test.company}, space=#{@test.space}, goal=#{@test.goal} on the goal, then expect code=#{@test.expected}", ctx do
+      test "goal update comment - if caller has levels company=#{@test.company}, space=#{@test.space}, goal=#{@test.goal} on the goal, then expect code=#{@test.expected}", ctx do
         space = create_space(ctx)
         goal = create_goal(ctx, space, @test.company, @test.space, @test.goal)
         update = create_goal_update(ctx, goal)
@@ -247,7 +272,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
     end
 
     tabletest @space_table do
-      test "comment - if caller has levels company=#{@test.company}, space=#{@test.space} on the space, then expect code=#{@test.expected}", ctx do
+      test "discussion comment - if caller has levels company=#{@test.company}, space=#{@test.space} on the space, then expect code=#{@test.expected}", ctx do
         space = create_space(ctx, @test.company, @test.space)
         discussion = create_discussion(ctx.creator, space.id)
         comment = create_comment(ctx, discussion, "update")
@@ -399,5 +424,18 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
   defp create_comment(ctx, parent, type) do
     {:ok, comment} = Operately.Operations.CommentAdding.run(ctx.creator, parent, type, RichText.rich_text("Content"))
     comment
+  end
+
+  defp create_milestone_comment(ctx, milestone) do
+    {:ok, milestone_comment} = Operately.Comments.create_milestone_comment(
+      ctx.creator,
+      milestone,
+      "none",
+      %{
+        content: %{"message" => RichText.rich_text("Content")},
+        author_id: ctx.creator.id,
+      }
+    )
+    Operately.Updates.get_comment!(milestone_comment.comment_id)
   end
 end
