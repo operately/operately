@@ -1465,6 +1465,7 @@ export interface AddProjectContributorResult {
 export interface AddReactionInput {
   entityId?: string | null;
   entityType?: string | null;
+  parentType?: string | null;
   emoji?: string | null;
 }
 
@@ -1666,6 +1667,7 @@ export interface DisconnectGoalFromProjectResult {
 export interface EditCommentInput {
   content?: string | null;
   commentId?: string | null;
+  parentType?: string | null;
 }
 
 export interface EditCommentResult {
