@@ -152,6 +152,6 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionTest do
   end
 
   defp add_comment(ctx, discussion, content) do
-    Operately.Operations.CommentAdding.run(ctx.person, discussion.id, "update", RichText.rich_text(content))
+    Operately.Operations.CommentAdding.run(ctx.person, discussion, "update", RichText.rich_text(content))
   end
 end

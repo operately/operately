@@ -21,7 +21,7 @@ defmodule Operately.Features.DiscussionsTest do
     Operately.Groups.add_members(author, space.id, [
       %{
         id: reader.id,
-        permissions: Binding.view_access(),
+        permissions: Binding.comment_access(),
       },
     ])
 

@@ -6,7 +6,32 @@ defmodule Operately.Comments do
   alias Operately.Comments.MilestoneComment
   alias Operately.Comments.CreateMilestoneCommentOperation
 
+  alias Operately.Activities.Activity
+  alias Operately.Access.{Binding, Fetch}
+
   def get_thread!(id), do: Repo.get!(CommentThread, id)
+
+  def get_thread_with_activity_and_access_level(id, person_id) do
+    query = from(t in CommentThread, as: :thread,
+        join: a in Activity, on: a.id == t.parent_id, as: :resource,
+        where: t.id == ^id
+      )
+      |> Fetch.join_access_level(person_id)
+
+
+    from([thread: t, resource: a, binding: b] in query,
+      where: b.access_level >= ^Binding.view_access(),
+      group_by: [t.id, a.id],
+      select: {a, t, max(b.access_level)}
+    )
+    |> Repo.one()
+    |> case do
+      nil -> {:error, :not_found}
+      {activity, thread, level} ->
+        activity = apply(activity.__struct__, :set_requester_access_level, [activity, level])
+        {:ok, Map.put(thread, :activity, activity)}
+    end
+  end
 
   def list_milestone_comments do
     Repo.all(MilestoneComment)
