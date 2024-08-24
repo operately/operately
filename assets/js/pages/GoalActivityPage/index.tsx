@@ -76,5 +76,5 @@ function Comments({ commentThread }: { commentThread: CommentThread }) {
   const refresh = Pages.useRefresh();
   const commentsForm = useForCommentThread(commentThread);
 
-  return <CommentSection form={commentsForm} refresh={refresh} />;
+  return <CommentSection form={commentsForm} refresh={refresh} commentParentType="comment_thread" />;
 }

@@ -17,6 +17,7 @@ interface ReactionsFormState {
 interface Entity {
   id: string;
   type: string;
+  parentType?: string;
 }
 
 interface ReactionListItem {
@@ -47,6 +48,7 @@ export function useReactionsForm(entity: Entity, initial: api.Reaction[] | React
       const res = await add({
         entityId: entity.id,
         entityType: entity.type,
+        parentType: entity.parentType,
         emoji: emoji,
       });
 

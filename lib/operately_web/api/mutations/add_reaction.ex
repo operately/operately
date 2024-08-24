@@ -85,8 +85,8 @@ defmodule OperatelyWeb.Api.Mutations.AddReaction do
     end
   end
 
-  defp parse_comment_parent("comment_" <> parent_type) do
+  defp parse_comment_parent(nil), do: :ok
+  defp parse_comment_parent(parent_type) do
     String.to_existing_atom(parent_type)
   end
-  defp parse_comment_parent(_), do: :ok
 end
