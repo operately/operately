@@ -12,6 +12,39 @@ defmodule OperatelyWeb.Api.Queries.SearchProjectContributorCandidatesTest do
     test "it requires authentication", ctx do
       assert {401, _} = query(ctx.conn, :search_project_contributor_candidates, %{})
     end
+
+    test "doesn't show people from other companies", ctx do
+      ctx1 = register_and_log_in_account(ctx)
+      ctx2 = register_and_log_in_account(ctx)
+
+      p1 = person_fixture(%{company_id: ctx1.company.id})
+      p2 = person_fixture(%{company_id: ctx1.company.id})
+      p3 = person_fixture(%{company_id: ctx2.company.id})
+      p4 = person_fixture(%{company_id: ctx2.company.id})
+
+      project1 = project_fixture(%{company_id: ctx1.company.id, creator_id: ctx1.person.id, group_id: ctx1.company.company_space_id})
+      project2 = project_fixture(%{company_id: ctx2.company.id, creator_id: ctx2.person.id, group_id: ctx2.company.company_space_id})
+
+      assert {200, res} = query(ctx1.conn, :search_project_contributor_candidates, %{
+        project_id: Paths.project_id(project1),
+        query: "",
+      })
+
+      assert length(res.people) == 3
+      Enum.each([p1, p2, ctx1.company_creator], fn p ->
+        assert Enum.find(res.people, &(&1.id == Paths.person_id(p)))
+      end)
+
+      assert {200, res} = query(ctx2.conn, :search_project_contributor_candidates, %{
+        project_id: Paths.project_id(project2),
+        query: "",
+      })
+
+      assert length(res.people) == 3
+      Enum.each([p3, p4, ctx2.company_creator], fn p ->
+        assert Enum.find(res.people, &(&1.id == Paths.person_id(p)))
+      end)
+    end
   end
 
 

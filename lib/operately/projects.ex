@@ -245,7 +245,7 @@ defmodule Operately.Projects do
     |> Repo.all()
   end
 
-  def list_project_contributor_candidates(project_id, query, exclude_ids, limit) do
+  def list_project_contributor_candidates(company_id, project_id, query, exclude_ids, limit) do
     ilike_pattern = "%#{query}%"
 
     query = (
@@ -254,7 +254,7 @@ defmodule Operately.Projects do
       where: is_nil(contrib.project_id),
       where: person.id not in ^exclude_ids,
       where: ilike(person.full_name, ^ilike_pattern) or ilike(person.title, ^ilike_pattern),
-      where: not person.suspended,
+      where: not person.suspended and person.company_id == ^company_id,
       limit: ^limit
     )
 
