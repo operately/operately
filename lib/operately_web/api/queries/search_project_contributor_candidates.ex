@@ -17,10 +17,11 @@ defmodule OperatelyWeb.Api.Queries.SearchProjectContributorCandidates do
   end
 
   def call(conn, inputs) do
+    person = me(conn)
     {:ok, project_id} = decode_id(inputs.project_id)
 
     if has_permissions?(me(conn), project_id) do
-      people = Projects.list_project_contributor_candidates(project_id, inputs.query, [], 10)
+      people = Projects.list_project_contributor_candidates(person.company_id, project_id, inputs.query, [], 10)
       {:ok, %{people: Serializer.serialize(people)}}
     else
       {:ok, %{people: []}}
