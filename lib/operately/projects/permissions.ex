@@ -76,6 +76,7 @@ defmodule Operately.Projects.Permissions do
       can_edit_task: can_edit_task(access_level),
       can_edit_timeline: can_edit_timeline(access_level),
       can_pause: can_pause(access_level),
+      can_edit_goal: can_edit_goal(access_level)
     }
   end
 
@@ -113,14 +114,15 @@ defmodule Operately.Projects.Permissions do
   def can_edit_task(access_level), do: access_level >= Binding.edit_access()
   def can_edit_timeline(access_level), do: access_level >= Binding.edit_access()
   def can_pause(access_level), do: access_level >= Binding.edit_access()
+  def can_edit_goal(access_level), do: access_level >= Binding.edit_access()
 
   def check(access_level, permission) do
     permissions = calculate_permissions(access_level)
 
-    if Map.get(permissions, permission) == true do
-      {:ok, :allowed}
-    else
-      {:error, :forbidden}
+    case Map.get(permissions, permission) do
+      true -> {:ok, :allowed}
+      false -> {:error, :forbidden}
+      nil -> raise "Unknown permission: #{permission}"
     end
   end
 end
