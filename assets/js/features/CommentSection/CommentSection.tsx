@@ -18,6 +18,7 @@ import { compareIds } from "@/routes/paths";
 interface CommentSectionProps {
   form: FormState;
   refresh: () => void;
+  commentParentType: "project_check_in" | "comment_thread" | "goal_update" | "discussion" | "milestone";
 }
 
 export function CommentSection(props: CommentSectionProps) {
@@ -26,7 +27,7 @@ export function CommentSection(props: CommentSectionProps) {
       <div className="flex flex-col">
         {props.form.items.map((item, index) => {
           if (item.type === "comment") {
-            return <Comment key={index} comment={item.value} form={props.form} refresh={props.refresh} />;
+            return <Comment key={index} comment={item.value} form={props.form} refresh={props.refresh} commentParentType={props.commentParentType} />;
           } else if (item.type === "milestone-completed") {
             return <MilestoneCompleted key={index} comment={item.value} />;
           } else if (item.type === "milestone-reopened") {
@@ -42,13 +43,13 @@ export function CommentSection(props: CommentSectionProps) {
   );
 }
 
-function Comment({ comment, form, refresh }) {
+function Comment({ comment, form, refresh, commentParentType }) {
   const [editing, _, startEditing, stopEditing] = useBoolState(false);
 
   if (editing) {
     return <EditComment comment={comment} onCancel={stopEditing} form={form} refresh={refresh} />;
   } else {
-    return <ViewComment comment={comment} onEdit={startEditing} />;
+    return <ViewComment comment={comment} onEdit={startEditing} commentParentType={commentParentType} />;
   }
 }
 
@@ -153,9 +154,9 @@ function MilestoneReopened({ comment }) {
   );
 }
 
-function ViewComment({ comment, onEdit }) {
+function ViewComment({ comment, onEdit, commentParentType }) {
   const me = useMe()!;
-  const entity = { id: comment.id, type: "comment" };
+  const entity = { id: comment.id, type: "comment", parentType: commentParentType };
   const addReactionForm = useReactionsForm(entity, comment.reactions);
   const testId = "comment-" + comment.id;
   const content = JSON.parse(comment.content)["message"];

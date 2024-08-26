@@ -1465,6 +1465,7 @@ export interface AddProjectContributorResult {
 export interface AddReactionInput {
   entityId?: string | null;
   entityType?: string | null;
+  parentType?: string | null;
   emoji?: string | null;
 }
 
