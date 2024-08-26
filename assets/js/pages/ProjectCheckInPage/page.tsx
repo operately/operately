@@ -53,7 +53,7 @@ function Comments() {
   const refresh = useRefresh();
   const commentsForm = useForProjectCheckIn(checkIn);
 
-  return <CommentSection form={commentsForm} refresh={refresh} />;
+  return <CommentSection form={commentsForm} refresh={refresh} commentParentType="project_check_in" />;
 }
 
 function Reactions() {

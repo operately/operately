@@ -55,7 +55,7 @@ export function Page() {
 
           <AckCTA />
           <div className="border-t border-stroke-base mt-8" />
-          <CommentSection form={commentsForm} refresh={refresh} />
+          <CommentSection form={commentsForm} refresh={refresh} commentParentType="goal_update" />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
@@ -65,7 +65,7 @@ export function Page() {
 function Reactions() {
   const { update } = useLoadedData();
   const reactions = update.reactions!.map((r: any) => r!);
-  const entity = { id: update.id!, type: "update" };
+  const entity = { id: update.id!, type: "goal_update" };
   const addReactionForm = useReactionsForm(entity, reactions);
 
   return <ReactionList size={24} form={addReactionForm} />;

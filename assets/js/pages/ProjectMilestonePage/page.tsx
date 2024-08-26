@@ -42,7 +42,7 @@ export function Page() {
           <TaskSection milestone={milestone} />
 
           <PageSection title="Comments &amp; Activity Feed" />
-          <CommentSection form={commentsForm} refresh={refresh} />
+          <CommentSection form={commentsForm} refresh={refresh} commentParentType="milestone" />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
