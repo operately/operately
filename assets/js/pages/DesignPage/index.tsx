@@ -10,6 +10,7 @@ import { Colors } from "./Colors";
 import { Links } from "./Links";
 import { Buttons } from "./Buttons";
 import { Menus } from "./Menus";
+import { CalloutExamples } from "./Callouts";
 
 export const loader = Pages.emptyLoader;
 
@@ -24,6 +25,7 @@ export function Page() {
           <Links />
           <Buttons />
           <Menus />
+          <CalloutExamples />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
