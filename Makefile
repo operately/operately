@@ -1,4 +1,6 @@
-SHELL := /bin/bash
+SHELL := /bin/bash  # Use bash syntax
+MAKEFLAGS += -s     # Silent mode
+
 .PHONY: test
 
 REPORTS_DIR ?= $(PWD)/testreports
@@ -72,7 +74,7 @@ dev.run.script:
 	cp -f $(FILE) tmp/
 	./devenv mix run tmp/$$(basename $(FILE))
 
-dev .seed.env:
+dev.seed.env:
 	touch .env
 
 #
