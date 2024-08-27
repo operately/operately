@@ -26,16 +26,16 @@ export function SubscribersSelector() {
 
   return (
     <div>
-      <p className="text-lg font-bold mb-2">Who should be notified?</p>
+      <p className="text-lg font-bold mb-2">When I post this, notify:</p>
 
-      <RadioGroup name="privacy-level" onChange={setSubscriptionType} defaultValue={subscriptionType} >
+      <RadioGroup name="subscriptions-options" onChange={setSubscriptionType} defaultValue={subscriptionType} >
         <Radio
-          label={`All people who are members of the space`}
+          label="All people who are members of the space"
           value={Options.ALL}
         />
         <div className="my-1" onClick={() => setShowSelector(true)} >
           <Radio
-            label={`Only the people I select`}
+            label="Only the people I select"
             value={Options.SELECTED}
           />
           <SelectedPeople people={selectedPeople} />
@@ -53,6 +53,19 @@ export function SubscribersSelector() {
         setShowSelector={setShowSelector}
       />
   </div>
+  );
+}
+
+
+function SelectedPeople({people}) {
+  if(people.length === 0) return <></>;
+
+  return(
+    <div className="flex gap-2 ml-6">
+      {people.map(person => (
+        <Avatar person={person} size="tiny" key={person.id} />
+      ))}
+    </div>
   );
 }
 
@@ -84,16 +97,14 @@ function SelectorModal({people, saveSelection, showSelector, setShowSelector}: S
   }
 
   return (
-    <Modal title="" isOpen={showSelector} hideModal={() => setShowSelector(false)} >
+    <Modal title="Select people to notify" isOpen={showSelector} hideModal={() => setShowSelector(false)} minHeight="200px" >
       <div className="flex flex-col gap-6">
-        <div className="font-bold text-center text-lg">Select people to notify</div>
-
         <div className="flex items-center gap-3">
           <ActionText
             text="Select everyone"
             onClick={handleSelectEveryone}
           />
-          <span className="text-[7px] content-accent">&#9830;</span>
+          <span className="text-content-dimmed">·</span>
           <ActionText
             text="Select no one"
             onClick={handleSelectNoone}
@@ -102,21 +113,12 @@ function SelectorModal({people, saveSelection, showSelector, setShowSelector}: S
 
         <div>
           {people.map(person => (
-            <div key={person.id} className="flex gap-4 border-b border-content-subtle px-2 pb-4 mb-4 last:border-0 last:mb-0">
-              <Avatar person={person} size="large" />
-              <div className="flex w-full items-center justify-between">
-                <div>
-                  <p className="font-bold">{person.fullName}</p>
-                  <p className="text-sm">Some role</p>
-                </div>
-                <input
-                  checked={selected.includes(person.id!)}
-                  onChange={() => handleSelect(person.id!)}
-                  type="checkbox"
-                  className="form-checkbox h-5 w-5 text-blue-600 rounded focus:ring-blue-500"
-                />
-              </div>
-            </div>
+            <ModalPersonItem
+              person={person}
+              isSelected={selected.includes(person.id!)}
+              handleSelect={() => handleSelect(person.id!)}
+              key={person.id}
+            />
           ))}
         </div>
 
@@ -126,19 +128,6 @@ function SelectorModal({people, saveSelection, showSelector, setShowSelector}: S
         </div>
       </div>
     </Modal>
-  );
-}
-
-
-function SelectedPeople({people}) {
-  if(people.length === 0) return <></>;
-
-  return(
-    <div className="flex gap-2 ml-6">
-      {people.map(person => (
-        <Avatar person={person} size="tiny" key={person.id} />
-      ))}
-    </div>
   );
 }
 
@@ -156,5 +145,26 @@ function ActionText({text, onClick}) {
     >
       {text}
     </span>
+  );
+}
+
+
+function ModalPersonItem({person, isSelected, handleSelect}) {
+  return (
+    <div className="flex gap-4 border-b border-bg-stroke-subtle px-2 pb-4 mb-4 last:border-0 last:mb-0">
+      <Avatar person={person} size="large" />
+      <div className="flex w-full items-center justify-between">
+        <div>
+          <p className="font-bold">{person.fullName}</p>
+          <p className="text-sm">Some role</p>
+        </div>
+        <input
+          checked={isSelected}
+          onChange={handleSelect}
+          type="checkbox"
+          className="form-checkbox h-5 w-5 text-blue-600 rounded focus:ring-blue-500"
+        />
+      </div>
+    </div>
   );
 }
