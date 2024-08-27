@@ -53,6 +53,7 @@ function ProfileForm({ me }: { me: People.Person }) {
       timezone: Forms.useSelectField(me.timezone, Timezones, { optional: true }),
       manager: Forms.useSelectPersonField(me.manager, { optional: true }),
       managerStatus: Forms.useSelectField(managerStatus, ManagerOptions),
+      frieds: Forms.useMultiPeopleSelectField(Space.allPeople, { optional: true }),
     },
     submit: async (form) => {
       await People.updateMyProfile({
@@ -74,6 +75,7 @@ function ProfileForm({ me }: { me: People.Person }) {
         <Forms.TextInput field={"name"} label="Name" />
         <Forms.TextInput field={"title"} label="Title in Company" />
         <Forms.SelectBox field={"timezone"} label="Timezone" />
+        <Forms.MultiPeopleSelectBox field={"friends"} label="Friends" />
 
         <Forms.FieldGroup>
           <Forms.RadioButtons field={"managerStatus"} label="Who is your manager?" />
