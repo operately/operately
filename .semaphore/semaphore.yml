@@ -27,10 +27,8 @@ blocks:
           - checkout
           - cache restore
           - cd assets && cache restore && cd .. # cache node_packages
-          - make test.init
-          - make test.seed.env
-          - ./devenv up
-          - make test.setup
+          - make test.build
+
       epilogue:
         always:
           commands:
