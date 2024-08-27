@@ -104,6 +104,9 @@ function ContributorList({ project }: { project: Projects.Project }) {
       <Link to={contributorsPath} data-test-id="project-contributors">
         <div className="flex items-center justify-center gap-1 cursor-pointer">
           {sortedContributors!.map((c) => c && <ContributorAvatar key={c.id} contributor={c} />)}
+          <div className="w-10 h-10 bg-yellow-50 rounded-full flex items-center justify-center" title="Assign a reviewer to get feedback">
+            <Icons.IconQuestionMark className="w-6 h-6 text-yellow-800" />
+          </div>
 
           {project.permissions!.canEditContributors && (
             <div className="ml-2">

@@ -33,6 +33,18 @@ module.exports = {
         "accent-1": "var(--color-accent-1)",
         "accent-1-light": "var(--color-accent-1-light)",
 
+        "callout-info": "var(--color-callout-info)",
+        "callout-info-icon": "var(--color-callout-info-icon)",
+        "callout-info-message": "var(--color-callout-info-message)",
+
+        "callout-warning": "var(--color-callout-warning)",
+        "callout-warning-icon": "var(--color-callout-warning-icon)",
+        "callout-warning-message": "var(--color-callout-warning-message)",
+
+        "callout-error": "var(--color-callout-error)",
+        "callout-error-icon": "var(--color-callout-error-icon)",
+        "callout-error-message": "var(--color-callout-error-message)",
+
         brand: {
           1: "#3185FF",
           2: "#E3F2FF",

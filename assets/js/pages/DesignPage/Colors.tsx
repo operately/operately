@@ -29,6 +29,15 @@ export function Colors() {
         <Color color="bg-accent-1" usage="Primary accent color in the application" />
         <Color color="bg-accent-1-light" usage="A lighter shade of the primary accent color for hover effects" />
         <Color color="bg-red-500" usage="Error color for alerts and notifications" />
+        <Color color="bg-callout-info" usage="Information callout background color" />
+        <Color color="bg-callout-info-icon" usage="Information callout icon color" />
+        <Color color="bg-callout-info-message" usage="Information callout message text" />
+        <Color color="bg-callout-warning" usage="Warning callout background color" />
+        <Color color="bg-callout-warning-icon" usage="Warning callout icon color" />
+        <Color color="bg-callout-warning-message" usage="Warning callout message text" />
+        <Color color="bg-callout-error" usage="Error callout background color" />
+        <Color color="bg-callout-error-icon" usage="Error callout icon color" />
+        <Color color="bg-callout-error-message" usage="Error callout message text" />
       </div>
     </Section>
   );

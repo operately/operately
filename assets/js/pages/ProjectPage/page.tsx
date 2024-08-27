@@ -130,6 +130,8 @@ function ProjectFeed({ project }) {
   return <Feed items={data!.activities!} testId="project-feed" page="project" />;
 }
 
+import { InfoCallout } from "@/components/Callouts";
+
 function LastCheckIn({ project }) {
   const newCheckInPath = Paths.projectCheckInNewPath(project.id);
 
@@ -143,10 +145,21 @@ function LastCheckIn({ project }) {
 
   if (!project.lastCheckIn) {
     return (
-      <div className="text-sm">
-        Asking the champion to check-in every Friday.
-        {project.permissions.canCheckIn && <div className="mt-2">{checkInNowLink}</div>}
-      </div>
+      <>
+        <div className="text-sm mb-2">
+          Asking the champion to check-in every Friday.
+          {project.permissions.canCheckIn && <div className="mt-2">{checkInNowLink}</div>}
+        </div>
+        <InfoCallout
+          message={"Want a second pair of eyes?"}
+          description={
+            <>
+              Check-ins are on, but important updates might slip through the cracks.{" "}
+              <Link to={""}>Add a Reviewer</Link> to get feedback and keep things moving smoothly.
+            </>
+          }
+        />
+      </>
     );
   }
 
