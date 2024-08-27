@@ -1,3 +1,5 @@
+import { Dispatch, SetStateAction } from "react";
+
 type State = "idle" | "submitting";
 
 export type MapOfFields = Record<string, Field<any>>;
@@ -15,8 +17,8 @@ export interface FormState<FieldTypes extends MapOfFields> {
 
 export type Field<T> = {
   value: T | null | undefined;
-  setValue: (value: T | null | undefined) => void;
-  initial: T | null | undefined;
+  setValue: Dispatch<SetStateAction<T | undefined>>;
+  initial?: T | null | undefined;
   optional?: boolean;
   validate: () => string | null;
 };
