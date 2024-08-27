@@ -10,7 +10,7 @@ import { Colors } from "./Colors";
 import { Links } from "./Links";
 import { Buttons } from "./Buttons";
 import { Menus } from "./Menus";
-import { AlertsExamples } from "./Alerts";
+import { CalloutExamples } from "./Callouts";
 
 export const loader = Pages.emptyLoader;
 
@@ -25,7 +25,7 @@ export function Page() {
           <Links />
           <Buttons />
           <Menus />
-          <AlertsExamples />
+          <CalloutExamples />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
