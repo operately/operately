@@ -142,7 +142,7 @@ function MilestoneDisplay({ milestone, form, edit }) {
 
             {milestone.deletable && (
               <div
-                className="rounded-full bg-surface-dimmed hover:bg-surface-accent p-1 cursor-pointer hover:text-red-500 transition-colors"
+                className="rounded-full bg-surface-dimmed hover:bg-surface-accent p-1 cursor-pointer hover:text-content-error transition-colors"
                 onClick={() => form.milestoneList.remove(milestone.id)}
                 data-test-id={"remove-" + milestoneTestID(milestone)}
               >

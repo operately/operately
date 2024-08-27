@@ -1,4 +1,5 @@
 import * as React from "react";
+import * as Icons from "@tabler/icons-react";
 import { Section, SectionTitle } from "./Section";
 
 export function Colors() {
@@ -12,41 +13,90 @@ export function Colors() {
         maintain a consistent look and feel, and easily make changes in the future.
       </div>
 
+      <h3 className="font-bold mt-4 text-lg">Background Colors</h3>
+      <p className="text-sm mb-6">Colors used for the background and surface.</p>
+
       <div className="grid grid-cols-2 gap-8">
-        <Color color="bg-base" usage="Background color of the application" />
-        <Color color="bg-surface" usage="Color of the UI surface" />
-        <Color color="bg-surface-dimmed" usage="Dimmed version of the UI surface, used for page footers" />
-        <Color color="bg-surface-accent" usage="Accent color of the UI surface, used for subtle highlights" />
-        <Color color="bg-surface-outline" usage="Outline color of the UI surface, used for borders" />
-        <Color color="bg-surface-highlight" usage="Highlight color of the UI surface, used for hover effects" />
-        <Color color="bg-content-base" usage="Default color of all text content" />
-        <Color color="bg-content-accent" usage="Accent color for text content" />
-        <Color color="bg-content-dimmed" usage="Dimmed color for text content" />
-        <Color color="bg-content-subtle" usage="Barely visible color for text content" />
-        <Color color="bg-stroke-base" usage="Color for dividers and subtle borders on a page" />
-        <Color color="bg-link-base" usage="Default color for links" />
-        <Color color="bg-link-hover" usage="Hover color for links" />
-        <Color color="bg-accent-1" usage="Primary accent color in the application" />
-        <Color color="bg-accent-1-light" usage="A lighter shade of the primary accent color for hover effects" />
-        <Color color="bg-red-500" usage="Error color for alerts and notifications" />
-        <Color color="bg-callout-info" usage="Information callout background color" />
-        <Color color="bg-callout-info-icon" usage="Information callout icon color" />
-        <Color color="bg-callout-info-message" usage="Information callout message text" />
-        <Color color="bg-callout-warning" usage="Warning callout background color" />
-        <Color color="bg-callout-warning-icon" usage="Warning callout icon color" />
-        <Color color="bg-callout-warning-message" usage="Warning callout message text" />
-        <Color color="bg-callout-error" usage="Error callout background color" />
-        <Color color="bg-callout-error-icon" usage="Error callout icon color" />
-        <Color color="bg-callout-error-message" usage="Error callout message text" />
-        <Color color="bg-callout-success" usage="Success callout background color" />
-        <Color color="bg-callout-success-icon" usage="Success callout icon color" />
-        <Color color="bg-callout-success-message" usage="Success callout message text" />
+        <ColorBox color="bg-base" usage="Background color of the application" />
+        <ColorBox color="bg-surface" usage="Color of the UI surface" />
+        <ColorBox color="bg-surface-dimmed" usage="Dimmed version of the UI surface, used for page footers" />
+        <ColorBox color="bg-surface-accent" usage="Accent color of the UI surface, used for subtle highlights" />
+        <ColorBox color="bg-surface-outline" usage="Outline color of the UI surface, used for borders" />
+        <ColorBox color="bg-surface-highlight" usage="Highlight color of the UI surface, used for hover effects" />
+      </div>
+
+      <h3 className="font-bold mt-12 text-lg">Interactive Components</h3>
+      <p className="text-sm mb-6">Form background, callouts, etc...</p>
+
+      <div className="grid grid-cols-2 gap-8">
+        <ColorBox color="bg-callout-info" usage="Information callout background color" />
+        <ColorBox color="bg-callout-info-icon" usage="Information callout icon color" />
+        <ColorBox color="bg-callout-info-message" usage="Information callout message text" />
+        <ColorBox color="bg-callout-warning" usage="Warning callout background color" />
+        <ColorBox color="bg-callout-warning-icon" usage="Warning callout icon color" />
+        <ColorBox color="bg-callout-warning-message" usage="Warning callout message text" />
+        <ColorBox color="bg-callout-error" usage="Error callout background color" />
+        <ColorBox color="bg-callout-error-icon" usage="Error callout icon color" />
+        <ColorBox color="bg-callout-error-message" usage="Error callout message text" />
+        <ColorBox color="bg-callout-success" usage="Success callout background color" />
+        <ColorBox color="bg-callout-success-icon" usage="Success callout icon color" />
+        <ColorBox color="bg-callout-success-message" usage="Success callout message text" />
+      </div>
+
+      <h3 className="font-bold mt-12 text-lg">Borders And Separators</h3>
+      <p className="text-sm mb-6">Colors used for dividers, borders, and other separators</p>
+
+      <div className="grid grid-cols-2 gap-8">
+        <ColorBox color="bg-stroke-base" usage="Color for dividers and subtle borders on a page" />
+        <ColorBox color="bg-stroke-dimmed" usage="Separator for condensed content, like lists" />
+      </div>
+
+      <h3 className="font-bold mt-12 text-lg">Solid Colors</h3>
+      <p className="text-sm mb-6">CTA, Buttons, Avatar background, etc...</p>
+
+      <div className="grid grid-cols-2 gap-8">
+        <ColorBox color="bg-accent-1" usage="Color that stands out, used for primary buttons and CTAs" />
+        <ColorBox color="bg-accent-1-light" usage="A lighter shade of the primary accent color for hover effects" />
+      </div>
+
+      <h3 className="font-bold mt-12 text-lg">Text Colors</h3>
+      <p className="text-sm mb-6">Colors used for text content, icons, warnings, and other content</p>
+
+      <div className="flex flex-col gap-4">
+        <ColorText color="text-content-base" usage="Default color of all text content" />
+        <ColorText color="text-content-dimmed" usage="Text content with less emphasis" />
+        <ColorText color="text-content-subtle" usage="Barely visible color for text content" />
+        <ColorText color="text-content-error" usage="Form errors, validation messages, etc..." />
+        <ColorText color="text-link-base" usage="Default color of all text links" />
+        <ColorText color="text-link-hover" usage="Color of text links on hover" />
       </div>
     </Section>
   );
 }
 
-function Color({ color, usage }: { color: string; usage: string }) {
+function ColorText({ color, usage }: { color: string; usage: string }) {
+  return (
+    <div className="flex items-center gap-16">
+      <div className="w-64">
+        <div className="text-content-accent font-bold">{color}</div>
+        <div className="text-xs">{usage}</div>
+      </div>
+
+      <span className={`font-medium ${color}`}>The quick brown fox jumps over the lazy dog</span>
+
+      <div className="flex items-center gap-4">
+        <Icons.IconTrash className={color} size={14} />
+        <Icons.IconUsers className={color} size={14} />
+        <Icons.IconRefresh className={color} size={14} />
+        <Icons.IconSettings className={color} size={14} />
+        <Icons.IconSearch className={color} size={14} />
+        <Icons.IconX className={color} size={14} />
+      </div>
+    </div>
+  );
+}
+
+function ColorBox({ color, usage }: { color: string; usage: string }) {
   return (
     <div className="flex items-start gap-4">
       <ColorShowcase color={color} />
@@ -63,7 +113,7 @@ function ColorDetails({ color, usage }: { color: string; usage: string }) {
   return (
     <div>
       <div className="text-content-accent font-bold">{color.slice(3)}</div>
-      <div className="text-sm">{usage}</div>
+      <div className="text-xs">{usage}</div>
     </div>
   );
 }
