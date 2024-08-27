@@ -4,7 +4,6 @@ import { getCompany, getProject } from "@/api";
 import { Company } from "@/models/companies";
 import { Project } from "@/models/projects";
 
-
 interface LoaderResult {
   project: Project;
   company: Company;
@@ -17,9 +16,9 @@ export async function loader({ params }): Promise<LoaderResult> {
       includeSpace: true,
       includeAccessLevels: true,
     }).then((data) => data.project!),
-    company: await getCompany({ 
+    company: await getCompany({
       id: params.companyId,
-    }).then((data) => data.company!)
+    }).then((data) => data.company!),
   };
 }
 

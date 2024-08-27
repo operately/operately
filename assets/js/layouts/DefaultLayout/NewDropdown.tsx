@@ -34,7 +34,11 @@ export function NewDropdown() {
             <DropdownSeparator />
             <DropdownItem path={Paths.newSpacePath()} icon={Icons.IconTent} title="New space" />
             <DropdownSeparator />
-            <DropdownItem path={Paths.companyManagePeopleAddPeoplePath()} icon={Icons.IconUser} title="New team member" />
+            <DropdownItem
+              path={Paths.companyManagePeopleAddPeoplePath()}
+              icon={Icons.IconUser}
+              title="New team member"
+            />
           </div>
         </Popover.Content>
       </Popover.Portal>

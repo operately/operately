@@ -8,7 +8,6 @@ import * as Icons from "@tabler/icons-react";
 import Avatar from "@/components/Avatar";
 import { createTestId } from "@/utils/testid";
 
-
 interface MultiPeopleSearchProps {
   addedPeople: People.Person[];
   setAddedPeople: React.Dispatch<React.SetStateAction<People.Person[]>>;

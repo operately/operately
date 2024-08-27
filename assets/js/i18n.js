@@ -75,8 +75,7 @@ i18n.use(initReactI18next).init({
           project_name_label: "Name",
           project_name_placeholder: "ex. New Website",
           project_description_label: "Description",
-          project_description_placeholder:
-            "ex. Create a new website for the company",
+          project_description_placeholder: "ex. Create a new website for the company",
 
           tenet_add_title: "Add Tenet",
           tenet_name_label: "Name",
@@ -190,8 +189,7 @@ i18n.use(initReactI18next).init({
           project_name_label: "Назив",
           project_name_placeholder: "нпр. Нови вебсајт",
           project_description_label: "Опис",
-          project_description_placeholder:
-            "нпр. Направи нови вебсајт за компанију",
+          project_description_placeholder: "нпр. Направи нови вебсајт за компанију",
 
           tenet_add_title: "Додај основни принцип",
           tenet_name_label: "Назив",
@@ -290,8 +288,7 @@ i18n.use(initReactI18next).init({
           tenet_name_label: "Név",
           tenet_name_placeholder: "pl. A használó az első",
           tenet_description_label: "Leírás",
-          tenet_description_placeholder:
-            "pl. Mindig a használó érdekében cselekszünk",
+          tenet_description_placeholder: "pl. Mindig a használó érdekében cselekszünk",
 
           add_group_members_title: "Csoport tagjainak hozzáadása",
           add_group_members_search_placeholder: "Keresés személyek között...",
@@ -378,8 +375,7 @@ i18n.use(initReactI18next).init({
           project_name_label: "名前",
           project_name_placeholder: "例：新しいウェブサイト",
           project_description_label: "説明",
-          project_description_placeholder:
-            "例：会社の新しいウェブサイトを作成する",
+          project_description_placeholder: "例：会社の新しいウェブサイトを作成する",
 
           tenet_add_title: "新しい原則",
           tenet_name_label: "名前",

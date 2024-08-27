@@ -24,7 +24,7 @@ export function LastCheckInMessage({ goal }) {
   const message = goal.lastCheckIn.message;
   const path = Paths.goalProgressUpdatePath(goal.lastCheckIn.id);
   const author = goal.lastCheckIn.author;
-  const championProfilePath = Paths.profilePath(author.id!)
+  const championProfilePath = Paths.profilePath(author.id!);
 
   return (
     <div className="flex items-start gap-4">

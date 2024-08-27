@@ -4,7 +4,6 @@ import { feedTitle } from "../feedItemLinks";
 import { Paths } from "@/routes/paths";
 import { firstName, namesListToString } from "@/models/people";
 
-
 const SpaceMembersAdded: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
     throw new Error("Not implemented");
@@ -45,7 +44,7 @@ const SpaceMembersAdded: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return firstName(activity.author!) + " granted you admin privileges"
+    return firstName(activity.author!) + " granted you admin privileges";
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

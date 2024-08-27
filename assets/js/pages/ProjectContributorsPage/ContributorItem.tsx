@@ -6,9 +6,15 @@ import * as Projects from "@/models/projects";
 import ContributorAvatar from "@/components/ContributorAvatar";
 
 import { PERMISSIONS_LIST } from "@/features/Permissions";
-import { ContributorSearch, RemoveButton, SaveButton, CancelButton, ResponsibilityInput, PermissionsInput } from "./FormElements";
+import {
+  ContributorSearch,
+  RemoveButton,
+  SaveButton,
+  CancelButton,
+  ResponsibilityInput,
+  PermissionsInput,
+} from "./FormElements";
 import { createTestId } from "@/utils/testid";
-
 
 interface Props {
   project: Projects.Project;
@@ -103,7 +109,9 @@ function EditAssignment({ contributor, project, onSave, onRemove, onClose }) {
 
   const responsibility = ProjectContributors.responsibility(contributor, contributor.role);
 
-  const [permissions, setPermissions] = React.useState(PERMISSIONS_LIST.find(p => p.value === contributor.accessLevel));
+  const [permissions, setPermissions] = React.useState(
+    PERMISSIONS_LIST.find((p) => p.value === contributor.accessLevel),
+  );
   const [personID, setPersonID] = React.useState<any>(contributor.person.id);
   const [newResp, setNewResp] = React.useState(responsibility);
 

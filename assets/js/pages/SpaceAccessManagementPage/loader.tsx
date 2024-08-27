@@ -1,13 +1,13 @@
 import * as Pages from "@/components/Pages";
-import { Company, getCompany } from "@/models/companies"
-import { Space, getSpace } from "@/models/spaces"
+import { Company, getCompany } from "@/models/companies";
+import { Space, getSpace } from "@/models/spaces";
 
 interface LoaderResult {
   space: Space;
   company: Company;
 }
 
-export async function loader({params}) : Promise<LoaderResult> {
+export async function loader({ params }): Promise<LoaderResult> {
   const [company, space] = await Promise.all([
     getCompany({ id: params.companyId }),
     getSpace({

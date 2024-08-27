@@ -15,7 +15,6 @@ import { SpaceAccessLevel } from "./SpaceAccessLevel";
 import { PermissionsProvider } from "@/features/Permissions/PermissionsContext";
 import { Spacer } from "@/components/Spacer";
 
-
 export function Page() {
   const { space, company } = useLoadedData();
 
@@ -29,7 +28,7 @@ export function Page() {
           <Spacer size={4} />
           <MembersAccessLevel />
           <SpacerWithLine />
-          <PermissionsProvider company={company} space={space} currentPermissions={space.accessLevels} >
+          <PermissionsProvider company={company} space={space} currentPermissions={space.accessLevels}>
             <SpaceAccessLevel />
           </PermissionsProvider>
         </Paper.Body>

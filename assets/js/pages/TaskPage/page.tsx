@@ -95,7 +95,13 @@ function HeaderEditor({ form }: { form: FormState }) {
           Cancel
         </FilledButton>
 
-        <FilledButton size="sm" type="primary" onClick={form.headerForm.submit} bzzzOnClickFailure testId="submit-edited-task">
+        <FilledButton
+          size="sm"
+          type="primary"
+          onClick={form.headerForm.submit}
+          bzzzOnClickFailure
+          testId="submit-edited-task"
+        >
           Save
         </FilledButton>
       </div>
@@ -179,7 +185,12 @@ function DescriptionEditor({ form }: { form: FormState }) {
             Cancel
           </FilledButton>
 
-          <FilledButton size="xs" type="primary" onClick={form.descriptionForm.submit} testId="submit-edited-task-description">
+          <FilledButton
+            size="xs"
+            type="primary"
+            onClick={form.descriptionForm.submit}
+            testId="submit-edited-task-description"
+          >
             Save
           </FilledButton>
         </div>
