@@ -11,7 +11,7 @@ export function PerfBar() {
   if (meData?.error) return null;
   if (meData?.data?.me?.companyRole !== "admin") return null;
 
-  const pageLoadColor = data.pageLoad < 500 ? "text-green-500" : "text-red-500";
+  const pageLoadColor = data.pageLoad < 500 ? "text-green-500" : "text-content-error";
 
   return (
     <div className="bg-black text-white-1 p-1 text-sm font-mono z-50">

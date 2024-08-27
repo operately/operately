@@ -39,7 +39,7 @@ export function StatusSection({ form }: { form: FormState }) {
   return (
     <div className="my-8">
       <div className="text-lg font-bold mx-auto">1. How's the project going?</div>
-      {error && <div className="text-xs text-red-500 mt-1 font-medium">Status is required</div>}
+      {error && <div className="text-xs text-content-error mt-1 font-medium">Status is required</div>}
 
       <div className="flex flex-col gap-2 mt-2">
         <StatusDropdown
@@ -63,7 +63,7 @@ function DescriptionSection({ form }: { form: FormState }) {
   return (
     <>
       <div className="text-lg font-bold mx-auto">2. What's new since the last check-in?</div>
-      {error && <div className="text-xs text-red-500 mt-1 font-medium">Description is required</div>}
+      {error && <div className="text-xs text-content-error mt-1 font-medium">Description is required</div>}
       <div className={className}>
         <TipTapEditor.StandardEditorForm editor={form.editor.editor} />
       </div>

@@ -59,7 +59,7 @@ export function MenuItem(props: MenuItemProps) {
 function MenuItemContent(props: MenuItemProps) {
   const className = classNames(menuItemClass, {
     "hover:text-content-base": !props.danger,
-    "hover:text-red-500": props.danger,
+    "hover:text-content-error": props.danger,
   });
 
   if (props.linkTo) {

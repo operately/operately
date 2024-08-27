@@ -21,6 +21,7 @@ module.exports = {
         "content-accent": "var(--color-content-accent)",
         "content-dimmed": "var(--color-content-dimmed)",
         "content-subtle": "var(--color-content-subtle)",
+        "content-error": "var(--color-content-error)",
 
         "stroke-base": "var(--color-stroke-base)",
         "stroke-dimmed": "var(--color-stroke-dimmed)",

@@ -61,7 +61,7 @@ function TrustedEmailDomainItem({ domain, form }: { domain: string; form: FormSt
     <div className="flex items-center gap-2 bg-surface-dimmed border border-stroke-base px-3 py-2 rounded">
       <div className="flex-1 font-medium">{domain}</div>
       <Icons.IconTrash
-        className="text-content-dimmed cursor-pointer hover:text-red-500 shrink-0"
+        className="text-content-dimmed cursor-pointer hover:text-content-error shrink-0"
         size={16}
         onClick={() => form.removeDomain(domain)}
         data-test-id={removeTestId}
