@@ -1,5 +1,4 @@
 SHELL := /bin/bash
-
 .PHONY: test
 
 REPORTS_DIR ?= $(PWD)/testreports
@@ -7,35 +6,9 @@ MEDIA_DIR ?= $(PWD)/media
 SCREENSHOTS_DIR ?= $(PWD)/screenshots
 CERTS_DIR ?= $(PWD)/tmp/certs
 
-build:
-	@touch .env
-	./devenv build
-
-up:
-	./devenv up
-
-setup:
-	./devenv mix local.hex --force --if-missing
-	$(MAKE) dev.setup
-	$(MAKE) test.setup
-
-migrate:
-	$(MAKE) dev.db.migrate
-	$(MAKE) test.db.migrate
-
-dev.setup:
-	./devenv mix deps.get
-	./devenv mix compile
-
-test.setup:
-	./devenv mix deps.get
-	./devenv bash -c "MIX_ENV=test mix deps.compile"
-	./devenv bash -c "MIX_ENV=test cd assets && npm install"
-	./devenv bash -c "MIX_ENV=test mix assets.deploy"
-
-test.seed.env:
-	touch .env
-	echo 'OPERATELY_BLOB_TOKEN_SECRET_KEY="lPEuB9ITpbHP1GTf98TPWcHb/CrdeNLzqLcm0zF5mfo="' >> .env
+#
+# Tasks for generating code
+#
 
 gen:
 	./devenv bash -c "mix operately.gen.page.index && mix operately.gen.typescript.api"
@@ -51,19 +24,28 @@ gen.activity:
 	./devenv mix operately.gen.activity.type $(NAME) $(FIELDS)
 	$(MAKE) gen
 
-
 #
 # Development tasks
 #
+
+dev.build:
+	$(MAKE) dev.seed.env
+	./devenv build
+	./devenv up
+	./devenv mix local.hex --force --if-missing
+	./devenv mix deps.get
+	./devenv mix compile
+	./devenv bash -c "cd assets && npm install"
+	$(MAKE) dev.db.create
+	$(MAKE) test.db.create
+	$(MAKE) dev.db.migrate
+	$(MAKE) test.db.migrate
 
 dev.server:
 	./devenv iex -S mix phx.server
 
 dev.shell:
 	./devenv shell
-
-dev.up:
-	./devenv up
 
 dev.mix.console:
 	./devenv iex -S mix
@@ -90,9 +72,25 @@ dev.run.script:
 	cp -f $(FILE) tmp/
 	./devenv mix run tmp/$$(basename $(FILE))
 
+dev .seed.env:
+	touch .env
+
 #
 # Testing tasks
 #
+
+test.build:
+	$(MAKE) test.init
+	$(MAKE) test.seed.env
+	./devenv build
+	./devenv up
+	./devenv bash -c "MIX_ENV=test mix local.hex --force --if-missing"
+	./devenv bash -c "MIX_ENV=test mix deps.get"
+	./devenv bash -c "MIX_ENV=test mix compile"
+	./devenv bash -c "MIX_ENV=test cd assets && npm install"
+	./devenv bash -c "MIX_ENV=test mix assets.deploy"
+	$(MAKE) test.db.create
+	$(MAKE) test.db.migrate
 
 test: test.init
 	@if [[ "$(FILE)" == assets/js* ]]; then \
@@ -157,6 +155,11 @@ test.pr.name:
 
 test.prettier.check:
 	./devenv bash -c "cd assets && npm run prettier:check"
+
+test.seed.env:
+	touch .env
+	echo 'OPERATELY_BLOB_TOKEN_SECRET_KEY="lPEuB9ITpbHP1GTf98TPWcHb/CrdeNLzqLcm0zF5mfo="' >> .env
+
 
 #
 # Building a docker image
