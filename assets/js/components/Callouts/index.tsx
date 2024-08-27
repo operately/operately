@@ -8,17 +8,17 @@ interface Props extends TestableElement {
   description?: string | JSX.Element;
 }
 
-export function InfoAlert(props: Props) {
+export function InfoCallout(props: Props) {
   return (
-    <div data-test-id={props.testId} className="rounded-md bg-blue-50 p-4">
+    <div data-test-id={props.testId} className="rounded-md bg-callout-info p-4">
       <div className="flex">
         <div className="flex-shrink-0">
-          <IconInfoCircleFilled aria-hidden="true" className="h-5 w-5 text-blue-400" />
+          <IconInfoCircleFilled aria-hidden="true" className="h-5 w-5 text-callout-info-icon" />
         </div>
         <div className="ml-3">
-          <h3 className="text-sm font-medium text-blue-800">{props.message}</h3>
+          <h3 className="text-sm font-semibold text-callout-info-message">{props.message}</h3>
           {props.description ? (
-            <div className="mt-2 text-sm text-blue-700">
+            <div className="mt-2 text-sm text-callout-info-message">
               <p>
                 {props.description}
               </p>
@@ -30,17 +30,17 @@ export function InfoAlert(props: Props) {
   )
 }
 
-export function WarningAlert(props: Props) {
+export function WarningCallout(props: Props) {
   return (
-    <div data-test-id={props.testId} className="rounded-md bg-yellow-50 p-4">
+    <div data-test-id={props.testId} className="rounded-md bg-callout-warning p-4">
       <div className="flex">
         <div className="flex-shrink-0">
-          <IconAlertTriangleFilled aria-hidden="true" className="h-5 w-5 text-yellow-400" />
+          <IconAlertTriangleFilled aria-hidden="true" className="h-5 w-5 text-callout-warning-icon" />
         </div>
         <div className="ml-3">
-          <h3 className="text-sm font-medium text-yellow-800">{props.message}</h3>
+          <h3 className="text-sm font-semibold text-callout-warning-message">{props.message}</h3>
           {props.description ? (
-            <div className="mt-2 text-sm text-yellow-700">
+            <div className="mt-2 text-sm text-callout-warning-message">
               <p>
                 {props.description}
               </p>
@@ -52,17 +52,17 @@ export function WarningAlert(props: Props) {
   )
 }
 
-export function ErrorAlert(props: Props) {
+export function ErrorCallout(props: Props) {
   return (
-    <div data-test-id={props.testId} className="rounded-md bg-red-50 p-4">
+    <div data-test-id={props.testId} className="rounded-md bg-callout-error p-4">
       <div className="flex">
         <div className="flex-shrink-0">
-          <IconCircleXFilled aria-hidden="true" className="h-5 w-5 text-red-400" />
+          <IconCircleXFilled aria-hidden="true" className="h-5 w-5 text-callout-error-icon" />
         </div>
         <div className="ml-3">
-          <h3 className="text-sm font-medium text-red-800">{props.message}</h3>
+          <h3 className="text-sm font-semibold text-callout-error-message">{props.message}</h3>
           {props.description ? (
-            <div className="mt-2 text-sm text-red-700">
+            <div className="mt-2 text-sm text-callout-error-message">
               <p>
                 {props.description}
               </p>
