@@ -20,6 +20,11 @@ interface ButtonLinkProps extends Props {
   onClick: () => void;
 }
 
+interface ActionLinkProps extends Props {
+  onClick: () => void;
+  underline?: "always" | "hover" | "never";
+}
+
 interface DivLinkProps extends Props {
   to: string;
   className?: string;
@@ -64,6 +69,17 @@ export function ButtonLink({ onClick, children, testId }: ButtonLinkProps) {
       {children}
     </span>
   );
+}
+
+export function ActionLink(props: ActionLinkProps) {
+  const className = classNames(
+    baseLinkClass,
+    underlineClass(props.underline),
+    "text-link-base hover:text-link-hover",
+    props.className,
+  );
+
+  return <span {...props} className={className} />;
 }
 
 export function DimmedLink(props: LinkProps) {
