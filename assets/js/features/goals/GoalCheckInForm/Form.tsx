@@ -26,7 +26,7 @@ function Editor({ form }: { form: FormState }) {
   return (
     <div className="mt-8">
       <div className="font-bold mb-2">Describe your progress and any learnings</div>
-      {contentError && <div className="text-red-500 text-sm font-medium mt-1">Required</div>}
+      {contentError && <div className="text-content-error text-sm font-medium mt-1">Required</div>}
       <div className="border border-surface-outline rounded overflow-hidden">
         <TipTapEditor.StandardEditorForm editor={form.editor.editor} />
       </div>

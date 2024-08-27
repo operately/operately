@@ -32,6 +32,7 @@ body[data-theme="light"] {
   --color-content-accent: rgba(0, 0, 0, 1);
   --color-content-dimmed: rgba(0, 0, 0, 0.6);
   --color-content-subtle: rgba(0, 0, 0, 0.3);
+  --color-content-error: var(--color-red-500);
 
   --color-stroke-base: rgba(0, 0, 0, 0.1);
   --color-stroke-dimmed: rgba(0, 0, 0, 0.05);
@@ -60,6 +61,7 @@ body[data-theme="dark"] {
   --color-content-accent: rgba(255, 255, 255, 1);
   --color-content-dimmed: rgba(255, 255, 255, 0.6);
   --color-content-subtle: rgba(255, 255, 255, 0.3);
+  --color-content-error: var(--color-red-500);
 
   --color-stroke-base: rgba(255, 255, 255, 0.1);
   --color-stroke-dimmed: rgba(255, 255, 255, 0.05);

@@ -123,7 +123,7 @@ function PersonForm({ fields, errors, submit, submitting }: ReturnType<typeof us
       </div>
 
       {errors.map((e, idx) => (
-        <div key={idx} className="text-red-500 text-sm">
+        <div key={idx} className="text-content-error text-sm">
           {e.message}
         </div>
       ))}

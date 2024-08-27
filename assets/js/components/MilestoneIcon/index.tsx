@@ -19,7 +19,7 @@ export function MilestoneIcon({ milestone, className, size = 16 }: MilestoneIcon
       color = "text-green-700";
     } else {
       if (isOverdue) {
-        color = "text-red-500";
+        color = "text-content-error";
       } else {
         color = "text-content-base";
       }
