@@ -6,13 +6,18 @@ import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
-import { ContributorSearch, ResponsibilityInput, CancelButton, AddContribButton, PermissionsInput } from "./FormElements";
+import {
+  ContributorSearch,
+  ResponsibilityInput,
+  CancelButton,
+  AddContribButton,
+  PermissionsInput,
+} from "./FormElements";
 import ContributorItem from "./ContributorItem";
 import { FilledButton } from "@/components/Button";
 
 import { useLoadedData, useRefresh } from "./loader";
 import { useForm, FormState } from "./useForm";
-
 
 export function Page() {
   const { project } = useLoadedData();

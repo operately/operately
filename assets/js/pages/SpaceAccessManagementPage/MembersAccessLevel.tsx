@@ -10,9 +10,8 @@ import { useEditSpaceMembersPermissions, useRemoveGroupMember } from "@/models/s
 import Avatar from "@/components/Avatar";
 import { SelectBoxNoLabel } from "@/components/Form";
 import { DropdownMenu } from "@/components/DropdownMenu";
-import { PERMISSIONS_LIST, PermissionOption,  } from "@/features/Permissions";
+import { PERMISSIONS_LIST, PermissionOption } from "@/features/Permissions";
 import Button from "@/components/Button";
-
 
 export function MembersAccessLevel() {
   const { space } = useLoadedData();
@@ -33,7 +32,6 @@ export function MembersAccessLevel() {
   );
 }
 
-
 interface ActionButtonsProps {
   members: Person[];
   setMembers: React.Dispatch<React.SetStateAction<Person[]>>;
@@ -46,39 +44,37 @@ function ActionButtons({ members, setMembers }: ActionButtonsProps) {
 
   const handleReset = () => {
     setMembers([...space.members!]);
-  }
+  };
 
   const handleEditMembers = () => {
     editMembers({
       groupId: space.id,
-      members: members.map(member => ({ id: member.id, accessLevel: member.accessLevel })),
-    })
-    .then(() => revalidate());
-  }
+      members: members.map((member) => ({ id: member.id, accessLevel: member.accessLevel })),
+    }).then(() => revalidate());
+  };
 
   const hasChanged = useMemo(() => {
     if (members.length !== space.members?.length) {
       return false;
-    }
-    else {
+    } else {
       return members.some((item, index) => item.accessLevel !== space.members![index]!.accessLevel);
     }
   }, [members, space.members]);
 
-  if (hasChanged) return (
-    <div className="flex gap-2">
-      <Button loading={loading} variant="success" size="small" onClick={handleEditMembers} >
-        Save
-      </Button>
-      <Button variant="secondary" size="small" onClick={handleReset} >
-        Cancel
-      </Button>
-    </div>
-  );
+  if (hasChanged)
+    return (
+      <div className="flex gap-2">
+        <Button loading={loading} variant="success" size="small" onClick={handleEditMembers}>
+          Save
+        </Button>
+        <Button variant="secondary" size="small" onClick={handleReset}>
+          Cancel
+        </Button>
+      </div>
+    );
 
   return <></>;
 }
-
 
 interface MemberListItemProps {
   member: Person;
@@ -91,21 +87,24 @@ function MemberListItem({ member, setMembers }: MemberListItemProps) {
   }, [member]);
 
   const handlePermissionsChange = (payload: PermissionOption) => {
-    setMembers(members => members.map((obj) => {
-      if(obj.id !== member.id) {
-        return obj;
-      }
-      else {
-        return {...obj, accessLevel: payload.value};
-      }
-    }));
-  }
+    setMembers((members) =>
+      members.map((obj) => {
+        if (obj.id !== member.id) {
+          return obj;
+        } else {
+          return { ...obj, accessLevel: payload.value };
+        }
+      }),
+    );
+  };
 
   return (
     <MemberContainer>
       <div className="flex items-center gap-2 pl-2 h-full border border-surface-outline rounded-lg">
         <Avatar person={member} size="tiny" />
-        <p>{member.fullName} &middot; {member.title}</p>
+        <p>
+          {member.fullName} &middot; {member.title}
+        </p>
       </div>
       <SelectBoxNoLabel onChange={handlePermissionsChange} options={PERMISSIONS_LIST} value={permissions} />
       <MemberDropdownAction member={member} />
@@ -121,22 +120,26 @@ function MemberDropdownAction({ member }: { member: Person }) {
   const [remove] = useRemoveGroupMember();
 
   const handleRemove = async () => {
-    remove({ groupId: space.id, memberId: member.id })
-    .then(() => {
+    remove({ groupId: space.id, memberId: member.id }).then(() => {
       revalidate();
     });
   };
 
   return (
     <DropdownMenu
-        testId={"options-" + member.id}
-        open={open}
-        setOpen={setOpen}
-        trigger={<Icons.IconDots size={14} className="cursor-pointer" />}
-        options={[
-          <DropdownOption title="Remove member" onClick={handleRemove} testId={"remove-" + member.id} key="remeve-member-option" />
-        ]}
-      />
+      testId={"options-" + member.id}
+      open={open}
+      setOpen={setOpen}
+      trigger={<Icons.IconDots size={14} className="cursor-pointer" />}
+      options={[
+        <DropdownOption
+          title="Remove member"
+          onClick={handleRemove}
+          testId={"remove-" + member.id}
+          key="remeve-member-option"
+        />,
+      ]}
+    />
   );
 }
 

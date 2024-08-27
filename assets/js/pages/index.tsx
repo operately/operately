@@ -88,310 +88,310 @@ import * as TaskPage from "./TaskPage";
 export default {
   AccountAppearancePage: {
     loader: AccountAppearancePage.loader,
-    Page: AccountAppearancePage.Page
+    Page: AccountAppearancePage.Page,
   },
   AccountEditProfilePage: {
     loader: AccountEditProfilePage.loader,
-    Page: AccountEditProfilePage.Page
+    Page: AccountEditProfilePage.Page,
   },
   AccountPage: {
     loader: AccountPage.loader,
-    Page: AccountPage.Page
+    Page: AccountPage.Page,
   },
   CompanyAdminAddPeoplePage: {
     loader: CompanyAdminAddPeoplePage.loader,
-    Page: CompanyAdminAddPeoplePage.Page
+    Page: CompanyAdminAddPeoplePage.Page,
   },
   CompanyAdminManageAdminsPage: {
     loader: CompanyAdminManageAdminsPage.loader,
-    Page: CompanyAdminManageAdminsPage.Page
+    Page: CompanyAdminManageAdminsPage.Page,
   },
   CompanyAdminManagePeoplePage: {
     loader: CompanyAdminManagePeoplePage.loader,
-    Page: CompanyAdminManagePeoplePage.Page
+    Page: CompanyAdminManagePeoplePage.Page,
   },
   CompanyAdminPage: {
     loader: CompanyAdminPage.loader,
-    Page: CompanyAdminPage.Page
+    Page: CompanyAdminPage.Page,
   },
   CompanyAdminTrustedEmailDomainsPage: {
     loader: CompanyAdminTrustedEmailDomainsPage.loader,
-    Page: CompanyAdminTrustedEmailDomainsPage.Page
+    Page: CompanyAdminTrustedEmailDomainsPage.Page,
   },
   DesignPage: {
     loader: DesignPage.loader,
-    Page: DesignPage.Page
+    Page: DesignPage.Page,
   },
   DiscussionEditPage: {
     loader: DiscussionEditPage.loader,
-    Page: DiscussionEditPage.Page
+    Page: DiscussionEditPage.Page,
   },
   DiscussionNewPage: {
     loader: DiscussionNewPage.loader,
-    Page: DiscussionNewPage.Page
+    Page: DiscussionNewPage.Page,
   },
   DiscussionPage: {
     loader: DiscussionPage.loader,
-    Page: DiscussionPage.Page
+    Page: DiscussionPage.Page,
   },
   FeedPage: {
     loader: FeedPage.loader,
-    Page: FeedPage.Page
+    Page: FeedPage.Page,
   },
   GoalAboutPage: {
     loader: GoalAboutPage.loader,
-    Page: GoalAboutPage.Page
+    Page: GoalAboutPage.Page,
   },
   GoalActivityPage: {
     loader: GoalActivityPage.loader,
-    Page: GoalActivityPage.Page
+    Page: GoalActivityPage.Page,
   },
   GoalAddPage: {
     loader: GoalAddPage.loader,
-    Page: GoalAddPage.Page
+    Page: GoalAddPage.Page,
   },
   GoalArchivePage: {
     loader: GoalArchivePage.loader,
-    Page: GoalArchivePage.Page
+    Page: GoalArchivePage.Page,
   },
   GoalClosingPage: {
     loader: GoalClosingPage.loader,
-    Page: GoalClosingPage.Page
+    Page: GoalClosingPage.Page,
   },
   GoalDiscussionEditPage: {
     loader: GoalDiscussionEditPage.loader,
-    Page: GoalDiscussionEditPage.Page
+    Page: GoalDiscussionEditPage.Page,
   },
   GoalDiscussionNewPage: {
     loader: GoalDiscussionNewPage.loader,
-    Page: GoalDiscussionNewPage.Page
+    Page: GoalDiscussionNewPage.Page,
   },
   GoalDiscussionsPage: {
     loader: GoalDiscussionsPage.loader,
-    Page: GoalDiscussionsPage.Page
+    Page: GoalDiscussionsPage.Page,
   },
   GoalEditPage: {
     loader: GoalEditPage.loader,
-    Page: GoalEditPage.Page
+    Page: GoalEditPage.Page,
   },
   GoalEditParentPage: {
     loader: GoalEditParentPage.loader,
-    Page: GoalEditParentPage.Page
+    Page: GoalEditParentPage.Page,
   },
   GoalEditTimeframePage: {
     loader: GoalEditTimeframePage.loader,
-    Page: GoalEditTimeframePage.Page
+    Page: GoalEditTimeframePage.Page,
   },
   GoalPage: {
     loader: GoalPage.loader,
-    Page: GoalPage.Page
+    Page: GoalPage.Page,
   },
   GoalProgressUpdateEditPage: {
     loader: GoalProgressUpdateEditPage.loader,
-    Page: GoalProgressUpdateEditPage.Page
+    Page: GoalProgressUpdateEditPage.Page,
   },
   GoalProgressUpdateNewPage: {
     loader: GoalProgressUpdateNewPage.loader,
-    Page: GoalProgressUpdateNewPage.Page
+    Page: GoalProgressUpdateNewPage.Page,
   },
   GoalProgressUpdatePage: {
     loader: GoalProgressUpdatePage.loader,
-    Page: GoalProgressUpdatePage.Page
+    Page: GoalProgressUpdatePage.Page,
   },
   GoalReopenPage: {
     loader: GoalReopenPage.loader,
-    Page: GoalReopenPage.Page
+    Page: GoalReopenPage.Page,
   },
   GoalSubgoalsPage: {
     loader: GoalSubgoalsPage.loader,
-    Page: GoalSubgoalsPage.Page
+    Page: GoalSubgoalsPage.Page,
   },
   GoalsPage: {
     loader: GoalsPage.loader,
-    Page: GoalsPage.Page
+    Page: GoalsPage.Page,
   },
   GroupAppearancePage: {
     loader: GroupAppearancePage.loader,
-    Page: GroupAppearancePage.Page
+    Page: GroupAppearancePage.Page,
   },
   GroupMembersPage: {
     loader: GroupMembersPage.loader,
-    Page: GroupMembersPage.Page
+    Page: GroupMembersPage.Page,
   },
   JoinPage: {
     loader: JoinPage.loader,
-    Page: JoinPage.Page
+    Page: JoinPage.Page,
   },
   LobbyPage: {
     loader: LobbyPage.loader,
-    Page: LobbyPage.Page
+    Page: LobbyPage.Page,
   },
   NewCompanyPage: {
     loader: NewCompanyPage.loader,
-    Page: NewCompanyPage.Page
+    Page: NewCompanyPage.Page,
   },
   NotFoundPage: {
     loader: NotFoundPage.loader,
-    Page: NotFoundPage.Page
+    Page: NotFoundPage.Page,
   },
   NotificationsPage: {
     loader: NotificationsPage.loader,
-    Page: NotificationsPage.Page
+    Page: NotificationsPage.Page,
   },
   PeopleOrgChartPage: {
     loader: PeopleOrgChartPage.loader,
-    Page: PeopleOrgChartPage.Page
+    Page: PeopleOrgChartPage.Page,
   },
   PeoplePage: {
     loader: PeoplePage.loader,
-    Page: PeoplePage.Page
+    Page: PeoplePage.Page,
   },
   ProfileGoalsPage: {
     loader: ProfileGoalsPage.loader,
-    Page: ProfileGoalsPage.Page
+    Page: ProfileGoalsPage.Page,
   },
   ProfilePage: {
     loader: ProfilePage.loader,
-    Page: ProfilePage.Page
+    Page: ProfilePage.Page,
   },
   ProjectAddPage: {
     loader: ProjectAddPage.loader,
-    Page: ProjectAddPage.Page
+    Page: ProjectAddPage.Page,
   },
   ProjectAddResourcePage: {
     loader: ProjectAddResourcePage.loader,
-    Page: ProjectAddResourcePage.Page
+    Page: ProjectAddResourcePage.Page,
   },
   ProjectArchivationPage: {
     loader: ProjectArchivationPage.loader,
-    Page: ProjectArchivationPage.Page
+    Page: ProjectArchivationPage.Page,
   },
   ProjectCheckInEditPage: {
     loader: ProjectCheckInEditPage.loader,
-    Page: ProjectCheckInEditPage.Page
+    Page: ProjectCheckInEditPage.Page,
   },
   ProjectCheckInNewPage: {
     loader: ProjectCheckInNewPage.loader,
-    Page: ProjectCheckInNewPage.Page
+    Page: ProjectCheckInNewPage.Page,
   },
   ProjectCheckInPage: {
     loader: ProjectCheckInPage.loader,
-    Page: ProjectCheckInPage.Page
+    Page: ProjectCheckInPage.Page,
   },
   ProjectCheckInsPage: {
     loader: ProjectCheckInsPage.loader,
-    Page: ProjectCheckInsPage.Page
+    Page: ProjectCheckInsPage.Page,
   },
   ProjectClosePage: {
     loader: ProjectClosePage.loader,
-    Page: ProjectClosePage.Page
+    Page: ProjectClosePage.Page,
   },
   ProjectContributorsPage: {
     loader: ProjectContributorsPage.loader,
-    Page: ProjectContributorsPage.Page
+    Page: ProjectContributorsPage.Page,
   },
   ProjectEditAccessLevelsPage: {
     loader: ProjectEditAccessLevelsPage.loader,
-    Page: ProjectEditAccessLevelsPage.Page
+    Page: ProjectEditAccessLevelsPage.Page,
   },
   ProjectEditDescriptionPage: {
     loader: ProjectEditDescriptionPage.loader,
-    Page: ProjectEditDescriptionPage.Page
+    Page: ProjectEditDescriptionPage.Page,
   },
   ProjectEditGoalPage: {
     loader: ProjectEditGoalPage.loader,
-    Page: ProjectEditGoalPage.Page
+    Page: ProjectEditGoalPage.Page,
   },
   ProjectEditProjectNamePage: {
     loader: ProjectEditProjectNamePage.loader,
-    Page: ProjectEditProjectNamePage.Page
+    Page: ProjectEditProjectNamePage.Page,
   },
   ProjectEditResourcePage: {
     loader: ProjectEditResourcePage.loader,
-    Page: ProjectEditResourcePage.Page
+    Page: ProjectEditResourcePage.Page,
   },
   ProjectEditResourcesPage: {
     loader: ProjectEditResourcesPage.loader,
-    Page: ProjectEditResourcesPage.Page
+    Page: ProjectEditResourcesPage.Page,
   },
   ProjectEditTimelinePage: {
     loader: ProjectEditTimelinePage.loader,
-    Page: ProjectEditTimelinePage.Page
+    Page: ProjectEditTimelinePage.Page,
   },
   ProjectMilestonePage: {
     loader: ProjectMilestonePage.loader,
-    Page: ProjectMilestonePage.Page
+    Page: ProjectMilestonePage.Page,
   },
   ProjectMilestonesPage: {
     loader: ProjectMilestonesPage.loader,
-    Page: ProjectMilestonesPage.Page
+    Page: ProjectMilestonesPage.Page,
   },
   ProjectMovePage: {
     loader: ProjectMovePage.loader,
-    Page: ProjectMovePage.Page
+    Page: ProjectMovePage.Page,
   },
   ProjectPage: {
     loader: ProjectPage.loader,
-    Page: ProjectPage.Page
+    Page: ProjectPage.Page,
   },
   ProjectPausePage: {
     loader: ProjectPausePage.loader,
-    Page: ProjectPausePage.Page
+    Page: ProjectPausePage.Page,
   },
   ProjectResumePage: {
     loader: ProjectResumePage.loader,
-    Page: ProjectResumePage.Page
+    Page: ProjectResumePage.Page,
   },
   ProjectRetrospectivePage: {
     loader: ProjectRetrospectivePage.loader,
-    Page: ProjectRetrospectivePage.Page
+    Page: ProjectRetrospectivePage.Page,
   },
   ProjectsPage: {
     loader: ProjectsPage.loader,
-    Page: ProjectsPage.Page
+    Page: ProjectsPage.Page,
   },
   ReviewPage: {
     loader: ReviewPage.loader,
-    Page: ReviewPage.Page
+    Page: ReviewPage.Page,
   },
   SetupPage: {
     loader: SetupPage.loader,
-    Page: SetupPage.Page
+    Page: SetupPage.Page,
   },
   SpaceAccessManagementPage: {
     loader: SpaceAccessManagementPage.loader,
-    Page: SpaceAccessManagementPage.Page
+    Page: SpaceAccessManagementPage.Page,
   },
   SpaceAddPage: {
     loader: SpaceAddPage.loader,
-    Page: SpaceAddPage.Page
+    Page: SpaceAddPage.Page,
   },
   SpaceDiscussionsPage: {
     loader: SpaceDiscussionsPage.loader,
-    Page: SpaceDiscussionsPage.Page
+    Page: SpaceDiscussionsPage.Page,
   },
   SpaceEditPage: {
     loader: SpaceEditPage.loader,
-    Page: SpaceEditPage.Page
+    Page: SpaceEditPage.Page,
   },
   SpaceGoalsPage: {
     loader: SpaceGoalsPage.loader,
-    Page: SpaceGoalsPage.Page
+    Page: SpaceGoalsPage.Page,
   },
   SpaceListPage: {
     loader: SpaceListPage.loader,
-    Page: SpaceListPage.Page
+    Page: SpaceListPage.Page,
   },
   SpacePage: {
     loader: SpacePage.loader,
-    Page: SpacePage.Page
+    Page: SpacePage.Page,
   },
   SpaceProjectsPage: {
     loader: SpaceProjectsPage.loader,
-    Page: SpaceProjectsPage.Page
+    Page: SpaceProjectsPage.Page,
   },
   TaskPage: {
     loader: TaskPage.loader,
-    Page: TaskPage.Page
-  }
+    Page: TaskPage.Page,
+  },
 };

@@ -11,14 +11,14 @@ export function snakeCaseToSpacedWords(str: string, options?: { capitalizeFirst?
   let name = str.replace(/_/g, " ");
 
   if (options?.capitalizeFirst) {
-    name =  name.charAt(0).toUpperCase() + name.slice(1);
+    name = name.charAt(0).toUpperCase() + name.slice(1);
   }
 
   return name;
 }
 
 export function camelCaseToSpacedWords(input: string, options?: { capitalizeFirst?: boolean }) {
-  let result = input.replace(/([A-Z])/g, ' $1').toLowerCase();
+  let result = input.replace(/([A-Z])/g, " $1").toLowerCase();
 
   if (options?.capitalizeFirst) {
     result = result.charAt(0).toUpperCase() + result.slice(1);
@@ -28,7 +28,7 @@ export function camelCaseToSpacedWords(input: string, options?: { capitalizeFirs
 }
 
 export function truncateString(str: string, limit: number, suffix: string = "...") {
-  if(str.length <= limit) return str;
-  
+  if (str.length <= limit) return str;
+
   return str.slice(0, limit).trim() + suffix;
 }

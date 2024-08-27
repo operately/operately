@@ -12,7 +12,6 @@ import { useListState } from "@/utils/useListState";
 import { Paths } from "@/routes/paths";
 import { Permissions } from "@/features/Permissions/PermissionsContext";
 
-
 export interface FormState {
   config: FormConfig;
   fields: Fields;
@@ -211,7 +210,10 @@ function newEmptyTarget() {
   };
 }
 
-function useSubmit(fields: Fields, config: FormConfig): [(permissions: Permissions) => Promise<boolean>, () => void, boolean, Error[]] {
+function useSubmit(
+  fields: Fields,
+  config: FormConfig,
+): [(permissions: Permissions) => Promise<boolean>, () => void, boolean, Error[]] {
   const navigate = useNavigate();
 
   const cancel = useNavigateTo(createCancelPath(config));
@@ -256,8 +258,7 @@ function useSubmit(fields: Fields, config: FormConfig): [(permissions: Permissio
 
       navigate(Paths.goalPath(res.goal.id!));
       return true;
-    }
-    else {
+    } else {
       const res = await edit({
         goalId: config.goal!.id,
         name: fields.name,

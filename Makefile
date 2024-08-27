@@ -155,6 +155,9 @@ test.tsc.lint:
 test.pr.name:
 	ruby scripts/pr-name-check
 
+test.prettier.check:
+	./devenv bash -c "cd assets && npm run prettier:check"
+
 #
 # Building a docker image
 #

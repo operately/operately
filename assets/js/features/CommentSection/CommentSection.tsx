@@ -27,7 +27,15 @@ export function CommentSection(props: CommentSectionProps) {
       <div className="flex flex-col">
         {props.form.items.map((item, index) => {
           if (item.type === "comment") {
-            return <Comment key={index} comment={item.value} form={props.form} refresh={props.refresh} commentParentType={props.commentParentType} />;
+            return (
+              <Comment
+                key={index}
+                comment={item.value}
+                form={props.form}
+                refresh={props.refresh}
+                commentParentType={props.commentParentType}
+              />
+            );
           } else if (item.type === "milestone-completed") {
             return <MilestoneCompleted key={index} comment={item.value} />;
           } else if (item.type === "milestone-reopened") {

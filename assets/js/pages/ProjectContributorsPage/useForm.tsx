@@ -5,7 +5,6 @@ import { useRefresh } from "./loader";
 import { useAddProjectContributor } from "@/api";
 import { VIEW_ACCESS, PermissionOption } from "@/features/Permissions";
 
-
 export interface FormState {
   project: Projects.Project;
   addContrib: AddColobState;
@@ -30,8 +29,8 @@ interface AddColobState {
   setPersonID: (id: string) => void;
   responsibility: string;
   setResponsibility: (responsibility: string) => void;
-  permissions: PermissionOption,
-  setPermissions: (permission: PermissionOption) => void,
+  permissions: PermissionOption;
+  setPermissions: (permission: PermissionOption) => void;
 
   submit: () => void;
   submittable: boolean;
@@ -63,8 +62,7 @@ function useAddContrib(project: Projects.Project): AddColobState {
       personId: personID,
       responsibility: responsibility,
       permissions: permissions.value,
-    })
-    .then(() => {
+    }).then(() => {
       setPersonID(null);
       setResponsibility("");
       setPermissions(VIEW_ACCESS);
