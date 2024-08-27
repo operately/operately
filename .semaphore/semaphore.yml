@@ -49,11 +49,15 @@ blocks:
           commands:
             - make test.mix.features INDEX=$SEMAPHORE_JOB_INDEX TOTAL=$SEMAPHORE_JOB_COUNT
 
-        - name: Linters
+        - name: Typescript Linting
           commands:
-            - make test.license.check
             - make test.js.dead.code
             - make test.tsc.lint
+            - make test.prettier.check
+
+        - name: Licence Check
+          commands:
+            - make test.license.check
 
   - name: Docker Build
     dependencies: ["Pre-Flight-Check"]
