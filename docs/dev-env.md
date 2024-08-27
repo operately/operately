@@ -6,11 +6,8 @@ This document describes how to set up a development environment for the Operatel
 
 - [Pre-requisites](#0-pre-requisites)
 - [Clone the Repository](#1-clone-the-repository)
-- [Build the development docker images](#2-build-the-development-docker-images)
-- [Start the development environment](#3-start-the-development-environment)
-- [Set up the development environment (install dependencies)](#4-set-up-the-development-environment-install-dependencies)
-- [Create the dev and test databases and run the migrations](#5-create-the-dev-and-test-databases-and-run-the-migrations)
-- [Start the Phoenix server](#6-start-the-phoenix-server)
+- [Build the development environment](#2-build-the-development-environment)
+- [Start the Phoenix server](#3-start-the-phoenix-server)
 
 ## 0. Pre-requisites
 
@@ -60,46 +57,19 @@ Change to the project directory:
 cd operately
 ```
 
-## 2. Build the development docker images
+## 2. Build the development environment
 
-To build the development docker images, run the following command:
-
-``` bash
-make build
-```
-
-## 3. Start the development environment
-
-Operately uses Docker Compose to manage the development environment.
-Both the application and the database run in Docker containers.
-
-To start the development environment, run the following command:
+To set up the development environment:
 
 ``` bash
-make up
+make dev.build
 ```
 
-## 4. Set up the development environment (install dependencies)
+This command will build the Docker images, install the Elixir and Node
+dependencies, and compile the project, create the databases, and run the
+migrations.
 
-To set up the development environment, run the following command:
-
-``` bash
-make setup
-```
-
-This command will build the Docker images and install the dependencies.
-
-## 5. Create the dev and test databases and run the migrations
-
-Run the migrations to create the database schema:
-
-``` bash
-make dev.db.create
-make test.db.create
-make migrate
-```
-
-## 6. Start the Phoenix server
+## 3. Start the Phoenix server
 
 To start the Phoenix server, run the following command:
 
