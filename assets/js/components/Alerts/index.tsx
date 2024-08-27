@@ -2,7 +2,7 @@ import React from "react";
 
 import { IconAlertTriangleFilled, IconCircleXFilled, IconInfoCircleFilled } from "@tabler/icons-react";
 
-export function InfoAlert({ message, description }: { message: string, description?: string }) {
+export function InfoAlert({ message, description }: { message: string | JSX.Element, description?: string | JSX.Element }) {
   return (
     <div className="rounded-md bg-blue-50 p-4">
       <div className="flex">
@@ -24,7 +24,7 @@ export function InfoAlert({ message, description }: { message: string, descripti
   )
 }
 
-export function WarningAlert({ message, description }: { message: string, description?: string }) {
+export function WarningAlert({ message, description }: { message: string | JSX.Element, description?: string | JSX.Element }) {
   return (
     <div className="rounded-md bg-yellow-50 p-4">
       <div className="flex">
@@ -46,7 +46,7 @@ export function WarningAlert({ message, description }: { message: string, descri
   )
 }
 
-export function ErrorAlert({ message, description }: { message: string, description?: string }) {
+export function ErrorAlert({ message, description }: { message: string | JSX.Element, description?: string | JSX.Element }) {
   return (
     <div className="rounded-md bg-red-50 p-4">
       <div className="flex">

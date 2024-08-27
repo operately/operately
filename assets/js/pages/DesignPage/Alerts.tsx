@@ -24,13 +24,13 @@ export function AlertsExamples() {
 
       <div className="mt-4 mb-4">
         <Alerts.InfoAlert
-            message={"Want markup in your info alert?"}
-            description={
-              <>
-                <Link to={""}>Add a Reviewer</Link> to get feedback and keep things moving smoothly.
-              </>
-            }
-          />
+          message={"Want markup in your info alert?"}
+          description={
+            <>
+              <Link to={""}>Add a Reviewer</Link> to get feedback and keep things moving smoothly.
+            </>
+          }
+        />
       </div>
 
       <div className="mt-4 mb-4">
