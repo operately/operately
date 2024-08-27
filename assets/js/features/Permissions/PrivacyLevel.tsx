@@ -5,24 +5,21 @@ import { Radio, RadioGroup } from "@/components/Form";
 import { usePermissionsContext, ReducerActions } from "./PermissionsContext";
 import { PermissionOptions } from ".";
 
-
 interface PrivacyLevelProps {
   description: string;
   options: { label: string; value: PermissionOptions }[];
   defaultValue: PermissionOptions;
 }
 
-
 const parseTestId = (name: string) => {
   return "privacy-level-" + name.split(" ")[0]?.toLocaleLowerCase();
-}
+};
 
-
-export default function PrivacyLevel({description, options, defaultValue}: PrivacyLevelProps) {
+export default function PrivacyLevel({ description, options, defaultValue }: PrivacyLevelProps) {
   const { dispatch } = usePermissionsContext();
 
   const handleChange = (value: PermissionOptions) => {
-    switch(value) {
+    switch (value) {
       case PermissionOptions.PUBLIC:
         dispatch({ type: ReducerActions.SET_PUBLIC });
         break;
@@ -36,7 +33,7 @@ export default function PrivacyLevel({description, options, defaultValue}: Priva
         dispatch({ type: ReducerActions.SET_SECRET });
         break;
     }
-  }
+  };
 
   return (
     <div>
@@ -45,7 +42,7 @@ export default function PrivacyLevel({description, options, defaultValue}: Priva
 
       <Spacer />
 
-      <RadioGroup name="privacy-level" onChange={handleChange} defaultValue={defaultValue} >
+      <RadioGroup name="privacy-level" onChange={handleChange} defaultValue={defaultValue}>
         {options.map((option, idx) => (
           <Radio {...option} key={idx} testId={parseTestId(option.label)} />
         ))}

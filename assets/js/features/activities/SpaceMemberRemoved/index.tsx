@@ -4,7 +4,6 @@ import { feedTitle, spaceLink } from "../feedItemLinks";
 import { Paths } from "@/routes/paths";
 import { shortName } from "@/models/people";
 
-
 const SpaceMemberRemoved: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
     throw new Error("Not implemented");
@@ -29,7 +28,7 @@ const SpaceMemberRemoved: ActivityHandler = {
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const person = shortName(content(activity).member!);
     const space = spaceLink(content(activity).space!);
-    
+
     if (page === "space") {
       return feedTitle(activity, "removed", person, "from the space");
     } else {

@@ -31,9 +31,7 @@ function PersonRow({ person }: { person: People.Person }) {
 
       <div className="flex flex-col gap-2">
         <RemoveMember person={person} />
-        {person.hasOpenInvitation && (
-          <NewInvitationToken person={person} />
-        )}
+        {person.hasOpenInvitation && <NewInvitationToken person={person} />}
       </div>
     </div>
   );

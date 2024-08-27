@@ -1,4 +1,4 @@
-import React, { Dispatch, ReactNode, createContext, useContext, useReducer } from "react"
+import React, { Dispatch, ReactNode, createContext, useContext, useReducer } from "react";
 import { Space } from "@/models/spaces";
 import { Company } from "@/models/companies";
 import { PermissionLevels } from ".";
@@ -30,15 +30,15 @@ export enum ReducerActions {
   SET_ALL,
 }
 
-type ActionOptions = { type: ReducerActions.SET_PUBLIC } |
-  { type: ReducerActions.SET_INTERNAL } |
-  { type: ReducerActions.SET_CONFIDENTIAL } |
-  { type: ReducerActions.SET_SECRET } |
-  { type: ReducerActions.SET_PUBLIC_ACCESS, access_level: PermissionLevels } |
-  { type: ReducerActions.SET_COMPANY_ACCESS, access_level: PermissionLevels } |
-  { type: ReducerActions.SET_SPACE_ACCESS, access_level: PermissionLevels } |
-  { type: ReducerActions.SET_ALL, payload: Permissions }
-
+type ActionOptions =
+  | { type: ReducerActions.SET_PUBLIC }
+  | { type: ReducerActions.SET_INTERNAL }
+  | { type: ReducerActions.SET_CONFIDENTIAL }
+  | { type: ReducerActions.SET_SECRET }
+  | { type: ReducerActions.SET_PUBLIC_ACCESS; access_level: PermissionLevels }
+  | { type: ReducerActions.SET_COMPANY_ACCESS; access_level: PermissionLevels }
+  | { type: ReducerActions.SET_SPACE_ACCESS; access_level: PermissionLevels }
+  | { type: ReducerActions.SET_ALL; payload: Permissions };
 
 export interface Permissions {
   public: PermissionLevels;
@@ -46,13 +46,11 @@ export interface Permissions {
   space: PermissionLevels;
 }
 
-
 const DEFAULT_PERMISSIONS = {
   public: PermissionLevels.NO_ACCESS,
   company: PermissionLevels.NO_ACCESS,
   space: PermissionLevels.NO_ACCESS,
 };
-
 
 function reducerFunction(state: Permissions, action: ActionOptions) {
   switch (action.type) {
@@ -66,7 +64,7 @@ function reducerFunction(state: Permissions, action: ActionOptions) {
       return {
         space: PermissionLevels.VIEW_ACCESS,
         company: PermissionLevels.VIEW_ACCESS,
-        public: PermissionLevels.NO_ACCESS
+        public: PermissionLevels.NO_ACCESS,
       };
     case ReducerActions.SET_CONFIDENTIAL:
       return {
@@ -101,9 +99,11 @@ function reducerFunction(state: Permissions, action: ActionOptions) {
   }
 }
 
-
-function PermissionsProvider({children, company, space, currentPermissions}: Props) {
-  const [permissions, dispatch] = useReducer(reducerFunction, currentPermissions ? ({...currentPermissions} as Permissions) : {...DEFAULT_PERMISSIONS});
+function PermissionsProvider({ children, company, space, currentPermissions }: Props) {
+  const [permissions, dispatch] = useReducer(
+    reducerFunction,
+    currentPermissions ? ({ ...currentPermissions } as Permissions) : { ...DEFAULT_PERMISSIONS },
+  );
 
   const data = {
     company,
@@ -111,30 +111,21 @@ function PermissionsProvider({children, company, space, currentPermissions}: Pro
     permissions,
     dispatch,
     hasPermissions: Boolean(currentPermissions),
-  }
+  };
 
-  return (
-    <PermissionsContext.Provider value={data}>
-      {children}
-    </PermissionsContext.Provider>
-  )
+  return <PermissionsContext.Provider value={data}>{children}</PermissionsContext.Provider>;
 }
 
-
 const PermissionsContext = createContext<ContextType | undefined>(undefined);
-
 
 function usePermissionsContext() {
   const context = useContext(PermissionsContext);
 
   if (context === undefined) {
-      throw Error('usePermissionsContext must be used within a PermissionsProvider');
+    throw Error("usePermissionsContext must be used within a PermissionsProvider");
   }
 
   return context;
 }
 
-export {
-  PermissionsProvider,
-  usePermissionsContext,
-}
+export { PermissionsProvider, usePermissionsContext };

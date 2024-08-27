@@ -5,7 +5,6 @@ import { Paths } from "@/routes/paths";
 import { DivLink } from "@/components/Link";
 import Avatar from "@/components/Avatar";
 
-
 interface InlinePeopleListProps {
   people: People.Person[];
   nameFormat?: People.NameFormat;

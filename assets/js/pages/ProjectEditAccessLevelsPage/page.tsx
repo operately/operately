@@ -15,7 +15,7 @@ import { useEditProjectPermissions } from "@/api";
 
 export function Page() {
   const { project, company } = useLoadedData();
-  
+
   return (
     <Pages.Page title={["Edit Project Permissions", project.name!]}>
       <Paper.Root>
@@ -28,7 +28,7 @@ export function Page() {
 
         <Paper.Body>
           <h1 className="mb-8 font-extrabold text-content-accent text-3xl">Editing the project&apos;s permissions</h1>
-          <PermissionsProvider company={company} space={project.space} currentPermissions={project.accessLevels} >
+          <PermissionsProvider company={company} space={project.space} currentPermissions={project.accessLevels}>
             <Form project={project} />
           </PermissionsProvider>
         </Paper.Body>
@@ -46,16 +46,15 @@ function Form({ project }: { project: Project }) {
     edit({
       projectId: project.id,
       accessLevels: permissions,
-    })
-    .then(() => {
+    }).then(() => {
       navigateToProject();
-    })
+    });
   };
 
   const handleCancel = () => navigateToProject();
 
   return (
-    <Forms.Form onSubmit={handleSubmit} loading={loading} isValid={true} onCancel={handleCancel} >
+    <Forms.Form onSubmit={handleSubmit} loading={loading} isValid={true} onCancel={handleCancel}>
       <div className="flex flex-col gap-6">
         <ResourcePermissionSelector />
       </div>

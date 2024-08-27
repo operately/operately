@@ -6,13 +6,13 @@ interface LoaderResult {
   assignmentsCount: number;
 }
 
-export async function loader() : Promise<LoaderResult> {
+export async function loader(): Promise<LoaderResult> {
   const data = await getAssignments({});
-  
+
   return {
     assignments: data.assignments || [],
     assignmentsCount: data.assignments?.length || 0,
-  }
+  };
 }
 
 export function useLoadedData(): LoaderResult {

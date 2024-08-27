@@ -11,7 +11,6 @@ import { useNavigateTo } from "@/routes/useNavigateTo";
 import { calculateHowManyDaysAgo } from "@/utils/time";
 import { ReviewAssignment, AssignmentType } from "@/models/assignments";
 
-
 export function Page() {
   const { assignmentsCount } = useLoadedData();
 
@@ -23,15 +22,16 @@ export function Page() {
       <Paper.Root size="large">
         <Paper.Body minHeight="600px">
           <div className="text-content-accent text-3xl font-bold">{title}</div>
-          <p className="mt-2">Your due actions as a champion and/or reviewer{noAssignments ? " will appear here." : "."}</p>
-        
+          <p className="mt-2">
+            Your due actions as a champion and/or reviewer{noAssignments ? " will appear here." : "."}
+          </p>
+
           <AssignmentsList />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
   );
 }
-
 
 function AssignmentsList() {
   const { assignments } = useLoadedData();
@@ -42,7 +42,7 @@ function AssignmentsList() {
         <AssignmentItem assignment={assignment} key={assignment.id} />
       ))}
     </div>
-  )
+  );
 }
 
 function AssignmentItem({ assignment }: { assignment: ReviewAssignment }) {
@@ -70,17 +70,15 @@ function AssignmentItem({ assignment }: { assignment: ReviewAssignment }) {
 function DueDate({ date }: { date: string }) {
   const daysAgo = calculateHowManyDaysAgo(date);
   const isRed = useMemo(() => !["Today", "Yesterday"].includes(daysAgo), []);
-  
+
   return (
     <div className="flex flex-col min-w-[110px]">
       <b>
         <FormattedTime time={date} format="short-date" />
       </b>
-      <span className={`text-sm ${isRed ? "text-red-500" : "text-content-dimmed"}`}>
-        {daysAgo}
-      </span>
+      <span className={`text-sm ${isRed ? "text-red-500" : "text-content-dimmed"}`}>{daysAgo}</span>
     </div>
-  )
+  );
 }
 
 function AssignmentIcon({ type }: { type: AssignmentType }) {
@@ -88,7 +86,7 @@ function AssignmentIcon({ type }: { type: AssignmentType }) {
   const GOAL_COLOR = "text-red-500 shrink-0";
   const PROJECT_COLOR = "text-indigo-500 shrink-0";
 
-  switch(type) {
+  switch (type) {
     case "project":
       return <IconHexagons size={SIZE} className={PROJECT_COLOR} />;
     case "check_in":
@@ -107,16 +105,20 @@ function AssignmentInfo({ assignment, isHovered }: { assignment: ReviewAssignmen
 
   return (
     <div data-test-id={assignment.id}>
-      <p className={className}><b>{title}</b> {assignment.name}</p>
+      <p className={className}>
+        <b>{title}</b> {assignment.name}
+      </p>
       {content && (
-        <p className="text-sm">{assignment.championName} {content}</p>
+        <p className="text-sm">
+          {assignment.championName} {content}
+        </p>
       )}
     </div>
   );
 }
 
 function parseInformation(assignment: ReviewAssignment) {
-  switch(assignment.type as AssignmentType) {
+  switch (assignment.type as AssignmentType) {
     case "project":
       return {
         title: "Write the weekly check-in:",

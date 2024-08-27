@@ -15,10 +15,9 @@ import { GoalSelectorDropdown } from "@/features/goals/GoalTree/GoalSelectorDrop
 import { TimeframeSelector } from "@/components/TimeframeSelector";
 import { ResourcePermissionSelector } from "@/features/Permissions";
 
-
 export function Form({ form }: { form: FormState }) {
   return (
-    <Forms.Form onSubmit={()=>{}} loading={form.submitting} onCancel={form.cancel} isValid={true}>
+    <Forms.Form onSubmit={() => {}} loading={form.submitting} onCancel={form.cancel} isValid={true}>
       <FormMain form={form} />
       <FormFooter form={form} />
     </Forms.Form>
