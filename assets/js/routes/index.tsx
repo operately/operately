@@ -4,7 +4,7 @@ import DefaultLayout from "@/layouts/DefaultLayout";
 
 import pages from "@/pages";
 
-import { createBrowserRouter } from "react-router-dom";
+import { Outlet, createBrowserRouter } from "react-router-dom";
 import { companyLoader } from "./companyLoader";
 import { pageRoute } from "./pageRoute";
 
@@ -24,13 +24,26 @@ function ProtectedRoutes() {
   );
 }
 
+function PublicRoutes() {
+  return (
+    <ThemeProvider>
+      <Outlet />
+    </ThemeProvider>
+  );
+}
+
 export function createAppRoutes() {
   return createBrowserRouter([
     pageRoute("/", pages.LobbyPage),
     pageRoute("/new", pages.NewCompanyPage),
     pageRoute("/setup", pages.SetupPage),
     pageRoute("/join", pages.JoinPage),
-    pageRoute("/__design__", pages.DesignPage),
+    {
+      path: "/",
+      element: <PublicRoutes />,
+      errorElement: <ErrorPage />,
+      children: [pageRoute("/__design__", pages.DesignPage)],
+    },
     {
       path: "/:companyId",
       loader: companyLoader,
