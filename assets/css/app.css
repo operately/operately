@@ -43,17 +43,32 @@ body[data-theme="light"] {
   --color-stale-selection: var(--color-sky-100);
 
   --color-accent-1: rgba(37, 155, 105, 1);
-  --color-accent-1-light: rgba(37,155,105,0.8);
+  --color-accent-1-light: rgba(37, 155, 105, 0.8);
+
+  --color-callout-info: var(--color-blue-50);
+  --color-callout-info-icon: var(--color-blue-400);
+  --color-callout-info-message: var(--color-blue-800);
+  --color-callout-info-description: var(--color-blue-700);
+
+  --color-callout-warning: var(--color-yellow-50);
+  --color-callout-warning-icon: var(--color-yellow-400);
+  --color-callout-warning-message: var(--color-yellow-800);
+  --color-callout-warning-description: var(--color-yellow-700);
+
+  --color-callout-error: var(--color-red-50);
+  --color-callout-error-icon: var(--color-red-400);
+  --color-callout-error-message: var(--color-red-800);
+  --color-callout-error-description: var(--color-red-700);
 }
 
 body[data-theme="dark"] {
   --color-base: rgba(30, 30, 34, 1);
   --color-base-accent: rgba(255, 255, 255, 0.1);
 
-  --color-surface: rgba(35,35,39,1);
+  --color-surface: rgba(35, 35, 39, 1);
   --color-surface-dimmed: rgba(30, 30, 34, 0.8);
   --color-surface-accent: rgba(255, 255, 255, 0.03);
-  --color-surface-outline: rgba(60,60,64,1);
+  --color-surface-outline: rgba(60, 60, 64, 1);
   --color-surface-highlight: rgba(255, 255, 255, 0.03);
 
   --color-content-base: rgba(255, 255, 255, 0.9);
@@ -71,7 +86,19 @@ body[data-theme="dark"] {
   --color-stale-selection: var(--color-sky-900);
 
   --color-accent-1: rgba(37, 155, 105, 1);
-  --color-accent-1-light: rgba(37,155,105,0.8);
+  --color-accent-1-light: rgba(37, 155, 105, 0.8);
+
+  --color-callout-info: var(--color-blue-900);
+  --color-callout-info-icon: var(--color-blue-300);
+  --color-callout-info-message: var(--color-blue-200);
+
+  --color-callout-warning: var(--color-yellow-900);
+  --color-callout-warning-icon: var(--color-yellow-300);
+  --color-callout-warning-message: var(--color-yellow-200);
+
+  --color-callout-error: var(--color-red-900);
+  --color-callout-error-icon: var(--color-red-300);
+  --color-callout-error-message: var(--color-red-200);
 }
 
 body {
