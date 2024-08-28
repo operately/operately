@@ -6,8 +6,11 @@ import classNames from "classnames";
 import { TestableElement } from "@/utils/testid";
 import { DivLink } from "../Link";
 
+type Size = "small" | "medium" | "large" | "xlarge" | "xxlarge" | "xxxlarge";
+
 interface MenuProps extends TestableElement {
   children: React.ReactNode;
+  size?: Size;
 }
 
 interface MenuItemProps extends TestableElement {
@@ -32,7 +35,9 @@ export function Menu(props: MenuProps) {
       </DropdownMenu.Trigger>
 
       <DropdownMenu.Portal>
-        <DropdownMenu.Content className={menuContentClass}>{props.children}</DropdownMenu.Content>
+        <DropdownMenu.Content className={menuContentClass} style={menuContentStyle(props.size)}>
+          {props.children}
+        </DropdownMenu.Content>
       </DropdownMenu.Portal>
     </DropdownMenu.Root>
   );
@@ -62,6 +67,23 @@ export function MenuActionItem(props: MenuActionItemProps) {
 // Helpers
 //
 
+const SizeToWidth: Record<Size, number> = {
+  small: 150,
+  medium: 200,
+  large: 225,
+  xlarge: 250,
+  xxlarge: 275,
+  xxxlarge: 300,
+};
+
+function menuContentStyle(size?: Size) {
+  const width = size ? SizeToWidth[size] : SizeToWidth.medium;
+
+  return {
+    width: `${width}px`,
+  };
+}
+
 const menuContentClass = classNames(
   "absolute z-10 rounded-md mt-1",
   "py-2 shadow-lg ring-1 transition ring-surface-outline",
@@ -86,8 +108,8 @@ const menuItemClass = classNames(
 function MenuItemIconAndTitle({ icon, children }) {
   return (
     <>
-      {React.createElement(icon, { size: 20 })}
-      {children}
+      <div className="shrink-0">{React.createElement(icon, { size: 20 })}</div>
+      <div className="break-keep">{children}</div>
     </>
   );
 }

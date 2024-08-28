@@ -157,14 +157,22 @@ function PersonOptions({ person }: { person: People.Person }) {
   const menuTestId = createTestId("person-options", person.id!);
   const removeTestId = createTestId("remove-person", person.id!);
 
+  const size = person.hasOpenInvitation ? "medium" : "small";
+
   return (
     <>
       <RemovePersonModal person={person} state={removePersonModalState} />
 
-      <Menu testId={menuTestId}>
+      <Menu testId={menuTestId} size={size}>
         <MenuLinkItem icon={Icons.IconId} testId="view-profile" to={Paths.profilePath(person.id!)}>
           View Profile
         </MenuLinkItem>
+
+        {person.hasOpenInvitation && (
+          <MenuActionItem icon={Icons.IconRefresh} onClick={removePersonModalState.show} danger testId={removeTestId}>
+            Regenerate Invitation
+          </MenuActionItem>
+        )}
 
         <MenuActionItem icon={Icons.IconTrash} onClick={removePersonModalState.show} danger testId={removeTestId}>
           Remove
