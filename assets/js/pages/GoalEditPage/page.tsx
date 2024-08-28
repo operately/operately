@@ -72,5 +72,5 @@ function Header({ form }: { form: FormState }) {
 function ErrorMessage({ form }: { form: FormState }) {
   if (form.errors.length === 0) return null;
 
-  return <div className="text-red-500 text-sm font-medium text-center mb-4">Please fill out all fields</div>;
+  return <div className="text-content-error text-sm font-medium text-center mb-4">Please fill out all fields</div>;
 }

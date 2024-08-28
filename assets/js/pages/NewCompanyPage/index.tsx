@@ -49,7 +49,7 @@ export function Page() {
               />
 
               {form.errors.some((e) => e.field === "companyName") && (
-                <div className="text-red-500 text-sm mt-1">
+                <div className="text-content-error text-sm mt-1">
                   {form.errors.find((e) => e.field === "companyName")?.message}
                 </div>
               )}
@@ -66,7 +66,9 @@ export function Page() {
               />
 
               {form.errors.some((e) => e.field === "title") && (
-                <div className="text-red-500 text-sm mt-1">{form.errors.find((e) => e.field === "title")?.message}</div>
+                <div className="text-content-error text-sm mt-1">
+                  {form.errors.find((e) => e.field === "title")?.message}
+                </div>
               )}
             </div>
           </div>

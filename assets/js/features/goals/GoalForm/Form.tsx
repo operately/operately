@@ -49,7 +49,7 @@ function TargetSection({ form }: { form: FormState }) {
       <SectionHeader form={form} title="Success Conditions" subtitle="How will you know that you succeded?" />
 
       {form.errors.find((e) => e.field === "targets") && (
-        <div className="text-red-500 text-sm">At least one success condition is required</div>
+        <div className="text-content-error text-sm">At least one success condition is required</div>
       )}
 
       <div className="mt-4">

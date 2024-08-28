@@ -55,7 +55,7 @@ function GoalTitle({ goal }: { goal: Goals.Goal }) {
 function GoalIcon() {
   return (
     <div className="bg-red-500/10 p-1.5 rounded-lg">
-      <Icons.IconTarget size={24} className="text-red-500" />
+      <Icons.IconTarget size={24} className="text-content-error" />
     </div>
   );
 }
@@ -213,7 +213,9 @@ function TimeframeState({ goal }) {
     return (
       <span>
         &middot;{" "}
-        <span className="text-red-500">Overdue by {plurarize(Timeframes.overdueDays(timeframe), "day", "days")}</span>
+        <span className="text-content-error">
+          Overdue by {plurarize(Timeframes.overdueDays(timeframe), "day", "days")}
+        </span>
       </span>
     );
   } else {
