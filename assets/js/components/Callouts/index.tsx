@@ -1,7 +1,12 @@
 import React from "react";
 import { TestableElement } from "@/utils/testid";
 
-import { IconAlertTriangleFilled, IconCircleCheckFilled, IconCircleXFilled, IconInfoCircleFilled } from "@tabler/icons-react";
+import {
+  IconAlertTriangleFilled,
+  IconCircleCheckFilled,
+  IconCircleXFilled,
+  IconInfoCircleFilled,
+} from "@tabler/icons-react";
 
 interface Props extends TestableElement {
   message: string | JSX.Element;
@@ -79,13 +84,11 @@ export function SuccessCallout(props: Props) {
           <h3 className="text-sm font-semibold text-callout-success-message">{props.message}</h3>
           {props.description ? (
             <div className="mt-2 text-sm text-callout-success-message">
-              <p>
-                {props.description}
-              </p>
+              <p>{props.description}</p>
             </div>
           ) : null}
         </div>
       </div>
     </div>
-  )
+  );
 }
