@@ -12,7 +12,7 @@ defmodule Operately.Operations.ProjectCheckIn do
 
     Multi.new()
     |> Multi.insert(:subscription_list, SubscriptionList.changeset(%{
-      send_to_everyone: attrs[:send_notifications_to_everyone] || false,
+      send_to_everyone: attrs.send_notifications_to_everyone,
     }))
     |> insert_subscriptions(attrs.subscribers_ids)
     |> Multi.insert(:check_in, fn changes ->
@@ -55,6 +55,7 @@ defmodule Operately.Operations.ProjectCheckIn do
     end
   end
 
+  defp insert_subscriptions(multi, nil), do: multi
   defp insert_subscriptions(multi, subscribers_ids) do
     Enum.reduce(subscribers_ids, multi, fn id, multi ->
       name = "subscription_" <> id

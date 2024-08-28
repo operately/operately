@@ -107,6 +107,12 @@ defmodule Operately.Notifications do
   def get_subscription_list!(id) when is_binary(id) , do: Repo.get!(SubscriptionList, id)
   def get_subscription_list!(attrs) when is_list(attrs), do: Repo.get_by!(SubscriptionList, attrs)
 
+  def create_subscription_list(attrs \\ %{}) do
+    %SubscriptionList{}
+    |> SubscriptionList.changeset(attrs)
+    |> Repo.insert()
+  end
+
   alias Operately.Notifications.Subscriptions
 
   def list_subscriptions(%SubscriptionList{} = subscription_list), do: list_subscriptions(subscription_list.id)
