@@ -2,10 +2,10 @@
   "$schema": "https://unpkg.com/knip@2/schema.json",
   "entry": ["js/app.tsx", "build.js", "codegen.ts"],
   "project": ["js/**/*.ts", "js/**/*.tsx"],
-  "ignore": ["js/gql/generated.tsx", "js/api/index.tsx"],
+  "ignore": ["js/gql/generated.tsx", "js/api/index.tsx", "js/features/Subscriptions/"],
   "ignoreDependencies": ["@types/jest"],
 
   "rules": {
-    "nsTypes": "off",
+    "nsTypes": "off"
   }
 }
