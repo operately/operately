@@ -47,18 +47,19 @@ body[data-theme="light"] {
 
   --color-callout-info: var(--color-blue-50);
   --color-callout-info-icon: var(--color-blue-400);
-  --color-callout-info-message: var(--color-blue-800);
-  --color-callout-info-description: var(--color-blue-700);
+  --color-callout-info-message: var(--color-blue-700);
 
   --color-callout-warning: var(--color-yellow-50);
   --color-callout-warning-icon: var(--color-yellow-400);
-  --color-callout-warning-message: var(--color-yellow-800);
-  --color-callout-warning-description: var(--color-yellow-700);
+  --color-callout-warning-message: var(--color-yellow-700);
 
   --color-callout-error: var(--color-red-50);
   --color-callout-error-icon: var(--color-red-400);
-  --color-callout-error-message: var(--color-red-800);
-  --color-callout-error-description: var(--color-red-700);
+  --color-callout-error-message: var(--color-red-700);
+
+  --color-callout-success: var(--color-green-50);
+  --color-callout-success-icon: var(--color-green-400);
+  --color-callout-success-message: var(--color-green-700);
 }
 
 body[data-theme="dark"] {
@@ -99,6 +100,10 @@ body[data-theme="dark"] {
   --color-callout-error: var(--color-red-900);
   --color-callout-error-icon: var(--color-red-300);
   --color-callout-error-message: var(--color-red-200);
+
+  --color-callout-success: var(--color-green-900);
+  --color-callout-success-icon: var(--color-green-300);
+  --color-callout-success-message: var(--color-green-200);
 }
 
 body {

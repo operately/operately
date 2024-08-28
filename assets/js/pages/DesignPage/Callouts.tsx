@@ -69,6 +69,14 @@ export function CalloutExamples() {
           }
         />
       </div>
+
+      <div className="mt-4 mb-4">
+        <Callouts.SuccessCallout message="Successfully uploaded" />
+      </div>
+
+      <div className="mt-4 mb-4">
+        <Callouts.SuccessCallout message="Retrospective submitted" description="All project contributors were notified" />
+      </div>
     </Section>
   );
 }

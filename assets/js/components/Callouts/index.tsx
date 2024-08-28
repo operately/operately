@@ -1,7 +1,7 @@
 import React from "react";
 import { TestableElement } from "@/utils/testid";
 
-import { IconAlertTriangleFilled, IconCircleXFilled, IconInfoCircleFilled } from "@tabler/icons-react";
+import { IconAlertTriangleFilled, IconCircleCheckFilled, IconCircleXFilled, IconInfoCircleFilled } from "@tabler/icons-react";
 
 interface Props extends TestableElement {
   message: string | JSX.Element;
@@ -66,4 +66,26 @@ export function ErrorCallout(props: Props) {
       </div>
     </div>
   );
+}
+
+export function SuccessCallout(props: Props) {
+  return (
+    <div data-test-id={props.testId} className="rounded-md bg-callout-success p-4">
+      <div className="flex">
+        <div className="flex-shrink-0">
+          <IconCircleCheckFilled aria-hidden="true" className="h-5 w-5 text-callout-success-icon" />
+        </div>
+        <div className="ml-3">
+          <h3 className="text-sm font-semibold text-callout-success-message">{props.message}</h3>
+          {props.description ? (
+            <div className="mt-2 text-sm text-callout-success-message">
+              <p>
+                {props.description}
+              </p>
+            </div>
+          ) : null}
+        </div>
+      </div>
+    </div>
+  )
 }
