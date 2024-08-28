@@ -115,7 +115,7 @@ function SelectorModal({ showSelector, setShowSelector }: SelectorModalProps) {
       minHeight="200px"
     >
       <Forms.Form form={form}>
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-6 max-h-[400px] overflow-y-auto">
           <div className="flex items-center gap-3">
             <ActionLink onClick={handleSelectEveryone}>Select everyone</ActionLink>
             <span className="text-content-dimmed">&middot;</span>
