@@ -4,9 +4,10 @@ import * as TipTapEditor from "@/components/Editor";
 
 import { FilledButton } from "@/components/Button";
 import { FormState } from "./useForm";
-import { NotificationSection } from "./NotificationSection";
+import { SubscribersSelector } from "@/features/Subscriptions";
 import { StatusDropdown } from "../StatusDropdown";
 import classNames from "classnames";
+import { Spacer } from "@/components/Spacer";
 
 interface FormProps {
   form: FormState;
@@ -19,7 +20,8 @@ export function Form({ form }: FormProps) {
       <StatusSection form={form} />
       <DescriptionSection form={form} />
 
-      {form.mode === "create" && <NotificationSection form={form} />}
+      <Spacer size={4} />
+      {form.mode === "create" && <SubscribersSelector labelSuffix={`contributors of ${form.project!.name}`} />}
       {form.mode === "create" && <SubmitActions form={form} />}
     </>
   );
