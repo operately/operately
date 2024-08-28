@@ -4,6 +4,21 @@ import * as Icons from "@tabler/icons-react";
 
 import { useColorMode } from "@/contexts/ThemeContext";
 
+export interface ModalState {
+  isOpen: boolean;
+  show: () => void;
+  hide: () => void;
+}
+
+export function useModalState(initial: boolean): ModalState {
+  const [isOpen, setIsOpen] = React.useState<boolean>(initial);
+
+  const showModal = () => setIsOpen(true);
+  const hideModal = () => setIsOpen(false);
+
+  return { isOpen, show: showModal, hide: hideModal };
+}
+
 export default function Modal({ isOpen, hideModal, title, children, minHeight = "600px" }) {
   const mode = useColorMode();
 
