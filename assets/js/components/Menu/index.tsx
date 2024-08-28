@@ -6,6 +6,10 @@ import classNames from "classnames";
 import { TestableElement } from "@/utils/testid";
 import { DivLink } from "../Link";
 
+interface MenuProps extends TestableElement {
+  children: React.ReactNode;
+}
+
 interface MenuItemProps extends TestableElement {
   icon: React.ComponentType<{ size: number }>;
   children: React.ReactNode;
@@ -20,15 +24,15 @@ interface MenuActionItemProps extends MenuItemProps {
   onClick: () => void;
 }
 
-export function Menu({ children }) {
+export function Menu(props: MenuProps) {
   return (
     <DropdownMenu.Root>
-      <DropdownMenu.Trigger className={menuTriggerClass}>
+      <DropdownMenu.Trigger className={menuTriggerClass} data-test-id={props.testId}>
         <Icons.IconDots size={20} />
       </DropdownMenu.Trigger>
 
       <DropdownMenu.Portal>
-        <DropdownMenu.Content className={menuContentClass}>{children}</DropdownMenu.Content>
+        <DropdownMenu.Content className={menuContentClass}>{props.children}</DropdownMenu.Content>
       </DropdownMenu.Portal>
     </DropdownMenu.Root>
   );

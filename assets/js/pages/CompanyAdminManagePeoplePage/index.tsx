@@ -12,6 +12,7 @@ import { Menu, MenuLinkItem, MenuActionItem } from "@/components/Menu";
 
 import Avatar from "@/components/Avatar";
 import Modal, { ModalState, useModalState } from "@/components/Modal";
+import { createTestId } from "@/utils/testid";
 
 interface LoaderResult {
   company: Companies.Company;
@@ -153,16 +154,19 @@ function PersonInfo({ person }: { person: People.Person }) {
 function PersonOptions({ person }: { person: People.Person }) {
   const removePersonModalState = useModalState(false);
 
+  const menuTestId = createTestId("person-options", person.id!);
+  const removeTestId = createTestId("remove-person", person.id!);
+
   return (
     <>
       <RemovePersonModal person={person} state={removePersonModalState} />
 
-      <Menu>
+      <Menu testId={menuTestId}>
         <MenuLinkItem icon={Icons.IconId} testId="view-profile" to={Paths.profilePath(person.id!)}>
           View Profile
         </MenuLinkItem>
 
-        <MenuActionItem icon={Icons.IconTrash} testId="remove-person" onClick={removePersonModalState.show} danger>
+        <MenuActionItem icon={Icons.IconTrash} onClick={removePersonModalState.show} danger testId={removeTestId}>
           Remove
         </MenuActionItem>
       </Menu>
@@ -183,7 +187,7 @@ function RemovePersonModal({ person, state }: { person: People.Person; state: Mo
     <Modal title="Remove Company Member" isOpen={state.isOpen} hideModal={state.hide} minHeight="150px">
       <div>Are you sure you want to remove {person.fullName} from the company?</div>
       <div className="mt-8 flex justify-center">
-        <FilledButton onClick={handleRemoveMember} type="primary" loading={loading} testId="remove-member">
+        <FilledButton onClick={handleRemoveMember} type="primary" loading={loading} testId="confirm-remove-member">
           Remove Member
         </FilledButton>
       </div>
