@@ -11,8 +11,8 @@ export function CalloutExamples() {
       <SectionTitle>Callouts</SectionTitle>
 
       <div className="max-w-2xl mt-2 mb-10">
-        Callouts provide short messages to attract user's immediate attention or action.
-        These widgets are designed to be visually prominent and easily noticeable.
+        Callouts provide short messages to attract user's immediate attention or action. These widgets are designed to
+        be visually prominent and easily noticeable.
       </div>
 
       <div className="mt-4 mb-4">
@@ -20,7 +20,10 @@ export function CalloutExamples() {
       </div>
 
       <div className="mt-4 mb-4">
-        <Callouts.InfoCallout message="This is an info callout" description="This is the description of the info callout." />
+        <Callouts.InfoCallout
+          message="This is an info callout"
+          description="This is the description of the info callout."
+        />
       </div>
 
       <div className="mt-4 mb-4">
@@ -35,7 +38,13 @@ export function CalloutExamples() {
       </div>
 
       <div className="mt-4 mb-4">
-        <Callouts.WarningCallout message={<span>This is a warning callout <DimmedLink to={""}>with a link</DimmedLink></span>} />
+        <Callouts.WarningCallout
+          message={
+            <span>
+              This is a warning callout <DimmedLink to={""}>with a link</DimmedLink>
+            </span>
+          }
+        />
       </div>
 
       <div className="mt-4 mb-4">
