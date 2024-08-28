@@ -19,15 +19,13 @@ export function InfoCallout(props: Props) {
           <h3 className="text-sm font-semibold text-callout-info-message">{props.message}</h3>
           {props.description ? (
             <div className="mt-2 text-sm text-callout-info-message">
-              <p>
-                {props.description}
-              </p>
+              <p>{props.description}</p>
             </div>
           ) : null}
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 export function WarningCallout(props: Props) {
@@ -41,15 +39,13 @@ export function WarningCallout(props: Props) {
           <h3 className="text-sm font-semibold text-callout-warning-message">{props.message}</h3>
           {props.description ? (
             <div className="mt-2 text-sm text-callout-warning-message">
-              <p>
-                {props.description}
-              </p>
+              <p>{props.description}</p>
             </div>
           ) : null}
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 export function ErrorCallout(props: Props) {
@@ -63,13 +59,11 @@ export function ErrorCallout(props: Props) {
           <h3 className="text-sm font-semibold text-callout-error-message">{props.message}</h3>
           {props.description ? (
             <div className="mt-2 text-sm text-callout-error-message">
-              <p>
-                {props.description}
-              </p>
+              <p>{props.description}</p>
             </div>
           ) : null}
         </div>
       </div>
     </div>
-  )
+  );
 }
