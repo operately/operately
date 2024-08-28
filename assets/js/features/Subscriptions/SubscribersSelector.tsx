@@ -72,7 +72,7 @@ function SelectedPeople({ people, hide }) {
   if (people.length === 0 || hide) return <></>;
 
   return (
-    <div className="flex gap-2 ml-6">
+    <div className="flex flex-wrap gap-2 ml-6">
       {people.map((person) => (
         <Avatar person={person} size="tiny" key={person.id} />
       ))}
