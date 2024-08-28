@@ -38,6 +38,9 @@ export function Colors() {
         <Color color="bg-callout-error" usage="Error callout background color" />
         <Color color="bg-callout-error-icon" usage="Error callout icon color" />
         <Color color="bg-callout-error-message" usage="Error callout message text" />
+        <Color color="bg-callout-success" usage="Success callout background color" />
+        <Color color="bg-callout-success-icon" usage="Success callout icon color" />
+        <Color color="bg-callout-success-message" usage="Success callout message text" />
       </div>
     </Section>
   );
