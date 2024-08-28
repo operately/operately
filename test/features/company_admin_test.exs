@@ -1,126 +1,65 @@
 defmodule Operately.Features.CompanyAdminTest do
   use Operately.FeatureCase
-
-  import Operately.CompaniesFixtures
-  import Operately.PeopleFixtures
-
-  alias Operately.Support.Features.InviteMemberSteps
+  alias Operately.Support.Features.CompanyAdminSteps, as: Steps
 
   setup ctx do
-    company = company_fixture(%{name: "Dunder Mifflin"})
-    admin = Operately.Companies.list_admins(company.id) |> hd()
-
-    ctx = Map.put(ctx, :company, company)
-    ctx = Map.put(ctx, :admin, admin)
-
-    ctx
-    |> UI.login_as(ctx.admin)
-    |> visit_page()
+    ctx |> Steps.given_a_company_exists_and_im_an_admin()
   end
 
   feature "adding a new person to the company", ctx do
+    params = %{
+      full_name: "Michael Scott",
+      email: "m.scott@dmif.com",
+      title: "Regional Manager"
+    }
+
     ctx
-    |> UI.click(testid: "add-remove-people-manually")
-    |> UI.click(testid: "add-person")
-    |> UI.fill(testid: "person-full-name", with: "Michael Scott")
-    |> UI.fill(testid: "person-email", with: "m.scott@dmif.com")
-    |> UI.fill(testid: "person-title", with: "Regional Manager")
-    |> UI.click(testid: "submit")
-    |> InviteMemberSteps.assert_member_invited()
-
-    person = Operately.People.get_person_by_name!(ctx.company, "Michael Scott")
-
-    assert person != nil
-    assert person.company_id == ctx.company.id
-    assert person.full_name == "Michael Scott"
-    assert person.title == "Regional Manager"
+    |> Steps.open_company_team_page()
+    |> Steps.invite_company_member(params)
+    |> Steps.assert_invitation_url_is_generated()
+    |> Steps.open_company_team_page()
+    |> Steps.assert_company_member_is_listed("Michael Scott")
+    |> Steps.assert_company_member_details_match_invitations(params)
   end
 
   feature "promote a person to admin", ctx do
-    person_fixture(%{full_name: "Michael Scott", company_id: ctx.company.id, title: "Regional Manager"})
-
     ctx
-    |> UI.click(testid: "manage-company-administrators")
-    |> UI.click(testid: "add-admins")
-    |> UI.fill_in(Query.css("#people-search"), with: "Mich")
-    |> UI.assert_text("Michael Scott")
-    |> UI.send_keys([:enter])
-    |> UI.click(testid: "save-admins")
-    |> UI.sleep(300)
-
-    michael = Operately.People.get_person_by_name!(ctx.company, "Michael Scott")
-    assert michael != nil
-    assert michael.company_id == ctx.company.id
-    assert michael.company_role == :admin
+    |> Steps.given_a_company_member_exists("Michael Scott")
+    |> Steps.open_company_admins_page()
+    |> Steps.add_company_admin("Michael Scott")
+    |> Steps.assert_person_is_admin("Michael Scott")
   end
 
   feature "demote a person from admin", ctx do
-    person_fixture(%{full_name: "Michael Scott", company_id: ctx.company.id, title: "Regional Manager", company_role: :admin})
-
     ctx
-    |> UI.click(testid: "manage-company-administrators")
-    |> UI.assert_text("Michael Scott")
-    |> UI.click(testid: "remove-michael-scott")
-    |> UI.refute_text("Michael Scott", attempts: [50, 150, 250, 400])
-
-    person = Operately.People.get_person_by_name!(ctx.company, "Michael Scott")
-
-    assert person != nil
-    assert person.company_id == ctx.company.id
-    assert person.company_role == :member
+    |> Steps.given_a_company_admin_exists("Michael Scott")
+    |> Steps.open_company_admins_page()
+    |> Steps.remove_company_admin("Michael Scott")
+    |> Steps.refute_person_is_admin("Michael Scott")
   end
 
   feature "adding a trusted email domain", ctx do
     ctx
-    |> UI.click(testid: "manage-trusted-email-domains")
-    |> UI.fill(testid: "add-trusted-email-domain-input", with: "dmif.com")
-    |> UI.click(testid: "add-trusted-email-domain-button")
-    |> UI.assert_text("@dmif.com")
-
-    company = Operately.Companies.get_company!(ctx.company.id)
-
-    assert company != nil
-    assert company.trusted_email_domains == ["@dmif.com"]
+    |> Steps.open_company_trusted_email_domains_page()
+    |> Steps.add_trusted_email_domain("@dmif.com")
+    |> Steps.assert_trusted_email_domain_added("@dmif.com")
   end
 
   feature "removing a trusted email domain", ctx do
-    Operately.Companies.update_company(ctx.company, %{trusted_email_domains: ["@dmif.com"]})
-
     ctx
-    |> UI.click(testid: "manage-trusted-email-domains")
-    |> UI.assert_text("@dmif.com")
-    |> UI.click(testid: "remove-trusted-email-domain--dmif-com")
-    |> UI.refute_text("@dmif.com", attempts: [50, 150, 250, 400])
-
-    company = Operately.Companies.get_company!(ctx.company.id)
-
-    assert company != nil
-    assert company.trusted_email_domains == []
+    |> Steps.given_the_company_has_trusted_email_domains(["@dmif.com"])
+    |> Steps.open_company_trusted_email_domains_page()
+    |> Steps.remove_trusted_email_domain("@dmif.com")
+    |> Steps.assert_truested_email_domain_list_empty()
   end
 
   feature "remove members from the company", ctx do
-    person_fixture(%{full_name: "Dwight Schrute", company_id: ctx.company.id})
-
     ctx
-    |> UI.click(testid: "add-remove-people-manually")
-    |> UI.assert_text("Dwight Schrute")
-    |> UI.click(testid: "remove-dwight-schrute")
-    |> UI.click(testid: "remove-member")
-    |> UI.refute_text("Dwight Schrute", attempts: [50, 150, 250, 400])
-
-    person = Operately.People.get_person_by_name!(ctx.company, "Dwight Schrute")
-
-    assert person != nil
-    assert person.suspended
-    assert person.suspended_at != nil
-  end
-
-  #
-  # ======== Helper functions ========
-  #
-
-  defp visit_page(ctx) do
-    UI.visit(ctx, Paths.company_admin_path(ctx.company))
+    |> Steps.given_a_company_member_exists("Dwight Schrute")
+    |> Steps.open_company_team_page()
+    |> Steps.assert_company_member_is_listed("Dwight Schrute")
+    |> Steps.remove_company_member("Dwight Schrute")
+    |> Steps.assert_member_removed("Dwight Schrute")
   end
 
 end
