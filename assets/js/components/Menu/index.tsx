@@ -6,6 +6,58 @@ import classNames from "classnames";
 import { TestableElement } from "@/utils/testid";
 import { DivLink } from "../Link";
 
+interface MenuItemProps extends TestableElement {
+  icon: React.ComponentType<{ size: number }>;
+  children: React.ReactNode;
+  danger?: boolean;
+}
+
+interface MenuLinkItemProps extends MenuItemProps {
+  to: string;
+}
+
+interface MenuActionItemProps extends MenuItemProps {
+  onClick: () => void;
+}
+
+export function Menu({ children }) {
+  return (
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger className={menuTriggerClass}>
+        <Icons.IconDots size={20} />
+      </DropdownMenu.Trigger>
+
+      <DropdownMenu.Portal>
+        <DropdownMenu.Content className={menuContentClass}>{children}</DropdownMenu.Content>
+      </DropdownMenu.Portal>
+    </DropdownMenu.Root>
+  );
+}
+
+export function MenuLinkItem(props: MenuLinkItemProps) {
+  return (
+    <DropdownMenu.Item asChild>
+      <DivLink to={props.to} className={menuItemClassNames(props)} testId={props.testId}>
+        <MenuItemIconAndTitle icon={props.icon}>{props.children}</MenuItemIconAndTitle>
+      </DivLink>
+    </DropdownMenu.Item>
+  );
+}
+
+export function MenuActionItem(props: MenuActionItemProps) {
+  return (
+    <DropdownMenu.Item asChild>
+      <div className={menuItemClassNames(props)} data-test-id={props.testId} onClick={props.onClick}>
+        <MenuItemIconAndTitle icon={props.icon}>{props.children}</MenuItemIconAndTitle>
+      </div>
+    </DropdownMenu.Item>
+  );
+}
+
+//
+// Helpers
+//
+
 const menuContentClass = classNames(
   "absolute z-10 rounded-md mt-1",
   "py-2 shadow-lg ring-1 transition ring-surface-outline",
@@ -27,54 +79,18 @@ const menuItemClass = classNames(
   "font-medium",
 );
 
-export function Menu({ children }) {
+function MenuItemIconAndTitle({ icon, children }) {
   return (
-    <DropdownMenu.Root>
-      <DropdownMenu.Trigger className={menuTriggerClass}>
-        <Icons.IconDots size={20} />
-      </DropdownMenu.Trigger>
-
-      <DropdownMenu.Portal>
-        <DropdownMenu.Content className={menuContentClass}>{children}</DropdownMenu.Content>
-      </DropdownMenu.Portal>
-    </DropdownMenu.Root>
+    <>
+      {React.createElement(icon, { size: 20 })}
+      {children}
+    </>
   );
 }
 
-interface MenuItemProps extends TestableElement {
-  icon: React.ComponentType<{ size: number }>;
-  children: React.ReactNode;
-  linkTo?: string;
-  danger?: boolean;
-}
-
-export function MenuItem(props: MenuItemProps) {
-  return (
-    <DropdownMenu.Item asChild>
-      <MenuItemContent {...props} />
-    </DropdownMenu.Item>
-  );
-}
-
-function MenuItemContent(props: MenuItemProps) {
-  const className = classNames(menuItemClass, {
+function menuItemClassNames(props: MenuItemProps) {
+  return classNames(menuItemClass, {
     "hover:text-content-base": !props.danger,
     "hover:text-content-error": props.danger,
   });
-
-  if (props.linkTo) {
-    return (
-      <DivLink to={props.linkTo} className={className} data-test-id={props.testId}>
-        {React.createElement(props.icon, { size: 20 })}
-        {props.children}
-      </DivLink>
-    );
-  } else {
-    return (
-      <div className={className} data-test-id={props.testId}>
-        {React.createElement(props.icon, { size: 20 })}
-        {props.children}
-      </div>
-    );
-  }
 }
