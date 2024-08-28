@@ -48,7 +48,10 @@
   text-underline-offset: 2px;
 }
 
-.ProseMirror > ul:first-child, ul:last-child, ol:first-child, ol:last-child {
+.ProseMirror > ul:first-child, 
+.ProseMirror > ul:last-child, 
+.ProseMirror > ol:first-child, 
+.ProseMirror > ol:last-child {
   margin-top: 0;
   margin-bottom: 0;
 }

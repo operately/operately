@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as Icons from "@tabler/icons-react";
 
-import { Menu, MenuItem } from "@/components/Menu";
+import { Menu, MenuLinkItem } from "@/components/Menu";
 import { Section, SectionTitle } from "./Section";
 
 export function Menus() {
@@ -20,8 +20,12 @@ export function Menus() {
           <div>Simple menu</div>
           <div>
             <Menu>
-              <MenuItem icon={Icons.IconEdit}>Edit</MenuItem>
-              <MenuItem icon={Icons.IconCopy}>Copy</MenuItem>
+              <MenuLinkItem to="" icon={Icons.IconEdit}>
+                Edit
+              </MenuLinkItem>
+              <MenuLinkItem to="" icon={Icons.IconCopy}>
+                Copy
+              </MenuLinkItem>
             </Menu>
           </div>
         </div>
@@ -30,10 +34,12 @@ export function Menus() {
           <div>Dangerous menu items</div>
           <div>
             <Menu>
-              <MenuItem icon={Icons.IconEdit}>Edit</MenuItem>
-              <MenuItem icon={Icons.IconTrash} danger>
+              <MenuLinkItem to="" icon={Icons.IconEdit}>
+                Edit
+              </MenuLinkItem>
+              <MenuLinkItem to="" icon={Icons.IconTrash} danger>
                 Delete
-              </MenuItem>
+              </MenuLinkItem>
             </Menu>
           </div>
         </div>
