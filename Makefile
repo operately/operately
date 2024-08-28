@@ -26,6 +26,10 @@ gen.activity:
 	./devenv mix operately.gen.activity.type $(NAME) $(FIELDS)
 	$(MAKE) gen
 
+js.fmt.fix:
+	./devenv bash -c "cd assets && npx prettier --write js"
+
+
 #
 # Development tasks
 #
@@ -155,8 +159,8 @@ test.tsc.lint:
 test.pr.name:
 	ruby scripts/pr-name-check
 
-test.prettier.check:
-	./devenv bash -c "cd assets && npm run prettier:check"
+test.js.fmt.check:
+	./devenv bash "./scripts/prettier-check.sh"
 
 test.seed.env:
 	touch .env
