@@ -50,7 +50,7 @@ function Question({ title, editor, error }) {
   return (
     <div className="" data-test-id={testId}>
       <h2 className="text-content-accent text font-bold mb-1">{title}</h2>
-      {error && <div className="text-sm text-red-500 mb-2 font-medium">Please fill in this field</div>}
+      {error && <div className="text-sm text-content-error mb-2 font-medium">Please fill in this field</div>}
 
       <div className="border-x border-stroke-base">
         <TipTapEditor.Root editor={editor}>

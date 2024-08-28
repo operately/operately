@@ -76,7 +76,7 @@ function DueDate({ date }: { date: string }) {
       <b>
         <FormattedTime time={date} format="short-date" />
       </b>
-      <span className={`text-sm ${isRed ? "text-red-500" : "text-content-dimmed"}`}>{daysAgo}</span>
+      <span className={`text-sm ${isRed ? "text-content-error" : "text-content-dimmed"}`}>{daysAgo}</span>
     </div>
   );
 }

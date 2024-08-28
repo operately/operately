@@ -62,7 +62,7 @@ function Header({ form }: { form: FormState }) {
       </Paper.Header>
 
       {form.errors.length > 0 && (
-        <div className="text-red-500 text-sm font-medium text-center mb-4">Please fill out all fields</div>
+        <div className="text-content-error text-sm font-medium text-center mb-4">Please fill out all fields</div>
       )}
     </div>
   );

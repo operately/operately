@@ -212,7 +212,7 @@ function Submit({ goal, form }: { goal: Goals.Goal; form: Form }) {
 function Error({ form }: { form: Form }) {
   if (!form.error) return null;
 
-  return <div className="mb-2 text-red-500 font-medium">{form.error.message}</div>;
+  return <div className="mb-2 text-content-error font-medium">{form.error.message}</div>;
 }
 
 function WhoWillBeNotified({ goal, me }: { goal: Goals.Goal; me: People.Person }) {
