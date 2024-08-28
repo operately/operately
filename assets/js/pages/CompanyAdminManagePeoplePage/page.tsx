@@ -2,7 +2,6 @@ import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as People from "@/models/people";
-import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import * as Icons from "@tabler/icons-react";
 
 import { useLoadedData } from "./loader";
@@ -109,7 +108,6 @@ function PersonRow({ person }: { person: People.Person }) {
 
       <div className="flex gap-2 items-center">
         {person.hasOpenInvitation && <div className="text-content-dimmed text-sm mr-2">Expires in 6 hours</div>}
-        <PersonActions person={person} />
         <PersonOptions person={person} />
       </div>
     </div>
@@ -132,15 +130,17 @@ function PersonInfo({ person }: { person: People.Person }) {
   );
 }
 
-function PersonActions({ person }: { person: People.Person }) {
-  return (
-    <div>
-      <FilledButton linkTo="/" size="xs" type="secondary" testId="edit-profile-link">
-        Edit Profile
-      </FilledButton>
-    </div>
-  );
-}
+// <PersonActions person={person} />
+
+// function PersonActions({ person }: { person: People.Person }) {
+//   return (
+//     <div>
+//       <FilledButton linkTo="/" size="xs" type="secondary" testId="edit-profile-link">
+//         Edit Profile
+//       </FilledButton>
+//     </div>
+//   );
+// }
 
 function PersonOptions({ person }: { person: People.Person }) {
   return (
