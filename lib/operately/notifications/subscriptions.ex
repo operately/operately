@@ -10,6 +10,10 @@ defmodule Operately.Notifications.Subscriptions do
     timestamps()
   end
 
+  def changeset(attrs) do
+    changeset(%__MODULE__{}, attrs)
+  end
+
   def changeset(subscriptions, attrs) do
     subscriptions
     |> cast(attrs, [:type, :subscription_list_id, :person_id])

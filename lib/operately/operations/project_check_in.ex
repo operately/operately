@@ -5,17 +5,29 @@ defmodule Operately.Operations.ProjectCheckIn do
   alias Operately.Activities
   alias Operately.Projects.Project
   alias Operately.Projects.CheckIn
+  alias Operately.Notifications.{SubscriptionList, Subscriptions}
 
-  def run(author, project, status, description) do
+  def run(author, project, attrs) do
     next_check_in = Operately.Time.calculate_next_check_in(project.next_check_in_scheduled_at, DateTime.utc_now())
 
     Multi.new()
-    |> Multi.insert(:check_in, fn _ ->
+    |> Multi.insert(:subscription_list, SubscriptionList.changeset(%{
+      send_to_everyone: attrs[:send_notifications_to_everyone] || false,
+    }))
+    |> insert_subscriptions(attrs.subscribers_ids)
+    |> Multi.insert(:check_in, fn changes ->
       CheckIn.changeset(%{
         author_id: author.id,
         project_id: project.id,
-        status: status,
-        description: description,
+        status: attrs.status,
+        description: attrs.description,
+        subscription_list_id: changes.subscription_list.id,
+      })
+    end)
+    |> Multi.update(:updated_subscription_list, fn changes ->
+      SubscriptionList.changeset(changes.subscription_list, %{
+        parent_type: :project_check_in,
+        parent_id: changes.check_in.id,
       })
     end)
     |> Multi.update(:project, fn changes ->
@@ -41,5 +53,19 @@ defmodule Operately.Operations.ProjectCheckIn do
 
       error -> error
     end
+  end
+
+  defp insert_subscriptions(multi, subscribers_ids) do
+    Enum.reduce(subscribers_ids, multi, fn id, multi ->
+      name = "subscription_" <> id
+
+      Multi.insert(multi, name, fn changes ->
+        Subscriptions.changeset(%{
+          subscription_list_id: changes.subscription_list.id,
+          person_id: id,
+          type: :invited,
+        })
+      end)
+    end)
   end
 end
