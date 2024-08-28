@@ -42,11 +42,7 @@ export function SubscribersSelector() {
           onClick={() => setShowSelector(true)}
         />
 
-        <SubscriptionOption
-          label="No one"
-          value={Options.NONE}
-          people={[]}
-        />
+        <SubscriptionOption label="No one" value={Options.NONE} people={[]} />
       </RadioGroup>
 
       <SelectorModal showSelector={showSelector} setShowSelector={setShowSelector} />
