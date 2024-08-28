@@ -45,7 +45,7 @@ export function Menu(props: MenuProps) {
 
 export function MenuLinkItem(props: MenuLinkItemProps) {
   return (
-    <DropdownMenu.Item asChild>
+    <DropdownMenu.Item>
       <DivLink to={props.to} className={menuItemClassNames(props)} testId={props.testId}>
         <MenuItemIconAndTitle icon={props.icon}>{props.children}</MenuItemIconAndTitle>
       </DivLink>

@@ -9,10 +9,12 @@ import { Paths } from "@/routes/paths";
 import { FilledButton } from "@/components/Button";
 import { BlackLink } from "@/components/Link";
 import { Menu, MenuLinkItem, MenuActionItem } from "@/components/Menu";
+import { CopyToClipboard } from "@/components/CopyToClipboard";
 
 import Avatar from "@/components/Avatar";
 import Modal, { ModalState, useModalState } from "@/components/Modal";
 import { createTestId } from "@/utils/testid";
+import { useMe } from "@/contexts/CurrentUserContext";
 
 interface LoaderResult {
   company: Companies.Company;
@@ -152,33 +154,52 @@ function PersonInfo({ person }: { person: People.Person }) {
 }
 
 function PersonOptions({ person }: { person: People.Person }) {
-  const removePersonModalState = useModalState(false);
-
-  const menuTestId = createTestId("person-options", person.id!);
-  const removeTestId = createTestId("remove-person", person.id!);
-
+  const testId = createTestId("person-options", person.id!);
   const size = person.hasOpenInvitation ? "medium" : "small";
+
+  const removeModal = useModalState();
+  const reissueModal = useModalState();
 
   return (
     <>
-      <RemovePersonModal person={person} state={removePersonModalState} />
+      <RemovePersonModal person={person} state={removeModal} />
+      <ReissueInvitationModal person={person} state={reissueModal} />
 
-      <Menu testId={menuTestId} size={size}>
-        <MenuLinkItem icon={Icons.IconId} testId="view-profile" to={Paths.profilePath(person.id!)}>
-          View Profile
-        </MenuLinkItem>
-
-        {person.hasOpenInvitation && (
-          <MenuActionItem icon={Icons.IconRefresh} onClick={removePersonModalState.show} danger testId={removeTestId}>
-            Regenerate Invitation
-          </MenuActionItem>
-        )}
-
-        <MenuActionItem icon={Icons.IconTrash} onClick={removePersonModalState.show} danger testId={removeTestId}>
-          Remove
-        </MenuActionItem>
+      <Menu testId={testId} size={size}>
+        <PersonOptionViewProfile person={person} />
+        <PersonOptionReissueInvitation person={person} onClick={reissueModal.show} />
+        <PersonOptionRemove person={person} onClick={removeModal.show} />
       </Menu>
     </>
+  );
+}
+
+function PersonOptionViewProfile({ person }: { person: People.Person }) {
+  return (
+    <MenuLinkItem icon={Icons.IconId} testId="view-profile" to={Paths.profilePath(person.id!)}>
+      View Profile
+    </MenuLinkItem>
+  );
+}
+
+function PersonOptionReissueInvitation({ person, onClick }: { person: People.Person; onClick: () => void }) {
+  if (!person.hasOpenInvitation) return null;
+
+  return (
+    <MenuActionItem icon={Icons.IconRefresh} onClick={onClick} testId={createTestId("reissue-token", person.id!)}>
+      Re-Issue Invitation
+    </MenuActionItem>
+  );
+}
+
+function PersonOptionRemove({ person, onClick }: { person: People.Person; onClick: () => void }) {
+  const me = useMe();
+  if (me!.id === person.id) return null;
+
+  return (
+    <MenuActionItem icon={Icons.IconTrash} onClick={onClick} danger testId={createTestId("remove-person", person.id!)}>
+      Remove
+    </MenuActionItem>
   );
 }
 
@@ -200,5 +221,64 @@ function RemovePersonModal({ person, state }: { person: People.Person; state: Mo
         </FilledButton>
       </div>
     </Modal>
+  );
+}
+
+function ReissueInvitationModal(props: { person: People.Person; state: ModalState }) {
+  const [isGenerated, setGenerated] = React.useState(false);
+  const [url, setUrl] = React.useState("");
+  const [create, { loading }] = Companies.useNewInvitationToken();
+
+  const generate = async () => {
+    const res = await create({ personId: props.person.id! });
+    const result = Companies.createInvitationUrl(res.invitation!.token!);
+
+    setUrl(result);
+    setGenerated(true);
+  };
+
+  return (
+    <>
+      <Modal
+        title="Re-generate the invitation URL"
+        isOpen={props.state.isOpen}
+        hideModal={props.state.hide}
+        minHeight="120px"
+        width="800px"
+      >
+        <div>
+          By clicking the button below:
+          <ul className="list-disc list-inside mt-2 block">
+            <li>A new invitation URL will be generated for {props.person.fullName}.</li>
+            <li>The previous URL will no longer be valid.</li>
+          </ul>
+        </div>
+
+        {!isGenerated && <NewInvitationButton onClick={generate} loading={loading} />}
+        {isGenerated && <NewInvitationUrl url={url} person={props.person} />}
+      </Modal>
+    </>
+  );
+}
+
+function NewInvitationButton({ onClick, loading }: { onClick: () => void; loading: boolean }) {
+  return (
+    <div className="flex items-center mt-4">
+      <FilledButton onClick={onClick} loading={loading} type="primary" testId="confirm-reissue">
+        I understand, Create New Invitation
+      </FilledButton>
+    </div>
+  );
+}
+
+function NewInvitationUrl({ url, person }: { url: string; person: People.Person }) {
+  return (
+    <>
+      <div className="mt-4">Share this URL with {person.fullName} to invite them to the company:</div>
+      <div className="text-content-primary border border-surface-outline rounded-lg px-3 py-1 font-medium flex items-center justify-between mt-2">
+        <span className="break-all">{url}</span>
+        <CopyToClipboard text={url} size={25} padding={1} containerClass="" />
+      </div>
+    </>
   );
 }

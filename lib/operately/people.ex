@@ -17,7 +17,7 @@ defmodule Operately.People do
     Repo.one!(from p in Person, where: p.account_id == ^account.id and p.company_id == ^company.id)
   end
 
-  def get_person_by_name!(company, name) do
+  def get_person_by_name!(company = %Company{}, name) do
     Repo.one!(from p in Person, where: p.full_name == ^name and p.company_id == ^company.id)
   end
 

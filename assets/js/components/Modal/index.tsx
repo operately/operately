@@ -10,8 +10,8 @@ export interface ModalState {
   hide: () => void;
 }
 
-export function useModalState(initial: boolean): ModalState {
-  const [isOpen, setIsOpen] = React.useState<boolean>(initial);
+export function useModalState(initial?: boolean): ModalState {
+  const [isOpen, setIsOpen] = React.useState<boolean>(initial || false);
 
   const showModal = () => setIsOpen(true);
   const hideModal = () => setIsOpen(false);
@@ -19,7 +19,7 @@ export function useModalState(initial: boolean): ModalState {
   return { isOpen, show: showModal, hide: hideModal };
 }
 
-export default function Modal({ isOpen, hideModal, title, children, minHeight = "600px" }) {
+export default function Modal({ isOpen, hideModal, title, children, minHeight = "600px", width = "600px" }) {
   const mode = useColorMode();
 
   return (
@@ -42,7 +42,7 @@ export default function Modal({ isOpen, hideModal, title, children, minHeight = 
           left: "50%",
           right: "auto",
           bottom: "auto",
-          width: "600px",
+          width: width,
           height: "auto",
           transform: "translate(-50%, -50%)",
           borderRadius: "8px",
@@ -55,7 +55,7 @@ export default function Modal({ isOpen, hideModal, title, children, minHeight = 
         },
       }}
     >
-      <div className="flex items-center justify-between mb-4 text-lg -mx-5 px-5 -mt-5 py-3">
+      <div className="flex items-center justify-between text-lg -mx-5 px-5 -mt-5 py-3">
         <h1 className="font-bold">{title}</h1>
 
         <div
