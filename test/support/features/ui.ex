@@ -381,7 +381,13 @@ defmodule Operately.Support.Features.UI do
     end)
   end
 
-  def str_to_testid(str) do
+  def testid(parts) when is_list(parts) do
+    parts
+    |> Enum.map(&testid/1)
+    |> Enum.join("-")
+  end
+
+  def testid(str) do
     str
     |> String.downcase()
     |> String.replace(~r/[^a-z0-9]/, "-")
