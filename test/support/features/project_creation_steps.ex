@@ -79,7 +79,7 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
     |> run_if(fields[:goal], fn ctx ->
       ctx
       |> UI.click(testid: "goal-selector")
-      |> UI.click(testid: UI.str_to_testid("goal-" <> fields.goal.name))
+      |> UI.click(testid: UI.testid(["goal", fields.goal.name]))
     end)
     |> run_if(fields[:add_creator_as_contributor], fn ctx ->
       ctx

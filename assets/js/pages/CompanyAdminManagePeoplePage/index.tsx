@@ -1,2 +1,196 @@
-export { loader } from "./loader";
-export { Page } from "./page";
+import * as React from "react";
+import * as Paper from "@/components/PaperContainer";
+import * as Pages from "@/components/Pages";
+import * as People from "@/models/people";
+import * as Icons from "@tabler/icons-react";
+import * as Companies from "@/models/companies";
+
+import { Paths } from "@/routes/paths";
+import { FilledButton } from "@/components/Button";
+import { BlackLink } from "@/components/Link";
+import { Menu, MenuLinkItem, MenuActionItem } from "@/components/Menu";
+
+import Avatar from "@/components/Avatar";
+import Modal, { ModalState, useModalState } from "@/components/Modal";
+import { createTestId } from "@/utils/testid";
+
+interface LoaderResult {
+  company: Companies.Company;
+  invitedPeople: People.Person[];
+  currentMembers: People.Person[];
+}
+
+export async function loader({ params }): Promise<LoaderResult> {
+  const company = await Companies.getCompany({ id: params.companyId, includePeople: true }).then((d) => d.company!);
+
+  return {
+    company: company,
+    invitedPeople: People.sortByName(company.people!.filter((person) => person!.hasOpenInvitation)),
+    currentMembers: People.sortByName(company.people!.filter((person) => !person!.hasOpenInvitation)),
+  };
+}
+
+export function useLoadedData(): LoaderResult {
+  return Pages.useLoadedData() as LoaderResult;
+}
+
+export function Page() {
+  const { company } = useLoadedData();
+
+  return (
+    <Pages.Page title={["Manage Team Members", company.name!]}>
+      <Paper.Root size="large">
+        <Navigation />
+
+        <Paper.Body>
+          <Header />
+          <InvitationList />
+          <MemberList />
+        </Paper.Body>
+      </Paper.Root>
+    </Pages.Page>
+  );
+}
+
+function Navigation() {
+  return (
+    <Paper.Navigation>
+      <Paper.NavItem linkTo={Paths.companyAdminPath()}>Company Administration</Paper.NavItem>
+    </Paper.Navigation>
+  );
+}
+
+function Header() {
+  return (
+    <div className="flex items-center justify-between">
+      <Title />
+      <AddMemberButton />
+    </div>
+  );
+}
+
+function Title() {
+  return (
+    <div>
+      <div className="text-content-accent text-3xl font-extrabold leading-none">Manage Team Members</div>
+      <div className="mt-2">Add new team members, update profiles, or remove access as needed.</div>
+    </div>
+  );
+}
+
+function AddMemberButton() {
+  return (
+    <FilledButton type="primary" linkTo={Paths.companyManagePeopleAddPeoplePath()} testId="add-person">
+      Add Team Member
+    </FilledButton>
+  );
+}
+
+function InvitationList() {
+  const { invitedPeople } = useLoadedData();
+  if (invitedPeople.length === 0) return null;
+
+  return (
+    <div>
+      <div className="font-bold text-2xl mb-6 mt-12">Invitations Awaiting Response</div>
+      <PeopleList people={invitedPeople} />
+    </div>
+  );
+}
+
+function MemberList() {
+  const { currentMembers } = useLoadedData();
+  if (currentMembers.length === 0) return null;
+
+  return (
+    <div>
+      <div className="font-bold text-2xl mb-6 mt-12">Current Team Members</div>
+      <PeopleList people={currentMembers} />
+    </div>
+  );
+}
+
+function PeopleList({ people }: { people: People.Person[] }) {
+  return (
+    <div>
+      {people.map((person) => (
+        <PersonRow key={person.id!} person={person} />
+      ))}
+    </div>
+  );
+}
+
+function PersonRow({ person }: { person: People.Person }) {
+  return (
+    <div className="flex items-center justify-between border-t border-stroke-dimmed py-4 last:border-b">
+      <div className="flex items-center gap-4">
+        <Avatar person={person} size={48} />
+        <PersonInfo person={person} />
+      </div>
+
+      <div className="flex gap-2 items-center">
+        <PersonOptions person={person} />
+      </div>
+    </div>
+  );
+}
+
+function PersonInfo({ person }: { person: People.Person }) {
+  return (
+    <div>
+      <BlackLink to={Paths.profilePath(person.id!)} className="font-bold" underline="hover">
+        {person.fullName}
+      </BlackLink>
+
+      <div className="text-content-dimmed text-sm">
+        <span className="text-sm">{person.title}</span>
+        <span className="text-sm"> &middot; </span>
+        <span className="break-all mt-0.5">{person.email}</span>
+      </div>
+    </div>
+  );
+}
+
+function PersonOptions({ person }: { person: People.Person }) {
+  const removePersonModalState = useModalState(false);
+
+  const menuTestId = createTestId("person-options", person.id!);
+  const removeTestId = createTestId("remove-person", person.id!);
+
+  return (
+    <>
+      <RemovePersonModal person={person} state={removePersonModalState} />
+
+      <Menu testId={menuTestId}>
+        <MenuLinkItem icon={Icons.IconId} testId="view-profile" to={Paths.profilePath(person.id!)}>
+          View Profile
+        </MenuLinkItem>
+
+        <MenuActionItem icon={Icons.IconTrash} onClick={removePersonModalState.show} danger testId={removeTestId}>
+          Remove
+        </MenuActionItem>
+      </Menu>
+    </>
+  );
+}
+
+function RemovePersonModal({ person, state }: { person: People.Person; state: ModalState }) {
+  const refresh = Pages.useRefresh();
+  const [remove, { loading }] = Companies.useRemoveCompanyMember();
+
+  const handleRemoveMember = async () => {
+    await remove({ personId: person.id });
+    refresh();
+  };
+
+  return (
+    <Modal title="Remove Company Member" isOpen={state.isOpen} hideModal={state.hide} minHeight="150px">
+      <div>Are you sure you want to remove {person.fullName} from the company?</div>
+      <div className="mt-8 flex justify-center">
+        <FilledButton onClick={handleRemoveMember} type="primary" loading={loading} testId="confirm-remove-member">
+          Remove Member
+        </FilledButton>
+      </div>
+    </Modal>
+  );
+}
