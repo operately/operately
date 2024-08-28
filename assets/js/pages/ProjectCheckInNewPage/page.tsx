@@ -5,16 +5,13 @@ import * as Paper from "@/components/PaperContainer";
 import * as Icons from "@tabler/icons-react";
 
 import { SubscriptionsProvider, findNotifiableProjectContributors } from "@/features/Subscriptions";
-import { Form, useForm } from "@/features/projectCheckIns/Form";
+import * as Forms from "@/features/projectCheckIns/Form";
 import { useLoadedData } from "./loader";
 import { Paths } from "@/routes/paths";
 import { useMe } from "@/contexts/CurrentUserContext";
 
 export function Page() {
-  const me = useMe()!;
   const { project } = useLoadedData();
-
-  const form = useForm({ project, mode: "create", author: me });
   const people = findNotifiableProjectContributors(project);
 
   return (
@@ -24,12 +21,20 @@ export function Page() {
 
         <Paper.Body>
           <SubscriptionsProvider people={people}>
-            <Form form={form} />
+            <Form />
           </SubscriptionsProvider>
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
   );
+}
+
+function Form() {
+  const me = useMe()!;
+  const { project } = useLoadedData();
+  const form = Forms.useForm({ project, mode: "create", author: me });
+
+  return <Forms.Form form={form} />;
 }
 
 function Navigation({ project }) {
