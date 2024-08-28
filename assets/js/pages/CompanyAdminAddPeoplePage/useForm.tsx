@@ -2,7 +2,6 @@ import { useCallback, useState } from "react";
 import * as Companies from "@/models/companies";
 
 import { camelCaseToSpacedWords } from "@/utils/strings";
-import { createInvitationUrl } from "@/features/CompanyAdmin";
 
 interface FormState {
   fields: FormFields;
@@ -77,7 +76,7 @@ function useSubmit(fields: FormFields) {
 
     try {
       const res = await add({ fullName: fields.fullName, email: fields.email, title: fields.title! });
-      const url = createInvitationUrl(res.invitation!.token!);
+      const url = Companies.createInvitationUrl(res.invitation!.token!);
 
       setResult(url);
     } catch (e) {

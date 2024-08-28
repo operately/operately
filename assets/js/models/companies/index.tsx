@@ -17,3 +17,7 @@ export {
 export function hasFeature(company: Company, feature: string): boolean {
   return company.enabledExperimentalFeatures!.includes(feature);
 }
+
+export function createInvitationUrl(token: string) {
+  return `${window.location.protocol}//${window.location.host}/join?token=${token}`;
+}
