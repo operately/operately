@@ -1,3 +1,5 @@
+import * as ProfileEditPage from "@/pages/ProfileEditPage";
+
 export class Paths {
   static lobbyPath() {
     return "/";
@@ -35,8 +37,14 @@ export class Paths {
     return createCompanyPath(["review"]);
   }
 
-  static accountProfilePath() {
-    return createCompanyPath(["account", "profile"]);
+  static profileEditPath(personId: string, params?: { from: ProfileEditPage.FromLocation }) {
+    const path = createCompanyPath(["people", personId, "profile", "edit"]);
+
+    if (params?.from) {
+      return path + "?from=" + params.from;
+    } else {
+      return path;
+    }
   }
 
   static accountAppearancePath() {

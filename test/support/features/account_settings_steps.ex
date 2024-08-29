@@ -19,7 +19,7 @@ defmodule Operately.Support.Features.AccountSettingsSteps do
     |> UI.visit(Paths.account_path(ctx.company))
     |> UI.click(testid: "appearance-link")
     |> UI.click(testid: "color-mode-#{theme}")
-    |> UI.click(testid: "save")
+    |> UI.click(testid: "submit")
     |> UI.assert_has(testid: "my-account-page")
   end
 

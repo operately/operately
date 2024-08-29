@@ -3,7 +3,7 @@ import Api, { GetMeInput } from "@/api";
 
 export type Person = api.Person;
 
-export { useGetMe, getPerson, getPeople, updateMyProfile } from "@/api";
+export { useGetMe, getPerson, getPeople, updateProfile } from "@/api";
 
 export const getMe = async (input: GetMeInput) => {
   const res = await Api.getMe(input);
