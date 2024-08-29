@@ -13,7 +13,7 @@ import { useSubscriptions, SubscriptionsState, Options } from "@/features/Subscr
 interface UseFormOptions {
   mode: "create" | "edit";
   author: People.Person;
-  notifiablePeople: People.Person[];
+  notifiablePeople?: People.Person[];
 
   project?: Projects.Project;
   checkIn?: ProjectCheckIns.ProjectCheckIn;
@@ -49,7 +49,7 @@ export interface FormState {
 
 export function useForm({ mode, project, checkIn, author, notifiablePeople }: UseFormOptions): FormState {
   const navigate = useNavigate();
-  const subscriptionsState = useSubscriptions(notifiablePeople);
+  const subscriptionsState = useSubscriptions(notifiablePeople || []);
 
   const [status, setStatus] = React.useState<string | null>(mode === "edit" ? checkIn!.status! : null);
   const [errors, setErrors] = React.useState<Error[]>([]);

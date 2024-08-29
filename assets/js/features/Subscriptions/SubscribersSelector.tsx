@@ -1,13 +1,14 @@
 import React, { useState, useMemo, createContext } from "react";
 
+import { Project } from "@/models/projects";
 import { RadioGroup } from "@/components/Form";
+import { SubscriptionOption } from "./SubscriptionOption";
 import { SubscribersSelectorModal } from "./SubscribersSelectorModal";
 import { SubscriptionsState, Options } from ".";
-import { SubscriptionOption } from "./SubscriptionOption";
 
 export const SubscriptionsContext = createContext<SubscriptionsState | undefined>(undefined);
 
-export function SubscribersSelector({ state, labelSuffix }: { state: SubscriptionsState; labelSuffix: string }) {
+export function SubscribersSelector({ state, project }: { state: SubscriptionsState; project: Project }) {
   const [showSelector, setShowSelector] = useState(false);
   const { people, selectedPeople, subscriptionType, setSubscriptionType } = state;
 
@@ -29,7 +30,9 @@ export function SubscribersSelector({ state, labelSuffix }: { state: Subscriptio
 
         <RadioGroup name="subscriptions-options" onChange={setSubscriptionType} defaultValue={subscriptionType}>
           <SubscriptionOption
-            label={`All ${people.length} people who are ${labelSuffix}`}
+            label={
+              (people.length > 1 ? `All ${people.length} people` : "The 1 person") + ` contributing to ${project.name}`
+            }
             value={Options.ALL}
             people={people}
           />
