@@ -39,10 +39,23 @@ defmodule Operately.Support.Features.UI do
   def new_session(state) do
     execute(state, fn _ ->
       metadata = Phoenix.Ecto.SQL.Sandbox.metadata_for(Operately.Repo, self())
-      {:ok, session} = Wallaby.start_session([metadata: metadata])
-
+      {:ok, session} = Wallaby.start_session([metadata: metadata, window_size: [width: 1920, height: 2000]])
       session
-      |> Wallaby.Browser.resize_window(1920, 2000)
+    end)
+  end
+
+  def logout(state) do
+    execute(state, fn session ->
+      cookies = Wallaby.Browser.cookies(session)
+
+      # Before we clear the session cookie, we need to check if the cookies are empty.
+      # Calling set_cookie if the cookies are empty will cause an error.
+
+      if cookies != [] do
+        Wallaby.Browser.set_cookie(state.session, "_operately_key", "")
+      else
+        session
+      end
     end)
   end
 
@@ -50,20 +63,9 @@ defmodule Operately.Support.Features.UI do
     path = URI.encode("/accounts/auth/test_login?email=#{person.email}&full_name=#{person.full_name}")
 
     state
-    |> end_session()
-    |> new_session()
+    |> logout()
     |> visit(path)
     |> assert_has(testid: "company-home")
-  end
-
-  def end_session(state) do
-    if state[:session] do
-      execute(state, fn session ->
-        Wallaby.end_session(session)
-      end)
-    else
-      state
-    end
   end
 
   def get_account() do
