@@ -90,7 +90,7 @@ defmodule Operately.Support.Features.InviteMemberSteps do
 
   step :goto_invitation_page, ctx do
     ctx
-    |> UI.new_session()
+    |> UI.logout()
     |> UI.visit("/join?token=#{ctx.token}")
     |> UI.assert_text("Welcome to Operately")
     |> UI.assert_text("Choose a password")
