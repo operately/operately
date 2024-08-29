@@ -4,7 +4,7 @@ defmodule OperatelyWeb.Api do
   plug OperatelyWeb.Api.Plugs.RequireAuthenticatedAccount, except: [
     {:query, :get_invitation},
     {:mutation, :add_first_company},
-    {:mutation, :change_password_first_time}
+    {:mutation, :join_company}
   ]
 
   use_types OperatelyWeb.Api.Types
@@ -60,7 +60,6 @@ defmodule OperatelyWeb.Api do
   mutation :archive_goal, M.ArchiveGoal
   mutation :archive_project, M.ArchiveProject
   mutation :change_goal_parent, M.ChangeGoalParent
-  mutation :change_password_first_time, M.ChangePasswordFirstTime
   mutation :change_task_description, M.ChangeTaskDescription
   mutation :close_goal, M.CloseGoal
   mutation :close_project, M.CloseProject
@@ -88,6 +87,7 @@ defmodule OperatelyWeb.Api do
   mutation :edit_space_members_permissions, M.EditSpaceMembersPermissions
   mutation :edit_space_permissions, M.EditSpacePermissions
   mutation :join_space, M.JoinSpace
+  mutation :join_company, M.JoinCompany
   mutation :mark_all_notifications_as_read, M.MarkAllNotificationsAsRead
   mutation :mark_notification_as_read, M.MarkNotificationAsRead
   mutation :move_project_to_space, M.MoveProjectToSpace

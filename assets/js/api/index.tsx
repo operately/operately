@@ -646,7 +646,6 @@ export interface GoalTargetUpdates {
 
 export interface Invitation {
   id?: string | null;
-  adminName?: string | null;
   admin?: Person | null;
   member?: Person | null;
   company?: Company | null;
@@ -1243,6 +1242,7 @@ export interface GetNotificationsResult {
 export interface GetPeopleInput {
   includeSuspended?: boolean | null;
   includeManager?: boolean | null;
+  includeInvitations?: boolean | null;
 }
 
 export interface GetPeopleResult {

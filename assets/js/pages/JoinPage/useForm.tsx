@@ -50,7 +50,7 @@ function useSubmit(fields: FormFields) {
   const { invitation, token } = useLoadedData();
   const [errors, setErrors] = useState<FormError[]>([]);
 
-  const [add, { loading: submitting }] = Accounts.useChangePasswordFirstTime();
+  const [add, { loading: submitting }] = Accounts.useJoinCompany();
 
   const submit = async () => {
     let errors = validate(fields);
