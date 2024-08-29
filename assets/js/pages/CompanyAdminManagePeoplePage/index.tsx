@@ -40,7 +40,7 @@ export function Page() {
   const { company } = useLoadedData();
 
   return (
-    <Pages.Page title={["Manage Team Members", company.name!]}>
+    <Pages.Page title={["Manage Team Members", company.name!]} testId="manage-people-page">
       <Paper.Root size="large">
         <Navigation />
 

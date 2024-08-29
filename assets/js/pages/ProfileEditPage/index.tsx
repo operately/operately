@@ -91,7 +91,11 @@ function ProfileForm({ person }: { person: People.Person }) {
         managerId: managerId,
       });
 
-      navigate(Paths.accountPath());
+      if (me.id === person.id) {
+        navigate(Paths.accountPath());
+      } else {
+        navigate(Paths.companyManagePeoplePath());
+      }
     },
   });
 
