@@ -38,7 +38,7 @@ function PersonOption({ person, field }: { person: Person; field: string }) {
           <p className="text-sm">{person.title}</p>
         </div>
         <input
-          checked={value.includes(person)}
+          checked={value.map((p) => p.id).includes(person.id)}
           onChange={handleChange}
           type="checkbox"
           className="form-checkbox h-5 w-5 text-blue-600 rounded focus:ring-blue-500"

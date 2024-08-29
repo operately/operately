@@ -4,6 +4,7 @@ defmodule Operately.Projects.CheckIn do
   schema "project_check_ins" do
     belongs_to :author, Operately.People.Person, foreign_key: :author_id
     belongs_to :project, Operately.Projects.Project, foreign_key: :project_id, where: [deleted_at: nil]
+    belongs_to :subscription_list, Operately.Notifications.SubscriptionList, foreign_key: :subscription_list_id
 
     field :status, :string
     field :description, :map
@@ -25,7 +26,7 @@ defmodule Operately.Projects.CheckIn do
 
   def changeset(project, attrs) do
     project
-    |> cast(attrs, [:author_id, :project_id, :description, :status, :acknowledged_by_id, :acknowledged_at])
-    |> validate_required([:author_id, :project_id, :description, :status])
+    |> cast(attrs, [:author_id, :project_id, :description, :status, :acknowledged_by_id, :acknowledged_at, :subscription_list_id])
+    |> validate_required([:author_id, :project_id, :description, :status, :subscription_list_id])
   end
 end
