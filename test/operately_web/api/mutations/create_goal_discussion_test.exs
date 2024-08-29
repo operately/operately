@@ -11,7 +11,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoalDiscussionTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, :update_my_profile, %{})
+      assert {401, _} = mutation(ctx.conn, :create_goal_discussion, %{})
     end
   end
 
