@@ -64,7 +64,7 @@ defmodule Operately.Notifications do
     end)
 
     Multi.new()
-    |> Multi.run(:notifications, fn repo, _ -> 
+    |> Multi.run(:notifications, fn repo, _ ->
       {_, notifications} = repo.insert_all(Notification, notifications, returning: [:id, :should_send_email, :person_id])
       {:ok, notifications}
     end)
@@ -81,7 +81,7 @@ defmodule Operately.Notifications do
     end)
     |> Repo.transaction()
     |> case do
-      {:ok, %{notifications: notifications}} -> 
+      {:ok, %{notifications: notifications}} ->
         unique_person_ids = Enum.uniq(Enum.map(notifications, &(&1.person_id)))
 
         Enum.each(unique_person_ids, fn person_id ->
@@ -89,7 +89,7 @@ defmodule Operately.Notifications do
         end)
 
         {:ok, notifications}
-      {:error, _} -> 
+      {:error, _} ->
         {:error, :failed_to_create_notifications}
     end
   end
@@ -100,5 +100,24 @@ defmodule Operately.Notifications do
       select: count(n.id)
 
     Repo.one(query)
+  end
+
+  alias Operately.Notifications.SubscriptionList
+
+  def get_subscription_list!(id) when is_binary(id) , do: Repo.get!(SubscriptionList, id)
+  def get_subscription_list!(attrs) when is_list(attrs), do: Repo.get_by!(SubscriptionList, attrs)
+
+  def create_subscription_list(attrs \\ %{}) do
+    %SubscriptionList{}
+    |> SubscriptionList.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  alias Operately.Notifications.Subscriptions
+
+  def list_subscriptions(%SubscriptionList{} = subscription_list), do: list_subscriptions(subscription_list.id)
+  def list_subscriptions(subscription_list_id) do
+    from(s in Subscriptions, where: s.subscription_list_id == ^subscription_list_id)
+    |> Repo.all()
   end
 end

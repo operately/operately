@@ -4,6 +4,7 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Icons from "@tabler/icons-react";
 
+import { findNotifiableProjectContributors } from "@/features/Subscriptions";
 import { Form, useForm } from "@/features/projectCheckIns/Form";
 import { useLoadedData } from "./loader";
 import { Paths } from "@/routes/paths";
@@ -13,7 +14,8 @@ export function Page() {
   const me = useMe()!;
   const { project } = useLoadedData();
 
-  const form = useForm({ project, mode: "create", author: me });
+  const people = findNotifiableProjectContributors(project, me);
+  const form = useForm({ project, mode: "create", author: me, notifiablePeople: people });
 
   return (
     <Pages.Page title={["Check-In", project.name!]}>
