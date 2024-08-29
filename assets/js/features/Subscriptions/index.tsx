@@ -1,3 +1,9 @@
 export { SubscribersSelector } from "./SubscribersSelector";
-export { SubscriptionsProvider, useSubscriptionsContext, Options } from "./SubscriptionsContext";
+export { useSubscriptions, SubscriptionsState } from "./useSubscriptions";
 export { findNotifiableProjectContributors } from "./utils";
+
+export enum Options {
+  ALL = "all",
+  SELECTED = "selected",
+  NONE = "none",
+}

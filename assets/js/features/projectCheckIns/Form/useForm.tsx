@@ -8,11 +8,12 @@ import * as TipTapEditor from "@/components/Editor";
 import { useNavigate } from "react-router-dom";
 import { Paths } from "@/routes/paths";
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
-import { useSubscriptionsContext, Options } from "@/features/Subscriptions";
+import { useSubscriptions, SubscriptionsState, Options } from "@/features/Subscriptions";
 
 interface UseFormOptions {
   mode: "create" | "edit";
   author: People.Person;
+  notifiablePeople: People.Person[];
 
   project?: Projects.Project;
   checkIn?: ProjectCheckIns.ProjectCheckIn;
@@ -31,6 +32,8 @@ export interface FormState {
 
   editor: TipTapEditor.EditorState;
 
+  subscriptionsState: SubscriptionsState;
+
   status: string | null;
   setStatus: (status: string) => void;
 
@@ -44,9 +47,9 @@ export interface FormState {
   cancelPath: string;
 }
 
-export function useForm({ mode, project, checkIn, author }: UseFormOptions): FormState {
+export function useForm({ mode, project, checkIn, author, notifiablePeople }: UseFormOptions): FormState {
   const navigate = useNavigate();
-  const { selectedPeople, subscriptionType } = useSubscriptionsContext();
+  const subscriptionsState = useSubscriptions(notifiablePeople);
 
   const [status, setStatus] = React.useState<string | null>(mode === "edit" ? checkIn!.status! : null);
   const [errors, setErrors] = React.useState<Error[]>([]);
@@ -78,8 +81,8 @@ export function useForm({ mode, project, checkIn, author }: UseFormOptions): For
         projectId: project!.id!,
         status,
         description: JSON.stringify(editor.editor.getJSON()),
-        sendNotificationsToEveryone: subscriptionType == Options.ALL,
-        subscribersIds: selectedPeople.map((person) => person.id!),
+        sendNotificationsToEveryone: subscriptionsState.subscriptionType == Options.ALL,
+        subscriberIds: subscriptionsState.selectedPeople.map((person) => person.id!),
       });
 
       navigate(Paths.projectCheckInPath(res.checkIn.id));
@@ -129,6 +132,8 @@ export function useForm({ mode, project, checkIn, author }: UseFormOptions): For
 
     status,
     setStatus,
+
+    subscriptionsState,
 
     submit,
     submitting,

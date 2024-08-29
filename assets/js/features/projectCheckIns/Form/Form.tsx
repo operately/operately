@@ -21,7 +21,9 @@ export function Form({ form }: FormProps) {
       <DescriptionSection form={form} />
 
       <Spacer size={4} />
-      {form.mode === "create" && <SubscribersSelector labelSuffix={`contributors of ${form.project!.name}`} />}
+      {form.mode === "create" && (
+        <SubscribersSelector state={form.subscriptionsState} labelSuffix={`contributors of ${form.project!.name}`} />
+      )}
       {form.mode === "create" && <SubmitActions form={form} />}
     </>
   );

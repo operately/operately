@@ -1887,7 +1887,7 @@ export interface PostProjectCheckInInput {
   status?: string | null;
   description?: string | null;
   sendNotificationsToEveryone?: boolean | null;
-  subscribersIds?: string[] | null;
+  subscriberIds?: string[] | null;
 }
 
 export interface PostProjectCheckInResult {
