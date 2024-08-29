@@ -131,6 +131,7 @@ function PersonRow({ person }: { person: People.Person }) {
       </div>
 
       <div className="flex gap-2 items-center">
+        <PersonActions person={person} />
         <PersonOptions person={person} />
       </div>
     </div>
@@ -149,6 +150,21 @@ function PersonInfo({ person }: { person: People.Person }) {
         <span className="text-sm"> &middot; </span>
         <span className="break-all mt-0.5">{person.email}</span>
       </div>
+    </div>
+  );
+}
+
+function PersonActions({ person }: { person: People.Person }) {
+  return (
+    <div>
+      <FilledButton
+        type="secondary"
+        size="xs"
+        linkTo={Paths.profileEditPath(person.id!, { from: "admin-manage-people" })}
+        testId={createTestId("edit", person.id!)}
+      >
+        Edit Profile
+      </FilledButton>
     </div>
   );
 }

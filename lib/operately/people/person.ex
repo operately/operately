@@ -10,6 +10,7 @@ defmodule Operately.People.Person do
     field :peers, :any, virtual: true # loaded in a custom preload
 
     has_one :access_group, Operately.Access.Group, foreign_key: :person_id
+    has_one :access_context, through: [:company, :access_context]
 
     field :full_name, :string
     field :title, :string
@@ -31,6 +32,7 @@ defmodule Operately.People.Person do
     field :has_open_invitation, :boolean, default: false
 
     timestamps()
+    requester_access_level()
   end
 
   def changeset(attrs) do
