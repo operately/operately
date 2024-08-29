@@ -77,7 +77,7 @@ function ProfileForm({ person }: { person: People.Person }) {
       name: Forms.useTextField(person.fullName),
       title: Forms.useTextField(person.title),
       timezone: Forms.useSelectField(person.timezone, Timezones, { optional: true }),
-      manager: Forms.useSelectPersonField(person.manager, { optional: true, exclude: [me] }),
+      manager: Forms.useSelectPersonField(person.manager, { optional: true, exclude: [person] }),
       managerStatus: Forms.useSelectField(managerStatus, ManagerOptions),
     },
     submit: async (form) => {
