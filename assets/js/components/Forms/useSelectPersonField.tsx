@@ -5,10 +5,12 @@ import { Field } from "./FormState";
 
 export type SelectPersonField = Field<Person> & {
   type: "select-person";
+  exclude?: Person[];
 };
 
 interface Config {
   optional?: boolean;
+  exclude?: Person[];
 }
 
 export function useSelectPersonField(initial?: Person | null, config?: Config): SelectPersonField {
@@ -20,5 +22,13 @@ export function useSelectPersonField(initial?: Person | null, config?: Config): 
     return null;
   };
 
-  return { type: "select-person", initial, optional: config?.optional, value, setValue, validate };
+  return {
+    type: "select-person",
+    initial,
+    optional: config?.optional,
+    value,
+    setValue,
+    validate,
+    exclude: config?.exclude,
+  };
 }

@@ -109,7 +109,7 @@ defmodule OperatelyWeb.Api do
   mutation :update_group_appearance, M.UpdateGroupAppearance
   mutation :update_milestone, M.UpdateMilestone
   mutation :update_milestone_description, M.UpdateMilestoneDescription
-  mutation :update_my_profile, M.UpdateMyProfile
+  mutation :update_profile, M.UpdateProfile
   mutation :update_project_contributor, M.UpdateProjectContributor
   mutation :update_project_description, M.UpdateProjectDescription
   mutation :update_task, M.UpdateTask

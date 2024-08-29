@@ -7,6 +7,7 @@ import * as Pages from "@/components/Pages";
 import { logOut } from "@/models/people";
 import { Paths } from "@/routes/paths";
 import { BurgerActionsGroup, BurgerLink, BurgerButton } from "./BurgerActions";
+import { useMe } from "@/contexts/CurrentUserContext";
 
 export const loader = Pages.emptyLoader();
 
@@ -34,8 +35,10 @@ export function Page() {
 }
 
 function ProfileLink() {
+  const me = useMe()!;
+
   return (
-    <BurgerLink icon={Icons.IconUserCircle} to={Paths.accountProfilePath()} testId="profile-link">
+    <BurgerLink icon={Icons.IconUserCircle} to={Paths.profileEditPath(me.id!)} testId="profile-link">
       Profile
     </BurgerLink>
   );
