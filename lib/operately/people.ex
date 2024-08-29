@@ -5,6 +5,8 @@ defmodule Operately.People do
   alias Operately.Access
   alias Operately.Companies.Company
   alias Operately.People.{Person, Account}
+  alias Operately.Access.Binding
+  alias Operately.Access.Fetch
 
   def list_people(company_id) do
     Repo.all(from p in Person, where: p.company_id == ^company_id and not p.suspended)
@@ -15,6 +17,17 @@ defmodule Operately.People do
 
   def get_person!(account = %Account{}, company = %Company{}) do
     Repo.one!(from p in Person, where: p.account_id == ^account.id and p.company_id == ^company.id)
+  end
+
+  def get_person_with_access_level(person_id, requester_id) do
+    if person_id == requester_id do
+      person = Repo.one!(from p in Person, where: p.id == ^person_id)
+      person = Person.set_requester_access_level(person, Binding.full_access())
+      {:ok, person}
+    else
+      (from p in Person, as: :resource, where: p.id == ^person_id)
+      |> Fetch.get_resource_with_access_level(requester_id)
+    end
   end
 
   def get_person_by_name!(company = %Company{}, name) do

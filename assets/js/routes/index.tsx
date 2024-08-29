@@ -53,6 +53,7 @@ export function createAppRoutes() {
         pageRoute("", pages.SpaceListPage),
         pageRoute("feed", pages.FeedPage),
         pageRoute("review", pages.ReviewPage),
+        pageRoute("notifications", pages.NotificationsPage),
 
         pageRoute("admin", pages.CompanyAdminPage),
         pageRoute("admin/manage-admins", pages.CompanyAdminManageAdminsPage),
@@ -61,15 +62,13 @@ export function createAppRoutes() {
         pageRoute("admin/manage-trusted-email-domains", pages.CompanyAdminTrustedEmailDomainsPage),
 
         pageRoute("account", pages.AccountPage),
-        pageRoute("account/profile", pages.AccountEditProfilePage),
         pageRoute("account/appearance", pages.AccountAppearancePage),
-
-        pageRoute("people/:id", pages.ProfilePage),
-        pageRoute("people/:id/goals", pages.ProfileGoalsPage),
-        pageRoute("notifications", pages.NotificationsPage),
 
         pageRoute("people", pages.PeoplePage),
         pageRoute("people/org-chart", pages.PeopleOrgChartPage),
+        pageRoute("people/:id", pages.ProfilePage),
+        pageRoute("people/:id/goals", pages.ProfileGoalsPage),
+        pageRoute("people/:id/profile/edit", pages.ProfileEditPage),
 
         pageRoute("spaces/new", pages.SpaceAddPage),
         pageRoute("spaces/:id", pages.SpacePage),

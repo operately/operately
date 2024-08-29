@@ -38,6 +38,17 @@ defmodule Operately.Features.CompanyAdminTest do
     |> Steps.refute_person_is_admin("Michael Scott")
   end
 
+  feature "edit a person's details", ctx do
+    ctx
+    |> Steps.given_a_company_member_exists("Michael Scott")
+    |> Steps.open_company_team_page()
+    |> Steps.edit_company_member(%{name: "Michael Scott", new_title: "Regional Manager", new_name: "Michael G. Scott"})
+    |> Steps.assert_company_member_details_updated(%{
+      name: "Michael G. Scott",
+      title: "Regional Manager"
+    })
+  end
+
   feature "adding a trusted email domain", ctx do
     ctx
     |> Steps.open_company_trusted_email_domains_page()

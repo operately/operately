@@ -71,6 +71,26 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
     |> UI.refute_text(domain, attempts: [50, 150, 250, 400])
   end
 
+  step :edit_company_member, ctx, params do
+    person = Operately.People.get_person_by_name!(ctx.company, params[:name])
+
+    ctx
+    |> UI.click(testid: UI.testid(["edit", Paths.person_id(person)]))
+    |> UI.fill(testid: "name", with: params[:new_name])
+    |> UI.fill(testid: "title", with: params[:new_title])
+    |> UI.click(testid: "submit")
+    |> UI.assert_has(testid: "manage-people-page")
+  end
+
+  step :assert_company_member_details_updated, ctx, params do
+    person = Operately.People.get_person_by_name!(ctx.company, params[:name])
+
+    assert person.full_name == params[:name]
+    assert person.title == params[:title]
+
+    ctx
+  end
+
   step :assert_trusted_email_domain_added, ctx, domain do
     company = Operately.Companies.get_company!(ctx.company.id)
     assert company.trusted_email_domains == [domain]
