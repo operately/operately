@@ -11,7 +11,7 @@ defmodule OperatelyWeb.Api.Mutations.PostProjectCheckIn do
     field :status, :string
     field :description, :string
     field :send_notifications_to_everyone, :boolean
-    field :subscribers_ids, list_of(:string)
+    field :subscriber_ids, list_of(:string)
   end
 
   outputs do
@@ -42,14 +42,14 @@ defmodule OperatelyWeb.Api.Mutations.PostProjectCheckIn do
 
   defp parse_inputs(inputs) do
     {:ok, project_id} = decode_id(inputs.project_id)
-    {:ok, subscribers_ids} = decode_id(inputs[:subscribers_ids], :allow_nil)
+    {:ok, subscriber_ids} = decode_id(inputs[:subscriber_ids], :allow_nil)
 
     {:ok, %{
       project_id: project_id,
       status: inputs.status,
       description: Jason.decode!(inputs.description),
       send_notifications_to_everyone: inputs[:send_notifications_to_everyone] || false,
-      subscribers_ids: subscribers_ids
+      subscriber_ids: subscriber_ids
     }}
   end
 end

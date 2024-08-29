@@ -96,7 +96,7 @@ defmodule OperatelyWeb.Api.Mutations.PostProjectCheckInTest do
         status: "on_track",
         description: RichText.rich_text("Description", :as_string),
         send_notifications_to_everyone: true,
-        subscribers_ids: people_ids,
+        subscriber_ids: people_ids,
       })
 
       {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.check_in.id)
