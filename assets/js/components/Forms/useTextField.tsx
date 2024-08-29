@@ -1,4 +1,5 @@
 import React from "react";
+
 import { Field } from "./FormState";
 
 export type TextField = Field<string> & {
@@ -7,6 +8,8 @@ export type TextField = Field<string> & {
 
 interface Config {
   optional?: boolean;
+  minLength?: number;
+  maxLength?: number;
 }
 
 export function useTextField(initial?: string | null, config?: Config): TextField {

@@ -1,13 +1,13 @@
 import * as React from "react";
-
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
-import * as Forms from "@/components/Form";
+import * as Accounts from "@/models/accounts";
+
+import Forms, { FormState } from "@/components/Forms";
 
 import { useLoadedData } from "./loader";
-import { useForm } from "./useForm";
 import { Logo } from "@/layouts/DefaultLayout/Logo";
-import { FilledButton } from "@/components/Button";
+import { logIn } from "@/models/people";
 
 export function Page() {
   const { invitation } = useLoadedData();
@@ -41,38 +41,75 @@ export function Page() {
 }
 
 function Form() {
-  const { fields, submit, submitting, errors } = useForm();
+  // const { fields, submit, submitting, errors } = useForm();
+
+  // return (
+  //   <div className="flex flex-col gap-6">
+  //     <Forms.TextInput
+  //       label="Choose a password (minimum 12 characters)"
+  //       onChange={fields.setPassword}
+  //       value={fields.password}
+  //       error={!!errors.find((e) => e.field === "password")?.message}
+  //       type="password"
+  //       testId="password"
+  //     />
+  //     <Forms.TextInput
+  //       label="Repeat password"
+  //       onChange={fields.setPasswordConfirmation}
+  //       value={fields.passwordConfirmation}
+  //       error={!!errors.find((e) => e.field === "passwordConfirmation")?.message}
+  //       type="password"
+  //       testId="password-confirmation"
+  //     />
+
+  //     {errors.map((e, idx) => (
+  //       <div key={idx} className="text-content-error text-sm">
+  //         {e.message}
+  //       </div>
+  //     ))}
+
+  //     <div className="flex items-center mt-4">
+  //       <FilledButton type="primary" onClick={submit} loading={submitting} testId="submit-form">
+  //         Sign up &amp; Log in
+  //       </FilledButton>
+  //     </div>
+  //   </div>
+  // );
+
+  const { invitation, token } = useLoadedData();
+  const [join] = Accounts.useJoinCompany();
+
+  const form = Forms.useForm({
+    fields: {
+      password: Forms.useTextField("", { minLength: 12, maxLength: 72 }),
+      passwordConfirmation: Forms.useTextField("", { minLength: 12, maxLength: 72 }),
+    },
+    validate: (fields, addError) => {
+      if (fields.password.value !== fields.passwordConfirmation.value) {
+        addError("passwordConfirmation", "Passwords do not match");
+      }
+    },
+    submit: async (form) => {
+      await join({
+        token: token,
+        password: form.fields.password.value,
+        passwordConfirmation: form.fields.passwordConfirmation.value,
+      });
+
+      await logIn(invitation.member!.email!, form.fields.password.value!);
+
+      window.location.href = "/" + invitation.company!.id;
+    },
+  });
 
   return (
-    <div className="flex flex-col gap-6">
-      <Forms.TextInput
-        label="Choose a password (minimum 12 characters)"
-        onChange={fields.setPassword}
-        value={fields.password}
-        error={!!errors.find((e) => e.field === "password")?.message}
-        type="password"
-        testId="password"
-      />
-      <Forms.TextInput
-        label="Repeat password"
-        onChange={fields.setPasswordConfirmation}
-        value={fields.passwordConfirmation}
-        error={!!errors.find((e) => e.field === "passwordConfirmation")?.message}
-        type="password"
-        testId="password-confirmation"
-      />
+    <Forms.Form form={form}>
+      <Forms.FieldGroup>
+        <Forms.PasswordInput label="Choose a password (minimum 12 characters)" field={"password"} />
+        <Forms.PasswordInput label="Repeat password" field={"passwordConfirmation"} />
+      </Forms.FieldGroup>
 
-      {errors.map((e, idx) => (
-        <div key={idx} className="text-content-error text-sm">
-          {e.message}
-        </div>
-      ))}
-
-      <div className="flex items-center mt-4">
-        <FilledButton type="primary" onClick={submit} loading={submitting} testId="submit-form">
-          Sign up &amp; Log in
-        </FilledButton>
-      </div>
-    </div>
+      <Forms.Submit saveText="Sign up & Log in" />
+    </Forms.Form>
   );
 }
