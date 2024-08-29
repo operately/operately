@@ -4,25 +4,35 @@ import * as People from "@/models/people";
 import * as Pages from "@/components/Pages";
 
 import { useNavigate } from "react-router-dom";
-import { useGetMe } from "@/models/people";
 import { Paths } from "@/routes/paths";
 import { Timezones } from "./timezones";
 
 import Avatar from "@/components/Avatar";
 import Forms from "@/components/Forms";
 
-export const loader = Pages.emptyLoader;
+export type FromLocation = "admin-manage-people" | null;
+
+interface LoaderResult {
+  person: People.Person;
+  from: FromLocation;
+}
+
+export async function loader({ request, params }): Promise<LoaderResult> {
+  return {
+    person: await People.getPerson({ id: params.id, includeManager: true }).then((d) => d.person!),
+    from: Pages.getSearchParam(request, "from") as FromLocation,
+  };
+}
 
 export function Page() {
-  const { data } = useGetMe({ includeManager: true });
-  if (!data || !data.me) return null;
+  const { person } = Pages.useLoadedData() as LoaderResult;
 
   return (
     <Pages.Page title="Edit Profile">
       <Paper.Root size="small">
         <Navigation />
         <Paper.Body minHeight="300px">
-          <ProfileForm me={data.me} />
+          <ProfileForm person={person} />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
@@ -30,11 +40,23 @@ export function Page() {
 }
 
 function Navigation() {
-  return (
-    <Paper.Navigation>
-      <Paper.NavItem linkTo={Paths.accountPath()}>Account</Paper.NavItem>
-    </Paper.Navigation>
-  );
+  const { from } = Pages.useLoadedData() as LoaderResult;
+
+  if (from === "admin-manage-people") {
+    return (
+      <Paper.Navigation>
+        <Paper.NavItem linkTo={Paths.companyAdminPath()}>Company Administration</Paper.NavItem>
+        <Paper.NavSeparator />
+        <Paper.NavItem linkTo={Paths.companyManagePeoplePath()}>Manage Team Members</Paper.NavItem>
+      </Paper.Navigation>
+    );
+  } else {
+    return (
+      <Paper.Navigation>
+        <Paper.NavItem linkTo={Paths.accountPath()}>Account</Paper.NavItem>
+      </Paper.Navigation>
+    );
+  }
 }
 
 const ManagerOptions = [
@@ -42,16 +64,16 @@ const ManagerOptions = [
   { value: "select-from-list", label: "Select my manager from a list" },
 ];
 
-function ProfileForm({ me }: { me: People.Person }) {
+function ProfileForm({ person }: { person: People.Person }) {
   const navigate = useNavigate();
-  const managerStatus = me.manager ? "select-from-list" : "no-manager";
+  const managerStatus = person.manager ? "select-from-list" : "no-manager";
 
   const form = Forms.useForm({
     fields: {
-      name: Forms.useTextField(me.fullName),
-      title: Forms.useTextField(me.title),
-      timezone: Forms.useSelectField(me.timezone, Timezones, { optional: true }),
-      manager: Forms.useSelectPersonField(me.manager, { optional: true }),
+      name: Forms.useTextField(person.fullName),
+      title: Forms.useTextField(person.title),
+      timezone: Forms.useSelectField(person.timezone, Timezones, { optional: true }),
+      manager: Forms.useSelectPersonField(person.manager, { optional: true }),
       managerStatus: Forms.useSelectField(managerStatus, ManagerOptions),
     },
     submit: async (form) => {
@@ -68,7 +90,7 @@ function ProfileForm({ me }: { me: People.Person }) {
 
   return (
     <Forms.Form form={form}>
-      <BigAvatar person={me} />
+      <BigAvatar person={person} />
 
       <Forms.FieldGroup>
         <Forms.TextInput field={"name"} label="Name" />

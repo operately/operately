@@ -4,7 +4,7 @@
 //
 
 import * as AccountAppearancePage from "./AccountAppearancePage";
-import * as AccountEditProfilePage from "./AccountEditProfilePage";
+import * as ProfileEditPage from "./ProfileEditPage";
 import * as AccountPage from "./AccountPage";
 import * as CompanyAdminAddPeoplePage from "./CompanyAdminAddPeoplePage";
 import * as CompanyAdminManageAdminsPage from "./CompanyAdminManageAdminsPage";
@@ -90,9 +90,9 @@ export default {
     loader: AccountAppearancePage.loader,
     Page: AccountAppearancePage.Page,
   },
-  AccountEditProfilePage: {
-    loader: AccountEditProfilePage.loader,
-    Page: AccountEditProfilePage.Page,
+  ProfileEditPage: {
+    loader: ProfileEditPage.loader,
+    Page: ProfileEditPage.Page,
   },
   AccountPage: {
     loader: AccountPage.loader,
