@@ -83,7 +83,8 @@ function ProfileForm({ person }: { person: People.Person }) {
     submit: async (form) => {
       const managerId = form.fields.managerStatus.value === "select-from-list" ? form.fields.manager!.value?.id : null;
 
-      await People.updateMyProfile({
+      await People.updateProfile({
+        id: person.id,
         fullName: form.fields.name.value,
         title: form.fields.title.value,
         timezone: form.fields.timezone.value,
