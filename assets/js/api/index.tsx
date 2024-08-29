@@ -1994,18 +1994,17 @@ export interface UpdateMilestoneDescriptionResult {
   milestone?: Milestone | null;
 }
 
-export interface UpdateMyProfileInput {
+export interface UpdateProfileInput {
+  id?: string | null;
   fullName?: string | null;
   title?: string | null;
   timezone?: string | null;
   managerId?: string | null;
-  avatarUrl?: string | null;
-  avatarBlobId?: string | null;
   theme?: string | null;
 }
 
-export interface UpdateMyProfileResult {
-  me?: Person | null;
+export interface UpdateProfileResult {
+  person?: Person | null;
 }
 
 export interface UpdateProjectContributorInput {
@@ -2474,8 +2473,8 @@ export class ApiClient {
     return this.post("/update_milestone_description", input);
   }
 
-  async updateMyProfile(input: UpdateMyProfileInput): Promise<UpdateMyProfileResult> {
-    return this.post("/update_my_profile", input);
+  async updateProfile(input: UpdateProfileInput): Promise<UpdateProfileResult> {
+    return this.post("/update_profile", input);
   }
 
   async updateProjectContributor(input: UpdateProjectContributorInput): Promise<UpdateProjectContributorResult> {
@@ -2820,8 +2819,8 @@ export async function updateMilestoneDescription(
 ): Promise<UpdateMilestoneDescriptionResult> {
   return defaultApiClient.updateMilestoneDescription(input);
 }
-export async function updateMyProfile(input: UpdateMyProfileInput): Promise<UpdateMyProfileResult> {
-  return defaultApiClient.updateMyProfile(input);
+export async function updateProfile(input: UpdateProfileInput): Promise<UpdateProfileResult> {
+  return defaultApiClient.updateProfile(input);
 }
 export async function updateProjectContributor(
   input: UpdateProjectContributorInput,
@@ -3370,8 +3369,8 @@ export function useUpdateMilestoneDescription(): UseMutationHookResult<
   );
 }
 
-export function useUpdateMyProfile(): UseMutationHookResult<UpdateMyProfileInput, UpdateMyProfileResult> {
-  return useMutation<UpdateMyProfileInput, UpdateMyProfileResult>((input) => defaultApiClient.updateMyProfile(input));
+export function useUpdateProfile(): UseMutationHookResult<UpdateProfileInput, UpdateProfileResult> {
+  return useMutation<UpdateProfileInput, UpdateProfileResult>((input) => defaultApiClient.updateProfile(input));
 }
 
 export function useUpdateProjectContributor(): UseMutationHookResult<
@@ -3595,8 +3594,8 @@ export default {
   useUpdateMilestone,
   updateMilestoneDescription,
   useUpdateMilestoneDescription,
-  updateMyProfile,
-  useUpdateMyProfile,
+  updateProfile,
+  useUpdateProfile,
   updateProjectContributor,
   useUpdateProjectContributor,
   updateProjectDescription,

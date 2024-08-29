@@ -4,7 +4,6 @@
 //
 
 import * as AccountAppearancePage from "./AccountAppearancePage";
-import * as ProfileEditPage from "./ProfileEditPage";
 import * as AccountPage from "./AccountPage";
 import * as CompanyAdminAddPeoplePage from "./CompanyAdminAddPeoplePage";
 import * as CompanyAdminManageAdminsPage from "./CompanyAdminManageAdminsPage";
@@ -43,6 +42,7 @@ import * as NotFoundPage from "./NotFoundPage";
 import * as NotificationsPage from "./NotificationsPage";
 import * as PeopleOrgChartPage from "./PeopleOrgChartPage";
 import * as PeoplePage from "./PeoplePage";
+import * as ProfileEditPage from "./ProfileEditPage";
 import * as ProfileGoalsPage from "./ProfileGoalsPage";
 import * as ProfilePage from "./ProfilePage";
 import * as ProjectAddPage from "./ProjectAddPage";
@@ -89,10 +89,6 @@ export default {
   AccountAppearancePage: {
     loader: AccountAppearancePage.loader,
     Page: AccountAppearancePage.Page,
-  },
-  ProfileEditPage: {
-    loader: ProfileEditPage.loader,
-    Page: ProfileEditPage.Page,
   },
   AccountPage: {
     loader: AccountPage.loader,
@@ -245,6 +241,10 @@ export default {
   PeoplePage: {
     loader: PeoplePage.loader,
     Page: PeoplePage.Page,
+  },
+  ProfileEditPage: {
+    loader: ProfileEditPage.loader,
+    Page: ProfileEditPage.Page,
   },
   ProfileGoalsPage: {
     loader: ProfileGoalsPage.loader,
