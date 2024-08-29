@@ -24,7 +24,7 @@ interface LoaderResult {
 
 export async function loader({ params }): Promise<LoaderResult> {
   const company = await Companies.getCompany({ id: params.companyId }).then((res) => res.company!);
-  const people = await People.getPeople({ includeManager: true }).then((res) => res.people!);
+  const people = await People.getPeople({ includeManager: true, includeInvitations: true }).then((res) => res.people!);
 
   return {
     company: company,

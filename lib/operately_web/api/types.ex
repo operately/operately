@@ -489,7 +489,6 @@ defmodule OperatelyWeb.Api.Types do
 
   object :invitation do
     field :id, :string
-    field :admin_name, :string
     field :admin, :person
     field :member, :person
     field :company, :company
