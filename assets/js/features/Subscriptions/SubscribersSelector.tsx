@@ -9,7 +9,7 @@ import { FilledButton } from "@/components/Button";
 import { ActionLink } from "@/components/Link";
 import { Person } from "@/models/people";
 
-export function SubscribersSelector() {
+export function SubscribersSelector({ labelSuffix }: { labelSuffix: string }) {
   const [showSelector, setShowSelector] = useState(false);
   const { people, selectedPeople, subscriptionType, setSubscriptionType } = useSubscriptionsContext();
 
@@ -30,7 +30,7 @@ export function SubscribersSelector() {
 
       <RadioGroup name="subscriptions-options" onChange={setSubscriptionType} defaultValue={subscriptionType}>
         <SubscriptionOption
-          label={`All ${people.length} people who are members of the space`}
+          label={`All ${people.length} people who are ${labelSuffix}`}
           value={Options.ALL}
           people={people}
         />

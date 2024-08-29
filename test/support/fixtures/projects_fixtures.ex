@@ -105,11 +105,14 @@ defmodule Operately.ProjectsFixtures do
   Generate a check_in_fixture.
   """
   def check_in_fixture(attrs) do
+    {:ok, subscription_list} = Operately.Notifications.create_subscription_list()
+
     {:ok, check_in} =
       attrs
       |> Enum.into(%{
         status: "on_track",
         description: %{},
+        subscription_list_id: subscription_list.id,
       })
       |> Operately.Projects.CheckIn.changeset()
       |> Operately.Repo.insert()
