@@ -9,8 +9,7 @@ import { Timezones } from "./timezones";
 
 import Avatar from "@/components/Avatar";
 import Forms from "@/components/Forms";
-
-export type FromLocation = "admin-manage-people" | null;
+import { useMe } from "@/contexts/CurrentUserContext";
 
 interface LoaderResult {
   person: People.Person;
@@ -31,13 +30,15 @@ export function Page() {
     <Pages.Page title="Edit Profile">
       <Paper.Root size="small">
         <Navigation />
-        <Paper.Body minHeight="300px">
+        <Paper.Body>
           <ProfileForm person={person} />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
   );
 }
+
+export type FromLocation = "admin-manage-people" | null;
 
 function Navigation() {
   const { from } = Pages.useLoadedData() as LoaderResult;
@@ -60,28 +61,33 @@ function Navigation() {
 }
 
 const ManagerOptions = [
-  { value: "no-manager", label: "I don't have a manager" },
-  { value: "select-from-list", label: "Select my manager from a list" },
+  { value: "no-manager", label: "No manager" },
+  { value: "select-from-list", label: "Select manager" },
 ];
 
 function ProfileForm({ person }: { person: People.Person }) {
+  const me = useMe()!;
   const navigate = useNavigate();
+
   const managerStatus = person.manager ? "select-from-list" : "no-manager";
+  const managerLabel = me.id === person.id ? "Who is your manager?" : "Who is their manager?";
 
   const form = Forms.useForm({
     fields: {
       name: Forms.useTextField(person.fullName),
       title: Forms.useTextField(person.title),
       timezone: Forms.useSelectField(person.timezone, Timezones, { optional: true }),
-      manager: Forms.useSelectPersonField(person.manager, { optional: true }),
+      manager: Forms.useSelectPersonField(person.manager, { optional: true, exclude: [me] }),
       managerStatus: Forms.useSelectField(managerStatus, ManagerOptions),
     },
     submit: async (form) => {
+      const managerId = form.fields.managerStatus.value === "select-from-list" ? form.fields.manager!.value?.id : null;
+
       await People.updateMyProfile({
         fullName: form.fields.name.value,
         title: form.fields.title.value,
         timezone: form.fields.timezone.value,
-        managerId: form.fields.managerStatus.value === "select-from-list" ? form.fields.manager!.value?.id : null,
+        managerId: managerId,
       });
 
       navigate(Paths.accountPath());
@@ -98,7 +104,7 @@ function ProfileForm({ person }: { person: People.Person }) {
         <Forms.SelectBox field={"timezone"} label="Timezone" />
 
         <Forms.FieldGroup>
-          <Forms.RadioButtons field={"managerStatus"} label="Who is your manager?" />
+          <Forms.RadioButtons field={"managerStatus"} label={managerLabel} />
           <Forms.SelectPerson field={"manager"} hidden={form.fields.managerStatus.value !== "select-from-list"} />
         </Forms.FieldGroup>
       </Forms.FieldGroup>
