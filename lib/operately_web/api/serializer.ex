@@ -77,7 +77,8 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.People.Person do
       manager: OperatelyWeb.Api.Serializer.serialize(data.manager),
       reports: OperatelyWeb.Api.Serializer.serialize(data.reports),
       peers: OperatelyWeb.Api.Serializer.serialize(data.peers),
-      has_open_invitation: data.has_open_invitation
+      has_open_invitation: data.has_open_invitation,
+      invitation: data.invitation && OperatelyWeb.Api.Serializer.serialize(data.invitation),
     }
   end
 
@@ -498,7 +499,6 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Invitations.Invitation do
   def serialize(inv, level: :essential) do
     %{
       id: inv.id,
-      admin_name: inv.admin.full_name,
       admin: OperatelyWeb.Api.Serializer.serialize(inv.admin),
       member: OperatelyWeb.Api.Serializer.serialize(inv.member, level: :full),
       company: OperatelyWeb.Api.Serializer.serialize(inv.company),
