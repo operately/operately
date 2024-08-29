@@ -5,6 +5,7 @@ import { SelectBox } from "./SelectBox";
 import { FieldGroup } from "./FieldGroup";
 import { RadioButtons } from "./RadioButtons";
 import { SelectPerson } from "./SelectPerson";
+import { PasswordInput } from "./PasswordInput";
 import { MultiPeopleSelectField } from "./MultiPeopleSelectField";
 
 import { useForm } from "./useForm";
@@ -21,6 +22,7 @@ export default {
   FieldGroup,
   RadioButtons,
   SelectPerson,
+  PasswordInput,
   MultiPeopleSelectField,
 
   useForm,

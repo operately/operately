@@ -11,6 +11,7 @@ import { Links } from "./Links";
 import { Buttons } from "./Buttons";
 import { Menus } from "./Menus";
 import { CalloutExamples } from "./Callouts";
+import { FormExamples } from "./Forms";
 
 export const loader = Pages.emptyLoader;
 
@@ -26,6 +27,7 @@ export function Page() {
           <Buttons />
           <Menus />
           <CalloutExamples />
+          <FormExamples />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
