@@ -9,9 +9,13 @@ defmodule Operately.Notifications.SubscriptionList do
     timestamps()
   end
 
+  def changeset(attrs) do
+    changeset(%__MODULE__{}, attrs)
+  end
+
   def changeset(subscription_list, attrs) do
     subscription_list
     |> cast(attrs, [:parent_id, :parent_type, :send_to_everyone])
-    |> validate_required([:parent_id, :parent_type])
+    |> validate_required([])
   end
 end

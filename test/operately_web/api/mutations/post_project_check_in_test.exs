@@ -9,6 +9,7 @@ defmodule OperatelyWeb.Api.Mutations.PostProjectCheckInTest do
   alias Operately.Access.Binding
   alias Operately.Projects.CheckIn
   alias Operately.Support.RichText
+  alias Operately.Notifications
 
   describe "security" do
     test "it requires authentication", ctx do
@@ -81,6 +82,32 @@ defmodule OperatelyWeb.Api.Mutations.PostProjectCheckInTest do
 
       check_in = Repo.one!(from(p in CheckIn))
       assert res.check_in == Serializer.serialize(check_in, level: :essential)
+    end
+
+    test "creates subscription list for project check-in", ctx do
+      project = project_fixture(%{company_id: ctx.company.id, creator_id: ctx.person.id, group_id: ctx.company.company_space_id})
+      people_ids = Enum.map(1..3, fn _ ->
+        person_fixture(%{company_id: ctx.company.id})
+        |> Paths.person_id()
+      end)
+
+      assert {200, res} = mutation(ctx.conn, :post_project_check_in, %{
+        project_id: Paths.project_id(project),
+        status: "on_track",
+        description: RichText.rich_text("Description", :as_string),
+        send_notifications_to_everyone: true,
+        subscriber_ids: people_ids,
+      })
+
+      {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.check_in.id)
+
+      list = Notifications.get_subscription_list!(parent_id: id)
+      subscriptions = Notifications.list_subscriptions(list)
+
+      assert list.send_to_everyone
+      Enum.each(people_ids, fn id ->
+        assert Enum.filter(subscriptions, &(&1.person_id == id))
+      end)
     end
   end
 
