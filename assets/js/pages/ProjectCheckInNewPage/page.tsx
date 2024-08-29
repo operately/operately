@@ -12,7 +12,8 @@ import { useMe } from "@/contexts/CurrentUserContext";
 
 export function Page() {
   const { project } = useLoadedData();
-  const people = findNotifiableProjectContributors(project);
+  const me = useMe()!;
+  const people = findNotifiableProjectContributors(project, me);
 
   return (
     <Pages.Page title={["Check-In", project.name!]}>
