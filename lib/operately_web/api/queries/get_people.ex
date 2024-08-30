@@ -10,6 +10,7 @@ defmodule OperatelyWeb.Api.Queries.GetPeople do
   inputs do
     field :include_suspended, :boolean
     field :include_manager, :boolean
+    field :include_invitations, :boolean
   end
 
   outputs do
@@ -40,6 +41,7 @@ defmodule OperatelyWeb.Api.Queries.GetPeople do
     )
     |> include_suspended(inputs[:include_suspended])
     |> include_manager(inputs[:include_manager])
+    |> include_invitations(inputs[:include_invitations])
     |> Repo.all()
   end
 
@@ -48,4 +50,7 @@ defmodule OperatelyWeb.Api.Queries.GetPeople do
 
   defp include_manager(q, true), do: from(p in q, preload: [:manager])
   defp include_manager(q, _), do: q
+
+  defp include_invitations(q, true), do: from(p in q, preload: [invitation: :invitation_token])
+  defp include_invitations(q, _), do: q
 end
