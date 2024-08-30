@@ -20,6 +20,7 @@ defmodule Operately.Features.CompanyAdminTest do
     |> Steps.open_company_team_page()
     |> Steps.assert_company_member_is_listed("Michael Scott")
     |> Steps.assert_company_member_details_match_invitations(params)
+    |> Steps.assert_expiration_date_is_visible_on_team_page()
   end
 
   feature "promote a person to admin", ctx do

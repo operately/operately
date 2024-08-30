@@ -51,6 +51,6 @@ defmodule OperatelyWeb.Api.Queries.GetPeople do
   defp include_manager(q, true), do: from(p in q, preload: [:manager])
   defp include_manager(q, _), do: q
 
-  defp include_invitations(q, true), do: from(p in q, preload: [:invitation])
+  defp include_invitations(q, true), do: from(p in q, preload: [invitation: :invitation_token])
   defp include_invitations(q, _), do: q
 end

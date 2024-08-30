@@ -4,6 +4,8 @@ import * as Pages from "@/components/Pages";
 import * as People from "@/models/people";
 import * as Icons from "@tabler/icons-react";
 import * as Companies from "@/models/companies";
+import * as Invitations from "@/models/invitations";
+import * as Time from "@/utils/time";
 
 import { Paths } from "@/routes/paths";
 import { FilledButton } from "@/components/Button";
@@ -157,7 +159,9 @@ function PersonInfo({ person }: { person: People.Person }) {
 
 function PersonActions({ person }: { person: People.Person }) {
   return (
-    <div>
+    <div className="flex items-center gap-4">
+      {People.hasValidInvite(person) && <ExpiresIn invitation={person.invitation!} />}
+
       <FilledButton
         type="secondary"
         size="xs"
@@ -298,4 +302,32 @@ function NewInvitationUrl({ url, person }: { url: string; person: People.Person 
       </div>
     </>
   );
+}
+
+function ExpiresIn({ invitation }: { invitation: Invitations.Invitation }) {
+  const expiresAt = Time.parse(invitation.expiresAt);
+  if (!expiresAt) return null;
+
+  const diff = +expiresAt - +new Date();
+  let humanDuration = "";
+
+  if (diff < 0) {
+    throw new Error("Invitation expired");
+  }
+
+  if (diff < 60 * 1000) {
+    humanDuration = "less than a minute";
+  }
+
+  if (diff < 60 * 60 * 1000) {
+    let value = Math.ceil(diff / (60 * 1000));
+    humanDuration = value === 1 ? "1 minute" : value + " minutes";
+  }
+
+  if (diff < 24 * 60 * 60 * 1000) {
+    let value = Math.ceil(diff / (60 * 60 * 1000));
+    humanDuration = value === 1 ? "1 hour" : value + " hours";
+  }
+
+  return <div>Expires in {humanDuration}</div>;
 }
