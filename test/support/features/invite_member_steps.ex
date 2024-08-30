@@ -42,9 +42,9 @@ defmodule Operately.Support.Features.InviteMemberSteps do
   step :submit_password, ctx, password do
     ctx
     |> UI.fill(testid: "password", with: password)
-    |> UI.fill(testid: "password-confirmation", with: password)
-    |> UI.click(testid: "submit-form")
-    |> UI.sleep(300)
+    |> UI.fill(testid: "passwordConfirmation", with: password)
+    |> UI.click(testid: "submit")
+    |> UI.assert_has(testid: "company-home")
   end
 
   step :reissue_invitation_token, ctx, name do

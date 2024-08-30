@@ -89,8 +89,7 @@ function Form() {
         passwordConfirmation: form.fields.passwordConfirmation.value,
       });
 
-      await logIn(invitation.member!.email!, form.fields.password.value!);
-      gotoCompany(invitation);
+      await logInAndGotoCompany(invitation, form.fields.password.value!);
     },
   });
 
@@ -106,6 +105,7 @@ function Form() {
   );
 }
 
-function gotoCompany(invitation: Invitations.Invitation) {
-  window.location.href = `/companies/${invitation.company!.id}`;
+async function logInAndGotoCompany(invitation: Invitations.Invitation, password: string) {
+  await logIn(invitation.member!.email!, password);
+  window.location.href = `/${invitation.company!.id}`;
 }
