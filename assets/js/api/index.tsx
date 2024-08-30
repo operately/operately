@@ -646,7 +646,6 @@ export interface GoalTargetUpdates {
 
 export interface Invitation {
   id?: string | null;
-  adminName?: string | null;
   admin?: Person | null;
   member?: Person | null;
   company?: Company | null;
@@ -1243,6 +1242,7 @@ export interface GetNotificationsResult {
 export interface GetPeopleInput {
   includeSuspended?: boolean | null;
   includeManager?: boolean | null;
+  includeInvitations?: boolean | null;
 }
 
 export interface GetPeopleResult {
@@ -1518,16 +1518,6 @@ export interface ChangeGoalParentInput {
 
 export interface ChangeGoalParentResult {
   goal?: Goal | null;
-}
-
-export interface ChangePasswordFirstTimeInput {
-  token?: string | null;
-  password?: string | null;
-  passwordConfirmation?: string | null;
-}
-
-export interface ChangePasswordFirstTimeResult {
-  result?: string | null;
 }
 
 export interface ChangeTaskDescriptionInput {
@@ -1811,6 +1801,16 @@ export interface EditSpacePermissionsInput {
 
 export interface EditSpacePermissionsResult {
   success?: boolean | null;
+}
+
+export interface JoinCompanyInput {
+  token?: string | null;
+  password?: string | null;
+  passwordConfirmation?: string | null;
+}
+
+export interface JoinCompanyResult {
+  result?: string | null;
 }
 
 export interface JoinSpaceInput {
@@ -2275,10 +2275,6 @@ export class ApiClient {
     return this.post("/change_goal_parent", input);
   }
 
-  async changePasswordFirstTime(input: ChangePasswordFirstTimeInput): Promise<ChangePasswordFirstTimeResult> {
-    return this.post("/change_password_first_time", input);
-  }
-
   async changeTaskDescription(input: ChangeTaskDescriptionInput): Promise<ChangeTaskDescriptionResult> {
     return this.post("/change_task_description", input);
   }
@@ -2383,6 +2379,10 @@ export class ApiClient {
 
   async editSpacePermissions(input: EditSpacePermissionsInput): Promise<EditSpacePermissionsResult> {
     return this.post("/edit_space_permissions", input);
+  }
+
+  async joinCompany(input: JoinCompanyInput): Promise<JoinCompanyResult> {
+    return this.post("/join_company", input);
   }
 
   async joinSpace(input: JoinSpaceInput): Promise<JoinSpaceResult> {
@@ -2650,11 +2650,6 @@ export async function archiveProject(input: ArchiveProjectInput): Promise<Archiv
 export async function changeGoalParent(input: ChangeGoalParentInput): Promise<ChangeGoalParentResult> {
   return defaultApiClient.changeGoalParent(input);
 }
-export async function changePasswordFirstTime(
-  input: ChangePasswordFirstTimeInput,
-): Promise<ChangePasswordFirstTimeResult> {
-  return defaultApiClient.changePasswordFirstTime(input);
-}
 export async function changeTaskDescription(input: ChangeTaskDescriptionInput): Promise<ChangeTaskDescriptionResult> {
   return defaultApiClient.changeTaskDescription(input);
 }
@@ -2740,6 +2735,9 @@ export async function editSpaceMembersPermissions(
 }
 export async function editSpacePermissions(input: EditSpacePermissionsInput): Promise<EditSpacePermissionsResult> {
   return defaultApiClient.editSpacePermissions(input);
+}
+export async function joinCompany(input: JoinCompanyInput): Promise<JoinCompanyResult> {
+  return defaultApiClient.joinCompany(input);
 }
 export async function joinSpace(input: JoinSpaceInput): Promise<JoinSpaceResult> {
   return defaultApiClient.joinSpace(input);
@@ -3063,15 +3061,6 @@ export function useChangeGoalParent(): UseMutationHookResult<ChangeGoalParentInp
   );
 }
 
-export function useChangePasswordFirstTime(): UseMutationHookResult<
-  ChangePasswordFirstTimeInput,
-  ChangePasswordFirstTimeResult
-> {
-  return useMutation<ChangePasswordFirstTimeInput, ChangePasswordFirstTimeResult>((input) =>
-    defaultApiClient.changePasswordFirstTime(input),
-  );
-}
-
 export function useChangeTaskDescription(): UseMutationHookResult<
   ChangeTaskDescriptionInput,
   ChangeTaskDescriptionResult
@@ -3222,6 +3211,10 @@ export function useEditSpacePermissions(): UseMutationHookResult<
   return useMutation<EditSpacePermissionsInput, EditSpacePermissionsResult>((input) =>
     defaultApiClient.editSpacePermissions(input),
   );
+}
+
+export function useJoinCompany(): UseMutationHookResult<JoinCompanyInput, JoinCompanyResult> {
+  return useMutation<JoinCompanyInput, JoinCompanyResult>((input) => defaultApiClient.joinCompany(input));
 }
 
 export function useJoinSpace(): UseMutationHookResult<JoinSpaceInput, JoinSpaceResult> {
@@ -3498,8 +3491,6 @@ export default {
   useArchiveProject,
   changeGoalParent,
   useChangeGoalParent,
-  changePasswordFirstTime,
-  useChangePasswordFirstTime,
   changeTaskDescription,
   useChangeTaskDescription,
   closeGoal,
@@ -3552,6 +3543,8 @@ export default {
   useEditSpaceMembersPermissions,
   editSpacePermissions,
   useEditSpacePermissions,
+  joinCompany,
+  useJoinCompany,
   joinSpace,
   useJoinSpace,
   markAllNotificationsAsRead,
