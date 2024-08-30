@@ -1,5 +1,3 @@
-export type { FormState } from "./FormState";
-
 import { Form } from "./Form";
 import { Submit } from "./Submit";
 import { TextInput } from "./TextInput";
