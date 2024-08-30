@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.ChangePasswordFirstTime do
+defmodule OperatelyWeb.Api.Mutations.JoinCompany do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 

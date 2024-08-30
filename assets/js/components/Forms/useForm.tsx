@@ -4,6 +4,7 @@ import { FormState, MapOfFields, ErrorMap } from "./FormState";
 
 interface UseFormProps<FieldTypes extends MapOfFields> {
   fields: FieldTypes;
+  validate: (fields: FieldTypes, addError: (field: keyof FieldTypes, message: string) => void) => void;
   submit: (form: FormState<FieldTypes>) => Promise<void>;
 }
 
@@ -15,6 +16,10 @@ export function useForm<FieldTypes extends MapOfFields>(props: UseFormProps<Fiel
 
   const validate = (): boolean => {
     const newErrors: ErrorMap<FieldTypes> = {};
+
+    props.validate(props.fields, (field, message) => {
+      newErrors[field] = message;
+    });
 
     for (const key in props.fields) {
       const field = props.fields[key]!;

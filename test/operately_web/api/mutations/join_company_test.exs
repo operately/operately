@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.ChangePasswordFirstTimeTest do
+defmodule OperatelyWeb.Api.Mutations.JoinCompanyText do
   use OperatelyWeb.TurboCase
 
   import Operately.InvitationsFixtures
@@ -15,7 +15,7 @@ defmodule OperatelyWeb.Api.Mutations.ChangePasswordFirstTimeTest do
     Map.put(ctx, :token, token)
   end
 
-  describe "change_password_first_time functionality" do
+  describe "join_company functionality" do
     setup :register_and_log_in_account
 
     test "it fails if passwords don't match", ctx do
@@ -25,7 +25,7 @@ defmodule OperatelyWeb.Api.Mutations.ChangePasswordFirstTimeTest do
         password_confirmation: "123123123123123"
       }
 
-      assert {400, res} = mutation(ctx.conn, :change_password_first_time, payload)
+      assert {400, res} = mutation(ctx.conn, :join_company, payload)
       assert res == %{error: "Bad request", message: "Passwords don't match"}
     end
 
@@ -36,7 +36,7 @@ defmodule OperatelyWeb.Api.Mutations.ChangePasswordFirstTimeTest do
         password_confirmation: "Aa12345#&!123"
       }
 
-      assert {400, res} = mutation(ctx.conn, :change_password_first_time, payload)
+      assert {400, res} = mutation(ctx.conn, :join_company, payload)
       assert res == %{error: "Bad request", message: "Invalid token"}
     end
 
@@ -47,7 +47,7 @@ defmodule OperatelyWeb.Api.Mutations.ChangePasswordFirstTimeTest do
         password_confirmation: "Aa12345#&!123"
       }
 
-      assert {200, res} = mutation(ctx.conn, :change_password_first_time, payload)
+      assert {200, res} = mutation(ctx.conn, :join_company, payload)
       assert res.result == "Password successfully changed"
     end
   end
