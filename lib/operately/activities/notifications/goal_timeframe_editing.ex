@@ -1,24 +1,16 @@
 defmodule Operately.Activities.Notifications.GoalTimeframeEditing do
   def dispatch(activity) do
     goal = Operately.Goals.get_goal!(activity.content["goal_id"])
+    goal = Operately.Repo.preload(goal, [:champion, :reviewer])
     message = Operately.Repo.preload(activity, :comment_thread).comment_thread.message
+    assigned = [goal.champion_id, goal.reviewer_id]
 
-    assigned = [
-      goal.champion_id,
-      goal.reviewer_id,
-    ]
-
-    mentioned =
-      message
-      |> ProsemirrorMentions.extract_ids()
-      |> Enum.map(fn id -> Operately.People.get_person!(id).id end)
-
-    people = Enum.uniq(assigned ++ mentioned)
+    mentioned = Operately.RichContent.lookup_mentioned_people(message)
+    people = Enum.uniq_by(assigned ++ mentioned, & &1.id)
 
     notifications =
       people
-      |> Enum.uniq()
-      |> Enum.filter(fn person_id -> person_id != activity.author_id end)
+      |> Enum.filter(fn p -> p.id != activity.author_id end)
       |> Enum.map(fn person_id ->
         %{
           person_id: person_id,

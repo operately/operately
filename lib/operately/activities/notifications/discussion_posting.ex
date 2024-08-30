@@ -8,12 +8,8 @@ defmodule Operately.Activities.Notifications.DiscussionPosting do
     members = Operately.Groups.list_members(space)
     discussion = Operately.Updates.get_update!(discussion_id)
 
-    mentioned = 
-      discussion.content["body"]
-      |> ProsemirrorMentions.extract_ids()
-      |> Enum.map(fn id -> Operately.People.get_person!(id) end)
-
-    people = Enum.uniq(members ++ mentioned)
+    mentioned = Operately.RichContent.lookup_mentioned_people(discussion.content["body"])
+    people = Enum.uniq_by(members ++ mentioned, & &1.id)
 
     notifications = Enum.map(people, fn member ->
       %{
