@@ -4,12 +4,16 @@ defmodule Operately.Activities.Notifications.GoalCheckIn do
     check_in_id = activity.content["update_id"]
 
     goal = Operately.Goals.get_goal!(goal_id)
-    check_in = Operately.Updates.get_update!(check_in_id)
+    goal = Operately.Repo.preload(goal, [:champion, :reviewer])
 
-    people = (ProsemirrorMentions.extract_ids(check_in.content["message"]) ++ [goal.champion_id, goal.reviewer_id])
-      |> Enum.uniq()
-      |> Enum.filter(fn id -> id != activity.author_id end)
-      |> Enum.map(fn id -> Operately.People.get_person!(id) end)
+    check_in = Operately.Updates.get_update!(check_in_id)
+    message = check_in.content["message"]
+
+    people = (
+      Operately.RichContent.lookup_mentioned_people(message)
+      ++ [goal.champion]
+      ++ [goal.reviewer]
+    ) |> Enum.uniq_by(& &1.id)
 
     notifications = Enum.map(people, fn person ->
       %{
