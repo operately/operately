@@ -1242,6 +1242,7 @@ export interface GetNotificationsResult {
 export interface GetPeopleInput {
   includeSuspended?: boolean | null;
   includeManager?: boolean | null;
+  includeInvitations?: boolean | null;
 }
 
 export interface GetPeopleResult {
