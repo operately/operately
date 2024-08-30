@@ -1,1 +1,1 @@
-export { useChangePasswordFirstTime } from "@/api";
+export { useJoinCompany } from "@/api";
