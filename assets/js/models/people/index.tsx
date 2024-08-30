@@ -114,7 +114,7 @@ export function sortByName(people: Person[]): Person[] {
     .sort((a, b) => a!.fullName!.localeCompare(b!.fullName!));
 }
 
-export function hasValidInvite(person: Person) {
+export function hasValidInvite(person: Person): boolean {
   if (!person.hasOpenInvitation) return false;
   if (!person.invitation?.expiresAt) return false;
 
@@ -122,4 +122,14 @@ export function hasValidInvite(person: Person) {
   if (!time) return false;
 
   return time > Time.now();
+}
+
+export function hasInvitationExpired(person: Person): boolean {
+  if (!person.hasOpenInvitation) return false;
+  if (!person.invitation?.expiresAt) return false;
+
+  const time = Time.parse(person.invitation!.expiresAt!);
+  if (!time) return false;
+
+  return time < Time.now();
 }

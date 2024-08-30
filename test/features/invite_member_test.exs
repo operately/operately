@@ -37,4 +37,13 @@ defmodule Operately.Features.InviteMemberTest do
     |> Steps.reissue_invitation_token("John Doe")
     |> Steps.assert_member_invited()
   end
+
+  feature "admin can see and renew expired invitations", ctx do
+    ctx
+    |> Steps.log_in_as_admin()
+    |> Steps.given_that_an_invitation_was_sent_and_expired(%{name: "John Doe", email: "john@john.com"})
+    |> Steps.assert_an_expired_warning_is_shown_on_the_team_page()
+    |> Steps.renew_invitation("John Doe")
+    |> Steps.assert_invitation_renewed()
+  end
 end
