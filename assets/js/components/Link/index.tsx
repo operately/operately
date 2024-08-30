@@ -56,7 +56,7 @@ export function BlackLink(props: LinkProps) {
   const className = classNames(
     baseLinkClass,
     underlineClass(props.underline),
-    "text-content-base hover:text-content-base",
+    "text-content-base hover:text-content-dimmed",
     props.className,
   );
 
@@ -83,7 +83,12 @@ export function ActionLink(props: ActionLinkProps) {
 }
 
 export function DimmedLink(props: LinkProps) {
-  const className = classnames(baseLinkClass, underlineClass(props.underline), "text-content-dimmed", props.className);
+  const className = classnames(
+    baseLinkClass,
+    underlineClass(props.underline),
+    "text-content-dimmed hover:text-content-base",
+    props.className,
+  );
 
   return <UnstyledLink {...props} className={className} />;
 }
