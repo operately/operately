@@ -93,12 +93,8 @@ defmodule OperatelyWeb.Api.Helpers do
   end
 
   def decode_id(id) do
-    require Logger
-
     case Ecto.UUID.cast(id) do
-      {:ok, id} ->
-        Logger.warn("Using UUIDs for IDs is deprecated, please use short UUIDs instead.")
-        {:ok, id}
+      {:ok, id} -> {:ok, id}
       :error -> decode_short_id(id)
     end
   end
