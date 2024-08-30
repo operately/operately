@@ -13,6 +13,7 @@ defmodule Operately.People do
   end
 
   def get_account!(id), do: Repo.get!(Account, id)
+  def get_person(id), do: Repo.get(Person, id)
   def get_person!(id), do: Repo.get!(Person, id)
 
   def get_person!(account = %Account{}, company = %Company{}) do

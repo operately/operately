@@ -8,12 +8,8 @@ defmodule Operately.Activities.Notifications.GoalDiscussionCreation do
       goal.reviewer_id,
     ]
 
-    mentioned =
-      message
-      |> ProsemirrorMentions.extract_ids()
-      |> Enum.map(fn id -> Operately.People.get_person!(id).id end)
-
-    people = Enum.uniq(assigned ++ mentioned)
+    mentioned = Operately.RichContent.lookup_mentioned_people(message)
+    people = Enum.uniq_by(assigned ++ mentioned, & &1.id)
 
     notifications =
       people
