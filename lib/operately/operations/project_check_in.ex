@@ -8,7 +8,10 @@ defmodule Operately.Operations.ProjectCheckIn do
   alias Operately.Notifications.{SubscriptionList, Subscriptions}
 
   def run(author, project, attrs) do
-    next_check_in = Operately.Time.calculate_next_check_in(project.next_check_in_scheduled_at, DateTime.utc_now())
+    next_check_in = Operately.Time.calculate_next_weekly_check_in(
+      project.next_check_in_scheduled_at, 
+      DateTime.utc_now()
+    )
 
     Multi.new()
     |> Multi.insert(:subscription_list, SubscriptionList.changeset(%{
