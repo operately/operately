@@ -12,8 +12,6 @@ defmodule Operately.People.Person do
     has_one :access_group, Operately.Access.Group, foreign_key: :person_id
     has_one :access_context, through: [:company, :access_context]
 
-    has_one :invitation, Operately.Invitations.Invitation, foreign_key: :member_id
-
     field :full_name, :string
     field :title, :string
     field :avatar_url, :string
