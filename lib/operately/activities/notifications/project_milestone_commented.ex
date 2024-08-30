@@ -7,12 +7,8 @@ defmodule Operately.Activities.Notifications.ProjectMilestoneCommented do
     comment = Operately.Updates.get_comment!(activity.content["comment_id"])
     people = Projects.list_notification_subscribers(project_id, exclude: author_id)
 
-    mentions = 
-      comment.content["message"]
-      |> ProsemirrorMentions.extract_ids()
-      |> Enum.map(fn id -> Operately.People.get_person!(id) end)
-
-    people = Enum.uniq(people ++ mentions) |> Enum.filter(fn person -> person.id != author_id end)
+    mentioned = Operately.RichContent.lookup_mentioned_people(comment.content["message"])
+    people = Enum.uniq_by(people ++ mentioned, & &1.id)
 
     notifications = Enum.map(people, fn person ->
       %{

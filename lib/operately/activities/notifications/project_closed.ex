@@ -7,15 +7,13 @@ defmodule Operately.Activities.Notifications.ProjectClosed do
     project = Projects.get_project!(project_id)
     people = Projects.list_notification_subscribers(project_id, exclude: author_id)
 
-    mentioned_ids = (
-      ProsemirrorMentions.extract_ids(project.retrospective["whatWentWell"])
-      ++ ProsemirrorMentions.extract_ids(project.retrospective["whatCouldHaveGoneBetter"])
-      ++ ProsemirrorMentions.extract_ids(project.retrospective["whatDidYouLearn"])
-    ) |> Enum.uniq()
+    mentioned = (
+      Operately.RichContent.lookup_mentioned_people(project.retrospective["whatWentWell"])
+      ++ Operately.RichContent.lookup_mentioned_people(project.retrospective["whatCouldHaveGoneBetter"])
+      ++ Operately.RichContent.lookup_mentioned_people(project.retrospective["whatDidYouLearn"])
+    )
 
-    mentioned = Enum.map(mentioned_ids, fn id -> Operately.People.get_person!(id) end)
-
-    people = Enum.uniq(people ++ mentioned) |> Enum.filter(fn person -> person.id != author_id end)
+    people = Enum.uniq_by(people ++ mentioned, & &1.id)
 
     notifications = Enum.map(people, fn person ->
       %{

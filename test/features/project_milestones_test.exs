@@ -17,7 +17,7 @@ defmodule Operately.Features.ProjectMilestonesTest do
     |> UI.assert_text("Outline your project timeline with milestones.")
   end
 
-  feature "write a comment on a milestones", ctx do
+  feature "write a comment on a milestone", ctx do
     ctx
     |> Steps.given_that_a_milestone_exists("Contract Signed")
     |> Steps.visit_milestone_page()
