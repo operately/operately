@@ -106,4 +106,46 @@ defmodule Operately.Support.Features.InviteMemberSteps do
 
     ctx
   end
+
+  step :given_that_an_invitation_was_sent_and_expired, ctx, params do
+    member = person_fixture_with_account(%{
+      company_id: ctx.company.id, 
+      full_name: params[:name], 
+      email: params[:email],
+      has_open_invitation: true
+    })
+
+    invitation = invitation_fixture(%{member_id: member.id, admin_id: ctx.admin.id})
+    invitation_token_fixture_unhashed(invitation.id)
+
+    invitation = Operately.Repo.preload(invitation, :invitation_token)
+
+    {:ok, _} = Operately.Repo.update(Ecto.Changeset.change(invitation.invitation_token, %{
+      valid_until: DateTime.add(DateTime.utc_now(), -4, :day) |> DateTime.truncate(:second)
+    }))
+
+    ctx |> Map.put(:member, member)
+  end
+
+  step :assert_an_expired_warning_is_shown_on_the_team_page, ctx do
+    ctx
+    |> UI.visit(Paths.company_admin_path(ctx.company))
+    |> UI.click(testid: "add-remove-people-manually")
+    |> UI.assert_text("Invitation Expired")
+  end
+
+  step :renew_invitation, ctx, name do
+    person = Operately.People.get_person_by_name!(ctx.company, name)
+
+    ctx 
+    |> UI.click(testid: UI.testid(["renew-invitation", Paths.person_id(person)]))
+    |> UI.assert_text("/join?token=")
+  end
+
+  step :assert_invitation_renewed, ctx do
+    member = Operately.People.get_person!(ctx.member.id)
+    member = Operately.Repo.preload(member, [invitation: :invitation_token])
+
+    assert member.invitation.invitation_token.valid_until > DateTime.utc_now()
+  end
 end
