@@ -1,5 +1,5 @@
 defmodule Operately.RichContentTest do
-  use ExUnit.Case
+  use Operately.DataCase
 
   import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
