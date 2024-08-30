@@ -83,7 +83,12 @@ export function ActionLink(props: ActionLinkProps) {
 }
 
 export function DimmedLink(props: LinkProps) {
-  const className = classnames(baseLinkClass, underlineClass(props.underline), "text-content-dimmed hover:text-content-base", props.className);
+  const className = classnames(
+    baseLinkClass,
+    underlineClass(props.underline),
+    "text-content-dimmed hover:text-content-base",
+    props.className,
+  );
 
   return <UnstyledLink {...props} className={className} />;
 }
