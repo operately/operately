@@ -8,6 +8,8 @@ import { Navigation } from "@/features/goals/GoalPageNavigation";
 import { Header } from "@/features/goals/GoalPageHeader";
 import { SuccessConditions } from "@/features/goals/SuccessConditions";
 import { LastCheckInMessage } from "@/features/goals/GoalCheckIn";
+import * as Tabs from "@/components/Tabs"; // this is temporary, will be removed in the next step
+import { Paths } from "@/routes/paths";
 
 interface LoaderResult {
   goal: Goals.Goal;
@@ -18,6 +20,8 @@ export async function loader({ params }): Promise<LoaderResult> {
     goal: await Goals.getGoal({
       id: params.id,
       includeSpace: true,
+      includeChampion: true,
+      includeReviewer: true,
       includeTargets: true,
       includeProjects: true,
       includeLastCheckIn: true,
@@ -35,17 +39,30 @@ export function Page() {
         <Navigation space={goal.space!} />
 
         <Paper.Body minHeight="none">
-          <Header goal={goal} activeTab="status" />
+          <Header goal={goal} />
 
           <div className="flex flex-col gap-10 mt-8 mb-10">
             <SuccessConditions goal={goal} />
             <LastCheckInMessage goal={goal} />
           </div>
 
+          <GoalTabs activeTab="status" goal={goal} />
+
           <GoalFeed />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
+  );
+}
+
+function GoalTabs({ activeTab, goal }: { activeTab: HeaderProps["activeTab"]; goal: Goals.Goal }) {
+  return (
+    <Tabs.Root activeTab={activeTab}>
+      <Tabs.Tab id="status" title="Current Status" linkTo={Paths.goalPath(goal.id!)} />
+      <Tabs.Tab id="subgoals" title="Sub-Goals and Projects" linkTo={Paths.goalSubgoalsPath(goal.id!)} />
+      <Tabs.Tab id="discussions" title="Discussions" linkTo={Paths.goalDiscussionsPath(goal.id!)} />
+      <Tabs.Tab id="about" title="About" linkTo={Paths.goalAboutPath(goal.id!)} />
+    </Tabs.Root>
   );
 }
 
