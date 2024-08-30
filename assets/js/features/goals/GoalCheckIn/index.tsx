@@ -23,24 +23,26 @@ export function LastCheckInMessage({ goal }) {
   const championProfilePath = Paths.profilePath(author.id!);
 
   return (
-    <div className="flex items-start gap-4">
-      <DivLink to={championProfilePath}>
-        <Avatar person={author} size={40} />
-      </DivLink>
-      <div className="flex flex-col gap-1 -mt-1">
-        <div className="font-semibold">
-          Last progress update from <FormattedTime time={goal.lastCheckIn.insertedAt} format="short-date" />
-        </div>
+    <div className="rounded-lg dark:bg-surface-accent shadow hover:shadow-lg">
+      <div className="px-4 py-5 sm:p-6 flex items-start gap-4">
+        <DivLink to={championProfilePath}>
+          <Avatar person={author} size={40} />
+        </DivLink>
+        <div className="flex flex-col gap-1 -mt-1">
+          <div className="font-semibold">
+            Last progress update from <FormattedTime time={goal.lastCheckIn.insertedAt} format="short-date" />
+          </div>
 
-        <div className="flex flex-col gap-3 w-full">
-          <RichContent jsonContent={message} />
+          <div className="flex flex-col gap-3 w-full">
+            <RichContent jsonContent={message} />
 
-          <div className="flex items-center gap-3">
-            <LastMessageReactions goal={goal} />
-            <SecondaryButton linkTo={path} size="xs">
-              Discuss
-            </SecondaryButton>
-            <LastMessageComments goal={goal} />
+            <div className="flex items-center gap-3">
+              <LastMessageReactions goal={goal} />
+              <SecondaryButton linkTo={path} size="xs">
+                Discuss
+              </SecondaryButton>
+              <LastMessageComments goal={goal} />
+            </div>
           </div>
         </div>
       </div>

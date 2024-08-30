@@ -17,6 +17,8 @@ import { DivLink } from "@/components/Link";
 import Avatar from "@/components/Avatar";
 import { DimmedLabel } from "@/components/Label";
 import { SuccessConditions } from "../SuccessConditions";
+import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
+import RichContent from "@/components/RichContent";
 
 interface HeaderProps {
   goal: Goals.Goal;
@@ -27,8 +29,12 @@ export function Header({ goal }: HeaderProps) {
     <div>
       <Options goal={goal} />
       <Banner goal={goal} />
-      <ParentGoal goal={goal.parentGoal} />
-      <GoalTitleRow goal={goal} />
+      <div className="rounded-lg shadow hover:shadow-lg">
+        <div className="px-4 py-5 sm:p-6">
+          <ParentGoal goal={goal.parentGoal} />
+          <GoalTitleRow goal={goal} />
+        </div>
+      </div>
     </div>
   );
 }
@@ -45,6 +51,19 @@ const AvatarAndName = ({ person }) => {
     </DivLink>
   );
 };
+
+function Description({ goal }) {
+  return (
+    <div className="mt-8">
+      <DimmedLabel>Description</DimmedLabel>
+      {isContentEmpty(goal.description) ? (
+        <div className="text-content-dimmed">No description provided</div>
+      ) : (
+        <RichContent jsonContent={goal.description} />
+      )}
+    </div>
+  );
+}
 
 function GoalTitleRow({ goal }: { goal: Goals.Goal }) {
   return (
@@ -75,6 +94,8 @@ function GoalTitleRow({ goal }: { goal: Goals.Goal }) {
         </div>
 
         <SuccessConditions goal={goal} />
+
+        <Description goal={goal} />
       </div>
     </div>
   );
@@ -106,7 +127,7 @@ function ParentGoal({ goal }: { goal: Goals.Goal | null | undefined }) {
     content = (
       <div className="flex items-center gap-1">
         <Icons.IconBuildingEstate size={14} />
-        <GhostLink to={Paths.goalsPath()} text="Company-wide goal" testId="company-goals-link" dimmed size="sm" />
+        <GhostLink to={Paths.goalsPath()} text="This is a company-wide goal" testId="company-goals-link" dimmed size="sm" />
       </div>
     );
   }
