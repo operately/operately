@@ -17,7 +17,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Invitations.Invitation do
 
   defp add_expiration_if_present(map, inv) do
     case inv.invitation_token do
-      nil -> map
+      %Ecto.Association.NotLoaded{} -> map
       token -> Map.put(map, :expires_at, OperatelyWeb.Api.Serializer.serialize(token.valid_until))
     end
   end
