@@ -120,6 +120,10 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
     ctx
   end
 
+  step :assert_expiration_date_is_visible_on_team_page, ctx do
+    ctx |> UI.assert_text("Expires in 24 hours")
+  end
+
   step :given_the_company_has_trusted_email_domains, ctx, domains do
     {:ok, company} = Operately.Companies.update_company(ctx.company, %{trusted_email_domains: domains})
     assert company.trusted_email_domains == domains
