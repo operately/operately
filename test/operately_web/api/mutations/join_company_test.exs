@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.JoinCompany do
+defmodule OperatelyWeb.Api.Mutations.JoinCompanyTest do
   use OperatelyWeb.TurboCase
 
   import Operately.InvitationsFixtures
