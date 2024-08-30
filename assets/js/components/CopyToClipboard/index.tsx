@@ -9,7 +9,7 @@ interface CopyToClipboardProps {
   iconProps?: TablerIconsProps;
 }
 
-export function CopyToClipboard({ text, size, padding = 2, containerClass, iconProps }: CopyToClipboardProps) {
+export function CopyToClipboard({ text, size, padding = 1, containerClass, iconProps }: CopyToClipboardProps) {
   const [copied, setCopied] = useState(false);
 
   const handleClick = () => {
@@ -27,7 +27,7 @@ export function CopyToClipboard({ text, size, padding = 2, containerClass, iconP
   return (
     <div
       onClick={handleClick}
-      className={`relative cursor-pointer hover:bg-stroke-base transition-colors duration-300 ease-in-out rounded ${containerPadding} ${containerClass}`}
+      className={`relative cursor-pointer hover:bg-surface-dimmed transition-colors duration-300 ease-in-out rounded ${containerPadding} ${containerClass}`}
       style={{
         width: containerSize,
         height: containerSize,
@@ -36,7 +36,9 @@ export function CopyToClipboard({ text, size, padding = 2, containerClass, iconP
       {copied ? <IconCheck size={size} color="green" {...iconProps} /> : <IconCopy size={size} {...iconProps} />}
 
       <div
-        className={`absolute bg-stroke-base rounded py-1 px-2 text-xs transition-opacity duration-300 ease-in-out ${copied ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+        className={`absolute bg-surface-dimmed rounded py-1 px-2 text-xs transition-opacity duration-300 ease-in-out ${
+          copied ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
         style={{
           top: "50%",
           right: `calc(${containerSize} + .5rem)`,
