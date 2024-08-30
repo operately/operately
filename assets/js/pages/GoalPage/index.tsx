@@ -42,7 +42,6 @@ export function Page() {
           <Header goal={goal} />
 
           <div className="flex flex-col gap-10 mt-8 mb-10">
-            <SuccessConditions goal={goal} />
             <LastCheckInMessage goal={goal} />
           </div>
 
