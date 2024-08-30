@@ -15,33 +15,63 @@ defmodule Operately.Time do
     as_datetime(date)
   end
 
-  def calculate_next_monthly_check_in(previous_due, check_in_date) do
-    previous_due = as_date(previous_due)
+  @montly_delta 7 # how many days before the due date is considered on time
+
+  def calculate_next_monthly_check_in(due, check_in_date) do
+    due = as_date(due || check_in_date)
     check_in_date = as_date(check_in_date)
 
-    if Date.compare(previous_due, check_in_date) == :lt do
-      first_of_next_month(check_in_date)
-    else
-      if Date.compare(previous_due, Date.add(check_in_date, 7)) == :lt do
-        first_of_next_month(previous_due)
-      else
-        as_datetime(previous_due)
-      end
+    case Date.compare(check_in_date, due) do
+      :eq ->
+        # check in on time, schedule next check-in for first of next month
+        first_of_next_month(check_in_date)
+
+      :gt ->
+        # check-in late, schedule first of next month
+        first_of_next_month(check_in_date)
+
+      :lt ->
+        # check-in early
+        diff = Date.diff(due, check_in_date)
+
+        if diff <= @montly_delta do
+          # check-in always on time just a day before the due date
+          # we consider this as on time
+          first_of_next_month(due)
+        else
+          # significantly early, don't change the next check-in
+          as_datetime(due)
+        end
     end
   end
 
-  def calculate_next_check_in(previous_due, check_in_date) do
-    if previous_due == nil do
-      next_week_friday(check_in_date)
-    else
-      previous_due = as_date(previous_due)
-      check_in_date = as_date(check_in_date)
+  @weekly_delta 1 # how many days before the due date is considered on time
 
-      if Date.compare(previous_due, check_in_date) == :lt do
+  def calculate_next_weekly_check_in(due, check_in_date) do
+    due = as_date(due || check_in_date)
+    check_in_date = as_date(check_in_date)
+
+    case Date.compare(check_in_date, due) do
+      :eq ->
+        # check in on time, schedule next check-in for next Friday
         next_week_friday(check_in_date)
-      else
-        next_week_friday(previous_due)
-      end
+
+      :gt ->
+        # check-in late, schedule next friday from today
+        next_week_friday(check_in_date)
+
+      :lt ->
+        # check-in early
+        diff = Date.diff(due, check_in_date)
+
+        if diff <= @weekly_delta do
+          # check-in always on time just a day before the due date
+          # we consider this as on time
+          next_week_friday(due)
+        else
+          # significantly early, don't change the next check-in
+          as_datetime(due)
+        end
     end
   end
 
