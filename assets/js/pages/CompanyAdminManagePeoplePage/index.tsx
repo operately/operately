@@ -134,6 +134,8 @@ function PersonRow({ person }: { person: People.Person }) {
       </div>
 
       <div className="flex gap-2 items-center">
+        {People.hasValidInvite(person) && <ExpiresIn invitation={person.invitation!} />}
+
         <PersonActions person={person} />
         <PersonOptions person={person} />
       </div>
@@ -160,17 +162,49 @@ function PersonInfo({ person }: { person: People.Person }) {
 function PersonActions({ person }: { person: People.Person }) {
   return (
     <div className="flex items-center gap-4">
-      {People.hasValidInvite(person) && <ExpiresIn invitation={person.invitation!} />}
+      {People.hasInvitationExpired(person) ? (
+        <ExpiredInvitationAndRenewButton person={person} />
+      ) : (
+        <EditProfileButton person={person} />
+      )}
+    </div>
+  );
+}
+
+function ExpiredInvitationAndRenewButton({ person }: { person: People.Person }) {
+  const modal = useModalState();
+
+  return (
+    <>
+      <RenewInvitationModal person={person} state={modal} />
+
+      <div className="text-content-error font-semibold flex items-center gap-2">
+        <Icons.IconAlertTriangle size={20} />
+        Invitation Expired
+      </div>
 
       <FilledButton
         type="secondary"
         size="xs"
-        linkTo={Paths.profileEditPath(person.id!, { from: "admin-manage-people" })}
-        testId={createTestId("edit", person.id!)}
+        onClick={modal.show}
+        testId={createTestId("renew-invitation", person.id!)}
       >
-        Edit Profile
+        Renew Invitation
       </FilledButton>
-    </div>
+    </>
+  );
+}
+
+function EditProfileButton({ person }: { person: People.Person }) {
+  return (
+    <FilledButton
+      type="secondary"
+      size="xs"
+      linkTo={Paths.profileEditPath(person.id!, { from: "admin-manage-people" })}
+      testId={createTestId("edit", person.id!)}
+    >
+      Edit Profile
+    </FilledButton>
   );
 }
 
@@ -277,6 +311,34 @@ function ReissueInvitationModal(props: { person: People.Person; state: ModalStat
 
         {!isGenerated && <NewInvitationButton onClick={generate} loading={loading} />}
         {isGenerated && <NewInvitationUrl url={url} person={props.person} />}
+      </Modal>
+    </>
+  );
+}
+
+function RenewInvitationModal(props: { person: People.Person; state: ModalState }) {
+  const refresh = Pages.useRefresh();
+  const [url, setUrl] = React.useState("");
+  const [create] = Companies.useNewInvitationToken();
+
+  React.useEffect(() => {
+    create({ personId: props.person.id! }).then((res) => {
+      setUrl(Companies.createInvitationUrl(res.invitation!.token!));
+    });
+  }, []);
+
+  return (
+    <>
+      <Modal
+        title="New invitation URL"
+        isOpen={props.state.isOpen}
+        hideModal={() => {
+          refresh();
+        }}
+        minHeight="120px"
+        width="800px"
+      >
+        <NewInvitationUrl url={url} person={props.person} />
       </Modal>
     </>
   );
