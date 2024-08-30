@@ -6,7 +6,6 @@ import * as Goals from "@/models/goals";
 import { Feed, useItemsQuery } from "@/features/Feed";
 import { Navigation } from "@/features/goals/GoalPageNavigation";
 import { Header } from "@/features/goals/GoalPageHeader";
-import { SuccessConditions } from "@/features/goals/SuccessConditions";
 import { LastCheckInMessage } from "@/features/goals/GoalCheckIn";
 import * as Tabs from "@/components/Tabs"; // this is temporary, will be removed in the next step
 import { Paths } from "@/routes/paths";
@@ -41,7 +40,7 @@ export function Page() {
         <Paper.Body minHeight="none">
           <Header goal={goal} />
 
-          <div className="flex flex-col gap-10 mt-8 mb-10">
+          <div className="flex flex-col mt-4 mb-10">
             <LastCheckInMessage goal={goal} />
           </div>
 
