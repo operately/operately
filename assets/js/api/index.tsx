@@ -650,6 +650,7 @@ export interface Invitation {
   member?: Person | null;
   company?: Company | null;
   token?: string | null;
+  expiresAt?: string | null;
 }
 
 export interface Milestone {
@@ -704,6 +705,7 @@ export interface Person {
   theme?: string | null;
   accessLevel?: number | null;
   hasOpenInvitation?: boolean | null;
+  invitation?: Invitation | null;
 }
 
 export interface Project {
@@ -1242,6 +1244,7 @@ export interface GetNotificationsResult {
 export interface GetPeopleInput {
   includeSuspended?: boolean | null;
   includeManager?: boolean | null;
+  includeInvitations?: boolean | null;
 }
 
 export interface GetPeopleResult {

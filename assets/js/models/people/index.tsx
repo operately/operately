@@ -1,4 +1,6 @@
 import * as api from "@/api";
+import * as Time from "@/utils/time";
+
 import Api, { GetMeInput } from "@/api";
 
 export type Person = api.Person;
@@ -110,4 +112,14 @@ export function sortByName(people: Person[]): Person[] {
     .slice()
     .map((p) => p!)
     .sort((a, b) => a!.fullName!.localeCompare(b!.fullName!));
+}
+
+export function hasValidInvite(person: Person) {
+  if (!person.hasOpenInvitation) return false;
+  if (!person.invitation?.expiresAt) return false;
+
+  const time = Time.parse(person.invitation!.expiresAt!);
+  if (!time) return false;
+
+  return time > Time.now();
 }

@@ -143,8 +143,8 @@ defmodule Operately.InvitationsTest do
     test "valid_token_time?/2 returns correct value" do
       token = invitation_token_fixture()
 
-      valid_time = DateTime.add(DateTime.utc_now(), -100, :minute)
-      invalid_time = DateTime.add(DateTime.utc_now(), 100, :minute)
+      valid_time = DateTime.add(DateTime.utc_now(), -30, :hour)
+      invalid_time = DateTime.add(DateTime.utc_now(), 30, :hour)
 
       assert InvitationToken.valid_token_time?(token, valid_time)
       assert !InvitationToken.valid_token_time?(token, invalid_time)

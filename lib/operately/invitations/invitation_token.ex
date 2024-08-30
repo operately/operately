@@ -34,7 +34,7 @@ defmodule Operately.Invitations.InvitationToken do
   end
 
   defp put_valid_until(changeset, opts) do
-    minutes = Keyword.get(opts, :minutes, 60)
+    minutes = Keyword.get(opts, :minutes, 24 * 60)
 
     valid_until = DateTime.add(DateTime.utc_now(), minutes * 60, :second) |> DateTime.truncate(:second)
     put_change(changeset, :valid_until, valid_until)
