@@ -7,13 +7,8 @@ defmodule Operately.Activities.Notifications.ProjectCheckInSubmitted do
     check_in = Operately.Projects.get_check_in!(activity.content["check_in_id"])
 
     people = Projects.list_notification_subscribers(project_id, exclude: author_id)
-
-    mentions = 
-      check_in.description
-      |> ProsemirrorMentions.extract_ids()
-      |> Enum.map(fn id -> Operately.People.get_person!(id) end)
-
-    people = Enum.uniq(people ++ mentions)
+    mentioned = Operately.RichContent.lookup_mentioned_people(check_in.description)
+    people = Enum.uniq_by(people ++ mentioned, & &1.id)
 
     notifications = Enum.map(people, fn person ->
       %{
