@@ -39,15 +39,11 @@ defmodule Operately.Activities.Notifications.CommentAdded do
     comment_thread = Operately.Comments.get_thread!(comment_thread_id)
     comments = Operately.Updates.list_comments(comment_thread.id, "comment_thread")
 
-    people = get_people_from_rich_text(comment_thread.message)
-    people_from_comments = Enum.map(comments, fn comment -> get_people_from_rich_text(comment.content) end)
+    people = Operately.RichContent.lookup_mentioned_people(comment_thread.message)
+    people_from_comments = Enum.map(comments, fn comment -> 
+      Operately.RichContent.lookup_mentioned_people(comment.content)
+    end)
 
     people ++ people_from_comments
-  end
-
-  def get_people_from_rich_text(rich_text) do
-    rich_text
-    |> ProsemirrorMentions.extract_ids()
-    |> Enum.map(fn id -> Operately.People.get_person!(id) end)
   end
 end
