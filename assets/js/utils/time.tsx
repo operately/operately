@@ -1,6 +1,10 @@
 import * as datefsn from "date-fns";
 import * as Quarters from "./quarters";
 
+export function now() {
+  return new Date();
+}
+
 export function today() {
   return datefsn.startOfDay(new Date());
 }

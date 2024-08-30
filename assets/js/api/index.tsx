@@ -650,6 +650,7 @@ export interface Invitation {
   member?: Person | null;
   company?: Company | null;
   token?: string | null;
+  expiresAt?: string | null;
 }
 
 export interface Milestone {
@@ -704,6 +705,7 @@ export interface Person {
   theme?: string | null;
   accessLevel?: number | null;
   hasOpenInvitation?: boolean | null;
+  invitation?: Invitation | null;
 }
 
 export interface Project {

@@ -493,6 +493,7 @@ defmodule OperatelyWeb.Api.Types do
     field :member, :person
     field :company, :company
     field :token, :string
+    field :expires_at, :datetime
   end
 
   object :activity_content_task_adding do
@@ -616,6 +617,7 @@ defmodule OperatelyWeb.Api.Types do
     field :theme, :string
     field :access_level, :integer
     field :has_open_invitation, :boolean
+    field :invitation, :invitation
   end
 
   object :project_health do
