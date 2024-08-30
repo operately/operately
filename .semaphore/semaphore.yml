@@ -25,17 +25,19 @@ blocks:
       prologue:
         commands:
           - checkout
-          - cache restore
-          - cd assets && cache restore && cd .. # cache node_packages
+          - cache restore operately.tar  # cached docker image
+          - cache restore mix_deps       # cached mix dependencies in deps/
+          - cache restore mix_build      # cached mix build in _build/
+          - cache restore node_modules   # cached node packages in assets/node_modules
+          - docker load -i operately.tar
           - make test.build
 
       epilogue:
         always:
           commands:
             - '[ -f testreports/junit.xml ] && test-results publish testreports/junit.xml'
-            - cache store
-            - cd assets && cache store && cd .. # cache node_packages
             - artifact push workflow screenshots
+
       jobs:
         - name: Unit Tests
           commands:
