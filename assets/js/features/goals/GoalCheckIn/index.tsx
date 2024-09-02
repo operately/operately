@@ -23,9 +23,12 @@ export function LastCheckInMessage({ goal }) {
   const championProfilePath = Paths.profilePath(author.id!);
 
   return (
-    <div className="mt-16 pl-2">
+    <div className="mt-16 px-2">
       <div className="font-medium text-content-dimmed text-lg mb-4">
-        Last progress update from <FormattedTime time={goal.lastCheckIn.insertedAt} format="short-date" />
+        <div className="flex items-center gap-1">
+          <Icons.IconWaveSawTool size={20} />{" "}
+          Last progress update from <FormattedTime time={goal.lastCheckIn.insertedAt} format="short-date" />
+        </div>
       </div>
 
       <div className="flex items-start gap-4">

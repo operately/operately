@@ -59,10 +59,10 @@ export function Page() {
 
 function MessageBoard({ goal }) {
   return (
-    <div className="divide-y divide-surface-outline overflow-hidden rounded-lg shadow hover:shadow-lg">
-      <div className="px-4 py-5 sm:px-6">
+    <div className="divide-y divide-surface-outline mt-12">
+      <div className="px-2 py-5">
         <div className="flex justify-between">
-          <div className="flex items-center space-x-2 font-bold">
+          <div className="flex items-center space-x-2 font-medium text-lg">
             <IconMessage size={20} />
             <BlackLink to={Paths.goalDiscussionsPath(goal.id!)} >Message Board</BlackLink>
             <span>(5)</span>
@@ -70,9 +70,9 @@ function MessageBoard({ goal }) {
           <ButtonSecondaryRounded title="Write a new message" url="" />
         </div>
       </div>
-      <div className="px-4 py-5 sm:p-6">
+      <div className="px-2 py-2">
         <Discussions />
-        <div className="mb-4">
+        <div className="my-2">
           <BlackLink to={Paths.goalDiscussionsPath(goal.id!)} >View all discussions</BlackLink>
         </div>
       </div>
@@ -211,7 +211,7 @@ export default function Discussions() {
       {discussions.map((discussion) => (
         <li
           key={discussion.id}
-          className="flex flex-wrap items-center justify-between gap-x-6 gap-y-4 pb-5 sm:flex-nowrap"
+          className="flex flex-wrap items-center justify-between gap-x-6 gap-y-4 py-2 sm:flex-nowrap"
         >
           <div>
             <p className="font-semibold leading-6">
