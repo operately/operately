@@ -24,7 +24,7 @@ export function LastCheckInMessage({ goal }) {
 
   return (
     <div className="mt-16 px-2">
-      <div className="font-medium text-content-dimmed text-lg mb-4">
+      <div className="font-medium text-content-base text-lg mb-4">
         <div className="flex items-center gap-1">
           <Icons.IconWaveSawTool size={20} />{" "}
           Last progress update from <FormattedTime time={goal.lastCheckIn.insertedAt} format="short-date" />
