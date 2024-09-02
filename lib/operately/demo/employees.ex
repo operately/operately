@@ -35,7 +35,7 @@ defmodule Operately.Demo.Employees do
   end
 
   def set_owner_avatar(context) do
-    Map.put(context, :owner, set_avatar(context.owner, avatar("photo-1531265180709-e9b5fb594ca6")))
+    Map.put(context, :owner, set_avatar(context.owner, "https://lh3.googleusercontent.com/a/ACg8ocILTOndcnZ-XIGfLdRiI4i6h2QhDVTtaj9XBh3FD_V94g8wLMo=s96-c"))
   end
 
   def avatar(source) do
@@ -43,6 +43,8 @@ defmodule Operately.Demo.Employees do
   end
 
   defp add_person(context, attrs) do
+    IO.puts("Adding #{attrs.name} as #{attrs.title}")
+
     {:ok, invitation} = Operately.Operations.CompanyMemberAdding.run(context.owner, %{
       full_name: attrs.name,
       email: create_email(context, attrs),
@@ -62,7 +64,7 @@ defmodule Operately.Demo.Employees do
   end
 
   defp create_email(context, attrs) do
-    email_handle = String.replace(attrs.name, " ", "-") <> "-" <> context.company.short_id
+    email_handle = String.replace(attrs.name, " ", "-") <> "-" <> to_string(context.company.short_id)
     "#{email_handle}@acmeinc.com"
   end
 end
