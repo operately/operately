@@ -27,17 +27,18 @@ export function LastCheckInMessage({ goal }) {
   const championProfilePath = Paths.profilePath(author.id!);
 
   return (
-    <div className="rounded-lg dark:bg-surface-accent shadow hover:shadow-lg">
-      <div className="px-4 py-5 sm:p-6 flex items-start gap-4">
+    <div className="mt-16 pl-2">
+      <div className="font-medium text-content-dimmed text-lg mb-4">
+        Last progress update from <FormattedTime time={goal.lastCheckIn.insertedAt} format="short-date" />
+      </div>
+
+      <div className="flex items-start gap-4">
         <DivLink to={championProfilePath}>
           <Avatar person={author} size={40} />
         </DivLink>
         <div className="flex flex-col gap-1 -mt-1">
-          <div className="font-semibold">
-            Last progress update from <FormattedTime time={goal.lastCheckIn.insertedAt} format="short-date" />
-          </div>
-
           <div className="flex flex-col gap-3 w-full">
+            <div className="font-bold -mb-2">{People.shortName(author)}</div>
             <RichContent jsonContent={message} />
 
             <div className="flex items-center gap-3">
