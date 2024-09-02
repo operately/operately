@@ -2,7 +2,9 @@ import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as Goals from "@/models/goals";
+import * as Projects from "@/models/projects";
 
+import { GoalTree } from "@/features/goals/GoalTree";
 import { Feed, useItemsQuery } from "@/features/Feed";
 import { Navigation } from "@/features/goals/GoalPageNavigation";
 import { Header } from "@/features/goals/GoalPageHeader";
@@ -10,29 +12,56 @@ import { LastCheckInMessage } from "@/features/goals/GoalCheckIn";
 import * as Tabs from "@/components/Tabs"; // this is temporary, will be removed in the next step
 import { Paths } from "@/routes/paths";
 import { BlackLink } from "@/components/Link";
-import { IconMessage } from "@tabler/icons-react";
+import { IconListTree, IconMessage, IconTarget } from "@tabler/icons-react";
+
 
 interface LoaderResult {
   goal: Goals.Goal;
+  goals: Goals.Goal[];
+  projects: Projects.Project[];
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
+  const goalPromise = await Goals.getGoal({
+    id: params.id,
+    includeSpace: true,
+    includeChampion: true,
+    includeReviewer: true,
+    includeTargets: true,
+    includeProjects: true,
+    includeLastCheckIn: true,
+    includePermissions: true,
+  }).then((data) => data.goal!);
+
+  const goalsPromise = Goals.getGoals({
+    includeTargets: true,
+    includeSpace: true,
+    includeLastCheckIn: true,
+    includeChampion: true,
+    includeReviewer: true,
+  }).then((data) => data.goals!);
+
+  const projectsPromise = Projects.getProjects({
+    includeGoal: true,
+    includeSpace: true,
+    includeLastCheckIn: true,
+    includeChampion: true,
+    includeMilestones: true,
+  }).then((data) => data.projects!);
+
   return {
-    goal: await Goals.getGoal({
-      id: params.id,
-      includeSpace: true,
-      includeChampion: true,
-      includeReviewer: true,
-      includeTargets: true,
-      includeProjects: true,
-      includeLastCheckIn: true,
-      includePermissions: true,
-    }).then((data) => data.goal!),
+    goal: await goalPromise,
+    goals: await goalsPromise,
+    projects: await projectsPromise,
   };
 }
 
+export function useLoadedData(): LoaderResult {
+  return Pages.useLoadedData() as LoaderResult;
+}
+
 export function Page() {
-  const { goal } = Pages.useLoadedData<LoaderResult>();
+  const { goal, goals, projects } = useLoadedData();
 
   return (
     <Pages.Page title={[goal.name!]}>
@@ -46,9 +75,7 @@ export function Page() {
 
           <MessageBoard goal={goal} />
 
-          <div className="mt-12">
-            <GoalTabs activeTab="status" goal={goal} />
-          </div>
+          <GoalSubGoals goal={goal} goals={goals} projects={projects} />
 
           <GoalFeed />
         </Paper.Body>
@@ -62,10 +89,10 @@ function MessageBoard({ goal }) {
     <div className="divide-y divide-surface-outline mt-12">
       <div className="px-2 py-5">
         <div className="flex justify-between">
-          <div className="flex items-center space-x-2 font-medium text-lg">
-            <IconMessage size={20} />
-            <BlackLink to={Paths.goalDiscussionsPath(goal.id!)} >Message Board</BlackLink>
-            <span>(5)</span>
+          <div className="flex items-center gap-1 font-medium text-lg text-content-base">
+            <IconMessage size={20} />{" "}
+            <BlackLink to={Paths.goalDiscussionsPath(goal.id!)} >Message board</BlackLink>{" "}
+            (5)
           </div>
           <ButtonSecondaryRounded title="Write a new message" url="" />
         </div>
@@ -262,15 +289,25 @@ export default function Discussions() {
   )
 }
 
-function GoalTabs({ activeTab, goal }: { activeTab: HeaderProps["activeTab"]; goal: Goals.Goal }) {
+
+function GoalSubGoals({ goal, goals, projects }) {
   return (
-    <Tabs.Root activeTab={activeTab}>
-      <Tabs.Tab id="status" title="Current Status" linkTo={Paths.goalPath(goal.id!)} />
-      <Tabs.Tab id="subgoals" title="Sub-Goals and Projects" linkTo={Paths.goalSubgoalsPath(goal.id!)} />
-      <Tabs.Tab id="discussions" title="Discussions" linkTo={Paths.goalDiscussionsPath(goal.id!)} />
-      <Tabs.Tab id="about" title="About" linkTo={Paths.goalAboutPath(goal.id!)} />
-    </Tabs.Root>
-  );
+    <>
+      <div className="font-medium text-lg text-content-base mt-12 mb-4 flex items-center gap-1">
+        <IconListTree size={20} />
+        Sub-goals and projects
+      </div>
+
+      <GoalTree
+        goals={goals}
+        projects={projects}
+        options={{
+          goalId: goal.id!,
+        }}
+      />
+      <div className="mb-16" />
+    </>
+  )
 }
 
 function GoalFeed() {
@@ -278,7 +315,7 @@ function GoalFeed() {
 
   return (
     <Paper.DimmedSection>
-      <div className="uppercase text-xs text-content-accent font-semibold mb-4">Activity</div>
+      <div className="text-lg font-medium text-content-dimmed mb-4">Activity</div>
       <GoalFeedItems goal={goal} />
     </Paper.DimmedSection>
   );
