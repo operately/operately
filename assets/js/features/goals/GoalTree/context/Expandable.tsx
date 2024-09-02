@@ -43,6 +43,8 @@ export function ExpandableProvider({ children, tree }: ExpandableProviderProps) 
     setExpanded({});
   };
 
+  React.useEffect(expandAll, []);
+
   const state = {
     expanded,
     toggleExpanded,
