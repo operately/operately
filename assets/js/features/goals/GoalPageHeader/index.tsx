@@ -29,12 +29,8 @@ export function Header({ goal }: HeaderProps) {
     <div>
       <Options goal={goal} />
       <Banner goal={goal} />
-      <div className="rounded-lg shadow hover:shadow-lg">
-        <div className="px-4 py-5 sm:p-6">
-          <ParentGoal goal={goal.parentGoal} />
-          <GoalTitleRow goal={goal} />
-        </div>
-      </div>
+      <ParentGoal goal={goal.parentGoal} />
+      <GoalTitleRow goal={goal} />
     </div>
   );
 }

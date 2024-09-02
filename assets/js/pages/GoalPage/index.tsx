@@ -42,13 +42,13 @@ export function Page() {
         <Paper.Body minHeight="none">
           <Header goal={goal} />
 
-          <div className="flex flex-col mt-4 mb-4">
-            <LastCheckInMessage goal={goal} />
-          </div>
+          <LastCheckInMessage goal={goal} />
 
           <MessageBoard goal={goal} />
 
-          <GoalTabs activeTab="status" goal={goal} />
+          <div className="mt-12">
+            <GoalTabs activeTab="status" goal={goal} />
+          </div>
 
           <GoalFeed />
         </Paper.Body>
@@ -59,7 +59,7 @@ export function Page() {
 
 function MessageBoard({ goal }) {
   return (
-    <div className="divide-y divide-surface-outline overflow-hidden rounded-lg shadow hover:shadow-lg dark:bg-surface-highlight">
+    <div className="divide-y divide-surface-outline overflow-hidden rounded-lg shadow hover:shadow-lg">
       <div className="px-4 py-5 sm:px-6">
         <div className="flex justify-between">
           <div className="flex items-center space-x-2 font-bold">
