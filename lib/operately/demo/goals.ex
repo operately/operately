@@ -42,12 +42,17 @@ defmodule Operately.Demo.Goals do
     })
     |> add_project(%{
       space: context.product_space,
-      name: "Improve the performance of the app",
-      champion: find_person(context, "Frank Miller"),
-      reviewer: find_person(context, "Emily Davis"),
+      name: "Self-hosted Installation",
+      champion: context.owner,
+      reviewer: find_person(context, "Frank Miller"),
       parent: find_goal(context, "Release v1.0 of the Product"),
-      check_in: :default,
-      milestones: :default,
+      check_in: :no_check_in,
+      milestones: [
+        "A self-hosted installation is available",
+        "The installation process is tested on different environments",
+        "Documentation is complete",
+      ],
+      description: rich_text("We want to provide our users with the option to host Operately on their own servers. This will allow them to have full control over their data and infrastructure, and it will also help us reach customers who have strict data privacy requirements."),
     })
     |> add_goal(%{
       space: context.marketing_space,
@@ -95,7 +100,7 @@ defmodule Operately.Demo.Goals do
       name: "Hire a Software Engineer",
       description: rich_text("We want to hire a software engineer to enhance Operately's core functionalities, ensuring our product is robust, scalable, and user-friendly. The engineer will play a crucial role in developing new features, optimizing performance, and maintaining the codebase. This addition to our team is essential to accelerate our development process and meet our growing user demands."),
       champion: find_person(context, "Emily Davis"),
-      reviewer: find_person(context, "Emily Davis"),
+      reviewer: context.owner,
       parent: find_goal(context, "Recruit Key Talent"),
       check_in: %{
         status: "on_track",
@@ -119,7 +124,7 @@ defmodule Operately.Demo.Goals do
       space: context.people_space,
       name: "Hire a Support Specialist",
       champion: find_person(context, "Tina Scott"),
-      reviewer: context.owner,
+      reviewer: find_person(context, "Emily Davis"),
       parent: find_goal(context, "Recruit Key Talent"),
       check_in: :default,
       milestones: :default
@@ -131,15 +136,6 @@ defmodule Operately.Demo.Goals do
       reviewer: find_person(context, "Emily Davis"),
       parent: find_goal(context, "Build a Strong Team"),
       check_in: :default,
-    })
-    |> add_project(%{
-      space: context.people_space,
-      name: "Employee Handbook",
-      champion: find_person(context, "Karen Martinez"),
-      reviewer: find_person(context, "Emily Davis"),
-      parent: find_goal(context, "Develop a Strong Company Culture"),
-      check_in: :default,
-      milestones: :default
     })
     |> add_project(%{
       space: context.people_space,
@@ -253,6 +249,12 @@ defmodule Operately.Demo.Goals do
       project_due_date: DateTime.new!(deadline, ~T[00:00:00], "Etc/UTC"),
       milestone_updates: [],
       new_milestones: []
+    })
+  end
+
+  def create_project_check_in(_champion, project, :no_check_in) do
+    Operately.Projects.update_project(project, %{
+      next_check_in_scheduled_at: Date.utc_today() |> Date.add(-1) |> DateTime.new!(~T[00:00:00], "Etc/UTC")
     })
   end
 

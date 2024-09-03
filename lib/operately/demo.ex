@@ -15,6 +15,7 @@ defmodule Operately.Demo do
       |> Goals.create_goals_and_projects()
     end)
 
+    :timer.sleep(2000) # wait for background job to finish
     mark_all_notifications_as_read(context)
   end
 
