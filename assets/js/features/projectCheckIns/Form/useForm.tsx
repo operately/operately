@@ -47,9 +47,11 @@ export interface FormState {
   cancelPath: string;
 }
 
-export function useForm({ mode, project, checkIn, author, notifiablePeople }: UseFormOptions): FormState {
+export function useForm({ mode, project, checkIn, author, notifiablePeople = [] }: UseFormOptions): FormState {
   const navigate = useNavigate();
-  const subscriptionsState = useSubscriptions(notifiablePeople || []);
+  const subscriptionsState = useSubscriptions(notifiablePeople, {
+    alwaysNotify: getReviewerAndChampion(notifiablePeople),
+  });
 
   const [status, setStatus] = React.useState<string | null>(mode === "edit" ? checkIn!.status! : null);
   const [errors, setErrors] = React.useState<Error[]>([]);
@@ -157,4 +159,8 @@ function validate(status: string | null, description: string): Error[] {
   }
 
   return errors;
+}
+
+function getReviewerAndChampion(people: People.Person[]) {
+  return people.filter((p) => p.title === "Reviewer" || p.title === "Champion");
 }
