@@ -1,4 +1,4 @@
-defmodule Operately.Operations.ProjectContributorRemoving do
+defmodule Operately.Operations.ProjectContributorRemoved do
   alias Ecto.Multi
   alias Operately.Repo
   alias Operately.Access

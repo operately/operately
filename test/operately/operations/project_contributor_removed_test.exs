@@ -1,4 +1,4 @@
-defmodule Operately.Operations.ProjectContributorRemovingTest do
+defmodule Operately.Operations.ProjectContributorRemovedTest do
   use Operately.DataCase
 
   import Operately.CompaniesFixtures
@@ -26,13 +26,13 @@ defmodule Operately.Operations.ProjectContributorRemovingTest do
     {:ok, creator: creator, contributor: contributor, person: person, project: project}
   end
 
-  test "ProjectContributorRemoving operation deletes contributor", ctx do
+  test "ProjectContributorRemoved operation deletes contributor", ctx do
     contributors = get_contributors(ctx.project)
 
     assert 3 == length(contributors)
     assert Enum.member?(contributors, {ctx.person.id, :contributor})
 
-    Operately.Operations.ProjectContributorRemoving.run(ctx.creator, ctx.contributor)
+    Operately.Operations.ProjectContributorRemoved.run(ctx.creator, ctx.contributor)
 
     contributors = get_contributors(ctx.project)
 
@@ -40,23 +40,23 @@ defmodule Operately.Operations.ProjectContributorRemovingTest do
     refute Enum.member?(contributors, {ctx.person.id, :contributor})
   end
 
-  test "ProjectContributorRemoving operation deletes access binding", ctx do
+  test "ProjectContributorRemoved operation deletes access binding", ctx do
     context = Access.get_context!(project_id: ctx.project.id)
     group = Access.get_group!(person_id: ctx.person.id)
 
     assert Access.get_binding(context_id: context.id, group_id: group.id)
 
-    Operately.Operations.ProjectContributorRemoving.run(ctx.creator, ctx.contributor)
+    Operately.Operations.ProjectContributorRemoved.run(ctx.creator, ctx.contributor)
 
     refute Access.get_binding(context_id: context.id, group_id: group.id)
   end
 
-  test "ProjectContributorRemoving operation creates activity", ctx do
+  test "ProjectContributorRemoved operation creates activity", ctx do
     query = from(a in Activity, where: a.action == "project_contributor_removed" and a.content["project_id"] == ^ctx.project.id)
 
     refute Repo.one(query)
 
-    Operately.Operations.ProjectContributorRemoving.run(ctx.creator, ctx.contributor)
+    Operately.Operations.ProjectContributorRemoved.run(ctx.creator, ctx.contributor)
 
     assert Repo.one(query)
   end

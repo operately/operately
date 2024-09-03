@@ -1,13 +1,13 @@
 import * as People from "@/models/people";
 
-import type { ActivityContentProjectContributorAddition } from "@/api";
+import type { ActivityContentProjectContributorRemoved } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-import { feedTitle, projectLink } from "./../feedItemLinks";
+import { feedTitle, projectLink } from "../feedItemLinks";
 import { Paths } from "@/routes/paths";
 
-const ProjectContributorRemoving: ActivityHandler = {
+const ProjectContributorRemoved: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
     throw new Error("Not implemented");
   },
@@ -33,9 +33,9 @@ const ProjectContributorRemoving: ActivityHandler = {
     const project = projectLink(content(activity).project!);
 
     if (page === "project") {
-      return feedTitle(activity, "removed", person, "to the project");
+      return feedTitle(activity, "removed", person, "from the project");
     } else {
-      return feedTitle(activity, "removed", person, "to the", project, "project");
+      return feedTitle(activity, "removed", person, "from the", project, "project");
     }
   },
 
@@ -60,8 +60,8 @@ const ProjectContributorRemoving: ActivityHandler = {
   },
 };
 
-function content(activity: Activity): ActivityContentProjectContributorRemoving {
-  return activity.content as ActivityContentProjectContributorRemoving;
+function content(activity: Activity): ActivityContentProjectContributorRemoved {
+  return activity.content as ActivityContentProjectContributorRemoved;
 }
 
-export default ProjectContributorRemoving;
+export default ProjectContributorRemoved;
