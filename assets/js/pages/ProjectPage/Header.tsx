@@ -2,7 +2,6 @@ import * as React from "react";
 import * as Icons from "@tabler/icons-react";
 import * as Projects from "@/models/projects";
 
-import classnames from "classnames";
 import ContributorAvatar from "@/components/ContributorAvatar";
 
 import { Link } from "react-router-dom";
@@ -12,6 +11,7 @@ import { Project } from "@/models/projects";
 import { Tooltip } from "@/components/Tooltip";
 import { Paths } from "@/routes/paths";
 import { GhostButton } from "@/components/Button";
+import { match } from "ts-pattern";
 
 interface HeaderProps {
   project: Project;
@@ -20,29 +20,29 @@ interface HeaderProps {
 export default function Header({ project }: HeaderProps): JSX.Element {
   return (
     <div>
-      <ProjectName project={project} />
-      <div className="mt-2"></div>
+      <div className="flex-1 truncate mb-2">
+        <ParentGoal project={project} />
+
+        <div className="flex items-center text-content-accent truncate mr-12">
+          <ProjectIcon />
+          <ProjectName project={project} />
+          <PrivacyIndicator project={project} />
+        </div>
+      </div>
+
       <ContributorList project={project} />
     </div>
   );
 }
 
 function ProjectName({ project }) {
+  return <div className="font-bold text-2xl text-content-accent truncate ml-3 mr-2">{project.name}</div>;
+}
+
+function ProjectIcon() {
   return (
-    <div className="flex-1 truncate">
-      <ParentGoal project={project} />
-
-      <div className={classnames("flex gap-3 items-center", "text-content-accent", "truncate mr-12")}>
-        <div className="bg-indigo-500/10 p-1.5 rounded-lg">
-          <Icons.IconHexagons size={24} className="text-indigo-500" />
-        </div>
-
-        <div className="inline-flex items-center gap-2 truncate">
-          <div className="font-bold text-2xl text-content-accent truncate flex-1">{project.name}</div>
-        </div>
-
-        <PrivateIndicator project={project} />
-      </div>
+    <div className="bg-indigo-500/10 p-1.5 rounded-lg">
+      <Icons.IconHexagons size={24} className="text-indigo-500" />
     </div>
   );
 }
@@ -83,13 +83,42 @@ function ParentGoal({ project }: { project: Projects.Project }) {
   );
 }
 
-function PrivateIndicator({ project }) {
-  if (!project.private) return null;
+function PrivacyIndicator({ project }: { project: Projects.Project }) {
+  return match(project.privacy)
+    .with(Projects.PRIVACY_PUBLIC, () => <PrivacyPublic />)
+    .with(Projects.PRIVACY_INTERNAL, () => null)
+    .with(Projects.PRIVACY_CONFIDENTIAL, () => <PrivacyConfidential />)
+    .with(Projects.PRIVACY_SECRET, () => <PrivacySecret />)
+    .otherwise(() => {
+      throw new Error("Invalid privacy value");
+    });
+}
 
+function PrivacyPublic() {
   return (
     <Tooltip content="Private project. Visible only to contributors.">
       <div className="mt-1" data-test-id="private-project-indicator">
         <Icons.IconLock size={20} />
+      </div>
+    </Tooltip>
+  );
+}
+
+function PrivacyConfidential() {
+  return (
+    <Tooltip content="TODO">
+      <div data-test-id="confidential-indicator">
+        <Icons.IconLockFilled size={20} />
+      </div>
+    </Tooltip>
+  );
+}
+
+function PrivacySecret() {
+  return (
+    <Tooltip content="TODO">
+      <div data-test-id="secret-indicator">
+        <Icons.IconLockFilled size={20} className="text-content-error" />
       </div>
     </Tooltip>
   );
