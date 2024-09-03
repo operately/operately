@@ -34,8 +34,8 @@ interface TreeContextProviderPropsWithChildren extends TreeContextProviderProps 
 }
 
 export function TreeContextProvider(props: TreeContextProviderPropsWithChildren) {
-  const [sortColumn, setSortColumn] = React.useState<SortColumn>("progress");
-  const [sortDirection, setSortDirection] = React.useState<SortDirection>("desc");
+  const [sortColumn, setSortColumn] = React.useState<SortColumn>("name");
+  const [sortDirection, setSortDirection] = React.useState<SortDirection>("asc");
   const [showCompleted, setShowCompleted] = React.useState<boolean>(false);
 
   const treeOptions = {
