@@ -192,6 +192,14 @@ defmodule OperatelyWeb.Paths do
     Operately.ShortUuid.encode!(comment.id)
   end
 
+  def subscription_list_id(comment) do
+    Operately.ShortUuid.encode!(comment.id)
+  end
+
+  def subscription_id(comment) do
+    Operately.ShortUuid.encode!(comment.id)
+  end
+
   #
   # Path Construction Helpers
   #

@@ -9,7 +9,8 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.CheckIn do
       acknowledged_by: OperatelyWeb.Api.Serializer.serialize(check_in.acknowledged_by),
       project: OperatelyWeb.Api.Serializer.serialize(check_in.project, level: :full),
       reactions: OperatelyWeb.Api.Serializer.serialize(check_in.reactions),
-      author: OperatelyWeb.Api.Serializer.serialize(check_in.author)
+      author: OperatelyWeb.Api.Serializer.serialize(check_in.author),
+      subscription_list: OperatelyWeb.Api.Serializer.serialize(check_in.subscription_list)
     }
   end
 

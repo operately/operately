@@ -117,6 +117,11 @@ defmodule Operately.ProjectsFixtures do
       |> Operately.Projects.CheckIn.changeset()
       |> Operately.Repo.insert()
 
+    {:ok, _} = Operately.Notifications.update_subscription_list(subscription_list, %{
+      parent_type: :project_check_in,
+      parent_id: check_in.id,
+    })
+
     check_in
   end
 end
