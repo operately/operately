@@ -1296,8 +1296,9 @@ export interface GetProjectInput {
   includeChampion?: boolean | null;
   includeReviewer?: boolean | null;
   includeSpace?: boolean | null;
-  includeAccessLevels?: boolean | null;
   includeContributorsAccessLevels?: boolean | null;
+  includeAccessLevels?: boolean | null;
+  includePrivacy?: boolean | null;
 }
 
 export interface GetProjectResult {
