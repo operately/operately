@@ -22,6 +22,11 @@ export {
   useRemoveProjectContributor,
 } from "@/api";
 
+export const PRIVACY_PUBLIC = "public";
+export const PRIVACY_INTERNAL = "internal";
+export const PRIVACY_CONFIDENTIAL = "confidential";
+export const PRIVACY_SECRET = "secret";
+
 export { groupBySpace } from "./groupBySpace";
 
 export function useProjectContributorCandidates(id: string): (query: string) => Promise<api.Person[]> {
