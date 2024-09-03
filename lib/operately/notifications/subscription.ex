@@ -1,4 +1,4 @@
-defmodule Operately.Notifications.Subscriptions do
+defmodule Operately.Notifications.Subscription do
   use Operately.Schema
 
   schema "subscriptions" do
