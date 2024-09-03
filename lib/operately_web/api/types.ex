@@ -891,6 +891,7 @@ defmodule OperatelyWeb.Api.Types do
     field :acknowledged_at, :datetime
     field :acknowledged_by, :person
     field :reactions, list_of(:reaction)
+    field :subscription_list, :subscription_list
   end
 
   object :activity_content_project_check_in_commented do
@@ -977,6 +978,19 @@ defmodule OperatelyWeb.Api.Types do
     field :unit, :string
     field :value, :float
     field :previous_value, :float
+  end
+
+  object :subscription_list do
+    field :id, :string
+    field :parent_type, :string
+    field :send_to_everyone, :boolean
+    field :subscriptions, list_of(:subscription)
+  end
+
+  object :subscription do
+    field :id, :string
+    field :type, :string
+    field :person, :person
   end
 
 end

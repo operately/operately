@@ -11,6 +11,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckIn do
     field :include_author, :boolean
     field :include_project, :boolean
     field :include_reactions, :boolean
+    field :include_subscriptions, :boolean
   end
 
   outputs do
@@ -51,6 +52,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckIn do
         :include_author -> from p in q, preload: [:author]
         :include_project -> from p in q, preload: [project: [:reviewer, [contributors: :person]]]
         :include_reactions -> from p in q, preload: [reactions: :person]
+        :include_subscriptions -> from p in q, preload: [subscription_list: [subscriptions: :person]]
         _ -> raise ArgumentError, "Unknown include filter: #{inspect(include)}"
       end
     end)

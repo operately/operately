@@ -113,11 +113,23 @@ defmodule Operately.Notifications do
     |> Repo.insert()
   end
 
-  alias Operately.Notifications.Subscriptions
+  def update_subscription_list(%SubscriptionList{} = subscription_list, attrs) do
+    subscription_list
+    |> SubscriptionList.changeset(attrs)
+    |> Repo.update()
+  end
+
+  alias Operately.Notifications.Subscription
 
   def list_subscriptions(%SubscriptionList{} = subscription_list), do: list_subscriptions(subscription_list.id)
   def list_subscriptions(subscription_list_id) do
-    from(s in Subscriptions, where: s.subscription_list_id == ^subscription_list_id)
+    from(s in Subscription, where: s.subscription_list_id == ^subscription_list_id)
     |> Repo.all()
+  end
+
+  def create_subscription(attrs \\ %{}) do
+    %Subscription{}
+    |> Subscription.changeset(attrs)
+    |> Repo.insert()
   end
 end
