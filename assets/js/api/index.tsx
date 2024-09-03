@@ -309,6 +309,14 @@ export interface ActivityContentProjectContributorAddition {
   project?: Project | null;
 }
 
+export interface ActivityContentProjectContributorRemoved {
+  companyId?: string | null;
+  projectId?: string | null;
+  personId?: string | null;
+  person?: Person | null;
+  project?: Project | null;
+}
+
 export interface ActivityContentProjectCreated {
   projectId?: string | null;
   project?: Project | null;

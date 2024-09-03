@@ -100,4 +100,8 @@ defmodule Operately.People.Person do
     peers = Operately.People.get_peers(person)
     Map.put(person, :peers, peers)
   end
+
+  def get_by!(:system, field_values) do
+    Operately.Repo.get_by!(__MODULE__, field_values)
+  end
 end

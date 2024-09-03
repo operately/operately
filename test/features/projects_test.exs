@@ -29,6 +29,7 @@ defmodule Operately.Features.ProjectsTest do
     |> Steps.given_the_project_has_contributor(name: "Michael Scott")
     |> Steps.remove_contributor(name: "Michael Scott")
     |> Steps.assert_contributor_removed(name: "Michael Scott")
+    |> Steps.assert_contributor_removed_feed_item_exists(name: "Michael Scott")
   end
 
   @tag login_as: :champion
