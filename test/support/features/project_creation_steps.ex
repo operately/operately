@@ -75,7 +75,10 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
     ctx
     |> UI.fill(testid: "project-name-input", with: fields.name)
     |> UI.select_person_in(id: "Champion", name: fields.champion.full_name)
-    |> UI.select_person_in(id: "Reviewer", name: fields.reviewer.full_name)
+    |> run_if(fields[:reviewer], fn ctx ->
+      ctx
+      |> UI.select_person_in(id: "Reviewer", name: fields.reviewer.full_name)
+    end)
     |> run_if(fields[:goal], fn ctx ->
       ctx
       |> UI.click(testid: "goal-selector")
@@ -134,6 +137,23 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
         subject: "#{Person.first_name(fields.creator)} started the #{fields.name} project"
       )
     end)
+  end
+
+  step :given_that_champion_has_a_manager, ctx do
+    manager = person_fixture_with_account(%{company_id: ctx.company.id, full_name: "Ursula Vonboss"})
+
+    {:ok, champion} = Operately.People.update_person(ctx.champion, %{manager_id: manager.id})
+
+    ctx
+    |> Map.put(:champion, champion)
+    |> Map.put(:manager, manager)
+  end
+
+  step :assert_reviewer_is_champions_manager, ctx, fields do
+    project = Operately.Repo.get_by!(Operately.Projects.Project, name: fields.name)
+    project = Operately.Repo.preload(project, [:reviewer])
+
+    assert project.reviewer.id == ctx.manager.id
   end
 
   defp who_should_be_notified(fields) do
