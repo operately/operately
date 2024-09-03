@@ -44,29 +44,8 @@ defmodule Operately.Support.Features.UI do
     end)
   end
 
-  def logout(state) do
-    execute(state, fn session ->
-      cookies = Wallaby.Browser.cookies(session)
-
-      # Before we clear the session cookie, we need to check if the cookies are empty.
-      # Calling set_cookie if the cookies are empty will cause an error.
-
-      if cookies != [] do
-        Wallaby.Browser.set_cookie(state.session, "_operately_key", "")
-      else
-        session
-      end
-    end)
-  end
-
-  def login_as(state, person) do
-    path = URI.encode("/accounts/auth/test_login?email=#{person.email}&full_name=#{person.full_name}")
-
-    state
-    |> logout()
-    |> visit(path)
-    |> assert_has(testid: "company-home")
-  end
+  defdelegate logout(state), to: Operately.Support.Features.UI.UserSession
+  defdelegate login_as(state, person), to: Operately.Support.Features.UI.UserSession
 
   def get_account() do
     Operately.People.Account
