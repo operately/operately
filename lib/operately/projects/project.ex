@@ -42,6 +42,7 @@ defmodule Operately.Projects.Project do
     field :next_milestone, :any, virtual: true
     field :permissions, :any, virtual: true
     field :access_levels, :any, virtual: true
+    field :privacy, :any, virtual: true
 
     timestamps()
     soft_delete()
@@ -177,11 +178,18 @@ defmodule Operately.Projects.Project do
     Map.put(project, :permissions, persmission)
   end
 
+  alias Operately.Access.AccessLevels
+
   def preload_access_levels(project) do
     context = Operately.Access.get_context!(project_id: project.id)
-    access_levels = Operately.Access.AccessLevels.load(context.id, project.company_id, project.group_id)
+    access_levels = AccessLevels.load(context.id, project.company_id, project.group_id)
 
     Map.put(project, :access_levels, access_levels)
+  end
+
+  def preload_privacy(project) do
+    project = if project.access_levels, do: project, else: preload_access_levels(project)
+    Map.put(project, :privacy, AccessLevels.calc_privacy(project.access_levels))
   end
 
   def get!(:system, project_id) do

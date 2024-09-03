@@ -22,6 +22,8 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
     field :include_space, :boolean
     field :include_access_levels, :boolean
     field :include_contributors_access_levels, :boolean
+    field :include_access_levels, :boolean
+    field :include_privacy, :boolean
   end
 
   outputs do
@@ -58,6 +60,7 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
     |> Project.after_load_hooks()
     |> include_permissions(person, include_filters)
     |> load_access_levels(inputs[:include_access_levels])
+    |> load_privacy(inputs[:include_privacy])
   end
 
   def include_requested(query, requested) do
@@ -74,7 +77,8 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
         :include_champion -> from p in q, preload: [:champion]
         :include_reviewer -> from p in q, preload: [:reviewer]
         :include_permissions -> q # this is done after loading
-        :include_access_levels -> q # this is done after the load
+        :include_access_levels -> q # this is done after loading
+        :include_privacy -> q # this is done after the load
         _ -> raise ArgumentError, "Unknown include filter: #{inspect(include)}"
       end
     end)
@@ -89,10 +93,14 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
     end
   end
 
+  defp load_contributors_access_level(query, true, project_id), do: Project.preload_contributors_access_level(query, project_id)
+  defp load_contributors_access_level(query, _, _), do: query
+
   defp load_access_levels(nil, _), do: nil
   defp load_access_levels(project, true), do: Project.preload_access_levels(project)
   defp load_access_levels(project, _), do: project
 
-  defp load_contributors_access_level(query, true, project_id), do: Project.preload_contributors_access_level(query, project_id)
-  defp load_contributors_access_level(query, _, _), do: query
+  defp load_privacy(nil, _), do: nil
+  defp load_privacy(project, true), do: Project.preload_privacy(project)
+  defp load_privacy(project, _), do: project
 end
