@@ -3,6 +3,7 @@ defmodule Operately.Activities.Content.ProjectContributorRemoved do
 
   embedded_schema do
     belongs_to :company, Operately.Companies.Company
+    belongs_to :space, Operately.Groups.Group
     belongs_to :project, Operately.Projects.Project
     belongs_to :person, Operately.People.Person
     belongs_to :contributor, Operately.Projects.Contributor

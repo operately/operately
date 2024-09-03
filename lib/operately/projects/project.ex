@@ -183,4 +183,8 @@ defmodule Operately.Projects.Project do
 
     Map.put(project, :access_levels, access_levels)
   end
+
+  def get!(:system, project_id) do
+    Operately.Repo.get!(__MODULE__, project_id)
+  end
 end
