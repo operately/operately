@@ -12,11 +12,11 @@ interface SelectorModalProps {
 }
 
 export function SubscribersSelectorModal({ showSelector, setShowSelector }: SelectorModalProps) {
-  const { people, setSelectedPeople } = useContext(SubscriptionsContext)!;
+  const { people, alwaysNotify, setSelectedPeople } = useContext(SubscriptionsContext)!;
 
   const form = Forms.useForm({
     fields: {
-      people: Forms.useMultiPeopleSelectField(people, { optional: true }),
+      people: Forms.useMultiPeopleSelectField(people, { optional: true, alwaysSelected: alwaysNotify }),
     },
     submit: async (form) => {
       const selectedPeopleIds = form.fields.people.value!.map((p) => p.id);
@@ -27,7 +27,7 @@ export function SubscribersSelectorModal({ showSelector, setShowSelector }: Sele
   const { options, setValue } = form.fields.people;
 
   const handleSelectNoone = () => {
-    setValue([]);
+    setValue([...alwaysNotify]);
   };
 
   const handleSelectEveryone = () => {

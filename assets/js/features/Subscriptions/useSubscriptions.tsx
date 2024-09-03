@@ -8,10 +8,11 @@ export interface SubscriptionsState {
   setSelectedPeople: Dispatch<SetStateAction<Person[]>>;
   subscriptionType: Options;
   setSubscriptionType: Dispatch<SetStateAction<Options>>;
+  alwaysNotify: Person[];
 }
 
-export function useSubscriptions(people: Person[]): SubscriptionsState {
-  const [selectedPeople, setSelectedPeople] = useState<Person[]>([]);
+export function useSubscriptions(people: Person[], opts?: { alwaysNotify?: Person[] }): SubscriptionsState {
+  const [selectedPeople, setSelectedPeople] = useState<Person[]>(opts?.alwaysNotify ? [...opts.alwaysNotify] : []);
   const [subscriptionType, setSubscriptionType] = useState(Options.ALL);
 
   return {
@@ -20,5 +21,6 @@ export function useSubscriptions(people: Person[]): SubscriptionsState {
     setSelectedPeople,
     subscriptionType,
     setSubscriptionType,
+    alwaysNotify: opts?.alwaysNotify || [],
   };
 }
