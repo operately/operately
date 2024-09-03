@@ -725,7 +725,7 @@ export interface Project {
   deadline?: string | null;
   nextUpdateScheduledAt?: string | null;
   nextCheckInScheduledAt?: string | null;
-  private?: boolean | null;
+  privacy?: string | null;
   status?: string | null;
   closedAt?: string | null;
   retrospective?: string | null;
@@ -1298,6 +1298,8 @@ export interface GetProjectInput {
   includeSpace?: boolean | null;
   includeAccessLevels?: boolean | null;
   includeContributorsAccessLevels?: boolean | null;
+  includeAccessLevels?: boolean | null;
+  includePrivacy?: boolean | null;
 }
 
 export interface GetProjectResult {

@@ -12,7 +12,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Project do
     %{
       id: OperatelyWeb.Paths.project_id(project),
       name: project.name,
-      private: project.private,
+      privacy: OperatelyWeb.Api.Serializer.serialize(project.privacy),
       status: project.status,
       next_check_in_scheduled_at: OperatelyWeb.Api.Serializer.serialize(project.next_check_in_scheduled_at),
       description: project.description && Jason.encode!(project.description),
