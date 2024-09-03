@@ -17,6 +17,7 @@ export async function loader({ params }): Promise<LoaderResult> {
       includeKeyResources: true,
       includeMilestones: true,
       includeLastCheckIn: true,
+      includePrivacy: true,
     }).then((data) => data.project!),
   };
 }
