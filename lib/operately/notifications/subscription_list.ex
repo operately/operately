@@ -6,6 +6,8 @@ defmodule Operately.Notifications.SubscriptionList do
     field :parent_type, Ecto.Enum, values: [:project_check_in]
     field :send_to_everyone, :boolean, default: false
 
+    has_many :subscriptions, Operately.Notifications.Subscription, foreign_key: :subscription_list_id
+
     timestamps()
   end
 

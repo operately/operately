@@ -760,6 +760,7 @@ export interface ProjectCheckIn {
   acknowledgedAt?: string | null;
   acknowledgedBy?: Person | null;
   reactions?: Reaction[] | null;
+  subscriptionList?: SubscriptionList | null;
 }
 
 export interface ProjectContributor {
@@ -847,6 +848,19 @@ export interface Space {
   color?: string | null;
   members?: Person[] | null;
   accessLevels?: AccessLevels | null;
+}
+
+export interface Subscription {
+  id?: string | null;
+  type?: string | null;
+  person?: Person | null;
+}
+
+export interface SubscriptionList {
+  id?: string | null;
+  parentType?: string | null;
+  sendToEveryone?: boolean | null;
+  subscriptions?: Subscription[] | null;
 }
 
 export interface Target {
@@ -1295,6 +1309,7 @@ export interface GetProjectCheckInInput {
   includeAuthor?: boolean | null;
   includeProject?: boolean | null;
   includeReactions?: boolean | null;
+  includeSubscriptions?: boolean | null;
 }
 
 export interface GetProjectCheckInResult {
