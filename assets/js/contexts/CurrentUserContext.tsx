@@ -10,7 +10,9 @@ interface CurrentUserContextProps {
 const CurrentUserContext = React.createContext<CurrentUserContextProps | null>(null);
 
 export function CurrentUserProvider({ children }) {
-  const { data, loading, error, refetch } = People.useGetMe({});
+  const { data, loading, error, refetch } = People.useGetMe({
+    includeManager: true,
+  });
 
   useProfileUpdatedSignal(() => {
     refetch();

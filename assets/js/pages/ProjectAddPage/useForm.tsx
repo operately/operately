@@ -66,7 +66,7 @@ export function useForm(): FormState {
 
   const [name, setName] = React.useState("");
   const [champion, setChampion] = React.useState<People.Person | null>(me);
-  const [reviewer, setReviewer] = React.useState<People.Person | null>(null);
+  const [reviewer, setReviewer] = React.useState<People.Person | null>(me.manager || null);
   const [visibility, setVisibility] = React.useState<string | null>("everyone");
   const [creatorRole, setCreatorRole] = React.useState<string | null>(null);
   const [creatorIsContributor, setCreatorIsContributor] = React.useState<string>("no");
