@@ -19,11 +19,17 @@ export function MultiPeopleSelectField({ field }: { field: string }) {
 
 function PersonOption({ person, field }: { person: Person; field: string }) {
   const form = getFormContext();
-  const { value, setValue } = form.fields[field];
+  const { value, setValue, alwaysSelected } = form.fields[field];
 
   const handleChange = () => {
-    if (value.includes(person)) {
-      setValue((prev: Person[]) => prev.filter((item) => item !== person));
+    // if alwaysSelected includes the person,
+    // handleChange doesn't do anything
+    if (alwaysSelected.find((p) => p.id === person.id)) return;
+
+    const ids = value.map((p) => p.id);
+
+    if (ids.includes(person.id)) {
+      setValue((prev: Person[]) => prev.filter((item) => item.id !== person.id));
     } else {
       setValue((prev: Person[]) => [...prev, person]);
     }
