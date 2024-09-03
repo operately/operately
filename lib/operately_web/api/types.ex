@@ -148,7 +148,7 @@ defmodule OperatelyWeb.Api.Types do
     field :deadline, :date
     field :next_update_scheduled_at, :date
     field :next_check_in_scheduled_at, :date
-    field :private, :boolean
+    field :privacy, :string
     field :status, :string
     field :closed_at, :date
     field :retrospective, :string

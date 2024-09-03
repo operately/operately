@@ -725,7 +725,7 @@ export interface Project {
   deadline?: string | null;
   nextUpdateScheduledAt?: string | null;
   nextCheckInScheduledAt?: string | null;
-  private?: boolean | null;
+  privacy?: string | null;
   status?: string | null;
   closedAt?: string | null;
   retrospective?: string | null;
