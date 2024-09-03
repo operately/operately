@@ -2,6 +2,7 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
   alias OperatelyWeb.Api.Serializers.Timeframe
   alias Operately.Activities.Content.GoalEditing
   alias OperatelyWeb.Paths
+  alias OperatelyWeb.Api.Serializer
 
   def serialize(activities) when is_list(activities) do
     Enum.map(activities, fn activity ->
@@ -204,7 +205,7 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
 
   def serialize_content("project_archived", content) do
     %{
-      project: serialize_project(content["project"])
+      project: Serializer.serialize(content["project"], level: :essential)
     }
   end
 
@@ -212,14 +213,14 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
     %{
       project_id: OperatelyWeb.Paths.project_id(content["project"]),
       check_in_id: OperatelyWeb.Paths.project_check_in_id(content["check_in"]),
-      project: serialize_project(content["project"]),
+      project: Serializer.serialize(content["project"], level: :essential),
       check_in: serialize_check_in(content["check_in"])
     }
   end
 
   def serialize_content("project_check_in_commented", content) do
     %{
-      project: serialize_project(content["project"]),
+      project: Serializer.serialize(content["project"], level: :essential),
       check_in: serialize_check_in(content["check_in"]),
       comment: serialize_comment(content["comment"])
     }
@@ -231,27 +232,34 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
 
   def serialize_content("project_check_in_submitted", content) do
     %{
-      project: serialize_project(content["project"]),
+      project: Serializer.serialize(content["project"], level: :essential),
       check_in: serialize_check_in(content["check_in"])
     }
   end
 
   def serialize_content("project_closed", content) do
     %{
-      project: serialize_project(content["project"])
+      project: Serializer.serialize(content["project"], level: :essential)
     }
   end
 
   def serialize_content("project_contributor_addition", content) do
     %{
-      person: OperatelyWeb.Api.Serializer.serialize(content["person"], level: :essential),
-      project: serialize_project(content["project"])
+      person: Serializer.serialize(content["person"], level: :essential),
+      project: Serializer.serialize(content["project"], level: :essential)
+    }
+  end
+
+  def serialize_content("project_contributor_removed", content) do
+    %{
+      person: Serializer.serialize(content["person"], level: :essential),
+      project: Serializer.serialize(content["project"], level: :essential)
     }
   end
 
   def serialize_content("project_created", content) do
     %{
-      project: serialize_project(content["project"])
+      project: Serializer.serialize(content["project"], level: :essential)
     }
   end
 
@@ -261,14 +269,14 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
 
   def serialize_content("project_goal_connection", content) do
     %{
-      project: serialize_project(content["project"]),
+      project: Serializer.serialize(content["project"], level: :essential),
       goal: serialize_goal(content["goal"])
     }
   end
 
   def serialize_content("project_goal_disconnection", content) do
     %{
-      project: serialize_project(content["project"]),
+      project: Serializer.serialize(content["project"], level: :essential),
       goal: serialize_goal(content["goal"])
     }
   end
@@ -279,7 +287,7 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
 
   def serialize_content("project_moved", content) do
     %{
-      project: serialize_project(content["project"]),
+      project: Serializer.serialize(content["project"], level: :essential),
       old_space: serialize_space(content["old_space"]),
       new_space: serialize_space(content["new_space"])
     }
@@ -287,13 +295,13 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
 
   def serialize_content("project_pausing", content) do
     %{
-      project: serialize_project(content["project"])
+      project: Serializer.serialize(content["project"], level: :essential),
     }
   end
 
   def serialize_content("project_renamed", content) do
     %{
-      project: serialize_project(content["project"]),
+      project: Serializer.serialize(content["project"], level: :essential),
       new_name: content["new_name"],
       old_name: content["old_name"]
     }
@@ -301,19 +309,19 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
 
   def serialize_content("project_resuming", content) do
     %{
-      project: serialize_project(content["project"])
+      project: Serializer.serialize(content["project"], level: :essential)
     }
   end
 
   def serialize_content("project_timeline_edited", content) do
     %{
-      project: OperatelyWeb.Api.Serializer.serialize(content.project),
-      old_start_date: OperatelyWeb.Api.Serializer.serialize(content.old_start_date),
-      new_start_date: OperatelyWeb.Api.Serializer.serialize(content.new_start_date),
-      old_end_date: OperatelyWeb.Api.Serializer.serialize(content.old_end_date),
-      new_end_date: OperatelyWeb.Api.Serializer.serialize(content.new_end_date),
-      new_milestones: OperatelyWeb.Api.Serializer.serialize(content.new_milestones),
-      updated_milestones: OperatelyWeb.Api.Serializer.serialize(content.milestone_updates)
+      project: Serializer.serialize(content.project),
+      old_start_date: Serializer.serialize(content.old_start_date),
+      new_start_date: Serializer.serialize(content.new_start_date),
+      old_end_date: Serializer.serialize(content.old_end_date),
+      new_end_date: Serializer.serialize(content.new_end_date),
+      new_milestones: Serializer.serialize(content.new_milestones),
+      updated_milestones: Serializer.serialize(content.milestone_updates)
     }
   end
 
@@ -380,14 +388,6 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
   #
   # Utility serializers
   #
-
-  def serialize_project(nil), do: nil
-  def serialize_project(project) do
-    %{
-      id: OperatelyWeb.Paths.project_id(project),
-      name: project.name,
-    }
-  end
 
   def serialize_goal(nil), do: nil
   def serialize_goal(goal) do

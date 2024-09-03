@@ -10,6 +10,8 @@ defmodule Operately.Support.Features.ProjectSteps do
   import Operately.GroupsFixtures
   import Operately.PeopleFixtures
 
+  alias Operately.People.Person
+
   step :given_a_goal_exists, ctx, name: name do
     {:ok, goal} = Operately.Goals.create_goal(ctx.champion, %{
       company_id: ctx.company.id,
@@ -440,6 +442,27 @@ defmodule Operately.Support.Features.ProjectSteps do
     })
   end
 
+  step :assert_contributor_removed_feed_item_exists, ctx, name: name do
+    person = Person.get_by!(:system, full_name: name)
+
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> FeedSteps.assert_feed_item_exists(%{
+      author: ctx.champion,
+      title: "removed #{Person.short_name(person)} from the project",
+    })
+    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
+    |> FeedSteps.assert_feed_item_exists(%{
+      author: ctx.champion,
+      title: "removed #{Person.short_name(person)} from the #{ctx.project.name} project",
+    })
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> FeedSteps.assert_feed_item_exists(%{
+      author: ctx.champion,
+      title: "removed #{Person.short_name(person)} from the #{ctx.project.name} project",
+    })
+  end
+
   step :assert_contributor_added_notification_sent, ctx, name: name do
     contributors = Operately.Projects.list_project_contributors(ctx.project)
     contributors = Operately.Repo.preload(contributors, :person)
@@ -486,6 +509,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> UI.click(testid: "project-contributors")
     |> UI.click(testid: "edit-contributor-#{String.downcase(name) |> String.replace(" ", "-")}")
     |> UI.click(testid: "remove-contributor")
+    |> UI.sleep(200)
   end
 
   step :assert_contributor_removed, ctx, name: name do
