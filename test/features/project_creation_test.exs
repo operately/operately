@@ -70,4 +70,15 @@ defmodule Operately.Features.ProjectCreationTest do
     |> Steps.assert_project_created_email_sent(params)
     |> Steps.assert_project_created_notification_sent(params)
   end
+
+  @tag login_as: :champion
+  feature "operately prefills the reviewer with the champion's manager", ctx do
+    params = %{name: "Website Redesign", creator: ctx.champion, champion: ctx.champion}
+
+    ctx
+    |> Steps.given_that_champion_has_a_manager()
+    |> Steps.start_adding_project()
+    |> Steps.submit_project_form(params)
+    |> Steps.assert_reviewer_is_champions_manager(params)
+  end
 end
