@@ -105,8 +105,35 @@ defmodule OperatelyWeb.Api.Mutations.PostProjectCheckInTest do
       subscriptions = Notifications.list_subscriptions(list)
 
       assert list.send_to_everyone
+      assert length(subscriptions) == 3
       Enum.each(people_ids, fn id ->
         assert Enum.filter(subscriptions, &(&1.person_id == id))
+      end)
+    end
+
+    test "adds mentioned people to subscription list", ctx do
+      project = project_fixture(%{company_id: ctx.company.id, creator_id: ctx.person.id, group_id: ctx.company.company_space_id})
+      people = Enum.map(1..3, fn _ ->
+        person_fixture(%{company_id: ctx.company.id})
+      end)
+      description = mentioned_people(people ++ people ++ people)
+
+      assert {200, res} = mutation(ctx.conn, :post_project_check_in, %{
+        project_id: Paths.project_id(project),
+        status: "on_track",
+        description: Jason.encode!(description),
+        send_notifications_to_everyone: false,
+        subscriber_ids: [],
+      })
+
+      {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.check_in.id)
+
+      list = Notifications.get_subscription_list!(parent_id: id)
+      subscriptions = Notifications.list_subscriptions(list)
+
+      assert length(subscriptions) == 3
+      Enum.each(people, fn p ->
+        assert Enum.filter(subscriptions, &(&1.person_id == p.id))
       end)
     end
   end
@@ -145,5 +172,28 @@ defmodule OperatelyWeb.Api.Mutations.PostProjectCheckInTest do
     end
 
     project
+  end
+
+  defp mentioned_people(people) do
+    mentions = Enum.map(people, fn p ->
+      %{
+        "content" => [
+          %{
+            "attrs" => %{
+              "id" => Paths.person_id(p),
+              "label" => p.full_name
+            },
+            "type" => "mention"
+          },
+          %{"text" => " ", "type" => "text"}
+        ],
+        "type" => "paragraph"
+      }
+    end)
+
+    %{
+      "content" => mentions,
+      "type" => "doc"
+    }
   end
 end

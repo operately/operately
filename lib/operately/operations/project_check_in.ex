@@ -3,13 +3,12 @@ defmodule Operately.Operations.ProjectCheckIn do
 
   alias Operately.Repo
   alias Operately.Activities
-  alias Operately.Projects.Project
-  alias Operately.Projects.CheckIn
+  alias Operately.Projects.{CheckIn, Project}
   alias Operately.Notifications.{SubscriptionList, Subscriptions}
 
   def run(author, project, attrs) do
     next_check_in = Operately.Time.calculate_next_weekly_check_in(
-      project.next_check_in_scheduled_at, 
+      project.next_check_in_scheduled_at,
       DateTime.utc_now()
     )
 
@@ -18,6 +17,7 @@ defmodule Operately.Operations.ProjectCheckIn do
       send_to_everyone: attrs.send_notifications_to_everyone,
     }))
     |> insert_subscriptions(attrs.subscriber_ids)
+    |> insert_mentioned_subscriptions(attrs.description)
     |> Multi.insert(:check_in, fn changes ->
       CheckIn.changeset(%{
         author_id: author.id,
@@ -68,6 +68,26 @@ defmodule Operately.Operations.ProjectCheckIn do
           subscription_list_id: changes.subscription_list.id,
           person_id: id,
           type: :invited,
+        })
+      end)
+    end)
+  end
+
+  defp insert_mentioned_subscriptions(multi, description) do
+    {:ok, ids} =
+      description
+      |> Operately.RichContent.find_mentioned_ids()
+      |> Enum.uniq()
+      |> OperatelyWeb.Api.Helpers.decode_id()
+
+    Enum.reduce(ids, multi, fn id, multi ->
+      name = "mentioned_subscription_" <> id
+
+      Multi.insert(multi, name, fn changes ->
+        Subscriptions.changeset(%{
+          subscription_list_id: changes.subscription_list.id,
+          person_id: id,
+          type: :mentioned,
         })
       end)
     end)
