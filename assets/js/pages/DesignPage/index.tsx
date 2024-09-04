@@ -9,6 +9,7 @@ import { Link } from "@/components/Link";
 import { Colors } from "./Colors";
 import { Links } from "./Links";
 import { Buttons } from "./Buttons";
+import { Tooltips } from "./Tooltips";
 import { Menus } from "./Menus";
 import { CalloutExamples } from "./Callouts";
 import { FormExamples } from "./Forms";
@@ -26,6 +27,7 @@ export function Page() {
           <Links />
           <Buttons />
           <Menus />
+          <Tooltips />
           <CalloutExamples />
           <FormExamples />
         </Paper.Body>

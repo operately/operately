@@ -4,7 +4,7 @@
     "@radix-ui/react-popover": "^1.0.5",
     "@radix-ui/react-tooltip": "^1.0.6",
     "@sentry/react": "^7.76.0",
-    "@tabler/icons-react": "^2.32.0",
+    "@tabler/icons-react": "^3.14.0",
     "@tiptap/core": "^2.3.0",
     "@tiptap/extension-highlight": "^2.3.0",
     "@tiptap/extension-link": "^2.3.0",
