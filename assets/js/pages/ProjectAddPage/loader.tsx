@@ -14,6 +14,7 @@ interface LoaderResult {
 
   allowSpaceSelection: boolean;
   spaceOptions: { value: string; label: string }[];
+  goalOptions: { value: string; label: string }[];
 }
 
 // There are two ways we can end up on this page:
@@ -47,7 +48,9 @@ export async function loader({ request, params }): Promise<LoaderResult> {
     spaceOptions = spaces.map((space) => ({ value: space.id!, label: space.name! }));
   }
 
-  return { company, spaceID, space, spaces, allowSpaceSelection, goal, goals, spaceOptions };
+  const goalOptions = goals.map((goal) => ({ value: goal.id!, label: goal.name! }));
+
+  return { company, spaceID, space, spaces, allowSpaceSelection, goal, goals, spaceOptions, goalOptions };
 }
 
 export function useLoadedData(): LoaderResult {
