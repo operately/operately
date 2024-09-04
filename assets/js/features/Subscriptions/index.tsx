@@ -7,3 +7,10 @@ export enum Options {
   SELECTED = "selected",
   NONE = "none",
 }
+
+export interface NotifiablePerson {
+  id: string;
+  avatarUrl: string;
+  fullName: string;
+  title: string;
+}
