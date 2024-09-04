@@ -22,6 +22,7 @@ export async function loader({ params, request }): Promise<LoaderResult> {
     includeContributors: true,
     includeMilestones: true,
     includeLastCheckIn: true,
+    includePrivacy: true,
     onlyMyProjects: filter === "my-projects",
     onlyReviewedByMe: filter === "reviewed-by-me",
   }).then((data) => data.projects!);

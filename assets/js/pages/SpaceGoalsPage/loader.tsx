@@ -26,6 +26,7 @@ export async function loader({ params }): Promise<LoadedData> {
     includeLastCheckIn: true,
     includeChampion: true,
     includeMilestones: true,
+    includePrivacy: true,
   }).then((data) => data.projects!);
 
   return {
