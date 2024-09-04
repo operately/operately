@@ -3,14 +3,15 @@ import React from "react";
 import * as ReactTooltip from "@radix-ui/react-tooltip";
 import classNames from "classnames";
 import { useColorMode } from "@/contexts/ThemeContext";
+import { TestableElement } from "@/utils/testid";
 
-interface TextTooltipProps {
+interface TextTooltipProps extends TestableElement {
   content: React.ReactNode | string;
   children: React.ReactNode;
   delayDuration?: number;
 }
 
-export function Tooltip({ content, delayDuration, children }: TextTooltipProps): JSX.Element {
+export function Tooltip({ content, delayDuration, children, testId }: TextTooltipProps): JSX.Element {
   const mode = useColorMode();
 
   const className = classNames(
@@ -21,6 +22,7 @@ export function Tooltip({ content, delayDuration, children }: TextTooltipProps):
     "break-normal",
     "select-none",
     "shadow-xl",
+    "whitespace-normal",
     {
       "border border-stroke-dimmed": mode === "dark",
     },
@@ -33,7 +35,9 @@ export function Tooltip({ content, delayDuration, children }: TextTooltipProps):
   return (
     <ReactTooltip.Provider>
       <ReactTooltip.Root delayDuration={delayDuration || 200}>
-        <ReactTooltip.Trigger asChild>{children}</ReactTooltip.Trigger>
+        <ReactTooltip.Trigger asChild data-test-id={testId}>
+          {children}
+        </ReactTooltip.Trigger>
         <ReactTooltip.Content sideOffset={10} className={className}>
           {content}
           <ReactTooltip.Arrow style={arrowStyle} />

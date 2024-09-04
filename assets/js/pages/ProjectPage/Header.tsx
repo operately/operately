@@ -2,25 +2,17 @@ import * as React from "react";
 import * as Icons from "@tabler/icons-react";
 import * as Projects from "@/models/projects";
 
-import ContributorAvatar from "@/components/ContributorAvatar";
-
-import { Link } from "react-router-dom";
-import { DivLink } from "@/components/Link";
-import { Project } from "@/models/projects";
-
-import { Tooltip } from "@/components/Tooltip";
+import { DimmedLink, DivLink } from "@/components/Link";
 import { Paths } from "@/routes/paths";
 import { GhostButton } from "@/components/Button";
-import { match } from "ts-pattern";
+import { PrivacyIndicator } from "@/features/projects/PrivacyIndicator";
 
-interface HeaderProps {
-  project: Project;
-}
+import ContributorAvatar from "@/components/ContributorAvatar";
 
-export default function Header({ project }: HeaderProps): JSX.Element {
+export default function Header({ project }: { project: Projects.Project }) {
   return (
     <div>
-      <div className="flex-1 truncate mb-2">
+      <div className="flex-1 mb-2">
         <ParentGoal project={project} />
 
         <div className="flex items-center text-content-accent truncate mr-12">
@@ -67,10 +59,8 @@ function ParentGoal({ project }: { project: Projects.Project }) {
   } else {
     content = (
       <div className="text-sm text-content-dimmed mx-1 font-medium">
-        <Link to={Paths.editProjectGoalPath(project.id!)} className="underline hover:text-link-hover">
-          Link this project to a goal
-        </Link>{" "}
-        for context and purpose
+        <DimmedLink to={Paths.editProjectGoalPath(project.id!)}>Link this project to a goal</DimmedLink> for context and
+        purpose
       </div>
     );
   }
@@ -83,54 +73,13 @@ function ParentGoal({ project }: { project: Projects.Project }) {
   );
 }
 
-function PrivacyIndicator({ project }: { project: Projects.Project }) {
-  return match(project.privacy)
-    .with(Projects.PRIVACY_PUBLIC, () => <PrivacyPublic />)
-    .with(Projects.PRIVACY_INTERNAL, () => null)
-    .with(Projects.PRIVACY_CONFIDENTIAL, () => <PrivacyConfidential />)
-    .with(Projects.PRIVACY_SECRET, () => <PrivacySecret />)
-    .otherwise(() => {
-      throw new Error("Invalid privacy value");
-    });
-}
-
-function PrivacyPublic() {
-  return (
-    <Tooltip content="Private project. Visible only to contributors.">
-      <div className="mt-1" data-test-id="private-project-indicator">
-        <Icons.IconLock size={20} />
-      </div>
-    </Tooltip>
-  );
-}
-
-function PrivacyConfidential() {
-  return (
-    <Tooltip content="TODO">
-      <div data-test-id="confidential-indicator">
-        <Icons.IconLockFilled size={20} />
-      </div>
-    </Tooltip>
-  );
-}
-
-function PrivacySecret() {
-  return (
-    <Tooltip content="TODO">
-      <div data-test-id="secret-indicator">
-        <Icons.IconLockFilled size={20} className="text-content-error" />
-      </div>
-    </Tooltip>
-  );
-}
-
 function ContributorList({ project }: { project: Projects.Project }) {
   const contributorsPath = Paths.projectContributorsPath(project.id!);
   const sortedContributors = Projects.sortContributorsByRole(project.contributors as Projects.ProjectContributor[]);
 
   return (
     <div className="flex items-center">
-      <Link to={contributorsPath} data-test-id="project-contributors">
+      <DivLink to={contributorsPath} testId="project-contributors">
         <div className="flex items-center justify-center gap-1 cursor-pointer">
           {sortedContributors!.map((c) => c && <ContributorAvatar key={c.id} contributor={c} />)}
 
@@ -142,7 +91,7 @@ function ContributorList({ project }: { project: Projects.Project }) {
             </div>
           )}
         </div>
-      </Link>
+      </DivLink>
     </div>
   );
 }
