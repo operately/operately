@@ -93,27 +93,27 @@ function className(
   }
 
   if (size === "xxs") {
-    result += " px-2 py-[1px] text-sm rounded-2xl";
+    result += " px-2.5 py-1 text-xs rounded-2xl";
   }
 
   if (size === "xs") {
-    result += " px-2.5 py-0.5 text-sm rounded-2xl";
+    result += " px-2.5 py-1 text-sm rounded-full";
   }
 
   if (size === "sm") {
-    result += " px-3 py-1 text-sm rounded-2xl";
+    result += " px-3 py-1.5 text-sm rounded-full";
   }
 
   if (size === "base") {
-    result += " px-4 py-1 rounded-3xl";
+    result += " px-3.5 py-2 rounded-full";
   }
 
   if (size === "lg") {
-    result += " px-6 py-2 text-lg rounded-3xl";
+    result += " px-4 py-2.5 rounded-full";
   }
 
   if (type === "primary") {
-    result += " border-2 border-accent-1 bg-accent-1";
+    result += " bg-accent-1 hover:bg-accent-1-light";
     if (loading) {
       result += " text-content-subtle";
     } else {
