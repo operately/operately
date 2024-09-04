@@ -187,6 +187,10 @@ defmodule Operately.Projects.Project do
     Map.put(project, :access_levels, access_levels)
   end
 
+  def preload_privacy(projects) when is_list(projects) do
+    Enum.map(projects, fn project -> preload_privacy(project) end)
+  end
+
   def preload_privacy(project) do
     project = if project.access_levels, do: project, else: preload_access_levels(project)
     Map.put(project, :privacy, AccessLevels.calc_privacy(project.access_levels))

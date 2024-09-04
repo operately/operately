@@ -21,6 +21,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjects do
     field :include_champion, :boolean
     field :include_goal, :boolean
     field :include_archived, :boolean
+    field :include_privacy, :boolean
   end
 
   outputs do
@@ -51,6 +52,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjects do
     |> Project.order_by_name()
     |> Repo.all(with_deleted: inputs[:include_archived] == true)
     |> Project.after_load_hooks()
+    |> load_privacy(inputs[:include_privacy])
   end
 
   defp apply_role_filter(query, person, inputs) do
@@ -73,8 +75,12 @@ defmodule OperatelyWeb.Api.Queries.GetProjects do
         :include_champion -> from p in q, preload: [:champion]
         :include_reviewer -> from p in q, preload: [:reviewer]
         :include_milestones -> from p in q, preload: [milestones: :project]
+        :include_privacy -> q
         _ -> q
       end
     end)
   end
+
+  defp load_privacy(projects, true), do: Project.preload_privacy(projects)
+  defp load_privacy(projects, _), do: projects
 end
