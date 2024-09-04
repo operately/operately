@@ -1340,6 +1340,7 @@ export interface GetProjectsInput {
   includeChampion?: boolean | null;
   includeGoal?: boolean | null;
   includeArchived?: boolean | null;
+  includePrivacy?: boolean | null;
 }
 
 export interface GetProjectsResult {
