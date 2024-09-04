@@ -38,8 +38,8 @@ function SimpleStackedForm() {
         <div className="mb-4 font-bold text-lg">Simple form with stacked layout</div>
 
         <Forms.FieldGroup>
-          <Forms.TextInput field={"name"} label={"Name"} />
-          <Forms.TextInput field={"email"} label={"Email"} />
+          <Forms.TextInput field={"name"} label={"Name"} placeholder="e.g. Martin Smith" />
+          <Forms.TextInput field={"email"} label={"Email"} placeholder="e.g. martin@acme.org" />
           <Forms.PasswordInput field={"password"} label={"Password (min 8 characters)"} />
         </Forms.FieldGroup>
 

@@ -4,7 +4,13 @@ import classNames from "classnames";
 import { getFormContext } from "./FormContext";
 import { InputField } from "./FieldGroup";
 
-export function TextInput({ field, label }: { field: string; label?: string }) {
+interface TextInputProps {
+  field: string;
+  label?: string;
+  placeholder?: string;
+}
+
+export function TextInput({ field, label, placeholder }: TextInputProps) {
   const form = getFormContext();
   const error = form.errors[field];
   const f = form.fields[field];
@@ -13,6 +19,7 @@ export function TextInput({ field, label }: { field: string; label?: string }) {
     <InputField field={field} label={label} error={error}>
       <input
         name={field}
+        placeholder={placeholder}
         data-test-id={field}
         className={styles(!!error)}
         type="text"
