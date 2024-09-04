@@ -1,18 +1,31 @@
 import { Person } from "@/models/people";
 import { Project } from "@/models/projects";
+import { NotifiablePerson } from "@/features/Subscriptions";
+import { compareIds } from "@/routes/paths";
 
-export function findNotifiableProjectContributors(project: Project, me: Person): Person[] {
+export function findNotifiableProjectContributors(project: Project, me: Person): NotifiablePerson[] {
   const people = project
-    .contributors!.filter((contrib) => contrib.person!.id !== me.id)
+    .contributors!.filter((contrib) => !compareIds(contrib.person!.id, me.id))
     .map((contrib) => {
+      const person = {
+        id: contrib.person!.id!,
+        fullName: contrib.person!.fullName!,
+        avatarUrl: contrib.person!.avatarUrl!,
+        title: "",
+      };
+
       switch (contrib.role) {
         case "reviewer":
-          return { ...contrib.person, title: "Reviewer" };
+          person.title = "Reviewer";
+          break;
         case "champion":
-          return { ...contrib.person, title: "Champion" };
+          person.title = "Champion";
+          break;
         default:
-          return { ...contrib.person, title: contrib.responsibility };
+          person.title = contrib.responsibility!;
       }
+
+      return person;
     });
 
   return people;
