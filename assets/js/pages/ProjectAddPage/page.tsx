@@ -3,9 +3,9 @@ import React from "react";
 import * as Paper from "@/components/PaperContainer";
 
 import PeopleSearch from "@/components/PeopleSearch";
+import Forms from "@/components/Forms";
 
 import * as People from "@/models/people";
-import * as Forms from "@/components/Form";
 import * as Pages from "@/components/Pages";
 
 import { useLoadedData } from "./loader";
@@ -97,83 +97,100 @@ function SubmitButton({ form }: { form: FormState }) {
   );
 }
 
-function Form({ form }: { form: FormState }) {
-  const { allowSpaceSelection } = useLoadedData();
-  const showWillYouContribute = !form.fields.amIChampion && !form.fields.amIReviewer;
+function Form() {
+  // const { allowSpaceSelection } = useLoadedData();
+  // const showWillYouContribute = !form.fields.amIChampion && !form.fields.amIReviewer;
+
+  const form = Forms.useForm({
+    fields: {
+      name: Forms.useTextField(),
+    },
+    submit: async (form) => {
+      console.log("submitting", form);
+    },
+  });
 
   return (
-    <Forms.Form onSubmit={() => {}} loading={form.submitting} isValid={true} onCancel={form.cancel}>
-      <div className="flex flex-col gap-8">
-        <div>
-          <Forms.TextInput
-            autoFocus
-            label="Project Name"
-            value={form.fields.name}
-            onChange={form.fields.setName}
-            placeholder="e.g. HR System Update"
-            data-test-id="project-name-input"
-            error={!!form.errors.find((e) => e.field === "name")?.message}
-          />
-        </div>
-
-        {allowSpaceSelection && <SpaceSelector form={form} />}
-
-        <GoalSelector form={form} />
-
-        <div className="grid grid-cols-2 gap-4">
-          <ContributorSearch
-            title="Champion"
-            onSelect={form.fields.setChampion}
-            defaultValue={form.fields.champion}
-            error={!!form.errors.find((e) => e.field === "champion")?.message}
-          />
-          <ContributorSearch
-            title="Reviewer"
-            onSelect={form.fields.setReviewer}
-            defaultValue={form.fields.reviewer}
-            error={!!form.errors.find((e) => e.field === "reviewer")?.message}
-          />
-        </div>
-
-        {showWillYouContribute && (
-          <div>
-            <div className="font-bold">Will you contribute?</div>
-
-            <Forms.RadioGroup
-              name="creatorIsContributor"
-              defaultValue={form.fields.creatorIsContributor}
-              onChange={form.fields.setCreatorIsContributor}
-            >
-              <div className="flex flex-col gap-1 mt-3">
-                <Forms.Radio
-                  label={"No, I'm just setting it up for someone else"}
-                  value="no"
-                  disabled={form.fields.visibility === "invite"}
-                  testId="no-contributor"
-                />
-                <Forms.Radio label="Yes, I'll contribute" value="yes" testId="yes-contributor" />
-              </div>
-            </Forms.RadioGroup>
-
-            {form.fields.creatorIsContributor === "yes" && (
-              <div className="mt-4">
-                <Forms.TextInput
-                  label="What is your responsibility on this project?"
-                  value={form.fields.creatorRole}
-                  onChange={form.fields.setCreatorRole}
-                  placeholder="e.g. Responsible for managing the project and coordinating tasks"
-                  testId="creator-responsibility-input"
-                  error={!!form.errors.find((e) => e.field === "creatorRole")?.message}
-                />
-              </div>
-            )}
-          </div>
-        )}
-
-        <ResourcePermissionSelector />
-      </div>
+    <Forms.Form form={form}>
+      <Forms.FieldGroup>
+        <Forms.TextInput label="Project Name" field={"name"} placeholder="e.g. HR System Update" />
+      </Forms.FieldGroup>
     </Forms.Form>
   );
+
+  // return (
+  //   <Forms.Form onSubmit={() => {}} loading={form.submitting} isValid={true} onCancel={form.cancel}>
+  //     <div className="flex flex-col gap-8">
+  //       <div>
+  //         <Forms.TextInput
+  //           autoFocus
+  //           label="Project Name"
+  //           value={form.fields.name}
+  //           onChange={form.fields.setName}
+  //           placeholder="e.g. HR System Update"
+  //           data-test-id="project-name-input"
+  //           error={!!form.errors.find((e) => e.field === "name")?.message}
+  //         />
+  //       </div>
+
+  //       {allowSpaceSelection && <SpaceSelector form={form} />}
+
+  //       <GoalSelector form={form} />
+
+  //       <div className="grid grid-cols-2 gap-4">
+  //         <ContributorSearch
+  //           title="Champion"
+  //           onSelect={form.fields.setChampion}
+  //           defaultValue={form.fields.champion}
+  //           error={!!form.errors.find((e) => e.field === "champion")?.message}
+  //         />
+  //         <ContributorSearch
+  //           title="Reviewer"
+  //           onSelect={form.fields.setReviewer}
+  //           defaultValue={form.fields.reviewer}
+  //           error={!!form.errors.find((e) => e.field === "reviewer")?.message}
+  //         />
+  //       </div>
+
+  //       {showWillYouContribute && (
+  //         <div>
+  //           <div className="font-bold">Will you contribute?</div>
+
+  //           <Forms.RadioGroup
+  //             name="creatorIsContributor"
+  //             defaultValue={form.fields.creatorIsContributor}
+  //             onChange={form.fields.setCreatorIsContributor}
+  //           >
+  //             <div className="flex flex-col gap-1 mt-3">
+  //               <Forms.Radio
+  //                 label={"No, I'm just setting it up for someone else"}
+  //                 value="no"
+  //                 disabled={form.fields.visibility === "invite"}
+  //                 testId="no-contributor"
+  //               />
+  //               <Forms.Radio label="Yes, I'll contribute" value="yes" testId="yes-contributor" />
+  //             </div>
+  //           </Forms.RadioGroup>
+
+  //           {form.fields.creatorIsContributor === "yes" && (
+  //             <div className="mt-4">
+  //               <Forms.TextInput
+  //                 label="What is your responsibility on this project?"
+  //                 value={form.fields.creatorRole}
+  //                 onChange={form.fields.setCreatorRole}
+  //                 placeholder="e.g. Responsible for managing the project and coordinating tasks"
+  //                 testId="creator-responsibility-input"
+  //                 error={!!form.errors.find((e) => e.field === "creatorRole")?.message}
+  //               />
+  //             </div>
+  //           )}
+  //         </div>
+  //       )}
+
+  //       <ResourcePermissionSelector />
+  //     </div>
+  //   </Forms.Form>
+  // );
 }
 
 function ContributorSearch({ title, onSelect, defaultValue, error }: any) {
