@@ -9,10 +9,10 @@ import { Feed, useItemsQuery } from "@/features/Feed";
 import { Navigation } from "@/features/goals/GoalPageNavigation";
 import { Header } from "@/features/goals/GoalPageHeader";
 import { LastCheckInMessage } from "@/features/goals/GoalCheckIn";
-import * as Tabs from "@/components/Tabs"; // this is temporary, will be removed in the next step
 import { Paths } from "@/routes/paths";
 import { BlackLink } from "@/components/Link";
-import { IconListTree, IconMessage, IconTarget } from "@tabler/icons-react";
+import { IconListTree, IconMessage } from "@tabler/icons-react";
+import { H3 } from "@/components/Text";
 
 
 interface LoaderResult {
@@ -292,11 +292,8 @@ export default function Discussions() {
 
 function GoalSubGoals({ goal, goals, projects }) {
   return (
-    <>
-      <div className="font-medium text-lg text-content-base mt-12 mb-4 flex items-center gap-1">
-        <IconListTree size={20} />
-        Sub-goals and projects
-      </div>
+    <div className="mt-16">
+      <H3 icon={IconListTree} content={"Sub-goals and projects"} />
 
       <GoalTree
         goals={goals}
@@ -306,7 +303,7 @@ function GoalSubGoals({ goal, goals, projects }) {
         }}
       />
       <div className="mb-16" />
-    </>
+    </div>
   )
 }
 

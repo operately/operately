@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as Goals from "@/models/goals";
 import * as Icons from "@tabler/icons-react";
-import { DimmedLabel } from "@/components/Label";
+import { DimmedLabel } from "@/components/Text";
 
 export function SuccessConditions({ goal }: { goal: Goals.Goal }) {
   return (

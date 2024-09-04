@@ -15,7 +15,7 @@ import FormattedTime from "@/components/FormattedTime";
 import plurarize from "@/utils/plurarize";
 import { DivLink } from "@/components/Link";
 import Avatar from "@/components/Avatar";
-import { DimmedLabel } from "@/components/Label";
+import { DimmedLabel } from "@/components/Text";
 import { SuccessConditions } from "../SuccessConditions";
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 import RichContent from "@/components/RichContent";
