@@ -84,7 +84,7 @@ export function useForm({ mode, project, checkIn, author, notifiablePeople = [] 
         status,
         description: JSON.stringify(editor.editor.getJSON()),
         sendNotificationsToEveryone: subscriptionsState.subscriptionType == Options.ALL,
-        subscriberIds: subscriptionsState.selectedPeople.map((person) => person.id!),
+        subscriberIds: subscriptionsState.currentSubscribersList,
       });
 
       navigate(Paths.projectCheckInPath(res.checkIn.id));

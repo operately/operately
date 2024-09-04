@@ -6,26 +6,44 @@ import { getFormContext } from "./FormContext";
 
 export function MultiPeopleSelectField({ field }: { field: string }) {
   const form = getFormContext();
-  const f = form.fields[field];
+  const { alwaysSelected, options } = form.fields[field];
+
+  const alwaysSelectedIds = alwaysSelected.map((p) => p.id!);
 
   return (
     <div>
-      {f.options.map((person: Person) => (
-        <PersonOption person={person} field={field} key={person.id} />
+      {alwaysSelected.map((person) => (
+        <PersonAlwaysSelected person={person} key={person.id} />
       ))}
+
+      {options
+        .filter((person) => !alwaysSelectedIds.includes(person.id))
+        .map((person) => (
+          <PersonOption person={person} field={field} key={person.id} />
+        ))}
+    </div>
+  );
+}
+
+function PersonAlwaysSelected({ person }: { person: Person }) {
+  return (
+    <div className="flex gap-4 border-b border-bg-stroke-subtle px-2 pb-4 mb-4 last:border-0 last:mb-0">
+      <Avatar person={person} size="large" />
+      <div className="flex w-full items-center justify-between">
+        <div className="text-content-dimmed">
+          <p className="font-bold">{person.fullName}</p>
+          <p className="text-sm">{person.title} - will always be notified</p>
+        </div>
+      </div>
     </div>
   );
 }
 
 function PersonOption({ person, field }: { person: Person; field: string }) {
   const form = getFormContext();
-  const { value, setValue, alwaysSelected } = form.fields[field];
+  const { value, setValue } = form.fields[field];
 
   const handleChange = () => {
-    // if alwaysSelected includes the person,
-    // handleChange doesn't do anything
-    if (alwaysSelected.find((p) => p.id === person.id)) return;
-
     const ids = value.map((p) => p.id);
 
     if (ids.includes(person.id)) {
