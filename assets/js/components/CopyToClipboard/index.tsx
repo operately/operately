@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { IconCopy, IconCheck, TablerIconsProps } from "@tabler/icons-react";
+import { IconCopy, IconCheck, IconProps } from "@tabler/icons-react";
 
 interface CopyToClipboardProps {
   text: string;
   size: number;
   padding?: number;
   containerClass?: string;
-  iconProps?: TablerIconsProps;
+  iconProps?: IconProps;
 }
 
 export function CopyToClipboard({ text, size, padding = 1, containerClass, iconProps }: CopyToClipboardProps) {

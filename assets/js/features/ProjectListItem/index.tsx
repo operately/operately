@@ -9,7 +9,7 @@ import FormattedTime from "@/components/FormattedTime";
 
 import { Link } from "@/components/Link";
 import { MiniPieChart } from "@/components/MiniPieChart";
-import { TextTooltip } from "@/components/Tooltip";
+import { Tooltip } from "@/components/Tooltip";
 import { MilestoneIcon } from "@/components/MilestoneIcon";
 import { StatusIndicator } from "@/features/ProjectListItem/StatusIndicator";
 
@@ -126,10 +126,10 @@ function PrivateIndicator({ project }) {
   if (!project.private) return null;
 
   return (
-    <TextTooltip text="Private project. Visible only to contributors.">
+    <Tooltip content="Private project. Visible only to contributors.">
       <div data-test-id="private-project-indicator">
         <Icons.IconLock size={16} />
       </div>
-    </TextTooltip>
+    </Tooltip>
   );
 }
