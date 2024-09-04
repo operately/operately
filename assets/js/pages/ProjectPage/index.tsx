@@ -9,8 +9,10 @@ import { Navigation } from "./Navigation";
 import { ProjectFeed } from "./ProjectFeed";
 import { CheckInSection } from "./CheckInSection";
 import { StatusOverview } from "./StatusOverview";
+import { ProjectOptions } from "./ProjectOptions";
 import { TimelineSection } from "./TimelineSection";
 import { ResourcesSection } from "./ResourcesSection";
+import { ContributorsSection } from "./ContributorsSection";
 import { ProjectDescriptionSection } from "./ProjectDescriptionSection";
 
 interface LoaderResult {
@@ -45,8 +47,10 @@ export function Page() {
         <Paper.Body>
           <Banner project={project} />
           <Header project={project} />
+          <ContributorsSection project={project} />
 
           <div className="mt-4">
+            <ProjectOptions project={project} />
             <StatusOverview project={project} />
             <ProjectDescriptionSection project={project} />
             <TimelineSection project={project} />
