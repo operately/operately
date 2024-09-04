@@ -5,6 +5,7 @@ import Modal from "@/components/Modal";
 import { FilledButton } from "@/components/Button";
 import { ActionLink } from "@/components/Link";
 import { SubscriptionsContext } from "./SubscribersSelector";
+import { includesId } from "@/routes/paths";
 
 interface SelectorModalProps {
   showSelector: boolean;
@@ -20,7 +21,7 @@ export function SubscribersSelectorModal({ showSelector, setShowSelector }: Sele
     },
     submit: async (form) => {
       const selectedPeopleIds = form.fields.people.value!.map((p) => p.id);
-      setSelectedPeople(people.filter((person) => selectedPeopleIds.includes(person.id)));
+      setSelectedPeople(people.filter((person) => includesId(selectedPeopleIds, person.id)));
       setShowSelector(false);
     },
   });

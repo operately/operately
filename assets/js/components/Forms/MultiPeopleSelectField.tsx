@@ -3,6 +3,7 @@ import React from "react";
 import Avatar from "@/components/Avatar";
 import { Person } from "@/models/people";
 import { getFormContext } from "./FormContext";
+import { compareIds, includesId } from "@/routes/paths";
 
 export function MultiPeopleSelectField({ field }: { field: string }) {
   const form = getFormContext();
@@ -17,7 +18,7 @@ export function MultiPeopleSelectField({ field }: { field: string }) {
       ))}
 
       {options
-        .filter((person) => !alwaysSelectedIds.includes(person.id))
+        .filter((person) => !includesId(alwaysSelectedIds, person.id))
         .map((person) => (
           <PersonOption person={person} field={field} key={person.id} />
         ))}
@@ -46,8 +47,8 @@ function PersonOption({ person, field }: { person: Person; field: string }) {
   const handleChange = () => {
     const ids = value.map((p) => p.id);
 
-    if (ids.includes(person.id)) {
-      setValue((prev: Person[]) => prev.filter((item) => item.id !== person.id));
+    if (includesId(ids, person.id)) {
+      setValue((prev: Person[]) => prev.filter((item) => !compareIds(item.id, person.id)));
     } else {
       setValue((prev: Person[]) => [...prev, person]);
     }
@@ -62,7 +63,10 @@ function PersonOption({ person, field }: { person: Person; field: string }) {
           <p className="text-sm">{person.title}</p>
         </div>
         <input
-          checked={value.map((p) => p.id).includes(person.id)}
+          checked={includesId(
+            value.map((p) => p.id),
+            person.id,
+          )}
           onChange={handleChange}
           type="checkbox"
           className="form-checkbox h-5 w-5 text-blue-600 rounded focus:ring-blue-500"

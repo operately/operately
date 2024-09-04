@@ -1,10 +1,11 @@
 import { Person } from "@/models/people";
 import { Project } from "@/models/projects";
 import { NotifiablePerson } from "@/features/Subscriptions";
+import { compareIds } from "@/routes/paths";
 
 export function findNotifiableProjectContributors(project: Project, me: Person): NotifiablePerson[] {
   const people = project
-    .contributors!.filter((contrib) => contrib.person!.id !== me.id)
+    .contributors!.filter((contrib) => !compareIds(contrib.person!.id, me.id))
     .map((contrib) => {
       const person = {
         id: contrib.person!.id!,
