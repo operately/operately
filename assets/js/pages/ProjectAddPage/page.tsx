@@ -1,12 +1,11 @@
-import React from "react";
-
+import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
+import * as People from "@/models/people";
+import * as Pages from "@/components/Pages";
+import * as Spaces from "@/models/spaces";
 
 import PeopleSearch from "@/components/PeopleSearch";
 import Forms from "@/components/Forms";
-
-import * as People from "@/models/people";
-import * as Pages from "@/components/Pages";
 
 import { useLoadedData } from "./loader";
 import { useForm, FormState } from "./useForm";
@@ -98,12 +97,15 @@ function SubmitButton({ form }: { form: FormState }) {
 }
 
 function Form() {
-  // const { allowSpaceSelection } = useLoadedData();
   // const showWillYouContribute = !form.fields.amIChampion && !form.fields.amIReviewer;
+  const { space, spaceOptions } = useLoadedData();
 
   const form = Forms.useForm({
     fields: {
       name: Forms.useTextField(),
+      space: Forms.useSelectField(space?.id, spaceOptions),
+      champion: Forms.useSelectPersonField(),
+      reviewer: Forms.useSelectPersonField(),
     },
     submit: async (form) => {
       console.log("submitting", form);
@@ -114,6 +116,10 @@ function Form() {
     <Forms.Form form={form}>
       <Forms.FieldGroup>
         <Forms.TextInput label="Project Name" field={"name"} placeholder="e.g. HR System Update" />
+        <Forms.SelectBox label="Space" field={"space"} />
+
+        <Forms.SelectPerson label="Champion" field={"champion"} />
+        <Forms.SelectPerson label="Reviewer" field={"reviewer"} />
       </Forms.FieldGroup>
     </Forms.Form>
   );
