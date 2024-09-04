@@ -14,7 +14,7 @@ interface MenuProps extends TestableElement {
 }
 
 interface MenuItemProps extends TestableElement {
-  icon: any;
+  icon: React.ComponentType<{ size: any }>;
   children: React.ReactNode;
   danger?: boolean;
 }
