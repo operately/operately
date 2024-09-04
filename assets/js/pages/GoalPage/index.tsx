@@ -13,6 +13,8 @@ import { Paths } from "@/routes/paths";
 import { BlackLink } from "@/components/Link";
 import { IconListTree, IconMessage } from "@tabler/icons-react";
 import { H3 } from "@/components/Text";
+import SecondaryButton from "@/components/Button/SecondaryButton";
+import { GhostButton } from "@/components/Button";
 
 
 interface LoaderResult {
@@ -94,7 +96,7 @@ function MessageBoard({ goal }) {
             <BlackLink to={Paths.goalDiscussionsPath(goal.id!)} >Message board</BlackLink>{" "}
             (5)
           </div>
-          <ButtonSecondaryRounded title="Write a new message" url="" />
+          <GhostButton type="secondary" size="xs">Write a new message</GhostButton>
         </div>
       </div>
       <div className="px-2 py-2">
@@ -112,12 +114,6 @@ function CircleWithNumber({ totalComments }) {
     <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
       <span className="text-white-1 text-xs font-bold">{totalComments}</span>
     </div>
-  );
-}
-
-function ButtonSecondaryRounded({ title, url }) {
-  return (
-    <a href={url} class="rounded-full bg-surface px-2.5 py-1.5 text-sm font-semibold text-content-base shadow-sm ring-1 ring-inset ring-stroke-base hover:bg-surface-dimmed">{title}</a>
   );
 }
 
