@@ -21,6 +21,7 @@ import { CommentSection, useForProjectCheckIn } from "@/features/CommentSection"
 
 import { useLoadedData, useRefresh } from "./loader";
 import { useMe } from "@/contexts/CurrentUserContext";
+import { CurrentSubscriptions } from "@/features/Subscriptions/CurrentSubscriptions";
 
 export function Page() {
   const { checkIn } = useLoadedData();
@@ -42,6 +43,10 @@ export function Page() {
 
           <div className="border-t border-stroke-base mt-8" />
           <Comments />
+
+          <div className="border-t border-stroke-base mt-16 mb-8" />
+
+          <CurrentSubscriptions subscriptionList={checkIn.subscriptionList!} name="check-in" />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
