@@ -8,12 +8,12 @@ import * as TipTapEditor from "@/components/Editor";
 import { useNavigate } from "react-router-dom";
 import { Paths } from "@/routes/paths";
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
-import { useSubscriptions, SubscriptionsState, Options } from "@/features/Subscriptions";
+import { useSubscriptions, SubscriptionsState, Options, NotifiablePerson } from "@/features/Subscriptions";
 
 interface UseFormOptions {
   mode: "create" | "edit";
   author: People.Person;
-  notifiablePeople?: People.Person[];
+  notifiablePeople?: NotifiablePerson[];
 
   project?: Projects.Project;
   checkIn?: ProjectCheckIns.ProjectCheckIn;
@@ -161,6 +161,6 @@ function validate(status: string | null, description: string): Error[] {
   return errors;
 }
 
-function getReviewerAndChampion(people: People.Person[]) {
+function getReviewerAndChampion(people: NotifiablePerson[]) {
   return people.filter((p) => p.title === "Reviewer" || p.title === "Champion");
 }

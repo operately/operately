@@ -1,9 +1,9 @@
 import { Dispatch, SetStateAction, useMemo, useState } from "react";
-import { Options } from ".";
+import { NotifiablePerson, Options } from ".";
 import { Person } from "@/models/people";
 
 export interface SubscriptionsState {
-  people: Person[];
+  people: NotifiablePerson[];
   selectedPeople: Person[];
   setSelectedPeople: Dispatch<SetStateAction<Person[]>>;
   subscriptionType: Options;
@@ -12,7 +12,7 @@ export interface SubscriptionsState {
   currentSubscribersList: string[];
 }
 
-export function useSubscriptions(people: Person[], opts?: { alwaysNotify?: Person[] }): SubscriptionsState {
+export function useSubscriptions(people: NotifiablePerson[], opts?: { alwaysNotify?: Person[] }): SubscriptionsState {
   const alwaysNotify = opts?.alwaysNotify ? [...opts.alwaysNotify] : [];
 
   const [selectedPeople, setSelectedPeople] = useState<Person[]>(alwaysNotify);
