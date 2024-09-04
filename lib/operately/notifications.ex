@@ -2,6 +2,7 @@ defmodule Operately.Notifications do
   import Ecto.Query, warn: false
   alias Operately.Repo
 
+  alias Operately.Access.Fetch
   alias Operately.Notifications.Notification
 
   def list_notifications do
@@ -102,10 +103,23 @@ defmodule Operately.Notifications do
     Repo.one(query)
   end
 
+
   alias Operately.Notifications.SubscriptionList
 
   def get_subscription_list!(id) when is_binary(id) , do: Repo.get!(SubscriptionList, id)
   def get_subscription_list!(attrs) when is_list(attrs), do: Repo.get_by!(SubscriptionList, attrs)
+
+  def get_subscription_access_level(id, type, person_id) do
+    query = case type do
+      :project_check_in ->
+        from(c in Operately.Projects.CheckIn, as: :resource,
+          join: s in assoc(c, :subscription_list),
+          where: s.id == ^id
+        )
+    end
+
+    {:ok, Fetch.get_access_level(query, person_id)}
+  end
 
   def create_subscription_list(attrs \\ %{}) do
     %SubscriptionList{}
@@ -119,6 +133,7 @@ defmodule Operately.Notifications do
     |> Repo.update()
   end
 
+
   alias Operately.Notifications.Subscription
 
   def list_subscriptions(%SubscriptionList{} = subscription_list), do: list_subscriptions(subscription_list.id)
@@ -131,5 +146,12 @@ defmodule Operately.Notifications do
     %Subscription{}
     |> Subscription.changeset(attrs)
     |> Repo.insert()
+  end
+
+  def is_subscriber?(person_id, subscription_list_id) do
+    from(s in Subscription,
+      where: s.person_id == ^person_id and s.subscription_list_id == ^subscription_list_id
+    )
+    |> Repo.exists?()
   end
 end
