@@ -13,14 +13,15 @@ export function FormExamples() {
       </div>
 
       <div className="flex flex-col gap-10">
-        <SimpleStackedForm />
-        <SimpleSideBySideForm />
+        <VerticalForm />
+        <HorizontalForm />
+        <GridForm />
       </div>
     </Section>
   );
 }
 
-function SimpleStackedForm() {
+function VerticalForm() {
   const form = Forms.useForm({
     fields: {
       name: Forms.useTextField(""),
@@ -35,7 +36,7 @@ function SimpleStackedForm() {
   return (
     <div className="p-6 border border-stroke-base rounded shadow-sm">
       <Forms.Form form={form}>
-        <div className="mb-4 font-bold text-lg">Simple form with stacked layout</div>
+        <div className="mb-4 font-bold text-lg">Vertical layout</div>
 
         <Forms.FieldGroup>
           <Forms.TextInput field={"name"} label={"Name"} placeholder="e.g. Martin Smith" />
@@ -49,7 +50,7 @@ function SimpleStackedForm() {
   );
 }
 
-function SimpleSideBySideForm() {
+function HorizontalForm() {
   const form = Forms.useForm({
     fields: {
       name: Forms.useTextField(""),
@@ -63,9 +64,7 @@ function SimpleSideBySideForm() {
   return (
     <div className="p-6 border border-stroke-base rounded shadow-sm">
       <Forms.Form form={form}>
-        <div className="mb-8 font-bold text-lg border-b border-stroke-base pb-4">
-          Simple form with horizontal layout
-        </div>
+        <div className="mb-8 font-bold text-lg border-b border-stroke-base pb-4">Horizontal layout</div>
 
         <Forms.FieldGroup layout="horizontal">
           <Forms.TextInput field={"name"} label={"Project Name"} />
@@ -75,6 +74,35 @@ function SimpleSideBySideForm() {
         <div className="border-b border-stroke-base mt-8" />
 
         <Forms.Submit saveText="Create Project" />
+      </Forms.Form>
+    </div>
+  );
+}
+
+function GridForm() {
+  const form = Forms.useForm({
+    fields: {
+      name: Forms.useTextField(""),
+      email: Forms.useTextField(""),
+      password: Forms.useTextField(""),
+      confirmPassword: Forms.useTextField(""),
+    },
+    submit: async (form) => {
+      console.log("Form submitted with values:", form);
+    },
+  });
+
+  return (
+    <div className="p-6 border border-stroke-base rounded shadow-sm">
+      <Forms.Form form={form}>
+        <div className="mb-4 font-bold text-lg">Grid layout form</div>
+
+        <Forms.FieldGroup layout="grid" gridColumns={2}>
+          <Forms.TextInput field={"name"} label={"Name"} placeholder="e.g. Martin Smith" />
+          <Forms.TextInput field={"email"} label={"Email"} placeholder="e.g. martin@acme.org" />
+          <Forms.PasswordInput field={"password"} label={"Password"} />
+          <Forms.PasswordInput field={"confirmPassword"} label={"Confirm Password"} />
+        </Forms.FieldGroup>
       </Forms.Form>
     </div>
   );
