@@ -118,8 +118,10 @@ function Form() {
         <Forms.TextInput label="Project Name" field={"name"} placeholder="e.g. HR System Update" />
         <Forms.SelectBox label="Space" field={"space"} />
 
-        <Forms.SelectPerson label="Champion" field={"champion"} />
-        <Forms.SelectPerson label="Reviewer" field={"reviewer"} />
+        <Forms.FieldGroup layout="grid" gridColumns={2}>
+          <Forms.SelectPerson label="Champion" field={"champion"} />
+          <Forms.SelectPerson label="Reviewer" field={"reviewer"} />
+        </Forms.FieldGroup>
       </Forms.FieldGroup>
     </Forms.Form>
   );
