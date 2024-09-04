@@ -12,9 +12,10 @@ import { useForm, FormState } from "./useForm";
 import { FilledButton } from "@/components/Button";
 import { DimmedLink } from "@/components/Link";
 import { GoalSelectorDropdown } from "@/features/goals/GoalTree/GoalSelectorDropdown";
-import { Paths } from "@/routes/paths";
+import { Paths, compareIds } from "@/routes/paths";
 import { PermissionsProvider, usePermissionsContext } from "@/features/Permissions/PermissionsContext";
 import { ResourcePermissionSelector } from "@/features/Permissions";
+import { useMe } from "@/contexts/CurrentUserContext";
 
 export function Page() {
   const { spaceID, company, space } = useLoadedData();
@@ -97,20 +98,40 @@ function SubmitButton({ form }: { form: FormState }) {
 }
 
 function Form() {
-  // const showWillYouContribute = !form.fields.amIChampion && !form.fields.amIReviewer;
+  const me = useMe()!;
   const { space, spaceOptions } = useLoadedData();
 
   const form = Forms.useForm({
     fields: {
       name: Forms.useTextField(),
       space: Forms.useSelectField(space?.id, spaceOptions),
-      champion: Forms.useSelectPersonField(),
-      reviewer: Forms.useSelectPersonField(),
+      champion: Forms.useSelectPersonField(me),
+      reviewer: Forms.useSelectPersonField(me.manager),
+      creatorRole: Forms.useTextField(),
+      creatorIsContributor: Forms.useSelectField("no", [
+        { label: "No, I'm just setting it up for someone else", value: "no" },
+        { label: "Yes, I'll contribute", value: "yes" },
+      ]),
     },
     submit: async (form) => {
       console.log("submitting", form);
     },
   });
+
+  const showWillYouContribute = React.useMemo(() => {
+    const isChampion = compareIds(form.fields.champion?.value!.id!, me.id!);
+    const isReviewer = compareIds(form.fields.reviewer?.value!.id!, me.id!);
+
+    return !isChampion && !isReviewer;
+  }, [form.fields.champion, form.fields.reviewer, me.id]);
+
+  const showResponsibility = React.useMemo(() => {
+    if (showWillYouContribute) {
+      return form.fields.creatorIsContributor.value === "yes";
+    } else {
+      return false;
+    }
+  }, [showWillYouContribute, form.fields.creatorIsContributor]);
 
   return (
     <Forms.Form form={form}>
@@ -122,6 +143,15 @@ function Form() {
           <Forms.SelectPerson label="Champion" field={"champion"} />
           <Forms.SelectPerson label="Reviewer" field={"reviewer"} />
         </Forms.FieldGroup>
+
+        {showWillYouContribute && <Forms.RadioButtons label="Will you contribute?" field={"creatorIsContributor"} />}
+        {showResponsibility && (
+          <Forms.TextInput
+            label="What is your responsibility on this project?"
+            field={"creatorRole"}
+            placeholder="e.g. Responsible for managing the project and coordinating tasks"
+          />
+        )}
       </Forms.FieldGroup>
     </Forms.Form>
   );
@@ -199,41 +229,6 @@ function Form() {
   //     </div>
   //   </Forms.Form>
   // );
-}
-
-function ContributorSearch({ title, onSelect, defaultValue, error }: any) {
-  const loader = People.usePeopleSearch();
-
-  return (
-    <div>
-      <label className="font-bold mb-1 block">{title}</label>
-      <div className="flex-1">
-        <PeopleSearch
-          onChange={(option) => onSelect(option?.person)}
-          defaultValue={defaultValue}
-          placeholder="Search by name..."
-          loader={loader}
-          inputId={title}
-          error={error}
-        />
-      </div>
-    </div>
-  );
-}
-
-function SpaceSelector({ form }: { form: FormState }) {
-  const hasError = !!form.errors.find((e) => e.field === "space");
-
-  return (
-    <Forms.SelectBox
-      label="Space"
-      value={form.fields.space}
-      onChange={form.fields.setSpace}
-      options={form.fields.spaceOptions}
-      defaultValue={null}
-      error={hasError}
-    />
-  );
 }
 
 function GoalSelector({ form }: { form: FormState }) {
