@@ -3,28 +3,27 @@ import React, { useState, useMemo } from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as Projects from "@/models/projects";
+import * as People from "@/models/people";
 
 import Banner from "./Banner";
 import Header from "./Header";
 import Overview from "./Overview";
 import Timeline from "./Timeline";
 import Navigation from "./Navigation";
-import { GhostButton } from "@/components/Button";
 
 import FormattedTime from "@/components/FormattedTime";
 import Avatar from "@/components/Avatar";
 import RichContent, { countCharacters, shortenContent, Summary } from "@/components/RichContent";
-import { ResourceIcon } from "@/components/KeyResourceIcon";
 
 import { Feed, useItemsQuery } from "@/features/Feed";
 import { DimmedLabel } from "./Label";
-
-import * as People from "@/models/people";
+import { ResourceIcon } from "@/components/KeyResourceIcon";
+import { GhostButton } from "@/components/Button";
 import { Link } from "@/components/Link";
-
-import { useLoadedData } from "./loader";
 import { Paths } from "@/routes/paths";
 import { SmallStatusIndicator } from "@/features/projectCheckIns/SmallStatusIndicator";
+
+import { useLoadedData } from "./loader";
 import Options from "./Options";
 
 export function Page() {
