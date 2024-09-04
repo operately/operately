@@ -5,28 +5,18 @@ import * as Goals from "@/models/goals";
 
 import { DimmedLink, DivLink } from "@/components/Link";
 import { Paths } from "@/routes/paths";
-import { GhostButton } from "@/components/Button";
 import { PrivacyIndicator } from "@/features/projects/PrivacyIndicator";
-import { ProjectOptions } from "./ProjectOptions";
-
-import ContributorAvatar from "@/components/ContributorAvatar";
 
 export function Header({ project }: { project: Projects.Project }) {
   return (
-    <div>
-      <ProjectOptions project={project} />
+    <div className="flex-1 mb-2">
+      <ParentGoal project={project} />
 
-      <div className="flex-1 mb-2">
-        <ParentGoal project={project} />
-
-        <div className="flex items-center text-content-accent truncate mr-12">
-          <ProjectIcon />
-          <ProjectName project={project} />
-          <PrivacyIndicator project={project} />
-        </div>
+      <div className="flex items-center text-content-accent truncate mr-12">
+        <ProjectIcon />
+        <ProjectName project={project} />
+        <PrivacyIndicator project={project} />
       </div>
-
-      <ContributorList project={project} />
     </div>
   );
 }
@@ -75,33 +65,5 @@ function ParentGoalLinked({ goal }: { goal: Goals.Goal }) {
         {goal.name}
       </DivLink>
     </>
-  );
-}
-
-function ContributorList({ project }: { project: Projects.Project }) {
-  const contributorsPath = Paths.projectContributorsPath(project.id!);
-  const sortedContributors = Projects.sortContributorsByRole(project.contributors!);
-
-  return (
-    <div className="flex items-center">
-      <DivLink to={contributorsPath} testId="project-contributors">
-        <div className="flex items-center justify-center gap-1 cursor-pointer">
-          {sortedContributors!.map((c) => c && <ContributorAvatar key={c.id} contributor={c} />)}
-          <ManageAccessButton project={project} />
-        </div>
-      </DivLink>
-    </div>
-  );
-}
-
-function ManageAccessButton({ project }: { project: Projects.Project }) {
-  if (!project.permissions!.canEditContributors) return null;
-
-  return (
-    <div className="ml-2">
-      <GhostButton size="xs" type="secondary" testId="manage-team-button">
-        Manage Team
-      </GhostButton>
-    </div>
   );
 }
