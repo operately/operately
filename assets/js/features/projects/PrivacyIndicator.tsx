@@ -5,18 +5,27 @@ import * as Projects from "@/models/projects";
 import { Tooltip } from "@/components/Tooltip";
 import { match } from "ts-pattern";
 
-export function PrivacyIndicator({ project }: { project: Projects.Project }) {
+interface PrivacyIndicatorProps {
+  project: Projects.Project;
+  size?: number;
+}
+
+const DEFAULT_SIZE = 24;
+
+export function PrivacyIndicator({ project, size }: PrivacyIndicatorProps) {
+  size = size ?? DEFAULT_SIZE;
+
   return match(project.privacy)
-    .with(Projects.PRIVACY_PUBLIC, () => <PrivacyPublic />)
+    .with(Projects.PRIVACY_PUBLIC, () => <PrivacyPublic size={size} />)
     .with(Projects.PRIVACY_INTERNAL, () => null)
-    .with(Projects.PRIVACY_CONFIDENTIAL, () => <PrivacyConfidential project={project} />)
-    .with(Projects.PRIVACY_SECRET, () => <PrivacySecret />)
+    .with(Projects.PRIVACY_CONFIDENTIAL, () => <PrivacyConfidential project={project} size={size} />)
+    .with(Projects.PRIVACY_SECRET, () => <PrivacySecret size={size} />)
     .otherwise(() => {
       throw new Error("Invalid privacy value");
     });
 }
 
-function PrivacyPublic() {
+function PrivacyPublic({ size }: { size: number }) {
   const content = (
     <div>
       <div className="text-content-accent font-bold">Anyone on the internet</div>
@@ -28,12 +37,12 @@ function PrivacyPublic() {
 
   return (
     <Tooltip content={content} testId="public-project-tooltip" delayDuration={100}>
-      <Icons.IconWorld size={24} />
+      <Icons.IconWorld size={size} />
     </Tooltip>
   );
 }
 
-function PrivacyConfidential({ project }: { project: Projects.Project }) {
+function PrivacyConfidential({ project, size }: { project: Projects.Project; size: number }) {
   const content = (
     <div>
       <div className="text-content-accent font-bold">Only {project.space!.name} members</div>
@@ -45,12 +54,12 @@ function PrivacyConfidential({ project }: { project: Projects.Project }) {
 
   return (
     <Tooltip content={content} testId="confidential-project-tooltip" delayDuration={100}>
-      <Icons.IconLockFilled size={24} />
+      <Icons.IconLockFilled size={size} />
     </Tooltip>
   );
 }
 
-function PrivacySecret() {
+function PrivacySecret({ size }) {
   const content = (
     <div>
       <div className="text-content-accent font-bold">Invite-Only</div>
@@ -60,7 +69,7 @@ function PrivacySecret() {
 
   return (
     <Tooltip content={content} testId="secret-project-tooltip" delayDuration={100}>
-      <Icons.IconLockFilled size={24} className="text-content-error" />
+      <Icons.IconLockFilled size={size} className="text-content-error" />
     </Tooltip>
   );
 }
