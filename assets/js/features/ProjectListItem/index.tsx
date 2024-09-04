@@ -1,21 +1,17 @@
-import React from "react";
-
+import * as React from "react";
 import * as Milestones from "@/models/milestones";
-import * as Icons from "@tabler/icons-react";
 import * as Projects from "@/models/projects";
 
 import Avatar from "@/components/Avatar";
+import classNames from "classnames";
 import FormattedTime from "@/components/FormattedTime";
 
 import { Link } from "@/components/Link";
+import { Paths } from "@/routes/paths";
 import { MiniPieChart } from "@/components/MiniPieChart";
-import { Tooltip } from "@/components/Tooltip";
 import { MilestoneIcon } from "@/components/MilestoneIcon";
 import { StatusIndicator } from "@/features/ProjectListItem/StatusIndicator";
 import { PrivacyIndicator } from "@/features/projects/PrivacyIndicator";
-
-import classNames from "classnames";
-import { Paths } from "@/routes/paths";
 
 interface ProjectListItemProps {
   project: Projects.Project;
@@ -120,17 +116,5 @@ function ContribList({ project, size }) {
         <Avatar key={contributor!.id} person={contributor!.person!} size={size} />
       ))}
     </div>
-  );
-}
-
-function PrivateIndicator({ project }) {
-  if (!project.private) return null;
-
-  return (
-    <Tooltip content="Private project. Visible only to contributors.">
-      <div data-test-id="private-project-indicator">
-        <Icons.IconLock size={16} />
-      </div>
-    </Tooltip>
   );
 }
