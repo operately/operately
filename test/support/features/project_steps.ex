@@ -506,7 +506,7 @@ defmodule Operately.Support.Features.ProjectSteps do
 
   step :remove_contributor, ctx, name: name do
     ctx
-    |> UI.click(testid: "project-contributors")
+    |> UI.click(testid: "manage-team-button")
     |> UI.click(testid: "edit-contributor-#{String.downcase(name) |> String.replace(" ", "-")}")
     |> UI.click(testid: "remove-contributor")
     |> UI.sleep(200)
@@ -521,7 +521,7 @@ defmodule Operately.Support.Features.ProjectSteps do
 
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
-    |> UI.click(testid: "project-contributors")
+    |> UI.click(testid: "manage-team-button")
     |> UI.refute_has(Query.text("Michael Scott"))
   end
 
