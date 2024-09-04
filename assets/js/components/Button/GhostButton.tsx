@@ -52,7 +52,8 @@ function className(size?: "xxs" | "xs" | "sm" | "base" | "lg", type?: "primary" 
   size = size || "base";
   type = type || "primary";
 
-  let result = "relative font-medium transition-all duration-100 text-center";
+  let result =
+    "relative font-semibold hover:bg-surface-highlight transition-all duration-100 text-center flex-grow-0 flex-shrink-0";
 
   if (loading) {
     result += " cursor-default";
@@ -61,27 +62,27 @@ function className(size?: "xxs" | "xs" | "sm" | "base" | "lg", type?: "primary" 
   }
 
   if (size === "xxs") {
-    result += " px-2 py-[1px] text-sm rounded-2xl";
+    result += " px-2 py-[1px] text-xs rounded-2xl";
   }
 
   if (size === "xs") {
-    result += " px-2.5 py-0.5 text-sm rounded-2xl";
+    result += " px-2.5 py-1 text-sm rounded-2xl";
   }
 
   if (size === "sm") {
-    result += " px-3 py-1 text-sm rounded-2xl";
+    result += " px-3 py-1.5 text-sm rounded-2xl";
   }
 
   if (size === "base") {
-    result += " px-4 py-1 rounded-3xl";
+    result += " px-3.5 py-2 rounded-3xl";
   }
 
   if (size === "lg") {
-    result += " px-6 py-2 text-lg rounded-3xl";
+    result += " px-4 py-2.5 rounded-3xl";
   }
 
   if (type === "primary") {
-    result += " border-2 border-accent-1";
+    result += " border border-accent-1";
     if (loading) {
       result += " text-content-subtle";
     } else {
@@ -94,7 +95,7 @@ function className(size?: "xxs" | "xs" | "sm" | "base" | "lg", type?: "primary" 
     if (loading) {
       result += " text-content-subtle";
     } else {
-      result += " text-content-dimmed hover:text-content-accent";
+      result += " text-content-base hover:text-content-accent";
     }
   }
 
