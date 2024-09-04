@@ -9,7 +9,7 @@ import { Link } from "react-router-dom";
 import { DivLink } from "@/components/Link";
 import { Project } from "@/models/projects";
 
-import { TextTooltip } from "@/components/Tooltip";
+import { Tooltip } from "@/components/Tooltip";
 import { Paths } from "@/routes/paths";
 import { GhostButton } from "@/components/Button";
 
@@ -87,11 +87,11 @@ function PrivateIndicator({ project }) {
   if (!project.private) return null;
 
   return (
-    <TextTooltip text="Private project. Visible only to contributors.">
+    <Tooltip content="Private project. Visible only to contributors.">
       <div className="mt-1" data-test-id="private-project-indicator">
         <Icons.IconLock size={20} />
       </div>
-    </TextTooltip>
+    </Tooltip>
   );
 }
 
