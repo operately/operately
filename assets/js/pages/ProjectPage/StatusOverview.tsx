@@ -5,7 +5,7 @@ import { StatusIndicator } from "@/features/ProjectListItem/StatusIndicator";
 import { MiniPieChart } from "@/components/MiniPieChart";
 import { DimmedLabel } from "./Label";
 
-export default function Overview({ project }) {
+export function StatusOverview({ project }) {
   if (project.status === "closed") return;
 
   return (

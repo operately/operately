@@ -5,7 +5,7 @@ import * as PageOptions from "@/components/PaperContainer/PageOptions";
 
 import { Paths } from "@/routes/paths";
 
-export default function Options({ project }) {
+export function ProjectOptions({ project }) {
   return (
     <PageOptions.Root testId="project-options-button" position="top-right">
       {project.permissions.canPause && Projects.isResumable(project) && (
