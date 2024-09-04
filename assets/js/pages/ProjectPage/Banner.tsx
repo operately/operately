@@ -1,36 +1,30 @@
-import React from "react";
-
+import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Projects from "@/models/projects";
 
-import FormattedTime from "@/components/FormattedTime";
 import { Link } from "@/components/Link";
 import { Paths } from "@/routes/paths";
 import { FilledButton } from "@/components/Button";
+import { match } from "ts-pattern";
 
-export default function Banner({ project }: { project: Projects.Project }) {
-  if (project.status === "closed") {
-    return <ProjectClosedBanner project={project} />;
-  }
+import FormattedTime from "@/components/FormattedTime";
 
-  if (project.status === "paused") {
-    return <ProjectPausedBanner project={project} />;
-  }
-
-  return null;
+export function Banner({ project }: { project: Projects.Project }) {
+  return match(project.status)
+    .with("closed", () => <ProjectClosedBanner project={project} />)
+    .with("paused", () => <ProjectPausedBanner project={project} />)
+    .otherwise(() => null);
 }
 
 function ProjectClosedBanner({ project }: { project: Projects.Project }) {
   const retroPath = Paths.projectRetrospectivePath(project.id!);
 
   return (
-    <Paper.Banner>
+    <Paper.Banner testId="project-closed-banner">
       This project was closed on <FormattedTime time={project.closedAt!} format="long-date" />. View the{" "}
-      <span className="font-bold ml-1">
-        <Link to={retroPath} testId="project-retrospective-link">
-          retrospective
-        </Link>
-      </span>
+      <Link to={retroPath} testId="project-retrospective-link" className="font-bold ml-1">
+        retrospective
+      </Link>
       .
     </Paper.Banner>
   );
@@ -40,8 +34,8 @@ function ProjectPausedBanner({ project }: { project: Projects.Project }) {
   const resumePath = Paths.resumeProjectPath(project.id!);
 
   return (
-    <Paper.Banner>
-      <div className="flex items-center gap-2" data-test-id="project-paused-banner">
+    <Paper.Banner testId="project-paused-banner">
+      <div className="flex items-center gap-2">
         <div>This project is paused</div>
         {project.permissions?.canPause && (
           <FilledButton linkTo={resumePath} testId="resume-project-button" size="xxs">

@@ -1,8 +1,13 @@
 import React from "react";
 import classnames from "classnames";
 import { usePaperSizeHelpers } from "./";
+import { TestableElement } from "@/utils/testid";
 
-export function Banner(props: { children: React.ReactNode }) {
+interface BannerProps extends TestableElement {
+  children: React.ReactNode;
+}
+
+export function Banner(props: BannerProps) {
   const className = classnames(
     "leading-none",
     "bg-yellow-400/10",
@@ -10,10 +15,19 @@ export function Banner(props: { children: React.ReactNode }) {
     "flex items-center justify-center",
   );
 
-  return <Header className={className}>{props.children}</Header>;
+  return (
+    <Header className={className} testId={props.testId}>
+      {props.children}
+    </Header>
+  );
 }
 
-export function Header(props: { className: string; children: React.ReactNode }) {
+interface HeaderProps extends TestableElement {
+  className: string;
+  children: React.ReactNode;
+}
+
+export function Header(props: HeaderProps) {
   const { negHor, negTop, horPadding } = usePaperSizeHelpers();
 
   const className = classnames(
@@ -24,5 +38,9 @@ export function Header(props: { className: string; children: React.ReactNode }) 
     horPadding,
   );
 
-  return <div className={className}>{props.children}</div>;
+  return (
+    <div className={className} data-test-id={props.testId}>
+      {props.children}
+    </div>
+  );
 }
