@@ -8,15 +8,16 @@ interface TextInputProps {
   field: string;
   label?: string;
   placeholder?: string;
+  hidden?: boolean;
 }
 
-export function TextInput({ field, label, placeholder }: TextInputProps) {
+export function TextInput({ field, label, placeholder, hidden }: TextInputProps) {
   const form = getFormContext();
   const error = form.errors[field];
   const f = form.fields[field];
 
   return (
-    <InputField field={field} label={label} error={error}>
+    <InputField field={field} label={label} error={error} hidden={hidden}>
       <input
         name={field}
         placeholder={placeholder}
