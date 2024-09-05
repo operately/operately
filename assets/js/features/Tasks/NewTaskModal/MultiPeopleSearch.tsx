@@ -124,6 +124,7 @@ export function MultiPeopleSearch(props: MultiPeopleSearchProps) {
                     "cursor-pointer": true,
                     "bg-sky-300": selectedPersonIndex === index,
                   })}
+                  data-test-id={createTestId("person-option", person.fullName!)}
                   onClick={() => {
                     props.setAddedPeople((people) => [...people, person]);
                     setSearchTerm("");
