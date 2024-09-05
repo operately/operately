@@ -5,12 +5,18 @@ import { InputField } from "./FieldGroup";
 
 import classNames from "classnames";
 
-export function RadioButtons({ field, label }: { field: string; label?: string }) {
+interface RadioButtonsProps {
+  field: string;
+  label?: string;
+  hidden?: boolean;
+}
+
+export function RadioButtons({ field, label, hidden }: RadioButtonsProps) {
   const form = getFormContext();
   const f = form.fields[field];
 
   return (
-    <InputField field={field} label={label}>
+    <InputField field={field} label={label} hidden={hidden}>
       <div className="flex flex-col gap-2 mt-1">
         {f.options.map((option: { value: string; label: string }) => (
           <RadioButton key={option.value} field={field} value={option.value} label={option.label} />

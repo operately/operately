@@ -13,6 +13,7 @@ interface LoaderResult {
   goals: Goals.Goal[];
 
   allowSpaceSelection: boolean;
+  spaceOptions: { value: string; label: string }[];
 }
 
 // There are two ways we can end up on this page:
@@ -34,16 +35,19 @@ export async function loader({ request, params }): Promise<LoaderResult> {
   let space: Spaces.Space | undefined;
   let spaces: Spaces.Space[] | undefined;
   let allowSpaceSelection: boolean;
+  let spaceOptions: { value: string; label: string }[] = [];
 
   if (spaceID) {
     space = await Spaces.getSpace({ id: spaceID });
     allowSpaceSelection = false;
+    spaceOptions = [{ value: space.id!, label: space.name! }];
   } else {
     spaces = await Spaces.getSpaces({});
     allowSpaceSelection = true;
+    spaceOptions = spaces.map((space) => ({ value: space.id!, label: space.name! }));
   }
 
-  return { company, spaceID, space, spaces, allowSpaceSelection, goal, goals };
+  return { company, spaceID, space, spaces, allowSpaceSelection, goal, goals, spaceOptions };
 }
 
 export function useLoadedData(): LoaderResult {
