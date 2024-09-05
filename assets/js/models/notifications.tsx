@@ -3,6 +3,9 @@ import Api from "@/api";
 
 import { useUnreadNotificationCount } from "@/api/socket";
 
+export type { SubscriptionList, Subscription } from "@/api";
+export { useSubscribeToNotifications, useUnsubscribeFromNotifications } from "@/api";
+
 export function useUnreadCount() {
   const [unread, setUnread] = React.useState(0);
 
