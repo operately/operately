@@ -1,25 +1,17 @@
 import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
-import * as People from "@/models/people";
 import * as Pages from "@/components/Pages";
-import * as Spaces from "@/models/spaces";
 import * as Projects from "@/models/projects";
-import * as Goals from "@/models/goals";
 
-import PeopleSearch from "@/components/PeopleSearch";
 import Forms from "@/components/Forms";
 
 import { useLoadedData } from "./loader";
 import { useForm, FormState } from "./useForm";
-import { FilledButton } from "@/components/Button";
 import { DimmedLink } from "@/components/Link";
-import { GoalSelectorDropdown } from "@/features/goals/GoalTree/GoalSelectorDropdown";
 import { Paths, compareIds } from "@/routes/paths";
 import { PermissionsProvider, usePermissionsContext } from "@/features/Permissions/PermissionsContext";
-import { ResourcePermissionSelector } from "@/features/Permissions";
 import { useMe } from "@/contexts/CurrentUserContext";
 import { useNavigate } from "react-router-dom";
-import { SelectField } from "@/components/Forms/useSelectField";
 
 export function Page() {
   const { spaceID, company, space } = useLoadedData();
@@ -27,7 +19,7 @@ export function Page() {
 
   return (
     <PermissionsProvider company={company} space={space || form.fields.space}>
-      {spaceID ? <NewProjectForSpacePage form={form} /> : <NewProjectPage form={form} />}
+      {spaceID ? <NewProjectForSpacePage /> : <NewProjectPage />}
     </PermissionsProvider>
   );
 }
@@ -45,12 +37,7 @@ function NewProjectForSpacePage({ form }: { form: FormState }) {
         </div>
 
         <h1 className="mb-4 font-bold text-3xl text-center">Start a new project in {space!.name}</h1>
-
-        <Paper.Body minHeight="300px">
-          <Form form={form} />
-        </Paper.Body>
-
-        <SubmitButton form={form} />
+        <Form />
       </Paper.Root>
     </Pages.Page>
   );
@@ -65,39 +52,9 @@ function NewProjectPage({ form }: { form: FormState }) {
         </div>
 
         <h1 className="mb-4 font-bold text-3xl text-center">Start a new project</h1>
-
-        <Paper.Body minHeight="300px">
-          <Form form={form} />
-        </Paper.Body>
-
-        <SubmitButton form={form} />
+        <Form />
       </Paper.Root>
     </Pages.Page>
-  );
-}
-
-function SubmitButton({ form }: { form: FormState }) {
-  const { permissions } = usePermissionsContext();
-
-  return (
-    <div className="mt-8">
-      {form.errors.length > 0 && (
-        <div className="text-content-error text-sm font-medium text-center mb-4">Please fill out all fields</div>
-      )}
-
-      <div className="flex items-center justify-center gap-4">
-        <FilledButton
-          type="primary"
-          onClick={() => form.submit(permissions)}
-          loading={form.submitting}
-          size="lg"
-          testId="save"
-          bzzzOnClickFailure
-        >
-          Add Project
-        </FilledButton>
-      </div>
-    </div>
   );
 }
 
@@ -106,11 +63,15 @@ const WillYouContributeOptions = [
   { label: "Yes, I'll contribute", value: "yes" },
 ];
 
+// Creator Role
+const CRLabel = "What is your responsibility on this project?";
+const CRPlaceholder = "e.g. Responsible for managing the project and coordinating tasks";
+
 function Form() {
   const me = useMe()!;
   const navigate = useNavigate();
   const [add] = Projects.useCreateProject();
-  const { space, spaceOptions, goal, goalOptions, allowSpaceSelection } = useLoadedData();
+  const { space, spaceOptions, goal, goals, allowSpaceSelection } = useLoadedData();
 
   const form = Forms.useForm({
     fields: {
@@ -118,16 +79,16 @@ function Form() {
       space: Forms.useSelectField(space?.id, spaceOptions),
       champion: Forms.useSelectPersonField(me),
       reviewer: Forms.useSelectPersonField(me.manager),
-      goal: Forms.useSelectField(goal?.id, goalOptions),
+      goal: Forms.useTextField(goal?.id),
       creatorRole: Forms.useTextField(),
-      creatorIsContributor: Forms.useSelectField("no", WillYouContributeOptions),
+      isContrib: Forms.useSelectField("no", WillYouContributeOptions),
     },
     submit: async (form) => {
       const res = await add({
         name: form.fields.name.value,
         championId: form.fields.champion!.value!.id,
         reviewerId: form.fields.reviewer!.value!.id,
-        creatorIsContributor: form.fields.creatorIsContributor.value,
+        creatorIsContributor: form.fields.isContrib!.value,
         creatorRole: form.fields.creatorRole.value,
         spaceId: form.fields.space!.value,
         goalId: form.fields.goal?.value,
@@ -140,56 +101,54 @@ function Form() {
     },
   });
 
-  const showWillYouContribute = React.useMemo(() => {
-    const isChampion = compareIds(form.fields.champion?.value!.id!, me.id!);
-    const isReviewer = compareIds(form.fields.reviewer?.value!.id!, me.id!);
-
-    return !isChampion && !isReviewer;
-  }, [form.fields.champion, form.fields.reviewer, me.id]);
-
-  const showResponsibility = React.useMemo(() => {
-    if (showWillYouContribute) {
-      return form.fields.creatorIsContributor.value === "yes";
-    } else {
-      return false;
-    }
-  }, [showWillYouContribute, form.fields.creatorIsContributor]);
+  const hideIsContrib = useShouldHideIsCotrib({ form });
+  const hideCreatorRole = useShouldHideCreatorRole({ form });
 
   return (
     <Forms.Form form={form}>
-      <Forms.FieldGroup>
-        <Forms.TextInput label="Project Name" field={"name"} placeholder="e.g. HR System Update" />
-        {allowSpaceSelection && <Forms.SelectBox label="Space" field={"space"} />}
-        <GoalSelector form={form} />
+      <Paper.Body minHeight="300px">
+        <Forms.FieldGroup>
+          <Forms.TextInput label="Project Name" field={"name"} placeholder="e.g. HR System Update" />
+          <Forms.SelectBox label="Space" field={"space"} hidden={!allowSpaceSelection} />
+          <Forms.SelectGoal field={"goal"} goals={goals} label={"Goal"} />
 
-        <Forms.FieldGroup layout="grid" gridColumns={2}>
-          <Forms.SelectPerson label="Champion" field={"champion"} />
-          <Forms.SelectPerson label="Reviewer" field={"reviewer"} />
+          <Forms.FieldGroup layout="grid" gridColumns={2}>
+            <Forms.SelectPerson label="Champion" field={"champion"} />
+            <Forms.SelectPerson label="Reviewer" field={"reviewer"} />
+          </Forms.FieldGroup>
+
+          <Forms.RadioButtons label="Will you contribute?" field={"isContrib"} hidden={hideIsContrib} />
+          <Forms.TextInput label={CRLabel} field={"creatorRole"} placeholder={CRPlaceholder} hidden={hideCreatorRole} />
         </Forms.FieldGroup>
+      </Paper.Body>
 
-        {showWillYouContribute && <Forms.RadioButtons label="Will you contribute?" field={"creatorIsContributor"} />}
-        {showResponsibility && (
-          <Forms.TextInput
-            label="What is your responsibility on this project?"
-            field={"creatorRole"}
-            placeholder="e.g. Responsible for managing the project and coordinating tasks"
-          />
-        )}
-      </Forms.FieldGroup>
+      <Forms.Submit saveText="Add Project" layout="centered" />
     </Forms.Form>
   );
 }
 
-// <ResourcePermissionSelector />
+function useShouldHideIsCotrib({ form }) {
+  const me = useMe()!;
 
-function GoalSelector({ form }) {
-  const f = form.fields.goal as SelectField;
+  return React.useMemo(() => {
+    const isChampion = compareIds(form.fields.champion?.value!.id!, me.id!);
+    const isReviewer = compareIds(form.fields.reviewer?.value!.id!, me.id!);
 
-  return (
-    <div className="flex flex-col">
-      <label className="font-bold mb-1 block">Goal</label>
-
-      <GoalSelectorDropdown selected={f.value} goals={f.options} onSelect={f.setValue} error={false} />
-    </div>
-  );
+    return isChampion || isReviewer;
+  }, [form.fields.champion, form.fields.reviewer, me.id]);
 }
+
+function useShouldHideCreatorRole({ form }) {
+  const me = useMe()!;
+
+  return React.useMemo(() => {
+    const isChampion = compareIds(form.fields.champion?.value!.id!, me.id!);
+    const isReviewer = compareIds(form.fields.reviewer?.value!.id!, me.id!);
+    const isContributor = form.fields.isContrib!.value === "yes";
+
+    return isChampion || isReviewer || !isContributor;
+  }, [form.fields.champion, form.fields.reviewer, form.fields.isContrib, me.id]);
+}
+
+// import { ResourcePermissionSelector } from "@/features/Permissions";
+// <ResourcePermissionSelector />
