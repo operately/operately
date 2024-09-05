@@ -17,7 +17,7 @@ export function useSelectPersonField(initial?: Person | null, config?: Config): 
   const [value, setValue] = React.useState(initial);
 
   const validate = (): string | null => {
-    if (!value) return !config?.optional ? "is required" : null;
+    if (!value) return !config?.optional ? "Can't be empty" : null;
 
     return null;
   };
