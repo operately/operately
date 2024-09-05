@@ -4,21 +4,6 @@ import { Company } from "@/models/companies";
 import { PermissionLevels } from ".";
 import { AccessLevels } from "@/api";
 
-// interface ContextType {
-//   company: Company;
-//   permissions: Permissions;
-//   hasPermissions: boolean;
-//   dispatch: Dispatch<ActionOptions>;
-//   space?: Space | null;
-// }
-
-// interface Props {
-//   children: NonNullable<ReactNode>;
-//   company: Company;
-//   space?: Space | null;
-//   currentPermissions?: AccessLevels | null;
-// }
-
 export enum ReducerActions {
   SET_PUBLIC,
   SET_INTERNAL,
@@ -99,35 +84,6 @@ function reducerFunction(state: Permissions, action: ActionOptions) {
   }
 }
 
-// function PermissionsProvider({ children, company, space, currentPermissions }: Props) {
-//   const [permissions, dispatch] = useReducer(
-//     reducerFunction,
-//     currentPermissions ? ({ ...currentPermissions } as Permissions) : { ...DEFAULT_PERMISSIONS },
-//   );
-
-//   const data = {
-//     company,
-//     space,
-//     permissions,
-//     dispatch,
-//     hasPermissions: Boolean(currentPermissions),
-//   };
-
-//   return <PermissionsContext.Provider value={data}>{children}</PermissionsContext.Provider>;
-// }
-
-// const PermissionsContext = createContext<ContextType | undefined>(undefined);
-
-// function usePermissionsContext() {
-//   const context = useContext(PermissionsContext);
-
-//   if (context === undefined) {
-//     throw Error("usePermissionsContext must be used within a PermissionsProvider");
-//   }
-
-//   return context;
-// }
-
 interface UsePermissionsStateProps {
   company: Company;
   space?: Space | null;
@@ -158,5 +114,3 @@ export function usePermissionsState(props: UsePermissionsStateProps): Permission
 
   return data;
 }
-
-// export { PermissionsProvider, usePermissionsContext };

@@ -9,7 +9,7 @@ import * as Spaces from "@/models/spaces";
 import * as Goals from "@/models/goals";
 
 import { useLoadedData } from "./loader";
-import { PermissionsState, usePermissionsState } from "@/features/Permissions/PermissionsContext";
+import { PermissionsState, usePermissionsState } from "@/features/Permissions/usePermissionsState";
 import { useMe } from "@/contexts/CurrentUserContext";
 import { Paths, compareIds } from "@/routes/paths";
 

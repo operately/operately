@@ -1,13 +1,13 @@
 import React, { useEffect, useMemo } from "react";
 import PrivacyLevel from "./PrivacyLevel";
 import { AccessLevel, ResourceAccessLevel } from "./AccessLevel";
-import { PermissionsState, ReducerActions, usePermissionsContext } from "./PermissionsContext";
+import { PermissionsState, ReducerActions } from "./usePermissionsState";
 import { compareIds } from "@/routes/paths";
 import { PermissionOptions } from ".";
 import { calculatePrivacyLevel } from "./utils";
 
-export function SpacePermissionSelector() {
-  const { hasPermissions, permissions } = usePermissionsContext();
+export function SpacePermissionSelector({ state }: { state: PermissionsState }) {
+  const { hasPermissions, permissions } = state;
 
   const PRIVACY_OPTIONS = [
     { label: "Public - Anyone on the internet", value: PermissionOptions.PUBLIC },
@@ -26,11 +26,12 @@ export function SpacePermissionSelector() {
   return (
     <>
       <PrivacyLevel
+        state={state}
         description="Who can view information in this space?"
         options={PRIVACY_OPTIONS}
         defaultValue={defaultPrivacyLevel}
       />
-      <AccessLevel />
+      <AccessLevel state={state} />
     </>
   );
 }
@@ -77,8 +78,9 @@ export function ResourcePermissionSelector({ state }: { state: PermissionsState 
         options={privacyOptions}
         defaultValue={defaultPrivacyLevel}
         key={space?.id}
+        state={state}
       />
-      <ResourceAccessLevel companySpaceSelected={companySpaceSelected} />
+      <ResourceAccessLevel companySpaceSelected={companySpaceSelected} state={state} />
     </>
   );
 }

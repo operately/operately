@@ -3,14 +3,14 @@ import { useRevalidator } from "react-router-dom";
 
 import { useLoadedData } from "./loader";
 import { useEditSpacePermissions } from "@/models/spaces";
-import { usePermissionsContext, ReducerActions, Permissions } from "@/features/Permissions/PermissionsContext";
+import { ReducerActions, Permissions, PermissionsState } from "@/features/Permissions/usePermissionsState";
 
 import { SpacePermissionSelector } from "@/features/Permissions";
 import Button from "@/components/Button";
 
-export function SpaceAccessLevel() {
+export function SpaceAccessLevel({ state }: { state: PermissionsState }) {
   const { space } = useLoadedData();
-  const { permissions, dispatch } = usePermissionsContext();
+  const { permissions, dispatch } = state;
 
   const { revalidate } = useRevalidator();
   const [edit, { loading }] = useEditSpacePermissions();
