@@ -9,7 +9,7 @@ import * as Spaces from "@/models/spaces";
 import * as Goals from "@/models/goals";
 
 import { useLoadedData } from "./loader";
-import { Permissions } from "@/features/Permissions/PermissionsContext";
+import { PermissionsState, usePermissionsState } from "@/features/Permissions/usePermissionsState";
 import { useMe } from "@/contexts/CurrentUserContext";
 import { Paths, compareIds } from "@/routes/paths";
 
@@ -17,7 +17,7 @@ export interface FormState {
   fields: Fields;
   errors: Error[];
   submitting: boolean;
-  submit: (permissions: Permissions) => Promise<boolean>;
+  submit: () => Promise<boolean>;
   cancel: () => void;
 }
 
@@ -35,6 +35,7 @@ interface Fields {
   spaceOptions: SpaceOption[];
   goal: Goals.Goal | null;
   goalOptions: Goals.Goal[];
+  permissions: PermissionsState;
 
   setName: (name: string) => void;
   setChampion: (champion: People.Person) => void;
@@ -77,6 +78,8 @@ export function useForm(): FormState {
   const amIReviewer = compareIds(reviewer?.id, me.id);
   const amIContributor = amIChampion || amIReviewer || creatorIsContributor === "yes";
 
+  const permissions = usePermissionsState({ company, space, currentPermissions: null });
+
   //
   // If the creator is not a contributor, then they can't set the visibility to invite only
   // So we set the visibility to everyone
@@ -102,6 +105,7 @@ export function useForm(): FormState {
     spaceOptions,
     goal,
     goalOptions: goals,
+    permissions,
 
     setName,
     setChampion,
@@ -137,7 +141,7 @@ function useSubmit(fields: Fields, cancelPath: string) {
 
   const [add, { loading: submitting }] = Projects.useCreateProject();
 
-  const submit = async (permissions: Permissions) => {
+  const submit = async () => {
     let errors = validate(fields);
 
     if (errors.length > 0) {
@@ -154,9 +158,9 @@ function useSubmit(fields: Fields, cancelPath: string) {
       creatorRole: fields.creatorRole,
       spaceId: fields.space!.value,
       goalId: fields.goal?.id,
-      anonymousAccessLevel: permissions.public,
-      companyAccessLevel: permissions.company,
-      spaceAccessLevel: permissions.space,
+      anonymousAccessLevel: fields.permissions.permissions.public,
+      companyAccessLevel: fields.permissions.permissions.company,
+      spaceAccessLevel: fields.permissions.permissions.space,
     });
 
     navigate(Paths.projectPath(res.project.id!));

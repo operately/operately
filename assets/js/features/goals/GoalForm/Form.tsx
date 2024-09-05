@@ -126,7 +126,7 @@ function FormFooter({ form }: { form: FormState }) {
       </div>
 
       <div className="flex flex-col gap-4 mt-10">
-        <ResourcePermissionSelector />
+        <ResourcePermissionSelector state={form.fields.permissions} />
       </div>
     </Paper.DimmedSection>
   );

@@ -14,18 +14,13 @@ import { FilledButton } from "@/components/Button";
 import { DimmedLink } from "@/components/Link";
 import { GoalSelectorDropdown } from "@/features/goals/GoalTree/GoalSelectorDropdown";
 import { Paths } from "@/routes/paths";
-import { PermissionsProvider, usePermissionsContext } from "@/features/Permissions/PermissionsContext";
 import { ResourcePermissionSelector } from "@/features/Permissions";
 
 export function Page() {
-  const { spaceID, company, space } = useLoadedData();
+  const { spaceID } = useLoadedData();
   const form = useForm();
 
-  return (
-    <PermissionsProvider company={company} space={space || form.fields.space}>
-      {spaceID ? <NewProjectForSpacePage form={form} /> : <NewProjectPage form={form} />}
-    </PermissionsProvider>
-  );
+  return spaceID ? <NewProjectForSpacePage form={form} /> : <NewProjectPage form={form} />;
 }
 
 function NewProjectForSpacePage({ form }: { form: FormState }) {
@@ -73,8 +68,6 @@ function NewProjectPage({ form }: { form: FormState }) {
 }
 
 function SubmitButton({ form }: { form: FormState }) {
-  const { permissions } = usePermissionsContext();
-
   return (
     <div className="mt-8">
       {form.errors.length > 0 && (
@@ -84,7 +77,7 @@ function SubmitButton({ form }: { form: FormState }) {
       <div className="flex items-center justify-center gap-4">
         <FilledButton
           type="primary"
-          onClick={() => form.submit(permissions)}
+          onClick={form.submit}
           loading={form.submitting}
           size="lg"
           testId="save"
@@ -170,7 +163,7 @@ function Form({ form }: { form: FormState }) {
           </div>
         )}
 
-        <ResourcePermissionSelector />
+        <ResourcePermissionSelector state={form.fields.permissions} />
       </div>
     </Forms.Form>
   );
