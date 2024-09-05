@@ -128,4 +128,39 @@ function usePermissionsContext() {
   return context;
 }
 
+interface UsePermissionsStateProps {
+  company: Company;
+  space?: Space | null;
+  currentPermissions?: AccessLevels | null;
+}
+
+export interface PermissionsState {
+  company: Company;
+  permissions: Permissions;
+  hasPermissions: boolean;
+  dispatch: Dispatch<ActionOptions>;
+  space?: Space | null;
+}
+
+export function usePermissionsState({
+  company,
+  space,
+  currentPermissions,
+}: UsePermissionsStateProps): PermissionsState {
+  const [permissions, dispatch] = useReducer(
+    reducerFunction,
+    currentPermissions ? ({ ...currentPermissions } as Permissions) : { ...DEFAULT_PERMISSIONS },
+  );
+
+  const data = {
+    company,
+    space,
+    permissions,
+    dispatch,
+    hasPermissions: Boolean(currentPermissions),
+  };
+
+  return data;
+}
+
 export { PermissionsProvider, usePermissionsContext };

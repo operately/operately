@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo } from "react";
 import PrivacyLevel from "./PrivacyLevel";
 import { AccessLevel, ResourceAccessLevel } from "./AccessLevel";
-import { ReducerActions, usePermissionsContext } from "./PermissionsContext";
+import { PermissionsState, ReducerActions, usePermissionsContext } from "./PermissionsContext";
 import { compareIds } from "@/routes/paths";
 import { PermissionOptions } from ".";
 import { calculatePrivacyLevel } from "./utils";
@@ -35,8 +35,8 @@ export function SpacePermissionSelector() {
   );
 }
 
-export function ResourcePermissionSelector() {
-  const { space, company, dispatch, hasPermissions, permissions } = usePermissionsContext();
+export function ResourcePermissionSelector({ state }: { state: PermissionsState }) {
+  const { space, company, dispatch, hasPermissions, permissions } = state;
 
   const companySpaceSelected =
     !company.companySpaceId || !space?.id ? false : compareIds(company.companySpaceId, space.id);
