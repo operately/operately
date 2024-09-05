@@ -49,7 +49,7 @@ defmodule OperatelyWeb.Api.Mutations.PostProjectCheckIn do
       status: inputs.status,
       description: Jason.decode!(inputs.description),
       send_notifications_to_everyone: inputs[:send_notifications_to_everyone] || false,
-      subscriber_ids: subscriber_ids
+      subscriber_ids: subscriber_ids || []
     }}
   end
 end

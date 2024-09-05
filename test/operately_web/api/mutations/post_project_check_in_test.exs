@@ -83,20 +83,26 @@ defmodule OperatelyWeb.Api.Mutations.PostProjectCheckInTest do
       check_in = Repo.one!(from(p in CheckIn))
       assert res.check_in == Serializer.serialize(check_in, level: :essential)
     end
+  end
 
-    test "creates subscription list for project check-in", ctx do
+  describe "subscriptions to notifications" do
+    setup ctx do
+      ctx = register_and_log_in_account(ctx)
       project = project_fixture(%{company_id: ctx.company.id, creator_id: ctx.person.id, group_id: ctx.company.company_space_id})
-      people_ids = Enum.map(1..3, fn _ ->
+      people = Enum.map(1..3, fn _ ->
         person_fixture(%{company_id: ctx.company.id})
-        |> Paths.person_id()
       end)
 
+      Map.merge(ctx, %{project: project, people: people})
+    end
+
+    test "creates subscription list for project check-in", ctx do
       assert {200, res} = mutation(ctx.conn, :post_project_check_in, %{
-        project_id: Paths.project_id(project),
+        project_id: Paths.project_id(ctx.project),
         status: "on_track",
         description: RichText.rich_text("Description", :as_string),
         send_notifications_to_everyone: true,
-        subscriber_ids: people_ids,
+        subscriber_ids: Enum.map(ctx.people, &(Paths.person_id(&1))),
       })
 
       {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.check_in.id)
@@ -107,34 +113,48 @@ defmodule OperatelyWeb.Api.Mutations.PostProjectCheckInTest do
       assert list.send_to_everyone
       assert length(subscriptions) == 4
 
-      Enum.each(people_ids ++ [ctx.person.id], fn id ->
-        assert Enum.filter(subscriptions, &(&1.person_id == id))
+      Enum.each([ctx.person | ctx.people], fn p ->
+        assert Enum.filter(subscriptions, &(&1.person_id == p.id))
       end)
     end
 
     test "adds mentioned people to subscription list", ctx do
-      project = project_fixture(%{company_id: ctx.company.id, creator_id: ctx.person.id, group_id: ctx.company.company_space_id})
-      people = Enum.map(1..3, fn _ ->
-        person_fixture(%{company_id: ctx.company.id})
-      end)
-      description = mentioned_people(people ++ people ++ people)
+      description = mentioned_people(ctx.people ++ ctx.people ++ ctx.people)
 
       assert {200, res} = mutation(ctx.conn, :post_project_check_in, %{
-        project_id: Paths.project_id(project),
+        project_id: Paths.project_id(ctx.project),
         status: "on_track",
         description: Jason.encode!(description),
         send_notifications_to_everyone: false,
         subscriber_ids: [],
       })
 
-      {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.check_in.id)
-
-      list = Notifications.get_subscription_list!(parent_id: id)
-      subscriptions = Notifications.list_subscriptions(list)
+      subscriptions = fetch_subscriptions(res)
 
       assert length(subscriptions) == 4
 
-      Enum.each(people ++ [ctx.person], fn p ->
+      Enum.each([ctx.person | ctx.people], fn p ->
+        assert Enum.filter(subscriptions, &(&1.person_id == p.id))
+      end)
+    end
+
+    test "doesn't create repeated subscription", ctx do
+      people = [ctx.person | ctx.people]
+      description = mentioned_people(people ++ people)
+
+      assert {200, res} = mutation(ctx.conn, :post_project_check_in, %{
+        project_id: Paths.project_id(ctx.project),
+        status: "on_track",
+        description: Jason.encode!(description),
+        send_notifications_to_everyone: true,
+        subscriber_ids: Enum.map(ctx.people, &(Paths.person_id(&1))),
+      })
+
+      subscriptions = fetch_subscriptions(res)
+
+      assert length(subscriptions) == 4
+
+      Enum.each(people, fn p ->
         assert Enum.filter(subscriptions, &(&1.person_id == p.id))
       end)
     end
@@ -144,11 +164,18 @@ defmodule OperatelyWeb.Api.Mutations.PostProjectCheckInTest do
   # Helpers
   #
 
-  def create_space(ctx) do
+  defp fetch_subscriptions(res) do
+    {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.check_in.id)
+
+    Notifications.get_subscription_list!(parent_id: id)
+    |> Notifications.list_subscriptions()
+  end
+
+  defp create_space(ctx) do
     group_fixture(ctx.creator, %{company_id: ctx.company.id, company_permissions: Binding.no_access()})
   end
 
-  def create_project(ctx, space, company_members_level, space_members_level, project_member_level) do
+  defp create_project(ctx, space, company_members_level, space_members_level, project_member_level) do
     project = project_fixture(%{
       company_id: ctx.company.id,
       creator_id: ctx.creator.id,
