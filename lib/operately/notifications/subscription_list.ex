@@ -9,6 +9,7 @@ defmodule Operately.Notifications.SubscriptionList do
     has_many :subscriptions, Operately.Notifications.Subscription, foreign_key: :subscription_list_id
 
     timestamps()
+    requester_access_level()
   end
 
   def changeset(attrs) do

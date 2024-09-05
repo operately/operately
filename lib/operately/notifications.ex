@@ -109,7 +109,18 @@ defmodule Operately.Notifications do
   def get_subscription_list!(id) when is_binary(id) , do: Repo.get!(SubscriptionList, id)
   def get_subscription_list!(attrs) when is_list(attrs), do: Repo.get_by!(SubscriptionList, attrs)
 
-  def get_subscription_access_level(id, type, person_id) do
+  def get_subscription_list_with_access_level(id, type, person_id) do
+    case type do
+      :project_check_in ->
+        from(c in Operately.Projects.CheckIn, as: :resource,
+          join: s in assoc(c, :subscription_list), as: :subscription_list,
+          where: s.id == ^id
+        )
+    end
+    |> Fetch.get_resource_with_access_level(person_id, selected_resource: :subscription_list)
+  end
+
+  def get_subscription_list_access_level(id, type, person_id) do
     query = case type do
       :project_check_in ->
         from(c in Operately.Projects.CheckIn, as: :resource,
