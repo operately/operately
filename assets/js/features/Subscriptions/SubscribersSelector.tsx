@@ -10,7 +10,7 @@ export const SubscriptionsContext = createContext<SubscriptionsState | undefined
 
 export function SubscribersSelector({ state, project }: { state: SubscriptionsState; project: Project }) {
   const [showSelector, setShowSelector] = useState(false);
-  const { people, selectedPeople, subscriptionType, setSubscriptionType } = state;
+  const { people, selectedPeople, subscriptionType, setSubscriptionType, alwaysNotify } = state;
 
   const selectedPeopleLabel = useMemo(() => {
     switch (selectedPeople.length) {
@@ -22,6 +22,10 @@ export function SubscribersSelector({ state, project }: { state: SubscriptionsSt
         return `Only the following ${selectedPeople.length} people I selected`;
     }
   }, [selectedPeople]);
+
+  // If all notifiable people must be notified,
+  // the widget is not displayed.
+  if (alwaysNotify.length >= people.length) return <></>;
 
   return (
     <SubscriptionsContext.Provider value={state}>
