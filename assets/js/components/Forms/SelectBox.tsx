@@ -8,15 +8,16 @@ import { InputField } from "./FieldGroup";
 interface SelectBoxProps {
   field: string;
   label?: string;
+  hidden?: boolean;
   placeholder?: string;
 }
 
-export function SelectBox({ field, label, placeholder }: SelectBoxProps) {
+export function SelectBox({ field, label, placeholder, hidden }: SelectBoxProps) {
   const form = getFormContext();
   const error = form.errors[field];
 
   return (
-    <InputField field={field} label={label} error={error}>
+    <InputField field={field} label={label} error={error} hidden={hidden}>
       <SelectBoxInput field={field} placeholder={placeholder} error={!!error} />
     </InputField>
   );
