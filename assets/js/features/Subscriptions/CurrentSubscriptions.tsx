@@ -4,14 +4,36 @@ import Avatar from "@/components/Avatar";
 import { useMe } from "@/contexts/CurrentUserContext";
 import { Spacer } from "@/components/Spacer";
 import { GhostButton } from "@/components/Button";
-import { SubscriptionList, Subscription } from "@/models/notifications";
+import {
+  SubscriptionList,
+  Subscription,
+  useSubscribeToNotifications,
+  useUnsubscribeFromNotifications,
+} from "@/models/notifications";
+
+type SubscriptionName = "check-in";
+type SubscriptionType = "project_check_in";
 
 interface Props {
   subscriptionList: SubscriptionList;
-  name: "check-in";
+  name: SubscriptionName;
+  type: SubscriptionType;
+  callback: () => void;
 }
 
-export function CurrentSubscriptions({ subscriptionList, name }: Props) {
+interface SubscribeProps {
+  id: string;
+  type: SubscriptionType;
+  callback: () => void;
+}
+
+interface UnsubscribeProps {
+  id: string;
+  name: SubscriptionName;
+  callback: () => void;
+}
+
+export function CurrentSubscriptions({ subscriptionList, name, type, callback }: Props) {
   const me = useMe();
 
   const isSubscribed = useMemo(() => {
@@ -23,7 +45,11 @@ export function CurrentSubscriptions({ subscriptionList, name }: Props) {
       <CurrentSubscriptionList subscriptions={subscriptionList.subscriptions!} name={name} />
       <Spacer size={2} />
 
-      {isSubscribed ? <Unsubscribe name={name} /> : <Subscribe />}
+      {isSubscribed ? (
+        <Unsubscribe id={subscriptionList.id!} name={name} callback={callback} />
+      ) : (
+        <Subscribe id={subscriptionList.id!} type={type} callback={callback} />
+      )}
     </div>
   );
 }
@@ -52,21 +78,24 @@ function CurrentSubscriptionList({ subscriptions, name }: { subscriptions: Subsc
         {subscriptions.map((s) => (
           <Avatar person={s.person!} size="tiny" key={s.person!.id} />
         ))}
-        <GhostButton size="xs" type="secondary">
-          Add/remove people...
-        </GhostButton>
       </div>
     </div>
   );
 }
 
-function Subscribe() {
+function Subscribe({ id, type, callback }: SubscribeProps) {
+  const [subscribe, { loading }] = useSubscribeToNotifications();
+
+  const handleSubscribe = () => {
+    subscribe({ id, type }).then(() => callback());
+  };
+
   return (
     <div>
       <div className="font-bold">You&apos;re not subscribed</div>
       <p className="text-sm">You won&apos;t be notified when comments are posted.</p>
       <div className="flex mt-2">
-        <GhostButton size="xs" type="secondary">
+        <GhostButton onClick={handleSubscribe} loading={loading} size="xs" type="secondary">
           Subscribe me
         </GhostButton>
       </div>
@@ -74,13 +103,19 @@ function Subscribe() {
   );
 }
 
-function Unsubscribe({ name }) {
+function Unsubscribe({ id, name, callback }: UnsubscribeProps) {
+  const [unsubscribe, { loading }] = useUnsubscribeFromNotifications();
+
+  const handleUnsubscribe = () => {
+    unsubscribe({ id }).then(() => callback());
+  };
+
   return (
     <div>
       <div className="font-bold">You&apos;re subscribed</div>
       <p className="text-sm">You&apos;ll get a notification when someone comments on this {name}.</p>
       <div className="flex mt-2">
-        <GhostButton size="xs" type="secondary">
+        <GhostButton onClick={handleUnsubscribe} loading={loading} size="xs" type="secondary">
           Unsubscribe me
         </GhostButton>
       </div>
