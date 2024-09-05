@@ -33,7 +33,7 @@ export function SpaceAccessLevel({ state }: { state: PermissionsState }) {
 
   return (
     <div className="flex flex-col gap-4">
-      <SpacePermissionSelector />
+      <SpacePermissionSelector state={state} />
 
       {hasChanged && (
         <div className="flex gap-2">
