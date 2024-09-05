@@ -3,6 +3,7 @@ import { Submit } from "./Submit";
 import { TextInput } from "./TextInput";
 import { SelectBox } from "./SelectBox";
 import { FieldGroup } from "./FieldGroup";
+import { SelectGoal } from "./SelectGoal";
 import { RadioButtons } from "./RadioButtons";
 import { SelectPerson } from "./SelectPerson";
 import { PasswordInput } from "./PasswordInput";
@@ -20,6 +21,7 @@ export default {
   TextInput,
   SelectBox,
   FieldGroup,
+  SelectGoal,
   RadioButtons,
   SelectPerson,
   PasswordInput,
