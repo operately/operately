@@ -10,6 +10,8 @@ import { useMe } from "@/contexts/CurrentUserContext";
 import { useNavigate } from "react-router-dom";
 
 import Forms from "@/components/Forms";
+import { usePermissionsState } from "@/features/Permissions/usePermissionsState";
+import { ResourcePermissionSelector } from "@/features/Permissions";
 
 export function Page() {
   return (
@@ -65,7 +67,9 @@ function Form() {
   const me = useMe()!;
   const navigate = useNavigate();
   const [add] = Projects.useCreateProject();
-  const { space, spaceOptions, goal, goals, allowSpaceSelection } = useLoadedData();
+  const { space, spaceOptions, goal, goals, allowSpaceSelection, company } = useLoadedData();
+
+  const permissions = usePermissionsState({ company: company, space: space });
 
   const form = Forms.useForm({
     fields: {
@@ -86,9 +90,9 @@ function Form() {
         creatorRole: form.fields.creatorRole.value,
         spaceId: form.fields.space!.value,
         goalId: form.fields.goal?.value,
-        // anonymousAccessLevel: permissions.public,
-        // companyAccessLevel: permissions.company,
-        // spaceAccessLevel: permissions.space,
+        anonymousAccessLevel: permissions.permissions.public,
+        companyAccessLevel: permissions.permissions.company,
+        spaceAccessLevel: permissions.permissions.space,
       });
 
       navigate(Paths.projectPath(res.project.id!));
@@ -113,6 +117,8 @@ function Form() {
 
           <Forms.RadioButtons label="Will you contribute?" field={"isContrib"} hidden={hideIsContrib} />
           <Forms.TextInput label={CRLabel} field={"creatorRole"} placeholder={CRPlaceholder} hidden={hideCreatorRole} />
+
+          <ResourcePermissionSelector state={permissions} />
         </Forms.FieldGroup>
       </Paper.Body>
 
@@ -143,6 +149,3 @@ function useShouldHideCreatorRole({ form }) {
     return isChampion || isReviewer || !isContributor;
   }, [form.fields.champion, form.fields.reviewer, form.fields.isContrib, me.id]);
 }
-
-// import { ResourcePermissionSelector } from "@/features/Permissions";
-// <ResourcePermissionSelector />
