@@ -182,10 +182,16 @@ defmodule Operately.Support.Features.UI do
 
   def select_person_in(state, id: id, name: name) do
     execute(state, fn session ->
-      session
-      |> Browser.fill_in(Query.css("#" <> id), with: name)
-      |> Browser.assert_text(name)
-      |> Browser.send_keys([:enter])
+      Browser.fill_in(session, Query.css("#" <> id), with: name)
+    end)
+    |> assert_has(testid: testid(["person-option", name]))
+    |> sleep(500)
+    |> press_enter()
+  end
+
+  def press_enter(state) do
+    execute(state, fn session ->
+      session |> Browser.send_keys([:enter])
     end)
   end
 

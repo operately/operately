@@ -90,7 +90,7 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
       |> UI.fill(testid: "creatorRole", with: "Responsible for managing the project")
     end)
     |> UI.click(testid: "submit")
-    |> UI.assert_text(fields.name)
+    |> UI.sleep(300)
   end
 
   step :assert_project_created, ctx, fields do
@@ -154,6 +154,10 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
     project = Operately.Repo.preload(project, [:reviewer])
 
     assert project.reviewer.id == ctx.manager.id
+  end
+
+  step :assert_validation_error, ctx, error do
+    UI.assert_text(ctx, error)
   end
 
   defp who_should_be_notified(fields) do
