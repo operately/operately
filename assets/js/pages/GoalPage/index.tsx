@@ -13,9 +13,7 @@ import { Paths } from "@/routes/paths";
 import { BlackLink } from "@/components/Link";
 import { IconListTree, IconMessage } from "@tabler/icons-react";
 import { H3 } from "@/components/Text";
-import SecondaryButton from "@/components/Button/SecondaryButton";
 import { GhostButton } from "@/components/Button";
-
 
 interface LoaderResult {
   goal: Goals.Goal;
@@ -49,6 +47,7 @@ export async function loader({ params }): Promise<LoaderResult> {
     includeLastCheckIn: true,
     includeChampion: true,
     includeMilestones: true,
+    includePrivacy: true,
   }).then((data) => data.projects!);
 
   return {
@@ -92,17 +91,17 @@ function MessageBoard({ goal }) {
       <div className="px-2 py-5">
         <div className="flex justify-between">
           <div className="flex items-center gap-1 font-medium text-lg text-content-base">
-            <IconMessage size={20} />{" "}
-            <BlackLink to={Paths.goalDiscussionsPath(goal.id!)} >Message board</BlackLink>{" "}
-            (5)
+            <IconMessage size={20} /> <BlackLink to={Paths.goalDiscussionsPath(goal.id!)}>Message board</BlackLink> (5)
           </div>
-          <GhostButton type="secondary" size="xs">Write a new message</GhostButton>
+          <GhostButton type="secondary" size="xs">
+            Write a new message
+          </GhostButton>
         </div>
       </div>
       <div className="px-2 py-2">
         <Discussions />
         <div className="my-2">
-          <BlackLink to={Paths.goalDiscussionsPath(goal.id!)} >View all discussions</BlackLink>
+          <BlackLink to={Paths.goalDiscussionsPath(goal.id!)}>View all discussions</BlackLink>
         </div>
       </div>
     </div>
@@ -120,113 +119,113 @@ function CircleWithNumber({ totalComments }) {
 const discussions = [
   {
     id: 1,
-    title: 'Atque perspiciatis et et aut ut porro voluptatem blanditiis?',
-    href: '#',
-    author: { name: 'Leslie A.', href: '#' },
-    date: '2d ago',
-    dateTime: '2023-01-23T22:34Z',
-    status: 'active',
+    title: "Atque perspiciatis et et aut ut porro voluptatem blanditiis?",
+    href: "#",
+    author: { name: "Leslie A.", href: "#" },
+    date: "2d ago",
+    dateTime: "2023-01-23T22:34Z",
+    status: "active",
     totalComments: 24,
     commenters: [
       {
         id: 12,
-        name: 'Emma Dorsey',
+        name: "Emma Dorsey",
         imageUrl:
-          'https://images.unsplash.com/photo-1505840717430-882ce147ef2d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+          "https://images.unsplash.com/photo-1505840717430-882ce147ef2d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
       },
       {
         id: 6,
-        name: 'Tom Cook',
+        name: "Tom Cook",
         imageUrl:
-          'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+          "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
       },
       {
         id: 4,
-        name: 'Lindsay Walton',
+        name: "Lindsay Walton",
         imageUrl:
-          'https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+          "https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
       },
       {
         id: 16,
-        name: 'Benjamin Russel',
+        name: "Benjamin Russel",
         imageUrl:
-          'https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+          "https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
       },
       {
         id: 23,
-        name: 'Hector Gibbons',
+        name: "Hector Gibbons",
         imageUrl:
-          'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+          "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
       },
     ],
   },
   {
     id: 2,
-    title: 'Et ratione distinctio nesciunt recusandae vel ab?',
-    href: '#',
-    author: { name: 'Michael F.', href: '#' },
-    date: '2d ago',
-    dateTime: '2023-01-23T19:20Z',
-    status: 'active',
+    title: "Et ratione distinctio nesciunt recusandae vel ab?",
+    href: "#",
+    author: { name: "Michael F.", href: "#" },
+    date: "2d ago",
+    dateTime: "2023-01-23T19:20Z",
+    status: "active",
     totalComments: 6,
     commenters: [
       {
         id: 13,
-        name: 'Alicia Bell',
+        name: "Alicia Bell",
         imageUrl:
-          'https://images.unsplash.com/photo-1509783236416-c9ad59bae472?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+          "https://images.unsplash.com/photo-1509783236416-c9ad59bae472?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
       },
       {
         id: 16,
-        name: 'Benjamin Russel',
+        name: "Benjamin Russel",
         imageUrl:
-          'https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+          "https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
       },
       {
         id: 3,
-        name: 'Dries Vincent',
+        name: "Dries Vincent",
         imageUrl:
-          'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+          "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
       },
     ],
   },
   {
     id: 3,
-    title: 'Blanditiis perferendis fugiat optio dolor minus ut?',
-    href: '#',
-    author: { name: 'Dries V.', href: '#' },
-    date: '3d ago',
-    dateTime: '2023-01-22T12:59Z',
-    status: 'resolved',
+    title: "Blanditiis perferendis fugiat optio dolor minus ut?",
+    href: "#",
+    author: { name: "Dries V.", href: "#" },
+    date: "3d ago",
+    dateTime: "2023-01-22T12:59Z",
+    status: "resolved",
     totalComments: 22,
     commenters: [
       {
         id: 19,
-        name: 'Lawrence Hunter',
+        name: "Lawrence Hunter",
         imageUrl:
-          'https://images.unsplash.com/photo-1513910367299-bce8d8a0ebf6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+          "https://images.unsplash.com/photo-1513910367299-bce8d8a0ebf6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
       },
       {
         id: 21,
-        name: 'Angela Fisher',
+        name: "Angela Fisher",
         imageUrl:
-          'https://images.unsplash.com/photo-1501031170107-cfd33f0cbdcc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+          "https://images.unsplash.com/photo-1501031170107-cfd33f0cbdcc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
       },
       {
         id: 14,
-        name: 'Jenny Wilson',
+        name: "Jenny Wilson",
         imageUrl:
-          'https://images.unsplash.com/photo-1507101105822-7472b28e22ac?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+          "https://images.unsplash.com/photo-1507101105822-7472b28e22ac?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
       },
       {
         id: 16,
-        name: 'Benjamin Russel',
+        name: "Benjamin Russel",
         imageUrl:
-          'https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+          "https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
       },
     ],
-  }
-]
+  },
+];
 
 export default function Discussions() {
   return (
@@ -238,12 +237,16 @@ export default function Discussions() {
         >
           <div>
             <p className="font-semibold leading-6">
-              <a href={discussion.href} className="text-link-base underline underline-offset-2 hover:text-link-hover transition-colors">
+              <a
+                href={discussion.href}
+                className="text-link-base underline underline-offset-2 hover:text-link-hover transition-colors"
+              >
                 {discussion.title}
               </a>
             </p>
             <p className="mt-1 leading-6 text-content-base">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et
+              dolore magna aliqua.
             </p>
             <div className="mt-1 flex items-center gap-x-2 text-xs leading-5 text-gray-500">
               <p>
@@ -276,15 +279,16 @@ export default function Discussions() {
               <dt>
                 <span className="sr-only">Total comments</span>
               </dt>
-              <dd className="text-sm leading-6 text-gray-900"><CircleWithNumber totalComments={discussion.totalComments} /></dd>
+              <dd className="text-sm leading-6 text-gray-900">
+                <CircleWithNumber totalComments={discussion.totalComments} />
+              </dd>
             </div>
           </dl>
         </li>
       ))}
     </ul>
-  )
+  );
 }
-
 
 function GoalSubGoals({ goal, goals, projects }) {
   return (
@@ -300,7 +304,7 @@ function GoalSubGoals({ goal, goals, projects }) {
       />
       <div className="mb-16" />
     </div>
-  )
+  );
 }
 
 function GoalFeed() {
