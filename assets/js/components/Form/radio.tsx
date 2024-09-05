@@ -48,7 +48,7 @@ export function Radio(props: RadioProps) {
 
   return (
     <label className="flex items-center gap-2">
-      <InputElement value={value} disabled={disabled} {...rest} data-test-id={props.testId} />
+      <InputElement value={value} disabled={disabled} {...rest} testId={props.testId} />
       <span className={disabled ? "text-content-subtle" : "text-content-accent"}>{label}</span>
     </label>
   );
@@ -63,7 +63,7 @@ export function RadioWithExplanation(props: RadioWithExplanationProps) {
 
   return (
     <label className="flex items-start gap-2">
-      <InputElement value={value} {...rest} data-test-id={props.testId} />
+      <InputElement value={value} {...rest} testId={props.testId} />
 
       <div className="flex flex-col">
         <div className="text-content-accent font-semibold leading-none">{label}</div>
@@ -73,7 +73,7 @@ export function RadioWithExplanation(props: RadioWithExplanationProps) {
   );
 }
 
-function InputElement({ value, ...props }) {
+function InputElement({ value, testId, ...props }) {
   const { name, checked, changeChecked } = React.useContext(RadioContext) as RadioGroupContextDescriptor;
 
   return (
@@ -96,6 +96,7 @@ function InputElement({ value, ...props }) {
       onChange={() => changeChecked(value)}
       checked={checked === value}
       name={name}
+      data-test-id={testId}
       {...props}
     />
   );
