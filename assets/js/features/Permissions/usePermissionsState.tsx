@@ -1,23 +1,23 @@
-import React, { Dispatch, ReactNode, createContext, useContext, useReducer } from "react";
+import React from "react";
 import { Space } from "@/models/spaces";
 import { Company } from "@/models/companies";
 import { PermissionLevels } from ".";
 import { AccessLevels } from "@/api";
 
-interface ContextType {
-  company: Company;
-  permissions: Permissions;
-  hasPermissions: boolean;
-  dispatch: Dispatch<ActionOptions>;
-  space?: Space | null;
-}
+// interface ContextType {
+//   company: Company;
+//   permissions: Permissions;
+//   hasPermissions: boolean;
+//   dispatch: Dispatch<ActionOptions>;
+//   space?: Space | null;
+// }
 
-interface Props {
-  children: NonNullable<ReactNode>;
-  company: Company;
-  space?: Space | null;
-  currentPermissions?: AccessLevels | null;
-}
+// interface Props {
+//   children: NonNullable<ReactNode>;
+//   company: Company;
+//   space?: Space | null;
+//   currentPermissions?: AccessLevels | null;
+// }
 
 export enum ReducerActions {
   SET_PUBLIC,
@@ -99,34 +99,34 @@ function reducerFunction(state: Permissions, action: ActionOptions) {
   }
 }
 
-function PermissionsProvider({ children, company, space, currentPermissions }: Props) {
-  const [permissions, dispatch] = useReducer(
-    reducerFunction,
-    currentPermissions ? ({ ...currentPermissions } as Permissions) : { ...DEFAULT_PERMISSIONS },
-  );
+// function PermissionsProvider({ children, company, space, currentPermissions }: Props) {
+//   const [permissions, dispatch] = useReducer(
+//     reducerFunction,
+//     currentPermissions ? ({ ...currentPermissions } as Permissions) : { ...DEFAULT_PERMISSIONS },
+//   );
 
-  const data = {
-    company,
-    space,
-    permissions,
-    dispatch,
-    hasPermissions: Boolean(currentPermissions),
-  };
+//   const data = {
+//     company,
+//     space,
+//     permissions,
+//     dispatch,
+//     hasPermissions: Boolean(currentPermissions),
+//   };
 
-  return <PermissionsContext.Provider value={data}>{children}</PermissionsContext.Provider>;
-}
+//   return <PermissionsContext.Provider value={data}>{children}</PermissionsContext.Provider>;
+// }
 
-const PermissionsContext = createContext<ContextType | undefined>(undefined);
+// const PermissionsContext = createContext<ContextType | undefined>(undefined);
 
-function usePermissionsContext() {
-  const context = useContext(PermissionsContext);
+// function usePermissionsContext() {
+//   const context = useContext(PermissionsContext);
 
-  if (context === undefined) {
-    throw Error("usePermissionsContext must be used within a PermissionsProvider");
-  }
+//   if (context === undefined) {
+//     throw Error("usePermissionsContext must be used within a PermissionsProvider");
+//   }
 
-  return context;
-}
+//   return context;
+// }
 
 interface UsePermissionsStateProps {
   company: Company;
@@ -138,29 +138,25 @@ export interface PermissionsState {
   company: Company;
   permissions: Permissions;
   hasPermissions: boolean;
-  dispatch: Dispatch<ActionOptions>;
+  dispatch: React.Dispatch<ActionOptions>;
   space?: Space | null;
 }
 
-export function usePermissionsState({
-  company,
-  space,
-  currentPermissions,
-}: UsePermissionsStateProps): PermissionsState {
-  const [permissions, dispatch] = useReducer(
+export function usePermissionsState(props: UsePermissionsStateProps): PermissionsState {
+  const [permissions, dispatch] = React.useReducer(
     reducerFunction,
-    currentPermissions ? ({ ...currentPermissions } as Permissions) : { ...DEFAULT_PERMISSIONS },
+    props.currentPermissions ? ({ ...props.currentPermissions } as Permissions) : { ...DEFAULT_PERMISSIONS },
   );
 
   const data = {
-    company,
-    space,
+    company: props.company,
+    space: props.space,
     permissions,
     dispatch,
-    hasPermissions: Boolean(currentPermissions),
+    hasPermissions: Boolean(props.currentPermissions),
   };
 
   return data;
 }
 
-export { PermissionsProvider, usePermissionsContext };
+// export { PermissionsProvider, usePermissionsContext };
