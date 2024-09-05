@@ -2,12 +2,13 @@ import React, { createElement, useMemo } from "react";
 
 import { SelectBoxNoLabel } from "@/components/Form";
 import { IconBuildingCommunity, IconNetwork } from "@tabler/icons-react";
-import { usePermissionsContext, ReducerActions } from "./PermissionsContext";
+import { ReducerActions } from "./usePermissionsState";
 import { PermissionLevels, PermissionOptions, PERMISSIONS_LIST, PUBLIC_PERMISSIONS_LIST } from ".";
 import { calculatePrivacyLevel } from "./utils";
 
 import { IconRocket } from "@tabler/icons-react";
 import * as Icons from "@tabler/icons-react";
+import { PermissionsState } from "./usePermissionsState";
 
 interface DropdownOption {
   value: PermissionLevels;
@@ -16,23 +17,22 @@ interface DropdownOption {
 
 interface ResourceAccessLevelProps {
   companySpaceSelected: boolean;
+  state: PermissionsState;
 }
 
-export function AccessLevel() {
-  const { permissions } = usePermissionsContext();
-
-  switch (calculatePrivacyLevel(permissions)) {
+export function AccessLevel({ state }: { state: PermissionsState }) {
+  switch (calculatePrivacyLevel(state.permissions)) {
     case PermissionOptions.PUBLIC:
       return (
         <AccessLevelContainer>
-          <CompanyAccessLevel />
-          <PublicAccessLevel />
+          <CompanyAccessLevel state={state} />
+          <PublicAccessLevel state={state} />
         </AccessLevelContainer>
       );
     case PermissionOptions.INTERNAL:
       return (
         <AccessLevelContainer>
-          <CompanyAccessLevel />
+          <CompanyAccessLevel state={state} />
         </AccessLevelContainer>
       );
     case PermissionOptions.CONFIDENTIAL:
@@ -42,29 +42,27 @@ export function AccessLevel() {
   }
 }
 
-export function ResourceAccessLevel({ companySpaceSelected }: ResourceAccessLevelProps) {
-  const { permissions } = usePermissionsContext();
-
-  switch (calculatePrivacyLevel(permissions)) {
+export function ResourceAccessLevel({ state, companySpaceSelected }: ResourceAccessLevelProps) {
+  switch (calculatePrivacyLevel(state.permissions)) {
     case PermissionOptions.PUBLIC:
       return (
         <AccessLevelContainer>
-          {!companySpaceSelected && <SpaceAccessLevel />}
-          <CompanyAccessLevel />
-          <PublicAccessLevel />
+          {!companySpaceSelected && <SpaceAccessLevel state={state} />}
+          <CompanyAccessLevel state={state} />
+          <PublicAccessLevel state={state} />
         </AccessLevelContainer>
       );
     case PermissionOptions.INTERNAL:
       return (
         <AccessLevelContainer>
-          {!companySpaceSelected && <SpaceAccessLevel />}
-          <CompanyAccessLevel />
+          {!companySpaceSelected && <SpaceAccessLevel state={state} />}
+          <CompanyAccessLevel state={state} />
         </AccessLevelContainer>
       );
     case PermissionOptions.CONFIDENTIAL:
       return (
         <AccessLevelContainer>
-          <SpaceAccessLevel />
+          <SpaceAccessLevel state={state} />
         </AccessLevelContainer>
       );
     case PermissionOptions.SECRET:
@@ -72,8 +70,8 @@ export function ResourceAccessLevel({ companySpaceSelected }: ResourceAccessLeve
   }
 }
 
-function SpaceAccessLevel() {
-  const { dispatch, permissions, space } = usePermissionsContext();
+function SpaceAccessLevel({ state }: { state: PermissionsState }) {
+  const { dispatch, permissions, space } = state;
 
   const currentPermission = useMemo(() => {
     return PERMISSIONS_LIST.find((option) => option.value === permissions.space);
@@ -103,8 +101,8 @@ function SpaceAccessLevel() {
   );
 }
 
-function CompanyAccessLevel() {
-  const { company, dispatch, permissions } = usePermissionsContext();
+function CompanyAccessLevel({ state }: { state: PermissionsState }) {
+  const { company, dispatch, permissions } = state;
 
   const currentPermission = useMemo(() => {
     return PERMISSIONS_LIST.find((option) => option.value === permissions.company);
@@ -125,8 +123,8 @@ function CompanyAccessLevel() {
   );
 }
 
-function PublicAccessLevel() {
-  const { dispatch, permissions } = usePermissionsContext();
+function PublicAccessLevel({ state }: { state: PermissionsState }) {
+  const { dispatch, permissions } = state;
 
   const currentPermission = useMemo(() => {
     return PUBLIC_PERMISSIONS_LIST.find((option) => option.value === permissions.public);

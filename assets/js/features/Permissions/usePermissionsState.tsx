@@ -1,23 +1,8 @@
-import React, { Dispatch, ReactNode, createContext, useContext, useReducer } from "react";
+import React from "react";
 import { Space } from "@/models/spaces";
 import { Company } from "@/models/companies";
 import { PermissionLevels } from ".";
 import { AccessLevels } from "@/api";
-
-interface ContextType {
-  company: Company;
-  permissions: Permissions;
-  hasPermissions: boolean;
-  dispatch: Dispatch<ActionOptions>;
-  space?: Space | null;
-}
-
-interface Props {
-  children: NonNullable<ReactNode>;
-  company: Company;
-  space?: Space | null;
-  currentPermissions?: AccessLevels | null;
-}
 
 export enum ReducerActions {
   SET_PUBLIC,
@@ -99,33 +84,33 @@ function reducerFunction(state: Permissions, action: ActionOptions) {
   }
 }
 
-function PermissionsProvider({ children, company, space, currentPermissions }: Props) {
-  const [permissions, dispatch] = useReducer(
+interface UsePermissionsStateProps {
+  company: Company;
+  space?: Space | null;
+  currentPermissions?: AccessLevels | null;
+}
+
+export interface PermissionsState {
+  company: Company;
+  permissions: Permissions;
+  hasPermissions: boolean;
+  dispatch: React.Dispatch<ActionOptions>;
+  space?: Space | null;
+}
+
+export function usePermissionsState(props: UsePermissionsStateProps): PermissionsState {
+  const [permissions, dispatch] = React.useReducer(
     reducerFunction,
-    currentPermissions ? ({ ...currentPermissions } as Permissions) : { ...DEFAULT_PERMISSIONS },
+    props.currentPermissions ? ({ ...props.currentPermissions } as Permissions) : { ...DEFAULT_PERMISSIONS },
   );
 
   const data = {
-    company,
-    space,
+    company: props.company,
+    space: props.space,
     permissions,
     dispatch,
-    hasPermissions: Boolean(currentPermissions),
+    hasPermissions: Boolean(props.currentPermissions),
   };
 
-  return <PermissionsContext.Provider value={data}>{children}</PermissionsContext.Provider>;
+  return data;
 }
-
-const PermissionsContext = createContext<ContextType | undefined>(undefined);
-
-function usePermissionsContext() {
-  const context = useContext(PermissionsContext);
-
-  if (context === undefined) {
-    throw Error("usePermissionsContext must be used within a PermissionsProvider");
-  }
-
-  return context;
-}
-
-export { PermissionsProvider, usePermissionsContext };

@@ -7,7 +7,6 @@ import { FilledButton } from "@/components/Button";
 import { useLoadedData } from "./loader";
 import { FormState, useForm, Form } from "@/features/goals/GoalForm";
 import { useMe } from "@/contexts/CurrentUserContext";
-import { PermissionsProvider, usePermissionsContext } from "@/features/Permissions/PermissionsContext";
 
 export function Page() {
   const me = useMe()!;
@@ -25,11 +24,9 @@ export function Page() {
     <Pages.Page title={["Edit", goal.name!]}>
       <Paper.Root size="medium">
         <Paper.Body minHeight="300px">
-          <PermissionsProvider company={company} space={goal.space} currentPermissions={goal.accessLevels}>
-            <Header form={form} />
-            <ErrorMessage form={form} />
-            <Form form={form} />
-          </PermissionsProvider>
+          <Header form={form} />
+          <ErrorMessage form={form} />
+          <Form form={form} />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
@@ -37,12 +34,6 @@ export function Page() {
 }
 
 function Header({ form }: { form: FormState }) {
-  const { permissions } = usePermissionsContext();
-
-  const handleSubmit = () => {
-    form.submit(permissions);
-  };
-
   return (
     <Paper.Header className="bg-surface-dimmed">
       <div className="flex items-end justify-between my-2">
@@ -55,7 +46,7 @@ function Header({ form }: { form: FormState }) {
 
           <FilledButton
             type="primary"
-            onClick={handleSubmit}
+            onClick={form.submit}
             loading={form.submitting}
             size="sm"
             testId="save-changes"

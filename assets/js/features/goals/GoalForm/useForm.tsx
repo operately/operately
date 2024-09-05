@@ -10,7 +10,8 @@ import { useNavigateTo } from "@/routes/useNavigateTo";
 import { useNavigate } from "react-router-dom";
 import { useListState } from "@/utils/useListState";
 import { Paths } from "@/routes/paths";
-import { Permissions } from "@/features/Permissions/PermissionsContext";
+import { PermissionsState } from "@/features/Permissions/usePermissionsState";
+import { usePermissionsState } from "@/features/Permissions/usePermissionsState";
 
 export interface FormState {
   config: FormConfig;
@@ -18,7 +19,7 @@ export interface FormState {
   errors: Error[];
   submitting: boolean;
 
-  submit: (permissions: Permissions) => Promise<boolean>;
+  submit: () => Promise<boolean>;
   cancel: () => void;
 }
 
@@ -40,6 +41,7 @@ interface Fields {
   space: SpaceOption | null;
   spaceOptions: SpaceOption[];
   hasDescription: boolean;
+  permissions: PermissionsState;
   descriptionEditor: TipTapEditor.Editor;
 
   setName: (name: string) => void;
@@ -92,6 +94,12 @@ export function useForm(config: FormConfig): FormState {
   const [parentGoal, setParentGoal] = React.useState<Goals.Goal | null>(config.parentGoal || null);
   const [timeframe, setTimeframe] = useTimeframe(config);
 
+  const permissions = usePermissionsState({
+    company: config.company,
+    space: space,
+    currentPermissions: config.goal?.accessLevels,
+  });
+
   const [hasDescription, setHasDescription] = React.useState<boolean>(false);
   const { editor: descriptionEditor } = TipTapEditor.useEditor({
     autoFocus: false,
@@ -113,6 +121,7 @@ export function useForm(config: FormConfig): FormState {
     hasDescription,
     descriptionEditor,
     parentGoal,
+    permissions,
 
     setName,
     setChampion,
@@ -210,10 +219,7 @@ function newEmptyTarget() {
   };
 }
 
-function useSubmit(
-  fields: Fields,
-  config: FormConfig,
-): [(permissions: Permissions) => Promise<boolean>, () => void, boolean, Error[]] {
+function useSubmit(fields: Fields, config: FormConfig): [() => Promise<boolean>, () => void, boolean, Error[]] {
   const navigate = useNavigate();
 
   const cancel = useNavigateTo(createCancelPath(config));
@@ -225,7 +231,7 @@ function useSubmit(
 
   const [errors, setErrors] = React.useState<Error[]>([]);
 
-  const submit = async (permissions: Permissions) => {
+  const submit = async () => {
     const errors = validateForm(fields, config);
 
     if (errors.length > 0) {
@@ -251,9 +257,9 @@ function useSubmit(
             unit: t.unit,
             index: index,
           })),
-        anonymousAccessLevel: permissions.public,
-        companyAccessLevel: permissions.company,
-        spaceAccessLevel: permissions.space,
+        anonymousAccessLevel: fields.permissions.permissions.public,
+        companyAccessLevel: fields.permissions.permissions.company,
+        spaceAccessLevel: fields.permissions.permissions.space,
       });
 
       navigate(Paths.goalPath(res.goal.id!));
@@ -287,9 +293,9 @@ function useSubmit(
             unit: t.unit,
             index: index,
           })),
-        anonymousAccessLevel: permissions.public,
-        companyAccessLevel: permissions.company,
-        spaceAccessLevel: permissions.space,
+        anonymousAccessLevel: fields.permissions.permissions.public,
+        companyAccessLevel: fields.permissions.permissions.company,
+        spaceAccessLevel: fields.permissions.permissions.space,
       });
 
       navigate(Paths.goalPath(res.goal.id!));

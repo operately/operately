@@ -1,5 +1,5 @@
 import { PermissionLevels, PermissionOptions } from ".";
-import { Permissions } from "./PermissionsContext";
+import { Permissions } from "./usePermissionsState";
 
 export function calculatePrivacyLevel(permissions: Permissions, opts?: { forSpace?: boolean }) {
   if (permissions.public !== PermissionLevels.NO_ACCESS) return PermissionOptions.PUBLIC;

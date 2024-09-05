@@ -9,7 +9,6 @@ import { useLoadedData } from "./loader";
 import { FormState, useForm, Form } from "@/features/goals/GoalForm";
 import { useMe } from "@/contexts/CurrentUserContext";
 import { Paths } from "@/routes/paths";
-import { PermissionsProvider, usePermissionsContext } from "@/features/Permissions/PermissionsContext";
 
 export function Page() {
   const me = useMe()!;
@@ -27,11 +26,7 @@ export function Page() {
     isCompanyWide,
   });
 
-  return (
-    <PermissionsProvider company={company} space={space || form.fields.space}>
-      {spaceID ? <NewGoalForSpacePage form={form} /> : <NewGoalPage form={form} />}
-    </PermissionsProvider>
-  );
+  return spaceID ? <NewGoalForSpacePage form={form} /> : <NewGoalPage form={form} />;
 }
 
 function NewGoalForSpacePage({ form }: { form: FormState }) {
@@ -81,12 +76,6 @@ function NewGoalPage({ form }: { form: FormState }) {
 }
 
 function SubmitButton({ form }: { form: FormState }) {
-  const { permissions } = usePermissionsContext();
-
-  const handleSubmit = () => {
-    form.submit(permissions);
-  };
-
   return (
     <div className="mt-8">
       {form.errors.length > 0 && (
@@ -96,7 +85,7 @@ function SubmitButton({ form }: { form: FormState }) {
       <div className="flex items-center justify-center gap-4">
         <FilledButton
           type="primary"
-          onClick={handleSubmit}
+          onClick={form.submit}
           loading={form.submitting}
           size="lg"
           testId="add-goal-button"
