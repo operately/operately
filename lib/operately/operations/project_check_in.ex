@@ -4,7 +4,7 @@ defmodule Operately.Operations.ProjectCheckIn do
   alias Operately.Repo
   alias Operately.Activities
   alias Operately.Projects.{CheckIn, Project}
-  alias Operately.Notifications.{SubscriptionList, Subscription}
+  alias Operately.Operations.ProjectCheckIn.{Subscription, SubscriptionList}
 
   def run(author, project, attrs) do
     next_check_in = Operately.Time.calculate_next_weekly_check_in(
@@ -13,12 +13,8 @@ defmodule Operately.Operations.ProjectCheckIn do
     )
 
     Multi.new()
-    |> Multi.insert(:subscription_list, SubscriptionList.changeset(%{
-      send_to_everyone: attrs.send_notifications_to_everyone,
-    }))
-    |> insert_author_subscription(author.id)
-    |> insert_subscriptions(attrs.subscriber_ids)
-    |> insert_mentioned_subscriptions(attrs.description)
+    |> SubscriptionList.insert(attrs)
+    |> Subscription.insert(author, attrs)
     |> Multi.insert(:check_in, fn changes ->
       CheckIn.changeset(%{
         author_id: author.id,
@@ -28,12 +24,7 @@ defmodule Operately.Operations.ProjectCheckIn do
         subscription_list_id: changes.subscription_list.id,
       })
     end)
-    |> Multi.update(:updated_subscription_list, fn changes ->
-      SubscriptionList.changeset(changes.subscription_list, %{
-        parent_type: :project_check_in,
-        parent_id: changes.check_in.id,
-      })
-    end)
+    |> SubscriptionList.update()
     |> Multi.update(:project, fn changes ->
       Project.changeset(project, %{
         last_check_in_id: changes.check_in.id,
@@ -57,50 +48,5 @@ defmodule Operately.Operations.ProjectCheckIn do
 
       error -> error
     end
-  end
-
-  defp insert_author_subscription(multi, author_id) do
-    Multi.insert(multi, :author_subscription, fn changes ->
-      Subscription.changeset(%{
-        subscription_list_id: changes.subscription_list.id,
-        person_id: author_id,
-        type: :invited,
-      })
-    end)
-  end
-
-  defp insert_subscriptions(multi, nil), do: multi
-  defp insert_subscriptions(multi, subscriber_ids) do
-    Enum.reduce(subscriber_ids, multi, fn id, multi ->
-      name = "subscription_" <> id
-
-      Multi.insert(multi, name, fn changes ->
-        Subscription.changeset(%{
-          subscription_list_id: changes.subscription_list.id,
-          person_id: id,
-          type: :invited,
-        })
-      end)
-    end)
-  end
-
-  defp insert_mentioned_subscriptions(multi, description) do
-    {:ok, ids} =
-      description
-      |> Operately.RichContent.find_mentioned_ids()
-      |> Enum.uniq()
-      |> OperatelyWeb.Api.Helpers.decode_id()
-
-    Enum.reduce(ids, multi, fn id, multi ->
-      name = "mentioned_subscription_" <> id
-
-      Multi.insert(multi, name, fn changes ->
-        Subscription.changeset(%{
-          subscription_list_id: changes.subscription_list.id,
-          person_id: id,
-          type: :mentioned,
-        })
-      end)
-    end)
   end
 end
