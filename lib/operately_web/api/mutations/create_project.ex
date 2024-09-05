@@ -57,6 +57,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateProject do
       reviewer_id: reviewer_id,
       creator_is_contributor: inputs[:creator_is_contributor],
       creator_role: inputs[:creator_role],
+      visibility: "everyone",
       creator_id: person.id,
       company_id: person.company_id,
       group_id: space_id,

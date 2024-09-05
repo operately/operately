@@ -14,6 +14,7 @@ defmodule Operately.Operations.ProjectCreation do
     :creator_id,
     :creator_role,
     :creator_is_contributor,
+    :visibility,
     :group_id,
     :goal_id,
     :anonymous_access_level,
@@ -42,6 +43,7 @@ defmodule Operately.Operations.ProjectCreation do
         :group_id => params.group_id,
         :goal_id => params.goal_id,
         :name => params.name,
+        :private => is_private(params.visibility),
         :creator_id => params.creator_id,
         :started_at => DateTime.utc_now(),
         :next_check_in_scheduled_at => Operately.Time.first_friday_from_today(),
@@ -149,5 +151,9 @@ defmodule Operately.Operations.ProjectCreation do
       params.creator_is_contributor == "no" -> false
       params.creator_is_contributor == "yes" -> true
     end
+  end
+
+  defp is_private(visibility) do
+    visibility != "everyone"
   end
 end

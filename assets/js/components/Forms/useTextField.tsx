@@ -20,8 +20,9 @@ export function useTextField(initial?: string | null, config?: Config): TextFiel
   }
 
   const validate = (): string | null => {
-    if (!config?.optional && !value) return "Can't be empty";
-    if (config?.optional && !value) return null;
+    if (!config?.optional && !value) {
+      return "Can't be empty";
+    }
 
     const trimmed = value!.trim();
 
