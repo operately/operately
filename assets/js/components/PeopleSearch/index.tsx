@@ -5,6 +5,7 @@ import Avatar, { AvatarSize } from "@/components/Avatar";
 import classnames from "classnames";
 
 import { Person } from "@/models/people";
+import { createTestId } from "@/utils/testid";
 
 export interface Option {
   value: string;
@@ -84,7 +85,7 @@ function personAsOption(person: Person, showTitle = false): Option {
 
 function PersonLabel({ person, showTitle }: { person: Person; showTitle: boolean }) {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2" data-test-id={createTestId("person-option", person.fullName!)}>
       <Avatar person={person} size={AvatarSize.Tiny} />
       {person.fullName}
       {showTitle && <>&middot; {person.title}</>}
