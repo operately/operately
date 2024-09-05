@@ -37,6 +37,7 @@ function SelectPersonInput({ field }: { field: string }) {
         inputId={field}
         onChange={onChange}
         placeholder="Search for person..."
+        defaultValue={f.value!}
         loader={loader}
         error={!!error}
         filterOption={(candidate) => !excludedIds[candidate.value]}
