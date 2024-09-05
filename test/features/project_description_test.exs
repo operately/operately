@@ -16,7 +16,7 @@ defmodule Operately.Features.ProjectsDescriptionTest do
     |> Steps.visit_project_page()
     |> Steps.assert_project_description_absent()
     |> Steps.submit_project_description(description: project_description())
-    |> UI.click(testid: "expand-project-description")
+    |> Steps.expand_project_description()
     |> Steps.assert_project_description_present(description: project_description())
   end
 

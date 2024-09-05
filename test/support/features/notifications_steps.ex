@@ -1,7 +1,21 @@
 defmodule Operately.Support.Features.NotificationsSteps do
+  use Operately.FeatureCase
+
   alias Operately.Support.Features.UI
   alias Operately.People.Person
   alias OperatelyWeb.Paths
+
+  step :given_a_project_creation_notification_exists, ctx do
+    ctx
+    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
+    |> UI.click(testid: "projects-tab")
+    |> UI.click(testid: "add-project")
+    |> UI.fill(testid: "name", with: "Website Redesign")
+    |> UI.select_person_in(id: "champion", name: ctx.champion.full_name)
+    |> UI.select_person_in(id: "reviewer", name: ctx.reviewer.full_name)
+    |> UI.click(testid: "submit")
+    |> UI.assert_text("Website Redesign")
+  end
 
   def visit_notifications_page(ctx) do
     UI.visit(ctx, Paths.notifications_path(ctx.company))

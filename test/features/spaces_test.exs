@@ -62,7 +62,7 @@ defmodule Operately.Features.SpacesTest do
     |> UI.login_as(person)
     |> UI.visit(Paths.space_path(ctx.company, group))
     |> UI.click(testid: "join-space-button")
-    |> UI.sleep(100)
+    |> UI.sleep(300)
     |> UI.visit(Paths.space_path(ctx.company, group))
     |> UI.assert_text("Mati A. joined the space")
 
