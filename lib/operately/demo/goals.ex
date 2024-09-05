@@ -218,7 +218,6 @@ defmodule Operately.Demo.Goals do
       creator_id: context.owner.id,
       creator_role: "contributor",
       creator_is_contributor: "yes",
-      visibility: "everyone",
       group_id: attrs.space.id,
       goal_id: attrs[:parent] && attrs.parent.id,
       anonymous_access_level: 0, 

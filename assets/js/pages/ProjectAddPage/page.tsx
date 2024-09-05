@@ -77,8 +77,8 @@ function Form() {
       space: Forms.useSelectField(space?.id, spaceOptions),
       champion: Forms.useSelectPersonField(me),
       reviewer: Forms.useSelectPersonField(me.manager),
-      goal: Forms.useTextField(goal?.id),
-      creatorRole: Forms.useTextField(),
+      goal: Forms.useTextField(goal?.id, { optional: true }),
+      creatorRole: Forms.useTextField(null, { optional: true }),
       isContrib: Forms.useSelectField("no", WillYouContributeOptions),
     },
     submit: async (form) => {
