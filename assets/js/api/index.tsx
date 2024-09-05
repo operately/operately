@@ -1994,6 +1994,19 @@ export interface ResumeProjectResult {
   project?: Project | null;
 }
 
+export interface SubscribeToNotificationsInput {
+  id?: string | null;
+  type?: string | null;
+}
+
+export interface SubscribeToNotificationsResult {}
+
+export interface UnsubscribeFromNotificationsInput {
+  id?: string | null;
+}
+
+export interface UnsubscribeFromNotificationsResult {}
+
 export interface UpdateGroupAppearanceInput {
   id?: string | null;
   icon?: string | null;
@@ -2490,6 +2503,16 @@ export class ApiClient {
     return this.post("/resume_project", input);
   }
 
+  async subscribeToNotifications(input: SubscribeToNotificationsInput): Promise<SubscribeToNotificationsResult> {
+    return this.post("/subscribe_to_notifications", input);
+  }
+
+  async unsubscribeFromNotifications(
+    input: UnsubscribeFromNotificationsInput,
+  ): Promise<UnsubscribeFromNotificationsResult> {
+    return this.post("/unsubscribe_from_notifications", input);
+  }
+
   async updateGroupAppearance(input: UpdateGroupAppearanceInput): Promise<UpdateGroupAppearanceResult> {
     return this.post("/update_group_appearance", input);
   }
@@ -2834,6 +2857,16 @@ export async function reopenGoal(input: ReopenGoalInput): Promise<ReopenGoalResu
 }
 export async function resumeProject(input: ResumeProjectInput): Promise<ResumeProjectResult> {
   return defaultApiClient.resumeProject(input);
+}
+export async function subscribeToNotifications(
+  input: SubscribeToNotificationsInput,
+): Promise<SubscribeToNotificationsResult> {
+  return defaultApiClient.subscribeToNotifications(input);
+}
+export async function unsubscribeFromNotifications(
+  input: UnsubscribeFromNotificationsInput,
+): Promise<UnsubscribeFromNotificationsResult> {
+  return defaultApiClient.unsubscribeFromNotifications(input);
 }
 export async function updateGroupAppearance(input: UpdateGroupAppearanceInput): Promise<UpdateGroupAppearanceResult> {
   return defaultApiClient.updateGroupAppearance(input);
@@ -3369,6 +3402,24 @@ export function useResumeProject(): UseMutationHookResult<ResumeProjectInput, Re
   return useMutation<ResumeProjectInput, ResumeProjectResult>((input) => defaultApiClient.resumeProject(input));
 }
 
+export function useSubscribeToNotifications(): UseMutationHookResult<
+  SubscribeToNotificationsInput,
+  SubscribeToNotificationsResult
+> {
+  return useMutation<SubscribeToNotificationsInput, SubscribeToNotificationsResult>((input) =>
+    defaultApiClient.subscribeToNotifications(input),
+  );
+}
+
+export function useUnsubscribeFromNotifications(): UseMutationHookResult<
+  UnsubscribeFromNotificationsInput,
+  UnsubscribeFromNotificationsResult
+> {
+  return useMutation<UnsubscribeFromNotificationsInput, UnsubscribeFromNotificationsResult>((input) =>
+    defaultApiClient.unsubscribeFromNotifications(input),
+  );
+}
+
 export function useUpdateGroupAppearance(): UseMutationHookResult<
   UpdateGroupAppearanceInput,
   UpdateGroupAppearanceResult
@@ -3610,6 +3661,10 @@ export default {
   useReopenGoal,
   resumeProject,
   useResumeProject,
+  subscribeToNotifications,
+  useSubscribeToNotifications,
+  unsubscribeFromNotifications,
+  useUnsubscribeFromNotifications,
   updateGroupAppearance,
   useUpdateGroupAppearance,
   updateMilestone,
