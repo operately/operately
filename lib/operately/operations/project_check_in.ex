@@ -16,6 +16,7 @@ defmodule Operately.Operations.ProjectCheckIn do
     |> Multi.insert(:subscription_list, SubscriptionList.changeset(%{
       send_to_everyone: attrs.send_notifications_to_everyone,
     }))
+    |> insert_author_subscription(author.id)
     |> insert_subscriptions(attrs.subscriber_ids)
     |> insert_mentioned_subscriptions(attrs.description)
     |> Multi.insert(:check_in, fn changes ->
@@ -56,6 +57,16 @@ defmodule Operately.Operations.ProjectCheckIn do
 
       error -> error
     end
+  end
+
+  defp insert_author_subscription(multi, author_id) do
+    Multi.insert(multi, :author_subscription, fn changes ->
+      Subscription.changeset(%{
+        subscription_list_id: changes.subscription_list.id,
+        person_id: author_id,
+        type: :invited,
+      })
+    end)
   end
 
   defp insert_subscriptions(multi, nil), do: multi
