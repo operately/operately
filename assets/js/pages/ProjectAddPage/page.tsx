@@ -131,19 +131,19 @@ function useShouldHideIsCotrib({ form }) {
   const me = useMe()!;
 
   return React.useMemo(() => {
-    const isChampion = compareIds(form.fields.champion?.value!.id!, me.id!);
-    const isReviewer = compareIds(form.fields.reviewer?.value!.id!, me.id!);
+    const isChampion = compareIds(form.fields.champion?.value?.id, me.id);
+    const isReviewer = compareIds(form.fields.reviewer?.value?.id, me.id);
 
     return isChampion || isReviewer;
-  }, [form.fields.champion, form.fields.reviewer, me.id]);
+  }, [form.fields.champion, form.fields.reviewer, me?.id]);
 }
 
 function useShouldHideCreatorRole({ form }) {
   const me = useMe()!;
 
   return React.useMemo(() => {
-    const isChampion = compareIds(form.fields.champion?.value!.id!, me.id!);
-    const isReviewer = compareIds(form.fields.reviewer?.value!.id!, me.id!);
+    const isChampion = compareIds(form.fields.champion?.value?.id!, me.id!);
+    const isReviewer = compareIds(form.fields.reviewer?.value?.id!, me.id!);
     const isContributor = form.fields.isContrib!.value === "yes";
 
     return isChampion || isReviewer || !isContributor;

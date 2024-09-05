@@ -127,7 +127,6 @@ defmodule OperatelyWeb.Api.Mutations.CreateProjectTest do
       name: "project",
       reviewer_id: Paths.person_id(ctx.person),
       champion_id: Paths.person_id(ctx.person),
-      visibility: "everyone",
       creator_is_contributor: "yes",
       creator_role: "Developer",
       goal_id: Paths.goal_id(ctx.goal),

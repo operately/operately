@@ -73,11 +73,11 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
 
   step :submit_project_form, ctx, fields do
     ctx
-    |> UI.fill(testid: "project-name-input", with: fields.name)
-    |> UI.select_person_in(id: "Champion", name: fields.champion.full_name)
+    |> UI.fill(testid: "name", with: fields.name)
+    |> UI.select_person_in(id: "champion", name: fields.champion.full_name)
     |> run_if(fields[:reviewer], fn ctx ->
       ctx
-      |> UI.select_person_in(id: "Reviewer", name: fields.reviewer.full_name)
+      |> UI.select_person_in(id: "reviewer", name: fields.reviewer.full_name)
     end)
     |> run_if(fields[:goal], fn ctx ->
       ctx
@@ -86,10 +86,10 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
     end)
     |> run_if(fields[:add_creator_as_contributor], fn ctx ->
       ctx
-      |> UI.click(testid: "yes-contributor")
-      |> UI.fill(testid: "creator-responsibility-input", with: "Responsible for managing the project")
+      |> UI.click(testid: "isContrib-yes")
+      |> UI.fill(testid: "creatorRole", with: "Responsible for managing the project")
     end)
-    |> UI.click(testid: "save")
+    |> UI.click(testid: "submit")
     |> UI.assert_text(fields.name)
   end
 

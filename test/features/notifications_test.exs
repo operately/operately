@@ -6,7 +6,7 @@ defmodule Operately.Features.NotificationsTest do
   import Operately.PeopleFixtures
 
   alias Operately.Access.Binding
-  alias Operately.Support.Features.NotificationsSteps
+  alias Operately.Support.Features.NotificationsSteps, as: Steps
 
   setup ctx do
     ctx = Map.put(ctx, :company, company_fixture(%{name: "Test Org"}))
@@ -31,32 +31,21 @@ defmodule Operately.Features.NotificationsTest do
   feature "unread notifications count", ctx do
     ctx
     |> UI.login_as(ctx.champion)
-    |> NotificationsSteps.assert_notification_count(1)
-    |> NotificationsSteps.visit_notifications_page()
-    |> NotificationsSteps.click_on_notification("notification-item-space_members_added")
-    |> NotificationsSteps.assert_no_unread_notifications()
+    |> Steps.assert_notification_count(1)
+    |> Steps.visit_notifications_page()
+    |> Steps.click_on_notification("notification-item-space_members_added")
+    |> Steps.assert_no_unread_notifications()
   end
 
   feature "mark all unread notifications as read", ctx do
     ctx
     |> UI.login_as(ctx.reviewer)
-    |> given_a_project_creation_notification_exists()
+    |> Steps.given_a_project_creation_notification_exists()
     |> UI.login_as(ctx.champion)
-    |> NotificationsSteps.assert_notification_count(2)
-    |> NotificationsSteps.visit_notifications_page()
-    |> NotificationsSteps.click_on_first_mark_all_as_read()
-    |> NotificationsSteps.assert_no_unread_notifications()
+    |> Steps.assert_notification_count(2)
+    |> Steps.visit_notifications_page()
+    |> Steps.click_on_first_mark_all_as_read()
+    |> Steps.assert_no_unread_notifications()
   end
 
-  step :given_a_project_creation_notification_exists, ctx do
-    ctx
-    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
-    |> UI.click(testid: "projects-tab")
-    |> UI.click(testid: "add-project")
-    |> UI.fill(testid: "project-name-input", with: "Website Redesign")
-    |> UI.select_person_in(id: "Champion", name: ctx.champion.full_name)
-    |> UI.select_person_in(id: "Reviewer", name: ctx.reviewer.full_name)
-    |> UI.click(testid: "save")
-    |> UI.assert_text("Website Redesign")
-  end
 end
