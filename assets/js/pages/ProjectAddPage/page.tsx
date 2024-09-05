@@ -3,59 +3,54 @@ import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as Projects from "@/models/projects";
 
-import Forms from "@/components/Forms";
-
 import { useLoadedData } from "./loader";
-import { useForm, FormState } from "./useForm";
 import { DimmedLink } from "@/components/Link";
 import { Paths, compareIds } from "@/routes/paths";
-import { PermissionsProvider, usePermissionsContext } from "@/features/Permissions/PermissionsContext";
 import { useMe } from "@/contexts/CurrentUserContext";
 import { useNavigate } from "react-router-dom";
 
+import Forms from "@/components/Forms";
+
 export function Page() {
-  const { spaceID, company, space } = useLoadedData();
-  const form = useForm();
-
-  return (
-    <PermissionsProvider company={company} space={space || form.fields.space}>
-      {spaceID ? <NewProjectForSpacePage /> : <NewProjectPage />}
-    </PermissionsProvider>
-  );
-}
-
-function NewProjectForSpacePage({ form }: { form: FormState }) {
-  const { space, spaceID } = useLoadedData();
-
-  const spaceProjectsPath = Paths.spaceProjectsPath(spaceID!);
-
   return (
     <Pages.Page title="New Project">
       <Paper.Root size="small">
-        <div className="flex items-center justify-center mb-4 gap-4">
-          <DimmedLink to={spaceProjectsPath}>Back to {space!.name} Space</DimmedLink>
-        </div>
-
-        <h1 className="mb-4 font-bold text-3xl text-center">Start a new project in {space!.name}</h1>
+        <Navigation />
+        <PageTitle />
         <Form />
       </Paper.Root>
     </Pages.Page>
   );
 }
 
-function NewProjectPage({ form }: { form: FormState }) {
-  return (
-    <Pages.Page title="New Project">
-      <Paper.Root size="small">
-        <div className="flex items-center justify-center mb-4 gap-4">
-          <DimmedLink to={Paths.projectsPath()}>Back to Projects</DimmedLink>
-        </div>
+function PageTitle() {
+  const { spaceID, space } = useLoadedData();
 
-        <h1 className="mb-4 font-bold text-3xl text-center">Start a new project</h1>
-        <Form />
-      </Paper.Root>
-    </Pages.Page>
-  );
+  if (spaceID && space) {
+    return <h1 className="mb-4 font-bold text-3xl text-center">Start a new project in {space!.name}</h1>;
+  } else {
+    return <h1 className="mb-4 font-bold text-3xl text-center">Start a new project</h1>;
+  }
+}
+
+function Navigation() {
+  const { spaceID, space } = useLoadedData();
+
+  if (spaceID && space) {
+    const spaceProjectsPath = Paths.spaceProjectsPath(spaceID!);
+
+    return (
+      <div className="flex items-center justify-center mb-4 gap-4">
+        <DimmedLink to={spaceProjectsPath}>Back to {space!.name} Space</DimmedLink>
+      </div>
+    );
+  } else {
+    return (
+      <div className="flex items-center justify-center mb-4 gap-4">
+        <DimmedLink to={Paths.projectsPath()}>Back to Projects</DimmedLink>
+      </div>
+    );
+  }
 }
 
 const WillYouContributeOptions = [
@@ -63,7 +58,6 @@ const WillYouContributeOptions = [
   { label: "Yes, I'll contribute", value: "yes" },
 ];
 
-// Creator Role
 const CRLabel = "What is your responsibility on this project?";
 const CRPlaceholder = "e.g. Responsible for managing the project and coordinating tasks";
 
