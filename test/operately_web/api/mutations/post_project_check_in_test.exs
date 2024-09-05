@@ -105,8 +105,9 @@ defmodule OperatelyWeb.Api.Mutations.PostProjectCheckInTest do
       subscriptions = Notifications.list_subscriptions(list)
 
       assert list.send_to_everyone
-      assert length(subscriptions) == 3
-      Enum.each(people_ids, fn id ->
+      assert length(subscriptions) == 4
+
+      Enum.each(people_ids ++ [ctx.person.id], fn id ->
         assert Enum.filter(subscriptions, &(&1.person_id == id))
       end)
     end
@@ -131,8 +132,9 @@ defmodule OperatelyWeb.Api.Mutations.PostProjectCheckInTest do
       list = Notifications.get_subscription_list!(parent_id: id)
       subscriptions = Notifications.list_subscriptions(list)
 
-      assert length(subscriptions) == 3
-      Enum.each(people, fn p ->
+      assert length(subscriptions) == 4
+
+      Enum.each(people ++ [ctx.person], fn p ->
         assert Enum.filter(subscriptions, &(&1.person_id == p.id))
       end)
     end
