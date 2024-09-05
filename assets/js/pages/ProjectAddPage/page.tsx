@@ -81,6 +81,11 @@ function Form() {
       creatorRole: Forms.useTextField(null, { optional: true }),
       isContrib: Forms.useSelectField("no", WillYouContributeOptions),
     },
+    validate: (fields, addError) => {
+      if (compareIds(fields.champion.value?.id, fields.reviewer.value?.id)) {
+        addError("reviewer", "Can't be the same as the champion");
+      }
+    },
     submit: async (form) => {
       const res = await add({
         name: form.fields.name.value,

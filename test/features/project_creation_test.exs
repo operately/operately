@@ -81,4 +81,14 @@ defmodule Operately.Features.ProjectCreationTest do
     |> Steps.submit_project_form(params)
     |> Steps.assert_reviewer_is_champions_manager(params)
   end
+
+  @tag login_as: :champion
+  feature "champion == reviewer is not allowed", ctx do
+    params = %{name: "Website Redesign", creator: ctx.champion, champion: ctx.champion, reviewer: ctx.champion}
+
+    ctx
+    |> Steps.start_adding_project()
+    |> Steps.submit_project_form(params)
+    |> Steps.assert_validation_error("Can't be the same as the champion")
+  end
 end
