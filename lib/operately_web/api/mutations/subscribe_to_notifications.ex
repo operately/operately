@@ -15,7 +15,7 @@ defmodule OperatelyWeb.Api.Mutations.SubscribeToNotifications do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:attrs, fn -> parse_inputs(inputs) end)
-    |> run(:access_level, fn ctx -> Notifications.get_subscription_access_level(ctx.attrs.id, ctx.attrs.type, ctx.me.id) end)
+    |> run(:access_level, fn ctx -> Notifications.get_subscription_list_access_level(ctx.attrs.id, ctx.attrs.type, ctx.me.id) end)
     |> run(:check_permissions, fn ctx -> check_permissions(ctx.attrs.type, ctx.access_level) end)
     |> run(:operation, fn ctx -> NotificationsSubscribing.run(ctx.me.id, ctx.attrs.id) end)
     |> respond()

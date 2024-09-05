@@ -1829,6 +1829,15 @@ export interface EditSpacePermissionsResult {
   success?: boolean | null;
 }
 
+export interface EditSubscriptionsListInput {
+  id?: string | null;
+  type?: string | null;
+  sendNotificationsToEveryone?: boolean | null;
+  subscriberIds?: string[] | null;
+}
+
+export interface EditSubscriptionsListResult {}
+
 export interface JoinCompanyInput {
   token?: string | null;
   password?: string | null;
@@ -2420,6 +2429,10 @@ export class ApiClient {
     return this.post("/edit_space_permissions", input);
   }
 
+  async editSubscriptionsList(input: EditSubscriptionsListInput): Promise<EditSubscriptionsListResult> {
+    return this.post("/edit_subscriptions_list", input);
+  }
+
   async joinCompany(input: JoinCompanyInput): Promise<JoinCompanyResult> {
     return this.post("/join_company", input);
   }
@@ -2784,6 +2797,9 @@ export async function editSpaceMembersPermissions(
 }
 export async function editSpacePermissions(input: EditSpacePermissionsInput): Promise<EditSpacePermissionsResult> {
   return defaultApiClient.editSpacePermissions(input);
+}
+export async function editSubscriptionsList(input: EditSubscriptionsListInput): Promise<EditSubscriptionsListResult> {
+  return defaultApiClient.editSubscriptionsList(input);
 }
 export async function joinCompany(input: JoinCompanyInput): Promise<JoinCompanyResult> {
   return defaultApiClient.joinCompany(input);
@@ -3272,6 +3288,15 @@ export function useEditSpacePermissions(): UseMutationHookResult<
   );
 }
 
+export function useEditSubscriptionsList(): UseMutationHookResult<
+  EditSubscriptionsListInput,
+  EditSubscriptionsListResult
+> {
+  return useMutation<EditSubscriptionsListInput, EditSubscriptionsListResult>((input) =>
+    defaultApiClient.editSubscriptionsList(input),
+  );
+}
+
 export function useJoinCompany(): UseMutationHookResult<JoinCompanyInput, JoinCompanyResult> {
   return useMutation<JoinCompanyInput, JoinCompanyResult>((input) => defaultApiClient.joinCompany(input));
 }
@@ -3620,6 +3645,8 @@ export default {
   useEditSpaceMembersPermissions,
   editSpacePermissions,
   useEditSpacePermissions,
+  editSubscriptionsList,
+  useEditSubscriptionsList,
   joinCompany,
   useJoinCompany,
   joinSpace,
