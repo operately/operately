@@ -12,11 +12,12 @@ import { MembersAccessLevel } from "./MembersAccessLevel";
 import { AddMembers } from "./AddMembers";
 import { SpaceAccessLevel } from "./SpaceAccessLevel";
 
-import { PermissionsProvider } from "@/features/Permissions/PermissionsContext";
+import { usePermissionsState } from "@/features/Permissions/usePermissionsState";
 import { Spacer } from "@/components/Spacer";
 
 export function Page() {
   const { space, company } = useLoadedData();
+  const permissions = usePermissionsState({ company, space, currentPermissions: space.accessLevels });
 
   return (
     <Pages.Page title={space.name!}>
@@ -28,9 +29,7 @@ export function Page() {
           <Spacer size={4} />
           <MembersAccessLevel />
           <SpacerWithLine />
-          <PermissionsProvider company={company} space={space} currentPermissions={space.accessLevels}>
-            <SpaceAccessLevel />
-          </PermissionsProvider>
+          <SpaceAccessLevel state={permissions} />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>

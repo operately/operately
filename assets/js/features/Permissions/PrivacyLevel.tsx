@@ -2,35 +2,35 @@ import React from "react";
 
 import { Spacer } from "@/components/Spacer";
 import { Radio, RadioGroup } from "@/components/Form";
-import { usePermissionsContext, ReducerActions } from "./PermissionsContext";
+import { ReducerActions } from "./usePermissionsState";
 import { PermissionOptions } from ".";
+import { PermissionsState } from "./usePermissionsState";
 
 interface PrivacyLevelProps {
   description: string;
   options: { label: string; value: PermissionOptions }[];
   defaultValue: PermissionOptions;
+  state: PermissionsState;
 }
 
 const parseTestId = (name: string) => {
   return "privacy-level-" + name.split(" ")[0]?.toLocaleLowerCase();
 };
 
-export default function PrivacyLevel({ description, options, defaultValue }: PrivacyLevelProps) {
-  const { dispatch } = usePermissionsContext();
-
+export default function PrivacyLevel({ state, description, options, defaultValue }: PrivacyLevelProps) {
   const handleChange = (value: PermissionOptions) => {
     switch (value) {
       case PermissionOptions.PUBLIC:
-        dispatch({ type: ReducerActions.SET_PUBLIC });
+        state.dispatch({ type: ReducerActions.SET_PUBLIC });
         break;
       case PermissionOptions.INTERNAL:
-        dispatch({ type: ReducerActions.SET_INTERNAL });
+        state.dispatch({ type: ReducerActions.SET_INTERNAL });
         break;
       case PermissionOptions.CONFIDENTIAL:
-        dispatch({ type: ReducerActions.SET_CONFIDENTIAL });
+        state.dispatch({ type: ReducerActions.SET_CONFIDENTIAL });
         break;
       case PermissionOptions.SECRET:
-        dispatch({ type: ReducerActions.SET_SECRET });
+        state.dispatch({ type: ReducerActions.SET_SECRET });
         break;
     }
   };

@@ -14,11 +14,9 @@ import { SpaceColorChooser } from "@/components/SpaceColorChooser";
 import { SpaceIconChooser } from "@/components/SpaceIconChooser";
 
 import { SpacePermissionSelector } from "@/features/Permissions";
-import { PermissionsProvider, usePermissionsContext } from "@/features/Permissions/PermissionsContext";
+import { usePermissionsState } from "@/features/Permissions/usePermissionsState";
 
 export function Page() {
-  const { company } = useLoadedData();
-
   return (
     <Pages.Page title="Create a new space">
       <Paper.Root size="small">
@@ -27,9 +25,7 @@ export function Page() {
           Spaces help organize projects, goals, and team members in one place.
         </span>
         <Paper.Body minHeight="none">
-          <PermissionsProvider company={company}>
-            <Form />
-          </PermissionsProvider>
+          <Form />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
@@ -38,7 +34,8 @@ export function Page() {
 
 function Form() {
   const navigate = useNavigate();
-  const { permissions } = usePermissionsContext();
+  const { company } = useLoadedData();
+  const permissions = usePermissionsState({ company: company });
 
   const [create, { loading }] = Spaces.useCreateGroup();
 
@@ -58,8 +55,8 @@ function Form() {
       mission: mission,
       icon: icon,
       color: color,
-      companyPermissions: permissions.company,
-      publicPermissions: permissions.public,
+      companyPermissions: permissions.permissions.company,
+      publicPermissions: permissions.permissions.public,
     });
 
     navigate(Paths.spacePath(res.group.id!));
@@ -92,7 +89,7 @@ function Form() {
         <SpaceIconChooser icon={icon} setIcon={setIcon} color={color} />
       </div>
 
-      <SpacePermissionSelector />
+      <SpacePermissionSelector state={permissions} />
 
       <div className="text-content-dimmed text-sm block">
         <span>You can modify these settings later in Space preferences.</span>
