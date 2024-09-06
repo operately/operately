@@ -48,11 +48,11 @@ export function SubmitArea({ children }) {
   return <div className="flex gap-2 mt-4">{children}</div>;
 }
 
-export function SubmitButton({ children, ...props }) {
+export function SubmitButton({ children, testId, ...props }) {
   const { loading } = React.useContext(Context);
 
   return (
-    <FilledButton submit type="primary" loading={loading} {...props}>
+    <FilledButton submit type="primary" testId={testId} loading={loading} {...props}>
       {children}
     </FilledButton>
   );
