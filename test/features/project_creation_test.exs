@@ -79,6 +79,7 @@ defmodule Operately.Features.ProjectCreationTest do
     |> Steps.given_that_champion_has_a_manager()
     |> Steps.start_adding_project()
     |> Steps.submit_project_form(params)
+    |> Steps.assert_project_created(params)
     |> Steps.assert_reviewer_is_champions_manager(params)
   end
 
@@ -100,5 +101,6 @@ defmodule Operately.Features.ProjectCreationTest do
     |> Steps.start_adding_project()
     |> Steps.submit_project_form(params)
     |> Steps.assert_project_created(params)
+    |> Steps.assert_no_reviewer_calluout_showing()
   end
 end

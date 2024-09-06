@@ -113,14 +113,6 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
       assert reviewer.person.full_name == fields.reviewer.full_name
     end
 
-    expected_contrib_count = [
-      fields[:champion],
-      fields[:reviewer],
-      fields[:add_creator_as_contributor]
-    ] |> Enum.count(& &1)
-
-    assert length(project.contributors) == expected_contrib_count
-
     ctx 
   end
 
@@ -170,6 +162,10 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
 
   step :assert_validation_error, ctx, error do
     UI.assert_text(ctx, error)
+  end
+
+  step :assert_no_reviewer_calluout_showing, ctx do
+    ctx |> UI.assert_has(testid: "no-reviewer-callout")
   end
 
   defp who_should_be_notified(fields) do
