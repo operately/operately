@@ -168,6 +168,10 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
     ctx |> UI.assert_has(testid: "no-reviewer-callout")
   end
 
+  step :assert_review_placeholder_showing, ctx do
+    ctx |> UI.assert_has(testid: "reviewer-placeholder")
+  end
+
   defp who_should_be_notified(fields) do
     [
       {fields.champion, "champion"},

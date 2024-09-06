@@ -3,7 +3,7 @@ import * as Icons from "@tabler/icons-react";
 import * as ProjectContributors from "@/models/projectContributors";
 import * as Projects from "@/models/projects";
 
-import ContributorAvatar from "@/components/ContributorAvatar";
+import { ContributorAvatar } from "@/components/ContributorAvatar";
 
 import { PERMISSIONS_LIST } from "@/features/Permissions";
 import {
