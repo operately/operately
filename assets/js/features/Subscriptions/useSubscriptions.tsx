@@ -9,7 +9,6 @@ export interface SubscriptionsState {
   subscriptionType: Options;
   setSubscriptionType: Dispatch<SetStateAction<Options>>;
   alwaysNotify: NotifiablePerson[];
-  alreadySelected: NotifiablePerson[];
   currentSubscribersList: string[];
 }
 
@@ -19,13 +18,8 @@ interface Opts {
 }
 
 export function useSubscriptions(people: NotifiablePerson[], opts?: Opts): SubscriptionsState {
-  const alwaysNotify = useMemo(() => {
-    return opts?.alwaysNotify || [];
-  }, [opts?.alwaysNotify]);
-
-  const alreadySelected = useMemo(() => {
-    return getAlreadySelected(alwaysNotify, opts?.alreadySelected || []);
-  }, [alwaysNotify, opts?.alreadySelected]);
+  const alwaysNotify = useMemo(() => opts?.alwaysNotify || [], []);
+  const alreadySelected = getAlreadySelected(alwaysNotify, opts?.alreadySelected || []);
 
   const [selectedPeople, setSelectedPeople] = useState<NotifiablePerson[]>(alreadySelected);
   const [subscriptionType, setSubscriptionType] = useState(Options.ALL);
@@ -48,7 +42,6 @@ export function useSubscriptions(people: NotifiablePerson[], opts?: Opts): Subsc
     subscriptionType,
     setSubscriptionType,
     alwaysNotify,
-    alreadySelected,
     currentSubscribersList,
   };
 }

@@ -27,7 +27,9 @@ export function Page() {
   const { checkIn } = useLoadedData();
   const refresh = useRefresh();
 
-  const notifiablePeople = findNotifiableProjectContributors(checkIn.project!);
+  const notifiablePeople = React.useMemo(() => {
+    return findNotifiableProjectContributors(checkIn.project!);
+  }, [checkIn.project]);
 
   return (
     <Pages.Page title={["Check-In", checkIn.project!.name!]}>

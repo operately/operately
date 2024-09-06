@@ -1,16 +1,15 @@
-import React, { useState, useMemo, createContext } from "react";
+import React, { useState, useMemo } from "react";
 
 import { RadioGroup } from "@/components/Form";
 import { SubscriptionsState, Options, NotifiablePerson } from "@/features/Subscriptions";
-import { SubscriptionOption } from "./SubscriptionOption";
-import { SubscribersSelectorModal } from "./SubscribersSelectorModal";
+import { SubscriptionOption } from "./selector/SubscriptionOption";
+import { SubscribersSelectorModal } from "./selector/SubscribersSelectorModal";
+import { SubscribersSelectorProvider } from "./SubscribersSelectorContext";
 
 interface Props {
   state: SubscriptionsState;
   projectName?: string;
 }
-
-export const SubscriptionsContext = createContext<SubscriptionsState | undefined>(undefined);
 
 export function SubscribersSelector({ state, projectName }: Props) {
   const [showSelector, setShowSelector] = useState(false);
@@ -24,7 +23,7 @@ export function SubscribersSelector({ state, projectName }: Props) {
   if (alwaysNotify.length >= people.length) return <></>;
 
   return (
-    <SubscriptionsContext.Provider value={state}>
+    <SubscribersSelectorProvider state={state}>
       <div>
         <p className="text-lg font-bold mb-2">When I post this, notify:</p>
 
@@ -43,7 +42,7 @@ export function SubscribersSelector({ state, projectName }: Props) {
 
         <SubscribersSelectorModal showSelector={showSelector} setShowSelector={setShowSelector} />
       </div>
-    </SubscriptionsContext.Provider>
+    </SubscribersSelectorProvider>
   );
 }
 

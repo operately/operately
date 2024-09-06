@@ -4,7 +4,7 @@ import Avatar from "@/components/Avatar";
 import { GhostButton } from "@/components/Buttons";
 import { Subscription } from "@/models/notifications";
 import { EditSubscriptionsModal } from "./EditSubscriptionsModal";
-import { useCurrentSubscriptionsContext } from "./CurrentSubscriptionsContext";
+import { useCurrentSubscriptionsContext } from "../CurrentSubscriptions";
 
 export function ExistingSubscriptionsList() {
   const { subscriptionList, name } = useCurrentSubscriptionsContext();

@@ -1,10 +1,10 @@
-import React, { useContext } from "react";
+import React from "react";
 
 import Avatar from "@/components/Avatar";
 import { Radio } from "@/components/Form";
 import { Person } from "@/models/people";
-import { SubscriptionsContext } from "./SubscribersSelector";
 import { Options } from "@/features/Subscriptions";
+import { useSubscribersSelectorContext } from "../SubscribersSelectorContext";
 
 interface SubscriptionOptionProps {
   label: string;
@@ -14,7 +14,7 @@ interface SubscriptionOptionProps {
 }
 
 export function SubscriptionOption({ label, value, people, onClick }: SubscriptionOptionProps) {
-  const { subscriptionType } = useContext(SubscriptionsContext)!;
+  const { subscriptionType } = useSubscribersSelectorContext();
 
   return (
     <div className="my-1" onClick={onClick}>
