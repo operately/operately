@@ -8,7 +8,7 @@ import * as Invitations from "@/models/invitations";
 import * as Time from "@/utils/time";
 
 import { Paths } from "@/routes/paths";
-import { FilledButton } from "@/components/Button";
+import { FilledButton } from "@/components/Buttons";
 import { BlackLink } from "@/components/Link";
 import { Menu, MenuLinkItem, MenuActionItem } from "@/components/Menu";
 import { CopyToClipboard } from "@/components/CopyToClipboard";

@@ -3,7 +3,7 @@ import * as Projects from "@/models/projects";
 
 import { Link } from "@/components/Link";
 import { Paths } from "@/routes/paths";
-import { GhostButton } from "@/components/Button";
+import { GhostButton } from "@/components/Buttons";
 
 import RichContent, { countCharacters, shortenContent } from "@/components/RichContent";
 

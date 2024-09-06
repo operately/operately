@@ -6,7 +6,7 @@ import * as TipTapEditor from "@/components/Editor";
 import * as Activities from "@/models/activities";
 
 import { FormTitleInput } from "@/components/FormTitleInput";
-import { FilledButton } from "@/components/Button";
+import { FilledButton } from "@/components/Buttons";
 import { DimmedLink } from "@/components/Link";
 import { Paths } from "@/routes/paths";
 import { GoalSubpageNavigation } from "@/features/goals/GoalSubpageNavigation";

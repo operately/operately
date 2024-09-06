@@ -3,7 +3,7 @@ import React, { useMemo } from "react";
 import Avatar from "@/components/Avatar";
 import { useMe } from "@/contexts/CurrentUserContext";
 import { Spacer } from "@/components/Spacer";
-import { GhostButton } from "@/components/Button";
+import { GhostButton } from "@/components/Buttons";
 import {
   SubscriptionList,
   Subscription,
