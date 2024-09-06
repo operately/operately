@@ -4,7 +4,7 @@ import * as Pages from "@/components/Pages";
 import * as Forms from "@/components/Form";
 import * as Editor from "@/components/Editor";
 
-import { FilledButton } from "@/components/Buttons";
+import { PrimaryButton } from "@/components/Buttons";
 import { DimmedLink } from "@/components/Link";
 
 import { useLoadedData } from "./loader";
@@ -75,8 +75,8 @@ function SuccessQuestion({ form }: { form: FormData }) {
 
 function SubmitButton({ form }: { form: FormData }) {
   return (
-    <FilledButton onClick={form.submit} testId="confirm-close-goal">
+    <PrimaryButton onClick={form.submit} testId="confirm-close-goal">
       Close Goal
-    </FilledButton>
+    </PrimaryButton>
   );
 }

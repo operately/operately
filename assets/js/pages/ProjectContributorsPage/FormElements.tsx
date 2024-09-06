@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as Projects from "@/models/projects";
 
-import { FilledButton } from "@/components/Buttons";
+import { PrimaryButton } from "@/components/Buttons";
 import { SelectBox } from "@/components/Form";
 import { PERMISSIONS_LIST } from "@/features/Permissions";
 
@@ -57,33 +57,33 @@ export function PermissionsInput({ value, onChange }) {
 export function RemoveButton({ onClick, loading }) {
   return (
     <div className="flex gap-2">
-      <FilledButton type="secondary" onClick={onClick} loading={loading} testId="remove-contributor">
+      <PrimaryButton type="secondary" onClick={onClick} loading={loading} testId="remove-contributor">
         Remove
-      </FilledButton>
+      </PrimaryButton>
     </div>
   );
 }
 
 export function CancelButton({ onClick }) {
   return (
-    <FilledButton type="secondary" onClick={onClick}>
+    <PrimaryButton type="secondary" onClick={onClick}>
       Cancel
-    </FilledButton>
+    </PrimaryButton>
   );
 }
 
 export function SaveButton({ onClick }) {
   return (
-    <FilledButton type="primary" onClick={onClick}>
+    <PrimaryButton type="primary" onClick={onClick}>
       Save
-    </FilledButton>
+    </PrimaryButton>
   );
 }
 
 export function AddContribButton({ onClick, loading }) {
   return (
-    <FilledButton loading={loading} type="primary" onClick={onClick} testId="save-contributor">
+    <PrimaryButton loading={loading} type="primary" onClick={onClick} testId="save-contributor">
       Add Contributor
-    </FilledButton>
+    </PrimaryButton>
   );
 }

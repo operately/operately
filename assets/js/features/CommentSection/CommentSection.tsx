@@ -7,7 +7,7 @@ import * as TipTapEditor from "@/components/Editor";
 import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
 import RichContent from "@/components/RichContent";
-import { FilledButton } from "@/components/Buttons";
+import { PrimaryButton } from "@/components/Buttons";
 
 import { FormState } from "./form";
 import { useBoolState } from "@/utils/useBoolState";
@@ -90,7 +90,7 @@ function EditComment({ comment, onCancel, form, refresh }) {
 
             <div className="flex justify-between items-center m-4">
               <div className="flex items-center gap-2">
-                <FilledButton
+                <PrimaryButton
                   onClick={handlePost}
                   type="primary"
                   testId="post-comment"
@@ -98,11 +98,11 @@ function EditComment({ comment, onCancel, form, refresh }) {
                   loading={form.submitting}
                 >
                   {uploading ? "Uploading..." : "Save Changes"}
-                </FilledButton>
+                </PrimaryButton>
 
-                <FilledButton type="secondary" onClick={onCancel} size="xs">
+                <PrimaryButton type="secondary" onClick={onCancel} size="xs">
                   Cancel
-                </FilledButton>
+                </PrimaryButton>
               </div>
             </div>
           </div>
@@ -299,7 +299,7 @@ function AddCommentActive({ onBlur, onPost, form }) {
 
             <div className="flex justify-between items-center m-4">
               <div className="flex items-center gap-2">
-                <FilledButton
+                <PrimaryButton
                   onClick={handlePost}
                   loading={form.submitting}
                   type="primary"
@@ -307,11 +307,11 @@ function AddCommentActive({ onBlur, onPost, form }) {
                   size="xs"
                 >
                   {uploading ? "Uploading..." : "Post"}
-                </FilledButton>
+                </PrimaryButton>
 
-                <FilledButton type="secondary" onClick={onBlur} size="xs">
+                <PrimaryButton type="secondary" onClick={onBlur} size="xs">
                   Cancel
-                </FilledButton>
+                </PrimaryButton>
               </div>
             </div>
           </div>

@@ -8,7 +8,7 @@ import * as People from "@/models/people";
 import * as Time from "@/utils/time";
 
 import { GoalSubpageNavigation } from "@/features/goals/GoalSubpageNavigation";
-import { FilledButton } from "@/components/Buttons";
+import { PrimaryButton } from "@/components/Buttons";
 import { InlinePeopleList } from "@/components/InlinePeopleList";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { Paths } from "@/routes/paths";
@@ -192,7 +192,7 @@ function Submit({ goal, form }: { goal: Goals.Goal; form: Form }) {
       <Error form={form} />
 
       <div className="flex items-center gap-4">
-        <FilledButton
+        <PrimaryButton
           type="primary"
           onClick={form.submit}
           loading={form.submitting}
@@ -201,7 +201,7 @@ function Submit({ goal, form }: { goal: Goals.Goal; form: Form }) {
           bzzzOnClickFailure
         >
           Submit
-        </FilledButton>
+        </PrimaryButton>
 
         <DimmedLink to={Paths.goalPath(goal.id!)}>Cancel</DimmedLink>
       </div>

@@ -7,7 +7,7 @@ import * as Icons from "@tabler/icons-react";
 import { useLoadedData } from "./loader";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 
-import { FilledButton } from "@/components/Buttons";
+import { PrimaryButton } from "@/components/Buttons";
 import { DimmedLink } from "@/components/Link";
 import { Paths } from "@/routes/paths";
 
@@ -52,8 +52,8 @@ function ResumeButton({ project }) {
   };
 
   return (
-    <FilledButton onClick={handleClick} testId="resume-project-button" type="primary" loading={loading}>
+    <PrimaryButton onClick={handleClick} testId="resume-project-button" type="primary" loading={loading}>
       Resume the Project
-    </FilledButton>
+    </PrimaryButton>
   );
 }

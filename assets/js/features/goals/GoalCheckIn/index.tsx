@@ -4,7 +4,7 @@ import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
 import RichContent from "@/components/RichContent";
 
-import { FilledButton } from "@/components/Buttons";
+import { PrimaryButton } from "@/components/Buttons";
 import { Paths } from "@/routes/paths";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 
@@ -41,9 +41,9 @@ export function LastCheckInMessage({ goal }) {
 
           <div className="flex items-center gap-3">
             <LastMessageReactions goal={goal} />
-            <FilledButton linkTo={path} size="xs" type="secondary">
+            <PrimaryButton linkTo={path} size="xs" type="secondary">
               Discuss
-            </FilledButton>
+            </PrimaryButton>
 
             <LastMessageComments goal={goal} />
           </div>
@@ -140,9 +140,9 @@ function AcknowledgeButton({ goal }: { goal: Goals.Goal }) {
 
   return (
     <div className="flex items-center gap-1">
-      <FilledButton size="xs" type="primary" onClick={handleAcknowledge}>
+      <PrimaryButton size="xs" type="primary" onClick={handleAcknowledge}>
         Acknowledge Now
-      </FilledButton>
+      </PrimaryButton>
     </div>
   );
 }
@@ -188,9 +188,9 @@ function CheckInButton({ goal }) {
   return (
     <div className="flex flex-col gap-4">
       <div className="">
-        <FilledButton linkTo={newCheckInPath} testId="check-in-now" size="sm" type="primary">
+        <PrimaryButton linkTo={newCheckInPath} testId="check-in-now" size="sm" type="primary">
           Update Progress Now
-        </FilledButton>
+        </PrimaryButton>
       </div>
     </div>
   );

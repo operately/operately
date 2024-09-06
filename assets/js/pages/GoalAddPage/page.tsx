@@ -3,7 +3,7 @@ import React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 
-import { FilledButton } from "@/components/Buttons";
+import { PrimaryButton } from "@/components/Buttons";
 import { DimmedLink } from "@/components/Link";
 import { useLoadedData } from "./loader";
 import { FormState, useForm, Form } from "@/features/goals/GoalForm";
@@ -83,7 +83,7 @@ function SubmitButton({ form }: { form: FormState }) {
       )}
 
       <div className="flex items-center justify-center gap-4">
-        <FilledButton
+        <PrimaryButton
           type="primary"
           onClick={form.submit}
           loading={form.submitting}
@@ -92,7 +92,7 @@ function SubmitButton({ form }: { form: FormState }) {
           bzzzOnClickFailure
         >
           Add Goal
-        </FilledButton>
+        </PrimaryButton>
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as Projects from "@/models/projects";
 
-import { FilledButton } from "@/components/Buttons";
+import { PrimaryButton } from "@/components/Buttons";
 import { Paths } from "@/routes/paths";
 
 export function CheckInButton({ project }: { project: Projects.Project }) {
@@ -9,5 +9,5 @@ export function CheckInButton({ project }: { project: Projects.Project }) {
 
   const path = Paths.projectCheckInNewPath(project.id!);
 
-  return <FilledButton linkTo={path}>Check-In Now</FilledButton>;
+  return <PrimaryButton linkTo={path}>Check-In Now</PrimaryButton>;
 }

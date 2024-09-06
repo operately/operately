@@ -1,7 +1,7 @@
 import React from "react";
 
 import { EditorContext, Context } from "./EditorContext";
-import { FilledButton } from "@/components/Buttons";
+import { PrimaryButton } from "@/components/Buttons";
 import classNames from "classnames";
 
 export function useLinkEditFormClose() {
@@ -84,23 +84,23 @@ export function LinkEditForm({ editor }): JSX.Element {
 
           {isSelectionLink ? (
             <>
-              <FilledButton onClick={save} size="xxs" type="primary">
+              <PrimaryButton onClick={save} size="xxs" type="primary">
                 Save
-              </FilledButton>
+              </PrimaryButton>
 
-              <FilledButton onClick={unlink} size="xxs" type="secondary">
+              <PrimaryButton onClick={unlink} size="xxs" type="secondary">
                 Unlink
-              </FilledButton>
+              </PrimaryButton>
             </>
           ) : (
             <>
-              <FilledButton onClick={save} size="xxs" type="primary">
+              <PrimaryButton onClick={save} size="xxs" type="primary">
                 Add
-              </FilledButton>
+              </PrimaryButton>
 
-              <FilledButton onClick={unlink} size="xxs" type="secondary">
+              <PrimaryButton onClick={unlink} size="xxs" type="secondary">
                 Cancel
-              </FilledButton>
+              </PrimaryButton>
             </>
           )}
         </div>

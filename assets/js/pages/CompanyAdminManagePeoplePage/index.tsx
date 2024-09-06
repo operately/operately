@@ -8,7 +8,7 @@ import * as Invitations from "@/models/invitations";
 import * as Time from "@/utils/time";
 
 import { Paths } from "@/routes/paths";
-import { FilledButton } from "@/components/Buttons";
+import { PrimaryButton } from "@/components/Buttons";
 import { BlackLink } from "@/components/Link";
 import { Menu, MenuLinkItem, MenuActionItem } from "@/components/Menu";
 import { CopyToClipboard } from "@/components/CopyToClipboard";
@@ -85,9 +85,9 @@ function Title() {
 
 function AddMemberButton() {
   return (
-    <FilledButton type="primary" linkTo={Paths.companyManagePeopleAddPeoplePath()} testId="add-person">
+    <PrimaryButton type="primary" linkTo={Paths.companyManagePeopleAddPeoplePath()} testId="add-person">
       Add Team Member
-    </FilledButton>
+    </PrimaryButton>
   );
 }
 
@@ -183,28 +183,28 @@ function ExpiredInvitationAndRenewButton({ person }: { person: People.Person }) 
         Invitation Expired
       </div>
 
-      <FilledButton
+      <PrimaryButton
         type="secondary"
         size="xs"
         onClick={modal.show}
         testId={createTestId("renew-invitation", person.id!)}
       >
         Renew Invitation
-      </FilledButton>
+      </PrimaryButton>
     </>
   );
 }
 
 function EditProfileButton({ person }: { person: People.Person }) {
   return (
-    <FilledButton
+    <PrimaryButton
       type="secondary"
       size="xs"
       linkTo={Paths.profileEditPath(person.id!, { from: "admin-manage-people" })}
       testId={createTestId("edit", person.id!)}
     >
       Edit Profile
-    </FilledButton>
+    </PrimaryButton>
   );
 }
 
@@ -271,9 +271,9 @@ function RemovePersonModal({ person, state }: { person: People.Person; state: Mo
     <Modal title="Remove Company Member" isOpen={state.isOpen} hideModal={state.hide} minHeight="150px">
       <div>Are you sure you want to remove {person.fullName} from the company?</div>
       <div className="mt-8 flex justify-center">
-        <FilledButton onClick={handleRemoveMember} type="primary" loading={loading} testId="confirm-remove-member">
+        <PrimaryButton onClick={handleRemoveMember} type="primary" loading={loading} testId="confirm-remove-member">
           Remove Member
-        </FilledButton>
+        </PrimaryButton>
       </div>
     </Modal>
   );
@@ -347,9 +347,9 @@ function RenewInvitationModal(props: { person: People.Person; state: ModalState 
 function NewInvitationButton({ onClick, loading }: { onClick: () => void; loading: boolean }) {
   return (
     <div className="flex items-center mt-4">
-      <FilledButton onClick={onClick} loading={loading} type="primary" testId="confirm-reissue">
+      <PrimaryButton onClick={onClick} loading={loading} type="primary" testId="confirm-reissue">
         I understand, Create New Invitation
-      </FilledButton>
+      </PrimaryButton>
     </div>
   );
 }

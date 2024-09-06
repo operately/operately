@@ -2,7 +2,7 @@ import React from "react";
 import { PuffLoader } from "react-spinners";
 import { DivLink } from "@/components/Link";
 
-interface FilledButtonProps {
+interface PrimaryButtonProps {
   children: any;
   linkTo?: string;
   linkTarget?: "_blank" | "_self" | "_parent" | "_top";
@@ -15,7 +15,7 @@ interface FilledButtonProps {
   submit?: boolean;
 }
 
-export function FilledButton(props: FilledButtonProps) {
+export function PrimaryButton(props: PrimaryButtonProps) {
   const [shake, setShake] = React.useState(false);
 
   const handleClick = async (e: any) => {

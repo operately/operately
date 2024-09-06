@@ -7,7 +7,7 @@ import * as Api from "@/api";
 import { Link } from "@/components/Link";
 import { Paths } from "@/routes/paths";
 import { TextInput } from "@/components/Form";
-import { FilledButton } from "@/components/Buttons";
+import { PrimaryButton } from "@/components/Buttons";
 import { Logo } from "@/layouts/DefaultLayout/Logo";
 import { useNavigate } from "react-router-dom";
 
@@ -74,7 +74,7 @@ export function Page() {
           </div>
 
           <div className="mt-10 flex justify-center gap-4">
-            <FilledButton
+            <PrimaryButton
               type="primary"
               onClick={form.submit}
               bzzzOnClickFailure
@@ -82,7 +82,7 @@ export function Page() {
               loading={form.loading}
             >
               Create Company
-            </FilledButton>
+            </PrimaryButton>
           </div>
         </Paper.Body>
       </Paper.Root>

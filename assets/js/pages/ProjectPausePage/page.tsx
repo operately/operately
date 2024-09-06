@@ -7,7 +7,7 @@ import * as Icons from "@tabler/icons-react";
 import { useLoadedData } from "./loader";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 
-import { FilledButton } from "@/components/Buttons";
+import { PrimaryButton } from "@/components/Buttons";
 import { DimmedLink } from "@/components/Link";
 import { Paths } from "@/routes/paths";
 
@@ -52,8 +52,8 @@ function PauseProject({ project }) {
   };
 
   return (
-    <FilledButton onClick={handleClick} testId="pause-project-button" type="primary" loading={loading}>
+    <PrimaryButton onClick={handleClick} testId="pause-project-button" type="primary" loading={loading}>
       Pause the Project
-    </FilledButton>
+    </PrimaryButton>
   );
 }

@@ -4,7 +4,7 @@ import * as Paper from "@/components/PaperContainer";
 import * as Icons from "@tabler/icons-react";
 
 import { useLoadedData } from "./loader";
-import { FilledButton } from "@/components/Buttons";
+import { PrimaryButton } from "@/components/Buttons";
 import { GoalTree } from "@/features/goals/GoalTree";
 import { Paths } from "@/routes/paths";
 
@@ -18,10 +18,10 @@ export function Page() {
         <Paper.Body className="max-w-screen-2xl mx-auto">
           <div className="flex justify-between items-center mb-8">
             <h1 className="text-3xl font-bold">Goals in {company.name}</h1>
-            <FilledButton size="sm" linkTo={newGoalPath} testId="add-company-wide-goal">
+            <PrimaryButton size="sm" linkTo={newGoalPath} testId="add-company-wide-goal">
               <Icons.IconPlus className="mr-2 inline-block" size={16} />
               Add Company-Wide Goal
-            </FilledButton>
+            </PrimaryButton>
           </div>
 
           <GoalTree goals={goals} projects={projects} options={{}} />

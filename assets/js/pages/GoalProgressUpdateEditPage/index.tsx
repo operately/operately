@@ -3,7 +3,7 @@ import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as GoalCheckIns from "@/models/goalCheckIns";
 
-import { FilledButton } from "@/components/Buttons";
+import { PrimaryButton } from "@/components/Buttons";
 import { Form, useForm } from "@/features/goals/GoalCheckInForm";
 import { Paths } from "@/routes/paths";
 import { DimmedLink } from "@/components/Link";
@@ -58,7 +58,7 @@ function Navigation({ goal, checkin }) {
 
 function SubmitButton({ form }) {
   return (
-    <FilledButton
+    <PrimaryButton
       type="primary"
       onClick={form.submit}
       loading={form.submitting}
@@ -66,7 +66,7 @@ function SubmitButton({ form }) {
       bzzzOnClickFailure
     >
       Save
-    </FilledButton>
+    </PrimaryButton>
   );
 }
 

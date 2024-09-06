@@ -9,7 +9,7 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import { Summary } from "@/components/RichContent";
 import { useLoadedData } from "./loader";
-import { FilledButton } from "@/components/Buttons";
+import { PrimaryButton } from "@/components/Buttons";
 import { Paths } from "@/routes/paths";
 
 export function Page() {
@@ -22,9 +22,9 @@ export function Page() {
           <SpacePageNavigation space={space} activeTab="discussions" />
           <div className="mt-4 mb-8 flex items-center justify-between">
             <div className="text-2xl font-extrabold">Discussions</div>
-            <FilledButton linkTo={Paths.discussionNewPath(space.id!)} size="sm" testId="new-discussion">
+            <PrimaryButton linkTo={Paths.discussionNewPath(space.id!)} size="sm" testId="new-discussion">
               New Discussion
-            </FilledButton>
+            </PrimaryButton>
           </div>
           <DiscussionList />
         </Paper.Body>

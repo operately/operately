@@ -8,7 +8,7 @@ import * as Timeframes from "@/utils/timeframes";
 
 import { GhostLink } from "@/components/Link/GhostList";
 import { Paths } from "@/routes/paths";
-import { FilledButton } from "@/components/Buttons";
+import { PrimaryButton } from "@/components/Buttons";
 
 import FormattedTime from "@/components/FormattedTime";
 
@@ -236,9 +236,9 @@ function UpdateProgressButton({ goal }) {
 
   return (
     <div className="mt-1">
-      <FilledButton linkTo={path} testId="update-progress-button" size="sm" type="primary">
+      <PrimaryButton linkTo={path} testId="update-progress-button" size="sm" type="primary">
         Update Progress
-      </FilledButton>
+      </PrimaryButton>
     </div>
   );
 }
