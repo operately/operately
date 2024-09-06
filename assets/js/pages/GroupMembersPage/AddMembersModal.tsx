@@ -38,7 +38,7 @@ export default function AddMembersModal({ spaceId, onSubmit, members }) {
     let result = await Spaces.searchPotentialSpaceMembers({
       groupId: spaceId,
       query: value,
-      excludeIds: selected.map((p) => p.value),
+      excludeIds: selected.map((p) => p.value!),
       limit: 10,
     });
 
@@ -128,7 +128,7 @@ function PeopleListItem({ selected }: { selected: MemberOption }): JSX.Element {
         </p>
       </div>
       <SelectBoxNoLabel onChange={setPermissions} options={PERMISSIONS_LIST} value={permissions} />
-      <RemoveIcon onClick={() => remove(selected.value)} />
+      <RemoveIcon onClick={() => remove(selected.value!)} />
     </div>
   );
 }
