@@ -29,10 +29,15 @@ defmodule Operately.Features.AccountSettingsTest do
   end
 
   feature "changing the timezone in account settings", ctx do
+    props = %{
+      value: "Europe/Belgrade",
+      label: "(UTC+01:00) Belgrade, Bratislava, Budapest, Ljubljana, Prague"
+    }
+
     ctx
     |> Steps.open_account_settings()
-    |> Steps.change_timezone("(UTC+01:00) Belgrade, Bratislava, Budapest, Ljubljana, Prague")
-    |> Steps.assert_person_timezone_changed("Europe/Belgrade")
+    |> Steps.change_timezone(props)
+    |> Steps.assert_person_timezone_changed(props)
   end
 
   feature "setting my manager in account settings", ctx do
