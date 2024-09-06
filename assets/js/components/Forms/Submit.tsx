@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import { getFormContext } from "./FormContext";
-import { FilledButton } from "@/components/Button";
+import { FilledButton } from "@/components/Buttons";
 import classNames from "classnames";
 
 interface SubmitProps {

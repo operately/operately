@@ -12,7 +12,6 @@ interface FilledButtonProps {
   type?: "primary" | "secondary";
   loading?: boolean;
   bzzzOnClickFailure?: boolean;
-  inlineBlock?: boolean;
   submit?: boolean;
 }
 
@@ -30,11 +29,11 @@ export function FilledButton(props: FilledButtonProps) {
     }
   };
 
-  const klass = className(props.size, props.type, props.loading, shake, props.inlineBlock);
+  const klass = className(props.size, props.type, props.loading, shake);
 
   if (props.linkTo) {
     return (
-      <DivLink className={klass} to={props.linkTo} target={props.linkTarget} data-test-id={props.testId}>
+      <DivLink className={klass} to={props.linkTo} target={props.linkTarget} testId={props.testId}>
         {props.children}
         <Spinner active={props.loading} />
       </DivLink>
@@ -71,16 +70,11 @@ function className(
   type?: "primary" | "secondary",
   loading?: boolean,
   shake?: boolean,
-  inlineBlock?: boolean,
 ) {
   size = size || "base";
   type = type || "primary";
 
-  let result = "relative font-medium transition-all duration-100 text-center";
-
-  if (inlineBlock) {
-    result += " inline-block";
-  }
+  let result = "relative font-medium transition-all duration-100 text-center inline-block";
 
   if (loading) {
     result += " cursor-default";

@@ -6,7 +6,7 @@ import * as Time from "@/utils/time";
 import { Link } from "@/components/Link";
 import { Paths } from "@/routes/paths";
 import { DimmedLabel } from "./Label";
-import { GhostButton } from "@/components/Button";
+import { GhostButton } from "@/components/Buttons";
 import { MilestoneIcon } from "@/components/MilestoneIcon";
 
 import Duration from "@/components/Duration";

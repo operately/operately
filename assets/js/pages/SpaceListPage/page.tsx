@@ -3,7 +3,7 @@ import React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 
-import { GhostButton } from "@/components/Button";
+import { GhostButton } from "@/components/Buttons";
 import { SpaceCardLink, SpaceCardGrid } from "@/components/SpaceCards";
 
 import { useLoadedData } from "./loader";
