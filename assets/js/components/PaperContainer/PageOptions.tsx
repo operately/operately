@@ -52,11 +52,7 @@ type LinkProps = TestableElement & {
 
 export function Link({ icon, title, to, testId }: LinkProps) {
   return (
-    <DivLink
-      to={to}
-      className="flex items-center gap-2 py-2 px-4 hover:bg-shade-1 cursor-pointer"
-      data-test-id={testId}
-    >
+    <DivLink to={to} className="flex items-center gap-2 py-2 px-4 hover:bg-shade-1 cursor-pointer" testId={testId}>
       {React.createElement(icon, { size: 20 })}
       {title}
     </DivLink>

@@ -14,7 +14,7 @@ export function Bell() {
       to={Paths.notificationsPath()}
       className="flex items-center justify-center cursor-pointer relative group rounded-full bg-surface-accent border border-surface-outline"
       style={{ height: "32px", width: "32px" }}
-      data-test-id="notifications-bell"
+      testId="notifications-bell"
     >
       <Icons.IconBell
         size={20}
