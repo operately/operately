@@ -11,12 +11,18 @@ defmodule Operately.Operations.SubscriptionsListEditing do
     |> Multi.run(:subscriptions, fn _, _ ->
       {:ok, Notifications.list_subscriptions(subscription_list)}
     end)
-    |> Multi.update(:subscription_list, SubscriptionList.changeset(subscription_list, %{
-      send_to_everyone: attrs.send_notifications_to_everyone,
-    }))
+    |> update_subscription_list(subscription_list, attrs[:send_notifications_to_everyone])
     |> insert_subscriptions(attrs.subscriber_ids)
     |> delete_subscriptions(attrs.subscriber_ids)
     |> Repo.transaction()
+  end
+
+  defp update_subscription_list(multi, _, nil), do: multi
+  defp update_subscription_list(multi, subscription_list, send_to_everyone) do
+    multi
+    |> Multi.update(:subscription_list, SubscriptionList.changeset(subscription_list, %{
+      send_to_everyone: send_to_everyone,
+    }))
   end
 
   defp insert_subscriptions(multi, subscriber_ids) do

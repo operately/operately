@@ -1,21 +1,27 @@
 import { Dispatch, SetStateAction, useMemo, useState } from "react";
 import { NotifiablePerson, Options } from ".";
-import { Person } from "@/models/people";
+import { includesId } from "@/routes/paths";
 
 export interface SubscriptionsState {
   people: NotifiablePerson[];
-  selectedPeople: Person[];
-  setSelectedPeople: Dispatch<SetStateAction<Person[]>>;
+  selectedPeople: NotifiablePerson[];
+  setSelectedPeople: Dispatch<SetStateAction<NotifiablePerson[]>>;
   subscriptionType: Options;
   setSubscriptionType: Dispatch<SetStateAction<Options>>;
-  alwaysNotify: Person[];
+  alwaysNotify: NotifiablePerson[];
   currentSubscribersList: string[];
 }
 
-export function useSubscriptions(people: NotifiablePerson[], opts?: { alwaysNotify?: Person[] }): SubscriptionsState {
-  const alwaysNotify = opts?.alwaysNotify ? [...opts.alwaysNotify] : [];
+interface Opts {
+  alwaysNotify?: NotifiablePerson[];
+  alreadySelected?: NotifiablePerson[];
+}
 
-  const [selectedPeople, setSelectedPeople] = useState<Person[]>(alwaysNotify);
+export function useSubscriptions(people: NotifiablePerson[], opts?: Opts): SubscriptionsState {
+  const alwaysNotify = useMemo(() => opts?.alwaysNotify || [], []);
+  const alreadySelected = getAlreadySelected(alwaysNotify, opts?.alreadySelected || []);
+
+  const [selectedPeople, setSelectedPeople] = useState<NotifiablePerson[]>(alreadySelected);
   const [subscriptionType, setSubscriptionType] = useState(Options.ALL);
 
   const currentSubscribersList = useMemo(() => {
@@ -35,7 +41,20 @@ export function useSubscriptions(people: NotifiablePerson[], opts?: { alwaysNoti
     setSelectedPeople,
     subscriptionType,
     setSubscriptionType,
-    alwaysNotify: opts?.alwaysNotify || [],
+    alwaysNotify,
     currentSubscribersList,
   };
+}
+
+function getAlreadySelected(alwaysNotify: NotifiablePerson[], alreadySelected: NotifiablePerson[]) {
+  const result = [...alwaysNotify];
+  const ids = alwaysNotify.map((p) => p.id);
+
+  alreadySelected.forEach((p) => {
+    if (!includesId(ids, p.id)) {
+      result.push(p);
+    }
+  });
+
+  return result;
 }

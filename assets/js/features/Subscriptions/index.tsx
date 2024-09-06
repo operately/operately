@@ -1,4 +1,6 @@
 export { SubscribersSelector } from "./SubscribersSelector";
+export { SubscribersSelectorForm } from "./selector/SubscribersSelectorForm";
+export { CurrentSubscriptions } from "./CurrentSubscriptions";
 export { useSubscriptions, SubscriptionsState } from "./useSubscriptions";
 export { findNotifiableProjectContributors } from "./utils";
 
