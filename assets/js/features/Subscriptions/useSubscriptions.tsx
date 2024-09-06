@@ -1,21 +1,24 @@
 import { Dispatch, SetStateAction, useMemo, useState } from "react";
 import { NotifiablePerson, Options } from ".";
-import { Person } from "@/models/people";
 
 export interface SubscriptionsState {
   people: NotifiablePerson[];
-  selectedPeople: Person[];
-  setSelectedPeople: Dispatch<SetStateAction<Person[]>>;
+  selectedPeople: NotifiablePerson[];
+  setSelectedPeople: Dispatch<SetStateAction<NotifiablePerson[]>>;
   subscriptionType: Options;
   setSubscriptionType: Dispatch<SetStateAction<Options>>;
-  alwaysNotify: Person[];
+  alwaysNotify: NotifiablePerson[];
   currentSubscribersList: string[];
 }
 
-export function useSubscriptions(people: NotifiablePerson[], opts?: { alwaysNotify?: Person[] }): SubscriptionsState {
+interface Opts {
+  alwaysNotify?: NotifiablePerson[];
+}
+
+export function useSubscriptions(people: NotifiablePerson[], opts?: Opts): SubscriptionsState {
   const alwaysNotify = opts?.alwaysNotify ? [...opts.alwaysNotify] : [];
 
-  const [selectedPeople, setSelectedPeople] = useState<Person[]>(alwaysNotify);
+  const [selectedPeople, setSelectedPeople] = useState<NotifiablePerson[]>(alwaysNotify);
   const [subscriptionType, setSubscriptionType] = useState(Options.ALL);
 
   const currentSubscribersList = useMemo(() => {

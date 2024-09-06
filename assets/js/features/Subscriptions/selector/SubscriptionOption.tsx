@@ -4,7 +4,7 @@ import Avatar from "@/components/Avatar";
 import { Radio } from "@/components/Form";
 import { Person } from "@/models/people";
 import { SubscriptionsContext } from "./SubscribersSelector";
-import { Options } from ".";
+import { Options } from "@/features/Subscriptions";
 
 interface SubscriptionOptionProps {
   label: string;
