@@ -8,9 +8,9 @@ import { Person } from "@/models/people";
 import { createTestId } from "@/utils/testid";
 
 export interface Option {
-  value: string;
+  value: string | null;
   label: React.ReactNode;
-  person: Person;
+  person?: Person;
 }
 
 interface PeopleSearchProps {
@@ -24,9 +24,14 @@ interface PeopleSearchProps {
   inputId?: string;
   showTitle?: boolean;
   error?: boolean;
+
+  allowEmptySelection?: boolean;
+  emptySelectionLabel?: string;
 }
 
 export default function PeopleSearch(props: PeopleSearchProps) {
+  validateProps(props);
+
   const defaultValue = props.defaultValue && personAsOption(props.defaultValue, props.showTitle);
   const optionLoader = usePeopleOptionLoader(props);
 
@@ -42,20 +47,24 @@ export default function PeopleSearch(props: PeopleSearchProps) {
       cacheOptions={false}
       filterOption={props.filterOption || (() => true)}
       value={props.value && personAsOption(props.value)}
-      classNames={classNames(props.error)}
-      styles={{
-        input: (provided) => ({
-          ...provided,
-          "input:focus": {
-            boxShadow: "none",
-          },
-        }),
-      }}
+      classNames={asyncSelectClassNames(!!props.error)}
+      styles={asyncSelectStyles()}
     />
   );
 }
 
-function classNames(error: boolean | undefined) {
+function asyncSelectStyles() {
+  return {
+    input: (provided: any) => ({
+      ...provided,
+      "input:focus": {
+        boxShadow: "none",
+      },
+    }),
+  };
+}
+
+function asyncSelectClassNames(error: boolean) {
   return {
     control: () => {
       if (error) {
@@ -67,11 +76,47 @@ function classNames(error: boolean | undefined) {
     menu: () => "bg-surface text-content-accent border border-surface-outline rounded-lg mt-1 overflow-hidden",
     input: () => "placeholder-content-subtle focus:ring-0 outline-none",
     placeholder: () => "truncate",
-    option: ({ isFocused }) =>
-      classnames({
+    option: ({ isFocused, data }) => {
+      return classnames({
         "px-3 py-2 hover:bg-surface-dimmed cursor-pointer": true,
         "bg-surface": isFocused,
-      }),
+        "border-t border-stroke-dimmed": data.value === null,
+      });
+    },
+  };
+}
+
+type LoaderFunction = (input: string, callback: (options: Option[]) => void) => void;
+
+function usePeopleOptionLoader(props: PeopleSearchProps): LoaderFunction {
+  return React.useCallback(
+    throttle(async (input: string, callback: any) => {
+      try {
+        const people = await props.loader(input);
+        const options = people.map((person) => personAsOption(person, props.showTitle));
+
+        if (props.allowEmptySelection) {
+          options.push(emptySelectionOption(props.emptySelectionLabel!));
+        }
+
+        callback(options);
+      } catch (error) {
+        console.error(error);
+        callback([]);
+      }
+    }, 500),
+    [props.loader],
+  );
+}
+
+function emptySelectionOption(label: string): Option {
+  return {
+    value: null,
+    label: (
+      <div className="flex items-center gap-2" data-test-id={createTestId("person-option-nobody")}>
+        {label}
+      </div>
+    ),
   };
 }
 
@@ -93,25 +138,6 @@ function PersonLabel({ person, showTitle }: { person: Person; showTitle: boolean
   );
 }
 
-function usePeopleOptionLoader(
-  props: PeopleSearchProps,
-): (input: string, callback: (options: Option[]) => void) => void {
-  return React.useCallback(
-    throttle(async (input: string, callback: any) => {
-      try {
-        const people = await props.loader(input);
-        const options = people.map((person) => personAsOption(person, props.showTitle));
-
-        callback(options);
-      } catch (error) {
-        console.error(error);
-        callback([]);
-      }
-    }, 500),
-    [props.loader],
-  );
-}
-
 const throttle = (callback: any, wait: number) => {
   let timeoutId: number | null = null;
 
@@ -123,3 +149,9 @@ const throttle = (callback: any, wait: number) => {
     }, wait);
   };
 };
+
+function validateProps(props: PeopleSearchProps) {
+  if (props.allowEmptySelection && !props.emptySelectionLabel) {
+    throw new Error("emptySelectionLabel is required when allowEmptySelection is true");
+  }
+}
