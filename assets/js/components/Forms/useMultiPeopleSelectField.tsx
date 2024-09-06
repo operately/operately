@@ -13,11 +13,13 @@ export type SelectMultiPeopleField = Field<Person[]> & {
 interface Config {
   optional?: boolean;
   alwaysSelected?: Person[];
+  alreadySelected?: Person[];
 }
 
 export function useMultiPeopleSelectField(options: Person[], config?: Config): SelectMultiPeopleField {
   const alwaysSelected = config?.alwaysSelected ? [...config.alwaysSelected] : [];
-  const [value, setValue] = React.useState<Person[]>(alwaysSelected);
+
+  const [value, setValue] = React.useState<Person[]>(config?.alreadySelected || []);
 
   const validate = (): string | null => {
     if (value.length < 1) return !config?.optional ? "Can't be empty" : null;

@@ -1,45 +1,34 @@
-import React, { useState, useMemo, createContext } from "react";
+import React, { useState, useMemo } from "react";
 
-import { Project } from "@/models/projects";
 import { RadioGroup } from "@/components/Form";
-import { SubscriptionOption } from "./SubscriptionOption";
-import { SubscribersSelectorModal } from "./SubscribersSelectorModal";
-import { SubscriptionsState, Options } from ".";
+import { SubscriptionsState, Options, NotifiablePerson } from "@/features/Subscriptions";
+import { SubscriptionOption } from "./selector/SubscriptionOption";
+import { SubscribersSelectorModal } from "./selector/SubscribersSelectorModal";
+import { SubscribersSelectorProvider } from "./SubscribersSelectorContext";
 
-export const SubscriptionsContext = createContext<SubscriptionsState | undefined>(undefined);
+interface Props {
+  state: SubscriptionsState;
+  projectName?: string;
+}
 
-export function SubscribersSelector({ state, project }: { state: SubscriptionsState; project: Project }) {
+export function SubscribersSelector({ state, projectName }: Props) {
   const [showSelector, setShowSelector] = useState(false);
   const { people, selectedPeople, subscriptionType, setSubscriptionType, alwaysNotify } = state;
 
-  const selectedPeopleLabel = useMemo(() => {
-    switch (selectedPeople.length) {
-      case 0:
-        return "Only the people I select";
-      case 1:
-        return "Only the following person I selected";
-      default:
-        return `Only the following ${selectedPeople.length} people I selected`;
-    }
-  }, [selectedPeople]);
+  const selectedPeopleLabel = useMemo(() => buildSelectedPeopleLabel(selectedPeople), [selectedPeople]);
+  const allPeopleLabel = useMemo(() => buildAllPeopleLabel(people, { projectName }), []);
 
   // If all notifiable people must be notified,
   // the widget is not displayed.
   if (alwaysNotify.length >= people.length) return <></>;
 
   return (
-    <SubscriptionsContext.Provider value={state}>
+    <SubscribersSelectorProvider state={state}>
       <div>
         <p className="text-lg font-bold mb-2">When I post this, notify:</p>
 
         <RadioGroup name="subscriptions-options" onChange={setSubscriptionType} defaultValue={subscriptionType}>
-          <SubscriptionOption
-            label={
-              (people.length > 1 ? `All ${people.length} people` : "The 1 person") + ` contributing to ${project.name}`
-            }
-            value={Options.ALL}
-            people={people}
-          />
+          <SubscriptionOption label={allPeopleLabel} value={Options.ALL} people={people} />
 
           <SubscriptionOption
             label={selectedPeopleLabel}
@@ -53,6 +42,32 @@ export function SubscribersSelector({ state, project }: { state: SubscriptionsSt
 
         <SubscribersSelectorModal showSelector={showSelector} setShowSelector={setShowSelector} />
       </div>
-    </SubscriptionsContext.Provider>
+    </SubscribersSelectorProvider>
   );
+}
+
+interface BuildAllPeopleLabelOpts {
+  projectName?: string;
+}
+
+function buildAllPeopleLabel(people: NotifiablePerson[], opts: BuildAllPeopleLabelOpts) {
+  const part1 = people.length > 1 ? `All ${people.length} people` : "The 1 person";
+  let part2 = "";
+
+  if (opts.projectName) {
+    part2 = ` contributing to ${opts.projectName}`;
+  }
+
+  return part1 + part2;
+}
+
+function buildSelectedPeopleLabel(selectedPeople: NotifiablePerson[]) {
+  switch (selectedPeople.length) {
+    case 0:
+      return "Only the people I select";
+    case 1:
+      return "Only the following person I selected";
+    default:
+      return `Only the following ${selectedPeople.length} people I selected`;
+  }
 }
