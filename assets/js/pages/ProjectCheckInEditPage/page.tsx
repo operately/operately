@@ -3,7 +3,7 @@ import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 
 import { Form, useForm } from "@/features/projectCheckIns/Form";
-import { FilledButton } from "@/components/Button";
+import { FilledButton } from "@/components/Buttons";
 import { useLoadedData } from "./loader";
 
 import FormattedTime from "@/components/FormattedTime";

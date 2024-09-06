@@ -8,7 +8,7 @@ import * as People from "@/models/people";
 import * as Time from "@/utils/time";
 
 import { GoalSubpageNavigation } from "@/features/goals/GoalSubpageNavigation";
-import { FilledButton } from "@/components/Button";
+import { FilledButton } from "@/components/Buttons";
 import { InlinePeopleList } from "@/components/InlinePeopleList";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { Paths } from "@/routes/paths";

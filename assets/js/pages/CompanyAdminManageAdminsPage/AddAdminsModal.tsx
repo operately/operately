@@ -2,7 +2,7 @@ import React from "react";
 
 import Modal from "@/components/Modal";
 import Avatar from "@/components/Avatar";
-import { GhostButton } from "@/components/Button";
+import { GhostButton } from "@/components/Buttons";
 
 import { Person } from "@/models/people";
 import PeopleSearch, { Option } from "@/components/PeopleSearch";

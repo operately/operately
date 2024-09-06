@@ -4,7 +4,7 @@ import * as Projects from "@/models/projects";
 
 import { Link } from "@/components/Link";
 import { Paths } from "@/routes/paths";
-import { FilledButton } from "@/components/Button";
+import { FilledButton } from "@/components/Buttons";
 import { match } from "ts-pattern";
 
 import FormattedTime from "@/components/FormattedTime";

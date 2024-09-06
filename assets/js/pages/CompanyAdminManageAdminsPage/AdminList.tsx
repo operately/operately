@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { GhostButton } from "@/components/Button";
+import { GhostButton } from "@/components/Buttons";
 import { FormState } from "./useForm";
 import { createTestId } from "@/utils/testid";
 import Avatar from "@/components/Avatar";

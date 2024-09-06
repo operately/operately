@@ -115,8 +115,6 @@ function EditAssignment({ contributor, project, onSave, onRemove, onClose }) {
   const [personID, setPersonID] = React.useState<any>(contributor.person.id);
   const [newResp, setNewResp] = React.useState(responsibility);
 
-  const disabled = !personID || !newResp;
-
   const handleSave = async () => {
     await update({
       contribId: contributor.id,
@@ -152,7 +150,7 @@ function EditAssignment({ contributor, project, onSave, onRemove, onClose }) {
 
       <div className="flex justify-between mt-8">
         <div className="flex gap-2">
-          <SaveButton disabled={disabled} onClick={handleSave} />
+          <SaveButton onClick={handleSave} />
           <CancelButton onClick={onClose} />
         </div>
 

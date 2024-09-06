@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import { Section, SectionTitle } from "./Section";
-import { FilledButton, GhostButton } from "@/components/Button";
+import { FilledButton, GhostButton } from "@/components/Buttons";
 
 export function Buttons() {
   return (
