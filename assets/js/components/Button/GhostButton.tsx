@@ -78,7 +78,7 @@ function className(size?: "xxs" | "xs" | "sm" | "base" | "lg", type?: "primary" 
   }
 
   if (size === "lg") {
-    result += " px-4 py-2.5 text-lg rounded-3xl";
+    result += " px-4 py-2.5 rounded-3xl";
   }
 
   if (type === "primary") {
