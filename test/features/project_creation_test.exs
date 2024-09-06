@@ -91,4 +91,14 @@ defmodule Operately.Features.ProjectCreationTest do
     |> Steps.submit_project_form(params)
     |> Steps.assert_validation_error("Can't be the same as the champion")
   end
+
+  @tag login_as: :champion
+  feature "creating a project with no reviewer", ctx do
+    params = %{name: "Website Redesign", creator: ctx.champion, champion: ctx.champion}
+
+    ctx
+    |> Steps.start_adding_project()
+    |> Steps.submit_project_form(params)
+    |> Steps.assert_project_created(params)
+  end
 end

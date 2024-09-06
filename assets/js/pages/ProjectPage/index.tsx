@@ -40,7 +40,7 @@ export function Page() {
   const { project } = Pages.useLoadedData() as LoaderResult;
 
   return (
-    <Pages.Page title={project.name!}>
+    <Pages.Page title={project.name!} testId="project-page">
       <Paper.Root size="large">
         <Navigation space={project.space!} />
 
