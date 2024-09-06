@@ -8,7 +8,7 @@ import * as Timeframes from "@/utils/timeframes";
 
 import { GhostLink } from "@/components/Link/GhostList";
 import { Paths } from "@/routes/paths";
-import { FilledButton } from "@/components/Button";
+import { FilledButton } from "@/components/Buttons";
 
 import FormattedTime from "@/components/FormattedTime";
 

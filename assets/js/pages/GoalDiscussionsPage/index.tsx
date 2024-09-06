@@ -8,7 +8,7 @@ import * as Icons from "@tabler/icons-react";
 import { Paths } from "@/routes/paths";
 import { Navigation } from "@/features/goals/GoalPageNavigation";
 import { Header } from "@/features/goals/GoalPageHeader";
-import { FilledButton } from "@/components/Button";
+import { FilledButton } from "@/components/Buttons";
 
 import FormattedTime from "@/components/FormattedTime";
 import Avatar from "@/components/Avatar";

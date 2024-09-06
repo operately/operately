@@ -5,7 +5,7 @@ import * as Tasks from "@/models/tasks";
 
 import classnames from "classnames";
 
-import { FilledButton } from "@/components/Button";
+import { FilledButton } from "@/components/Buttons";
 import { MultiPeopleSearch } from "./MultiPeopleSearch";
 
 import ReactModal from "react-modal";

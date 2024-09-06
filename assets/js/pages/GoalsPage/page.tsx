@@ -4,7 +4,7 @@ import * as Paper from "@/components/PaperContainer";
 import * as Icons from "@tabler/icons-react";
 
 import { useLoadedData } from "./loader";
-import { FilledButton } from "@/components/Button";
+import { FilledButton } from "@/components/Buttons";
 import { GoalTree } from "@/features/goals/GoalTree";
 import { Paths } from "@/routes/paths";
 

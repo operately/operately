@@ -6,7 +6,7 @@ import * as Goals from "@/models/goals";
 import { useLoadedData } from "./loader";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 
-import { FilledButton } from "@/components/Button";
+import { FilledButton } from "@/components/Buttons";
 import { DimmedLink } from "@/components/Link";
 import { Paths } from "@/routes/paths";
 

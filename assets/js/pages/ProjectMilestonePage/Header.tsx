@@ -2,7 +2,7 @@ import * as React from "react";
 import * as Forms from "@/components/Form";
 import * as Milestones from "@/models/milestones";
 
-import { FilledButton } from "@/components/Button";
+import { FilledButton } from "@/components/Buttons";
 import { MilestoneIcon } from "@/components/MilestoneIcon";
 
 import FormattedTime from "@/components/FormattedTime";
@@ -57,17 +57,12 @@ function Actions({ milestone, form }) {
 
     return (
       <div className="flex justify-center gap-2">
-        <FilledButton size="sm" onClick={form.completeMilestone} data-test-id="complete-milestone" type="primary">
+        <FilledButton size="sm" onClick={form.completeMilestone} testId="complete-milestone" type="primary">
           Mark as Completed
         </FilledButton>
 
         {isOverdue && (
-          <FilledButton
-            size="sm"
-            onClick={form.titleAndDeadline.startEditing}
-            data-test-id="edit-milestone"
-            type="secondary"
-          >
+          <FilledButton size="sm" onClick={form.titleAndDeadline.startEditing} testId="edit-milestone" type="secondary">
             Reschedule
           </FilledButton>
         )}
@@ -78,7 +73,7 @@ function Actions({ milestone, form }) {
   if (milestone.status === "done") {
     return (
       <div className="flex justify-between">
-        <FilledButton size="sm" onClick={form.reopenMilestone} data-test-id="reopen-milestone" type="secondary">
+        <FilledButton size="sm" onClick={form.reopenMilestone} testId="reopen-milestone" type="secondary">
           Re-Open Milestone
         </FilledButton>
       </div>

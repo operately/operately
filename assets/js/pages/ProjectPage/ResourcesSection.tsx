@@ -2,7 +2,7 @@ import * as React from "react";
 import * as Projects from "@/models/projects";
 
 import { ResourceIcon } from "@/components/KeyResourceIcon";
-import { GhostButton } from "@/components/Button";
+import { GhostButton } from "@/components/Buttons";
 import { Link } from "@/components/Link";
 import { Paths } from "@/routes/paths";
 

@@ -198,7 +198,7 @@ defmodule Operately.Support.Features.UI do
   def select(state, testid: id, option: option_name) do
     execute(state, fn session ->
       session
-      |> Browser.click(Query.css("[data-test-id=\"#{id}\"]"))
+      |> Browser.click(query(testid: id))
       |> Browser.click(Query.text(option_name))
     end)
   end
@@ -212,7 +212,7 @@ defmodule Operately.Support.Features.UI do
   def assert_text(state, text, testid: id) do
     execute(state, fn session ->
       session
-      |> Browser.find(Query.css("[data-test-id=\"#{id}\"]"), fn element ->
+      |> Browser.find(query(testid: id), fn element ->
         element |> Browser.assert_text(text)
       end)
     end)
@@ -244,7 +244,7 @@ defmodule Operately.Support.Features.UI do
   def refute_text(state, text, testid: id) do
     execute(state, fn session ->
       session
-      |> Browser.find(Query.css("[data-test-id=\"#{id}\"]"), fn element ->
+      |> Browser.find(query(testid: id), fn element ->
         element |> Browser.refute_has(Query.text(text))
       end)
     end)
@@ -291,7 +291,7 @@ defmodule Operately.Support.Features.UI do
 
   def find(state, testid: id) do
     execute(state, fn session ->
-      session |> Browser.find(Query.css("[data-test-id=\"#{id}\"]"))
+      session |> Browser.find(query(testid: id))
     end)
   end
 

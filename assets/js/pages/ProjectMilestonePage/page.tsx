@@ -12,7 +12,7 @@ import { Options } from "./Options";
 import { Header } from "./Header";
 import { Description } from "./Description";
 import { CommentSection, useForMilestone } from "@/features/CommentSection";
-import { FilledButton } from "@/components/Button";
+import { FilledButton } from "@/components/Buttons";
 import { TaskBoard } from "@/features/Tasks/TaskBoard";
 import { NewTaskModal } from "@/features/Tasks/NewTaskModal";
 

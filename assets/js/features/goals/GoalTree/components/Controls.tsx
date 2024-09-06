@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { FilledButton } from "@/components/Button";
+import { FilledButton } from "@/components/Buttons";
 import { useTreeContext } from "../treeContext";
 import { useExpandable } from "../context/Expandable";
 

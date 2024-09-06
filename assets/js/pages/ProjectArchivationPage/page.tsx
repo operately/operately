@@ -9,7 +9,7 @@ import { useNavigateTo } from "@/routes/useNavigateTo";
 
 import { DimmedLink } from "@/components/Link";
 import { Paths } from "@/routes/paths";
-import { FilledButton } from "@/components/Button";
+import { FilledButton } from "@/components/Buttons";
 
 export function Page() {
   const { project } = useLoadedData();

@@ -11,7 +11,7 @@ import Avatar from "@/components/Avatar";
 import { SelectBoxNoLabel } from "@/components/Form";
 import { DropdownMenu } from "@/components/DropdownMenu";
 import { PERMISSIONS_LIST, PermissionOption } from "@/features/Permissions";
-import Button from "@/components/Button";
+import { FilledButton } from "@/components/Buttons";
 
 export function MembersAccessLevel() {
   const { space } = useLoadedData();
@@ -64,12 +64,12 @@ function ActionButtons({ members, setMembers }: ActionButtonsProps) {
   if (hasChanged)
     return (
       <div className="flex gap-2">
-        <Button loading={loading} variant="success" size="small" onClick={handleEditMembers}>
+        <FilledButton loading={loading} type="primary" size="xs" onClick={handleEditMembers}>
           Save
-        </Button>
-        <Button variant="secondary" size="small" onClick={handleReset}>
+        </FilledButton>
+        <FilledButton type="secondary" size="xs" onClick={handleReset}>
           Cancel
-        </Button>
+        </FilledButton>
       </div>
     );
 
