@@ -105,7 +105,10 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
     assert project.creator_id == fields.creator.id
 
     assert champion.person.full_name == fields.champion.full_name
-    assert reviewer.person.full_name == fields.reviewer.full_name
+
+    if fields[:reviewer] do
+      assert reviewer.person.full_name == fields.reviewer.full_name
+    end
 
     assert length(project.contributors) == if fields[:add_creator_as_contributor], do: 3, else: 2
 
