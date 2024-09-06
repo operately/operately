@@ -26,6 +26,7 @@ export async function loader({ params }): Promise<LoaderResult> {
       includeSpace: true,
       includeGoal: true,
       includeChampion: true,
+      includeReviewer: true,
       includePermissions: true,
       includeContributors: true,
       includeKeyResources: true,
