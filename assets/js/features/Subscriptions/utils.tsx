@@ -1,7 +1,14 @@
 import { Person } from "@/models/people";
 import { Project } from "@/models/projects";
+import { Subscription } from "@/models/notifications";
 import { NotifiablePerson } from "@/features/Subscriptions";
-import { compareIds } from "@/routes/paths";
+import { compareIds, includesId } from "@/routes/paths";
+
+export function getSelectedPeopleFromSubscriptions(people: NotifiablePerson[], subscriptions: Subscription[]) {
+  const ids = subscriptions.map((s) => s.person!.id!);
+
+  return people.filter((p) => includesId(ids, p.id));
+}
 
 export function findNotifiableProjectContributors(project: Project, me?: Person): NotifiablePerson[] {
   const people = project

@@ -1,5 +1,6 @@
 import { Dispatch, SetStateAction, useMemo, useState } from "react";
 import { NotifiablePerson, Options } from ".";
+import { includesId } from "@/routes/paths";
 
 export interface SubscriptionsState {
   people: NotifiablePerson[];
@@ -8,17 +9,25 @@ export interface SubscriptionsState {
   subscriptionType: Options;
   setSubscriptionType: Dispatch<SetStateAction<Options>>;
   alwaysNotify: NotifiablePerson[];
+  alreadySelected: NotifiablePerson[];
   currentSubscribersList: string[];
 }
 
 interface Opts {
   alwaysNotify?: NotifiablePerson[];
+  alreadySelected?: NotifiablePerson[];
 }
 
 export function useSubscriptions(people: NotifiablePerson[], opts?: Opts): SubscriptionsState {
-  const alwaysNotify = opts?.alwaysNotify ? [...opts.alwaysNotify] : [];
+  const alwaysNotify = useMemo(() => {
+    return opts?.alwaysNotify || [];
+  }, [opts?.alwaysNotify]);
 
-  const [selectedPeople, setSelectedPeople] = useState<NotifiablePerson[]>(alwaysNotify);
+  const alreadySelected = useMemo(() => {
+    return getAlreadySelected(alwaysNotify, opts?.alreadySelected || []);
+  }, [alwaysNotify, opts?.alreadySelected]);
+
+  const [selectedPeople, setSelectedPeople] = useState<NotifiablePerson[]>(alreadySelected);
   const [subscriptionType, setSubscriptionType] = useState(Options.ALL);
 
   const currentSubscribersList = useMemo(() => {
@@ -38,7 +47,21 @@ export function useSubscriptions(people: NotifiablePerson[], opts?: Opts): Subsc
     setSelectedPeople,
     subscriptionType,
     setSubscriptionType,
-    alwaysNotify: opts?.alwaysNotify || [],
+    alwaysNotify,
+    alreadySelected,
     currentSubscribersList,
   };
+}
+
+function getAlreadySelected(alwaysNotify: NotifiablePerson[], alreadySelected: NotifiablePerson[]) {
+  const result = [...alwaysNotify];
+  const ids = alwaysNotify.map((p) => p.id);
+
+  alreadySelected.forEach((p) => {
+    if (!includesId(ids, p.id)) {
+      result.push(p);
+    }
+  });
+
+  return result;
 }
