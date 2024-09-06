@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as Projects from "@/models/projects";
 import * as People from "@/models/people";
+import * as Callouts from "@/components/Callouts";
 
 import FormattedTime from "@/components/FormattedTime";
 import Avatar from "@/components/Avatar";
@@ -27,6 +28,7 @@ export function CheckInSection({ project }: { project: Projects.Project }) {
 
         <div className="w-4/5">
           {project.lastCheckIn ? <LastCheckIn project={project} /> : <CheckInZeroState project={project} />}
+          <NoReviewerCallout project={project} />
         </div>
       </div>
     </div>
@@ -125,6 +127,29 @@ function CheckInZeroState({ project }: { project: Projects.Project }) {
       <div className="mt-2">
         <CheckInNowButton project={project} />
       </div>
+    </div>
+  );
+}
+
+function NoReviewerCallout({ project }: { project: Projects.Project }) {
+  if (project.reviewer) return null;
+
+  const path = Paths.projectContributorsPath(project.id!);
+  const addReviewer = <Link to={path}>Add a Reviewer</Link>;
+
+  return (
+    <div className="mt-4">
+      <Callouts.InfoCallout
+        testId="no-reviewer-callout"
+        message={"Want a second pair of eyes?"}
+        description={
+          <>
+            Check-ins are on, but important updates might slip through the cracks.
+            <br />
+            {addReviewer} to get feedback and keep things moving smoothly.
+          </>
+        }
+      />
     </div>
   );
 }
