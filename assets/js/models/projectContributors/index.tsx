@@ -1,4 +1,6 @@
 import * as api from "@/api";
+import { match } from "ts-pattern";
+
 export type ProjectContributor = api.ProjectContributor;
 export type ContributorRole = "champion" | "reviewer" | "contributor";
 
@@ -6,25 +8,17 @@ export const CHAMPION_RESPONSIBILITY = "Champion - Responsible for the success o
 export const REVIEWER_RESPONSIBILITY = "Reviewer - Responsible for reviewing and acknowledging progress";
 
 export function responsibility(contributor: ProjectContributor | undefined, role: ContributorRole) {
-  switch (role) {
-    case "champion":
-      return CHAMPION_RESPONSIBILITY;
-    case "reviewer":
-      return REVIEWER_RESPONSIBILITY;
-    default:
-      return contributor?.responsibility || "";
-  }
+  return match(role)
+    .with("champion", () => CHAMPION_RESPONSIBILITY)
+    .with("reviewer", () => REVIEWER_RESPONSIBILITY)
+    .otherwise(() => contributor?.responsibility || "");
 }
 
 export function isPermissionsEditable(role: ContributorRole) {
-  switch (role) {
-    case "champion":
-      return false;
-    case "reviewer":
-      return false;
-    default:
-      return true;
-  }
+  return match(role)
+    .with("champion", () => false)
+    .with("reviewer", () => false)
+    .otherwise(() => true);
 }
 
 export function isResponsibilityEditable(role: ContributorRole) {
