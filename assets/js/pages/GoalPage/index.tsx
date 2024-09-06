@@ -12,7 +12,7 @@ import { LastCheckInMessage } from "@/features/goals/GoalCheckIn";
 import { Paths } from "@/routes/paths";
 import { BlackLink } from "@/components/Link";
 import { IconListTree, IconMessage } from "@tabler/icons-react";
-import { H3 } from "@/components/Text";
+import { Subheader } from "@/components/Text";
 import { GhostButton } from "@/components/Button";
 
 interface LoaderResult {
@@ -293,7 +293,7 @@ export default function Discussions() {
 function GoalSubGoals({ goal, goals, projects }) {
   return (
     <div className="mt-16">
-      <H3 icon={IconListTree} content={"Sub-goals and projects"} />
+      <Subheader icon={IconListTree} content={"Sub-goals and projects"} />
 
       <GoalTree
         goals={goals}
