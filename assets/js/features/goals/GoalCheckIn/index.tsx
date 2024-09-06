@@ -1,6 +1,6 @@
 import React from "react";
 
-import { H3 } from "@/components/Text";
+import { Subheader } from "@/components/Text";
 import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
 import RichContent from "@/components/RichContent";
@@ -29,11 +29,9 @@ export function LastCheckInMessage({ goal }) {
 
   return (
     <div className="mt-16">
-
-      <H3 icon={Icons.IconWaveSawTool}
-        content={
-          <>{<FormattedTime time={goal.lastCheckIn.insertedAt} format="short-date" />}: Last progress update</>
-        }
+      <Subheader
+        icon={Icons.IconWaveSawTool}
+        content={<>{<FormattedTime time={goal.lastCheckIn.insertedAt} format="short-date" />}: Last progress update</>}
       />
 
       <div className="px-2 py-2">
