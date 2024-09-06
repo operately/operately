@@ -3,7 +3,7 @@ import * as TipTapEditor from "@/components/Editor";
 
 import RichContent from "@/components/RichContent";
 
-import { FilledButton } from "@/components/Button";
+import { FilledButton } from "@/components/Buttons";
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 
 export function Description({ milestone, form }) {

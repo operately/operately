@@ -4,7 +4,7 @@ import * as Goals from "@/models/goals";
 import * as People from "@/models/people";
 import * as React from "react";
 
-import { FilledButton } from "@/components/Button";
+import { FilledButton } from "@/components/Buttons";
 import { Form, useForm } from "@/features/goals/GoalCheckInForm";
 import { InlinePeopleList } from "@/components/InlinePeopleList";
 import { Paths } from "@/routes/paths";
