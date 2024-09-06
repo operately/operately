@@ -27,6 +27,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.People.Person do
       avatar_url: data.avatar_url,
       title: data.title,
       suspended: data.suspended,
+      timezone: data.timezone,
       manager: OperatelyWeb.Api.Serializer.serialize(data.manager),
       reports: OperatelyWeb.Api.Serializer.serialize(data.reports),
       peers: OperatelyWeb.Api.Serializer.serialize(data.peers),

@@ -58,16 +58,20 @@ defmodule Operately.Support.Features.AccountSettingsSteps do
     ctx
   end
 
-  step :change_timezone, ctx, timezone do
+  step :change_timezone, ctx, props do
     ctx
-    |> UI.select(testid: "timezone", option: timezone)
+    |> UI.select(testid: "timezone", option: props[:label])
     |> UI.click(testid: "submit")
     |> UI.assert_has(testid: "my-account-page")
   end
 
-  step :assert_person_timezone_changed, ctx, timezone do
-    assert Operately.People.get_person!(ctx.person.id).timezone == timezone
+  step :assert_person_timezone_changed, ctx, props do
+    assert Operately.People.get_person!(ctx.person.id).timezone == props[:value]
+
     ctx
+    |> UI.visit(Paths.account_path(ctx.company))
+    |> UI.click(testid: "profile-link")
+    |> UI.assert_text(props[:label])
   end
 
   step :set_select_manager_from_list, ctx do
