@@ -2,7 +2,7 @@ import * as React from "react";
 import * as Projects from "@/models/projects";
 
 import { Paths } from "@/routes/paths";
-import { GhostButton } from "@/components/Button";
+import { GhostButton } from "@/components/Buttons";
 
 import ContributorAvatar from "@/components/ContributorAvatar";
 
@@ -27,7 +27,7 @@ function ManageAccessButton({ project }: { project: Projects.Project }) {
   return (
     <div className="ml-2">
       <GhostButton size="xs" type="secondary" testId="manage-team-button" linkTo={path}>
-        Manage Team &amp; Access
+        Manage team &amp; access
       </GhostButton>
     </div>
   );

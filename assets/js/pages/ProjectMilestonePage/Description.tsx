@@ -3,7 +3,7 @@ import * as TipTapEditor from "@/components/Editor";
 
 import RichContent from "@/components/RichContent";
 
-import { FilledButton } from "@/components/Button";
+import { FilledButton } from "@/components/Buttons";
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 
 export function Description({ milestone, form }) {
@@ -66,7 +66,7 @@ function DescriptionEdit({ form }) {
       <div className="flex items-center gap-2 justify-end mt-4">
         <FilledButton
           onClick={form.description.stopEditing}
-          data-test-id="cancel-milestone-description"
+          testId="cancel-milestone-description"
           type="secondary"
           size="xs"
         >
@@ -76,7 +76,7 @@ function DescriptionEdit({ form }) {
         <FilledButton
           onClick={form.description.submit}
           loading={form.description.submitting}
-          data-test-id="save-milestone-description"
+          testId="save-milestone-description"
           size="xs"
         >
           Save

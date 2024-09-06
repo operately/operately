@@ -5,7 +5,7 @@ import * as Pages from "@/components/Pages";
 import * as Icons from "@tabler/icons-react";
 import * as Spaces from "@/models/spaces";
 
-import { FilledButton } from "@/components/Button";
+import { FilledButton } from "@/components/Buttons";
 
 import { Form, useForm } from "@/features/DiscussionForm";
 import { Paths } from "@/routes/paths";

@@ -1,7 +1,7 @@
 import React from "react";
 
 import { EditorContext, Context } from "./EditorContext";
-import { FilledButton } from "@/components/Button";
+import { FilledButton } from "@/components/Buttons";
 import classNames from "classnames";
 
 export function useLinkEditFormClose() {

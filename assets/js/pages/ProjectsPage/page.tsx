@@ -3,7 +3,7 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
 import { useLoadedData, useFilters } from "./loader";
-import { FilledButton } from "@/components/Button";
+import { FilledButton } from "@/components/Buttons";
 import { ProjectList } from "@/features/ProjectList";
 
 import classNames from "classnames";

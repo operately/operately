@@ -4,7 +4,7 @@ import classname from "classnames";
 
 type Ref = HTMLFormElement;
 
-import Button from "@/components/Button";
+import { FilledButton } from "@/components/Buttons";
 
 export * from "./radio";
 export * from "./select";
@@ -48,13 +48,13 @@ export function SubmitArea({ children }) {
   return <div className="flex gap-2 mt-4">{children}</div>;
 }
 
-export function SubmitButton({ children, ...props }) {
-  const { loading, isValid } = React.useContext(Context);
+export function SubmitButton({ children, testId, ...props }) {
+  const { loading } = React.useContext(Context);
 
   return (
-    <Button submit variant="success" loading={loading} disabled={!isValid} {...props}>
+    <FilledButton submit type="primary" testId={testId} loading={loading} {...props}>
       {children}
-    </Button>
+    </FilledButton>
   );
 }
 
@@ -62,9 +62,9 @@ export function CancelButton({ children }) {
   const { onCancel } = React.useContext(Context);
 
   return (
-    <Button variant="secondary" onClick={onCancel}>
+    <FilledButton type="secondary" onClick={onCancel}>
       {children}
-    </Button>
+    </FilledButton>
   );
 }
 

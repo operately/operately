@@ -5,7 +5,7 @@ import * as Goals from "@/models/goals";
 import * as Editor from "@/components/Editor";
 
 import { Paths } from "@/routes/paths";
-import { FilledButton } from "@/components/Button";
+import { FilledButton } from "@/components/Buttons";
 import { DimmedLink } from "@/components/Link";
 import { useNavigate } from "react-router-dom";
 

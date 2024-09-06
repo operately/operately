@@ -6,7 +6,7 @@ import * as Notifications from "@/models/notifications";
 import * as Api from "@/api";
 
 import { useDocumentTitle } from "@/layouts/header";
-import { GhostButton } from "@/components/Button";
+import { GhostButton } from "@/components/Buttons";
 
 import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
