@@ -102,5 +102,6 @@ defmodule Operately.Features.ProjectCreationTest do
     |> Steps.submit_project_form(params)
     |> Steps.assert_project_created(params)
     |> Steps.assert_no_reviewer_calluout_showing()
+    |> Steps.assert_review_placeholder_showing()
   end
 end

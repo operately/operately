@@ -82,9 +82,7 @@ function AddButton({ onClick }) {
 }
 
 function ContributorList({ project, refetch }: { project: Projects.Project; refetch: () => void }) {
-  const { champion, reviewer, contributors } = ProjectContributors.splitByRole(
-    project.contributors! as ProjectContributors.ProjectContributor[],
-  );
+  const { champion, reviewer, contributors } = ProjectContributors.splitByRole(project.contributors!);
 
   return (
     <div className="flex flex-col border-t border-stroke-base">
