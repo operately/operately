@@ -76,7 +76,7 @@ function Form() {
       name: Forms.useTextField(),
       space: Forms.useSelectField(space?.id, spaceOptions),
       champion: Forms.useSelectPersonField(me),
-      reviewer: Forms.useSelectPersonField(me.manager),
+      reviewer: Forms.useSelectPersonField(me.manager, { optional: true }),
       goal: Forms.useTextField(goal?.id, { optional: true }),
       creatorRole: Forms.useTextField(null, { optional: true }),
       isContrib: Forms.useSelectField("no", WillYouContributeOptions),
@@ -90,7 +90,7 @@ function Form() {
       const res = await add({
         name: form.fields.name.value,
         championId: form.fields.champion!.value!.id,
-        reviewerId: form.fields.reviewer!.value!.id,
+        reviewerId: form.fields.reviewer!.value?.id,
         creatorIsContributor: form.fields.isContrib!.value,
         creatorRole: form.fields.creatorRole.value,
         spaceId: form.fields.space!.value,
@@ -117,7 +117,7 @@ function Form() {
 
           <Forms.FieldGroup layout="grid" gridColumns={2}>
             <Forms.SelectPerson label="Champion" field={"champion"} />
-            <Forms.SelectPerson label="Reviewer" field={"reviewer"} />
+            <Forms.SelectPerson label="Reviewer" field={"reviewer"} allowEmpty={true} emptyLabel="No reviewer" />
           </Forms.FieldGroup>
 
           <Forms.RadioButtons label="Will you contribute?" field={"isContrib"} hidden={hideIsContrib} />
