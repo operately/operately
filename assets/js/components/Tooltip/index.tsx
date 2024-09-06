@@ -23,9 +23,7 @@ export function Tooltip({ content, delayDuration, children, testId }: TextToolti
     "select-none",
     "shadow-xl",
     "whitespace-normal",
-    {
-      "border border-stroke-dimmed": mode === "dark",
-    },
+    "border border-stroke-dimmed",
   );
 
   const arrowStyle = {
@@ -38,7 +36,7 @@ export function Tooltip({ content, delayDuration, children, testId }: TextToolti
         <ReactTooltip.Trigger asChild data-test-id={testId}>
           {children}
         </ReactTooltip.Trigger>
-        <ReactTooltip.Content sideOffset={10} className={className}>
+        <ReactTooltip.Content sideOffset={5} className={className}>
           {content}
           <ReactTooltip.Arrow style={arrowStyle} />
         </ReactTooltip.Content>
