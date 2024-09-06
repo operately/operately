@@ -1,8 +1,7 @@
 import React, { useState, useMemo, createContext } from "react";
 
 import { RadioGroup } from "@/components/Form";
-import { SubscriptionsState, Options } from "@/features/Subscriptions";
-import { findAllPeopleLabel, findSelectedPeopleLabel } from "@/features/Subscriptions/utils";
+import { SubscriptionsState, Options, NotifiablePerson } from "@/features/Subscriptions";
 import { SubscriptionOption } from "./SubscriptionOption";
 import { SubscribersSelectorModal } from "./SubscribersSelectorModal";
 
@@ -17,8 +16,8 @@ export function SubscribersSelector({ state, projectName }: Props) {
   const [showSelector, setShowSelector] = useState(false);
   const { people, selectedPeople, subscriptionType, setSubscriptionType, alwaysNotify } = state;
 
-  const selectedPeopleLabel = useMemo(() => findSelectedPeopleLabel(selectedPeople), [selectedPeople]);
-  const allPeopleLabel = useMemo(() => findAllPeopleLabel(people, { projectName }), []);
+  const selectedPeopleLabel = useMemo(() => buildSelectedPeopleLabel(selectedPeople), [selectedPeople]);
+  const allPeopleLabel = useMemo(() => buildAllPeopleLabel(people, { projectName }), []);
 
   // If all notifiable people must be notified,
   // the widget is not displayed.
@@ -46,4 +45,30 @@ export function SubscribersSelector({ state, projectName }: Props) {
       </div>
     </SubscriptionsContext.Provider>
   );
+}
+
+interface BuildAllPeopleLabelOpts {
+  projectName?: string;
+}
+
+function buildAllPeopleLabel(people: NotifiablePerson[], opts: BuildAllPeopleLabelOpts) {
+  const part1 = people.length > 1 ? `All ${people.length} people` : "The 1 person";
+  let part2 = "";
+
+  if (opts.projectName) {
+    part2 = ` contributing to ${opts.projectName}`;
+  }
+
+  return part1 + part2;
+}
+
+function buildSelectedPeopleLabel(selectedPeople: NotifiablePerson[]) {
+  switch (selectedPeople.length) {
+    case 0:
+      return "Only the people I select";
+    case 1:
+      return "Only the following person I selected";
+    default:
+      return `Only the following ${selectedPeople.length} people I selected`;
+  }
 }

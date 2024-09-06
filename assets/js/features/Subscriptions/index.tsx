@@ -1,6 +1,5 @@
 export { SubscribersSelector } from "./selector/SubscribersSelector";
-export { CurrentSubscriptions } from "./CurrentSubscriptions";
-export { EditSubscriptionsModal } from "./EditSubscriptionsModal";
+export { CurrentSubscriptions } from "./current-subscriptions/CurrentSubscriptions";
 export { useSubscriptions, SubscriptionsState } from "./useSubscriptions";
 export { findNotifiableProjectContributors } from "./utils";
 

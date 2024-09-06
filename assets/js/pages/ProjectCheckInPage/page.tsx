@@ -21,11 +21,13 @@ import { CommentSection, useForProjectCheckIn } from "@/features/CommentSection"
 
 import { useLoadedData, useRefresh } from "./loader";
 import { useMe } from "@/contexts/CurrentUserContext";
-import { CurrentSubscriptions } from "@/features/Subscriptions/CurrentSubscriptions";
+import { findNotifiableProjectContributors, CurrentSubscriptions } from "@/features/Subscriptions";
 
 export function Page() {
   const { checkIn } = useLoadedData();
   const refresh = useRefresh();
+
+  const notifiablePeople = findNotifiableProjectContributors(checkIn.project!);
 
   return (
     <Pages.Page title={["Check-In", checkIn.project!.name!]}>
@@ -48,10 +50,12 @@ export function Page() {
           <div className="border-t border-stroke-base mt-16 mb-8" />
 
           <CurrentSubscriptions
+            people={notifiablePeople}
             subscriptionList={checkIn.subscriptionList!}
             name="check-in"
             type="project_check_in"
             callback={refresh}
+            projectName={checkIn.project!.name!}
           />
         </Paper.Body>
       </Paper.Root>
