@@ -7,7 +7,7 @@ import { useLoadedData } from "./loader";
 import { useForm } from "./useForm";
 import { createTestId } from "@/utils/testid";
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
-import { FilledButton } from "@/components/Button";
+import { FilledButton } from "@/components/Buttons";
 
 export function Page() {
   const { project } = useLoadedData();

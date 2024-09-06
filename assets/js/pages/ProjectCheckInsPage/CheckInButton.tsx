@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as Projects from "@/models/projects";
 
-import { FilledButton } from "@/components/Button";
+import { FilledButton } from "@/components/Buttons";
 import { Paths } from "@/routes/paths";
 
 export function CheckInButton({ project }: { project: Projects.Project }) {

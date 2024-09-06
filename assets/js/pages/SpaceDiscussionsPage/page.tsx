@@ -9,7 +9,7 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import { Summary } from "@/components/RichContent";
 import { useLoadedData } from "./loader";
-import { FilledButton } from "@/components/Button";
+import { FilledButton } from "@/components/Buttons";
 import { Paths } from "@/routes/paths";
 
 export function Page() {

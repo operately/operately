@@ -7,7 +7,7 @@ import * as Api from "@/api";
 import { Link } from "@/components/Link";
 import { Paths } from "@/routes/paths";
 import { TextInput } from "@/components/Form";
-import { FilledButton } from "@/components/Button";
+import { FilledButton } from "@/components/Buttons";
 import { Logo } from "@/layouts/DefaultLayout/Logo";
 import { useNavigate } from "react-router-dom";
 

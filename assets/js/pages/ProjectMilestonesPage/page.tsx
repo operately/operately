@@ -5,7 +5,7 @@ import * as Milestones from "@/models/milestones";
 import * as Pages from "@/components/Pages";
 import * as Time from "@/utils/time";
 
-import { GhostButton } from "@/components/Button";
+import { GhostButton } from "@/components/Buttons";
 import FormattedTime from "@/components/FormattedTime";
 
 import { useLoadedData } from "./loader";

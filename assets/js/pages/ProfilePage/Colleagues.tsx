@@ -3,7 +3,7 @@ import * as People from "@/models/people";
 
 import { DivLink } from "@/components/Link";
 import { Paths } from "@/routes/paths";
-import { FilledButton } from "@/components/Button";
+import { FilledButton } from "@/components/Buttons";
 
 import Avatar from "@/components/Avatar";
 import classNames from "classnames";

@@ -2,7 +2,7 @@ import * as React from "react";
 import * as Forms from "@/components/Form";
 import * as Milestones from "@/models/milestones";
 
-import { FilledButton } from "@/components/Button";
+import { FilledButton } from "@/components/Buttons";
 import { MilestoneIcon } from "@/components/MilestoneIcon";
 
 import FormattedTime from "@/components/FormattedTime";

@@ -12,7 +12,7 @@ import classNames from "classnames";
 import { match } from "ts-pattern";
 import { createTestId } from "@/utils/testid";
 
-import { FilledButton } from "@/components/Button";
+import { FilledButton } from "@/components/Buttons";
 import { MilestoneIcon } from "@/components/MilestoneIcon";
 import { DivLink } from "@/components/Link";
 import { Paths } from "@/routes/paths";
