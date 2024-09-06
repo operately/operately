@@ -7,7 +7,7 @@ import { MemberContainer } from "./components";
 
 import { PERMISSIONS_LIST, PermissionLevels, VIEW_ACCESS } from "@/features/Permissions";
 import { SelectBoxNoLabel } from "@/components/Form";
-import Button from "@/components/Button";
+import { FilledButton } from "@/components/Buttons";
 import PeopleSearch from "@/components/PeopleSearch";
 
 export function AddMembers({ space }: { space: Space }) {
@@ -79,15 +79,9 @@ function AddMemberButton({ member, loading, handleAddMember }) {
 
   return (
     <div>
-      <Button
-        loading={loading}
-        size="small"
-        variant="success"
-        onClick={handleAddMember}
-        data-test-id="submit-space-members"
-      >
+      <FilledButton loading={loading} size="xs" type="primary" onClick={handleAddMember} testId="submit-space-members">
         Add member
-      </Button>
+      </FilledButton>
     </div>
   );
 }

@@ -6,7 +6,7 @@ import { buildTree, GoalNode, Node, TreeOptions } from "./tree";
 
 import { NodeIcon } from "./components/NodeIcon";
 import { TableRow } from "./components/TableRow";
-import { FilledButton } from "@/components/Button";
+import { FilledButton } from "@/components/Buttons";
 import { ExpandableProvider, useExpandable } from "./context/Expandable";
 
 import classNames from "classnames";

@@ -7,7 +7,7 @@ import * as Icons from "@tabler/icons-react";
 import classNames from "classnames";
 import FormattedTime from "@/components/FormattedTime";
 
-import { FilledButton } from "@/components/Button";
+import { FilledButton } from "@/components/Buttons";
 import { DateSelector } from "./DateSelector";
 import { Summary } from "@/components/RichContent";
 

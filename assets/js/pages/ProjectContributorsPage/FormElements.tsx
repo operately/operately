@@ -1,12 +1,11 @@
-import React from "react";
-
+import * as React from "react";
 import * as Projects from "@/models/projects";
-import * as Icons from "@tabler/icons-react";
 
-import Button from "@/components/Button";
-import PeopleSearch from "@/components/PeopleSearch";
+import { FilledButton } from "@/components/Buttons";
 import { SelectBox } from "@/components/Form";
 import { PERMISSIONS_LIST } from "@/features/Permissions";
+
+import PeopleSearch from "@/components/PeopleSearch";
 
 export function ContributorSearch({ projectID, title, onSelect, defaultValue = undefined }) {
   const loader = Projects.useProjectContributorCandidates(projectID);
@@ -58,34 +57,33 @@ export function PermissionsInput({ value, onChange }) {
 export function RemoveButton({ onClick, loading }) {
   return (
     <div className="flex gap-2">
-      <Button variant="danger" onClick={onClick} loading={loading} data-test-id="remove-contributor">
+      <FilledButton type="secondary" onClick={onClick} loading={loading} testId="remove-contributor">
         Remove
-      </Button>
+      </FilledButton>
     </div>
   );
 }
 
 export function CancelButton({ onClick }) {
   return (
-    <Button variant="secondary" onClick={onClick}>
+    <FilledButton type="secondary" onClick={onClick}>
       Cancel
-    </Button>
+    </FilledButton>
   );
 }
 
-export function SaveButton({ disabled, onClick }) {
+export function SaveButton({ onClick }) {
   return (
-    <Button variant="success" disabled={disabled} onClick={onClick}>
+    <FilledButton type="primary" onClick={onClick}>
       Save
-    </Button>
+    </FilledButton>
   );
 }
 
-export function AddContribButton({ disabled, onClick, loading }) {
+export function AddContribButton({ onClick, loading }) {
   return (
-    <Button loading={loading} variant="success" disabled={disabled} onClick={onClick} data-test-id="save-contributor">
-      <Icons.IconPlus size={20} />
+    <FilledButton loading={loading} type="primary" onClick={onClick} testId="save-contributor">
       Add Contributor
-    </Button>
+    </FilledButton>
   );
 }

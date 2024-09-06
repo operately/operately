@@ -7,7 +7,7 @@ import * as Spaces from "@/models/spaces";
 
 import { Link } from "@/components/Link";
 import { useLoadedData } from "./loader";
-import { GhostButton } from "@/components/Button";
+import { GhostButton } from "@/components/Buttons";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 
 import { SpaceColorChooser } from "@/components/SpaceColorChooser";
