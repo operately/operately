@@ -7,7 +7,7 @@ import * as Icons from "@tabler/icons-react";
 import * as Spaces from "@/models/spaces";
 
 import Avatar from "@/components/Avatar";
-import { GhostButton } from "@/components/Button";
+import { GhostButton } from "@/components/Buttons";
 
 import AddMembersModal from "./AddMembersModal";
 import { Link } from "@/components/Link";

@@ -4,7 +4,7 @@ import * as Pages from "@/components/Pages";
 import * as Forms from "@/components/Form";
 import * as Editor from "@/components/Editor";
 
-import { FilledButton } from "@/components/Button";
+import { FilledButton } from "@/components/Buttons";
 import { DimmedLink } from "@/components/Link";
 
 import { useLoadedData } from "./loader";

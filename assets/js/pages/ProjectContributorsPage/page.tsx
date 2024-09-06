@@ -14,7 +14,7 @@ import {
   PermissionsInput,
 } from "./FormElements";
 import ContributorItem from "./ContributorItem";
-import { FilledButton } from "@/components/Button";
+import { FilledButton } from "@/components/Buttons";
 
 import { useLoadedData, useRefresh } from "./loader";
 import { useForm, FormState } from "./useForm";
@@ -66,11 +66,7 @@ function AddContribForm({ form }: { form: FormState }) {
       <PermissionsInput value={form.addContrib.permissions} onChange={form.addContrib.setPermissions} />
 
       <div className="flex mt-8 gap-2">
-        <AddContribButton
-          onClick={form.addContrib.submit}
-          loading={form.addContrib.submitting}
-          disabled={!form.addContrib.submittable}
-        />
+        <AddContribButton onClick={form.addContrib.submit} loading={form.addContrib.submitting} />
         <CancelButton onClick={form.addContrib.deactivate} />
       </div>
     </div>

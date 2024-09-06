@@ -5,7 +5,7 @@ import * as Paper from "@/components/PaperContainer";
 import * as Spaces from "@/models/spaces";
 import * as Projects from "@/models/projects";
 
-import { FilledButton } from "@/components/Button";
+import { FilledButton } from "@/components/Buttons";
 import { SpacePageNavigation } from "@/components/SpacePageNavigation";
 import { ProjectList } from "@/features/ProjectList";
 import { Paths } from "@/routes/paths";

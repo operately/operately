@@ -2,7 +2,7 @@ import React from "react";
 
 import * as TipTapEditor from "@/components/Editor";
 
-import { FilledButton } from "@/components/Button";
+import { FilledButton } from "@/components/Buttons";
 import { FormState } from "./useForm";
 import { SubscribersSelector } from "@/features/Subscriptions";
 import { StatusDropdown } from "../StatusDropdown";

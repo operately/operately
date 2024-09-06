@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 
 import Forms from "@/components/Forms";
 import Modal from "@/components/Modal";
-import { FilledButton } from "@/components/Button";
+import { FilledButton } from "@/components/Buttons";
 import { ActionLink } from "@/components/Link";
 import { SubscriptionsContext } from "./SubscribersSelector";
 import { includesId } from "@/routes/paths";

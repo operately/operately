@@ -10,7 +10,7 @@ import MemberList from "./MemberList";
 import { useLoadedData, useRefresh } from "./loader";
 import { SpacePageNavigation } from "@/components/SpacePageNavigation";
 import { Feed, useItemsQuery } from "@/features/Feed";
-import { FilledButton } from "@/components/Button";
+import { FilledButton } from "@/components/Buttons";
 
 import { useJoinSpace } from "@/models/spaces";
 
