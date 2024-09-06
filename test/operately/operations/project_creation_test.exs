@@ -47,7 +47,7 @@ defmodule Operately.Operations.ProjectCreationTest do
 
     contributors = Projects.list_project_contributors(project)
 
-    assert 3 == length(contributors)
+    assert length(contributors) == 3
 
     contributors = Enum.map(contributors, fn contributor -> {contributor.person_id, contributor.role} end)
 
