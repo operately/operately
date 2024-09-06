@@ -1,5 +1,6 @@
 import React from "react";
 
+import { Subheader } from "@/components/Text";
 import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
 import RichContent from "@/components/RichContent";
@@ -27,25 +28,31 @@ export function LastCheckInMessage({ goal }) {
   const championProfilePath = Paths.profilePath(author.id!);
 
   return (
-    <div className="flex items-start gap-4">
-      <DivLink to={championProfilePath}>
-        <Avatar person={author} size={40} />
-      </DivLink>
-      <div className="flex flex-col gap-1 -mt-1">
-        <div className="font-semibold">
-          Last progress update from <FormattedTime time={goal.lastCheckIn.insertedAt} format="short-date" />
-        </div>
+    <div className="mt-16">
+      <Subheader
+        icon={Icons.IconWaveSawTool}
+        content={<>{<FormattedTime time={goal.lastCheckIn.insertedAt} format="short-date" />}: Last progress update</>}
+      />
 
-        <div className="flex flex-col gap-3 w-full">
-          <RichContent jsonContent={message} />
+      <div className="px-2 py-2">
+        <div className="flex items-start gap-4">
+          <DivLink to={championProfilePath}>
+            <Avatar person={author} size={40} />
+          </DivLink>
+          <div className="flex flex-col gap-1 -mt-1">
+            <div className="flex flex-col gap-3 w-full">
+              <div className="font-bold -mb-2">{People.shortName(author)}</div>
+              <RichContent jsonContent={message} />
 
-          <div className="flex items-center gap-3">
-            <LastMessageReactions goal={goal} />
-            <FilledButton linkTo={path} size="xs" type="secondary">
-              Discuss
-            </FilledButton>
+              <div className="flex items-center gap-3">
+                <LastMessageReactions goal={goal} />
+                <FilledButton linkTo={path} size="xs" type="secondary">
+                  Discuss
+                </FilledButton>
 
-            <LastMessageComments goal={goal} />
+                <LastMessageComments goal={goal} />
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -1,15 +1,16 @@
 import * as React from "react";
 import * as Goals from "@/models/goals";
 import * as Icons from "@tabler/icons-react";
+import { DimmedLabel } from "@/components/Text";
 
 export function SuccessConditions({ goal }: { goal: Goals.Goal }) {
   return (
-    <div className="flex flex-col gap-2">
-      <div className="text-sm font-bold uppercase mb-3">SUCCESS CONDITIONS</div>
+    <div className="flex flex-col gap-2 mt-8">
+      <DimmedLabel className="">Success Conditions</DimmedLabel>
 
-      <div className="flex flex-col gap-2.5">
-        {goal.targets!.map((target) => (
-          <TargetItem key={target!.id} target={target!} />
+      <div className="flex flex-col">
+        {goal.targets!.map((target, index) => (
+          <TargetItem target={target!} />
         ))}
       </div>
     </div>
@@ -18,9 +19,8 @@ export function SuccessConditions({ goal }: { goal: Goals.Goal }) {
 
 function TargetItem({ target }: { target: Goals.Target }) {
   return (
-    <div className="flex justify-between border items-center gap-8 py-2 px-4 rounded-2xl">
+    <div className="flex justify-between items-center gap-8 py-4 pr-4 hover:bg-surface-highlight transition-colors duration-200 border-b first:border-t">
       <div className="flex items-center gap-2 flex-1">
-        <Icons.IconTimeline size={20} />
         <div className="font-semibold flex-1">{target.name}</div>
       </div>
 
