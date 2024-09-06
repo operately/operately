@@ -90,10 +90,13 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
       |> UI.fill(testid: "creatorRole", with: "Responsible for managing the project")
     end)
     |> UI.click(testid: "submit")
-    |> UI.sleep(300)
   end
 
   step :assert_project_created, ctx, fields do
+    ctx
+    |> UI.assert_text(fields.name)
+    |> UI.assert_has(testid: "project-page")
+
     project = Operately.Repo.get_by!(Operately.Projects.Project, name: fields.name)
     project = Operately.Repo.preload(project, [contributors: :person])
 
@@ -105,11 +108,20 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
     assert project.creator_id == fields.creator.id
 
     assert champion.person.full_name == fields.champion.full_name
-    assert reviewer.person.full_name == fields.reviewer.full_name
 
-    assert length(project.contributors) == if fields[:add_creator_as_contributor], do: 3, else: 2
+    if fields[:reviewer] do
+      assert reviewer.person.full_name == fields.reviewer.full_name
+    end
 
-    ctx
+    expected_contrib_count = [
+      fields[:champion],
+      fields[:reviewer],
+      fields[:add_creator_as_contributor]
+    ] |> Enum.count(& &1)
+
+    assert length(project.contributors) == expected_contrib_count
+
+    ctx 
   end
 
   step :assert_project_created_email_sent, ctx, fields do
