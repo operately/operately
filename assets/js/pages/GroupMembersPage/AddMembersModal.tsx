@@ -6,7 +6,7 @@ import * as Icons from "@tabler/icons-react";
 
 import Modal from "@/components/Modal";
 import Avatar from "@/components/Avatar";
-import { FilledButton, GhostButton } from "@/components/Button";
+import { FilledButton, GhostButton } from "@/components/Buttons";
 
 import { Person } from "@/models/people";
 import PeopleSearch, { Option } from "@/components/PeopleSearch";

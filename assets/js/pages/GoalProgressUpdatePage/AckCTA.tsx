@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as GoalCheckIns from "@/models/goalCheckIns";
 
-import { FilledButton } from "@/components/Button";
+import { FilledButton } from "@/components/Buttons";
 
 import { useLoadedData, useRefresh } from "./loader";
 

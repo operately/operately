@@ -8,7 +8,7 @@ import * as TipTapEditor from "@/components/Editor";
 
 import RichContent from "@/components/RichContent";
 import Avatar from "@/components/Avatar";
-import { FilledButton } from "@/components/Button";
+import { FilledButton } from "@/components/Buttons";
 
 import { useLoadedData } from "./loader";
 import { useForm, FormState } from "./useForm";

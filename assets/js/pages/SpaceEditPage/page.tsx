@@ -6,7 +6,7 @@ import * as Forms from "@/components/Form";
 
 import { useForm, FormState } from "./useForm";
 import { useLoadedData } from "./loader";
-import { FilledButton } from "@/components/Button";
+import { FilledButton } from "@/components/Buttons";
 import { Link } from "@/components/Link";
 import { Paths } from "@/routes/paths";
 

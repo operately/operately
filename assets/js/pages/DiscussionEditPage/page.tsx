@@ -4,7 +4,7 @@ import * as Pages from "@/components/Pages";
 import * as Spaces from "@/models/spaces";
 
 import { useLoadedData } from "./loader";
-import { FilledButton } from "@/components/Button";
+import { FilledButton } from "@/components/Buttons";
 import { Form, useForm } from "@/features/DiscussionForm";
 
 export function Page() {

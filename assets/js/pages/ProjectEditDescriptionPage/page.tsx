@@ -7,7 +7,7 @@ import * as Projects from "@/models/projects";
 
 import { useLoadedData } from "./loader";
 import { useNavigateTo } from "@/routes/useNavigateTo";
-import { FilledButton } from "@/components/Button";
+import { FilledButton } from "@/components/Buttons";
 import { Paths } from "@/routes/paths";
 
 export function Page() {

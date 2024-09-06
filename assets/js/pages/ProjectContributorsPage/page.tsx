@@ -14,7 +14,7 @@ import {
   PermissionsInput,
 } from "./FormElements";
 import ContributorItem from "./ContributorItem";
-import { FilledButton } from "@/components/Button";
+import { FilledButton } from "@/components/Buttons";
 
 import { useLoadedData, useRefresh } from "./loader";
 import { useForm, FormState } from "./useForm";
