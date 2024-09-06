@@ -25,11 +25,10 @@ defmodule Operately.Operations.ProjectCreation do
   def run(%__MODULE__{} = params) do
     Multi.new()
     |> insert_project(params)
-    |> Multi.insert(:context, fn changes ->
-      Context.changeset(%{project_id: changes.project.id})
-    end)
-    |> insert_contributors(params)
-    |> Multi.run(:phases, fn _repo, changes -> record_phase_histories(changes.project) end)
+    |> insert_access_context(params)
+    |> insert_champion_as_contributor(params)
+    |> insert_reviewer_as_contributor(params)
+    |> insert_creator_as_contributor(params)
     |> insert_bindings(params)
     |> insert_activity(params)
     |> Repo.transaction()
@@ -52,9 +51,14 @@ defmodule Operately.Operations.ProjectCreation do
     end)
   end
 
-  defp insert_contributors(multi, params) do
-    multi
-    |> Multi.insert(:champion, fn changes ->
+  defp insert_access_context(multi, _params) do
+    Multi.insert(multi, :context, fn changes ->
+      Context.changeset(%{project_id: changes.project.id})
+    end)
+  end
+
+  defp insert_champion_as_contributor(multi, params) do
+    Multi.insert(multi, :champion, fn changes ->
       Contributor.changeset(%{
         project_id: changes.project.id,
         person_id: params.champion_id,
@@ -62,18 +66,24 @@ defmodule Operately.Operations.ProjectCreation do
         role: :champion
       })
     end)
-    |> Multi.insert(:reviewer, fn changes ->
-      Contributor.changeset(%{
-        project_id: changes.project.id,
-        person_id: params.reviewer_id,
-        responsibility: " ",
-        role: :reviewer
-      })
-    end)
-    |> maybe_insert_creator_as_contributor(params)
   end
 
-  defp maybe_insert_creator_as_contributor(multi, params) do
+  defp insert_reviewer_as_contributor(multi, params) do
+    if params.reviewer_id do
+      Multi.insert(multi, :reviewer, fn changes ->
+        Contributor.changeset(%{
+          project_id: changes.project.id,
+          person_id: params.reviewer_id,
+          responsibility: " ",
+          role: :reviewer
+        })
+      end)
+    else
+      multi
+    end
+  end
+
+  defp insert_creator_as_contributor(multi, params) do
     if is_creator_a_contributor?(params) do
       Multi.insert(multi, :creator, fn changes ->
         Contributor.changeset(%{
@@ -88,30 +98,11 @@ defmodule Operately.Operations.ProjectCreation do
     end
   end
 
-  defp record_phase_histories(project) do
-    {:ok, _} = Operately.Projects.create_phase_history(%{
-      project_id: project.id,
-      phase: :planning,
-      start_time: DateTime.utc_now()
-    })
-
-    {:ok, _} = Operately.Projects.create_phase_history(%{
-      project_id: project.id,
-      phase: :execution,
-    })
-
-    {:ok, _} = Operately.Projects.create_phase_history(%{
-      project_id: project.id,
-      phase: :control
-    })
-  end
-
   defp insert_bindings(multi, params) do
     full_access = Access.get_group!(company_id: params.company_id, tag: :full_access)
     standard = Access.get_group!(company_id: params.company_id, tag: :standard)
     space_full_access = Access.get_group!(group_id: params.group_id, tag: :full_access)
     space_standard = Access.get_group!(group_id: params.group_id, tag: :standard)
-    reviewer_group = Access.get_group!(person_id: params.reviewer_id)
     champion_group = Access.get_group!(person_id: params.champion_id)
 
     multi
@@ -120,16 +111,24 @@ defmodule Operately.Operations.ProjectCreation do
     |> Access.insert_binding(:company_members_binding, standard, params.company_access_level)
     |> Access.insert_binding(:space_full_access_binding, space_full_access, Binding.full_access())
     |> Access.insert_binding(:space_members_binding, space_standard, params.space_access_level)
-    |> Access.insert_binding(:reviewer_binding, reviewer_group, Binding.full_access(), :reviewer)
     |> Access.insert_binding(:champion_binding, champion_group, Binding.full_access(), :champion)
-    |> maybe_insert_binding_to_creator(params)
+    |> insert_binding_for_reviewer(params)
+    |> insert_binding_for_creator(params)
   end
 
-  defp maybe_insert_binding_to_creator(multi, params) do
+  defp insert_binding_for_creator(multi, params) do
     if is_creator_a_contributor?(params) do
-      creator_group = Access.get_group!(person_id: params.creator_id)
+      group = Access.get_group!(person_id: params.creator_id)
+      Access.insert_binding(multi, :creator_binding, group, Binding.full_access())
+    else
+      multi
+    end
+  end
 
-      Access.insert_binding(multi, :creator_binding, creator_group, Binding.full_access())
+  defp insert_binding_for_reviewer(multi, params) do
+    if params.reviewer_id do
+      group = Access.get_group!(person_id: params.reviewer_id)
+      Access.insert_binding(multi, :reviewer_binding, group, Binding.full_access(), :reviewer)
     else
       multi
     end

@@ -5,27 +5,35 @@ import { InputField } from "./FieldGroup";
 import { SelectPersonField } from "./useSelectPersonField";
 import { getFormContext } from "./FormContext";
 
-import PeopleSearch from "@/components/PeopleSearch";
+import PeopleSearch, { Option } from "@/components/PeopleSearch";
 
-export function SelectPerson({ field, label, hidden }: { field: string; label?: string; hidden?: boolean }) {
+interface SelectPersonProps {
+  field: string;
+  label?: string;
+  hidden?: boolean;
+  allowEmpty?: boolean;
+  emptyLabel?: string;
+}
+
+export function SelectPerson(props: SelectPersonProps) {
   const form = getFormContext();
-  const error = form.errors[field];
+  const error = form.errors[props.field];
 
   return (
-    <InputField field={field} label={label} error={error} hidden={hidden}>
-      <SelectPersonInput field={field} />
+    <InputField field={props.field} label={props.label} error={error} hidden={props.hidden}>
+      <SelectPersonInput {...props} />
     </InputField>
   );
 }
 
-function SelectPersonInput({ field }: { field: string }) {
+function SelectPersonInput(props: SelectPersonProps) {
   const form = getFormContext();
-  const f = form.fields[field] as SelectPersonField;
-  const error = form.errors[field];
+  const f = form.fields[props.field] as SelectPersonField;
+  const error = form.errors[props.field];
 
   const loader = People.usePeopleSearch();
 
-  const onChange = (option: { person: People.Person } | null) => {
+  const onChange = (option: Option | null) => {
     f.setValue(option?.person);
   };
 
@@ -34,13 +42,15 @@ function SelectPersonInput({ field }: { field: string }) {
   return (
     <div className="flex-1">
       <PeopleSearch
-        inputId={field}
+        inputId={props.field}
         onChange={onChange}
         placeholder="Search for person..."
         defaultValue={f.value!}
         loader={loader}
         error={!!error}
         filterOption={(candidate) => !excludedIds[candidate.value]}
+        allowEmptySelection={props.allowEmpty}
+        emptySelectionLabel={props.emptyLabel}
       />
     </div>
   );

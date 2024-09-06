@@ -129,7 +129,7 @@ function useAddAdminsModalState(form: FormState): AdminModalState {
   };
 
   const submit = async () => {
-    await form.addAdmins(selected.map((s) => s.value));
+    await form.addAdmins(selected.map((s) => s.value!));
 
     setIsModalOpen(false);
     setSelectedList([]);
@@ -139,7 +139,7 @@ function useAddAdminsModalState(form: FormState): AdminModalState {
   const hideModal = () => setIsModalOpen(false);
 
   const excludeIds = React.useMemo(() => {
-    return selected.map((s) => s.value).concat(form.company.admins!.map((a) => a!.id!)!);
+    return selected.map((s) => s.value!).concat(form.company.admins!.map((a) => a!.id!)!);
   }, [selected, form.company.admins]);
 
   return {
