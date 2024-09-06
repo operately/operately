@@ -172,6 +172,10 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
     UI.assert_text(ctx, error)
   end
 
+  step :assert_no_reviewer_calluout_showing, ctx do
+    ctx |> UI.assert_has(testid: "no-reviewer-callout")
+  end
+
   defp who_should_be_notified(fields) do
     [
       {fields.champion, "champion"},
