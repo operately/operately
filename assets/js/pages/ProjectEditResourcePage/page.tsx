@@ -59,7 +59,7 @@ function Form({ project, form }) {
       />
 
       <Forms.SubmitArea>
-        <Forms.SubmitButton data-test-id="save">Save</Forms.SubmitButton>
+        <Forms.SubmitButton testId="save">Save</Forms.SubmitButton>
         <Forms.CancelButton>Cancel</Forms.CancelButton>
       </Forms.SubmitArea>
     </Forms.Form>

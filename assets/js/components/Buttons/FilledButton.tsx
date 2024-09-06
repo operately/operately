@@ -33,7 +33,7 @@ export function FilledButton(props: FilledButtonProps) {
 
   if (props.linkTo) {
     return (
-      <DivLink className={klass} to={props.linkTo} target={props.linkTarget} data-test-id={props.testId}>
+      <DivLink className={klass} to={props.linkTo} target={props.linkTarget} testId={props.testId}>
         {props.children}
         <Spinner active={props.loading} />
       </DivLink>
