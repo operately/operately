@@ -120,7 +120,7 @@ test.mix: test.init
 	./devenv mix test $(FILE)
 
 test.mix.unit: test.init
-	./devenv mix test $$(find test -name "*_test.exs" | grep -v "test/features")
+	./devenv mix test $$(find test -name "*_test.exs" | grep -v "test/features") --warnings-as-errors --all-warnings
 
 test.mix.features: test.init
 	./devenv mix test $$(find test -name "*_test.exs" | grep "test/features" | ./scripts/split.rb $(INDEX) $(TOTAL))
@@ -165,6 +165,9 @@ test.js.fmt.check:
 test.seed.env:
 	touch .env
 	echo 'OPERATELY_BLOB_TOKEN_SECRET_KEY="lPEuB9ITpbHP1GTf98TPWcHb/CrdeNLzqLcm0zF5mfo="' >> .env
+
+test.elixir.warnings:
+	./devenv bash -c "MIX_ENV=test mix compile --warnings-as-errors --all-warnings"
 
 
 #

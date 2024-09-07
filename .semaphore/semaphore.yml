@@ -49,11 +49,15 @@ blocks:
           commands:
             - make test.mix.features INDEX=$SEMAPHORE_JOB_INDEX TOTAL=$SEMAPHORE_JOB_COUNT
 
-        - name: Typescript Linting
+        - name: Lint Typescript
           commands:
             - make test.js.dead.code
             - make test.js.fmt.check
             - make test.tsc.lint
+
+        - name: Lint Elixir
+          commands:
+            - make test.elixir.warnings
 
         - name: Licence Check
           commands:
