@@ -25,7 +25,7 @@ defmodule Operately.Companies.ShortId do
 
   def decode(str) do
     if String.starts_with?(str, "0") do
-      case __MODULE__.Base32.decode(String.slice(str, 1..-1)) do
+      case __MODULE__.Base32.decode(String.slice(str, 1, String.length(str) - 1)) do
         {:ok, int} -> {:ok, int}
         :error -> {:error, "invalid short id '#{str}'"}
       end
