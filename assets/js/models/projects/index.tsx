@@ -4,7 +4,6 @@ import * as api from "@/api";
 export type Project = api.Project;
 export type ProjectContributor = api.ProjectContributor;
 export type Milestone = api.Milestone;
-export type KeyResource = api.ProjectKeyResource;
 
 export {
   getProject,
@@ -26,8 +25,6 @@ export const PRIVACY_PUBLIC = "public";
 export const PRIVACY_INTERNAL = "internal";
 export const PRIVACY_CONFIDENTIAL = "confidential";
 export const PRIVACY_SECRET = "secret";
-
-export { groupBySpace } from "./groupBySpace";
 
 export function useProjectContributorCandidates(id: string): (query: string) => Promise<api.Person[]> {
   return async (query: string) => {
@@ -68,10 +65,6 @@ export function isMilestoneOverdue(milestone: Pick<Milestone, "status" | "deadli
   if (!day) return false;
 
   return !Time.isToday(day) && Time.isPast(day);
-}
-
-export function allMilestonesCompleted(project: Project) {
-  return project.milestones!.every((m) => m!.status === "done");
 }
 
 export function isPausable(project: Project) {

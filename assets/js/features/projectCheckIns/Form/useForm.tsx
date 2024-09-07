@@ -19,7 +19,7 @@ interface UseFormOptions {
   checkIn?: ProjectCheckIns.ProjectCheckIn;
 }
 
-export interface Error {
+interface Error {
   field: string;
   message: string;
 }

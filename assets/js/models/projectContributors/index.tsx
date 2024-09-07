@@ -2,10 +2,11 @@ import * as api from "@/api";
 import { match } from "ts-pattern";
 
 export type ProjectContributor = api.ProjectContributor;
-export type ContributorRole = "champion" | "reviewer" | "contributor";
 
-export const CHAMPION_RESPONSIBILITY = "Champion - Responsible for the success of the project";
-export const REVIEWER_RESPONSIBILITY = "Reviewer - Responsible for reviewing and acknowledging progress";
+type ContributorRole = "champion" | "reviewer" | "contributor";
+
+const CHAMPION_RESPONSIBILITY = "Champion - Responsible for the success of the project";
+const REVIEWER_RESPONSIBILITY = "Reviewer - Responsible for reviewing and acknowledging progress";
 
 export function responsibility(contributor: ProjectContributor | undefined, role: ContributorRole) {
   return match(role)

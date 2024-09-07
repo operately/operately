@@ -6,14 +6,14 @@ import { logIn } from "@/models/people";
 import { useState } from "react";
 import { camelCaseToSpacedWords } from "@/utils/strings";
 
-export interface FormState {
+interface FormState {
   fields: FormFields;
   errors: FormError[];
   submitting: boolean;
   submit: () => Promise<boolean>;
 }
 
-export interface FormFields {
+interface FormFields {
   companyName: string;
   fullName: string;
   email: string;
@@ -29,7 +29,7 @@ export interface FormFields {
   setPasswordConfirmation: (content: string) => void;
 }
 
-export interface FormError {
+interface FormError {
   field: string;
   message: string;
 }
