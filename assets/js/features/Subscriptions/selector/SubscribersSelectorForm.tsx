@@ -2,7 +2,7 @@ import React from "react";
 
 import Forms from "@/components/Forms";
 import { includesId } from "@/routes/paths";
-import { FilledButton } from "@/components/Buttons";
+import { GhostButton, PrimaryButton } from "@/components/Buttons";
 import { ActionLink } from "@/components/Link";
 import { useSubscribersSelectorContext } from "../SubscribersSelectorContext";
 
@@ -50,12 +50,12 @@ export function SubscribersSelectorForm({ closeForm, loading = false, callback }
       </div>
 
       <div className="flex justify-center gap-2">
-        <FilledButton loading={loading} type="primary" submit>
+        <PrimaryButton loading={loading} submit>
           Save selection
-        </FilledButton>
-        <FilledButton onClick={closeForm} type="secondary">
+        </PrimaryButton>
+        <GhostButton onClick={closeForm} type="secondary">
           Never mind
-        </FilledButton>
+        </GhostButton>
       </div>
     </Forms.Form>
   );

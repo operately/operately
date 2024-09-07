@@ -5,7 +5,7 @@ import * as Pages from "@/components/Pages";
 import * as Icons from "@tabler/icons-react";
 import * as Spaces from "@/models/spaces";
 
-import { FilledButton } from "@/components/Buttons";
+import { PrimaryButton } from "@/components/Buttons";
 
 import { Form, useForm } from "@/features/DiscussionForm";
 import { Paths } from "@/routes/paths";
@@ -34,9 +34,9 @@ export function Page() {
         </Paper.Body>
 
         <div className="flex justify-center items-center mt-8">
-          <FilledButton loading={form.submitting} testId="post-discussion" onClick={form.submit} size="lg">
+          <PrimaryButton loading={form.submitting} testId="post-discussion" onClick={form.submit} size="lg">
             {form.submitButtonLabel}
-          </FilledButton>
+          </PrimaryButton>
         </div>
       </Paper.Root>
     </Pages.Page>

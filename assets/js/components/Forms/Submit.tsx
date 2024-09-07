@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import { getFormContext } from "./FormContext";
-import { FilledButton } from "@/components/Buttons";
+import { PrimaryButton } from "@/components/Buttons";
 import classNames from "classnames";
 
 interface SubmitProps {
@@ -19,9 +19,9 @@ export function Submit({ saveText, layout }: SubmitProps) {
 
   return (
     <div className={className}>
-      <FilledButton type="primary" submit loading={form.state === "submitting"} testId="submit">
+      <PrimaryButton submit loading={form.state === "submitting"} testId="submit">
         {saveText}
-      </FilledButton>
+      </PrimaryButton>
     </div>
   );
 }

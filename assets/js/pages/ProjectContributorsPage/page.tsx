@@ -14,7 +14,7 @@ import {
   PermissionsInput,
 } from "./FormElements";
 import ContributorItem from "./ContributorItem";
-import { FilledButton } from "@/components/Buttons";
+import { PrimaryButton } from "@/components/Buttons";
 
 import { useLoadedData, useRefresh } from "./loader";
 import { useForm, FormState } from "./useForm";
@@ -75,9 +75,9 @@ function AddContribForm({ form }: { form: FormState }) {
 
 function AddButton({ onClick }) {
   return (
-    <FilledButton onClick={onClick} testId="add-contributor-button" size="sm">
+    <PrimaryButton onClick={onClick} testId="add-contributor-button" size="sm">
       Add Contributor
-    </FilledButton>
+    </PrimaryButton>
   );
 }
 

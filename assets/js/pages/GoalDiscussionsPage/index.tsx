@@ -8,7 +8,7 @@ import * as Icons from "@tabler/icons-react";
 import { Paths } from "@/routes/paths";
 import { Navigation } from "@/features/goals/GoalPageNavigation";
 import { Header } from "@/features/goals/GoalPageHeader";
-import { FilledButton } from "@/components/Buttons";
+import { GhostButton, PrimaryButton } from "@/components/Buttons";
 
 import FormattedTime from "@/components/FormattedTime";
 import Avatar from "@/components/Avatar";
@@ -55,9 +55,9 @@ export const Page = function () {
 
           <div className="flex items-center my-6">
             <div className="flex-1 font-bold text-xs uppercase">Discussions</div>
-            <FilledButton size="sm" linkTo={Paths.newGoalDiscussionPath(goal.id!)} testId="start-discussion">
+            <PrimaryButton size="sm" linkTo={Paths.newGoalDiscussionPath(goal.id!)} testId="start-discussion">
               Start a new discussion
-            </FilledButton>
+            </PrimaryButton>
           </div>
 
           <ActivityList />
@@ -113,9 +113,9 @@ function ActivityItem({ activity }: { activity: Activities.Activity }) {
             </div>
 
             <div className="flex items-center gap-4 mt-4">
-              <FilledButton size="xxs" linkTo={path} type="secondary">
+              <GhostButton size="xxs" linkTo={path} type="secondary">
                 Discuss
-              </FilledButton>
+              </GhostButton>
 
               {ActivityHandler.hasComments(activity) && (
                 <div className="flex items-center gap-1 text-sm leading-none text-content-dimmed">

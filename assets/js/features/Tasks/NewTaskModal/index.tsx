@@ -5,7 +5,7 @@ import * as Tasks from "@/models/tasks";
 
 import classnames from "classnames";
 
-import { FilledButton } from "@/components/Buttons";
+import { GhostButton, PrimaryButton } from "@/components/Buttons";
 import { MultiPeopleSearch } from "./MultiPeopleSearch";
 
 import ReactModal from "react-modal";
@@ -85,13 +85,13 @@ export function NewTaskModal({ isOpen, hideModal, modalTitle, milestone, onSubmi
 
       <div className="flex justify-end mt-8">
         <div className="flex items-center gap-2">
-          <FilledButton size="base" type="secondary" onClick={handleCancel}>
+          <GhostButton size="base" type="secondary" onClick={handleCancel}>
             Cancel
-          </FilledButton>
+          </GhostButton>
 
-          <FilledButton size="base" type="primary" onClick={form.submit} testId="submit-new-task">
+          <PrimaryButton size="base" onClick={form.submit} testId="submit-new-task">
             Add Task
-          </FilledButton>
+          </PrimaryButton>
         </div>
       </div>
     </Modal>

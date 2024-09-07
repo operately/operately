@@ -12,7 +12,7 @@ import classNames from "classnames";
 import { match } from "ts-pattern";
 import { createTestId } from "@/utils/testid";
 
-import { FilledButton } from "@/components/Buttons";
+import { GhostButton } from "@/components/Buttons";
 import { MilestoneIcon } from "@/components/MilestoneIcon";
 import { DivLink } from "@/components/Link";
 import { Paths } from "@/routes/paths";
@@ -304,14 +304,14 @@ function ProjectLastCheckInDateWithPopover({ project }: { project: Projects.Proj
           <div className="flex items-center justify-between px-4 pt-4 text-sm">
             <div className="uppercase font-bold">Last Check-in</div>
 
-            <FilledButton
+            <GhostButton
               size="xs"
               type="secondary"
               linkTo={Paths.projectCheckInPath(project.lastCheckIn!.id!)}
               linkTarget="_blank"
             >
               Open <Icons.IconArrowUpRight size={14} className="ml-1 inline-block" />
-            </FilledButton>
+            </GhostButton>
           </div>
 
           <div className="inline-flex items-center gap-1 text-sm w-full px-4 mt-2">
@@ -369,14 +369,14 @@ function GoalLastCheckInDateWithPopover({ goal }: { goal: Goals.Goal }) {
           <div className="flex items-center justify-between px-4 pt-4 text-sm">
             <div className="uppercase font-bold">Last Check-in</div>
 
-            <FilledButton
+            <GhostButton
               size="xs"
               type="secondary"
               linkTo={Paths.goalProgressUpdatePath(goal.lastCheckIn!.id!)}
               linkTarget="_blank"
             >
               Open <Icons.IconArrowUpRight size={14} className="ml-1 inline-block" />
-            </FilledButton>
+            </GhostButton>
           </div>
 
           <div className="inline-flex items-center gap-1 text-sm w-full px-4 mt-2">

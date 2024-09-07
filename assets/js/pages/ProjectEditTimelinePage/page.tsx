@@ -3,7 +3,7 @@ import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
-import { FilledButton } from "@/components/Buttons";
+import { GhostButton, PrimaryButton } from "@/components/Buttons";
 
 import { useLoadedData } from "./loader";
 import { useForm, FormState } from "./useForm";
@@ -42,12 +42,11 @@ function Header({ form }: { form: FormState }) {
 
           {form.milestoneBeingEdited ? null : (
             <div className="flex items-center gap-2">
-              <FilledButton type="secondary" onClick={form.cancel} size="sm" testId="cancel-edit">
+              <GhostButton type="secondary" onClick={form.cancel} size="sm" testId="cancel-edit">
                 Cancel
-              </FilledButton>
+              </GhostButton>
 
-              <FilledButton
-                type="primary"
+              <PrimaryButton
                 onClick={form.submit}
                 loading={form.submitting}
                 size="sm"
@@ -55,7 +54,7 @@ function Header({ form }: { form: FormState }) {
                 bzzzOnClickFailure
               >
                 Save Changes
-              </FilledButton>
+              </PrimaryButton>
             </div>
           )}
         </div>
