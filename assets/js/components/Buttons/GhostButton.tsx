@@ -1,27 +1,23 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+
 import { PuffLoader } from "react-spinners";
+import { DivLink } from "../Link";
 
 interface GhostButton {
   children: any;
-  linkTo?: string;
   onClick?: (e: any) => void;
   testId?: string;
   size?: "xxs" | "xs" | "sm" | "base" | "lg";
   type?: "primary" | "secondary";
   loading?: boolean;
+
+  linkTo?: string;
+  linkTarget?: "_blank" | "_self" | "_parent" | "_top";
 }
 
 export function GhostButton(props: GhostButton) {
-  const navigate = useNavigate();
-
   const handleClick = (e: any) => {
     if (props.loading) {
-      return;
-    }
-
-    if (props.linkTo) {
-      navigate(props.linkTo);
       return;
     }
 
@@ -31,6 +27,15 @@ export function GhostButton(props: GhostButton) {
   };
 
   const klass = className(props.size, props.type, props.loading);
+
+  if (props.linkTo) {
+    return (
+      <DivLink className={klass} to={props.linkTo} target={props.linkTarget} testId={props.testId}>
+        {props.children}
+        <Spinner active={props.loading} />
+      </DivLink>
+    );
+  }
 
   return (
     <div className={klass} onClick={handleClick} data-test-id={props.testId}>
