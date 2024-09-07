@@ -11,10 +11,10 @@ defmodule OperatelyWeb.AccountTestSessionController do
   use OperatelyWeb, :controller
 
   if Application.compile_env(:operately, :test_routes) do
-    alias Operately.People
-    alias OperatelyWeb.AccountAuth
-
     def test_login(conn, params) do
+      alias Operately.People
+      alias OperatelyWeb.AccountAuth
+
       account = People.get_account_by_email(params["email"])
 
       if account do
