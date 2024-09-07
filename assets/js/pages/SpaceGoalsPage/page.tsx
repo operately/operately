@@ -31,7 +31,7 @@ function Content() {
     <>
       <div className="flex items-center justify-between mb-8">
         <div className="font-extrabold text-3xl">Goals in {space.name}</div>
-        <PrimaryButton type="primary" size="sm" linkTo={newGoalPath} testId="add-goal">
+        <PrimaryButton size="sm" linkTo={newGoalPath} testId="add-goal">
           Add Goal
         </PrimaryButton>
       </div>

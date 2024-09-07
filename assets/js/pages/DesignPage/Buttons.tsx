@@ -26,27 +26,53 @@ export function Buttons() {
         <PrimaryButton size="lg">Button text</PrimaryButton>
       </div>
 
-      <h3 className="font-bold mt-8 mb-4">Ghost buttons - primary</h3>
+      <div className="flex items-center space-x-4 mt-4">
+        <PrimaryButton loading={true} size="xxs">
+          Button text
+        </PrimaryButton>
+        <PrimaryButton loading={true} size="xs">
+          Button text
+        </PrimaryButton>
+        <PrimaryButton loading={true} size="sm">
+          Button text
+        </PrimaryButton>
+        <PrimaryButton loading={true} size="base">
+          Button text
+        </PrimaryButton>
+        <PrimaryButton loading={true} size="lg">
+          Button text
+        </PrimaryButton>
+      </div>
+
+      <h3 className="font-bold mt-8 mb-4">Ghost buttons</h3>
 
       <div className="flex items-center space-x-4 w-auto">
-        <GhostButton type="primary" size="xxs">
+        <GhostButton size="xxs">Button text</GhostButton>
+        <GhostButton size="xs">Button text</GhostButton>
+        <GhostButton size="sm">Button text</GhostButton>
+        <GhostButton size="base">Button text</GhostButton>
+        <GhostButton size="lg">Button text</GhostButton>
+      </div>
+
+      <div className="flex items-center space-x-4 w-auto mt-4">
+        <GhostButton loading={true} size="xxs">
           Button text
         </GhostButton>
-        <GhostButton type="primary" size="xs">
+        <GhostButton loading={true} size="xs">
           Button text
         </GhostButton>
-        <GhostButton type="primary" size="sm">
+        <GhostButton loading={true} size="sm">
           Button text
         </GhostButton>
-        <GhostButton type="primary" size="base">
+        <GhostButton loading={true} size="base">
           Button text
         </GhostButton>
-        <GhostButton type="primary" size="lg">
+        <GhostButton loading={true} size="lg">
           Button text
         </GhostButton>
       </div>
 
-      <h3 className="font-bold mt-8 mb-4">Ghost buttons - secondary</h3>
+      <h3 className="font-bold mt-8 mb-4">Secondary buttons</h3>
 
       <div className="flex items-center space-x-4 w-auto">
         <SecondaryButton size="xxs">Button text</SecondaryButton>
@@ -54,6 +80,24 @@ export function Buttons() {
         <SecondaryButton size="sm">Button text</SecondaryButton>
         <SecondaryButton size="base">Button text</SecondaryButton>
         <SecondaryButton size="lg">Button text</SecondaryButton>
+      </div>
+
+      <div className="flex items-center space-x-4 w-auto mt-4">
+        <SecondaryButton loading={true} size="xxs">
+          Button text
+        </SecondaryButton>
+        <SecondaryButton loading={true} size="xs">
+          Button text
+        </SecondaryButton>
+        <SecondaryButton loading={true} size="sm">
+          Button text
+        </SecondaryButton>
+        <SecondaryButton loading={true} size="base">
+          Button text
+        </SecondaryButton>
+        <SecondaryButton loading={true} size="lg">
+          Button text
+        </SecondaryButton>
       </div>
     </Section>
   );

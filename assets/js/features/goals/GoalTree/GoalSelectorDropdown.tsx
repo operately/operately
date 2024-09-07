@@ -89,7 +89,7 @@ function NodeView({ node, onSelect }: NodeProps) {
         </div>
 
         <div>
-          <PrimaryButton onClick={() => onSelect(node.goal)} size="xxxs" testId={createTestId("goal", node.name)}>
+          <PrimaryButton onClick={() => onSelect(node.goal)} size="xxs" testId={createTestId("goal", node.name)}>
             Select
           </PrimaryButton>
         </div>

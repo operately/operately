@@ -83,13 +83,7 @@ function SubmitButton({ form }: { form: FormState }) {
       )}
 
       <div className="flex items-center justify-center gap-4">
-        <PrimaryButton
-          onClick={form.submit}
-          loading={form.submitting}
-          size="lg"
-          testId="add-goal-button"
-          bzzzOnClickFailure
-        >
+        <PrimaryButton onClick={form.submit} loading={form.submitting} size="lg" testId="add-goal-button">
           Add Goal
         </PrimaryButton>
       </div>

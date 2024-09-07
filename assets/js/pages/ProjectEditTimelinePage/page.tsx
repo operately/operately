@@ -46,13 +46,7 @@ function Header({ form }: { form: FormState }) {
                 Cancel
               </SecondaryButton>
 
-              <PrimaryButton
-                onClick={form.submit}
-                loading={form.submitting}
-                size="sm"
-                testId="save-changes"
-                bzzzOnClickFailure
-              >
+              <PrimaryButton onClick={form.submit} loading={form.submitting} size="sm" testId="save-changes">
                 Save Changes
               </PrimaryButton>
             </div>
