@@ -126,7 +126,7 @@ function Progress({ project }: { project: Projects.Project }) {
   );
 }
 
-export function ProjectMilestones({ project }) {
+function ProjectMilestones({ project }) {
   const milestones = project.milestones || [];
 
   if (milestones.length === 0) {
