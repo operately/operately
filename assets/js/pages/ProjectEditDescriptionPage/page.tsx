@@ -7,7 +7,7 @@ import * as Projects from "@/models/projects";
 
 import { useLoadedData } from "./loader";
 import { useNavigateTo } from "@/routes/useNavigateTo";
-import { GhostButton, PrimaryButton } from "@/components/Buttons";
+import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
 import { Paths } from "@/routes/paths";
 
 export function Page() {
@@ -70,9 +70,7 @@ function Editor() {
           <PrimaryButton onClick={submit} testId="save" loading={loading}>
             Save
           </PrimaryButton>
-          <GhostButton linkTo={Paths.projectPath(project.id!)} type="secondary">
-            Cancel
-          </GhostButton>
+          <SecondaryButton linkTo={Paths.projectPath(project.id!)}>Cancel</SecondaryButton>
         </div>
       </TipTapEditor.Root>
     </div>

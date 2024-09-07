@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as Projects from "@/models/projects";
 
-import { GhostButton, PrimaryButton } from "@/components/Buttons";
+import { GhostButton, PrimaryButton, SecondaryButton } from "@/components/Buttons";
 import { SelectBox } from "@/components/Form";
 import { PERMISSIONS_LIST } from "@/features/Permissions";
 
@@ -57,9 +57,9 @@ export function PermissionsInput({ value, onChange }) {
 export function RemoveButton({ onClick, loading }) {
   return (
     <div className="flex gap-2">
-      <GhostButton type="secondary" onClick={onClick} loading={loading} testId="remove-contributor">
+      <SecondaryButton onClick={onClick} loading={loading} testId="remove-contributor">
         Remove
-      </GhostButton>
+      </SecondaryButton>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { GhostButton } from "@/components/Buttons";
+import { SecondaryButton } from "@/components/Buttons";
 import { FormState } from "./useForm";
 import { createTestId } from "@/utils/testid";
 import Avatar from "@/components/Avatar";
@@ -35,9 +35,9 @@ function AdminListItem({ admin, form }) {
 
         <div className="flex justify-center">
           {admin.id !== form.me.id ? (
-            <GhostButton type="secondary" size="xs" onClick={onRemoveClick} testId={removeTestId}>
+            <SecondaryButton size="xs" onClick={onRemoveClick} testId={removeTestId}>
               Remove
-            </GhostButton>
+            </SecondaryButton>
           ) : (
             <div className="bg-surface-dimmed px-2 py-0.5 rounded-lg text-sm text-accent-1 font-medium">This is me</div>
           )}

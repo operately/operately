@@ -4,7 +4,7 @@ import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
 import RichContent from "@/components/RichContent";
 
-import { GhostButton, PrimaryButton } from "@/components/Buttons";
+import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
 import { Paths } from "@/routes/paths";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 
@@ -41,10 +41,9 @@ export function LastCheckInMessage({ goal }) {
 
           <div className="flex items-center gap-3">
             <LastMessageReactions goal={goal} />
-            <GhostButton linkTo={path} size="xs" type="secondary">
+            <SecondaryButton linkTo={path} size="xs">
               Discuss
-            </GhostButton>
-
+            </SecondaryButton>
             <LastMessageComments goal={goal} />
           </div>
         </div>

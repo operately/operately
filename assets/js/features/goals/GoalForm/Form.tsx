@@ -8,7 +8,7 @@ import * as Forms from "@/components/Form";
 import * as People from "@/models/people";
 import * as TipTapEditor from "@/components/Editor";
 
-import { GhostButton } from "@/components/Buttons";
+import { SecondaryButton } from "@/components/Buttons";
 import { AddTarget, Target, TargetHeader } from "./Target";
 import { FormState } from "./useForm";
 import { GoalSelectorDropdown } from "@/features/goals/GoalTree/GoalSelectorDropdown";
@@ -197,9 +197,9 @@ function AddDescription({ form }: { form: FormState }) {
 
   return (
     <div className="mt-2 flex items-center gap-2 text-xs">
-      <GhostButton size="xxs" type="secondary" onClick={form.fields.setHasDescription}>
+      <SecondaryButton size="xxs" onClick={form.fields.setHasDescription}>
         Add Description
-      </GhostButton>
+      </SecondaryButton>
     </div>
   );
 }

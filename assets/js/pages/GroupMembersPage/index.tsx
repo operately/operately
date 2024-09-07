@@ -7,7 +7,7 @@ import * as Icons from "@tabler/icons-react";
 import * as Spaces from "@/models/spaces";
 
 import Avatar from "@/components/Avatar";
-import { GhostButton } from "@/components/Buttons";
+import { SecondaryButton } from "@/components/Buttons";
 
 import AddMembersModal from "./AddMembersModal";
 import { Link } from "@/components/Link";
@@ -84,9 +84,9 @@ function MemberListItem({ member }) {
         </div>
 
         <div className="flex justify-center">
-          <GhostButton type="secondary" size="xs" onClick={handleRemove} testId={"remove-member-" + member.id}>
+          <SecondaryButton size="xs" onClick={handleRemove} testId={"remove-member-" + member.id}>
             Remove
-          </GhostButton>
+          </SecondaryButton>
         </div>
       </div>
     </div>

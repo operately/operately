@@ -8,7 +8,7 @@ import * as Icons from "@tabler/icons-react";
 import { Paths } from "@/routes/paths";
 import { Navigation } from "@/features/goals/GoalPageNavigation";
 import { Header } from "@/features/goals/GoalPageHeader";
-import { GhostButton, PrimaryButton } from "@/components/Buttons";
+import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
 
 import FormattedTime from "@/components/FormattedTime";
 import Avatar from "@/components/Avatar";
@@ -113,9 +113,9 @@ function ActivityItem({ activity }: { activity: Activities.Activity }) {
             </div>
 
             <div className="flex items-center gap-4 mt-4">
-              <GhostButton size="xxs" linkTo={path} type="secondary">
+              <SecondaryButton size="xxs" linkTo={path}>
                 Discuss
-              </GhostButton>
+              </SecondaryButton>
 
               {ActivityHandler.hasComments(activity) && (
                 <div className="flex items-center gap-1 text-sm leading-none text-content-dimmed">

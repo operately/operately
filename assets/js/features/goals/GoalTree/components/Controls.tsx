@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { GhostButton } from "@/components/Buttons";
+import { SecondaryButton } from "@/components/Buttons";
 import { useTreeContext } from "../treeContext";
 import { useExpandable } from "../context/Expandable";
 
@@ -18,15 +18,15 @@ function ExpandCollapseButton() {
 
   if (Object.keys(expanded).length === 0) {
     return (
-      <GhostButton type="secondary" size="xs" onClick={expandAll}>
+      <SecondaryButton size="xs" onClick={expandAll}>
         Expand All
-      </GhostButton>
+      </SecondaryButton>
     );
   } else {
     return (
-      <GhostButton type="secondary" size="xs" onClick={collapseAll}>
+      <SecondaryButton size="xs" onClick={collapseAll}>
         Collapse All
-      </GhostButton>
+      </SecondaryButton>
     );
   }
 }
@@ -38,8 +38,8 @@ function ShowHideCompletedToggle() {
   const title = showCompleted ? "Hide Completed" : "Show Completed";
 
   return (
-    <GhostButton type="secondary" size="xs" onClick={toggle}>
+    <SecondaryButton size="xs" onClick={toggle}>
       {title}
-    </GhostButton>
+    </SecondaryButton>
   );
 }

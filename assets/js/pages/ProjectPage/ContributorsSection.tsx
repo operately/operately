@@ -3,7 +3,7 @@ import * as Projects from "@/models/projects";
 import * as ProjectContributors from "@/models/projectContributors";
 
 import { Paths } from "@/routes/paths";
-import { GhostButton } from "@/components/Buttons";
+import { SecondaryButton } from "@/components/Buttons";
 import { ContributorAvatar, ReviewerPlaceholder, ChampionPlaceholder } from "@/components/ContributorAvatar";
 import { ProjectContributor } from "@/models/projectContributors";
 
@@ -38,9 +38,9 @@ function ManageAccessButton({ project }: { project: Projects.Project }) {
 
   return (
     <div className="ml-2">
-      <GhostButton size="xs" type="secondary" testId="manage-team-button" linkTo={path}>
+      <SecondaryButton size="xs" testId="manage-team-button" linkTo={path}>
         Manage team &amp; access
-      </GhostButton>
+      </SecondaryButton>
     </div>
   );
 }

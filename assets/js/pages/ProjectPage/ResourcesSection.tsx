@@ -2,7 +2,7 @@ import * as React from "react";
 import * as Projects from "@/models/projects";
 
 import { ResourceIcon } from "@/components/KeyResourceIcon";
-import { GhostButton } from "@/components/Buttons";
+import { SecondaryButton } from "@/components/Buttons";
 import { Link } from "@/components/Link";
 import { Paths } from "@/routes/paths";
 
@@ -48,9 +48,9 @@ function ResourcesZeroState({ project }) {
   const editPath = Paths.projectEditResourcesPath(project.id!);
 
   const editLink = (
-    <GhostButton linkTo={editPath} testId="add-resources-link" size="xs" type="secondary">
+    <SecondaryButton linkTo={editPath} testId="add-resources-link" size="xs">
       Add Resources
-    </GhostButton>
+    </SecondaryButton>
   );
 
   return (

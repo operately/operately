@@ -1,7 +1,7 @@
 import React from "react";
 
 import { EditorContext, Context } from "./EditorContext";
-import { GhostButton, PrimaryButton } from "@/components/Buttons";
+import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
 import classNames from "classnames";
 
 export function useLinkEditFormClose() {
@@ -88,9 +88,9 @@ export function LinkEditForm({ editor }): JSX.Element {
                 Save
               </PrimaryButton>
 
-              <GhostButton onClick={unlink} size="xxs">
+              <SecondaryButton onClick={unlink} size="xxs">
                 Unlink
-              </GhostButton>
+              </SecondaryButton>
             </>
           ) : (
             <>
@@ -98,9 +98,9 @@ export function LinkEditForm({ editor }): JSX.Element {
                 Add
               </PrimaryButton>
 
-              <GhostButton onClick={unlink} size="xxs" type="secondary">
+              <SecondaryButton onClick={unlink} size="xxs">
                 Cancel
-              </GhostButton>
+              </SecondaryButton>
             </>
           )}
         </div>

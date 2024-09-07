@@ -6,7 +6,7 @@ import * as Time from "@/utils/time";
 import { Link } from "@/components/Link";
 import { Paths } from "@/routes/paths";
 import { DimmedLabel } from "./Label";
-import { GhostButton } from "@/components/Buttons";
+import { SecondaryButton } from "@/components/Buttons";
 import { MilestoneIcon } from "@/components/MilestoneIcon";
 
 import Duration from "@/components/Duration";
@@ -146,9 +146,9 @@ function MilestonesZeroState({ project }) {
   const editPath = Paths.projectEditTimelinePath(project.id!);
 
   const editLink = (
-    <GhostButton linkTo={editPath} testId="add-milestones-link" size="xs" type="secondary">
+    <SecondaryButton linkTo={editPath} testId="add-milestones-link" size="xs">
       Edit Timeline
-    </GhostButton>
+    </SecondaryButton>
   );
 
   return (
