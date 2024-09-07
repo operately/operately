@@ -1,7 +1,7 @@
 import * as api from "@/api";
 import * as Time from "@/utils/time";
 
-export type Comment = api.Comment;
+type Comment = api.Comment;
 
 export { useCreateComment, useEditComment, useGetComments } from "@/api";
 export { useDiscussionCommentsChangeSignal } from "@/api/socket";

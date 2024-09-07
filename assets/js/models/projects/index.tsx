@@ -4,7 +4,6 @@ import * as api from "@/api";
 export type Project = api.Project;
 export type ProjectContributor = api.ProjectContributor;
 export type Milestone = api.Milestone;
-export type KeyResource = api.ProjectKeyResource;
 
 export {
   getProject,
