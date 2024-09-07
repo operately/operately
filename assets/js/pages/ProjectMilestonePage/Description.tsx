@@ -1,9 +1,9 @@
-import * as React from "react";
 import * as TipTapEditor from "@/components/Editor";
+import * as React from "react";
 
 import RichContent from "@/components/RichContent";
 
-import { GhostButton, PrimaryButton } from "@/components/Buttons";
+import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 
 export function Description({ milestone, form }) {
@@ -33,14 +33,9 @@ function DescriptionContent({ milestone, form }) {
 function DescriptionZeroState({ form }) {
   return (
     <div className="flex items-center gap-2">
-      <GhostButton
-        onClick={form.description.startEditing}
-        testId="add-milestone-description"
-        size="xs"
-        type="secondary"
-      >
+      <SecondaryButton onClick={form.description.startEditing} testId="add-milestone-description" size="xs">
         Add Description
-      </GhostButton>
+      </SecondaryButton>
     </div>
   );
 }
@@ -64,14 +59,9 @@ function DescriptionEdit({ form }) {
       </div>
 
       <div className="flex items-center gap-2 justify-end mt-4">
-        <GhostButton
-          onClick={form.description.stopEditing}
-          testId="cancel-milestone-description"
-          type="secondary"
-          size="xs"
-        >
+        <SecondaryButton onClick={form.description.stopEditing} testId="cancel-milestone-description" size="xs">
           Cancel
-        </GhostButton>
+        </SecondaryButton>
 
         <PrimaryButton
           onClick={form.description.submit}

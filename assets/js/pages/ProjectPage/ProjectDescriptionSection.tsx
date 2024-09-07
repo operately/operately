@@ -3,7 +3,7 @@ import * as Projects from "@/models/projects";
 
 import { Link } from "@/components/Link";
 import { Paths } from "@/routes/paths";
-import { GhostButton } from "@/components/Buttons";
+import { SecondaryButton } from "@/components/Buttons";
 
 import RichContent, { countCharacters, shortenContent } from "@/components/RichContent";
 
@@ -82,9 +82,9 @@ function DescriptionZeroState({ project }) {
   const writePath = Paths.projectEditDescriptionPath(project.id!);
 
   const editLink = (
-    <GhostButton linkTo={writePath} testId="write-project-description-link" size="xs" type="secondary">
+    <SecondaryButton linkTo={writePath} testId="write-project-description-link" size="xs">
       Write project description
-    </GhostButton>
+    </SecondaryButton>
   );
 
   return (

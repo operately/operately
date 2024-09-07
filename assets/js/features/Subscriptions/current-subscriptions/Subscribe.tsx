@@ -1,6 +1,6 @@
 import React from "react";
 
-import { GhostButton } from "@/components/Buttons";
+import { SecondaryButton } from "@/components/Buttons";
 import { useSubscribeToNotifications } from "@/models/notifications";
 import { useCurrentSubscriptionsContext } from "../CurrentSubscriptions";
 
@@ -17,9 +17,9 @@ export function Subscribe() {
       <div className="font-bold">You&apos;re not subscribed</div>
       <p className="text-sm">You won&apos;t be notified when comments are posted.</p>
       <div className="flex mt-2">
-        <GhostButton onClick={handleSubscribe} loading={loading} size="xs" type="secondary">
+        <SecondaryButton onClick={handleSubscribe} loading={loading} size="xs">
           Subscribe me
-        </GhostButton>
+        </SecondaryButton>
       </div>
     </div>
   );

@@ -7,7 +7,7 @@ import FormattedTime from "@/components/FormattedTime";
 import Avatar from "@/components/Avatar";
 
 import { DimmedLabel } from "./Label";
-import { GhostButton } from "@/components/Buttons";
+import { SecondaryButton } from "@/components/Buttons";
 import { Link } from "@/components/Link";
 import { Paths } from "@/routes/paths";
 import { SmallStatusIndicator } from "@/features/projectCheckIns/SmallStatusIndicator";
@@ -113,9 +113,9 @@ function CheckInNowButton({ project }: { project: Projects.Project }) {
 
   return (
     <div className="flex">
-      <GhostButton linkTo={newCheckInPath} testId="check-in-now" size="xs" type="secondary">
+      <SecondaryButton linkTo={newCheckInPath} testId="check-in-now" size="xs">
         Check-In Now
-      </GhostButton>
+      </SecondaryButton>
     </div>
   );
 }

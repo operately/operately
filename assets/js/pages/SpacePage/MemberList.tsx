@@ -1,10 +1,10 @@
-import * as React from "react";
 import * as Spaces from "@/models/spaces";
+import * as React from "react";
 
-import { useNavigate } from "react-router-dom";
 import Avatar from "@/components/Avatar";
+import { SecondaryButton } from "@/components/Buttons";
 import { Paths } from "@/routes/paths";
-import { GhostButton } from "@/components/Buttons";
+import { useNavigate } from "react-router-dom";
 
 export default function MemberList({ space }: { space: Spaces.Space }) {
   const navigate = useNavigate();
@@ -36,9 +36,9 @@ export default function MemberList({ space }: { space: Spaces.Space }) {
             <Avatar key={m.id} person={m} size={32} />
           ))}
         </div>
-        <GhostButton onClick={gotoSpaceAccessManagementPage} size="xs" type="secondary" testId="access-management">
+        <SecondaryButton onClick={gotoSpaceAccessManagementPage} size="xs" testId="access-management">
           Manage access
-        </GhostButton>
+        </SecondaryButton>
       </div>
     );
   }

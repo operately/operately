@@ -7,7 +7,7 @@ import * as TipTapEditor from "@/components/Editor";
 import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
 import RichContent from "@/components/RichContent";
-import { GhostButton, PrimaryButton } from "@/components/Buttons";
+import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
 
 import { FormState } from "./form";
 import { useBoolState } from "@/utils/useBoolState";
@@ -94,9 +94,9 @@ function EditComment({ comment, onCancel, form, refresh }) {
                   {uploading ? "Uploading..." : "Save Changes"}
                 </PrimaryButton>
 
-                <GhostButton type="secondary" onClick={onCancel} size="xs">
+                <SecondaryButton onClick={onCancel} size="xs">
                   Cancel
-                </GhostButton>
+                </SecondaryButton>
               </div>
             </div>
           </div>
@@ -297,9 +297,9 @@ function AddCommentActive({ onBlur, onPost, form }) {
                   {uploading ? "Uploading..." : "Post"}
                 </PrimaryButton>
 
-                <GhostButton type="secondary" onClick={onBlur} size="xs">
+                <SecondaryButton onClick={onBlur} size="xs">
                   Cancel
-                </GhostButton>
+                </SecondaryButton>
               </div>
             </div>
           </div>

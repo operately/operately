@@ -3,7 +3,7 @@ import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
-import { GhostButton, PrimaryButton } from "@/components/Buttons";
+import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
 
 import { useLoadedData } from "./loader";
 import { useForm, FormState } from "./useForm";
@@ -42,9 +42,9 @@ function Header({ form }: { form: FormState }) {
 
           {form.milestoneBeingEdited ? null : (
             <div className="flex items-center gap-2">
-              <GhostButton type="secondary" onClick={form.cancel} size="sm" testId="cancel-edit">
+              <SecondaryButton onClick={form.cancel} size="sm" testId="cancel-edit">
                 Cancel
-              </GhostButton>
+              </SecondaryButton>
 
               <PrimaryButton
                 onClick={form.submit}

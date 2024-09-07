@@ -1,10 +1,10 @@
 import React, { useMemo, useState } from "react";
 
 import Avatar from "@/components/Avatar";
-import { GhostButton } from "@/components/Buttons";
 import { Subscription } from "@/models/notifications";
 import { EditSubscriptionsModal } from "./EditSubscriptionsModal";
 import { useCurrentSubscriptionsContext } from "../CurrentSubscriptions";
+import { SecondaryButton } from "@/components/Buttons";
 
 export function ExistingSubscriptionsList() {
   const { subscriptionList, name } = useCurrentSubscriptionsContext();
@@ -20,9 +20,9 @@ export function ExistingSubscriptionsList() {
         {subscriptionList.subscriptions!.map((s) => (
           <Avatar person={s.person!} size="tiny" key={s.person!.id} />
         ))}
-        <GhostButton onClick={() => setIsModalOpen(true)} size="xs" type="secondary">
+        <SecondaryButton onClick={() => setIsModalOpen(true)} size="xs">
           Add/remove people...
-        </GhostButton>
+        </SecondaryButton>
       </div>
 
       <EditSubscriptionsModal isModalOpen={isModalOpen} hideModal={() => setIsModalOpen(false)} />

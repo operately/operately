@@ -6,7 +6,6 @@ import * as Notifications from "@/models/notifications";
 import * as Api from "@/api";
 
 import { useDocumentTitle } from "@/layouts/header";
-import { GhostButton } from "@/components/Buttons";
 
 import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
@@ -14,6 +13,7 @@ import ActivityHandler from "@/features/activities";
 
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { TextSeparator } from "@/components/TextSeparator";
+import { SecondaryButton } from "@/components/Buttons";
 
 interface LoaderResult {
   notifications: Api.Notification[];
@@ -85,9 +85,9 @@ function MarkAllReadButton() {
   }, [markAllRead]);
 
   return (
-    <GhostButton type="secondary" size="xs" testId="mark-all-read" onClick={onClick} loading={loading}>
+    <SecondaryButton size="xs" testId="mark-all-read" onClick={onClick} loading={loading}>
       Mark all read
-    </GhostButton>
+    </SecondaryButton>
   );
 }
 

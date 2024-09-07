@@ -12,7 +12,7 @@ import { Options } from "./Options";
 import { Header } from "./Header";
 import { Description } from "./Description";
 import { CommentSection, useForMilestone } from "@/features/CommentSection";
-import { GhostButton } from "@/components/Buttons";
+import { SecondaryButton } from "@/components/Buttons";
 import { TaskBoard } from "@/features/Tasks/TaskBoard";
 import { NewTaskModal } from "@/features/Tasks/NewTaskModal";
 
@@ -106,9 +106,9 @@ function TaskSection({ milestone }) {
 
       {showAddFirstTask && (
         <div className="flex justify-between mb-6">
-          <GhostButton size="xs" type="secondary" onClick={() => setNewTaskModalOpen(true)}>
+          <SecondaryButton size="xs" onClick={() => setNewTaskModalOpen(true)}>
             Add First Task
-          </GhostButton>
+          </SecondaryButton>
         </div>
       )}
 

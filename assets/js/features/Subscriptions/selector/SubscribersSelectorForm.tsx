@@ -2,7 +2,7 @@ import React from "react";
 
 import Forms from "@/components/Forms";
 import { includesId } from "@/routes/paths";
-import { GhostButton, PrimaryButton } from "@/components/Buttons";
+import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
 import { ActionLink } from "@/components/Link";
 import { useSubscribersSelectorContext } from "../SubscribersSelectorContext";
 
@@ -53,9 +53,7 @@ export function SubscribersSelectorForm({ closeForm, loading = false, callback }
         <PrimaryButton loading={loading} submit>
           Save selection
         </PrimaryButton>
-        <GhostButton onClick={closeForm} type="secondary">
-          Never mind
-        </GhostButton>
+        <SecondaryButton onClick={closeForm}>Never mind</SecondaryButton>
       </div>
     </Forms.Form>
   );
