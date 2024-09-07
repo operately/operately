@@ -101,7 +101,7 @@ function AddTrustedEmailDomain({ form }: { form: FormState }) {
           data-test-id="add-trusted-email-domain-input"
         />
 
-        <GhostButton onClick={submit} type="primary" size="sm" testId="add-trusted-email-domain-button">
+        <GhostButton onClick={submit} size="sm" testId="add-trusted-email-domain-button">
           Add
         </GhostButton>
       </div>

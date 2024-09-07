@@ -58,7 +58,7 @@ function Navigation({ goal, checkin }) {
 
 function SubmitButton({ form }) {
   return (
-    <PrimaryButton onClick={form.submit} loading={form.submitting} testId="submit-update" bzzzOnClickFailure>
+    <PrimaryButton onClick={form.submit} loading={form.submitting} testId="submit-update">
       Save
     </PrimaryButton>
   );

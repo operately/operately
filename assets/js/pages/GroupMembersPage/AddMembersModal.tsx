@@ -74,7 +74,7 @@ export default function AddMembersModal({ spaceId, onSubmit, members }) {
     <Context.Provider value={{ selected, add, remove }}>
       <div className="flex items-center my-8 gap-2">
         <div className="h-px bg-surface-outline flex-1" />
-        <GhostButton type="primary" onClick={openModal} testId="add-space-members">
+        <GhostButton onClick={openModal} testId="add-space-members">
           Add Members
         </GhostButton>
         <div className="h-px bg-surface-outline flex-1" />

@@ -57,7 +57,7 @@ function SubmitButton({ form }: { form: FormState }) {
         <div className="text-content-error text-sm font-medium text-center mb-4">Please fill out all fields</div>
       )}
       <div className="flex items-center justify-center">
-        <PrimaryButton onClick={form.submit} testId="save" bzzzOnClickFailure>
+        <PrimaryButton onClick={form.submit} testId="save">
           Save
         </PrimaryButton>
       </div>

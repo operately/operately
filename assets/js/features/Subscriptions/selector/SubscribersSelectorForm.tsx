@@ -50,7 +50,7 @@ export function SubscribersSelectorForm({ closeForm, loading = false, callback }
       </div>
 
       <div className="flex justify-center gap-2">
-        <PrimaryButton loading={loading} submit>
+        <PrimaryButton loading={loading} type="submit">
           Save selection
         </PrimaryButton>
         <SecondaryButton onClick={closeForm}>Never mind</SecondaryButton>

@@ -42,13 +42,7 @@ function Header({ form, checkIn }: { form: ReturnType<typeof useForm>; checkIn: 
               Cancel
             </SecondaryButton>
 
-            <PrimaryButton
-              onClick={form.submit}
-              loading={form.submitting}
-              size="sm"
-              testId="save-changes"
-              bzzzOnClickFailure
-            >
+            <PrimaryButton onClick={form.submit} loading={form.submitting} size="sm" testId="save-changes">
               {form.submitButtonLabel}
             </PrimaryButton>
           </div>

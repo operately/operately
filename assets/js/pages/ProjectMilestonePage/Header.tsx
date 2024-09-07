@@ -73,7 +73,7 @@ function Actions({ milestone, form }) {
   if (milestone.status === "done") {
     return (
       <div className="flex justify-between">
-        <SecondaryButton size="sm" onClick={form.reopenMilestone} testId="reopen-milestone" type="secondary">
+        <SecondaryButton size="sm" onClick={form.reopenMilestone} testId="reopen-milestone">
           Re-Open Milestone
         </SecondaryButton>
       </div>
@@ -112,7 +112,7 @@ function Edit({ form }: { form: FormState }) {
           Cancel
         </SecondaryButton>
 
-        <PrimaryButton size="sm" onClick={form.titleAndDeadline.submit} testId="save-milestone" bzzzOnClickFailure>
+        <PrimaryButton size="sm" onClick={form.titleAndDeadline.submit} testId="save-milestone">
           Save Changes
         </PrimaryButton>
       </div>

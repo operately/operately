@@ -95,7 +95,7 @@ function HeaderEditor({ form }: { form: FormState }) {
           Cancel
         </SecondaryButton>
 
-        <PrimaryButton size="sm" onClick={form.headerForm.submit} bzzzOnClickFailure testId="submit-edited-task">
+        <PrimaryButton size="sm" onClick={form.headerForm.submit} testId="submit-edited-task">
           Save
         </PrimaryButton>
       </div>

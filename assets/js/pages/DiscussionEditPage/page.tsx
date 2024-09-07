@@ -36,13 +36,7 @@ function Header({ form }) {
               Cancel
             </SecondaryButton>
 
-            <PrimaryButton
-              onClick={form.submit}
-              loading={form.submitting}
-              size="sm"
-              testId="save-changes"
-              bzzzOnClickFailure
-            >
+            <PrimaryButton onClick={form.submit} loading={form.submitting} size="sm" testId="save-changes">
               {form.submitButtonLabel}
             </PrimaryButton>
           </div>
