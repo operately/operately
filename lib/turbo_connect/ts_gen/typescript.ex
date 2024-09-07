@@ -16,12 +16,12 @@ defmodule TurboConnect.TsGen.Typescript do
 
   def ts_function_name(name) do
     result = name |> Atom.to_string() |> Macro.camelize()
-    String.downcase(String.at(result, 0)) <> String.slice(result, 1..-1)
+    String.downcase(String.at(result, 0)) <> String.slice(result, 1, String.length(result) - 1)
   end
 
   def ts_field_name(name) do
     result = name |> Atom.to_string() |> Macro.camelize()
-    String.downcase(String.at(result, 0)) <> String.slice(result, 1..-1)
+    String.downcase(String.at(result, 0)) <> String.slice(result, 1, String.length(result) - 1)
   end
 
   def ts_interface_fields(fields) do
