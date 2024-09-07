@@ -59,13 +59,7 @@ function SubmitButton({ form }) {
   return (
     <div className="mt-8">
       <div className="flex items-center gap-4">
-        <PrimaryButton
-          type="primary"
-          onClick={form.submit}
-          loading={form.submitting}
-          testId="submit-update"
-          bzzzOnClickFailure
-        >
+        <PrimaryButton onClick={form.submit} loading={form.submitting} testId="submit-update" bzzzOnClickFailure>
           Submit Update
         </PrimaryButton>
       </div>

@@ -52,7 +52,7 @@ function ResumeButton({ project }) {
   };
 
   return (
-    <PrimaryButton onClick={handleClick} testId="resume-project-button" type="primary" loading={loading}>
+    <PrimaryButton onClick={handleClick} testId="resume-project-button" loading={loading}>
       Resume the Project
     </PrimaryButton>
   );

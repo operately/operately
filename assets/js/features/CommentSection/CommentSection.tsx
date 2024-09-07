@@ -7,7 +7,7 @@ import * as TipTapEditor from "@/components/Editor";
 import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
 import RichContent from "@/components/RichContent";
-import { PrimaryButton } from "@/components/Buttons";
+import { GhostButton, PrimaryButton } from "@/components/Buttons";
 
 import { FormState } from "./form";
 import { useBoolState } from "@/utils/useBoolState";
@@ -90,19 +90,13 @@ function EditComment({ comment, onCancel, form, refresh }) {
 
             <div className="flex justify-between items-center m-4">
               <div className="flex items-center gap-2">
-                <PrimaryButton
-                  onClick={handlePost}
-                  type="primary"
-                  testId="post-comment"
-                  size="xs"
-                  loading={form.submitting}
-                >
+                <PrimaryButton onClick={handlePost} testId="post-comment" size="xs" loading={form.submitting}>
                   {uploading ? "Uploading..." : "Save Changes"}
                 </PrimaryButton>
 
-                <PrimaryButton type="secondary" onClick={onCancel} size="xs">
+                <GhostButton type="secondary" onClick={onCancel} size="xs">
                   Cancel
-                </PrimaryButton>
+                </GhostButton>
               </div>
             </div>
           </div>
@@ -299,19 +293,13 @@ function AddCommentActive({ onBlur, onPost, form }) {
 
             <div className="flex justify-between items-center m-4">
               <div className="flex items-center gap-2">
-                <PrimaryButton
-                  onClick={handlePost}
-                  loading={form.submitting}
-                  type="primary"
-                  testId="post-comment"
-                  size="xs"
-                >
+                <PrimaryButton onClick={handlePost} loading={form.submitting} testId="post-comment" size="xs">
                   {uploading ? "Uploading..." : "Post"}
                 </PrimaryButton>
 
-                <PrimaryButton type="secondary" onClick={onBlur} size="xs">
+                <GhostButton type="secondary" onClick={onBlur} size="xs">
                   Cancel
-                </PrimaryButton>
+                </GhostButton>
               </div>
             </div>
           </div>

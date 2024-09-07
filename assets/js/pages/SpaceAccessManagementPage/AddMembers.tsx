@@ -79,7 +79,7 @@ function AddMemberButton({ member, loading, handleAddMember }) {
 
   return (
     <div>
-      <PrimaryButton loading={loading} size="xs" type="primary" onClick={handleAddMember} testId="submit-space-members">
+      <PrimaryButton loading={loading} size="xs" onClick={handleAddMember} testId="submit-space-members">
         Add member
       </PrimaryButton>
     </div>

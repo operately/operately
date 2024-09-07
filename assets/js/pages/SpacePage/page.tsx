@@ -101,7 +101,7 @@ function JoinButton({ space }) {
 
   return (
     <div className="flex justify-center mb-8 mt-6">
-      <PrimaryButton type="primary" size="sm" onClick={handleClick} testId="join-space-button">
+      <PrimaryButton size="sm" onClick={handleClick} testId="join-space-button">
         Join this Space
       </PrimaryButton>
     </div>

@@ -74,13 +74,7 @@ export function Page() {
           </div>
 
           <div className="mt-10 flex justify-center gap-4">
-            <PrimaryButton
-              type="primary"
-              onClick={form.submit}
-              bzzzOnClickFailure
-              testId="submit"
-              loading={form.loading}
-            >
+            <PrimaryButton onClick={form.submit} bzzzOnClickFailure testId="submit" loading={form.loading}>
               Create Company
             </PrimaryButton>
           </div>

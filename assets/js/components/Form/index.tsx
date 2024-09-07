@@ -4,7 +4,7 @@ import classname from "classnames";
 
 type Ref = HTMLFormElement;
 
-import { PrimaryButton } from "@/components/Buttons";
+import { GhostButton, PrimaryButton } from "@/components/Buttons";
 
 export * from "./radio";
 export * from "./select";
@@ -52,7 +52,7 @@ export function SubmitButton({ children, testId, ...props }: { children: React.R
   const { loading } = React.useContext(Context);
 
   return (
-    <PrimaryButton submit type="primary" testId={testId || "submit"} loading={loading} {...props}>
+    <PrimaryButton submit testId={testId || "submit"} loading={loading} {...props}>
       {children}
     </PrimaryButton>
   );
@@ -62,9 +62,9 @@ export function CancelButton({ children }) {
   const { onCancel } = React.useContext(Context);
 
   return (
-    <PrimaryButton type="secondary" onClick={onCancel}>
+    <GhostButton type="secondary" onClick={onCancel}>
       {children}
-    </PrimaryButton>
+    </GhostButton>
   );
 }
 

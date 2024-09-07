@@ -84,7 +84,6 @@ function SubmitButton({ form }: { form: FormState }) {
 
       <div className="flex items-center justify-center gap-4">
         <PrimaryButton
-          type="primary"
           onClick={form.submit}
           loading={form.submitting}
           size="lg"

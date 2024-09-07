@@ -19,7 +19,7 @@ export function Submit({ saveText, layout }: SubmitProps) {
 
   return (
     <div className={className}>
-      <PrimaryButton type="primary" submit loading={form.state === "submitting"} testId="submit">
+      <PrimaryButton submit loading={form.state === "submitting"} testId="submit">
         {saveText}
       </PrimaryButton>
     </div>

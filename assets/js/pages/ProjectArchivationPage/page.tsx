@@ -51,7 +51,7 @@ function ArchiveButton({ project }) {
   };
 
   return (
-    <PrimaryButton onClick={submit} testId="archive-project-button" type="primary" loading={loading}>
+    <PrimaryButton onClick={submit} testId="archive-project-button" loading={loading}>
       Archive the Project
     </PrimaryButton>
   );

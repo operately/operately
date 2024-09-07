@@ -8,7 +8,7 @@ import * as TipTapEditor from "@/components/Editor";
 
 import RichContent from "@/components/RichContent";
 import Avatar from "@/components/Avatar";
-import { PrimaryButton } from "@/components/Buttons";
+import { GhostButton, PrimaryButton } from "@/components/Buttons";
 
 import { useLoadedData } from "./loader";
 import { useForm, FormState } from "./useForm";
@@ -91,17 +91,11 @@ function HeaderEditor({ form }: { form: FormState }) {
       </div>
 
       <div className="flex gap-2 mt-4 justify-end items-center">
-        <PrimaryButton size="sm" type="secondary" onClick={form.headerForm.cancel}>
+        <GhostButton size="sm" type="secondary" onClick={form.headerForm.cancel}>
           Cancel
-        </PrimaryButton>
+        </GhostButton>
 
-        <PrimaryButton
-          size="sm"
-          type="primary"
-          onClick={form.headerForm.submit}
-          bzzzOnClickFailure
-          testId="submit-edited-task"
-        >
+        <PrimaryButton size="sm" onClick={form.headerForm.submit} bzzzOnClickFailure testId="submit-edited-task">
           Save
         </PrimaryButton>
       </div>
@@ -140,16 +134,16 @@ function TopActions({ form }: { form: FormState }) {
     <div className="flex gap-2 items-center shrink-0">
       {form.fields.status !== "done" ? <MarkAsDoneButton form={form} /> : <ReopenButton form={form} />}
 
-      <PrimaryButton size="sm" type="secondary" onClick={form.headerForm.startEditing} testId="edit-task">
+      <GhostButton size="sm" type="secondary" onClick={form.headerForm.startEditing} testId="edit-task">
         Edit
-      </PrimaryButton>
+      </GhostButton>
     </div>
   );
 }
 
 function MarkAsDoneButton({ form }: { form: FormState }) {
   return (
-    <PrimaryButton size="sm" type="primary" onClick={form.statusActions.moveStatusToDone}>
+    <PrimaryButton size="sm" onClick={form.statusActions.moveStatusToDone}>
       Mark as Done
     </PrimaryButton>
   );
@@ -157,7 +151,7 @@ function MarkAsDoneButton({ form }: { form: FormState }) {
 
 function ReopenButton({ form }: { form: FormState }) {
   return (
-    <PrimaryButton size="sm" type="primary" onClick={form.statusActions.moveStatusToTodo}>
+    <PrimaryButton size="sm" onClick={form.statusActions.moveStatusToTodo}>
       Reopen
     </PrimaryButton>
   );
@@ -185,12 +179,7 @@ function DescriptionEditor({ form }: { form: FormState }) {
             Cancel
           </PrimaryButton>
 
-          <PrimaryButton
-            size="xs"
-            type="primary"
-            onClick={form.descriptionForm.submit}
-            testId="submit-edited-task-description"
-          >
+          <PrimaryButton size="xs" onClick={form.descriptionForm.submit} testId="submit-edited-task-description">
             Save
           </PrimaryButton>
         </div>
@@ -203,14 +192,14 @@ function DescriptionDisplay({ form }: { form: FormState }) {
   if (isContentEmpty(form.fields.description)) {
     return (
       <div className="flex items-center gap-2 mx-10 mb-8">
-        <PrimaryButton
+        <GhostButton
           onClick={form.descriptionForm.startEditing}
           testId="add-milestone-description"
           size="xs"
           type="secondary"
         >
           Add Description
-        </PrimaryButton>
+        </GhostButton>
       </div>
     );
   } else {

@@ -3,7 +3,7 @@ import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 
 import { Form, useForm } from "@/features/projectCheckIns/Form";
-import { PrimaryButton } from "@/components/Buttons";
+import { GhostButton, PrimaryButton } from "@/components/Buttons";
 import { useLoadedData } from "./loader";
 
 import FormattedTime from "@/components/FormattedTime";
@@ -38,12 +38,11 @@ function Header({ form, checkIn }: { form: ReturnType<typeof useForm>; checkIn: 
           </h1>
 
           <div className="flex items-center gap-2">
-            <PrimaryButton type="secondary" linkTo={form.cancelPath} size="sm" testId="cancel-edit">
+            <GhostButton type="secondary" linkTo={form.cancelPath} size="sm" testId="cancel-edit">
               Cancel
-            </PrimaryButton>
+            </GhostButton>
 
             <PrimaryButton
-              type="primary"
               onClick={form.submit}
               loading={form.submitting}
               size="sm"

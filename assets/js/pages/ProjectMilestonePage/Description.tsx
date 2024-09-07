@@ -3,7 +3,7 @@ import * as TipTapEditor from "@/components/Editor";
 
 import RichContent from "@/components/RichContent";
 
-import { PrimaryButton } from "@/components/Buttons";
+import { GhostButton, PrimaryButton } from "@/components/Buttons";
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 
 export function Description({ milestone, form }) {
@@ -33,14 +33,14 @@ function DescriptionContent({ milestone, form }) {
 function DescriptionZeroState({ form }) {
   return (
     <div className="flex items-center gap-2">
-      <PrimaryButton
+      <GhostButton
         onClick={form.description.startEditing}
         testId="add-milestone-description"
         size="xs"
         type="secondary"
       >
         Add Description
-      </PrimaryButton>
+      </GhostButton>
     </div>
   );
 }
@@ -64,14 +64,14 @@ function DescriptionEdit({ form }) {
       </div>
 
       <div className="flex items-center gap-2 justify-end mt-4">
-        <PrimaryButton
+        <GhostButton
           onClick={form.description.stopEditing}
           testId="cancel-milestone-description"
           type="secondary"
           size="xs"
         >
           Cancel
-        </PrimaryButton>
+        </GhostButton>
 
         <PrimaryButton
           onClick={form.description.submit}

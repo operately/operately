@@ -7,7 +7,7 @@ import * as Projects from "@/models/projects";
 
 import { useLoadedData } from "./loader";
 import { useNavigateTo } from "@/routes/useNavigateTo";
-import { PrimaryButton } from "@/components/Buttons";
+import { GhostButton, PrimaryButton } from "@/components/Buttons";
 import { Paths } from "@/routes/paths";
 
 export function Page() {
@@ -67,12 +67,12 @@ function Editor() {
         </div>
 
         <div className="flex items-center gap-2">
-          <PrimaryButton onClick={submit} testId="save" loading={loading} type="primary">
+          <PrimaryButton onClick={submit} testId="save" loading={loading}>
             Save
           </PrimaryButton>
-          <PrimaryButton linkTo={Paths.projectPath(project.id!)} type="secondary">
+          <GhostButton linkTo={Paths.projectPath(project.id!)} type="secondary">
             Cancel
-          </PrimaryButton>
+          </GhostButton>
         </div>
       </TipTapEditor.Root>
     </div>

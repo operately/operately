@@ -93,7 +93,7 @@ export default function AddMembersModal({ spaceId, onSubmit, members }) {
         </div>
 
         <div className="mt-4 flex">
-          <PrimaryButton type="primary" onClick={submit} testId="submit-space-members">
+          <PrimaryButton onClick={submit} testId="submit-space-members">
             Add Members
           </PrimaryButton>
         </div>

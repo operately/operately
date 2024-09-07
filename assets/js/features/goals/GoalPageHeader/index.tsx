@@ -236,7 +236,7 @@ function UpdateProgressButton({ goal }) {
 
   return (
     <div className="mt-1">
-      <PrimaryButton linkTo={path} testId="update-progress-button" size="sm" type="primary">
+      <PrimaryButton linkTo={path} testId="update-progress-button" size="sm">
         Update Progress
       </PrimaryButton>
     </div>

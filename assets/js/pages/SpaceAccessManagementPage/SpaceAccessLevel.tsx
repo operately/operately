@@ -6,7 +6,7 @@ import { useEditSpacePermissions } from "@/models/spaces";
 import { ReducerActions, Permissions, PermissionsState } from "@/features/Permissions/usePermissionsState";
 
 import { SpacePermissionSelector } from "@/features/Permissions";
-import { PrimaryButton } from "@/components/Buttons";
+import { GhostButton, PrimaryButton } from "@/components/Buttons";
 
 export function SpaceAccessLevel({ state }: { state: PermissionsState }) {
   const { space } = useLoadedData();
@@ -37,12 +37,12 @@ export function SpaceAccessLevel({ state }: { state: PermissionsState }) {
 
       {hasChanged && (
         <div className="flex gap-2">
-          <PrimaryButton loading={loading} type="primary" size="xs" onClick={handleEditPermissions}>
+          <PrimaryButton loading={loading} size="xs" onClick={handleEditPermissions}>
             Save
           </PrimaryButton>
-          <PrimaryButton type="secondary" size="xs" onClick={handleReset}>
+          <GhostButton type="secondary" size="xs" onClick={handleReset}>
             Cancel
-          </PrimaryButton>
+          </GhostButton>
         </div>
       )}
     </div>

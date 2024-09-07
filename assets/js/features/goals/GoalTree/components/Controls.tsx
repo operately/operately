@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { PrimaryButton } from "@/components/Buttons";
+import { GhostButton } from "@/components/Buttons";
 import { useTreeContext } from "../treeContext";
 import { useExpandable } from "../context/Expandable";
 
@@ -18,15 +18,15 @@ function ExpandCollapseButton() {
 
   if (Object.keys(expanded).length === 0) {
     return (
-      <PrimaryButton type="secondary" size="xs" onClick={expandAll}>
+      <GhostButton type="secondary" size="xs" onClick={expandAll}>
         Expand All
-      </PrimaryButton>
+      </GhostButton>
     );
   } else {
     return (
-      <PrimaryButton type="secondary" size="xs" onClick={collapseAll}>
+      <GhostButton type="secondary" size="xs" onClick={collapseAll}>
         Collapse All
-      </PrimaryButton>
+      </GhostButton>
     );
   }
 }
@@ -38,8 +38,8 @@ function ShowHideCompletedToggle() {
   const title = showCompleted ? "Hide Completed" : "Show Completed";
 
   return (
-    <PrimaryButton type="secondary" size="xs" onClick={toggle}>
+    <GhostButton type="secondary" size="xs" onClick={toggle}>
       {title}
-    </PrimaryButton>
+    </GhostButton>
   );
 }

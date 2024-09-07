@@ -4,7 +4,7 @@ import * as Pages from "@/components/Pages";
 import * as Spaces from "@/models/spaces";
 
 import { useLoadedData } from "./loader";
-import { PrimaryButton } from "@/components/Buttons";
+import { GhostButton, PrimaryButton } from "@/components/Buttons";
 import { Form, useForm } from "@/features/DiscussionForm";
 
 export function Page() {
@@ -32,12 +32,11 @@ function Header({ form }) {
           <h1 className="text-xl font-extrabold">Editing the Post</h1>
 
           <div className="flex items-center gap-2">
-            <PrimaryButton type="secondary" linkTo={form.cancelPath} size="sm" testId="cancel-edit">
+            <GhostButton type="secondary" linkTo={form.cancelPath} size="sm" testId="cancel-edit">
               Cancel
-            </PrimaryButton>
+            </GhostButton>
 
             <PrimaryButton
-              type="primary"
               onClick={form.submit}
               loading={form.submitting}
               size="sm"

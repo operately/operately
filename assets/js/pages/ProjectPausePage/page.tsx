@@ -52,7 +52,7 @@ function PauseProject({ project }) {
   };
 
   return (
-    <PrimaryButton onClick={handleClick} testId="pause-project-button" type="primary" loading={loading}>
+    <PrimaryButton onClick={handleClick} testId="pause-project-button" loading={loading}>
       Pause the Project
     </PrimaryButton>
   );

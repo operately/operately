@@ -2,7 +2,7 @@ import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 
-import { PrimaryButton } from "@/components/Buttons";
+import { GhostButton, PrimaryButton } from "@/components/Buttons";
 import { TextInputNoLabel } from "@/components/Form";
 
 import { useLoadedData } from "./loader";
@@ -53,7 +53,7 @@ export function Page() {
           </Paper.Body>
 
           <div className="flex items-center gap-3 mt-8 justify-center">
-            <PrimaryButton onClick={form.reset} type="primary" size="base">
+            <PrimaryButton onClick={form.reset} size="base">
               Invite Another Member
             </PrimaryButton>
           </div>
@@ -129,13 +129,13 @@ function PersonForm({ fields, errors, submit, submitting }: ReturnType<typeof us
       ))}
 
       <div className="flex items-center gap-3 mt-8">
-        <PrimaryButton onClick={submit} type="primary" testId="submit" loading={submitting}>
+        <PrimaryButton onClick={submit} testId="submit" loading={submitting}>
           Invite Member
         </PrimaryButton>
 
-        <PrimaryButton linkTo={managePeoplePath} type="secondary">
+        <GhostButton linkTo={managePeoplePath} type="secondary">
           Cancel
-        </PrimaryButton>
+        </GhostButton>
       </div>
     </div>
   );
