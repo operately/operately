@@ -142,26 +142,3 @@ export function TextInputNoLabel(props: TextInnputNoLabelProps) {
     />
   );
 }
-
-export function Switch({ label, value, onChange }) {
-  return (
-    <div className="flex items-center justify-between">
-      <label className="font-medium">{label}</label>
-
-      <div
-        style={{ width: "2.6rem" }}
-        className={classname("h-6 bg-dark-5 rounded-full relative outline-none cursor-pointer", {
-          "bg-green-400": value,
-        })}
-        onClick={() => onChange(!value)}
-      >
-        <div
-          className={classname(
-            "block w-5 h-5 bg-dark-3 rounded-full transition-transform duration-100 translate-x-0.5 absolute top-0.5",
-            { "translate-x-5": value },
-          )}
-        ></div>
-      </div>
-    </div>
-  );
-}

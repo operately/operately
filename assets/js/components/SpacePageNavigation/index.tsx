@@ -79,7 +79,7 @@ function Tab({ id, activeTab, link, title }: TabProps) {
   );
 }
 
-export function Settings({ space }) {
+function Settings({ space }) {
   return (
     <PageOptions.Root noBorder testId="space-settings">
       <PageOptions.Link

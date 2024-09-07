@@ -1,16 +1,11 @@
 import * as api from "@/api";
 import * as Time from "@/utils/time";
 
-import Api, { GetMeInput } from "@/api";
+import Api from "@/api";
 
 export type Person = api.Person;
 
 export { useGetMe, getPerson, getPeople, updateProfile } from "@/api";
-
-export const getMe = async (input: GetMeInput) => {
-  const res = await Api.getMe(input);
-  return res.me as Person;
-};
 
 export function usePeopleSearch() {
   //

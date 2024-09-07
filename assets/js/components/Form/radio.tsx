@@ -25,17 +25,6 @@ export function RadioGroup({ name, defaultValue, onChange, children }) {
   return <RadioContext.Provider value={{ name, checked, changeChecked }}>{children}</RadioContext.Provider>;
 }
 
-export function RadioGroupWithLabel({ label, name, defaultValue, onChange, children }) {
-  return (
-    <RadioGroup name={name} defaultValue={defaultValue} onChange={onChange}>
-      <div>
-        <label className="font-bold mb-4 block">{label}</label>
-        <div className="flex flex-col gap-2">{children}</div>
-      </div>
-    </RadioGroup>
-  );
-}
-
 interface RadioProps {
   label: string;
   value: string;
@@ -50,25 +39,6 @@ export function Radio(props: RadioProps) {
     <label className="flex items-center gap-2">
       <InputElement value={value} disabled={disabled} {...rest} testId={props.testId} />
       <span className={disabled ? "text-content-subtle" : "text-content-accent"}>{label}</span>
-    </label>
-  );
-}
-
-interface RadioWithExplanationProps extends RadioProps {
-  explanation: string;
-}
-
-export function RadioWithExplanation(props: RadioWithExplanationProps) {
-  const { label, value, explanation, ...rest } = props;
-
-  return (
-    <label className="flex items-start gap-2">
-      <InputElement value={value} {...rest} testId={props.testId} />
-
-      <div className="flex flex-col">
-        <div className="text-content-accent font-semibold leading-none">{label}</div>
-        <div className="text-sm text-content-dimmed max-w-md mt-0.5">{explanation}</div>
-      </div>
     </label>
   );
 }
