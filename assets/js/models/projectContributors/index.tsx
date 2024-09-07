@@ -2,7 +2,8 @@ import * as api from "@/api";
 import { match } from "ts-pattern";
 
 export type ProjectContributor = api.ProjectContributor;
-export type ContributorRole = "champion" | "reviewer" | "contributor";
+
+type ContributorRole = "champion" | "reviewer" | "contributor";
 
 const CHAMPION_RESPONSIBILITY = "Champion - Responsible for the success of the project";
 const REVIEWER_RESPONSIBILITY = "Reviewer - Responsible for reviewing and acknowledging progress";

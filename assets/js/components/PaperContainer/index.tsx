@@ -30,7 +30,7 @@ import { Context } from "./Context";
 export { DimmedSection } from "./DimmedSection";
 export { Banner, Header } from "./Banner";
 
-export type Size = "small" | "medium" | "large" | "xlarge" | "xxlarge";
+type Size = "small" | "medium" | "large" | "xlarge" | "xxlarge";
 
 const sizes = {
   small: "max-w-2xl",

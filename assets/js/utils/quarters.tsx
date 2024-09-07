@@ -1,4 +1,4 @@
-export interface Quarter {
+interface Quarter {
   index: number;
   year: number;
 }
