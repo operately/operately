@@ -1,4 +1,14 @@
 {
+  "test/features/*_test.exs": {
+    "type": "test",
+    "alternate": "test/support/features/{}_steps.ex",
+    "template": ["# test/{}_test.exs", "defmodule XXX do", "end"]
+  },
+  "test/support/features/*_steps.ex": {
+    "type": "test",
+    "alternate": "test/features/{}_test.exs",
+    "template": ["# test/{}_test.exs", "defmodule XXX do", "end"]
+  },
   "lib/*.ex": {
     "type": "src",
     "alternate": "test/{}_test.exs",
