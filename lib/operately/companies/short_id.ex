@@ -51,6 +51,6 @@ defmodule Operately.Companies.ShortId do
   end
 
   defmodule Base32 do
-    use CustomBase, 'abcdefghijklmnopqrstuv0123456789'
+    use CustomBase, ~c"abcdefghijklmnopqrstuv0123456789"
   end
 end
