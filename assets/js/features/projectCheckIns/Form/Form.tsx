@@ -79,7 +79,7 @@ function SubmitActions({ form }: { form: FormState }) {
   return (
     <div className="mt-6">
       <div className="flex items-center gap-2 mt-4">
-        <PrimaryButton onClick={form.submit} testId="post-check-in" bzzzOnClickFailure>
+        <PrimaryButton onClick={form.submit} testId="post-check-in">
           {form.submitButtonLabel}
         </PrimaryButton>
 

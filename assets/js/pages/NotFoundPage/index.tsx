@@ -17,7 +17,7 @@ export function Page() {
         <div className="text-lg font-medium my-4">Sorry, we couldn't find that page you were looking for.</div>
 
         <div className="flex w-full justify-center mt-4">
-          <GhostButton linkTo={Paths.homePath()} type="primary" testId="back-to-lobby">
+          <GhostButton linkTo={Paths.homePath()} testId="back-to-lobby">
             Go back to Home
           </GhostButton>
         </div>

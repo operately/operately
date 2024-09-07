@@ -52,7 +52,7 @@ export function SubmitButton({ children, testId, ...props }: { children: React.R
   const { loading } = React.useContext(Context);
 
   return (
-    <PrimaryButton submit testId={testId || "submit"} loading={loading} {...props}>
+    <PrimaryButton type="submit" testId={testId || "submit"} loading={loading} {...props}>
       {children}
     </PrimaryButton>
   );

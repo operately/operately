@@ -192,7 +192,7 @@ function Submit({ goal, form }: { goal: Goals.Goal; form: Form }) {
       <Error form={form} />
 
       <div className="flex items-center gap-4">
-        <PrimaryButton onClick={form.submit} loading={form.submitting} size="base" testId="submit" bzzzOnClickFailure>
+        <PrimaryButton onClick={form.submit} loading={form.submitting} size="base" testId="submit">
           Submit
         </PrimaryButton>
 

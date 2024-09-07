@@ -45,7 +45,7 @@ export function Page() {
         <div className="flex items-center justify-center mt-8 mb-8">
           <div className="flex-1 mx-4 border-t border-surface-outline"></div>
 
-          <GhostButton testId="add-space" linkTo={Paths.newSpacePath()} type="primary">
+          <GhostButton testId="add-space" linkTo={Paths.newSpacePath()}>
             Add a new space
           </GhostButton>
 

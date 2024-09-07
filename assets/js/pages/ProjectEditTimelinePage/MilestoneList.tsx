@@ -267,7 +267,7 @@ function MilestoneForm({ form, id, initialTitle, initialDueDate, initialDescript
           Cancel
         </SecondaryButton>
 
-        <PrimaryButton size="sm" onClick={addMilestone} testId="save-milestone-button" bzzzOnClickFailure>
+        <PrimaryButton size="sm" onClick={addMilestone} testId="save-milestone-button">
           Save
         </PrimaryButton>
       </div>

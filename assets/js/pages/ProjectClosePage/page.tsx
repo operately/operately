@@ -68,7 +68,7 @@ function Question({ title, editor, error }) {
 function SubmitButton({ form }) {
   return (
     <div className="flex justify-center mt-8">
-      <PrimaryButton size="lg" onClick={form.submit} testId="submit" bzzzOnClickFailure>
+      <PrimaryButton size="lg" onClick={form.submit} testId="submit">
         Submit &amp; Close Project
       </PrimaryButton>
     </div>

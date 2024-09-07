@@ -17,7 +17,7 @@ export function AddAdminsModal({ form }: { form: FormState }) {
     <>
       <div className="flex items-center my-8 gap-2">
         <div className="h-px bg-surface-outline flex-1" />
-        <GhostButton type="primary" onClick={state.openModal} testId="add-admins">
+        <GhostButton onClick={state.openModal} testId="add-admins">
           Add Admininstrators
         </GhostButton>
         <div className="h-px bg-surface-outline flex-1" />

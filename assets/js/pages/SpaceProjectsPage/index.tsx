@@ -40,7 +40,7 @@ export function Page() {
 
           <div className="flex items-center justify-between mb-8">
             <div className="font-extrabold text-3xl">Projects</div>
-            <PrimaryButton type="primary" testId="add-project" size="sm" linkTo={newProjectPath}>
+            <PrimaryButton testId="add-project" size="sm" linkTo={newProjectPath}>
               Add Project
             </PrimaryButton>
           </div>
