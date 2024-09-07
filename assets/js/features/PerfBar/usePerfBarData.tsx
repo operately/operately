@@ -39,10 +39,6 @@ export function usePerfBarData() {
   };
 }
 
-export function incrementNetworkRequests() {
-  setPerfData({ networkRequests: data.networkRequests + 1 });
-}
-
 export function setPerfData(newData: Partial<PerfBarData>) {
   Object.assign(data, newData);
 

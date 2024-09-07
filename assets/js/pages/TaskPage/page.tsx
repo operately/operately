@@ -44,7 +44,7 @@ export function Page() {
   );
 }
 
-export function Navigation({ task }: { task: Tasks.Task }) {
+function Navigation({ task }: { task: Tasks.Task }) {
   const projectPath = Paths.projectPath(task.project!.id!);
   const milestonePath = Paths.projectMilestonePath(task.milestone!.id!);
 

@@ -65,16 +65,6 @@ export function isOverdue(milestone: Milestone) {
   return !isDone(milestone) && deadline < now;
 }
 
-export function isUpcoming(milestone: Milestone) {
-  if (isDone(milestone)) return false;
-  if (isOverdue(milestone)) return false;
-
-  let deadline = +Time.parse(milestone.deadlineAt)!;
-  let now = +Time.today();
-
-  return deadline > now;
-}
-
-export function isDone(milestone: Milestone) {
+function isDone(milestone: Milestone) {
   return milestone.status === "done";
 }

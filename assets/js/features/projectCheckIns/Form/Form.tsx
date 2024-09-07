@@ -37,7 +37,7 @@ function Header() {
   );
 }
 
-export function StatusSection({ form }: { form: FormState }) {
+function StatusSection({ form }: { form: FormState }) {
   const error = !!form.errors.find((e) => e.field === "status");
 
   return (

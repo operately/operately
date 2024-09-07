@@ -18,7 +18,6 @@ export {
   useReopenGoal,
 } from "@/api";
 
-export { groupBySpace } from "./groupBySpace";
 export { filterPossibleParentGoals } from "./filterPossibleParentGoals";
 
 export function targetProgressPercentage(target: Target): number {

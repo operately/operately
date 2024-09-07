@@ -140,27 +140,6 @@ function FancyLineSeparator() {
   );
 }
 
-function LineSeparator() {
-  return (
-    <div
-      className="flex-1"
-      style={{
-        height: "1px",
-        background: "linear-gradient(90deg, var(--color-white-2) 0%, var(--color-white-1) 100%)",
-      }}
-    />
-  );
-}
-
-export function SectionHeader({ children }) {
-  return (
-    <div className="flex items-center gap-4 mt-12 mb-4">
-      <h1 className="uppercase font-bold tracking-wider">{children}</h1>
-      <LineSeparator />
-    </div>
-  );
-}
-
 export function useLoadedData() {
   const [fetchVersion, setFetchVersion] = React.useState(0);
 
