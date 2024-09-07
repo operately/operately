@@ -36,7 +36,6 @@ js.fmt.fix:
 
 dev.build:
 	$(MAKE) dev.seed.env
-	./devenv build
 	./devenv up
 	./devenv mix local.hex --force --if-missing
 	./devenv mix deps.get
@@ -88,7 +87,6 @@ dev.seed.env:
 test.build:
 	$(MAKE) test.init
 	$(MAKE) test.seed.env
-	./devenv build
 	./devenv up
 	./devenv bash -c "MIX_ENV=test mix local.hex --force --if-missing"
 	./devenv bash -c "MIX_ENV=test mix deps.get"
