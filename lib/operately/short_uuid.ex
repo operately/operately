@@ -57,7 +57,7 @@ defmodule Operately.ShortUuid do
   end
 
   defmodule Base62 do
-    use CustomBase, 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+    use CustomBase, ~c"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
   end
 
   defmodule ShortUuidError do
