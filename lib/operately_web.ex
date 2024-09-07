@@ -83,8 +83,6 @@ defmodule OperatelyWeb do
     quote do
       # HTML escaping functionality
       import Phoenix.HTML
-      # Core UI components and translation
-      import OperatelyWeb.CoreComponents
       import OperatelyWeb.Gettext
 
       # Shortcut for generating JS commands
