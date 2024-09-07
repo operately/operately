@@ -12,8 +12,8 @@ export function calcClassName(props: BaseButtonProps, { normal, loading, always 
     "transition-all duration-100",
     always,
     {
-      "cursor-default": loading,
-      "cursor-pointer": !loading,
+      "cursor-default": props.loading,
+      "cursor-pointer": !props.loading,
     },
     {
       "px-2 py-[1px] text-xs rounded-2xl": size === "xxs",
