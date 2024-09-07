@@ -120,7 +120,7 @@ test.mix: test.init
 	./devenv mix test $(FILE)
 
 test.mix.unit: test.init
-	./devenv mix test $$(find test -name "*_test.exs" | grep -v "test/features")
+	./devenv mix test $$(find test -name "*_test.exs" | grep -v "test/features") --warnings-as-errors --all-warnings
 
 test.mix.features: test.init
 	./devenv mix test $$(find test -name "*_test.exs" | grep "test/features" | ./scripts/split.rb $(INDEX) $(TOTAL))
