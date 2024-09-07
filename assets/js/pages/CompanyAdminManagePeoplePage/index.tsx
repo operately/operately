@@ -35,12 +35,8 @@ export async function loader({ params }): Promise<LoaderResult> {
   };
 }
 
-export function useLoadedData(): LoaderResult {
-  return Pages.useLoadedData() as LoaderResult;
-}
-
 export function Page() {
-  const { company } = useLoadedData();
+  const { company } = Pages.useLoadedData() as LoaderResult;
 
   return (
     <Pages.Page title={["Manage Team Members", company.name!]} testId="manage-people-page">
@@ -92,7 +88,7 @@ function AddMemberButton() {
 }
 
 function InvitationList() {
-  const { invitedPeople } = useLoadedData();
+  const { invitedPeople } = Pages.useLoadedData() as LoaderResult;
   if (invitedPeople.length === 0) return null;
 
   return (
@@ -104,7 +100,7 @@ function InvitationList() {
 }
 
 function MemberList() {
-  const { currentMembers } = useLoadedData();
+  const { currentMembers } = Pages.useLoadedData() as LoaderResult;
   if (currentMembers.length === 0) return null;
 
   return (

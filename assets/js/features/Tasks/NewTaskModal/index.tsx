@@ -143,7 +143,7 @@ function Form({ form }: { form: ReturnType<typeof useForm> }) {
   );
 }
 
-export function Modal({ isOpen, title, children }: { isOpen: boolean; title: string; children: React.ReactNode }) {
+function Modal({ isOpen, title, children }: { isOpen: boolean; title: string; children: React.ReactNode }) {
   const mode = useColorMode();
   const width = 800;
 

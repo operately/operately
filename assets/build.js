@@ -13,7 +13,7 @@ let opts = {
   entryPoints: ["js/app.js"],
   bundle: true,
   logLevel: "info",
-  target: "es2017",
+  target: "es2020",
   outdir: "../priv/static/assets",
   external: ["*.css", "fonts/*", "images/*"],
   loader: loader,

@@ -33,7 +33,7 @@ interface DivLinkProps extends Props {
 
 const baseLinkClass = classnames("cursor-pointer", "transition-colors");
 
-export function UnstyledLink(props: LinkProps) {
+function UnstyledLink(props: LinkProps) {
   return (
     <Router.Link to={props.to} className={props.className} data-test-id={props.testId} target={props.target}>
       {props.children}

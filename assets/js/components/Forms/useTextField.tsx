@@ -2,7 +2,7 @@ import React from "react";
 
 import { Field } from "./FormState";
 
-export type TextField = Field<string> & {
+type TextField = Field<string> & {
   type: "text";
 };
 

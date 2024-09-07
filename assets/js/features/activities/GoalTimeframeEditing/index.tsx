@@ -13,7 +13,7 @@ import RichContent from "@/components/RichContent";
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 import { ActivityHandler } from "../interfaces";
 
-export const GoalTimeframeEditing: ActivityHandler = {
+const GoalTimeframeEditing: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
     return `Goal timeframe change`;
   },

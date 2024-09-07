@@ -2,7 +2,7 @@ import * as React from "react";
 import { DivLink } from "@/components/Link";
 import classNames from "classnames";
 
-export interface GhostLinkProps {
+interface GhostLinkProps {
   to: string;
   text: string;
   testId?: string;

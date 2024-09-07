@@ -4,7 +4,7 @@ import * as People from "@/models/people";
 import * as Spaces from "@/models/spaces";
 import * as Time from "@/utils/time";
 
-export type NodeTypes = "goal" | "project";
+type NodeTypes = "goal" | "project";
 
 import { match } from "ts-pattern";
 
