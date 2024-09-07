@@ -7,7 +7,7 @@ import * as Icons from "@tabler/icons-react";
 import classNames from "classnames";
 import FormattedTime from "@/components/FormattedTime";
 
-import { GhostButton, PrimaryButton } from "@/components/Buttons";
+import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
 import { DateSelector } from "./DateSelector";
 import { Summary } from "@/components/RichContent";
 
@@ -263,9 +263,9 @@ function MilestoneForm({ form, id, initialTitle, initialDueDate, initialDescript
       </div>
 
       <div className="mt-4 flex items-center gap-2 justify-end border-t border-stroke-base pt-2">
-        <GhostButton size="sm" type="secondary" onClick={onCancel}>
+        <SecondaryButton size="sm" onClick={onCancel}>
           Cancel
-        </GhostButton>
+        </SecondaryButton>
 
         <PrimaryButton size="sm" onClick={addMilestone} testId="save-milestone-button" bzzzOnClickFailure>
           Save

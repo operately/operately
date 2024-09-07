@@ -11,7 +11,7 @@ import Avatar from "@/components/Avatar";
 import { SelectBoxNoLabel } from "@/components/Form";
 import { DropdownMenu } from "@/components/DropdownMenu";
 import { PERMISSIONS_LIST, PermissionOption } from "@/features/Permissions";
-import { GhostButton, PrimaryButton } from "@/components/Buttons";
+import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
 
 export function MembersAccessLevel() {
   const { space } = useLoadedData();
@@ -67,9 +67,9 @@ function ActionButtons({ members, setMembers }: ActionButtonsProps) {
         <PrimaryButton loading={loading} size="xs" onClick={handleEditMembers}>
           Save
         </PrimaryButton>
-        <GhostButton type="secondary" size="xs" onClick={handleReset}>
+        <SecondaryButton size="xs" onClick={handleReset}>
           Cancel
-        </GhostButton>
+        </SecondaryButton>
       </div>
     );
 

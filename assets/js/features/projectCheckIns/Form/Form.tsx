@@ -2,7 +2,7 @@ import React from "react";
 
 import * as TipTapEditor from "@/components/Editor";
 
-import { GhostButton, PrimaryButton } from "@/components/Buttons";
+import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
 import { FormState } from "./useForm";
 import { SubscribersSelector } from "@/features/Subscriptions";
 import { StatusDropdown } from "../StatusDropdown";
@@ -83,9 +83,9 @@ function SubmitActions({ form }: { form: FormState }) {
           {form.submitButtonLabel}
         </PrimaryButton>
 
-        <GhostButton type="secondary" linkTo={form.cancelPath} data-test-id="cancel" loading={form.submitting}>
+        <SecondaryButton linkTo={form.cancelPath} testId="cancel" loading={form.submitting}>
           Cancel
-        </GhostButton>
+        </SecondaryButton>
       </div>
     </div>
   );

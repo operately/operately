@@ -4,7 +4,7 @@ import classname from "classnames";
 
 type Ref = HTMLFormElement;
 
-import { GhostButton, PrimaryButton } from "@/components/Buttons";
+import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
 
 export * from "./radio";
 export * from "./select";
@@ -61,11 +61,7 @@ export function SubmitButton({ children, testId, ...props }: { children: React.R
 export function CancelButton({ children }) {
   const { onCancel } = React.useContext(Context);
 
-  return (
-    <GhostButton type="secondary" onClick={onCancel}>
-      {children}
-    </GhostButton>
-  );
+  return <SecondaryButton onClick={onCancel}>{children}</SecondaryButton>;
 }
 
 export function TextInput({ label, value, onChange, placeholder = "", error, ...props }) {

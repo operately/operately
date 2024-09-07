@@ -8,7 +8,7 @@ import * as Invitations from "@/models/invitations";
 import * as Time from "@/utils/time";
 
 import { Paths } from "@/routes/paths";
-import { GhostButton, PrimaryButton } from "@/components/Buttons";
+import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
 import { BlackLink } from "@/components/Link";
 import { Menu, MenuLinkItem, MenuActionItem } from "@/components/Menu";
 import { CopyToClipboard } from "@/components/CopyToClipboard";
@@ -183,28 +183,22 @@ function ExpiredInvitationAndRenewButton({ person }: { person: People.Person }) 
         Invitation Expired
       </div>
 
-      <GhostButton
-        type="secondary"
-        size="xs"
-        onClick={modal.show}
-        testId={createTestId("renew-invitation", person.id!)}
-      >
+      <SecondaryButton size="xs" onClick={modal.show} testId={createTestId("renew-invitation", person.id!)}>
         Renew Invitation
-      </GhostButton>
+      </SecondaryButton>
     </>
   );
 }
 
 function EditProfileButton({ person }: { person: People.Person }) {
   return (
-    <GhostButton
-      type="secondary"
+    <SecondaryButton
       size="xs"
       linkTo={Paths.profileEditPath(person.id!, { from: "admin-manage-people" })}
       testId={createTestId("edit", person.id!)}
     >
       Edit Profile
-    </GhostButton>
+    </SecondaryButton>
   );
 }
 

@@ -8,7 +8,7 @@ import * as TipTapEditor from "@/components/Editor";
 
 import RichContent from "@/components/RichContent";
 import Avatar from "@/components/Avatar";
-import { GhostButton, PrimaryButton } from "@/components/Buttons";
+import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
 
 import { useLoadedData } from "./loader";
 import { useForm, FormState } from "./useForm";
@@ -91,9 +91,9 @@ function HeaderEditor({ form }: { form: FormState }) {
       </div>
 
       <div className="flex gap-2 mt-4 justify-end items-center">
-        <GhostButton size="sm" type="secondary" onClick={form.headerForm.cancel}>
+        <SecondaryButton size="sm" onClick={form.headerForm.cancel}>
           Cancel
-        </GhostButton>
+        </SecondaryButton>
 
         <PrimaryButton size="sm" onClick={form.headerForm.submit} bzzzOnClickFailure testId="submit-edited-task">
           Save
@@ -134,9 +134,9 @@ function TopActions({ form }: { form: FormState }) {
     <div className="flex gap-2 items-center shrink-0">
       {form.fields.status !== "done" ? <MarkAsDoneButton form={form} /> : <ReopenButton form={form} />}
 
-      <GhostButton size="sm" type="secondary" onClick={form.headerForm.startEditing} testId="edit-task">
+      <SecondaryButton size="sm" onClick={form.headerForm.startEditing} testId="edit-task">
         Edit
-      </GhostButton>
+      </SecondaryButton>
     </div>
   );
 }
@@ -175,9 +175,9 @@ function DescriptionEditor({ form }: { form: FormState }) {
         </div>
 
         <div className="flex gap-2 mt-2 justify-end">
-          <PrimaryButton size="xs" type="secondary" onClick={form.descriptionForm.cancel}>
+          <SecondaryButton size="xs" onClick={form.descriptionForm.cancel}>
             Cancel
-          </PrimaryButton>
+          </SecondaryButton>
 
           <PrimaryButton size="xs" onClick={form.descriptionForm.submit} testId="submit-edited-task-description">
             Save
@@ -192,14 +192,9 @@ function DescriptionDisplay({ form }: { form: FormState }) {
   if (isContentEmpty(form.fields.description)) {
     return (
       <div className="flex items-center gap-2 mx-10 mb-8">
-        <GhostButton
-          onClick={form.descriptionForm.startEditing}
-          testId="add-milestone-description"
-          size="xs"
-          type="secondary"
-        >
+        <SecondaryButton onClick={form.descriptionForm.startEditing} testId="add-milestone-description" size="xs">
           Add Description
-        </GhostButton>
+        </SecondaryButton>
       </div>
     );
   } else {

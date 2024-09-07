@@ -1,8 +1,8 @@
-import * as React from "react";
 import * as Forms from "@/components/Form";
 import * as Milestones from "@/models/milestones";
+import * as React from "react";
 
-import { GhostButton, PrimaryButton } from "@/components/Buttons";
+import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
 import { MilestoneIcon } from "@/components/MilestoneIcon";
 
 import FormattedTime from "@/components/FormattedTime";
@@ -62,9 +62,9 @@ function Actions({ milestone, form }) {
         </PrimaryButton>
 
         {isOverdue && (
-          <GhostButton size="sm" onClick={form.titleAndDeadline.startEditing} testId="edit-milestone" type="secondary">
+          <SecondaryButton size="sm" onClick={form.titleAndDeadline.startEditing} testId="edit-milestone">
             Reschedule
-          </GhostButton>
+          </SecondaryButton>
         )}
       </div>
     );
@@ -73,9 +73,9 @@ function Actions({ milestone, form }) {
   if (milestone.status === "done") {
     return (
       <div className="flex justify-between">
-        <GhostButton size="sm" onClick={form.reopenMilestone} testId="reopen-milestone" type="secondary">
+        <SecondaryButton size="sm" onClick={form.reopenMilestone} testId="reopen-milestone" type="secondary">
           Re-Open Milestone
-        </GhostButton>
+        </SecondaryButton>
       </div>
     );
   }
@@ -108,9 +108,9 @@ function Edit({ form }: { form: FormState }) {
       />
 
       <div className="flex items-center gap-2 justify-end mt-2">
-        <GhostButton size="sm" onClick={form.titleAndDeadline.cancel} data-test-id="cancel-milestone" type="secondary">
+        <SecondaryButton size="sm" onClick={form.titleAndDeadline.cancel} data-test-id="cancel-milestone">
           Cancel
-        </GhostButton>
+        </SecondaryButton>
 
         <PrimaryButton size="sm" onClick={form.titleAndDeadline.submit} testId="save-milestone" bzzzOnClickFailure>
           Save Changes

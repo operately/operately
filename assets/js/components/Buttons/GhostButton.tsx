@@ -15,6 +15,10 @@ interface GhostButton {
   linkTarget?: "_blank" | "_self" | "_parent" | "_top";
 }
 
+export function SecondaryButton(props: GhostButton) {
+  return <GhostButton {...props} type="secondary" />;
+}
+
 export function GhostButton(props: GhostButton) {
   const handleClick = (e: any) => {
     if (props.loading) {

@@ -2,7 +2,7 @@ import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 
-import { GhostButton, PrimaryButton } from "@/components/Buttons";
+import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
 import { TextInputNoLabel } from "@/components/Form";
 
 import { useLoadedData } from "./loader";
@@ -133,9 +133,7 @@ function PersonForm({ fields, errors, submit, submitting }: ReturnType<typeof us
           Invite Member
         </PrimaryButton>
 
-        <GhostButton linkTo={managePeoplePath} type="secondary">
-          Cancel
-        </GhostButton>
+        <SecondaryButton linkTo={managePeoplePath}>Cancel</SecondaryButton>
       </div>
     </div>
   );
