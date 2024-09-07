@@ -5,7 +5,7 @@ import * as Goals from "@/models/goals";
 import * as Editor from "@/components/Editor";
 
 import { Paths } from "@/routes/paths";
-import { FilledButton } from "@/components/Buttons";
+import { PrimaryButton } from "@/components/Buttons";
 import { DimmedLink } from "@/components/Link";
 import { useNavigate } from "react-router-dom";
 
@@ -96,8 +96,8 @@ function Message({ form }: { form: FormState }) {
 
 function SubmitButton({ form }: { form: FormState }) {
   return (
-    <FilledButton onClick={form.submit} testId="confirm-reopen-goal">
+    <PrimaryButton onClick={form.submit} testId="confirm-reopen-goal">
       Reopen Goal
-    </FilledButton>
+    </PrimaryButton>
   );
 }

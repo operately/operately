@@ -4,7 +4,7 @@ import * as Paper from "@/components/PaperContainer";
 
 import { useLoadedData } from "./loader";
 import { GoalTree } from "@/features/goals/GoalTree";
-import { FilledButton } from "@/components/Buttons";
+import { PrimaryButton } from "@/components/Buttons";
 import { SpacePageNavigation } from "@/components/SpacePageNavigation";
 import { Paths } from "@/routes/paths";
 
@@ -31,9 +31,9 @@ function Content() {
     <>
       <div className="flex items-center justify-between mb-8">
         <div className="font-extrabold text-3xl">Goals in {space.name}</div>
-        <FilledButton type="primary" size="sm" linkTo={newGoalPath} testId="add-goal">
+        <PrimaryButton type="primary" size="sm" linkTo={newGoalPath} testId="add-goal">
           Add Goal
-        </FilledButton>
+        </PrimaryButton>
       </div>
 
       <GoalTree goals={goals} projects={projects} options={{ spaceId: space.id! }} />

@@ -3,7 +3,7 @@ import React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 
-import { FilledButton } from "@/components/Buttons";
+import { GhostButton, PrimaryButton } from "@/components/Buttons";
 import { useLoadedData } from "./loader";
 import { FormState, useForm, Form } from "@/features/goals/GoalForm";
 import { useMe } from "@/contexts/CurrentUserContext";
@@ -40,12 +40,11 @@ function Header({ form }: { form: FormState }) {
         <h1 className="text-xl font-extrabold">Editing the goal</h1>
 
         <div className="flex items-center gap-2">
-          <FilledButton type="secondary" onClick={form.cancel} size="sm" testId="cancel-edit">
+          <GhostButton type="secondary" onClick={form.cancel} size="sm" testId="cancel-edit">
             Cancel
-          </FilledButton>
+          </GhostButton>
 
-          <FilledButton
-            type="primary"
+          <PrimaryButton
             onClick={form.submit}
             loading={form.submitting}
             size="sm"
@@ -53,7 +52,7 @@ function Header({ form }: { form: FormState }) {
             bzzzOnClickFailure
           >
             Save Changes
-          </FilledButton>
+          </PrimaryButton>
         </div>
       </div>
     </Paper.Header>

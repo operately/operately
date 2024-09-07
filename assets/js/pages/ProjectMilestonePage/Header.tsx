@@ -2,7 +2,7 @@ import * as React from "react";
 import * as Forms from "@/components/Form";
 import * as Milestones from "@/models/milestones";
 
-import { FilledButton } from "@/components/Buttons";
+import { GhostButton, PrimaryButton } from "@/components/Buttons";
 import { MilestoneIcon } from "@/components/MilestoneIcon";
 
 import FormattedTime from "@/components/FormattedTime";
@@ -57,14 +57,14 @@ function Actions({ milestone, form }) {
 
     return (
       <div className="flex justify-center gap-2">
-        <FilledButton size="sm" onClick={form.completeMilestone} testId="complete-milestone" type="primary">
+        <PrimaryButton size="sm" onClick={form.completeMilestone} testId="complete-milestone">
           Mark as Completed
-        </FilledButton>
+        </PrimaryButton>
 
         {isOverdue && (
-          <FilledButton size="sm" onClick={form.titleAndDeadline.startEditing} testId="edit-milestone" type="secondary">
+          <GhostButton size="sm" onClick={form.titleAndDeadline.startEditing} testId="edit-milestone" type="secondary">
             Reschedule
-          </FilledButton>
+          </GhostButton>
         )}
       </div>
     );
@@ -73,9 +73,9 @@ function Actions({ milestone, form }) {
   if (milestone.status === "done") {
     return (
       <div className="flex justify-between">
-        <FilledButton size="sm" onClick={form.reopenMilestone} testId="reopen-milestone" type="secondary">
+        <GhostButton size="sm" onClick={form.reopenMilestone} testId="reopen-milestone" type="secondary">
           Re-Open Milestone
-        </FilledButton>
+        </GhostButton>
       </div>
     );
   }
@@ -108,19 +108,13 @@ function Edit({ form }: { form: FormState }) {
       />
 
       <div className="flex items-center gap-2 justify-end mt-2">
-        <FilledButton size="sm" onClick={form.titleAndDeadline.cancel} data-test-id="cancel-milestone" type="secondary">
+        <GhostButton size="sm" onClick={form.titleAndDeadline.cancel} data-test-id="cancel-milestone" type="secondary">
           Cancel
-        </FilledButton>
+        </GhostButton>
 
-        <FilledButton
-          size="sm"
-          onClick={form.titleAndDeadline.submit}
-          testId="save-milestone"
-          type="primary"
-          bzzzOnClickFailure
-        >
+        <PrimaryButton size="sm" onClick={form.titleAndDeadline.submit} testId="save-milestone" bzzzOnClickFailure>
           Save Changes
-        </FilledButton>
+        </PrimaryButton>
       </div>
     </div>
   );

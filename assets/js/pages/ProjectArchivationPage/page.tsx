@@ -9,7 +9,7 @@ import { useNavigateTo } from "@/routes/useNavigateTo";
 
 import { DimmedLink } from "@/components/Link";
 import { Paths } from "@/routes/paths";
-import { FilledButton } from "@/components/Buttons";
+import { PrimaryButton } from "@/components/Buttons";
 
 export function Page() {
   const { project } = useLoadedData();
@@ -51,8 +51,8 @@ function ArchiveButton({ project }) {
   };
 
   return (
-    <FilledButton onClick={submit} testId="archive-project-button" type="primary" loading={loading}>
+    <PrimaryButton onClick={submit} testId="archive-project-button" loading={loading}>
       Archive the Project
-    </FilledButton>
+    </PrimaryButton>
   );
 }

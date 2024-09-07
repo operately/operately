@@ -5,7 +5,7 @@ import * as Paper from "@/components/PaperContainer";
 import * as Spaces from "@/models/spaces";
 import * as Projects from "@/models/projects";
 
-import { FilledButton } from "@/components/Buttons";
+import { PrimaryButton } from "@/components/Buttons";
 import { SpacePageNavigation } from "@/components/SpacePageNavigation";
 import { ProjectList } from "@/features/ProjectList";
 import { Paths } from "@/routes/paths";
@@ -40,9 +40,9 @@ export function Page() {
 
           <div className="flex items-center justify-between mb-8">
             <div className="font-extrabold text-3xl">Projects</div>
-            <FilledButton type="primary" testId="add-project" size="sm" linkTo={newProjectPath}>
+            <PrimaryButton type="primary" testId="add-project" size="sm" linkTo={newProjectPath}>
               Add Project
-            </FilledButton>
+            </PrimaryButton>
           </div>
 
           <ProjectList projects={projects} />

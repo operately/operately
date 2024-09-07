@@ -2,7 +2,7 @@ import React from "react";
 
 import * as TipTapEditor from "@/components/Editor";
 
-import { FilledButton } from "@/components/Buttons";
+import { GhostButton, PrimaryButton } from "@/components/Buttons";
 import { FormState } from "./useForm";
 import { SubscribersSelector } from "@/features/Subscriptions";
 import { StatusDropdown } from "../StatusDropdown";
@@ -79,13 +79,13 @@ function SubmitActions({ form }: { form: FormState }) {
   return (
     <div className="mt-6">
       <div className="flex items-center gap-2 mt-4">
-        <FilledButton onClick={form.submit} testId="post-check-in" bzzzOnClickFailure>
+        <PrimaryButton onClick={form.submit} testId="post-check-in" bzzzOnClickFailure>
           {form.submitButtonLabel}
-        </FilledButton>
+        </PrimaryButton>
 
-        <FilledButton type="secondary" linkTo={form.cancelPath} data-test-id="cancel" loading={form.submitting}>
+        <GhostButton type="secondary" linkTo={form.cancelPath} data-test-id="cancel" loading={form.submitting}>
           Cancel
-        </FilledButton>
+        </GhostButton>
       </div>
     </div>
   );

@@ -4,7 +4,7 @@ import * as Projects from "@/models/projects";
 
 import { Link } from "@/components/Link";
 import { Paths } from "@/routes/paths";
-import { FilledButton } from "@/components/Buttons";
+import { PrimaryButton } from "@/components/Buttons";
 import { match } from "ts-pattern";
 
 import FormattedTime from "@/components/FormattedTime";
@@ -38,9 +38,9 @@ function ProjectPausedBanner({ project }: { project: Projects.Project }) {
       <div className="flex items-center gap-2">
         <div>This project is paused</div>
         {project.permissions?.canPause && (
-          <FilledButton linkTo={resumePath} testId="resume-project-button" size="xxs">
+          <PrimaryButton linkTo={resumePath} testId="resume-project-button" size="xxs">
             Resume
-          </FilledButton>
+          </PrimaryButton>
         )}
       </div>
     </Paper.Banner>

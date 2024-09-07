@@ -3,7 +3,7 @@ import * as People from "@/models/people";
 
 import { DivLink } from "@/components/Link";
 import { Paths } from "@/routes/paths";
-import { FilledButton } from "@/components/Buttons";
+import { GhostButton } from "@/components/Buttons";
 
 import Avatar from "@/components/Avatar";
 import classNames from "classnames";
@@ -55,9 +55,9 @@ export function Colleagues({ person }: { person: People.Person }) {
 
           {!allPeersVisible && person.peers!.length > visiblePeers.length && (
             <div className="mt-2 flex items-center justify-center">
-              <FilledButton type="secondary" size="xxs" onClick={() => setAllPeersVisible(true)}>
+              <GhostButton type="secondary" size="xxs" onClick={() => setAllPeersVisible(true)}>
                 Show all
-              </FilledButton>
+              </GhostButton>
             </div>
           )}
         </div>
@@ -80,9 +80,9 @@ export function Colleagues({ person }: { person: People.Person }) {
 
             {!allReportsVisible && sortedReports.length > visibleReports.length && (
               <div className="mt-2 flex items-center justify-center">
-                <FilledButton type="secondary" size="xxs" onClick={() => setAllReportsVisible(true)}>
+                <GhostButton type="secondary" size="xxs" onClick={() => setAllReportsVisible(true)}>
                   Show all
-                </FilledButton>
+                </GhostButton>
               </div>
             )}
           </div>

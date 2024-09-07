@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as ProjectCheckIns from "@/models/projectCheckIns";
 
-import { FilledButton } from "@/components/Buttons";
+import { PrimaryButton } from "@/components/Buttons";
 
 import { useLoadedData, useRefresh } from "./loader";
 
@@ -17,9 +17,9 @@ export function AckCTA() {
 
   return (
     <div className="flex flex-row items-center justify-center mt-4 mb-4">
-      <FilledButton size="lg" testId="acknowledge-check-in" onClick={ackHandler}>
+      <PrimaryButton size="lg" testId="acknowledge-check-in" onClick={ackHandler}>
         Acknowledge this Check-In
-      </FilledButton>
+      </PrimaryButton>
     </div>
   );
 }

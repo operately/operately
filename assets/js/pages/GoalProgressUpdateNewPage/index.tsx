@@ -4,7 +4,7 @@ import * as Goals from "@/models/goals";
 import * as People from "@/models/people";
 import * as React from "react";
 
-import { FilledButton } from "@/components/Buttons";
+import { PrimaryButton } from "@/components/Buttons";
 import { Form, useForm } from "@/features/goals/GoalCheckInForm";
 import { InlinePeopleList } from "@/components/InlinePeopleList";
 import { Paths } from "@/routes/paths";
@@ -59,15 +59,9 @@ function SubmitButton({ form }) {
   return (
     <div className="mt-8">
       <div className="flex items-center gap-4">
-        <FilledButton
-          type="primary"
-          onClick={form.submit}
-          loading={form.submitting}
-          testId="submit-update"
-          bzzzOnClickFailure
-        >
+        <PrimaryButton onClick={form.submit} loading={form.submitting} testId="submit-update" bzzzOnClickFailure>
           Submit Update
-        </FilledButton>
+        </PrimaryButton>
       </div>
     </div>
   );

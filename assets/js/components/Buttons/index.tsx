@@ -1,2 +1,2 @@
-export * from "./FilledButton";
+export * from "./PrimaryButton";
 export * from "./GhostButton";

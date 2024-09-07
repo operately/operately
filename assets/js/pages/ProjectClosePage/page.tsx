@@ -7,7 +7,7 @@ import { useLoadedData } from "./loader";
 import { useForm } from "./useForm";
 import { createTestId } from "@/utils/testid";
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
-import { FilledButton } from "@/components/Buttons";
+import { PrimaryButton } from "@/components/Buttons";
 
 export function Page() {
   const { project } = useLoadedData();
@@ -68,9 +68,9 @@ function Question({ title, editor, error }) {
 function SubmitButton({ form }) {
   return (
     <div className="flex justify-center mt-8">
-      <FilledButton size="lg" onClick={form.submit} testId="submit" bzzzOnClickFailure>
+      <PrimaryButton size="lg" onClick={form.submit} testId="submit" bzzzOnClickFailure>
         Submit &amp; Close Project
-      </FilledButton>
+      </PrimaryButton>
     </div>
   );
 }
