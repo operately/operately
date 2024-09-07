@@ -6,7 +6,7 @@ import * as Icons from "@tabler/icons-react";
 
 import Modal from "@/components/Modal";
 import Avatar from "@/components/Avatar";
-import { FilledButton, GhostButton } from "@/components/Buttons";
+import { PrimaryButton, GhostButton } from "@/components/Buttons";
 
 import { Person } from "@/models/people";
 import PeopleSearch, { Option } from "@/components/PeopleSearch";
@@ -93,9 +93,9 @@ export default function AddMembersModal({ spaceId, onSubmit, members }) {
         </div>
 
         <div className="mt-4 flex">
-          <FilledButton type="primary" onClick={submit} testId="submit-space-members">
+          <PrimaryButton onClick={submit} testId="submit-space-members">
             Add Members
-          </FilledButton>
+          </PrimaryButton>
         </div>
       </Modal>
     </Context.Provider>

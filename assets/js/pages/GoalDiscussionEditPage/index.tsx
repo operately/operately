@@ -6,7 +6,7 @@ import * as TipTapEditor from "@/components/Editor";
 import * as Activities from "@/models/activities";
 
 import { FormTitleInput } from "@/components/FormTitleInput";
-import { FilledButton } from "@/components/Buttons";
+import { PrimaryButton } from "@/components/Buttons";
 import { DimmedLink } from "@/components/Link";
 import { Paths } from "@/routes/paths";
 import { GoalSubpageNavigation } from "@/features/goals/GoalSubpageNavigation";
@@ -47,9 +47,9 @@ export function Page() {
           </div>
 
           <div className="flex items-center gap-4 mt-4">
-            <FilledButton testId="save" onClick={form.submit} loading={form.submitting}>
+            <PrimaryButton testId="save" onClick={form.submit} loading={form.submitting}>
               Save
-            </FilledButton>
+            </PrimaryButton>
 
             <DimmedLink to={Paths.goalActivityPath(activity.id!)}>Cancel</DimmedLink>
           </div>

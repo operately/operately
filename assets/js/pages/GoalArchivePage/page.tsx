@@ -6,7 +6,7 @@ import * as Goals from "@/models/goals";
 import { useLoadedData } from "./loader";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 
-import { FilledButton } from "@/components/Buttons";
+import { PrimaryButton } from "@/components/Buttons";
 import { DimmedLink } from "@/components/Link";
 import { Paths } from "@/routes/paths";
 
@@ -47,8 +47,8 @@ function ArchiveButton({ goal }) {
   };
 
   return (
-    <FilledButton onClick={submit} testId="confirm-archive-goal" loading={loading}>
+    <PrimaryButton onClick={submit} testId="confirm-archive-goal" loading={loading}>
       Archive the Goal
-    </FilledButton>
+    </PrimaryButton>
   );
 }

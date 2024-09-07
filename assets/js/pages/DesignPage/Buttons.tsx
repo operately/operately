@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import { Section, SectionTitle } from "./Section";
-import { FilledButton, GhostButton } from "@/components/Buttons";
+import { PrimaryButton, GhostButton } from "@/components/Buttons";
 
 export function Buttons() {
   return (
@@ -19,11 +19,11 @@ export function Buttons() {
       <h3 className="font-bold mb-4">Primary buttons</h3>
 
       <div className="flex items-center space-x-4">
-        <FilledButton size="xxs">Button text</FilledButton>
-        <FilledButton size="xs">Button text</FilledButton>
-        <FilledButton size="sm">Button text</FilledButton>
-        <FilledButton size="base">Button text</FilledButton>
-        <FilledButton size="lg">Button text</FilledButton>
+        <PrimaryButton size="xxs">Button text</PrimaryButton>
+        <PrimaryButton size="xs">Button text</PrimaryButton>
+        <PrimaryButton size="sm">Button text</PrimaryButton>
+        <PrimaryButton size="base">Button text</PrimaryButton>
+        <PrimaryButton size="lg">Button text</PrimaryButton>
       </div>
 
       <h3 className="font-bold mt-8 mb-4">Ghost buttons - primary</h3>

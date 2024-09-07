@@ -6,7 +6,7 @@ import * as Forms from "@/components/Form";
 
 import { useForm, FormState } from "./useForm";
 import { useLoadedData } from "./loader";
-import { FilledButton } from "@/components/Buttons";
+import { PrimaryButton } from "@/components/Buttons";
 import { Link } from "@/components/Link";
 import { Paths } from "@/routes/paths";
 
@@ -57,9 +57,9 @@ function SubmitButton({ form }: { form: FormState }) {
         <div className="text-content-error text-sm font-medium text-center mb-4">Please fill out all fields</div>
       )}
       <div className="flex items-center justify-center">
-        <FilledButton onClick={form.submit} testId="save" bzzzOnClickFailure>
+        <PrimaryButton onClick={form.submit} testId="save" bzzzOnClickFailure>
           Save
-        </FilledButton>
+        </PrimaryButton>
       </div>
     </div>
   );

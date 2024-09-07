@@ -6,7 +6,7 @@ import { buildTree, GoalNode, Node, TreeOptions } from "./tree";
 
 import { NodeIcon } from "./components/NodeIcon";
 import { TableRow } from "./components/TableRow";
-import { FilledButton } from "@/components/Buttons";
+import { PrimaryButton } from "@/components/Buttons";
 import { ExpandableProvider, useExpandable } from "./context/Expandable";
 
 import classNames from "classnames";
@@ -89,9 +89,9 @@ function NodeView({ node, onSelect }: NodeProps) {
         </div>
 
         <div>
-          <FilledButton onClick={() => onSelect(node.goal)} size="xxxs" testId={createTestId("goal", node.name)}>
+          <PrimaryButton onClick={() => onSelect(node.goal)} size="xxxs" testId={createTestId("goal", node.name)}>
             Select
-          </FilledButton>
+          </PrimaryButton>
         </div>
       </TableRow>
 

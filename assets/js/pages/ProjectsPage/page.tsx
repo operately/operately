@@ -3,7 +3,7 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
 import { useLoadedData, useFilters } from "./loader";
-import { FilledButton } from "@/components/Buttons";
+import { PrimaryButton } from "@/components/Buttons";
 import { ProjectList } from "@/features/ProjectList";
 
 import classNames from "classnames";
@@ -20,7 +20,7 @@ export function Page() {
           <Title />
 
           <div className="flex items-center justify-center mb-10 gap-4">
-            <FilledButton linkTo={Paths.newProjectPath()}>Add Project</FilledButton>
+            <PrimaryButton linkTo={Paths.newProjectPath()}>Add Project</PrimaryButton>
           </div>
 
           <ProjectList projects={projects} showSpace />
