@@ -539,7 +539,7 @@ defmodule Operately.Support.Features.ProjectSteps do
   end
 
   step :expand_project_description, ctx do
-    ctx |> UI.click(testid: "expand-project-description")
+    ctx |> UI.click(testid: "expand-project-description") |> UI.sleep(100)
   end
 
   step :assert_project_description_present, ctx, description: description do
