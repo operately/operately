@@ -68,6 +68,7 @@ defmodule Operately.Features.ProjectResourcesTest do
     |> ProjectSteps.visit_project_page()
     |> UI.click(testid: "edit-resources-link")
     |> UI.click(testid: "remove-resource-website")
+    |> UI.sleep(300)
 
     ctx
     |> ProjectSteps.visit_project_page()
@@ -88,6 +89,7 @@ defmodule Operately.Features.ProjectResourcesTest do
     |> UI.fill("Name", with: "Operately Repo")
     |> UI.fill("URL", with: "https://github.com/operately/operately")
     |> UI.click(testid: "save")
+    |> UI.assert_has(testid: "project-edit-resources-page")
 
     ctx
     |> UI.refute_text("Code Repository")
