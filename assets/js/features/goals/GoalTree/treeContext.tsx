@@ -5,7 +5,7 @@ import * as Projects from "@/models/projects";
 import { Tree, buildTree, SortColumn, SortDirection, TreeOptions } from "./tree";
 import { ExpandableProvider } from "./context/Expandable";
 
-export interface TreeContextValue {
+interface TreeContextValue {
   tree: Tree;
 
   sortColumn: SortColumn;

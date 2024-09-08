@@ -13,7 +13,7 @@ import ActivityHandler, { DISPLAYED_IN_FEED } from "@/features/activities";
 import FormattedTime from "@/components/FormattedTime";
 import Api from "@/api";
 
-export type Page = "company" | "project" | "goal" | "space" | "profile";
+type Page = "company" | "project" | "goal" | "space" | "profile";
 type ScopeType = "company" | "project" | "goal" | "space" | "person";
 
 export function useItemsQuery(scopeType: ScopeType, scopeId: string) {

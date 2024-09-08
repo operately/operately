@@ -30,7 +30,7 @@ import { Context } from "./Context";
 export { DimmedSection } from "./DimmedSection";
 export { Banner, Header } from "./Banner";
 
-export type Size = "small" | "medium" | "large" | "xlarge" | "xxlarge";
+type Size = "small" | "medium" | "large" | "xlarge" | "xxlarge";
 
 const sizes = {
   small: "max-w-2xl",
@@ -137,27 +137,6 @@ function FancyLineSeparator() {
         background: "linear-gradient(90deg, var(--color-pink-600) 0%, var(--color-sky-600) 100%)",
       }}
     />
-  );
-}
-
-function LineSeparator() {
-  return (
-    <div
-      className="flex-1"
-      style={{
-        height: "1px",
-        background: "linear-gradient(90deg, var(--color-white-2) 0%, var(--color-white-1) 100%)",
-      }}
-    />
-  );
-}
-
-export function SectionHeader({ children }) {
-  return (
-    <div className="flex items-center gap-4 mt-12 mb-4">
-      <h1 className="uppercase font-bold tracking-wider">{children}</h1>
-      <LineSeparator />
-    </div>
   );
 }
 

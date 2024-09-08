@@ -324,7 +324,7 @@ export class Paths {
   }
 }
 
-export function getCompanyID(): string {
+function getCompanyID(): string {
   const parts = window.location.pathname.split("/") as string[];
 
   if (parts.length >= 2) {

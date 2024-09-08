@@ -95,7 +95,7 @@ function isCurrentYear(year: number) {
   return year === currentYear;
 }
 
-export function CheckInCard({ checkIn }: { checkIn: ProjectCheckIns.ProjectCheckIn }) {
+function CheckInCard({ checkIn }: { checkIn: ProjectCheckIns.ProjectCheckIn }) {
   const author = checkIn.author!;
   const path = Paths.projectCheckInPath(checkIn.id!);
 
