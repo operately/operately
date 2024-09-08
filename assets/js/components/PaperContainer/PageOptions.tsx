@@ -11,7 +11,7 @@ type RootProps = TestableElement & {
   noBorder?: boolean;
 };
 
-export const Context = React.createContext({
+const Context = React.createContext({
   close: () => {},
 });
 
