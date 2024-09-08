@@ -9,7 +9,7 @@ import { Paths } from "@/routes/paths";
 import { BurgerActionsGroup, BurgerLink, BurgerButton } from "./BurgerActions";
 import { useMe } from "@/contexts/CurrentUserContext";
 
-export const loader = Pages.emptyLoader();
+export const loader = Pages.emptyLoader;
 
 export function Page() {
   return (
