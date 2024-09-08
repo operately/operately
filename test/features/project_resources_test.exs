@@ -88,6 +88,7 @@ defmodule Operately.Features.ProjectResourcesTest do
     |> UI.fill("Name", with: "Operately Repo")
     |> UI.fill("URL", with: "https://github.com/operately/operately")
     |> UI.click(testid: "save")
+    |> UI.assert_has(testid: "project-edit-resources-page")
 
     ctx
     |> UI.refute_text("Code Repository")
