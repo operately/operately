@@ -40,8 +40,7 @@ defmodule Operately.MixProject do
       {:phoenix_html, "~> 4.1"},
       {:phoenix_view, "~> 2.0"},
       {:phoenix_live_reload, "~> 1.5", only: :dev},
-      {:phoenix_live_view, "~> 0.20.17"},
-      # {:heroicons, "~> 0.5"},
+
       {:floki, ">= 0.36.0", only: :test},
       {:phoenix_live_dashboard, "~> 0.8.4"},
       {:tailwind, "~> 0.2.3", runtime: Mix.env() == :dev},
@@ -56,7 +55,6 @@ defmodule Operately.MixProject do
       {:ueberauth_google, "~> 0.12"},
       {:inflex, "~> 2.0.0"},
       {:ex_aws, "~> 2.5"},
-      {:ex_aws_s3, "~> 2.0"},
       {:custom_base, "~> 0.2"},
 
       {:oban, "~> 2.14"},
@@ -66,7 +64,6 @@ defmodule Operately.MixProject do
       # testing
       {:cabbage, "~> 0.4.1", only: :test},
       {:wallaby, "~> 0.30.0", runtime: false, only: :test},
-      # {:mix_test_watch, "~> 1.0", only: [:dev, :test], runtime: false},
       {:junit_formatter, "~> 3.1", only: [:test]},
       {:hackney, "~> 1.20"},
       {:sweet_xml, "~> 0.7"}
