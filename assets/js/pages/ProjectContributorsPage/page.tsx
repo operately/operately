@@ -1,10 +1,10 @@
 import React from "react";
 
-import * as ProjectContributors from "@/models/projectContributors";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as Icons from "@tabler/icons-react";
 import * as Projects from "@/models/projects";
+import * as ProjectContributors from "@/models/projectContributors";
 
 import { useLoadedData } from "./loader";
 import { usePageState, PageState } from "./usePageState";
@@ -12,10 +12,12 @@ import { AddContributorForm } from "./AddContributorForm";
 import { EditContributorResponsibilityModal } from "./EditContributorResponsibilityModal";
 import { PrimaryButton } from "@/components/Buttons";
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
+import { ProjectContributor } from "@/models/projectContributors";
 
 import { ContributorAvatar } from "@/components/ContributorAvatar";
 import { Menu, MenuActionItem, MenuLinkItem } from "@/components/Menu";
 import { match } from "ts-pattern";
+import { createTestId } from "@/utils/testid";
 
 export function Page() {
   const { project } = useLoadedData();
@@ -166,53 +168,54 @@ function Contributors({ state }: { state: PageState }) {
   );
 }
 
-function Contributor({
-  state,
-  contributor,
-}: {
-  state: PageState;
-  contributor: ProjectContributors.ProjectContributor;
-}) {
+function Contributor({ state, contributor }: { state: PageState; contributor: ProjectContributor }) {
   return (
     <div className="flex items-center justify-between py-2 border-t border-stroke-dimmed last:border-b">
       <EditContributorResponsibilityModal state={state} contributor={contributor} />
 
       <div className="flex items-center gap-2">
         <ContributorAvatar contributor={contributor} />
-
-        <div className="flex flex-col flex-1">
-          <div className="font-bold flex items-center gap-2">{contributor!.person!.fullName}</div>
-
-          <div className="text-sm font-medium flex items-center">{contributor.responsibility}</div>
-        </div>
+        <ContributotNameAndResponsibility contributor={contributor} />
       </div>
       <div className="flex items-center gap-4">
         <AccessLevelBadge level="edit" />
-
-        {!state.editing && (
-          <Menu>
-            <EditResponsibilityMenuItem state={state} contributor={contributor} />
-            <RemoveContributorMenuItem contributor={contributor} />
-          </Menu>
-        )}
+        <ContributorMenu state={state} contributor={contributor} />
       </div>
     </div>
   );
 }
 
-function EditResponsibilityMenuItem(props: { state: PageState; contributor: ProjectContributors.ProjectContributor }) {
-  const handleClick = () => {
-    props.state.activateEditResponsibility(props.contributor.id!);
-  };
+function ContributorMenu({ state, contributor }: { state: PageState; contributor: ProjectContributor }) {
+  if (state.editing) return null;
 
   return (
-    <MenuActionItem icon={Icons.IconEdit} onClick={handleClick}>
+    <Menu testId={createTestId("contributor-menu", contributor.person!.fullName!)}>
+      <EditResponsibilityMenuItem state={state} contributor={contributor} />
+      <RemoveContributorMenuItem contributor={contributor} />
+    </Menu>
+  );
+}
+
+function ContributotNameAndResponsibility({ contributor }: { contributor: ProjectContributor }) {
+  return (
+    <div className="flex flex-col flex-1">
+      <div className="font-bold flex items-center gap-2">{contributor!.person!.fullName}</div>
+      <div className="text-sm font-medium flex items-center">{contributor.responsibility}</div>
+    </div>
+  );
+}
+
+function EditResponsibilityMenuItem(props: { state: PageState; contributor: ProjectContributor }) {
+  const handleClick = () => props.state.activateEditResponsibility(props.contributor.id!);
+
+  return (
+    <MenuActionItem icon={Icons.IconEdit} onClick={handleClick} testId="edit-responsibility">
       Edit responsibility
     </MenuActionItem>
   );
 }
 
-function RemoveContributorMenuItem({ contributor }: { contributor: ProjectContributors.ProjectContributor }) {
+function RemoveContributorMenuItem({ contributor }: { contributor: ProjectContributor }) {
   const refresh = Pages.useRefresh();
   const [remove] = Projects.useRemoveProjectContributor();
 
@@ -222,7 +225,7 @@ function RemoveContributorMenuItem({ contributor }: { contributor: ProjectContri
   };
 
   return (
-    <MenuActionItem icon={Icons.IconTrash} danger={true} onClick={handleClick}>
+    <MenuActionItem icon={Icons.IconTrash} danger={true} onClick={handleClick} testId="remove-contributor">
       Remove from project
     </MenuActionItem>
   );
