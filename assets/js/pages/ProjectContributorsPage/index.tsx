@@ -15,6 +15,7 @@ import { Menu, MenuActionItem, MenuLinkItem } from "@/components/Menu";
 import { match } from "ts-pattern";
 import { createTestId } from "@/utils/testid";
 import { Paths } from "@/routes/paths";
+import { PermissionLevels } from "@/features/Permissions";
 
 interface LoaderData {
   project: Projects.Project;
@@ -24,8 +25,6 @@ export async function loader({ params }): Promise<LoaderData> {
   return {
     project: await Projects.getProject({
       id: params.projectID,
-      includeSpace: true,
-      includeChampion: true,
       includePermissions: true,
       includeContributorsAccessLevels: true,
     }).then((data) => data.project!),
@@ -110,7 +109,7 @@ function Champion() {
         </div>
 
         <div className="flex items-center gap-4">
-          <AccessLevelBadge level="full" />
+          <AccessLevelBadge contributor={champion} />
 
           <Menu>
             <MenuLinkItem to="" icon={Icons.IconEdit}>
@@ -148,7 +147,7 @@ function Reviewer() {
         </div>
 
         <div className="flex items-center gap-4">
-          <AccessLevelBadge level="full" />
+          <AccessLevelBadge contributor={reviewer} />
 
           <Menu>
             <MenuLinkItem to="" icon={Icons.IconEdit}>
@@ -245,7 +244,7 @@ function Contributor({ contributor }: { contributor: ProjectContributor }) {
         <ContributotNameAndResponsibility contributor={contributor} />
       </div>
       <div className="flex items-center gap-4">
-        <AccessLevelBadge level="edit" />
+        <AccessLevelBadge contributor={contributor} />
         <ContributorMenu contributor={contributor} />
       </div>
     </div>
@@ -296,11 +295,11 @@ function RemoveContributorMenuItem({ contributor }: { contributor: ProjectContri
   );
 }
 
-function AccessLevelBadge({ level }: { level: "full" | "edit" }) {
-  return match(level)
-    .with("full", () => <FullAccessBadge />)
-    .with("edit", () => <EditAccessBadge />)
-    .exhaustive();
+function AccessLevelBadge({ contributor }: { contributor: ProjectContributor }) {
+  return match(contributor.accessLevel)
+    .with(PermissionLevels.FULL_ACCESS, () => <FullAccessBadge />)
+    .with(PermissionLevels.EDIT_ACCESS, () => <EditAccessBadge />)
+    .run();
 }
 
 function FullAccessBadge() {
