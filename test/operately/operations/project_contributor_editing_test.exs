@@ -32,9 +32,8 @@ defmodule Operately.Operations.ProjectContributorEditingTest do
     {:ok, company: company, creator: creator, champion: champion, contributor: contributor, project: project, attrs: attrs}
   end
 
-  test "ProjectContributorEditing operation updates reviewer/champion with the same person", ctx do
+  test "it updates reviewer/champion with the same person", ctx do
     champion = Projects.get_contributor!(person_id: ctx.champion.id, project_id: ctx.project.id)
-
     assert champion.role == :champion
 
     {:ok, updated} = Operately.Operations.ProjectContributorEditing.run(ctx.creator, champion, %{
@@ -45,7 +44,7 @@ defmodule Operately.Operations.ProjectContributorEditingTest do
     assert updated.role == :reviewer
   end
 
-  test "ProjectContributorEditing operation updates contributor with the same person", ctx do
+  test "it updates contributor with the same person", ctx do
     {:ok, contributor} = Projects.create_contributor(ctx.creator, Map.merge(ctx.attrs, %{
       person_id: ctx.contributor.id,
     }))
@@ -65,7 +64,7 @@ defmodule Operately.Operations.ProjectContributorEditingTest do
     assert Access.get_binding(context_id: context.id, group_id: group.id, access_level: Binding.full_access())
   end
 
-  test "ProjectContributorEditing operation updates reviewer/champion with another person", ctx do
+  test "it updates reviewer/champion with another person", ctx do
     champion_person = Projects.get_champion(ctx.project)
     new_champion_person = person_fixture_with_account(%{company_id: ctx.company.id})
 
@@ -89,7 +88,7 @@ defmodule Operately.Operations.ProjectContributorEditingTest do
     assert Access.get_binding(context_id: context.id, group_id: new_champion_group.id, access_level: Binding.full_access())
   end
 
-  test "ProjectContributorEditing operation handles reviewer's and champion's tags correctly", ctx do
+  test "it handles reviewer's and champion's tags correctly", ctx do
     project = project_fixture(%{
       company_id: ctx.company.id,
       creator_id: ctx.creator.id,
@@ -125,7 +124,7 @@ defmodule Operately.Operations.ProjectContributorEditingTest do
     assert Access.get_binding(tag: :champion, context_id: context.id, group_id: reviewer_champion_group.id)
   end
 
-  test "ProjectContributorEditing operation updates contributor with a different person", ctx do
+  test "it updates contributor with a different person", ctx do
     {:ok, contributor} = Projects.create_contributor(ctx.creator, Map.merge(ctx.attrs, %{
       person_id: ctx.contributor.id,
     }))
@@ -148,7 +147,7 @@ defmodule Operately.Operations.ProjectContributorEditingTest do
     assert Access.get_binding(context_id: context.id, group_id: new_person_group.id, access_level: Binding.comment_access())
   end
 
-  test "ProjectContributorEditing operation creates activity", ctx do
+  test "it creates activity", ctx do
     {:ok, contributor} = Projects.create_contributor(ctx.creator, Map.merge(ctx.attrs, %{
       person_id: ctx.contributor.id,
     }))
@@ -167,5 +166,23 @@ defmodule Operately.Operations.ProjectContributorEditingTest do
     assert activity.content["updated_contributor"]["person_id"] == new_person.id
     assert activity.content["updated_contributor"]["permissions"] == Binding.view_access()
     assert activity.content["updated_contributor"]["role"] == "contributor"
+  end
+
+  test "it is able to update just the responsibility", ctx do
+    {:ok, contributor} = Projects.create_contributor(ctx.creator, Map.merge(ctx.attrs, %{
+      person_id: ctx.contributor.id,
+    }))
+    group = Access.get_group!(person_id: ctx.contributor.id)
+    context = Access.get_context!(project_id: ctx.project.id)
+
+    assert Access.get_binding(context_id: context.id, group_id: group.id, access_level: Binding.edit_access())
+    assert contributor.responsibility == "Developer"
+
+    {:ok, updated} = Operately.Operations.ProjectContributorEditing.run(ctx.creator, contributor, %{
+      responsibility: "Manager",
+    })
+
+    assert updated.responsibility == "Manager"
+    assert Access.get_binding(context_id: context.id, group_id: group.id, access_level: Binding.edit_access())
   end
 end
