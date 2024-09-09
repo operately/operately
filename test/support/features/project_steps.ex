@@ -10,8 +10,6 @@ defmodule Operately.Support.Features.ProjectSteps do
   import Operately.GroupsFixtures
   import Operately.PeopleFixtures
 
-  alias Operately.People.Person
-
   step :given_a_goal_exists, ctx, name: name do
     {:ok, goal} = Operately.Goals.create_goal(ctx.champion, %{
       company_id: ctx.company.id,

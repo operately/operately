@@ -40,18 +40,20 @@ export function AddContributorForm({ state }: { state: PageState }) {
   };
 
   return (
-    <InlineModal title="Add Contributor" onClose={close}>
-      <Forms.Form form={form}>
-        <Forms.FieldGroup>
-          <Forms.FieldGroup layout="grid" gridColumns={2}>
-            <Forms.SelectPerson field={"person"} label="Contributor" />
-            <Forms.SelectBox field={"permissions"} label="Access Level" />
+    <div className="mb-8 -mt-4">
+      <InlineModal title="Add Contributor" onClose={close}>
+        <Forms.Form form={form}>
+          <Forms.FieldGroup>
+            <Forms.FieldGroup layout="grid" gridColumns={2}>
+              <Forms.SelectPerson field={"person"} label="Contributor" />
+              <Forms.SelectBox field={"permissions"} label="Access Level" />
+            </Forms.FieldGroup>
+            <Forms.TextInput field={"responsibility"} placeholder="e.g. Project Manager" label="Responsibility" />
           </Forms.FieldGroup>
-          <Forms.TextInput field={"responsibility"} placeholder="e.g. Project Manager" label="Responsibility" />
-        </Forms.FieldGroup>
 
-        <Forms.Submit saveText="Add Contributor" secondarySubmitText="Save &amp; Add Another" />
-      </Forms.Form>
-    </InlineModal>
+          <Forms.Submit saveText="Add Contributor" secondarySubmitText="Save &amp; Add Another" />
+        </Forms.Form>
+      </InlineModal>
+    </div>
   );
 }
