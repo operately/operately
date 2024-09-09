@@ -9,7 +9,7 @@ interface Props {
 
 export function InlineModal(props: Props) {
   return (
-    <div className="shadow-lg rounded-lg p-8 border my-12 border-callout-warning-icon bg-callout-warning">
+    <div className="shadow-lg rounded-lg p-8 border border-callout-warning-icon bg-callout-warning">
       <Title title={props.title} onClose={props.onClose} />
 
       {props.children}
