@@ -15,6 +15,7 @@ export interface FormState<FieldTypes extends MapOfFields> {
     validate: () => boolean;
     submit: (form: FormState<FieldTypes>) => Promise<void>;
     cancel: (form: FormState<FieldTypes>) => Promise<void>;
+    reset: () => void;
   };
 }
 
