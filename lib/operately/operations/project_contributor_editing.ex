@@ -19,30 +19,35 @@ defmodule Operately.Operations.ProjectContributorEditing do
     |> Repo.extract_result(:contributor)
   end
 
-  defp update_bindings(multi, contributor, attrs) when contributor.person_id == attrs.person_id do
-    if is_reviewer_or_contributor?(contributor) do
-      multi
-    else
-      group = Access.get_group!(person_id: contributor.person_id)
-      Access.update_or_insert_binding(multi, :contributor_binding, group, attrs.permissions)
-    end
-  end
+  defp update_bindings(multi, contributor, attrs) do
+    cond do
+      attrs[:person_id] == nil -> 
+        multi
 
-  defp update_bindings(multi, contributor, attrs) when contributor.person_id != attrs.person_id do
-    previous_group = Access.get_group!(person_id: contributor.person_id)
-    new_group = Access.get_group!(person_id: attrs.person_id)
-    permissions = find_permissions(contributor, attrs)
+      attrs[:person_id] == contributor.person_id -> 
+        if is_reviewer_or_contributor?(contributor) do
+          multi
+        else
+          group = Access.get_group!(person_id: contributor.person_id)
+          Access.update_or_insert_binding(multi, :contributor_binding, group, attrs.permissions)
+        end
 
-    if is_reviewer_or_contributor?(contributor) do
-      tag = contributor.role
+      attrs[:person_id] != contributor.person_id -> 
+        previous_group = Access.get_group!(person_id: contributor.person_id)
+        new_group = Access.get_group!(person_id: attrs.person_id)
+        permissions = find_permissions(contributor, attrs)
 
-      multi
-      |> delete_binding(previous_group, tag)
-      |> Access.update_or_insert_binding(:contributor_binding, new_group, permissions, tag)
-    else
-      multi
-      |> delete_binding(previous_group)
-      |> Access.update_or_insert_binding(:contributor_binding, new_group, permissions)
+        if is_reviewer_or_contributor?(contributor) do
+          tag = contributor.role
+
+          multi
+          |> delete_binding(previous_group, tag)
+          |> Access.update_or_insert_binding(:contributor_binding, new_group, permissions, tag)
+        else
+          multi
+          |> delete_binding(previous_group)
+          |> Access.update_or_insert_binding(:contributor_binding, new_group, permissions)
+        end
     end
   end
 
