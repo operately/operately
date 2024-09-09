@@ -5,6 +5,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckIn do
   import Operately.Access.Filters
 
   alias Operately.Projects.CheckIn
+  alias Operately.Notifications.Subscription
 
   inputs do
     field :id, :string
@@ -52,7 +53,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckIn do
         :include_author -> from p in q, preload: [:author]
         :include_project -> from p in q, preload: [project: [:reviewer, [contributors: :person]]]
         :include_reactions -> from p in q, preload: [reactions: :person]
-        :include_subscriptions -> from p in q, preload: [subscription_list: [subscriptions: :person]]
+        :include_subscriptions -> Subscription.preload_subscriptions(q)
         _ -> raise ArgumentError, "Unknown include filter: #{inspect(include)}"
       end
     end)
