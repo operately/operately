@@ -1,97 +1,257 @@
 import React from "react";
 
-import * as Projects from "@/models/projects";
-import * as ProjectContributors from "@/models/projectContributors";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
+import * as Icons from "@tabler/icons-react";
+import * as Projects from "@/models/projects";
+import * as ProjectContributors from "@/models/projectContributors";
 
-import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
-import {
-  ContributorSearch,
-  ResponsibilityInput,
-  CancelButton,
-  AddContribButton,
-  PermissionsInput,
-} from "./FormElements";
-import ContributorItem from "./ContributorItem";
+import { useLoadedData } from "./loader";
+import { usePageState, PageState } from "./usePageState";
+import { AddContributorForm } from "./AddContributorForm";
+import { EditContributorResponsibilityModal } from "./EditContributorResponsibilityModal";
 import { PrimaryButton } from "@/components/Buttons";
+import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
+import { ProjectContributor } from "@/models/projectContributors";
 
-import { useLoadedData, useRefresh } from "./loader";
-import { useForm, FormState } from "./useForm";
+import { ContributorAvatar } from "@/components/ContributorAvatar";
+import { Menu, MenuActionItem, MenuLinkItem } from "@/components/Menu";
+import { match } from "ts-pattern";
+import { createTestId } from "@/utils/testid";
 
 export function Page() {
   const { project } = useLoadedData();
-  const refetch = useRefresh();
-
-  const form = useForm(project);
+  const pageState = usePageState(project);
 
   return (
-    <Pages.Page title={["Contributors", project.name!]}>
+    <Pages.Page title={["Team & Access", project.name!]}>
       <Paper.Root>
         <ProjectPageNavigation project={project} />
 
         <Paper.Body>
-          <Title form={form} />
-          <ContributorList project={project} refetch={refetch} />
+          <Title state={pageState} />
+          <AddContributorForm state={pageState} />
+
+          <Champion state={pageState} />
+          <Reviewer state={pageState} />
+          <Contributors state={pageState} />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
   );
 }
 
-function Title({ form }: { form: FormState }) {
+function Title({ state }: { state: PageState }) {
   return (
     <div className="rounded-t-[20px] pb-12">
       <div className="flex items-center justify-between">
         <div>
-          <div className="text-2xl font-extrabold ">Contributors</div>
-          <div className="text-medium">People who are contributing to this project and their responsibilities.</div>
+          <div className="text-2xl font-extrabold ">Team &amp; Access</div>
+          <div className="text-medium">Manage the team and access to this project</div>
         </div>
 
-        {form.addContrib.hasPermission && <AddButton onClick={form.addContrib.activate} />}
-      </div>
-
-      {form.addContrib.active && <AddContribForm form={form} />}
-    </div>
-  );
-}
-
-function AddContribForm({ form }: { form: FormState }) {
-  return (
-    <div className="bg-surface-dimmed border-y border-surface-outline -mx-12 px-12 mt-4 py-8">
-      <ContributorSearch title="Contributor" projectID={form.project.id} onSelect={form.addContrib.setPersonID} />
-
-      <ResponsibilityInput value={form.addContrib.responsibility} onChange={form.addContrib.setResponsibility} />
-
-      <PermissionsInput value={form.addContrib.permissions} onChange={form.addContrib.setPermissions} />
-
-      <div className="flex mt-8 gap-2">
-        <AddContribButton onClick={form.addContrib.submit} loading={form.addContrib.submitting} />
-        <CancelButton onClick={form.addContrib.deactivate} />
+        <AddContribButton state={state} />
       </div>
     </div>
   );
 }
 
-function AddButton({ onClick }) {
+function AddContribButton({ state }: { state: PageState }) {
+  if (state.editing) return null;
+
   return (
-    <PrimaryButton onClick={onClick} testId="add-contributor-button" size="sm">
+    <PrimaryButton onClick={state.showAddContribForm} testId="add-contributor-button" size="sm">
       Add Contributor
     </PrimaryButton>
   );
 }
 
-function ContributorList({ project, refetch }: { project: Projects.Project; refetch: () => void }) {
-  const { champion, reviewer, contributors } = ProjectContributors.splitByRole(project.contributors!);
+function SectionTitle({ title }: { title: string }) {
+  return (
+    <div className="flex items-center justify-between mb-2">
+      <h2 className="font-bold text-lg">{title}</h2>
+    </div>
+  );
+}
+
+function Champion({ state }: { state: PageState }) {
+  const { project } = useLoadedData();
+  const { champion } = ProjectContributors.splitByRole(project.contributors!);
 
   return (
-    <div className="flex flex-col border-t border-stroke-base">
-      {champion && <ContributorItem contributor={champion} project={project} refetch={refetch} />}
-      {reviewer && <ContributorItem contributor={reviewer} project={project} refetch={refetch} />}
+    <div>
+      <SectionTitle title="Champion" />
+      <div className="flex items-center justify-between py-2 border-y border-stroke-dimmed">
+        <div className="flex items-center gap-2">
+          <ContributorAvatar contributor={champion} />
 
-      {contributors.map((c) => (
-        <ContributorItem key={c.id} contributor={c} project={project} refetch={refetch} />
+          <div className="flex flex-col flex-1">
+            <div className="font-bold flex items-center gap-2">{champion!.person!.fullName}</div>
+
+            <div className="text-sm font-medium flex items-center">
+              Responsible for the overall success of the project
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-4">
+          <AccessLevelBadge level="full" />
+
+          {!state.editing && (
+            <Menu>
+              <MenuLinkItem to="" icon={Icons.IconEdit}>
+                Edit
+              </MenuLinkItem>
+              <MenuLinkItem to="" icon={Icons.IconCopy}>
+                Copy
+              </MenuLinkItem>
+            </Menu>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Reviewer({ state }: { state: PageState }) {
+  const { project } = useLoadedData();
+  const { reviewer } = ProjectContributors.splitByRole(project.contributors!);
+
+  return (
+    <div className="mt-8">
+      <SectionTitle title="Reviewer" />
+
+      <div className="flex items-center justify-between py-2 border-y border-stroke-dimmed">
+        <div className="flex items-center gap-2">
+          <ContributorAvatar contributor={reviewer} />
+
+          <div className="flex flex-col flex-1">
+            <div className="font-bold flex items-center gap-2">{reviewer!.person!.fullName}</div>
+
+            <div className="text-sm font-medium flex items-center">
+              Responsible for reviewing updates and providing feedback
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-4">
+          <AccessLevelBadge level="full" />
+
+          {!state.editing && (
+            <Menu>
+              <MenuLinkItem to="" icon={Icons.IconEdit}>
+                Edit
+              </MenuLinkItem>
+              <MenuLinkItem to="" icon={Icons.IconCopy}>
+                Copy
+              </MenuLinkItem>
+            </Menu>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Contributors({ state }: { state: PageState }) {
+  const { project } = useLoadedData();
+  const { contributors } = ProjectContributors.splitByRole(project.contributors!);
+
+  if (contributors.length === 0) return null;
+
+  return (
+    <div className="mt-8">
+      <SectionTitle title="Contributors" />
+
+      {contributors.map((contrib) => (
+        <Contributor state={state} contributor={contrib} key={contrib.id} />
       ))}
+    </div>
+  );
+}
+
+function Contributor({ state, contributor }: { state: PageState; contributor: ProjectContributor }) {
+  return (
+    <div className="flex items-center justify-between py-2 border-t border-stroke-dimmed last:border-b">
+      <EditContributorResponsibilityModal state={state} contributor={contributor} />
+
+      <div className="flex items-center gap-2">
+        <ContributorAvatar contributor={contributor} />
+        <ContributotNameAndResponsibility contributor={contributor} />
+      </div>
+      <div className="flex items-center gap-4">
+        <AccessLevelBadge level="edit" />
+        <ContributorMenu state={state} contributor={contributor} />
+      </div>
+    </div>
+  );
+}
+
+function ContributorMenu({ state, contributor }: { state: PageState; contributor: ProjectContributor }) {
+  if (state.editing) return null;
+
+  return (
+    <Menu testId={createTestId("contributor-menu", contributor.person!.fullName!)}>
+      <EditResponsibilityMenuItem state={state} contributor={contributor} />
+      <RemoveContributorMenuItem contributor={contributor} />
+    </Menu>
+  );
+}
+
+function ContributotNameAndResponsibility({ contributor }: { contributor: ProjectContributor }) {
+  return (
+    <div className="flex flex-col flex-1">
+      <div className="font-bold flex items-center gap-2">{contributor!.person!.fullName}</div>
+      <div className="text-sm font-medium flex items-center">{contributor.responsibility}</div>
+    </div>
+  );
+}
+
+function EditResponsibilityMenuItem(props: { state: PageState; contributor: ProjectContributor }) {
+  const handleClick = () => props.state.activateEditResponsibility(props.contributor.id!);
+
+  return (
+    <MenuActionItem icon={Icons.IconEdit} onClick={handleClick} testId="edit-responsibility">
+      Edit responsibility
+    </MenuActionItem>
+  );
+}
+
+function RemoveContributorMenuItem({ contributor }: { contributor: ProjectContributor }) {
+  const refresh = Pages.useRefresh();
+  const [remove] = Projects.useRemoveProjectContributor();
+
+  const handleClick = async () => {
+    await remove({ contribId: contributor.id });
+    refresh();
+  };
+
+  return (
+    <MenuActionItem icon={Icons.IconTrash} danger={true} onClick={handleClick} testId="remove-contributor">
+      Remove from project
+    </MenuActionItem>
+  );
+}
+
+function AccessLevelBadge({ level }: { level: "full" | "edit" }) {
+  return match(level)
+    .with("full", () => <FullAccessBadge />)
+    .with("edit", () => <EditAccessBadge />)
+    .exhaustive();
+}
+
+function FullAccessBadge() {
+  return (
+    <div className="text-xs font-semibold bg-callout-warning text-callout-warning-message rounded-full px-2.5 py-1.5 uppercase">
+      Full Access
+    </div>
+  );
+}
+
+function EditAccessBadge() {
+  return (
+    <div className="text-xs font-semibold bg-callout-info text-callout-info-message rounded-full px-2.5 py-1.5 uppercase">
+      Edit Access
     </div>
   );
 }
