@@ -4,6 +4,7 @@ import * as ProjectContributors from "@/models/projectContributors";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as Icons from "@tabler/icons-react";
+import * as Projects from "@/models/projects";
 
 import { useLoadedData } from "./loader";
 import { usePageState, PageState } from "./usePageState";
@@ -12,7 +13,7 @@ import { PrimaryButton } from "@/components/Buttons";
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
 
 import { ContributorAvatar } from "@/components/ContributorAvatar";
-import { Menu, MenuLinkItem } from "@/components/Menu";
+import { Menu, MenuActionItem, MenuLinkItem } from "@/components/Menu";
 import { match } from "ts-pattern";
 
 export function Page() {
@@ -174,18 +175,38 @@ function Contributors({ state }: { state: PageState }) {
 
             {!state.editing && (
               <Menu>
-                <MenuLinkItem to="" icon={Icons.IconEdit}>
-                  Edit
-                </MenuLinkItem>
-                <MenuLinkItem to="" icon={Icons.IconCopy}>
-                  Copy
-                </MenuLinkItem>
+                <EditResponsibilityMenuItem contributor={contrib} />
+                <RemoveContributorMenuItem contributor={contrib} />
               </Menu>
             )}
           </div>
         </div>
       ))}
     </div>
+  );
+}
+
+function EditResponsibilityMenuItem({ contributor }: { contributor: ProjectContributors.ProjectContributor }) {
+  return (
+    <MenuActionItem icon={Icons.IconEdit} onClick={() => console.log("Edit responsibility")}>
+      Edit Responsibility
+    </MenuActionItem>
+  );
+}
+
+function RemoveContributorMenuItem({ contributor }: { contributor: ProjectContributors.ProjectContributor }) {
+  const refresh = Pages.useRefresh();
+  const [remove] = Projects.useRemoveProjectContributor();
+
+  const handleClick = async () => {
+    await remove({ contribId: contributor.id });
+    refresh();
+  };
+
+  return (
+    <MenuActionItem icon={Icons.IconTrash} danger={true} onClick={handleClick}>
+      Remove from project
+    </MenuActionItem>
   );
 }
 
