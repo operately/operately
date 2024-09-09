@@ -9,6 +9,7 @@ import * as Projects from "@/models/projects";
 import { useLoadedData } from "./loader";
 import { usePageState, PageState } from "./usePageState";
 import { AddContributorForm } from "./AddContributorForm";
+import { EditContributorResponsibilityModal } from "./EditContributorResponsibilityModal";
 import { PrimaryButton } from "@/components/Buttons";
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
 
@@ -159,37 +160,54 @@ function Contributors({ state }: { state: PageState }) {
       <SectionTitle title="Contributors" />
 
       {contributors.map((contrib) => (
-        <div className="flex items-center justify-between py-2 border-t border-stroke-dimmed last:border-b">
-          <div className="flex items-center gap-2">
-            <ContributorAvatar contributor={contrib} />
-
-            <div className="flex flex-col flex-1">
-              <div className="font-bold flex items-center gap-2">{contrib!.person!.fullName}</div>
-
-              <div className="text-sm font-medium flex items-center">{contrib.responsibility}</div>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <AccessLevelBadge level="edit" />
-
-            {!state.editing && (
-              <Menu>
-                <EditResponsibilityMenuItem contributor={contrib} />
-                <RemoveContributorMenuItem contributor={contrib} />
-              </Menu>
-            )}
-          </div>
-        </div>
+        <Contributor state={state} contributor={contrib} key={contrib.id} />
       ))}
     </div>
   );
 }
 
-function EditResponsibilityMenuItem({ contributor }: { contributor: ProjectContributors.ProjectContributor }) {
+function Contributor({
+  state,
+  contributor,
+}: {
+  state: PageState;
+  contributor: ProjectContributors.ProjectContributor;
+}) {
   return (
-    <MenuActionItem icon={Icons.IconEdit} onClick={() => console.log("Edit responsibility")}>
-      Edit Responsibility
+    <div className="flex items-center justify-between py-2 border-t border-stroke-dimmed last:border-b">
+      <EditContributorResponsibilityModal state={state} contributor={contributor} />
+
+      <div className="flex items-center gap-2">
+        <ContributorAvatar contributor={contributor} />
+
+        <div className="flex flex-col flex-1">
+          <div className="font-bold flex items-center gap-2">{contributor!.person!.fullName}</div>
+
+          <div className="text-sm font-medium flex items-center">{contributor.responsibility}</div>
+        </div>
+      </div>
+      <div className="flex items-center gap-4">
+        <AccessLevelBadge level="edit" />
+
+        {!state.editing && (
+          <Menu>
+            <EditResponsibilityMenuItem state={state} contributor={contributor} />
+            <RemoveContributorMenuItem contributor={contributor} />
+          </Menu>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function EditResponsibilityMenuItem(props: { state: PageState; contributor: ProjectContributors.ProjectContributor }) {
+  const handleClick = () => {
+    props.state.activateEditResponsibility(props.contributor.id!);
+  };
+
+  return (
+    <MenuActionItem icon={Icons.IconEdit} onClick={handleClick}>
+      Edit responsibility
     </MenuActionItem>
   );
 }
