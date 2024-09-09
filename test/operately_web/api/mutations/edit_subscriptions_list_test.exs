@@ -121,7 +121,7 @@ defmodule OperatelyWeb.Api.Mutations.EditSubscriptionsListTest do
       end)
     end
 
-    test "removes subscriptions", ctx do
+    test "cancels subscriptions", ctx do
       people = create_people(ctx)
       subscribe_people(ctx, people)
 
@@ -141,7 +141,7 @@ defmodule OperatelyWeb.Api.Mutations.EditSubscriptionsListTest do
       end)
     end
 
-    test "adds and removes subscriptions", ctx do
+    test "adds and cancels subscriptions", ctx do
       another = person_fixture(%{company_id: ctx.company.id})
       subscribe_people(ctx, [ctx.person])
 
@@ -159,7 +159,7 @@ defmodule OperatelyWeb.Api.Mutations.EditSubscriptionsListTest do
       assert Notifications.is_subscriber?(another.id, ctx.subscriptions_list.id)
     end
 
-    test "doesn't remove subscriptions", ctx do
+    test "doesn't cancel all subscriptions", ctx do
       another = person_fixture(%{company_id: ctx.company.id})
       subscribe_people(ctx, [ctx.person, another])
 
@@ -176,6 +176,28 @@ defmodule OperatelyWeb.Api.Mutations.EditSubscriptionsListTest do
       refute Notifications.is_subscriber?(ctx.person.id, ctx.subscriptions_list.id)
       assert Notifications.is_subscriber?(another.id, ctx.subscriptions_list.id)
     end
+
+    test "reactivates canceled subscriptions", ctx do
+      another = person_fixture(%{company_id: ctx.company.id})
+      subscriptions = subscribe_people(ctx, [ctx.person, another])
+
+      assert Notifications.is_subscriber?(ctx.person.id, ctx.subscriptions_list.id)
+      assert Notifications.is_subscriber?(another.id, ctx.subscriptions_list.id)
+
+      Enum.each(subscriptions, &(Notifications.update_subscription(&1, %{canceled: true})))
+
+      refute Notifications.is_subscriber?(ctx.person.id, ctx.subscriptions_list.id)
+      refute Notifications.is_subscriber?(another.id, ctx.subscriptions_list.id)
+
+      assert {200, _} = mutation(ctx.conn, :edit_subscriptions_list, %{
+        id: Paths.subscription_list_id(ctx.subscriptions_list),
+        type: "project_check_in",
+        subscriber_ids: [Paths.person_id(ctx.person), Paths.person_id(another)],
+      })
+
+      assert Notifications.is_subscriber?(ctx.person.id, ctx.subscriptions_list.id)
+      assert Notifications.is_subscriber?(another.id, ctx.subscriptions_list.id)
+    end
   end
 
   #
@@ -189,12 +211,13 @@ defmodule OperatelyWeb.Api.Mutations.EditSubscriptionsListTest do
   end
 
   defp subscribe_people(ctx, people) do
-    Enum.each(people, fn p ->
-      Notifications.create_subscription(%{
+    Enum.map(people, fn p ->
+      {:ok, s} = Notifications.create_subscription(%{
         subscription_list_id: ctx.subscriptions_list.id,
         person_id: p.id,
         type: :invited,
       })
+      s
     end)
   end
 

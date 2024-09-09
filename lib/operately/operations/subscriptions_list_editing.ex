@@ -13,7 +13,7 @@ defmodule Operately.Operations.SubscriptionsListEditing do
     end)
     |> update_subscription_list(subscription_list, attrs[:send_notifications_to_everyone])
     |> insert_subscriptions(attrs.subscriber_ids)
-    |> delete_subscriptions(attrs.subscriber_ids)
+    |> cancel_subscriptions(attrs.subscriber_ids)
     |> Repo.transaction()
   end
 
@@ -30,40 +30,55 @@ defmodule Operately.Operations.SubscriptionsListEditing do
       name = "subscription_" <> id
 
       Multi.run(multi, name, fn _, changes ->
-        if is_existing_subscription?(changes, id) do
+        if subscription_active?(changes, id) do
           {:ok, nil}
         else
-          Notifications.create_subscription(%{
-            subscription_list_id: changes.subscription_list.id,
-            person_id: id,
-            type: :invited,
-          })
+          create_or_update_subscription(changes, id)
         end
       end)
     end)
   end
 
-  defp delete_subscriptions(multi, subscriber_ids) do
+  defp cancel_subscriptions(multi, subscriber_ids) do
     multi
-    |> Multi.delete_all(:deleted_subscriptions, fn changes ->
-      ids = find_subscriptions_to_delete(changes, subscriber_ids)
+    |> Multi.update_all(:canceled_subscriptions, fn changes ->
+      ids = find_subscriptions_to_cancel(changes, subscriber_ids)
 
       from(s in Subscription,
-        where: s.subscription_list_id == ^changes.subscription_list.id and s.person_id in ^ids
+        where: s.subscription_list_id == ^changes.subscription_list.id and s.person_id in ^ids,
+        update: [set: [canceled: true]]
       )
-    end)
+    end, [])
   end
 
   #
   # Helpers
   #
 
-  defp is_existing_subscription?(changes, id) do
-    Enum.map(changes.subscriptions, fn s -> s.person_id end)
-    |> Enum.member?(id)
+  defp subscription_active?(changes, id) do
+    case Enum.find(changes.subscriptions, &(&1.person_id == id)) do
+      nil -> false
+      s -> not s.canceled
+    end
   end
 
-  defp find_subscriptions_to_delete(changes, subscriber_ids) do
+  defp create_or_update_subscription(changes, id) do
+    case Enum.find(changes.subscriptions, &(&1.person_id == id)) do
+      nil ->
+        Notifications.create_subscription(%{
+          subscription_list_id: changes.subscription_list.id,
+          person_id: id,
+          type: :invited,
+        })
+      s ->
+        Notifications.update_subscription(s, %{
+          canceled: false,
+          type: :invited,
+        })
+    end
+  end
+
+  defp find_subscriptions_to_cancel(changes, subscriber_ids) do
     changes.subscriptions
     |> Enum.map(fn s -> s.person_id end)
     |> Enum.filter(fn id -> not Enum.member?(subscriber_ids, id) end)

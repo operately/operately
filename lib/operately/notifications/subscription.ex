@@ -20,4 +20,12 @@ defmodule Operately.Notifications.Subscription do
     |> cast(attrs, [:type, :subscription_list_id, :person_id, :canceled])
     |> validate_required([:type, :subscription_list_id, :person_id])
   end
+
+  # Queries
+  import Ecto.Query, only: [from: 2]
+
+  def preload_subscriptions(query) do
+    subquery = from(s in Operately.Notifications.Subscription, where: s.canceled == false, preload: :person)
+    from(p in query, preload: [subscription_list: [subscriptions: ^subquery]])
+  end
 end
