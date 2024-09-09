@@ -127,6 +127,14 @@ export class Paths {
     return createCompanyPath(["projects", projectId, "contributors"]);
   }
 
+  static projectContributorsAddPath(projectId: string) {
+    return createCompanyPath(["projects", projectId, "contributors", "add"]);
+  }
+
+  static projectContributorsEditPath(contributorId: string) {
+    return createCompanyPath(["project-contribs", contributorId, "edit"]);
+  }
+
   static editProjectGoalPath(projectId: string) {
     return createCompanyPath(["projects", projectId, "edit", "goal"]);
   }

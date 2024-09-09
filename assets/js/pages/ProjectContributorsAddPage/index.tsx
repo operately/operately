@@ -1,16 +1,31 @@
-import React from "react";
-import Forms from "@/components/Forms";
+import * as React from "react";
+import * as Pages from "@/components/Pages";
+import * as Paper from "@/components/PaperContainer";
+import * as Projects from "@/models/projects";
 
 import { PERMISSIONS_LIST, PermissionLevels } from "@/features/Permissions";
-import { PageState } from "./usePageState";
-import { useAddProjectContributor } from "@/api";
-import { useLoadedData } from "./loader";
-
-import * as Paper from "@/components/PaperContainer";
 import { ProjectContribsSubpageNavigation } from "@/components/ProjectPageNavigation";
+import { useAddProjectContributor } from "@/api";
 
-export function AddContribView({ state }: { state: PageState }) {
-  const { project } = useLoadedData();
+import Forms from "@/components/Forms";
+import { Paths } from "@/routes/paths";
+import { useNavigate } from "react-router-dom";
+
+interface LoaderResult {
+  project: Projects.Project;
+}
+
+export async function loader({ params }): Promise<LoaderResult> {
+  return {
+    project: await Projects.getProject({
+      id: params.projectID,
+      includePermissions: true,
+    }).then((data) => data.project!),
+  };
+}
+
+export function Page() {
+  const { project } = Pages.useLoadedData() as LoaderResult;
 
   return (
     <Paper.Root>
@@ -19,14 +34,15 @@ export function AddContribView({ state }: { state: PageState }) {
       <Paper.Body>
         <div className="text-2xl font-extrabold pb-8">Add Contributor</div>
 
-        <Form state={state} />
+        <Form />
       </Paper.Body>
     </Paper.Root>
   );
 }
 
-function Form({ state }: { state: PageState }) {
-  const { project } = useLoadedData();
+function Form() {
+  const navigate = useNavigate();
+  const { project } = Pages.useLoadedData() as LoaderResult;
   const [add] = useAddProjectContributor();
 
   const form = Forms.useForm({
@@ -43,9 +59,9 @@ function Form({ state }: { state: PageState }) {
         permissions: form.fields.permissions.value,
       });
 
-      state.goToListView();
+      navigate(Paths.projectContributorsPath(project.id!));
     },
-    cancel: async () => state.goToListView(),
+    cancel: async () => navigate(Paths.projectContributorsPath(project.id!)),
   });
 
   return (
