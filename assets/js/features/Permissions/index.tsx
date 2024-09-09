@@ -30,7 +30,6 @@ export const PERMISSIONS_LIST = [
   { value: PermissionLevels.EDIT_ACCESS, label: "Can Edit" },
   { value: PermissionLevels.COMMENT_ACCESS, label: "Can Comment" },
   VIEW_ACCESS,
-  { value: PermissionLevels.NO_ACCESS, label: "No Access" },
 ];
 
 export const PUBLIC_PERMISSIONS_LIST = [VIEW_ACCESS];
