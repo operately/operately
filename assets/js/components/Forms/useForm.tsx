@@ -55,9 +55,22 @@ export function useForm<FieldTypes extends MapOfFields>(props: UseFormProps<Fiel
         setState("submitting");
         await props.submit(form);
         setState("idle");
+
+        form.actions.reset();
       },
       cancel: async () => {
-        if (props.cancel) await props.cancel(form);
+        if (!props.cancel) return;
+
+        form.actions.reset();
+        await props.cancel(form);
+      },
+      reset: () => {
+        form.actions.clearErrors();
+
+        for (const key in props.fields) {
+          const field = props.fields[key]!;
+          field.setValue(field.initial);
+        }
       },
     },
   };
