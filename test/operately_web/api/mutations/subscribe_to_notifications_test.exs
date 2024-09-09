@@ -68,20 +68,44 @@ defmodule OperatelyWeb.Api.Mutations.SubscribeToNotificationsTest do
 
   describe "subscribe_to_notifications functionality" do
     setup :register_and_log_in_account
-
-    test "subscribes to check-in notifications", ctx do
+    setup ctx do
       project = project_fixture(%{company_id: ctx.company.id, creator_id: ctx.person.id, group_id: ctx.company.company_space_id})
       check_in = check_in_fixture(%{author_id: ctx.person.id, project_id: project.id})
       subscription_list = Notifications.get_subscription_list!(parent_id: check_in.id)
 
-      refute Notifications.is_subscriber?(ctx.person.id, subscription_list.id)
+      Map.merge(ctx, %{subscription_list: subscription_list})
+    end
+
+    test "subscribes to check-in notifications", ctx do
+      refute Notifications.is_subscriber?(ctx.person.id, ctx.subscription_list.id)
 
       assert {200, _} = mutation(ctx.conn, :subscribe_to_notifications, %{
-        id: Paths.subscription_list_id(subscription_list),
+        id: Paths.subscription_list_id(ctx.subscription_list),
         type: "project_check_in",
       })
 
-      assert Notifications.is_subscriber?(ctx.person.id, subscription_list.id)
+      assert Notifications.is_subscriber?(ctx.person.id, ctx.subscription_list.id)
+    end
+
+    test "updates canceled subscription", ctx do
+      {:ok, subscription} = Notifications.create_subscription(%{
+        person_id: ctx.person.id,
+        subscription_list_id: ctx.subscription_list.id,
+        type: :joined
+      })
+
+      assert Notifications.is_subscriber?(ctx.person.id, ctx.subscription_list.id)
+
+      {:ok, _} = Notifications.update_subscription(subscription, %{canceled: true})
+
+      refute Notifications.is_subscriber?(ctx.person.id, ctx.subscription_list.id)
+
+      assert {200, _} = mutation(ctx.conn, :subscribe_to_notifications, %{
+        id: Paths.subscription_list_id(ctx.subscription_list),
+        type: "project_check_in",
+      })
+
+      assert Notifications.is_subscriber?(ctx.person.id, ctx.subscription_list.id)
     end
   end
 
