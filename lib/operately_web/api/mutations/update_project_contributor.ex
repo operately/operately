@@ -40,7 +40,11 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProjectContributor do
   end
 
   defp parse_inputs(inputs) do
-    {:ok, person_id} = decode_id(inputs.person_id)
-    {:ok, %{inputs | person_id: person_id}}
+    if inputs[:person_id] == nil do
+      {:ok, inputs}
+    else
+      {:ok, person_id} = decode_id(inputs[:person_id])
+      {:ok, %{inputs | person_id: person_id}}
+    end
   end
 end

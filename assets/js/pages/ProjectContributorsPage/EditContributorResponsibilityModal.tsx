@@ -40,7 +40,7 @@ export function EditContributorResponsibilityModal({ state, contributor }: Props
 
   return (
     <Modal
-      title={`Edit ${contributor.person!.fullName}'s Responsibility`}
+      title={`Edit ${People.firstName(contributor.person!)}'s Responsibility`}
       hideModal={close}
       isOpen={state.editResponsibilityActiveFor === contributor.id}
       minHeight="0px"
@@ -50,7 +50,7 @@ export function EditContributorResponsibilityModal({ state, contributor }: Props
           <Forms.TextInput
             field={"responsibility"}
             placeholder="e.g. Project Manager"
-            label={`What's ${People.firstName(contributor.person!)} responsible for on this project?`}
+            label={"Responsibility on this project"}
           />
         </Forms.FieldGroup>
 
