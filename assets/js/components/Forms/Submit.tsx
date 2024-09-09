@@ -1,11 +1,12 @@
 import * as React from "react";
 
 import { getFormContext } from "./FormContext";
-import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
+import { GhostButton, PrimaryButton, SecondaryButton } from "@/components/Buttons";
 import classNames from "classnames";
 
 interface SubmitProps {
   saveText?: string;
+  secondarySubmitText?: string;
   cancelText?: string;
   layout?: "left" | "centered";
 }
@@ -26,6 +27,18 @@ export function Submit(props: SubmitProps) {
       <PrimaryButton type="submit" loading={form.state === "submitting"} testId="submit" size="sm">
         {saveText}
       </PrimaryButton>
+
+      {props.secondarySubmitText && (
+        <GhostButton
+          type="button"
+          loading={form.state === "submitting"}
+          testId="submit"
+          size="sm"
+          onClick={form.actions.submit}
+        >
+          {props.secondarySubmitText}
+        </GhostButton>
+      )}
 
       {form.hasCancel && (
         <SecondaryButton onClick={() => form.actions.cancel(form)} testId="cancel" size="sm">
