@@ -9,3 +9,6 @@ export function splitByRole(contributors: ProjectContributor[]) {
 
   return { champion, reviewer, contributors: rest };
 }
+
+export const getContributor = api.getProjectContributor;
+export const useUpdateContributor = api.useUpdateProjectContributor;
