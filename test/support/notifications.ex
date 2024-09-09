@@ -15,6 +15,14 @@ defmodule Operately.Support.Notifications do
     Repo.aggregate(Notification, :count, :id)
   end
 
+  def notifications_count(action: action) do
+    from(n in Notification,
+      join: a in assoc(n, :activity),
+      where: a.action == ^action
+    )
+    |> Repo.aggregate(:count)
+  end
+
   def perform_job(activity_id) do
     Oban.Testing.perform_job(Operately.Activities.NotificationDispatcher, %{activity_id: activity_id}, [])
   end
@@ -25,6 +33,14 @@ defmodule Operately.Support.Notifications do
 
   def fetch_notifications(activity_id) do
     from(n in Notification, where: n.activity_id == ^activity_id) |> Repo.all()
+  end
+
+  def fetch_notifications(activity_id, action: action) do
+    from(n in Notification,
+      join: a in assoc(n, :activity),
+      where: n.activity_id == ^activity_id and a.action == ^action
+    )
+    |> Repo.all()
   end
 
   def notification_message(%Person{id: id, full_name: full_name}) do
