@@ -12,6 +12,7 @@ import { MultiPeopleSelectField } from "./MultiPeopleSelectField";
 import { useForm } from "./useForm";
 import { useTextField } from "./useTextField";
 import { useSelectField } from "./useSelectField";
+import { useSelectNumberField } from "./useSelectNumberField";
 import { useSelectPersonField } from "./useSelectPersonField";
 import { useMultiPeopleSelectField } from "./useMultiPeopleSelectField";
 
@@ -30,6 +31,7 @@ export default {
   useForm,
   useTextField,
   useSelectField,
+  useSelectNumberField,
   useSelectPersonField,
   useMultiPeopleSelectField,
 };
