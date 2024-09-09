@@ -106,6 +106,8 @@ function GridForm() {
           <Forms.PasswordInput field={"password"} label={"Password"} />
           <Forms.PasswordInput field={"confirmPassword"} label={"Confirm Password"} />
         </Forms.FieldGroup>
+
+        <Forms.Submit saveText="Submit" />
       </Forms.Form>
     </div>
   );
