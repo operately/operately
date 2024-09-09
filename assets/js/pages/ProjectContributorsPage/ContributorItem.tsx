@@ -62,7 +62,7 @@ function ViewState({ project, avatar, name, responsibility, onEdit }) {
   const editTestId = createTestId("edit-contributor", name);
 
   return (
-    <div className="flex items-center justify-between border-b border-stroke-base py-2 group">
+    <div className="flex items-center justify-between border-b border-stroke-dimmed py-2 group">
       <div className="flex items-center gap-2">
         {avatar}
 
