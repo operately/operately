@@ -69,7 +69,10 @@ export function useForm<FieldTypes extends MapOfFields>(props: UseFormProps<Fiel
 
         for (const key in props.fields) {
           const field = props.fields[key]!;
-          field.setValue(field.initial);
+
+          if (field.initial) {
+            field.setValue(field.initial);
+          }
         }
       },
     },
