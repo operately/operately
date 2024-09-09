@@ -2,6 +2,7 @@ import * as React from "react";
 import * as Projects from "@/models/projects";
 
 export interface PageState {
+  editing: boolean;
   addContribButtonVisible: boolean;
   addContribVisible: boolean;
   showAddContribForm: () => void;
@@ -9,12 +10,20 @@ export interface PageState {
 }
 
 export function usePageState(project: Projects.Project): PageState {
+  const [editing, setEditing] = React.useState(false);
   const [addContribVisible, setAddContribVisible] = React.useState(false);
 
   return {
-    addContribButtonVisible: project.permissions!.canEditContributors! && !addContribVisible,
+    editing,
+    addContribButtonVisible: project.permissions!.canEditContributors! && !editing,
     addContribVisible,
-    showAddContribForm: () => setAddContribVisible(true),
-    hideAddContribForm: () => setAddContribVisible(false),
+    showAddContribForm: () => {
+      setEditing(true);
+      setAddContribVisible(true);
+    },
+    hideAddContribForm: () => {
+      setEditing(false);
+      setAddContribVisible(false);
+    },
   };
 }
