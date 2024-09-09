@@ -1,11 +1,11 @@
 import React from "react";
 import Forms from "@/components/Forms";
-import { IconX } from "@tabler/icons-react";
 
 import { PERMISSIONS_LIST, PermissionLevels } from "@/features/Permissions";
 import { PageState } from "./usePageState";
 import { useAddProjectContributor } from "@/api";
 import { useLoadedData, useRefresh } from "./loader";
+import { InlineModal } from "./InlineModal";
 
 export function AddContributorForm({ state }: { state: PageState }) {
   const { project } = useLoadedData();
@@ -40,9 +40,7 @@ export function AddContributorForm({ state }: { state: PageState }) {
   };
 
   return (
-    <div className="shadow-lg rounded-lg p-8 border mb-12 -mt-4 border-callout-warning-icon bg-callout-warning">
-      <Title title="Add Contributor" closeForm={close} />
-
+    <InlineModal title="Add Contributor" onClose={close}>
       <Forms.Form form={form}>
         <Forms.FieldGroup>
           <Forms.FieldGroup layout="grid" gridColumns={2}>
@@ -54,15 +52,6 @@ export function AddContributorForm({ state }: { state: PageState }) {
 
         <Forms.Submit saveText="Add Contributor" secondarySubmitText="Save &amp; Add Another" />
       </Forms.Form>
-    </div>
-  );
-}
-
-function Title({ title, closeForm }: { title: string; closeForm: () => void }) {
-  return (
-    <div className="flex items-center justify-between mb-8 border-b border-stroke-base pb-2">
-      <h2 className="font-bold text-lg">{title}</h2>
-      <IconX size={24} className="cursor-pointer text-content-dimmed hover:text-content-accent" onClick={closeForm} />
-    </div>
+    </InlineModal>
   );
 }
