@@ -34,9 +34,14 @@ export function AddContributorForm({ state }: { state: PageState }) {
 
   if (!state.addContribVisible) return null;
 
+  const close = () => {
+    form.actions.reset();
+    state.hideAddContribForm();
+  };
+
   return (
     <div className="shadow-lg rounded-lg p-8 border mb-12 -mt-4 border-callout-warning-icon bg-callout-warning">
-      <Title title="Add Contributor" closeForm={state.hideAddContribForm} />
+      <Title title="Add Contributor" closeForm={close} />
 
       <Forms.Form form={form}>
         <Forms.FieldGroup>
