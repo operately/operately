@@ -913,6 +913,7 @@ defmodule OperatelyWeb.Api.Types do
     field :role, :string
     field :person, :person
     field :access_level, :integer
+    field :project, :project
   end
 
   object :create_target_input do
