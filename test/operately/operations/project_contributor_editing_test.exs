@@ -169,9 +169,7 @@ defmodule Operately.Operations.ProjectContributorEditingTest do
   end
 
   test "it is able to update just the responsibility", ctx do
-    {:ok, contributor} = Projects.create_contributor(ctx.creator, Map.merge(ctx.attrs, %{
-      person_id: ctx.contributor.id,
-    }))
+    {:ok, contributor} = Projects.create_contributor(ctx.creator, Map.merge(ctx.attrs, %{person_id: ctx.contributor.id}))
     group = Access.get_group!(person_id: ctx.contributor.id)
     context = Access.get_context!(project_id: ctx.project.id)
 
@@ -179,10 +177,10 @@ defmodule Operately.Operations.ProjectContributorEditingTest do
     assert contributor.responsibility == "Developer"
 
     {:ok, updated} = Operately.Operations.ProjectContributorEditing.run(ctx.creator, contributor, %{
-      responsibility: "Manager",
+      responsibility: "Project manager & Designer",
     })
 
-    assert updated.responsibility == "Manager"
+    assert updated.responsibility == "Project manager & Designer"
     assert Access.get_binding(context_id: context.id, group_id: group.id, access_level: Binding.edit_access())
   end
 end

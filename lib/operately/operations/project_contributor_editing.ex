@@ -66,7 +66,7 @@ defmodule Operately.Operations.ProjectContributorEditing do
         updated_contributor: %{
           person_id: changes.contributor.person_id,
           role: Atom.to_string(changes.contributor.role),
-          permissions: find_permissions(changes.contributor, attrs),
+          permissions: attrs[:person_id] && find_permissions(changes.contributor, attrs),
         }
       }
     end)

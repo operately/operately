@@ -32,7 +32,7 @@ export function Submit(props: SubmitProps) {
         <GhostButton
           type="button"
           loading={form.state === "submitting"}
-          testId="submit"
+          testId="submit-secondary"
           size="sm"
           onClick={form.actions.submit}
         >
