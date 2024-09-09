@@ -6,15 +6,10 @@ import * as Projects from "@/models/projects";
 import { ContributorAvatar } from "@/components/ContributorAvatar";
 
 import { PERMISSIONS_LIST } from "@/features/Permissions";
-import {
-  ContributorSearch,
-  RemoveButton,
-  SaveButton,
-  CancelButton,
-  ResponsibilityInput,
-  PermissionsInput,
-} from "./FormElements";
 import { createTestId } from "@/utils/testid";
+
+import Forms from "@/components/Forms";
+import { SecondaryButton } from "@/components/Buttons";
 
 interface Props {
   project: Projects.Project;
@@ -45,15 +40,7 @@ function ContributorItemContent({ contributor, project, refetch }: Props) {
   }
 
   if (state === "edit") {
-    return (
-      <EditAssignment
-        project={project}
-        contributor={contributor}
-        onSave={onChange}
-        onRemove={onChange}
-        onClose={deactivateEdit}
-      />
-    );
+    return <EditAssignment contributor={contributor} onSave={onChange} onRemove={onChange} onCancel={deactivateEdit} />;
   }
 
   throw new Error("Invalid state");
@@ -75,7 +62,7 @@ function ViewState({ project, avatar, name, responsibility, onEdit }) {
   const editTestId = createTestId("edit-contributor", name);
 
   return (
-    <div className="flex items-center justify-between border-b border-stroke-base py-2 group">
+    <div className="flex items-center justify-between border-b border-stroke-dimmed py-2 group">
       <div className="flex items-center gap-2">
         {avatar}
 
@@ -103,61 +90,68 @@ function ViewState({ project, avatar, name, responsibility, onEdit }) {
   );
 }
 
-function EditAssignment({ contributor, project, onSave, onRemove, onClose }) {
-  const [update, _s1] = Projects.useUpdateProjectContributor();
+function EditAssignment({ contributor, onSave, onRemove, onCancel }) {
+  const [update] = Projects.useUpdateProjectContributor();
   const [remove, { loading }] = Projects.useRemoveProjectContributor();
 
-  const responsibility = ProjectContributors.responsibility(contributor, contributor.role);
+  const form = Forms.useForm({
+    fields: {
+      person: Forms.useSelectPersonField(contributor.person),
+      responsibility: Forms.useTextField(ProjectContributors.responsibility(contributor, contributor.role)),
+      permissions: Forms.useSelectNumberField(contributor.accessLevel, PERMISSIONS_LIST),
+    },
+    submit: async (form) => {
+      await update({
+        contribId: contributor.id,
+        personId: form.fields.person.value!.id!,
+        responsibility: form.fields.responsibility.value!,
+        permissions: form.fields.permissions.value,
+      });
 
-  const [permissions, setPermissions] = React.useState(
-    PERMISSIONS_LIST.find((p) => p.value === contributor.accessLevel),
-  );
-  const [personID, setPersonID] = React.useState<any>(contributor.person.id);
-  const [newResp, setNewResp] = React.useState(responsibility);
-
-  const handleSave = async () => {
-    await update({
-      contribId: contributor.id,
-      personId: personID,
-      responsibility: newResp,
-      permissions: permissions?.value || 0,
-    });
-
-    onSave();
-  };
+      onSave();
+    },
+    cancel: async () => {
+      onCancel();
+    },
+  });
 
   const handleRemove = async () => {
     await remove({ contribId: contributor.id });
     onRemove();
   };
 
+  const hideResp = !ProjectContributors.isResponsibilityEditable(contributor.role);
+  const hidePermissions = !ProjectContributors.isPermissionsEditable(contributor.role);
+  const showRemove = ProjectContributors.isResponsibilityRemovable(contributor.role);
+
   return (
-    <div className="bg-surface-dimmed border-y border-surface-outline -mx-12 px-12 py-8">
-      <ContributorSearch
-        defaultValue={contributor.person}
-        projectID={project.id}
-        title={contributor.role}
-        onSelect={setPersonID}
-      />
+    <Forms.Form form={form}>
+      <div className="bg-surface-dimmed border-y border-surface-outline -mx-12 px-12 py-8">
+        <Forms.FieldGroup>
+          <Forms.SelectPerson field={"person"} label="Contributor" />
+          <Forms.TextInput
+            field={"responsibility"}
+            placeholder="e.g. Project Manager"
+            label="Responsibility"
+            hidden={hideResp}
+          />
+          <Forms.SelectBox field={"permissions"} label="Access Level" hidden={hidePermissions} />
+        </Forms.FieldGroup>
 
-      {ProjectContributors.isResponsibilityEditable(contributor.role) && (
-        <ResponsibilityInput value={newResp} onChange={setNewResp} />
-      )}
+        <Forms.Submit saveText="Save" cancelText="Cancel" />
 
-      {ProjectContributors.isPermissionsEditable(contributor.role) && (
-        <PermissionsInput value={permissions} onChange={setPermissions} />
-      )}
-
-      <div className="flex justify-between mt-8">
-        <div className="flex gap-2">
-          <SaveButton onClick={handleSave} />
-          <CancelButton onClick={onClose} />
-        </div>
-
-        {ProjectContributors.isResponsibilityRemovable(contributor.role) && (
-          <RemoveButton onClick={handleRemove} loading={loading} />
-        )}
+        {showRemove && <RemoveButton onClick={handleRemove} loading={loading} />}
       </div>
+    </Forms.Form>
+  );
+}
+
+export function RemoveButton({ onClick, loading }) {
+  return (
+    <div className="flex gap-2">
+      <SecondaryButton onClick={onClick} loading={loading} testId="remove-contributor">
+        Remove
+      </SecondaryButton>
     </div>
   );
 }
