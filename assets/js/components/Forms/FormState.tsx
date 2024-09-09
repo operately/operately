@@ -1,7 +1,6 @@
 import { Dispatch, SetStateAction } from "react";
 
-type State = "idle" | "submitting";
-
+export type State = "idle" | "validating" | "submitting";
 export type MapOfFields = Record<string, Field<any>>;
 
 export interface FormState<FieldTypes extends MapOfFields> {
@@ -10,9 +9,13 @@ export interface FormState<FieldTypes extends MapOfFields> {
   errors: ErrorMap<FieldTypes>;
   setState: (state: State) => void;
   setErrors: (errors: ErrorMap<FieldTypes>) => void;
-  clearErrors: () => void;
-  submit: (form: FormState<FieldTypes>) => Promise<void>;
-  validate: () => boolean;
+  hasCancel: boolean;
+  actions: {
+    clearErrors: () => void;
+    validate: () => boolean;
+    submit: (form: FormState<FieldTypes>) => Promise<void>;
+    cancel: (form: FormState<FieldTypes>) => Promise<void>;
+  };
 }
 
 export type Field<T> = {

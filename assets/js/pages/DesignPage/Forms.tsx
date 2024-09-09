@@ -31,6 +31,9 @@ function VerticalForm() {
     submit: async (form) => {
       console.log("Form submitted with values:", form);
     },
+    cancel: async (form) => {
+      console.log("Form cancelled", form);
+    },
   });
 
   return (

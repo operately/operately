@@ -1,27 +1,37 @@
 import * as React from "react";
 
 import { getFormContext } from "./FormContext";
-import { PrimaryButton } from "@/components/Buttons";
+import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
 import classNames from "classnames";
 
 interface SubmitProps {
-  saveText: string;
+  saveText?: string;
+  cancelText?: string;
   layout?: "left" | "centered";
 }
 
-export function Submit({ saveText, layout }: SubmitProps) {
+export function Submit(props: SubmitProps) {
   const form = getFormContext();
 
   const className = classNames("flex items-center gap-2 mt-8", {
-    "justify-start": layout === "left",
-    "justify-center": layout === "centered",
+    "justify-start": props.layout === "left",
+    "justify-center": props.layout === "centered",
   });
+
+  const saveText = props.saveText || "Save";
+  const cancelText = props.cancelText || "Cancel";
 
   return (
     <div className={className}>
-      <PrimaryButton type="submit" loading={form.state === "submitting"} testId="submit">
+      <PrimaryButton type="submit" loading={form.state === "submitting"} testId="submit" size="sm">
         {saveText}
       </PrimaryButton>
+
+      {form.hasCancel && (
+        <SecondaryButton onClick={() => form.actions.cancel(form)} testId="cancel" size="sm">
+          {cancelText}
+        </SecondaryButton>
+      )}
     </div>
   );
 }

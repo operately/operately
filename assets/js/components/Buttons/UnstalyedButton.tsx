@@ -59,8 +59,10 @@ function UnstyledActionButton(props: UnstyledButtonProps) {
     if (props.onClick) props.onClick(e);
   };
 
+  const type = props.type || "button";
+
   return (
-    <button type={props.type} className={props.className} onClick={handleClick} data-test-id={props.testId}>
+    <button type={type} className={props.className} onClick={handleClick} data-test-id={props.testId}>
       {props.children}
       {props.spinner}
     </button>
