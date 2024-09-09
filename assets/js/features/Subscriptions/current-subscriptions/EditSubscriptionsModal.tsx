@@ -14,7 +14,7 @@ interface Props {
 
 export function EditSubscriptionsModal({ isModalOpen, hideModal }: Props) {
   const { people, subscriptionList, callback, type } = useCurrentSubscriptionsContext();
-  const [edit, { loading }] = useEditSubscriptionsList();
+  const [edit] = useEditSubscriptionsList();
 
   const alreadySelected = getSelectedPeopleFromSubscriptions(people, subscriptionList.subscriptions!);
   const subscriptionsState = useSubscriptions(people, { alreadySelected });
@@ -35,7 +35,7 @@ export function EditSubscriptionsModal({ isModalOpen, hideModal }: Props) {
   return (
     <SubscribersSelectorProvider state={subscriptionsState}>
       <Modal title="Edit subscribers" isOpen={isModalOpen} hideModal={hideModal} minHeight="200px">
-        <SubscribersSelectorForm callback={submitForm} closeForm={hideModal} loading={loading} />
+        <SubscribersSelectorForm callback={submitForm} closeForm={hideModal} />
       </Modal>
     </SubscribersSelectorProvider>
   );
