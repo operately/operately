@@ -29,6 +29,9 @@ export function AddContributorForm({ state }: { state: PageState }) {
       refresh();
       state.hideAddContribForm();
     },
+    cancel: async () => {
+      state.hideAddContribForm();
+    },
   });
 
   if (!state.addContribVisible) return null;
