@@ -8,36 +8,45 @@ import * as ProjectContributors from "@/models/projectContributors";
 
 import { useLoadedData } from "./loader";
 import { usePageState, PageState } from "./usePageState";
-import { AddContributorForm } from "./AddContributorForm";
-import { EditContributorResponsibilityModal } from "./EditContributorResponsibilityModal";
-import { PrimaryButton } from "@/components/Buttons";
+import { AddContribView } from "./AddContributorForm";
+import { EditContribView } from "./EditContribView";
+import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
 import { ProjectContributor } from "@/models/projectContributors";
 
-import { ContributorAvatar } from "@/components/ContributorAvatar";
+import { ContributorAvatar, ReviewerPlaceholderAvatar } from "@/components/ContributorAvatar";
 import { Menu, MenuActionItem, MenuLinkItem } from "@/components/Menu";
 import { match } from "ts-pattern";
 import { createTestId } from "@/utils/testid";
 
 export function Page() {
   const { project } = useLoadedData();
-  const pageState = usePageState(project);
+  const state = usePageState();
 
   return (
     <Pages.Page title={["Team & Access", project.name!]}>
-      <Paper.Root>
-        <ProjectPageNavigation project={project} />
-
-        <Paper.Body>
-          <Title state={pageState} />
-          <AddContributorForm state={pageState} />
-
-          <Champion state={pageState} />
-          <Reviewer state={pageState} />
-          <Contributors state={pageState} />
-        </Paper.Body>
-      </Paper.Root>
+      {match(state.view)
+        .with("list", () => <ListView pageState={state} />)
+        .with("add", () => <AddContribView state={state} />)
+        .with("edit", () => <EditContribView state={state} />)
+        .exhaustive()}
     </Pages.Page>
+  );
+}
+
+function ListView({ pageState }: { pageState: PageState }) {
+  const { project } = useLoadedData();
+
+  return (
+    <Paper.Root>
+      <ProjectPageNavigation project={project} />
+      <Paper.Body>
+        <Title state={pageState} />
+        <Champion state={pageState} />
+        <Reviewer state={pageState} />
+        <Contributors state={pageState} />
+      </Paper.Body>
+    </Paper.Root>
   );
 }
 
@@ -57,10 +66,12 @@ function Title({ state }: { state: PageState }) {
 }
 
 function AddContribButton({ state }: { state: PageState }) {
-  if (state.editing) return null;
+  const { project } = useLoadedData();
+
+  if (!project.permissions?.canEditContributors) return null;
 
   return (
-    <PrimaryButton onClick={state.showAddContribForm} testId="add-contributor-button" size="sm">
+    <PrimaryButton onClick={state.goToAddView} testId="add-contributor-button" size="sm">
       Add Contributor
     </PrimaryButton>
   );
@@ -77,6 +88,8 @@ function SectionTitle({ title }: { title: string }) {
 function Champion({ state }: { state: PageState }) {
   const { project } = useLoadedData();
   const { champion } = ProjectContributors.splitByRole(project.contributors!);
+
+  if (!champion) return <ChampionPlaceholder state={state} />;
 
   return (
     <div>
@@ -97,16 +110,12 @@ function Champion({ state }: { state: PageState }) {
         <div className="flex items-center gap-4">
           <AccessLevelBadge level="full" />
 
-          {!state.editing && (
-            <Menu>
-              <MenuLinkItem to="" icon={Icons.IconEdit}>
-                Edit
-              </MenuLinkItem>
-              <MenuLinkItem to="" icon={Icons.IconCopy}>
-                Copy
-              </MenuLinkItem>
-            </Menu>
-          )}
+          <Menu>
+            <MenuLinkItem to="" icon={Icons.IconEdit}>
+              Edit
+            </MenuLinkItem>
+            <RemoveContributorMenuItem contributor={champion} />
+          </Menu>
         </div>
       </div>
     </div>
@@ -116,6 +125,8 @@ function Champion({ state }: { state: PageState }) {
 function Reviewer({ state }: { state: PageState }) {
   const { project } = useLoadedData();
   const { reviewer } = ProjectContributors.splitByRole(project.contributors!);
+
+  if (!reviewer) return <ReviewerPlaceholder state={state} />;
 
   return (
     <div className="mt-8">
@@ -137,16 +148,66 @@ function Reviewer({ state }: { state: PageState }) {
         <div className="flex items-center gap-4">
           <AccessLevelBadge level="full" />
 
-          {!state.editing && (
-            <Menu>
-              <MenuLinkItem to="" icon={Icons.IconEdit}>
-                Edit
-              </MenuLinkItem>
-              <MenuLinkItem to="" icon={Icons.IconCopy}>
-                Copy
-              </MenuLinkItem>
-            </Menu>
-          )}
+          <Menu>
+            <MenuLinkItem to="" icon={Icons.IconEdit}>
+              Edit
+            </MenuLinkItem>
+            <RemoveContributorMenuItem contributor={reviewer} />
+          </Menu>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ReviewerPlaceholder({ state }: { state: PageState }) {
+  return (
+    <div className="mt-8">
+      <SectionTitle title="Reviewer" />
+
+      <div className="flex items-center justify-between py-2 border-y border-stroke-dimmed">
+        <div className="flex items-center gap-2">
+          <ReviewerPlaceholderAvatar />
+
+          <div className="flex flex-col flex-1">
+            <div className="font-bold flex items-center gap-2">No Reviewer</div>
+            <div className="text-sm font-medium flex items-center">
+              Select a reviewer to get feedback and keep things moving smoothly
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-4">
+          <SecondaryButton onClick={state.goToAddView} testId="add-contributor-button" size="sm">
+            Add Reviewer
+          </SecondaryButton>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ChampionPlaceholder({ state }: { state: PageState }) {
+  return (
+    <div className="">
+      <SectionTitle title="Champion" />
+
+      <div className="flex items-center justify-between py-2 border-y border-stroke-dimmed">
+        <div className="flex items-center gap-2">
+          <ReviewerPlaceholderAvatar />
+
+          <div className="flex flex-col flex-1">
+            <div className="font-bold flex items-center gap-2">No Reviewer</div>
+            <div className="text-sm font-medium flex items-center">
+              Select a reviewer to get feedback and keep things moving smoothly
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-4">
+          <SecondaryButton onClick={state.goToAddView} testId="add-contributor-button" size="sm">
+            Add Champion
+          </SecondaryButton>
         </div>
       </div>
     </div>
@@ -173,8 +234,6 @@ function Contributors({ state }: { state: PageState }) {
 function Contributor({ state, contributor }: { state: PageState; contributor: ProjectContributor }) {
   return (
     <div className="flex items-center justify-between py-2 border-t border-stroke-dimmed last:border-b">
-      <EditContributorResponsibilityModal state={state} contributor={contributor} />
-
       <div className="flex items-center gap-2">
         <ContributorAvatar contributor={contributor} />
         <ContributotNameAndResponsibility contributor={contributor} />
@@ -188,8 +247,6 @@ function Contributor({ state, contributor }: { state: PageState; contributor: Pr
 }
 
 function ContributorMenu({ state, contributor }: { state: PageState; contributor: ProjectContributor }) {
-  if (state.editing) return null;
-
   return (
     <Menu testId={createTestId("contributor-menu", contributor.person!.fullName!)}>
       <EditResponsibilityMenuItem state={state} contributor={contributor} />
@@ -208,7 +265,7 @@ function ContributotNameAndResponsibility({ contributor }: { contributor: Projec
 }
 
 function EditResponsibilityMenuItem(props: { state: PageState; contributor: ProjectContributor }) {
-  const handleClick = () => props.state.activateEditResponsibility(props.contributor.id!);
+  const handleClick = () => props.state.goToEditView(props.contributor);
 
   return (
     <MenuActionItem icon={Icons.IconEdit} onClick={handleClick} testId="edit-responsibility">

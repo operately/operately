@@ -4,13 +4,29 @@ import Forms from "@/components/Forms";
 import { PERMISSIONS_LIST, PermissionLevels } from "@/features/Permissions";
 import { PageState } from "./usePageState";
 import { useAddProjectContributor } from "@/api";
-import { useLoadedData, useRefresh } from "./loader";
-import { InlineModal } from "./InlineModal";
+import { useLoadedData } from "./loader";
 
-export function AddContributorForm({ state }: { state: PageState }) {
+import * as Paper from "@/components/PaperContainer";
+import { ProjectContribsSubpageNavigation } from "@/components/ProjectPageNavigation";
+
+export function AddContribView({ state }: { state: PageState }) {
   const { project } = useLoadedData();
-  const refresh = useRefresh();
 
+  return (
+    <Paper.Root>
+      <ProjectContribsSubpageNavigation project={project} />
+
+      <Paper.Body>
+        <div className="text-2xl font-extrabold pb-8">Add Contributor</div>
+
+        <Form state={state} />
+      </Paper.Body>
+    </Paper.Root>
+  );
+}
+
+function Form({ state }: { state: PageState }) {
+  const { project } = useLoadedData();
   const [add] = useAddProjectContributor();
 
   const form = Forms.useForm({
@@ -27,33 +43,22 @@ export function AddContributorForm({ state }: { state: PageState }) {
         permissions: form.fields.permissions.value,
       });
 
-      refresh();
-      state.hideAddContribForm();
+      state.goToListView();
     },
+    cancel: async () => state.goToListView(),
   });
 
-  if (!state.addContribVisible) return null;
-
-  const close = () => {
-    form.actions.reset();
-    state.hideAddContribForm();
-  };
-
   return (
-    <div className="mb-8 -mt-4">
-      <InlineModal title="Add Contributor" onClose={close}>
-        <Forms.Form form={form}>
-          <Forms.FieldGroup>
-            <Forms.FieldGroup layout="grid" gridColumns={2}>
-              <Forms.SelectPerson field={"person"} label="Contributor" />
-              <Forms.SelectBox field={"permissions"} label="Access Level" />
-            </Forms.FieldGroup>
-            <Forms.TextInput field={"responsibility"} placeholder="e.g. Project Manager" label="Responsibility" />
-          </Forms.FieldGroup>
+    <Forms.Form form={form}>
+      <Forms.FieldGroup>
+        <Forms.FieldGroup layout="grid" gridColumns={2}>
+          <Forms.SelectPerson field={"person"} label="Contributor" />
+          <Forms.SelectBox field={"permissions"} label="Access Level" />
+        </Forms.FieldGroup>
+        <Forms.TextInput field={"responsibility"} placeholder="e.g. Project Manager" label="Responsibility" />
+      </Forms.FieldGroup>
 
-          <Forms.Submit saveText="Add Contributor" secondarySubmitText="Save &amp; Add Another" />
-        </Forms.Form>
-      </InlineModal>
-    </div>
+      <Forms.Submit saveText="Add Contributor" secondarySubmitText="Save &amp; Add Another" />
+    </Forms.Form>
   );
 }
