@@ -40,7 +40,7 @@ function ContributorItemContent({ contributor, project, refetch }: Props) {
   }
 
   if (state === "edit") {
-    return <EditAssignment contributor={contributor} onSave={onChange} onRemove={onChange} />;
+    return <EditAssignment contributor={contributor} onSave={onChange} onRemove={onChange} onCancel={deactivateEdit} />;
   }
 
   throw new Error("Invalid state");
@@ -90,7 +90,7 @@ function ViewState({ project, avatar, name, responsibility, onEdit }) {
   );
 }
 
-function EditAssignment({ contributor, onSave, onRemove }) {
+function EditAssignment({ contributor, onSave, onRemove, onCancel }) {
   const [update] = Projects.useUpdateProjectContributor();
   const [remove, { loading }] = Projects.useRemoveProjectContributor();
 
@@ -110,6 +110,9 @@ function EditAssignment({ contributor, onSave, onRemove }) {
 
       onSave();
     },
+    cancel: async () => {
+      onCancel();
+    },
   });
 
   const handleRemove = async () => {
@@ -119,12 +122,12 @@ function EditAssignment({ contributor, onSave, onRemove }) {
 
   const hideResp = !ProjectContributors.isResponsibilityEditable(contributor.role);
   const hidePermissions = !ProjectContributors.isPermissionsEditable(contributor.role);
-  const showRemove = !ProjectContributors.isResponsibilityRemovable(contributor.role);
+  const showRemove = ProjectContributors.isResponsibilityRemovable(contributor.role);
 
   return (
     <Forms.Form form={form}>
       <div className="bg-surface-dimmed border-y border-surface-outline -mx-12 px-12 py-8">
-        <Forms.FieldGroup layout="horizontal">
+        <Forms.FieldGroup>
           <Forms.SelectPerson field={"person"} label="Contributor" />
           <Forms.TextInput
             field={"responsibility"}
@@ -135,7 +138,7 @@ function EditAssignment({ contributor, onSave, onRemove }) {
           <Forms.SelectBox field={"permissions"} label="Access Level" hidden={hidePermissions} />
         </Forms.FieldGroup>
 
-        <Forms.Submit saveText="Save" />
+        <Forms.Submit saveText="Save" cancelText="Cancel" />
 
         {showRemove && <RemoveButton onClick={handleRemove} loading={loading} />}
       </div>
