@@ -161,7 +161,8 @@ defmodule Operately.Notifications do
 
   def is_subscriber?(person_id, subscription_list_id) do
     from(s in Subscription,
-      where: s.person_id == ^person_id and s.subscription_list_id == ^subscription_list_id
+      where: s.person_id == ^person_id and s.subscription_list_id == ^subscription_list_id,
+      where: not s.canceled
     )
     |> Repo.exists?()
   end
