@@ -2,8 +2,6 @@ import React from "react";
 import ReactModal from "react-modal";
 import * as Icons from "@tabler/icons-react";
 
-import { useColorMode } from "@/contexts/ThemeContext";
-
 export interface ModalState {
   isOpen: boolean;
   show: () => void;
@@ -46,7 +44,7 @@ export default function Modal({ isOpen, hideModal, title, children, minHeight = 
         },
       }}
     >
-      <div className="flex items-center justify-between text-lg">
+      <div className="flex items-center justify-between text-lg border-b border-surface-outline pb-2 mb-8">
         <h1 className="font-bold">{title}</h1>
 
         <div
