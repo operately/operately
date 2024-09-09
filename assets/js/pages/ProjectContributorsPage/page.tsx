@@ -5,33 +5,27 @@ import * as ProjectContributors from "@/models/projectContributors";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 
-import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
-import {
-  ContributorSearch,
-  ResponsibilityInput,
-  CancelButton,
-  AddContribButton,
-  PermissionsInput,
-} from "./FormElements";
-import ContributorItem from "./ContributorItem";
-import { PrimaryButton } from "@/components/Buttons";
-
 import { useLoadedData, useRefresh } from "./loader";
-import { useForm, FormState } from "./useForm";
+import { usePageState, PageState } from "./usePageState";
+import { AddContributorForm } from "./AddContributorForm";
+import { PrimaryButton } from "@/components/Buttons";
+import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
+
+import ContributorItem from "./ContributorItem";
 
 export function Page() {
   const { project } = useLoadedData();
+  const pageState = usePageState(project);
   const refetch = useRefresh();
 
-  const form = useForm(project);
-
   return (
-    <Pages.Page title={["Contributors", project.name!]}>
+    <Pages.Page title={["Team & Access", project.name!]}>
       <Paper.Root>
         <ProjectPageNavigation project={project} />
 
         <Paper.Body>
-          <Title form={form} />
+          <Title state={pageState} />
+          <AddContributorForm state={pageState} />
           <ContributorList project={project} refetch={refetch} />
         </Paper.Body>
       </Paper.Root>
@@ -39,43 +33,24 @@ export function Page() {
   );
 }
 
-function Title({ form }: { form: FormState }) {
+function Title({ state }: { state: PageState }) {
   return (
     <div className="rounded-t-[20px] pb-12">
       <div className="flex items-center justify-between">
         <div>
-          <div className="text-2xl font-extrabold ">Contributors</div>
-          <div className="text-medium">People who are contributing to this project and their responsibilities.</div>
+          <div className="text-2xl font-extrabold ">Team &amp; Access</div>
+          <div className="text-medium">Manage the team and access to this project</div>
         </div>
 
-        {form.addContrib.hasPermission && <AddButton onClick={form.addContrib.activate} />}
-      </div>
-
-      {form.addContrib.active && <AddContribForm form={form} />}
-    </div>
-  );
-}
-
-function AddContribForm({ form }: { form: FormState }) {
-  return (
-    <div className="bg-surface-dimmed border-y border-surface-outline -mx-12 px-12 mt-4 py-8">
-      <ContributorSearch title="Contributor" projectID={form.project.id} onSelect={form.addContrib.setPersonID} />
-
-      <ResponsibilityInput value={form.addContrib.responsibility} onChange={form.addContrib.setResponsibility} />
-
-      <PermissionsInput value={form.addContrib.permissions} onChange={form.addContrib.setPermissions} />
-
-      <div className="flex mt-8 gap-2">
-        <AddContribButton onClick={form.addContrib.submit} loading={form.addContrib.submitting} />
-        <CancelButton onClick={form.addContrib.deactivate} />
+        <AddContribButton state={state} />
       </div>
     </div>
   );
 }
 
-function AddButton({ onClick }) {
+function AddContribButton({ state }: { state: PageState }) {
   return (
-    <PrimaryButton onClick={onClick} testId="add-contributor-button" size="sm">
+    <PrimaryButton onClick={state.showAddContribForm} testId="add-contributor-button" size="sm">
       Add Contributor
     </PrimaryButton>
   );
