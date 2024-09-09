@@ -45,7 +45,6 @@ export function useForm<FieldTypes extends MapOfFields>(props: UseFormProps<Fiel
         return Object.keys(newErrors).length === 0;
       },
       submit: async () => {
-        console.log("submitting");
         setState("validating");
         if (!form.actions.validate()) {
           setState("idle");
