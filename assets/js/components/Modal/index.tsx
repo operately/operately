@@ -19,25 +19,16 @@ export function useModalState(initial?: boolean): ModalState {
   return { isOpen, show: showModal, hide: hideModal };
 }
 
-export default function Modal({ isOpen, hideModal, title, children, minHeight = "600px", width = "600px" }) {
-  const mode = useColorMode();
-
+export default function Modal({ isOpen, hideModal, title, children, minHeight = "600px", width = "800px" }) {
   return (
     <ReactModal
       isOpen={isOpen}
       contentLabel={title}
       ariaHideApp={false}
+      overlayClassName="fixed inset-0 bg-modal-overlay backdrop-blur-[2px] z-[999]"
       style={{
-        overlay: {
-          position: "fixed",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: mode === "light" ? "rgba(0,0,0,0.3)" : "rgba(0,0,0,0.7)",
-          zIndex: 999,
-        },
         content: {
+          padding: "32px",
           top: "48%",
           left: "50%",
           right: "auto",
@@ -55,11 +46,11 @@ export default function Modal({ isOpen, hideModal, title, children, minHeight = 
         },
       }}
     >
-      <div className="flex items-center justify-between text-lg -mx-5 px-5 -mt-5 py-3">
+      <div className="flex items-center justify-between text-lg">
         <h1 className="font-bold">{title}</h1>
 
         <div
-          className="hover:cursor-pointer text-content-dimmed hover:text-content-accent transition-colors"
+          className="hover:cursor-pointer text-content-subtle hover:text-content-accent transition-colors"
           onClick={hideModal}
         >
           <Icons.IconX size={20} />
