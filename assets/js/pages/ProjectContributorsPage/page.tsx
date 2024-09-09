@@ -157,6 +157,8 @@ function Contributors({ state }: { state: PageState }) {
   const { project } = useLoadedData();
   const { contributors } = ProjectContributors.splitByRole(project.contributors!);
 
+  if (contributors.length === 0) return null;
+
   return (
     <div className="mt-8">
       <SectionTitle title="Contributors" />
