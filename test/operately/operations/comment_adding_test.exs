@@ -7,6 +7,7 @@ defmodule Operately.Operations.CommentAddingTest do
   import Operately.ProjectsFixtures
 
   alias Operately.Support.RichText
+  alias Operately.Access.Binding
   alias Operately.Operations.ProjectCheckIn
   alias Operately.Operations.CommentAdding
 
@@ -28,14 +29,13 @@ defmodule Operately.Operations.CommentAddingTest do
         champion_id: champion.id,
         reviewer_id: reviewer.id,
         group_id: ctx.company.company_space_id,
+        company_access_level: Binding.no_access(),
+        space_access_level: Binding.no_access(),
       })
 
       Enum.each(1..3, fn _ ->
         person = person_fixture_with_account(%{company_id: ctx.company.id})
-        contributor_fixture(ctx.creator, %{
-          project_id: project.id,
-          person_id: person.id,
-        })
+        contributor_fixture(ctx.creator, %{project_id: project.id, person_id: person.id})
       end)
       contribs = Operately.Projects.list_project_contributors(project)
 
@@ -55,11 +55,11 @@ defmodule Operately.Operations.CommentAddingTest do
         subscriber_ids: Enum.map(ctx.contribs, &(&1.person_id)),
       })
 
-      Oban.Testing.with_testing_mode(:manual, fn ->
-        {:ok, _} = CommentAdding.run(ctx.champion, check_in, "project_check_in", RichText.rich_text("Some comment"))
+      {:ok, comment} = Oban.Testing.with_testing_mode(:manual, fn ->
+        CommentAdding.run(ctx.champion, check_in, "project_check_in", RichText.rich_text("Some comment"))
       end)
       action = "project_check_in_commented"
-      activity = get_activity(ctx.project, action)
+      activity = get_activity(comment, action)
 
       assert 0 == notifications_count(action: action)
 
@@ -83,22 +83,27 @@ defmodule Operately.Operations.CommentAddingTest do
         subscriber_ids: [ctx.champion.id],
       })
 
+      # Without permissions
       person = person_fixture_with_account(%{company_id: ctx.company.id})
+      content = RichText.rich_text(mentioned_people: [person]) |> Jason.decode!()
 
-      Oban.Testing.with_testing_mode(:manual, fn ->
-        content = RichText.rich_text(mentioned_people: [person]) |> Jason.decode!()
+      {:ok, comment} = CommentAdding.run(ctx.champion, check_in, "project_check_in", content)
 
-        {:ok, _} = CommentAdding.run(ctx.champion, check_in, "project_check_in", content)
-      end)
       action = "project_check_in_commented"
-      activity = get_activity(ctx.project, action)
+      activity = get_activity(comment, action)
 
-      assert 0 == notifications_count(action: action)
+      assert notifications_count(action: action) == 0
+      assert fetch_notifications(activity.id, action: action) == []
 
-      perform_job(activity.id)
-      assert 1 == notifications_count(action: action)
+      # With permissions
+      contributor_fixture(ctx.creator, %{project_id: ctx.project.id, person_id: person.id})
 
+      {:ok, comment} = CommentAdding.run(ctx.champion, check_in, "project_check_in", content)
+
+      activity = get_activity(comment, action)
       notifications = fetch_notifications(activity.id, action: action)
+
+      assert notifications_count(action: action) == 1
       assert hd(notifications).person_id == person.id
     end
   end
@@ -107,9 +112,9 @@ defmodule Operately.Operations.CommentAddingTest do
   # Helpers
   #
 
-  defp get_activity(project, action) do
+  defp get_activity(comment, action) do
     from(a in Operately.Activities.Activity,
-      where: a.action == ^action and a.content["project_id"] == ^project.id
+      where: a.action == ^action and a.content["comment_id"] == ^comment.id
     )
     |> Repo.one()
   end
