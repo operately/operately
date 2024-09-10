@@ -6,6 +6,7 @@ defmodule Operately.Operations.ProjectCheckInTest do
   import Operately.PeopleFixtures
   import Operately.ProjectsFixtures
 
+  alias Operately.Access.Binding
   alias Operately.Support.RichText
   alias Operately.Operations.ProjectCheckIn
 
@@ -22,6 +23,8 @@ defmodule Operately.Operations.ProjectCheckInTest do
       champion_id: champion.id,
       reviewer_id: reviewer.id,
       group_id: company.company_space_id,
+      company_access_level: Binding.no_access(),
+      space_access_level: Binding.no_access(),
     })
 
     Enum.each(1..3, fn _ ->
@@ -32,19 +35,19 @@ defmodule Operately.Operations.ProjectCheckInTest do
       })
     end)
 
-    {:ok, %{creator: creator, champion: champion, reviewer: reviewer, project: project}}
+    {:ok, %{company: company, creator: creator, champion: champion, reviewer: reviewer, project: project}}
   end
 
   test "Creating project check-in notifies only reviewer", ctx do
-    Oban.Testing.with_testing_mode(:manual, fn ->
-      {:ok, _} = ProjectCheckIn.run(ctx.champion, ctx.project, %{
+    {:ok, check_in} = Oban.Testing.with_testing_mode(:manual, fn ->
+      ProjectCheckIn.run(ctx.champion, ctx.project, %{
         status: "on_track",
         description: RichText.rich_text("Some description"),
         send_notifications_to_everyone: false,
         subscriber_ids: [ctx.reviewer.id, ctx.champion.id]
       })
     end)
-    activity = get_activity(ctx.project)
+    activity = get_activity(check_in)
 
     assert 0 == notifications_count(action: "project_check_in_submitted")
 
@@ -60,15 +63,15 @@ defmodule Operately.Operations.ProjectCheckInTest do
   test "Creating project check-in notifies all contributors", ctx do
     contributors = Operately.Projects.list_project_contributors(ctx.project)
 
-    Oban.Testing.with_testing_mode(:manual, fn ->
-      {:ok, _} = ProjectCheckIn.run(ctx.champion, ctx.project, %{
+    {:ok, check_in} = Oban.Testing.with_testing_mode(:manual, fn ->
+      ProjectCheckIn.run(ctx.champion, ctx.project, %{
         status: "on_track",
         description: RichText.rich_text("Some description"),
         send_notifications_to_everyone: false,
         subscriber_ids: Enum.map(contributors, &(&1.person_id))
       })
     end)
-    activity = get_activity(ctx.project)
+    activity = get_activity(check_in)
 
     assert 0 == notifications_count(action: "project_check_in_submitted")
 
@@ -86,15 +89,15 @@ defmodule Operately.Operations.ProjectCheckInTest do
   end
 
   test "Creating project check-in notifies all contributors if send_to_everyone is true", ctx do
-    Oban.Testing.with_testing_mode(:manual, fn ->
-      {:ok, _} = ProjectCheckIn.run(ctx.champion, ctx.project, %{
+    {:ok, check_in} = Oban.Testing.with_testing_mode(:manual, fn ->
+      ProjectCheckIn.run(ctx.champion, ctx.project, %{
         status: "on_track",
         description: RichText.rich_text("Some description"),
         send_notifications_to_everyone: true,
         subscriber_ids: []
       })
     end)
-    activity = get_activity(ctx.project)
+    activity = get_activity(check_in)
 
     assert 0 == notifications_count(action: "project_check_in_submitted")
 
@@ -112,8 +115,8 @@ defmodule Operately.Operations.ProjectCheckInTest do
   end
 
   test "Creating project check-in does not notify creator", ctx do
-    Oban.Testing.with_testing_mode(:manual, fn ->
-      {:ok, _} = ProjectCheckIn.run(ctx.champion, ctx.project, %{
+    {:ok, check_in} = Oban.Testing.with_testing_mode(:manual, fn ->
+      ProjectCheckIn.run(ctx.champion, ctx.project, %{
         status: "on_track",
         description: RichText.rich_text("Some description"),
         send_notifications_to_everyone: false,
@@ -121,19 +124,52 @@ defmodule Operately.Operations.ProjectCheckInTest do
       })
     end)
 
-    activity = get_activity(ctx.project)
+    activity = get_activity(check_in)
     perform_job(activity.id)
 
     assert 0 == notifications_count(action: "project_check_in_submitted")
+  end
+
+  test "Creating project check-in notifies mentioned person", ctx do
+    person = person_fixture_with_account(%{company_id: ctx.company.id})
+    content = RichText.rich_text(mentioned_people: [person]) |> Jason.decode!()
+    action = "project_check_in_submitted"
+
+    # Without permissions
+    {:ok, check_in} = ProjectCheckIn.run(ctx.champion, ctx.project, %{
+      status: "on_track",
+      description: content,
+      send_notifications_to_everyone: false,
+      subscriber_ids: []
+    })
+    activity = get_activity(check_in)
+
+    assert notifications_count(action: action) == 0
+    assert fetch_notifications(activity.id, action: action) == []
+
+    # With permissions
+    contributor_fixture(ctx.creator, %{project_id: ctx.project.id, person_id: person.id})
+
+    {:ok, check_in} = ProjectCheckIn.run(ctx.champion, ctx.project, %{
+      status: "on_track",
+      description: content,
+      send_notifications_to_everyone: false,
+      subscriber_ids: []
+    })
+    activity = get_activity(check_in)
+    notifications = fetch_notifications(activity.id, action: action)
+
+    assert notifications_count(action: action) == 1
+    assert hd(notifications).person_id == person.id
   end
 
   #
   # Helpers
   #
 
-  defp get_activity(project) do
+  defp get_activity(check_in) do
     from(a in Operately.Activities.Activity,
-      where: a.action == "project_check_in_submitted" and a.content["project_id"] == ^project.id
+      where: a.action == "project_check_in_submitted" and a.content["check_in_id"] == ^check_in.id
     )
     |> Repo.one()
   end
