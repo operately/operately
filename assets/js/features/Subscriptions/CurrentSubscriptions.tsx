@@ -31,18 +31,19 @@ export function useCurrentSubscriptionsContext() {
 
 export function CurrentSubscriptions(props: CurrentSubscriptionsProps) {
   const me = useMe();
+  const { subscriptions } = props.subscriptionList;
 
   const isSubscribed = useMemo(() => {
-    return props.subscriptionList.subscriptions?.map((s) => s.person?.id).includes(me?.id);
-  }, [props.subscriptionList.subscriptions]);
+    return subscriptions?.map((s) => s.person?.id).includes(me?.id);
+  }, [subscriptions]);
 
   return (
     <div>
       <CurrentSubscriptionsContext.Provider value={props}>
         <ExistingSubscriptionsList
-          // The key is necessary because, when someone subscribes/unsubscribes,
+          // The key is necessary because, when someone subscribes/unsubscribes or is mentioned in a comment,
           // this component must reload in order to update the "initially already selected" people
-          key={String(isSubscribed)}
+          key={String(isSubscribed) + subscriptions?.length}
         />
         <Spacer size={2} />
 

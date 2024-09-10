@@ -9,7 +9,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
   import Operately.CommentsFixtures
   import Operately.UpdatesFixtures
 
-  alias Operately.Updates
+  alias Operately.{Notifications, Updates}
   alias Operately.Activities.Activity
   alias Operately.Access.Binding
   alias Operately.Support.RichText
@@ -163,23 +163,77 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
   end
 
   describe "create_comment functionality" do
-    setup :register_and_log_in_account
-
-    test "creates comment", ctx do
+    setup ctx do
+      ctx = register_and_log_in_account(ctx)
       project = project_fixture(%{company_id: ctx.company.id, creator_id: ctx.person.id, group_id: ctx.company.company_space_id})
       check_in = create_check_in(ctx.person, project)
 
-      assert Updates.count_comments(check_in.id, :project_check_in) == 0
+      Map.merge(ctx, %{check_in: check_in})
+    end
+
+    test "creates comment", ctx do
+      assert Updates.count_comments(ctx.check_in.id, :project_check_in) == 0
 
       assert {200, res} = mutation(ctx.conn, :create_comment, %{
-        entity_id: Paths.project_check_in_id(check_in),
+        entity_id: Paths.project_check_in_id(ctx.check_in),
         entity_type: "project_check_in",
         content: RichText.rich_text("Content", :as_string)
       })
 
-      assert Updates.count_comments(check_in.id, :project_check_in) == 1
-      comment = hd(Updates.list_comments(check_in.id, :project_check_in))
+      assert Updates.count_comments(ctx.check_in.id, :project_check_in) == 1
+
+      comment = hd(Updates.list_comments(ctx.check_in.id, :project_check_in))
       assert res.comment == Serializer.serialize(comment, level: :essential)
+    end
+
+    test "updates subscriptions list", ctx do
+      people = Enum.map(1..3, fn _ ->
+        person_fixture(%{company_id: ctx.company.id})
+      end)
+      content = RichText.rich_text(mentioned_people: people)
+
+      list = Notifications.get_subscription_list_by_parent_id(ctx.check_in.id)
+      assert list.subscriptions == []
+
+      assert {200, _} = mutation(ctx.conn, :create_comment, %{
+        entity_id: Paths.project_check_in_id(ctx.check_in),
+        entity_type: "project_check_in",
+        content: content
+      })
+
+      list = Notifications.get_subscription_list_by_parent_id(ctx.check_in.id)
+
+      assert length(list.subscriptions) == 3
+
+      Enum.each(list.subscriptions, fn s ->
+        assert Enum.find(people, &(&1.id == s.person_id))
+      end)
+    end
+
+    test "doesn't create repeated subscriptions", ctx do
+      another_person = person_fixture(%{company_id: ctx.company.id})
+      list = Notifications.get_subscription_list_by_parent_id(ctx.check_in.id)
+      Notifications.create_subscription(%{
+        subscription_list_id: list.id,
+        person_id: ctx.person.id,
+        type: :joined,
+      })
+      list = Notifications.get_subscription_list_by_parent_id(ctx.check_in.id)
+
+      assert length(list.subscriptions) == 1
+      assert hd(list.subscriptions).person_id == ctx.person.id
+
+      assert {200, _} = mutation(ctx.conn, :create_comment, %{
+        entity_id: Paths.project_check_in_id(ctx.check_in),
+        entity_type: "project_check_in",
+        content: RichText.rich_text(mentioned_people: [ctx.person, another_person])
+      })
+
+      %{subscriptions: subscriptions} = Notifications.get_subscription_list_by_parent_id(ctx.check_in.id)
+
+      assert length(subscriptions) == 2
+      assert Enum.find(subscriptions, &(&1.person_id == another_person.id))
+      assert Enum.find(subscriptions, &(&1.person_id == ctx.person.id))
     end
   end
 
