@@ -1,17 +1,18 @@
 defmodule Operately.Projects.Contributor do
-  use Ecto.Schema
-  import Ecto.Changeset
+  use Operately.Schema
+  use Operately.Repo.Getter
 
-  @primary_key {:id, :binary_id, autogenerate: true}
-  @foreign_key_type :binary_id
   schema "project_contributors" do
     belongs_to :project, Operately.Projects.Project, foreign_key: :project_id
     belongs_to :person, Operately.People.Person, foreign_key: :person_id, where: [suspended_at: nil]
+
+    has_one :access_context, through: [:project, :access_context]
 
     field :responsibility, :string
     field :role, Ecto.Enum, values: [:champion, :reviewer, :contributor], default: :contributor
 
     timestamps()
+    request_info()
   end
 
   def order_by_role_and_insertion_at(query) do
@@ -32,4 +33,5 @@ defmodule Operately.Projects.Contributor do
     |> cast(attrs, [:responsibility, :project_id, :person_id, :role])
     |> validate_required([:project_id, :person_id])
   end
+
 end
