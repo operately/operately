@@ -15,4 +15,5 @@ defmodule Operately.CompaniesFixtures do
 
     company
   end
+
 end
