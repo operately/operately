@@ -17,8 +17,6 @@ module.exports = {
         "surface-accent": "var(--color-surface-accent)",
         "surface-highlight": "var(--color-surface-highlight)",
 
-        "modal-overlay": "var(--color-modal-overlay)",
-
         "content-base": "var(--color-content)",
         "content-accent": "var(--color-content-accent)",
         "content-dimmed": "var(--color-content-dimmed)",
