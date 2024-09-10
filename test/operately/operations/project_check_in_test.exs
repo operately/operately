@@ -35,7 +35,7 @@ defmodule Operately.Operations.ProjectCheckInTest do
     {:ok, %{creator: creator, champion: champion, reviewer: reviewer, project: project}}
   end
 
-  test "Creating project check-in notifies only reviewer and champion", ctx do
+  test "Creating project check-in notifies only reviewer", ctx do
     Oban.Testing.with_testing_mode(:manual, fn ->
       {:ok, _} = ProjectCheckIn.run(ctx.champion, ctx.project, %{
         status: "on_track",
@@ -50,12 +50,11 @@ defmodule Operately.Operations.ProjectCheckInTest do
 
     perform_job(activity.id)
 
-    assert 2 == notifications_count(action: "project_check_in_submitted")
+    assert 1 == notifications_count(action: "project_check_in_submitted")
 
     notifications = fetch_notifications(activity.id, action: "project_check_in_submitted")
 
     assert Enum.find(notifications, &(&1.person_id == ctx.reviewer.id))
-    assert Enum.find(notifications, &(&1.person_id == ctx.champion.id))
   end
 
   test "Creating project check-in notifies all contributors", ctx do
@@ -75,11 +74,13 @@ defmodule Operately.Operations.ProjectCheckInTest do
 
     perform_job(activity.id)
 
-    assert 5 == notifications_count(action: "project_check_in_submitted")
+    assert 4 == notifications_count(action: "project_check_in_submitted")
 
     notifications = fetch_notifications(activity.id, action: "project_check_in_submitted")
 
-    Enum.each(contributors, fn c ->
+    contributors
+    |> Enum.filter(&(&1.person_id != ctx.champion.id))
+    |> Enum.each(fn c ->
       assert Enum.find(notifications, &(&1.person_id == c.person_id))
     end)
   end
@@ -99,14 +100,31 @@ defmodule Operately.Operations.ProjectCheckInTest do
 
     perform_job(activity.id)
 
-    assert 5 == notifications_count(action: "project_check_in_submitted")
+    assert 4 == notifications_count(action: "project_check_in_submitted")
 
     notifications = fetch_notifications(activity.id, action: "project_check_in_submitted")
-    contributors = Operately.Projects.list_project_contributors(ctx.project)
 
-    Enum.each(contributors, fn c ->
+    Operately.Projects.list_project_contributors(ctx.project)
+    |> Enum.filter(&(&1.person_id != ctx.champion.id))
+    |> Enum.each(fn c ->
       assert Enum.find(notifications, &(&1.person_id == c.person_id))
     end)
+  end
+
+  test "Creating project check-in does not notify creator", ctx do
+    Oban.Testing.with_testing_mode(:manual, fn ->
+      {:ok, _} = ProjectCheckIn.run(ctx.champion, ctx.project, %{
+        status: "on_track",
+        description: RichText.rich_text("Some description"),
+        send_notifications_to_everyone: false,
+        subscriber_ids: [ctx.champion.id]
+      })
+    end)
+
+    activity = get_activity(ctx.project)
+    perform_job(activity.id)
+
+    assert 0 == notifications_count(action: "project_check_in_submitted")
   end
 
   #
