@@ -106,8 +106,16 @@ defmodule Operately.Notifications do
 
   alias Operately.Notifications.SubscriptionList
 
-  def get_subscription_list!(id) when is_binary(id) , do: Repo.get!(SubscriptionList, id)
+  def get_subscription_list!(id) when is_binary(id), do: Repo.get!(SubscriptionList, id)
   def get_subscription_list!(attrs) when is_list(attrs), do: Repo.get_by!(SubscriptionList, attrs)
+
+  def get_subscription_list_by_parent_id(parent_id) do
+    from(list in SubscriptionList,
+      preload: :subscriptions,
+      where: list.parent_id == ^parent_id
+    )
+    |> Repo.one()
+  end
 
   def get_subscription_list_with_access_level(id, type, person_id) do
     case type do
@@ -147,7 +155,7 @@ defmodule Operately.Notifications do
 
   alias Operately.Notifications.Subscription
 
-  def get_subscription(id) when is_binary(id) , do: Repo.get(Subscription, id)
+  def get_subscription(id) when is_binary(id), do: Repo.get(Subscription, id)
   def get_subscription(attrs) when is_list(attrs), do: Repo.get_by(Subscription, attrs)
 
   def list_subscriptions(%SubscriptionList{} = subscription_list), do: list_subscriptions(subscription_list.id)

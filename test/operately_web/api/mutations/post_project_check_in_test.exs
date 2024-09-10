@@ -119,12 +119,13 @@ defmodule OperatelyWeb.Api.Mutations.PostProjectCheckInTest do
     end
 
     test "adds mentioned people to subscription list", ctx do
-      description = mentioned_people(ctx.people ++ ctx.people ++ ctx.people)
+      people = ctx.people ++ ctx.people ++ ctx.people
+      description = RichText.rich_text(mentioned_people: people)
 
       assert {200, res} = mutation(ctx.conn, :post_project_check_in, %{
         project_id: Paths.project_id(ctx.project),
         status: "on_track",
-        description: Jason.encode!(description),
+        description: description,
         send_notifications_to_everyone: false,
         subscriber_ids: [],
       })
@@ -140,12 +141,12 @@ defmodule OperatelyWeb.Api.Mutations.PostProjectCheckInTest do
 
     test "doesn't create repeated subscription", ctx do
       people = [ctx.person | ctx.people]
-      description = mentioned_people(people ++ people)
+      description = RichText.rich_text(mentioned_people: people)
 
       assert {200, res} = mutation(ctx.conn, :post_project_check_in, %{
         project_id: Paths.project_id(ctx.project),
         status: "on_track",
-        description: Jason.encode!(description),
+        description: description,
         send_notifications_to_everyone: true,
         subscriber_ids: Enum.map(ctx.people, &(Paths.person_id(&1))),
       })
@@ -201,28 +202,5 @@ defmodule OperatelyWeb.Api.Mutations.PostProjectCheckInTest do
     end
 
     project
-  end
-
-  defp mentioned_people(people) do
-    mentions = Enum.map(people, fn p ->
-      %{
-        "content" => [
-          %{
-            "attrs" => %{
-              "id" => Paths.person_id(p),
-              "label" => p.full_name
-            },
-            "type" => "mention"
-          },
-          %{"text" => " ", "type" => "text"}
-        ],
-        "type" => "paragraph"
-      }
-    end)
-
-    %{
-      "content" => mentions,
-      "type" => "doc"
-    }
   end
 end

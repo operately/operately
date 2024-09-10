@@ -1,8 +1,8 @@
 defmodule Operately.Operations.CommentAdding do
+  alias Ecto.Multi
   alias Operately.Repo
   alias Operately.Updates.Comment
-  alias Operately.Activities
-  alias Ecto.Multi
+  alias Operately.Operations.CommentAdding.{Activity, Subscriptions}
 
   def run(creator, entity, entity_type, content) do
     changeset = Comment.changeset(%{
@@ -15,7 +15,8 @@ defmodule Operately.Operations.CommentAdding do
 
     Multi.new()
     |> Multi.insert(:comment, changeset)
-    |> insert_activity(creator, action, entity)
+    |> Subscriptions.update(action, content)
+    |> Activity.insert(creator, action, entity)
     |> Repo.transaction()
     |> Repo.extract_result(:comment)
     |> case do
@@ -27,75 +28,13 @@ defmodule Operately.Operations.CommentAdding do
     end
   end
 
-  def insert_activity(multi, creator, action = :discussion_comment_submitted, entity) do
-    Activities.insert_sync(multi, creator.id, action, fn changes ->
-      %{
-        company_id: creator.company_id,
-        space_id: entity.updatable_id,
-        discussion_id: entity.id,
-        comment_id: changes.comment.id
-      }
-    end)
-  end
+  #
+  # Helpers
+  #
 
-  def insert_activity(multi, creator, action = :goal_check_in_commented, entity) do
-    Activities.insert_sync(multi, creator.id, action, fn changes ->
-      %{
-        company_id: creator.company_id,
-        goal_id: entity.updatable_id,
-        goal_check_in_id: entity.id,
-        comment_id: changes.comment.id
-      }
-    end)
-  end
-
-  def insert_activity(multi, creator, action = :project_check_in_commented, entity) do
-    Activities.insert_sync(multi, creator.id, action, fn changes ->
-      %{
-        company_id: creator.company_id,
-        project_id: entity.project_id,
-        check_in_id: entity.id,
-        comment_id: changes.comment.id
-      }
-    end)
-  end
-
-  def insert_activity(multi, creator, action = :comment_added, %Operately.Comments.CommentThread{} = entity) do
-    activity = Operately.Activities.get_activity!(entity.parent_id)
-
-    Activities.insert_sync(multi, creator.id, action, fn changes ->
-      fields = %{
-        company_id: creator.company_id,
-        comment_id: changes.comment.id,
-        comment_thread_id: entity.id,
-        activity_id: activity.id,
-      }
-
-      fields = if activity.content["goal_id"] do
-        Map.put(fields, :goal_id, activity.content["goal_id"])
-      else
-        fields
-      end
-
-      fields = if activity.content["project_id"] do
-        Map.put(fields, :project_id, activity.content["project_id"])
-      else
-        fields
-      end
-
-      fields = if activity.content["space_id"] do
-        Map.put(fields, :space_id, activity.content["space_id"])
-      else
-        fields
-      end
-
-      fields
-    end)
-  end
-
-  def find_action(%Operately.Updates.Update{type: :project_discussion}), do: :discussion_comment_submitted
-  def find_action(%Operately.Updates.Update{type: :goal_check_in}), do: :goal_check_in_commented
-  def find_action(%Operately.Projects.CheckIn{}), do: :project_check_in_commented
-  def find_action(%Operately.Comments.CommentThread{}), do: :comment_added
-  def find_action(e), do: raise "Unknown entity type #{inspect(e)}"
+  defp find_action(%Operately.Updates.Update{type: :project_discussion}), do: :discussion_comment_submitted
+  defp find_action(%Operately.Updates.Update{type: :goal_check_in}), do: :goal_check_in_commented
+  defp find_action(%Operately.Projects.CheckIn{}), do: :project_check_in_commented
+  defp find_action(%Operately.Comments.CommentThread{}), do: :comment_added
+  defp find_action(e), do: raise("Unknown entity type #{inspect(e)}")
 end
