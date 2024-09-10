@@ -124,4 +124,5 @@ defmodule Operately.ProjectsFixtures do
 
     check_in
   end
+
 end
