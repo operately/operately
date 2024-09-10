@@ -55,4 +55,9 @@ defmodule Operately.DataCase do
       end)
     end)
   end
+
+  def assert_full_access(resource) do
+    assert {:ok, resource} = resource
+    assert resource.request_info.access_level == Operately.Access.Binding.full_access()
+  end
 end
