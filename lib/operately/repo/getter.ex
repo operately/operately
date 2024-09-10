@@ -101,8 +101,13 @@ defmodule Operately.Repo.Getter do
 
   def get(module, :system, args) do
     query = build_query(module, args)
-    resource = Operately.Repo.one(query)
-    process_result(resource, Binding.full_access(), :system)
+    
+    case Operately.Repo.one(query) do
+      nil -> 
+        {:error, :not_found}
+      resource -> 
+        process_result(resource, Binding.full_access(), :system)
+    end
   end
 
   def get(module, requester = %Person{}, args) do
@@ -120,9 +125,12 @@ defmodule Operately.Repo.Getter do
       group_by: r.id,
       select: {r, max(b.access_level)})
 
-    {resource, access_level} = Operately.Repo.one(query)
-
-    process_result(resource, access_level, requester)
+    case Operately.Repo.one(query) do
+      nil -> 
+        {:error, :not_found}
+      {resource, access_level} -> 
+        process_result(resource, access_level, requester)
+    end
   end
 
   defp build_query(module, args) do
@@ -145,10 +153,6 @@ defmodule Operately.Repo.Getter do
     preload = Keyword.get(opts, :preload, [])
 
     {field_matchers, preload}
-  end
-
-  defp process_result(nil, _access_level, _requester) do 
-    {:error, :not_found}
   end
 
   defp process_result(resource, access_level, requester) do

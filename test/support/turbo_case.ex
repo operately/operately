@@ -29,6 +29,19 @@ defmodule OperatelyWeb.TurboCase do
   end
 
   defdelegate register_and_log_in_account(context), to: OperatelyWeb.ConnCase
+
+  def log_in_account(ctx, person_name) when is_atom(person_name) do
+    alias Operately.Support.Fixtures
+
+    person = Fixtures.get(ctx, person_name)
+    company = Fixtures.get(ctx, :company)
+    account = person |> Operately.Repo.preload(:account) |> Map.get(:account)
+
+    conn = log_in_account(ctx.conn, account, company)
+
+    Map.put(ctx, :conn, conn)
+  end
+
   defdelegate log_in_account(conn, account), to: OperatelyWeb.ConnCase
   defdelegate log_in_account(conn, account, company), to: OperatelyWeb.ConnCase
 
