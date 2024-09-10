@@ -18,4 +18,5 @@ defmodule Operately.GroupsFixtures do
 
     group
   end
+
 end

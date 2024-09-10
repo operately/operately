@@ -1328,6 +1328,15 @@ export interface GetProjectCheckInsResult {
   projectCheckIns?: ProjectCheckIn[] | null;
 }
 
+export interface GetProjectContributorInput {
+  id?: string | null;
+  includeProject?: boolean | null;
+}
+
+export interface GetProjectContributorResult {
+  contributor?: ProjectContributor | null;
+}
+
 export interface GetProjectsInput {
   onlyMyProjects?: boolean | null;
   onlyReviewedByMe?: boolean | null;
@@ -2223,6 +2232,10 @@ export class ApiClient {
     return this.get("/get_project_check_ins", input);
   }
 
+  async getProjectContributor(input: GetProjectContributorInput): Promise<GetProjectContributorResult> {
+    return this.get("/get_project_contributor", input);
+  }
+
   async getProjects(input: GetProjectsInput): Promise<GetProjectsResult> {
     return this.get("/get_projects", input);
   }
@@ -2631,6 +2644,9 @@ export async function getProjectCheckIn(input: GetProjectCheckInInput): Promise<
 export async function getProjectCheckIns(input: GetProjectCheckInsInput): Promise<GetProjectCheckInsResult> {
   return defaultApiClient.getProjectCheckIns(input);
 }
+export async function getProjectContributor(input: GetProjectContributorInput): Promise<GetProjectContributorResult> {
+  return defaultApiClient.getProjectContributor(input);
+}
 export async function getProjects(input: GetProjectsInput): Promise<GetProjectsResult> {
   return defaultApiClient.getProjects(input);
 }
@@ -3008,6 +3024,12 @@ export function useGetProjectCheckIn(input: GetProjectCheckInInput): UseQueryHoo
 
 export function useGetProjectCheckIns(input: GetProjectCheckInsInput): UseQueryHookResult<GetProjectCheckInsResult> {
   return useQuery<GetProjectCheckInsResult>(() => defaultApiClient.getProjectCheckIns(input));
+}
+
+export function useGetProjectContributor(
+  input: GetProjectContributorInput,
+): UseQueryHookResult<GetProjectContributorResult> {
+  return useQuery<GetProjectContributorResult>(() => defaultApiClient.getProjectContributor(input));
 }
 
 export function useGetProjects(input: GetProjectsInput): UseQueryHookResult<GetProjectsResult> {
@@ -3547,6 +3569,8 @@ export default {
   useGetProjectCheckIn,
   getProjectCheckIns,
   useGetProjectCheckIns,
+  getProjectContributor,
+  useGetProjectContributor,
   getProjects,
   useGetProjects,
   getSpace,
