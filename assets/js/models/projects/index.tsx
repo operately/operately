@@ -26,12 +26,6 @@ export const PRIVACY_INTERNAL = "internal";
 export const PRIVACY_CONFIDENTIAL = "confidential";
 export const PRIVACY_SECRET = "secret";
 
-export function useProjectContributorCandidates(id: string): (query: string) => Promise<api.Person[]> {
-  return async (query: string) => {
-    return await api.searchProjectContributorCandidates({ projectId: id, query: query }).then((r) => r.people!);
-  };
-}
-
 export function sortByName(projects: Project[]) {
   return [...projects].sort((a, b) => a.name!.localeCompare(b.name!));
 }
