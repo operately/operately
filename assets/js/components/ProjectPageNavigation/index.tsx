@@ -31,3 +31,19 @@ export function ProjectMilestonesNavigation({ project }: { project: Projects.Pro
     </Paper.Navigation>
   );
 }
+
+export function ProjectContribsSubpageNavigation({ project }) {
+  const dashboardPath = Paths.projectPath(project.id!);
+  const teamPath = Paths.projectContributorsPath(project.id!);
+
+  return (
+    <Paper.Navigation>
+      <Paper.NavItem linkTo={dashboardPath}>
+        <Icons.IconClipboardList size={16} />
+        {project.name}
+      </Paper.NavItem>
+      <Paper.NavSeparator />
+      <Paper.NavItem linkTo={teamPath}>Team &amp; Access</Paper.NavItem>
+    </Paper.Navigation>
+  );
+}
