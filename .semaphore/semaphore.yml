@@ -77,7 +77,7 @@ blocks:
           commands:
             - docker pull operately/operately:latest
             - make docker.build
-            - if [ "$SEMAPHORE_GIT_BRANCH" = "main" ]; then make docker.push; fi
+            - if [ "$SEMAPHORE_GIT_BRANCH" = "main" && "$SEMAPHORE_GIT_REF_TYPE" = "branch" ]; then make docker.push; else echo "Skipping Docker push"; fi
 
   - name: Release Tests
     dependencies: ["Pre-Flight-Check"]
