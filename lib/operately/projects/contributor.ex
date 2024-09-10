@@ -1,5 +1,6 @@
 defmodule Operately.Projects.Contributor do
   use Operately.Schema
+  use Operately.Repo.Getter
 
   schema "project_contributors" do
     belongs_to :project, Operately.Projects.Project, foreign_key: :project_id
@@ -11,7 +12,7 @@ defmodule Operately.Projects.Contributor do
     field :role, Ecto.Enum, values: [:champion, :reviewer, :contributor], default: :contributor
 
     timestamps()
-    requester_access_level()
+    request_info()
   end
 
   def order_by_role_and_insertion_at(query) do
@@ -33,23 +34,4 @@ defmodule Operately.Projects.Contributor do
     |> validate_required([:project_id, :person_id])
   end
 
-  import Ecto.Query
-  alias Operately.Access.Fetch
-  alias Operately.Repo
-
-  def get(requester, id, opts \\ []) do
-    opts = Keyword.get(opts, :opts, [])
-    preload = Keyword.get(opts, :preload, [])
-
-    from(c in __MODULE__, as: :resource, where: c.id == ^id)
-    |> Fetch.get_resource_with_access_level(requester.id)
-    |> then(fn res ->
-      IO.inspect(preload)
-
-      case res do
-        {:ok, res} -> {:ok, Repo.preload(res, preload)}
-        _ -> {:error, :not_found}
-      end
-    end)
-  end
 end

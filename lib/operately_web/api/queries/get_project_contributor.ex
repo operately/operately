@@ -26,7 +26,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectContributor do
   def load(ctx, inputs) do
     preload = [:person] ++ (if inputs[:include_project], do: [:project], else: [])
 
-    Contributor.get(ctx.me, ctx.id, opts: [preload: preload])
+    Contributor.get(ctx.me, id: ctx.id, opts: [preload: preload])
   end
 
   def respond(result) do
