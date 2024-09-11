@@ -74,7 +74,7 @@ function Form() {
         <Forms.TextInput field={"responsibility"} placeholder="e.g. Project Manager" label="Responsibility" />
       </Forms.FieldGroup>
 
-      <Forms.Submit saveText="Add Contributor" secondarySubmitText="Save &amp; Add Another" />
+      <Forms.Submit saveText="Add Contributor" />
     </Forms.Form>
   );
 }

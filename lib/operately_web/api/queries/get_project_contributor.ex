@@ -19,7 +19,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectContributor do
     |> Action.run(:me, fn -> find_me(conn) end)
     |> Action.run(:id, fn -> decode_id(inputs[:id]) end)
     |> Action.run(:contrib, fn ctx -> load(ctx, inputs) end)
-    |> Action.run(:serialized, fn ctx -> {:ok, %{contributor: Serializer.serialize(ctx.contrib, level: :essential)}} end)
+    |> Action.run(:serialized, fn ctx -> {:ok, %{contributor: Serializer.serialize(ctx.contrib, level: :full)}} end)
     |> respond()
   end
 

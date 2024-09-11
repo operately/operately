@@ -202,9 +202,9 @@ function ChampionPlaceholder() {
           <ReviewerPlaceholderAvatar />
 
           <div className="flex flex-col flex-1">
-            <div className="font-bold flex items-center gap-2">No Reviewer</div>
+            <div className="font-bold flex items-center gap-2">No Champion</div>
             <div className="text-sm font-medium flex items-center">
-              Select a reviewer to get feedback and keep things moving smoothly
+              Select a champion to lead the project and ensure its success
             </div>
           </div>
         </div>
@@ -274,7 +274,7 @@ function EditResponsibilityMenuItem({ contributor }: { contributor: ProjectContr
 
   return (
     <MenuLinkItem icon={Icons.IconEdit} to={path} testId="edit-responsibility">
-      Edit responsibility
+      Edit
     </MenuLinkItem>
   );
 }
