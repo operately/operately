@@ -223,12 +223,10 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
         person_id: ctx.person.id,
         type: :joined,
       })
-      {:ok, list} = SubscriptionList.get(:system, parent_id: ctx.check_in.id, opts: [
-        preload: :subscriptions
-      ])
+      subscriptions = Notifications.list_subscriptions(list)
 
-      assert length(list.subscriptions) == 1
-      assert hd(list.subscriptions).person_id == ctx.person.id
+      assert length(subscriptions) == 1
+      assert hd(subscriptions).person_id == ctx.person.id
 
       assert {200, _} = mutation(ctx.conn, :create_comment, %{
         entity_id: Paths.project_check_in_id(ctx.check_in),
@@ -236,9 +234,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
         content: RichText.rich_text(mentioned_people: [ctx.person, another_person])
       })
 
-      {:ok, %{subscriptions: subscriptions}} = SubscriptionList.get(:system, parent_id: ctx.check_in.id, opts: [
-        preload: :subscriptions
-      ])
+      subscriptions = Notifications.list_subscriptions(list)
 
       assert length(subscriptions) == 2
       assert Enum.find(subscriptions, &(&1.person_id == another_person.id))
