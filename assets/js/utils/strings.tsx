@@ -32,3 +32,5 @@ export function truncateString(str: string, limit: number, suffix: string = "...
 
   return str.slice(0, limit).trim() + suffix;
 }
+
+export const joinStr = (...args: string[]) => args.join("");
