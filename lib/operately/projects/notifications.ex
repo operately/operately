@@ -55,4 +55,6 @@ defmodule Operately.Projects.Notifications do
       Enum.any?(p.contributors, &(&1.person_id == s.person_id))
     end)
   end
+
+  defp filter_subscribers(nil), do: []
 end
