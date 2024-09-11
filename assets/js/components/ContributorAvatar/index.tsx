@@ -61,8 +61,6 @@ interface PlaceholderProps extends TestableElement {
 }
 
 function Placeholder(props: PlaceholderProps) {
-  const colorMode = useColorMode();
-
   const tooltipContent = (
     <div className="w-64">
       <p className="font-bold mb-1">{props.tooltipTitle}</p>
@@ -71,6 +69,21 @@ function Placeholder(props: PlaceholderProps) {
   );
 
   const path = Paths.projectContributorsPath(props.project.id!);
+
+  return (
+    <Tooltip content={tooltipContent}>
+      <div>
+        <DivLink to={path} testId={props.testId}>
+          <ReviewerPlaceholderAvatar />
+        </DivLink>
+      </div>
+    </Tooltip>
+  );
+}
+
+export function ReviewerPlaceholderAvatar() {
+  const colorMode = useColorMode();
+
   const className = classNames("flex items-center justify-center rounded-full", {
     "bg-yellow-500/10": colorMode === "light",
     "bg-yellow-500/20": colorMode === "dark",
@@ -79,12 +92,10 @@ function Placeholder(props: PlaceholderProps) {
   const iconColor = colorMode === "light" ? "text-yellow-800" : "text-yellow-600";
 
   return (
-    <Tooltip content={tooltipContent}>
-      <div className="shrink-0 relative p-1">
-        <DivLink to={path} className={className} style={{ width: 38, height: 38 }} testId={props.testId}>
-          <Icons.IconQuestionMark size={20} className={iconColor} stroke={3} />
-        </DivLink>
+    <div className="shrink-0 relative p-1">
+      <div className={className} style={{ width: 38, height: 38 }}>
+        <Icons.IconQuestionMark size={20} className={iconColor} stroke={3} />
       </div>
-    </Tooltip>
+    </div>
   );
 }
