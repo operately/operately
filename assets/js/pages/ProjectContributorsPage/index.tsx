@@ -269,6 +269,7 @@ function ConvertToContributorMenuItem({ contributor }: { contributor: ProjectCon
       contribId: contributor.id,
       role: "contributor",
       permissions: PermissionLevels.EDIT_ACCESS,
+      responsibility: "Project contributor",
     });
 
     refresh();

@@ -40,4 +40,26 @@ defmodule Operately.Features.ProjectsContributorsTest do
     |> Steps.assert_reviewer_removed()
     |> Steps.assert_contributor_removed_feed_item_exists(name: ctx.reviewer.full_name)
   end
+
+  @tag login_as: :champion
+  feature "converting a project reviewer to a contributor", ctx do
+    params = %{name: ctx.reviewer.full_name, responsibility: "Lead the backend implementation"}
+
+    ctx
+    |> Steps.visit_project_page()
+    |> Steps.convert_reviewer_to_contributor(params)
+    # |> Steps.assert_reviewer_converted_to_contributor(params)
+    # |> Steps.assert_reviewer_converted_to_contributor_feed_item_exists(params)
+  end
+
+  # @tag login_as: :champion
+  # feature "converting a project champion to a contributor", ctx do
+  #   params = %{name: ctx.reviewer.full_name, responsibility: "Design the user interface"}
+
+  #   ctx
+  #   |> Steps.visit_project_page()
+  #   |> Steps.convert_champion_to_contributor(params)
+  #   |> Steps.assert_champion_converted_to_contributor(params)
+  #   |> Steps.assert_champion_converted_to_contributor_feed_item_exists(params)
+  # end
 end

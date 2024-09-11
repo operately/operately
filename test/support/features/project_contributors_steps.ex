@@ -157,4 +157,24 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
     |> UI.assert_has(testid: "add-reviewer-button")
   end
 
+  step :convert_reviewer_to_contributor, ctx, params do
+    ctx
+    |> UI.click(testid: "manage-team-button")
+    |> UI.click(testid: UI.testid(["contributor-menu", params.name]))
+    |> UI.click(testid: "convert-to-contributor")
+    |> UI.fill(testid: "responsibility", with: params.responsibility)
+    |> UI.click(testid: "submit")
+    |> UI.assert_has(testid: "project-contributors-page")
+  end
+
+  step :convert_champion_to_contributor, ctx, params do
+    ctx
+    |> UI.click(testid: "manage-team-button")
+    |> UI.click(testid: UI.testid(["contributor-menu", params.name]))
+    |> UI.click(testid: "convert-to-contributor")
+    |> UI.fill(testid: "responsibility", with: params.responsibility)
+    |> UI.click(testid: "submit")
+    |> UI.assert_has(testid: "project-contributors-page")
+  end
+
 end

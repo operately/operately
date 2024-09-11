@@ -7,7 +7,7 @@ defmodule Operately.Projects do
   alias Operately.People.Person
   alias Operately.Updates
   alias Operately.Activities
-  alias Operately.Access.{Binding, Fetch}
+  alias Operately.Access.Fetch
 
   alias Operately.Projects.{
     Project,
