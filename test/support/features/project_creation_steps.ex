@@ -175,8 +175,22 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
   step :follow_add_reviewer_link_and_add_reviewer, ctx do
     ctx
     |> UI.click(testid: "add-reviewer")
-    |> UI.select_person_in(id: "reviewer", name: ctx.reviewer.full_name)
+    |> UI.select_person_in(id: "person", name: ctx.reviewer.full_name)
     |> UI.click(testid: "submit")
+  end
+
+  step :assert_project_has_reviewer, ctx, fields do
+    ctx
+    |> UI.assert_has(testid: "project-contributors-page")
+    |> UI.assert_text(ctx.reviewer.full_name)
+    |> then(fn ctx ->
+      project = Operately.Repo.get_by!(Operately.Projects.Project, name: fields.name)
+      project = Operately.Repo.preload(project, [:reviewer])
+      assert project.reviewer.id == ctx.reviewer.id
+
+      UI.visit(ctx, Paths.project_path(ctx.company, project))
+    end)
+    |> UI.refute_has(testid: "no-reviewer-callout")
   end
 
   defp who_should_be_notified(fields) do

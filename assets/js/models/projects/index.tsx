@@ -68,3 +68,14 @@ export function isPausable(project: Project) {
 export function isResumable(project: Project) {
   return project.status === "paused";
 }
+
+export function useContributorSearchFn(project: Project) {
+  return async (query: string) => {
+    const res = await api.searchProjectContributorCandidates({
+      projectId: project.id!,
+      query,
+    });
+
+    return res.people!.map((p) => p!);
+  };
+}
