@@ -177,4 +177,26 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
     |> UI.assert_has(testid: "project-contributors-page")
   end
 
+  step :assert_reviewer_converted_to_contributor, ctx, params do
+    contributors = Operately.Projects.list_project_contributors(ctx.project)
+    reviewer = Enum.find(contributors, fn c -> c.role == "reviewer" end)
+
+    assert reviewer == nil
+
+    ctx
+    |> UI.assert_text(params.name)
+    |> UI.assert_text(params.responsibility)
+  end
+
+  step :assert_champion_converted_to_contributor, ctx, params do
+    contributors = Operately.Projects.list_project_contributors(ctx.project)
+    champion = Enum.find(contributors, fn c -> c.role == "champion" end)
+
+    assert champion == nil
+
+    ctx
+    |> UI.assert_text(params.name)
+    |> UI.assert_text(params.responsibility)
+  end
+
 end
