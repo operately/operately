@@ -59,7 +59,7 @@ function Form() {
   const form = Forms.useForm({
     fields: {
       person: Forms.useSelectPersonField(),
-      responsibility: Forms.useTextField(""),
+      responsibility: Forms.useTextField("", { optional: contribType !== "contributor" }),
       permissions: useSelectAccessLevelField(),
     },
     submit: async (form) => {

@@ -68,7 +68,7 @@ function AddContribButton() {
   const { project } = Pages.useLoadedData() as LoaderData;
 
   if (!project.permissions?.canEditContributors) return null;
-  const path = Paths.projectContributorsAddPath(project.id!);
+  const path = Paths.projectContributorsAddPath(project.id!, { type: "contributor" });
 
   return (
     <PrimaryButton linkTo={path} testId="add-contributor-button" size="sm">
@@ -161,7 +161,7 @@ function Reviewer() {
 }
 
 function ReviewerPlaceholder() {
-  const path = Paths.projectContributorsAddPath(Pages.useLoadedData().project.id!);
+  const path = Paths.projectContributorsAddPath(Pages.useLoadedData().project.id!, { type: "reviewer" });
 
   return (
     <div className="mt-8">
@@ -190,7 +190,7 @@ function ReviewerPlaceholder() {
 }
 
 function ChampionPlaceholder() {
-  const path = Paths.projectContributorsAddPath(Pages.useLoadedData().project.id!);
+  const path = Paths.projectContributorsAddPath(Pages.useLoadedData().project.id!, { type: "champion" });
 
   return (
     <div className="">
