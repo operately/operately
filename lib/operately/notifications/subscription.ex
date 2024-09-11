@@ -10,7 +10,6 @@ defmodule Operately.Notifications.Subscription do
     field :canceled, :boolean, default: false
 
     timestamps()
-    # requester_info()
     request_info()
   end
 
