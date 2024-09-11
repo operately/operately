@@ -16,7 +16,14 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Contributor do
       responsibility: contributor.responsibility,
       access_level: 0,
       person: OperatelyWeb.Api.Serializer.serialize(contributor.person),
-      project: OperatelyWeb.Api.Serializer.serialize(contributor.project),
     }
+  end
+
+  def serialize(contributor, level: :full) do
+    contributor
+    |> serialize(level: :essential)
+    |> Map.merge(%{
+      project: OperatelyWeb.Api.Serializer.serialize(contributor.project)
+    })
   end
 end
