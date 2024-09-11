@@ -145,4 +145,16 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
     |> UI.refute_has(Query.text("Michael Scott"))
   end
 
+  step :assert_reviewer_removed, ctx do 
+    contributors = Operately.Projects.list_project_contributors(ctx.project)
+    refute Enum.find(contributors, fn c -> c.role == "reviewer" end)
+
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> UI.click(testid: "manage-team-button")
+    |> UI.refute_has(Query.text(ctx.reviewer.full_name))
+    |> UI.assert_text("No Reviewer")
+    |> UI.assert_has(testid: "add-reviewer-button")
+  end
+
 end
