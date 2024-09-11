@@ -769,6 +769,7 @@ export interface ProjectContributor {
   role?: string | null;
   person?: Person | null;
   accessLevel?: number | null;
+  project?: Project | null;
 }
 
 export interface ProjectHealth {

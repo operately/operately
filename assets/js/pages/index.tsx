@@ -53,6 +53,8 @@ import * as ProjectCheckInNewPage from "./ProjectCheckInNewPage";
 import * as ProjectCheckInPage from "./ProjectCheckInPage";
 import * as ProjectCheckInsPage from "./ProjectCheckInsPage";
 import * as ProjectClosePage from "./ProjectClosePage";
+import * as ProjectContributorsAddPage from "./ProjectContributorsAddPage";
+import * as ProjectContributorsEditPage from "./ProjectContributorsEditPage";
 import * as ProjectContributorsPage from "./ProjectContributorsPage";
 import * as ProjectEditAccessLevelsPage from "./ProjectEditAccessLevelsPage";
 import * as ProjectEditDescriptionPage from "./ProjectEditDescriptionPage";
@@ -285,6 +287,14 @@ export default {
   ProjectClosePage: {
     loader: ProjectClosePage.loader,
     Page: ProjectClosePage.Page,
+  },
+  ProjectContributorsAddPage: {
+    loader: ProjectContributorsAddPage.loader,
+    Page: ProjectContributorsAddPage.Page,
+  },
+  ProjectContributorsEditPage: {
+    loader: ProjectContributorsEditPage.loader,
+    Page: ProjectContributorsEditPage.Page,
   },
   ProjectContributorsPage: {
     loader: ProjectContributorsPage.loader,
