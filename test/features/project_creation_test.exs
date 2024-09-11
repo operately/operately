@@ -104,5 +104,6 @@ defmodule Operately.Features.ProjectCreationTest do
     |> Steps.assert_no_reviewer_calluout_showing()
     |> Steps.assert_review_placeholder_showing()
     |> Steps.follow_add_reviewer_link_and_add_reviewer()
+    |> Steps.assert_project_has_reviewer(params)
   end
 end

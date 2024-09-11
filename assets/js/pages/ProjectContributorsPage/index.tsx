@@ -34,7 +34,7 @@ export function Page() {
   const { project } = Pages.useLoadedData() as LoaderData;
 
   return (
-    <Pages.Page title={["Team & Access", project.name!]}>
+    <Pages.Page title={["Team & Access", project.name!]} testId="project-contributors-page">
       <Paper.Root>
         <ProjectPageNavigation project={project} />
 

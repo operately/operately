@@ -1,5 +1,5 @@
 import * as ProfileEditPage from "@/pages/ProfileEditPage";
-import * as ProjectContributorAddPage from "@/pages/ProjectContributorAddPage";
+import * as ProjectContributorAddPage from "@/pages/ProjectContributorsAddPage";
 
 export class Paths {
   static lobbyPath() {
