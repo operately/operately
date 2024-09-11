@@ -9,8 +9,8 @@ import { useAddProjectContributor } from "@/api";
 
 import Forms from "@/components/Forms";
 import { Paths } from "@/routes/paths";
-import { useNavigate } from "react-router-dom";
 import { match } from "ts-pattern";
+import { useNavigateTo } from "@/routes/useNavigateTo";
 
 export type ContributorTypeParam = "contributor" | "reviewer" | "champion";
 
@@ -48,18 +48,36 @@ export function Page() {
 function PageTitle() {
   const { contribType } = Pages.useLoadedData() as LoaderResult;
 
-  return <div className="text-2xl font-extrabold pb-8">Add {contribType}</div>;
+  return (
+    <div className="pb-6">
+      <div className="text-2xl font-extrabold">Add {contribType}</div>
+      <ReviewerSubtitle />
+    </div>
+  );
+}
+
+function ReviewerSubtitle() {
+  const { contribType } = Pages.useLoadedData() as LoaderResult;
+
+  if (contribType !== "reviewer") return null;
+
+  return (
+    <div className="text-medium">
+      Reviewers are responsible for acknowledging each check-in and have the authority to initiate corrective action if
+      needed. This is typically the person to whom the champion reports to.
+    </div>
+  );
 }
 
 function Form() {
-  const navigate = useNavigate();
   const { project, contribType } = Pages.useLoadedData() as LoaderResult;
+  const gotoContribPage = useNavigateTo(Paths.projectContributorsPath(project.id!));
   const [add] = useAddProjectContributor();
 
   const form = Forms.useForm({
     fields: {
-      person: Forms.useSelectPersonField(),
-      responsibility: Forms.useTextField("", { optional: contribType !== "contributor" }),
+      person: usePersonField(),
+      responsibility: useResponsibilityField(),
       permissions: useSelectAccessLevelField(),
     },
     submit: async (form) => {
@@ -71,9 +89,9 @@ function Form() {
         role: contribType,
       });
 
-      navigate(Paths.projectContributorsPath(project.id!));
+      gotoContribPage();
     },
-    cancel: async () => navigate(Paths.projectContributorsPath(project.id!)),
+    cancel: async () => gotoContribPage(),
   });
 
   return (
@@ -145,4 +163,17 @@ function useSelectAccessLevelField() {
     .exhaustive();
 
   return Forms.useSelectNumberField(initial, PERMISSIONS_LIST);
+}
+
+function usePersonField() {
+  const { project } = Pages.useLoadedData() as LoaderResult;
+  const personSearchFn = Projects.useContributorSearchFn(project!);
+
+  return Forms.useSelectPersonField(null, { searchFn: personSearchFn });
+}
+
+function useResponsibilityField() {
+  const { contribType } = Pages.useLoadedData() as LoaderResult;
+
+  return Forms.useTextField("", { optional: contribType !== "contributor" });
 }
