@@ -109,13 +109,7 @@ function Champion() {
 
         <div className="flex items-center gap-4">
           <ProjectAccessLevelBadge accessLevel={champion.accessLevel!} />
-
-          <Menu>
-            <MenuLinkItem to="" icon={Icons.IconEdit}>
-              Edit
-            </MenuLinkItem>
-            <RemoveContributorMenuItem contributor={champion} />
-          </Menu>
+          <ContributorMenu contributor={champion} />
         </div>
       </div>
     </div>
@@ -147,13 +141,7 @@ function Reviewer() {
 
         <div className="flex items-center gap-4">
           <ProjectAccessLevelBadge accessLevel={reviewer.accessLevel!} />
-
-          <Menu>
-            <MenuLinkItem to="" icon={Icons.IconEdit}>
-              Edit
-            </MenuLinkItem>
-            <RemoveContributorMenuItem contributor={reviewer} />
-          </Menu>
+          <ContributorMenu contributor={reviewer} />
         </div>
       </div>
     </div>
@@ -180,8 +168,8 @@ function ReviewerPlaceholder() {
         </div>
 
         <div className="flex items-center gap-4">
-          <SecondaryButton linkTo={path} testId="add-contributor-button" size="sm">
-            Add Reviewer
+          <SecondaryButton linkTo={path} testId="add-reviewer-button" size="sm">
+            Add reviewer
           </SecondaryButton>
         </div>
       </div>
@@ -209,8 +197,8 @@ function ChampionPlaceholder() {
         </div>
 
         <div className="flex items-center gap-4">
-          <SecondaryButton linkTo={path} testId="add-contributor-button" size="sm">
-            Add Champion
+          <SecondaryButton linkTo={path} testId="add-champion-button" size="sm">
+            Add champion
           </SecondaryButton>
         </div>
       </div>
@@ -253,7 +241,7 @@ function Contributor({ contributor }: { contributor: ProjectContributor }) {
 function ContributorMenu({ contributor }: { contributor: ProjectContributor }) {
   return (
     <Menu testId={createTestId("contributor-menu", contributor.person!.fullName!)}>
-      <EditResponsibilityMenuItem contributor={contributor} />
+      <EditMenuItem contributor={contributor} />
       <RemoveContributorMenuItem contributor={contributor} />
     </Menu>
   );
@@ -268,11 +256,13 @@ function ContributotNameAndResponsibility({ contributor }: { contributor: Projec
   );
 }
 
-function EditResponsibilityMenuItem({ contributor }: { contributor: ProjectContributor }) {
+function EditMenuItem({ contributor }: { contributor: ProjectContributor }) {
+  if (contributor.role !== "contributor") return null;
+
   const path = Paths.projectContributorsEditPath(contributor.id!);
 
   return (
-    <MenuLinkItem icon={Icons.IconEdit} to={path} testId="edit-responsibility">
+    <MenuLinkItem icon={Icons.IconEdit} to={path} testId="edit-contributor">
       Edit
     </MenuLinkItem>
   );
