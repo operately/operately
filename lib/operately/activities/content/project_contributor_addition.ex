@@ -14,7 +14,7 @@ defmodule Operately.Activities.Content.ProjectContributorAddition do
   def changeset(attrs) do
     %__MODULE__{}
     |> cast(attrs, __schema__(:fields))
-    |> validate_required(__schema__(:fields))
+    |> validate_required(__schema__(:fields) -- [:responsibility])
   end
 
   def build(params) do

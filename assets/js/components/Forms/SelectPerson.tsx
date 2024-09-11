@@ -30,8 +30,7 @@ function SelectPersonInput(props: SelectPersonProps) {
   const form = getFormContext();
   const f = form.fields[props.field] as SelectPersonField;
   const error = form.errors[props.field];
-
-  const loader = People.usePeopleSearch();
+  const loader = f.searchFn;
 
   const onChange = (option: Option | null) => {
     f.setValue(option?.person);

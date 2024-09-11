@@ -1,4 +1,5 @@
 import * as ProfileEditPage from "@/pages/ProfileEditPage";
+import * as ProjectContributorAddPage from "@/pages/ProjectContributorAddPage";
 
 export class Paths {
   static lobbyPath() {
@@ -127,8 +128,11 @@ export class Paths {
     return createCompanyPath(["projects", projectId, "contributors"]);
   }
 
-  static projectContributorsAddPath(projectId: string) {
-    return createCompanyPath(["projects", projectId, "contributors", "add"]);
+  static projectContributorsAddPath(
+    projectId: string,
+    { type }: { type: ProjectContributorAddPage.ContributorTypeParam },
+  ) {
+    return createCompanyPath(["projects", projectId, "contributors", "add"]) + "?type=" + type;
   }
 
   static projectContributorsEditPath(contributorId: string) {
