@@ -12,10 +12,9 @@ import { ProjectContributor } from "@/models/projectContributors";
 
 import { ContributorAvatar, ReviewerPlaceholderAvatar } from "@/components/ContributorAvatar";
 import { Menu, MenuActionItem, MenuLinkItem } from "@/components/Menu";
-import { match } from "ts-pattern";
 import { createTestId } from "@/utils/testid";
 import { Paths } from "@/routes/paths";
-import { PermissionLevels } from "@/features/Permissions";
+import { ProjectAccessLevelBadge } from "@/components/Badges/AccessLevelBadges";
 
 interface LoaderData {
   project: Projects.Project;
@@ -109,7 +108,7 @@ function Champion() {
         </div>
 
         <div className="flex items-center gap-4">
-          <AccessLevelBadge contributor={champion} />
+          <ProjectAccessLevelBadge accessLevel={champion.accessLevel!} />
 
           <Menu>
             <MenuLinkItem to="" icon={Icons.IconEdit}>
@@ -147,7 +146,7 @@ function Reviewer() {
         </div>
 
         <div className="flex items-center gap-4">
-          <AccessLevelBadge contributor={reviewer} />
+          <ProjectAccessLevelBadge accessLevel={reviewer.accessLevel!} />
 
           <Menu>
             <MenuLinkItem to="" icon={Icons.IconEdit}>
@@ -244,7 +243,7 @@ function Contributor({ contributor }: { contributor: ProjectContributor }) {
         <ContributotNameAndResponsibility contributor={contributor} />
       </div>
       <div className="flex items-center gap-4">
-        <AccessLevelBadge contributor={contributor} />
+        <ProjectAccessLevelBadge accessLevel={contributor.accessLevel!} />
         <ContributorMenu contributor={contributor} />
       </div>
     </div>
@@ -292,28 +291,5 @@ function RemoveContributorMenuItem({ contributor }: { contributor: ProjectContri
     <MenuActionItem icon={Icons.IconTrash} danger={true} onClick={handleClick} testId="remove-contributor">
       Remove from project
     </MenuActionItem>
-  );
-}
-
-function AccessLevelBadge({ contributor }: { contributor: ProjectContributor }) {
-  return match(contributor.accessLevel)
-    .with(PermissionLevels.FULL_ACCESS, () => <FullAccessBadge />)
-    .with(PermissionLevels.EDIT_ACCESS, () => <EditAccessBadge />)
-    .run();
-}
-
-function FullAccessBadge() {
-  return (
-    <div className="text-xs font-semibold bg-callout-warning text-callout-warning-message rounded-full px-2.5 py-1.5 uppercase">
-      Full Access
-    </div>
-  );
-}
-
-function EditAccessBadge() {
-  return (
-    <div className="text-xs font-semibold bg-callout-info text-callout-info-message rounded-full px-2.5 py-1.5 uppercase">
-      Edit Access
-    </div>
   );
 }

@@ -33,9 +33,7 @@ export function Tooltip({ content, delayDuration, children, testId }: TextToolti
   return (
     <ReactTooltip.Provider>
       <ReactTooltip.Root delayDuration={delayDuration || 200}>
-        <ReactTooltip.Trigger asChild data-test-id={testId}>
-          {children}
-        </ReactTooltip.Trigger>
+        <ReactTooltip.Trigger data-test-id={testId}>{children}</ReactTooltip.Trigger>
         <ReactTooltip.Content sideOffset={5} className={className}>
           {content}
           <ReactTooltip.Arrow style={arrowStyle} />
