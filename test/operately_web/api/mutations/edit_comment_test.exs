@@ -9,6 +9,8 @@ defmodule OperatelyWeb.Api.Mutations.EditCommentTest do
   import Operately.CommentsFixtures
   import Operately.UpdatesFixtures
 
+  alias Operately.Notifications
+  alias Operately.Notifications.SubscriptionList
   alias Operately.Access.Binding
   alias Operately.Activities.Activity
   alias Operately.Support.RichText
@@ -216,6 +218,41 @@ defmodule OperatelyWeb.Api.Mutations.EditCommentTest do
 
       comment = Repo.reload(comment)
       assert res.comment == Serializer.serialize(comment, level: :essential)
+    end
+
+    test "mentioned people are added to subscriptions list", ctx do
+      project = project_fixture(%{company_id: ctx.company.id, creator_id: ctx.person.id, group_id: ctx.company.company_space_id})
+      check_in = create_check_in(ctx.person, project)
+
+      {:ok, comment} = Operately.Operations.CommentAdding.run(ctx.person, check_in, "project_check_in", RichText.rich_text("Content"))
+      {:ok, list} = SubscriptionList.get(:system, parent_id: check_in.id, opts: [
+        preload: :subscriptions
+      ])
+
+      assert list.subscriptions == []
+
+      assert {200, _} = mutation(ctx.conn, :edit_comment, %{
+        comment_id: Paths.comment_id(comment),
+        content: RichText.rich_text(mentioned_people: [ctx.company_creator]),
+        parent_type: "project_check_in",
+      })
+
+      subscriptions = Notifications.list_subscriptions(list)
+
+      assert length(subscriptions) == 1
+      assert hd(subscriptions).person_id == ctx.company_creator.id
+    end
+
+    test "ignores mentioned people, if it's not project check-in", ctx do
+      goal = goal_fixture(ctx.person, %{space_id: ctx.company.company_space_id})
+      thread = create_comment_thread(goal)
+      {:ok, comment} = Operately.Operations.CommentAdding.run(ctx.person, thread, "comment_thread", RichText.rich_text("Content"))
+
+      assert {200, _} = mutation(ctx.conn, :edit_comment, %{
+        comment_id: Paths.comment_id(comment),
+        content: RichText.rich_text(mentioned_people: [ctx.company_creator]),
+        parent_type: "comment_thread",
+      })
     end
   end
 
