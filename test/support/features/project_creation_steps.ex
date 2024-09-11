@@ -172,6 +172,13 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
     ctx |> UI.assert_has(testid: "reviewer-placeholder")
   end
 
+  step :follow_add_reviewer_link_and_add_reviewer, ctx do
+    ctx
+    |> UI.click(testid: "add-reviewer")
+    |> UI.select_person_in(id: "reviewer", name: ctx.reviewer.full_name)
+    |> UI.click(testid: "submit")
+  end
+
   defp who_should_be_notified(fields) do
     [
       {fields.champion, "champion"},

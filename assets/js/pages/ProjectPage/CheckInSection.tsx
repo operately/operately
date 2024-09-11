@@ -134,8 +134,12 @@ function CheckInZeroState({ project }: { project: Projects.Project }) {
 function NoReviewerCallout({ project }: { project: Projects.Project }) {
   if (project.reviewer) return null;
 
-  const path = Paths.projectContributorsPath(project.id!);
-  const addReviewer = <Link to={path}>Add a Reviewer</Link>;
+  const path = Paths.projectContributorsAddPath(project.id!, { type: "reviewer" });
+  const addReviewer = (
+    <Link to={path} testId="add-reviewer">
+      Add a Reviewer
+    </Link>
+  );
 
   return (
     <div className="mt-4">
