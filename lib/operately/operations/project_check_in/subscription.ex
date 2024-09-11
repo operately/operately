@@ -1,9 +1,10 @@
 defmodule Operately.Operations.ProjectCheckIn.Subscription do
   alias Ecto.Multi
+  alias Operately.RichContent
   alias Operately.Notifications.Subscription
 
   def insert(multi, author, attrs) do
-    mentioned = find_mentioned_people(attrs.description)
+    mentioned = RichContent.find_mentioned_ids(attrs.description, :decode_ids)
     invited = [author.id | attrs.subscriber_ids]
 
     ids = categorize_ids(invited, mentioned)
@@ -24,16 +25,6 @@ defmodule Operately.Operations.ProjectCheckIn.Subscription do
   #
   # Helpers
   #
-
-  defp find_mentioned_people(description) do
-    {:ok, ids} =
-      description
-      |> Operately.RichContent.find_mentioned_ids()
-      |> Enum.uniq()
-      |> OperatelyWeb.Api.Helpers.decode_id()
-
-    ids
-  end
 
   defp categorize_ids(invited, mentioned) do
     mentioned ++ invited
