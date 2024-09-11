@@ -31,4 +31,13 @@ defmodule Operately.Features.ProjectsContributorsTest do
     |> Steps.assert_contributor_removed(name: "Michael Scott")
     |> Steps.assert_contributor_removed_feed_item_exists(name: "Michael Scott")
   end
+
+  @tag login_as: :champion
+  feature "removing a project reviewer", ctx do
+    ctx
+    |> Steps.visit_project_page()
+    |> Steps.remove_contributor(name: ctx.reviewer.full_name)
+    |> Steps.assert_reviewer_removed()
+    |> Steps.assert_contributor_removed_feed_item_exists(name: ctx.reviewer.full_name)
+  end
 end
