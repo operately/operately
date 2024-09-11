@@ -15,7 +15,6 @@ import { Menu, MenuActionItem, MenuLinkItem } from "@/components/Menu";
 import { createTestId } from "@/utils/testid";
 import { Paths } from "@/routes/paths";
 import { ProjectAccessLevelBadge } from "@/components/Badges/AccessLevelBadges";
-import { PermissionLevels } from "@/features/Permissions";
 
 interface LoaderData {
   project: Projects.Project;
