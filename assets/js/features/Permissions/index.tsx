@@ -22,13 +22,13 @@ export interface PermissionOption {
 
 export const VIEW_ACCESS = {
   value: PermissionLevels.VIEW_ACCESS,
-  label: "Can View",
+  label: "View Access",
 };
 
 export const PERMISSIONS_LIST = [
-  { value: PermissionLevels.FULL_ACCESS, label: "Has Full Access" },
-  { value: PermissionLevels.EDIT_ACCESS, label: "Can Edit" },
-  { value: PermissionLevels.COMMENT_ACCESS, label: "Can Comment" },
+  { value: PermissionLevels.FULL_ACCESS, label: "Full Access" },
+  { value: PermissionLevels.EDIT_ACCESS, label: "Edit Access" },
+  { value: PermissionLevels.COMMENT_ACCESS, label: "Comment Access" },
   VIEW_ACCESS,
 ];
 
