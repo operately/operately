@@ -9,7 +9,7 @@ defmodule OperatelyWeb.Api.Mutations.PostProjectCheckInTest do
   alias Operately.Access.Binding
   alias Operately.Projects.CheckIn
   alias Operately.Support.RichText
-  alias Operately.Notifications
+  alias Operately.Notifications.SubscriptionList
 
   describe "security" do
     test "it requires authentication", ctx do
@@ -106,15 +106,13 @@ defmodule OperatelyWeb.Api.Mutations.PostProjectCheckInTest do
       })
 
       {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.check_in.id)
-
-      list = Notifications.get_subscription_list!(parent_id: id)
-      subscriptions = Notifications.list_subscriptions(list)
+      {:ok, list} = SubscriptionList.get(:system, parent_id: id, opts: [preload: :subscriptions])
 
       assert list.send_to_everyone
-      assert length(subscriptions) == 4
+      assert length(list.subscriptions) == 4
 
       Enum.each([ctx.person | ctx.people], fn p ->
-        assert Enum.filter(subscriptions, &(&1.person_id == p.id))
+        assert Enum.filter(list.subscriptions, &(&1.person_id == p.id))
       end)
     end
 
@@ -167,9 +165,9 @@ defmodule OperatelyWeb.Api.Mutations.PostProjectCheckInTest do
 
   defp fetch_subscriptions(res) do
     {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.check_in.id)
+    {:ok, list} = SubscriptionList.get(:system, parent_id: id, opts: [preload: :subscriptions])
 
-    Notifications.get_subscription_list!(parent_id: id)
-    |> Notifications.list_subscriptions()
+    list.subscriptions
   end
 
   defp create_space(ctx) do

@@ -6,8 +6,9 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckInTest do
   import Operately.ProjectsFixtures
   import Operately.GroupsFixtures
 
-  alias Operately.{Repo, Notifications}
+  alias Operately.Repo
   alias Operately.Access.Binding
+  alias Operately.Notifications.SubscriptionList
 
   describe "security" do
     test "it requires authentication", ctx do
@@ -93,11 +94,11 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckInTest do
     test "include_subscriptions", ctx do
       project = project_fixture(%{company_id: ctx.company.id, group_id: ctx.company.company_space_id, creator_id: ctx.person.id})
       check_in = check_in_fixture(%{author_id: ctx.person.id, project_id: project.id})
-      list = Notifications.get_subscription_list!(parent_id: check_in.id)
+      {:ok, list} = SubscriptionList.get(:system, parent_id: check_in.id)
 
       people = Enum.map(1..3, fn _ ->
         person = person_fixture(%{company_id: ctx.company.id})
-        Notifications.create_subscription(%{
+        Operately.Notifications.create_subscription(%{
           subscription_list_id: list.id,
           person_id: person.id,
           type: :invited,
