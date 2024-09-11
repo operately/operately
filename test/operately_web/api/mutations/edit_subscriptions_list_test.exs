@@ -7,6 +7,7 @@ defmodule OperatelyWeb.Api.Mutations.EditSubscriptionsListTest do
 
   alias Operately.Repo
   alias Operately.Notifications
+  alias Operately.Notifications.SubscriptionList
   alias Operately.Access.Binding
 
   describe "security" do
@@ -45,7 +46,7 @@ defmodule OperatelyWeb.Api.Mutations.EditSubscriptionsListTest do
         space = create_space(ctx)
         project = create_project(ctx, space, @test.company, @test.space, @test.project)
         check_in = check_in_fixture(%{author_id: ctx.creator.id, project_id: project.id})
-        subscription_list = Notifications.get_subscription_list!(parent_id: check_in.id)
+        {:ok, subscription_list} = SubscriptionList.get(:system, parent_id: check_in.id)
 
         assert {code, res} = mutation(ctx.conn, :edit_subscriptions_list, %{
           id: Paths.subscription_list_id(subscription_list),
@@ -76,7 +77,7 @@ defmodule OperatelyWeb.Api.Mutations.EditSubscriptionsListTest do
       ctx = register_and_log_in_account(ctx)
       project = project_fixture(%{company_id: ctx.company.id, creator_id: ctx.person.id, group_id: ctx.company.company_space_id})
       check_in = check_in_fixture(%{author_id: ctx.person.id, project_id: project.id})
-      subscriptions_list = Notifications.get_subscription_list!(parent_id: check_in.id)
+      {:ok, subscriptions_list} = SubscriptionList.get(:system, parent_id: check_in.id)
 
       Map.merge(ctx, %{subscriptions_list: subscriptions_list})
     end

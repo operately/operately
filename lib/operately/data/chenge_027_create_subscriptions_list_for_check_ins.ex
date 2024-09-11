@@ -2,7 +2,7 @@ defmodule Operately.Data.Chenge027CreateSubscriptionsListForCheckIns do
   import Ecto.Query, only: [from: 1, from: 2]
 
   alias Operately.{Repo, Notifications}
-  alias Operately.Notifications.Subscription
+  alias Operately.Notifications.{Subscription, SubscriptionList}
   alias Operately.Projects.{CheckIn, Contributor}
 
   def run do
@@ -21,8 +21,8 @@ defmodule Operately.Data.Chenge027CreateSubscriptionsListForCheckIns do
   end
 
   defp create_subscriptions_list(check_in) do
-    case Notifications.get_subscription_list(parent_id: check_in.id) do
-      nil ->
+    case SubscriptionList.get(:system, parent_id: check_in.id) do
+      {:error, :not_found} ->
         {:ok, subscriptions_list} = Notifications.create_subscription_list(%{
           parent_id: check_in.id,
           parent_type: :project_check_in,
@@ -30,7 +30,7 @@ defmodule Operately.Data.Chenge027CreateSubscriptionsListForCheckIns do
         })
         subscriptions_list
 
-      subscriptions_list -> subscriptions_list
+      {:ok, subscriptions_list} -> subscriptions_list
     end
   end
 

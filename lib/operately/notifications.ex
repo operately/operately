@@ -106,12 +106,6 @@ defmodule Operately.Notifications do
 
   alias Operately.Notifications.SubscriptionList
 
-  def get_subscription_list!(id) when is_binary(id), do: Repo.get!(SubscriptionList, id)
-  def get_subscription_list!(attrs) when is_list(attrs), do: Repo.get_by!(SubscriptionList, attrs)
-
-  def get_subscription_list(id) when is_binary(id), do: Repo.get(SubscriptionList, id)
-  def get_subscription_list(attrs) when is_list(attrs), do: Repo.get_by(SubscriptionList, attrs)
-
   def get_subscription_list_with_access_level(id, type, person_id) do
     case type do
       :project_check_in ->
