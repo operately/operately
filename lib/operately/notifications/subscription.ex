@@ -1,5 +1,6 @@
 defmodule Operately.Notifications.Subscription do
   use Operately.Schema
+  use Operately.Repo.Getter
 
   schema "subscriptions" do
     belongs_to :subscription_list, Operately.Notifications.SubscriptionList, foreign_key: :subscription_list_id
@@ -9,6 +10,8 @@ defmodule Operately.Notifications.Subscription do
     field :canceled, :boolean, default: false
 
     timestamps()
+    # requester_info()
+    request_info()
   end
 
   def changeset(attrs) do

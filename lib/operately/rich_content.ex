@@ -1,6 +1,6 @@
 defmodule Operately.RichContent do
   @moduledoc """
-  RichContent are the content of a messages, comments, etc, where the 
+  RichContent are the content of a messages, comments, etc, where the
   text is formatted as a ProseMirror JSON document.
   """
 
@@ -21,6 +21,16 @@ defmodule Operately.RichContent do
 
   def find_mentioned_ids(document) do
     extract_mentions_from_node(document) |> Enum.uniq()
+  end
+
+  def find_mentioned_ids(document, :decode_ids) do
+    {:ok, ids} =
+      document
+      |> find_mentioned_ids()
+      |> Enum.uniq()
+      |> OperatelyWeb.Api.Helpers.decode_id()
+
+    ids
   end
 
   def extract_mentions_from_node(%{"type" => "mention", "attrs" => %{"id" => id}}) do

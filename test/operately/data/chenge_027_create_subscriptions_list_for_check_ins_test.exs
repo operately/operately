@@ -5,7 +5,8 @@ defmodule Operately.Data.Chenge027CreateSubscriptionsListForCheckInsTest do
   import Operately.PeopleFixtures
   import Operately.ProjectsFixtures
 
-  alias Operately.{Projects, Notifications}
+  alias Operately.Projects
+  alias Operately.Notifications.Subscription
 
   setup ctx do
     company = company_fixture(%{})
@@ -32,7 +33,7 @@ defmodule Operately.Data.Chenge027CreateSubscriptionsListForCheckInsTest do
 
     Enum.each(check_ins, fn check_in ->
       Enum.each(contribs, fn contrib ->
-        refute Notifications.get_subscription(subscription_list_id: check_in.subscription_list_id, person_id: contrib.person_id)
+        assert {:error, :not_found} = Subscription.get(:system, subscription_list_id: check_in.subscription_list_id, person_id: contrib.person_id)
       end)
     end)
 
@@ -40,7 +41,7 @@ defmodule Operately.Data.Chenge027CreateSubscriptionsListForCheckInsTest do
 
     Enum.each(check_ins, fn check_in ->
       Enum.each(contribs, fn contrib ->
-        assert Notifications.get_subscription(subscription_list_id: check_in.subscription_list_id, person_id: contrib.person_id)
+        assert {:ok, _} = Subscription.get(:system, subscription_list_id: check_in.subscription_list_id, person_id: contrib.person_id)
       end)
     end)
   end

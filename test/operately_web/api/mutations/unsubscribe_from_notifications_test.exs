@@ -4,6 +4,7 @@ defmodule OperatelyWeb.Api.Mutations.UnsubscribeFromNotificationsTest do
   import Operately.ProjectsFixtures
 
   alias Operately.Notifications
+  alias Operately.Notifications.SubscriptionList
 
   describe "security" do
     test "it requires authentication", ctx do
@@ -17,7 +18,7 @@ defmodule OperatelyWeb.Api.Mutations.UnsubscribeFromNotificationsTest do
 
       project = project_fixture(%{company_id: ctx.company.id, creator_id: ctx.person.id, group_id: ctx.company.company_space_id})
       check_in = check_in_fixture(%{author_id: ctx.person.id, project_id: project.id})
-      subscription_list = Notifications.get_subscription_list!(parent_id: check_in.id)
+      {:ok, subscription_list} = SubscriptionList.get(:system, parent_id: check_in.id)
 
       Map.merge(ctx, %{subscription_list: subscription_list})
     end
