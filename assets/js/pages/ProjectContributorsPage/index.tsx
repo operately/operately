@@ -15,6 +15,7 @@ import { Menu, MenuActionItem, MenuLinkItem } from "@/components/Menu";
 import { createTestId } from "@/utils/testid";
 import { Paths } from "@/routes/paths";
 import { ProjectAccessLevelBadge } from "@/components/Badges/AccessLevelBadges";
+import { PermissionLevels } from "@/features/Permissions";
 
 interface LoaderData {
   project: Projects.Project;
@@ -240,8 +241,9 @@ function Contributor({ contributor }: { contributor: ProjectContributor }) {
 
 function ContributorMenu({ contributor }: { contributor: ProjectContributor }) {
   return (
-    <Menu testId={createTestId("contributor-menu", contributor.person!.fullName!)}>
+    <Menu testId={createTestId("contributor-menu", contributor.person!.fullName!)} size="large">
       <EditMenuItem contributor={contributor} />
+      <ConvertToContributorMenuItem contributor={contributor} />
       <RemoveContributorMenuItem contributor={contributor} />
     </Menu>
   );
@@ -253,6 +255,29 @@ function ContributotNameAndResponsibility({ contributor }: { contributor: Projec
       <div className="font-bold flex items-center gap-2">{contributor!.person!.fullName}</div>
       <div className="text-sm font-medium flex items-center">{contributor.responsibility}</div>
     </div>
+  );
+}
+
+function ConvertToContributorMenuItem({ contributor }: { contributor: ProjectContributor }) {
+  if (contributor.role === "contributor") return null;
+
+  const refresh = Pages.useRefresh();
+  const [update] = ProjectContributors.useUpdateContributor();
+
+  const handle = async () => {
+    await update({
+      contribId: contributor.id,
+      role: "contributor",
+      permissions: PermissionLevels.EDIT_ACCESS,
+    });
+
+    refresh();
+  };
+
+  return (
+    <MenuActionItem icon={Icons.IconArrowsDown} onClick={handle} testId="convert-contributor">
+      Convert to contributor
+    </MenuActionItem>
   );
 }
 

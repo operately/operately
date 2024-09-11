@@ -2,8 +2,8 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProjectContributor do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
-  alias Operately.Projects
   alias Operately.Projects.Permissions
+  alias Operately.Projects.Contributor
   alias Operately.Operations.ProjectContributorEditing
 
   inputs do
@@ -11,6 +11,7 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProjectContributor do
     field :person_id, :string
     field :responsibility, :string
     field :permissions, :integer
+    field :role, :string
   end
 
   outputs do
@@ -21,7 +22,7 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProjectContributor do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:attrs, fn -> parse_inputs(inputs) end)
-    |> run(:contrib, fn ctx -> Projects.get_contributor_with_project_and_access_level(ctx.attrs.contrib_id, ctx.me.id) end)
+    |> run(:contrib, fn ctx -> Contributor.get(ctx.me, id: ctx.attrs[:contrib_id]) end)
     |> run(:check_permissions, fn ctx -> Permissions.check(ctx.contrib.project.requester_access_level, :can_edit_contributors) end)
     |> run(:operation, fn ctx -> ProjectContributorEditing.run(ctx.me, ctx.contrib, ctx.attrs) end)
     |> run(:serialized, fn ctx -> {:ok, %{contributor: Serializer.serialize(ctx.operation)}} end)

@@ -2073,6 +2073,7 @@ export interface UpdateProjectContributorInput {
   personId?: string | null;
   responsibility?: string | null;
   permissions?: number | null;
+  role?: string | null;
 }
 
 export interface UpdateProjectContributorResult {
