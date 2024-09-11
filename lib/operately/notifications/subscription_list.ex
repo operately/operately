@@ -1,5 +1,6 @@
 defmodule Operately.Notifications.SubscriptionList do
   use Operately.Schema
+  use Operately.Repo.Getter
 
   schema "subscription_lists" do
     field :parent_id, Ecto.UUID
@@ -9,6 +10,7 @@ defmodule Operately.Notifications.SubscriptionList do
     has_many :subscriptions, Operately.Notifications.Subscription, foreign_key: :subscription_list_id
 
     timestamps()
+    request_info()
     requester_access_level()
   end
 

@@ -1,6 +1,7 @@
 defmodule Operately.Operations.CommentAdding.Subscriptions do
   alias Ecto.Multi
-  alias Operately.Notifications
+  alias Operately.{Notifications, RichContent}
+  alias Operately.Notifications.SubscriptionList
 
   def update(multi, :project_check_in_commented, content) do
     multi
@@ -12,15 +13,14 @@ defmodule Operately.Operations.CommentAdding.Subscriptions do
   defp fetch_subscriptions(multi) do
     multi
     |> Multi.run(:subscription_list, fn _, %{comment: comment} ->
-      case Notifications.get_subscription_list_by_parent_id(comment.entity_id) do
-        nil -> {:error, nil}
-        subscription_list -> {:ok, subscription_list}
-      end
+      SubscriptionList.get(:system, parent_id: comment.entity_id, opts: [
+        preload: :subscriptions
+      ])
     end)
   end
 
   defp update_subscriptions(multi, content) do
-    ids = find_mentioned_people(content)
+    ids = RichContent.find_mentioned_ids(content, :decode_ids)
 
     Enum.reduce(ids, multi, fn id, multi ->
       name = "subscription_" <> id
@@ -45,15 +45,5 @@ defmodule Operately.Operations.CommentAdding.Subscriptions do
 
   defp subscription_exists?(changes, id) do
     Enum.any?(changes.subscription_list.subscriptions, &(&1.person_id == id))
-  end
-
-  defp find_mentioned_people(description) do
-    {:ok, ids} =
-      description
-      |> Operately.RichContent.find_mentioned_ids()
-      |> Enum.uniq()
-      |> OperatelyWeb.Api.Helpers.decode_id()
-
-    ids
   end
 end

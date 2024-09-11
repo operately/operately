@@ -10,6 +10,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
   import Operately.UpdatesFixtures
 
   alias Operately.{Notifications, Updates}
+  alias Operately.Notifications.SubscriptionList
   alias Operately.Activities.Activity
   alias Operately.Access.Binding
   alias Operately.Support.RichText
@@ -192,7 +193,9 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
       end)
       content = RichText.rich_text(mentioned_people: people)
 
-      list = Notifications.get_subscription_list_by_parent_id(ctx.check_in.id)
+      {:ok, list} = SubscriptionList.get(:system, parent_id: ctx.check_in.id, opts: [
+        preload: :subscriptions
+      ])
       assert list.subscriptions == []
 
       assert {200, _} = mutation(ctx.conn, :create_comment, %{
@@ -201,7 +204,9 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
         content: content
       })
 
-      list = Notifications.get_subscription_list_by_parent_id(ctx.check_in.id)
+      {:ok, list} = SubscriptionList.get(:system, parent_id: ctx.check_in.id, opts: [
+        preload: :subscriptions
+      ])
 
       assert length(list.subscriptions) == 3
 
@@ -212,13 +217,15 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
 
     test "doesn't create repeated subscriptions", ctx do
       another_person = person_fixture(%{company_id: ctx.company.id})
-      list = Notifications.get_subscription_list_by_parent_id(ctx.check_in.id)
+      {:ok, list} = SubscriptionList.get(:system, parent_id: ctx.check_in.id)
       Notifications.create_subscription(%{
         subscription_list_id: list.id,
         person_id: ctx.person.id,
         type: :joined,
       })
-      list = Notifications.get_subscription_list_by_parent_id(ctx.check_in.id)
+      {:ok, list} = SubscriptionList.get(:system, parent_id: ctx.check_in.id, opts: [
+        preload: :subscriptions
+      ])
 
       assert length(list.subscriptions) == 1
       assert hd(list.subscriptions).person_id == ctx.person.id
@@ -229,7 +236,9 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
         content: RichText.rich_text(mentioned_people: [ctx.person, another_person])
       })
 
-      %{subscriptions: subscriptions} = Notifications.get_subscription_list_by_parent_id(ctx.check_in.id)
+      {:ok, %{subscriptions: subscriptions}} = SubscriptionList.get(:system, parent_id: ctx.check_in.id, opts: [
+        preload: :subscriptions
+      ])
 
       assert length(subscriptions) == 2
       assert Enum.find(subscriptions, &(&1.person_id == another_person.id))
