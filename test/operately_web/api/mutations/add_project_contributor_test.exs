@@ -183,6 +183,7 @@ defmodule OperatelyWeb.Api.Mutations.AddProjectContributorTest do
       person_id: Paths.person_id(contributor),
       responsibility: "some role",
       permissions: Binding.view_access(),
+      role: "contributor",
     })
   end
 
