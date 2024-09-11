@@ -2,7 +2,7 @@ defmodule OperatelyWeb.Api.Mutations.RemoveProjectContributor do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
-  alias Operately.Projects
+  alias Operately.Projects.Contributor
   alias Operately.Projects.Permissions
   alias Operately.Operations.ProjectContributorRemoved
 
@@ -17,8 +17,9 @@ defmodule OperatelyWeb.Api.Mutations.RemoveProjectContributor do
   def call(conn, inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:contrib, fn ctx -> Projects.get_contributor_with_project_and_access_level(inputs.contrib_id, ctx.me.id) end)
-    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.contrib.project.requester_access_level, :can_edit_contributors) end)
+    |> run(:id, fn -> decode_id(inputs[:contrib_id]) end)
+    |> run(:contrib, fn ctx -> Contributor.get(ctx.me, id: ctx.id) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.contrib.request_info.access_level, :can_edit_contributors) end)
     |> run(:operation, fn ctx -> ProjectContributorRemoved.run(ctx.me, ctx.contrib) end)
     |> run(:serialized, fn ctx -> {:ok, %{contributor: Serializer.serialize(ctx.operation, level: :essential)}} end)
     |> respond()

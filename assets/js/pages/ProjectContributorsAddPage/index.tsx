@@ -12,7 +12,11 @@ import { Paths } from "@/routes/paths";
 import { match } from "ts-pattern";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 
-export type ContributorTypeParam = "contributor" | "reviewer" | "champion";
+type ContributorTypeParam = "contributor" | "reviewer" | "champion";
+
+export interface UrlParams {
+  type: ContributorTypeParam;
+}
 
 interface LoaderResult {
   project: Projects.Project;

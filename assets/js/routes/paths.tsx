@@ -1,5 +1,6 @@
 import * as ProfileEditPage from "@/pages/ProfileEditPage";
-import * as ProjectContributorAddPage from "@/pages/ProjectContributorsAddPage";
+import * as ProjectContributorsAddPage from "@/pages/ProjectContributorsAddPage";
+import * as ProjectContributorsEditPage from "@/pages/ProjectContributorsEditPage";
 
 export class Paths {
   static lobbyPath() {
@@ -128,15 +129,12 @@ export class Paths {
     return createCompanyPath(["projects", projectId, "contributors"]);
   }
 
-  static projectContributorsAddPath(
-    projectId: string,
-    { type }: { type: ProjectContributorAddPage.ContributorTypeParam },
-  ) {
-    return createCompanyPath(["projects", projectId, "contributors", "add"]) + "?type=" + type;
+  static projectContributorsAddPath(projectId: string, params: ProjectContributorsAddPage.UrlParams) {
+    return createCompanyPath(["projects", projectId, "contributors", "add"]) + encodeUrlParams(params);
   }
 
-  static projectContributorsEditPath(contributorId: string) {
-    return createCompanyPath(["project-contribs", contributorId, "edit"]);
+  static projectContributorsEditPath(contributorId: string, params?: ProjectContributorsEditPage.UrlParams) {
+    return createCompanyPath(["project-contribs", contributorId, "edit"]) + encodeUrlParams(params);
   }
 
   static editProjectGoalPath(projectId: string) {
@@ -405,4 +403,14 @@ function isUUID(id: string) {
 function idWithoutComments(id: string) {
   const parts = id.split("-");
   return parts[parts.length - 1];
+}
+
+function encodeUrlParams(params?: Record<any, any>) {
+  if (!params) return "";
+
+  const queryStr = Object.entries(params)
+    .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
+    .join("&");
+
+  return queryStr ? "?" + queryStr : "";
 }

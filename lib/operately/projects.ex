@@ -7,7 +7,7 @@ defmodule Operately.Projects do
   alias Operately.People.Person
   alias Operately.Updates
   alias Operately.Activities
-  alias Operately.Access.{Binding, Fetch}
+  alias Operately.Access.Fetch
 
   alias Operately.Projects.{
     Project,
@@ -186,29 +186,6 @@ defmodule Operately.Projects do
 
   def get_contributor!(id) do
     Repo.get!(Contributor, id)
-  end
-
-  def get_contributor_with_project_and_access_level(id, person_id) do
-    query = from(c in Contributor, as: :contributor,
-        join: assoc(c, :project), as: :resource,
-        where: c.id == ^id
-      )
-      |> Fetch.join_access_level(person_id)
-
-
-    from([contributor: c, resource: p, binding: b] in query,
-      where: b.access_level >= ^Binding.view_access(),
-      group_by: [c.id, p.id],
-      preload: [project: p],
-      select: {c, max(b.access_level)}
-    )
-    |> Repo.one()
-    |> case do
-      nil -> {:error, :not_found}
-      {c, level} ->
-        project = apply(c.project.__struct__, :set_requester_access_level, [c.project, level])
-        {:ok, %{c | project: project}}
-    end
   end
 
   def get_contributor_role!(project, person_id) do
