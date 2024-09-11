@@ -9,6 +9,7 @@ defmodule OperatelyWeb.Api.Mutations.AddProjectContributor do
     field :person_id, :string
     field :responsibility, :string
     field :permissions, :integer
+    field :role, :string
   end
 
   outputs do
@@ -29,6 +30,7 @@ defmodule OperatelyWeb.Api.Mutations.AddProjectContributor do
           person_id: person_id,
           responsibility: inputs.responsibility,
           permissions: inputs.permissions,
+          role: inputs.role
         })
         {:ok, %{contributor: Serializer.serialize(contributor, level: :essential)}}
     end

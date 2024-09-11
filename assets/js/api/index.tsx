@@ -1515,6 +1515,7 @@ export interface AddProjectContributorInput {
   personId?: string | null;
   responsibility?: string | null;
   permissions?: number | null;
+  role?: string | null;
 }
 
 export interface AddProjectContributorResult {
