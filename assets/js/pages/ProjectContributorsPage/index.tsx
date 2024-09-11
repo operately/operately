@@ -261,24 +261,12 @@ function ContributotNameAndResponsibility({ contributor }: { contributor: Projec
 function ConvertToContributorMenuItem({ contributor }: { contributor: ProjectContributor }) {
   if (contributor.role === "contributor") return null;
 
-  const refresh = Pages.useRefresh();
-  const [update] = ProjectContributors.useUpdateContributor();
-
-  const handle = async () => {
-    await update({
-      contribId: contributor.id,
-      role: "contributor",
-      permissions: PermissionLevels.EDIT_ACCESS,
-      responsibility: "Project contributor",
-    });
-
-    refresh();
-  };
+  const path = Paths.projectContributorsEditPath(contributor.id!, { convertTo: "contributor" });
 
   return (
-    <MenuActionItem icon={Icons.IconArrowsDown} onClick={handle} testId="convert-contributor">
+    <MenuLinkItem icon={Icons.IconTransfer} to={path} testId="convert-to-contributor">
       Convert to contributor
-    </MenuActionItem>
+    </MenuLinkItem>
   );
 }
 

@@ -14,6 +14,10 @@ import { useNavigateTo } from "@/routes/useNavigateTo";
 
 export type ContributorTypeParam = "contributor" | "reviewer" | "champion";
 
+export interface UrlParams {
+  type: ContributorTypeParam;
+}
+
 interface LoaderResult {
   project: Projects.Project;
   contribType: ContributorTypeParam;

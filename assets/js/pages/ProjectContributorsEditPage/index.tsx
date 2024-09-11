@@ -6,45 +6,72 @@ import * as ProjectContributors from "@/models/projectContributors";
 
 import Forms from "@/components/Forms";
 import { ProjectContribsSubpageNavigation } from "@/components/ProjectPageNavigation";
-import { Paths } from "@/routes/paths";
-import { useNavigate } from "react-router-dom";
 import { PermissionLevels, PERMISSIONS_LIST } from "@/features/Permissions";
+import { match } from "ts-pattern";
+import { useNavigateTo } from "@/routes/useNavigateTo";
+import { Paths } from "@/routes/paths";
+
+export interface UrlParams {
+  convertTo: "contributor";
+}
 
 interface LoaderResult {
   contributor: ProjectContributors.ProjectContributor;
+  convertTo?: UrlParams["convertTo"];
 }
 
-export async function loader({ params }): Promise<LoaderResult> {
-  return {
-    contributor: await ProjectContributors.getContributor({
-      id: params.id,
-      includeProject: true,
-    }).then((data) => data.contributor!),
-  };
+export async function loader({ params, request }): Promise<LoaderResult> {
+  const contributor = await ProjectContributors.getContributor({
+    id: params.id,
+    includeProject: true,
+  }).then((data) => data.contributor!);
+
+  const convertTo = Pages.getSearchParam(request, "convertTo") as UrlParams["convertTo"];
+
+  return { contributor: contributor, convertTo: convertTo };
 }
 
 export function Page() {
   const { contributor } = Pages.useLoadedData();
 
   return (
-    <Paper.Root>
+    <Paper.Root size="small">
       <ProjectContribsSubpageNavigation project={contributor.project} />
 
       <Paper.Body>
-        <div className="text-2xl font-extrabold pb-8">
-          Edit {People.firstName(contributor.person!)}'s Role &amp; Access
-        </div>
-
+        <Title />
         <Form />
       </Paper.Body>
     </Paper.Root>
   );
 }
 
+function Title() {
+  const { convertTo, contributor } = Pages.useLoadedData() as LoaderResult;
+
+  return match(convertTo)
+    .with("contributor", () => (
+      <>
+        <div className="text-2xl font-extrabold pb-1">
+          Reassign {People.firstName(contributor.person!)} as a Contributor
+        </div>
+        <div className="text-medium pb-8">
+          {People.firstName(contributor.person!)} is currently a {contributor.role} on this project. Changing their role
+          to contributor will update their responsibilities and access level to align with the new role.
+        </div>
+      </>
+    ))
+    .otherwise(() => (
+      <div className="text-2xl font-extrabold pb-8">
+        Edit {People.firstName(contributor.person!)}'s Role &amp; Access
+      </div>
+    ));
+}
+
 function Form() {
-  const { contributor } = Pages.useLoadedData() as LoaderResult;
+  const { contributor, convertTo } = Pages.useLoadedData() as LoaderResult;
   const [update] = ProjectContributors.useUpdateContributor();
-  const navigate = useNavigate();
+  const gotoProjectContributors = useNavigateTo(Paths.projectContributorsPath(contributor.project!.id!));
 
   const form = Forms.useForm({
     fields: {
@@ -52,26 +79,30 @@ function Form() {
       permissions: Forms.useSelectNumberField(PermissionLevels.EDIT_ACCESS, PERMISSIONS_LIST),
     },
     submit: async (form) => {
-      await update({
+      let payload = {
         contribId: contributor.id,
         responsibility: form.fields.responsibility.value!,
         permissions: form.fields.permissions.value,
-      });
+      };
 
-      navigate(Paths.projectContributorsPath(contributor.project!.id!));
+      if (convertTo === "contributor") payload["role"] = "contributor";
+
+      await update(payload);
+
+      gotoProjectContributors();
     },
-    cancel: async () => navigate(Paths.projectContributorsPath(contributor.project!.id!)),
+    cancel: async () => gotoProjectContributors(),
   });
 
   return (
     <Forms.Form form={form}>
       <Forms.FieldGroup>
-        <Forms.SelectBox field={"permissions"} label="Access Level" />
         <Forms.TextInput
           field={"responsibility"}
-          placeholder="e.g. Project Manager"
-          label={"Responsibility on this project"}
+          placeholder="e.g. Design the UI/UX for the project"
+          label={"What is " + People.firstName(contributor.person!) + "'s responsibility on this project?"}
         />
+        <Forms.SelectBox field={"permissions"} label="Access Level" />
       </Forms.FieldGroup>
 
       <Forms.Submit saveText="Save" />
