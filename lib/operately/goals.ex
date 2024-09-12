@@ -97,4 +97,37 @@ defmodule Operately.Goals do
         end
     end
   end
+
+  alias Operately.Goals.CheckIn
+  alias Operately.Access.Binding
+
+  def get_check_in(:system, id) do
+    from(c in CheckIn, where: c.id == ^id)
+    |> Repo.one()
+    |> case do
+      nil -> {:error, :not_found}
+      r -> {:ok, apply(r.__struct__, :set_requester_access_level, [r, Binding.full_access()])}
+    end
+  end
+
+  def get_check_in(person, id) do
+    from(c in CheckIn,
+      join: ac in assoc(c, :access_context),
+      join: b in assoc(ac, :bindings),
+      join: g in assoc(b, :group),
+      join: m in assoc(g, :memberships),
+      join: p in assoc(m, :person),
+      where: m.person_id == ^person.id and is_nil(p.suspended_at),
+      where: b.access_level >= ^Binding.view_access(),
+      where: c.id == ^id,
+      preload: [:goal, :author, :acknowledged_by],
+      group_by: [c.id, c.goal_id, c.author_id, c.message, c.acknowledged_at, c.acknowledged_by_id, c.targets, c.inserted_at, c.updated_at],
+      select: {c, max(b.access_level)}
+    )
+    |> Repo.one()
+    |> case do
+      nil -> {:error, :not_found}
+      {r, level} -> {:ok, apply(r.__struct__, :set_requester_access_level, [r, level])}
+    end
+  end
 end
