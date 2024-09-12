@@ -1,20 +1,17 @@
 defmodule Operately.Operations.GoalCheckIn do
   alias Ecto.Multi
   alias Operately.{Repo, Activities}
-  alias Operately.Goals.{Goal, Target}
-  alias Operately.Updates.Update
+  alias Operately.Goals.{Goal, Update, Target}
 
   def run(author, goal, content, new_target_values) do
     targets = Operately.Goals.list_targets(goal.id)
     encoded_new_target_values = encode_new_target_values(targets, new_target_values)
 
     changeset = Update.changeset(%{
-      updatable_type: :goal,
-      updatable_id: goal.id,
+      goal_id: goal.id,
       author_id: author.id,
-      title: "",
-      type: :goal_check_in,
-      content: Operately.Updates.Types.GoalCheckIn.build(encoded_new_target_values, content),
+      message: content,
+      targets: encoded_new_target_values,
     })
 
     Multi.new()
@@ -67,16 +64,11 @@ defmodule Operately.Operations.GoalCheckIn do
     Enum.map(new_target_values, fn target_value ->
       target = Enum.find(targets, fn target -> target.id == target_value["id"] end)
 
-      %{
-        "id" => target.id,
-        "name" => target.name,
-        "value" => target_value["value"],
-        "from" => target.from,
-        "to" => target.to,
-        "unit" => target.unit,
-        "index" => target.index,
-        "previous_value" => target.value
-      }
+      Map.from_struct(target)
+      |> Map.merge(%{
+        value: target_value["value"],
+        previous_value: target.value
+      })
     end)
   end
 end

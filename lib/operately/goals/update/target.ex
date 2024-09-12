@@ -15,8 +15,8 @@ defmodule Operately.Goals.Update.Target do
     field :to, :float
   end
 
-  def changeset(attrs) do
-    %__MODULE__{}
+  def changeset(target, attrs) do
+    target
     |> cast(attrs, __schema__(:fields))
     |> validate_required(__schema__(:fields))
   end
