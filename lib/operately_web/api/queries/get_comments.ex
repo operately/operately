@@ -6,7 +6,6 @@ defmodule OperatelyWeb.Api.Queries.GetComments do
 
   alias Operately.Updates.{Update, Comment}
   alias Operately.Groups.Group
-  alias Operately.Goals.Goal
   alias Operately.Projects.CheckIn
   alias Operately.Comments.CommentThread
   alias Operately.Activities.Activity
@@ -42,12 +41,11 @@ defmodule OperatelyWeb.Api.Queries.GetComments do
 
   defp load(id, :goal_update, person) do
     from(c in Comment,
-      join: u in Update, on: c.entity_id == u.id,
-      join: g in Goal, on: u.updatable_id == g.id, as: :goal,
-      where: c.entity_id == ^id and c.entity_type == :update
+      join: u in Operately.Goals.Update, on: c.entity_id == u.id, as: :update,
+      where: u.id == ^id
     )
     |> preload_resources()
-    |> filter_by_view_access(person.id, named_binding: :goal)
+    |> filter_by_view_access(person.id, named_binding: :update)
     |> Repo.all()
   end
 
