@@ -21,11 +21,11 @@ export function ContributorsSection({ project }: { project: Projects.Project }) 
 }
 
 function Champion({ project, champion }: { project: Projects.Project; champion: ProjectContributor }) {
-  return champion ? <ContributorAvatar contributor={champion} /> : <ChampionPlaceholder project={project} />;
+  return champion ? <ContributorAvatar contributor={champion} /> : <ChampionPlaceholder project={project} size="lg" />;
 }
 
 function Reviewer({ project, reviewer }: { project: Projects.Project; reviewer: ProjectContributor }) {
-  return reviewer ? <ContributorAvatar contributor={reviewer} /> : <ReviewerPlaceholder project={project} />;
+  return reviewer ? <ContributorAvatar contributor={reviewer} /> : <ReviewerPlaceholder project={project} size="lg" />;
 }
 
 function ContribList({ contributors }: { contributors: ProjectContributor[] }) {

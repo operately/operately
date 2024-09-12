@@ -33,6 +33,7 @@ import { NodeName } from "./components/NodeName";
 import { TableRow } from "./components/TableRow";
 
 import { useExpandable } from "./context/Expandable";
+import { ChampionPlaceholder } from "@/components/ContributorAvatar";
 
 export function GoalTree(props: TreeContextProviderProps) {
   return (
@@ -181,6 +182,8 @@ function ProjectTimeframe({ project }: { project: Projects.Project }) {
 }
 
 function NodeChampion({ node }: { node: Node }) {
+  if (!node.champion) return <NodeChampionMissing node={node} />;
+
   return (
     <DivLink
       className="flex items-center gap-1.5 text-sm truncate w-24 cursor-pointer"
@@ -190,6 +193,15 @@ function NodeChampion({ node }: { node: Node }) {
       <div className="truncate">{People.firstName(node.champion!)}</div>
     </DivLink>
   );
+}
+
+function NodeChampionMissing({ node }: { node: Node }) {
+  const avatar = match(node.type)
+    .with("project", () => <ChampionPlaceholder project={node as ProjectNode} size={"xs"} />)
+    .with("goal", () => null)
+    .exhaustive();
+
+  return <div className="flex items-center gap-1.5 text-sm w-24">{avatar}</div>;
 }
 
 function NodeHeaderChildrenInfo({ node }: { node: Node }) {

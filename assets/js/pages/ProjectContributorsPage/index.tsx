@@ -10,7 +10,7 @@ import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
 import { ProjectContributor } from "@/models/projectContributors";
 
-import { ContributorAvatar, ReviewerPlaceholderAvatar } from "@/components/ContributorAvatar";
+import { ContributorAvatar, PlaceholderAvatar } from "@/components/ContributorAvatar";
 import { Menu, MenuActionItem, MenuLinkItem } from "@/components/Menu";
 import { createTestId } from "@/utils/testid";
 import { Paths } from "@/routes/paths";
@@ -157,7 +157,7 @@ function ReviewerPlaceholder() {
 
       <div className="flex items-center justify-between py-2 border-y border-stroke-dimmed">
         <div className="flex items-center gap-2">
-          <ReviewerPlaceholderAvatar />
+          <PlaceholderAvatar size="lg" />
 
           <div className="flex flex-col flex-1">
             <div className="font-bold flex items-center gap-2">No Reviewer</div>
@@ -186,7 +186,7 @@ function ChampionPlaceholder() {
 
       <div className="flex items-center justify-between py-2 border-y border-stroke-dimmed">
         <div className="flex items-center gap-2">
-          <ReviewerPlaceholderAvatar />
+          <PlaceholderAvatar size="lg" />
 
           <div className="flex flex-col flex-1">
             <div className="font-bold flex items-center gap-2">No Champion</div>

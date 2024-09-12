@@ -12,6 +12,9 @@ import classNames from "classnames";
 import { TestableElement } from "@/utils/testid";
 import { useColorMode } from "@/contexts/ThemeContext";
 
+type Size = "xs" | "md" | "base" | "lg";
+const DefaultSize: Size = "base";
+
 interface ContributorAvatarProps {
   contributor: ProjectContributor;
 }
@@ -32,24 +35,26 @@ function borderClass(role: string) {
   });
 }
 
-export function ChampionPlaceholder({ project }: { project: Projects.Project }) {
+export function ChampionPlaceholder({ project, size }: { project: Projects.Project; size?: Size }) {
   return (
     <Placeholder
       project={project}
       tooltipTitle="No champion assigned"
       tooltipText="Assign a champion to lead the project and make sure it stays on track."
       testId="champion-placeholder"
+      size={size || DefaultSize}
     />
   );
 }
 
-export function ReviewerPlaceholder({ project }: { project: Projects.Project }) {
+export function ReviewerPlaceholder({ project, size }: { project: Projects.Project; size?: Size }) {
   return (
     <Placeholder
       project={project}
       tooltipTitle="No reviewer assigned"
       tooltipText="Assign a reviewer to get feedback and keep things moving smoothly."
       testId="reviewer-placeholder"
+      size={size || DefaultSize}
     />
   );
 }
@@ -58,6 +63,7 @@ interface PlaceholderProps extends TestableElement {
   project: Projects.Project;
   tooltipTitle: string;
   tooltipText: string;
+  size: Size;
 }
 
 function Placeholder(props: PlaceholderProps) {
@@ -74,28 +80,46 @@ function Placeholder(props: PlaceholderProps) {
     <Tooltip content={tooltipContent}>
       <div>
         <DivLink to={path} testId={props.testId}>
-          <ReviewerPlaceholderAvatar />
+          <PlaceholderAvatar size={props.size} />
         </DivLink>
       </div>
     </Tooltip>
   );
 }
 
-export function ReviewerPlaceholderAvatar() {
+const DIMENSIONS: Record<Size, { circle: number; icon: number }> = {
+  xs: {
+    circle: 16,
+    icon: 12,
+  },
+  md: {
+    circle: 24,
+    icon: 16,
+  },
+  base: {
+    circle: 32,
+    icon: 18,
+  },
+  lg: {
+    circle: 38,
+    icon: 20,
+  },
+};
+
+export function PlaceholderAvatar({ size }: { size: Size }) {
   const colorMode = useColorMode();
 
-  const className = classNames("flex items-center justify-center rounded-full", {
+  const className = classNames("shrink-0 relative flex items-center justify-center rounded-full", {
     "bg-yellow-500/10": colorMode === "light",
     "bg-yellow-500/20": colorMode === "dark",
   });
 
   const iconColor = colorMode === "light" ? "text-yellow-800" : "text-yellow-600";
+  const style = { width: DIMENSIONS[size].circle, height: DIMENSIONS[size].circle };
 
   return (
-    <div className="shrink-0 relative p-1">
-      <div className={className} style={{ width: 38, height: 38 }}>
-        <Icons.IconQuestionMark size={20} className={iconColor} stroke={3} />
-      </div>
+    <div className={className} style={style}>
+      <Icons.IconQuestionMark size={DIMENSIONS[size].icon} className={iconColor} stroke={3} />
     </div>
   );
 }
