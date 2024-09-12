@@ -309,6 +309,22 @@ export interface ActivityContentProjectContributorAddition {
   project?: Project | null;
 }
 
+export interface ActivityContentProjectContributorEdited {
+  companyId?: string | null;
+  projectId?: string | null;
+  personId?: string | null;
+  project?: Project | null;
+  previousContributor?: ActivityContentProjectContributorEditedContributor | null;
+  updatedContributor?: ActivityContentProjectContributorEditedContributor | null;
+}
+
+export interface ActivityContentProjectContributorEditedContributor {
+  personId?: string | null;
+  person?: Person | null;
+  role?: string | null;
+  permissions?: number | null;
+}
+
 export interface ActivityContentProjectContributorRemoved {
   companyId?: string | null;
   projectId?: string | null;
@@ -1043,6 +1059,8 @@ export type ActivityContent =
   | ActivityContentProjectCheckInSubmitted
   | ActivityContentProjectClosed
   | ActivityContentProjectContributorAddition
+  | ActivityContentProjectContributorEdited
+  | ActivityContentProjectContributorRemoved
   | ActivityContentProjectCreated
   | ActivityContentProjectDiscussionSubmitted
   | ActivityContentProjectGoalConnection

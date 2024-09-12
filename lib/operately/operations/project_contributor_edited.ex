@@ -1,4 +1,4 @@
-defmodule Operately.Operations.ProjectContributorEditing do
+defmodule Operately.Operations.ProjectContributorEdited do
   alias Ecto.Multi
   alias Operately.Repo
   alias Operately.Access
@@ -9,14 +9,21 @@ defmodule Operately.Operations.ProjectContributorEditing do
 
   def run(creator, contributor, attrs) do
     Multi.new()
-    |> Multi.update(:contributor, Contributor.changeset(contributor, attrs))
-    |> Multi.run(:context, fn _, _ ->
-      {:ok, Access.get_context!(project_id: contributor.project_id)}
-    end)
+    |> lookup_context(contributor)
+    |> update_contributor(contributor, attrs)
     |> update_bindings(contributor, attrs)
-    |> insert_activity(creator, contributor, attrs)
+    |> insert_activity(creator, contributor)
     |> Repo.transaction()
     |> Repo.extract_result(:contributor)
+  end
+
+  defp update_contributor(multi, contributor, attrs) do
+    Multi.update(multi, :contributor, Contributor.changeset(contributor, attrs))
+  end
+
+  defp lookup_context(mutli, contributor) do
+    context = Access.get_context!(project_id: contributor.project_id)
+    Multi.put(mutli, :context, context)
   end
 
   defp update_bindings(multi, contributor, attrs) do
@@ -30,8 +37,9 @@ defmodule Operately.Operations.ProjectContributorEditing do
     end
   end
 
-  defp insert_activity(multi, creator, contributor, attrs) do
+  defp insert_activity(multi, creator, contributor) do
     project = Projects.get_project!(contributor.project_id)
+    old_access_level = access_level(project, contributor)
 
     Activities.insert_sync(multi, creator.id, :project_contributor_edited, fn changes ->
       %{
@@ -41,11 +49,12 @@ defmodule Operately.Operations.ProjectContributorEditing do
         previous_contributor: %{
           person_id: contributor.person_id,
           role: Atom.to_string(contributor.role),
+          permissions: old_access_level,
         },
         updated_contributor: %{
           person_id: changes.contributor.person_id,
           role: Atom.to_string(changes.contributor.role),
-          permissions: attrs[:person_id] && find_permissions(changes.contributor, attrs),
+          permissions: access_level(project, changes.contributor),
         }
       }
     end)
@@ -55,19 +64,28 @@ defmodule Operately.Operations.ProjectContributorEditing do
   # Helpers
   #
 
-  defp find_permissions(contributor, attrs) do
-    if is_reviewer_or_contributor?(contributor) do
-      Binding.full_access()
+  defp access_level(project, contributor) do
+    context = Access.get_context!(project_id: project.id)
+    group = Access.get_group!(person_id: contributor.person_id)
+
+    binding = if contributor.role in [:champion, :reviewer] do
+      Access.get_binding(context_id: context.id, group_id: group.id, tag: contributor.role)
     else
-      attrs.permissions
+      Access.get_binding(context_id: context.id, group_id: group.id)
+    end
+
+    if binding do
+      binding.access_level
+    else
+      Binding.no_access()
     end
   end
 
-  defp is_reviewer_or_contributor?(contributor) do
-    case contributor.role do
-      :champion -> true
-      :reviewer -> true
-      :contributor -> false
+  defp find_permissions(contributor, attrs) do
+    if contributor.role in [:champion, :reviewer] do
+      Binding.full_access()
+    else
+      attrs.permissions || Binding.edit_access()
     end
   end
 
@@ -85,32 +103,30 @@ defmodule Operately.Operations.ProjectContributorEditing do
   end
 
   defp transfer_binding_to_new_person(multi, contributor, attrs) do
+    context = Access.get_context!(project_id: contributor.project_id)
     previous_group = Access.get_group!(person_id: contributor.person_id)
     new_group = Access.get_group!(person_id: attrs.person_id)
     permissions = find_permissions(contributor, attrs)
 
-    if is_reviewer_or_contributor?(contributor) do
-      tag = contributor.role
-
+    if contributor.role in [:champion, :reviewer] do
       multi
-      |> delete_binding(previous_group, tag)
-      |> Access.update_or_insert_binding(:contributor_binding, new_group, permissions, tag)
+      |> delete_binding(context, previous_group, contributor.role)
+      |> Access.update_or_insert_binding(:contributor_binding, new_group, permissions, contributor.role)
     else
       multi
-      |> delete_binding(previous_group)
+      |> delete_binding(context, previous_group)
       |> Access.update_or_insert_binding(:contributor_binding, new_group, permissions)
     end
   end
 
-  defp delete_binding(multi, group, tag \\ nil) do
-    Multi.run(multi, :deleted_binding, fn _, changes ->
-      case tag do
-        nil -> Access.get_binding!(context_id: changes.context.id, group_id: group.id)
-        _ -> Access.get_binding!(context_id: changes.context.id, group_id: group.id, tag: tag)
+  defp delete_binding(multi, context, group, tag \\ nil) do
+    Multi.run(multi, :deleted_binding, fn _, _ ->
+      if tag do
+        Access.get_binding!(context_id: context.id, group_id: group.id, tag: tag) |> Repo.delete()
+      else
+        Access.get_binding!(context_id: context.id, group_id: group.id) |> Repo.delete()
       end
-      |> Repo.delete()
     end)
   end
-
 
 end
