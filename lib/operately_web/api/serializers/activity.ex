@@ -251,10 +251,7 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
   end
 
   def serialize_content("project_contributor_edited", content) do
-    %{
-      person: Serializer.serialize(content["person"], level: :essential),
-      project: Serializer.serialize(content["project"], level: :essential)
-    }
+    OperatelyWeb.Api.Serializer.serialize(content)
   end
 
   def serialize_content("project_contributor_removed", content) do
@@ -481,41 +478,6 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
       id: comment.id,
       content: Jason.encode!(comment.content),
       inserted_at: OperatelyWeb.Api.Serializer.serialize(comment.inserted_at),
-    }
-  end
-end
-
-defimpl OperatelyWeb.Api.Serializable, for: Operately.Activities.Content.ProjectTimelineEdited.NewMilestones do
-  def serialize(milestone, level: :essential) do
-    %{
-      id: OperatelyWeb.Paths.milestone_id(milestone.milestone_id, milestone.title),
-      title: milestone.title,
-      deadline_at: OperatelyWeb.Api.Serializer.serialize(milestone.due_date),
-    }
-  end
-end
-
-defimpl OperatelyWeb.Api.Serializable, for: Operately.Activities.Content.ProjectTimelineEdited.MilestoneUpdate do
-  def serialize(milestone, level: :essential) do
-    %{
-      id: OperatelyWeb.Paths.milestone_id(milestone.milestone_id, milestone.new_title),
-      title: milestone.new_title,
-      deadline_at: OperatelyWeb.Api.Serializer.serialize(milestone.new_due_date),
-    }
-  end
-end
-
-defimpl OperatelyWeb.Api.Serializable, for: Operately.Activities.Content.ProjectMilestoneCommented do
-  def serialize(content, level: :essential) do
-    %{
-      comment: OperatelyWeb.Api.Serializer.serialize(content.comment),
-      comment_action: content.comment_action,
-      milestone: %{
-        id: OperatelyWeb.Paths.milestone_id(content.milestone),
-        title: content.milestone.title,
-      },
-      project: OperatelyWeb.Api.Serializer.serialize(content.project),
-      project_id: OperatelyWeb.Paths.project_id(content.project),
     }
   end
 end

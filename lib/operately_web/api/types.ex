@@ -493,8 +493,16 @@ defmodule OperatelyWeb.Api.Types do
     field :company_id, :string
     field :project_id, :string
     field :person_id, :string
-    field :person, :person
     field :project, :project
+    field :previous_contributor, :activity_content_project_contributor_edited_contributor
+    field :updated_contributor, :activity_content_project_contributor_edited_contributor
+  end
+
+  object :activity_content_project_contributor_edited_contributor do
+    field :person_id, :string
+    field :person, :person
+    field :role, :string
+    field :permissions, :integer
   end
 
   object :activity_content_project_contributor_removed do

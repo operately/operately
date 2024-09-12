@@ -58,8 +58,8 @@ defmodule Operately.Activities.Preloader do
   #
   # Returns:
   #
-  #   {activity_id, "project_a", Operately.Projects.Project, "project_a_id"},
-  #   {activity_id, "project_b", Operately.Projects.Project, "project_b_id"}
+  #   {activity_id, ["project_a"], Operately.Projects.Project, "9b3160cd-2ec9-4d85-9ad5-713bfe2c8c86"}
+  #   {activity_id, ["project_b"], Operately.Projects.Project, "317221c7-2999-47c6-84e2-6fb588325115"}
   #
   defp references(activity, schema) do
     activity.content
@@ -68,11 +68,16 @@ defmodule Operately.Activities.Preloader do
       case v do
         %Ecto.Association.NotLoaded{__owner__: owner_schema, __field__: field} ->
           if owner_schema.__schema__(:association, field).queryable === schema do
-            [{activity.id, k, schema, Map.get(activity.content, String.to_existing_atom("#{k}_id"))} | acc]
+            id = Map.get(activity.content, String.to_existing_atom("#{k}_id"))
+            ref = {activity.id, [k], schema, id}
+
+            [ref | acc]
           else
             acc
           end
-        _ -> acc
+        e -> 
+          IO.inspect(e)
+          acc
       end
     end)
   end
@@ -98,7 +103,7 @@ defmodule Operately.Activities.Preloader do
   end
 
   defp find_ref(references, activity_id, field) do
-    Enum.find(references, fn {id, f, _, _} -> id == activity_id and f == field end)
+    Enum.find(references, fn {id, f, _, _} -> id == activity_id and hd(f) == field end)
   end
 
   defp preload_sub_activities(activities) do

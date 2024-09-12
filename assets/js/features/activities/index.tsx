@@ -79,7 +79,7 @@ export const DISPLAYED_IN_FEED = [
   "project_check_in_submitted",
   "project_closed",
   "project_contributor_addition",
-  "project_contributor_editing",
+  "project_contributor_edited",
   "project_contributor_removed",
   "project_created",
   "project_goal_connection",
