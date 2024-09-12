@@ -75,6 +75,7 @@ defmodule Operately.Activities do
     if changeset.valid? do
       fields = module.__schema__(:fields)
       content = Ecto.Changeset.apply_changes(changeset)
+      content = remove_associations_before_encoding(content)
 
       {:ok, Map.take(content, fields)}
     else
@@ -90,4 +91,15 @@ defmodule Operately.Activities do
     full_module_name = "Elixir.#{base}.#{Macro.camelize(action)}"
     String.to_existing_atom(full_module_name)
   end
+
+  def remove_associations_before_encoding(content) do
+    Enum.reduce(Map.from_struct(content), content, fn {key, value}, acc ->
+      case value do
+        %Ecto.Association.NotLoaded{} -> acc
+        %{} -> Map.put(acc, key, remove_associations_before_encoding(value))
+        _ -> Map.put(acc, key, value)
+      end
+    end)
+  end
+
 end
