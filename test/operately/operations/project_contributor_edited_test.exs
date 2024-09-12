@@ -1,4 +1,4 @@
-defmodule Operately.Operations.ProjectContributorEditingTest do
+defmodule Operately.Operations.ProjectContributorEditedTest do
   use Operately.DataCase
 
   import Operately.CompaniesFixtures
@@ -36,7 +36,7 @@ defmodule Operately.Operations.ProjectContributorEditingTest do
     champion = Projects.get_contributor!(person_id: ctx.champion.id, project_id: ctx.project.id)
     assert champion.role == :champion
 
-    {:ok, updated} = Operately.Operations.ProjectContributorEditing.run(ctx.creator, champion, %{
+    {:ok, updated} = Operately.Operations.ProjectContributorEdited.run(ctx.creator, champion, %{
       person_id: ctx.champion.id,
       role: :reviewer,
     })
@@ -54,7 +54,7 @@ defmodule Operately.Operations.ProjectContributorEditingTest do
     assert Access.get_binding(context_id: context.id, group_id: group.id, access_level: Binding.edit_access())
     assert contributor.responsibility == "Developer"
 
-    {:ok, updated} = Operately.Operations.ProjectContributorEditing.run(ctx.creator, contributor, %{
+    {:ok, updated} = Operately.Operations.ProjectContributorEdited.run(ctx.creator, contributor, %{
       person_id: ctx.contributor.id,
       responsibility: "Manager",
       permissions: Binding.full_access(),
@@ -78,7 +78,7 @@ defmodule Operately.Operations.ProjectContributorEditingTest do
     champion = Projects.get_contributor!(person_id: ctx.champion.id, project_id: ctx.project.id)
     assert champion_person == ctx.champion
 
-    {:ok, _} = Operately.Operations.ProjectContributorEditing.run(ctx.creator, champion, %{
+    {:ok, _} = Operately.Operations.ProjectContributorEdited.run(ctx.creator, champion, %{
       person_id: new_champion_person.id,
     })
 
@@ -110,7 +110,7 @@ defmodule Operately.Operations.ProjectContributorEditingTest do
     reviewer = person_fixture_with_account(%{company_id: ctx.company.id})
     contributor = Repo.preload(project, :reviewer_contributor).reviewer_contributor
 
-    {:ok, _} = Operately.Operations.ProjectContributorEditing.run(ctx.creator, contributor, %{
+    {:ok, _} = Operately.Operations.ProjectContributorEdited.run(ctx.creator, contributor, %{
       person_id: reviewer.id,
     })
 
@@ -137,7 +137,7 @@ defmodule Operately.Operations.ProjectContributorEditingTest do
     assert Access.get_binding(context_id: context.id, group_id: contributor_group.id, access_level: Binding.edit_access())
     refute Access.get_binding(context_id: context.id, group_id: new_person_group.id)
 
-    {:ok, _} = Operately.Operations.ProjectContributorEditing.run(ctx.creator, contributor, %{
+    {:ok, _} = Operately.Operations.ProjectContributorEdited.run(ctx.creator, contributor, %{
       person_id: new_person.id,
       responsibility: "Manager",
       permissions: Binding.comment_access(),
@@ -153,7 +153,7 @@ defmodule Operately.Operations.ProjectContributorEditingTest do
     }))
     new_person = person_fixture_with_account(%{company_id: ctx.company.id})
 
-    Operately.Operations.ProjectContributorEditing.run(ctx.creator, contributor, %{
+    Operately.Operations.ProjectContributorEdited.run(ctx.creator, contributor, %{
       person_id: new_person.id,
       permissions: Binding.view_access(),
     })
@@ -176,7 +176,7 @@ defmodule Operately.Operations.ProjectContributorEditingTest do
     assert Access.get_binding(context_id: context.id, group_id: group.id, access_level: Binding.edit_access())
     assert contributor.responsibility == "Developer"
 
-    {:ok, updated} = Operately.Operations.ProjectContributorEditing.run(ctx.creator, contributor, %{
+    {:ok, updated} = Operately.Operations.ProjectContributorEdited.run(ctx.creator, contributor, %{
       responsibility: "Project manager & Designer",
     })
 
