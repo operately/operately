@@ -27,7 +27,7 @@ defmodule Operately.Activities.Preloader do
   end
 
   def preload(activities, schema) do
-    references = Enum.flat_map(activities, fn a -> references(a, schema) end)
+    references = Enum.flat_map(activities, fn a -> references(a.id, a.content, schema) end)
 
     ids = Enum.map(references, &elem(&1, 3)) |> Enum.uniq()
 
@@ -61,27 +61,94 @@ defmodule Operately.Activities.Preloader do
   #   {activity_id, ["project_a"], Operately.Projects.Project, "9b3160cd-2ec9-4d85-9ad5-713bfe2c8c86"}
   #   {activity_id, ["project_b"], Operately.Projects.Project, "317221c7-2999-47c6-84e2-6fb588325115"}
   #
-  defp references(activity, schema) do
-    activity.content
+  # For embeds, the function will also look for nested references.
+  #
+  #   embeds_one :subcontet, Operately.Activities.Content.Subcontent
+  #
+  #   defmodule Operately.Activities.Content.Subcontent do
+  #     embedded_schema do
+  #       belongs_to :project, Operately.Projects.Project
+  #     end
+  #   end
+  #
+  # Returns:
+  #
+  #   {activity_id, ["subcontent", "project"], Operately.Projects.Project, "9b3160cd-2ec9-4d85-9ad5-713bfe2c8c86"}
+  #
+  defp references(activity_id, content, schema) do
+    content
     |> Map.from_struct()
     |> Enum.reduce([], fn {k, v}, acc ->
-      case v do
-        %Ecto.Association.NotLoaded{__owner__: owner_schema, __field__: field} ->
-          if owner_schema.__schema__(:association, field).queryable === schema do
-            id = Map.get(activity.content, String.to_existing_atom("#{k}_id"))
-            ref = {activity.id, [k], schema, id}
+      cond do
+        is_field_a_not_loaded_ref(k, v, schema) ->
+          id = Map.get(content, String.to_existing_atom("#{k}_id"))
+          ref = {activity_id, [k], schema, id}
 
-            [ref | acc]
-          else
-            acc
-          end
-        e -> 
-          IO.inspect(e)
+          [ref | acc]
+
+        is_field_an_embed(content, k, v) ->
+          subreferences = references(activity_id, v, schema)
+          subreferences = Enum.map(subreferences, fn {id, f, s, i} -> {id, [k | f], s, i} end)
+          subreferences ++ acc
+
+        true ->
           acc
       end
     end)
   end
 
+
+  #
+  # Checks if the given field is a reference to a schema that is not loaded.
+  # To determine if the field is a reference, the function checks if the
+  # value is an Ecto.Association.NotLoaded struct and if the schema of the
+  # field is the same as the given schema.
+  #
+  # Example:
+  #
+  #   belongs_to :project, Operately.Projects.Project
+  #
+  # > is_field_a_not_loaded_ref("project", %Ecto.Association.NotLoaded{}, Operately.Projects.Project)
+  #   => true
+  # 
+  defp is_field_a_not_loaded_ref(key, value, schema) do
+    case value do
+      %Ecto.Association.NotLoaded{__owner__: owner_schema, __field__: field} ->
+        owner_schema.__schema__(:association, field).queryable == schema
+      _ -> false
+    end
+  end
+
+  #
+  # Checks if the given field is an embed and if the related schema is the same
+  # as the given schema.
+  #
+  # Example:
+  #
+  #   embeds_one :subcontent, Operately.Activities.Content.Subcontent
+  #
+  # > is_field_an_embed(%Operately.Activities.Content.Subcontent{}, "subcontent", %Operately.Activities.Content.Subcontent{})
+  #   => true
+  #
+  defp is_field_an_embed(object, key, value) when not is_map(value) do
+    false
+  end
+
+  defp is_field_an_embed(object, key, value) when is_map(value) do
+    value_type = value.__struct__
+    embeds = object.__struct__.__schema__(:embeds)
+
+    key in embeds && object.__struct__.__schema__(:embed, key).related == value_type
+  end
+
+  #
+  # Injects the records into the activities content.
+  #
+  # The function goes through the list of activities and for each one
+  # it looks for references that are related to the given records.
+  #
+  # The references are then injected into the content of the activity.
+  #
   defp inject(activities, references, records) when is_list(activities) do
     Enum.map(activities, fn a ->
       inject(a, references, records)
@@ -89,21 +156,18 @@ defmodule Operately.Activities.Preloader do
   end
 
   defp inject(activity, references, records) do
-    keys = Map.keys(Map.from_struct(activity.content))
+    found = Enum.filter(references, fn {activity_id, _, _, ref_id} -> 
+      activity_id == activity.id && Map.has_key?(records, ref_id) 
+    end)
 
-    content = Enum.reduce(keys, activity.content, fn k, acc ->
-      case find_ref(references, activity.id, k) do
-        nil -> acc
-        {_, _, _, id} ->
-          Map.put(acc, k, Map.get(records, id))
-      end
+    content = Enum.reduce(found, activity.content, fn {_, path, _, ref_id}, acc ->
+      ref = Map.get(records, ref_id)
+      path = Enum.map(path, fn f -> Access.key(f) end)
+
+      put_in(acc, path, ref)
     end)
 
     %{activity | content: content}
-  end
-
-  defp find_ref(references, activity_id, field) do
-    Enum.find(references, fn {id, f, _, _} -> id == activity_id and hd(f) == field end)
   end
 
   defp preload_sub_activities(activities) do
