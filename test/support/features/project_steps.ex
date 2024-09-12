@@ -378,18 +378,13 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> UI.click(testid: "edit-project-name-button")
     |> UI.fill(testid: "project-name-input", with: new_name)
     |> UI.click(testid: "save")
+    |> UI.assert_has(testid: "project-page")
   end
 
   step :assert_project_renamed, ctx, new_name: new_name do
-    ctx
-    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
-    |> UI.assert_text(new_name)
+    assert Operately.Projects.get_project!(ctx.project.id).name == new_name
 
-    project = Operately.Projects.get_project!(ctx.project.id)
-
-    assert project.name == new_name
-
-    ctx
+    ctx |> UI.assert_text(new_name)
   end
 
   step :assert_project_description_absent, ctx do
@@ -406,7 +401,7 @@ defmodule Operately.Support.Features.ProjectSteps do
   end
 
   step :expand_project_description, ctx do
-    ctx |> UI.click(testid: "expand-project-description") |> UI.sleep(100)
+    ctx |> UI.click(testid: "expand-project-description") |> UI.sleep(300)
   end
 
   step :assert_project_description_present, ctx, description: description do

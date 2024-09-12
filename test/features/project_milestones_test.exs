@@ -2,7 +2,7 @@ defmodule Operately.Features.ProjectMilestonesTest do
   use Operately.FeatureCase
 
   alias Operately.Support.Features.ProjectSteps
-  alias Operately.Support.Features.ProjectMilestoneSteps, as: Steps
+  alias Operately.Support.Features.ProjectMilestonesSteps, as: Steps
 
   setup ctx do
     ctx = ProjectSteps.create_project(ctx, name: "Live support")
