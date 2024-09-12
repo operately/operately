@@ -6,11 +6,10 @@ defmodule Operately.Activities.Notifications.GoalCheckIn do
     goal = Operately.Goals.get_goal!(goal_id)
     goal = Operately.Repo.preload(goal, [:champion, :reviewer])
 
-    check_in = Operately.Updates.get_update!(check_in_id)
-    message = check_in.content["message"]
+    {:ok, check_in} = Operately.Goals.get_check_in(:system, check_in_id)
 
     people = (
-      Operately.RichContent.lookup_mentioned_people(message)
+      Operately.RichContent.lookup_mentioned_people(check_in.message)
       ++ [goal.champion]
       ++ [goal.reviewer]
     ) |> Enum.uniq_by(& &1.id)
