@@ -1,3 +1,4 @@
+import * as React from "react";
 import * as People from "@/models/people";
 
 import type { ActivityContentProjectContributorEdited } from "@/api";
@@ -32,8 +33,7 @@ const ProjectContributorEdited: ActivityHandler = {
     const project = projectLink(content(activity).project!);
 
     if (roleChanged(activity)) {
-      console.log(activity);
-      const person = People.shortName(content(activity).updatedContributor!.person!);
+      const person = People.firstName(content(activity).updatedContributor!.person!);
       const newRole = content(activity).updatedContributor!.role!;
 
       if (page === "project") {
@@ -47,8 +47,20 @@ const ProjectContributorEdited: ActivityHandler = {
     }
   },
 
-  FeedItemContent(_props: { activity: Activity; page: any }) {
-    return null;
+  FeedItemContent({ activity }: { activity: Activity }) {
+    if (roleChanged(activity)) {
+      const oldRole = content(activity).previousContributor!.role!;
+      const person = People.firstName(content(activity).updatedContributor!.person!);
+
+      return (
+        <div className="text-xs">
+          Previously {person} was a {oldRole}
+        </div>
+      );
+    } else {
+      // Not yet implemented
+      return null;
+    }
   },
 
   commentCount(_activity: Activity): number {
