@@ -384,8 +384,7 @@ defmodule Operately.Updates do
         )
       :goal_update ->
         from(c in Comment, as: :comment,
-          join: u in Update, on: u.id == c.entity_id,
-          join: g in Operately.Goals.Goal, on: u.updatable_id == g.id, as: :resource,
+          join: u in Operately.Goals.Update, on: u.id == c.entity_id, as: :resource,
           where: c.id == ^id
         )
       :discussion ->
