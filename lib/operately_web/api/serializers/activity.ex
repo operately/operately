@@ -250,6 +250,13 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
     }
   end
 
+  def serialize_content("project_contributor_edited", content) do
+    %{
+      person: Serializer.serialize(content["person"], level: :essential),
+      project: Serializer.serialize(content["project"], level: :essential)
+    }
+  end
+
   def serialize_content("project_contributor_removed", content) do
     %{
       person: Serializer.serialize(content["person"], level: :essential),
