@@ -9,7 +9,7 @@ import * as api from "@/api";
 export const feedTitle = (activity: api.Activity, ...rest: (string | JSX.Element)[]) => {
   return (
     <>
-      {People.shortName(activity.author!)}{" "}
+      {People.firstName(activity.author!)}{" "}
       {rest.map((part, i) => (
         <React.Fragment key={i}>{part} </React.Fragment>
       ))}
