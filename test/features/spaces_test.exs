@@ -64,7 +64,7 @@ defmodule Operately.Features.SpacesTest do
     |> UI.click(testid: "join-space-button")
     |> UI.sleep(300)
     |> UI.visit(Paths.space_path(ctx.company, group))
-    |> UI.assert_text("Mati A. joined the space")
+    |> UI.assert_text("Mati joined the space")
 
     members = Operately.Groups.list_members(group)
     assert Enum.find(members, fn member -> member.id == ctx.person.id end) != nil

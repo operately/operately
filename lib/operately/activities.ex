@@ -75,6 +75,7 @@ defmodule Operately.Activities do
     if changeset.valid? do
       fields = module.__schema__(:fields)
       content = Ecto.Changeset.apply_changes(changeset)
+      content = Operately.Activities.Encoder.encode(content)
 
       {:ok, Map.take(content, fields)}
     else
@@ -90,4 +91,5 @@ defmodule Operately.Activities do
     full_module_name = "Elixir.#{base}.#{Macro.camelize(action)}"
     String.to_existing_atom(full_module_name)
   end
+
 end
