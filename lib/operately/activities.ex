@@ -75,7 +75,7 @@ defmodule Operately.Activities do
     if changeset.valid? do
       fields = module.__schema__(:fields)
       content = Ecto.Changeset.apply_changes(changeset)
-      content = encode_content(content)
+      content = Operately.Activities.Encoder.encode(content)
 
       {:ok, Map.take(content, fields)}
     else
@@ -90,22 +90,6 @@ defmodule Operately.Activities do
   defp find_module(base, action) when is_binary(action) do
     full_module_name = "Elixir.#{base}.#{Macro.camelize(action)}"
     String.to_existing_atom(full_module_name)
-  end
-
-  defp encode_content(content) do
-    content
-    |> IO.inspect(label: "before encode")
-    |> Map.from_struct()
-    |> Map.to_list()
-    |> Enum.reject(fn {_, value} -> match?(%Ecto.Association.NotLoaded{}, value) end)
-    |> Enum.map(fn {key, value} -> 
-      case Jason.encode(value) do
-        {:ok, _} -> {key, value}
-        {:error, _} -> {key, encode_content(value)}
-      end
-    end)
-    |> Enum.into(%{})
-    |> IO.inspect(label: "after encode")
   end
 
 end
