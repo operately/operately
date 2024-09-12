@@ -63,7 +63,7 @@ defmodule Operately.MixProject do
 
       # testing
       {:cabbage, "~> 0.4.1", only: :test},
-      {:wallaby, "~> 0.30.0", runtime: false, only: :test},
+      {:wallaby, "~> 0.30.9", runtime: false, only: :test},
       {:junit_formatter, "~> 3.1", only: [:test]},
       {:hackney, "~> 1.20"},
       {:sweet_xml, "~> 0.7"}
