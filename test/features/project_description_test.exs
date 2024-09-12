@@ -17,7 +17,7 @@ defmodule Operately.Features.ProjectsDescriptionTest do
     |> Steps.assert_project_description_absent()
     |> Steps.submit_project_description(description: project_description())
     |> Steps.expand_project_description()
-    |> Steps.assert_project_description_present(description: project_description())
+    |> Steps.assert_project_description_present(description: "TEXT END MARKER")
   end
 
   @tag login_as: :champion

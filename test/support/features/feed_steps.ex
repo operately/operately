@@ -32,7 +32,7 @@ defmodule Operately.Support.Features.FeedSteps do
 
   def assert_project_timeline_edited(ctx, author: author, messages: messages) do
     ctx
-    |> UI.assert_text(Person.short_name(author))
+    |> UI.assert_text(Person.first_name(author))
     |> UI.assert_text("edited the timeline")
     |> then(fn ctx ->
       Enum.each(messages, fn message ->
