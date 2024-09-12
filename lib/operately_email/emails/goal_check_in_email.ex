@@ -1,13 +1,13 @@
 defmodule OperatelyEmail.Emails.GoalCheckInEmail do
   import OperatelyEmail.Mailers.ActivityMailer
-  alias Operately.{Repo, Goals, Updates}
+  alias Operately.{Repo, Goals}
   alias OperatelyWeb.Paths
 
   def send(person, activity) do
     author = Repo.preload(activity, :author).author
     company = Repo.preload(author, :company).company
     goal = Goals.get_goal!(activity.content["goal_id"])
-    update = Updates.get_update!(activity.content["update_id"])
+    {:ok, update} = Goals.get_check_in(:system, activity.content["update_id"])
 
     company
     |> new()

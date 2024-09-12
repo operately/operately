@@ -443,27 +443,13 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
   defp serialize_goal_check_in_update(update) do
     %{
       id: OperatelyWeb.Paths.goal_update_id(update),
-      title: update.title,
-      message: Jason.encode!(update.content["message"]),
-      message_type: update.type || "status_update",
-      updatable_id: update.updatable_id,
-      updatable_type: update.updatable_type,
+      message: Jason.encode!(update.message),
+      message_type: "status_update",
       inserted_at: OperatelyWeb.Api.Serializer.serialize(update.inserted_at),
-      comments_count: Operately.Updates.count_comments(update.id, :update),
+      comments_count: Operately.Updates.count_comments(update.id, :goal_update),
       content: %{
         "__typename" => "UpdateContentGoalCheckIn",
-
-        targets: update.content["targets"] && Enum.map(update.content["targets"], fn target ->
-          %{
-            id: target["id"],
-            name: target["name"],
-            value: target["value"],
-            previous_value: target["previous_value"],
-            unit: target["unit"],
-            from: target["from"],
-            to: target["to"]
-          }
-        end)
+        targets: Enum.map(update.targets, &(Map.from_struct(&1)))
       }
     }
   end

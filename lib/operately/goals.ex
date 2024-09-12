@@ -97,4 +97,48 @@ defmodule Operately.Goals do
         end
     end
   end
+
+  alias Operately.Goals.Update
+  alias Operately.Access.Binding
+
+  def list_updates(goal) do
+    from(u in Update,
+      where: u.goal_id == ^goal.id
+    )
+    |> Repo.all()
+  end
+
+  def get_check_in(:system, id) do
+    from(u in Update,
+      preload: [:author, :acknowledged_by, reactions: [:person], goal: [:targets]],
+      where: u.id == ^id
+    )
+    |> Repo.one()
+    |> case do
+      nil -> {:error, :not_found}
+      r -> {:ok, apply(r.__struct__, :set_requester_access_level, [r, Binding.full_access()])}
+    end
+  end
+
+  def get_check_in(%Operately.People.Person{} = person, id), do: get_check_in(person.id, id)
+  def get_check_in(person_id, id) do
+    from(u in Update,
+      join: ac in assoc(u, :access_context),
+      join: b in assoc(ac, :bindings),
+      join: g in assoc(b, :group),
+      join: m in assoc(g, :memberships),
+      join: p in assoc(m, :person),
+      where: m.person_id == ^person_id and is_nil(p.suspended_at),
+      where: b.access_level >= ^Binding.view_access(),
+      where: u.id == ^id,
+      preload: [:author, :acknowledged_by, reactions: [:person], goal: [:targets]],
+      group_by: [u.id, u.goal_id, u.author_id, u.message, u.acknowledged_at, u.acknowledged_by_id, u.targets, u.inserted_at, u.updated_at],
+      select: {u, max(b.access_level)}
+    )
+    |> Repo.one()
+    |> case do
+      nil -> {:error, :not_found}
+      {r, level} -> {:ok, apply(r.__struct__, :set_requester_access_level, [r, level])}
+    end
+  end
 end

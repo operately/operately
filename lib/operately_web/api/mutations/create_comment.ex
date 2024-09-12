@@ -52,7 +52,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateComment do
     case type do
       :project_check_in -> Projects.get_check_in_with_access_level(id, person_id)
       :comment_thread -> Comments.get_thread_with_activity_and_access_level(id, person_id)
-      :goal_update -> Updates.get_update_with_goal_and_access_level(id, person_id)
+      :goal_update -> Goals.get_check_in(person_id, id)
       :discussion -> Updates.get_update_with_space_and_access_level(id, person_id)
     end
   end
@@ -61,14 +61,13 @@ defmodule OperatelyWeb.Api.Mutations.CreateComment do
     case type do
       :project_check_in -> Projects.Permissions.check(parent.requester_access_level, :can_comment_on_check_in)
       :comment_thread -> Activities.Permissions.check(parent.activity.requester_access_level, :can_comment_on_thread)
-      :goal_update -> Goals.Permissions.check(parent.goal.requester_access_level, :can_comment_on_update)
+      :goal_update -> Goals.Permissions.check(parent.requester_access_level, :can_comment_on_update)
       :discussion -> Groups.Permissions.check(parent.space.requester_access_level, :can_comment_on_discussions)
     end
   end
 
   defp execute(ctx, inputs, type) do
     case type do
-      :goal_update -> CommentAdding.run(ctx.me, ctx.parent, "update", ctx.content)
       :discussion -> CommentAdding.run(ctx.me, ctx.parent, "update", ctx.content)
       _ -> CommentAdding.run(ctx.me, ctx.parent, inputs.entity_type, ctx.content)
     end
