@@ -54,7 +54,7 @@ defmodule Operately.Features.ProjectsContributorsTest do
 
   @tag login_as: :champion
   feature "converting a project champion to a contributor", ctx do
-    params = %{name: ctx.reviewer.full_name, responsibility: "Design the user interface"}
+    params = %{name: ctx.champion.full_name, responsibility: "Design the user interface"}
 
     ctx
     |> Steps.visit_project_page()
