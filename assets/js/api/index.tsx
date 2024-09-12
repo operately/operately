@@ -313,8 +313,16 @@ export interface ActivityContentProjectContributorEdited {
   companyId?: string | null;
   projectId?: string | null;
   personId?: string | null;
-  person?: Person | null;
   project?: Project | null;
+  previousContributor?: ActivityContentProjectContributorEditedContributor | null;
+  updatedContributor?: ActivityContentProjectContributorEditedContributor | null;
+}
+
+export interface ActivityContentProjectContributorEditedContributor {
+  personId?: string | null;
+  person?: Person | null;
+  role?: string | null;
+  permissions?: number | null;
 }
 
 export interface ActivityContentProjectContributorRemoved {

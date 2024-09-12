@@ -29,13 +29,21 @@ const ProjectContributorEdited: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    const person = People.shortName(content(activity).person!);
     const project = projectLink(content(activity).project!);
 
-    if (page === "project") {
-      return feedTitle(activity, "updated", person, "to the project");
+    if (roleChanged(activity)) {
+      console.log(activity);
+      const person = People.shortName(content(activity).updatedContributor!.person!);
+      const newRole = content(activity).updatedContributor!.role!;
+
+      if (page === "project") {
+        return feedTitle(activity, "reassigned", person, "as a", newRole, "on the project");
+      } else {
+        return feedTitle(activity, "reassigned", person, "as a", newRole, "on the", project, "project");
+      }
     } else {
-      return feedTitle(activity, "updated", person, "to the", project, "project");
+      // Not yet implemented
+      return null;
     }
   },
 
@@ -51,17 +59,24 @@ const ProjectContributorEdited: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " added you as a contributor";
+  NotificationTitle(_props: { activity: Activity }) {
+    throw new Error("Not implemented");
   },
 
-  NotificationLocation({ activity }: { activity: Activity }) {
-    return content(activity).project!.name!;
+  NotificationLocation(_props: { activity: Activity }) {
+    throw new Error("Not implemented");
   },
 };
 
 function content(activity: Activity): ActivityContentProjectContributorEdited {
   return activity.content as ActivityContentProjectContributorEdited;
+}
+
+function roleChanged(activity: Activity): boolean {
+  return (
+    content(activity).previousContributor?.role !== content(activity).updatedContributor?.role &&
+    content(activity).previousContributor?.personId === content(activity).updatedContributor?.personId
+  );
 }
 
 export default ProjectContributorEdited;
