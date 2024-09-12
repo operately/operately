@@ -1,4 +1,4 @@
-defmodule Operately.Operations.ProjectContributorEditing do
+defmodule Operately.Operations.ProjectContributorEdited do
   alias Ecto.Multi
   alias Operately.Repo
   alias Operately.Access

@@ -309,6 +309,14 @@ export interface ActivityContentProjectContributorAddition {
   project?: Project | null;
 }
 
+export interface ActivityContentProjectContributorEdited {
+  companyId?: string | null;
+  projectId?: string | null;
+  personId?: string | null;
+  person?: Person | null;
+  project?: Project | null;
+}
+
 export interface ActivityContentProjectContributorRemoved {
   companyId?: string | null;
   projectId?: string | null;
@@ -1043,6 +1051,8 @@ export type ActivityContent =
   | ActivityContentProjectCheckInSubmitted
   | ActivityContentProjectClosed
   | ActivityContentProjectContributorAddition
+  | ActivityContentProjectContributorEditing
+  | ActivityContentProjectContributorRemoved
   | ActivityContentProjectCreated
   | ActivityContentProjectDiscussionSubmitted
   | ActivityContentProjectGoalConnection

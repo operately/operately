@@ -284,6 +284,8 @@ defmodule OperatelyWeb.Api.Types do
     :activity_content_project_check_in_submitted,
     :activity_content_project_closed,
     :activity_content_project_contributor_addition,
+    :activity_content_project_contributor_editing,
+    :activity_content_project_contributor_removed,
     :activity_content_project_created,
     :activity_content_project_discussion_submitted,
     :activity_content_project_goal_connection,
@@ -480,6 +482,14 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :activity_content_project_contributor_addition do
+    field :company_id, :string
+    field :project_id, :string
+    field :person_id, :string
+    field :person, :person
+    field :project, :project
+  end
+
+  object :activity_content_project_contributor_edited do
     field :company_id, :string
     field :project_id, :string
     field :person_id, :string
