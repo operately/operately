@@ -6,7 +6,6 @@ defmodule Operately.Activities.Content.ProjectContributorEdited do
 
     embedded_schema do
       belongs_to :person, Operately.People.Person
-
       field :role, :string
       field :permissions, :integer
     end
