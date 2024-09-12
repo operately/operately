@@ -10,7 +10,8 @@ defmodule Operately.Repo.Migrations.CopyGoalCheckInsFromUpdatesToNewTable do
 
     alter table(:goal_check_ins) do
       add :goal_id, references(:goals, type: :binary_id, on_delete: :nothing)
-      add :targets, {:array, :map}
+      add :message, :jsonb
+      add :targets, {:array, :jsonb}, default: []
     end
 
     create index(:goal_check_ins, [:goal_id])
@@ -29,6 +30,7 @@ defmodule Operately.Repo.Migrations.CopyGoalCheckInsFromUpdatesToNewTable do
       remove :new_phase, :string
       remove :title, :string
       remove :acknowledged, :boolean
+      remove :content, :jsonb
     end
     rename table(:goal_check_ins), :acknowledging_person_id, to: :acknowledged_by_id
   end
@@ -47,7 +49,7 @@ defmodule Operately.Repo.Migrations.CopyGoalCheckInsFromUpdatesToNewTable do
       |> Repo.update_all(set: [
         goal_id: check_in.updatable_id,
         targets: check_in.content["targets"],
-        content: check_in.content["message"],
+        message: check_in.content["message"],
       ])
     end)
   end
