@@ -2,7 +2,9 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalProgressUpdate do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
-  import Operately.Access.Filters, only: [forbidden_or_not_found: 3]
+  alias Operately.Goals
+  alias Operately.Goals.Permissions
+  alias Operately.Operations.GoalCheckInEdit
 
   inputs do
     field :id, :string
@@ -15,35 +17,33 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalProgressUpdate do
   end
 
   def call(conn, inputs) do
-    {:ok, update_id} = decode_id(inputs.id)
-    author = me(conn)
+    Action.new()
+    |> Action.run(:id, fn -> decode_id(inputs.id) end)
+    |> Action.run(:attrs, fn -> parse_inputs(inputs) end)
+    |> Action.run(:me, fn -> find_me(conn) end)
+    |> Action.run(:update, fn ctx -> Goals.get_check_in(ctx.me, ctx.id) end)
+    |> Action.run(:check_permissions, fn ctx -> Permissions.check(ctx.update.requester_access_level, :can_edit_check_in) end)
+    |> Action.run(:operation, fn ctx -> GoalCheckInEdit.run(ctx.me, ctx.update.goal, ctx.update, ctx.attrs) end)
+    |> Action.run(:serialized, fn ctx -> {:ok, %{update: OperatelyWeb.Api.Serializer.serialize(ctx.update, level: :full)}} end)
+    |> respond()
+  end
 
-    case load(author, update_id) do
-      nil ->
-        query(update_id)
-        |> forbidden_or_not_found(author.id, named_binding: :goal)
-
-      {update, goal} ->
-        content = Jason.decode!(inputs.content)
-        target_values = Jason.decode!(inputs.new_target_values)
-
-        {:ok, update} = Operately.Operations.GoalCheckInEdit.run(author, goal, update, content, target_values)
-        {:ok, %{update: OperatelyWeb.Api.Serializer.serialize(update, level: :full)}}
+  defp respond(result) do
+    case result do
+      {:ok, ctx} -> {:ok, ctx.serialized}
+      {:error, :id, _} -> {:error, :bad_request}
+      {:error, :attrs, _} -> {:error, :bad_request}
+      {:error, :update, _} -> {:error, :not_found}
+      {:error, :check_permissions, _} -> {:error, :forbidden}
+      {:error, :operation, _} -> {:error, :internal_server_error}
+      _ -> {:error, :internal_server_error}
     end
   end
 
-  defp load(author, update_id) do
-    from([update: u, goal: g] in query(update_id),
-      where: u.author_id == ^author.id,
-      select: {u, g}
-    )
-    |> Repo.one()
-  end
-
-  defp query(update_id) do
-    from(u in Operately.Updates.Update, as: :update,
-      join: g in Operately.Goals.Goal, on: u.updatable_id == g.id, as: :goal,
-      where: u.id == ^update_id
-    )
+  defp parse_inputs(inputs) do
+    {:ok, %{
+      content: Jason.decode!(inputs.content),
+      new_target_values: Jason.decode!(inputs.new_target_values),
+    }}
   end
 end
