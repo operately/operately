@@ -120,7 +120,7 @@ defmodule Operately.Goals do
       where: m.person_id == ^person.id and is_nil(p.suspended_at),
       where: b.access_level >= ^Binding.view_access(),
       where: u.id == ^id,
-      preload: [:goal, :author, :acknowledged_by],
+      preload: [:goal, :author, :acknowledged_by, reactions: [:person]],
       group_by: [u.id, u.goal_id, u.author_id, u.message, u.acknowledged_at, u.acknowledged_by_id, u.targets, u.inserted_at, u.updated_at],
       select: {u, max(b.access_level)}
     )

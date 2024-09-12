@@ -9,8 +9,8 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Goals.Update  do
       acknowledged: !!update.acknowledged_at,
       acknowledged_at: OperatelyWeb.Api.Serializer.serialize(update.acknowledged_at),
       acknowledging_person: OperatelyWeb.Api.Serializer.serialize(update.acknowledged_by),
-      reactions: [], # OperatelyWeb.Api.Serializer.serialize(update.reactions),
-      comments_count: 0, # Operately.Updates.count_comments(update.id, :update),
+      reactions: OperatelyWeb.Api.Serializer.serialize(update.reactions),
+      comments_count: Operately.Updates.count_comments(update.id, :goal_update),
       goal_target_updates: parse_targets(update.targets),
     }
   end

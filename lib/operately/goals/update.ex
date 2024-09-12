@@ -7,7 +7,7 @@ defmodule Operately.Goals.Update do
     belongs_to :author, Operately.People.Person, foreign_key: :author_id
 
     has_one :access_context, through: [:goal, :access_context]
-    # has_many :reactions, Operately.Updates.Reaction
+    has_many :reactions, Operately.Updates.Reaction, foreign_key: :entity_id, where: [entity_type: :goal_update]
     has_many :comments, Operately.Updates.Comment, foreign_key: :entity_id, where: [entity_type: :goal_update]
 
     field :message, :map
