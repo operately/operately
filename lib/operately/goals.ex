@@ -110,14 +110,15 @@ defmodule Operately.Goals do
     end
   end
 
-  def get_check_in(person, id) do
+  def get_check_in(%Operately.People.Person{} = person, id), do: get_check_in(person.id, id)
+  def get_check_in(person_id, id) do
     from(u in Update,
       join: ac in assoc(u, :access_context),
       join: b in assoc(ac, :bindings),
       join: g in assoc(b, :group),
       join: m in assoc(g, :memberships),
       join: p in assoc(m, :person),
-      where: m.person_id == ^person.id and is_nil(p.suspended_at),
+      where: m.person_id == ^person_id and is_nil(p.suspended_at),
       where: b.access_level >= ^Binding.view_access(),
       where: u.id == ^id,
       preload: [:author, :acknowledged_by, reactions: [:person], goal: [:targets]],
