@@ -1,4 +1,4 @@
-defmodule Operately.Support.Features.ProjectMilestoneSteps do
+defmodule Operately.Support.Features.ProjectMilestonesSteps do
   alias Operately.Support.Features.{UI, EmailSteps, NotificationsSteps}
   alias Operately.People.Person
   alias OperatelyWeb.Paths
@@ -31,7 +31,7 @@ defmodule Operately.Support.Features.ProjectMilestoneSteps do
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
     |> UI.find(UI.query(testid: "project-feed"), fn el ->
       el
-      |> UI.assert_text(Person.short_name(ctx.champion) <> " commented on the " <> ctx.milestone.title <> " milestone")
+      |> UI.assert_text(Person.first_name(ctx.champion) <> " commented on the " <> ctx.milestone.title <> " milestone")
       |> UI.assert_text(comment)
     end)
   end
