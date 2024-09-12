@@ -98,11 +98,11 @@ defmodule Operately.Goals do
     end
   end
 
-  alias Operately.Goals.CheckIn
+  alias Operately.Goals.Update
   alias Operately.Access.Binding
 
   def get_check_in(:system, id) do
-    from(c in CheckIn, where: c.id == ^id)
+    from(u in Update, where: u.id == ^id)
     |> Repo.one()
     |> case do
       nil -> {:error, :not_found}
@@ -111,18 +111,18 @@ defmodule Operately.Goals do
   end
 
   def get_check_in(person, id) do
-    from(c in CheckIn,
-      join: ac in assoc(c, :access_context),
+    from(u in Update,
+      join: ac in assoc(u, :access_context),
       join: b in assoc(ac, :bindings),
       join: g in assoc(b, :group),
       join: m in assoc(g, :memberships),
       join: p in assoc(m, :person),
       where: m.person_id == ^person.id and is_nil(p.suspended_at),
       where: b.access_level >= ^Binding.view_access(),
-      where: c.id == ^id,
+      where: u.id == ^id,
       preload: [:goal, :author, :acknowledged_by],
-      group_by: [c.id, c.goal_id, c.author_id, c.message, c.acknowledged_at, c.acknowledged_by_id, c.targets, c.inserted_at, c.updated_at],
-      select: {c, max(b.access_level)}
+      group_by: [u.id, u.goal_id, u.author_id, u.message, u.acknowledged_at, u.acknowledged_by_id, u.targets, u.inserted_at, u.updated_at],
+      select: {u, max(b.access_level)}
     )
     |> Repo.one()
     |> case do

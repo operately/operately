@@ -1,4 +1,4 @@
-defmodule Operately.Goals.CheckIn.Target do
+defmodule Operately.Goals.Update.Target do
   use Ecto.Schema
   import Ecto.Changeset
 
