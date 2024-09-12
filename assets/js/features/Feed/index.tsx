@@ -82,9 +82,9 @@ function ActivityItem({ activity, page }: { activity: Activities.Activity; page:
         <Avatar person={author!} size="small" />
       </DivLink>
 
-      <div className="w-full break-all">
+      <div className="w-full break-all -mt-0.5">
         <div className="text-sm font-bold text-content-accent">{title}</div>
-        {content && <div className="text-sm w-full mt-1">{content}</div>}
+        {content && <div className="text-sm w-full mt-0.5">{content}</div>}
       </div>
 
       <div className="shrink-0 text-xs text-content-dimmed w-16 text-right">

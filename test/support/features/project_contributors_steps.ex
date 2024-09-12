@@ -58,7 +58,7 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
     |> FeedSteps.assert_feed_item_exists(%{
       author: ctx.champion,
-      title: "added #{Operately.People.Person.short_name(contrib.person)} to the project",
+      title: "added #{Person.first_name(contrib.person)} to the project",
     })
   end
 
@@ -69,17 +69,17 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
     |> FeedSteps.assert_feed_item_exists(%{
       author: ctx.champion,
-      title: "removed #{Person.short_name(person)} from the project",
+      title: "removed #{Person.first_name(person)} from the project",
     })
     |> UI.visit(Paths.space_path(ctx.company, ctx.group))
     |> FeedSteps.assert_feed_item_exists(%{
       author: ctx.champion,
-      title: "removed #{Person.short_name(person)} from the #{ctx.project.name} project",
+      title: "removed #{Person.first_name(person)} from the #{ctx.project.name} project",
     })
     |> UI.visit(Paths.feed_path(ctx.company))
     |> FeedSteps.assert_feed_item_exists(%{
       author: ctx.champion,
-      title: "removed #{Person.short_name(person)} from the #{ctx.project.name} project",
+      title: "removed #{Person.first_name(person)} from the #{ctx.project.name} project",
     })
   end
 
@@ -197,6 +197,44 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
     ctx
     |> UI.assert_text(params.name)
     |> UI.assert_text(params.responsibility)
+  end
+
+  step :assert_reviewer_converted_to_contributor_feed_item_exists, ctx do
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> FeedSteps.assert_feed_item_exists(%{
+      author: ctx.champion,
+      title: "reassigned #{Person.first_name(ctx.reviewer)} as a contributor",
+    })
+    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
+    |> FeedSteps.assert_feed_item_exists(%{
+      author: ctx.champion,
+      title: "reassigned #{Person.first_name(ctx.reviewer)} as a contributor on the #{ctx.project.name} project",
+    })
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> FeedSteps.assert_feed_item_exists(%{
+      author: ctx.champion,
+      title: "reassigned #{Person.first_name(ctx.reviewer)} as a contributor on the #{ctx.project.name} project",
+    })
+  end
+
+  step :assert_champion_converted_to_contributor_feed_item_exists, ctx do
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> FeedSteps.assert_feed_item_exists(%{
+      author: ctx.champion,
+      title: "reassigned #{Person.first_name(ctx.champion)} as a contributor",
+    })
+    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
+    |> FeedSteps.assert_feed_item_exists(%{
+      author: ctx.champion,
+      title: "reassigned #{Person.first_name(ctx.champion)} as a contributor on the #{ctx.project.name} project",
+    })
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> FeedSteps.assert_feed_item_exists(%{
+      author: ctx.champion,
+      title: "reassigned #{Person.first_name(ctx.champion)} as a contributor on the #{ctx.project.name} project",
+    })
   end
 
 end

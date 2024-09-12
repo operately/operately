@@ -49,6 +49,7 @@ defmodule Operately.Features.ProjectsContributorsTest do
     |> Steps.visit_project_page()
     |> Steps.convert_reviewer_to_contributor(params)
     |> Steps.assert_reviewer_converted_to_contributor(params)
+    |> Steps.assert_reviewer_converted_to_contributor_feed_item_exists()
   end
 
   @tag login_as: :champion
@@ -59,5 +60,6 @@ defmodule Operately.Features.ProjectsContributorsTest do
     |> Steps.visit_project_page()
     |> Steps.convert_champion_to_contributor(params)
     |> Steps.assert_champion_converted_to_contributor(params)
+    |> Steps.assert_champion_converted_to_contributor_feed_item_exists()
   end
 end

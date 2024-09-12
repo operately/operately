@@ -14,6 +14,7 @@ CERTS_DIR ?= $(PWD)/tmp/certs
 
 gen:
 	./devenv bash -c "mix operately.gen.page.index && mix operately.gen.typescript.api"
+	./devenv bash -c "cd assets && npx prettier --write js/api"
 
 gen.migration:
 	./devenv mix ecto.gen.migration $(NAME)
