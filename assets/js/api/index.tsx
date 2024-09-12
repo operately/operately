@@ -1059,7 +1059,7 @@ export type ActivityContent =
   | ActivityContentProjectCheckInSubmitted
   | ActivityContentProjectClosed
   | ActivityContentProjectContributorAddition
-  | ActivityContentProjectContributorEditing
+  | ActivityContentProjectContributorEdited
   | ActivityContentProjectContributorRemoved
   | ActivityContentProjectCreated
   | ActivityContentProjectDiscussionSubmitted

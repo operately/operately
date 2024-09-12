@@ -68,7 +68,17 @@ defmodule Operately.Operations.ProjectContributorEdited do
     context = Access.get_context!(project_id: project.id)
     group = Access.get_group!(person_id: contributor.person_id)
 
-    Access.get_binding(context_id: context.id, group_id: group.id).access_level
+    binding = if contributor.role in [:champion, :reviewer] do
+      Access.get_binding(context_id: context.id, group_id: group.id, tag: contributor.role)
+    else
+      Access.get_binding(context_id: context.id, group_id: group.id)
+    end
+
+    if binding do
+      binding.access_level
+    else
+      Binding.no_access()
+    end
   end
 
   defp find_permissions(contributor, attrs) do
@@ -111,11 +121,11 @@ defmodule Operately.Operations.ProjectContributorEdited do
 
   defp delete_binding(multi, context, group, tag \\ nil) do
     Multi.run(multi, :deleted_binding, fn _, _ ->
-      case tag do
-        nil -> Access.get_binding!(context_id: context.id, group_id: group.id)
-        _ -> Access.get_binding!(context_id: context.id, group_id: group.id, tag: tag)
+      if tag do
+        Access.get_binding!(context_id: context.id, group_id: group.id, tag: tag) |> Repo.delete()
+      else
+        Access.get_binding!(context_id: context.id, group_id: group.id) |> Repo.delete()
       end
-      |> Repo.delete()
     end)
   end
 
