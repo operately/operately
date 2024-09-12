@@ -111,7 +111,7 @@ defmodule Operately.Activities.Preloader do
   # > is_field_a_not_loaded_ref("project", %Ecto.Association.NotLoaded{}, Operately.Projects.Project)
   #   => true
   # 
-  defp is_field_a_not_loaded_ref(key, value, schema) do
+  defp is_field_a_not_loaded_ref(_key, value, schema) do
     case value do
       %Ecto.Association.NotLoaded{__owner__: owner_schema, __field__: field} ->
         owner_schema.__schema__(:association, field).queryable == schema
@@ -130,7 +130,7 @@ defmodule Operately.Activities.Preloader do
   # > is_field_an_embed(%Operately.Activities.Content.Subcontent{}, "subcontent", %Operately.Activities.Content.Subcontent{})
   #   => true
   #
-  defp is_field_an_embed(object, key, value) when not is_map(value) do
+  defp is_field_an_embed(_object, _key, value) when not is_map(value) do
     false
   end
 
