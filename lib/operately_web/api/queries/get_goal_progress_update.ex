@@ -2,11 +2,8 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdate do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
-  import Operately.Access.Filters, only: [filter_by_view_access: 2]
-
-  alias Operately.Repo
   alias Operately.Goals.Goal
-  alias Operately.Updates.Update
+  alias Operately.Goals.Permissions
 
   inputs do
     field :id, :string
@@ -18,39 +15,33 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdate do
   end
 
   def call(conn, inputs) do
-    {:ok, id} = decode_id(inputs.id)
+    Action.new()
+    |> Action.run(:me, fn -> find_me(conn) end)
+    |> Action.run(:id, fn -> decode_id(inputs.id) end)
+    |> Action.run(:check_in, fn ctx -> load(ctx) end)
+    |> Action.run(:check_permissions, fn ctx -> Permissions.check(ctx.check_in.requester_access_level, :can_view) end)
+    |> Action.run(:serialized, fn ctx -> {:ok, %{update: OperatelyWeb.Api.Serializer.serialize(ctx.check_in, level: :full)}} end)
+    |> respond()
+  end
 
-    case load(me(conn), id) do
-      nil ->
-        {:error, :not_found}
-      update ->
-        {:ok, %{update: OperatelyWeb.Api.Serializer.serialize(update, level: :full)}}
+  defp respond(result) do
+    case result do
+      {:ok, ctx} -> {:ok, ctx.serialized}
+      {:error, :id, _} -> {:error, :bad_request}
+      {:error, :check_in, _} -> {:error, :not_found}
+      {:error, :check_permissions, _} -> {:error, :not_found}
+      _ -> {:error, :not_found}
     end
   end
 
-  defp load(person, id) do
-    from(g in Goal,
-      join: u in Update, on: g.id == u.updatable_id,
-      where: u.id == ^id,
-      preload: :targets,
-      order_by: [desc: u.inserted_at],
-      select: %{update: u, goal: g}
-    )
-    |> filter_by_view_access(person.id)
-    |> Repo.one()
-    |> preload_resources()
-    |> load_goal_permissions(person)
+  defp load(ctx) do
+    Operately.Goals.get_check_in(ctx.me, ctx.id)
+    |> load_goal_permissions(ctx.me)
   end
 
-  defp preload_resources(nil), do: nil
-  defp preload_resources(%{update: update, goal: goal}) do
-    update = Repo.preload(update, [:author, :acknowledging_person, reactions: [:person]])
-    %{update | goal: goal}
-  end
-
-  defp load_goal_permissions(nil, _), do: nil
-  defp load_goal_permissions(update, person) do
-    goal = Goal.preload_permissions(update.goal, person)
-    %{update | goal: goal}
+  defp load_goal_permissions({:error, reason}, _), do: {:error, reason}
+  defp load_goal_permissions({:ok, check_in}, person) do
+    goal = Goal.preload_permissions(check_in.goal, person)
+    {:ok, %{check_in | goal: goal}}
   end
 end
