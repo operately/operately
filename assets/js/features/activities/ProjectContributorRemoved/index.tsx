@@ -29,7 +29,7 @@ const ProjectContributorRemoved: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    const person = People.shortName(content(activity).person!);
+    const person = People.firstName(content(activity).person!);
     const project = projectLink(content(activity).project!);
 
     if (page === "project") {

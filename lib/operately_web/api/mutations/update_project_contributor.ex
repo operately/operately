@@ -4,7 +4,7 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProjectContributor do
 
   alias Operately.Projects.Permissions
   alias Operately.Projects.Contributor
-  alias Operately.Operations.ProjectContributorEditing
+  alias Operately.Operations.ProjectContributorEdited
 
   inputs do
     field :contrib_id, :string
@@ -24,7 +24,7 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProjectContributor do
     |> run(:attrs, fn -> parse_inputs(inputs) end)
     |> run(:contrib, fn ctx -> Contributor.get(ctx.me, id: ctx.attrs[:contrib_id]) end)
     |> run(:check_permissions, fn ctx -> Permissions.check(ctx.contrib.request_info.access_level, :can_edit_contributors) end)
-    |> run(:operation, fn ctx -> ProjectContributorEditing.run(ctx.me, ctx.contrib, ctx.attrs) end)
+    |> run(:operation, fn ctx -> ProjectContributorEdited.run(ctx.me, ctx.contrib, ctx.attrs) end)
     |> run(:serialized, fn ctx -> {:ok, %{contributor: Serializer.serialize(ctx.operation)}} end)
     |> respond()
   end
