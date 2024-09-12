@@ -101,8 +101,18 @@ defmodule Operately.Goals do
   alias Operately.Goals.Update
   alias Operately.Access.Binding
 
+  def list_updates(goal) do
+    from(u in Update,
+      where: u.goal_id == ^goal.id
+    )
+    |> Repo.all()
+  end
+
   def get_check_in(:system, id) do
-    from(u in Update, where: u.id == ^id)
+    from(u in Update,
+      preload: [:author, :acknowledged_by, reactions: [:person], goal: [:targets]],
+      where: u.id == ^id
+    )
     |> Repo.one()
     |> case do
       nil -> {:error, :not_found}
