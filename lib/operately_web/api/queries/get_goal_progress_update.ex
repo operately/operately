@@ -2,8 +2,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdate do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
-  alias Operately.Goals.Goal
-  alias Operately.Goals.Permissions
+  alias Operately.Goals.{Goal, Update, Permissions}
 
   inputs do
     field :id, :string
@@ -35,7 +34,9 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdate do
   end
 
   defp load(ctx) do
-    Operately.Goals.get_check_in(ctx.me, ctx.id)
+    Update.get(ctx.me, id: ctx.id, opts: [
+      preload: [:author, :acknowledged_by, reactions: :person, goal: :targets],
+    ])
     |> load_goal_permissions(ctx.me)
   end
 

@@ -2,8 +2,7 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalProgressUpdate do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
-  alias Operately.Goals
-  alias Operately.Goals.Permissions
+  alias Operately.Goals.{Permissions, Update}
   alias Operately.Operations.GoalCheckInEdit
 
   inputs do
@@ -21,8 +20,8 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalProgressUpdate do
     |> Action.run(:id, fn -> decode_id(inputs.id) end)
     |> Action.run(:attrs, fn -> parse_inputs(inputs) end)
     |> Action.run(:me, fn -> find_me(conn) end)
-    |> Action.run(:update, fn ctx -> Goals.get_check_in(ctx.me, ctx.id) end)
-    |> Action.run(:check_permissions, fn ctx -> Permissions.check(ctx.update.requester_access_level, :can_edit_check_in) end)
+    |> Action.run(:update, fn ctx -> load(ctx) end)
+    |> Action.run(:check_permissions, fn ctx -> Permissions.check(ctx.update.request_info.access_level, :can_edit_check_in) end)
     |> Action.run(:operation, fn ctx -> GoalCheckInEdit.run(ctx.me, ctx.update.goal, ctx.update, ctx.attrs) end)
     |> Action.run(:serialized, fn ctx -> {:ok, %{update: OperatelyWeb.Api.Serializer.serialize(ctx.update, level: :full)}} end)
     |> respond()
@@ -45,5 +44,11 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalProgressUpdate do
       content: Jason.decode!(inputs.content),
       new_target_values: Jason.decode!(inputs.new_target_values),
     }}
+  end
+
+  defp load(ctx) do
+    Update.get(ctx.me, id: ctx.id, opts: [
+      preload: [goal: :targets]
+    ])
   end
 end
