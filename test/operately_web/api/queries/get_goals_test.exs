@@ -4,12 +4,12 @@ defmodule OperatelyWeb.Api.Queries.GetGoalsTest do
   import Operately.GroupsFixtures
   import Operately.PeopleFixtures
   import Operately.GoalsFixtures
-  import Operately.UpdatesFixtures
   import OperatelyWeb.Api.Serializer
 
   alias OperatelyWeb.Paths
+  alias Operately.Support.RichText
   alias Operately.Access.Binding
-  alias Operately.{Repo, Groups}
+  alias Operately.{Repo, Groups, Goals}
 
   describe "security" do
     test "it requires authentication", ctx do
@@ -146,11 +146,11 @@ defmodule OperatelyWeb.Api.Queries.GetGoalsTest do
       goal1 = goal_fixture(ctx.person, company_id: ctx.company.id, space_id: ctx.company.company_space_id)
       goal2 = goal_fixture(ctx.person, company_id: ctx.company.id, space_id: ctx.company.company_space_id)
 
-      update1 = update_fixture(%{type: :goal_check_in, updatable_id: goal1.id, updatable_type: :goal, author_id: ctx.person.id})
-      _update2 = update_fixture(%{type: :goal_check_in, updatable_id: goal1.id, updatable_type: :goal, author_id: ctx.person.id})
+      update1 = create_update(goal1)
+      _update2 = create_update(goal1)
 
-      update3 = update_fixture(%{type: :goal_check_in, updatable_id: goal2.id, updatable_type: :goal, author_id: ctx.person.id})
-      _update4 = update_fixture(%{type: :goal_check_in, updatable_id: goal2.id, updatable_type: :goal, author_id: ctx.person.id})
+      update3 = create_update(goal2)
+      _update4 = create_update(goal2)
 
       update1 = Operately.Repo.preload(update1, [:author, [reactions: :author]])
       update3 = Operately.Repo.preload(update3, [:author, [reactions: :author]])
@@ -180,5 +180,10 @@ defmodule OperatelyWeb.Api.Queries.GetGoalsTest do
       id: ctx.person.id,
       permissions: Binding.edit_access(),
     }])
+  end
+
+  defp create_update(goal) do
+    {:ok, update} = Goals.create_update(%{goal_id: goal.id, author_id: goal.champion_id, message: RichText.rich_text("message")})
+    update
   end
 end

@@ -32,23 +32,6 @@ defmodule Operately.UpdatesTest do
       assert Updates.get_update!(ctx.update.id).id == ctx.update.id
     end
 
-    test "create_update/1 with valid data creates a update", ctx do
-      valid_attrs = %{
-        content: %{
-          "message" => %{},
-          "health" => update_health_fixture(),
-        },
-        type: :goal_check_in,
-        updatable_id: "7488a646-e31f-11e4-aace-600308960662",
-        updatable_type: :goal,
-        author_id: ctx.person.id
-      }
-
-      assert {:ok, %Update{} = update} = Updates.create_update(valid_attrs)
-      assert update.updatable_id == "7488a646-e31f-11e4-aace-600308960662"
-      assert update.updatable_type == :goal
-    end
-
     test "create_update/1 with invalid data returns error changeset" do
       assert {:error, %Ecto.Changeset{}} = Updates.create_update(@invalid_attrs)
     end
@@ -164,8 +147,8 @@ defmodule Operately.UpdatesTest do
     test "update_reaction/2 with valid data updates the reaction" do
       reaction = reaction_fixture()
       update_attrs = %{
-        entity_id: "7488a646-e31f-11e4-aace-600308960668", 
-        entity_type: :comment, 
+        entity_id: "7488a646-e31f-11e4-aace-600308960668",
+        entity_type: :comment,
         reaction_type: :thumbs_down
       }
 

@@ -3,11 +3,10 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsCountTest do
 
   import Operately.ProjectsFixtures
   import Operately.GoalsFixtures
-  import Operately.UpdatesFixtures
 
   alias Operately.Repo
-  alias Operately.Goals.Goal
-  alias Operately.Updates.Update
+  alias Operately.Goals
+  alias Operately.Goals.{Goal, Update}
   alias Operately.Projects.{Project, CheckIn}
 
   describe "security" do
@@ -202,11 +201,11 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsCountTest do
   end
 
   defp create_update(goal) do
-    update_fixture(%{
-      updatable_type: :goal,
-      updatable_id: goal.id,
+    {:ok, update} = Goals.create_update(%{
       author_id: goal.champion_id,
-      type: :goal_check_in,
+      goal_id: goal.id,
+      message: %{},
     })
+    update
   end
 end

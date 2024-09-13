@@ -2,10 +2,6 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsCount do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
-  alias Operately.Repo
-
-  import Ecto.Query, only: [from: 2]
-
   outputs do
     field :count, :integer
   end
@@ -61,10 +57,10 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsCount do
   end
 
   defp count_due_goal_updates(result, person) do
-    count = from(u in Operately.Updates.Update,
-        join: g in Operately.Goals.Goal, on: u.updatable_id == g.id,
-        where: g.reviewer_id == ^person.id,
-        where: u.type == :goal_check_in and is_nil(u.acknowledging_person_id)
+    count = from(u in Operately.Goals.Update,
+        join: g in assoc(u, :goal),
+        where: g.reviewer_id == ^person.id and is_nil(g.deleted_at),
+        where: is_nil(u.acknowledged_by_id)
       )
       |> Repo.aggregate(:count, :id)
 
