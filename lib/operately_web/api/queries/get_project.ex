@@ -45,61 +45,55 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
     end
   end
 
-  def load(person, id, inputs) do
-    include_filters = extract_include_filters(inputs)
-    query = from p in Project, as: :project, where: p.id == ^id
+  def load(requester, id, inputs) do
+    Projects.get(requester, id: id, opts: [
+      preload: calc_preload(inputs),
+      scopes: [Project.with_preloaded_access_levels(id)],
+      after_load: [Project.set_permissions()],
+      with_deleted: true
+    ])
 
-    query
-    |> Project.scope_company(person.company_id)
-    |> Project.scope_visibility(person.id)
-    |> include_requested(include_filters)
-    |> load_contributors_access_level(inputs[:include_contributors_access_levels], id)
-    |> filter_by_view_access(person.id)
-    |> Repo.one(with_deleted: true)
-    |> Project.after_load_hooks()
-    |> include_permissions(person, include_filters)
-    |> load_access_levels(inputs[:include_access_levels])
-    |> load_privacy(inputs[:include_privacy])
+    # query
+    # |> Project.after_load_hooks()
+    # |> include_permissions(person, include_filters)
+    # |> load_access_levels(inputs[:include_access_levels])
+    # |> load_privacy(inputs[:include_privacy])
   end
 
-  def include_requested(query, requested) do
-    Enum.reduce(requested, query, fn include, q ->
+  def calc_preload(inputs) do
+    Enum.reduce(inputs, [], fn include, acc ->
       case include do
-        :include_closed_by -> from p in q, preload: [:closed_by]
-        :include_contributors -> from p in q, preload: [contributors: :person]
-        :include_contributors_access_levels -> q # this is done in a separate function
-        :include_key_resources -> from p in q, preload: [key_resources: :project]
-        :include_last_check_in -> from p in q, preload: [last_check_in: :author]
-        :include_milestones -> from p in q, preload: [milestones: :project]
-        :include_goal -> from p in q, preload: [:goal]
-        :include_space -> from p in q, preload: [:group]
-        :include_champion -> from p in q, preload: [:champion]
-        :include_reviewer -> from p in q, preload: [:reviewer]
-        :include_permissions -> q # this is done after loading
-        :include_access_levels -> q # this is done after loading
-        :include_privacy -> q # this is done after the load
-        _ -> raise ArgumentError, "Unknown include filter: #{inspect(include)}"
+        :include_closed_by -> [:closed_by | acc]
+        :include_contributors -> [[contributors: :person] | acc]
+        :include_key_resources -> [[key_resources: :project] | acc]
+        :include_last_check_in -> [[last_check_in: :author] | acc]
+        :include_milestones -> [[milestones: :project] | acc]
+        :include_goal -> [:goal | acc]
+        :include_space -> [:group | acc]
+        :include_champion -> [:champion | acc]
+        :include_reviewer -> [:reviewer | acc]
+        _ -> acc
       end
     end)
   end
 
-  def include_permissions(nil, _, _), do: nil
-  def include_permissions(project, person, include_filters) do
-    if Enum.member?(include_filters, :include_permissions) do
-      Project.set_permissions(project, person)
-    else
-      project
-    end
-  end
+  # def include_permissions(nil, _, _), do: nil
+  # def include_permissions(project, person, include_filters) do
+  #   if Enum.member?(include_filters, :include_permissions) do
+  #     Project.set_permissions(project, person)
+  #   else
+  #     project
+  #   end
+  # end
 
-  defp load_contributors_access_level(query, true, project_id), do: Project.preload_contributors_access_level(query, project_id)
-  defp load_contributors_access_level(query, _, _), do: query
+  # defp load_contributors_access_level(query, true, project_id), do: Project.preload_contributors_access_level(query, project_id)
+  # defp load_contributors_access_level(query, _, _), do: query
 
-  defp load_access_levels(nil, _), do: nil
-  defp load_access_levels(project, true), do: Project.preload_access_levels(project)
-  defp load_access_levels(project, _), do: project
+  # defp load_access_levels(nil, _), do: nil
+  # defp load_access_levels(project, true), do: Project.preload_access_levels(project)
+  # defp load_access_levels(project, _), do: project
 
-  defp load_privacy(nil, _), do: nil
-  defp load_privacy(project, true), do: Project.preload_privacy(project)
-  defp load_privacy(project, _), do: project
+  # defp load_privacy(nil, _), do: nil
+  # defp load_privacy(project, true), do: Project.preload_privacy(project)
+  # defp load_privacy(project, _), do: project
 end
