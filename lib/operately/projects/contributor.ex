@@ -11,6 +11,8 @@ defmodule Operately.Projects.Contributor do
     field :responsibility, :string
     field :role, Ecto.Enum, values: [:champion, :reviewer, :contributor], default: :contributor
 
+    field :access_level, :integer, virtual: true
+
     timestamps()
     request_info()
   end
