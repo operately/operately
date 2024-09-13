@@ -48,8 +48,8 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
   def load(requester, id, inputs) do
     Projects.get(requester, id: id, opts: [
       preload: calc_preload(inputs),
-      scopes: [Project.with_preloaded_access_levels(id)],
-      after_load: [Project.set_permissions()],
+      scopes: calc_scopes(inputs),
+      after_load: [&Project.set_permissions/1],
       with_deleted: true
     ])
 
@@ -58,6 +58,14 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
     # |> include_permissions(person, include_filters)
     # |> load_access_levels(inputs[:include_access_levels])
     # |> load_privacy(inputs[:include_privacy])
+  end
+
+  def calc_scopes(inputs) do
+    if inputs[:include_contributors_access_levels] do
+      [Project.with_contributors_access_levels()]
+    else
+      []
+    end
   end
 
   def calc_preload(inputs) do
@@ -85,9 +93,6 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
   #     project
   #   end
   # end
-
-  # defp load_contributors_access_level(query, true, project_id), do: Project.preload_contributors_access_level(query, project_id)
-  # defp load_contributors_access_level(query, _, _), do: query
 
   # defp load_access_levels(nil, _), do: nil
   # defp load_access_levels(project, true), do: Project.preload_access_levels(project)
