@@ -79,6 +79,13 @@ defmodule Operately.Repo.Getter do
   To preload nested associations, use a list of associations:
 
     MySchema.get(person, id: "123", opts: [preload: [projects: [champion: :person]]])
+
+  ## Getting solf-deleted resources
+
+  If you want to get soft-deleted resources, you can pass the `:with_deleted`
+  option to the `get/2` function. For example:
+
+    MySchema.get(person, id: "123", opts: [with_deleted: true])
   """
 
   defmacro __using__(_) do
@@ -102,7 +109,7 @@ defmodule Operately.Repo.Getter do
   def get(module, :system, args) do
     query = build_query(module, args)
     
-    case Operately.Repo.one(query) do
+    case load(query, args) do
       nil -> 
         {:error, :not_found}
       resource -> 
@@ -125,11 +132,19 @@ defmodule Operately.Repo.Getter do
       group_by: r.id,
       select: {r, max(b.access_level)})
 
-    case Operately.Repo.one(query) do
+    case load(query, args) do
       nil -> 
         {:error, :not_found}
       {resource, access_level} -> 
         process_result(resource, access_level, requester)
+    end
+  end
+
+  defp load(query, args) do
+    if args[:with_deleted] do
+      Operately.Repo.one(query, :with_deleted)
+    else
+      Operately.Repo.one(query)
     end
   end
 
