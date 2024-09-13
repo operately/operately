@@ -2,7 +2,8 @@ defmodule OperatelyWeb.Api.Mutations.AcknowledgeGoalProgressUpdate do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
-  import Operately.Access.Filters, only: [forbidden_or_not_found: 3]
+  alias Operately.Goals.{Update, Permissions}
+  alias Operately.Operations.GoalUpdateAcknowledging
 
   inputs do
     field :id, :string
@@ -13,31 +14,24 @@ defmodule OperatelyWeb.Api.Mutations.AcknowledgeGoalProgressUpdate do
   end
 
   def call(conn, inputs) do
-    person = me(conn)
-    {:ok, id} = decode_id(inputs.id)
+    Action.new()
+    |> run(:id, fn -> decode_id(inputs.id) end)
+    |> run(:me, fn -> find_me(conn) end)
+    |> run(:update, fn ctx -> Update.get(ctx.me, id: ctx.id) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.update.request_info.access_level, :can_acknowledge_check_in) end)
+    |> run(:operation, fn ctx -> GoalUpdateAcknowledging.run(ctx.me, ctx.update) end)
+    |> run(:serialized, fn ctx -> {:ok, %{update: Serializer.serialize(ctx.operation, level: :full)}} end)
+    |> respond()
+  end
 
-    case load_update(person.id, id) do
-      nil ->
-        query(id)
-        |> forbidden_or_not_found(person.id, named_binding: :goal)
-
-      update ->
-        {:ok, update} = Operately.Updates.acknowledge_update(person, update)
-        {:ok, %{update: OperatelyWeb.Api.Serializer.serialize(update)}}
+  defp respond(result) do
+    case result do
+      {:ok, ctx} -> {:ok, ctx.serialized}
+      {:error, :id, _} -> {:error, :bad_request}
+      {:error, :update, _} -> {:error, :not_found}
+      {:error, :check_permissions, _} -> {:error, :forbidden}
+      {:error, :operation, _} -> {:error, :internal_server_error}
+      _ -> {:error, :internal_server_error}
     end
-  end
-
-  defp load_update(person_id, update_id) do
-    q = query(update_id)
-
-    from([goal: goal] in q, where: goal.reviewer_id == ^person_id)
-    |> Repo.one()
-  end
-
-  defp query(update_id) do
-    from(u in Operately.Updates.Update,
-      join: g in Operately.Goals.Goal, on: u.updatable_id == g.id, as: :goal,
-      where: u.id == ^update_id
-    )
   end
 end

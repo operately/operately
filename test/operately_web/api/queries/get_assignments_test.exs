@@ -4,13 +4,12 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
   import Operately.PeopleFixtures
   import Operately.ProjectsFixtures
   import Operately.GoalsFixtures
-  import Operately.UpdatesFixtures
 
   alias OperatelyWeb.Paths
   alias Operately.{Repo, Goals, Projects}
-  alias Operately.Goals.Goal
-  alias Operately.Updates.Update
+  alias Operately.Goals.{Goal, Update}
   alias Operately.Projects.{Project, CheckIn}
+  alias Operately.Support.RichText
 
   describe "security" do
     test "it requires authentication", ctx do
@@ -156,13 +155,13 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
         champion_id: another_person.id,
       })
 
-      update1 = create_update(goal)
-      update2 = create_update(goal)
+      update1 = create_update(another_person, goal)
+      update2 = create_update(another_person, goal)
 
       # Updates for another person
       another_goal = create_goal(another_person, ctx.company, upcoming_date(), %{reviewer_id: another_person.id})
-      create_update(another_goal)
-      create_update(another_goal)
+      create_update(another_person, another_goal)
+      create_update(another_person, another_goal)
 
       assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments, %{})
 
@@ -216,7 +215,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
         reviewer_id: ctx.person.id,
         champion_id: champion1.id,
       })
-      create_update(goal)
+      create_update(champion1, goal)
 
       # Before updating champion
       assert {200, %{assignments: [update]}} = query(ctx.conn, :get_assignments, %{})
@@ -287,11 +286,11 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
 
     test "goal updates", ctx do
       g1 = create_goal(ctx.person, ctx.company, upcoming_date())
-      create_update(g1)
-      create_update(g1)
+      create_update(ctx.person, g1)
+      create_update(ctx.person, g1)
       g2 = create_goal(ctx.person, ctx.company, upcoming_date())
-      create_update(g2)
-      create_update(g2)
+      create_update(ctx.person, g2)
+      create_update(ctx.person, g2)
 
       assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments, %{})
       assert length(assignments) == 4
@@ -377,13 +376,15 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
     })
   end
 
-  defp create_update(goal) do
-    update_fixture(%{
-      updatable_type: :goal,
-      updatable_id: goal.id,
-      author_id: goal.champion_id,
-      type: :goal_check_in,
-    })
-    |> Repo.reload()
+  defp create_update(creator, goal) do
+    # update_fixture(%{
+    #   updatable_type: :goal,
+    #   updatable_id: goal.id,
+    #   author_id: goal.champion_id,
+    #   type: :goal_check_in,
+    # })
+    # |> Repo.reload()
+    {:ok, update} = Operately.Operations.GoalCheckIn.run(creator, goal, RichText.rich_text("content"), [])
+    update
   end
 end

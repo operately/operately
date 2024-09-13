@@ -13,6 +13,7 @@ defmodule Operately.Activities.Preloader do
     |> preload(Operately.Updates.Update)
     |> preload(Operately.People.Person)
     |> preload(Operately.Goals.Goal)
+    |> preload(Operately.Goals.Update)
     |> preload(Operately.Groups.Group)
     |> preload(Operately.Projects.Project)
     |> preload(Operately.Projects.CheckIn)

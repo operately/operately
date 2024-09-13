@@ -147,7 +147,7 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
     test "company members have no access", ctx do
       update = create_goal_update(ctx, company_access: Binding.no_access())
       Enum.each(1..3, fn _ ->
-        add_comment(ctx, update, "update")
+        add_comment(ctx, update, "goal_update")
       end)
 
       assert {200, res} = query(ctx.conn, :get_comments, %{
@@ -160,7 +160,7 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
     test "company members have access", ctx do
       update = create_goal_update(ctx, company_access: Binding.view_access())
       comments = Enum.map(1..3, fn _ ->
-        add_comment(ctx, update, "update")
+        add_comment(ctx, update, "goal_update")
       end)
 
       assert {200, res} = query(ctx.conn, :get_comments, %{
@@ -174,7 +174,7 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
       add_person_to_space(ctx)
       update = create_goal_update(ctx, space_access: Binding.no_access())
       Enum.each(1..3, fn _ ->
-        add_comment(ctx, update, "update")
+        add_comment(ctx, update, "goal_update")
       end)
 
       assert {200, res} = query(ctx.conn, :get_comments, %{
@@ -188,7 +188,7 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
       add_person_to_space(ctx)
       update = create_goal_update(ctx, space_access: Binding.view_access())
       comments = Enum.map(1..3, fn _ ->
-        add_comment(ctx, update, "update")
+        add_comment(ctx, update, "goal_update")
       end)
 
       assert {200, res} = query(ctx.conn, :get_comments, %{
@@ -202,7 +202,7 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
       champion = person_fixture_with_account(%{company_id: ctx.company.id})
       update = create_goal_update(ctx, champion_id: champion.id)
       comments = Enum.map(1..3, fn _ ->
-        add_comment(ctx, update, "update")
+        add_comment(ctx, update, "goal_update")
       end)
 
       account = Repo.preload(champion, :account).account
@@ -227,7 +227,7 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
       reviewer = person_fixture_with_account(%{company_id: ctx.company.id})
       update = create_goal_update(ctx, reviewer_id: reviewer.id)
       comments = Enum.map(1..3, fn _ ->
-        add_comment(ctx, update, "update")
+        add_comment(ctx, update, "goal_update")
       end)
 
       account = Repo.preload(reviewer, :account).account
@@ -483,7 +483,8 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
       company_access_level: Keyword.get(opts, :company_access, Binding.no_access()),
       space_access_level: Keyword.get(opts, :space_access, Binding.no_access()),
     })
-    update_fixture(%{type: :goal_check_in, updatable_id: goal.id, updatable_type: :goal, author_id: ctx.creator.id})
+    {:ok, update} = Operately.Operations.GoalCheckIn.run(ctx.creator, goal, RichText.rich_text("content"), [])
+    update
   end
 
   defp create_discussion(ctx, attrs) do
