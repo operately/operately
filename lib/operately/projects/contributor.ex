@@ -48,10 +48,10 @@ defmodule Operately.Projects.Contributor do
       select: {group.person_id, context.project_id, max(binding.access_level)}
     )
 
-    pairs = Repo.all(query)
+    values = Repo.all(query)
 
     Enum.map(contributors, fn c ->
-      level = Enum.find(pairs, fn {person_id, project_id, _} -> c.person_id == person_id and c.project_id == project_id end)
+      {_, _, level} = Enum.find(values, fn {person_id, project_id, _} -> c.person_id == person_id and c.project_id == project_id end)
       Map.put(c, :access_level, level)
     end)
   end
