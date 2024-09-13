@@ -4,11 +4,11 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdatesTest do
   import Operately.GroupsFixtures
   import Operately.PeopleFixtures
   import Operately.GoalsFixtures
-  import Operately.UpdatesFixtures
 
   alias Operately.Repo
   alias OperatelyWeb.Paths
   alias Operately.Access.Binding
+  alias Operately.Support.RichText
 
   describe "security" do
     test "it requires authentication", ctx do
@@ -116,7 +116,8 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdatesTest do
       space_access_level: space_access,
     })
     updates = Enum.map(1..3, fn _ ->
-      update_fixture(%{type: :goal_check_in, updatable_id: goal.id, updatable_type: :goal, author_id: ctx.creator.id})
+      {:ok, update} = Operately.Operations.GoalCheckIn.run(ctx.creator, goal, RichText.rich_text("content"), [])
+      update
     end)
 
     goal_id = Paths.goal_id(goal)

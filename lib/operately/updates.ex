@@ -296,38 +296,6 @@ defmodule Operately.Updates do
     })
   end
 
-  def acknowledge_update(author, update) do
-    changeset = change_update(update, %{
-      acknowledged: true,
-      acknowledged_at: DateTime.utc_now,
-      acknowledging_person_id: author.id
-    })
-
-    action = case update.type do
-      :goal_check_in -> :goal_check_in_acknowledgement
-      _ -> raise "Unknown update type"
-    end
-
-    Multi.new()
-    |> Multi.update(:update, changeset)
-    |> Activities.insert_sync(author.id, action, fn _changes ->
-      %{
-        company_id: author.company_id,
-        goal_id: update.updatable_id,
-        update_id: update.id
-      }
-    end)
-    |> Repo.transaction()
-    |> Repo.extract_result(:update)
-    |> case do
-      {:ok, update} ->
-        OperatelyWeb.ApiSocket.broadcast!("api:assignments_count:#{author.id}")
-        {:ok, update}
-
-      error -> error
-    end
-  end
-
   def update_update(%Update{} = update, attrs) do
     update
     |> Update.changeset(attrs)
@@ -384,8 +352,7 @@ defmodule Operately.Updates do
         )
       :goal_update ->
         from(c in Comment, as: :comment,
-          join: u in Update, on: u.id == c.entity_id,
-          join: g in Operately.Goals.Goal, on: u.updatable_id == g.id, as: :resource,
+          join: u in Operately.Goals.Update, on: u.id == c.entity_id, as: :resource,
           where: c.id == ^id
         )
       :discussion ->

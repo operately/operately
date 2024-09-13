@@ -3,7 +3,7 @@
 <%= spacer() %>
 
 <%= row do %>
-  <%= rich_text(@update.content["message"]) %>
+  <%= rich_text(@update.message) %>
 <% end %>
 
 <%= spacer() %>

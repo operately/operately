@@ -1,13 +1,14 @@
 defmodule OperatelyEmail.Emails.GoalCheckInCommentedEmail do
   import OperatelyEmail.Mailers.ActivityMailer
   alias Operately.{Repo, Goals, Updates}
+  alias Operately.Goals.Update
   alias OperatelyWeb.Paths
 
   def send(person, activity) do
     author = Repo.preload(activity, :author).author
     company = Repo.preload(author, :company).company
     goal = Goals.get_goal!(activity.content["goal_id"])
-    update = Updates.get_update!(activity.content["goal_check_in_id"])
+    {:ok, update} = Update.get(:system, id: activity.content["goal_check_in_id"])
     comment = Updates.get_comment!(activity.content["comment_id"])
     action = "commented on the progress update"
 

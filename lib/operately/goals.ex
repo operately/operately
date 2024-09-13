@@ -97,4 +97,20 @@ defmodule Operately.Goals do
         end
     end
   end
+
+
+  alias Operately.Goals.Update
+
+  def list_updates(goal) do
+    from(u in Update,
+      where: u.goal_id == ^goal.id
+    )
+    |> Repo.all()
+  end
+
+  def create_update(attrs \\ %{}) do
+    %Update{}
+    |> Update.changeset(attrs)
+    |> Repo.insert()
+  end
 end
