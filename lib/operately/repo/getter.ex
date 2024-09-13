@@ -86,6 +86,53 @@ defmodule Operately.Repo.Getter do
   option to the `get/2` function. For example:
 
     MySchema.get(person, id: "123", opts: [with_deleted: true])
+
+  # After Load Hooks
+
+  You can pass a list of functions to the `get/2` function which will be called
+  after the resource is loaded. This is useful for performing additional operations
+  on the resource after it is loaded. For example:
+
+    MySchema.get(person, id: "123", opts: [
+      after_load: [
+        &fill_permission_field/1,
+        &parse_rich_text_fields/1
+      ]
+    ])
+
+    def fill_permission_field(resource) do
+      resource = Map.put(resource, :permissions, get_permissions(resource))
+      resource
+    end
+
+    def parse_rich_text_fields(resource) do
+      resource = Map.put(resource, :description, parse_rich_text(resource.description))
+      resource
+    end
+
+  The functions in the `after_load` list should accept a single argument, the
+  resource, and return the modified resource. The after load function is called
+  only if the resource is found and the requester has access to the resource.
+
+  If you need some context to be passed to the after load function, you can use
+  the following pattern to create a closure with the context:
+
+    MySchema.get(person, id: "123", opts: [
+      after_load: [
+        fill_permission_field(person)
+      ]
+    ])
+
+    def fill_permission_field(person) do
+      fn resource ->
+        resource = Map.put(resource, :permissions, get_permissions(resource, person))
+        resource
+      end
+    end
+
+  In the above example, the `fill_permission_field` function returns a function
+  that accepts a resource and returns the modified resource. The returned function
+  has access to the `person` variable.
   """
 
   defmacro __using__(_) do
@@ -108,18 +155,15 @@ defmodule Operately.Repo.Getter do
 
   def get(module, :system, args) do
     query = build_query(module, args)
-    
+
     case load(query, args) do
-      nil -> 
-        {:error, :not_found}
-      resource -> 
-        process_result(resource, Binding.full_access(), :system)
+      {:ok, resource} -> process_resource(resource, :system, Binding.full_access(), args)
+      {:error, :not_found} -> {:error, :not_found}
     end
   end
 
   def get(module, requester = %Person{}, args) do
     query = build_query(module, args)
-
     query = from([resource: r] in query,
       join: c in assoc(r, :access_context),
       join: b in assoc(c, :bindings), as: :binding,
@@ -133,19 +177,13 @@ defmodule Operately.Repo.Getter do
       select: {r, max(b.access_level)})
 
     case load(query, args) do
-      nil -> 
-        {:error, :not_found}
-      {resource, access_level} -> 
-        process_result(resource, access_level, requester)
+      {:ok, {resource, access_level}} -> process_resource(resource, requester, access_level, args)
+      {:error, :not_found} -> {:error, :not_found}
     end
   end
 
   defp load(query, args) do
-    if args[:with_deleted] do
-      Operately.Repo.one(query, :with_deleted)
-    else
-      Operately.Repo.one(query)
-    end
+    Operately.Repo.one(query, with_deleted: args[:with_deleted] || false) |> to_tuple()
   end
 
   defp build_query(module, args) do
@@ -170,8 +208,19 @@ defmodule Operately.Repo.Getter do
     {field_matchers, preload}
   end
 
-  defp process_result(resource, access_level, requester) do
+  defp process_resource(resource, access_level, requester, args) do
     resource = RequestInfo.populate_request_info(resource, requester, access_level)
+    resource = run_after_load_hooks(resource, args[:after_load] || [])
+
     {:ok, resource}
   end
+
+  defp run_after_load_hooks(resource, hooks) do
+    Enum.reduce(hooks, resource, fn hook, resource ->
+      hook.(resource)
+    end)
+  end
+
+  defp to_tuple(nil), do: {:error, :not_found}
+  defp to_tuple(resource), do: {:ok, resource}
 end
