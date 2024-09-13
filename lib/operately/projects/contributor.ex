@@ -36,4 +36,24 @@ defmodule Operately.Projects.Contributor do
     |> validate_required([:project_id, :person_id])
   end
 
+  def load_project_access_levels(contributors) do
+    people_ids = Enum.map(contributors, fn c -> c.person_id end)
+    project_ids = Enum.map(contributors, fn c -> c.project_id end)
+
+    query = from(group in Operately.Access.Group,
+      join: binding in assoc(group, :bindings),
+      join: context in assoc(binding, :context),
+      where: group.person_id in ^people_ids and context.project_id in ^project_ids,
+      group_by: [group.person_id, context.project_id],
+      select: {group.person_id, context.project_id, max(binding.access_level)}
+    )
+
+    pairs = Repo.all(query)
+
+    Enum.map(contributors, fn c ->
+      level = Enum.find(pairs, fn {person_id, project_id, _} -> c.person_id == person_id and c.project_id == project_id end)
+      Map.put(c, :access_level, level)
+    end)
+  end
+
 end
