@@ -160,7 +160,7 @@ defmodule Operately.Projects.Project do
     end
   end
 
-  def load_contributor_access_levels_if_requested(project) do
+  def load_contributor_access_levels(project) do
     contribs = project.contributors
 
     ids = Enum.map(contribs, fn c -> c.person_id end)

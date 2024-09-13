@@ -28,8 +28,9 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
   end
 
   def call(conn, inputs) do
-    with {:ok, id} <- decode_id(inputs[:id]),
-      {:ok, project} <- load(me(conn), id, inputs) do
+    with :ok <- check_inputs(inputs),
+         {:ok, id} <- decode_id(inputs[:id]),
+         {:ok, project} <- load(me(conn), id, inputs) do
       {:ok, %{project: Serializer.serialize(project, level: :full)}}
     end
   end
@@ -37,7 +38,7 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
   def load(requester, id, inputs) do
     Project.get(requester, id: id, opts: [
       with_deleted: true,
-      preload: calc_preload(inputs),
+      preload: preload(inputs),
       after_load: [
         set_permissions_if_requested(inputs),
         load_contributors_access_levels_if_requested(inputs),
@@ -46,21 +47,17 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
     ])
   end
 
-  def calc_preload(inputs) do
-    Enum.reduce(inputs, [], fn include, acc ->
-      case include do
-        :include_closed_by -> [:closed_by | acc]
-        :include_contributors -> [[contributors: [:person, :binding]] | acc]
-        :include_key_resources -> [[key_resources: :project] | acc]
-        :include_last_check_in -> [[last_check_in: :author] | acc]
-        :include_milestones -> [[milestones: :project] | acc]
-        :include_goal -> [:goal | acc]
-        :include_space -> [:group | acc]
-        :include_champion -> [:champion | acc]
-        :include_reviewer -> [:reviewer | acc]
-        _ -> acc
-      end
-    end)
+  def preload(inputs) do
+    OperatelyWeb.Api.Helpers.Inputs.parse_includes(inputs, [
+      include_closed_by: [:closed_by],
+      include_contributors: [contributors: [:person]],
+      include_key_resources: [key_resources: :project],
+      include_milestones: [:milestones],
+      include_goal: [:goal],
+      include_space: [:group],
+      include_champion: [:champion],
+      include_reviewer: [:reviewer],
+    ])
   end
 
   def set_permissions_if_requested(inputs) do
@@ -88,4 +85,21 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
   end
 
   def do_nothing(), do: fn project -> project end
+
+  defp check_inputs(inputs) do
+    cond do
+      inputs[:id] == nil -> 
+        {:error, :bad_request, "id is required"}
+
+      inputs[:include_contributors_access_levels] ->
+        if inputs[:include_contributors] do
+          :ok
+        else
+          {:error, :bad_request, "include_contributors_access_levels requires include_contributors"}
+        end
+
+      true -> 
+        :ok
+    end
+  end
 end
