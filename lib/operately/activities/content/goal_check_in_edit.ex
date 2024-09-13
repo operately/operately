@@ -4,7 +4,7 @@ defmodule Operately.Activities.Content.GoalCheckInEdit do
   embedded_schema do
     belongs_to :company, Operately.Companies.Company
     belongs_to :goal, Operately.Goals.Goal
-    belongs_to :check_in, Operately.Updates.Update
+    belongs_to :check_in, Operately.Goals.Update
   end
 
   def changeset(attrs) do

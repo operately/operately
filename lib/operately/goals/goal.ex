@@ -9,6 +9,8 @@ defmodule Operately.Goals.Goal do
     belongs_to :champion, Operately.People.Person, foreign_key: :champion_id
     belongs_to :reviewer, Operately.People.Person, foreign_key: :reviewer_id
     belongs_to :creator, Operately.People.Person, foreign_key: :creator_id
+
+    has_many :updates, Operately.Goals.Update
     has_many :targets, Operately.Goals.Target
     has_many :projects, Operately.Projects.Project, foreign_key: :goal_id
 
@@ -89,28 +91,26 @@ defmodule Operately.Goals.Goal do
   #
 
   def preload_last_check_in(goals) when is_list(goals) do
-    alias Operately.Updates.Update
+    alias Operately.Goals.Update
 
-    latest_updates = from u in Update,
-      group_by: [u.updatable_id, u.updatable_type],
-      where: u.type == :goal_check_in,
+    latest_updates = from(u in Update,
+      group_by: u.goal_id,
       select: %{
-        updatable_type: u.updatable_type,
-        updatable_id: u.updatable_id,
+        goal_id: u.goal_id,
         max_inserted_at: max(u.inserted_at)
       }
+    )
 
-    query = from u in Update,
+    query = from(u in Update,
       join: c in subquery(latest_updates),
-      on: u.updatable_id == c.updatable_id
-        and u.updatable_type == c.updatable_type
-        and u.inserted_at == c.max_inserted_at,
+      on: u.goal_id == c.goal_id and u.inserted_at == c.max_inserted_at,
       preload: [:author, [reactions: :person]]
+    )
 
     updates = Operately.Repo.all(query)
 
     Enum.map(goals, fn goal ->
-      last_check_in = Enum.find(updates, fn u -> u.updatable_id == goal.id end)
+      last_check_in = Enum.find(updates, fn u -> u.goal_id == goal.id end)
       Map.put(goal, :last_check_in, last_check_in)
     end)
   end

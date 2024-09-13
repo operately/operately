@@ -346,7 +346,8 @@ defmodule OperatelyWeb.Api.Mutations.EditCommentTest do
   end
 
   defp create_goal_update(ctx, goal) do
-    update_fixture(%{type: :goal_check_in, updatable_id: goal.id, updatable_type: :goal, author_id: ctx.creator.id})
+    {:ok, update} = Operately.Operations.GoalCheckIn.run(ctx.creator, goal, RichText.rich_text("content"), [])
+    update
   end
 
   defp create_discussion(ctx, space) do
