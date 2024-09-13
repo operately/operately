@@ -110,4 +110,18 @@ defmodule OperatelyWeb.Api.Helpers do
   defp decode_short_id(id) do
     id_without_comments(id) |> Operately.ShortUuid.decode()
   end
+
+  defmodule Inputs do
+    def parse_includes(inputs, includes) do
+      Enum.reduce(inputs, [], fn {key, value}, acc ->
+        rule = Keyword.get(includes, key)
+
+        if rule && value do
+          [rule | acc]
+        else
+          acc
+        end
+      end)
+    end
+  end
 end
