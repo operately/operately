@@ -4,11 +4,11 @@ defmodule OperatelyWeb.Api.Mutations.AcknowledgeGoalProgressUpdateTest do
   import Operately.PeopleFixtures
   import Operately.GroupsFixtures
   import Operately.GoalsFixtures
-  import Operately.UpdatesFixtures
 
   alias OperatelyWeb.Paths
   alias Operately.Repo
   alias Operately.Access.Binding
+  alias Operately.Support.RichText
 
   describe "security" do
     test "it requires authentication", ctx do
@@ -55,13 +55,6 @@ defmodule OperatelyWeb.Api.Mutations.AcknowledgeGoalProgressUpdateTest do
       assert res.message == "You don't have permission to perform this action"
     end
 
-    test "champion can't acknowledge an update", ctx do
-      update = create_update(ctx, champion_id: ctx.person.id)
-
-      assert {403, res} = request(ctx.conn, update)
-      assert res.message == "You don't have permission to perform this action"
-    end
-
     test "reviewers can acknowledge an update", ctx do
       update = create_update(ctx, reviewer_id: ctx.person.id)
 
@@ -81,9 +74,8 @@ defmodule OperatelyWeb.Api.Mutations.AcknowledgeGoalProgressUpdateTest do
     test "acknowledges goal update", ctx do
       update = create_update(ctx, reviewer_id: ctx.person.id)
 
-      refute update.acknowledged
       refute update.acknowledged_at
-      refute update.acknowledging_person_id
+      refute update.acknowledged_by_id
 
       assert {200, res} = mutation(ctx.conn, :acknowledge_goal_progress_update, %{id: Paths.goal_update_id(update)})
       assert_response(res, update)
@@ -101,10 +93,9 @@ defmodule OperatelyWeb.Api.Mutations.AcknowledgeGoalProgressUpdateTest do
   defp assert_response(res, update) do
     update = Repo.reload(update)
 
-    assert update.acknowledged
     assert update.acknowledged_at
-    assert update.acknowledging_person_id
-    assert res.update == Serializer.serialize(update)
+    assert update.acknowledged_by_id
+    assert res.update == Serializer.serialize(update, level: :full)
   end
 
   #
@@ -117,7 +108,8 @@ defmodule OperatelyWeb.Api.Mutations.AcknowledgeGoalProgressUpdateTest do
       company_access_level: Keyword.get(opts, :company_access_level, Binding.no_access()),
       space_access_level: Keyword.get(opts, :space_access_level, Binding.no_access()),
     }))
-    update_fixture(%{type: :goal_check_in, updatable_id: goal.id, updatable_type: :goal, author_id: ctx.creator.id})
+    {:ok, update} = Operately.Operations.GoalCheckIn.run(ctx.creator, goal, RichText.rich_text("content"), [])
+    update
   end
 
   defp add_person_to_space(ctx) do

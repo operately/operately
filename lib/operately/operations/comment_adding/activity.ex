@@ -16,7 +16,7 @@ defmodule Operately.Operations.CommentAdding.Activity do
     Activities.insert_sync(multi, creator.id, action, fn changes ->
       %{
         company_id: creator.company_id,
-        goal_id: entity.updatable_id,
+        goal_id: entity.goal_id,
         goal_check_in_id: entity.id,
         comment_id: changes.comment.id
       }
