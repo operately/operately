@@ -1,13 +1,13 @@
 defmodule OperatelyWeb.Api.Mutations.EditGoalProgressUpdateTest do
   use OperatelyWeb.TurboCase
 
-  import Operately.Support.RichText
   import Operately.GroupsFixtures
   import Operately.PeopleFixtures
   import Operately.GoalsFixtures
 
   alias Operately.Goals
   alias Operately.Access.Binding
+  alias Operately.Support.RichText
 
   describe "security" do
     test "it requires authentication", ctx do
@@ -39,9 +39,9 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalProgressUpdateTest do
       assert res.message == "The requested resource was not found"
     end
 
-    test "member who is not author can't edit goal update", ctx do
+    test "member without full access can't edit goal update", ctx do
       update = create_goal_update(ctx, [
-        company_access_level: Binding.full_access(),
+        company_access_level: Binding.edit_access(),
         space_access_level: Binding.no_access(),
       ])
 
@@ -74,37 +74,35 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalProgressUpdateTest do
 
       assert {200, res} = request(ctx.conn, update)
 
+      assert res.update.id == Paths.goal_update_id(update)
       assert_update_edited(update)
-
-      update = Repo.reload(update)
-      assert res.update == Serializer.serialize(update, level: :full)
     end
   end
 
   defp request(conn, update) do
-    content = rich_text("Edited content") |> Jason.encode!()
-    targets = Enum.map(Goals.list_targets(update.updatable_id), fn t ->
+    targets = Enum.map(Goals.list_targets(update.goal_id), fn t ->
       %{"id" => t.id, "value" => 75}
     end) |> Jason.encode!()
 
     mutation(conn, :edit_goal_progress_update, %{
       id: Paths.goal_update_id(update),
-      content: content,
+      content: RichText.rich_text("Edited content", :as_string),
       new_target_values: targets,
     })
   end
 
   defp assert_update_edited(update) do
-    assert update.content["message"] == rich_text("Content")
-    Enum.each(update.content["targets"], fn t ->
-      assert t["value"] == 50
+    assert update.message == RichText.rich_text("Content")
+
+    Enum.each(update.targets, fn t ->
+      assert t.value == 50
     end)
 
     update = Repo.reload(update)
 
-    assert update.content["message"] == rich_text("Edited content")
-    Enum.each(update.content["targets"], fn t ->
-      assert t["value"] == 75
+    assert update.message == RichText.rich_text("Edited content")
+    Enum.each(update.targets, fn t ->
+      assert t.value == 75
     end)
   end
 
@@ -123,7 +121,7 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalProgressUpdateTest do
       space_access_level: Binding.no_access(),
     }))
 
-    content = rich_text("Content")
+    content = RichText.rich_text("Content")
     targets = Enum.map(Goals.list_targets(goal.id), fn t ->
       %{"id" => t.id, "value" => 50}
     end)

@@ -5,7 +5,7 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdateTest do
   import Operately.GroupsFixtures
   import Operately.PeopleFixtures
 
-  alias Operately.{Goals, Updates}
+  alias Operately.Goals
   alias Operately.Support.RichText
   alias Operately.Access.Binding
 
@@ -50,7 +50,7 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdateTest do
         assert code == @test.expected
 
         case @test.expected do
-          200 -> assert length(Updates.list_updates(goal.id, :goal)) == 1
+          200 -> assert length(Goals.list_updates(goal)) == 1
           403 -> assert res.message == "You don't have permission to perform this action"
           404 -> assert res.message == "The requested resource was not found"
         end
@@ -67,7 +67,7 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdateTest do
     end
 
     test "posts goal progress update", ctx do
-      assert Updates.list_updates(ctx.goal.id, :goal) == []
+      assert Goals.list_updates(ctx.goal) == []
 
       assert {200, res} = mutation(ctx.conn, :post_goal_progress_update, %{
         goal_id: Paths.goal_id(ctx.goal),
@@ -75,7 +75,7 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdateTest do
         new_target_values: new_target_values(ctx.goal),
       })
 
-      updates = Updates.list_updates(ctx.goal.id, :goal)
+      updates = Goals.list_updates(ctx.goal)
 
       assert length(updates) == 1
       assert res.update == Serializer.serialize(hd(updates), level: :full)

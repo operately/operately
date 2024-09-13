@@ -21,18 +21,11 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdates do
   end
 
   defp load(person, goal_id) do
-    goal_query = from(g in Operately.Goals.Goal,
-        where: g.id == ^goal_id,
-        select: g.id
-      )
-      |> filter_by_view_access(person.id)
-
-    from(u in Operately.Updates.Update,
-      where: u.updatable_id in subquery(goal_query),
-      where: u.updatable_type == :goal,
-      where: u.type == :goal_check_in,
+    from(u in Operately.Goals.Update,
+      where: u.goal_id == ^goal_id,
       order_by: [desc: u.inserted_at]
     )
+    |> filter_by_view_access(person.id)
     |> Repo.all()
   end
 end

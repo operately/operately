@@ -134,7 +134,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
         assert code == @test.expected
 
         case @test.expected do
-          200 -> assert Updates.count_comments(update.id, :update) == 1
+          200 -> assert Updates.count_comments(update.id, :goal_update) == 1
           403 -> assert res.message == "You don't have permission to perform this action"
           404 -> assert res.message == "The requested resource was not found"
         end
@@ -327,7 +327,8 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
   end
 
   defp create_goal_update(ctx, goal) do
-    update_fixture(%{type: :goal_check_in, updatable_id: goal.id, updatable_type: :goal, author_id: ctx.creator.id})
+    {:ok, update} = Operately.Operations.GoalCheckIn.run(ctx.creator, goal, RichText.rich_text("content"), [])
+    update
   end
 
   defp create_discussion(ctx, space) do
