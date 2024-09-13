@@ -4,8 +4,11 @@ import * as ProjectCheckIns from "@/models/projectCheckIns";
 import { PrimaryButton } from "@/components/Buttons";
 
 import { useLoadedData, useRefresh } from "./loader";
+import { useMe } from "@/contexts/CurrentUserContext";
+import { compareIds } from "@/routes/paths";
 
 export function AckCTA() {
+  const me = useMe();
   const { checkIn } = useLoadedData();
 
   const ackOnLoad = shouldAcknowledgeOnLoad();
@@ -13,6 +16,7 @@ export function AckCTA() {
 
   if (checkIn.acknowledgedAt) return null;
   if (!checkIn.project!.permissions!.canAcknowledgeCheckIn) return null;
+  if (!compareIds(checkIn.project!.reviewer!.id!, me!.id)) return null;
   if (ackOnLoad) return null;
 
   return (
