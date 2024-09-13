@@ -2,17 +2,15 @@ defmodule Operately.Support.Features.ReviewSteps do
   use Operately.FeatureCase
 
   import Ecto.Query, only: [from: 2]
-  import Operately.Support.RichText, only: [rich_text: 1]
   import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
   import Operately.ProjectsFixtures
   import Operately.GoalsFixtures
 
+  alias Operately.Support.RichText
   alias OperatelyWeb.Paths
-  alias Operately.Goals.Goal
-  alias Operately.Updates.Update
+  alias Operately.Goals.{Goal, Update}
   alias Operately.Projects.{Project, CheckIn}
-  alias Operately.Support.Features.UI
 
   step :setup, ctx do
     company = company_fixture(%{name: "Test Org"})
@@ -56,10 +54,10 @@ defmodule Operately.Support.Features.ReviewSteps do
 
   step :setup_updates, ctx, name do
     create_goal(ctx.other_person, ctx.person, ctx.company, DateTime.utc_now(), name)
-    |> create_update(ctx.other_person)
+    |> create_update()
 
     create_goal(ctx.other_person, ctx.person, ctx.company, past_date(), name)
-    |> create_update(ctx.other_person)
+    |> create_update()
 
     ctx
   end
@@ -138,12 +136,11 @@ defmodule Operately.Support.Features.ReviewSteps do
 
   step :acknowledge_goal_check_in, ctx, name do
     test_id = from(u in Update,
-        join: g in Goal, on: u.updatable_id == g.id,
+        join: g in assoc(u, :goal),
         where: g.name == ^name,
-        select: u
+        limit: 1
       )
-      |> Repo.all()
-      |> List.first()
+      |> Repo.one()
       |> Paths.goal_update_id()
 
     ctx
@@ -242,8 +239,12 @@ defmodule Operately.Support.Features.ReviewSteps do
     })
   end
 
-  defp create_update(goal, person) do
-    content = rich_text("Doing well")
-    Operately.Operations.GoalCheckIn.run(person, goal, content, [])
+  defp create_update(goal) do
+    {:ok, update} = Operately.Goals.create_update(%{
+      goal_id: goal.id,
+      author_id: goal.champion_id,
+      message: RichText.rich_text("Doing well")
+    })
+    update
   end
 end
