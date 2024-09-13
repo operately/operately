@@ -39,12 +39,7 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
     Project.get(requester, id: id, opts: [
       with_deleted: true,
       preload: preload(inputs),
-      after_load: [
-        set_permissions_if_requested(inputs),
-        load_contributors_access_levels_if_requested(inputs),
-        load_general_access_levels_if_requested(inputs),
-        load_privacy_if_requested(inputs),
-      ],
+      after_load: after_load(inputs),
     ])
   end
 
@@ -58,42 +53,24 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
       include_space: [:group],
       include_champion: [:champion],
       include_reviewer: [:reviewer],
+      include_last_check_in: [last_check_in: :author],
     ])
   end
 
-  def set_permissions_if_requested(inputs) do
-    if inputs[:include_permissions] do
-      &Project.set_permissions/1
-    else
-      do_nothing()
-    end
+  def after_load(inputs) do
+    filter_what_to_run([
+      %{run: &Project.set_permissions/1, if: inputs[:include_permissions]},
+      %{run: &Project.load_contributor_access_levels/1, if: inputs[:include_contributors_access_levels]},
+      %{run: &Project.load_access_levels/1, if: inputs[:include_access_levels]},
+      %{run: &Project.load_privacy/1, if: inputs[:include_privacy]},
+    ])
   end
 
-  def load_contributors_access_levels_if_requested(inputs) do
-    if inputs[:include_contributors_access_levels] do
-      &Project.load_contributor_access_levels/1
-    else
-      do_nothing()
-    end
+  defp filter_what_to_run(list) do
+    list
+    |> Enum.filter(fn %{if: c} -> c end)
+    |> Enum.map(fn %{run: f} -> f end)
   end
-
-  def load_general_access_levels_if_requested(inputs) do
-    if inputs[:include_access_levels] do
-      &Project.load_access_levels/1
-    else
-      do_nothing()
-    end
-  end
-
-  def load_privacy_if_requested(inputs) do
-    if inputs[:include_privacy] do
-      &Project.load_privacy/1
-    else
-      do_nothing()
-    end
-  end
-
-  def do_nothing(), do: fn project -> project end
 
   defp check_inputs(inputs) do
     cond do
