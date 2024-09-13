@@ -25,6 +25,7 @@ export async function loader({ params }): Promise<LoaderData> {
     project: await Projects.getProject({
       id: params.projectID,
       includePermissions: true,
+      includeContributors: true,
       includeContributorsAccessLevels: true,
     }).then((data) => data.project!),
   };
