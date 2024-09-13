@@ -401,10 +401,6 @@ defmodule Operately.Projects do
     end)
   end
 
-  def get_permissions(project, person) do
-    Operately.Projects.Permissions.calculate_permissions(project, person)
-  end
-
   def list_project_review_requests do
     Repo.all(ReviewRequest)
   end
