@@ -110,7 +110,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
     end
 
     test "returns 400 if id is not provided", ctx do
-      assert query(ctx.conn, :get_project, %{}) == bad_request_response()
+      assert query(ctx.conn, :get_project, %{}) == {400, %{error: "Bad request", message: "id is required"}}
     end
 
     test "include_space", ctx do
@@ -248,7 +248,11 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
 
       refute Map.has_key?(res.project, :contributor)
 
-      assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(project), include_contributors_access_levels: true})
+      assert {200, res} = query(ctx.conn, :get_project, %{
+        id: Paths.project_id(project), 
+        include_contributors: true,
+        include_contributors_access_levels: true
+      })
 
       assert length(res.project.contributors) > 0
 
