@@ -1,5 +1,8 @@
 defmodule Operately.Projects.Project do
   use Operately.Schema
+  use Operately.Repo.Getter
+
+  alias Operately.Access.AccessLevels
 
   schema "projects" do
     belongs_to :company, Operately.Companies.Company, foreign_key: :company_id
@@ -47,6 +50,7 @@ defmodule Operately.Projects.Project do
     timestamps()
     soft_delete()
     requester_access_level()
+    request_info()
   end
 
   def changeset(attrs) do
@@ -129,21 +133,6 @@ defmodule Operately.Projects.Project do
     from p in query, order_by: [asc: p.name]
   end
 
-  def preload_contributors_access_level(query, project_id) do
-    subquery = from(b in Operately.Access.Binding,
-      join: c in assoc(b, :context),
-      where: c.project_id == ^project_id,
-      select: b
-    )
-
-    from(p in query,
-      join: contribs in assoc(p, :contributors),
-      join: person in assoc(contribs, :person),
-      join: group in assoc(person, :access_group),
-      where: p.id == ^project_id,
-      preload: [contributors: {contribs, [person: {person, [access_group: {group, [bindings: ^subquery]}]}]}]
-    )
-  end
 
   # After load hooks
 
@@ -173,30 +162,45 @@ defmodule Operately.Projects.Project do
     end
   end
 
-  def set_permissions(project = %__MODULE__{}, user) do
-    persmission = Operately.Projects.Permissions.calculate_permissions(project, user)
-    Map.put(project, :permissions, persmission)
+  def load_contributor_access_levels(project) do
+    contribs = project.contributors
+
+    ids = Enum.map(contribs, fn c -> c.person_id end)
+
+    query = from(group in Operately.Access.Group,
+      join: binding in assoc(group, :bindings),
+      join: context in assoc(binding, :context),
+      where: context.project_id == ^project.id and group.person_id in ^ids,
+      group_by: group.person_id,
+      select: {group.person_id, max(binding.access_level)}
+    )
+
+    person_access_level_pairs = query |> Repo.all() |> Enum.into(%{})
+
+    contribs = Enum.map(contribs, fn contributor ->
+      Map.put(contributor, :access_level, Enum.find(person_access_level_pairs, fn {id, _} -> id == contributor.person_id end))
+    end)
+
+    Map.put(project, :contributors, contribs)
   end
 
-  alias Operately.Access.AccessLevels
+  def set_permissions(project = %__MODULE__{}) do
+    Map.put(project, :permissions, Operately.Projects.Permissions.calculate(project.request_info.access_level))
+  end
 
-  def preload_access_levels(project) do
+  def load_access_levels(project) do
     context = Operately.Access.get_context!(project_id: project.id)
     access_levels = AccessLevels.load(context.id, project.company_id, project.group_id)
 
     Map.put(project, :access_levels, access_levels)
   end
 
-  def preload_privacy(projects) when is_list(projects) do
-    Enum.map(projects, fn project -> preload_privacy(project) end)
+  def load_privacy(projects) when is_list(projects) do
+    Enum.map(projects, &load_privacy/1)
   end
 
-  def preload_privacy(project) do
-    project = if project.access_levels, do: project, else: preload_access_levels(project)
+  def load_privacy(project) do
+    project = if project.access_levels, do: project, else: load_access_levels(project)
     Map.put(project, :privacy, AccessLevels.calc_privacy(project.access_levels))
-  end
-
-  def get!(:system, project_id) do
-    Operately.Repo.get!(__MODULE__, project_id)
   end
 end
