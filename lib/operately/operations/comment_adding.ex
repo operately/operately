@@ -33,7 +33,7 @@ defmodule Operately.Operations.CommentAdding do
   #
 
   defp find_action(%Operately.Updates.Update{type: :project_discussion}), do: :discussion_comment_submitted
-  defp find_action(%Operately.Updates.Update{type: :goal_check_in}), do: :goal_check_in_commented
+  defp find_action(%Operately.Goals.Update{}), do: :goal_check_in_commented
   defp find_action(%Operately.Projects.CheckIn{}), do: :project_check_in_commented
   defp find_action(%Operately.Comments.CommentThread{}), do: :comment_added
   defp find_action(e), do: raise("Unknown entity type #{inspect(e)}")
