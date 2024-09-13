@@ -53,7 +53,7 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
       include_closed_by: [:closed_by],
       include_contributors: [contributors: [:person]],
       include_key_resources: [key_resources: :project],
-      include_milestones: [:milestones],
+      include_milestones: [milestones: :project],
       include_goal: [:goal],
       include_space: [:group],
       include_champion: [:champion],
