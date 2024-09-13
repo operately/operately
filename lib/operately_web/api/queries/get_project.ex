@@ -2,8 +2,6 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
-  import Operately.Access.Filters, only: [filter_by_view_access: 2]
-
   alias Operately.Projects.Project
   alias OperatelyWeb.Api.Serializer
 
@@ -30,76 +28,87 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
   end
 
   def call(conn, inputs) do
-    if inputs[:id] == nil do
-      {:error, :bad_request}
-    else
-      {:ok, id} = decode_id(inputs[:id])
-
-      project = load(me(conn), id, inputs)
-
-      if nil == project do
-        {:error, :not_found}
-      else
-        {:ok, %{project: Serializer.serialize(project, level: :full)}}
-      end
+    with :ok <- check_inputs(inputs),
+         {:ok, id} <- decode_id(inputs[:id]),
+         {:ok, project} <- load(me(conn), id, inputs) do
+      {:ok, %{project: Serializer.serialize(project, level: :full)}}
     end
   end
 
-  def load(person, id, inputs) do
-    include_filters = extract_include_filters(inputs)
-    query = from p in Project, as: :project, where: p.id == ^id
-
-    query
-    |> Project.scope_company(person.company_id)
-    |> Project.scope_visibility(person.id)
-    |> include_requested(include_filters)
-    |> load_contributors_access_level(inputs[:include_contributors_access_levels], id)
-    |> filter_by_view_access(person.id)
-    |> Repo.one(with_deleted: true)
-    |> Project.after_load_hooks()
-    |> include_permissions(person, include_filters)
-    |> load_access_levels(inputs[:include_access_levels])
-    |> load_privacy(inputs[:include_privacy])
+  def load(requester, id, inputs) do
+    Project.get(requester, id: id, opts: [
+      with_deleted: true,
+      preload: preload(inputs),
+      after_load: [
+        set_permissions_if_requested(inputs),
+        load_contributors_access_levels_if_requested(inputs),
+        load_general_access_levels_if_requested(inputs),
+        load_privacy_if_requested(inputs),
+      ],
+    ])
   end
 
-  def include_requested(query, requested) do
-    Enum.reduce(requested, query, fn include, q ->
-      case include do
-        :include_closed_by -> from p in q, preload: [:closed_by]
-        :include_contributors -> from p in q, preload: [contributors: :person]
-        :include_contributors_access_levels -> q # this is done in a separate function
-        :include_key_resources -> from p in q, preload: [key_resources: :project]
-        :include_last_check_in -> from p in q, preload: [last_check_in: :author]
-        :include_milestones -> from p in q, preload: [milestones: :project]
-        :include_goal -> from p in q, preload: [:goal]
-        :include_space -> from p in q, preload: [:group]
-        :include_champion -> from p in q, preload: [:champion]
-        :include_reviewer -> from p in q, preload: [:reviewer]
-        :include_permissions -> q # this is done after loading
-        :include_access_levels -> q # this is done after loading
-        :include_privacy -> q # this is done after the load
-        _ -> raise ArgumentError, "Unknown include filter: #{inspect(include)}"
-      end
-    end)
+  def preload(inputs) do
+    OperatelyWeb.Api.Helpers.Inputs.parse_includes(inputs, [
+      include_closed_by: [:closed_by],
+      include_contributors: [contributors: [:person]],
+      include_key_resources: [key_resources: :project],
+      include_milestones: [milestones: :project],
+      include_goal: [:goal],
+      include_space: [:group],
+      include_champion: [:champion],
+      include_reviewer: [:reviewer],
+    ])
   end
 
-  def include_permissions(nil, _, _), do: nil
-  def include_permissions(project, person, include_filters) do
-    if Enum.member?(include_filters, :include_permissions) do
-      Project.set_permissions(project, person)
+  def set_permissions_if_requested(inputs) do
+    if inputs[:include_permissions] do
+      &Project.set_permissions/1
     else
-      project
+      do_nothing()
     end
   end
 
-  defp load_contributors_access_level(query, true, project_id), do: Project.preload_contributors_access_level(query, project_id)
-  defp load_contributors_access_level(query, _, _), do: query
+  def load_contributors_access_levels_if_requested(inputs) do
+    if inputs[:include_contributors_access_levels] do
+      &Project.load_contributor_access_levels/1
+    else
+      do_nothing()
+    end
+  end
 
-  defp load_access_levels(nil, _), do: nil
-  defp load_access_levels(project, true), do: Project.preload_access_levels(project)
-  defp load_access_levels(project, _), do: project
+  def load_general_access_levels_if_requested(inputs) do
+    if inputs[:include_access_levels] do
+      &Project.load_access_levels/1
+    else
+      do_nothing()
+    end
+  end
 
-  defp load_privacy(nil, _), do: nil
-  defp load_privacy(project, true), do: Project.preload_privacy(project)
-  defp load_privacy(project, _), do: project
+  def load_privacy_if_requested(inputs) do
+    if inputs[:include_privacy] do
+      &Project.load_privacy/1
+    else
+      do_nothing()
+    end
+  end
+
+  def do_nothing(), do: fn project -> project end
+
+  defp check_inputs(inputs) do
+    cond do
+      inputs[:id] == nil -> 
+        {:error, :bad_request, "id is required"}
+
+      inputs[:include_contributors_access_levels] ->
+        if inputs[:include_contributors] do
+          :ok
+        else
+          {:error, :bad_request, "include_contributors_access_levels requires include_contributors"}
+        end
+
+      true -> 
+        :ok
+    end
+  end
 end
