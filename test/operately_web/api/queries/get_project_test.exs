@@ -207,7 +207,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
       assert res.project.permissions == nil
 
       assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(project), include_permissions: true})
-      assert res.project.permissions == Map.from_struct(Operately.Projects.Permissions.calculate_permissions(project, ctx.person))
+      assert res.project.permissions == Map.from_struct(Operately.Projects.Permissions.calculate(project))
     end
 
     test "include_key_resources", ctx do
