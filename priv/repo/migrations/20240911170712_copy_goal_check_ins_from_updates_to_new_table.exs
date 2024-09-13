@@ -7,6 +7,7 @@ defmodule Operately.Repo.Migrations.CopyGoalCheckInsFromUpdatesToNewTable do
 
   def up do
     execute("CREATE TABLE goal_updates AS SELECT * FROM updates WHERE updates.type = 'goal_check_in';")
+    execute("ALTER TABLE goal_updates ADD CONSTRAINT goal_updates_pkey PRIMARY KEY (id);")
 
     alter table(:goal_updates) do
       add :goal_id, references(:goals, type: :binary_id, on_delete: :nothing)
