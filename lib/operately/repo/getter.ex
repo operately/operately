@@ -153,17 +153,27 @@ defmodule Operately.Repo.Getter do
   alias Operately.Access.Binding
   alias Operately.Repo.RequestInfo
 
-  def get(module, :system, args) do
-    query = build_query(module, args)
+  def get(module, requester, args) do
+    args = __MODULE__.GetterArgs.parse(args)
 
+    query = from(r in module, as: :resource, preload: ^args.preload)
+    query = add_where_clauses(query, args.field_matchers)
+
+    case requester do
+      :system -> get_for_system(query, :system, args)
+      %Person{} -> get_for_person(query, requester, args)
+      _ -> {:error, :invalid_requester}
+    end
+  end
+
+  def get_for_system(query, :system, args) do
     case load(query, args) do
       {:ok, resource} -> process_resource(resource, :system, Binding.full_access(), args)
       {:error, :not_found} -> {:error, :not_found}
     end
   end
 
-  def get(module, requester = %Person{}, args) do
-    query = build_query(module, args)
+  def get_for_person(query, requester = %Person{}, args) do
     query = from([resource: r] in query,
       join: c in assoc(r, :access_context),
       join: b in assoc(c, :bindings), as: :binding,
@@ -183,15 +193,7 @@ defmodule Operately.Repo.Getter do
   end
 
   defp load(query, args) do
-    Operately.Repo.one(query, with_deleted: args[:with_deleted] || false) |> to_tuple()
-  end
-
-  defp build_query(module, args) do
-    {field_matchers, preload} = parse_args(args)
-
-    query = from(r in module, as: :resource, preload: ^preload)
-    query = add_where_clauses(query, field_matchers)
-    query
+    Operately.Repo.one(query, with_deleted: args.with_deleted) |> to_tuple()
   end
 
   defp add_where_clauses(query, field_matchers) do
@@ -200,17 +202,9 @@ defmodule Operately.Repo.Getter do
     end)
   end
 
-  defp parse_args(args) do
-    field_matchers = Keyword.delete(args, :opts)
-    opts = Keyword.get(args, :opts, [])
-    preload = Keyword.get(opts, :preload, [])
-
-    {field_matchers, preload}
-  end
-
   defp process_resource(resource, requester, access_level, args) do
     resource = RequestInfo.populate_request_info(resource, requester, access_level)
-    resource = run_after_load_hooks(resource, args[:after_load] || [])
+    resource = run_after_load_hooks(resource, args.after_load)
 
     {:ok, resource}
   end
@@ -223,4 +217,37 @@ defmodule Operately.Repo.Getter do
 
   defp to_tuple(nil), do: {:error, :not_found}
   defp to_tuple(resource), do: {:ok, resource}
+
+  defmodule GetterArgs do
+    defstruct [
+      field_matchers: [],
+      preload: [],
+      with_deleted: false,
+      after_load: []
+    ]
+
+    @allowed_options [:preload, :with_deleted, :after_load]
+
+    def parse(args) do
+      field_matchers = Keyword.delete(args, :opts)
+      opts = Keyword.get(args, :opts, [])
+
+      validate_options(opts)
+
+      %__MODULE__{
+        field_matchers: field_matchers,
+        preload: Keyword.get(opts, :preload, []),
+        with_deleted: Keyword.get(opts, :with_deleted, false),
+        after_load: Keyword.get(opts, :after_load, [])
+      }
+    end
+
+    defp validate_options(opts) do
+      unknown_options = Keyword.drop(opts, @allowed_options)
+
+      if unknown_options != [] do
+        raise ArgumentError, "Invalid options: #{Keyword.keys(unknown_options)}"
+      end
+    end
+  end
 end
