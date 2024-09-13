@@ -4,7 +4,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckIn do
 
   import Operately.Access.Filters
 
-  alias Operately.Projects.CheckIn
+  alias Operately.Projects.{CheckIn, Project}
   alias Operately.Notifications.Subscription
 
   inputs do
@@ -44,24 +44,32 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckIn do
     |> include_requested(requested)
     |> filter_by_view_access(person.id, join_parent: :project)
     |> Repo.one()
-    |> preload_project_permissions(person)
+    |> load_project(inputs, person)
   end
 
   def include_requested(query, requested) do
     Enum.reduce(requested, query, fn include, q ->
       case include do
         :include_author -> from p in q, preload: [:author]
-        :include_project -> from p in q, preload: [project: [:reviewer, [contributors: :person]]]
         :include_reactions -> from p in q, preload: [reactions: :person]
         :include_subscriptions -> Subscription.preload_subscriptions(q)
-        _ -> raise ArgumentError, "Unknown include filter: #{inspect(include)}"
+        _ -> q
       end
     end)
   end
 
-  def preload_project_permissions(nil, _), do: nil
-  def preload_project_permissions(check_in = %{project: %Ecto.Association.NotLoaded{}}, _), do: check_in
-  def preload_project_permissions(check_in = %{project: project}, person) do
-    %{check_in | project: Operately.Projects.Project.set_permissions(project, person)}
+  def load_project(check_in, inputs, person) do
+    if inputs[:include_project] do
+      {:ok, project} = Operately.Projects.Project.get(person, id: check_in.project_id, opts: [
+        with_deleted: true, 
+        preload: [:reviewer, [contributors: :person]],
+        after_load: [&Project.set_permissions/1]
+      ])
+
+      %{check_in | project: project}
+    else
+      check_in
+    end
   end
+
 end

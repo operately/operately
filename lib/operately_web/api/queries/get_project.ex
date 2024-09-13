@@ -43,6 +43,7 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
         set_permissions_if_requested(inputs),
         load_contributors_access_levels_if_requested(inputs),
         load_general_access_levels_if_requested(inputs),
+        load_privacy_if_requested(inputs),
       ],
     ])
   end
@@ -79,6 +80,14 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
   def load_general_access_levels_if_requested(inputs) do
     if inputs[:include_access_levels] do
       &Project.load_access_levels/1
+    else
+      do_nothing()
+    end
+  end
+
+  def load_privacy_if_requested(inputs) do
+    if inputs[:include_privacy] do
+      &Project.load_privacy/1
     else
       do_nothing()
     end

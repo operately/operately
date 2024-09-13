@@ -2,6 +2,8 @@ defmodule Operately.Projects.Project do
   use Operately.Schema
   use Operately.Repo.Getter
 
+  alias Operately.Access.AccessLevels
+
   schema "projects" do
     belongs_to :company, Operately.Companies.Company, foreign_key: :company_id
     belongs_to :creator, Operately.People.Person, foreign_key: :creator_id
@@ -186,8 +188,6 @@ defmodule Operately.Projects.Project do
     Map.put(project, :permissions, Operately.Projects.Permissions.calculate(project.request_info.access_level))
   end
 
-  alias Operately.Access.AccessLevels
-
   def load_access_levels(project) do
     context = Operately.Access.get_context!(project_id: project.id)
     access_levels = AccessLevels.load(context.id, project.company_id, project.group_id)
@@ -195,16 +195,12 @@ defmodule Operately.Projects.Project do
     Map.put(project, :access_levels, access_levels)
   end
 
-  def preload_privacy(projects) when is_list(projects) do
-    Enum.map(projects, fn project -> preload_privacy(project) end)
+  def load_privacy(projects) when is_list(projects) do
+    Enum.map(projects, &load_privacy/1)
   end
 
-  def preload_privacy(project) do
+  def load_privacy(project) do
     project = if project.access_levels, do: project, else: load_access_levels(project)
     Map.put(project, :privacy, AccessLevels.calc_privacy(project.access_levels))
-  end
-
-  def get!(:system, project_id) do
-    Operately.Repo.get!(__MODULE__, project_id)
   end
 end
