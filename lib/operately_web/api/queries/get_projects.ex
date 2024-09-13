@@ -81,6 +81,6 @@ defmodule OperatelyWeb.Api.Queries.GetProjects do
     end)
   end
 
-  defp load_privacy(projects, true), do: Project.preload_privacy(projects)
+  defp load_privacy(projects, true), do: Project.load_privacy(projects)
   defp load_privacy(projects, _), do: projects
 end
