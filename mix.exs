@@ -39,11 +39,6 @@ defmodule Operately.MixProject do
       {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 4.1"},
       {:phoenix_view, "~> 2.0"},
-      {:phoenix_live_reload, "~> 1.5", only: :dev},
-
-      {:floki, ">= 0.36.0", only: :test},
-      {:phoenix_live_dashboard, "~> 0.8.4"},
-      {:tailwind, "~> 0.2.3", runtime: Mix.env() == :dev},
       {:swoosh, "~> 1.17"},
       {:finch, "~> 0.19"},
       {:telemetry_metrics, "~> 1.0"},
@@ -60,13 +55,17 @@ defmodule Operately.MixProject do
       {:oban, "~> 2.14"},
       {:bamboo, "~> 2.3.0"},
       {:site_encrypt, "~> 0.6.0"},
+      {:hackney, "~> 1.20"},
+      {:sweet_xml, "~> 0.7"},
 
-      # testing
-      {:cabbage, "~> 0.4.1", only: :test},
+      # only in dev
+      {:phoenix_live_reload, "~> 1.5", only: :dev},
+      {:tailwind, "~> 0.2.3", runtime: Mix.env() == :dev},
+
+      # only in tests
       {:wallaby, "~> 0.30.9", runtime: false, only: :test},
       {:junit_formatter, "~> 3.1", only: [:test]},
-      {:hackney, "~> 1.20"},
-      {:sweet_xml, "~> 0.7"}
+      {:floki, ">= 0.36.0", only: :test},
     ]
   end
 
