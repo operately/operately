@@ -98,7 +98,13 @@ const bodyPaddings = {
   xxlarge: "px-16 py-12",
 };
 
-export function Body({ children, minHeight, className = "", noPadding = false, backgroundColor = "bg-surface" }) {
+export function Body({
+  children,
+  minHeight = "none",
+  className = "",
+  noPadding = false,
+  backgroundColor = "bg-surface",
+}) {
   const { size } = React.useContext(Context);
   const padding = noPadding ? "" : bodyPaddings[size];
 
@@ -113,10 +119,6 @@ export function Body({ children, minHeight, className = "", noPadding = false, b
     </div>
   );
 }
-
-Body.defaultProps = {
-  minHeight: "none",
-};
 
 export function Title({ children }) {
   return (
