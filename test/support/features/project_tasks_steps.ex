@@ -1,4 +1,4 @@
-defmodule Operately.Support.Features.ProjectTaskSteps do
+defmodule Operately.Support.Features.ProjectTasksSteps do
   use Operately.FeatureCase
 
   step :visit_milestone_page, ctx do
