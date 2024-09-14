@@ -27,7 +27,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Goals.Goal do
       progress_percentage: Operately.Goals.progress_percentage(goal),
 
       timeframe: OperatelyWeb.Api.Serializer.serialize(goal.timeframe),
-      space: OperatelyWeb.Api.Serializer.serialize(goal.group),
+      space: serialize_space(goal.group),
       champion: OperatelyWeb.Api.Serializer.serialize(goal.champion),
       reviewer: OperatelyWeb.Api.Serializer.serialize(goal.reviewer),
       projects: OperatelyWeb.Api.Serializer.serialize(goal.projects, level: :full),
@@ -36,5 +36,16 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Goals.Goal do
       permissions: OperatelyWeb.Api.Serializer.serialize(goal.permissions, level: :full),
       access_levels: OperatelyWeb.Api.Serializer.serialize(goal.access_levels, level: :full),
     }
+  end
+
+  defp serialize_space(space) do
+    cond do
+      not Ecto.assoc_loaded?(space) ->
+        OperatelyWeb.Api.Serializer.serialize(space)
+      Ecto.assoc_loaded?(space.members) and Ecto.assoc_loaded?(space.company) ->
+        OperatelyWeb.Api.Serializer.serialize(space, level: :full)
+      true ->
+        OperatelyWeb.Api.Serializer.serialize(space)
+    end
   end
 end

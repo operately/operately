@@ -7,9 +7,8 @@ defmodule OperatelyWeb.Api.Queries.GetGoalsTest do
   import OperatelyWeb.Api.Serializer
 
   alias OperatelyWeb.Paths
-  alias Operately.Support.RichText
   alias Operately.Access.Binding
-  alias Operately.{Repo, Groups, Goals}
+  alias Operately.{Repo, Groups}
 
   describe "security" do
     test "it requires authentication", ctx do
@@ -146,11 +145,11 @@ defmodule OperatelyWeb.Api.Queries.GetGoalsTest do
       goal1 = goal_fixture(ctx.person, company_id: ctx.company.id, space_id: ctx.company.company_space_id)
       goal2 = goal_fixture(ctx.person, company_id: ctx.company.id, space_id: ctx.company.company_space_id)
 
-      update1 = create_update(goal1)
-      _update2 = create_update(goal1)
+      update1 = create_update(ctx.person, goal1)
+      _update2 = create_update(ctx.person, goal1)
 
-      update3 = create_update(goal2)
-      _update4 = create_update(goal2)
+      update3 = create_update(ctx.person, goal2)
+      _update4 = create_update(ctx.person, goal2)
 
       update1 = Operately.Repo.preload(update1, [:author, [reactions: :author]])
       update3 = Operately.Repo.preload(update3, [:author, [reactions: :author]])
@@ -182,8 +181,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalsTest do
     }])
   end
 
-  defp create_update(goal) do
-    {:ok, update} = Goals.create_update(%{goal_id: goal.id, author_id: goal.champion_id, message: RichText.rich_text("message")})
-    update
+  defp create_update(person, goal) do
+    goal_update_fixture(person, goal)
   end
 end

@@ -8,6 +8,8 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdateTest do
   alias Operately.Goals
   alias Operately.Support.RichText
   alias Operately.Access.Binding
+  alias Operately.Goals.Update
+  alias Operately.Notifications.SubscriptionList
 
   describe "security" do
     test "it requires authentication", ctx do
@@ -82,9 +84,94 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdateTest do
     end
   end
 
+  describe "subscriptions to notifications" do
+    setup :register_and_log_in_account
+    setup ctx do
+      goal = goal_fixture(ctx.person, %{space_id: ctx.company.company_space_id})
+      people = Enum.map(1..3, fn _ ->
+        person_fixture(%{company_id: ctx.company.id})
+      end)
+
+      Map.merge(ctx, %{goal: goal, people: people})
+    end
+
+    test "creates subscription list for goal update", ctx do
+      assert {200, res} = mutation(ctx.conn, :post_goal_progress_update, %{
+        goal_id: Paths.goal_id(ctx.goal),
+        content: RichText.rich_text("Content", :as_string),
+        new_target_values: new_target_values(ctx.goal),
+        send_notifications_to_everyone: true,
+        subscriber_ids: Enum.map(ctx.people, &(Paths.person_id(&1))),
+      })
+
+      {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.update.id)
+      {:ok, list} = SubscriptionList.get(:system, parent_id: id, opts: [preload: :subscriptions])
+
+      assert list.send_to_everyone
+      assert length(list.subscriptions) == 4
+
+      Enum.each([ctx.person | ctx.people], fn p ->
+        assert Enum.filter(list.subscriptions, &(&1.person_id == p.id))
+      end)
+
+      {:ok, update} = Update.get(:system, id: id)
+
+      assert update.subscription_list_id
+    end
+
+    test "adds mentioned people to subscription list", ctx do
+      people = ctx.people ++ ctx.people ++ ctx.people
+      content = RichText.rich_text(mentioned_people: people)
+
+      assert {200, res} = mutation(ctx.conn, :post_goal_progress_update, %{
+        goal_id: Paths.goal_id(ctx.goal),
+        content: content,
+        new_target_values: new_target_values(ctx.goal),
+        send_notifications_to_everyone: false,
+        subscriber_ids: [],
+      })
+
+      subscriptions = fetch_subscriptions(res)
+
+      assert length(subscriptions) == 4
+
+      Enum.each([ctx.person | ctx.people], fn p ->
+        assert Enum.filter(subscriptions, &(&1.person_id == p.id))
+      end)
+    end
+
+    test "doesn't create repeated subscription", ctx do
+      people = [ctx.person | ctx.people]
+      content = RichText.rich_text(mentioned_people: people)
+
+      assert {200, res} = mutation(ctx.conn, :post_goal_progress_update, %{
+        goal_id: Paths.goal_id(ctx.goal),
+        content: content,
+        new_target_values: new_target_values(ctx.goal),
+        send_notifications_to_everyone: true,
+        subscriber_ids: Enum.map(people, &(Paths.person_id(&1))),
+      })
+
+      subscriptions = fetch_subscriptions(res)
+
+      assert length(subscriptions) == 4
+
+      Enum.each(people, fn p ->
+        assert Enum.filter(subscriptions, &(&1.person_id == p.id))
+      end)
+    end
+  end
+
   #
   # Helpers
   #
+
+  defp fetch_subscriptions(res) do
+    {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.update.id)
+    {:ok, list} = SubscriptionList.get(:system, parent_id: id, opts: [preload: :subscriptions])
+
+    list.subscriptions
+  end
 
   defp new_target_values(goal) do
     Goals.list_targets(goal.id)

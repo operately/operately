@@ -5,7 +5,6 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsCountTest do
   import Operately.GoalsFixtures
 
   alias Operately.Repo
-  alias Operately.Goals
   alias Operately.Goals.{Goal, Update}
   alias Operately.Projects.{Project, CheckIn}
 
@@ -111,15 +110,15 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsCountTest do
         reviewer_id: ctx.person.id,
         champion_id: another_ctx.person.id,
       })
-      create_update(goal)
-      create_update(goal)
+      goal_update_fixture(another_ctx.person, goal)
+      goal_update_fixture(another_ctx.person, goal)
 
       # Updates for another person
       another_goal = create_goal(another_ctx, upcoming_date(), %{
         reviewer_id: another_ctx.person.id,
         champion_id: ctx.person.id,
       })
-      create_update(another_goal)
+      goal_update_fixture(ctx.person, another_goal)
 
       assert Repo.aggregate(Update, :count, :id) == 3
 
@@ -198,14 +197,5 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsCountTest do
       author_id: project.champion.id,
       project_id: project.id,
     })
-  end
-
-  defp create_update(goal) do
-    {:ok, update} = Goals.create_update(%{
-      author_id: goal.champion_id,
-      goal_id: goal.id,
-      message: %{},
-    })
-    update
   end
 end

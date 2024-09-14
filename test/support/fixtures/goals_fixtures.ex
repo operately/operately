@@ -52,4 +52,18 @@ defmodule Operately.GoalsFixtures do
       type: "quarter"
     }
   end
+
+  def goal_update_fixture(author, goal, attrs \\ []) do
+    attrs = Enum.into(attrs, %{
+      goal_id: goal.id,
+      target_values: [],
+      content: Operately.Support.RichText.rich_text("content"),
+      send_to_everyone: false,
+      subscription_parent_type: :goal_update,
+      subscriber_ids: []
+    })
+
+    {:ok, update} = Operately.Operations.GoalCheckIn.run(author, goal, attrs)
+    update
+  end
 end

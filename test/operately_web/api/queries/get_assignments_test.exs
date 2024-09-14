@@ -9,7 +9,6 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
   alias Operately.{Repo, Goals, Projects}
   alias Operately.Goals.{Goal, Update}
   alias Operately.Projects.{Project, CheckIn}
-  alias Operately.Support.RichText
 
   describe "security" do
     test "it requires authentication", ctx do
@@ -377,14 +376,6 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
   end
 
   defp create_update(creator, goal) do
-    # update_fixture(%{
-    #   updatable_type: :goal,
-    #   updatable_id: goal.id,
-    #   author_id: goal.champion_id,
-    #   type: :goal_check_in,
-    # })
-    # |> Repo.reload()
-    {:ok, update} = Operately.Operations.GoalCheckIn.run(creator, goal, RichText.rich_text("content"), [])
-    update
+    goal_update_fixture(creator, goal)
   end
 end

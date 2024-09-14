@@ -1199,6 +1199,7 @@ export interface GetGoalInput {
   includeProjects?: boolean | null;
   includeReviewer?: boolean | null;
   includeSpace?: boolean | null;
+  includeSpaceMembers?: boolean | null;
   includeTargets?: boolean | null;
   includeAccessLevels?: boolean | null;
 }
@@ -1930,6 +1931,8 @@ export interface PostGoalProgressUpdateInput {
   content?: string | null;
   goalId?: string | null;
   newTargetValues?: string | null;
+  sendNotificationsToEveryone?: boolean | null;
+  subscriberIds?: string[] | null;
 }
 
 export interface PostGoalProgressUpdateResult {
