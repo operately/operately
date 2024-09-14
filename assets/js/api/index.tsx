@@ -1931,6 +1931,8 @@ export interface PostGoalProgressUpdateInput {
   content?: string | null;
   goalId?: string | null;
   newTargetValues?: string | null;
+  sendNotificationsToEveryone?: boolean | null;
+  subscriberIds?: string[] | null;
 }
 
 export interface PostGoalProgressUpdateResult {

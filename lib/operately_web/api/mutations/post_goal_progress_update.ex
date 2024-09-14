@@ -10,6 +10,8 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdate do
     field :content, :string
     field :goal_id, :string
     field :new_target_values, :string
+    field :send_notifications_to_everyone, :boolean
+    field :subscriber_ids, list_of(:string)
   end
 
   outputs do

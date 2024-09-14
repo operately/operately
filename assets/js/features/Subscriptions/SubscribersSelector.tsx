@@ -9,14 +9,15 @@ import { SubscribersSelectorProvider } from "./SubscribersSelectorContext";
 interface Props {
   state: SubscriptionsState;
   projectName?: string;
+  spaceName?: string;
 }
 
-export function SubscribersSelector({ state, projectName }: Props) {
+export function SubscribersSelector({ state, projectName, spaceName }: Props) {
   const [showSelector, setShowSelector] = useState(false);
   const { people, selectedPeople, subscriptionType, setSubscriptionType, alwaysNotify } = state;
 
   const selectedPeopleLabel = useMemo(() => buildSelectedPeopleLabel(selectedPeople), [selectedPeople]);
-  const allPeopleLabel = useMemo(() => buildAllPeopleLabel(people, { projectName }), []);
+  const allPeopleLabel = useMemo(() => buildAllPeopleLabel(people, { projectName, spaceName }), []);
 
   // If all notifiable people must be notified,
   // the widget is not displayed.
@@ -48,6 +49,7 @@ export function SubscribersSelector({ state, projectName }: Props) {
 
 interface BuildAllPeopleLabelOpts {
   projectName?: string;
+  spaceName?: string;
 }
 
 function buildAllPeopleLabel(people: NotifiablePerson[], opts: BuildAllPeopleLabelOpts) {
@@ -56,6 +58,8 @@ function buildAllPeopleLabel(people: NotifiablePerson[], opts: BuildAllPeopleLab
 
   if (opts.projectName) {
     part2 = ` contributing to ${opts.projectName}`;
+  } else if (opts.spaceName) {
+    part2 = ` who are members of the ${opts.spaceName} space`;
   }
 
   return part1 + part2;
