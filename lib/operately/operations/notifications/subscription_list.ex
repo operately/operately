@@ -1,4 +1,4 @@
-defmodule Operately.Operations.ProjectCheckIn.SubscriptionList do
+defmodule Operately.Operations.Notifications.SubscriptionList do
   alias Ecto.Multi
   alias Operately.Notifications.SubscriptionList
 

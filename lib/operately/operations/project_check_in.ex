@@ -4,7 +4,7 @@ defmodule Operately.Operations.ProjectCheckIn do
   alias Operately.Repo
   alias Operately.Activities
   alias Operately.Projects.{CheckIn, Project}
-  alias Operately.Operations.ProjectCheckIn.{Subscription, SubscriptionList}
+  alias Operately.Operations.Notifications.{Subscription, SubscriptionList}
 
   def run(author, project, attrs) do
     next_check_in = Operately.Time.calculate_next_weekly_check_in(
