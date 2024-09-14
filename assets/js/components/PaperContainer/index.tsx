@@ -114,10 +114,6 @@ export function Body({ children, minHeight, className = "", noPadding = false, b
   );
 }
 
-Body.defaultProps = {
-  minHeight: "none",
-};
-
 export function Title({ children }) {
   return (
     <div className="flex items-center gap-4 mb-8">

@@ -36,9 +36,5 @@ export default function RichContent({ jsonContent, className, skipParse }: RichC
   return <TipTapEditor.EditorContent editor={editor} className={"ProseMirror " + className} />;
 }
 
-RichContent.defaultProps = {
-  className: "",
-};
-
 export * from "./Summary";
 export * from "./contentOps";
