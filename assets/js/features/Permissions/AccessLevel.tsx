@@ -2,6 +2,7 @@ import React, { createElement, useMemo } from "react";
 
 import { SelectBoxNoLabel } from "@/components/Form";
 import { IconBuildingCommunity, IconNetwork } from "@tabler/icons-react";
+import * as Icons from "@tabler/icons-react";
 import { ReducerActions } from "./usePermissionsState";
 import { PermissionLevels, PermissionOptions, PERMISSIONS_LIST, PUBLIC_PERMISSIONS_LIST } from ".";
 import { calculatePrivacyLevel } from "./utils";
@@ -82,20 +83,21 @@ function SpaceAccessLevel({ state }: { state: PermissionsState }) {
   };
 
   return (
-    <div className="grid grid-cols-[70%_30%] gap-2 w-full">
-      <div className="flex items-center gap-2 pl-2 border border-surface-outline rounded-lg">
+    <div className="flex items-center justify-between border-y border-stroke-subtle py-3 px-1">
+      <div className="flex items-center gap-2 flex-1">
         {space ? (
           <>
-            {createElement(Icons[space.icon!], { size: 25 })}
+            {createElement(Icons[space.icon!], { size: 20 })}
             <span>Everyone in {space.name}</span>
           </>
         ) : (
           <>
-            <IconRocket size={25} />
-            <span>Everyone in the space</span>
+            <IconRocket size={20} />
+            <span>Product Space members</span>
           </>
         )}
       </div>
+
       <SelectBoxNoLabel onChange={handleChange} options={PERMISSIONS_LIST} value={currentPermission} />
     </div>
   );
@@ -113,10 +115,10 @@ function CompanyAccessLevel({ state }: { state: PermissionsState }) {
   };
 
   return (
-    <div className="grid grid-cols-[70%_30%] gap-2 w-full">
-      <div className="flex items-center gap-2 pl-2 border border-surface-outline rounded-lg">
-        <IconBuildingCommunity size={25} />
-        <span>Everyone at {company.name}</span>
+    <div className="flex items-center justify-between border-b border-stroke-subtle py-3 px-1">
+      <div className="flex items-center gap-2 flex-1">
+        <Icons.IconBuilding size={20} />
+        <span>Company members</span>
       </div>
       <SelectBoxNoLabel onChange={handleChange} options={PERMISSIONS_LIST} value={currentPermission} />
     </div>
@@ -146,10 +148,5 @@ function PublicAccessLevel({ state }: { state: PermissionsState }) {
 }
 
 function AccessLevelContainer({ children }) {
-  return (
-    <div className="flex flex-col gap-2">
-      <h2 className="font-bold">Access {children.length > 1 ? "Levels" : "Level"}</h2>
-      {children}
-    </div>
-  );
+  return <div className="flex flex-col gap-2 mt-6">{children}</div>;
 }
