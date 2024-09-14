@@ -5,7 +5,7 @@ defmodule Operately.Features.ProjectTasksTest do
   import Operately.ProjectsFixtures
 
   alias Operately.Support.Features.ProjectSteps
-  alias Operately.Support.Features.ProjectTaskSteps, as: Steps
+  alias Operately.Support.Features.ProjectTasksSteps, as: Steps
 
   setup ctx do
     ctx = ProjectSteps.create_project(ctx, name: "Test Project")
