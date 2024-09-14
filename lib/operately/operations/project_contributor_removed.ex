@@ -35,7 +35,7 @@ defmodule Operately.Operations.ProjectContributorRemoved do
 
   defp insert_activity(multi, author) do
     Activities.insert_sync(multi, author.id, :project_contributor_removed, fn %{contributor: contributor} ->
-      project = Project.get!(:system, contributor.project_id)
+      {:ok, project} = Project.get(:system, id: contributor.project_id)
 
       %{
         company_id: author.company_id,
