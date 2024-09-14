@@ -17,6 +17,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
     field :include_projects, :boolean
     field :include_reviewer, :boolean
     field :include_space, :boolean
+    field :include_space_members, :boolean
     field :include_targets, :boolean
     field :include_access_levels, :boolean
   end
@@ -65,6 +66,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
         :include_projects -> from p in q, preload: [projects: [:champion, :reviewer]]
         :include_reviewer -> from p in q, preload: [:reviewer]
         :include_space -> from p in q, preload: [:group]
+        :include_space_members -> from p in q, preload: [group: [:members, :company]]
         :include_targets -> from p in q, preload: [:targets]
         :include_access_levels -> q # this is done after the load
         _ -> raise "Unknown include filter: #{inspect(include)}"

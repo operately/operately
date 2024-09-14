@@ -1199,6 +1199,7 @@ export interface GetGoalInput {
   includeProjects?: boolean | null;
   includeReviewer?: boolean | null;
   includeSpace?: boolean | null;
+  includeSpaceMembers?: boolean | null;
   includeTargets?: boolean | null;
   includeAccessLevels?: boolean | null;
 }
