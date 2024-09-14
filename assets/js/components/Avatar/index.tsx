@@ -181,7 +181,3 @@ export default function Avatar(props: AvatarProps): JSX.Element {
     return UnassingedAvatar(props);
   }
 }
-
-Avatar.defaultProps = {
-  size: AvatarSize.Normal,
-};
