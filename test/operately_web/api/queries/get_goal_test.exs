@@ -1,5 +1,4 @@
 defmodule OperatelyWeb.Api.Queries.GetGoalTest do
-  alias Operately.Goals
   alias Operately.Support.RichText
   alias Operately.Access.Binding
   alias OperatelyWeb.Paths
@@ -175,7 +174,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
       assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal), include_last_check_in: true})
       assert res.goal.last_check_in == nil
 
-      {:ok, update} = Goals.create_update(%{goal_id: goal.id, author_id: goal.champion_id, message: RichText.rich_text("message")})
+      update = goal_update_fixture(ctx.person, goal)
       update = Operately.Repo.preload(update, [:author, [reactions: :author]])
 
       assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal), include_last_check_in: true})

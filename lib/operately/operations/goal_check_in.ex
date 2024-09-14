@@ -2,22 +2,27 @@ defmodule Operately.Operations.GoalCheckIn do
   alias Ecto.Multi
   alias Operately.{Repo, Activities}
   alias Operately.Goals.{Goal, Update, Target}
+  alias Operately.Operations.Notifications.{Subscription, SubscriptionList}
 
-  def run(author, goal, content, new_target_values) do
+  def run(author, goal, attrs) do
     targets = Operately.Goals.list_targets(goal.id)
-    encoded_new_target_values = encode_new_target_values(targets, new_target_values)
-
-    changeset = Update.changeset(%{
-      goal_id: goal.id,
-      author_id: author.id,
-      message: content,
-      targets: encoded_new_target_values,
-    })
+    encoded_new_target_values = encode_new_target_values(targets, attrs.target_values)
 
     Multi.new()
-    |> Multi.insert(:update, changeset)
+    |> SubscriptionList.insert(attrs)
+    |> Subscription.insert(author, attrs)
+    |> Multi.insert(:update, fn changes ->
+      Update.changeset(%{
+        goal_id: goal.id,
+        author_id: author.id,
+        message: attrs.content,
+        targets: encoded_new_target_values,
+        subscription_list_id: changes.subscription_list.id,
+      })
+    end)
+    |> SubscriptionList.update(:update)
     |> update_goal_next_check_in(goal)
-    |> update_targets(targets, new_target_values)
+    |> update_targets(targets, attrs.target_values)
     |> record_activity(author, goal)
     |> Repo.transaction()
     |> Repo.extract_result(:update)

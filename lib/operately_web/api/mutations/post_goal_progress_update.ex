@@ -24,7 +24,7 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdate do
     |> run(:attrs, fn -> parse_inputs(inputs) end)
     |> run(:goal, fn ctx -> Goals.get_goal_with_access_level(ctx.attrs.goal_id, ctx.me.id) end)
     |> run(:check_permissions, fn ctx -> Permissions.check(ctx.goal.requester_access_level, :can_check_in) end)
-    |> run(:operation, fn ctx -> GoalCheckIn.run(ctx.me, ctx.goal, ctx.attrs.content, ctx.attrs.target_values) end)
+    |> run(:operation, fn ctx -> GoalCheckIn.run(ctx.me, ctx.goal, ctx.attrs) end)
     |> run(:serialized, fn ctx -> {:ok, %{update: Serializer.serialize(ctx.operation, level: :full)}} end)
     |> respond()
   end
@@ -42,10 +42,15 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdate do
 
   defp parse_inputs(inputs) do
     {:ok, goal_id} = decode_id(inputs.goal_id)
+    {:ok, subscriber_ids} = decode_id(inputs[:subscriber_ids], :allow_nil)
+
     {:ok, %{
       goal_id: goal_id,
       target_values: Jason.decode!(inputs.new_target_values),
       content: Jason.decode!(inputs.content),
+      send_to_everyone: inputs[:send_notifications_to_everyone] || false,
+      subscription_parent_type: :goal_update,
+      subscriber_ids: subscriber_ids || []
     }}
   end
 end

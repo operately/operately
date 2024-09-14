@@ -121,13 +121,12 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalProgressUpdateTest do
       space_access_level: Binding.no_access(),
     }))
 
-    content = RichText.rich_text("Content")
-    targets = Enum.map(Goals.list_targets(goal.id), fn t ->
+    target_values = Enum.map(Goals.list_targets(goal.id), fn t ->
       %{"id" => t.id, "value" => 50}
     end)
+    content = RichText.rich_text("Content")
 
-    {:ok, update} = Operately.Operations.GoalCheckIn.run(ctx[:creator] || ctx.person, goal, content, targets)
-    update
+    goal_update_fixture(ctx[:creator] || ctx.person, goal, target_values: target_values, content: content)
   end
 
   defp add_person_to_space(ctx) do

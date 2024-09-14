@@ -42,9 +42,10 @@ defmodule Operately.Operations.ProjectCheckInTest do
     {:ok, check_in} = Oban.Testing.with_testing_mode(:manual, fn ->
       ProjectCheckIn.run(ctx.champion, ctx.project, %{
         status: "on_track",
-        description: RichText.rich_text("Some description"),
-        send_notifications_to_everyone: false,
-        subscriber_ids: [ctx.reviewer.id, ctx.champion.id]
+        content: RichText.rich_text("Some description"),
+        send_to_everyone: false,
+        subscriber_ids: [ctx.reviewer.id, ctx.champion.id],
+        subscription_parent_type: :project_check_in
       })
     end)
     activity = get_activity(check_in)
@@ -66,9 +67,10 @@ defmodule Operately.Operations.ProjectCheckInTest do
     {:ok, check_in} = Oban.Testing.with_testing_mode(:manual, fn ->
       ProjectCheckIn.run(ctx.champion, ctx.project, %{
         status: "on_track",
-        description: RichText.rich_text("Some description"),
-        send_notifications_to_everyone: false,
-        subscriber_ids: Enum.map(contributors, &(&1.person_id))
+        content: RichText.rich_text("Some description"),
+        send_to_everyone: false,
+        subscriber_ids: Enum.map(contributors, &(&1.person_id)),
+        subscription_parent_type: :project_check_in
       })
     end)
     activity = get_activity(check_in)
@@ -92,9 +94,10 @@ defmodule Operately.Operations.ProjectCheckInTest do
     {:ok, check_in} = Oban.Testing.with_testing_mode(:manual, fn ->
       ProjectCheckIn.run(ctx.champion, ctx.project, %{
         status: "on_track",
-        description: RichText.rich_text("Some description"),
-        send_notifications_to_everyone: true,
-        subscriber_ids: []
+        content: RichText.rich_text("Some description"),
+        send_to_everyone: true,
+        subscriber_ids: [],
+        subscription_parent_type: :project_check_in
       })
     end)
     activity = get_activity(check_in)
@@ -118,9 +121,10 @@ defmodule Operately.Operations.ProjectCheckInTest do
     {:ok, check_in} = Oban.Testing.with_testing_mode(:manual, fn ->
       ProjectCheckIn.run(ctx.champion, ctx.project, %{
         status: "on_track",
-        description: RichText.rich_text("Some description"),
-        send_notifications_to_everyone: false,
-        subscriber_ids: [ctx.champion.id]
+        content: RichText.rich_text("Some description"),
+        send_to_everyone: false,
+        subscriber_ids: [ctx.champion.id],
+        subscription_parent_type: :project_check_in
       })
     end)
 
@@ -138,9 +142,10 @@ defmodule Operately.Operations.ProjectCheckInTest do
     # Without permissions
     {:ok, check_in} = ProjectCheckIn.run(ctx.champion, ctx.project, %{
       status: "on_track",
-      description: content,
-      send_notifications_to_everyone: false,
-      subscriber_ids: []
+      content: content,
+      send_to_everyone: false,
+      subscriber_ids: [],
+      subscription_parent_type: :project_check_in
     })
     activity = get_activity(check_in)
 
@@ -152,9 +157,10 @@ defmodule Operately.Operations.ProjectCheckInTest do
 
     {:ok, check_in} = ProjectCheckIn.run(ctx.champion, ctx.project, %{
       status: "on_track",
-      description: content,
-      send_notifications_to_everyone: false,
-      subscriber_ids: []
+      content: content,
+      send_to_everyone: false,
+      subscriber_ids: [],
+      subscription_parent_type: :project_check_in
     })
     activity = get_activity(check_in)
     notifications = fetch_notifications(activity.id, action: action)

@@ -5,6 +5,7 @@ defmodule Operately.Goals.Update do
   schema "goal_updates" do
     belongs_to :goal, Operately.Goals.Goal, foreign_key: :goal_id
     belongs_to :author, Operately.People.Person, foreign_key: :author_id
+    belongs_to :subscription_list, Operately.Notifications.SubscriptionList, foreign_key: :subscription_list_id
 
     has_one :access_context, through: [:goal, :access_context]
     has_many :reactions, Operately.Updates.Reaction, foreign_key: :entity_id, where: [entity_type: :goal_update]
@@ -26,8 +27,8 @@ defmodule Operately.Goals.Update do
 
   def changeset(check_in, attrs) do
     check_in
-    |> cast(attrs, [:goal_id, :author_id, :message, :acknowledged_at, :acknowledged_by_id])
+    |> cast(attrs, [:goal_id, :author_id, :message, :acknowledged_at, :acknowledged_by_id, :subscription_list_id])
     |> cast_embed(:targets)
-    |> validate_required([:goal_id, :author_id, :message])
+    |> validate_required([:goal_id, :author_id, :message, :subscription_list_id])
   end
 end

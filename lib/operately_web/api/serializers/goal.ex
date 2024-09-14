@@ -39,10 +39,13 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Goals.Goal do
   end
 
   defp serialize_space(space) do
-    if Ecto.assoc_loaded?(space.members) and Ecto.assoc_loaded?(space.company) do
-      OperatelyWeb.Api.Serializer.serialize(space, level: :full)
-    else
-      OperatelyWeb.Api.Serializer.serialize(space)
+    cond do
+      not Ecto.assoc_loaded?(space) ->
+        OperatelyWeb.Api.Serializer.serialize(space)
+      Ecto.assoc_loaded?(space.members) and Ecto.assoc_loaded?(space.company) ->
+        OperatelyWeb.Api.Serializer.serialize(space, level: :full)
+      true ->
+        OperatelyWeb.Api.Serializer.serialize(space)
     end
   end
 end

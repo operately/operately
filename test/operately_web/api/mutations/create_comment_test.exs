@@ -327,8 +327,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
   end
 
   defp create_goal_update(ctx, goal) do
-    {:ok, update} = Operately.Operations.GoalCheckIn.run(ctx.creator, goal, RichText.rich_text("content"), [])
-    update
+    goal_update_fixture(ctx.creator, goal)
   end
 
   defp create_discussion(ctx, space) do

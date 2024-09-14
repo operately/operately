@@ -20,11 +20,11 @@ defmodule Operately.Operations.ProjectCheckIn do
         author_id: author.id,
         project_id: project.id,
         status: attrs.status,
-        description: attrs.description,
+        description: attrs.content,
         subscription_list_id: changes.subscription_list.id,
       })
     end)
-    |> SubscriptionList.update()
+    |> SubscriptionList.update(:check_in)
     |> Multi.update(:project, fn changes ->
       Project.changeset(project, %{
         last_check_in_id: changes.check_in.id,

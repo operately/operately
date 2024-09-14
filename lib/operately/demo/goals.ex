@@ -5,7 +5,7 @@ defmodule Operately.Demo.Goals do
 
   import Ecto.Query
 
-  def create_goals_and_projects(context) do 
+  def create_goals_and_projects(context) do
     context
     |> add_goal(%{
       space: context.company_space,
@@ -104,7 +104,7 @@ defmodule Operately.Demo.Goals do
       parent: find_goal(context, "Recruit Key Talent"),
       check_in: %{
         status: "on_track",
-        description: rich_text("We have several good candidates in the final step of the selection process. If everything goes well, we will have a hired engineer by the end of this week."),
+        content: rich_text("We have several good candidates in the final step of the selection process. If everything goes well, we will have a hired engineer by the end of this week."),
       },
       milestones: [
         "Candidates are selected for the second round",
@@ -183,7 +183,7 @@ defmodule Operately.Demo.Goals do
         },
       ],
       parent_goal_id: attrs[:parent] && attrs.parent.id,
-      anonymous_access_level: 0, 
+      anonymous_access_level: 0,
       company_access_level: 100,
       space_access_level: 100,
     })
@@ -198,12 +198,12 @@ defmodule Operately.Demo.Goals do
         }
       end)
 
-      {:ok, _} = Operately.Operations.GoalCheckIn.run(
-        goal.champion, 
-        goal, 
-        rich_text("Everything is going as planned! Last week we had a new batch of beta testers and they loved the product! We are now fully focusing on eliminating the leftover bugs"),
-        targets
-      )
+      {:ok, _} = Operately.Operations.GoalCheckIn.run(goal.champion, goal, %{
+        content: rich_text("Everything is going as planned! Last week we had a new batch of beta testers and they loved the product! We are now fully focusing on eliminating the leftover bugs"),
+        target_values: targets,
+        subscription_parent_type: :goal_update,
+        subscriber_ids: [],
+      } )
     end
 
     context
@@ -221,7 +221,7 @@ defmodule Operately.Demo.Goals do
       visibility: "everyone",
       group_id: attrs.space.id,
       goal_id: attrs[:parent] && attrs.parent.id,
-      anonymous_access_level: 0, 
+      anonymous_access_level: 0,
       company_access_level: 100,
       space_access_level: 100,
     })
@@ -261,13 +261,13 @@ defmodule Operately.Demo.Goals do
   def create_project_check_in(champion, project, :default) do
     create_project_check_in(champion, project, %{
       status: "on_track",
-      description: rich_text("Everything is going as planned! Last week we had a new batch of beta testers and they loved the product! We are now fully focusing on eliminating the leftover bugs"),
+      content: rich_text("Everything is going as planned! Last week we had a new batch of beta testers and they loved the product! We are now fully focusing on eliminating the leftover bugs"),
     })
   end
 
   def create_project_check_in(champion, project, attrs) do
     Operately.Operations.ProjectCheckIn.run(champion, project, Map.merge(attrs, %{
-      send_notifications_to_everyone: true,
+      subscription_parent_type: :project_check_in,
       subscriber_ids: []
     }))
   end
@@ -302,7 +302,7 @@ defmodule Operately.Demo.Goals do
   end
 
   def complete_project_milestones(project) do
-    milestones = Operately.Repo.preload(project, :milestones).milestones 
+    milestones = Operately.Repo.preload(project, :milestones).milestones
     completed = Enum.take(milestones, :rand.uniform(length(milestones)))
 
     completed
@@ -322,7 +322,7 @@ defmodule Operately.Demo.Goals do
       find_person(context, "Frank Miller"),
       find_person(context, "Olivia Hall"),
       find_person(context, "Mia Clark"),
-    ] 
+    ]
     |> Enum.filter(fn p -> p.id != attrs.champion.id end)
     |> Enum.filter(fn p -> p.id != attrs.reviewer.id end)
     |> Enum.each(fn p ->
@@ -361,7 +361,7 @@ defmodule Operately.Demo.Goals do
         }
       ]
     }
-    |> Jason.encode!() 
+    |> Jason.encode!()
     |> Jason.decode!()
   end
 end
