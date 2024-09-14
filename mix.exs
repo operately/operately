@@ -39,7 +39,6 @@ defmodule Operately.MixProject do
       {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 4.1"},
       {:phoenix_view, "~> 2.0"},
-      {:phoenix_live_dashboard, "~> 0.8.4"},
       {:swoosh, "~> 1.17"},
       {:finch, "~> 0.19"},
       {:telemetry_metrics, "~> 1.0"},
