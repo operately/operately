@@ -81,6 +81,9 @@ dev.run.script:
 dev.seed.env:
 	touch .env
 
+dev.mix.deps.clean:
+	./devenv mix deps.clean --unlock --unused
+
 #
 # Testing tasks
 #
