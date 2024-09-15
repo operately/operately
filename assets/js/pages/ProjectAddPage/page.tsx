@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
+import * as Icons from "@tabler/icons-react";
 import * as Projects from "@/models/projects";
 
 import { useLoadedData } from "./loader";
@@ -10,8 +11,8 @@ import { useMe } from "@/contexts/CurrentUserContext";
 import { useNavigate } from "react-router-dom";
 
 import Forms from "@/components/Forms";
-import { usePermissionsState } from "@/features/Permissions/usePermissionsState";
-import { ResourcePermissionSelector } from "@/features/Permissions";
+import { NO_ACCESS, PERMISSIONS_LIST, PermissionLevels, VIEW_ACCESS } from "@/features/Permissions";
+import { SecondaryButton } from "@/components/Buttons";
 
 export function Page() {
   return (
@@ -67,9 +68,7 @@ function Form() {
   const me = useMe()!;
   const navigate = useNavigate();
   const [add] = Projects.useCreateProject();
-  const { space, spaceOptions, goal, goals, allowSpaceSelection, company } = useLoadedData();
-
-  const permissions = usePermissionsState({ company: company, space: space });
+  const { space, spaceOptions, goal, goals, allowSpaceSelection } = useLoadedData();
 
   const form = Forms.useForm({
     fields: {
@@ -80,6 +79,9 @@ function Form() {
       goal: Forms.useTextField(goal?.id, { optional: true }),
       creatorRole: Forms.useTextField(null, { optional: true }),
       isContrib: Forms.useSelectField("no", WillYouContributeOptions),
+      companyMembers: Forms.useSelectNumberField(PermissionLevels.EDIT_ACCESS, PERMISSIONS_LIST),
+      spaceMembers: Forms.useSelectNumberField(PermissionLevels.EDIT_ACCESS, PERMISSIONS_LIST),
+      public: Forms.useSelectNumberField(PermissionLevels.NO_ACCESS, [NO_ACCESS, VIEW_ACCESS]),
     },
     validate: (fields, addError) => {
       if (compareIds(fields.champion.value?.id, fields.reviewer.value?.id)) {
@@ -95,9 +97,9 @@ function Form() {
         creatorRole: form.fields.creatorRole.value,
         spaceId: form.fields.space!.value,
         goalId: form.fields.goal?.value,
-        anonymousAccessLevel: permissions.permissions.public,
-        companyAccessLevel: permissions.permissions.company,
-        spaceAccessLevel: permissions.permissions.space,
+        anonymousAccessLevel: form.fields.public!.value!,
+        companyAccessLevel: form.fields.companyMembers!.value!,
+        spaceAccessLevel: form.fields.spaceMembers!.value!,
       });
 
       navigate(Paths.projectPath(res.project.id!));
@@ -123,11 +125,11 @@ function Form() {
           <Forms.RadioButtons label="Will you contribute?" field={"isContrib"} hidden={hideIsContrib} />
           <Forms.TextInput label={CRLabel} field={"creatorRole"} placeholder={CRPlaceholder} hidden={hideCreatorRole} />
 
-          <ResourcePermissionSelector state={permissions} />
+          <PermissionSelector />
         </Forms.FieldGroup>
       </Paper.Body>
 
-      <Forms.Submit saveText="Add Project" layout="centered" />
+      <Forms.Submit saveText="Add Project" layout="centered" buttonSize="lg" />
     </Forms.Form>
   );
 }
@@ -153,4 +155,63 @@ function useShouldHideCreatorRole({ form }) {
 
     return isChampion || isReviewer || !isContributor;
   }, [form.fields.champion, form.fields.reviewer, form.fields.isContrib, me.id]);
+}
+
+function PermissionSelector() {
+  const [advanced, setAdvanced] = React.useState(false);
+  const showAdvanced = () => setAdvanced(true);
+
+  return (
+    <Paper.DimmedSection>
+      <div className="flex items-center justify-between">
+        <div>
+          <div className="font-semibold">Company-wide Access</div>
+          <div className="text-sm">Everyone at Semaphore will be able to view and comment on this project</div>
+        </div>
+
+        {!advanced && (
+          <SecondaryButton size="xs" onClick={showAdvanced}>
+            Edit
+          </SecondaryButton>
+        )}
+      </div>
+
+      {advanced && (
+        <div className="mt-6">
+          <div className="flex items-center justify-between border-t last:border-b border-stroke-subtle py-2.5">
+            <div className="flex items-center gap-2 flex-1 w-2/3 font-semibold">
+              <Icons.IconTent size={20} className="text-content-accent" strokeWidth={2} />
+              <span>Product Space members</span>
+            </div>
+
+            <div className="w-1/3">
+              <Forms.SelectBox field={"spaceMembers"} />
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between border-t last:border-b border-stroke-subtle py-2.5">
+            <div className="flex items-center gap-2 flex-1 w-2/3 font-semibold">
+              <Icons.IconBuilding size={20} />
+              <span>Company members</span>
+            </div>
+
+            <div className="w-1/3">
+              <Forms.SelectBox field={"companyMembers"} />
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between border-t last:border-b border-stroke-subtle py-2.5">
+            <div className="flex items-center gap-2 flex-1 w-2/3 font-semibold">
+              <Icons.IconWorld size={20} />
+              <span>People on the internet</span>
+            </div>
+
+            <div className="w-1/3">
+              <Forms.SelectBox field={"public"} />
+            </div>
+          </div>
+        </div>
+      )}
+    </Paper.DimmedSection>
+  );
 }
