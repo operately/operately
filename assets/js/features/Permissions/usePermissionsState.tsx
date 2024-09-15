@@ -33,32 +33,35 @@ export interface Permissions {
 
 const DEFAULT_PERMISSIONS = {
   public: PermissionLevels.NO_ACCESS,
-  company: PermissionLevels.NO_ACCESS,
-  space: PermissionLevels.NO_ACCESS,
+  company: PermissionLevels.EDIT_ACCESS,
+  space: PermissionLevels.EDIT_ACCESS,
 };
 
 function reducerFunction(state: Permissions, action: ActionOptions) {
   switch (action.type) {
     case ReducerActions.SET_PUBLIC:
       return {
-        space: PermissionLevels.VIEW_ACCESS,
-        company: PermissionLevels.VIEW_ACCESS,
+        space: PermissionLevels.EDIT_ACCESS,
+        company: PermissionLevels.EDIT_ACCESS,
         public: PermissionLevels.VIEW_ACCESS,
       };
     case ReducerActions.SET_INTERNAL:
       return {
-        space: PermissionLevels.VIEW_ACCESS,
-        company: PermissionLevels.VIEW_ACCESS,
+        space: PermissionLevels.EDIT_ACCESS,
+        company: PermissionLevels.EDIT_ACCESS,
         public: PermissionLevels.NO_ACCESS,
       };
     case ReducerActions.SET_CONFIDENTIAL:
       return {
-        ...DEFAULT_PERMISSIONS,
-        space: PermissionLevels.VIEW_ACCESS,
+        space: PermissionLevels.EDIT_ACCESS,
+        company: PermissionLevels.NO_ACCESS,
+        public: PermissionLevels.NO_ACCESS,
       };
     case ReducerActions.SET_SECRET:
       return {
-        ...DEFAULT_PERMISSIONS,
+        space: PermissionLevels.NO_ACCESS,
+        company: PermissionLevels.NO_ACCESS,
+        public: PermissionLevels.NO_ACCESS,
       };
 
     case ReducerActions.SET_PUBLIC_ACCESS:
