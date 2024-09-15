@@ -43,7 +43,6 @@ defmodule OperatelyWeb do
         layouts: [html: OperatelyWeb.Layouts]
 
       import Plug.Conn
-      import OperatelyWeb.Gettext
 
       unquote(verified_routes())
     end
@@ -83,7 +82,6 @@ defmodule OperatelyWeb do
     quote do
       # HTML escaping functionality
       import Phoenix.HTML
-      import OperatelyWeb.Gettext
 
       # Shortcut for generating JS commands
       alias Phoenix.LiveView.JS
