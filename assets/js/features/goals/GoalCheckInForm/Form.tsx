@@ -5,6 +5,8 @@ import * as Forms from "@/components/Form";
 
 import { FormState } from "./useForm";
 import { createTestId } from "@/utils/testid";
+import { Spacer } from "@/components/Spacer";
+import { SubscribersSelector } from "@/features/Subscriptions";
 
 export function Form({ form }: { form: FormState }) {
   return (
@@ -12,6 +14,12 @@ export function Form({ form }: { form: FormState }) {
       <Header />
       <TargetInputs form={form} />
       <Editor form={form} />
+
+      <Spacer size={4} />
+
+      {form.mode === "create" && (
+        <SubscribersSelector state={form.subscriptionsState} spaceName={form.goal.space!.name!} />
+      )}
     </>
   );
 }

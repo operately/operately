@@ -1,10 +1,10 @@
-defmodule Operately.Operations.ProjectCheckIn.Subscription do
+defmodule Operately.Operations.Notifications.Subscription do
   alias Ecto.Multi
   alias Operately.RichContent
   alias Operately.Notifications.Subscription
 
   def insert(multi, author, attrs) do
-    mentioned = RichContent.find_mentioned_ids(attrs.description, :decode_ids)
+    mentioned = RichContent.find_mentioned_ids(attrs.content, :decode_ids)
     invited = [author.id | attrs.subscriber_ids]
 
     ids = categorize_ids(invited, mentioned)

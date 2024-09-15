@@ -50,9 +50,10 @@ defmodule Operately.Operations.CommentAddingTest do
     test "Commenting on check-in notifies everyone", ctx do
       {:ok, check_in} = ProjectCheckIn.run(ctx.champion, ctx.project, %{
         status: "on_track",
-        description: RichText.rich_text("Some description"),
-        send_notifications_to_everyone: false,
+        content: RichText.rich_text("Some description"),
+        send_to_everyone: false,
         subscriber_ids: Enum.map(ctx.contribs, &(&1.person_id)),
+        subscription_parent_type: :project_check_in
       })
 
       {:ok, comment} = Oban.Testing.with_testing_mode(:manual, fn ->
@@ -78,9 +79,10 @@ defmodule Operately.Operations.CommentAddingTest do
     test "Mentioned person is notified", ctx do
       {:ok, check_in} = ProjectCheckIn.run(ctx.champion, ctx.project, %{
         status: "on_track",
-        description: RichText.rich_text("Some description"),
-        send_notifications_to_everyone: false,
+        content: RichText.rich_text("Some description"),
+        send_to_everyone: false,
         subscriber_ids: [ctx.champion.id],
+        subscription_parent_type: :project_check_in
       })
 
       # Without permissions

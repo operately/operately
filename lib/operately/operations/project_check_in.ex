@@ -4,7 +4,7 @@ defmodule Operately.Operations.ProjectCheckIn do
   alias Operately.Repo
   alias Operately.Activities
   alias Operately.Projects.{CheckIn, Project}
-  alias Operately.Operations.ProjectCheckIn.{Subscription, SubscriptionList}
+  alias Operately.Operations.Notifications.{Subscription, SubscriptionList}
 
   def run(author, project, attrs) do
     next_check_in = Operately.Time.calculate_next_weekly_check_in(
@@ -20,11 +20,11 @@ defmodule Operately.Operations.ProjectCheckIn do
         author_id: author.id,
         project_id: project.id,
         status: attrs.status,
-        description: attrs.description,
+        description: attrs.content,
         subscription_list_id: changes.subscription_list.id,
       })
     end)
-    |> SubscriptionList.update()
+    |> SubscriptionList.update(:check_in)
     |> Multi.update(:project, fn changes ->
       Project.changeset(project, %{
         last_check_in_id: changes.check_in.id,

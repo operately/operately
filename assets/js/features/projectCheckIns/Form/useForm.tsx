@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { Paths } from "@/routes/paths";
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 import { useSubscriptions, SubscriptionsState, Options, NotifiablePerson } from "@/features/Subscriptions";
+import { getReviewerAndChampion } from "@/features/Subscriptions/utils";
 
 interface UseFormOptions {
   mode: "create" | "edit";
@@ -50,7 +51,7 @@ export interface FormState {
 export function useForm({ mode, project, checkIn, author, notifiablePeople = [] }: UseFormOptions): FormState {
   const navigate = useNavigate();
   const subscriptionsState = useSubscriptions(notifiablePeople, {
-    alwaysNotify: getAlwaysNotifiablePeople(notifiablePeople),
+    alwaysNotify: getReviewerAndChampion(notifiablePeople),
   });
 
   const [status, setStatus] = React.useState<string | null>(mode === "edit" ? checkIn!.status! : null);
@@ -159,8 +160,4 @@ function validate(status: string | null, description: string): Error[] {
   }
 
   return errors;
-}
-
-function getAlwaysNotifiablePeople(people: NotifiablePerson[]) {
-  return people.filter((p) => p.title === "Reviewer" || p.title === "Champion");
 }

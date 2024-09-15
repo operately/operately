@@ -483,8 +483,7 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
       company_access_level: Keyword.get(opts, :company_access, Binding.no_access()),
       space_access_level: Keyword.get(opts, :space_access, Binding.no_access()),
     })
-    {:ok, update} = Operately.Operations.GoalCheckIn.run(ctx.creator, goal, RichText.rich_text("content"), [])
-    update
+    goal_update_fixture(ctx.creator, goal)
   end
 
   defp create_discussion(ctx, attrs) do

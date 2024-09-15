@@ -7,7 +7,6 @@ defmodule Operately.Support.Features.ReviewSteps do
   import Operately.ProjectsFixtures
   import Operately.GoalsFixtures
 
-  alias Operately.Support.RichText
   alias OperatelyWeb.Paths
   alias Operately.Goals.{Goal, Update}
   alias Operately.Projects.{Project, CheckIn}
@@ -53,11 +52,11 @@ defmodule Operately.Support.Features.ReviewSteps do
   end
 
   step :setup_updates, ctx, name do
-    create_goal(ctx.other_person, ctx.person, ctx.company, DateTime.utc_now(), name)
-    |> create_update()
+    goal = create_goal(ctx.other_person, ctx.person, ctx.company, DateTime.utc_now(), name)
+    goal_update_fixture(ctx.other_person, goal)
 
-    create_goal(ctx.other_person, ctx.person, ctx.company, past_date(), name)
-    |> create_update()
+    goal = create_goal(ctx.other_person, ctx.person, ctx.company, past_date(), name)
+    goal_update_fixture(ctx.other_person, goal)
 
     ctx
   end
@@ -237,14 +236,5 @@ defmodule Operately.Support.Features.ReviewSteps do
       author_id: project.champion.id,
       project_id: project.id,
     })
-  end
-
-  defp create_update(goal) do
-    {:ok, update} = Operately.Goals.create_update(%{
-      goal_id: goal.id,
-      author_id: goal.champion_id,
-      message: RichText.rich_text("Doing well")
-    })
-    update
   end
 end

@@ -8,6 +8,8 @@ import { useListState } from "@/utils/useListState";
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 import { Validators } from "@/utils/validators";
 import { Paths } from "@/routes/paths";
+import { NotifiablePerson, Options, SubscriptionsState, useSubscriptions } from "@/features/Subscriptions";
+import { getReviewerAndChampion } from "@/features/Subscriptions/utils";
 
 interface Error {
   field: string;
@@ -18,11 +20,13 @@ interface UseFormOptions {
   mode: "create" | "edit";
   goal: Goals.Goal;
   checkIn?: GoalCheckIns.Update;
+  notifiablePeople?: NotifiablePerson[];
 }
 
 export interface FormState {
   errors: Error[];
 
+  mode: "create" | "edit";
   editor: TipTapEditor.EditorState;
   targets: TargetState[];
   updateTarget: (id: string, value: number | null) => void;
@@ -33,10 +37,17 @@ export interface FormState {
   submitButtonLabel?: string;
 
   cancelPath: string;
+
+  subscriptionsState: SubscriptionsState;
+  goal: Goals.Goal;
 }
 
 export function useForm(options: UseFormOptions): FormState {
   const navigate = useNavigate();
+  const subscriptionsState = useSubscriptions(options.notifiablePeople || [], {
+    alwaysNotify: getReviewerAndChampion(options.notifiablePeople || []),
+  });
+
   const goal = options.goal;
   const [errors, setErrors] = React.useState<Error[]>([]);
 
@@ -66,6 +77,8 @@ export function useForm(options: UseFormOptions): FormState {
         goalId: goal.id,
         content: JSON.stringify(editor.editor.getJSON()),
         newTargetValues: JSON.stringify(targets.map((target) => ({ id: target.id, value: target.value }))),
+        sendNotificationsToEveryone: subscriptionsState.subscriptionType == Options.ALL,
+        subscriberIds: subscriptionsState.currentSubscribersList,
       });
 
       navigate(Paths.goalProgressUpdatePath(res.update!.id));
@@ -90,6 +103,7 @@ export function useForm(options: UseFormOptions): FormState {
     options.mode === "create" ? Paths.goalPath(goal.id!) : Paths.goalProgressUpdatePath(options.checkIn!.id!);
 
   return {
+    mode: options.mode,
     editor,
     targets,
     updateTarget,
@@ -98,6 +112,8 @@ export function useForm(options: UseFormOptions): FormState {
     submitButtonLabel,
     cancelPath,
     errors,
+    subscriptionsState,
+    goal,
   };
 }
 

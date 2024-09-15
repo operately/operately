@@ -1,13 +1,12 @@
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Goals from "@/models/goals";
-import * as People from "@/models/people";
 import * as React from "react";
 
 import { PrimaryButton } from "@/components/Buttons";
 import { Form, useForm } from "@/features/goals/GoalCheckInForm";
-import { InlinePeopleList } from "@/components/InlinePeopleList";
 import { Paths } from "@/routes/paths";
+import { findGoalNotifiablePeople } from "@/features/Subscriptions/utils";
 import { useMe } from "@/contexts/CurrentUserContext";
 
 interface LoaderResult {
@@ -19,7 +18,7 @@ export async function loader({ params }): Promise<LoaderResult> {
     goal: await Goals.getGoal({
       id: params.goalId,
       includeTargets: true,
-      includeSpace: true,
+      includeSpaceMembers: true,
       includeChampion: true,
       includeReviewer: true,
     }).then((data) => data.goal!),
@@ -30,7 +29,8 @@ export function Page() {
   const me = useMe()!;
   const { goal } = Pages.useLoadedData<LoaderResult>();
 
-  const form = useForm({ goal, mode: "create" });
+  const people = findGoalNotifiablePeople(goal, me);
+  const form = useForm({ goal, mode: "create", notifiablePeople: people });
 
   return (
     <Pages.Page title={["Goal Progress Update", goal.name!]}>
@@ -39,7 +39,6 @@ export function Page() {
 
         <Paper.Body>
           <Form form={form} />
-          <WhoWillBeNotified goal={goal} me={me} />
           <SubmitButton form={form} />
         </Paper.Body>
       </Paper.Root>
@@ -62,19 +61,6 @@ function SubmitButton({ form }) {
         <PrimaryButton onClick={form.submit} loading={form.submitting} testId="submit-update">
           Submit Update
         </PrimaryButton>
-      </div>
-    </div>
-  );
-}
-
-function WhoWillBeNotified({ goal, me }: { goal: Goals.Goal; me: People.Person }) {
-  const people = [goal.champion!, goal.reviewer!].filter((person) => person.id !== me.id);
-
-  return (
-    <div className="mt-8 font-medium">
-      <p className="font-bold">When you submit:</p>
-      <div className="inline-flex gap-1 flex-wrap mt-1">
-        <InlinePeopleList people={people} /> will be notified.
       </div>
     </div>
   );

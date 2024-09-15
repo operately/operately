@@ -8,7 +8,6 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdatesTest do
   alias Operately.Repo
   alias OperatelyWeb.Paths
   alias Operately.Access.Binding
-  alias Operately.Support.RichText
 
   describe "security" do
     test "it requires authentication", ctx do
@@ -116,8 +115,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdatesTest do
       space_access_level: space_access,
     })
     updates = Enum.map(1..3, fn _ ->
-      {:ok, update} = Operately.Operations.GoalCheckIn.run(ctx.creator, goal, RichText.rich_text("content"), [])
-      update
+      goal_update_fixture(ctx.creator, goal)
     end)
 
     goal_id = Paths.goal_id(goal)
