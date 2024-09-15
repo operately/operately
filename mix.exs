@@ -44,7 +44,6 @@ defmodule Operately.MixProject do
       {:finch, "~> 0.19"},
       {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.1"},
-      {:gettext, "~> 0.20"},
       {:jason, "~> 1.4"},
       {:plug_cowboy, "~> 2.7"},
       {:ueberauth, "~> 0.10"},
