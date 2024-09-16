@@ -113,6 +113,11 @@ defmodule Operately.Notifications do
           join: s in assoc(c, :subscription_list), as: :subscription_list,
           where: s.id == ^id
         )
+      :goal_update ->
+        from(u in Operately.Goals.Update, as: :resource,
+          join: s in assoc(u, :subscription_list), as: :subscription_list,
+          where: s.id == ^id
+        )
     end
     |> Fetch.get_resource_with_access_level(person_id, selected_resource: :subscription_list)
   end
@@ -121,6 +126,11 @@ defmodule Operately.Notifications do
     query = case type do
       :project_check_in ->
         from(c in Operately.Projects.CheckIn, as: :resource,
+          join: s in assoc(c, :subscription_list),
+          where: s.id == ^id
+        )
+      :goal_update ->
+        from(c in Operately.Goals.Update, as: :resource,
           join: s in assoc(c, :subscription_list),
           where: s.id == ^id
         )

@@ -10,11 +10,10 @@ import { Unsubscribe } from "./current-subscriptions/Unsubscribe";
 
 interface CurrentSubscriptionsProps {
   subscriptionList: SubscriptionList;
-  name: "check-in";
-  type: "project_check_in";
+  name: "check-in" | "update";
+  type: "project_check_in" | "goal_update";
   callback: () => void;
   people: NotifiablePerson[];
-  projectName?: string;
 }
 
 const CurrentSubscriptionsContext = createContext<CurrentSubscriptionsProps | undefined>(undefined);
