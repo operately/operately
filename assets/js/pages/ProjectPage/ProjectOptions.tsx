@@ -26,15 +26,6 @@ export function ProjectOptions({ project }) {
         />
       )}
 
-      {project.permissions.canEditPermissions && (
-        <PageOptions.Link
-          icon={Icons.IconLock}
-          title="Edit project permissions"
-          to={Paths.editProjectAccessLevelsPath(project.id)}
-          testId="edit-project-permissions-button"
-        />
-      )}
-
       {project.permissions.canPause && Projects.isPausable(project) && (
         <PageOptions.Link
           icon={Icons.IconPlayerPauseFilled}
