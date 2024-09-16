@@ -44,6 +44,12 @@ defmodule Operately.Projects do
     |> Fetch.get_resource_with_access_level(person_id)
   end
 
+  def update_check_in(%CheckIn{} = check_in, attrs) do
+    check_in
+    |> CheckIn.changeset(attrs)
+    |> Repo.update()
+  end
+
   defdelegate create_project(params), to: Operately.Operations.ProjectCreation, as: :run
   defdelegate list_projects(person, filters), to: Operately.Projects.ListOperation, as: :run
 
