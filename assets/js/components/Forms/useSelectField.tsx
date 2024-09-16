@@ -25,5 +25,7 @@ export function useSelectField(initial: string | null | undefined, options: Opti
     return null;
   };
 
-  return { type: "select", initial, options, optional: config?.optional, value, setValue, validate };
+  const reset = () => setValue(initial);
+
+  return { type: "select", initial, options, optional: config?.optional, value, setValue, validate, reset };
 }
