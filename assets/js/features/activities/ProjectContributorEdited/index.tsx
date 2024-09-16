@@ -53,8 +53,7 @@ const ProjectContributorEdited: ActivityHandler = {
       }
     }
 
-    // not yet implemented
-    return null;
+    throw new Error("Unknown edit event for the project contributor");
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {
@@ -81,8 +80,7 @@ const ProjectContributorEdited: ActivityHandler = {
       );
     }
 
-    // not yet implemented
-    return null;
+    throw new Error("Unknown edit event for the project contributor");
   },
 
   commentCount(_activity: Activity): number {
