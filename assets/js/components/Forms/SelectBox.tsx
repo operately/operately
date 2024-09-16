@@ -2,8 +2,9 @@ import React from "react";
 import Select from "react-select";
 import classnames from "classnames";
 
-import { getFormContext } from "./FormContext";
+import { getFormContext, useField } from "./FormContext";
 import { InputField } from "./FieldGroup";
+import { SelectField } from "./useSelectField";
 
 interface SelectBoxProps {
   field: string;
@@ -24,8 +25,7 @@ export function SelectBox({ field, label, placeholder, hidden }: SelectBoxProps)
 }
 
 function SelectBoxInput({ field, placeholder, error }: SelectBoxProps & { error: boolean }) {
-  const form = getFormContext();
-  const f = form.fields[field];
+  const f = useField<SelectField>(field);
 
   const onChange = ({ value }: { value: any }) => {
     f.setValue(value);

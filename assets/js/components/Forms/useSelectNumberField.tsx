@@ -5,6 +5,7 @@ import { Field } from "./FormState";
 type SelectField = Field<number> & {
   type: "select";
   options: { value: number; label: string }[];
+  setOptions: (options: { value: number; label: string }[]) => void;
 };
 
 interface Config {
@@ -18,10 +19,11 @@ interface Option {
 
 export function useSelectNumberField(
   initial: number | null | undefined,
-  options: Option[],
+  initialOptions: Option[],
   config?: Config,
 ): SelectField {
   const [value, setValue] = React.useState(initial);
+  const [options, setOptions] = React.useState(initialOptions);
 
   const validate = (): string | null => {
     if (!value) return !config?.optional ? "Can't be empty" : null;
@@ -29,5 +31,5 @@ export function useSelectNumberField(
     return null;
   };
 
-  return { type: "select", initial, options, optional: config?.optional, value, setValue, validate };
+  return { type: "select", initial, options, optional: config?.optional, value, setValue, validate, setOptions };
 }
