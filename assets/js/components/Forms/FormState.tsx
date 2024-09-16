@@ -1,32 +1,34 @@
 import { Dispatch, SetStateAction } from "react";
+import { FieldSet } from "./useFieldSet";
 
 export type State = "idle" | "validating" | "submitting";
-export type MapOfFields = Record<string, Field<any>>;
 
-export interface FormState<FieldTypes extends MapOfFields> {
-  fields: FieldTypes;
+export interface KeyValueMap {
+  [key: string]: Field<any> | FieldSet<any>;
+}
+
+export interface FormState<T extends KeyValueMap> {
+  fields: T;
   state: State;
-  errors: ErrorMap<FieldTypes>;
-  setState: (state: State) => void;
-  setErrors: (errors: ErrorMap<FieldTypes>) => void;
+  errors: ErrorMap;
   hasCancel: boolean;
   actions: {
     clearErrors: () => void;
     validate: () => boolean;
-    submit: (form: FormState<FieldTypes>) => Promise<void>;
-    cancel: (form: FormState<FieldTypes>) => Promise<void>;
+    submit: (form: FormState<T>) => Promise<void>;
+    cancel: (form: FormState<T>) => Promise<void>;
     reset: () => void;
   };
 }
 
 export type Field<T> = {
+  type: string;
   value: T | null | undefined;
   setValue: Dispatch<SetStateAction<T | undefined>>;
   initial?: T | null | undefined;
   optional?: boolean;
   validate: () => string | null;
+  reset: () => void;
 };
 
-export type ErrorMap<Fields extends MapOfFields> = {
-  [K in keyof Fields]?: string;
-};
+export type ErrorMap = Record<string, string>;

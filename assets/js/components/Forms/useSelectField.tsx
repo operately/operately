@@ -2,7 +2,7 @@ import React from "react";
 
 import { Field } from "./FormState";
 
-type SelectField = Field<string> & {
+export type SelectField = Field<string> & {
   type: "select";
   options: { value: string; label: string }[];
 };
