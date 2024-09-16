@@ -27,6 +27,8 @@ export function useMultiPeopleSelectField(options: Person[], config?: Config): S
     return null;
   };
 
+  const reset = () => null;
+
   return {
     type: "select-multi-people",
     value,
@@ -35,5 +37,6 @@ export function useMultiPeopleSelectField(options: Person[], config?: Config): S
     options,
     optional: config?.optional,
     alwaysSelected,
+    reset,
   };
 }
