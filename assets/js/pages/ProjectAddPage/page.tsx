@@ -150,8 +150,8 @@ function useAccessFields() {
     fields: {
       isAdvanced: Forms.useBooleanField(false),
       annonymousMembers: Forms.useSelectNumberField(PermissionLevels.NO_ACCESS, annonymousOptions),
-      companyMembers: Forms.useSelectNumberField(PermissionLevels.EDIT_ACCESS, companyOptions),
-      spaceMembers: Forms.useSelectNumberField(PermissionLevels.EDIT_ACCESS, spaceOptions),
+      companyMembers: Forms.useSelectNumberField(PermissionLevels.COMMENT_ACCESS, companyOptions),
+      spaceMembers: Forms.useSelectNumberField(PermissionLevels.COMMENT_ACCESS, spaceOptions),
     },
   });
 
