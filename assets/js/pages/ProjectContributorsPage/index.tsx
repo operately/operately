@@ -15,6 +15,7 @@ import { Menu, MenuActionItem, MenuLinkItem } from "@/components/Menu";
 import { createTestId } from "@/utils/testid";
 import { Paths } from "@/routes/paths";
 import { ProjectAccessLevelBadge } from "@/components/Badges/AccessLevelBadges";
+import { AccessLevel } from "@/features/projects/AccessLevel";
 
 interface LoaderData {
   project: Projects.Project;
@@ -26,6 +27,7 @@ export async function loader({ params }): Promise<LoaderData> {
       id: params.projectID,
       includePermissions: true,
       includeContributors: true,
+      includeAccessLevels: true,
       includeContributorsAccessLevels: true,
     }).then((data) => data.project!),
   };
@@ -41,6 +43,7 @@ export function Page() {
 
         <Paper.Body>
           <Title />
+          <GeneralAccess />
           <Champion />
           <Reviewer />
           <Contributors />
@@ -82,6 +85,28 @@ function SectionTitle({ title }: { title: string }) {
   return (
     <div className="flex items-center justify-between mb-2">
       <h2 className="font-bold text-lg">{title}</h2>
+    </div>
+  );
+}
+
+function GeneralAccess() {
+  const { project } = Pages.useLoadedData() as LoaderData;
+
+  return (
+    <div className="mb-10">
+      <SectionTitle title="General Access" />
+      <div className="border-y border-stroke-dimmed flex items-center justify-between">
+        <AccessLevel
+          annonymous={project.accessLevels?.public!}
+          company={project.accessLevels?.company!}
+          space={project.accessLevels?.space!}
+          tense="present"
+        />
+
+        <SecondaryButton linkTo={Paths.projectEditPermissionsPath(project.id!)} size="xs">
+          Edit
+        </SecondaryButton>
+      </div>
     </div>
   );
 }
