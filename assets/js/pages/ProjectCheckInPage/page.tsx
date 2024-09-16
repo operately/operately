@@ -57,7 +57,6 @@ export function Page() {
             name="check-in"
             type="project_check_in"
             callback={refresh}
-            projectName={checkIn.project!.name!}
           />
         </Paper.Body>
       </Paper.Root>

@@ -12,7 +12,7 @@ export function getSelectedPeopleFromSubscriptions(people: NotifiablePerson[], s
 }
 
 export function getReviewerAndChampion(people: NotifiablePerson[]) {
-  return people.filter((p) => p.title === "Reviewer" || p.title === "Champion");
+  return people.filter((p) => p.role === "Reviewer" || p.role === "Champion");
 }
 
 export function findNotifiableProjectContributors(project: Project, me?: Person): NotifiablePerson[] {
@@ -23,18 +23,18 @@ export function findNotifiableProjectContributors(project: Project, me?: Person)
         id: contrib.person!.id!,
         fullName: contrib.person!.fullName!,
         avatarUrl: contrib.person!.avatarUrl!,
-        title: "",
+        role: "",
       };
 
       switch (contrib.role) {
         case "reviewer":
-          person.title = "Reviewer";
+          person.role = "Reviewer";
           break;
         case "champion":
-          person.title = "Champion";
+          person.role = "Champion";
           break;
         default:
-          person.title = contrib.responsibility!;
+          person.role = contrib.responsibility!;
       }
 
       return person;
@@ -51,14 +51,14 @@ export function findGoalNotifiablePeople(goal: Goal, me?: Person): NotifiablePer
         id: member.id!,
         fullName: member.fullName!,
         avatarUrl: member.avatarUrl!,
-        title: member.title!,
+        role: member.title!,
       };
 
       if (compareIds(member.id, goal.reviewer?.id)) {
-        person.title = "Reviewer";
+        person.role = "Reviewer";
       }
       if (compareIds(member.id, goal.champion?.id)) {
-        person.title = "Champion";
+        person.role = "Champion";
       }
 
       return person;

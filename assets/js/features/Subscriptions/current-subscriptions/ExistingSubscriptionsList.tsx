@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 
+import { match } from "ts-pattern";
 import Avatar from "@/components/Avatar";
 import { Subscription } from "@/models/notifications";
 import { EditSubscriptionsModal } from "./EditSubscriptionsModal";
@@ -31,18 +32,10 @@ export function ExistingSubscriptionsList() {
 }
 
 function buildLabel(subscriptions: Subscription[], name: string) {
-  let prefix: string;
-
-  switch (subscriptions.length) {
-    case 0:
-      prefix = "No one";
-      break;
-    case 1:
-      prefix = "1 person";
-      break;
-    default:
-      prefix = `${subscriptions!.length} people`;
-  }
+  const prefix = match(subscriptions.length)
+    .with(0, () => "No one")
+    .with(1, () => "1 person")
+    .otherwise(() => `${subscriptions.length} people`);
 
   return `${prefix} will be notified when someone comments on this ${name}.`;
 }
