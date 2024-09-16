@@ -655,6 +655,7 @@ export interface GoalProgressUpdate {
   goalTargetUpdates?: GoalTargetUpdates[] | null;
   commentsCount?: number | null;
   goal?: Goal | null;
+  subscriptionList?: SubscriptionList | null;
 }
 
 export interface GoalTargetUpdates {
@@ -1215,6 +1216,9 @@ export interface GetGoalProgressUpdateInput {
   includeReactions?: boolean | null;
   includeGoal?: boolean | null;
   includeGoalTargets?: boolean | null;
+  includeReviewer?: boolean | null;
+  includeChampion?: boolean | null;
+  includeSpaceMembers?: boolean | null;
   includeSubscriptions?: boolean | null;
 }
 

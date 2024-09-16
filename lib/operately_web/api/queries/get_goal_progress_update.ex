@@ -12,6 +12,9 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdate do
     field :include_reactions, :boolean
     field :include_goal, :boolean
     field :include_goal_targets, :boolean
+    field :include_reviewer, :boolean
+    field :include_champion, :boolean
+    field :include_space_members, :boolean
     field :include_subscriptions, :boolean
   end
 
@@ -58,6 +61,9 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdate do
           :include_reactions -> [[reactions: :person] | result]
           :include_goal -> [:goal | result]
           :include_goal_targets -> [[goal: :targets] | result]
+          :include_champion -> [[goal: :champion] | result]
+          :include_reviewer -> [[goal: :reviewer] | result]
+          :include_space_members -> [[goal: [group: [:members, :company]]] | result]
           :include_subscriptions -> [Subscription.preload_subscriptions() | result]
           _ -> result
         end

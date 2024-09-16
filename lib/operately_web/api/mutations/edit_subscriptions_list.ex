@@ -2,8 +2,7 @@ defmodule OperatelyWeb.Api.Mutations.EditSubscriptionsList do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
-  alias Operately.Projects
-  alias Operately.Notifications
+  alias Operately.{Goals, Projects, Notifications}
   alias Operately.Operations.SubscriptionsListEditing
 
   inputs do
@@ -49,6 +48,7 @@ defmodule OperatelyWeb.Api.Mutations.EditSubscriptionsList do
   defp check_permissions(type, access_level) do
     case type do
       :project_check_in -> Projects.Permissions.check(access_level, :can_edit_check_in)
+      :goal_update -> Goals.Permissions.check(access_level, :can_edit_check_in)
     end
   end
 end

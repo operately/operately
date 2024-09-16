@@ -4,7 +4,10 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Goals.Goal do
       id: OperatelyWeb.Paths.goal_id(goal),
       name: goal.name,
       permissions: OperatelyWeb.Api.Serializer.serialize(goal.permissions, level: :full),
-      targets: OperatelyWeb.Api.Serializer.serialize(goal.targets)
+      targets: OperatelyWeb.Api.Serializer.serialize(goal.targets),
+      space: serialize_space(goal.group),
+      champion: OperatelyWeb.Api.Serializer.serialize(goal.champion),
+      reviewer: OperatelyWeb.Api.Serializer.serialize(goal.reviewer),
     }
   end
 
@@ -39,13 +42,10 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Goals.Goal do
   end
 
   defp serialize_space(space) do
-    cond do
-      not Ecto.assoc_loaded?(space) ->
-        OperatelyWeb.Api.Serializer.serialize(space)
-      Ecto.assoc_loaded?(space.members) and Ecto.assoc_loaded?(space.company) ->
-        OperatelyWeb.Api.Serializer.serialize(space, level: :full)
-      true ->
-        OperatelyWeb.Api.Serializer.serialize(space)
+    if Ecto.assoc_loaded?(space) and Ecto.assoc_loaded?(space.members) and Ecto.assoc_loaded?(space.company) do
+      OperatelyWeb.Api.Serializer.serialize(space, level: :full)
+    else
+      OperatelyWeb.Api.Serializer.serialize(space)
     end
   end
 end
