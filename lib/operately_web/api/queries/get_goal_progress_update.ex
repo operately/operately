@@ -3,10 +3,16 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdate do
   use OperatelyWeb.Api.Helpers
 
   alias Operately.Goals.{Goal, Update, Permissions}
+  alias Operately.Notifications.Subscription
 
   inputs do
     field :id, :string
+    field :include_author, :boolean
+    field :include_acknowledged_by, :boolean
+    field :include_reactions, :boolean
     field :include_goal, :boolean
+    field :include_goal_targets, :boolean
+    field :include_subscriptions, :boolean
   end
 
   outputs do
@@ -17,6 +23,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdate do
     Action.new()
     |> Action.run(:me, fn -> find_me(conn) end)
     |> Action.run(:id, fn -> decode_id(inputs.id) end)
+    |> Action.run(:preload, fn -> include_requested(inputs) end)
     |> Action.run(:check_in, fn ctx -> load(ctx) end)
     |> Action.run(:check_permissions, fn ctx -> Permissions.check(ctx.check_in.requester_access_level, :can_view) end)
     |> Action.run(:serialized, fn ctx -> {:ok, %{update: OperatelyWeb.Api.Serializer.serialize(ctx.check_in, level: :full)}} end)
@@ -35,9 +42,28 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdate do
 
   defp load(ctx) do
     Update.get(ctx.me, id: ctx.id, opts: [
-      preload: [:author, :acknowledged_by, reactions: :person, goal: :targets],
+      preload: ctx.preload,
     ])
     |> load_goal_permissions(ctx.me)
+  end
+
+  defp include_requested(inputs) do
+    requested = extract_include_filters(inputs)
+
+    preload =
+      Enum.reduce(requested, [], fn include, result ->
+        case include do
+          :include_author -> [:author | result]
+          :include_acknowledged_by -> [:acknowledged_by | result]
+          :include_reactions -> [[reactions: :person] | result]
+          :include_goal -> [:goal | result]
+          :include_goal_targets -> [[goal: :targets] | result]
+          :include_subscriptions -> [Subscription.preload_subscriptions() | result]
+          _ -> result
+        end
+      end)
+
+    {:ok, preload}
   end
 
   defp load_goal_permissions({:error, reason}, _), do: {:error, reason}
