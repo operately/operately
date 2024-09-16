@@ -1,49 +1,29 @@
 import * as React from "react";
 
-import { FormState, State, MapOfFields, ErrorMap } from "./FormState";
+import { FormState, State, KeyValueMap, ErrorMap, Field } from "./FormState";
+import { FieldSet } from "./useFieldSet";
 
-interface UseFormProps<FieldTypes extends MapOfFields> {
-  fields: FieldTypes;
-  validate?: (fields: FieldTypes, addError: (field: keyof FieldTypes, message: string) => void) => void;
-  submit: (form: FormState<FieldTypes>) => Promise<void>;
-  cancel?: (form: FormState<FieldTypes>) => Promise<void>;
+type AddErrorFn = (field: string, message: string) => void;
+
+interface FormProps<T extends KeyValueMap> {
+  fields: T;
+  validate?: (addError: AddErrorFn) => void;
+  submit: (form: FormState<T>) => Promise<void>;
+  cancel?: (form: FormState<T>) => Promise<void>;
 }
 
-export function useForm<FieldTypes extends MapOfFields>(props: UseFormProps<FieldTypes>): FormState<FieldTypes> {
+export function useForm<T extends KeyValueMap>(props: FormProps<T>): FormState<T> {
   const [state, setState] = React.useState<State>("idle");
-  const [errors, setErrors] = React.useState<ErrorMap<FieldTypes>>({});
+  const [errors, validate, clearErrors] = createFormValidator(props);
 
   const form = {
-    state: state,
-    setState,
     fields: props.fields,
+    state: state,
     errors,
-    setErrors,
     hasCancel: !!props.cancel,
     actions: {
-      clearErrors: () => setErrors({}),
-      validate: (): boolean => {
-        const newErrors: ErrorMap<FieldTypes> = {};
-
-        if (props.validate) {
-          props.validate(props.fields, (field, message) => {
-            newErrors[field] = message;
-          });
-        }
-
-        for (const key in props.fields) {
-          const field = props.fields[key]!;
-          const error = field.validate();
-
-          if (error) {
-            newErrors[key] = error;
-          }
-        }
-
-        setErrors(newErrors);
-
-        return Object.keys(newErrors).length === 0;
-      },
+      clearErrors: clearErrors,
+      validate: validate,
       submit: async () => {
         setState("validating");
         if (!form.actions.validate()) {
@@ -69,8 +49,12 @@ export function useForm<FieldTypes extends MapOfFields>(props: UseFormProps<Fiel
         for (const key in props.fields) {
           const field = props.fields[key]!;
 
-          if (field.initial) {
-            field.setValue(field.initial);
+          if (field.type === "fieldset") {
+            const subfieldset = field as FieldSet<any>;
+            subfieldset.reset();
+          } else {
+            const regularField = field as Field<any>;
+            regularField.reset();
           }
         }
       },
@@ -78,4 +62,37 @@ export function useForm<FieldTypes extends MapOfFields>(props: UseFormProps<Fiel
   };
 
   return form;
+}
+
+function createFormValidator<T extends KeyValueMap>(props: FormProps<T>): [ErrorMap, () => boolean, () => void] {
+  const [errors, setErrors] = React.useState<ErrorMap>({});
+  const clearErrors = () => setErrors({});
+
+  const validate = (): boolean => {
+    const newErrors: ErrorMap = {};
+    const addError: AddErrorFn = (field: string, message: string) => {
+      newErrors[field] = message;
+    };
+
+    if (props.validate) props.validate(addError);
+
+    for (const key in props.fields) {
+      const field = props.fields[key]!;
+
+      if (field.type === "fieldset") {
+        const subfieldset = field as FieldSet<any>;
+        subfieldset.validate((field, error) => addError(`${key}.${field}`, error));
+      } else {
+        const regularField = field as Field<any>;
+        const error = regularField.validate();
+        if (error) addError(key, error);
+      }
+    }
+
+    setErrors(newErrors);
+
+    return Object.keys(newErrors).length === 0;
+  };
+
+  return [errors, validate, clearErrors];
 }

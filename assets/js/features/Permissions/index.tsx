@@ -25,6 +25,26 @@ export const VIEW_ACCESS = {
   label: "View Access",
 };
 
+export const NO_ACCESS = {
+  value: PermissionLevels.NO_ACCESS,
+  label: "No Access",
+};
+
+export const COMMENT_ACCESS = {
+  value: PermissionLevels.COMMENT_ACCESS,
+  label: "Comment Access",
+};
+
+export const EDIT_ACCESS = {
+  value: PermissionLevels.EDIT_ACCESS,
+  label: "Edit Access",
+};
+
+export const FULL_ACCESS = {
+  value: PermissionLevels.FULL_ACCESS,
+  label: "Full Access",
+};
+
 export const PERMISSIONS_LIST = [
   { value: PermissionLevels.FULL_ACCESS, label: "Full Access" },
   { value: PermissionLevels.EDIT_ACCESS, label: "Edit Access" },

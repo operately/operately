@@ -77,8 +77,8 @@ function Form() {
       password: Forms.useTextField("", { minLength: 12, maxLength: 72 }),
       passwordConfirmation: Forms.useTextField("", { minLength: 12, maxLength: 72 }),
     },
-    validate: (fields, addError) => {
-      if (fields.password.value !== fields.passwordConfirmation.value) {
+    validate: (addError) => {
+      if (form.fields.password.value !== form.fields.passwordConfirmation.value) {
         addError("passwordConfirmation", "Passwords do not match");
       }
     },
