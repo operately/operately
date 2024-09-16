@@ -15,7 +15,7 @@ interface AccessLevelProps {
 
 export function AccessLevel(props: AccessLevelProps) {
   return (
-    <div className="flex items-center py-2">
+    <div className="flex items-center">
       {!props.hideIcon && <Icon {...props} />}
       <div>
         <div className="font-semibold">{calcTitle(props)}</div>
