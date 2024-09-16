@@ -8,7 +8,10 @@ interface LoaderResult {
 export async function loader({ params }): Promise<LoaderResult> {
   const updatePromise = GoalCheckIns.getGoalProgressUpdate({
     id: params.id,
-    includeGoal: true,
+    includeGoalTargets: true,
+    includeAcknowledgedBy: true,
+    includeReactions: true,
+    includeAuthor: true,
   }).then((data) => data.update!);
 
   return {
