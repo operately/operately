@@ -85,7 +85,11 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdateTest do
   #
 
   defp allowed_request(conn, update_id) do
-    assert {200, %{update: update} = _res} = query(conn, :get_goal_progress_update, %{id: update_id})
+    assert {200, %{update: update} = _res} = query(conn, :get_goal_progress_update, %{
+      id: update_id,
+      include_goal_targets: true,
+      include_author: true,
+    })
 
     assert update.id == update_id
     assert update.author

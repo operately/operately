@@ -26,8 +26,12 @@ defmodule Operately.Notifications.Subscription do
   # Queries
   import Ecto.Query, only: [from: 2]
 
-  def preload_subscriptions(query) do
+  def preload_subscriptions() do
     subquery = from(s in Operately.Notifications.Subscription, where: s.canceled == false, preload: :person)
-    from(p in query, preload: [subscription_list: [subscriptions: ^subquery]])
+    [subscription_list: [subscriptions: subquery]]
+  end
+
+  def preload_subscriptions(query) do
+    from(p in query, preload: ^preload_subscriptions())
   end
 end

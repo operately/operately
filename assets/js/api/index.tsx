@@ -1210,7 +1210,12 @@ export interface GetGoalResult {
 
 export interface GetGoalProgressUpdateInput {
   id?: string | null;
+  includeAuthor?: boolean | null;
+  includeAcknowledgedBy?: boolean | null;
+  includeReactions?: boolean | null;
   includeGoal?: boolean | null;
+  includeGoalTargets?: boolean | null;
+  includeSubscriptions?: boolean | null;
 }
 
 export interface GetGoalProgressUpdateResult {
