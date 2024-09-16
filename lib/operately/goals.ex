@@ -113,4 +113,10 @@ defmodule Operately.Goals do
     |> Update.changeset(attrs)
     |> Repo.insert()
   end
+
+  def update_update(%Update{} = update, attrs) do
+    update
+    |> Update.changeset(attrs)
+    |> Repo.update()
+  end
 end
