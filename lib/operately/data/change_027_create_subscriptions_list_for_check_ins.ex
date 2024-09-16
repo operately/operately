@@ -32,6 +32,14 @@ defmodule Operately.Data.Chenge027CreateSubscriptionsListForCheckIns do
 
       {:ok, subscriptions_list} -> subscriptions_list
     end
+    |> edit_check_in(check_in)
+  end
+
+  defp edit_check_in(subscriptions_list, check_in) do
+    if subscriptions_list.id != check_in.subscription_list_id do
+      {:ok, _} = Operately.Projects.update_check_in(check_in, %{subscription_list_id: subscriptions_list.id})
+    end
+    subscriptions_list
   end
 
   defp create_subscriptions(subscriptions_list) when is_list(subscriptions_list) do
