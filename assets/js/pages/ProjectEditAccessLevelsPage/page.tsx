@@ -1,4 +1,3 @@
-import * as Icons from "@tabler/icons-react";
 import React from "react";
 
 import * as Forms from "@/components/Form";
@@ -11,6 +10,7 @@ import { Paths } from "@/routes/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { useLoadedData } from "./loader";
 import { usePermissionsState } from "@/features/Permissions/usePermissionsState";
+import { ProjectContribsSubpageNavigation } from "@/components/ProjectPageNavigation";
 
 export function Page() {
   const { project } = useLoadedData();
@@ -18,12 +18,7 @@ export function Page() {
   return (
     <Pages.Page title={["Edit Project Permissions", project.name!]}>
       <Paper.Root>
-        <Paper.Navigation>
-          <Paper.NavItem linkTo={Paths.projectPath(project.id!)}>
-            <Icons.IconClipboardList size={16} />
-            {project.name}
-          </Paper.NavItem>
-        </Paper.Navigation>
+        <ProjectContribsSubpageNavigation project={project} />
 
         <Paper.Body>
           <h1 className="mb-8 font-extrabold text-content-accent text-3xl">Editing the project&apos;s permissions</h1>
@@ -37,7 +32,7 @@ export function Page() {
 function Form() {
   const { project, company } = useLoadedData();
 
-  const navigateToProject = useNavigateTo(Paths.projectPath(project.id!));
+  const navigateToContributorsPath = useNavigateTo(Paths.projectContributorsPath(project.id!));
   const [edit, { loading }] = useEditProjectPermissions();
   const permissions = usePermissionsState({ company, space: project.space, currentPermissions: project.accessLevels });
 
@@ -46,11 +41,11 @@ function Form() {
       projectId: project.id,
       accessLevels: permissions.permissions,
     }).then(() => {
-      navigateToProject();
+      navigateToContributorsPath();
     });
   };
 
-  const handleCancel = () => navigateToProject();
+  const handleCancel = () => navigateToContributorsPath();
 
   return (
     <Forms.Form onSubmit={handleSubmit} loading={loading} isValid={true} onCancel={handleCancel}>
