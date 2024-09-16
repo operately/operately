@@ -11,10 +11,11 @@ export function ContributorsSection({ project }: { project: Projects.Project }) 
   const { champion, reviewer, contributors } = ProjectContributors.splitByRole(project.contributors!);
 
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center gap-1 flex-wrap">
       <Champion champion={champion} project={project} />
       <Reviewer reviewer={reviewer} project={project} />
       <ContribList contributors={contributors} />
+      <SmallGap />
       <ManageAccessButton project={project} />
     </div>
   );
@@ -37,10 +38,18 @@ function ManageAccessButton({ project }: { project: Projects.Project }) {
   const path = Paths.projectContributorsPath(project.id!);
 
   return (
-    <div className="ml-2">
-      <SecondaryButton size="xs" testId="manage-team-button" linkTo={path}>
-        Manage team &amp; access
-      </SecondaryButton>
-    </div>
+    <SecondaryButton size="xs" testId="manage-team-button" linkTo={path}>
+      Manage team &amp; access
+    </SecondaryButton>
   );
+}
+
+//
+// To look good, we need to add a small gap between the contributors and the manage team button
+// This is a small component that adds a small gap. Originally, we would have to add a margin-left
+// to the manage team button, but this is a better approach as it plays well with the flex layout
+// and the wrapping of the contributors.
+//
+function SmallGap() {
+  return <div className="ml-0.5" />;
 }
