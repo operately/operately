@@ -95,7 +95,7 @@ function GeneralAccess() {
   return (
     <div className="mb-10">
       <SectionTitle title="General Access" />
-      <div className="border-y border-stroke-dimmed flex items-center justify-between">
+      <div className="border-y border-stroke-dimmed flex items-center justify-between py-2">
         <AccessLevel
           annonymous={project.accessLevels?.public!}
           company={project.accessLevels?.company!}
