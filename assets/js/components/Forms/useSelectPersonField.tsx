@@ -29,6 +29,8 @@ export function useSelectPersonField(initial?: Person | null, config?: Config): 
     return null;
   };
 
+  const reset = () => setValue(initial);
+
   return {
     type: "select-person",
     initial,
@@ -38,6 +40,7 @@ export function useSelectPersonField(initial?: Person | null, config?: Config): 
     validate,
     exclude: config?.exclude,
     searchFn,
+    reset,
   };
 }
 

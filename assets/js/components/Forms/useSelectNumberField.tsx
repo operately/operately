@@ -26,10 +26,15 @@ export function useSelectNumberField(
   const [options, setOptions] = React.useState(initialOptions);
 
   const validate = (): string | null => {
-    if (!value) return !config?.optional ? "Can't be empty" : null;
+    if (value === null || value === undefined) return !config?.optional ? "Can't be empty" : null;
 
     return null;
   };
 
-  return { type: "select", initial, options, optional: config?.optional, value, setValue, validate, setOptions };
+  const reset = () => {
+    setValue(initial);
+    setOptions(initialOptions);
+  };
+
+  return { type: "select", initial, options, optional: config?.optional, value, setValue, validate, setOptions, reset };
 }

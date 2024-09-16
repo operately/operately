@@ -40,5 +40,7 @@ export function useTextField(initial?: string | null, config?: Config): TextFiel
     return null;
   };
 
-  return { type: "text", initial, optional: config?.optional, value: value, setValue, validate };
+  const reset = () => setValue(initial);
+
+  return { type: "text", initial, optional: config?.optional, value: value, setValue, validate, reset };
 }

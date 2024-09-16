@@ -14,11 +14,11 @@ export function useField<T>(name: string): T {
   const form = React.useContext(FormContext);
   if (!form) throw new Error("Form fields must be used within a Form component");
 
-  let f: any = form.fields;
+  let f: any = form;
 
   const parts = name.split(".");
   for (const part of parts) {
-    f = f[part];
+    f = f.fields[part];
   }
 
   return f as T;

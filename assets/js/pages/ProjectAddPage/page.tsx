@@ -147,9 +147,12 @@ function useAccessFields() {
   const spaceOptions = [FULL_ACCESS, EDIT_ACCESS, COMMENT_ACCESS, VIEW_ACCESS, NO_ACCESS];
 
   const access = Forms.useFieldSet({
-    annonymousMembers: Forms.useSelectNumberField(PermissionLevels.NO_ACCESS, annonymousOptions),
-    companyMembers: Forms.useSelectNumberField(PermissionLevels.EDIT_ACCESS, companyOptions),
-    spaceMembers: Forms.useSelectNumberField(PermissionLevels.EDIT_ACCESS, spaceOptions),
+    fields: {
+      isAdvanced: Forms.useBooleanField(false),
+      annonymousMembers: Forms.useSelectNumberField(PermissionLevels.NO_ACCESS, annonymousOptions),
+      companyMembers: Forms.useSelectNumberField(PermissionLevels.EDIT_ACCESS, companyOptions),
+      spaceMembers: Forms.useSelectNumberField(PermissionLevels.EDIT_ACCESS, spaceOptions),
+    },
   });
 
   React.useEffect(() => {
@@ -192,21 +195,23 @@ function useShouldHideCreatorRole({ form }) {
   }, [form.fields.champion, form.fields.reviewer, form.fields.isContrib, me.id]);
 }
 
-function AccessSelector({ access }: { access: AccessFields }) {
+function AccessSelector({ field }: { field: string }) {
   return (
     <Paper.DimmedSection>
       <div className="flex items-center justify-between">
-        <AccessSelectorTitle access={access} />
-        <AccessSelectorEditButton hidden={access.isAdvanced} onClick={access.showAdvanced} />
+        <AccessSelectorTitle field={field} />
+        <AccessSelectorEditButton field={field} />
       </div>
 
-      <AccessSelectorAdvancedOptions hidden={!access.isAdvanced} />
+      <AccessSelectorAdvancedOptions field={field} />
     </Paper.DimmedSection>
   );
 }
 
-function AccessSelectorTitle({ access }: { access: AccessFields }) {
-  if (access.annonymousMembers.value! === PermissionLevels.VIEW_ACCESS) {
+function AccessSelectorTitle({ field }: { field: string }) {
+  const access = Forms.useField<AccessFields>(field);
+
+  if (access.fields.annonymousMembers.value! === PermissionLevels.VIEW_ACCESS) {
     return (
       <div>
         <div className="font-semibold">Internet-wide public Access</div>
@@ -215,7 +220,7 @@ function AccessSelectorTitle({ access }: { access: AccessFields }) {
     );
   }
 
-  if (access.companyMembers.value! >= PermissionLevels.VIEW_ACCESS) {
+  if (access.fields.companyMembers.value! >= PermissionLevels.VIEW_ACCESS) {
     return (
       <div>
         <div className="font-semibold">Company-wide Access</div>
@@ -224,7 +229,7 @@ function AccessSelectorTitle({ access }: { access: AccessFields }) {
     );
   }
 
-  if (access.spaceMembers.value! >= PermissionLevels.VIEW_ACCESS) {
+  if (access.fields.spaceMembers.value! >= PermissionLevels.VIEW_ACCESS) {
     return (
       <div>
         <div className="font-semibold">Space-wide Access</div>
@@ -241,29 +246,33 @@ function AccessSelectorTitle({ access }: { access: AccessFields }) {
   );
 }
 
-function AccessSelectorEditButton({ hidden, onClick }) {
-  if (hidden) return null;
+function AccessSelectorEditButton({ field }: { field: string }) {
+  const access = Forms.useField<AccessFields>(field);
+
+  if (access.fields.isAdvanced.value) return null;
 
   return (
-    <SecondaryButton size="xs" onClick={onClick}>
+    <SecondaryButton size="xs" onClick={access.fields.isAdvanced.toggle}>
       Edit
     </SecondaryButton>
   );
 }
 
-function AccessSelectorAdvancedOptions({ hidden }) {
-  if (hidden) return null;
+function AccessSelectorAdvancedOptions({ field }: { field: string }) {
+  const access = Forms.useField<AccessFields>(field);
+
+  if (!access.fields.isAdvanced.value) return null;
 
   return (
     <div className="mt-6">
       <div className="flex items-center justify-between border-t last:border-b border-stroke-subtle py-2.5">
         <div className="flex items-center gap-2 flex-1 w-2/3 font-semibold">
-          <Icons.IconTent size={20} className="text-content-accent" strokeWidth={2} />
-          <span>Space members</span>
+          <Icons.IconWorld size={20} />
+          <span>People on the internet</span>
         </div>
 
         <div className="w-1/3">
-          <Forms.SelectBox field={"access.spaceMembers"} />
+          <Forms.SelectBox field={"access.annonymousMembers"} />
         </div>
       </div>
 
@@ -273,20 +282,19 @@ function AccessSelectorAdvancedOptions({ hidden }) {
           <span>Company members</span>
         </div>
 
-        <div className="w-1/3 flex items-center">
+        <div className="w-1/3">
           <Forms.SelectBox field={"access.companyMembers"} />
-          <input type="checkbox" className="ml-2" />
         </div>
       </div>
 
       <div className="flex items-center justify-between border-t last:border-b border-stroke-subtle py-2.5">
         <div className="flex items-center gap-2 flex-1 w-2/3 font-semibold">
-          <Icons.IconWorld size={20} />
-          <span>People on the internet</span>
+          <Icons.IconTent size={20} className="text-content-accent" strokeWidth={2} />
+          <span>Space members</span>
         </div>
 
         <div className="w-1/3">
-          <Forms.SelectBox field={"access.annonymousMembers"} />
+          <Forms.SelectBox field={"access.spaceMembers"} />
         </div>
       </div>
     </div>
