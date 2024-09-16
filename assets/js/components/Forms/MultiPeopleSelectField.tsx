@@ -4,6 +4,7 @@ import Avatar from "@/components/Avatar";
 import { Person } from "@/models/people";
 import { getFormContext } from "./FormContext";
 import { compareIds, includesId } from "@/routes/paths";
+import { NotifiablePerson } from "@/features/Subscriptions";
 
 export function MultiPeopleSelectField({ field }: { field: string }) {
   const form = getFormContext();
@@ -33,14 +34,14 @@ function PersonAlwaysSelected({ person }: { person: Person }) {
       <div className="flex w-full items-center justify-between">
         <div className="text-content-dimmed">
           <p className="font-bold">{person.fullName}</p>
-          <p className="text-sm">{person.title} - will always be notified</p>
+          <p className="text-sm">{getTitleOrRole(person)} - will always be notified</p>
         </div>
       </div>
     </div>
   );
 }
 
-function PersonOption({ person, field }: { person: Person; field: string }) {
+function PersonOption({ person, field }: { person: Person | NotifiablePerson; field: string }) {
   const form = getFormContext();
   const { value, setValue } = form.fields[field];
 
@@ -60,7 +61,7 @@ function PersonOption({ person, field }: { person: Person; field: string }) {
       <div className="flex w-full items-center justify-between">
         <div>
           <p className="font-bold">{person.fullName}</p>
-          <p className="text-sm">{person.title}</p>
+          <p className="text-sm">{getTitleOrRole(person)}</p>
         </div>
         <input
           checked={includesId(
@@ -75,3 +76,13 @@ function PersonOption({ person, field }: { person: Person; field: string }) {
     </div>
   );
 }
+
+const getTitleOrRole = (person: Person | NotifiablePerson) => {
+  if ("role" in person) {
+    return person.role;
+  } else if ("title" in person) {
+    return person.title;
+  } else {
+    return "";
+  }
+};
