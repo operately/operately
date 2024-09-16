@@ -1,3 +1,5 @@
+import { match } from "ts-pattern";
+
 export { SpacePermissionSelector, ResourcePermissionSelector } from "./PermissionSelector";
 
 export enum PermissionLevels {
@@ -51,5 +53,15 @@ export const PERMISSIONS_LIST = [
   { value: PermissionLevels.COMMENT_ACCESS, label: "Comment Access" },
   VIEW_ACCESS,
 ];
+
+export function accessLevelAsString(permission: PermissionLevels) {
+  return match(permission)
+    .with(PermissionLevels.FULL_ACCESS, () => "Full Access")
+    .with(PermissionLevels.EDIT_ACCESS, () => "Edit Access")
+    .with(PermissionLevels.COMMENT_ACCESS, () => "Comment Access")
+    .with(PermissionLevels.VIEW_ACCESS, () => "View Access")
+    .with(PermissionLevels.NO_ACCESS, () => "No Access")
+    .run();
+}
 
 export const PUBLIC_PERMISSIONS_LIST = [VIEW_ACCESS];

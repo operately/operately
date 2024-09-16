@@ -7,6 +7,7 @@ import type { ActivityHandler } from "../interfaces";
 
 import { feedTitle, projectLink } from "../feedItemLinks";
 import { Paths } from "@/routes/paths";
+import { accessLevelAsString } from "@/features/Permissions";
 
 const ProjectContributorEdited: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -31,6 +32,7 @@ const ProjectContributorEdited: ActivityHandler = {
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const project = projectLink(content(activity).project!);
+    const person = People.firstName(content(activity).updatedContributor!.person!);
 
     if (roleChanged(activity)) {
       const person = People.firstName(content(activity).updatedContributor!.person!);
@@ -41,10 +43,18 @@ const ProjectContributorEdited: ActivityHandler = {
       } else {
         return feedTitle(activity, "reassigned", person, "as a", newRole, "on the", project, "project");
       }
-    } else {
-      // Not yet implemented
-      return null;
     }
+
+    if (accessChanged(activity)) {
+      if (page === "project") {
+        return feedTitle(activity, "edited", person + "'s", "access");
+      } else {
+        return feedTitle(activity, "edited", person + "'s", "access on the", project, "project");
+      }
+    }
+
+    // not yet implemented
+    return null;
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {
@@ -57,10 +67,22 @@ const ProjectContributorEdited: ActivityHandler = {
           Previously {person} was a {oldRole}
         </div>
       );
-    } else {
-      // Not yet implemented
-      return null;
     }
+
+    if (accessChanged(activity)) {
+      const person = People.firstName(content(activity).updatedContributor!.person!);
+      const newAccess = content(activity).updatedContributor!.permissions!;
+      const newAccessText = accessLevelAsString(newAccess).toLowerCase();
+
+      return (
+        <div className="text-xs">
+          {person} now has {newAccessText} on this project
+        </div>
+      );
+    }
+
+    // not yet implemented
+    return null;
   },
 
   commentCount(_activity: Activity): number {
@@ -87,6 +109,13 @@ function content(activity: Activity): ActivityContentProjectContributorEdited {
 function roleChanged(activity: Activity): boolean {
   return (
     content(activity).previousContributor?.role !== content(activity).updatedContributor?.role &&
+    content(activity).previousContributor?.personId === content(activity).updatedContributor?.personId
+  );
+}
+
+function accessChanged(activity: Activity): boolean {
+  return (
+    content(activity).previousContributor?.permissions !== content(activity).updatedContributor?.permissions &&
     content(activity).previousContributor?.personId === content(activity).updatedContributor?.personId
   );
 }
