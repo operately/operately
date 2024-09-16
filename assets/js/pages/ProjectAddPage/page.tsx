@@ -215,7 +215,9 @@ function AccessSelectorTitle({ field }: { field: string }) {
     return (
       <div>
         <div className="font-semibold">Internet-wide public Access</div>
-        <div className="text-sm">Anyone on the internet can view this project, company members can edit</div>
+        <div className="text-sm">
+          Anyone on the internet will be able to view this project, company members will be able to comment or edit
+        </div>
       </div>
     );
   }
@@ -224,7 +226,7 @@ function AccessSelectorTitle({ field }: { field: string }) {
     return (
       <div>
         <div className="font-semibold">Company-wide Access</div>
-        <div className="text-sm">Everyone in the company can view and comment on this project</div>
+        <div className="text-sm">Everyone in the company will be able to view and comment on this project</div>
       </div>
     );
   }
@@ -233,7 +235,7 @@ function AccessSelectorTitle({ field }: { field: string }) {
     return (
       <div>
         <div className="font-semibold">Space-wide Access</div>
-        <div className="text-sm">Everyone in the space can view and comment on this project</div>
+        <div className="text-sm">Everyone in the space will be able to view and comment on this project</div>
       </div>
     );
   }
