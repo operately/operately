@@ -20,6 +20,7 @@ import {
   VIEW_ACCESS,
 } from "@/features/Permissions";
 import { SecondaryButton } from "@/components/Buttons";
+import { AccessLevel } from "@/features/projects/AccessLevel";
 
 export function Page() {
   return (
@@ -211,40 +212,14 @@ function AccessSelector({ field }: { field: string }) {
 function AccessSelectorTitle({ field }: { field: string }) {
   const access = Forms.useField<AccessFields>(field);
 
-  if (access.fields.annonymousMembers.value! === PermissionLevels.VIEW_ACCESS) {
-    return (
-      <div>
-        <div className="font-semibold">Internet-wide public Access</div>
-        <div className="text-sm">
-          Anyone on the internet will be able to view this project, company members will be able to comment or edit
-        </div>
-      </div>
-    );
-  }
-
-  if (access.fields.companyMembers.value! >= PermissionLevels.VIEW_ACCESS) {
-    return (
-      <div>
-        <div className="font-semibold">Company-wide Access</div>
-        <div className="text-sm">Everyone in the company will be able to view and comment on this project</div>
-      </div>
-    );
-  }
-
-  if (access.fields.spaceMembers.value! >= PermissionLevels.VIEW_ACCESS) {
-    return (
-      <div>
-        <div className="font-semibold">Space-wide Access</div>
-        <div className="text-sm">Everyone in the space will be able to view and comment on this project</div>
-      </div>
-    );
-  }
-
   return (
-    <div>
-      <div className="font-semibold">Invite-only Access</div>
-      <div className="text-sm">Only people you add to the project can access it</div>
-    </div>
+    <AccessLevel
+      annonymous={access.fields.annonymousMembers.value!}
+      company={access.fields.companyMembers.value!}
+      space={access.fields.spaceMembers.value!}
+      tense="future"
+      hideIcon={true}
+    />
   );
 }
 

@@ -321,6 +321,10 @@ export class Paths {
     return createCompanyPath(["project-resources", resourceId, "edit"]);
   }
 
+  static projectEditPermissionsPath(projectId: string) {
+    return createCompanyPath(["projects", projectId, "edit", "permissions"]);
+  }
+
   static projectNewResourcePath(projectId: string, { resourceType }: { resourceType: string }) {
     return createCompanyPath(["projects", projectId, "resources", "new"]) + "?resourceType=" + resourceType;
   }
