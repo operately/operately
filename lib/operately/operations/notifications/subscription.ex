@@ -27,7 +27,8 @@ defmodule Operately.Operations.Notifications.Subscription do
   if they don't have a subscription yet, creates it.
 
   Before calling update_mentioned_people/2,
-  "subscription_list" must be part of multi.
+  "subscription_list" and "subscription_list.subscriptions"
+  must be part of multi.
 
   Example:
     Multi.run(multi, :subscription_list, fn _, _ ->
