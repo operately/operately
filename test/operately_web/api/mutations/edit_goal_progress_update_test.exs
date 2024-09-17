@@ -5,9 +5,10 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalProgressUpdateTest do
   import Operately.PeopleFixtures
   import Operately.GoalsFixtures
 
-  alias Operately.Goals
+  alias Operately.{Goals, Notifications}
   alias Operately.Access.Binding
   alias Operately.Support.RichText
+  alias Operately.Notifications.SubscriptionList
 
   describe "security" do
     test "it requires authentication", ctx do
@@ -76,6 +77,36 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalProgressUpdateTest do
 
       assert res.update.id == Paths.goal_update_id(update)
       assert_update_edited(update)
+    end
+
+    test "mentioned people are added to subscriptions list", ctx do
+      update = create_goal_update(ctx)
+
+      assert {200, _} = mutation(ctx.conn, :edit_goal_progress_update, %{
+        id: Paths.goal_update_id(update),
+        content: RichText.rich_text("content", :as_string),
+        new_target_values: Jason.encode!([]),
+      })
+
+      {:ok, list} = SubscriptionList.get(:system, parent_id: update.id, opts: [
+        preload: :subscriptions
+      ])
+
+      subscriptions = Enum.filter(list.subscriptions, &(&1.person_id != ctx.person.id))
+      assert subscriptions == []
+
+      assert {200, _} = mutation(ctx.conn, :edit_goal_progress_update, %{
+        id: Paths.goal_update_id(update),
+        content: RichText.rich_text(mentioned_people: [ctx.company_creator]),
+        new_target_values: Jason.encode!([]),
+      })
+
+      subscriptions =
+        Notifications.list_subscriptions(list)
+        |> Enum.filter(&(&1.person_id != ctx.person.id))
+
+      assert length(subscriptions) == 1
+      assert hd(subscriptions).person_id == ctx.company_creator.id
     end
   end
 
