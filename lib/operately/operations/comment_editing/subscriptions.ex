@@ -1,9 +1,9 @@
-defmodule Operately.Operations.CommentAdding.Subscriptions do
+defmodule Operately.Operations.CommentEditing.Subscriptions do
   alias Ecto.Multi
   alias Operately.Notifications.SubscriptionList
 
-  def update(multi, :project_check_in_commented, content), do: execute_update(multi, content)
-  def update(multi, :goal_check_in_commented, content), do: execute_update(multi, content)
+  def update(multi, :project_check_in, content), do: execute_update(multi, content)
+  def update(multi, :goal_update, content), do: execute_update(multi, content)
   def update(multi, _, _), do: multi
 
   defp execute_update(multi, content) do
