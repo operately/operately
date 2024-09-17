@@ -1,6 +1,7 @@
 defmodule Operately.Support.Factory.Projects do
   alias Operately.Access
   alias Operately.Access.Binding
+  alias Operately.Support.Factory.Utils
 
   def add_project(ctx, testid, space_name) do
     project = Operately.ProjectsFixtures.project_fixture(%{
@@ -18,12 +19,15 @@ defmodule Operately.Support.Factory.Projects do
   def add_project_contributor(ctx, testid, project_name, opts \\ []) do
     project = Map.fetch!(ctx, project_name)
 
-    name = Keyword.get(opts, :name, "John Doe")
+    name = Keyword.get(opts, :name, Utils.testid_to_name(testid))
     role = Keyword.get(opts, :role, :contributor)
     level = Keyword.get(opts, :permissions, :edit_access)
     responsibility = Keyword.get(opts, :responsibility, "Project Manager & Developer")
 
-    person  = Operately.PeopleFixtures.person_fixture_with_account(%{company_id: ctx.company.id, name: name})
+    person  = Operately.PeopleFixtures.person_fixture_with_account(%{
+      company_id: ctx.company.id, 
+      full_name: name
+    })
 
     contributor = Operately.ProjectsFixtures.contributor_fixture(ctx.creator, %{
       project_id: project.id,

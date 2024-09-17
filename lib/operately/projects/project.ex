@@ -188,4 +188,8 @@ defmodule Operately.Projects.Project do
     project = if project.access_levels, do: project, else: load_access_levels(project)
     Map.put(project, :privacy, AccessLevels.calc_privacy(project.access_levels))
   end
+
+  def get_access_context(project) do
+    Operately.Access.get_context!(project_id: project.id)
+  end
 end
