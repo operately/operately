@@ -94,7 +94,7 @@ defmodule Operately.Operations.GoalCheckInTest do
       goal_id: ctx.goal.id,
       target_values: [],
       content: content,
-      send_to_everyone: false,
+      send_to_everyone: true,
       subscriber_ids: [],
       subscription_parent_type: :goal_update,
     })
@@ -114,7 +114,7 @@ defmodule Operately.Operations.GoalCheckInTest do
       goal_id: ctx.goal.id,
       target_values: [],
       content: content,
-      send_to_everyone: false,
+      send_to_everyone: true,
       subscriber_ids: [],
       subscription_parent_type: :goal_update,
     })

@@ -44,8 +44,19 @@ export function findNotifiableProjectContributors(project: Project, me?: Person)
 }
 
 export function findGoalNotifiablePeople(goal: Goal, me?: Person): NotifiablePerson[] {
-  const people = goal
-    .space!.members!.filter((member) => !compareIds(me?.id, member.id))
+  const members = goal.space!.members!;
+
+  // Ensure reviewer and champion are in the list
+  if (!members.some((member) => compareIds(member.id, goal.champion?.id))) {
+    members.push(goal.champion!);
+  }
+  if (!members.some((member) => compareIds(member.id, goal.reviewer?.id))) {
+    members.push(goal.reviewer!);
+  }
+
+  // Parse Person into NotifiablePerson
+  const people = members
+    .filter((member) => !compareIds(me?.id, member.id))
     .map((member) => {
       const person = {
         id: member.id!,
