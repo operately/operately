@@ -137,7 +137,7 @@ function AddContributor() {
   return (
     <>
       <Forms.FieldGroup>
-        <Forms.FieldGroup layout="grid" gridColumns={2}>
+        <Forms.FieldGroup layout="grid">
           <Forms.SelectPerson field={"person"} label="Contributor" />
           <Forms.SelectBox field={"permissions"} label="Access Level" />
         </Forms.FieldGroup>
