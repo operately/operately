@@ -27,7 +27,7 @@ export function AccessLevel(props: AccessLevelProps) {
 
 function Icon(props: AccessLevelProps) {
   if (props.annonymous >= PermissionLevels.VIEW_ACCESS) {
-    return <Icons.IconGlobe className="text-content-accent ml-1.5 mr-3" size={30} strokeWidth={2} />;
+    return <Icons.IconWorld className="text-content-accent ml-1.5 mr-3" size={30} strokeWidth={2} />;
   }
 
   if (props.company >= PermissionLevels.VIEW_ACCESS) {
