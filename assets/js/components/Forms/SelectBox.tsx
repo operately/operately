@@ -8,7 +8,7 @@ import { SelectField } from "./useSelectField";
 
 interface SelectBoxProps {
   field: string;
-  label?: string;
+  label?: string | React.ReactNode;
   hidden?: boolean;
   placeholder?: string;
 }

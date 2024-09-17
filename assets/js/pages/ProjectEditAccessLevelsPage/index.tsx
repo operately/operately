@@ -95,38 +95,38 @@ function Form() {
 function AccessSelectorAdvancedOptions() {
   return (
     <div className="mt-6">
-      <div className="flex items-center justify-between border-t last:border-b border-stroke-subtle py-2.5">
-        <div className="flex items-center gap-2 flex-1 w-2/3 font-semibold">
-          <Icons.IconWorld size={20} />
-          <span>People on the internet</span>
-        </div>
+      <Forms.FieldGroup layout="horizontal" layoutOptions={{ dividers: true, ratio: "1:1" }}>
+        <Forms.SelectBox field={"access.annonymousMembers"} label={<AnnonymousLabel />} />
+        <Forms.SelectBox field={"access.companyMembers"} label={<CompanyLabel />} />
+        <Forms.SelectBox field={"access.spaceMembers"} label={<SpaceLabel />} />
+      </Forms.FieldGroup>
+    </div>
+  );
+}
 
-        <div className="w-1/3">
-          <Forms.SelectBox field={"access.annonymousMembers"} />
-        </div>
-      </div>
+function AnnonymousLabel() {
+  return (
+    <div className="flex items-center gap-2 font-semibold">
+      <Icons.IconWorld size={20} />
+      <span>People on the internet</span>
+    </div>
+  );
+}
 
-      <div className="flex items-center justify-between border-t last:border-b border-stroke-subtle py-2.5">
-        <div className="flex items-center gap-2 flex-1 w-2/3 font-semibold">
-          <Icons.IconBuilding size={20} />
-          <span>Company members</span>
-        </div>
+function CompanyLabel() {
+  return (
+    <div className="flex items-center gap-2 font-semibold">
+      <Icons.IconBuilding size={20} />
+      <span>Company members</span>
+    </div>
+  );
+}
 
-        <div className="w-1/3">
-          <Forms.SelectBox field={"access.companyMembers"} />
-        </div>
-      </div>
-
-      <div className="flex items-center justify-between border-t last:border-b border-stroke-subtle py-2.5">
-        <div className="flex items-center gap-2 flex-1 w-2/3 font-semibold">
-          <Icons.IconTent size={20} className="text-content-accent" strokeWidth={2} />
-          <span>Space members</span>
-        </div>
-
-        <div className="w-1/3">
-          <Forms.SelectBox field={"access.spaceMembers"} />
-        </div>
-      </div>
+function SpaceLabel() {
+  return (
+    <div className="flex items-center gap-2 font-semibold">
+      <Icons.IconTent size={20} className="text-content-accent" strokeWidth={2} />
+      <span>Space members</span>
     </div>
   );
 }
