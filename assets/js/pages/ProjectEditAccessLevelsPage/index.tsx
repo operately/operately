@@ -41,7 +41,7 @@ export function Page() {
         <ProjectContribsSubpageNavigation project={project} />
 
         <Paper.Body>
-          <h1 className="text-2xl font-extrabold">Edit General Access for {project.name}</h1>
+          <h1 className="text-2xl font-extrabold">Edit access for {project.name}</h1>
           <Form />
         </Paper.Body>
       </Paper.Root>
@@ -96,37 +96,18 @@ function AccessSelectorAdvancedOptions() {
   return (
     <div className="mt-6">
       <Forms.FieldGroup layout="horizontal" layoutOptions={{ dividers: true, ratio: "1:1" }}>
-        <Forms.SelectBox field={"access.annonymousMembers"} label={<AnnonymousLabel />} />
-        <Forms.SelectBox field={"access.companyMembers"} label={<CompanyLabel />} />
-        <Forms.SelectBox field={"access.spaceMembers"} label={<SpaceLabel />} />
+        <Forms.SelectBox
+          field={"access.annonymousMembers"}
+          label="People on the internet"
+          labelIcon={<Icons.IconWorld size={20} />}
+        />
+        <Forms.SelectBox
+          field={"access.companyMembers"}
+          label="Company members"
+          labelIcon={<Icons.IconBuilding size={20} />}
+        />
+        <Forms.SelectBox field={"access.spaceMembers"} label="Space members" labelIcon={<Icons.IconTent size={20} />} />
       </Forms.FieldGroup>
-    </div>
-  );
-}
-
-function AnnonymousLabel() {
-  return (
-    <div className="flex items-center gap-2 font-semibold">
-      <Icons.IconWorld size={20} />
-      <span>People on the internet</span>
-    </div>
-  );
-}
-
-function CompanyLabel() {
-  return (
-    <div className="flex items-center gap-2 font-semibold">
-      <Icons.IconBuilding size={20} />
-      <span>Company members</span>
-    </div>
-  );
-}
-
-function SpaceLabel() {
-  return (
-    <div className="flex items-center gap-2 font-semibold">
-      <Icons.IconTent size={20} className="text-content-accent" strokeWidth={2} />
-      <span>Space members</span>
     </div>
   );
 }

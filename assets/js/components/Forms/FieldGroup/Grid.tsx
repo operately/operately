@@ -34,7 +34,7 @@ export function Container({ children }: { children: React.ReactNode }) {
 export function Input(props: InputFieldProps) {
   return (
     <div className="flex flex-col gap-0.5">
-      {props.label ? <Label field={props.field} label={props.label} /> : null}
+      {props.label ? <Label field={props.field} label={props.label} icon={props.labelIcon} /> : null}
       {props.children}
       {props.error ? <ErrorMessage error={props.error} /> : null}
     </div>

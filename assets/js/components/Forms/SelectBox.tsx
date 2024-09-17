@@ -8,23 +8,24 @@ import { SelectField } from "./useSelectField";
 
 interface SelectBoxProps {
   field: string;
-  label?: string | React.ReactNode;
+  label?: string;
+  labelIcon?: React.ReactNode;
   hidden?: boolean;
   placeholder?: string;
 }
 
-export function SelectBox({ field, label, placeholder, hidden }: SelectBoxProps) {
+export function SelectBox({ field, label, labelIcon, placeholder, hidden }: SelectBoxProps) {
   const form = getFormContext();
   const error = form.errors[field];
 
   return (
-    <InputField field={field} label={label} error={error} hidden={hidden}>
+    <InputField field={field} label={label} error={error} hidden={hidden} labelIcon={labelIcon}>
       <SelectBoxInput field={field} placeholder={placeholder} error={!!error} />
     </InputField>
   );
 }
 
-function SelectBoxInput({ field, placeholder, error }: SelectBoxProps & { error: boolean }) {
+function SelectBoxInput({ field, placeholder, error }: { field: string; placeholder?: string; error: boolean }) {
   const f = useField<SelectField>(field);
 
   const onChange = ({ value }: { value: any }) => {
