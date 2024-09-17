@@ -2,7 +2,7 @@ import React from "react";
 
 import { Field } from "./FormState";
 
-type BooleanField = Field<boolean> & {
+export type BooleanField = Field<boolean> & {
   type: "boolean";
   toggle: () => void;
 };

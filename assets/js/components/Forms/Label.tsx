@@ -1,8 +1,15 @@
 import * as React from "react";
 
-export function Label({ field, label }: { field: string; label: string }) {
+interface LabelProps {
+  field: string;
+  label: string;
+  icon?: React.ReactNode;
+}
+
+export function Label({ field, label, icon }: LabelProps) {
   return (
-    <label className="font-semibold block" htmlFor={field}>
+    <label className="font-semibold flex items-center gap-2" htmlFor={field}>
+      {icon}
       {label}
     </label>
   );

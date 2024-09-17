@@ -47,6 +47,7 @@ export interface InputFieldProps {
 
   hidden?: boolean;
   label?: string;
+  labelIcon?: React.ReactNode;
   error?: string;
 }
 
