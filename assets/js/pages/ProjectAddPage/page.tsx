@@ -11,16 +11,9 @@ import { useMe } from "@/contexts/CurrentUserContext";
 import { useNavigate } from "react-router-dom";
 
 import Forms from "@/components/Forms";
-import {
-  COMMENT_ACCESS,
-  EDIT_ACCESS,
-  FULL_ACCESS,
-  NO_ACCESS,
-  PermissionLevels,
-  VIEW_ACCESS,
-} from "@/features/Permissions";
 import { SecondaryButton } from "@/components/Buttons";
 import { AccessLevel } from "@/features/projects/AccessLevel";
+import { useProjectAccessFields, AccessFields } from "@/features/Permissions/useAccessLevelsField";
 
 export function Page() {
   return (
@@ -87,7 +80,7 @@ function Form() {
       goal: Forms.useTextField(goal?.id, { optional: true }),
       creatorRole: Forms.useTextField(null, { optional: true }),
       isContrib: Forms.useSelectField("no", WillYouContributeOptions),
-      access: useAccessFields(),
+      access: useProjectAccessFields(),
     },
     validate: (addError) => {
       if (compareIds(form.fields.champion.value?.id, form.fields.reviewer.value?.id)) {
@@ -138,39 +131,6 @@ function Form() {
       <Forms.Submit saveText="Add Project" layout="centered" buttonSize="lg" />
     </Forms.Form>
   );
-}
-
-type AccessFields = ReturnType<typeof useAccessFields>;
-
-function useAccessFields() {
-  const annonymousOptions = [NO_ACCESS, VIEW_ACCESS];
-  const companyOptions = [FULL_ACCESS, EDIT_ACCESS, COMMENT_ACCESS, VIEW_ACCESS, NO_ACCESS];
-  const spaceOptions = [FULL_ACCESS, EDIT_ACCESS, COMMENT_ACCESS, VIEW_ACCESS, NO_ACCESS];
-
-  const access = Forms.useFieldSet({
-    fields: {
-      isAdvanced: Forms.useBooleanField(false),
-      annonymousMembers: Forms.useSelectNumberField(PermissionLevels.NO_ACCESS, annonymousOptions),
-      companyMembers: Forms.useSelectNumberField(PermissionLevels.COMMENT_ACCESS, companyOptions),
-      spaceMembers: Forms.useSelectNumberField(PermissionLevels.COMMENT_ACCESS, spaceOptions),
-    },
-  });
-
-  React.useEffect(() => {
-    const value = access.fields.annonymousMembers.value!;
-
-    access.fields.companyMembers.setOptions(companyOptions.filter((option) => option.value >= value));
-    access.fields.companyMembers.setValue((current) => Math.max(value!, current!));
-  }, [access.fields.annonymousMembers.value]);
-
-  React.useEffect(() => {
-    const value = access.fields.companyMembers.value!;
-
-    access.fields.spaceMembers.setOptions(spaceOptions.filter((option) => option.value >= value));
-    access.fields.spaceMembers.setValue((current) => Math.max(value!, current!));
-  }, [access.fields.companyMembers.value]);
-
-  return access;
 }
 
 function useShouldHideIsCotrib({ form }) {
