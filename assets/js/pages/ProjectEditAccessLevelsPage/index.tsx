@@ -11,7 +11,7 @@ import { useEditProjectPermissions } from "@/api";
 import { Paths } from "@/routes/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { ProjectContribsSubpageNavigation } from "@/components/ProjectPageNavigation";
-import { useProjectAccessFields, AccessFields } from "@/features/Permissions/useAccessLevelsField";
+import { useProjectAccessFields } from "@/features/Permissions/useAccessLevelsField";
 
 interface LoaderResult {
   project: Projects.Project;
@@ -41,7 +41,7 @@ export function Page() {
         <ProjectContribsSubpageNavigation project={project} />
 
         <Paper.Body>
-          <h1 className="text-2xl font-extrabold mb-8">Edit General Access for {project.name}</h1>
+          <h1 className="text-2xl font-extrabold">Edit General Access for {project.name}</h1>
           <Form />
         </Paper.Body>
       </Paper.Root>
@@ -83,10 +83,8 @@ function Form() {
 
   return (
     <Forms.Form form={form}>
-      <Forms.FieldGroup layout="horizontal" dividers={true}>
-        <Forms.SelectBox field={"access.annonymousMembers"} label="People on the internet" />
-        <Forms.SelectBox field={"access.companyMembers"} label="Company members" />
-        <Forms.SelectBox field={"access.spaceMembers"} label="Space members" />
+      <Forms.FieldGroup>
+        <AccessSelectorAdvancedOptions />
       </Forms.FieldGroup>
 
       <Forms.Submit />
@@ -94,38 +92,41 @@ function Form() {
   );
 }
 
-// function AccessSelectorAdvancedOptions() {
-//   return (
-//     <div className="mt-6">
-//       <div className="flex items-center justify-between border-t last:border-b border-stroke-subtle py-2.5">
-//         <div className="flex items-center gap-2 flex-1 w-2/3 font-semibold">
-//           <Icons.IconWorld size={20} />
-//           <span>People on the internet</span>
-//         </div>
+function AccessSelectorAdvancedOptions() {
+  return (
+    <div className="mt-6">
+      <div className="flex items-center justify-between border-t last:border-b border-stroke-subtle py-2.5">
+        <div className="flex items-center gap-2 flex-1 w-2/3 font-semibold">
+          <Icons.IconWorld size={20} />
+          <span>People on the internet</span>
+        </div>
 
-//         <div className="w-1/3"></div>
-//       </div>
+        <div className="w-1/3">
+          <Forms.SelectBox field={"access.annonymousMembers"} />
+        </div>
+      </div>
 
-//       <div className="flex items-center justify-between border-t last:border-b border-stroke-subtle py-2.5">
-//         <div className="flex items-center gap-2 flex-1 w-2/3 font-semibold">
-//           <Icons.IconBuilding size={20} />
-//           <span>Company members</span>
-//         </div>
+      <div className="flex items-center justify-between border-t last:border-b border-stroke-subtle py-2.5">
+        <div className="flex items-center gap-2 flex-1 w-2/3 font-semibold">
+          <Icons.IconBuilding size={20} />
+          <span>Company members</span>
+        </div>
 
-//         <div className="w-1/3">
-//         </div>
-//       </div>
+        <div className="w-1/3">
+          <Forms.SelectBox field={"access.companyMembers"} />
+        </div>
+      </div>
 
-//       <div className="flex items-center justify-between border-t last:border-b border-stroke-subtle py-2.5">
-//         <div className="flex items-center gap-2 flex-1 w-2/3 font-semibold">
-//           <Icons.IconTent size={20} className="text-content-accent" strokeWidth={2} />
-//           <span>Space members</span>
-//         </div>
+      <div className="flex items-center justify-between border-t last:border-b border-stroke-subtle py-2.5">
+        <div className="flex items-center gap-2 flex-1 w-2/3 font-semibold">
+          <Icons.IconTent size={20} className="text-content-accent" strokeWidth={2} />
+          <span>Space members</span>
+        </div>
 
-//         <div className="w-1/3">
-//           <Forms.SelectBox field={"access.spaceMembers"} />
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
+        <div className="w-1/3">
+          <Forms.SelectBox field={"access.spaceMembers"} />
+        </div>
+      </div>
+    </div>
+  );
+}

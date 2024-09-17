@@ -36,7 +36,6 @@ type LayoutDirection = "horizontal" | "vertical" | "grid";
 
 interface FieldGroupConfig {
   layout: LayoutDirection;
-  dividers?: boolean;
 }
 
 const FieldGroupContext = React.createContext<FieldGroupConfig | null>(null);
@@ -45,13 +44,11 @@ interface FieldGroupProps {
   layout?: LayoutDirection;
   gridColumns?: number;
   children: React.ReactNode;
-  dividers?: boolean;
 }
 
-export function FieldGroup({ layout, children, gridColumns, dividers }: FieldGroupProps) {
+export function FieldGroup({ layout, children, gridColumns }: FieldGroupProps) {
   const config = {
     layout: layout || "vertical",
-    dividers: dividers || false,
   };
 
   if (layout === "grid" && !gridColumns) {
@@ -74,10 +71,7 @@ function VerticalFieldGroup({ children }: { children: React.ReactNode }) {
 }
 
 function HorizontalFieldGroup({ children }: { children: React.ReactNode }) {
-  const context = React.useContext(FieldGroupContext);
-  const className = context?.dividers ? "flex flex-col" : "flex flex-col gap-4";
-
-  return <div className={className}>{children}</div>;
+  return <div className="flex flex-col gap-4">{children}</div>;
 }
 
 function GridFieldGroup({ children, columns }: { children: React.ReactNode; columns: number }) {
@@ -115,15 +109,11 @@ export function InputField(props: InputFieldProps) {
 }
 
 function HorizontalFieldGroupInput(props: InputFieldProps) {
-  const context = React.useContext(FieldGroupContext);
-
   const label = props.label ? <Label field={props.field} label={props.label} /> : null;
   const error = props.error ? <ErrorMessage error={props.error} /> : null;
 
-  const className = context?.dividers ? "border-t last:border-b border-stroke-subtle py-2.5" : "";
-
   return (
-    <div className={className}>
+    <div>
       <div className="flex gap-4 items-center">
         <div className="w-1/5 shrink-0">{label}</div>
         <div className="flex flex-col gap-0.5 w-4/5 flex-1">{props.children}</div>
