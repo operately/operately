@@ -29,7 +29,7 @@ export function Container({ children }: { children: React.ReactNode }) {
 export function Input(props: InputFieldProps) {
   const options = useLayoutOptions<Options>();
 
-  const label = props.label ? <Label field={props.field} label={props.label} /> : null;
+  const label = props.label ? <Label field={props.field} label={props.label} icon={props.labelIcon} /> : null;
   const error = props.error ? <ErrorMessage error={props.error} /> : null;
 
   const [leftSize, rightSize] = match(options.ratio)

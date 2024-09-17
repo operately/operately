@@ -14,6 +14,7 @@ import Forms from "@/components/Forms";
 import { SecondaryButton } from "@/components/Buttons";
 import { AccessLevel } from "@/features/projects/AccessLevel";
 import { useProjectAccessFields, AccessFields } from "@/features/Permissions/useAccessLevelsField";
+import { BooleanField } from "@/components/Forms/useBooleanField";
 
 export function Page() {
   return (
@@ -123,9 +124,9 @@ function Form() {
 
           <Forms.RadioButtons label="Will you contribute?" field={"isContrib"} hidden={hideIsContrib} />
           <Forms.TextInput label={CRLabel} field={"creatorRole"} placeholder={CRPlaceholder} hidden={hideCreatorRole} />
-
-          <AccessSelector field={"access"} />
         </Forms.FieldGroup>
+
+        <AccessSelectorFields />
       </Paper.Body>
 
       <Forms.Submit saveText="Add Project" layout="centered" buttonSize="lg" />
@@ -156,15 +157,37 @@ function useShouldHideCreatorRole({ form }) {
   }, [form.fields.champion, form.fields.reviewer, form.fields.isContrib, me.id]);
 }
 
-function AccessSelector({ field }: { field: string }) {
+function AccessSelectorFields() {
+  const isAdvanced = Forms.useField<BooleanField>("access.isAdvanced");
+
   return (
     <Paper.DimmedSection>
       <div className="flex items-center justify-between">
-        <AccessSelectorTitle field={field} />
-        <AccessSelectorEditButton field={field} />
+        <AccessSelectorTitle field={"access"} />
+        <AccessSelectorEditButton field={"access"} />
       </div>
 
-      <AccessSelectorAdvancedOptions field={field} />
+      {isAdvanced.value && (
+        <div className="mt-6">
+          <Forms.FieldGroup layout="horizontal" layoutOptions={{ dividers: true, ratio: "1:1" }}>
+            <Forms.SelectBox
+              field={"access.annonymousMembers"}
+              label="People on the internet"
+              labelIcon={<Icons.IconWorld size={20} />}
+            />
+            <Forms.SelectBox
+              field={"access.companyMembers"}
+              label="Company members"
+              labelIcon={<Icons.IconBuilding size={20} />}
+            />
+            <Forms.SelectBox
+              field={"access.spaceMembers"}
+              label="Space members"
+              labelIcon={<Icons.IconTent size={20} />}
+            />
+          </Forms.FieldGroup>
+        </div>
+      )}
     </Paper.DimmedSection>
   );
 }
@@ -192,48 +215,5 @@ function AccessSelectorEditButton({ field }: { field: string }) {
     <SecondaryButton size="xs" onClick={access.fields.isAdvanced.toggle}>
       Edit
     </SecondaryButton>
-  );
-}
-
-function AccessSelectorAdvancedOptions({ field }: { field: string }) {
-  const access = Forms.useField<AccessFields>(field);
-
-  if (!access.fields.isAdvanced.value) return null;
-
-  return (
-    <div className="mt-6">
-      <div className="flex items-center justify-between border-t last:border-b border-stroke-subtle py-2.5">
-        <div className="flex items-center gap-2 flex-1 w-2/3 font-semibold">
-          <Icons.IconWorld size={20} />
-          <span>People on the internet</span>
-        </div>
-
-        <div className="w-1/3">
-          <Forms.SelectBox field={"access.annonymousMembers"} />
-        </div>
-      </div>
-
-      <div className="flex items-center justify-between border-t last:border-b border-stroke-subtle py-2.5">
-        <div className="flex items-center gap-2 flex-1 w-2/3 font-semibold">
-          <Icons.IconBuilding size={20} />
-          <span>Company members</span>
-        </div>
-
-        <div className="w-1/3">
-          <Forms.SelectBox field={"access.companyMembers"} />
-        </div>
-      </div>
-
-      <div className="flex items-center justify-between border-t last:border-b border-stroke-subtle py-2.5">
-        <div className="flex items-center gap-2 flex-1 w-2/3 font-semibold">
-          <Icons.IconTent size={20} className="text-content-accent" strokeWidth={2} />
-          <span>Space members</span>
-        </div>
-
-        <div className="w-1/3">
-          <Forms.SelectBox field={"access.spaceMembers"} />
-        </div>
-      </div>
-    </div>
   );
 }
