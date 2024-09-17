@@ -1,4 +1,5 @@
 defmodule Operately.Support.Factory.Companies do
+  alias Operately.Support.Factory.Utils
 
   def add_company(ctx, testid, account, opts \\ []) do
     name = Keyword.get(opts, :name, "Acme Inc.")
@@ -18,11 +19,11 @@ defmodule Operately.Support.Factory.Companies do
   end
 
   def add_company_member(ctx, testid, opts \\ []) do
-    name = Keyword.get(opts, :name, "John Doe")
+    name = Keyword.get(opts, :name) || Utils.testid_to_name(testid)
 
     attrs = %{
       company_id: ctx.company.id,
-      name: name,
+      full_name: name,
     }
 
     person = Operately.PeopleFixtures.person_fixture_with_account(attrs)
