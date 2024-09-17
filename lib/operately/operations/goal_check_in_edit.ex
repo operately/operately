@@ -3,6 +3,7 @@ defmodule Operately.Operations.GoalCheckInEdit do
   alias Operately.{Repo, Activities}
   alias Operately.Goals.Target
   alias Operately.Goals.Update
+  alias Operately.Notifications.SubscriptionList
 
   def run(author, goal, update, attrs) do
     encoded_new_target_values = encode_new_target_values(attrs.new_target_values, update)
@@ -15,6 +16,12 @@ defmodule Operately.Operations.GoalCheckInEdit do
     Multi.new()
     |> Multi.update(:update, changeset)
     |> update_targets(goal.targets, attrs.new_target_values)
+    |> Multi.run(:subscription_list, fn _, changes ->
+      SubscriptionList.get(:system, parent_id: changes.update.id, opts: [
+        preload: :subscriptions
+      ])
+    end)
+    |> Operately.Operations.Notifications.Subscription.update_mentioned_people(attrs.content)
     |> record_activity(author, goal)
     |> Repo.transaction()
     |> Repo.extract_result(:update)
