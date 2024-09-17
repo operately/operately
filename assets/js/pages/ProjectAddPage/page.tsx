@@ -123,7 +123,7 @@ function Form() {
           <Forms.SelectBox label="Space" field={"space"} hidden={!allowSpaceSelection} />
           <Forms.SelectGoal field={"goal"} goals={goals} label={"Goal"} />
 
-          <Forms.FieldGroup layout="grid" gridColumns={2}>
+          <Forms.FieldGroup layout="grid">
             <Forms.SelectPerson label="Champion" field={"champion"} />
             <Forms.SelectPerson label="Reviewer" field={"reviewer"} allowEmpty={true} emptyLabel="No reviewer" />
           </Forms.FieldGroup>
