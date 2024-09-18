@@ -5,17 +5,22 @@ import * as Spaces from "@/models/spaces";
 
 import { useNavigate } from "react-router-dom";
 import { Paths } from "@/routes/paths";
+import { NotifiablePerson, Options, SubscriptionsState, useSubscriptions } from "@/features/Subscriptions";
 
 interface UseFormOptions {
   mode: "create" | "edit";
   space: Spaces.Space;
   discussion?: Discussions.Discussion;
+  notifiablePeople?: NotifiablePerson[];
 }
 
 export interface FormState {
   title: string;
   setTitle: (title: string) => void;
   editor: TipTapEditor.EditorState;
+
+  mode: "create" | "edit";
+  space: Spaces.Space;
 
   submit: () => void;
   submitting: boolean;
@@ -24,6 +29,7 @@ export interface FormState {
   errors: Error[];
 
   cancelPath: string;
+  subscriptionsState: SubscriptionsState;
 }
 
 interface Error {
@@ -33,6 +39,8 @@ interface Error {
 
 export function useForm(options: UseFormOptions): FormState {
   const navigate = useNavigate();
+  const subscriptionsState = useSubscriptions(options.notifiablePeople || []);
+
   const discussion = options.discussion;
   const space = options.space;
 
@@ -76,6 +84,8 @@ export function useForm(options: UseFormOptions): FormState {
         spaceId: space.id,
         title: title,
         body: JSON.stringify(editor.getJSON()),
+        sendNotificationsToEveryone: subscriptionsState.subscriptionType == Options.ALL,
+        subscriberIds: subscriptionsState.currentSubscribersList,
       });
 
       navigate(Paths.discussionPath(res.discussion.id));
@@ -94,6 +104,10 @@ export function useForm(options: UseFormOptions): FormState {
     title,
     setTitle,
     editor,
+
+    space,
+    mode: options.mode,
+    subscriptionsState,
 
     // empty,
     submit,
