@@ -16,6 +16,9 @@ defmodule Operately.Access.BindedPeopleLoader do
       select: %{person: p, access_level: max(b.access_level)}
     )
     |> Operately.Repo.all()
+    |> Enum.map(fn %{person: p, access_level: level} -> 
+      %{p | access_level: level} 
+    end)
   end
 
 end

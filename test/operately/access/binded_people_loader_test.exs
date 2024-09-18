@@ -29,6 +29,6 @@ defmodule Operately.Access.BindedPeopleLoaderTest do
   end
 
   def assert_includes_person(people, person_id) do
-    assert Enum.any?(people, fn %{person: p} -> p.id == person_id end)
+    assert Enum.any?(people, fn p -> p.id == person_id end)
   end
 end
