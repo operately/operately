@@ -5,10 +5,10 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
   import OperatelyWeb.Api.Serializer
   import Operately.PeopleFixtures
   import Operately.GroupsFixtures
-  import Operately.UpdatesFixtures
   import Operately.GoalsFixtures
   import Operately.ProjectsFixtures
   import Operately.CommentsFixtures
+  import Operately.MessagesFixtures
 
   alias Operately.Repo
   alias Operately.Support.RichText
@@ -258,57 +258,57 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
     end
 
     test "company space - company members have access", ctx do
-      discussion = create_discussion(ctx, space_id: ctx.company.company_space_id)
+      message = message_fixture(ctx.creator.id, ctx.company.company_space_id)
       comments = Enum.map(1..3, fn _ ->
-        add_comment(ctx, discussion, "update")
+        add_comment(ctx, message, "message")
       end)
 
       assert {200, res} = query(ctx.conn, :get_comments, %{
-        entity_id: Paths.discussion_id(discussion),
-        entity_type: "discussion",
+        entity_id: Paths.message_id(message),
+        entity_type: "message",
       })
       assert_comments(res, comments)
     end
 
     test "company members have no access", ctx do
       space = create_space(ctx, company_permissions: Binding.no_access())
-      discussion = create_discussion(ctx, space_id: space.id)
+      message = message_fixture(ctx.creator.id, space.id)
       Enum.each(1..3, fn _ ->
-        add_comment(ctx, discussion, "update")
+        add_comment(ctx, message, "message")
       end)
 
       assert {200, res} = query(ctx.conn, :get_comments, %{
-        entity_id: Paths.discussion_id(discussion),
-        entity_type: "discussion",
+        entity_id: Paths.message_id(message),
+        entity_type: "message",
       })
       assert length(res.comments) == 0
     end
 
     test "company members have access", ctx do
       space = create_space(ctx, company_permissions: Binding.view_access())
-      discussion = create_discussion(ctx, space_id: space.id)
+      message = message_fixture(ctx.creator.id, space.id)
       comments = Enum.map(1..3, fn _ ->
-        add_comment(ctx, discussion, "update")
+        add_comment(ctx, message, "message")
       end)
 
       assert {200, res} = query(ctx.conn, :get_comments, %{
-        entity_id: Paths.discussion_id(discussion),
-        entity_type: "discussion",
+        entity_id: Paths.message_id(message),
+        entity_type: "message",
       })
       assert_comments(res, comments)
     end
 
     test "space members have access", ctx do
       space = create_space(ctx, company_permissions: Binding.no_access())
-      discussion = create_discussion(ctx, space_id: space.id)
+      message = message_fixture(ctx.creator.id, space.id)
       comments = Enum.map(1..3, fn _ ->
-        add_comment(ctx, discussion, "update")
+        add_comment(ctx, message, "message")
       end)
 
       # Outside of space
       assert {200, res} = query(ctx.conn, :get_comments, %{
-        entity_id: Paths.discussion_id(discussion),
-        entity_type: "discussion",
+        entity_id: Paths.message_id(message),
+        entity_type: "message",
       })
       assert length(res.comments) == 0
 
@@ -316,8 +316,8 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
       add_person_to_space(ctx, space.id)
 
       assert {200, res} = query(ctx.conn, :get_comments, %{
-        entity_id: Paths.discussion_id(discussion),
-        entity_type: "discussion",
+        entity_id: Paths.message_id(message),
+        entity_type: "message",
       })
       assert_comments(res, comments)
     end
@@ -484,19 +484,6 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
       space_access_level: Keyword.get(opts, :space_access, Binding.no_access()),
     })
     goal_update_fixture(ctx.creator, goal)
-  end
-
-  defp create_discussion(ctx, attrs) do
-    update_fixture(%{
-      author_id: ctx.creator.id,
-      updatable_id: Keyword.get(attrs, :space_id, ctx.company.company_space_id),
-      updatable_type: :space,
-      type: :project_discussion,
-      content: %{
-        title: "Hello World",
-        body: RichText.rich_text("How are you doing?")
-      }
-    })
   end
 
   defp create_comment_thread(ctx, opts) do

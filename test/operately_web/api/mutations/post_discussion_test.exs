@@ -1,11 +1,12 @@
 defmodule OperatelyWeb.Api.Mutations.PostDiscussionTest do
   use OperatelyWeb.TurboCase
 
-  import Operately.Support.RichText
   import Operately.GroupsFixtures
 
   alias Operately.Access
   alias Operately.Access.Binding
+  alias Operately.Support.RichText
+  alias Operately.Messages.Message
 
   describe "security" do
     test "it requires authentication", ctx do
@@ -121,14 +122,17 @@ defmodule OperatelyWeb.Api.Mutations.PostDiscussionTest do
   defp request(conn, space) do
     mutation(conn, :post_discussion, %{
       space_id: Paths.space_id(space),
-      title: "Discussion",
-      body: rich_text("Content") |> Jason.encode!(),
+      title: "Message",
+      body: RichText.rich_text("Content", :as_string),
     })
   end
 
   defp assert_discussion_created(res) do
     {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.discussion.id)
-    assert Operately.Updates.get_update!(id)
+
+    assert {:ok, message} = Message.get(:system, id: id)
+    assert message.title == "Message"
+    assert message.body == RichText.rich_text("Content")
   end
 
   #
