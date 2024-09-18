@@ -6,6 +6,10 @@ defmodule Operately.Messages.Message do
     belongs_to :space, Operately.Groups.Group
     belongs_to :author, Operately.People.Person
 
+    has_one :access_context, through: [:space, :access_context]
+    has_many :reactions, Operately.Updates.Reaction, where: [entity_type: :message], foreign_key: :entity_id
+    has_many :comments, Operately.Updates.Comment, where: [entity_type: :message], foreign_key: :entity_id
+
     field :title
     field :body, :map
 

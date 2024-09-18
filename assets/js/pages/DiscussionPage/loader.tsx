@@ -12,6 +12,7 @@ export async function loader({ params }): Promise<LoaderResult> {
       includeAuthor: true,
       includeComments: true,
       includeReactions: true,
+      includeSpace: true,
     }).then((d) => d.discussion!),
   };
 }
