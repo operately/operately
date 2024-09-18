@@ -1,14 +1,12 @@
 defmodule Operately.Features.ProjectCheckInsTest do
   use Operately.FeatureCase
 
-  alias Operately.Support.Features.ProjectSteps
-  alias Operately.Support.Features.ProjectCheckInSteps, as: Steps
+  alias Operately.Support.Features.ProjectCheckInsSteps, as: Steps
 
   setup ctx do
-    ctx = ProjectSteps.create_project(ctx, name: "Test Project")
-    ctx = ProjectSteps.login(ctx)
-
-    {:ok, ctx}
+    ctx
+    |> Steps.given_a_project_exists(name: "Test Project")
+    |> Steps.login()
   end
 
   @tag login_as: :champion
@@ -30,11 +28,9 @@ defmodule Operately.Features.ProjectCheckInsTest do
 
     ctx 
     |> Steps.submit_check_in(values)
-    |> UI.login_as(ctx.reviewer)
     |> Steps.open_check_in_from_notifications(values)
     |> Steps.acknowledge_check_in()
     |> Steps.assert_check_in_acknowledged(values)
-    |> UI.login_as(ctx.champion)
     |> Steps.assert_acknowledgement_email_sent_to_champion(values)
     |> Steps.assert_acknowledgement_notification_sent_to_champion(values)
     |> Steps.assert_acknowledgement_visible_on_project_feed(values)
@@ -46,7 +42,6 @@ defmodule Operately.Features.ProjectCheckInsTest do
 
     ctx 
     |> Steps.submit_check_in(values)
-    |> UI.login_as(ctx.reviewer)
     |> Steps.acknowledge_check_in_from_email(values)
     |> Steps.assert_check_in_acknowledged(values)
   end
@@ -57,10 +52,8 @@ defmodule Operately.Features.ProjectCheckInsTest do
 
     ctx
     |> Steps.submit_check_in(values)
-    |> UI.login_as(ctx.reviewer)
     |> Steps.open_check_in_from_notifications(values)
     |> Steps.leave_comment_on_check_in()
-    |> UI.login_as(ctx.champion)
     |> Steps.assert_comment_on_check_in_received_in_notifications()
     |> Steps.assert_comment_on_check_in_received_in_email()
   end
