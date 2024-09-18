@@ -14,6 +14,12 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
   defdelegate visit_project_page(ctx), to: ProjectSteps
   defdelegate create_project(ctx, attrs), to: ProjectSteps
 
+  step :visit_project_contributors_page, ctx do
+    ctx
+    |> UI.visit(Paths.project_contributors_path(ctx.company, ctx.project))
+    |> UI.assert_has(testid: "project-contributors-page")
+  end
+
   step :given_a_person_exists, ctx, name: name do
     person_fixture_with_account(%{
       full_name: name,
@@ -235,6 +241,12 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
       author: ctx.champion,
       title: "reassigned #{Person.first_name(ctx.champion)} as a contributor on the #{ctx.project.name} project",
     })
+  end
+
+  step :expand_show_other_people, ctx do
+    ctx
+    |> UI.click(testid: "show-other-people")
+    |> UI.assert_has(testid: "other-people-list")
   end
 
 end
