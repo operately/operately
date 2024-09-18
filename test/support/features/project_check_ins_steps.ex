@@ -1,8 +1,9 @@
-defmodule Operately.Support.Features.ProjectCheckInSteps do
+defmodule Operately.Support.Features.ProjectCheckInsSteps do
   use Operately.FeatureCase
 
   alias Operately.Support.Features.UI
   alias Operately.Support.Features.EmailSteps
+  alias Operately.Support.Features.ProjectSteps
   alias Operately.Support.Features.NotificationsSteps
 
   @status_to_on_screen %{
@@ -10,6 +11,9 @@ defmodule Operately.Support.Features.ProjectCheckInSteps do
     "caution" => "Caution",
     "issue" => "Issue",
   }
+
+  defdelegate login(ctx), to: ProjectSteps, as: :login
+  defdelegate given_a_project_exists(ctx, args), to: ProjectSteps, as: :create_project
 
   step :submit_check_in, ctx, %{status: status, description: description} do
     ctx
@@ -77,12 +81,15 @@ defmodule Operately.Support.Features.ProjectCheckInSteps do
 
   step :open_check_in_from_notifications, ctx, %{status: _status, description: _description} do
     ctx
+    |> UI.login_as(ctx.reviewer)
     |> NotificationsSteps.visit_notifications_page()
     |> UI.click(testid: "notification-item-project_check_in_submitted")
   end
 
   step :acknowledge_check_in, ctx do
-    ctx |> UI.click(testid: "acknowledge-check-in")
+    ctx 
+    |> UI.click(testid: "acknowledge-check-in")
+    |> UI.sleep(300) # Wait for the check-in to be acknowledged
   end
 
   step :assert_check_in_acknowledged, ctx, %{status: _status, description: _description} do
@@ -90,7 +97,9 @@ defmodule Operately.Support.Features.ProjectCheckInSteps do
   end
 
   step :assert_acknowledgement_email_sent_to_champion, ctx, %{status: _status, description: _description} do
-    ctx |> EmailSteps.assert_activity_email_sent(%{
+    ctx 
+    |> UI.login_as(ctx.champion)
+    |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.project.name,
       to: ctx.champion,
       action: "acknowledged your check-in",
@@ -118,6 +127,7 @@ defmodule Operately.Support.Features.ProjectCheckInSteps do
   end
 
   step :acknowledge_check_in_from_email, ctx, %{status: _status, description: _description} do
+    ctx = ctx |> UI.login_as(ctx.reviewer)
     email = UI.Emails.last_sent_email()
     link = UI.Emails.find_link(email, "Acknowledge")
 
@@ -134,6 +144,7 @@ defmodule Operately.Support.Features.ProjectCheckInSteps do
 
   step :assert_comment_on_check_in_received_in_notifications, ctx do
     ctx
+    |> UI.login_as(ctx.champion)
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.assert_activity_notification(%{
       where: ctx.project.name,

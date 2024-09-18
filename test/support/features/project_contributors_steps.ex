@@ -14,6 +14,13 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
   defdelegate visit_project_page(ctx), to: ProjectSteps
   defdelegate create_project(ctx, attrs), to: ProjectSteps
 
+  step :visit_project_contributors_page, ctx do
+    ctx 
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> UI.click(testid: "manage-team-button")
+    |> UI.assert_has(testid: "project-contributors-page")
+  end
+
   step :given_a_person_exists, ctx, name: name do
     person_fixture_with_account(%{
       full_name: name,
@@ -235,6 +242,28 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
       author: ctx.champion,
       title: "reassigned #{Person.first_name(ctx.champion)} as a contributor on the #{ctx.project.name} project",
     })
+  end
+
+  step :given_company_members_have_access, ctx do
+    person = person_fixture_with_account(%{
+      company_id: ctx.company.id,
+      full_name: "Michael Scott"
+    })
+
+
+    Map.put(ctx, :company_member, person)
+  end
+
+  step :expand_show_other_people, ctx do
+    ctx
+    |> UI.click(testid: "show-all-other-people")
+    |> UI.assert_has(testid: "other-people-list")
+  end
+
+  step :assert_other_people_listed, ctx do
+    UI.find(ctx, UI.query(testid: "other-people-list"), fn ctx ->
+      assert UI.assert_text(ctx, ctx.company_member.full_name)
+    end)
   end
 
 end
