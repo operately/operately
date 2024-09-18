@@ -140,6 +140,12 @@ defmodule OperatelyWeb.Paths do
     OperatelyWeb.Api.Helpers.id_with_comments(title, id)
   end
 
+  def message_id(message) do
+    id = Operately.ShortUuid.encode!(message.id)
+    title = message.title
+    OperatelyWeb.Api.Helpers.id_with_comments(title, id)
+  end
+
   def project_check_in_id(check_in) do
     id = Operately.ShortUuid.encode!(check_in.id)
     date = check_in.inserted_at |> NaiveDateTime.to_date() |> Date.to_string()

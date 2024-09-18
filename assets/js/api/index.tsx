@@ -1186,6 +1186,7 @@ export interface GetDiscussionInput {
   includeAuthor?: boolean | null;
   includeComments?: boolean | null;
   includeReactions?: boolean | null;
+  includeSpace?: boolean | null;
 }
 
 export interface GetDiscussionResult {
