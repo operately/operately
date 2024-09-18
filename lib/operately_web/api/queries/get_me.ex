@@ -39,7 +39,8 @@ defmodule OperatelyWeb.Api.Queries.GetMe do
         notify_about_assignments: me.notify_about_assignments,
 
         theme: me.theme || "system",
-        manager: include_manager && serialize_manager(me.manager)
+        manager: include_manager && serialize_manager(me.manager),
+        show_perf_bar: Application.get_env(:operately, :app_env) == :dev
       }
     }
   end
