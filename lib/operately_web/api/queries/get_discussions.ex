@@ -2,8 +2,6 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussions do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
-  alias Operately.Groups.Group
-  alias Operately.Updates.Update
   alias Operately.Access.Filters
 
   inputs do
@@ -15,22 +13,33 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussions do
   end
 
   def call(conn, inputs) do
-    {:ok, space_id} = decode_id(inputs.space_id)
-    updates = load(me(conn), space_id)
-
-    {:ok, %{discussions: Serializer.serialize(updates, level: :essential)}}
+    Action.new()
+    |> run(:me, fn -> find_me(conn) end)
+    |> run(:id, fn -> decode_id(inputs.space_id) end)
+    |> run(:messages, fn ctx -> load_messages(ctx.me, ctx.id) end)
+    |> run(:serialized, fn ctx -> {:ok, %{discussions: Serializer.serialize(ctx.messages, level: :essential)}} end)
+    |> respond()
   end
 
-  defp load(person, space_id) do
-    from(u in Update,
-      join: s in Group, on: s.id == u.updatable_id, as: :space,
-      where: u.updatable_id == ^space_id,
-      where: u.updatable_type == :space,
-      where: u.type == :project_discussion,
-      preload: :author,
-      order_by: [desc: u.inserted_at]
-    )
-    |> Filters.filter_by_view_access(person.id, named_binding: :space)
-    |> Repo.all()
+  defp respond(result) do
+    case result do
+      {:ok, ctx} -> {:ok, ctx.serialized}
+      {:error, :id, _} -> {:error, :bad_request}
+      {:error, :messages, _} -> {:error, :not_found}
+      _ -> {:error, :internal_server_error}
+    end
+  end
+
+  defp load_messages(person, space_id) do
+    messages =
+      from(m in Operately.Messages.Message,
+        where: m.space_id == ^space_id,
+        preload: :author,
+        order_by: [desc: m.inserted_at]
+      )
+      |> Filters.filter_by_view_access(person.id)
+      |> Repo.all()
+
+    {:ok, messages}
   end
 end
