@@ -13,9 +13,13 @@ import { ProjectContributor } from "@/models/projectContributors";
 import { ContributorAvatar, PlaceholderAvatar } from "@/components/ContributorAvatar";
 import { Menu, MenuActionItem, MenuLinkItem } from "@/components/Menu";
 import { createTestId } from "@/utils/testid";
-import { Paths } from "@/routes/paths";
+import { Paths, compareIds } from "@/routes/paths";
 import { ProjectAccessLevelBadge } from "@/components/Badges/AccessLevelBadges";
 import { AccessLevel } from "@/features/projects/AccessLevel";
+import { useGetBindedPeople } from "@/api";
+import Avatar from "@/components/Avatar";
+import { PermissionLevels } from "@/features/Permissions";
+import { ActionLink } from "@/components/Link";
 
 interface LoaderData {
   project: Projects.Project;
@@ -47,6 +51,7 @@ export function Page() {
           <Champion />
           <Reviewer />
           <Contributors />
+          <OtherPeople />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
@@ -107,6 +112,110 @@ function GeneralAccess() {
           Edit
         </SecondaryButton>
       </div>
+    </div>
+  );
+}
+
+function OtherPeople() {
+  const [show, setShow] = React.useState(false);
+
+  const project = Pages.useLoadedData().project;
+  const { data, loading } = useGetBindedPeople({ resourseType: "project", resourseId: project.id! });
+
+  if (loading) return <div>Loading...</div>;
+
+  const people = data?.people!.filter(
+    (person) => !project.contributors!.some((contrib) => compareIds(contrib.person.id, person.id)),
+  );
+
+  const groups = Object.groupBy(people, (person) => person!.accessLevel!);
+
+  if (people.length === 0) return null;
+
+  if (!show) {
+    return (
+      <div className="mt-12 text-center">
+        <div className="text-sm mb-2">
+          {people?.length} other people have access to this project (
+          <ActionLink onClick={() => setShow(true)}>show all</ActionLink>)
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div className="font-bold mt-10 text-lg">Other People with Access</div>
+      <div className="text-medium text-sm max-w-lg mb-6">
+        People who have access to the project based on their company or space membership but are not directly assigned
+        to the project.
+      </div>
+
+      {groups[PermissionLevels.FULL_ACCESS] && (
+        <div className="flex items-start gap-10 border-t border-stroke-dimmed py-3">
+          <p className="shrink-0 w-36">
+            <ProjectAccessLevelBadge accessLevel={PermissionLevels.FULL_ACCESS} />
+          </p>
+
+          <div className="flex items-center gap-2 flex-wrap mt-0.5">
+            {groups[PermissionLevels.FULL_ACCESS].map((person) => (
+              <div className="flex items-center gap-2">
+                <Avatar person={person} size={20} />
+                <div className="font-medium flex items-center gap-2">{person!.fullName}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {groups[PermissionLevels.EDIT_ACCESS] && (
+        <div className="flex items-start gap-10 border-t border-stroke-dimmed py-3">
+          <p className="shrink-0 w-36">
+            <ProjectAccessLevelBadge accessLevel={PermissionLevels.EDIT_ACCESS} />
+          </p>
+
+          <div className="flex items-center gap-2 flex-wrap mt-0.5">
+            {groups[PermissionLevels.EDIT_ACCESS].map((person) => (
+              <div className="flex items-center gap-2">
+                <Avatar person={person} size={20} />
+                <div className="font-medium flex items-center gap-2">{person!.fullName}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {groups[PermissionLevels.COMMENT_ACCESS] && (
+        <div className="flex items-start gap-10 border-t border-stroke-dimmed py-3">
+          <p className="shrink-0 w-36">
+            <ProjectAccessLevelBadge accessLevel={PermissionLevels.COMMENT_ACCESS} />
+          </p>
+          <div className="flex items-center gap-2 flex-wrap mt-0.5">
+            {groups[PermissionLevels.COMMENT_ACCESS].map((person) => (
+              <div className="flex items-center gap-2">
+                <Avatar person={person} size={20} />
+                <div className="font-medium flex items-center gap-2">{person!.fullName}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {groups[PermissionLevels.VIEW_ACCESS] && (
+        <div className="flex items-start gap-10 border-t border-stroke-dimmed py-3">
+          <p className="shrink-0 w-36">
+            <ProjectAccessLevelBadge accessLevel={PermissionLevels.VIEW_ACCESS} />
+          </p>
+          <div className="flex items-center gap-2 flex-wrap mt-0.5">
+            {groups[PermissionLevels.VIEW_ACCESS].map((person) => (
+              <div className="flex items-center gap-2">
+                <Avatar person={person} size={20} />
+                <div className="font-medium flex items-center gap-2">{person!.fullName}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
