@@ -56,11 +56,11 @@ defmodule Operately.Features.DiscussionsTest do
     |> UI.click(testid: "post-discussion")
     |> UI.assert_text("Posted on")
 
-    discussion = last_discussion(ctx)
+    message = last_message(ctx)
 
     ctx
     |> UI.login_as(ctx.reader)
-    |> UI.visit(Paths.discussion_path(ctx.company, discussion))
+    |> UI.visit(Paths.message_path(ctx.company, message))
     |> UI.click(testid: "add-comment")
     |> UI.fill_rich_text("This is a comment.")
     |> UI.click(testid: "post-comment")
@@ -114,16 +114,16 @@ defmodule Operately.Features.DiscussionsTest do
   #
   # Utilities
   #
-  defp last_discussion(ctx) do
-    discussions = Operately.Updates.list_updates(ctx.space.id, :space, :project_discussion)
+  defp last_message(ctx) do
+    messages = Operately.Messages.list_messages(ctx.space.id)
 
-    if discussions != [] do
-      hd(discussions)
+    if messages != [] do
+      hd(messages)
     else
       # sometimes the updates are not immediately available
       # so we wait a bit and try again
       :timer.sleep(300)
-      Operately.Updates.list_updates(ctx.space.id, :space, :project_discussion) |> hd()
+      Operately.Messages.list_messages(ctx.space.id) |> hd()
     end
   end
 end

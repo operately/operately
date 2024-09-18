@@ -1,38 +1,36 @@
 defmodule Operately.Activities.Notifications.DiscussionCommentSubmitted do
+  alias Operately.Messages.Message
+
   def dispatch(activity) do
     author_id = activity.author_id
     space_id = activity.content["space_id"]
-    discussion_id = activity.content["discussion_id"]
+    message_id = activity.content["discussion_id"]
 
     space = Operately.Groups.get_group!(space_id)
     members = Operately.Groups.list_members(space)
 
-    discussion = Operately.Updates.get_update!(discussion_id)
-    discussion_author = Operately.People.get_person!(discussion.author_id)
+    {:ok, %{author: message_author}} = Message.get(:system, id: message_id, opts: [
+      preload: :author,
+    ])
 
-    comments = Operately.Updates.list_comments(discussion_id)
+    comments = Operately.Updates.list_comments(message_id)
     comment_authors = Enum.map(comments, fn comment ->
-      comment_author = Operately.People.get_person!(comment.author_id)
-      comment_author
+      Operately.People.get_person!(comment.author_id)
     end)
 
     comment = Operately.Updates.get_comment!(activity.content["comment_id"])
-
     mentioned = Operately.RichContent.lookup_mentioned_people(comment.content["message"])
-    people = members ++ [discussion_author] ++ comment_authors ++ mentioned
-    people = Enum.uniq_by(people, & &1.id)
-    people = Enum.filter(people, fn person ->
-      person.id != author_id
-    end)
 
-    notifications = Enum.map(people, fn person ->
+    members ++ [message_author] ++ comment_authors ++ mentioned
+    |> Enum.uniq_by(& &1.id)
+    |> Enum.filter(fn person -> person.id != author_id end)
+    |> Enum.map(fn person ->
       %{
         person_id: person.id,
         activity_id: activity.id,
         should_send_email: true,
       }
     end)
-
-    Operately.Notifications.bulk_create(notifications)
+    |> Operately.Notifications.bulk_create()
   end
 end

@@ -355,10 +355,9 @@ defmodule Operately.Updates do
           join: u in Operately.Goals.Update, on: u.id == c.entity_id, as: :resource,
           where: c.id == ^id
         )
-      :discussion ->
+     :message ->
         from(c in Comment, as: :comment,
-          join: u in Update, on: u.id == c.entity_id,
-          join: s in Operately.Groups.Group, on: u.updatable_id == s.id, as: :resource,
+          join: m in Operately.Messages.Message, on: m.id == c.entity_id, as: :resource,
           where: c.id == ^id
         )
       :milestone ->
