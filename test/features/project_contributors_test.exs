@@ -66,6 +66,7 @@ defmodule Operately.Features.ProjectsContributorsTest do
   @tag login_as: :champion
   feature "listing all other people who can access the project", ctx do
     ctx
+    |> Steps.given_company_members_have_access()
     |> Steps.visit_project_contributors_page()
     |> Steps.expand_show_other_people()
     |> Steps.assert_other_people_listed()

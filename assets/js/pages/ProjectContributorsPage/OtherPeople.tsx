@@ -35,9 +35,11 @@ function Expanded({ people }: { people: People.Person[] }) {
         to the project.
       </div>
 
-      {groups.map((group) => (
-        <OtherPeopleGroup accessLevel={group.accessLevel} people={group.people} key={group.accessLevel} />
-      ))}
+      <div data-test-id="other-people-list">
+        {groups.map((group) => (
+          <OtherPeopleGroup accessLevel={group.accessLevel} people={group.people} key={group.accessLevel} />
+        ))}
+      </div>
     </div>
   );
 }
@@ -47,7 +49,12 @@ function Condensed({ people, onShowAllClick }: { people: People.Person[]; onShow
     .with(1, () => "1 other person has access to this project")
     .otherwise(() => `${people.length} other people have access to this project`);
 
-  const showAll = <ActionLink onClick={onShowAllClick}>show all</ActionLink>;
+  const testId = "show-all-other-people";
+  const showAll = (
+    <ActionLink onClick={onShowAllClick} testId={testId}>
+      show all
+    </ActionLink>
+  );
 
   return (
     <div className="mt-12 text-center">
