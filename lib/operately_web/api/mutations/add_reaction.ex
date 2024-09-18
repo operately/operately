@@ -11,6 +11,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReaction do
     Groups,
   }
   alias Operately.Goals.Update
+  alias Operately.Messages.Message
   alias Operately.Operations.ReactionAdding
 
   inputs do
@@ -33,7 +34,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReaction do
     |> run(:id, fn -> decode_id(inputs.entity_id) end)
     |> run(:parent, fn ctx -> fetch_parent(ctx.id, ctx.me, type, parent_type) end)
     |> run(:check_permissions, fn ctx -> check_permissions(ctx.parent, type, parent_type) end)
-    |> run(:operation, fn ctx -> execute(ctx, inputs, type) end)
+    |> run(:operation, fn ctx -> execute(ctx, inputs) end)
     |> run(:serialized, fn ctx -> {:ok, %{reaction: Serializer.serialize(ctx.operation, level: :essential)}} end)
     |> respond()
   end
@@ -54,7 +55,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReaction do
       :project_check_in -> Projects.get_check_in_with_access_level(id, person.id)
       :comment_thread -> Comments.get_thread_with_activity_and_access_level(id, person.id)
       :goal_update -> Update.get(person, id: id)
-      :discussion -> Updates.get_update_with_space_and_access_level(id, person.id)
+      :message -> Message.get(person, id: id)
       :comment -> Updates.get_comment_with_access_level(id, person.id, parent_type)
     end
   end
@@ -64,7 +65,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReaction do
       :project_check_in -> Projects.Permissions.check(parent.requester_access_level, :can_comment_on_check_in)
       :comment_thread -> Activities.Permissions.check(parent.activity.requester_access_level, :can_comment_on_thread)
       :goal_update -> Goals.Permissions.check(parent.request_info.access_level, :can_comment_on_update)
-      :discussion -> Groups.Permissions.check(parent.space.requester_access_level, :can_comment_on_discussions)
+      :message -> Groups.Permissions.check(parent.request_info.access_level, :can_comment_on_discussions)
       :comment -> check_comment_permissions(parent, parent_type)
     end
   end
@@ -74,16 +75,13 @@ defmodule OperatelyWeb.Api.Mutations.AddReaction do
       :project_check_in -> Projects.Permissions.check(parent.requester_access_level, :can_comment_on_check_in)
       :comment_thread -> Activities.Permissions.check(parent.requester_access_level, :can_comment_on_thread)
       :goal_update -> Goals.Permissions.check(parent.requester_access_level, :can_comment_on_update)
-      :discussion -> Groups.Permissions.check(parent.requester_access_level, :can_comment_on_discussions)
+      :message -> Groups.Permissions.check(parent.requester_access_level, :can_comment_on_discussions)
       :milestone -> Projects.Permissions.check(parent.requester_access_level, :can_comment_on_milestone)
     end
   end
 
-  defp execute(ctx, inputs, type) do
-    case type do
-      :discussion -> ReactionAdding.run(ctx.me, ctx.id, "update", inputs.emoji)
-      _ -> ReactionAdding.run(ctx.me, ctx.id, inputs.entity_type, inputs.emoji)
-    end
+  defp execute(ctx, inputs) do
+    ReactionAdding.run(ctx.me, ctx.id, inputs.entity_type, inputs.emoji)
   end
 
   defp parse_comment_parent(nil), do: :ok
