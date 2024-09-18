@@ -731,6 +731,7 @@ export interface Person {
   accessLevel?: number | null;
   hasOpenInvitation?: boolean | null;
   invitation?: Invitation | null;
+  showPerfBar?: boolean | null;
 }
 
 export interface Project {
