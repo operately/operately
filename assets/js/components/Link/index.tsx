@@ -79,7 +79,7 @@ export function ActionLink(props: ActionLinkProps) {
     props.className,
   );
 
-  return <span {...props} className={className} />;
+  return <span data-test-id={props.testId} {...props} className={className} />;
 }
 
 export function DimmedLink(props: LinkProps) {

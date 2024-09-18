@@ -62,4 +62,13 @@ defmodule Operately.Features.ProjectsContributorsTest do
     |> Steps.assert_champion_converted_to_contributor(params)
     |> Steps.assert_champion_converted_to_contributor_feed_item_exists()
   end
+
+  @tag login_as: :champion
+  feature "listing all other people who can access the project", ctx do
+    ctx
+    |> Steps.given_company_members_have_access()
+    |> Steps.visit_project_contributors_page()
+    |> Steps.expand_show_other_people()
+    |> Steps.assert_other_people_listed()
+  end
 end

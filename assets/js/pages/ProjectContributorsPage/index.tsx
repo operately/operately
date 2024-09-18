@@ -4,7 +4,6 @@ import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as Icons from "@tabler/icons-react";
 import * as Projects from "@/models/projects";
-import * as ProjectContributors from "@/models/projectContributors";
 
 import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
@@ -16,25 +15,16 @@ import { createTestId } from "@/utils/testid";
 import { Paths } from "@/routes/paths";
 import { ProjectAccessLevelBadge } from "@/components/Badges/AccessLevelBadges";
 import { AccessLevel } from "@/features/projects/AccessLevel";
+import { match } from "ts-pattern";
 
-interface LoaderData {
-  project: Projects.Project;
-}
-
-export async function loader({ params }): Promise<LoaderData> {
-  return {
-    project: await Projects.getProject({
-      id: params.projectID,
-      includePermissions: true,
-      includeContributors: true,
-      includeAccessLevels: true,
-      includeContributorsAccessLevels: true,
-    }).then((data) => data.project!),
-  };
-}
+import { OtherPeople } from "./OtherPeople";
+import { useLoadedData } from "./loader";
+import { Section } from "./Section";
+import { BorderedRow } from "./BorderedRow";
+export { loader } from "./loader";
 
 export function Page() {
-  const { project } = Pages.useLoadedData() as LoaderData;
+  const { project } = useLoadedData();
 
   return (
     <Pages.Page title={["Team & Access", project.name!]} testId="project-contributors-page">
@@ -47,6 +37,7 @@ export function Page() {
           <Champion />
           <Reviewer />
           <Contributors />
+          <OtherPeople />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
@@ -69,7 +60,7 @@ function Title() {
 }
 
 function AddContribButton() {
-  const { project } = Pages.useLoadedData() as LoaderData;
+  const { project } = useLoadedData();
 
   if (!project.permissions?.canEditContributors) return null;
   const path = Paths.projectContributorsAddPath(project.id!, { type: "contributor" });
@@ -81,21 +72,13 @@ function AddContribButton() {
   );
 }
 
-function SectionTitle({ title }: { title: string }) {
-  return (
-    <div className="flex items-center justify-between mb-2">
-      <h2 className="font-bold text-lg">{title}</h2>
-    </div>
-  );
-}
-
 function GeneralAccess() {
-  const { project } = Pages.useLoadedData() as LoaderData;
+  const { project } = useLoadedData();
+  const editPath = Paths.projectEditPermissionsPath(project.id!);
 
   return (
-    <div className="mb-10">
-      <SectionTitle title="General Access" />
-      <div className="border-y border-stroke-dimmed flex items-center justify-between py-2">
+    <Section title="General Access">
+      <BorderedRow>
         <AccessLevel
           annonymous={project.accessLevels?.public!}
           company={project.accessLevels?.company!}
@@ -103,34 +86,25 @@ function GeneralAccess() {
           tense="present"
         />
 
-        <SecondaryButton linkTo={Paths.projectEditPermissionsPath(project.id!)} size="xs">
+        <SecondaryButton linkTo={editPath} size="xs">
           Edit
         </SecondaryButton>
-      </div>
-    </div>
+      </BorderedRow>
+    </Section>
   );
 }
 
 function Champion() {
-  const { project } = Pages.useLoadedData() as LoaderData;
-  const { champion } = ProjectContributors.splitByRole(project.contributors!);
+  const { champion } = useLoadedData();
 
   if (!champion) return <ChampionPlaceholder />;
 
   return (
-    <div>
-      <SectionTitle title="Champion" />
+    <Section title="Champion">
       <div className="flex items-center justify-between py-2 border-y border-stroke-dimmed">
         <div className="flex items-center gap-2">
           <ContributorAvatar contributor={champion} />
-
-          <div className="flex flex-col flex-1">
-            <div className="font-bold flex items-center gap-2">{champion!.person!.fullName}</div>
-
-            <div className="text-sm font-medium flex items-center">
-              Responsible for the overall success of the project
-            </div>
-          </div>
+          <ContributorNameAndResponsibility contributor={champion} />
         </div>
 
         <div className="flex items-center gap-4">
@@ -138,31 +112,21 @@ function Champion() {
           <ContributorMenu contributor={champion} />
         </div>
       </div>
-    </div>
+    </Section>
   );
 }
 
 function Reviewer() {
-  const { project } = Pages.useLoadedData() as LoaderData;
-  const { reviewer } = ProjectContributors.splitByRole(project.contributors!);
+  const { reviewer } = useLoadedData();
 
   if (!reviewer) return <ReviewerPlaceholder />;
 
   return (
-    <div className="mt-8">
-      <SectionTitle title="Reviewer" />
-
+    <Section title="Reviewer">
       <div className="flex items-center justify-between py-2 border-y border-stroke-dimmed">
         <div className="flex items-center gap-2">
           <ContributorAvatar contributor={reviewer} />
-
-          <div className="flex flex-col flex-1">
-            <div className="font-bold flex items-center gap-2">{reviewer!.person!.fullName}</div>
-
-            <div className="text-sm font-medium flex items-center">
-              Responsible for reviewing updates and providing feedback
-            </div>
-          </div>
+          <ContributorNameAndResponsibility contributor={reviewer} />
         </div>
 
         <div className="flex items-center gap-4">
@@ -170,27 +134,38 @@ function Reviewer() {
           <ContributorMenu contributor={reviewer} />
         </div>
       </div>
+    </Section>
+  );
+}
+
+function ContributorNameAndResponsibility({ contributor }: { contributor: ProjectContributor }) {
+  const name = contributor.person!.fullName;
+  const responsibility = match(contributor.role)
+    .with("champion", () => "Responsible for the overall success of the project")
+    .with("reviewer", () => "Responsible for reviewing updates and providing feedback")
+    .otherwise(() => contributor.responsibility);
+
+  return (
+    <div className="flex flex-col flex-1">
+      <div className="font-bold flex items-center gap-2">{name}</div>
+      <div className="text-sm font-medium flex items-center">{responsibility}</div>
     </div>
   );
 }
 
 function ReviewerPlaceholder() {
-  const path = Paths.projectContributorsAddPath(Pages.useLoadedData().project.id!, { type: "reviewer" });
+  const { project } = useLoadedData();
+  const path = Paths.projectContributorsAddPath(project.id!, { type: "reviewer" });
 
   return (
-    <div className="mt-8">
-      <SectionTitle title="Reviewer" />
-
-      <div className="flex items-center justify-between py-2 border-y border-stroke-dimmed">
+    <Section title="Reviewer">
+      <BorderedRow>
         <div className="flex items-center gap-2">
           <PlaceholderAvatar size="lg" />
-
-          <div className="flex flex-col flex-1">
-            <div className="font-bold flex items-center gap-2">No Reviewer</div>
-            <div className="text-sm font-medium flex items-center">
-              Select a reviewer to get feedback and keep things moving smoothly
-            </div>
-          </div>
+          <PlaceholderTitleAndDescription
+            title="No Reviewer"
+            description="Select a reviewer to get feedback and keep things moving smoothly"
+          />
         </div>
 
         <div className="flex items-center gap-4">
@@ -198,28 +173,30 @@ function ReviewerPlaceholder() {
             Add reviewer
           </SecondaryButton>
         </div>
-      </div>
+      </BorderedRow>
+    </Section>
+  );
+}
+
+function PlaceholderTitleAndDescription({ title, description }: { title: string; description: string }) {
+  return (
+    <div className="flex flex-col flex-1">
+      <div className="font-bold flex items-center gap-2">{title}</div>
+      <div className="text-sm font-medium flex items-center">{description}</div>
     </div>
   );
 }
 
 function ChampionPlaceholder() {
-  const path = Paths.projectContributorsAddPath(Pages.useLoadedData().project.id!, { type: "champion" });
+  const { project } = useLoadedData();
+  const path = Paths.projectContributorsAddPath(project.id!, { type: "champion" });
 
   return (
-    <div className="">
-      <SectionTitle title="Champion" />
-
+    <Section title="Champion">
       <div className="flex items-center justify-between py-2 border-y border-stroke-dimmed">
         <div className="flex items-center gap-2">
           <PlaceholderAvatar size="lg" />
-
-          <div className="flex flex-col flex-1">
-            <div className="font-bold flex items-center gap-2">No Champion</div>
-            <div className="text-sm font-medium flex items-center">
-              Select a champion to lead the project and ensure its success
-            </div>
-          </div>
+          <PlaceholderTitleAndDescription title="No Champion" description="Select a champion to lead the project" />
         </div>
 
         <div className="flex items-center gap-4">
@@ -228,30 +205,27 @@ function ChampionPlaceholder() {
           </SecondaryButton>
         </div>
       </div>
-    </div>
+    </Section>
   );
 }
 
 function Contributors() {
-  const { project } = Pages.useLoadedData() as LoaderData;
-  const { contributors } = ProjectContributors.splitByRole(project.contributors!);
+  const { contributors } = useLoadedData();
 
   if (contributors.length === 0) return null;
 
   return (
-    <div className="mt-8">
-      <SectionTitle title="Contributors" />
-
+    <Section title="Contributors">
       {contributors.map((contrib) => (
         <Contributor contributor={contrib} key={contrib.id} />
       ))}
-    </div>
+    </Section>
   );
 }
 
 function Contributor({ contributor }: { contributor: ProjectContributor }) {
   return (
-    <div className="flex items-center justify-between py-2 border-t border-stroke-dimmed last:border-b">
+    <BorderedRow>
       <div className="flex items-center gap-2">
         <ContributorAvatar contributor={contributor} />
         <ContributotNameAndResponsibility contributor={contributor} />
@@ -260,7 +234,7 @@ function Contributor({ contributor }: { contributor: ProjectContributor }) {
         <ProjectAccessLevelBadge accessLevel={contributor.accessLevel!} />
         <ContributorMenu contributor={contributor} />
       </div>
-    </div>
+    </BorderedRow>
   );
 }
 
