@@ -4,7 +4,7 @@ defmodule Operately.Activities.Content.DiscussionPosting do
   embedded_schema do
     belongs_to :company, Operately.Companies.Company
     belongs_to :space, Operately.Groups.Group
-    belongs_to :discussion, Operately.Updates.Update
+    belongs_to :discussion, Operately.Messages.Message
 
     field :title, :string
   end

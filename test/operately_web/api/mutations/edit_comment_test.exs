@@ -7,7 +7,7 @@ defmodule OperatelyWeb.Api.Mutations.EditCommentTest do
   import Operately.ProjectsFixtures
   import Operately.GoalsFixtures
   import Operately.CommentsFixtures
-  import Operately.UpdatesFixtures
+  import Operately.MessagesFixtures
 
   alias Operately.Notifications
   alias Operately.Notifications.SubscriptionList
@@ -153,13 +153,13 @@ defmodule OperatelyWeb.Api.Mutations.EditCommentTest do
     tabletest @space_table do
       test "if caller has levels company=#{@test.company}, space=#{@test.space} on the space, then expect code=#{@test.expected}", ctx do
         space = create_space(ctx, @test.company, @test.space)
-        discussion = create_discussion(ctx, space)
-        comment = create_comment(ctx, discussion, "update")
+        message = message_fixture(ctx.creator.id, space.id)
+        comment = create_comment(ctx, message, "message")
 
         assert {code, res} = mutation(ctx.conn, :edit_comment, %{
           comment_id: Paths.comment_id(comment),
           content: RichText.rich_text("New content", :as_string),
-          parent_type: "discussion",
+          parent_type: "message",
         })
 
         assert code == @test.expected
@@ -347,19 +347,6 @@ defmodule OperatelyWeb.Api.Mutations.EditCommentTest do
 
   defp create_goal_update(ctx, goal) do
     goal_update_fixture(ctx.creator, goal)
-  end
-
-  defp create_discussion(ctx, space) do
-    update_fixture(%{
-      author_id: ctx.creator.id,
-      updatable_id: space.id,
-      updatable_type: :space,
-      type: :project_discussion,
-      content: %{
-        title: "Title",
-        body: RichText.rich_text("Content")
-      }
-    })
   end
 
   defp create_milestone_comment(ctx, milestone) do

@@ -20,6 +20,7 @@ defmodule Operately.Activities.Preloader do
     |> preload(Operately.Projects.Milestone)
     |> preload(Operately.Updates.Comment)
     |> preload(Operately.Companies.Company)
+    |> preload(Operately.Messages.Message)
     |> preload_sub_activities()
   end
 
@@ -111,7 +112,7 @@ defmodule Operately.Activities.Preloader do
   #
   # > is_field_a_not_loaded_ref("project", %Ecto.Association.NotLoaded{}, Operately.Projects.Project)
   #   => true
-  # 
+  #
   defp is_field_a_not_loaded_ref(_key, value, schema) do
     case value do
       %Ecto.Association.NotLoaded{__owner__: owner_schema, __field__: field} ->
@@ -157,8 +158,8 @@ defmodule Operately.Activities.Preloader do
   end
 
   defp inject(activity, references, records) do
-    found = Enum.filter(references, fn {activity_id, _, _, ref_id} -> 
-      activity_id == activity.id && Map.has_key?(records, ref_id) 
+    found = Enum.filter(references, fn {activity_id, _, _, ref_id} ->
+      activity_id == activity.id && Map.has_key?(records, ref_id)
     end)
 
     content = Enum.reduce(found, activity.content, fn {_, path, _, ref_id}, acc ->

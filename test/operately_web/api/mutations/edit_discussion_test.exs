@@ -1,11 +1,11 @@
 defmodule OperatelyWeb.Api.Mutations.EditDiscussionTest do
   use OperatelyWeb.TurboCase
 
-  import Operately.Support.RichText
   import Operately.PeopleFixtures
   import Operately.GroupsFixtures
-  import Operately.UpdatesFixtures
+  import Operately.MessagesFixtures
 
+  alias Operately.Support.RichText
   alias Operately.{Repo, Access}
   alias Operately.Access.Binding
 
@@ -25,38 +25,38 @@ defmodule OperatelyWeb.Api.Mutations.EditDiscussionTest do
 
     test "company member can see only their company", ctx do
       other_ctx = register_and_log_in_account(ctx)
-      discussion = create_discussion(ctx)
+      message = message_fixture(ctx.creator_id, ctx.company.company_space_id)
 
-      assert {404, res} = request(other_ctx.conn, discussion)
+      assert {404, res} = request(other_ctx.conn, message)
       assert res.message == "The requested resource was not found"
     end
 
     test "company members without edit access can't edit discussion", ctx do
-      discussion = create_discussion(ctx)
+      message = message_fixture(ctx.creator_id, ctx.company.company_space_id)
 
-      assert {403, res} = request(ctx.conn, discussion)
+      assert {403, res} = request(ctx.conn, message)
       assert res.message == "You don't have permission to perform this action"
     end
 
     test "company members with edit access can edit discussion", ctx do
       give_person_edit_access(ctx)
-      discussion = create_discussion(ctx)
+      message = message_fixture(ctx.creator_id, ctx.company.company_space_id)
 
-      assert {200, _} = request(ctx.conn, discussion)
-      assert_discussion_edited(discussion)
+      assert {200, _} = request(ctx.conn, message)
+      assert_discussion_edited(message)
     end
 
     test "company admins can edit discussion", ctx do
-      discussion = create_discussion(ctx)
+      message = message_fixture(ctx.creator_id, ctx.company.company_space_id)
 
       # Not admin
-      assert {403, _} = request(ctx.conn, discussion)
+      assert {403, _} = request(ctx.conn, message)
 
       # Admin
       {:ok, _} = Operately.Companies.add_admin(ctx.company_creator, ctx.person.id)
 
-      assert {200, _} = request(ctx.conn, discussion)
-      assert_discussion_edited(discussion)
+      assert {200, _} = request(ctx.conn, message)
+      assert_discussion_edited(message)
     end
   end
 
@@ -70,39 +70,39 @@ defmodule OperatelyWeb.Api.Mutations.EditDiscussionTest do
     end
 
     test "company member without view access can't see space", ctx do
-      discussion = create_discussion(ctx)
+      message = message_fixture(ctx.creator_id, ctx.space_id)
 
-      assert {404, res} = request(ctx.conn, discussion)
+      assert {404, res} = request(ctx.conn, message)
       assert res.message == "The requested resource was not found"
     end
 
     test "space member without edit access can't edit discussion", ctx do
-      discussion = create_discussion(ctx)
+      message = message_fixture(ctx.creator_id, ctx.space_id)
       add_person_to_space(ctx, Binding.comment_access())
 
-      assert {403, res} = request(ctx.conn, discussion)
+      assert {403, res} = request(ctx.conn, message)
       assert res.message == "You don't have permission to perform this action"
     end
 
     test "space members with edit access can edit discussion", ctx do
-      discussion = create_discussion(ctx)
+      message = message_fixture(ctx.creator_id, ctx.space_id)
       add_person_to_space(ctx, Binding.edit_access())
 
-      assert {200, _} = request(ctx.conn, discussion)
-      assert_discussion_edited(discussion)
+      assert {200, _} = request(ctx.conn, message)
+      assert_discussion_edited(message)
     end
 
     test "company admins can edit discussion", ctx do
-      discussion = create_discussion(ctx)
+      message = message_fixture(ctx.creator_id, ctx.space_id)
 
       # Not admin
-      assert {404, _} = request(ctx.conn, discussion)
+      assert {404, _} = request(ctx.conn, message)
 
       # Admin
       {:ok, _} = Operately.Companies.add_admin(ctx.company_creator, ctx.person.id)
 
-      assert {200, _} = request(ctx.conn, discussion)
-      assert_discussion_edited(discussion)
+      assert {200, _} = request(ctx.conn, message)
+      assert_discussion_edited(message)
     end
   end
 
@@ -115,10 +115,10 @@ defmodule OperatelyWeb.Api.Mutations.EditDiscussionTest do
     end
 
     test "edits discussion", ctx do
-      discussion = create_discussion(ctx)
+      message = message_fixture(ctx.person.id, ctx.company.company_space_id)
 
-      assert {200, _} = request(ctx.conn, discussion)
-      assert_discussion_edited(discussion)
+      assert {200, _} = request(ctx.conn, message)
+      assert_discussion_edited(message)
     end
   end
 
@@ -126,37 +126,24 @@ defmodule OperatelyWeb.Api.Mutations.EditDiscussionTest do
   # Steps
   #
 
-  defp request(conn, discussion) do
+  defp request(conn, message) do
     mutation(conn, :edit_discussion, %{
-      discussion_id: Paths.discussion_id(discussion),
+      discussion_id: Paths.message_id(message),
       title: "New title",
-      body: rich_text("New body") |> Jason.encode!(),
+      body: RichText.rich_text("New body", :as_string),
     })
   end
 
-  defp assert_discussion_edited(discussion) do
-    discussion = Repo.reload(discussion)
+  defp assert_discussion_edited(message) do
+    message = Repo.reload(message)
 
-    assert discussion.content["title"] == "New title"
-    assert discussion.content["body"] == rich_text("New body")
+    assert message.title == "New title"
+    assert message.body == RichText.rich_text("New body")
   end
 
   #
   # Helpers
   #
-
-  defp create_discussion(ctx) do
-    update_fixture(%{
-      author_id: ctx[:creator_id] || ctx.person.id,
-      updatable_id: ctx[:space_id] || ctx.company.company_space_id,
-      updatable_type: :space,
-      type: :project_discussion,
-      content: %{
-        title: "Title",
-        body: rich_text("Body")
-      }
-    })
-  end
 
   defp give_person_edit_access(ctx) do
     group = Access.get_group!(company_id: ctx.company.id, tag: :standard)

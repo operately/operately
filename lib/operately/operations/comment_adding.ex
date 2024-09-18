@@ -32,7 +32,7 @@ defmodule Operately.Operations.CommentAdding do
   # Helpers
   #
 
-  defp find_action(%Operately.Updates.Update{type: :project_discussion}), do: :discussion_comment_submitted
+  defp find_action(%Operately.Messages.Message{}), do: :discussion_comment_submitted
   defp find_action(%Operately.Goals.Update{}), do: :goal_check_in_commented
   defp find_action(%Operately.Projects.CheckIn{}), do: :project_check_in_commented
   defp find_action(%Operately.Comments.CommentThread{}), do: :comment_added
