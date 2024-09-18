@@ -6,11 +6,11 @@ defmodule OperatelyWeb.Api.Mutations.CreateComment do
     Activities,
     Comments,
     Projects,
-    Updates,
     Goals,
     Groups,
   }
   alias Operately.Goals.Update
+  alias Operately.Messages.Message
   alias Operately.Operations.CommentAdding
 
   inputs do
@@ -32,7 +32,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateComment do
     |> run(:content, fn -> Jason.decode(inputs.content) end)
     |> run(:parent, fn ctx -> fetch_parent(ctx.me, ctx.id, type) end)
     |> run(:check_permissions, fn ctx -> check_permissions(ctx.parent, type) end)
-    |> run(:operation, fn ctx -> execute(ctx, inputs, type) end)
+    |> run(:operation, fn ctx -> execute(ctx, inputs) end)
     |> run(:serialized, fn ctx -> {:ok, %{comment: Serializer.serialize(ctx.operation, level: :essential)}} end)
     |> respond()
   end
@@ -54,7 +54,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateComment do
       :project_check_in -> Projects.get_check_in_with_access_level(id, person.id)
       :comment_thread -> Comments.get_thread_with_activity_and_access_level(id, person.id)
       :goal_update -> Update.get(person, id: id)
-      :discussion -> Updates.get_update_with_space_and_access_level(id, person.id)
+      :message -> Message.get(person, id: id)
     end
   end
 
@@ -63,14 +63,11 @@ defmodule OperatelyWeb.Api.Mutations.CreateComment do
       :project_check_in -> Projects.Permissions.check(parent.requester_access_level, :can_comment_on_check_in)
       :comment_thread -> Activities.Permissions.check(parent.activity.requester_access_level, :can_comment_on_thread)
       :goal_update -> Goals.Permissions.check(parent.request_info.access_level, :can_comment_on_update)
-      :discussion -> Groups.Permissions.check(parent.space.requester_access_level, :can_comment_on_discussions)
+      :message -> Groups.Permissions.check(parent.request_info.access_level, :can_comment_on_discussions)
     end
   end
 
-  defp execute(ctx, inputs, type) do
-    case type do
-      :discussion -> CommentAdding.run(ctx.me, ctx.parent, "update", ctx.content)
-      _ -> CommentAdding.run(ctx.me, ctx.parent, inputs.entity_type, ctx.content)
-    end
+  defp execute(ctx, inputs) do
+    CommentAdding.run(ctx.me, ctx.parent, inputs.entity_type, ctx.content)
   end
 end

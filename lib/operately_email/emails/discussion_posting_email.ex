@@ -2,14 +2,15 @@ defmodule OperatelyEmail.Emails.DiscussionPostingEmail do
   import OperatelyEmail.Mailers.ActivityMailer
 
   alias Operately.Repo
-  alias Operately.Updates
+  alias Operately.Messages.Message
 
   def send(person, activity) do
     author = Repo.preload(activity, :author).author
-    discussion = Updates.get_update!(activity.content["discussion_id"])
     company = Repo.preload(author, :company).company
-    space = Operately.Groups.get_group!(activity.content["space_id"])
-    title = discussion.content["title"]
+
+    {:ok, %{space: space, title: title} = message} = Message.get(:system, id: activity.content["discussion_id"], opts: [
+      preload: :space
+    ])
 
     company
     |> new()
@@ -17,10 +18,10 @@ defmodule OperatelyEmail.Emails.DiscussionPostingEmail do
     |> to(person)
     |> subject(where: space.name, who: author, action: "posted: #{title}")
     |> assign(:author, author)
-    |> assign(:discussion, discussion)
+    |> assign(:message, message)
     |> assign(:title, title)
     |> assign(:space, space)
-    |> assign(:cta_url, OperatelyWeb.Paths.discussion_path(company, discussion) |> OperatelyWeb.Paths.to_url())
+    |> assign(:cta_url, OperatelyWeb.Paths.message_path(company, message) |> OperatelyWeb.Paths.to_url())
     |> render("discussion_posting")
   end
 end
