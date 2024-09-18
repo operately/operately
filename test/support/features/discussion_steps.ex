@@ -15,10 +15,10 @@ defmodule Operately.Support.Features.DiscussionSteps do
   end
 
   step :assert_discussion_is_posted, ctx do
-    discussion = last_discussion(ctx)
+    message = last_message(ctx)
 
     ctx
-    |> UI.assert_page(Paths.discussion_path(ctx.company, discussion))
+    |> UI.assert_page(Paths.message_path(ctx.company, message))
     |> UI.assert_text("This is a discussion")
     |> UI.assert_text("This is the body of the discussion.")
   end
@@ -77,15 +77,15 @@ defmodule Operately.Support.Features.DiscussionSteps do
   end
 
   step :submit_discussion, ctx do
-    ctx 
+    ctx
     |> UI.click(testid: "post-discussion")
   end
 
   step :assert_discussion_is_posted_with_attachment, ctx do
-    discussion = last_discussion(ctx)
+    message = last_message(ctx)
 
     ctx
-    |> UI.assert_page(Paths.discussion_path(ctx.company, discussion))
+    |> UI.assert_page(Paths.message_path(ctx.company, message))
     |> UI.assert_text("Testing file attachment")
     |> UI.assert_text("README.md")
   end
@@ -94,16 +94,16 @@ defmodule Operately.Support.Features.DiscussionSteps do
   # Utilities
   #
 
-  defp last_discussion(ctx) do
-    discussions = Operately.Updates.list_updates(ctx.space.id, :space, :project_discussion) 
+  defp last_message(ctx) do
+    messages = Operately.Messages.list_messages(ctx.space.id)
 
-    if discussions != [] do
-      hd(discussions)
+    if messages != [] do
+      hd(messages)
     else
       # sometimes the updates are not immediately available
       # so we wait a bit and try again
       :timer.sleep(300)
-      Operately.Updates.list_updates(ctx.space.id, :space, :project_discussion) |> hd()
+      Operately.Messages.list_messages(ctx.space.id) |> hd()
     end
   end
 end

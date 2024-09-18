@@ -89,7 +89,7 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
       space: serialize_space(content["space"]),
       discussion: serialize_discussion(content["discussion"]),
       space_id: Paths.space_id(content["space"]),
-      discussion_id: Paths.discussion_id(content["discussion"]),
+      discussion_id: Paths.message_id(content["discussion"]),
       title: content["title"]
     }
   end
@@ -409,11 +409,11 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
     }
   end
 
-  def serialize_discussion(discussion) do
+  def serialize_discussion(message) do
     %{
-      id: OperatelyWeb.Paths.discussion_id(discussion),
-      title: discussion.content["title"],
-      body: discussion.content["body"],
+      id: OperatelyWeb.Paths.message_id(message),
+      title: message.title,
+      body: message.body,
     }
   end
 
