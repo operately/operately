@@ -19,7 +19,7 @@ defmodule Operately.Api.Queries.GetProjectContributorTest do
     end
 
     test "company members", ctx do
-      ctx = log_in_account(ctx, :company_member)
+      ctx = log_in_account(ctx, ctx.company_member)
 
       ctx = Factory.edit_project_company_members_access(ctx, :hello, :no_access)
       assert {404, _} = query(ctx.conn, :get_project_contributor, %{id: ctx.developer.id})
@@ -35,7 +35,7 @@ defmodule Operately.Api.Queries.GetProjectContributorTest do
     end
 
     test "space members", ctx do
-      ctx = log_in_account(ctx, :space_member)
+      ctx = log_in_account(ctx, ctx.space_member)
 
       ctx = Factory.edit_project_company_members_access(ctx, :hello, :no_access)
 

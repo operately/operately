@@ -34,6 +34,9 @@ defmodule Operately.People.Person do
     field :avatar_blob_id, :binary_id
     field :has_open_invitation, :boolean, default: false
 
+    # if the person is loaded in an access context, this field can be set
+    field :access_level, :any, virtual: true
+
     timestamps()
     requester_access_level()
   end

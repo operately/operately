@@ -11,11 +11,14 @@ defmodule Operately.Access.BindedPeopleLoader do
       join: g in assoc(m, :group),
       join: b in assoc(g, :bindings),
       join: c in assoc(b, :context),
-      where: c.id == ^access_context_id and is_nil(p.suspended_at),
+      where: c.id == ^access_context_id and is_nil(p.suspended_at) and b.access_level > 0,
       group_by: p.id,
       select: %{person: p, access_level: max(b.access_level)}
     )
     |> Operately.Repo.all()
+    |> Enum.map(fn %{person: p, access_level: level} -> 
+      %{p | access_level: level} 
+    end)
   end
 
 end
