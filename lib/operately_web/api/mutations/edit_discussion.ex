@@ -31,8 +31,7 @@ defmodule OperatelyWeb.Api.Mutations.EditDiscussion do
     case result do
       {:ok, ctx} -> {:ok, ctx.serialized}
       {:error, :id, _} -> {:error, :bad_request}
-      {:error, :discussion, _} -> {:error, :not_found}
-      {:error, :space, _} -> {:error, :not_found}
+      {:error, :message, _} -> {:error, :not_found}
       {:error, :check_permissions, _} -> {:error, :forbidden}
       {:error, :operation, _} -> {:error, :internal_server_error}
       _ -> {:error, :internal_server_error}

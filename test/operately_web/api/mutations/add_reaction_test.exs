@@ -3,11 +3,11 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
 
   import Ecto.Query, only: [from: 2]
   import Operately.PeopleFixtures
-  import Operately.UpdatesFixtures
   import Operately.GroupsFixtures
   import Operately.ProjectsFixtures
   import Operately.GoalsFixtures
   import Operately.CommentsFixtures
+  import Operately.MessagesFixtures
 
   alias Operately.Access.Binding
   alias Operately.Activities.Activity
@@ -148,11 +148,11 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
     tabletest @space_table do
       test "if caller has levels company=#{@test.company}, space=#{@test.space} on the space, then expect code=#{@test.expected}", ctx do
         space = create_space(ctx, @test.company, @test.space)
-        discussion = create_discussion(ctx.creator, space.id)
+        message = message_fixture(ctx.creator.id, space.id)
 
         assert {code, res} = mutation(ctx.conn, :add_reaction, %{
-          entity_id: Paths.discussion_id(discussion),
-          entity_type: "discussion",
+          entity_id: Paths.message_id(message),
+          entity_type: "message",
           emoji: "👍"
         })
 
@@ -160,7 +160,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
 
         case @test.expected do
           200 ->
-            reaction = get_reaction(discussion.id, :update)
+            reaction = get_reaction(message.id, :message)
             assert res.reaction == Serializer.serialize(reaction, level: :essential)
           403 -> assert res.message == "You don't have permission to perform this action"
           404 -> assert res.message == "The requested resource was not found"
@@ -193,6 +193,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
         end
       end
     end
+
     tabletest @project_table do
       test "milestone comment - if caller has levels company=#{@test.company}, space=#{@test.space}, project=#{@test.project} on the project, then expect code=#{@test.expected}", ctx do
         space = create_space(ctx)
@@ -272,15 +273,15 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
     end
 
     tabletest @space_table do
-      test "discussion comment - if caller has levels company=#{@test.company}, space=#{@test.space} on the space, then expect code=#{@test.expected}", ctx do
+      test "message comment - if caller has levels company=#{@test.company}, space=#{@test.space} on the space, then expect code=#{@test.expected}", ctx do
         space = create_space(ctx, @test.company, @test.space)
-        discussion = create_discussion(ctx.creator, space.id)
-        comment = create_comment(ctx, discussion, "update")
+        message = message_fixture(ctx.creator.id, space.id)
+        comment = create_comment(ctx, message, "message")
 
         assert {code, res} = mutation(ctx.conn, :add_reaction, %{
           entity_id: Paths.comment_id(comment),
           entity_type: "comment",
-          parent_type: "discussion",
+          parent_type: "message",
           emoji: "👍"
         })
 
@@ -302,15 +303,15 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
 
     test "add reaction to a discussion", ctx do
       Operately.Companies.add_admin(ctx.company_creator, ctx.person.id)
-      discussion = create_discussion(ctx.person, ctx.company.company_space_id)
+      message = message_fixture(ctx.person.id, ctx.company.company_space_id)
 
       assert {200, res} = mutation(ctx.conn, :add_reaction, %{
-        entity_id: Paths.discussion_id(discussion),
-        entity_type: "discussion",
+        entity_id: Paths.message_id(message),
+        entity_type: "message",
         emoji: "👍"
       })
 
-      reaction = hd(Operately.Updates.list_reactions(discussion.id, :update))
+      reaction = hd(Operately.Updates.list_reactions(message.id, :message))
       assert reaction.emoji == "👍"
       assert res.reaction == Serializer.serialize(reaction, level: :essential)
     end
@@ -342,19 +343,6 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
     end
 
     space
-  end
-
-  defp create_discussion(creator, space_id) do
-    update_fixture(%{
-      author_id: creator.id,
-      updatable_id: space_id,
-      updatable_type: :space,
-      type: :project_discussion,
-      content: %{
-        title: "Hello World",
-        body: RichText.rich_text("How are you doing?")
-      }
-    })
   end
 
   defp create_project(ctx, space, company_members_level, space_members_level, project_member_level) do

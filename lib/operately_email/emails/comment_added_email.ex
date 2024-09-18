@@ -52,7 +52,7 @@ defmodule OperatelyEmail.Emails.CommentAddedEmail do
         "commented on: #{parent_comment_thread.title}"
 
       true ->
-        raise "Unsupported action"
+        raise "Unsupported action: #{activity.action}"
     end
   end
 
