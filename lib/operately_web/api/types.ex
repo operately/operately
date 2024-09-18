@@ -644,6 +644,7 @@ defmodule OperatelyWeb.Api.Types do
     field :access_level, :integer
     field :has_open_invitation, :boolean
     field :invitation, :invitation
+    field :show_perf_bar, :boolean
   end
 
   object :project_health do
