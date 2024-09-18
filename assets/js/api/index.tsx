@@ -1145,6 +1145,15 @@ export interface GetAssignmentsCountResult {
   count?: number | null;
 }
 
+export interface GetBindedPeopleInput {
+  resourseType?: string | null;
+  resourseId?: string | null;
+}
+
+export interface GetBindedPeopleResult {
+  people?: Person[] | null;
+}
+
 export interface GetCommentsInput {
   entityId?: string | null;
   entityType?: string | null;
@@ -2189,6 +2198,10 @@ export class ApiClient {
     return this.get("/get_assignments_count", input);
   }
 
+  async getBindedPeople(input: GetBindedPeopleInput): Promise<GetBindedPeopleResult> {
+    return this.get("/get_binded_people", input);
+  }
+
   async getComments(input: GetCommentsInput): Promise<GetCommentsResult> {
     return this.get("/get_comments", input);
   }
@@ -2618,6 +2631,9 @@ export async function getAssignments(input: GetAssignmentsInput): Promise<GetAss
 export async function getAssignmentsCount(input: GetAssignmentsCountInput): Promise<GetAssignmentsCountResult> {
   return defaultApiClient.getAssignmentsCount(input);
 }
+export async function getBindedPeople(input: GetBindedPeopleInput): Promise<GetBindedPeopleResult> {
+  return defaultApiClient.getBindedPeople(input);
+}
 export async function getComments(input: GetCommentsInput): Promise<GetCommentsResult> {
   return defaultApiClient.getComments(input);
 }
@@ -2977,6 +2993,10 @@ export function useGetAssignments(input: GetAssignmentsInput): UseQueryHookResul
 
 export function useGetAssignmentsCount(input: GetAssignmentsCountInput): UseQueryHookResult<GetAssignmentsCountResult> {
   return useQuery<GetAssignmentsCountResult>(() => defaultApiClient.getAssignmentsCount(input));
+}
+
+export function useGetBindedPeople(input: GetBindedPeopleInput): UseQueryHookResult<GetBindedPeopleResult> {
+  return useQuery<GetBindedPeopleResult>(() => defaultApiClient.getBindedPeople(input));
 }
 
 export function useGetComments(input: GetCommentsInput): UseQueryHookResult<GetCommentsResult> {
@@ -3564,6 +3584,8 @@ export default {
   useGetAssignments,
   getAssignmentsCount,
   useGetAssignmentsCount,
+  getBindedPeople,
+  useGetBindedPeople,
   getComments,
   useGetComments,
   getCompanies,
