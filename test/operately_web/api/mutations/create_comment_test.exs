@@ -7,7 +7,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
   import Operately.ProjectsFixtures
   import Operately.GoalsFixtures
   import Operately.CommentsFixtures
-  import Operately.UpdatesFixtures
+  import Operately.MessagesFixtures
 
   alias Operately.{Notifications, Updates}
   alias Operately.Notifications.SubscriptionList
@@ -144,18 +144,18 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
     tabletest @space_table do
       test "if caller has levels company=#{@test.company}, space=#{@test.space} on the space, then expect code=#{@test.expected}", ctx do
         space = create_space(ctx, @test.company, @test.space)
-        discussion = create_discussion(ctx, space)
+        message = message_fixture(ctx.creator.id, space.id)
 
         assert {code, res} = mutation(ctx.conn, :create_comment, %{
-          entity_id: Paths.discussion_id(discussion),
-          entity_type: "discussion",
+          entity_id: Paths.message_id(message),
+          entity_type: "message",
           content: RichText.rich_text("Content", :as_string)
         })
 
         assert code == @test.expected
 
         case @test.expected do
-          200 -> assert Updates.count_comments(discussion.id, :update) == 1
+          200 -> assert Updates.count_comments(message.id, :message) == 1
           403 -> assert res.message == "You don't have permission to perform this action"
           404 -> assert res.message == "The requested resource was not found"
         end
@@ -328,18 +328,5 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
 
   defp create_goal_update(ctx, goal) do
     goal_update_fixture(ctx.creator, goal)
-  end
-
-  defp create_discussion(ctx, space) do
-    update_fixture(%{
-      author_id: ctx.creator.id,
-      updatable_id: space.id,
-      updatable_type: :space,
-      type: :project_discussion,
-      content: %{
-        title: "Title",
-        body: RichText.rich_text("Content")
-      }
-    })
   end
 end

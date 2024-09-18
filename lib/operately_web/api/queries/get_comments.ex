@@ -4,8 +4,7 @@ defmodule OperatelyWeb.Api.Queries.GetComments do
 
   import Operately.Access.Filters, only: [filter_by_view_access: 3]
 
-  alias Operately.Updates.{Update, Comment}
-  alias Operately.Groups.Group
+  alias Operately.Updates.Comment
   alias Operately.Projects.CheckIn
   alias Operately.Comments.CommentThread
   alias Operately.Activities.Activity
@@ -49,14 +48,13 @@ defmodule OperatelyWeb.Api.Queries.GetComments do
     |> Repo.all()
   end
 
-  defp load(id, :discussion, person) do
+  defp load(id, :message, person) do
     from(c in Comment,
-      join: u in Update, on: c.entity_id == u.id,
-      join: g in Group, on: u.updatable_id == g.id, as: :group,
-      where: c.entity_id == ^id and c.entity_type == :update
+      join: m in Operately.Messages.Message, on: c.entity_id == m.id, as: :message,
+      where: m.id == ^id
     )
     |> preload_resources()
-    |> filter_by_view_access(person.id, named_binding: :group)
+    |> filter_by_view_access(person.id, named_binding: :message)
     |> Repo.all()
   end
 
