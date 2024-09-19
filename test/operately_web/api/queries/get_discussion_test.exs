@@ -5,7 +5,6 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionTest do
   import Operately.GroupsFixtures
   import Operately.MessagesFixtures
 
-  alias Operately.Support.RichText
   alias Operately.Access.Binding
 
   describe "security" do
@@ -101,29 +100,6 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionTest do
       assert {200, res} = query(ctx.conn, :get_discussion, %{id: Paths.message_id(message), include_reactions: true})
       assert res.discussion.reactions == [Serializer.serialize(reaction, level: :essential)]
     end
-
-    test "include_comments", ctx do
-      message = message_fixture(ctx.person.id, ctx.company.company_space_id)
-
-      assert {200, res} = query(ctx.conn, :get_discussion, %{id: Paths.message_id(message)})
-      assert res.discussion.comments == nil
-
-      assert {200, res} = query(ctx.conn, :get_discussion, %{id: Paths.message_id(message), include_comments: true})
-      assert res.discussion.comments == []
-
-      {:ok, comment} = add_comment(ctx, message, "Hello World")
-      {:ok, _reaction} = Operately.Updates.create_reaction(%{
-        person_id: ctx.person.id,
-        entity_id: comment.id,
-        entity_type: :comment,
-        emoji: "👍"
-      })
-
-      comment = Operately.Repo.preload(comment, [:author, [reactions: :person]])
-
-      assert {200, res} = query(ctx.conn, :get_discussion, %{id: Paths.message_id(message), include_comments: true})
-      assert res.discussion.comments == [Serializer.serialize(comment, level: :essential)]
-    end
   end
 
   #
@@ -147,9 +123,5 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionTest do
       id: ctx.person.id,
       permissions: Binding.view_access(),
     }])
-  end
-
-  defp add_comment(ctx, message, content) do
-    Operately.Operations.CommentAdding.run(ctx.person, message, "message", RichText.rich_text(content))
   end
 end
