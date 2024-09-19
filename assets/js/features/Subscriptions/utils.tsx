@@ -1,5 +1,6 @@
 import { Person } from "@/models/people";
 import { Project } from "@/models/projects";
+import { Space } from "@/models/spaces";
 import { Goal } from "@/models/goals";
 import { Subscription } from "@/models/notifications";
 import { NotifiablePerson } from "@/features/Subscriptions";
@@ -76,4 +77,17 @@ export function findGoalNotifiablePeople(goal: Goal, me?: Person): NotifiablePer
     });
 
   return people;
+}
+
+export function findSpaceNotifiablePeople(space: Space, me?: Person): NotifiablePerson[] {
+  return space
+    .members!.filter((member) => !compareIds(me?.id, member.id))
+    .map((member) => {
+      return {
+        id: member.id!,
+        fullName: member.fullName!,
+        avatarUrl: member.avatarUrl!,
+        role: member.title!,
+      };
+    });
 }

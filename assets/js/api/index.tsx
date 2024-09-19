@@ -1941,6 +1941,8 @@ export interface PostDiscussionInput {
   spaceId?: string | null;
   title?: string | null;
   body?: string | null;
+  sendNotificationsToEveryone?: boolean | null;
+  subscriberIds?: string[] | null;
 }
 
 export interface PostDiscussionResult {
