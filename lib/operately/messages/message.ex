@@ -26,6 +26,6 @@ defmodule Operately.Messages.Message do
   def changeset(update, attrs) do
     update
     |> cast(attrs, [:space_id, :author_id, :title, :body, :subscription_list_id])
-    |> validate_required([:space_id, :author_id, :title, :body])
+    |> validate_required([:space_id, :author_id, :title, :body, :subscription_list_id])
   end
 end
