@@ -15,7 +15,7 @@ import { Spacer } from "@/components/Spacer";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { CommentSection, useForDiscussion } from "@/features/CommentSection";
 
-import { useRefresh, useLoadedData } from "./loader";
+import { useLoadedData } from "./loader";
 import { useDiscussionCommentsChangeSignal } from "@/models/comments";
 import { useMe } from "@/contexts/CurrentUserContext";
 import { Paths, compareIds } from "@/routes/paths";
@@ -24,9 +24,8 @@ export function Page() {
   const me = useMe()!;
   const { discussion } = useLoadedData();
 
-  const refresh = useRefresh();
   const commentsForm = useForDiscussion(discussion);
-  useDiscussionCommentsChangeSignal(refresh, { discussionId: discussion.id! });
+  useDiscussionCommentsChangeSignal(commentsForm.refetch!, { discussionId: discussion.id! });
 
   return (
     <Pages.Page title={discussion.title!}>
@@ -46,7 +45,7 @@ export function Page() {
 
             <Spacer size={4} />
             <div className="border-t border-stroke-base mt-8" />
-            <CommentSection form={commentsForm} refresh={refresh} commentParentType="message" />
+            <CommentSection form={commentsForm} refresh={() => {}} commentParentType="message" />
           </div>
         </Paper.Body>
       </Paper.Root>
