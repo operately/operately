@@ -37,6 +37,12 @@ defmodule Operately.Access do
     Context.changeset(context, attrs)
   end
 
+  alias Operately.Access.Binder
+
+  defdelegate bind(context, attrs), to: Binder
+  defdelegate bind_person(context, person_id, level), to: Binder
+  defdelegate unbind(context, attrs), to: Binder
+  defdelegate unbind_person(context, person_id), to: Binder
 
   alias Operately.Access.Group
 
