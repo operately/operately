@@ -189,7 +189,11 @@ defmodule Operately.Projects.Project do
     Map.put(project, :privacy, AccessLevels.calc_privacy(project.access_levels))
   end
 
-  def get_access_context(project) do
-    Operately.Access.get_context!(project_id: project.id)
+  def get_access_context(project = %__MODULE__{}) do
+    get_access_context(project.id)
+  end
+
+  def get_access_context(project_id) when is_binary(project_id) do
+    Operately.Access.get_context!(project_id: project_id)
   end
 end

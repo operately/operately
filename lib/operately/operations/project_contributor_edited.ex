@@ -3,16 +3,15 @@ defmodule Operately.Operations.ProjectContributorEdited do
   alias Operately.Repo
   alias Operately.Access
   alias Operately.Access.Binding
-  alias Operately.Projects
+  alias Operately.Projects.Project
   alias Operately.Projects.Contributor
   alias Operately.Activities
 
   def run(creator, contributor, attrs) do
     Multi.new()
-    |> lookup_context(contributor)
     |> update_contributor(contributor, attrs)
     |> update_bindings(contributor, attrs)
-    |> insert_activity(creator, contributor)
+    |> insert_activity(creator, contributor, attrs)
     |> Repo.transaction()
     |> Repo.extract_result(:contributor)
   end
@@ -21,25 +20,27 @@ defmodule Operately.Operations.ProjectContributorEdited do
     Multi.update(multi, :contributor, Contributor.changeset(contributor, attrs))
   end
 
-  defp lookup_context(mutli, contributor) do
-    context = Access.get_context!(project_id: contributor.project_id)
-    Multi.put(mutli, :context, context)
-  end
-
   defp update_bindings(multi, contributor, attrs) do
-    cond do
-      person_changed?(contributor, attrs) -> 
-        transfer_binding_to_new_person(multi, contributor, attrs)
-      persmission_changed?(attrs) ->
-        update_persmission(multi, contributor, attrs)
-      true -> 
-        multi
-    end
+    Multi.run(multi, :bindings, fn _, _ ->
+      level = access_level(contributor, attrs)
+      context = Project.get_access_context(contributor.project_id)
+
+      cond do
+        person_changed?(contributor, attrs) -> 
+          Access.bind_person(context, attrs.person_id, level)
+          Access.unbind_person(context, contributor.person_id)
+
+        persmission_changed?(attrs) ->
+          Access.bind_person(context, contributor.person_id, level)
+
+        true -> 
+          {:ok, nil}
+      end
+    end)
   end
 
-  defp insert_activity(multi, creator, contributor) do
-    project = Projects.get_project!(contributor.project_id)
-    old_access_level = access_level(project, contributor)
+  defp insert_activity(multi, creator, contributor, attrs) do
+    {:ok, project} = Project.get(:system, id: contributor.project_id)
 
     Activities.insert_sync(multi, creator.id, :project_contributor_edited, fn changes ->
       %{
@@ -49,12 +50,12 @@ defmodule Operately.Operations.ProjectContributorEdited do
         previous_contributor: %{
           person_id: contributor.person_id,
           role: Atom.to_string(contributor.role),
-          permissions: old_access_level,
+          permissions: access_level(contributor),
         },
         updated_contributor: %{
           person_id: changes.contributor.person_id,
           role: Atom.to_string(changes.contributor.role),
-          permissions: access_level(project, changes.contributor),
+          permissions: access_level(changes.contributor, attrs),
         }
       }
     end)
@@ -64,69 +65,15 @@ defmodule Operately.Operations.ProjectContributorEdited do
   # Helpers
   #
 
-  defp access_level(project, contributor) do
-    context = Access.get_context!(project_id: project.id)
-    group = Access.get_group!(person_id: contributor.person_id)
-
-    binding = if contributor.role in [:champion, :reviewer] do
-      Access.get_binding(context_id: context.id, group_id: group.id, tag: contributor.role)
-    else
-      Access.get_binding(context_id: context.id, group_id: group.id)
-    end
-
-    if binding do
-      binding.access_level
-    else
-      Binding.no_access()
-    end
-  end
-
-  defp find_permissions(contributor, attrs) do
+  defp access_level(contributor, attrs \\ nil) do
     if contributor.role in [:champion, :reviewer] do
       Binding.full_access()
     else
-      attrs.permissions || Binding.edit_access()
+      attrs[:permissions] || Binding.edit_access()
     end
   end
 
-  defp person_changed?(contributor, attrs) do
-    attrs[:person_id] && attrs[:person_id] != contributor.person_id
-  end
-
-  defp persmission_changed?(attrs) do
-    attrs[:permissions]
-  end
-
-  defp update_persmission(multi, contributor, attrs) do
-    group = Access.get_group!(person_id: contributor.person_id)
-    Access.update_or_insert_binding(multi, :contributor_binding, group, attrs.permissions)
-  end
-
-  defp transfer_binding_to_new_person(multi, contributor, attrs) do
-    context = Access.get_context!(project_id: contributor.project_id)
-    previous_group = Access.get_group!(person_id: contributor.person_id)
-    new_group = Access.get_group!(person_id: attrs.person_id)
-    permissions = find_permissions(contributor, attrs)
-
-    if contributor.role in [:champion, :reviewer] do
-      multi
-      |> delete_binding(context, previous_group, contributor.role)
-      |> Access.update_or_insert_binding(:contributor_binding, new_group, permissions, contributor.role)
-    else
-      multi
-      |> delete_binding(context, previous_group)
-      |> Access.update_or_insert_binding(:contributor_binding, new_group, permissions)
-    end
-  end
-
-  defp delete_binding(multi, context, group, tag \\ nil) do
-    Multi.run(multi, :deleted_binding, fn _, _ ->
-      if tag do
-        Access.get_binding!(context_id: context.id, group_id: group.id, tag: tag) |> Repo.delete()
-      else
-        Access.get_binding!(context_id: context.id, group_id: group.id) |> Repo.delete()
-      end
-    end)
-  end
+  defp persmission_changed?(attrs), do: attrs[:permissions]
+  defp person_changed?(contributor, attrs), do: attrs[:person_id] && attrs[:person_id] != contributor.person_id
 
 end
