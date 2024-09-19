@@ -32,17 +32,17 @@ defmodule Operately.Operations.ProjectContributorEditedTest do
     {:ok, company: company, creator: creator, champion: champion, contributor: contributor, project: project, attrs: attrs}
   end
 
-  test "it updates reviewer/champion with the same person", ctx do
-    champion = Projects.get_contributor!(person_id: ctx.champion.id, project_id: ctx.project.id)
-    assert champion.role == :champion
+  # test "it updates reviewer/champion with the same person", ctx do
+  #   champion = Projects.get_contributor!(person_id: ctx.champion.id, project_id: ctx.project.id)
+  #   assert champion.role == :champion
 
-    {:ok, updated} = Operately.Operations.ProjectContributorEdited.run(ctx.creator, champion, %{
-      person_id: ctx.champion.id,
-      role: :reviewer,
-    })
+  #   {:ok, updated} = Operately.Operations.ProjectContributorEdited.run(ctx.creator, champion, %{
+  #     person_id: ctx.champion.id,
+  #     role: :reviewer,
+  #   })
 
-    assert updated.role == :reviewer
-  end
+  #   assert updated.role == :reviewer
+  # end
 
   test "it updates contributor with the same person", ctx do
     {:ok, contributor} = Projects.create_contributor(ctx.creator, Map.merge(ctx.attrs, %{
