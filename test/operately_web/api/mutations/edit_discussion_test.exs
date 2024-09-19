@@ -8,6 +8,8 @@ defmodule OperatelyWeb.Api.Mutations.EditDiscussionTest do
   alias Operately.Support.RichText
   alias Operately.{Repo, Access}
   alias Operately.Access.Binding
+  alias Operately.Notifications
+  alias Operately.Notifications.SubscriptionList
 
   describe "security" do
     test "it requires authentication", ctx do
@@ -119,6 +121,30 @@ defmodule OperatelyWeb.Api.Mutations.EditDiscussionTest do
 
       assert {200, _} = request(ctx.conn, message)
       assert_discussion_edited(message)
+    end
+
+    test "mentioned people are added to subscriptions list", ctx do
+      message = message_fixture(ctx.person.id, ctx.company.company_space_id)
+
+      {:ok, list} = SubscriptionList.get(:system, parent_id: message.id, opts: [
+        preload: :subscriptions
+      ])
+
+      subscriptions = Enum.filter(list.subscriptions, &(&1.person_id != ctx.person.id))
+      assert subscriptions == []
+
+      assert {200, _} = mutation(ctx.conn, :edit_discussion, %{
+        discussion_id: Paths.message_id(message),
+        title: "New title",
+        body: RichText.rich_text(mentioned_people: [ctx.company_creator]),
+      })
+
+      subscriptions =
+        Notifications.list_subscriptions(list)
+        |> Enum.filter(&(&1.person_id != ctx.person.id))
+
+      assert length(subscriptions) == 1
+      assert hd(subscriptions).person_id == ctx.company_creator.id
     end
   end
 
