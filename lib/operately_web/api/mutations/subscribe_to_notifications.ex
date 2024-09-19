@@ -2,7 +2,7 @@ defmodule OperatelyWeb.Api.Mutations.SubscribeToNotifications do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
-  alias Operately.{Goals, Projects, Notifications}
+  alias Operately.{Goals, Projects, Notifications, Groups}
   alias Operately.Operations.NotificationsSubscribing
 
   inputs do
@@ -42,6 +42,7 @@ defmodule OperatelyWeb.Api.Mutations.SubscribeToNotifications do
     case type do
       :project_check_in -> Projects.Permissions.check(access_level, :can_view)
       :goal_update -> Goals.Permissions.check(access_level, :can_view)
+      :message -> Groups.Permissions.check(access_level, :can_view)
     end
   end
 end
