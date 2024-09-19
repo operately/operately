@@ -6,7 +6,7 @@ import * as People from "@/models/people";
 import { useGetBindedPeople } from "@/api";
 import { compareIds } from "@/routes/paths";
 
-export interface LoaderData {
+interface LoaderData {
   project: Projects.Project;
   champion: Projects.ProjectContributor | null;
   reviewer: Projects.ProjectContributor | null;

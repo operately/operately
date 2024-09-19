@@ -19,7 +19,7 @@ export function useForDiscussion(discussion: Discussions.Discussion): FormState 
   const postComment = async (content: string) => {
     await post({
       entityId: discussion.id,
-      entityType: "discussion",
+      entityType: "message",
       content: JSON.stringify(content),
     });
   };
@@ -28,7 +28,7 @@ export function useForDiscussion(discussion: Discussions.Discussion): FormState 
     await edit({
       commentId: commentID,
       content: JSON.stringify(content),
-      parentType: "discussion",
+      parentType: "message",
     });
   };
 

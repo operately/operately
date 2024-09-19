@@ -6,9 +6,9 @@ defmodule Operately.Activities.Notifications.DiscussionPosting do
 
     space = Operately.Groups.get_group!(space_id)
     members = Operately.Groups.list_members(space)
-    discussion = Operately.Updates.get_update!(discussion_id)
+    {:ok, message} = Operately.Messages.Message.get(:system, id: discussion_id)
 
-    mentioned = Operately.RichContent.lookup_mentioned_people(discussion.content["body"])
+    mentioned = Operately.RichContent.lookup_mentioned_people(message.body)
     people = Enum.uniq_by(members ++ mentioned, & &1.id)
 
     notifications = Enum.map(people, fn member ->
