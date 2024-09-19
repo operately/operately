@@ -1185,7 +1185,6 @@ export interface GetCompanyResult {
 export interface GetDiscussionInput {
   id?: string | null;
   includeAuthor?: boolean | null;
-  includeComments?: boolean | null;
   includeReactions?: boolean | null;
   includeSpace?: boolean | null;
 }
