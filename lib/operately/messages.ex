@@ -14,4 +14,10 @@ defmodule Operately.Messages do
     |> Message.changeset(attrs)
     |> Repo.insert()
   end
+
+  def update_message(%Message{} = message, attrs) do
+    message
+    |> Message.changeset(attrs)
+    |> Repo.update()
+  end
 end
