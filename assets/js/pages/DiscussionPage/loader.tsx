@@ -10,7 +10,6 @@ export async function loader({ params }): Promise<LoaderResult> {
     discussion: await Discussions.getDiscussion({
       id: params.id,
       includeAuthor: true,
-      includeComments: true,
       includeReactions: true,
       includeSpace: true,
     }).then((d) => d.discussion!),
