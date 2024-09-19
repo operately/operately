@@ -2,7 +2,6 @@ import React from "react";
 
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
-import * as Icons from "@tabler/icons-react";
 import * as Projects from "@/models/projects";
 
 import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
@@ -240,9 +239,10 @@ function Contributor({ contributor }: { contributor: ProjectContributor }) {
 
 function ContributorMenu({ contributor }: { contributor: ProjectContributor }) {
   return (
-    <Menu testId={createTestId("contributor-menu", contributor.person!.fullName!)} size="large">
+    <Menu testId={createTestId("contributor-menu", contributor.person!.fullName!)} size="medium">
       <EditMenuItem contributor={contributor} />
-      <ConvertToContributorMenuItem contributor={contributor} />
+      <ChangeProjectChampionMenuItem contributor={contributor} />
+      <ReassignAsContributorMenuItem contributor={contributor} />
       <RemoveContributorMenuItem contributor={contributor} />
     </Menu>
   );
@@ -257,14 +257,26 @@ function ContributotNameAndResponsibility({ contributor }: { contributor: Projec
   );
 }
 
-function ConvertToContributorMenuItem({ contributor }: { contributor: ProjectContributor }) {
+function ReassignAsContributorMenuItem({ contributor }: { contributor: ProjectContributor }) {
   if (contributor.role === "contributor") return null;
 
-  const path = Paths.projectContributorsEditPath(contributor.id!, { convertTo: "contributor" });
+  const path = Paths.projectContributorsEditPath(contributor.id!, { action: "reassign-as-contributor" });
 
   return (
-    <MenuLinkItem icon={Icons.IconTransfer} to={path} testId="convert-to-contributor">
-      Convert to contributor
+    <MenuLinkItem to={path} testId="convert-to-contributor">
+      Reassign as contributor
+    </MenuLinkItem>
+  );
+}
+
+function ChangeProjectChampionMenuItem({ contributor }: { contributor: ProjectContributor }) {
+  if (contributor.role !== "champion") return null;
+
+  const path = Paths.projectContributorsEditPath(contributor.id!, { action: "change-champion" });
+
+  return (
+    <MenuLinkItem to={path} testId="convert-to-champion">
+      Edit champion
     </MenuLinkItem>
   );
 }
@@ -272,11 +284,11 @@ function ConvertToContributorMenuItem({ contributor }: { contributor: ProjectCon
 function EditMenuItem({ contributor }: { contributor: ProjectContributor }) {
   if (contributor.role !== "contributor") return null;
 
-  const path = Paths.projectContributorsEditPath(contributor.id!);
+  const path = Paths.projectContributorsEditPath(contributor.id!, { action: "edit-contributor" });
 
   return (
-    <MenuLinkItem icon={Icons.IconEdit} to={path} testId="edit-contributor">
-      Edit
+    <MenuLinkItem to={path} testId="edit-contributor">
+      Edit contributor
     </MenuLinkItem>
   );
 }
@@ -291,7 +303,7 @@ function RemoveContributorMenuItem({ contributor }: { contributor: ProjectContri
   };
 
   return (
-    <MenuActionItem icon={Icons.IconTrash} danger={true} onClick={handleClick} testId="remove-contributor">
+    <MenuActionItem danger={true} onClick={handleClick} testId="remove-contributor">
       Remove from project
     </MenuActionItem>
   );
