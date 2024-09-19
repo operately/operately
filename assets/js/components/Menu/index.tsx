@@ -14,8 +14,8 @@ interface MenuProps extends TestableElement {
 }
 
 interface MenuItemProps extends TestableElement {
-  icon: React.ComponentType<{ size: any }>;
   children: React.ReactNode;
+  icon?: React.ComponentType<{ size: any }>;
   danger?: boolean;
 }
 
@@ -108,7 +108,7 @@ const menuItemClass = classNames(
 function MenuItemIconAndTitle({ icon, children }) {
   return (
     <>
-      <div className="shrink-0">{React.createElement(icon, { size: 20 })}</div>
+      {icon && <div className="shrink-0">{React.createElement(icon, { size: 20 })}</div>}
       <div className="break-keep">{children}</div>
     </>
   );
