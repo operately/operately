@@ -582,6 +582,7 @@ export interface Discussion {
   space?: Space | null;
   reactions?: Reaction[] | null;
   comments?: Comment[] | null;
+  subscriptionList?: SubscriptionList | null;
 }
 
 export interface EditMemberPermissionsInput {
@@ -1187,6 +1188,8 @@ export interface GetDiscussionInput {
   includeAuthor?: boolean | null;
   includeReactions?: boolean | null;
   includeSpace?: boolean | null;
+  includeSpaceMembers?: boolean | null;
+  includeSubscriptions?: boolean | null;
 }
 
 export interface GetDiscussionResult {

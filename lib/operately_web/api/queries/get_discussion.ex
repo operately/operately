@@ -4,12 +4,15 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussion do
 
   alias Operately.Messages.Message
   alias Operately.Groups.Permissions
+  alias Operately.Notifications.Subscription
 
   inputs do
     field :id, :string
     field :include_author, :boolean
     field :include_reactions, :boolean
     field :include_space, :boolean
+    field :include_space_members, :boolean
+    field :include_subscriptions, :boolean
   end
 
   outputs do
@@ -52,6 +55,8 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussion do
           :include_author -> [:author | result]
           :include_reactions -> [[reactions: :person] | result]
           :include_space -> [:space | result]
+          :include_space_members -> [[space: [:members, :company]] | result]
+          :include_subscriptions -> [Subscription.preload_subscriptions() | result]
           e -> raise "Unknown include filter: #{e}"
         end
       end)
