@@ -8,7 +8,6 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussion do
   inputs do
     field :id, :string
     field :include_author, :boolean
-    field :include_comments, :boolean
     field :include_reactions, :boolean
     field :include_space, :boolean
   end
@@ -51,7 +50,6 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussion do
       Enum.reduce(requested, [], fn include, result ->
         case include do
           :include_author -> [:author | result]
-          :include_comments -> [[comments: [:author, [reactions: :person]]] | result]
           :include_reactions -> [[reactions: :person] | result]
           :include_space -> [:space | result]
           e -> raise "Unknown include filter: #{e}"

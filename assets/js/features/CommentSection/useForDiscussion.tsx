@@ -5,16 +5,31 @@ import * as Time from "@/utils/time";
 import { ItemType, FormState } from "./form";
 
 export function useForDiscussion(discussion: Discussions.Discussion): FormState {
-  const items = discussion.comments!.map((c) => {
-    return {
-      type: "comment" as ItemType,
-      insertedAt: Time.parse(c.insertedAt)!,
-      value: c,
-    };
+  const { data, loading, error, refetch } = Comments.useGetComments({
+    entityId: discussion.id!,
+    entityType: "message",
   });
 
   const [post, { loading: submittingPost }] = Comments.useCreateComment();
   const [edit, { loading: submittingEdit }] = Comments.useEditComment();
+
+  if (loading)
+    return {
+      items: [],
+      postComment: async (_content: string) => {},
+      editComment: async (_commentID: string, _content: string) => {},
+      submitting: false,
+    };
+
+  if (error) throw error;
+
+  const items = data!.comments!.map((comment) => {
+    return {
+      type: "comment" as ItemType,
+      insertedAt: Time.parse(comment.insertedAt)!,
+      value: comment,
+    };
+  });
 
   const postComment = async (content: string) => {
     await post({
@@ -37,5 +52,6 @@ export function useForDiscussion(discussion: Discussions.Discussion): FormState 
     postComment,
     editComment,
     submitting: submittingPost || submittingEdit,
+    refetch,
   };
 }
