@@ -8,8 +8,8 @@ type AddErrorFn = (field: string, message: string) => void;
 interface FormProps<T extends KeyValueMap> {
   fields: T;
   validate?: (addError: AddErrorFn) => void;
-  submit: (form: FormState<T>) => Promise<void>;
-  cancel?: (form: FormState<T>) => Promise<void>;
+  submit: (form: FormState<T>) => Promise<void> | void;
+  cancel?: (form: FormState<T>) => Promise<void> | void;
 }
 
 export function useForm<T extends KeyValueMap>(props: FormProps<T>): FormState<T> {
