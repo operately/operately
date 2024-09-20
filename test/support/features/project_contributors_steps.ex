@@ -314,4 +314,52 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
     })
   end
 
+  step :choose_new_reviewer, ctx, name: name do
+    person_fixture_with_account(%{company_id: ctx.company.id, full_name: name})
+
+    ctx
+    |> UI.click(testid: UI.testid(["contributor-menu", ctx.reviewer.full_name]))
+    |> UI.click(testid: "choose-new-reviewer")
+    |> UI.select_person_in(id: "person", name: name)
+    |> UI.click(testid: "submit")
+    |> UI.assert_has(testid: "project-contributors-page")
+  end
+
+  step :assert_new_reviewer_is, ctx, name: name do
+    contributors = Operately.Projects.list_project_contributors(ctx.project)
+    reviewer = Enum.find(contributors, fn c -> c.role == :reviewer end)
+
+    assert reviewer.person.full_name == name
+
+    ctx
+  end
+
+  step :assert_old_reviewer_is_contributor, ctx do
+    contributors = Operately.Projects.list_project_contributors(ctx.project)
+    reviewer = Enum.find(contributors, fn c -> c.person_id == ctx.reviewer.id end)
+
+    assert reviewer.role == :contributor
+
+    ctx
+  end
+
+  step :assert_new_reviewer_chosen_feed_item_exists, ctx, name: name do
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> FeedSteps.assert_feed_item_exists(%{
+      author: ctx.champion,
+      title: "set #{name} as the new reviewer",
+    })
+    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
+    |> FeedSteps.assert_feed_item_exists(%{
+      author: ctx.champion,
+      title: "set #{name} as the new reviewer on the #{ctx.project.name} project",
+    })
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> FeedSteps.assert_feed_item_exists(%{
+      author: ctx.champion,
+      title: "set #{name} as the new reviewer on the #{ctx.project.name} project",
+    })
+  end
+
 end
