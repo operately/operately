@@ -184,6 +184,7 @@ defmodule OperatelyWeb.Api.Types do
     field :space, :space
     field :reactions, list_of(:reaction)
     field :comments, list_of(:comment)
+    field :subscription_list, :subscription_list
   end
 
   object :activity do
