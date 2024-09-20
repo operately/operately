@@ -2,7 +2,6 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
   use Operately.FeatureCase
 
   alias Operately.Support.Features.ProjectSteps
-  alias Operately.Support.Features.FeedSteps
   alias Operately.Support.Features.NotificationsSteps
   alias Operately.Support.Features.EmailSteps
   alias Operately.Access.Binding
@@ -74,34 +73,27 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
     contributors = Operately.Projects.list_project_contributors(ctx.project)
     contributors = Operately.Repo.preload(contributors, :person)
     contrib = Enum.find(contributors, fn c -> c.person.full_name == name end)
+    name = Person.first_name(contrib.person)
 
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
-    |> FeedSteps.assert_feed_item_exists(%{
-      author: ctx.champion,
-      title: "added #{Person.first_name(contrib.person)} to the project",
-    })
+    |> UI.assert_feed_item(ctx.champion, "added #{name} to the project")
+    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
+    |> UI.assert_feed_item(ctx.champion, "added #{name} to the #{ctx.project.name} project")
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.assert_feed_item(ctx.champion, "added #{name} to the #{ctx.project.name} project")
   end
 
   step :assert_contributor_removed_feed_item_exists, ctx, name: name do
-    person = Person.get_by!(:system, full_name: name)
+    name = Person.get_by!(:system, full_name: name) |> Person.first_name()
 
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
-    |> FeedSteps.assert_feed_item_exists(%{
-      author: ctx.champion,
-      title: "removed #{Person.first_name(person)} from the project",
-    })
+    |> UI.assert_feed_item(ctx.champion, "removed #{name} from the project")
     |> UI.visit(Paths.space_path(ctx.company, ctx.group))
-    |> FeedSteps.assert_feed_item_exists(%{
-      author: ctx.champion,
-      title: "removed #{Person.first_name(person)} from the #{ctx.project.name} project",
-    })
+    |> UI.assert_feed_item(ctx.champion, "removed #{name} from the #{ctx.project.name} project")
     |> UI.visit(Paths.feed_path(ctx.company))
-    |> FeedSteps.assert_feed_item_exists(%{
-      author: ctx.champion,
-      title: "removed #{Person.first_name(person)} from the #{ctx.project.name} project",
-    })
+    |> UI.assert_feed_item(ctx.champion, "removed #{name} from the #{ctx.project.name} project")
   end
 
   step :assert_contributor_added_notification_sent, ctx, name: name do
@@ -221,41 +213,26 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
   end
 
   step :assert_reviewer_converted_to_contributor_feed_item_exists, ctx do
+    name = Person.first_name(ctx.reviewer)
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
-    |> FeedSteps.assert_feed_item_exists(%{
-      author: ctx.champion,
-      title: "reassigned #{Person.first_name(ctx.reviewer)} as a contributor",
-    })
+    |> UI.assert_feed_item(ctx.champion, "reassigned #{name} as a contributor")
     |> UI.visit(Paths.space_path(ctx.company, ctx.group))
-    |> FeedSteps.assert_feed_item_exists(%{
-      author: ctx.champion,
-      title: "reassigned #{Person.first_name(ctx.reviewer)} as a contributor on the #{ctx.project.name} project",
-    })
+    |> UI.assert_feed_item(ctx.champion, "reassigned #{name} as a contributor on the #{ctx.project.name} project")
     |> UI.visit(Paths.feed_path(ctx.company))
-    |> FeedSteps.assert_feed_item_exists(%{
-      author: ctx.champion,
-      title: "reassigned #{Person.first_name(ctx.reviewer)} as a contributor on the #{ctx.project.name} project",
-    })
+    |> UI.assert_feed_item(ctx.champion, "reassigned #{name} as a contributor on the #{ctx.project.name} project")
   end
 
   step :assert_champion_converted_to_contributor_feed_item_exists, ctx do
+    name = Person.first_name(ctx.champion)
+
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
-    |> FeedSteps.assert_feed_item_exists(%{
-      author: ctx.champion,
-      title: "reassigned #{Person.first_name(ctx.champion)} as a contributor",
-    })
+    |> UI.assert_feed_item(ctx.champion, "reassigned #{name} as a contributor")
     |> UI.visit(Paths.space_path(ctx.company, ctx.group))
-    |> FeedSteps.assert_feed_item_exists(%{
-      author: ctx.champion,
-      title: "reassigned #{Person.first_name(ctx.champion)} as a contributor on the #{ctx.project.name} project",
-    })
+    |> UI.assert_feed_item(ctx.champion, "reassigned #{name} as a contributor on the #{ctx.project.name} project")
     |> UI.visit(Paths.feed_path(ctx.company))
-    |> FeedSteps.assert_feed_item_exists(%{
-      author: ctx.champion,
-      title: "reassigned #{Person.first_name(ctx.champion)} as a contributor on the #{ctx.project.name} project",
-    })
+    |> UI.assert_feed_item(ctx.champion, "reassigned #{name} as a contributor on the #{ctx.project.name} project")
   end
 
   step :given_company_members_have_access, ctx do
@@ -312,20 +289,11 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
   step :assert_new_champion_chosen_feed_item_exists, ctx, name: name do
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
-    |> FeedSteps.assert_feed_item_exists(%{
-      author: ctx.champion,
-      title: "set #{name} as the new champion",
-    })
+    |> UI.assert_feed_item(ctx.champion, "set #{name} as the new champion")
     |> UI.visit(Paths.space_path(ctx.company, ctx.group))
-    |> FeedSteps.assert_feed_item_exists(%{
-      author: ctx.champion,
-      title: "set #{name} as the new champion on the #{ctx.project.name} project",
-    })
+    |> UI.assert_feed_item(ctx.champion, "set #{name} as the new champion on the #{ctx.project.name} project")
     |> UI.visit(Paths.feed_path(ctx.company))
-    |> FeedSteps.assert_feed_item_exists(%{
-      author: ctx.champion,
-      title: "set #{name} as the new champion on the #{ctx.project.name} project",
-    })
+    |> UI.assert_feed_item(ctx.champion, "set #{name} as the new champion on the #{ctx.project.name} project")
   end
 
   step :choose_new_reviewer, ctx, name: name do
@@ -360,26 +328,29 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
   step :assert_new_reviewer_chosen_feed_item_exists, ctx, name: name do
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
-    |> FeedSteps.assert_feed_item_exists(%{
-      author: ctx.champion,
-      title: "set #{name} as the new reviewer",
-    })
+    |> UI.assert_feed_item(ctx.champion, "set #{name} as the new reviewer")
     |> UI.visit(Paths.space_path(ctx.company, ctx.group))
-    |> FeedSteps.assert_feed_item_exists(%{
-      author: ctx.champion,
-      title: "set #{name} as the new reviewer on the #{ctx.project.name} project",
-    })
+    |> UI.assert_feed_item(ctx.champion, "set #{name} as the new reviewer on the #{ctx.project.name} project")
     |> UI.visit(Paths.feed_path(ctx.company))
-    |> FeedSteps.assert_feed_item_exists(%{
-      author: ctx.champion,
-      title: "set #{name} as the new reviewer on the #{ctx.project.name} project",
-    })
+    |> UI.assert_feed_item(ctx.champion, "set #{name} as the new reviewer on the #{ctx.project.name} project")
   end
 
   step :promote_contributor_to_champion, ctx, name: name do
+    promote_to(ctx, name, "champion")
+  end
+
+  step :promote_contributor_to_reviewer, ctx, name: name do
+    promote_to(ctx, name, "reviewer")
+  end
+
+  #
+  # Helpers
+  #
+
+  defp promote_to(ctx, name, role) do
     ctx
     |> UI.click(testid: UI.testid(["contributor-menu", name]))
-    |> UI.click(testid: "promote-to-champion")
+    |> UI.click(testid: "promote-to-#{role}")
     |> UI.sleep(500)
   end
 

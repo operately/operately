@@ -368,6 +368,10 @@ defmodule Operately.Support.Features.UI do
     end)
   end
 
+  def assert_feed_item(ctx, author, title) do
+    Operately.Support.Features.FeedSteps.assert_feed_item_exists(ctx, %{author: author, title: title})
+  end
+
   def testid(parts) when is_list(parts) do
     parts
     |> Enum.map(&testid/1)
