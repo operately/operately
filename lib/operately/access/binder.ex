@@ -12,10 +12,7 @@ defmodule Operately.Access.Binder do
     Access.unbind_person(context, person_id)
   """
 
-  alias Operately.Repo
   alias Operately.Access
-
-  import Ecto.Query, only: [from: 2]
 
   def bind_person(context, person_id, level) do
     bind(context, person_id: person_id, level: level)
@@ -52,7 +49,7 @@ defmodule Operately.Access.Binder do
   #
 
   def get_binding(context_id, group_id) do
-    Repo.one(from b in Access.Binding, where: b.context_id == ^context_id and b.group_id == ^group_id)
+    Access.get_binding(context_id: context_id, group_id: group_id)
   end
 
   def get_group(person_id: person_id) do
