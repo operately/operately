@@ -11,11 +11,16 @@ export async function loader({ params }): Promise<LoaderResult> {
       id: params.id,
       includeAuthor: true,
       includeReactions: true,
-      includeSpace: true,
+      includeSpaceMembers: true,
+      includeSubscriptions: true,
     }).then((d) => d.discussion!),
   };
 }
 
 export function useLoadedData(): LoaderResult {
   return Pages.useLoadedData() as LoaderResult;
+}
+
+export function useRefresh() {
+  return Pages.useRefresh();
 }

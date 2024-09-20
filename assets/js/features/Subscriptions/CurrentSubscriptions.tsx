@@ -10,8 +10,8 @@ import { Unsubscribe } from "./current-subscriptions/Unsubscribe";
 
 interface CurrentSubscriptionsProps {
   subscriptionList: SubscriptionList;
-  name: "check-in" | "update";
-  type: "project_check_in" | "goal_update";
+  name: "check-in" | "update" | "discussion";
+  type: "project_check_in" | "goal_update" | "message";
   callback: () => void;
   people: NotifiablePerson[];
 }
