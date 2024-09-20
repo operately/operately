@@ -260,6 +260,7 @@ function ContributorMenu({ contributor }: { contributor: ProjectContributor }) {
           <>
             <EditMenuItem contributor={contributor} />
             <PromoteToChampionMenuItem contributor={contributor} />
+            <PromoteToReviewerMenuItem contributor={contributor} />
             <RemoveContributorMenuItem contributor={contributor} />
           </>
         ))}
@@ -337,6 +338,8 @@ function PromoteToChampionMenuItem({ contributor }: { contributor: ProjectContri
   const [update] = ProjectContributors.useUpdateContributor();
   const { champion } = useLoadedData();
 
+  if (!champion) return null;
+
   const handleClick = async () => {
     await update({ contribId: champion!.id, role: "champion", personId: contributor.person!.id });
     refresh();
@@ -345,6 +348,25 @@ function PromoteToChampionMenuItem({ contributor }: { contributor: ProjectContri
   return (
     <MenuActionItem danger={true} onClick={handleClick} testId="promote-to-champion">
       Assign as champion
+    </MenuActionItem>
+  );
+}
+
+function PromoteToReviewerMenuItem({ contributor }: { contributor: ProjectContributor }) {
+  const refresh = Pages.useRefresh();
+  const [update] = ProjectContributors.useUpdateContributor();
+  const { reviewer } = useLoadedData();
+
+  if (!reviewer) return null;
+
+  const handleClick = async () => {
+    await update({ contribId: reviewer!.id, role: "reviewer", personId: contributor.person!.id });
+    refresh();
+  };
+
+  return (
+    <MenuActionItem danger={true} onClick={handleClick} testId="promote-to-reviewer">
+      Assign as reviewer
     </MenuActionItem>
   );
 }
