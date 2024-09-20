@@ -21,6 +21,7 @@ defmodule Operately.Support.Factory do
 
   # projects
   defdelegate add_project(ctx, testid, space_name), to: Projects
+  defdelegate add_project_reviewer(ctx, testid, project_name, opts \\ []), to: Projects
   defdelegate add_project_contributor(ctx, testid, project_name, opts \\ []), to: Projects
   defdelegate edit_project_company_members_access(ctx, project_name, access_level), to: Projects
   defdelegate edit_project_space_members_access(ctx, project_name, access_level), to: Projects
