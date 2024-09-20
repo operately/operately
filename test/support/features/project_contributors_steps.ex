@@ -31,6 +31,20 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
     ctx
   end
 
+  step :given_a_contributor_exists, ctx, name: name do
+    contrib = person_fixture_with_account(%{full_name: name, title: "Manager", company_id: ctx.company.id})
+
+    {:ok, _} = Operately.Projects.create_contributor(contrib, %{
+      person_id: contrib.id,
+      role: "contributor",
+      project_id: ctx.project.id,
+      responsibility: "Lead the backend implementation",
+      permissions: Binding.edit_access(),
+    })
+
+    ctx
+  end
+
   step :add_contributor, ctx, name: name, responsibility: responsibility do
     ctx
     |> UI.click(testid: "manage-team-button")
@@ -360,6 +374,13 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
       author: ctx.champion,
       title: "set #{name} as the new reviewer on the #{ctx.project.name} project",
     })
+  end
+
+  step :promote_contributor_to_champion, ctx, name: name do
+    ctx
+    |> UI.click(testid: UI.testid(["contributor-menu", name]))
+    |> UI.click(testid: "promote-to-champion")
+    |> UI.sleep(500)
   end
 
 end
