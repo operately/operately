@@ -81,4 +81,14 @@ defmodule Operately.Features.ProjectsContributorsTest do
     |> Steps.assert_old_champion_is_contributor()
     |> Steps.assert_new_champion_chosen_feed_item_exists(name: "Michael")
   end
+
+  @tag login_as: :champion
+  feature "choosing a new reviewer for the project", ctx do
+    ctx
+    |> Steps.visit_project_contributors_page()
+    |> Steps.choose_new_reviewer(name: "Michael Scottish")
+    |> Steps.assert_new_reviewer_is(name: "Michael Scottish")
+    |> Steps.assert_old_reviewer_is_contributor()
+    |> Steps.assert_new_reviewer_chosen_feed_item_exists(name: "Michael")
+  end
 end
