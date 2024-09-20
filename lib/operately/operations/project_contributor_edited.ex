@@ -45,22 +45,28 @@ defmodule Operately.Operations.ProjectContributorEdited do
           Contributor.changeset(contributor, %{role: :contributor})
         end)
         |> Multi.run(:update_bindings, fn _, _ -> 
-          Access.bind_person(context, attrs.person_id, attrs.permissions)
+          Access.bind_person(context, attrs.person_id, access_level(contributor, attrs))
         end)
 
       other_contributor ->
         multi
+        |> Multi.update(:contributor, fn _ ->
+          # downgrade the current contributor to a regular contributor
+          Contributor.changeset(contributor, %{role: :contributor})
+        end)
         |> Multi.update(:new_contributor, fn _ ->
+          # upgrade the new contributor to the role of the previous contributor (champion or reviewer)
           Contributor.changeset(other_contributor, %{role: contributor.role})
         end)
-        |> Multi.update(:contributor, fn _ ->
-          Contributor.changeset(other_contributor, %{role: :contributor})
+        |> Multi.run(:update_bindings, fn _, _ -> 
+          # increase the access level of the new contributor to the level of the previous contributor
+          Access.bind_person(context, attrs.person_id, access_level(contributor, attrs))
         end)
     end
   end
 
   # 
-  # A simple update means that we are only updating the responsibility or the permissions
+  # A simple update means that we are only updating the responsibility, role or the permissions
   # of the contributor. In this case, we only need to update the contributor record and
   # acess level on the binding.
   #

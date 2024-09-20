@@ -16,7 +16,7 @@ defmodule Operately.ProjectsFixtures do
       name: "some name",
       visibility: "everyone",
       champion_id: attrs[:champion_id] || attrs[:creator_id],
-      reviewer_id: attrs[:reviewer_id] || attrs[:creator_id],
+      reviewer_id: attrs[:reviewer_id],
       company_access_level: Binding.view_access(),
       space_access_level: Binding.comment_access(),
     }, attrs)
