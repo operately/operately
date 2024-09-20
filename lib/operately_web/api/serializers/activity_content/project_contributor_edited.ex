@@ -3,7 +3,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Activities.Content.Project
     %{
       project: OperatelyWeb.Api.Serializer.serialize(content["project"], level: :essential),
       previous_contributor: %{
-        person: OperatelyWeb.Api.Serializer.serialize(content["updated_contributor"]["person"], level: :essential),
+        person: OperatelyWeb.Api.Serializer.serialize(content["previous_contributor"]["person"], level: :essential),
         person_id: content["previous_contributor"]["person_id"],
         role: content["previous_contributor"]["role"],
         permissions: content["previous_contributor"]["permissions"]

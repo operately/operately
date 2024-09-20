@@ -8,8 +8,6 @@ import * as Projects from "@/models/projects";
 import Forms from "@/components/Forms";
 import { PageTitle } from "./PageTitle";
 import { LoaderResult, useGotoProjectContributors } from "./loader";
-import { useAccessLevelField } from "./useAccessLevelField";
-import { PermissionLevels } from "@/features/Permissions";
 import { joinStr } from "@/utils/strings";
 
 export function ChangeChampion() {

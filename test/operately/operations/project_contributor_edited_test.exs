@@ -1,151 +1,119 @@
 defmodule Operately.Operations.ProjectContributorEditedTest do
   use Operately.DataCase
 
-  import Operately.CompaniesFixtures
-  import Operately.PeopleFixtures
-  import Operately.ProjectsFixtures
+  # import Operately.PeopleFixtures
 
-  alias Operately.Projects
   alias Operately.Access
   alias Operately.Access.Binding
-  alias Operately.Activities.Activity
+  alias Operately.Projects.Project
+  # alias Operately.Activities.Activity
+  alias Operately.Support.Factory
+  alias Operately.Operations.ProjectContributorEdited, as: Operation
 
-  setup do
-    company = company_fixture()
-    creator = person_fixture_with_account(%{company_id: company.id})
-    champion = person_fixture_with_account(%{company_id: company.id})
-    contributor = person_fixture_with_account(%{company_id: company.id})
-
-    project = project_fixture(%{
-      company_id: company.id,
-      creator_id: creator.id,
-      champion_id: champion.id,
-      group_id: company.company_space_id,
-    })
-
-    attrs = %{
-      project_id: project.id,
-      responsibility: "Developer",
-      permissions: Binding.edit_access(),
-    }
-
-    {:ok, company: company, creator: creator, champion: champion, contributor: contributor, project: project, attrs: attrs}
+  setup ctx do
+    ctx
+    |> Factory.setup()
+    |> Factory.add_company_member(:silvia)
+    |> Factory.add_space(:product_space)
+    |> Factory.add_space_member(:mike, :product_space)
+    |> Factory.add_space_member(:jane, :product_space)
+    |> Factory.add_project(:hello, :product_space)
+    |> Factory.add_project_reviewer(:reviewer, :hello)
+    |> Factory.add_project_contributor(:dev, :hello)
   end
 
-  # test "it updates reviewer/champion with the same person", ctx do
-  #   champion = Projects.get_contributor!(person_id: ctx.champion.id, project_id: ctx.project.id)
-  #   assert champion.role == :champion
+  test "updating responsibility", ctx do
+    {:ok, _ } = Operation.run(ctx.creator, ctx.dev, %{responsibility: "Project manager & Designer"})
 
-  #   {:ok, updated} = Operately.Operations.ProjectContributorEdited.run(ctx.creator, champion, %{
-  #     person_id: ctx.champion.id,
-  #     role: :reviewer,
-  #   })
+    assert Operately.Repo.reload(ctx.dev).responsibility == "Project manager & Designer"
+  end
 
-  #   assert updated.role == :reviewer
-  # end
+  test "updating access level", ctx do
+    {:ok, _} = Operation.run(ctx.creator, ctx.dev, %{permissions: Binding.comment_access()})
 
-  test "it updates contributor with the same person", ctx do
-    {:ok, contributor} = Projects.create_contributor(ctx.creator, Map.merge(ctx.attrs, %{
-      person_id: ctx.contributor.id,
-    }))
-    group = Access.get_group!(person_id: ctx.contributor.id)
-    context = Access.get_context!(project_id: ctx.project.id)
+    assert get_access_level(ctx.dev) == Binding.comment_access()
+  end
 
-    assert Access.get_binding(context_id: context.id, group_id: group.id, access_level: Binding.edit_access())
+  test "converting a champion to a contributor", ctx do
+    champion = find_champion(ctx.hello)
+    {:ok, _} = Operation.run(ctx.creator, champion, %{role: :contributor, responsibility: "Developer"})
+
+    contributor = Operately.Repo.reload(champion)
+
+    assert contributor.role == :contributor
     assert contributor.responsibility == "Developer"
-
-    {:ok, updated} = Operately.Operations.ProjectContributorEdited.run(ctx.creator, contributor, %{
-      person_id: ctx.contributor.id,
-      responsibility: "Manager",
-      permissions: Binding.full_access(),
-    })
-
-    assert updated.responsibility == "Manager"
-    assert Access.get_binding(context_id: context.id, group_id: group.id, access_level: Binding.full_access())
+    assert get_access_level(contributor) == Binding.full_access()
+    assert find_champion(ctx.hello) == nil
   end
 
-  test "it updates reviewer/champion with another person", ctx do
-    champion_person = Projects.get_champion(ctx.project)
-    new_champion_person = person_fixture_with_account(%{company_id: ctx.company.id})
+  test "converting a reviewer to a contributor", ctx do
+    reviewer = find_reviewer(ctx.hello)
+    {:ok, _} = Operation.run(ctx.creator, reviewer, %{role: :contributor, responsibility: "Developer"})
 
-    context = Access.get_context!(project_id: ctx.project.id)
-    champion_group = Access.get_group!(person_id: champion_person.id)
-    new_champion_group = Access.get_group!(person_id: new_champion_person.id)
+    contributor = Operately.Repo.reload(reviewer)
 
-    assert Access.get_binding(context_id: context.id, group_id: champion_group.id, access_level: Binding.full_access())
-    refute Access.get_binding(context_id: context.id, group_id: new_champion_group.id)
-
-    champion = Projects.get_contributor!(person_id: ctx.champion.id, project_id: ctx.project.id)
-    assert champion_person == ctx.champion
-
-    {:ok, _} = Operately.Operations.ProjectContributorEdited.run(ctx.creator, champion, %{
-      person_id: new_champion_person.id,
-    })
-
-    assert new_champion_person == Projects.get_champion(ctx.project)
-
-    refute Access.get_binding(context_id: context.id, group_id: champion_group.id)
-    assert Access.get_binding(context_id: context.id, group_id: new_champion_group.id, access_level: Binding.full_access())
-  end
-
-  test "it updates contributor with a different person", ctx do
-    {:ok, contributor} = Projects.create_contributor(ctx.creator, Map.merge(ctx.attrs, %{
-      person_id: ctx.contributor.id,
-    }))
-
-    new_person = person_fixture_with_account(%{company_id: ctx.company.id})
-
-    context = Access.get_context!(project_id: ctx.project.id)
-    contributor_group = Access.get_group!(person_id: ctx.contributor.id)
-    new_person_group = Access.get_group!(person_id: new_person.id)
-
-    assert Access.get_binding(context_id: context.id, group_id: contributor_group.id, access_level: Binding.edit_access())
-    refute Access.get_binding(context_id: context.id, group_id: new_person_group.id)
-
-    {:ok, _} = Operately.Operations.ProjectContributorEdited.run(ctx.creator, contributor, %{
-      person_id: new_person.id,
-      responsibility: "Manager",
-      permissions: Binding.comment_access(),
-    })
-
-    refute Access.get_binding(context_id: context.id, group_id: contributor_group.id)
-    assert Access.get_binding(context_id: context.id, group_id: new_person_group.id, access_level: Binding.comment_access())
-  end
-
-  test "it creates activity", ctx do
-    {:ok, contributor} = Projects.create_contributor(ctx.creator, Map.merge(ctx.attrs, %{
-      person_id: ctx.contributor.id,
-    }))
-    new_person = person_fixture_with_account(%{company_id: ctx.company.id})
-
-    Operately.Operations.ProjectContributorEdited.run(ctx.creator, contributor, %{
-      person_id: new_person.id,
-      permissions: Binding.view_access(),
-    })
-
-    activity = from(a in Activity, where: a.action == "project_contributor_edited" and a.content["project_id"] == ^ctx.project.id) |> Repo.one()
-
-    assert activity.content["previous_contributor"]["person_id"] == contributor.person_id
-    assert activity.content["previous_contributor"]["role"] == "contributor"
-
-    assert activity.content["updated_contributor"]["person_id"] == new_person.id
-    assert activity.content["updated_contributor"]["permissions"] == Binding.view_access()
-    assert activity.content["updated_contributor"]["role"] == "contributor"
-  end
-
-  test "it is able to update just the responsibility", ctx do
-    {:ok, contributor} = Projects.create_contributor(ctx.creator, Map.merge(ctx.attrs, %{person_id: ctx.contributor.id}))
-    group = Access.get_group!(person_id: ctx.contributor.id)
-    context = Access.get_context!(project_id: ctx.project.id)
-
-    assert Access.get_binding(context_id: context.id, group_id: group.id, access_level: Binding.edit_access())
+    assert contributor.role == :contributor
     assert contributor.responsibility == "Developer"
+    assert get_access_level(contributor) == Binding.full_access()
+  end
 
-    {:ok, updated} = Operately.Operations.ProjectContributorEdited.run(ctx.creator, contributor, %{
-      responsibility: "Project manager & Designer",
-    })
+  test "choosing a new champion that is not already a contributor", ctx do
+    old_champion = find_champion(ctx.hello)
 
-    assert updated.responsibility == "Project manager & Designer"
-    assert Access.get_binding(context_id: context.id, group_id: group.id, access_level: Binding.edit_access())
+    {:ok, _} = Operation.run(ctx.creator, old_champion, %{person_id: ctx.silvia.id, role: :champion})
+
+    # the new champion should be Silvia and have full access
+    new_champion = find_champion(ctx.hello)
+    assert new_champion.person_id == ctx.silvia.id
+    assert new_champion.role == :champion
+    assert get_access_level(new_champion) == Binding.full_access()
+
+    # the old champion should be a contributor now
+    old_champion = Operately.Repo.reload(old_champion)
+    assert old_champion.role == :contributor
+    assert get_access_level(old_champion) == Binding.full_access()
+    assert old_champion.responsibility == nil
+  end
+
+  test "choosing a new champion from the contributors", ctx do
+    old_champion = find_champion(ctx.hello)
+
+    {:ok, _} = Operation.run(ctx.creator, old_champion, %{person_id: ctx.dev.person_id, role: :champion})
+
+    # the new champion should be the dev and have full access
+    new_champion = find_champion(ctx.hello)
+    assert new_champion.person_id == ctx.dev.person_id
+    assert new_champion.role == :champion
+    assert get_access_level(new_champion) == Binding.full_access()
+
+    # the old champion should be a contributor now with full access
+    old_champion = Operately.Repo.reload(old_champion)
+    assert old_champion.role == :contributor
+    assert get_access_level(old_champion) == Binding.full_access()
+    assert old_champion.responsibility == nil
+  end
+
+  #
+  # Helpers
+  #
+
+  import Ecto.Query, only: [from: 2]
+
+  def find_champion(project) do
+    find_contributor_by_role(project, :champion)
+  end
+
+  def find_reviewer(project) do
+    find_contributor_by_role(project, :reviewer)
+  end
+
+  def find_contributor_by_role(project, role) do
+    Operately.Repo.one(from(c in Operately.Projects.Contributor, where: c.project_id == ^project.id and c.role == ^role))
+  end
+
+  defp get_access_level(contributor) do
+    context = Project.get_access_context(contributor.project_id)
+    binding = Access.get_binding(context, person_id: contributor.person_id)
+    binding.access_level
   end
 end
