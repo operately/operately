@@ -3,6 +3,7 @@ import React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as Projects from "@/models/projects";
+import * as ProjectContributors from "@/models/projectContributors";
 
 import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
@@ -258,6 +259,7 @@ function ContributorMenu({ contributor }: { contributor: ProjectContributor }) {
         .otherwise(() => (
           <>
             <EditMenuItem contributor={contributor} />
+            <PromoteToChampionMenuItem contributor={contributor} />
             <RemoveContributorMenuItem contributor={contributor} />
           </>
         ))}
@@ -326,6 +328,23 @@ function RemoveContributorMenuItem({ contributor }: { contributor: ProjectContri
   return (
     <MenuActionItem danger={true} onClick={handleClick} testId="remove-contributor">
       Remove from project
+    </MenuActionItem>
+  );
+}
+
+function PromoteToChampionMenuItem({ contributor }: { contributor: ProjectContributor }) {
+  const refresh = Pages.useRefresh();
+  const [update] = ProjectContributors.useUpdateContributor();
+  const { champion } = useLoadedData();
+
+  const handleClick = async () => {
+    await update({ contribId: champion!.id, role: "champion", personId: contributor.person!.id });
+    refresh();
+  };
+
+  return (
+    <MenuActionItem danger={true} onClick={handleClick} testId="promote-to-champion">
+      Assign as champion
     </MenuActionItem>
   );
 }
