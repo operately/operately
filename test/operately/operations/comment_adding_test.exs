@@ -2,22 +2,19 @@ defmodule Operately.Operations.CommentAddingTest do
   use Operately.DataCase
   use Operately.Support.Notifications
 
-  import Operately.CompaniesFixtures
   import Operately.GroupsFixtures
   import Operately.PeopleFixtures
   import Operately.ProjectsFixtures
   import Operately.GoalsFixtures
 
   alias Operately.Groups
-  alias Operately.Support.RichText
+  alias Operately.Support.{Factory, RichText}
   alias Operately.Access.Binding
   alias Operately.Operations.{GoalCheckIn, ProjectCheckIn, CommentAdding}
 
-  setup do
-    company = company_fixture()
-    creator = person_fixture_with_account(%{company_id: company.id})
-
-    {:ok, %{company: company, creator: creator}}
+  setup ctx do
+    ctx
+    |> Factory.setup()
   end
 
   describe "Commenting on check-in" do
@@ -220,6 +217,100 @@ defmodule Operately.Operations.CommentAddingTest do
       ])
 
       {:ok, comment} = CommentAdding.run(ctx.champion, update, "goal_update", content)
+
+      activity = get_activity(comment, action)
+      notifications = fetch_notifications(activity.id, action: action)
+
+      assert notifications_count(action: action) == 1
+      assert hd(notifications).person_id == person.id
+    end
+  end
+
+  describe "Commenting on message" do
+    setup ctx do
+      ctx
+      |> Factory.add_space(:space)
+      |> Factory.add_space_member(:mike, :space)
+      |> Factory.add_space_member(:bob, :space)
+      |> Factory.add_space_member(:jane, :space)
+    end
+
+    test "Commenting on message notifies everyone", ctx do
+      ctx = Factory.add_message(ctx, :message, :space, [
+        person_ids: [ctx.creator.id],
+        send_to_everyone: true,
+      ])
+
+      {:ok, comment} = Oban.Testing.with_testing_mode(:manual, fn ->
+        CommentAdding.run(ctx.creator, ctx.message, "message", RichText.rich_text("Some comment"))
+      end)
+
+      action = "discussion_comment_submitted"
+      activity = get_activity(comment, action)
+
+      assert 0 == notifications_count(action: action)
+
+      perform_job(activity.id)
+      notifications = fetch_notifications(activity.id, action: action)
+
+      assert 3 == notifications_count(action: action)
+
+      [ctx.mike, ctx.bob, ctx.jane]
+      |> Enum.each(fn p ->
+        assert Enum.find(notifications, &(&1.person_id == p.id))
+      end)
+    end
+
+    test "Commenting on message notifies selected people", ctx do
+      ctx = Factory.add_message(ctx, :message, :space, [
+        person_ids: [ctx.mike.id, ctx.jane.id],
+        send_to_everyone: false,
+      ])
+
+      {:ok, comment} = Oban.Testing.with_testing_mode(:manual, fn ->
+        CommentAdding.run(ctx.creator, ctx.message, "message", RichText.rich_text("Some comment"))
+      end)
+
+      action = "discussion_comment_submitted"
+      activity = get_activity(comment, action)
+
+      assert 0 == notifications_count(action: action)
+
+      perform_job(activity.id)
+      notifications = fetch_notifications(activity.id, action: action)
+
+      assert 2 == notifications_count(action: action)
+
+      [ctx.mike, ctx.jane]
+      |> Enum.each(fn p ->
+        assert Enum.find(notifications, &(&1.person_id == p.id))
+      end)
+    end
+
+    test "Mentioned person is notified", ctx do
+      ctx = Factory.add_message(ctx, :message, :space, [
+        person_ids: [ctx.creator.id],
+        send_to_everyone: false,
+      ])
+
+      # Without permissions
+      person = person_fixture_with_account(%{company_id: ctx.company.id})
+      content = RichText.rich_text(mentioned_people: [person]) |> Jason.decode!()
+
+      {:ok, comment} = CommentAdding.run(ctx.creator, ctx.message, "message", content)
+
+      action = "discussion_comment_submitted"
+      activity = get_activity(comment, action)
+
+      assert notifications_count(action: action) == 0
+      assert fetch_notifications(activity.id, action: action) == []
+
+      # With permissions
+      {:ok, _} = Groups.add_members(ctx.creator, ctx.space.id, [
+        %{id: person.id, permissions: Binding.view_access()}
+      ])
+
+      {:ok, comment} = CommentAdding.run(ctx.creator, ctx.message, "message", content)
 
       activity = get_activity(comment, action)
       notifications = fetch_notifications(activity.id, action: action)

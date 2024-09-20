@@ -1,5 +1,5 @@
 defmodule Operately.Support.Factory do
-  alias Operately.Support.Factory.{Projects, Spaces, Companies, Accounts}
+  alias Operately.Support.Factory.{Projects, Spaces, Companies, Accounts, Messages}
 
   def setup(ctx) do
     ctx = add_account(ctx, :account)
@@ -25,5 +25,8 @@ defmodule Operately.Support.Factory do
   defdelegate add_project_contributor(ctx, testid, project_name, opts \\ []), to: Projects
   defdelegate edit_project_company_members_access(ctx, project_name, access_level), to: Projects
   defdelegate edit_project_space_members_access(ctx, project_name, access_level), to: Projects
+
+  # messages
+  defdelegate add_message(ctx, testid, space_name, opts \\ []), to: Messages
 
 end
