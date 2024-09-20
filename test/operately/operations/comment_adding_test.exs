@@ -21,15 +21,16 @@ defmodule Operately.Operations.CommentAddingTest do
     setup ctx do
       champion = person_fixture_with_account(%{company_id: ctx.company.id})
       reviewer = person_fixture_with_account(%{company_id: ctx.company.id})
+      space = group_fixture(champion)
       project = project_fixture(%{
         company_id: ctx.company.id,
         creator_id: ctx.creator.id,
         creator_is_contributor: "no",
         champion_id: champion.id,
         reviewer_id: reviewer.id,
-        group_id: ctx.company.company_space_id,
+        group_id: space.id,
         company_access_level: Binding.no_access(),
-        space_access_level: Binding.no_access(),
+        space_access_level: Binding.view_access(),
       })
 
       Enum.each(1..3, fn _ ->
@@ -41,6 +42,7 @@ defmodule Operately.Operations.CommentAddingTest do
       Map.merge(ctx, %{
         champion: champion,
         reviewer: reviewer,
+        space: space,
         project: project,
         contribs: contribs,
       })
@@ -50,7 +52,7 @@ defmodule Operately.Operations.CommentAddingTest do
       {:ok, check_in} = ProjectCheckIn.run(ctx.champion, ctx.project, %{
         status: "on_track",
         content: RichText.rich_text("Some description"),
-        send_to_everyone: false,
+        send_to_everyone: true,
         subscriber_ids: Enum.map(ctx.contribs, &(&1.person_id)),
         subscription_parent_type: :project_check_in
       })
@@ -97,7 +99,9 @@ defmodule Operately.Operations.CommentAddingTest do
       assert fetch_notifications(activity.id, action: action) == []
 
       # With permissions
-      contributor_fixture(ctx.creator, %{project_id: ctx.project.id, person_id: person.id})
+      {:ok, _} = Groups.add_members(ctx.champion, ctx.space.id, [
+        %{id: person.id, permissions: Binding.view_access()}
+      ])
 
       {:ok, comment} = CommentAdding.run(ctx.champion, check_in, "project_check_in", content)
 
@@ -190,7 +194,7 @@ defmodule Operately.Operations.CommentAddingTest do
     end
 
     test "Mentioned person is notified", ctx do
-      {:ok, update} = GoalCheckIn.run(ctx.creator, ctx.goal,%{
+      {:ok, update} = GoalCheckIn.run(ctx.champion, ctx.goal,%{
         goal_id: ctx.goal.id,
         target_values: [],
         content: RichText.rich_text("Some content"),
@@ -236,10 +240,7 @@ defmodule Operately.Operations.CommentAddingTest do
     end
 
     test "Commenting on message notifies everyone", ctx do
-      ctx = Factory.add_message(ctx, :message, :space, [
-        person_ids: [ctx.creator.id],
-        send_to_everyone: true,
-      ])
+      ctx = Factory.add_message(ctx, :message, :space, send_to_everyone: true)
 
       {:ok, comment} = Oban.Testing.with_testing_mode(:manual, fn ->
         CommentAdding.run(ctx.creator, ctx.message, "message", RichText.rich_text("Some comment"))
@@ -288,10 +289,7 @@ defmodule Operately.Operations.CommentAddingTest do
     end
 
     test "Mentioned person is notified", ctx do
-      ctx = Factory.add_message(ctx, :message, :space, [
-        person_ids: [ctx.creator.id],
-        send_to_everyone: false,
-      ])
+      ctx = Factory.add_message(ctx, :message, :space, send_to_everyone: false)
 
       # Without permissions
       person = person_fixture_with_account(%{company_id: ctx.company.id})
