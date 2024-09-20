@@ -15,15 +15,19 @@ import { Spacer } from "@/components/Spacer";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { CommentSection, useForDiscussion } from "@/features/CommentSection";
 
-import { useLoadedData } from "./loader";
+import { useLoadedData, useRefresh } from "./loader";
 import { useDiscussionCommentsChangeSignal } from "@/models/comments";
 import { useMe } from "@/contexts/CurrentUserContext";
 import { Paths, compareIds } from "@/routes/paths";
+import { findSpaceNotifiablePeople } from "@/features/Subscriptions/utils";
+import { CurrentSubscriptions } from "@/features/Subscriptions";
 
 export function Page() {
   const me = useMe()!;
   const { discussion } = useLoadedData();
+  const refresh = useRefresh();
 
+  const people = findSpaceNotifiablePeople(discussion.space!);
   const commentsForm = useForDiscussion(discussion);
   useDiscussionCommentsChangeSignal(commentsForm.refetch!, { discussionId: discussion.id! });
 
@@ -46,6 +50,16 @@ export function Page() {
             <Spacer size={4} />
             <div className="border-t border-stroke-base mt-8" />
             <CommentSection form={commentsForm} refresh={() => {}} commentParentType="message" />
+
+            <div className="border-t border-stroke-base mt-16 mb-8" />
+
+            <CurrentSubscriptions
+              people={people}
+              subscriptionList={discussion.subscriptionList!}
+              name="discussion"
+              type="message"
+              callback={refresh}
+            />
           </div>
         </Paper.Body>
       </Paper.Root>
