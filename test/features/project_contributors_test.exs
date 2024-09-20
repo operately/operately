@@ -101,4 +101,14 @@ defmodule Operately.Features.ProjectsContributorsTest do
     |> Steps.assert_new_champion_is(name: "Debbie Downer")
     |> Steps.assert_new_champion_chosen_feed_item_exists(name: "Debbie")
   end
+
+  @tag login_as: :champion
+  feature "promote a contributor to a reviewer", ctx do
+    ctx
+    |> Steps.given_a_contributor_exists(name: "Debbie Downer")
+    |> Steps.visit_project_contributors_page()
+    |> Steps.promote_contributor_to_reviewer(name: "Debbie Downer")
+    |> Steps.assert_new_reviewer_is(name: "Debbie Downer")
+    |> Steps.assert_new_reviewer_chosen_feed_item_exists(name: "Debbie")
+  end
 end

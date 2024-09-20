@@ -3,7 +3,7 @@ defmodule Operately.Operations.ProjectContributorAddition do
   alias Operately.Repo
   alias Operately.Access
   alias Operately.Activities
-  alias Operately.Projects.Contributor
+  alias Operately.Projects.{Project, Contributor}
 
   def run(author, attrs) do
     Multi.new()
@@ -26,9 +26,12 @@ defmodule Operately.Operations.ProjectContributorAddition do
 
   defp insert_activity(multi, author) do
     Activities.insert_sync(multi, author.id, :project_contributor_addition, fn %{contributor: contributor} ->
+      {:ok, project} = Project.get(:system, id: contributor.project_id)
+
       %{
         company_id: author.company_id,
         project_id: contributor.project_id,
+        space_id: project.group_id,
         person_id: contributor.person_id,
         contributor_id: contributor.id,
         responsibility: contributor.responsibility,
