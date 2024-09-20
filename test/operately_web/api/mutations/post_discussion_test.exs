@@ -2,11 +2,13 @@ defmodule OperatelyWeb.Api.Mutations.PostDiscussionTest do
   use OperatelyWeb.TurboCase
 
   import Operately.GroupsFixtures
+  import Operately.PeopleFixtures
 
   alias Operately.Access
   alias Operately.Access.Binding
   alias Operately.Support.RichText
   alias Operately.Messages.Message
+  alias Operately.Notifications.SubscriptionList
 
   describe "security" do
     test "it requires authentication", ctx do
@@ -115,6 +117,85 @@ defmodule OperatelyWeb.Api.Mutations.PostDiscussionTest do
     end
   end
 
+  describe "subscriptions to notifications" do
+    setup :register_and_log_in_account
+    setup ctx do
+      space = group_fixture(ctx.company_creator, %{company_id: ctx.company.id, company_permissions: Binding.edit_access()})
+      people = Enum.map(1..3, fn _ ->
+        person_fixture(%{company_id: ctx.company.id})
+      end)
+
+      Map.merge(ctx, %{space: space, people: people})
+    end
+
+    test "creates subscription list for message", ctx do
+      assert {200, res} = mutation(ctx.conn, :post_discussion, %{
+        space_id: Paths.space_id(ctx.space),
+        title: "Message",
+        body: RichText.rich_text("Content", :as_string),
+        send_notifications_to_everyone: true,
+        subscriber_ids: Enum.map(ctx.people, &(Paths.person_id(&1))),
+      })
+
+      {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.discussion.id)
+      {:ok, list} = SubscriptionList.get(:system, parent_id: id, opts: [preload: :subscriptions])
+
+      assert list.send_to_everyone
+      assert length(list.subscriptions) == 4
+
+      Enum.each([ctx.person | ctx.people], fn p ->
+        assert Enum.filter(list.subscriptions, &(&1.person_id == p.id))
+      end)
+
+      {:ok, message} = Message.get(:system, id: id)
+
+      assert message.subscription_list_id
+    end
+
+    test "adds mentioned people to subscription list", ctx do
+      people = ctx.people ++ ctx.people ++ ctx.people
+      content = RichText.rich_text(mentioned_people: people)
+
+      assert {200, res} = mutation(ctx.conn, :post_discussion, %{
+        space_id: Paths.space_id(ctx.space),
+        title: "Message",
+        body: content,
+        send_notifications_to_everyone: false,
+        subscriber_ids: [],
+      })
+
+      subscriptions = fetch_subscriptions(res)
+
+      assert length(subscriptions) == 4
+
+      Enum.each([ctx.person | ctx.people], fn p ->
+        assert Enum.filter(subscriptions, &(&1.person_id == p.id))
+      end)
+    end
+
+    test "doesn't create repeated subscription", ctx do
+      people = [ctx.person | ctx.people]
+      content = RichText.rich_text(mentioned_people: people)
+
+      assert {200, res} = mutation(ctx.conn, :post_discussion, %{
+        space_id: Paths.space_id(ctx.space),
+        title: "Message",
+        body: content,
+        send_notifications_to_everyone: true,
+        subscriber_ids: Enum.map(people, &(Paths.person_id(&1))),
+      })
+
+      subscriptions = fetch_subscriptions(res)
+
+      assert length(subscriptions) == 4
+
+      Enum.each(people, fn p ->
+        assert Enum.filter(subscriptions, &(&1.person_id == p.id))
+      end)
+    end
+  end
+
+
   #
   # Steps
   #
@@ -138,6 +219,13 @@ defmodule OperatelyWeb.Api.Mutations.PostDiscussionTest do
   #
   # Helpers
   #
+
+  defp fetch_subscriptions(res) do
+    {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.discussion.id)
+    {:ok, list} = SubscriptionList.get(:system, parent_id: id, opts: [preload: :subscriptions])
+
+    list.subscriptions
+  end
 
   defp give_person_edit_access(ctx) do
     group = Access.get_group!(company_id: ctx.company.id, tag: :standard)
