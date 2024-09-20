@@ -240,10 +240,27 @@ function Contributor({ contributor }: { contributor: ProjectContributor }) {
 function ContributorMenu({ contributor }: { contributor: ProjectContributor }) {
   return (
     <Menu testId={createTestId("contributor-menu", contributor.person!.fullName!)} size="medium">
-      <EditMenuItem contributor={contributor} />
-      <ChangeProjectChampionMenuItem contributor={contributor} />
-      <ReassignAsContributorMenuItem contributor={contributor} />
-      <RemoveContributorMenuItem contributor={contributor} />
+      {match(contributor.role)
+        .with("champion", () => (
+          <>
+            <ChangeProjectChampionMenuItem contributor={contributor} />
+            <ReassignAsContributorMenuItem contributor={contributor} />
+            <RemoveContributorMenuItem contributor={contributor} />
+          </>
+        ))
+        .with("reviewer", () => (
+          <>
+            <ChangeProjectReviewerMenuItem contributor={contributor} />
+            <ReassignAsContributorMenuItem contributor={contributor} />
+            <RemoveContributorMenuItem contributor={contributor} />
+          </>
+        ))
+        .otherwise(() => (
+          <>
+            <EditMenuItem contributor={contributor} />
+            <RemoveContributorMenuItem contributor={contributor} />
+          </>
+        ))}
     </Menu>
   );
 }
@@ -258,8 +275,6 @@ function ContributotNameAndResponsibility({ contributor }: { contributor: Projec
 }
 
 function ReassignAsContributorMenuItem({ contributor }: { contributor: ProjectContributor }) {
-  if (contributor.role === "contributor") return null;
-
   const path = Paths.projectContributorsEditPath(contributor.id!, { action: "reassign-as-contributor" });
 
   return (
@@ -270,8 +285,6 @@ function ReassignAsContributorMenuItem({ contributor }: { contributor: ProjectCo
 }
 
 function ChangeProjectChampionMenuItem({ contributor }: { contributor: ProjectContributor }) {
-  if (contributor.role !== "champion") return null;
-
   const path = Paths.projectContributorsEditPath(contributor.id!, { action: "change-champion" });
 
   return (
@@ -281,9 +294,17 @@ function ChangeProjectChampionMenuItem({ contributor }: { contributor: ProjectCo
   );
 }
 
-function EditMenuItem({ contributor }: { contributor: ProjectContributor }) {
-  if (contributor.role !== "contributor") return null;
+function ChangeProjectReviewerMenuItem({ contributor }: { contributor: ProjectContributor }) {
+  const path = Paths.projectContributorsEditPath(contributor.id!, { action: "change-reviewer" });
 
+  return (
+    <MenuLinkItem to={path} testId="choose-new-reviewer">
+      Edit reviewer
+    </MenuLinkItem>
+  );
+}
+
+function EditMenuItem({ contributor }: { contributor: ProjectContributor }) {
   const path = Paths.projectContributorsEditPath(contributor.id!, { action: "edit-contributor" });
 
   return (
