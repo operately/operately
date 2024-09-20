@@ -262,10 +262,10 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
     end
 
     test "project check-ins", ctx do
-      p1 = create_project(ctx, upcoming_date())
+      p1 = create_project(ctx, upcoming_date(), %{reviewer_id: ctx.person.id})
       create_check_in(p1)
       create_check_in(p1)
-      p2 = create_project(ctx, upcoming_date())
+      p2 = create_project(ctx, upcoming_date(), %{reviewer_id: ctx.person.id})
       create_check_in(p2)
       create_check_in(p2)
 

@@ -105,7 +105,7 @@ defmodule Operately.Support.Features.SpaceSteps do
     ctx
     |> UI.click(testid: "options-" <> id)
     |> UI.click(testid: "remove-" <> id)
-    |> UI.sleep(200)
+    |> UI.sleep(500)
   end
 
   step :assert_member_added, ctx, name do

@@ -25,7 +25,7 @@ defmodule Operately.GroupsTest do
       person1 = person_fixture(full_name: "John Doe", title: "CEO", company_id: ctx.company.id)
       person2 = person_fixture(full_name: "Mike Smith", title: "CTO", company_id: ctx.company.id)
 
-      assert Groups.list_potential_members(ctx.group.id, "", [], 10) == [person0, person1, person2]
+      assert Groups.list_potential_members(ctx.group.id, "", [], 10) == [person1, person0, person2]
       assert Groups.list_potential_members(ctx.group.id, "", [person0.id, person1.id], 10) == [person2]
       assert Groups.list_potential_members(ctx.group.id, "Doe", [], 10) == [person1]
       assert Groups.list_potential_members(ctx.group.id, "CTO", [], 10) == [person2]

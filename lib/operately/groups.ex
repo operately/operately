@@ -32,6 +32,7 @@ defmodule Operately.Groups do
       where: p.id not in ^exclude_ids and p.id not in ^member_ids,
       where: ilike(p.full_name, ^"%#{string_query}%") or ilike(p.title, ^"%#{string_query}%"),
       where: not p.suspended,
+      order_by: p.full_name,
       limit: ^limit
     )
 
