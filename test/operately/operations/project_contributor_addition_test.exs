@@ -30,7 +30,7 @@ defmodule Operately.Operations.ProjectContributorAdditionTest do
 
     contributors = Projects.list_project_contributors(ctx.project) |> Enum.map(fn c -> {c.person_id, c.role} end)
 
-    assert 3 == length(contributors)
+    assert length(contributors) == 2
     assert Enum.member?(contributors, {ctx.contributor.id, :contributor})
   end
 
