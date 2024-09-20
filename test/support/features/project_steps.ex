@@ -398,6 +398,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> UI.click(testid: "write-project-description-link")
     |> UI.fill_rich_text(description)
     |> UI.click(testid: "save")
+    |> UI.assert_has(testid: "project-page")
   end
 
   step :expand_project_description, ctx do

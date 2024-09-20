@@ -275,7 +275,7 @@ function ChangeProjectChampionMenuItem({ contributor }: { contributor: ProjectCo
   const path = Paths.projectContributorsEditPath(contributor.id!, { action: "change-champion" });
 
   return (
-    <MenuLinkItem to={path} testId="convert-to-champion">
+    <MenuLinkItem to={path} testId="choose-new-champion">
       Edit champion
     </MenuLinkItem>
   );
