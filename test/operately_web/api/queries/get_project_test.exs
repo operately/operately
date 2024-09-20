@@ -140,7 +140,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
       project = create_project(ctx)
 
       assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(project), include_contributors: true})
-      assert length(res.project.contributors) == 2
+      assert length(res.project.contributors) == 1
       assert res.project.contributors == serialize(Operately.Projects.list_project_contributors(project), level: :essential)
 
       dev = person_fixture(company_id: ctx.company.id)
@@ -152,7 +152,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
       })
 
       assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(project), include_contributors: true})
-      assert length(res.project.contributors) == 3
+      assert length(res.project.contributors) == 2
       assert res.project.contributors == serialize(Operately.Projects.list_project_contributors(project), level: :essential)
     end
 
@@ -183,13 +183,14 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
     end
 
     test "include_reviewer", ctx do
-      project = create_project(ctx)
+      person = create_person(ctx)
+      project = create_project(ctx, reviewer_id: person.id)
 
       assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(project)})
       assert res.project.reviewer == nil
 
       assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(project), include_reviewer: true})
-      assert res.project.reviewer == serialize(ctx.person, level: :essential)
+      assert res.project.reviewer == serialize(person, level: :essential)
     end
 
     test "include_archived", ctx do
@@ -271,6 +272,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
       company_id: ctx.company.id,
       name: "Project 1",
       creator_id: ctx[:creator_id] || ctx.person.id,
+      reviewer_id: attrs[:reviewer_id],
       group_id: ctx[:space_id] || ctx.company.company_space_id,
       company_access_level: Binding.no_access(),
       space_access_level: Binding.no_access(),
@@ -284,5 +286,9 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
       id: ctx.person.id,
       permissions: Binding.edit_access(),
     }])
+  end
+
+  defp create_person(ctx) do
+    person_fixture(company_id: ctx.company.id)
   end
 end

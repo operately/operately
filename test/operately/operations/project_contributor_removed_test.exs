@@ -29,14 +29,14 @@ defmodule Operately.Operations.ProjectContributorRemovedTest do
   test "ProjectContributorRemoved operation deletes contributor", ctx do
     contributors = get_contributors(ctx.project)
 
-    assert 3 == length(contributors)
+    assert length(contributors) == 2
     assert Enum.member?(contributors, {ctx.person.id, :contributor})
 
     Operately.Operations.ProjectContributorRemoved.run(ctx.creator, ctx.contributor)
 
     contributors = get_contributors(ctx.project)
 
-    assert 2 == length(contributors)
+    assert length(contributors) == 1
     refute Enum.member?(contributors, {ctx.person.id, :contributor})
   end
 
