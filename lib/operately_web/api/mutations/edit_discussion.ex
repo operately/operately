@@ -19,10 +19,10 @@ defmodule OperatelyWeb.Api.Mutations.EditDiscussion do
   def call(conn, inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:id, fn -> decode_id(inputs.discussion_id) end)
-    |> run(:message, fn ctx -> Message.get(ctx.me, id: ctx.id) end)
+    |> run(:attrs, fn -> parse_inputs(inputs) end)
+    |> run(:message, fn ctx -> Message.get(ctx.me, id: ctx.attrs.id) end)
     |> run(:check_permissions, fn ctx -> Permissions.check(ctx.message.request_info.access_level, :can_edit_discussions) end)
-    |> run(:operation, fn ctx -> DiscussionEditing.run(ctx.me, ctx.message, inputs) end)
+    |> run(:operation, fn ctx -> DiscussionEditing.run(ctx.me, ctx.message, ctx.attrs) end)
     |> run(:serialized, fn ctx -> {:ok, %{discussion: Serializer.serialize(ctx.operation, level: :essential)}} end)
     |> respond()
   end
@@ -36,5 +36,15 @@ defmodule OperatelyWeb.Api.Mutations.EditDiscussion do
       {:error, :operation, _} -> {:error, :internal_server_error}
       _ -> {:error, :internal_server_error}
     end
+  end
+
+  defp parse_inputs(inputs) do
+    {:ok, id} = decode_id(inputs.discussion_id)
+
+    {:ok, %{
+      id: id,
+      title: inputs.title,
+      body: Jason.decode!(inputs.body),
+    }}
   end
 end
