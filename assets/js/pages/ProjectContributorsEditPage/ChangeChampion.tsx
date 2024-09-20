@@ -63,7 +63,5 @@ function useForm(contributor: ProjectContributors.ProjectContributor) {
 
 function usePersonField() {
   const { contributor } = Pages.useLoadedData() as LoaderResult;
-  const personSearchFn = Projects.useContributorSearchFn(contributor.project!);
-
-  return Forms.useSelectPersonField(contributor.person, { searchFn: personSearchFn });
+  return Forms.useSelectPersonField(contributor.person);
 }
