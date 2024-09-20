@@ -149,6 +149,7 @@ defmodule Operately.Operations.ProjectCreation do
       params.reviewer_id == params.creator_id -> false
       params.creator_is_contributor == "no" -> false
       params.creator_is_contributor == "yes" -> true
+      true -> false
     end
   end
 

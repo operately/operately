@@ -85,6 +85,12 @@ defmodule Operately.Access do
     Repo.all(Binding)
   end
 
+  def get_binding(context = %Context{}, person_id: person_id) do
+    group = get_group(person_id: person_id)
+
+    get_binding(context_id: context.id, group_id: group.id)
+  end
+
   def get_binding!(id) when is_binary(id), do: Repo.get!(Binding, id)
 
   def get_binding!(attrs) when is_list(attrs), do: Repo.get_by!(Binding, attrs)
