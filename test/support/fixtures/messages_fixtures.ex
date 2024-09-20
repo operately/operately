@@ -1,6 +1,7 @@
 defmodule Operately.MessagesFixtures do
   def message_fixture(author_id, space_id, attrs \\ []) do
-    {:ok, subscription_list} = Operately.Notifications.create_subscription_list()
+    subscription_list = Operately.NotificationsFixtures.subscriptions_list_fixture(attrs)
+
     {:ok, message} =
       attrs
       |> Enum.into(%{
