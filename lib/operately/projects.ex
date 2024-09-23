@@ -286,10 +286,6 @@ defmodule Operately.Projects do
     Repo.preload(project, :control_review).control_review
   end
 
-  def get_retrospective(project) do
-    Repo.preload(project, :retrospective).retrospective
-  end
-
   def list_project_documents do
     Repo.all(Document)
   end
