@@ -38,6 +38,7 @@ defmodule OperatelyWeb.Api do
   query :get_project_check_ins, Q.GetProjectCheckIns
   query :get_projects, Q.GetProjects
   query :get_project_contributor, Q.GetProjectContributor
+  query :get_project_retrospective, Q.GetProjectRetrospective
   query :get_space, Q.GetSpace
   query :get_spaces, Q.GetSpaces
   query :get_task, Q.GetTask

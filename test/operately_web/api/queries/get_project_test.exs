@@ -124,16 +124,16 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
       assert res.project.space == nil
     end
 
-    test "include_closed_by", ctx do
+    test "include_retrospective", ctx do
       project = create_project(ctx)
 
-      assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(project), include_closed_by: true})
-      assert res.project.closed_by == nil
+      assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(project), include_retrospective: true})
+      refute res.project.retrospective
 
-      {:ok, project} = Operately.Projects.update_project(project, %{closed_by_id: ctx.person.id})
+      retrospective = retrospective_fixture(%{author_id: ctx.person.id, project_id: project.id})
 
-      assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(project), include_closed_by: true})
-      assert res.project.closed_by == serialize(ctx.person, level: :essential)
+      assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(project), include_retrospective: true})
+      assert res.project.retrospective == serialize(retrospective)
     end
 
     test "include_contributors", ctx do
@@ -250,7 +250,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
       refute Map.has_key?(res.project, :contributor)
 
       assert {200, res} = query(ctx.conn, :get_project, %{
-        id: Paths.project_id(project), 
+        id: Paths.project_id(project),
         include_contributors: true,
         include_contributors_access_levels: true
       })
