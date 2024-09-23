@@ -1,19 +1,30 @@
 import * as Pages from "@/components/Pages";
 import * as Discussions from "@/models/discussions";
+import * as Comments from "@/models/comments";
 
 interface LoaderResult {
   discussion: Discussions.Discussion;
+  comments: Comments.Comment[];
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
-  return {
-    discussion: await Discussions.getDiscussion({
+  const [discussion, comments] = await Promise.all([
+    Discussions.getDiscussion({
       id: params.id,
       includeAuthor: true,
       includeReactions: true,
       includeSpaceMembers: true,
       includeSubscriptions: true,
     }).then((d) => d.discussion!),
+    Comments.getComments({
+      entityId: params.id,
+      entityType: "message",
+    }).then((c) => c.comments!),
+  ]);
+
+  return {
+    discussion,
+    comments,
   };
 }
 
