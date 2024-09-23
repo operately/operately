@@ -11,5 +11,4 @@ export interface FormState {
   postComment: (content: string) => void;
   editComment: (commentID: string, content: string) => void;
   submitting: boolean;
-  refetch?: () => void;
 }

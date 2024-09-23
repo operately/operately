@@ -24,12 +24,12 @@ import { CurrentSubscriptions } from "@/features/Subscriptions";
 
 export function Page() {
   const me = useMe()!;
-  const { discussion } = useLoadedData();
+  const { discussion, comments } = useLoadedData();
   const refresh = useRefresh();
 
   const people = findSpaceNotifiablePeople(discussion.space!);
-  const commentsForm = useForDiscussion(discussion);
-  useDiscussionCommentsChangeSignal(commentsForm.refetch!, { discussionId: discussion.id! });
+  const commentsForm = useForDiscussion(discussion, comments);
+  useDiscussionCommentsChangeSignal(refresh, { discussionId: discussion.id! });
 
   return (
     <Pages.Page title={discussion.title!}>
