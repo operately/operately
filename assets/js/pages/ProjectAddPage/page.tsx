@@ -84,7 +84,7 @@ function Form() {
       access: useProjectAccessFields(),
     },
     validate: (addError) => {
-      if (compareIds(form.fields.champion.value?.id, form.fields.reviewer.value?.id)) {
+      if (compareIds(form.fields.champion!.value?.id, form.fields.reviewer!.value?.id)) {
         addError("reviewer", "Can't be the same as the champion");
       }
     },

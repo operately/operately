@@ -1,9 +1,9 @@
 import React from "react";
 
 import { Person } from "@/models/people";
-import { Field } from "./FormState";
+import { AddErrorFn, ValueField } from "./FormState";
 
-type SelectMultiPeopleField = Field<Person[]> & {
+type SelectMultiPeopleField = ValueField<Person[]> & {
   type: "select-multi-people";
   setValue: React.Dispatch<React.SetStateAction<Person[]>>;
   options: Person[];
@@ -20,11 +20,12 @@ export function useMultiPeopleSelectField(options: Person[], config?: Config): S
   const alwaysSelected = config?.alwaysSelected ? [...config.alwaysSelected] : [];
 
   const [value, setValue] = React.useState<Person[]>(config?.alreadySelected || []);
+  const [fieldName, setFieldName] = React.useState<string | undefined>(undefined);
 
-  const validate = (): string | null => {
-    if (value.length < 1) return !config?.optional ? "Can't be empty" : null;
+  const validate = (addError: AddErrorFn) => {
+    if (config && config.optional) return;
 
-    return null;
+    if (value.length < 1) return addError(fieldName!, "Can't be empty");
   };
 
   const reset = () => null;
@@ -38,5 +39,7 @@ export function useMultiPeopleSelectField(options: Person[], config?: Config): S
     optional: config?.optional,
     alwaysSelected,
     reset,
+    fieldName,
+    setFieldName,
   };
 }
