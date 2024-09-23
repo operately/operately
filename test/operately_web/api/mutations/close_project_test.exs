@@ -7,6 +7,7 @@ defmodule OperatelyWeb.Api.Mutations.CloseProjectTest do
   import Operately.ProjectsFixtures
 
   alias Operately.{Repo, Projects, Companies}
+  alias Operately.Projects.Retrospective
   alias Operately.Access.Binding
 
   describe "security" do
@@ -32,15 +33,15 @@ defmodule OperatelyWeb.Api.Mutations.CloseProjectTest do
       assert_project_not_closed(project)
     end
 
-    test "company members without full access can't close a project", ctx do
-      project = create_project(ctx, company_access_level: Binding.edit_access())
+    test "company members without edit access can't close a project", ctx do
+      project = create_project(ctx, company_access_level: Binding.comment_access())
 
       assert {403, res} = request(ctx.conn, project)
       assert res.message == "You don't have permission to perform this action"
       assert_project_not_closed(project)
     end
 
-    test "company members with full access can close a project", ctx do
+    test "company members with edit access can close a project", ctx do
       project = create_project(ctx, company_access_level: Binding.full_access())
 
       assert {200, res} = request(ctx.conn, project)
@@ -70,16 +71,16 @@ defmodule OperatelyWeb.Api.Mutations.CloseProjectTest do
       assert_project_not_closed(project)
     end
 
-    test "space members without full access can't close a project", ctx do
+    test "space members without edit access can't close a project", ctx do
       add_person_to_space(ctx)
-      project = create_project(ctx, space_access_level: Binding.edit_access())
+      project = create_project(ctx, space_access_level: Binding.comment_access())
 
       assert {403, res} = request(ctx.conn, project)
       assert res.message == "You don't have permission to perform this action"
       assert_project_not_closed(project)
     end
 
-    test "space members with full access can close a project", ctx do
+    test "space members with edit access can close a project", ctx do
       add_person_to_space(ctx)
       project = create_project(ctx, space_access_level: Binding.full_access())
 
@@ -101,9 +102,9 @@ defmodule OperatelyWeb.Api.Mutations.CloseProjectTest do
       assert_project_closed(res, project)
     end
 
-    test "contributors without full access can't close a project", ctx do
+    test "contributors without edit access can't close a project", ctx do
       project = create_project(ctx)
-      contributor = create_contributor(ctx, project, Binding.edit_access())
+      contributor = create_contributor(ctx, project, Binding.comment_access())
 
       account = Repo.preload(contributor, :account).account
       conn = log_in_account(ctx.conn, account)
@@ -113,7 +114,7 @@ defmodule OperatelyWeb.Api.Mutations.CloseProjectTest do
       assert_project_not_closed(project)
     end
 
-    test "contributors with full access can close a project", ctx do
+    test "contributors with edit access can close a project", ctx do
       project = create_project(ctx)
       contributor = create_contributor(ctx, project, Binding.full_access())
 
@@ -185,20 +186,16 @@ defmodule OperatelyWeb.Api.Mutations.CloseProjectTest do
   defp assert_project_not_closed(project) do
     project = Repo.reload(project)
 
-    refute project.retrospective
-    refute project.closed_at
-    refute project.closed_by_id
     assert project.status == "active"
+    assert {:error, :not_found} = Retrospective.get(:system, project_id: project.id)
   end
 
   defp assert_project_closed(res, project) do
     project = Repo.reload(project)
 
-    assert project.retrospective
-    assert project.closed_at
-    assert project.closed_by_id
     assert project.status == "closed"
-    assert res.project == Serializer.serialize(project)
+    assert {:ok, retrospective} = Retrospective.get(:system, project_id: project.id)
+    assert res.retrospective == Serializer.serialize(retrospective)
   end
 
   #

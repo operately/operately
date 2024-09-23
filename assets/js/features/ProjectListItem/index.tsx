@@ -53,11 +53,15 @@ function ProjectNameLine({ project }) {
   );
 }
 
-function ProjectStatusLine({ project }) {
+function ProjectStatusLine({ project }: { project: Projects.Project }) {
   if (project.status === "closed") {
     return (
       <div className="mt-2 text-sm font-medium">
-        Closed on <FormattedTime time={project.closedAt} format="short-date" /> &middot;{" "}
+        {project.retrospective && (
+          <>
+            Closed on <FormattedTime time={project.retrospective.closedAt!} format="short-date" /> &middot;{" "}
+          </>
+        )}
         <Link to={Paths.projectRetrospectivePath(project.id!)}>Read the retrospective</Link>
       </div>
     );

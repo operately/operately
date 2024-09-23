@@ -22,6 +22,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjects do
     field :include_goal, :boolean
     field :include_archived, :boolean
     field :include_privacy, :boolean
+    field :include_retrospective, :boolean
   end
 
   outputs do
@@ -75,6 +76,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjects do
         :include_champion -> from p in q, preload: [:champion]
         :include_reviewer -> from p in q, preload: [:reviewer]
         :include_milestones -> from p in q, preload: [milestones: :project]
+        :include_retrospective -> from p in q, preload: [:retrospective]
         :include_privacy -> q
         _ -> q
       end

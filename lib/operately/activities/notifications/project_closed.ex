@@ -1,16 +1,18 @@
 defmodule Operately.Activities.Notifications.ProjectClosed do
   alias Operately.Projects
+  alias Operately.Projects.Retrospective
 
   def dispatch(activity) do
     author_id = activity.author_id
     project_id = activity.content["project_id"]
-    project = Projects.get_project!(project_id)
+
+    {:ok, retrospective} = Retrospective.get(:system, project_id: project_id)
     people = Projects.list_notification_subscribers(project_id, exclude: author_id)
 
     mentioned = (
-      Operately.RichContent.lookup_mentioned_people(project.retrospective["whatWentWell"])
-      ++ Operately.RichContent.lookup_mentioned_people(project.retrospective["whatCouldHaveGoneBetter"])
-      ++ Operately.RichContent.lookup_mentioned_people(project.retrospective["whatDidYouLearn"])
+      Operately.RichContent.lookup_mentioned_people(retrospective.content["whatWentWell"])
+      ++ Operately.RichContent.lookup_mentioned_people(retrospective.content["whatCouldHaveGoneBetter"])
+      ++ Operately.RichContent.lookup_mentioned_people(retrospective.content["whatDidYouLearn"])
     )
 
     people = Enum.uniq_by(people ++ mentioned, & &1.id)
