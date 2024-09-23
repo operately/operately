@@ -10,44 +10,44 @@ import RichContent from "@/components/RichContent";
 import FormattedTime from "@/components/FormattedTime";
 
 interface LoaderResult {
-  project: Projects.Project;
+  retrospective: Projects.ProjectRetrospective;
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
   return {
-    project: await Projects.getProject({
-      id: params.projectID,
-      includeSpace: true,
-      includePermissions: true,
-      includeClosedBy: true,
-    }).then((data) => data.project!),
+    retrospective: await Projects.getProjectRetrospective({
+      projectId: params.projectID,
+      includeAuthor: true,
+      includeProject: true,
+    }).then((data) => data.retrospective!),
   };
 }
 
 export function Page() {
-  const { project } = Pages.useLoadedData<LoaderResult>();
+  const { retrospective } = Pages.useLoadedData<LoaderResult>();
 
   return (
-    <Pages.Page title={["Retrospective", project.name!]}>
+    <Pages.Page title={["Retrospective", retrospective.project!.name!]}>
       <Paper.Root size="small">
-        <ProjectPageNavigation project={project} />
+        <ProjectPageNavigation project={retrospective.project!} />
 
         <Paper.Body minHeight="none">
           <div className="text-center text-content-accent text-3xl font-extrabold">Project Retrospective</div>
           <div className="flex items-center gap-2 font-medium justify-center mt-2">
-            {project.closedBy && <AvatarWithName person={project.closedBy!} size={16} />}
-            {project.closedBy && <span>&middot;</span>}
-            <FormattedTime time={project.closedAt!} format="long-date" />
+            {retrospective.author && <AvatarWithName person={retrospective.author} size={16} />}
+            {retrospective.author && <span>&middot;</span>}
+            <FormattedTime time={retrospective.closedAt!} format="long-date" />
           </div>
-          <Content project={project} />
+          <Content />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
   );
 }
 
-function Content({ project }) {
-  const retro = JSON.parse(project.retrospective);
+function Content() {
+  const { retrospective } = Pages.useLoadedData<LoaderResult>();
+  const retro = JSON.parse(retrospective.content!);
 
   return (
     <div className="mt-8">
