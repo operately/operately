@@ -1,8 +1,8 @@
 import React from "react";
 
-import { Field } from "./FormState";
+import { AddErrorFn, ValueField } from "./FormState";
 
-type TextField = Field<string> & {
+type TextField = ValueField<string> & {
   type: "text";
 };
 
@@ -14,33 +14,43 @@ interface Config {
 
 export function useTextField(initial?: string | null, config?: Config): TextField {
   const [value, setValue] = React.useState(initial);
+  const [fieldName, setFieldName] = React.useState<string | undefined>(undefined);
 
   if (config?.minLength && config?.maxLength && config.minLength > config.maxLength) {
     throw new Error("minLength must be less than or equal to maxLength");
   }
 
-  const validate = (): string | null => {
-    if (!config?.optional && !value) return "Can't be empty";
-    if (config?.optional && !value) return null;
+  const validate = (addError: AddErrorFn) => {
+    if (config && config.optional) return;
+
+    if (!value) return addError(fieldName!, "Can't be empty");
 
     const trimmed = value!.trim();
 
     if (trimmed.length === 0) {
-      return !config?.optional ? "Can't be empty" : null;
+      return addError(fieldName!, "Can't be empty");
     }
 
     if (config?.minLength && trimmed.length < config.minLength) {
-      return `Must be at least ${config.minLength} characters long`;
+      return addError(fieldName!, `Must be at least ${config.minLength} characters long`);
     }
 
     if (config?.maxLength && trimmed.length > config.maxLength) {
-      return `Must be at most ${config.maxLength} characters long`;
+      return addError(fieldName!, `Must be at most ${config.maxLength} characters long`);
     }
-
-    return null;
   };
 
   const reset = () => setValue(initial);
 
-  return { type: "text", initial, optional: config?.optional, value: value, setValue, validate, reset };
+  return {
+    type: "text",
+    initial,
+    optional: config?.optional,
+    value: value,
+    setValue,
+    validate,
+    reset,
+    fieldName,
+    setFieldName,
+  };
 }
