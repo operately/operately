@@ -1,10 +1,10 @@
 import { Dispatch, SetStateAction } from "react";
-import { FieldSet } from "./useFieldSet";
 
 export type State = "idle" | "validating" | "submitting";
+export type AddErrorFn = (field: string, message: string) => void;
 
 export interface KeyValueMap {
-  [key: string]: Field<any> | FieldSet<any>;
+  [key: string]: Field;
 }
 
 export interface FormState<T extends KeyValueMap> {
@@ -21,14 +21,20 @@ export interface FormState<T extends KeyValueMap> {
   };
 }
 
-export type Field<T> = {
+export type Field = {
+  fieldName?: string;
   type: string;
+
+  setFieldName: (name: string) => void;
+  validate: (addError: AddErrorFn) => void;
+  reset: () => void;
+};
+
+export type ValueField<T> = Field & {
   value: T | null | undefined;
   setValue: Dispatch<SetStateAction<T | undefined>>;
   initial?: T | null | undefined;
   optional?: boolean;
-  validate: () => string | null;
-  reset: () => void;
 };
 
 export type ErrorMap = Record<string, string>;
