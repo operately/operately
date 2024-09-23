@@ -3,6 +3,8 @@ import * as React from "react";
 import classNames from "classnames";
 import { getFormContext } from "./FormContext";
 import { InputField } from "./FieldGroup";
+import { AddErrorFn } from "./FormState";
+import { useValidation } from "./useForm";
 
 interface TextInputProps {
   field: string;
@@ -11,10 +13,27 @@ interface TextInputProps {
   hidden?: boolean;
 }
 
+function useCantBeBlankValidation(field: string) {
+  const form = getFormContext();
+
+  const cantBeBlank = React.useCallback(
+    (addError: AddErrorFn) => {
+      const value = form.getField(field);
+      if (value === "") {
+        addError(field, "Can't be blank    ooooo");
+      }
+    },
+    [field],
+  );
+
+  useValidation(field, cantBeBlank);
+}
+
 export function TextInput({ field, label, placeholder, hidden }: TextInputProps) {
   const form = getFormContext();
   const error = form.errors[field];
-  const f = form.fields[field];
+
+  useCantBeBlankValidation(field);
 
   return (
     <InputField field={field} label={label} error={error} hidden={hidden}>
@@ -24,8 +43,8 @@ export function TextInput({ field, label, placeholder, hidden }: TextInputProps)
         data-test-id={field}
         className={styles(!!error)}
         type="text"
-        value={f.value}
-        onChange={(e) => f.setValue(e.target.value)}
+        value={form.getField(field)}
+        onChange={(e) => form.setField(field, e.target.value)}
       />
     </InputField>
   );
