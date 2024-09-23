@@ -1,4 +1,5 @@
 defimpl OperatelyWeb.Api.Serializable, for: Operately.Goals.Goal do
+  alias OperatelyWeb.Api.Serializers.DateTimeHelpers
   def serialize(goal, level: :essential) do
     %{
       id: OperatelyWeb.Paths.goal_id(goal),
@@ -16,8 +17,8 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Goals.Goal do
       id: OperatelyWeb.Paths.goal_id(goal),
       name: goal.name,
       description: goal.description && Jason.encode!(goal.description),
-      inserted_at: OperatelyWeb.Api.Serializer.serialize(goal.inserted_at),
-      updated_at: OperatelyWeb.Api.Serializer.serialize(goal.updated_at),
+      inserted_at: DateTimeHelpers.serialize_datetime(goal.inserted_at),
+      updated_at: DateTimeHelpers.serialize_datetime(goal.updated_at),
       archived_at: OperatelyWeb.Api.Serializer.serialize(goal.deleted_at),
       closed_by: OperatelyWeb.Api.Serializer.serialize(goal.closed_by),
       closed_at: OperatelyWeb.Api.Serializer.serialize(goal.closed_at),
