@@ -2,11 +2,11 @@ import * as React from "react";
 import * as People from "@/models/people";
 
 import { Person } from "@/api";
-import { Field } from "./FormState";
+import { AddErrorFn, ValueField } from "./FormState";
 
 type SearchFn = (query: string) => Promise<Person[]>;
 
-export type SelectPersonField = Field<Person> & {
+export type SelectPersonField = ValueField<Person> & {
   type: "select-person";
   exclude?: Person[];
   searchFn: SearchFn;
@@ -20,11 +20,14 @@ interface Config {
 
 export function useSelectPersonField(initial?: Person | null, config?: Config): SelectPersonField {
   const [value, setValue] = React.useState(initial);
+  const [fieldName, setFieldName] = React.useState<string | undefined>(undefined);
 
   const searchFn = useSearchFn(config);
 
-  const validate = (): string | null => {
-    if (!value) return !config?.optional ? "Can't be empty" : null;
+  const validate = (addError: AddErrorFn) => {
+    if (config && config.optional) return;
+
+    if (!value) return addError(fieldName!, "Can't be empty");
 
     return null;
   };
@@ -33,6 +36,8 @@ export function useSelectPersonField(initial?: Person | null, config?: Config): 
 
   return {
     type: "select-person",
+    fieldName,
+    setFieldName,
     initial,
     optional: config?.optional,
     value,

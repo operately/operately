@@ -1,7 +1,6 @@
 import * as React from "react";
 
-import { FormState, State, KeyValueMap, ErrorMap, Field } from "./FormState";
-import { FieldSet } from "./useFieldSet";
+import { FormState, State, KeyValueMap, ErrorMap } from "./FormState";
 
 type AddErrorFn = (field: string, message: string) => void;
 
@@ -15,6 +14,12 @@ interface FormProps<T extends KeyValueMap> {
 export function useForm<T extends KeyValueMap>(props: FormProps<T>): FormState<T> {
   const [state, setState] = React.useState<State>("idle");
   const [errors, validate, clearErrors] = createFormValidator(props);
+
+  React.useEffect(() => {
+    for (const key in props.fields) {
+      props.fields[key]!.setFieldName(key);
+    }
+  }, []);
 
   const form = {
     fields: props.fields,
@@ -47,15 +52,7 @@ export function useForm<T extends KeyValueMap>(props: FormProps<T>): FormState<T
         form.actions.clearErrors();
 
         for (const key in props.fields) {
-          const field = props.fields[key]!;
-
-          if (field.type === "fieldset") {
-            const subfieldset = field as FieldSet<any>;
-            subfieldset.reset();
-          } else {
-            const regularField = field as Field<any>;
-            regularField.reset();
-          }
+          props.fields[key]!.reset();
         }
       },
     },
@@ -77,16 +74,7 @@ function createFormValidator<T extends KeyValueMap>(props: FormProps<T>): [Error
     if (props.validate) props.validate(addError);
 
     for (const key in props.fields) {
-      const field = props.fields[key]!;
-
-      if (field.type === "fieldset") {
-        const subfieldset = field as FieldSet<any>;
-        subfieldset.validate((field, error) => addError(`${key}.${field}`, error));
-      } else {
-        const regularField = field as Field<any>;
-        const error = regularField.validate();
-        if (error) addError(key, error);
-      }
+      props.fields[key]!.validate(addError);
     }
 
     setErrors(newErrors);
