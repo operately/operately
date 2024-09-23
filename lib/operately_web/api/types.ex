@@ -150,6 +150,7 @@ defmodule OperatelyWeb.Api.Types do
     field :next_check_in_scheduled_at, :date
     field :privacy, :string
     field :status, :string
+    field :closed_at, :date
     field :retrospective, :project_retrospective
     field :description, :string
     field :goal, :goal

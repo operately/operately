@@ -23,8 +23,6 @@ defmodule Operately.Projects.Project do
     has_one :champion, through: [:champion_contributor, :person]
     has_one :reviewer, through: [:reviewer_contributor, :person]
 
-    has_one :retrospective, Operately.Projects.Retrospective, foreign_key: :project_id
-
     field :description, :map
     field :name, :string
     field :private, :boolean, default: false
@@ -39,7 +37,9 @@ defmodule Operately.Projects.Project do
     field :health, Ecto.Enum, values: [:on_track, :at_risk, :off_track, :paused, :unknown], default: :on_track
     field :next_update_scheduled_at, :utc_datetime # Deprecated, use next_check_in_scheduled_at instead
 
+    has_one :retrospective, Operately.Projects.Retrospective, foreign_key: :project_id
     field :status, :string, default: "active"
+    field :closed_at, :utc_datetime
 
     # populated with after load hooks
     field :next_milestone, :any, virtual: true

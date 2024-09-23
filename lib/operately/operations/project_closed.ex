@@ -12,9 +12,12 @@ defmodule Operately.Operations.ProjectClosed do
       content: Jason.decode!(retrospective),
       closed_at: DateTime.utc_now(),
     }))
-    |> Multi.update(:project, Project.changeset(project, %{
-      status: "closed"
-    }))
+    |> Multi.update(:project, fn changes ->
+      Project.changeset(project,%{
+        status: "closed",
+        closed_at: changes.retrospective.closed_at,
+      })
+    end)
     |> Activities.insert_sync(author.id, :project_closed, fn _changes -> %{
       company_id: project.company_id,
       project_id: project.id

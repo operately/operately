@@ -11,7 +11,7 @@ defmodule OperatelyWeb.Api.Mutations.CloseProject do
   end
 
   outputs do
-    field :retrospective, :retrospective
+    field :retrospective, :project_retrospective
   end
 
   def call(conn, inputs) do

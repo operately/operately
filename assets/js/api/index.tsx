@@ -746,6 +746,7 @@ export interface Project {
   nextCheckInScheduledAt?: string | null;
   privacy?: string | null;
   status?: string | null;
+  closedAt?: string | null;
   retrospective?: ProjectRetrospective | null;
   description?: string | null;
   goal?: Goal | null;
@@ -1641,7 +1642,7 @@ export interface CloseProjectInput {
 }
 
 export interface CloseProjectResult {
-  retrospective?: Retrospective | null;
+  retrospective?: ProjectRetrospective | null;
 }
 
 export interface ConnectGoalToProjectInput {

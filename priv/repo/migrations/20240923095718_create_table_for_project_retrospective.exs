@@ -3,7 +3,7 @@ defmodule Operately.Repo.Migrations.CreateTableForProjectRetrospective do
   use Ecto.Migration
 
   alias Operately.Repo
-  alias Operately.Projects.{Project, Retrospective}
+  alias Operately.Projects.Retrospective
 
   def up do
     create table(:project_retrospectives, primary_key: false) do
@@ -23,12 +23,18 @@ defmodule Operately.Repo.Migrations.CreateTableForProjectRetrospective do
 
     flush()
 
-    from(p in Project, where: not is_nil(p.retrospective))
+    from(p in "projects",
+      where: not is_nil(p.retrospective),
+      select: [:id, :closed_by_id, :closed_at, :retrospective]
+    )
     |> Repo.all()
     |> Enum.each(fn p ->
+      {:ok, project_id} = Ecto.UUID.cast(p.id)
+      {:ok, author_id} = Ecto.UUID.cast(p.closed_by_id)
+
       {:ok, _} = Retrospective.changeset(%{
-        project_id: p.id,
-        author_id: p.closed_by_id,
+        project_id: project_id,
+        author_id: author_id,
         closed_at: p.closed_at,
         content: p.retrospective,
       })
@@ -37,6 +43,17 @@ defmodule Operately.Repo.Migrations.CreateTableForProjectRetrospective do
   end
 
   def down do
+    from(r in "project_retrospectives", select: [:project_id, :content, :closed_at, :author_id])
+    |> Repo.all()
+    |> Enum.each(fn r ->
+      from(p in "projects", where: p.id == ^r.project_id and is_nil(p.retrospective))
+      |> Repo.update_all(set: [
+        retrospective: r.content,
+        closed_at: r.closed_at,
+        closed_by_id: r.author_id,
+      ])
+    end)
+
     drop index(:project_retrospectives, [:subscription_list_id])
     drop index(:project_retrospectives, [:author_id])
     drop unique_index(:project_retrospectives, [:project_id])
