@@ -12,6 +12,7 @@ export interface FormState<T extends KeyValueMap> {
   state: State;
   errors: ErrorMap;
   hasCancel: boolean;
+  validations: AddErrorFn[];
   actions: {
     clearErrors: () => void;
     validate: () => boolean;

@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import type { FormState } from "./FormState";
+import type { FormState } from "./useForm";
 
 export const FormContext = React.createContext<FormState<any> | null>(null);
 
