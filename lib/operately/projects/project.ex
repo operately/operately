@@ -23,6 +23,8 @@ defmodule Operately.Projects.Project do
     has_one :champion, through: [:champion_contributor, :person]
     has_one :reviewer, through: [:reviewer_contributor, :person]
 
+    has_one :retrospective, Operately.Projects.Retrospective, foreign_key: :project_id
+
     field :description, :map
     field :name, :string
     field :private, :boolean, default: false
@@ -38,9 +40,6 @@ defmodule Operately.Projects.Project do
     field :next_update_scheduled_at, :utc_datetime # Deprecated, use next_check_in_scheduled_at instead
 
     field :status, :string, default: "active"
-    field :retrospective, :map
-    field :closed_at, :utc_datetime
-    belongs_to :closed_by, Operately.People.Person, foreign_key: :closed_by_id
 
     # populated with after load hooks
     field :next_milestone, :any, virtual: true
@@ -74,12 +73,9 @@ defmodule Operately.Projects.Project do
       :private,
       :deleted_at,
       :status,
-      :retrospective,
-      :closed_at,
       :last_check_in_id,
       :last_check_in_status,
       :next_update_scheduled_at,
-      :closed_by_id,
     ])
     |> validate_required([
       :name,

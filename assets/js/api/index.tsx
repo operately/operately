@@ -746,15 +746,13 @@ export interface Project {
   nextCheckInScheduledAt?: string | null;
   privacy?: string | null;
   status?: string | null;
-  closedAt?: string | null;
-  retrospective?: string | null;
+  retrospective?: ProjectRetrospective | null;
   description?: string | null;
   goal?: Goal | null;
   lastCheckIn?: ProjectCheckIn | null;
   milestones?: Milestone[] | null;
   contributors?: ProjectContributor[] | null;
   keyResources?: ProjectKeyResource[] | null;
-  closedBy?: Person | null;
   isOutdated?: boolean | null;
   spaceId?: string | null;
   space?: Space | null;
@@ -1336,7 +1334,6 @@ export interface GetPersonResult {
 
 export interface GetProjectInput {
   id?: string | null;
-  includeClosedBy?: boolean | null;
   includeContributors?: boolean | null;
   includeGoal?: boolean | null;
   includeKeyResources?: boolean | null;
@@ -1349,6 +1346,7 @@ export interface GetProjectInput {
   includeContributorsAccessLevels?: boolean | null;
   includeAccessLevels?: boolean | null;
   includePrivacy?: boolean | null;
+  includeRetrospective?: boolean | null;
 }
 
 export interface GetProjectResult {
@@ -1410,6 +1408,7 @@ export interface GetProjectsInput {
   includeGoal?: boolean | null;
   includeArchived?: boolean | null;
   includePrivacy?: boolean | null;
+  includeRetrospective?: boolean | null;
 }
 
 export interface GetProjectsResult {
@@ -1642,7 +1641,7 @@ export interface CloseProjectInput {
 }
 
 export interface CloseProjectResult {
-  project?: Project | null;
+  retrospective?: Retrospective | null;
 }
 
 export interface ConnectGoalToProjectInput {

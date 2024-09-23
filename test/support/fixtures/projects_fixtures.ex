@@ -137,7 +137,8 @@ defmodule Operately.ProjectsFixtures do
           whatWentWell: RichText.rich_text("some content"),
           whatDidYouLearn: RichText.rich_text("some content"),
           whatCouldHaveGoneBetter: RichText.rich_text("some content"),
-        }
+        },
+        closed_at: DateTime.utc_now(),
       })
       |> Operately.Projects.create_retrospective()
 
