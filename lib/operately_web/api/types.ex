@@ -173,6 +173,14 @@ defmodule OperatelyWeb.Api.Types do
     field :access_levels, :access_levels
   end
 
+  object :project_retrospective do
+    field :id, :string
+    field :author, :person
+    field :project, :project
+    field :content, :string
+    field :closed_at, :date
+  end
+
   object :discussion do
     field :id, :string
     field :name, :string

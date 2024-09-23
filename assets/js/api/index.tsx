@@ -831,6 +831,14 @@ export interface ProjectPermissions {
   canAcknowledgeCheckIn?: boolean | null;
 }
 
+export interface ProjectRetrospective {
+  id?: string | null;
+  author?: Person | null;
+  project?: Project | null;
+  content?: string | null;
+  closedAt?: string | null;
+}
+
 export interface ProjectReviewRequest {
   id?: string | null;
   insertedAt?: string | null;
@@ -1377,6 +1385,16 @@ export interface GetProjectContributorInput {
 
 export interface GetProjectContributorResult {
   contributor?: ProjectContributor | null;
+}
+
+export interface GetProjectRetrospectiveInput {
+  projectId?: string | null;
+  includeAuthor?: boolean | null;
+  includeProject?: boolean | null;
+}
+
+export interface GetProjectRetrospectiveResult {
+  retrospective?: ProjectRetrospective | null;
 }
 
 export interface GetProjectsInput {
@@ -2288,6 +2306,10 @@ export class ApiClient {
     return this.get("/get_project_contributor", input);
   }
 
+  async getProjectRetrospective(input: GetProjectRetrospectiveInput): Promise<GetProjectRetrospectiveResult> {
+    return this.get("/get_project_retrospective", input);
+  }
+
   async getProjects(input: GetProjectsInput): Promise<GetProjectsResult> {
     return this.get("/get_projects", input);
   }
@@ -2702,6 +2724,11 @@ export async function getProjectCheckIns(input: GetProjectCheckInsInput): Promis
 export async function getProjectContributor(input: GetProjectContributorInput): Promise<GetProjectContributorResult> {
   return defaultApiClient.getProjectContributor(input);
 }
+export async function getProjectRetrospective(
+  input: GetProjectRetrospectiveInput,
+): Promise<GetProjectRetrospectiveResult> {
+  return defaultApiClient.getProjectRetrospective(input);
+}
 export async function getProjects(input: GetProjectsInput): Promise<GetProjectsResult> {
   return defaultApiClient.getProjects(input);
 }
@@ -3089,6 +3116,12 @@ export function useGetProjectContributor(
   input: GetProjectContributorInput,
 ): UseQueryHookResult<GetProjectContributorResult> {
   return useQuery<GetProjectContributorResult>(() => defaultApiClient.getProjectContributor(input));
+}
+
+export function useGetProjectRetrospective(
+  input: GetProjectRetrospectiveInput,
+): UseQueryHookResult<GetProjectRetrospectiveResult> {
+  return useQuery<GetProjectRetrospectiveResult>(() => defaultApiClient.getProjectRetrospective(input));
 }
 
 export function useGetProjects(input: GetProjectsInput): UseQueryHookResult<GetProjectsResult> {
@@ -3632,6 +3665,8 @@ export default {
   useGetProjectCheckIns,
   getProjectContributor,
   useGetProjectContributor,
+  getProjectRetrospective,
+  useGetProjectRetrospective,
   getProjects,
   useGetProjects,
   getSpace,

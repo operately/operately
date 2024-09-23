@@ -453,4 +453,13 @@ defmodule Operately.Projects do
       true
     end
   end
+
+
+  alias Operately.Projects.Retrospective
+
+  def create_retrospective(attrs) do
+    %Retrospective{}
+    |> Retrospective.changeset(attrs)
+    |> Repo.insert()
+  end
 end

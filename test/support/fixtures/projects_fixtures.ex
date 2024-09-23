@@ -1,4 +1,5 @@
 defmodule Operately.ProjectsFixtures do
+  alias Operately.Support.RichText
   alias Operately.Access.Binding
 
   @moduledoc """
@@ -125,4 +126,21 @@ defmodule Operately.ProjectsFixtures do
     check_in
   end
 
+  @doc """
+  Generate a project retrospective.
+  """
+  def retrospective_fixture(attrs) do
+    {:ok, retrospective} =
+      attrs
+      |> Enum.into(%{
+        content: %{
+          whatWentWell: RichText.rich_text("some content"),
+          whatDidYouLearn: RichText.rich_text("some content"),
+          whatCouldHaveGoneBetter: RichText.rich_text("some content"),
+        }
+      })
+      |> Operately.Projects.create_retrospective()
+
+    retrospective
+  end
 end
