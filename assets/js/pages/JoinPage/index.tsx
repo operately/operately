@@ -74,30 +74,35 @@ function Form() {
 
   const form = Forms.useForm({
     fields: {
-      password: Forms.useTextField("", { minLength: 12, maxLength: 72 }),
-      passwordConfirmation: Forms.useTextField("", { minLength: 12, maxLength: 72 }),
+      password: "",
+      passwordConfirmation: "",
     },
     validate: (addError) => {
-      if (form.fields.password.value !== form.fields.passwordConfirmation.value) {
+      if (form.values.password !== form.values.passwordConfirmation) {
         addError("passwordConfirmation", "Passwords do not match");
       }
     },
-    submit: async (form) => {
+    submit: async () => {
       await join({
         token: token,
-        password: form.fields.password.value,
-        passwordConfirmation: form.fields.passwordConfirmation.value,
+        password: form.values.password.trim(),
+        passwordConfirmation: form.values.passwordConfirmation.trim(),
       });
 
-      await logInAndGotoCompany(invitation, form.fields.password.value!);
+      await logInAndGotoCompany(invitation, form.values.password.trim());
     },
   });
 
   return (
     <Forms.Form form={form}>
       <Forms.FieldGroup>
-        <Forms.PasswordInput label="Choose a password (minimum 12 characters)" field={"password"} />
-        <Forms.PasswordInput label="Repeat password" field={"passwordConfirmation"} />
+        <Forms.PasswordInput
+          label="Choose a password (minimum 12 characters)"
+          field={"password"}
+          minLength={12}
+          maxLength={72}
+        />
+        <Forms.PasswordInput label="Repeat password" field={"passwordConfirmation"} minLength={12} maxLength={72} />
       </Forms.FieldGroup>
 
       <Forms.Submit saveText="Sign up &amp; Log in" />

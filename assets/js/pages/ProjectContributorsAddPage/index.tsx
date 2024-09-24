@@ -80,16 +80,16 @@ function Form() {
 
   const form = Forms.useForm({
     fields: {
-      person: usePersonField(),
-      responsibility: useResponsibilityField(),
+      person: "",
+      responsibility: "",
       permissions: useSelectAccessLevelField(),
     },
-    submit: async (form) => {
+    submit: async () => {
       await add({
         projectId: project.id,
-        personId: form.fields.person.value!.id!,
-        responsibility: form.fields.responsibility.value!,
-        permissions: form.fields.permissions.value,
+        personId: form.values.person,
+        responsibility: form.values.responsibility,
+        permissions: form.values.permissions,
         role: contribType,
       });
 
@@ -134,14 +134,23 @@ function AddReviewer() {
 }
 
 function AddContributor() {
+  const { project, contribType } = Pages.useLoadedData() as LoaderResult;
+  const personSearchFn = Projects.useContributorSearchFn(project!);
+
   return (
     <>
       <Forms.FieldGroup>
         <Forms.FieldGroup layout="grid">
-          <Forms.SelectPerson field={"person"} label="Contributor" />
-          <Forms.SelectBox field={"permissions"} label="Access Level" />
+          <Forms.SelectPerson field={"person"} label="Contributor" searchFn={personSearchFn} />
+          <Forms.SelectBox field={"permissions"} label="Access Level" options={PERMISSIONS_LIST} />
         </Forms.FieldGroup>
-        <Forms.TextInput field={"responsibility"} placeholder="e.g. Project Manager" label="Responsibility" />
+
+        <Forms.TextInput
+          field={"responsibility"}
+          placeholder="e.g. Project Manager"
+          label="Responsibility"
+          required={contribType == "contributor"}
+        />
       </Forms.FieldGroup>
 
       <Forms.Submit saveText="Add Contributor" />
@@ -160,24 +169,9 @@ function pageSize(contribType: ContributorTypeParam): Paper.Size {
 function useSelectAccessLevelField() {
   const { contribType } = Pages.useLoadedData() as LoaderResult;
 
-  const initial = match(contribType)
+  return match(contribType)
     .with("contributor", () => PermissionLevels.EDIT_ACCESS)
     .with("reviewer", () => PermissionLevels.FULL_ACCESS)
     .with("champion", () => PermissionLevels.FULL_ACCESS)
     .exhaustive();
-
-  return Forms.useSelectNumberField(initial, PERMISSIONS_LIST);
-}
-
-function usePersonField() {
-  const { project } = Pages.useLoadedData() as LoaderResult;
-  const personSearchFn = Projects.useContributorSearchFn(project!);
-
-  return Forms.useSelectPersonField(null, { searchFn: personSearchFn });
-}
-
-function useResponsibilityField() {
-  const { contribType } = Pages.useLoadedData() as LoaderResult;
-
-  return Forms.useTextField("", { optional: contribType !== "contributor" });
 }
