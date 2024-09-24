@@ -1,10 +1,10 @@
 import * as React from "react";
 import * as Icons from "@tabler/icons-react";
 import * as Goals from "@/models/goals";
-import * as Tabs from "@/components/Tabs";
 import * as Paper from "@/components/PaperContainer";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import * as Timeframes from "@/utils/timeframes";
+import * as People from "@/models/people";
 
 import { GhostLink } from "@/components/Link/GhostList";
 import { Paths } from "@/routes/paths";
@@ -13,20 +13,50 @@ import { PrimaryButton } from "@/components/Buttons";
 import FormattedTime from "@/components/FormattedTime";
 
 import plurarize from "@/utils/plurarize";
+import { DivLink } from "@/components/Link";
+import Avatar from "@/components/Avatar";
+import { DimmedLabel } from "@/components/Text";
+import { SuccessConditions } from "../SuccessConditions";
+import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
+import RichContent from "@/components/RichContent";
 
 interface HeaderProps {
-  activeTab: "status" | "subgoals" | "discussions" | "about";
   goal: Goals.Goal;
 }
 
-export function Header({ goal, activeTab }: HeaderProps) {
+export function Header({ goal }: HeaderProps) {
   return (
     <div>
       <Options goal={goal} />
       <Banner goal={goal} />
       <ParentGoal goal={goal.parentGoal} />
       <GoalTitleRow goal={goal} />
-      <GoalTabs activeTab={activeTab} goal={goal} />
+    </div>
+  );
+}
+
+const AvatarAndName = ({ person }) => {
+  const profilePath = Paths.profilePath(person.id);
+
+  return (
+    <DivLink to={profilePath}>
+      <div className="flex items-center gap-1.5 text-sm">
+        <Avatar person={person} size="tiny" />
+        <div className="" title={person.fullName}>{People.shortName(person)}</div>
+      </div>
+    </DivLink>
+  );
+};
+
+function Description({ goal }) {
+  return (
+    <div className="mt-8">
+      <DimmedLabel>Description</DimmedLabel>
+      {isContentEmpty(goal.description) ? (
+        <div className="text-content-dimmed">No description provided</div>
+      ) : (
+        <RichContent jsonContent={goal.description} />
+      )}
     </div>
   );
 }
@@ -42,7 +72,26 @@ function GoalTitleRow({ goal }: { goal: Goals.Goal }) {
           <UpdateProgressButton goal={goal} />
         </div>
 
-        <Timeframe goal={goal} />
+        <div className="flex item-center mt-4 gap-12">
+          <div>
+            <DimmedLabel className="mb-1">Timeframe</DimmedLabel>
+            <Timeframe goal={goal} />
+          </div>
+
+          <div>
+            <DimmedLabel className="mb-1">Champion</DimmedLabel>
+            <AvatarAndName person={goal.champion} />
+          </div>
+
+          <div>
+            <DimmedLabel className="mb-1">Reviewer</DimmedLabel>
+            <AvatarAndName person={goal.reviewer} />
+          </div>
+        </div>
+
+        <SuccessConditions goal={goal} />
+
+        <Description goal={goal} />
       </div>
     </div>
   );
@@ -60,17 +109,6 @@ function GoalIcon() {
   );
 }
 
-function GoalTabs({ activeTab, goal }: { activeTab: HeaderProps["activeTab"]; goal: Goals.Goal }) {
-  return (
-    <Tabs.Root activeTab={activeTab}>
-      <Tabs.Tab id="status" title="Current Status" linkTo={Paths.goalPath(goal.id!)} />
-      <Tabs.Tab id="subgoals" title="Sub-Goals and Projects" linkTo={Paths.goalSubgoalsPath(goal.id!)} />
-      <Tabs.Tab id="discussions" title="Discussions" linkTo={Paths.goalDiscussionsPath(goal.id!)} />
-      <Tabs.Tab id="about" title="About" linkTo={Paths.goalAboutPath(goal.id!)} />
-    </Tabs.Root>
-  );
-}
-
 function ParentGoal({ goal }: { goal: Goals.Goal | null | undefined }) {
   let content: React.ReactNode;
 
@@ -85,7 +123,7 @@ function ParentGoal({ goal }: { goal: Goals.Goal | null | undefined }) {
     content = (
       <div className="flex items-center gap-1">
         <Icons.IconBuildingEstate size={14} />
-        <GhostLink to={Paths.goalsPath()} text="Company-wide goal" testId="company-goals-link" dimmed size="sm" />
+        <GhostLink to={Paths.goalsPath()} text="This is a company-wide goal" testId="company-goals-link" dimmed size="sm" />
       </div>
     );
   }
@@ -182,8 +220,8 @@ function Timeframe({ goal }: { goal: Goals.Goal }) {
   const timeframe = Timeframes.parse(goal.timeframe!);
 
   return (
-    <div className="font-medium text-sm mt-1 text-content-dimmed">
-      Timeframe: {Timeframes.format(timeframe)} <TimeframeState goal={goal} />
+    <div className="text-sm">
+      {Timeframes.format(timeframe)} <TimeframeState goal={goal} />
     </div>
   );
 }
