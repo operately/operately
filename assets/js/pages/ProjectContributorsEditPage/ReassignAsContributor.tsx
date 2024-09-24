@@ -7,8 +7,7 @@ import * as ProjectContributors from "@/models/projectContributors";
 import Forms from "@/components/Forms";
 import { PageTitle } from "./PageTitle";
 import { LoaderResult, useGotoProjectContributors } from "./loader";
-import { useAccessLevelField } from "./useAccessLevelField";
-import { PermissionLevels } from "@/features/Permissions";
+import { PERMISSIONS_LIST, PermissionLevels } from "@/features/Permissions";
 import { joinStr } from "@/utils/strings";
 
 export function ReassignAsContributor() {
@@ -35,7 +34,7 @@ export function ReassignAsContributor() {
 
         <Forms.FieldGroup>
           <Forms.TextInput field={"responsibility"} placeholder={placeholder} label={label} />
-          <Forms.SelectBox field={"permissions"} label="Access Level" />
+          <Forms.SelectBox field={"permissions"} label="Access Level" options={PERMISSIONS_LIST} />
         </Forms.FieldGroup>
 
         <Forms.Submit saveText="Save" />
@@ -48,16 +47,16 @@ function useForm(contributor: ProjectContributors.ProjectContributor) {
   const [update] = ProjectContributors.useUpdateContributor();
   const gotoProjectContrib = useGotoProjectContributors();
 
-  return Forms.useForm({
+  const form = Forms.useForm({
     fields: {
-      responsibility: Forms.useTextField(contributor.responsibility),
-      permissions: useAccessLevelField(PermissionLevels.FULL_ACCESS),
+      responsibility: contributor.responsibility,
+      permissions: PermissionLevels.FULL_ACCESS,
     },
-    submit: async (form) => {
+    submit: async () => {
       await update({
         contribId: contributor.id,
-        responsibility: form.fields.responsibility.value!,
-        permissions: form.fields.permissions.value,
+        responsibility: form.values.responsibility,
+        permissions: form.values.permissions,
         role: "contributor",
       });
 
@@ -65,4 +64,6 @@ function useForm(contributor: ProjectContributors.ProjectContributor) {
     },
     cancel: gotoProjectContrib,
   });
+
+  return form;
 }
