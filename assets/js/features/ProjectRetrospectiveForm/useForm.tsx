@@ -11,7 +11,7 @@ interface Error {
   message: string;
 }
 
-interface FormState {
+export interface FormState {
   project: Projects.Project;
 
   errors: Error[];
