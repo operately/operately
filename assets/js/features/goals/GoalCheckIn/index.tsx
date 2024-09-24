@@ -1,6 +1,5 @@
 import React from "react";
 
-import { H3 } from "@/components/Text";
 import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
 import RichContent from "@/components/RichContent";
@@ -24,7 +23,7 @@ export function LastCheckInMessage({ goal }) {
   const championProfilePath = Paths.profilePath(author.id!);
 
   return (
-    <div className="flex items-start gap-4">
+    <div className="flex items-start gap-4 mt-16">
       <DivLink to={championProfilePath}>
         <Avatar person={author} size={40} />
       </DivLink>

@@ -13,7 +13,7 @@ import { Paths } from "@/routes/paths";
 import { BlackLink } from "@/components/Link";
 import { IconListTree, IconMessage } from "@tabler/icons-react";
 import { Subheader } from "@/components/Text";
-import { GhostButton } from "@/components/Button";
+import { GhostButton } from "@/components/Buttons";
 
 interface LoaderResult {
   goal: Goals.Goal;
