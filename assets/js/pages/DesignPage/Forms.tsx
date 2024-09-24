@@ -29,10 +29,10 @@ function VerticalForm() {
       email: "",
       password: "",
     },
-    submit: async (form) => {
+    submit: async () => {
       console.log("Form submitted with values:", form);
     },
-    cancel: async (form) => {
+    cancel: async () => {
       console.log("Form cancelled", form);
     },
   });
@@ -60,7 +60,7 @@ function HorizontalForm() {
       name: "",
       description: "",
     },
-    submit: async (form) => {
+    submit: async () => {
       console.log("Form submitted with values:", form);
     },
   });
@@ -91,7 +91,7 @@ function HorizontalFormCustomized() {
       company: "view",
       space: "edit",
     },
-    submit: async (form) => {
+    submit: async () => {
       console.log("Form submitted with values:", form);
     },
   });
@@ -125,7 +125,7 @@ function GridForm() {
       password: "",
       confirmPassword: "",
     },
-    submit: async (form) => {
+    submit: async () => {
       console.log("Form submitted with values:", form);
     },
   });
