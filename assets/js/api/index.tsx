@@ -1872,6 +1872,15 @@ export interface EditProjectPermissionsResult {
   success?: boolean | null;
 }
 
+export interface EditProjectRetrospectiveInput {
+  id?: string | null;
+  content?: string | null;
+}
+
+export interface EditProjectRetrospectiveResult {
+  retrospective?: ProjectRetrospective | null;
+}
+
 export interface EditProjectTimelineInput {
   projectId?: string | null;
   projectStartDate?: string | null;
@@ -2505,6 +2514,10 @@ export class ApiClient {
     return this.post("/edit_project_permissions", input);
   }
 
+  async editProjectRetrospective(input: EditProjectRetrospectiveInput): Promise<EditProjectRetrospectiveResult> {
+    return this.post("/edit_project_retrospective", input);
+  }
+
   async editProjectTimeline(input: EditProjectTimelineInput): Promise<EditProjectTimelineResult> {
     return this.post("/edit_project_timeline", input);
   }
@@ -2887,6 +2900,11 @@ export async function editProjectPermissions(
   input: EditProjectPermissionsInput,
 ): Promise<EditProjectPermissionsResult> {
   return defaultApiClient.editProjectPermissions(input);
+}
+export async function editProjectRetrospective(
+  input: EditProjectRetrospectiveInput,
+): Promise<EditProjectRetrospectiveResult> {
+  return defaultApiClient.editProjectRetrospective(input);
 }
 export async function editProjectTimeline(input: EditProjectTimelineInput): Promise<EditProjectTimelineResult> {
   return defaultApiClient.editProjectTimeline(input);
@@ -3381,6 +3399,15 @@ export function useEditProjectPermissions(): UseMutationHookResult<
   );
 }
 
+export function useEditProjectRetrospective(): UseMutationHookResult<
+  EditProjectRetrospectiveInput,
+  EditProjectRetrospectiveResult
+> {
+  return useMutation<EditProjectRetrospectiveInput, EditProjectRetrospectiveResult>((input) =>
+    defaultApiClient.editProjectRetrospective(input),
+  );
+}
+
 export function useEditProjectTimeline(): UseMutationHookResult<EditProjectTimelineInput, EditProjectTimelineResult> {
   return useMutation<EditProjectTimelineInput, EditProjectTimelineResult>((input) =>
     defaultApiClient.editProjectTimeline(input),
@@ -3762,6 +3789,8 @@ export default {
   useEditProjectName,
   editProjectPermissions,
   useEditProjectPermissions,
+  editProjectRetrospective,
+  useEditProjectRetrospective,
   editProjectTimeline,
   useEditProjectTimeline,
   editSpaceMembersPermissions,

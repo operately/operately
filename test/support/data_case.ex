@@ -19,6 +19,7 @@ defmodule Operately.DataCase do
   using do
     quote do
       alias Operately.Repo
+      alias Operately.Support.Factory
 
       import Ecto
       import Ecto.Changeset
