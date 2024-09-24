@@ -823,6 +823,7 @@ export interface ProjectPermissions {
   canEditGoal?: boolean | null;
   canEditName?: boolean | null;
   canEditSpace?: boolean | null;
+  canEditRetrospective?: boolean | null;
   canEditPermissions?: boolean | null;
   canClose?: boolean | null;
   canPause?: boolean | null;
@@ -836,6 +837,7 @@ export interface ProjectRetrospective {
   project?: Project | null;
   content?: string | null;
   closedAt?: string | null;
+  permissions?: ProjectPermissions | null;
 }
 
 export interface ProjectReviewRequest {
@@ -1390,6 +1392,7 @@ export interface GetProjectRetrospectiveInput {
   projectId?: string | null;
   includeAuthor?: boolean | null;
   includeProject?: boolean | null;
+  includePermissions?: boolean | null;
 }
 
 export interface GetProjectRetrospectiveResult {
