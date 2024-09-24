@@ -3,7 +3,7 @@ import * as People from "@/models/people";
 
 import { InputField } from "./FieldGroup";
 import { SelectPersonField } from "./useSelectPersonField";
-import { getFormContext } from "./FormContext";
+import { useFieldValue, useFieldError } from "./FormContext";
 
 import PeopleSearch, { Option } from "@/components/PeopleSearch";
 
@@ -13,11 +13,12 @@ interface SelectPersonProps {
   hidden?: boolean;
   allowEmpty?: boolean;
   emptyLabel?: string;
+  searchFn: SelectPersonField["searchFn"];
+  exclude?: People.Person[];
 }
 
 export function SelectPerson(props: SelectPersonProps) {
-  const form = getFormContext();
-  const error = form.errors[props.field];
+  const error = useFieldError(props.field);
 
   return (
     <InputField field={props.field} label={props.label} error={error} hidden={props.hidden}>
@@ -27,16 +28,17 @@ export function SelectPerson(props: SelectPersonProps) {
 }
 
 function SelectPersonInput(props: SelectPersonProps) {
-  const form = getFormContext();
-  const f = form.fields[props.field] as SelectPersonField;
-  const error = form.errors[props.field];
-  const loader = f.searchFn;
+  const { field, searchFn, exclude } = props;
+
+  const [value, setValue] = useFieldValue(field);
+  const error = useFieldError(field);
+  const loader = searchFn;
 
   const onChange = (option: Option | null) => {
-    f.setValue(option?.person);
+    setValue(option?.value);
   };
 
-  const excludedIds = buildExcludedIds(f.exclude);
+  const excludedIds = buildExcludedIds(exclude);
 
   return (
     <div className="flex-1">
@@ -44,7 +46,7 @@ function SelectPersonInput(props: SelectPersonProps) {
         inputId={props.field}
         onChange={onChange}
         placeholder="Search for person..."
-        defaultValue={f.value!}
+        defaultValue={value!}
         loader={loader}
         error={!!error}
         filterOption={(candidate) => !excludedIds[candidate.value]}

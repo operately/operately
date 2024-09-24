@@ -1,8 +1,8 @@
 import React from "react";
 
-import { Field } from "./FormState";
+import { AddErrorFn, ValueField } from "./FormState";
 
-type SelectField = Field<number> & {
+type SelectField = ValueField<number> & {
   type: "select";
   options: { value: number; label: string }[];
   setOptions: (options: { value: number; label: string }[]) => void;
@@ -24,11 +24,15 @@ export function useSelectNumberField(
 ): SelectField {
   const [value, setValue] = React.useState(initial);
   const [options, setOptions] = React.useState(initialOptions);
+  const [fieldName, setFieldName] = React.useState<string | undefined>(undefined);
 
-  const validate = (): string | null => {
-    if (value === null || value === undefined) return !config?.optional ? "Can't be empty" : null;
+  const validate = (addError: AddErrorFn) => {
+    if (config && config.optional) return;
 
-    return null;
+    if (value === null) return addError(fieldName!, "Can't be empty");
+    if (value === undefined) return addError(fieldName!, "Can't be empty");
+
+    return;
   };
 
   const reset = () => {
@@ -36,5 +40,17 @@ export function useSelectNumberField(
     setOptions(initialOptions);
   };
 
-  return { type: "select", initial, options, optional: config?.optional, value, setValue, validate, setOptions, reset };
+  return {
+    type: "select",
+    initial: initial,
+    options,
+    optional: config?.optional,
+    value,
+    setValue,
+    validate,
+    setOptions,
+    reset,
+    fieldName,
+    setFieldName,
+  };
 }
