@@ -42,7 +42,9 @@ const AvatarAndName = ({ person }) => {
     <DivLink to={profilePath}>
       <div className="flex items-center gap-1.5 text-sm">
         <Avatar person={person} size="tiny" />
-        <div className="" title={person.fullName}>{People.shortName(person)}</div>
+        <div className="" title={person.fullName}>
+          {People.shortName(person)}
+        </div>
       </div>
     </DivLink>
   );
@@ -50,14 +52,14 @@ const AvatarAndName = ({ person }) => {
 
 function Description({ goal }) {
   return (
-    <div className="mt-8">
-      <DimmedLabel>Description</DimmedLabel>
-      {isContentEmpty(goal.description) ? (
-        <div className="text-content-dimmed">No description provided</div>
-      ) : (
-        <RichContent jsonContent={goal.description} />
+    <>
+      {isContentEmpty(goal.description) ? null : (
+        <div className="mt-2 mb-4">
+          {/* <DimmedLabel>Description</DimmedLabel> */}
+          <RichContent jsonContent={goal.description} />
+        </div>
       )}
-    </div>
+    </>
   );
 }
 
@@ -72,7 +74,11 @@ function GoalTitleRow({ goal }: { goal: Goals.Goal }) {
           <UpdateProgressButton goal={goal} />
         </div>
 
-        <div className="flex item-center mt-4 gap-12">
+        <Description goal={goal} />
+
+        <SuccessConditions goal={goal} />
+
+        <div className="flex item-center mt-6 gap-12">
           <div>
             <DimmedLabel className="mb-1">Timeframe</DimmedLabel>
             <Timeframe goal={goal} />
@@ -88,10 +94,6 @@ function GoalTitleRow({ goal }: { goal: Goals.Goal }) {
             <AvatarAndName person={goal.reviewer} />
           </div>
         </div>
-
-        <SuccessConditions goal={goal} />
-
-        <Description goal={goal} />
       </div>
     </div>
   );
@@ -123,7 +125,13 @@ function ParentGoal({ goal }: { goal: Goals.Goal | null | undefined }) {
     content = (
       <div className="flex items-center gap-1">
         <Icons.IconBuildingEstate size={14} />
-        <GhostLink to={Paths.goalsPath()} text="This is a company-wide goal" testId="company-goals-link" dimmed size="sm" />
+        <GhostLink
+          to={Paths.goalsPath()}
+          text="This is a company-wide goal"
+          testId="company-goals-link"
+          dimmed
+          size="sm"
+        />
       </div>
     );
   }

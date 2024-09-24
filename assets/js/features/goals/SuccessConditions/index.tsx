@@ -1,12 +1,12 @@
 import * as React from "react";
 import * as Goals from "@/models/goals";
 import * as Icons from "@tabler/icons-react";
-import { DimmedLabel } from "@/components/Text";
+// import { DimmedLabel } from "@/components/Text";
 
 export function SuccessConditions({ goal }: { goal: Goals.Goal }) {
   return (
-    <div className="flex flex-col gap-2 mt-8">
-      <DimmedLabel className="">Success Conditions</DimmedLabel>
+    <div className="flex flex-col gap-2 mt-4">
+      {/*<DimmedLabel className="">Success Conditions</DimmedLabel>*/}
 
       <div className="flex flex-col">
         {goal.targets!.map((target, index) => (
