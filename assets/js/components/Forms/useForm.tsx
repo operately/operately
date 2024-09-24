@@ -61,6 +61,7 @@ export function useForm<T extends FieldObject>(props: FormProps<T>): FormState<T
 
         const errors = runValidations(form, validations, props.validate);
         if (Object.keys(errors).length > 0) {
+          console.log("Errors", errors);
           setErrors(errors);
           setState("idle");
           return;

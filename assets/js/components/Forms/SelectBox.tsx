@@ -42,7 +42,7 @@ function SelectBoxInput({ field, placeholder, options }: SelectBoxProps) {
         placeholder={placeholder}
         classNames={selectBoxClassNames(!!error)}
         value={options.find(({ value: v }) => v === value)}
-        onChange={setValue}
+        onChange={(option) => setValue(option?.value)}
         options={options}
         styles={selectBoxStyles()}
       />

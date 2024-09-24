@@ -63,9 +63,6 @@ const WillYouContributeOptions = [
   { label: "Yes, I'll contribute", value: "yes" },
 ];
 
-const CRLabel = "What is your responsibility on this project?";
-const CRPlaceholder = "e.g. Responsible for managing the project and coordinating tasks";
-
 function Form() {
   const me = useMe()!;
   const navigate = useNavigate();
@@ -135,7 +132,14 @@ function Form() {
             hidden={hideIsContrib}
             options={WillYouContributeOptions}
           />
-          <Forms.TextInput label={CRLabel} field="creatorRole" placeholder={CRPlaceholder} hidden={hideCreatorRole} />
+
+          <Forms.TextInput
+            label="What is your responsibility on this project?"
+            field="creatorRole"
+            placeholder="e.g. Responsible for managing the project and coordinating tasks"
+            hidden={hideCreatorRole}
+            required={false}
+          />
         </Forms.FieldGroup>
 
         <AccessSelectorFields />
@@ -188,7 +192,7 @@ function AccessSelectorFields() {
       setCompanyMembers(annonymousMembers);
     }
 
-    const options = DEFAULT_COMPANY_OPTIONS.filter((option) => option >= annonymousMembers);
+    const options = DEFAULT_COMPANY_OPTIONS.filter((option) => option.value >= annonymousMembers);
     setCompanyAccessOptions(options);
   }, [annonymousMembers]);
 
@@ -197,7 +201,7 @@ function AccessSelectorFields() {
       setSpaceMembers(companyMembers);
     }
 
-    const options = DEFAULT_SPACE_OPTIONS.filter((option) => option >= companyMembers);
+    const options = DEFAULT_SPACE_OPTIONS.filter((option) => option.value >= companyMembers);
     setSpaceAccessOptions(options);
   }, [companyMembers]);
 
