@@ -14,7 +14,7 @@ import Forms from "@/components/Forms";
 import { SecondaryButton } from "@/components/Buttons";
 import { AccessLevel } from "@/features/projects/AccessLevel";
 import { useProjectAccessFields } from "@/features/Permissions/useAccessLevelsField";
-import { VIEW_ACCESS, NO_ACCESS, FULL_ACCESS, EDIT_ACCESS, COMMENT_ACCESS } from "@/features/Permissions";
+import { DEFAULT_ANNONYMOUS_OPTIONS, DEFAULT_COMPANY_OPTIONS, DEFAULT_SPACE_OPTIONS } from "@/features/Permissions";
 
 export function Page() {
   return (
@@ -172,10 +172,6 @@ function useShouldHideCreatorRole({ form }) {
     return isChampion || isReviewer || !isContributor;
   }, [form.values.champion, form.values.reviewer, form.values.isContrib, me.id]);
 }
-
-const DEFAULT_ANNONYMOUS_OPTIONS = [VIEW_ACCESS, NO_ACCESS];
-const DEFAULT_COMPANY_OPTIONS = [FULL_ACCESS, EDIT_ACCESS, COMMENT_ACCESS, VIEW_ACCESS, NO_ACCESS];
-const DEFAULT_SPACE_OPTIONS = [FULL_ACCESS, EDIT_ACCESS, COMMENT_ACCESS, VIEW_ACCESS, NO_ACCESS];
 
 function AccessSelectorFields() {
   const [isAdvanced, setIsAdvanced] = Forms.useFieldValue("access.isAdvanced");
