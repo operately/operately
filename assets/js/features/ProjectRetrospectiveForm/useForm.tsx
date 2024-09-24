@@ -11,8 +11,14 @@ interface Error {
   message: string;
 }
 
+interface FormOptions {
+  project?: Projects.Project;
+  retrospective?: Projects.ProjectRetrospective;
+  mode: "create" | "edit";
+}
 export interface FormState {
-  project: Projects.Project;
+  project?: Projects.Project;
+  mode: "create" | "edit";
 
   errors: Error[];
 
@@ -24,18 +30,24 @@ export interface FormState {
   submittable: boolean;
 }
 
-export function useForm(project: Projects.Project): FormState {
+export function useForm(options: FormOptions): FormState {
   const [errors, setErrors] = React.useState<Error[]>([]);
 
-  const whatWentWell = useWhatWentWellEditor();
-  const whatCouldHaveGoneBetter = useWhatCouldHaveGoneBetterEditor();
-  const whatDidYouLearn = useWhatDidYouLearnEditor();
+  const whatWentWell = useWhatWentWellEditor(options);
+  const whatCouldHaveGoneBetter = useWhatCouldHaveGoneBetterEditor(options);
+  const whatDidYouLearn = useWhatDidYouLearnEditor(options);
 
-  const goToProject = useNavigateTo(Paths.projectPath(project.id!));
+  const redirect = useNavigateTo(
+    options.mode === "create"
+      ? Paths.projectPath(options.project!.id!)
+      : Paths.projectRetrospectivePath(options.retrospective!.project!.id!),
+  );
 
-  const [post, { loading }] = Projects.useCloseProject();
+  const [post, { loading: posting }] = Projects.useCloseProject();
+  const [edit, { loading: editing }] = Projects.useEditProjectRetrospective();
+  const loading = posting || editing;
 
-  const submit = React.useCallback(async () => {
+  const submit = async () => {
     if (!submittable) return false;
 
     const errors = validate(whatWentWell, whatCouldHaveGoneBetter, whatDidYouLearn);
@@ -44,25 +56,37 @@ export function useForm(project: Projects.Project): FormState {
       return false;
     }
 
-    await post({
-      projectId: project.id,
-      retrospective: JSON.stringify({
-        whatWentWell: whatWentWell.editor.getJSON(),
-        whatCouldHaveGoneBetter: whatCouldHaveGoneBetter.editor.getJSON(),
-        whatDidYouLearn: whatDidYouLearn.editor.getJSON(),
-      }),
-    });
+    if (options.mode == "create") {
+      await post({
+        projectId: options.project!.id,
+        retrospective: JSON.stringify({
+          whatWentWell: whatWentWell.editor.getJSON(),
+          whatCouldHaveGoneBetter: whatCouldHaveGoneBetter.editor.getJSON(),
+          whatDidYouLearn: whatDidYouLearn.editor.getJSON(),
+        }),
+      });
+    } else {
+      await edit({
+        id: options.retrospective!.id,
+        content: JSON.stringify({
+          whatWentWell: whatWentWell.editor.getJSON(),
+          whatCouldHaveGoneBetter: whatCouldHaveGoneBetter.editor.getJSON(),
+          whatDidYouLearn: whatDidYouLearn.editor.getJSON(),
+        }),
+      });
+    }
 
-    goToProject();
+    redirect();
 
     return true;
-  }, [project.id, whatWentWell.editor, whatCouldHaveGoneBetter.editor, whatDidYouLearn.editor]);
+  };
 
   const submittable =
     !loading && whatWentWell.submittable && whatCouldHaveGoneBetter.submittable && whatDidYouLearn.submittable;
 
   return {
-    project,
+    project: options.project,
+    mode: options.mode,
     errors,
     whatWentWell,
     whatCouldHaveGoneBetter,
@@ -73,24 +97,27 @@ export function useForm(project: Projects.Project): FormState {
   };
 }
 
-function useWhatWentWellEditor() {
+function useWhatWentWellEditor(options: FormOptions) {
   return TipTapEditor.useEditor({
     placeholder: `Write your answer here...`,
     className: "min-h-[250px] py-2 font-medium",
+    content: findExistingContent(options, "whatWentWell"),
   });
 }
 
-function useWhatCouldHaveGoneBetterEditor() {
+function useWhatCouldHaveGoneBetterEditor(options: FormOptions) {
   return TipTapEditor.useEditor({
     placeholder: `Write your answer here...`,
     className: "min-h-[250px] py-2 font-medium",
+    content: findExistingContent(options, "whatCouldHaveGoneBetter"),
   });
 }
 
-function useWhatDidYouLearnEditor() {
+function useWhatDidYouLearnEditor(options: FormOptions) {
   return TipTapEditor.useEditor({
     placeholder: `Write your answer here...`,
     className: "min-h-[250px] py-2 font-medium",
+    content: findExistingContent(options, "whatDidYouLearn"),
   });
 }
 
@@ -114,4 +141,17 @@ function validate(
   }
 
   return errors;
+}
+
+function findExistingContent(
+  options: FormOptions,
+  key: "whatWentWell" | "whatCouldHaveGoneBetter" | "whatDidYouLearn",
+) {
+  if (options.mode === "edit" && options.retrospective?.content) {
+    const content = JSON.parse(options.retrospective.content);
+
+    if (content[key]) {
+      return content[key];
+    }
+  }
 }

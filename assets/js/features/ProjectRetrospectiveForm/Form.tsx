@@ -51,11 +51,11 @@ function Question({ title, editor, error }) {
   );
 }
 
-function SubmitButton({ form }) {
+function SubmitButton({ form }: { form: FormState }) {
   return (
     <div className="flex justify-center mt-8">
       <PrimaryButton size="lg" onClick={form.submit} testId="submit">
-        Submit &amp; Close Project
+        {form.mode === "create" ? "Submit & Close Project" : "Save"}
       </PrimaryButton>
     </div>
   );
