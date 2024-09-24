@@ -10,7 +10,6 @@ import { PasswordInput } from "./PasswordInput";
 import { MultiPeopleSelectField } from "./MultiPeopleSelectField";
 
 import { useForm } from "./useForm";
-import { useField } from "./FormContext";
 import { useFieldSet } from "./useFieldSet";
 import { useTextField } from "./useTextField";
 import { useArrayField } from "./useArrayField";
@@ -33,7 +32,6 @@ export default {
   MultiPeopleSelectField,
 
   useForm,
-  useField,
   useFieldSet,
   useArrayField,
   useTextField,

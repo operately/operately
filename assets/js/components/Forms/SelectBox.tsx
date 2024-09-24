@@ -2,7 +2,7 @@ import React from "react";
 import Select from "react-select";
 import classnames from "classnames";
 
-import { getFormContext, useField } from "./FormContext";
+import { useFieldError, useFieldValue } from "./FormContext";
 import { InputField } from "./FieldGroup";
 import { SelectField } from "./useSelectField";
 
@@ -12,25 +12,23 @@ interface SelectBoxProps {
   labelIcon?: React.ReactNode;
   hidden?: boolean;
   placeholder?: string;
+  options: SelectField["options"];
 }
 
-export function SelectBox({ field, label, labelIcon, placeholder, hidden }: SelectBoxProps) {
-  const form = getFormContext();
-  const error = form.errors[field];
+export function SelectBox(props: SelectBoxProps) {
+  const { field, label, labelIcon, hidden } = props;
+  const error = useFieldError(field);
 
   return (
     <InputField field={field} label={label} error={error} hidden={hidden} labelIcon={labelIcon}>
-      <SelectBoxInput field={field} placeholder={placeholder} error={!!error} />
+      <SelectBoxInput {...props} />
     </InputField>
   );
 }
 
-function SelectBoxInput({ field, placeholder, error }: { field: string; placeholder?: string; error: boolean }) {
-  const f = useField<SelectField>(field);
-
-  const onChange = ({ value }: { value: any }) => {
-    f.setValue(value);
-  };
+function SelectBoxInput({ field, placeholder, options }: SelectBoxProps) {
+  const [value, setValue] = useFieldValue(field);
+  const error = useFieldError(field);
 
   return (
     <div data-test-id={field} className="flex-1">
@@ -38,10 +36,10 @@ function SelectBoxInput({ field, placeholder, error }: { field: string; placehol
         unstyled={true}
         className="flex-1"
         placeholder={placeholder}
-        classNames={selectBoxClassNames(error)}
-        value={f.options.find(({ value }) => value === f.value)}
-        onChange={onChange}
-        options={f.options}
+        classNames={selectBoxClassNames(!!error)}
+        value={options.find(({ value: v }) => v === value)}
+        onChange={setValue}
+        options={options}
         styles={selectBoxStyles()}
       />
     </div>

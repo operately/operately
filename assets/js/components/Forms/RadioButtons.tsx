@@ -1,24 +1,27 @@
 import * as React from "react";
 
-import { getFormContext } from "./FormContext";
+import { useFieldValue } from "./FormContext";
 import { InputField } from "./FieldGroup";
 
 import classNames from "classnames";
+
+interface Option {
+  value: string;
+  label: string;
+}
 
 interface RadioButtonsProps {
   field: string;
   label?: string;
   hidden?: boolean;
+  options: Option[];
 }
 
-export function RadioButtons({ field, label, hidden }: RadioButtonsProps) {
-  const form = getFormContext();
-  const f = form.fields[field];
-
+export function RadioButtons({ field, label, hidden, options }: RadioButtonsProps) {
   return (
     <InputField field={field} label={label} hidden={hidden}>
       <div className="flex flex-col gap-2 mt-1">
-        {f.options.map((option: { value: string; label: string }) => (
+        {options.map((option: Option) => (
           <RadioButton key={option.value} field={field} value={option.value} label={option.label} />
         ))}
       </div>
@@ -27,8 +30,7 @@ export function RadioButtons({ field, label, hidden }: RadioButtonsProps) {
 }
 
 function RadioButton({ field, value, label }: { field: string; value: string; label: string }) {
-  const form = getFormContext();
-  const f = form.fields[field];
+  const [activeValue, setActiveValue] = useFieldValue(field);
 
   return (
     <label className="flex items-start gap-2">
@@ -39,8 +41,8 @@ function RadioButton({ field, value, label }: { field: string; value: string; la
         className={RadioClass}
         style={RadioStyle}
         value={value}
-        onChange={() => f.setValue(value)}
-        checked={value === f.value}
+        onChange={() => setActiveValue(value)}
+        checked={value === activeValue}
       />
 
       <div className="flex flex-col">

@@ -1,39 +1,39 @@
 import * as React from "react";
 
 import classNames from "classnames";
-import { getFormContext } from "./FormContext";
 import { InputField } from "./FieldGroup";
-import { AddErrorFn } from "./FormState";
-import { useValidation } from "./useForm";
+
+import { useValidation } from "./validations/hook";
+import { validatePresence } from "./validations/presence";
+import { validateTextLength } from "./validations/textLength";
+
+import { useFieldValue, useFieldError } from "./FormContext";
 
 interface TextInputProps {
   field: string;
   label?: string;
   placeholder?: string;
   hidden?: boolean;
+  required?: boolean;
+  minLength?: number;
+  maxLength?: number;
 }
 
-function useCantBeBlankValidation(field: string) {
-  const form = getFormContext();
+const DEFAULT_VALIDATION_PROPS = {
+  required: true,
+  minLength: undefined,
+  maxLength: undefined,
+};
 
-  const cantBeBlank = React.useCallback(
-    (addError: AddErrorFn) => {
-      const value = form.getField(field);
-      if (value === "") {
-        addError(field, "Can't be blank    ooooo");
-      }
-    },
-    [field],
-  );
+export function TextInput(props: TextInputProps) {
+  const { field, label, hidden, placeholder } = props;
+  const { required, minLength, maxLength } = { ...DEFAULT_VALIDATION_PROPS, ...props };
 
-  useValidation(field, cantBeBlank);
-}
+  const [value, setValue] = useFieldValue(field);
+  const error = useFieldError(field);
 
-export function TextInput({ field, label, placeholder, hidden }: TextInputProps) {
-  const form = getFormContext();
-  const error = form.errors[field];
-
-  useCantBeBlankValidation(field);
+  useValidation(field, validatePresence(required));
+  useValidation(field, validateTextLength(minLength, maxLength));
 
   return (
     <InputField field={field} label={label} error={error} hidden={hidden}>
@@ -43,8 +43,8 @@ export function TextInput({ field, label, placeholder, hidden }: TextInputProps)
         data-test-id={field}
         className={styles(!!error)}
         type="text"
-        value={form.getField(field)}
-        onChange={(e) => form.setField(field, e.target.value)}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
       />
     </InputField>
   );
