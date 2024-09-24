@@ -93,9 +93,9 @@ function Form() {
 }
 
 function AccessSelectorAdvancedOptions() {
-  const [annonymousMembers] = Forms.useFieldValue("access.annonymousMembers");
-  const [companyMembers, setCompanyMembers] = Forms.useFieldValue("access.companyMembers");
-  const [spaceMembers, setSpaceMembers] = Forms.useFieldValue("access.spaceMembers");
+  const [annonymousMembers] = Forms.useFieldValue<number>("access.annonymousMembers");
+  const [companyMembers, setCompanyMembers] = Forms.useFieldValue<number>("access.companyMembers");
+  const [spaceMembers, setSpaceMembers] = Forms.useFieldValue<number>("access.spaceMembers");
 
   const [annonymousAccessOptions] = React.useState(DEFAULT_ANNONYMOUS_OPTIONS);
   const [companyAccessOptions, setCompanyAccessOptions] = React.useState(DEFAULT_COMPANY_OPTIONS);

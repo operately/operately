@@ -174,10 +174,10 @@ function useShouldHideCreatorRole({ form }) {
 }
 
 function AccessSelectorFields() {
-  const [isAdvanced, setIsAdvanced] = Forms.useFieldValue("access.isAdvanced");
-  const [annonymousMembers] = Forms.useFieldValue("access.annonymousMembers");
-  const [companyMembers, setCompanyMembers] = Forms.useFieldValue("access.companyMembers");
-  const [spaceMembers, setSpaceMembers] = Forms.useFieldValue("access.spaceMembers");
+  const [isAdvanced, setIsAdvanced] = Forms.useFieldValue<boolean>("access.isAdvanced");
+  const [annonymousMembers] = Forms.useFieldValue<number>("access.annonymousMembers");
+  const [companyMembers, setCompanyMembers] = Forms.useFieldValue<number>("access.companyMembers");
+  const [spaceMembers, setSpaceMembers] = Forms.useFieldValue<number>("access.spaceMembers");
 
   const [annonymousAccessOptions] = React.useState(DEFAULT_ANNONYMOUS_OPTIONS);
   const [companyAccessOptions, setCompanyAccessOptions] = React.useState(DEFAULT_COMPANY_OPTIONS);
@@ -237,9 +237,9 @@ function AccessSelectorFields() {
 }
 
 function AccessSelectorTitle({ field }: { field: string }) {
-  const [annonymous] = Forms.useFieldValue(`${field}.annonymousMembers`);
-  const [company] = Forms.useFieldValue(`${field}.companyMembers`);
-  const [space] = Forms.useFieldValue(`${field}.spaceMembers`);
+  const [annonymous] = Forms.useFieldValue<number>(`${field}.annonymousMembers`);
+  const [company] = Forms.useFieldValue<number>(`${field}.companyMembers`);
+  const [space] = Forms.useFieldValue<number>(`${field}.spaceMembers`);
 
   return <AccessLevel annonymous={annonymous} company={company} space={space} tense="future" hideIcon={true} />;
 }

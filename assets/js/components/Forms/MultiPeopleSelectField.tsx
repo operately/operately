@@ -46,15 +46,13 @@ function PersonAlwaysSelected({ person }: { person: Person }) {
 }
 
 function PersonOption({ person, field }: { person: Person | NotifiablePerson; field: string }) {
-  const [value, setValue] = useFieldValue(field);
+  const [value, setValue] = useFieldValue<string[]>(field);
 
   const handleChange = () => {
-    const ids = value.map((p) => p.id);
-
-    if (includesId(ids, person.id)) {
-      setValue((prev: Person[]) => prev.filter((item) => !compareIds(item.id, person.id)));
+    if (includesId(value, person.id)) {
+      setValue((prev: string[]) => prev.filter((item) => !compareIds(item, person.id)));
     } else {
-      setValue((prev: Person[]) => [...prev, person]);
+      setValue((prev: string[]) => [...prev, person.id!]);
     }
   };
 
@@ -67,10 +65,7 @@ function PersonOption({ person, field }: { person: Person | NotifiablePerson; fi
           <p className="text-sm">{getTitleOrRole(person)}</p>
         </div>
         <input
-          checked={includesId(
-            value.map((p) => p.id),
-            person.id,
-          )}
+          checked={includesId(value, person.id)}
           onChange={handleChange}
           type="checkbox"
           className="form-checkbox h-5 w-5 text-blue-600 rounded focus:ring-blue-500"

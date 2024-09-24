@@ -10,17 +10,17 @@ export function useFormContext(): FormState<any> {
   return form;
 }
 
-export function useFieldValue<K extends keyof T, T extends Record<string, any>>(key: K): [T[K], (value: T[K]) => void] {
+export function useFieldValue<T = string>(key: string): [T, React.Dispatch<React.SetStateAction<T>>] {
   const form = useFormContext();
 
   const setValue = React.useCallback(
-    (value: T[K]) => {
+    (value: T) => {
       form.actions.setValue(key, value);
     },
     [form, key],
   );
 
-  return [form.actions.getValue(key), setValue];
+  return [form.actions.getValue(key) as T, setValue];
 }
 
 export function useFieldError<K extends keyof T, T extends Record<string, any>>(key: K): string | undefined {

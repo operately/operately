@@ -45,14 +45,14 @@ function SelectPersonInput(props: SelectPersonProps) {
   const loader = useSearchFn(searchFn);
 
   const onChange = (option: Option | null) => {
-    setValue(option?.value);
+    setValue(option?.value!);
   };
 
   const excludedIds = buildExcludedIds(exclude);
 
   React.useEffect(() => {
     if (props.default) {
-      setValue(props.default.id);
+      setValue(props.default.id!);
     }
   }, [props.default]);
 

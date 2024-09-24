@@ -4,7 +4,7 @@ import { State } from "./FormState";
 import { ValidationFn } from "./validations/hook";
 
 type AddErrorFn = (field: string, message: string) => void;
-export type FieldValue = number | string | boolean | null | undefined | FieldObject | FieldObject[];
+export type FieldValue = number | string | boolean | null | undefined | FieldObject | FieldObject[] | FieldValue[];
 
 interface FieldObject {
   [key: string]: FieldValue;

@@ -30,7 +30,7 @@ export function SelectGoal(props: SelectGoalProps) {
     return goals.find((g) => compareIds(g.id, value));
   }, [goals, value]);
 
-  const onSelect = React.useCallback((goal: Goals.Goal) => setValue(goal.id), [setValue]);
+  const onSelect = React.useCallback((goal: Goals.Goal) => setValue(goal.id!), [setValue]);
 
   useValidation(field, validatePresence(required));
 
