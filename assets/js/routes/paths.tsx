@@ -117,6 +117,9 @@ export class Paths {
     return createCompanyPath(["projects", projectId, "retrospective"]);
   }
 
+  static projectRetrospectiveEditPath(projectId: string) {
+    return createCompanyPath(["projects", projectId, "retrospective", "edit"]);
+  }
   static projectMilestonesPath(projectId: string) {
     return createCompanyPath(["projects", projectId, "milestones"]);
   }

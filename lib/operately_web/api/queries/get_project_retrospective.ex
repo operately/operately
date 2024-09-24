@@ -2,12 +2,13 @@ defmodule OperatelyWeb.Api.Queries.GetProjectRetrospective do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
-  alias Operately.Projects.Permissions
+  alias Operately.Projects.{Permissions, Retrospective}
 
   inputs do
     field :project_id, :string
     field :include_author, :boolean
     field :include_project, :boolean
+    field :include_permissions, :boolean
   end
 
   outputs do
@@ -18,8 +19,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectRetrospective do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:id, fn -> decode_id(inputs.project_id) end)
-    |> run(:preload, fn -> include_requested(inputs) end)
-    |> run(:retrospective, fn ctx -> load(ctx) end)
+    |> run(:retrospective, fn ctx -> load(ctx, inputs) end)
     |> run(:check_permissions, fn ctx -> Permissions.check(ctx.retrospective.request_info.access_level, :can_view) end)
     |> run(:serialized, fn ctx -> {:ok, %{retrospective: Serializer.serialize(ctx.retrospective)}} end)
     |> respond()
@@ -35,24 +35,29 @@ defmodule OperatelyWeb.Api.Queries.GetProjectRetrospective do
     end
   end
 
-  defp load(ctx) do
-    Operately.Projects.Retrospective.get(ctx.me, project_id: ctx.id, opts: [
-      preload: ctx.preload,
+  defp load(ctx, inputs) do
+    Retrospective.get(ctx.me, project_id: ctx.id, opts: [
+      preload: preload(inputs),
+      after_load: after_load(inputs),
     ])
   end
 
-  defp include_requested(inputs) do
-    requested = extract_include_filters(inputs)
+  def preload(inputs) do
+    OperatelyWeb.Api.Helpers.Inputs.parse_includes(inputs, [
+      include_author: [:author],
+      include_project: [:project],
+    ])
+  end
 
-    preload =
-      Enum.reduce(requested, [], fn include, result ->
-        case include do
-          :include_author -> [:author | result]
-          :include_project-> [:project | result]
-          e -> raise "Unknown include filter: #{e}"
-        end
-      end)
+  def after_load(inputs) do
+    filter_what_to_run([
+      %{run: &Retrospective.set_permissions/1, if: inputs[:include_permissions]},
+    ])
+  end
 
-    {:ok, preload}
+  defp filter_what_to_run(list) do
+    list
+    |> Enum.filter(fn %{if: c} -> c end)
+    |> Enum.map(fn %{run: f} -> f end)
   end
 end

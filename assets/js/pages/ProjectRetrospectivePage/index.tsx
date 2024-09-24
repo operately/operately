@@ -2,10 +2,13 @@ import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as Projects from "@/models/projects";
+import * as PageOptions from "@/components/PaperContainer/PageOptions";
 
+import { IconEdit } from "@tabler/icons-react";
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
 import { AvatarWithName } from "@/components/Avatar/AvatarWithName";
 
+import { Paths } from "@/routes/paths";
 import RichContent from "@/components/RichContent";
 import FormattedTime from "@/components/FormattedTime";
 
@@ -19,6 +22,7 @@ export async function loader({ params }): Promise<LoaderResult> {
       projectId: params.projectID,
       includeAuthor: true,
       includeProject: true,
+      includePermissions: true,
     }).then((data) => data.retrospective!),
   };
 }
@@ -32,16 +36,34 @@ export function Page() {
         <ProjectPageNavigation project={retrospective.project!} />
 
         <Paper.Body minHeight="none">
+          <Options retrospective={retrospective} />
+
           <div className="text-center text-content-accent text-3xl font-extrabold">Project Retrospective</div>
           <div className="flex items-center gap-2 font-medium justify-center mt-2">
             {retrospective.author && <AvatarWithName person={retrospective.author} size={16} />}
             {retrospective.author && <span>&middot;</span>}
             <FormattedTime time={retrospective.closedAt!} format="long-date" />
           </div>
+
           <Content />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
+  );
+}
+
+function Options({ retrospective }: { retrospective: Projects.ProjectRetrospective }) {
+  return (
+    <PageOptions.Root testId="project-options-button" position="top-right">
+      {retrospective.permissions?.canEditRetrospective && (
+        <PageOptions.Link
+          icon={IconEdit}
+          title="Edit retrospective"
+          to={Paths.projectRetrospectiveEditPath(retrospective.project!.id!)}
+          testId="edit-retrospective"
+        />
+      )}
+    </PageOptions.Root>
   );
 }
 
