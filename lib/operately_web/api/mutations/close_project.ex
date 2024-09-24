@@ -2,7 +2,8 @@ defmodule OperatelyWeb.Api.Mutations.CloseProject do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
-  import Operately.Access.Filters, only: [filter_by_full_access: 2, forbidden_or_not_found: 2]
+  alias Operately.Projects.{Project, Permissions}
+  alias Operately.Operations.ProjectClosed
 
   inputs do
     field :project_id, :string
@@ -10,31 +11,28 @@ defmodule OperatelyWeb.Api.Mutations.CloseProject do
   end
 
   outputs do
-    field :project, :project
+    field :retrospective, :project_retrospective
   end
 
   def call(conn, inputs) do
-    person = me(conn)
-    {:ok, id} = decode_id(inputs.project_id)
+    Action.new()
+    |> run(:me, fn -> find_me(conn) end)
+    |> run(:id, fn -> decode_id(inputs.project_id) end)
+    |> run(:project, fn ctx -> Project.get(ctx.me, id: ctx.id) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.project.request_info.access_level, :can_close) end)
+    |> run(:operation, fn ctx -> ProjectClosed.run(ctx.me, ctx.project, inputs.retrospective) end)
+    |> run(:serialized, fn ctx -> {:ok, %{retrospective: Serializer.serialize(ctx.operation)}} end)
+    |> respond()
+  end
 
-    case load_project(person, id) do
-      nil ->
-        query(id)
-        |> forbidden_or_not_found(person.id)
-
-      project ->
-        {:ok, project} = Operately.Operations.ProjectClosed.run(me(conn), project, inputs.retrospective)
-        {:ok, %{project: OperatelyWeb.Api.Serializer.serialize(project)}}
+  def respond(result) do
+    case result do
+      {:ok, ctx} -> {:ok, ctx.serialized}
+      {:error, :id, _} -> {:error, :bad_request}
+      {:error, :project, _} -> {:error, :not_found}
+      {:error, :check_permissions, _} -> {:error, :forbidden}
+      {:error, :operation, _} -> {:error, :internal_server_error}
+      _ -> {:error, :internal_server_error}
     end
-  end
-
-  defp load_project(person, project_id) do
-    query(project_id)
-    |> filter_by_full_access(person.id)
-    |> Repo.one()
-  end
-
-  defp query(project_id) do
-    from(p in Operately.Projects.Project, where: p.id == ^project_id)
   end
 end

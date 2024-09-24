@@ -8,7 +8,6 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
   inputs do
     field :id, :string
 
-    field :include_closed_by, :boolean
     field :include_contributors, :boolean
     field :include_goal, :boolean
     field :include_key_resources, :boolean
@@ -21,6 +20,7 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
     field :include_contributors_access_levels, :boolean
     field :include_access_levels, :boolean
     field :include_privacy, :boolean
+    field :include_retrospective, :boolean
   end
 
   outputs do
@@ -45,7 +45,6 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
 
   def preload(inputs) do
     OperatelyWeb.Api.Helpers.Inputs.parse_includes(inputs, [
-      include_closed_by: [:closed_by],
       include_contributors: [contributors: [:person]],
       include_key_resources: [key_resources: :project],
       include_milestones: [milestones: :project],
@@ -54,6 +53,7 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
       include_champion: [:champion],
       include_reviewer: [:reviewer],
       include_last_check_in: [last_check_in: :author],
+      include_retrospective: [:retrospective],
     ])
   end
 
@@ -74,7 +74,7 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
 
   defp check_inputs(inputs) do
     cond do
-      inputs[:id] == nil -> 
+      inputs[:id] == nil ->
         {:error, :bad_request, "id is required"}
 
       inputs[:include_contributors_access_levels] ->
@@ -84,7 +84,7 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
           {:error, :bad_request, "include_contributors_access_levels requires include_contributors"}
         end
 
-      true -> 
+      true ->
         :ok
     end
   end

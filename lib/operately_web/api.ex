@@ -38,6 +38,7 @@ defmodule OperatelyWeb.Api do
   query :get_project_check_ins, Q.GetProjectCheckIns
   query :get_projects, Q.GetProjects
   query :get_project_contributor, Q.GetProjectContributor
+  query :get_project_retrospective, Q.GetProjectRetrospective
   query :get_space, Q.GetSpace
   query :get_spaces, Q.GetSpaces
   query :get_task, Q.GetTask
@@ -85,6 +86,7 @@ defmodule OperatelyWeb.Api do
   mutation :edit_project_check_in, M.EditProjectCheckIn
   mutation :edit_project_name, M.EditProjectName
   mutation :edit_project_permissions, M.EditProjectPermissions
+  mutation :edit_project_retrospective, M.EditProjectRetrospective
   mutation :edit_project_timeline, M.EditProjectTimeline
   mutation :edit_space_members_permissions, M.EditSpaceMembersPermissions
   mutation :edit_space_permissions, M.EditSpacePermissions

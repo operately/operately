@@ -286,10 +286,6 @@ defmodule Operately.Projects do
     Repo.preload(project, :control_review).control_review
   end
 
-  def get_retrospective(project) do
-    Repo.preload(project, :retrospective).retrospective
-  end
-
   def list_project_documents do
     Repo.all(Document)
   end
@@ -452,5 +448,14 @@ defmodule Operately.Projects do
     else
       true
     end
+  end
+
+
+  alias Operately.Projects.Retrospective
+
+  def create_retrospective(attrs) do
+    %Retrospective{}
+    |> Retrospective.changeset(attrs)
+    |> Repo.insert()
   end
 end

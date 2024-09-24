@@ -151,14 +151,13 @@ defmodule OperatelyWeb.Api.Types do
     field :privacy, :string
     field :status, :string
     field :closed_at, :date
-    field :retrospective, :string
+    field :retrospective, :project_retrospective
     field :description, :string
     field :goal, :goal
     field :last_check_in, :project_check_in
     field :milestones, list_of(:milestone)
     field :contributors, list_of(:project_contributor)
     field :key_resources, list_of(:project_key_resource)
-    field :closed_by, :person
     field :is_outdated, :boolean
     field :space_id, :string
     field :space, :space
@@ -171,6 +170,15 @@ defmodule OperatelyWeb.Api.Types do
     field :champion, :person
     field :reviewer, :person
     field :access_levels, :access_levels
+  end
+
+  object :project_retrospective do
+    field :id, :string
+    field :author, :person
+    field :project, :project
+    field :content, :string
+    field :closed_at, :date
+    field :permissions, :project_permissions
   end
 
   object :discussion do
@@ -411,6 +419,7 @@ defmodule OperatelyWeb.Api.Types do
     field :can_edit_goal, :boolean
     field :can_edit_name, :boolean
     field :can_edit_space, :boolean
+    field :can_edit_retrospective, :boolean
     field :can_edit_permissions, :boolean
     field :can_close, :boolean
     field :can_pause, :boolean

@@ -156,6 +156,12 @@ defmodule OperatelyWeb.Paths do
     OperatelyWeb.Api.Helpers.id_with_comments(date, id)
   end
 
+  def project_retrospective_id(retrospective) do
+    id = Operately.ShortUuid.encode!(retrospective.id)
+    date = retrospective.inserted_at |> NaiveDateTime.to_date() |> Date.to_string()
+    OperatelyWeb.Api.Helpers.id_with_comments(date, id)
+  end
+
   def goal_update_id(update) do
     id = Operately.ShortUuid.encode!(update.id)
     date = update.inserted_at |> NaiveDateTime.to_date() |> Date.to_string()

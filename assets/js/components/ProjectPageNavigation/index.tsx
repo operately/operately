@@ -47,3 +47,19 @@ export function ProjectContribsSubpageNavigation({ project }) {
     </Paper.Navigation>
   );
 }
+
+export function ProjectRetrospectiveNavigation({ project }) {
+  const dashboardPath = Paths.projectPath(project.id!);
+  const retrospectivePath = Paths.projectRetrospectivePath(project.id!);
+
+  return (
+    <Paper.Navigation>
+      <Paper.NavItem linkTo={dashboardPath}>
+        <Icons.IconClipboardList size={16} />
+        {project.name}
+      </Paper.NavItem>
+      <Paper.NavSeparator />
+      <Paper.NavItem linkTo={retrospectivePath}>Retrospective</Paper.NavItem>
+    </Paper.Navigation>
+  );
+}

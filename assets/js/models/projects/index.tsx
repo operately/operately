@@ -4,10 +4,12 @@ import * as api from "@/api";
 export type Project = api.Project;
 export type ProjectContributor = api.ProjectContributor;
 export type Milestone = api.Milestone;
+export type ProjectRetrospective = api.ProjectRetrospective;
 
 export {
   getProject,
   getProjects,
+  getProjectRetrospective,
   useMoveProjectToSpace,
   useCreateProject,
   useCloseProject,
@@ -19,6 +21,7 @@ export {
   useResumeProject,
   usePauseProject,
   useRemoveProjectContributor,
+  useEditProjectRetrospective,
 } from "@/api";
 
 export const PRIVACY_PUBLIC = "public";
