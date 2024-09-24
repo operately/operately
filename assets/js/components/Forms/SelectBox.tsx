@@ -4,7 +4,11 @@ import classnames from "classnames";
 
 import { useFieldError, useFieldValue } from "./FormContext";
 import { InputField } from "./FieldGroup";
-import { SelectField } from "./useSelectField";
+
+interface Option {
+  label: string;
+  value: any;
+}
 
 interface SelectBoxProps {
   field: string;
@@ -12,7 +16,7 @@ interface SelectBoxProps {
   labelIcon?: React.ReactNode;
   hidden?: boolean;
   placeholder?: string;
-  options: SelectField["options"];
+  options: Option[];
 }
 
 export function SelectBox(props: SelectBoxProps) {

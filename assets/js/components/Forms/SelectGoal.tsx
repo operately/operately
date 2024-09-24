@@ -6,14 +6,23 @@ import { GoalSelectorDropdown } from "@/features/goals/GoalTree/GoalSelectorDrop
 
 import { compareIds } from "@/routes/paths";
 import { useFieldValue, useFieldError } from "./FormContext";
+import { useValidation } from "./validations/hook";
+import { validatePresence } from "./validations/presence";
 
 interface SelectGoalProps {
   field: string;
   goals: Goals.Goal[];
   label?: string;
+  required?: boolean;
 }
 
-export function SelectGoal({ field, goals, label }: SelectGoalProps) {
+const DEFAULT_VALIDATION_PROPS = {
+  required: true,
+};
+
+export function SelectGoal(props: SelectGoalProps) {
+  const { field, label, goals, required } = { ...DEFAULT_VALIDATION_PROPS, ...props };
+
   const [value, setValue] = useFieldValue(field);
   const error = useFieldError(field);
 
@@ -22,6 +31,8 @@ export function SelectGoal({ field, goals, label }: SelectGoalProps) {
   }, [goals, value]);
 
   const onSelect = React.useCallback((goal: Goals.Goal) => setValue(goal.id), [setValue]);
+
+  useValidation(field, validatePresence(required));
 
   return (
     <InputField field={field} label={label} error={error}>

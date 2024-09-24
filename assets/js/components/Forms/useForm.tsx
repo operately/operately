@@ -13,8 +13,8 @@ interface FieldObject {
 interface FormProps<T extends FieldObject> {
   fields: T;
   validate?: (addError: AddErrorFn) => void;
-  submit: (form: FormState<T>) => Promise<void> | void;
-  cancel?: (form: FormState<T>) => Promise<void> | void;
+  submit: () => Promise<void> | void;
+  cancel?: () => Promise<void> | void;
 }
 
 export interface FormState<T extends FieldObject> {
@@ -22,16 +22,15 @@ export interface FormState<T extends FieldObject> {
   state: State;
   errors: ErrorMap;
   hasCancel: boolean;
-  getField: <K extends keyof T>(key: K) => T[K];
-  setField: <K extends keyof T>(key: K, value: T[K]) => void;
   actions: {
     clearErrors: () => void;
-    validate: () => boolean;
     submit: () => void | Promise<void>;
     cancel: () => void | Promise<void>;
     reset: () => void;
     addValidation: (field: string, validation: ValidationFn) => void;
     removeValidation: (field: string, validation: ValidationFn) => void;
+    getValue: <K extends keyof T>(key: K) => T[K];
+    setValue: <K extends keyof T>(key: K, value: T[K]) => void;
   };
 }
 
@@ -39,33 +38,28 @@ export type ErrorMap = Record<string, string>;
 
 export function useForm<T extends FieldObject>(props: FormProps<T>): FormState<T> {
   const [state, setState] = React.useState<State>("idle");
-  const [values, setValues] = React.useState<T>(props.fields);
   const [errors, setErrors] = React.useState<ErrorMap>({});
 
   const clearErrors = () => setErrors({});
 
+  const { values, getValue, setValue } = useFieldValues<T>(props.fields);
   const { validations, addValidation, removeValidation } = useValidations();
 
   const form = {
     values,
-    state: state,
+    state,
     errors,
     hasCancel: !!props.cancel,
-    getField: <K extends keyof T>(key: K) => {
-      return values[key];
-    },
-    setField: <K extends keyof T>(key: K, value: T[K]) => {
-      setValues((prev) => ({ ...prev, [key]: value }));
-    },
     actions: {
       clearErrors,
       addValidation,
       removeValidation,
-
+      getValue,
+      setValue,
       submit: async () => {
         setState("validating");
 
-        const errors = runValidations(form, validations);
+        const errors = runValidations(form, validations, props.validate);
         if (Object.keys(errors).length > 0) {
           setErrors(errors);
           setState("idle");
@@ -73,16 +67,15 @@ export function useForm<T extends FieldObject>(props: FormProps<T>): FormState<T
         }
 
         setState("submitting");
-        await props.submit(form);
-        setState("idle");
+        await props.submit();
 
+        setState("idle");
         form.actions.reset();
       },
       cancel: async () => {
         if (!props.cancel) return;
-
         form.actions.reset();
-        await props.cancel(form);
+        await props.cancel();
       },
       reset: () => {
         form.actions.clearErrors();
@@ -119,24 +112,29 @@ function useValidations() {
     });
   };
 
-  const removeValidation = (validation: ValidationFn) => {
+  const removeValidation = (field: string, validation: ValidationFn) => {
     setValidations((prev) => {
-      return Object.keys(prev).reduce((acc, key) => {
-        const validations = prev[key]!.filter((v) => v !== validation);
+      if (!prev[field]) return prev;
 
-        if (validations.length > 0) {
-          return { ...acc, [key]: validations };
-        } else {
-          return acc;
-        }
-      }, {});
+      const newValidations = prev[field]!.filter((v) => v !== validation);
+
+      if (newValidations.length === 0) {
+        const { [field]: _, ...rest } = prev;
+        return rest;
+      } else {
+        return { ...prev, [field]: newValidations };
+      }
     });
   };
 
   return { validations, addValidation, removeValidation };
 }
 
-function runValidations<T extends FieldObject>(form: FormState<T>, validations: ValidationFnMap): ErrorMap {
+function runValidations<T extends FieldObject>(
+  form: FormState<T>,
+  validations: ValidationFnMap,
+  formValidate?: (addError: AddErrorFn) => void,
+): ErrorMap {
   let errors: ErrorMap = {};
 
   let addError: AddErrorFn = (field, message) => {
@@ -158,5 +156,41 @@ function runValidations<T extends FieldObject>(form: FormState<T>, validations: 
     }
   }
 
+  if (formValidate) {
+    formValidate(addError);
+  }
+
   return errors;
+}
+
+function useFieldValues<T extends FieldObject>(fields: T) {
+  const [values, setValues] = React.useState<T>(fields);
+
+  const getValue = (key: string) => {
+    const parts = key.split(".");
+
+    return deepLookup(values, parts);
+  };
+
+  const setValue = <K extends keyof T>(key: K, value: T[K]) => {
+    setValues((prev) => ({ ...prev, [key]: value }));
+  };
+
+  return { values, getValue, setValue };
+}
+
+function deepLookup<T extends FieldObject, K extends keyof T>(obj: T, keys: string[]): T[K] {
+  let value: any = obj;
+
+  for (let i = 0; i < keys.length; i++) {
+    if (Object.hasOwnProperty.call(value, keys[i]!)) {
+      value = value[keys[i]!];
+    } else {
+      throw new Error(
+        `Field ${keys.join(".")} does not exist. Did you forget to add it to the form? Existing fields are: ${Object.keys(obj).join(", ")}`,
+      );
+    }
+  }
+
+  return value;
 }

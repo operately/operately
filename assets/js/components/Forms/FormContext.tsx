@@ -13,14 +13,14 @@ export function useFormContext(): FormState<any> {
 export function useFieldValue<K extends keyof T, T extends Record<string, any>>(key: K): [T[K], (value: T[K]) => void] {
   const form = useFormContext();
 
-  const setField = React.useCallback(
+  const setValue = React.useCallback(
     (value: T[K]) => {
-      form.setField(key, value);
+      form.actions.setValue(key, value);
     },
     [form, key],
   );
 
-  return [form.getField(key), setField];
+  return [form.actions.getValue(key), setValue];
 }
 
 export function useFieldError<K extends keyof T, T extends Record<string, any>>(key: K): string | undefined {
