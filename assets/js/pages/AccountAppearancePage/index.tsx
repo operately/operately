@@ -35,14 +35,10 @@ function Form() {
 
   const form = Forms.useForm({
     fields: {
-      theme: Forms.useSelectField(currentTheme, [
-        { value: "light", label: "Always Light" },
-        { value: "dark", label: "Always Dark" },
-        { value: "system", label: "Same as System" },
-      ]),
+      theme: currentTheme,
     },
-    submit: async (form) => {
-      await People.updateProfile({ id: me.id, theme: form.fields.theme.value });
+    submit: async () => {
+      await People.updateProfile({ id: me.id, theme: form.values.theme });
       navigate(Paths.accountPath());
     },
   });
@@ -57,9 +53,9 @@ function Form() {
       </p>
 
       <div className="grid grid-cols-3 gap-4 mt-4 h-32">
-        <ColorModeOption form={form} icon={Icons.IconSun} title="Always Light" theme="light" />
-        <ColorModeOption form={form} icon={Icons.IconMoon} title="Always Dark" theme="dark" />
-        <ColorModeOption form={form} icon={Icons.IconDeviceLaptop} title="Same as System" theme="system" />
+        <ColorModeOption icon={Icons.IconSun} title="Always Light" theme="light" />
+        <ColorModeOption icon={Icons.IconMoon} title="Always Dark" theme="dark" />
+        <ColorModeOption icon={Icons.IconDeviceLaptop} title="Same as System" theme="system" />
       </div>
 
       <Forms.Submit saveText="Save Changes" />
@@ -80,7 +76,7 @@ function Navigation() {
   );
 }
 
-function ColorModeOption({ form, theme, icon, title }) {
+function ColorModeOption({ theme, icon, title }) {
   const currentTheme = useTheme();
   const setTheme = useSetTheme();
 
@@ -98,8 +94,10 @@ function ColorModeOption({ form, theme, icon, title }) {
     },
   );
 
+  const [_, setValue] = Forms.useFieldValue("theme");
+
   const changeTheme = () => {
-    form.fields.theme.setValue(theme);
+    setValue(theme);
     setTheme(theme);
   };
 

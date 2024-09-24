@@ -1,25 +1,30 @@
 import * as React from "react";
 
-import type { FormState } from "./FormState";
+import type { FormState } from "./useForm";
 
 export const FormContext = React.createContext<FormState<any> | null>(null);
 
-export function getFormContext(): FormState<any> {
+export function useFormContext(): FormState<any> {
   const form = React.useContext(FormContext);
   if (!form) throw new Error("Form fields must be used within a Form component");
   return form;
 }
 
-export function useField<T>(name: string): T {
-  const form = React.useContext(FormContext);
-  if (!form) throw new Error("Form fields must be used within a Form component");
+export function useFieldValue<K extends keyof T, T extends Record<string, any>>(key: K): [T[K], (value: T[K]) => void] {
+  const form = useFormContext();
 
-  let f: any = form;
+  const setValue = React.useCallback(
+    (value: T[K]) => {
+      form.actions.setValue(key, value);
+    },
+    [form, key],
+  );
 
-  const parts = name.split(".");
-  for (const part of parts) {
-    f = f.fields[part];
-  }
+  return [form.actions.getValue(key), setValue];
+}
 
-  return f as T;
+export function useFieldError<K extends keyof T, T extends Record<string, any>>(key: K): string | undefined {
+  const form = useFormContext();
+
+  return form.errors[key as string];
 }
