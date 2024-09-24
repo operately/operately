@@ -69,6 +69,7 @@ import * as ProjectMovePage from "./ProjectMovePage";
 import * as ProjectPage from "./ProjectPage";
 import * as ProjectPausePage from "./ProjectPausePage";
 import * as ProjectResumePage from "./ProjectResumePage";
+import * as ProjectRetrospectiveEditPage from "./ProjectRetrospectiveEditPage";
 import * as ProjectRetrospectivePage from "./ProjectRetrospectivePage";
 import * as ProjectsPage from "./ProjectsPage";
 import * as ReviewPage from "./ReviewPage";
@@ -351,6 +352,10 @@ export default {
   ProjectResumePage: {
     loader: ProjectResumePage.loader,
     Page: ProjectResumePage.Page,
+  },
+  ProjectRetrospectiveEditPage: {
+    loader: ProjectRetrospectiveEditPage.loader,
+    Page: ProjectRetrospectiveEditPage.Page,
   },
   ProjectRetrospectivePage: {
     loader: ProjectRetrospectivePage.loader,
