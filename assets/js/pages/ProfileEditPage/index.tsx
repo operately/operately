@@ -74,20 +74,20 @@ function ProfileForm({ person }: { person: People.Person }) {
 
   const form = Forms.useForm({
     fields: {
-      name: Forms.useTextField(person.fullName),
-      title: Forms.useTextField(person.title),
-      timezone: Forms.useSelectField(person.timezone, Timezones, { optional: true }),
-      manager: Forms.useSelectPersonField(person.manager, { optional: true, exclude: [person] }),
-      managerStatus: Forms.useSelectField(managerStatus, ManagerOptions),
+      name: person.fullName,
+      title: person.title,
+      timezone: person.timezone,
+      manager: person.manager?.id,
+      managerStatus: managerStatus,
     },
-    submit: async (form) => {
-      const managerId = form.fields.managerStatus.value === "select-from-list" ? form.fields.manager!.value?.id : null;
+    submit: async () => {
+      const managerId = form.values.managerStatus === "select-from-list" ? form.values.manager : null;
 
       await People.updateProfile({
         id: person.id,
-        fullName: form.fields.name.value,
-        title: form.fields.title.value,
-        timezone: form.fields.timezone.value,
+        fullName: form.values.name?.trim(),
+        title: form.values.title?.trim(),
+        timezone: form.values.timezone,
         managerId: managerId,
       });
 
@@ -106,11 +106,15 @@ function ProfileForm({ person }: { person: People.Person }) {
       <Forms.FieldGroup>
         <Forms.TextInput field={"name"} label="Name" />
         <Forms.TextInput field={"title"} label="Title in Company" />
-        <Forms.SelectBox field={"timezone"} label="Timezone" />
+        <Forms.SelectBox field={"timezone"} label="Timezone" options={Timezones} />
 
         <Forms.FieldGroup>
-          <Forms.RadioButtons field={"managerStatus"} label={managerLabel} />
-          <Forms.SelectPerson field={"manager"} hidden={form.fields.managerStatus.value !== "select-from-list"} />
+          <Forms.RadioButtons field={"managerStatus"} label={managerLabel} options={ManagerOptions} />
+          <Forms.SelectPerson
+            field={"manager"}
+            hidden={form.values.managerStatus !== "select-from-list"}
+            default={person.manager}
+          />
         </Forms.FieldGroup>
       </Forms.FieldGroup>
 
