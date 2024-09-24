@@ -1,7 +1,9 @@
 import * as React from "react";
+import * as Icons from "@tabler/icons-react";
 
 import { Section, SectionTitle } from "./Section";
 import Forms from "@/components/Forms";
+import { SecondaryButton } from "@/components/Buttons";
 
 export function FormExamples() {
   return (
@@ -14,9 +16,10 @@ export function FormExamples() {
 
       <div className="flex flex-col gap-10">
         <VerticalForm />
-        <GridForm />
         <HorizontalForm />
         <HorizontalFormCustomized />
+        <GridForm />
+        <ArrayForm />
       </div>
     </Section>
   );
@@ -25,14 +28,14 @@ export function FormExamples() {
 function VerticalForm() {
   const form = Forms.useForm({
     fields: {
-      name: Forms.useTextField(""),
-      email: Forms.useTextField(""),
-      password: Forms.useTextField(""),
+      name: "",
+      email: "",
+      password: "",
     },
-    submit: async (form) => {
+    submit: async () => {
       console.log("Form submitted with values:", form);
     },
-    cancel: async (form) => {
+    cancel: async () => {
       console.log("Form cancelled", form);
     },
   });
@@ -45,7 +48,7 @@ function VerticalForm() {
         <Forms.FieldGroup>
           <Forms.TextInput field={"name"} label={"Name"} placeholder="e.g. Martin Smith" />
           <Forms.TextInput field={"email"} label={"Email"} placeholder="e.g. martin@acme.org" />
-          <Forms.PasswordInput field={"password"} label={"Password (min 8 characters)"} />
+          <Forms.TextInput field={"password"} label={"Password (min 8 characters)"} />
         </Forms.FieldGroup>
 
         <Forms.Submit saveText="Submit" />
@@ -57,10 +60,10 @@ function VerticalForm() {
 function HorizontalForm() {
   const form = Forms.useForm({
     fields: {
-      name: Forms.useTextField(""),
-      description: Forms.useTextField(""),
+      name: "",
+      description: "",
     },
-    submit: async (form) => {
+    submit: async () => {
       console.log("Form submitted with values:", form);
     },
   });
@@ -88,19 +91,18 @@ function HorizontalForm() {
 function HorizontalFormCustomized() {
   const form = Forms.useForm({
     fields: {
-      company: Forms.useSelectField("view", [
-        { value: "view", label: "View Access" },
-        { value: "edit", label: "Edit Access" },
-      ]),
-      space: Forms.useSelectField("edit", [
-        { value: "view", label: "View Access" },
-        { value: "edit", label: "Edit Access" },
-      ]),
+      company: "view",
+      space: "edit",
     },
-    submit: async (form) => {
+    submit: async () => {
       console.log("Form submitted with values:", form);
     },
   });
+
+  const options = [
+    { value: "view", label: "View Access" },
+    { value: "edit", label: "Edit Access" },
+  ];
 
   return (
     <div className="p-6 border border-surface-outline rounded shadow-sm">
@@ -108,8 +110,8 @@ function HorizontalFormCustomized() {
         <div className="mb-8 font-bold text-lg">Horizontal layout (customized)</div>
 
         <Forms.FieldGroup layout="horizontal" layoutOptions={{ ratio: "1:1", dividers: true }}>
-          <Forms.SelectBox field={"company"} label={"Company Members"} />
-          <Forms.SelectBox field={"space"} label={"Space Members"} />
+          <Forms.SelectBox field={"company"} label={"Company Members"} options={options} />
+          <Forms.SelectBox field={"space"} label={"Space Members"} options={options} />
         </Forms.FieldGroup>
 
         <Forms.Submit saveText="Create Project" />
@@ -121,12 +123,12 @@ function HorizontalFormCustomized() {
 function GridForm() {
   const form = Forms.useForm({
     fields: {
-      name: Forms.useTextField(""),
-      email: Forms.useTextField(""),
-      password: Forms.useTextField(""),
-      confirmPassword: Forms.useTextField(""),
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
     },
-    submit: async (form) => {
+    submit: async () => {
       console.log("Form submitted with values:", form);
     },
   });
@@ -147,4 +149,71 @@ function GridForm() {
       </Forms.Form>
     </div>
   );
+}
+
+function ArrayForm() {
+  const form = Forms.useForm({
+    fields: {
+      people: [{ name: "", email: "" }],
+    },
+    submit: async () => {
+      console.log("Form submitted with values:", form);
+    },
+  });
+
+  return (
+    <div className="p-6 border border-surface-outline rounded shadow-sm">
+      <Forms.Form form={form}>
+        <div className="mb-4 font-bold text-lg">Form example with add more button</div>
+
+        <div className="mb-4">
+          {form.values.people.map((_, index) => (
+            <div className="flex justify-between items-center gap-4 mb-4" key={index}>
+              <div className="w-[calc(100%-40px)]">
+                <Forms.FieldGroup layout="grid">
+                  <Forms.TextInput field={`people[${index}].name`} label={"Name"} placeholder="e.g. Martin Smith" />
+                  <Forms.TextInput
+                    field={`people[${index}].email`}
+                    label={"Email"}
+                    placeholder="e.g. martin@acme.org"
+                  />
+                </Forms.FieldGroup>
+              </div>
+
+              <Remove index={index} />
+            </div>
+          ))}
+        </div>
+
+        <AddMoreButton />
+
+        <Forms.Submit saveText="Submit" />
+      </Forms.Form>
+    </div>
+  );
+}
+
+function AddMoreButton() {
+  const [value, setValue] = Forms.useFieldValue<{ name: string; email: string }[]>("people");
+
+  const onClick = () => {
+    setValue([...value, { name: "", email: "" }]);
+  };
+
+  return (
+    <SecondaryButton size="xxs" onClick={onClick}>
+      Add more
+    </SecondaryButton>
+  );
+}
+
+function Remove({ index }: { index: number }) {
+  const [value, setValue] = Forms.useFieldValue<{ name: string; email: string }[]>("people");
+
+  const onClick = () => {
+    const newValue = value.filter((_, i) => i !== index);
+    setValue(newValue);
+  };
+
+  return <Icons.IconTrash onClick={onClick} className="cursor-pointer mt-6" size={20} />;
 }

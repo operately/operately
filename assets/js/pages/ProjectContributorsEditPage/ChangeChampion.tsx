@@ -8,6 +8,7 @@ import Forms from "@/components/Forms";
 import { PageTitle } from "./PageTitle";
 import { LoaderResult, useGotoProjectContributors } from "./loader";
 import { joinStr } from "@/utils/strings";
+import { compareIds } from "@/routes/paths";
 
 export function ChangeChampion() {
   const { contributor } = Pages.useLoadedData() as LoaderResult;
@@ -28,7 +29,7 @@ export function ChangeChampion() {
         <PageTitle title={title} subtitle={subtitle} />
 
         <Forms.FieldGroup>
-          <Forms.SelectPerson field={"person"} label="Project Champion" />
+          <Forms.SelectPerson field={"person"} label="Project Champion" default={contributor.person} />
         </Forms.FieldGroup>
 
         <Forms.Submit saveText="Save" />
@@ -41,15 +42,15 @@ function useForm(contributor: ProjectContributors.ProjectContributor) {
   const [update] = ProjectContributors.useUpdateContributor();
   const gotoProjectContrib = useGotoProjectContributors();
 
-  return Forms.useForm({
+  const form = Forms.useForm({
     fields: {
-      person: usePersonField(),
+      person: contributor.person?.id,
     },
-    submit: async (form) => {
-      if (form.fields.person.value!.id !== contributor.person!.id) {
+    submit: async () => {
+      if (!compareIds(form.values.person, contributor.person?.id)) {
         await update({
           contribId: contributor.id,
-          personId: form.fields.person.value!.id!,
+          personId: form.values.person,
           role: "champion",
         });
       }
@@ -58,9 +59,6 @@ function useForm(contributor: ProjectContributors.ProjectContributor) {
     },
     cancel: gotoProjectContrib,
   });
-}
 
-function usePersonField() {
-  const { contributor } = Pages.useLoadedData() as LoaderResult;
-  return Forms.useSelectPersonField(contributor.person);
+  return form;
 }
