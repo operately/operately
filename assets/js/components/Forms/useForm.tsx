@@ -172,8 +172,10 @@ function useFieldValues<T extends FieldObject>(fields: T) {
     return deepLookup(values, parts);
   };
 
-  const setValue = <K extends keyof T>(key: K, value: T[K]) => {
-    setValues((prev) => ({ ...prev, [key]: value }));
+  const setValue = (key: string, value: FieldValue) => {
+    const parts = key.split(".");
+
+    setValues((prev) => deepInsert(prev, parts, value));
   };
 
   return { values, getValue, setValue };
@@ -193,4 +195,21 @@ function deepLookup<T extends FieldObject, K extends keyof T>(obj: T, keys: stri
   }
 
   return value;
+}
+
+function deepInsert<T extends FieldObject>(obj: T, keys: string[], value: FieldValue): T {
+  let newObj: any = { ...obj };
+
+  let current = newObj;
+  for (let i = 0; i < keys.length - 1; i++) {
+    if (!Object.hasOwnProperty.call(current, keys[i]!)) {
+      current[keys[i]!] = {};
+    }
+
+    current = current[keys[i]!];
+  }
+
+  current[keys[keys.length - 1]!] = value;
+
+  return newObj;
 }
