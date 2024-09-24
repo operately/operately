@@ -1,4 +1,4 @@
-import { AddErrorFn } from "../FormState";
+import { AddErrorFn } from "../useForm/errors";
 
 export function validatePresence(required?: boolean) {
   return (field: string, value: string, addError: AddErrorFn) => {

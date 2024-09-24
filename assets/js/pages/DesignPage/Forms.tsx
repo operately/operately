@@ -1,4 +1,5 @@
 import * as React from "react";
+import * as Icons from "@tabler/icons-react";
 
 import { Section, SectionTitle } from "./Section";
 import Forms from "@/components/Forms";
@@ -153,7 +154,7 @@ function GridForm() {
 function ArrayForm() {
   const form = Forms.useForm({
     fields: {
-      people: [] as { name: string; email: string }[],
+      people: [{ name: "", email: "" }],
     },
     submit: async () => {
       console.log("Form submitted with values:", form);
@@ -163,14 +164,26 @@ function ArrayForm() {
   return (
     <div className="p-6 border border-surface-outline rounded shadow-sm">
       <Forms.Form form={form}>
-        <div className="mb-4 font-bold text-lg">Add more example</div>
+        <div className="mb-4 font-bold text-lg">Form example with add more button</div>
 
-        {form.values.people.map((_, index) => (
-          <Forms.FieldGroup layout="grid">
-            <Forms.TextInput field={`people[${index}].name`} label={"Name"} placeholder="e.g. Martin Smith" />
-            <Forms.TextInput field={`people[${index}].email`} label={"Email"} placeholder="e.g. martin@acme.org" />
-          </Forms.FieldGroup>
-        ))}
+        <div className="mb-4">
+          {form.values.people.map((_, index) => (
+            <div className="flex justify-between items-center gap-4 mb-4" key={index}>
+              <div className="w-[calc(100%-40px)]">
+                <Forms.FieldGroup layout="grid">
+                  <Forms.TextInput field={`people[${index}].name`} label={"Name"} placeholder="e.g. Martin Smith" />
+                  <Forms.TextInput
+                    field={`people[${index}].email`}
+                    label={"Email"}
+                    placeholder="e.g. martin@acme.org"
+                  />
+                </Forms.FieldGroup>
+              </div>
+
+              <Remove index={index} />
+            </div>
+          ))}
+        </div>
 
         <AddMoreButton />
 
@@ -192,4 +205,15 @@ function AddMoreButton() {
       Add more
     </SecondaryButton>
   );
+}
+
+function Remove({ index }: { index: number }) {
+  const [value, setValue] = Forms.useFieldValue<{ name: string; email: string }[]>("people");
+
+  const onClick = () => {
+    const newValue = value.filter((_, i) => i !== index);
+    setValue(newValue);
+  };
+
+  return <Icons.IconTrash onClick={onClick} className="cursor-pointer mt-6" size={20} />;
 }
