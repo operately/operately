@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { getFormContext } from "./FormContext";
+import { useFormContext } from "./FormContext";
 import { GhostButton, PrimaryButton, SecondaryButton } from "@/components/Buttons";
 import classNames from "classnames";
 
@@ -18,7 +18,7 @@ const DEFAULT_SAVE_TEXT = "Save";
 const DEFAULT_CANCEL_TEXT = "Cancel";
 
 export function Submit(props: SubmitProps) {
-  const form = getFormContext();
+  const form = useFormContext();
 
   const layout = props.layout || DEFAULT_LAYOUT;
   const saveText = props.saveText || DEFAULT_SAVE_TEXT;
@@ -51,7 +51,7 @@ export function Submit(props: SubmitProps) {
       )}
 
       {form.hasCancel && (
-        <SecondaryButton onClick={() => form.actions.cancel(form)} testId="cancel" size={buttonSize}>
+        <SecondaryButton onClick={form.actions.cancel} testId="cancel" size={buttonSize}>
           {cancelText}
         </SecondaryButton>
       )}

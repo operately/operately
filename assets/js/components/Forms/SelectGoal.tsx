@@ -5,20 +5,34 @@ import { InputField } from "./FieldGroup";
 import { GoalSelectorDropdown } from "@/features/goals/GoalTree/GoalSelectorDropdown";
 
 import { compareIds } from "@/routes/paths";
-import { getFormContext } from "./FormContext";
+import { useFieldValue, useFieldError } from "./FormContext";
+import { useValidation } from "./validations/hook";
+import { validatePresence } from "./validations/presence";
 
-export function SelectGoal({ field, goals, label }: { field: string; goals: Goals.Goal[]; label?: string }) {
-  const form = getFormContext();
-  const error = form.errors[field];
+interface SelectGoalProps {
+  field: string;
+  goals: Goals.Goal[];
+  label?: string;
+  required?: boolean;
+}
+
+const DEFAULT_VALIDATION_PROPS = {
+  required: true,
+};
+
+export function SelectGoal(props: SelectGoalProps) {
+  const { field, label, goals, required } = { ...DEFAULT_VALIDATION_PROPS, ...props };
+
+  const [value, setValue] = useFieldValue(field);
+  const error = useFieldError(field);
 
   const goal = React.useMemo(() => {
-    return goals.find((g) => compareIds(g.id, form.fields[field].value));
-  }, [goals, form.fields[field].value]);
+    return goals.find((g) => compareIds(g.id, value));
+  }, [goals, value]);
 
-  const onSelect = React.useCallback(
-    (goal: Goals.Goal) => form.fields[field].setValue(goal.id),
-    [form.fields[field].setValue],
-  );
+  const onSelect = React.useCallback((goal: Goals.Goal) => setValue(goal.id), [setValue]);
+
+  useValidation(field, validatePresence(required));
 
   return (
     <InputField field={field} label={label} error={error}>

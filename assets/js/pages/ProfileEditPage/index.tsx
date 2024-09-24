@@ -80,7 +80,7 @@ function ProfileForm({ person }: { person: People.Person }) {
       manager: Forms.useSelectPersonField(person.manager, { optional: true, exclude: [person] }),
       managerStatus: Forms.useSelectField(managerStatus, ManagerOptions),
     },
-    submit: async (form) => {
+    submit: async () => {
       const managerId = form.fields.managerStatus.value === "select-from-list" ? form.fields.manager!.value?.id : null;
 
       await People.updateProfile({

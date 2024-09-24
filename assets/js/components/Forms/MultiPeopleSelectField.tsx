@@ -2,14 +2,18 @@ import React from "react";
 
 import Avatar from "@/components/Avatar";
 import { Person } from "@/models/people";
-import { getFormContext } from "./FormContext";
 import { compareIds, includesId } from "@/routes/paths";
 import { NotifiablePerson } from "@/features/Subscriptions";
+import { useFieldValue } from "./FormContext";
 
-export function MultiPeopleSelectField({ field }: { field: string }) {
-  const form = getFormContext();
-  const { alwaysSelected, options } = form.fields[field];
+interface MultiPeopleSelectFieldProps {
+  field: string;
+  options: (Person | NotifiablePerson)[];
+  alwaysSelected: Person[];
+}
 
+export function MultiPeopleSelectField(props: MultiPeopleSelectFieldProps) {
+  const { field, options, alwaysSelected } = props;
   const alwaysSelectedIds = alwaysSelected.map((p) => p.id!);
 
   return (
@@ -42,8 +46,7 @@ function PersonAlwaysSelected({ person }: { person: Person }) {
 }
 
 function PersonOption({ person, field }: { person: Person | NotifiablePerson; field: string }) {
-  const form = getFormContext();
-  const { value, setValue } = form.fields[field];
+  const [value, setValue] = useFieldValue(field);
 
   const handleChange = () => {
     const ids = value.map((p) => p.id);
