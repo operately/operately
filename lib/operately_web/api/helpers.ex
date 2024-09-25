@@ -100,7 +100,7 @@ defmodule OperatelyWeb.Api.Helpers do
   end
 
   def decode_id(id, :allow_nil) do
-    if id == nil do
+    if id == nil || id == "" do
       {:ok, nil}
     else
       decode_id(id)
