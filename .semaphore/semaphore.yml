@@ -101,3 +101,8 @@ promotions:
     pipeline_file: deploy.yml
     auto_promote:
       when: "result = 'passed' and branch = 'main'"
+
+  - name: Populate CI Cache
+    pipeline_file: cache.yml
+    auto_promote:
+      when: "result = 'passed' and branch = 'main'"
