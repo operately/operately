@@ -25,7 +25,7 @@ defmodule Operately.Support.Factory.Projects do
     responsibility = Keyword.get(opts, :responsibility, "Project Manager & Developer")
 
     person  = Operately.PeopleFixtures.person_fixture_with_account(%{
-      company_id: ctx.company.id, 
+      company_id: ctx.company.id,
       full_name: name
     })
 
@@ -49,7 +49,7 @@ defmodule Operately.Support.Factory.Projects do
     responsibility = Keyword.get(opts, :responsibility, "Project Manager & Developer")
 
     person  = Operately.PeopleFixtures.person_fixture_with_account(%{
-      company_id: ctx.company.id, 
+      company_id: ctx.company.id,
       full_name: name
     })
 
@@ -64,9 +64,21 @@ defmodule Operately.Support.Factory.Projects do
     Map.put(ctx, testid, contributor)
   end
 
+  def add_project_retrospective(ctx, testid, project_name, author_name) do
+    project = Map.fetch!(ctx, project_name)
+    author = Map.fetch!(ctx, author_name)
+
+    retrospective = Operately.ProjectsFixtures.retrospective_fixture(%{
+      project_id: project.id,
+      author_id: author.id,
+    })
+
+    Map.put(ctx, testid, retrospective)
+  end
+
   def edit_project_company_members_access(ctx, project_name, access_level) do
     project = Map.fetch!(ctx, project_name)
-    
+
     context = Access.get_context!(project_id: project.id)
     group = Access.get_group!(company_id: project.company_id, tag: :standard)
     binding = Operately.Access.get_binding(group_id: group.id, context_id: context.id)
@@ -78,7 +90,7 @@ defmodule Operately.Support.Factory.Projects do
 
   def edit_project_space_members_access(ctx, project_name, access_level) do
     project = Map.fetch!(ctx, project_name)
-    
+
     context= Access.get_context!(project_id: project.id)
     group = Access.get_group!(group_id: project.group_id, tag: :standard)
     binding = Operately.Access.get_binding(group_id: group.id, context_id: context.id)

@@ -747,14 +747,13 @@ export interface Project {
   privacy?: string | null;
   status?: string | null;
   closedAt?: string | null;
-  retrospective?: string | null;
+  retrospective?: ProjectRetrospective | null;
   description?: string | null;
   goal?: Goal | null;
   lastCheckIn?: ProjectCheckIn | null;
   milestones?: Milestone[] | null;
   contributors?: ProjectContributor[] | null;
   keyResources?: ProjectKeyResource[] | null;
-  closedBy?: Person | null;
   isOutdated?: boolean | null;
   spaceId?: string | null;
   space?: Space | null;
@@ -829,6 +828,14 @@ export interface ProjectPermissions {
   canPause?: boolean | null;
   canCheckIn?: boolean | null;
   canAcknowledgeCheckIn?: boolean | null;
+}
+
+export interface ProjectRetrospective {
+  id?: string | null;
+  author?: Person | null;
+  project?: Project | null;
+  content?: string | null;
+  closedAt?: string | null;
 }
 
 export interface ProjectReviewRequest {
@@ -1328,7 +1335,6 @@ export interface GetPersonResult {
 
 export interface GetProjectInput {
   id?: string | null;
-  includeClosedBy?: boolean | null;
   includeContributors?: boolean | null;
   includeGoal?: boolean | null;
   includeKeyResources?: boolean | null;
@@ -1341,6 +1347,7 @@ export interface GetProjectInput {
   includeContributorsAccessLevels?: boolean | null;
   includeAccessLevels?: boolean | null;
   includePrivacy?: boolean | null;
+  includeRetrospective?: boolean | null;
 }
 
 export interface GetProjectResult {
@@ -1379,6 +1386,16 @@ export interface GetProjectContributorResult {
   contributor?: ProjectContributor | null;
 }
 
+export interface GetProjectRetrospectiveInput {
+  projectId?: string | null;
+  includeAuthor?: boolean | null;
+  includeProject?: boolean | null;
+}
+
+export interface GetProjectRetrospectiveResult {
+  retrospective?: ProjectRetrospective | null;
+}
+
 export interface GetProjectsInput {
   onlyMyProjects?: boolean | null;
   onlyReviewedByMe?: boolean | null;
@@ -1392,6 +1409,7 @@ export interface GetProjectsInput {
   includeGoal?: boolean | null;
   includeArchived?: boolean | null;
   includePrivacy?: boolean | null;
+  includeRetrospective?: boolean | null;
 }
 
 export interface GetProjectsResult {
@@ -1624,7 +1642,7 @@ export interface CloseProjectInput {
 }
 
 export interface CloseProjectResult {
-  project?: Project | null;
+  retrospective?: ProjectRetrospective | null;
 }
 
 export interface ConnectGoalToProjectInput {
@@ -2288,6 +2306,10 @@ export class ApiClient {
     return this.get("/get_project_contributor", input);
   }
 
+  async getProjectRetrospective(input: GetProjectRetrospectiveInput): Promise<GetProjectRetrospectiveResult> {
+    return this.get("/get_project_retrospective", input);
+  }
+
   async getProjects(input: GetProjectsInput): Promise<GetProjectsResult> {
     return this.get("/get_projects", input);
   }
@@ -2702,6 +2724,11 @@ export async function getProjectCheckIns(input: GetProjectCheckInsInput): Promis
 export async function getProjectContributor(input: GetProjectContributorInput): Promise<GetProjectContributorResult> {
   return defaultApiClient.getProjectContributor(input);
 }
+export async function getProjectRetrospective(
+  input: GetProjectRetrospectiveInput,
+): Promise<GetProjectRetrospectiveResult> {
+  return defaultApiClient.getProjectRetrospective(input);
+}
 export async function getProjects(input: GetProjectsInput): Promise<GetProjectsResult> {
   return defaultApiClient.getProjects(input);
 }
@@ -3089,6 +3116,12 @@ export function useGetProjectContributor(
   input: GetProjectContributorInput,
 ): UseQueryHookResult<GetProjectContributorResult> {
   return useQuery<GetProjectContributorResult>(() => defaultApiClient.getProjectContributor(input));
+}
+
+export function useGetProjectRetrospective(
+  input: GetProjectRetrospectiveInput,
+): UseQueryHookResult<GetProjectRetrospectiveResult> {
+  return useQuery<GetProjectRetrospectiveResult>(() => defaultApiClient.getProjectRetrospective(input));
 }
 
 export function useGetProjects(input: GetProjectsInput): UseQueryHookResult<GetProjectsResult> {
@@ -3632,6 +3665,8 @@ export default {
   useGetProjectCheckIns,
   getProjectContributor,
   useGetProjectContributor,
+  getProjectRetrospective,
+  useGetProjectRetrospective,
   getProjects,
   useGetProjects,
   getSpace,

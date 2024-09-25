@@ -4,21 +4,21 @@
 <%= title("What went well?", font_size: 20) %>
 
 <%= row do %>
-  <%= rich_text(@project.retrospective["whatWentWell"]) %>
+  <%= rich_text(@retrospective.content["whatWentWell"]) %>
 <% end %>
 
 <%= spacer() %>
 <%= title("What could've gone better?", font_size: 20) %>
 
 <%= row do %>
-  <%= rich_text(@project.retrospective["whatCouldHaveGoneBetter"]) %>
+  <%= rich_text(@retrospective.content["whatCouldHaveGoneBetter"]) %>
 <% end %>
 
 <%= spacer() %>
 <%= title("What did you learn?", font_size: 20) %>
 
 <%= row do %>
-  <%= rich_text(@project.retrospective["whatDidYouLearn"]) %>
+  <%= rich_text(@retrospective.content["whatDidYouLearn"]) %>
 <% end %>
 
 <%= spacer() %>

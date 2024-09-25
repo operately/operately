@@ -37,10 +37,9 @@ defmodule Operately.Projects.Project do
     field :health, Ecto.Enum, values: [:on_track, :at_risk, :off_track, :paused, :unknown], default: :on_track
     field :next_update_scheduled_at, :utc_datetime # Deprecated, use next_check_in_scheduled_at instead
 
+    has_one :retrospective, Operately.Projects.Retrospective, foreign_key: :project_id
     field :status, :string, default: "active"
-    field :retrospective, :map
     field :closed_at, :utc_datetime
-    belongs_to :closed_by, Operately.People.Person, foreign_key: :closed_by_id
 
     # populated with after load hooks
     field :next_milestone, :any, virtual: true
@@ -74,12 +73,9 @@ defmodule Operately.Projects.Project do
       :private,
       :deleted_at,
       :status,
-      :retrospective,
-      :closed_at,
       :last_check_in_id,
       :last_check_in_status,
       :next_update_scheduled_at,
-      :closed_by_id,
     ])
     |> validate_required([
       :name,
