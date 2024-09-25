@@ -839,6 +839,7 @@ export interface ProjectRetrospective {
   content?: string | null;
   closedAt?: string | null;
   permissions?: ProjectPermissions | null;
+  reactions?: Reaction[] | null;
 }
 
 export interface ProjectReviewRequest {
@@ -1401,6 +1402,7 @@ export interface GetProjectRetrospectiveInput {
   includeAuthor?: boolean | null;
   includeProject?: boolean | null;
   includePermissions?: boolean | null;
+  includeReactions?: boolean | null;
 }
 
 export interface GetProjectRetrospectiveResult {

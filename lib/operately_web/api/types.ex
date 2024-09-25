@@ -180,6 +180,7 @@ defmodule OperatelyWeb.Api.Types do
     field :content, :string
     field :closed_at, :date
     field :permissions, :project_permissions
+    field :reactions, list_of(:reaction)
   end
 
   object :discussion do
