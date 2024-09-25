@@ -30,7 +30,7 @@ defmodule Operately.Repo.Migrations.CreateTableForProjectRetrospective do
     |> Repo.all()
     |> Enum.each(fn p ->
       {:ok, project_id} = Ecto.UUID.cast(p.id)
-      {:ok, author_id} = Ecto.UUID.cast(p.closed_by_id)
+      author_id = find_author_id(p)
 
       {:ok, _} = Retrospective.changeset(%{
         project_id: project_id,
@@ -59,5 +59,25 @@ defmodule Operately.Repo.Migrations.CreateTableForProjectRetrospective do
     drop unique_index(:project_retrospectives, [:project_id])
 
     drop table(:project_retrospectives)
+  end
+
+  #
+  # Helpers
+  #
+
+  defp find_author_id(project) do
+    if project.closed_by_id do
+      {:ok, author_id} = Ecto.UUID.cast(project.closed_by_id)
+      author_id
+    else
+      {:ok, project_id} = Ecto.UUID.cast(project.id)
+
+      from(champion in Operately.Projects.Contributor,
+        join: person in assoc(champion, :person),
+        where: champion.project_id == ^project_id and champion.role == :champion,
+        select: person.id
+      )
+      |> Repo.one!()
+    end
   end
 end
