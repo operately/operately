@@ -178,6 +178,7 @@ defmodule OperatelyWeb.Api.Types do
     field :project, :project
     field :content, :string
     field :closed_at, :date
+    field :permissions, :project_permissions
   end
 
   object :discussion do
@@ -418,6 +419,7 @@ defmodule OperatelyWeb.Api.Types do
     field :can_edit_goal, :boolean
     field :can_edit_name, :boolean
     field :can_edit_space, :boolean
+    field :can_edit_retrospective, :boolean
     field :can_edit_permissions, :boolean
     field :can_close, :boolean
     field :can_pause, :boolean
