@@ -27,12 +27,18 @@ export function Page() {
         <Paper.Body minHeight="none">
           <div className="text-content-accent text-3xl font-extrabold">Pause this project?</div>
           <div className="text-content text font-medium mt-2">
-            Pausing a project will stop all notifications and updates for this project. You can resume it at any time.
+            Pausing this project will:
+            <ul className="list-disc list-inside mt-4">
+              <li>Suspend all associated milestones and tasks</li>
+              <li>Stop notifications for team members</li>
+              <li>Move the project to your paused projects list</li>
+            </ul>
+            <p className="mt-4">Note: You can resume the project at any time.</p>
           </div>
 
           <div className="flex items-center gap-6 mt-8">
             <PauseProject project={project} />
-            <DimmedLink to={Paths.projectPath(project.id!)}>Cancel</DimmedLink>
+            <DimmedLink to={Paths.projectPath(project.id!)}>Keep it active</DimmedLink>
           </div>
         </Paper.Body>
       </Paper.Root>
@@ -53,7 +59,7 @@ function PauseProject({ project }) {
 
   return (
     <PrimaryButton onClick={handleClick} testId="pause-project-button" loading={loading}>
-      Pause the Project
+      Pause project
     </PrimaryButton>
   );
 }

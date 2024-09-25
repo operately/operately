@@ -25,14 +25,19 @@ export function Page() {
         </Paper.Navigation>
 
         <Paper.Body minHeight="none">
-          <div className="text-content-accent text-3xl font-extrabold">Resume this project?</div>
+          <div className="text-content-accent text-3xl font-extrabold">Ready to resume project?</div>
           <div className="text-content text font-medium mt-2">
-            Resuming the project will restart the notifications and the project will be active again.
+            Resuming will:
+            <ul className="list-disc list-inside mt-4">
+              <li>Reactivate project milestones and tasks</li>
+              <li>Restart notifications for team members</li>
+              <li>Make the project visible in active project lists</li>
+            </ul>
           </div>
 
           <div className="flex items-center gap-6 mt-8">
             <ResumeButton project={project} />
-            <DimmedLink to={Paths.projectPath(project.id!)}>Cancel</DimmedLink>
+            <DimmedLink to={Paths.projectPath(project.id!)}>Keep it paused</DimmedLink>
           </div>
         </Paper.Body>
       </Paper.Root>
@@ -53,7 +58,7 @@ function ResumeButton({ project }) {
 
   return (
     <PrimaryButton onClick={handleClick} testId="resume-project-button" loading={loading}>
-      Resume the Project
+      Resume project
     </PrimaryButton>
   );
 }
