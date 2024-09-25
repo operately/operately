@@ -219,6 +219,32 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
     end
 
     tabletest @project_table do
+      test "project retrospective comment - if caller has levels company=#{@test.company}, space=#{@test.space}, project=#{@test.project} on the project, then expect code=#{@test.expected}", ctx do
+        space = create_space(ctx)
+        project = create_project(ctx, space, @test.company, @test.space, @test.project)
+        retrospective = retrospective_fixture(%{project_id: project.id, author_id: ctx.creator.id})
+        comment = create_comment(ctx, retrospective, "project_retrospective")
+
+        assert {code, res} = mutation(ctx.conn, :add_reaction, %{
+          entity_id: Paths.comment_id(comment),
+          entity_type: "comment",
+          parent_type: "project_retrospective",
+          emoji: "👍"
+        })
+
+        assert code == @test.expected
+
+        case @test.expected do
+          200 ->
+            reaction = get_reaction(comment.id, :comment)
+            assert res.reaction == Serializer.serialize(reaction, level: :essential)
+          403 -> assert res.message == "You don't have permission to perform this action"
+          404 -> assert res.message == "The requested resource was not found"
+        end
+      end
+    end
+
+    tabletest @project_table do
       test "project milestone comment - if caller has levels company=#{@test.company}, space=#{@test.space}, project=#{@test.project} on the project, then expect code=#{@test.expected}", ctx do
         space = create_space(ctx)
         project = create_project(ctx, space, @test.company, @test.space, @test.project)
