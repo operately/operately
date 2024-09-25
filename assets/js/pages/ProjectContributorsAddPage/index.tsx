@@ -1,6 +1,8 @@
 import * as React from "react";
 import * as Pages from "@/components/Pages";
 
+export { loader } from "./loader";
+
 import { AddChampion } from "./AddChampion";
 import { AddReviewer } from "./AddReviewer";
 import { AddContributors } from "./AddContributors";
