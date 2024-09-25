@@ -45,6 +45,7 @@ defmodule OperatelyWeb.Api do
   query :get_tasks, Q.GetTasks
   query :get_binded_people, Q.GetBindedPeople
   query :get_unread_notification_count, Q.GetUnreadNotificationCount
+  query :list_project_subscribers_candidates, Q.ListProjectSubscribersCandidates
   query :search_people, Q.SearchPeople
   query :search_potential_space_members, Q.SearchPotentialSpaceMembers
   query :search_project_contributor_candidates, Q.SearchProjectContributorCandidates

@@ -438,6 +438,12 @@ defmodule OperatelyWeb.Api.Types do
     field :activity, :activity
   end
 
+  object :subscriber do
+    field :role, :string
+    field :priority, :boolean
+    field :person, :person
+  end
+
   object :task do
     field :id, :string
     field :name, :string

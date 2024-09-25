@@ -8,4 +8,10 @@ defmodule Operately.Support.Factory.Accounts do
     Map.put(ctx, testid, account)
   end
 
+  def log_in_contributor(ctx, contributor_name) do
+    contributor = Map.fetch!(ctx, contributor_name)
+    person = Operately.People.get_person(contributor.person_id)
+
+    OperatelyWeb.TurboCase.log_in_account(ctx, person)
+  end
 end
