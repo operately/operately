@@ -1,0 +1,19 @@
+version: v1.0
+name: Populate CI Cache
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu2004
+blocks:
+  - name: Populate CI Cache
+    task:
+      jobs:
+        - name: "Populate CI Cache"
+          commands:
+            - checkout
+            - make dev.build
+            - docker save -o operately.tar operately-app:latest
+            - cache store operately.tar operately.tar
+            - cache store mix_deps deps
+            - cache store mix_build _build
+            - cache store node_modules assets/node_modules
