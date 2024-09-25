@@ -24,8 +24,6 @@ interface Props {
   spaceMembers: PermissionLevels;
 }
 
-export type AccessFields = ReturnType<typeof useProjectAccessFields>;
-
 const DEFAULT_PROPS: Props = {
   isAdvanced: false,
   annonymousMembers: PermissionLevels.NO_ACCESS,

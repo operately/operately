@@ -3,7 +3,7 @@ import { FormState } from "../useForm";
 import { AddErrorFn, ErrorMap, ValidationFn } from "./errors";
 import { FieldObject } from "./field";
 
-export type ValidationFnMap = Record<string, ValidationFn[]>;
+type ValidationFnMap = Record<string, ValidationFn[]>;
 
 export function useValidations() {
   const [validations, setValidations] = React.useState<ValidationFnMap>({});
