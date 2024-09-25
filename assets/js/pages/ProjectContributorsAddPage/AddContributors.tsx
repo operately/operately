@@ -4,36 +4,32 @@ import * as Paper from "@/components/PaperContainer";
 import * as Projects from "@/models/projects";
 
 import { PERMISSIONS_LIST, PermissionLevels } from "@/features/Permissions";
-import { useAddProjectContributor } from "@/api";
+import { useAddProjectContributors } from "@/api";
 
 import Forms from "@/components/Forms";
 import { Paths } from "@/routes/paths";
-import { match } from "ts-pattern";
 import { useNavigateTo } from "@/routes/useNavigateTo";
+import { LoaderResult } from "./loader";
 
 export function AddContributors() {
-  return <Form />;
-}
-
-function Form() {
   const { project, contribType } = Pages.useLoadedData() as LoaderResult;
   const gotoContribPage = useNavigateTo(Paths.projectContributorsPath(project.id!));
   const personSearchFn = Projects.useContributorSearchFn(project!);
-  const [add] = useAddProjectContributor();
+  const [add] = useAddProjectContributors();
 
   const form = Forms.useForm({
     fields: {
-      person: "",
-      responsibility: "",
-      permissions: PermissionLevels.EDIT_ACCESS,
+      contributors: {
+        personId: "",
+        responsibility: "",
+        permissions: PermissionLevels.EDIT_ACCESS,
+        role: "contributor",
+      },
     },
     submit: async () => {
       await add({
         projectId: project.id,
-        personId: form.values.person,
-        responsibility: form.values.responsibility,
-        permissions: form.values.permissions,
-        role: contribType,
+        contributors: form.values.contributors,
       });
 
       gotoContribPage();
