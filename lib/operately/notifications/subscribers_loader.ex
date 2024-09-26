@@ -15,20 +15,32 @@ defmodule Operately.Notifications.SubscribersLoader do
 
     - ignore_ids: list of person IDs to exclude from the final result.
   """
-  def load(resource, people, ignore_ids \\ []) do
+  def load_for_notifications(resource, people, ignore_ids \\ []) do
+    resource
+    |> preload_subscriptions()
+    |> filter_subscribers(people)
+    |> Enum.uniq()
+    |> Enum.filter(&(not Enum.member?(ignore_ids, &1)))
+  end
+
+  @doc """
+    Preloads a resource's subscriptions.
+
+    Parameters:
+    - resource: struct which has a subscriptions list (e.g. message, project check-in, goal update).
+      It must have `access_context` preloaded.
+  """
+  def preload_subscriptions(resource) do
     query = from(subs in Operately.Notifications.Subscription,
       join: p in assoc(subs, :person),
       join: m in assoc(p, :access_group_memberships),
       join: g in assoc(m, :group),
       join: b in Binding, on: b.group_id == g.id and b.context_id == ^resource.access_context.id and b.access_level >= ^Binding.view_access(),
+      preload: [person: p],
       select: subs
     )
 
-    resource
-    |> Repo.preload(subscription_list: [subscriptions: query])
-    |> filter_subscribers(people)
-    |> Enum.uniq()
-    |> Enum.filter(&(not Enum.member?(ignore_ids, &1)))
+    Repo.preload(resource, subscription_list: [subscriptions: query])
   end
 
   defp filter_subscribers(%{subscription_list: list = %{send_to_everyone: false}}, _) do
