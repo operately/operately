@@ -1,7 +1,6 @@
 import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
-import * as Projects from "@/models/projects";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
 
 import { Paths } from "@/routes/paths";
@@ -24,15 +23,9 @@ export function Page() {
         <ProjectPageNavigation project={retrospective.project!} />
 
         <Paper.Body minHeight="none">
-          <Options retrospective={retrospective} />
+          <Options />
 
-          <div className="text-center text-content-accent text-3xl font-extrabold">Project Retrospective</div>
-          <div className="flex items-center gap-2 font-medium justify-center mt-2">
-            {retrospective.author && <AvatarWithName person={retrospective.author} size={16} />}
-            {retrospective.author && <span>&middot;</span>}
-            <FormattedTime time={retrospective.closedAt!} format="long-date" />
-          </div>
-
+          <Header />
           <Content />
 
           <Spacer size={3} />
@@ -43,7 +36,9 @@ export function Page() {
   );
 }
 
-function Options({ retrospective }: { retrospective: Projects.ProjectRetrospective }) {
+function Options() {
+  const { retrospective } = useLoadedData();
+
   return (
     <PageOptions.Root testId="project-options-button" position="top-right">
       {retrospective.permissions?.canEditRetrospective && (
@@ -55,6 +50,22 @@ function Options({ retrospective }: { retrospective: Projects.ProjectRetrospecti
         />
       )}
     </PageOptions.Root>
+  );
+}
+
+function Header() {
+  const { retrospective } = useLoadedData();
+
+  return (
+    <>
+      <div className="text-center text-content-accent text-3xl font-extrabold">Project Retrospective</div>
+
+      <div className="flex items-center gap-2 font-medium justify-center mt-2">
+        {retrospective.author && <AvatarWithName person={retrospective.author} size={16} />}
+        {retrospective.author && <span>&middot;</span>}
+        <FormattedTime time={retrospective.closedAt!} format="long-date" />
+      </div>
+    </>
   );
 }
 
