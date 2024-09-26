@@ -20,6 +20,7 @@ defmodule Operately.Projects.Permissions do
     :can_edit_permissions,
     :can_edit_resources,
     :can_edit_space,
+    :can_edit_retrospective,
     :can_edit_task,
     :can_edit_timeline,
     :can_pause,
@@ -46,6 +47,7 @@ defmodule Operately.Projects.Permissions do
       can_edit_goal: access_level >= Binding.edit_access(),
       can_edit_name: access_level >= Binding.edit_access(),
       can_edit_space: access_level >= Binding.edit_access(),
+      can_edit_retrospective: access_level >= Binding.edit_access(),
 
       can_close: access_level >= Binding.edit_access(),
       can_pause: access_level >= Binding.edit_access(),

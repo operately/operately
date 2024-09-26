@@ -21,6 +21,7 @@ export {
   useResumeProject,
   usePauseProject,
   useRemoveProjectContributor,
+  useEditProjectRetrospective,
 } from "@/api";
 
 export const PRIVACY_PUBLIC = "public";
