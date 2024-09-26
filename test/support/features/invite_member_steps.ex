@@ -27,7 +27,7 @@ defmodule Operately.Support.Features.InviteMemberSteps do
     |> UI.visit(Paths.home_path(ctx.company))
     |> UI.click(testid: "company-dropdown")
     |> UI.click(testid: "company-dropdown-company-admin")
-    |> UI.click(testid: "add-remove-people-manually")
+    |> UI.click(testid: "manage-team-members")
     |> UI.click(testid: "add-person")
   end
 
@@ -52,7 +52,7 @@ defmodule Operately.Support.Features.InviteMemberSteps do
 
     ctx 
     |> UI.visit(Paths.company_admin_path(ctx.company))
-    |> UI.click(testid: "add-remove-people-manually")
+    |> UI.click(testid: "manage-team-members")
     |> UI.click(testid: UI.testid(["person-options", Paths.person_id(person)]))
     |> UI.click(testid: UI.testid(["reissue-token", Paths.person_id(person)]))
     |> UI.click(testid: "confirm-reissue")
@@ -130,7 +130,7 @@ defmodule Operately.Support.Features.InviteMemberSteps do
   step :assert_an_expired_warning_is_shown_on_the_team_page, ctx do
     ctx
     |> UI.visit(Paths.company_admin_path(ctx.company))
-    |> UI.click(testid: "add-remove-people-manually")
+    |> UI.click(testid: "manage-team-members")
     |> UI.assert_text("Invitation Expired")
   end
 
