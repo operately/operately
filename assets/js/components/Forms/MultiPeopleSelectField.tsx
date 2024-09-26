@@ -50,9 +50,9 @@ function PersonOption({ person, field }: { person: Person | NotifiablePerson; fi
 
   const handleChange = () => {
     if (includesId(value, person.id)) {
-      setValue((prev: string[]) => prev.filter((item) => !compareIds(item, person.id)));
+      setValue(value.filter((item) => !compareIds(item, person.id)));
     } else {
-      setValue((prev: string[]) => [...prev, person.id!]);
+      setValue([...value, person.id!]);
     }
   };
 

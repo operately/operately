@@ -7,11 +7,11 @@ import { ActionLink } from "@/components/Link";
 import { useSubscribersSelectorContext } from "../SubscribersSelectorContext";
 
 export function SubscribersSelectorForm({ closeForm, callback }) {
-  const { people, alwaysNotify, setSelectedPeople } = useSubscribersSelectorContext();
+  const { people, alwaysNotify, selectedPeople, setSelectedPeople } = useSubscribersSelectorContext();
 
   const form = Forms.useForm({
     fields: {
-      people: people.map((p) => p.id!),
+      people: selectedPeople.map((p) => p.id!),
     },
     submit: async () => {
       setSelectedPeople(people.filter((person) => includesId(form.values.people, person.id)));
