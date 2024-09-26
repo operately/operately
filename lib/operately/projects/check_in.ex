@@ -1,10 +1,13 @@
 defmodule Operately.Projects.CheckIn do
   use Operately.Schema
+  use Operately.Repo.Getter
+
+  alias Operately.Notifications
 
   schema "project_check_ins" do
     belongs_to :author, Operately.People.Person, foreign_key: :author_id
     belongs_to :project, Operately.Projects.Project, foreign_key: :project_id, where: [deleted_at: nil]
-    belongs_to :subscription_list, Operately.Notifications.SubscriptionList, foreign_key: :subscription_list_id
+    belongs_to :subscription_list, Notifications.SubscriptionList, foreign_key: :subscription_list_id
 
     field :status, :string
     field :description, :map
