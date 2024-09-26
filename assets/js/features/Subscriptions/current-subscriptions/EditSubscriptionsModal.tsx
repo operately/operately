@@ -20,7 +20,7 @@ export function EditSubscriptionsModal({ isModalOpen, hideModal }: Props) {
   const subscriptionsState = useSubscriptions(people, { alreadySelected });
 
   const submitForm = (form) => {
-    const selectedPeopleIds = form.fields.people.value!.map((p) => p.id);
+    const selectedPeopleIds = form.values.people!.map((personId) => personId);
 
     edit({
       id: subscriptionList.id,
