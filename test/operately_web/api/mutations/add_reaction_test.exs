@@ -74,7 +74,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
     end
 
     tabletest @project_table do
-      test "if caller has levels company=#{@test.company}, space=#{@test.space}, project=#{@test.project} on the project, then expect code=#{@test.expected}", ctx do
+      test "project check-in - if caller has levels company=#{@test.company}, space=#{@test.space}, project=#{@test.project} on the project, then expect code=#{@test.expected}", ctx do
         space = create_space(ctx)
         project = create_project(ctx, space, @test.company, @test.space, @test.project)
         check_in = create_check_in(ctx.creator, project)
@@ -90,6 +90,30 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
         case @test.expected do
           200 ->
             reaction = get_reaction(check_in.id, :project_check_in)
+            assert res.reaction == Serializer.serialize(reaction, level: :essential)
+          403 -> assert res.message == "You don't have permission to perform this action"
+          404 -> assert res.message == "The requested resource was not found"
+        end
+      end
+    end
+
+    tabletest @project_table do
+      test "project retrospective - if caller has levels company=#{@test.company}, space=#{@test.space}, project=#{@test.project} on the project, then expect code=#{@test.expected}", ctx do
+        space = create_space(ctx)
+        project = create_project(ctx, space, @test.company, @test.space, @test.project)
+        retrospective = retrospective_fixture(%{project_id: project.id, author_id: ctx.creator.id})
+
+        assert {code, res} = mutation(ctx.conn, :add_reaction, %{
+          entity_id: Paths.project_retrospective_id(retrospective),
+          entity_type: "project_retrospective",
+          emoji: "👍"
+        })
+
+        assert code == @test.expected
+
+        case @test.expected do
+          200 ->
+            reaction = get_reaction(retrospective.id, :project_retrospective)
             assert res.reaction == Serializer.serialize(reaction, level: :essential)
           403 -> assert res.message == "You don't have permission to perform this action"
           404 -> assert res.message == "The requested resource was not found"
@@ -169,7 +193,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
     end
 
     tabletest @project_table do
-      test "check-in comment - if caller has levels company=#{@test.company}, space=#{@test.space}, project=#{@test.project} on the project, then expect code=#{@test.expected}", ctx do
+      test "project check-in comment - if caller has levels company=#{@test.company}, space=#{@test.space}, project=#{@test.project} on the project, then expect code=#{@test.expected}", ctx do
         space = create_space(ctx)
         project = create_project(ctx, space, @test.company, @test.space, @test.project)
         check_in = create_check_in(ctx.creator, project)
@@ -195,7 +219,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
     end
 
     tabletest @project_table do
-      test "milestone comment - if caller has levels company=#{@test.company}, space=#{@test.space}, project=#{@test.project} on the project, then expect code=#{@test.expected}", ctx do
+      test "project milestone comment - if caller has levels company=#{@test.company}, space=#{@test.space}, project=#{@test.project} on the project, then expect code=#{@test.expected}", ctx do
         space = create_space(ctx)
         project = create_project(ctx, space, @test.company, @test.space, @test.project)
         milestone = milestone_fixture(ctx.creator, %{project_id: project.id})
