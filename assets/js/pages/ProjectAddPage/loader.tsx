@@ -38,11 +38,11 @@ export async function loader({ request, params }): Promise<LoaderResult> {
   let spaceOptions: { value: string; label: string }[] = [];
 
   if (spaceID) {
-    space = await Spaces.getSpace({ id: spaceID });
+    space = await Spaces.getSpace({ id: spaceID, includeAccessLevels: true });
     allowSpaceSelection = false;
     spaceOptions = [{ value: space.id!, label: space.name! }];
   } else {
-    spaces = await Spaces.getSpaces({});
+    spaces = await Spaces.getSpaces({ includeAccessLevels: true });
     allowSpaceSelection = true;
     spaceOptions = spaces.map((space) => ({ value: space.id!, label: space.name! }));
   }
