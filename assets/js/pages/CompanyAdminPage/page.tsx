@@ -48,7 +48,7 @@ function Menu() {
     <div className="mt-12">
       <OptionsMenu>
         <OptionsMenuItem linkTo={manageTrustedDomains} icon={Icons.IconLock} title="Manage Trusted Email Domains" />
-        <OptionsMenuItem linkTo={managePeople} icon={Icons.IconUsers} title="Add/Remove People Manually" />
+        <OptionsMenuItem linkTo={managePeople} icon={Icons.IconUsers} title="Manage Team Members" />
         <OptionsMenuItem linkTo={manageAdmins} icon={Icons.IconUserShield} title="Manage Company Administrators" />
       </OptionsMenu>
     </div>
