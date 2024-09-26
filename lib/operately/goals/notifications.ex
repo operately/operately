@@ -18,6 +18,6 @@ defmodule Operately.Goals.Notifications do
       )
       |> Repo.one()
 
-    SubscribersLoader.load(update, update.goal.group.members, ignore)
+    SubscribersLoader.load_for_notifications(update, update.goal.group.members, ignore)
   end
 end

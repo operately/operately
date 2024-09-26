@@ -15,7 +15,7 @@ defmodule Operately.Notifications.SubscribersLoader do
 
     - ignore_ids: list of person IDs to exclude from the final result.
   """
-  def load(resource, people, ignore_ids \\ []) do
+  def load_for_notifications(resource, people, ignore_ids \\ []) do
     query = from(subs in Operately.Notifications.Subscription,
       join: p in assoc(subs, :person),
       join: m in assoc(p, :access_group_memberships),
