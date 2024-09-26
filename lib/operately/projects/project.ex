@@ -46,6 +46,7 @@ defmodule Operately.Projects.Project do
     field :permissions, :any, virtual: true
     field :access_levels, :any, virtual: true
     field :privacy, :any, virtual: true
+    field :potential_subscribers, :any, virtual: true
 
     timestamps()
     soft_delete()
@@ -167,6 +168,11 @@ defmodule Operately.Projects.Project do
   def set_permissions(project = %__MODULE__{}) do
     perms = Permissions.calculate(project.request_info.access_level)
     Map.put(project, :permissions, perms)
+  end
+
+  def set_potential_subscribers(project = %__MODULE__{}) do
+    subscribers = Operately.Notifications.Subscriber.from_project_contributor(project.contributors)
+    Map.put(project, :potential_subscribers, subscribers)
   end
 
   def load_access_levels(project) do

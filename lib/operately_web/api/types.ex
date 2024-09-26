@@ -170,6 +170,7 @@ defmodule OperatelyWeb.Api.Types do
     field :champion, :person
     field :reviewer, :person
     field :access_levels, :access_levels
+    field :potential_subscribers, list_of(:subscriber)
   end
 
   object :project_retrospective do

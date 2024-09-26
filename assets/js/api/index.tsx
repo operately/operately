@@ -766,6 +766,7 @@ export interface Project {
   champion?: Person | null;
   reviewer?: Person | null;
   accessLevels?: AccessLevels | null;
+  potentialSubscribers?: Subscriber[] | null;
 }
 
 export interface ProjectCheckIn {
@@ -1354,6 +1355,7 @@ export interface GetProjectInput {
   includeAccessLevels?: boolean | null;
   includePrivacy?: boolean | null;
   includeRetrospective?: boolean | null;
+  includePotentialSubscribers?: boolean | null;
 }
 
 export interface GetProjectResult {
