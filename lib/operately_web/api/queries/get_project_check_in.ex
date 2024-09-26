@@ -11,6 +11,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckIn do
     field :include_project, :boolean
     field :include_reactions, :boolean
     field :include_subscriptions, :boolean
+    field :include_potential_subscribers, :boolean
   end
 
   outputs do
@@ -45,15 +46,17 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckIn do
   defp preload(inputs) do
     OperatelyWeb.Api.Helpers.Inputs.parse_includes(inputs, [
       include_author: [:author],
+      include_project: [project: [:reviewer, [contributors: :person]]],
       include_reactions: [reactions: :person],
       include_subscriptions: Subscription.preload_subscriptions(),
-      include_project: [project: [:reviewer, [contributors: :person]]],
+      include_potential_subscribers: [:access_context, project: [contributors: :person]],
     ])
   end
 
   defp after_load(inputs) do
     OperatelyWeb.Api.Helpers.Inputs.parse_includes(inputs, [
       include_project: &Project.set_permissions/1,
+      include_potential_subscribers: &CheckIn.set_potential_subscribers/1,
     ])
   end
 end

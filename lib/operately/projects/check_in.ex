@@ -19,6 +19,9 @@ defmodule Operately.Projects.CheckIn do
     has_many :reactions, Operately.Updates.Reaction, foreign_key: :entity_id, where: [entity_type: :project_check_in]
     has_many :comments, Operately.Updates.Comment, foreign_key: :entity_id, where: [entity_type: :project_check_in]
 
+    # populated with after load hooks
+    field :potential_subscribers, :any, virtual: true
+
     timestamps()
     requester_access_level()
   end
@@ -31,5 +34,16 @@ defmodule Operately.Projects.CheckIn do
     project
     |> cast(attrs, [:author_id, :project_id, :description, :status, :acknowledged_by_id, :acknowledged_at, :subscription_list_id])
     |> validate_required([:author_id, :project_id, :description, :status, :subscription_list_id])
+  end
+
+  # After load hooks
+
+  def set_potential_subscribers(check_in = %__MODULE__{}) do
+    subs =
+      check_in
+      |> Notifications.SubscribersLoader.preload_subscriptions()
+      |> Notifications.Subscriber.from_project_check_in()
+
+    %{check_in | potential_subscribers: subs}
   end
 end

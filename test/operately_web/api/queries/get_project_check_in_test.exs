@@ -5,6 +5,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckInTest do
   import Operately.PeopleFixtures
   import Operately.ProjectsFixtures
   import Operately.GroupsFixtures
+  import Operately.NotificationsFixtures
 
   alias Operately.Repo
   alias Operately.Access.Binding
@@ -174,6 +175,42 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckInTest do
         assert Enum.find(people, &(serialize(&1) == s.person))
       end)
     end
+
+    test "include_potential_subscribers", ctx do
+      ctx =
+        ctx
+        |> Factory.add_company_member(:person)
+        |> Factory.add_project_contributor(:contrib1, :project)
+        |> Factory.add_project_contributor(:contrib2, :project)
+
+      {:ok, list} = SubscriptionList.get(:system, parent_id: ctx.check_in.id)
+      subscription_fixture(%{subscription_list_id: list.id, person_id: ctx.person.id})
+      subscription_fixture(%{subscription_list_id: list.id, person_id: ctx.contrib1.person_id})
+
+      assert {200, res} = query(ctx.conn, :get_project_check_in, %{
+        id: Paths.project_check_in_id(ctx.check_in),
+      })
+
+      refute res.project_check_in.potential_subscribers
+
+      assert {200, res} = query(ctx.conn, :get_project_check_in, %{
+        id: Paths.project_check_in_id(ctx.check_in),
+        include_potential_subscribers: true,
+      })
+      subs = res.project_check_in.potential_subscribers
+
+      # person is not contrib, but has subscription
+      person = Enum.find(subs, &(&1.person.id == Paths.person_id(ctx.person)))
+      assert person.is_subscribed
+
+      # contrib1 has subscription
+      contrib1 = Enum.find(subs, &(equal_ids?(&1.person.id, ctx.contrib1.person_id)))
+      assert contrib1.is_subscribed
+
+      # contrib2 doesn't have subscription, but is potential subscriber
+      contrib2 = Enum.find(subs, &(equal_ids?(&1.person.id, ctx.contrib2.person_id)))
+      refute contrib2.is_subscribed
+    end
   end
 
   #
@@ -200,5 +237,11 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckInTest do
       id: ctx.person.id,
       permissions: Binding.edit_access(),
     }])
+  end
+
+  def equal_ids?(short_id, id) do
+    {:ok, decoded_id} = OperatelyWeb.Api.Helpers.decode_id(short_id)
+
+    decoded_id == id
   end
 end
