@@ -10,6 +10,7 @@ defmodule Operately.Support.Factory do
 
   # accounts
   defdelegate add_account(ctx, testid), to: Accounts
+  defdelegate log_in_person(ctx, person_name), to: Accounts
   defdelegate log_in_contributor(ctx, contributor_name), to: Accounts
 
   # companies
