@@ -261,6 +261,36 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
         assert Map.has_key?(contributor, :access_level)
       end)
     end
+
+    test "include_potential_subscribers", ctx do
+      ctx = Factory.add_company_member(ctx, :creator)
+        |> Factory.add_space(:space)
+        |> Factory.add_project(:project, :space)
+        |> Factory.add_project_contributor(:champion, :project, role: :champion)
+        |> Factory.add_project_contributor(:reviewer, :project, role: :reviewer)
+        |> Factory.add_project_contributor(:contrib1, :project)
+        |> Factory.add_project_contributor(:contrib2, :project)
+        |> Factory.add_project_contributor(:contrib3, :project)
+
+
+      assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(ctx.project)})
+
+      refute res.project.potential_subscribers
+
+      assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(ctx.project), include_potential_subscribers: true})
+
+      [ctx.reviewer, ctx.champion]
+      |> Enum.each(fn contrib ->
+        candidate = Enum.find(res.project.potential_subscribers, &(equal_ids?(&1.person.id, contrib.person_id)))
+        assert candidate.priority
+      end)
+
+      [ctx.contrib1, ctx.contrib2, ctx.contrib3]
+      |> Enum.each(fn contrib ->
+        candidate = Enum.find(res.project.potential_subscribers, &(equal_ids?(&1.person.id, contrib.person_id)))
+        refute candidate.priority
+      end)
+    end
   end
 
   #
@@ -290,5 +320,11 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
 
   defp create_person(ctx) do
     person_fixture(company_id: ctx.company.id)
+  end
+
+  def equal_ids?(short_id, id) do
+    {:ok, decoded_id} = OperatelyWeb.Api.Helpers.decode_id(short_id)
+
+    decoded_id == id
   end
 end
