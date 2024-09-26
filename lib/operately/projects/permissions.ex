@@ -21,6 +21,7 @@ defmodule Operately.Projects.Permissions do
     :can_edit_resources,
     :can_edit_space,
     :can_edit_retrospective,
+    :can_comment_on_retrospective,
     :can_edit_task,
     :can_edit_timeline,
     :can_pause,
@@ -33,6 +34,7 @@ defmodule Operately.Projects.Permissions do
 
       can_comment_on_milestone: access_level >= Binding.comment_access(),
       can_comment_on_check_in: access_level >= Binding.comment_access(),
+      can_comment_on_retrospective: access_level >= Binding.comment_access(),
 
       can_complete_milestone: access_level >= Binding.edit_access(),
       can_reopen_milestone: access_level >= Binding.edit_access(),
