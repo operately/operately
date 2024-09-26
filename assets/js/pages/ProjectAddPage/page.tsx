@@ -76,7 +76,7 @@ function Form() {
       creatorRole: "",
       isContrib: "no",
       access: {
-        isAdvanced: true,
+        isAdvanced: false,
         annonymousMembers: PermissionLevels.NO_ACCESS,
         companyMembers: PermissionLevels.COMMENT_ACCESS,
         spaceMembers: PermissionLevels.COMMENT_ACCESS,
@@ -243,11 +243,8 @@ function useAccessLevelAdjuster(parentSpace?: Spaces.Space) {
   // and at most as high as the parent space's company access level.
   //
   React.useEffect(() => {
-    if (parentAccessLevel.company! < companyMembers) {
-      setCompanyMembers(parentAccessLevel.company!);
-    } else {
-      setCompanyMembers(Math.max(annonymousMembers, companyMembers));
-    }
+    const level = Math.max(annonymousMembers, parentAccessLevel.company!);
+    setCompanyMembers(level);
   }, [annonymousMembers, parentAccessLevel.company]);
 
   //
@@ -303,8 +300,6 @@ function AccessSelectorFields() {
               labelIcon={<Icons.IconTent size={20} />}
               options={spaceAccessOptions}
             />
-
-            {JSON.stringify(Forms.useFieldValue("access")[0])}
           </Forms.FieldGroup>
         </div>
       )}
@@ -330,7 +325,7 @@ function AccessSelectorEditButton({
   if (isAdvanced) return null;
 
   return (
-    <SecondaryButton size="xs" onClick={() => setIsAdvanced(true)}>
+    <SecondaryButton size="xs" onClick={() => setIsAdvanced(true)} testId="edit-access-levels">
       Edit
     </SecondaryButton>
   );
