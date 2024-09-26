@@ -24,6 +24,7 @@ defmodule Operately.Projects.CheckIn do
 
     timestamps()
     requester_access_level()
+    request_info()
   end
 
   def changeset(attrs) do
