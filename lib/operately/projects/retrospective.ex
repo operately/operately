@@ -8,6 +8,7 @@ defmodule Operately.Projects.Retrospective do
     belongs_to :subscription_list, Operately.Notifications.SubscriptionList
 
     has_one :access_context, through: [:project, :access_context]
+    has_many :reactions, Operately.Updates.Reaction, where: [entity_type: :project_retrospective], foreign_key: :entity_id
 
     field :content, :map
     field :closed_at, :utc_datetime
