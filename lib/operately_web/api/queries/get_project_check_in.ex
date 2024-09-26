@@ -2,8 +2,6 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckIn do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
-  import Operately.Access.Filters
-
   alias Operately.Projects.{CheckIn, Project}
   alias Operately.Notifications.Subscription
 
@@ -13,6 +11,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckIn do
     field :include_project, :boolean
     field :include_reactions, :boolean
     field :include_subscriptions, :boolean
+    field :include_potential_subscribers, :boolean
   end
 
   outputs do
@@ -20,56 +19,44 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckIn do
   end
 
   def call(conn, inputs) do
-    case decode_id(inputs[:id]) do
-      {:ok, id} ->
-        project_check_in = load(me(conn), id, inputs)
+    Action.new()
+    |> run(:me, fn -> find_me(conn) end)
+    |> run(:id, fn -> decode_id(inputs.id) end)
+    |> run(:check_in, fn ctx -> load(ctx, inputs) end)
+    |> run(:serialized, fn ctx -> {:ok, %{project_check_in: Serializer.serialize(ctx.check_in, level: :full)}} end)
+    |> respond()
+ end
 
-        if nil == project_check_in do
-          {:error, :not_found}
-        else
-          {:ok, %{project_check_in: Serializer.serialize(project_check_in, level: :full)}}
-        end
-      {:error, _} -> {:error, :bad_request}
+  defp respond(result) do
+    case result do
+      {:ok, ctx} -> {:ok, ctx.serialized}
+      {:error, :id, _} -> {:error, :bad_request}
+      {:error, :check_in, _} -> {:error, :not_found}
+      _ -> {:error, :internal_server_error}
     end
   end
 
-  defp load(person, id, inputs) do
-    requested = extract_include_filters(inputs)
-
-    query = from p in CheckIn,
-      where: p.id == ^id,
-      preload: [:acknowledged_by]
-
-    query
-    |> include_requested(requested)
-    |> filter_by_view_access(person.id, join_parent: :project)
-    |> Repo.one()
-    |> load_project(inputs, person)
+  defp load(ctx, inputs) do
+    CheckIn.get(ctx.me, id: ctx.id, opts: [
+      preload: preload(inputs),
+      after_load: after_load(inputs),
+    ])
   end
 
-  def include_requested(query, requested) do
-    Enum.reduce(requested, query, fn include, q ->
-      case include do
-        :include_author -> from p in q, preload: [:author]
-        :include_reactions -> from p in q, preload: [reactions: :person]
-        :include_subscriptions -> Subscription.preload_subscriptions(q)
-        _ -> q
-      end
-    end)
+  defp preload(inputs) do
+    OperatelyWeb.Api.Helpers.Inputs.parse_includes(inputs, [
+      include_author: [:author],
+      include_project: [project: [:reviewer, [contributors: :person]]],
+      include_reactions: [reactions: :person],
+      include_subscriptions: Subscription.preload_subscriptions(),
+      include_potential_subscribers: [:access_context, project: [contributors: :person]],
+    ])
   end
 
-  def load_project(check_in, inputs, person) do
-    if inputs[:include_project] do
-      {:ok, project} = Operately.Projects.Project.get(person, id: check_in.project_id, opts: [
-        with_deleted: true, 
-        preload: [:reviewer, [contributors: :person]],
-        after_load: [&Project.set_permissions/1]
-      ])
-
-      %{check_in | project: project}
-    else
-      check_in
-    end
+  defp after_load(inputs) do
+    OperatelyWeb.Api.Helpers.Inputs.parse_includes(inputs, [
+      include_project: &Project.set_permissions/1,
+      include_potential_subscribers: &CheckIn.set_potential_subscribers/1,
+    ])
   end
-
 end
