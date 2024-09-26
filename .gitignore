@@ -51,3 +51,4 @@ media
 testreports
 
 locals3root/
+*.DS_Store

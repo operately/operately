@@ -21,6 +21,7 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
     field :include_access_levels, :boolean
     field :include_privacy, :boolean
     field :include_retrospective, :boolean
+    field :include_potential_subscribers, :boolean
   end
 
   outputs do
@@ -54,6 +55,7 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
       include_reviewer: [:reviewer],
       include_last_check_in: [last_check_in: :author],
       include_retrospective: [:retrospective],
+      include_potential_subscribers: [contributors: :person],
     ])
   end
 
@@ -63,6 +65,7 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
       %{run: &Project.load_contributor_access_levels/1, if: inputs[:include_contributors_access_levels]},
       %{run: &Project.load_access_levels/1, if: inputs[:include_access_levels]},
       %{run: &Project.load_privacy/1, if: inputs[:include_privacy]},
+      %{run: &Project.set_potential_subscribers/1, if: inputs[:include_potential_subscribers]},
     ])
   end
 

@@ -35,6 +35,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Project do
       permissions: OperatelyWeb.Api.Serializer.serialize(project.permissions),
       key_resources: OperatelyWeb.Api.Serializer.serialize(project.key_resources),
       access_levels: OperatelyWeb.Api.Serializer.serialize(project.access_levels, level: :full),
+      potential_subscribers: OperatelyWeb.Api.Serializer.serialize(project.potential_subscribers),
     }
   end
 
