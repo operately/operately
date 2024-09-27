@@ -76,6 +76,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReaction do
   defp check_comment_permissions(parent, type) do
     case type do
       :project_check_in -> Projects.Permissions.check(parent.requester_access_level, :can_comment_on_check_in)
+      :project_retrospective -> Projects.Permissions.check(parent.requester_access_level, :can_comment_on_retrospective)
       :comment_thread -> Activities.Permissions.check(parent.requester_access_level, :can_comment_on_thread)
       :goal_update -> Goals.Permissions.check(parent.requester_access_level, :can_comment_on_update)
       :message -> Groups.Permissions.check(parent.requester_access_level, :can_comment_on_discussions)

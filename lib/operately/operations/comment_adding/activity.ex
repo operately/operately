@@ -34,6 +34,18 @@ defmodule Operately.Operations.CommentAdding.Activity do
     end)
   end
 
+  def insert(multi, creator, action = :project_retrospective_commented, entity) do
+    Activities.insert_sync(multi, creator.id, action, fn changes ->
+      %{
+        company_id: creator.company_id,
+        space_id: entity.project.group_id,
+        project_id: entity.project_id,
+        retrospective_id: entity.id,
+        comment_id: changes.comment.id,
+      }
+    end)
+  end
+
   def insert(multi, creator, action = :comment_added, %Operately.Comments.CommentThread{} = entity) do
     activity = Operately.Activities.get_activity!(entity.parent_id)
 

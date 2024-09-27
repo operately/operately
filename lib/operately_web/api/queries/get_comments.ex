@@ -38,6 +38,17 @@ defmodule OperatelyWeb.Api.Queries.GetComments do
     |> Repo.all()
   end
 
+  defp load(id, :project_retrospective, person) do
+    from(c in Comment,
+      join: retro in Operately.Projects.Retrospective, on: c.entity_id == retro.id,
+      join: project in assoc(retro, :project), as: :project,
+      where: project.id == ^id and c.entity_type == :project_retrospective
+    )
+    |> preload_resources()
+    |> filter_by_view_access(person.id, named_binding: :project)
+    |> Repo.all()
+  end
+
   defp load(id, :goal_update, person) do
     from(c in Comment,
       join: u in Operately.Goals.Update, on: c.entity_id == u.id, as: :update,
