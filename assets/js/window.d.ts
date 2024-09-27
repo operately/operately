@@ -10,6 +10,7 @@ declare global {
 
   interface AppConfig {
     environment: string;
+    demoBuilder: boolean;
 
     sentry: SentryConfig;
     api: ApiConfig;
