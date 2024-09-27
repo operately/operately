@@ -99,7 +99,7 @@ defmodule TurboConnect.Plugs.ParseInputs do
 
   def parse_input({:list, type}, types, unions, value, strict) when is_list(value) do
     Enum.reduce(value, {:ok, []}, fn v, res ->
-      with {:ok, res} <- res, 
+      with {:ok, res} <- res,
            {:ok, parsed} <- parse_input(type, types, unions, v, strict) do
         {:ok, [parsed | res]}
       end
@@ -108,6 +108,10 @@ defmodule TurboConnect.Plugs.ParseInputs do
       {:ok, res} -> {:ok, Enum.reverse(res)}
       {:error, status, body} -> {:error, status, body}
     end
+  end
+
+  def parse_input(_field , _types, _unions, nil, _strict) do
+    {:ok, nil}
   end
 
   #
