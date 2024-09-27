@@ -780,6 +780,7 @@ export interface ProjectCheckIn {
   acknowledgedBy?: Person | null;
   reactions?: Reaction[] | null;
   subscriptionList?: SubscriptionList | null;
+  potentialSubscribers?: Subscriber[] | null;
 }
 
 export interface ProjectContributor {
@@ -884,6 +885,7 @@ export interface Space {
 export interface Subscriber {
   role?: string | null;
   priority?: boolean | null;
+  isSubscribed?: boolean | null;
   person?: Person | null;
 }
 
@@ -1368,9 +1370,11 @@ export interface GetProjectResult {
 export interface GetProjectCheckInInput {
   id?: string | null;
   includeAuthor?: boolean | null;
+  includeAcknowledgedBy?: boolean | null;
   includeProject?: boolean | null;
   includeReactions?: boolean | null;
   includeSubscriptions?: boolean | null;
+  includePotentialSubscribers?: boolean | null;
 }
 
 export interface GetProjectCheckInResult {
@@ -1470,14 +1474,6 @@ export interface GetUnreadNotificationCountInput {}
 
 export interface GetUnreadNotificationCountResult {
   unread?: number | null;
-}
-
-export interface ListProjectSubscribersCandidatesInput {
-  projectId?: string | null;
-}
-
-export interface ListProjectSubscribersCandidatesResult {
-  candidates?: boolean[] | null;
 }
 
 export interface SearchPeopleInput {
@@ -2364,12 +2360,6 @@ export class ApiClient {
     return this.get("/get_unread_notification_count", input);
   }
 
-  async listProjectSubscribersCandidates(
-    input: ListProjectSubscribersCandidatesInput,
-  ): Promise<ListProjectSubscribersCandidatesResult> {
-    return this.get("/list_project_subscribers_candidates", input);
-  }
-
   async searchPeople(input: SearchPeopleInput): Promise<SearchPeopleResult> {
     return this.get("/search_people", input);
   }
@@ -2789,11 +2779,6 @@ export async function getUnreadNotificationCount(
 ): Promise<GetUnreadNotificationCountResult> {
   return defaultApiClient.getUnreadNotificationCount(input);
 }
-export async function listProjectSubscribersCandidates(
-  input: ListProjectSubscribersCandidatesInput,
-): Promise<ListProjectSubscribersCandidatesResult> {
-  return defaultApiClient.listProjectSubscribersCandidates(input);
-}
 export async function searchPeople(input: SearchPeopleInput): Promise<SearchPeopleResult> {
   return defaultApiClient.searchPeople(input);
 }
@@ -3198,14 +3183,6 @@ export function useGetUnreadNotificationCount(
   input: GetUnreadNotificationCountInput,
 ): UseQueryHookResult<GetUnreadNotificationCountResult> {
   return useQuery<GetUnreadNotificationCountResult>(() => defaultApiClient.getUnreadNotificationCount(input));
-}
-
-export function useListProjectSubscribersCandidates(
-  input: ListProjectSubscribersCandidatesInput,
-): UseQueryHookResult<ListProjectSubscribersCandidatesResult> {
-  return useQuery<ListProjectSubscribersCandidatesResult>(() =>
-    defaultApiClient.listProjectSubscribersCandidates(input),
-  );
 }
 
 export function useSearchPeople(input: SearchPeopleInput): UseQueryHookResult<SearchPeopleResult> {
@@ -3746,8 +3723,6 @@ export default {
   useGetTasks,
   getUnreadNotificationCount,
   useGetUnreadNotificationCount,
-  listProjectSubscribersCandidates,
-  useListProjectSubscribersCandidates,
   searchPeople,
   useSearchPeople,
   searchPotentialSpaceMembers,

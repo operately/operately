@@ -76,6 +76,18 @@ defmodule Operately.Support.Factory.Projects do
     Map.put(ctx, testid, retrospective)
   end
 
+  def add_project_check_in(ctx, testid, project_name, author_name) do
+    project = Map.fetch!(ctx, project_name)
+    author = Map.fetch!(ctx, author_name)
+
+    check_in = Operately.ProjectsFixtures.check_in_fixture(%{
+      project_id: project.id,
+      author_id: author.id,
+    })
+
+    Map.put(ctx, testid, check_in)
+  end
+
   def edit_project_company_members_access(ctx, project_name, access_level) do
     project = Map.fetch!(ctx, project_name)
 

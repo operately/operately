@@ -20,6 +20,6 @@ defmodule Operately.Projects.Notifications do
 
     people = Enum.map(check_in.project.contributors, &(&1.person))
 
-    SubscribersLoader.load(check_in, people, ignore)
+    SubscribersLoader.load_for_notifications(check_in, people, ignore)
   end
 end

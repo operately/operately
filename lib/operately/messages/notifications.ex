@@ -17,6 +17,6 @@ defmodule Operately.Messages.Notifications do
       )
       |> Repo.one()
 
-    SubscribersLoader.load(message, message.space.members, ignore)
+    SubscribersLoader.load_for_notifications(message, message.space.members, ignore)
   end
 end

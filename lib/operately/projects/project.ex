@@ -170,6 +170,13 @@ defmodule Operately.Projects.Project do
     Map.put(project, :permissions, perms)
   end
 
+  def set_permissions(%{project: project = %__MODULE__{}} = parent) do
+    perms = Permissions.calculate(parent.request_info.access_level)
+    project = Map.put(project, :permissions, perms)
+
+    %{parent | project: project}
+  end
+
   def set_potential_subscribers(project = %__MODULE__{}) do
     subscribers = Operately.Notifications.Subscriber.from_project_contributor(project.contributors)
     Map.put(project, :potential_subscribers, subscribers)
