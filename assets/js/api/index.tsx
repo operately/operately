@@ -1444,7 +1444,9 @@ export interface GetSpaceResult {
   space?: Space | null;
 }
 
-export interface GetSpacesInput {}
+export interface GetSpacesInput {
+  includeAccessLevels?: boolean | null;
+}
 
 export interface GetSpacesResult {
   spaces?: Space[] | null;

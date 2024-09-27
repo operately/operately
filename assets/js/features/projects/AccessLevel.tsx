@@ -6,7 +6,7 @@ import * as Icons from "@tabler/icons-react";
 interface AccessLevelProps {
   tense: "present" | "future";
 
-  annonymous: PermissionLevels;
+  anonymous: PermissionLevels;
   company: PermissionLevels;
   space: PermissionLevels;
 
@@ -26,7 +26,7 @@ export function AccessLevel(props: AccessLevelProps) {
 }
 
 function Icon(props: AccessLevelProps) {
-  if (props.annonymous >= PermissionLevels.VIEW_ACCESS) {
+  if (props.anonymous >= PermissionLevels.VIEW_ACCESS) {
     return <Icons.IconWorld className="text-content-accent ml-1.5 mr-3" size={30} strokeWidth={2} />;
   }
 
@@ -42,7 +42,7 @@ function Icon(props: AccessLevelProps) {
 }
 
 function calcTitle(props: AccessLevelProps) {
-  if (props.annonymous >= PermissionLevels.VIEW_ACCESS) {
+  if (props.anonymous >= PermissionLevels.VIEW_ACCESS) {
     return "Public Access";
   }
 
@@ -61,7 +61,7 @@ function calcDescription(props: AccessLevelProps) {
   const can = props.tense === "future" ? "will be able to" : "can";
   const have = props.tense === "future" ? "will have" : "have";
 
-  if (props.annonymous >= PermissionLevels.VIEW_ACCESS) {
+  if (props.anonymous >= PermissionLevels.VIEW_ACCESS) {
     let message = `Anyone on the internet ${can} view this project`;
 
     if (props.company > props.company) {

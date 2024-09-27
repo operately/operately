@@ -80,7 +80,7 @@ function GeneralAccess() {
     <Section title="General Access">
       <BorderedRow>
         <AccessLevel
-          annonymous={project.accessLevels?.public!}
+          anonymous={project.accessLevels?.public!}
           company={project.accessLevels?.company!}
           space={project.accessLevels?.space!}
           tense="present"
