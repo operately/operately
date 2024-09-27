@@ -1,6 +1,7 @@
 defmodule Operately.Support.Features.ProjectCreationSteps do
   use Operately.FeatureCase
 
+  alias Operately.Access
   alias Operately.Access.Binding
   alias Operately.People.Person
   alias Operately.Support.Features.UI
@@ -191,6 +192,55 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
       UI.visit(ctx, Paths.project_path(ctx.company, project))
     end)
     |> UI.refute_has(testid: "no-reviewer-callout")
+  end
+
+  step :given_that_space_is_hidden_from_company_members, ctx do
+    context = Access.get_context!(group_id: ctx.group.id)
+    group = Access.get_group!(company_id: ctx.company.id, tag: :standard)
+
+    Access.unbind(context, access_group_id: group.id)
+
+    ctx
+  end
+
+  step :assert_form_offers_space_wide_access_level, ctx do
+    ctx |> UI.assert_text("Space-wide Access")
+  end
+
+  step :change_project_access_level_to_invite_only, ctx do
+    ctx
+    |> UI.click(testid: "edit-access-levels")
+    |> UI.select(testid: "access.spaceMembers", option: "No Access")
+  end
+
+  step :assert_company_members_cant_see_project, ctx, params do
+    project = Operately.Repo.get_by!(Operately.Projects.Project, name: params.name)
+    context = Access.get_context!(project_id: project.id)
+    group = Access.get_group!(company_id: ctx.company.id, tag: :standard)
+
+    assert Access.get_binding(context_id: context.id, group_id: group.id).access_level == Binding.no_access()
+
+    ctx
+  end
+
+  step :assert_space_members_can_see_project, ctx, params do
+    project = Operately.Repo.get_by!(Operately.Projects.Project, name: params.name)
+    context = Access.get_context!(project_id: project.id)
+    group = Access.get_group!(group_id: ctx.group.id, tag: :standard)
+
+    assert Access.get_binding(context_id: context.id, group_id: group.id).access_level > Binding.no_access()
+
+    ctx
+  end
+
+  step :assert_space_members_cant_see_project, ctx, params do
+    project = Operately.Repo.get_by!(Operately.Projects.Project, name: params.name)
+    context = Access.get_context!(project_id: project.id)
+    group = Access.get_group!(group_id: ctx.group.id, tag: :standard)
+
+    assert Access.get_binding(context_id: context.id, group_id: group.id).access_level == Binding.no_access()
+
+    ctx
   end
 
   defp who_should_be_notified(fields) do
