@@ -291,6 +291,40 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
         refute candidate.priority
       end)
     end
+
+    test "include_milestones", ctx do
+      ctx = Factory.add_company_member(ctx, :creator)
+        |> Factory.add_space(:space)
+        |> Factory.add_project(:project, :space)
+        |> Factory.add_project_milestone(:milestone1, :project, :creator)
+        |> Factory.add_project_milestone(:milestone2, :project, :creator)
+
+      # doesn't include milestone
+      assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(ctx.project)})
+
+      refute res.project.milestones
+
+      # include milestones
+      assert {200, res} = query(ctx.conn, :get_project, %{
+        id: Paths.project_id(ctx.project),
+        include_milestones: true,
+      })
+
+      assert length(res.project.milestones) == 2
+      assert Enum.find(res.project.milestones, &(&1 == Serializer.serialize(ctx.milestone1)))
+      assert Enum.find(res.project.milestones, &(&1 == Serializer.serialize(ctx.milestone2)))
+
+      # doesn't include archived milestones
+      {:ok, _} = Repo.soft_delete(ctx.milestone1)
+
+      assert {200, res} = query(ctx.conn, :get_project, %{
+        id: Paths.project_id(ctx.project),
+        include_milestones: true,
+      })
+
+      assert length(res.project.milestones) == 1
+      assert Enum.find(res.project.milestones, &(&1 == Serializer.serialize(ctx.milestone2)))
+    end
   end
 
   #

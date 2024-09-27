@@ -44,7 +44,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectRetrospective do
   end
 
   def preload(inputs) do
-    OperatelyWeb.Api.Helpers.Inputs.parse_includes(inputs, [
+    Inputs.parse_includes(inputs, [
       include_author: [:author],
       include_project: [:project],
       include_reactions: [reactions: :person],
