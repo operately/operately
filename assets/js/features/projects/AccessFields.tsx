@@ -43,9 +43,9 @@ export type AccessLevels = {
 //
 // Available access levels
 //
-export const ANNON = [VIEW_ACCESS, NO_ACCESS];
-export const COMPANY = [FULL_ACCESS, EDIT_ACCESS, COMMENT_ACCESS, VIEW_ACCESS, NO_ACCESS];
-export const SPACE = [FULL_ACCESS, EDIT_ACCESS, COMMENT_ACCESS, VIEW_ACCESS, NO_ACCESS];
+const ANNON = [VIEW_ACCESS, NO_ACCESS];
+const COMPANY = [FULL_ACCESS, EDIT_ACCESS, COMMENT_ACCESS, VIEW_ACCESS, NO_ACCESS];
+const SPACE = [FULL_ACCESS, EDIT_ACCESS, COMMENT_ACCESS, VIEW_ACCESS, NO_ACCESS];
 
 export function initialAccessLevels(parent: Api.AccessLevels): AccessLevels {
   return {
@@ -53,7 +53,7 @@ export function initialAccessLevels(parent: Api.AccessLevels): AccessLevels {
     anonymousOptions: ANNON.filter((o) => o.value <= parent.public!),
     companyMembers: parent.company!,
     companyMembersOptions: COMPANY.filter((o) => o.value >= parent.public! && o.value <= parent.company!),
-    spaceMembers: parent.space!,
+    spaceMembers: COMMENT_ACCESS.value,
     spaceMembersOptions: SPACE,
   };
 }
@@ -72,7 +72,7 @@ export function applyAccessLevelConstraints(vals: AccessLevels, parent: Api.Acce
 }
 
 function clamp(val: PermissionLevels, options: Option[]): PermissionLevels {
-  if (options.find((o) => o.value === val)) {
+  if (options.some((o) => o.value === val)) {
     return val;
   } else {
     return options[0]!.value;
