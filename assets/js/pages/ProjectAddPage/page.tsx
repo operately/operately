@@ -1,7 +1,6 @@
 import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
-import * as Icons from "@tabler/icons-react";
 import * as Projects from "@/models/projects";
 import * as People from "@/models/people";
 import * as Spaces from "@/models/spaces";
@@ -16,7 +15,7 @@ import Forms from "@/components/Forms";
 import { SecondaryButton } from "@/components/Buttons";
 import { AccessLevel } from "@/features/projects/AccessLevel";
 import { PermissionLevels } from "@/features/Permissions";
-import { DEFAULT_ANNONYMOUS_OPTIONS, DEFAULT_COMPANY_OPTIONS, DEFAULT_SPACE_OPTIONS } from "@/features/Permissions";
+import { AccessSelectors, applyAccessLevelConstraints, initialAccessLevels } from "@/features/projects/AccessSelectors";
 
 export function Page() {
   return (
@@ -64,7 +63,7 @@ function Form() {
   const me = useMe()!;
   const navigate = useNavigate();
   const [add] = Projects.useCreateProject();
-  const { space, spaceOptions, goal, goals, allowSpaceSelection } = useLoadedData();
+  const { space, spaces, spaceOptions, goal, goals, allowSpaceSelection } = useLoadedData();
 
   const form = Forms.useForm({
     fields: {
@@ -75,12 +74,11 @@ function Form() {
       goal: goal?.id,
       creatorRole: "",
       isContrib: "no",
-      access: {
-        isAdvanced: false,
-        annonymousMembers: PermissionLevels.NO_ACCESS,
-        companyMembers: PermissionLevels.COMMENT_ACCESS,
-        spaceMembers: PermissionLevels.COMMENT_ACCESS,
-      },
+      access: initialAccessLevels(),
+      showAdvancedAccess: false,
+    },
+    onChange: (values) => {
+      applyAccessLevelConstraints(values.access, findParentAccessLevel(space, spaces, values.space));
     },
     validate: (addError) => {
       if (compareIds(form.values.champion, form.values.reviewer)) {
@@ -111,7 +109,7 @@ function Form() {
         <Forms.FieldGroup>
           <Forms.TextInput label="Project Name" field="name" placeholder="e.g. HR System Update" />
           <Forms.SelectBox label="Space" field="space" hidden={!allowSpaceSelection} options={spaceOptions} />
-          <Forms.SelectGoal field="goal" goals={goals} label="Goal" required={false} />
+          <Forms.SelectGoal label="Goal" field="goal" goals={goals} required={false} />
 
           <Forms.FieldGroup layout="grid">
             <SelectChampion me={me} />
@@ -121,7 +119,7 @@ function Form() {
           <CreatorsResponsibilityFields form={form} />
         </Forms.FieldGroup>
 
-        <AccessSelectorFields />
+        <PrivacyLevel />
       </Paper.Body>
 
       <Forms.Submit saveText="Add Project" layout="centered" buttonSize="lg" />
@@ -175,6 +173,58 @@ function CreatorsResponsibilityFields({ form }) {
   );
 }
 
+function PrivacyLevel() {
+  const [isAdvanced] = Forms.useFieldValue<boolean>("showAdvancedAccess");
+
+  return (
+    <Paper.DimmedSection>
+      <div className="flex items-center justify-between">
+        <PrivacyLevelTitle field={"access"} />
+        <PrivacyEdit />
+      </div>
+
+      {isAdvanced && <AccessSelectors />}
+    </Paper.DimmedSection>
+  );
+}
+
+function PrivacyLevelTitle({ field }: { field: string }) {
+  const [annonymous] = Forms.useFieldValue<number>(`${field}.annonymousMembers`);
+  const [company] = Forms.useFieldValue<number>(`${field}.companyMembers`);
+  const [space] = Forms.useFieldValue<number>(`${field}.spaceMembers`);
+
+  return <AccessLevel annonymous={annonymous} company={company} space={space} tense="future" hideIcon={true} />;
+}
+
+function PrivacyEdit() {
+  const [isAdvanced, setIsAdvanced] = Forms.useFieldValue<boolean>("showAdvancedAccess");
+  if (isAdvanced) return null;
+
+  return (
+    <SecondaryButton size="xs" onClick={() => setIsAdvanced(true)} testId="edit-access-levels">
+      Edit
+    </SecondaryButton>
+  );
+}
+
+function findParentAccessLevel(
+  space: Spaces.Space | undefined,
+  spaces: Spaces.Space[] | undefined,
+  spaceId: string | null | undefined,
+) {
+  if (spaces && spaceId) {
+    return spaces.find((s) => compareIds(s.id, spaceId))!.accessLevels!;
+  } else if (space) {
+    return space.accessLevels!;
+  } else {
+    return {
+      public: PermissionLevels.NO_ACCESS,
+      company: PermissionLevels.COMMENT_ACCESS,
+      space: PermissionLevels.COMMENT_ACCESS,
+    };
+  }
+}
+
 function useShouldHideIsCotrib({ form }) {
   const me = useMe()!;
 
@@ -196,137 +246,4 @@ function useShouldHideCreatorRole({ form }) {
 
     return isChampion || isReviewer || !isContributor;
   }, [form.values.champion, form.values.reviewer, form.values.isContrib, me.id]);
-}
-
-function useParentSpace() {
-  const { space, spaces } = useLoadedData();
-
-  const [spaceId, _] = Forms.useFieldValue<string>("space");
-  const [parentSpace, setParentSpace] = React.useState<Spaces.Space | undefined>();
-
-  React.useEffect(() => {
-    if (spaces && spaceId) {
-      const parentSpace = spaces.find((s) => compareIds(s.id, spaceId));
-      setParentSpace(parentSpace);
-    } else if (space) {
-      setParentSpace(space);
-    }
-  }, [spaceId]);
-
-  return parentSpace;
-}
-
-const DEFAULT_PARENT_ACCESS_LEVELS = {
-  public: PermissionLevels.NO_ACCESS,
-  company: PermissionLevels.COMMENT_ACCESS,
-  space: PermissionLevels.COMMENT_ACCESS,
-};
-
-function useAccessLevelAdjuster(parentSpace?: Spaces.Space) {
-  const parentAccessLevel = parentSpace?.accessLevels || DEFAULT_PARENT_ACCESS_LEVELS;
-
-  const [annonymousMembers, setAnnonymousMembers] = Forms.useFieldValue<number>("access.annonymousMembers");
-  const [companyMembers, setCompanyMembers] = Forms.useFieldValue<number>("access.companyMembers");
-  const [spaceMembers, setSpaceMembers] = Forms.useFieldValue<number>("access.spaceMembers");
-
-  //
-  // Annonyous members should never be higher than the parent space's public access.
-  //
-  React.useEffect(() => {
-    if (parentAccessLevel.public! >= annonymousMembers) {
-      setAnnonymousMembers(parentAccessLevel.public!);
-    }
-  }, [parentAccessLevel.public]);
-
-  //
-  // Company members should always be at least as high as annonymous members
-  // and at most as high as the parent space's company access level.
-  //
-  React.useEffect(() => {
-    const level = Math.max(annonymousMembers, parentAccessLevel.company!);
-    setCompanyMembers(level);
-  }, [annonymousMembers, parentAccessLevel.company]);
-
-  //
-  // Space members should always be at least as high as company members,
-  //
-  React.useEffect(() => {
-    if (spaceMembers < companyMembers) {
-      setSpaceMembers(companyMembers);
-    }
-  }, [companyMembers]);
-}
-
-function AccessSelectorFields() {
-  const parentSpace = useParentSpace();
-
-  const [isAdvanced, setIsAdvanced] = Forms.useFieldValue<boolean>("access.isAdvanced");
-  const [annonymousMembers] = Forms.useFieldValue<number>("access.annonymousMembers");
-  const [companyMembers] = Forms.useFieldValue<number>("access.companyMembers");
-
-  useAccessLevelAdjuster(parentSpace);
-
-  const annonymousAccessOptions = DEFAULT_ANNONYMOUS_OPTIONS;
-  const companyAccessOptions = DEFAULT_COMPANY_OPTIONS.filter((option) => option.value >= annonymousMembers);
-  const spaceAccessOptions = DEFAULT_SPACE_OPTIONS.filter((option) => option.value >= companyMembers);
-
-  return (
-    <Paper.DimmedSection>
-      <div className="flex items-center justify-between">
-        <AccessSelectorTitle field={"access"} />
-        <AccessSelectorEditButton isAdvanced={isAdvanced} setIsAdvanced={setIsAdvanced} />
-      </div>
-
-      {isAdvanced && (
-        <div className="mt-6">
-          <Forms.FieldGroup layout="horizontal" layoutOptions={{ dividers: true, ratio: "1:1" }}>
-            <Forms.SelectBox
-              field={"access.annonymousMembers"}
-              label="People on the internet"
-              labelIcon={<Icons.IconWorld size={20} />}
-              options={annonymousAccessOptions}
-              hidden={parentSpace?.accessLevels?.public === PermissionLevels.NO_ACCESS}
-            />
-            <Forms.SelectBox
-              field={"access.companyMembers"}
-              label="Company members"
-              labelIcon={<Icons.IconBuilding size={20} />}
-              options={companyAccessOptions}
-              hidden={parentSpace?.accessLevels?.company === PermissionLevels.NO_ACCESS}
-            />
-            <Forms.SelectBox
-              field={"access.spaceMembers"}
-              label="Space members"
-              labelIcon={<Icons.IconTent size={20} />}
-              options={spaceAccessOptions}
-            />
-          </Forms.FieldGroup>
-        </div>
-      )}
-    </Paper.DimmedSection>
-  );
-}
-
-function AccessSelectorTitle({ field }: { field: string }) {
-  const [annonymous] = Forms.useFieldValue<number>(`${field}.annonymousMembers`);
-  const [company] = Forms.useFieldValue<number>(`${field}.companyMembers`);
-  const [space] = Forms.useFieldValue<number>(`${field}.spaceMembers`);
-
-  return <AccessLevel annonymous={annonymous} company={company} space={space} tense="future" hideIcon={true} />;
-}
-
-function AccessSelectorEditButton({
-  isAdvanced,
-  setIsAdvanced,
-}: {
-  isAdvanced: boolean;
-  setIsAdvanced: (value: boolean) => void;
-}) {
-  if (isAdvanced) return null;
-
-  return (
-    <SecondaryButton size="xs" onClick={() => setIsAdvanced(true)} testId="edit-access-levels">
-      Edit
-    </SecondaryButton>
-  );
 }
