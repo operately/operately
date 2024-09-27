@@ -1370,6 +1370,7 @@ export interface GetProjectResult {
 export interface GetProjectCheckInInput {
   id?: string | null;
   includeAuthor?: boolean | null;
+  includeAcknowledgedBy?: boolean | null;
   includeProject?: boolean | null;
   includeReactions?: boolean | null;
   includeSubscriptions?: boolean | null;

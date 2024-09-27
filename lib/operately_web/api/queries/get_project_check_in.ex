@@ -8,6 +8,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckIn do
   inputs do
     field :id, :string
     field :include_author, :boolean
+    field :include_acknowledged_by, :boolean
     field :include_project, :boolean
     field :include_reactions, :boolean
     field :include_subscriptions, :boolean
@@ -46,6 +47,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckIn do
   defp preload(inputs) do
     OperatelyWeb.Api.Helpers.Inputs.parse_includes(inputs, [
       include_author: [:author],
+      include_acknowledged_by: [:acknowledged_by],
       include_project: [project: [:reviewer, [contributors: :person]]],
       include_reactions: [reactions: :person],
       include_subscriptions: Subscription.preload_subscriptions(),
