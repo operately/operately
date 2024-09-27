@@ -45,7 +45,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckIn do
   end
 
   defp preload(inputs) do
-    OperatelyWeb.Api.Helpers.Inputs.parse_includes(inputs, [
+    Inputs.parse_includes(inputs, [
       include_author: [:author],
       include_acknowledged_by: [:acknowledged_by],
       include_project: [project: [:reviewer, [contributors: :person]]],
@@ -56,7 +56,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckIn do
   end
 
   defp after_load(inputs) do
-    OperatelyWeb.Api.Helpers.Inputs.parse_includes(inputs, [
+    Inputs.parse_includes(inputs, [
       include_project: &Project.set_permissions/1,
       include_potential_subscribers: &CheckIn.set_potential_subscribers/1,
     ])

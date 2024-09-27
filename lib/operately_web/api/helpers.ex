@@ -6,6 +6,7 @@ defmodule OperatelyWeb.Api.Helpers do
 
       alias Operately.Repo
       alias OperatelyWeb.Api.Serializer
+      alias OperatelyWeb.Api.Helpers.Inputs
 
       alias OperatelyWeb.Api.Action
       import OperatelyWeb.Api.Action, only: [run: 3]
