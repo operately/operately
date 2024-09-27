@@ -8,18 +8,23 @@ interface LoaderResult {
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
-  return {
-    retrospective: await Projects.getProjectRetrospective({
+  const [retrospective, comments] = await Promise.all([
+    Projects.getProjectRetrospective({
       projectId: params.projectID,
       includeAuthor: true,
       includeProject: true,
       includePermissions: true,
       includeReactions: true,
     }).then((data) => data.retrospective!),
-    comments: await Comments.getComments({
+    Comments.getComments({
       entityId: params.projectID,
       entityType: "project_retrospective",
     }).then((c) => c.comments!),
+  ]);
+
+  return {
+    retrospective,
+    comments,
   };
 }
 
