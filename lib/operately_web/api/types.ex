@@ -445,6 +445,7 @@ defmodule OperatelyWeb.Api.Types do
   object :subscriber do
     field :role, :string
     field :priority, :boolean
+    field :is_subscribed, :boolean
     field :person, :person
   end
 
@@ -929,6 +930,7 @@ defmodule OperatelyWeb.Api.Types do
     field :acknowledged_by, :person
     field :reactions, list_of(:reaction)
     field :subscription_list, :subscription_list
+    field :potential_subscribers, list_of(:subscriber)
   end
 
   object :activity_content_project_check_in_commented do
