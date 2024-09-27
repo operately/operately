@@ -53,7 +53,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateComment do
   defp fetch_parent(person, id, type) do
     case type do
       :project_check_in -> Projects.get_check_in_with_access_level(id, person.id)
-      :project_retrospective -> Retrospective.get(person, id: id)
+      :project_retrospective -> Retrospective.get(person, id: id, opts: [preload: :project])
       :comment_thread -> Comments.get_thread_with_activity_and_access_level(id, person.id)
       :goal_update -> Update.get(person, id: id)
       :message -> Message.get(person, id: id)

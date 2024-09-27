@@ -3,6 +3,7 @@ defmodule Operately.Activities.Content.ProjectRetrospectiveCommented do
 
   embedded_schema do
     belongs_to :company, Operately.Companies.Company
+    belongs_to :space, Operately.Groups.Group
     belongs_to :project, Operately.Projects.Project
     belongs_to :retrospective, Operately.Projects.Retrospective
     belongs_to :comment, Operately.Updates.Comment
