@@ -2,7 +2,7 @@ import { match } from "ts-pattern";
 
 export { SpacePermissionSelector, ResourcePermissionSelector } from "./PermissionSelector";
 
-export enum PermissionLevels {
+export const enum PermissionLevels {
   FULL_ACCESS = 100,
   EDIT_ACCESS = 70,
   COMMENT_ACCESS = 40,

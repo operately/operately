@@ -1,9 +1,8 @@
 import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
-import * as Companies from "@/models/companies";
 import * as Projects from "@/models/projects";
-import * as Icons from "@tabler/icons-react";
+import * as Spaces from "@/models/spaces";
 
 import Forms from "@/components/Forms";
 
@@ -11,25 +10,24 @@ import { useEditProjectPermissions } from "@/api";
 import { Paths } from "@/routes/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { ProjectContribsSubpageNavigation } from "@/components/ProjectPageNavigation";
+import { AccessSelectors } from "@/features/projects/AccessSelectors";
 import { DEFAULT_ANNONYMOUS_OPTIONS, DEFAULT_COMPANY_OPTIONS, DEFAULT_SPACE_OPTIONS } from "@/features/Permissions";
 
 interface LoaderResult {
   project: Projects.Project;
-  company: Companies.Company;
+  space: Spaces.Space;
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
-  const project = Projects.getProject({
+  const project = await Projects.getProject({
     id: params.projectID,
     includeSpace: true,
     includeAccessLevels: true,
   }).then((data) => data.project!);
 
-  const company = Companies.getCompany({
-    id: params.companyId,
-  }).then((data) => data.company!);
+  const space = await Spaces.getSpace({ id: project.space!.id, includeAccessLevels: true });
 
-  return { project: await project, company: await company };
+  return { project: project, space: space };
 }
 
 export function Page() {
@@ -50,7 +48,8 @@ export function Page() {
 }
 
 function Form() {
-  const { project } = Pages.useLoadedData();
+  const { project, space } = Pages.useLoadedData();
+  const parentAccessLevel = space.accessLevels!;
 
   const navigateToContributorsPath = useNavigateTo(Paths.projectContributorsPath(project.id!));
   const [edit] = useEditProjectPermissions();
@@ -60,9 +59,37 @@ function Form() {
       access: {
         isAdvanced: true,
         annonymousMembers: project.accessLevels!.public!,
+        annonynousMembersOptions: DEFAULT_ANNONYMOUS_OPTIONS,
         companyMembers: project.accessLevels!.company!,
+        companyMembersOptions: DEFAULT_COMPANY_OPTIONS,
         spaceMembers: project.accessLevels!.space!,
+        spaceMembersOptions: DEFAULT_SPACE_OPTIONS,
       },
+    },
+    onChange: (values) => {
+      if (parentAccessLevel.public! >= values.access.annonymousMembers) {
+        values.access.annonymousMembers = parentAccessLevel.public!;
+      }
+
+      if (parentAccessLevel.company! >= values.access.companyMembers) {
+        values.access.companyMembers = parentAccessLevel.company!;
+      }
+
+      if (values.access.companyMembers < values.access.annonymousMembers) {
+        values.access.annonymousMembers = values.access.companyMembers;
+      }
+
+      if (values.access.spaceMembers < values.access.companyMembers) {
+        values.access.companyMembers = values.access.spaceMembers;
+      }
+
+      values.access.annonynousMembersOptions = DEFAULT_ANNONYMOUS_OPTIONS.filter(
+        (option) => option.value <= parentAccessLevel.public!,
+      );
+
+      values.access.companyMembersOptions = DEFAULT_COMPANY_OPTIONS.filter(
+        (option) => option.value <= parentAccessLevel.company! && option.value >= values.access.annonymousMembers,
+      );
     },
     submit: async () => {
       await edit({
@@ -83,64 +110,8 @@ function Form() {
 
   return (
     <Forms.Form form={form}>
-      <Forms.FieldGroup>
-        <AccessSelectorAdvancedOptions />
-      </Forms.FieldGroup>
-
+      <AccessSelectors />
       <Forms.Submit />
     </Forms.Form>
-  );
-}
-
-function AccessSelectorAdvancedOptions() {
-  const [annonymousMembers] = Forms.useFieldValue<number>("access.annonymousMembers");
-  const [companyMembers, setCompanyMembers] = Forms.useFieldValue<number>("access.companyMembers");
-  const [spaceMembers, setSpaceMembers] = Forms.useFieldValue<number>("access.spaceMembers");
-
-  const [annonymousAccessOptions] = React.useState(DEFAULT_ANNONYMOUS_OPTIONS);
-  const [companyAccessOptions, setCompanyAccessOptions] = React.useState(DEFAULT_COMPANY_OPTIONS);
-  const [spaceAccessOptions, setSpaceAccessOptions] = React.useState(DEFAULT_SPACE_OPTIONS);
-
-  React.useEffect(() => {
-    if (companyMembers < annonymousMembers) {
-      setCompanyMembers(annonymousMembers);
-    }
-
-    const options = DEFAULT_COMPANY_OPTIONS.filter((option) => option.value >= annonymousMembers);
-    setCompanyAccessOptions(options);
-  }, [annonymousMembers]);
-
-  React.useEffect(() => {
-    if (spaceMembers < companyMembers) {
-      setSpaceMembers(companyMembers);
-    }
-
-    const options = DEFAULT_SPACE_OPTIONS.filter((option) => option.value >= companyMembers);
-    setSpaceAccessOptions(options);
-  }, [companyMembers]);
-
-  return (
-    <div className="mt-6">
-      <Forms.FieldGroup layout="horizontal" layoutOptions={{ dividers: true, ratio: "1:1" }}>
-        <Forms.SelectBox
-          field={"access.annonymousMembers"}
-          label="People on the internet"
-          labelIcon={<Icons.IconWorld size={20} />}
-          options={annonymousAccessOptions}
-        />
-        <Forms.SelectBox
-          field={"access.companyMembers"}
-          label="Company members"
-          labelIcon={<Icons.IconBuilding size={20} />}
-          options={companyAccessOptions}
-        />
-        <Forms.SelectBox
-          field={"access.spaceMembers"}
-          label="Space members"
-          labelIcon={<Icons.IconTent size={20} />}
-          options={spaceAccessOptions}
-        />
-      </Forms.FieldGroup>
-    </div>
   );
 }

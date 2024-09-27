@@ -12,6 +12,7 @@ interface FormProps<T extends FieldObject> {
   validate?: (addError: AddErrorFn) => void;
   submit: () => Promise<void> | void;
   cancel?: () => Promise<void> | void;
+  onChange?: (values: T) => void;
 }
 
 export interface FormState<T extends FieldObject> {
@@ -38,7 +39,7 @@ export function useForm<T extends FieldObject>(props: FormProps<T>): FormState<T
   const clearErrors = () => setErrors({});
 
   const { state, setIdleState, setValidatingState, setSubmittingState } = useFormState();
-  const { values, getValue, setValue, resetValues } = useFieldValues<T>(props.fields);
+  const { values, getValue, setValue, resetValues } = useFieldValues<T>(props.fields, props.onChange);
   const { validations, addValidation, removeValidation } = useValidations();
 
   const form = {
