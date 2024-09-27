@@ -4,123 +4,54 @@ import * as Paper from "@/components/PaperContainer";
 import * as Api from "@/api";
 
 import { Paths } from "@/routes/paths";
-import { TextInput } from "@/components/Form";
-import { PrimaryButton } from "@/components/Buttons";
 import { Logo } from "@/layouts/DefaultLayout/Logo";
 import { useNavigate } from "react-router-dom";
 
-export async function loader({}): Promise<null> {
-  return null;
-}
+import Forms from "@/components/Forms";
+
+export const loader = Pages.emptyLoader;
 
 export function Page() {
-  const form = useForm();
+  const navigate = useNavigate();
+  const [add] = Api.useAddCompany();
+
+  const form = Forms.useForm({
+    fields: { companyName: "", title: "" },
+    submit: async () => {
+      const res = await add({ ...form.values });
+      navigate(Paths.companyHomePath(res.company.id));
+    },
+  });
 
   return (
     <Pages.Page title={"New Company"}>
       <Paper.Root size="small" className="mt-24">
         <Paper.NavigateBack to={Paths.lobbyPath()} title="Back to the Lobby" />
-
         <Paper.Body>
-          <div className="flex items-center justify-between">
-            <div className="">
-              <div className="text-content-accent text-2xl font-semibold">New Company</div>
-              <div className="text-content-accent">Let&apos;s set up your company in Operately.</div>
-            </div>
-            <Logo width="40" height="40" />
-          </div>
+          <PageTitle />
 
-          <div className="mt-8 flex flex-col gap-6">
-            <div className="">
-              <TextInput
-                testId="company-name-input"
-                label="Name of the company"
-                placeholder="e.g. Acme Co."
-                value={form.companyName}
-                onChange={form.setCompanyName}
-                error={form.errors.some((e) => e.field === "companyName")}
-              />
+          <Forms.Form form={form}>
+            <Forms.FieldGroup>
+              <Forms.TextInput field="companyName" label="Name of the company" placeholder="e.g. Acme Co." />
+              <Forms.TextInput field="title" label="What's your title in the company?" placeholder="e.g. Founder" />
+            </Forms.FieldGroup>
 
-              {form.errors.some((e) => e.field === "companyName") && (
-                <div className="text-content-error text-sm mt-1">
-                  {form.errors.find((e) => e.field === "companyName")?.message}
-                </div>
-              )}
-            </div>
-
-            <div className="">
-              <TextInput
-                testId="title-input"
-                label="What's your title in the company?"
-                placeholder="e.g. Founder"
-                value={form.title}
-                onChange={form.setTitle}
-                error={form.errors.some((e) => e.field === "title")}
-              />
-
-              {form.errors.some((e) => e.field === "title") && (
-                <div className="text-content-error text-sm mt-1">
-                  {form.errors.find((e) => e.field === "title")?.message}
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className="mt-10 flex justify-center gap-4">
-            <PrimaryButton onClick={form.submit} testId="submit" loading={form.loading}>
-              Create Company
-            </PrimaryButton>
-          </div>
+            <Forms.Submit saveText="Create Company" buttonSize="sm" />
+          </Forms.Form>
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
   );
 }
 
-function useForm() {
-  const navigate = useNavigate();
-
-  const [companyName, setCompanyName] = React.useState("");
-  const [title, setTitle] = React.useState("");
-  const [errors, setErrors] = React.useState<{ field: string; message: string }[]>([]);
-
-  const [add, { loading: loading }] = Api.useAddCompany();
-
-  const submit = async (): Promise<boolean> => {
-    const foundErrors: { field: string; message: string }[] = [];
-
-    if (!companyName) {
-      foundErrors.push({ field: "companyName", message: "Company name can't be blank" });
-    }
-
-    if (!title) {
-      foundErrors.push({ field: "title", message: "Title can't be blank" });
-    }
-
-    if (foundErrors.length > 0) {
-      setErrors(foundErrors);
-      return false;
-    } else {
-      setErrors([]);
-    }
-
-    try {
-      const res = await add({ companyName, title });
-      navigate(Paths.companyHomePath(res.company.id));
-
-      return true;
-    } catch (e) {
-      return false;
-    }
-  };
-
-  return {
-    companyName,
-    setCompanyName,
-    title,
-    setTitle,
-    submit,
-    errors,
-    loading,
-  };
+function PageTitle() {
+  return (
+    <div className="flex items-center justify-between mb-8">
+      <div className="">
+        <div className="text-content-accent text-xl font-semibold">New Company</div>
+        <div className="text-content-accent">Let&apos;s set up your company in Operately.</div>
+      </div>
+      <Logo width="40" height="40" />
+    </div>
+  );
 }
