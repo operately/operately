@@ -3,13 +3,14 @@ import * as React from "react";
 import { useFormContext } from "./FormContext";
 import { GhostButton, PrimaryButton, SecondaryButton } from "@/components/Buttons";
 import classNames from "classnames";
+import { BaseButtonProps } from "../Buttons/UnstalyedButton";
 
 interface SubmitProps {
   saveText?: string;
   secondarySubmitText?: string;
   cancelText?: string;
   layout?: "left" | "centered";
-  buttonSize?: "sm" | "lg";
+  buttonSize?: BaseButtonProps["size"];
 }
 
 const DEFAULT_LAYOUT = "left";
