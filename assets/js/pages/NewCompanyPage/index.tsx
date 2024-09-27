@@ -16,9 +16,18 @@ export function Page() {
   const [add] = Api.useAddCompany();
 
   const form = Forms.useForm({
-    fields: { companyName: "", title: "" },
+    fields: {
+      companyName: "",
+      title: "",
+      isDemo: "false",
+    },
     submit: async () => {
-      const res = await add({ ...form.values });
+      const res = await add({
+        companyName: form.values.companyName,
+        title: form.values.title,
+        isDemo: form.values.isDemo == "true",
+      });
+
       navigate(Paths.companyHomePath(res.company.id));
     },
   });
@@ -34,6 +43,17 @@ export function Page() {
             <Forms.FieldGroup>
               <Forms.TextInput field="companyName" label="Name of the company" placeholder="e.g. Acme Co." />
               <Forms.TextInput field="title" label="What's your title in the company?" placeholder="e.g. Founder" />
+
+              {window.appConfig.demoBuilder && (
+                <Forms.RadioButtons
+                  field="isDemo"
+                  label="Is this a demo company?"
+                  options={[
+                    { label: "Yes", value: "true" },
+                    { label: "No", value: "false" },
+                  ]}
+                />
+              )}
             </Forms.FieldGroup>
 
             <Forms.Submit saveText="Create Company" buttonSize="sm" />

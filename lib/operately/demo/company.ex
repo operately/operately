@@ -9,8 +9,8 @@ defmodule Operately.Demo.Company do
     cleanup_acme_companies()
 
     {:ok, company} = Operately.Operations.CompanyAdding.run(%{
-      company_name: "Acme Inc.",
-      title: "Founder"
+      company_name: context.company_name,
+      title: context.title,
     }, context.account)
 
     owner = Operately.People.get_person!(context.account, company)

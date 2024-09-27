@@ -24,6 +24,7 @@ services:
       - NOTIFICATION_EMAIL=notifications@locahost.dev
       - OPERATELY_JS_SENTRY_ENABLED=false
       - OPERATELY_JS_SENTRY_DSN=not-set
+      - OPERATELY_DEMO_BUILDER_ALLOWED=true
       - CERT_DOMAIN=localhost
       - CERT_DB_DIR=/home/dev/certs
     env_file:

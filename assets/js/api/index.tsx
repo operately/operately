@@ -1526,6 +1526,7 @@ export interface AcknowledgeProjectCheckInResult {
 export interface AddCompanyInput {
   companyName?: string | null;
   title?: string | null;
+  isDemo?: boolean | null;
 }
 
 export interface AddCompanyResult {
