@@ -48,7 +48,6 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
     Inputs.parse_includes(inputs, [
       include_contributors: [contributors: [:person]],
       include_key_resources: [key_resources: :project],
-      include_milestones: [milestones: :project],
       include_goal: [:goal],
       include_space: [:group],
       include_champion: [:champion],
@@ -61,6 +60,7 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
 
   def after_load(inputs) do
     Inputs.parse_includes(inputs, [
+      include_milestones: &Project.load_milestones/1,
       include_permissions: &Project.set_permissions/1,
       include_contributors_access_levels: &Project.load_contributor_access_levels/1,
       include_access_levels: &Project.load_access_levels/1,
