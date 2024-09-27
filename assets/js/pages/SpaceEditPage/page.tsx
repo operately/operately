@@ -1,13 +1,11 @@
 import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
-import * as Icons from "@tabler/icons-react";
 import * as Forms from "@/components/Form";
 
 import { useForm, FormState } from "./useForm";
 import { useLoadedData } from "./loader";
 import { PrimaryButton } from "@/components/Buttons";
-import { Link } from "@/components/Link";
 import { Paths } from "@/routes/paths";
 
 export function Page() {
@@ -17,12 +15,7 @@ export function Page() {
   return (
     <Pages.Page title={["Appearance Settings", space.name!]}>
       <Paper.Root size="small">
-        <div className="flex items-center justify-center mb-2">
-          <Link to={Paths.spacePath(space.id!)}>
-            <Icons.IconArrowLeft className="text-content-dimmed inline mr-2" size={16} />
-            Back to the {space.name} Space
-          </Link>
-        </div>
+        <Paper.NavigateBack to={Paths.spacePath(space.id!)} title={`Back to ${space.name} Space`} />
 
         <Paper.Body minHeight="none">
           <div className="font-extrabold text-2xl text-center">Editing {space.name}</div>

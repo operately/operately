@@ -22,13 +22,14 @@
  */
 
 import React from "react";
-import { Link } from "@/components/Link";
+
+import classNames from "classnames";
 import { useLoaderData, useRevalidator } from "react-router-dom";
-import * as Icons from "@tabler/icons-react";
 
 import { Context } from "./Context";
 export { DimmedSection } from "./DimmedSection";
 export { Banner, Header } from "./Banner";
+export { Navigation, NavItem, NavSeparator, NavigateBack } from "./Navigation";
 
 export type Size = "small" | "medium" | "large" | "xlarge" | "xxlarge";
 
@@ -44,49 +45,21 @@ interface RootProps {
   size?: Size;
   children?: React.ReactNode;
   fluid?: boolean;
+  className?: string;
 }
 
-export function Root({ size, children, fluid = false }: RootProps): JSX.Element {
+export function Root({ size, children, className, fluid = false }: RootProps): JSX.Element {
   size = size || "medium";
 
-  const className = fluid
-    ? "flex-1 mx-auto my-10 relative " + "w-[90%]"
-    : "flex-1 mx-auto my-10 relative " + sizes[size];
+  className = classNames(className, "flex-1 mx-auto my-10 relative", {
+    "w-[90%]": fluid,
+    [sizes[size]]: !fluid,
+  });
 
   return (
     <Context.Provider value={{ size }}>
       <div className={className}>{children}</div>
     </Context.Provider>
-  );
-}
-
-export function Navigation({ children }) {
-  return (
-    <div className="bg-surface-dimmed flex items-center justify-center gap-1 pt-2 pb-1 mx-10 font-semibold rounded-t border-t border-x border-surface-outline">
-      {children}
-    </div>
-  );
-}
-
-interface NavItemProps {
-  linkTo: string;
-  children: React.ReactNode;
-  testId?: string;
-}
-
-export function NavItem({ linkTo, children, testId }: NavItemProps) {
-  return (
-    <Link to={linkTo} testId={testId}>
-      <span className="flex items-center gap-1.5">{children}</span>
-    </Link>
-  );
-}
-
-export function NavSeparator() {
-  return (
-    <div className="shrink-0">
-      <Icons.IconSlash size={16} />
-    </div>
   );
 }
 

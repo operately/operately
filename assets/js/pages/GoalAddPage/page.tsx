@@ -4,7 +4,6 @@ import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 
 import { PrimaryButton } from "@/components/Buttons";
-import { DimmedLink } from "@/components/Link";
 import { useLoadedData } from "./loader";
 import { FormState, useForm, Form } from "@/features/goals/GoalForm";
 import { useMe } from "@/contexts/CurrentUserContext";
@@ -35,9 +34,7 @@ function NewGoalForSpacePage({ form }: { form: FormState }) {
   return (
     <Pages.Page title="New Goal">
       <Paper.Root size="large">
-        <div className="flex items-center justify-center mb-4 gap-4">
-          <DimmedLink to={Paths.spacePath(space!.id!)}>Back to {space!.name} Space</DimmedLink>
-        </div>
+        <Paper.NavigateBack to={Paths.goalsPath()} title={`Back to ${space!.name} Space`} />
 
         <h1 className="mb-4 font-bold text-3xl text-center">Adding a new subgoal for {space!.name}</h1>
 
@@ -57,9 +54,7 @@ function NewGoalPage({ form }: { form: FormState }) {
   return (
     <Pages.Page title="New Goal">
       <Paper.Root size="large">
-        <div className="flex items-center justify-center mb-4 gap-4">
-          <DimmedLink to={Paths.goalsPath()}>Back to Goals</DimmedLink>
-        </div>
+        <Paper.NavigateBack to={Paths.goalsPath()} title="Back to Goals" />
 
         <h1 className="mb-4 font-bold text-3xl text-center">
           Adding a new {isCompanyWide ? "company-wide" : " "} goal

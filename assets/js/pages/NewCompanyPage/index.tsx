@@ -1,10 +1,8 @@
 import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
-import * as Icons from "@tabler/icons-react";
 import * as Api from "@/api";
 
-import { Link } from "@/components/Link";
 import { Paths } from "@/routes/paths";
 import { TextInput } from "@/components/Form";
 import { PrimaryButton } from "@/components/Buttons";
@@ -20,13 +18,8 @@ export function Page() {
 
   return (
     <Pages.Page title={"New Company"}>
-      <Paper.Root size="small">
-        <div className="flex items-center justify-center mb-4 mt-24">
-          <Link to={Paths.lobbyPath()}>
-            <Icons.IconArrowLeft className="text-content-dimmed inline mr-2" size={16} />
-            Back to the Lobby
-          </Link>
-        </div>
+      <Paper.Root size="small" className="mt-24">
+        <Paper.NavigateBack to={Paths.lobbyPath()} title="Back to the Lobby" />
 
         <Paper.Body>
           <div className="flex items-center justify-between">
