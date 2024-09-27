@@ -80,6 +80,54 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdateTest do
     end
   end
 
+  describe "get_goal_progress_update functionality" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.add_space(:space)
+      |> Factory.add_space_member(:champion, :space)
+      |> Factory.add_space_member(:reviewer, :space)
+      |> Factory.add_space_member(:member, :space)
+      |> Factory.add_goal(:goal, :space, champion: :champion, reviewer: :reviewer)
+      |> Factory.add_goal_update(:update, :goal, :champion)
+      |> Factory.log_in_person(:champion)
+    end
+
+    test "include_potential_subscribers", ctx do
+      assert {200, res} = query(ctx.conn, :get_goal_progress_update, %{id: Paths.goal_update_id(ctx.update)})
+
+      refute res.update.potential_subscribers
+
+      assert {200, res} = query(ctx.conn, :get_goal_progress_update, %{
+        id: Paths.goal_update_id(ctx.update),
+        include_potential_subscribers: true,
+      })
+
+      subs = res.update.potential_subscribers
+
+      assert length(subs) == 4
+
+      champion = Enum.find(subs, &(&1.person == Serializer.serialize(ctx.champion)))
+      reviewer = Enum.find(subs, &(&1.person == Serializer.serialize(ctx.reviewer)))
+
+      # Only creator of update has subscription by default
+      assert champion.is_subscribed
+      refute reviewer.is_subscribed
+
+      # Champion and reviewer are priority
+      assert champion.priority
+      assert reviewer.priority
+
+      # Other space members are potential subscribers
+      [ctx.creator, ctx.member]
+      |> Enum.each(fn p ->
+        sub = Enum.find(subs, &(&1.person == Serializer.serialize(p)))
+        refute sub.is_subscribed
+        refute sub.priority
+      end)
+    end
+  end
+
   #
   # Helpers
   #
