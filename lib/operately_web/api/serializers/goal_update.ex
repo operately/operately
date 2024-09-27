@@ -13,6 +13,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Goals.Update  do
       comments_count: Operately.Updates.count_comments(update.id, :goal_update),
       goal_target_updates: parse_targets(update.targets),
       subscription_list: OperatelyWeb.Api.Serializer.serialize(update.subscription_list),
+      potential_subscribers: OperatelyWeb.Api.Serializer.serialize(update.potential_subscribers),
     }
   end
 

@@ -2,10 +2,12 @@ defmodule Operately.Goals.Update do
   use Operately.Schema
   use Operately.Repo.Getter
 
+  alias Operately.Notifications
+
   schema "goal_updates" do
     belongs_to :goal, Operately.Goals.Goal, foreign_key: :goal_id
     belongs_to :author, Operately.People.Person, foreign_key: :author_id
-    belongs_to :subscription_list, Operately.Notifications.SubscriptionList, foreign_key: :subscription_list_id
+    belongs_to :subscription_list, Notifications.SubscriptionList, foreign_key: :subscription_list_id
 
     has_one :access_context, through: [:goal, :access_context]
     has_many :reactions, Operately.Updates.Reaction, foreign_key: :entity_id, where: [entity_type: :goal_update]
@@ -15,6 +17,9 @@ defmodule Operately.Goals.Update do
     field :acknowledged_at, :utc_datetime
     belongs_to :acknowledged_by, Operately.People.Person, foreign_key: :acknowledged_by_id
     embeds_many :targets, Operately.Goals.Update.Target, on_replace: :delete
+
+    # populated with after load hooks
+    field :potential_subscribers, :any, virtual: true
 
     timestamps()
     requester_access_level()
@@ -30,5 +35,14 @@ defmodule Operately.Goals.Update do
     |> cast(attrs, [:goal_id, :author_id, :message, :acknowledged_at, :acknowledged_by_id, :subscription_list_id])
     |> cast_embed(:targets)
     |> validate_required([:goal_id, :author_id, :message, :subscription_list_id])
+  end
+
+  def set_potential_subscribers(update = %__MODULE__{}) do
+    subs =
+      update
+      |> Notifications.SubscribersLoader.preload_subscriptions()
+      |> Notifications.Subscriber.from_goal_update()
+
+    %{update | potential_subscribers: subs}
   end
 end
