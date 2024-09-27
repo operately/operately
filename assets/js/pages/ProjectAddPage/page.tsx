@@ -6,7 +6,6 @@ import * as People from "@/models/people";
 import * as Spaces from "@/models/spaces";
 
 import { useLoadedData } from "./loader";
-import { DimmedLink } from "@/components/Link";
 import { Paths, compareIds } from "@/routes/paths";
 import { useMe } from "@/contexts/CurrentUserContext";
 import { useNavigate } from "react-router-dom";
@@ -46,17 +45,9 @@ function Navigation() {
   if (spaceID && space) {
     const spaceProjectsPath = Paths.spaceProjectsPath(spaceID!);
 
-    return (
-      <div className="flex items-center justify-center mb-4 gap-4">
-        <DimmedLink to={spaceProjectsPath}>Back to {space!.name} Space</DimmedLink>
-      </div>
-    );
+    return <Paper.NavigateBack to={spaceProjectsPath} title={`Back to ${space!.name} Space`} />;
   } else {
-    return (
-      <div className="flex items-center justify-center mb-4 gap-4">
-        <DimmedLink to={Paths.projectsPath()}>Back to Projects</DimmedLink>
-      </div>
-    );
+    return <Paper.NavigateBack to={Paths.projectsPath()} title="Back to Projects" />;
   }
 }
 
