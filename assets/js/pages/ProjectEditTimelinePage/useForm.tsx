@@ -61,7 +61,7 @@ export function useForm(project: Projects.Project): FormState {
     await edit({
       projectId: project.id,
       projectStartDate: startTime && Time.toDateWithoutTime(startTime),
-      projectDueDate: dueDate && Time.toDateWithoutTime(dueDate),
+      projectDueDate: dueDate ? Time.toDateWithoutTime(dueDate) : undefined,
       newMilestones: milestoneList.newMilestones.map((m) => ({
         title: m.title,
         description: m.description,

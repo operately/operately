@@ -56,7 +56,7 @@ defmodule Operately.Activities.Content.ProjectTimelineEdited do
     |> cast(attrs, [:company_id, :project_id, :old_start_date, :old_end_date, :new_start_date, :new_end_date])
     |> cast_embed(:milestone_updates)
     |> cast_embed(:new_milestones)
-    |> validate_required([:company_id, :project_id, :new_start_date, :new_end_date])
+    |> validate_required([:company_id, :project_id, :new_start_date])
   end
 
   def build(params) do
