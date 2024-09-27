@@ -222,7 +222,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
       test "project retrospective comment - if caller has levels company=#{@test.company}, space=#{@test.space}, project=#{@test.project} on the project, then expect code=#{@test.expected}", ctx do
         space = create_space(ctx)
         project = create_project(ctx, space, @test.company, @test.space, @test.project)
-        retrospective = retrospective_fixture(%{project_id: project.id, author_id: ctx.creator.id})
+        retrospective = retrospective_fixture(%{project_id: project.id, author_id: ctx.creator.id}) |> Repo.preload(:project)
         comment = create_comment(ctx, retrospective, "project_retrospective")
 
         assert {code, res} = mutation(ctx.conn, :add_reaction, %{
