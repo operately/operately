@@ -2,7 +2,7 @@ import * as React from "react";
 
 import { FieldObject } from "./useForm/field";
 import { ErrorMap, AddErrorFn, ValidationFn } from "./useForm/errors";
-import { useFieldValues } from "./useForm/values";
+import { useFieldValues, OnChangeFn } from "./useForm/values";
 import { useFormState } from "./useForm/state";
 import { useValidations, runValidations } from "./useForm/validations";
 import { State } from "./useForm/state";
@@ -12,6 +12,7 @@ interface FormProps<T extends FieldObject> {
   validate?: (addError: AddErrorFn) => void;
   submit: () => Promise<void> | void;
   cancel?: () => Promise<void> | void;
+  onChange?: OnChangeFn<T>;
 }
 
 export interface FormState<T extends FieldObject> {
@@ -38,7 +39,7 @@ export function useForm<T extends FieldObject>(props: FormProps<T>): FormState<T
   const clearErrors = () => setErrors({});
 
   const { state, setIdleState, setValidatingState, setSubmittingState } = useFormState();
-  const { values, getValue, setValue, resetValues } = useFieldValues<T>(props.fields);
+  const { values, getValue, setValue, resetValues } = useFieldValues<T>(props.fields, props.onChange);
   const { validations, addValidation, removeValidation } = useValidations();
 
   const form = {
