@@ -1,16 +1,12 @@
-import React from "react";
-
-import { useDocumentTitle } from "@/layouts/header";
-
+import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
-import * as Icons from "@tabler/icons-react";
 import * as Spaces from "@/models/spaces";
+import * as Pages from "@/components/Pages";
 
 import Avatar from "@/components/Avatar";
 import { SecondaryButton } from "@/components/Buttons";
 
 import AddMembersModal from "./AddMembersModal";
-import { Link } from "@/components/Link";
 import { Paths } from "@/routes/paths";
 
 interface LoadedData {
@@ -25,23 +21,18 @@ export function Page() {
   const [{ space }] = Paper.useLoadedData() as [LoadedData, () => void];
   const [_, refetch] = Paper.useLoadedData() as [LoadedData, () => void];
 
-  useDocumentTitle(space.name + " Members");
-
   return (
-    <Paper.Root size="medium">
-      <div className="flex items-center justify-center mb-2">
-        <Link to={Paths.spacePath(space.id!)}>
-          <Icons.IconArrowLeft className="text-content-dimmed inline mr-2" size={16} />
-          Back to the {space.name} Space
-        </Link>
-      </div>
+    <Pages.Page title={space.name + " Members"}>
+      <Paper.Root size="medium">
+        <Paper.NavigateBack to={Paths.spacePath(space.id!)} title={`Back to ${space.name} Space`} />
 
-      <Paper.Body minHeight="none">
-        <Header space={space} />
-        <AddMembersModal spaceId={space.id!} onSubmit={refetch} members={space.members} />
-        <MemberList space={space} />
-      </Paper.Body>
-    </Paper.Root>
+        <Paper.Body minHeight="none">
+          <Header space={space} />
+          <AddMembersModal spaceId={space.id!} onSubmit={refetch} members={space.members} />
+          <MemberList space={space} />
+        </Paper.Body>
+      </Paper.Root>
+    </Pages.Page>
   );
 }
 
