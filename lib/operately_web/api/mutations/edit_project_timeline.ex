@@ -49,7 +49,7 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectTimeline do
       project_id: project_id,
 
       project_start_date: parse_date(inputs.project_start_date),
-      project_due_date: parse_date(inputs.project_due_date),
+      project_due_date: inputs[:project_due_date] && parse_date(inputs.project_due_date),
 
       milestone_updates: Enum.map(inputs.milestone_updates, fn update ->
         {:ok, milestone_id} = decode_id(update.id)
