@@ -106,4 +106,33 @@ defmodule Operately.Features.ProjectCreationTest do
     |> Steps.follow_add_reviewer_link_and_add_reviewer()
     |> Steps.assert_project_has_reviewer(params)
   end
+
+  @tag login_as: :champion
+  feature "creating a project in a confidential space", ctx do
+    params = %{name: "Website Redesign", creator: ctx.champion, reviewer: ctx.reviewer, champion: ctx.champion}
+
+    ctx
+    |> Steps.given_that_space_is_hidden_from_company_members()
+    |> Steps.start_adding_project()
+    |> Steps.assert_form_offers_space_wide_access_level()
+    |> Steps.submit_project_form(params)
+    |> Steps.assert_project_created(params)
+    |> Steps.assert_company_members_cant_see_project(params)
+    |> Steps.assert_space_members_can_see_project(params)
+  end
+
+  @tag login_as: :champion
+  feature "creating an invite-only project in a confidential space", ctx do
+    params = %{name: "Website Redesign", creator: ctx.champion, reviewer: ctx.reviewer, champion: ctx.champion}
+
+    ctx
+    |> Steps.given_that_space_is_hidden_from_company_members()
+    |> Steps.start_adding_project()
+    |> Steps.assert_form_offers_space_wide_access_level()
+    |> Steps.change_project_access_level_to_invite_only()
+    |> Steps.submit_project_form(params)
+    |> Steps.assert_project_created(params)
+    |> Steps.assert_company_members_cant_see_project(params)
+    |> Steps.assert_space_members_cant_see_project(params)
+  end
 end
