@@ -24,6 +24,7 @@
       window.appConfig = {};
 
       window.appConfig.environment = "<%= Application.get_env(:operately, :app_env) %>";
+      window.appConfig.demoBuilder = <%= Application.get_env(:operately, :demo_builder_allowed) %>;
 
       <%= if @current_account do %>
         window.appConfig.api = {};
