@@ -344,6 +344,12 @@ defmodule Operately.Updates do
           join: project in assoc(check_in, :project), as: :resource,
           where: comment.id == ^id
         )
+      :project_retrospective ->
+        from(comment in Comment, as: :comment,
+          join: retrospective in Operately.Projects.Retrospective, on: retrospective.id == comment.entity_id,
+          join: project in assoc(retrospective, :project), as: :resource,
+          where: comment.id == ^id
+        )
       :comment_thread ->
         from(c in Comment, as: :comment,
           join: t in Operately.Comments.CommentThread, on: t.id == c.entity_id,
@@ -355,7 +361,7 @@ defmodule Operately.Updates do
           join: u in Operately.Goals.Update, on: u.id == c.entity_id, as: :resource,
           where: c.id == ^id
         )
-     :message ->
+      :message ->
         from(c in Comment, as: :comment,
           join: m in Operately.Messages.Message, on: m.id == c.entity_id, as: :resource,
           where: c.id == ^id
