@@ -2,6 +2,7 @@ defmodule Operately.Projects.Project do
   use Operately.Schema
   use Operately.Repo.Getter
 
+  alias Operately.Repo
   alias Operately.Access.AccessLevels
   alias Operately.Projects.{Contributor, Permissions}
 
@@ -196,6 +197,14 @@ defmodule Operately.Projects.Project do
   def load_privacy(project) do
     project = if project.access_levels, do: project, else: load_access_levels(project)
     Map.put(project, :privacy, AccessLevels.calc_privacy(project.access_levels))
+  end
+
+  def load_milestones(p = %__MODULE__{}) do
+    milestones = for milestone <- Repo.preload(p, :milestones).milestones do
+      %{milestone | project: p}
+    end
+
+    Map.put(p, :milestones, milestones)
   end
 
   def get_access_context(project = %__MODULE__{}) do

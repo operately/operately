@@ -45,10 +45,9 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
   end
 
   def preload(inputs) do
-    OperatelyWeb.Api.Helpers.Inputs.parse_includes(inputs, [
+    Inputs.parse_includes(inputs, [
       include_contributors: [contributors: [:person]],
       include_key_resources: [key_resources: :project],
-      include_milestones: [milestones: :project],
       include_goal: [:goal],
       include_space: [:group],
       include_champion: [:champion],
@@ -60,19 +59,14 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
   end
 
   def after_load(inputs) do
-    filter_what_to_run([
-      %{run: &Project.set_permissions/1, if: inputs[:include_permissions]},
-      %{run: &Project.load_contributor_access_levels/1, if: inputs[:include_contributors_access_levels]},
-      %{run: &Project.load_access_levels/1, if: inputs[:include_access_levels]},
-      %{run: &Project.load_privacy/1, if: inputs[:include_privacy]},
-      %{run: &Project.set_potential_subscribers/1, if: inputs[:include_potential_subscribers]},
+    Inputs.parse_includes(inputs, [
+      include_milestones: &Project.load_milestones/1,
+      include_permissions: &Project.set_permissions/1,
+      include_contributors_access_levels: &Project.load_contributor_access_levels/1,
+      include_access_levels: &Project.load_access_levels/1,
+      include_privacy: &Project.load_privacy/1,
+      include_potential_subscribers: &Project.set_potential_subscribers/1,
     ])
-  end
-
-  defp filter_what_to_run(list) do
-    list
-    |> Enum.filter(fn %{if: c} -> c end)
-    |> Enum.map(fn %{run: f} -> f end)
   end
 
   defp check_inputs(inputs) do
