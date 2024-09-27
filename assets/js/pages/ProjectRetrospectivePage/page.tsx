@@ -5,6 +5,8 @@ import * as PageOptions from "@/components/PaperContainer/PageOptions";
 
 import { Paths } from "@/routes/paths";
 import { IconEdit } from "@tabler/icons-react";
+import { useForProjectRetrospective } from "@/features/CommentSection/useForProjectRetrospective";
+import { CommentSection } from "@/features/CommentSection";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
 import { AvatarWithName } from "@/components/Avatar/AvatarWithName";
@@ -12,7 +14,7 @@ import { Spacer } from "@/components/Spacer";
 import RichContent from "@/components/RichContent";
 import FormattedTime from "@/components/FormattedTime";
 
-import { useLoadedData } from "./loader";
+import { useLoadedData, useRefresh } from "./loader";
 
 export function Page() {
   const { retrospective } = useLoadedData();
@@ -28,8 +30,11 @@ export function Page() {
           <Header />
           <Content />
 
-          <Spacer size={3} />
+          <Spacer size={2} />
           <Reactions />
+
+          <Spacer size={4} />
+          <Comments />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
@@ -96,4 +101,18 @@ function Reactions() {
   const addReactionForm = useReactionsForm(entity, reactions);
 
   return <ReactionList size={24} form={addReactionForm} />;
+}
+
+function Comments() {
+  const { retrospective, comments } = useLoadedData();
+  const refresh = useRefresh();
+
+  const commentsForm = useForProjectRetrospective(retrospective, comments);
+
+  return (
+    <>
+      <div className="border-t border-stroke-base mt-8" />
+      <CommentSection form={commentsForm} refresh={refresh} commentParentType="project_retrospective" />
+    </>
+  );
 }
