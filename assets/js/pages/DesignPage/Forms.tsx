@@ -1,5 +1,6 @@
 import * as React from "react";
 import * as Icons from "@tabler/icons-react";
+import * as People from "@/models/people";
 
 import { Section, SectionTitle } from "./Section";
 import Forms from "@/components/Forms";
@@ -174,6 +175,7 @@ function RichTextForm() {
             field={"description"}
             label={"Description"}
             placeholder="e.g. A new project to explore Mars"
+            mentionSearchScope={People.NoneSearchScope}
           />
         </Forms.FieldGroup>
 

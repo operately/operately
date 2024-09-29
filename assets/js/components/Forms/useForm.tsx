@@ -29,6 +29,7 @@ export interface FormState<T extends FieldObject> {
     removeValidation: (field: string, validation: ValidationFn) => void;
     getValue: (key: string) => any;
     setValue: (key: string, value: any) => void;
+    setState: (state: State) => void;
   };
 }
 
@@ -38,7 +39,7 @@ export function useForm<T extends FieldObject>(props: FormProps<T>): FormState<T
   const [errors, setErrors] = React.useState<ErrorMap>({});
   const clearErrors = () => setErrors({});
 
-  const { state, setIdleState, setValidatingState, setSubmittingState } = useFormState();
+  const { state, setState } = useFormState();
   const { values, getValue, setValue, resetValues } = useFieldValues<T>(props.fields, props.onChange);
   const { validations, addValidation, removeValidation } = useValidations();
 
@@ -54,21 +55,23 @@ export function useForm<T extends FieldObject>(props: FormProps<T>): FormState<T
       getValue,
       setValue,
       submit: async () => {
-        setValidatingState();
+        if (state !== "idle") return;
+
+        setState("validating");
 
         const errors = runValidations(form, validations, props.validate);
         if (Object.keys(errors).length > 0) {
           console.log("Values", values);
           console.log("Errors", errors);
           setErrors(errors);
-          setIdleState();
+          setState("idle");
           return;
         }
 
-        setSubmittingState();
+        setState("submitting");
         await props.submit();
 
-        setIdleState();
+        setState("idle");
         form.actions.reset();
       },
       cancel: async () => {
@@ -80,6 +83,7 @@ export function useForm<T extends FieldObject>(props: FormProps<T>): FormState<T
         form.actions.clearErrors();
         resetValues();
       },
+      setState,
     },
   };
 
