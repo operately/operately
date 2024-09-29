@@ -31,12 +31,13 @@ export function Submit(props: SubmitProps) {
     "justify-center": layout === "centered",
   });
 
-  const loading = React.useMemo(() => form.state === "submitting", [form.state]);
+  const loading = React.useMemo(() => form.state === "submitting" || form.state === "uploading", [form.state]);
+  const buttonText = form.state === "uploading" ? "Uploading..." : saveText;
 
   return (
     <div className={className}>
       <PrimaryButton type="submit" loading={loading} testId="submit" size={buttonSize}>
-        {saveText}
+        {buttonText}
       </PrimaryButton>
 
       {props.secondarySubmitText && (

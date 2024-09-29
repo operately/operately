@@ -1,5 +1,6 @@
 import * as React from "react";
 import * as Icons from "@tabler/icons-react";
+import * as People from "@/models/people";
 
 import { Section, SectionTitle } from "./Section";
 import Forms from "@/components/Forms";
@@ -20,6 +21,7 @@ export function FormExamples() {
         <HorizontalFormCustomized />
         <GridForm />
         <ArrayForm />
+        <RichTextForm />
       </div>
     </Section>
   );
@@ -143,6 +145,38 @@ function GridForm() {
           <Forms.TextInput field={"email"} label={"Email"} placeholder="e.g. martin@acme.org" />
           <Forms.PasswordInput field={"password"} label={"Password"} />
           <Forms.PasswordInput field={"confirmPassword"} label={"Confirm Password"} />
+        </Forms.FieldGroup>
+
+        <Forms.Submit saveText="Submit" />
+      </Forms.Form>
+    </div>
+  );
+}
+
+function RichTextForm() {
+  const form = Forms.useForm({
+    fields: {
+      name: "",
+      description: null,
+    },
+    submit: async () => {
+      console.log("Form submitted with values:", form.values.description);
+    },
+  });
+
+  return (
+    <div className="p-6 border border-surface-outline rounded shadow-sm">
+      <Forms.Form form={form}>
+        <div className="mb-4 font-bold text-lg">Rich Text Form</div>
+
+        <Forms.FieldGroup>
+          <Forms.TextInput field={"name"} label={"Name"} placeholder="e.g. Project Orion" />
+          <Forms.RichTextArea
+            field={"description"}
+            label={"Description"}
+            placeholder="e.g. A new project to explore Mars"
+            mentionSearchScope={People.NoneSearchScope}
+          />
         </Forms.FieldGroup>
 
         <Forms.Submit saveText="Submit" />

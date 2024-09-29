@@ -127,18 +127,11 @@
 }
 
 .ProseMirror p.is-editor-empty:first-child::before {
-  color: var(--color-content-dimmed);
+  color: var(--color-content-subtle);
   content: attr(data-placeholder);
   float: left;
   height: 0;
   pointer-events: none;
-}
-
-.ProseMirror h3 {
-  /* font-size: 1.2rem; */
-  /* font-weight: 700; */
-  /* margin-bottom: 1rem; */
-  /* color: var(--color-brand-1); */
 }
 
 .ProseMirror [data-type="mention"] {
