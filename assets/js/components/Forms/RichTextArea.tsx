@@ -9,7 +9,6 @@ interface RichTextAreaProps {
   field: string;
   label?: string;
   hidden?: boolean;
-  required?: boolean;
   placeholder?: string;
 }
 
@@ -39,14 +38,16 @@ function Editor({
   const editor = TipTapEditor.useEditor({
     placeholder: placeholder,
     className: "min-h-[250px] px-3 py-2 font-medium",
+    onBlur: () => {
+      setValue(editor.editor.getJSON());
+    },
   });
 
   React.useEffect(() => {
-    if (value === null && editor.editor) {
-      editor.editor.commands.setContent("");
-      setValue(editor.editor);
+    if (editor.editor) {
+      editor.editor.commands.setContent(value);
     }
-  }, [value, editor.editor === null]);
+  }, [value, editor.editor]);
 
   return (
     <div className={styles(!!error)}>

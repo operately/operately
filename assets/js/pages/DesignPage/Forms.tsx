@@ -152,16 +152,14 @@ function GridForm() {
   );
 }
 
-import * as TipTapEditor from "@tiptap/react";
-
 function RichTextForm() {
   const form = Forms.useForm({
     fields: {
       name: "",
-      description: "",
+      description: null,
     },
     submit: async () => {
-      console.log("Form submitted with values:", form.values.description?.getJSON());
+      console.log("Form submitted with values:", form.values.description);
     },
   });
 
