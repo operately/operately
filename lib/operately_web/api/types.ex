@@ -1008,6 +1008,7 @@ defmodule OperatelyWeb.Api.Types do
     field :comments_count, :integer
     field :goal, :goal
     field :subscription_list, :subscription_list
+    field :potential_subscribers, list_of(:subscriber)
   end
 
   object :goal_target_updates do
