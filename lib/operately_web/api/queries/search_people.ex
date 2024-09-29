@@ -24,6 +24,8 @@ defmodule OperatelyWeb.Api.Queries.SearchPeople do
   @limit 10
 
   def call(conn, inputs) do
+    inputs = parse_inputs(inputs)
+
     check_permissions(me(conn))
     |> load_people(inputs)
     |> serialize()
@@ -92,7 +94,8 @@ defmodule OperatelyWeb.Api.Queries.SearchPeople do
           join: g in assoc(m, :group),
           join: b in assoc(g, :bindings),
           join: c in assoc(b, :context),
-          where: c.project_id == ^id
+          where: c.project_id == ^id and b.access_level > 0,
+          group_by: p.id
 
       {"space", id} -> 
         from p in query,
@@ -100,7 +103,8 @@ defmodule OperatelyWeb.Api.Queries.SearchPeople do
           join: g in assoc(m, :group),
           join: b in assoc(g, :bindings),
           join: c in assoc(b, :context),
-          where: c.group_id == ^id
+          where: c.group_id == ^id and b.access_level > 0,
+          group_by: p.id
 
       {"goal", id} -> 
         from p in query,
@@ -108,7 +112,8 @@ defmodule OperatelyWeb.Api.Queries.SearchPeople do
           join: g in assoc(m, :group),
           join: b in assoc(g, :bindings),
           join: c in assoc(b, :context),
-          where: c.goal_id == ^id
+          where: c.goal_id == ^id and b.access_level > 0,
+          group_by: p.id
     end
   end
 
@@ -118,5 +123,14 @@ defmodule OperatelyWeb.Api.Queries.SearchPeople do
 
   def serialize(people) when is_list(people) do
     %{people: Serializer.serialize(people, level: :essential)}
+  end
+  
+  def parse_inputs(inputs) do
+    if inputs[:search_scope_id] do
+      {:ok, search_scope_id} = decode_id(inputs[:search_scope_id])
+      %{inputs | search_scope_id: search_scope_id}
+    else
+      inputs
+    end
   end
 end
