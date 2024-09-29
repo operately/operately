@@ -8,11 +8,11 @@ export type Person = api.Person;
 export { useGetMe, getPerson, getPeople, updateProfile } from "@/api";
 
 export type SearchScope =
-  | { type: "company" }
+  | { type: "company"; id?: undefined }
   | { type: "project"; id: string }
   | { type: "space"; id: string }
   | { type: "goal"; id: string }
-  | { type: "none" };
+  | { type: "none"; id?: undefined };
 
 export const CompanyWideSearchScope = { type: "company" } as SearchScope;
 export const NoneSearchScope = { type: "none" } as SearchScope;
@@ -38,7 +38,12 @@ export function usePeopleSearch(scope: SearchScope) {
       ignoredIds = arg.ignoredIds || [];
     }
 
-    const res = await Api.searchPeople({ query, ignoredIds });
+    const res = await Api.searchPeople({ 
+      query, 
+      ignoredIds 
+      searchScopeType: scope.type,
+      searchScopeId: scope.id,
+    });
     return res.people as Person[];
   };
 }
