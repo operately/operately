@@ -47,6 +47,7 @@ defmodule OperatelyWeb.Api.Queries.SearchPeople do
     |> ignore_ids(inputs[:ignored_ids] || [])
     |> order_asc_by_match_position(inputs)
     |> exclude_suspended()
+    |> filter_by_search_scope(inputs[:search_scope_type], inputs[:search_scope_id])
     |> limit(@limit)
     |> Repo.all()
   end
@@ -78,6 +79,37 @@ defmodule OperatelyWeb.Api.Queries.SearchPeople do
 
   defp exclude_suspended(query) do
     from p in query, where: p.suspended == false
+  end
+
+  defp filter_by_search_scope(query, scope, id) do
+    case {scope, id} do
+      {"company", _} -> 
+        query
+
+      {"project", id} -> 
+        from p in query,
+          join: m in assoc(p, :access_group_memberships),
+          join: g in assoc(m, :group),
+          join: b in assoc(g, :bindings),
+          join: c in assoc(b, :context),
+          where: c.project_id == ^id
+
+      {"space", id} -> 
+        from p in query,
+          join: m in assoc(p, :access_group_memberships),
+          join: g in assoc(m, :group),
+          join: b in assoc(g, :bindings),
+          join: c in assoc(b, :context),
+          where: c.group_id == ^id
+
+      {"goal", id} -> 
+        from p in query,
+          join: m in assoc(p, :access_group_memberships),
+          join: g in assoc(m, :group),
+          join: b in assoc(g, :bindings),
+          join: c in assoc(b, :context),
+          where: c.goal_id == ^id
+    end
   end
 
   defp ok_tuple(value) do

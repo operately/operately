@@ -27,6 +27,8 @@ export function usePeopleSearch(scope: SearchScope) {
   // This is a bit of a hack to make it work with both.
   //
   return async (arg: string | { query: string; ignoredIds?: string[] }): Promise<Person[]> => {
+    if (scope.type === "none") return [];
+
     let query = "";
     let ignoredIds: string[] = [];
 
@@ -38,9 +40,9 @@ export function usePeopleSearch(scope: SearchScope) {
       ignoredIds = arg.ignoredIds || [];
     }
 
-    const res = await Api.searchPeople({ 
-      query, 
-      ignoredIds 
+    const res = await Api.searchPeople({
+      query,
+      ignoredIds,
       searchScopeType: scope.type,
       searchScopeId: scope.id,
     });

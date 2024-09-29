@@ -1483,6 +1483,8 @@ export interface GetUnreadNotificationCountResult {
 export interface SearchPeopleInput {
   query?: string | null;
   ignoredIds?: string[] | null;
+  searchScopeType?: string | null;
+  searchScopeId?: string | null;
 }
 
 export interface SearchPeopleResult {
