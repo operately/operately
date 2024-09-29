@@ -4,6 +4,7 @@ import * as Paper from "@/components/PaperContainer";
 import * as Goals from "@/models/goals";
 import * as TipTapEditor from "@/components/Editor";
 import * as Activities from "@/models/activities";
+import * as Api from "@/api";
 
 import { FormTitleInput } from "@/components/FormTitleInput";
 import { PrimaryButton } from "@/components/Buttons";
@@ -13,6 +14,7 @@ import { GoalSubpageNavigation } from "@/features/goals/GoalSubpageNavigation";
 import { Validators } from "@/utils/validators";
 
 import { useFormState, formValidator, useFormMutationAction } from "@/components/Form/useFormState";
+import { match } from "ts-pattern";
 
 interface LoaderResult {
   activity: Activities.Activity;
@@ -73,6 +75,7 @@ function useForm({ activity }: { activity: Activities.Activity }) {
     placeholder: "Start a new discussion...",
     className: "min-h-[350px] py-2 text-lg",
     content: JSON.parse(commentThread.message!),
+    mentionSearchScope: { type: "goal", id: findGoalId(activity) },
   });
 
   return useFormState<FormFields>({
@@ -95,4 +98,21 @@ function useForm({ activity }: { activity: Activities.Activity }) {
       onCompleted: (_data, navigate) => navigate(Paths.goalActivityPath(activity.id!)),
     }),
   });
+}
+
+function findGoalId(activity: Api.Activity): string {
+  return match(activity.action)
+    .with("goal_archived", () => (activity.content as Api.ActivityContentGoalArchived).goal!.id)
+    .with("goal_check_in", () => (activity.content as Api.ActivityContentGoalCheckIn).goal!.id)
+    .with(
+      "goal_check_in_acknowledgement",
+      () => (activity.content as Api.ActivityContentGoalCheckInAcknowledgement).goal!.id,
+    )
+    .with("goal_closing", () => (activity.content as Api.ActivityContentGoalClosing).goal!.id)
+    .with("goal_created", () => (activity.content as Api.ActivityContentGoalCreated).goal!.id)
+    .with("goal_discussion_creation", () => (activity.content as Api.ActivityContentGoalDiscussionCreation).goal!.id)
+    .with("goal_editing", () => (activity.content as Api.ActivityContentGoalEditing).goal!.id)
+    .with("goal_reopening", () => (activity.content as Api.ActivityContentGoalReopening).goal!.id)
+    .with("goal_timeframe_editing", () => (activity.content as Api.ActivityContentGoalTimeframeEditing).goal!.id)
+    .run()!;
 }

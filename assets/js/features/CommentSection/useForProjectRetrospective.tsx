@@ -37,5 +37,6 @@ export function useForProjectRetrospective(project: Projects.Project, comments: 
     postComment,
     editComment,
     submitting: submittingPost || submittingEdit,
+    mentionSearchScope: { type: "project", id: project.id! },
   };
 }

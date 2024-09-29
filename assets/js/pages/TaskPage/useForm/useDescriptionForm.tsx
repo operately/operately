@@ -22,6 +22,7 @@ export function useDescriptionState(fields: Fields): DescriptionFormState {
     placeholder: "Write here...",
     className: "min-h-[250px] p-2 py-1",
     content: fields.description && JSON.parse(fields.description),
+    mentionSearchScope: { type: "project", id: fields.projectID },
   });
 
   const [editName] = Tasks.useChangeTaskDescription();
