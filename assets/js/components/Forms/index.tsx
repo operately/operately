@@ -6,6 +6,7 @@ import { FieldGroup } from "./FieldGroup";
 import { SelectGoal } from "./SelectGoal";
 import { RadioButtons } from "./RadioButtons";
 import { SelectPerson } from "./SelectPerson";
+import { RichTextArea } from "./RichTextArea";
 import { PasswordInput } from "./PasswordInput";
 import { MultiPeopleSelectField } from "./MultiPeopleSelectField";
 
@@ -24,6 +25,7 @@ export default {
   FieldGroup,
   SelectGoal,
   RadioButtons,
+  RichTextArea,
   SelectPerson,
   PasswordInput,
   MultiPeopleSelectField,
