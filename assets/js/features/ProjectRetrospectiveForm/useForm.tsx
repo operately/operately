@@ -102,6 +102,7 @@ function useWhatWentWellEditor(options: FormOptions) {
     placeholder: `Write your answer here...`,
     className: "min-h-[250px] py-2 font-medium",
     content: findExistingContent(options, "whatWentWell"),
+    mentionSearchScope: { type: "project", id: options.project!.id! },
   });
 }
 
@@ -110,6 +111,7 @@ function useWhatCouldHaveGoneBetterEditor(options: FormOptions) {
     placeholder: `Write your answer here...`,
     className: "min-h-[250px] py-2 font-medium",
     content: findExistingContent(options, "whatCouldHaveGoneBetter"),
+    mentionSearchScope: { type: "project", id: options.project!.id! },
   });
 }
 
@@ -118,6 +120,7 @@ function useWhatDidYouLearnEditor(options: FormOptions) {
     placeholder: `Write your answer here...`,
     className: "min-h-[250px] py-2 font-medium",
     content: findExistingContent(options, "whatDidYouLearn"),
+    mentionSearchScope: { type: "project", id: options.project!.id! },
   });
 }
 

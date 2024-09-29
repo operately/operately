@@ -12,6 +12,8 @@ interface Error {
 }
 
 export interface FormState {
+  projectId: string;
+
   startTime: Date | null;
   setStartTime: (date: Date | null) => void;
 
@@ -87,6 +89,8 @@ export function useForm(project: Projects.Project): FormState {
   const errors = [];
 
   return {
+    projectId: project.id!,
+
     startTime,
     setStartTime,
     dueDate,

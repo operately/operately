@@ -1,10 +1,11 @@
 import * as Comments from "@/models/comments";
 import * as Time from "@/utils/time";
+import * as People from "@/models/people";
 
 import { ItemType, FormState } from "./form";
 import { CommentThread } from "@/api";
 
-export function useForCommentThread(thread: CommentThread): FormState {
+export function useForCommentThread(thread: CommentThread, mentionSearchScope: People.SearchScope): FormState {
   const items = thread.comments!.map((c) => {
     return {
       type: "comment" as ItemType,
@@ -37,5 +38,6 @@ export function useForCommentThread(thread: CommentThread): FormState {
     postComment,
     editComment,
     submitting: submittingPost || submittingEdit,
+    mentionSearchScope,
   };
 }
