@@ -60,6 +60,7 @@ interface UseEditorProps {
   content?: any;
   onSave?: (data: OnSaveData) => void;
   onBlur?: (data: OnBlurData) => void;
+  onUploadStatusChange?: (uploading: boolean) => void;
   className?: string;
   editable?: boolean;
   autoFocus?: boolean;
@@ -143,10 +144,17 @@ function useEditor(props: UseEditorProps): EditorState {
         html: editor.getHTML(),
       });
     },
-    onUpdate: (props) => {
-      setUploading(isUploadInProgress(props.editor.state.doc));
-      setSubmittable(!isUploadInProgress(props.editor.state.doc));
-      setEmpty(props.editor.state.doc.childCount === 1 && props.editor.state.doc.firstChild?.childCount === 0);
+    onUpdate: ({ editor }) => {
+      const isUploading = isUploadInProgress(editor.state.doc);
+
+      if (props.onUploadStatusChange && isUploading !== uploading) {
+        props.onUploadStatusChange(isUploading);
+      }
+
+      setUploading(isUploading);
+      setSubmittable(!isUploading);
+
+      setEmpty(editor.state.doc.childCount === 1 && editor.state.doc.firstChild?.childCount === 0);
     },
   });
 
