@@ -14,14 +14,15 @@ import { MentionPopup } from "@/features/richtexteditor/components/MentionPopup"
 
 import Blob, { isUploadInProgress } from "./Blob";
 
-export { LinkEditForm } from "./LinkEditForm";
-export { EditorContext } from "./EditorContext";
 import { EditorContext } from "./EditorContext";
 import { useLinkEditFormClose } from "./LinkEditForm";
+import { MentionContext } from "./mentionContext";
 
 type EditorMentionSearchFunc = ({ query }: { query: string }) => Promise<Person[]>;
 
 export type Editor = TipTap.Editor;
+export { LinkEditForm } from "./LinkEditForm";
+export { EditorContext } from "./EditorContext";
 
 interface Person {
   id: string;
@@ -38,17 +39,6 @@ interface OnBlurData {
   html: string;
 }
 
-interface UseEditorProps {
-  peopleSearch?: EditorMentionSearchFunc;
-  placeholder?: string;
-  content?: any;
-  onSave?: (data: OnSaveData) => void;
-  onBlur?: (data: OnBlurData) => void;
-  className?: string;
-  editable?: boolean;
-  autoFocus?: boolean;
-}
-
 export function Root({ editor, children }): JSX.Element {
   const [linkEditActive, setLinkEditActive] = React.useState(false);
 
@@ -63,6 +53,18 @@ function RootBody({ children }) {
   const handleClick = useLinkEditFormClose();
 
   return <div onClick={handleClick}>{children}</div>;
+}
+
+interface UseEditorProps {
+  peopleSearch?: EditorMentionSearchFunc;
+  placeholder?: string;
+  content?: any;
+  onSave?: (data: OnSaveData) => void;
+  onBlur?: (data: OnBlurData) => void;
+  className?: string;
+  editable?: boolean;
+  autoFocus?: boolean;
+  mentionSearchScope: People.SearchScope;
 }
 
 export interface EditorState {
@@ -82,7 +84,7 @@ function useEditor(props: UseEditorProps): EditorState {
   const editable = props.editable === undefined ? true : props.editable;
   const autoFocus = props.autoFocus === undefined ? true : props.autoFocus;
 
-  const defaultPeopleSearch = People.usePeopleSearch();
+  const defaultPeopleSearch = People.usePeopleSearch(props.mentionSearchScope);
 
   const editor = TipTap.useEditor({
     editable: editable,

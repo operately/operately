@@ -7,7 +7,13 @@ export type Person = api.Person;
 
 export { useGetMe, getPerson, getPeople, updateProfile } from "@/api";
 
-export function usePeopleSearch() {
+export type SearchScope =
+  | { type: "company" }
+  | { type: "project"; projectId: string }
+  | { type: "space"; spaceId: string }
+  | { type: "goal"; goalId: string };
+
+export function usePeopleSearch(scope: SearchScope) {
   //
   // There are multiple components that use this hook. Some of them
   // pass in a string, others pass in an object with a query property.
