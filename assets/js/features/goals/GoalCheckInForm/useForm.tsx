@@ -55,6 +55,7 @@ export function useForm(options: UseFormOptions): FormState {
     placeholder: `Write here...`,
     className: "min-h-[250px] py-2 font-medium",
     content: options.checkIn && JSON.parse(options.checkIn!.message!),
+    mentionSearchScope: { type: "goal", id: goal.id! },
   });
 
   const [targets, { update: updateTarget }] = useTargetListState(goal);

@@ -87,6 +87,7 @@ function HeaderEditor({ form }: { form: FormState }) {
           visuals="regular"
           addedPeople={form.headerForm.assignedPeople}
           setAddedPeople={form.headerForm.setAssignedPeople}
+          searchScope={{ type: "project", id: form.fields.projectID }}
         />
       </div>
 

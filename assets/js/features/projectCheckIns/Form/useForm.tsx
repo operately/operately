@@ -61,6 +61,7 @@ export function useForm({ mode, project, checkIn, author, notifiablePeople = [] 
     placeholder: `Write your updates here...`,
     className: "min-h-[250px] py-2 font-medium",
     content: checkIn?.description && JSON.parse(checkIn.description),
+    mentionSearchScope: { type: "project", id: project ? project.id! : checkIn!.project!.id! },
   });
 
   const [post, { loading: postLoading }] = ProjectCheckIns.usePostProjectCheckIn();
