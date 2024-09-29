@@ -1,6 +1,7 @@
 import * as Milestones from "@/models/milestones";
 import * as Comments from "@/models/comments";
 import * as Time from "@/utils/time";
+import * as People from "@/models/people";
 
 import { Item, ItemType, FormState } from "./form";
 
@@ -48,6 +49,7 @@ export function useForMilestone(milestone: Milestones.Milestone): FormState {
     postComment,
     editComment,
     submitting: submittingPost || submittingEdit,
+    mentionSearchScope: { type: "project", id: milestone.projectId! } as People.SearchScope,
   };
 
   return res;

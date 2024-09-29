@@ -81,6 +81,7 @@ function useForm({ goal }: { goal: Goals.Goal }) {
   const editor = TipTapEditor.useEditor({
     placeholder: "Start a new discussion...",
     className: "min-h-[350px] py-2 text-lg",
+    mentionSearchScope: { type: "goal", id: goal.id! },
   });
 
   const [submitting, setSubmitting] = React.useState(false);

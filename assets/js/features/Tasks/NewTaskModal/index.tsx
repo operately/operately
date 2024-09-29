@@ -2,6 +2,7 @@ import * as React from "react";
 import * as TipTapEditor from "@/components/Editor";
 import * as People from "@/models/people";
 import * as Tasks from "@/models/tasks";
+import * as Milestones from "@/models/milestones";
 
 import classnames from "classnames";
 
@@ -12,7 +13,13 @@ import ReactModal from "react-modal";
 
 import { useColorMode } from "@/contexts/ThemeContext";
 
-function useForm({ onSubmit, milestone }) {
+interface UseFormProps {
+  onSubmit: () => void;
+  milestone: Milestones.Milestone;
+  mentionSearchScope: People.SearchScope;
+}
+
+function useForm({ onSubmit, milestone, mentionSearchScope }: UseFormProps) {
   const [name, setName] = React.useState("");
   const [assignees, setAssignees] = React.useState<People.Person[]>([]);
   const [errors, setErrors] = React.useState<string[]>([]);
@@ -27,6 +34,7 @@ function useForm({ onSubmit, milestone }) {
     autoFocus: false,
     placeholder: "Add a description here...",
     className: "min-h-[250px] p-2 py-1",
+    mentionSearchScope: mentionSearchScope,
   });
 
   const [create] = Tasks.useCreateTask();
@@ -58,6 +66,7 @@ function useForm({ onSubmit, milestone }) {
 
       setName,
       setAssignees,
+      mentionSearchScope,
     },
 
     submit,
@@ -77,7 +86,11 @@ export function NewTaskModal({ isOpen, hideModal, modalTitle, milestone, onSubmi
     hideModal();
   };
 
-  const form = useForm({ onSubmit: handleSubmit, milestone });
+  const form = useForm({
+    onSubmit: handleSubmit,
+    milestone,
+    mentionSearchScope: { type: "project", id: milestone.projectId! },
+  });
 
   return (
     <Modal title={modalTitle} isOpen={isOpen}>
@@ -129,6 +142,7 @@ function Form({ form }: { form: ReturnType<typeof useForm> }) {
             visuals="minimal"
             addedPeople={form.fields.assignees}
             setAddedPeople={form.fields.setAssignees}
+            searchScope={form.fields.mentionSearchScope}
           />
         </div>
       </div>

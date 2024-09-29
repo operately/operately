@@ -12,6 +12,9 @@ defmodule OperatelyWeb.Api.Queries.SearchPeople do
   inputs do
     field :query, :string
     field :ignored_ids, list_of(:string)
+
+    field :search_scope_type, :string
+    field :search_scope_id, :string
   end
 
   outputs do
@@ -21,6 +24,8 @@ defmodule OperatelyWeb.Api.Queries.SearchPeople do
   @limit 10
 
   def call(conn, inputs) do
+    inputs = parse_inputs(inputs)
+
     check_permissions(me(conn))
     |> load_people(inputs)
     |> serialize()
@@ -44,6 +49,7 @@ defmodule OperatelyWeb.Api.Queries.SearchPeople do
     |> ignore_ids(inputs[:ignored_ids] || [])
     |> order_asc_by_match_position(inputs)
     |> exclude_suspended()
+    |> filter_by_search_scope(inputs[:search_scope_type], inputs[:search_scope_id])
     |> limit(@limit)
     |> Repo.all()
   end
@@ -77,11 +83,54 @@ defmodule OperatelyWeb.Api.Queries.SearchPeople do
     from p in query, where: p.suspended == false
   end
 
+  defp filter_by_search_scope(query, scope, id) do
+    case {scope, id} do
+      {"company", _} -> 
+        query
+
+      {"project", id} -> 
+        from p in query,
+          join: m in assoc(p, :access_group_memberships),
+          join: g in assoc(m, :group),
+          join: b in assoc(g, :bindings),
+          join: c in assoc(b, :context),
+          where: c.project_id == ^id and b.access_level > 0,
+          group_by: p.id
+
+      {"space", id} -> 
+        from p in query,
+          join: m in assoc(p, :access_group_memberships),
+          join: g in assoc(m, :group),
+          join: b in assoc(g, :bindings),
+          join: c in assoc(b, :context),
+          where: c.group_id == ^id and b.access_level > 0,
+          group_by: p.id
+
+      {"goal", id} -> 
+        from p in query,
+          join: m in assoc(p, :access_group_memberships),
+          join: g in assoc(m, :group),
+          join: b in assoc(g, :bindings),
+          join: c in assoc(b, :context),
+          where: c.goal_id == ^id and b.access_level > 0,
+          group_by: p.id
+    end
+  end
+
   defp ok_tuple(value) do
     {:ok, value}
   end
 
   def serialize(people) when is_list(people) do
     %{people: Serializer.serialize(people, level: :essential)}
+  end
+  
+  def parse_inputs(inputs) do
+    if inputs[:search_scope_id] do
+      {:ok, search_scope_id} = decode_id(inputs[:search_scope_id])
+      %{inputs | search_scope_id: search_scope_id}
+    else
+      inputs
+    end
   end
 end

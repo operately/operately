@@ -3,6 +3,7 @@ import * as Tasks from "@/models/tasks";
 
 export interface Fields {
   taskID: string;
+  projectID: string;
 
   name: string;
   status: Tasks.Task["status"];
@@ -23,6 +24,7 @@ export function useFields(task: Tasks.Task): Fields {
 
   return {
     taskID: task.id!,
+    projectID: task.project!.id!,
     name: name!,
     status,
     description,

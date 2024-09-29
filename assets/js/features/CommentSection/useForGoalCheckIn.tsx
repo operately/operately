@@ -1,10 +1,13 @@
 import * as GoalCheckIns from "@/models/goalCheckIns";
 import * as Comments from "@/models/comments";
 import * as Time from "@/utils/time";
+import * as People from "@/models/people";
 
-import { Item, ItemType } from "./form";
+import { FormState, Item, ItemType } from "./form";
 
-export function useForGoalCheckIn(update: GoalCheckIns.Update) {
+export function useForGoalCheckIn(update: GoalCheckIns.Update): FormState {
+  const mentionSearchScope = { type: "goal", id: update.goal!.id! } as People.SearchScope;
+
   const { data, loading, error, refetch } = Comments.useGetComments({
     entityId: update.id!,
     entityType: "goal_update",
@@ -19,6 +22,7 @@ export function useForGoalCheckIn(update: GoalCheckIns.Update) {
       postComment: async (_content: string) => {},
       editComment: async (_commentID: string, _content: string) => {},
       submitting: false,
+      mentionSearchScope,
     };
 
   if (error) throw error;
@@ -68,5 +72,6 @@ export function useForGoalCheckIn(update: GoalCheckIns.Update) {
     postComment,
     editComment,
     submitting: submittingPost || submittingEdit,
+    mentionSearchScope,
   };
 }

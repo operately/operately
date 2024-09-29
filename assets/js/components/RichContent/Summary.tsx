@@ -1,12 +1,14 @@
-import React from "react";
-
+import * as React from "react";
 import * as TipTapEditor from "@/components/Editor";
+import * as People from "@/models/people";
+
 import { extract, truncate } from "./contentOps";
 
 export function Summary({ jsonContent, characterCount }): JSX.Element {
   const { editor } = TipTapEditor.useEditor({
     content: parseContent(jsonContent),
     editable: false,
+    mentionSearchScope: People.NoneSearchScope,
   });
 
   React.useEffect(() => {

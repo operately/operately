@@ -96,6 +96,6 @@ function useSearchFn(searchFn?: SearchFn): SearchFn {
   if (searchFn) {
     return searchFn;
   } else {
-    return People.usePeopleSearch();
+    return People.usePeopleSearch(People.CompanyWideSearchScope);
   }
 }

@@ -173,7 +173,7 @@ function SpaceSelector({ form }: { form: FormState }) {
 }
 
 function ContributorSearch({ title, onSelect, defaultValue, inputId, error }: any) {
-  const loader = People.usePeopleSearch();
+  const loader = People.usePeopleSearch(People.CompanyWideSearchScope);
 
   return (
     <div>

@@ -51,6 +51,7 @@ export function useForm(options: UseFormOptions): FormState {
     placeholder: "Write here...",
     className: "min-h-[350px] py-2 px-1",
     content: discussion?.body && JSON.parse(discussion.body),
+    mentionSearchScope: { type: "space", id: space ? space.id! : discussion!.space!.id! },
   });
 
   const [post, { loading: submittingPost }] = Discussions.usePostDiscussion();

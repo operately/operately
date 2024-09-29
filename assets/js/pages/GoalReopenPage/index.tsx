@@ -61,6 +61,7 @@ function useForm(goal: Goals.Goal): FormState {
   const messageEditor = Editor.useEditor({
     placeholder: "Write here...",
     className: "min-h-[200px] py-2 font-medium",
+    mentionSearchScope: { type: "goal", id: goal.id! },
   });
 
   const goalPath = Paths.goalPath(goal.id!);
