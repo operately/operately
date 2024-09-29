@@ -12,10 +12,11 @@ interface MultiPeopleSearchProps {
   addedPeople: People.Person[];
   setAddedPeople: React.Dispatch<React.SetStateAction<People.Person[]>>;
   visuals: "minimal" | "regular";
+  searchScope: People.SearchScope;
 }
 
 export function MultiPeopleSearch(props: MultiPeopleSearchProps) {
-  const search = People.usePeopleSearch();
+  const search = People.usePeopleSearch(props.searchScope);
 
   const [searchTerm, setSearchTerm] = React.useState("");
   const [people, setPeople] = React.useState<People.Person[]>(props.addedPeople);

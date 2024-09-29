@@ -1,4 +1,5 @@
-import React from "react";
+import * as React from "react";
+import * as People from "@/models/people";
 
 // import Mention from "@tiptap/extension-mention";
 // import StarterKit from "@tiptap/starter-kit";
@@ -25,6 +26,7 @@ export default function RichContent({ jsonContent, className, skipParse }: RichC
   const { editor } = TipTapEditor.useEditor({
     content: content,
     editable: false,
+    mentionSearchScope: People.NoneSearchScope,
   });
 
   React.useEffect(() => {

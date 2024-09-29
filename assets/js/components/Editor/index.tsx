@@ -16,7 +16,6 @@ import Blob, { isUploadInProgress } from "./Blob";
 
 import { EditorContext } from "./EditorContext";
 import { useLinkEditFormClose } from "./LinkEditForm";
-import { MentionContext } from "./mentionContext";
 
 type EditorMentionSearchFunc = ({ query }: { query: string }) => Promise<Person[]>;
 

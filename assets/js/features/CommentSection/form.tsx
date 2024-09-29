@@ -1,3 +1,5 @@
+import * as People from "@/models/people";
+
 export type ItemType = "comment" | "acknowledgement" | "milestone-completed" | "milestone-reopened";
 
 export interface Item {
@@ -11,4 +13,5 @@ export interface FormState {
   postComment: (content: string) => void;
   editComment: (commentID: string, content: string) => void;
   submitting: boolean;
+  mentionSearchScope: People.SearchScope;
 }

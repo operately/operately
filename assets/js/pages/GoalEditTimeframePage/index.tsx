@@ -258,6 +258,7 @@ function useForm({ goal }): Form {
 
   const commentEditor = TipTapEditor.useEditor({
     placeholder: "Explain the reason for the change here...",
+    mentionSearchScope: { type: "goal", id: goal.id! },
   });
 
   const [error, setError] = React.useState<{ message: string } | null>(null);

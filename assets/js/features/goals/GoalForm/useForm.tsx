@@ -105,6 +105,7 @@ export function useForm(config: FormConfig): FormState {
     autoFocus: false,
     placeholder: "Write a description...",
     className: "min-h-[150px] p-2 py-1",
+    mentionSearchScope: config.goal ? { type: "goal", id: config.goal.id! } : People.CompanyWideSearchScope,
   });
 
   const fields = {

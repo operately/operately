@@ -118,7 +118,7 @@ interface AdminModalState {
 }
 
 function useAddAdminsModalState(form: FormState): AdminModalState {
-  const search = People.usePeopleSearch();
+  const search = People.usePeopleSearch(People.CompanyWideSearchScope);
 
   const [selected, setSelectedList] = React.useState<Option[]>([]);
   const [isModalOpen, setIsModalOpen]: [boolean, any] = React.useState(false);

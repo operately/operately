@@ -9,9 +9,13 @@ export { useGetMe, getPerson, getPeople, updateProfile } from "@/api";
 
 export type SearchScope =
   | { type: "company" }
-  | { type: "project"; projectId: string }
-  | { type: "space"; spaceId: string }
-  | { type: "goal"; goalId: string };
+  | { type: "project"; id: string }
+  | { type: "space"; id: string }
+  | { type: "goal"; id: string }
+  | { type: "none" };
+
+export const CompanyWideSearchScope = { type: "company" } as SearchScope;
+export const NoneSearchScope = { type: "none" } as SearchScope;
 
 export function usePeopleSearch(scope: SearchScope) {
   //
