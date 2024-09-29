@@ -194,6 +194,7 @@ function MilestoneForm({ form, id, initialTitle, initialDueDate, initialDescript
     placeholder: "Write here...",
     className: "min-h-[150px] p-2 py-1 text-sm",
     content: initialDescription,
+    mentionSearchScope: { type: "project", id: form.projectID },
   });
 
   const [errors, setErrors] = React.useState<string[]>([]);

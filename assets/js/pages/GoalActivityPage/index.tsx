@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
+import * as Goals from "@/models/goals";
 import * as Activities from "@/models/activities";
 
 import { CommentThread } from "@/api";
@@ -40,7 +41,7 @@ export function Page() {
 
           <Reactions commentThread={activity.commentThread!} />
           <div className="border-t border-stroke-base mt-8" />
-          <Comments commentThread={activity.commentThread!} />
+          <Comments commentThread={activity.commentThread!} goal={goal} />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
@@ -72,9 +73,9 @@ function Reactions({ commentThread }: { commentThread: CommentThread }) {
   return <ReactionList size={24} form={addReactionForm} />;
 }
 
-function Comments({ commentThread }: { commentThread: CommentThread }) {
+function Comments({ commentThread, goal }: { commentThread: CommentThread; goal: Goals.Goal }) {
   const refresh = Pages.useRefresh();
-  const commentsForm = useForCommentThread(commentThread);
+  const commentsForm = useForCommentThread(commentThread, { type: "goal", id: goal.id! });
 
   return <CommentSection form={commentsForm} refresh={refresh} commentParentType="comment_thread" />;
 }

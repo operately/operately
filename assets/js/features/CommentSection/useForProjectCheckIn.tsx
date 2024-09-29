@@ -1,10 +1,13 @@
 import * as ProjectCheckIns from "@/models/projectCheckIns";
 import * as Comments from "@/models/comments";
 import * as Time from "@/utils/time";
+import * as People from "@/models/people";
 
 import { Item, ItemType, FormState } from "./form";
 
 export function useForProjectCheckIn(checkIn: ProjectCheckIns.ProjectCheckIn): FormState {
+  const mentionSearchScope = { type: "project", id: checkIn.project!.id! } as People.SearchScope;
+
   const { data, loading, error, refetch } = Comments.useGetComments({
     entityId: checkIn.id!,
     entityType: "project_check_in",
@@ -19,6 +22,7 @@ export function useForProjectCheckIn(checkIn: ProjectCheckIns.ProjectCheckIn): F
       postComment: async (_content: string) => {},
       editComment: async (_commentID: string, _content: string) => {},
       submitting: false,
+      mentionSearchScope,
     };
 
   if (error) throw error;
@@ -70,5 +74,6 @@ export function useForProjectCheckIn(checkIn: ProjectCheckIns.ProjectCheckIn): F
     postComment,
     editComment,
     submitting,
+    mentionSearchScope,
   };
 }

@@ -29,6 +29,7 @@ export function useForm(goal: Goals.Goal): FormData {
   const retrospectiveEditor = Editor.useEditor({
     placeholder: "What went well? What could've gone better?",
     className: "min-h-[250px] py-2 font-medium",
+    mentionSearchScope: { type: "goal", id: goal.id! },
   });
 
   const submit = async () => {
