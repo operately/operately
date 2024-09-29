@@ -37,5 +37,6 @@ export function useForDiscussion(discussion: Discussions.Discussion, comments: C
     postComment,
     editComment,
     submitting: submittingPost || submittingEdit,
+    mentionSearchScope: { type: "space", id: discussion.space!.id! },
   };
 }

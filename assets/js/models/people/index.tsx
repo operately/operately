@@ -7,7 +7,17 @@ export type Person = api.Person;
 
 export { useGetMe, getPerson, getPeople, updateProfile } from "@/api";
 
-export function usePeopleSearch() {
+export type SearchScope =
+  | { type: "company"; id?: undefined }
+  | { type: "project"; id: string }
+  | { type: "space"; id: string }
+  | { type: "goal"; id: string }
+  | { type: "none"; id?: undefined };
+
+export const CompanyWideSearchScope = { type: "company" } as SearchScope;
+export const NoneSearchScope = { type: "none" } as SearchScope;
+
+export function usePeopleSearch(scope: SearchScope) {
   //
   // There are multiple components that use this hook. Some of them
   // pass in a string, others pass in an object with a query property.
@@ -17,6 +27,8 @@ export function usePeopleSearch() {
   // This is a bit of a hack to make it work with both.
   //
   return async (arg: string | { query: string; ignoredIds?: string[] }): Promise<Person[]> => {
+    if (scope.type === "none") return [];
+
     let query = "";
     let ignoredIds: string[] = [];
 
@@ -28,7 +40,12 @@ export function usePeopleSearch() {
       ignoredIds = arg.ignoredIds || [];
     }
 
-    const res = await Api.searchPeople({ query, ignoredIds });
+    const res = await Api.searchPeople({
+      query,
+      ignoredIds,
+      searchScopeType: scope.type,
+      searchScopeId: scope.id,
+    });
     return res.people as Person[];
   };
 }

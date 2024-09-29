@@ -74,6 +74,7 @@ function EditComment({ comment, onCancel, form, refresh }) {
     placeholder: "Write a comment here...",
     className: "min-h-[200px] p-4",
     content: JSON.parse(comment.content)["message"],
+    mentionSearchScope: form.mentionSearchScope,
   });
 
   const handlePost = async () => {
@@ -272,6 +273,7 @@ function AddCommentActive({ onBlur, onPost, form }) {
     placeholder: "Write a comment here...",
     className: "min-h-[200px] px-4 py-3",
     autoFocus: true,
+    mentionSearchScope: form.mentionSearchScope,
   });
 
   const handlePost = async () => {

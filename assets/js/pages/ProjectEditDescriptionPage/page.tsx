@@ -45,6 +45,7 @@ function Editor() {
     placeholder: `Write your updates here...`,
     className: "min-h-[350px] py-2 font-medium",
     content: JSON.parse(project.description!),
+    mentionSearchScope: { type: "project", id: project.id! },
   });
 
   const submit = React.useCallback(async () => {
