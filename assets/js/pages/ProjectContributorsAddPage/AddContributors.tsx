@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
-import * as Projects from "@/models/projects";
+import * as People from "@/models/people";
 import * as Icons from "@tabler/icons-react";
 
 import { PERMISSIONS_LIST, PermissionLevels } from "@/features/Permissions";
@@ -14,6 +14,7 @@ import { LoaderResult } from "./loader";
 import { SecondaryButton } from "@/components/Buttons";
 
 interface ContributorFields {
+  key: number;
   personId: string;
   responsibility: string;
   permissions: PermissionLevels;
@@ -23,13 +24,13 @@ interface ContributorFields {
 export function AddContributors() {
   const { project } = Pages.useLoadedData() as LoaderResult;
   const gotoContribPage = useNavigateTo(Paths.projectContributorsPath(project.id!));
-  const personSearchFn = Projects.useContributorSearchFn(project!);
   const [add] = useAddProjectContributors();
 
   const form = Forms.useForm({
     fields: {
       contributors: [
         {
+          key: Math.random(),
           personId: "",
           responsibility: "",
           permissions: PermissionLevels.EDIT_ACCESS,
@@ -53,8 +54,7 @@ export function AddContributors() {
       <div className="text-2xl font-extrabold mb-4 text-center">Add contributors to {project.name}</div>
 
       <Forms.Form form={form}>
-        <Contributors form={form} personSearchFn={personSearchFn} />
-        <AddMoreContributorsButton />
+        <Contributors project={project} />
 
         <Forms.Submit saveText="Add contributors" layout="centered" buttonSize="base" />
       </Forms.Form>
@@ -62,17 +62,52 @@ export function AddContributors() {
   );
 }
 
-function Contributors({ form, personSearchFn }) {
+function Contributors({ project }) {
+  const [contribs] = Forms.useFieldValue<ContributorFields[]>("contributors");
+  const search = People.usePeopleSearch({ type: "space", id: project.space.id });
+
+  const contribSearch = React.useCallback(
+    (query: string) => {
+      return search({ query, ignoredIds: contribs.map((c) => c.personId).filter((c) => c !== "") });
+    },
+    [contribs, search],
+  );
+
+  const [value, setValue] = Forms.useFieldValue<ContributorFields[]>("contributors");
+
+  const addMore = React.useCallback(() => {
+    const newContributor = {
+      key: Math.random(),
+      personId: "",
+      responsibility: "",
+      permissions: PermissionLevels.EDIT_ACCESS,
+      role: "contributor",
+    };
+
+    setValue([...value, newContributor]);
+  }, [value, setValue]);
+
   return (
-    <div className="flex flex-col gap-6">
-      {form.values.contributors.map((_: any, i: number) => (
-        <Contributor key={i} field={`contributors[${i}]`} personSearchFn={personSearchFn} />
-      ))}
+    <div>
+      <div className="flex flex-col gap-6">
+        {contribs.map((c, i) => (
+          <Contributor
+            key={c.key}
+            field={`contributors[${i}]`}
+            personSearchFn={contribSearch}
+            index={i}
+            last={i === contribs.length - 1}
+            addMore={addMore}
+          />
+        ))}
+      </div>
+
+      <AddMoreContributorsButton onClick={addMore} />
     </div>
   );
 }
 
-function Contributor({ field, personSearchFn }) {
+function Contributor({ field, personSearchFn, index, last, addMore }) {
   return (
     <Paper.Body>
       <Forms.FieldGroup layout="horizontal">
@@ -84,31 +119,46 @@ function Contributor({ field, personSearchFn }) {
           placeholder="e.g. Project Manager"
           label="Responsibility"
           required={true}
+          onEnter={(e) => {
+            e.preventDefault();
+            if (last) addMore();
+          }}
         />
       </Forms.FieldGroup>
+
+      <RemoveContributorButton index={index} />
     </Paper.Body>
   );
 }
 
-function AddMoreContributorsButton() {
-  const [value, setValue] = Forms.useFieldValue<ContributorFields[]>("contributors");
-
-  const addMore = React.useCallback(() => {
-    const newContributor = {
-      personId: "",
-      responsibility: "",
-      permissions: PermissionLevels.EDIT_ACCESS,
-      role: "contributor",
-    };
-
-    setValue([...value, newContributor]);
-  }, [value, setValue]);
-
+function AddMoreContributorsButton({ onClick }: { onClick: () => void }) {
   return (
     <div className="flex justify-center" style={{ marginTop: "-18px" }}>
-      <SecondaryButton onClick={addMore}>
+      <SecondaryButton onClick={onClick}>
         <Icons.IconPlus size={16} />
       </SecondaryButton>
+    </div>
+  );
+}
+
+function RemoveContributorButton({ index }) {
+  const [value, setValue] = Forms.useFieldValue<ContributorFields[]>("contributors");
+
+  const onClick = () => {
+    const newValue = value.filter((_, i) => i !== index);
+    setValue(newValue);
+  };
+
+  if (index === 0) return null;
+
+  return (
+    <div className="absolute" style={{ top: "-14px", right: "-14px" }}>
+      <div
+        className="border border-surface-outline rounded-full p-2 cursor-pointer text-content-subtle hover:text-content-accent bg-surface"
+        onClick={onClick}
+      >
+        <Icons.IconX size={16} />
+      </div>
     </div>
   );
 }
