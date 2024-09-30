@@ -3,6 +3,7 @@ defmodule Operately.Notifications.Subscriber do
   alias Operately.Goals.{Update, Goal}
   alias Operately.Notifications.Subscription
   alias Operately.People.Person
+  alias Operately.Messages.Message
 
   defstruct [
     :person,
@@ -30,10 +31,7 @@ defmodule Operately.Notifications.Subscriber do
       {c.person.id, from_project_contributor(c)}
     end)
 
-    Map.merge(subs, potential_subs, fn _id, _sub, potential_sub ->
-      Map.put(potential_sub, :is_subscribed, true)
-    end)
-    |> Map.values()
+    merge_subs_and_potential_subs(subs, potential_subs)
   end
 
   def from_goal_update(%Update{} = update) do
@@ -45,10 +43,19 @@ defmodule Operately.Notifications.Subscriber do
       {sub.person.id, sub}
     end)
 
-    Map.merge(subs, potential_subs, fn _id, _sub, potential_sub ->
-      Map.put(potential_sub, :is_subscribed, true)
+    merge_subs_and_potential_subs(subs, potential_subs)
+  end
+
+  def from_message(%Message{} = message) do
+    subs = Enum.into(message.subscription_list.subscriptions, %{}, fn s ->
+      {s.person.id, from_subscription(s)}
     end)
-    |> Map.values()
+
+    potential_subs = Enum.into(message.space.members, %{}, fn p ->
+      {p.id, from_person(p)}
+    end)
+
+    merge_subs_and_potential_subs(subs, potential_subs)
   end
 
   #
@@ -91,6 +98,13 @@ defmodule Operately.Notifications.Subscriber do
       :reviewer -> [role: "Reviewer", priority: true]
       _ -> [role: contributor.responsibility, priority: false]
     end
+  end
+
+  defp merge_subs_and_potential_subs(subs, potential_subs) do
+    Map.merge(subs, potential_subs, fn _id, _sub, potential_sub ->
+      Map.put(potential_sub, :is_subscribed, true)
+    end)
+    |> Map.values()
   end
 
   defp build_struct(person, role, opts \\ []) do
