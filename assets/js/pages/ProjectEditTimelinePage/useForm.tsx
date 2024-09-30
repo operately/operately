@@ -37,8 +37,8 @@ export function useForm(project: Projects.Project): FormState {
   const navigate = useNavigate();
   const milestonesPath = Paths.projectMilestonesPath(project.id!);
 
-  const oldStart = Time.parse(project.startedAt);
-  const oldDue = Time.parse(project.deadline);
+  const oldStart = Time.parseDate(project.startedAt);
+  const oldDue = Time.parseDate(project.deadline);
 
   const [startTime, setStartTime] = React.useState<Date | null>(oldStart);
   const [dueDate, setDueDate] = React.useState<Date | null>(oldDue);

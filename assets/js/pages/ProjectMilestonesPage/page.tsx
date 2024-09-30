@@ -51,8 +51,8 @@ function Title({ project }) {
 }
 
 function Dates({ project }) {
-  const start = Time.parse(project.startedAt);
-  const end = Time.parse(project.deadline);
+  const start = Time.parseDate(project.startedAt);
+  const end = Time.parseDate(project.deadline);
 
   return (
     <div className="flex items-center gap-12 mb-8">
