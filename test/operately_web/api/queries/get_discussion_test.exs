@@ -4,8 +4,10 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionTest do
   import Operately.PeopleFixtures
   import Operately.GroupsFixtures
   import Operately.MessagesFixtures
+  import Operately.NotificationsFixtures
 
   alias Operately.Access.Binding
+  alias Operately.Notifications.SubscriptionList
 
   describe "security" do
     test "it requires authentication", ctx do
@@ -99,6 +101,46 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionTest do
 
       assert {200, res} = query(ctx.conn, :get_discussion, %{id: Paths.message_id(message), include_reactions: true})
       assert res.discussion.reactions == [Serializer.serialize(reaction, level: :essential)]
+    end
+
+    test "include_potential_subscribers", ctx do
+      ctx =
+        ctx
+        |> Factory.add_company_member(:creator)
+        |> Factory.log_in_person(:creator)
+        |> Factory.add_space(:space)
+        |> Factory.add_space_member(:member1, :space)
+        |> Factory.add_space_member(:member2, :space)
+        |> Factory.add_space_member(:member3, :space)
+        |> Factory.add_message(:message, :space)
+
+      {:ok, list} = SubscriptionList.get(:system, parent_id: ctx.message.id)
+      subscription_fixture(%{subscription_list_id: list.id, person_id: ctx.creator.id})
+
+      assert {200, res} = query(ctx.conn, :get_discussion, %{id: Paths.message_id(ctx.message)})
+
+      refute res.discussion.potential_subscribers
+
+      assert {200, res} = query(ctx.conn, :get_discussion, %{
+        id: Paths.message_id(ctx.message),
+        include_potential_subscribers: true,
+      })
+      subs = res.discussion.potential_subscribers
+
+      assert length(subs) == 4
+
+      # creator is has subscription
+      creator = Enum.find(subs, &(&1.person.id == Paths.person_id(ctx.creator)))
+      assert creator.is_subscribed
+      refute creator.priority
+
+      # space members are potential subscribers
+      [ctx.member1, ctx.member2, ctx.member3]
+      |> Enum.each(fn p ->
+        sub = Enum.find(subs, &(&1.person.id == Paths.person_id(p)))
+        refute sub.is_subscribed
+        refute sub.priority
+      end)
     end
   end
 
