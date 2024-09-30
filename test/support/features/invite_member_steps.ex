@@ -50,7 +50,7 @@ defmodule Operately.Support.Features.InviteMemberSteps do
   step :reissue_invitation_token, ctx, name do
     person = Operately.People.get_person_by_name!(ctx.company, name)
 
-    ctx 
+    ctx
     |> UI.visit(Paths.company_admin_path(ctx.company))
     |> UI.click(testid: "manage-team-members")
     |> UI.click(testid: UI.testid(["person-options", Paths.person_id(person)]))
@@ -67,15 +67,15 @@ defmodule Operately.Support.Features.InviteMemberSteps do
     invitation = invitation_fixture(%{member_id: member.id, admin_id: ctx.admin.id})
     token = invitation_token_fixture_unhashed(invitation.id)
 
-    ctx 
-    |> Map.put(:token, token) 
+    ctx
+    |> Map.put(:token, token)
     |> Map.put(:person, member)
   end
 
   step :given_that_an_invitation_was_sent, ctx, params do
     member = person_fixture_with_account(%{
-      company_id: ctx.company.id, 
-      full_name: params[:name], 
+      company_id: ctx.company.id,
+      full_name: params[:name],
       email: params[:email],
       has_open_invitation: true
     })
@@ -83,8 +83,8 @@ defmodule Operately.Support.Features.InviteMemberSteps do
     invitation = invitation_fixture(%{member_id: member.id, admin_id: ctx.admin.id})
     token = invitation_token_fixture_unhashed(invitation.id)
 
-    ctx 
-    |> Map.put(:token, token) 
+    ctx
+    |> Map.put(:token, token)
     |> Map.put(:person, member)
   end
 
@@ -109,8 +109,8 @@ defmodule Operately.Support.Features.InviteMemberSteps do
 
   step :given_that_an_invitation_was_sent_and_expired, ctx, params do
     member = person_fixture_with_account(%{
-      company_id: ctx.company.id, 
-      full_name: params[:name], 
+      company_id: ctx.company.id,
+      full_name: params[:name],
       email: params[:email],
       has_open_invitation: true
     })
@@ -137,7 +137,7 @@ defmodule Operately.Support.Features.InviteMemberSteps do
   step :renew_invitation, ctx, name do
     person = Operately.People.get_person_by_name!(ctx.company, name)
 
-    ctx 
+    ctx
     |> UI.click(testid: UI.testid(["renew-invitation", Paths.person_id(person)]))
     |> UI.assert_text("/join?token=")
   end
@@ -146,6 +146,6 @@ defmodule Operately.Support.Features.InviteMemberSteps do
     member = Operately.People.get_person!(ctx.member.id)
     member = Operately.Repo.preload(member, [invitation: :invitation_token])
 
-    assert member.invitation.invitation_token.valid_until > DateTime.utc_now()
+    assert DateTime.after?(member.invitation.invitation_token.valid_until, DateTime.utc_now())
   end
 end
