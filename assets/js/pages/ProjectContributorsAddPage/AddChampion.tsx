@@ -9,7 +9,7 @@ import { useAddProjectContributor } from "@/api";
 import Forms from "@/components/Forms";
 import { Paths } from "@/routes/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
-import { LoaderResult } from ".";
+import { LoaderResult } from "./loader";
 
 export function AddChampion() {
   const { project } = Pages.useLoadedData() as LoaderResult;
@@ -20,7 +20,7 @@ export function AddChampion() {
       <ProjectContribsSubpageNavigation project={project} />
 
       <Paper.Body>
-        <div className="text-2xl font-extrabold">Add Champion</div>
+        <div className="text-2xl font-extrabold mb-4">Add Champion</div>
 
         <Forms.Form form={form}>
           <Forms.FieldGroup>
