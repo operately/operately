@@ -65,7 +65,7 @@ export function AddContributors() {
 function Contributors({ form, personSearchFn }) {
   return (
     <div className="flex flex-col gap-6">
-      {form.values.contributors.map((_, i: number) => (
+      {form.values.contributors.map((_: any, i: number) => (
         <Contributor key={i} field={`contributors[${i}]`} personSearchFn={personSearchFn} />
       ))}
     </div>
