@@ -8,6 +8,7 @@ import RelativeTime from "./RelativeTime";
 import ShortDateWithWeekday from "./ShortDateWithWeekday";
 import RelativeWeekdayOrDate from "./RelativeWeekdayOrDate";
 import { useTimezone } from "@/contexts/TimezoneContext";
+import { match } from "ts-pattern";
 
 type Format =
   | "relative"
@@ -36,7 +37,11 @@ interface FormattedTimeProps {
 export default function FormattedTime(props: FormattedTimeProps): JSX.Element {
   const timezone = useTimezone();
 
-  const parsedTime = Time.parse(props.time);
+  const parsedTime = match(props.format)
+    .with("relative", () => Time.parse(props.time))
+    .with("time-only", () => Time.parse(props.time))
+    .otherwise(() => Time.parseDate(props.time));
+
   if (!parsedTime) throw "Invalid date " + props.time;
 
   const time = applyTimezone(parsedTime, timezone);
