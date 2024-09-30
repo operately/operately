@@ -15,6 +15,7 @@ export interface LoaderResult {
 export async function loader({ request, params }): Promise<LoaderResult> {
   const project = await Projects.getProject({
     id: params.projectID,
+    includeSpace: true,
     includePermissions: true,
   }).then((data) => data.project!);
 
