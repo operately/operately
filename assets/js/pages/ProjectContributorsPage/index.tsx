@@ -67,7 +67,7 @@ function AddContribButton() {
 
   return (
     <PrimaryButton linkTo={path} testId="add-contributor-button" size="sm">
-      Add Contributor
+      Add Contributors
     </PrimaryButton>
   );
 }
