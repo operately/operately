@@ -9,7 +9,7 @@ import { useAddProjectContributor } from "@/api";
 import Forms from "@/components/Forms";
 import { Paths } from "@/routes/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
-import { LoaderResult } from ".";
+import { LoaderResult } from "./loader";
 
 export function AddReviewer() {
   const { project } = Pages.useLoadedData() as LoaderResult;
@@ -21,7 +21,7 @@ export function AddReviewer() {
 
       <Paper.Body>
         <div className="text-2xl font-extrabold">Add Reviewer</div>
-        <div className="text-medium">
+        <div className="text-medium mb-6">
           Reviewers are responsible for acknowledging each check-in and have the authority to initiate corrective action
           if needed. This is typically the person to whom the champion reports to.
         </div>
