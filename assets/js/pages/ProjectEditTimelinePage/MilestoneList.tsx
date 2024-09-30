@@ -126,7 +126,7 @@ function MilestoneDisplay({ milestone, form, edit }) {
           </div>
 
           <div className="text-sm">
-            Deadline: <FormattedTime time={Time.parse(milestone.deadlineAt)!} format="short-date" />
+            Deadline: <FormattedTime time={Time.parseDate(milestone.deadlineAt)!} format="short-date" />
           </div>
         </div>
 
@@ -173,7 +173,7 @@ function MilestoneEdit({ milestone, form, close }) {
       form={form}
       id={milestone.id}
       initialTitle={milestone.title}
-      initialDueDate={Time.parse(milestone.deadlineAt)}
+      initialDueDate={Time.parseDate(milestone.deadlineAt)}
       initialDescription={milestone.description && JSON.parse(milestone.description)}
       onSubmit={onSubmit}
       onCancel={close}

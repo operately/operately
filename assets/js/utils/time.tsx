@@ -73,7 +73,7 @@ export function parseDate(date: Date | string | null | undefined): Date | null {
   }
 
   // parse dates like "2024-07-15T00:00:00Z"
-  if (d.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z?$/)) {
+  if (d.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z?$/)) {
     const shorted = d.slice(0, 10);
     return datefsn.parse(shorted, "yyyy-MM-dd", new Date());
   }
