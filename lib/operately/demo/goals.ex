@@ -41,7 +41,9 @@ defmodule Operately.Demo.Goals do
       space_access_level: 70,
     })
 
-    submit_update(goal, data.update)
+    if data.update do
+      submit_update(goal, data.update)
+    end
 
     goal
   end
