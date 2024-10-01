@@ -629,6 +629,7 @@ export interface Goal {
   space?: Space | null;
   myRole?: string | null;
   accessLevels?: AccessLevels | null;
+  potentialSubscribers?: Subscriber[] | null;
 }
 
 export interface GoalEditingUpdatedTarget {
@@ -1239,6 +1240,7 @@ export interface GetGoalInput {
   includeSpaceMembers?: boolean | null;
   includeTargets?: boolean | null;
   includeAccessLevels?: boolean | null;
+  includePotentialSubscribers?: boolean | null;
 }
 
 export interface GetGoalResult {
