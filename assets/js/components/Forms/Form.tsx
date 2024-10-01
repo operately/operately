@@ -4,9 +4,12 @@ import { FormContext } from "./FormContext";
 import { FormState } from "./useForm";
 
 export function Form({ form, children }: { form: FormState<any>; children: React.ReactNode }) {
+  //
+  // Submit the form when the user presses Enter in a field.
+  //
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await form.actions.submit();
+    if (form.submitOnEnter) await form.actions.submit();
   };
 
   return (
