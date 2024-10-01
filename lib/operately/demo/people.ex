@@ -22,8 +22,8 @@ defmodule Operately.Demo.People do
     person
   end
 
-  defp set_avatar(person, url) do
-    {:ok, person} = Operately.People.update_person(person, %{avatar_url: url})
+  defp set_avatar(person, avatar_id) do
+    {:ok, person} = Operately.People.update_person(person, %{avatar_url: avatar(avatar_id)})
     person
   end
 
