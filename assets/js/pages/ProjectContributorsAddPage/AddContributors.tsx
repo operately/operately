@@ -49,16 +49,18 @@ export function AddContributors() {
   });
 
   return (
-    <Paper.Root size="small">
-      <Paper.NavigateBack to={Paths.projectContributorsPath(project.id!)} title="Back to Team & Access" />
-      <div className="text-2xl font-extrabold mb-4 text-center">Add contributors to {project.name}</div>
+    <Pages.Page title={["Add contributors", project.name!]}>
+      <Paper.Root size="small">
+        <Paper.NavigateBack to={Paths.projectContributorsPath(project.id!)} title="Back to Team & Access" />
+        <div className="text-2xl font-extrabold mb-4 text-center">Add contributors to {project.name}</div>
 
-      <Forms.Form form={form}>
-        <Contributors project={project} />
+        <Forms.Form form={form}>
+          <Contributors project={project} />
 
-        <Forms.Submit saveText="Add contributors" layout="centered" buttonSize="base" />
-      </Forms.Form>
-    </Paper.Root>
+          <Forms.Submit saveText="Add contributors" layout="centered" buttonSize="base" submitOnEnter={false} />
+        </Forms.Form>
+      </Paper.Root>
+    </Pages.Page>
   );
 }
 
@@ -119,8 +121,7 @@ function Contributor({ field, personSearchFn, index, last, addMore }) {
           placeholder="e.g. Project Manager"
           label="Responsibility"
           required={true}
-          onEnter={(e) => {
-            e.preventDefault();
+          onEnter={() => {
             if (last) addMore();
           }}
         />
