@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Queries.GetProjectTest do
+defmodule OperatelyWeb.Api.Queries.GetBindedPeopleTest do
   use OperatelyWeb.TurboCase
 
   alias Operately.Support.Factory
@@ -16,7 +16,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
 
   test "no access to not logged in users", ctx do
     assert {401, _} = query(ctx.conn, :get_binded_people, %{
-      resourse_type: "project", 
+      resourse_type: "project",
       resourse_id: Paths.project_id(ctx.hello)
     })
   end
@@ -25,7 +25,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
     ctx = log_in_account(ctx, ctx.mike)
 
     assert {200, result} = query(ctx.conn, :get_binded_people, %{
-      resourse_type: "project", 
+      resourse_type: "project",
       resourse_id: Paths.project_id(ctx.hello)
     })
 
@@ -42,7 +42,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
     ctx = log_in_account(ctx, ctx.silvia)
 
     assert {404, _} = query(ctx.conn, :get_binded_people, %{
-      resourse_type: "project", 
+      resourse_type: "project",
       resourse_id: Paths.project_id(ctx.hello)
     })
   end

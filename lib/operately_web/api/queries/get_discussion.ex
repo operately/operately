@@ -4,7 +4,6 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussion do
 
   alias Operately.Messages.Message
   alias Operately.Groups.Permissions
-  alias Operately.Notifications.Subscription
 
   inputs do
     field :id, :string
@@ -12,7 +11,7 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussion do
     field :include_reactions, :boolean
     field :include_space, :boolean
     field :include_space_members, :boolean
-    field :include_subscriptions, :boolean
+    field :include_subscriptions_list, :boolean
     field :include_potential_subscribers, :boolean
   end
 
@@ -53,7 +52,7 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussion do
       include_reactions: [reactions: :person],
       include_space: :space,
       include_space_members: [space: [:members, :company]],
-      include_subscriptions: Subscription.preload_subscriptions(),
+      include_subscriptions_list: :subscription_list,
       include_potential_subscribers: [:access_context, space: :members],
     ])
   end
