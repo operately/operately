@@ -1,42 +1,24 @@
 defmodule Operately.Demo.Company do
-  @moduledoc """
-  Create a company for the demo.
-  """
+  alias Operately.Demo.Resources
 
-  import Ecto.Query
-
-  def create_company(context) do
-    cleanup_acme_companies()
-
+  def create_company(resources, account, company_name, title) do
     {:ok, company} = Operately.Operations.CompanyAdding.run(%{
-      company_name: context.company_name,
-      title: context.title,
-    }, context.account)
+      company_name: company_name,
+      title: title,
+    }, account)
 
-    owner = Operately.People.get_person!(context.account, company)
+    owner = Operately.People.get_person!(account, company)
 
-    context
-    |> Map.put(:company, company)
-    |> Map.put(:owner, owner)
+    {:ok, owner} = Operately.People.update_person(owner, %{
+      avatar_url: "https://lh3.googleusercontent.com/a/ACg8ocILTOndcnZ-XIGfLdRiI4i6h2QhDVTtaj9XBh3FD_V94g8wLMo=s96-c",
+    })
+
+    company_space = Operately.Groups.get_group!(company.company_space_id)
+
+    resources
+    |> Resources.add(:company, company)
+    |> Resources.add(:company_space, company_space)
+    |> Resources.add(:owner, owner)
   end
 
-  @doc """
-  As we don't have a way to delete companies (yet), we are cleaning up
-  the database by renaming companies that contain 'Acme Inc.' in their 
-  name.
-
-  We are doing this only in the development environment, to not risk
-  renaming companies in production by mistake.
-  """
-  def cleanup_acme_companies do
-    if Application.get_env(:operately, :app_env) == :dev do
-      companies = Operately.Repo.all(from c in Operately.Companies.Company)
-
-      companies |> Enum.each(fn c ->
-        if String.contains?(c.name, "Acme Inc.") do
-          Operately.Companies.update_company(c, %{name: "#{c.short_id}"})
-        end
-      end)
-    end
-  end
 end
