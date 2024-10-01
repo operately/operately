@@ -1,5 +1,6 @@
 defmodule Operately.Goals.Goal do
   use Operately.Schema
+  use Operately.Repo.Getter
 
   schema "goals" do
     belongs_to :company, Operately.Companies.Company, foreign_key: :company_id
@@ -33,10 +34,12 @@ defmodule Operately.Goals.Goal do
     field :last_check_in, :any, virtual: true
     field :permissions, :any, virtual: true
     field :access_levels, :any, virtual: true
+    field :potential_subscribers, :any, virtual: true
 
     timestamps()
     soft_delete()
     requester_access_level()
+    request_info()
   end
 
   def changeset(attrs) do
@@ -130,5 +133,10 @@ defmodule Operately.Goals.Goal do
     access_levels = Operately.Access.AccessLevels.load(context.id, goal.company_id, goal.group_id)
 
     Map.put(goal, :access_levels, access_levels)
+  end
+
+  def set_potential_subscribers(goal = %__MODULE__{}) do
+    subscribers = Operately.Notifications.Subscriber.from_goal(goal)
+    Map.put(goal, :potential_subscribers, subscribers)
   end
 end

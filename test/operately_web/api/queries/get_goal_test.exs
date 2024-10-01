@@ -278,6 +278,37 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
       assert res.goal.access_levels.company == Binding.edit_access()
       assert res.goal.access_levels.space == Binding.full_access()
     end
+
+    test "include_potential_subscribers", ctx do
+      ctx =
+        ctx
+        |> Factory.add_company_member(:creator)
+        |> Factory.add_company_member(:reviewer)
+        |> Factory.add_space(:space)
+        |> Factory.add_goal(:goal, :space, champion: :creator, reviewer: :reviewer)
+        |> Factory.add_space_member(:member1, :space)
+        |> Factory.add_space_member(:member2, :space)
+        |> Factory.add_space_member(:member3, :space)
+
+      assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(ctx.goal)})
+
+      refute res.goal.potential_subscribers
+
+      assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(ctx.goal), include_potential_subscribers: true})
+      subs = res.goal.potential_subscribers
+
+      [ctx.reviewer, ctx.creator]
+      |> Enum.each(fn contrib ->
+        candidate = Enum.find(subs, &(&1.person.id == Paths.person_id(contrib)))
+        assert candidate.priority
+      end)
+
+      [ctx.member1, ctx.member2, ctx.member3]
+      |> Enum.each(fn member ->
+        candidate = Enum.find(subs, &(&1.person.id == Paths.person_id(member)))
+        refute candidate.priority
+      end)
+    end
   end
 
   #

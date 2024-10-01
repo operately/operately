@@ -2,10 +2,8 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
-  import Operately.Access.Filters, only: [filter_by_view_access: 2]
-
   alias OperatelyWeb.Api.Serializer
-  alias Operately.Goals.Goal
+  alias Operately.Goals.{Goal, Permissions}
 
   inputs do
     field :id, :string
@@ -20,6 +18,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
     field :include_space_members, :boolean
     field :include_targets, :boolean
     field :include_access_levels, :boolean
+    field :include_potential_subscribers, :boolean
   end
 
   outputs do
@@ -27,62 +26,62 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
   end
 
   def call(conn, %{id: id} = inputs) do
-    {:ok, id} = decode_id(id)
-    goal = load(id, me(conn), inputs)
-
-    if goal do
-      output = %{goal: Serializer.serialize(goal, level: :full)}
-      {:ok, output}
-    else
-      {:error, :not_found}
-    end
+    Action.new()
+    |> run(:me, fn -> find_me(conn) end)
+    |> run(:id, fn -> decode_id(id) end)
+    |> run(:goal, fn ctx -> load(ctx, inputs) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.goal.requester_access_level, :can_view) end)
+    |> run(:serialized, fn ctx -> {:ok, %{goal: Serializer.serialize(ctx.goal, level: :full)}} end)
+    |> respond()
   end
 
   def call(_conn, _) do
     {:error, :bad_request}
   end
 
-  defp load(id, person, inputs) do
-    include_filters = extract_include_filters(inputs)
-    query = from(g in Goal, as: :goal, where: g.id == ^id, preload: [:parent_goal])
-
-    query
-    |> Goal.scope_company(person.company_id)
-    |> include_requested(include_filters)
-    |> filter_by_view_access(person.id)
-    |> Repo.one(with_deleted: true)
-    |> load_last_check_in(inputs[:include_last_check_in])
-    |> load_permissions(person, inputs[:include_permissions])
-    |> load_access_levels(inputs[:include_access_levels])
+  defp respond(result) do
+    case result do
+      {:ok, ctx} -> {:ok, ctx.serialized}
+      {:error, :id, _} -> {:error, :bad_request}
+      {:error, :goal, _} -> {:error, :not_found}
+      {:error, :check_permissions, _} -> {:error, :not_found}
+      _ -> {:error, :not_found}
+    end
   end
 
-  defp include_requested(query, requested) do
-    Enum.reduce(requested, query, fn include, q ->
-      case include do
-        :include_champion -> from p in q, preload: [:champion]
-        :include_closed_by -> from p in q, preload: [:closed_by]
-        :include_last_check_in -> q # this is done after the load
-        :include_permissions -> q # this is done after the load
-        :include_projects -> from p in q, preload: [projects: [:champion, :reviewer]]
-        :include_reviewer -> from p in q, preload: [:reviewer]
-        :include_space -> from p in q, preload: [:group]
-        :include_space_members -> from p in q, preload: [group: [:members, :company]]
-        :include_targets -> from p in q, preload: [:targets]
-        :include_access_levels -> q # this is done after the load
-        _ -> raise "Unknown include filter: #{inspect(include)}"
-      end
-    end)
+  defp load(ctx, inputs) do
+    Goal.get(ctx.me, id: ctx.id, company_id: ctx.me.company_id, opts: [
+      with_deleted: true,
+      preload: [:parent_goal] ++ preload(inputs),
+      after_load: after_load(inputs, ctx.me),
+    ])
   end
 
-  defp load_last_check_in(nil, _), do: nil
-  defp load_last_check_in(goal, true), do: Goal.preload_last_check_in(goal)
-  defp load_last_check_in(goal, _), do: goal
+  defp preload(inputs) do
+    Inputs.parse_includes(inputs, [
+        include_champion: :champion,
+        include_closed_by: :closed_by,
+        include_projects: [projects: [:champion, :reviewer]],
+        include_reviewer: :reviewer,
+        include_space: :group,
+        include_space_members: [group: [:members, :company]],
+        include_targets: :targets,
+        include_potential_subscribers: [:reviewer, :champion, group: :members],
+    ])
+  end
 
-  defp load_permissions(nil, _, _), do: nil
-  defp load_permissions(goal, person, true), do: Goal.preload_permissions(goal, person)
-  defp load_permissions(goal, _, _), do: goal
+  defp after_load(inputs, me) do
+    Inputs.parse_includes(inputs, [
+      include_last_check_in: &Goal.preload_last_check_in/1,
+      include_permissions: load_permissions(me),
+      include_access_levels: &Goal.preload_access_levels/1,
+      include_potential_subscribers: &Goal.set_potential_subscribers/1,
+    ])
+  end
 
-  defp load_access_levels(nil, _), do: nil
-  defp load_access_levels(goal, true), do: Goal.preload_access_levels(goal)
-  defp load_access_levels(goal, _), do: goal
+  defp load_permissions(person) do
+    fn goal ->
+      Goal.preload_permissions(goal, person)
+    end
+  end
 end
