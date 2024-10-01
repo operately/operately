@@ -882,6 +882,7 @@ export interface Space {
   color?: string | null;
   members?: Person[] | null;
   accessLevels?: AccessLevels | null;
+  potentialSubscribers?: Subscriber[] | null;
 }
 
 export interface Subscriber {
@@ -1442,6 +1443,7 @@ export interface GetSpaceInput {
   includeMembers?: boolean | null;
   includeAccessLevels?: boolean | null;
   includeMembersAccessLevels?: boolean | null;
+  includePotentialSubscribers?: boolean | null;
 }
 
 export interface GetSpaceResult {
