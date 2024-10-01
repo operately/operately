@@ -12,9 +12,9 @@ export async function loader({ params }): Promise<LoaderResult> {
     getCompany({ id: params.companyId }),
     getSpace({
       id: params.id,
-      includeMembers: true,
       includeMembersAccessLevels: true,
       includeAccessLevels: true,
+      includePotentialSubscribers: true,
     }),
   ]);
 

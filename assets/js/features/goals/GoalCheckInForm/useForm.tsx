@@ -8,8 +8,8 @@ import { useListState } from "@/utils/useListState";
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 import { Validators } from "@/utils/validators";
 import { Paths } from "@/routes/paths";
-import { NotifiablePerson, Options, SubscriptionsState, useSubscriptions } from "@/features/Subscriptions";
-import { getReviewerAndChampion } from "@/features/Subscriptions/utils";
+import { Subscriber } from "@/models/notifications";
+import { Options, SubscriptionsState, useSubscriptions } from "@/features/Subscriptions";
 
 interface Error {
   field: string;
@@ -20,7 +20,7 @@ interface UseFormOptions {
   mode: "create" | "edit";
   goal: Goals.Goal;
   checkIn?: GoalCheckIns.Update;
-  notifiablePeople?: NotifiablePerson[];
+  potentialSubscribers: Subscriber[];
 }
 
 export interface FormState {
@@ -42,19 +42,19 @@ export interface FormState {
   goal: Goals.Goal;
 }
 
-export function useForm(options: UseFormOptions): FormState {
+export function useForm({ goal, mode, checkIn, potentialSubscribers = [] }: UseFormOptions): FormState {
   const navigate = useNavigate();
-  const subscriptionsState = useSubscriptions(options.notifiablePeople || [], {
-    alwaysNotify: getReviewerAndChampion(options.notifiablePeople || []),
+  const subscriptionsState = useSubscriptions(potentialSubscribers, {
+    ignoreMe: true,
+    notifyPrioritySubscribers: true,
   });
 
-  const goal = options.goal;
   const [errors, setErrors] = React.useState<Error[]>([]);
 
   const editor = TipTapEditor.useEditor({
     placeholder: `Write here...`,
     className: "min-h-[250px] py-2 font-medium",
-    content: options.checkIn && JSON.parse(options.checkIn!.message!),
+    content: checkIn && JSON.parse(checkIn!.message!),
     mentionSearchScope: { type: "goal", id: goal.id! },
   });
 
@@ -73,7 +73,7 @@ export function useForm(options: UseFormOptions): FormState {
       return false;
     }
 
-    if (options.mode === "create") {
+    if (mode === "create") {
       const res = await post({
         goalId: goal.id,
         content: JSON.stringify(editor.editor.getJSON()),
@@ -87,7 +87,7 @@ export function useForm(options: UseFormOptions): FormState {
       return true;
     } else {
       const res = await edit({
-        id: options.checkIn!.id,
+        id: checkIn!.id,
         content: JSON.stringify(editor.editor.getJSON()),
         newTargetValues: JSON.stringify(targets.map((target) => ({ id: target.id, value: target.value }))),
       });
@@ -99,12 +99,11 @@ export function useForm(options: UseFormOptions): FormState {
   };
 
   const submitting = submittingPost || submittingEdit;
-  const submitButtonLabel = options.mode === "create" ? "Submit" : "Save Changes";
-  const cancelPath =
-    options.mode === "create" ? Paths.goalPath(goal.id!) : Paths.goalProgressUpdatePath(options.checkIn!.id!);
+  const submitButtonLabel = mode === "create" ? "Submit" : "Save Changes";
+  const cancelPath = mode === "create" ? Paths.goalPath(goal.id!) : Paths.goalProgressUpdatePath(checkIn!.id!);
 
   return {
-    mode: options.mode,
+    mode,
     editor,
     targets,
     updateTarget,

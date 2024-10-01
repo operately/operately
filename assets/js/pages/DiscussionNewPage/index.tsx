@@ -6,11 +6,8 @@ import * as Icons from "@tabler/icons-react";
 import * as Spaces from "@/models/spaces";
 
 import { PrimaryButton } from "@/components/Buttons";
-
 import { Form, useForm } from "@/features/DiscussionForm";
 import { Paths } from "@/routes/paths";
-import { findSpaceNotifiablePeople } from "@/features/Subscriptions/utils";
-import { useMe } from "@/contexts/CurrentUserContext";
 
 interface LoaderResult {
   space: Spaces.Space;
@@ -20,17 +17,14 @@ export async function loader({ params }): Promise<LoaderResult> {
   return {
     space: await Spaces.getSpace({
       id: params.id,
-      includeMembers: true,
+      includePotentialSubscribers: true,
     }),
   };
 }
 
 export function Page() {
-  const me = useMe()!;
   const { space } = Pages.useLoadedData<LoaderResult>();
-  const people = findSpaceNotifiablePeople(space, me);
-
-  const form = useForm({ space: space, mode: "create", notifiablePeople: people });
+  const form = useForm({ space: space, mode: "create", potentialSubscribers: space.potentialSubscribers! });
 
   return (
     <Pages.Page title="New Discussion">

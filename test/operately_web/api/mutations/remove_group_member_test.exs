@@ -5,7 +5,7 @@ defmodule OperatelyWeb.Api.Mutations.RemoveGroupMemberTest do
   import Operately.GroupsFixtures
 
   alias OperatelyWeb.Paths
-  alias Operately.{Repo, Groups}
+  alias Operately.Groups
   alias Operately.Access.Binding
 
   describe "security" do
@@ -52,11 +52,11 @@ defmodule OperatelyWeb.Api.Mutations.RemoveGroupMemberTest do
         assert code == @test.expected
 
         case @test.expected do
-          200 -> 
+          200 ->
             assert res == %{}
             refute Groups.is_member?(space, member)
 
-          403 -> 
+          403 ->
             assert res.message == "You don't have permission to perform this action"
             assert Groups.is_member?(space, member)
 
@@ -71,4 +71,4 @@ defmodule OperatelyWeb.Api.Mutations.RemoveGroupMemberTest do
   defp add_member(ctx, space, person, permissions) do
     {:ok, _} = Operately.Groups.add_members(ctx.creator, space.id, [%{id: person.id, permissions: permissions}])
   end
-end 
+end
