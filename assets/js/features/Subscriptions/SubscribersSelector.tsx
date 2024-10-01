@@ -1,7 +1,8 @@
 import React, { useState, useMemo } from "react";
 
+import { Subscriber } from "@/models/notifications";
 import { RadioGroup } from "@/components/Form";
-import { SubscriptionsState, Options, NotifiablePerson } from "@/features/Subscriptions";
+import { SubscriptionsState, Options } from "@/features/Subscriptions";
 import { SubscriptionOption } from "./selector/SubscriptionOption";
 import { SubscribersSelectorModal } from "./selector/SubscribersSelectorModal";
 import { SubscribersSelectorProvider } from "./SubscribersSelectorContext";
@@ -14,14 +15,17 @@ interface Props {
 
 export function SubscribersSelector({ state, projectName, spaceName }: Props) {
   const [showSelector, setShowSelector] = useState(false);
-  const { people, selectedPeople, subscriptionType, setSubscriptionType, alwaysNotify } = state;
+  const { subscribers, selectedSubscribers, subscriptionType, setSubscriptionType, alwaysNotify } = state;
 
-  const selectedPeopleLabel = useMemo(() => buildSelectedPeopleLabel(selectedPeople), [selectedPeople]);
-  const allPeopleLabel = useMemo(() => buildAllPeopleLabel(people, { projectName, spaceName }), []);
+  const selectedSubscribersLabel = useMemo(
+    () => buildSelectedSubscribersLabel(selectedSubscribers),
+    [selectedSubscribers],
+  );
+  const allSubscribersLabel = useMemo(() => buildAllSubscribersLabel(subscribers, { projectName, spaceName }), []);
 
   // If all notifiable people must be notified,
   // the widget is not displayed.
-  if (alwaysNotify.length >= people.length) return <></>;
+  if (alwaysNotify.length >= subscribers.length) return <></>;
 
   return (
     <SubscribersSelectorProvider state={state}>
@@ -29,16 +33,17 @@ export function SubscribersSelector({ state, projectName, spaceName }: Props) {
         <p className="text-lg font-bold mb-2">When I post this, notify:</p>
 
         <RadioGroup name="subscriptions-options" onChange={setSubscriptionType} defaultValue={subscriptionType}>
-          <SubscriptionOption label={allPeopleLabel} value={Options.ALL} people={people} />
+          <SubscriptionOption label={allSubscribersLabel} value={Options.ALL} subscribers={subscribers} />
 
           <SubscriptionOption
-            label={selectedPeopleLabel}
+            label={selectedSubscribersLabel}
             value={Options.SELECTED}
-            people={selectedPeople}
+            subscribers={selectedSubscribers}
             onClick={() => setShowSelector(true)}
           />
 
-          <SubscriptionOption label="No one" value={Options.NONE} people={[]} />
+          <SubscriptionOption label="No one" value={Options.NONE} subscribers={[]} />
+          <></>
         </RadioGroup>
 
         <SubscribersSelectorModal showSelector={showSelector} setShowSelector={setShowSelector} />
@@ -52,8 +57,8 @@ interface BuildAllPeopleLabelOpts {
   spaceName?: string;
 }
 
-function buildAllPeopleLabel(people: NotifiablePerson[], opts: BuildAllPeopleLabelOpts) {
-  const part1 = people.length > 1 ? `All ${people.length} people` : "The 1 person";
+function buildAllSubscribersLabel(subscribers: Subscriber[], opts: BuildAllPeopleLabelOpts) {
+  const part1 = subscribers.length > 1 ? `All ${subscribers.length} people` : "The 1 person";
   let part2 = "";
 
   if (opts.projectName) {
@@ -65,7 +70,7 @@ function buildAllPeopleLabel(people: NotifiablePerson[], opts: BuildAllPeopleLab
   return part1 + part2;
 }
 
-function buildSelectedPeopleLabel(selectedPeople: NotifiablePerson[]) {
+function buildSelectedSubscribersLabel(selectedPeople: Subscriber[]) {
   switch (selectedPeople.length) {
     case 0:
       return "Only the people I select";

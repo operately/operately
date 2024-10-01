@@ -14,7 +14,8 @@ export async function loader({ params }): Promise<LoaderResult> {
       includeAuthor: true,
       includeReactions: true,
       includeSpaceMembers: true,
-      includeSubscriptions: true,
+      includeSubscriptionsList: true,
+      includePotentialSubscribers: true,
     }).then((d) => d.discussion!),
     Comments.getComments({
       entityId: params.id,

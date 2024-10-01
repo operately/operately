@@ -3,12 +3,9 @@ defmodule OperatelyWeb.Api.Mutations.RemoveProjectMilestoneTest do
 
   alias Operately.Access.Binding
 
-  import Operately.CompaniesFixtures
   import Operately.GroupsFixtures
   import Operately.PeopleFixtures
   import Operately.ProjectsFixtures
-
-  alias Operately.Support.RichText
 
   describe "security" do
     test "it requires authentication", ctx do
@@ -60,7 +57,7 @@ defmodule OperatelyWeb.Api.Mutations.RemoveProjectMilestoneTest do
   #
   # Helpers
   #
-    
+
   def create_space(ctx) do
     group_fixture(ctx.creator, %{company_id: ctx.company.id, company_permissions: Binding.no_access()})
   end
@@ -77,7 +74,7 @@ defmodule OperatelyWeb.Api.Mutations.RemoveProjectMilestoneTest do
 
     if space_members_level != :no_access do
       {:ok, _} = Operately.Groups.add_members(ctx.creator, space.id, [%{
-        id: ctx.person.id, 
+        id: ctx.person.id,
         permissions: Binding.from_atom(space_members_level)
       }])
     end
@@ -85,12 +82,12 @@ defmodule OperatelyWeb.Api.Mutations.RemoveProjectMilestoneTest do
     if project_member_level != :no_access do
       {:ok, _} = Operately.Projects.create_contributor(ctx.creator, %{
         project_id: project.id,
-        person_id: ctx.person.id, 
+        person_id: ctx.person.id,
         permissions: Binding.from_atom(project_member_level),
         responsibility: "some responsibility"
       })
     end
-    
+
     project
   end
 
@@ -98,4 +95,4 @@ defmodule OperatelyWeb.Api.Mutations.RemoveProjectMilestoneTest do
     milestone_fixture(ctx.creator, %{project_id: project.id})
   end
 
-end 
+end

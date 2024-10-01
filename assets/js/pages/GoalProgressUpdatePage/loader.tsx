@@ -9,13 +9,11 @@ export async function loader({ params }): Promise<LoaderResult> {
   const updatePromise = GoalCheckIns.getGoalProgressUpdate({
     id: params.id,
     includeGoalTargets: true,
-    includeChampion: true,
-    includeReviewer: true,
     includeAcknowledgedBy: true,
     includeReactions: true,
     includeAuthor: true,
-    includeSubscriptions: true,
-    includeSpaceMembers: true,
+    includeSubscriptionsList: true,
+    includePotentialSubscribers: true,
   }).then((data) => data.update!);
 
   return {
