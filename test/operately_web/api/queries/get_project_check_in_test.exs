@@ -153,27 +153,17 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckInTest do
       assert res.project_check_in.project.permissions
     end
 
-    test "include_subscriptions", ctx do
-      {:ok, list} = SubscriptionList.get(:system, parent_id: ctx.check_in.id)
+    test "include_subscriptions_list", ctx do
+      assert {200, res} = query(ctx.conn, :get_project_check_in, %{id: Paths.project_check_in_id(ctx.check_in)})
 
-      people = Enum.map(1..3, fn _ ->
-        person = person_fixture(%{company_id: ctx.company.id})
-        Operately.Notifications.create_subscription(%{
-          subscription_list_id: list.id,
-          person_id: person.id,
-          type: :invited,
-        })
-        person
-      end)
+      refute res.project_check_in.subscription_list
 
       assert {200, res} = query(ctx.conn, :get_project_check_in, %{
         id: Paths.project_check_in_id(ctx.check_in),
-        include_subscriptions: true,
+        include_subscriptions_list: true,
       })
 
-      Enum.each(res.project_check_in.subscription_list.subscriptions, fn s ->
-        assert Enum.find(people, &(serialize(&1) == s.person))
-      end)
+      assert res.project_check_in.subscription_list
     end
 
     test "include_potential_subscribers", ctx do

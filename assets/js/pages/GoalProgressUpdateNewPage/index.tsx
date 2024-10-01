@@ -6,8 +6,6 @@ import * as React from "react";
 import { PrimaryButton } from "@/components/Buttons";
 import { Form, useForm } from "@/features/goals/GoalCheckInForm";
 import { Paths } from "@/routes/paths";
-import { findGoalNotifiablePeople } from "@/features/Subscriptions/utils";
-import { useMe } from "@/contexts/CurrentUserContext";
 
 interface LoaderResult {
   goal: Goals.Goal;
@@ -21,16 +19,14 @@ export async function loader({ params }): Promise<LoaderResult> {
       includeSpaceMembers: true,
       includeChampion: true,
       includeReviewer: true,
+      includePotentialSubscribers: true,
     }).then((data) => data.goal!),
   };
 }
 
 export function Page() {
-  const me = useMe()!;
   const { goal } = Pages.useLoadedData<LoaderResult>();
-
-  const people = findGoalNotifiablePeople(goal, me);
-  const form = useForm({ goal, mode: "create", notifiablePeople: people });
+  const form = useForm({ goal, mode: "create", potentialSubscribers: goal.potentialSubscribers! });
 
   return (
     <Pages.Page title={["Goal Progress Update", goal.name!]}>

@@ -1,7 +1,7 @@
 defmodule Operately.Notifications.Subscriber do
   alias Operately.Projects.{Contributor, CheckIn}
   alias Operately.Goals.{Update, Goal}
-  alias Operately.Notifications.Subscription
+  alias Operately.Notifications.{Subscription, SubscriptionList}
   alias Operately.People.Person
   alias Operately.Messages.Message
 
@@ -29,7 +29,9 @@ defmodule Operately.Notifications.Subscriber do
   end
 
   def from_project_check_in(%CheckIn{} = check_in) do
-    subs = Enum.into(check_in.subscription_list.subscriptions, %{}, fn s ->
+    subs =
+      exclude_canceled_subscriptions(check_in.subscription_list)
+      |> Enum.into(%{}, fn s ->
       {s.person.id, from_subscription(s)}
     end)
 
@@ -41,7 +43,9 @@ defmodule Operately.Notifications.Subscriber do
   end
 
   def from_goal_update(%Update{} = update) do
-    subs = Enum.into(update.subscription_list.subscriptions, %{}, fn s ->
+    subs =
+      exclude_canceled_subscriptions(update.subscription_list)
+      |> Enum.into(%{}, fn s ->
       {s.person.id, from_subscription(s)}
     end)
 
@@ -53,7 +57,9 @@ defmodule Operately.Notifications.Subscriber do
   end
 
   def from_message(%Message{} = message) do
-    subs = Enum.into(message.subscription_list.subscriptions, %{}, fn s ->
+    subs =
+      exclude_canceled_subscriptions(message.subscription_list)
+      |> Enum.into(%{}, fn s ->
       {s.person.id, from_subscription(s)}
     end)
 
@@ -104,6 +110,10 @@ defmodule Operately.Notifications.Subscriber do
       :reviewer -> [role: "Reviewer", priority: true]
       _ -> [role: contributor.responsibility, priority: false]
     end
+  end
+
+  defp exclude_canceled_subscriptions(subscription_list = %SubscriptionList{}) do
+    Enum.filter(subscription_list.subscriptions, &(not &1.canceled))
   end
 
   defp merge_subs_and_potential_subs(subs, potential_subs) do

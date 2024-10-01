@@ -5,13 +5,14 @@ import * as Spaces from "@/models/spaces";
 
 import { useNavigate } from "react-router-dom";
 import { Paths } from "@/routes/paths";
-import { NotifiablePerson, Options, SubscriptionsState, useSubscriptions } from "@/features/Subscriptions";
+import { Subscriber } from "@/models/notifications";
+import { Options, SubscriptionsState, useSubscriptions } from "@/features/Subscriptions";
 
 interface UseFormOptions {
   mode: "create" | "edit";
   space: Spaces.Space;
   discussion?: Discussions.Discussion;
-  notifiablePeople?: NotifiablePerson[];
+  potentialSubscribers?: Subscriber[];
 }
 
 export interface FormState {
@@ -37,12 +38,11 @@ interface Error {
   message: string;
 }
 
-export function useForm(options: UseFormOptions): FormState {
+export function useForm({ space, mode, discussion, potentialSubscribers = [] }: UseFormOptions): FormState {
   const navigate = useNavigate();
-  const subscriptionsState = useSubscriptions(options.notifiablePeople || []);
-
-  const discussion = options.discussion;
-  const space = options.space;
+  const subscriptionsState = useSubscriptions(potentialSubscribers, {
+    ignoreMe: true,
+  });
 
   const [errors, setErrors] = React.useState<Error[]>([]);
   const [title, setTitle] = React.useState(() => discussion?.title || "");
@@ -70,7 +70,7 @@ export function useForm(options: UseFormOptions): FormState {
       return false;
     }
 
-    if (options.mode === "edit") {
+    if (mode === "edit") {
       const res = await edit({
         discussionId: discussion!.id,
         title: title,
@@ -96,10 +96,8 @@ export function useForm(options: UseFormOptions): FormState {
   };
 
   const submitting = submittingPost || submittingEdit;
-  const cancelPath =
-    options.mode === "edit" ? Paths.discussionPath(discussion?.id!) : Paths.spaceDiscussionsPath(space.id!);
-
-  const submitButtonLabel = options.mode === "edit" ? "Save Changes" : "Post Discussion";
+  const cancelPath = mode === "edit" ? Paths.discussionPath(discussion?.id!) : Paths.spaceDiscussionsPath(space.id!);
+  const submitButtonLabel = mode === "edit" ? "Save Changes" : "Post Discussion";
 
   return {
     title,
@@ -107,7 +105,7 @@ export function useForm(options: UseFormOptions): FormState {
     editor,
 
     space,
-    mode: options.mode,
+    mode,
     subscriptionsState,
 
     // empty,

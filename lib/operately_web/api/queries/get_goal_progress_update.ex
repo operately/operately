@@ -3,7 +3,6 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdate do
   use OperatelyWeb.Api.Helpers
 
   alias Operately.Goals.{Goal, Update, Permissions}
-  alias Operately.Notifications.Subscription
 
   inputs do
     field :id, :string
@@ -15,7 +14,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdate do
     field :include_reviewer, :boolean
     field :include_champion, :boolean
     field :include_space_members, :boolean
-    field :include_subscriptions, :boolean
+    field :include_subscriptions_list, :boolean
     field :include_potential_subscribers, :boolean
   end
 
@@ -60,7 +59,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdate do
       include_champion: [goal: :champion],
       include_reviewer: [goal: :reviewer],
       include_space_members: [goal: [group: [:members, :company]]],
-      include_subscriptions: Subscription.preload_subscriptions(),
+      include_subscriptions_list: :subscription_list,
       include_potential_subscribers: [:access_context, goal: [:champion, :reviewer, group: :members]],
     ])
   end

@@ -3,7 +3,6 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckIn do
   use OperatelyWeb.Api.Helpers
 
   alias Operately.Projects.{CheckIn, Project}
-  alias Operately.Notifications.Subscription
 
   inputs do
     field :id, :string
@@ -11,7 +10,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckIn do
     field :include_acknowledged_by, :boolean
     field :include_project, :boolean
     field :include_reactions, :boolean
-    field :include_subscriptions, :boolean
+    field :include_subscriptions_list, :boolean
     field :include_potential_subscribers, :boolean
   end
 
@@ -50,7 +49,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckIn do
       include_acknowledged_by: [:acknowledged_by],
       include_project: [project: [:reviewer, [contributors: :person]]],
       include_reactions: [reactions: :person],
-      include_subscriptions: Subscription.preload_subscriptions(),
+      include_subscriptions_list: :subscription_list,
       include_potential_subscribers: [:access_context, project: [contributors: :person]],
     ])
   end
