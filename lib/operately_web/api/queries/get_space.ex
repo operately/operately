@@ -2,14 +2,14 @@ defmodule OperatelyWeb.Api.Queries.GetSpace do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
-  alias Operately.Access.Filters
-  alias Operately.Groups.Group
+  alias Operately.Groups.{Group, Permissions}
 
   inputs do
     field :id, :string
     field :include_members, :boolean
     field :include_access_levels, :boolean
     field :include_members_access_levels, :boolean
+    field :include_potential_subscribers, :boolean
   end
 
   outputs do
@@ -17,53 +17,62 @@ defmodule OperatelyWeb.Api.Queries.GetSpace do
   end
 
   def call(conn, inputs) do
-    space = load(me(conn), inputs)
+    Action.new()
+    |> run(:me, fn -> find_me(conn) end)
+    |> run(:id, fn -> decode_id(inputs.id) end)
+    |> run(:space, fn ctx -> load(ctx, inputs) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.space.request_info.access_level, :can_view) end)
+    |> run(:serialized, fn ctx -> {:ok, %{space: Serializer.serialize(ctx.space, level: :full)}} end)
+    |> respond()
+  end
 
-    if space do
-      {:ok, %{space: Serializer.serialize(space, level: :full)}}
-    else
-      {:error, :not_found}
+  defp respond(result) do
+    case result do
+      {:ok, ctx} -> {:ok, ctx.serialized}
+      {:error, :id, _} -> {:error, :bad_request}
+      {:error, :update, _} -> {:error, :not_found}
+      {:error, :check_permissions, _} -> {:error, :not_found}
+      _ -> {:error, :not_found}
     end
   end
 
-  defp load(person, inputs) do
-    requested = extract_include_filters(inputs)
-    {:ok, id} = decode_id(inputs[:id])
-
-    (from s in Group, where: s.id == ^id, preload: [:company])
-    |> Group.scope_company(person.company_id)
-    |> include_requested(requested)
-    |> load_members_access_level(inputs[:include_members_access_levels], id)
-    |> Filters.filter_by_view_access(person.id)
-    |> Repo.one()
-    |> preload_is_member(person)
-    |> sort_members()
-    |> load_access_levels(inputs[:include_access_levels])
+  defp load(ctx, inputs) do
+    Group.get(ctx.me, id: ctx.id, company_id: ctx.me.company_id, opts: [
+      preload: preload(inputs),
+      after_load: after_load(ctx.me, inputs),
+    ])
   end
 
-  defp include_requested(query, requested) do
-    Enum.reduce(requested, query, fn include, q ->
-      case include do
-        :include_members -> from p in q, preload: [:members]
-        :include_access_levels -> q # this is done after the load
-        :include_members_access_levels -> q # this is done in a separate function
-        e -> raise "Unknown include filter: #{inspect e}"
-      end
-    end)
+  defp preload(inputs) do
+    Inputs.parse_includes(inputs, [
+      include_members: :members,
+      include_potential_subscribers: :members,
+    ])
+    ++
+    [:company]
   end
 
-  defp preload_is_member(nil, _), do: nil
-  defp preload_is_member(space, person), do: Group.load_is_member(space, person)
+  defp after_load(me, inputs) do
+    Inputs.parse_includes(inputs, [
+      include_access_levels: &Group.preload_access_levels/1,
+      include_members_access_levels: &Group.preload_members_access_level/1,
+      include_potential_subscribers: &Group.set_potential_subscribers/1,
+    ])
+    ++
+    [
+      preload_is_member(me),
+      &sort_members/1,
+    ]
+  end
+
+  defp preload_is_member(person) do
+    fn space ->
+      Group.load_is_member(space, person)
+    end
+  end
 
   defp sort_members(group) when is_list(group.members) do
     %{group | members: Enum.sort_by(group.members, & &1.full_name) }
   end
   defp sort_members(group), do: group
-
-  defp load_access_levels(nil, _), do: nil
-  defp load_access_levels(group, true), do: Group.preload_access_levels(group)
-  defp load_access_levels(group, _), do: group
-
-  defp load_members_access_level(query, true, space_id), do: Group.preload_members_access_level(query, space_id)
-  defp load_members_access_level(query, _, _), do: query
 end

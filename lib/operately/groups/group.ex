@@ -1,5 +1,8 @@
 defmodule Operately.Groups.Group do
   use Operately.Schema
+  use Operately.Repo.Getter
+
+  alias Operately.Repo
 
   schema "groups" do
     belongs_to :company, Operately.Companies.Company
@@ -16,10 +19,12 @@ defmodule Operately.Groups.Group do
     # populated by after load hooks
     field :is_member, :boolean, virtual: true
     field :access_levels, :any, virtual: true
+    field :potential_subscribers, :any, virtual: true
 
     timestamps()
     soft_delete()
     requester_access_level()
+    request_info()
   end
 
   def changeset(attrs) do
@@ -42,25 +47,10 @@ defmodule Operately.Groups.Group do
     from g in query, where: g.company_id == ^company_id
   end
 
-  def preload_members_access_level(query, space_id) do
-    subquery = from(b in Operately.Access.Binding,
-      join: c in assoc(b, :context),
-      where: c.group_id == ^space_id,
-      select: b
-    )
-
-    from(s in query,
-      join: members in assoc(s, :memberships),
-      join: person in assoc(members, :person),
-      join: group in assoc(person, :access_group),
-      where: s.id == ^space_id,
-      preload: [memberships: {members, [person: {person, [access_group: {group, [bindings: ^subquery]}]}]}]
-    )
-  end
-
   #
   # After Query Hooks
   #
+
   def load_is_member(group, person) do
     is_member = Operately.Groups.is_member?(group, person)
 
@@ -72,5 +62,20 @@ defmodule Operately.Groups.Group do
     access_levels = Operately.Access.AccessLevels.load(context.id, group.company_id, group.id)
 
     Map.put(group, :access_levels, access_levels)
+  end
+
+  def preload_members_access_level(space = %__MODULE__{}) do
+    subquery = from(b in Operately.Access.Binding,
+      join: c in assoc(b, :context),
+      where: c.group_id == ^space.id,
+      select: b
+    )
+
+    Repo.preload(space, [members: [access_group: [bindings: subquery]]])
+  end
+
+  def set_potential_subscribers(space = %__MODULE__{}) do
+    subscribers = Operately.Notifications.Subscriber.from_space_members(space.members)
+    Map.put(space, :potential_subscribers, subscribers)
   end
 end

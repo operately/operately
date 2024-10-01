@@ -83,7 +83,8 @@ defmodule OperatelyWeb.Api.Queries.GetSpaceTest do
         is_company_space: ctx.company.company_space_id == space.id,
         is_member: true,
         members: nil,
-        access_levels: nil
+        access_levels: nil,
+        potential_subscribers: nil,
       }
     end
 
@@ -104,7 +105,8 @@ defmodule OperatelyWeb.Api.Queries.GetSpaceTest do
         is_company_space: ctx.company.company_space_id == space.id,
         is_member: false,
         members: nil,
-        access_levels: nil
+        access_levels: nil,
+        potential_subscribers: nil,
       }
     end
 
@@ -141,6 +143,33 @@ defmodule OperatelyWeb.Api.Queries.GetSpaceTest do
 
       assert res.space.access_levels.public == Binding.view_access()
       assert res.space.access_levels.company == Binding.comment_access()
+    end
+
+    test "include_potential_subscribers", ctx do
+      ctx = Factory.add_company_member(ctx, :creator)
+        |> Factory.log_in_person(:creator)
+        |> Factory.add_space(:space)
+        |> Factory.add_space_member(:member1, :space)
+        |> Factory.add_space_member(:member2, :space)
+        |> Factory.add_space_member(:member3, :space)
+
+      assert {200, res} = query(ctx.conn, :get_space, %{id: Paths.space_id(ctx.space)})
+
+      refute res.space.potential_subscribers
+
+      assert {200, res} = query(ctx.conn, :get_space, %{
+        id: Paths.space_id(ctx.space),
+        include_potential_subscribers: true,
+      })
+
+      assert length(res.space.potential_subscribers) == 4
+
+      [ctx.creator, ctx.member1, ctx.member2, ctx.member3]
+      |> Enum.each(fn member ->
+        sub = Enum.find(res.space.potential_subscribers, &(&1.person.id == Paths.person_id(member)))
+        refute sub.priority
+        refute sub.is_subscribed
+      end)
     end
   end
 
