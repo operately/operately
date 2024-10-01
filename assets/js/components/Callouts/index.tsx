@@ -15,78 +15,74 @@ interface Props extends TestableElement {
 
 export function InfoCallout(props: Props) {
   return (
-    <div data-test-id={props.testId} className="rounded-md bg-callout-info p-4">
-      <div className="flex">
-        <div className="flex-shrink-0">
-          <IconInfoCircleFilled aria-hidden="true" className="h-5 w-5 text-callout-info-icon" />
-        </div>
-        <div className="ml-3">
-          <h3 className="text-sm font-semibold text-callout-info-message">{props.message}</h3>
-          {props.description ? (
-            <div className="mt-2 text-sm text-callout-info-message">
-              <p>{props.description}</p>
-            </div>
-          ) : null}
-        </div>
-      </div>
-    </div>
+    <UnstyledCallout
+      {...props}
+      icon={IconInfoCircleFilled}
+      iconClassName="text-callout-info-icon"
+      backgroundColor="bg-callout-info"
+      titleColor="text-callout-info-message"
+      messageColor="text-callout-info-message"
+    />
   );
 }
 
 export function WarningCallout(props: Props) {
   return (
-    <div data-test-id={props.testId} className="rounded-md bg-callout-warning p-4">
-      <div className="flex">
-        <div className="flex-shrink-0">
-          <IconAlertTriangleFilled aria-hidden="true" className="h-5 w-5 text-callout-warning-icon" />
-        </div>
-        <div className="ml-3">
-          <h3 className="text-sm font-semibold text-callout-warning-message">{props.message}</h3>
-          {props.description ? (
-            <div className="mt-2 text-sm text-callout-warning-message">
-              <p>{props.description}</p>
-            </div>
-          ) : null}
-        </div>
-      </div>
-    </div>
+    <UnstyledCallout
+      {...props}
+      icon={IconAlertTriangleFilled}
+      iconClassName="text-callout-warning-icon"
+      backgroundColor="bg-callout-error"
+      titleColor="text-callout-warning-message"
+      messageColor="text-callout-warning-message"
+    />
   );
 }
 
 export function ErrorCallout(props: Props) {
   return (
-    <div data-test-id={props.testId} className="rounded-md bg-callout-error p-4">
-      <div className="flex">
-        <div className="flex-shrink-0">
-          <IconCircleXFilled aria-hidden="true" className="h-5 w-5 text-callout-error-icon" />
-        </div>
-        <div className="ml-3">
-          <h3 className="text-sm font-semibold text-callout-error-message">{props.message}</h3>
-          {props.description ? (
-            <div className="mt-2 text-sm text-callout-error-message">
-              <p>{props.description}</p>
-            </div>
-          ) : null}
-        </div>
-      </div>
-    </div>
+    <UnstyledCallout
+      {...props}
+      icon={IconCircleXFilled}
+      iconClassName="text-callout-error-icon"
+      backgroundColor="bg-callout-error"
+      titleColor="text-callout-error-message"
+      messageColor="text-callout-error-message"
+    />
   );
 }
 
 export function SuccessCallout(props: Props) {
   return (
-    <div data-test-id={props.testId} className="rounded-md bg-callout-success p-4">
+    <UnstyledCallout
+      {...props}
+      icon={IconCircleCheckFilled}
+      iconClassName="text-callout-success-icon"
+      backgroundColor="bg-callout-success"
+      titleColor="text-callout-success-message"
+      messageColor="text-callout-success-message"
+    />
+  );
+}
+
+interface Style {
+  icon: any;
+  iconClassName: string;
+  backgroundColor: string;
+  titleColor: string;
+  messageColor: string;
+}
+
+function UnstyledCallout(props: Props & Style) {
+  return (
+    <div data-test-id={props.testId} className={`rounded-md ${props.backgroundColor} p-4`}>
       <div className="flex">
         <div className="flex-shrink-0">
-          <IconCircleCheckFilled aria-hidden="true" className="h-5 w-5 text-callout-success-icon" />
+          {React.createElement(props.icon, { "aria-hidden": true, className: props.iconClassName + " h-5 w-5" })}
         </div>
         <div className="ml-3">
-          <h3 className="text-sm font-semibold text-callout-success-message">{props.message}</h3>
-          {props.description ? (
-            <div className="mt-2 text-sm text-callout-success-message">
-              <p>{props.description}</p>
-            </div>
-          ) : null}
+          <h3 className={`text-sm font-semibold ${props.titleColor}`}>{props.message}</h3>
+          {props.description ? <div className={`mt-2 text-sm ${props.messageColor}`}>{props.description}</div> : null}
         </div>
       </div>
     </div>
