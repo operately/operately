@@ -24,6 +24,10 @@ defmodule Operately.Demo.Goals do
       }
     end)
 
+    if length(targets) == 0 do
+      raise ArgumentError, "Must have at least one target"
+    end
+
     {:ok, goal} = Operately.Operations.GoalCreation.run(owner, %{
       space_id: space.id,
       name: data.name,
@@ -37,13 +41,19 @@ defmodule Operately.Demo.Goals do
       space_access_level: 70,
     })
 
-    submit_update(goal, data.update)
+    if data.update do
+      submit_update(goal, data.update)
+    end
 
     goal
   end
 
   def submit_update(goal, data) do
     goal = Operately.Repo.preload(goal, [:targets, :champion])
+
+    if length(data.target_values) != length(goal.targets) do
+      raise ArgumentError, "Number of target values does not match number of targets"
+    end
 
     target_values = Enum.with_index(data.target_values) |> Enum.map(fn {t, index} ->
       id = goal.targets |> Enum.find(fn t -> t.index == index end) |> Map.get(:id)
