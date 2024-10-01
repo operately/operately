@@ -22,6 +22,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Messages.Message do
       reactions: OperatelyWeb.Api.Serializer.serialize(message.reactions),
       comments: OperatelyWeb.Api.Serializer.serialize(message.comments),
       subscription_list: OperatelyWeb.Api.Serializer.serialize(message.subscription_list),
+      potential_subscribers: OperatelyWeb.Api.Serializer.serialize(message.potential_subscribers),
     }
   end
 

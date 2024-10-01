@@ -13,6 +13,7 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussion do
     field :include_space, :boolean
     field :include_space_members, :boolean
     field :include_subscriptions, :boolean
+    field :include_potential_subscribers, :boolean
   end
 
   outputs do
@@ -23,8 +24,7 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussion do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:id, fn -> decode_id(inputs.id) end)
-    |> run(:preload, fn -> include_requested(inputs) end)
-    |> run(:message, fn ctx -> load(ctx) end)
+    |> run(:message, fn ctx -> load(ctx, inputs) end)
     |> run(:check_permissions, fn ctx -> Permissions.check(ctx.message.request_info.access_level, :can_view_message) end)
     |> run(:serialized, fn ctx -> {:ok, %{discussion: OperatelyWeb.Api.Serializer.serialize(ctx.message, level: :full)}} end)
     |> respond()
@@ -40,27 +40,27 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussion do
     end
   end
 
-  defp load(ctx) do
+  defp load(ctx, inputs) do
     Message.get(ctx.me, id: ctx.id, opts: [
-      preload: ctx.preload,
+      preload: preload(inputs),
+      after_load: after_load(inputs),
     ])
   end
 
-  defp include_requested(inputs) do
-    requested = extract_include_filters(inputs)
+  defp preload(inputs) do
+    Inputs.parse_includes(inputs, [
+      include_author: :author,
+      include_reactions: [reactions: :person],
+      include_space: :space,
+      include_space_members: [space: [:members, :company]],
+      include_subscriptions: Subscription.preload_subscriptions(),
+      include_potential_subscribers: [:access_context, space: :members],
+    ])
+  end
 
-    preload =
-      Enum.reduce(requested, [], fn include, result ->
-        case include do
-          :include_author -> [:author | result]
-          :include_reactions -> [[reactions: :person] | result]
-          :include_space -> [:space | result]
-          :include_space_members -> [[space: [:members, :company]] | result]
-          :include_subscriptions -> [Subscription.preload_subscriptions() | result]
-          e -> raise "Unknown include filter: #{e}"
-        end
-      end)
-
-    {:ok, preload}
+  defp after_load(inputs) do
+    Inputs.parse_includes(inputs, [
+      include_potential_subscribers: &Message.set_potential_subscribers/1,
+    ])
   end
 end
