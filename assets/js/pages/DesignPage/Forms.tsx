@@ -193,6 +193,7 @@ function ArrayForm() {
     submit: async () => {
       console.log("Form submitted with values:", form);
     },
+    submitOnEnter: false,
   });
 
   return (
