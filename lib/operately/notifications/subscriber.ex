@@ -64,11 +64,7 @@ defmodule Operately.Notifications.Subscriber do
     merge_subs_and_potential_subs(subs, potential_subs)
   end
 
-  #
-  # Helpers
-  #
-
-  defp from_goal(goal = %Goal{}) do
+  def from_goal(goal = %Goal{}) do
     members = Enum.into(goal.group.members, %{}, fn p ->
       {p.id, from_person(p)}
     end)
@@ -81,6 +77,10 @@ defmodule Operately.Notifications.Subscriber do
     Map.merge(members, contribs)
     |> Map.values()
   end
+
+  #
+  # Helpers
+  #
 
   defp from_subscription(subscription = %Subscription{}) do
     build_struct(subscription.person, subscription.person.title, is_subscribed: true)
