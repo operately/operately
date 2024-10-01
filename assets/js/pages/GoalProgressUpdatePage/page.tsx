@@ -13,7 +13,6 @@ import { Spacer } from "@/components/Spacer";
 import { AckCTA } from "./AckCTA";
 
 import { CurrentSubscriptions } from "@/features/Subscriptions";
-import { findGoalNotifiablePeople } from "@/features/Subscriptions/utils";
 import Avatar from "@/components/Avatar";
 import RichContent from "@/components/RichContent";
 import { CommentSection, useForGoalCheckIn } from "@/features/CommentSection";
@@ -26,10 +25,6 @@ export function Page() {
   const refresh = useRefresh();
 
   const commentsForm = useForGoalCheckIn(update);
-
-  const notifiablePeople = React.useMemo(() => {
-    return findGoalNotifiablePeople(update.goal!);
-  }, [update.goal]);
 
   return (
     <Pages.Page title={["Goal Progress Update", update.goal!.name!]}>
@@ -66,8 +61,8 @@ export function Page() {
           <div className="border-t border-stroke-base mt-16 mb-8" />
 
           <CurrentSubscriptions
-            people={notifiablePeople}
             subscriptionList={update.subscriptionList!}
+            potentialSubscribers={update.potentialSubscribers!}
             name="update"
             type="goal_update"
             callback={refresh}

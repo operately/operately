@@ -8,13 +8,13 @@ import * as TipTapEditor from "@/components/Editor";
 import { useNavigate } from "react-router-dom";
 import { Paths } from "@/routes/paths";
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
-import { useSubscriptions, SubscriptionsState, Options, NotifiablePerson } from "@/features/Subscriptions";
-import { getReviewerAndChampion } from "@/features/Subscriptions/utils";
+import { Subscriber } from "@/models/notifications";
+import { useSubscriptions, SubscriptionsState, Options } from "@/features/Subscriptions";
 
 interface UseFormOptions {
   mode: "create" | "edit";
   author: People.Person;
-  notifiablePeople?: NotifiablePerson[];
+  potentialSubscribers?: Subscriber[];
 
   project?: Projects.Project;
   checkIn?: ProjectCheckIns.ProjectCheckIn;
@@ -48,10 +48,11 @@ export interface FormState {
   cancelPath: string;
 }
 
-export function useForm({ mode, project, checkIn, author, notifiablePeople = [] }: UseFormOptions): FormState {
+export function useForm({ mode, project, checkIn, author, potentialSubscribers = [] }: UseFormOptions): FormState {
   const navigate = useNavigate();
-  const subscriptionsState = useSubscriptions(notifiablePeople, {
-    alwaysNotify: getReviewerAndChampion(notifiablePeople),
+  const subscriptionsState = useSubscriptions(potentialSubscribers, {
+    ignoreMe: true,
+    notifyPrioritySubscribers: true,
   });
 
   const [status, setStatus] = React.useState<string | null>(mode === "edit" ? checkIn!.status! : null);

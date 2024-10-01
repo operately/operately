@@ -19,7 +19,6 @@ import { useLoadedData, useRefresh } from "./loader";
 import { useDiscussionCommentsChangeSignal } from "@/models/comments";
 import { useMe } from "@/contexts/CurrentUserContext";
 import { Paths, compareIds } from "@/routes/paths";
-import { findSpaceNotifiablePeople } from "@/features/Subscriptions/utils";
 import { CurrentSubscriptions } from "@/features/Subscriptions";
 
 export function Page() {
@@ -27,7 +26,6 @@ export function Page() {
   const { discussion, comments } = useLoadedData();
   const refresh = useRefresh();
 
-  const people = findSpaceNotifiablePeople(discussion.space!);
   const commentsForm = useForDiscussion(discussion, comments);
   useDiscussionCommentsChangeSignal(refresh, { discussionId: discussion.id! });
 
@@ -54,7 +52,7 @@ export function Page() {
             <div className="border-t border-stroke-base mt-16 mb-8" />
 
             <CurrentSubscriptions
-              people={people}
+              potentialSubscribers={discussion.potentialSubscribers!}
               subscriptionList={discussion.subscriptionList!}
               name="discussion"
               type="message"
