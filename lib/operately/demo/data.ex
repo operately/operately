@@ -265,7 +265,7 @@ defmodule Operately.Demo.Data do
           reviewer: :emily_davis,
           parent: :accelerate_user_growth,
           targets: [
-            %{name: "Achieve 1000+ active users in each of 2 new countries", from: 0, current: 0, unit: "countries"}
+            %{name: "Achieve 1000+ active users in each of 2 new countries", from: 0, to: 1000, unit: "users"}
           ],
           update: nil, # TODO
         },
@@ -569,6 +569,31 @@ defmodule Operately.Demo.Data do
             %{title: "Conduct initial phone screenings with promising applicants", status: :pending},
             %{title: "Perform role-playing exercises with top candidates to assess skills", status: :pending},
             %{title: "Check references and make job offer to best candidate", status: :pending}
+          ]
+        },
+        %{
+          key: :prepare_pitch_deck,
+          name: "Prepare pitch deck and financial projections for Series A funding",
+          space: :finance_space,
+          champion: :frank_miller,
+          reviewer: :emily_davis,
+          contributors: [
+            %{person: :alice_johnson, responsibility: "Software Engineer"},
+            %{person: :bob_williams, responsibility: "Software Engineer"},
+            %{person: :charlie_davis, responsibility: "Software Engineer"},
+            %{person: :david_brown, responsibility: "Software Engineer"},
+          ],
+          goal: :ensure_financial_stability,
+          check_in: %{
+            status: "on_track",
+            content: "Financial model is taking longer than expected due to complexities in our expansion plans. May need an extra week to finalize projections."
+          },
+          milestones: [
+            %{title: "Gather key metrics and growth data from all departments", status: :pending},
+            %{title: "Develop detailed financial model with projections for next 3 years", status: :pending},
+            %{title: "Create compelling narrative and design for pitch deck", status: :pending},
+            %{title: "Rehearse pitch with mentors and advisors for feedback", status: :pending},
+            %{title: "Schedule meetings with potential investors and VC firms", status: :pending}
           ]
         },
       ]
