@@ -11,32 +11,48 @@ interface SubmitProps {
   cancelText?: string;
   layout?: "left" | "centered";
   buttonSize?: BaseButtonProps["size"];
+  submitOnEnter?: boolean;
 }
 
-const DEFAULT_LAYOUT = "left";
-const DEFAULT_BUTTON_SIZE = "sm";
-const DEFAULT_SAVE_TEXT = "Save";
-const DEFAULT_CANCEL_TEXT = "Cancel";
+const DefaultSubmitProps: SubmitProps = {
+  saveText: "Save",
+  cancelText: "Cancel",
+  layout: "left",
+  buttonSize: "sm",
+  submitOnEnter: false,
+};
 
 export function Submit(props: SubmitProps) {
+  props = { ...DefaultSubmitProps, ...props };
+
   const form = useFormContext();
 
-  const layout = props.layout || DEFAULT_LAYOUT;
-  const saveText = props.saveText || DEFAULT_SAVE_TEXT;
-  const cancelText = props.cancelText || DEFAULT_CANCEL_TEXT;
-  const buttonSize = props.buttonSize || DEFAULT_BUTTON_SIZE;
-
   const className = classNames("flex items-center gap-2 mt-8", {
-    "justify-start": layout === "left",
-    "justify-center": layout === "centered",
+    "justify-start": props.layout === "left",
+    "justify-center": props.layout === "centered",
   });
 
   const loading = React.useMemo(() => form.state === "submitting" || form.state === "uploading", [form.state]);
-  const buttonText = form.state === "uploading" ? "Uploading..." : saveText;
+  const buttonText = form.state === "uploading" ? "Uploading..." : props.saveText;
+
+  const onSubmitClick = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    await form.actions.submit();
+  };
+
+  // If submitOnEnter is true, the button type should be "submit" to allow form submission on enter key press
+  // Otherwise, the button type should be "button" to prevent form submission on enter key press
+  const buttonType = props.submitOnEnter ? "submit" : "button";
 
   return (
     <div className={className}>
-      <PrimaryButton type="submit" loading={loading} testId="submit" size={buttonSize}>
+      <PrimaryButton
+        type={buttonType}
+        loading={loading}
+        testId="submit"
+        size={props.buttonSize}
+        onClick={onSubmitClick}
+      >
         {buttonText}
       </PrimaryButton>
 
@@ -45,7 +61,7 @@ export function Submit(props: SubmitProps) {
           type="button"
           loading={form.state === "submitting"}
           testId="submit-secondary"
-          size={buttonSize}
+          size={props.buttonSize}
           onClick={form.actions.submit}
         >
           {props.secondarySubmitText}
@@ -53,8 +69,8 @@ export function Submit(props: SubmitProps) {
       )}
 
       {form.hasCancel && (
-        <SecondaryButton onClick={form.actions.cancel} testId="cancel" size={buttonSize}>
-          {cancelText}
+        <SecondaryButton onClick={form.actions.cancel} testId="cancel" size={props.buttonSize}>
+          {props.cancelText}
         </SecondaryButton>
       )}
     </div>
