@@ -458,4 +458,10 @@ defmodule Operately.Projects do
     |> Retrospective.changeset(attrs)
     |> Repo.insert()
   end
+
+  def update_retrospective(%Retrospective{} = retrospective, attrs) do
+    retrospective
+    |> Retrospective.changeset(attrs)
+    |> Repo.update()
+  end
 end
