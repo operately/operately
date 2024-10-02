@@ -66,14 +66,14 @@ function Form() {
       goal: goal?.id,
       creatorRole: "",
       isContrib: "no",
-      access: initialAccessLevels(findParentAccessLevel(space, spaces, space?.id)),
+      access: initialAccessLevels(null, findParentAccessLevel(space, spaces, space?.id)),
       showAdvancedAccess: false,
     },
     onChange: ({ field, newValues }) => {
       const parentAccessLevel = findParentAccessLevel(space, spaces, newValues.space);
 
       if (field === "space") {
-        newValues.access = initialAccessLevels(parentAccessLevel);
+        newValues.access = initialAccessLevels(null, parentAccessLevel);
       } else {
         newValues.access = applyAccessLevelConstraints(newValues.access, parentAccessLevel);
       }

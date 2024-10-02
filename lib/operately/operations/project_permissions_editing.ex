@@ -15,13 +15,13 @@ defmodule Operately.Operations.ProjectPermissionsEditing do
   end
 
   defp update_bindings(multi, project, attrs) do
-    standard = Access.get_group!(company_id: project.company_id, tag: :standard)
-    space_standard = Access.get_group!(group_id: project.group_id, tag: :standard)
+    company = Access.get_group!(company_id: project.company_id, tag: :standard)
+    space = Access.get_group!(group_id: project.group_id, tag: :standard)
 
     multi
     |> Access.maybe_update_anonymous_binding(project.company_id, attrs.public)
-    |> Access.update_or_insert_binding(:company_members_binding, standard, attrs.company)
-    |> Access.update_or_insert_binding(:space_members_binding, space_standard, attrs.space)
+    |> Access.update_or_insert_binding(:company_members_binding, company, attrs.company)
+    |> Access.update_or_insert_binding(:space_members_binding, space, attrs.space)
   end
 
   defp insert_activity(multi, author, project) do
