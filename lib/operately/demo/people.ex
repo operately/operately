@@ -18,13 +18,24 @@ defmodule Operately.Demo.People do
     })
 
     person = Operately.Repo.preload(invitation, :member).member
-    person = set_avatar(person, data.avatar)
+
+    {:ok, person} = set_avatar(person, data.avatar)
+    {:ok, person} = set_manager(person, resources, data[:reports_to])
+
     person
   end
 
   defp set_avatar(person, avatar_id) do
-    {:ok, person} = Operately.People.update_person(person, %{avatar_url: avatar(avatar_id)})
-    person
+    Operately.People.update_person(person, %{
+      avatar_url: avatar(avatar_id)
+    })
+  end
+
+  defp set_manager(person, _resources, nil), do: {:ok, person}
+  defp set_manager(person, resources, key) do
+    Operately.People.update_person(person, %{
+      manager_id: Resources.get(resources, key).id
+    })
   end
 
   defp create_email(company, data) do
