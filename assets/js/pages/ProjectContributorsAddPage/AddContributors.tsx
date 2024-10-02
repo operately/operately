@@ -17,7 +17,7 @@ interface ContributorFields {
   key: number;
   personId: string;
   responsibility: string;
-  permissions: PermissionLevels;
+  accessLevel: PermissionLevels;
 }
 
 function newContributor() {
@@ -32,7 +32,7 @@ function newContributor() {
     key: key,
     personId: "",
     responsibility: "",
-    permissions: PermissionLevels.EDIT_ACCESS,
+    accessLevel: PermissionLevels.EDIT_ACCESS,
   };
 }
 
@@ -51,7 +51,7 @@ export function AddContributors() {
         contributors: form.values.contributors.map((c) => ({
           personId: c.personId,
           responsibility: c.responsibility,
-          permissions: c.permissions,
+          accessLevel: c.accessLevel,
         })),
       });
 
@@ -117,7 +117,7 @@ function Contributor({ field, personSearchFn, index, last, addMore }) {
     <Paper.Body>
       <Forms.FieldGroup layout="horizontal">
         <Forms.SelectPerson field={field + ".personId"} label="Contributor" searchFn={personSearchFn} />
-        <Forms.SelectBox field={field + ".permissions"} label="Access Level" options={PERMISSIONS_LIST} />
+        <Forms.SelectBox field={field + ".accessLevel"} label="Access Level" options={PERMISSIONS_LIST} />
 
         <Forms.TextInput
           field={field + ".responsibility"}

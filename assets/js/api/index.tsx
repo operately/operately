@@ -333,6 +333,11 @@ export interface ActivityContentProjectContributorRemoved {
   project?: Project | null;
 }
 
+export interface ActivityContentProjectContributorsAddition {
+  project?: Project | null;
+  contributors?: ProjectContributorsAdditionContributor[] | null;
+}
+
 export interface ActivityContentProjectCreated {
   projectId?: string | null;
   project?: Project | null;
@@ -798,8 +803,12 @@ export interface ProjectContributor {
 export interface ProjectContributorInput {
   personId?: string | null;
   responsibility?: string | null;
-  role?: string | null;
   accessLevel?: number | null;
+}
+
+export interface ProjectContributorsAdditionContributor {
+  person?: Person | null;
+  responsibility?: string | null;
 }
 
 export interface ProjectHealth {
@@ -1092,6 +1101,7 @@ export type ActivityContent =
   | ActivityContentProjectCheckInSubmitted
   | ActivityContentProjectClosed
   | ActivityContentProjectContributorAddition
+  | ActivityContentProjectContributorsAddition
   | ActivityContentProjectContributorEdited
   | ActivityContentProjectContributorRemoved
   | ActivityContentProjectCreated
