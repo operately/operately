@@ -1669,6 +1669,8 @@ export interface CloseGoalResult {
 export interface CloseProjectInput {
   projectId?: string | null;
   retrospective?: string | null;
+  sendNotificationsToEveryone?: boolean | null;
+  subscriberIds?: string[] | null;
 }
 
 export interface CloseProjectResult {

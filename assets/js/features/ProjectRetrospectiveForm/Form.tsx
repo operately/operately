@@ -5,6 +5,7 @@ import * as TipTapEditor from "@/components/Editor";
 import { PrimaryButton } from "@/components/Buttons";
 import { createTestId } from "@/utils/testid";
 import { FormState } from "./useForm";
+import { SubscribersSelector } from "@/features/Subscriptions";
 
 export function Form({ form }: { form: FormState }) {
   return (
@@ -24,6 +25,10 @@ export function Form({ form }: { form: FormState }) {
         editor={form.whatDidYouLearn.editor}
         error={form.errors.find((e) => e.field === "whatDidYouLearn")}
       />
+
+      {form.mode === "create" && (
+        <SubscribersSelector state={form.subscriptionsState} projectName={form.project!.name!} />
+      )}
 
       <SubmitButton form={form} />
     </>

@@ -4,7 +4,7 @@ defmodule Operately.Notifications.SubscriptionList do
 
   schema "subscription_lists" do
     field :parent_id, Ecto.UUID
-    field :parent_type, Ecto.Enum, values: [:project_check_in, :goal_update, :message]
+    field :parent_type, Ecto.Enum, values: [:project_check_in, :project_retrospective, :goal_update, :message]
     field :send_to_everyone, :boolean, default: false
 
     has_many :subscriptions, Operately.Notifications.Subscription, foreign_key: :subscription_list_id
