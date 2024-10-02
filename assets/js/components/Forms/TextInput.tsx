@@ -17,6 +17,7 @@ interface TextInputProps {
   required?: boolean;
   minLength?: number;
   maxLength?: number;
+  onEnter?: (e: React.KeyboardEvent) => void;
 }
 
 const DEFAULT_VALIDATION_PROPS = {
@@ -45,6 +46,11 @@ export function TextInput(props: TextInputProps) {
         type="text"
         value={value}
         onChange={(e) => setValue(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && props.onEnter) {
+            props.onEnter(e);
+          }
+        }}
       />
     </InputField>
   );
