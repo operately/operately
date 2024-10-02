@@ -41,7 +41,16 @@ defmodule Operately.Support.Factory.Projects do
     Map.put(ctx, testid, reviewer)
   end
 
-  def add_project_contributor(ctx, testid, project_name, opts \\ []) do
+  def add_project_contributor(ctx, testid, project_name, opts \\ [])
+
+  def add_project_contributor(ctx, testid, project_name, :as_person) do
+    ctx = add_project_contributor(ctx, testid, project_name)
+    person = Repo.preload(ctx[testid], :person).person
+
+    Map.put(ctx, testid, person)
+  end
+
+  def add_project_contributor(ctx, testid, project_name, opts) do
     project = Map.fetch!(ctx, project_name)
 
     name = Keyword.get(opts, :name, Utils.testid_to_name(testid))

@@ -8,7 +8,7 @@ import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
 
 export function Page() {
   const { project } = useLoadedData();
-  const form = useForm({ project, mode: "create" });
+  const form = useForm({ project, mode: "create", potentialSubscribers: project.potentialSubscribers! });
 
   return (
     <Pages.Page title={"Closing " + project.name}>
