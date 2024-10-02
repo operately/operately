@@ -1,0 +1,11 @@
+<%= title("#{short_name(@author)} added you as a contributor on #{@project.name}") %>
+
+<%= spacer() %>
+
+Your responsibility is: <%= @responsibility %>
+
+<%= spacer() %>
+
+<%= row do %>
+  <%= cta_button(@link, "View Project") %>
+<% end %>
