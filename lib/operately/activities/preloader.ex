@@ -93,6 +93,12 @@ defmodule Operately.Activities.Preloader do
           subreferences = Enum.map(subreferences, fn {id, f, s, i} -> {id, [k | f], s, i} end)
           subreferences ++ acc
 
+        is_list(v) ->
+          Enum.with_index(v) |> Enum.reduce(acc, fn {item, index}, acc ->
+            refs = references(activity_id, item, schema) |> Enum.map(fn {id, f, s, i} -> {id, [k, index | f], s, i} end)
+            refs ++ acc
+          end)
+
         true ->
           acc
       end
@@ -164,7 +170,7 @@ defmodule Operately.Activities.Preloader do
 
     content = Enum.reduce(found, activity.content, fn {_, path, _, ref_id}, acc ->
       ref = Map.get(records, ref_id)
-      path = Enum.map(path, fn f -> Access.key(f) end)
+      path = ref_path_to_access_path(path)
 
       put_in(acc, path, ref)
     end)
@@ -202,5 +208,17 @@ defmodule Operately.Activities.Preloader do
 
       %{a | content: content}
     end)
+  end
+
+  defp ref_path_to_access_path([]) do
+    []
+  end
+
+  defp ref_path_to_access_path([head | tail]) when is_integer(head) do
+    [Access.at(head) | ref_path_to_access_path(tail)]
+  end
+
+  defp ref_path_to_access_path([head | tail]) when is_atom(head) do
+    [Access.key(head) | ref_path_to_access_path(tail)]
   end
 end
