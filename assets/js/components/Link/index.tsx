@@ -72,8 +72,6 @@ export function ButtonLink({ onClick, children, testId }: ButtonLinkProps) {
 }
 
 export function ActionLink(props: ActionLinkProps) {
-  const { testId } = props;
-
   const className = classNames(
     baseLinkClass,
     underlineClass(props.underline),
@@ -82,7 +80,7 @@ export function ActionLink(props: ActionLinkProps) {
   );
 
   return (
-    <span data-test-id={testId} className={className}>
+    <span data-test-id={props.testId} className={className} onClick={props.onClick}>
       {props.children}
     </span>
   );
