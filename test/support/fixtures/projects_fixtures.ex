@@ -130,6 +130,8 @@ defmodule Operately.ProjectsFixtures do
   Generate a project retrospective.
   """
   def retrospective_fixture(attrs) do
+    subscription_list = Operately.NotificationsFixtures.subscriptions_list_fixture()
+
     {:ok, retrospective} =
       attrs
       |> Enum.into(%{
@@ -139,8 +141,14 @@ defmodule Operately.ProjectsFixtures do
           whatCouldHaveGoneBetter: RichText.rich_text("some content"),
         },
         closed_at: DateTime.utc_now(),
+        subscription_list_id: subscription_list.id,
       })
       |> Operately.Projects.create_retrospective()
+
+    {:ok, _} = Operately.Notifications.update_subscription_list(subscription_list, %{
+      parent_type: :project_retrospective,
+      parent_id: retrospective.id,
+    })
 
     retrospective
   end
