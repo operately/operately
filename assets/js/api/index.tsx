@@ -795,6 +795,13 @@ export interface ProjectContributor {
   project?: Project | null;
 }
 
+export interface ProjectContributorInput {
+  personId?: string | null;
+  responsibility?: string | null;
+  role?: string | null;
+  accessLevel?: number | null;
+}
+
 export interface ProjectHealth {
   status?: string | null;
   statusComments?: string | null;
@@ -1609,6 +1616,15 @@ export interface AddProjectContributorInput {
 
 export interface AddProjectContributorResult {
   projectContributor?: ProjectContributor | null;
+}
+
+export interface AddProjectContributorsInput {
+  projectId?: string | null;
+  contributors?: ProjectContributorInput[] | null;
+}
+
+export interface AddProjectContributorsResult {
+  success?: boolean | null;
 }
 
 export interface AddReactionInput {
@@ -2433,6 +2449,10 @@ export class ApiClient {
     return this.post("/add_project_contributor", input);
   }
 
+  async addProjectContributors(input: AddProjectContributorsInput): Promise<AddProjectContributorsResult> {
+    return this.post("/add_project_contributors", input);
+  }
+
   async addReaction(input: AddReactionInput): Promise<AddReactionResult> {
     return this.post("/add_reaction", input);
   }
@@ -2840,6 +2860,11 @@ export async function addKeyResource(input: AddKeyResourceInput): Promise<AddKey
 }
 export async function addProjectContributor(input: AddProjectContributorInput): Promise<AddProjectContributorResult> {
   return defaultApiClient.addProjectContributor(input);
+}
+export async function addProjectContributors(
+  input: AddProjectContributorsInput,
+): Promise<AddProjectContributorsResult> {
+  return defaultApiClient.addProjectContributors(input);
 }
 export async function addReaction(input: AddReactionInput): Promise<AddReactionResult> {
   return defaultApiClient.addReaction(input);
@@ -3277,6 +3302,15 @@ export function useAddProjectContributor(): UseMutationHookResult<
 > {
   return useMutation<AddProjectContributorInput, AddProjectContributorResult>((input) =>
     defaultApiClient.addProjectContributor(input),
+  );
+}
+
+export function useAddProjectContributors(): UseMutationHookResult<
+  AddProjectContributorsInput,
+  AddProjectContributorsResult
+> {
+  return useMutation<AddProjectContributorsInput, AddProjectContributorsResult>((input) =>
+    defaultApiClient.addProjectContributors(input),
   );
 }
 
@@ -3762,6 +3796,8 @@ export default {
   useAddKeyResource,
   addProjectContributor,
   useAddProjectContributor,
+  addProjectContributors,
+  useAddProjectContributors,
   addReaction,
   useAddReaction,
   archiveGoal,
