@@ -62,6 +62,9 @@ function Form() {
       newValues.access = applyAccessLevelConstraints(newValues.access, parentAccessLevel);
     },
     submit: async () => {
+      console.log("company", form.values.access.companyMembers);
+      console.log("space", form.values.access.spaceMembers);
+
       await edit({
         projectId: project.id,
         accessLevels: {

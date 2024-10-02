@@ -74,7 +74,6 @@ export function useForm<T extends FieldObject>(props: FormProps<T>): FormState<T
         await props.submit();
 
         setState("idle");
-        form.actions.reset();
       },
       cancel: async () => {
         if (!props.cancel) return;
