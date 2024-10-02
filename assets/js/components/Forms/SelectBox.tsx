@@ -52,18 +52,22 @@ function SelectBoxInput({ field, placeholder, options }: SelectBoxProps) {
 
 function selectBoxClassNames(error: boolean | undefined) {
   return {
-    control: () => selectBoxControlStyles(error),
+    control: ({ isFocused }) => selectBoxControlStyles(isFocused, error),
     menu: () => "bg-surface text-content-accent border border-surface-outline rounded-lg mt-1",
     option: selectBoxOptionStyles,
   };
 }
 
-function selectBoxControlStyles(error: boolean | undefined) {
+function selectBoxControlStyles(isFocused: boolean, error: boolean | undefined) {
   if (error) {
     return "bg-surface placeholder-content-dimmed border border-red-500 rounded-lg px-3 flex-1";
-  } else {
-    return "bg-surface placeholder-content-dimmed border border-surface-outline rounded-lg px-3 flex-1";
   }
+
+  if (isFocused) {
+    return "bg-surface placeholder-content-subtle border-2 border-blue-600 rounded-lg px-3";
+  }
+
+  return "bg-surface placeholder-content-dimmed border border-surface-outline rounded-lg px-3 flex-1";
 }
 
 function selectBoxOptionStyles({ isFocused }: { isFocused: boolean }) {
