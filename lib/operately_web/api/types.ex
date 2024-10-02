@@ -181,6 +181,8 @@ defmodule OperatelyWeb.Api.Types do
     field :closed_at, :date
     field :permissions, :project_permissions
     field :reactions, list_of(:reaction)
+    field :subscription_list, :subscription_list
+    field :potential_subscribers, list_of(:subscriber)
   end
 
   object :discussion do
