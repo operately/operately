@@ -76,15 +76,15 @@ function OtherPeopleGroup({ accessLevel, people }: { accessLevel: PermissionLeve
       </p>
 
       <div className="flex items-center gap-2 flex-wrap mt-0.5">
-        <OtherPeopleAvartarList people={people} />
+        <OtherPeopleAvatarList people={people} />
       </div>
     </div>
   );
 }
 
-function OtherPeopleAvartarList({ people }: { people: People.Person[] }) {
+function OtherPeopleAvatarList({ people }: { people: People.Person[] }) {
   return people.map((person) => (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2" key={person.id}>
       <Avatar person={person} size={20} />
       <div className="font-medium flex items-center gap-2">{person!.fullName}</div>
     </div>
