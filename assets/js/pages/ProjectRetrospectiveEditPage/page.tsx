@@ -8,7 +8,7 @@ import { useLoadedData } from "./loader";
 
 export function Page() {
   const { retrospective } = useLoadedData();
-  const form = useForm({ retrospective, mode: "edit" });
+  const form = useForm({ retrospective, project: retrospective.project!, mode: "edit" });
 
   return (
     <Pages.Page title="Editing Retrospective">

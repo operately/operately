@@ -14,7 +14,7 @@ interface Error {
 }
 
 interface FormOptions {
-  project?: Projects.Project;
+  project: Projects.Project;
   retrospective?: Projects.ProjectRetrospective;
   mode: "create" | "edit";
   potentialSubscribers?: Subscriber[];
@@ -47,8 +47,8 @@ export function useForm(options: FormOptions): FormState {
 
   const redirect = useNavigateTo(
     options.mode === "create"
-      ? Paths.projectPath(options.project!.id!)
-      : Paths.projectRetrospectivePath(options.retrospective!.project!.id!),
+      ? Paths.projectPath(options.project.id!)
+      : Paths.projectRetrospectivePath(options.project.id!),
   );
 
   const [post, { loading: posting }] = Projects.useCloseProject();
@@ -66,7 +66,7 @@ export function useForm(options: FormOptions): FormState {
 
     if (options.mode == "create") {
       await post({
-        projectId: options.project!.id,
+        projectId: options.project.id,
         retrospective: JSON.stringify({
           whatWentWell: whatWentWell.editor.getJSON(),
           whatCouldHaveGoneBetter: whatCouldHaveGoneBetter.editor.getJSON(),
@@ -113,7 +113,7 @@ function useWhatWentWellEditor(options: FormOptions) {
     placeholder: `Write your answer here...`,
     className: "min-h-[250px] py-2 font-medium",
     content: findExistingContent(options, "whatWentWell"),
-    mentionSearchScope: { type: "project", id: options.project!.id! },
+    mentionSearchScope: { type: "project", id: options.project.id! },
   });
 }
 
@@ -122,7 +122,7 @@ function useWhatCouldHaveGoneBetterEditor(options: FormOptions) {
     placeholder: `Write your answer here...`,
     className: "min-h-[250px] py-2 font-medium",
     content: findExistingContent(options, "whatCouldHaveGoneBetter"),
-    mentionSearchScope: { type: "project", id: options.project!.id! },
+    mentionSearchScope: { type: "project", id: options.project.id! },
   });
 }
 
@@ -131,7 +131,7 @@ function useWhatDidYouLearnEditor(options: FormOptions) {
     placeholder: `Write your answer here...`,
     className: "min-h-[250px] py-2 font-medium",
     content: findExistingContent(options, "whatDidYouLearn"),
-    mentionSearchScope: { type: "project", id: options.project!.id! },
+    mentionSearchScope: { type: "project", id: options.project.id! },
   });
 }
 
