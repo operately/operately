@@ -1,14 +1,21 @@
 defmodule OperatelyWeb.Api.Mutations.CloseProjectTest do
   use OperatelyWeb.TurboCase
 
-  import Operately.Support.RichText
   import Operately.PeopleFixtures
   import Operately.GroupsFixtures
   import Operately.ProjectsFixtures
 
   alias Operately.{Repo, Projects, Companies}
+  alias Operately.Notifications.SubscriptionList
   alias Operately.Projects.Retrospective
   alias Operately.Access.Binding
+  alias Operately.Support.RichText
+
+  @retrospective_content %{
+    "whatWentWell" => RichText.rich_text("some content"),
+    "whatDidYouLearn" => RichText.rich_text("some content"),
+    "whatCouldHaveGoneBetter" => RichText.rich_text("some content"),
+  }
 
   describe "security" do
     test "it requires authentication", ctx do
@@ -172,6 +179,96 @@ defmodule OperatelyWeb.Api.Mutations.CloseProjectTest do
     end
   end
 
+  describe "subscriptions to notifications" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.log_in_person(:creator)
+      |> Factory.add_space(:space)
+      |> Factory.add_project(:project, :space)
+      |> Factory.add_project_contributor(:contrib1, :project, :as_person)
+      |> Factory.add_project_contributor(:contrib2, :project, :as_person)
+      |> Factory.add_project_contributor(:contrib3, :project, :as_person)
+      |> Factory.add_project_contributor(:contrib4, :project, :as_person)
+    end
+
+    test "creates subscription list for project retrospective", ctx do
+      people = [ctx.contrib1, ctx.contrib2, ctx.contrib3, ctx.contrib4]
+
+      assert {200, res} = mutation(ctx.conn, :close_project, %{
+        project_id: Paths.project_id(ctx.project),
+        retrospective: Jason.encode!(@retrospective_content),
+        send_notifications_to_everyone: true,
+        subscriber_ids: Enum.map(people, &(Paths.person_id(&1))),
+      })
+
+      {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.retrospective.id)
+      {:ok, list} = SubscriptionList.get(:system, parent_id: id, opts: [preload: :subscriptions])
+
+      assert list.send_to_everyone
+      assert length(list.subscriptions) == 5
+
+      Enum.each([ctx.creator | people], fn p ->
+        assert Enum.filter(list.subscriptions, &(&1.person_id == p.id))
+      end)
+
+      {:ok, message} = Retrospective.get(:system, id: id)
+
+      assert message.subscription_list_id == list.id
+    end
+
+    test "adds mentioned people to subscription list", ctx do
+      retrospective_content = %{
+        "whatWentWell" => RichText.rich_text(mentioned_people: [ctx.contrib1]) |> Jason.decode!(),
+        "whatDidYouLearn" => RichText.rich_text(mentioned_people: [ctx.contrib2]) |> Jason.decode!(),
+        "whatCouldHaveGoneBetter" => RichText.rich_text(mentioned_people: [ctx.contrib3, ctx.contrib4]) |> Jason.decode!(),
+      }
+
+      assert {200, res} = mutation(ctx.conn, :close_project, %{
+        project_id: Paths.project_id(ctx.project),
+        retrospective: Jason.encode!(retrospective_content),
+        send_notifications_to_everyone: false,
+        subscriber_ids: [],
+      })
+
+      subscriptions = fetch_subscriptions(res)
+
+      assert length(subscriptions) == 5
+
+      Enum.each([ctx.contrib1, ctx.contrib2, ctx.contrib3, ctx.contrib4], fn p ->
+        sub = Enum.find(subscriptions, &(&1.person_id == p.id))
+        assert sub.type == :mentioned
+      end)
+
+      sub = Enum.find(subscriptions, &(&1.person_id == ctx.creator.id))
+      assert sub.type == :invited
+    end
+
+    test "doesn't create repeated subscription", ctx do
+      retrospective_content = %{
+        "whatWentWell" => RichText.rich_text(mentioned_people: [ctx.contrib1, ctx.contrib1]) |> Jason.decode!(),
+        "whatDidYouLearn" => RichText.rich_text(mentioned_people: [ctx.contrib1]) |> Jason.decode!(),
+        "whatCouldHaveGoneBetter" => RichText.rich_text(mentioned_people: [ctx.contrib1, ctx.contrib2]) |> Jason.decode!(),
+      }
+      people = [ctx.creator, ctx.contrib1, ctx.contrib2]
+
+      assert {200, res} = mutation(ctx.conn, :close_project, %{
+        project_id: Paths.project_id(ctx.project),
+        retrospective: Jason.encode!(retrospective_content),
+        send_notifications_to_everyone: false,
+        subscriber_ids: Enum.map(people, &(Paths.person_id(&1))),
+      })
+
+      subscriptions = fetch_subscriptions(res)
+
+      assert length(subscriptions) == 3
+
+      Enum.each(people, fn p ->
+        assert Enum.filter(subscriptions, &(&1.person_id == p.id))
+      end)
+    end
+  end
+
   #
   # Steps
   #
@@ -179,7 +276,7 @@ defmodule OperatelyWeb.Api.Mutations.CloseProjectTest do
   defp request(conn, project) do
     mutation(conn, :close_project, %{
       project_id: Paths.project_id(project),
-      retrospective: rich_text("some content") |> Jason.encode!(),
+      retrospective: RichText.rich_text("some content", :as_string),
     })
   end
 
@@ -201,6 +298,13 @@ defmodule OperatelyWeb.Api.Mutations.CloseProjectTest do
   #
   # Helpers
   #
+
+  defp fetch_subscriptions(res) do
+    {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.retrospective.id)
+    {:ok, list} = SubscriptionList.get(:system, parent_id: id, opts: [preload: :subscriptions])
+
+    list.subscriptions
+  end
 
   defp create_project(ctx, attrs \\ %{}) do
     project_fixture(Map.merge(%{

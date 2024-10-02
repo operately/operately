@@ -5,6 +5,8 @@ import * as TipTapEditor from "@/components/Editor";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 import { Paths } from "@/routes/paths";
+import { Subscriber } from "@/models/notifications";
+import { Options, SubscriptionsState, useSubscriptions } from "@/features/Subscriptions";
 
 interface Error {
   field: string;
@@ -15,6 +17,7 @@ interface FormOptions {
   project?: Projects.Project;
   retrospective?: Projects.ProjectRetrospective;
   mode: "create" | "edit";
+  potentialSubscribers?: Subscriber[];
 }
 export interface FormState {
   project?: Projects.Project;
@@ -28,9 +31,14 @@ export interface FormState {
 
   submit: () => void;
   submittable: boolean;
+  subscriptionsState: SubscriptionsState;
 }
 
 export function useForm(options: FormOptions): FormState {
+  const subscriptionsState = useSubscriptions(options.potentialSubscribers || [], {
+    ignoreMe: true,
+    notifyPrioritySubscribers: true,
+  });
   const [errors, setErrors] = React.useState<Error[]>([]);
 
   const whatWentWell = useWhatWentWellEditor(options);
@@ -64,6 +72,8 @@ export function useForm(options: FormOptions): FormState {
           whatCouldHaveGoneBetter: whatCouldHaveGoneBetter.editor.getJSON(),
           whatDidYouLearn: whatDidYouLearn.editor.getJSON(),
         }),
+        sendNotificationsToEveryone: subscriptionsState.subscriptionType == Options.ALL,
+        subscriberIds: subscriptionsState.currentSubscribersList,
       });
     } else {
       await edit({
@@ -94,6 +104,7 @@ export function useForm(options: FormOptions): FormState {
 
     submit,
     submittable,
+    subscriptionsState,
   };
 }
 

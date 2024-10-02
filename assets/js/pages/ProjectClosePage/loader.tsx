@@ -11,6 +11,7 @@ export async function loader({ params }): Promise<LoaderResult> {
       id: params.projectID,
       includeSpace: true,
       includePermissions: true,
+      includePotentialSubscribers: true,
     }).then((data) => data.project!),
   };
 }
