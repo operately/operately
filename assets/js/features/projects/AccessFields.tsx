@@ -25,7 +25,7 @@ export type AccessLevels = {
 //
 //   const form = Forms.useForm({
 //     fields: {
-//       access: initialAccessLevels(),
+//       access: initialAccessLevels(parentAccessLevel),
 //     },
 //     onChange: (values) => {
 //       applyAccessLevelConstraints(values.access, parentAccessLevel);
@@ -47,13 +47,27 @@ const ANNON = [VIEW_ACCESS, NO_ACCESS];
 const COMPANY = [FULL_ACCESS, EDIT_ACCESS, COMMENT_ACCESS, VIEW_ACCESS, NO_ACCESS];
 const SPACE = [FULL_ACCESS, EDIT_ACCESS, COMMENT_ACCESS, VIEW_ACCESS, NO_ACCESS];
 
-export function initialAccessLevels(parent: Api.AccessLevels): AccessLevels {
+export function initialAccessLevels(current: Api.AccessLevels | null, parent: Api.AccessLevels): AccessLevels {
+  let annonymous: PermissionLevels;
+  let company: PermissionLevels;
+  let space: PermissionLevels;
+
+  if (current === null) {
+    annonymous = parent.public!;
+    company = parent.company!;
+    space = COMMENT_ACCESS.value;
+  } else {
+    annonymous = current.public!;
+    company = current.company!;
+    space = current.space!;
+  }
+
   return {
-    anonymous: parent.public!,
+    anonymous: annonymous,
     anonymousOptions: ANNON.filter((o) => o.value <= parent.public!),
-    companyMembers: parent.company!,
+    companyMembers: company,
     companyMembersOptions: COMPANY.filter((o) => o.value >= parent.public! && o.value <= parent.company!),
-    spaceMembers: COMMENT_ACCESS.value,
+    spaceMembers: space,
     spaceMembersOptions: SPACE,
   };
 }

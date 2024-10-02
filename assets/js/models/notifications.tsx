@@ -3,7 +3,7 @@ import Api from "@/api";
 
 import { useUnreadNotificationCount } from "@/api/socket";
 
-export type { SubscriptionList, Subscription } from "@/api";
+export type { SubscriptionList, Subscription, Subscriber } from "@/api";
 export { useSubscribeToNotifications, useUnsubscribeFromNotifications, useEditSubscriptionsList } from "@/api";
 
 export function useUnreadCount() {

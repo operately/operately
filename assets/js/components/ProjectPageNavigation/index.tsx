@@ -40,7 +40,7 @@ export function ProjectContribsSubpageNavigation({ project }) {
     <Paper.Navigation>
       <Paper.NavItem linkTo={dashboardPath}>
         <Icons.IconClipboardList size={16} />
-        {project.name}
+        <div className="truncate max-w-xs">{project.name}</div>
       </Paper.NavItem>
       <Paper.NavSeparator />
       <Paper.NavItem linkTo={teamPath}>Team &amp; Access</Paper.NavItem>

@@ -3,7 +3,6 @@ import React from "react";
 import Modal from "@/components/Modal";
 import { useEditSubscriptionsList } from "@/models/notifications";
 import { useSubscriptions, SubscribersSelectorForm } from "@/features/Subscriptions";
-import { getSelectedPeopleFromSubscriptions } from "@/features/Subscriptions/utils";
 import { useCurrentSubscriptionsContext } from "../CurrentSubscriptions";
 import { SubscribersSelectorProvider } from "../SubscribersSelectorContext";
 
@@ -13,18 +12,17 @@ interface Props {
 }
 
 export function EditSubscriptionsModal({ isModalOpen, hideModal }: Props) {
-  const { people, subscriptionList, callback, type } = useCurrentSubscriptionsContext();
+  const { subscriptionList, potentialSubscribers, callback, type } = useCurrentSubscriptionsContext();
   const [edit] = useEditSubscriptionsList();
 
-  const alreadySelected = getSelectedPeopleFromSubscriptions(people, subscriptionList.subscriptions!);
-  const subscriptionsState = useSubscriptions(people, { alreadySelected });
+  const subscriptionsState = useSubscriptions(potentialSubscribers);
 
   const submitForm = (form) => {
-    const selectedPeopleIds = form.values.people!.map((personId) => personId);
+    const selectedIds = form.values.subscribers!.map((id) => id);
 
     edit({
       id: subscriptionList.id,
-      subscriberIds: selectedPeopleIds,
+      subscriberIds: selectedIds,
       type: type,
     }).then(() => {
       callback();

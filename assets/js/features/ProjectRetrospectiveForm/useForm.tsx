@@ -5,6 +5,8 @@ import * as TipTapEditor from "@/components/Editor";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 import { Paths } from "@/routes/paths";
+import { Subscriber } from "@/models/notifications";
+import { Options, SubscriptionsState, useSubscriptions } from "@/features/Subscriptions";
 
 interface Error {
   field: string;
@@ -12,9 +14,10 @@ interface Error {
 }
 
 interface FormOptions {
-  project?: Projects.Project;
+  project: Projects.Project;
   retrospective?: Projects.ProjectRetrospective;
   mode: "create" | "edit";
+  potentialSubscribers?: Subscriber[];
 }
 export interface FormState {
   project?: Projects.Project;
@@ -28,9 +31,14 @@ export interface FormState {
 
   submit: () => void;
   submittable: boolean;
+  subscriptionsState: SubscriptionsState;
 }
 
 export function useForm(options: FormOptions): FormState {
+  const subscriptionsState = useSubscriptions(options.potentialSubscribers || [], {
+    ignoreMe: true,
+    notifyPrioritySubscribers: true,
+  });
   const [errors, setErrors] = React.useState<Error[]>([]);
 
   const whatWentWell = useWhatWentWellEditor(options);
@@ -39,8 +47,8 @@ export function useForm(options: FormOptions): FormState {
 
   const redirect = useNavigateTo(
     options.mode === "create"
-      ? Paths.projectPath(options.project!.id!)
-      : Paths.projectRetrospectivePath(options.retrospective!.project!.id!),
+      ? Paths.projectPath(options.project.id!)
+      : Paths.projectRetrospectivePath(options.project.id!),
   );
 
   const [post, { loading: posting }] = Projects.useCloseProject();
@@ -58,12 +66,14 @@ export function useForm(options: FormOptions): FormState {
 
     if (options.mode == "create") {
       await post({
-        projectId: options.project!.id,
+        projectId: options.project.id,
         retrospective: JSON.stringify({
           whatWentWell: whatWentWell.editor.getJSON(),
           whatCouldHaveGoneBetter: whatCouldHaveGoneBetter.editor.getJSON(),
           whatDidYouLearn: whatDidYouLearn.editor.getJSON(),
         }),
+        sendNotificationsToEveryone: subscriptionsState.subscriptionType == Options.ALL,
+        subscriberIds: subscriptionsState.currentSubscribersList,
       });
     } else {
       await edit({
@@ -94,6 +104,7 @@ export function useForm(options: FormOptions): FormState {
 
     submit,
     submittable,
+    subscriptionsState,
   };
 }
 
@@ -102,7 +113,7 @@ function useWhatWentWellEditor(options: FormOptions) {
     placeholder: `Write your answer here...`,
     className: "min-h-[250px] py-2 font-medium",
     content: findExistingContent(options, "whatWentWell"),
-    mentionSearchScope: { type: "project", id: options.project!.id! },
+    mentionSearchScope: { type: "project", id: options.project.id! },
   });
 }
 
@@ -111,7 +122,7 @@ function useWhatCouldHaveGoneBetterEditor(options: FormOptions) {
     placeholder: `Write your answer here...`,
     className: "min-h-[250px] py-2 font-medium",
     content: findExistingContent(options, "whatCouldHaveGoneBetter"),
-    mentionSearchScope: { type: "project", id: options.project!.id! },
+    mentionSearchScope: { type: "project", id: options.project.id! },
   });
 }
 
@@ -120,7 +131,7 @@ function useWhatDidYouLearnEditor(options: FormOptions) {
     placeholder: `Write your answer here...`,
     className: "min-h-[250px] py-2 font-medium",
     content: findExistingContent(options, "whatDidYouLearn"),
-    mentionSearchScope: { type: "project", id: options.project!.id! },
+    mentionSearchScope: { type: "project", id: options.project.id! },
   });
 }
 

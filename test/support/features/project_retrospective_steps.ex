@@ -4,7 +4,7 @@ defmodule Operately.Support.Features.ProjectRetrospectiveSteps do
   alias Operately.Support.Features.FeedSteps
   alias Operately.Support.Features.NotificationsSteps
   alias Operately.Support.Features.EmailSteps
-  
+
   step :setup, ctx do
     ctx
     |> ProjectSteps.create_project(name: "Test Project")
@@ -28,6 +28,23 @@ defmodule Operately.Support.Features.ProjectRetrospectiveSteps do
   step :submit_retrospective, ctx do
     ctx
     |> UI.click(testid: "submit")
+  end
+
+  step :edit_project_retrospective, ctx, params do
+    ctx
+    |> UI.sleep(200)
+    |> UI.click(testid: "project-options-button")
+    |> UI.click(testid: "edit-retrospective")
+    |> fill_rich_text("what-went-well", params["what-went-well"])
+    |> fill_rich_text("what-could-ve-gone-better", params["what-could-ve-gone-better"])
+    |> fill_rich_text("what-did-you-learn", params["what-did-you-learn"])
+  end
+
+  step :assert_project_retrospective_edited, ctx, params do
+    ctx
+    |> UI.assert_text(params["what-went-well"])
+    |> UI.assert_text(params["what-could-ve-gone-better"])
+    |> UI.assert_text(params["what-did-you-learn"])
   end
 
   step :assert_project_retrospective_posted, ctx, params do

@@ -1212,7 +1212,7 @@ export interface GetDiscussionInput {
   includeReactions?: boolean | null;
   includeSpace?: boolean | null;
   includeSpaceMembers?: boolean | null;
-  includeSubscriptions?: boolean | null;
+  includeSubscriptionsList?: boolean | null;
   includePotentialSubscribers?: boolean | null;
 }
 
@@ -1257,7 +1257,7 @@ export interface GetGoalProgressUpdateInput {
   includeReviewer?: boolean | null;
   includeChampion?: boolean | null;
   includeSpaceMembers?: boolean | null;
-  includeSubscriptions?: boolean | null;
+  includeSubscriptionsList?: boolean | null;
   includePotentialSubscribers?: boolean | null;
 }
 
@@ -1380,7 +1380,7 @@ export interface GetProjectCheckInInput {
   includeAcknowledgedBy?: boolean | null;
   includeProject?: boolean | null;
   includeReactions?: boolean | null;
-  includeSubscriptions?: boolean | null;
+  includeSubscriptionsList?: boolean | null;
   includePotentialSubscribers?: boolean | null;
 }
 
@@ -1669,6 +1669,8 @@ export interface CloseGoalResult {
 export interface CloseProjectInput {
   projectId?: string | null;
   retrospective?: string | null;
+  sendNotificationsToEveryone?: boolean | null;
+  subscriberIds?: string[] | null;
 }
 
 export interface CloseProjectResult {
