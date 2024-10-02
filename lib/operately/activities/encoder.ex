@@ -19,18 +19,21 @@ defmodule Operately.Activities.Encoder do
     end
   end
 
+  defp remove_not_loaded(map) when is_struct(map) do
+    map |> Map.from_struct() |> remove_not_loaded()
+  end
+
   defp remove_not_loaded(map) when is_map(map) do
-    map 
-    |> Map.from_struct() 
-    |> Map.to_list()
-    |> Enum.reject(fn {_, value} -> match?(%Ecto.Association.NotLoaded{}, value) end)
-    |> Enum.map(fn {key, value} -> 
-      if is_list(value) do
-        {key, Enum.map(value, &remove_not_loaded/1)}
-      else
-        {key, value}
+    map
+    |> Enum.reduce(%{}, fn {key, value}, acc ->
+      case value do
+        %Ecto.Association.NotLoaded{} -> acc
+        _ -> Map.put(acc, key, clean_value(value))
       end
     end)
-    |> Enum.into(%{})
   end
+
+  defp clean_value(map) when is_map(map), do: remove_not_loaded(map)
+  defp clean_value(list) when is_list(list), do: Enum.map(list, &clean_value/1)
+  defp clean_value(other), do: other
 end
