@@ -795,6 +795,13 @@ export interface ProjectContributor {
   project?: Project | null;
 }
 
+export interface ProjectContributorInput {
+  personId?: string | null;
+  responsibility?: string | null;
+  role?: string | null;
+  accessLevel?: number | null;
+}
+
 export interface ProjectHealth {
   status?: string | null;
   statusComments?: string | null;
@@ -1617,14 +1624,11 @@ export interface AddProjectContributorResult {
 
 export interface AddProjectContributorsInput {
   projectId?: string | null;
-  personId?: string | null;
-  responsibility?: string | null;
-  permissions?: number | null;
-  role?: string | null;
+  contributors?: ProjectContributorInput[] | null;
 }
 
 export interface AddProjectContributorsResult {
-  projectContributor?: ProjectContributor | null;
+  success?: boolean | null;
 }
 
 export interface AddReactionInput {
