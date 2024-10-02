@@ -1,7 +1,7 @@
 defmodule Operately.Demo.Data do
   @moduledoc """
   Data for creating a demo company.
-  
+
   # Key Field
 
   Each entity has a 'key' field that is used to identify the entity while creating the demo company.
@@ -12,8 +12,8 @@ defmodule Operately.Demo.Data do
   people: [
     %{
       key: :ceo      <--- Defined here
-      name: "Alice Johnson", 
-      title: "Chief Executive Officer (CEO)", 
+      name: "Alice Johnson",
+      title: "Chief Executive Officer (CEO)",
       avatar: "photo-1550525811-e5869dd03032",
     }
   ],
@@ -43,139 +43,145 @@ defmodule Operately.Demo.Data do
     %{
       people: [
         %{
-          key: :alice_johnson,
-          name: "Alice Johnson", 
-          title: "Chief Executive Officer (CEO)", 
-          avatar: "photo-1550525811-e5869dd03032",
-        },
-        %{
           key: :bob_williams,
-          name: "Bob Williams", 
-          title: "Chief Operating Officer (COO)", 
+          name: "Bob Williams",
+          title: "Chief Operating Officer (COO)",
           avatar: "photo-1500648767791-00dcc994a43e",
-          reports_to: :alice_johnson
+          reports_to: :owner
         },
         %{
           key: :charlie_davis,
           name: "Martin Smith",
-          title: "Chief Financial Officer (CFO)", 
-          avatar: "photo-1472099645785-5658abf4ff4e"
+          title: "Chief Financial Officer (CFO)",
+          avatar: "photo-1472099645785-5658abf4ff4e",
+          reports_to: :owner
         },
         %{
           key: :david_brown,
           name: "David Brown",
           title: "Chief Technology Officer (CTO)",
-          avatar: "photo-1491528323818-fdd1faba62cc"
+          avatar: "photo-1491528323818-fdd1faba62cc",
+          reports_to: :owner
         },
         %{
           key: :emily_davis,
           name: "Emily Davis",
           title: "Chief Marketing Officer (CMO)",
-          avatar: "photo-1438761681033-6461ffad8d80"
+          avatar: "photo-1438761681033-6461ffad8d80",
+          reports_to: :owner
         },
         %{
           key: :frank_miller,
           name: "Frank Miller",
-          title: "Chief Product Officer (CPO)",
-          avatar: "photo-1633332755192-727a05c4013d"
+          title: "VP of Product",
+          avatar: "photo-1633332755192-727a05c4013d",
+          reports_to: :david_brown
         },
         %{
           key: :grace_wilson,
           name: "Grace Wilson",
-          title: "Chief Legal Officer (CLO)",
-          avatar: "photo-1494790108377-be9c29b29330"
+          title: "VP of Compliance",
+          avatar: "photo-1494790108377-be9c29b29330",
+          reports_to: :bob_williams
         },
         %{
           key: :henry_taylor,
           name: "Henry Taylor",
           title: "VP of Engineering",
-          avatar: "photo-1492562080023-ab3db95bfbce"
+          avatar: "photo-1492562080023-ab3db95bfbce",
+          reports_to: :david_brown
         },
         %{
           key: :ivy_anderson,
           name: "Ivy Anderson",
           title: "VP of Sales",
-          avatar: "photo-1522075469751-3a6694fb2f61"
+          avatar: "photo-1522075469751-3a6694fb2f61",
+          reports_to: :emily_davis
         },
         %{
           key: :jack_thomas,
           name: "Jack Thomas",
           title: "VP of Customer Success",
-          avatar: "photo-1579038773867-044c48829161"
+          avatar: "photo-1579038773867-044c48829161",
+          reports_to: :bob_williams
         },
         %{
           key: :karen_martinez,
           name: "Karen Martinez",
           title: "VP of Human Resources",
-          avatar: "photo-1534528741775-53994a69daeb"
+          avatar: "photo-1534528741775-53994a69daeb",
+          reports_to: :bob_williams
         },
         %{
           key: :liam_harris,
           name: "Liam Harris",
           title: "VP of Design",
-          avatar: "photo-1489980557514-251d61e3eeb6"
+          avatar: "photo-1489980557514-251d61e3eeb6",
+          reports_to: :david_brown
         },
         %{
           key: :mia_clark,
           name: "Mia Clark",
           title: "Director of Engineering",
-          avatar: "photo-1541823709867-1b206113eafd"
+          avatar: "photo-1541823709867-1b206113eafd",
+          reports_to: :frank_miller
         },
         %{
           key: :nathan_morris,
           name: "Noah Lewis",
           title: "Director of Sales",
-          avatar: "photo-1568602471122-7832951cc4c5"
+          avatar: "photo-1568602471122-7832951cc4c5",
+          reports_to: :ivy_anderson
         },
         %{
           key: :olivia_hall,
           name: "Olivia Hall",
-          title: "Director of Product Management",
-          avatar: "photo-1531123897727-8f129e1688ce"
+          title: "Product Manager",
+          avatar: "photo-1531123897727-8f129e1688ce",
+          reports_to: :frank_miller
         },
         %{
           key: :paul_young,
           name: "Paul Young",
           title: "Director of Business Development",
-          avatar: "photo-1600180758890-6b94519a8ba6"
+          avatar: "photo-1600180758890-6b94519a8ba6",
+          reports_to: :ivy_anderson
         },
         %{
           key: :quinn_walker,
           name: "Quinn Walker",
           title: "Director of Operations",
-          avatar: "photo-1584999734482-0361aecad844"
+          avatar: "photo-1584999734482-0361aecad844",
+          reports_to: :bob_williams
         },
         %{
           key: :rachel_king,
           name: "Rachel King",
           title: "Director of Marketing",
-          avatar: "photo-1502031882019-24c0bccfffc6"
-        },
-        %{
-          key: :samuel_wright,
-          name: "Samuel Wright",
-          title: "Director of Finance",
-          avatar: "photo-1702449269565-8bbe32972f65"
+          avatar: "photo-1502031882019-24c0bccfffc6",
+          reports_to: :emily_davis
         },
         %{
           key: :tina_scott,
           name: "Tina Scott",
-          title: "Director of Customer Support",
-          avatar: "photo-1700248356502-ca48ae3bafd6"
+          title: "Customer Support Representative",
+          avatar: "photo-1700248356502-ca48ae3bafd6",
+          reports_to: :jack_thomas
         },
         %{
           key: :walter_baker,
           name: "Walter Baker",
           title: "Lead Software Engineer",
-          avatar: "photo-1521341957697-b93449760f30"
+          avatar: "photo-1521341957697-b93449760f30",
+          reports_to: :mia_clark
         },
       ],
       spaces: [
         %{
           key: :product_space,
-          name: "Product", 
-          description: "Build and ship high quality features to our customers", 
-          icon: "IconBox", 
+          name: "Product",
+          description: "Build and ship high quality features to our customers",
+          icon: "IconBox",
           color: "text-blue-500"
         },
         %{
@@ -215,139 +221,166 @@ defmodule Operately.Demo.Data do
           champion: :emily_davis,
           reviewer: :frank_miller,
           targets: [
-            %{name: "TODO", from: 0, to: 1000, unit: "TODO"},
+            %{name: "Increase total active users", from: 10000, to: 25000, unit: "users"},
+            %{name: "Achieve presence in new markets", from: 0, to: 5, unit: "markets"}
           ],
           update: %{
             content: "We're seeing positive traction in user acquisition, but our expansion into new markets is slower than anticipated. We may need to reassess our localization strategy.",
-            target_values: [0] # TODO
+            target_values: [14500, 1]
           }
         },
         %{
           key: :increase_user_acquisition,
           name: "Increase User Acquisition",
           space: :marketing_space,
-          champion: :henry_taylor,
+          champion: :rachel_king,
           reviewer: :emily_davis,
           parent: :accelerate_user_growth,
           targets: [
-            %{name: "Achieve 20% month-over-month growth in new user signups", from: 10, to: 15, unit: "%"},
+            %{name: "Achieve month-over-month growth in new user signups", from: 10, to: 20, unit: "%"},
+            %{name: "Increase percentage of new users acquired through referrals", from: 10, to: 30, unit: "%"}
           ],
-          update: nil, # TODO
+          update: %{
+            content: "Our user acquisition efforts are showing promising results with a 15% month-over-month growth in new signups. Our referral program is gaining traction, with 18% of new users now coming from referrals.",
+            target_values: [15, 18]
+          }
         },
         %{
           key: :optimize_roi_of_ads,
           name: "Optimize ROI of ads",
           space: :marketing_space,
-          champion: :henry_taylor,
-          reviewer: :emily_davis,
+          champion: :nathan_morris,
+          reviewer: :rachel_king,
           parent: :increase_user_acquisition,
           targets: [
-            %{name: "Increase conversion rate from ads to signups from 2% to 5%", from: 2, to: 5, unit: "%"}
+            %{name: "Increase conversion rate from ads to signups", from: 2, to: 5, unit: "%"}
           ],
-          update: nil, # TODO
+          update: %{
+            content: "AB testing is yielding promising results. We've identified key demographics that respond well to our ads. On track to meet our conversion rate goal.",
+            target_values: [3.5]
+          }
         },
         %{
           key: :get_more_users_through_word_of_mouth,
           name: "Get more users through word of mouth",
           space: :marketing_space,
-          champion: :henry_taylor,
-          reviewer: :emily_davis,
+          champion: :olivia_hall,
+          reviewer: :rachel_king,
           parent: :increase_user_acquisition,
           targets: [
-            %{name: "15% of new users acquired through referrals", from: 5, to: 8, unit: "%"}
+            %{name: "Percentage of new users acquired through referrals", from: 5, to: 15, unit: "%"}
           ],
-          update: nil, # TODO
+          update: %{
+            content: "Our new in-app referral program is showing early signs of success. We've seen an uptick in user-to-user invitations.",
+            target_values: [8]
+          }
         },
         %{
           key: :expand_into_new_markets,
           name: "Expand into New Markets",
           space: :marketing_space,
-          champion: :henry_taylor,
+          champion: :paul_young,
           reviewer: :emily_davis,
           parent: :accelerate_user_growth,
           targets: [
-            %{name: "Achieve 1000+ active users in each of 2 new countries", from: 0, to: 1000, unit: "users"}
+            %{name: "Achieve 1000+ active users in new countries", from: 0, to: 2, unit: "countries"}
           ],
-          update: nil, # TODO
+          update: %{
+            content: "Market research for Germany is progressing well, but we're facing challenges in adapting our product for Spanish-speaking markets. We may need to reassess our timeline.",
+            target_values: [0]
+          }
         },
         %{
           key: :improve_product,
           name: "Improve Product",
           space: :product_space,
-          champion: :henry_taylor,
-          reviewer: :emily_davis,
+          champion: :frank_miller,
+          reviewer: :owner,
           targets: [
-            %{name: "TODO", from: 0, to: 1000, unit: "TODO"},
+            %{name: "Reduce monthly churn rate", from: 5, to: 2, unit: "%"},
+            %{name: "Reduce average time to complete core task", from: 45, to: 30, unit: "seconds"}
           ],
           update: %{
-            content: "We're making steady progress on reducing churn rate. The new collaborative features are receiving positive feedback in beta testing.",
-            target_values: [0] # TODO
+            content: "We're making steady progress on reducing our churn rate and improving user efficiency. The new collaborative features are receiving positive feedback in beta testing.",
+            target_values: [3.8, 38]
           }
         },
         %{
-          key: :eliminate_top_reasons_customers_cancel,
-          name: "Eliminate top reasons customers cancel",
+          key: :enhance_product_functionality,
+          name: "Enhance product functionality",
           space: :product_space,
-          champion: :henry_taylor,
-          reviewer: :emily_davis,
+          champion: :liam_harris,
+          reviewer: :frank_miller,
           parent: :improve_product,
           targets: [
-            %{name: "Reduce monthly churn rate from 5% to 2%", from: 5, to: 3.8, unit: "%"},
-            %{name: "Deliver top 5 most requested product enhancements", from: 0, to: 2, unit: "deliverables"},
+            %{name: "Deliver top requested product enhancements", from: 0, to: 5, unit: "deliverables"}
           ],
-          update: nil
+          update: %{
+            content: "We've successfully launched two major enhancements this quarter. The team is making good progress on the remaining features.",
+            target_values: [2]
+          }
         },
         %{
           key: :scale_up_company,
           name: "Scale up company",
           space: :company_space,
-          champion: :henry_taylor,
-          reviewer: :emily_davis,
+          champion: :bob_williams,
+          reviewer: :owner,
           targets: [
-            %{name: "TODO", from: 0, to: 1000, unit: "TODO"},
+            %{name: "Increase team size", from: 15, to: 25, unit: "employees"},
+            %{name: "Achieve Annual Recurring Revenue (ARR)", from: 1.2, to: 2, unit: "M$"}
           ],
           update: %{
             content: "We're making good progress on documenting processes and expanding the team. However, we're slightly behind on our financial goals and may need to adjust our strategy.",
-            target_values: [0] # TODO
+            target_values: [18, 1.44]
           }
         },
         %{
           key: :document_core_business_processes,
           name: "Document core business processes in company playbook",
           space: :company_space,
-          champion: :henry_taylor,
-          reviewer: :emily_davis,
+          champion: :bob_williams,
+          reviewer: :owner,
           parent: :scale_up_company,
           targets: [
-            %{name: "80% of core processes documented", from: 40, to: 60, unit: "%"},
+            %{name: "Percentage of core processes documented", from: 40, to: 80, unit: "%"}
           ],
-          update: nil
+          update: %{
+            content: "We've made significant progress in documenting our core processes. The team has completed 60% of the documentation, and we're on track to meet our goal.",
+            target_values: [60]
+          }
         },
         %{
           key: :expand_team_capabilities,
           name: "Expand team capabilities",
           space: :people_space,
-          champion: :henry_taylor,
-          reviewer: :emily_davis,
+          champion: :karen_martinez,
+          reviewer: :bob_williams,
           parent: :scale_up_company,
           targets: [
-            %{name: "Hire and onboard 5 key roles identified in growth plan", from: 1, to: 3, unit: "roles"},
-            %{name: "90% of team members complete individual development plans", from: 60, to: 75, unit: "%"},
+            %{name: "Hire and onboard key roles identified in growth plan", from: 1, to: 5, unit: "roles"},
+            %{name: "Team members complete individual development plans", from: 60, to: 90, unit: "%"}
           ],
-          update: nil
+          update: %{
+            content: "We've successfully hired 3 out of the 5 key roles. The individual development plan initiative is progressing well, with 75% of team members having completed their plans.",
+            target_values: [3, 75]
+          }
         },
         %{
           key: :ensure_financial_stability,
           name: "Ensure Financial Stability",
-          space: :people_space,
-          champion: :henry_taylor,
-          reviewer: :emily_davis,
+          space: :finance_space,
+          champion: :charlie_davis,
+          reviewer: :owner,
           parent: :scale_up_company,
           targets: [
-            %{name: "Extend runway to 18 months at current burn rate", from: 3, to: 5, unit: "months"},
-            %{name: "Increase monthly recurring revenue (MRR) by 50%", from: 10000, to: 12000, unit: "$"},
+            %{name: "Extend runway at current burn rate", from: 3, to: 18, unit: "months"},
+            %{name: "Increase monthly recurring revenue (MRR)", from: 100, to: 150, unit: "K$"}
           ],
-          update: nil
+          update: %{
+            content: "We've successfully extended our runway to 5 months and increased our MRR to $120K. We're making progress, but we need to accelerate our efforts to meet our targets.",
+            target_values: [5, 120]
+          }
         }
       ],
       projects: [
@@ -355,13 +388,10 @@ defmodule Operately.Demo.Data do
           key: :refine_ad_targeting,
           name: "Refine ad targeting on social media platforms",
           space: :marketing_space,
-          champion: :frank_miller,
+          champion: :nathan_morris,
           reviewer: :emily_davis,
           contributors: [
-            %{person: :alice_johnson, responsibility: "Software Engineer"},
-            %{person: :bob_williams, responsibility: "Software Engineer"},
-            %{person: :charlie_davis, responsibility: "Software Engineer"},
-            %{person: :david_brown, responsibility: "Software Engineer"},
+            %{person: :nathan_morris, responsibility: "Growth Marketer"}
           ],
           goal: :optimize_roi_of_ads,
           check_in: %{
@@ -369,234 +399,185 @@ defmodule Operately.Demo.Data do
             content: "A/B testing is yielding promising results. We've identified key demographics that respond well to our ads. On track to meet our conversion rate goal."
           },
           milestones: [
-            %{title: "Analyze user behavior of top 100 power users to create \"ideal customer\" profile", status: :pending},
-            %{title: "Develop 5 distinct ad creatives featuring customer success stories", status: :pending},
-            %{title: "Set up A/B tests for ad placement during \"productivity hours\" (10am-2pm) vs. \"downtime hours\" (8pm-11pm)", status: :pending},
-            %{title: "Achieve 1000 click-throughs from developers active in Stack Overflow communities", status: :pending}
+            %{title: "Ideal customer profile created", status: :pending},
+            %{title: "5 new ad creatives launched", status: :pending},
+            %{title: "A/B test results analyzed", status: :pending},
+            %{title: "1000 click-throughs achieved from Stack Overflow", status: :pending}
           ]
         },
         %{
           key: :implement_in_app_referral_program,
           name: "Implement in-app referral program with rewards",
           space: :marketing_space,
-          champion: :frank_miller,
+          champion: :olivia_hall,
           reviewer: :emily_davis,
           contributors: [
-            %{person: :alice_johnson, responsibility: "Software Engineer"},
-            %{person: :bob_williams, responsibility: "Software Engineer"},
-            %{person: :charlie_davis, responsibility: "Software Engineer"},
-            %{person: :david_brown, responsibility: "Software Engineer"},
+            %{person: :olivia_hall, responsibility: "Product Manager"}
           ],
           goal: :get_more_users_through_word_of_mouth,
           check_in: %{
-            status: "on_track",
+            status: "at_risk",
             content: "Referral program UI is complete, but we're facing delays in implementing the reward system. May need an additional week to resolve technical issues."
           },
           milestones: [
-            %{title: "Design \"Golden Ticket\" referral UI that appears after user's 10th login", status: :pending},
-            %{title: "Implement blockchain-based reward system for tracking referrals", status: :pending},
-            %{title: "Create tiered rewards including \"Productivity Guru\" badge and limited edition branded ergonomic mouse", status: :pending},
-            %{title: "Soft launch program to top 50 users and gather feedback", status: :pending}
+            %{title: "\"Golden Ticket\" referral UI implemented", status: :pending},
+            %{title: "Blockchain-based reward system deployed", status: :pending},
+            %{title: "Tiered reward system launched", status: :pending},
+            %{title: "Referral program soft-launched to top users", status: :pending}
           ]
         },
         %{
-          key: :conduct_market_research,
+          key: :conduct_market_research_germany,
           name: "Conduct market research for expansion into Germany",
           space: :marketing_space,
-          champion: :frank_miller,
+          champion: :paul_young,
           reviewer: :emily_davis,
           contributors: [
-            %{person: :alice_johnson, responsibility: "Software Engineer"},
-            %{person: :bob_williams, responsibility: "Software Engineer"},
-            %{person: :charlie_davis, responsibility: "Software Engineer"},
-            %{person: :david_brown, responsibility: "Software Engineer"},
+            %{person: :paul_young, responsibility: "Market Research Analyst"}
           ],
           goal: :expand_into_new_markets,
           check_in: %{
             status: "on_track",
-            content: "Referral program UI is complete, but we're facing delays in implementing the reward system. May need an additional week to resolve technical issues."
+            content: "Research is progressing well. We've identified key competitors and potential partners. On track to present findings next week."
           },
           milestones: [
-            %{title: "Hire a Berlin-based \"Culture Consultant\" for insights into German work habits", status: :pending},
-            %{title: "Attend \"Bits & Pretzels\" startup conference in Munich to network with potential users", status: :pending},
-            %{title: "Conduct 5 focus groups with German project managers, offering free Bavarian pretzels as incentive", status: :pending},
-            %{title: "Analyze top 3 competing products' German-language marketing materials", status: :pending}
+            %{title: "Berlin-based consultant hired", status: :pending},
+            %{title: "\"Bits & Pretzels\" conference attended", status: :pending},
+            %{title: "Focus groups conducted", status: :pending},
+            %{title: "Competitor analysis completed", status: :pending}
           ]
         },
         %{
-          key: :develop_localization_strategy,
+          key: :develop_spanish_localization,
           name: "Develop localization strategy for Spanish-speaking markets",
           space: :marketing_space,
-          champion: :frank_miller,
+          champion: :rachel_king,
           reviewer: :emily_davis,
           contributors: [
-            %{person: :alice_johnson, responsibility: "Software Engineer"},
-            %{person: :bob_williams, responsibility: "Software Engineer"},
-            %{person: :charlie_davis, responsibility: "Software Engineer"},
-            %{person: :david_brown, responsibility: "Software Engineer"},
+            %{person: :rachel_king, responsibility: "Localization Specialist"}
           ],
           goal: :expand_into_new_markets,
           check_in: %{
-            status: "on_track",
+            status: "at_risk",
             content: "Facing challenges in adapting our UI for cultural preferences. May need to bring in a local UX consultant to assist."
           },
           milestones: [
-            %{title: "Create a \"Siesta-Friendly\" feature that optimizes task scheduling around traditional break times", status: :pending},
-            %{title: "Hire a Mexican telenovela script writer to add flair to product copy translations", status: :pending},
-            %{title: "Partner with 3 coworking spaces in Madrid for beta testing", status: :pending},
-            %{title: "Develop a \"Fiesta Mode\" UI theme with vibrant colors and celebratory icons", status: :pending}
+            %{title: "\"Siesta-Friendly\" feature conceptualized", status: :pending},
+            %{title: "Product copy localization completed", status: :pending},
+            %{title: "Madrid coworking space partnerships established", status: :pending},
+            %{title: "\"Fiesta Mode\" UI theme developed", status: :pending}
           ]
         },
         %{
-          key: :develop_and_launch_new_collaborative_features,
+          key: :develop_collaborative_features,
           name: "Develop and launch new collaborative features",
           space: :product_space,
-          champion: :frank_miller,
-          reviewer: :emily_davis,
+          champion: :walter_baker,
+          reviewer: :frank_miller,
           contributors: [
-            %{person: :alice_johnson, responsibility: "Software Engineer"},
-            %{person: :bob_williams, responsibility: "Software Engineer"},
-            %{person: :charlie_davis, responsibility: "Software Engineer"},
-            %{person: :david_brown, responsibility: "Software Engineer"},
+            %{person: :walter_baker, responsibility: "Senior Developer"}
           ],
-          goal: :eliminate_top_reasons_customers_cancel,
+          goal: :enhance_product_functionality,
           check_in: %{
             status: "on_track",
             content: "Beta testing of the real-time document collaboration feature is going well. We're on track for the full release next month."
           },
           milestones: [
-            %{title: "Conduct user surveys to identify top 3 requested collaborative features", status: :pending},
-            %{title: "Create detailed wireframes and user flow diagrams for new features", status: :pending},
-            %{title: "Develop MVP of real-time document collaboration feature", status: :pending},
-            %{title: "Beta test new features with a group of 50 power users", status: :pending},
-            %{title: "Iterate based on beta feedback and prepare for full release", status: :pending}
+            %{title: "Top 3 requested features identified", status: :pending},
+            %{title: "Wireframes and user flows approved", status: :pending},
+            %{title: "MVP developed and internally tested", status: :pending},
+            %{title: "Beta testing completed with power users", status: :pending},
+            %{title: "Final iteration completed", status: :pending}
           ]
         },
         %{
-          key: :create_templates_for_common_business_processes,
+          key: :create_process_templates,
           name: "Create templates for common business processes",
-          space: :product_space,
-          champion: :frank_miller,
-          reviewer: :emily_davis,
+          space: :company_space,
+          champion: :quinn_walker,
+          reviewer: :bob_williams,
           contributors: [
-            %{person: :alice_johnson, responsibility: "Software Engineer"},
-            %{person: :bob_williams, responsibility: "Software Engineer"},
-            %{person: :charlie_davis, responsibility: "Software Engineer"},
-            %{person: :david_brown, responsibility: "Software Engineer"},
+            %{person: :quinn_walker, responsibility: "Operations Manager"}
           ],
-          goal: :scale_up_company,
+          goal: :document_core_business_processes,
           check_in: %{
             status: "on_track",
-            content: "Template creation is on schedule. We've completed drafts for 3 out of 5 top processes and are gathering feedback.",
+            content: "Template creation is on schedule. We've completed drafts for 3 out of 5 top processes and are gathering feedback."
           },
           milestones: [
-            %{title: "Identify top 10 most frequently used business processes", status: :pending},
-            %{title: "Interview department heads to document current workflows", status: :pending},
-            %{title: "Design standardized template format for process documentation", status: :pending},
-            %{title: "Create first draft of templates for top 5 processes", status: :pending},
-            %{title: "Review and refine templates with relevant team members", status: :pending}
+            %{title: "Top 10 critical processes identified", status: :pending},
+            %{title: "Current workflows for top 5 processes mapped", status: :pending},
+            %{title: "Template format approved", status: :pending},
+            %{title: "First drafts of top 5 templates completed", status: :pending},
+            %{title: "All 5 process templates finalized", status: :pending}
           ]
         },
         %{
-          key: :hire_senior_ux_designer,
+          key: :hire_ux_designer,
           name: "Hire a Senior UX Designer",
-          space: :company_space,
-          champion: :frank_miller,
-          reviewer: :emily_davis,
+          space: :people_space,
+          champion: :karen_martinez,
+          reviewer: :liam_harris,
           contributors: [
-            %{person: :alice_johnson, responsibility: "Software Engineer"},
-            %{person: :bob_williams, responsibility: "Software Engineer"},
-            %{person: :charlie_davis, responsibility: "Software Engineer"},
-            %{person: :david_brown, responsibility: "Software Engineer"},
+            %{person: :karen_martinez, responsibility: "HR Manager"}
           ],
           goal: :expand_team_capabilities,
           check_in: %{
             status: "on_track",
-            content: "We've narrowed down to 3 top candidates. Design challenge results are due this Friday. On track to make an offer next week.",
+            content: "We've narrowed down to 3 top candidates. Design challenge results are due this Friday. On track to make an offer next week."
           },
           milestones: [
-            %{title: "Define job requirements and create detailed job description", status: :pending},
-            %{title: "Post job opening on relevant platforms (e.g., LinkedIn, Dribbble, AngelList)", status: :pending},
-            %{title: "Review portfolios and conduct initial screening interviews", status: :pending},
-            %{title: "Assign practical design challenge to top 5 candidates", status: :pending},
-            %{title: "Conduct final round interviews and make job offer", status: :pending}
+            %{title: "Job requirements defined", status: :pending},
+            %{title: "Job opening posted on key platforms", status: :pending},
+            %{title: "Initial screening interviews completed", status: :pending},
+            %{title: "Design challenge assigned to top candidates", status: :pending},
+            %{title: "Final interviews conducted", status: :pending}
           ]
         },
         %{
-          key: :hire_full_stack_software_engineer,
-          name: "Hire a Full Stack Software Engineer",
-          space: :company_space,
-          champion: :frank_miller,
-          reviewer: :emily_davis,
-          contributors: [
-            %{person: :alice_johnson, responsibility: "Software Engineer"},
-            %{person: :bob_williams, responsibility: "Software Engineer"},
-            %{person: :charlie_davis, responsibility: "Software Engineer"},
-            %{person: :david_brown, responsibility: "Software Engineer"},
-          ],
-          goal: :expand_team_capabilities,
-          check_in: %{
-            status: "on_track",
-            content: "Received a strong pool of applicants. Technical screenings are underway. Slightly ahead of schedule."
-          },
-          milestones: [
-            %{title: "Define technical requirements and skills needed for the role", status: :pending},
-            %{title: "Reach out to personal networks and post on job boards", status: :pending},
-            %{title: "Conduct technical screening interviews with qualified candidates", status: :pending},
-            %{title: "Administer coding challenge to top candidates", status: :pending},
-            %{title: "Perform final round interviews with team leads and make decision", status: :pending}
-          ]
-        },
-        %{
-          key: :hire_customer_support_specialist,
+          key: :hire_customer_support,
           name: "Hire a Customer Support Specialist",
-          space: :company_space,
-          champion: :frank_miller,
-          reviewer: :emily_davis,
+          space: :people_space,
+          champion: :karen_martinez,
+          reviewer: :jack_thomas,
           contributors: [
-            %{person: :alice_johnson, responsibility: "Software Engineer"},
-            %{person: :bob_williams, responsibility: "Software Engineer"},
-            %{person: :charlie_davis, responsibility: "Software Engineer"},
-            %{person: :david_brown, responsibility: "Software Engineer"},
+            %{person: :karen_martinez, responsibility: "HR Manager"}
           ],
           goal: :expand_team_capabilities,
           check_in: %{
-            status: "on_track",
+            status: "at_risk",
             content: "Struggling to find candidates with the right mix of technical knowledge and customer service skills. May need to expand our search or consider internal training options."
           },
           milestones: [
-            %{title: "Create job description emphasizing required skills and experience", status: :pending},
-            %{title: "Post job opening on customer service-specific job boards", status: :pending},
-            %{title: "Conduct initial phone screenings with promising applicants", status: :pending},
-            %{title: "Perform role-playing exercises with top candidates to assess skills", status: :pending},
-            %{title: "Check references and make job offer to best candidate", status: :pending}
+            %{title: "Job description created", status: :pending},
+            %{title: "Posting on customer service job boards", status: :pending},
+            %{title: "Initial phone screenings conducted", status: :pending},
+            %{title: "Role-playing exercises performed", status: :pending},
+            %{title: "Top candidate selected and offer extended", status: :pending}
           ]
         },
         %{
-          key: :prepare_pitch_deck,
+          key: :prepare_series_a,
           name: "Prepare pitch deck and financial projections for Series A funding",
           space: :finance_space,
-          champion: :frank_miller,
-          reviewer: :emily_davis,
+          champion: :charlie_davis,
+          reviewer: :owner,
           contributors: [
-            %{person: :alice_johnson, responsibility: "Software Engineer"},
-            %{person: :bob_williams, responsibility: "Software Engineer"},
-            %{person: :charlie_davis, responsibility: "Software Engineer"},
-            %{person: :david_brown, responsibility: "Software Engineer"},
+            %{person: :charlie_davis, responsibility: "CFO"}
           ],
           goal: :ensure_financial_stability,
           check_in: %{
-            status: "on_track",
+            status: "at_risk",
             content: "Financial model is taking longer than expected due to complexities in our expansion plans. May need an extra week to finalize projections."
           },
           milestones: [
-            %{title: "Gather key metrics and growth data from all departments", status: :pending},
-            %{title: "Develop detailed financial model with projections for next 3 years", status: :pending},
-            %{title: "Create compelling narrative and design for pitch deck", status: :pending},
-            %{title: "Rehearse pitch with mentors and advisors for feedback", status: :pending},
-            %{title: "Schedule meetings with potential investors and VC firms", status: :pending}
+            %{title: "Key metrics and growth data gathered", status: :pending},
+            %{title: "Financial model developed", status: :pending},
+            %{title: "Pitch deck narrative and design created", status: :pending},
+            %{title: "Pitch rehearsed with advisors", status: :pending},
+            %{title: "Investor meetings scheduled", status: :pending}
           ]
-        },
+        }
       ]
     }
   end
