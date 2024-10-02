@@ -59,6 +59,7 @@ defmodule OperatelyWeb.Api do
   mutation :add_group_members, M.AddGroupMembers
   mutation :add_key_resource, M.AddKeyResource
   mutation :add_project_contributor, M.AddProjectContributor
+  mutation :add_project_contributors, M.AddProjectContributors
   mutation :add_reaction, M.AddReaction
   mutation :archive_goal, M.ArchiveGoal
   mutation :archive_project, M.ArchiveProject
