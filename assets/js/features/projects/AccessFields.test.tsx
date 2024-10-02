@@ -11,7 +11,7 @@ describe("applyAccessLevelConstraints", () => {
       company: PermissionLevels.FULL_ACCESS,
     };
 
-    values = initialAccessLevels(parentAccessLevels);
+    values = initialAccessLevels(null, parentAccessLevels);
   });
 
   test("if annonymous people don't have access to the space, they should not have access to the project as well", () => {
