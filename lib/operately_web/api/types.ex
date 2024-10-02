@@ -1038,4 +1038,10 @@ defmodule OperatelyWeb.Api.Types do
     field :person, :person
   end
 
+  object :project_contributor_input do
+    field :person_id, :string
+    field :responsibility, :string
+    field :access_level, :integer
+  end
+
 end

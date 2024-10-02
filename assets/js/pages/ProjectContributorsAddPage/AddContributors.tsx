@@ -18,7 +18,22 @@ interface ContributorFields {
   personId: string;
   responsibility: string;
   permissions: PermissionLevels;
-  role: string;
+}
+
+function newContributor() {
+  //
+  // used for unique key in React component list
+  // index is not unique when removing items and causes rendering issues
+  // so we add a random key to each item
+  //
+  const key = Math.random();
+
+  return {
+    key: key,
+    personId: "",
+    responsibility: "",
+    permissions: PermissionLevels.EDIT_ACCESS,
+  };
 }
 
 export function AddContributors() {
@@ -28,20 +43,16 @@ export function AddContributors() {
 
   const form = Forms.useForm({
     fields: {
-      contributors: [
-        {
-          key: Math.random(),
-          personId: "",
-          responsibility: "",
-          permissions: PermissionLevels.EDIT_ACCESS,
-          role: "contributor",
-        },
-      ],
+      contributors: [newContributor()],
     },
     submit: async () => {
       await add({
         projectId: project.id,
-        // contributors: form.values.contributors,
+        contributors: form.values.contributors.map((c) => ({
+          personId: c.personId,
+          responsibility: c.responsibility,
+          permissions: c.permissions,
+        })),
       });
 
       gotoContribPage();
@@ -78,15 +89,7 @@ function Contributors({ project }) {
   const [value, setValue] = Forms.useFieldValue<ContributorFields[]>("contributors");
 
   const addMore = React.useCallback(() => {
-    const newContributor = {
-      key: Math.random(),
-      personId: "",
-      responsibility: "",
-      permissions: PermissionLevels.EDIT_ACCESS,
-      role: "contributor",
-    };
-
-    setValue([...value, newContributor]);
+    setValue([...value, newContributor()]);
   }, [value, setValue]);
 
   return (
