@@ -4,7 +4,10 @@ import * as Time from "@/utils/time";
 
 import { ItemType, FormState } from "./form";
 
-export function useForProjectRetrospective(project: Projects.Project, comments: Comments.Comment[]): FormState {
+export function useForProjectRetrospective(
+  retrospective: Projects.ProjectRetrospective,
+  comments: Comments.Comment[],
+): FormState {
   const [post, { loading: submittingPost }] = Comments.useCreateComment();
   const [edit, { loading: submittingEdit }] = Comments.useEditComment();
 
@@ -18,7 +21,7 @@ export function useForProjectRetrospective(project: Projects.Project, comments: 
 
   const postComment = async (content: string) => {
     await post({
-      entityId: project.id,
+      entityId: retrospective.id,
       entityType: "project_retrospective",
       content: JSON.stringify(content),
     });
@@ -37,6 +40,6 @@ export function useForProjectRetrospective(project: Projects.Project, comments: 
     postComment,
     editComment,
     submitting: submittingPost || submittingEdit,
-    mentionSearchScope: { type: "project", id: project.id! },
+    mentionSearchScope: { type: "project", id: retrospective.project!.id! },
   };
 }
