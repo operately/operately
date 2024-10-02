@@ -8,6 +8,7 @@ defmodule OperatelyWeb.Api.Queries.SearchPeople do
   alias Operately.Repo
   alias Operately.Companies.Company
   alias Operately.People.Person
+  alias Operately.Access.Binding
 
   inputs do
     field :query, :string
@@ -85,34 +86,34 @@ defmodule OperatelyWeb.Api.Queries.SearchPeople do
 
   defp filter_by_search_scope(query, scope, id) do
     case {scope, id} do
-      {"company", _} -> 
+      {"company", _} ->
         query
 
-      {"project", id} -> 
+      {"project", id} ->
         from p in query,
           join: m in assoc(p, :access_group_memberships),
           join: g in assoc(m, :group),
           join: b in assoc(g, :bindings),
           join: c in assoc(b, :context),
-          where: c.project_id == ^id and b.access_level > 0,
+          where: c.project_id == ^id and b.access_level >= ^Binding.view_access(),
           group_by: p.id
 
-      {"space", id} -> 
+      {"space", id} ->
         from p in query,
           join: m in assoc(p, :access_group_memberships),
           join: g in assoc(m, :group),
           join: b in assoc(g, :bindings),
           join: c in assoc(b, :context),
-          where: c.group_id == ^id and b.access_level > 0,
+          where: c.group_id == ^id and b.access_level >= ^Binding.view_access(),
           group_by: p.id
 
-      {"goal", id} -> 
+      {"goal", id} ->
         from p in query,
           join: m in assoc(p, :access_group_memberships),
           join: g in assoc(m, :group),
           join: b in assoc(g, :bindings),
           join: c in assoc(b, :context),
-          where: c.goal_id == ^id and b.access_level > 0,
+          where: c.goal_id == ^id and b.access_level >= ^Binding.view_access(),
           group_by: p.id
     end
   end
@@ -124,7 +125,7 @@ defmodule OperatelyWeb.Api.Queries.SearchPeople do
   def serialize(people) when is_list(people) do
     %{people: Serializer.serialize(people, level: :essential)}
   end
-  
+
   def parse_inputs(inputs) do
     if inputs[:search_scope_id] do
       {:ok, search_scope_id} = decode_id(inputs[:search_scope_id])
