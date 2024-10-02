@@ -1,8 +1,8 @@
 import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
-import * as People from "@/models/people";
 import * as Icons from "@tabler/icons-react";
+import * as Projects from "@/models/projects";
 
 import { PERMISSIONS_LIST, PermissionLevels } from "@/features/Permissions";
 import { useAddProjectContributors } from "@/api";
@@ -45,6 +45,9 @@ export function AddContributors() {
     fields: {
       contributors: [newContributor()],
     },
+    validate: async (addError) => {
+      validatePeopleUniqueness(form.values.contributors, addError);
+    },
     submit: async () => {
       await add({
         projectId: project.id,
@@ -77,14 +80,7 @@ export function AddContributors() {
 
 function Contributors({ project }) {
   const [contribs] = Forms.useFieldValue<ContributorFields[]>("contributors");
-  const search = People.usePeopleSearch({ type: "space", id: project.space.id });
-
-  const contribSearch = React.useCallback(
-    (query: string) => {
-      return search({ query, ignoredIds: contribs.map((c) => c.personId).filter((c) => c !== "") });
-    },
-    [contribs, search],
-  );
+  const search = Projects.useContributorSearchFn(project);
 
   const [value, setValue] = Forms.useFieldValue<ContributorFields[]>("contributors");
 
@@ -99,7 +95,7 @@ function Contributors({ project }) {
           <Contributor
             key={c.key}
             field={`contributors[${i}]`}
-            personSearchFn={contribSearch}
+            search={search}
             index={i}
             last={i === contribs.length - 1}
             addMore={addMore}
@@ -112,11 +108,11 @@ function Contributors({ project }) {
   );
 }
 
-function Contributor({ field, personSearchFn, index, last, addMore }) {
+function Contributor({ field, search, index, last, addMore }) {
   return (
     <Paper.Body>
       <Forms.FieldGroup layout="horizontal">
-        <Forms.SelectPerson field={field + ".personId"} label="Contributor" searchFn={personSearchFn} />
+        <Forms.SelectPerson field={field + ".personId"} label="Contributor" searchFn={search} />
         <Forms.SelectBox field={field + ".accessLevel"} label="Access Level" options={PERMISSIONS_LIST} />
 
         <Forms.TextInput
@@ -165,4 +161,27 @@ function RemoveContributorButton({ index }) {
       </div>
     </div>
   );
+}
+
+function validatePeopleUniqueness(
+  contributors: ContributorFields[],
+  addError: (field: string, message: string) => void,
+) {
+  let peopleIds = {} as Record<string, number[]>;
+
+  contributors.forEach((c, i) => {
+    if (peopleIds[c.personId]) {
+      peopleIds[c.personId]!.push(i);
+    } else {
+      peopleIds[c.personId] = [i];
+    }
+  });
+
+  Object.entries(peopleIds).forEach(([_personId, indexes]) => {
+    if (indexes.length > 1) {
+      indexes.forEach((i) => {
+        addError(`contributors[${i}].personId`, "Can't add the same person more than once");
+      });
+    }
+  });
 }
