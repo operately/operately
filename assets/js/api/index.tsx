@@ -844,6 +844,8 @@ export interface ProjectRetrospective {
   closedAt?: string | null;
   permissions?: ProjectPermissions | null;
   reactions?: Reaction[] | null;
+  subscriptionList?: SubscriptionList | null;
+  potentialSubscribers?: Subscriber[] | null;
 }
 
 export interface ProjectReviewRequest {
@@ -1414,6 +1416,8 @@ export interface GetProjectRetrospectiveInput {
   includeProject?: boolean | null;
   includePermissions?: boolean | null;
   includeReactions?: boolean | null;
+  includeSubscriptionsList?: boolean | null;
+  includePotentialSubscribers?: boolean | null;
 }
 
 export interface GetProjectRetrospectiveResult {
