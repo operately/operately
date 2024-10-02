@@ -52,7 +52,8 @@ defmodule Operately.Demo.Data do
           key: :bob_williams,
           name: "Bob Williams", 
           title: "Chief Operating Officer (COO)", 
-          avatar: "photo-1500648767791-00dcc994a43e"
+          avatar: "photo-1500648767791-00dcc994a43e",
+          reports_to: :alice_johnson
         },
         %{
           key: :charlie_davis,
