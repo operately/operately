@@ -7,6 +7,7 @@ import type { ActivityHandler } from "../interfaces";
 
 import { feedTitle, projectLink } from "./../feedItemLinks";
 import { Paths } from "@/routes/paths";
+import Avatar from "@/components/Avatar";
 
 const ProjectContributorsAddition: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -40,12 +41,16 @@ const ProjectContributorsAddition: ActivityHandler = {
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {
-    const personList = content(activity)
-      .contributors!.map((c) => People.firstName(c.person!))
-      .map((p) => p)
-      .join(", ");
-
-    return <>{personList}</>;
+    return (
+      <div className="flex flex-col gap-2 mt-2">
+        {content(activity).contributors!.map((c) => (
+          <div key={c.person!.id} className="flex items-center gap-1">
+            <Avatar person={c.person!} size={20} /> <span>{People.firstName(c.person!)}</span> &ndash;{" "}
+            {c.responsibility}
+          </div>
+        ))}
+      </div>
+    );
   },
 
   commentCount(_activity: Activity): number {
