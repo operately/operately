@@ -35,11 +35,11 @@ export function Page() {
 
   return (
     <Pages.Page title={["Edit General Access", project.name!]}>
-      <Paper.Root size="medium">
+      <Paper.Root size="small">
         <ProjectContribsSubpageNavigation project={project} />
 
         <Paper.Body>
-          <h1 className="text-2xl font-extrabold">Edit access for {project.name}</h1>
+          <h1 className="text-2xl font-extrabold">Edit General Access</h1>
           <Form />
         </Paper.Body>
       </Paper.Root>
@@ -56,7 +56,7 @@ function Form() {
 
   const form = Forms.useForm({
     fields: {
-      access: initialAccessLevels(parentAccessLevel),
+      access: initialAccessLevels(project.accessLevels!, parentAccessLevel),
     },
     onChange: ({ newValues }) => {
       newValues.access = applyAccessLevelConstraints(newValues.access, parentAccessLevel);
