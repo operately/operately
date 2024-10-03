@@ -20,7 +20,7 @@ blocks:
             - make test.pr.name
 
   - name: Tests
-    dependencies: ["Pre-Flight-Check"]
+    dependencies: []
     task:
       prologue:
         commands:
@@ -64,7 +64,7 @@ blocks:
             - make test.license.check
 
   - name: Docker Build
-    dependencies: ["Pre-Flight-Check"]
+    dependencies: []
     task:
       secrets:
         - name: docker-push
@@ -80,7 +80,7 @@ blocks:
             - 'if [[ "$SEMAPHORE_GIT_BRANCH" = "main" && "$SEMAPHORE_GIT_REF_TYPE" = "branch" ]]; then make docker.push; else echo "Skipping Docker push"; fi'
 
   - name: Release Tests
-    dependencies: ["Pre-Flight-Check"]
+    dependencies: []
     task:
       jobs:
         - name: Single Host Release

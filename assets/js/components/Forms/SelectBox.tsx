@@ -4,6 +4,7 @@ import classnames from "classnames";
 
 import { useFieldError, useFieldValue } from "./FormContext";
 import { InputField } from "./FieldGroup";
+import { createTestId } from "@/utils/testid";
 
 interface Option {
   label: string;
@@ -35,7 +36,7 @@ function SelectBoxInput({ field, placeholder, options }: SelectBoxProps) {
   const error = useFieldError(field);
 
   return (
-    <div data-test-id={field} className="flex-1">
+    <div data-test-id={createTestId(field)} className="flex-1">
       <Select
         unstyled={true}
         className="flex-1"
@@ -52,18 +53,22 @@ function SelectBoxInput({ field, placeholder, options }: SelectBoxProps) {
 
 function selectBoxClassNames(error: boolean | undefined) {
   return {
-    control: () => selectBoxControlStyles(error),
+    control: ({ isFocused }) => selectBoxControlStyles(isFocused, error),
     menu: () => "bg-surface text-content-accent border border-surface-outline rounded-lg mt-1",
     option: selectBoxOptionStyles,
   };
 }
 
-function selectBoxControlStyles(error: boolean | undefined) {
+function selectBoxControlStyles(isFocused: boolean, error: boolean | undefined) {
   if (error) {
     return "bg-surface placeholder-content-dimmed border border-red-500 rounded-lg px-3 flex-1";
-  } else {
-    return "bg-surface placeholder-content-dimmed border border-surface-outline rounded-lg px-3 flex-1";
   }
+
+  if (isFocused) {
+    return "bg-surface placeholder-content-subtle border-2 border-blue-600 rounded-lg px-3";
+  }
+
+  return "bg-surface placeholder-content-dimmed border border-surface-outline rounded-lg px-3 flex-1";
 }
 
 function selectBoxOptionStyles({ isFocused }: { isFocused: boolean }) {
