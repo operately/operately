@@ -26,7 +26,7 @@ defmodule Operately.Support.Factory do
   defdelegate add_goal_update(ctx, testid, goal_name, person_name) , to: Goals
 
   # projects
-  defdelegate add_project(ctx, testid, space_name), to: Projects
+  defdelegate add_project(ctx, testid, space_name, opts \\ []), to: Projects
   defdelegate add_project_reviewer(ctx, testid, project_name, opts \\ []), to: Projects
   defdelegate add_project_contributor(ctx, testid, project_name, opts \\ []), to: Projects
   defdelegate add_project_retrospective(ctx, testid, project_name, author_name), to: Projects
