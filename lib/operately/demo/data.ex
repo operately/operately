@@ -399,8 +399,8 @@ defmodule Operately.Demo.Data do
             content: "A/B testing is yielding promising results. We've identified key demographics that respond well to our ads. On track to meet our conversion rate goal."
           },
           milestones: [
-            %{title: "Ideal customer profile created", status: :pending},
-            %{title: "5 new ad creatives launched", status: :pending},
+            %{title: "Ideal customer profile created", status: :done},
+            %{title: "5 new ad creatives launched", status: :done},
             %{title: "A/B test results analyzed", status: :pending},
             %{title: "1000 click-throughs achieved from Stack Overflow", status: :pending}
           ]
@@ -420,7 +420,7 @@ defmodule Operately.Demo.Data do
             content: "Referral program UI is complete, but we're facing delays in implementing the reward system. May need an additional week to resolve technical issues."
           },
           milestones: [
-            %{title: "\"Golden Ticket\" referral UI implemented", status: :pending},
+            %{title: "\"Golden Ticket\" referral UI implemented", status: :done},
             %{title: "Blockchain-based reward system deployed", status: :pending},
             %{title: "Tiered reward system launched", status: :pending},
             %{title: "Referral program soft-launched to top users", status: :pending}
@@ -441,7 +441,7 @@ defmodule Operately.Demo.Data do
             content: "Research is progressing well. We've identified key competitors and potential partners. On track to present findings next week."
           },
           milestones: [
-            %{title: "Berlin-based consultant hired", status: :pending},
+            %{title: "Berlin-based consultant hired", status: :done},
             %{title: "\"Bits & Pretzels\" conference attended", status: :pending},
             %{title: "Focus groups conducted", status: :pending},
             %{title: "Competitor analysis completed", status: :pending}
@@ -462,9 +462,9 @@ defmodule Operately.Demo.Data do
             content: "Facing challenges in adapting our UI for cultural preferences. May need to bring in a local UX consultant to assist."
           },
           milestones: [
-            %{title: "\"Siesta-Friendly\" feature conceptualized", status: :pending},
-            %{title: "Product copy localization completed", status: :pending},
-            %{title: "Madrid coworking space partnerships established", status: :pending},
+            %{title: "\"Siesta-Friendly\" feature conceptualized", status: :done},
+            %{title: "Product copy localization completed", status: :done},
+            %{title: "Madrid coworking space partnerships established", status: :done},
             %{title: "\"Fiesta Mode\" UI theme developed", status: :pending}
           ]
         },
@@ -483,9 +483,9 @@ defmodule Operately.Demo.Data do
             content: "Beta testing of the real-time document collaboration feature is going well. We're on track for the full release next month."
           },
           milestones: [
-            %{title: "Top 3 requested features identified", status: :pending},
-            %{title: "Wireframes and user flows approved", status: :pending},
-            %{title: "MVP developed and internally tested", status: :pending},
+            %{title: "Top 3 requested features identified", status: :done},
+            %{title: "Wireframes and user flows approved", status: :done},
+            %{title: "MVP developed and internally tested", status: :done},
             %{title: "Beta testing completed with power users", status: :pending},
             %{title: "Final iteration completed", status: :pending}
           ]
@@ -505,8 +505,8 @@ defmodule Operately.Demo.Data do
             content: "Template creation is on schedule. We've completed drafts for 3 out of 5 top processes and are gathering feedback."
           },
           milestones: [
-            %{title: "Top 10 critical processes identified", status: :pending},
-            %{title: "Current workflows for top 5 processes mapped", status: :pending},
+            %{title: "Top 10 critical processes identified", status: :done},
+            %{title: "Current workflows for top 5 processes mapped", status: :done},
             %{title: "Template format approved", status: :pending},
             %{title: "First drafts of top 5 templates completed", status: :pending},
             %{title: "All 5 process templates finalized", status: :pending}
@@ -527,9 +527,9 @@ defmodule Operately.Demo.Data do
             content: "We've narrowed down to 3 top candidates. Design challenge results are due this Friday. On track to make an offer next week."
           },
           milestones: [
-            %{title: "Job requirements defined", status: :pending},
-            %{title: "Job opening posted on key platforms", status: :pending},
-            %{title: "Initial screening interviews completed", status: :pending},
+            %{title: "Job requirements defined", status: :done},
+            %{title: "Job opening posted on key platforms", status: :done},
+            %{title: "Initial screening interviews completed", status: :done},
             %{title: "Design challenge assigned to top candidates", status: :pending},
             %{title: "Final interviews conducted", status: :pending}
           ]
@@ -549,8 +549,8 @@ defmodule Operately.Demo.Data do
             content: "Struggling to find candidates with the right mix of technical knowledge and customer service skills. May need to expand our search or consider internal training options."
           },
           milestones: [
-            %{title: "Job description created", status: :pending},
-            %{title: "Posting on customer service job boards", status: :pending},
+            %{title: "Job description created", status: :done},
+            %{title: "Posting on customer service job boards", status: :done},
             %{title: "Initial phone screenings conducted", status: :pending},
             %{title: "Role-playing exercises performed", status: :pending},
             %{title: "Top candidate selected and offer extended", status: :pending}
@@ -571,7 +571,7 @@ defmodule Operately.Demo.Data do
             content: "Financial model is taking longer than expected due to complexities in our expansion plans. May need an extra week to finalize projections."
           },
           milestones: [
-            %{title: "Key metrics and growth data gathered", status: :pending},
+            %{title: "Key metrics and growth data gathered", status: :done},
             %{title: "Financial model developed", status: :pending},
             %{title: "Pitch deck narrative and design created", status: :pending},
             %{title: "Pitch rehearsed with advisors", status: :pending},
