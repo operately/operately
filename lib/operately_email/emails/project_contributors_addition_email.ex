@@ -5,8 +5,8 @@ defmodule OperatelyEmail.Emails.ProjectContributorsAdditionEmail do
   def send(person, activity) do
     author = Repo.preload(activity, :author).author
     company = Repo.preload(author, :company).company
-    project = Projects.get_project!(activity.content["project_id"])
-    contributor = Projects.get_contributor!(person.id)
+    project = Projects.get_project!(activity.content.project_id)
+    contributor = Projects.get_contributor!(person_id: person.id, project_id: project.id)
     link = OperatelyWeb.Paths.project_path(company, project) |> OperatelyWeb.Paths.to_url()
 
     company
