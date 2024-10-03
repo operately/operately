@@ -438,10 +438,16 @@ defmodule Operately.AccessActivityContextAssignerTest do
     end
 
     test "project_closed action", ctx do
+      retrospective = retrospective_fixture(%{author_id: ctx.author.id, project_id: ctx.project.id})
       attrs = %{
         action: "project_closed",
         author_id: ctx.author.id,
-        content: %{ project_id: ctx.project.id, company_id: ctx.company.id }
+        content: %{
+          project_id: ctx.project.id,
+          space_id: ctx.group.id,
+          company_id: ctx.company.id,
+          retrospective_id: retrospective.id,
+        }
       }
 
       create_activity(attrs)
