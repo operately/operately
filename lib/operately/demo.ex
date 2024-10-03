@@ -2,9 +2,12 @@ defmodule Operately.Demo do
   alias Operately.Demo.{Resources, Company, People, Spaces, Goals, Projects}
 
   def run(account, company_name, title) do
+    run(account, company_name, title, Operately.Demo.Data.data())
+  end
+
+  def run(account, company_name, title, data) do
     verify_if_demo_can_be_run()
 
-    data = Operately.Demo.Data.data()
     resources = Resources.init()
 
     {:ok, context} = Operately.Repo.transaction(fn ->

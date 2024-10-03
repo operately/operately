@@ -12,21 +12,21 @@ defmodule Operately.Demo.Projects do
     company = Resources.get(resources, :company)
     owner = Resources.get(resources, :owner)
     champion = Resources.get(resources, data.champion)
-    reviewer = Resources.get(resources, data.reviewer)
+    reviewer = data[:reviewer] && Resources.get(resources, data.reviewer)
     space = Resources.get(resources, data.space)
-    goal = data.goal && Resources.get(resources, data.goal)
+    goal = data[:goal] && Resources.get(resources, data.goal)
 
     params = %Operately.Operations.ProjectCreation{
       company_id: company.id,
       name: data.name,
       champion_id: champion.id,
-      reviewer_id: reviewer.id,
+      reviewer_id: reviewer && reviewer.id,
       creator_id: owner.id,
       creator_role: "contributor",
       creator_is_contributor: "yes",
       visibility: "everyone",
       group_id: space.id,
-      goal_id: goal.id,
+      goal_id: goal && goal.id,
       anonymous_access_level: 0,
       company_access_level: 70,
       space_access_level: 70,
@@ -103,11 +103,14 @@ defmodule Operately.Demo.Projects do
 
   def add_project_contributors(context, project, data) do
     champion = Resources.get(context, data.champion)
-    reviewer = Resources.get(context, data.reviewer)
+
+    champion_id = champion.id
+    reviewer_id = data[:reviewer] && Resources.get(context, data.reviewer).id
+
     contribs = Enum.map(data.contributors, fn c -> Resources.get(context, c.person) end)
 
     contribs
-    |> Enum.filter(fn c -> c.id != champion.id && c.id != reviewer.id end)
+    |> Enum.filter(fn c -> c.id != champion_id && c.id != reviewer_id end)
     |> Enum.each(fn c ->
       {:ok, _} = Operately.Operations.ProjectContributorAddition.run(champion, %{
         person_id: c.id,
