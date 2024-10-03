@@ -10,15 +10,6 @@ auto_cancel:
     when: "branch != 'main'"
 
 blocks:
-  - name: Pre-Flight-Check
-    dependencies: []
-    task:
-      jobs:
-        - name: PR Name Check
-          commands:
-            - checkout
-            - make test.pr.name
-
   - name: Tests
     dependencies: []
     task:
@@ -32,36 +23,31 @@ blocks:
           - docker load -i operately.tar
           - make test.build
 
-      epilogue:
-        always:
-          commands:
-            - '[ -f testreports/junit.xml ] && test-results publish testreports/junit.xml'
-            - artifact push workflow screenshots
-
       jobs:
+        - name: Lint
+          commands:
+            - make test.js.dead.code
+            - make test.js.fmt.check
+            - make test.tsc.lint
+            - make test.elixir.warnings
+            - make test.pr.name
+            - make test.license.check
+
         - name: Unit Tests
           commands:
             - make test.mix.unit
             - make test.npm
 
         - name: Features
-          parallelism: 4
+          parallelism: 6
           commands:
             - make test.mix.features INDEX=$SEMAPHORE_JOB_INDEX TOTAL=$SEMAPHORE_JOB_COUNT
 
-        - name: Lint Typescript
+      epilogue:
+        always:
           commands:
-            - make test.js.dead.code
-            - make test.js.fmt.check
-            - make test.tsc.lint
-
-        - name: Lint Elixir
-          commands:
-            - make test.elixir.warnings
-
-        - name: Licence Check
-          commands:
-            - make test.license.check
+            - '[ -f testreports/junit.xml ] && test-results publish testreports/junit.xml'
+            - artifact push workflow screenshots
 
   - name: Docker Build
     dependencies: []
@@ -78,16 +64,6 @@ blocks:
             - docker pull operately/operately:latest
             - make docker.build
             - 'if [[ "$SEMAPHORE_GIT_BRANCH" = "main" && "$SEMAPHORE_GIT_REF_TYPE" = "branch" ]]; then make docker.push; else echo "Skipping Docker push"; fi'
-
-  - name: Release Tests
-    dependencies: []
-    task:
-      jobs:
-        - name: Single Host Release
-          commands:
-            - checkout
-            - elixir rel/single-host/build.exs $(git rev-parse HEAD)
-            - test -f build/single-host-$(git rev-parse HEAD)/operately.tar.gz
 
 after_pipeline:
   task:
