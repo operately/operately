@@ -1,0 +1,3 @@
+<%= "#{short_name(@author)} added you as a contributor on #{@project.name}" %>
+
+Link: <%= @link %>

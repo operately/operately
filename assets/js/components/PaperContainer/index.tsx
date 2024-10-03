@@ -31,7 +31,7 @@ export { DimmedSection } from "./DimmedSection";
 export { Banner, Header } from "./Banner";
 export { Navigation, NavItem, NavSeparator, NavigateBack } from "./Navigation";
 
-export type Size = "small" | "medium" | "large" | "xlarge" | "xxlarge";
+type Size = "small" | "medium" | "large" | "xlarge" | "xxlarge";
 
 const sizes = {
   small: "max-w-2xl",
