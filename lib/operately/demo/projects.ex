@@ -1,5 +1,6 @@
 defmodule Operately.Demo.Projects do
   alias Operately.Demo.Resources
+  alias Operately.Projects.Milestone
 
   def create_projects(resources, data) do
     Resources.create(resources, data, fn {resources, data} ->
@@ -34,9 +35,9 @@ defmodule Operately.Demo.Projects do
     {:ok, project} = Operately.Operations.ProjectCreation.run(params)
     {:ok, project} = set_description(project, data[:description])
     {:ok, project} = set_project_timeline(champion, project)
-    {:ok, project} = create_project_milestones(champion, project, data.milestones)
 
-    {:ok, _check_in} = create_project_check_in(champion, project, data.check_in)
+    {:ok, _} = create_project_milestones(champion, project, data.milestones)
+    {:ok, _} = create_project_check_in(champion, project, data.check_in)
 
     add_project_contributors(resources, project, data)
 
@@ -77,21 +78,27 @@ defmodule Operately.Demo.Projects do
     Date.utc_today() |> Date.add(-1) |> DateTime.new!(~T[00:00:00], "Etc/UTC")
   end
 
-  def create_project_milestones(champion, project, data) do
+  def create_project_milestones(champion, project, milestones) do
     {:ok, _} = Operately.Projects.EditTimelineOperation.run(champion, project, %{
       project_start_date: project.started_at,
       project_due_date: project.deadline,
       milestone_updates: [],
-      new_milestones: Enum.map(data, fn m ->
+      new_milestones: Enum.map(milestones, fn m ->
         %{
           title: m.title,
           due_time: yesterday(),
           description: Operately.Demo.RichText.from_string(""),
-          status: m.status,
           tasks_kanban_state: %{}
         }
       end)
     })
+
+    Enum.each(milestones, fn m ->
+      {:ok, milestone} = Milestone.get(:system, project_id: project.id, title: m.title)
+      {:ok, _} = Milestone.set_status(milestone, m.status)
+    end)
+
+    {:ok, project}
   end
 
   def add_project_contributors(context, project, data) do
@@ -110,6 +117,10 @@ defmodule Operately.Demo.Projects do
         role: :contributor
       })
     end)
+  end
+
+  def set_milestone_title(milestone, title) do
+    Operately.Repo.update(milestone, %{title: title})
   end
 
 end

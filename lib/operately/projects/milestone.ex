@@ -1,5 +1,6 @@
 defmodule Operately.Projects.Milestone do
   use Operately.Schema
+  use Operately.Repo.Getter
 
   schema "project_milestones" do
     belongs_to :project, Operately.Projects.Project
@@ -32,5 +33,17 @@ defmodule Operately.Projects.Milestone do
     milestone
     |> cast(attrs, [:title, :deadline_at, :project_id, :status, :completed_at, :deleted_at, :description, :tasks_kanban_state])
     |> validate_required([:title, :tasks_kanban_state, :project_id])
+  end
+
+  def set_status(milestone, :pending) do
+    milestone
+    |> changeset(%{status: :pending, completed_at: nil})
+    |> Operately.Repo.update()
+  end
+
+  def set_status(milestone, :done) do
+    milestone
+    |> changeset(%{status: :done, completed_at: DateTime.utc_now()})
+    |> Operately.Repo.update()
   end
 end
