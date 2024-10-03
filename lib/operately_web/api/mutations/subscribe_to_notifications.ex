@@ -41,6 +41,7 @@ defmodule OperatelyWeb.Api.Mutations.SubscribeToNotifications do
   defp check_permissions(type, access_level) do
     case type do
       :project_check_in -> Projects.Permissions.check(access_level, :can_view)
+      :project_retrospective -> Projects.Permissions.check(access_level, :can_view)
       :goal_update -> Goals.Permissions.check(access_level, :can_view)
       :message -> Groups.Permissions.check(access_level, :can_view)
     end

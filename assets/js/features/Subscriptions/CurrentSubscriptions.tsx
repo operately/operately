@@ -11,8 +11,8 @@ import { compareIds } from "@/routes/paths";
 interface CurrentSubscriptionsProps {
   subscriptionList: SubscriptionList;
   potentialSubscribers: Subscriber[];
-  name: "check-in" | "update" | "discussion";
-  type: "project_check_in" | "goal_update" | "message";
+  name: "check-in" | "update" | "discussion" | "project retrospective";
+  type: "project_check_in" | "goal_update" | "message" | "project_retrospective";
   callback: () => void;
 }
 

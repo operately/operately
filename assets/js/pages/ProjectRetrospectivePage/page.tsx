@@ -13,6 +13,7 @@ import { AvatarWithName } from "@/components/Avatar/AvatarWithName";
 import { Spacer } from "@/components/Spacer";
 import RichContent from "@/components/RichContent";
 import FormattedTime from "@/components/FormattedTime";
+import { CurrentSubscriptions } from "@/features/Subscriptions";
 
 import { useLoadedData, useRefresh } from "./loader";
 
@@ -35,6 +36,8 @@ export function Page() {
 
           <Spacer size={4} />
           <Comments />
+
+          <Subscriptions />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
@@ -113,6 +116,25 @@ function Comments() {
     <>
       <div className="border-t border-stroke-base mt-8" />
       <CommentSection form={commentsForm} refresh={refresh} commentParentType="project_retrospective" />
+    </>
+  );
+}
+
+function Subscriptions() {
+  const { retrospective } = useLoadedData();
+  const refresh = useRefresh();
+
+  return (
+    <>
+      <div className="border-t border-stroke-base mt-16 mb-8" />
+
+      <CurrentSubscriptions
+        potentialSubscribers={retrospective.potentialSubscribers!}
+        subscriptionList={retrospective.subscriptionList!}
+        name="project retrospective"
+        type="project_retrospective"
+        callback={refresh}
+      />
     </>
   );
 }

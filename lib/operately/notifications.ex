@@ -113,6 +113,11 @@ defmodule Operately.Notifications do
           join: s in assoc(c, :subscription_list), as: :subscription_list,
           where: s.id == ^id
         )
+      :project_retrospective ->
+        from(r in Operately.Projects.Retrospective, as: :resource,
+          join: s in assoc(r, :subscription_list), as: :subscription_list,
+          where: s.id == ^id
+        )
       :goal_update ->
         from(u in Operately.Goals.Update, as: :resource,
           join: s in assoc(u, :subscription_list), as: :subscription_list,
@@ -132,6 +137,11 @@ defmodule Operately.Notifications do
       :project_check_in ->
         from(c in Operately.Projects.CheckIn, as: :resource,
           join: s in assoc(c, :subscription_list),
+          where: s.id == ^id
+        )
+      :project_retrospective ->
+        from(r in Operately.Projects.Retrospective, as: :resource,
+          join: s in assoc(r, :subscription_list),
           where: s.id == ^id
         )
       :goal_update ->
