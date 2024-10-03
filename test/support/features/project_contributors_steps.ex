@@ -52,7 +52,6 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
     ctx = Enum.reduce(Enum.with_index(people), ctx, fn {person, index}, ctx ->
       UI.find(ctx, UI.query(testid: "contributor-#{index}"), fn ctx ->
         ctx
-        |> UI.sleep(500)
         |> UI.select_person_in(testid: "contributors-#{index}-personid", name: person.name)
         |> UI.fill(testid: "contributors-#{index}-responsibility", with: person.responsibility)
       end)
@@ -65,22 +64,24 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
     end)
 
     ctx
-    |> UI.take_screenshot()
     |> UI.click(testid: "submit")
-    |> UI.sleep(200)
+    |> UI.assert_has(testid: "project-contributors-page")
   end
 
-  step :assert_contributor_added, ctx, name: name, responsibility: responsibility do
-    ctx
-    |> UI.assert_text(name)
-    |> UI.assert_text(responsibility)
-
+  step :assert_contributors_added, ctx, contribs do
     contributors = Operately.Projects.list_project_contributors(ctx.project)
     contributors = Operately.Repo.preload(contributors, :person)
-    contrib = Enum.find(contributors, fn c -> c.person.full_name == name end)
 
-    assert contrib != nil
-    assert contrib.responsibility == responsibility
+    Enum.map(contribs, fn contrib ->
+      ctx
+      |> UI.assert_text(contrib.name)
+      |> UI.assert_text(contrib.responsibility)
+
+      found = Enum.find(contributors, fn c -> c.person.full_name == contrib.name end)
+
+      assert found != nil
+      assert found.responsibility == contrib.responsibility
+    end)
 
     ctx
   end
