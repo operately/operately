@@ -220,6 +220,7 @@ defmodule Operately.Demo.Data do
           space: :marketing_space,
           champion: :emily_davis,
           reviewer: :frank_miller,
+          timeframe: :current_year,
           targets: [
             %{name: "Increase total active users", from: 10000, to: 25000, unit: "users"},
             %{name: "Achieve presence in new markets", from: 0, to: 5, unit: "markets"}
@@ -327,6 +328,7 @@ defmodule Operately.Demo.Data do
           space: :company_space,
           champion: :bob_williams,
           reviewer: :owner,
+          timeframe: :current_year,
           targets: [
             %{name: "Increase team size", from: 15, to: 25, unit: "employees"},
             %{name: "Achieve Annual Recurring Revenue (ARR)", from: 1.2, to: 2, unit: "M$"}
