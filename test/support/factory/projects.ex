@@ -4,10 +4,15 @@ defmodule Operately.Support.Factory.Projects do
   alias Operately.Access.Binding
   alias Operately.Support.Factory.Utils
 
-  def add_project(ctx, testid, space_name) do
+  def add_project(ctx, testid, space_name, opts \\ []) do
+    champion = Keyword.get(opts, :champion, :creator)
+    reviewer = Keyword.get(opts, :reviewer, :creator)
+
     project = Operately.ProjectsFixtures.project_fixture(%{
       name: Atom.to_string(testid),
       creator_id: ctx.creator.id,
+      champion_id: ctx[champion].id,
+      reviewer_id: ctx[reviewer].id,
       company_id: ctx.company.id,
       group_id: ctx[space_name].id,
       company_access_level: Binding.edit_access(),
