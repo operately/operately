@@ -110,24 +110,26 @@ function Contributors({ project }) {
 
 function Contributor({ field, search, index, last, addMore }) {
   return (
-    <Paper.Body>
-      <Forms.FieldGroup layout="horizontal">
-        <Forms.SelectPerson field={field + ".personId"} label="Contributor" searchFn={search} />
-        <Forms.SelectBox field={field + ".accessLevel"} label="Access Level" options={PERMISSIONS_LIST} />
+    <div data-test-id={`contributor-${index}`}>
+      <Paper.Body>
+        <Forms.FieldGroup layout="horizontal">
+          <Forms.SelectPerson field={field + ".personId"} label="Contributor" searchFn={search} />
+          <Forms.SelectBox field={field + ".accessLevel"} label="Access Level" options={PERMISSIONS_LIST} />
 
-        <Forms.TextInput
-          field={field + ".responsibility"}
-          placeholder="e.g. Project Manager"
-          label="Responsibility"
-          required={true}
-          onEnter={() => {
-            if (last) addMore();
-          }}
-        />
-      </Forms.FieldGroup>
+          <Forms.TextInput
+            field={field + ".responsibility"}
+            placeholder="e.g. Project Manager"
+            label="Responsibility"
+            required={true}
+            onEnter={() => {
+              if (last) addMore();
+            }}
+          />
+        </Forms.FieldGroup>
 
-      <RemoveContributorButton index={index} />
-    </Paper.Body>
+        <RemoveContributorButton index={index} />
+      </Paper.Body>
+    </div>
   );
 }
 

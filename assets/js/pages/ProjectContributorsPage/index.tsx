@@ -53,20 +53,20 @@ function Title() {
           <div className="text-medium">Manage the team and access to this project</div>
         </div>
 
-        <AddContribButton />
+        <AddContribsButton />
       </div>
     </div>
   );
 }
 
-function AddContribButton() {
+function AddContribsButton() {
   const { project } = useLoadedData();
 
   if (!project.permissions?.canEditContributors) return null;
   const path = Paths.projectContributorsAddPath(project.id!, { type: "contributor" });
 
   return (
-    <PrimaryButton linkTo={path} testId="add-contributor-button" size="sm">
+    <PrimaryButton linkTo={path} testId="add-contributors-button" size="sm">
       Add Contributors
     </PrimaryButton>
   );
