@@ -28,7 +28,7 @@ defmodule Operately.Projects.Permissions do
     :can_view,
   ]
 
-  def calculate(access_level) do
+  def calculate(access_level) when is_integer(access_level) do
     %__MODULE__{
       can_view: access_level >= Binding.view_access(),
 
