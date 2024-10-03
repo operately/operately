@@ -42,7 +42,6 @@ This project is in alpha and may experience significant changes.
 
 ## Installation
 
-- [Try out Operately Locally](docs/installation/local.md): Explore Operately on your local machine.
 - [Single Host Installation](docs/installation/single-host.md): Perfect for teams up to 30 people.
 - [Kubernetes Installation](docs/installation/kubernetes.md): For larger teams and enterprise use cases (coming soon).
 
