@@ -31,7 +31,7 @@ defmodule Operately.Projects.Retrospective do
   def changeset(retrospective, attrs) do
     retrospective
     |> cast(attrs, [:author_id, :project_id, :subscription_list_id, :content, :closed_at])
-    |> validate_required([:author_id, :project_id, :content, :closed_at])
+    |> validate_required([:author_id, :project_id, :subscription_list_id, :content, :closed_at])
   end
 
   # After load hooks

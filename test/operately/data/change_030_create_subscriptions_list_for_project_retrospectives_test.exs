@@ -3,7 +3,7 @@ defmodule Operately.Data.Change030CreateSubscriptionsListForProjectRetrospective
 
   import Ecto.Query, only: [from: 2]
 
-  alias Operately.Notifications.{Subscription, SubscriptionList}
+  alias Operately.Notifications.Subscription
 
   setup ctx do
     ctx =
@@ -27,11 +27,6 @@ defmodule Operately.Data.Change030CreateSubscriptionsListForProjectRetrospective
 
   test "creates subscriptions list for existing project retrospective", ctx do
     retrospectives = [ctx.retrospective_1, ctx.retrospective_2, ctx.retrospective_3]
-
-    Enum.each(retrospectives, fn r ->
-      refute r.subscription_list_id
-      assert {:error, :not_found} = SubscriptionList.get(:system, parent_id: r.id)
-    end)
 
     Operately.Data.Change030CreateSubscriptionsListForProjectRetrospectives.run()
 
