@@ -120,7 +120,7 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
     contributors = Operately.Projects.list_project_contributors(ctx.project)
     contributors = Operately.Repo.preload(contributors, :person)
 
-    Enum.map(contribs, fn contrib ->
+    Enum.reduce(contribs, ctx, fn contrib, ctx ->
       person = Enum.find(contributors, fn c -> c.person.full_name == contrib.name end).person
 
       ctx
@@ -136,7 +136,7 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
     contributors = Operately.Projects.list_project_contributors(ctx.project)
     contributors = Operately.Repo.preload(contributors, :person)
 
-    Enum.map(contribs, fn contrib ->
+    Enum.reduce(contribs, ctx, fn contrib, ctx ->
       person = Enum.find(contributors, fn c -> c.person.full_name == contrib.name end).person
 
       ctx
