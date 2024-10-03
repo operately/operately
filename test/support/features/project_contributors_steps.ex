@@ -44,12 +44,23 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
     ctx
   end
 
-  step :add_contributor, ctx, name: name, responsibility: responsibility do
+  step :add_contributors, ctx, people do
     ctx
     |> UI.click(testid: "manage-team-button")
-    |> UI.click(testid: "add-contributor-button")
-    |> UI.select_person_in(id: "person", name: name)
-    |> UI.fill(testid: "responsibility", with: responsibility)
+    |> UI.click(testid: "add-contributors-button")
+    |> Enum.reduce(Enum.with_index(people), ctx, fn {person, index}, ctx ->
+      UI.find(ctx, UI.query(testid: "contributor-#{index}"), fn ctx ->
+          ctx
+          |> UI.select_person_in(id: "person", name: person.name)
+          |> UI.fill(testid: "responsibility", with: person.responsibility)
+          |> UI.click(testid: "submit")
+          |> UI.sleep(200)
+        end)
+      |> UI.select_person_in(id: "contributor-
+      |> UI.fill(testid: "responsibility", with: person.responsibility)
+      |> UI.click(testid: "submit")
+      |> UI.sleep(200)
+    end)
     |> UI.click(testid: "submit")
     |> UI.sleep(200)
   end

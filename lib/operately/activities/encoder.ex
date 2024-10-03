@@ -11,36 +11,29 @@ defmodule Operately.Activities.Encoder do
   """
 
   def encode(content) do
-    content
-    |> to_keyword_list()
-    |> remove_not_loaded()
-    |> encode_key_value_list()
-    |> Enum.into(%{})
+    content = content |> remove_not_loaded()
+
+    case Jason.encode(content) do
+      {:ok, encoded} -> Jason.decode!(encoded, keys: :atoms)
+      {:error, _} -> encode(content)
+    end
   end
 
-  defp encode_key_value_list(key_value_list) do
-    Enum.map(key_value_list, fn {key, value} -> 
-      case try_jason_encode(value) do
-        {:ok, _} -> {key, value}
-        {:error, _} -> {key, encode(value)}
+  defp remove_not_loaded(map) when is_struct(map) do
+    map |> Map.from_struct() |> remove_not_loaded()
+  end
+
+  defp remove_not_loaded(map) when is_map(map) do
+    map
+    |> Enum.reduce(%{}, fn {key, value}, acc ->
+      case value do
+        %Ecto.Association.NotLoaded{} -> acc
+        _ -> Map.put(acc, key, clean_value(value))
       end
     end)
   end
 
-  defp try_jason_encode(value) do
-    case Jason.encode(value) do
-      {:ok, _} -> {:ok, value}
-      {:error, _} -> encode(value)
-    end
-  rescue
-    _ -> {:error, value}
-  end
-
-  defp to_keyword_list(map) do
-    map |> Map.from_struct() |> Map.to_list()
-  end
-
-  defp remove_not_loaded(key_value_map) do
-    Enum.reject(key_value_map, fn {_, value} -> match?(%Ecto.Association.NotLoaded{}, value) end)
-  end
+  defp clean_value(map) when is_map(map), do: remove_not_loaded(map)
+  defp clean_value(list) when is_list(list), do: Enum.map(list, &clean_value/1)
+  defp clean_value(other), do: other
 end
