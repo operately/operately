@@ -24,6 +24,8 @@ defmodule Operately.Activities.Encoder do
   end
 
   defp remove_not_loaded(map) when is_map(map) do
+    IO.inspect("Here")
+
     map
     |> Enum.reduce(%{}, fn {key, value}, acc ->
       case value do
