@@ -25,9 +25,11 @@ defmodule Operately.Operations.ProjectClosed do
         closed_at: changes.retrospective.closed_at,
       })
     end)
-    |> Activities.insert_sync(author.id, :project_closed, fn _changes -> %{
+    |> Activities.insert_sync(author.id, :project_closed, fn changes -> %{
       company_id: project.company_id,
-      project_id: project.id
+      space_id: project.group_id,
+      project_id: project.id,
+      retrospective_id: changes.retrospective.id,
     } end)
     |> Repo.transaction()
     |> Repo.extract_result(:retrospective)
