@@ -3,7 +3,9 @@ defmodule Operately.Activities.Content.ProjectClosed do
 
   embedded_schema do
     belongs_to :company, Operately.Companies.Company
+    belongs_to :space, Operately.Groups.Group
     belongs_to :project, Operately.Projects.Project
+    belongs_to :retrospective, Operately.Projects.Retrospective
   end
 
   def changeset(attrs) do
