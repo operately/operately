@@ -2,7 +2,7 @@ version: v1.0
 name: Operately — Build & Test
 agent:
   machine:
-    type: f1-standard-2
+    type: e1-standard-2
     os_image: ubuntu2004
 
 auto_cancel:
