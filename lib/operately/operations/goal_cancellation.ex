@@ -30,7 +30,6 @@ defmodule Operately.Operations.GoalCancellation do
     end)
   end
 
-
   defp insert_activity(multi, canceller, goal, reason) do
     Activities.insert_sync(multi, canceller.id, :goal_cancelled, fn changes ->
       %{
