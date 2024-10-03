@@ -104,5 +104,43 @@ defmodule OperatelyWeb.Api.Queries.GetProjectRetrospectiveTest do
 
       assert res.retrospective.project == Serializer.serialize(ctx.project)
     end
+
+    test "include_permissions", ctx do
+      assert {200, res} = query(ctx.conn, :get_project_retrospective, %{
+        project_id: Paths.project_id(ctx.project),
+      })
+
+      refute res.retrospective.permissions
+
+      assert {200, res} = query(ctx.conn, :get_project_retrospective, %{
+        project_id: Paths.project_id(ctx.project),
+        include_permissions: true,
+      })
+
+      assert res.retrospective.permissions
+    end
+
+    test "include_potential_subscribers", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project_contributor(:contrib1, :project, :as_person)
+        |> Factory.add_project_contributor(:contrib2, :project, :as_person)
+
+      assert {200, res} = query(ctx.conn, :get_project_retrospective, %{
+        project_id: Paths.project_id(ctx.project),
+      })
+
+      refute res.retrospective.potential_subscribers
+
+      assert {200, res} = query(ctx.conn, :get_project_retrospective, %{
+        project_id: Paths.project_id(ctx.project),
+        include_potential_subscribers: true,
+      })
+
+      subs = res.retrospective.potential_subscribers
+
+      assert Enum.find(subs, &(&1.person.id == Paths.person_id(ctx.contrib1)))
+      assert Enum.find(subs, &(&1.person.id == Paths.person_id(ctx.contrib2)))
+    end
   end
 end

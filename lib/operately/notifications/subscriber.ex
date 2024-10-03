@@ -1,5 +1,5 @@
 defmodule Operately.Notifications.Subscriber do
-  alias Operately.Projects.{Contributor, CheckIn}
+  alias Operately.Projects.Contributor
   alias Operately.Goals.{Update, Goal}
   alias Operately.Notifications.{Subscription, SubscriptionList}
   alias Operately.People.Person
@@ -28,14 +28,14 @@ defmodule Operately.Notifications.Subscriber do
     end)
   end
 
-  def from_project_check_in(%CheckIn{} = check_in) do
+  def from_project_child(project_child) do
     subs =
-      exclude_canceled_subscriptions(check_in.subscription_list)
+      exclude_canceled_subscriptions(project_child.subscription_list)
       |> Enum.into(%{}, fn s ->
       {s.person.id, from_subscription(s)}
     end)
 
-    potential_subs = Enum.into(check_in.project.contributors, %{}, fn c ->
+    potential_subs = Enum.into(project_child.project.contributors, %{}, fn c ->
       {c.person.id, from_project_contributor(c)}
     end)
 
@@ -111,6 +111,8 @@ defmodule Operately.Notifications.Subscriber do
       _ -> [role: contributor.responsibility, priority: false]
     end
   end
+
+  defp exclude_canceled_subscriptions(nil), do: []
 
   defp exclude_canceled_subscriptions(subscription_list = %SubscriptionList{}) do
     Enum.filter(subscription_list.subscriptions, &(not &1.canceled))

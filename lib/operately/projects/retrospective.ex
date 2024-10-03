@@ -2,10 +2,12 @@ defmodule Operately.Projects.Retrospective do
   use Operately.Schema
   use Operately.Repo.Getter
 
+  alias Operately.Notifications
+
   schema "project_retrospectives" do
     belongs_to :author, Operately.People.Person
     belongs_to :project, Operately.Projects.Project
-    belongs_to :subscription_list, Operately.Notifications.SubscriptionList
+    belongs_to :subscription_list, Notifications.SubscriptionList
 
     has_one :access_context, through: [:project, :access_context]
     has_many :reactions, Operately.Updates.Reaction, where: [entity_type: :project_retrospective], foreign_key: :entity_id
@@ -15,6 +17,7 @@ defmodule Operately.Projects.Retrospective do
 
     # populated with after load hooks
     field :permissions, :any, virtual: true
+    field :potential_subscribers, :any, virtual: true
 
     timestamps()
     requester_access_level()
@@ -36,5 +39,14 @@ defmodule Operately.Projects.Retrospective do
   def set_permissions(retrospective = %__MODULE__{}) do
     perms = Operately.Projects.Permissions.calculate(retrospective.request_info.access_level)
     Map.put(retrospective, :permissions, perms)
+  end
+
+  def set_potential_subscribers(retrospective = %__MODULE__{}) do
+    subs =
+      retrospective
+      |> Notifications.SubscribersLoader.preload_subscriptions()
+      |> Notifications.Subscriber.from_project_child()
+
+    %{retrospective | potential_subscribers: subs}
   end
 end

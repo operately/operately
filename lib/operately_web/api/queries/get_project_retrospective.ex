@@ -10,6 +10,8 @@ defmodule OperatelyWeb.Api.Queries.GetProjectRetrospective do
     field :include_project, :boolean
     field :include_permissions, :boolean
     field :include_reactions, :boolean
+    field :include_subscriptions_list, :boolean
+    field :include_potential_subscribers, :boolean
   end
 
   outputs do
@@ -48,18 +50,15 @@ defmodule OperatelyWeb.Api.Queries.GetProjectRetrospective do
       include_author: [:author],
       include_project: [:project],
       include_reactions: [reactions: :person],
+      include_subscriptions_list: :subscription_list,
+      include_potential_subscribers: [:access_context, project: [contributors: :person]],
     ])
   end
 
   def after_load(inputs) do
-    filter_what_to_run([
-      %{run: &Retrospective.set_permissions/1, if: inputs[:include_permissions]},
+    Inputs.parse_includes(inputs, [
+      include_permissions: &Retrospective.set_permissions/1,
+      include_potential_subscribers: &Retrospective.set_potential_subscribers/1,
     ])
-  end
-
-  defp filter_what_to_run(list) do
-    list
-    |> Enum.filter(fn %{if: c} -> c end)
-    |> Enum.map(fn %{run: f} -> f end)
   end
 end

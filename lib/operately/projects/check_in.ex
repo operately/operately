@@ -43,7 +43,7 @@ defmodule Operately.Projects.CheckIn do
     subs =
       check_in
       |> Notifications.SubscribersLoader.preload_subscriptions()
-      |> Notifications.Subscriber.from_project_check_in()
+      |> Notifications.Subscriber.from_project_child()
 
     %{check_in | potential_subscribers: subs}
   end
