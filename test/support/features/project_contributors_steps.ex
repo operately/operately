@@ -86,19 +86,22 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
     ctx
   end
 
-  step :assert_contributor_added_feed_item_exists, ctx, name: name do
-    contributors = Operately.Projects.list_project_contributors(ctx.project)
-    contributors = Operately.Repo.preload(contributors, :person)
-    contrib = Enum.find(contributors, fn c -> c.person.full_name == name end)
-    name = Person.first_name(contrib.person)
-
+  step :assert_contributors_added_feed_item_exists, ctx, contribs do
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
-    |> UI.assert_feed_item(ctx.champion, "added #{name} to the project")
+    |> UI.assert_feed_item(ctx.champion, "added new contributors to the project")
+  
+    Enum.map(contribs, fn c ->
+      ctx
+      |> UI.assert_text(List.first(String.split(c.name, " ")))
+      |> UI.assert_text(c.responsibility)
+    end)
+
+    ctx
     |> UI.visit(Paths.space_path(ctx.company, ctx.group))
-    |> UI.assert_feed_item(ctx.champion, "added #{name} to the #{ctx.project.name} project")
+    |> UI.assert_feed_item(ctx.champion, "added new contributors to the #{ctx.project.name} project")
     |> UI.visit(Paths.feed_path(ctx.company))
-    |> UI.assert_feed_item(ctx.champion, "added #{name} to the #{ctx.project.name} project")
+    |> UI.assert_feed_item(ctx.champion, "added new contributors to the #{ctx.project.name} project")
   end
 
   step :assert_contributor_removed_feed_item_exists, ctx, name: name do
@@ -113,31 +116,37 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
     |> UI.assert_feed_item(ctx.champion, "removed #{name} from the #{ctx.project.name} project")
   end
 
-  step :assert_contributor_added_notification_sent, ctx, name: name do
+  step :assert_contributors_added_notification_sent, ctx, contribs do
     contributors = Operately.Projects.list_project_contributors(ctx.project)
     contributors = Operately.Repo.preload(contributors, :person)
-    contrib = Enum.find(contributors, fn c -> c.person.full_name == name end)
 
-    ctx
-    |> UI.login_as(contrib.person)
-    |> NotificationsSteps.assert_activity_notification(%{
-      author: ctx.champion,
-      action: "added you as a contributor"
-    })
+    Enum.map(contribs, fn contrib ->
+      person = Enum.find(contributors, fn c -> c.person.full_name == contrib.name end).person
+
+      ctx
+      |> UI.login_as(person)
+      |> NotificationsSteps.assert_activity_notification(%{
+        author: ctx.champion,
+        action: "added you as a contributor"
+      })
+    end)
   end
 
-  step :assert_contributor_added_email_sent, ctx, name: name do
+  step :assert_contributors_added_email_sent, ctx, contribs do
     contributors = Operately.Projects.list_project_contributors(ctx.project)
     contributors = Operately.Repo.preload(contributors, :person)
-    contrib = Enum.find(contributors, fn c -> c.person.full_name == name end)
 
-    ctx
-    |> EmailSteps.assert_activity_email_sent(%{
-      where: ctx.project.name,
-      to: contrib.person,
-      author: ctx.champion,
-      action: "added you as a contributor"
-    })
+    Enum.map(contribs, fn contrib ->
+      person = Enum.find(contributors, fn c -> c.person.full_name == contrib.name end).person
+
+      ctx
+      |> EmailSteps.assert_activity_email_sent(%{
+        where: ctx.project.name,
+        to: person,
+        author: ctx.champion,
+        action: "added you as a contributor"
+      })
+    end)
   end
 
   step :given_the_project_has_contributor, ctx, name: name do

@@ -11,7 +11,7 @@ defmodule Operately.Features.ProjectsContributorsTest do
   end
 
   @tag login_as: :champion
-  feature "adding a project contributors", ctx do
+  feature "adding project contributors", ctx do
     contribs = [
       %{name: "Michael Scott", responsibility: "Lead the backend implementation"},
       %{name: "Dwight Schrute", responsibility: "Lead the frontend implementation"},
@@ -25,9 +25,9 @@ defmodule Operately.Features.ProjectsContributorsTest do
     |> Steps.visit_project_page()
     |> Steps.add_contributors(contribs)
     |> Steps.assert_contributors_added(contribs)
-    # |> Steps.assert_contributor_added_feed_item_exists(name: "Michael Scott")
-    # |> Steps.assert_contributor_added_notification_sent(name: "Michael Scott")
-    # |> Steps.assert_contributor_added_email_sent(name: "Michael Scott")
+    |> Steps.assert_contributors_added_feed_item_exists(contribs)
+    |> Steps.assert_contributors_added_notification_sent(contribs)
+    |> Steps.assert_contributors_added_email_sent(contribs)
   end
 
   @tag login_as: :champion
