@@ -15,6 +15,8 @@ export async function loader({ params }): Promise<LoaderResult> {
       includeProject: true,
       includePermissions: true,
       includeReactions: true,
+      includePotentialSubscribers: true,
+      includeSubscriptionsList: true,
     }).then((data) => data.retrospective!),
     Comments.getComments({
       entityId: params.projectID,
