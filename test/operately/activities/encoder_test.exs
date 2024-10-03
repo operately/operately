@@ -36,4 +36,16 @@ defmodule Operately.Activities.EncoderTest do
       ]
     }
   end
+
+  test "properly encodes datetime structs" do
+    datetime = %{
+      created_at: ~U[2021-01-01 12:00:00Z],
+      updated_at: ~U[2021-01-01 12:00:00Z],
+    }
+
+    assert Operately.Activities.Encoder.encode(datetime) == %{
+      created_at: "2021-01-01T12:00:00Z",
+      updated_at: "2021-01-01T12:00:00Z",
+    }
+  end
 end

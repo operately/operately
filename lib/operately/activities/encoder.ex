@@ -24,8 +24,6 @@ defmodule Operately.Activities.Encoder do
   end
 
   defp remove_not_loaded(map) when is_map(map) do
-    IO.inspect("Here")
-
     map
     |> Enum.reduce(%{}, fn {key, value}, acc ->
       case value do
@@ -34,6 +32,11 @@ defmodule Operately.Activities.Encoder do
       end
     end)
   end
+
+  defp clean_value(%DateTime{} = datetime), do: datetime
+  defp clean_value(%Date{} = date), do: date
+  defp clean_value(%Time{} = time), do: time
+  defp clean_value(%NaiveDateTime{} = naive_datetime), do: naive_datetime
 
   defp clean_value(map) when is_map(map), do: remove_not_loaded(map)
   defp clean_value(list) when is_list(list), do: Enum.map(list, &clean_value/1)
