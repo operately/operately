@@ -7,6 +7,7 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectRetrospectiveTest do
   alias Operately.Access.Binding
   alias Operately.Support.RichText
   alias Operately.Projects.Retrospective
+  alias Operately.Notifications.SubscriptionList
 
   @new_content %{
     "whatWentWell" => RichText.rich_text("Everything went well"),
@@ -102,6 +103,43 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectRetrospectiveTest do
         id: Paths.project_retrospective_id(ctx.retrospective),
         content: RichText.rich_text("some content", :as_string)
       })
+    end
+
+    test "mentioned people are added to subscriptions list", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project_contributor(:contrib1, :project, :as_person)
+        |> Factory.add_project_contributor(:contrib2, :project, :as_person)
+        |> Factory.add_project_contributor(:contrib3, :project, :as_person)
+
+      content = %{
+        "whatWentWell" => RichText.rich_text(mentioned_people: [ctx.contrib1]) |> Jason.decode!(),
+        "whatDidYouLearn" => RichText.rich_text(mentioned_people: [ctx.contrib2]) |> Jason.decode!(),
+        "whatCouldHaveGoneBetter" => RichText.rich_text(mentioned_people: [ctx.contrib3]) |> Jason.decode!(),
+      }
+
+      {:ok, list} = SubscriptionList.get(:system, parent_id: ctx.retrospective.id, opts: [
+        preload: :subscriptions
+      ])
+
+      assert list.subscriptions == []
+
+      assert {200, _} = mutation(ctx.conn, :edit_project_retrospective, %{
+        id: Paths.project_retrospective_id(ctx.retrospective),
+        content: Jason.encode!(content)
+      })
+
+      {:ok, list} = SubscriptionList.get(:system, parent_id: ctx.retrospective.id, opts: [
+        preload: :subscriptions
+      ])
+
+      assert length(list.subscriptions) == 3
+
+      [ctx.contrib1, ctx.contrib2, ctx.contrib3]
+      |> Enum.each(fn person ->
+        sub = Enum.find(list.subscriptions, &(&1.person_id == person.id))
+        assert sub.type == :mentioned
+      end)
     end
   end
 
