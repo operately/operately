@@ -193,7 +193,6 @@ function ArrayForm() {
     submit: async () => {
       console.log("Form submitted with values:", form);
     },
-    submitOnEnter: false,
   });
 
   return (
@@ -222,7 +221,7 @@ function ArrayForm() {
 
         <AddMoreButton />
 
-        <Forms.Submit saveText="Submit" />
+        <Forms.Submit saveText="Submit" submitOnEnter={false} />
       </Forms.Form>
     </div>
   );
