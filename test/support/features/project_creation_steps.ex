@@ -88,7 +88,7 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
     |> run_if(fields[:add_creator_as_contributor], fn ctx ->
       ctx
       |> UI.click(testid: "isContrib-yes")
-      |> UI.fill(testid: "creatorRole", with: "Responsible for managing the project")
+      |> UI.fill(testid: "creatorrole", with: "Responsible for managing the project")
     end)
     |> UI.click(testid: "submit")
   end
@@ -210,7 +210,7 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
   step :change_project_access_level_to_invite_only, ctx do
     ctx
     |> UI.click(testid: "edit-access-levels")
-    |> UI.select(testid: "access.spaceMembers", option: "No Access")
+    |> UI.select(testid: "access-spacemembers", option: "No Access")
   end
 
   step :assert_company_members_cant_see_project, ctx, params do
