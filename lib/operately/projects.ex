@@ -137,23 +137,6 @@ defmodule Operately.Projects do
     end)
   end
 
-  def complete_milestone(person, milestone) do
-    Repo.transaction(fn ->
-      {:ok, milestone} = update_milestone(milestone, %{status: :done, completed_at: DateTime.utc_now()})
-      {:ok, _} = Updates.record_project_milestone_completed(person, milestone)
-
-      milestone
-    end)
-  end
-
-  def uncomplete_milestone(_person, milestone) do
-    Repo.transaction(fn ->
-      {:ok, milestone} = update_milestone(milestone, %{status: :pending, completed_at: nil})
-
-      milestone
-    end)
-  end
-
   def update_milestone_deadline(person, milestone, deadline) do
     Repo.transaction(fn ->
       old_deadline = milestone.deadline_at
