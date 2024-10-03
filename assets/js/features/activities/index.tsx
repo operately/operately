@@ -79,6 +79,7 @@ export const DISPLAYED_IN_FEED = [
   "project_check_in_submitted",
   "project_closed",
   "project_contributor_addition",
+  "project_contributors_addition",
   "project_contributor_edited",
   "project_contributor_removed",
   "project_created",
@@ -125,6 +126,7 @@ import ProjectCheckInCommented from "@/features/activities/ProjectCheckInComment
 import ProjectCheckInSubmitted from "@/features/activities/ProjectCheckInSubmitted";
 import ProjectClosed from "@/features/activities/ProjectClosed";
 import ProjectContributorAddition from "@/features/activities/ProjectContributorAddition";
+import ProjectContributorsAddition from "@/features/activities/ProjectContributorsAddition";
 import ProjectContributorEdited from "@/features/activities/ProjectContributorEdited";
 import ProjectContributorRemoved from "@/features/activities/ProjectContributorRemoved";
 import ProjectCreated from "@/features/activities/ProjectCreated";
@@ -162,6 +164,7 @@ function handler(activity: Activity) {
     .with("project_check_in_submitted", () => ProjectCheckInSubmitted)
     .with("project_closed", () => ProjectClosed)
     .with("project_contributor_addition", () => ProjectContributorAddition)
+    .with("project_contributors_addition", () => ProjectContributorsAddition)
     .with("project_contributor_edited", () => ProjectContributorEdited)
     .with("project_contributor_removed", () => ProjectContributorRemoved)
     .with("project_created", () => ProjectCreated)

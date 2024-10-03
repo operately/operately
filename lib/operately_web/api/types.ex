@@ -299,6 +299,7 @@ defmodule OperatelyWeb.Api.Types do
     :activity_content_project_check_in_submitted,
     :activity_content_project_closed,
     :activity_content_project_contributor_addition,
+    :activity_content_project_contributors_addition,
     :activity_content_project_contributor_edited,
     :activity_content_project_contributor_removed,
     :activity_content_project_created,
@@ -510,6 +511,16 @@ defmodule OperatelyWeb.Api.Types do
     field :person_id, :string
     field :person, :person
     field :project, :project
+  end
+
+  object :activity_content_project_contributors_addition do
+    field :project, :project
+    field :contributors, list_of(:project_contributors_addition_contributor)
+  end
+
+  object :project_contributors_addition_contributor do
+    field :person, :person
+    field :responsibility, :string
   end
 
   object :activity_content_project_contributor_edited do
@@ -1038,6 +1049,12 @@ defmodule OperatelyWeb.Api.Types do
     field :id, :string
     field :type, :string
     field :person, :person
+  end
+
+  object :project_contributor_input do
+    field :person_id, :string
+    field :responsibility, :string
+    field :access_level, :integer
   end
 
 end
