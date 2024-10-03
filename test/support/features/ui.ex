@@ -189,6 +189,17 @@ defmodule Operately.Support.Features.UI do
     |> press_enter()
   end
 
+  def select_person_in(state, testid: id, name: name) do
+    execute(state, fn session ->
+      Browser.find(session, Query.css("[data-test-id=\"#{id}\"]"), fn element ->
+        Browser.fill_in(element, Query.css("input"), with: name)
+      end)
+    end)
+    |> assert_has(testid: testid(["person-option", name]))
+    |> sleep(500)
+    |> press_enter()
+  end
+
   def press_enter(state) do
     execute(state, fn session ->
       session |> Browser.send_keys([:enter])

@@ -12,6 +12,7 @@ import { Paths } from "@/routes/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { LoaderResult } from "./loader";
 import { SecondaryButton } from "@/components/Buttons";
+import { createTestId } from "@/utils/testid";
 
 interface ContributorFields {
   key: number;
@@ -135,7 +136,7 @@ function Contributor({ field, search, index, last, addMore }) {
 
 function AddMoreContributorsButton({ onClick }: { onClick: () => void }) {
   return (
-    <div className="flex justify-center" style={{ marginTop: "-18px" }}>
+    <div className="flex justify-center" style={{ marginTop: "-18px" }} data-test-id={createTestId("add-more")}>
       <SecondaryButton onClick={onClick}>
         <Icons.IconPlus size={16} />
       </SecondaryButton>

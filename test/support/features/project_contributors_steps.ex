@@ -48,19 +48,24 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
     ctx
     |> UI.click(testid: "manage-team-button")
     |> UI.click(testid: "add-contributors-button")
-    |> Enum.reduce(Enum.with_index(people), ctx, fn {person, index}, ctx ->
+    
+    ctx = Enum.reduce(Enum.with_index(people), ctx, fn {person, index}, ctx ->
       UI.find(ctx, UI.query(testid: "contributor-#{index}"), fn ctx ->
-          ctx
-          |> UI.select_person_in(id: "person", name: person.name)
-          |> UI.fill(testid: "responsibility", with: person.responsibility)
-          |> UI.click(testid: "submit")
-          |> UI.sleep(200)
-        end)
-      |> UI.select_person_in(id: "contributor-
-      |> UI.fill(testid: "responsibility", with: person.responsibility)
-      |> UI.click(testid: "submit")
-      |> UI.sleep(200)
+        ctx
+        |> UI.sleep(500)
+        |> UI.select_person_in(testid: "contributors-#{index}-personid", name: person.name)
+        |> UI.fill(testid: "contributors-#{index}-responsibility", with: person.responsibility)
+      end)
+
+      if index == length(people) - 1 do
+        ctx
+      else
+        ctx |> UI.click(testid: "add-more")
+      end
     end)
+
+    ctx
+    |> UI.take_screenshot()
     |> UI.click(testid: "submit")
     |> UI.sleep(200)
   end
