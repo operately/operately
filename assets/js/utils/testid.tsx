@@ -6,6 +6,7 @@ function sanitizeName(name: string) {
   return name
     .replace(/\?/g, "")
     .replace(/[^a-z0-9-]/gi, "-")
+    .replace(/-+/g, "-")
     .toLowerCase();
 }
 
