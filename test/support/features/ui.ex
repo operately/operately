@@ -190,14 +190,17 @@ defmodule Operately.Support.Features.UI do
   end
 
   def select_person_in(state, testid: id, name: name) do
+    root_query = Query.css("[data-test-id=\"#{id}\"]")
+    input_query = Query.css("input")
+    option_query = Query.css("[data-test-id=\"#{testid(["person-option", name])}\"]")
+
     execute(state, fn session ->
-      Browser.find(session, Query.css("[data-test-id=\"#{id}\"]"), fn element ->
-        Browser.fill_in(element, Query.css("input"), with: name)
+      Browser.find(session, root_query, fn element ->
+        element
+        |> Browser.fill_in(input_query, with: name)
+        |> Browser.click(option_query)
       end)
     end)
-    |> assert_has(testid: testid(["person-option", name]))
-    |> sleep(500)
-    |> press_enter()
   end
 
   def press_enter(state) do
