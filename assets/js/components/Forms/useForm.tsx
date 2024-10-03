@@ -9,7 +9,6 @@ import { State } from "./useForm/state";
 
 interface FormProps<T extends FieldObject> {
   fields: T;
-  submitOnEnter?: boolean;
   validate?: (addError: AddErrorFn) => void;
   submit: () => Promise<void> | void;
   cancel?: () => Promise<void> | void;
@@ -21,7 +20,6 @@ export interface FormState<T extends FieldObject> {
   state: State;
   errors: ErrorMap;
   hasCancel: boolean;
-  submitOnEnter: boolean;
   actions: {
     clearErrors: () => void;
     submit: () => void | Promise<void>;
@@ -36,7 +34,6 @@ export interface FormState<T extends FieldObject> {
 }
 
 export function useForm<T extends FieldObject>(props: FormProps<T>): FormState<T> {
-  const { submitOnEnter } = { submitOnEnter: true, ...props };
   const hasCancel = !!props.cancel;
 
   const [errors, setErrors] = React.useState<ErrorMap>({});
@@ -51,7 +48,6 @@ export function useForm<T extends FieldObject>(props: FormProps<T>): FormState<T
     state,
     errors,
     hasCancel,
-    submitOnEnter,
     actions: {
       clearErrors,
       addValidation,
