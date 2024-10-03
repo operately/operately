@@ -7,6 +7,7 @@ import { useFieldValue, useFieldError } from "./FormContext";
 import PeopleSearch, { Option } from "@/components/PeopleSearch";
 import { useValidation } from "./validations/hook";
 import { validatePresence } from "./validations/presence";
+import { createTestId } from "@/utils/testid";
 
 type SearchFn = (query: string) => Promise<People.Person[]>;
 
@@ -59,9 +60,9 @@ function SelectPersonInput(props: SelectPersonProps) {
   useValidation(field, validatePresence(required));
 
   return (
-    <div className="flex-1">
+    <div className="flex-1" data-test-id={createTestId(field)}>
       <PeopleSearch
-        inputId={props.field}
+        inputId={createTestId(field)}
         onChange={onChange}
         placeholder="Search for person..."
         defaultValue={props.default || undefined}

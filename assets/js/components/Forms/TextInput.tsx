@@ -8,6 +8,7 @@ import { validatePresence } from "./validations/presence";
 import { validateTextLength } from "./validations/textLength";
 
 import { useFieldValue, useFieldError } from "./FormContext";
+import { createTestId } from "@/utils/testid";
 
 interface TextInputProps {
   field: string;
@@ -41,7 +42,7 @@ export function TextInput(props: TextInputProps) {
       <input
         name={field}
         placeholder={placeholder}
-        data-test-id={field}
+        data-test-id={createTestId(field)}
         className={styles(!!error)}
         type="text"
         value={value}

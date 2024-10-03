@@ -4,6 +4,7 @@ import classnames from "classnames";
 
 import { useFieldError, useFieldValue } from "./FormContext";
 import { InputField } from "./FieldGroup";
+import { createTestId } from "@/utils/testid";
 
 interface Option {
   label: string;
@@ -35,7 +36,7 @@ function SelectBoxInput({ field, placeholder, options }: SelectBoxProps) {
   const error = useFieldError(field);
 
   return (
-    <div data-test-id={field} className="flex-1">
+    <div data-test-id={createTestId(field)} className="flex-1">
       <Select
         unstyled={true}
         className="flex-1"
