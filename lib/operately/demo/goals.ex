@@ -33,7 +33,7 @@ defmodule Operately.Demo.Goals do
       name: data.name,
       champion_id: champion.id,
       reviewer_id: reviewer.id,
-      timeframe: current_quarter(),
+      timeframe: create_timeframe(data[:timeframe] || :current_quarter),
       targets: targets,
       parent_goal_id: parent && parent.id,
       anonymous_access_level: 0,
@@ -69,7 +69,16 @@ defmodule Operately.Demo.Goals do
     })
   end
 
-  defp current_quarter do
+  defp create_timeframe(:current_year) do
+    {year, _, _} = Date.to_erl(Date.utc_today())
+
+    start_date = Date.new!(year, 1, 1)
+    end_date = Date.new!(year, 12, 31)
+
+    %{start_date: start_date, end_date: end_date, type: "year"}
+  end
+
+  defp create_timeframe(:current_quarter) do
     {year, month, _day} = Date.to_erl(Date.utc_today())
 
     {start_month, end_month} = 
