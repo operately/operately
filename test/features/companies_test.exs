@@ -20,7 +20,7 @@ defmodule Operately.Features.CompaniesTest do
     ctx
     |> UI.visit("/")
     |> UI.click(testid: "add-company-card")
-    |> UI.fill(testid: "companyName", with: "Acme Co.")
+    |> UI.fill(testid: "companyname", with: "Acme Co.")
     |> UI.fill(testid: "title", with: "System Administrator")
     |> UI.click(testid: "submit")
     |> UI.assert_text("Acme Co.")
