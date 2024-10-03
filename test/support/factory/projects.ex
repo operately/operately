@@ -4,15 +4,22 @@ defmodule Operately.Support.Factory.Projects do
   alias Operately.Access.Binding
   alias Operately.Support.Factory.Utils
 
-  def add_project(ctx, testid, space_name) do
-    project = Operately.ProjectsFixtures.project_fixture(%{
-      name: Atom.to_string(testid),
-      creator_id: ctx.creator.id,
-      company_id: ctx.company.id,
-      group_id: ctx[space_name].id,
-      company_access_level: Binding.edit_access(),
-      space_access_level: Binding.edit_access()
-    })
+  def add_project(ctx, testid, space_name, opts \\ []) do
+    champion = Keyword.get(opts, :champion, nil)
+    reviewer = Keyword.get(opts, :reviewer, nil)
+
+    project =
+      %{
+        name: Atom.to_string(testid),
+        creator_id: ctx.creator.id,
+        company_id: ctx.company.id,
+        group_id: ctx[space_name].id,
+        company_access_level: Binding.edit_access(),
+        space_access_level: Binding.edit_access()
+      }
+      |> maybe_add_key(:champion_id, champion && ctx[champion].id)
+      |> maybe_add_key(:reviewer_id, reviewer && ctx[reviewer].id)
+      |> Operately.ProjectsFixtures.project_fixture()
 
     Map.put(ctx, testid, project)
   end
@@ -132,5 +139,17 @@ defmodule Operately.Support.Factory.Projects do
     {:ok, _} = Operately.Access.update_binding(binding, %{access_level: Binding.from_atom(access_level)})
 
     ctx
+  end
+
+  #
+  # Helpers
+  #
+
+  defp maybe_add_key(map, key, value) do
+    if value do
+      Map.put(map, key, value)
+    else
+      map
+    end
   end
 end
