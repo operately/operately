@@ -957,6 +957,12 @@ defmodule OperatelyWeb.Api.Types do
     field :comment, :comment
   end
 
+  object :activity_content_project_retrospective_commented do
+    field :project_id, :string
+    field :project, :project
+    field :comment, :comment
+  end
+
   object :update_content_project_start_time_changed do
     field :old_start_time, :string
     field :new_start_time, :string

@@ -392,6 +392,12 @@ export interface ActivityContentProjectResuming {
   project?: Project | null;
 }
 
+export interface ActivityContentProjectRetrospectiveCommented {
+  projectId?: string | null;
+  project?: Project | null;
+  comment?: Comment | null;
+}
+
 export interface ActivityContentProjectReviewAcknowledged {
   projectId?: string | null;
   reviewId?: string | null;
