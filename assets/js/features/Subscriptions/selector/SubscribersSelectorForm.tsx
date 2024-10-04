@@ -49,9 +49,13 @@ function ActionLinks({ alwaysNotify, allSubscribers }: { alwaysNotify: Subscribe
 
   return (
     <div className="flex items-center gap-3">
-      <ActionLink onClick={handleSelectEveryone}>Select everyone</ActionLink>
+      <ActionLink onClick={handleSelectEveryone} testId="select-everyone">
+        Select everyone
+      </ActionLink>
       <span className="text-content-dimmed">&middot;</span>
-      <ActionLink onClick={handleSelectNoone}>Select no one</ActionLink>
+      <ActionLink onClick={handleSelectNoone} testId="select-no-one">
+        Select no one
+      </ActionLink>
     </div>
   );
 }

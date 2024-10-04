@@ -46,6 +46,7 @@ function PersonAlwaysSelected({ subscriber }: { subscriber: Subscriber }) {
 
 function PersonOption({ subscriber, field }: { subscriber: Subscriber; field: string }) {
   const [value, setValue] = useFieldValue<string[]>(field);
+  const testId = "person-option-" + subscriber.person!.id;
 
   const handleChange = () => {
     if (includesId(value, subscriber.person!.id)) {
@@ -68,6 +69,7 @@ function PersonOption({ subscriber, field }: { subscriber: Subscriber; field: st
           onChange={handleChange}
           type="checkbox"
           className="form-checkbox h-5 w-5 text-blue-600 rounded focus:ring-blue-500"
+          data-test-id={testId}
         />
       </div>
     </div>

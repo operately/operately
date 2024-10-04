@@ -10,15 +10,16 @@ interface SubscriptionOptionProps {
   label: string;
   value: Options;
   subscribers: Subscriber[];
+  testId: string;
   onClick?: () => void;
 }
 
-export function SubscriptionOption({ label, value, subscribers, onClick }: SubscriptionOptionProps) {
+export function SubscriptionOption({ label, value, subscribers, testId, onClick }: SubscriptionOptionProps) {
   const { subscriptionType } = useSubscribersSelectorContext();
 
   return (
     <div className="my-1" onClick={onClick}>
-      <Radio label={label} value={value} />
+      <Radio label={label} value={value} testId={testId} />
       <SelectedPeople subscribers={subscribers} hide={subscriptionType !== value} />
     </div>
   );
