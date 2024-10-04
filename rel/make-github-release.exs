@@ -6,6 +6,7 @@ defmodule Uploader do
   def repo(), do: System.get_env("GITHUB_REPOSITORY")
   def single_host_zip_path(), do: "build/single-host-#{version()}/operately.tar.gz"
 
+
   def run do
     validate_version()
     validate_token()
@@ -30,7 +31,7 @@ defmodule Uploader do
       generate_release_notes: true
     }
 
-    case Req.post(url, headers: headers, json: payload) do
+    case Req.post(url, headers: headers, json: payload, connect_options: connect_options()) do
       {:ok, %{status: 201, body: %{"id" => id}}} -> 
         IO.puts("* Release created successfully")
         id
@@ -49,7 +50,7 @@ defmodule Uploader do
     url = "https://uploads.github.com/repos/#{repo()}/releases/#{id}/assets?name=#{asset_name}"
     headers = build_header("application/octet-stream")
 
-    case Req.post(url, headers: headers, body: file) do
+    case Req.post(url, headers: headers, body: file, connect_options: connect_options()) do
       {:ok, %{status: 201}} -> IO.puts("* #{asset_name} uploaded successfully")
       {:ok, %{status: code} = res} -> raise "Error: #{code} #{inspect(res)}"
       {:error, reason} -> raise "Error: #{reason}"
@@ -87,6 +88,10 @@ defmodule Uploader do
     if repo() == nil || repo() == "" do
       raise "Error: GITHUB_REPOSITORY is required, e.g operately/nightly"
     end
+  end
+
+  def connect_options do
+    [transport_opts: [cacerts: :public_key.cacerts_get()]]
   end
 end
 
