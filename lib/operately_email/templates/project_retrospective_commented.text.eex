@@ -1,0 +1,3 @@
+<%= short_name(@author) %> commented on a retrospective for <%= @project.name %>.
+
+Link: <%= @cta_url %>

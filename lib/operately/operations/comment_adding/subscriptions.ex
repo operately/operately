@@ -3,6 +3,7 @@ defmodule Operately.Operations.CommentAdding.Subscriptions do
   alias Operately.Notifications.SubscriptionList
 
   def update(multi, :project_check_in_commented, content), do: execute_update(multi, content)
+  def update(multi, :project_retrospective_commented, content), do: execute_update(multi, content)
   def update(multi, :goal_check_in_commented, content), do: execute_update(multi, content)
   def update(multi, :discussion_comment_submitted, content), do: execute_update(multi, content)
   def update(multi, _, _), do: multi
