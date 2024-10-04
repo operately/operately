@@ -8,6 +8,14 @@ defmodule Operately.Support.Factory do
     Map.put(ctx, :creator, Ecto.assoc(ctx.company, :people) |> Operately.Repo.all() |> hd())
   end
 
+  def preload(ctx, resource_name, preload) do
+    resource = Map.fetch!(ctx, resource_name)
+
+    resource = Operately.Repo.preload(resource, preload)
+
+    Map.put(ctx, resource_name, resource)
+  end
+
   # accounts
   defdelegate add_account(ctx, testid), to: Accounts
   defdelegate log_in_person(ctx, person_name), to: Accounts
