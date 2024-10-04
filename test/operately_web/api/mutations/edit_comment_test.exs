@@ -219,40 +219,55 @@ defmodule OperatelyWeb.Api.Mutations.EditCommentTest do
       comment = Repo.reload(comment)
       assert res.comment == Serializer.serialize(comment, level: :essential)
     end
+  end
 
-    test "mentioned people are added to subscriptions list", ctx do
-      project = project_fixture(%{company_id: ctx.company.id, creator_id: ctx.person.id, group_id: ctx.company.company_space_id})
-      check_in = create_check_in(ctx.person, project)
+  describe "Updates subscriptions" do
+    @table [
+      %{resource: :check_in,      resource_type: "project_check_in"},
+      %{resource: :retrospective, resource_type: "project_retrospective"},
+      %{resource: :update,        resource_type: "goal_update"},
+      %{resource: :message,       resource_type: "message"},
+    ]
 
-      {:ok, comment} = Operately.Operations.CommentAdding.run(ctx.person, check_in, "project_check_in", RichText.rich_text("Content"))
-      {:ok, list} = SubscriptionList.get(:system, parent_id: check_in.id, opts: [
-        preload: :subscriptions
-      ])
-
-      assert list.subscriptions == []
-
-      assert {200, _} = mutation(ctx.conn, :edit_comment, %{
-        comment_id: Paths.comment_id(comment),
-        content: RichText.rich_text(mentioned_people: [ctx.company_creator]),
-        parent_type: "project_check_in",
-      })
-
-      subscriptions = Notifications.list_subscriptions(list)
-
-      assert length(subscriptions) == 1
-      assert hd(subscriptions).person_id == ctx.company_creator.id
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.log_in_person(:creator)
+      |> Factory.add_space(:space)
+      |> Factory.add_space_member(:person, :space)
+      |> Factory.add_project(:project, :space)
+      |> Factory.add_project_check_in(:check_in, :project, :creator)
+      |> Factory.add_project(:project, :space)
+      |> Factory.add_project_retrospective(:retrospective, :project, :creator)
+      |> Factory.preload(:retrospective, :project)
+      |> Factory.add_goal(:goal, :space)
+      |> Factory.add_goal_update(:update, :goal, :creator)
+      |> Factory.add_message(:message, :space)
     end
 
-    test "ignores mentioned people, if it's not project check-in", ctx do
-      goal = goal_fixture(ctx.person, %{space_id: ctx.company.company_space_id})
-      thread = create_comment_thread(goal)
-      {:ok, comment} = Operately.Operations.CommentAdding.run(ctx.person, thread, "comment_thread", RichText.rich_text("Content"))
+    tabletest @table do
+      test "#{@test.resource_type}", ctx do
+        comment = create_comment(ctx, ctx[@test.resource], @test.resource_type)
+        {:ok, list} = SubscriptionList.get(:system, parent_id: ctx[@test.resource].id, opts: [
+          preload: :subscriptions
+        ])
 
-      assert {200, _} = mutation(ctx.conn, :edit_comment, %{
-        comment_id: Paths.comment_id(comment),
-        content: RichText.rich_text(mentioned_people: [ctx.company_creator]),
-        parent_type: "comment_thread",
-      })
+        subscriptions = Enum.filter(list.subscriptions, &(&1.person_id != ctx.creator.id))
+        assert subscriptions == []
+
+        assert {200, _} = mutation(ctx.conn, :edit_comment, %{
+          comment_id: Paths.comment_id(comment),
+          content: RichText.rich_text(mentioned_people: [ctx.person]),
+          parent_type: @test.resource_type,
+        })
+
+        subscriptions =
+          Notifications.list_subscriptions(list)
+          |> Enum.filter(&(&1.person_id != ctx.creator.id))
+
+        assert length(subscriptions) == 1
+        assert hd(subscriptions).person_id == ctx.person.id
+      end
     end
   end
 
