@@ -22,7 +22,7 @@ export function Page() {
 
   return (
     <Pages.Page title={["Retrospective", retrospective.project!.name!]}>
-      <Paper.Root size="small">
+      <Paper.Root size="medium">
         <ProjectPageNavigation project={retrospective.project!} />
 
         <Paper.Body minHeight="none">
@@ -68,8 +68,8 @@ function Header() {
     <>
       <div className="text-center text-content-accent text-3xl font-extrabold">Project Retrospective</div>
 
-      <div className="flex items-center gap-2 font-medium justify-center mt-2">
-        {retrospective.author && <AvatarWithName person={retrospective.author} size={16} />}
+      <div className="flex items-center gap-1.5 font-medium justify-center mt-2">
+        {retrospective.author && <AvatarWithName person={retrospective.author!} size={20} />}
         {retrospective.author && <span>&middot;</span>}
         <FormattedTime time={retrospective.closedAt!} format="long-date" />
       </div>
@@ -82,16 +82,14 @@ function Content() {
   const retro = JSON.parse(retrospective.content!);
 
   return (
-    <div className="mt-8">
-      <div className="text-content-accent font-bold mt-4 pt-4 border-t border-stroke-base">What went well?</div>
+    <div className="mb-8">
+      <QuestionTitle title="What went well?" />
       <RichContent jsonContent={JSON.stringify(retro.whatWentWell)} />
 
-      <div className="text-content-accent font-bold mt-4 pt-4 border-t border-stroke-base">
-        What could've gone better?
-      </div>
+      <QuestionTitle title="What could've gone better?" />
       <RichContent jsonContent={JSON.stringify(retro.whatCouldHaveGoneBetter)} />
 
-      <div className="text-content-accent font-bold mt-4 pt-4 border-t border-stroke-base">What did you learn?</div>
+      <QuestionTitle title="What did you learn?" />
       <RichContent jsonContent={JSON.stringify(retro.whatDidYouLearn)} />
     </div>
   );
@@ -137,4 +135,8 @@ function Subscriptions() {
       />
     </>
   );
+}
+
+function QuestionTitle({ title }: { title: string }) {
+  return <div className="text-content-accent font-extrabold mb-2 mt-8 text-xl">{title}</div>;
 }
