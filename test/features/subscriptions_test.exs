@@ -24,7 +24,7 @@ defmodule Operately.Features.SubscriptionsTest do
     feature "All contributors", ctx do
       ctx
       |> Steps.go_to_new_check_in_page()
-      |> Steps.fill_out_check_in_form(%{status: "on_track", description: "Going well"})
+      |> Steps.fill_out_check_in_form()
       |> Steps.select_all_people()
       |> Steps.submit_check_in_form()
       |> Steps.assert_current_subscribers(%{count: 5, resource: "check-in"})
@@ -33,7 +33,7 @@ defmodule Operately.Features.SubscriptionsTest do
     feature "Select specific contributors", ctx do
       ctx
       |> Steps.go_to_new_check_in_page()
-      |> Steps.fill_out_check_in_form(%{status: "on_track", description: "Going well"})
+      |> Steps.fill_out_check_in_form()
       |> Steps.select_specific_people()
       |> Steps.toggle_person_checkbox(ctx.john)
       |> Steps.toggle_person_checkbox(ctx.jane)
@@ -45,7 +45,7 @@ defmodule Operately.Features.SubscriptionsTest do
     feature "No one", ctx do
       ctx
       |> Steps.go_to_new_check_in_page()
-      |> Steps.fill_out_check_in_form(%{status: "on_track", description: "Going well"})
+      |> Steps.fill_out_check_in_form()
       |> Steps.select_no_one()
       |> Steps.submit_check_in_form()
       |> Steps.assert_current_subscribers(%{count: 2, resource: "check-in"})
@@ -54,7 +54,7 @@ defmodule Operately.Features.SubscriptionsTest do
     feature "Subscribe and unsubribe", ctx do
       ctx
       |> Steps.go_to_new_check_in_page()
-      |> Steps.fill_out_check_in_form(%{status: "on_track", description: "Going well"})
+      |> Steps.fill_out_check_in_form()
       |> Steps.select_all_people()
       |> Steps.submit_check_in_form()
       |> test_current_subscriptions_widget("check-in")
@@ -137,7 +137,7 @@ defmodule Operately.Features.SubscriptionsTest do
     feature "All contributors", ctx do
       ctx
       |> Steps.go_to_new_message_page()
-      |> Steps.fill_out_message_form(%{title: "Title", body: "Some body"})
+      |> Steps.fill_out_message_form()
       |> Steps.select_all_people()
       |> Steps.submit_message_form()
       |> Steps.assert_current_subscribers(%{count: 5, resource: "discussion"})
@@ -146,7 +146,7 @@ defmodule Operately.Features.SubscriptionsTest do
     feature "Select specific contributors", ctx do
       ctx
       |> Steps.go_to_new_message_page()
-      |> Steps.fill_out_message_form(%{title: "Title", body: "Some body"})
+      |> Steps.fill_out_message_form()
       |> Steps.select_specific_people()
       |> Steps.toggle_person_checkbox(ctx.john)
       |> Steps.toggle_person_checkbox(ctx.jane)
@@ -158,7 +158,7 @@ defmodule Operately.Features.SubscriptionsTest do
     feature "No one", ctx do
       ctx
       |> Steps.go_to_new_message_page()
-      |> Steps.fill_out_message_form(%{title: "Title", body: "Some body"})
+      |> Steps.fill_out_message_form()
       |> Steps.select_no_one()
       |> Steps.submit_message_form()
       |> Steps.assert_current_subscribers(%{count: 1, resource: "discussion"})
@@ -167,10 +167,61 @@ defmodule Operately.Features.SubscriptionsTest do
     feature "Subscribe and unsubribe", ctx do
       ctx
       |> Steps.go_to_new_message_page()
-      |> Steps.fill_out_message_form(%{title: "Title", body: "Some body"})
+      |> Steps.fill_out_message_form()
       |> Steps.select_all_people()
       |> Steps.submit_message_form()
       |> test_current_subscriptions_widget("discussion")
+    end
+  end
+
+  describe "Goal Update" do
+    setup ctx do
+      ctx
+      |> Factory.add_space_member(:bob, :space)
+      |> Factory.add_space_member(:fred, :space)
+      |> Factory.add_space_member(:jane, :space)
+      |> Factory.add_space_member(:john, :space)
+      |> Factory.add_goal(:goal, :space)
+      |> UI.login_as(ctx.creator)
+    end
+
+    feature "All contributors", ctx do
+      ctx
+      |> Steps.go_to_new_goal_update_page()
+      |> Steps.fill_out_goal_update_form()
+      |> Steps.select_all_people()
+      |> Steps.submit_goal_update_form()
+      |> Steps.assert_current_subscribers(%{count: 5, resource: "update"})
+    end
+
+    feature "Select specific contributors", ctx do
+      ctx
+      |> Steps.go_to_new_goal_update_page()
+      |> Steps.fill_out_goal_update_form()
+      |> Steps.select_specific_people()
+      |> Steps.toggle_person_checkbox(ctx.john)
+      |> Steps.toggle_person_checkbox(ctx.jane)
+      |> Steps.save_people_selection()
+      |> Steps.submit_goal_update_form()
+      |> Steps.assert_current_subscribers(%{count: 3, resource: "update"})
+    end
+
+    feature "No one", ctx do
+      ctx
+      |> Steps.go_to_new_goal_update_page()
+      |> Steps.fill_out_goal_update_form()
+      |> Steps.select_no_one()
+      |> Steps.submit_goal_update_form()
+      |> Steps.assert_current_subscribers(%{count: 1, resource: "update"})
+    end
+
+    feature "Subscribe and unsubribe", ctx do
+      ctx
+      |> Steps.go_to_new_goal_update_page()
+      |> Steps.fill_out_goal_update_form()
+      |> Steps.select_all_people()
+      |> Steps.submit_goal_update_form()
+      |> test_current_subscriptions_widget("update")
     end
   end
 
@@ -187,6 +238,10 @@ defmodule Operately.Features.SubscriptionsTest do
     |> Steps.open_current_subscriptions_form()
     |> Steps.deselect_everyone()
     |> Steps.save_people_selection()
+    |> Steps.assert_current_subscribers(%{count: 0, resource: resource})
+    |> Steps.open_current_subscriptions_form()
+    |> Steps.select_everyone()
+    |> Steps.close_form_without_saving()
     |> Steps.assert_current_subscribers(%{count: 0, resource: resource})
     |> Steps.subscribe()
     |> Steps.assert_current_subscribers(%{count: 1, resource: resource})

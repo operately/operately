@@ -16,11 +16,11 @@ defmodule Operately.Support.Features.SubscriptionsSteps do
     |> UI.click(testid: "check-in-now")
   end
 
-  step :fill_out_check_in_form, ctx, attrs do
+  step :fill_out_check_in_form, ctx do
     ctx
     |> UI.click(testid: "status-dropdown")
-    |> UI.click(testid: "status-dropdown-#{attrs.status}")
-    |> UI.fill_rich_text(attrs.description)
+    |> UI.click(testid: "status-dropdown-on_track")
+    |> UI.fill_rich_text("Some description")
   end
 
   step :submit_check_in_form, ctx do
@@ -38,15 +38,35 @@ defmodule Operately.Support.Features.SubscriptionsSteps do
     |> UI.click(testid: "new-discussion")
   end
 
-  step :fill_out_message_form, ctx, attrs do
+  step :fill_out_message_form, ctx do
     ctx
-    |> UI.fill(testid: "discussion-title", with: attrs.title)
-    |> UI.fill_rich_text(attrs.body)
+    |> UI.fill(testid: "discussion-title", with: "Some title")
+    |> UI.fill_rich_text("Some body")
   end
 
   step :submit_message_form, ctx do
     ctx
     |> UI.click(testid: "post-discussion")
+  end
+
+  #
+  # Goal Update
+  #
+
+  step :go_to_new_goal_update_page, ctx do
+    ctx
+    |> UI.visit(Paths.goal_path(ctx.company, ctx.goal))
+    |> UI.click(testid: "update-progress-button")
+  end
+
+  step :fill_out_goal_update_form, ctx do
+    ctx
+    |> UI.fill_rich_text("Some content")
+  end
+
+  step :submit_goal_update_form, ctx do
+    ctx
+    |> UI.click(testid: "submit-update")
   end
 
   #
@@ -85,6 +105,14 @@ defmodule Operately.Support.Features.SubscriptionsSteps do
     |> UI.find(UI.query(testid: "subscribers-selection-modal"), fn el ->
       el
       |> UI.click(testid: "submit")
+    end)
+  end
+
+  step :close_form_without_saving, ctx do
+    ctx
+    |> UI.find(UI.query(testid: "subscribers-selection-modal"), fn el ->
+      el
+      |> UI.click(testid: "cancel")
     end)
   end
 
