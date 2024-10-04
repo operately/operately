@@ -12,6 +12,7 @@ defmodule Operately.FeatureCase do
       alias Operately.Repo
       alias Operately.Support.Features.UI
       alias OperatelyWeb.Paths
+      alias Operately.Support.Factory
 
       import Wallaby.Browser, except: [assert_text: 2, click: 2, fill: 2, find: 2, visit: 1]
 

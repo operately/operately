@@ -29,7 +29,7 @@ export function Page() {
           <Paper.DimmedSection>
             <div className="mt-6">
               <div className="text-xs mt-6 mb-3 uppercase font-bold">{People.firstName(person)}'s Activity</div>
-              <PersonFeedContent />
+              <PersonFeedContent key={person.id} />
             </div>
           </Paper.DimmedSection>
         </Paper.Body>
