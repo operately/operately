@@ -32,6 +32,8 @@ function PeopleList({ people }: { people: Person[] }) {
 }
 
 function PersonCard({ person }: { person: Person }) {
+  const testId = "person-" + person.id!;
+
   return (
     <div className="bg-surface rounded shadow p-4 border border-stroke-base">
       <div className="flex items-start gap-4">
@@ -39,7 +41,7 @@ function PersonCard({ person }: { person: Person }) {
 
         <div className="flex flex-col">
           <div className="font-bold leading-tight">
-            <Link to={Paths.profilePath(person.id!!)} underline="never">
+            <Link to={Paths.profilePath(person.id!!)} underline="never" testId={testId}>
               {person.fullName}
             </Link>
           </div>
