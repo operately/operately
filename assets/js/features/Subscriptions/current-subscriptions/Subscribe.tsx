@@ -17,7 +17,7 @@ export function Subscribe() {
       <div className="font-bold">You&apos;re not subscribed</div>
       <p className="text-sm">You won&apos;t be notified when comments are posted.</p>
       <div className="flex mt-2">
-        <SecondaryButton onClick={handleSubscribe} loading={loading} size="xs">
+        <SecondaryButton onClick={handleSubscribe} loading={loading} size="xs" testId="subscribe">
           Subscribe me
         </SecondaryButton>
       </div>

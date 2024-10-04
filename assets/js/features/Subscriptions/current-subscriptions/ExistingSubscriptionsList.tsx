@@ -22,7 +22,7 @@ export function ExistingSubscriptionsList() {
         {subscribers.map((s) => (
           <Avatar person={s.person!} size="tiny" key={s.person!.id} />
         ))}
-        <SecondaryButton onClick={() => setIsModalOpen(true)} size="xs">
+        <SecondaryButton onClick={() => setIsModalOpen(true)} size="xs" testId="add-remove-subscribers">
           Add/remove people...
         </SecondaryButton>
       </div>

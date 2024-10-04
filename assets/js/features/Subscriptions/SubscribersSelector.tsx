@@ -33,17 +33,22 @@ export function SubscribersSelector({ state, projectName, spaceName }: Props) {
         <p className="text-lg font-bold mb-2">When I post this, notify:</p>
 
         <RadioGroup name="subscriptions-options" onChange={setSubscriptionType} defaultValue={subscriptionType}>
-          <SubscriptionOption label={allSubscribersLabel} value={Options.ALL} subscribers={subscribers} />
+          <SubscriptionOption
+            label={allSubscribersLabel}
+            value={Options.ALL}
+            subscribers={subscribers}
+            testId="subscribe-all"
+          />
 
           <SubscriptionOption
             label={selectedSubscribersLabel}
             value={Options.SELECTED}
             subscribers={selectedSubscribers}
             onClick={() => setShowSelector(true)}
+            testId="subscribe-specific-people"
           />
 
-          <SubscriptionOption label="No one" value={Options.NONE} subscribers={[]} />
-          <></>
+          <SubscriptionOption label="No one" value={Options.NONE} subscribers={[]} testId="subscribe-no-one" />
         </RadioGroup>
 
         <SubscribersSelectorModal showSelector={showSelector} setShowSelector={setShowSelector} />
