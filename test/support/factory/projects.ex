@@ -5,13 +5,14 @@ defmodule Operately.Support.Factory.Projects do
   alias Operately.Support.Factory.Utils
 
   def add_project(ctx, testid, space_name, opts \\ []) do
+    creator = Keyword.get(opts, :creator, :creator)
     champion = Keyword.get(opts, :champion, nil)
     reviewer = Keyword.get(opts, :reviewer, nil)
 
     project =
       %{
         name: Atom.to_string(testid),
-        creator_id: ctx.creator.id,
+        creator_id: ctx[creator].id,
         company_id: ctx.company.id,
         group_id: ctx[space_name].id,
         company_access_level: Binding.edit_access(),
