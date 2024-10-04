@@ -7,10 +7,10 @@ defmodule Operately.Operations.CommentAddingTest do
   import Operately.ProjectsFixtures
   import Operately.GoalsFixtures
 
-  alias Operately.Groups
+  alias Operately.{Groups, Projects}
   alias Operately.Support.{Factory, RichText}
   alias Operately.Access.Binding
-  alias Operately.Operations.{GoalCheckIn, ProjectCheckIn, CommentAdding}
+  alias Operately.Operations.{GoalCheckIn, ProjectCheckIn, CommentAdding, ProjectClosed}
 
   setup ctx do
     ctx
@@ -309,6 +309,119 @@ defmodule Operately.Operations.CommentAddingTest do
       ])
 
       {:ok, comment} = CommentAdding.run(ctx.creator, ctx.message, "message", content)
+
+      activity = get_activity(comment, action)
+      notifications = fetch_notifications(activity.id, action: action)
+
+      assert notifications_count(action: action) == 1
+      assert hd(notifications).person_id == person.id
+    end
+  end
+
+  describe "Commenting on project retrospective" do
+    @retrospective_content %{
+      "whatWentWell" => RichText.rich_text("some content"),
+      "whatDidYouLearn" => RichText.rich_text("some content"),
+      "whatCouldHaveGoneBetter" => RichText.rich_text("some content"),
+    }
+
+    setup ctx do
+      ctx
+      |> Factory.add_space(:space)
+      |> Factory.add_space_member(:reviewer, :space)
+      |> Factory.add_project(:project, :space, reviewer: :reviewer)
+      |> Factory.add_project_contributor(:contrib1, :project, :as_person)
+      |> Factory.add_project_contributor(:contrib2, :project, :as_person)
+      |> Factory.add_project_contributor(:contrib3, :project, :as_person)
+      |> Factory.preload(:project, :group)
+    end
+
+    test "Commenting on message notifies everyone", ctx do
+      {:ok, retrospective} = ProjectClosed.run(ctx.creator, ctx.project, %{
+        retrospective: @retrospective_content,
+        content: %{},
+        send_to_everyone: true,
+        subscription_parent_type: :project_retrospective,
+        subscriber_ids: []
+      })
+      retrospective = Repo.preload(retrospective, :project)
+
+      {:ok, comment} = Oban.Testing.with_testing_mode(:manual, fn ->
+        CommentAdding.run(ctx.creator, retrospective, "project_retrospective", RichText.rich_text("Some comment"))
+      end)
+
+      action = "project_retrospective_commented"
+      activity = get_activity(comment, action)
+
+      assert notifications_count(action: action) == 0
+
+      perform_job(activity.id)
+      notifications = fetch_notifications(activity.id, action: action)
+
+      assert notifications_count(action: action) == 4
+
+      Projects.list_project_contributors(ctx.project)
+      |> Enum.filter(&(&1.person_id != ctx.creator.id))
+      |> Enum.each(fn p ->
+        assert Enum.find(notifications, &(&1.person_id == p.person_id))
+      end)
+    end
+
+    test "Commenting on message notifies selected people", ctx do
+      {:ok, retrospective} = ProjectClosed.run(ctx.creator, ctx.project, %{
+        retrospective: @retrospective_content,
+        content: %{},
+        send_to_everyone: false,
+        subscription_parent_type: :project_retrospective,
+        subscriber_ids: [ctx.reviewer.id, ctx.contrib1.id]
+      })
+      retrospective = Repo.preload(retrospective, :project)
+
+      {:ok, comment} = Oban.Testing.with_testing_mode(:manual, fn ->
+        CommentAdding.run(ctx.creator, retrospective, "project_retrospective", RichText.rich_text("Some comment"))
+      end)
+
+      action = "project_retrospective_commented"
+      activity = get_activity(comment, action)
+
+      assert notifications_count(action: action) == 0
+
+      perform_job(activity.id)
+      notifications = fetch_notifications(activity.id, action: action)
+
+      assert notifications_count(action: action) == 2
+
+      [ctx.reviewer, ctx.contrib1]
+      |> Enum.each(fn p ->
+        assert Enum.find(notifications, &(&1.person_id == p.id))
+      end)
+    end
+
+    test "Mentioned person is notified", ctx do
+      ctx =
+        ctx
+        |> Factory.edit_project_company_members_access(:project, :no_access)
+        |> Factory.add_project_retrospective(:retrospective, :project, :creator)
+        |> Factory.preload(:retrospective, :project)
+
+      # Without permissions
+      person = person_fixture_with_account(%{company_id: ctx.company.id})
+      content = RichText.rich_text(mentioned_people: [person]) |> Jason.decode!()
+
+      {:ok, comment} = CommentAdding.run(ctx.creator, ctx.retrospective, "project_retrospective", content)
+
+      action = "project_retrospective_commented"
+      activity = get_activity(comment, action)
+
+      assert notifications_count(action: action) == 0
+      assert fetch_notifications(activity.id, action: action) == []
+
+      # With permissions
+      {:ok, _} = Groups.add_members(ctx.creator, ctx.space.id, [
+        %{id: person.id, permissions: Binding.view_access()}
+      ])
+
+      {:ok, comment} = CommentAdding.run(ctx.creator, ctx.retrospective, "project_retrospective", content)
 
       activity = get_activity(comment, action)
       notifications = fetch_notifications(activity.id, action: action)
