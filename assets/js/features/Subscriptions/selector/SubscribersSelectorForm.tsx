@@ -24,7 +24,7 @@ export function SubscribersSelectorForm({ closeForm, callback }) {
 
   return (
     <Forms.Form form={form}>
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-6" data-test-id="subscribers-selection-modal">
         <ActionLinks alwaysNotify={alwaysNotify} allSubscribers={subscribers} />
 
         <div className="max-h-[380px] overflow-y-auto">

@@ -2,8 +2,13 @@ defmodule Operately.Support.Features.SubscriptionsSteps do
   use Operately.FeatureCase
 
   #
-  # Project Check-in
+  # Project
   #
+
+  step :go_to_project_retrospective_page, ctx do
+    ctx
+    |> UI.click(testid: "project-retrospective-link")
+  end
 
   step :go_to_new_check_in_page, ctx do
     ctx
@@ -51,12 +56,15 @@ defmodule Operately.Support.Features.SubscriptionsSteps do
 
   step :open_current_subscriptions_form, ctx do
     ctx
-    |> UI.click(testid: "add-remobe-subscribers")
+    |> UI.click(testid: "add-remove-subscribers")
   end
 
   step :save_people_selection, ctx do
     ctx
-    |> UI.click(testid: "submit")
+    |> UI.find(UI.query(testid: "subscribers-selection-modal"), fn el ->
+      el
+      |> UI.click(testid: "submit")
+    end)
   end
 
   step :unsubscribe, ctx do
