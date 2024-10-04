@@ -92,6 +92,7 @@ export const DISPLAYED_IN_FEED = [
   "project_resuming",
   "project_resuming",
   "project_timeline_edited",
+  "project_retrospective_commented",
   "space_joining",
   "space_member_removed",
   "space_members_added",
@@ -137,6 +138,7 @@ import ProjectMoved from "@/features/activities/ProjectMoved";
 import ProjectPausing from "@/features/activities/ProjectPausing";
 import ProjectRenamed from "@/features/activities/ProjectRenamed";
 import ProjectResuming from "@/features/activities/ProjectResuming";
+import ProjectRetrospectiveCommented from "@/features/activities/ProjectRetrospectiveCommented";
 import ProjectTimelineEdited from "@/features/activities/ProjectTimelineEdited";
 import SpaceJoining from "@/features/activities/SpaceJoining";
 import SpaceMemberRemoved from "@/features/activities/SpaceMemberRemoved";
@@ -175,7 +177,7 @@ function handler(activity: Activity) {
     .with("project_pausing", () => ProjectPausing)
     .with("project_renamed", () => ProjectRenamed)
     .with("project_resuming", () => ProjectResuming)
-    .with("project_resuming", () => ProjectResuming)
+    .with("project_retrospective_commented", () => ProjectRetrospectiveCommented)
     .with("project_timeline_edited", () => ProjectTimelineEdited)
     .with("space_joining", () => SpaceJoining)
     .with("space_member_removed", () => SpaceMemberRemoved)

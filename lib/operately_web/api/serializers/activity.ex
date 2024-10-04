@@ -209,6 +209,14 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
     }
   end
 
+  def serialize_content("project_retrospective_commented", content) do
+    %{
+      project_id: OperatelyWeb.Paths.project_id(content["project"]),
+      project: Serializer.serialize(content["project"], level: :essential),
+      comment: serialize_comment(content["comment"])
+    }
+  end
+
   def serialize_content("project_check_in_acknowledged", content) do
     %{
       project_id: OperatelyWeb.Paths.project_id(content["project"]),
