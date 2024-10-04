@@ -123,7 +123,7 @@ defmodule Operately.Goals.Goal do
   end
 
   def preload_permissions(goal, person) do
-    persmissions = Operately.Goals.Permissions.calculate(goal, person)
+    persmissions = Operately.Goals.Permissions.calculate(goal, person)F
 
     Map.put(goal, :permissions, persmissions)
   end
