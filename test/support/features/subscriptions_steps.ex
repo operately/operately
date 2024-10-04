@@ -29,6 +29,27 @@ defmodule Operately.Support.Features.SubscriptionsSteps do
   end
 
   #
+  # Messages
+  #
+
+  step :go_to_new_message_page, ctx do
+    ctx
+    |> UI.visit(Paths.space_discussions_path(ctx.company, ctx.space))
+    |> UI.click(testid: "new-discussion")
+  end
+
+  step :fill_out_message_form, ctx, attrs do
+    ctx
+    |> UI.fill(testid: "discussion-title", with: attrs.title)
+    |> UI.fill_rich_text(attrs.body)
+  end
+
+  step :submit_message_form, ctx do
+    ctx
+    |> UI.click(testid: "post-discussion")
+  end
+
+  #
   # Subscriptions widget
   #
 
@@ -91,7 +112,7 @@ defmodule Operately.Support.Features.SubscriptionsSteps do
   # Assertions
   #
 
-  step :asset_current_subscribers, ctx, attrs do
+  step :assert_current_subscribers, ctx, attrs do
     text = case attrs.count do
       0 -> "No one"
       1 -> "1 person"
