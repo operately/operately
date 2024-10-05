@@ -33,11 +33,11 @@ const ProjectGoalConnection: ActivityHandler = {
     const goal = goalLink(content(activity).goal!);
 
     if (page === "project") {
-      return feedTitle(activity, "connected the project from the", goal, "goal");
+      return feedTitle(activity, "connected the project to the", goal, "goal");
     } else if (page === "goal") {
-      return feedTitle(activity, "connected the", project, "project from the goal");
+      return feedTitle(activity, "connected the", project, "project to the goal");
     } else {
-      return feedTitle(activity, "connected the", project, "project from the", goal, "goal");
+      return feedTitle(activity, "connected the", project, "project to the", goal, "goal");
     }
   },
 
