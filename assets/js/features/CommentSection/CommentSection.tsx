@@ -8,6 +8,7 @@ import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
 import RichContent from "@/components/RichContent";
 import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
+import { useMarkNotificationAsRead } from "@/models/notifications";
 
 import { FormState } from "./form";
 import { useBoolState } from "@/utils/useBoolState";
@@ -165,15 +166,48 @@ function MilestoneReopened({ comment }) {
 
 function ViewComment({ comment, onEdit, commentParentType }) {
   const me = useMe()!;
+  const [markNotificationAsRead] = useMarkNotificationAsRead();
+
   const entity = { id: comment.id, type: "comment", parentType: commentParentType };
   const addReactionForm = useReactionsForm(entity, comment.reactions);
+
   const testId = "comment-" + comment.id;
   const content = JSON.parse(comment.content)["message"];
+  const commentRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    const options = {
+      root: null,
+      threshold: 0.1,
+    };
+
+    const observer = new IntersectionObserver(handleIntersect, options);
+
+    function handleIntersect(entries, observer) {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          markNotificationAsRead({ id: comment.notification.id });
+          observer.unobserve(entry.target);
+        }
+      });
+    }
+
+    if (commentRef.current && comment.notification && !comment.notification.read) {
+      // setTimeout prevents the callback function from being fired when IntersectionObserver
+      // is instantiated, which is its default behavior.
+      setTimeout(() => observer.observe(commentRef.current!), 500);
+    }
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
 
   return (
     <div
       className="flex items-start justify-between gap-3 py-3 not-first:border-t border-stroke-base text-content-accent relative"
       data-test-id={testId}
+      ref={commentRef}
     >
       <div className="shrink-0">
         <Avatar person={comment.author} size="normal" />
