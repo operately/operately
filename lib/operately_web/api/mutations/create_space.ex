@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.CreateGroup do
+defmodule OperatelyWeb.Api.Mutations.CreateSpace do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
