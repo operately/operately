@@ -1,18 +1,15 @@
-import React from "react";
-
-import classnames from "classnames";
-
+import * as React from "react";
 import * as Icons from "@tabler/icons-react";
 
-interface SpaceIconChooserProps {
-  icon: string;
-  setIcon: (icon: string) => void;
-  color: string;
-}
+import Forms from "@/components/Forms";
+import classnames from "classnames";
 
-export function SpaceIconChooser({ color, icon, setIcon }: SpaceIconChooserProps) {
+export function IconChooser({ colorField, iconField }: { colorField: string; iconField: string }) {
+  const [color] = Forms.useFieldValue(colorField);
+  const [icon, setIcon] = Forms.useFieldValue(iconField);
+
   return (
-    <>
+    <Forms.InputField field={iconField}>
       <h2 className="font-bold">Icon</h2>
       <p className="text-sm text-content-dimmed">Select an icon.</p>
 
@@ -36,7 +33,7 @@ export function SpaceIconChooser({ color, icon, setIcon }: SpaceIconChooserProps
         <IconOption setIcon={setIcon} color={color} icon="IconHeartHandshake" current={icon} />
         <IconOption setIcon={setIcon} color={color} icon="IconLifebuoy" current={icon} />
       </div>
-    </>
+    </Forms.InputField>
   );
 }
 
