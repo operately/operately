@@ -6,6 +6,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Updates.Comment do
       inserted_at: OperatelyWeb.Api.Serializer.serialize(comment.inserted_at),
       author: OperatelyWeb.Api.Serializer.serialize(comment.author),
       reactions: OperatelyWeb.Api.Serializer.serialize(comment.reactions),
+      notification: OperatelyWeb.Api.Serializer.serialize(comment.notification),
     }
   end
 

@@ -25,7 +25,7 @@ defmodule OperatelyWeb.Api.Queries.GetNotifications do
 
     notifications = load(page, per_page, me(conn))
 
-    {:ok, %{notifications: serialize(notifications)}}
+    {:ok, %{notifications: Serializer.serialize(notifications, level: :full)}}
   end
 
   def load(page, per_page, me) do
@@ -39,16 +39,16 @@ defmodule OperatelyWeb.Api.Queries.GetNotifications do
       order_by: [desc: n.inserted_at],
       offset: ^offset,
       limit: ^limit,
-      preload: [activity: [:author, :comment_thread]]
+      preload: [activity: {a, [:author, :comment_thread]}]
 
-    query 
-    |> Operately.Repo.all() 
+    query
+    |> Operately.Repo.all()
     |> load_data_for_activities()
     |> inject_my_role_into_goals(me)
   end
 
   def load_data_for_activities(notifications) do
-    activities = 
+    activities =
       notifications
       |> Enum.map(fn n -> n.activity end)
       |> Enum.map(&Operately.Activities.cast_content/1)
@@ -66,20 +66,6 @@ defmodule OperatelyWeb.Api.Queries.GetNotifications do
     goals_with_roles = goals |> Enum.map(fn g -> Map.put(g, :my_role, Operately.Goals.get_role(g, me)) end)
 
     inject(notifications, Operately.Goals.Goal, goals_with_roles)
-  end
-
-  def serialize(notifications) when is_list(notifications) do
-    Enum.map(notifications, fn n -> serialize(n) end)
-  end
-
-  def serialize(notification = %Notification{}) do
-    %{
-      id: notification.id,
-      inserted_at: notification.inserted_at,
-      read: notification.read,
-      read_at: notification.read_at,
-      activity: OperatelyWeb.Api.Serializers.Activity.serialize(notification.activity, [comment_thread: :minimal])
-    }
   end
 
   #
@@ -108,9 +94,9 @@ defmodule OperatelyWeb.Api.Queries.GetNotifications do
     if record.__struct__ == type do
       Enum.find(data, fn d -> d.id == record.id end)
     else
-      keys = record |> Map.from_struct() |> Map.keys() 
+      keys = record |> Map.from_struct() |> Map.keys()
 
-      Enum.reduce(keys, record, fn k, acc -> 
+      Enum.reduce(keys, record, fn k, acc ->
         Map.put(acc, k, inject(Map.get(record, k), type, data))
       end)
     end
