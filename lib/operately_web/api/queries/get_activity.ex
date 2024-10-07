@@ -35,7 +35,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivity do
   defp load(person, id) do
     query = from a in Activity,
       where: a.id == ^id,
-      preload: [:author, comment_thread: [comments: [:author, reactions: :person], reactions: :person]]
+      preload: [:author, comment_thread: [reactions: :person]]
 
     query
     |> filter_by_view_access(person.id)

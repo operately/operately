@@ -35,7 +35,7 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
       message: Jason.encode!(comment_thread.message),
       title: comment_thread.title,
       reactions: OperatelyWeb.Api.Serializer.serialize(comment_thread.reactions),
-      comments: Enum.map(comment_thread.comments, fn c ->
+      comments: Ecto.assoc_loaded?(comment_thread.comments) && Enum.map(comment_thread.comments, fn c ->
         %{
           id: c.id,
           content: Jason.encode!(c.content),

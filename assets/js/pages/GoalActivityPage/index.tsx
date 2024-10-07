@@ -74,8 +74,7 @@ function Reactions({ commentThread }: { commentThread: CommentThread }) {
 }
 
 function Comments({ commentThread, goal }: { commentThread: CommentThread; goal: Goals.Goal }) {
-  const refresh = Pages.useRefresh();
   const commentsForm = useForCommentThread(commentThread, { type: "goal", id: goal.id! });
 
-  return <CommentSection form={commentsForm} refresh={refresh} commentParentType="comment_thread" />;
+  return <CommentSection form={commentsForm} refresh={() => {}} commentParentType="comment_thread" />;
 }
