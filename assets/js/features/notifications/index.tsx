@@ -1,0 +1,1 @@
+export { useClearNotificationOnIntersection } from "./useClearNotificationOnIntersection";
