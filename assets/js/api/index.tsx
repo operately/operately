@@ -549,6 +549,7 @@ export interface Comment {
   content?: string | null;
   author?: Person | null;
   reactions?: Reaction[] | null;
+  notification?: Notification | null;
 }
 
 export interface CommentThread {
