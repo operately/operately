@@ -35,6 +35,10 @@ const DiscussionCommentSubmitted: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
+  feedItemAlignment(_activity: Activity): "items-start" | "items-center" {
+    return "items-start";
+  },
+
   commentCount(_activity: Activity): number {
     throw new Error("Not implemented");
   },

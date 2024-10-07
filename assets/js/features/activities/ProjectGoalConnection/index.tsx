@@ -45,6 +45,10 @@ const ProjectGoalConnection: ActivityHandler = {
     return null;
   },
 
+  feedItemAlignment(_activity: Activity): "items-start" | "items-center" {
+    return "items-center";
+  },
+
   commentCount(_activity: Activity): number {
     throw new Error("Not implemented");
   },
