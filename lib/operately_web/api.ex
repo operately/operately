@@ -68,13 +68,15 @@ defmodule OperatelyWeb.Api do
   mutation :close_goal, M.CloseGoal
   mutation :close_project, M.CloseProject
   mutation :connect_goal_to_project, M.ConnectGoalToProject
+
   mutation :create_blob, M.CreateBlob
   mutation :create_comment, M.CreateComment
   mutation :create_goal, M.CreateGoal
   mutation :create_goal_discussion, M.CreateGoalDiscussion
-  mutation :create_group, M.CreateGroup
+  mutation :create_space, M.CreateSpace
   mutation :create_project, M.CreateProject
   mutation :create_task, M.CreateTask
+
   mutation :disconnect_goal_from_project, M.DisconnectGoalFromProject
   mutation :edit_comment, M.EditComment
   mutation :edit_discussion, M.EditDiscussion

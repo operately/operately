@@ -4,6 +4,7 @@ export interface ActivityHandler {
   // Feed items
   FeedItemContent(props: { activity: Activity; page: any }): JSX.Element | null;
   FeedItemTitle(props: { activity: Activity; page: any }): JSX.Element | null;
+  feedItemAlignment(activity: Activity): "items-start" | "items-center";
 
   // Activity page
   pagePath(activity: Activity): string;

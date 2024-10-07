@@ -1,5 +1,6 @@
 defmodule Operately.Companies.Company do
   use Operately.Schema
+  use Operately.Repo.Getter
 
   schema "companies" do
     has_one :access_context, Operately.Access.Context, foreign_key: :company_id
@@ -18,6 +19,7 @@ defmodule Operately.Companies.Company do
     field :member_count, :integer, virtual: true
 
     timestamps()
+    request_info()
     requester_access_level()
   end
 

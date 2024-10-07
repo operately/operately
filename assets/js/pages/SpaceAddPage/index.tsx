@@ -23,7 +23,7 @@ export const loader = Pages.emptyLoader;
 
 export function Page() {
   const navigate = useNavigate();
-  const [create] = Spaces.useCreateGroup();
+  const [create] = Spaces.useCreateSpace();
 
   const form = Forms.useForm({
     fields: {

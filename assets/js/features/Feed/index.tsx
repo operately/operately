@@ -73,7 +73,7 @@ function ActivityItem({ activity, page }: { activity: Activities.Activity; page:
   const time = activity.insertedAt!;
   const title = <ActivityHandler.FeedItemTitle activity={activity} page={page} />;
   const content = <ActivityHandler.FeedItemContent activity={activity} page={page} />;
-  const alignement = content ? "items-start" : "items-center";
+  const alignement = ActivityHandler.feedItemAlignment(activity);
   const profilePath = Paths.profilePath(author.id!);
 
   return (

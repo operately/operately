@@ -2,7 +2,7 @@ import * as api from "@/api";
 
 export type { Space } from "@/api";
 export {
-  useCreateGroup,
+  useCreateSpace,
   useJoinSpace,
   useEditGroup,
   useEditSpacePermissions,
