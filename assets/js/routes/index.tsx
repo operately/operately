@@ -74,7 +74,7 @@ export function createAppRoutes() {
         pageRoute("spaces/:id", pages.SpacePage),
         pageRoute("spaces/:id/edit", pages.SpaceEditPage),
         pageRoute("spaces/:id/members", pages.GroupMembersPage),
-        pageRoute("spaces/:id/appearance", pages.GroupAppearancePage),
+        pageRoute("spaces/:id/appearance", pages.SpaceAppearancePage),
         pageRoute("spaces/:id/projects/new", pages.ProjectAddPage),
         pageRoute("spaces/:id/projects", pages.SpaceProjectsPage),
         pageRoute("spaces/:id/discussions", pages.SpaceDiscussionsPage),
