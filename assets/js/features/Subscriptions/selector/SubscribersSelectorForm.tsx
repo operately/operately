@@ -24,7 +24,7 @@ export function SubscribersSelectorForm({ closeForm, callback }) {
 
   return (
     <Forms.Form form={form}>
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-6" data-test-id="subscribers-selection-modal">
         <ActionLinks alwaysNotify={alwaysNotify} allSubscribers={subscribers} />
 
         <div className="max-h-[380px] overflow-y-auto">
@@ -49,9 +49,13 @@ function ActionLinks({ alwaysNotify, allSubscribers }: { alwaysNotify: Subscribe
 
   return (
     <div className="flex items-center gap-3">
-      <ActionLink onClick={handleSelectEveryone}>Select everyone</ActionLink>
+      <ActionLink onClick={handleSelectEveryone} testId="select-everyone">
+        Select everyone
+      </ActionLink>
       <span className="text-content-dimmed">&middot;</span>
-      <ActionLink onClick={handleSelectNoone}>Select no one</ActionLink>
+      <ActionLink onClick={handleSelectNoone} testId="select-no-one">
+        Select no one
+      </ActionLink>
     </div>
   );
 }
