@@ -7,6 +7,12 @@ defmodule OperatelyWeb.Api.Types do
     field :space, :integer
   end
 
+  object :activity_content_space_added do
+    field :company_id, :string
+    field :space_id, :string
+    field :space, :space
+  end
+
   object :activity_content_space_joining do
     field :company_id, :string
     field :space_id, :string

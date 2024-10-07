@@ -13,9 +13,9 @@ defmodule OperatelyWeb.Api.Mutations.CreateSpaceTest do
   describe "permissions" do
     setup :register_and_log_in_account
 
-    test "company members without full access can't create space", ctx do
-      assert {403, res} = request(ctx.conn)
-      assert res.message == "You don't have permission to perform this action"
+    test "company members can create spaces", ctx do
+      assert {200, res} = request(ctx.conn)
+      assert_space_created(res)
     end
 
     test "company members with full access can create space", ctx do
@@ -26,10 +26,6 @@ defmodule OperatelyWeb.Api.Mutations.CreateSpaceTest do
     end
 
     test "company admins can create space", ctx do
-      # Not admin
-      assert {403, _} = request(ctx.conn)
-
-      # Admin
       {:ok, _} = Operately.Companies.add_admin(ctx.company_creator, ctx.person.id)
 
       assert {200, res} = request(ctx.conn)

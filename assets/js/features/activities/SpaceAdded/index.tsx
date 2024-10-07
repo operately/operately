@@ -1,9 +1,9 @@
-import { Activity, ActivityContentSpaceJoining } from "@/api";
+import { Activity, ActivityContentSpaceAdded } from "@/api";
 import { ActivityHandler } from "../interfaces";
 import { feedTitle, spaceLink } from "../feedItemLinks";
 import { Paths } from "@/routes/paths";
 
-const SpaceJoining: ActivityHandler = {
+const SpaceAdded: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
     throw new Error("Not implemented");
   },
@@ -26,9 +26,9 @@ const SpaceJoining: ActivityHandler = {
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     if (page === "space") {
-      return feedTitle(activity, "joined the space");
+      return feedTitle(activity, "created this space");
     } else {
-      return feedTitle(activity, "joined the", spaceLink(content(activity).space!), "space");
+      return feedTitle(activity, "created the", spaceLink(content(activity).space!), "space");
     }
   },
 
@@ -57,8 +57,8 @@ const SpaceJoining: ActivityHandler = {
   },
 };
 
-export default SpaceJoining;
+export default SpaceAdded;
 
-function content(activity: Activity): ActivityContentSpaceJoining {
-  return activity.content as ActivityContentSpaceJoining;
+function content(activity: Activity): ActivityContentSpaceAdded {
+  return activity.content as ActivityContentSpaceAdded;
 }

@@ -432,6 +432,12 @@ export interface ActivityContentProjectTimelineEdited {
   updatedMilestones?: Milestone[] | null;
 }
 
+export interface ActivityContentSpaceAdded {
+  companyId?: string | null;
+  spaceId?: string | null;
+  space?: Space | null;
+}
+
 export interface ActivityContentSpaceJoining {
   companyId?: string | null;
   spaceId?: string | null;

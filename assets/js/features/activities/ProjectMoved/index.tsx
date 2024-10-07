@@ -55,6 +55,10 @@ const ProjectMoved: ActivityHandler = {
     );
   },
 
+  feedItemAlignment(_activity: Activity): "items-start" | "items-center" {
+    return "items-start";
+  },
+
   commentCount(_activity: Activity): number {
     throw new Error("Not implemented");
   },
