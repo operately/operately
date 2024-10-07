@@ -2,6 +2,7 @@ defmodule Operately.Support.Features.SpaceSteps do
   use Operately.FeatureCase
 
   alias Operately.Companies
+  alias Operately.Access.Binding
   alias Operately.Support.Features.UI
   alias Operately.Support.Features.NotificationsSteps
   alias Operately.Support.Features.EmailSteps
@@ -9,6 +10,7 @@ defmodule Operately.Support.Features.SpaceSteps do
   import Operately.CompaniesFixtures
   import Operately.GroupsFixtures
   import Operately.PeopleFixtures
+  import Operately.ProjectsFixtures
 
   step :setup, ctx do
     company = company_fixture(%{name: "Test Org"})
@@ -129,5 +131,58 @@ defmodule Operately.Support.Features.SpaceSteps do
   step :assert_members_added_email_sent, ctx, params do
     ctx
     |> EmailSteps.assert_space_members_added_sent(author: ctx.person, to: params[:member], title: params[:title])
+  end
+
+  step :given_a_space_exists, ctx do
+    ctx |> Map.put(:space, group_fixture(ctx.person, %{name: "Marketing"}))
+  end
+
+  step :given_the_space_has_several_projects, ctx, names do
+    group = group_fixture(ctx.person, %{name: "Marketing"})
+
+    projects = Enum.map(names, fn name ->
+      project_fixture(%{
+        name: name, 
+        company_id: ctx.company.id, 
+        creator_id: ctx.person.id, 
+        group_id: group.id
+      })
+    end)
+
+    ctx
+    |> Map.put(:group, group)
+    |> Map.put(:projects, projects)
+  end
+
+  step :given_the_space_has_several_space_wide_projects, ctx, names do
+    group = group_fixture(ctx.person, %{name: "Marketing"})
+
+    projects = Enum.map(names, fn name ->
+      project_fixture(%{
+        name: name, 
+        company_id: ctx.company.id, 
+        creator_id: ctx.person.id, 
+        group_id: group.id,
+        anonymous_access_level: Binding.no_access(),
+        company_access_level: Binding.no_access(),
+        space_access_level: Binding.comment_access(),
+      })
+    end)
+
+    ctx
+    |> Map.put(:group, group)
+    |> Map.put(:projects, projects)
+  end
+
+  step :when_clicking_on_projects_tab, ctx do
+    ctx
+    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
+    |> UI.click(testid: "projects-tab")
+  end
+
+  step :assert_projects_are_listed, ctx, names do
+    Enum.reduce(names, ctx, fn name, ctx ->
+      ctx |> UI.assert_text(name)
+    end)
   end
 end
