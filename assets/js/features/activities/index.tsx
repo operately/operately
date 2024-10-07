@@ -48,6 +48,10 @@ const ActivityHandler: interfaces.ActivityHandler = {
     return React.createElement(handler(activity).FeedItemTitle, { activity, page });
   },
 
+  feedItemAlignment(activity: Activity) {
+    return handler(activity).feedItemAlignment(activity);
+  },
+
   NotificationTitle({ activity }: { activity: Activity }) {
     return React.createElement(handler(activity).NotificationTitle, { activity });
   },
@@ -93,6 +97,7 @@ export const DISPLAYED_IN_FEED = [
   "project_resuming",
   "project_timeline_edited",
   "project_retrospective_commented",
+  "space_added",
   "space_joining",
   "space_member_removed",
   "space_members_added",
@@ -140,6 +145,7 @@ import ProjectRenamed from "@/features/activities/ProjectRenamed";
 import ProjectResuming from "@/features/activities/ProjectResuming";
 import ProjectRetrospectiveCommented from "@/features/activities/ProjectRetrospectiveCommented";
 import ProjectTimelineEdited from "@/features/activities/ProjectTimelineEdited";
+import SpaceAdded from "@/features/activities/SpaceAdded";
 import SpaceJoining from "@/features/activities/SpaceJoining";
 import SpaceMemberRemoved from "@/features/activities/SpaceMemberRemoved";
 import SpaceMembersAdded from "@/features/activities/SpaceMembersAdded";
@@ -179,6 +185,7 @@ function handler(activity: Activity) {
     .with("project_resuming", () => ProjectResuming)
     .with("project_retrospective_commented", () => ProjectRetrospectiveCommented)
     .with("project_timeline_edited", () => ProjectTimelineEdited)
+    .with("space_added", () => SpaceAdded)
     .with("space_joining", () => SpaceJoining)
     .with("space_member_removed", () => SpaceMemberRemoved)
     .with("space_members_added", () => SpaceMembersAdded)

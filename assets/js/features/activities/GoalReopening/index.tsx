@@ -59,6 +59,10 @@ const GoalClosing: ActivityHandler = {
     );
   },
 
+  feedItemAlignment(_activity: Activity): "items-start" | "items-center" {
+    return "items-center";
+  },
+
   commentCount(activity: Activity): number {
     return activity.commentThread?.commentsCount || 0;
   },

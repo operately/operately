@@ -334,10 +334,12 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
     }
   end
 
+  def serialize_content("space_added", content) do
+    OperatelyWeb.Api.Serializer.serialize(content)
+  end
+
   def serialize_content("space_joining", content) do
-    %{
-      space: serialize_space(content["space"])
-    }
+    OperatelyWeb.Api.Serializer.serialize(content)
   end
 
   def serialize_content("space_member_removed", content) do

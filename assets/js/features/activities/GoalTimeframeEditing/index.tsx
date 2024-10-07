@@ -107,6 +107,10 @@ const GoalTimeframeEditing: ActivityHandler = {
     );
   },
 
+  feedItemAlignment(_activity: Activity) {
+    return "items-start";
+  },
+
   commentCount(activity: Activity): number {
     return activity.commentThread?.commentsCount || 0;
   },
