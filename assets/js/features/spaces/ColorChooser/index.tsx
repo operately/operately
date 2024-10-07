@@ -1,17 +1,14 @@
-import React from "react";
-
-import classnames from "classnames";
-
+import * as React from "react";
 import * as Icons from "@tabler/icons-react";
 
-interface SpaceColorChooserProps {
-  color: string;
-  setColor: (color: string) => void;
-}
+import classnames from "classnames";
+import Forms from "@/components/Forms";
 
-export function SpaceColorChooser({ color, setColor }: SpaceColorChooserProps) {
+export function ColorChooser({ field }: { field: string }) {
+  const [color, setColor] = Forms.useFieldValue(field);
+
   return (
-    <>
+    <Forms.InputField field={field}>
       <h2 className="font-bold">Color</h2>
       <p className="text-sm text-content-dimmed">Select a color theme.</p>
 
@@ -23,7 +20,7 @@ export function SpaceColorChooser({ color, setColor }: SpaceColorChooserProps) {
         <ColorOption setColor={setColor} color="text-purple-500" current={color} />
         <ColorOption setColor={setColor} color="text-pink-500" current={color} />
       </div>
-    </>
+    </Forms.InputField>
   );
 }
 

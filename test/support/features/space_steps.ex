@@ -62,8 +62,8 @@ defmodule Operately.Support.Features.SpaceSteps do
 
   step :fill_in_space_form, ctx, %{name: name, mission: mission, color: color, icon: icon} do
     ctx
-    |> UI.fill_in(Query.text_field("Name"), with: name)
-    |> UI.fill_in(Query.text_field("Purpose"), with: mission)
+    |> UI.fill(testid: "name", with: name)
+    |> UI.fill(testid: "mission", with: mission)
     |> UI.click(testid: "color-#{color}")
     |> UI.click(testid: "icon-#{icon}")
   end
