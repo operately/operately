@@ -36,6 +36,7 @@ defmodule OperatelyWeb.Api.Queries.GetComments do
     |> preload_resources()
     |> filter_by_view_access(person.id, named_binding: :project)
     |> Repo.all()
+    |> load_notifications(person, action: "project_check_in_commented")
   end
 
   defp load(id, :project_retrospective, person) do
@@ -47,6 +48,7 @@ defmodule OperatelyWeb.Api.Queries.GetComments do
     |> preload_resources()
     |> filter_by_view_access(person.id, named_binding: :project)
     |> Repo.all()
+    |> load_notifications(person, action: "project_retrospective_commented")
   end
 
   defp load(id, :goal_update, person) do
@@ -57,6 +59,7 @@ defmodule OperatelyWeb.Api.Queries.GetComments do
     |> preload_resources()
     |> filter_by_view_access(person.id, named_binding: :update)
     |> Repo.all()
+    |> load_notifications(person, action: "goal_check_in_commented")
   end
 
   defp load(id, :message, person) do
@@ -79,6 +82,7 @@ defmodule OperatelyWeb.Api.Queries.GetComments do
     |> preload_resources()
     |> filter_by_view_access(person.id, named_binding: :activity)
     |> Repo.all()
+    |> load_notifications(person, action: "comment_added")
   end
 
   defp preload_resources(query) do
