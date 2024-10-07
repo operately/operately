@@ -34,23 +34,6 @@ defmodule Operately.Features.SpacesTest do
     |> Steps.assert_space_creationg_visible_in_activity_feed(params)
   end
 
-  feature "listing space members", ctx do
-    group = group_fixture(ctx.person, %{name: "Marketing"})
-    person = person_fixture(%{full_name: "Mati Aharoni", company_id: ctx.company.id})
-
-    Operately.Groups.add_members(ctx.person, group.id, [%{
-      id: person.id,
-      permissions: Binding.edit_access(),
-    }])
-
-    ctx
-    |> Steps.visit_home()
-    |> UI.click(title: group.name)
-    |> UI.click(testid: "space-settings")
-    |> UI.click(testid: "add-remove-members")
-    |> UI.assert_has(Query.text(person.full_name))
-  end
-
   feature "joining a space", ctx do
     group = group_fixture(ctx.person, %{name: "Marketing", company_permissions: Binding.view_access()})
     person = person_fixture_with_account(%{full_name: "Mati Aharoni", company_id: ctx.company.id})
@@ -68,42 +51,6 @@ defmodule Operately.Features.SpacesTest do
 
     members = Operately.Groups.list_members(group)
     assert Enum.find(members, fn member -> member.id == ctx.person.id end) != nil
-  end
-
-  feature "adding space members", ctx do
-    group = group_fixture(ctx.person, %{name: "Marketing"})
-    person = person_fixture(%{full_name: "Mati Aharoni", company_id: ctx.company.id})
-
-    ctx
-    |> Steps.visit_home()
-    |> UI.click(title: group.name)
-    |> UI.click(testid: "space-settings")
-    |> UI.click(testid: "add-remove-members")
-    |> UI.click(testid: "add-space-members")
-    |> UI.fill_in(Query.css("#people-search"), with: "Mati")
-    |> UI.assert_text("Mati Aharoni")
-    |> UI.send_keys([:enter])
-    |> UI.click(testid: "submit-space-members")
-    |> UI.assert_has(title: person.full_name)
-  end
-
-  feature "removing space members", ctx do
-    group = group_fixture(ctx.person, %{name: "Marketing"})
-    person = person_fixture(%{full_name: "Mati Aharoni", company_id: ctx.company.id})
-
-    Operately.Groups.add_members(ctx.person, group.id, [%{
-      id: person.id,
-      permissions: Binding.edit_access(),
-    }])
-
-    ctx
-    |> Steps.visit_home()
-    |> UI.click(title: group.name)
-    |> UI.click(testid: "space-settings")
-    |> UI.click(testid: "add-remove-members")
-    |> UI.assert_text(person.full_name)
-    |> UI.click(testid: "remove-member-#{Paths.person_id(person)}")
-    |> UI.refute_text(person.full_name, attempts: [50, 150, 250, 500])
   end
 
   feature "listing projects in a space", ctx do

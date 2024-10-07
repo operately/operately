@@ -201,7 +201,7 @@ export class Paths {
   }
 
   static spaceAccessManagementPath(spaceId: string) {
-    return createCompanyPath(["spaces", spaceId, "access-management"]);
+    return createCompanyPath(["spaces", spaceId, "access"]);
   }
 
   static goalClosePath(goalId: string) {
