@@ -3,7 +3,6 @@ defmodule Operately.Features.SpacesTest do
 
   import Operately.GroupsFixtures
   import Operately.PeopleFixtures
-  import Operately.ProjectsFixtures
 
   alias Operately.Access.Binding
   alias Operately.Support.Features.SpaceSteps, as: Steps
@@ -107,16 +106,13 @@ defmodule Operately.Features.SpacesTest do
   end
 
   feature "listing projects in a space", ctx do
-    group = group_fixture(ctx.person, %{name: "Marketing"})
-    project1 = project_fixture(%{name: "Project 1", company_id: ctx.company.id, creator_id: ctx.person.id, group_id: group.id})
-    project2 = project_fixture(%{name: "Project 2", company_id: ctx.company.id, creator_id: ctx.person.id, group_id: group.id})
-
     ctx
     |> Steps.visit_home()
-    |> UI.click(title: group.name)
-    |> UI.click(testid: "projects-tab")
-    |> UI.assert_text(project1.name)
-    |> UI.assert_text(project2.name)
+    |> Steps.given_a_space_exists()
+    |> Steps.given_the_space_has_several_projects(["Project 1", "Project 2"])
+    |> Steps.given_the_space_has_several_space_wide_projects(["Project 3", "Project 4"])
+    |> Steps.when_clicking_on_projects_tab()
+    |> Steps.assert_projects_are_listed(["Project 1", "Project 2", "Project 3", "Project 4"])
   end
 
   feature "editing space's name and purpose", ctx do
