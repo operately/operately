@@ -1773,19 +1773,6 @@ export interface CreateGoalDiscussionResult {
   id?: string | null;
 }
 
-export interface CreateGroupInput {
-  name?: string | null;
-  mission?: string | null;
-  icon?: string | null;
-  color?: string | null;
-  companyPermissions?: number | null;
-  publicPermissions?: number | null;
-}
-
-export interface CreateGroupResult {
-  space?: Space | null;
-}
-
 export interface CreateProjectInput {
   spaceId?: string | null;
   name?: string | null;
@@ -1801,6 +1788,19 @@ export interface CreateProjectInput {
 
 export interface CreateProjectResult {
   project?: Project | null;
+}
+
+export interface CreateSpaceInput {
+  name?: string | null;
+  mission?: string | null;
+  icon?: string | null;
+  color?: string | null;
+  companyPermissions?: number | null;
+  publicPermissions?: number | null;
+}
+
+export interface CreateSpaceResult {
+  space?: Space | null;
 }
 
 export interface CreateTaskInput {
@@ -2523,12 +2523,12 @@ export class ApiClient {
     return this.post("/create_goal_discussion", input);
   }
 
-  async createGroup(input: CreateGroupInput): Promise<CreateGroupResult> {
-    return this.post("/create_group", input);
-  }
-
   async createProject(input: CreateProjectInput): Promise<CreateProjectResult> {
     return this.post("/create_project", input);
+  }
+
+  async createSpace(input: CreateSpaceInput): Promise<CreateSpaceResult> {
+    return this.post("/create_space", input);
   }
 
   async createTask(input: CreateTaskInput): Promise<CreateTaskResult> {
@@ -2924,11 +2924,11 @@ export async function createGoal(input: CreateGoalInput): Promise<CreateGoalResu
 export async function createGoalDiscussion(input: CreateGoalDiscussionInput): Promise<CreateGoalDiscussionResult> {
   return defaultApiClient.createGoalDiscussion(input);
 }
-export async function createGroup(input: CreateGroupInput): Promise<CreateGroupResult> {
-  return defaultApiClient.createGroup(input);
-}
 export async function createProject(input: CreateProjectInput): Promise<CreateProjectResult> {
   return defaultApiClient.createProject(input);
+}
+export async function createSpace(input: CreateSpaceInput): Promise<CreateSpaceResult> {
+  return defaultApiClient.createSpace(input);
 }
 export async function createTask(input: CreateTaskInput): Promise<CreateTaskResult> {
   return defaultApiClient.createTask(input);
@@ -3401,12 +3401,12 @@ export function useCreateGoalDiscussion(): UseMutationHookResult<
   );
 }
 
-export function useCreateGroup(): UseMutationHookResult<CreateGroupInput, CreateGroupResult> {
-  return useMutation<CreateGroupInput, CreateGroupResult>((input) => defaultApiClient.createGroup(input));
-}
-
 export function useCreateProject(): UseMutationHookResult<CreateProjectInput, CreateProjectResult> {
   return useMutation<CreateProjectInput, CreateProjectResult>((input) => defaultApiClient.createProject(input));
+}
+
+export function useCreateSpace(): UseMutationHookResult<CreateSpaceInput, CreateSpaceResult> {
+  return useMutation<CreateSpaceInput, CreateSpaceResult>((input) => defaultApiClient.createSpace(input));
 }
 
 export function useCreateTask(): UseMutationHookResult<CreateTaskInput, CreateTaskResult> {
@@ -3844,10 +3844,10 @@ export default {
   useCreateGoal,
   createGoalDiscussion,
   useCreateGoalDiscussion,
-  createGroup,
-  useCreateGroup,
   createProject,
   useCreateProject,
+  createSpace,
+  useCreateSpace,
   createTask,
   useCreateTask,
   disconnectGoalFromProject,

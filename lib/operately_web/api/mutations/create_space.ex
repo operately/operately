@@ -2,7 +2,8 @@ defmodule OperatelyWeb.Api.Mutations.CreateSpace do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
-  import Operately.Access.Filters, only: [filter_by_full_access: 2]
+  alias Operately.Companies.Company
+  alias Operately.Companies.Permissions
 
   inputs do
     field :name, :string
@@ -19,19 +20,23 @@ defmodule OperatelyWeb.Api.Mutations.CreateSpace do
   end
 
   def call(conn, inputs) do
-    author = me(conn)
-
-    if has_permissions?(author) do
-      {:ok, group} = Operately.Groups.create_group(author, inputs)
-      {:ok, %{group: Serializer.serialize(group, level: :essential)}}
-    else
-      {:error, :forbidden}
-    end
+    Action.new()
+    |> run(:me, fn -> find_me(conn) end)
+    |> run(:company, fn ctx -> Company.get(ctx.me, id: ctx.me.company_id) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.company.request_info.access_level, :can_create_space) end)
+    |> run(:space, fn ctx -> Operately.Groups.create_group(ctx.me, inputs) end)
+    |> run(:serialized, fn ctx -> {:ok, %{group: Serializer.serialize(ctx.space, level: :essential)}} end)
+    |> respond()
   end
 
-  defp has_permissions?(person) do
-    from(c in Operately.Companies.Company, where: c.id == ^person.company_id)
-    |> filter_by_full_access(person.id)
-    |> Repo.exists?()
+  defp respond(result) do
+    case result do
+      {:ok, ctx} -> {:ok, ctx.serialized}
+      {:error, :company, _} -> {:error, :not_found}
+      {:error, :check_permissions, _} -> {:error, :forbidden}
+      {:error, :space, _} -> {:error, :not_found}
+      {:error, :operation, _} -> {:error, :internal_server_error}
+      _ -> {:error, :internal_server_error}
+    end
   end
 end

@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.CreateGroupTest do
+defmodule OperatelyWeb.Api.Mutations.CreateSpaceTest do
   use OperatelyWeb.TurboCase
 
   alias Operately.Access
@@ -6,7 +6,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateGroupTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, :create_group, %{})
+      assert {401, _} = mutation(ctx.conn, :create_space, %{})
     end
   end
 
@@ -37,7 +37,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateGroupTest do
     end
   end
 
-  describe "create_group functionality" do
+  describe "create_space functionality" do
     setup :register_and_log_in_account
 
     test "creates space", ctx do
@@ -53,7 +53,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateGroupTest do
   #
 
   defp request(conn) do
-    mutation(conn, :create_group, %{
+    mutation(conn, :create_space, %{
       name: "some name",
       mission: "some mission",
       icon: "IconBuildingEstate",
