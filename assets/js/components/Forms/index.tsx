@@ -4,6 +4,7 @@ import { TextInput } from "./TextInput";
 import { SelectBox } from "./SelectBox";
 import { FieldGroup } from "./FieldGroup";
 import { SelectGoal } from "./SelectGoal";
+import { InputField } from "./FieldGroup";
 import { RadioButtons } from "./RadioButtons";
 import { SelectPerson } from "./SelectPerson";
 import { RichTextArea } from "./RichTextArea";
@@ -24,6 +25,7 @@ export default {
   SelectBox,
   FieldGroup,
   SelectGoal,
+  InputField,
   RadioButtons,
   RichTextArea,
   SelectPerson,
