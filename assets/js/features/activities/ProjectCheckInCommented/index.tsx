@@ -52,6 +52,10 @@ const ProjectCheckInCommented: ActivityHandler = {
     return <Summary jsonContent={commentContent} characterCount={200} />;
   },
 
+  feedItemAlignment(_activity: Activity): "items-start" | "items-center" {
+    return "items-start";
+  },
+
   commentCount(_activity: Activity): number {
     throw new Error("Not implemented");
   },

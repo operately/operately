@@ -91,6 +91,8 @@ defmodule Operately.Support.Features.SpaceSteps do
 
     members = Operately.Groups.list_members(group)
     assert Enum.find(members, fn member -> member.id == ctx.person.id end) != nil
+
+    ctx
   end
 
   step :add_new_member, ctx, attrs do
@@ -177,4 +179,15 @@ defmodule Operately.Support.Features.SpaceSteps do
       ctx |> UI.assert_text(name)
     end)
   end
+
+  step :assert_space_creationg_visible_in_activity_feed, ctx, attrs do
+    space = Operately.Groups.get_group_by_name(attrs.name)
+
+    ctx
+    |> UI.visit(Paths.space_path(ctx.company, space))
+    |> UI.assert_feed_item(ctx.person, "created this space")
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.assert_feed_item(ctx.person, "created the #{attrs.name} space")
+  end
+
 end

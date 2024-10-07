@@ -31,6 +31,7 @@ defmodule Operately.Features.SpacesTest do
     |> Steps.submit_space_form()
     |> Steps.assert_space_created(params)
     |> Steps.assert_creator_is_space_member(params)
+    |> Steps.assert_space_creationg_visible_in_activity_feed(params)
   end
 
   feature "listing space members", ctx do
