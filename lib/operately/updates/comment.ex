@@ -13,6 +13,9 @@ defmodule Operately.Updates.Comment do
 
     has_many :reactions, Operately.Updates.Reaction, foreign_key: :entity_id, where: [entity_type: :comment]
 
+    # populated with after load hooks
+    field :notification, :any, virtual: true
+
     timestamps()
     requester_access_level()
   end

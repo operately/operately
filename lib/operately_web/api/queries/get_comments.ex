@@ -67,6 +67,7 @@ defmodule OperatelyWeb.Api.Queries.GetComments do
     |> preload_resources()
     |> filter_by_view_access(person.id, named_binding: :message)
     |> Repo.all()
+    |> load_notifications(person, action: "discussion_comment_submitted")
   end
 
   defp load(id, :comment_thread, person) do
@@ -85,5 +86,28 @@ defmodule OperatelyWeb.Api.Queries.GetComments do
       preload: [:author, reactions: :person],
       order_by: [asc: c.inserted_at]
     )
+  end
+
+  defp load_notifications(comments, person, action: action) do
+    comment_ids = Enum.map(comments, &(&1.id))
+
+    notifications =
+      from(n in Operately.Notifications.Notification,
+        join: a in assoc(n, :activity),
+        where: a.action == ^action,
+        where: a.content["comment_id"] in ^comment_ids,
+        where: n.person_id == ^person.id,
+        where: not n.read,
+        preload: [activity: a],
+        select: n
+      )
+      |> Repo.all()
+
+    Enum.map(comments, fn comment ->
+      case Enum.find(notifications, &(&1.activity.content["comment_id"] == comment.id)) do
+        nil -> comment
+        notification -> Map.put(comment, :notification, notification)
+      end
+    end)
   end
 end

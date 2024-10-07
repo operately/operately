@@ -8,6 +8,7 @@ import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
 import RichContent from "@/components/RichContent";
 import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
+import { useClearNotificationOnIntersection } from "@/features/notifications";
 
 import { FormState } from "./form";
 import { useBoolState } from "@/utils/useBoolState";
@@ -165,8 +166,11 @@ function MilestoneReopened({ comment }) {
 
 function ViewComment({ comment, onEdit, commentParentType }) {
   const me = useMe()!;
+  const commentRef = useClearNotificationOnIntersection(comment.notification);
+
   const entity = { id: comment.id, type: "comment", parentType: commentParentType };
   const addReactionForm = useReactionsForm(entity, comment.reactions);
+
   const testId = "comment-" + comment.id;
   const content = JSON.parse(comment.content)["message"];
 
@@ -174,6 +178,7 @@ function ViewComment({ comment, onEdit, commentParentType }) {
     <div
       className="flex items-start justify-between gap-3 py-3 not-first:border-t border-stroke-base text-content-accent relative"
       data-test-id={testId}
+      ref={commentRef}
     >
       <div className="shrink-0">
         <Avatar person={comment.author} size="normal" />

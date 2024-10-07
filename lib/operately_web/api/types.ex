@@ -869,6 +869,7 @@ defmodule OperatelyWeb.Api.Types do
     field :content, :string
     field :author, :person
     field :reactions, list_of(:reaction)
+    field :notification, :notification
   end
 
   union :assignment_resource, types: [
