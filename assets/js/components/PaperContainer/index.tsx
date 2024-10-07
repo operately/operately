@@ -24,7 +24,6 @@
 import React from "react";
 
 import classNames from "classnames";
-import { useLoaderData, useRevalidator } from "react-router-dom";
 
 import { Context } from "./Context";
 export { DimmedSection } from "./DimmedSection";
@@ -113,20 +112,6 @@ function FancyLineSeparator() {
       }}
     />
   );
-}
-
-export function useLoadedData() {
-  const [fetchVersion, setFetchVersion] = React.useState(0);
-
-  const data = useLoaderData();
-  const { revalidate } = useRevalidator();
-
-  const refetch = React.useCallback(() => {
-    setFetchVersion((v) => v + 1);
-    revalidate();
-  }, [revalidate]);
-
-  return [data, refetch, fetchVersion];
 }
 
 export function usePaperSizeHelpers(): { size: Size; negHor: string; negTop: string; horPadding: string } {
