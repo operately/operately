@@ -87,7 +87,7 @@ defmodule Operately.Features.SpacesTest do
     |> UI.assert_has(Query.text("Let the world know about our products 2"))
   end
 
-  feature "adding space members (access management page)", ctx do
+  feature "adding space members", ctx do
     group = group_fixture(ctx.person, %{name: "Marketing"})
     member = person_fixture_with_account(%{full_name: "Mati Aharoni", company_id: ctx.company.id})
 
@@ -100,7 +100,7 @@ defmodule Operately.Features.SpacesTest do
     |> Steps.assert_members_added_email_sent(member: member, title: group.name)
   end
 
-  feature "removing space members (access management page)", ctx do
+  feature "removing space members", ctx do
     [space, member] = Steps.given_space_with_member_exists(ctx, %{
       person_name: "Mati Aharoni",
       space_name: "Marketing",
