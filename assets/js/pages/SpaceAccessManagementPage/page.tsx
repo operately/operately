@@ -25,6 +25,7 @@ export function Page() {
         <Navigation space={space} />
 
         <Paper.Body>
+          <Title />
           <AddMembers space={space} />
           <Spacer size={4} />
           <MembersAccessLevel />
@@ -33,6 +34,19 @@ export function Page() {
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
+  );
+}
+
+function Title() {
+  return (
+    <div className="rounded-t-[20px] pb-12">
+      <div className="flex items-center justify-between">
+        <div>
+          <div className="text-2xl font-extrabold ">Team &amp; Access</div>
+          <div className="text-medium">Manage the team and access to this space</div>
+        </div>
+      </div>
+    </div>
   );
 }
 
