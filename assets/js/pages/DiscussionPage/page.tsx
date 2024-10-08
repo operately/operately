@@ -20,11 +20,13 @@ import { useDiscussionCommentsChangeSignal } from "@/models/comments";
 import { useMe } from "@/contexts/CurrentUserContext";
 import { Paths, compareIds } from "@/routes/paths";
 import { CurrentSubscriptions } from "@/features/Subscriptions";
+import { useClearNotificationsOnLoad } from "@/features/notifications";
 
 export function Page() {
   const me = useMe()!;
   const { discussion, comments } = useLoadedData();
   const refresh = useRefresh();
+  useClearNotificationsOnLoad(discussion.notifications || []);
 
   const commentsForm = useForDiscussion(discussion, comments);
   useDiscussionCommentsChangeSignal(refresh, { discussionId: discussion.id! });

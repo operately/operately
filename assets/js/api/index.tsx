@@ -602,6 +602,7 @@ export interface Discussion {
   comments?: Comment[] | null;
   subscriptionList?: SubscriptionList | null;
   potentialSubscribers?: Subscriber[] | null;
+  notifications?: Notification[] | null;
 }
 
 export interface EditMemberPermissionsInput {
@@ -2018,6 +2019,12 @@ export interface MarkNotificationAsReadInput {
 
 export interface MarkNotificationAsReadResult {}
 
+export interface MarkNotificationsAsReadInput {
+  ids?: string[] | null;
+}
+
+export interface MarkNotificationsAsReadResult {}
+
 export interface MoveProjectToSpaceInput {
   projectId?: string | null;
   spaceId?: string | null;
@@ -2628,6 +2635,10 @@ export class ApiClient {
     return this.post("/mark_notification_as_read", input);
   }
 
+  async markNotificationsAsRead(input: MarkNotificationsAsReadInput): Promise<MarkNotificationsAsReadResult> {
+    return this.post("/mark_notifications_as_read", input);
+  }
+
   async moveProjectToSpace(input: MoveProjectToSpaceInput): Promise<MoveProjectToSpaceResult> {
     return this.post("/move_project_to_space", input);
   }
@@ -3016,6 +3027,11 @@ export async function markNotificationAsRead(
   input: MarkNotificationAsReadInput,
 ): Promise<MarkNotificationAsReadResult> {
   return defaultApiClient.markNotificationAsRead(input);
+}
+export async function markNotificationsAsRead(
+  input: MarkNotificationsAsReadInput,
+): Promise<MarkNotificationsAsReadResult> {
+  return defaultApiClient.markNotificationsAsRead(input);
 }
 export async function moveProjectToSpace(input: MoveProjectToSpaceInput): Promise<MoveProjectToSpaceResult> {
   return defaultApiClient.moveProjectToSpace(input);
@@ -3557,6 +3573,15 @@ export function useMarkNotificationAsRead(): UseMutationHookResult<
   );
 }
 
+export function useMarkNotificationsAsRead(): UseMutationHookResult<
+  MarkNotificationsAsReadInput,
+  MarkNotificationsAsReadResult
+> {
+  return useMutation<MarkNotificationsAsReadInput, MarkNotificationsAsReadResult>((input) =>
+    defaultApiClient.markNotificationsAsRead(input),
+  );
+}
+
 export function useMoveProjectToSpace(): UseMutationHookResult<MoveProjectToSpaceInput, MoveProjectToSpaceResult> {
   return useMutation<MoveProjectToSpaceInput, MoveProjectToSpaceResult>((input) =>
     defaultApiClient.moveProjectToSpace(input),
@@ -3899,6 +3924,8 @@ export default {
   useMarkAllNotificationsAsRead,
   markNotificationAsRead,
   useMarkNotificationAsRead,
+  markNotificationsAsRead,
+  useMarkNotificationsAsRead,
   moveProjectToSpace,
   useMoveProjectToSpace,
   newInvitationToken,
