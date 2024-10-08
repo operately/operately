@@ -25,7 +25,7 @@ function SectionTitle({ title, subtitle }: SectionTitleProps) {
   return (
     <div className="mb-2">
       <h2 className="font-bold text-lg">{title}</h2>
-      {subtitle && <p className="text-sm">{subtitle}</p>}
+      {subtitle && <p className="text-sm mb-4">{subtitle}</p>}
     </div>
   );
 }
