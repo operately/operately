@@ -44,7 +44,7 @@ defmodule Operately.Operations.CompanyAdding do
   defp insert_group(multi) do
     attrs = %{
       name: "Company",
-      mission: "Everyone in the company",
+      mission: "Organization-wide announcements and resources",
       icon: "IconBuildingEstate",
       color: "text-cyan-500",
       company_permissions: Binding.view_access(),
