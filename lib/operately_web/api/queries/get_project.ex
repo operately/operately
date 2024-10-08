@@ -40,7 +40,7 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
     Project.get(requester, id: id, opts: [
       with_deleted: true,
       preload: preload(inputs),
-      after_load: after_load(inputs),
+      after_load: after_load(inputs) ++ [load_unread_notifications(requester)],
     ])
   end
 
@@ -83,6 +83,12 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
 
       true ->
         :ok
+    end
+  end
+
+  defp load_unread_notifications(person) do
+    fn project ->
+      Project.load_unread_notifications(project, person)
     end
   end
 end

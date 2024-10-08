@@ -14,6 +14,8 @@ import { TimelineSection } from "./TimelineSection";
 import { ResourcesSection } from "./ResourcesSection";
 import { ContributorsSection } from "./ContributorsSection";
 import { ProjectDescriptionSection } from "./ProjectDescriptionSection";
+import { useClearNotificationsOnLoad } from "@/features/notifications";
+import { assertPresent } from "@/utils/assertions";
 
 interface LoaderResult {
   project: Projects.Project;
@@ -40,6 +42,9 @@ export async function loader({ params }): Promise<LoaderResult> {
 
 export function Page() {
   const { project } = Pages.useLoadedData() as LoaderResult;
+
+  assertPresent(project.notifications, "Project notifications must be defined");
+  useClearNotificationsOnLoad(project.notifications);
 
   return (
     <Pages.Page title={project.name!} testId="project-page">
