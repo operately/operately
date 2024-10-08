@@ -7,7 +7,7 @@ import * as Projects from "@/models/projects";
 
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { useLoadedData } from "./loader";
-import { SpaceCardGrid, SpaceCard } from "@/components/SpaceCards";
+import { SpaceCardGrid, SpaceCard } from "@/features/spaces/SpaceCards";
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
 import { Paths, compareIds } from "@/routes/paths";
 
