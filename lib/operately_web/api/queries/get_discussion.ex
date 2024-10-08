@@ -42,7 +42,7 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussion do
   defp load(ctx, inputs) do
     Message.get(ctx.me, id: ctx.id, opts: [
       preload: preload(inputs),
-      after_load: after_load(inputs),
+      after_load: after_load(inputs) ++ [load_unread_notifications(ctx.me)],
     ])
   end
 
@@ -61,5 +61,11 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussion do
     Inputs.parse_includes(inputs, [
       include_potential_subscribers: &Message.set_potential_subscribers/1,
     ])
+  end
+
+  defp load_unread_notifications(person) do
+    fn message ->
+      Message.load_unread_notifications(message, person)
+    end
   end
 end

@@ -9,6 +9,11 @@ defmodule Operately.Notifications do
     Repo.all(Notification)
   end
 
+  def list_notifications(ids) when is_list(ids) do
+    from(n in Notification, where: n.id in ^ids)
+    |> Repo.all()
+  end
+
   def get_notification!(id), do: Repo.get!(Notification, id)
 
   def create_notification(attrs \\ %{}) do
@@ -40,6 +45,18 @@ defmodule Operately.Notifications do
     OperatelyWeb.ApiSocket.broadcast!("api:unread_notifications_count:#{notification.person_id}")
 
     {:ok, notification}
+  end
+
+  def mark_as_read(notifications, person) when is_list(notifications) do
+    now = DateTime.utc_now()
+    ids = Enum.map(notifications, &(&1.id))
+
+    from(n in Notification, where: n.id in ^ids and n.person_id == ^person.id)
+    |> Repo.update_all([set: [read: true, read_at: now]])
+
+    OperatelyWeb.ApiSocket.broadcast!("api:unread_notifications_count:#{person.id}")
+
+    {:ok, true}
   end
 
   def mark_all_as_read(person) do
