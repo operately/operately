@@ -26,7 +26,7 @@ defmodule OperatelyWeb.Api.Queries.GetSpaceTest do
 
       assert {200, %{space: space} = _res} = query(ctx.conn, :get_space, %{id: Paths.space_id(space)})
       assert space.name == "Company"
-      assert space.mission == "Everyone in the company"
+      assert space.mission == "Organization-wide announcements and resources"
       assert space.is_company_space
     end
 
