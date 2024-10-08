@@ -10,7 +10,7 @@ interface LoadedData {
 
 export async function loader({ params }): Promise<LoadedData> {
   const companyPromise = Companies.getCompany({ id: params.companyId }).then((d) => d.company!);
-  const spacePromise = Spaces.getSpace({ id: params.id, includeMembers: true });
+  const spacePromise = Spaces.getSpace({ id: params.id, includeMembers: true, includeAccessLevels: true });
 
   return {
     company: await companyPromise,

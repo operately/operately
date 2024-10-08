@@ -13,6 +13,7 @@ import { Feed, useItemsQuery } from "@/features/Feed";
 import { PrimaryButton } from "@/components/Buttons";
 
 import { useJoinSpace } from "@/models/spaces";
+import { PrivacyIndicator } from "@/features/spaces/PrivacyIndicator";
 
 export function Page() {
   const { space } = useLoadedData();
@@ -51,7 +52,12 @@ function SpaceIcon({ space }: { space: Spaces.Space }) {
 }
 
 function SpaceName({ space }: { space: Spaces.Space }) {
-  return <div className="font-bold text-4xl text-center">{space.name}</div>;
+  return (
+    <div className="flex items-center gap-2 justify-center">
+      <PrivacyIndicator space={space} size={30} />
+      <div className="font-bold text-4xl text-center">{space.name}</div>
+    </div>
+  );
 }
 
 function SpaceMission({ space }: { space: Spaces.Space }) {

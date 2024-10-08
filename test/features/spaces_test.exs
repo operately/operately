@@ -14,6 +14,7 @@ defmodule Operately.Features.SpacesTest do
     |> Steps.given_two_spaces_exists()
     |> Steps.visit_home()
     |> Steps.assert_all_spaces_are_listed()
+    |> Steps.assert_privacy_indicator_is_visible()
   end
 
   feature "creating a new space", ctx do
@@ -32,6 +33,14 @@ defmodule Operately.Features.SpacesTest do
     |> Steps.assert_space_created(params)
     |> Steps.assert_creator_is_space_member(params)
     |> Steps.assert_space_creationg_visible_in_activity_feed(params)
+  end
+
+  feature "viewing space information", ctx do
+    ctx
+    |> Steps.given_a_space_exists()
+    |> Steps.visit_home()
+    |> Steps.click_on_space()
+    |> Steps.assert_space_name_mission_and_privacy_indicator()
   end
 
   feature "joining a space", ctx do
