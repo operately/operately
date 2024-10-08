@@ -104,24 +104,21 @@ defmodule Operately.Support.Features.SpaceSteps do
   end
 
   step :remove_member, ctx, person do
-    id = OperatelyWeb.Paths.person_id(person)
-
     ctx
-    |> UI.click(testid: "options-" <> id)
-    |> UI.click(testid: "remove-" <> id)
+    |> UI.click(testid: UI.testid(["member", "menu", person.full_name]))
+    |> UI.click(testid: "remove-member")
     |> UI.sleep(500)
   end
 
   step :assert_member_added, ctx, name do
     ctx
-    |> UI.find(UI.query(testid: "members-list"), fn members ->
-        UI.assert_text(members, name)
+    |> UI.find(UI.query(testid: "members-section"), fn members ->
+      UI.assert_text(members, name)
     end)
   end
 
   step :assert_member_removed, ctx, person do
-    ctx
-    |> UI.refute_text(person.full_name, testid: "members-list")
+    ctx |> UI.refute_text(person.full_name, testid: "members-section")
   end
 
   step :assert_members_added_notification_sent, ctx, params do
