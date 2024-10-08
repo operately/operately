@@ -54,6 +54,7 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     Enum.each(assignees, fn name ->
       ctx
       |> UI.select_person_in(id: "task-assignees-input", name: name)
+      |> UI.sleep(300)
     end)
 
     ctx

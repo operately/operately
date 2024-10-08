@@ -10,7 +10,9 @@ interface LoaderData {
 export async function loader({ params }): Promise<LoaderData> {
   return {
     company: await Companies.getCompany({ id: params.companyId }).then((d) => d.company!),
-    spaces: await Spaces.getSpaces({}),
+    spaces: await Spaces.getSpaces({
+      includeAccessLevels: true,
+    }),
   };
 }
 
