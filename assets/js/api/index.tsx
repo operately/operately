@@ -803,6 +803,7 @@ export interface ProjectCheckIn {
   reactions?: Reaction[] | null;
   subscriptionList?: SubscriptionList | null;
   potentialSubscribers?: Subscriber[] | null;
+  notifications?: Notification[] | null;
 }
 
 export interface ProjectContributor {

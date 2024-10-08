@@ -39,7 +39,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckIn do
   defp load(ctx, inputs) do
     CheckIn.get(ctx.me, id: ctx.id, opts: [
       preload: preload(inputs),
-      after_load: after_load(inputs),
+      after_load: after_load(inputs) ++ [load_unread_notifications(ctx.me)],
     ])
   end
 
@@ -59,5 +59,11 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckIn do
       include_project: &Project.set_permissions/1,
       include_potential_subscribers: &CheckIn.set_potential_subscribers/1,
     ])
+  end
+
+  defp load_unread_notifications(person) do
+    fn check_in ->
+      CheckIn.load_unread_notifications(check_in, person)
+    end
   end
 end
