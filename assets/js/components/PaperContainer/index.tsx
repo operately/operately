@@ -29,6 +29,7 @@ import { Context } from "./Context";
 export { DimmedSection } from "./DimmedSection";
 export { Banner, Header } from "./Banner";
 export { Navigation, NavItem, NavSeparator, NavigateBack } from "./Navigation";
+export * from "./Section";
 
 type Size = "small" | "medium" | "large" | "xlarge" | "xxlarge";
 

@@ -19,8 +19,7 @@ import { match } from "ts-pattern";
 
 import { OtherPeople } from "./OtherPeople";
 import { useLoadedData } from "./loader";
-import { Section } from "./Section";
-import { BorderedRow } from "./BorderedRow";
+import { BorderedRow } from "@/components/BorderedRow";
 export { loader } from "./loader";
 
 export function Page() {
@@ -77,7 +76,7 @@ function GeneralAccess() {
   const editPath = Paths.projectEditPermissionsPath(project.id!);
 
   return (
-    <Section title="General Access">
+    <Paper.Section title="General Access">
       <BorderedRow>
         <AccessLevel
           anonymous={project.accessLevels?.public!}
@@ -90,7 +89,7 @@ function GeneralAccess() {
           Edit
         </SecondaryButton>
       </BorderedRow>
-    </Section>
+    </Paper.Section>
   );
 }
 
@@ -100,7 +99,7 @@ function Champion() {
   if (!champion) return <ChampionPlaceholder />;
 
   return (
-    <Section title="Champion">
+    <Paper.Section title="Champion">
       <div className="flex items-center justify-between py-2 border-y border-stroke-dimmed">
         <div className="flex items-center gap-2">
           <ContributorAvatar contributor={champion} />
@@ -112,7 +111,7 @@ function Champion() {
           <ContributorMenu contributor={champion} />
         </div>
       </div>
-    </Section>
+    </Paper.Section>
   );
 }
 
@@ -122,7 +121,7 @@ function Reviewer() {
   if (!reviewer) return <ReviewerPlaceholder />;
 
   return (
-    <Section title="Reviewer">
+    <Paper.Section title="Reviewer">
       <div className="flex items-center justify-between py-2 border-y border-stroke-dimmed">
         <div className="flex items-center gap-2">
           <ContributorAvatar contributor={reviewer} />
@@ -134,7 +133,7 @@ function Reviewer() {
           <ContributorMenu contributor={reviewer} />
         </div>
       </div>
-    </Section>
+    </Paper.Section>
   );
 }
 
@@ -158,7 +157,7 @@ function ReviewerPlaceholder() {
   const path = Paths.projectContributorsAddPath(project.id!, { type: "reviewer" });
 
   return (
-    <Section title="Reviewer">
+    <Paper.Section title="Reviewer">
       <BorderedRow>
         <div className="flex items-center gap-2">
           <PlaceholderAvatar size="lg" />
@@ -174,7 +173,7 @@ function ReviewerPlaceholder() {
           </SecondaryButton>
         </div>
       </BorderedRow>
-    </Section>
+    </Paper.Section>
   );
 }
 
@@ -192,7 +191,7 @@ function ChampionPlaceholder() {
   const path = Paths.projectContributorsAddPath(project.id!, { type: "champion" });
 
   return (
-    <Section title="Champion">
+    <Paper.Section title="Champion">
       <div className="flex items-center justify-between py-2 border-y border-stroke-dimmed">
         <div className="flex items-center gap-2">
           <PlaceholderAvatar size="lg" />
@@ -205,7 +204,7 @@ function ChampionPlaceholder() {
           </SecondaryButton>
         </div>
       </div>
-    </Section>
+    </Paper.Section>
   );
 }
 
@@ -215,11 +214,11 @@ function Contributors() {
   if (contributors.length === 0) return null;
 
   return (
-    <Section title="Contributors">
+    <Paper.Section title="Contributors">
       {contributors.map((contrib) => (
         <Contributor contributor={contrib} key={contrib.id} />
       ))}
-    </Section>
+    </Paper.Section>
   );
 }
 
