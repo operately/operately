@@ -21,6 +21,7 @@ defmodule Operately.Projects.CheckIn do
 
     # populated with after load hooks
     field :potential_subscribers, :any, virtual: true
+    field :notifications, :any, virtual: true, default: []
 
     timestamps()
     requester_access_level()
@@ -38,6 +39,26 @@ defmodule Operately.Projects.CheckIn do
   end
 
   # After load hooks
+
+  import Ecto.Query, only: [from: 2]
+
+  def load_unread_notifications(check_in = %__MODULE__{}, person) do
+    actions = [
+      "project_check_in_submitted",
+      "project_check_in_acknowledged"
+    ]
+
+    notifications =
+      from(n in Operately.Notifications.Notification,
+        join: a in assoc(n, :activity),
+        where: a.action in ^actions and a.content["check_in_id"] == ^check_in.id,
+        where: n.person_id == ^person.id and not n.read,
+        select: n
+      )
+      |> Repo.all()
+
+    Map.put(check_in, :notifications, notifications)
+  end
 
   def set_potential_subscribers(check_in = %__MODULE__{}) do
     subs =

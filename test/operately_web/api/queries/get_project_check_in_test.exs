@@ -1,11 +1,11 @@
 defmodule OperatelyWeb.Api.Queries.GetProjectCheckInTest do
   use OperatelyWeb.TurboCase
 
-  import OperatelyWeb.Api.Serializer
   import Operately.PeopleFixtures
   import Operately.ProjectsFixtures
   import Operately.GroupsFixtures
   import Operately.NotificationsFixtures
+  import Operately.ActivitiesFixtures
 
   alias Operately.Repo
   alias Operately.Access.Binding
@@ -97,6 +97,19 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckInTest do
       |> Factory.add_space(:space)
       |> Factory.add_project(:project, :space)
       |> Factory.add_project_check_in(:check_in, :project, :creator)
+    end
+
+    test "includes notifications by default", ctx do
+      assert {200, res} = query(ctx.conn, :get_project_check_in, %{id: Paths.project_check_in_id(ctx.check_in)})
+      assert res.project_check_in.notifications == []
+
+      a = activity_fixture(author_id: ctx.creator.id, action: "project_check_in_submitted", content: %{check_in_id: ctx.check_in.id})
+      n = notification_fixture(person_id: ctx.creator.id, read: false, activity_id: a.id)
+
+      assert {200, res} = query(ctx.conn, :get_project_check_in, %{id: Paths.project_check_in_id(ctx.check_in)})
+
+      assert length(res.project_check_in.notifications) == 1
+      assert Serializer.serialize(n) == hd(res.project_check_in.notifications)
     end
 
     test "include_author", ctx do
@@ -219,7 +232,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckInTest do
     })
 
     check_in_fixture(%{author_id: ctx.creator.id, project_id: project.id})
-    |> serialize(level: :full)
+    |> Serializer.serialize(level: :full)
   end
 
   defp add_person_to_space(ctx) do

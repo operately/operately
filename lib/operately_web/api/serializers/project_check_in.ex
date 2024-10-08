@@ -12,6 +12,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.CheckIn do
       author: OperatelyWeb.Api.Serializer.serialize(check_in.author),
       subscription_list: OperatelyWeb.Api.Serializer.serialize(check_in.subscription_list),
       potential_subscribers: OperatelyWeb.Api.Serializer.serialize(check_in.potential_subscribers),
+      notifications: OperatelyWeb.Api.Serializer.serialize(check_in.notifications),
     }
   end
 

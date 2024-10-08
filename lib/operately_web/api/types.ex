@@ -955,6 +955,7 @@ defmodule OperatelyWeb.Api.Types do
     field :reactions, list_of(:reaction)
     field :subscription_list, :subscription_list
     field :potential_subscribers, list_of(:subscriber)
+    field :notifications, list_of(:notification)
   end
 
   object :activity_content_project_check_in_commented do
