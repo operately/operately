@@ -17,11 +17,6 @@ export enum PermissionOptions {
   SECRET = "secret",
 }
 
-export interface PermissionOption {
-  value: PermissionLevels;
-  label: string;
-}
-
 export const VIEW_ACCESS = {
   value: PermissionLevels.VIEW_ACCESS,
   label: "View Access",

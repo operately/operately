@@ -9,19 +9,19 @@ import { Paths } from "@/routes/paths";
 import { Space } from "@/models/spaces";
 
 import { useLoadedData } from "./loader";
-import { MembersAccessLevel } from "./MembersAccessLevel";
 import { AddMembers } from "./AddMembers";
 import { SpaceAccessLevel } from "./SpaceAccessLevel";
 
 import { usePermissionsState } from "@/features/Permissions/usePermissionsState";
 import { Spacer } from "@/components/Spacer";
-import { joinStr } from "@/utils/strings";
 import { assertPresent } from "@/utils/assertions";
 import { PermissionLevels } from "@/features/Permissions";
-import { ProjectAccessLevelBadge } from "@/components/Badges/AccessLevelBadges";
 import { BorderedRow } from "@/components/BorderedRow";
-import { ContributorAvatar } from "@/components/ContributorAvatar";
+import { Menu, MenuActionItem } from "@/components/Menu";
+import { useRemoveGroupMember } from "@/models/spaces";
+
 import Avatar from "@/components/Avatar";
+import { createTestId } from "@/utils/testid";
 
 export function Page() {
   const { space, company } = useLoadedData();
@@ -35,9 +35,9 @@ export function Page() {
         <Paper.Body>
           <Title />
           <SpaceManagers />
+          <SpaceMembers />
           <AddMembers space={space} />
           <Spacer size={4} />
-          <MembersAccessLevel />
           <SpacerWithLine />
           <SpaceAccessLevel state={permissions} />
         </Paper.Body>
@@ -79,19 +79,30 @@ function SpaceManagers() {
 
   assertPresent(space.members, "Space members must be present");
 
-  const subtitle = joinStr(
-    "They have unrestricted access to resources in this space, including managing the team and access levels.",
-  );
-
+  const subtitle = "Managers have full access to resources in this space, including team and access management.";
   const managers = space.members.filter((member) => member.accessLevel === PermissionLevels.FULL_ACCESS);
 
   return (
     <Paper.Section title="Space Managers" subtitle={subtitle}>
-      <div className="mt-4">
-        {managers.map((contrib) => (
-          <Member member={contrib} key={contrib.id} />
-        ))}
-      </div>
+      {managers.map((contrib) => (
+        <Member member={contrib} key={contrib.id} />
+      ))}
+    </Paper.Section>
+  );
+}
+
+function SpaceMembers() {
+  const { space } = useLoadedData();
+
+  assertPresent(space.members, "Space members must be present");
+
+  const managers = space.members.filter((member) => member.accessLevel !== PermissionLevels.FULL_ACCESS);
+
+  return (
+    <Paper.Section title="Members">
+      {managers.map((contrib) => (
+        <Member member={contrib} key={contrib.id} />
+      ))}
     </Paper.Section>
   );
 }
@@ -103,7 +114,9 @@ function Member({ member }: { member: People.Person }) {
         <Avatar person={member} size={40} />
         <MemberName member={member} />
       </div>
-      <div className="flex items-center gap-4"></div>
+      <div className="flex items-center gap-4">
+        <MemberMenu member={member} />
+      </div>
     </BorderedRow>
   );
 }
@@ -114,5 +127,30 @@ function MemberName({ member }: { member: People.Person }) {
       <div className="font-bold flex items-center gap-2">{member.fullName}</div>
       <div className="text-sm font-medium flex items-center">{member.title}</div>
     </div>
+  );
+}
+
+function MemberMenu({ member }: { member: People.Person }) {
+  return (
+    <Menu testId={createTestId("member-menu", member!.fullName!)} size="medium">
+      <RemoveMemberMenuItem member={member} />
+    </Menu>
+  );
+}
+
+function RemoveMemberMenuItem({ member }: { member: People.Person }) {
+  const { space } = useLoadedData();
+  const refresh = Pages.useRefresh();
+  const [remove] = useRemoveGroupMember();
+
+  const handleClick = async () => {
+    await remove({ groupId: space.id, memberId: member.id });
+    refresh();
+  };
+
+  return (
+    <MenuActionItem danger={true} onClick={handleClick} testId="remove-member">
+      Remove from space
+    </MenuActionItem>
   );
 }
