@@ -789,6 +789,7 @@ export interface Project {
   reviewer?: Person | null;
   accessLevels?: AccessLevels | null;
   potentialSubscribers?: Subscriber[] | null;
+  notifications?: Notification[] | null;
 }
 
 export interface ProjectCheckIn {
