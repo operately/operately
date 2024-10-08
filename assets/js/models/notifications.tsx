@@ -4,7 +4,14 @@ import Api from "@/api";
 import { useUnreadNotificationCount } from "@/api/socket";
 
 export type { SubscriptionList, Subscription, Subscriber, Notification } from "@/api";
-export { useSubscribeToNotifications, useUnsubscribeFromNotifications, useEditSubscriptionsList } from "@/api";
+export {
+  useSubscribeToNotifications,
+  useUnsubscribeFromNotifications,
+  useEditSubscriptionsList,
+  useMarkAllNotificationsAsRead,
+  useMarkNotificationAsRead,
+  useMarkNotificationsAsRead,
+} from "@/api";
 
 export function useUnreadCount() {
   const [unread, setUnread] = React.useState(0);
@@ -20,6 +27,3 @@ export function useUnreadCount() {
 
   return unread;
 }
-
-export const useMarkAllNotificationsAsRead = Api.useMarkAllNotificationsAsRead;
-export const useMarkNotificationAsRead = Api.useMarkNotificationAsRead;

@@ -98,6 +98,7 @@ defmodule OperatelyWeb.Api do
   mutation :join_company, M.JoinCompany
   mutation :mark_all_notifications_as_read, M.MarkAllNotificationsAsRead
   mutation :mark_notification_as_read, M.MarkNotificationAsRead
+  mutation :mark_notifications_as_read, M.MarkNotificationsAsRead
   mutation :move_project_to_space, M.MoveProjectToSpace
   mutation :new_invitation_token, M.NewInvitationToken
   mutation :pause_project, M.PauseProject

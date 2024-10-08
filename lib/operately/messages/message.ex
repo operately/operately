@@ -18,6 +18,7 @@ defmodule Operately.Messages.Message do
 
     # populated with after load hooks
     field :potential_subscribers, :any, virtual: true
+    field :notifications, :any, virtual: true
 
     timestamps()
     requester_access_level()
@@ -37,6 +38,21 @@ defmodule Operately.Messages.Message do
   #
   # After load hooks
   #
+
+  import Ecto.Query, only: [from: 2]
+
+  def load_unread_notifications(message = %__MODULE__{}, person) do
+    notifications =
+      from(n in Operately.Notifications.Notification,
+        join: a in assoc(n, :activity),
+        where: a.action == "discussion_posting" and a.content["discussion_id"] == ^message.id,
+        where: n.person_id == ^person.id and not n.read,
+        select: n
+      )
+      |> Repo.all()
+
+    Map.put(message, :notifications, notifications)
+  end
 
   def set_potential_subscribers(message = %__MODULE__{}) do
     subs =
