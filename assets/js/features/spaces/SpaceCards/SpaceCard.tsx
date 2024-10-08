@@ -5,6 +5,7 @@ import * as Icons from "@tabler/icons-react";
 import classnames from "classnames";
 
 import { Card } from "./Card";
+import { PrivacyIndicator } from "@/features/spaces/PrivacyIndicator";
 
 export interface SpaceCardProps {
   space: Spaces.Space;
@@ -15,7 +16,7 @@ export interface SpaceCardProps {
 }
 
 export function SpaceCard(props: SpaceCardProps) {
-  const { name, mission, color, icon, privateSpace } = props.space;
+  const { name, mission, color, icon } = props.space;
   const iconElement = Icons[icon!];
   const shadowSize = props.shadowSize ?? "base";
 
@@ -42,14 +43,13 @@ export function SpaceCard(props: SpaceCardProps) {
     <Card className={className} title={name!} {...cardProps}>
       <div className="mt-2"></div>
       {React.createElement(iconElement, { size: 40, className: color, strokeWidth: 1 })}
-      <div className="font-semibold mt-2">{name}</div>
-      <div className="text-content-dimmed text-xs line-clamp-3">{mission}</div>
 
-      {privateSpace && (
-        <div className="absolute top-2 right-2 text-accent-1">
-          <Icons.IconLock size={24} />
-        </div>
-      )}
+      <div className="flex items-center gap-1.5 mt-2">
+        <div className="font-semibold">{name}</div>
+        <PrivacyIndicator space={props.space} size={14} />
+      </div>
+
+      <div className="text-content-dimmed text-xs line-clamp-3">{mission}</div>
     </Card>
   );
 }

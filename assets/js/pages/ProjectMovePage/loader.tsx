@@ -14,7 +14,9 @@ export async function loader({ params }): Promise<LoaderResult> {
       includeSpace: true,
       includePermissions: true,
     }).then((data) => data.project!),
-    spaces: await Spaces.getSpaces({}),
+    spaces: await Spaces.getSpaces({
+      includeAccessLevels: true,
+    }),
   };
 }
 
