@@ -34,8 +34,8 @@ defmodule Operately.Support.Features.SpaceSteps do
   end
 
   step :given_two_spaces_exists, ctx do
-    space1 = group_fixture(ctx.person, %{name: "Marketing", mission: "Let the world know about our products"})
-    space2 = group_fixture(ctx.person, %{name: "Engineering", mission: "Build the best product"})
+    space1 = group_fixture(ctx.person, %{name: "Marketing", mission: "Let the world know about our products", company_permissions: Binding.view_access()})
+    space2 = group_fixture(ctx.person, %{name: "Engineering", mission: "Build the best product", company_permissions: Binding.no_access()})
 
     Map.merge(ctx, %{spaces: [space1, space2]})
   end
@@ -168,6 +168,17 @@ defmodule Operately.Support.Features.SpaceSteps do
     ctx
   end
 
+  step :click_on_space, ctx do
+    ctx |> UI.click(title: ctx.space.name)
+  end
+
+  step :assert_space_name_mission_and_privacy_indicator, ctx do
+    ctx
+    |> UI.assert_text(ctx.space.name)
+    |> UI.assert_text(ctx.space.mission)
+    |> UI.assert_has(testid: "secret-space-tooltip")
+  end
+
   step :when_clicking_on_projects_tab, ctx do
     ctx
     |> UI.visit(Paths.space_path(ctx.company, ctx.space))
@@ -188,6 +199,10 @@ defmodule Operately.Support.Features.SpaceSteps do
     |> UI.assert_feed_item(ctx.person, "created this space")
     |> UI.visit(Paths.feed_path(ctx.company))
     |> UI.assert_feed_item(ctx.person, "created the #{attrs.name} space")
+  end
+
+  step :assert_privacy_indicator_is_visible, ctx do
+    ctx |> UI.assert_has(testid: "secret-space-tooltip")
   end
 
 end
