@@ -20,6 +20,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Groups.Group do
       members: OperatelyWeb.Api.Serializer.serialize(space.members),
       access_levels: OperatelyWeb.Api.Serializer.serialize(space.access_levels, level: :full),
       potential_subscribers: OperatelyWeb.Api.Serializer.serialize(space.potential_subscribers),
+      notifications: OperatelyWeb.Api.Serializer.serialize(space.notifications),
     }
   end
 end

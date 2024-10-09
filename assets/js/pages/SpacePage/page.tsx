@@ -14,9 +14,14 @@ import { PrimaryButton } from "@/components/Buttons";
 
 import { useJoinSpace } from "@/models/spaces";
 import { PrivacyIndicator } from "@/features/spaces/PrivacyIndicator";
+import { useClearNotificationsOnLoad } from "@/features/notifications";
+import { assertPresent } from "@/utils/assertions";
 
 export function Page() {
   const { space } = useLoadedData();
+
+  assertPresent(space.notifications, "notifications must be present in space");
+  useClearNotificationsOnLoad(space.notifications);
 
   return (
     <Pages.Page title={space.name!}>

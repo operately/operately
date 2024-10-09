@@ -20,6 +20,7 @@ defmodule Operately.Groups.Group do
     field :is_member, :boolean, virtual: true
     field :access_levels, :any, virtual: true
     field :potential_subscribers, :any, virtual: true
+    field :notifications, :any, virtual: true, default: []
 
     timestamps()
     soft_delete()
@@ -55,6 +56,23 @@ defmodule Operately.Groups.Group do
     is_member = Operately.Groups.is_member?(group, person)
 
     %{group | is_member: is_member}
+  end
+
+  def load_unread_notifications(space = %__MODULE__{}, person) do
+    actions = [
+      "space_members_added",
+    ]
+
+    notifications =
+      from(n in Operately.Notifications.Notification,
+        join: a in assoc(n, :activity),
+        where: a.action in ^actions and a.content["space_id"] == ^space.id,
+        where: n.person_id == ^person.id and not n.read,
+        select: n
+      )
+      |> Repo.all()
+
+    Map.put(space, :notifications, notifications)
   end
 
   def preload_access_levels(group) do
