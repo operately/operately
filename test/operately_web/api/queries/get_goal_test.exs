@@ -128,16 +128,18 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
       assert query(ctx.conn, :get_goal, %{id: id}) == not_found_response()
     end
 
-    test "includes notifications by default", ctx do
+    test "include_unread_notifications", ctx do
       goal = goal_fixture(ctx.person, company_id: ctx.company.id, space_id: ctx.company.company_space_id)
-
-      assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal)})
-      assert res.goal.notifications == []
-
       a = activity_fixture(author_id: ctx.person.id, action: "goal_created", content: %{goal_id: goal.id})
       n = notification_fixture(person_id: ctx.person.id, read: false, activity_id: a.id)
 
       assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal)})
+      assert res.goal.notifications == []
+
+      assert {200, res} = query(ctx.conn, :get_goal, %{
+        id: Paths.goal_id(goal),
+        include_unread_notifications: true,
+      })
 
       assert length(res.goal.notifications) == 1
       assert Serializer.serialize(n) == hd(res.goal.notifications)

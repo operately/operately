@@ -23,11 +23,14 @@ import { useLoadedData, useRefresh } from "./loader";
 import { useMe } from "@/contexts/CurrentUserContext";
 import { CurrentSubscriptions } from "@/features/Subscriptions";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
+import { assertPresent } from "@/utils/assertions";
 
 export function Page() {
   const { checkIn } = useLoadedData();
   const refresh = useRefresh();
-  useClearNotificationsOnLoad(checkIn.notifications || []);
+
+  assertPresent(checkIn.notifications, "Check-in notifications must be defined");
+  useClearNotificationsOnLoad(checkIn.notifications);
 
   return (
     <Pages.Page title={["Check-In", checkIn.project!.name!]}>

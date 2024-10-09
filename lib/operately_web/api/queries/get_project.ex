@@ -22,6 +22,7 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
     field :include_privacy, :boolean
     field :include_retrospective, :boolean
     field :include_potential_subscribers, :boolean
+    field :include_unread_notifications, :boolean
   end
 
   outputs do
@@ -40,7 +41,7 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
     Project.get(requester, id: id, opts: [
       with_deleted: true,
       preload: preload(inputs),
-      after_load: after_load(inputs) ++ [load_unread_notifications(requester)],
+      after_load: after_load(inputs, requester),
     ])
   end
 
@@ -58,7 +59,7 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
     ])
   end
 
-  def after_load(inputs) do
+  def after_load(inputs, person) do
     Inputs.parse_includes(inputs, [
       include_milestones: &Project.load_milestones/1,
       include_permissions: &Project.set_permissions/1,
@@ -66,6 +67,7 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
       include_access_levels: &Project.load_access_levels/1,
       include_privacy: &Project.load_privacy/1,
       include_potential_subscribers: &Project.set_potential_subscribers/1,
+      include_unread_notifications: load_unread_notifications(person),
     ])
   end
 
