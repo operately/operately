@@ -137,6 +137,7 @@ export interface Activity {
   person?: Person | null;
   eventData?: ActivityDataUnion | null;
   content?: ActivityContent | null;
+  notifications?: Notification[] | null;
 }
 
 export interface ActivityContentCommentAdded {
@@ -1188,6 +1189,7 @@ export interface GetActivitiesResult {
 
 export interface GetActivityInput {
   id?: string | null;
+  includeUnreadGoalNotifications?: boolean | null;
 }
 
 export interface GetActivityResult {
