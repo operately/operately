@@ -270,6 +270,7 @@ defmodule OperatelyWeb.Api.Types do
     field :members, list_of(:person)
     field :access_levels, :access_levels
     field :potential_subscribers, list_of(:subscriber)
+    field :notifications, list_of(:notification)
   end
 
   object :panel do

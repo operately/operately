@@ -920,6 +920,7 @@ export interface Space {
   members?: Person[] | null;
   accessLevels?: AccessLevels | null;
   potentialSubscribers?: Subscriber[] | null;
+  notifications?: Notification[] | null;
 }
 
 export interface Subscriber {
@@ -1486,6 +1487,7 @@ export interface GetSpaceInput {
   includeAccessLevels?: boolean | null;
   includeMembersAccessLevels?: boolean | null;
   includePotentialSubscribers?: boolean | null;
+  includeUnreadNotifications?: boolean | null;
 }
 
 export interface GetSpaceResult {

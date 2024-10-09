@@ -3,6 +3,8 @@ defmodule OperatelyWeb.Api.Queries.GetSpaceTest do
 
   import Operately.PeopleFixtures
   import Operately.GroupsFixtures
+  import Operately.NotificationsFixtures
+  import Operately.ActivitiesFixtures
 
   alias Operately.{Repo, Groups}
   alias Operately.Access.Binding
@@ -85,6 +87,7 @@ defmodule OperatelyWeb.Api.Queries.GetSpaceTest do
         members: nil,
         access_levels: nil,
         potential_subscribers: nil,
+        notifications: [],
       }
     end
 
@@ -107,7 +110,25 @@ defmodule OperatelyWeb.Api.Queries.GetSpaceTest do
         members: nil,
         access_levels: nil,
         potential_subscribers: nil,
+        notifications: [],
       }
+    end
+
+    test "include_unread_notifications", ctx do
+      space = group_fixture(ctx.person, [company_id: ctx.company.id])
+      a = activity_fixture(author_id: ctx.company_creator.id, action: "space_members_added", content: %{space_id: space.id})
+      n = notification_fixture(person_id: ctx.person.id, read: false, activity_id: a.id)
+
+      assert {200, res} = query(ctx.conn, :get_space, %{id: Paths.space_id(space)})
+      assert res.space.notifications == []
+
+      assert {200, res} = query(ctx.conn, :get_space, %{
+        id: Paths.space_id(space),
+        include_unread_notifications: true,
+      })
+
+      assert length(res.space.notifications) == 1
+      assert Serializer.serialize(n) == hd(res.space.notifications)
     end
 
     test "include_members", ctx do
