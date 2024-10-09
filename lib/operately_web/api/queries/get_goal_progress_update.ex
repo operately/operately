@@ -16,6 +16,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdate do
     field :include_space_members, :boolean
     field :include_subscriptions_list, :boolean
     field :include_potential_subscribers, :boolean
+    field :include_unread_notifications, :boolean
   end
 
   outputs do
@@ -67,9 +68,9 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdate do
   defp after_load(inputs, me) do
     Inputs.parse_includes(inputs, [
       include_potential_subscribers: &Update.set_potential_subscribers/1,
+      include_unread_notifications: load_unread_notifications(me),
+      always_include: load_goal_permissions(me),
     ])
-    ++
-    [load_goal_permissions(me)]
   end
 
   defp load_goal_permissions(person) do
@@ -80,6 +81,12 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdate do
       else
         update
       end
+    end
+  end
+
+  defp load_unread_notifications(person) do
+    fn activity ->
+      Update.load_unread_notifications(activity, person)
     end
   end
 end

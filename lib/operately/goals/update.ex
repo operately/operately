@@ -20,6 +20,7 @@ defmodule Operately.Goals.Update do
 
     # populated with after load hooks
     field :potential_subscribers, :any, virtual: true
+    field :notifications, :any, virtual: true, default: []
 
     timestamps()
     requester_access_level()
@@ -35,6 +36,28 @@ defmodule Operately.Goals.Update do
     |> cast(attrs, [:goal_id, :author_id, :message, :acknowledged_at, :acknowledged_by_id, :subscription_list_id])
     |> cast_embed(:targets)
     |> validate_required([:goal_id, :author_id, :message, :subscription_list_id])
+  end
+
+  #
+  # After load hooks
+  #
+
+  def load_unread_notifications(update = %__MODULE__{}, person) do
+    actions = [
+      "goal_check_in",
+      "goal_check_in_acknowledgement"
+    ]
+
+    notifications =
+      from(n in Operately.Notifications.Notification,
+        join: a in assoc(n, :activity),
+        where: a.action in ^actions and a.content["update_id"] == ^update.id,
+        where: n.person_id == ^person.id and not n.read,
+        select: n
+      )
+      |> Repo.all()
+
+    Map.put(update, :notifications, notifications)
   end
 
   def set_potential_subscribers(update = %__MODULE__{}) do
