@@ -23,6 +23,8 @@ import { useRemoveGroupMember } from "@/models/spaces";
 import Avatar from "@/components/Avatar";
 import { createTestId } from "@/utils/testid";
 import { SpaceAccessLevbelBadge } from "@/components/Badges/AccessLevelBadges";
+import { SecondaryButton } from "@/components/Buttons";
+import { AccessLevel } from "@/features/spaces";
 
 export function Page() {
   const { space, company } = useLoadedData();
@@ -35,6 +37,7 @@ export function Page() {
 
         <Paper.Body>
           <Title />
+          <GeneralAccess />
           <SpaceManagers />
           <SpaceMembers />
           <AddMembers space={space} />
@@ -73,6 +76,24 @@ function Navigation({ space }: { space: Space }) {
 
 function SpacerWithLine() {
   return <div className="bg-content-subtle h-[1px] w-full mt-12 mb-10" />;
+}
+
+function GeneralAccess() {
+  const { space } = useLoadedData();
+  const editPath = Paths.spaceEditGeneralAccessPath(space.id!);
+
+  assertPresent(space.accessLevels, "Space access levels must be present");
+
+  return (
+    <Paper.Section title="General Access">
+      <BorderedRow>
+        <AccessLevel anonymous={space.accessLevels.public!} company={space.accessLevels.company!} tense="present" />
+        <SecondaryButton linkTo={editPath} size="xs">
+          Edit
+        </SecondaryButton>
+      </BorderedRow>
+    </Paper.Section>
+  );
 }
 
 function SpaceManagers() {

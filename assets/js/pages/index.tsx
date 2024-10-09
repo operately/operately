@@ -76,6 +76,7 @@ import * as SpaceAccessManagementPage from "./SpaceAccessManagementPage";
 import * as SpaceAddPage from "./SpaceAddPage";
 import * as SpaceAppearancePage from "./SpaceAppearancePage";
 import * as SpaceDiscussionsPage from "./SpaceDiscussionsPage";
+import * as SpaceEditGeneralAccessPage from "./SpaceEditGeneralAccessPage";
 import * as SpaceEditPage from "./SpaceEditPage";
 import * as SpaceGoalsPage from "./SpaceGoalsPage";
 import * as SpaceListPage from "./SpaceListPage";
@@ -379,6 +380,10 @@ export default {
   SpaceDiscussionsPage: {
     loader: SpaceDiscussionsPage.loader,
     Page: SpaceDiscussionsPage.Page,
+  },
+  SpaceEditGeneralAccessPage: {
+    loader: SpaceEditGeneralAccessPage.loader,
+    Page: SpaceEditGeneralAccessPage.Page,
   },
   SpaceEditPage: {
     loader: SpaceEditPage.loader,
