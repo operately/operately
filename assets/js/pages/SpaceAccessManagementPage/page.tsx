@@ -10,10 +10,7 @@ import { Space } from "@/models/spaces";
 
 import { useLoadedData } from "./loader";
 import { AddMembers } from "./AddMembers";
-import { SpaceAccessLevel } from "./SpaceAccessLevel";
 
-import { usePermissionsState } from "@/features/Permissions/usePermissionsState";
-import { Spacer } from "@/components/Spacer";
 import { assertPresent } from "@/utils/assertions";
 import { PermissionLevels } from "@/features/Permissions";
 import { BorderedRow } from "@/components/BorderedRow";
@@ -23,10 +20,11 @@ import { useRemoveGroupMember } from "@/models/spaces";
 import Avatar from "@/components/Avatar";
 import { createTestId } from "@/utils/testid";
 import { SpaceAccessLevbelBadge } from "@/components/Badges/AccessLevelBadges";
+import { SecondaryButton } from "@/components/Buttons";
+import { AccessLevel } from "@/features/spaces";
 
 export function Page() {
-  const { space, company } = useLoadedData();
-  const permissions = usePermissionsState({ company, space, currentPermissions: space.accessLevels });
+  const { space } = useLoadedData();
 
   return (
     <Pages.Page title={space.name!}>
@@ -35,12 +33,10 @@ export function Page() {
 
         <Paper.Body>
           <Title />
+          <GeneralAccess />
           <SpaceManagers />
           <SpaceMembers />
           <AddMembers space={space} />
-          <Spacer size={4} />
-          <SpacerWithLine />
-          <SpaceAccessLevel state={permissions} />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
@@ -71,8 +67,22 @@ function Navigation({ space }: { space: Space }) {
   );
 }
 
-function SpacerWithLine() {
-  return <div className="bg-content-subtle h-[1px] w-full mt-12 mb-10" />;
+function GeneralAccess() {
+  const { space } = useLoadedData();
+  const editPath = Paths.spaceEditGeneralAccessPath(space.id!);
+
+  assertPresent(space.accessLevels, "Space access levels must be present");
+
+  return (
+    <Paper.Section title="General Access">
+      <BorderedRow>
+        <AccessLevel anonymous={space.accessLevels.public!} company={space.accessLevels.company!} tense="present" />
+        <SecondaryButton linkTo={editPath} size="xs">
+          Edit
+        </SecondaryButton>
+      </BorderedRow>
+    </Paper.Section>
+  );
 }
 
 function SpaceManagers() {

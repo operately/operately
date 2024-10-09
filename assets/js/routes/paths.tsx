@@ -180,6 +180,10 @@ export class Paths {
     return createCompanyPath(["spaces", spaceId, "edit"]);
   }
 
+  static spaceEditGeneralAccessPath(spaceId: string) {
+    return createCompanyPath(["spaces", spaceId, "edit", "general-access"]);
+  }
+
   static spaceGoalsPath(spaceId: string) {
     return createCompanyPath(["spaces", spaceId, "goals"]);
   }
