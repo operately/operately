@@ -36,6 +36,7 @@ export async function loader({ params }): Promise<LoaderResult> {
       includeLastCheckIn: true,
       includePrivacy: true,
       includeRetrospective: true,
+      includeUnreadNotifications: true,
     }).then((data) => data.project!),
   };
 }

@@ -21,15 +21,18 @@ import { useMe } from "@/contexts/CurrentUserContext";
 import { Paths, compareIds } from "@/routes/paths";
 import { CurrentSubscriptions } from "@/features/Subscriptions";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
+import { assertPresent } from "@/utils/assertions";
 
 export function Page() {
   const me = useMe()!;
   const { discussion, comments } = useLoadedData();
   const refresh = useRefresh();
-  useClearNotificationsOnLoad(discussion.notifications || []);
 
   const commentsForm = useForDiscussion(discussion, comments);
   useDiscussionCommentsChangeSignal(refresh, { discussionId: discussion.id! });
+
+  assertPresent(discussion.notifications, "Discussion notifications must be defined");
+  useClearNotificationsOnLoad(discussion.notifications);
 
   return (
     <Pages.Page title={discussion.title!}>

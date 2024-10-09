@@ -114,16 +114,18 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
       assert query(ctx.conn, :get_project, %{}) == {400, %{error: "Bad request", message: "id is required"}}
     end
 
-    test "includes notifications by default", ctx do
+    test "include_unread_notifications", ctx do
       project = create_project(ctx)
-
-      assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(project)})
-      assert res.project.notifications == []
-
       a = activity_fixture(author_id: ctx.person.id, action: "project_created", content: %{project_id: project.id})
       n = notification_fixture(person_id: ctx.person.id, read: false, activity_id: a.id)
 
       assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(project)})
+      assert res.project.notifications == []
+
+      assert {200, res} = query(ctx.conn, :get_project, %{
+        id: Paths.project_id(project),
+        include_unread_notifications: true,
+      })
 
       assert length(res.project.notifications) == 1
       assert Serializer.serialize(n) == hd(res.project.notifications)

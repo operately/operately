@@ -1252,6 +1252,7 @@ export interface GetDiscussionInput {
   includeSpaceMembers?: boolean | null;
   includeSubscriptionsList?: boolean | null;
   includePotentialSubscribers?: boolean | null;
+  includeUnreadNotifications?: boolean | null;
 }
 
 export interface GetDiscussionResult {
@@ -1279,6 +1280,7 @@ export interface GetGoalInput {
   includeTargets?: boolean | null;
   includeAccessLevels?: boolean | null;
   includePotentialSubscribers?: boolean | null;
+  includeUnreadNotifications?: boolean | null;
 }
 
 export interface GetGoalResult {
@@ -1406,6 +1408,7 @@ export interface GetProjectInput {
   includePrivacy?: boolean | null;
   includeRetrospective?: boolean | null;
   includePotentialSubscribers?: boolean | null;
+  includeUnreadNotifications?: boolean | null;
 }
 
 export interface GetProjectResult {
@@ -1420,6 +1423,7 @@ export interface GetProjectCheckInInput {
   includeReactions?: boolean | null;
   includeSubscriptionsList?: boolean | null;
   includePotentialSubscribers?: boolean | null;
+  includeUnreadNotifications?: boolean | null;
 }
 
 export interface GetProjectCheckInResult {

@@ -60,16 +60,18 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionTest do
   describe "get_discussion functionality" do
     setup :register_and_log_in_account
 
-    test "includes notifications by default", ctx do
+    test "include_unread_notifications", ctx do
       message = message_fixture(ctx.person.id, ctx.company.company_space_id)
-
-      assert {200, res} = query(ctx.conn, :get_discussion, %{id: Paths.message_id(message)})
-      assert res.discussion.notifications == []
-
       a = activity_fixture(author_id: ctx.person.id, action: "discussion_posting", content: %{discussion_id: message.id})
       n = notification_fixture(person_id: ctx.person.id, read: false, activity_id: a.id)
 
       assert {200, res} = query(ctx.conn, :get_discussion, %{id: Paths.message_id(message)})
+      assert res.discussion.notifications == []
+
+      assert {200, res} = query(ctx.conn, :get_discussion, %{
+        id: Paths.message_id(message),
+        include_unread_notifications: true,
+      })
 
       assert length(res.discussion.notifications) == 1
       assert Serializer.serialize(n) == hd(res.discussion.notifications)
