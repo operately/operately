@@ -22,6 +22,7 @@ import { createTestId } from "@/utils/testid";
 import { SpaceAccessLevbelBadge } from "@/components/Badges/AccessLevelBadges";
 import { SecondaryButton } from "@/components/Buttons";
 import { AccessLevel } from "@/features/spaces";
+import { OtherPeople } from "./OtherPeople";
 
 export function Page() {
   const { space } = useLoadedData();
@@ -33,10 +34,11 @@ export function Page() {
 
         <Paper.Body>
           <Title />
+          <AddMembers space={space} />
           <GeneralAccess />
           <SpaceManagers />
           <SpaceMembers />
-          <AddMembers space={space} />
+          <OtherPeople />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
@@ -45,7 +47,7 @@ export function Page() {
 
 function Title() {
   return (
-    <div className="rounded-t-[20px] pb-8">
+    <div className="rounded-t-[20px]">
       <div className="flex items-center justify-between">
         <div>
           <div className="text-2xl font-extrabold ">Team &amp; Access</div>

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import * as Paper from "@/components/PaperContainer";
 import { useRevalidator } from "react-router-dom";
 
 import { Person } from "@/models/people";
@@ -55,22 +56,22 @@ export function AddMembers({ space }: { space: Space }) {
   };
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="font-bold">Add Members</div>
+    <Paper.Section title="Add Members">
+      <div className="flex flex-col gap-4">
+        <MemberContainer>
+          <PeopleSearch
+            onChange={(option) => setMember(option?.person)}
+            placeholder="Search for person..."
+            loader={search}
+            key={peopleSearchKey}
+          />
 
-      <MemberContainer>
-        <PeopleSearch
-          onChange={(option) => setMember(option?.person)}
-          placeholder="Search for person..."
-          loader={search}
-          key={peopleSearchKey}
-        />
+          {member && <SelectBoxNoLabel onChange={setPermissions} options={PERMISSIONS_LIST} value={permissions} />}
+        </MemberContainer>
 
-        {member && <SelectBoxNoLabel onChange={setPermissions} options={PERMISSIONS_LIST} value={permissions} />}
-      </MemberContainer>
-
-      <AddMemberButton member={member} loading={loading} handleAddMember={handleAddMember} />
-    </div>
+        <AddMemberButton member={member} loading={loading} handleAddMember={handleAddMember} />
+      </div>
+    </Paper.Section>
   );
 }
 

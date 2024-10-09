@@ -25,6 +25,14 @@ defmodule OperatelyWeb.Api.Queries.GetBindedPeople do
     {:ok, Operately.Access.get_context!(project_id: id)}
   end
 
+  def load_access_context("space", id) do
+    {:ok, Operately.Access.get_context!(group_id: id)}
+  end
+
+  def load_access_context(type, _) do
+    {:error, :bad_request, "Unknown resourse type: #{type}"}
+  end
+
   def respond(ctx) do
     case ctx do
       {:ok, ctx} -> {:ok, ctx.serialized}
