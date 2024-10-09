@@ -18,6 +18,7 @@ defmodule Operately.Projects.Retrospective do
     # populated with after load hooks
     field :permissions, :any, virtual: true
     field :potential_subscribers, :any, virtual: true
+    field :notifications, :any, virtual: true, default: []
 
     timestamps()
     requester_access_level()
@@ -34,7 +35,27 @@ defmodule Operately.Projects.Retrospective do
     |> validate_required([:author_id, :project_id, :subscription_list_id, :content, :closed_at])
   end
 
+  #
   # After load hooks
+  #
+
+  def load_unread_notifications(retrospective = %__MODULE__{}, person) do
+    actions = [
+      "project_closed",
+    ]
+
+    notifications =
+      from(n in Operately.Notifications.Notification,
+        join: a in assoc(n, :activity),
+        where: a.action in ^actions and a.content["retrospective_id"] == ^retrospective.id,
+        where: n.person_id == ^person.id and not n.read,
+        preload: :activity,
+        select: n
+      )
+      |> Repo.all()
+
+    Map.put(retrospective, :notifications, notifications)
+  end
 
   def set_permissions(retrospective = %__MODULE__{}) do
     perms = Operately.Projects.Permissions.calculate(retrospective.request_info.access_level)

@@ -12,6 +12,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectRetrospective do
     field :include_reactions, :boolean
     field :include_subscriptions_list, :boolean
     field :include_potential_subscribers, :boolean
+    field :include_unread_notifications, :boolean
   end
 
   outputs do
@@ -41,7 +42,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectRetrospective do
   defp load(ctx, inputs) do
     Retrospective.get(ctx.me, project_id: ctx.id, opts: [
       preload: preload(inputs),
-      after_load: after_load(inputs),
+      after_load: after_load(inputs, ctx.me),
     ])
   end
 
@@ -55,10 +56,17 @@ defmodule OperatelyWeb.Api.Queries.GetProjectRetrospective do
     ])
   end
 
-  def after_load(inputs) do
+  def after_load(inputs, person) do
     Inputs.parse_includes(inputs, [
       include_permissions: &Retrospective.set_permissions/1,
       include_potential_subscribers: &Retrospective.set_potential_subscribers/1,
+      include_unread_notifications: load_unread_notifications(person),
     ])
+  end
+
+  defp load_unread_notifications(person) do
+    fn retrospective ->
+      Retrospective.load_unread_notifications(retrospective, person)
+    end
   end
 end
