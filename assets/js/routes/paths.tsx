@@ -208,6 +208,10 @@ export class Paths {
     return createCompanyPath(["spaces", spaceId, "access"]);
   }
 
+  static spaceAddMembersPath(spaceId: string) {
+    return createCompanyPath(["spaces", spaceId, "add-members"]);
+  }
+
   static goalClosePath(goalId: string) {
     return createCompanyPath(["goals", goalId, "complete"]);
   }

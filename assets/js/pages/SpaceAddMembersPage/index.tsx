@@ -1,15 +1,50 @@
-import React, { useState } from "react";
+import * as React from "react";
+import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
+import * as Spaces from "@/models/spaces";
+
 import { useRevalidator } from "react-router-dom";
 
 import { Person } from "@/models/people";
 import { Space, searchPotentialSpaceMembers, useAddGroupMembers } from "@/models/spaces";
-import { MemberContainer } from "./components";
 
 import { PERMISSIONS_LIST, PermissionLevels, VIEW_ACCESS } from "@/features/Permissions";
 import { SelectBoxNoLabel } from "@/components/Form";
 import { PrimaryButton } from "@/components/Buttons";
 import PeopleSearch from "@/components/PeopleSearch";
+
+interface LoaderResult {
+  space: Spaces.Space;
+}
+
+export async function loader({ params }): Promise<LoaderResult> {
+  const space = await Spaces.getSpace({
+    id: params.id,
+    includeMembersAccessLevels: true,
+    includeAccessLevels: true,
+    includePotentialSubscribers: true,
+  });
+
+  return { space: space };
+}
+
+export function Page() {
+  const { space } = Pages.useLoadedData<LoaderResult>();
+
+  return (
+    <Pages.Page title={["Add Members", space.name!]}>
+      <Paper.Root>
+        <Paper.Body>
+          <Title />
+        </Paper.Body>
+      </Paper.Root>
+    </Pages.Page>
+  );
+}
+
+function Title() {
+  return <div className="text-content-accent text-3xl font-extrabold">SpaceAddMembersPage</div>;
+}
 
 export function AddMembers({ space }: { space: Space }) {
   const [peopleSearchKey, setPeopleSearchKey] = useState(0);
