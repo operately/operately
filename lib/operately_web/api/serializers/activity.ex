@@ -126,8 +126,8 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
     }
   end
 
-  def serialize_content("goal_check_in_commented", _content) do
-    %{}
+  def serialize_content("goal_check_in_commented", content) do
+    OperatelyWeb.Api.Serializer.serialize(content)
   end
 
   def serialize_content("goal_check_in_edit", _content) do
@@ -452,7 +452,7 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
     }
   end
 
-  defp serialize_goal_check_in_update(update) do
+  def serialize_goal_check_in_update(update) do
     %{
       id: OperatelyWeb.Paths.goal_update_id(update),
       message: Jason.encode!(update.message),

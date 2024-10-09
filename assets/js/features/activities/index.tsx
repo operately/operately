@@ -71,6 +71,7 @@ export const DISPLAYED_IN_FEED = [
   "goal_archived",
   "goal_check_in",
   "goal_check_in_acknowledgement",
+  "goal_check_in_commented",
   "goal_closing",
   "goal_created",
   "goal_discussion_creation",
@@ -120,6 +121,7 @@ import DiscussionCommentSubmitted from "@/features/activities/DiscussionCommentS
 import GoalArchived from "@/features/activities/GoalArchived";
 import GoalCheckIn from "@/features/activities/GoalCheckIn";
 import GoalCheckInAcknowledgement from "@/features/activities/GoalCheckInAcknowledgement";
+import GoalCheckInCommented from "@/features/activities/GoalCheckInCommented";
 import GoalClosing from "@/features/activities/GoalClosing";
 import GoalCreated from "@/features/activities/GoalCreated";
 import GoalDiscussionCreation from "@/features/activities/GoalDiscussionCreation";
@@ -160,6 +162,7 @@ function handler(activity: Activity) {
     .with("goal_archived", () => GoalArchived)
     .with("goal_check_in", () => GoalCheckIn)
     .with("goal_check_in_acknowledgement", () => GoalCheckInAcknowledgement)
+    .with("goal_check_in_commented", () => GoalCheckInCommented)
     .with("goal_closing", () => GoalClosing)
     .with("goal_created", () => GoalCreated)
     .with("goal_discussion_creation", () => GoalDiscussionCreation)
