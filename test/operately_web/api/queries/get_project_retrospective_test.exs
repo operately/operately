@@ -1,6 +1,9 @@
 defmodule OperatelyWeb.Api.Queries.GetProjectRetrospectiveTest do
   use OperatelyWeb.TurboCase
 
+  import Operately.NotificationsFixtures
+  import Operately.ActivitiesFixtures
+
   alias Operately.Projects.Retrospective
 
   describe "security" do
@@ -83,6 +86,22 @@ defmodule OperatelyWeb.Api.Queries.GetProjectRetrospectiveTest do
       {:ok, retrospective} = Retrospective.get(:system, id: ctx.retrospective.id)
 
       assert res.retrospective == Serializer.serialize(retrospective)
+    end
+
+    test "include_unread_notifications", ctx do
+      a = activity_fixture(author_id: ctx.creator.id, action: "project_closed", content: %{retrospective_id: ctx.retrospective.id})
+      n = notification_fixture(person_id: ctx.person.id, read: false, activity_id: a.id)
+
+      assert {200, res} = query(ctx.conn, :get_project_retrospective, %{project_id: Paths.project_id(ctx.project)})
+      assert res.retrospective.notifications == []
+
+      assert {200, res} = query(ctx.conn, :get_project_retrospective, %{
+        project_id: Paths.project_id(ctx.project),
+        include_unread_notifications: true,
+      })
+
+      assert length(res.retrospective.notifications) == 1
+      assert Serializer.serialize(n) == hd(res.retrospective.notifications)
     end
 
     test "include_author", ctx do

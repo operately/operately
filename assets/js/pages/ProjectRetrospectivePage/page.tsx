@@ -16,9 +16,14 @@ import FormattedTime from "@/components/FormattedTime";
 import { CurrentSubscriptions } from "@/features/Subscriptions";
 
 import { useLoadedData, useRefresh } from "./loader";
+import { assertPresent } from "@/utils/assertions";
+import { useClearNotificationsOnLoad } from "@/features/notifications";
 
 export function Page() {
   const { retrospective } = useLoadedData();
+
+  assertPresent(retrospective.notifications, "Retrospective notifications must be defined");
+  useClearNotificationsOnLoad(retrospective.notifications);
 
   return (
     <Pages.Page title={["Retrospective", retrospective.project!.name!]}>

@@ -880,6 +880,7 @@ export interface ProjectRetrospective {
   reactions?: Reaction[] | null;
   subscriptionList?: SubscriptionList | null;
   potentialSubscribers?: Subscriber[] | null;
+  notifications?: Notification[] | null;
 }
 
 export interface ProjectReviewRequest {
@@ -1454,6 +1455,7 @@ export interface GetProjectRetrospectiveInput {
   includeReactions?: boolean | null;
   includeSubscriptionsList?: boolean | null;
   includePotentialSubscribers?: boolean | null;
+  includeUnreadNotifications?: boolean | null;
 }
 
 export interface GetProjectRetrospectiveResult {
