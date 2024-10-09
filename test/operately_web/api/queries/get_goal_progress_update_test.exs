@@ -4,6 +4,8 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdateTest do
   import Operately.GroupsFixtures
   import Operately.PeopleFixtures
   import Operately.GoalsFixtures
+  import Operately.NotificationsFixtures
+  import Operately.ActivitiesFixtures
 
   alias Operately.Repo
   alias OperatelyWeb.Paths
@@ -125,6 +127,22 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdateTest do
         refute sub.is_subscribed
         refute sub.priority
       end)
+    end
+
+    test "include_unread_notifications", ctx do
+      a = activity_fixture(author_id: ctx.reviewer.id, action: "goal_check_in", content: %{update_id: ctx.update.id})
+      n = notification_fixture(person_id: ctx.champion.id, read: false, activity_id: a.id)
+
+      assert {200, res} = query(ctx.conn, :get_goal_progress_update, %{id: Paths.goal_update_id(ctx.update)})
+      assert res.update.notifications == []
+
+      assert {200, res} = query(ctx.conn, :get_goal_progress_update, %{
+        id: Paths.goal_update_id(ctx.update),
+        include_unread_notifications: true,
+      })
+
+      assert length(res.update.notifications) == 1
+      assert Serializer.serialize(n) == hd(res.update.notifications)
     end
   end
 
