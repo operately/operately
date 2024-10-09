@@ -18,7 +18,7 @@ defmodule Operately.Messages.Message do
 
     # populated with after load hooks
     field :potential_subscribers, :any, virtual: true
-    field :notifications, :any, virtual: true
+    field :notifications, :any, virtual: true, default: []
 
     timestamps()
     requester_access_level()

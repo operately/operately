@@ -99,14 +99,17 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckInTest do
       |> Factory.add_project_check_in(:check_in, :project, :creator)
     end
 
-    test "includes notifications by default", ctx do
-      assert {200, res} = query(ctx.conn, :get_project_check_in, %{id: Paths.project_check_in_id(ctx.check_in)})
-      assert res.project_check_in.notifications == []
-
+    test "include_unread_notifications", ctx do
       a = activity_fixture(author_id: ctx.creator.id, action: "project_check_in_submitted", content: %{check_in_id: ctx.check_in.id})
       n = notification_fixture(person_id: ctx.creator.id, read: false, activity_id: a.id)
 
       assert {200, res} = query(ctx.conn, :get_project_check_in, %{id: Paths.project_check_in_id(ctx.check_in)})
+      assert res.project_check_in.notifications == []
+
+      assert {200, res} = query(ctx.conn, :get_project_check_in, %{
+        id: Paths.project_check_in_id(ctx.check_in),
+        include_unread_notifications: true,
+      })
 
       assert length(res.project_check_in.notifications) == 1
       assert Serializer.serialize(n) == hd(res.project_check_in.notifications)

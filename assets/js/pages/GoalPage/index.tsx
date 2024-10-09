@@ -24,6 +24,7 @@ export async function loader({ params }): Promise<LoaderResult> {
       includeProjects: true,
       includeLastCheckIn: true,
       includePermissions: true,
+      includeUnreadNotifications: true,
     }).then((data) => data.goal!),
   };
 }

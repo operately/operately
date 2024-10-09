@@ -19,6 +19,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
     field :include_targets, :boolean
     field :include_access_levels, :boolean
     field :include_potential_subscribers, :boolean
+    field :include_unread_notifications, :boolean
   end
 
   outputs do
@@ -52,8 +53,8 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
   defp load(ctx, inputs) do
     Goal.get(ctx.me, id: ctx.id, company_id: ctx.me.company_id, opts: [
       with_deleted: true,
-      preload: [:parent_goal] ++ preload(inputs),
-      after_load: [load_unread_notifications(ctx.me)] ++ after_load(inputs, ctx.me),
+      preload: preload(inputs),
+      after_load: after_load(inputs, ctx.me),
     ])
   end
 
@@ -67,6 +68,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
         include_space_members: [group: [:members, :company]],
         include_targets: :targets,
         include_potential_subscribers: [:reviewer, :champion, group: :members],
+        always_include: :parent_goal,
     ])
   end
 
@@ -76,6 +78,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
       include_permissions: load_permissions(me),
       include_access_levels: &Goal.preload_access_levels/1,
       include_potential_subscribers: &Goal.set_potential_subscribers/1,
+      include_unread_notifications: load_unread_notifications(me),
     ])
   end
 

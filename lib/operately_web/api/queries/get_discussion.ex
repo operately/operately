@@ -13,6 +13,7 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussion do
     field :include_space_members, :boolean
     field :include_subscriptions_list, :boolean
     field :include_potential_subscribers, :boolean
+    field :include_unread_notifications, :boolean
   end
 
   outputs do
@@ -42,7 +43,7 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussion do
   defp load(ctx, inputs) do
     Message.get(ctx.me, id: ctx.id, opts: [
       preload: preload(inputs),
-      after_load: after_load(inputs) ++ [load_unread_notifications(ctx.me)],
+      after_load: after_load(inputs, ctx.me),
     ])
   end
 
@@ -57,9 +58,10 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussion do
     ])
   end
 
-  defp after_load(inputs) do
+  defp after_load(inputs, me) do
     Inputs.parse_includes(inputs, [
       include_potential_subscribers: &Message.set_potential_subscribers/1,
+      include_unread_notifications: load_unread_notifications(me),
     ])
   end
 
