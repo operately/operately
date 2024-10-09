@@ -35,6 +35,7 @@ defmodule Operately.Goals.Goal do
     field :permissions, :any, virtual: true
     field :access_levels, :any, virtual: true
     field :potential_subscribers, :any, virtual: true
+    field :notifications, :any, virtual: true, default: []
 
     timestamps()
     soft_delete()
@@ -120,6 +121,25 @@ defmodule Operately.Goals.Goal do
 
   def preload_last_check_in(goal = %__MODULE__{}) do
     [goal] |> preload_last_check_in() |> hd()
+  end
+
+  def load_unread_notifications(goal = %__MODULE__{}, person) do
+    actions = [
+      "goal_created",
+      "goal_editing",
+      "goal_archived",
+    ]
+
+    notifications =
+      from(n in Operately.Notifications.Notification,
+        join: a in assoc(n, :activity),
+        where: a.action in ^actions and a.content["goal_id"] == ^goal.id,
+        where: n.person_id == ^person.id and not n.read,
+        select: n
+      )
+      |> Repo.all()
+
+    Map.put(goal, :notifications, notifications)
   end
 
   def preload_permissions(goal, person) do
