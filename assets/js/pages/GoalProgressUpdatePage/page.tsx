@@ -18,13 +18,18 @@ import RichContent from "@/components/RichContent";
 import { CommentSection, useForGoalCheckIn } from "@/features/CommentSection";
 import { Paths, compareIds } from "@/routes/paths";
 import { useMe } from "@/contexts/CurrentUserContext";
+import { assertPresent } from "@/utils/assertions";
+import { useClearNotificationsOnLoad } from "@/features/notifications";
 
 export function Page() {
   const me = useMe()!;
-  const { update } = useLoadedData();
   const refresh = useRefresh();
 
+  const { update } = useLoadedData();
   const commentsForm = useForGoalCheckIn(update);
+
+  assertPresent(update.notifications, "Update notifications must be defined");
+  useClearNotificationsOnLoad(update.notifications);
 
   return (
     <Pages.Page title={["Goal Progress Update", update.goal!.name!]}>
