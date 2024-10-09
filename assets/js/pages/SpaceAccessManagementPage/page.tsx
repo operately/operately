@@ -22,6 +22,7 @@ import { useRemoveGroupMember } from "@/models/spaces";
 
 import Avatar from "@/components/Avatar";
 import { createTestId } from "@/utils/testid";
+import { SpaceAccessLevbelBadge } from "@/components/Badges/AccessLevelBadges";
 
 export function Page() {
   const { space, company } = useLoadedData();
@@ -115,6 +116,7 @@ function Member({ member }: { member: People.Person }) {
         <MemberName member={member} />
       </div>
       <div className="flex items-center gap-4">
+        <SpaceAccessLevbelBadge accessLevel={member.accessLevel!} />
         <MemberMenu member={member} />
       </div>
     </BorderedRow>
