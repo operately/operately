@@ -649,6 +649,7 @@ export interface Goal {
   myRole?: string | null;
   accessLevels?: AccessLevels | null;
   potentialSubscribers?: Subscriber[] | null;
+  notifications?: Notification[] | null;
 }
 
 export interface GoalEditingUpdatedTarget {

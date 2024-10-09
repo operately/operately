@@ -39,6 +39,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Goals.Goal do
       permissions: OperatelyWeb.Api.Serializer.serialize(goal.permissions, level: :full),
       access_levels: OperatelyWeb.Api.Serializer.serialize(goal.access_levels, level: :full),
       potential_subscribers: OperatelyWeb.Api.Serializer.serialize(goal.potential_subscribers),
+      notifications: OperatelyWeb.Api.Serializer.serialize(goal.notifications),
     }
   end
 

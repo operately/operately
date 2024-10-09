@@ -611,6 +611,7 @@ defmodule OperatelyWeb.Api.Types do
     field :my_role, :string
     field :access_levels, :access_levels
     field :potential_subscribers, list_of(:subscriber)
+    field :notifications, list_of(:notification)
   end
 
   object :activity_content_project_resuming do

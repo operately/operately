@@ -9,7 +9,8 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
   import Operately.GroupsFixtures
   import Operately.GoalsFixtures
   import Operately.ProjectsFixtures
-  import OperatelyWeb.Api.Serializer
+  import Operately.NotificationsFixtures
+  import Operately.ActivitiesFixtures
   import Ecto.Query, only: [from: 2]
 
   describe "security" do
@@ -127,12 +128,27 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
       assert query(ctx.conn, :get_goal, %{id: id}) == not_found_response()
     end
 
+    test "includes notifications by default", ctx do
+      goal = goal_fixture(ctx.person, company_id: ctx.company.id, space_id: ctx.company.company_space_id)
+
+      assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal)})
+      assert res.goal.notifications == []
+
+      a = activity_fixture(author_id: ctx.person.id, action: "goal_created", content: %{goal_id: goal.id})
+      n = notification_fixture(person_id: ctx.person.id, read: false, activity_id: a.id)
+
+      assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal)})
+
+      assert length(res.goal.notifications) == 1
+      assert Serializer.serialize(n) == hd(res.goal.notifications)
+    end
+
     test "with no includes", ctx do
       goal = goal_fixture(ctx.person, company_id: ctx.company.id, space_id: ctx.company.company_space_id)
       goal = Operately.Repo.preload(goal, [:parent_goal])
 
       assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal)})
-      assert res.goal == serialize(goal, level: :full)
+      assert res.goal == Serializer.serialize(goal, level: :full)
     end
 
     test "include_champion", ctx do
@@ -142,7 +158,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
       assert res.goal.champion == nil
 
       assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal), include_champion: true})
-      assert res.goal.champion == serialize(ctx.person, level: :essential)
+      assert res.goal.champion == Serializer.serialize(ctx.person, level: :essential)
     end
 
     test "include_closed_by", ctx do
@@ -160,7 +176,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
       {:ok, goal} = Operately.Operations.GoalClosing.run(ctx.person, goal, "success", retrospective)
 
       assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal), include_closed_by: true})
-      assert res.goal.closed_by == serialize(ctx.person, level: :essential)
+      assert res.goal.closed_by == Serializer.serialize(ctx.person, level: :essential)
     end
 
     test "include_last_check_in", ctx do
@@ -178,7 +194,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
       update = Operately.Repo.preload(update, [:author, [reactions: :author]])
 
       assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal), include_last_check_in: true})
-      assert res.goal.last_check_in == serialize(update, level: :full)
+      assert res.goal.last_check_in == Serializer.serialize(update, level: :full)
     end
 
     test "include_permissions", ctx do
@@ -191,7 +207,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
       permissions = Operately.Goals.Permissions.calculate(goal, ctx.person)
 
       assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal), include_permissions: true})
-      assert res.goal.permissions == serialize(permissions, level: :full)
+      assert res.goal.permissions == Serializer.serialize(permissions, level: :full)
     end
 
     test "include_projects", ctx do
@@ -217,8 +233,8 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
       # requested, but the goal has no projects
       assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal), include_projects: true})
       assert length(res.goal.projects) == 2
-      assert Enum.find(res.goal.projects, fn p -> p.id == Paths.project_id(project1) end) == serialize(project1, level: :full)
-      assert Enum.find(res.goal.projects, fn p -> p.id == Paths.project_id(project2) end) == serialize(project2, level: :full)
+      assert Enum.find(res.goal.projects, fn p -> p.id == Paths.project_id(project1) end) == Serializer.serialize(project1, level: :full)
+      assert Enum.find(res.goal.projects, fn p -> p.id == Paths.project_id(project2) end) == Serializer.serialize(project2, level: :full)
     end
 
     test "include_reviewer", ctx do
@@ -229,7 +245,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
       assert res.goal.reviewer == nil
 
       assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal), include_reviewer: true})
-      assert res.goal.reviewer == serialize(ctx.person, level: :essential)
+      assert res.goal.reviewer == Serializer.serialize(ctx.person, level: :essential)
     end
 
     test "include_space", ctx do
@@ -242,7 +258,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
       space = Operately.Groups.get_group!(ctx.company.company_space_id)
 
       assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal), include_space: true})
-      assert res.goal.space == serialize(space, level: :essential)
+      assert res.goal.space == Serializer.serialize(space, level: :essential)
     end
 
     test "include_targets", ctx do
@@ -255,7 +271,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
       goal = Operately.Repo.preload(goal, :targets)
 
       assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal), include_targets: true})
-      assert res.goal.targets == serialize(goal.targets, level: :essential)
+      assert res.goal.targets == Serializer.serialize(goal.targets, level: :essential)
     end
 
     test "include_access_levels", ctx do
