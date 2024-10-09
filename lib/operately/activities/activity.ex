@@ -1,5 +1,6 @@
 defmodule Operately.Activities.Activity do
   use Operately.Schema
+  use Operately.Repo.Getter
 
   @deprecated_actions [
     "project_status_update_acknowledged",
@@ -25,8 +26,12 @@ defmodule Operately.Activities.Activity do
     field :resource_id, :binary_id
     field :resource_type, :string
 
+    # populated with after load hooks
+    field :notifications, :any, virtual: true, default: []
+
     timestamps()
     requester_access_level()
+    request_info()
   end
 
   def changeset(attrs) do
@@ -38,4 +43,30 @@ defmodule Operately.Activities.Activity do
   end
 
   def deprecated_actions, do: @deprecated_actions
+
+  #
+  # After load hooks
+  #
+
+  def load_unread_goal_notifications(activity = %__MODULE__{}, person) do
+    actions = [
+      "goal_closing",
+      "goal_reopening",
+      "goal_timeframe_editing",
+    ]
+
+    if Enum.member?(actions, activity.action) do
+      notifications =
+        from(n in Operately.Notifications.Notification,
+          where: n.activity_id == ^activity.id,
+          where: n.person_id == ^person.id and not n.read,
+          select: n
+        )
+        |> Repo.all()
+
+      Map.put(activity, :notifications, notifications)
+    else
+      activity
+    end
+  end
 end
