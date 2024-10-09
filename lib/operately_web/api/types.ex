@@ -970,6 +970,13 @@ defmodule OperatelyWeb.Api.Types do
     field :comment, :comment
   end
 
+  object :activity_content_goal_check_in_commented do
+    field :goal_id, :string
+    field :goal, :goal
+    field :update, :goal_progress_update
+    field :comment, :comment
+  end
+
   object :activity_content_project_retrospective_commented do
     field :project_id, :string
     field :project, :project

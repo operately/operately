@@ -192,6 +192,13 @@ export interface ActivityContentGoalCheckInAcknowledgement {
   update?: Update | null;
 }
 
+export interface ActivityContentGoalCheckInCommented {
+  goalId?: string | null;
+  goal?: Goal | null;
+  update?: GoalProgressUpdate | null;
+  comment?: Comment | null;
+}
+
 export interface ActivityContentGoalCheckInEdit {
   companyId?: string | null;
   goalId?: string | null;
