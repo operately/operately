@@ -73,6 +73,7 @@ import * as ProjectsPage from "./ProjectsPage";
 import * as ReviewPage from "./ReviewPage";
 import * as SetupPage from "./SetupPage";
 import * as SpaceAccessManagementPage from "./SpaceAccessManagementPage";
+import * as SpaceAddMembersPage from "./SpaceAddMembersPage";
 import * as SpaceAddPage from "./SpaceAddPage";
 import * as SpaceAppearancePage from "./SpaceAppearancePage";
 import * as SpaceDiscussionsPage from "./SpaceDiscussionsPage";
@@ -368,6 +369,10 @@ export default {
   SpaceAccessManagementPage: {
     loader: SpaceAccessManagementPage.loader,
     Page: SpaceAccessManagementPage.Page,
+  },
+  SpaceAddMembersPage: {
+    loader: SpaceAddMembersPage.loader,
+    Page: SpaceAddMembersPage.Page,
   },
   SpaceAddPage: {
     loader: SpaceAddPage.loader,
