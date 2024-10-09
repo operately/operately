@@ -20,28 +20,6 @@ interface ResourceAccessLevelProps {
   state: PermissionsState;
 }
 
-export function AccessLevel({ state }: { state: PermissionsState }) {
-  switch (calculatePrivacyLevel(state.permissions)) {
-    case PermissionOptions.PUBLIC:
-      return (
-        <AccessLevelContainer>
-          <CompanyAccessLevel state={state} />
-          <PublicAccessLevel state={state} />
-        </AccessLevelContainer>
-      );
-    case PermissionOptions.INTERNAL:
-      return (
-        <AccessLevelContainer>
-          <CompanyAccessLevel state={state} />
-        </AccessLevelContainer>
-      );
-    case PermissionOptions.CONFIDENTIAL:
-      return <></>;
-    case PermissionOptions.SECRET:
-      return <></>;
-  }
-}
-
 export function ResourceAccessLevel({ state, companySpaceSelected }: ResourceAccessLevelProps) {
   switch (calculatePrivacyLevel(state.permissions)) {
     case PermissionOptions.PUBLIC:
