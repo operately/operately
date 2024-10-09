@@ -1,6 +1,6 @@
 import { match } from "ts-pattern";
 
-export { SpacePermissionSelector, ResourcePermissionSelector } from "./PermissionSelector";
+export { ResourcePermissionSelector } from "./PermissionSelector";
 
 export const enum PermissionLevels {
   FULL_ACCESS = 100,

@@ -81,6 +81,7 @@ export function createAppRoutes() {
         pageRoute("spaces/:id/goals/new", pages.GoalAddPage),
         pageRoute("spaces/:id/goals", pages.SpaceGoalsPage),
         pageRoute("spaces/:id/access", pages.SpaceAccessManagementPage),
+        pageRoute("spaces/:id/edit/general-access", pages.SpaceEditGeneralAccessPage),
 
         pageRoute("tasks/:id", pages.TaskPage),
 
