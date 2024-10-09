@@ -10,6 +10,7 @@ defmodule OperatelyWeb.Api.Queries.GetSpace do
     field :include_access_levels, :boolean
     field :include_members_access_levels, :boolean
     field :include_potential_subscribers, :boolean
+    field :include_unread_notifications, :boolean
   end
 
   outputs do
@@ -47,9 +48,8 @@ defmodule OperatelyWeb.Api.Queries.GetSpace do
     Inputs.parse_includes(inputs, [
       include_members: :members,
       include_potential_subscribers: :members,
+      always_include: :company,
     ])
-    ++
-    [:company]
   end
 
   defp after_load(me, inputs) do
@@ -57,12 +57,10 @@ defmodule OperatelyWeb.Api.Queries.GetSpace do
       include_access_levels: &Group.preload_access_levels/1,
       include_members_access_levels: &Group.preload_members_access_level/1,
       include_potential_subscribers: &Group.set_potential_subscribers/1,
+      include_unread_notifications: load_unread_notifications(me),
+      always_include: preload_is_member(me),
+      always_include: &sort_members/1,
     ])
-    ++
-    [
-      preload_is_member(me),
-      &sort_members/1,
-    ]
   end
 
   defp preload_is_member(person) do
@@ -75,4 +73,10 @@ defmodule OperatelyWeb.Api.Queries.GetSpace do
     %{group | members: Enum.sort_by(group.members, & &1.full_name) }
   end
   defp sort_members(group), do: group
+
+  defp load_unread_notifications(person) do
+    fn space ->
+      Group.load_unread_notifications(space, person)
+    end
+  end
 end

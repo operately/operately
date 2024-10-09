@@ -9,12 +9,21 @@ interface LoadedData {
 }
 
 export async function loader({ params }): Promise<LoadedData> {
-  const companyPromise = Companies.getCompany({ id: params.companyId }).then((d) => d.company!);
-  const spacePromise = Spaces.getSpace({ id: params.id, includeMembers: true, includeAccessLevels: true });
+  const [company, space] = await Promise.all([
+    Companies.getCompany({
+      id: params.companyId,
+    }).then((d) => d.company!),
+    Spaces.getSpace({
+      id: params.id,
+      includeMembers: true,
+      includeAccessLevels: true,
+      includeUnreadNotifications: true,
+    }),
+  ]);
 
   return {
-    company: await companyPromise,
-    space: await spacePromise,
+    company,
+    space,
     loadedAt: new Date(),
   };
 }
