@@ -3,13 +3,27 @@ import { Tooltip } from "@/components/Tooltip";
 import { PermissionLevels } from "@/features/Permissions";
 import { joinStr } from "@/utils/strings";
 import classNames from "classnames";
+import { assertPresent } from "@/utils/assertions";
+
+// Public interface
 
 export function ProjectAccessLevelBadge({ accessLevel }: { accessLevel: PermissionLevels }) {
   const data = permissionData[accessLevel];
-  if (!data) throw new Error(`Invalid access level: ${accessLevel}`);
+  assertPresent(data, `Invalid access level: ${accessLevel}`);
 
   return <AccessBadge title={data.title} colors={data.colors} description={data.description.project} />;
 }
+
+export function SpaceAccessLevbelBadge({ accessLevel }: { accessLevel: PermissionLevels }) {
+  const data = permissionData[accessLevel];
+  assertPresent(data, `Invalid access level: ${accessLevel}`);
+
+  return <AccessBadge title={data.title} colors={data.colors} description={data.description.space} />;
+}
+
+//
+// Private components and utilities
+//
 
 interface AccessBadgeProps {
   title: string;
@@ -39,6 +53,21 @@ function Badge({ title, colors }: { title: string; colors: string }) {
   return <div className={className}>{title}</div>;
 }
 
+//
+// Permission data
+//
+
+interface PermissionData {
+  [level: number]: {
+    title: string; // title of the badge
+    colors: string; // color of the badge
+    description: {
+      project: string; // message shown in the tooltip for project access
+      space: string; // message shown in the tooltip for space access
+    };
+  };
+}
+
 const permissionData: PermissionData = {
   [PermissionLevels.FULL_ACCESS]: {
     title: "Full Access",
@@ -49,6 +78,7 @@ const permissionData: PermissionData = {
         "including editing, commenting, checking-in, closing, and ",
         "archiving the project.",
       ),
+      space: "Has full access to all resources in the space, including team and access management.",
     },
   },
 
@@ -59,6 +89,10 @@ const permissionData: PermissionData = {
       project: joinStr(
         "Can edit the project, including its details, tasks, and comments, ",
         "and can check-in. Cannot close or archive the project.",
+      ),
+      space: joinStr(
+        "Can edit the space and its details, add new members, but cannot access ",
+        "invite-only projects or change space managers.",
       ),
     },
   },
@@ -71,6 +105,7 @@ const permissionData: PermissionData = {
         "Can comment on the project, including tasks, and check-ins. ",
         "Cannot edit, close, or archive the project.",
       ),
+      space: "Can comment all resources in the space, but cannot add or remove members or resources in the space.",
     },
   },
 
@@ -82,16 +117,7 @@ const permissionData: PermissionData = {
         "Can view the project, including its details, tasks, and comments. ",
         "Cannot edit, comment, close, or archive the project.",
       ),
+      space: "Can view all resources in the space, but cannot edit, comment, or add new resources.",
     },
   },
 };
-
-interface PermissionData {
-  [level: number]: {
-    title: string;
-    colors: string;
-    description: {
-      project: string;
-    };
-  };
-}
