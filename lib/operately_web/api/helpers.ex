@@ -114,6 +114,8 @@ defmodule OperatelyWeb.Api.Helpers do
 
   defmodule Inputs do
     def parse_includes(inputs, includes) do
+      always_include = Keyword.get_values(includes, :always_include)
+
       Enum.reduce(inputs, [], fn {key, value}, acc ->
         rule = Keyword.get(includes, key)
 
@@ -123,6 +125,7 @@ defmodule OperatelyWeb.Api.Helpers do
           acc
         end
       end)
+      |> Enum.concat(always_include)
     end
   end
 end

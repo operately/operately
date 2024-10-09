@@ -12,6 +12,8 @@ import { CommentSection, useForCommentThread } from "@/features/CommentSection";
 import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
 import ActivityHandler from "@/features/activities";
+import { useClearNotificationsOnLoad } from "@/features/notifications";
+import { assertPresent } from "@/utils/assertions";
 
 interface LoaderResult {
   activity: Activities.Activity;
@@ -19,13 +21,19 @@ interface LoaderResult {
 
 export async function loader({ params }): Promise<LoaderResult> {
   return {
-    activity: await Activities.getActivity({ id: params.id }),
+    activity: await Activities.getActivity({
+      id: params.id,
+      includeUnreadGoalNotifications: true,
+    }),
   };
 }
 
 export function Page() {
   const { activity } = Pages.useLoadedData<LoaderResult>();
   const goal = Activities.getGoal(activity);
+
+  assertPresent(activity.notifications, "Activity notifications must be defined");
+  useClearNotificationsOnLoad(activity.notifications);
 
   return (
     <Pages.Page title={[ActivityHandler.pageHtmlTitle(activity), goal.name!]}>

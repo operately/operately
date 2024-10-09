@@ -2,16 +2,12 @@ defmodule OperatelyWeb.Api.Queries.GetActivity do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
-  alias Operately.Repo
   alias Operately.Activities
-  alias Operately.Activities.Activity
-  alias Operately.Activities.Preloader
-
-  import Operately.Access.Filters, only: [filter_by_view_access: 2]
-  import Ecto.Query, only: [from: 2]
+  alias Operately.Activities.{Activity, Preloader, Permissions}
 
   inputs do
     field :id, :string
+    field :include_unread_goal_notifications, :boolean
   end
 
   outputs do
@@ -19,38 +15,47 @@ defmodule OperatelyWeb.Api.Queries.GetActivity do
   end
 
   def call(conn, inputs) do
-    {:ok, activity_id} = decode_id(inputs[:id])
+    Action.new()
+    |> run(:me, fn -> find_me(conn) end)
+    |> run(:id, fn -> decode_id(inputs.id) end)
+    |> run(:activity, fn ctx -> load(ctx, inputs) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.activity.request_info.access_level, :can_view) end)
+    |> run(:serialized, fn ctx -> {:ok, %{activity: serialize(ctx.activity)}} end)
+    |> respond()
+  end
 
-    load(me(conn), activity_id)
-    |> preload_content()
-    |> serialize()
-    |> case do
-      nil ->
-        {:error, :not_found, "Activity not found"}
-      activity ->
-        {:ok, %{activity: activity}}
+  defp respond(result) do
+    case result do
+      {:ok, ctx} -> {:ok, ctx.serialized}
+      {:error, :id, _} -> {:error, :bad_request}
+      {:error, :activity, _} -> {:error, :not_found}
+      {:error, :check_permissions, _} -> {:error, :not_found}
+      _ -> {:error, :internal_server_error}
     end
   end
 
-  defp load(person, id) do
-    query = from a in Activity,
-      where: a.id == ^id,
-      preload: [:author, comment_thread: [reactions: :person]]
-
-    query
-    |> filter_by_view_access(person.id)
-    |> Repo.one()
+  defp load(ctx, inputs) do
+    Activity.get(ctx.me, id: ctx.id, opts: [
+      preload: [:author, comment_thread: [reactions: :person]],
+      after_load: after_load(inputs, ctx.me),
+    ])
   end
 
-  defp preload_content(nil), do: nil
-  defp preload_content(activity) do
-    activity
-    |> Activities.cast_content()
-    |> Preloader.preload()
+  defp after_load(inputs, person) do
+    Inputs.parse_includes(inputs, [
+      include_unread_goal_notifications: load_unread_goal_notifications(person),
+      always_include: &Activities.cast_content/1,
+      always_include: &Preloader.preload/1,
+    ])
   end
 
-  defp serialize(nil), do: nil
   defp serialize(activity) do
     OperatelyWeb.Api.Serializers.Activity.serialize(activity, [comment_thread: :full])
+  end
+
+  defp load_unread_goal_notifications(person) do
+    fn activity ->
+      Activity.load_unread_goal_notifications(activity, person)
+    end
   end
 end

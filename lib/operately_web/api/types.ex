@@ -223,6 +223,7 @@ defmodule OperatelyWeb.Api.Types do
     field :person, :person
     field :event_data, :activity_data_union
     field :content, :activity_content
+    field :notifications, list_of(:notification)
   end
 
   object :activity_event_data_project_create do

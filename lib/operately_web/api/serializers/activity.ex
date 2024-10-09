@@ -18,6 +18,7 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
       author: OperatelyWeb.Api.Serializer.serialize(activity.author, level: :essential),
       comment_thread: activity.comment_thread && serialize_comment_thread(activity.comment_thread, comment_thread),
       content: serialize_content(activity.action, activity.content),
+      notifications: OperatelyWeb.Api.Serializer.serialize(activity.notifications),
     }
   end
 
