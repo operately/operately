@@ -7,6 +7,8 @@ export function useClearNotificationsOnLoad(notifications: Notification[]) {
   useEffect(() => {
     const ids = notifications.filter((n) => !n.read).map((n) => n.id!);
 
-    markNotificationsAsRead({ ids: ids });
+    if (ids.length > 0) {
+      markNotificationsAsRead({ ids: ids });
+    }
   }, []);
 }
