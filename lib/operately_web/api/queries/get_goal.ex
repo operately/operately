@@ -53,7 +53,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
     Goal.get(ctx.me, id: ctx.id, company_id: ctx.me.company_id, opts: [
       with_deleted: true,
       preload: [:parent_goal] ++ preload(inputs),
-      after_load: after_load(inputs, ctx.me),
+      after_load: [load_unread_notifications(ctx.me)] ++ after_load(inputs, ctx.me),
     ])
   end
 
@@ -82,6 +82,12 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
   defp load_permissions(person) do
     fn goal ->
       Goal.preload_permissions(goal, person)
+    end
+  end
+
+  defp load_unread_notifications(person) do
+    fn goal ->
+      Goal.load_unread_notifications(goal, person)
     end
   end
 end

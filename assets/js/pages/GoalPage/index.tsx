@@ -8,6 +8,8 @@ import { Navigation } from "@/features/goals/GoalPageNavigation";
 import { Header } from "@/features/goals/GoalPageHeader";
 import { SuccessConditions } from "@/features/goals/SuccessConditions";
 import { LastCheckInMessage } from "@/features/goals/GoalCheckIn";
+import { useClearNotificationsOnLoad } from "@/features/notifications";
+import { assertPresent } from "@/utils/assertions";
 
 interface LoaderResult {
   goal: Goals.Goal;
@@ -28,6 +30,9 @@ export async function loader({ params }): Promise<LoaderResult> {
 
 export function Page() {
   const { goal } = Pages.useLoadedData<LoaderResult>();
+
+  assertPresent(goal.notifications, "Goal notifications must be defined");
+  useClearNotificationsOnLoad(goal.notifications);
 
   return (
     <Pages.Page title={[goal.name!]}>
