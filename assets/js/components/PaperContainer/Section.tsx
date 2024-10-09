@@ -11,7 +11,7 @@ export function Section({ title, subtitle, testId, children }: Props) {
   testId = testId ?? createTestId(title, "section");
 
   return (
-    <div className="mb-10" data-test-id={testId}>
+    <div className="mt-10" data-test-id={testId}>
       <SectionTitle title={title} subtitle={subtitle} />
 
       {children}
