@@ -1,6 +1,16 @@
 defmodule OperatelyWeb.Api.Types do
   use TurboConnect.Types
 
+  primitive :id, 
+    encoded_type: :string,
+    decoded_type: :string,
+    decode_with: &OperatelyWeb.Api.Ids.decode_id/1
+
+  primitive :company_id, 
+    encoded_type: :string, 
+    decoded_type: :number, 
+    decode_with: &OperatelyWeb.Api.Ids.decode_company_id/1
+
   object :access_levels do
     field :public, :integer
     field :company, :integer
@@ -1017,7 +1027,7 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :add_member_input do
-    field :id, :string
+    field :id, :id
     field :permissions, :integer
   end
 
