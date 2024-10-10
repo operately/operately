@@ -1,41 +1,25 @@
 defmodule OperatelyWeb.Api.Ids do
-  def decode_id(ids) when is_list(ids) do
-    Enum.reduce(ids, {:ok, []}, fn id, {:ok, acc} ->
-      case decode_id(id) do
-        {:ok, id} -> {:ok, [id | acc]}
-        e -> e
-      end
-    end)
+  def decode_id(id) when id == nil do
+    {:ok, nil}
   end
 
-  def decode_id(id) do
-    case Ecto.UUID.cast(id) do
-      {:ok, id} -> {:ok, id}
-      :error -> decode_short_id(id)
-    end
-  end
-
-  def decode_id(id, :allow_nil) do
-    if id == nil || id == "" do
-      {:ok, nil}
-    else
-      decode_id(id)
-    end
-  end
-
-  def decode_company_id(id) do
-    id_without_comments(id)
-    |> Operately.Companies.ShortId.decode()
-    |> handle_error()
-  end
-
-  defp decode_short_id(id) do
-    id_without_comments(id) 
+  def decode_id(id) when is_binary(id) do
+    remove_comments(id)
     |> Operately.ShortUuid.decode()
     |> handle_error()
   end
 
-  defp id_without_comments(id) do
+  def decode_company_id(id) when id == nil do
+    {:ok, nil}
+  end
+
+  def decode_company_id(id) do
+    remove_comments(id)
+    |> Operately.Companies.ShortId.decode()
+    |> handle_error()
+  end
+
+  defp remove_comments(id) do
     id |> String.split("-") |> List.last()
   end
 

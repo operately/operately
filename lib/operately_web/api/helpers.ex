@@ -79,7 +79,23 @@ defmodule OperatelyWeb.Api.Helpers do
     parts <> "-" <> id
   end
 
-  defdelegate decode_id(id), to: OperatelyWeb.Api.Ids
+  def decode_id(ids) when is_list(ids) do
+    Enum.reduce(ids, {:ok, []}, fn id, {:ok, acc} ->
+      case decode_id(id) do
+        {:ok, id} -> {:ok, [id | acc]}
+        e -> e
+      end
+    end)
+  end
+
+  def decode_id(id, nil_handling \\ :dont_allow_nil) do
+    if nil_handling != :allow_nil && id == nil do
+      {:error, :bad_request}
+    else
+      OperatelyWeb.Api.Ids.decode_id(id)
+    end
+  end
+
   defdelegate decode_company_id(id), to: OperatelyWeb.Api.Ids
 
   defmodule Inputs do
