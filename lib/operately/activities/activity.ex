@@ -53,6 +53,7 @@ defmodule Operately.Activities.Activity do
       "goal_closing",
       "goal_reopening",
       "goal_timeframe_editing",
+      "goal_discussion_creation",
     ]
 
     if Enum.member?(actions, activity.action) do
