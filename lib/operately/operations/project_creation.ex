@@ -138,6 +138,7 @@ defmodule Operately.Operations.ProjectCreation do
     Activities.insert_sync(multi, params.creator_id, :project_created, fn changes ->
       %{
         company_id: changes.project.company_id,
+        space_id: changes.project.group_id,
         project_id: changes.project.id
       }
     end)
