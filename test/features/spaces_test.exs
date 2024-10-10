@@ -88,16 +88,18 @@ defmodule Operately.Features.SpacesTest do
   end
 
   feature "adding space members", ctx do
-    group = group_fixture(ctx.person, %{name: "Marketing"})
-    member = person_fixture_with_account(%{full_name: "Mati Aharoni", company_id: ctx.company.id})
+    member1 = person_fixture_with_account(%{full_name: "Alex Aleksej", company_id: ctx.company.id})
+    member2 = person_fixture_with_account(%{full_name: "Boby Brown", company_id: ctx.company.id})
+    member3 = person_fixture_with_account(%{full_name: "Cathy Clarkson", company_id: ctx.company.id})
+
+    members = [member1, member2, member3]
 
     ctx
-    |> Steps.visit_home()
-    |> Steps.visit_access_management(group.name)
-    |> Steps.add_new_member(search: "Mati", name: member.full_name)
-    |> Steps.assert_member_added(member.full_name)
-    |> Steps.assert_members_added_notification_sent(member: member, title: group.name)
-    |> Steps.assert_members_added_email_sent(member: member, title: group.name)
+    |> Steps.given_a_space_exists()
+    |> Steps.add_new_members(members)
+    |> Steps.assert_members_added(members)
+    |> Steps.assert_members_added_notification_sent(members)
+    |> Steps.assert_members_added_email_sent(members)
   end
 
   feature "removing space members", ctx do

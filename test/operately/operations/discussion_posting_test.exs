@@ -93,7 +93,7 @@ defmodule Operately.Operations.DiscussionPostingTest do
 
     # With permissions
     {:ok, _} = Operately.Groups.add_members(ctx.creator, ctx.space.id, [
-      %{id: person.id, permissions: Operately.Access.Binding.view_access()}
+      %{id: person.id, access_level: Operately.Access.Binding.view_access()}
     ])
 
     {:ok, message} = Operately.Operations.DiscussionPosting.run(ctx.creator, ctx.space, %{

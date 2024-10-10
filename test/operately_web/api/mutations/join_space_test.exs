@@ -124,7 +124,7 @@ defmodule OperatelyWeb.Api.Mutations.JoinSpaceTest do
   defp add_person_to_space(ctx, space_id, access_level) do
     Groups.add_members(ctx.person, space_id, [%{
       id: ctx.person.id,
-      permissions: access_level,
+      access_level: access_level,
     }])
   end
 end
