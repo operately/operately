@@ -12,9 +12,8 @@ defmodule TurboConnect.Plugs.ParseInputs do
 
     inputs = conn.assigns.turbo_req_handler.__inputs__()
     types = conn.assigns.turbo_api.__types__()
-    unions = types.unions
     strict_parsing = conn.assigns.turbo_req_type == :mutation
-    specs = {inputs, types, unions}
+    specs = {inputs, types}
 
     with {:ok, inputs} <- parse_inputs(specs, params, strict_parsing) do
       Plug.Conn.assign(conn, :turbo_inputs, inputs)
@@ -23,11 +22,11 @@ defmodule TurboConnect.Plugs.ParseInputs do
     end
   end
 
-  def parse_inputs({inputs, types, unions}, values, strict) do
+  def parse_inputs({inputs, types}, values, strict) do
     Enum.reduce(values, {:ok, %{}}, fn {name, value}, res ->
       with {:ok, res} <- res,
            {:ok, {field_name, type, _opts}} <- find_field(inputs.fields, name),
-           {:ok, parsed} <- parse_input(type, types, unions, value, strict) do
+           {:ok, parsed} <- parse_input(type, types, value, strict) do
         {:ok, Map.put(res, field_name, parsed)}
       end
     end)
@@ -44,45 +43,45 @@ defmodule TurboConnect.Plugs.ParseInputs do
   # Parsing basic types
   #
 
-  def parse_input(:string, _types, _unions, value, _strict) when is_binary(value), do: {:ok, value}
-  def parse_input(:string, _types, _unions, value, true) when is_nil(value), do: {:ok, nil}
+  def parse_input(:string, _types, value, _strict) when is_binary(value), do: {:ok, value}
+  def parse_input(:string, _types, value, true) when is_nil(value), do: {:ok, nil}
 
-  def parse_input(:boolean, _types, _unions, value, true) when is_boolean(value), do: {:ok, value}
-  def parse_input(:boolean, _types, _unions, "true", false), do: {:ok, true}
-  def parse_input(:boolean, _types, _unions, "false", false), do: {:ok, false}
+  def parse_input(:boolean, _types, value, true) when is_boolean(value), do: {:ok, value}
+  def parse_input(:boolean, _types, "true", false), do: {:ok, true}
+  def parse_input(:boolean, _types, "false", false), do: {:ok, false}
 
-  def parse_input(:integer, _types, _unions, value, true) when is_integer(value), do: {:ok, value}
-  def parse_input(:integer, _types, _unions, value, false) do
+  def parse_input(:integer, _types, value, true) when is_integer(value), do: {:ok, value}
+  def parse_input(:integer, _types, value, false) do
     case Integer.parse(value) do
       {int, ""} -> {:ok, int}
       _ -> {:error, 422, "Invalid integer: #{value}"}
     end
   end
 
-  def parse_input(:float, _types, _unions, value, true) when is_float(value), do: {:ok, value}
-  def parse_input(:float, _types, _unions, value, true) when is_number(value), do: {:ok, value}
-  def parse_input(:float, _types, _unions, value, false) do
+  def parse_input(:float, _types, value, true) when is_float(value), do: {:ok, value}
+  def parse_input(:float, _types, value, true) when is_number(value), do: {:ok, value}
+  def parse_input(:float, _types, value, false) do
     case Float.parse(value) do
       {float, ""} -> {:ok, float}
       _ -> {:error, 422, "Invalid float: #{value}"}
     end
   end
 
-  def parse_input(:date, _types, _unions, value, _strict) when is_binary(value) do
+  def parse_input(:date, _types, value, _strict) when is_binary(value) do
     case Date.from_iso8601(value) do
       {:ok, date} -> {:ok, date}
       _ -> {:error, 422, "Invalid date: #{value}"}
     end
   end
 
-  def parse_input(:datetime, _types, _unions, value, _strict) when is_binary(value) do
+  def parse_input(:datetime, _types, value, _strict) when is_binary(value) do
     case DateTime.from_iso8601(value) do
       {:ok, datetime} -> {:ok, datetime}
       _ -> {:error, 422, "Invalid datetime: #{value}"}
     end
   end
 
-  def parse_input(:time, _types, _unions, value, _strict) when is_binary(value) do
+  def parse_input(:time, _types, value, _strict) when is_binary(value) do
     case Time.from_iso8601(value) do
       {:ok, time} -> {:ok, time}
       _ -> {:error, 422, "Invalid time: #{value}"}
@@ -92,15 +91,15 @@ defmodule TurboConnect.Plugs.ParseInputs do
   #
   # Parsing lists
 
-  def parse_input({:list, _type}, _types, _unions, "", false) do
+  def parse_input({:list, _type}, _types, "", false) do
     # query params for empty lists are parsed by Plug.Conn as an empty string
     {:ok, []}
   end
 
-  def parse_input({:list, type}, types, unions, value, strict) when is_list(value) do
+  def parse_input({:list, type}, types, value, strict) when is_list(value) do
     Enum.reduce(value, {:ok, []}, fn v, res ->
       with {:ok, res} <- res,
-           {:ok, parsed} <- parse_input(type, types, unions, v, strict) do
+           {:ok, parsed} <- parse_input(type, types, v, strict) do
         {:ok, [parsed | res]}
       end
     end)
@@ -110,28 +109,42 @@ defmodule TurboConnect.Plugs.ParseInputs do
     end
   end
 
-  def parse_input(_field , _types, _unions, nil, _strict) do
+  def parse_input(_field , _types, nil, _strict) do
     {:ok, nil}
   end
 
   #
-  # Error handling
+  # Complex types
   #
 
-  def parse_input(type, types, unions, values, strict) do
-    # TODO: What if the type is a union?
-    registered_type = types.objects[type]
+  def parse_input(type, types, value, strict) do
+    cond do
+      types.primitives[type] != nil ->
+        primitive_type = types.primitives[type]
+        decode_with = Keyword.get(primitive_type, :decode_with)
 
-    if registered_type do
-      Enum.reduce(values, {:ok, %{}}, fn {name, value}, res ->
-        with {:ok, res} <- res,
-             {:ok, {field_name, field_type, _opts}} <- find_field(registered_type.fields, name),
-             {:ok, parsed} <- parse_input(field_type, types, unions, value, strict) do
-          {:ok, Map.put(res, field_name, parsed)}
+        case decode_with do
+          nil -> {:error, 500, "Unknown decoder for primitive type: #{type}"}
+          _ -> 
+            case decode_with.(value) do
+              {:ok, decoded} -> {:ok, decoded}
+              {:error, reason} -> {:error, 422, reason}
+            end
         end
-      end)
-    else
-      {:error, 422, "Unknown input type: #{type}"}
+
+      types.objects[type] != nil ->
+        object_type = types.objects[type]
+
+        Enum.reduce(value, {:ok, %{}}, fn {name, value}, res ->
+          with {:ok, res} <- res,
+               {:ok, {field_name, field_type, _opts}} <- find_field(object_type.fields, name),
+               {:ok, parsed} <- parse_input(field_type, types, value, strict) do
+            {:ok, Map.put(res, field_name, parsed)}
+          end
+        end)
+
+      true ->
+        {:error, 422, "Unknown input type: #{type}"}
     end
   end
 
