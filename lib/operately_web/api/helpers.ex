@@ -79,20 +79,25 @@ defmodule OperatelyWeb.Api.Helpers do
     parts <> "-" <> id
   end
 
-  def decode_id(ids) when is_list(ids) do
+  def decode_id(ids, nil_handling \\ :dont_allow_nil)
+
+  def decode_id(ids, nil_handling) when is_list(ids) do
     Enum.reduce(ids, {:ok, []}, fn id, {:ok, acc} ->
-      case decode_id(id) do
+      case decode_id(id, nil_handling) do
         {:ok, id} -> {:ok, [id | acc]}
         e -> e
       end
     end)
   end
 
-  def decode_id(id, nil_handling \\ :dont_allow_nil) do
-    if nil_handling != :allow_nil && id == nil do
+  def decode_id(id, nil_handling) do
+    if nil_handling == :dont_allow_nil && id == nil do
       {:error, :bad_request}
     else
-      OperatelyWeb.Api.Ids.decode_id(id)
+      case Ecto.UUID.cast(id) do
+        {:ok, id} -> {:ok, id}
+        _ -> OperatelyWeb.Api.Ids.decode_id(id)
+      end
     end
   end
 
