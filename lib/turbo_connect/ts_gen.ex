@@ -3,7 +3,7 @@ defmodule TurboConnect.TsGen do
   This module generates TypeScript code from the specs defined with TurboConnect.Specs.
   """
 
-  import TurboConnect.TsGen.Typescript, only: [ts_interface: 2, ts_sum_type: 2]
+  import TurboConnect.TsGen.Typescript, only: [ts_interface: 2, ts_sum_type: 2, ts_type_alias: 2]
   alias TurboConnect.TsGen.{Queries, Mutations}
 
   @spec generate(module) :: String.t()
@@ -29,6 +29,7 @@ defmodule TurboConnect.TsGen do
 
   def generate_types(api_module) do
     Enum.join([
+      convert_primitives(api_module.__types__().primitives),
       convert_objects(api_module.__types__().objects),
       convert_unions(api_module.__types__().unions),
       Queries.generate_types(api_module.__queries__()),
@@ -80,10 +81,20 @@ defmodule TurboConnect.TsGen do
     |> Enum.sort_by(&elem(&1, 0))
     |> Enum.map_join("\n", fn {name, object} -> ts_interface(name, object.fields) end)
   end
+
   def convert_unions(unions) do
     unions
     |> Enum.sort_by(&elem(&1, 0))
     |> Enum.map_join("\n", fn {name, types} -> ts_sum_type(name, types) end)
+  end
+
+  def convert_primitives(primitives) do
+    primitives
+    |> Enum.sort_by(&elem(&1, 0))
+    |> Enum.map_join("\n", fn {name, opts} -> 
+      encoded_type = Keyword.get(opts, :encoded_type)
+      ts_type_alias(name, encoded_type)
+    end)
   end
 
   def to_camel_case do
