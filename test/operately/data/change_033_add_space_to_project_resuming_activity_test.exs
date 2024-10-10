@@ -1,4 +1,4 @@
-defmodule Operately.Data.Change032AddSpaceToProjectCreatedActivityTest do
+defmodule Operately.Data.Change033AddSpaceToProjectResumingActivityTest do
   use Operately.DataCase
 
   alias Operately.Repo

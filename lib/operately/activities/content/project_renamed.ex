@@ -3,6 +3,7 @@ defmodule Operately.Activities.Content.ProjectRenamed do
 
   embedded_schema do
     belongs_to :company, Operately.Companies.Company
+    belongs_to :space, Operately.Groups.Group
     belongs_to :project, Operately.Projects.Project
 
     field :old_name, :string

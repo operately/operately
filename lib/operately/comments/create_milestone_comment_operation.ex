@@ -15,7 +15,7 @@ defmodule Operately.Comments.CreateMilestoneCommentOperation do
     |> Repo.transaction()
     |> Repo.extract_result(:milestone_comment)
   end
-  
+
   defp insert_milestone_comment(multi, milestone, action) do
     Multi.insert(multi, :milestone_comment, fn changes ->
       MilestoneComment.changeset(%{
@@ -53,6 +53,7 @@ defmodule Operately.Comments.CreateMilestoneCommentOperation do
 
       %{
         company_id: project.company_id,
+        space_id: project.group_id,
         project_id: project.id,
         milestone_id: milestone.id,
         comment_id: changes[:comment].id,
