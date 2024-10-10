@@ -7,6 +7,7 @@ defmodule OperatelyWeb.Api.Queries.GetMilestoneTest do
 
   alias Operately.Repo
   alias Operately.Access.Binding
+  alias Operately.Support.RichText
 
   describe "security" do
     test "it requires authentication", ctx do
@@ -86,6 +87,71 @@ defmodule OperatelyWeb.Api.Queries.GetMilestoneTest do
     end
   end
 
+
+  describe "get_milestone functionality" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.log_in_person(:creator)
+      |> Factory.add_space(:space)
+      |> Factory.add_project(:project, :space)
+      |> Factory.add_project_milestone(:milestone, :project, :creator)
+    end
+
+    test "include_project", ctx do
+      assert {200, res} = query(ctx.conn, :get_milestone, %{id: Paths.milestone_id(ctx.milestone)})
+
+      refute res.milestone.project
+
+      assert {200, res} = query(ctx.conn, :get_milestone, %{
+        id: Paths.milestone_id(ctx.milestone),
+        include_project: true,
+      })
+
+      assert res.milestone.project.id == Paths.project_id(ctx.project)
+    end
+
+    test "include_permissions", ctx do
+      assert {200, res} = query(ctx.conn, :get_milestone, %{id: Paths.milestone_id(ctx.milestone)})
+
+      refute res.milestone.permissions
+
+      assert {200, res} = query(ctx.conn, :get_milestone, %{
+        id: Paths.milestone_id(ctx.milestone),
+        include_permissions: true,
+      })
+
+      assert res.milestone.permissions.can_edit_milestone
+    end
+
+    test "include_comments", ctx do
+      person = person_fixture(%{company_id: ctx.company.id})
+      Operately.Comments.create_milestone_comment(person, ctx.milestone, "none", %{
+        content: %{"message" => RichText.rich_text("some message")},
+        author_id: person.id,
+      })
+
+      assert {200, res} = query(ctx.conn, :get_milestone, %{id: Paths.milestone_id(ctx.milestone)})
+
+      refute res.milestone.comments
+
+      assert {200, res} = query(ctx.conn, :get_milestone, %{
+        id: Paths.milestone_id(ctx.milestone),
+        include_comments: true,
+      })
+
+      assert length(res.milestone.comments) == 1
+
+      comment = hd(res.milestone.comments)
+
+      assert comment.action == "none"
+      assert comment.comment.author
+      assert comment.comment.content
+      assert comment.comment.notification
+      assert comment.comment.notification.read == false
+    end
+  end
+
   #
   # Helpers
   #
@@ -108,7 +174,6 @@ defmodule OperatelyWeb.Api.Queries.GetMilestoneTest do
     })
 
     milestone_fixture(ctx.creator, %{ project_id: project.id })
-    |> Repo.preload([:project, comments: [comment: [:author, reactions: :person]]])
     |> Serializer.serialize(level: :essential)
   end
 

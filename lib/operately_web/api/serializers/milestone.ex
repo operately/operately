@@ -2,7 +2,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Milestone do
   def serialize(milestone, level: :essential) do
     %{
       id: OperatelyWeb.Paths.milestone_id(milestone),
-      project_id: OperatelyWeb.Paths.project_id(milestone.project),
+      project: OperatelyWeb.Api.Serializer.serialize(milestone.project),
       title: milestone.title,
       status: to_string(milestone.status),
       description: milestone.description && Jason.encode!(milestone.description),
@@ -15,6 +15,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Milestone do
         done: encode_task_ids(milestone.tasks_kanban_state["done"]),
       },
       comments: OperatelyWeb.Api.Serializer.serialize(milestone.comments),
+      permissions: OperatelyWeb.Api.Serializer.serialize(milestone.permissions),
     }
   end
 

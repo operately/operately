@@ -49,7 +49,7 @@ export function useForMilestone(milestone: Milestones.Milestone): FormState {
     postComment,
     editComment,
     submitting: submittingPost || submittingEdit,
-    mentionSearchScope: { type: "project", id: milestone.projectId! } as People.SearchScope,
+    mentionSearchScope: { type: "project", id: milestone.project!.id } as People.SearchScope,
   };
 
   return res;
