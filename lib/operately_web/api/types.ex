@@ -1028,7 +1028,7 @@ defmodule OperatelyWeb.Api.Types do
 
   object :add_member_input do
     field :id, :id
-    field :permissions, :integer
+    field :access_level, :integer
   end
 
   object :edit_member_permissions_input do

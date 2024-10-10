@@ -18,7 +18,7 @@ defmodule Operately.Support.Factory.Spaces do
 
     {:ok, _} = Operately.Groups.add_members(person, space.id, [%{
       id: person.id,
-      permissions: Operately.Access.Binding.from_atom(level)
+      access_level: Operately.Access.Binding.from_atom(level)
     }])
 
     Map.put(ctx, testid, person)
