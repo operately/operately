@@ -11,24 +11,15 @@ defmodule OperatelyWeb.Api.Mutations.AddGroupMembers do
 
   def call(conn, inputs) do
     {:ok, id} = decode_id(inputs.group_id)
-    members = decode_member_ids(inputs)
-
+    
     case check_permissions(me(conn), id) do
       {:error, reason} ->
         {:error, reason}
 
       :ok ->
-        Operately.Operations.GroupMembersAdding.run(me(conn), id, members)
+        Operately.Operations.GroupMembersAdding.run(me(conn), id, inputs.members)
         {:ok, %{}}
     end
-  end
-
-  defp decode_member_ids(inputs) do
-    Enum.map(inputs.members, fn member ->
-      {:ok, id} = decode_id(member.id)
-
-      %{member | id: id}
-    end)
   end
 
   defp check_permissions(person, space_id) do

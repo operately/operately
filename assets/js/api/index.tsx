@@ -116,6 +116,10 @@ export function useMutation<InputT, ResultT>(
   return [execute, { data, loading, error }];
 }
 
+export type CompanyId = string;
+
+export type Id = string;
+
 export interface AccessLevels {
   public?: number | null;
   company?: number | null;
@@ -543,7 +547,7 @@ export interface ActivityEventDataProjectCreate {
 }
 
 export interface AddMemberInput {
-  id?: string | null;
+  id?: Id | null;
   permissions?: number | null;
 }
 

@@ -5,8 +5,17 @@ defmodule TurboConnect.Types do
       use TurboConnect.Fields
 
       import TurboConnect.Types
+
       Module.register_attribute(__MODULE__, :unions, accumulate: true)
+      Module.register_attribute(__MODULE__, :primitives, accumulate: true)
+
       @before_compile unquote(__MODULE__)
+    end
+  end
+
+  defmacro primitive(name, opts) do
+    quote do
+      @primitives {unquote(name), unquote(opts)}
     end
   end
 
@@ -26,6 +35,7 @@ defmodule TurboConnect.Types do
 
   defmacro __before_compile__(_) do
     quote do
+      def __primitives__(), do: Enum.reverse(@primitives) |> Enum.into(%{})
       def __objects__(), do: __fields__()
       def __unions__(), do: Enum.reverse(@unions) |> Enum.into(%{})
     end
