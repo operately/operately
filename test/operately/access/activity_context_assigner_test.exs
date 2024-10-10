@@ -375,7 +375,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "project_created",
         author_id: ctx.author.id,
-        content: %{ project_id: ctx.project.id, company_id: ctx.company.id }
+        content: %{ project_id: ctx.project.id, space_id: ctx.group.id, company_id: ctx.company.id }
       }
 
       create_activity(attrs)
