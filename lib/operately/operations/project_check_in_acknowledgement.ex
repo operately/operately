@@ -16,6 +16,7 @@ defmodule Operately.Operations.ProjectCheckInAcknowledgement do
     |> Activities.insert_sync(author.id, :project_check_in_acknowledged, fn _changes ->
       %{
         company_id: author.company_id,
+        space_id: check_in.project.group_id,
         project_id: check_in.project_id,
         check_in_id: check_in.id
       }

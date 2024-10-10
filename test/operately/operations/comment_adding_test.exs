@@ -56,6 +56,7 @@ defmodule Operately.Operations.CommentAddingTest do
         subscriber_ids: Enum.map(ctx.contribs, &(&1.person_id)),
         subscription_parent_type: :project_check_in
       })
+      check_in = Repo.preload(check_in, :project)
 
       {:ok, comment} = Oban.Testing.with_testing_mode(:manual, fn ->
         CommentAdding.run(ctx.champion, check_in, "project_check_in", RichText.rich_text("Some comment"))
@@ -85,6 +86,7 @@ defmodule Operately.Operations.CommentAddingTest do
         subscriber_ids: [ctx.champion.id],
         subscription_parent_type: :project_check_in
       })
+      check_in = Repo.preload(check_in, :project)
 
       # Without permissions
       person = person_fixture_with_account(%{company_id: ctx.company.id})

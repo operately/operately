@@ -97,7 +97,7 @@ defmodule OperatelyWeb.Api.Mutations.AcknowledgeProjectCheckInTest do
   end
 
   defp assert_response(res, check_in) do
-    check_in = Repo.reload(check_in)
+    check_in = Repo.reload(check_in) |> Repo.preload(:project)
 
     assert check_in.acknowledged_at
     assert check_in.acknowledged_by_id
