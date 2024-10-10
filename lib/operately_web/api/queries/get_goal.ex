@@ -31,7 +31,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
     |> run(:me, fn -> find_me(conn) end)
     |> run(:id, fn -> decode_id(id) end)
     |> run(:goal, fn ctx -> load(ctx, inputs) end)
-    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.goal.requester_access_level, :can_view) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.goal.request_info.access_level, :can_view) end)
     |> run(:serialized, fn ctx -> {:ok, %{goal: Serializer.serialize(ctx.goal, level: :full)}} end)
     |> respond()
   end
@@ -60,32 +60,26 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
 
   defp preload(inputs) do
     Inputs.parse_includes(inputs, [
-        include_champion: :champion,
-        include_closed_by: :closed_by,
-        include_projects: [projects: [:champion, :reviewer]],
-        include_reviewer: :reviewer,
-        include_space: :group,
-        include_space_members: [group: [:members, :company]],
-        include_targets: :targets,
-        include_potential_subscribers: [:reviewer, :champion, group: :members],
-        always_include: :parent_goal,
+      include_champion: :champion,
+      include_closed_by: :closed_by,
+      include_projects: [projects: [:champion, :reviewer]],
+      include_reviewer: :reviewer,
+      include_space: :group,
+      include_space_members: [group: [:members, :company]],
+      include_targets: :targets,
+      include_potential_subscribers: [:reviewer, :champion, group: :members],
+      always_include: :parent_goal,
     ])
   end
 
   defp after_load(inputs, me) do
     Inputs.parse_includes(inputs, [
       include_last_check_in: &Goal.preload_last_check_in/1,
-      include_permissions: load_permissions(me),
+      include_permissions: &Goal.preload_permissions/1,
       include_access_levels: &Goal.preload_access_levels/1,
       include_potential_subscribers: &Goal.set_potential_subscribers/1,
       include_unread_notifications: load_unread_notifications(me),
     ])
-  end
-
-  defp load_permissions(person) do
-    fn goal ->
-      Goal.preload_permissions(goal, person)
-    end
   end
 
   defp load_unread_notifications(person) do
