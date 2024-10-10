@@ -80,7 +80,7 @@ defmodule Operately.Operations.GroupMembersPermissionsEditingTest do
 
     Groups.add_members(creator, space.id, [%{
       id: person.id,
-      permissions: permissions,
+      access_level: permissions,
     }])
 
     person

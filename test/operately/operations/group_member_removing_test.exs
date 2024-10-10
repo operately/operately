@@ -19,7 +19,7 @@ defmodule Operately.Operations.GroupMemberRemovingTest do
 
     Groups.add_members(creator, group.id, [%{
       id: member.id,
-      permissions: Binding.comment_access(),
+      access_level: Binding.comment_access(),
     }])
 
     {:ok, company: company, creator: creator, group: group, member: member}

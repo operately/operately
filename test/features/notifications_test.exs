@@ -15,14 +15,8 @@ defmodule Operately.Features.NotificationsTest do
     ctx = Map.put(ctx, :group, group_fixture(ctx.champion, %{company_id: ctx.company.id, name: "Designers"}))
 
     Operately.Groups.add_members(ctx.reviewer, ctx.group.id, [
-      %{
-        id: ctx.reviewer.id,
-        permissions: Binding.edit_access(),
-      },
-      %{
-        id: ctx.champion.id,
-        permissions: Binding.view_access(),
-      }
+      %{id: ctx.reviewer.id, access_level: Binding.edit_access()},
+      %{id: ctx.champion.id, access_level: Binding.view_access()}
     ])
 
     {:ok, ctx}

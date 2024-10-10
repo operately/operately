@@ -46,7 +46,7 @@ defmodule Operately.Support.Features.SpaceSteps do
 
     Operately.Groups.add_members(ctx.person, space.id, [%{
       id: member.id,
-      permissions: Operately.Access.Binding.comment_access(),
+      access_level: Operately.Access.Binding.comment_access(),
     }])
 
     [space, member]

@@ -7,10 +7,11 @@ export {
   useEditGroup,
   useEditSpacePermissions,
   useRemoveGroupMember,
-  useAddGroupMembers,
+  useAddSpaceMembers,
   useUpdateGroupAppearance,
   useEditSpaceMembersPermissions,
   searchPotentialSpaceMembers,
+  useSearchPotentialSpaceMembers,
 } from "@/api";
 
 export async function getSpace(params: api.GetSpaceInput): Promise<api.Space> {
