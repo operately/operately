@@ -88,14 +88,6 @@ function Settings({ space }) {
         to={Paths.spaceEditPath(space.id)}
         testId="edit-name-and-purpose"
       />
-      {!space.isCompanySpace && (
-        <PageOptions.Link
-          icon={Icons.IconUserPlus}
-          title="Add/Remove members"
-          to={Paths.spaceMembersPath(space.id)}
-          testId="add-remove-members"
-        />
-      )}
       <PageOptions.Link
         icon={Icons.IconPaint}
         title="Change Appearance"
