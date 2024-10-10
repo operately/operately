@@ -32,6 +32,7 @@ defmodule OperatelyWeb.Api.Mutations.AcknowledgeProjectCheckIn do
     from(check_in in Operately.Projects.CheckIn,
       join: project in assoc(check_in, :project),
       join: reviewer in assoc(project, :reviewer_contributor),
+      preload: [project: project],
       where: check_in.id == ^check_in_id and reviewer.person_id == ^person_id
     )
     |> Repo.one()

@@ -237,6 +237,7 @@ defmodule OperatelyWeb.Api.Mutations.EditCommentTest do
       |> Factory.add_space_member(:person, :space)
       |> Factory.add_project(:project, :space)
       |> Factory.add_project_check_in(:check_in, :project, :creator)
+      |> Factory.preload(:check_in, :project)
       |> Factory.add_project(:project, :space)
       |> Factory.add_project_retrospective(:retrospective, :project, :creator)
       |> Factory.preload(:retrospective, :project)
@@ -302,6 +303,7 @@ defmodule OperatelyWeb.Api.Mutations.EditCommentTest do
 
   defp create_check_in(author, project) do
     check_in_fixture(%{author_id: author.id, project_id: project.id})
+    |> Repo.preload(:project)
   end
 
   def create_project(ctx, space, company_members_level, space_members_level, project_member_level) do
