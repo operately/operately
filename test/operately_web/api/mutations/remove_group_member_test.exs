@@ -69,6 +69,6 @@ defmodule OperatelyWeb.Api.Mutations.RemoveGroupMemberTest do
   end
 
   defp add_member(ctx, space, person, permissions) do
-    {:ok, _} = Operately.Groups.add_members(ctx.creator, space.id, [%{id: person.id, permissions: permissions}])
+    {:ok, _} = Operately.Groups.add_members(ctx.creator, space.id, [%{id: person.id, access_level: permissions}])
   end
 end

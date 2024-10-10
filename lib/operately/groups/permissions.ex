@@ -14,6 +14,7 @@ defmodule Operately.Groups.Permissions do
     :can_remove_member,
     :can_view,
     :can_view_message,
+    :can_add_members,
   ]
 
   def calculate_permissions(access_level) do
@@ -30,6 +31,7 @@ defmodule Operately.Groups.Permissions do
       can_remove_member: can_remove_member(access_level),
       can_view: can_view(access_level),
       can_view_message: can_view_message(access_level),
+      can_add_members: can_add_members(access_level),
     }
   end
 
@@ -45,14 +47,15 @@ defmodule Operately.Groups.Permissions do
   def can_remove_member(access_level), do: access_level >= Binding.full_access()
   def can_view(access_level), do: access_level >= Binding.view_access()
   def can_view_message(access_level), do: access_level >= Binding.view_access()
+  def can_add_members(access_level), do: access_level >= Binding.full_access()
 
-  def check(access_level, permission) do
+  def check(access_level, permission) when is_number(access_level) and is_atom(permission) do
     permissions = calculate_permissions(access_level)
 
-    if Map.get(permissions, permission) == true do
-      {:ok, :allowed}
-    else
-      {:error, :forbidden}
+    case Map.get(permissions, permission) do
+      true -> {:ok, :allowed}
+      false -> {:error, :forbidden}
+      nil -> raise ArgumentError, "Unknown permission: #{inspect permission}"
     end
   end
 end

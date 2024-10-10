@@ -199,7 +199,7 @@ defmodule OperatelyWeb.Api.Queries.SearchPotentialSpaceMembersTest do
   defp add_person_to_space(person, space) do
     Operately.Groups.add_members(person, space.id, [%{
       id: person.id,
-      permissions: Binding.view_access(),
+      access_level: Binding.view_access(),
     }])
   end
 end

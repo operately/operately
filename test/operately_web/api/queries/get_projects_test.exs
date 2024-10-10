@@ -208,7 +208,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectsTest do
   defp add_person_to_space(ctx) do
     Operately.Groups.add_members(ctx.person, ctx.space.id, [%{
       id: ctx.person.id,
-      permissions: Binding.edit_access(),
+      access_level: Binding.edit_access(),
     }])
   end
 end
