@@ -397,7 +397,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "project_check_in_acknowledged",
         author_id: ctx.author.id,
-        content: %{ project_id: ctx.project.id, company_id: ctx.company.id, check_in_id: ctx.check_in.id }
+        content: %{ project_id: ctx.project.id, space_id: ctx.group.id, company_id: ctx.company.id, check_in_id: ctx.check_in.id }
       }
 
       create_activity(attrs)
@@ -408,7 +408,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "project_check_in_commented",
         author_id: ctx.author.id,
-        content: %{ project_id: ctx.project.id, company_id: ctx.company.id, check_in_id: ctx.check_in.id, comment_id: ctx.comment.id }
+        content: %{ project_id: ctx.project.id, space_id: ctx.group.id, company_id: ctx.company.id, check_in_id: ctx.check_in.id, comment_id: ctx.comment.id }
       }
 
       create_activity(attrs)
@@ -430,7 +430,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "project_check_in_submitted",
         author_id: ctx.author.id,
-        content: %{ project_id: ctx.project.id, company_id: ctx.company.id, check_in_id: ctx.check_in.id }
+        content: %{ project_id: ctx.project.id, space_id: ctx.group.id, company_id: ctx.company.id, check_in_id: ctx.check_in.id }
       }
 
       create_activity(attrs)
