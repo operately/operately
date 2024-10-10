@@ -155,14 +155,14 @@ function useSearch() {
   );
 }
 
-function uniqueMemberList(members: MemberField[]): { personId: string; accessLevel: PermissionLevels }[] {
-  let res = [] as { personId: string; accessLevel: PermissionLevels }[];
+function uniqueMemberList(members: MemberField[]): { id: string; accessLevel: PermissionLevels }[] {
+  let res = [] as { id: string; accessLevel: PermissionLevels }[];
 
   for (const m of members) {
-    const existing = res.find((r) => compareIds(r.personId, m.personId));
+    const existing = res.find((r) => compareIds(r.id, m.personId));
 
     if (!existing) {
-      res.push({ personId: m.personId, accessLevel: m.accessLevel });
+      res.push({ id: m.personId, accessLevel: m.accessLevel });
       continue;
     }
 

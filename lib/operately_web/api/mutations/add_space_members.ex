@@ -2,35 +2,39 @@ defmodule OperatelyWeb.Api.Mutations.AddSpaceMembers do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
-  import Operately.Access.Filters, only: [filter_by_full_access: 2, forbidden_or_not_found: 2]
-
   inputs do
     field :space_id, :string
     field :members, list_of(:add_member_input)
   end
 
   def call(conn, inputs) do
-    {:ok, id} = decode_id(inputs.space_id)
-    members = decode_member_ids(inputs)
-
-    case check_permissions(me(conn), id) do
-      {:error, reason} ->
-        {:error, reason}
-
-      :ok ->
-        Operately.Operations.GroupMembersAdding.run(me(conn), id, inputs.members)
-        {:ok, %{}}
-    end
+    Action.new()
+    |> run(:me, fn -> find_me(conn) end)
+    |> run(:space_id, fn -> decode_id(inputs.space_id) end)
+    |> run(:members, fn -> decode_member_ids(inputs) end)
+    |> run(:space, fn ctx -> Operately.Groups.Group.get!(ctx.me, id: ctx.space_id) end)
+    |> run(:check_permissions, fn ctx -> Operately.Groups.Permissions.check_permissions(ctx.space.request_info.access_level, :can_add_members) end)
+    |> run(:operation, fn ctx -> Operately.Operations.GroupMembersAdding.run(ctx.me, ctx.space_id, ctx.members) end)
+    |> respond()
   end
 
-  defp check_permissions(person, space_id) do
-    query = from(s in Operately.Groups.Group, where: s.id == ^space_id)
-    has_permissions = filter_by_full_access(query, person.id) |> Repo.exists?()
+  defp decode_member_ids(inputs) do
+    Enum.map(inputs.members, fn member ->
+      {:ok, id} = decode_id(member.id)
 
-    if has_permissions do
-      :ok
-    else
-      forbidden_or_not_found(query, person.id)
+      %{member | id: id}
+    end)
+  end
+
+  defp respond(result) do
+    case result do
+      {:ok, ctx} -> {:ok, ctx.operation}
+      {:error, :space_id, _} -> {:error, :bad_request}
+      {:error, :members, _} -> {:error, :bad_request}
+      {:error, :space, _} -> {:error, :not_found}
+      {:error, :check_permissions, _} -> {:error, :forbidden}
+      {:error, :operation, _} -> {:error, :internal_server_error}
+      _ -> {:error, :internal_server_error}
     end
   end
 end
