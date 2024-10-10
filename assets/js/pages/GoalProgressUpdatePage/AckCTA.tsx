@@ -4,8 +4,11 @@ import * as GoalCheckIns from "@/models/goalCheckIns";
 import { PrimaryButton } from "@/components/Buttons";
 
 import { useLoadedData, useRefresh } from "./loader";
+import { useMe } from "@/contexts/CurrentUserContext";
+import { compareIds } from "@/routes/paths";
 
 export function AckCTA() {
+  const me = useMe();
   const { update } = useLoadedData();
   const refresh = useRefresh();
 
@@ -13,6 +16,7 @@ export function AckCTA() {
 
   if (update.acknowledged) return null;
   if (!update.goal!.permissions!.canAcknowledgeCheckIn) return null;
+  if (!compareIds(update.goal!.reviewer!.id, me!.id)) return null;
 
   const handleAck = async () => {
     await ack({ id: update.id });
