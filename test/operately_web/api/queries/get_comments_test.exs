@@ -473,6 +473,7 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
     })
 
     check_in_fixture(%{author_id: ctx.creator.id, project_id: project.id})
+    |> Repo.preload(:project)
   end
 
   defp create_goal_update(ctx, opts) do

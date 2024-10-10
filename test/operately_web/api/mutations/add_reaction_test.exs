@@ -457,6 +457,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
 
   defp create_check_in(author, project) do
     check_in_fixture(%{author_id: author.id, project_id: project.id})
+    |> Repo.preload(:project)
   end
 
   defp create_comment(ctx, parent, type) do

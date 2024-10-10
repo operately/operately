@@ -11,7 +11,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateComment do
   }
   alias Operately.Goals.Update
   alias Operately.Messages.Message
-  alias Operately.Projects.Retrospective
+  alias Operately.Projects.{CheckIn, Retrospective}
   alias Operately.Operations.CommentAdding
 
   inputs do
@@ -52,7 +52,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateComment do
 
   defp fetch_parent(person, id, type) do
     case type do
-      :project_check_in -> Projects.get_check_in_with_access_level(id, person.id)
+      :project_check_in -> CheckIn.get(person, id: id, opts: [preload: :project])
       :project_retrospective -> Retrospective.get(person, id: id, opts: [preload: :project])
       :comment_thread -> Comments.get_thread_with_activity_and_access_level(id, person.id)
       :goal_update -> Update.get(person, id: id)
@@ -62,7 +62,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateComment do
 
   defp check_permissions(parent, type) do
     case type do
-      :project_check_in -> Projects.Permissions.check(parent.requester_access_level, :can_comment_on_check_in)
+      :project_check_in -> Projects.Permissions.check(parent.request_info.access_level, :can_comment_on_check_in)
       :project_retrospective -> Projects.Permissions.check(parent.request_info.access_level, :can_comment_on_retrospective)
       :comment_thread -> Activities.Permissions.check(parent.activity.requester_access_level, :can_comment_on_thread)
       :goal_update -> Goals.Permissions.check(parent.request_info.access_level, :can_comment_on_update)

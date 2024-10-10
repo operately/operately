@@ -3,6 +3,7 @@ defmodule Operately.Activities.Content.ProjectCheckInSubmitted do
 
   embedded_schema do
     belongs_to :company, Operately.Companies.Company
+    belongs_to :space, Operately.Groups.Group
     belongs_to :project, Operately.Projects.Project
     belongs_to :check_in, Operately.Projects.CheckIn
   end

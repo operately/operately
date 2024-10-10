@@ -35,6 +35,7 @@ defmodule Operately.Operations.ProjectCheckIn do
     |> Activities.insert_sync(author.id, :project_check_in_submitted, fn changes ->
       %{
         company_id: project.company_id,
+        space_id: project.group_id,
         project_id: project.id,
         check_in_id: changes.check_in.id
       }
