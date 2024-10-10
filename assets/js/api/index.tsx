@@ -547,13 +547,8 @@ export interface ActivityEventDataProjectCreate {
 }
 
 export interface AddMemberInput {
-<<<<<<< HEAD
   id?: Id | null;
-  permissions?: number | null;
-=======
-  id?: string | null;
   accessLevel?: number | null;
->>>>>>> f23652ee (feat: Add multi people input)
 }
 
 export interface Assignment {
@@ -1692,7 +1687,7 @@ export interface AddReactionResult {
 }
 
 export interface AddSpaceMembersInput {
-  spaceId?: string | null;
+  spaceId?: Id | null;
   members?: AddMemberInput[] | null;
 }
 
