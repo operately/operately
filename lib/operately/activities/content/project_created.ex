@@ -3,6 +3,7 @@ defmodule Operately.Activities.Content.ProjectCreated do
 
   embedded_schema do
     belongs_to :company, Operately.Companies.Company, type: :string
+    belongs_to :space, Operately.Groups.Group, type: :string
     belongs_to :project, Operately.Projects.Project, type: :string
   end
 
