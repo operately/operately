@@ -206,7 +206,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
       assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal)})
       assert res.goal.permissions == nil
 
-      permissions = Operately.Goals.Permissions.calculate(goal, ctx.person)
+      permissions = Operately.Goals.Permissions.calculate(Binding.full_access())
 
       assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal), include_permissions: true})
       assert res.goal.permissions == Serializer.serialize(permissions, level: :full)
