@@ -14,6 +14,12 @@ defmodule TurboConnect.TsGen.Typescript do
     """
   end
 
+  def ts_type_alias(name, type) do
+    """
+    export type #{ts_type(name)} = #{ts_type(type)};
+    """
+  end
+
   def ts_function_name(name) do
     result = name |> Atom.to_string() |> Macro.camelize()
     String.downcase(String.at(result, 0)) <> String.slice(result, 1, String.length(result) - 1)
