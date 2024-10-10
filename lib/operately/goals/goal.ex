@@ -142,10 +142,13 @@ defmodule Operately.Goals.Goal do
     Map.put(goal, :notifications, notifications)
   end
 
-  def preload_permissions(goal, person) do
-    persmissions = Operately.Goals.Permissions.calculate(goal, person)
 
-    Map.put(goal, :permissions, persmissions)
+  def preload_permissions(goal) do 
+    preload_permissions(goal, goal.request_info.access_level)
+  end
+
+  def preload_permissions(goal, access_level) do
+    Map.put(goal, :permissions, Operately.Goals.Permissions.calculate(access_level))
   end
 
   def preload_access_levels(goal) do
