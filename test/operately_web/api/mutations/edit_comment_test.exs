@@ -293,7 +293,7 @@ defmodule OperatelyWeb.Api.Mutations.EditCommentTest do
     if space_members_level != :no_access do
       {:ok, _} = Operately.Groups.add_members(ctx.creator, space.id, [%{
         id: ctx.person.id,
-        permissions: Binding.from_atom(space_members_level)
+        access_level: Binding.from_atom(space_members_level)
       }])
     end
 
@@ -316,7 +316,7 @@ defmodule OperatelyWeb.Api.Mutations.EditCommentTest do
     if space_members_level != :no_access do
       {:ok, _} = Operately.Groups.add_members(ctx.creator, space.id, [%{
         id: ctx.person.id,
-        permissions: Binding.from_atom(space_members_level)
+        access_level: Binding.from_atom(space_members_level)
       }])
     end
 
@@ -348,7 +348,7 @@ defmodule OperatelyWeb.Api.Mutations.EditCommentTest do
     if space_members_level != :no_access do
       {:ok, _} = Operately.Groups.add_members(ctx.creator, space.id, [%{
         id: ctx.person.id,
-        permissions: Binding.from_atom(space_members_level)
+        access_level: Binding.from_atom(space_members_level)
       }])
     end
 

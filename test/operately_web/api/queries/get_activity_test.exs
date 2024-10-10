@@ -48,7 +48,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivityTest do
     test "space members have no access", ctx do
       Groups.add_members(ctx.person, ctx.space.id, [%{
         id: ctx.person.id,
-        permissions: Binding.edit_access(),
+        access_level: Binding.edit_access(),
       }])
       goal_fixture(ctx.creator, %{
         space_id: ctx.space.id,
@@ -63,7 +63,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivityTest do
     test "space members have access", ctx do
       Groups.add_members(ctx.person, ctx.space.id, [%{
         id: ctx.person.id,
-        permissions: Binding.edit_access(),
+        access_level: Binding.edit_access(),
       }])
       goal = goal_fixture(ctx.creator, %{
         space_id: ctx.space.id,

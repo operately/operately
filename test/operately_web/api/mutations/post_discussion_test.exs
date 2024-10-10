@@ -238,7 +238,7 @@ defmodule OperatelyWeb.Api.Mutations.PostDiscussionTest do
   defp add_person_to_space(ctx, access_level) do
     Operately.Groups.add_members(ctx.person, ctx.space.id, [%{
       id: ctx.person.id,
-      permissions: access_level,
+      access_level: access_level,
     }])
   end
 end

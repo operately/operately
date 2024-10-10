@@ -138,7 +138,7 @@ defmodule OperatelyWeb.Api.Queries.GetSpaceTest do
       m2 = person_fixture(company_id: ctx.company.id, full_name: "Bob Smith")
       m3 = person_fixture(company_id: ctx.company.id, full_name: "Charlie Smith")
 
-      members = [m1, m2, m3] |> Enum.map(fn person -> %{id: person.id, permissions: Binding.comment_access()} end)
+      members = [m1, m2, m3] |> Enum.map(fn person -> %{id: person.id, access_level: Binding.comment_access()} end)
       Operately.Groups.add_members(ctx.person, space.id, members)
 
       assert {200, res} = query(ctx.conn, :get_space, %{id: Paths.space_id(space), include_members: true})
@@ -201,7 +201,7 @@ defmodule OperatelyWeb.Api.Queries.GetSpaceTest do
   defp add_person_to_space(ctx, space) do
     Operately.Groups.add_members(ctx.person, space.id, [%{
       id: ctx.person.id,
-      permissions: Binding.view_access(),
+      access_level: Binding.view_access(),
     }])
   end
 end
