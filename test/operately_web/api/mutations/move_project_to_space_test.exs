@@ -76,7 +76,7 @@ defmodule OperatelyWeb.Api.Mutations.MoveProjectToSpaceTest do
         if @test.space != :no_access do
           {:ok, _} = Operately.Groups.add_members(ctx.creator, new_space.id, [%{
             id: ctx.person.id,
-            permissions: Binding.from_atom(@test.space)
+            access_level: Binding.from_atom(@test.space)
           }])
         end
 
@@ -145,7 +145,7 @@ defmodule OperatelyWeb.Api.Mutations.MoveProjectToSpaceTest do
     if space_members_level != :no_access do
       {:ok, _} = Operately.Groups.add_members(ctx.creator, ctx.space.id, [%{
         id: ctx.person.id,
-        permissions: Binding.from_atom(space_members_level)
+        access_level: Binding.from_atom(space_members_level)
       }])
     end
 

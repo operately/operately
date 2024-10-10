@@ -453,7 +453,7 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
   defp add_person_to_space(ctx, space_id \\ nil) do
     Operately.Groups.add_members(ctx.person, space_id || ctx.space.id, [%{
       id: ctx.person.id,
-      permissions: Binding.edit_access(),
+      access_level: Binding.edit_access(),
     }])
   end
 
