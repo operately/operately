@@ -107,7 +107,7 @@ defmodule Operately.Operations.GoalCheckInTest do
 
     # With permissions
     {:ok, _} = Groups.add_members(ctx.champion, ctx.space.id, [
-      %{id: person.id, permissions: Binding.view_access()}
+      %{id: person.id, access_level: Binding.view_access()}
     ])
 
     {:ok, update} = Operately.Operations.GoalCheckIn.run(ctx.champion, ctx.goal,%{
@@ -132,7 +132,7 @@ defmodule Operately.Operations.GoalCheckInTest do
 
   defp create_space_members(ctx) do
     people = Enum.map(1..3, fn _ -> person_fixture_with_account(%{company_id: ctx.company.id}) end)
-    attrs = Enum.map(people ++ [ctx.reviewer], fn p -> %{id: p.id, permissions: Binding.edit_access()} end)
+    attrs = Enum.map(people ++ [ctx.reviewer], fn p -> %{id: p.id, access_level: Binding.edit_access()} end)
     {:ok, _} = Groups.add_members(ctx.champion, ctx.space.id, attrs)
     Groups.list_members(ctx.space)
   end

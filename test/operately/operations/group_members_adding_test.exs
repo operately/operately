@@ -19,18 +19,13 @@ defmodule Operately.Operations.GroupMembersAddingTest do
     members = Enum.map(1..3, fn _ ->
       person = person_fixture(%{company_id: company.id})
 
-      %{
-        id: person.id,
-        permissions: Binding.comment_access(),
-      }
+      %{id: person.id, access_level: Binding.comment_access()}
     end)
+
     managers = Enum.map(1..3, fn _ ->
       person = person_fixture(%{company_id: company.id})
 
-      %{
-        id: person.id,
-        permissions: Binding.full_access(),
-      }
+      %{id: person.id, access_level: Binding.full_access()}
     end)
 
     {:ok, company: company, group: group, creator: creator, members: members, managers: managers}
@@ -85,10 +80,10 @@ defmodule Operately.Operations.GroupMembersAddingTest do
 
     Operately.Operations.GroupMembersAdding.run(ctx.creator, ctx.group.id, all_members)
 
-    Enum.each(all_members, fn %{id: person_id, permissions: permissions} ->
+    Enum.each(all_members, fn %{id: person_id, access_level: access_level} ->
       access_group = Access.get_group!(person_id: person_id)
 
-      assert Access.get_binding(group_id: access_group.id, context_id: access_context.id, access_level: permissions)
+      assert Access.get_binding(group_id: access_group.id, context_id: access_context.id, access_level: access_level)
       assert Access.get_binding(group_id: access_group.id, context_id: access_context.id)
     end)
   end

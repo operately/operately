@@ -175,7 +175,7 @@ defmodule OperatelyWeb.Api.Mutations.EditSpaceMembersPermissionsTest do
   defp add_person_to_space(person, space_id, access_level) do
     Operately.Groups.add_members(person, space_id, [%{
       id: person.id,
-      permissions: access_level,
+      access_level: access_level,
     }])
   end
 end

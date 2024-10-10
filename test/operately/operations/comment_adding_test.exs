@@ -100,7 +100,7 @@ defmodule Operately.Operations.CommentAddingTest do
 
       # With permissions
       {:ok, _} = Groups.add_members(ctx.champion, ctx.space.id, [
-        %{id: person.id, permissions: Binding.view_access()}
+        %{id: person.id, access_level: Binding.view_access()}
       ])
 
       {:ok, comment} = CommentAdding.run(ctx.champion, check_in, "project_check_in", content)
@@ -127,7 +127,7 @@ defmodule Operately.Operations.CommentAddingTest do
       })
 
       people = Enum.map(1..3, fn _ -> person_fixture_with_account(%{company_id: ctx.company.id}) end)
-      attrs = Enum.map(people ++ [champion, reviewer], fn p -> %{id: p.id, permissions: Binding.edit_access()} end)
+      attrs = Enum.map(people ++ [champion, reviewer], fn p -> %{id: p.id, access_level: Binding.edit_access()} end)
       {:ok, _} = Groups.add_members(ctx.creator, space.id, attrs)
       members = Groups.list_members(space)
 
@@ -217,7 +217,7 @@ defmodule Operately.Operations.CommentAddingTest do
 
       # With permissions
       {:ok, _} = Groups.add_members(ctx.creator, ctx.space.id, [
-        %{id: person.id, permissions: Binding.view_access()}
+        %{id: person.id, access_level: Binding.view_access()}
       ])
 
       {:ok, comment} = CommentAdding.run(ctx.champion, update, "goal_update", content)
@@ -305,7 +305,7 @@ defmodule Operately.Operations.CommentAddingTest do
 
       # With permissions
       {:ok, _} = Groups.add_members(ctx.creator, ctx.space.id, [
-        %{id: person.id, permissions: Binding.view_access()}
+        %{id: person.id, access_level: Binding.view_access()}
       ])
 
       {:ok, comment} = CommentAdding.run(ctx.creator, ctx.message, "message", content)
@@ -418,7 +418,7 @@ defmodule Operately.Operations.CommentAddingTest do
 
       # With permissions
       {:ok, _} = Groups.add_members(ctx.creator, ctx.space.id, [
-        %{id: person.id, permissions: Binding.view_access()}
+        %{id: person.id, access_level: Binding.view_access()}
       ])
 
       {:ok, comment} = CommentAdding.run(ctx.creator, ctx.retrospective, "project_retrospective", content)

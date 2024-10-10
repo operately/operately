@@ -73,7 +73,7 @@ defmodule OperatelyWeb.Api.Mutations.UpdateGroupAppearanceTest do
   defp add_person_to_space(ctx, person, space_id, permissions: access_level) do
     Operately.Groups.add_members(ctx.creator, space_id, [%{
       id: person.id,
-      permissions: Binding.from_atom(access_level),
+      access_level: Binding.from_atom(access_level),
     }])
   end
 end 
