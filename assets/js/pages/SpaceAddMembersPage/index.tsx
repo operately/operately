@@ -1,123 +1,175 @@
 import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
+import * as Icons from "@tabler/icons-react";
 import * as Spaces from "@/models/spaces";
+import * as People from "@/models/people";
 
-import { useRevalidator } from "react-router-dom";
+import { PERMISSIONS_LIST, PermissionLevels } from "@/features/Permissions";
 
-import { Person } from "@/models/people";
-import { Space, searchPotentialSpaceMembers, useAddGroupMembers } from "@/models/spaces";
+import Forms from "@/components/Forms";
+import { Paths, compareIds } from "@/routes/paths";
+import { SecondaryButton } from "@/components/Buttons";
+import { createTestId } from "@/utils/testid";
+import { useNavigate } from "react-router-dom";
 
-import { PERMISSIONS_LIST, PermissionLevels, VIEW_ACCESS } from "@/features/Permissions";
-import { SelectBoxNoLabel } from "@/components/Form";
-import { PrimaryButton } from "@/components/Buttons";
-import PeopleSearch from "@/components/PeopleSearch";
-
-interface LoaderResult {
+export interface LoaderResult {
   space: Spaces.Space;
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
-  const space = await Spaces.getSpace({
-    id: params.id,
-    includeMembersAccessLevels: true,
-    includeAccessLevels: true,
-    includePotentialSubscribers: true,
-  });
-
+  const space = await Spaces.getSpace({ id: params.id });
   return { space: space };
 }
 
+interface MemberField {
+  key: number;
+  personId: string;
+  accessLevel: PermissionLevels;
+}
+
+function newMember() {
+  return {
+    key: Math.random(),
+    personId: "",
+    accessLevel: PermissionLevels.EDIT_ACCESS,
+  };
+}
+
 export function Page() {
-  const { space } = Pages.useLoadedData<LoaderResult>();
+  const { space } = Pages.useLoadedData() as LoaderResult;
+  const backPath = Paths.spaceAccessManagementPath(space.id!);
+  const navigate = useNavigate();
+  const [add] = Spaces.useAddSpaceMembers();
+
+  const form = Forms.useForm({
+    fields: {
+      members: [newMember()],
+    },
+    submit: async () => {
+      await add({
+        spaceId: space.id,
+        members: uniqueMemberList(form.values.members),
+      });
+
+      navigate(backPath);
+    },
+  });
 
   return (
-    <Pages.Page title={["Add Members", space.name!]}>
-      <Paper.Root>
-        <Paper.Body>
-          <Title />
-        </Paper.Body>
+    <Pages.Page title={["Add members", space.name!]}>
+      <Paper.Root size="small">
+        <Paper.NavigateBack to={backPath} title="Back to Team & Access" />
+        <div className="text-2xl font-extrabold mb-4 text-center">Add members to {space.name}</div>
+
+        <Forms.Form form={form}>
+          <Members />
+
+          <Forms.Submit saveText="Add members" layout="centered" buttonSize="base" submitOnEnter={false} />
+        </Forms.Form>
       </Paper.Root>
     </Pages.Page>
   );
 }
 
-function Title() {
-  return <div className="text-content-accent text-3xl font-extrabold">SpaceAddMembersPage</div>;
-}
+function Members() {
+  const search = useSearch();
 
-export function AddMembers({ space }: { space: Space }) {
-  const [peopleSearchKey, setPeopleSearchKey] = useState(0);
-  const [member, setMember] = useState<Person>();
-  const [permissions, setPermissions] = useState(VIEW_ACCESS);
+  const [members] = Forms.useFieldValue<MemberField[]>("members");
+  const [value, setValue] = Forms.useFieldValue<MemberField[]>("members");
 
-  const { revalidate } = useRevalidator();
-  const [addMembers, { loading }] = useAddGroupMembers();
-
-  const search = async (value: string) => {
-    const result = await searchPotentialSpaceMembers({
-      groupId: space.id,
-      query: value,
-      excludeIds: [],
-      limit: 10,
-    });
-
-    const people = result.people!.map((person: Person) => ({
-      ...person,
-      permissions: PermissionLevels.COMMENT_ACCESS,
-    }));
-
-    people.sort((a, b) => a.fullName!.localeCompare(b.fullName!));
-
-    return people;
-  };
-
-  const handleAddMember = () => {
-    if (!member) return;
-
-    addMembers({
-      groupId: space.id,
-      members: [
-        {
-          id: member.id,
-          permissions: permissions.value,
-        },
-      ],
-    }).then(() => {
-      revalidate();
-      setMember(undefined);
-      setPeopleSearchKey((prev) => prev + 1);
-    });
-  };
-
-  return (
-    <Paper.Section title="Add Members">
-      <div className="flex flex-col gap-4">
-        <MemberContainer>
-          <PeopleSearch
-            onChange={(option) => setMember(option?.person)}
-            placeholder="Search for person..."
-            loader={search}
-            key={peopleSearchKey}
-          />
-
-          {member && <SelectBoxNoLabel onChange={setPermissions} options={PERMISSIONS_LIST} value={permissions} />}
-        </MemberContainer>
-
-        <AddMemberButton member={member} loading={loading} handleAddMember={handleAddMember} />
-      </div>
-    </Paper.Section>
-  );
-}
-
-function AddMemberButton({ member, loading, handleAddMember }) {
-  if (!member) return <></>;
+  const addMore = React.useCallback(() => {
+    setValue([...value, newMember()]);
+  }, [value, setValue]);
 
   return (
     <div>
-      <PrimaryButton loading={loading} size="xs" onClick={handleAddMember} testId="submit-space-members">
-        Add member
-      </PrimaryButton>
+      <div className="flex flex-col gap-6">
+        {members.map((c, i) => (
+          <Member key={c.key} field={`members[${i}]`} search={search} index={i} />
+        ))}
+      </div>
+
+      <AddMoreMembersButton onClick={addMore} />
     </div>
   );
+}
+
+function Member({ field, search, index }) {
+  return (
+    <div data-test-id={`contributor-${index}`}>
+      <Paper.Body>
+        <Forms.FieldGroup layout="horizontal">
+          <Forms.SelectPerson field={field + ".personId"} label="Member" searchFn={search} />
+          <Forms.SelectBox field={field + ".accessLevel"} label="Access Level" options={PERMISSIONS_LIST} />
+        </Forms.FieldGroup>
+
+        <RemoveMemberButton index={index} />
+      </Paper.Body>
+    </div>
+  );
+}
+
+function AddMoreMembersButton({ onClick }: { onClick: () => void }) {
+  return (
+    <div className="flex justify-center" style={{ marginTop: "-18px" }} data-test-id={createTestId("add-more")}>
+      <SecondaryButton onClick={onClick}>
+        <Icons.IconPlus size={16} />
+      </SecondaryButton>
+    </div>
+  );
+}
+
+function RemoveMemberButton({ index }) {
+  const [value, setValue] = Forms.useFieldValue<MemberField[]>("members");
+
+  const onClick = () => {
+    const newValue = value.filter((_, i) => i !== index);
+    setValue(newValue);
+  };
+
+  if (index === 0) return null;
+
+  return (
+    <div className="absolute" style={{ top: "-14px", right: "-14px" }}>
+      <div
+        className="border border-surface-outline rounded-full p-2 cursor-pointer text-content-subtle hover:text-content-accent bg-surface"
+        onClick={onClick}
+      >
+        <Icons.IconX size={16} />
+      </div>
+    </div>
+  );
+}
+
+function useSearch() {
+  const { space } = Pages.useLoadedData() as LoaderResult;
+
+  return React.useCallback(
+    async (query: string): Promise<People.Person[]> => {
+      const res = await Spaces.searchPotentialSpaceMembers({ groupId: space.id!, query });
+
+      return res.people as People.Person[];
+    },
+    [space.id],
+  );
+}
+
+function uniqueMemberList(members: MemberField[]): { personId: string; accessLevel: PermissionLevels }[] {
+  let res = [] as { personId: string; accessLevel: PermissionLevels }[];
+
+  for (const m of members) {
+    const existing = res.find((r) => compareIds(r.personId, m.personId));
+
+    if (!existing) {
+      res.push({ personId: m.personId, accessLevel: m.accessLevel });
+      continue;
+    }
+
+    if (existing.accessLevel < m.accessLevel) {
+      existing.accessLevel = m.accessLevel;
+    }
+  }
+
+  return res;
 }
