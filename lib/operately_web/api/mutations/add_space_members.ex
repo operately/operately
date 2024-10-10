@@ -1,16 +1,16 @@
-defmodule OperatelyWeb.Api.Mutations.AddGroupMembers do
+defmodule OperatelyWeb.Api.Mutations.AddSpaceMembers do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
   import Operately.Access.Filters, only: [filter_by_full_access: 2, forbidden_or_not_found: 2]
 
   inputs do
-    field :group_id, :string
+    field :space_id, :string
     field :members, list_of(:add_member_input)
   end
 
   def call(conn, inputs) do
-    {:ok, id} = decode_id(inputs.group_id)
+    {:ok, id} = decode_id(inputs.space_id)
     members = decode_member_ids(inputs)
 
     case check_permissions(me(conn), id) do
