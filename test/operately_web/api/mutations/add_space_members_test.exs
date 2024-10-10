@@ -27,8 +27,8 @@ defmodule OperatelyWeb.Api.Mutations.AddSpaceMembersTest do
       new_member = person_fixture(%{company_id: ctx.company.id})
 
       assert {404, %{message: message}} = mutation(ctx.conn, :add_space_members, %{
-        group_id: Paths.space_id(space),
-        members: [%{id: Paths.person_id(new_member), permissions: Binding.comment_access()}],
+        space_id: Paths.space_id(space),
+        members: [%{id: Paths.person_id(new_member), access_level: Binding.comment_access()}],
       })
       assert message == "The requested resource was not found"
       refute Groups.is_member?(space, new_member)
@@ -39,8 +39,8 @@ defmodule OperatelyWeb.Api.Mutations.AddSpaceMembersTest do
       new_member = person_fixture(%{company_id: ctx.company.id})
 
       assert {403, %{message: message}} = mutation(ctx.conn, :add_space_members, %{
-        group_id: Paths.space_id(space),
-        members: [%{id: Paths.person_id(new_member), permissions: Binding.comment_access()}],
+        space_id: Paths.space_id(space),
+        members: [%{id: Paths.person_id(new_member), access_level: Binding.comment_access()}],
       })
       assert message == "You don't have permission to perform this action"
       refute Groups.is_member?(space, new_member)
@@ -51,8 +51,8 @@ defmodule OperatelyWeb.Api.Mutations.AddSpaceMembersTest do
       new_member = person_fixture(%{company_id: ctx.company.id})
 
       assert {200, _} = mutation(ctx.conn, :add_space_members, %{
-        group_id: Paths.space_id(space),
-        members: [%{id: Paths.person_id(new_member), permissions: Binding.comment_access()}],
+        space_id: Paths.space_id(space),
+        members: [%{id: Paths.person_id(new_member), access_level: Binding.comment_access()}],
       })
       assert Groups.is_member?(space, new_member)
     end
@@ -63,8 +63,8 @@ defmodule OperatelyWeb.Api.Mutations.AddSpaceMembersTest do
 
       # Not admin
       assert {403, _} = mutation(ctx.conn, :add_space_members, %{
-        group_id: Paths.space_id(space),
-        members: [%{id: Paths.person_id(new_member), permissions: Binding.comment_access()}],
+        space_id: Paths.space_id(space),
+        members: [%{id: Paths.person_id(new_member), access_level: Binding.comment_access()}],
       })
       refute Groups.is_member?(space, new_member)
 
@@ -73,8 +73,8 @@ defmodule OperatelyWeb.Api.Mutations.AddSpaceMembersTest do
       conn = log_in_account(ctx.conn, account)
 
       assert {200, _} = mutation(conn, :add_space_members, %{
-        group_id: Paths.space_id(space),
-        members: [%{id: Paths.person_id(new_member), permissions: Binding.comment_access()}],
+        space_id: Paths.space_id(space),
+        members: [%{id: Paths.person_id(new_member), access_level: Binding.comment_access()}],
       })
       assert Groups.is_member?(space, new_member)
     end
@@ -85,8 +85,8 @@ defmodule OperatelyWeb.Api.Mutations.AddSpaceMembersTest do
       add_person_to_space(ctx, space)
 
       assert {403, _} = mutation(ctx.conn, :add_space_members, %{
-        group_id: Paths.space_id(space),
-        members: [%{id: Paths.person_id(new_member), permissions: Binding.comment_access()}],
+        space_id: Paths.space_id(space),
+        members: [%{id: Paths.person_id(new_member), access_level: Binding.comment_access()}],
       })
       refute Groups.is_member?(space, new_member)
     end
@@ -97,16 +97,16 @@ defmodule OperatelyWeb.Api.Mutations.AddSpaceMembersTest do
 
       # Not manager
       assert {403, _} = mutation(ctx.conn, :add_space_members, %{
-        group_id: Paths.space_id(space),
-        members: [%{id: Paths.person_id(new_member), permissions: Binding.comment_access()}],
+        space_id: Paths.space_id(space),
+        members: [%{id: Paths.person_id(new_member), access_level: Binding.comment_access()}],
       })
       refute Groups.is_member?(space, new_member)
 
       # Manager
       add_manager_to_space(ctx, space)
       assert {200, _} = mutation(ctx.conn, :add_space_members, %{
-        group_id: Paths.space_id(space),
-        members: [%{id: Paths.person_id(new_member), permissions: Binding.comment_access()}],
+        space_id: Paths.space_id(space),
+        members: [%{id: Paths.person_id(new_member), access_level: Binding.comment_access()}],
       })
       assert Groups.is_member?(space, new_member)
     end
@@ -127,22 +127,22 @@ defmodule OperatelyWeb.Api.Mutations.AddSpaceMembersTest do
       refute Groups.is_member?(ctx.space, new_member)
 
       assert {200, _} = mutation(ctx.conn, :add_space_members, %{
-        group_id: Paths.space_id(ctx.space),
-        members: [%{id: Paths.person_id(new_member), permissions: Binding.comment_access()}],
+        space_id: Paths.space_id(ctx.space),
+        members: [%{id: Paths.person_id(new_member), access_level: Binding.comment_access()}],
       })
       assert Groups.is_member?(ctx.space, new_member)
     end
 
     test "adds multiple members", ctx do
       people = Enum.map(1..3, fn _ -> person_fixture(%{company_id: ctx.company.id}) end)
-      new_members = Enum.map(people, fn p -> %{id: Paths.person_id(p), permissions: Binding.comment_access()} end)
+      new_members = Enum.map(people, fn p -> %{id: Paths.person_id(p), access_level: Binding.comment_access()} end)
 
       Enum.each(people, fn p ->
         refute Groups.is_member?(ctx.space, p)
       end)
 
       assert {200, _} = mutation(ctx.conn, :add_space_members, %{
-        group_id: Paths.space_id(ctx.space),
+        space_id: Paths.space_id(ctx.space),
         members: new_members,
       })
       Enum.each(people, fn p ->
@@ -165,14 +165,14 @@ defmodule OperatelyWeb.Api.Mutations.AddSpaceMembersTest do
   defp add_person_to_space(ctx, space) do
     Operately.Groups.add_members(ctx.person, space.id, [%{
       id: ctx.person.id,
-      permissions: Binding.edit_access(),
+      access_level: Binding.edit_access(),
     }])
   end
 
   defp add_manager_to_space(ctx, space) do
     Operately.Groups.add_members(ctx.person, space.id, [%{
       id: ctx.person.id,
-      permissions: Binding.full_access(),
+      access_level: Binding.full_access(),
     }])
   end
 end

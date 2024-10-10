@@ -12,17 +12,22 @@ defmodule OperatelyWeb.Api.Mutations.AddSpaceMembers do
     |> run(:me, fn -> find_me(conn) end)
     |> run(:space_id, fn -> decode_id(inputs.space_id) end)
     |> run(:members, fn -> decode_member_ids(inputs) end)
-    |> run(:space, fn ctx -> Operately.Groups.Group.get!(ctx.me, id: ctx.space_id) end)
-    |> run(:check_permissions, fn ctx -> Operately.Groups.Permissions.check_permissions(ctx.space.request_info.access_level, :can_add_members) end)
+    |> run(:space, fn ctx -> Operately.Groups.Group.get(ctx.me, id: ctx.space_id) end)
+    |> run(:check_permissions, fn ctx -> Operately.Groups.Permissions.check(ctx.space.request_info.access_level, :can_add_members) end)
     |> run(:operation, fn ctx -> Operately.Operations.GroupMembersAdding.run(ctx.me, ctx.space_id, ctx.members) end)
     |> respond()
   end
 
   defp decode_member_ids(inputs) do
-    Enum.map(inputs.members, fn member ->
-      {:ok, id} = decode_id(member.id)
-
-      %{member | id: id}
+    Enum.reduce(inputs.members, [], fn member, acc ->
+      case acc do
+        {:error, _} -> acc
+        _ ->
+          case decode_id(member.id) do
+            {:ok, id} -> [Map.put(member, :id, id) | acc]
+            {:error, _} -> acc
+          end
+      end
     end)
   end
 
