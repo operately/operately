@@ -1,5 +1,5 @@
 defmodule OperatelyWeb.Api.Ids do
-  def decode_id(id) when id == nil do
+  def decode_id(id) when id == nil or id == "" do
     {:ok, nil}
   end
 

@@ -5,6 +5,8 @@ defmodule TurboConnect.ApiTest do
   defmodule ExampleTypes do
     use TurboConnect.Types
 
+    primitive :id, encoded_type: :string, decode_with: &String.to_integer/1
+
     object :user do
       field :full_name, :string
       field :address, :address
@@ -72,6 +74,9 @@ defmodule TurboConnect.ApiTest do
 
   test "__types__ returns the types defined in the module" do
     assert ExampleApi.__types__() == %{
+      primitives: %{
+        id: [encoded_type: :string, decode_with: &String.to_integer/1]
+      },
       objects: %{
         address: %{
           fields: [

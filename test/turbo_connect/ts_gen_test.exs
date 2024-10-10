@@ -3,6 +3,8 @@ defmodule TurboConnect.TsGenTest do
 
   defmodule ExampleTypes do
     use TurboConnect.Types
+    
+    primitive :id, encoded_type: :integer, decode_with: &String.to_integer/1
 
     object :user do
       field :full_name, :string
@@ -102,6 +104,8 @@ defmodule TurboConnect.TsGenTest do
   """
 
   @ts_types """
+  export type Id = number;
+
   export interface Address {
     street?: string | null;
     city?: string | null;
