@@ -95,12 +95,27 @@ defmodule Operately.Support.Features.SpaceSteps do
     ctx
   end
 
-  step :add_new_member, ctx, attrs do
+  step :add_new_members, ctx, members do
     ctx
-    |> UI.fill_in(Query.css("#people-search"), with: attrs[:search])
-    |> UI.assert_text(attrs[:name])
-    |> UI.send_keys([:enter])
-    |> UI.click(testid: "submit-space-members")
+    |> UI.visit(Paths.space_path(ctx.company, ctx.space))
+    |> UI.click(testid: "access-management")
+    |> UI.click(testid: "add-members")
+    
+    ctx = Enum.reduce(Enum.with_index(members), ctx, fn {person, index}, ctx ->
+      UI.find(ctx, UI.query(testid: "member-#{index}"), fn ctx ->
+        UI.select_person_in(ctx, testid: "members-#{index}-personid", name: person.full_name)
+      end)
+
+      if index == length(members) - 1 do
+        ctx
+      else
+        ctx |> UI.click(testid: "add-more")
+      end
+    end)
+
+    ctx
+    |> UI.click(testid: "submit")
+    |> UI.assert_has(testid: "space-access-management-page")
   end
 
   step :remove_member, ctx, person do
@@ -110,10 +125,12 @@ defmodule Operately.Support.Features.SpaceSteps do
     |> UI.sleep(500)
   end
 
-  step :assert_member_added, ctx, name do
+  step :assert_members_added, ctx, members do
     ctx
-    |> UI.find(UI.query(testid: "members-section"), fn members ->
-      UI.assert_text(members, name)
+    |> UI.find(UI.query(testid: "members-section"), fn ctx ->
+      Enum.reduce(members, ctx, fn person, ctx ->
+        ctx |> UI.assert_text(person.full_name)
+      end)
     end)
   end
 
@@ -121,15 +138,19 @@ defmodule Operately.Support.Features.SpaceSteps do
     ctx |> UI.refute_text(person.full_name, testid: "members-section")
   end
 
-  step :assert_members_added_notification_sent, ctx, params do
-    ctx
-    |> UI.login_as(params[:member])
-    |> NotificationsSteps.assert_space_members_added_sent(author: ctx.person, title: params[:title])
+  step :assert_members_added_notification_sent, ctx, members do
+    Enum.reduce(members, ctx, fn member, ctx ->
+      ctx
+      |> UI.login_as(member)
+      |> NotificationsSteps.assert_space_members_added_sent(author: ctx.person, title: ctx.space.name)
+    end)
   end
 
-  step :assert_members_added_email_sent, ctx, params do
-    ctx
-    |> EmailSteps.assert_space_members_added_sent(author: ctx.person, to: params[:member], title: params[:title])
+  step :assert_members_added_email_sent, ctx, members do
+    Enum.reduce(members, ctx, fn member, ctx ->
+      ctx
+      |> EmailSteps.assert_space_members_added_sent(author: ctx.person, to: member, title: ctx.space.name)
+    end)
   end
 
   step :given_a_space_exists, ctx do

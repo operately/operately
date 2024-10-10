@@ -26,7 +26,7 @@ export function Page() {
   const { space } = useLoadedData();
 
   return (
-    <Pages.Page title={space.name!}>
+    <Pages.Page title={space.name!} testId="space-access-management-page">
       <Paper.Root>
         <Navigation space={space} />
 
@@ -54,7 +54,7 @@ function Title() {
           <div className="text-medium">Manage the team and access to this space</div>
         </div>
 
-        <PrimaryButton size="sm" linkTo={addMembersPath}>
+        <PrimaryButton size="sm" linkTo={addMembersPath} testId="add-members">
           Add Members
         </PrimaryButton>
       </div>

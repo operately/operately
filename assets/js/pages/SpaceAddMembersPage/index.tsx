@@ -97,7 +97,7 @@ function Members() {
 
 function Member({ field, search, index }) {
   return (
-    <div data-test-id={`contributor-${index}`}>
+    <div data-test-id={`member-${index}`}>
       <Paper.Body>
         <Forms.FieldGroup layout="horizontal">
           <Forms.SelectPerson field={field + ".personId"} label="Member" searchFn={search} />
