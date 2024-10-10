@@ -34,7 +34,7 @@ defmodule Operately.Operations.GroupMembersAdding do
 
   defp insert_access_group_memberships(multi, group_id, members) do
     members
-    |> Enum.map(fn %{id: person_id, permissions: access_level} ->
+    |> Enum.map(fn %{id: person_id, access_level: access_level} ->
       access_group = fetch_access_group(group_id, access_level)
 
       GroupMembership.changeset(%{
@@ -53,7 +53,7 @@ defmodule Operately.Operations.GroupMembersAdding do
   defp insert_access_bindings(multi, members) do
     members
     |> Enum.with_index()
-    |> Enum.reduce(multi, fn ({%{id: person_id, permissions: access_level}, index}, multi) ->
+    |> Enum.reduce(multi, fn ({%{id: person_id, access_level: access_level}, index}, multi) ->
       access_group = Access.get_group!(person_id: person_id)
       name = Integer.to_string(index) <> "_binding"
 
