@@ -75,7 +75,15 @@ function useForm({ onSubmit, milestone, mentionSearchScope }: UseFormProps) {
   };
 }
 
-export function NewTaskModal({ isOpen, hideModal, modalTitle, milestone, onSubmit }) {
+interface NewTaskModalProps {
+  isOpen: boolean;
+  hideModal: () => void;
+  modalTitle: string;
+  onSubmit: () => void;
+  milestone: Milestones.Milestone;
+}
+
+export function NewTaskModal({ isOpen, hideModal, modalTitle, milestone, onSubmit }: NewTaskModalProps) {
   const handleSubmit = () => {
     onSubmit();
     hideModal();
@@ -89,7 +97,7 @@ export function NewTaskModal({ isOpen, hideModal, modalTitle, milestone, onSubmi
   const form = useForm({
     onSubmit: handleSubmit,
     milestone,
-    mentionSearchScope: { type: "project", id: milestone.projectId! },
+    mentionSearchScope: { type: "project", id: milestone.project!.id! },
   });
 
   return (

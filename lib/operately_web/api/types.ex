@@ -786,7 +786,7 @@ defmodule OperatelyWeb.Api.Types do
 
   object :milestone do
     field :id, :string
-    field :project_id, :string
+    field :project, :project
     field :title, :string
     field :status, :string
     field :inserted_at, :date
@@ -795,6 +795,7 @@ defmodule OperatelyWeb.Api.Types do
     field :description, :string
     field :comments, list_of(:milestone_comment)
     field :tasks_kanban_state, :string
+    field :permissions, :project_permissions
   end
 
   object :activity_content_goal_check_in_edit do

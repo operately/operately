@@ -17,18 +17,20 @@ import { TaskBoard } from "@/features/Tasks/TaskBoard";
 import { NewTaskModal } from "@/features/Tasks/NewTaskModal";
 
 import classNames from "classnames";
+import { assertPresent } from "@/utils/assertions";
 
 export function Page() {
   const refresh = useRefresh();
-  const { project, milestone } = useLoadedData();
+  const { milestone } = useLoadedData();
+  assertPresent(milestone.project, "project must be present in milestone");
 
-  const form = useFormState(project, milestone);
+  const form = useFormState(milestone.project, milestone);
   const commentsForm = useForMilestone(milestone);
 
   return (
-    <Pages.Page title={[milestone.title!, project.name!]}>
+    <Pages.Page title={[milestone.title!, milestone.project.name!]}>
       <Paper.Root size="large">
-        <ProjectMilestonesNavigation project={project} />
+        <ProjectMilestonesNavigation project={milestone.project} />
 
         <Paper.Body minHeight="none">
           <Options form={form} />
