@@ -713,7 +713,7 @@ export interface Invitation {
 
 export interface Milestone {
   id?: string | null;
-  projectId?: string | null;
+  project?: Project | null;
   title?: string | null;
   status?: string | null;
   insertedAt?: string | null;
@@ -722,6 +722,7 @@ export interface Milestone {
   description?: string | null;
   comments?: MilestoneComment[] | null;
   tasksKanbanState?: string | null;
+  permissions?: ProjectPermissions | null;
 }
 
 export interface MilestoneComment {
@@ -1365,8 +1366,8 @@ export interface GetMeResult {
 export interface GetMilestoneInput {
   id?: string | null;
   includeComments?: boolean | null;
-  includeTasksKanban?: boolean | null;
   includeProject?: boolean | null;
+  includePermissions?: boolean | null;
 }
 
 export interface GetMilestoneResult {

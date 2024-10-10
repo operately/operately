@@ -100,7 +100,7 @@ function useDescriptionState(milestone: Milestones.Milestone): DescriptionState 
     content: JSON.parse(milestone.description || "{}"),
     editable: true,
     className: "p-2 min-h-[200px]",
-    mentionSearchScope: { type: "project", id: milestone.projectId! },
+    mentionSearchScope: { type: "project", id: milestone.project!.id! },
   });
 
   const startEditing = React.useCallback(() => {
