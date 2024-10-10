@@ -22,18 +22,9 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
 
     group = group_fixture(champion, %{company_id: company.id, name: "Test Group"})
     Operately.Groups.add_members(non_contributor, group.id, [
-      %{
-        id: non_contributor.id,
-        permissions: Binding.full_access(),
-      },
-      %{
-        id: project_manager.id,
-        permissions: Binding.full_access(),
-      },
-      %{
-        id: reviewer.id,
-        permissions: Binding.edit_access(),
-      },
+      %{id: non_contributor.id, access_level: Binding.full_access()},
+      %{id: project_manager.id, access_level: Binding.full_access()},
+      %{id: reviewer.id, access_level: Binding.edit_access()},
     ])
 
     {:ok, goal} = Operately.Goals.create_goal(champion, %{

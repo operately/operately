@@ -119,7 +119,7 @@ defmodule OperatelyWeb.Api.Queries.GetKeyResourceTest do
   defp add_person_to_space(ctx) do
     Operately.Groups.add_members(ctx.person, ctx.space.id, [%{
       id: ctx.person.id,
-      permissions: Binding.view_access(),
+      access_level: Binding.view_access(),
     }])
   end
 end

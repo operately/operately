@@ -13,7 +13,7 @@ import { SecondaryButton } from "@/components/Buttons";
 import { createTestId } from "@/utils/testid";
 import { useNavigate } from "react-router-dom";
 
-export interface LoaderResult {
+interface LoaderResult {
   space: Spaces.Space;
 }
 
