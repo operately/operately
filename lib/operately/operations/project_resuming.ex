@@ -12,6 +12,7 @@ defmodule Operately.Operations.ProjectResuming do
     |> Activities.insert_sync(author.id, :project_resuming, fn _changes ->
       %{
         company_id: project.company_id,
+        space_id: project.group_id,
         project_id: project.id,
       }
     end)
