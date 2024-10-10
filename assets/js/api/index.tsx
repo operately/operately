@@ -544,7 +544,7 @@ export interface ActivityEventDataProjectCreate {
 
 export interface AddMemberInput {
   id?: string | null;
-  permissions?: number | null;
+  accessLevel?: number | null;
 }
 
 export interface Assignment {
@@ -1638,13 +1638,6 @@ export interface AddFirstCompanyResult {
   company?: Company | null;
 }
 
-export interface AddGroupMembersInput {
-  groupId?: string | null;
-  members?: AddMemberInput[] | null;
-}
-
-export interface AddGroupMembersResult {}
-
 export interface AddKeyResourceInput {
   projectId?: string | null;
   title?: string | null;
@@ -1687,6 +1680,13 @@ export interface AddReactionInput {
 export interface AddReactionResult {
   reaction?: Reaction | null;
 }
+
+export interface AddSpaceMembersInput {
+  spaceId?: string | null;
+  members?: AddMemberInput[] | null;
+}
+
+export interface AddSpaceMembersResult {}
 
 export interface ArchiveGoalInput {
   goalId?: string | null;
@@ -2495,10 +2495,6 @@ export class ApiClient {
     return this.post("/add_first_company", input);
   }
 
-  async addGroupMembers(input: AddGroupMembersInput): Promise<AddGroupMembersResult> {
-    return this.post("/add_group_members", input);
-  }
-
   async addKeyResource(input: AddKeyResourceInput): Promise<AddKeyResourceResult> {
     return this.post("/add_key_resource", input);
   }
@@ -2513,6 +2509,10 @@ export class ApiClient {
 
   async addReaction(input: AddReactionInput): Promise<AddReactionResult> {
     return this.post("/add_reaction", input);
+  }
+
+  async addSpaceMembers(input: AddSpaceMembersInput): Promise<AddSpaceMembersResult> {
+    return this.post("/add_space_members", input);
   }
 
   async archiveGoal(input: ArchiveGoalInput): Promise<ArchiveGoalResult> {
@@ -2914,9 +2914,6 @@ export async function addCompanyTrustedEmailDomain(
 export async function addFirstCompany(input: AddFirstCompanyInput): Promise<AddFirstCompanyResult> {
   return defaultApiClient.addFirstCompany(input);
 }
-export async function addGroupMembers(input: AddGroupMembersInput): Promise<AddGroupMembersResult> {
-  return defaultApiClient.addGroupMembers(input);
-}
 export async function addKeyResource(input: AddKeyResourceInput): Promise<AddKeyResourceResult> {
   return defaultApiClient.addKeyResource(input);
 }
@@ -2930,6 +2927,9 @@ export async function addProjectContributors(
 }
 export async function addReaction(input: AddReactionInput): Promise<AddReactionResult> {
   return defaultApiClient.addReaction(input);
+}
+export async function addSpaceMembers(input: AddSpaceMembersInput): Promise<AddSpaceMembersResult> {
+  return defaultApiClient.addSpaceMembers(input);
 }
 export async function archiveGoal(input: ArchiveGoalInput): Promise<ArchiveGoalResult> {
   return defaultApiClient.archiveGoal(input);
@@ -3355,10 +3355,6 @@ export function useAddFirstCompany(): UseMutationHookResult<AddFirstCompanyInput
   return useMutation<AddFirstCompanyInput, AddFirstCompanyResult>((input) => defaultApiClient.addFirstCompany(input));
 }
 
-export function useAddGroupMembers(): UseMutationHookResult<AddGroupMembersInput, AddGroupMembersResult> {
-  return useMutation<AddGroupMembersInput, AddGroupMembersResult>((input) => defaultApiClient.addGroupMembers(input));
-}
-
 export function useAddKeyResource(): UseMutationHookResult<AddKeyResourceInput, AddKeyResourceResult> {
   return useMutation<AddKeyResourceInput, AddKeyResourceResult>((input) => defaultApiClient.addKeyResource(input));
 }
@@ -3383,6 +3379,10 @@ export function useAddProjectContributors(): UseMutationHookResult<
 
 export function useAddReaction(): UseMutationHookResult<AddReactionInput, AddReactionResult> {
   return useMutation<AddReactionInput, AddReactionResult>((input) => defaultApiClient.addReaction(input));
+}
+
+export function useAddSpaceMembers(): UseMutationHookResult<AddSpaceMembersInput, AddSpaceMembersResult> {
+  return useMutation<AddSpaceMembersInput, AddSpaceMembersResult>((input) => defaultApiClient.addSpaceMembers(input));
 }
 
 export function useArchiveGoal(): UseMutationHookResult<ArchiveGoalInput, ArchiveGoalResult> {
@@ -3866,8 +3866,6 @@ export default {
   useAddCompanyTrustedEmailDomain,
   addFirstCompany,
   useAddFirstCompany,
-  addGroupMembers,
-  useAddGroupMembers,
   addKeyResource,
   useAddKeyResource,
   addProjectContributor,
@@ -3876,6 +3874,8 @@ export default {
   useAddProjectContributors,
   addReaction,
   useAddReaction,
+  addSpaceMembers,
+  useAddSpaceMembers,
   archiveGoal,
   useArchiveGoal,
   archiveProject,

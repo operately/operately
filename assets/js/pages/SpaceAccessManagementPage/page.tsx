@@ -7,22 +7,20 @@ import * as People from "@/models/people";
 
 import { Paths } from "@/routes/paths";
 import { Space } from "@/models/spaces";
-
-import { useLoadedData } from "./loader";
-import { AddMembers } from "./AddMembers";
-
-import { assertPresent } from "@/utils/assertions";
-import { PermissionLevels } from "@/features/Permissions";
+import { AccessLevel } from "@/features/spaces";
+import { OtherPeople } from "./OtherPeople";
 import { BorderedRow } from "@/components/BorderedRow";
+import { PermissionLevels } from "@/features/Permissions";
 import { Menu, MenuActionItem } from "@/components/Menu";
+import { SpaceAccessLevbelBadge } from "@/components/Badges/AccessLevelBadges";
+import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
+
+import { createTestId } from "@/utils/testid";
+import { useLoadedData } from "./loader";
+import { assertPresent } from "@/utils/assertions";
 import { useRemoveGroupMember } from "@/models/spaces";
 
 import Avatar from "@/components/Avatar";
-import { createTestId } from "@/utils/testid";
-import { SpaceAccessLevbelBadge } from "@/components/Badges/AccessLevelBadges";
-import { SecondaryButton } from "@/components/Buttons";
-import { AccessLevel } from "@/features/spaces";
-import { OtherPeople } from "./OtherPeople";
 
 export function Page() {
   const { space } = useLoadedData();
@@ -34,7 +32,6 @@ export function Page() {
 
         <Paper.Body>
           <Title />
-          <AddMembers space={space} />
           <GeneralAccess />
           <SpaceManagers />
           <SpaceMembers />
@@ -46,6 +43,9 @@ export function Page() {
 }
 
 function Title() {
+  const { space } = useLoadedData();
+  const addMembersPath = Paths.spaceAddMembersPath(space.id!);
+
   return (
     <div className="rounded-t-[20px]">
       <div className="flex items-center justify-between">
@@ -53,6 +53,10 @@ function Title() {
           <div className="text-2xl font-extrabold ">Team &amp; Access</div>
           <div className="text-medium">Manage the team and access to this space</div>
         </div>
+
+        <PrimaryButton size="sm" linkTo={addMembersPath}>
+          Add Members
+        </PrimaryButton>
       </div>
     </div>
   );
