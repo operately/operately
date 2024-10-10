@@ -504,7 +504,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "project_milestone_commented",
         author_id: ctx.author.id,
-        content: %{ project_id: ctx.project.id, company_id: ctx.company.id, milestone_id: "-", comment_id: ctx.comment.id, comment_action: "-" }
+        content: %{ project_id: ctx.project.id, space_id: ctx.group.id, company_id: ctx.company.id, milestone_id: "-", comment_id: ctx.comment.id, comment_action: "-" }
       }
 
       create_activity(attrs)
@@ -526,7 +526,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "project_pausing",
         author_id: ctx.author.id,
-        content: %{ project_id: ctx.project.id, company_id: ctx.company.id }
+        content: %{ project_id: ctx.project.id, space_id: ctx.group.id, company_id: ctx.company.id }
       }
 
       create_activity(attrs)
@@ -537,7 +537,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "project_renamed",
         author_id: ctx.author.id,
-        content: %{ project_id: ctx.project.id, company_id: ctx.company.id, old_name: "-", new_name: "-" }
+        content: %{ project_id: ctx.project.id, space_id: ctx.group.id, company_id: ctx.company.id, old_name: "-", new_name: "-" }
       }
 
       create_activity(attrs)

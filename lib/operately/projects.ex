@@ -64,6 +64,7 @@ defmodule Operately.Projects do
     |> Multi.update(:project, change_project(project, %{name: new_name}))
     |> Activities.insert_sync(author.id, :project_renamed, fn changes -> %{
       company_id: project.company_id,
+      space_id: project.group_id,
       project_id: project.id,
       old_name: project.name,
       new_name: changes.project.name
