@@ -8,6 +8,7 @@ defmodule Operately.Support.Factory.Projects do
     creator = Keyword.get(opts, :creator, :creator)
     champion = Keyword.get(opts, :champion, nil)
     reviewer = Keyword.get(opts, :reviewer, nil)
+    goal = Keyword.get(opts, :goal, nil)
 
     project =
       %{
@@ -20,6 +21,7 @@ defmodule Operately.Support.Factory.Projects do
       }
       |> maybe_add_key(:champion_id, champion && ctx[champion].id)
       |> maybe_add_key(:reviewer_id, reviewer && ctx[reviewer].id)
+      |> maybe_add_key(:goal_id, goal && ctx[goal].id)
       |> Operately.ProjectsFixtures.project_fixture()
 
     Map.put(ctx, testid, project)

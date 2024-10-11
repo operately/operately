@@ -12,6 +12,7 @@ defmodule Operately.Operations.ProjectGoalDisconnection do
     |> Multi.update(:project, project_changeset)
     |> Activities.insert_sync(person.id, :project_goal_disconnection, fn _ -> %{
       company_id: person.company_id,
+      space_id: project.group_id,
       project_id: project.id,
       goal_id: project.goal_id
     } end)

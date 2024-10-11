@@ -1,4 +1,4 @@
-defmodule Operately.Operations.ProjectGoalDisconnectionTest do
+  defmodule Operately.Operations.ProjectGoalDisconnectionTest do
   use Operately.DataCase
   use Operately.Support.Notifications
 
@@ -25,7 +25,7 @@ defmodule Operately.Operations.ProjectGoalDisconnectionTest do
       contributor_fixture(creator, %{project_id: project.id, person_id: contributor.id})
     end)
 
-    {:ok, creator: creator, contributor: contributor, project: project, goal: goal}
+    {:ok, company: company, group: group, creator: creator, contributor: contributor, project: project, goal: goal}
   end
 
   test "ProjectGoalDisconnection operation updates project.goal_id to nil", ctx do
@@ -44,6 +44,10 @@ defmodule Operately.Operations.ProjectGoalDisconnectionTest do
     end)
 
     activity = from(a in Activity, where: a.action == "project_goal_disconnection" and a.content["goal_id"] == ^ctx.goal.id) |> Repo.one()
+
+    assert activity.content["company_id"] == ctx.company.id
+    assert activity.content["space_id"] == ctx.group.id
+    assert activity.content["project_id"] == ctx.project.id
 
     assert 0 == notifications_count()
 
