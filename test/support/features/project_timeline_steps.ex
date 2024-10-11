@@ -2,8 +2,8 @@ defmodule Operately.Support.Features.ProjectTimelineSteps do
   use Operately.FeatureCase
 
   alias Operately.Support.Features.{
-    UI, 
-    EmailSteps, 
+    UI,
+    EmailSteps,
     NotificationsSteps,
     ProjectSteps,
     FeedSteps,
@@ -35,7 +35,7 @@ defmodule Operately.Support.Features.ProjectTimelineSteps do
     |> UI.click(testid: "manage-timeline")
     |> UI.click(testid: "edit-timeline")
   end
-  
+
   step :start_adding_milestones, ctx do
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
@@ -55,6 +55,7 @@ defmodule Operately.Support.Features.ProjectTimelineSteps do
     |> UI.click(testid: "new-milestone-due")
     |> UI.click(css: ".react-datepicker__day.react-datepicker__day--0#{attrs.due_day}")
     |> UI.click(testid: "save-milestone-button")
+    |> UI.assert_text("Deadline: #{current_month(:short)} #{attrs.due_day}")
     |> UI.assert_text("Save Changes")
   end
 
@@ -71,6 +72,7 @@ defmodule Operately.Support.Features.ProjectTimelineSteps do
     |> UI.click(testid: "new-milestone-due")
     |> UI.click(css: ".react-datepicker__day.react-datepicker__day--0#{due_day}")
     |> UI.click(testid: "save-milestone-button")
+    |> UI.assert_text("Deadline: #{current_month(:short)} #{due_day}")
     |> UI.assert_text("Save Changes")
     |> UI.sleep(300) # wait for the modal to close
   end
@@ -79,6 +81,24 @@ defmodule Operately.Support.Features.ProjectTimelineSteps do
     ctx
     |> UI.click(testid: "save-changes")
     |> UI.sleep(300)
+  end
+
+  step :assert_project_timeframe, ctx, attrs do
+    ctx
+    |> UI.assert_text("#{current_month()} #{attrs.start}")
+    |> UI.assert_text("#{current_month()} #{attrs.due_day}")
+  end
+
+  step :assert_project_timeframe_before_saving, ctx, attrs do
+    ctx
+    |> UI.assert_text("#{current_month(:short)} #{attrs.start}")
+    |> UI.assert_text("#{current_month(:short)} #{attrs.due_day}")
+  end
+
+  step :assert_milestone_added, ctx, attrs do
+    ctx
+    |> UI.assert_text(attrs.title)
+    |> UI.assert_text("Due Date: #{current_month()} #{attrs.due_day}")
   end
 
   step :assert_project_timeline_edited_feed, ctx, %{messages: messages} do
@@ -94,7 +114,7 @@ defmodule Operately.Support.Features.ProjectTimelineSteps do
     |> NotificationsSteps.assert_project_timeline_edited_sent(author: ctx.champion)
   end
 
-  step :assert_project_timeline_edited_email, ctx do  
+  step :assert_project_timeline_edited_email, ctx do
     ctx
     |> UI.login_as(ctx.reviewer)
     |> NotificationsSteps.assert_project_timeline_edited_sent(author: ctx.champion)
@@ -119,4 +139,7 @@ defmodule Operately.Support.Features.ProjectTimelineSteps do
     |> UI.click(testid: field)
     |> UI.click(css: ".react-datepicker__day.react-datepicker__day--0#{day}")
   end
+
+  defp current_month, do: Operately.Time.current_month()
+  defp current_month(:short), do: Date.utc_today() |> Calendar.strftime("%b")
 end
