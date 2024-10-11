@@ -208,6 +208,22 @@ defmodule Operately.Support.Features.GoalSteps do
     ctx |> FeedSteps.assert_goal_edited(author: ctx.champion)
   end
 
+  step :assert_goal_edited_space_feed_posted, ctx do
+    goal = Repo.reload(ctx.goal)
+
+    ctx
+    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
+    |> FeedSteps.assert_goal_edited(author: ctx.champion, goal_name: goal.name)
+  end
+
+  step :assert_goal_edited_company_feed_posted, ctx do
+    goal = Repo.reload(ctx.goal)
+
+    ctx
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> FeedSteps.assert_goal_edited(author: ctx.champion, goal_name: goal.name)
+  end
+
   step :edit_goal_timeframe, ctx do
     ctx
     |> UI.click(testid: "goal-options")

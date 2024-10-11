@@ -325,7 +325,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "goal_editing",
         author_id: ctx.author.id,
-        content: %{ goal_id: ctx.goal.id, company_id: ctx.company.id, old_name: "-", new_name: "-", old_champion_id: ctx.author.id, new_champion_id: ctx.author.id, old_reviewer_id: ctx.author.id, new_reviewer_id: ctx.author.id, }
+        content: %{ goal_id: ctx.goal.id, space_id: ctx.group.id, company_id: ctx.company.id, old_name: "-", new_name: "-", old_champion_id: ctx.author.id, new_champion_id: ctx.author.id, old_reviewer_id: ctx.author.id, new_reviewer_id: ctx.author.id, }
       }
 
       create_activity(attrs)
