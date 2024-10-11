@@ -69,7 +69,7 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
     |> UI.select_person_in(id: "champion", name: fields.champion.full_name)
     |> run_if(fields[:reviewer], fn ctx ->
       ctx
-      |> UI.select_person_in(id: "reviewer", name: fields.reviewer.full_name)
+      |> UI.select_person_in(testid: "reviewer", name: fields.reviewer.full_name)
     end)
     |> run_if(fields[:goal], fn ctx ->
       ctx

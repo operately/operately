@@ -3,21 +3,18 @@ defmodule Operately.Activities.Notifications.GoalCreated do
     goal_id = activity.content["goal_id"]
     goal = Operately.Goals.get_goal!(goal_id)
 
-    notifications = [
+    people = [goal.champion_id, goal.reviewer_id]
+
+    people
+    |> Enum.filter(fn id -> id != nil end)
+    |> Enum.filter(fn id -> id != goal.creator_id end)
+    |> Enum.map(fn id ->
       %{
-        person_id: goal.champion_id,
-        activity_id: activity.id,
-        should_send_email: true,
-      },
-      %{
-        person_id: goal.reviewer_id,
+        person_id: id,
         activity_id: activity.id,
         should_send_email: true,
       }
-    ]
-
-    notifications = Enum.filter(notifications, fn n -> n.person_id != goal.creator_id end)
-
-    Operately.Notifications.bulk_create(notifications)
+    end)
+    |> Operately.Notifications.bulk_create()
   end
 end
