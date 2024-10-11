@@ -243,6 +243,7 @@ defmodule OperatelyWeb.Api.Mutations.EditCommentTest do
       |> Factory.preload(:retrospective, :project)
       |> Factory.add_goal(:goal, :space)
       |> Factory.add_goal_update(:update, :goal, :creator)
+      |> Factory.preload(:update, :goal)
       |> Factory.add_message(:message, :space)
     end
 
@@ -364,6 +365,7 @@ defmodule OperatelyWeb.Api.Mutations.EditCommentTest do
 
   defp create_goal_update(ctx, goal) do
     goal_update_fixture(ctx.creator, goal)
+    |> Repo.preload(:goal)
   end
 
   defp create_milestone_comment(ctx, milestone) do

@@ -3,6 +3,7 @@ defmodule Operately.Activities.Content.GoalCheckInCommented do
 
   embedded_schema do
     belongs_to :company, Operately.Companies.Company
+    belongs_to :space, Operately.Groups.Group
     belongs_to :goal, Operately.Goals.Goal
     belongs_to :goal_check_in, Operately.Goals.Update
     belongs_to :comment, Operately.Updates.Comment

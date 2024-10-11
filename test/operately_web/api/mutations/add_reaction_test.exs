@@ -453,6 +453,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
 
   defp create_goal_update(ctx, goal) do
     goal_update_fixture(ctx.creator, goal)
+    |> Repo.preload(:goal)
   end
 
   defp create_check_in(author, project) do
