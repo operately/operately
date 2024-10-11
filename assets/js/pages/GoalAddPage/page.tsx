@@ -32,7 +32,7 @@ function NewGoalForSpacePage({ form }: { form: FormState }) {
   const { space } = useLoadedData();
 
   return (
-    <Pages.Page title="New Goal">
+    <Pages.Page title="New Goal" testId="goal-add-page">
       <Paper.Root size="large">
         <Paper.NavigateBack to={Paths.goalsPath()} title={`Back to ${space!.name} Space`} />
 
@@ -52,7 +52,7 @@ function NewGoalPage({ form }: { form: FormState }) {
   const { isCompanyWide } = useLoadedData();
 
   return (
-    <Pages.Page title="New Goal">
+    <Pages.Page title="New Goal" testId="goal-add-page">
       <Paper.Root size="large">
         <Paper.NavigateBack to={Paths.goalsPath()} title="Back to Goals" />
 
