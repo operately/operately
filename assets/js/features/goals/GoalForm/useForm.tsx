@@ -248,7 +248,7 @@ function useSubmit(fields: Fields, config: FormConfig): [() => Promise<boolean>,
         reviewerId: fields.reviewer!.id,
         timeframe: Timeframes.serialize(fields.timeframe),
         description: prepareDescriptionForSave(fields),
-        parentGoalId: config.parentGoal?.id,
+        parentGoalId: fields.parentGoal?.id,
         targets: fields.targets
           .filter((t) => t.name.trim() !== "")
           .map((t, index) => ({
