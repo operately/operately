@@ -28,6 +28,8 @@ defmodule Operately.Features.GoalTest do
     |> Steps.assert_goal_edited()
     |> Steps.assert_goal_edited_email_sent()
     |> Steps.assert_goal_edited_feed_posted()
+    |> Steps.assert_goal_edited_space_feed_posted()
+    |> Steps.assert_goal_edited_company_feed_posted()
   end
 
   @parent_goal_params %{
@@ -120,5 +122,5 @@ defmodule Operately.Features.GoalTest do
     |> Steps.assert_comment_on_the_timeframe_change_email_sent()
     |> Steps.assert_comment_on_the_timeframe_change_notification_sent()
   end
-  
+
 end

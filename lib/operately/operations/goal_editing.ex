@@ -96,6 +96,7 @@ defmodule Operately.Operations.GoalEditing do
     Activities.insert_sync(multi, author.id, :goal_editing, fn changes ->
       %{
         company_id: goal.company_id,
+        space_id: goal.group_id,
         goal_id: changes.goal.id,
         old_name: goal.name,
         new_name: changes.goal.name,
