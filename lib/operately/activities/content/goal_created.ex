@@ -19,7 +19,7 @@ defmodule Operately.Activities.Content.GoalCreated do
     %__MODULE__{}
     |> cast(attrs, __schema__(:fields) -- [:new_timeframe])
     |> cast_embed(:new_timeframe)
-    |> validate_required(__schema__(:fields) -- [:timeframe])
+    |> validate_required(__schema__(:fields) -- [:timeframe, :champion_id, :reviewer_id])
   end
 
   def build(params) do

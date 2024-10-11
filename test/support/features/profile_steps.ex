@@ -59,13 +59,20 @@ defmodule Operately.Support.Features.ProfileSteps do
   end
 
   step :given_goals_exist_for_person, ctx do
-    goal = goal_fixture(ctx.person, %{
+    goal1 = goal_fixture(ctx.person, %{
       company_id: ctx.company.id,
       space_id: ctx.company.company_space_id,
       name: "Improve support first response time",
     })
 
-    Map.merge(ctx, %{goals: [goal]})
+    goal2 = goal_fixture(ctx.person, %{
+      company_id: ctx.company.id,
+      space_id: ctx.company.company_space_id,
+      champion_id: nil,
+      name: "Increase customer satisfaction",
+    })
+
+    Map.merge(ctx, %{goals: [goal1, goal2]})
   end
 
   step :click_goals_tab, ctx do
@@ -73,8 +80,7 @@ defmodule Operately.Support.Features.ProfileSteps do
   end
 
   step :assert_goals_visible, ctx do
-    Enum.each(ctx.goals, &UI.assert_text(ctx, &1.name))
-    ctx
+    UI.assert_text(ctx, Enum.at(ctx.goals, 0).name)
   end
 
 end
