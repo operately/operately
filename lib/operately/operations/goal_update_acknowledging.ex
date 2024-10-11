@@ -13,6 +13,7 @@ defmodule Operately.Operations.GoalUpdateAcknowledging do
     |> Activities.insert_sync(person.id, :goal_check_in_acknowledgement, fn _changes ->
       %{
         company_id: person.company_id,
+        space_id: update.goal.group_id,
         goal_id: update.goal_id,
         update_id: update.id,
       }

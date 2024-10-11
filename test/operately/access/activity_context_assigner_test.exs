@@ -232,7 +232,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "goal_check_in",
         author_id: ctx.author.id,
-        content: %{ goal_id: ctx.goal.id, company_id: ctx.company.id, update_id: ctx.update.id }
+        content: %{ goal_id: ctx.goal.id, space_id: ctx.group.id, company_id: ctx.company.id, update_id: ctx.update.id }
       }
 
       create_activity(attrs)
@@ -243,7 +243,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "goal_check_in_acknowledgement",
         author_id: ctx.author.id,
-        content: %{ goal_id: ctx.goal.id, company_id: ctx.company.id, update_id: ctx.update.id }
+        content: %{ goal_id: ctx.goal.id, space_id: ctx.group.id, company_id: ctx.company.id, update_id: ctx.update.id }
       }
 
       create_activity(attrs)
@@ -254,7 +254,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "goal_check_in_commented",
         author_id: ctx.author.id,
-        content: %{ goal_id: ctx.goal.id, company_id: ctx.company.id, goal_check_in_id: ctx.check_in.id, comment_id: ctx.comment.id }
+        content: %{ goal_id: ctx.goal.id, space_id: ctx.group.id, company_id: ctx.company.id, goal_check_in_id: ctx.check_in.id, comment_id: ctx.comment.id }
       }
 
       create_activity(attrs)
