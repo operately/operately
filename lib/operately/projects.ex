@@ -78,6 +78,7 @@ defmodule Operately.Projects do
     |> Multi.run(:project, fn repo, _ -> repo.soft_delete(project) end)
     |> Activities.insert_sync(author.id, :project_archived, fn changes -> %{
       company_id: project.company_id,
+      space_id: project.group_id,
       project_id: changes.project.id
     } end)
     |> Repo.transaction()

@@ -386,7 +386,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "project_archived",
         author_id: ctx.author.id,
-        content: %{ project_id: ctx.project.id, company_id: ctx.company.id }
+        content: %{ project_id: ctx.project.id, space_id: ctx.group.id, company_id: ctx.company.id }
       }
 
       create_activity(attrs)
@@ -482,7 +482,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "project_goal_connection",
         author_id: ctx.author.id,
-        content: %{ project_id: ctx.project.id, company_id: ctx.company.id, goal_id: ctx.goal.id }
+        content: %{ project_id: ctx.project.id, space_id: ctx.group.id, company_id: ctx.company.id, goal_id: ctx.goal.id }
       }
 
       create_activity(attrs)
@@ -493,7 +493,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "project_goal_disconnection",
         author_id: ctx.author.id,
-        content: %{ project_id: ctx.project.id, company_id: ctx.company.id, goal_id: ctx.goal.id }
+        content: %{ project_id: ctx.project.id, space_id: ctx.group.id, company_id: ctx.company.id, goal_id: ctx.goal.id }
       }
 
       create_activity(attrs)
