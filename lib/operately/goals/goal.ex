@@ -69,8 +69,6 @@ defmodule Operately.Goals.Goal do
       :name,
       :company_id,
       :group_id,
-      :champion_id,
-      :reviewer_id,
       :creator_id,
     ])
   end

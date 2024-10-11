@@ -94,8 +94,8 @@ class TreeBuilder {
   private rootNodesForPerson(): Node[] {
     return this.nodes.filter(
       (n) =>
-        compareIds(n.champion.id, this.options.personId!) &&
-        n.hasNoParentWith((node) => compareIds(node.champion.id, this.options.personId)),
+        compareIds(n.champion?.id, this.options.personId!) &&
+        n.hasNoParentWith((node) => compareIds(node.champion?.id, this.options.personId)),
     );
   }
 
