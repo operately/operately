@@ -7,7 +7,7 @@ import { compareIds } from "@/routes/paths";
 interface Milestone {
   id: string;
   title: string;
-  deadlineAt: string;
+  deadlineAt: string | Date;
   description: string;
   deletable: boolean;
 }
