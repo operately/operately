@@ -39,19 +39,33 @@ defmodule Operately.Features.GoalCreationTest do
   @tag login_as: :champion
   feature "add a company wide goal", ctx do
     ctx
-    |> Steps.visit_company_goals_page()
-    |> Steps.add_company_goal(@goal_params)
+    |> Steps.initialize_goal_creation_from_global_goals_page()
+    |> Steps.add_goal(@goal_params)
     |> Steps.assert_company_goal_added(@goal_params)
     |> Steps.assert_company_goal_created_email_sent(@goal_params.name)
   end
 
   @tag login_as: :champion
-  feature "add subgoal to a company wide goal", ctx do
+  feature "create a new goal and set parent goal", ctx do
+    params = Map.merge(@goal_params, %{parent_name: @parent_goal_params.name})
+
     ctx
     |> Steps.given_a_goal_exists(@parent_goal_params)
-    |> Steps.visit_company_goals_page()
-    |> Steps.add_subgoal(%{parent_name: @parent_goal_params.name, goal_params: @goal_params})
-    |> Steps.assert_subgoal_added(%{parent_name: @parent_goal_params.name, goal_params: @goal_params})
+    |> Steps.initialize_goal_creation_from_global_new_navigation()
+    |> Steps.add_goal(params)
+    |> Steps.assert_subgoal_added(params)
+    |> Steps.assert_subgoal_created_email_sent(@goal_params.name)
+  end
+
+  @tag login_as: :champion
+  feature "add subgoal to a company wide goal", ctx do
+    params = Map.merge(@goal_params, %{parent_name: @parent_goal_params.name})
+
+    ctx
+    |> Steps.given_a_goal_exists(@parent_goal_params)
+    |> Steps.initialize_goal_creation_from_goals_page_via_parent_goal(@parent_goal_params.name)
+    |> Steps.add_goal(params)
+    |> Steps.assert_subgoal_added(params)
     |> Steps.assert_subgoal_created_email_sent(@goal_params.name)
   end
   

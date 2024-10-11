@@ -36,7 +36,7 @@ export function Page() {
   useClearNotificationsOnLoad(goal.notifications);
 
   return (
-    <Pages.Page title={[goal.name!]}>
+    <Pages.Page title={[goal.name!]} testId="goal-page">
       <Paper.Root size="large">
         <Navigation space={goal.space!} />
 

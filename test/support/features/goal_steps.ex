@@ -445,25 +445,6 @@ defmodule Operately.Support.Features.GoalSteps do
     |> UI.refute_text("Mark as Complete")
   end
 
-  step :visit_company_goals_page, ctx do
-    UI.visit(ctx, Paths.goals_path(ctx.company))
-  end
-
-  step :add_company_goal, ctx, %{name: name, target_name: target_name, from: current, to: target, unit: unit} do
-    ctx
-    |> UI.click(testid: "add-company-wide-goal")
-    |> UI.fill(testid: "goal-name", with: name)
-    |> UI.select_person_in(id: "champion-search", name: ctx.champion.full_name)
-    |> UI.select_person_in(id: "reviewer-search", name: ctx.reviewer.full_name)
-    |> UI.fill(testid: "target-0-name", with: target_name)
-    |> UI.fill(testid: "target-0-current", with: current)
-    |> UI.fill(testid: "target-0-target", with: target)
-    |> UI.fill(testid: "target-0-unit", with: unit)
-    |> UI.select(testid: "space-selector", option: ctx.group.name)
-    |> UI.click(testid: "add-goal-button")
-    |> UI.assert_text("About") # TODO: this is a hack to wait for the goal page to load
-  end
-
   step :assert_company_goal_added, ctx, %{name: name, target_name: target_name, from: current, to: target, unit: unit} do
     goal = Operately.Repo.one(from g in Operately.Goals.Goal, where: g.name == ^name, preload: [:targets])
 
@@ -495,13 +476,31 @@ defmodule Operately.Support.Features.GoalSteps do
     })
   end
 
-  step :add_subgoal, ctx, %{parent_name: parent_goal_name, goal_params: goal_params} do
-    parent_test_id = "#{parent_goal_name |> String.downcase() |> String.replace(" ", "-")}"
-
+  step :initialize_goal_creation_from_global_goals_page, ctx do
     ctx
-    |> UI.hover(testid: "goal-#{parent_test_id}")
-    |> UI.click(testid: "goal-options-#{parent_test_id}")
+    |> UI.visit(Paths.goals_path(ctx.company))
+    |> UI.click(testid: "add-company-wide-goal")
+    |> UI.assert_has(testid: "goal-add-page")
+  end
+
+  step :initialize_goal_creation_from_goals_page_via_parent_goal, ctx, parent_goal_name do
+    ctx
+    |> UI.visit(Paths.goals_path(ctx.company))
+    |> UI.hover(testid: "goal-#{UI.testid(parent_goal_name)}")
+    |> UI.click(testid: "goal-options-#{UI.testid(parent_goal_name)}")
     |> UI.click(testid: "add-subgoal")
+    |> UI.assert_has(testid: "goal-add-page")
+  end
+
+  step :initialize_goal_creation_from_global_new_navigation, ctx do
+    ctx
+    |> UI.click(testid: "new-dropdown")
+    |> UI.click(testid: "company-dropdown-new-goal")
+    |> UI.assert_has(testid: "goal-add-page")
+  end
+
+  step :add_goal, ctx, goal_params do
+    ctx
     |> UI.fill(testid: "goal-name", with: goal_params.name)
     |> UI.select_person_in(id: "champion-search", name: ctx.champion.full_name)
     |> UI.select_person_in(id: "reviewer-search", name: ctx.reviewer.full_name)
@@ -510,12 +509,21 @@ defmodule Operately.Support.Features.GoalSteps do
     |> UI.fill(testid: "target-0-target", with: goal_params.to)
     |> UI.fill(testid: "target-0-unit", with: goal_params.unit)
     |> UI.select(testid: "space-selector", option: ctx.group.name)
+    |> then(fn ctx ->
+      if Map.has_key?(goal_params, :parent_name) do
+        ctx
+        |> UI.click(testid: "goal-selector")
+        |> UI.click(testid: UI.testid(["goal", goal_params.parent_name]))
+      else
+        ctx
+      end
+    end)
     |> UI.click(testid: "add-goal-button")
-    |> UI.assert_text("About") # TODO: this is a hack to wait for the goal page to load
+    |> UI.assert_has(testid: "goal-page")
   end
 
-  step :assert_subgoal_added, ctx, %{parent_name: parent_goal_name, goal_params: goal_params} do
-    parent_goal = Operately.Repo.one(from g in Operately.Goals.Goal, where: g.name == ^parent_goal_name)
+  step :assert_subgoal_added, ctx, goal_params do
+    parent_goal = Operately.Repo.one(from g in Operately.Goals.Goal, where: g.name == ^goal_params.parent_name)
     goal = Operately.Repo.one(from g in Operately.Goals.Goal, where: g.name == ^goal_params.name, preload: [:targets])
 
     assert goal != nil
@@ -535,7 +543,7 @@ defmodule Operately.Support.Features.GoalSteps do
     |> UI.visit(Paths.goal_path(ctx.company, goal))
     |> UI.assert_text(goal_params.name)
     |> UI.assert_text(goal_params.target_name)
-    |> UI.assert_text(parent_goal_name)
+    |> UI.assert_text(goal_params.parent_name)
   end
 
   step :assert_subgoal_created_email_sent, ctx, goal_name do
