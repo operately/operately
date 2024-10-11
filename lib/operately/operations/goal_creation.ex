@@ -45,8 +45,6 @@ defmodule Operately.Operations.GoalCreation do
     standard = Access.get_group!(company_id: creator.company_id, tag: :standard)
     space_full_access = Access.get_group!(group_id: attrs.space_id, tag: :full_access)
     space_standard = Access.get_group!(group_id: attrs.space_id, tag: :standard)
-    reviewer_group = Access.get_group!(person_id: attrs.reviewer_id)
-    champion_group = Access.get_group!(person_id: attrs.champion_id)
 
     multi
     |> Access.maybe_insert_anonymous_binding(creator.company_id, attrs.anonymous_access_level)
@@ -54,8 +52,26 @@ defmodule Operately.Operations.GoalCreation do
     |> Access.insert_binding(:company_members_binding, standard, attrs.company_access_level)
     |> Access.insert_binding(:space_full_access_binding, space_full_access, Binding.full_access())
     |> Access.insert_binding(:space_members_binding, space_standard, attrs.space_access_level)
-    |> Access.insert_binding(:reviewer_binding, reviewer_group, Binding.full_access(), :reviewer)
-    |> Access.insert_binding(:champion_binding, champion_group, Binding.full_access(), :champion)
+    |> bind_champion(attrs.champion_id)
+    |> bind_reviewer(attrs.reviewer_id)
+  end
+
+  defp bind_champion(multi, champion_id) do
+    if champion_id do
+      champion_group = Access.get_group!(person_id: champion_id)
+      Access.insert_binding(multi, :champion_binding, champion_group, Binding.full_access(), :champion)
+    else
+      multi
+    end
+  end
+
+  defp bind_reviewer(multi, reviewer_id) do
+    if reviewer_id do
+      reviewer_group = Access.get_group!(person_id: reviewer_id)
+      Access.insert_binding(multi, :reviewer_binding, reviewer_group, Binding.full_access(), :reviewer)
+    else
+      multi
+    end
   end
 
   defp insert_activity(multi, creator) do
