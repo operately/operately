@@ -145,6 +145,7 @@ defmodule Operately.Operations.CommentAddingTest do
         subscriber_ids: [],
         subscription_parent_type: :goal_update,
       })
+      update = Repo.preload(update, :goal)
 
       {:ok, comment} = Oban.Testing.with_testing_mode(:manual, fn ->
         CommentAdding.run(ctx.champion, update, "goal_update", RichText.rich_text("Some comment"))
@@ -175,6 +176,7 @@ defmodule Operately.Operations.CommentAddingTest do
         subscriber_ids: [ctx.reviewer.id, ctx.champion.id],
         subscription_parent_type: :goal_update,
       })
+      update = Repo.preload(update, :goal)
 
       {:ok, comment} = Oban.Testing.with_testing_mode(:manual, fn ->
         CommentAdding.run(ctx.creator, update, "goal_update", RichText.rich_text("Some comment"))
@@ -204,6 +206,7 @@ defmodule Operately.Operations.CommentAddingTest do
         subscriber_ids: [],
         subscription_parent_type: :goal_update,
       })
+      update = Repo.preload(update, :goal)
 
       # Without permissions
       person = person_fixture_with_account(%{company_id: ctx.company.id})

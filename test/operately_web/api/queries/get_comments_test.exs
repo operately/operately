@@ -484,7 +484,9 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
       company_access_level: Keyword.get(opts, :company_access, Binding.no_access()),
       space_access_level: Keyword.get(opts, :space_access, Binding.no_access()),
     })
+
     goal_update_fixture(ctx.creator, goal)
+    |> Repo.preload(:goal)
   end
 
   defp create_comment_thread(ctx, opts) do

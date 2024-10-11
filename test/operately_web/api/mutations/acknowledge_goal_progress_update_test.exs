@@ -90,7 +90,7 @@ defmodule OperatelyWeb.Api.Mutations.AcknowledgeGoalProgressUpdateTest do
   end
 
   defp assert_response(res, update) do
-    update = Repo.reload(update)
+    update = Repo.reload(update) |> Repo.preload(:goal)
 
     assert update.acknowledged_at
     assert update.acknowledged_by_id
