@@ -69,7 +69,7 @@ function AddMilestoneForm({ form, close }) {
       id: id,
       title,
       description: description,
-      deadlineAt: dueDate.toISOString(),
+      deadlineAt: Time.parseDate(dueDate),
     });
 
     close();
@@ -162,7 +162,7 @@ function MilestoneEdit({ milestone, form, close }) {
       id: id,
       title,
       description: description,
-      deadlineAt: dueDate.toISOString(),
+      deadlineAt: Time.parseDate(dueDate),
     });
 
     close();
