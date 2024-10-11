@@ -50,6 +50,7 @@ defmodule Operately.Operations.GoalCheckIn do
     multi
     |> Activities.insert_sync(author.id, :goal_check_in, fn changes -> %{
       company_id: goal.company_id,
+      space_id: goal.group_id,
       goal_id: goal.id,
       update_id: changes.update.id,
     } end)

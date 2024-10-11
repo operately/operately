@@ -17,7 +17,7 @@ defmodule OperatelyWeb.Api.Mutations.AcknowledgeGoalProgressUpdate do
     Action.new()
     |> run(:id, fn -> decode_id(inputs.id) end)
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:update, fn ctx -> Update.get(ctx.me, id: ctx.id) end)
+    |> run(:update, fn ctx -> Update.get(ctx.me, id: ctx.id, opts: [preload: :goal]) end)
     |> run(:check_permissions, fn ctx -> Permissions.check(ctx.update.request_info.access_level, :can_acknowledge_check_in) end)
     |> run(:operation, fn ctx -> GoalUpdateAcknowledging.run(ctx.me, ctx.update) end)
     |> run(:serialized, fn ctx -> {:ok, %{update: Serializer.serialize(ctx.operation, level: :full)}} end)
