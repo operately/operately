@@ -17,10 +17,6 @@ export function SubscribersSelector({ state, projectName, spaceName }: Props) {
   const [showSelector, setShowSelector] = useState(false);
   const { subscribers, selectedSubscribers, subscriptionType, setSubscriptionType, alwaysNotify } = state;
 
-  const selectedSubscribersLabel = useMemo(
-    () => buildSelectedSubscribersLabel(selectedSubscribers),
-    [selectedSubscribers],
-  );
   const allSubscribersLabel = useMemo(() => buildAllSubscribersLabel(subscribers, { projectName, spaceName }), []);
 
   // If all notifiable people must be notified,
@@ -41,7 +37,7 @@ export function SubscribersSelector({ state, projectName, spaceName }: Props) {
           />
 
           <SubscriptionOption
-            label={selectedSubscribersLabel}
+            label="Only the people I select"
             value={Options.SELECTED}
             subscribers={selectedSubscribers}
             onClick={() => setShowSelector(true)}
@@ -73,15 +69,4 @@ function buildAllSubscribersLabel(subscribers: Subscriber[], opts: BuildAllPeopl
   }
 
   return part1 + part2;
-}
-
-function buildSelectedSubscribersLabel(selectedPeople: Subscriber[]) {
-  switch (selectedPeople.length) {
-    case 0:
-      return "Only the people I select";
-    case 1:
-      return "Only the following person I selected";
-    default:
-      return `Only the following ${selectedPeople.length} people I selected`;
-  }
 }
