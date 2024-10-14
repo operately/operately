@@ -51,7 +51,7 @@ interface RootProps {
 export function Root({ size, children, className, fluid = false }: RootProps): JSX.Element {
   size = size || "medium";
 
-  className = classNames(className, "flex-1 mx-auto my-10 relative", {
+  className = classNames(className, "flex-1 mx-auto my-10 relative w-full max-w-screen-lg px-4 sm:px-6 lg:px-8", {
     "w-[90%]": fluid,
     [sizes[size]]: !fluid,
   });
@@ -63,27 +63,10 @@ export function Root({ size, children, className, fluid = false }: RootProps): J
   );
 }
 
-const bodyPaddings = {
-  small: "px-10 py-8",
-  medium: "px-12 py-10",
-  large: "px-12 py-10",
-  xlarge: "px-12 py-10",
-  xxlarge: "px-16 py-12",
-};
-
-export function Body({
-  children,
-  minHeight = "none",
-  className = "",
-  noPadding = false,
-  backgroundColor = "bg-surface",
-}) {
-  const { size } = React.useContext(Context);
-  const padding = noPadding ? "" : bodyPaddings[size];
-
+export function Body({ children, minHeight = "none", className = "", backgroundColor = "bg-surface" }) {
   return (
     <div
-      className={`relative ${backgroundColor} rounded shadow-xl ${padding} ${className} border border-surface-outline`}
+      className={`relative ${backgroundColor} rounded shadow-xl p-4 sm:p-8 lg:p-12 ${className} border border-surface-outline`}
       style={{
         minHeight: minHeight,
       }}

@@ -15,7 +15,7 @@ export function Unsubscribe() {
   return (
     <div>
       <div className="font-bold">You&apos;re subscribed</div>
-      <p className="text-sm">You&apos;ll get a notification when someone comments on this {name}.</p>
+      <p className="text-sm mt-1">You&apos;ll get a notification when someone comments on this {name}.</p>
       <div className="flex mt-2">
         <SecondaryButton onClick={handleUnsubscribe} loading={loading} size="xs" testId="unsubscribe">
           Unsubscribe me
