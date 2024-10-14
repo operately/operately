@@ -2,6 +2,10 @@ defmodule Operately.Support.Features.FeedSteps do
   alias Operately.Support.Features.UI
   alias Operately.People.Person
 
+  #
+  # Goals
+  #
+
   def assert_goal_added(ctx, author: author) do
     ctx |> assert_feed_item_exists(author, "added this goal", "")
   end
@@ -17,6 +21,10 @@ defmodule Operately.Support.Features.FeedSteps do
   def assert_goal_check_in_acknowledgement(ctx, author: author) do
     ctx |> assert_feed_item_exists(author, "acknowledged", "")
   end
+
+  #
+  # Projects
+  #
 
   def assert_project_created(ctx, author: author) do
     ctx |> assert_feed_item_exists(author, "created the project", "")
@@ -84,6 +92,14 @@ defmodule Operately.Support.Features.FeedSteps do
 
       ctx
     end)
+  end
+
+  #
+  # Project Check-ins
+  #
+
+  def assert_project_check_in_commented(ctx, author: author, comment: comment) do
+    ctx |> assert_feed_item_exists(author, "commented on Check-In", comment)
   end
 
   #

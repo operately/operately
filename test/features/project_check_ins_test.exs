@@ -26,7 +26,7 @@ defmodule Operately.Features.ProjectCheckInsTest do
   feature "acknowledge a check-in in the web app", ctx do
     values = %{status: "on_track", description: "This is a check-in."}
 
-    ctx 
+    ctx
     |> Steps.submit_check_in(values)
     |> Steps.open_check_in_from_notifications(values)
     |> Steps.acknowledge_check_in()
@@ -40,7 +40,7 @@ defmodule Operately.Features.ProjectCheckInsTest do
   feature "acknowledge a check-in from the email", ctx do
     values = %{status: "on_track", description: "This is a check-in."}
 
-    ctx 
+    ctx
     |> Steps.submit_check_in(values)
     |> Steps.acknowledge_check_in_from_email(values)
     |> Steps.assert_check_in_acknowledged(values)
@@ -54,6 +54,7 @@ defmodule Operately.Features.ProjectCheckInsTest do
     |> Steps.submit_check_in(values)
     |> Steps.open_check_in_from_notifications(values)
     |> Steps.leave_comment_on_check_in()
+    |> Steps.assert_check_in_comment_visible_on_feed()
     |> Steps.assert_comment_on_check_in_received_in_notifications()
     |> Steps.assert_comment_on_check_in_received_in_email()
   end
@@ -69,5 +70,4 @@ defmodule Operately.Features.ProjectCheckInsTest do
     |> Steps.edit_check_in(new_values)
     |> Steps.assert_check_in_submitted(new_values)
   end
-
 end
