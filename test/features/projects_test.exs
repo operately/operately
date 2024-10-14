@@ -35,7 +35,7 @@ defmodule Operately.Features.ProjectsTest do
     |> Steps.pause_project()
     |> Steps.assert_project_paused()
     |> Steps.assert_pause_notification_sent_to_reviewer()
-    |> Steps.assert_pause_visible_on_project_feed()
+    |> Steps.assert_pause_visible_on_feed()
     |> Steps.assert_pause_email_sent_to_reviewer()
   end
 

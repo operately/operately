@@ -325,11 +325,19 @@ defmodule Operately.Support.Features.ProjectSteps do
     })
   end
 
-  step :assert_pause_visible_on_project_feed, ctx do
+  step :assert_pause_visible_on_feed, ctx do
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
     |> UI.find(UI.query(testid: "project-feed"), fn el ->
-      el |> UI.assert_text("paused the project")
+      el |> FeedSteps.assert_project_paused(author: ctx.champion)
+    end)
+    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
+    |> UI.find(UI.query(testid: "space-feed"), fn el ->
+      el |> FeedSteps.assert_project_paused(author: ctx.champion, project_name: ctx.project.name)
+    end)
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.find(UI.query(testid: "company-feed"), fn el ->
+      el |> FeedSteps.assert_project_paused(author: ctx.champion, project_name: ctx.project.name)
     end)
   end
 

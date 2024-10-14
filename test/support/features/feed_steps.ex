@@ -39,7 +39,11 @@ defmodule Operately.Support.Features.FeedSteps do
   end
 
   def assert_project_paused(ctx, author: author) do
-    ctx |> assert_feed_item_exists(author, "paused the project with", "")
+    ctx |> assert_feed_item_exists(author, "paused the project", "")
+  end
+
+  def assert_project_paused(ctx, author: author, project_name: project_name) do
+    ctx |> assert_feed_item_exists(author, "paused the #{project_name} project", "")
   end
 
   def assert_project_resumed(ctx, author: author) do
