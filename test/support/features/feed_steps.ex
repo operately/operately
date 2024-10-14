@@ -34,6 +34,14 @@ defmodule Operately.Support.Features.FeedSteps do
     ctx |> assert_feed_item_exists(author, "acknowledged the Progress Update in the #{goal_name} goal", "")
   end
 
+  def assert_goal_check_in_commented(ctx, author: author, comment: comment) do
+    ctx |> assert_feed_item_exists(author, "commented on Update", comment)
+  end
+
+  def assert_goal_check_in_commented(ctx, author: author, goal_name: goal_name, comment: comment) do
+    ctx |> assert_feed_item_exists(author, "commented on Update in the #{goal_name} goal", comment)
+  end
+
   #
   # Projects
   #

@@ -178,6 +178,16 @@ defmodule Operately.Support.Features.GoalProgressUpdateSteps do
     |> UI.click(testid: "post-comment")
   end
 
+  step :assert_progress_update_commented_in_feed, ctx, comment do
+    ctx
+    |> visit_page()
+    |> FeedSteps.assert_goal_check_in_commented(author: ctx.champion, comment: comment)
+    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
+    |> FeedSteps.assert_goal_check_in_commented(author: ctx.champion, goal_name: ctx.goal.name, comment: comment)
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> FeedSteps.assert_goal_check_in_commented(author: ctx.champion, goal_name: ctx.goal.name, comment: comment)
+  end
+
   step :assert_comment_email_sent, ctx do
     ctx
     |> EmailSteps.assert_activity_email_sent(%{
