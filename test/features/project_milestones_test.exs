@@ -22,7 +22,7 @@ defmodule Operately.Features.ProjectMilestonesTest do
     |> Steps.given_that_a_milestone_exists("Contract Signed")
     |> Steps.visit_milestone_page()
     |> Steps.leave_a_comment("Hello world")
-    |> Steps.assert_comment_visible_in_project_feed("Hello world")
+    |> Steps.assert_comment_visible_in_feed("Hello world")
     |> Steps.assert_comment_email_sent_to_project_reviewer()
     |> Steps.assert_comment_notification_sent_to_project_reviewer()
   end

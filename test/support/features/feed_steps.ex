@@ -2,6 +2,10 @@ defmodule Operately.Support.Features.FeedSteps do
   alias Operately.Support.Features.UI
   alias Operately.People.Person
 
+  #
+  # Goals
+  #
+
   def assert_goal_added(ctx, author: author) do
     ctx |> assert_feed_item_exists(author, "added this goal", "")
   end
@@ -14,8 +18,40 @@ defmodule Operately.Support.Features.FeedSteps do
     ctx |> assert_feed_item_exists(author, "edited the #{name} goal", "")
   end
 
+  def assert_goal_checked_in(ctx, author: author, message: message) do
+    ctx |> assert_feed_item_exists(author, "updated the progress", message)
+  end
+
+  def assert_goal_checked_in(ctx, author: author, goal_name: goal_name, message: message) do
+    ctx |> assert_feed_item_exists(author, "updated the progress in the #{goal_name}", message)
+  end
+
   def assert_goal_check_in_acknowledgement(ctx, author: author) do
-    ctx |> assert_feed_item_exists(author, "acknowledged", "")
+    ctx |> assert_feed_item_exists(author, "acknowledged the Progress Update", "")
+  end
+
+  def assert_goal_check_in_acknowledgement(ctx, author: author, goal_name: goal_name) do
+    ctx |> assert_feed_item_exists(author, "acknowledged the Progress Update in the #{goal_name} goal", "")
+  end
+
+  def assert_goal_check_in_commented(ctx, author: author, comment: comment) do
+    ctx |> assert_feed_item_exists(author, "commented on Update", comment)
+  end
+
+  def assert_goal_check_in_commented(ctx, author: author, goal_name: goal_name, comment: comment) do
+    ctx |> assert_feed_item_exists(author, "commented on Update in the #{goal_name} goal", comment)
+  end
+
+  #
+  # Projects
+  #
+
+  def assert_project_created(ctx, author: author) do
+    ctx |> assert_feed_item_exists(author, "created the project", "")
+  end
+
+  def assert_project_created(ctx, author: author, project_name: project_name) do
+    ctx |> assert_feed_item_exists(author, "created the #{project_name} project", "")
   end
 
   def assert_project_moved(ctx, author: author, old_space: old_space, new_space: new_space) do
@@ -31,7 +67,43 @@ defmodule Operately.Support.Features.FeedSteps do
   end
 
   def assert_project_paused(ctx, author: author) do
-    ctx |> assert_feed_item_exists(author, "paused the project with", "")
+    ctx |> assert_feed_item_exists(author, "paused the project", "")
+  end
+
+  def assert_project_paused(ctx, author: author, project_name: project_name) do
+    ctx |> assert_feed_item_exists(author, "paused the #{project_name} project", "")
+  end
+
+  def assert_project_resumed(ctx, author: author) do
+    ctx |> assert_feed_item_exists(author, "resumed the project", "")
+  end
+
+  def assert_project_resumed(ctx, author: author, project_name: project_name) do
+    ctx |> assert_feed_item_exists(author, "resumed the #{project_name} project", "")
+  end
+
+  def assert_project_renamed(ctx, author: author) do
+    ctx |> assert_feed_item_exists(author, "renamed the project", "")
+  end
+
+  def assert_project_renamed(ctx, author: author, project_name: project_name) do
+    ctx |> assert_feed_item_exists(author, "renamed the #{project_name} project", "")
+  end
+
+  def assert_project_milestone_commented(ctx, author: author, milestone_tile: milestone_title, comment: comment) do
+    ctx |> assert_feed_item_exists(author, "commented on the #{milestone_title} milestone", comment)
+  end
+
+  def assert_project_goal_connection(ctx, author: author, goal_name: goal_name) do
+    ctx |> assert_feed_item_exists(author, "connected the project to the #{goal_name} goal", "")
+  end
+
+  def assert_project_goal_connection(ctx, author: author, project_name: project_name) do
+    ctx |> assert_feed_item_exists(author, "connected the #{project_name} project to the goal", "")
+  end
+
+  def assert_project_goal_connection(ctx, author: author, project_name: project_name, goal_name: goal_name) do
+    ctx |> assert_feed_item_exists(author, "connected the #{project_name} project to the #{goal_name} goal", "")
   end
 
   def assert_project_timeline_edited(ctx, attrs) do
@@ -52,6 +124,36 @@ defmodule Operately.Support.Features.FeedSteps do
 
       ctx
     end)
+  end
+
+  #
+  # Project Check-ins
+  #
+
+  def assert_project_check_in_submitted(ctx, author: author, description: description) do
+    ctx
+    |> assert_feed_item_exists(author, "submitted a Check-In", "On Track")
+    |> UI.assert_text(description)
+  end
+
+  def assert_project_check_in_submitted(ctx, author: author, project_name: project_name, description: description) do
+    ctx
+    |> assert_feed_item_exists(author, "submitted a Check-In in the #{project_name} project", "On Track")
+    |> UI.assert_text(description)
+  end
+
+  def assert_project_check_in_acknowledged(ctx, author: author) do
+    ctx
+    |> assert_feed_item_exists(author, "acknowledged a Check-In", "")
+  end
+
+  def assert_project_check_in_acknowledged(ctx, author: author, project_name: project_name) do
+    ctx
+    |> assert_feed_item_exists(author, "acknowledged a Check-In in the #{project_name} project", "")
+  end
+
+  def assert_project_check_in_commented(ctx, author: author, comment: comment) do
+    ctx |> assert_feed_item_exists(author, "commented on Check-In", comment)
   end
 
   #

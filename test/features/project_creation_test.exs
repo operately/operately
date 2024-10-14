@@ -14,6 +14,7 @@ defmodule Operately.Features.ProjectCreationTest do
     |> Steps.assert_project_created(params)
     |> Steps.assert_project_created_email_sent(params)
     |> Steps.assert_project_created_notification_sent(params)
+    |> Steps.assert_project_created_feed()
   end
 
   @tag login_as: :reviewer
@@ -26,6 +27,7 @@ defmodule Operately.Features.ProjectCreationTest do
     |> Steps.assert_project_created(params)
     |> Steps.assert_project_created_email_sent(params)
     |> Steps.assert_project_created_notification_sent(params)
+    |> Steps.assert_project_created_feed(ctx.reviewer)
   end
 
   @tag login_as: :non_contributor
@@ -38,6 +40,7 @@ defmodule Operately.Features.ProjectCreationTest do
     |> Steps.assert_project_created(params)
     |> Steps.assert_project_created_email_sent(params)
     |> Steps.assert_project_created_notification_sent(params)
+    |> Steps.assert_project_created_feed(ctx.non_contributor)
   end
 
 
@@ -51,6 +54,7 @@ defmodule Operately.Features.ProjectCreationTest do
     |> Steps.assert_project_created(params)
     |> Steps.assert_project_created_email_sent(params)
     |> Steps.assert_project_created_notification_sent(params)
+    |> Steps.assert_project_created_feed(ctx.project_manager)
   end
 
   @tag login_as: :champion
@@ -69,6 +73,7 @@ defmodule Operately.Features.ProjectCreationTest do
     |> Steps.assert_project_created(params)
     |> Steps.assert_project_created_email_sent(params)
     |> Steps.assert_project_created_notification_sent(params)
+    |> Steps.assert_project_created_feed()
   end
 
   @tag login_as: :champion
@@ -80,6 +85,7 @@ defmodule Operately.Features.ProjectCreationTest do
     |> Steps.start_adding_project()
     |> Steps.submit_project_form(params)
     |> Steps.assert_project_created(params)
+    |> Steps.assert_project_created_feed()
     |> Steps.assert_reviewer_is_champions_manager(params)
   end
 
@@ -105,6 +111,7 @@ defmodule Operately.Features.ProjectCreationTest do
     |> Steps.assert_review_placeholder_showing()
     |> Steps.follow_add_reviewer_link_and_add_reviewer()
     |> Steps.assert_project_has_reviewer(params)
+    |> Steps.assert_project_created_feed()
   end
 
   @tag login_as: :champion
@@ -119,6 +126,7 @@ defmodule Operately.Features.ProjectCreationTest do
     |> Steps.assert_project_created(params)
     |> Steps.assert_company_members_cant_see_project(params)
     |> Steps.assert_space_members_can_see_project(params)
+    |> Steps.assert_project_created_feed()
   end
 
   @tag login_as: :champion
@@ -134,5 +142,6 @@ defmodule Operately.Features.ProjectCreationTest do
     |> Steps.assert_project_created(params)
     |> Steps.assert_company_members_cant_see_project(params)
     |> Steps.assert_space_members_cant_see_project(params)
+    |> Steps.assert_project_created_feed()
   end
 end

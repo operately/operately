@@ -2,6 +2,7 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
   use Operately.FeatureCase
 
   alias Operately.Support.Features.UI
+  alias Operately.Support.Features.FeedSteps
   alias Operately.Support.Features.EmailSteps
   alias Operately.Support.Features.ProjectSteps
   alias Operately.Support.Features.NotificationsSteps
@@ -51,13 +52,14 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
     |> UI.assert_text(@status_to_on_screen[status])
   end
 
-  step :assert_check_in_visible_on_feed, ctx, %{status: status, description: description} do
+  step :assert_check_in_visible_on_feed, ctx, %{description: description} do
     ctx
-    |> UI.find(UI.query(testid: "project-feed"), fn el ->
-      el
-      |> UI.assert_text(description)
-      |> UI.assert_text(@status_to_on_screen[status])
-    end)
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> FeedSteps.assert_project_check_in_submitted(author: ctx.champion, description: description)
+    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
+    |> FeedSteps.assert_project_check_in_submitted(author: ctx.champion, project_name: ctx.project.name, description: description)
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> FeedSteps.assert_project_check_in_submitted(author: ctx.champion, project_name: ctx.project.name, description: description)
   end
 
   step :assert_email_sent_to_reviewer, ctx, %{status: _status, description: _description} do
@@ -87,7 +89,7 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
   end
 
   step :acknowledge_check_in, ctx do
-    ctx 
+    ctx
     |> UI.click(testid: "acknowledge-check-in")
     |> UI.sleep(300) # Wait for the check-in to be acknowledged
   end
@@ -97,7 +99,7 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
   end
 
   step :assert_acknowledgement_email_sent_to_champion, ctx, %{status: _status, description: _description} do
-    ctx 
+    ctx
     |> UI.login_as(ctx.champion)
     |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.project.name,
@@ -118,12 +120,14 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
     })
   end
 
-  step :assert_acknowledgement_visible_on_project_feed, ctx, %{status: _status, description: _description} do
+  step :assert_acknowledgement_visible_on_feed, ctx do
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
-    |> UI.find(UI.query(testid: "project-feed"), fn el ->
-      el |> UI.assert_text("acknowledged")
-    end)
+    |> FeedSteps.assert_project_check_in_acknowledged(author: ctx.champion)
+    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
+    |> FeedSteps.assert_project_check_in_acknowledged(author: ctx.champion, project_name: ctx.project.name)
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> FeedSteps.assert_project_check_in_acknowledged(author: ctx.champion, project_name: ctx.project.name)
   end
 
   step :acknowledge_check_in_from_email, ctx, %{status: _status, description: _description} do
@@ -160,5 +164,15 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
       action: "commented on a check-in",
       author: ctx.reviewer,
     })
+  end
+
+  step :assert_check_in_comment_visible_on_feed, ctx do
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> FeedSteps.assert_project_check_in_commented(author: ctx.champion, comment: "This is a comment.")
+    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
+    |> FeedSteps.assert_project_check_in_commented(author: ctx.champion, comment: "This is a comment.")
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> FeedSteps.assert_project_check_in_commented(author: ctx.champion, comment: "This is a comment.")
   end
 end
