@@ -559,7 +559,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "project_timeline_edited",
         author_id: ctx.author.id,
-        content: %{ project_id: ctx.project.id, company_id: ctx.company.id, old_start_date: DateTime.utc_now(), new_start_date: DateTime.utc_now(), old_end_date: DateTime.utc_now(), new_end_date: DateTime.utc_now() }
+        content: %{ project_id: ctx.project.id, space_id: ctx.group.id, company_id: ctx.company.id, old_start_date: DateTime.utc_now(), new_start_date: DateTime.utc_now(), old_end_date: DateTime.utc_now(), new_end_date: DateTime.utc_now() }
       }
 
       create_activity(attrs)

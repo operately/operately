@@ -9,6 +9,15 @@ defmodule Operately.Features.ProjectsTimelineTest do
 
   @tag login_as: :champion
   feature "setting initial start and due dates, and adding milestones", ctx do
+    messages = [
+      "The due date was set to #{Operately.Time.current_month()} 20th.",
+      "Total project duration is 10 days.",
+      "Added new milestones:",
+      "Contract Signed",
+      "#{Operately.Time.current_month()} 15th",
+      "Website Launched",
+      "#{Operately.Time.current_month()} 16th"
+    ]
     milestone1 = %{title: "Contract Signed", due_day: 15}
     milestone2 = %{title: "Website Launched", due_day: 16}
 
@@ -22,17 +31,9 @@ defmodule Operately.Features.ProjectsTimelineTest do
     |> Steps.assert_project_timeframe(%{start: "10th", due_day: "20th"})
     |> Steps.assert_milestone_added(milestone1)
     |> Steps.assert_milestone_added(milestone2)
-    |> Steps.assert_project_timeline_edited_feed(%{
-      messages: [
-        "The due date was set to #{Operately.Time.current_month()} 20th.",
-        "Total project duration is 10 days.",
-        "Added new milestones:",
-        "Contract Signed",
-        "#{Operately.Time.current_month()} 15th",
-        "Website Launched",
-        "#{Operately.Time.current_month()} 16th"
-      ]
-    })
+    |> Steps.assert_project_timeline_edited_feed(%{messages: messages})
+    |> Steps.assert_project_timeline_edited_space_feed_posted(%{messages: messages})
+    |> Steps.assert_project_timeline_edited_company_feed_posted(%{messages: messages})
     |> Steps.assert_project_timeline_edited_notification()
     |> Steps.assert_project_timeline_edited_email()
   end
@@ -66,6 +67,12 @@ defmodule Operately.Features.ProjectsTimelineTest do
 
   @tag login_as: :champion
   feature "editing existing milestones while editing project timeline", ctx do
+    messages = [
+      "Updated a milestone:",
+      "Contract Updated with Provider",
+      "#{Operately.Time.current_month()} 16th",
+    ]
+
     ctx
     |> Steps.give_a_milestone_exists(%{title: "Contract Signed"})
     |> Steps.start_editing_timeline()
@@ -77,13 +84,9 @@ defmodule Operately.Features.ProjectsTimelineTest do
     })
     |> Steps.submit_changes()
     |> Steps.assert_project_timeframe(%{start: "10th", due_day: "20th"})
-    |> Steps.assert_project_timeline_edited_feed(%{
-      messages: [
-        "Updated a milestone:",
-        "Contract Updated with Provider",
-        "#{Operately.Time.current_month()} 16th",
-      ]
-    })
+    |> Steps.assert_project_timeline_edited_feed(%{messages: messages})
+    |> Steps.assert_project_timeline_edited_space_feed_posted(%{messages: messages})
+    |> Steps.assert_project_timeline_edited_company_feed_posted(%{messages: messages})
     |> Steps.assert_project_timeline_edited_notification()
     |> Steps.assert_project_timeline_edited_email()
   end
