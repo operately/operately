@@ -50,6 +50,10 @@ defmodule Operately.Support.Features.FeedSteps do
     ctx |> assert_feed_item_exists(author, "resumed the #{project_name} project", "")
   end
 
+  def assert_project_milestone_commented(ctx, author: author, milestone_tile: milestone_title, comment: comment) do
+    ctx |> assert_feed_item_exists(author, "commented on the #{milestone_title} milestone", comment)
+  end
+
   def assert_project_timeline_edited(ctx, attrs) do
     title = case Keyword.get(attrs, :project_name, nil) do
       nil -> "edited the timeline"
