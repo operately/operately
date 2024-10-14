@@ -7,7 +7,7 @@ defmodule Operately.Projects.EditTimelineOperation do
 
   def run(author, project, attrs) do
     changeset = Project.changeset(project, %{
-      started_at: attrs.project_start_date, 
+      started_at: attrs.project_start_date,
       deadline: attrs.project_due_date
     })
 
@@ -52,9 +52,10 @@ defmodule Operately.Projects.EditTimelineOperation do
 
   defp record_activity(multi, author, project, attrs) do
     multi
-    |> Activities.insert_sync(author.id, :project_timeline_edited, fn changes -> 
+    |> Activities.insert_sync(author.id, :project_timeline_edited, fn changes ->
       %{
         company_id: project.company_id,
+        space_id: project.group_id,
         project_id: project.id,
         old_start_date: project.started_at,
         new_start_date: changes.project.started_at,

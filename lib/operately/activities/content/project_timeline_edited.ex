@@ -39,6 +39,7 @@ defmodule Operately.Activities.Content.ProjectTimelineEdited do
 
   embedded_schema do
     belongs_to :company, Operately.Companies.Company
+    belongs_to :space, Operately.Groups.Group
     belongs_to :project, Operately.Projects.Project
 
     field :old_start_date, :utc_datetime
@@ -53,10 +54,10 @@ defmodule Operately.Activities.Content.ProjectTimelineEdited do
 
   def changeset(attrs) do
     %__MODULE__{}
-    |> cast(attrs, [:company_id, :project_id, :old_start_date, :old_end_date, :new_start_date, :new_end_date])
+    |> cast(attrs, [:company_id, :space_id, :project_id, :old_start_date, :old_end_date, :new_start_date, :new_end_date])
     |> cast_embed(:milestone_updates)
     |> cast_embed(:new_milestones)
-    |> validate_required([:company_id, :project_id, :new_start_date])
+    |> validate_required([:company_id, :space_id, :project_id, :new_start_date])
   end
 
   def build(params) do

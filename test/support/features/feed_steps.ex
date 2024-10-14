@@ -34,10 +34,17 @@ defmodule Operately.Support.Features.FeedSteps do
     ctx |> assert_feed_item_exists(author, "paused the project with", "")
   end
 
-  def assert_project_timeline_edited(ctx, author: author, messages: messages) do
+  def assert_project_timeline_edited(ctx, attrs) do
+    title = case Keyword.get(attrs, :project_name, nil) do
+      nil -> "edited the timeline"
+      name -> "edited the timeline on the #{name} project"
+    end
+    author = Keyword.get(attrs, :author)
+    messages = Keyword.get(attrs, :messages)
+
     ctx
     |> UI.assert_text(Person.first_name(author))
-    |> UI.assert_text("edited the timeline")
+    |> UI.assert_text(title)
     |> then(fn ctx ->
       Enum.each(messages, fn message ->
         ctx |> UI.assert_text(message)
