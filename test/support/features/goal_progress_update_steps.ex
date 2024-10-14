@@ -15,7 +15,7 @@ defmodule Operately.Support.Features.GoalProgressUpdateSteps do
     company = company_fixture(%{name: "Test Org", enabled_experimental_features: ["goals"]})
     champion = person_fixture_with_account(%{company_id: company.id, full_name: "John Champion"})
     reviewer = person_fixture_with_account(%{company_id: company.id, full_name: "Leonardo Reviewer"})
-    group = group_fixture(champion, %{company_id: company.id, name: "Test Group"})
+    group = group_fixture(champion, %{company_id: company.id, name: "Test Group", company_permissions: Binding.view_access()})
 
     timeframe = %{
       start_date: ~D[2023-01-01],
@@ -136,9 +136,11 @@ defmodule Operately.Support.Features.GoalProgressUpdateSteps do
   step :assert_progress_update_acknowledged_in_feed, ctx do
     ctx
     |> visit_page()
-    |> FeedSteps.assert_feed_item_exists(%{author: ctx.champion, title: "acknowledged"})
+    |> FeedSteps.assert_goal_check_in_acknowledgement(author: ctx.champion)
+    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
+    |> FeedSteps.assert_goal_check_in_acknowledgement(author: ctx.champion, goal_name: ctx.goal.name)
     |> UI.visit(Paths.feed_path(ctx.company))
-    |> FeedSteps.assert_feed_item_exists(%{author: ctx.champion, title: "acknowledged"})
+    |> FeedSteps.assert_goal_check_in_acknowledgement(author: ctx.champion, goal_name: ctx.goal.name)
   end
 
   step :assert_progress_update_acknowledged_in_notifications, ctx do
