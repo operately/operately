@@ -107,6 +107,18 @@ defmodule Operately.Support.Features.ProjectTimelineSteps do
     |> FeedSteps.assert_project_timeline_edited(author: ctx.champion, messages: messages)
   end
 
+  step :assert_project_timeline_edited_space_feed_posted, ctx, %{messages: messages} do
+    ctx
+    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
+    |> FeedSteps.assert_project_timeline_edited(author: ctx.champion, project_name: ctx.project.name, messages: messages)
+  end
+
+  step :assert_project_timeline_edited_company_feed_posted, ctx, %{messages: messages} do
+    ctx
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> FeedSteps.assert_project_timeline_edited(author: ctx.champion, project_name: ctx.project.name, messages: messages)
+  end
+
   step :assert_project_timeline_edited_notification, ctx do
     ctx
     |> UI.login_as(ctx.reviewer)
