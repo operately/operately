@@ -261,7 +261,7 @@ function AddCommentNonActive({ onClick }) {
 
   return (
     <div
-      className="py-6 not-first:border-t border-stroke-base cursor-pointer flex items-center gap-3"
+      className="py-4 sm:py-6 not-first:border-t border-stroke-base cursor-pointer flex items-center gap-3"
       data-test-id="add-comment"
       onClick={onClick}
     >
