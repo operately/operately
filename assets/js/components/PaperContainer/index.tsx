@@ -63,10 +63,28 @@ export function Root({ size, children, className, fluid = false }: RootProps): J
   );
 }
 
-export function Body({ children, minHeight = "none", className = "", backgroundColor = "bg-surface" }) {
+const bodyPaddings = {
+  small: "px-10 py-8",
+  medium: "px-12 py-10",
+  large: "px-12 py-10",
+  xlarge: "px-12 py-10",
+  xxlarge: "px-16 py-12",
+};
+
+export function Body({
+  children,
+  minHeight = "none",
+  className = "",
+  noPadding = false,
+  backgroundColor = "bg-surface",
+}) {
+  const { size } = React.useContext(Context);
+  const padding = noPadding ? "" : bodyPaddings[size];
+
   return (
+    //
     <div
-      className={`relative ${backgroundColor} rounded shadow-xl p-4 sm:p-8 lg:p-12 ${className} border border-surface-outline`}
+      className={`relative ${backgroundColor} rounded shadow-xl ${padding} ${className} border border-surface-outline`}
       style={{
         minHeight: minHeight,
       }}
