@@ -48,7 +48,7 @@ defmodule Operately.Features.ProjectsTest do
     |> Steps.resume_project()
     |> Steps.assert_project_active()
     |> Steps.assert_resume_notification_sent_to_reviewer()
-    |> Steps.assert_resume_visible_on_project_feed()
+    |> Steps.assert_project_resumed_visible_on_feed()
     |> Steps.assert_resume_email_sent_to_reviewer()
   end
 
