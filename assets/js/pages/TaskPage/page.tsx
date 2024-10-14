@@ -27,7 +27,7 @@ export function Page() {
       <Paper.Root size="medium">
         <Navigation task={task} />
 
-        <Paper.Body noPadding>
+        <Paper.Body>
           <Header form={form} />
 
           <div className="flex justify-center">

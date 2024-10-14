@@ -40,7 +40,7 @@ export function Page() {
         <Navigation space={discussion.space} />
 
         <Paper.Body>
-          <div className="px-16">
+          <div className="sm:px-8 lg:px-16">
             {compareIds(me.id, discussion.author!.id) && <Options />}
             <Title discussion={discussion} />
 
@@ -82,8 +82,8 @@ function Reactions() {
 function Title({ discussion }) {
   return (
     <div className="flex flex-col items-center">
-      <div className="text-content-accent text-3xl font-extrabold text-center">{discussion.title}</div>
-      <div className="flex gap-0.5 flex-row items-center mt-1 text-content-accent font-medium">
+      <div className="text-content-accent text-2xl sm:text-3xl font-extrabold text-center">{discussion.title}</div>
+      <div className="flex flex-wrap justify-center gap-2 mt-2 text-content-accent font-medium text-sm sm:text-base">
         <div className="flex items-center gap-2">
           <Avatar person={discussion.author} size="tiny" /> {discussion.author.fullName}
         </div>
