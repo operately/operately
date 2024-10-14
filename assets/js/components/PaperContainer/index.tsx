@@ -66,7 +66,7 @@ export function Root({ size, children, className, fluid = false }: RootProps): J
 export function Body({ children, minHeight = "none", className = "", backgroundColor = "bg-surface" }) {
   return (
     <div
-      className={`relative ${backgroundColor} rounded shadow-xl p-4 sm:p-8 lg:p-12 ${className} border border-surface-outline`}
+      className={`relative ${backgroundColor} rounded shadow-xl px-10 sm:px-12 py-8 sm:py-10 ${className} border border-surface-outline`}
       style={{
         minHeight: minHeight,
       }}
