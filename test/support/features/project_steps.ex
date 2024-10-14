@@ -50,7 +50,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     company = company_fixture(%{name: "Test Org"})
     champion = person_fixture_with_account(%{company_id: company.id, full_name: "John Champion"})
     reviewer = person_fixture_with_account(%{company_id: company.id, full_name: "Leonardo Reviewer"})
-    group = group_fixture(champion, %{company_id: company.id, name: "Test Group"})
+    group = group_fixture(champion, %{company_id: company.id, name: "Test Group", company_permissions: Binding.view_access()})
 
     params = %Operately.Operations.ProjectCreation{
       company_id: company.id,
@@ -300,7 +300,7 @@ defmodule Operately.Support.Features.ProjectSteps do
   end
 
   step :assert_project_paused, ctx do
-    ctx 
+    ctx
     |> UI.assert_text("Paused")
     |> UI.assert_has(testid: "project-paused-banner")
   end
@@ -325,11 +325,19 @@ defmodule Operately.Support.Features.ProjectSteps do
     })
   end
 
-  step :assert_pause_visible_on_project_feed, ctx do
+  step :assert_pause_visible_on_feed, ctx do
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
     |> UI.find(UI.query(testid: "project-feed"), fn el ->
-      el |> UI.assert_text("paused the project")
+      el |> FeedSteps.assert_project_paused(author: ctx.champion)
+    end)
+    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
+    |> UI.find(UI.query(testid: "space-feed"), fn el ->
+      el |> FeedSteps.assert_project_paused(author: ctx.champion, project_name: ctx.project.name)
+    end)
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.find(UI.query(testid: "company-feed"), fn el ->
+      el |> FeedSteps.assert_project_paused(author: ctx.champion, project_name: ctx.project.name)
     end)
   end
 
@@ -364,12 +372,14 @@ defmodule Operately.Support.Features.ProjectSteps do
     })
   end
 
-  step :assert_resume_visible_on_project_feed, ctx do
+  step :assert_project_resumed_visible_on_feed, ctx do
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
-    |> UI.find(UI.query(testid: "project-feed"), fn el ->
-      el |> UI.assert_text("resumed the project")
-    end)
+    |> FeedSteps.assert_project_resumed(author: ctx.champion)
+    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
+    |> FeedSteps.assert_project_resumed(author: ctx.champion, project_name: ctx.project.name)
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> FeedSteps.assert_project_resumed(author: ctx.champion, project_name: ctx.project.name)
   end
 
   step :rename_project, ctx, new_name: new_name do
@@ -385,6 +395,30 @@ defmodule Operately.Support.Features.ProjectSteps do
     assert Operately.Projects.get_project!(ctx.project.id).name == new_name
 
     ctx |> UI.assert_text(new_name)
+  end
+
+  step :assert_project_renamed_visible_on_feed, ctx do
+    project = Repo.reload(ctx.project)
+
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> FeedSteps.assert_project_renamed(author: ctx.champion)
+    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
+    |> FeedSteps.assert_project_renamed(author: ctx.champion, project_name: project.name)
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> FeedSteps.assert_project_renamed(author: ctx.champion, project_name: project.name)
+  end
+
+ step :assert_project_goal_connection_visible_on_feed, ctx, goal_name: goal_name do
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> FeedSteps.assert_project_goal_connection(author: ctx.champion, goal_name: goal_name)
+    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
+    |> FeedSteps.assert_project_goal_connection(author: ctx.champion, project_name: ctx.project.name, goal_name: goal_name)
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> FeedSteps.assert_project_goal_connection(author: ctx.champion, project_name: ctx.project.name, goal_name: goal_name)
+    |> UI.visit(Paths.goal_path(ctx.company, ctx.goal))
+    |> FeedSteps.assert_project_goal_connection(author: ctx.champion, project_name: ctx.project.name)
   end
 
   step :assert_project_description_absent, ctx do

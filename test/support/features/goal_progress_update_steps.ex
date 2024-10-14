@@ -15,7 +15,7 @@ defmodule Operately.Support.Features.GoalProgressUpdateSteps do
     company = company_fixture(%{name: "Test Org", enabled_experimental_features: ["goals"]})
     champion = person_fixture_with_account(%{company_id: company.id, full_name: "John Champion"})
     reviewer = person_fixture_with_account(%{company_id: company.id, full_name: "Leonardo Reviewer"})
-    group = group_fixture(champion, %{company_id: company.id, name: "Test Group"})
+    group = group_fixture(champion, %{company_id: company.id, name: "Test Group", company_permissions: Binding.view_access()})
 
     timeframe = %{
       start_date: ~D[2023-01-01],
@@ -80,12 +80,14 @@ defmodule Operately.Support.Features.GoalProgressUpdateSteps do
     |> UI.assert_text("#{Enum.at(target_values, 0)} / 15")
   end
 
-  step :assert_progress_update_in_feed, ctx do
+  step :assert_progress_update_in_feed, ctx, attrs do
     ctx
     |> visit_page()
-    |> FeedSteps.assert_feed_item_exists(%{author: ctx.champion, title: "updated the progress"})
+    |> FeedSteps.assert_goal_checked_in(author: ctx.champion, message: attrs.message)
+    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
+    |> FeedSteps.assert_goal_checked_in(author: ctx.champion, goal_name: ctx.goal.name, message: attrs.message)
     |> UI.visit(Paths.feed_path(ctx.company))
-    |> FeedSteps.assert_feed_item_exists(%{author: ctx.champion, title: "updated the progress"})
+    |> FeedSteps.assert_goal_checked_in(author: ctx.champion, goal_name: ctx.goal.name, message: attrs.message)
   end
 
   step :assert_progress_update_email_sent_to_reviewer, ctx do
@@ -134,9 +136,11 @@ defmodule Operately.Support.Features.GoalProgressUpdateSteps do
   step :assert_progress_update_acknowledged_in_feed, ctx do
     ctx
     |> visit_page()
-    |> FeedSteps.assert_feed_item_exists(%{author: ctx.champion, title: "acknowledged"})
+    |> FeedSteps.assert_goal_check_in_acknowledgement(author: ctx.champion)
+    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
+    |> FeedSteps.assert_goal_check_in_acknowledgement(author: ctx.champion, goal_name: ctx.goal.name)
     |> UI.visit(Paths.feed_path(ctx.company))
-    |> FeedSteps.assert_feed_item_exists(%{author: ctx.champion, title: "acknowledged"})
+    |> FeedSteps.assert_goal_check_in_acknowledgement(author: ctx.champion, goal_name: ctx.goal.name)
   end
 
   step :assert_progress_update_acknowledged_in_notifications, ctx do
@@ -172,6 +176,16 @@ defmodule Operately.Support.Features.GoalProgressUpdateSteps do
     |> UI.click(testid: "add-comment")
     |> UI.fill_rich_text(message)
     |> UI.click(testid: "post-comment")
+  end
+
+  step :assert_progress_update_commented_in_feed, ctx, comment do
+    ctx
+    |> visit_page()
+    |> FeedSteps.assert_goal_check_in_commented(author: ctx.champion, comment: comment)
+    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
+    |> FeedSteps.assert_goal_check_in_commented(author: ctx.champion, goal_name: ctx.goal.name, comment: comment)
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> FeedSteps.assert_goal_check_in_commented(author: ctx.champion, goal_name: ctx.goal.name, comment: comment)
   end
 
   step :assert_comment_email_sent, ctx do
