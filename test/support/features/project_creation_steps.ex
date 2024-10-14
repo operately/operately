@@ -4,7 +4,9 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
   alias Operately.Access
   alias Operately.Access.Binding
   alias Operately.People.Person
+  alias Operately.Projects.Project
   alias Operately.Support.Features.UI
+  alias Operately.Support.Features.FeedSteps
   alias Operately.Support.Features.EmailSteps
   alias Operately.Support.Features.NotificationsSteps
 
@@ -105,7 +107,7 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
       assert reviewer.person.full_name == fields.reviewer.full_name
     end
 
-    ctx 
+    ctx
   end
 
   step :assert_project_created_email_sent, ctx, fields do
@@ -232,6 +234,19 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
     assert Access.get_binding(context_id: context.id, group_id: group.id).access_level == Binding.no_access()
 
     ctx
+  end
+
+  step :assert_project_created_feed, ctx, creator \\ nil do
+    project = Repo.one(Project)
+    creator = creator || ctx.champion
+
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, project))
+    |> FeedSteps.assert_project_created(author: creator)
+    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
+    |> FeedSteps.assert_project_created(author: creator, project_name: project.name)
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> FeedSteps.assert_project_created(author: creator, project_name: project.name)
   end
 
   defp who_should_be_notified(fields) do

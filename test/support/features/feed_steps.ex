@@ -18,6 +18,14 @@ defmodule Operately.Support.Features.FeedSteps do
     ctx |> assert_feed_item_exists(author, "acknowledged", "")
   end
 
+  def assert_project_created(ctx, author: author) do
+    ctx |> assert_feed_item_exists(author, "created the project", "")
+  end
+
+  def assert_project_created(ctx, author: author, project_name: project_name) do
+    ctx |> assert_feed_item_exists(author, "created the #{project_name} project", "")
+  end
+
   def assert_project_moved(ctx, author: author, old_space: old_space, new_space: new_space) do
     ctx |> assert_feed_item_exists(author, "moved the project", "From #{old_space.name} to #{new_space.name}")
   end
