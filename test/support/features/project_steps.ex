@@ -409,6 +409,18 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> FeedSteps.assert_project_renamed(author: ctx.champion, project_name: project.name)
   end
 
+ step :assert_project_goal_connection_visible_on_feed, ctx, goal_name: goal_name do
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> FeedSteps.assert_project_goal_connection(author: ctx.champion, goal_name: goal_name)
+    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
+    |> FeedSteps.assert_project_goal_connection(author: ctx.champion, project_name: ctx.project.name, goal_name: goal_name)
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> FeedSteps.assert_project_goal_connection(author: ctx.champion, project_name: ctx.project.name, goal_name: goal_name)
+    |> UI.visit(Paths.goal_path(ctx.company, ctx.goal))
+    |> FeedSteps.assert_project_goal_connection(author: ctx.champion, project_name: ctx.project.name)
+  end
+
   step :assert_project_description_absent, ctx do
     ctx
     |> UI.assert_text("Describe your project to provide context and clarity.")

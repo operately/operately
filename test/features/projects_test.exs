@@ -55,13 +55,15 @@ defmodule Operately.Features.ProjectsTest do
 
   @tag login_as: :champion
   feature "connect a goal to a project", ctx do
-    ctx
-    |> Steps.given_a_goal_exists(name: "Improve support first response time")
-    |> Steps.visit_project_page()
-    |> Steps.choose_new_goal(goal_name: "Improve support first response time")
-    |> Steps.assert_goal_connected(goal_name: "Improve support first response time")
-    |> Steps.assert_goal_link_on_project_page(goal_name: "Improve support first response time")
-    |> Steps.assert_goal_connected_email_sent_to_champion(goal_name: "Improve support first response time")
-  end
+    goal_name = "Improve support first response time"
 
+    ctx
+    |> Steps.given_a_goal_exists(name: goal_name)
+    |> Steps.visit_project_page()
+    |> Steps.choose_new_goal(goal_name: goal_name)
+    |> Steps.assert_goal_connected(goal_name: goal_name)
+    |> Steps.assert_goal_link_on_project_page(goal_name: goal_name)
+    |> Steps.assert_project_goal_connection_visible_on_feed(goal_name: goal_name)
+    |> Steps.assert_goal_connected_email_sent_to_champion(goal_name: goal_name)
+  end
 end
