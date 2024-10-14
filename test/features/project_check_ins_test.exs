@@ -33,7 +33,7 @@ defmodule Operately.Features.ProjectCheckInsTest do
     |> Steps.assert_check_in_acknowledged(values)
     |> Steps.assert_acknowledgement_email_sent_to_champion(values)
     |> Steps.assert_acknowledgement_notification_sent_to_champion(values)
-    |> Steps.assert_acknowledgement_visible_on_project_feed(values)
+    |> Steps.assert_acknowledgement_visible_on_feed()
   end
 
   @tag login_as: :champion

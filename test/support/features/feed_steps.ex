@@ -98,10 +98,26 @@ defmodule Operately.Support.Features.FeedSteps do
   # Project Check-ins
   #
 
-  def assert_project_check_in_submitted(ctx, author: author, status: status, description: description) do
+  def assert_project_check_in_submitted(ctx, author: author, description: description) do
     ctx
-    |> assert_feed_item_exists(author, "submitted a Check-In", status)
+    |> assert_feed_item_exists(author, "submitted a Check-In", "On Track")
     |> UI.assert_text(description)
+  end
+
+  def assert_project_check_in_submitted(ctx, author: author, project_name: project_name, description: description) do
+    ctx
+    |> assert_feed_item_exists(author, "submitted a Check-In in the #{project_name} project", "On Track")
+    |> UI.assert_text(description)
+  end
+
+  def assert_project_check_in_acknowledged(ctx, author: author) do
+    ctx
+    |> assert_feed_item_exists(author, "acknowledged a Check-In", "")
+  end
+
+  def assert_project_check_in_acknowledged(ctx, author: author, project_name: project_name) do
+    ctx
+    |> assert_feed_item_exists(author, "acknowledged a Check-In in the #{project_name} project", "")
   end
 
   def assert_project_check_in_commented(ctx, author: author, comment: comment) do
