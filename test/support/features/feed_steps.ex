@@ -54,6 +54,14 @@ defmodule Operately.Support.Features.FeedSteps do
     ctx |> assert_feed_item_exists(author, "resumed the #{project_name} project", "")
   end
 
+  def assert_project_renamed(ctx, author: author) do
+    ctx |> assert_feed_item_exists(author, "renamed the project", "")
+  end
+
+  def assert_project_renamed(ctx, author: author, project_name: project_name) do
+    ctx |> assert_feed_item_exists(author, "renamed the #{project_name} project", "")
+  end
+
   def assert_project_milestone_commented(ctx, author: author, milestone_tile: milestone_title, comment: comment) do
     ctx |> assert_feed_item_exists(author, "commented on the #{milestone_title} milestone", comment)
   end

@@ -397,6 +397,18 @@ defmodule Operately.Support.Features.ProjectSteps do
     ctx |> UI.assert_text(new_name)
   end
 
+  step :assert_project_renamed_visible_on_feed, ctx do
+    project = Repo.reload(ctx.project)
+
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> FeedSteps.assert_project_renamed(author: ctx.champion)
+    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
+    |> FeedSteps.assert_project_renamed(author: ctx.champion, project_name: project.name)
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> FeedSteps.assert_project_renamed(author: ctx.champion, project_name: project.name)
+  end
+
   step :assert_project_description_absent, ctx do
     ctx
     |> UI.assert_text("Describe your project to provide context and clarity.")

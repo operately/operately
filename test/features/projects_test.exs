@@ -16,6 +16,7 @@ defmodule Operately.Features.ProjectsTest do
     |> Steps.visit_project_page()
     |> Steps.rename_project(new_name: "New Name")
     |> Steps.assert_project_renamed(new_name: "New Name")
+    |> Steps.assert_project_renamed_visible_on_feed()
   end
 
   @tag login_as: :champion
