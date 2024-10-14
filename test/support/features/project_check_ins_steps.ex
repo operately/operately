@@ -52,13 +52,14 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
     |> UI.assert_text(@status_to_on_screen[status])
   end
 
-  step :assert_check_in_visible_on_feed, ctx, %{status: status, description: description} do
+  step :assert_check_in_visible_on_feed, ctx, %{description: description} do
     ctx
-    |> UI.find(UI.query(testid: "project-feed"), fn el ->
-      el
-      |> UI.assert_text(description)
-      |> UI.assert_text(@status_to_on_screen[status])
-    end)
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> FeedSteps.assert_project_check_in_submitted(author: ctx.champion, status: "On Track", description: description)
+    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
+    |> FeedSteps.assert_project_check_in_submitted(author: ctx.champion, status: "On Track", description: description)
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> FeedSteps.assert_project_check_in_submitted(author: ctx.champion, status: "On Track", description: description)
   end
 
   step :assert_email_sent_to_reviewer, ctx, %{status: _status, description: _description} do
