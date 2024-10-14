@@ -5,7 +5,7 @@ import { Link } from "@/components/Link";
 
 export function Navigation({ children }) {
   return (
-    <div className="bg-surface-dimmed flex items-center justify-center gap-1 pt-2 pb-1 mx-10 font-semibold rounded-t border-t border-x border-surface-outline">
+    <div className="bg-surface-dimmed flex items-center justify-center gap-1 pt-2 pb-1 mx-2 sm:mx-10 font-semibold rounded-t border-t border-x border-surface-outline">
       {children}
     </div>
   );
