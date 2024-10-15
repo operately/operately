@@ -88,12 +88,16 @@ function ToggleTestIds() {
 
 function Right() {
   const data = usePerfBarData();
-  const pageLoadColor = data.pageLoad < 500 ? "text-green-500" : "text-content-error";
+  const pageLoadColor = data.loadTime < 500 ? "text-green-500" : "text-content-error";
 
   return (
     <div className="flex items-center gap-8">
       <div>
-        Page Load: <span className={pageLoadColor}>{data.pageLoad.toFixed(0)}ms</span>
+        Page: <span>{data.pageName}</span>
+      </div>
+
+      <div>
+        Load Time: <span className={pageLoadColor}>{data.loadTime.toFixed(0)}ms</span>
       </div>
 
       <div>
