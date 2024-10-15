@@ -16,8 +16,8 @@ export function ExistingSubscriptionsList() {
 
   return (
     <div>
-      <div className="font-bold">Subscribers</div>
-      <div className="text-sm mt-1">{label}</div>
+      <div className="font-bold text-sm sm:text-[16px]">Subscribers</div>
+      <div className="text-xs sm:text-sm mt-1">{label}</div>
       <div className="flex items-center gap-1 mt-2 flex-wrap gap-y-2">
         {subscribers.map((s) => (
           <Avatar person={s.person!} size="tiny" key={s.person!.id} />
