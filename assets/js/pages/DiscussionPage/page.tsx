@@ -45,7 +45,7 @@ export function Page() {
             <Title discussion={discussion} />
 
             <Spacer size={4} />
-            <RichContent jsonContent={discussion.body!} className="text-lg" />
+            <RichContent jsonContent={discussion.body!} className="text-md sm:text-lg" />
 
             <Spacer size={2} />
             <Reactions />
@@ -82,8 +82,10 @@ function Reactions() {
 function Title({ discussion }) {
   return (
     <div className="flex flex-col items-center">
-      <div className="text-content-accent text-2xl sm:text-3xl font-extrabold text-center">{discussion.title}</div>
-      <div className="flex flex-wrap justify-center gap-2 mt-2 text-content-accent font-medium text-sm sm:text-base">
+      <div className="text-content-accent text-xl sm:text-2xl md:text-3xl font-extrabold text-center">
+        {discussion.title}
+      </div>
+      <div className="flex flex-wrap justify-center gap-2 mt-2 text-content-accent font-medium text-sm sm:text-[16px]">
         <div className="flex items-center gap-2">
           <Avatar person={discussion.author} size="tiny" /> {discussion.author.fullName}
         </div>
