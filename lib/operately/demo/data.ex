@@ -590,6 +590,47 @@ defmodule Operately.Demo.Data do
             %{title: "Investor meetings scheduled", status: :pending}
           ]
         }
+      ],
+      discussions: [
+        %{
+          key: :welcome_tina_scott,
+          space: :company_space,
+          author: :karen_martinez,
+          title: "🙌 Team Announcement: Welcoming Tina Scott!",
+          content: """
+          Hey everyone,
+
+          I’m excited to share that we’re continuing to grow our team and have
+          an amazing new addition! Please join me in welcoming Tina Scott, who
+          will be joining us as our Customer Support Representative.
+
+          Tina brings valuable experience in customer service, having worked in
+          fast-paced environments where she’s known for her dedication to
+          helping customers and resolving their issues efficiently. She will be
+          a key part of our efforts to ensure that we continue to deliver
+          top-notch support as we expand and onboard new users.
+
+          Here’s a bit more about Tina:
+
+          **Background**: Tina has previously worked at BrightTech Solutions and
+          InnovateCo, where she specialized in building customer relationships
+          and improving support processes.
+
+          **Specialty**: Tina is skilled in handling complex customer inquiries
+          and is passionate about ensuring customer satisfaction at every step.
+
+          **Fun fact**: Outside of work, Tina enjoys hiking and photography and
+          is always on the lookout for great outdoor spots to explore.
+
+          We’re excited to have Tina onboard and confident she will make a
+          great impact, especially as we continue to focus on scaling our
+          support team and enhancing the user experience.
+
+          Looking forward to seeing the great things we’ll accomplish together!
+
+          Welcome aboard, Tina! 🎉
+          """
+        }
       ]
     }
   end
