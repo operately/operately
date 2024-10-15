@@ -1,5 +1,5 @@
 defmodule Operately.Demo do
-  alias Operately.Demo.{Resources, Company, People, Spaces, Goals, Projects}
+  alias Operately.Demo.{Resources, Company, People, Spaces, Goals, Projects, Discussions}
 
   def run(account, company_name, title) do
     run(account, company_name, title, Operately.Demo.Data.data())
@@ -13,10 +13,11 @@ defmodule Operately.Demo do
     {:ok, context} = Operately.Repo.transaction(fn ->
       resources
       |> Company.create_company(account, company_name, title)
-      |> People.create_people(data.people)
-      |> Spaces.create_spaces(data.spaces)
-      |> Goals.create_goals(data.goals)
-      |> Projects.create_projects(data.projects)
+      |> People.create_people(data[:people])
+      |> Spaces.create_spaces(data[:spaces])
+      |> Goals.create_goals(data[:goals])
+      |> Projects.create_projects(data[:projects])
+      |> Discussions.create_discussions(data[:discussions])
     end)
 
     :timer.sleep(2000) # wait for background job to finish
