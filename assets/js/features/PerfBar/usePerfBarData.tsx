@@ -7,22 +7,26 @@
 import React from "react";
 
 interface PerfBarData {
-  pageLoad: number;
+  pageName: string;
+  loadTime: number;
   networkRequests: number;
 }
 
 var data: PerfBarData = {
-  pageLoad: 0,
+  pageName: "",
+  loadTime: 0,
   networkRequests: 0,
 };
 
 export function usePerfBarData() {
-  const [pageLoad, setPageLoad] = React.useState(data.pageLoad);
+  const [pageName, setPageName] = React.useState(data.pageName);
+  const [loadTime, setLoadTime] = React.useState(data.loadTime);
   const [networkRequests, setNetworkRequests] = React.useState(data.networkRequests);
 
   React.useEffect(() => {
     function updateData() {
-      setPageLoad(data.pageLoad);
+      setPageName(data.pageName);
+      setLoadTime(data.loadTime);
       setNetworkRequests(data.networkRequests);
     }
 
@@ -34,7 +38,8 @@ export function usePerfBarData() {
   }, []);
 
   return {
-    pageLoad,
+    pageName,
+    loadTime,
     networkRequests,
   };
 }
