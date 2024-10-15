@@ -43,6 +43,7 @@ defmodule Mix.Tasks.Operately.Gen.Page.Index do
   def export_page(page) do
     """
     #{page}: {
+      name: "#{page}",
       loader: #{page}.loader,
       Page: #{page}.Page
     }

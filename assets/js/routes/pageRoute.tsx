@@ -9,12 +9,12 @@ export function pageRoute(path: string, pageModule: any) {
 
   return {
     path: path,
-    loader: showProgress(path, loader),
+    loader: showProgress(path, pageModule.name, loader),
     element: <Element />,
   };
 }
 
-function showProgress(path: string, loader: ({ params }: { params: any }) => Promise<any>) {
+function showProgress(path: string, pageName: string, loader: ({ params }: { params: any }) => Promise<any>) {
   return async (req: any) => {
     let samePage = req.request.url === document.URL;
 
@@ -33,7 +33,7 @@ function showProgress(path: string, loader: ({ params }: { params: any }) => Pro
         console.log(`Execution time: ${end - start} ms`);
       }
 
-      setPerfData({ pageLoad: end - start });
+      setPerfData({ pageName: pageName, loadTime: end - start });
 
       return data;
     } catch (error) {
