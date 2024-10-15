@@ -18,6 +18,16 @@ export default function RelativeTime({ time }: RelativeTimeProps): JSX.Element {
   const months = Math.floor(days / 30);
   const years = Math.floor(days / 365);
 
+  const [lastRender, setLastRender] = React.useState(0);
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      setLastRender(Date.now());
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   if (seconds < 10) {
     return <>{t("intlRelativeDateTimeJustNow")}</>;
   }
@@ -46,5 +56,5 @@ export default function RelativeTime({ time }: RelativeTimeProps): JSX.Element {
     return <>{t("intlRelativeDateTime", { val: -months, range: "month" })}</>;
   }
 
-  return <>{t("intlRelativeDateTime", { val: -years, range: "year" })}</>;
+  return <React.Fragment key={lastRender}>{t("intlRelativeDateTime", { val: -years, range: "year" })}</React.Fragment>;
 }
