@@ -1,5 +1,6 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { useTranslation } from "react-i18next";
+import { useRenderInterval } from "./useRenderInterval";
 
 interface RelativeTimeProps {
   time: Date;
@@ -7,6 +8,7 @@ interface RelativeTimeProps {
 
 export default function RelativeTime({ time }: RelativeTimeProps): JSX.Element {
   const { t } = useTranslation();
+  const lastRender = useRenderInterval(time);
 
   const diff = +new Date() - +time;
 
@@ -19,32 +21,32 @@ export default function RelativeTime({ time }: RelativeTimeProps): JSX.Element {
   const years = Math.floor(days / 365);
 
   if (seconds < 10) {
-    return <>{t("intlRelativeDateTimeJustNow")}</>;
+    return <Fragment key={lastRender}>{t("intlRelativeDateTimeJustNow")}</Fragment>;
   }
 
   if (seconds < 60) {
-    return <>{t("intlRelativeDateTime", { val: -seconds, range: "second" })}</>;
+    return <Fragment key={lastRender}>{t("intlRelativeDateTime", { val: -seconds, range: "second" })}</Fragment>;
   }
 
   if (minutes < 60) {
-    return <>{t("intlRelativeDateTime", { val: -minutes, range: "minute" })}</>;
+    return <Fragment key={lastRender}>{t("intlRelativeDateTime", { val: -minutes, range: "minute" })}</Fragment>;
   }
 
   if (hours < 24) {
-    return <>{t("intlRelativeDateTime", { val: -hours, range: "hour" })}</>;
+    return <Fragment key={lastRender}>{t("intlRelativeDateTime", { val: -hours, range: "hour" })}</Fragment>;
   }
 
   if (days < 7) {
-    return <>{t("intlRelativeDateTime", { val: -days, range: "day" })}</>;
+    return <Fragment key={lastRender}>{t("intlRelativeDateTime", { val: -days, range: "day" })}</Fragment>;
   }
 
   if (weeks < 4) {
-    return <>{t("intlRelativeDateTime", { val: -weeks, range: "week" })}</>;
+    return <Fragment key={lastRender}>{t("intlRelativeDateTime", { val: -weeks, range: "week" })}</Fragment>;
   }
 
   if (months < 12) {
-    return <>{t("intlRelativeDateTime", { val: -months, range: "month" })}</>;
+    return <Fragment key={lastRender}>{t("intlRelativeDateTime", { val: -months, range: "month" })}</Fragment>;
   }
 
-  return <>{t("intlRelativeDateTime", { val: -years, range: "year" })}</>;
+  return <Fragment key={lastRender}>{t("intlRelativeDateTime", { val: -years, range: "year" })}</Fragment>;
 }

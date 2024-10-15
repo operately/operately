@@ -22,7 +22,6 @@ import { Paths, compareIds } from "@/routes/paths";
 import { CurrentSubscriptions } from "@/features/Subscriptions";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { assertPresent } from "@/utils/assertions";
-import { hoursBetween, parse } from "@/utils/time";
 
 export function Page() {
   const me = useMe()!;
@@ -91,26 +90,9 @@ function Title({ discussion }) {
           <Avatar person={discussion.author} size="tiny" /> {discussion.author.fullName}
         </div>
         <TextSeparator />
-
-        <DiscussionPostedTime insertedAt={discussion.insertedAt} />
+        <FormattedTime time={discussion.insertedAt} format="relative-time-or-date" />
       </div>
     </div>
-  );
-}
-
-function DiscussionPostedTime({ insertedAt }: { insertedAt: string }) {
-  const parsedInsertedAt = parse(insertedAt)!;
-  const now = new Date();
-  const delta = hoursBetween(parsedInsertedAt, now);
-
-  return delta < 24 ? (
-    <span>
-      Posted <FormattedTime time={insertedAt} format="relative" />
-    </span>
-  ) : (
-    <span>
-      Posted on <FormattedTime time={insertedAt} format="short-date" />
-    </span>
   );
 }
 
