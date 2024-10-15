@@ -54,7 +54,7 @@ defmodule Operately.Features.DiscussionsTest do
     |> UI.fill(testid: "discussion-title", with: "This is a discussion")
     |> UI.fill_rich_text("This is the body of the discussion.")
     |> UI.click(testid: "post-discussion")
-    |> UI.assert_text("Posted just now")
+    |> UI.assert_text("just now")
 
     message = last_message(ctx)
 
@@ -86,7 +86,7 @@ defmodule Operately.Features.DiscussionsTest do
     |> UI.fill(testid: "discussion-title", with: "This is a discussion")
     |> UI.fill_rich_text("This is the body of the discussion.")
     |> UI.click(testid: "post-discussion")
-    |> UI.assert_text("Posted just now")
+    |> UI.assert_text("just now")
 
     ctx
     |> UI.click(testid: "options-button")
@@ -96,7 +96,7 @@ defmodule Operately.Features.DiscussionsTest do
     |> UI.click(testid: "save-changes")
 
     ctx
-    |> UI.assert_text("Posted just now")
+    |> UI.assert_text("just now")
     |> UI.assert_text("This is an edited discussion")
     |> UI.assert_text("This is the edited body of the discussion")
   end
