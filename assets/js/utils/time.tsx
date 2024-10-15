@@ -125,6 +125,10 @@ export function daysBetween(start: Date, end: Date) {
   return datefsn.differenceInDays(end, start);
 }
 
+export function hoursBetween(start: Date, end: Date) {
+  return datefsn.differenceInHours(end, start);
+}
+
 export function getMonthName(date: Date) {
   return datefsn.format(date, "MMMM");
 }
