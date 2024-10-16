@@ -3,6 +3,7 @@ import * as api from "@/api";
 export type Goal = api.Goal;
 export type Target = api.Target;
 //as
+//bc
 export {
   getGoal,
   getGoals,
