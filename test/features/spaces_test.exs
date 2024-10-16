@@ -127,4 +127,18 @@ defmodule Operately.Features.SpacesTest do
     |> Steps.promote_to_manager(member)
     |> Steps.assert_member_promoted(member)
   end
+
+  feature "demoting manager to member", ctx do
+    [space, member] = Steps.given_space_with_member_exists(ctx, %{
+      person_name: "Mati Aharoni",
+      space_name: "Marketing",
+      access_level: Binding.full_access(),
+    })
+
+    ctx
+    |> Steps.visit_home()
+    |> Steps.visit_access_management(space.name)
+    |> Steps.demote_to_member(member)
+    |> Steps.assert_member_demoted(member)
+  end
 end

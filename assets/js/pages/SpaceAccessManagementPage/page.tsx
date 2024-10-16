@@ -161,6 +161,7 @@ function MemberMenu({ member }: { member: People.Person }) {
   return (
     <Menu testId={createTestId("member-menu", member!.fullName!)} size="medium">
       <PromoteToManagerMenuItem member={member} hidden={!editPerms} />
+      <DemoteToMemberMenuItem member={member} hidden={!editPerms} />
       <RemoveMemberMenuItem member={member} hidden={!editPerms} />
     </Menu>
   );
@@ -181,6 +182,25 @@ function PromoteToManagerMenuItem({ member, hidden }: { member: People.Person; h
   return (
     <MenuActionItem onClick={handleClick} testId="promote-to-manager" hidden={hidden}>
       Promote to manager
+    </MenuActionItem>
+  );
+}
+
+function DemoteToMemberMenuItem({ member, hidden }: { member: People.Person; hidden: boolean }) {
+  const { space } = useLoadedData();
+  const refresh = Pages.useRefresh();
+  const [edit] = useEditSpaceMembersPermissions();
+
+  if (member.accessLevel !== PermissionLevels.FULL_ACCESS) return null;
+
+  const handleClick = async () => {
+    await edit({ spaceId: space.id, members: [{ id: member.id, accessLevel: PermissionLevels.EDIT_ACCESS }] });
+    refresh();
+  };
+
+  return (
+    <MenuActionItem onClick={handleClick} testId="demote-to-member" hidden={hidden}>
+      Reassign to member
     </MenuActionItem>
   );
 }
