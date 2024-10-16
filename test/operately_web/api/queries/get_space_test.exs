@@ -88,6 +88,7 @@ defmodule OperatelyWeb.Api.Queries.GetSpaceTest do
         access_levels: nil,
         potential_subscribers: nil,
         notifications: [],
+        permissions: nil,
       }
     end
 
@@ -111,6 +112,7 @@ defmodule OperatelyWeb.Api.Queries.GetSpaceTest do
         access_levels: nil,
         potential_subscribers: nil,
         notifications: [],
+        permissions: nil,
       }
     end
 

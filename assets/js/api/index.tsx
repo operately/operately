@@ -618,7 +618,7 @@ export interface Discussion {
 }
 
 export interface EditMemberPermissionsInput {
-  id?: string | null;
+  id?: Id | null;
   accessLevel?: number | null;
 }
 
@@ -931,10 +931,27 @@ export interface Space {
   privateSpace?: boolean | null;
   icon?: string | null;
   color?: string | null;
+  permissions?: SpacePermissions | null;
   members?: Person[] | null;
   accessLevels?: AccessLevels | null;
   potentialSubscribers?: Subscriber[] | null;
   notifications?: Notification[] | null;
+}
+
+export interface SpacePermissions {
+  canCreateGoal?: boolean | null;
+  canCreateProject?: boolean | null;
+  canCommentOnDiscussions?: boolean | null;
+  canEdit?: boolean | null;
+  canEditDiscussions?: boolean | null;
+  canEditMembersPermissions?: boolean | null;
+  canEditPermissions?: boolean | null;
+  canJoin?: boolean | null;
+  canPostDiscussions?: boolean | null;
+  canRemoveMember?: boolean | null;
+  canView?: boolean | null;
+  canViewMessage?: boolean | null;
+  canAddMembers?: boolean | null;
 }
 
 export interface Subscriber {
@@ -1503,6 +1520,7 @@ export interface GetProjectsResult {
 
 export interface GetSpaceInput {
   id?: string | null;
+  includePermissions?: boolean | null;
   includeMembers?: boolean | null;
   includeAccessLevels?: boolean | null;
   includeMembersAccessLevels?: boolean | null;
@@ -1994,7 +2012,7 @@ export interface EditProjectTimelineResult {
 }
 
 export interface EditSpaceMembersPermissionsInput {
-  groupId?: string | null;
+  spaceId?: Id | null;
   members?: EditMemberPermissionsInput[] | null;
 }
 
