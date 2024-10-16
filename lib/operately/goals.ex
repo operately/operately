@@ -118,4 +118,13 @@ defmodule Operately.Goals do
     |> Update.changeset(attrs)
     |> Repo.update()
   end
+
+  def round_up(value, decimal_places \\ 2) do
+    multiplier = :math.pow(10, decimal_places)
+    value
+    |> Float.ceil()
+    |> Kernel.*(multiplier)
+    |> Float.ceil()
+    |> Kernel./(multiplier)
+  end
 end

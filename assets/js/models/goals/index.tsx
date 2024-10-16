@@ -43,3 +43,8 @@ export function targetProgressPercentage(target: Target): number {
     }
   }
 }
+
+export function roundUp(value, decimalPlaces = 2) {
+  const multiplier = Math.pow(10, decimalPlaces);
+  return Math.ceil(value * multiplier) / multiplier;
+}

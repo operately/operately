@@ -61,6 +61,10 @@ defmodule Operately.Demo.Goals do
       %{"id" => id, "value" => floor(t)}
     end)
 
+    updated_arr = round_up((arr_from + arr_to) / 2)
+
+    IO.puts("ARR from: #{arr_from}, to: #{arr_to}, updated to: #{updated_arr}")
+
     {:ok, _} = Operately.Operations.GoalCheckIn.run(goal.champion, goal, %{
       content: Operately.Demo.RichText.from_string(data.content),
       target_values: target_values,
