@@ -43,7 +43,7 @@ defmodule OperatelyWeb.Api.Queries.GetComments do
     from(c in Comment,
       join: retro in Operately.Projects.Retrospective, on: c.entity_id == retro.id,
       join: project in assoc(retro, :project), as: :project,
-      where: project.id == ^id and c.entity_type == :project_retrospective
+      where: retro.id == ^id and c.entity_type == :project_retrospective
     )
     |> preload_resources()
     |> filter_by_view_access(person.id, named_binding: :project)

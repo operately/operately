@@ -1,15 +1,13 @@
 import * as Pages from "@/components/Pages";
 import * as Discussions from "@/models/discussions";
-import * as Comments from "@/models/comments";
 
 interface LoaderResult {
   discussion: Discussions.Discussion;
-  comments: Comments.Comment[];
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
-  const [discussion, comments] = await Promise.all([
-    Discussions.getDiscussion({
+  return {
+    discussion: await Discussions.getDiscussion({
       id: params.id,
       includeAuthor: true,
       includeReactions: true,
@@ -18,15 +16,6 @@ export async function loader({ params }): Promise<LoaderResult> {
       includePotentialSubscribers: true,
       includeUnreadNotifications: true,
     }).then((d) => d.discussion!),
-    Comments.getComments({
-      entityId: params.id,
-      entityType: "message",
-    }).then((c) => c.comments!),
-  ]);
-
-  return {
-    discussion,
-    comments,
   };
 }
 
