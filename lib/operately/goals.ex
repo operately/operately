@@ -119,6 +119,8 @@ defmodule Operately.Goals do
     |> Repo.update()
   end
 
+  
+
   def round_up(value, decimal_places \\ 2) do
     multiplier = :math.pow(10, decimal_places)
     value
