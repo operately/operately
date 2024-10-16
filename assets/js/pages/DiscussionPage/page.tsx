@@ -13,10 +13,9 @@ import RichContent from "@/components/RichContent";
 import { TextSeparator } from "@/components/TextSeparator";
 import { Spacer } from "@/components/Spacer";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
-import { CommentSection, useForDiscussion } from "@/features/CommentSection";
+import { CommentSection, useComments } from "@/features/CommentSection";
 
 import { useLoadedData, useRefresh } from "./loader";
-import { useDiscussionCommentsChangeSignal } from "@/models/comments";
 import { useMe } from "@/contexts/CurrentUserContext";
 import { Paths, compareIds } from "@/routes/paths";
 import { CurrentSubscriptions } from "@/features/Subscriptions";
@@ -25,14 +24,13 @@ import { assertPresent } from "@/utils/assertions";
 
 export function Page() {
   const me = useMe()!;
-  const { discussion, comments } = useLoadedData();
+  const { discussion } = useLoadedData();
   const refresh = useRefresh();
-
-  const commentsForm = useForDiscussion(discussion, comments);
-  useDiscussionCommentsChangeSignal(refresh, { discussionId: discussion.id! });
 
   assertPresent(discussion.notifications, "Discussion notifications must be defined");
   useClearNotificationsOnLoad(discussion.notifications);
+
+  const commentsForm = useComments({ parent: discussion, parentType: "message" });
 
   return (
     <Pages.Page title={discussion.title!}>

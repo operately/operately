@@ -1,15 +1,13 @@
 import * as Pages from "@/components/Pages";
 import * as Projects from "@/models/projects";
-import * as Comments from "@/models/comments";
 
 interface LoaderResult {
   retrospective: Projects.ProjectRetrospective;
-  comments: Comments.Comment[];
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
-  const [retrospective, comments] = await Promise.all([
-    Projects.getProjectRetrospective({
+  return {
+    retrospective: await Projects.getProjectRetrospective({
       projectId: params.projectID,
       includeAuthor: true,
       includeProject: true,
@@ -19,15 +17,6 @@ export async function loader({ params }): Promise<LoaderResult> {
       includeSubscriptionsList: true,
       includeUnreadNotifications: true,
     }).then((data) => data.retrospective!),
-    Comments.getComments({
-      entityId: params.projectID,
-      entityType: "project_retrospective",
-    }).then((c) => c.comments!),
-  ]);
-
-  return {
-    retrospective,
-    comments,
   };
 }
 

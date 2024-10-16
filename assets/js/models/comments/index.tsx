@@ -3,6 +3,14 @@ import * as Time from "@/utils/time";
 
 type Comment = api.Comment;
 
+export type CommentParentType =
+  | "project_check_in"
+  | "comment_thread"
+  | "goal_update"
+  | "message"
+  | "milestone"
+  | "project_retrospective";
+
 export type { Comment };
 export { useCreateComment, useEditComment, useGetComments, getComments } from "@/api";
 export { useDiscussionCommentsChangeSignal } from "@/api/socket";

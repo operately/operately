@@ -5,8 +5,7 @@ import * as PageOptions from "@/components/PaperContainer/PageOptions";
 
 import { Paths } from "@/routes/paths";
 import { IconEdit } from "@tabler/icons-react";
-import { useForProjectRetrospective } from "@/features/CommentSection/useForProjectRetrospective";
-import { CommentSection } from "@/features/CommentSection";
+import { CommentSection, useComments } from "@/features/CommentSection";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
 import { AvatarWithName } from "@/components/Avatar/AvatarWithName";
@@ -110,15 +109,13 @@ function Reactions() {
 }
 
 function Comments() {
-  const { retrospective, comments } = useLoadedData();
-  const refresh = useRefresh();
-
-  const commentsForm = useForProjectRetrospective(retrospective, comments);
+  const { retrospective } = useLoadedData();
+  const commentsForm = useComments({ parent: retrospective, parentType: "project_retrospective" });
 
   return (
     <>
       <div className="border-t border-stroke-base mt-8" />
-      <CommentSection form={commentsForm} refresh={refresh} commentParentType="project_retrospective" />
+      <CommentSection form={commentsForm} refresh={() => {}} commentParentType="project_retrospective" />
     </>
   );
 }
