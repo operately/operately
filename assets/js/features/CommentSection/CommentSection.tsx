@@ -15,17 +15,12 @@ import { useBoolState } from "@/utils/useBoolState";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { useMe } from "@/contexts/CurrentUserContext";
 import { compareIds } from "@/routes/paths";
+import { CommentParentType } from "@/models/comments";
 
 interface CommentSectionProps {
   form: FormState;
   refresh: () => void;
-  commentParentType:
-    | "project_check_in"
-    | "comment_thread"
-    | "goal_update"
-    | "message"
-    | "milestone"
-    | "project_retrospective";
+  commentParentType: CommentParentType;
 }
 
 export function CommentSection(props: CommentSectionProps) {
@@ -36,7 +31,7 @@ export function CommentSection(props: CommentSectionProps) {
           if (item.type === "comment") {
             return (
               <Comment
-                key={index}
+                key={item.value.id}
                 comment={item.value}
                 form={props.form}
                 refresh={props.refresh}
