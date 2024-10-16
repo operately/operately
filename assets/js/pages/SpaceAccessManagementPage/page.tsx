@@ -99,6 +99,8 @@ function SpaceManagers() {
   const subtitle = "Managers have full access to resources in this space, including team and access management.";
   const managers = space.members.filter((member) => member.accessLevel === PermissionLevels.FULL_ACCESS);
 
+  if (managers.length === 0) return null;
+
   return (
     <Paper.Section title="Space Managers" subtitle={subtitle}>
       {managers.map((contrib) => (
@@ -113,11 +115,13 @@ function SpaceMembers() {
 
   assertPresent(space.members, "Space members must be present");
 
-  const managers = space.members.filter((member) => member.accessLevel !== PermissionLevels.FULL_ACCESS);
+  const members = space.members.filter((member) => member.accessLevel !== PermissionLevels.FULL_ACCESS);
+
+  if (members.length === 0) return null;
 
   return (
     <Paper.Section title="Members">
-      {managers.map((contrib) => (
+      {members.map((contrib) => (
         <Member member={contrib} key={contrib.id} />
       ))}
     </Paper.Section>
