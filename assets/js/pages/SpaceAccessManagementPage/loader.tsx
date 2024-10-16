@@ -13,6 +13,7 @@ interface LoaderResult {
 export async function loader({ params }): Promise<LoaderResult> {
   const space = await Spaces.getSpace({
     id: params.id,
+    includePermissions: true,
     includeMembersAccessLevels: true,
     includeAccessLevels: true,
     includePotentialSubscribers: true,

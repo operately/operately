@@ -21,6 +21,7 @@ defmodule Operately.Groups.Group do
     field :access_levels, :any, virtual: true
     field :potential_subscribers, :any, virtual: true
     field :notifications, :any, virtual: true, default: []
+    field :permissions, :any, virtual: true
 
     timestamps()
     soft_delete()
@@ -95,5 +96,9 @@ defmodule Operately.Groups.Group do
   def set_potential_subscribers(space = %__MODULE__{}) do
     subscribers = Operately.Notifications.Subscriber.from_space_members(space.members)
     Map.put(space, :potential_subscribers, subscribers)
+  end
+
+  def preload_permissions(space = %__MODULE__{}) do
+    Map.put(space, :permissions, Operately.Groups.Permissions.calculate_permissions(space.request_info.access_level))
   end
 end

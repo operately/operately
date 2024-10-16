@@ -17,6 +17,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Groups.Group do
       icon: space.icon,
       is_member: space.is_member,
       is_company_space: space.company.company_space_id == space.id,
+      permissions: OperatelyWeb.Api.Serializer.serialize(space.permissions),
       members: OperatelyWeb.Api.Serializer.serialize(space.members),
       access_levels: OperatelyWeb.Api.Serializer.serialize(space.access_levels, level: :full),
       potential_subscribers: OperatelyWeb.Api.Serializer.serialize(space.potential_subscribers),
