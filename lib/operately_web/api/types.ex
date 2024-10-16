@@ -278,6 +278,7 @@ defmodule OperatelyWeb.Api.Types do
     field :private_space, :boolean
     field :icon, :string
     field :color, :string
+    field :permissions, :space_permissions
     field :members, list_of(:person)
     field :access_levels, :access_levels
     field :potential_subscribers, list_of(:subscriber)
@@ -453,6 +454,22 @@ defmodule OperatelyWeb.Api.Types do
     field :can_pause, :boolean
     field :can_check_in, :boolean
     field :can_acknowledge_check_in, :boolean
+  end
+
+  object :space_permissions do
+    field :can_create_goal, :boolean
+    field :can_create_project, :boolean
+    field :can_comment_on_discussions, :boolean
+    field :can_edit, :boolean
+    field :can_edit_discussions, :boolean
+    field :can_edit_members_permissions, :boolean
+    field :can_edit_permissions, :boolean
+    field :can_join, :boolean
+    field :can_post_discussions, :boolean
+    field :can_remove_member, :boolean
+    field :can_view, :boolean
+    field :can_view_message, :boolean
+    field :can_add_members, :boolean
   end
 
   union :activity_data_union, types: [
@@ -1032,7 +1049,7 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :edit_member_permissions_input do
-    field :id, :string
+    field :id, :id
     field :access_level, :integer
   end
 

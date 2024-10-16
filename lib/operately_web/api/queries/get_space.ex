@@ -5,7 +5,8 @@ defmodule OperatelyWeb.Api.Queries.GetSpace do
   alias Operately.Groups.{Group, Permissions}
 
   inputs do
-    field :id, :string
+    field :id, :id
+    field :include_permissions, :boolean
     field :include_members, :boolean
     field :include_access_levels, :boolean
     field :include_members_access_levels, :boolean
@@ -20,7 +21,6 @@ defmodule OperatelyWeb.Api.Queries.GetSpace do
   def call(conn, inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:id, fn -> decode_id(inputs.id) end)
     |> run(:space, fn ctx -> load(ctx, inputs) end)
     |> run(:check_permissions, fn ctx -> Permissions.check(ctx.space.request_info.access_level, :can_view) end)
     |> run(:serialized, fn ctx -> {:ok, %{space: Serializer.serialize(ctx.space, level: :full)}} end)
@@ -38,7 +38,7 @@ defmodule OperatelyWeb.Api.Queries.GetSpace do
   end
 
   defp load(ctx, inputs) do
-    Group.get(ctx.me, id: ctx.id, company_id: ctx.me.company_id, opts: [
+    Group.get(ctx.me, id: inputs.id, company_id: ctx.me.company_id, opts: [
       preload: preload(inputs),
       after_load: after_load(ctx.me, inputs),
     ])
@@ -54,6 +54,7 @@ defmodule OperatelyWeb.Api.Queries.GetSpace do
 
   defp after_load(me, inputs) do
     Inputs.parse_includes(inputs, [
+      include_permissions: &Group.preload_permissions/1,
       include_access_levels: &Group.preload_access_levels/1,
       include_members_access_levels: &Group.preload_members_access_level/1,
       include_potential_subscribers: &Group.set_potential_subscribers/1,
