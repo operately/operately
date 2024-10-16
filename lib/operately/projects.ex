@@ -27,8 +27,21 @@ defmodule Operately.Projects do
   end
 
   def get_project_with_access_level(project_id, person_id) do
-    from(p in Project, as: :resource, where: p.id == ^project_id)
-    |> Fetch.get_resource_with_access_level(person_id)
+    project = Repo.get(Project, project_id)
+
+    if project do
+      access_level = Fetch.get_resource_with_access_level(person_id, project)
+
+      case access_level do
+        :no_access ->
+          {:error, "You don't have access to this project."}
+
+        _ ->
+          {:ok, project}
+      end
+    else
+      {:error, "Project not found."}
+    end
   end
 
   def get_check_in!(id) do

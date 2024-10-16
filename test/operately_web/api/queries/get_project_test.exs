@@ -343,6 +343,13 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
       assert length(res.project.milestones) == 1
       assert Enum.find(res.project.milestones, &(&1 == Serializer.serialize(ctx.milestone2)))
     end
+
+    test "returns 404 if project is not accessible", ctx do
+      project = create_project(ctx, company_access_level: Binding.no_access())
+
+      assert {404, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(project)})
+      assert res.message == "You don't have access to this project."
+    end
   end
 
   #
