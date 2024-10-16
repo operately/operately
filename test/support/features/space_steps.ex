@@ -223,4 +223,17 @@ defmodule Operately.Support.Features.SpaceSteps do
     ctx |> UI.assert_has(testid: "secret-space-tooltip")
   end
 
+  step :promote_to_manager, ctx, member do
+    ctx
+    |> UI.click(testid: UI.testid(["member", "menu", member.full_name]))
+    |> UI.click(testid: "promote-to-manager")
+  end
+
+  step :assert_member_promoted, ctx, member do
+    ctx
+    |> UI.find(UI.query(testid: "space-manager-section"), fn ctx ->
+      ctx |> UI.assert_text(member.full_name)
+    end)
+  end
+
 end

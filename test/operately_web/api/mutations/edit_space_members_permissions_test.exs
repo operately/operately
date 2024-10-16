@@ -130,7 +130,7 @@ defmodule OperatelyWeb.Api.Mutations.EditSpaceMembersPermissionsTest do
 
   defp request(conn, space, people) do
     mutation(conn, :edit_space_members_permissions, %{
-      group_id: Paths.space_id(space),
+      space_id: Paths.space_id(space),
       members: Enum.map(people, fn {p, level} ->
         %{
           id: Paths.person_id(p),
