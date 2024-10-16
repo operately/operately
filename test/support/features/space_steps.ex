@@ -46,7 +46,7 @@ defmodule Operately.Support.Features.SpaceSteps do
 
     Operately.Groups.add_members(ctx.person, space.id, [%{
       id: member.id,
-      access_level: Operately.Access.Binding.comment_access(),
+      access_level: attrs[:access_level] || Operately.Access.Binding.comment_access(),
     }])
 
     [space, member]
@@ -229,9 +229,22 @@ defmodule Operately.Support.Features.SpaceSteps do
     |> UI.click(testid: "promote-to-manager")
   end
 
+  step :demote_to_member, ctx, member do
+    ctx
+    |> UI.click(testid: UI.testid(["member", "menu", member.full_name]))
+    |> UI.click(testid: "demote-to-member")
+  end
+
   step :assert_member_promoted, ctx, member do
     ctx
     |> UI.find(UI.query(testid: "space-managers-section"), fn ctx ->
+      ctx |> UI.assert_text(member.full_name)
+    end)
+  end
+
+  step :assert_member_demoted, ctx, member do
+    ctx
+    |> UI.find(UI.query(testid: "members-section"), fn ctx ->
       ctx |> UI.assert_text(member.full_name)
     end)
   end
