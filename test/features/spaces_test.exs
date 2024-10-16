@@ -114,4 +114,17 @@ defmodule Operately.Features.SpacesTest do
     |> Steps.remove_member(member)
     |> Steps.assert_member_removed(member)
   end
+
+  feature "promoting member to space manager", ctx do
+    [space, member] = Steps.given_space_with_member_exists(ctx, %{
+      person_name: "Mati Aharoni",
+      space_name: "Marketing",
+    })
+
+    ctx
+    |> Steps.visit_home()
+    |> Steps.visit_access_management(space.name)
+    |> Steps.promote_to_manager(member)
+    |> Steps.assert_member_promoted(member)
+  end
 end

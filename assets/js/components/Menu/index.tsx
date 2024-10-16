@@ -17,6 +17,7 @@ interface MenuItemProps extends TestableElement {
   children: React.ReactNode;
   icon?: React.ComponentType<{ size: any }>;
   danger?: boolean;
+  hidden?: boolean;
 }
 
 interface MenuLinkItemProps extends MenuItemProps {
@@ -44,6 +45,8 @@ export function Menu(props: MenuProps) {
 }
 
 export function MenuLinkItem(props: MenuLinkItemProps) {
+  if (props.hidden) return null;
+
   return (
     <DropdownMenu.Item>
       <DivLink to={props.to} className={menuItemClassNames(props)} testId={props.testId}>
@@ -54,6 +57,8 @@ export function MenuLinkItem(props: MenuLinkItemProps) {
 }
 
 export function MenuActionItem(props: MenuActionItemProps) {
+  if (props.hidden) return null;
+
   return (
     <DropdownMenu.Item asChild>
       <div className={menuItemClassNames(props)} data-test-id={props.testId} onClick={props.onClick}>

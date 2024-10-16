@@ -135,7 +135,7 @@ defmodule Operately.Support.Features.SpaceSteps do
   end
 
   step :assert_member_removed, ctx, person do
-    ctx |> UI.refute_text(person.full_name, testid: "members-section")
+    ctx |> UI.refute_text(person.full_name)
   end
 
   step :assert_members_added_notification_sent, ctx, members do
@@ -221,6 +221,19 @@ defmodule Operately.Support.Features.SpaceSteps do
 
   step :assert_privacy_indicator_is_visible, ctx do
     ctx |> UI.assert_has(testid: "secret-space-tooltip")
+  end
+
+  step :promote_to_manager, ctx, member do
+    ctx
+    |> UI.click(testid: UI.testid(["member", "menu", member.full_name]))
+    |> UI.click(testid: "promote-to-manager")
+  end
+
+  step :assert_member_promoted, ctx, member do
+    ctx
+    |> UI.find(UI.query(testid: "space-managers-section"), fn ctx ->
+      ctx |> UI.assert_text(member.full_name)
+    end)
   end
 
 end

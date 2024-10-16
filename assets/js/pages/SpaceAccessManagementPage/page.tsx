@@ -18,7 +18,7 @@ import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
 import { createTestId } from "@/utils/testid";
 import { useLoadedData } from "./loader";
 import { assertPresent } from "@/utils/assertions";
-import { useRemoveGroupMember } from "@/models/spaces";
+import { useEditSpaceMembersPermissions, useRemoveGroupMember } from "@/models/spaces";
 
 import Avatar from "@/components/Avatar";
 
@@ -153,14 +153,39 @@ function MemberName({ member }: { member: People.Person }) {
 }
 
 function MemberMenu({ member }: { member: People.Person }) {
+  const { space } = useLoadedData();
+
+  const editPerms = space.permissions!.canEditMembersPermissions!;
+  if (!editPerms) return null;
+
   return (
     <Menu testId={createTestId("member-menu", member!.fullName!)} size="medium">
-      <RemoveMemberMenuItem member={member} />
+      <PromoteToManagerMenuItem member={member} hidden={!editPerms} />
+      <RemoveMemberMenuItem member={member} hidden={!editPerms} />
     </Menu>
   );
 }
 
-function RemoveMemberMenuItem({ member }: { member: People.Person }) {
+function PromoteToManagerMenuItem({ member, hidden }: { member: People.Person; hidden: boolean }) {
+  const { space } = useLoadedData();
+  const refresh = Pages.useRefresh();
+  const [edit] = useEditSpaceMembersPermissions();
+
+  if (member.accessLevel === PermissionLevels.FULL_ACCESS) return null;
+
+  const handleClick = async () => {
+    await edit({ spaceId: space.id, members: [{ id: member.id, accessLevel: PermissionLevels.FULL_ACCESS }] });
+    refresh();
+  };
+
+  return (
+    <MenuActionItem onClick={handleClick} testId="promote-to-manager" hidden={hidden}>
+      Promote to manager
+    </MenuActionItem>
+  );
+}
+
+function RemoveMemberMenuItem({ member, hidden }: { member: People.Person; hidden: boolean }) {
   const { space } = useLoadedData();
   const refresh = Pages.useRefresh();
   const [remove] = useRemoveGroupMember();
@@ -171,7 +196,7 @@ function RemoveMemberMenuItem({ member }: { member: People.Person }) {
   };
 
   return (
-    <MenuActionItem danger={true} onClick={handleClick} testId="remove-member">
+    <MenuActionItem danger={true} onClick={handleClick} testId="remove-member" hidden={hidden}>
       Remove from space
     </MenuActionItem>
   );
