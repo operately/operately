@@ -3,7 +3,7 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import * as Icons from "@tabler/icons-react";
 
 import classNames from "classnames";
-import { TestableElement } from "@/utils/testid";
+import { TestableElement, createTestId } from "@/utils/testid";
 import { DivLink } from "../Link";
 
 type Size = "small" | "medium" | "large" | "xlarge" | "xxlarge" | "xxxlarge";
@@ -32,6 +32,7 @@ interface SubMenuProps {
   label: string;
   icon?: React.ComponentType<{ size: any }>;
   children: React.ReactNode;
+  hidden?: boolean;
 }
 
 export function Menu(props: MenuProps) {
@@ -50,11 +51,13 @@ export function Menu(props: MenuProps) {
   );
 }
 
-export function SubMenu({ label, icon, children }: SubMenuProps) {
+export function SubMenu({ label, icon, children, hidden }: SubMenuProps) {
+  if (hidden) return null;
+
   return (
     <DropdownMenu.Sub>
       <DropdownMenu.SubTrigger asChild>
-        <div className={menuItemClass}>
+        <div className={menuItemClass} data-test-id={createTestId(label)}>
           <MenuItemIconAndTitle icon={icon}>{label}</MenuItemIconAndTitle>
           <Icons.IconChevronRight size={16} />
         </div>

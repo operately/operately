@@ -4,6 +4,7 @@ import { PermissionLevels } from "@/features/Permissions";
 import { joinStr } from "@/utils/strings";
 import classNames from "classnames";
 import { assertPresent } from "@/utils/assertions";
+import { TestableElement } from "@/utils/testid";
 
 // Public interface
 
@@ -14,25 +15,27 @@ export function ProjectAccessLevelBadge({ accessLevel }: { accessLevel: Permissi
   return <AccessBadge title={data.title} colors={data.colors} description={data.description.project} />;
 }
 
-export function SpaceAccessLevbelBadge({ accessLevel }: { accessLevel: PermissionLevels }) {
+export function SpaceAccessLevelBadge({ accessLevel }: { accessLevel: PermissionLevels }) {
   const data = permissionData[accessLevel];
   assertPresent(data, `Invalid access level: ${accessLevel}`);
 
-  return <AccessBadge title={data.title} colors={data.colors} description={data.description.space} />;
+  return (
+    <AccessBadge title={data.title} colors={data.colors} description={data.description.space} testId={data.testId} />
+  );
 }
 
 //
 // Private components and utilities
 //
 
-interface AccessBadgeProps {
+interface AccessBadgeProps extends TestableElement {
   title: string;
   colors: string;
   description: string;
 }
 
-function AccessBadge({ title, colors, description }: AccessBadgeProps) {
-  const badge = <Badge title={title} colors={colors} />;
+function AccessBadge({ title, colors, description, testId }: AccessBadgeProps) {
+  const badge = <Badge title={title} colors={colors} testId={testId} />;
   const tooltipContent = <TooltipContent title={title} description={description} />;
 
   return <Tooltip content={tooltipContent}>{badge}</Tooltip>;
@@ -47,10 +50,14 @@ function TooltipContent({ title, description }: { title: string; description: st
   );
 }
 
-function Badge({ title, colors }: { title: string; colors: string }) {
+function Badge({ title, colors, testId }: { title: string; colors: string; testId?: string }) {
   const className = classNames("text-xs font-semibold rounded-full px-2.5 py-1.5", "uppercase cursor-default", colors);
 
-  return <div className={className}>{title}</div>;
+  return (
+    <div className={className} data-test-id={testId}>
+      {title}
+    </div>
+  );
 }
 
 //
@@ -59,6 +66,7 @@ function Badge({ title, colors }: { title: string; colors: string }) {
 
 interface PermissionData {
   [level: number]: {
+    testId: string; // test id for the badge
     title: string; // title of the badge
     colors: string; // color of the badge
     description: {
@@ -70,6 +78,7 @@ interface PermissionData {
 
 const permissionData: PermissionData = {
   [PermissionLevels.FULL_ACCESS]: {
+    testId: "full-access-badge",
     title: "Full Access",
     colors: "bg-callout-warning text-callout-warning-message",
     description: {
@@ -83,6 +92,7 @@ const permissionData: PermissionData = {
   },
 
   [PermissionLevels.EDIT_ACCESS]: {
+    testId: "edit-access-badge",
     title: "Edit Access",
     colors: "bg-callout-info text-callout-info-message",
     description: {
@@ -98,6 +108,7 @@ const permissionData: PermissionData = {
   },
 
   [PermissionLevels.COMMENT_ACCESS]: {
+    testId: "comment-access-badge",
     title: "Comment Access",
     colors: "bg-callout-error text-callout-error-message",
     description: {
@@ -110,6 +121,7 @@ const permissionData: PermissionData = {
   },
 
   [PermissionLevels.VIEW_ACCESS]: {
+    testId: "view-access-badge",
     title: "View Access",
     colors: "bg-callout-success text-callout-success-message",
     description: {

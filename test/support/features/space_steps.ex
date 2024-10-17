@@ -249,4 +249,15 @@ defmodule Operately.Support.Features.SpaceSteps do
     end)
   end
 
+  step :change_access_level, ctx, %{member: member, access_level: access_level} do
+    ctx
+    |> UI.click(testid: UI.testid(["member", "menu", member.full_name]))
+    |> UI.click(testid: "change-access-level")
+    |> UI.click(testid: "#{access_level}-access")
+  end
+
+  step :assert_access_level_changed, ctx, access_level do
+    ctx |> UI.assert_has(testid: "#{access_level}-access-badge")
+  end
+
 end

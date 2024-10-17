@@ -11,8 +11,8 @@ import { AccessLevel } from "@/features/spaces";
 import { OtherPeople } from "./OtherPeople";
 import { BorderedRow } from "@/components/BorderedRow";
 import { PermissionLevels } from "@/features/Permissions";
-import { Menu, MenuActionItem } from "@/components/Menu";
-import { SpaceAccessLevbelBadge } from "@/components/Badges/AccessLevelBadges";
+import { Menu, MenuActionItem, SubMenu } from "@/components/Menu";
+import { SpaceAccessLevelBadge } from "@/components/Badges/AccessLevelBadges";
 import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
 
 import { createTestId } from "@/utils/testid";
@@ -136,7 +136,7 @@ function Member({ member }: { member: People.Person }) {
         <MemberName member={member} />
       </div>
       <div className="flex items-center gap-4">
-        <SpaceAccessLevbelBadge accessLevel={member.accessLevel!} />
+        <SpaceAccessLevelBadge accessLevel={member.accessLevel!} />
         <MemberMenu member={member} />
       </div>
     </BorderedRow>
@@ -156,12 +156,15 @@ function MemberMenu({ member }: { member: People.Person }) {
   const { space } = useLoadedData();
 
   const editPerms = space.permissions!.canEditMembersPermissions!;
+  const isManager = member.accessLevel === PermissionLevels.FULL_ACCESS;
+
   if (!editPerms) return null;
 
   return (
     <Menu testId={createTestId("member-menu", member!.fullName!)} size="medium">
       <PromoteToManagerMenuItem member={member} hidden={!editPerms} />
       <DemoteToMemberMenuItem member={member} hidden={!editPerms} />
+      <ChangeAccessLevelMenuItem member={member} hidden={!editPerms || isManager} />
       <RemoveMemberMenuItem member={member} hidden={!editPerms} />
     </Menu>
   );
@@ -219,5 +222,30 @@ function RemoveMemberMenuItem({ member, hidden }: { member: People.Person; hidde
     <MenuActionItem danger={true} onClick={handleClick} testId="remove-member" hidden={hidden}>
       Remove from space
     </MenuActionItem>
+  );
+}
+
+function ChangeAccessLevelMenuItem({ member, hidden }: { member: People.Person; hidden: boolean }) {
+  const { space } = useLoadedData();
+  const refresh = Pages.useRefresh();
+  const [edit] = useEditSpaceMembersPermissions();
+
+  const handleClick = async (accessLevel: number) => {
+    await edit({ spaceId: space.id, members: [{ id: member.id, accessLevel }] });
+    refresh();
+  };
+
+  return (
+    <SubMenu label="Change access level" hidden={hidden}>
+      <MenuActionItem testId="edit-access" onClick={() => handleClick(PermissionLevels.EDIT_ACCESS)}>
+        Edit access
+      </MenuActionItem>
+      <MenuActionItem testId="comment-access" onClick={() => handleClick(PermissionLevels.COMMENT_ACCESS)}>
+        Comment access
+      </MenuActionItem>
+      <MenuActionItem testId="view-access" onClick={() => handleClick(PermissionLevels.VIEW_ACCESS)}>
+        View access
+      </MenuActionItem>
+    </SubMenu>
   );
 }
