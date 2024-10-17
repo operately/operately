@@ -29,7 +29,7 @@ defmodule OperatelyWeb.Api.Queries.GetMeTest do
         companyRole: Atom.to_string(ctx.person.company_role),
         theme: "system",
         manager: nil,
-        show_perf_bar: false,
+        show_dev_bar: false,
       }
     end
 
@@ -52,7 +52,7 @@ defmodule OperatelyWeb.Api.Queries.GetMeTest do
         notify_about_assignments: me.notify_about_assignments,
         companyRole: Atom.to_string(me.company_role),
         theme: "system",
-        show_perf_bar: false,
+        show_dev_bar: false,
         manager: %{
           id: Paths.person_id(manager),
           full_name: manager.full_name,
@@ -78,7 +78,7 @@ defmodule OperatelyWeb.Api.Queries.GetMeTest do
         notify_on_mention: ctx.person.notify_on_mention,
         notify_about_assignments: ctx.person.notify_about_assignments,
         companyRole: Atom.to_string(ctx.person.company_role),
-        show_perf_bar: false,
+        show_dev_bar: false,
         theme: "system",
         manager: nil
       }

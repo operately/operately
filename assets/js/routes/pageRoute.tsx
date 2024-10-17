@@ -1,7 +1,7 @@
 import React from "react";
 
 import nprogress from "nprogress";
-import { setPerfData } from "@/features/PerfBar/usePerfBarData";
+import { setDevData } from "@/features/DevBar/useDevBarData";
 
 export function pageRoute(path: string, pageModule: any) {
   const Element = pageModule.Page;
@@ -19,7 +19,7 @@ function showProgress(path: string, pageName: string, loader: ({ params }: { par
     let samePage = req.request.url === document.URL;
 
     try {
-      setPerfData({ networkRequests: 0 });
+      setDevData({ networkRequests: 0 });
 
       const start = performance.now();
       if (!samePage) nprogress.start();
@@ -33,7 +33,7 @@ function showProgress(path: string, pageName: string, loader: ({ params }: { par
         console.log(`Execution time: ${end - start} ms`);
       }
 
-      setPerfData({ pageName: pageName, loadTime: end - start });
+      setDevData({ pageName: pageName, loadTime: end - start });
 
       return data;
     } catch (error) {
