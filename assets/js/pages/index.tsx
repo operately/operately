@@ -32,6 +32,7 @@ import * as GoalProgressUpdateNewPage from "./GoalProgressUpdateNewPage";
 import * as GoalProgressUpdatePage from "./GoalProgressUpdatePage";
 import * as GoalReopenPage from "./GoalReopenPage";
 import * as GoalSubgoalsPage from "./GoalSubgoalsPage";
+import * as GoalsAndProjectsPage from "./GoalsAndProjectsPage";
 import * as GoalsPage from "./GoalsPage";
 import * as JoinPage from "./JoinPage";
 import * as LobbyPage from "./LobbyPage";
@@ -234,6 +235,11 @@ export default {
     name: "GoalSubgoalsPage",
     loader: GoalSubgoalsPage.loader,
     Page: GoalSubgoalsPage.Page,
+  },
+  GoalsAndProjectsPage: {
+    name: "GoalsAndProjectsPage",
+    loader: GoalsAndProjectsPage.loader,
+    Page: GoalsAndProjectsPage.Page,
   },
   GoalsPage: {
     name: "GoalsPage",
