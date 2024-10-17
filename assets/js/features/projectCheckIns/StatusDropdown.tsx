@@ -35,7 +35,7 @@ export function StatusDropdown({ status, onStatusSelected, reviewer, error }: St
     },
   );
   const dropdownClassName = classNames(
-    "border border-surface-outline mt-1 bg-surface z-[100] divide-y divide-stroke-base rounded shadow-lg overflow-hidden",
+    "border border-surface-outline mt-1 bg-surface-base z-[100] divide-y divide-stroke-base rounded shadow-lg overflow-hidden",
   );
 
   const handleSelected = (status: string) => () => {

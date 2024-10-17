@@ -32,7 +32,7 @@ export function TimeframeSelector(props: TimeframeSelectorProps) {
 function TimeframeSelectorFormElement(props: TimeframeSelectorProps) {
   return (
     <Popover.Trigger asChild>
-      <div className="border border-surface-outline rounded-lg px-3 py-1.5 flex items-center gap-1 cursor-pointer bg-surface truncate">
+      <div className="border border-surface-outline rounded-lg px-3 py-1.5 flex items-center gap-1 cursor-pointer bg-surface-base truncate">
         <Icons.IconCalendar size={18} className="shrink-0" />
         <span className="truncate">{Timeframes.format(props.timeframe)}</span>
       </div>
@@ -45,7 +45,7 @@ function PopeverContent(props: TimeframeSelectorProps) {
     "z-[100] overflow-hidden",
     "border border-surface-outline",
     "rounded-lg shadow-xl",
-    "bg-surface",
+    "bg-surface-base",
     "flex flex-col items-start p-6",
   );
 

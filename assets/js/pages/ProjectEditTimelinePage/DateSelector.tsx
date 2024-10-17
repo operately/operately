@@ -20,7 +20,7 @@ export function DateSelector({ date, onChange, minDate, maxDate, placeholder = "
   const className = classnames(
     {
       "bg-surface-dimmed hover:bg-surface-accent": date,
-      "bg-surface hover:bg-surface-accent": !date,
+      "bg-surface-base hover:bg-surface-accent": !date,
       "border border-red-500": error,
     },
     "border border-surface-outline",
@@ -46,7 +46,10 @@ export function DateSelector({ date, onChange, minDate, maxDate, placeholder = "
       </Popover.Trigger>
 
       <Popover.Portal>
-        <Popover.Content className="bg-surface outline-red-400 border border-surface-outline z-[1000]" align="start">
+        <Popover.Content
+          className="bg-surface-base outline-red-400 border border-surface-outline z-[1000]"
+          align="start"
+        >
           <DatePicker
             inline
             selected={date}

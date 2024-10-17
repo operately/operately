@@ -26,7 +26,7 @@ export function DropdownMenu({ open, setOpen, trigger, options, testId }: Dropdo
 
       <Popover.Portal>
         <Popover.Content className={dropdownClassName} align="center" sideOffset={5}>
-          <div className="bg-surface px-1 py-1 flex flex-col gap-0.5">{options}</div>
+          <div className="bg-surface-base px-1 py-1 flex flex-col gap-0.5">{options}</div>
 
           <Popover.Arrow className="fill-surface-outline scale-150" />
         </Popover.Content>

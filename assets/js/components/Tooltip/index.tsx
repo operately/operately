@@ -15,7 +15,7 @@ export function Tooltip({ content, delayDuration, children, testId }: TextToolti
   const mode = useColorMode();
 
   const className = classNames(
-    "bg-surface rounded-lg",
+    "bg-surface-base rounded-lg",
     "py-4 px-5",
     "text-content-accent",
     "font-medium",
@@ -27,7 +27,7 @@ export function Tooltip({ content, delayDuration, children, testId }: TextToolti
   );
 
   const arrowStyle = {
-    fill: mode === "light" ? "var(--color-surface)" : "var(--color-stroke-base)",
+    fill: mode === "light" ? "var(--color-surface-base)" : "var(--color-stroke-base)",
   };
 
   return (

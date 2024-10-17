@@ -312,7 +312,7 @@ function ProjectLastCheckInDateWithPopover({ project }: { project: Projects.Proj
         align="start"
         className="z-[1000] relative w-[550px]"
       >
-        <div className="bg-surface rounded border border-surface-outline shadow-xl">
+        <div className="bg-surface-base rounded border border-surface-outline shadow-xl">
           <div className="flex items-center justify-between px-4 pt-4 text-sm">
             <div className="uppercase font-bold">Last Check-in</div>
 
@@ -334,7 +334,7 @@ function ProjectLastCheckInDateWithPopover({ project }: { project: Projects.Proj
           </div>
         </div>
 
-        <Popover.Arrow className="bg-surface" />
+        <Popover.Arrow className="bg-surface-base" />
       </Popover.Content>
     </Popover.Root>
   );
@@ -372,7 +372,7 @@ function GoalLastCheckInDateWithPopover({ goal }: { goal: Goals.Goal }) {
         align="start"
         className="z-[1000] relative w-[550px]"
       >
-        <div className="bg-surface rounded border border-surface-outline shadow-xl">
+        <div className="bg-surface-base rounded border border-surface-outline shadow-xl">
           <div className="flex items-center justify-between px-4 pt-4 text-sm">
             <div className="uppercase font-bold">Last Check-in</div>
 
@@ -391,7 +391,7 @@ function GoalLastCheckInDateWithPopover({ goal }: { goal: Goals.Goal }) {
           </div>
         </div>
 
-        <Popover.Arrow className="bg-surface" />
+        <Popover.Arrow className="bg-surface-base" />
       </Popover.Content>
     </Popover.Root>
   );
@@ -422,7 +422,7 @@ function GoalProgress({ node }: { node: GoalNode }) {
         align="start"
         className="z-[1000] relative w-[550px]"
       >
-        <div className="bg-surface rounded border border-surface-outline shadow-xl">
+        <div className="bg-surface-base rounded border border-surface-outline shadow-xl">
           <div className="font-bold px-4 pt-4 flex items-center justify-between">
             <div className="font-bold">Goal Progress</div>
             <div className="text-accent-1 font-extrabold">{Math.round(node.progress)}% Complete</div>
@@ -447,7 +447,7 @@ function GoalProgress({ node }: { node: GoalNode }) {
             )}
           </div>
         </div>
-        <Popover.Arrow className="bg-surface" />
+        <Popover.Arrow className="bg-surface-base" />
       </Popover.Content>
     </Popover.Root>
   );
@@ -505,7 +505,7 @@ function ProjectProgress({ node }: { node: ProjectNode }) {
         align="start"
         className="z-[1000] relative w-[550px]"
       >
-        <div className="bg-surface rounded border border-surface-outline shadow-xl">
+        <div className="bg-surface-base rounded border border-surface-outline shadow-xl">
           <div className="font-bold p-4 flex items-center justify-between">
             <div className="font-bold">Project Progress</div>
             <div className="text-accent-1 font-extrabold">{progress ? Math.round(progress) : 0}% Complete</div>
@@ -514,7 +514,7 @@ function ProjectProgress({ node }: { node: ProjectNode }) {
           <PendingMilestones pending={pending} />
           <DoneMilestones done={done} />
         </div>
-        <Popover.Arrow className="bg-surface" />
+        <Popover.Arrow className="bg-surface-base" />
       </Popover.Content>
     </Popover.Root>
   );

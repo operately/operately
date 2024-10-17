@@ -195,7 +195,7 @@ function Modal({ isOpen, title, children }: { isOpen: boolean; title: string; ch
           borderRadius: "8px",
           overflow: "scroll-y",
           bottom: "auto",
-          backgroundColor: "var(--color-surface)",
+          backgroundColor: "var(--color-surface-base)",
           border: "1px solid var(--color-surface-outline)",
           boxShadow: "0px 0px 30px 0px rgba(0,0,0,0.4)",
         },

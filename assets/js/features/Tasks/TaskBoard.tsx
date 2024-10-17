@@ -187,14 +187,14 @@ function TaskItem({
     <div className="w-full" ref={ref}>
       <div className="my-1" style={isDragging ? {} : style} data-test-id={testId}>
         <DivLink
-          className="text-sm bg-surface rounded p-2 border border-stroke-base flex items-start justify-between cursor-pointer"
+          className="text-sm bg-surface-base rounded p-2 border border-stroke-base flex items-start justify-between cursor-pointer"
           to={Paths.taskPath(task.id!)}
         >
           <div className="font-medium">{task.name}</div>
 
           <div className="text-sm text-content-dimmed flex items-center -space-x-2">
             {task.assignees!.map((a) => (
-              <div className="border border-surface rounded-full flex items-center" key={a.id}>
+              <div className="border border-surface-base rounded-full flex items-center" key={a.id}>
                 <Avatar key={a.id} person={a} size={20} />
               </div>
             ))}

@@ -67,7 +67,7 @@ export function LinkEditForm({ editor }): JSX.Element {
             className={classNames(
               "flex-1 px-2 py-1 border border-surface-outline",
               "rounded-lg text-sm focus:outline-none focus:ring-0",
-              "text-content-accent bg-surface",
+              "text-content-accent bg-surface-base",
               {
                 "border-red-400": error,
               },

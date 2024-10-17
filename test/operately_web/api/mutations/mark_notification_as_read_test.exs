@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.MarkNotificationsAsReadTest do
+defmodule OperatelyWeb.Api.Mutations.MarkNotificationAsReadTest do
   use OperatelyWeb.TurboCase
 
   import Operately.ActivitiesFixtures

@@ -222,14 +222,14 @@ function MilestoneForm({ form, id, initialTitle, initialDueDate, initialDescript
   }, [editor, title, dueDate]);
 
   return (
-    <div className="border border-surface-outline rounded bg-surface p-3 shadow-xl">
+    <div className="border border-surface-outline rounded bg-surface-base p-3 shadow-xl">
       <div className="text-xs uppercase tracking-wide mb-1 mt-2">Title</div>
       <div className="">
         <input
           autoFocus
           type="text"
           className={classNames(
-            "w-full bg-surface px-2 py-1 outline-none border border-stroke-base ring-0 placeholder-content-dimmed",
+            "w-full bg-surface-base px-2 py-1 outline-none border border-stroke-base ring-0 placeholder-content-dimmed",
             {
               "border-red-500": errors.includes("title"),
             },
