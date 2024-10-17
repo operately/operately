@@ -37,7 +37,7 @@ export function Page() {
   return (
     <Pages.Page title={space.name!}>
       <Paper.Root size="large">
-        <Paper.Body minHeight="500px" backgroundColor="bg-surface">
+        <Paper.Body minHeight="500px" backgroundColor="bg-surface-base">
           <SpacePageNavigation space={space} activeTab="projects" />
 
           <div className="flex items-center justify-between mb-8">

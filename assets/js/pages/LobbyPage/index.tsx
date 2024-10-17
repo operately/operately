@@ -53,7 +53,7 @@ function CompanyCard({ company }: { company: Api.Company }) {
   const className = classnames(
     "cursor-pointer",
     "rounded-lg",
-    "bg-surface",
+    "bg-surface-base",
     "px-4 py-3 w-64",
     "border border-surface-outline",
     "relative",

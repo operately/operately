@@ -11,7 +11,7 @@ interface FormTitleInputProps {
 
 export function FormTitleInput({ value, onChange, error, testId }: FormTitleInputProps) {
   const className = classnames(
-    "bg-surface",
+    "bg-surface-base",
     "text-3xl",
     "font-semibold",
     "border-none",
