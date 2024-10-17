@@ -69,16 +69,16 @@ function asyncSelectClassNames(error: boolean) {
   return {
     control: ({ isFocused }) => {
       if (error) {
-        return "bg-surface placeholder-content-subtle border border-red-500 rounded-lg px-3";
+        return "bg-surface-base placeholder-content-subtle border border-red-500 rounded-lg px-3";
       }
 
       if (isFocused) {
-        return "bg-surface placeholder-content-subtle border-2 border-blue-600 rounded-lg px-3";
+        return "bg-surface-base placeholder-content-subtle border-2 border-blue-600 rounded-lg px-3";
       }
 
-      return "bg-surface placeholder-content-subtle border border-surface-outline rounded-lg px-3";
+      return "bg-surface-base placeholder-content-subtle border border-surface-outline rounded-lg px-3";
     },
-    menu: () => "bg-surface text-content-accent border border-surface-outline rounded-lg mt-1 overflow-hidden",
+    menu: () => "bg-surface-base text-content-accent border border-surface-outline rounded-lg mt-1 overflow-hidden",
     input: () => "placeholder-content-subtle focus:ring-0 outline-none",
     placeholder: () => "truncate",
     option: ({ isFocused, data }) => {

@@ -31,7 +31,7 @@ export function Tab({ id, title, linkTo }: { title: string; linkTo: string; id: 
   const { activeTab } = React.useContext(Context);
   const isActive = activeTab === id;
 
-  const className = classNames("border-surface-outline rounded-t px-4 py-1 -mb-px cursor-pointer bg-surface", {
+  const className = classNames("border-surface-outline rounded-t px-4 py-1 -mb-px cursor-pointer bg-surface-base", {
     "border-x border-t font-medium": isActive,
     border: !isActive,
     "hover:text-content": !isActive,

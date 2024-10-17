@@ -12,7 +12,7 @@ export function Review() {
   return (
     <DivLink
       to={Paths.reviewPath()}
-      className="font-semibold flex items-center gap-1 cursor-pointer group hover:bg-base-accent px-1.5 py-0.5 rounded relative"
+      className="font-semibold flex items-center gap-1 cursor-pointer group hover:bg-surface-bg-highlight px-1.5 py-0.5 rounded relative"
       testId="review-link"
     >
       <IconCoffee size={20} stroke={2} className="mb-[3px]" />

@@ -121,7 +121,7 @@ const menuContentClass = classNames(
   "relative rounded-md mt-1 z-10",
   "py-2 shadow-lg ring-1 transition ring-surface-outline",
   "focus:outline-none",
-  "bg-surface",
+  "bg-surface-base",
   "animateMenuSlideDown",
 );
 

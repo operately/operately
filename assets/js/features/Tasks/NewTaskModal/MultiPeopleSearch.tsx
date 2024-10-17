@@ -112,7 +112,7 @@ export function MultiPeopleSearch(props: MultiPeopleSearchProps) {
         />
 
         <div className="absolute flex items-center justify-center z-[1000]" style={{ top: "30px", left: 0 }}>
-          <div className="flex flex-col rounded-lg border border-stroke-base overflow-hidden shadow-lg bg-surface">
+          <div className="flex flex-col rounded-lg border border-stroke-base overflow-hidden shadow-lg bg-surface-base">
             {searchTerm.length >= 2 && people.length === 0 && <div className="p-1 px-2">No results</div>}
             {searchTerm.length >= 2 &&
               people.length > 0 &&
@@ -162,7 +162,7 @@ function FormField({ children, visuals = "regular" }: { children: React.ReactNod
       <div
         className={classNames(
           "flex items-center gap-2 flex-wrap",
-          "w-full bg-surface text-content-accent placeholder-content-subtle border rounded-lg px-3 py-1.5",
+          "w-full bg-surface-base text-content-accent placeholder-content-subtle border rounded-lg px-3 py-1.5",
           "border-surface-outline",
         )}
         children={children}

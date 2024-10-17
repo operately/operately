@@ -35,7 +35,7 @@ function PersonCard({ person }: { person: Person }) {
   const testId = "person-" + person.id!;
 
   return (
-    <div className="bg-surface rounded shadow p-4 border border-stroke-base">
+    <div className="bg-surface-base rounded shadow p-4 border border-stroke-base">
       <div className="flex items-start gap-4">
         <Avatar person={person} size={40} />
 

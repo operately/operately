@@ -8,10 +8,9 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        "base": "var(--color-base)",
-        "base-accent": "var(--color-base-accent)",
-
-        "surface": "var(--color-surface)",
+        "surface-bg": "var(--color-surface-bg)",
+        "surface-bg-highlight": "var(--color-surface-bg-highlight)",
+        "surface-base": "var(--color-surface-base)",
         "surface-dimmed": "var(--color-surface-dimmed)",
         "surface-outline": "var(--color-surface-outline)",
         "surface-accent": "var(--color-surface-accent)",

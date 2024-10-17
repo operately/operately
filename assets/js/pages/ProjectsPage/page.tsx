@@ -15,7 +15,7 @@ export function Page() {
   return (
     <Pages.Page title={"Projects"}>
       <Paper.Root size="large">
-        <Paper.Body minHeight="500px" backgroundColor="bg-surface">
+        <Paper.Body minHeight="500px" backgroundColor="bg-surface-base">
           <Filters />
           <Title />
 
@@ -67,7 +67,7 @@ function Filters() {
 function FilterButton({ onClick, children, active }) {
   const className = classNames(
     "px-3 py-1 text-sm font-medium rounded-full",
-    active ? "bg-surface cursor-pointer" : "bg-transparent cursor-pointer text-white-1",
+    active ? "bg-surface-base cursor-pointer" : "bg-transparent cursor-pointer text-white-1",
   );
 
   return (
