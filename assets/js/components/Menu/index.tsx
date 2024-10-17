@@ -28,6 +28,12 @@ interface MenuActionItemProps extends MenuItemProps {
   onClick: () => void;
 }
 
+interface SubMenuProps {
+  label: string;
+  icon?: React.ComponentType<{ size: any }>;
+  children: React.ReactNode;
+}
+
 export function Menu(props: MenuProps) {
   return (
     <DropdownMenu.Root>
@@ -41,6 +47,25 @@ export function Menu(props: MenuProps) {
         </DropdownMenu.Content>
       </DropdownMenu.Portal>
     </DropdownMenu.Root>
+  );
+}
+
+export function SubMenu({ label, icon, children }: SubMenuProps) {
+  return (
+    <DropdownMenu.Sub>
+      <DropdownMenu.SubTrigger asChild>
+        <div className={menuItemClass}>
+          <MenuItemIconAndTitle icon={icon}>{label}</MenuItemIconAndTitle>
+          <Icons.IconChevronRight size={16} />
+        </div>
+      </DropdownMenu.SubTrigger>
+
+      <DropdownMenu.Portal>
+        <DropdownMenu.SubContent className={menuContentClass} style={menuContentStyle()}>
+          {children}
+        </DropdownMenu.SubContent>
+      </DropdownMenu.Portal>
+    </DropdownMenu.Sub>
   );
 }
 
@@ -90,11 +115,11 @@ function menuContentStyle(size?: Size) {
 }
 
 const menuContentClass = classNames(
-  "absolute z-10 rounded-md mt-1",
+  "relative rounded-md mt-1 z-10",
   "py-2 shadow-lg ring-1 transition ring-surface-outline",
   "focus:outline-none",
   "bg-surface",
-  "animate-menu-slide-down",
+  "animateMenuSlideDown",
 );
 
 const menuTriggerClass = classNames(
@@ -114,7 +139,7 @@ function MenuItemIconAndTitle({ icon, children }) {
   return (
     <>
       {icon && <div className="shrink-0">{React.createElement(icon, { size: 20 })}</div>}
-      <div className="break-keep">{children}</div>
+      <div className="break-keep flex-1">{children}</div>
     </>
   );
 }
