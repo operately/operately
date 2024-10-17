@@ -13,7 +13,7 @@ import { Review } from "./Review";
 import { CompanyDropdown } from "./CompanyDropdown";
 import { NewDropdown } from "./NewDropdown";
 
-import { PerfBar } from "@/features/PerfBar";
+import { DevBar } from "@/features/DevBar";
 import { Paths } from "@/routes/paths";
 
 function NavigationContainer({ children }) {
@@ -96,7 +96,7 @@ export default function DefaultLayout() {
       <div className="flex-1 overflow-y-auto" ref={outletDiv}>
         <Outlet />
       </div>
-      <PerfBar />
+      <DevBar />
     </div>
   );
 }

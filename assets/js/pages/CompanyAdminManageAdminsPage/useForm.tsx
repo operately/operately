@@ -41,10 +41,10 @@ function useRemoveAdmin() {
 function useAddAdmins() {
   const refresh = useRefresh();
 
-  const [remove] = Companies.useAddCompanyAdmins();
+  const [add] = Companies.useAddCompanyAdmins();
 
   return React.useCallback(async (peopleIds: string[]) => {
-    await remove({ peopleIds });
+    await add({ peopleIds });
     refresh();
   }, []);
 }

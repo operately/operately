@@ -6,19 +6,21 @@
 
 import React from "react";
 
-interface PerfBarData {
+interface DevBarData {
   pageName: string;
   loadTime: number;
   networkRequests: number;
 }
 
-var data: PerfBarData = {
+var data: DevBarData = {
   pageName: "",
   loadTime: 0,
   networkRequests: 0,
 };
 
-export function usePerfBarData() {
+const EVENT_NAME = "devbar-update";
+
+export function useDevBarData() {
   const [pageName, setPageName] = React.useState(data.pageName);
   const [loadTime, setLoadTime] = React.useState(data.loadTime);
   const [networkRequests, setNetworkRequests] = React.useState(data.networkRequests);
@@ -30,11 +32,8 @@ export function usePerfBarData() {
       setNetworkRequests(data.networkRequests);
     }
 
-    window.addEventListener("perfbar-update", updateData);
-
-    return () => {
-      window.removeEventListener("perfbar-update", updateData);
-    };
+    window.addEventListener(EVENT_NAME, updateData);
+    return () => window.removeEventListener(EVENT_NAME, updateData);
   }, []);
 
   return {
@@ -44,8 +43,7 @@ export function usePerfBarData() {
   };
 }
 
-export function setPerfData(newData: Partial<PerfBarData>) {
+export function setDevData(newData: Partial<DevBarData>) {
   Object.assign(data, newData);
-
-  window.dispatchEvent(new Event("perfbar-update"));
+  window.dispatchEvent(new Event(EVENT_NAME));
 }

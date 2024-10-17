@@ -3,7 +3,7 @@ defmodule Operately.Operations.CompanyAdminAdding do
   alias Operately.{Repo, Access, People, Activities}
   alias Operately.People.Person
 
-  def run(%Person{company_role: :admin} = admin, ids) do
+  def run(admin, ids) do
     Multi.new()
     |> update_people(ids)
     |> Multi.run(:admins_group, fn _, _ ->

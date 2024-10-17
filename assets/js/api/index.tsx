@@ -769,7 +769,7 @@ export interface Person {
   accessLevel?: number | null;
   hasOpenInvitation?: boolean | null;
   invitation?: Invitation | null;
-  showPerfBar?: boolean | null;
+  showDevBar?: boolean | null;
 }
 
 export interface Project {
@@ -1519,7 +1519,7 @@ export interface GetProjectsResult {
 }
 
 export interface GetSpaceInput {
-  id?: string | null;
+  id?: Id | null;
   includePermissions?: boolean | null;
   includeMembers?: boolean | null;
   includeAccessLevels?: boolean | null;
