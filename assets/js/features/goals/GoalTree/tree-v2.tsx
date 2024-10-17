@@ -5,7 +5,7 @@ import { GhostButton } from "@/components/Buttons";
 
 import { useTreeContext, TreeContextProvider, TreeContextProviderProps } from "./treeContext";
 import { useExpandable } from "./context/Expandable";
-import { Node } from "./tree";
+import { GoalNode, Node } from "./tree";
 import { NodeIcon } from "./components/NodeIcon";
 import { NodeName } from "./components/NodeName";
 
@@ -24,9 +24,11 @@ function GoalTreeRoots() {
     <div>
       <Controls />
 
-      {context.tree.map((root) => (
-        <NodeView key={root.id} node={root} />
-      ))}
+      <div className="border-b border-surface-outline">
+        {context.tree.map((root) => (
+          <NodeView key={root.id} node={root} />
+        ))}
+      </div>
     </div>
   );
 }
@@ -51,14 +53,15 @@ function NodeView({ node }: { node: Node }) {
 
 function NodeHeader({ node }: { node: Node }) {
   return (
-    <div className="border-t last:border-b border-surface-outline py-3">
+    <div className="border-t border-surface-outline py-3">
       <div
-        className="inline-flex items-center gap-1.5 truncate flex-1 group pr-2"
+        className="inline-flex items-center gap-1 truncate flex-1 group pr-2"
         style={{ paddingLeft: node.depth * 30 }}
       >
         <NodeExpandCollapseToggle node={node} />
         <NodeIcon node={node} />
         <NodeName node={node} />
+        {node.type === "goal" && <GoalProgressBar node={node as GoalNode} />}
       </div>
     </div>
   );
@@ -82,4 +85,15 @@ function NodeExpandCollapseToggle({ node }: { node: Node }) {
   const ChevronIcon = expanded[node.id] ? IconChevronDown : IconChevronRight;
 
   return <ChevronIcon size={size} className="cursor-pointer" onClick={handleClick} />;
+}
+
+function GoalProgressBar({ node }: { node: GoalNode }) {
+  return (
+    <div className={"ml-2 w-24 h-2.5 bg-surface-outline rounded relative"}>
+      <div
+        className="bg-accent-1 rounded absolute top-0 bottom-0 left-0"
+        style={{ width: `${node.goal.progressPercentage}%` }}
+      />
+    </div>
+  );
 }
