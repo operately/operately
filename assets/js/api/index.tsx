@@ -1508,6 +1508,7 @@ export interface GetProjectsInput {
   includeContributors?: boolean | null;
   includeLastCheckIn?: boolean | null;
   includeChampion?: boolean | null;
+  includeReviewer?: boolean | null;
   includeGoal?: boolean | null;
   includeArchived?: boolean | null;
   includePrivacy?: boolean | null;
@@ -1624,7 +1625,7 @@ export interface AddCompanyResult {
 }
 
 export interface AddCompanyAdminsInput {
-  peopleIds?: string[] | null;
+  peopleIds?: Id[] | null;
 }
 
 export interface AddCompanyAdminsResult {}
@@ -2140,7 +2141,7 @@ export interface PostProjectCheckInResult {
 }
 
 export interface RemoveCompanyAdminInput {
-  personId?: string | null;
+  personId?: Id | null;
 }
 
 export interface RemoveCompanyAdminResult {

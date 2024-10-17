@@ -5,13 +5,14 @@ import { GhostButton } from "@/components/Buttons";
 import { MiniPieChart } from "@/components/MiniPieChart";
 import { assertPresent } from "@/utils/assertions";
 import { includesId } from "@/routes/paths";
+import { ProgressBar } from "@/components/ProgressBar";
 
 import { useTreeContext, TreeContextProvider, TreeContextProviderProps } from "./treeContext";
 import { GoalNode, Node, ProjectNode } from "./tree";
 import { useExpandable } from "./context/Expandable";
 import { NodeIcon } from "./components/NodeIcon";
 import { NodeName } from "./components/NodeName";
-import { ProgressBar } from "@/components/ProgressBar";
+import ProjectDetails from "./components/ProjectDetails";
 
 export function GoalTree(props: TreeContextProviderProps) {
   return (
@@ -58,18 +59,17 @@ function NodeView({ node }: { node: Node }) {
 function NodeHeader({ node }: { node: Node }) {
   return (
     <div className="border-t border-surface-outline py-3">
-      <div
-        className="inline-flex items-center gap-1 truncate flex-1 group pr-2"
-        style={{ paddingLeft: node.depth * 30 }}
-      >
-        <NodeExpandCollapseToggle node={node} />
-        <NodeIcon node={node} />
-        <NodeName node={node} />
-        {node.type === "goal" && <GoalProgressBar node={node as GoalNode} />}
-        {node.type == "goal" && <ExpandGoalSuccessConditions node={node as GoalNode} />}
-      </div>
+      <div style={{ paddingLeft: node.depth * 30 }}>
+        <div className="inline-flex items-center gap-1 truncate flex-1 group pr-2">
+          <NodeExpandCollapseToggle node={node} />
+          <NodeIcon node={node} />
+          <NodeName node={node} />
+          {node.type === "goal" && <GoalProgressBar node={node as GoalNode} />}
+          {node.type == "goal" && <ExpandGoalSuccessConditions node={node as GoalNode} />}
+        </div>
 
-      <ResourceDetails node={node} />
+        <ResourceDetails node={node} />
+      </div>
     </div>
   );
 }
@@ -88,10 +88,9 @@ function NodeExpandCollapseToggle({ node }: { node: Node }) {
   if (!node.hasChildren) return <></>;
 
   const handleClick = () => toggleExpanded(node.id);
-  const size = 16;
   const ChevronIcon = expanded[node.id] ? IconChevronDown : IconChevronRight;
 
-  return <ChevronIcon size={size} className="cursor-pointer" onClick={handleClick} />;
+  return <ChevronIcon size={16} className="cursor-pointer" onClick={handleClick} />;
 }
 
 function GoalProgressBar({ node }: { node: GoalNode }) {
@@ -111,7 +110,7 @@ function ResourceDetails({ node }: { node: Node }) {
 
 function GoalDetails({ node }: { node: GoalNode }) {
   return (
-    <div>
+    <div className="pl-[42px]">
       <GoalSuccessConditions node={node} />
     </div>
   );
@@ -141,7 +140,7 @@ function GoalSuccessConditions({ node }: { node: GoalNode }) {
   if (!includesId(goalExpanded, node.goal.id)) return <></>;
 
   return (
-    <div style={{ paddingLeft: node.depth * 30 + 42 }}>
+    <div>
       {node.goal.targets.map((t) => {
         const total = t.to! - t.from!;
         const completed = t.value! - t.from!;
@@ -155,8 +154,4 @@ function GoalSuccessConditions({ node }: { node: GoalNode }) {
       })}
     </div>
   );
-}
-
-function ProjectDetails({}: { node: ProjectNode }) {
-  return <></>;
 }

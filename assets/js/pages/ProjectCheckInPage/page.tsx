@@ -7,14 +7,14 @@ import * as api from "@/api";
 
 import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
-import RichContent from "@/components/RichContent";
 
 import { TextSeparator } from "@/components/TextSeparator";
 import { Paths, compareIds } from "@/routes/paths";
 import { AckCTA } from "./AckCTA";
 
 import { Spacer } from "@/components/Spacer";
-import { Status } from "@/features/projectCheckIns/Status";
+import { StatusSection } from "@/features/projectCheckIns/StatusSection";
+import { DescriptionSection } from "@/features/projectCheckIns/DescriptionSection";
 
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { CommentSection, useForProjectCheckIn } from "@/features/CommentSection";
@@ -30,6 +30,8 @@ export function Page() {
   const refresh = useRefresh();
 
   assertPresent(checkIn.notifications, "Check-in notifications must be defined");
+  assertPresent(checkIn.project?.reviewer, "project and project reviewer must be present in checkIn");
+
   useClearNotificationsOnLoad(checkIn.notifications);
 
   return (
@@ -40,8 +42,8 @@ export function Page() {
         <Paper.Body>
           <Options />
           <Title />
-          <StatusSection />
-          <DescriptionSection />
+          <StatusSection checkIn={checkIn} reviewer={checkIn.project.reviewer} />
+          <DescriptionSection checkIn={checkIn} />
           <AckCTA />
 
           <Spacer size={4} />
@@ -129,34 +131,6 @@ function Acknowledgement() {
   } else {
     return <span className="flex items-center gap-1">Not yet acknowledged</span>;
   }
-}
-
-function StatusSection() {
-  const { checkIn } = useLoadedData();
-
-  return (
-    <div className="my-8">
-      <div className="text-lg font-bold mx-auto">1. How's the project going?</div>
-
-      <div className="flex flex-col gap-2 mt-2 border border-stroke-base rounded-lg p-2">
-        <Status status={checkIn.status!} reviewer={checkIn.project!.reviewer!} />
-      </div>
-    </div>
-  );
-}
-
-function DescriptionSection() {
-  const { checkIn } = useLoadedData();
-
-  return (
-    <div className="my-8">
-      <div className="text-lg font-bold mx-auto">2. What's new since the last check-in?</div>
-
-      <div className="mt-2 border border-stroke-base rounded p-4">
-        <RichContent jsonContent={checkIn.description!} className="text-lg" />
-      </div>
-    </div>
-  );
 }
 
 function Options() {
