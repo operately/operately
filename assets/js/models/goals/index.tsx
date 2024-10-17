@@ -2,7 +2,8 @@ import * as api from "@/api";
 
 export type Goal = api.Goal;
 export type Target = api.Target;
-
+//as
+//bc
 export {
   getGoal,
   getGoals,
@@ -42,4 +43,9 @@ export function targetProgressPercentage(target: Target): number {
       return ((from - value) / (from - to)) * 100;
     }
   }
+}
+
+export function roundUp(value, decimalPlaces = 2) {
+  const multiplier = Math.pow(10, decimalPlaces);
+  return Math.ceil(value * multiplier) / multiplier;
 }

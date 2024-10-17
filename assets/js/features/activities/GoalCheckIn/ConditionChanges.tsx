@@ -1,5 +1,6 @@
 import * as React from "react";
 import * as GoalCheckIns from "@/models/goalCheckIns";
+import { roundUp } from "@/models/goals";
 
 export function ConditionChanges({ update }: { update: GoalCheckIns.Update }) {
   const targets = (update.goalTargetUpdates ?? [])
@@ -40,8 +41,8 @@ function TargetProgress({ value, start, end }) {
 }
 
 function TargetChange({ target }) {
-  const newProgress = target.value - target.from;
-  const oldProgress = target.previousValue - target.from;
+  const newProgress = roundUp(target.value - target.from);
+  const oldProgress = roundUp(target.previousValue - target.from);
   const diff = newProgress - oldProgress;
 
   if (newProgress > oldProgress) {
