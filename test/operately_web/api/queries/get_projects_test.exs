@@ -131,6 +131,20 @@ defmodule OperatelyWeb.Api.Queries.GetProjectsTest do
       assert res.projects == serialize([project], level: :full)
     end
 
+    test "include_reviewer", ctx do
+      project_fixture(company_id: ctx.company.id, name: "Project 1", creator_id: ctx.person.id, reviewer_id: ctx.person.id, group_id: ctx.company.company_space_id)
+
+      assert {200, res} = query(ctx.conn, :get_projects, %{})
+
+      assert length(res.projects) == 1
+      refute hd(res.projects).reviewer
+
+      assert {200, res} = query(ctx.conn, :get_projects, %{include_reviewer: true})
+
+      assert length(res.projects) == 1
+      assert hd(res.projects).reviewer == serialize(ctx.person)
+    end
+
     test "include_space", ctx do
       space = group_fixture(ctx.person, company_id: ctx.company.id, name: "Space 1")
       project_fixture(company_id: ctx.company.id, name: "Project 1", creator_id: ctx.person.id, group_id: space.id)

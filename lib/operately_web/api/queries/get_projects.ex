@@ -19,6 +19,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjects do
     field :include_contributors, :boolean
     field :include_last_check_in, :boolean
     field :include_champion, :boolean
+    field :include_reviewer, :boolean
     field :include_goal, :boolean
     field :include_archived, :boolean
     field :include_privacy, :boolean
