@@ -76,12 +76,12 @@ function selectBoxStyles(error: boolean | undefined) {
   return {
     control: () => {
       if (error) {
-        return "bg-surface placeholder-content-dimmed border border-red-500 rounded-lg px-3 flex-1";
+        return "bg-surface-base placeholder-content-dimmed border border-red-500 rounded-lg px-3 flex-1";
       } else {
-        return "bg-surface placeholder-content-dimmed border border-surface-outline rounded-lg px-3 flex-1";
+        return "bg-surface-base placeholder-content-dimmed border border-surface-outline rounded-lg px-3 flex-1";
       }
     },
-    menu: () => "bg-surface text-content-accent border border-surface-outline rounded-lg mt-1",
+    menu: () => "bg-surface-base text-content-accent border border-surface-outline rounded-lg mt-1",
     option: ({ isFocused }) =>
       classnames({
         "px-3 py-2 hover:bg-surface-accent cursor-pointer": true,

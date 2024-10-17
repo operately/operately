@@ -67,7 +67,7 @@ function SectionLink({ to, children, icon }) {
   return (
     <DivLink
       to={to}
-      className="font-semibold flex items-center gap-1 cursor-pointer group hover:bg-base-accent px-1.5 py-0.5 rounded"
+      className="font-semibold flex items-center gap-1 cursor-pointer group hover:bg-surface-base px-1.5 py-0.5 rounded"
     >
       {React.createElement(icon, { size: 16 })}
       {children}

@@ -18,7 +18,7 @@ export function CompanyDropdown({ company }: { company: Api.Company }) {
     <Popover.Root open={open} onOpenChange={setOpen}>
       <Popover.Trigger asChild>
         <div
-          className="font-semibold flex items-center gap-1 cursor-pointer group hover:bg-base-accent px-1.5 py-0.5 rounded"
+          className="font-semibold flex items-center gap-1 cursor-pointer group hover:bg-surface-bg-highlight px-1.5 py-0.5 rounded"
           data-test-id="company-dropdown"
         >
           <Icons.IconBuildingEstate size={16} />
@@ -29,7 +29,7 @@ export function CompanyDropdown({ company }: { company: Api.Company }) {
 
       <Popover.Portal>
         <Popover.Content className={dropdownClassName} align="start" sideOffset={12} onClick={close}>
-          <div className="bg-surface p-3 min-w-[250px]">
+          <div className="bg-surface-base p-3 min-w-[250px]">
             <DropdownItem path={Paths.feedPath()} icon={Icons.IconRss} title="The Feed" />
             <DropdownItem path={Paths.peoplePath()} icon={Icons.IconUserCircle} title="People" />
             <DropdownItem path={Paths.orgChartPath()} icon={Icons.IconBinaryTree2} title="Org Chart" />

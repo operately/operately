@@ -47,7 +47,7 @@ export function PasswordInput(props: PasswordInputProps) {
 function styles(error: boolean | undefined) {
   return classNames({
     "w-full": true,
-    "bg-surface text-content-accent placeholder-content-subtle": true,
+    "bg-surface-base text-content-accent placeholder-content-subtle": true,
     "border rounded-lg": true,
     "px-3 py-1.5": true,
     "border-surface-outline": !error,

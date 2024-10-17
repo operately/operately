@@ -49,7 +49,7 @@ export default function Modal({ isOpen, hideModal, title, children, minHeight = 
           overflowY: "auto",
           maxHeight: "80vh",
           minHeight: minHeight,
-          backgroundColor: "var(--color-surface)",
+          backgroundColor: "var(--color-surface-base)",
           border: "1px solid var(--color-surface-outline)",
           boxShadow: "0px 0px 10px 0px rgba(0,0,0,0.1)",
         },

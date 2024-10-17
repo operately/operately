@@ -19,7 +19,7 @@ export function ProjectList(props: ProjectListProps) {
 
       <div className="flex flex-col gap-1">
         {viewState.displayedProjects.map((project) => (
-          <div key={project.id} className="px-3 py-4 bg-surface flex flex-col">
+          <div key={project.id} className="px-3 py-4 bg-surface-base flex flex-col">
             <ProjectListItem project={project} key={project.id} avatarPosition="right" showSpace={props.showSpace} />
           </div>
         ))}

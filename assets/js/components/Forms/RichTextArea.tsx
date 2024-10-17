@@ -72,7 +72,7 @@ function Editor({ placeholder, field, error, mentionSearchScope }: EditorProps) 
 function styles(error: boolean | undefined) {
   return classNames({
     "w-full": true,
-    "bg-surface text-content-accent placeholder-content-subtle": true,
+    "bg-surface-base text-content-accent placeholder-content-subtle": true,
     "border rounded-lg": true,
     "border-surface-outline": !error,
     "border-red-500": error,

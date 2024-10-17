@@ -157,7 +157,7 @@ function RemoveContributorButton({ index }) {
   return (
     <div className="absolute" style={{ top: "-14px", right: "-14px" }}>
       <div
-        className="border border-surface-outline rounded-full p-2 cursor-pointer text-content-subtle hover:text-content-accent bg-surface"
+        className="border border-surface-outline rounded-full p-2 cursor-pointer text-content-subtle hover:text-content-accent bg-surface-base"
         onClick={onClick}
       >
         <Icons.IconX size={16} />

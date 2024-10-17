@@ -76,7 +76,7 @@ export function Body({
   minHeight = "none",
   className = "",
   noPadding = false,
-  backgroundColor = "bg-surface",
+  backgroundColor = "bg-surface-base",
 }) {
   const { size } = React.useContext(Context);
   const padding = noPadding ? "" : bodyPaddings[size];
