@@ -19,10 +19,9 @@
 }
 
 body[data-theme="light"] {
-  --color-base: rgba(254, 245, 237, 1);
-  --color-base-accent: rgba(255, 255, 255, 0.9);
-
-  --color-surface: rgba(255, 255, 255, 1);
+  --color-surface-bg: rgba(254, 245, 237, 1);
+  --color-surface-bg-highlight: rgba(255, 255, 255, 0.9);
+  --color-surface-base: rgba(255, 255, 255, 1);
   --color-surface-dimmed: rgba(249, 249, 249, 1);
   --color-surface-accent: rgba(251, 251, 251, 1);
   --color-surface-outline: rgba(211, 204, 189, 1);
@@ -64,10 +63,9 @@ body[data-theme="light"] {
 }
 
 body[data-theme="dark"] {
-  --color-base: rgba(30, 30, 34, 1);
-  --color-base-accent: rgba(255, 255, 255, 0.1);
-
-  --color-surface: rgba(35, 35, 39, 1);
+  --color-surface-bg: rgba(30, 30, 34, 1);
+  --color-surface-bg-highlight: rgba(255, 255, 255, 0.1);
+  --color-surface-base: rgba(35, 35, 39, 1);
   --color-surface-dimmed: rgba(30, 30, 34, 0.8);
   --color-surface-accent: rgba(255, 255, 255, 0.03);
   --color-surface-outline: rgba(60, 60, 64, 1);
@@ -113,5 +111,5 @@ body {
   font-size: 16px;
 
   color: var(--color-content-base);
-  background: var(--color-base);
+  background: var(--color-surface-bg);
 }

@@ -38,7 +38,7 @@ export function GhostButton(props: BaseButtonProps) {
 
 export function SecondaryButton(props: BaseButtonProps) {
   const className = calcClassName(props, {
-    always: "border border-surface-outline bg-surface",
+    always: "border border-surface-outline bg-surface-base",
     normal: "text-content-dimmed hover:text-content-base hover:bg-surface-accent",
     loading: "text-content-subtle",
   });

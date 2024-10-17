@@ -114,7 +114,7 @@ export function TextInputNoLabel(props: TextInnputNoLabelProps) {
   } = props;
 
   const className = classname(
-    "w-full bg-surface text-content-accent placeholder-content-subtle border rounded-lg px-3 py-1.5",
+    "w-full bg-surface-base text-content-accent placeholder-content-subtle border rounded-lg px-3 py-1.5",
     {
       "border-surface-outline": !error,
       "border-red-500": error,

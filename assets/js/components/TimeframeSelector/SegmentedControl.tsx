@@ -32,7 +32,7 @@ interface SegmentedControlOptionProps {
 
 function SegmentedControlOption(props: SegmentedControlOptionProps) {
   const className = classNames("w-full px-2.5 py-1 text-sm font-medium rounded-lg", {
-    "bg-surface border border-stroke-base": props.value === props.activeValue,
+    "bg-surface-base border border-stroke-base": props.value === props.activeValue,
     "bg-transparent": props.value !== props.activeValue,
   });
 

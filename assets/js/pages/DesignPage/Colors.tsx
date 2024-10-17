@@ -17,8 +17,9 @@ export function Colors() {
       <p className="text-sm mb-6">Colors used for the background and surface.</p>
 
       <div className="grid grid-cols-2 gap-8">
-        <ColorBox color="bg-base" usage="Background color of the application" />
-        <ColorBox color="bg-surface" usage="Color of the UI surface" />
+        <ColorBox color="bg-surface-bg" usage="Background color of the application" />
+        <ColorBox color="bg-surface-highlight" usage="Highlight color for the application background" />
+        <ColorBox color="bg-surface-base" usage="Color of the UI surface" />
         <ColorBox color="bg-surface-dimmed" usage="Dimmed version of the UI surface, used for page footers" />
         <ColorBox color="bg-surface-accent" usage="Accent color of the UI surface, used for subtle highlights" />
         <ColorBox color="bg-surface-outline" usage="Outline color of the UI surface, used for borders" />

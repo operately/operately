@@ -57,7 +57,7 @@ export function GoalSelectorDropdown({ goals, onSelect, selected, error }: GoalS
         </div>
 
         {open && (
-          <div className="absolute mt-1 w-full bg-surface border border-surface-outline rounded-lg shadow-lg z-50">
+          <div className="absolute mt-1 w-full bg-surface-base border border-surface-outline rounded-lg shadow-lg z-50">
             {tree.map((root) => (
               <NodeView key={root.id} node={root as GoalNode} onSelect={handleSelect} />
             ))}
