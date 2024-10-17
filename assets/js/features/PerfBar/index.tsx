@@ -78,6 +78,7 @@ function ToggleTestIds() {
             padding: 1px 3px;
             white-space: nowrap;
             font-weight: bold;
+            text-transform: none;
           }
         `}
         </style>

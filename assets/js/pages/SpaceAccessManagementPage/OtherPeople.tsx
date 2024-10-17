@@ -7,7 +7,7 @@ import { ActionLink } from "@/components/Link";
 
 import Avatar from "@/components/Avatar";
 import { match } from "ts-pattern";
-import { SpaceAccessLevbelBadge } from "@/components/Badges/AccessLevelBadges";
+import { SpaceAccessLevelBadge } from "@/components/Badges/AccessLevelBadges";
 import { useBindedPeopleList } from "./loader";
 
 export function OtherPeople() {
@@ -69,7 +69,7 @@ function OtherPeopleGroup({ accessLevel, people }: { accessLevel: PermissionLeve
   return (
     <div className="flex items-start gap-10 border-t border-stroke-dimmed py-3">
       <p className="shrink-0 w-36">
-        <SpaceAccessLevbelBadge accessLevel={accessLevel} />
+        <SpaceAccessLevelBadge accessLevel={accessLevel} />
       </p>
 
       <div className="flex items-center gap-2 flex-wrap mt-0.5">

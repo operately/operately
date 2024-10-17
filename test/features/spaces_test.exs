@@ -141,4 +141,18 @@ defmodule Operately.Features.SpacesTest do
     |> Steps.demote_to_member(member)
     |> Steps.assert_member_demoted(member)
   end
+
+  feature "change access level of member", ctx do
+    [space, member] = Steps.given_space_with_member_exists(ctx, %{
+      person_name: "Mati Aharoni",
+      space_name: "Marketing",
+      access_level: Binding.comment_access(),
+    })
+
+    ctx
+    |> Steps.visit_home()
+    |> Steps.visit_access_management(space.name)
+    |> Steps.change_access_level(%{member: member, access_level: "edit"})
+    |> Steps.assert_access_level_changed("edit")
+  end
 end
