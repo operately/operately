@@ -7,14 +7,12 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyAdmins do
   alias Operately.Companies.Company
 
   inputs do
-    field :people_ids, list_of(:string)
+    field :people_ids, list_of(:id)
   end
 
   def call(conn, inputs) do
-    {:ok, ids} = decode_id(inputs.people_ids)
-
     if has_permissions?(me(conn), company(conn)) do
-      {:ok, _} = Operately.Operations.CompanyAdminAdding.run(me(conn), ids)
+      {:ok, _} = Operately.Operations.CompanyAdminAdding.run(me(conn), inputs.people_ids)
       {:ok, %{}}
     else
       {:error, :forbidden}
@@ -22,6 +20,14 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyAdmins do
   end
 
   defp has_permissions?(person, company) do
+    dev_env?() || company_owner?(person, company)
+  end
+
+  defp dev_env?() do
+    Application.get_env(:operately, :app_env) == :dev
+  end
+
+  defp company_owner?(person, company) do
     from(c in Company, where: c.id == ^company.id)
     |> filter_by_full_access(person.id)
     |> Repo.exists?()
