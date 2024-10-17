@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as Icons from "@tabler/icons-react";
 
-import { Menu, MenuLinkItem } from "@/components/Menu";
+import { Menu, MenuLinkItem, MenuActionItem, SubMenu } from "@/components/Menu";
 import { Section, SectionTitle } from "./Section";
 
 export function Menus() {
@@ -37,6 +37,27 @@ export function Menus() {
               <MenuLinkItem to="" icon={Icons.IconEdit}>
                 Edit
               </MenuLinkItem>
+              <MenuLinkItem to="" icon={Icons.IconTrash} danger>
+                Delete
+              </MenuLinkItem>
+            </Menu>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between py-3 border-t border-stroke-base">
+          <div>Menu with submenus</div>
+          <div>
+            <Menu>
+              <MenuLinkItem to="" icon={Icons.IconEdit}>
+                Edit
+              </MenuLinkItem>
+
+              <SubMenu label="Access Level" icon={Icons.IconLock}>
+                <MenuActionItem onClick={() => null}>Full Access</MenuActionItem>
+                <MenuActionItem onClick={() => null}>Edit Access</MenuActionItem>
+                <MenuActionItem onClick={() => null}>View Access</MenuActionItem>
+              </SubMenu>
+
               <MenuLinkItem to="" icon={Icons.IconTrash} danger>
                 Delete
               </MenuLinkItem>
