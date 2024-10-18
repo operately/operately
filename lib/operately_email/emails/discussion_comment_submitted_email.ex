@@ -24,7 +24,7 @@ defmodule OperatelyEmail.Emails.DiscussionCommentSubmittedEmail do
     |> assign(:title, title)
     |> assign(:comment, comment)
     |> assign(:space, space)
-    |> assign(:cta_url, Paths.message_path(company, message) |> Paths.to_url())
+    |> assign(:cta_url, Paths.message_path(company, message, comment) |> Paths.to_url())
     |> render("discussion_comment_submitted")
   end
 end
