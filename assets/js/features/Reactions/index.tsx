@@ -101,7 +101,9 @@ function ReactionItem({ reaction, size }) {
 }
 
 function AddReaction({ form, size }) {
-  const dropdownClassName = classNames("rounded-lg border border-surface-outline z-[100] shadow-xl overflow-hidden");
+  const dropdownClassName = classNames(
+    "rounded-lg border border-surface-outline z-[100] shadow-xl overflow-hidden bg-surface-base",
+  );
 
   const [open, setOpen] = React.useState(false);
 
