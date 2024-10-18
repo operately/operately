@@ -18,6 +18,7 @@ export async function loader({ params }): Promise<LoadedData> {
       includeMembers: true,
       includeAccessLevels: true,
       includeUnreadNotifications: true,
+      includePermissions: true,
     }),
   ]);
 
