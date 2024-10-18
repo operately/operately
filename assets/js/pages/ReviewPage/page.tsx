@@ -8,7 +8,7 @@ import FormattedTime from "@/components/FormattedTime";
 
 import { Paths } from "@/routes/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
-import { calculateHowManyDaysAgo } from "@/utils/time";
+import { parseDate, relativeDay } from "@/utils/time";
 import { ReviewAssignment, AssignmentType } from "@/models/assignments";
 
 export function Page() {
@@ -68,7 +68,7 @@ function AssignmentItem({ assignment }: { assignment: ReviewAssignment }) {
 }
 
 function DueDate({ date }: { date: string }) {
-  const daysAgo = calculateHowManyDaysAgo(date);
+  const daysAgo = relativeDay(parseDate(date)!);
   const isRed = useMemo(() => !["Today", "Yesterday"].includes(daysAgo), []);
 
   return (
