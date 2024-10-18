@@ -26,6 +26,7 @@ defmodule Operately.Support.Features.SpaceSteps do
   end
 
   step :visit_home, ctx, do: UI.visit(ctx, Paths.home_path(ctx.company))
+  step :visit_space, ctx, do: UI.visit(ctx, Paths.space_path(ctx.company, ctx.space))
 
   step :visit_access_management, ctx, name do
     ctx
@@ -258,6 +259,33 @@ defmodule Operately.Support.Features.SpaceSteps do
 
   step :assert_access_level_changed, ctx, access_level do
     ctx |> UI.assert_has(testid: "#{access_level}-access-badge")
+  end
+
+  step :initialize_appearance_editing, ctx do
+    ctx
+    |> UI.click(testid: "space-settings")
+    |> UI.click(testid: "change-appearance")
+  end
+
+  step :change_space_color, ctx, color do
+    ctx |> UI.click(testid: "color-#{color}")
+  end
+
+  step :change_space_icon, ctx, icon do
+    ctx |> UI.click(testid: "icon-#{icon}")
+  end
+
+  step :save_appearance_changes, ctx do
+    ctx 
+    |> UI.click(testid: "submit")
+    |> UI.assert_has(testid: "space-page")
+  end
+
+  step :assert_space_appearance_changed, ctx, values do
+    space = Operately.Groups.get_group_by_name(ctx.space.name)
+    
+    assert space.color == values.color
+    assert space.icon == values.icon
   end
 
 end
