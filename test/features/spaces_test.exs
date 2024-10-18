@@ -155,4 +155,17 @@ defmodule Operately.Features.SpacesTest do
     |> Steps.change_access_level(%{member: member, access_level: "edit"})
     |> Steps.assert_access_level_changed("edit")
   end
+
+  feature "edit space appearance", ctx do
+    values = %{color: "text-green-500", icon: "IconBolt"}
+
+    ctx
+    |> Steps.given_a_space_exists()
+    |> Steps.visit_space()
+    |> Steps.initialize_appearance_editing()
+    |> Steps.change_space_color(values.color)
+    |> Steps.change_space_icon(values.icon)
+    |> Steps.save_appearance_changes()
+    |> Steps.assert_space_appearance_changed(values)
+  end
 end

@@ -30,28 +30,24 @@ export function Page() {
 
       goToSpace();
     },
-    cancel: goToSpace,
   });
 
   return (
     <Pages.Page title={["Appearance Settings", space.name!]}>
       <Paper.Root size="small">
         <Paper.NavigateBack to={Paths.spacePath(space.id!)} title={`Back to ${space.name} Space`} />
+        <div className="font-extrabold text-2xl text-center mb-4">Appearance of {space.name}</div>
 
-        <Paper.Body minHeight="none">
-          <div className="font-extrabold text-2xl text-center">Appearance of {space.name}</div>
+        <Forms.Form form={form}>
+          <Paper.Body minHeight="none">
+            <Forms.FieldGroup>
+              <ColorChooser field="color" />
+              <IconChooser iconField="icon" colorField="color" />
+            </Forms.FieldGroup>
+          </Paper.Body>
 
-          <Forms.Form form={form}>
-            <div className="h-px bg-stroke-base my-8"></div>
-            <ColorChooser field="color" />
-
-            <div className="h-px bg-stroke-base my-8"></div>
-            <IconChooser iconField="icon" colorField="color" />
-
-            <div className="h-px bg-stroke-base my-8"></div>
-            <Forms.Submit saveText="Save Changes" />
-          </Forms.Form>
-        </Paper.Body>
+          <Forms.Submit saveText="Save Changes" buttonSize="base" layout="centered" />
+        </Forms.Form>
       </Paper.Root>
     </Pages.Page>
   );
