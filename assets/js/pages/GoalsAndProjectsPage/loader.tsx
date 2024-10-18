@@ -24,6 +24,7 @@ export async function loader(): Promise<LoaderResult> {
       includeMilestones: true,
       includePrivacy: true,
       includeReviewer: true,
+      includeContributors: true,
     }).then((data) => data.projects!),
   ]);
 

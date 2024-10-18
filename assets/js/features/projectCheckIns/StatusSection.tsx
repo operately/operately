@@ -4,7 +4,7 @@ import { ProjectCheckIn } from "@/models/projectCheckIns";
 import { Status } from "./Status";
 import { Person } from "@/models/people";
 
-export function StatusSection({ checkIn, reviewer }: { checkIn: ProjectCheckIn; reviewer: Person }) {
+export function StatusSection({ checkIn, reviewer }: { checkIn: ProjectCheckIn; reviewer?: Person }) {
   return (
     <div className="my-8">
       <div className="text-lg font-bold mx-auto">1. How's the project going?</div>
