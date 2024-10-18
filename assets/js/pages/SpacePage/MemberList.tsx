@@ -4,36 +4,31 @@ import * as React from "react";
 import Avatar from "@/components/Avatar";
 import { SecondaryButton } from "@/components/Buttons";
 import { Paths } from "@/routes/paths";
-import { useNavigate } from "react-router-dom";
+import { assertPresent } from "@/utils/assertions";
 
 export default function MemberList({ space }: { space: Spaces.Space }) {
-  const navigate = useNavigate();
-  const gotoSpaceAccessManagementPage = () => navigate(Paths.spaceAccessManagementPath(space.id!));
-
-  if (space.members!.length === 0) return null;
-
-  if (space.isCompanySpace) {
-    return (
-      <div>
-        <div className="inline-flex gap-2 justify-center mb-4 flex-wrap mx-8" data-test-id="space-members">
-          {space.members!.map((m) => (
-            <Avatar key={m.id} person={m} size={32} />
-          ))}
-        </div>
+  return (
+    <div className="flex items-center mt-2 gap-3">
+      <div className="inline-flex gap-2 justify-end flex-wrap" data-test-id="space-members">
+        {space.members!.map((m) => (
+          <Avatar key={m.id} person={m} size={32} />
+        ))}
       </div>
-    );
-  } else {
-    return (
-      <div className="flex items-center mt-2 gap-3">
-        <div className="inline-flex gap-2 justify-end flex-wrap" data-test-id="space-members">
-          {space.members!.map((m) => (
-            <Avatar key={m.id} person={m} size={32} />
-          ))}
-        </div>
-        <SecondaryButton onClick={gotoSpaceAccessManagementPage} size="xs" testId="access-management">
-          Manage access
-        </SecondaryButton>
-      </div>
-    );
-  }
+
+      <ManageAccessButton space={space} />
+    </div>
+  );
+}
+
+function ManageAccessButton({ space }: { space: Spaces.Space }) {
+  const path = Paths.spaceAccessManagementPath(space.id!);
+
+  assertPresent(space.permissions, "permissions must be present in space");
+  if (!space.permissions.canAddMembers) return null;
+
+  return (
+    <SecondaryButton linkTo={path} size="xs" testId="access-management">
+      Manage access
+    </SecondaryButton>
+  );
 }
