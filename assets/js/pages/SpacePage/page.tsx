@@ -24,7 +24,7 @@ export function Page() {
   useClearNotificationsOnLoad(space.notifications);
 
   return (
-    <Pages.Page title={space.name!}>
+    <Pages.Page title={space.name!} testId="space-page">
       <Paper.Root size="large">
         <Paper.Body>
           <SpacePageNavigation space={space} activeTab="overview" />
