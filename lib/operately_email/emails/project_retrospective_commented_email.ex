@@ -22,7 +22,7 @@ defmodule OperatelyEmail.Emails.ProjectRetrospectiveCommentedEmail do
     |> assign(:project, project)
     |> assign(:comment, comment)
     |> assign(:cta_text, "View Retrospective")
-    |> assign(:cta_url, Paths.project_retrospective_path(company, project) |> Paths.to_url())
+    |> assign(:cta_url, Paths.project_retrospective_path(company, project, comment) |> Paths.to_url())
     |> render("project_retrospective_commented")
   end
 end

@@ -5,6 +5,7 @@ defmodule OperatelyWeb.Paths do
   alias Operately.Companies.Company
   alias Operately.People.Person
   alias Operately.Projects.Milestone
+  alias Operately.Updates.Comment
 
   def account_path(company = %Company{}) do
     create_path([company_id(company), "account"])
@@ -26,12 +27,24 @@ defmodule OperatelyWeb.Paths do
     create_path([company_id(company), "goal-updates", goal_update_id(update)])
   end
 
+  def goal_check_in_path(company = %Company{}, update, comment = %Comment{}) do
+    update_with_comment = goal_update_id(update) <> "#" <> comment_id(comment)
+
+    create_path([company_id(company), "goal-updates", update_with_comment])
+  end
+
   def goal_check_in_new_path(company = %Company{}, goal = %Goal{}) do
     create_path([company_id(company), "goals", goal_id(goal), "progress-updates", "new"])
   end
 
   def goal_activity_path(company = %Company{}, activity) do
     create_path([company_id(company), "goal-activities", activity_id(activity)])
+  end
+
+  def goal_activity_path(company = %Company{}, activity, comment = %Comment{}) do
+    activity_with_comment = activity_id(activity) <> "#" <> comment_id(comment)
+
+    create_path([company_id(company), "goal-activities", activity_with_comment])
   end
 
   def goal_discussions_path(company = %Company{}, goal = %Goal{}) do
@@ -74,6 +87,12 @@ defmodule OperatelyWeb.Paths do
     create_path([company_id(company), "discussions", message_id(message)])
   end
 
+  def message_path(company = %Company{}, message, comment = %Comment{}) do
+    message_with_comment = message_id(message) <> "#" <> comment_id(comment)
+
+    create_path([company_id(company), "discussions", message_with_comment])
+  end
+
   def project_path(company = %Company{}, project = %Project{}) do
     create_path([company_id(company), "projects", project_id(project)])
   end
@@ -82,12 +101,24 @@ defmodule OperatelyWeb.Paths do
     create_path([company_id(company), "project-check-ins", project_check_in_id(check_in)])
   end
 
+  def project_check_in_path(company = %Company{}, check_in, comment = %Comment{}) do
+    check_in_with_comment = project_check_in_id(check_in) <> "#" <> comment_id(comment)
+
+    create_path([company_id(company), "project-check-ins", check_in_with_comment])
+  end
+
   def project_check_in_new_path(company = %Company{}, project = %Project{}) do
     create_path([company_id(company), "projects", project_id(project), "check-ins", "new"])
   end
 
   def project_retrospective_path(company = %Company{}, project = %Project{}) do
     create_path([company_id(company), "projects", project_id(project), "retrospective"])
+  end
+
+  def project_retrospective_path(company = %Company{}, project = %Project{}, comment = %Comment{}) do
+    retrospective_with_comment = "retrospective#" <> comment_id(comment)
+
+    create_path([company_id(company), "projects", project_id(project), retrospective_with_comment])
   end
 
   def project_milestone_path(company = %Company{}, milestone = %Milestone{}) do
