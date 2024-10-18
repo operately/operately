@@ -26,7 +26,6 @@ export function Page() {
   const refresh = useRefresh();
 
   const { update } = useLoadedData();
-  const commentsForm = useForGoalCheckIn(update);
 
   assertPresent(update.notifications, "Update notifications must be defined");
   useClearNotificationsOnLoad(update.notifications);
@@ -60,8 +59,7 @@ export function Page() {
           <Reactions />
 
           <AckCTA />
-          <div className="border-t border-stroke-base mt-8" />
-          <CommentSection form={commentsForm} refresh={refresh} commentParentType="goal_update" />
+          <Comments />
 
           <div className="border-t border-stroke-base mt-16 mb-8" />
 
@@ -84,7 +82,29 @@ function Reactions() {
   const entity = { id: update.id!, type: "goal_update" };
   const addReactionForm = useReactionsForm(entity, reactions);
 
-  return <ReactionList size={24} form={addReactionForm} />;
+  assertPresent(update.goal?.permissions?.canCommentOnUpdate, "permissions must be present in update");
+
+  return <ReactionList size={24} form={addReactionForm} canAddReaction={update.goal.permissions.canCommentOnUpdate} />;
+}
+
+function Comments() {
+  const refresh = useRefresh();
+  const { update } = useLoadedData();
+  const commentsForm = useForGoalCheckIn(update);
+
+  assertPresent(update.goal?.permissions?.canCommentOnUpdate, "permissions must be present in update");
+
+  return (
+    <>
+      <div className="border-t border-stroke-base mt-8" />
+      <CommentSection
+        form={commentsForm}
+        refresh={refresh}
+        commentParentType="goal_update"
+        canComment={update.goal.permissions.canCommentOnUpdate}
+      />
+    </>
+  );
 }
 
 function Acknowledgement({ update }) {

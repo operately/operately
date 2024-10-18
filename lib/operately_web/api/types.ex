@@ -1,14 +1,14 @@
 defmodule OperatelyWeb.Api.Types do
   use TurboConnect.Types
 
-  primitive :id, 
+  primitive :id,
     encoded_type: :string,
     decoded_type: :string,
     decode_with: &OperatelyWeb.Api.Ids.decode_id/1
 
-  primitive :company_id, 
-    encoded_type: :string, 
-    decoded_type: :number, 
+  primitive :company_id,
+    encoded_type: :string,
+    decoded_type: :number,
     decode_with: &OperatelyWeb.Api.Ids.decode_company_id/1
 
   object :access_levels do
@@ -217,6 +217,7 @@ defmodule OperatelyWeb.Api.Types do
     field :subscription_list, :subscription_list
     field :potential_subscribers, list_of(:subscriber)
     field :notifications, list_of(:notification)
+    field :permissions, :space_permissions
   end
 
   object :activity do
@@ -235,6 +236,12 @@ defmodule OperatelyWeb.Api.Types do
     field :event_data, :activity_data_union
     field :content, :activity_content
     field :notifications, list_of(:notification)
+    field :permissions, :activity_permissions
+  end
+
+  object :activity_permissions do
+    field :can_comment_on_thread, :boolean
+    field :can_view, :boolean
   end
 
   object :activity_event_data_project_create do
@@ -454,6 +461,9 @@ defmodule OperatelyWeb.Api.Types do
     field :can_pause, :boolean
     field :can_check_in, :boolean
     field :can_acknowledge_check_in, :boolean
+    field :can_comment_on_check_in, :boolean
+    field :can_comment_on_retrospective, :boolean
+    field :can_comment_on_milestone, :boolean
   end
 
   object :space_permissions do
@@ -541,6 +551,7 @@ defmodule OperatelyWeb.Api.Types do
     field :can_acknowledge_check_in, :boolean
     field :can_close, :boolean
     field :can_archive, :boolean
+    field :can_comment_on_update, :boolean
   end
 
   object :activity_content_project_contributor_addition do

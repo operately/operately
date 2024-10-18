@@ -4,7 +4,6 @@ import * as Pages from "@/components/Pages";
 import * as Goals from "@/models/goals";
 import * as Activities from "@/models/activities";
 
-import { CommentThread } from "@/api";
 import { GoalSubpageNavigation } from "@/features/goals/GoalSubpageNavigation";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { CommentSection, useForCommentThread } from "@/features/CommentSection";
@@ -24,6 +23,7 @@ export async function loader({ params }): Promise<LoaderResult> {
     activity: await Activities.getActivity({
       id: params.id,
       includeUnreadGoalNotifications: true,
+      includePermissions: true,
     }),
   };
 }
@@ -47,9 +47,8 @@ export function Page() {
             <ActivityHandler.PageContent activity={activity} />
           </div>
 
-          <Reactions commentThread={activity.commentThread!} />
-          <div className="border-t border-stroke-base mt-8" />
-          <Comments commentThread={activity.commentThread!} goal={goal} />
+          <Reactions />
+          <Comments goal={goal} />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
@@ -73,16 +72,39 @@ function Title({ activity }: { activity: Activities.Activity }) {
   );
 }
 
-function Reactions({ commentThread }: { commentThread: CommentThread }) {
-  const reactions = commentThread.reactions!.map((r) => r!);
-  const entity = { id: commentThread.id!, type: "comment_thread" };
+function Reactions() {
+  const { activity } = Pages.useLoadedData<LoaderResult>();
+
+  assertPresent(
+    activity.commentThread?.reactions,
+    "commentThread and commentThread reactions must be present in activity",
+  );
+  assertPresent(activity.permissions?.canCommentOnThread, "permissions must be present in activity");
+
+  const reactions = activity.commentThread.reactions.map((r) => r!);
+  const entity = { id: activity.commentThread.id!, type: "comment_thread" };
   const addReactionForm = useReactionsForm(entity, reactions);
 
-  return <ReactionList size={24} form={addReactionForm} />;
+  return <ReactionList size={24} form={addReactionForm} canAddReaction={activity.permissions.canCommentOnThread} />;
 }
 
-function Comments({ commentThread, goal }: { commentThread: CommentThread; goal: Goals.Goal }) {
-  const commentsForm = useForCommentThread(commentThread, { type: "goal", id: goal.id! });
+function Comments({ goal }: { goal: Goals.Goal }) {
+  const { activity } = Pages.useLoadedData<LoaderResult>();
 
-  return <CommentSection form={commentsForm} refresh={() => {}} commentParentType="comment_thread" />;
+  assertPresent(activity.commentThread, "commentThread must be present in activity");
+  assertPresent(activity.permissions?.canCommentOnThread, "permissions must be present in activity");
+
+  const commentsForm = useForCommentThread(activity.commentThread, { type: "goal", id: goal.id! });
+
+  return (
+    <>
+      <div className="border-t border-stroke-base mt-8" />
+      <CommentSection
+        form={commentsForm}
+        refresh={() => {}}
+        commentParentType="comment_thread"
+        canComment={activity.permissions.canCommentOnThread}
+      />
+    </>
+  );
 }

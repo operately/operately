@@ -15,6 +15,7 @@ export async function loader({ params }): Promise<LoaderResult> {
     includeSubscriptionsList: true,
     includePotentialSubscribers: true,
     includeUnreadNotifications: true,
+    includePermissions: true,
   }).then((data) => data.update!);
 
   return {

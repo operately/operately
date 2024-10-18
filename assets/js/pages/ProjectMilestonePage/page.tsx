@@ -22,7 +22,9 @@ import { assertPresent } from "@/utils/assertions";
 export function Page() {
   const refresh = useRefresh();
   const { milestone } = useLoadedData();
+
   assertPresent(milestone.project, "project must be present in milestone");
+  assertPresent(milestone.permissions?.canCommentOnMilestone, "permissions must be present in milestone");
 
   const form = useFormState(milestone.project, milestone);
   const commentsForm = useForMilestone(milestone);
@@ -44,7 +46,12 @@ export function Page() {
           <TaskSection milestone={milestone} />
 
           <PageSection title="Comments &amp; Activity Feed" />
-          <CommentSection form={commentsForm} refresh={refresh} commentParentType="milestone" />
+          <CommentSection
+            form={commentsForm}
+            refresh={refresh}
+            commentParentType="milestone"
+            canComment={milestone.permissions.canCommentOnMilestone}
+          />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>

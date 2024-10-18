@@ -28,6 +28,7 @@ defmodule Operately.Activities.Activity do
 
     # populated with after load hooks
     field :notifications, :any, virtual: true, default: []
+    field :permissions, :any, virtual: true
 
     timestamps()
     requester_access_level()
@@ -69,5 +70,10 @@ defmodule Operately.Activities.Activity do
     else
       activity
     end
+  end
+
+  def set_permissions(activity) do
+    permissions = Operately.Activities.Permissions.calculate_permissions(activity.request_info.access_level)
+    Map.put(activity, :permissions, permissions)
   end
 end
