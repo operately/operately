@@ -140,8 +140,13 @@ defmodule Operately.Goals.Goal do
     Map.put(goal, :notifications, notifications)
   end
 
+  def set_permissions(%{goal: goal = %__MODULE__{}} = parent) do
+    goal = preload_permissions(goal, parent.request_info.access_level)
 
-  def preload_permissions(goal) do 
+    %{parent | goal: goal}
+  end
+
+  def preload_permissions(goal) do
     preload_permissions(goal, goal.request_info.access_level)
   end
 

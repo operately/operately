@@ -105,17 +105,32 @@ function Reactions() {
   const entity = { id: retrospective.id!, type: "project_retrospective" };
   const addReactionForm = useReactionsForm(entity, reactions);
 
-  return <ReactionList size={24} form={addReactionForm} />;
+  assertPresent(retrospective.permissions?.canCommentOnRetrospective, "permissions must be present in retrospective");
+
+  return (
+    <ReactionList
+      size={24}
+      form={addReactionForm}
+      canAddReaction={retrospective.permissions.canCommentOnRetrospective}
+    />
+  );
 }
 
 function Comments() {
   const { retrospective } = useLoadedData();
   const commentsForm = useComments({ parent: retrospective, parentType: "project_retrospective" });
 
+  assertPresent(retrospective.permissions?.canCommentOnRetrospective, "permissions must be present in retrospective");
+
   return (
     <>
       <div className="border-t border-stroke-base mt-8" />
-      <CommentSection form={commentsForm} refresh={() => {}} commentParentType="project_retrospective" />
+      <CommentSection
+        form={commentsForm}
+        refresh={() => {}}
+        commentParentType="project_retrospective"
+        canComment={retrospective.permissions.canCommentOnRetrospective}
+      />
     </>
   );
 }
