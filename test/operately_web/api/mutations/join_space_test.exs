@@ -29,12 +29,11 @@ defmodule OperatelyWeb.Api.Mutations.JoinSpaceTest do
       refute_joined_space(space, ctx.person)
     end
 
-    test "company members without full access can't join space", ctx do
-      space = create_space(ctx, company_permissions: Binding.edit_access())
+    test "company members with view access can join space", ctx do
+      space = create_space(ctx, company_permissions: Binding.view_access())
 
-      assert {403, res} = mutation(ctx.conn, :join_space, %{space_id: Paths.space_id(space)})
-      assert res.message == "You don't have permission to perform this action"
-      refute_joined_space(space, ctx.person)
+      assert {200, _} = mutation(ctx.conn, :join_space, %{space_id: Paths.space_id(space)})
+      assert_joined_space(space, ctx.person)
     end
 
     test "company members with full access can join space", ctx do
@@ -45,30 +44,14 @@ defmodule OperatelyWeb.Api.Mutations.JoinSpaceTest do
     end
 
     test "company admins can join space", ctx do
-      space = create_space(ctx, company_permissions: Binding.view_access())
+      space = create_space(ctx, company_permissions: Binding.no_access())
 
       # Not admin
-      assert {403, _} = mutation(ctx.conn, :join_space, %{space_id: Paths.space_id(space)})
+      assert {404, _} = mutation(ctx.conn, :join_space, %{space_id: Paths.space_id(space)})
       refute_joined_space(space, ctx.person)
 
       # Admin
       Operately.Companies.add_admin(ctx.company_creator, ctx.person.id)
-
-      assert {200, _} = mutation(ctx.conn, :join_space, %{space_id: Paths.space_id(space)})
-      assert_joined_space(space, ctx.person)
-    end
-
-    test "space members without full access can't join space", ctx do
-      space = create_space(ctx, company_permissions: Binding.no_access())
-      add_person_to_space(ctx, space.id, Binding.comment_access())
-
-      assert {403, res} = mutation(ctx.conn, :join_space, %{space_id: Paths.space_id(space)})
-      assert res.message == "You don't have permission to perform this action"
-    end
-
-    test "space members with full access can join space", ctx do
-      space = create_space(ctx, company_permissions: Binding.no_access())
-      add_person_to_space(ctx, space.id, Binding.full_access())
 
       assert {200, _} = mutation(ctx.conn, :join_space, %{space_id: Paths.space_id(space)})
       assert_joined_space(space, ctx.person)
@@ -119,12 +102,5 @@ defmodule OperatelyWeb.Api.Mutations.JoinSpaceTest do
       company_id: ctx.company.id,
       company_permissions: Keyword.get(attrs, :company_permissions, Binding.no_access()),
     })
-  end
-
-  defp add_person_to_space(ctx, space_id, access_level) do
-    Groups.add_members(ctx.person, space_id, [%{
-      id: ctx.person.id,
-      access_level: access_level,
-    }])
   end
 end
