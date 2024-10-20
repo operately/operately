@@ -22,7 +22,7 @@ defmodule OperatelyEmail.Emails.GoalCheckInCommentedEmail do
     |> assign(:goal, goal)
     |> assign(:update, update)
     |> assign(:comment, comment)
-    |> assign(:link, Paths.goal_check_in_path(company, update) |> Paths.to_url())
+    |> assign(:link, Paths.goal_check_in_path(company, update, comment) |> Paths.to_url())
     |> render("goal_check_in_commented")
   end
 end

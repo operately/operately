@@ -16,6 +16,7 @@ import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { useMe } from "@/contexts/CurrentUserContext";
 import { compareIds } from "@/routes/paths";
 import { CommentParentType } from "@/models/comments";
+import { useScrollIntoViewOnLoad } from "./useScrollIntoViewOnLoad";
 
 interface CommentSectionProps {
   form: FormState;
@@ -162,6 +163,7 @@ function MilestoneReopened({ comment }) {
 function ViewComment({ comment, onEdit, commentParentType }) {
   const me = useMe()!;
   const commentRef = useClearNotificationOnIntersection(comment.notification);
+  useScrollIntoViewOnLoad(comment.id);
 
   const entity = { id: comment.id, type: "comment", parentType: commentParentType };
   const addReactionForm = useReactionsForm(entity, comment.reactions);
@@ -173,6 +175,7 @@ function ViewComment({ comment, onEdit, commentParentType }) {
     <div
       className="flex items-start justify-between gap-3 py-3 not-first:border-t border-stroke-base text-content-accent relative"
       data-test-id={testId}
+      id={comment.id}
       ref={commentRef}
     >
       <div className="shrink-0">
