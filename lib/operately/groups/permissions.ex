@@ -42,7 +42,7 @@ defmodule Operately.Groups.Permissions do
   def can_edit_discussions(access_level), do: access_level >= Binding.edit_access()
   def can_edit_members_permissions(access_level), do: access_level >= Binding.full_access()
   def can_edit_permissions(access_level), do: access_level >= Binding.full_access()
-  def can_join(access_level), do: access_level >= Binding.full_access()
+  def can_join(access_level), do: access_level >= Binding.view_access()
   def can_post_discussions(access_level), do: access_level >= Binding.edit_access()
   def can_remove_member(access_level), do: access_level >= Binding.full_access()
   def can_view(access_level), do: access_level >= Binding.view_access()

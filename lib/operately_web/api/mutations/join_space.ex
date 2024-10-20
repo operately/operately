@@ -7,17 +7,15 @@ defmodule OperatelyWeb.Api.Mutations.JoinSpace do
   alias Operately.Access.Binding
 
   inputs do
-    field :space_id, :string
+    field :space_id, :id
   end
 
   def call(conn, inputs) do
     person = me(conn)
-    {:ok, space_id} = decode_id(inputs.space_id)
-
-    access_level = Groups.get_access_level(space_id, person.id)
+    access_level = Groups.get_access_level(inputs.space_id, person.id)
 
     cond do
-      Permissions.can_join(access_level) -> execute(person, space_id)
+      Permissions.can_join(access_level) -> execute(person, inputs.space_id)
       access_level >= Binding.view_access() -> {:error, :forbidden}
       true -> {:error, :not_found}
     end
