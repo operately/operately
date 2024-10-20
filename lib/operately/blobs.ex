@@ -34,7 +34,15 @@ defmodule Operately.Blobs do
     path = "#{blob.company_id}-#{blob.id}"
 
     case blob.storage_type do
-      :s3 -> presigned_s3_url(:get, path, 3600)
+      :s3 -> 
+        # Tell the browser what filename to use when downloading the file
+        #
+        # readmore: 
+        # - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition
+        # - https://elixirforum.com/t/presigned-urls-with-exaws/15708/10
+        #
+        query_params = [{"response-content-disposition", "attachment; filename=#{blob.filename}"}]
+        presigned_s3_url(:get, path, 3600, [], query_params)
 
       :local ->
         host = OperatelyWeb.Endpoint.url()
@@ -55,7 +63,7 @@ defmodule Operately.Blobs do
     ]
 
     case blob.storage_type do
-      :s3 -> presigned_s3_url(:put, path, 3600, headers)
+      :s3 -> presigned_s3_url(:put, path, 3600, headers, [])
 
       :local ->
         host = OperatelyWeb.Endpoint.url()
@@ -68,7 +76,7 @@ defmodule Operately.Blobs do
     end
   end
 
-  defp presigned_s3_url(method, path, expires_in, headers \\ []) when method in [:get, :put] do
+  defp presigned_s3_url(method, path, expires_in, headers, query_params) when method in [:get, :put] do
     host = System.get_env("OPERATELY_STORAGE_S3_HOST")
     scheme = System.get_env("OPERATELY_STORAGE_S3_SCHEME")
     port = System.get_env("OPERATELY_STORAGE_S3_PORT")
@@ -82,6 +90,6 @@ defmodule Operately.Blobs do
     time = NaiveDateTime.utc_now() |> NaiveDateTime.to_erl()
     config = %{access_key_id: access_key_id, secret_access_key: secret_access_key, region: region}
 
-    ExAws.Auth.presigned_url(method, url, :s3, time, config, expires_in, [], nil, headers)
+    ExAws.Auth.presigned_url(method, url, :s3, time, config, expires_in, query_params, nil, headers)
   end
 end
