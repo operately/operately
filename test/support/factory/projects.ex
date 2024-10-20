@@ -12,7 +12,7 @@ defmodule Operately.Support.Factory.Projects do
 
     project =
       %{
-        name: Atom.to_string(testid),
+        name: Keyword.get(opts, :name, Atom.to_string(testid)),
         creator_id: ctx[creator].id,
         company_id: ctx.company.id,
         group_id: ctx[space_name].id,

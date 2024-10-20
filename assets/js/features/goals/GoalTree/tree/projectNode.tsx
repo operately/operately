@@ -20,7 +20,7 @@ export class ProjectNode extends Node {
 
     this.champion = project.champion!;
     this.space = project.space as Spaces.Space;
-    this.isClosed = !!project.closedAt;
+    this.isClosed = project.status === "closed";
     this.progress = this.calculateProgress();
     this.lastCheckInDate = Time.parseDate(project.lastCheckIn?.insertedAt);
     this.spaceId = project.space!.id!;
