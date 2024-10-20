@@ -46,6 +46,8 @@ function Title() {
   const { space } = useLoadedData();
   const addMembersPath = Paths.spaceAddMembersPath(space.id!);
 
+  assertPresent(space.permissions, "Space permissions must be present");
+
   return (
     <div className="rounded-t-[20px]">
       <div className="flex items-center justify-between">
@@ -54,9 +56,11 @@ function Title() {
           <div className="text-medium">Manage the team and access to this space</div>
         </div>
 
-        <PrimaryButton size="sm" linkTo={addMembersPath} testId="add-members">
-          Add Members
-        </PrimaryButton>
+        {space.permissions.canAddMembers && (
+          <PrimaryButton size="sm" linkTo={addMembersPath} testId="add-members">
+            Add Members
+          </PrimaryButton>
+        )}
       </div>
     </div>
   );
@@ -78,14 +82,18 @@ function GeneralAccess() {
   const editPath = Paths.spaceEditGeneralAccessPath(space.id!);
 
   assertPresent(space.accessLevels, "Space access levels must be present");
+  assertPresent(space.permissions, "Space permissions must be present");
 
   return (
     <Paper.Section title="General Access">
       <BorderedRow>
         <AccessLevel anonymous={space.accessLevels.public!} company={space.accessLevels.company!} tense="present" />
-        <SecondaryButton linkTo={editPath} size="xs">
-          Edit
-        </SecondaryButton>
+
+        {space.permissions.canAddMembers && (
+          <SecondaryButton linkTo={editPath} size="xs">
+            Edit
+          </SecondaryButton>
+        )}
       </BorderedRow>
     </Paper.Section>
   );
