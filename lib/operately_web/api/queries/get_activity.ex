@@ -8,6 +8,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivity do
   inputs do
     field :id, :string
     field :include_unread_goal_notifications, :boolean
+    field :include_permissions, :boolean
   end
 
   outputs do
@@ -43,9 +44,10 @@ defmodule OperatelyWeb.Api.Queries.GetActivity do
 
   defp after_load(inputs, person) do
     Inputs.parse_includes(inputs, [
-      include_unread_goal_notifications: load_unread_goal_notifications(person),
       always_include: &Activities.cast_content/1,
       always_include: &Preloader.preload/1,
+      include_unread_goal_notifications: load_unread_goal_notifications(person),
+      include_permissions: &Activity.set_permissions/1,
     ])
   end
 

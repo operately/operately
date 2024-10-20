@@ -24,6 +24,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Messages.Message do
       subscription_list: OperatelyWeb.Api.Serializer.serialize(message.subscription_list),
       potential_subscribers: OperatelyWeb.Api.Serializer.serialize(message.potential_subscribers),
       notifications: OperatelyWeb.Api.Serializer.serialize(message.notifications),
+      permissions: OperatelyWeb.Api.Serializer.serialize(message.permissions),
     }
   end
 

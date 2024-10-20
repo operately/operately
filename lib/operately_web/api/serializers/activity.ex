@@ -19,6 +19,7 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
       comment_thread: activity.comment_thread && serialize_comment_thread(activity.comment_thread, comment_thread),
       content: serialize_content(activity.action, activity.content),
       notifications: OperatelyWeb.Api.Serializer.serialize(activity.notifications),
+      permissions: OperatelyWeb.Api.Serializer.serialize(activity.permissions, level: :full),
     }
   end
 

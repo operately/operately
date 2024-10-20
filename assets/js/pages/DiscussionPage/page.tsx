@@ -30,8 +30,6 @@ export function Page() {
   assertPresent(discussion.notifications, "Discussion notifications must be defined");
   useClearNotificationsOnLoad(discussion.notifications);
 
-  const commentsForm = useComments({ parent: discussion, parentType: "message" });
-
   return (
     <Pages.Page title={discussion.title!}>
       <Paper.Root size="large">
@@ -49,8 +47,8 @@ export function Page() {
             <Reactions />
 
             <Spacer size={4} />
-            <div className="border-t border-stroke-base mt-8" />
-            <CommentSection form={commentsForm} refresh={() => {}} commentParentType="message" />
+
+            <Comments />
 
             <div className="border-t border-stroke-base mt-16 mb-8" />
 
@@ -74,7 +72,11 @@ function Reactions() {
   const entity = { id: discussion.id!, type: "message" };
   const addReactionForm = useReactionsForm(entity, reactions);
 
-  return <ReactionList size={24} form={addReactionForm} />;
+  assertPresent(discussion.permissions?.canCommentOnDiscussions, "permissions must be present in discussion");
+
+  return (
+    <ReactionList size={24} form={addReactionForm} canAddReaction={discussion.permissions.canCommentOnDiscussions} />
+  );
 }
 
 function Title({ discussion }) {
@@ -117,5 +119,24 @@ function Options() {
         testId="edit-discussion"
       />
     </PageOptions.Root>
+  );
+}
+
+function Comments() {
+  const { discussion } = useLoadedData();
+  const commentsForm = useComments({ parent: discussion, parentType: "message" });
+
+  assertPresent(discussion.permissions?.canCommentOnDiscussions, "permissions must be present in discussion");
+
+  return (
+    <>
+      <div className="border-t border-stroke-base mt-8" />
+      <CommentSection
+        form={commentsForm}
+        refresh={() => {}}
+        commentParentType="message"
+        canComment={discussion.permissions.canCommentOnDiscussions}
+      />
+    </>
   );
 }

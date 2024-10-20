@@ -13,13 +13,15 @@ import * as Goals from "@/models/goals";
 
 import plurarize from "@/utils/plurarize";
 import { DivLink } from "@/components/Link";
+import { assertPresent } from "@/utils/assertions";
 
-export function LastCheckInMessage({ goal }) {
+export function LastCheckInMessage({ goal }: { goal: Goals.Goal }) {
   if (!goal.lastCheckIn) return null;
 
-  const message = goal.lastCheckIn.message;
-  const path = Paths.goalProgressUpdatePath(goal.lastCheckIn.id);
-  const author = goal.lastCheckIn.author;
+  assertPresent(goal.lastCheckIn.author, "author must be present in lastCheckIn");
+
+  const { author, message } = goal.lastCheckIn;
+  const path = Paths.goalProgressUpdatePath(goal.lastCheckIn.id!);
   const championProfilePath = Paths.profilePath(author.id!);
 
   return (
@@ -29,11 +31,11 @@ export function LastCheckInMessage({ goal }) {
       </DivLink>
       <div className="flex flex-col gap-1 -mt-1">
         <div className="font-semibold">
-          Last progress update from <FormattedTime time={goal.lastCheckIn.insertedAt} format="short-date" />
+          Last progress update from <FormattedTime time={goal.lastCheckIn.insertedAt!} format="short-date" />
         </div>
 
         <div className="flex flex-col gap-3 w-full">
-          <RichContent jsonContent={message} />
+          <RichContent jsonContent={message!} />
 
           <div className="flex items-center gap-3">
             <LastMessageReactions goal={goal} />
@@ -64,11 +66,13 @@ function LastMessageComments({ goal }: { goal: Goals.Goal }) {
 }
 
 function LastMessageReactions({ goal }: { goal: Goals.Goal }) {
+  assertPresent(goal.permissions?.canCommentOnUpdate, "permissions must be present in goal");
+
   const update = goal.lastCheckIn!;
   const reactions = update.reactions!.map((r: any) => r!);
   const entity = { id: update.id!, type: "update" };
 
   const addReactionForm = useReactionsForm(entity, reactions);
 
-  return <ReactionList size={20} form={addReactionForm} />;
+  return <ReactionList size={20} form={addReactionForm} canAddReaction={goal.permissions.canCommentOnUpdate} />;
 }

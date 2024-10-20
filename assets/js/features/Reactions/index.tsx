@@ -74,14 +74,20 @@ export function useReactionsForm(entity: Entity, initial: api.Reaction[] | React
   };
 }
 
-export function ReactionList({ form, size }: { form: ReactionsFormState; size: number }) {
+interface ReactionListProps {
+  form: ReactionsFormState;
+  size: number;
+  canAddReaction: boolean;
+}
+
+export function ReactionList({ form, size, canAddReaction }: ReactionListProps) {
   return (
     <div className="flex items-start gap-2 flex-wrap">
       {form.reactions.map((reaction, index) => (
         <ReactionItem key={index} reaction={reaction} size={size} />
       ))}
 
-      <AddReaction form={form} size={size} />
+      {canAddReaction && <AddReaction form={form} size={size} />}
     </div>
   );
 }

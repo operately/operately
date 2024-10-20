@@ -17,6 +17,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdate do
     field :include_subscriptions_list, :boolean
     field :include_potential_subscribers, :boolean
     field :include_unread_notifications, :boolean
+    field :include_permissions, :boolean
   end
 
   outputs do
@@ -69,6 +70,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdate do
     Inputs.parse_includes(inputs, [
       include_potential_subscribers: &Update.set_potential_subscribers/1,
       include_unread_notifications: load_unread_notifications(me),
+      include_permissions: &Goal.set_permissions/1,
       always_include: &load_goal_permissions/1,
     ])
   end

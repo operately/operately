@@ -72,7 +72,16 @@ function Comments() {
   const refresh = useRefresh();
   const commentsForm = useForProjectCheckIn(checkIn);
 
-  return <CommentSection form={commentsForm} refresh={refresh} commentParentType="project_check_in" />;
+  assertPresent(checkIn.project?.permissions?.canCommentOnCheckIn, "permissions must be present in project checkIn");
+
+  return (
+    <CommentSection
+      form={commentsForm}
+      refresh={refresh}
+      commentParentType="project_check_in"
+      canComment={checkIn.project.permissions.canCommentOnCheckIn}
+    />
+  );
 }
 
 function Reactions() {
@@ -81,7 +90,9 @@ function Reactions() {
   const entity = { id: checkIn.id!, type: "project_check_in" };
   const form = useReactionsForm(entity, reactions);
 
-  return <ReactionList form={form} size={24} />;
+  assertPresent(checkIn.project?.permissions?.canCommentOnCheckIn, "permissions must be present in project checkIn");
+
+  return <ReactionList form={form} size={24} canAddReaction={checkIn.project.permissions.canCommentOnCheckIn} />;
 }
 
 function Title() {

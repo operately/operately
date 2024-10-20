@@ -22,6 +22,7 @@ interface CommentSectionProps {
   form: FormState;
   refresh: () => void;
   commentParentType: CommentParentType;
+  canComment: boolean;
 }
 
 export function CommentSection(props: CommentSectionProps) {
@@ -37,6 +38,7 @@ export function CommentSection(props: CommentSectionProps) {
                 form={props.form}
                 refresh={props.refresh}
                 commentParentType={props.commentParentType}
+                canComment={props.canComment}
               />
             );
           } else if (item.type === "milestone-completed") {
@@ -48,19 +50,26 @@ export function CommentSection(props: CommentSectionProps) {
           }
         })}
 
-        <CommentBox refresh={props.refresh} form={props.form} />
+        {props.canComment && <CommentBox refresh={props.refresh} form={props.form} />}
       </div>
     </>
   );
 }
 
-function Comment({ comment, form, refresh, commentParentType }) {
+function Comment({ comment, form, refresh, commentParentType, canComment }) {
   const [editing, _, startEditing, stopEditing] = useBoolState(false);
 
   if (editing) {
     return <EditComment comment={comment} onCancel={stopEditing} form={form} refresh={refresh} />;
   } else {
-    return <ViewComment comment={comment} onEdit={startEditing} commentParentType={commentParentType} />;
+    return (
+      <ViewComment
+        comment={comment}
+        onEdit={startEditing}
+        commentParentType={commentParentType}
+        canComment={canComment}
+      />
+    );
   }
 }
 
@@ -160,7 +169,7 @@ function MilestoneReopened({ comment }) {
   );
 }
 
-function ViewComment({ comment, onEdit, commentParentType }) {
+function ViewComment({ comment, onEdit, commentParentType, canComment }) {
   const me = useMe()!;
   const commentRef = useClearNotificationOnIntersection(comment.notification);
   useScrollIntoViewOnLoad(comment.id);
@@ -210,7 +219,7 @@ function ViewComment({ comment, onEdit, commentParentType }) {
           <RichContent jsonContent={content} skipParse />
         </div>
 
-        <ReactionList form={addReactionForm} size={20} />
+        <ReactionList form={addReactionForm} size={20} canAddReaction={canComment} />
       </div>
     </div>
   );

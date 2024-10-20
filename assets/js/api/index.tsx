@@ -142,6 +142,7 @@ export interface Activity {
   eventData?: ActivityDataUnion | null;
   content?: ActivityContent | null;
   notifications?: Notification[] | null;
+  permissions?: ActivityPermissions | null;
 }
 
 export interface ActivityContentCommentAdded {
@@ -546,6 +547,11 @@ export interface ActivityEventDataProjectCreate {
   champion?: Person | null;
 }
 
+export interface ActivityPermissions {
+  canCommentOnThread?: boolean | null;
+  canView?: boolean | null;
+}
+
 export interface AddMemberInput {
   id?: Id | null;
   accessLevel?: number | null;
@@ -615,6 +621,7 @@ export interface Discussion {
   subscriptionList?: SubscriptionList | null;
   potentialSubscribers?: Subscriber[] | null;
   notifications?: Notification[] | null;
+  permissions?: SpacePermissions | null;
 }
 
 export interface EditMemberPermissionsInput {
@@ -676,6 +683,7 @@ export interface GoalPermissions {
   canAcknowledgeCheckIn?: boolean | null;
   canClose?: boolean | null;
   canArchive?: boolean | null;
+  canCommentOnUpdate?: boolean | null;
 }
 
 export interface GoalProgressUpdate {
@@ -881,6 +889,9 @@ export interface ProjectPermissions {
   canPause?: boolean | null;
   canCheckIn?: boolean | null;
   canAcknowledgeCheckIn?: boolean | null;
+  canCommentOnCheckIn?: boolean | null;
+  canCommentOnRetrospective?: boolean | null;
+  canCommentOnMilestone?: boolean | null;
 }
 
 export interface ProjectRetrospective {
@@ -1222,6 +1233,7 @@ export interface GetActivitiesResult {
 export interface GetActivityInput {
   id?: string | null;
   includeUnreadGoalNotifications?: boolean | null;
+  includePermissions?: boolean | null;
 }
 
 export interface GetActivityResult {
@@ -1285,6 +1297,7 @@ export interface GetDiscussionInput {
   includeSubscriptionsList?: boolean | null;
   includePotentialSubscribers?: boolean | null;
   includeUnreadNotifications?: boolean | null;
+  includePermissions?: boolean | null;
 }
 
 export interface GetDiscussionResult {
@@ -1332,6 +1345,7 @@ export interface GetGoalProgressUpdateInput {
   includeSubscriptionsList?: boolean | null;
   includePotentialSubscribers?: boolean | null;
   includeUnreadNotifications?: boolean | null;
+  includePermissions?: boolean | null;
 }
 
 export interface GetGoalProgressUpdateResult {

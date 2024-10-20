@@ -14,6 +14,7 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussion do
     field :include_subscriptions_list, :boolean
     field :include_potential_subscribers, :boolean
     field :include_unread_notifications, :boolean
+    field :include_permissions, :boolean
   end
 
   outputs do
@@ -62,6 +63,7 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussion do
     Inputs.parse_includes(inputs, [
       include_potential_subscribers: &Message.set_potential_subscribers/1,
       include_unread_notifications: load_unread_notifications(me),
+      include_permissions: &Message.set_permissions/1,
     ])
   end
 
