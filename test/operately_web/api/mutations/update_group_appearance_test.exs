@@ -8,7 +8,7 @@ defmodule OperatelyWeb.Api.Mutations.UpdateGroupAppearanceTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, :edit_group, %{})
+      assert {401, _} = mutation(ctx.conn, :update_group_appearance, %{})
     end
   end
 

@@ -18,15 +18,11 @@ export async function loader({ params }): Promise<LoaderResult> {
   };
 }
 
-export function useLoadedData(): LoaderResult {
-  return Pages.useLoadedData() as LoaderResult;
-}
-
 export function Page() {
   const navigate = useNavigate();
-  const { space } = useLoadedData();
+  const { space } = Pages.useLoadedData<LoaderResult>();
 
-  const [edit] = Spaces.useEditGroup();
+  const [edit] = Spaces.useEditSpace();
   const backPath = Paths.spacePath(space.id!);
 
   const form = Forms.useForm({

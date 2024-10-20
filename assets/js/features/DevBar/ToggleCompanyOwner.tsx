@@ -26,12 +26,12 @@ function Toggle() {
 
   const className = color + " cursor-pointer";
 
-  const toggle = () => {
+  const toggle = async () => {
     if (isAdmin) {
-      remove({ personId: me!.id! });
+      await remove({ personId: me!.id! });
       window.location.reload();
     } else {
-      add({ peopleIds: [me!.id!] });
+      await add({ peopleIds: [me!.id!] });
       window.location.reload();
     }
   };
