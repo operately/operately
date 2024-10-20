@@ -41,7 +41,7 @@ defmodule Operately.Blobs do
         # - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition
         # - https://elixirforum.com/t/presigned-urls-with-exaws/15708/10
         #
-        query_params = [{"response-content-disposition", "attachment; filename=#{blob.filename}"}]
+        query_params = [] # should be: {"response-content-disposition", "attachment; filename=#{blob.filename}"}]
         presigned_s3_url(:get, path, 3600, [], query_params)
 
       :local ->
@@ -76,7 +76,7 @@ defmodule Operately.Blobs do
     end
   end
 
-  defp presigned_s3_url(method, path, expires_in, headers, query_params) when method in [:get, :put] do
+  def presigned_s3_url(method, path, expires_in, headers, query_params) when method in [:get, :put] do
     host = System.get_env("OPERATELY_STORAGE_S3_HOST")
     scheme = System.get_env("OPERATELY_STORAGE_S3_SCHEME")
     port = System.get_env("OPERATELY_STORAGE_S3_PORT")
