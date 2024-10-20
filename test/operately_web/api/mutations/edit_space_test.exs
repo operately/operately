@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.EditGroupTest do
+defmodule OperatelyWeb.Api.Mutations.EditSpaceTest do
   use OperatelyWeb.TurboCase
 
   import Operately.PeopleFixtures
@@ -8,7 +8,7 @@ defmodule OperatelyWeb.Api.Mutations.EditGroupTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, :edit_group, %{})
+      assert {401, _} = mutation(ctx.conn, :edit_space, %{})
     end
   end
 
@@ -101,7 +101,7 @@ defmodule OperatelyWeb.Api.Mutations.EditGroupTest do
   #
 
   defp request(conn, space, attrs \\ []) do
-    mutation(conn, :edit_group, %{
+    mutation(conn, :edit_space, %{
       id: Paths.space_id(space),
       name: Keyword.get(attrs, :name, space.name),
       mission: Keyword.get(attrs, :mission, space.mission),

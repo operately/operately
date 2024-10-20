@@ -26,7 +26,7 @@ export function Page() {
   const navigate = useNavigate();
   const { space } = useLoadedData();
 
-  const [edit] = Spaces.useEditGroup();
+  const [edit] = Spaces.useEditSpace();
   const backPath = Paths.spacePath(space.id!);
 
   const form = Forms.useForm({
