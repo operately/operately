@@ -1957,16 +1957,6 @@ export interface EditGoalTimeframeResult {
   goal?: Goal | null;
 }
 
-export interface EditGroupInput {
-  id?: string | null;
-  name?: string | null;
-  mission?: string | null;
-}
-
-export interface EditGroupResult {
-  space?: Space | null;
-}
-
 export interface EditKeyResourceInput {
   id?: string | null;
   title?: string | null;
@@ -2026,6 +2016,16 @@ export interface EditProjectTimelineResult {
   project?: Project | null;
 }
 
+export interface EditSpaceInput {
+  id?: string | null;
+  name?: string | null;
+  mission?: string | null;
+}
+
+export interface EditSpaceResult {
+  space?: Space | null;
+}
+
 export interface EditSpaceMembersPermissionsInput {
   spaceId?: Id | null;
   members?: EditMemberPermissionsInput[] | null;
@@ -2064,7 +2064,7 @@ export interface JoinCompanyResult {
 }
 
 export interface JoinSpaceInput {
-  spaceId?: string | null;
+  spaceId?: Id | null;
 }
 
 export interface JoinSpaceResult {}
@@ -2637,10 +2637,6 @@ export class ApiClient {
     return this.post("/edit_goal_timeframe", input);
   }
 
-  async editGroup(input: EditGroupInput): Promise<EditGroupResult> {
-    return this.post("/edit_group", input);
-  }
-
   async editKeyResource(input: EditKeyResourceInput): Promise<EditKeyResourceResult> {
     return this.post("/edit_key_resource", input);
   }
@@ -2663,6 +2659,10 @@ export class ApiClient {
 
   async editProjectTimeline(input: EditProjectTimelineInput): Promise<EditProjectTimelineResult> {
     return this.post("/edit_project_timeline", input);
+  }
+
+  async editSpace(input: EditSpaceInput): Promise<EditSpaceResult> {
+    return this.post("/edit_space", input);
   }
 
   async editSpaceMembersPermissions(
@@ -3036,9 +3036,6 @@ export async function editGoalProgressUpdate(
 export async function editGoalTimeframe(input: EditGoalTimeframeInput): Promise<EditGoalTimeframeResult> {
   return defaultApiClient.editGoalTimeframe(input);
 }
-export async function editGroup(input: EditGroupInput): Promise<EditGroupResult> {
-  return defaultApiClient.editGroup(input);
-}
 export async function editKeyResource(input: EditKeyResourceInput): Promise<EditKeyResourceResult> {
   return defaultApiClient.editKeyResource(input);
 }
@@ -3060,6 +3057,9 @@ export async function editProjectRetrospective(
 }
 export async function editProjectTimeline(input: EditProjectTimelineInput): Promise<EditProjectTimelineResult> {
   return defaultApiClient.editProjectTimeline(input);
+}
+export async function editSpace(input: EditSpaceInput): Promise<EditSpaceResult> {
+  return defaultApiClient.editSpace(input);
 }
 export async function editSpaceMembersPermissions(
   input: EditSpaceMembersPermissionsInput,
@@ -3538,10 +3538,6 @@ export function useEditGoalTimeframe(): UseMutationHookResult<EditGoalTimeframeI
   );
 }
 
-export function useEditGroup(): UseMutationHookResult<EditGroupInput, EditGroupResult> {
-  return useMutation<EditGroupInput, EditGroupResult>((input) => defaultApiClient.editGroup(input));
-}
-
 export function useEditKeyResource(): UseMutationHookResult<EditKeyResourceInput, EditKeyResourceResult> {
   return useMutation<EditKeyResourceInput, EditKeyResourceResult>((input) => defaultApiClient.editKeyResource(input));
 }
@@ -3578,6 +3574,10 @@ export function useEditProjectTimeline(): UseMutationHookResult<EditProjectTimel
   return useMutation<EditProjectTimelineInput, EditProjectTimelineResult>((input) =>
     defaultApiClient.editProjectTimeline(input),
   );
+}
+
+export function useEditSpace(): UseMutationHookResult<EditSpaceInput, EditSpaceResult> {
+  return useMutation<EditSpaceInput, EditSpaceResult>((input) => defaultApiClient.editSpace(input));
 }
 
 export function useEditSpaceMembersPermissions(): UseMutationHookResult<
@@ -3956,8 +3956,6 @@ export default {
   useEditGoalProgressUpdate,
   editGoalTimeframe,
   useEditGoalTimeframe,
-  editGroup,
-  useEditGroup,
   editKeyResource,
   useEditKeyResource,
   editProjectCheckIn,
@@ -3970,6 +3968,8 @@ export default {
   useEditProjectRetrospective,
   editProjectTimeline,
   useEditProjectTimeline,
+  editSpace,
+  useEditSpace,
   editSpaceMembersPermissions,
   useEditSpaceMembersPermissions,
   editSpacePermissions,

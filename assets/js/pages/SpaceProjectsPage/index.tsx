@@ -17,7 +17,7 @@ interface LoadedData {
 
 export async function loader({ params }): Promise<LoadedData> {
   return {
-    space: await Spaces.getSpace({ id: params.id }),
+    space: await Spaces.getSpace({ id: params.id, includePermissions: true }),
     projects: await Projects.getProjects({
       spaceId: params.id,
       includeContributors: true,
