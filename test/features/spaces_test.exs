@@ -80,9 +80,10 @@ defmodule Operately.Features.SpacesTest do
     |> UI.click(title: group.name)
     |> UI.click(testid: "space-settings")
     |> UI.click(testid: "edit-name-and-purpose")
-    |> UI.fill_in(Query.text_field("Name"), with: "Marketing 2")
-    |> UI.fill_in(Query.text_field("Purpose"), with: "Let the world know about our products 2")
-    |> UI.click(testid: "save")
+    |> UI.fill(testid: "name", with: "Marketing 2")
+    |> UI.fill(testid: "purpose", with: "Let the world know about our products 2")
+    |> UI.click(testid: "submit")
+    |> UI.assert_has(testid: "space-page")
     |> UI.assert_has(Query.text("Marketing 2", count: 2))
     |> UI.assert_has(Query.text("Let the world know about our products 2"))
   end
