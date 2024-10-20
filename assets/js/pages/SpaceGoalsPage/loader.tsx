@@ -10,7 +10,10 @@ interface LoadedData {
 }
 
 export async function loader({ params }): Promise<LoadedData> {
-  const spacePromise = Spaces.getSpace({ id: params.id });
+  const spacePromise = Spaces.getSpace({
+    id: params.id,
+    includePermissions: true,
+  });
 
   const goalsPromise = Goals.getGoals({
     includeTargets: true,

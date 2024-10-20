@@ -55,21 +55,26 @@ export function useForm<T extends FieldObject>(props: FormProps<T>): FormState<T
       getValue,
       setValue,
       submit: async () => {
-        if (state !== "idle") return;
+        try {
+          if (state !== "idle") return;
 
-        setState("validating");
+          setState("validating");
 
-        const errors = runValidations(form, validations, props.validate);
-        if (Object.keys(errors).length > 0) {
-          setErrors(errors);
+          const errors = runValidations(form, validations, props.validate);
+          if (Object.keys(errors).length > 0) {
+            setErrors(errors);
+            setState("idle");
+            return;
+          }
+
+          setState("submitting");
+          await props.submit();
+
           setState("idle");
-          return;
+        } catch (e) {
+          console.error(e);
+          setState("idle");
         }
-
-        setState("submitting");
-        await props.submit();
-
-        setState("idle");
       },
       cancel: async () => {
         if (!props.cancel) return;
