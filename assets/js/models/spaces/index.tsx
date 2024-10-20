@@ -4,7 +4,7 @@ export type { Space } from "@/api";
 export {
   useCreateSpace,
   useJoinSpace,
-  useEditGroup,
+  useEditSpace,
   useEditSpacePermissions,
   useRemoveGroupMember,
   useAddSpaceMembers,

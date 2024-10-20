@@ -10,6 +10,7 @@ import classnames from "classnames";
 import { createTestId } from "@/utils/testid";
 import classNames from "classnames";
 import { Paths } from "@/routes/paths";
+import { assertPresent } from "@/utils/assertions";
 
 interface SpacePageNavigationProps {
   space: Spaces.Space;
@@ -79,19 +80,22 @@ function Tab({ id, activeTab, link, title }: TabProps) {
   );
 }
 
-function Settings({ space }) {
+function Settings({ space }: { space: Spaces.Space }) {
+  assertPresent(space.permissions, "permissions must be loaded");
+  if (!space.permissions.canEdit) return null;
+
   return (
     <PageOptions.Root noBorder testId="space-settings">
       <PageOptions.Link
         icon={Icons.IconEdit}
         title="Edit name and purpose"
-        to={Paths.spaceEditPath(space.id)}
+        to={Paths.spaceEditPath(space.id!)}
         testId="edit-name-and-purpose"
       />
       <PageOptions.Link
         icon={Icons.IconPaint}
         title="Change Appearance"
-        to={Paths.spaceAppearancePath(space.id)}
+        to={Paths.spaceAppearancePath(space.id!)}
         testId="change-appearance"
       />
     </PageOptions.Root>
