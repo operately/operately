@@ -38,7 +38,7 @@ function ShowHideCompletedToggle() {
   const title = showCompleted ? "Hide Completed" : "Show Completed";
 
   return (
-    <SecondaryButton size="xs" onClick={toggle}>
+    <SecondaryButton size="xs" onClick={toggle} testId="show-hide-completed">
       {title}
     </SecondaryButton>
   );
