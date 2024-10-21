@@ -36,9 +36,14 @@ function GoalTreeRoots() {
 }
 
 function Controls() {
+  const { expanded, expandAll, collapseAll } = useExpandable();
+  const isExpanded = Object.keys(expanded).length > 0;
+
   return (
     <div className="flex mb-4 items-center gap-2">
-      <GhostButton size="sm">Expand all</GhostButton>
+      <GhostButton onClick={isExpanded ? collapseAll : expandAll} size="sm">
+        {isExpanded ? "Collapse All" : "Expand all"}
+      </GhostButton>
       <GhostButton size="sm">View options</GhostButton>
     </div>
   );
