@@ -1,4 +1,7 @@
-import React from "react";
+import * as React from "react";
+import * as Icons from "@tabler/icons-react";
+import * as Goals from "@/models/goals";
+import * as Reactions from "@/models/reactions";
 
 import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
@@ -7,9 +10,6 @@ import RichContent from "@/components/RichContent";
 import { SecondaryButton } from "@/components/Buttons";
 import { Paths } from "@/routes/paths";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
-
-import * as Icons from "@tabler/icons-react";
-import * as Goals from "@/models/goals";
 
 import plurarize from "@/utils/plurarize";
 import { DivLink } from "@/components/Link";
@@ -70,7 +70,7 @@ function LastMessageReactions({ goal }: { goal: Goals.Goal }) {
 
   const update = goal.lastCheckIn!;
   const reactions = update.reactions!.map((r: any) => r!);
-  const entity = { id: update.id!, type: "update" };
+  const entity = Reactions.entity(update.id!, "goal_update");
 
   const addReactionForm = useReactionsForm(entity, reactions);
 

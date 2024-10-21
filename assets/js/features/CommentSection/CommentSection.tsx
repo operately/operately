@@ -3,6 +3,7 @@ import React from "react";
 import * as Icons from "@tabler/icons-react";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import * as TipTapEditor from "@/components/Editor";
+import * as Reactions from "@/models/reactions";
 
 import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
@@ -174,7 +175,7 @@ function ViewComment({ comment, onEdit, commentParentType, canComment }) {
   const commentRef = useClearNotificationOnIntersection(comment.notification);
   useScrollIntoViewOnLoad(comment.id);
 
-  const entity = { id: comment.id, type: "comment", parentType: commentParentType };
+  const entity = Reactions.entity(comment.id, "comment", commentParentType);
   const addReactionForm = useReactionsForm(entity, comment.reactions);
 
   const testId = "comment-" + comment.id;
