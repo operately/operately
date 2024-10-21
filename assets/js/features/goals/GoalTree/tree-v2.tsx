@@ -1,13 +1,10 @@
 import React from "react";
 
-import { IconChevronDown, IconChevronRight, IconMinus, IconPlus } from "@tabler/icons-react";
+import { IconChevronDown, IconChevronRight } from "@tabler/icons-react";
 import { GhostButton } from "@/components/Buttons";
-import { MiniPieChart } from "@/components/MiniPieChart";
-import { assertPresent } from "@/utils/assertions";
-import { includesId } from "@/routes/paths";
-import { ProgressBar } from "@/components/ProgressBar";
 
 import { useTreeContext, TreeContextProvider, TreeContextProviderProps } from "./treeContext";
+import { ExpandGoalSuccessConditions, GoalDetails, GoalProgressBar } from "./components/GoalDetails";
 import { GoalNode, Node, ProjectNode } from "./tree";
 import { useExpandable } from "./context/Expandable";
 import { NodeIcon } from "./components/NodeIcon";
@@ -93,12 +90,6 @@ function NodeExpandCollapseToggle({ node }: { node: Node }) {
   return <ChevronIcon size={16} className="cursor-pointer" onClick={handleClick} />;
 }
 
-function GoalProgressBar({ node }: { node: GoalNode }) {
-  assertPresent(node.goal.progressPercentage, "progressPercentage must be present in goal");
-
-  return <ProgressBar percentage={node.goal.progressPercentage} className="ml-2" />;
-}
-
 function ResourceDetails({ node }: { node: Node }) {
   switch (node.type) {
     case "goal":
@@ -106,52 +97,4 @@ function ResourceDetails({ node }: { node: Node }) {
     case "project":
       return <ProjectDetails node={node as ProjectNode} />;
   }
-}
-
-function GoalDetails({ node }: { node: GoalNode }) {
-  return (
-    <div className="pl-[42px]">
-      <GoalSuccessConditions node={node} />
-    </div>
-  );
-}
-
-function ExpandGoalSuccessConditions({ node }: { node: GoalNode }) {
-  const { goalExpanded, toggleGoalExpanded } = useExpandable();
-
-  return (
-    <div
-      onClick={() => toggleGoalExpanded(node.goal.id!)}
-      className="ml-2 h-[20px] w-[20px] rounded-full border-2 border-surface-outline flex items-center justify-center cursor-pointer"
-    >
-      {includesId(goalExpanded, node.goal.id) ? (
-        <IconMinus size={12} stroke={3} className="border-surface-outline shrink-0" />
-      ) : (
-        <IconPlus size={12} stroke={3} className="border-surface-outline shrink-0" />
-      )}
-    </div>
-  );
-}
-
-function GoalSuccessConditions({ node }: { node: GoalNode }) {
-  const { goalExpanded } = useExpandable();
-  assertPresent(node.goal.targets, "targets must be present in goal");
-
-  if (!includesId(goalExpanded, node.goal.id)) return <></>;
-
-  return (
-    <div>
-      {node.goal.targets.map((t) => {
-        const total = t.to! - t.from!;
-        const completed = t.value! - t.from!;
-
-        return (
-          <div key={t.id} className="flex items-center gap-2">
-            <MiniPieChart total={total} completed={completed} />
-            {t.name}
-          </div>
-        );
-      })}
-    </div>
-  );
 }
