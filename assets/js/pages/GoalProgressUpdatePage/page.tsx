@@ -3,6 +3,7 @@ import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as Icons from "@tabler/icons-react";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
+import * as Reactions from "@/models/reactions";
 
 import { useLoadedData, useRefresh } from "./loader";
 import FormattedTime from "@/components/FormattedTime";
@@ -56,7 +57,7 @@ export function Page() {
           <Targets />
 
           <Spacer size={4} />
-          <Reactions />
+          <GoalUpdateReactions />
 
           <AckCTA />
           <Comments />
@@ -76,10 +77,10 @@ export function Page() {
   );
 }
 
-function Reactions() {
+function GoalUpdateReactions() {
   const { update } = useLoadedData();
   const reactions = update.reactions!.map((r: any) => r!);
-  const entity = { id: update.id!, type: "goal_update" };
+  const entity = Reactions.entity(update.id!, "goal_update");
   const addReactionForm = useReactionsForm(entity, reactions);
 
   assertPresent(update.goal?.permissions?.canCommentOnUpdate, "permissions must be present in update");

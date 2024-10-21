@@ -3,6 +3,7 @@ import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as Goals from "@/models/goals";
 import * as Activities from "@/models/activities";
+import * as Reactions from "@/models/reactions";
 
 import { GoalSubpageNavigation } from "@/features/goals/GoalSubpageNavigation";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
@@ -47,7 +48,7 @@ export function Page() {
             <ActivityHandler.PageContent activity={activity} />
           </div>
 
-          <Reactions />
+          <ActivityReactions />
           <Comments goal={goal} />
         </Paper.Body>
       </Paper.Root>
@@ -72,7 +73,7 @@ function Title({ activity }: { activity: Activities.Activity }) {
   );
 }
 
-function Reactions() {
+function ActivityReactions() {
   const { activity } = Pages.useLoadedData<LoaderResult>();
 
   assertPresent(
@@ -82,7 +83,7 @@ function Reactions() {
   assertPresent(activity.permissions?.canCommentOnThread, "permissions must be present in activity");
 
   const reactions = activity.commentThread.reactions.map((r) => r!);
-  const entity = { id: activity.commentThread.id!, type: "comment_thread" };
+  const entity = Reactions.entity(activity.commentThread.id!, "comment_thread");
   const addReactionForm = useReactionsForm(entity, reactions);
 
   return <ReactionList size={24} form={addReactionForm} canAddReaction={activity.permissions.canCommentOnThread} />;

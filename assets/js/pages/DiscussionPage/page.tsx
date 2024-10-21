@@ -6,6 +6,7 @@ import * as Icons from "@tabler/icons-react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
+import * as Reactions from "@/models/reactions";
 
 import Avatar from "@/components/Avatar";
 import RichContent from "@/components/RichContent";
@@ -44,7 +45,7 @@ export function Page() {
             <RichContent jsonContent={discussion.body!} className="text-md sm:text-lg" />
 
             <Spacer size={2} />
-            <Reactions />
+            <DiscussionReactions />
 
             <Spacer size={4} />
 
@@ -66,10 +67,10 @@ export function Page() {
   );
 }
 
-function Reactions() {
+function DiscussionReactions() {
   const { discussion } = useLoadedData();
   const reactions = discussion.reactions!.map((r) => r!);
-  const entity = { id: discussion.id!, type: "message" };
+  const entity = Reactions.entity(discussion.id!, "message");
   const addReactionForm = useReactionsForm(entity, reactions);
 
   assertPresent(discussion.permissions?.canCommentOnDiscussions, "permissions must be present in discussion");
