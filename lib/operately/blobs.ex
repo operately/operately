@@ -30,7 +30,16 @@ defmodule Operately.Blobs do
     Blob.changeset(blob, attrs)
   end
 
-  def get_signed_get_url(%Blob{} = blob) do
+  @valid_dispositions [
+    "inline",              # Display the file in the browser
+    "attachment"           # For downloading the file
+  ]
+
+  def is_valid_disposition?(disposition) do
+    disposition in @valid_dispositions
+  end
+
+  def get_signed_get_url(%Blob{} = blob, disposition) when disposition in @valid_dispositions do
     path = "#{blob.company_id}-#{blob.id}"
 
     case blob.storage_type do
@@ -41,7 +50,12 @@ defmodule Operately.Blobs do
         # - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition
         # - https://elixirforum.com/t/presigned-urls-with-exaws/15708/10
         #
-        query_params = [] # should be: {"response-content-disposition", "attachment; filename=#{blob.filename}"}]
+        query_params = case disposition do
+          "attachment" -> [{"response-content-disposition", "attachment; filename=#{URI.encode(blob.filename)}"}]
+          "inline" -> [{"response-content-disposition", "inline; filename=#{URI.encode(blob.filename)}"}]
+          _ -> raise ArgumentError, "Invalid disposition type #{disposition}"
+        end
+
         presigned_s3_url(:get, path, 3600, [], query_params)
 
       :local ->
