@@ -3,7 +3,7 @@ import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as Icons from "@tabler/icons-react";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
-import * as api from "@/api";
+import * as Reactions from "@/models/reactions";
 
 import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
@@ -47,7 +47,7 @@ export function Page() {
           <AckCTA />
 
           <Spacer size={4} />
-          <Reactions />
+          <CheckInReactions />
 
           <div className="border-t border-stroke-base mt-8" />
           <Comments />
@@ -84,10 +84,10 @@ function Comments() {
   );
 }
 
-function Reactions() {
+function CheckInReactions() {
   const { checkIn } = useLoadedData();
-  const reactions = checkIn.reactions!.map((r) => r!) as api.Reaction[];
-  const entity = { id: checkIn.id!, type: "project_check_in" };
+  const reactions = checkIn.reactions!.map((r) => r!);
+  const entity = Reactions.entity(checkIn.id!, "project_check_in");
   const form = useReactionsForm(entity, reactions);
 
   assertPresent(checkIn.project?.permissions?.canCommentOnCheckIn, "permissions must be present in project checkIn");

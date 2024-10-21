@@ -14,19 +14,13 @@ interface ReactionsFormState {
   submit: (type: string) => void;
 }
 
-interface Entity {
-  id: string;
-  type: string;
-  parentType?: string;
-}
-
 interface ReactionListItem {
   id: string;
   person: Pick<api.Person, "id" | "fullName" | "avatarUrl">;
   emoji: string;
 }
 
-export function useReactionsForm(entity: Entity, initial: api.Reaction[] | Reactions.Reaction[]): ReactionsFormState {
+export function useReactionsForm(entity: Reactions.Entity, initial: Reactions.Reaction[]): ReactionsFormState {
   const me = useMe()!;
   const [add] = Reactions.useAddReaction();
 
