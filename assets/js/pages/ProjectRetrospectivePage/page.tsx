@@ -2,6 +2,7 @@ import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
+import * as Reactions from "@/models/reactions";
 
 import { Paths } from "@/routes/paths";
 import { IconEdit } from "@tabler/icons-react";
@@ -36,7 +37,7 @@ export function Page() {
           <Content />
 
           <Spacer size={2} />
-          <Reactions />
+          <RetroReactions />
 
           <Spacer size={4} />
           <Comments />
@@ -99,10 +100,10 @@ function Content() {
   );
 }
 
-function Reactions() {
+function RetroReactions() {
   const { retrospective } = useLoadedData();
   const reactions = retrospective.reactions!.map((r) => r!);
-  const entity = { id: retrospective.id!, type: "project_retrospective" };
+  const entity = Reactions.entity(retrospective.id!, "project_retrospective");
   const addReactionForm = useReactionsForm(entity, reactions);
 
   assertPresent(retrospective.permissions?.canCommentOnRetrospective, "permissions must be present in retrospective");
