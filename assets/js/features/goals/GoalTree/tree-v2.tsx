@@ -1,10 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 
 import { IconChevronDown, IconChevronRight } from "@tabler/icons-react";
 import { GhostButton } from "@/components/Buttons";
 
 import { useTreeContext, TreeContextProvider, TreeContextProviderProps } from "./treeContext";
-import { ExpandGoalSuccessConditions, GoalDetails, GoalProgressBar } from "./components/GoalDetails";
+import { ExpandGoalSuccessConditions, GoalActions, GoalDetails, GoalProgressBar } from "./components/GoalDetails";
 import { GoalNode, Node, ProjectNode } from "./tree";
 import { useExpandable } from "./context/Expandable";
 import { NodeIcon } from "./components/NodeIcon";
@@ -47,27 +47,41 @@ function Controls() {
 function NodeView({ node }: { node: Node }) {
   return (
     <div>
-      <NodeHeader node={node} />
+      {node.type === "goal" ? <GoalHeader node={node as GoalNode} /> : <ProjectHeader node={node as ProjectNode} />}
       <NodeChildren node={node} />
     </div>
   );
 }
 
-function NodeHeader({ node }: { node: Node }) {
+function ProjectHeader({ node }: { node: ProjectNode }) {
   return (
-    <div className="border-t border-surface-outline py-3">
-      <div style={{ paddingLeft: node.depth * 30 }}>
-        <div className="inline-flex items-center gap-1 truncate flex-1 group pr-2">
-          <NodeExpandCollapseToggle node={node} />
-          <NodeIcon node={node} />
-          <NodeName node={node} />
-          {node.type === "goal" && <GoalProgressBar node={node as GoalNode} />}
-          {node.type == "goal" && <ExpandGoalSuccessConditions node={node as GoalNode} />}
-        </div>
-
-        <ResourceDetails node={node} />
+    <HeaderContainer node={node}>
+      <div className="flex items-center gap-1">
+        <NodeIcon node={node} />
+        <NodeName node={node} />
       </div>
-    </div>
+
+      <ProjectDetails node={node} />
+    </HeaderContainer>
+  );
+}
+
+function GoalHeader({ node }: { node: GoalNode }) {
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    <HeaderContainer node={node} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
+      <div className="flex items-center gap-1">
+        <NodeExpandCollapseToggle node={node} />
+        <NodeIcon node={node} />
+        <NodeName node={node} />
+        <GoalProgressBar node={node} />
+        <ExpandGoalSuccessConditions node={node} />
+        <GoalActions node={node} hovered={hovered} />
+      </div>
+
+      <GoalDetails node={node} />
+    </HeaderContainer>
   );
 }
 
@@ -90,11 +104,10 @@ function NodeExpandCollapseToggle({ node }: { node: Node }) {
   return <ChevronIcon size={16} className="cursor-pointer" onClick={handleClick} />;
 }
 
-function ResourceDetails({ node }: { node: Node }) {
-  switch (node.type) {
-    case "goal":
-      return <GoalDetails node={node as GoalNode} />;
-    case "project":
-      return <ProjectDetails node={node as ProjectNode} />;
-  }
+function HeaderContainer(props) {
+  return (
+    <div className="border-t border-surface-outline py-3" {...props}>
+      <div style={{ paddingLeft: props.node.depth * 30 }}>{props.children}</div>
+    </div>
+  );
 }
