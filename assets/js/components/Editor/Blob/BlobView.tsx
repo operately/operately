@@ -131,8 +131,8 @@ function ImageView({ node, deleteNode, updateAttributes, view }) {
             <div className="text-content-dimmed text-sm">•</div>
             <a
               className="text-content-dimmed text-sm underline cursor-pointer"
-              download={node.attrs.title}
-              href={node.attrs.src}
+              title={node.attrs.title}
+              href={downloadableUrl(node.attrs.src)}
             >
               Download
             </a>
@@ -184,8 +184,8 @@ function FileView({ node, deleteNode, view }) {
                 <div className="text-content-dimmed text-sm">•</div>
                 <a
                   className="text-content-dimmed text-sm underline cursor-pointer"
-                  download={node.attrs.title}
-                  href={node.attrs.src}
+                  title={node.attrs.title}
+                  href={downloadableUrl(node.attrs.src)}
                 >
                   Download
                 </a>
@@ -230,4 +230,8 @@ function FileIcon({ filetype }: { filetype: string }) {
     default:
       return <Icons.IconFileFilled className="text-content-accent" size={48} data-drag-handle strokeWidth={1} />;
   }
+}
+
+function downloadableUrl(url: string) {
+  return url + "?disposition=attachment";
 }
