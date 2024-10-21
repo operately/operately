@@ -1,10 +1,12 @@
 import React from "react";
 
+import classNames from "classnames";
 import { IconMinus, IconPlus } from "@tabler/icons-react";
-import { includesId } from "@/routes/paths";
+import { includesId, Paths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { ProgressBar } from "@/components/ProgressBar";
 import { MiniPieChart } from "@/components/MiniPieChart";
+import { SecondaryButton } from "@/components/Buttons";
 
 import { GoalNode } from "../tree";
 import { useExpandable } from "../context/Expandable";
@@ -36,6 +38,26 @@ export function ExpandGoalSuccessConditions({ node }: { node: GoalNode }) {
       ) : (
         <IconPlus size={12} stroke={3} className="border-surface-outline shrink-0" />
       )}
+    </div>
+  );
+}
+
+export function GoalActions({ hovered, node }: { hovered: boolean; node: GoalNode }) {
+  const containerClasses = classNames(
+    "ml-2 flex gap-2 items-center",
+    hovered ? "opacity-100 transition-opacity duration-300" : "opacity-0",
+  );
+  const newGoalPath = Paths.goalNewPath({ parentGoalId: node.goal.id! });
+  const newProjectPath = Paths.newProjectPath();
+
+  return (
+    <div className={containerClasses}>
+      <SecondaryButton linkTo={newGoalPath} size="xxs">
+        Add sub-goal
+      </SecondaryButton>
+      <SecondaryButton linkTo={newProjectPath} size="xxs">
+        Create project
+      </SecondaryButton>
     </div>
   );
 }
