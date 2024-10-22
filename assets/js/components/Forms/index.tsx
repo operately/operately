@@ -10,6 +10,7 @@ import { SelectPerson } from "./SelectPerson";
 import { RichTextArea } from "./RichTextArea";
 import { PasswordInput } from "./PasswordInput";
 import { MultiPeopleSelectField } from "./MultiPeopleSelectField";
+import { CheckboxInput } from "./CheckboxInput";
 
 import { useForm } from "./useForm";
 import { useFieldError, useFieldValue } from "./FormContext";
@@ -31,4 +32,5 @@ export default {
   SelectPerson,
   PasswordInput,
   MultiPeopleSelectField,
+  CheckboxInput,
 };

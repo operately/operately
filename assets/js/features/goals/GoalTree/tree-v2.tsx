@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 
 import { IconChevronDown, IconChevronRight } from "@tabler/icons-react";
-import { GhostButton } from "@/components/Buttons";
 
 import { useTreeContext, TreeContextProvider, TreeContextProviderProps } from "./treeContext";
 import { ExpandGoalSuccessConditions, GoalActions, GoalDetails, GoalProgressBar } from "./components/GoalDetails";
+import { ProjectDetails } from "./components/ProjectDetails";
 import { GoalNode, Node, ProjectNode } from "./tree";
 import { useExpandable } from "./context/Expandable";
 import { NodeIcon } from "./components/NodeIcon";
 import { NodeName } from "./components/NodeName";
-import ProjectDetails from "./components/ProjectDetails";
+import { Controls } from "./components/Controls-v2";
 
 export function GoalTree(props: TreeContextProviderProps) {
   return (
@@ -31,20 +31,6 @@ function GoalTreeRoots() {
           <NodeView key={root.id} node={root} />
         ))}
       </div>
-    </div>
-  );
-}
-
-function Controls() {
-  const { expanded, expandAll, collapseAll } = useExpandable();
-  const isExpanded = Object.keys(expanded).length > 0;
-
-  return (
-    <div className="flex mb-4 items-center gap-2">
-      <GhostButton onClick={isExpanded ? collapseAll : expandAll} size="sm">
-        {isExpanded ? "Collapse All" : "Expand all"}
-      </GhostButton>
-      <GhostButton size="sm">View options</GhostButton>
     </div>
   );
 }
@@ -101,7 +87,7 @@ function NodeChildren({ node }: { node: Node }) {
 function NodeExpandCollapseToggle({ node }: { node: Node }) {
   const { expanded, toggleExpanded } = useExpandable();
 
-  if (!node.hasChildren) return <></>;
+  if (node.children.length === 0) return <></>;
 
   const handleClick = () => toggleExpanded(node.id);
   const ChevronIcon = expanded[node.id] ? IconChevronDown : IconChevronRight;

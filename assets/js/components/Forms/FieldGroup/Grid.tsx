@@ -7,6 +7,7 @@ import { InputFieldProps } from "../FieldGroup";
 
 export interface Options {
   columns: number;
+  gridTemplateColumns?: string;
 }
 
 const DEFAULT_OPTIONS: Options = {
@@ -21,7 +22,7 @@ export function Container({ children }: { children: React.ReactNode }) {
   const options = useLayoutOptions<Options>();
 
   const style = {
-    gridTemplateColumns: `repeat(${options.columns}, 1fr)`,
+    gridTemplateColumns: options.gridTemplateColumns || `repeat(${options.columns}, 1fr)`,
   };
 
   return (
