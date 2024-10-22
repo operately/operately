@@ -1,4 +1,5 @@
 import { createTestId } from "@/utils/testid";
+import classNames from "classnames";
 import * as React from "react";
 import { Link } from "react-router-dom";
 
@@ -10,17 +11,27 @@ export function OptionsMenu({ children }) {
   );
 }
 
-export function OptionsMenuItem({ icon, title, linkTo }) {
+export function OptionsMenuItem({ icon, title, linkTo, disabled }) {
   const testId = createTestId(title);
 
-  return (
-    <Link
-      to={linkTo}
-      className="flex items-center gap-4 group cursor-pointer px-4 py-3 font-bold text-lg"
-      data-test-id={testId}
-    >
-      {React.createElement(icon, { size: 24 })}
-      {title}
-    </Link>
-  );
+  const className = classNames("flex items-center gap-4 group px-4 py-3", {
+    "font-bold text-content text-lg": !disabled,
+    "font-medium text-lg": disabled,
+  });
+
+  if (disabled) {
+    return (
+      <div className={className}>
+        {React.createElement(icon, { size: 20 })}
+        {title}
+      </div>
+    );
+  } else {
+    return (
+      <Link to={linkTo} className={className} data-test-id={testId}>
+        {React.createElement(icon, { size: 24 })}
+        {title}
+      </Link>
+    );
+  }
 }

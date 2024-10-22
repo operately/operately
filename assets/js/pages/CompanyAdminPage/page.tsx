@@ -7,11 +7,10 @@ import { NavigationBackToLobby } from "./NavigationBackToLobby";
 import { CompanyAdmins } from "./CompanyAdmins";
 import { useLoadedData } from "./loader";
 import { OptionsMenu, OptionsMenuItem } from "./OptionsMenu";
-import { useMe } from "@/contexts/CurrentUserContext";
 import { Paths } from "@/routes/paths";
+import { assertPresent } from "@/utils/assertions";
 
 export function Page() {
-  const me = useMe()!;
   const { company } = useLoadedData();
 
   return (
@@ -32,7 +31,7 @@ export function Page() {
 
           <CompanyAdmins />
 
-          {me.companyRole === "admin" && <Menu />}
+          <Menu />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
@@ -40,17 +39,43 @@ export function Page() {
 }
 
 function Menu() {
+  const { company } = useLoadedData();
+
   const manageTrustedDomains = Paths.companyAdminManageTrustedDomainsPath();
   const managePeople = Paths.companyManagePeoplePath();
   const manageAdmins = Paths.companyManageAdminsPath();
 
+  assertPresent(company.permissions, "company permissions must be present");
+  const permissions = company.permissions;
+
   return (
     <div className="mt-12">
+      {permissions.canInviteMembers && <ReachOutMessage />}
+
       <OptionsMenu>
-        <OptionsMenuItem linkTo={manageTrustedDomains} icon={Icons.IconLock} title="Manage Trusted Email Domains" />
-        <OptionsMenuItem linkTo={managePeople} icon={Icons.IconUsers} title="Manage Team Members" />
-        <OptionsMenuItem linkTo={manageAdmins} icon={Icons.IconUserShield} title="Manage Company Administrators" />
+        <OptionsMenuItem
+          disabled={permissions.canEditTrustedEmailDomains}
+          linkTo={manageTrustedDomains}
+          icon={Icons.IconLock}
+          title="Manage Trusted Email Domains"
+        />
+        <OptionsMenuItem
+          disabled={permissions.canInviteMembers}
+          linkTo={managePeople}
+          icon={Icons.IconUsers}
+          title="Manage Team Members"
+        />
+        <OptionsMenuItem
+          disabled={permissions.canManageAdmins}
+          linkTo={manageAdmins}
+          icon={Icons.IconUserShield}
+          title="Manage Company Administrators"
+        />
       </OptionsMenu>
     </div>
   );
+}
+
+function ReachOutMessage() {
+  return <p className="mb-2 font-medium">Reach out to an admin if you need to:</p>;
 }
