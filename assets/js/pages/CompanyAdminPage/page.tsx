@@ -4,7 +4,7 @@ import * as Pages from "@/components/Pages";
 import * as Icons from "@tabler/icons-react";
 
 import { NavigationBackToLobby } from "./NavigationBackToLobby";
-import { CompanyAdmins } from "./CompanyAdmins";
+import { AccountOnwners } from "./AccontOwners";
 import { useLoadedData } from "./loader";
 import { OptionsMenu, OptionsMenuItem } from "./OptionsMenu";
 import { useMe } from "@/contexts/CurrentUserContext";
