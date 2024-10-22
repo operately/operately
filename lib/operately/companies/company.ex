@@ -19,6 +19,7 @@ defmodule Operately.Companies.Company do
     field :member_count, :integer, virtual: true
     field :admins, :any, virtual: true
     field :account_owners, :any, virtual: true
+    field :permissions, :any, virtual: true
 
     timestamps()
     request_info()
@@ -76,6 +77,11 @@ defmodule Operately.Companies.Company do
     context = Operately.Access.get_context(company_id: company.id)
     people = Operately.Access.BindedPeopleLoader.load(context.id, :full_access)
     Map.put(company, :account_owners, people)
+  end
+
+  def load_permissions(company) do
+    permissions = Operately.Companies.Permissions.calculate(company.request_info.access_level)
+    Map.put(company, :permissions, permissions)
   end
 
 end

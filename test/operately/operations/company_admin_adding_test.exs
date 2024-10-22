@@ -7,6 +7,7 @@ defmodule Operately.Operations.CompanyAdminAddingTest do
 
   alias Operately.Access
   alias Operately.Activities.Activity
+  alias Operately.Operations.CompanyAdminAdding
 
   setup do
     company = company_fixture()
@@ -18,40 +19,25 @@ defmodule Operately.Operations.CompanyAdminAddingTest do
     {:ok, company: company, admin: admin, people: people}
   end
 
-  test "CompanyAdminAdding operation updates people to admin", ctx do
-    Enum.each(ctx.people, fn p ->
-      assert p.company_role != :admin
-    end)
+  test "CompanyAdminAdding operation promotes people to admin", ctx do
+    refute_people_are_owners(ctx.company, ctx.people)
 
-    ids = Enum.map(ctx.people, &(&1.id))
-    {:ok, _} = Operately.Operations.CompanyAdminAdding.run(ctx.admin, ids)
+    assert {:ok, _} = CompanyAdminAdding.run(ctx.admin, people_ids(ctx.people))
 
-    Enum.each(ctx.people, fn p ->
-      person = Repo.reload(p)
-      assert person.company_role == :admin
-    end)
+    assert_people_are_owners(ctx.company, ctx.people)
   end
 
   test "CompanyAdminAdding operation adds person to admins group", ctx do
-    group = Access.get_group!(company_id: ctx.company.id, tag: :full_access)
+    refute_people_are_in_owners_group(ctx.company, ctx.people)
 
-    Enum.each(ctx.people, fn p ->
-      refute Access.get_group_membership(group_id: group.id, person_id: p.id)
-    end)
+    assert {:ok, _} = CompanyAdminAdding.run(ctx.admin, people_ids(ctx.people))
 
-    ids = Enum.map(ctx.people, &(&1.id))
-    {:ok, _} = Operately.Operations.CompanyAdminAdding.run(ctx.admin, ids)
-
-    Enum.each(ctx.people, fn p ->
-      assert Access.get_group_membership(group_id: group.id, person_id: p.id)
-    end)
+    assert_people_are_in_owners_group(ctx.company, ctx.people)
   end
 
   test "CompanyAdminAdding operation creates activity", ctx do
-    ids = Enum.map(ctx.people, &(&1.id))
-    {:ok, _} = Operately.Operations.CompanyAdminAdding.run(ctx.admin, ids)
-
-    activity = from(a in Activity, where: a.action == "company_admin_added" and a.content["company_id"] == ^ctx.company.id) |> Repo.one()
+    assert {:ok, _} = CompanyAdminAdding.run(ctx.admin, people_ids(ctx.people))
+    assert activity = find_activity(ctx.company)
 
     assert activity.author_id == ctx.admin.id
     assert activity.content["company_id"] == ctx.company.id
@@ -65,11 +51,10 @@ defmodule Operately.Operations.CompanyAdminAddingTest do
 
   test "CompanyAdminAdding operation creates notification", ctx do
     Oban.Testing.with_testing_mode(:manual, fn ->
-      ids = Enum.map(ctx.people, &(&1.id))
-      {:ok, _} = Operately.Operations.CompanyAdminAdding.run(ctx.admin, ids)
+      assert {:ok, _} = CompanyAdminAdding.run(ctx.admin, people_ids(ctx.people))
     end)
 
-    activity = from(a in Activity, where: a.action == "company_admin_added" and a.content["company_id"] == ^ctx.company.id) |> Repo.one()
+    assert activity = find_activity(ctx.company)
 
     assert notifications_count() == 0
 
@@ -77,5 +62,41 @@ defmodule Operately.Operations.CompanyAdminAddingTest do
 
     assert fetch_notifications(activity.id)
     assert notifications_count() == length(ctx.people)
+  end
+
+  #
+  # Helpers
+  #
+
+  defp people_ids(people) do
+    Enum.map(people, &(&1.id))
+  end
+
+  defp refute_people_are_owners(company, people) do
+    owners = Operately.Companies.list_account_owners(company)
+    owner_ids = Enum.map(owners, &(&1.id))
+
+    refute Enum.any?(people, fn p -> p.id in owner_ids end)
+  end
+
+  defp assert_people_are_owners(company, people) do
+    owners = Operately.Companies.list_account_owners(company)
+    owner_ids = Enum.map(owners, &(&1.id))
+
+    assert Enum.all?(people, fn p -> p.id in owner_ids end)
+  end
+
+  defp refute_people_are_in_owners_group(company, people) do
+    group = Access.get_group!(company_id: company.id, tag: :full_access)
+    refute Enum.any?(people, fn p -> Access.get_group_membership(group_id: group.id, person_id: p.id) end)
+  end
+
+  defp assert_people_are_in_owners_group(company, people) do
+    group = Access.get_group!(company_id: company.id, tag: :full_access)
+    assert Enum.all?(people, fn p -> Access.get_group_membership(group_id: group.id, person_id: p.id) end)
+  end
+
+  defp find_activity(company) do
+    from(a in Activity, where: a.action == "company_admin_added" and a.content["company_id"] == ^company.id) |> Repo.one()
   end
 end

@@ -33,7 +33,6 @@ defmodule Operately.Operations.CompanyMemberAdding do
 
   defp insert_person(multi, admin, attrs) do
     attrs = Map.put(attrs, :company_id, admin.company_id)
-    attrs = Map.put(attrs, :company_role, :member)
 
     multi
     |> Multi.run(:company_space, fn _, _ ->

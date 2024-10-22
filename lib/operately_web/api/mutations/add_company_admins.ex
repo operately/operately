@@ -11,8 +11,11 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyAdmins do
   end
 
   def call(conn, inputs) do
-    if has_permissions?(me(conn), company(conn)) do
-      {:ok, _} = Operately.Operations.CompanyAdminAdding.run(me(conn), inputs.people_ids)
+    me = me(conn)
+    company = company(conn)
+
+    if has_permissions?(me, company) do
+      {:ok, _} = Operately.Operations.CompanyAdminAdding.run(me, inputs.people_ids)
       {:ok, %{}}
     else
       {:error, :forbidden}
