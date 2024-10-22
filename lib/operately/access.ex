@@ -43,6 +43,8 @@ defmodule Operately.Access do
   defdelegate bind_person(context, person_id, level), to: Binder
   defdelegate unbind(context, attrs), to: Binder
   defdelegate unbind_person(context, person_id), to: Binder
+  defdelegate add_to_group(group_id, attrs), to: Binder
+  defdelegate remove_from_group(group_id, attrs), to: Binder
 
   alias Operately.Access.Group
 
