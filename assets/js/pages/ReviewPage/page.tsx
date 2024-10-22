@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
+import * as Signals from "@/signals";
 
 import { useLoadedData } from "./loader";
 import { IconTarget, IconHexagons } from "@tabler/icons-react";
@@ -14,11 +15,12 @@ import { ReviewAssignment, AssignmentType } from "@/models/assignments";
 export function Page() {
   const { assignmentsCount } = useLoadedData();
 
+  const onLoad = () => Signals.publish(Signals.LocalSignal.RefreshReviewCount);
   const noAssignments = assignmentsCount === 0;
   const title = noAssignments ? "Review" : `Review (${assignmentsCount})`;
 
   return (
-    <Pages.Page title={title}>
+    <Pages.Page title={title} onLoad={onLoad}>
       <Paper.Root size="large">
         <Paper.Body minHeight="600px">
           <div className="text-content-accent text-3xl font-bold">{title}</div>
