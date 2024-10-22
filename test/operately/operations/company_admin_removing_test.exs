@@ -10,19 +10,10 @@ defmodule Operately.Operations.CompanyAdminRemovingTest do
 
   setup do
     company = company_fixture()
-    company_creator = Operately.Companies.list_admins(company.id) |> hd()
+    company_creator = Operately.Companies.list_account_owners(company) |> hd()
     admin = person_fixture_with_account(%{company_id: company.id, company_role: :admin})
 
     {:ok, company: company, admin: admin, member: company_creator}
-  end
-
-  test "CompanyAdminRemoving operation updates admin to member", ctx do
-    assert ctx.member.company_role == :admin
-
-    {:ok, _} = Operately.Operations.CompanyAdminRemoving.run(ctx.admin, ctx.member)
-
-    member = Repo.reload(ctx.member)
-    assert member.company_role == :member
   end
 
   test "CompanyAdminRemoving operation removes membership with admins group", ctx do

@@ -715,7 +715,6 @@ defmodule OperatelyWeb.Api.Types do
     field :title, :string
     field :avatar_url, :string
     field :timezone, :string
-    field :company_role, :string
     field :email, :string
     field :send_daily_summary, :boolean
     field :notify_on_mention, :boolean
