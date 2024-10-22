@@ -50,23 +50,23 @@ function Menu() {
 
   return (
     <div className="mt-12">
-      {permissions.canInviteMembers && <ReachOutMessage />}
+      {!permissions.canInviteMembers && <ReachOutMessage />}
 
       <OptionsMenu>
         <OptionsMenuItem
-          disabled={permissions.canEditTrustedEmailDomains}
+          disabled={!permissions.canEditTrustedEmailDomains}
           linkTo={manageTrustedDomains}
           icon={Icons.IconLock}
           title="Manage Trusted Email Domains"
         />
         <OptionsMenuItem
-          disabled={permissions.canInviteMembers}
+          disabled={!permissions.canInviteMembers}
           linkTo={managePeople}
           icon={Icons.IconUsers}
           title="Manage Team Members"
         />
         <OptionsMenuItem
-          disabled={permissions.canManageAdmins}
+          disabled={!permissions.canManageAdmins}
           linkTo={manageAdmins}
           icon={Icons.IconUserShield}
           title="Manage Company Administrators"

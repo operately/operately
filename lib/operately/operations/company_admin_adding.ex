@@ -10,7 +10,6 @@ defmodule Operately.Operations.CompanyAdminAdding do
     Multi.new()
     |> Multi.put(:author, author)
     |> Multi.put(:context, Access.get_context!(company_id: author.company_id))
-    |> Multi.put(:owners_group, Access.get_group!(company_id: author.company_id, tag: :full_access))
     |> add_admins(ids)
     |> insert_activity(author)
     |> Repo.transaction()
@@ -20,8 +19,7 @@ defmodule Operately.Operations.CompanyAdminAdding do
     Enum.reduce(ids, multi, fn id, multi ->
       Multi.run(multi, "person_#{id}", fn _, ctx ->
         person = Operately.People.get_person!(id)
-        {:ok, _} = Operately.Access.bind(ctx.context, person_id: id, level: Operately.Access.Binding.full_access())
-        {:ok, _} = Operately.Access.add_to_group(ctx.owners_group, person_id: id)
+        {:ok, _} = Operately.Access.bind(ctx.context, person_id: id, level: Operately.Access.Binding.edit_access())
         {:ok, person}
       end)
     end)

@@ -15,7 +15,7 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyAdminsTest do
   describe "permissions" do
     setup :register_and_log_in_account
 
-    test "company members without full access can't add admins", ctx do
+    test "company members with full access can add new admins", ctx do
       person = person_fixture(%{company_id: ctx.company.id})
 
       assert {403, res} = mutation(ctx.conn, :add_company_admins, %{
@@ -24,7 +24,22 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyAdminsTest do
       assert res.message == "You don't have permission to perform this action"
     end
 
-    test "company members with full access can add admins", ctx do
+    test "company members with edit access can add new admins", ctx do
+      person = person_fixture(%{company_id: ctx.company.id})
+      account = Repo.preload(ctx.company_creator, :account).account
+      conn = log_in_account(ctx.conn, account)
+
+      refute person.company_role == :admin
+
+      assert {200, _} = mutation(conn, :add_company_admins, %{
+        people_ids: [Paths.person_id(ctx.person)],
+      })
+
+      person = Repo.reload(ctx.person)
+      assert person.company_role == :admin
+    end
+
+    test "company members with non-admin roles can't add new admins", ctx do
       person = person_fixture(%{company_id: ctx.company.id})
       account = Repo.preload(ctx.company_creator, :account).account
       conn = log_in_account(ctx.conn, account)
