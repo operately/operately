@@ -1,13 +1,14 @@
 import React from "react";
 
-import { useAssignmentsCount } from "@/models/assignments";
+import { useAssignmentsCount, useReviewRefreshSignal } from "@/models/assignments";
 
 import { DivLink } from "@/components/Link";
 import { Paths } from "@/routes/paths";
 import { IconCoffee } from "@tabler/icons-react";
 
 export function Review() {
-  const count = useAssignmentsCount();
+  const [count, refetch] = useAssignmentsCount();
+  useReviewRefreshSignal(refetch);
 
   return (
     <DivLink
