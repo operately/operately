@@ -6,10 +6,15 @@ interface PageProps {
   title: string | string[];
   children: React.ReactNode;
   testId?: string;
+  onLoad?: () => void;
 }
 
-export function Page({ title, children, testId }: PageProps): JSX.Element {
+export function Page({ title, children, testId, onLoad }: PageProps): JSX.Element {
   useDocumentTitle(title);
+
+  React.useEffect(() => {
+    if (onLoad) onLoad();
+  }, []);
 
   return <div data-test-id={testId}>{children}</div>;
 }

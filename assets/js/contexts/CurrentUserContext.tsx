@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as People from "@/models/people";
 
-import { useProfileUpdatedSignal } from "@/api/socket";
+import { useProfileUpdatedSignal } from "@/signals";
 
 interface CurrentUserContextProps {
   me: People.Person | null;

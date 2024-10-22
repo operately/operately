@@ -21,6 +21,8 @@ describe("Tree", () => {
       sortColumn: "name",
       sortDirection: "asc",
       showCompleted: false,
+      showActive: true,
+      showPaused: false,
     });
 
     const expected = `
@@ -42,6 +44,8 @@ describe("Tree", () => {
       sortColumn: "name",
       sortDirection: "asc",
       showCompleted: false,
+      showActive: true,
+      showPaused: false,
     });
 
     const expected = `
@@ -67,6 +71,8 @@ describe("Tree", () => {
       sortColumn: "name",
       sortDirection: "asc",
       showCompleted: false,
+      showActive: true,
+      showPaused: false,
     });
 
     const expected = `
@@ -94,6 +100,8 @@ describe("Tree", () => {
       sortDirection: "asc",
       showCompleted: false,
       spaceId: marketing.id!,
+      showActive: true,
+      showPaused: false,
     });
 
     const expected = `
@@ -118,6 +126,8 @@ describe("Tree", () => {
       sortDirection: "asc",
       showCompleted: false,
       spaceId: marketing.id!,
+      showActive: true,
+      showPaused: false,
     });
 
     const expected = `
@@ -145,6 +155,8 @@ describe("Tree", () => {
       sortDirection: "asc",
       showCompleted: false,
       personId: john.id!,
+      showActive: true,
+      showPaused: false,
     });
 
     const expected = `
@@ -169,6 +181,8 @@ describe("Tree", () => {
       sortColumn: "name",
       sortDirection: "asc",
       showCompleted: false,
+      showActive: true,
+      showPaused: false,
 
       goalId: g2.id!,
     });
@@ -197,12 +211,16 @@ describe("Tree", () => {
       sortColumn: "name",
       sortDirection: "asc",
       showCompleted: true,
+      showActive: true,
+      showPaused: false,
     });
 
     const withoutCompleted = buildTree([g1, g2, g3, g4, g5], [p1, p2], {
       sortColumn: "name",
       sortDirection: "asc",
       showCompleted: false,
+      showActive: true,
+      showPaused: false,
     });
 
     const expectedWithCompleted = `
@@ -234,6 +252,8 @@ describe("Tree", () => {
       sortColumn: "name",
       sortDirection: "asc",
       showCompleted: false,
+      showActive: true,
+      showPaused: false,
     });
 
     const expected = `
@@ -256,6 +276,8 @@ describe("Tree", () => {
       sortColumn: "name",
       sortDirection: "asc",
       showCompleted: true,
+      showActive: true,
+      showPaused: false,
     });
 
     const expected = `
@@ -283,12 +305,16 @@ describe("Tree", () => {
       sortColumn: "name",
       sortDirection: "asc",
       showCompleted: false,
+      showActive: true,
+      showPaused: false,
     });
 
     const treeDesc = buildTree([g1, g2, g3, g11, g12, g13], [], {
       sortColumn: "name",
       sortDirection: "desc",
       showCompleted: false,
+      showActive: true,
+      showPaused: false,
     });
 
     const expectedAsc = `
