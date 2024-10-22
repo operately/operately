@@ -1,65 +1,31 @@
 defmodule Operately.Operations.CompanyAdminAdding do
   alias Ecto.Multi
-  alias Operately.{Repo, Access, People, Activities}
-  alias Operately.People.Person
 
-  def run(admin, ids) do
+  @type id :: binary()
+
+  @spec run(Person.t(), Company.t(), list(id)) :: {:ok, map()} | {:error, any()}
+  def run(author, company, ids) do
     Multi.new()
-    |> update_people(ids)
-    |> Multi.run(:admins_group, fn _, _ ->
-      {:ok, Access.get_group!(company_id: admin.company_id, tag: :full_access)}
-    end)
-    |> update_permissions(ids)
-    |> insert_activity(admin)
-    |> Repo.transaction()
+    |> add_admins(company, ids)
+    |> insert_activity(author)
+    |> Operately.Repo.transaction()
   end
 
-  defp update_people(multi, ids) do
-    ids
-    |> Enum.with_index()
-    |> Enum.reduce(multi, fn ({id, index}, multi) ->
-      multi
-      |> Multi.run("person_#{index}", fn _, _ ->
-        {:ok, People.get_person!(id)}
-      end)
-      |> Multi.update("updated_person_#{index}", fn changes ->
-        Person.changeset(changes["person_#{index}"], %{company_role: :admin})
-      end)
-    end)
-  end
+  defp add_admins(multi, company, people_ids) do
+    context = Operately.Access.get_context(company)
 
-  defp update_permissions(multi, ids) do
-    ids
-    |> Enum.with_index()
-    |> Enum.reduce(multi, fn ({_, index}, multi) ->
-      multi
-      |> Multi.run("membership_#{index}", fn _, changes ->
-        maybe_create_membership(changes.admins_group.id, changes["person_#{index}"].id)
-      end)
+    Enum.reduce(people_ids, multi, fn id, multi ->
+      grant_edit_access(multi, context, id)
     end)
   end
 
   defp insert_activity(multi, admin) do
-    multi
-    |> Activities.insert_sync(admin.id, :company_admin_added, fn changes ->
+    Operately.Activities.insert_sync(multi, admin.id, :company_admin_added, fn changes ->
       %{
         company_id: admin.company_id,
         people: serialize_people(changes),
       }
     end)
-  end
-
-  #
-  # Helpers
-  #
-
-  defp maybe_create_membership(group_id, person_id) do
-    case Access.get_group_membership(group_id: group_id, person_id: person_id) do
-      nil ->
-        Access.create_group_membership(%{group_id: group_id, person_id: person_id})
-      membership ->
-        {:ok, membership}
-    end
   end
 
   defp serialize_people(changes) do
@@ -70,5 +36,11 @@ defmodule Operately.Operations.CompanyAdminAdding do
       email: person.email,
       full_name: person.full_name,
     } end)
+  end
+
+  defp grant_edit_access(multi, context, person_id) do
+    Multi.run(multi, "person" <> person_id, fn _, _ ->
+      Operately.Access.bind(context, person_id: person_id, level: Operately.Access.Binding.edit_access())
+    end)
   end
 end
