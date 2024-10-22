@@ -1,6 +1,7 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 
+import * as Signals from "@/signals";
 import * as Sentry from "@sentry/react";
 import {
   useLocation,
@@ -24,6 +25,7 @@ setupTestErrorLogger();
 // don't run this code on the login page, it's handled separately on the backend
 if (window.location.pathname !== "/accounts/log_in") {
   Api.default.setBasePath("/api/v2");
+  Signals.init();
 
   if (window.appConfig.sentry.enabled) {
     Sentry.init({
