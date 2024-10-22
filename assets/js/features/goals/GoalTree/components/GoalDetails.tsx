@@ -1,19 +1,31 @@
-import React from "react";
+import React, { useMemo } from "react";
+
+import * as Goals from "@/models/goals";
+import * as Timeframes from "@/utils/timeframes";
 
 import classNames from "classnames";
-import { IconMinus, IconPlus } from "@tabler/icons-react";
+import { match } from "ts-pattern";
+import { IconCalendar, IconMinus, IconPlus } from "@tabler/icons-react";
 import { includesId, Paths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { ProgressBar } from "@/components/ProgressBar";
 import { MiniPieChart } from "@/components/MiniPieChart";
 import { SecondaryButton } from "@/components/Buttons";
+import { DivLink } from "@/components/Link";
+import Avatar from "@/components/Avatar";
 
-import { GoalNode } from "../tree";
+import { GoalNode, Node } from "../tree";
 import { useExpandable } from "../context/Expandable";
 
 export function GoalDetails({ node }: { node: GoalNode }) {
   return (
     <div className="pl-[42px]">
+      <div className="flex gap-10 items-center">
+        <GoalTimeframe goal={node.goal} />
+        <ChampionAndSpace goal={node.goal} />
+        <GoalChildrenCount node={node} />
+      </div>
+
       <GoalSuccessConditions node={node} />
     </div>
   );
@@ -62,6 +74,60 @@ export function GoalActions({ hovered, node }: { hovered: boolean; node: GoalNod
   );
 }
 
+function GoalTimeframe({ goal }: { goal: Goals.Goal }) {
+  const timeframe = Timeframes.parse(goal.timeframe!);
+
+  return (
+    <div className="flex gap-1 items-center text-xs text-content-dimmed">
+      <IconCalendar size={13} className="text-content-dimmed mb-[1px]" />
+      {Timeframes.format(timeframe)}
+    </div>
+  );
+}
+
+function ChampionAndSpace({ goal }: { goal: Goals.Goal }) {
+  assertPresent(goal.champion, "champion must be present in goal");
+  assertPresent(goal.space, "space must be present in goal");
+
+  const path = Paths.spacePath(goal.space.id!);
+
+  return (
+    <div className="flex items-center gap-1">
+      <Avatar person={goal.champion} size="tiny" />
+      <DivLink to={path} className="text-xs text-content-dimmed">
+        {goal.space.name}
+      </DivLink>
+    </div>
+  );
+}
+
+function GoalChildrenCount({ node }: { node: GoalNode }) {
+  const { expanded } = useExpandable();
+
+  const text = useMemo(() => {
+    const { subgoals, projects } = countGoalChildren(node);
+
+    const subgoalsText = match(subgoals)
+      .with(0, () => null)
+      .with(1, () => "1 subgoal")
+      .otherwise(() => `${subgoals} subgoals`);
+
+    const projectsText = match(projects)
+      .with(0, () => null)
+      .with(1, () => "1 project")
+      .otherwise(() => `${projects} projects`);
+
+    if (subgoalsText && projectsText) {
+      return `${subgoalsText} and ${projectsText}`;
+    }
+    return subgoalsText || projectsText;
+  }, [node]);
+
+  if (expanded[node.goal.id!]) return <></>;
+
+  return <div className="text-xs text-content-subtle">{text}</div>;
+}
+
 function GoalSuccessConditions({ node }: { node: GoalNode }) {
   const { goalExpanded } = useExpandable();
   assertPresent(node.goal.targets, "targets must be present in goal");
@@ -69,13 +135,13 @@ function GoalSuccessConditions({ node }: { node: GoalNode }) {
   if (!includesId(goalExpanded, node.goal.id)) return <></>;
 
   return (
-    <div>
+    <div className="mt-2">
       {node.goal.targets.map((t) => {
         const total = t.to! - t.from!;
         const completed = t.value! - t.from!;
 
         return (
-          <div key={t.id} className="flex items-center gap-2 text-content-dimmed">
+          <div key={t.id} className="flex items-center gap-2 text-sm text-content-dimmed">
             <MiniPieChart total={total} completed={completed} />
             {t.name}
           </div>
@@ -83,4 +149,22 @@ function GoalSuccessConditions({ node }: { node: GoalNode }) {
       })}
     </div>
   );
+}
+
+function countGoalChildren(node: GoalNode) {
+  const dfs = (node: Node) => {
+    for (let child of node.children) {
+      if (child.type === "goal") {
+        count.subgoals += 1;
+      } else {
+        count.projects += 1;
+      }
+      dfs(child);
+    }
+  };
+
+  const count = { subgoals: 0, projects: 0 };
+  dfs(node);
+
+  return count;
 }
