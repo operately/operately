@@ -1,6 +1,6 @@
 import React from "react";
 
-export class LocalSignalBroker {
+class LocalSignalBroker {
   static __instance: LocalSignalBroker | null = null;
   subscribers: Record<string, Function[]>;
 

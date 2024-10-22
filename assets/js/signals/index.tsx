@@ -5,7 +5,7 @@ export function init() {
   Local.init();
 }
 
-export enum ApiSignal {
+enum ApiSignal {
   AssignmentsCount = "api:assignments_count",
   DiscussionCommentsChange = "api:discussion_comments",
   UnreadNotificationCount = "api:unread_notifications_count",
