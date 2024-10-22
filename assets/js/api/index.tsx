@@ -597,6 +597,16 @@ export interface Company {
   admins?: Person[] | null;
   people?: Person[] | null;
   memberCount?: number | null;
+  permissions?: CompanyPermissions | null;
+}
+
+export interface CompanyPermissions {
+  canEditTrustedEmailDomains?: boolean | null;
+  canInviteMembers?: boolean | null;
+  canRemoveMembers?: boolean | null;
+  canCreateSpace?: boolean | null;
+  canManageAdmins?: boolean | null;
+  canManageOwners?: boolean | null;
 }
 
 export interface CreateTargetInput {
@@ -763,7 +773,6 @@ export interface Person {
   title?: string | null;
   avatarUrl?: string | null;
   timezone?: string | null;
-  companyRole?: string | null;
   email?: string | null;
   sendDailySummary?: boolean | null;
   notifyOnMention?: boolean | null;
@@ -1279,9 +1288,11 @@ export interface GetCompaniesResult {
 }
 
 export interface GetCompanyInput {
-  id?: string | null;
-  includeAdmins?: boolean | null;
+  id?: CompanyId | null;
   includePeople?: boolean | null;
+  includeAdmins?: boolean | null;
+  includeAccountOwners?: boolean | null;
+  includePermissions?: boolean | null;
 }
 
 export interface GetCompanyResult {
@@ -2017,7 +2028,7 @@ export interface EditProjectTimelineResult {
 }
 
 export interface EditSpaceInput {
-  id?: string | null;
+  id?: Id | null;
   name?: string | null;
   mission?: string | null;
 }

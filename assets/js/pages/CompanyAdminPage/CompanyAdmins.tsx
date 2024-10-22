@@ -13,7 +13,7 @@ export function CompanyAdmins() {
       <div className="text-content-accent font-bold mt-8 text-lg">Administrators</div>
 
       <div className="flex flex-wrap mt-2 gap-4">
-        {company.admins!.map((admin) => (
+        {company.accountOwners!.map((admin) => (
           <CompanyAdmin key={admin!.id} admin={admin!} />
         ))}
       </div>
