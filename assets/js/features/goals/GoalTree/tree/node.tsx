@@ -20,6 +20,7 @@ export abstract class Node {
   public showCompleted: boolean;
 
   public champion: People.Person;
+  public reviewer: People.Person;
   public parent: Node | undefined;
   public children: Node[];
   public hasChildren: boolean;

@@ -22,6 +22,7 @@ export class GoalNode extends Node {
     this.type = "goal";
     this.name = goal.name!;
     this.champion = goal.champion!;
+    this.reviewer = goal.reviewer!;
     this.isClosed = goal.isClosed!;
     this.progress = this.goal.progressPercentage!;
     this.lastCheckInDate = Time.parseDate(goal.lastCheckIn?.insertedAt);
