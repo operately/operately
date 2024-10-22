@@ -13,7 +13,7 @@ export type CommentParentType =
 
 export type { Comment };
 export { useCreateComment, useEditComment, useGetComments, getComments } from "@/api";
-export { useDiscussionCommentsChangeSignal } from "@/api/socket";
+export { useDiscussionCommentsChangeSignal } from "@/signals";
 
 export function splitComments(comments: Comment[], timestamp: string): { before: Comment[]; after: Comment[] } {
   const before = comments.filter((comment) => {
