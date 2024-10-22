@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as Goals from "@/models/goals";
 import * as Projects from "@/models/projects";
+import { Person } from "@/models/people";
 
 import { Tree, buildTree, SortColumn, SortDirection, TreeOptions } from "./tree";
 import { ExpandableProvider } from "./context/Expandable";
@@ -15,8 +16,14 @@ interface TreeContextValue {
 
   hideSpaceColumn?: boolean;
 
+  showActive: boolean;
+  setShowActive: (show: boolean) => void;
+  showPaused: boolean;
+  setShowPaused: (show: boolean) => void;
   showCompleted: boolean;
   setShowCompleted: (show: boolean) => void;
+  setChampionedBy: (person?: Person) => void;
+  setReviewedBy: (person?: Person) => void;
 }
 
 const TreeContext = React.createContext<TreeContextValue | null>(null);
@@ -36,12 +43,20 @@ interface TreeContextProviderPropsWithChildren extends TreeContextProviderProps 
 export function TreeContextProvider(props: TreeContextProviderPropsWithChildren) {
   const [sortColumn, setSortColumn] = React.useState<SortColumn>("name");
   const [sortDirection, setSortDirection] = React.useState<SortDirection>("asc");
+  const [showActive, setShowActive] = React.useState<boolean>(true);
+  const [showPaused, setShowPaused] = React.useState<boolean>(false);
   const [showCompleted, setShowCompleted] = React.useState<boolean>(false);
+  const [championedBy, setChampionedBy] = React.useState<Person>();
+  const [reviewedBy, setReviewedBy] = React.useState<Person>();
 
   const treeOptions = {
     ...props.options,
+    personId: props.options.personId || championedBy?.id!,
+    reviewerId: reviewedBy?.id!,
     sortColumn,
     sortDirection,
+    showActive,
+    showPaused,
     showCompleted,
   };
 
@@ -57,8 +72,14 @@ export function TreeContextProvider(props: TreeContextProviderPropsWithChildren)
     setSortDirection,
     sortDirection,
     hideSpaceColumn: props.hideSpaceColumn,
+    showActive,
+    setShowActive,
+    showPaused,
+    setShowPaused,
     showCompleted,
     setShowCompleted,
+    setChampionedBy,
+    setReviewedBy,
   };
 
   return (

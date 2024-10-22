@@ -12,10 +12,13 @@ export type SortDirection = "asc" | "desc";
 export interface TreeOptions {
   sortColumn: SortColumn;
   sortDirection: SortDirection;
+  showActive: boolean;
+  showPaused: boolean;
   showCompleted: boolean;
 
   spaceId?: string;
   personId?: string;
+  reviewerId?: string;
   goalId?: string;
 }
 
@@ -46,11 +49,12 @@ class TreeBuilder {
   build(): Tree {
     this.createNodes();
     this.connectNodes();
-    this.connectNodes();
     this.findRoots();
-    this.setDepth();
     this.sortNodes();
+    this.showHideActive();
+    this.showHidePaused();
     this.showHideCompleted();
+    this.setDepth();
 
     return this.rootNodes;
   }
@@ -74,7 +78,7 @@ class TreeBuilder {
   private findRoots(): void {
     if (this.options.spaceId) {
       this.rootNodes = this.rootNodesForSpace();
-    } else if (this.options.personId) {
+    } else if (this.options.personId || this.options.reviewerId) {
       this.rootNodes = this.rootNodesForPerson();
     } else if (this.options.goalId) {
       this.rootNodes = this.rootNodesForGoal();
@@ -94,8 +98,11 @@ class TreeBuilder {
   private rootNodesForPerson(): Node[] {
     return this.nodes.filter(
       (n) =>
-        compareIds(n.champion?.id, this.options.personId!) &&
-        n.hasNoParentWith((node) => compareIds(node.champion?.id, this.options.personId)),
+        (compareIds(n.champion?.id, this.options.personId!) || compareIds(n.reviewer?.id, this.options.reviewerId)) &&
+        n.hasNoParentWith(
+          (node) =>
+            compareIds(node.champion?.id, this.options.personId) || compareIds(n.reviewer?.id, this.options.reviewerId),
+        ),
     );
   }
 
@@ -113,6 +120,18 @@ class TreeBuilder {
 
   private sortNodes(): void {
     TreeBuilder.sortNodes(this.rootNodes, this.options.sortColumn, this.options.sortDirection);
+  }
+
+  private showHideActive(): void {
+    if (!this.options.showActive) {
+      this.rootNodes = TreeBuilder.hideProjectByStatus(this.rootNodes, "active");
+    }
+  }
+
+  private showHidePaused(): void {
+    if (!this.options.showPaused) {
+      this.rootNodes = TreeBuilder.hideProjectByStatus(this.rootNodes, "paused");
+    }
   }
 
   private showHideCompleted(): void {
@@ -145,6 +164,16 @@ class TreeBuilder {
       .filter((n) => !n.isClosed)
       .map((n) => {
         n.children = TreeBuilder.hideCompleted(n.children);
+
+        return n;
+      });
+  }
+
+  static hideProjectByStatus(nodes: Node[], status: "active" | "paused"): Node[] {
+    return nodes
+      .filter((n) => n.type === "goal" || (n as ProjectNode).project?.status !== status)
+      .map((n) => {
+        n.children = TreeBuilder.hideProjectByStatus(n.children, status);
 
         return n;
       });

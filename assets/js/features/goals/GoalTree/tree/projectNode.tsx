@@ -19,6 +19,7 @@ export class ProjectNode extends Node {
     this.name = project.name!;
 
     this.champion = project.champion!;
+    this.reviewer = project.reviewer!;
     this.space = project.space as Spaces.Space;
     this.isClosed = project.status === "closed";
     this.progress = this.calculateProgress();

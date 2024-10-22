@@ -19,7 +19,7 @@ import { Paths } from "@/routes/paths";
 
 import { ProjectNode } from "../tree";
 
-export default function ProjectDetails({ node }: { node: ProjectNode }) {
+export function ProjectDetails({ node }: { node: ProjectNode }) {
   return (
     <div className="pl-[20px] flex gap-10 items-center">
       <Status project={node.project} />
