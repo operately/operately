@@ -7,7 +7,6 @@ defmodule Operately.Companies.Company do
 
     has_many :access_groups, Operately.Access.Group, foreign_key: :company_id
     has_many :people, Operately.People.Person, foreign_key: :company_id, where: [suspended_at: nil]
-    has_many :admins, Operately.People.Person, foreign_key: :company_id, where: [company_role: "admin", suspended_at: nil]
 
     field :mission, :string
     field :name, :string
@@ -17,6 +16,21 @@ defmodule Operately.Companies.Company do
     field :short_id, :integer
 
     field :member_count, :integer, virtual: true
+
+    # all people in the company
+    has_one :everyone_group, Operately.Access.Group, foreign_key: :company_id
+
+    # people who are not employees, limited access to spaces and projects
+    has_one :outside_contributors_group, Operately.Access.Group, foreign_key: :company_id
+
+    # members of the company
+    has_one :members_group, Operately.Access.Group, foreign_key: :company_id
+
+    # administators of the company, can manage company settings
+    has_one :admins_group, Operately.Access.Group, foreign_key: :company_id
+
+    # owners of the company, can do anything
+    has_one :owners_group, Operately.Access.Group, foreign_key: :company_id
 
     timestamps()
     request_info()
