@@ -31,4 +31,39 @@ defmodule Operately.Support.Factory.Companies do
     Map.put(ctx, testid, person)
   end
 
+  def add_company_admin(ctx, testid, opts \\ []) do
+    name = Keyword.get(opts, :name) || Utils.testid_to_name(testid)
+
+    attrs = %{
+      company_id: ctx.company.id,
+      full_name: name,
+    }
+
+    person = Operately.PeopleFixtures.person_fixture_with_account(attrs)
+
+    set_access_level(ctx, person, Operately.Access.Binding.edit_access())
+    
+    Map.put(ctx, testid, person)
+  end
+
+  def add_company_owner(ctx, testid, opts \\ []) do
+    name = Keyword.get(opts, :name) || Utils.testid_to_name(testid)
+
+    attrs = %{
+      company_id: ctx.company.id,
+      full_name: name,
+    }
+
+    person = Operately.PeopleFixtures.person_fixture_with_account(attrs)
+
+    set_access_level(ctx, person, Operately.Access.Binding.full_access())
+    
+    Map.put(ctx, testid, person)
+  end
+
+  defp set_access_level(ctx, person, access_level) do
+    context = Operately.Access.get_context(company_id: ctx.company.id)
+    Operately.Access.bind(context, person_id: person.id, level: access_level)
+  end
+
 end

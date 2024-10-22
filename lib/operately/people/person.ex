@@ -26,7 +26,6 @@ defmodule Operately.People.Person do
     field :notify_about_assignments, :boolean
 
     field :theme, :string
-    field :company_role, Ecto.Enum, values: [:admin, :member], default: :member
 
     field :suspended, :boolean, default: false
     field :suspended_at, :utc_datetime
@@ -60,7 +59,6 @@ defmodule Operately.People.Person do
       :send_daily_summary,
       :notify_on_mention,
       :notify_about_assignments,
-      :company_role,
       :theme,
       :suspended,
       :suspended_at,
