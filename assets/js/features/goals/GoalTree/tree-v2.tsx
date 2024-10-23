@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 
 import { IconChevronDown, IconChevronRight } from "@tabler/icons-react";
+import { createTestId } from "@/utils/testid";
 
 import { useTreeContext, TreeContextProvider, TreeContextProviderProps } from "./treeContext";
 import { ExpandGoalSuccessConditions, GoalActions, GoalDetails, GoalProgressBar } from "./components/GoalDetails";
@@ -89,10 +90,12 @@ function NodeExpandCollapseToggle({ node }: { node: Node }) {
 
   if (node.children.length === 0) return <></>;
 
+  const resourceId = "goal" in node ? (node as GoalNode).goal.id : (node as ProjectNode).project.id;
+  const testId = createTestId("toggle-node", resourceId!);
   const handleClick = () => toggleExpanded(node.id);
   const ChevronIcon = expanded[node.id] ? IconChevronDown : IconChevronRight;
 
-  return <ChevronIcon size={16} className="cursor-pointer" onClick={handleClick} />;
+  return <ChevronIcon size={16} className="cursor-pointer" onClick={handleClick} data-test-id={testId} />;
 }
 
 function HeaderContainer(props) {
