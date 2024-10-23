@@ -116,7 +116,7 @@ function OverdueProgress({ end }: { end: Date }) {
   return (
     <div>
       <DimmedLabel>Countdown</DimmedLabel>
-      <div className="font-semibold">{Time.overdueDurationHumanized(end, Time.today())}</div>
+      <div className="font-bold text-callout-error-message">{Time.durationHumanized(end, Time.today(), "overdue")}</div>
     </div>
   );
 }
@@ -125,7 +125,7 @@ function OngoingProgress({ end }: { end: Date }) {
   return (
     <div>
       <DimmedLabel>Countdown</DimmedLabel>
-      <div className="font-semibold">{Time.remainingDurationHumanized(end, Time.today())}</div>
+      <div className="font-semibold">{Time.durationHumanized(Time.today(), end, "remaining")}</div>
     </div>
   );
 }
