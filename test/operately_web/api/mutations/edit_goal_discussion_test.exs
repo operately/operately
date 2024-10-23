@@ -48,15 +48,15 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalDiscussionTest do
       asset_discussion_edited(discussion)
     end
 
-    test "company admins can edit a goal discussion", ctx do
+    test "company owner can edit a goal discussion", ctx do
       goal = create_goal(ctx, company_access_level: Binding.view_access())
       discussion = create_discussion(ctx, goal)
 
-      # Not admin
+      # Not owner
       assert {403, _} = request(ctx.conn, discussion)
 
-      # Admin
-      Operately.Companies.add_admin(ctx.company_creator, ctx.person.id)
+      # Owner
+      Operately.Companies.add_owner(ctx.company_creator, ctx.person.id)
 
       assert {200, _} = request(ctx.conn, discussion)
       asset_discussion_edited(discussion)

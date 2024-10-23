@@ -48,15 +48,15 @@ defmodule OperatelyWeb.Api.Mutations.CloseGoalTest do
       assert_goal_closed(goal, ctx.person)
     end
 
-    test "company admins can close a goal", ctx do
+    test "company owner can close a goal", ctx do
       goal = create_goal(ctx, company_access_level: Binding.view_access())
 
-      # Not admin
+      # Not owner
       assert {403, _} = request(ctx.conn, goal)
       refute_goal_closed(goal)
 
       # Admin
-      Operately.Companies.add_admin(ctx.company_creator, ctx.person.id)
+      Operately.Companies.add_owner(ctx.company_creator, ctx.person.id)
 
       assert {200, _} = request(ctx.conn, goal)
       assert_goal_closed(goal, ctx.person)

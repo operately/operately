@@ -50,16 +50,16 @@ defmodule OperatelyWeb.Api.Mutations.DisconnectGoalFromProjectTest do
       assert_goal_disconnected(project)
     end
 
-    test "company admins can disconnect goal from project", ctx do
+    test "company owner can disconnect goal from project", ctx do
       goal = create_goal(ctx)
       project = create_project(ctx, goal_id: goal.id, company_access_level: Binding.view_access())
 
-      # Not admin
+      # Not owner
       assert {403, _} = request(ctx.conn, project, goal)
       refute_goal_disconnected(project, goal)
 
-      # Admin
-      {:ok, _} = Operately.Companies.add_admin(ctx.company_creator, ctx.person.id)
+      # Owner
+      {:ok, _} = Operately.Companies.add_owner(ctx.company_creator, ctx.person.id)
 
       assert {200, _} = request(ctx.conn, project, goal)
       assert_goal_disconnected(project)

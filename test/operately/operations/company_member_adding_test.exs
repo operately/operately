@@ -24,7 +24,7 @@ defmodule Operately.Operations.CompanyMemberAddingTest do
 
   setup do
     company = company_fixture()
-    admin = person_fixture_with_account(%{company_id: company.id, company_role: :admin})
+    admin = person_fixture_with_account(%{company_id: company.id})
 
     {:ok, company: company, admin: admin}
   end
@@ -39,7 +39,6 @@ defmodule Operately.Operations.CompanyMemberAddingTest do
 
     person = People.get_person_by_email(ctx.company, @email)
 
-    assert person.company_role == :member
     assert person.full_name == "John Doe"
     assert person.title == "Developer"
     assert person.has_open_invitation

@@ -14,10 +14,10 @@ defmodule Operately.Support.Features.SpaceSteps do
 
   step :setup, ctx do
     company = company_fixture(%{name: "Test Org"})
-    admin = hd(Companies.list_admins(company.id))
+    admin = hd(Companies.list_owners(company))
 
     person = person_fixture_with_account(%{full_name: "Kevin Kernel", company_id: company.id})
-    Companies.add_admin(admin, person.id)
+    Companies.add_admins(admin, person.id)
 
     ctx = Map.merge(ctx, %{company: company, person: person})
     ctx = UI.login_as(ctx, ctx.person)

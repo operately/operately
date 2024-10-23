@@ -43,15 +43,15 @@ defmodule OperatelyWeb.Api.Mutations.JoinSpaceTest do
       assert_joined_space(space, ctx.person)
     end
 
-    test "company admins can join space", ctx do
+    test "company owners can join space", ctx do
       space = create_space(ctx, company_permissions: Binding.no_access())
 
-      # Not admin
+      # Not owner
       assert {404, _} = mutation(ctx.conn, :join_space, %{space_id: Paths.space_id(space)})
       refute_joined_space(space, ctx.person)
 
-      # Admin
-      Operately.Companies.add_admin(ctx.company_creator, ctx.person.id)
+      # Owner
+      Operately.Companies.add_owner(ctx.company_creator, ctx.person.id)
 
       assert {200, _} = mutation(ctx.conn, :join_space, %{space_id: Paths.space_id(space)})
       assert_joined_space(space, ctx.person)
@@ -61,7 +61,7 @@ defmodule OperatelyWeb.Api.Mutations.JoinSpaceTest do
   describe "join_space functionality" do
     setup ctx do
       ctx = register_and_log_in_account(ctx)
-      Operately.Companies.add_admin(ctx.company_creator, ctx.person.id)
+      Operately.Companies.add_owner(ctx.company_creator, ctx.person.id)
       space = group_fixture(ctx.company_creator, %{company_id: ctx.company.id})
 
       Map.merge(ctx, %{space: space})
