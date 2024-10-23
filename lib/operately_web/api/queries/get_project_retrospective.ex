@@ -52,14 +52,13 @@ defmodule OperatelyWeb.Api.Queries.GetProjectRetrospective do
       include_project: [:project],
       include_reactions: [reactions: :person],
       include_subscriptions_list: :subscription_list,
-      include_potential_subscribers: [:access_context, project: [contributors: :person]],
     ])
   end
 
   def after_load(inputs, person) do
     Inputs.parse_includes(inputs, [
       include_permissions: &Retrospective.set_permissions/1,
-      include_potential_subscribers: &Retrospective.set_potential_subscribers/1,
+      include_potential_subscribers: &Retrospective.load_potential_subscribers/1,
       include_unread_notifications: load_unread_notifications(person),
     ])
   end

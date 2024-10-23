@@ -202,8 +202,11 @@ defmodule Operately.Projects.Project do
     %{parent | project: project}
   end
 
-  def set_potential_subscribers(project = %__MODULE__{}) do
-    subscribers = Operately.Notifications.Subscriber.from_project_contributor(project.contributors)
+  def load_potential_subscribers(project = %__MODULE__{}) do
+    q = from(c in Operately.Projects.Contributor, join: p in assoc(c, :person), preload: :person)
+    contributors = Repo.preload(project, [contributors: q], force: true).contributors
+
+    subscribers = Operately.Notifications.Subscriber.from_project_contributor(contributors)
     Map.put(project, :potential_subscribers, subscribers)
   end
 

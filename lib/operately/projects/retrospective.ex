@@ -62,9 +62,12 @@ defmodule Operately.Projects.Retrospective do
     Map.put(retrospective, :permissions, perms)
   end
 
-  def set_potential_subscribers(retrospective = %__MODULE__{}) do
+  def load_potential_subscribers(retrospective = %__MODULE__{}) do
+    q = from(c in Operately.Projects.Contributor, join: p in assoc(c, :person), preload: :person)
+    tmp_retrospective = Repo.preload(retrospective, [:access_context, [project: [contributors: q]]], force: true)
+
     subs =
-      retrospective
+      tmp_retrospective
       |> Notifications.SubscribersLoader.preload_subscriptions()
       |> Notifications.Subscriber.from_project_child()
 
