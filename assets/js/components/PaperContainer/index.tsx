@@ -33,7 +33,7 @@ export * from "./Section";
 
 type Size = "small" | "medium" | "large" | "xlarge" | "xxlarge";
 
-const sizes = {
+export const sizes = {
   small: "max-w-2xl",
   medium: "max-w-4xl",
   large: "max-w-screen-lg w-[90%]",

@@ -12,12 +12,7 @@ export function SubscribersSelectorModal({ showSelector, setShowSelector }: Sele
   const closeForm = () => setShowSelector(false);
 
   return (
-    <Modal
-      title="Select people to notify"
-      isOpen={showSelector}
-      hideModal={() => setShowSelector(false)}
-      minHeight="200px"
-    >
+    <Modal title="Select people to notify" isOpen={showSelector} hideModal={() => setShowSelector(false)}>
       <SubscribersSelectorForm callback={closeForm} closeForm={closeForm} />
     </Modal>
   );
