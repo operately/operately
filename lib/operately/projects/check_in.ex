@@ -60,9 +60,12 @@ defmodule Operately.Projects.CheckIn do
     Map.put(check_in, :notifications, notifications)
   end
 
-  def set_potential_subscribers(check_in = %__MODULE__{}) do
+  def load_potential_subscribers(check_in = %__MODULE__{}) do
+    q = from(c in Operately.Projects.Contributor, join: p in assoc(c, :person), preload: :person)
+    tmp_check_in = Repo.preload(check_in, [:access_context, [project: [contributors: q]]], force: true)
+
     subs =
-      check_in
+      tmp_check_in
       |> Notifications.SubscribersLoader.preload_subscriptions()
       |> Notifications.Subscriber.from_project_child()
 

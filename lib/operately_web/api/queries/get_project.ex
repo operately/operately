@@ -55,7 +55,6 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
       include_reviewer: [:reviewer],
       include_last_check_in: [last_check_in: :author],
       include_retrospective: [:retrospective],
-      include_potential_subscribers: [contributors: :person],
     ])
   end
 
@@ -66,7 +65,7 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
       include_contributors_access_levels: &Project.load_contributor_access_levels/1,
       include_access_levels: &Project.load_access_levels/1,
       include_privacy: &Project.load_privacy/1,
-      include_potential_subscribers: &Project.set_potential_subscribers/1,
+      include_potential_subscribers: &Project.load_potential_subscribers/1,
       include_unread_notifications: load_unread_notifications(person),
     ])
   end

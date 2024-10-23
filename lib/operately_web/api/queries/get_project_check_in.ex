@@ -51,14 +51,13 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckIn do
       include_project: [project: [:reviewer, [contributors: :person]]],
       include_reactions: [reactions: :person],
       include_subscriptions_list: :subscription_list,
-      include_potential_subscribers: [:access_context, project: [contributors: :person]],
     ])
   end
 
   defp after_load(inputs, person) do
     Inputs.parse_includes(inputs, [
       include_project: &Project.set_permissions/1,
-      include_potential_subscribers: &CheckIn.set_potential_subscribers/1,
+      include_potential_subscribers: &CheckIn.load_potential_subscribers/1,
       include_unread_notifications: load_unread_notifications(person),
     ])
   end
