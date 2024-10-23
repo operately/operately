@@ -5,13 +5,10 @@ import * as Tasks from "@/models/tasks";
 import * as Milestones from "@/models/milestones";
 
 import classnames from "classnames";
+import Modal from "@/components/Modal";
 
 import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
 import { MultiPeopleSearch } from "./MultiPeopleSearch";
-
-import ReactModal from "react-modal";
-
-import { useColorMode } from "@/contexts/ThemeContext";
 
 interface UseFormProps {
   onSubmit: () => void;
@@ -33,7 +30,7 @@ function useForm({ onSubmit, milestone, mentionSearchScope }: UseFormProps) {
   const { editor } = TipTapEditor.useEditor({
     autoFocus: false,
     placeholder: "Add a description here...",
-    className: "min-h-[250px] p-2 py-1",
+    className: "flex-1 p-2 py-1",
     mentionSearchScope: mentionSearchScope,
   });
 
@@ -83,7 +80,7 @@ interface NewTaskModalProps {
   milestone: Milestones.Milestone;
 }
 
-export function NewTaskModal({ isOpen, hideModal, modalTitle, milestone, onSubmit }: NewTaskModalProps) {
+export function NewTaskModal({ isOpen, hideModal, milestone, onSubmit }: NewTaskModalProps) {
   const handleSubmit = () => {
     onSubmit();
     hideModal();
@@ -101,29 +98,15 @@ export function NewTaskModal({ isOpen, hideModal, modalTitle, milestone, onSubmi
   });
 
   return (
-    <Modal title={modalTitle} isOpen={isOpen}>
-      <Form form={form} />
-
-      <div className="flex justify-end mt-8">
-        <div className="flex items-center gap-2">
-          <SecondaryButton size="base" onClick={handleCancel}>
-            Cancel
-          </SecondaryButton>
-
-          <PrimaryButton size="base" onClick={form.submit} testId="submit-new-task">
-            Add Task
-          </PrimaryButton>
-        </div>
-      </div>
+    <Modal title="Add Task" isOpen={isOpen} hideModal={handleCancel} size="lg" height="600px">
+      <Form form={form} handleCancel={handleCancel} />
     </Modal>
   );
 }
 
-function Form({ form }: { form: ReturnType<typeof useForm> }) {
+function Form({ form, handleCancel }: { form: ReturnType<typeof useForm>; handleCancel: () => void }) {
   return (
-    <div className="flex flex-col gap-6">
-      <h1 className="text-lg font-bold">Adding a new task</h1>
-
+    <div className="flex flex-col gap-6 flex-1 h-full">
       <div className="flex flex-col gap-4">
         <div className="flex items-center gap-4">
           <div className="font-bold w-24 shrink-0">Title</div>
@@ -155,53 +138,24 @@ function Form({ form }: { form: ReturnType<typeof useForm> }) {
         </div>
       </div>
 
-      <TipTapEditor.Root editor={form.fields.descriptionEditor}>
-        <div className="border-x border-b border-stroke-base flex-1">
+      <TipTapEditor.Root editor={form.fields.descriptionEditor} className="flex-1">
+        <div className="border-x border-b border-stroke-base h-full">
           <TipTapEditor.Toolbar editor={form.fields.descriptionEditor} />
           <TipTapEditor.EditorContent editor={form.fields.descriptionEditor} />
         </div>
       </TipTapEditor.Root>
+
+      <div className="flex justify-end">
+        <div className="flex items-center gap-2">
+          <SecondaryButton size="sm" onClick={handleCancel}>
+            Cancel
+          </SecondaryButton>
+
+          <PrimaryButton size="sm" onClick={form.submit} testId="submit-new-task">
+            Add Task
+          </PrimaryButton>
+        </div>
+      </div>
     </div>
-  );
-}
-
-function Modal({ isOpen, title, children }: { isOpen: boolean; title: string; children: React.ReactNode }) {
-  const mode = useColorMode();
-  const width = 800;
-
-  return (
-    <ReactModal
-      isOpen={isOpen}
-      contentLabel={title}
-      ariaHideApp={false}
-      style={{
-        overlay: {
-          position: "fixed",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: mode === "light" ? "rgba(0,0,0,0.6)" : "rgba(0,0,0,0.7)",
-          zIndex: 999,
-        },
-        content: {
-          padding: "32px",
-          top: "0px",
-          left: "50%",
-          width: `${width}px`,
-          height: "auto",
-          marginTop: "200px",
-          marginLeft: `-${width / 2}px`,
-          borderRadius: "8px",
-          overflow: "scroll-y",
-          bottom: "auto",
-          backgroundColor: "var(--color-surface-base)",
-          border: "1px solid var(--color-surface-outline)",
-          boxShadow: "0px 0px 30px 0px rgba(0,0,0,0.4)",
-        },
-      }}
-    >
-      {children}
-    </ReactModal>
   );
 }
