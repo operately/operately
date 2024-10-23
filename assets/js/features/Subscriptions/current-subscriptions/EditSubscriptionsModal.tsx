@@ -32,7 +32,7 @@ export function EditSubscriptionsModal({ isModalOpen, hideModal }: Props) {
 
   return (
     <SubscribersSelectorProvider state={subscriptionsState}>
-      <Modal title="Edit subscribers" isOpen={isModalOpen} hideModal={hideModal} minHeight="200px">
+      <Modal title="Edit subscribers" isOpen={isModalOpen} hideModal={hideModal}>
         <SubscribersSelectorForm callback={submitForm} closeForm={hideModal} />
       </Modal>
     </SubscribersSelectorProvider>
