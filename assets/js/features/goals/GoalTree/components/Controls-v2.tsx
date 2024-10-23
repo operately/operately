@@ -82,7 +82,7 @@ function OptionsModal({ showOptions, toggleShowOptions }) {
   });
 
   return (
-    <Modal title="View options" isOpen={showOptions} hideModal={toggleShowOptions} minHeight="200px" width="700px">
+    <Modal title="View options" isOpen={showOptions} hideModal={toggleShowOptions} size="lg">
       <Forms.Form form={form}>
         <Forms.FieldGroup layout="grid" layoutOptions={{ gridTemplateColumns: "repeat(3, auto)" }}>
           <Forms.CheckboxInput

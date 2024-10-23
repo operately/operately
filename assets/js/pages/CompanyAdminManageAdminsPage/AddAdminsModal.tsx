@@ -23,7 +23,7 @@ export function AddAdminsModal({ form }: { form: FormState }) {
         <div className="h-px bg-surface-outline flex-1" />
       </div>
 
-      <Modal title="Add administrators" isOpen={state.isModalOpen} hideModal={state.hideModal}>
+      <Modal title="Add administrators" isOpen={state.isModalOpen} hideModal={state.hideModal} height="600px">
         <SearchField
           onSelect={state.add}
           loader={state.search}
