@@ -56,10 +56,10 @@ defmodule OperatelyWeb.Api.Mutations.EditSpaceMembersPermissionsTest do
       assert_member_access_level(space, p2, Binding.comment_access())
     end
 
-    test "company admins can edit members permissions", ctx do
+    test "company owner can edit members permissions", ctx do
       {space, p1, p2} = create_space_with_members(ctx, company_permissions: Binding.view_access())
 
-      # Not admin
+      # Not owner
       assert {403, _} = request(ctx.conn, space, [
         {p1, Binding.edit_access()},
         {p2, Binding.comment_access()},
@@ -67,8 +67,8 @@ defmodule OperatelyWeb.Api.Mutations.EditSpaceMembersPermissionsTest do
       refute_member_access_level(space, p1, Binding.edit_access())
       refute_member_access_level(space, p2, Binding.comment_access())
 
-      # Admin
-      Operately.Companies.add_admin(ctx.company_creator, ctx.person.id)
+      # Owner
+      Operately.Companies.add_owner(ctx.company_creator, ctx.person.id)
 
       assert {200, _} = request(ctx.conn, space, [
         {p1, Binding.edit_access()},

@@ -32,12 +32,11 @@ defmodule Operately.Operations.CompanyAddingTest do
     assert length(People.list_people(company.id)) == 1
 
     person = People.list_people(company.id) |> hd()
-    assert person.company_role == :admin
     assert person.full_name == account.full_name
     assert person.title == "CEO"
   end
 
-  test "CompanyAdding operation creates company with admin" do
+  test "CompanyAdding operation creates company with owner" do
     assert Companies.count_companies() == 0
 
     {:ok, company} = Operately.Operations.CompanyAdding.run(@company_attrs)
@@ -47,11 +46,14 @@ defmodule Operately.Operations.CompanyAddingTest do
     assert Companies.get_company_by_name("Acme Co.")
 
     assert length(People.list_people(company.id)) == 1
-    assert person.company_role == :admin
     assert person.full_name == "John Doe"
     assert person.title == "CEO"
 
     assert People.get_account_by_email(@email)
+
+    owners = Operately.Companies.list_owners(company)
+    assert length(owners) == 1
+    assert Enum.find(owners, fn o -> o.id == person.id end)
   end
 
   test "CompanyAdding operation creates company group" do

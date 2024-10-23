@@ -1,6 +1,4 @@
 defmodule Operately.Data.Change015CreateCompaniesAccessGroup do
-  import Ecto.Query, only: [from: 2]
-
   alias Operately.Repo
   alias Operately.Companies
   alias Operately.Access
@@ -31,11 +29,9 @@ defmodule Operately.Data.Change015CreateCompaniesAccessGroup do
           tag: tag,
         })
         create_bindings(company_id, group, tag)
-        create_memberships(company_id, group)
 
       group ->
         create_bindings(company_id, group, tag)
-        create_memberships(company_id, group)
         :ok
     end
   end
@@ -50,31 +46,6 @@ defmodule Operately.Data.Change015CreateCompaniesAccessGroup do
         context_id: context.id,
         access_level: access_level,
       })
-      _ -> :ok
-    end
-  end
-
-  defp create_memberships(company_id, group) do
-    people = from(p in Operately.People.Person, where: p.company_id == ^company_id) |> Repo.all()
-
-    Enum.each(people, fn person ->
-      if person.company_role == :admin and group.tag == :full_access do
-        create_membership(person, group)
-      end
-
-      if person.company_role == :member and group.tag == :standard do
-        create_membership(person, group)
-      end
-    end)
-  end
-
-  defp create_membership(person, group) do
-    case Access.get_group_membership(person_id: person.id, group_id: group.id) do
-      nil ->
-        Access.create_group_membership(%{
-          person_id: person.id,
-          group_id: group.id,
-        })
       _ -> :ok
     end
   end

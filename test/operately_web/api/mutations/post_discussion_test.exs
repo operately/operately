@@ -43,12 +43,12 @@ defmodule OperatelyWeb.Api.Mutations.PostDiscussionTest do
       assert_discussion_created(res)
     end
 
-    test "company admins can create discussion", ctx do
-      # Not admin
+    test "company owners can create discussion", ctx do
+      # Not owner
       assert {403, _} = request(ctx.conn, ctx.space)
 
-      # Admin
-      {:ok, _} = Operately.Companies.add_admin(ctx.company_creator, ctx.person.id)
+      # Owner
+      {:ok, _} = Operately.Companies.add_owner(ctx.company_creator, ctx.person.id)
 
       assert {200, res} = request(ctx.conn, ctx.space)
       assert_discussion_created(res)
@@ -82,12 +82,12 @@ defmodule OperatelyWeb.Api.Mutations.PostDiscussionTest do
       assert_discussion_created(res)
     end
 
-    test "company admins can create discussion", ctx do
-      # Not admin
+    test "company owner can create discussion", ctx do
+      # Not owner
       assert {404, _} = request(ctx.conn, ctx.space)
 
-      # Admin
-      {:ok, _} = Operately.Companies.add_admin(ctx.company_creator, ctx.person.id)
+      # Owner
+      {:ok, _} = Operately.Companies.add_owner(ctx.company_creator, ctx.person.id)
 
       assert {200, res} = request(ctx.conn, ctx.space)
       assert_discussion_created(res)
@@ -97,7 +97,7 @@ defmodule OperatelyWeb.Api.Mutations.PostDiscussionTest do
   describe "post_discussion functionality" do
     setup ctx do
       ctx = register_and_log_in_account(ctx)
-      Operately.Companies.add_admin(ctx.company_creator, ctx.person.id)
+      Operately.Companies.add_owner(ctx.company_creator, ctx.person.id)
 
       ctx
     end

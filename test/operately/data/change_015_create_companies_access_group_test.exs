@@ -26,18 +26,6 @@ defmodule Operately.Data.Change015CreateCompaniesAccessGroupTest do
 
       assert nil != Access.get_binding!(group_id: full_access.id, access_level: Binding.full_access())
       assert nil != Access.get_binding!(group_id: standard.id, access_level: Binding.view_access())
-
-      people = from(p in Person, where: p.company_id == ^company.id) |> Repo.all()
-
-      Enum.each(people, fn person ->
-        if person.company_role == :admin do
-          assert nil != Access.get_group_membership(group_id: full_access.id, person_id: person.id)
-          assert nil == Access.get_group_membership(group_id: standard.id, person_id: person.id)
-        else
-          assert nil == Access.get_group_membership(group_id: full_access.id, person_id: person.id)
-          assert nil != Access.get_group_membership(group_id: standard.id, person_id: person.id)
-        end
-      end)
     end)
   end
 
@@ -83,7 +71,6 @@ defmodule Operately.Data.Change015CreateCompaniesAccessGroupTest do
         Person.changeset(%{
           full_name: "some name",
           company_id: company_id,
-          company_role: :admin,
         })
         |> Repo.insert()
 

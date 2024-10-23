@@ -28,6 +28,7 @@ defmodule Operately.Access.Binding do
     |> cast(attrs, [:group_id, :context_id, :access_level, :tag])
     |> validate_inclusion(:access_level, @valid_access_levels, message: "invalid access level")
     |> validate_required([:group_id, :context_id, :access_level])
+    |> foreign_key_constraint(:context_id, name: "access_bindings_context_id_fkey")
   end
 
   def no_access, do: @no_access

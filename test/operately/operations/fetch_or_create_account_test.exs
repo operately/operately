@@ -30,7 +30,6 @@ defmodule Operately.Operations.FetchOrCreateAccountTest do
 
     assert person.full_name == "John Doe"
     assert person.email == @email
-    assert person.company_role == :member
     assert People.get_account_by_email(@email)
   end
 

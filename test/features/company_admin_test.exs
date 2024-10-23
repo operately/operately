@@ -3,9 +3,12 @@ defmodule Operately.Features.CompanyAdminTest do
   alias Operately.Support.Features.CompanyAdminSteps, as: Steps
 
   setup ctx do
-    ctx |> Steps.given_a_company_exists_and_im_an_admin()
+    ctx 
+    |> Steps.given_a_company_exists()
+    |> Steps.given_i_am_logged_in(as: ctx[:role])
   end
 
+  @tag role: :admin
   feature "adding a new person to the company", ctx do
     params = %{
       full_name: "Michael Scott",
@@ -23,6 +26,7 @@ defmodule Operately.Features.CompanyAdminTest do
     |> Steps.assert_expiration_date_is_visible_on_team_page()
   end
 
+  @tag role: :owner
   feature "promote a person to admin", ctx do
     ctx
     |> Steps.given_a_company_member_exists("Michael Scott")
@@ -31,6 +35,7 @@ defmodule Operately.Features.CompanyAdminTest do
     |> Steps.assert_person_is_admin("Michael Scott")
   end
 
+  @tag role: :owner
   feature "demote a person from admin", ctx do
     ctx
     |> Steps.given_a_company_admin_exists("Michael Scott")
@@ -39,6 +44,7 @@ defmodule Operately.Features.CompanyAdminTest do
     |> Steps.refute_person_is_admin("Michael Scott")
   end
 
+  @tag role: :admin
   feature "edit a person's details", ctx do
     ctx
     |> Steps.given_a_company_member_exists("Michael Scott")
@@ -50,6 +56,7 @@ defmodule Operately.Features.CompanyAdminTest do
     })
   end
 
+  @tag role: :owner
   feature "adding a trusted email domain", ctx do
     ctx
     |> Steps.open_company_trusted_email_domains_page()
@@ -57,6 +64,7 @@ defmodule Operately.Features.CompanyAdminTest do
     |> Steps.assert_trusted_email_domain_added("@dmif.com")
   end
 
+  @tag role: :owner
   feature "removing a trusted email domain", ctx do
     ctx
     |> Steps.given_the_company_has_trusted_email_domains(["@dmif.com"])
@@ -65,6 +73,7 @@ defmodule Operately.Features.CompanyAdminTest do
     |> Steps.assert_truested_email_domain_list_empty()
   end
 
+  @tag role: :admin
   feature "remove members from the company", ctx do
     ctx
     |> Steps.given_a_company_member_exists("Dwight Schrute")
