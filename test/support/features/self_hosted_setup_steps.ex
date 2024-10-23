@@ -34,10 +34,6 @@ defmodule Operately.Support.Features.SelfHostedSetupSteps do
     assert Operately.Companies.count_companies() == 1
     assert account != nil
 
-    person = Operately.Repo.preload(account, :people).people |> hd()
-
-    assert person.company_role == :admin
-
     ctx
   end
 

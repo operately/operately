@@ -3,7 +3,7 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyMember do
   use OperatelyWeb.Api.Helpers
 
   require Logger
-  import Operately.Access.Filters, only: [filter_by_full_access: 2]
+  import Operately.Access.Filters, only: [filter_by_edit_access: 2]
 
   inputs do
     field :full_name, :string
@@ -32,7 +32,7 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyMember do
 
   defp has_permissions?(person) do
     from(c in Operately.Companies.Company, where: c.id == ^person.company_id)
-    |> filter_by_full_access(person.id)
+    |> filter_by_edit_access(person.id)
     |> Repo.exists?()
   end
 

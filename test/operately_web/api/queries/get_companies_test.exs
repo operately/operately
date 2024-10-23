@@ -38,8 +38,8 @@ defmodule OperatelyWeb.Api.Queries.GetCompaniesTest do
       company1 = company_fixture(name: "Acmecorp")
       company2 = company_fixture(name: "Dunder Mifflin")
 
-      add_as_admin(ctx.person, company1)
-      add_as_admin(ctx.person, company2)
+      add_as_owner(ctx.person, company1)
+      add_as_owner(ctx.person, company2)
 
       person_fixture(company_id: company1.id)
       person_fixture(company_id: company1.id)
@@ -83,7 +83,6 @@ defmodule OperatelyWeb.Api.Queries.GetCompaniesTest do
       email: "john@jobh.com",
       avatar_url: "",
       title: "COO",
-      company_role: :admin,
     })
 
     {:ok, _} = Operately.Repo.insert(changeset)

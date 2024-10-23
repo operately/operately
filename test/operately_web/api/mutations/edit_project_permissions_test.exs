@@ -44,14 +44,14 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectPermissionsTest do
       assert res.success
     end
 
-    test "company admins can edit project permissions", ctx do
+    test "company owners can edit project permissions", ctx do
       project = create_project(ctx, company_access_level: Binding.view_access())
 
-      # Not admin
+      # Not owner
       assert {403, _} = request(ctx.conn, project)
 
-      # Admin
-      Operately.Companies.add_admin(ctx.company_creator, ctx.person.id)
+      # Owner
+      Operately.Companies.add_owner(ctx.company_creator, ctx.person.id)
 
       assert {200, res} = request(ctx.conn, project)
       assert res.success

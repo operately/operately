@@ -25,8 +25,8 @@ defmodule OperatelyWeb.Api.Mutations.CreateSpaceTest do
       assert_space_created(res)
     end
 
-    test "company admins can create space", ctx do
-      {:ok, _} = Operately.Companies.add_admin(ctx.company_creator, ctx.person.id)
+    test "company owners can create space", ctx do
+      {:ok, _} = Operately.Companies.add_owner(ctx.company_creator, ctx.person.id)
 
       assert {200, res} = request(ctx.conn)
       assert_space_created(res)
@@ -37,7 +37,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateSpaceTest do
     setup :register_and_log_in_account
 
     test "creates space", ctx do
-      Operately.Companies.add_admin(ctx.company_creator, ctx.person.id)
+      Operately.Companies.add_owner(ctx.company_creator, ctx.person.id)
 
       assert {200, res} = request(ctx.conn)
       assert_space_created(res)

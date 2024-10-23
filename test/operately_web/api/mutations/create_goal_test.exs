@@ -40,12 +40,12 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoalTest do
       assert_goal_created(res)
     end
 
-    test "company admins can create goal", ctx do
-      # Not admin
+    test "company owners can create goal", ctx do
+      # Not owner
       assert {403, _} = request(ctx.conn, ctx)
 
-      # Admin
-      {:ok, _} = Operately.Companies.add_admin(ctx.company_creator, ctx.person.id)
+      # Owner
+      {:ok, _} = Operately.Companies.add_owner(ctx.company_creator, ctx.person.id)
 
       assert {200, res} = request(ctx.conn, ctx)
       assert_goal_created(res)
@@ -79,12 +79,12 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoalTest do
       assert_goal_created(res)
     end
 
-    test "company admins can create goal", ctx do
-      # Not admin
+    test "company owners can create goal", ctx do
+      # Not owner
       assert {404, _} = request(ctx.conn, ctx)
 
-      # Admin
-      {:ok, _} = Operately.Companies.add_admin(ctx.company_creator, ctx.person.id)
+      # Owner
+      {:ok, _} = Operately.Companies.add_owner(ctx.company_creator, ctx.person.id)
 
       assert {200, res} = request(ctx.conn, ctx)
       assert_goal_created(res)
@@ -96,7 +96,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoalTest do
       ctx = register_and_log_in_account(ctx)
       space = group_fixture(ctx.company_creator, %{company_id: ctx.company.id})
 
-      Operately.Companies.add_admin(ctx.company_creator, ctx.person.id)
+      Operately.Companies.add_owner(ctx.company_creator, ctx.person.id)
 
       Map.merge(ctx, %{space: space})
     end
