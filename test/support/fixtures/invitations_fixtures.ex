@@ -10,14 +10,14 @@ defmodule Operately.InvitationsFixtures do
   """
   def invitation_fixture() do
     company = company_fixture(%{name: "Test Company"})
+
     admin = person_fixture(%{
       email: "admin@test.com",
-      company_role: :admin,
       company_id: company.id,
     })
+
     member = person_fixture_with_account(%{
       email: "member@test.com",
-      company_role: :member,
       company_id: company.id,
     })
 

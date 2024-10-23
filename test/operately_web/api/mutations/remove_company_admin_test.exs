@@ -40,7 +40,7 @@ defmodule OperatelyWeb.Api.Mutations.RemoveCompanyAdminTest do
 
     test "admins from other companies are not found", ctx do
       company = company_fixture()
-      admin = hd(Companies.list_admins(company.id))
+      admin = hd(Companies.list_owners(company))
 
       assert {404, res} = request(ctx.conn, admin)
       assert res.message == "The requested resource was not found"
@@ -83,12 +83,12 @@ defmodule OperatelyWeb.Api.Mutations.RemoveCompanyAdminTest do
   end
 
   defp assert_is_admin(company, person) do
-    admins = Companies.list_admins(company.id)
+    admins = Companies.list_owners(company)
     assert Enum.find(admins, &(&1.id == person.id))
   end
 
   defp refute_is_admin(company, person) do
-    admins = Companies.list_admins(company.id)
+    admins = Companies.list_owners(company)
     refute Enum.find(admins, &(&1.id == person.id))
   end
 end

@@ -128,7 +128,6 @@ defmodule Operately.Operations.CompanyAdding do
         email: changes[:account].email,
         avatar_url: "",
         title: attrs.title,
-        company_role: :admin,
       })
     end)
     |> Multi.insert(:admin_access_membership, fn changes ->

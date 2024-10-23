@@ -47,15 +47,15 @@ defmodule OperatelyWeb.Api.Mutations.CreateTaskTest do
       assert_task_created(res)
     end
 
-    test "company admins can create task", ctx do
+    test "company owners can create task", ctx do
       milestone = create_milestone(ctx, company_access_level: Binding.view_access())
 
-      # Not admin
+      # Not owner
       assert {403, _} = request(ctx.conn, milestone)
       refute_task_created(milestone)
 
-      # Admin
-      {:ok, _} = Operately.Companies.add_admin(ctx.company_creator, ctx.person.id)
+      # Owner
+      {:ok, _} = Operately.Companies.add_owner(ctx.company_creator, ctx.person.id)
 
       assert {200, res} = request(ctx.conn, milestone)
       assert_task_created(res)

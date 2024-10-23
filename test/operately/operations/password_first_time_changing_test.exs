@@ -10,9 +10,9 @@ defmodule Operately.Operations.PasswordFirstTimeChangingTest do
 
   setup do
     company = company_fixture()
-    admin = person_fixture_with_account(%{company_id: company.id, company_role: :admin})
+    inviter = person_fixture_with_account(%{company_id: company.id})
     member = person_fixture_with_account(%{company_id: company.id, has_open_invitation: true})
-    invitation = invitation_fixture(%{member_id: member.id, admin_id: admin.id})
+    invitation = invitation_fixture(%{member_id: member.id, admin_id: inviter.id})
 
     attrs = %{
       password: "AaBb12345@#cC",

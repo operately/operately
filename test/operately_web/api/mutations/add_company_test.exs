@@ -27,11 +27,13 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyTest do
       assert length(people) == 1
 
       person = hd(people)
-      assert person.company_role == :admin
       assert person.full_name == account.full_name
       assert person.title == "Founder"
       assert person.account_id == account.id
       assert person.company_id == company.id
+
+      owners = Operately.Companies.list_owners(company)
+      assert Enum.any?(owners, fn o -> o.id == person.id end)
     end
   end
 end 

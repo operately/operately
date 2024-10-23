@@ -16,7 +16,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReaction do
   alias Operately.Operations.ReactionAdding
 
   inputs do
-    field :entity_id, :string
+    field :entity_id, :id
     field :entity_type, :string
     field :parent_type, :string
     field :emoji, :string
@@ -32,8 +32,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReaction do
 
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:id, fn -> decode_id(inputs.entity_id) end)
-    |> run(:parent, fn ctx -> fetch_parent(ctx.id, ctx.me, type, parent_type) end)
+    |> run(:parent, fn ctx -> fetch_parent(inputs.entity_id, ctx.me, type, parent_type) end)
     |> run(:check_permissions, fn ctx -> check_permissions(ctx.parent, type, parent_type) end)
     |> run(:operation, fn ctx -> execute(ctx, inputs) end)
     |> run(:serialized, fn ctx -> {:ok, %{reaction: Serializer.serialize(ctx.operation, level: :essential)}} end)
@@ -85,7 +84,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReaction do
   end
 
   defp execute(ctx, inputs) do
-    ReactionAdding.run(ctx.me, ctx.id, inputs.entity_type, inputs.emoji)
+    ReactionAdding.run(ctx.me, inputs.entity_id, inputs.entity_type, inputs.emoji)
   end
 
   defp parse_comment_parent(nil), do: :ok
