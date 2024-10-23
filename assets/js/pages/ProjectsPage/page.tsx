@@ -13,16 +13,12 @@ export function Page() {
   const { projects } = useLoadedData();
 
   return (
-    <Pages.Page title={"Projects"}>
+    <Pages.Page title="Projects">
       <Paper.Root size="large">
-        <Paper.Body minHeight="500px" backgroundColor="bg-surface-base">
-          <Filters />
+        <Paper.Body minHeight="500px">
           <Title />
 
-          <div className="flex items-center justify-center mb-10 gap-4">
-            <PrimaryButton linkTo={Paths.newProjectPath()}>Add Project</PrimaryButton>
-          </div>
-
+          <Filters />
           <ProjectList projects={projects} showSpace />
         </Paper.Body>
       </Paper.Root>
@@ -31,16 +27,17 @@ export function Page() {
 }
 
 function Title() {
-  const { company, activeFilter } = useLoadedData();
+  const { company } = useLoadedData();
 
-  switch (activeFilter) {
-    case "my-projects":
-      return <h1 className="text-3xl font-bold text-center mb-6 leading-none">My projects in {company.name}</h1>;
-    case "reviewed-by-me":
-      return <h1 className="text-3xl font-bold text-center mb-6 leading-none">Reviewed by me in {company.name}</h1>;
-    case "all-projects":
-      return <h1 className="text-3xl font-bold text-center mb-6 leading-none">All projects in {company.name}</h1>;
-  }
+  return (
+    <div className="flex items-center justify-between pb-6 mb-6 border-b border-stroke-base">
+      <h1 className="text-3xl font-bold text-center leading-none">Projects in {company.name}</h1>
+
+      <PrimaryButton size="sm" linkTo={Paths.newProjectPath()}>
+        Add Project
+      </PrimaryButton>
+    </div>
+  );
 }
 
 function Filters() {
