@@ -49,15 +49,15 @@ defmodule OperatelyWeb.Api.Mutations.ChangeTaskDescriptionTest do
       assert_description_changed(task, "new description")
     end
 
-    test "company admins can change task description", ctx do
+    test "company owner can change task description", ctx do
       task = create_task(ctx, company_access_level: Binding.view_access())
 
-      # Not admin
+      # Not owner
       assert {403, _} = request(ctx.conn, task, "content")
       refute_description_changed(task)
 
       # Admin
-      {:ok, _} = Operately.Companies.add_admin(ctx.company_creator, ctx.person.id)
+      {:ok, _} = Operately.Companies.add_owner(ctx.company_creator, ctx.person.id)
 
       assert {200, _} = request(ctx.conn, task, "new description")
       assert_description_changed(task, "new description")

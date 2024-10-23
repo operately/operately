@@ -1,74 +1,28 @@
 defmodule Operately.Operations.CompanyAdminRemoving do
   alias Ecto.Multi
   alias Operately.{Repo, Access, Activities}
-  alias Operately.People.Person
 
-  def run(%Person{company_role: :admin} = admin, person) do
+  def run(admin, person) do
     Multi.new()
-    |> update_person(person)
-    |> remove_admin_permissions(admin)
-    |> insert_member_permissions(admin)
+    |> Multi.put(:admin, admin)
+    |> Multi.put(:person, person)
+    |> Multi.run(:reduce_access_level_to_view, &reduce_access_level_to_view/2)
     |> insert_activity(admin)
     |> Repo.transaction()
     |> Repo.extract_result(:person)
   end
 
-  defp update_person(multi, person) do
-    multi
-    |> Multi.update(:person, fn _ ->
-      Person.changeset(person, %{company_role: :member})
-    end)
-  end
-
-  defp remove_admin_permissions(multi, admin) do
-    multi
-    |> Multi.run(:admins_group, fn _, _ ->
-      {:ok, Access.get_group!(company_id: admin.company_id, tag: :full_access)}
-    end)
-    |> Multi.run(:admins_membership, fn _, changes ->
-      maybe_delete_membership(changes.admins_group.id, changes.person.id)
-    end)
-  end
-
-  defp insert_member_permissions(multi, admin) do
-    multi
-    |> Multi.run(:members_group, fn _, _ ->
-      {:ok, Access.get_group!(company_id: admin.company_id, tag: :standard)}
-    end)
-    |> Multi.run(:members_membership, fn _, changes ->
-      maybe_create_membership(changes.members_group.id, changes.person.id)
-    end)
+  defp reduce_access_level_to_view(_, ctx) do
+    context = Access.get_context!(company_id: ctx.admin.company_id)
+    Access.bind(context, person_id: ctx.person.id, level: Access.Binding.view_access())
   end
 
   defp insert_activity(multi, admin) do
-    multi
-    |> Activities.insert_sync(admin.id, :company_admin_removed, fn %{person: person} ->
+    Activities.insert_sync(multi, admin.id, :company_admin_removed, fn changes ->
       %{
-        company_id: person.company_id,
-        person_id: person.id,
+        company_id: changes.person.company_id,
+        person_id: changes.person.id,
       }
     end)
-  end
-
-  #
-  # Helpers
-  #
-
-  defp maybe_create_membership(group_id, person_id) do
-    case Access.get_group_membership(group_id: group_id, person_id: person_id) do
-      nil ->
-        Access.create_group_membership(%{group_id: group_id, person_id: person_id})
-      membership ->
-        {:ok, membership}
-    end
-  end
-
-  defp maybe_delete_membership(group_id, person_id) do
-    case Access.get_group_membership(group_id: group_id, person_id: person_id) do
-      nil ->
-        {:ok, nil}
-      membership ->
-        Access.delete_group_membership(membership)
-    end
   end
 end

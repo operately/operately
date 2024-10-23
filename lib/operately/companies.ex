@@ -4,12 +4,13 @@ defmodule Operately.Companies do
 
   alias Operately.Companies.Company
   alias Operately.Tenets.Tenet
-  alias Operately.People.Person
   alias Operately.Access.Fetch
 
   def list_companies do
     Repo.all(Company)
   end
+
+  def list_account_owners(company), do: Company.load_account_owners(company).account_owners
 
   def list_companies(account = %Operately.People.Account{}) do
     Repo.all(
@@ -55,8 +56,6 @@ defmodule Operately.Companies do
     |> Fetch.get_resource_with_access_level(person_id)
   end
 
-  defdelegate create_company(attrs \\ %{}, account \\ nil), to: Operately.Operations.CompanyAdding, as: :run
-
   def update_company(%Company{} = company, attrs) do
     company
     |> Company.changeset(attrs)
@@ -71,14 +70,25 @@ defmodule Operately.Companies do
     Company.changeset(company, attrs)
   end
 
-  def list_admins(company_id) do
-    Repo.all(from p in Person, where: p.company_role == :admin and p.company_id == ^company_id and not p.suspended)
+  alias Operately.Operations.{
+    CompanyAdding,
+    CompanyAdminAdding, 
+    CompanyAdminRemoving,
+    CompanyOwnerAdding
+  }
+
+  defdelegate create_company(attrs, account), to: CompanyAdding, as: :run
+  defdelegate add_admins(admin, people_ids), to: CompanyAdminAdding, as: :run
+  defdelegate add_owner(admin, person), to: CompanyOwnerAdding, as: :run
+  defdelegate remove_admin(admin, person), to: CompanyAdminRemoving, as: :run
+
+  def get_owner_group(company_id) do
+    Operately.Access.get_group(company_id: company_id, tag: :full_access)
   end
 
-  defdelegate remove_admin(admin, person), to: Operately.Operations.CompanyAdminRemoving, as: :run
-
-  def add_admin(admin, person_id), do: add_admins(admin, [person_id])
-  defdelegate add_admins(admin, people_ids), to: Operately.Operations.CompanyAdminAdding, as: :run
+  def get_members_group(company_id) do
+    Operately.Access.get_group(company_id: company_id, tag: :standard)
+  end
 
   def add_trusted_email_domain(company, domain) do
     company

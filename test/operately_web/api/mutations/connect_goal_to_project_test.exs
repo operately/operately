@@ -50,16 +50,16 @@ defmodule OperatelyWeb.Api.Mutations.ConnectGoalToProjectTest do
       assert_connected(project, goal)
     end
 
-    test "company admins can connect goal to project", ctx do
+    test "company owners can connect goal to project", ctx do
       goal = create_goal(ctx)
       project = create_project(ctx, company_access_level: Binding.view_access())
 
-      # Not admin
+      # Not owner
       assert {403, _} = request(ctx.conn, project, goal)
       refute_connected(project)
 
       # Admin
-      {:ok, _} = Operately.Companies.add_admin(ctx.company_creator, ctx.person.id)
+      {:ok, _} = Operately.Companies.add_owner(ctx.company_creator, ctx.person.id)
 
       assert {200, _} = request(ctx.conn, project, goal)
       assert_connected(project, goal)

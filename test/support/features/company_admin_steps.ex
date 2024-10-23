@@ -6,7 +6,13 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
 
   step :given_a_company_exists_and_im_an_admin, ctx do
     company = company_fixture(%{name: "Dunder Mifflin"})
-    admin = Operately.Companies.list_admins(company.id) |> hd()
+    owner = Operately.Companies.list_account_owners(company) |> List.first()
+    admin = person_fixture_with_account(%{
+      full_name: "Admin Adminson",
+      company_id: company.id, 
+    })
+
+    {:ok, _} = Operately.Companies.add_admins(owner, admin.id)
 
     ctx = Map.put(ctx, :company, company)
     ctx = Map.put(ctx, :admin, admin)

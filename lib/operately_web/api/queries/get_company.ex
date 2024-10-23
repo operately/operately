@@ -2,16 +2,18 @@ defmodule OperatelyWeb.Api.Queries.GetCompany do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
-  import Operately.Access.Filters, only: [filter_by_view_access: 2]
-
   alias OperatelyWeb.Api.Serializer
-  alias Operately.Companies.ShortId
   alias Operately.Companies.Company
 
+  require Logger
+
   inputs do
-    field :id, :string
-    field :include_admins, :boolean
+    field :id, :company_id
+
+    field :include_permissions, :boolean
     field :include_people, :boolean
+    field :include_admins, :boolean
+    field :include_account_owners, :boolean
   end
 
   outputs do
@@ -19,48 +21,32 @@ defmodule OperatelyWeb.Api.Queries.GetCompany do
   end
 
   def call(conn, inputs) do
-    case parse_id(inputs) do
-      {:ok, id} ->
-        person = me(conn)
-        company = load(person, id, inputs)
-
-        case company do
-          nil -> {:error, :not_found}
-          company -> {:ok, %{company: Serializer.serialize(company, level: :full)}}
-        end
-      e -> e
+    Company.get(me(conn), short_id: inputs.id, opts: [
+      after_load: after_load_hooks(inputs)
+    ])
+    |> case do
+      {:ok, company} -> {:ok, serialize(company)}
+      {:error, :not_found} -> {:error, :not_found}
+      {:error, :forbidden} -> {:error, :forbidden}
+      e -> internal_server_error(e)
     end
   end
 
-  defp parse_id(inputs) do
-    if inputs[:id] == nil do
-      {:error, :bad_request}
-    else
-      id = id_without_comments(inputs[:id])
-      case ShortId.decode(id) do
-        {:ok, short_id} -> {:ok, short_id}
-        _ -> {:error, :bad_request}
-      end
-    end
+  def after_load_hooks(inputs) do
+    Inputs.parse_includes(inputs, [
+      include_people: &Company.load_people/1,
+      include_admins: &Company.load_admins/1,
+      include_account_owners: &Company.load_account_owners/1,
+      include_permissions: &Company.load_permissions/1
+    ])
   end
 
-  defp load(person, id, inputs) do
-    requested = extract_include_filters(inputs)
-
-    (from c in Company, join: p in assoc(c, :people), where: c.short_id == ^id and p.id == ^person.id)
-    |> filter_by_view_access(person.id)
-    |> include_requested(requested)
-    |> Repo.one()
+  defp internal_server_error(e) do
+    Logger.error("Failed to get company: #{inspect(e)}")
+    {:error, :internal_server_error}
   end
 
-  def include_requested(query, requested) do
-    Enum.reduce(requested, query, fn include, q ->
-      case include do
-        :include_admins -> from c in q, preload: [:admins]
-        :include_people -> from c in q, preload: [:people]
-        _ -> raise ArgumentError, "Unknown include filter: #{inspect(include)}"
-      end
-    end)
+  defp serialize(company) do
+    %{company: Serializer.serialize(company, level: :full)}
   end
-
 end

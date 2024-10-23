@@ -23,7 +23,7 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyMemberTest do
 
   describe "add_company_member functionality" do
     setup :register_and_log_in_account
-    setup :promote_to_admin
+    setup :promote_to_owner
 
     test "creates first-time-access token for new member", ctx do
       assert {200, res} = mutation(ctx.conn, :add_company_member, @add_company_member_input)
@@ -53,8 +53,8 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyMemberTest do
     end
   end
 
-  defp promote_to_admin(ctx) do
-    {:ok, _} = Operately.Companies.add_admin(ctx.company_creator, ctx.person.id)
+  defp promote_to_owner(ctx) do
+    {:ok, _} = Operately.Companies.add_owner(ctx.company_creator, ctx.person.id)
     ctx
   end
 end

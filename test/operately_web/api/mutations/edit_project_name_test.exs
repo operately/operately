@@ -43,14 +43,14 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectNameTest do
       assert_name_edited(res, project)
     end
 
-    test "company admins can edit project name", ctx do
+    test "company owners can edit project name", ctx do
       project = create_project(ctx, company_access_level: Binding.view_access())
 
-      # Not admin
+      # Not owner
       assert {403, _} = request(ctx.conn, project)
 
       # Admin
-      Operately.Companies.add_admin(ctx.company_creator, ctx.person.id)
+      Operately.Companies.add_owner(ctx.company_creator, ctx.person.id)
 
       assert {200, res} = request(ctx.conn, project)
       assert_name_edited(res, project)

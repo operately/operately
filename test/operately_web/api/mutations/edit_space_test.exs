@@ -41,14 +41,14 @@ defmodule OperatelyWeb.Api.Mutations.EditSpaceTest do
       assert res.space == Serializer.serialize(space)
     end
 
-    test "company admins can edit a space", ctx do
+    test "company owners can edit a space", ctx do
       space = create_space(ctx, company_permissions: Binding.view_access())
 
-      # Not admin
+      # Not owner
       assert {403, _} = request(ctx.conn, space)
 
       # Admin
-      Operately.Companies.add_admin(ctx.company_creator, ctx.person.id)
+      Operately.Companies.add_owner(ctx.company_creator, ctx.person.id)
 
       assert {200, res} = request(ctx.conn, space)
       assert res.space == Serializer.serialize(space)

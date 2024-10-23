@@ -45,14 +45,14 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalTest do
       assert res.goal == Serializer.serialize(goal, level: :essential)
     end
 
-    test "company admins can edit a goal", ctx do
+    test "company owners can edit a goal", ctx do
       goal = create_goal(ctx, company_access_level: Binding.view_access())
 
-      # Not admin
+      # Not owner
       assert {403, _} = request(ctx.conn, goal)
 
-      # Admin
-      Operately.Companies.add_admin(ctx.company_creator, ctx.person.id)
+      # Owner
+      Operately.Companies.add_owner(ctx.company_creator, ctx.person.id)
 
       assert {200, res} = request(ctx.conn, goal)
       assert res.goal == Serializer.serialize(goal, level: :essential)
