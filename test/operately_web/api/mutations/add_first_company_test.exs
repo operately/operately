@@ -24,7 +24,7 @@ defmodule OperatelyWeb.Api.Mutations.AddFirstCompanyTest do
       assert group
 
       person = Operately.Repo.preload(account, :people).people |> hd()
-      owners = Operately.Companies.list_account_owners(company)
+      owners = Operately.Companies.list_owners(company)
 
       assert Enum.any?(owners, fn o -> o.id == person.id end)
     end

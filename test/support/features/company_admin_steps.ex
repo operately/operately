@@ -4,20 +4,27 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
   import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
 
-  step :given_a_company_exists_and_im_an_admin, ctx do
+  step :given_a_company_exists, ctx do
     company = company_fixture(%{name: "Dunder Mifflin"})
-    owner = Operately.Companies.list_account_owners(company) |> List.first()
-    admin = person_fixture_with_account(%{
-      full_name: "Admin Adminson",
-      company_id: company.id, 
-    })
+    owner = Operately.Companies.list_owners(company) |> List.first()
 
-    {:ok, _} = Operately.Companies.add_admins(owner, admin.id)
+    ctx
+    |> Map.put(:company, company)
+    |> Map.put(:owner, owner)
+  end
 
-    ctx = Map.put(ctx, :company, company)
-    ctx = Map.put(ctx, :admin, admin)
+  step :given_i_am_logged_in, ctx, [as: role] do
+    cond do
+      role == :admin ->
+        admin = person_fixture_with_account(%{full_name: "Admin Adminson", company_id: ctx.company.id})
+        {:ok, _} = Operately.Companies.add_admins(ctx.owner, admin.id)
+        UI.login_as(ctx, admin)
 
-    ctx |> UI.login_as(ctx.admin)
+      role == :owner ->
+        owner = person_fixture_with_account(%{full_name: "Owner Ownerson", company_id: ctx.company.id})
+        {:ok, _} = Operately.Companies.add_owner(ctx.owner, owner.id)
+        UI.login_as(ctx, owner)
+    end
   end
 
   step :open_company_team_page, ctx do
@@ -143,7 +150,7 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
   end
 
   step :given_a_company_admin_exists, ctx, name do
-    Factory.add_company_admin(ctx, ctx.company, [full_name: name])
+    Factory.add_company_admin(ctx, :admin, [name: name])
   end
 
   step :click_on_add_remove_people, ctx do
@@ -187,7 +194,7 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
     person = Operately.People.get_person_by_name!(ctx.company, name)
     admins = Operately.Companies.list_admins(ctx.company)
 
-    assert Enum.any?(admins, fn admin -> admin.id == person.id end)
+    refute Enum.any?(admins, fn admin -> admin.id == person.id end)
 
     ctx
   end

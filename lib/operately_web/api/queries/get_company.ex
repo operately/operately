@@ -13,7 +13,7 @@ defmodule OperatelyWeb.Api.Queries.GetCompany do
     field :include_permissions, :boolean
     field :include_people, :boolean
     field :include_admins, :boolean
-    field :include_account_owners, :boolean
+    field :include_owners, :boolean
   end
 
   outputs do
@@ -36,7 +36,7 @@ defmodule OperatelyWeb.Api.Queries.GetCompany do
     Inputs.parse_includes(inputs, [
       include_people: &Company.load_people/1,
       include_admins: &Company.load_admins/1,
-      include_account_owners: &Company.load_account_owners/1,
+      include_owners: &Company.load_owners/1,
       include_permissions: &Company.load_permissions/1
     ])
   end
