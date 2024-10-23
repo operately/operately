@@ -7,7 +7,6 @@ defmodule Operately.Companies.Company do
 
     has_many :access_groups, Operately.Access.Group, foreign_key: :company_id
     has_many :people, Operately.People.Person, foreign_key: :company_id, where: [suspended_at: nil]
-    has_many :admins, Operately.People.Person, foreign_key: :company_id, where: [company_role: "admin", suspended_at: nil]
 
     field :mission, :string
     field :name, :string
@@ -16,7 +15,11 @@ defmodule Operately.Companies.Company do
     field :company_space_id, :binary_id
     field :short_id, :integer
 
+    # loaded with hooks
     field :member_count, :integer, virtual: true
+    field :admins, :any, virtual: true
+    field :owners, :any, virtual: true
+    field :permissions, :any, virtual: true
 
     timestamps()
     request_info()
@@ -58,6 +61,27 @@ defmodule Operately.Companies.Company do
         nil -> Map.put(company, :member_count, 0)
       end
     end)
+  end
+
+  def load_people(company) do
+    company |> Repo.preload([:people])
+  end
+
+  def load_admins(company) do
+    context = Operately.Access.get_context(company_id: company.id)
+    people = Operately.Access.BindedPeopleLoader.load(context.id, :edit_access)
+    Map.put(company, :admins, people)
+  end
+
+  def load_owners(company) do
+    context = Operately.Access.get_context(company_id: company.id)
+    people = Operately.Access.BindedPeopleLoader.load(context.id, :full_access)
+    Map.put(company, :owners, people)
+  end
+
+  def load_permissions(company) do
+    permissions = Operately.Companies.Permissions.calculate(company.request_info.access_level)
+    Map.put(company, :permissions, permissions)
   end
 
 end

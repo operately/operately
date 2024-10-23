@@ -32,7 +32,6 @@ defmodule Operately.Operations.CompanyAddingTest do
     assert length(People.list_people(company.id)) == 1
 
     person = People.list_people(company.id) |> hd()
-    assert person.company_role == :admin
     assert person.full_name == account.full_name
     assert person.title == "CEO"
   end

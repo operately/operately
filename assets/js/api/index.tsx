@@ -595,8 +595,19 @@ export interface Company {
   enabledExperimentalFeatures?: string[] | null;
   companySpaceId?: string | null;
   admins?: Person[] | null;
+  owners?: Person[] | null;
   people?: Person[] | null;
   memberCount?: number | null;
+  permissions?: CompanyPermissions | null;
+}
+
+export interface CompanyPermissions {
+  canEditTrustedEmailDomains?: boolean | null;
+  canInviteMembers?: boolean | null;
+  canRemoveMembers?: boolean | null;
+  canCreateSpace?: boolean | null;
+  canManageAdmins?: boolean | null;
+  canManageOwners?: boolean | null;
 }
 
 export interface CreateTargetInput {
@@ -763,7 +774,6 @@ export interface Person {
   title?: string | null;
   avatarUrl?: string | null;
   timezone?: string | null;
-  companyRole?: string | null;
   email?: string | null;
   sendDailySummary?: boolean | null;
   notifyOnMention?: boolean | null;
@@ -1279,9 +1289,11 @@ export interface GetCompaniesResult {
 }
 
 export interface GetCompanyInput {
-  id?: string | null;
-  includeAdmins?: boolean | null;
+  id?: CompanyId | null;
+  includePermissions?: boolean | null;
   includePeople?: boolean | null;
+  includeAdmins?: boolean | null;
+  includeOwners?: boolean | null;
 }
 
 export interface GetCompanyResult {
@@ -1709,7 +1721,7 @@ export interface AddProjectContributorsResult {
 }
 
 export interface AddReactionInput {
-  entityId?: string | null;
+  entityId?: Id | null;
   entityType?: string | null;
   parentType?: string | null;
   emoji?: string | null;
@@ -2017,7 +2029,7 @@ export interface EditProjectTimelineResult {
 }
 
 export interface EditSpaceInput {
-  id?: string | null;
+  id?: Id | null;
   name?: string | null;
   mission?: string | null;
 }
