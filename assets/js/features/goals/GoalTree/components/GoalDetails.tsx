@@ -5,6 +5,7 @@ import * as Timeframes from "@/utils/timeframes";
 
 import classNames from "classnames";
 import { match } from "ts-pattern";
+import { createTestId } from "@/utils/testid";
 import { IconCalendar, IconMinus, IconPlus } from "@tabler/icons-react";
 import { includesId, Paths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
@@ -39,11 +40,13 @@ export function GoalProgressBar({ node }: { node: GoalNode }) {
 
 export function ExpandGoalSuccessConditions({ node }: { node: GoalNode }) {
   const { goalExpanded, toggleGoalExpanded } = useExpandable();
+  const testId = createTestId("toggle-goal", node.goal.id!);
 
   return (
     <div
       onClick={() => toggleGoalExpanded(node.goal.id!)}
       className="ml-2 h-[20px] w-[20px] rounded-full border-2 border-surface-outline flex items-center justify-center cursor-pointer"
+      data-test-id={testId}
     >
       {includesId(goalExpanded, node.goal.id) ? (
         <IconMinus size={12} stroke={3} className="border-surface-outline shrink-0" />
