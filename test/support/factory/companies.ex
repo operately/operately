@@ -55,8 +55,10 @@ defmodule Operately.Support.Factory.Companies do
     }
 
     person = Operately.PeopleFixtures.person_fixture_with_account(attrs)
-
     set_access_level(ctx, person, Operately.Access.Binding.full_access())
+
+    group = Operately.Access.get_group(company_id: ctx.company.id, tag: :full_access)
+    {:ok, _} = Operately.Access.add_to_group(group, person_id: person.id)
     
     Map.put(ctx, testid, person)
   end

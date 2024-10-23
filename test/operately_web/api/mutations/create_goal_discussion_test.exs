@@ -45,14 +45,14 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoalDiscussionTest do
       assert_discussion_created(res)
     end
 
-    test "company admins can create a goal discussion", ctx do
+    test "company owners can create a goal discussion", ctx do
       goal = create_goal(ctx, company_access_level: Binding.view_access())
 
-      # Not admin
+      # Not owner
       assert {403, _} = request(ctx.conn, goal)
 
-      # Admin
-      Operately.Companies.add_admin(ctx.company_creator, ctx.person.id)
+      # Owner
+      Operately.Companies.add_owner(ctx.company_creator, ctx.person.id)
 
       assert {200, res} = request(ctx.conn, goal)
       assert_discussion_created(res)

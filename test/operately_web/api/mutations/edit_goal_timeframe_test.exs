@@ -44,14 +44,14 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalTimeframeTest do
       assert_timeframe_edited(goal)
     end
 
-    test "company admins can edit a goal timeframe", ctx do
+    test "company owner can edit a goal timeframe", ctx do
       goal = create_goal(ctx, company_access_level: Binding.view_access())
 
-      # Not admin
+      # Not owner
       assert {403, _} = request(ctx.conn, goal)
 
-      # Admin
-      Operately.Companies.add_admin(ctx.company_creator, ctx.person.id)
+      # Owner
+      Operately.Companies.add_owner(ctx.company_creator, ctx.person.id)
 
       assert {200, _} = request(ctx.conn, goal)
       assert_timeframe_edited(goal)

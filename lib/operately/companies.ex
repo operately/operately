@@ -73,11 +73,13 @@ defmodule Operately.Companies do
   alias Operately.Operations.{
     CompanyAdding,
     CompanyAdminAdding, 
-    CompanyAdminRemoving
+    CompanyAdminRemoving,
+    CompanyOwnerAdding
   }
 
   defdelegate create_company(attrs, account), to: CompanyAdding, as: :run
   defdelegate add_admins(admin, people_ids), to: CompanyAdminAdding, as: :run
+  defdelegate add_owner(admin, person), to: CompanyOwnerAdding, as: :run
   defdelegate remove_admin(admin, person), to: CompanyAdminRemoving, as: :run
 
   def get_owner_group(company_id) do

@@ -42,11 +42,11 @@ defmodule OperatelyWeb.Api.Mutations.CreateProjectTest do
     end
 
     test "company admins can create project", ctx do
-      # Not admin
+      # Not owner
       assert {403, _} = request(ctx.conn, ctx)
 
-      # Admin
-      {:ok, _} = Operately.Companies.add_admin(ctx.company_creator, ctx.person.id)
+      # Owner
+      {:ok, _} = Operately.Companies.add_owner(ctx.company_creator, ctx.person.id)
 
       assert {200, res} = request(ctx.conn, ctx)
       assert_project_created(res, ctx.company.company_space_id)
@@ -82,11 +82,11 @@ defmodule OperatelyWeb.Api.Mutations.CreateProjectTest do
     end
 
     test "company admins can create project", ctx do
-      # Not admin
+      # Not owner
       assert {404, _} = request(ctx.conn, ctx)
 
-      # Admin
-      {:ok, _} = Operately.Companies.add_admin(ctx.company_creator, ctx.person.id)
+      # Owner
+      {:ok, _} = Operately.Companies.add_owner(ctx.company_creator, ctx.person.id)
 
       assert {200, res} = request(ctx.conn, ctx)
       assert_project_created(res, ctx.space.id)
@@ -99,7 +99,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateProjectTest do
       space = group_fixture(ctx.company_creator, %{company_id: ctx.company.id})
       goal = goal_fixture(ctx.person, %{space_id: space.id})
 
-      Operately.Companies.add_admin(ctx.company_creator, ctx.person.id)
+      Operately.Companies.add_owner(ctx.company_creator, ctx.person.id)
 
       Map.merge(ctx, %{space: space, goal: goal})
     end

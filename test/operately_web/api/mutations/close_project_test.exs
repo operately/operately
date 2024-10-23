@@ -55,15 +55,15 @@ defmodule OperatelyWeb.Api.Mutations.CloseProjectTest do
       assert_project_closed(res, project)
     end
 
-    test "company admins can close a project", ctx do
+    test "company owner can close a project", ctx do
       project = create_project(ctx, company_access_level: Binding.view_access())
 
-      # Not admin
+      # Not owner
       assert {403, _} = request(ctx.conn, project)
       assert_project_not_closed(project)
 
-      # Admin
-      {:ok, _} = Companies.add_admin(ctx.company_creator, ctx.person.id)
+      # Owner
+      {:ok, _} = Companies.add_owner(ctx.company_creator, ctx.person.id)
 
       assert {200, res} = request(ctx.conn, project)
       assert_project_closed(res, project)
