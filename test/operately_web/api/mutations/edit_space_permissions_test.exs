@@ -42,14 +42,14 @@ defmodule OperatelyWeb.Api.Mutations.EditSpacePermissionsTest do
       assert res.success
     end
 
-    test "company admins can edit space permissions", ctx do
+    test "company owner can edit space permissions", ctx do
       space = create_space(ctx, company_permissions: Binding.view_access())
 
-      # Not admin
+      # Not owner
       assert {403, _} = request(ctx.conn, space)
 
       # Admin
-      Operately.Companies.add_admin(ctx.company_creator, ctx.person.id)
+      Operately.Companies.add_owner(ctx.company_creator, ctx.person.id)
 
       assert {200, res} = request(ctx.conn, space)
       assert res.success

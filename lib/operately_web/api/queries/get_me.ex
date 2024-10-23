@@ -31,7 +31,6 @@ defmodule OperatelyWeb.Api.Queries.GetMe do
         title: me.title,
         avatar_url: me.avatar_url,
         timezone: me.timezone,
-        companyRole: me.company_role,
         avatar_blob_id: me.avatar_blob_id,
 
         send_daily_summary: me.send_daily_summary,

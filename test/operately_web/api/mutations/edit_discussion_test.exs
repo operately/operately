@@ -48,14 +48,14 @@ defmodule OperatelyWeb.Api.Mutations.EditDiscussionTest do
       assert_discussion_edited(message)
     end
 
-    test "company admins can edit discussion", ctx do
+    test "company owners can edit discussion", ctx do
       message = message_fixture(ctx.creator_id, ctx.company.company_space_id)
 
-      # Not admin
+      # Not owner
       assert {403, _} = request(ctx.conn, message)
 
-      # Admin
-      {:ok, _} = Operately.Companies.add_admin(ctx.company_creator, ctx.person.id)
+      # Owner
+      {:ok, _} = Operately.Companies.add_owner(ctx.company_creator, ctx.person.id)
 
       assert {200, _} = request(ctx.conn, message)
       assert_discussion_edited(message)
@@ -94,14 +94,14 @@ defmodule OperatelyWeb.Api.Mutations.EditDiscussionTest do
       assert_discussion_edited(message)
     end
 
-    test "company admins can edit discussion", ctx do
+    test "company owner can edit discussion", ctx do
       message = message_fixture(ctx.creator_id, ctx.space_id)
 
-      # Not admin
+      # Not owner
       assert {404, _} = request(ctx.conn, message)
 
-      # Admin
-      {:ok, _} = Operately.Companies.add_admin(ctx.company_creator, ctx.person.id)
+      # Owner
+      {:ok, _} = Operately.Companies.add_owner(ctx.company_creator, ctx.person.id)
 
       assert {200, _} = request(ctx.conn, message)
       assert_discussion_edited(message)
@@ -111,7 +111,7 @@ defmodule OperatelyWeb.Api.Mutations.EditDiscussionTest do
   describe "edit_discussion functionality" do
     setup ctx do
       ctx = register_and_log_in_account(ctx)
-      Operately.Companies.add_admin(ctx.company_creator, ctx.person.id)
+      Operately.Companies.add_owner(ctx.company_creator, ctx.person.id)
 
       ctx
     end

@@ -349,19 +349,23 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
   end
 
   describe "add_reaction functionality" do
-    setup :register_and_log_in_account
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.add_company_owner(:owner)
+      |> Factory.add_space(:product_space)
+      |> Factory.add_message(:hello_message, :product_space)
+      |> Factory.log_in_person(:owner)
+    end
 
     test "add reaction to a discussion", ctx do
-      Operately.Companies.add_admin(ctx.company_creator, ctx.person.id)
-      message = message_fixture(ctx.person.id, ctx.company.company_space_id)
-
       assert {200, res} = mutation(ctx.conn, :add_reaction, %{
-        entity_id: Paths.message_id(message),
+        entity_id: Paths.message_id(ctx.hello_message),
         entity_type: "message",
         emoji: "👍"
       })
 
-      reaction = hd(Operately.Updates.list_reactions(message.id, :message))
+      reaction = hd(Operately.Updates.list_reactions(ctx.hello_message.id, :message))
       assert reaction.emoji == "👍"
       assert res.reaction == Serializer.serialize(reaction, level: :essential)
     end

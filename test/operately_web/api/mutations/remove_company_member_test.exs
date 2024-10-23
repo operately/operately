@@ -61,7 +61,7 @@ defmodule OperatelyWeb.Api.Mutations.RemoveCompanyMemberTest do
 
   defp set_caller_access_level(ctx, access_level) do
     if access_level == :full_access do
-      Operately.Companies.add_admin(ctx.company_creator, ctx.person.id)
+      Operately.Companies.add_owner(ctx.company_creator, ctx.person.id)
     end
   end
 end

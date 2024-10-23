@@ -6,7 +6,13 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
 
   step :given_a_company_exists_and_im_an_admin, ctx do
     company = company_fixture(%{name: "Dunder Mifflin"})
-    admin = Operately.Companies.list_admins(company.id) |> hd()
+    owner = Operately.Companies.list_account_owners(company) |> List.first()
+    admin = person_fixture_with_account(%{
+      full_name: "Admin Adminson",
+      company_id: company.id, 
+    })
+
+    {:ok, _} = Operately.Companies.add_admins(owner, admin.id)
 
     ctx = Map.put(ctx, :company, company)
     ctx = Map.put(ctx, :admin, admin)
@@ -137,8 +143,7 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
   end
 
   step :given_a_company_admin_exists, ctx, name do
-    person_fixture(%{full_name: name, company_id: ctx.company.id, company_role: :admin})
-    ctx
+    Factory.add_company_admin(ctx, ctx.company, [full_name: name])
   end
 
   step :click_on_add_remove_people, ctx do
@@ -171,14 +176,18 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
 
   step :assert_person_is_admin, ctx, name do
     person = Operately.People.get_person_by_name!(ctx.company, name)
-    assert person.company_role == :admin
+    admins = Operately.Companies.list_admins(ctx.company)
+
+    assert Enum.any?(admins, fn admin -> admin.id == person.id end)
 
     ctx
   end
 
   step :refute_person_is_admin, ctx, name do
     person = Operately.People.get_person_by_name!(ctx.company, name)
-    assert person.company_role == :member
+    admins = Operately.Companies.list_admins(ctx.company)
+
+    assert Enum.any?(admins, fn admin -> admin.id == person.id end)
 
     ctx
   end

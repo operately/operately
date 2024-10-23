@@ -715,7 +715,6 @@ defmodule OperatelyWeb.Api.Types do
     field :title, :string
     field :avatar_url, :string
     field :timezone, :string
-    field :company_role, :string
     field :email, :string
     field :send_daily_summary, :boolean
     field :notify_on_mention, :boolean
@@ -861,6 +860,16 @@ defmodule OperatelyWeb.Api.Types do
     field :admins, list_of(:person)
     field :people, list_of(:person)
     field :member_count, :integer
+    field :permissions, :company_permissions
+  end
+
+  object :company_permissions do
+    field :can_edit_trusted_email_domains, :boolean
+    field :can_invite_members, :boolean
+    field :can_remove_members, :boolean
+    field :can_create_space, :boolean
+    field :can_manage_admins, :boolean
+    field :can_manage_owners, :boolean
   end
 
   object :activity_content_goal_timeframe_editing do
