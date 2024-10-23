@@ -5,7 +5,6 @@ defmodule OperatelyWeb.Api.Queries.GetCompaniesTest do
   import Operately.PeopleFixtures
 
   alias Operately.People.Person
-  alias Operately.Companies.Company
 
   describe "security" do
     test "it requires authentication", ctx do
@@ -32,31 +31,6 @@ defmodule OperatelyWeb.Api.Queries.GetCompaniesTest do
       assert find_in_response(res, ctx.company) == Serializer.serialize(ctx.company, level: :full)
       assert find_in_response(res, company1) == Serializer.serialize(company1, level: :full)
       assert find_in_response(res, company2) == Serializer.serialize(company2, level: :full)
-    end
-
-    test "include_member_count", ctx do
-      company1 = company_fixture(name: "Acmecorp")
-      company2 = company_fixture(name: "Dunder Mifflin")
-
-      add_as_owner(ctx.person, company1)
-      add_as_owner(ctx.person, company2)
-
-      person_fixture(company_id: company1.id)
-      person_fixture(company_id: company1.id)
-      person_fixture(company_id: company2.id)
-
-      assert {200, res} = query(ctx.conn, :get_companies, %{include_member_count: true})
-      assert length(res.companies) == 3
-
-      # reload companies with member count so that we can compare the serialized response
-      [c1, c2, c3] =
-        [ctx.company, company1, company2]
-        |> Enum.map(fn c -> Operately.Companies.get_company!(c.id) end)
-        |> Company.load_member_count()
-
-      assert find_in_response(res, ctx.company) == Serializer.serialize(c1, level: :full)
-      assert find_in_response(res, company1) == Serializer.serialize(c2, level: :full)
-      assert find_in_response(res, company2) == Serializer.serialize(c3, level: :full)
     end
 
     test "include_member_count doesn't include suspended members", ctx do

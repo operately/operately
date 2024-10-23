@@ -32,7 +32,7 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyTest do
       assert person.account_id == account.id
       assert person.company_id == company.id
 
-      owners = Operately.Companies.list_account_owners(company)
+      owners = Operately.Companies.list_owners(company)
       assert Enum.any?(owners, fn o -> o.id == person.id end)
     end
   end

@@ -10,7 +10,7 @@ export async function loader({ params }): Promise<LoaderResult> {
     company: await Companies.getCompany({
       id: params.companyId,
       includeAdmins: true,
-      includeAccountOwners: true,
+      includeOwners: true,
       includePermissions: true,
     }).then((d) => d.company!),
   };

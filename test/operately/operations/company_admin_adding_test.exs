@@ -5,7 +5,6 @@ defmodule Operately.Operations.CompanyAdminAddingTest do
   import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
 
-  alias Operately.Access
   alias Operately.Activities.Activity
   alias Operately.Operations.CompanyAdminAdding
 
@@ -20,19 +19,11 @@ defmodule Operately.Operations.CompanyAdminAddingTest do
   end
 
   test "CompanyAdminAdding operation promotes people to admin", ctx do
-    refute_people_are_owners(ctx.company, ctx.people)
+    refute_people_are_admins(ctx.company, ctx.people)
 
     assert {:ok, _} = CompanyAdminAdding.run(ctx.admin, people_ids(ctx.people))
 
-    assert_people_are_owners(ctx.company, ctx.people)
-  end
-
-  test "CompanyAdminAdding operation adds person to admins group", ctx do
-    refute_people_are_in_owners_group(ctx.company, ctx.people)
-
-    assert {:ok, _} = CompanyAdminAdding.run(ctx.admin, people_ids(ctx.people))
-
-    assert_people_are_in_owners_group(ctx.company, ctx.people)
+    assert_people_are_admins(ctx.company, ctx.people)
   end
 
   test "CompanyAdminAdding operation creates activity", ctx do
@@ -72,28 +63,18 @@ defmodule Operately.Operations.CompanyAdminAddingTest do
     Enum.map(people, &(&1.id))
   end
 
-  defp refute_people_are_owners(company, people) do
-    owners = Operately.Companies.list_account_owners(company)
-    owner_ids = Enum.map(owners, &(&1.id))
+  defp refute_people_are_admins(company, people) do
+    admins = Operately.Companies.list_admins(company)
+    admin_ids = Enum.map(admins, &(&1.id))
 
-    refute Enum.any?(people, fn p -> p.id in owner_ids end)
+    refute Enum.any?(people, fn p -> p.id in admin_ids end)
   end
 
-  defp assert_people_are_owners(company, people) do
-    owners = Operately.Companies.list_account_owners(company)
-    owner_ids = Enum.map(owners, &(&1.id))
+  defp assert_people_are_admins(company, people) do
+    admins = Operately.Companies.list_admins(company)
+    admin_ids = Enum.map(admins, &(&1.id))
 
-    assert Enum.all?(people, fn p -> p.id in owner_ids end)
-  end
-
-  defp refute_people_are_in_owners_group(company, people) do
-    group = Access.get_group!(company_id: company.id, tag: :full_access)
-    refute Enum.any?(people, fn p -> Access.get_group_membership(group_id: group.id, person_id: p.id) end)
-  end
-
-  defp assert_people_are_in_owners_group(company, people) do
-    group = Access.get_group!(company_id: company.id, tag: :full_access)
-    assert Enum.all?(people, fn p -> Access.get_group_membership(group_id: group.id, person_id: p.id) end)
+    assert Enum.all?(people, fn p -> p.id in admin_ids end)
   end
 
   defp find_activity(company) do

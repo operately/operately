@@ -595,6 +595,7 @@ export interface Company {
   enabledExperimentalFeatures?: string[] | null;
   companySpaceId?: string | null;
   admins?: Person[] | null;
+  owners?: Person[] | null;
   people?: Person[] | null;
   memberCount?: number | null;
   permissions?: CompanyPermissions | null;
@@ -1289,10 +1290,10 @@ export interface GetCompaniesResult {
 
 export interface GetCompanyInput {
   id?: CompanyId | null;
+  includePermissions?: boolean | null;
   includePeople?: boolean | null;
   includeAdmins?: boolean | null;
-  includeAccountOwners?: boolean | null;
-  includePermissions?: boolean | null;
+  includeOwners?: boolean | null;
 }
 
 export interface GetCompanyResult {
@@ -1720,7 +1721,7 @@ export interface AddProjectContributorsResult {
 }
 
 export interface AddReactionInput {
-  entityId?: string | null;
+  entityId?: Id | null;
   entityType?: string | null;
   parentType?: string | null;
   emoji?: string | null;

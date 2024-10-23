@@ -18,7 +18,7 @@ defmodule OperatelyWeb.Api.Mutations.RemoveCompanyAdminTest do
       ctx = register_and_log_in_account(ctx)
       admin = person_fixture_with_account(%{company_id: ctx.company.id})
 
-      Companies.add_admins(ctx.company_creator, ctx.company, [ctx.person.id, admin.id])
+      Companies.add_admins(ctx.company_creator, [ctx.person.id, admin.id])
 
       Map.merge(ctx, %{admin: admin})
     end
@@ -31,16 +31,15 @@ defmodule OperatelyWeb.Api.Mutations.RemoveCompanyAdminTest do
       assert_is_admin(ctx.company, ctx.admin)
     end
 
-    test "company admins can remove other admins", ctx do
-      assert {200, res} = request(ctx.conn, ctx.admin)
+    test "company admins can't remove other admins", ctx do
+      assert {403, res} = request(ctx.conn, ctx.admin)
 
-      assert res.person == Serializer.serialize(ctx.admin)
-      refute_is_admin(ctx.company, ctx.admin)
+      assert res.message == "You don't have permission to perform this action"
     end
 
     test "admins from other companies are not found", ctx do
       company = company_fixture()
-      admin = hd(Companies.list_account_owners(company))
+      admin = hd(Companies.list_owners(company))
 
       assert {404, res} = request(ctx.conn, admin)
       assert res.message == "The requested resource was not found"
@@ -52,7 +51,8 @@ defmodule OperatelyWeb.Api.Mutations.RemoveCompanyAdminTest do
       ctx = register_and_log_in_account(ctx)
       admin = person_fixture_with_account(%{company_id: ctx.company.id})
 
-      Companies.add_admins(ctx.company_creator, ctx.company, [ctx.person.id, admin.id])
+      Companies.add_owner(ctx.company_creator, ctx.person.id)
+      Companies.add_admins(ctx.company_creator, [admin.id])
 
       Map.merge(ctx, %{admin: admin})
     end
@@ -65,13 +65,6 @@ defmodule OperatelyWeb.Api.Mutations.RemoveCompanyAdminTest do
       assert res.person == Serializer.serialize(ctx.admin)
       refute_is_admin(ctx.company, ctx.admin)
     end
-
-    test "admins can't remove themselves", ctx do
-      assert {400, res} = request(ctx.conn, ctx.person)
-
-      assert res == %{error: "Bad request", message: "Admins cannot remove themselves"}
-      assert_is_admin(ctx.company, ctx.person)
-    end
   end
 
   #
@@ -83,12 +76,12 @@ defmodule OperatelyWeb.Api.Mutations.RemoveCompanyAdminTest do
   end
 
   defp assert_is_admin(company, person) do
-    admins = Companies.list_account_owners(company)
+    admins = Companies.list_admins(company)
     assert Enum.find(admins, &(&1.id == person.id))
   end
 
   defp refute_is_admin(company, person) do
-    admins = Companies.list_account_owners(company)
+    admins = Companies.list_admins(company)
     refute Enum.find(admins, &(&1.id == person.id))
   end
 end
