@@ -9,8 +9,8 @@ import { DimmedLabel } from "./Label";
 import { SecondaryButton } from "@/components/Buttons";
 import { MilestoneIcon } from "@/components/MilestoneIcon";
 
-import Duration from "@/components/Duration";
 import FormattedTime from "@/components/FormattedTime";
+import { assertPresent } from "@/utils/assertions";
 
 export function TimelineSection({ project }: { project: Projects.Project }) {
   return (
@@ -46,7 +46,6 @@ function Content({ project }) {
       <div className="flex items-start gap-12 text-sm mb-6">
         <StartDate project={project} />
         <EndDate project={project} />
-        <DurationField project={project} />
         <Progress project={project} />
       </div>
 
@@ -83,45 +82,50 @@ function EndDate({ project }: { project: Projects.Project }) {
   );
 }
 
-function DurationField({ project }: { project: Projects.Project }) {
+function Progress({ project }: { project: Projects.Project }) {
+  if (project.status === "closed") return <CompletedProgress project={project} />;
+
   const start = Time.parse(project.startedAt);
   const end = Time.parse(project.deadline);
 
   if (!start) return null;
   if (!end) return null;
+  if (Time.isFuture(start)) return null;
+
+  if (Projects.isOverdue(project)) {
+    return <OverdueProgress end={end} />;
+  } else {
+    return <OngoingProgress end={end} />;
+  }
+}
+
+function CompletedProgress({ project }: { project: Projects.Project }) {
+  assertPresent(project.closedAt, "project closedAt must be defined");
 
   return (
     <div>
-      <DimmedLabel>Duration</DimmedLabel>
+      <DimmedLabel>Completed On</DimmedLabel>
       <div className="font-semibold">
-        <Duration start={start} end={end} />
+        <FormattedTime time={project.closedAt} format="short-date" />
       </div>
     </div>
   );
 }
 
-function Progress({ project }: { project: Projects.Project }) {
-  if (project.status === "closed") return null;
-  if (project.isArchived) return null;
-
-  const start = Time.parse(project.startedAt);
-  const end = Time.parse(project.deadline);
-
-  if (!start) return null;
-  if (!end) return null;
-
+function OverdueProgress({ end }: { end: Date }) {
   return (
     <div>
-      <DimmedLabel>Progress</DimmedLabel>
-      <div className="flex items-center gap-2 ">
-        {Time.isPast(start) ? (
-          <span className="font-semibold">
-            {Time.weeksBetween(start, new Date())} / {Time.weeksBetween(start, end)} weeks
-          </span>
-        ) : (
-          <>Not yet started</>
-        )}
-      </div>
+      <DimmedLabel>Countdown</DimmedLabel>
+      <div className="font-semibold">{Time.overdueDurationHumanized(end, Time.today())}</div>
+    </div>
+  );
+}
+
+function OngoingProgress({ end }: { end: Date }) {
+  return (
+    <div>
+      <DimmedLabel>Countdown</DimmedLabel>
+      <div className="font-semibold">{Time.remainingDurationHumanized(end, Time.today())}</div>
     </div>
   );
 }
