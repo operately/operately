@@ -19,10 +19,10 @@ export function Controls() {
   return (
     <>
       <div className="flex mb-4 items-center gap-2">
-        <GhostButton onClick={isExpanded ? collapseAll : expandAll} size="sm">
+        <GhostButton onClick={isExpanded ? collapseAll : expandAll} size="sm" testId="collapse-expand-all">
           {isExpanded ? "Collapse All" : "Expand all"}
         </GhostButton>
-        <GhostButton onClick={toggleShowOptions} size="sm">
+        <GhostButton onClick={toggleShowOptions} size="sm" testId="view-options">
           View options
         </GhostButton>
       </div>
