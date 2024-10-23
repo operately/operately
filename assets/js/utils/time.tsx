@@ -183,3 +183,29 @@ export function dateChanged(old: Date | null, current: Date | null): boolean {
 
   return !isSameDay(old!, current!);
 }
+
+export function durationHumanized(a: Date, b: Date, suffix?: string): string {
+  const days = daysBetween(a, b);
+  if (days === 0) return "Last day";
+  if (days === 1) return withSuffix("1 day", suffix);
+  if (days < 14) return withSuffix(`${days} days`, suffix);
+
+  const weeks = weeksBetween(a, b);
+  if (days < 60) return withSuffix(`${weeks} weeks`, suffix);
+
+  const months = Math.floor(days / 30);
+  if (days < 365) return withSuffix(`${months} months`, suffix);
+
+  const years = Math.floor(days / 365);
+  if (years === 1) return withSuffix(`${years} year`, suffix);
+
+  return withSuffix(`${years} years`, suffix);
+}
+
+function withSuffix(str: string, suffix?: string): string {
+  if (suffix) {
+    return `${str} ${suffix}`;
+  } else {
+    return str;
+  }
+}
