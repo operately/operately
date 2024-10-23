@@ -1,7 +1,7 @@
 import React from "react";
 import Api from "@/api";
 
-import { useUnreadNotificationCount } from "@/api/socket";
+import { useUnreadNotificationCount } from "@/signals";
 
 export type { SubscriptionList, Subscription, Subscriber, Notification } from "@/api";
 export {

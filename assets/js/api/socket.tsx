@@ -20,7 +20,7 @@ export function setHeaders(headers: Payload) {
   sharedHeaders = headers;
 }
 
-function useSubscription(channelName: string, callback: () => void, payload: Payload = {}) {
+export function useSubscription(channelName: string, callback: () => void, payload: Payload = {}) {
   React.useEffect(() => {
     let socket = connect();
     let data = { ...sharedHeaders, ...payload };
@@ -40,20 +40,4 @@ function useSubscription(channelName: string, callback: () => void, payload: Pay
       channel.leave();
     };
   }, [channelName, callback]);
-}
-
-export function useAssignmentsCount(callback: () => void) {
-  return useSubscription("api:assignments_count", callback);
-}
-
-export function useDiscussionCommentsChangeSignal(callback: () => void, payload: { discussionId: string }) {
-  return useSubscription("api:discussion_comments", callback, payload);
-}
-
-export function useUnreadNotificationCount(callback: () => void) {
-  return useSubscription("api:unread_notifications_count", callback);
-}
-
-export function useProfileUpdatedSignal(callback: () => void) {
-  return useSubscription("api:profile_updated", callback);
 }
