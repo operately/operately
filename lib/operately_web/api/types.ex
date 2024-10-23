@@ -858,6 +858,7 @@ defmodule OperatelyWeb.Api.Types do
     field :enabled_experimental_features, list_of(:string)
     field :company_space_id, :string
     field :admins, list_of(:person)
+    field :owners, list_of(:person)
     field :people, list_of(:person)
     field :member_count, :integer
     field :permissions, :company_permissions

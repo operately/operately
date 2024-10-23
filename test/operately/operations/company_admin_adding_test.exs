@@ -73,14 +73,14 @@ defmodule Operately.Operations.CompanyAdminAddingTest do
   end
 
   defp refute_people_are_owners(company, people) do
-    owners = Operately.Companies.list_account_owners(company)
+    owners = Operately.Companies.list_owners(company)
     owner_ids = Enum.map(owners, &(&1.id))
 
     refute Enum.any?(people, fn p -> p.id in owner_ids end)
   end
 
   defp assert_people_are_owners(company, people) do
-    owners = Operately.Companies.list_account_owners(company)
+    owners = Operately.Companies.list_owners(company)
     owner_ids = Enum.map(owners, &(&1.id))
 
     assert Enum.all?(people, fn p -> p.id in owner_ids end)

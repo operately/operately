@@ -10,7 +10,7 @@ defmodule Operately.Support.Features.InviteMemberSteps do
 
   step :given_that_a_company_and_an_admin_exists, ctx do
     company = company_fixture()
-    creator = hd(Companies.list_account_owners(company))
+    creator = hd(Companies.list_owners(company))
 
     admin = person_fixture_with_account(%{company_id: company.id, full_name: "John Admin"})
     Companies.add_admins(creator, admin.id)

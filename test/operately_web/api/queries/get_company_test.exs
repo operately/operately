@@ -57,12 +57,12 @@ defmodule OperatelyWeb.Api.Queries.GetCompanyTest do
       refute includes_person(res.company.admins, ctx.member_peter)
     end
 
-    test "include_account_owners", ctx do
+    test "include_owners", ctx do
       assert {200, res} = query(ctx.conn, :get_company, %{id: Paths.company_id(ctx.company), include_account_owners: true})
 
-      assert includes_person(res.company.account_owners, ctx.owner_john)
-      refute includes_person(res.company.account_owners, ctx.admin_susan)
-      refute includes_person(res.company.account_owners, ctx.member_peter)
+      assert includes_person(res.company.owners, ctx.owner_john)
+      refute includes_person(res.company.owners, ctx.admin_susan)
+      refute includes_person(res.company.owners, ctx.member_peter)
     end
 
     defp includes_person(list, person) do

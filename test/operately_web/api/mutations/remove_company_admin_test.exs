@@ -18,7 +18,7 @@ defmodule OperatelyWeb.Api.Mutations.RemoveCompanyAdminTest do
       ctx = register_and_log_in_account(ctx)
       admin = person_fixture_with_account(%{company_id: ctx.company.id})
 
-      Companies.add_admins(ctx.company_creator, ctx.company, [ctx.person.id, admin.id])
+      Companies.add_admins(ctx.company_creator, [ctx.person.id, admin.id])
 
       Map.merge(ctx, %{admin: admin})
     end
@@ -40,7 +40,7 @@ defmodule OperatelyWeb.Api.Mutations.RemoveCompanyAdminTest do
 
     test "admins from other companies are not found", ctx do
       company = company_fixture()
-      admin = hd(Companies.list_account_owners(company))
+      admin = hd(Companies.list_owners(company))
 
       assert {404, res} = request(ctx.conn, admin)
       assert res.message == "The requested resource was not found"
@@ -52,7 +52,7 @@ defmodule OperatelyWeb.Api.Mutations.RemoveCompanyAdminTest do
       ctx = register_and_log_in_account(ctx)
       admin = person_fixture_with_account(%{company_id: ctx.company.id})
 
-      Companies.add_admins(ctx.company_creator, ctx.company, [ctx.person.id, admin.id])
+      Companies.add_admins(ctx.company_creator, [ctx.person.id, admin.id])
 
       Map.merge(ctx, %{admin: admin})
     end
@@ -83,12 +83,12 @@ defmodule OperatelyWeb.Api.Mutations.RemoveCompanyAdminTest do
   end
 
   defp assert_is_admin(company, person) do
-    admins = Companies.list_account_owners(company)
+    admins = Companies.list_owners(company)
     assert Enum.find(admins, &(&1.id == person.id))
   end
 
   defp refute_is_admin(company, person) do
-    admins = Companies.list_account_owners(company)
+    admins = Companies.list_owners(company)
     refute Enum.find(admins, &(&1.id == person.id))
   end
 end
