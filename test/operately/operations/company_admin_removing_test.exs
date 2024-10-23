@@ -10,7 +10,7 @@ defmodule Operately.Operations.CompanyAdminRemovingTest do
 
   setup do
     company = company_fixture()
-    company_creator = Operately.Companies.list_account_owners(company) |> hd()
+    company_creator = Operately.Companies.list_owners(company) |> hd()
     admin = person_fixture_with_account(%{company_id: company.id, company_role: :admin})
 
     {:ok, company: company, admin: admin, member: company_creator}

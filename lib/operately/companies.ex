@@ -11,7 +11,7 @@ defmodule Operately.Companies do
   end
 
   def list_admins(company), do: Company.load_admins(company).admins
-  def list_account_owners(company), do: Company.load_account_owners(company).account_owners
+  def list_owners(company), do: Company.load_owners(company).owners
 
   def list_companies(account = %Operately.People.Account{}) do
     Repo.all(

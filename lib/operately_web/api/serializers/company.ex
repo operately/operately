@@ -14,9 +14,9 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Companies.Company do
       trusted_email_domains: company.trusted_email_domains,
       enabled_experimental_features: company.enabled_experimental_features,
       company_space_id: company.company_space_id && Operately.ShortUuid.encode!(company.company_space_id),
-      admins: OperatelyWeb.Api.Serializer.serialize(company.admins),
       people: OperatelyWeb.Api.Serializer.serialize(company.people, level: :full),
-      account_owners: OperatelyWeb.Api.Serializer.serialize(company.account_owners),
+      admins: OperatelyWeb.Api.Serializer.serialize(company.admins),
+      owners: OperatelyWeb.Api.Serializer.serialize(company.owners),
       permissions: OperatelyWeb.Api.Serializer.serialize(company.permissions)
     }
   end

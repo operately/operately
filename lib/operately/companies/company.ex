@@ -18,7 +18,7 @@ defmodule Operately.Companies.Company do
     # loaded with hooks
     field :member_count, :integer, virtual: true
     field :admins, :any, virtual: true
-    field :account_owners, :any, virtual: true
+    field :owners, :any, virtual: true
     field :permissions, :any, virtual: true
 
     timestamps()
@@ -73,10 +73,10 @@ defmodule Operately.Companies.Company do
     Map.put(company, :admins, people)
   end
 
-  def load_account_owners(company) do
+  def load_owners(company) do
     context = Operately.Access.get_context(company_id: company.id)
     people = Operately.Access.BindedPeopleLoader.load(context.id, :full_access)
-    Map.put(company, :account_owners, people)
+    Map.put(company, :owners, people)
   end
 
   def load_permissions(company) do
