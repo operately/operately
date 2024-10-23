@@ -66,9 +66,7 @@ function LatestProjectCheckIn({ project, showCheckIn, toggleShowCheckIn }: Lates
   assertPresent(project.lastCheckIn, "lastCheckIn must be present in project");
 
   return (
-    <Modal title="" hideModal={toggleShowCheckIn} isOpen={showCheckIn} minHeight="300px">
-      <div className="text-xl font-bold">{project.name}</div>
-
+    <Modal title={project.name!} hideModal={toggleShowCheckIn} isOpen={showCheckIn}>
       <StatusSection checkIn={project.lastCheckIn} reviewer={project.reviewer || undefined} />
       <DescriptionSection checkIn={project.lastCheckIn} />
     </Modal>

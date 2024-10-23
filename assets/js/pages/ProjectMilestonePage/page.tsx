@@ -122,7 +122,6 @@ function TaskSection({ milestone }) {
       )}
 
       <NewTaskModal
-        modalTitle={`Adding a new task to ${milestone.title}`}
         isOpen={newTaskModalOpen}
         hideModal={() => setNewTaskModalOpen(false)}
         onSubmit={refetch}
