@@ -258,10 +258,10 @@ function RemovePersonModal({ person, state }: { person: People.Person; state: Mo
   };
 
   return (
-    <Modal title="Remove Company Member" isOpen={state.isOpen} hideModal={state.hide} minHeight="150px">
+    <Modal title="Remove Company Member" isOpen={state.isOpen} hideModal={state.hide}>
       <div>Are you sure you want to remove {person.fullName} from the company?</div>
       <div className="mt-8 flex justify-center">
-        <PrimaryButton onClick={handleRemoveMember} loading={loading} testId="confirm-remove-member">
+        <PrimaryButton onClick={handleRemoveMember} loading={loading} testId="confirm-remove-member" size="sm">
           Remove Member
         </PrimaryButton>
       </div>
@@ -284,13 +284,7 @@ function ReissueInvitationModal(props: { person: People.Person; state: ModalStat
 
   return (
     <>
-      <Modal
-        title="Re-generate the invitation URL"
-        isOpen={props.state.isOpen}
-        hideModal={props.state.hide}
-        minHeight="120px"
-        width="800px"
-      >
+      <Modal title="Re-generate the invitation URL" isOpen={props.state.isOpen} hideModal={props.state.hide} size="lg">
         <div>
           By clicking the button below:
           <ul className="list-disc list-inside mt-2 block">
@@ -319,15 +313,7 @@ function RenewInvitationModal(props: { person: People.Person; state: ModalState 
 
   return (
     <>
-      <Modal
-        title="New invitation URL"
-        isOpen={props.state.isOpen}
-        hideModal={() => {
-          refresh();
-        }}
-        minHeight="120px"
-        width="800px"
-      >
+      <Modal title="New invitation URL" isOpen={props.state.isOpen} hideModal={refresh} size="lg">
         <NewInvitationUrl url={url} person={props.person} />
       </Modal>
     </>

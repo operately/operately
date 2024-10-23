@@ -38,20 +38,24 @@ interface OnBlurData {
   html: string;
 }
 
-export function Root({ editor, children }): JSX.Element {
+export function Root({ editor, children, className = "" }): JSX.Element {
   const [linkEditActive, setLinkEditActive] = React.useState(false);
 
   return (
     <EditorContext.Provider value={{ editor, linkEditActive, setLinkEditActive }}>
-      <RootBody children={children}></RootBody>
+      <RootBody children={children} className={className}></RootBody>
     </EditorContext.Provider>
   );
 }
 
-function RootBody({ children }) {
+function RootBody({ children, className = "" }): JSX.Element {
   const handleClick = useLinkEditFormClose();
 
-  return <div onClick={handleClick}>{children}</div>;
+  return (
+    <div onClick={handleClick} className={className}>
+      {children}
+    </div>
+  );
 }
 
 interface UseEditorProps {
