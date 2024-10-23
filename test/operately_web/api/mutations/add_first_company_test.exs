@@ -11,7 +11,7 @@ defmodule OperatelyWeb.Api.Mutations.AddFirstCompanyTest do
   }
 
   describe "add_first_company functionality" do
-    test "creates company and admin account", ctx do
+    test "creates company and owner account", ctx do
       assert {200, res} = mutation(ctx.conn, :add_first_company, @add_first_company_input)
       assert res.company.id
 
@@ -24,7 +24,9 @@ defmodule OperatelyWeb.Api.Mutations.AddFirstCompanyTest do
       assert group
 
       person = Operately.Repo.preload(account, :people).people |> hd()
-      assert person.company_role == :admin
+      owners = Operately.Companies.list_account_owners(company)
+
+      assert Enum.any?(owners, fn o -> o.id == person.id end)
     end
 
     test "allows company and admin account creation only once", ctx do

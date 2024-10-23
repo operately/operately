@@ -35,7 +35,7 @@ defmodule Operately.InvitationsTest do
 
     test "get_invitation_by_member/1 returns the invitation" do
       company = company_fixture(%{name: "Test Company"})
-      admin = person_fixture_with_account(%{company_id: company.id, company_role: :admin})
+      admin = person_fixture_with_account(%{company_id: company.id})
       member = person_fixture_with_account(%{company_id: company.id})
 
       invitation = invitation_fixture(%{member_id: member.id, admin_id: admin.id})
@@ -47,8 +47,8 @@ defmodule Operately.InvitationsTest do
 
     test "create_invitation/1 with valid data creates a invitation" do
       company = company_fixture(%{name: "Test Company"})
-      admin = person_fixture(%{email: "admin@test.com", company_role: :admin, company_id: company.id})
-      member = person_fixture(%{email: "member@test.com", company_role: :member, company_id: company.id})
+      admin = person_fixture(%{email: "admin@test.com", company_id: company.id})
+      member = person_fixture(%{email: "member@test.com", company_id: company.id})
       valid_attrs = %{
         member_id: member.id,
         admin_id: admin.id,

@@ -10,6 +10,7 @@ defmodule Operately.Companies do
     Repo.all(Company)
   end
 
+  def list_admins(company), do: Company.load_admins(company).admins
   def list_account_owners(company), do: Company.load_account_owners(company).account_owners
 
   def list_companies(account = %Operately.People.Account{}) do
