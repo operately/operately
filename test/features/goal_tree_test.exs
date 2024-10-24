@@ -96,5 +96,16 @@ defmodule Operately.Features.GoalTreeTest do
       |> Steps.assert_project_visible(:project_alpha)
       |> Steps.assert_project_visible(:project_beta)
     end
+
+    feature "reviewed by", ctx do
+      ctx
+      |> Steps.given_project_and_goal_with_other_reviewer_exists()
+      |> Steps.visit_goals_v2_page()
+      |> Steps.assert_goal_visible(:goal_3)
+      |> Steps.assert_project_visible(:project_omega)
+      |> Steps.select_reviewed_by_me_filter()
+      |> Steps.refute_goal_visible(:goal_3)
+      |> Steps.refute_project_visible(:project_omega)
+    end
   end
 end
