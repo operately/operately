@@ -1,5 +1,6 @@
 import * as Time from "@/utils/time";
 import * as api from "@/api";
+import { assertPresent } from "@/utils/assertions";
 
 export type Project = api.Project;
 export type ProjectContributor = api.ProjectContributor;
@@ -44,6 +45,14 @@ export function sortByClosedAt(projects: Project[]) {
 
     return Time.compareAsc(closedAtB, closedAtA);
   });
+}
+
+export function isOverdue(project: Project) {
+  assertPresent(project.deadline, "project deadlineAt must be defined");
+
+  const deadline = Time.parse(project.deadline);
+
+  return Time.compareAsc(deadline, Time.today()) === -1;
 }
 
 export function sortContributorsByRole(contributors: ProjectContributor[]): ProjectContributor[] {

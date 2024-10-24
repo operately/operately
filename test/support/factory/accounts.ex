@@ -9,8 +9,12 @@ defmodule Operately.Support.Factory.Accounts do
   end
 
   def log_in_person(ctx, person_name) do
-    person = Map.fetch!(ctx, person_name)
-    OperatelyWeb.TurboCase.log_in_account(ctx, person)
+    if ctx.feature == true do
+      Operately.Support.Features.UI.login_as(ctx, ctx[person_name])
+    else
+      person = Map.fetch!(ctx, person_name)
+      OperatelyWeb.TurboCase.log_in_account(ctx, person)
+    end
   end
 
   def log_in_contributor(ctx, contributor_name) do

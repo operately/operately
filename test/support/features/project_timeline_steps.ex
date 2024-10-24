@@ -1,6 +1,8 @@
 defmodule Operately.Support.Features.ProjectTimelineSteps do
   use Operately.FeatureCase
 
+  alias Operately.Time
+
   alias Operately.Support.Features.{
     UI,
     EmailSteps,
@@ -154,4 +156,63 @@ defmodule Operately.Support.Features.ProjectTimelineSteps do
 
   defp current_month, do: Operately.Time.current_month()
   defp current_month(:short), do: Date.utc_today() |> Calendar.strftime("%b")
+
+
+  step :given_a_project_with_a_defined_timeline_exists, ctx do
+    Factory.add_project(ctx, :project, :product, [started_at: days_ago(15), deadline: days_from_now(10)])
+  end
+
+  step :expect_to_see_project_countdown_on_the_project_page, ctx do
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> UI.assert_text("10 days remaining")
+  end
+
+  step :given_an_overdue_project_exists, ctx do
+    Factory.add_project(ctx, :project, :product, [started_at: days_ago(15), deadline: days_ago(5)])
+  end
+
+  step :expect_to_see_project_overdue_days_on_the_project_page, ctx do
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> UI.assert_text("4 days overdue")
+  end
+
+  step :given_a_completed_project_exists, ctx do
+    ctx = Factory.add_project(ctx, :project, :product, [started_at: Time.days_ago(15), deadline: days_ago(5)])
+    ctx = close_project(ctx, ctx.project, Time.days_ago(10))
+    ctx
+  end
+
+  step :expect_to_see_project_closing_date_on_the_project_page, ctx do
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> UI.assert_text("COMPLETED ON")
+    |> UI.assert_text(Time.short_date(ctx.project.closed_at))
+  end
+
+  step :expect_to_see_how_many_days_the_project_was_completed_ahead_of_schedule, ctx do
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> UI.assert_text("5 days ahead of schedule")
+  end
+
+  step :given_a_closed_overdue_project_exists, ctx do
+    ctx = Factory.add_project(ctx, :project, :product, [started_at: Time.days_ago(15), deadline: Time.days_ago(5)])
+    ctx = close_project(ctx, ctx.project, Time.days_ago(0))
+    ctx
+  end
+
+  step :expect_to_see_how_many_days_was_the_project_overdue, ctx do
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> UI.assert_text("5 days late")
+  end
+
+
+  defp close_project(ctx, project, date) do
+    {:ok, project} = Operately.Projects.update_project(project, %{closed_at: date, status: "closed"})
+    Map.put(ctx, :project, project)
+  end
+
 end
