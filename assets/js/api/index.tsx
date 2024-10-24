@@ -1513,6 +1513,7 @@ export interface GetProjectRetrospectiveInput {
   projectId?: string | null;
   includeAuthor?: boolean | null;
   includeProject?: boolean | null;
+  includeClosedAt?: boolean | null;
   includePermissions?: boolean | null;
   includeReactions?: boolean | null;
   includeSubscriptionsList?: boolean | null;
