@@ -1,5 +1,5 @@
 defmodule Operately.Support.Factory do
-  alias Operately.Support.Factory.{Projects, Spaces, Companies, Accounts, Messages, Goals}
+  alias Operately.Support.Factory.{Projects, Spaces, Companies, Accounts, Messages, Goals, Comments}
 
   def setup(ctx) do
     ctx = add_account(ctx, :account)
@@ -48,4 +48,6 @@ defmodule Operately.Support.Factory do
   # messages
   defdelegate add_message(ctx, testid, space_name, opts \\ []), to: Messages
 
+  # comments
+  defdelegate add_comment(ctx, testid, parent_name, opts \\ []), to: Comments
 end
