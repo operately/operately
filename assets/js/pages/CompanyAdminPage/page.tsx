@@ -6,10 +6,10 @@ import * as Icons from "@tabler/icons-react";
 import { NavigationBackToLobby } from "./NavigationBackToLobby";
 import { CompanyAdmins, CompanyOwners } from "./CompanyAdmins";
 import { useLoadedData } from "./loader";
-import { OptionsMenu, OptionsMenuItem } from "./OptionsMenu";
-import { Paths } from "@/routes/paths";
-import { assertPresent } from "@/utils/assertions";
+import { OptionsMenuItem } from "./OptionsMenu";
+import { Paths, includesId } from "@/routes/paths";
 import { Link } from "@/components/Link";
+import { useMe } from "@/contexts/CurrentUserContext";
 
 export function Page() {
   const { company } = useLoadedData();
@@ -38,45 +38,84 @@ export function Page() {
           <CompanyAdmins />
           <CompanyOwners />
 
-          <CompanyOwnersMenu />
+          <AdminsMenu />
+          <OwnersMenu />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
   );
 }
 
-function CompanyOwnersMenu() {
-  const { company } = useLoadedData();
+function AdminsMenu() {
+  const { adminIds, ownerIds } = useLoadedData();
 
-  const manageTrustedDomains = Paths.companyAdminManageTrustedDomainsPath();
-  const manageAdmins = Paths.companyManageAdminsPath();
+  const me = useMe();
+  const amIAdmin = includesId(adminIds, me!.id);
+  const amIOwner = includesId(ownerIds, me!.id);
+
   const managePeople = Paths.companyManagePeoplePath();
 
-  assertPresent(company.permissions, "company permissions must be present");
-  const permissions = company.permissions;
+  let message = "";
+
+  if (amIOwner) {
+    message = "As an admin or owner, you can:";
+  } else if (amIAdmin) {
+    message = "As an admin, you can:";
+  } else {
+    message = "Reach out to an admin if you need to:";
+  }
 
   return (
     <div className="mt-12">
-      <OptionsMenu>
+      <div>
+        <p className="mt-12 mb-2 font-bold">{message}</p>
         <OptionsMenuItem
-          disabled={!permissions.canEditTrustedEmailDomains}
-          linkTo={manageTrustedDomains}
-          icon={Icons.IconLock}
-          title="Manage Trusted Email Domains"
-        />
-        <OptionsMenuItem
-          disabled={!permissions.canManageAdmins}
-          linkTo={manageAdmins}
-          icon={Icons.IconShieldLock}
-          title="Manage Company Administrators"
-        />
-        <OptionsMenuItem
-          disabled={!permissions.canInviteMembers}
+          disabled={!(amIAdmin || amIOwner)}
           linkTo={managePeople}
           icon={Icons.IconUsers}
           title="Manage Team Members"
         />
-      </OptionsMenu>
+      </div>
+    </div>
+  );
+}
+
+function OwnersMenu() {
+  const { ownerIds } = useLoadedData();
+
+  const me = useMe();
+  const amIOwner = includesId(ownerIds, me!.id);
+
+  let message = "";
+
+  if (amIOwner) {
+    message = "As an owner, you can:";
+  } else {
+    message = "Reach out to an account owner if you need to:";
+  }
+
+  const manageTrustedDomains = Paths.companyAdminManageTrustedDomainsPath();
+  const manageAdmins = Paths.companyManageAdminsPath();
+
+  return (
+    <div className="mt-12">
+      <div>
+        <p className="mt-12 mb-2 font-bold">{message}</p>
+
+        <OptionsMenuItem
+          disabled={!amIOwner}
+          linkTo={manageAdmins}
+          icon={Icons.IconShieldLock}
+          title="Manage Administrators and Owners"
+        />
+
+        <OptionsMenuItem
+          disabled={!amIOwner}
+          linkTo={manageTrustedDomains}
+          icon={Icons.IconLock}
+          title="Manage Trusted Email Domains"
+        />
+      </div>
     </div>
   );
 }
