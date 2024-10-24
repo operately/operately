@@ -15,6 +15,10 @@ export class Paths {
     return createPath([companyId]);
   }
 
+  static companyPermissionsPath() {
+    return createCompanyPath(["admin", "permissions"]);
+  }
+
   static feedPath() {
     return createCompanyPath(["feed"]);
   }
