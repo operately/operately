@@ -67,6 +67,50 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionsTest do
     end
   end
 
+
+  describe "get_discussions functionality" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.add_space(:space)
+      |> Factory.add_message(:message, :space)
+      |> Factory.add_comment(:comment1, :message)
+      |> Factory.add_comment(:comment2, :message)
+      |> Factory.log_in_person(:creator)
+    end
+
+    test "with no includes", ctx do
+      assert {200, res} = query(ctx.conn, :get_discussions, %{space_id: Paths.space_id(ctx.space)})
+
+      assert length(res.discussions) == 1
+
+      discussion = hd(res.discussions)
+
+      refute discussion.author
+      refute discussion.comments_count
+    end
+
+    test "include_author", ctx do
+      assert {200, res} = query(ctx.conn, :get_discussions, %{
+        space_id: Paths.space_id(ctx.space),
+        include_author: true
+      })
+      discussion = hd(res.discussions)
+
+      assert discussion.author == Serializer.serialize(ctx.creator)
+    end
+
+    test "include_comments_count", ctx do
+      assert {200, res} = query(ctx.conn, :get_discussions, %{
+        space_id: Paths.space_id(ctx.space),
+        include_comments_count: true
+      })
+      discussion = hd(res.discussions)
+
+      assert discussion.comments_count == 2
+    end
+  end
+
   #
   # Helpers
   #
