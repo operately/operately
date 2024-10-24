@@ -76,6 +76,7 @@ defmodule Operately.Projects.Project do
       :private,
       :deleted_at,
       :status,
+      :closed_at,
       :last_check_in_id,
       :last_check_in_status,
       :next_update_scheduled_at,

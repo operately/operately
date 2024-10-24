@@ -5,7 +5,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Retrospective do
       author: OperatelyWeb.Api.Serializer.serialize(retrospective.author),
       project: OperatelyWeb.Api.Serializer.serialize(retrospective.project),
       content: Jason.encode!(retrospective.content),
-      closed_at: OperatelyWeb.Api.Serializer.serialize(retrospective.closed_at),
+      closed_at: Ecto.assoc_loaded?(retrospective.project) && OperatelyWeb.Api.Serializer.serialize(retrospective.project.closed_at),
       permissions: OperatelyWeb.Api.Serializer.serialize(retrospective.permissions),
       reactions: OperatelyWeb.Api.Serializer.serialize(retrospective.reactions),
       subscription_list: OperatelyWeb.Api.Serializer.serialize(retrospective.subscription_list),

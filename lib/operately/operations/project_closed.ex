@@ -14,17 +14,14 @@ defmodule Operately.Operations.ProjectClosed do
         author_id: author.id,
         project_id: project.id,
         content: attrs.retrospective,
-        closed_at: DateTime.utc_now(),
         subscription_list_id: changes.subscription_list.id,
       })
     end)
     |> SubscriptionList.update(:retrospective)
-    |> Multi.update(:project, fn changes ->
-      Project.changeset(project,%{
-        status: "closed",
-        closed_at: changes.retrospective.closed_at,
-      })
-    end)
+    |> Multi.update(:project, Project.changeset(project,%{
+      status: "closed",
+      closed_at: DateTime.utc_now(),
+    }))
     |> Activities.insert_sync(author.id, :project_closed, fn changes -> %{
       company_id: project.company_id,
       space_id: project.group_id,
