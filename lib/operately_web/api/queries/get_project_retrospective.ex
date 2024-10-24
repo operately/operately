@@ -8,6 +8,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectRetrospective do
     field :project_id, :string
     field :include_author, :boolean
     field :include_project, :boolean
+    field :include_closed_at, :boolean
     field :include_permissions, :boolean
     field :include_reactions, :boolean
     field :include_subscriptions_list, :boolean
@@ -50,6 +51,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectRetrospective do
     Inputs.parse_includes(inputs, [
       include_author: [:author],
       include_project: [:project],
+      include_closed_at: [:project],
       include_reactions: [reactions: :person],
       include_subscriptions_list: :subscription_list,
     ])

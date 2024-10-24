@@ -13,7 +13,6 @@ defmodule Operately.Projects.Retrospective do
     has_many :reactions, Operately.Updates.Reaction, where: [entity_type: :project_retrospective], foreign_key: :entity_id
 
     field :content, :map
-    field :closed_at, :utc_datetime
 
     # populated with after load hooks
     field :permissions, :any, virtual: true
@@ -31,8 +30,8 @@ defmodule Operately.Projects.Retrospective do
 
   def changeset(retrospective, attrs) do
     retrospective
-    |> cast(attrs, [:author_id, :project_id, :subscription_list_id, :content, :closed_at])
-    |> validate_required([:author_id, :project_id, :subscription_list_id, :content, :closed_at])
+    |> cast(attrs, [:author_id, :project_id, :subscription_list_id, :content])
+    |> validate_required([:author_id, :project_id, :subscription_list_id, :content])
   end
 
   #
