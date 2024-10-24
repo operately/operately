@@ -38,14 +38,14 @@ export function Page() {
           <CompanyAdmins />
           <CompanyOwners />
 
-          <CompanyOwnersMenu />
+          <Menu />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
   );
 }
 
-function CompanyOwnersMenu() {
+function Menu() {
   const { company } = useLoadedData();
 
   const manageTrustedDomains = Paths.companyAdminManageTrustedDomainsPath();
@@ -57,26 +57,33 @@ function CompanyOwnersMenu() {
 
   return (
     <div className="mt-12">
-      <OptionsMenu>
-        <OptionsMenuItem
-          disabled={!permissions.canEditTrustedEmailDomains}
-          linkTo={manageTrustedDomains}
-          icon={Icons.IconLock}
-          title="Manage Trusted Email Domains"
-        />
-        <OptionsMenuItem
-          disabled={!permissions.canManageAdmins}
-          linkTo={manageAdmins}
-          icon={Icons.IconShieldLock}
-          title="Manage Company Administrators"
-        />
+      <div>
+        <p className="mt-12 mb-2 font-bold">As an admin, you can:</p>
         <OptionsMenuItem
           disabled={!permissions.canInviteMembers}
           linkTo={managePeople}
           icon={Icons.IconUsers}
           title="Manage Team Members"
         />
-      </OptionsMenu>
+      </div>
+
+      <div>
+        <p className="mt-12 mb-2 font-bold">Reach out to an account owner if you need to:</p>
+
+        <OptionsMenuItem
+          disabled={!permissions.canManageAdmins}
+          linkTo={manageAdmins}
+          icon={Icons.IconShieldLock}
+          title="Manage Administrators and Owners"
+        />
+
+        <OptionsMenuItem
+          disabled={!permissions.canEditTrustedEmailDomains}
+          linkTo={manageTrustedDomains}
+          icon={Icons.IconLock}
+          title="Manage Trusted Email Domains"
+        />
+      </div>
     </div>
   );
 }
