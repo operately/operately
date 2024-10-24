@@ -31,7 +31,7 @@ export function Page() {
             </p>
 
             <p className="mt-2">
-              <Link to="/">View permission breakdown</Link>
+              <Link to={Paths.companyPermissionsPath()}>View permission breakdown</Link>
             </p>
           </Paper.Section>
 
