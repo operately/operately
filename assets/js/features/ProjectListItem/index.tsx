@@ -59,7 +59,7 @@ function ProjectStatusLine({ project }: { project: Projects.Project }) {
       <div className="mt-2 text-sm font-medium">
         {project.retrospective && (
           <>
-            Closed on <FormattedTime time={project.retrospective.closedAt!} format="short-date" /> &middot;{" "}
+            Closed on <FormattedTime time={project.closedAt!} format="short-date" /> &middot;{" "}
           </>
         )}
         <Link to={Paths.projectRetrospectivePath(project.id!)}>Read the retrospective</Link>

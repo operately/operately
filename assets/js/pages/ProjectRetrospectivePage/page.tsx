@@ -69,6 +69,8 @@ function Options() {
 function Header() {
   const { retrospective } = useLoadedData();
 
+  assertPresent(retrospective.closedAt, "closedAt must be present in retrospective");
+
   return (
     <>
       <div className="text-center text-content-accent text-3xl font-extrabold">Project Retrospective</div>
@@ -76,7 +78,7 @@ function Header() {
       <div className="flex items-center gap-1.5 font-medium justify-center mt-2">
         {retrospective.author && <AvatarWithName person={retrospective.author!} size={20} />}
         {retrospective.author && <span>&middot;</span>}
-        <FormattedTime time={retrospective.closedAt!} format="long-date" />
+        <FormattedTime time={retrospective.closedAt} format="long-date" />
       </div>
     </>
   );
