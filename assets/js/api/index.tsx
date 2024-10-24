@@ -629,6 +629,7 @@ export interface Discussion {
   space?: Space | null;
   reactions?: Reaction[] | null;
   comments?: Comment[] | null;
+  commentsCount?: number | null;
   subscriptionList?: SubscriptionList | null;
   potentialSubscribers?: Subscriber[] | null;
   notifications?: Notification[] | null;
@@ -1318,6 +1319,8 @@ export interface GetDiscussionResult {
 
 export interface GetDiscussionsInput {
   spaceId?: string | null;
+  includeAuthor?: boolean | null;
+  includeCommentsCount?: boolean | null;
 }
 
 export interface GetDiscussionsResult {

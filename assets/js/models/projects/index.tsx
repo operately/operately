@@ -9,6 +9,7 @@ export type ProjectRetrospective = api.ProjectRetrospective;
 export {
   getProject,
   getProjects,
+  useGetProjects,
   getProjectRetrospective,
   useMoveProjectToSpace,
   useCreateProject,
