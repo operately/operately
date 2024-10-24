@@ -101,7 +101,8 @@ class TreeBuilder {
         (compareIds(n.champion?.id, this.options.personId!) || compareIds(n.reviewer?.id, this.options.reviewerId)) &&
         n.hasNoParentWith(
           (node) =>
-            compareIds(node.champion?.id, this.options.personId) || compareIds(n.reviewer?.id, this.options.reviewerId),
+            compareIds(node.champion?.id, this.options.personId) ||
+            compareIds(node.reviewer?.id, this.options.reviewerId),
         ),
     );
   }
