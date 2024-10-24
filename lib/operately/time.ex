@@ -1,5 +1,25 @@
 defmodule Operately.Time do
 
+  def day_in_current_month(day) do
+    date = {{Date.utc_today().year, Date.utc_today().month, day}, {0, 0, 0}}
+    NaiveDateTime.new!(date)
+  end
+
+  def days_ago(n) do
+    DateTime.utc_now() |> DateTime.add(-n, :day)
+  end
+
+  def days_from_now(n) do
+    DateTime.utc_now() |> DateTime.add(n, :day)
+  end
+
+  def short_date(date) do
+    month = Calendar.strftime(date, "%B")
+    day = Calendar.strftime(date, "%-d")
+
+    "#{month} #{day}"
+  end
+
   def first_friday_from_today do
     today = Date.utc_today()
 

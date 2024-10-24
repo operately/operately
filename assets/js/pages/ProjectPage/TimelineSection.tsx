@@ -11,6 +11,7 @@ import { MilestoneIcon } from "@/components/MilestoneIcon";
 
 import FormattedTime from "@/components/FormattedTime";
 import { assertPresent } from "@/utils/assertions";
+import { match } from "ts-pattern";
 
 export function TimelineSection({ project }: { project: Projects.Project }) {
   return (
@@ -106,10 +107,26 @@ function CompletedProgress({ project }: { project: Projects.Project }) {
     <div>
       <DimmedLabel>Completed On</DimmedLabel>
       <div className="font-semibold">
-        <FormattedTime time={project.closedAt} format="short-date" />
+        <FormattedTime time={project.closedAt} format="short-date" /> <CompletedProgressDiff project={project} />
       </div>
     </div>
   );
+}
+
+function CompletedProgressDiff({ project }: { project: Projects.Project }) {
+  const closedAt = Time.parseDate(project.closedAt);
+  const deadline = Time.parseDate(project.deadline);
+
+  if (!closedAt) return null;
+  if (!deadline) return null;
+
+  let msg = match(Time.compareAsc(closedAt, deadline))
+    .with(0, () => "as planned")
+    .with(-1, () => Time.durationHumanized(closedAt, deadline, "ahead of schedule"))
+    .with(1, () => Time.durationHumanized(deadline, closedAt, "late"))
+    .run();
+
+  return <>&mdash; {msg}</>;
 }
 
 function OverdueProgress({ end }: { end: Date }) {
