@@ -6,6 +6,7 @@ export type Target = api.Target;
 export {
   getGoal,
   getGoals,
+  useGetGoals,
   useCreateGoal,
   useEditGoal,
   useConnectGoalToProject,
