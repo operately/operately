@@ -112,14 +112,16 @@ defmodule Operately.Support.Factory.Projects do
     Map.put(ctx, testid, check_in)
   end
 
-  def add_project_milestone(ctx, testid, project_name, author_name) do
+  def add_project_milestone(ctx, testid, project_name, opts \\ []) do
     project = Map.fetch!(ctx, project_name)
-    author = Map.fetch!(ctx, author_name)
+    
+    attrs = %{
+      project_id: project.id,
+      title: Keyword.get(opts, :title, "Milestone #{testid}"),
+    }
 
-    milestone = Operately.ProjectsFixtures.milestone_fixture(author, %{
-        project_id: project.id,
-      })
-      |> Repo.preload(:project)
+    milestone = Operately.ProjectsFixtures.milestone_fixture(ctx.creator, attrs)
+    milestone = Repo.preload(milestone, :project)
 
     Map.put(ctx, testid, milestone)
   end

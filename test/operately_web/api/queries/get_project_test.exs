@@ -314,8 +314,8 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
       ctx = Factory.add_company_member(ctx, :creator)
         |> Factory.add_space(:space)
         |> Factory.add_project(:project, :space)
-        |> Factory.add_project_milestone(:milestone1, :project, :creator)
-        |> Factory.add_project_milestone(:milestone2, :project, :creator)
+        |> Factory.add_project_milestone(:milestone1, :project)
+        |> Factory.add_project_milestone(:milestone2, :project)
 
       # doesn't include milestone
       assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(ctx.project)})
