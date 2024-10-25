@@ -20,6 +20,7 @@ defmodule Operately.Messages.Message do
     field :potential_subscribers, :any, virtual: true
     field :notifications, :any, virtual: true, default: []
     field :permissions, :any, virtual: true
+    field :comments_count, :any, virtual: true
 
     timestamps()
     requester_access_level()
@@ -53,6 +54,24 @@ defmodule Operately.Messages.Message do
       |> Repo.all()
 
     Map.put(message, :notifications, notifications)
+  end
+
+  def load_comments_count(messages) do
+    message_ids = Enum.map(messages, &(&1.id))
+
+    counts =
+      from(c in Operately.Updates.Comment,
+        where: c.entity_id in ^message_ids,
+        group_by: c.entity_id,
+        select: {c.entity_id, count(c.id)}
+      )
+      |> Repo.all()
+      |> Enum.into(%{})
+
+    Enum.map(messages, fn m ->
+      count = Map.get(counts, m.id, 0)
+      Map.put(m, :comments_count, count)
+    end)
   end
 
   def set_potential_subscribers(message = %__MODULE__{}) do
