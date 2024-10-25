@@ -1,8 +1,15 @@
 defmodule Operately.Time do
 
+  @doc """
+  Create a NaiveDateTime for a specific day in the current month.
+  e.g. Time.day_in_current_month(15) will return a NaiveDateTime 
+  for the 15th of the current month.
+  """
   def day_in_current_month(day) do
-    date = {{Date.utc_today().year, Date.utc_today().month, day}, {0, 0, 0}}
-    NaiveDateTime.new!(date)
+    NaiveDateTime.from_erl!({
+      {Date.utc_today().year, Date.utc_today().month, day}, 
+      {0, 0, 0}
+    })
   end
 
   def days_ago(n) do

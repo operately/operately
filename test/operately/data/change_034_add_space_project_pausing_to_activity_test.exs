@@ -46,7 +46,7 @@ defmodule Operately.Data.Change034AddSpaceProjectPausingToActivityTest do
     setup ctx do
       ctx
       |> Factory.add_project(:project, :space)
-      |> Factory.add_project_milestone(:milestone, :project, :creator)
+      |> Factory.add_project_milestone(:milestone, :project)
     end
 
     test "migration doesn't delete existing data in activity content", ctx do

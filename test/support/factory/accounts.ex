@@ -9,18 +9,25 @@ defmodule Operately.Support.Factory.Accounts do
   end
 
   def log_in_person(ctx, person_name) do
-    if ctx.feature == true do
-      Operately.Support.Features.UI.login_as(ctx, ctx[person_name])
-    else
-      person = Map.fetch!(ctx, person_name)
-      OperatelyWeb.TurboCase.log_in_account(ctx, person)
-    end
+    person = Map.fetch!(ctx, person_name)
+
+    login(ctx, person)
   end
 
   def log_in_contributor(ctx, contributor_name) do
     contributor = Map.fetch!(ctx, contributor_name)
     person = Operately.People.get_person(contributor.person_id)
 
-    OperatelyWeb.TurboCase.log_in_account(ctx, person)
+    login(ctx, person)
+  end
+
+  defp login(ctx, person) do
+    if ctx[:feature] == true do
+      # we are running a feature test, log in via the UI
+      Operately.Support.Features.UI.login_as(ctx, person)
+    else
+      # we are running an API test, log in via the API
+      OperatelyWeb.TurboCase.log_in_account(ctx, person)
+    end
   end
 end
