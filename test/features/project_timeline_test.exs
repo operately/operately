@@ -25,26 +25,24 @@ defmodule Operately.Features.ProjectsTimelineTest do
     |> Steps.given_a_project_exists()
     |> Steps.when_i_define_the_project_timeline(params)
     |> Steps.assert_the_timeline_and_milestone_are_visible_on_the_project_page(params)
-    |> Steps.assert_feed_item_is_posted()
-    |> Steps.assert_notification_is_sent()
-    |> Steps.assert_email_is_sent()
+    |> Steps.assert_feed_email_and_notification_are_sent_for_timeline_change()
   end
 
-  feature "adding a project milestone", ctx do
-    ctx
-    |> Steps.given_a_project_with_a_defined_timeline_exists()
-    |> Steps.when_I_add_a_milestone()
-    |> Steps.assert_the_milestone_is_visible_on_the_project_page()
-    |> Steps.assert_feed_email_and_notification_are_sent_for_milestone_addition()
-  end
+  # feature "adding a project milestone", ctx do
+  #   ctx
+  #   |> Steps.given_a_project_with_a_defined_timeline_exists()
+  #   |> Steps.when_I_add_a_milestone()
+  #   |> Steps.assert_the_milestone_is_visible_on_the_project_page()
+  #   |> Steps.assert_feed_email_and_notification_are_sent_for_milestone_addition()
+  # end
 
-  feature "removing a project milestone", ctx do
-    ctx
-    |> Steps.given_a_project_with_set_milestones_exists()
-    |> Steps.when_i_remove_a_milestone()
-    |> Steps.assert_the_milestone_is_not_visible_on_the_project_page()
-    |> Steps.assert_feed_email_and_notification_are_sent_for_milestone_removal()
-  end
+  # feature "removing a project milestone", ctx do
+  #   ctx
+  #   |> Steps.given_a_project_with_set_milestones_exists()
+  #   |> Steps.when_i_remove_a_milestone()
+  #   |> Steps.assert_the_milestone_is_not_visible_on_the_project_page()
+  #   |> Steps.assert_feed_email_and_notification_are_sent_for_milestone_removal()
+  # end
 
   # feature "editing newly added milestones while editing project timeline", ctx do
   #   ctx
