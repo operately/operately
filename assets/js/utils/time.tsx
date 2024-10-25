@@ -117,7 +117,7 @@ export function isCurrentYear(date: Date) {
   return date.getFullYear() === new Date().getFullYear();
 }
 
-export function weeksBetween(start: Date, end: Date) {
+function weeksBetween(start: Date, end: Date) {
   return datefsn.differenceInWeeks(end, start);
 }
 
@@ -149,37 +149,36 @@ export function relativeDay(date: Date) {
   return `${days} days ago`;
 }
 
-export function humanDuration(start: Date, end: Date): string {
-  const days = daysBetween(start, end);
-
-  if (days === 0) return "0 days";
-  if (days === 1) return "1 day";
-  if (days < 7) return `${days} days`;
-
-  if (days < 30) {
-    const weeks = Math.floor(days / 7);
-
-    if (weeks === 1) return "1 week";
-    return `${weeks} weeks`;
-  }
-
-  if (days < 365) {
-    const months = Math.floor(days / 30);
-
-    if (months === 1) return "1 month";
-    return `${months} months`;
-  }
-
-  const years = Math.floor(days / 365);
-
-  if (years === 1) return "1 year";
-  return `${years} years`;
-}
-
 export function dateChanged(old: Date | null, current: Date | null): boolean {
   if (!old && !current) return false;
   if (!old && current) return true;
   if (old && !current) return true;
 
   return !isSameDay(old!, current!);
+}
+
+export function durationHumanized(a: Date, b: Date, suffix?: string): string {
+  const days = daysBetween(a, b);
+  if (days === 0) return "Last day";
+  if (days === 1) return withSuffix("1 day", suffix);
+  if (days < 14) return withSuffix(`${days} days`, suffix);
+
+  const weeks = weeksBetween(a, b);
+  if (days < 60) return withSuffix(`${weeks} weeks`, suffix);
+
+  const months = Math.floor(days / 30);
+  if (days < 365) return withSuffix(`${months} months`, suffix);
+
+  const years = Math.floor(days / 365);
+  if (years === 1) return withSuffix(`${years} year`, suffix);
+
+  return withSuffix(`${years} years`, suffix);
+}
+
+function withSuffix(str: string, suffix?: string): string {
+  if (suffix) {
+    return `${str} ${suffix}`;
+  } else {
+    return str;
+  }
 }

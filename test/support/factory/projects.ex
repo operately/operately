@@ -10,19 +10,23 @@ defmodule Operately.Support.Factory.Projects do
     reviewer = Keyword.get(opts, :reviewer, nil)
     goal = Keyword.get(opts, :goal, nil)
 
+    atts = %{
+      name: Keyword.get(opts, :name, Atom.to_string(testid)),
+      creator_id: ctx[creator].id,
+      company_id: ctx.company.id,
+      group_id: ctx[space_name].id,
+      company_access_level: Binding.edit_access(),
+      space_access_level: Binding.edit_access()
+    }
+
     project =
-      %{
-        name: Keyword.get(opts, :name, Atom.to_string(testid)),
-        creator_id: ctx[creator].id,
-        company_id: ctx.company.id,
-        group_id: ctx[space_name].id,
-        company_access_level: Binding.edit_access(),
-        space_access_level: Binding.edit_access()
-      }
+      atts
       |> maybe_add_key(:champion_id, champion && ctx[champion].id)
       |> maybe_add_key(:reviewer_id, reviewer && ctx[reviewer].id)
       |> maybe_add_key(:goal_id, goal && ctx[goal].id)
       |> Operately.ProjectsFixtures.project_fixture()
+      |> set_deadline(opts)
+      |> set_started_at(opts)
 
     Map.put(ctx, testid, project)
   end
@@ -108,14 +112,16 @@ defmodule Operately.Support.Factory.Projects do
     Map.put(ctx, testid, check_in)
   end
 
-  def add_project_milestone(ctx, testid, project_name, author_name) do
+  def add_project_milestone(ctx, testid, project_name, opts \\ []) do
     project = Map.fetch!(ctx, project_name)
-    author = Map.fetch!(ctx, author_name)
+    
+    attrs = %{
+      project_id: project.id,
+      title: Keyword.get(opts, :title, "Milestone #{testid}"),
+    }
 
-    milestone = Operately.ProjectsFixtures.milestone_fixture(author, %{
-        project_id: project.id,
-      })
-      |> Repo.preload(:project)
+    milestone = Operately.ProjectsFixtures.milestone_fixture(ctx.creator, attrs)
+    milestone = Repo.preload(milestone, :project)
 
     Map.put(ctx, testid, milestone)
   end
@@ -153,6 +159,30 @@ defmodule Operately.Support.Factory.Projects do
       Map.put(map, key, value)
     else
       map
+    end
+  end
+
+  defp set_started_at(project, opts) do
+    if opts[:started_at] do
+      {:ok, project} = Operately.Projects.update_project(project, %{
+        started_at: Keyword.get(opts, :started_at)
+      })
+
+      project
+    else
+      project
+    end
+  end
+
+  defp set_deadline(project, opts) do
+    if opts[:deadline] do
+      {:ok, project} = Operately.Projects.update_project(project, %{
+        deadline: Keyword.get(opts, :deadline)
+      })
+
+      project 
+    else
+      project
     end
   end
 end

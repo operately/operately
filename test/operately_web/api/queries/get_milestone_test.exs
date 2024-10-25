@@ -95,7 +95,7 @@ defmodule OperatelyWeb.Api.Queries.GetMilestoneTest do
       |> Factory.log_in_person(:creator)
       |> Factory.add_space(:space)
       |> Factory.add_project(:project, :space)
-      |> Factory.add_project_milestone(:milestone, :project, :creator)
+      |> Factory.add_project_milestone(:milestone, :project)
     end
 
     test "include_project", ctx do
