@@ -1,5 +1,32 @@
 defmodule Operately.Time do
 
+  @doc """
+  Create a NaiveDateTime for a specific day in the current month.
+  e.g. Time.day_in_current_month(15) will return a NaiveDateTime 
+  for the 15th of the current month.
+  """
+  def day_in_current_month(day) do
+    NaiveDateTime.from_erl!({
+      {Date.utc_today().year, Date.utc_today().month, day}, 
+      {0, 0, 0}
+    })
+  end
+
+  def days_ago(n) do
+    DateTime.utc_now() |> DateTime.add(-n, :day)
+  end
+
+  def days_from_now(n) do
+    DateTime.utc_now() |> DateTime.add(n, :day)
+  end
+
+  def short_date(date) do
+    month = Calendar.strftime(date, "%B")
+    day = Calendar.strftime(date, "%-d")
+
+    "#{month} #{day}"
+  end
+
   def first_friday_from_today do
     today = Date.utc_today()
 
