@@ -15,6 +15,12 @@ defmodule Operately.Support.Features.GoalTreeSteps do
     |> then(fn ctx -> UI.login_as(ctx, ctx.creator) end)
   end
 
+  step :given_project_and_goal_with_other_reviewer_exists, ctx do
+    ctx
+    |> Factory.add_goal(:goal_3, :product, [reviewer: :john, name: "Goal Tres"])
+    |> Factory.add_project(:project_omega, :product, [reviewer: :john, name: "Project Omega"])
+  end
+
   step :given_project_is_paused, ctx, project do
     Operately.Operations.ProjectPausing.run(ctx.creator, project)
     ctx
@@ -133,6 +139,13 @@ defmodule Operately.Support.Features.GoalTreeSteps do
     ctx
     |> UI.click(testid: "view-options")
     |> UI.click(testid: "ownedBy-me")
+    |> UI.click(testid: "submit")
+  end
+
+  step :select_reviewed_by_me_filter, ctx do
+    ctx
+    |> UI.click(testid: "view-options")
+    |> UI.click(testid: "reviewedBy-me")
     |> UI.click(testid: "submit")
   end
 
