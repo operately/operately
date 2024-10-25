@@ -18,7 +18,7 @@ export function Page() {
   const { project } = useLoadedData();
 
   return (
-    <Pages.Page title={["Timeline", project.name!]}>
+    <Pages.Page title={["Timeline", project.name!]} testId="project-timeline-page">
       <Paper.Root size="small">
         <ProjectPageNavigation project={project} />
 
