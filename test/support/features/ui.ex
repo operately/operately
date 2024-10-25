@@ -411,4 +411,10 @@ defmodule Operately.Support.Features.UI do
     |> String.downcase()
     |> String.replace(~r/[^a-z0-9]/, "-")
   end
+
+  def foreach(ctx, list, cb) do
+    Enum.reduce(list, ctx, fn item, ctx ->
+      cb.(item, ctx)
+    end)
+  end
 end
