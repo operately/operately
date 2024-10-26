@@ -1,6 +1,7 @@
 import React from "react";
 import * as Time from "@/utils/time";
 
+import { Discussion } from "@/models/discussions";
 import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
 import { SpacePageNavigation } from "@/components/SpacePageNavigation";
@@ -11,6 +12,7 @@ import { Summary } from "@/components/RichContent";
 import { useLoadedData } from "./loader";
 import { PrimaryButton } from "@/components/Buttons";
 import { Paths } from "@/routes/paths";
+import { assertPresent } from "@/utils/assertions";
 
 export function Page() {
   const { space } = useLoadedData();
@@ -58,8 +60,10 @@ function DiscussionList() {
   );
 }
 
-function DiscussionListItem({ discussion }) {
-  const path = Paths.discussionPath(discussion.id);
+function DiscussionListItem({ discussion }: { discussion: Discussion }) {
+  assertPresent(discussion.author, "author must be present in discussion");
+
+  const path = Paths.discussionPath(discussion.id!);
 
   return (
     <DivLink
@@ -78,7 +82,7 @@ function DiscussionListItem({ discussion }) {
           <div className="text-sm text-content-dimmed">{discussion.author.fullName}</div>
           <div className="text-sm text-content-dimmed">·</div>
           <div className="text-sm text-content-dimmed">
-            <FormattedTime time={discussion.insertedAt} format="long-date" />
+            <FormattedTime time={discussion.insertedAt!} format="long-date" />
           </div>
         </div>
       </div>
