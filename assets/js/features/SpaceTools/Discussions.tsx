@@ -10,11 +10,17 @@ import Avatar from "@/components/Avatar";
 
 import { Title, Container } from "./components";
 
-export function Discussions({ space, discussions }: { space: Space; discussions: Discussion[] }) {
+interface DiscussionsProps {
+  space: Space;
+  discussions: Discussion[];
+  toolsCount: number;
+}
+
+export function Discussions({ space, discussions, toolsCount }: DiscussionsProps) {
   const path = Paths.discussionsPath(space.id!);
 
   return (
-    <Container path={path}>
+    <Container path={path} toolsCount={toolsCount}>
       <Title title="Discussions" />
       <DiscussionList discussions={discussions} />
     </Container>
