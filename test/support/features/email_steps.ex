@@ -1,8 +1,12 @@
 defmodule Operately.Support.Features.EmailSteps do
   alias Operately.Support.Features.UI
   alias Operately.People.Person
+  alias Operately.Projects.Contributor
 
   def assert_activity_email_sent(ctx, %{where: where, to: to, author: author, action: action}) do
+    author = find_person(author)
+    to = find_person(to)
+
     subject = "(#{where}) #{Person.short_name(author)} #{action}"
 
     ctx |> UI.assert_email_sent(subject, to: to.email)
@@ -91,5 +95,13 @@ defmodule Operately.Support.Features.EmailSteps do
     |> Operately.Repo.preload(:person)
     |> Enum.map(fn contrib -> contrib.person end)
     |> Enum.reject(fn person -> person.id in except_ids end)
+  end
+
+  defp find_person(person) do
+    case person do
+      %Person{} -> person
+      %Contributor{} -> Operately.People.get_person!(person.person_id)
+      _ -> raise "Invalid person: #{inspect(person)}"
+    end
   end
 end

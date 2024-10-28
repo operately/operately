@@ -6,7 +6,7 @@ import { COLORS, TITLES, CIRCLE_BORDER_COLORS, CIRCLE_BACKGROUND_COLORS } from "
 
 interface StatusProps {
   status: string;
-  reviewer?: People.Person;
+  reviewer?: People.Person | null;
   selectable?: boolean;
   onSelected?: () => void;
   testId?: string;
@@ -46,7 +46,7 @@ export function Placeholder() {
   );
 }
 
-function StatusDescription({ status, reviewer }: { status: string; reviewer?: People.Person }) {
+function StatusDescription({ status, reviewer }: { status: string; reviewer?: People.Person | null }) {
   const reviewerMention = reviewer ? People.firstName(reviewer) : "the reviewer";
 
   switch (status) {
