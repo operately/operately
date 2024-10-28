@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 
+import { Space } from "@/models/spaces";
 import { Goal } from "@/models/goals";
 import { Project } from "@/models/projects";
 import { splitByStatus } from "@/models/milestones";
@@ -8,18 +9,20 @@ import { PieChart } from "@/components/PieChart";
 import { ProgressBar } from "@/components/ProgressBar";
 import { MiniPieChart } from "@/components/MiniPieChart";
 import { assertPresent } from "@/utils/assertions";
-import { DivLink } from "@/components/Link";
 import { Paths } from "@/routes/paths";
 
 import { Container, Title } from "./components";
 import { calculateGoalsStatus, calculateProjectsStatus } from "./utils";
 
 interface GoalsAndProjectsProps {
+  space: Space;
   goals: Goal[];
   projects: Project[];
 }
 
-export function GoalsAndProjects({ goals, projects }: GoalsAndProjectsProps) {
+export function GoalsAndProjects({ space, goals, projects }: GoalsAndProjectsProps) {
+  const path = Paths.spaceGoalsPath(space.id!);
+
   // Limiting the number of goals to ensure that the component
   // displays goals and projects evenly in the container.
   // With the current fixed 380px height, only 9 goals and project
@@ -32,7 +35,7 @@ export function GoalsAndProjects({ goals, projects }: GoalsAndProjectsProps) {
   }, []);
 
   return (
-    <Container>
+    <Container path={path}>
       <Title title="Goals & Projects" />
       <Goals goals={slicedGoals} />
       <Projects projects={projects} />
@@ -55,10 +58,8 @@ function Goals({ goals }: { goals: Goal[] }) {
 function GoalItem({ goal }: { goal: Goal }) {
   assertPresent(goal.progressPercentage, "progressPercentage");
 
-  const path = Paths.goalPath(goal.id!);
-
   return (
-    <DivLink to={path} className="flex items-center gap-1 overflow-hidden">
+    <div className="flex items-center gap-1 overflow-hidden">
       <div>
         <div className="w-[14px] h-[14px] bg-red-500 rounded-full" />
       </div>
@@ -66,7 +67,7 @@ function GoalItem({ goal }: { goal: Goal }) {
         <ProgressBar percentage={goal.progressPercentage} className="w-[50px]" />
       </div>
       <div className="truncate">{goal.name}</div>
-    </DivLink>
+    </div>
   );
 }
 
@@ -85,17 +86,16 @@ function Projects({ projects }: { projects: Project[] }) {
 function ProjectItem({ project }: { project: Project }) {
   assertPresent(project.milestones, "milestones must be present in project");
 
-  const path = Paths.projectPath(project.id!);
   const total = project.milestones.length;
   const { done } = splitByStatus(project.milestones);
 
   return (
-    <DivLink to={path} className="flex items-center gap-1 overflow-hidden">
+    <div className="flex items-center gap-1 overflow-hidden">
       <div>
         <MiniPieChart completed={done.length} total={total} />
       </div>
       <div className="truncate">{project.name}</div>
-    </DivLink>
+    </div>
   );
 }
 

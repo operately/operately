@@ -1,18 +1,20 @@
 import React from "react";
 
+import { Space } from "@/models/spaces";
 import { Discussion } from "@/models/discussions";
 
 import { Paths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
-import { DivLink } from "@/components/Link";
 import { richContentToString } from "@/components/RichContent";
 import Avatar from "@/components/Avatar";
 
 import { Title, Container } from "./components";
 
-export function Discussions({ discussions }: { discussions: Discussion[] }) {
+export function Discussions({ space, discussions }: { space: Space; discussions: Discussion[] }) {
+  const path = Paths.discussionsPath(space.id!);
+
   return (
-    <Container>
+    <Container path={path}>
       <Title title="Discussions" />
       <DiscussionList discussions={discussions} />
     </Container>
@@ -33,14 +35,12 @@ function DiscussionItem({ discussion }: { discussion: Discussion }) {
   assertPresent(discussion.author, "author must be present in discussion");
   assertPresent(discussion.commentsCount, "commentsCount must be present in discussion");
 
-  const path = Paths.discussionPath(discussion.id!);
-
   return (
-    <DivLink to={path} className="flex items-center gap-2 py-3 px-2 border-b border-stroke-base last:border-b-0">
+    <div className="flex items-center gap-2 py-3 px-2 border-b border-stroke-base last:border-b-0">
       <Avatar person={discussion.author} size="normal" />
       <DiscussionTitle title={discussion.title!} body={discussion.body!} />
       <CommnetsCount count={discussion.commentsCount} />
-    </DivLink>
+    </div>
   );
 }
 
