@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 
 import { Goal } from "@/models/goals";
 import { Project } from "@/models/projects";
@@ -20,10 +20,21 @@ interface GoalsAndProjectsProps {
 }
 
 export function GoalsAndProjects({ goals, projects }: GoalsAndProjectsProps) {
+  // Limiting the number of goals to ensure that the component
+  // displays goals and projects evenly in the container.
+  // With the current fixed 380px height, only 9 goals and project
+  // can be displayed.
+  const slicedGoals = useMemo(() => {
+    if (projects.length > 4) {
+      return goals.slice(0, 5);
+    }
+    return goals.slice(0, 9 - projects.length);
+  }, []);
+
   return (
     <Container>
       <Title title="Goals & Projects" />
-      <Goals goals={goals} />
+      <Goals goals={slicedGoals} />
       <Projects projects={projects} />
     </Container>
   );
