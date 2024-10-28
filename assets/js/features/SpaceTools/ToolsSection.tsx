@@ -19,8 +19,8 @@ export function ToolsSection({ space, discussions, goals, projects }: ToolsSecti
   return (
     <div className="mt-6 py-6">
       <div className="flex justify-center items-start flex-wrap gap-8">
-        <GoalsAndProjects space={space} goals={goals} projects={projects} />
-        <Discussions space={space} discussions={discussions} />
+        <GoalsAndProjects space={space} goals={goals} projects={projects} toolsCount={2} />
+        <Discussions space={space} discussions={discussions} toolsCount={2} />
       </div>
     </div>
   );
