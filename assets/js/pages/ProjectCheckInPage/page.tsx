@@ -30,19 +30,19 @@ export function Page() {
   const refresh = useRefresh();
 
   assertPresent(checkIn.notifications, "Check-in notifications must be defined");
-  assertPresent(checkIn.project?.reviewer, "project and project reviewer must be present in checkIn");
+  assertPresent(checkIn.project, "Check-in project must be defined");
 
   useClearNotificationsOnLoad(checkIn.notifications);
 
   return (
-    <Pages.Page title={["Check-In", checkIn.project!.name!]}>
+    <Pages.Page title={["Check-In", checkIn.project!.name!]} testId="project-check-in-page">
       <Paper.Root>
         <Navigation project={checkIn.project} />
 
         <Paper.Body>
           <Options />
           <Title />
-          <StatusSection checkIn={checkIn} reviewer={checkIn.project.reviewer} />
+          <StatusSection checkIn={checkIn} reviewer={checkIn.project!.reviewer} />
           <DescriptionSection checkIn={checkIn} />
           <AckCTA />
 
