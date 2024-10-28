@@ -24,6 +24,10 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
         owner = person_fixture_with_account(%{full_name: "Owner Ownerson", company_id: ctx.company.id})
         {:ok, _} = Operately.Companies.add_owner(ctx.owner, owner.id)
         UI.login_as(ctx, owner)
+
+      role == :member ->
+        owner = person_fixture_with_account(%{full_name: "Member Memberson", company_id: ctx.company.id})
+        UI.login_as(ctx, owner)
     end
   end
 
@@ -36,7 +40,8 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
   step :open_company_admins_page, ctx do
     ctx 
     |> UI.visit(Paths.company_admin_path(ctx.company))
-    |> UI.click(testid: "manage-company-administrators")
+    |> UI.click(testid: "manage-administrators-and-owners")
+    |> UI.assert_has(testid: "manage-admins-page")
   end
   
   step :open_company_trusted_email_domains_page, ctx do
@@ -197,6 +202,26 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
     refute Enum.any?(admins, fn admin -> admin.id == person.id end)
 
     ctx
+  end
+
+  step :when_i_open_the_company_admin_page, ctx do
+    ctx |> UI.visit(Paths.company_admin_path(ctx.company))
+  end
+
+  step :assert_i_see_reach_out_to_admins, ctx do
+    UI.assert_text(ctx, "Reach out to an admin if you need to:")
+  end
+
+  step :assert_i_see_reach_out_to_owners, ctx do
+    UI.assert_text(ctx, "Reach out to an account owner if you need to:")
+  end
+
+  step :assert_i_dont_see_reach_out_to_admins, ctx do
+    UI.refute_text(ctx, "Reach out to an admin if you need to:")
+  end
+
+  step :assert_i_dont_see_reach_out_to_owners, ctx do
+    UI.refute_text(ctx, "Reach out to an admin if you need to:")
   end
 
 end

@@ -13,7 +13,7 @@ export function Page() {
   const form = useFrom();
 
   return (
-    <Pages.Page title={["Add/Remove People", "Company Administration"]}>
+    <Pages.Page title={"Manage admins and owners"} testId="manage-admins-page">
       <Paper.Root>
         <Paper.Navigation>
           <Paper.NavItem linkTo={Paths.companyAdminPath()}>Company Administration</Paper.NavItem>
