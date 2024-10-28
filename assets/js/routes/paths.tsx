@@ -81,6 +81,10 @@ export class Paths {
     return createCompanyPath(["people"]);
   }
 
+  static discussionsPath(spaceId: string) {
+    return createCompanyPath(["spaces", spaceId, "discussions"]);
+  }
+
   static discussionPath(discussionId: string) {
     return createCompanyPath(["discussions", discussionId]);
   }
