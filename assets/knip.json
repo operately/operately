@@ -6,7 +6,8 @@
     "js/gql/generated.tsx",
     "js/api/index.tsx",
     "js/features/SpaceTools/*.tsx",
-    "js/components/RichContent/contentOps.tsx"
+    "js/components/RichContent/contentOps.tsx",
+    "js/components/PieChart/index.tsx"
   ],
   "ignoreDependencies": ["@types/jest"],
 
