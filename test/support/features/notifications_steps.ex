@@ -30,6 +30,8 @@ defmodule Operately.Support.Features.NotificationsSteps do
   end
 
   def assert_notification_exists(ctx, author: author, subject: subject) do
+    author = find_person(author)
+
     ctx
     |> UI.sleep(100)
     |> visit_notifications_page()
@@ -55,6 +57,7 @@ defmodule Operately.Support.Features.NotificationsSteps do
   end
 
   def assert_activity_notification(ctx, %{author: author, action: action}) do
+    author = find_person(author)
     ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} #{action}")
   end
 
@@ -132,5 +135,13 @@ defmodule Operately.Support.Features.NotificationsSteps do
 
   def assert_space_members_added_sent(ctx, author: author, title: title) do
     ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} added you to the #{title} space")
+  end
+
+  defp find_person(person) do
+    case person do
+      %Operately.People.Person{} -> person
+      %Operately.Projects.Contributor{} -> Operately.People.get_person(person.person_id)
+      _ -> raise "Invalid person: #{inspect(person)}"
+    end
   end
 end

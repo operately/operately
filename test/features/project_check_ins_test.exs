@@ -5,11 +5,10 @@ defmodule Operately.Features.ProjectCheckInsTest do
 
   setup ctx do
     ctx
-    |> Steps.given_a_project_exists(name: "Test Project")
-    |> Steps.login()
+    |> Steps.given_a_project_exists()
+    |> Steps.log_in_as_champion()
   end
 
-  @tag login_as: :champion
   feature "submitting a check-in", ctx do
     values = %{status: "on_track", description: "This is a check-in."}
 
@@ -22,7 +21,17 @@ defmodule Operately.Features.ProjectCheckInsTest do
     |> Steps.assert_notification_sent_to_reviewer(values)
   end
 
-  @tag login_as: :champion
+  @tag has_reviewer: false
+  feature "submitting a check-in when project has no reviewers", ctx do
+    values = %{status: "on_track", description: "This is a check-in."}
+
+    ctx
+    |> Steps.submit_check_in(values)
+    |> Steps.assert_check_in_submitted(values)
+    |> Steps.assert_check_in_visible_on_project_page(values)
+    |> Steps.assert_check_in_visible_on_feed(values)
+  end
+
   feature "acknowledge a check-in in the web app", ctx do
     values = %{status: "on_track", description: "This is a check-in."}
 
@@ -36,7 +45,6 @@ defmodule Operately.Features.ProjectCheckInsTest do
     |> Steps.assert_acknowledgement_visible_on_feed()
   end
 
-  @tag login_as: :champion
   feature "acknowledge a check-in from the email", ctx do
     values = %{status: "on_track", description: "This is a check-in."}
 
@@ -46,7 +54,6 @@ defmodule Operately.Features.ProjectCheckInsTest do
     |> Steps.assert_check_in_acknowledged(values)
   end
 
-  @tag login_as: :champion
   feature "leave a comment on an check-in", ctx do
     values = %{status: "on_track", description: "This is a check-in."}
 
@@ -59,7 +66,6 @@ defmodule Operately.Features.ProjectCheckInsTest do
     |> Steps.assert_comment_on_check_in_received_in_email()
   end
 
-  @tag login_as: :champion
   feature "edit a submitted check-in", ctx do
     original_values = %{status: "on_track", description: "This is a check-in."}
     new_values = %{status: "caution", description: "This is an edited check-in."}
