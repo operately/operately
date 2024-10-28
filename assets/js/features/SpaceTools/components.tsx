@@ -5,5 +5,5 @@ export function Title({ title }: { title: string }) {
 }
 
 export function Container({ children }) {
-  return <div className="min-h-[160px] w-[300px] border border-stroke-base">{children}</div>;
+  return <div className="min-h-[160px] w-[320px] border border-stroke-base">{children}</div>;
 }
