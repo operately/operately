@@ -18,9 +18,10 @@ interface GoalsAndProjectsProps {
   space: Space;
   goals: Goal[];
   projects: Project[];
+  toolsCount: number;
 }
 
-export function GoalsAndProjects({ space, goals, projects }: GoalsAndProjectsProps) {
+export function GoalsAndProjects({ space, goals, projects, toolsCount }: GoalsAndProjectsProps) {
   const path = Paths.spaceGoalsPath(space.id!);
 
   // Limiting the number of goals to ensure that the component
@@ -35,7 +36,7 @@ export function GoalsAndProjects({ space, goals, projects }: GoalsAndProjectsPro
   }, []);
 
   return (
-    <Container path={path}>
+    <Container path={path} toolsCount={toolsCount}>
       <Title title="Goals & Projects" />
       <Goals goals={slicedGoals} />
       <Projects projects={projects} />
