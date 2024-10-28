@@ -55,17 +55,17 @@ defmodule Operately.Support.Features.ProjectTimelineSteps do
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
     |> FeedSteps.assert_feed_item_exists(%{
-      author: ctx.creator, 
+      author: ctx.creator,
       title: "edited the timeline"
     })
     |> UI.visit(Paths.space_path(ctx.company, ctx.product))
     |> FeedSteps.assert_feed_item_exists(%{
-      author: ctx.creator, 
+      author: ctx.creator,
       title: "edited the timeline on the #{ctx.project.name} project"
     })
     |> UI.visit(Paths.feed_path(ctx.company))
     |> FeedSteps.assert_feed_item_exists(%{
-      author: ctx.creator, 
+      author: ctx.creator,
       title: "edited the timeline on the #{ctx.project.name} project"
     })
     |> EmailSteps.assert_activity_email_sent(%{
@@ -82,6 +82,8 @@ defmodule Operately.Support.Features.ProjectTimelineSteps do
   end
 
   step :when_i_add_a_milestone, ctx do
+    current_day = Date.utc_today().day
+
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
     |> UI.click(testid: "manage-timeline")
@@ -89,12 +91,12 @@ defmodule Operately.Support.Features.ProjectTimelineSteps do
     |> UI.click(testid: "add-milestone")
     |> UI.fill(testid: "new-milestone-title", with: "Website Published")
     |> UI.click(testid: "new-milestone-due")
-    |> UI.click(css: ".react-datepicker__day.react-datepicker__day--010")
+    |> UI.click(css: ".react-datepicker__day.react-datepicker__day--0#{current_day}")
     |> UI.click(testid: "save-milestone-button")
     |> UI.click(testid: "save-changes")
     |> UI.assert_has(testid: "project-timeline-page")
   end
-  
+
   step :assert_the_milestone_is_visible_on_the_project_page, ctx do
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
@@ -105,17 +107,17 @@ defmodule Operately.Support.Features.ProjectTimelineSteps do
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
     |> FeedSteps.assert_feed_item_exists(%{
-      author: ctx.creator, 
+      author: ctx.creator,
       title: "edited the timeline"
     })
     |> UI.visit(Paths.space_path(ctx.company, ctx.product))
     |> FeedSteps.assert_feed_item_exists(%{
-      author: ctx.creator, 
+      author: ctx.creator,
       title: "edited the timeline on the #{ctx.project.name} project"
     })
     |> UI.visit(Paths.feed_path(ctx.company))
     |> FeedSteps.assert_feed_item_exists(%{
-      author: ctx.creator, 
+      author: ctx.creator,
       title: "edited the timeline on the #{ctx.project.name} project"
     })
     |> EmailSteps.assert_activity_email_sent(%{
@@ -182,7 +184,7 @@ defmodule Operately.Support.Features.ProjectTimelineSteps do
 
   step :given_a_project_with_a_defined_timeline_exists, ctx do
     Factory.add_project(ctx, :project, :product, [
-      started_at: Time.days_ago(15), 
+      started_at: Time.days_ago(15),
       deadline: Time.days_from_now(10)
     ])
     |> Factory.add_project_reviewer(:reviewer, :project)
@@ -190,16 +192,16 @@ defmodule Operately.Support.Features.ProjectTimelineSteps do
 
   step :given_a_project_with_a_defined_timeline_and_milestones_exists, ctx do
     Factory.add_project(ctx, :project, :product, [
-      started_at: Time.days_ago(15), 
+      started_at: Time.days_ago(15),
       deadline: Time.days_from_now(10)
     ])
     |> Factory.add_project_reviewer(:reviewer, :project)
     |> Factory.add_project_milestone(:milestone1, :project, [
-      title: "Contract Signed", 
+      title: "Contract Signed",
       due_day: Time.days_from_now(5)
     ])
     |> Factory.add_project_milestone(:milestone2, :project, [
-      title: "Website Launched", 
+      title: "Website Launched",
       due_day: Time.days_from_now(6)
     ])
   end
@@ -222,7 +224,7 @@ defmodule Operately.Support.Features.ProjectTimelineSteps do
 
   step :given_an_overdue_project_exists, ctx do
     Factory.add_project(ctx, :project, :product, [
-      started_at: Time.days_ago(15), 
+      started_at: Time.days_ago(15),
       deadline: Time.days_ago(5)
     ])
   end
@@ -235,7 +237,7 @@ defmodule Operately.Support.Features.ProjectTimelineSteps do
 
   step :given_a_completed_project_exists, ctx do
     ctx = Factory.add_project(ctx, :project, :product, [
-      started_at: Time.days_ago(15), 
+      started_at: Time.days_ago(15),
       deadline: Time.days_ago(5)
     ])
 
