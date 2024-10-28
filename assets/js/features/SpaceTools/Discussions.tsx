@@ -14,7 +14,7 @@ export function Discussions({ discussions }: { discussions: Discussion[] }) {
   return (
     <Container>
       <Title title="Discussions" />
-      <DiscussionList discussions={discussions.slice(0, 4)} />
+      <DiscussionList discussions={discussions} />
     </Container>
   );
 }
@@ -63,7 +63,7 @@ function DiscussionTitle({ title, body }: { title: string; body: string }) {
   }, [setSubtitle]);
 
   return (
-    <div ref={textRef} className="text-sm font-bold overflow-hidden">
+    <div ref={textRef} className="font-bold overflow-hidden">
       {title}
 
       {subtitle && <div className="font-normal truncate pr-2">{subtitle}</div>}
