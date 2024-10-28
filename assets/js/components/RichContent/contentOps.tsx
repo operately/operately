@@ -41,6 +41,26 @@ export function extract(node: any): ExtractResult[] {
   return result;
 }
 
+export function richContentToString(node: any): string {
+  let result: string[] = [];
+
+  if (node.type === "text") {
+    result.push(node.text);
+  } else if (node.type === "mention") {
+    result.push(node.attrs.label);
+  } else if (node.content) {
+    node.content.forEach((child: any) => {
+      result.push(richContentToString(child));
+    });
+
+    if (node.type.name === "paragraph") {
+      result.push(" ");
+    }
+  }
+
+  return result.join(" ");
+}
+
 export function truncate(extracted: ExtractResult[], characterCount: number): JSX.Element[] {
   let result: JSX.Element[] = [];
   let length = 0;
