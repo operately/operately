@@ -1,4 +1,3 @@
-export { StatusDropdown } from "./StatusDropdown";
 export { SmallStatusIndicator } from "./SmallStatusIndicator";
 export { Status, Placeholder } from "./Status";
 
