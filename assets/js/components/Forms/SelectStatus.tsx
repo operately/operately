@@ -12,12 +12,11 @@ import { useFieldError, useFieldValue } from "./FormContext";
 
 interface Props {
   field: string;
+  options: StatusOptions[];
   reviewer?: People.Person;
 }
 
-const POSSIBLE_STATUSES: StatusOptions[] = ["on_track", "caution", "issue"];
-
-export function SelectStatus({ field, reviewer }: Props) {
+export function SelectStatus({ field, options, reviewer }: Props) {
   const ref = React.useRef<HTMLDivElement>(null);
   const [open, setOpen] = React.useState(false);
   const [width, setWidth] = React.useState(0);
@@ -61,7 +60,7 @@ export function SelectStatus({ field, reviewer }: Props) {
 
         <Popover.Portal>
           <Popover.Content className={dropdownClassName} align="start" style={{ width }}>
-            {POSSIBLE_STATUSES.map((status) => (
+            {options.map((status) => (
               <Status
                 key={status}
                 status={status}
