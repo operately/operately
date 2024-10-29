@@ -3,8 +3,8 @@ defmodule Mix.Tasks.Operation.GenActivitySchema do
   def gen(ctx) do
     fields = 
       ctx.activity_fields 
-      |> Enum.map(fn {name, type} -> "field :#{name}, :#{type}}" end)
-      |> Enum.join(",\n")
+      |> Enum.map(fn {name, type} -> "field :#{name}, :#{type}" end)
+      |> Enum.join("\n")
 
     Mix.Operately.generate_file(ctx.activity_schema_file_path, fn _ ->
       """
