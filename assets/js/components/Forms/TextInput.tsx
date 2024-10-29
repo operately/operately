@@ -19,6 +19,7 @@ interface TextInputProps {
   minLength?: number;
   maxLength?: number;
   onEnter?: (e: React.KeyboardEvent) => void;
+  testId?: string;
 }
 
 const DEFAULT_VALIDATION_PROPS = {
@@ -42,7 +43,7 @@ export function TextInput(props: TextInputProps) {
       <input
         name={field}
         placeholder={placeholder}
-        data-test-id={createTestId(field)}
+        data-test-id={props.testId ?? createTestId(field)}
         className={styles(!!error)}
         type="text"
         value={value}

@@ -18,7 +18,7 @@ import { DivLink } from "@/components/Link";
 import { Paths } from "@/routes/paths";
 import { DropdownMenu, DropdownMenuLinkItem } from "@/components/DropdownMenu";
 import { DaysAgo } from "@/components/FormattedTime/DaysAgo";
-import { SmallStatusIndicator } from "@/features/projectCheckIns/SmallStatusIndicator";
+import { SmallStatusIndicator } from "@/components/status";
 
 import { Node, GoalNode, ProjectNode, SortColumn } from "./tree";
 import { useTreeContext, TreeContextProvider, TreeContextProviderProps } from "./treeContext";
