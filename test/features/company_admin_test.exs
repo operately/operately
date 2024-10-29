@@ -30,7 +30,7 @@ defmodule Operately.Features.CompanyAdminTest do
   feature "promote a person to admin", ctx do
     ctx
     |> Steps.given_a_company_member_exists("Michael Scott")
-    |> Steps.open_company_admins_page()
+    |> Steps.open_manage_admins_page()
     |> Steps.add_company_admin("Michael Scott")
     |> Steps.assert_person_is_admin("Michael Scott")
   end
@@ -39,7 +39,7 @@ defmodule Operately.Features.CompanyAdminTest do
   feature "demote a person from admin", ctx do
     ctx
     |> Steps.given_a_company_admin_exists("Michael Scott")
-    |> Steps.open_company_admins_page()
+    |> Steps.open_manage_admins_page()
     |> Steps.remove_company_admin("Michael Scott")
     |> Steps.refute_person_is_admin("Michael Scott")
   end
@@ -105,6 +105,17 @@ defmodule Operately.Features.CompanyAdminTest do
     |> Steps.when_i_open_the_company_admin_page()
     |> Steps.assert_i_dont_see_reach_out_to_admins()
     |> Steps.assert_i_dont_see_reach_out_to_owners()
+  end
+
+  @tag role: :admin
+  feature "rename company", ctx do
+    ctx
+    |> Steps.open_company_admins_page()
+    |> Steps.click_rename_company()
+    |> Steps.fill_in_new_company_name_and_submit()
+    |> Steps.assert_company_name_is_changed()
+    |> Steps.assert_company_name_is_changed_in_navbar()
+    |> Steps.assert_company_feed_shows_the_company_name_change()
   end
 
 end

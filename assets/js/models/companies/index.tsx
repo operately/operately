@@ -4,6 +4,7 @@ export type Company = api.Company;
 
 export {
   getCompany,
+  useEditCompany,
   useGetCompany,
   useAddCompanyTrustedEmailDomain,
   useRemoveCompanyTrustedEmailDomain,
