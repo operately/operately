@@ -61,6 +61,7 @@ export function createAppRoutes() {
         pageRoute("admin/manage-people/add", pages.CompanyAdminAddPeoplePage),
         pageRoute("admin/manage-trusted-email-domains", pages.CompanyAdminTrustedEmailDomainsPage),
         pageRoute("admin/permissions", pages.CompanyPermissionsPage),
+        pageRoute("admin/rename", pages.CompanyRenamePage),
 
         pageRoute("account", pages.AccountPage),
         pageRoute("account/appearance", pages.AccountAppearancePage),

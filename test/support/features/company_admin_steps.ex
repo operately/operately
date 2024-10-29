@@ -40,6 +40,12 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
   step :open_company_admins_page, ctx do
     ctx 
     |> UI.visit(Paths.company_admin_path(ctx.company))
+    |> UI.assert_has(testid: "company-admin-page")
+  end
+
+  step :open_manage_admins_page, ctx do
+    ctx 
+    |> UI.visit(Paths.company_admin_path(ctx.company))
     |> UI.click(testid: "manage-administrators-and-owners")
     |> UI.assert_has(testid: "manage-admins-page")
   end
@@ -225,7 +231,7 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
   end
 
   step :click_rename_company, ctx do
-    ctx |> UI.click(testid: "rename-company")
+    ctx |> UI.click(testid: "rename-the-company")
   end
 
   step :fill_in_new_company_name_and_submit, ctx do

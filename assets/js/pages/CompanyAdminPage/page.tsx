@@ -15,7 +15,7 @@ export function Page() {
   const { company } = useLoadedData();
 
   return (
-    <Pages.Page title={[company.name!, "Admininstration"]}>
+    <Pages.Page title={[company.name!, "Admininstration"]} testId="company-admin-page">
       <Paper.Root size="small">
         <NavigationBackToLobby />
 
@@ -54,6 +54,7 @@ function AdminsMenu() {
   const amIOwner = includesId(ownerIds, me!.id);
 
   const managePeople = Paths.companyManagePeoplePath();
+  const renameCompanyPath = Paths.companyRenamePath();
 
   let message = "";
 
@@ -73,7 +74,14 @@ function AdminsMenu() {
           disabled={!(amIAdmin || amIOwner)}
           linkTo={managePeople}
           icon={Icons.IconUsers}
-          title="Manage Team Members"
+          title="Manage team members"
+        />
+
+        <OptionsMenuItem
+          disabled={!(amIAdmin || amIOwner)}
+          linkTo={renameCompanyPath}
+          icon={Icons.IconLetterCase}
+          title="Rename the company"
         />
       </div>
     </div>
@@ -106,14 +114,14 @@ function OwnersMenu() {
           disabled={!amIOwner}
           linkTo={manageAdmins}
           icon={Icons.IconShieldLock}
-          title="Manage Administrators and Owners"
+          title="Manage administrators and owners"
         />
 
         <OptionsMenuItem
           disabled={!amIOwner}
           linkTo={manageTrustedDomains}
           icon={Icons.IconLock}
-          title="Manage Trusted Email Domains"
+          title="Manage trusted email domains"
         />
       </div>
     </div>

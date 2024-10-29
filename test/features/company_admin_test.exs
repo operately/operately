@@ -30,7 +30,7 @@ defmodule Operately.Features.CompanyAdminTest do
   feature "promote a person to admin", ctx do
     ctx
     |> Steps.given_a_company_member_exists("Michael Scott")
-    |> Steps.open_company_admins_page()
+    |> Steps.open_manage_admins_page()
     |> Steps.add_company_admin("Michael Scott")
     |> Steps.assert_person_is_admin("Michael Scott")
   end
@@ -39,7 +39,7 @@ defmodule Operately.Features.CompanyAdminTest do
   feature "demote a person from admin", ctx do
     ctx
     |> Steps.given_a_company_admin_exists("Michael Scott")
-    |> Steps.open_company_admins_page()
+    |> Steps.open_manage_admins_page()
     |> Steps.remove_company_admin("Michael Scott")
     |> Steps.refute_person_is_admin("Michael Scott")
   end
