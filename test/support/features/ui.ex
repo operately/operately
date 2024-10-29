@@ -417,4 +417,36 @@ defmodule Operately.Support.Features.UI do
       cb.(item, ctx)
     end)
   end
+
+  def select_day_in_datepicker(ctx, testid: testid, date: date) do
+    is_current_month = date.month == Date.utc_today().month
+    is_last_month = date.month == Date.utc_today().month - 1
+    is_next_month = date.month == Date.utc_today().month + 1
+
+    day = if date.day < 10 do 
+      "00#{date.day}"
+    else
+      "0#{date.day}"
+    end
+
+    ctx
+    |> click(testid: testid)
+    |> then(fn ctx ->
+      cond do
+        is_current_month ->
+          ctx
+          |> click(css: ".react-datepicker__day.react-datepicker__day--#{day}")
+
+        is_last_month ->
+          ctx
+          |> click(css: ".react-datepicker__navigation.react-datepicker__navigation--prev")
+          |> click(css: ".react-datepicker__day.react-datepicker__day--#{day}")
+
+        is_next_month ->
+          ctx
+          |> click(css: ".react-datepicker__navigation.react-datepicker__navigation--next")
+          |> click(css: ".react-datepicker__day.react-datepicker__day--#{day}")
+      end
+    end)
+  end
 end

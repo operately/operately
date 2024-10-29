@@ -23,16 +23,13 @@ defmodule Operately.Support.Features.ProjectTimelineSteps do
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
     |> UI.click(testid: "manage-timeline")
     |> UI.click(testid: "edit-timeline")
-    |> UI.click(testid: "project-start")
-    |> UI.click(css: ".react-datepicker__day.react-datepicker__day--0#{attrs.started_at.day}")
-    |> UI.click(testid: "project-due")
-    |> UI.click(css: ".react-datepicker__day.react-datepicker__day--0#{attrs.deadline.day}")
+    |> UI.select_day_in_datepicker(testid: "project-start", date: attrs.started_at)
+    |> UI.select_day_in_datepicker(testid: "project-due", date: attrs.deadline)
     |> UI.foreach(attrs.milestones, fn milestone, ctx ->
       ctx
       |> UI.click(testid: "add-milestone")
       |> UI.fill(testid: "new-milestone-title", with: milestone.title)
-      |> UI.click(testid: "new-milestone-due")
-      |> UI.click(css: ".react-datepicker__day.react-datepicker__day--0#{milestone.due_day.day}")
+      |> UI.select_day_in_datepicker(testid: "new-milestone-due", date: milestone.due_day)
       |> UI.click(testid: "save-milestone-button")
     end)
     |> UI.click(testid: "save-changes")
@@ -82,16 +79,13 @@ defmodule Operately.Support.Features.ProjectTimelineSteps do
   end
 
   step :when_i_add_a_milestone, ctx do
-    current_day = Date.utc_today().day
-
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
     |> UI.click(testid: "manage-timeline")
     |> UI.click(testid: "edit-timeline")
     |> UI.click(testid: "add-milestone")
     |> UI.fill(testid: "new-milestone-title", with: "Website Published")
-    |> UI.click(testid: "new-milestone-due")
-    |> UI.click(css: ".react-datepicker__day.react-datepicker__day--0#{current_day}")
+    |> UI.select_day_in_datepicker(testid: "new-milestone-due", date: Time.days_from_now(5))
     |> UI.click(testid: "save-milestone-button")
     |> UI.click(testid: "save-changes")
     |> UI.assert_has(testid: "project-timeline-page")
