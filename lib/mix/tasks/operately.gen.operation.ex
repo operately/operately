@@ -7,6 +7,7 @@ defmodule Mix.Tasks.Operately.Gen.Operation do
 
     ctx = initialize_context(resource, action, action_gerund)
 
+    IO.puts("")
     IO.puts("Generating operation: #{ctx.operation_module_name}")
     IO.puts("")
 
@@ -61,9 +62,9 @@ defmodule Mix.Tasks.Operately.Gen.Operation do
       activity_item_name: activity_item_name,
       activity_action_name: "#{resource}_#{action_gerund}",
       api_module_name: "#{Macro.camelize(action)}#{Macro.camelize(resource)}",
-      activity_schema_name: "#{Macro.camelize(resource)}#{Macro.camelize(action_gerund)}",
+      activity_schema_module_name: "#{Macro.camelize(resource)}#{Macro.camelize(action_gerund)}",
       email_handler_module_name: "#{Macro.camelize(resource)}#{Macro.camelize(action_gerund)}Email",
-      activity_item_module_name: "#{Macro.camelize(resource)}#{Macro.camelize(action_gerund)}",
+      activity_item_handler_name: "#{Macro.camelize(resource)}#{Macro.camelize(action_gerund)}",
 
       operation_file_path: "lib/operately/operations/#{resource}_#{action_gerund}.ex",
       api_mutation_file_path: "lib/operately_web/api/mutations/#{action}_#{resource}.ex",
