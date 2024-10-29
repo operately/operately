@@ -12,6 +12,7 @@ defmodule Mix.Operately do
 
   def generate_file!(path, generator) do
     IO.puts "#{IO.ANSI.green()}Generating#{IO.ANSI.reset()} #{path}"
+    File.mkdir_p!(Path.dirname(path))
     File.write!(path, generator.(path))
   end
 
