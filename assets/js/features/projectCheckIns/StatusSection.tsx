@@ -1,8 +1,8 @@
 import React from "react";
 
 import { ProjectCheckIn } from "@/models/projectCheckIns";
-import { Status } from "./Status";
 import { Person } from "@/models/people";
+import { Status } from "@/components/status";
 
 interface StatusSectionProps {
   checkIn: ProjectCheckIn;
