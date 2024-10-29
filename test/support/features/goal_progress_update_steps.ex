@@ -66,7 +66,7 @@ defmodule Operately.Support.Features.GoalProgressUpdateSteps do
     |> UI.fill_rich_text(params.message)
     |> UI.fill(testid: "target-first-response-time", with: to_string(Enum.at(params.target_values, 0)))
     |> UI.fill(testid: "target-increase-feedback-score-to-90-", with: to_string(Enum.at(params.target_values, 1)))
-    |> UI.click(testid: "submit-update")
+    |> UI.click(testid: "submit")
     |> UI.sleep(500)
   end
 
@@ -158,7 +158,7 @@ defmodule Operately.Support.Features.GoalProgressUpdateSteps do
     |> UI.click(testid: "options-button")
     |> UI.click(testid: "edit-update")
     |> UI.fill_rich_text(params.message)
-    |> UI.click(testid: "submit-update")
+    |> UI.click(testid: "submit")
   end
 
   step :assert_progress_update_edited, ctx, params do

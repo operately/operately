@@ -1,11 +1,12 @@
 import React from "react";
 
 import { Goal, Target } from "@/models/goals";
+import { Update } from "@/models/goalCheckIns";
 
 import Forms from "@/components/Forms";
 import { SubscribersSelector, useSubscriptions } from "@/features/Subscriptions";
 import { Spacer } from "@/components/Spacer";
-import { GoalProgressUpdate } from "@/api";
+import { createTestId } from "@/utils/testid";
 import { useForm } from "./useForm";
 
 export interface CreateProps {
@@ -14,7 +15,7 @@ export interface CreateProps {
 }
 export interface EditProps {
   goal: Goal;
-  update: GoalProgressUpdate;
+  update: Update;
   mode: "edit";
 }
 
@@ -71,7 +72,7 @@ function TargetInputs() {
                 </div>
               </div>
 
-              <Forms.TextInput field={`targets[${index}].value`} />
+              <Forms.TextInput field={`targets[${index}].value`} testId={createTestId("target", target.name!)} />
             </div>
           );
         })}
