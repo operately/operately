@@ -20,6 +20,7 @@ defmodule Mix.Tasks.Operately.Gen.Operation do
     IO.puts(" * Email Handler:        #{ctx.email_handler_file_path}")
     IO.puts(" * Email HTML Template:  #{ctx.email_html_template_file_path}")
     IO.puts(" * Email Text Template:  #{ctx.email_text_template_file_path}")
+    IO.puts(" * Serializer:           #{ctx.serializer_file_path}")
     IO.puts(" * Activity Item:        #{ctx.activity_item_file_path}")
 
     continue?()
@@ -47,6 +48,7 @@ defmodule Mix.Tasks.Operately.Gen.Operation do
     Mix.Tasks.Operation.GenEmailHandler.gen_html_template(ctx)
     Mix.Tasks.Operation.GenEmailHandler.gen_text_template(ctx)
     Mix.Tasks.Operation.GenActivityItem.gen(ctx)
+    Mix.Tasks.Operation.GenSerializer.gen(ctx)
   end
 
   defp initialize_context(resource, action, action_gerund) do
@@ -66,6 +68,7 @@ defmodule Mix.Tasks.Operately.Gen.Operation do
       email_handler_module_name: "#{Macro.camelize(resource)}#{Macro.camelize(action_gerund)}Email",
       activity_item_handler_name: "#{Macro.camelize(resource)}#{Macro.camelize(action_gerund)}",
 
+      serializer_file_path: "lib/operately_web/api/serializers/activity_content/#{resource}_#{action_gerund}.ex",
       operation_file_path: "lib/operately/operations/#{resource}_#{action_gerund}.ex",
       api_mutation_file_path: "lib/operately_web/api/mutations/#{action}_#{resource}.ex",
       activity_schema_file_path: "lib/operately/activities/content/#{resource}_#{action_gerund}.ex",
