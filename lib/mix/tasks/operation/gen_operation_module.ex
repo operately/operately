@@ -18,7 +18,7 @@ defmodule Mix.Tasks.Operation.GenOperationModule do
 
           Multi.new()
           |> Multi.insert(:something, ...)
-          |> Activities.insert_sync(author.id, :#{ctx.action_name}, fn changes ->
+          |> Activities.insert_sync(author.id, :#{ctx.activity_action_name}, fn changes ->
             %{
               #{Mix.Operately.indent(fields, 6)}
             }
