@@ -1,27 +1,29 @@
 import React from "react";
 
+import { InputField } from "./FieldGroup";
 import classNames from "classnames";
 
 import * as Icons from "@tabler/icons-react";
 import * as Popover from "@radix-ui/react-popover";
 import * as People from "@/models/people";
 
-import { StatusOptions } from ".";
-import { Status, Placeholder } from "./Status";
+import { Status, Placeholder, StatusOptions } from "@/components/status";
+import { useFieldError, useFieldValue } from "./FormContext";
 
-interface StatusDropdownProps {
-  status: StatusOptions | null;
+interface Props {
+  field: string;
   reviewer?: People.Person;
-  onStatusSelected: (status: string) => void;
-  error?: boolean;
 }
 
 const POSSIBLE_STATUSES: StatusOptions[] = ["on_track", "caution", "issue"];
 
-export function StatusDropdown({ status, onStatusSelected, reviewer, error }: StatusDropdownProps) {
+export function SelectStatus({ field, reviewer }: Props) {
   const ref = React.useRef<HTMLDivElement>(null);
   const [open, setOpen] = React.useState(false);
   const [width, setWidth] = React.useState(0);
+
+  const [value, setValue] = useFieldValue<StatusOptions>(field);
+  const error = useFieldError(field);
 
   const testId = "status-dropdown";
 
@@ -39,36 +41,38 @@ export function StatusDropdown({ status, onStatusSelected, reviewer, error }: St
     "border border-surface-outline mt-1 bg-surface-base z-[100] divide-y divide-stroke-base rounded shadow-lg overflow-hidden",
   );
 
-  const handleSelected = (status: string) => () => {
-    onStatusSelected(status);
+  const handleSelected = (status: StatusOptions) => () => {
+    setValue(status);
     setOpen(false);
   };
 
   return (
     <Popover.Root open={open} onOpenChange={setOpen}>
-      <Popover.Trigger asChild>
-        <div className={triggerClassName} ref={ref} data-test-id={testId}>
-          <StatusOrPlaceholder status={status} reviewer={reviewer} />
+      <InputField field={field} error={error}>
+        <Popover.Trigger asChild>
+          <div className={triggerClassName} ref={ref} data-test-id={testId}>
+            <StatusOrPlaceholder status={value} reviewer={reviewer} />
 
-          <div className="p-4">
-            <Icons.IconChevronDown size={24} />
+            <div className="p-4">
+              <Icons.IconChevronDown size={24} />
+            </div>
           </div>
-        </div>
-      </Popover.Trigger>
+        </Popover.Trigger>
 
-      <Popover.Portal>
-        <Popover.Content className={dropdownClassName} align="start" style={{ width }}>
-          {POSSIBLE_STATUSES.map((status) => (
-            <Status
-              key={status}
-              status={status}
-              selectable
-              onSelected={handleSelected(status)}
-              testId={`status-dropdown-${status}`}
-            />
-          ))}
-        </Popover.Content>
-      </Popover.Portal>
+        <Popover.Portal>
+          <Popover.Content className={dropdownClassName} align="start" style={{ width }}>
+            {POSSIBLE_STATUSES.map((status) => (
+              <Status
+                key={status}
+                status={status}
+                selectable
+                onSelected={handleSelected(status)}
+                testId={`status-dropdown-${status}`}
+              />
+            ))}
+          </Popover.Content>
+        </Popover.Portal>
+      </InputField>
     </Popover.Root>
   );
 }

@@ -2,10 +2,11 @@ import * as React from "react";
 import * as People from "@/models/people";
 
 import classNames from "classnames";
+import { ColorOptions, StatusOptions } from ".";
 import { COLORS, TITLES, CIRCLE_BORDER_COLORS, CIRCLE_BACKGROUND_COLORS } from "./constants";
 
 interface StatusProps {
-  status: string;
+  status: StatusOptions;
   reviewer?: People.Person | null;
   selectable?: boolean;
   onSelected?: () => void;
@@ -13,7 +14,7 @@ interface StatusProps {
 }
 
 export function Status({ status, reviewer, selectable, onSelected, testId }: StatusProps) {
-  const color = COLORS[status];
+  const color = COLORS[status] as ColorOptions;
   const title = TITLES[status];
   const description = <StatusDescription status={status} reviewer={reviewer} />;
 
@@ -46,7 +47,7 @@ export function Placeholder() {
   );
 }
 
-function StatusDescription({ status, reviewer }: { status: string; reviewer?: People.Person | null }) {
+function StatusDescription({ status, reviewer }: { status: StatusOptions; reviewer?: People.Person | null }) {
   const reviewerMention = reviewer ? People.firstName(reviewer) : "the reviewer";
 
   switch (status) {
@@ -80,7 +81,7 @@ function StatusDescription({ status, reviewer }: { status: string; reviewer?: Pe
   }
 }
 
-function Circle({ color }: { color: "green" | "yellow" | "red" }) {
+function Circle({ color }: { color: ColorOptions }) {
   const borderColor = CIRCLE_BORDER_COLORS[color];
   const backgroundColor = CIRCLE_BACKGROUND_COLORS[color];
 
