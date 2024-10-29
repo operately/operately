@@ -5,7 +5,8 @@ import * as TipTapEditor from "@/components/Editor";
 import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
 import { FormState } from "./useForm";
 import { SubscribersSelector } from "@/features/Subscriptions";
-import { StatusDropdown } from "../StatusDropdown";
+import { StatusDropdown } from "@/components/status";
+
 import classNames from "classnames";
 import { Spacer } from "@/components/Spacer";
 
