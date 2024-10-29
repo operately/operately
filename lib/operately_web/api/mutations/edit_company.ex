@@ -2,34 +2,46 @@ defmodule OperatelyWeb.Api.Mutations.EditCompany do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
+  alias Operately.Companies.Company
+  alias Operately.Companies.Permissions
+  alias Operately.Operations.CompanyEditing
+
   inputs do
-    field company_id, :string
-    field old_name, :string
-    field new_name, :string
+    field :name, :string
   end
 
   outputs do
-    field :something, :something  # TODO
+    field :company, :company
   end
 
   def run(conn, inputs) do
-    Action.new()
-    |> run(:me, fn -> find_me(conn) end)
-    |> run(:attrs, fn -> decode_inputs(inputs) end)
-    # TODO: check permissions
-    |> run(:operation, fn ctx -> CompanyEditing.run(ctx.me, ctx.attrs) end)
-    |> run(:serialized, fn ctx -> {:ok, %{something: Serializer.serialize(ctx.operation, level: :essential)}} end)
-    |> respond()
+    me = find_me(conn) |> unwrap()
+    company = Company.get!(me, id: me.company_id) |> unwrap()
+
+    authorize(company, :edit)
+    
+    company = CompanyEditing.run(me, inputs.name) |> unwrap()
+    serialized = Serializer.serialize(company, level: :essential)
+
+    {:ok, %{company: serialized}}
+  catch
+    {:error, :forbidden} -> {:error, :forbidden}
+    {:error, :not_found} -> {:error, :not_found}
+    {:error, _} -> {:error, :internal_server_error}
   end
 
-  defp respond(result) do
-    case result do
-      {:ok, ctx} -> {:ok, ctx.serialized}
-      {:error, :attrs, _} -> {:error, :bad_request}
-      {:error, :space, _} -> {:error, :not_found}
-      {:error, :check_permissions, _} -> {:error, :forbidden}
-      {:error, :operation, _} -> {:error, :internal_server_error}
-      _ -> {:error, :internal_server_error}
+  defp authorize(company, action) do
+    access_level = company.request_info.access_level
+
+    case Permissions.check(access_level, action) do
+      {:ok, :allowed} -> :ok
+      {:error, _} -> throw {:error, :forbidden}
     end
   end
+
+  defp unwrap({:ok, value}), do: value
+  defp unwrap({:error, :not_found}), do: throw {:error, :not_found}
+  defp unwrap({:error, :forbidden}), do: throw {:error, :forbidden}
+  defp unwrap({:error, _}), do: throw {:error, :internal_server_error}
+
 end

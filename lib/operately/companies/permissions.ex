@@ -8,10 +8,12 @@ defmodule Operately.Companies.Permissions do
     :can_create_space,
     :can_manage_admins,
     :can_manage_owners,
+    :can_edit_details,
   ]
 
   def calculate(access_level) when is_number(access_level) do
     %__MODULE__{
+      can_edit_details: access_level >= Binding.edit_access(),
       can_invite_members: access_level >= Binding.edit_access(),
       can_remove_members: access_level >= Binding.edit_access(),
       can_create_space: access_level >= Binding.view_access(),
