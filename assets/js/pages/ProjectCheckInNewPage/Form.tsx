@@ -80,7 +80,7 @@ function StatusSection() {
     <div className="mt-8 mb-4">
       <div className="text-lg font-bold mb-2">1. How's the project going?</div>
 
-      <Forms.SelectStatus field="status" />
+      <Forms.SelectStatus field="status" options={["on_track", "caution", "issue"]} />
     </div>
   );
 }
