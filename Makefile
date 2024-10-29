@@ -20,12 +20,10 @@ gen.migration:
 	./devenv mix ecto.gen.migration $(NAME)
 
 gen.page:
-	./devenv mix operately.gen.page $(NAME)
-	$(MAKE) gen
+	./devenv mix operately.gen.page $(NAME) && $(MAKE) gen
 
-gen.activity:
-	./devenv mix operately.gen.activity.type $(NAME) $(FIELDS)
-	$(MAKE) gen
+gen.operation:
+	./devenv bash -c "ERL_FLAGS=+B mix operately.gen.operation"
 
 js.fmt.fix:
 	./devenv bash -c "cd assets && npx prettier --write js"
