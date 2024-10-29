@@ -224,4 +224,26 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
     UI.refute_text(ctx, "Reach out to an admin if you need to:")
   end
 
+  step :click_rename_company, ctx do
+    ctx |> UI.click(testid: "rename-company")
+  end
+
+  step :fill_in_new_company_name_and_submit, ctx do
+    ctx |> UI.fill(testid: "name", with: "Dunder Mifflin Paper Company")
+  end
+
+  step :assert_company_name_is_changed, ctx do
+    company = Operately.Companies.get_company!(ctx.company.id)
+
+    assert company.name == "Dunder Mifflin Paper Company"
+
+    ctx
+  end
+
+  step :assert_company_feed_shows_the_company_name_change, ctx do
+    ctx 
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.assert_feed_item(ctx.creator, "changed the company name to Dunder Mifflin Paper Company")
+  end
+
 end

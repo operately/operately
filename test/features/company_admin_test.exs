@@ -107,4 +107,14 @@ defmodule Operately.Features.CompanyAdminTest do
     |> Steps.assert_i_dont_see_reach_out_to_owners()
   end
 
+  @tag role: :admin
+  feature "rename company", ctx do
+    ctx
+    |> Steps.open_company_admins_page()
+    |> Steps.click_rename_company()
+    |> Steps.fill_in_new_company_name_and_submit()
+    |> Steps.assert_company_name_is_changed()
+    |> Steps.assert_company_feed_shows_the_company_name_change()
+  end
+
 end
