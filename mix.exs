@@ -66,6 +66,7 @@ defmodule Operately.MixProject do
       {:wallaby, "~> 0.30.9", runtime: false, only: :test},
       {:junit_formatter, "~> 3.1", only: [:test]},
       {:floki, ">= 0.36.0", only: :test},
+      {:mock, "~> 0.3.0", only: :test}
     ]
   end
 
