@@ -66,7 +66,7 @@ defmodule Mix.Tasks.Operately.Gen.Operation do
       activity_item_module_name: "#{Macro.camelize(resource)}#{Macro.camelize(action_gerund)}",
 
       operation_file_path: "lib/operately/operations/#{resource}_#{action_gerund}.ex",
-      api_mutation_file_path: "lib/opertely_web/api/mutations/#{action}_#{resource}.ex",
+      api_mutation_file_path: "lib/operately_web/api/mutations/#{action}_#{resource}.ex",
       activity_schema_file_path: "lib/operately/activities/content/#{resource}_#{action_gerund}.ex",
       notification_handler_file_path: "lib/operately/activities/notifications/#{resource}_#{action_gerund}.ex",
       email_handler_file_path: "lib/operately_email/emails/#{resource}_#{action_gerund}_email.ex",
