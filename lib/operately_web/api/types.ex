@@ -56,6 +56,13 @@ defmodule OperatelyWeb.Api.Types do
     field :check_in, :project_check_in
   end
 
+  object :activity_content_company_editing do
+    field :company_id, :string
+    field :company, :company
+    field :new_name, :string
+    field :old_name, :string
+  end
+
   object :review_assignment do
     field :id, :string
     field :name, :string
@@ -305,6 +312,7 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   union :activity_content, types: [
+    :activity_content_company_editing,
     :activity_content_comment_added,
     :activity_content_discussion_comment_submitted,
     :activity_content_discussion_editing,

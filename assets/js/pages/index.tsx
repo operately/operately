@@ -11,6 +11,7 @@ import * as CompanyAdminManagePeoplePage from "./CompanyAdminManagePeoplePage";
 import * as CompanyAdminPage from "./CompanyAdminPage";
 import * as CompanyAdminTrustedEmailDomainsPage from "./CompanyAdminTrustedEmailDomainsPage";
 import * as CompanyPermissionsPage from "./CompanyPermissionsPage";
+import * as CompanyRenamePage from "./CompanyRenamePage";
 import * as DesignPage from "./DesignPage";
 import * as DiscussionEditPage from "./DiscussionEditPage";
 import * as DiscussionNewPage from "./DiscussionNewPage";
@@ -131,6 +132,11 @@ export default {
     name: "CompanyPermissionsPage",
     loader: CompanyPermissionsPage.loader,
     Page: CompanyPermissionsPage.Page,
+  },
+  CompanyRenamePage: {
+    name: "CompanyRenamePage",
+    loader: CompanyRenamePage.loader,
+    Page: CompanyRenamePage.Page,
   },
   DesignPage: {
     name: "DesignPage",

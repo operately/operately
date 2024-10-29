@@ -64,6 +64,7 @@ const ActivityHandler: interfaces.ActivityHandler = {
 export default ActivityHandler;
 
 export const DISPLAYED_IN_FEED = [
+  "company_editing",
   "comment_added",
   "company_admin_added",
   "company_admin_removed",
@@ -151,9 +152,11 @@ import SpaceAdded from "@/features/activities/SpaceAdded";
 import SpaceJoining from "@/features/activities/SpaceJoining";
 import SpaceMemberRemoved from "@/features/activities/SpaceMemberRemoved";
 import SpaceMembersAdded from "@/features/activities/SpaceMembersAdded";
+import CompanyEditing from "@/features/activities/CompanyEditing";
 
 function handler(activity: Activity) {
   return match(activity.action)
+    .with("company_editing", () => CompanyEditing)
     .with("comment_added", () => CommentAdded)
     .with("company_admin_added", () => CompanyAdminAdded)
     .with("company_admin_removed", () => CompanyAdminRemoved)

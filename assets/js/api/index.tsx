@@ -160,6 +160,13 @@ export interface ActivityContentCompanyAdminRemoved {
   person?: Person | null;
 }
 
+export interface ActivityContentCompanyEditing {
+  companyId?: string | null;
+  company?: Company | null;
+  newName?: string | null;
+  oldName?: string | null;
+}
+
 export interface ActivityContentDiscussionCommentSubmitted {
   spaceId?: string | null;
   discussionId?: string | null;
@@ -1151,6 +1158,7 @@ export interface UpdateTargetInput {
 }
 
 export type ActivityContent =
+  | ActivityContentCompanyEditing
   | ActivityContentCommentAdded
   | ActivityContentDiscussionCommentSubmitted
   | ActivityContentDiscussionEditing
@@ -1917,6 +1925,14 @@ export interface EditCommentResult {
   comment?: Comment | null;
 }
 
+export interface EditCompanyInput {
+  name?: string | null;
+}
+
+export interface EditCompanyResult {
+  company?: Company | null;
+}
+
 export interface EditDiscussionInput {
   discussionId?: string | null;
   title?: string | null;
@@ -2633,6 +2649,10 @@ export class ApiClient {
     return this.post("/edit_comment", input);
   }
 
+  async editCompany(input: EditCompanyInput): Promise<EditCompanyResult> {
+    return this.post("/edit_company", input);
+  }
+
   async editDiscussion(input: EditDiscussionInput): Promise<EditDiscussionResult> {
     return this.post("/edit_discussion", input);
   }
@@ -3034,6 +3054,9 @@ export async function disconnectGoalFromProject(
 }
 export async function editComment(input: EditCommentInput): Promise<EditCommentResult> {
   return defaultApiClient.editComment(input);
+}
+export async function editCompany(input: EditCompanyInput): Promise<EditCompanyResult> {
+  return defaultApiClient.editCompany(input);
 }
 export async function editDiscussion(input: EditDiscussionInput): Promise<EditDiscussionResult> {
   return defaultApiClient.editDiscussion(input);
@@ -3525,6 +3548,10 @@ export function useEditComment(): UseMutationHookResult<EditCommentInput, EditCo
   return useMutation<EditCommentInput, EditCommentResult>((input) => defaultApiClient.editComment(input));
 }
 
+export function useEditCompany(): UseMutationHookResult<EditCompanyInput, EditCompanyResult> {
+  return useMutation<EditCompanyInput, EditCompanyResult>((input) => defaultApiClient.editCompany(input));
+}
+
 export function useEditDiscussion(): UseMutationHookResult<EditDiscussionInput, EditDiscussionResult> {
   return useMutation<EditDiscussionInput, EditDiscussionResult>((input) => defaultApiClient.editDiscussion(input));
 }
@@ -3962,6 +3989,8 @@ export default {
   useDisconnectGoalFromProject,
   editComment,
   useEditComment,
+  editCompany,
+  useEditCompany,
   editDiscussion,
   useEditDiscussion,
   editGoal,

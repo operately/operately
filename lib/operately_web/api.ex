@@ -77,7 +77,7 @@ defmodule OperatelyWeb.Api do
   mutation :create_project, M.CreateProject
   mutation :create_task, M.CreateTask
 
-  mutation :disconnect_goal_from_project, M.DisconnectGoalFromProject
+  mutation :edit_company, M.EditCompany
   mutation :edit_comment, M.EditComment
   mutation :edit_discussion, M.EditDiscussion
   mutation :edit_goal, M.EditGoal
@@ -94,6 +94,8 @@ defmodule OperatelyWeb.Api do
   mutation :edit_space_members_permissions, M.EditSpaceMembersPermissions
   mutation :edit_space_permissions, M.EditSpacePermissions
   mutation :edit_subscriptions_list, M.EditSubscriptionsList
+
+  mutation :disconnect_goal_from_project, M.DisconnectGoalFromProject
   mutation :join_space, M.JoinSpace
   mutation :join_company, M.JoinCompany
   mutation :mark_all_notifications_as_read, M.MarkAllNotificationsAsRead

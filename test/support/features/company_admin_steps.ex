@@ -40,6 +40,12 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
   step :open_company_admins_page, ctx do
     ctx 
     |> UI.visit(Paths.company_admin_path(ctx.company))
+    |> UI.assert_has(testid: "company-admin-page")
+  end
+
+  step :open_manage_admins_page, ctx do
+    ctx 
+    |> UI.visit(Paths.company_admin_path(ctx.company))
     |> UI.click(testid: "manage-administrators-and-owners")
     |> UI.assert_has(testid: "manage-admins-page")
   end
@@ -222,6 +228,38 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
 
   step :assert_i_dont_see_reach_out_to_owners, ctx do
     UI.refute_text(ctx, "Reach out to an admin if you need to:")
+  end
+
+  step :click_rename_company, ctx do
+    ctx |> UI.click(testid: "rename-the-company")
+  end
+
+  step :fill_in_new_company_name_and_submit, ctx do
+    ctx 
+    |> UI.fill(testid: "name", with: "Dunder")
+    |> UI.click(testid: "submit")
+    |> UI.assert_has(testid: "company-admin-page")
+    |> UI.take_screenshot()
+  end
+
+  step :assert_company_name_is_changed_in_navbar, ctx do
+    UI.find(ctx, UI.query(testid: "company-dropdown"), fn el -> 
+      UI.assert_text(el, "Dunder")
+    end)
+  end
+
+  step :assert_company_name_is_changed, ctx do
+    company = Operately.Companies.get_company!(ctx.company.id)
+
+    assert company.name == "Dunder"
+
+    ctx
+  end
+
+  step :assert_company_feed_shows_the_company_name_change, ctx do
+    ctx 
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.assert_feed_item(ctx.owner, "renamed the company to Dunder")
   end
 
 end
