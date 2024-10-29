@@ -2,9 +2,9 @@ defmodule Operately.Activities.Content.CompanyEditing do
   use Operately.Activities.Content
 
   embedded_schema do
-    field :company_id, :string},
-    field :old_name, :string},
-    field :new_name, :string}
+    field :company_id, :string
+    field :old_name, :string
+    field :new_name, :string
   end
 
   def changeset(attrs) do

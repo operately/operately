@@ -1,4 +1,4 @@
-import * as People from "@/models/people";
+import { feedTitle } from "../feedItemLinks";
 
 import type { Activity } from "@/models/activities";
 import type { ActivityContentCompanyEditing } from "@/api";
@@ -25,8 +25,8 @@ const CompanyEditing: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle(_props: { activity: Activity }) {
-    return null;
+  FeedItemTitle({ activity }: { activity: Activity }) {
+    return feedTitle(activity, "renamed the company to", content(activity).newName!);
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {
@@ -46,7 +46,7 @@ const CompanyEditing: ActivityHandler = {
   },
 
   NotificationTitle(_props: { activity: Activity }) {
-    return null;
+    throw new Error("Not implemented");
   },
 
   NotificationLocation(_props: { activity: Activity }) {
@@ -55,7 +55,7 @@ const CompanyEditing: ActivityHandler = {
 };
 
 function content(activity: Activity): ActivityContentCompanyEditing {
-  return activity.content as CompanyEditing;
+  return activity.content as ActivityContentCompanyEditing;
 }
 
 export default CompanyEditing;

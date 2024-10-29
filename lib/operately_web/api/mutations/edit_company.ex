@@ -14,13 +14,13 @@ defmodule OperatelyWeb.Api.Mutations.EditCompany do
     field :company, :company
   end
 
-  def run(conn, inputs) do
+  def call(conn, inputs) do
     me = find_me(conn) |> unwrap()
-    company = Company.get!(me, id: me.company_id) |> unwrap()
+    company = Company.get(me, id: me.company_id) |> unwrap()
 
-    authorize(company, :edit)
+    authorize(company, :can_edit_details)
     
-    company = CompanyEditing.run(me, inputs.name) |> unwrap()
+    company = CompanyEditing.run(me, company, inputs.name) |> unwrap()
     serialized = Serializer.serialize(company, level: :essential)
 
     {:ok, %{company: serialized}}

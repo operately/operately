@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.EditDiscussionTest do
+defmodule OperatelyWeb.Api.Mutations.EditCompanyTest do
   use OperatelyWeb.TurboCase
 
   describe "security" do

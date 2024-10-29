@@ -127,10 +127,6 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
     }
   end
 
-  def serialize_content("goal_check_in_commented", content) do
-    OperatelyWeb.Api.Serializer.serialize(content)
-  end
-
   def serialize_content("goal_check_in_edit", _content) do
     %{}
   end
@@ -211,10 +207,6 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
     }
   end
 
-  def serialize_content("project_retrospective_commented", content) do
-    OperatelyWeb.Api.Serializer.serialize(content)
-  end
-
   def serialize_content("project_check_in_acknowledged", content) do
     %{
       project_id: OperatelyWeb.Paths.project_id(content["project"]),
@@ -249,18 +241,6 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
     }
   end
 
-  def serialize_content("project_contributor_addition", content) do
-    OperatelyWeb.Api.Serializer.serialize(content)
-  end
-
-  def serialize_content("project_contributors_addition", content) do
-    OperatelyWeb.Api.Serializer.serialize(content)
-  end
-
-  def serialize_content("project_contributor_edited", content) do
-    OperatelyWeb.Api.Serializer.serialize(content)
-  end
-
   def serialize_content("project_contributor_removed", content) do
     %{
       person: Serializer.serialize(content["person"], level: :essential),
@@ -272,10 +252,6 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
     %{
       project: Serializer.serialize(content["project"], level: :essential)
     }
-  end
-
-  def serialize_content("project_discusssion_submitted", _content) do
-    raise "not implemented"
   end
 
   def serialize_content("project_goal_connection", content) do
@@ -290,10 +266,6 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
       project: Serializer.serialize(content["project"], level: :essential),
       goal: serialize_goal(content["goal"])
     }
-  end
-
-  def serialize_content("project_milestone_commented", content) do
-    OperatelyWeb.Api.Serializer.serialize(content)
   end
 
   def serialize_content("project_moved", content) do
@@ -334,14 +306,6 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
       new_milestones: Serializer.serialize(content.new_milestones),
       updated_milestones: Serializer.serialize(content.milestone_updates)
     }
-  end
-
-  def serialize_content("space_added", content) do
-    OperatelyWeb.Api.Serializer.serialize(content)
-  end
-
-  def serialize_content("space_joining", content) do
-    OperatelyWeb.Api.Serializer.serialize(content)
   end
 
   def serialize_content("space_member_removed", content) do
@@ -396,6 +360,10 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
 
   def serialize_content("task_update", _content) do
     %{}
+  end
+
+  def serialize_content(_, content) do
+    OperatelyWeb.Api.Serializer.serialize(content)
   end
 
   #

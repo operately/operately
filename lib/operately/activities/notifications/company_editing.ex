@@ -1,7 +1,6 @@
-defmodule Operately.Operations.CompanyEditing do
-  alias Operately.Goals.Notifications
-
-  def dispatch(activity) do
-    Operately.Notifications.bulk_create(...)
+defmodule Operately.Activities.Notifications.CompanyEditing do
+  def dispatch(_activity) do
+    # no notifications for company editing
+    {:ok, nil}
   end
 end

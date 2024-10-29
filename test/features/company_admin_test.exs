@@ -114,6 +114,7 @@ defmodule Operately.Features.CompanyAdminTest do
     |> Steps.click_rename_company()
     |> Steps.fill_in_new_company_name_and_submit()
     |> Steps.assert_company_name_is_changed()
+    |> Steps.assert_company_name_is_changed_in_navbar()
     |> Steps.assert_company_feed_shows_the_company_name_change()
   end
 

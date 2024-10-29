@@ -235,13 +235,23 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
   end
 
   step :fill_in_new_company_name_and_submit, ctx do
-    ctx |> UI.fill(testid: "name", with: "Dunder Mifflin Paper Company")
+    ctx 
+    |> UI.fill(testid: "name", with: "Dunder")
+    |> UI.click(testid: "submit")
+    |> UI.assert_has(testid: "company-admin-page")
+    |> UI.take_screenshot()
+  end
+
+  step :assert_company_name_is_changed_in_navbar, ctx do
+    UI.find(ctx, UI.query(testid: "company-dropdown"), fn el -> 
+      UI.assert_text(el, "Dunder")
+    end)
   end
 
   step :assert_company_name_is_changed, ctx do
     company = Operately.Companies.get_company!(ctx.company.id)
 
-    assert company.name == "Dunder Mifflin Paper Company"
+    assert company.name == "Dunder"
 
     ctx
   end
@@ -249,7 +259,7 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
   step :assert_company_feed_shows_the_company_name_change, ctx do
     ctx 
     |> UI.visit(Paths.feed_path(ctx.company))
-    |> UI.assert_feed_item(ctx.creator, "changed the company name to Dunder Mifflin Paper Company")
+    |> UI.assert_feed_item(ctx.owner, "renamed the company to Dunder")
   end
 
 end
