@@ -60,7 +60,7 @@ defmodule Mix.Tasks.Operation.GenActivityItem do
       };
 
       function content(activity: Activity): ActivityContent#{ctx.activity_item_handler_name} {
-        return activity.content as #{ctx.activity_item_handler_name};
+        return activity.content as ActivityContent#{ctx.activity_item_handler_name};
       }
 
       export default #{ctx.activity_item_handler_name};

@@ -3,7 +3,7 @@ defmodule Mix.Tasks.Operation.GenApiMutation do
   def gen(ctx) do
     fields = 
       ctx.activity_fields 
-      |> Enum.map(fn {name, type} -> "field #{name}, :#{type}" end)
+      |> Enum.map(fn {name, type} -> "field :#{name}, :#{type}" end)
       |> Enum.join("\n")
 
     Mix.Operately.generate_file(ctx.api_mutation_file_path, fn _ ->
@@ -11,6 +11,8 @@ defmodule Mix.Tasks.Operation.GenApiMutation do
       defmodule OperatelyWeb.Api.Mutations.#{ctx.api_module_name} do
         use TurboConnect.Mutation
         use OperatelyWeb.Api.Helpers
+
+        alias Operately.Operation.#{ctx.operation_module_name}
 
         inputs do
           #{Mix.Operately.indent(fields, 4)}
@@ -24,7 +26,6 @@ defmodule Mix.Tasks.Operation.GenApiMutation do
           Action.new()
           |> run(:me, fn -> find_me(conn) end)
           |> run(:attrs, fn -> decode_inputs(inputs) end)
-          # TODO: check permissions
           |> run(:operation, fn ctx -> #{ctx.operation_module_name}.run(ctx.me, ctx.attrs) end)
           |> run(:serialized, fn ctx -> {:ok, %{something: Serializer.serialize(ctx.operation, level: :essential)}} end)
           |> respond()
