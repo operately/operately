@@ -75,6 +75,8 @@ function StatusDescription({ status, reviewer }: { status: StatusOptions; review
           <span className="capitalize">{reviewerMention}</span>’s involvement is necessary.
         </>
       );
+    case "pending":
+      return <>Work on this goal hasn't started yet.</>;
 
     default:
       throw new Error(`Unknown status: ${status}`);

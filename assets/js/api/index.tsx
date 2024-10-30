@@ -707,6 +707,7 @@ export interface GoalPermissions {
 
 export interface GoalProgressUpdate {
   id?: string | null;
+  status?: string | null;
   message?: string | null;
   insertedAt?: string | null;
   author?: Person | null;
@@ -1971,6 +1972,7 @@ export interface EditGoalDiscussionResult {}
 
 export interface EditGoalProgressUpdateInput {
   id?: string | null;
+  status?: string | null;
   content?: string | null;
   newTargetValues?: string | null;
 }
@@ -2153,6 +2155,7 @@ export interface PostDiscussionResult {
 }
 
 export interface PostGoalProgressUpdateInput {
+  status?: string | null;
   content?: string | null;
   goalId?: string | null;
   newTargetValues?: string | null;

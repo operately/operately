@@ -34,6 +34,7 @@ defmodule Operately.Operations.GoalCheckInTest do
     {:ok, update} = Oban.Testing.with_testing_mode(:manual, fn ->
       Operately.Operations.GoalCheckIn.run(ctx.champion, ctx.goal,%{
         goal_id: ctx.goal.id,
+        status: "on_track",
         target_values: [],
         content: RichText.rich_text("Some content"),
         send_to_everyone: true,
@@ -65,6 +66,7 @@ defmodule Operately.Operations.GoalCheckInTest do
     {:ok, update} = Oban.Testing.with_testing_mode(:manual, fn ->
       Operately.Operations.GoalCheckIn.run(ctx.champion, ctx.goal,%{
         goal_id: ctx.goal.id,
+        status: "caution",
         target_values: [],
         content: RichText.rich_text("Some content"),
         send_to_everyone: false,
@@ -92,6 +94,7 @@ defmodule Operately.Operations.GoalCheckInTest do
 
     {:ok, update} = Operately.Operations.GoalCheckIn.run(ctx.champion, ctx.goal,%{
       goal_id: ctx.goal.id,
+      status: "issue",
       target_values: [],
       content: content,
       send_to_everyone: true,
@@ -112,6 +115,7 @@ defmodule Operately.Operations.GoalCheckInTest do
 
     {:ok, update} = Operately.Operations.GoalCheckIn.run(ctx.champion, ctx.goal,%{
       goal_id: ctx.goal.id,
+      status: "issue",
       target_values: [],
       content: content,
       send_to_everyone: true,

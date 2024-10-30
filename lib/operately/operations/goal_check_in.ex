@@ -15,6 +15,7 @@ defmodule Operately.Operations.GoalCheckIn do
       Update.changeset(%{
         goal_id: goal.id,
         author_id: author.id,
+        status: attrs.status,
         message: attrs.content,
         targets: encoded_new_target_values,
         subscription_list_id: changes.subscription_list.id,
