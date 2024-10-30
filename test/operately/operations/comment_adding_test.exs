@@ -138,6 +138,7 @@ defmodule Operately.Operations.CommentAddingTest do
 
     test "Commenting on update notifies everyone", ctx do
       {:ok, update} = GoalCheckIn.run(ctx.champion, ctx.goal,%{
+        status: "on_track",
         goal_id: ctx.goal.id,
         target_values: [],
         content: RichText.rich_text("Some content"),
@@ -170,6 +171,7 @@ defmodule Operately.Operations.CommentAddingTest do
     test "Commenting on update notifies selected people", ctx do
       {:ok, update} = GoalCheckIn.run(ctx.creator, ctx.goal,%{
         goal_id: ctx.goal.id,
+        status: "on_track",
         target_values: [],
         content: RichText.rich_text("Some content"),
         send_to_everyone: false,
@@ -200,6 +202,7 @@ defmodule Operately.Operations.CommentAddingTest do
     test "Mentioned person is notified", ctx do
       {:ok, update} = GoalCheckIn.run(ctx.champion, ctx.goal,%{
         goal_id: ctx.goal.id,
+        status: "on_track",
         target_values: [],
         content: RichText.rich_text("Some content"),
         send_to_everyone: false,

@@ -4,6 +4,7 @@ export const COLORS = {
   issue: "red",
   paused: "gray",
   outdated: "gray",
+  pending: "gray",
 };
 
 export const TITLES = {
@@ -12,6 +13,7 @@ export const TITLES = {
   issue: "Issue",
   paused: "Paused",
   outdated: "Outdated",
+  pending: "Pending",
 };
 
 export const CIRCLE_BORDER_COLORS = {

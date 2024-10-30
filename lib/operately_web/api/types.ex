@@ -1098,6 +1098,7 @@ defmodule OperatelyWeb.Api.Types do
 
   object :goal_progress_update do
     field :id, :string
+    field :status, :string
     field :message, :string
     field :inserted_at, :datetime
     field :author, :person
