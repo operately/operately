@@ -23,6 +23,7 @@ defmodule Operately.Data.Change037AddSpaceToGoalUpdateActivitiesTest do
       updates = Enum.map(1..3, fn _ ->
         {:ok, update} = Operately.Operations.GoalCheckIn.run(ctx.creator, ctx.goal, %{
           goal_id: ctx.goal.id,
+          status: "on_track",
           target_values: [],
           content: RichText.rich_text("content"),
           send_to_everyone: false,

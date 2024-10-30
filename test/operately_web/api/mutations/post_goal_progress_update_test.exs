@@ -45,6 +45,7 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdateTest do
 
         assert {code, res} = mutation(ctx.conn, :post_goal_progress_update, %{
           goal_id: Paths.goal_id(goal),
+          status: "on_track",
           content: RichText.rich_text("Content", :as_string),
           new_target_values: new_target_values(goal),
         })
@@ -73,6 +74,7 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdateTest do
 
       assert {200, res} = mutation(ctx.conn, :post_goal_progress_update, %{
         goal_id: Paths.goal_id(ctx.goal),
+        status: "caution",
         content: RichText.rich_text("Content", :as_string),
         new_target_values: new_target_values(ctx.goal),
       })
@@ -98,6 +100,7 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdateTest do
     test "creates subscription list for goal update", ctx do
       assert {200, res} = mutation(ctx.conn, :post_goal_progress_update, %{
         goal_id: Paths.goal_id(ctx.goal),
+        status: "issue",
         content: RichText.rich_text("Content", :as_string),
         new_target_values: new_target_values(ctx.goal),
         send_notifications_to_everyone: true,
@@ -125,6 +128,7 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdateTest do
 
       assert {200, res} = mutation(ctx.conn, :post_goal_progress_update, %{
         goal_id: Paths.goal_id(ctx.goal),
+        status: "pending",
         content: content,
         new_target_values: new_target_values(ctx.goal),
         send_notifications_to_everyone: false,
@@ -146,6 +150,7 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdateTest do
 
       assert {200, res} = mutation(ctx.conn, :post_goal_progress_update, %{
         goal_id: Paths.goal_id(ctx.goal),
+        status: "caution",
         content: content,
         new_target_values: new_target_values(ctx.goal),
         send_notifications_to_everyone: true,

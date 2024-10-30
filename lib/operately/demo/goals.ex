@@ -62,6 +62,7 @@ defmodule Operately.Demo.Goals do
     end)
 
     {:ok, _} = Operately.Operations.GoalCheckIn.run(goal.champion, goal, %{
+      status: "on_track",
       content: Operately.Demo.RichText.from_string(data.content),
       target_values: target_values,
       subscription_parent_type: :goal_update,
@@ -81,7 +82,7 @@ defmodule Operately.Demo.Goals do
   defp create_timeframe(:current_quarter) do
     {year, month, _day} = Date.to_erl(Date.utc_today())
 
-    {start_month, end_month} = 
+    {start_month, end_month} =
       case month do
         1 -> {1, 3}
         2 -> {1, 3}

@@ -7,6 +7,7 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalProgressUpdate do
 
   inputs do
     field :id, :string
+    field :status, :string
     field :content, :string
     field :new_target_values, :string
   end
@@ -41,6 +42,7 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalProgressUpdate do
 
   defp parse_inputs(inputs) do
     {:ok, %{
+      status: inputs.status,
       content: Jason.decode!(inputs.content),
       new_target_values: Jason.decode!(inputs.new_target_values),
     }}
