@@ -35,8 +35,8 @@ export function Page() {
 
 function Header({ form }: { form: FormState }) {
   return (
-    <div className="">
-      <Paper.Header className="bg-surface-dimmed">
+    <div>
+      <Paper.Banner className="justify-between py-4">
         <div className="flex items-end justify-between my-2">
           <h1 className="text-xl font-extrabold">Editing the project timeline</h1>
 
@@ -52,7 +52,7 @@ function Header({ form }: { form: FormState }) {
             </div>
           )}
         </div>
-      </Paper.Header>
+      </Paper.Banner>
 
       {form.errors.length > 0 && (
         <div className="text-content-error text-sm font-medium text-center mb-4">Please fill out all fields</div>
