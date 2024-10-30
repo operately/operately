@@ -167,6 +167,11 @@ export interface ActivityContentCompanyEditing {
   oldName?: string | null;
 }
 
+export interface ActivityContentCompanyOwnersAdding {
+  company?: Company | null;
+  owners?: Person[] | null;
+}
+
 export interface ActivityContentDiscussionCommentSubmitted {
   spaceId?: string | null;
   discussionId?: string | null;
@@ -1158,6 +1163,8 @@ export interface UpdateTargetInput {
 }
 
 export type ActivityContent =
+  | ActivityContentCompanyOwnersAdding
+  | ActivityContentCompanyAdminAdded
   | ActivityContentCompanyEditing
   | ActivityContentCommentAdded
   | ActivityContentDiscussionCommentSubmitted
