@@ -35,21 +35,19 @@ export function Page() {
 
 function Header({ form }: { form: FormState }) {
   return (
-    <Paper.Header className="bg-surface-dimmed">
-      <div className="flex items-end justify-between my-2">
-        <h1 className="text-xl font-extrabold">Editing the goal</h1>
+    <Paper.Banner className="justify-between py-4">
+      <h1 className="text-xl font-extrabold">Editing the goal</h1>
 
-        <div className="flex items-center gap-2">
-          <SecondaryButton onClick={form.cancel} size="sm" testId="cancel-edit">
-            Cancel
-          </SecondaryButton>
+      <div className="flex items-center gap-2">
+        <SecondaryButton onClick={form.cancel} size="sm" testId="cancel-edit">
+          Cancel
+        </SecondaryButton>
 
-          <PrimaryButton onClick={form.submit} loading={form.submitting} size="sm" testId="save-changes">
-            Save Changes
-          </PrimaryButton>
-        </div>
+        <PrimaryButton onClick={form.submit} loading={form.submitting} size="sm" testId="save-changes">
+          Save Changes
+        </PrimaryButton>
       </div>
-    </Paper.Header>
+    </Paper.Banner>
   );
 }
 

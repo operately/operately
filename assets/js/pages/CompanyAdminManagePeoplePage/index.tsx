@@ -44,7 +44,12 @@ export function Page() {
         <Navigation />
 
         <Paper.Body>
-          <Header />
+          <Paper.Header
+            title="Manage Team Members"
+            subtitle="Add new team members, update profiles, or remove access as needed."
+            actions={<AddMemberButton />}
+          />
+
           <InvitationList />
           <MemberList />
         </Paper.Body>
@@ -58,24 +63,6 @@ function Navigation() {
     <Paper.Navigation>
       <Paper.NavItem linkTo={Paths.companyAdminPath()}>Company Administration</Paper.NavItem>
     </Paper.Navigation>
-  );
-}
-
-function Header() {
-  return (
-    <div className="flex items-center justify-between">
-      <Title />
-      <AddMemberButton />
-    </div>
-  );
-}
-
-function Title() {
-  return (
-    <div>
-      <div className="text-content-accent text-3xl font-extrabold leading-none">Manage Team Members</div>
-      <div className="mt-2">Add new team members, update profiles, or remove access as needed.</div>
-    </div>
   );
 }
 

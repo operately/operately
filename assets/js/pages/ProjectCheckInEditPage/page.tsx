@@ -30,24 +30,20 @@ export function Page() {
 
 function Header({ form, checkIn }: { form: ReturnType<typeof useForm>; checkIn: ProjectCheckIn }) {
   return (
-    <div className="">
-      <Paper.Header className="bg-surface-dimmed">
-        <div className="flex items-end justify-between my-2">
-          <h1 className="text-xl font-extrabold">
-            Editing the Check-In from <FormattedTime time={checkIn.insertedAt!} format="long-date" />
-          </h1>
+    <Paper.Banner className="justify-between py-4">
+      <h1 className="text-xl font-extrabold">
+        Editing the Check-In from <FormattedTime time={checkIn.insertedAt!} format="long-date" />
+      </h1>
 
-          <div className="flex items-center gap-2">
-            <SecondaryButton linkTo={form.cancelPath} size="sm" testId="cancel-edit">
-              Cancel
-            </SecondaryButton>
+      <div className="flex items-center gap-2">
+        <SecondaryButton linkTo={form.cancelPath} size="sm" testId="cancel-edit">
+          Cancel
+        </SecondaryButton>
 
-            <PrimaryButton onClick={form.submit} loading={form.submitting} size="sm" testId="save-changes">
-              {form.submitButtonLabel}
-            </PrimaryButton>
-          </div>
-        </div>
-      </Paper.Header>
-    </div>
+        <PrimaryButton onClick={form.submit} loading={form.submitting} size="sm" testId="save-changes">
+          {form.submitButtonLabel}
+        </PrimaryButton>
+      </div>
+    </Paper.Banner>
   );
 }
