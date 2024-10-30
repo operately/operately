@@ -10,7 +10,7 @@ defmodule Mix.Tasks.Operately.Gen.Operation.Task do
       {
         Mix.Operately,
         [:passthrough],
-        [generate_file: fn _path, generator -> generator.("") end]
+        [generate_file: fn _path, generator -> IO.puts(generator.("")) end]
       },
       {
         IO,

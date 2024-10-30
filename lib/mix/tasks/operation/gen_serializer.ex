@@ -13,7 +13,7 @@ defmodule Mix.Tasks.Operation.GenSerializer do
 
         def serialize(content, level: :essential) do
           %{
-            #{Mix.Operately.indent(fields, 10)}
+            #{Mix.Operately.indent(fields, 6)}
           }
         end
       end
