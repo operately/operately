@@ -20,9 +20,7 @@ export function Page() {
         </Paper.Navigation>
 
         <Paper.Body>
-          <div className="text-content-accent text-2xl font-extrabold text-center leading-none">
-            Administrators of {company.name}
-          </div>
+          <div className="text-content-accent text-2xl font-extrabold">Manage admins and owners</div>
 
           <AddAdminsModal form={form} />
           <AdminList form={form} />
