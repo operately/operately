@@ -1,6 +1,6 @@
 import React from "react";
 
-import { SmallStatusIndicator } from "@/features/projectCheckIns/SmallStatusIndicator";
+import { SmallStatusIndicator } from "@/components/status";
 import { Project } from "@/models/projects";
 
 type Size = "std" | "sm";
