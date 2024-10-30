@@ -15,6 +15,7 @@ defmodule Mix.Tasks.Operately.Gen.Operation do
     IO.puts("")
     IO.puts(" * Operation:            #{ctx.operation_file_path}")
     IO.puts(" * API Mutation:         #{ctx.api_mutation_file_path}")
+    IO.puts(" * API Types:            #{ctx.api_types_file_path}")
     IO.puts(" * Activity Schema:      #{ctx.activity_schema_file_path}")
     IO.puts(" * Notification Handler: #{ctx.notification_handler_file_path}")
     IO.puts(" * Email Handler:        #{ctx.email_handler_file_path}")
@@ -42,6 +43,7 @@ defmodule Mix.Tasks.Operately.Gen.Operation do
   def generate_files(ctx) do
     Mix.Tasks.Operation.GenOperationModule.gen(ctx)
     Mix.Tasks.Operation.GenApiMutation.gen(ctx)
+    Mix.Tasks.Operation.GenApiTypes.gen(ctx)
     Mix.Tasks.Operation.GenActivitySchema.gen(ctx)
     Mix.Tasks.Operation.GenNotificationHandler.gen(ctx)
     Mix.Tasks.Operation.GenEmailHandler.gen(ctx)
@@ -71,6 +73,7 @@ defmodule Mix.Tasks.Operately.Gen.Operation do
       serializer_file_path: "lib/operately_web/api/serializers/activity_content/#{resource}_#{action_gerund}.ex",
       operation_file_path: "lib/operately/operations/#{resource}_#{action_gerund}.ex",
       api_mutation_file_path: "lib/operately_web/api/mutations/#{action}_#{resource}.ex",
+      api_types_file_path: "lib/operately_web/api/types.ex",
       activity_schema_file_path: "lib/operately/activities/content/#{resource}_#{action_gerund}.ex",
       notification_handler_file_path: "lib/operately/activities/notifications/#{resource}_#{action_gerund}.ex",
       email_handler_file_path: "lib/operately_email/emails/#{resource}_#{action_gerund}_email.ex",
