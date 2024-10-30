@@ -8,6 +8,7 @@ import { splitByStatus } from "@/models/milestones";
 import { PieChart } from "@/components/PieChart";
 import { ProgressBar } from "@/components/ProgressBar";
 import { MiniPieChart } from "@/components/MiniPieChart";
+import { SmallStatusIndicator } from "@/components/status";
 import { assertPresent } from "@/utils/assertions";
 import { Paths } from "@/routes/paths";
 
@@ -57,16 +58,12 @@ function Goals({ goals }: { goals: Goal[] }) {
 }
 
 function GoalItem({ goal }: { goal: Goal }) {
-  assertPresent(goal.progressPercentage, "progressPercentage");
+  assertPresent(goal.progressPercentage, "progressPercentage must be present in goal");
 
   return (
     <div className="flex items-center gap-1 overflow-hidden">
-      <div>
-        <div className="w-[14px] h-[14px] bg-red-500 rounded-full" />
-      </div>
-      <div>
-        <ProgressBar percentage={goal.progressPercentage} className="w-[50px]" />
-      </div>
+      <SmallStatusIndicator status={goal.lastCheckIn?.status ?? "pending"} size="sm" hideText={true} />
+      <ProgressBar percentage={goal.progressPercentage} className="w-[50px] h-[9px]" />
       <div className="truncate">{goal.name}</div>
     </div>
   );
