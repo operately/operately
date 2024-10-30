@@ -9,6 +9,7 @@ defmodule Operately.Operations.GoalCheckInEdit do
     encoded_new_target_values = encode_new_target_values(attrs.new_target_values, update)
 
     changeset = Update.changeset(update, %{
+      status: attrs.status,
       message: attrs.content,
       targets: encoded_new_target_values,
     })

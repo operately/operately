@@ -84,6 +84,7 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalProgressUpdateTest do
 
       assert {200, _} = mutation(ctx.conn, :edit_goal_progress_update, %{
         id: Paths.goal_update_id(update),
+        status: "issue",
         content: RichText.rich_text("content", :as_string),
         new_target_values: Jason.encode!([]),
       })
@@ -97,6 +98,7 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalProgressUpdateTest do
 
       assert {200, _} = mutation(ctx.conn, :edit_goal_progress_update, %{
         id: Paths.goal_update_id(update),
+        status: "issue",
         content: RichText.rich_text(mentioned_people: [ctx.company_creator]),
         new_target_values: Jason.encode!([]),
       })
@@ -117,6 +119,7 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalProgressUpdateTest do
 
     mutation(conn, :edit_goal_progress_update, %{
       id: Paths.goal_update_id(update),
+      status: "on_track",
       content: RichText.rich_text("Edited content", :as_string),
       new_target_values: targets,
     })

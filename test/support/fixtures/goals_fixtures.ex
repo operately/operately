@@ -56,6 +56,7 @@ defmodule Operately.GoalsFixtures do
   def goal_update_fixture(author, goal, attrs \\ []) do
     attrs = Enum.into(attrs, %{
       goal_id: goal.id,
+      status: "on_track",
       target_values: [],
       content: Operately.Support.RichText.rich_text("content"),
       send_to_everyone: false,

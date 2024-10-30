@@ -43,6 +43,7 @@ defmodule Operately.Data.Change028CreateSubscriptionsListForGoalUpdatesTest do
           author_id: author.id,
           subscription_list_id: subscriptions_list.id,
           message: Operately.Support.RichText.rich_text("message"),
+          status: "on_track",
         }),
         {:ok, _} <- Notifications.update_subscription_list(subscriptions_list, %{parent_id: update.id}) do
       update
