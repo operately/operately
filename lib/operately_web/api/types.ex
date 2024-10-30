@@ -312,6 +312,8 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   union :activity_content, types: [
+    :activity_content_company_owners_adding,
+    :activity_content_company_admin_added,
     :activity_content_company_editing,
     :activity_content_comment_added,
     :activity_content_discussion_comment_submitted,
@@ -949,6 +951,11 @@ defmodule OperatelyWeb.Api.Types do
   object :activity_content_company_admin_added do
     field :company, :company
     field :people, list_of(:person)
+  end
+
+  object :activity_content_company_owners_adding do
+    field :company, :company
+    field :owners, list_of(:person)
   end
 
   object :activity_content_company_admin_removed do
