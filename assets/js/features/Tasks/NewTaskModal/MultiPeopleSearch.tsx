@@ -33,7 +33,12 @@ export function MultiPeopleSearch(props: MultiPeopleSearchProps) {
     setSearchTerm("");
     setPeople([]);
     setSelectedPersonIndex(0);
-    inputRef.current?.focus();
+
+    // The timeout is necessary to prevent the a race condition
+    // between setting the focus and the user click event.
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 10);
   };
 
   const removePerson = (person: People.Person | null | undefined) => {
@@ -110,9 +115,19 @@ export function MultiPeopleSearch(props: MultiPeopleSearchProps) {
   }, [searchTerm]);
 
   const handleBlur = () => {
-    setSearchTerm("");
-    setPeople([]);
-    setSelectedPersonIndex(0);
+    //
+    // Delay to allow any click event in the popup to be processed first
+    // before clearing the search term and people list.
+    //
+    // Looks like a hack but it is the recommended way to handle the
+    // synchronization between the input blur event and the click event
+    // in the popup.
+    //
+    setTimeout(() => {
+      setSearchTerm("");
+      setPeople([]);
+      setSelectedPersonIndex(0);
+    }, 1);
   };
 
   return (
@@ -211,7 +226,17 @@ function PeopleSelectPopupElement({ person, onClick, selected }: PeopleSelectPop
   });
 
   return (
-    <div key={person.id} className={className} data-test-id={testId} onClick={() => onClick(person)}>
+    <div
+      key={person.id}
+      className={className}
+      data-test-id={testId}
+      onMouseDown={() => {
+        // Using onMouseDown instead of onClick to prevent the input from losing focus
+        // when the user clicks on the popup and execute the onBlur event
+        // before the click event
+        onClick(person);
+      }}
+    >
       <Avatar person={person} size={20} />
       <div>{person.fullName}</div>
     </div>
