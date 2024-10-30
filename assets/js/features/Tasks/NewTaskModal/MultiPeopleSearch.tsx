@@ -7,6 +7,7 @@ import * as Icons from "@tabler/icons-react";
 
 import Avatar from "@/components/Avatar";
 import { createTestId } from "@/utils/testid";
+import { match } from "ts-pattern";
 
 interface MultiPeopleSearchProps {
   addedPeople: People.Person[];
@@ -24,7 +25,61 @@ export function MultiPeopleSearch(props: MultiPeopleSearchProps) {
 
   const inputRef = React.useRef<HTMLInputElement>(null);
 
-  const handleOnChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const addPerson = (person: People.Person | null | undefined) => {
+    if (!person) return;
+
+    props.setAddedPeople((people) => [...people, person]);
+    setSearchTerm("");
+    setPeople([]);
+    setSelectedPersonIndex(0);
+    inputRef.current?.focus();
+  };
+
+  const removePerson = (person: People.Person | null | undefined) => {
+    if (!person) return;
+
+    props.setAddedPeople((people) => people.filter((p) => p.id !== person.id));
+  };
+
+  const moveSelectionUp = () => {
+    setSelectedPersonIndex((index) => Math.max(index - 1, 0));
+  };
+
+  const moveSelectionDown = () => {
+    setSelectedPersonIndex((index) => Math.min(index + 1, people.length - 1));
+  };
+
+  const stopEventPropagation = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    e.stopPropagation();
+    e.preventDefault();
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    match(e.key)
+      .with("ArrowDown", () => {
+        stopEventPropagation(e);
+        moveSelectionDown();
+      })
+      .with("ArrowUp", () => {
+        stopEventPropagation(e);
+        moveSelectionUp();
+      })
+      .with("Enter", () => {
+        stopEventPropagation(e);
+        addPerson(people[selectedPersonIndex]);
+      })
+      .with("Backspace", () => {
+        if (searchTerm === "") {
+          stopEventPropagation(e);
+          removePerson(props.addedPeople[props.addedPeople.length - 1]);
+        }
+      })
+      .otherwise(() => {
+        // Do nothing
+      });
+  };
+
+  const handleSearchTermChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const term = e.target.value;
 
     setSearchTerm(term);
@@ -42,106 +97,109 @@ export function MultiPeopleSearch(props: MultiPeopleSearchProps) {
     setPeople(response);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "ArrowDown") {
-      e.stopPropagation();
-      e.preventDefault();
-      setSelectedPersonIndex((index) => Math.min(index + 1, people.length - 1));
-    }
-
-    if (e.key === "ArrowUp") {
-      e.stopPropagation();
-      e.preventDefault();
-      setSelectedPersonIndex((index) => Math.max(index - 1, 0));
-    }
-
-    if (e.key === "Enter") {
-      e.stopPropagation();
-      e.preventDefault();
-
-      const person = people[selectedPersonIndex];
-      if (person) {
-        setSearchTerm("");
-        setPeople([]);
-        setSelectedPersonIndex(0);
-        props.setAddedPeople((people) => [...people, person]);
-      }
-    }
-
-    if (e.key === "Backspace" && searchTerm === "" && props.addedPeople.length > 0) {
-      props.setAddedPeople((people) => people.slice(0, people.length - 1));
-    }
-  };
-
   const handleBlur = () => {
-    setTimeout(() => {
-      setSearchTerm("");
-      setPeople([]);
-      setSelectedPersonIndex(0);
-    }, 100);
+    setSearchTerm("");
+    setPeople([]);
+    setSelectedPersonIndex(0);
   };
+
+  const showPopup = searchTerm.length >= 2 && people.length > 0;
 
   return (
     <FormField visuals={props.visuals}>
-      {props.addedPeople.map((person) => (
-        <div
-          className="flex items-center gap-1 bg-accent-1 rounded-xl px-1.5 py-0.5 text-sm text-white-1 shrink-0"
-          key={person.id}
-        >
-          <Avatar key={person.id} person={person} size={18} />
-          <div>{person.fullName}</div>
-          <Icons.IconX
-            size={12}
-            onClick={() => props.setAddedPeople((people) => people.filter((p) => p.id !== person.id))}
-            className="cursor-pointer ml-1"
-            data-test-id={createTestId("remove", person.fullName!)}
-          />
-        </div>
-      ))}
-      <div className="flex-1 relative flex">
-        <input
-          ref={inputRef}
-          type="text"
-          className="border-none ring-0 p-0 bg-transparent outline-none hover:ring-0 focus:ring-0 flex-1"
-          placeholder={props.addedPeople.length === 0 ? "Type names to assign" : ""}
-          onChange={handleOnChange}
-          onKeyDown={handleKeyDown}
-          onBlur={handleBlur}
-          value={searchTerm}
-          id="task-assignees-input"
-        />
+      <div className="flex-1 relative flex gap-1.5 flex-wrap">
+        <PeopleList people={props.addedPeople} onRemove={removePerson} />
 
-        <div className="absolute flex items-center justify-center z-[1000]" style={{ top: "30px", left: 0 }}>
-          <div className="flex flex-col rounded-lg border border-stroke-base overflow-hidden shadow-lg bg-surface-base">
-            {searchTerm.length >= 2 && people.length === 0 && <div className="p-1 px-2">No results</div>}
-            {searchTerm.length >= 2 &&
-              people.length > 0 &&
-              people.slice(0, 5).map((person, index) => (
-                <div
-                  key={person.id}
-                  className={classNames({
-                    "flex items-center gap-2": true,
-                    "p-1 px-2": true,
-                    "cursor-pointer": true,
-                    "bg-sky-300": selectedPersonIndex === index,
-                  })}
-                  data-test-id={createTestId("person-option", person.fullName!)}
-                  onClick={() => {
-                    props.setAddedPeople((people) => [...people, person]);
-                    setSearchTerm("");
-                    setPeople([]);
-                    setSelectedPersonIndex(0);
-                    inputRef.current?.focus();
-                  }}
-                >
-                  <Avatar person={person} size={20} />
-                  <div>{person.fullName}</div>
-                </div>
-              ))}
-          </div>
+        <div className="flex-1 relative flex">
+          <input
+            ref={inputRef}
+            type="text"
+            className="border-none ring-0 p-0 bg-transparent outline-none hover:ring-0 focus:ring-0 flex-1"
+            placeholder={props.addedPeople.length === 0 ? "Type names to assign" : ""}
+            onChange={handleSearchTermChange}
+            onKeyDown={handleKeyDown}
+            onBlur={handleBlur}
+            value={searchTerm}
+            id="task-assignees-input"
+          />
+
+          {showPopup && <PeopleSelectPopup people={people} selectedIndex={selectedPersonIndex} onClick={addPerson} />}
         </div>
       </div>
     </FormField>
+  );
+}
+
+function PeopleList({ people, onRemove }: { people: People.Person[]; onRemove: (person: People.Person) => void }) {
+  return people.map((person) => (
+    <div
+      className="flex items-center gap-1 bg-accent-1 rounded-xl px-1.5 py-0.5 text-sm text-white-1 shrink-0"
+      key={person.id}
+    >
+      <Avatar key={person.id} person={person} size={18} />
+
+      <div>{person.fullName}</div>
+
+      <Icons.IconX
+        size={12}
+        onClick={() => onRemove(person)}
+        className="cursor-pointer ml-1"
+        data-test-id={createTestId("remove", person.fullName!)}
+      />
+    </div>
+  ));
+}
+
+interface PeopleSelectPopupProps {
+  people: People.Person[];
+  selectedIndex: number;
+  onClick: (person: People.Person) => void;
+}
+
+function PeopleSelectPopup({ people, selectedIndex, onClick }: PeopleSelectPopupProps) {
+  const slicedPeople = people.slice(0, 5);
+
+  return (
+    <div className="absolute flex items-center justify-center z-[1000]" style={{ top: "30px", left: 0 }}>
+      <div className="flex flex-col rounded-lg border border-stroke-base overflow-hidden shadow-lg bg-surface-base">
+        {slicedPeople.length === 0 ? (
+          <div className="p-1 px-2">No results</div>
+        ) : (
+          slicedPeople.map((person, index) => (
+            <PeopleSelectPopupElement
+              key={person.id}
+              person={person}
+              onClick={onClick}
+              selected={selectedIndex === index}
+            />
+          ))
+        )}
+      </div>
+    </div>
+  );
+}
+
+interface PeopleSelectPopupElementProps {
+  person: People.Person;
+  onClick: (person: People.Person) => void;
+  selected: boolean;
+}
+
+function PeopleSelectPopupElement({ person, onClick, selected }: PeopleSelectPopupElementProps) {
+  const testId = createTestId("person-option", person.fullName!);
+
+  const className = classNames({
+    "flex items-center gap-2": true,
+    "p-1 px-2": true,
+    "cursor-pointer": true,
+    "bg-sky-300": selected,
+  });
+
+  return (
+    <div key={person.id} className={className} data-test-id={testId} onClick={() => onClick(person)}>
+      <Avatar person={person} size={20} />
+      <div>{person.fullName}</div>
+    </div>
   );
 }
 
