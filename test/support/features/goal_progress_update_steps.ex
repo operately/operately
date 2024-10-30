@@ -63,6 +63,8 @@ defmodule Operately.Support.Features.GoalProgressUpdateSteps do
     ctx
     |> UI.visit(Paths.goal_path(ctx.company, ctx.goal))
     |> UI.click(testid: "update-progress-button")
+    |> UI.click(testid: "status-dropdown")
+    |> UI.click(testid: "status-dropdown-#{params.status}")
     |> UI.fill_rich_text(params.message)
     |> UI.fill(testid: "target-first-response-time", with: to_string(Enum.at(params.target_values, 0)))
     |> UI.fill(testid: "target-increase-feedback-score-to-90-", with: to_string(Enum.at(params.target_values, 1)))
@@ -157,6 +159,8 @@ defmodule Operately.Support.Features.GoalProgressUpdateSteps do
     ctx
     |> UI.click(testid: "options-button")
     |> UI.click(testid: "edit-update")
+    |> UI.click(testid: "status-dropdown")
+    |> UI.click(testid: "status-dropdown-#{params.status}")
     |> UI.fill_rich_text(params.message)
     |> UI.click(testid: "submit")
   end

@@ -6,7 +6,7 @@ defmodule Operately.Features.GoalProgressUpdateTest do
 
   @tag login_as: :champion
   feature "check-in on a goal", ctx do
-    params = %{message: "Checking-in on my goal", target_values: [20, 80]}
+    params = %{status: "on_track", message: "Checking-in on my goal", target_values: [20, 80]}
 
     ctx
     |> Steps.visit_page()
@@ -18,7 +18,7 @@ defmodule Operately.Features.GoalProgressUpdateTest do
 
   @tag login_as: :champion
   feature "acknowledge a progress update", ctx do
-    params = %{message: "Checking-in on my goal", target_values: [20, 80]}
+    params = %{status: "caution", message: "Checking-in on my goal", target_values: [20, 80]}
 
     ctx
     |> Steps.visit_page()
@@ -31,8 +31,8 @@ defmodule Operately.Features.GoalProgressUpdateTest do
 
   @tag login_as: :champion
   feature "edit a submitted progress update", ctx do
-    params = %{message: "Checking-in on my goal", target_values: [20, 80]}
-    edit_params = %{message: "This is an edited check-in.", target_values: [30, 70]}
+    params = %{status: "issue", message: "Checking-in on my goal", target_values: [20, 80]}
+    edit_params = %{status: "on_track", message: "This is an edited check-in.", target_values: [30, 70]}
 
     ctx
     |> Steps.visit_page()
@@ -43,7 +43,7 @@ defmodule Operately.Features.GoalProgressUpdateTest do
 
   @tag login_as: :champion
   feature "commenting on a progress update", ctx do
-    params = %{message: "Checking-in on my goal", target_values: [20, 80]}
+    params = %{status: "pending", message: "Checking-in on my goal", target_values: [20, 80]}
 
     ctx
     |> Steps.visit_page()

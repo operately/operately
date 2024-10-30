@@ -7,6 +7,7 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdate do
   alias Operately.Operations.GoalCheckIn
 
   inputs do
+    field :status, :string
     field :content, :string
     field :goal_id, :string
     field :new_target_values, :string
@@ -48,6 +49,7 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdate do
       goal_id: goal_id,
       target_values: Jason.decode!(inputs.new_target_values),
       content: Jason.decode!(inputs.content),
+      status: inputs.status,
       send_to_everyone: inputs[:send_notifications_to_everyone] || false,
       subscription_parent_type: :goal_update,
       subscriber_ids: subscriber_ids || []

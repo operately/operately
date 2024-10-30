@@ -34,6 +34,7 @@ export function Form(props: CreateProps | EditProps) {
       <Header />
 
       <Forms.FieldGroup>
+        <Status />
         <TargetInputs />
         <Description goal={goal} />
       </Forms.FieldGroup>
@@ -51,12 +52,24 @@ function Header() {
   return <div className="text-3xl font-bold mb-8">Update Progress</div>;
 }
 
+function Status() {
+  return (
+    <div className="mt-8 mb-4">
+      <Forms.SelectStatus
+        label="1. How's the goal going?"
+        field="status"
+        options={["on_track", "caution", "issue", "pending"]}
+      />
+    </div>
+  );
+}
+
 function TargetInputs() {
   const [targets] = Forms.useFieldValue<Target[]>("targets");
 
   return (
     <div>
-      <div className="font-bold mb-1">Success Conditions</div>
+      <div className="font-bold mb-1">2. Success Conditions</div>
 
       <div className="flex flex-col gap-4">
         {targets.map((target, index) => {
@@ -87,7 +100,7 @@ function Description({ goal }: { goal: Goal }) {
   return (
     <div className="mt-4">
       <Forms.RichTextArea
-        label="Describe your progress and any learnings"
+        label="3. Describe your progress and any learnings"
         field="description"
         mentionSearchScope={mentionSearchScope}
         placeholder="Write your update here..."

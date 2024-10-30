@@ -37,7 +37,7 @@ defmodule Operately.Goals.Update do
     check_in
     |> cast(attrs, [:goal_id, :author_id, :message, :status, :acknowledged_at, :acknowledged_by_id, :subscription_list_id])
     |> cast_embed(:targets)
-    |> validate_required([:goal_id, :author_id, :message, :subscription_list_id])
+    |> validate_required([:goal_id, :author_id, :message, :status, :subscription_list_id])
   end
 
   #
