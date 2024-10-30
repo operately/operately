@@ -25,7 +25,7 @@ defmodule Operately.Support.Features.SubscriptionsSteps do
 
   step :submit_check_in_form, ctx do
     ctx
-    |> UI.click(testid: "post-check-in")
+    |> UI.click(testid: "submit")
   end
 
   #
@@ -66,7 +66,7 @@ defmodule Operately.Support.Features.SubscriptionsSteps do
 
   step :submit_goal_update_form, ctx do
     ctx
-    |> UI.click(testid: "submit-update")
+    |> UI.click(testid: "submit")
   end
 
   #
