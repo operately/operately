@@ -14,6 +14,8 @@ defmodule Operately.Goals.Update do
     has_many :comments, Operately.Updates.Comment, foreign_key: :entity_id, where: [entity_type: :goal_update]
 
     field :message, :map
+    field :status, Ecto.Enum, values: [:on_track, :caution, :issue, :pending]
+
     field :acknowledged_at, :utc_datetime
     belongs_to :acknowledged_by, Operately.People.Person, foreign_key: :acknowledged_by_id
     embeds_many :targets, Operately.Goals.Update.Target, on_replace: :delete
@@ -33,7 +35,7 @@ defmodule Operately.Goals.Update do
 
   def changeset(check_in, attrs) do
     check_in
-    |> cast(attrs, [:goal_id, :author_id, :message, :acknowledged_at, :acknowledged_by_id, :subscription_list_id])
+    |> cast(attrs, [:goal_id, :author_id, :message, :status, :acknowledged_at, :acknowledged_by_id, :subscription_list_id])
     |> cast_embed(:targets)
     |> validate_required([:goal_id, :author_id, :message, :subscription_list_id])
   end
