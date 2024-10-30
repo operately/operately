@@ -113,20 +113,6 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
     }
   end
 
-  def serialize_content("goal_check_in", content) do
-    %{
-      goal: serialize_goal(content["goal"]),
-      update: serialize_goal_check_in_update(content["update"])
-    }
-  end
-
-  def serialize_content("goal_check_in_acknowledgement", content) do
-    %{
-      goal: serialize_goal(content["goal"]),
-      update: serialize_goal_check_in_update(content["update"])
-    }
-  end
-
   def serialize_content("goal_check_in_edit", _content) do
     %{}
   end
@@ -418,20 +404,6 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
       inserted_at: OperatelyWeb.Api.Serializer.serialize(check_in.inserted_at),
       status: check_in.status,
       description: check_in.description
-    }
-  end
-
-  def serialize_goal_check_in_update(update) do
-    %{
-      id: OperatelyWeb.Paths.goal_update_id(update),
-      message: Jason.encode!(update.message),
-      message_type: "status_update",
-      inserted_at: OperatelyWeb.Api.Serializer.serialize(update.inserted_at),
-      comments_count: Operately.Updates.count_comments(update.id, :goal_update),
-      content: %{
-        "__typename" => "UpdateContentGoalCheckIn",
-        targets: Enum.map(update.targets, &(Map.from_struct(&1)))
-      }
     }
   end
 

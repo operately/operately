@@ -11,6 +11,7 @@ import { ActivityHandler } from "../interfaces";
 
 import { Link } from "@/components/Link";
 import { feedTitle, goalLink } from "../feedItemLinks";
+import { SmallStatusIndicator } from "@/components/status";
 
 const GoalCheckIn: ActivityHandler = {
   pagePath(activity: Activity): string {
@@ -39,10 +40,13 @@ const GoalCheckIn: ActivityHandler = {
   },
 
   FeedItemContent({ activity }: { activity: Activity; page: string }) {
+    const update = content(activity).update!;
+
     return (
       <div className="flex flex-col">
-        <RichContent jsonContent={content(activity).update!.message!} />
-        <ConditionChanges update={content(activity).update!} />
+        <RichContent jsonContent={update.message!} />
+        <ConditionChanges update={update} />
+        <SmallStatusIndicator status={update.status!} />
       </div>
     );
   },

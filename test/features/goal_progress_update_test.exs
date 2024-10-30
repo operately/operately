@@ -12,7 +12,7 @@ defmodule Operately.Features.GoalProgressUpdateTest do
     |> Steps.visit_page()
     |> Steps.update_progress(params)
     |> Steps.assert_progress_updated(params)
-    |> Steps.assert_progress_update_in_feed(params)
+    |> Steps.assert_progress_update_in_feed()
     |> Steps.assert_progress_update_in_notifications()
   end
 

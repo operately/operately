@@ -82,14 +82,16 @@ defmodule Operately.Support.Features.GoalProgressUpdateSteps do
     |> UI.assert_text("#{Enum.at(target_values, 0)} / 15")
   end
 
-  step :assert_progress_update_in_feed, ctx, attrs do
+  step :assert_progress_update_in_feed, ctx do
+    feed_texts = ["Checking-in on my goal", "First response time", "Increase feedback score to 90%", "On Track"]
+
     ctx
     |> visit_page()
-    |> FeedSteps.assert_goal_checked_in(author: ctx.champion, message: attrs.message)
+    |> FeedSteps.assert_goal_checked_in(author: ctx.champion, texts: feed_texts)
     |> UI.visit(Paths.space_path(ctx.company, ctx.group))
-    |> FeedSteps.assert_goal_checked_in(author: ctx.champion, goal_name: ctx.goal.name, message: attrs.message)
+    |> FeedSteps.assert_goal_checked_in(author: ctx.champion, goal_name: ctx.goal.name, texts: feed_texts)
     |> UI.visit(Paths.feed_path(ctx.company))
-    |> FeedSteps.assert_goal_checked_in(author: ctx.champion, goal_name: ctx.goal.name, message: attrs.message)
+    |> FeedSteps.assert_goal_checked_in(author: ctx.champion, goal_name: ctx.goal.name, texts: feed_texts)
   end
 
   step :assert_progress_update_email_sent_to_reviewer, ctx do

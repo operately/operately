@@ -73,5 +73,5 @@ function GoalFeedItems({ goal }) {
   if (error) return <div>Error: {error.message}</div>;
   if (!data) return null;
 
-  return <Feed items={data!.activities!} page="goal" />;
+  return <Feed items={data!.activities!} page="goal" testId="goal-feed" />;
 }

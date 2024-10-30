@@ -83,7 +83,6 @@ defmodule OperatelyWeb.Api.Types do
     :update_content_project_milestone_deadline_changed,
     :update_content_project_milestone_deleted,
     :update_content_status_update,
-    :update_content_goal_check_in,
     :update_content_review,
     :update_content_project_discussion,
     :update_content_message
@@ -397,8 +396,9 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :activity_content_goal_check_in do
+    field :goal_id, :string
     field :goal, :goal
-    field :update, :update
+    field :update, :goal_progress_update
   end
 
   object :activity_content_discussion_posting do
@@ -627,7 +627,7 @@ defmodule OperatelyWeb.Api.Types do
 
   object :activity_content_goal_check_in_acknowledgement do
     field :goal, :goal
-    field :update, :update
+    field :update, :goal_progress_update
   end
 
   object :activity_content_project_archived do
@@ -854,11 +854,6 @@ defmodule OperatelyWeb.Api.Types do
     field :assignments, list_of(:assignment)
   end
 
-  object :update_content_goal_check_in do
-    field :message, :string
-    field :targets, list_of(:update_content_goal_check_in_target)
-  end
-
   object :company do
     field :id, :string
     field :name, :string
@@ -993,17 +988,6 @@ defmodule OperatelyWeb.Api.Types do
   object :activity_content_project_created do
     field :project_id, :string
     field :project, :project
-  end
-
-  object :update_content_goal_check_in_target do
-    field :id, :string
-    field :name, :string
-    field :value, :float
-    field :unit, :string
-    field :previous_value, :float
-    field :index, :integer
-    field :from, :float
-    field :to, :float
   end
 
   object :project_check_in do
