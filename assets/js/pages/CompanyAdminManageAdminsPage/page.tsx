@@ -1,15 +1,21 @@
 import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
+import * as People from "@/models/people";
+import * as Companies from "@/models/companies";
 
 import { useLoadedData } from "./loader";
 import { useFrom } from "./useForm";
 import { AddAdminsModal } from "./AddAdminsModal";
-import { AdminList } from "./AdminList";
-import { Paths } from "@/routes/paths";
+import { Paths, compareIds } from "@/routes/paths";
+
+import Avatar from "@/components/Avatar";
+import { BlackLink } from "@/components/Link";
+import { SecondaryButton } from "@/components/Buttons";
+import { useMe } from "@/contexts/CurrentUserContext";
+import { createTestId } from "@/utils/testid";
 
 export function Page() {
-  const { company } = useLoadedData();
   const form = useFrom();
 
   return (
@@ -20,12 +26,108 @@ export function Page() {
         </Paper.Navigation>
 
         <Paper.Body>
-          <div className="text-content-accent text-2xl font-extrabold">Manage admins and owners</div>
+          <Paper.Header
+            title="Manage admins and owners"
+            subtitle="Add/Remove people who are in charge of the company and its operations"
+          />
 
-          <AddAdminsModal form={form} />
-          <AdminList form={form} />
+          <Paper.Section title="Administrators" actions={<AddAdminsModal form={form} />}>
+            <AdminList />
+          </Paper.Section>
+
+          <Paper.Section title="Account Owners">
+            <OwnerList />
+          </Paper.Section>
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
+  );
+}
+
+function AdminList() {
+  const { admins } = useLoadedData();
+
+  if (admins.length > 0) {
+    return <PeopleList people={admins} />;
+  } else {
+    return <p>No admins have been added to this company yet.</p>;
+  }
+}
+
+function OwnerList() {
+  const { owners } = useLoadedData();
+
+  if (owners.length > 0) {
+    return <PeopleList people={owners} />;
+  } else {
+    return <p>This company has no account owners.</p>;
+  }
+}
+
+function PeopleList({ people }: { people: People.Person[] }) {
+  return (
+    <div>
+      {people.map((person) => (
+        <PersonRow key={person.id!} person={person} />
+      ))}
+    </div>
+  );
+}
+
+function PersonRow({ person }: { person: People.Person }) {
+  return (
+    <div className="flex items-center justify-between border-t border-stroke-dimmed py-4 last:border-b">
+      <div className="flex items-center gap-4">
+        <Avatar person={person} size={48} />
+        <PersonInfo person={person} />
+      </div>
+
+      <div className="flex gap-2 items-center">
+        <PersonActions person={person} />
+      </div>
+    </div>
+  );
+}
+
+function PersonInfo({ person }: { person: People.Person }) {
+  return (
+    <div>
+      <BlackLink to={Paths.profilePath(person.id!)} className="font-bold" underline="hover">
+        {person.fullName}
+      </BlackLink>
+
+      <div className="text-content-dimmed text-sm">
+        <span className="text-sm">{person.title}</span>
+      </div>
+    </div>
+  );
+}
+
+function PersonActions({ person }: { person: People.Person }) {
+  return (
+    <div className="flex items-center gap-4">
+      <RemoveAction person={person} />
+    </div>
+  );
+}
+
+function RemoveAction({ person }: { person: People.Person }) {
+  const me = useMe();
+  const refresh = Pages.useRefresh();
+  const [remove] = Companies.useRemoveCompanyMember();
+
+  const handle = async () => {
+    await remove({ personId: person.id });
+    refresh();
+  };
+
+  if (compareIds(person.id, me!.id)) return null;
+
+  return (
+    <>
+      <SecondaryButton onClick={handle} size="xs" testId={createTestId("remove-admin", person.id!)}>
+        Remove
+      </SecondaryButton>
+    </>
   );
 }
