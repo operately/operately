@@ -19,6 +19,7 @@ interface MultiPeopleSearchProps {
 export function MultiPeopleSearch(props: MultiPeopleSearchProps) {
   const search = People.usePeopleSearch(props.searchScope);
 
+  const [state, setState] = React.useState<"idle" | "searching">("idle");
   const [searchTerm, setSearchTerm] = React.useState("");
   const [people, setPeople] = React.useState<People.Person[]>(props.addedPeople);
   const [selectedPersonIndex, setSelectedPersonIndex] = React.useState(0);
@@ -80,30 +81,39 @@ export function MultiPeopleSearch(props: MultiPeopleSearchProps) {
   };
 
   const handleSearchTermChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const term = e.target.value;
+    const term = e.target.value.trim();
 
-    setSearchTerm(term);
-
-    if (term.length < 2) {
-      setPeople([]);
-      return;
-    }
-
-    const response = await search({
-      query: searchTerm,
-      ignoredIds: props.addedPeople.map((person) => person.id!),
-    });
-
-    setPeople(response);
+    setSearchTerm(e.target.value);
+    if (term.length < 2) setPeople([]);
   };
+
+  React.useEffect(() => {
+    setState("searching");
+
+    const t = setTimeout(() => {
+      if (searchTerm.length < 2) {
+        setState("idle");
+        setPeople([]);
+        return;
+      }
+
+      search({
+        query: searchTerm.trim(),
+        ignoredIds: props.addedPeople.map((person) => person.id!),
+      }).then((response) => {
+        setState("idle");
+        setPeople(response);
+      });
+    }, 50);
+
+    return () => clearTimeout(t);
+  }, [searchTerm]);
 
   const handleBlur = () => {
     setSearchTerm("");
     setPeople([]);
     setSelectedPersonIndex(0);
   };
-
-  const showPopup = searchTerm.length >= 2 && people.length > 0;
 
   return (
     <FormField visuals={props.visuals}>
@@ -123,7 +133,9 @@ export function MultiPeopleSearch(props: MultiPeopleSearchProps) {
             id="task-assignees-input"
           />
 
-          {showPopup && <PeopleSelectPopup people={people} selectedIndex={selectedPersonIndex} onClick={addPerson} />}
+          {searchTerm.length >= 2 && (
+            <PeopleSelectPopup people={people} selectedIndex={selectedPersonIndex} onClick={addPerson} state={state} />
+          )}
         </div>
       </div>
     </FormField>
@@ -154,10 +166,13 @@ interface PeopleSelectPopupProps {
   people: People.Person[];
   selectedIndex: number;
   onClick: (person: People.Person) => void;
+  state: "idle" | "searching";
 }
 
-function PeopleSelectPopup({ people, selectedIndex, onClick }: PeopleSelectPopupProps) {
+function PeopleSelectPopup({ people, selectedIndex, state, onClick }: PeopleSelectPopupProps) {
   const slicedPeople = people.slice(0, 5);
+
+  if (state === "searching" && slicedPeople.length === 0) return null;
 
   return (
     <div className="absolute flex items-center justify-center z-[1000]" style={{ top: "30px", left: 0 }}>

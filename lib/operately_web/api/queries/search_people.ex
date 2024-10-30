@@ -48,9 +48,9 @@ defmodule OperatelyWeb.Api.Queries.SearchPeople do
     |> match_by_full_name_or_title(inputs)
     |> limit_to_company(company_id)
     |> ignore_ids(inputs[:ignored_ids] || [])
-    |> order_asc_by_match_position(inputs)
     |> exclude_suspended()
     |> filter_by_search_scope(inputs[:search_scope_type], inputs[:search_scope_id])
+    |> order_asc_by_match_position(inputs)
     |> limit(@limit)
     |> Repo.all()
   end
