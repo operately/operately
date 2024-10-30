@@ -9,7 +9,7 @@ import { feedTitle, projectLink } from "./../feedItemLinks";
 import { Paths } from "@/routes/paths";
 import { Link } from "@/components/Link";
 import { Summary } from "@/components/RichContent";
-import { SmallStatusIndicator } from "@/features/projectCheckIns/SmallStatusIndicator";
+import { SmallStatusIndicator } from "@/components/status";
 
 const ProjectCheckInSubmitted: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {

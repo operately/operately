@@ -4,16 +4,12 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Icons from "@tabler/icons-react";
 
-import { Form, useForm } from "@/features/projectCheckIns/Form";
-import { useLoadedData } from "./loader";
 import { Paths } from "@/routes/paths";
-import { useMe } from "@/contexts/CurrentUserContext";
+import { useLoadedData } from "./loader";
+import { Form } from "./Form";
 
 export function Page() {
-  const me = useMe()!;
   const { project } = useLoadedData();
-
-  const form = useForm({ project, mode: "create", author: me, potentialSubscribers: project.potentialSubscribers! });
 
   return (
     <Pages.Page title={["Check-In", project.name!]}>
@@ -21,7 +17,7 @@ export function Page() {
         <Navigation project={project} />
 
         <Paper.Body>
-          <Form form={form} />
+          <Form project={project} />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>

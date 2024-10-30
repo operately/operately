@@ -1,26 +1,49 @@
 import React from "react";
 
-import * as TipTapEditor from "@/components/Editor";
-import * as Forms from "@/components/Form";
+import { Goal, Target } from "@/models/goals";
+import { Update } from "@/models/goalCheckIns";
 
-import { FormState } from "./useForm";
-import { createTestId } from "@/utils/testid";
+import Forms from "@/components/Forms";
+import { SubscribersSelector, useSubscriptions } from "@/features/Subscriptions";
 import { Spacer } from "@/components/Spacer";
-import { SubscribersSelector } from "@/features/Subscriptions";
+import { createTestId } from "@/utils/testid";
+import { useForm } from "./useForm";
 
-export function Form({ form }: { form: FormState }) {
+export interface CreateProps {
+  goal: Goal;
+  mode: "create";
+}
+export interface EditProps {
+  goal: Goal;
+  update: Update;
+  mode: "edit";
+}
+
+export function Form(props: CreateProps | EditProps) {
+  const { goal, mode } = props;
+
+  const subscriptionsState = useSubscriptions(mode === "create" ? goal.potentialSubscribers! : [], {
+    ignoreMe: true,
+    notifyPrioritySubscribers: true,
+  });
+
+  const form = useForm(props, subscriptionsState);
+
   return (
-    <>
+    <Forms.Form form={form}>
       <Header />
-      <TargetInputs form={form} />
-      <Editor form={form} />
+
+      <Forms.FieldGroup>
+        <TargetInputs />
+        <Description goal={goal} />
+      </Forms.FieldGroup>
 
       <Spacer size={4} />
 
-      {form.mode === "create" && (
-        <SubscribersSelector state={form.subscriptionsState} spaceName={form.goal.space!.name!} />
-      )}
-    </>
+      {mode === "create" && <SubscribersSelector state={subscriptionsState} spaceName={goal.space?.name!} />}
+
+      <Forms.Submit saveText={mode === "create" ? "Submit Update" : "Save"} buttonSize="base" />
+    </Forms.Form>
   );
 }
 
@@ -28,27 +51,15 @@ function Header() {
   return <div className="text-3xl font-bold mb-8">Update Progress</div>;
 }
 
-function Editor({ form }: { form: FormState }) {
-  const contentError = form.errors.find((e) => e.field === "content");
+function TargetInputs() {
+  const [targets] = Forms.useFieldValue<Target[]>("targets");
 
-  return (
-    <div className="mt-8">
-      <div className="font-bold mb-2">Describe your progress and any learnings</div>
-      {contentError && <div className="text-content-error text-sm font-medium mt-1">Required</div>}
-      <div className="border border-surface-outline rounded overflow-hidden">
-        <TipTapEditor.StandardEditorForm editor={form.editor.editor} />
-      </div>
-    </div>
-  );
-}
-
-function TargetInputs({ form }: { form: FormState }) {
   return (
     <div>
-      <div className="font-bold mb-2">Success Conditions</div>
+      <div className="font-bold mb-1">Success Conditions</div>
 
       <div className="flex flex-col gap-4">
-        {form.targets.map((target, index) => {
+        {targets.map((target, index) => {
           return (
             <div
               className="flex items-center justify-between bg-surface-dimmed border border-stroke-base p-3 rounded"
@@ -61,19 +72,26 @@ function TargetInputs({ form }: { form: FormState }) {
                 </div>
               </div>
 
-              <div className="">
-                <Forms.TextInputNoLabel
-                  id={target.id}
-                  testId={createTestId("target", target.name)}
-                  value={target.value?.toString() || ""}
-                  onChange={(value: string) => form.updateTarget(target.id, value === "" ? null : Number(value))}
-                  error={!!form.errors.find((e) => e.field === target.id)}
-                />
-              </div>
+              <Forms.TextInput field={`targets[${index}].value`} testId={createTestId("target", target.name!)} />
             </div>
           );
         })}
       </div>
+    </div>
+  );
+}
+
+function Description({ goal }: { goal: Goal }) {
+  const mentionSearchScope = { type: "goal", id: goal.id! } as const;
+
+  return (
+    <div className="mt-4">
+      <Forms.RichTextArea
+        label="Describe your progress and any learnings"
+        field="description"
+        mentionSearchScope={mentionSearchScope}
+        placeholder="Write your update here..."
+      />
     </div>
   );
 }

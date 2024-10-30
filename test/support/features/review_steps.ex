@@ -86,7 +86,7 @@ defmodule Operately.Support.Features.ReviewSteps do
     |> UI.click(testid: "status-dropdown")
     |> UI.click(testid: "status-dropdown-on_track")
     |> UI.fill_rich_text("Going well")
-    |> UI.click(testid: "post-check-in")
+    |> UI.click(testid: "submit")
     |> UI.assert_text("Check-In from")
   end
 
@@ -108,7 +108,7 @@ defmodule Operately.Support.Features.ReviewSteps do
     ctx
     |> UI.click(testid: test_id)
     |> UI.fill_rich_text("Going well")
-    |> UI.click(testid: "submit-update")
+    |> UI.click(testid: "submit")
     |> UI.assert_text("Progress Update from")
   end
 
