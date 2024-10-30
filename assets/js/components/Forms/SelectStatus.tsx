@@ -14,9 +14,10 @@ interface Props {
   field: string;
   options: StatusOptions[];
   reviewer?: People.Person;
+  label?: string;
 }
 
-export function SelectStatus({ field, options, reviewer }: Props) {
+export function SelectStatus({ field, options, reviewer, label }: Props) {
   const ref = React.useRef<HTMLDivElement>(null);
   const [open, setOpen] = React.useState(false);
   const [width, setWidth] = React.useState(0);
@@ -48,6 +49,8 @@ export function SelectStatus({ field, options, reviewer }: Props) {
   return (
     <Popover.Root open={open} onOpenChange={setOpen}>
       <InputField field={field} error={error}>
+        {label && <label className="font-bold">{label}</label>}
+
         <Popover.Trigger asChild>
           <div className={triggerClassName} ref={ref} data-test-id={testId}>
             <StatusOrPlaceholder status={value} reviewer={reviewer} />

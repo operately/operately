@@ -56,7 +56,7 @@ function TargetInputs() {
 
   return (
     <div>
-      <div className="font-bold mb-2">Success Conditions</div>
+      <div className="font-bold mb-1">Success Conditions</div>
 
       <div className="flex flex-col gap-4">
         {targets.map((target, index) => {
@@ -86,9 +86,8 @@ function Description({ goal }: { goal: Goal }) {
 
   return (
     <div className="mt-4">
-      <div className="font-bold mb-2">Describe your progress and any learnings</div>
-
       <Forms.RichTextArea
+        label="Describe your progress and any learnings"
         field="description"
         mentionSearchScope={mentionSearchScope}
         placeholder="Write your update here..."

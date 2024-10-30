@@ -69,9 +69,11 @@ function Header({ checkIn }: { checkIn: ProjectCheckIn }) {
 function StatusSection() {
   return (
     <div className="mt-8 mb-4">
-      <div className="text-lg font-bold mb-2">1. How's the project going?</div>
-
-      <Forms.SelectStatus field="status" options={["on_track", "caution", "issue"]} />
+      <Forms.SelectStatus
+        label="1. How's the project going?"
+        field="status"
+        options={["on_track", "caution", "issue"]}
+      />
     </div>
   );
 }
@@ -82,14 +84,11 @@ function DescriptionSection({ checkIn }: { checkIn: ProjectCheckIn }) {
   const mentionSearchScope = { type: "project", id: checkIn.project.id! } as const;
 
   return (
-    <div>
-      <div className="text-lg font-bold mb-2">2. What's new since the last check-in?</div>
-
-      <Forms.RichTextArea
-        field="description"
-        mentionSearchScope={mentionSearchScope}
-        placeholder="Write your check-in here..."
-      />
-    </div>
+    <Forms.RichTextArea
+      label="2. What's new since the last check-in?"
+      field="description"
+      mentionSearchScope={mentionSearchScope}
+      placeholder="Write your check-in here..."
+    />
   );
 }
