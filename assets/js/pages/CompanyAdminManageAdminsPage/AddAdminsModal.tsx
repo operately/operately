@@ -2,7 +2,7 @@ import React from "react";
 
 import Modal from "@/components/Modal";
 import Avatar from "@/components/Avatar";
-import { GhostButton } from "@/components/Buttons";
+import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
 
 import { Person } from "@/models/people";
 import PeopleSearch, { Option } from "@/components/PeopleSearch";
@@ -15,13 +15,9 @@ export function AddAdminsModal({ form }: { form: FormState }) {
 
   return (
     <>
-      <div className="flex items-center my-8 gap-2">
-        <div className="h-px bg-surface-outline flex-1" />
-        <GhostButton onClick={state.openModal} testId="add-admins">
-          Add Admininstrators
-        </GhostButton>
-        <div className="h-px bg-surface-outline flex-1" />
-      </div>
+      <SecondaryButton onClick={state.openModal} testId="add-admins" size="xs">
+        Add
+      </SecondaryButton>
 
       <Modal title="Add administrators" isOpen={state.isModalOpen} hideModal={state.hideModal} height="600px">
         <SearchField
@@ -36,9 +32,9 @@ export function AddAdminsModal({ form }: { form: FormState }) {
         </div>
 
         <div className="mt-4 flex items-center justify-center">
-          <GhostButton onClick={state.submit} testId="save-admins">
+          <PrimaryButton onClick={state.submit} testId="save-admins">
             Add Admininstrators
-          </GhostButton>
+          </PrimaryButton>
         </div>
       </Modal>
     </>
