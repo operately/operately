@@ -12,7 +12,7 @@ import { DivLink } from "@/components/Link";
 
 import FormattedTime from "@/components/FormattedTime";
 import Avatar from "@/components/Avatar";
-import { SmallStatusIndicator } from "@/features/projectCheckIns/SmallStatusIndicator";
+import { SmallStatusIndicator } from "@/components/status";
 
 export function Page() {
   const { project } = useLoadedData();

@@ -1,12 +1,12 @@
 defmodule Operately.Data.Change028CreateSubscriptionsListForGoalUpdates do
-  import Ecto.Query, only: [from: 1, from: 2]
+  import Ecto.Query, only: [from: 2]
 
   alias Operately.{Repo, Notifications}
   alias Operately.Notifications.{Subscription, SubscriptionList}
 
   def run do
     Repo.transaction(fn ->
-      from(c in Operately.Goals.Update)
+      from(u in Operately.Goals.Update, select: %{id: u.id, subscription_list_id: u.subscription_list_id})
       |> Repo.all()
       |> create_subscriptions_list()
       |> create_subscriptions()
@@ -34,9 +34,14 @@ defmodule Operately.Data.Change028CreateSubscriptionsListForGoalUpdates do
   end
 
   defp edit_update(subscriptions_list, update) do
-    if subscriptions_list.id != update.subscription_list_id do
-      {:ok, _} = Operately.Goals.update_update(update, %{subscription_list_id: subscriptions_list.id})
-    end
+    {:ok, update_id} = Ecto.UUID.dump(update.id)
+    {:ok, subscription_list_id} = Ecto.UUID.dump(subscriptions_list.id)
+
+    {_, nil} = from(u in "goal_updates", where: u.id == ^update_id)
+    |> Repo.update_all(set: [
+      subscription_list_id: subscription_list_id
+    ])
+
     subscriptions_list
   end
 

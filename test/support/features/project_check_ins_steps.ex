@@ -42,7 +42,7 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
     |> UI.click(testid: "status-dropdown")
     |> UI.click(testid: "status-dropdown-#{status}")
     |> UI.fill_rich_text(description)
-    |> UI.click(testid: "post-check-in")
+    |> UI.click(testid: "submit")
     |> UI.assert_has(testid: "project-check-in-page")
   end
 
@@ -53,7 +53,7 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
     |> UI.click(testid: "status-dropdown")
     |> UI.click(testid: "status-dropdown-#{status}")
     |> UI.fill_rich_text(description)
-    |> UI.click(testid: "save-changes")
+    |> UI.click(testid: "submit")
     |> UI.assert_text("Check-In from")
   end
 
@@ -192,7 +192,6 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
     |> UI.login_as(ctx.champion)
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
     |> FeedSteps.assert_project_check_in_commented(author: ctx.champion, comment: "This is a comment.")
-    |> UI.take_screenshot()
     |> UI.visit(Paths.space_path(ctx.company, ctx.space))
     |> FeedSteps.assert_project_check_in_commented(author: ctx.champion, comment: "This is a comment.")
     |> UI.visit(Paths.feed_path(ctx.company))
