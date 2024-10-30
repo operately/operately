@@ -6,8 +6,9 @@ import * as Companies from "@/models/companies";
 
 import { useLoadedData } from "./loader";
 import { useFrom } from "./useForm";
-import { AddAdminsModal } from "./AddAdminsModal";
 import { Paths, compareIds } from "@/routes/paths";
+import { AddOwnersModal } from "./AddOwnersModal";
+import { AddAdminsModal } from "./AddAdminsModal";
 
 import Avatar from "@/components/Avatar";
 import { BlackLink } from "@/components/Link";
@@ -17,6 +18,8 @@ import { createTestId } from "@/utils/testid";
 
 export function Page() {
   const form = useFrom();
+
+  const { admins, owners } = useLoadedData();
 
   return (
     <Pages.Page title={"Manage admins and owners"} testId="manage-admins-page">
@@ -31,37 +34,23 @@ export function Page() {
             subtitle="Add/Remove people who are in charge of the company and its operations"
           />
 
-          <Paper.Section title="Administrators" actions={<AddAdminsModal form={form} />}>
-            <AdminList />
-          </Paper.Section>
+          <Paper.Section
+            title="Administrators"
+            subtitle="Company administrators can add/remove people from the company, manage their profiles, update company settings, and more."
+            actions={<AddAdminsModal form={form} />}
+            children={<PeopleList people={admins} />}
+          />
 
-          <Paper.Section title="Account Owners">
-            <OwnerList />
-          </Paper.Section>
+          <Paper.Section
+            title="Account Owners"
+            subtitle="Owners have the highest level of access and can manage all aspects of the company, including billing, and have access to all resources."
+            actions={<AddOwnersModal form={form} />}
+            children={<PeopleList people={owners} />}
+          />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
   );
-}
-
-function AdminList() {
-  const { admins } = useLoadedData();
-
-  if (admins.length > 0) {
-    return <PeopleList people={admins} />;
-  } else {
-    return <p>No admins have been added to this company yet.</p>;
-  }
-}
-
-function OwnerList() {
-  const { owners } = useLoadedData();
-
-  if (owners.length > 0) {
-    return <PeopleList people={owners} />;
-  } else {
-    return <p>This company has no account owners.</p>;
-  }
 }
 
 function PeopleList({ people }: { people: People.Person[] }) {
