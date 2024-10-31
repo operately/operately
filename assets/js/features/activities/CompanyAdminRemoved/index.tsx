@@ -9,8 +9,8 @@ const CompanyAdminRemoved: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  pagePath(): string {
-    return Paths.orgChartPath();
+  pagePath(_activity: Activity) {
+    return Paths.companyAdminPath();
   },
 
   PageTitle(_props: { activity: any }) {

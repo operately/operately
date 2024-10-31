@@ -1,6 +1,7 @@
 import type { Activity } from "@/models/activities";
 import type { ActivityContentCompanyOwnerRemoving } from "@/api";
 import type { ActivityHandler } from "../interfaces";
+import { Paths } from "@/routes/paths";
 
 import { feedTitle } from "../feedItemLinks";
 import { firstName } from "@/models/people";
@@ -11,7 +12,7 @@ const CompanyOwnerRemoving: ActivityHandler = {
   },
 
   pagePath(_activity: Activity) {
-    throw new Error("Not implemented");
+    return Paths.companyAdminPath();
   },
 
   PageTitle(_props: { activity: any }) {
@@ -29,7 +30,7 @@ const CompanyOwnerRemoving: ActivityHandler = {
   FeedItemTitle({ activity }: { activity: Activity; page: any }) {
     const name = firstName(content(activity).person!);
 
-    return feedTitle(activity, `has revoked ${name}'s owner privileges`);
+    return feedTitle(activity, `removed ${name} as an account owner`);
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {
@@ -49,7 +50,7 @@ const CompanyOwnerRemoving: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return firstName(activity.author!) + " has revoked your owner privileges";
+    return firstName(activity.author!) + " has revoked your account owner status";
   },
 
   NotificationLocation(_props: { activity: Activity }) {

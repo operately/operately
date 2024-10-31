@@ -283,8 +283,8 @@ defmodule Operately.Support.Features.UI do
 
       cond do
         not text_found -> session
-        attempts == [] -> refute_text(state, text)
-        true -> refute_text(state, text, attempts: attempts)
+        attempts == [] -> refute_text(state, text).session
+        true -> refute_text(state, text, attempts: attempts).session
       end
     end)
   end

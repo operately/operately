@@ -1,35 +1,30 @@
 defmodule Operately.Support.Features.CompanyAdminSteps do
   use Operately.FeatureCase
 
-  import Operately.CompaniesFixtures
-  import Operately.PeopleFixtures
-
   alias Operately.People.Person
+  alias Operately.Support.Features.NotificationsSteps
+  alias Operately.Support.Features.EmailSteps
 
   step :given_a_company_exists, ctx do
-    company = company_fixture(%{name: "Dunder Mifflin"})
-    owner = Operately.Companies.list_owners(company) |> List.first()
-
-    ctx
-    |> Map.put(:company, company)
-    |> Map.put(:owner, owner)
+    ctx |> Factory.setup()
   end
 
   step :given_i_am_logged_in, ctx, [as: role] do
     cond do
       role == :admin ->
-        admin = person_fixture_with_account(%{full_name: "Admin Adminson", company_id: ctx.company.id})
-        {:ok, _} = Operately.Companies.add_admins(ctx.owner, admin.id)
-        UI.login_as(ctx, admin)
+        ctx 
+        |> Factory.add_company_admin(:admin, [name: "Admin Adminson"])
+        |> Factory.log_in_person(:admin)
 
       role == :owner ->
-        owner = person_fixture_with_account(%{full_name: "Owner Ownerson", company_id: ctx.company.id})
-        {:ok, _} = Operately.Companies.add_owner(ctx.owner, owner.id)
-        UI.login_as(ctx, owner)
+        ctx 
+        |> Factory.add_company_owner(:owner, [name: "Owner Ownerson"])
+        |> Factory.log_in_person(:owner)
 
       role == :member ->
-        owner = person_fixture_with_account(%{full_name: "Member Memberson", company_id: ctx.company.id})
-        UI.login_as(ctx, owner)
+        ctx 
+        |> Factory.add_company_member(:member, [name: "Member Memberson"])
+        |> Factory.log_in_person(:member)
     end
   end
 
@@ -285,24 +280,35 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
 
   step :remove_company_owner, ctx do
     ctx
-    |> UI.take_screenshot()
     |> UI.assert_text(ctx.other_owner.full_name)
-    |> UI.take_screenshot()
     |> UI.click(testid: UI.testid(["remove", ctx.other_owner.full_name]))
-    |> UI.take_screenshot()
     |> UI.refute_text(ctx.other_owner.full_name)
   end
 
   step :refute_person_is_owner, ctx do
+    people = Operately.Repo.preload(ctx.company, :people).people
     owners = Operately.Companies.list_owners(ctx.company)
 
+    refute Enum.find(people, fn p -> p.id == ctx.other_owner.id end).suspended
+    assert Enum.any?(people, fn p -> p.id == ctx.other_owner.id end)
     refute Enum.any?(owners, fn admin -> admin.id == ctx.other_owner.id end)
 
     ctx
   end
 
   step :assert_notification_and_email_sent_to_removed_owner, ctx do
-    ctx |> UI.click(testid: "something")
+    ctx 
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.company.name,
+      to: ctx.other_owner,
+      author: ctx.owner,
+      action: "has revoked your account owner status"
+    })
+    |> Factory.log_in_person(:other_owner)
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.owner,
+      action: "has revoked your account owner status"
+    })
   end
 
   step :assert_notification_and_email_sent_to_new_owner, ctx do
@@ -315,7 +321,7 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
   end
 
   step :assert_feed_item_for_removed_owner, ctx do
-    name = Person.first_name(ctx.owner)
+    name = Person.first_name(ctx.other_owner)
 
     ctx 
     |> UI.visit(Paths.feed_path(ctx.company))

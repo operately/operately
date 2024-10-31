@@ -62,8 +62,8 @@ defmodule Operately.Features.CompanyAdminTest do
     |> Steps.open_manage_admins_page()
     |> Steps.remove_company_owner()
     |> Steps.refute_person_is_owner()
-    |> Steps.assert_notification_and_email_sent_to_removed_owner()
     |> Steps.assert_feed_item_for_removed_owner()
+    |> Steps.assert_notification_and_email_sent_to_removed_owner()
   end
 
   @tag role: :admin

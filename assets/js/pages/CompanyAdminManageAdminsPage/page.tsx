@@ -38,14 +38,14 @@ export function Page() {
             title="Administrators"
             subtitle="Company administrators can add/remove people from the company, manage their profiles, update company settings, and more."
             actions={<AddAdminsModal form={form} />}
-            children={<PeopleList people={admins} />}
+            children={<PeopleList type="admins" people={admins} />}
           />
 
           <Paper.Section
             title="Account Owners"
             subtitle="Owners have the highest level of access and can manage all aspects of the company, including billing, and have access to all resources."
             actions={<AddOwnersModal form={form} />}
-            children={<PeopleList people={owners} />}
+            children={<PeopleList type="owners" people={owners} />}
           />
         </Paper.Body>
       </Paper.Root>
@@ -53,17 +53,17 @@ export function Page() {
   );
 }
 
-function PeopleList({ people }: { people: People.Person[] }) {
+function PeopleList({ people, type }: { people: People.Person[]; type: "admins" | "owners" }) {
   return (
     <div>
       {people.map((person) => (
-        <PersonRow key={person.id!} person={person} />
+        <PersonRow key={person.id!} person={person} type={type} />
       ))}
     </div>
   );
 }
 
-function PersonRow({ person }: { person: People.Person }) {
+function PersonRow({ person, type }: { person: People.Person; type: "admins" | "owners" }) {
   return (
     <div className="flex items-center justify-between border-t border-stroke-dimmed py-4 last:border-b">
       <div className="flex items-center gap-4">
@@ -72,7 +72,7 @@ function PersonRow({ person }: { person: People.Person }) {
       </div>
 
       <div className="flex gap-2 items-center">
-        <PersonActions person={person} />
+        <PersonActions person={person} type={type} />
       </div>
     </div>
   );
@@ -92,21 +92,25 @@ function PersonInfo({ person }: { person: People.Person }) {
   );
 }
 
-function PersonActions({ person }: { person: People.Person }) {
+function PersonActions({ person, type }: { person: People.Person; type: "admins" | "owners" }) {
   return (
     <div className="flex items-center gap-4">
-      <RemoveAction person={person} />
+      <RemoveAction person={person} type={type} />
     </div>
   );
 }
 
-function RemoveAction({ person }: { person: People.Person }) {
+function RemoveAction({ person, type }: { person: People.Person; type: "admins" | "owners" }) {
   const me = useMe();
   const refresh = Pages.useRefresh();
-  const [remove] = Companies.useRemoveCompanyMember();
+
+  const [removeAdmin] = Companies.useRemoveCompanyAdmin();
+  const [removeOwner] = Companies.useRemoveCompanyOwner();
 
   const handle = async () => {
-    await remove({ personId: person.id });
+    if (type === "admins") await removeAdmin({ personId: person.id });
+    if (type === "owners") await removeOwner({ personId: person.id });
+
     refresh();
   };
 

@@ -1,1 +1,3 @@
-<%= short_name(@author) %> ...
+You have been removed as a company owner by <%= short_name(@author) %>.
+
+Link: <%= @link %>
