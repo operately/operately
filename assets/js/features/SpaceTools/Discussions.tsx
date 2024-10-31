@@ -7,6 +7,7 @@ import { Paths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { richContentToString } from "@/components/RichContent";
 import Avatar from "@/components/Avatar";
+import classNames from "classnames";
 
 import { Title, Container } from "./components";
 
@@ -41,8 +42,16 @@ function DiscussionItem({ discussion }: { discussion: Discussion }) {
   assertPresent(discussion.author, "author must be present in discussion");
   assertPresent(discussion.commentsCount, "commentsCount must be present in discussion");
 
+  const className = classNames(
+    // 2rem is the size of <Avatar size="normal" />
+    discussion.commentsCount > 0 ? "grid-cols-[2rem_1fr_20px]" : "grid-cols-[2rem_1fr]",
+    "grid items-center gap-2",
+    "py-3 px-2",
+    "border-b border-stroke-base last:border-b-0",
+  );
+
   return (
-    <div className="flex items-center gap-2 py-3 px-2 border-b border-stroke-base last:border-b-0">
+    <div className={className}>
       <Avatar person={discussion.author} size="normal" />
       <DiscussionTitle title={discussion.title!} body={discussion.body!} />
       <CommnetsCount count={discussion.commentsCount} />
