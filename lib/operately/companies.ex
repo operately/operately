@@ -75,13 +75,16 @@ defmodule Operately.Companies do
     CompanyAdding,
     CompanyAdminAdding, 
     CompanyAdminRemoving,
-    CompanyOwnerAdding
+    CompanyOwnersAdding,
+    CompanyOwnerRemoving
   }
 
   defdelegate create_company(attrs, account), to: CompanyAdding, as: :run
   defdelegate add_admins(admin, people_ids), to: CompanyAdminAdding, as: :run
-  defdelegate add_owner(admin, person), to: CompanyOwnerAdding, as: :run
+  defdelegate add_owner(admin, person), to: CompanyOwnersAdding, as: :run
+  defdelegate add_owners(admin, person), to: CompanyOwnersAdding, as: :run
   defdelegate remove_admin(admin, person), to: CompanyAdminRemoving, as: :run
+  defdelegate remove_owner(admin, person), to: CompanyOwnerRemoving, as: :run
 
   def get_owner_group(company_id) do
     Operately.Access.get_group(company_id: company_id, tag: :full_access)
