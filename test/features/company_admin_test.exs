@@ -21,7 +21,7 @@ defmodule Operately.Features.CompanyAdminTest do
     |> Steps.invite_company_member(params)
     |> Steps.assert_invitation_url_is_generated()
     |> Steps.open_company_team_page()
-    |> Steps.assert_company_member_is_listed("Michael Scott")
+    |> Steps.assert_new_company_member_is_listed("Michael Scott")
     |> Steps.assert_company_member_details_match_invitations(params)
     |> Steps.assert_expiration_date_is_visible_on_team_page()
   end
@@ -29,43 +29,47 @@ defmodule Operately.Features.CompanyAdminTest do
   @tag role: :owner
   feature "promote a person to admin", ctx do
     ctx
-    |> Steps.given_a_company_member_exists("Michael Scott")
+    |> Steps.given_a_company_member_exists()
     |> Steps.open_manage_admins_page()
-    |> Steps.add_company_admin("Michael Scott")
-    |> Steps.assert_person_is_admin("Michael Scott")
+    |> Steps.add_company_admin()
+    |> Steps.assert_person_is_admin()
   end
 
   @tag role: :owner
   feature "demote a person from admin", ctx do
     ctx
-    |> Steps.given_a_company_admin_exists("Michael Scott")
+    |> Steps.given_a_company_admin_exists()
     |> Steps.open_manage_admins_page()
-    |> Steps.remove_company_admin("Michael Scott")
-    |> Steps.refute_person_is_admin("Michael Scott")
+    |> Steps.remove_company_admin()
+    |> Steps.refute_person_is_admin()
   end
 
   @tag role: :owner
   feature "add a new account owner", ctx do
     ctx
-    |> Steps.given_a_company_member_exists("Michael Scott")
+    |> Steps.given_a_company_member_exists()
     |> Steps.open_manage_admins_page()
-    |> Steps.add_company_owner("Michael Scott")
-    |> Steps.assert_person_is_owner("Michael Scott")
+    |> Steps.add_company_owner()
+    |> Steps.assert_person_is_owner()
+    |> Steps.assert_notification_and_email_sent_to_new_owner()
+    |> Steps.assert_feed_item_for_new_owner()
   end
 
   @tag role: :owner
   feature "remove account owner", ctx do
     ctx
-    |> Steps.given_a_company_owner_exists("Michael Scott")
+    |> Steps.given_a_company_owner_exists()
     |> Steps.open_manage_admins_page()
-    |> Steps.remove_company_owner("Michael Scott")
-    |> Steps.refute_person_is_owner("Michael Scott")
+    |> Steps.remove_company_owner()
+    |> Steps.refute_person_is_owner()
+    |> Steps.assert_notification_and_email_sent_to_removed_owner()
+    |> Steps.assert_feed_item_for_removed_owner()
   end
 
   @tag role: :admin
   feature "edit a person's details", ctx do
     ctx
-    |> Steps.given_a_company_member_exists("Michael Scott")
+    |> Steps.given_a_company_member_exists()
     |> Steps.open_company_team_page()
     |> Steps.edit_company_member(%{name: "Michael Scott", new_title: "Regional Manager", new_name: "Michael G. Scott"})
     |> Steps.assert_company_member_details_updated(%{
@@ -94,11 +98,11 @@ defmodule Operately.Features.CompanyAdminTest do
   @tag role: :admin
   feature "remove members from the company", ctx do
     ctx
-    |> Steps.given_a_company_member_exists("Dwight Schrute")
+    |> Steps.given_a_company_member_exists()
     |> Steps.open_company_team_page()
-    |> Steps.assert_company_member_is_listed("Dwight Schrute")
-    |> Steps.remove_company_member("Dwight Schrute")
-    |> Steps.assert_member_removed("Dwight Schrute")
+    |> Steps.assert_company_member_is_listed()
+    |> Steps.remove_company_member()
+    |> Steps.assert_member_removed()
   end
 
   @tag role: :member
