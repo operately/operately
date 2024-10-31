@@ -4,6 +4,8 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
   import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
 
+  alias Operately.People.Person
+
   step :given_a_company_exists, ctx do
     company = company_fixture(%{name: "Dunder Mifflin"})
     owner = Operately.Companies.list_owners(company) |> List.first()
@@ -65,21 +67,21 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
     |> UI.click(testid: "submit")
   end
 
-  step :add_company_admin, ctx, name do
+  step :add_company_admin, ctx do
     ctx
     |> UI.click(testid: "add-admins")
-    |> UI.fill_in(Query.css("#people-search"), with: String.slice(name, 0, 4))
-    |> UI.assert_text(name)
+    |> UI.fill_in(Query.css("#people-search"), with: String.slice(ctx.member.full_name, 0, 4))
+    |> UI.assert_text(ctx.member.full_name)
     |> UI.send_keys([:enter])
     |> UI.click(testid: "save-admins")
     |> UI.sleep(500)
   end
 
-  step :remove_company_admin, ctx, name do
+  step :remove_company_admin, ctx do
     ctx
-    |> UI.assert_text(name)
-    |> UI.click(testid: UI.testid(["remove", name]))
-    |> UI.refute_text(name, attempts: [50, 150, 250, 400])
+    |> UI.assert_text(ctx.admin.full_name)
+    |> UI.click(testid: UI.testid(["remove", ctx.admin.full_name]))
+    |> UI.refute_text(ctx.admin.full_name)
   end
 
   step :add_trusted_email_domain, ctx, domain do
@@ -96,10 +98,8 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
   end
 
   step :edit_company_member, ctx, params do
-    person = Operately.People.get_person_by_name!(ctx.company, params[:name])
-
     ctx
-    |> UI.click(testid: UI.testid(["edit", Paths.person_id(person)]))
+    |> UI.click(testid: UI.testid(["edit", Paths.person_id(ctx.member)]))
     |> UI.fill(testid: "name", with: params[:new_name])
     |> UI.fill(testid: "title", with: params[:new_title])
     |> UI.click(testid: "submit")
@@ -107,7 +107,7 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
   end
 
   step :assert_company_member_details_updated, ctx, params do
-    person = Operately.People.get_person_by_name!(ctx.company, params[:name])
+    person = Operately.Repo.reload(ctx.member)
 
     assert person.full_name == params[:name]
     assert person.title == params[:title]
@@ -155,36 +155,42 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
     ctx
   end
 
-  step :given_a_company_member_exists, ctx, name do
-    person_fixture(%{full_name: name, company_id: ctx.company.id})
-    ctx
+  step :given_a_company_member_exists, ctx do
+    Factory.add_company_member(ctx, :member, [name: "Member Memberson"])
   end
 
-  step :given_a_company_admin_exists, ctx, name do
-    Factory.add_company_admin(ctx, :admin, [name: name])
+  step :given_a_company_admin_exists, ctx do
+    Factory.add_company_admin(ctx, :admin, [name: "Admin Adminson"])
+  end
+
+  step :given_a_company_owner_exists, ctx do
+    Factory.add_company_owner(ctx, :other_owner, [name: "Other Ownerson"])
   end
 
   step :click_on_add_remove_people, ctx do
     ctx |> UI.click(testid: "manage-team-members")
   end
 
-  step :assert_company_member_is_listed, ctx, name do
+  step :assert_company_member_is_listed, ctx do
+    ctx |> UI.assert_text(ctx.member.full_name)
+  end
+
+  step :assert_new_company_member_is_listed, ctx, name do
     ctx |> UI.assert_text(name)
   end
 
-  step :remove_company_member, ctx, name do
-    person = Operately.People.get_person_by_name!(ctx.company, name)
-
+  step :remove_company_member, ctx do
     ctx
-    |> UI.click(testid: UI.testid(["person-options", Paths.person_id(person)]))
-    |> UI.click(testid: UI.testid(["remove-person", Paths.person_id(person)]))
+    |> UI.click(testid: UI.testid(["person-options", Paths.person_id(ctx.member)]))
+    |> UI.click(testid: UI.testid(["remove-person", Paths.person_id(ctx.member)]))
     |> UI.click(testid: UI.testid("confirm-remove-member"))
   end
 
-  step :assert_member_removed, ctx, name do
-    ctx |> UI.refute_text(name, attempts: [50, 150, 250, 400])
+  step :assert_member_removed, ctx do
+    ctx |> UI.refute_text(ctx.member.full_name)
 
-    person = Operately.People.get_person_by_name!(ctx.company, "Dwight Schrute")
+    person = Operately.Repo.reload(ctx.member)
+
     assert person != nil
     assert person.suspended
     assert person.suspended_at != nil
@@ -192,20 +198,18 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
     ctx
   end
 
-  step :assert_person_is_admin, ctx, name do
-    person = Operately.People.get_person_by_name!(ctx.company, name)
+  step :assert_person_is_admin, ctx do
     admins = Operately.Companies.list_admins(ctx.company)
 
-    assert Enum.any?(admins, fn admin -> admin.id == person.id end)
+    assert Enum.any?(admins, fn admin -> admin.id == ctx.member.id end)
 
     ctx
   end
 
-  step :refute_person_is_admin, ctx, name do
-    person = Operately.People.get_person_by_name!(ctx.company, name)
+  step :refute_person_is_admin, ctx do
     admins = Operately.Companies.list_admins(ctx.company)
 
-    refute Enum.any?(admins, fn admin -> admin.id == person.id end)
+    refute Enum.any?(admins, fn admin -> admin.id == ctx.admin.id end)
 
     ctx
   end
@@ -239,7 +243,6 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
     |> UI.fill(testid: "name", with: "Dunder")
     |> UI.click(testid: "submit")
     |> UI.assert_has(testid: "company-admin-page")
-    |> UI.take_screenshot()
   end
 
   step :assert_company_name_is_changed_in_navbar, ctx do
@@ -260,6 +263,69 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
     ctx 
     |> UI.visit(Paths.feed_path(ctx.company))
     |> UI.assert_feed_item(ctx.owner, "renamed the company to Dunder")
+  end
+
+  step :add_company_owner, ctx do
+    ctx
+    |> UI.click(testid: "add-owners")
+    |> UI.fill_in(Query.css("#people-search"), with: String.slice(ctx.member.full_name, 0, 4))
+    |> UI.assert_text(ctx.member.full_name)
+    |> UI.send_keys([:enter])
+    |> UI.click(testid: "save-owners")
+    |> UI.sleep(500)
+  end
+
+  step :assert_person_is_owner, ctx do
+    owners = Operately.Companies.list_owners(ctx.company)
+
+    assert Enum.any?(owners, fn o -> o.id == ctx.member.id end)
+
+    ctx
+  end
+
+  step :remove_company_owner, ctx do
+    ctx
+    |> UI.take_screenshot()
+    |> UI.assert_text(ctx.other_owner.full_name)
+    |> UI.take_screenshot()
+    |> UI.click(testid: UI.testid(["remove", ctx.other_owner.full_name]))
+    |> UI.take_screenshot()
+    |> UI.refute_text(ctx.other_owner.full_name)
+  end
+
+  step :refute_person_is_owner, ctx do
+    owners = Operately.Companies.list_owners(ctx.company)
+
+    refute Enum.any?(owners, fn admin -> admin.id == ctx.other_owner.id end)
+
+    ctx
+  end
+
+  step :assert_notification_and_email_sent_to_removed_owner, ctx do
+    ctx |> UI.click(testid: "something")
+  end
+
+  step :assert_notification_and_email_sent_to_new_owner, ctx do
+    name = Person.first_name(ctx.member)
+
+    ctx 
+    |> Factory.log_in_person(:member)
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.assert_feed_item(ctx.owner, "removed #{name} as an account owner")
+  end
+
+  step :assert_feed_item_for_removed_owner, ctx do
+    name = Person.first_name(ctx.owner)
+
+    ctx 
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.assert_feed_item(ctx.owner, "removed #{name} as an account owner")
+  end
+
+  step :assert_feed_item_for_new_owner, ctx do
+    ctx 
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.assert_feed_item(ctx.owner, "promoted Michael to an account owner")
   end
 
 end
