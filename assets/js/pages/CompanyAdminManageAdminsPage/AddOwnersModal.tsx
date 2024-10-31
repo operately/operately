@@ -10,20 +10,20 @@ import * as Icons from "@tabler/icons-react";
 import { FormState } from "./useForm";
 import * as People from "@/models/people";
 
-export function AddAdminsModal({ form }: { form: FormState }) {
+export function AddOwnersModal({ form }: { form: FormState }) {
   const state = useState(form);
 
   return (
     <>
-      <PrimaryButton onClick={state.openModal} testId="add-admins" size="xs">
-        Add Admin
+      <PrimaryButton onClick={state.openModal} testId="add-owners" size="xs">
+        Add Owner
       </PrimaryButton>
 
-      <Modal title="Add administrators" isOpen={state.isModalOpen} hideModal={state.hideModal} height="600px">
+      <Modal title="Add owners" isOpen={state.isModalOpen} hideModal={state.hideModal} height="600px">
         <SearchField
           onSelect={state.add}
           loader={state.search}
-          placeholder={"Search for people to promote to admin"}
+          placeholder={"Search for people to promote to owner"}
           alreadySelected={state.excludeIds}
         />
 
@@ -32,8 +32,8 @@ export function AddAdminsModal({ form }: { form: FormState }) {
         </div>
 
         <div className="mt-4 flex items-center justify-center">
-          <PrimaryButton onClick={state.submit} testId="save-admins">
-            Add Admininstrators
+          <PrimaryButton onClick={state.submit} testId="save-owners">
+            Add Owners
           </PrimaryButton>
         </div>
       </Modal>
@@ -41,7 +41,7 @@ export function AddAdminsModal({ form }: { form: FormState }) {
   );
 }
 
-function PeopleList({ state }: { state: AdminModalState }) {
+function PeopleList({ state }: { state: OwnerModalState }) {
   return (
     <div className="flex flex-col gap-2">
       {state.selected.map((s) => (
@@ -100,7 +100,7 @@ function RemoveIcon({ onClick }) {
   );
 }
 
-interface AdminModalState {
+interface OwnerModalState {
   selected: Option[];
   add: (selection: Option) => void;
   remove: (id: string) => void;
@@ -113,7 +113,7 @@ interface AdminModalState {
   excludeIds: string[];
 }
 
-function useState(form: FormState): AdminModalState {
+function useState(form: FormState): OwnerModalState {
   const search = People.usePeopleSearch(People.CompanyWideSearchScope);
 
   const [selected, setSelectedList] = React.useState<Option[]>([]);
@@ -125,7 +125,7 @@ function useState(form: FormState): AdminModalState {
   };
 
   const submit = async () => {
-    await form.addAdmins(selected.map((s) => s.value!));
+    await form.addOwners(selected.map((s) => s.value!));
 
     setIsModalOpen(false);
     setSelectedList([]);
@@ -135,11 +135,8 @@ function useState(form: FormState): AdminModalState {
   const hideModal = () => setIsModalOpen(false);
 
   const excludeIds = React.useMemo(() => {
-    return selected
-      .map((s) => s.value!)
-      .concat(form.company.admins!.map((a) => a!.id!)!)
-      .concat(form.company.owners!.map((a) => a!.id!)!);
-  }, [selected, form.company.admins]);
+    return selected.map((s) => s.value!).concat(form.company.owners!.map((a) => a!.id!)!);
+  }, [selected, form.company.owners]);
 
   return {
     selected,

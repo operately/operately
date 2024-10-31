@@ -20,7 +20,7 @@ export function Header({ title, subtitle, actions }: Props) {
 }
 
 function Title({ title }) {
-  return <div className="text-content-accent text-3xl font-extrabold">{title}</div>;
+  return <div className="text-content-accent text-2xl font-extrabold">{title}</div>;
 }
 
 function Subtitle({ message }) {

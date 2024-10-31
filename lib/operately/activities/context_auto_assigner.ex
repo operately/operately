@@ -22,6 +22,8 @@ defmodule Operately.Activities.ContextAutoAssigner do
   @company_actions [
     "company_editing",
     "company_admin_added",
+    "company_owners_adding",
+    "company_owner_removing",
     "company_admin_removed",
     "company_member_removed",
     "password_first_time_changed",
