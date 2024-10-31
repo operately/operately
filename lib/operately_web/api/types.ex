@@ -657,6 +657,7 @@ defmodule OperatelyWeb.Api.Types do
     field :is_archived, :boolean
     field :is_closed, :boolean
     field :archived_at, :date
+    field :is_outdated, :boolean
     field :space, :space
     field :my_role, :string
     field :access_levels, :access_levels

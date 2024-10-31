@@ -1,21 +1,16 @@
 import { Goal } from "@/models/goals";
 import { Project } from "@/models/projects";
 
-export function calculateGoalsStatus(_: Goal[]) {
-  // todo
-  return { on_track: 5, caution: 3, issue: 1, total: 9 };
-}
+export function calculateStatus(resources: Project[] | Goal[]) {
+  const result = { on_track: 0, caution: 0, issue: 0, pending: 0, total: 0 };
 
-export function calculateProjectsStatus(projects: Project[]) {
-  const result = { on_track: 0, caution: 0, issue: 0, total: 0 };
-
-  projects.forEach((project) => {
-    if (project.isOutdated) {
-      result.issue++;
-    } else if (!project.lastCheckIn) {
+  resources.forEach((resource) => {
+    if (resource.isOutdated) {
+      result.pending++;
+    } else if (!resource.lastCheckIn) {
       result.on_track++;
     } else {
-      result[project.lastCheckIn.status!]++;
+      result[resource.lastCheckIn.status!]++;
     }
 
     result.total++;
