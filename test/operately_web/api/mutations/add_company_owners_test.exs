@@ -1,68 +1,45 @@
-defmodule OperatelyWeb.Api.Mutations.AddCompanyAdminsTest do
+defmodule OperatelyWeb.Api.Mutations.AddCompanyOwnersTest do
   use OperatelyWeb.TurboCase
 
-  import Operately.PeopleFixtures
-
-  alias OperatelyWeb.Paths
-  alias Operately.Repo
+  setup ctx do
+    ctx
+    |> Factory.setup()
+    |> Factory.add_company_owner(:owner)
+    |> Factory.add_company_admin(:admin)
+    |> Factory.add_company_member(:regular_member)
+  end
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, :add_company_owners, %{})
+      assert {401, _} = request(ctx, "")
     end
-  end
 
-  describe "permissions" do
-    setup :register_and_log_in_account
+    test "regular members can't add owners", ctx do
+      ctx = Factory.log_in_person(ctx, :regular_member)
 
-    test "company members with full access can add new admins", ctx do
-      person = person_fixture(%{company_id: ctx.company.id})
-
-      assert {403, res} = mutation(ctx.conn, :add_company_owners, %{
-        people_ids: [Paths.person_id(person)],
-      })
+      assert {403, res} = request(ctx, ctx.owner)
       assert res.message == "You don't have permission to perform this action"
     end
 
-    test "company members with edit access can add new admins", ctx do
-      account = Repo.preload(ctx.company_creator, :account).account
-      conn = log_in_account(ctx.conn, account)
+    test "admins can't add owners", ctx do
+      ctx = Factory.log_in_person(ctx, :admin)
 
-      assert {200, _} = mutation(conn, :add_company_owners, %{
-        people_ids: [Paths.person_id(ctx.person)],
-      })
+      assert {403, res} = request(ctx, ctx.owner)
+      assert res.message == "You don't have permission to perform this action"
     end
 
-    test "company members with non-admin roles can't add new admins", ctx do
-      account = Repo.preload(ctx.company_creator, :account).account
-      conn = log_in_account(ctx.conn, account)
-
-      assert {200, _} = mutation(conn, :add_company_owners, %{
-        people_ids: [Paths.person_id(ctx.person)],
-      })
+    test "company owners can add owners", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      assert {200, _} = request(ctx, ctx.regular_member)
     end
   end
 
-  describe "add_company_owners functionality" do
-    setup ctx do
-      ctx = register_and_log_in_account(ctx)
-      account = Repo.preload(ctx.company_creator, :account).account
-
-      %{ctx | conn: log_in_account(ctx.conn, account)}
-    end
-
-    test "adds one admin", ctx do
-      assert {200, _} = mutation(ctx.conn, :add_company_owners, %{
-        people_ids: [Paths.person_id(ctx.person)],
-      })
-    end
-
-    test "adds multiple members", ctx do
-      people = Enum.map(1..3, fn _ -> person_fixture(%{company_id: ctx.company.id}) end)
-
-      assert {200, _} = mutation(ctx.conn, :add_company_owners, %{
-        people_ids: Enum.map(people, &(Paths.person_id(&1))),
-      })
-    end
+  def request(ctx, %Operately.People.Person{} = person) do
+    request(ctx, Paths.person_id(person))
   end
+
+  def request(ctx, person_id) when is_binary(person_id) do
+    mutation(ctx.conn, :add_company_owners, %{people_ids: [person_id]})
+  end
+
 end

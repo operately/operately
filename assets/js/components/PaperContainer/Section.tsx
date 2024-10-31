@@ -1,5 +1,6 @@
 import React from "react";
 import { TestableElement, createTestId } from "@/utils/testid";
+import classNames from "classnames";
 
 interface Props extends TestableElement {
   title: string;
@@ -27,8 +28,13 @@ interface SectionTitleProps {
 }
 
 function SectionTitle({ title, subtitle, actions }: SectionTitleProps) {
+  const className = classNames("flex items-center justify-between", {
+    "mb-6": subtitle,
+    "mb-2": !subtitle,
+  });
+
   return (
-    <div className="mb-6 flex items-center justify-between">
+    <div className={className}>
       <div>
         <h2 className="font-bold text-lg">{title}</h2>
         {subtitle && <p className="text-sm max-w-xl">{subtitle}</p>}

@@ -12,7 +12,7 @@ defmodule Operately.Operations.CompanyOwnersAdding do
     |> Multi.put(:context, Access.get_context!(company_id: author.company_id))
     |> Multi.put(:owner_group, Access.get_group(company_id: author.company_id, tag: :full_access))
     |> add_owners(ids)
-    |> Activities.insert_sync(author.id, :company_onwers_adding, fn _ ->
+    |> Activities.insert_sync(author.id, :company_owners_adding, fn _ ->
       %{
         company_id: author.company_id,
         owner_ids: ids,

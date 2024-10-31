@@ -2,37 +2,35 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyOwners do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
-  import Operately.Access.Filters, only: [filter_by_full_access: 2]
-
   alias Operately.Companies.Company
+  alias Operately.Companies.Permissions
+  alias Operately.Operations.CompanyOwnersAdding
 
   inputs do
     field :people_ids, list_of(:id)
   end
 
   def call(conn, inputs) do
-    me = me(conn)
-    company = company(conn)
-
-    if has_permissions?(me, company) do
-      {:ok, _} = Operately.Operations.CompanyOwnersAdding.run(me, inputs.people_ids)
+    with(
+      {:ok, me} <- find_me(conn),
+      {:ok, company} <- find_company(conn),
+      {:ok, :allowed} <- authorize(company),
+      {:ok, _} <- CompanyOwnersAdding.run(me, inputs.people_ids)
+    ) do
       {:ok, %{}}
     else
-      {:error, :forbidden}
+      {:error, :forbidden} -> {:error, :forbidden}
+      {:error, :not_found} -> {:error, :not_found}
+      {:error, _} -> {:error, :internal_server_error}
     end
   end
 
-  defp has_permissions?(person, company) do
-    dev_env?() || company_owner?(person, company)
+  defp find_company(conn) do
+    Company.get(me(conn), id: me(conn).company_id)
   end
 
-  defp dev_env?() do
-    Application.get_env(:operately, :app_env) == :dev
+  defp authorize(company) do
+    Permissions.check(company.request_info.access_level, :can_manage_owners)
   end
 
-  defp company_owner?(person, company) do
-    from(c in Company, where: c.id == ^company.id)
-    |> filter_by_full_access(person.id)
-    |> Repo.exists?()
-  end
 end
