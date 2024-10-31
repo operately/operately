@@ -44,6 +44,24 @@ defmodule Operately.Features.CompanyAdminTest do
     |> Steps.refute_person_is_admin("Michael Scott")
   end
 
+  @tag role: :owner
+  feature "add a new account owner", ctx do
+    ctx
+    |> Steps.given_a_company_member_exists("Michael Scott")
+    |> Steps.open_manage_admins_page()
+    |> Steps.add_company_owner("Michael Scott")
+    |> Steps.assert_person_is_owner("Michael Scott")
+  end
+
+  @tag role: :owner
+  feature "remove account owner", ctx do
+    ctx
+    |> Steps.given_a_company_owner_exists("Michael Scott")
+    |> Steps.open_manage_admins_page()
+    |> Steps.remove_company_owner("Michael Scott")
+    |> Steps.refute_person_is_owner("Michael Scott")
+  end
+
   @tag role: :admin
   feature "edit a person's details", ctx do
     ctx

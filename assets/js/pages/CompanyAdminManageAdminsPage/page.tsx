@@ -114,7 +114,7 @@ function RemoveAction({ person }: { person: People.Person }) {
 
   return (
     <>
-      <SecondaryButton onClick={handle} size="xs" testId={createTestId("remove-admin", person.id!)}>
+      <SecondaryButton onClick={handle} size="xs" testId={createTestId("remove", person.fullName!)}>
         Remove
       </SecondaryButton>
     </>
