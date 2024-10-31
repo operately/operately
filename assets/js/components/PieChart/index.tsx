@@ -2,7 +2,7 @@ import React from "react";
 
 interface Slice {
   size: number;
-  color: "green" | "yellow" | "red";
+  color: "green" | "yellow" | "red" | "gray";
 }
 
 interface PieChartProps {
@@ -12,9 +12,10 @@ interface PieChartProps {
 }
 
 const COLORS = {
-  green: "#10b981",
-  yellow: "#fde047",
-  red: "#ef4444",
+  green: "rgb(22, 163, 74)",
+  yellow: "rgb(250, 204, 21)",
+  red: "rgb(239, 68, 68)",
+  gray: "rgb(107, 114, 128)",
 };
 
 export function PieChart({ size = 20, total, slices }: PieChartProps) {
@@ -30,7 +31,7 @@ export function PieChart({ size = 20, total, slices }: PieChartProps) {
       const color = COLORS[slice.color];
 
       result.push(`${color} ${start}% ${start + roundedEnd}%`);
-      start = roundedEnd;
+      start += roundedEnd;
     });
 
     return result.join(", ");

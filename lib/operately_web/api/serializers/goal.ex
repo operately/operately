@@ -24,6 +24,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Goals.Goal do
 
       is_archived: goal.deleted_at != nil,
       is_closed: goal.closed_at != nil,
+      is_outdated: Operately.Goals.outdated?(goal),
 
       parent_goal_id: goal.parent_goal && OperatelyWeb.Paths.goal_id(goal.parent_goal),
       parent_goal: OperatelyWeb.Api.Serializer.serialize(goal.parent_goal),

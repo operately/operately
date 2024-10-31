@@ -97,6 +97,22 @@ defmodule Operately.Goals do
     end
   end
 
+  def outdated?(goal) do
+    if goal.next_update_scheduled_at do
+      today = Date.utc_today()
+      update_day = DateTime.to_date(goal.next_update_scheduled_at)
+      update_missed_by = Date.diff(today, update_day)
+
+      cond do
+        goal.closed_at != nil -> false
+        goal.deleted_at != nil -> false
+        update_missed_by > 3 -> true
+        true -> false
+      end
+    else
+      true
+    end
+  end
 
   alias Operately.Goals.Update
 

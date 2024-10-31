@@ -684,6 +684,7 @@ export interface Goal {
   isArchived?: boolean | null;
   isClosed?: boolean | null;
   archivedAt?: string | null;
+  isOutdated?: boolean | null;
   space?: Space | null;
   myRole?: string | null;
   accessLevels?: AccessLevels | null;

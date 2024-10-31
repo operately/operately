@@ -13,7 +13,7 @@ import { assertPresent } from "@/utils/assertions";
 import { Paths } from "@/routes/paths";
 
 import { Container, Title } from "./components";
-import { calculateGoalsStatus, calculateProjectsStatus } from "./utils";
+import { calculateStatus } from "./utils";
 
 interface GoalsAndProjectsProps {
   space: Space;
@@ -62,11 +62,17 @@ function GoalItem({ goal }: { goal: Goal }) {
 
   return (
     <div className="flex items-center gap-1 overflow-hidden">
-      <SmallStatusIndicator status={goal.lastCheckIn?.status ?? "pending"} size="sm" hideText={true} />
+      <GoalStatusIndicator goal={goal} />
       <ProgressBar percentage={goal.progressPercentage} className="w-[50px] h-[9px]" />
       <div className="truncate">{goal.name}</div>
     </div>
   );
+}
+
+function GoalStatusIndicator({ goal }: { goal: Goal }) {
+  if (goal.isOutdated) return <SmallStatusIndicator status="outdated" size="sm" hideText={true} />;
+
+  return <SmallStatusIndicator status={goal.lastCheckIn?.status || "on_track"} size="sm" hideText={true} />;
 }
 
 function Projects({ projects }: { projects: Project[] }) {
@@ -109,6 +115,7 @@ interface ResourceStatus {
   on_track: number;
   caution: number;
   issue: number;
+  pending: number;
   total: number;
 }
 
@@ -116,9 +123,9 @@ function Header(props: GoalsHeader | ProjectsHeader) {
   const status: ResourceStatus = React.useMemo(() => {
     switch (props.type) {
       case "goals":
-        return calculateGoalsStatus(props.goals);
+        return calculateStatus(props.goals);
       case "projects":
-        return calculateProjectsStatus(props.projects);
+        return calculateStatus(props.projects);
     }
   }, []);
 
@@ -130,6 +137,7 @@ function Header(props: GoalsHeader | ProjectsHeader) {
           { size: status.on_track, color: "green" },
           { size: status.caution, color: "yellow" },
           { size: status.issue, color: "red" },
+          { size: status.pending, color: "gray" },
         ]}
       />
       {status.on_track}/{status.total} {props.type} on track
