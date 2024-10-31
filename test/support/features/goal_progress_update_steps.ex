@@ -72,9 +72,10 @@ defmodule Operately.Support.Features.GoalProgressUpdateSteps do
     |> UI.sleep(500)
   end
 
-  step :assert_progress_updated, ctx, %{message: message, target_values: target_values} do
+  step :assert_progress_updated, ctx, %{status: status, message: message, target_values: target_values} do
     ctx
     |> UI.assert_text("Progress Update from")
+    |> UI.assert_text(format_status(status))
     |> UI.assert_text(message)
     |> UI.assert_text("First response time")
     |> UI.assert_text("Increase feedback score to 90%")
@@ -170,6 +171,7 @@ defmodule Operately.Support.Features.GoalProgressUpdateSteps do
   step :assert_progress_update_edited, ctx, params do
     ctx
     |> UI.assert_text("Progress Update from")
+    |> UI.assert_text(format_status(params.status))
     |> UI.assert_text(params.message)
   end
 
@@ -202,5 +204,13 @@ defmodule Operately.Support.Features.GoalProgressUpdateSteps do
       author: ctx.reviewer,
       action: "commented on the progress update"
     })
+  end
+
+  defp format_status(status) do
+    status
+    |> String.replace("_", " ")
+    |> String.split()
+    |> Enum.map(&String.capitalize/1)
+    |> Enum.join(" ")
   end
 end
