@@ -2,7 +2,7 @@ defmodule Operately.Support.Features.UI.UserSession do
   alias Operately.Support.Features.UI
 
   def login_as(state, person) do
-    login_as(state, person, attempts: 10)
+    login_as(state, person, attempts: default_login_attempts())
   end
 
   #
@@ -23,7 +23,8 @@ defmodule Operately.Support.Features.UI.UserSession do
     |> UI.visit(login_url(person))
     |> UI.assert_has(testid: "company-home")
   rescue
-    _ -> 
+    e -> 
+      IO.inspect(e)
       IO.puts("\nFailed to login as #{person.email}, retrying in 1000ms...")
       :timer.sleep(1000)
       login_as(state, person, attempts: attempts - 1)
@@ -50,6 +51,14 @@ defmodule Operately.Support.Features.UI.UserSession do
 
   defp login_url(person) do
     URI.encode("/accounts/auth/test_login?email=#{person.email}&full_name=#{person.full_name}")
+  end
+
+  defp default_login_attempts() do
+    if System.get_env("CI") do
+      10
+    else
+      2
+    end
   end
 
 end

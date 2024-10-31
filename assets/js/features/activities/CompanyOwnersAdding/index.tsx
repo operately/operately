@@ -1,16 +1,17 @@
-import { Activity, ActivityContentCompanyAdminRemoved } from "@/api";
-import { ActivityHandler } from "../interfaces";
+import { firstName, namesListToString } from "@/models/people";
 import { feedTitle } from "../feedItemLinks";
-import { Paths } from "@/routes/paths";
-import { firstName } from "@/models/people";
 
-const CompanyAdminRemoved: ActivityHandler = {
+import type { Activity } from "@/models/activities";
+import type { ActivityContentCompanyOwnersAdding } from "@/api";
+import type { ActivityHandler } from "../interfaces";
+
+const CompanyOwnersAdding: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
     throw new Error("Not implemented");
   },
 
   pagePath(_activity: Activity) {
-    return Paths.companyAdminPath();
+    throw new Error("Not implemented");
   },
 
   PageTitle(_props: { activity: any }) {
@@ -26,9 +27,9 @@ const CompanyAdminRemoved: ActivityHandler = {
   },
 
   FeedItemTitle({ activity }: { activity: Activity; page: any }) {
-    const name = firstName(content(activity).person!);
+    const names = namesListToString(content(activity).owners!);
 
-    return feedTitle(activity, `has revoked ${name}'s admin privileges`);
+    return feedTitle(activity, "promoted", names, "to company owners");
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {
@@ -48,16 +49,16 @@ const CompanyAdminRemoved: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return firstName(activity.author!) + " has revoked your admin privileges";
+    return firstName(activity.author!) + " promoted you to company owner";
   },
 
-  NotificationLocation({ activity }: { activity: Activity }) {
-    return content(activity).company!.name!;
+  NotificationLocation(_props: { activity: Activity }) {
+    return null;
   },
 };
 
-export default CompanyAdminRemoved;
-
-function content(activity: Activity): ActivityContentCompanyAdminRemoved {
-  return activity.content as ActivityContentCompanyAdminRemoved;
+function content(activity: Activity): ActivityContentCompanyOwnersAdding {
+  return activity.content as ActivityContentCompanyOwnersAdding;
 }
+
+export default CompanyOwnersAdding;
