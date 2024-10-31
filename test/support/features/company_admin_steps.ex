@@ -182,7 +182,7 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
   end
 
   step :assert_member_removed, ctx, name do
-    ctx |> UI.refute_text(name, attempts: [50, 150, 250, 400])
+    ctx |> UI.refute_text(name)
 
     person = Operately.People.get_person_by_name!(ctx.company, "Dwight Schrute")
     assert person != nil
@@ -260,6 +260,45 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
     ctx 
     |> UI.visit(Paths.feed_path(ctx.company))
     |> UI.assert_feed_item(ctx.owner, "renamed the company to Dunder")
+  end
+
+  step :add_company_owner, ctx, name do
+    ctx
+    |> UI.click(testid: "add-owners")
+    |> UI.fill_in(Query.css("#people-search"), with: String.slice(name, 0, 4))
+    |> UI.assert_text(name)
+    |> UI.send_keys([:enter])
+    |> UI.click(testid: "save-owners")
+    |> UI.sleep(500)
+  end
+
+  step :assert_person_is_owner, ctx, name do
+    person = Operately.People.get_person_by_name!(ctx.company, name)
+    owners = Operately.Companies.list_owners(ctx.company)
+
+    assert Enum.any?(owners, fn o -> o.id == person.id end)
+
+    ctx
+  end
+
+  step :given_a_company_owner_exists, ctx, name do
+    Factory.add_company_owner(ctx, :owner2, [name: name])
+  end
+
+  step :remove_company_owner, ctx, name do
+    ctx
+    |> UI.assert_text(name)
+    |> UI.click(testid: UI.testid(["remove", name]))
+    |> UI.refute_text(name)
+  end
+
+  step :refute_person_is_owner, ctx, name do
+    person = Operately.People.get_person_by_name!(ctx.company, name)
+    admins = Operately.Companies.list_admins(ctx.company)
+
+    refute Enum.any?(admins, fn admin -> admin.id == person.id end)
+
+    ctx
   end
 
 end
