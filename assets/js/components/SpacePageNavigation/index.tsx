@@ -15,9 +15,10 @@ import { assertPresent } from "@/utils/assertions";
 interface SpacePageNavigationProps {
   space: Spaces.Space;
   activeTab: "overview" | "discussions" | "goals" | "projects";
+  hideWhenOnOverview?: boolean;
 }
 
-export function SpacePageNavigation({ space, activeTab }: SpacePageNavigationProps) {
+export function SpacePageNavigation({ space, activeTab, hideWhenOnOverview }: SpacePageNavigationProps) {
   const { negTop, negHor } = Paper.usePaperSizeHelpers();
 
   const overviewPath = Paths.spacePath(space.id!);
@@ -30,6 +31,14 @@ export function SpacePageNavigation({ space, activeTab }: SpacePageNavigationPro
     negHor,
     negTop,
   );
+
+  if (hideWhenOnOverview && activeTab === "overview") {
+    return (
+      <div className="flex absolute right-3 top-2">
+        <Settings space={space} />
+      </div>
+    );
+  }
 
   return (
     <div className={wrapperClassName}>

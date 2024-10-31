@@ -28,7 +28,7 @@ export function Page() {
     <Pages.Page title={space.name!} testId="space-page">
       <Paper.Root size="large">
         <Paper.Body>
-          <SpacePageNavigation space={space} activeTab="overview" />
+          <SpacePageNavigation space={space} activeTab="overview" hideWhenOnOverview={true} />
           <SpaceHeader space={space} />
           <SpaceMembers space={space} />
           <JoinButton space={space} />
