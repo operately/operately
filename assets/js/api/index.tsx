@@ -195,13 +195,14 @@ export interface ActivityContentGoalArchived {
 }
 
 export interface ActivityContentGoalCheckIn {
+  goalId?: string | null;
   goal?: Goal | null;
-  update?: Update | null;
+  update?: GoalProgressUpdate | null;
 }
 
 export interface ActivityContentGoalCheckInAcknowledgement {
   goal?: Goal | null;
-  update?: Update | null;
+  update?: GoalProgressUpdate | null;
 }
 
 export interface ActivityContentGoalCheckInCommented {
@@ -1055,22 +1056,6 @@ export interface Update {
   commentsCount?: number | null;
 }
 
-export interface UpdateContentGoalCheckIn {
-  message?: string | null;
-  targets?: UpdateContentGoalCheckInTarget[] | null;
-}
-
-export interface UpdateContentGoalCheckInTarget {
-  id?: string | null;
-  name?: string | null;
-  value?: number | null;
-  unit?: string | null;
-  previousValue?: number | null;
-  index?: number | null;
-  from?: number | null;
-  to?: number | null;
-}
-
 export interface UpdateContentMessage {
   message?: string | null;
 }
@@ -1235,7 +1220,6 @@ export type UpdateContent =
   | UpdateContentProjectMilestoneDeadlineChanged
   | UpdateContentProjectMilestoneDeleted
   | UpdateContentStatusUpdate
-  | UpdateContentGoalCheckIn
   | UpdateContentReview
   | UpdateContentProjectDiscussion
   | UpdateContentMessage;
