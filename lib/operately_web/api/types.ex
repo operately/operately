@@ -20,6 +20,7 @@ defmodule OperatelyWeb.Api.Types do
   object :activity_content_company_owner_removing do
     field :company_id, :string
     field :person_id, :string
+    field :person, :person
   end
 
   object :activity_content_space_added do

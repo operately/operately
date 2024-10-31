@@ -1,8 +1,9 @@
-import * as People from "@/models/people";
-
 import type { Activity } from "@/models/activities";
 import type { ActivityContentCompanyOwnerRemoving } from "@/api";
 import type { ActivityHandler } from "../interfaces";
+
+import { feedTitle } from "../feedItemLinks";
+import { firstName } from "@/models/people";
 
 const CompanyOwnerRemoving: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -25,8 +26,10 @@ const CompanyOwnerRemoving: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle(_props: { activity: Activity }) {
-    return null;
+  FeedItemTitle({ activity }: { activity: Activity; page: any }) {
+    const name = firstName(content(activity).person!);
+
+    return feedTitle(activity, `has revoked ${name}'s owner privileges`);
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {
@@ -45,8 +48,8 @@ const CompanyOwnerRemoving: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  NotificationTitle(_props: { activity: Activity }) {
-    return null;
+  NotificationTitle({ activity }: { activity: Activity }) {
+    return firstName(activity.author!) + " has revoked your owner privileges";
   },
 
   NotificationLocation(_props: { activity: Activity }) {
