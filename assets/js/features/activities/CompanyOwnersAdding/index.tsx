@@ -4,6 +4,7 @@ import { feedTitle } from "../feedItemLinks";
 import type { Activity } from "@/models/activities";
 import type { ActivityContentCompanyOwnersAdding } from "@/api";
 import type { ActivityHandler } from "../interfaces";
+import { Paths } from "@/routes/paths";
 
 const CompanyOwnersAdding: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -11,7 +12,7 @@ const CompanyOwnersAdding: ActivityHandler = {
   },
 
   pagePath(_activity: Activity) {
-    throw new Error("Not implemented");
+    return Paths.companyAdminPath();
   },
 
   PageTitle(_props: { activity: any }) {
@@ -27,9 +28,10 @@ const CompanyOwnersAdding: ActivityHandler = {
   },
 
   FeedItemTitle({ activity }: { activity: Activity; page: any }) {
-    const names = namesListToString(content(activity).owners!);
+    const people = content(activity).people!.map((p) => p.person!);
+    const names = namesListToString(people);
 
-    return feedTitle(activity, "promoted", names, "to company owners");
+    return feedTitle(activity, "promoted", names, "to account owner");
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {
@@ -49,7 +51,7 @@ const CompanyOwnersAdding: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return firstName(activity.author!) + " promoted you to company owner";
+    return firstName(activity.author!) + " promoted you to an account owner";
   },
 
   NotificationLocation(_props: { activity: Activity }) {

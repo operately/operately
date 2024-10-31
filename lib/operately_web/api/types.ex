@@ -961,7 +961,11 @@ defmodule OperatelyWeb.Api.Types do
 
   object :activity_content_company_owners_adding do
     field :company, :company
-    field :owners, list_of(:person)
+    field :people, list_of(:activity_content_company_owners_adding_person)
+  end
+
+  object :activity_content_company_owners_adding_person do
+    field :person, :person
   end
 
   object :activity_content_company_admin_removed do

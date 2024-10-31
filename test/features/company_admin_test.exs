@@ -51,8 +51,8 @@ defmodule Operately.Features.CompanyAdminTest do
     |> Steps.open_manage_admins_page()
     |> Steps.add_company_owner()
     |> Steps.assert_person_is_owner()
-    |> Steps.assert_notification_and_email_sent_to_new_owner()
     |> Steps.assert_feed_item_for_new_owner()
+    |> Steps.assert_notification_and_email_sent_to_new_owner()
   end
 
   @tag role: :owner
