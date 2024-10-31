@@ -30,3 +30,7 @@ export function Container({ children, path, toolsCount }: ContainerProps) {
     </DivLink>
   );
 }
+
+export function ZeroResourcesContainer({ children }) {
+  return <div className="text-center text-base font-semibold py-4 px-2">{children}</div>;
+}
