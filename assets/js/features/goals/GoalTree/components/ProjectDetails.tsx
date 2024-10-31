@@ -15,6 +15,7 @@ import { MilestoneIcon } from "@/components/MilestoneIcon";
 import { DivLink } from "@/components/Link";
 import { assertPresent } from "@/utils/assertions";
 import { truncateString } from "@/utils/strings";
+import { createTestId } from "@/utils/testid";
 import { Paths } from "@/routes/paths";
 
 import { ProjectNode } from "../tree";
@@ -33,6 +34,7 @@ export function ProjectDetails({ node }: { node: ProjectNode }) {
 
 function Status({ project }: { project: Project }) {
   const [showCheckIn, setShowCheckIn] = useState(false);
+  const testId = createTestId("status", project.id!);
 
   const toggleShowCheckIn = () => {
     setShowCheckIn((prev) => !prev);
@@ -46,7 +48,7 @@ function Status({ project }: { project: Project }) {
     // The 14px padding-right in the container is the same
     // as the 14px offset in icon.
     <div className="pr-[14px]">
-      <div onClick={toggleShowCheckIn} className="relative cursor-pointer">
+      <div onClick={toggleShowCheckIn} className="relative cursor-pointer" data-test-id={testId}>
         <StatusIndicator project={project} size="sm" textClassName="text-content-dimmed" />
         <IconArrowUpRight size={12} className="absolute top-0 right-[-14px]" />
       </div>

@@ -37,6 +37,19 @@ defmodule Operately.Support.Features.GoalTreeSteps do
     ctx
   end
 
+  step :given_goal_update_exist, ctx do
+    ctx
+    |> Factory.add_goal_update(:update, :goal_1, :john)
+  end
+
+  step :given_project_check_in_exist, ctx do
+    ctx = Factory.add_project_check_in(ctx, :check_in, :project_alpha, :creator)
+
+    {:ok, _} = Operately.Projects.update_project(ctx.project_alpha, %{last_check_in_id: ctx.check_in.id})
+
+    ctx
+  end
+
   step :close_project, ctx, id do
     project = ctx[id]
 
@@ -147,6 +160,33 @@ defmodule Operately.Support.Features.GoalTreeSteps do
     |> UI.click(testid: "view-options")
     |> UI.click(testid: "reviewedBy-me")
     |> UI.click(testid: "submit")
+  end
+
+  step :open_status_pop_up, ctx, attrs do
+    testid = cond do
+      Map.has_key?(attrs, :goal) -> UI.testid(["status", Paths.goal_id(attrs.goal)])
+      Map.has_key?(attrs, :project) -> UI.testid(["status", Paths.goal_id(attrs.project)])
+    end
+
+    ctx
+    |> UI.click(testid: testid)
+  end
+
+  step :assert_goal_update_content, ctx do
+    ctx
+    |> UI.assert_text("1. How's the goal going?")
+    |> UI.assert_text("On Track")
+    |> UI.assert_text("Work is progressing as planned")
+    |> UI.assert_text("2. What's new since the last update?")
+    |> UI.assert_text("3. Success conditions")
+  end
+
+  step :assert_project_check_in_content, ctx do
+    ctx
+    |> UI.assert_text("1. How's the project going?")
+    |> UI.assert_text("On Track")
+    |> UI.assert_text("Work is progressing as planned")
+    |> UI.assert_text("2. What's new since the last check-in?")
   end
 
   step :assert_goal_success_conditions_are_visible, ctx do
