@@ -22,7 +22,7 @@ defmodule Mix.Tasks.Operation.GenApiMutation do
           field :something, :something  # TODO
         end
 
-        def run(conn, inputs) do
+        def call(conn, inputs) do
           Action.new()
           |> run(:me, fn -> find_me(conn) end)
           |> run(:attrs, fn -> decode_inputs(inputs) end)
