@@ -1,19 +1,23 @@
-defmodule Operately.Operations.CompanyOwnerAdding do
+defmodule Operately.Operations.CompanyOwnersAdding do
   alias Ecto.Multi
-  alias Operately.{Repo, Access}
-  alias Operately.Access.{Binding}
-  alias Operately.People.Person
+  alias Operately.Repo
+  alias Operately.{Repo, Access, Activities}
+  alias Operately.Access.Binding
 
-  def run(author, %Person{} = person), do: run(author, person.id)
   def run(author, id) when is_binary(id), do: run(author, [id])
 
-  def run(author, ids) do
+  def run(author, ids) when is_list(ids) do
     Multi.new()
     |> Multi.put(:author, author)
     |> Multi.put(:context, Access.get_context!(company_id: author.company_id))
-    |> Multi.put(:owner_group, Access.get_group!(company_id: author.company_id, tag: :full_access))
+    |> Multi.put(:owner_group, Access.get_group(company_id: author.company_id, tag: :full_access))
     |> add_owners(ids)
-    |> insert_activity(author)
+    |> Activities.insert_sync(author.id, :company_owners_adding, fn _ ->
+      %{
+        company_id: author.company_id,
+        owner_ids: ids,
+      }
+    end)
     |> Repo.transaction()
   end
 
@@ -26,10 +30,5 @@ defmodule Operately.Operations.CompanyOwnerAdding do
         {:ok, person}
       end)
     end)
-  end
-
-  defp insert_activity(multi, _) do
-    # TODO
-    multi
   end
 end
