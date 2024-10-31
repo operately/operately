@@ -12,7 +12,7 @@ defmodule Mix.Tasks.Operation.GenApiMutation do
         use TurboConnect.Mutation
         use OperatelyWeb.Api.Helpers
 
-        alias Operately.Operation.#{ctx.operation_module_name}
+        alias Operately.Operations.#{ctx.operation_module_name}
 
         inputs do
           #{Mix.Operately.indent(fields, 4)}
@@ -23,23 +23,31 @@ defmodule Mix.Tasks.Operation.GenApiMutation do
         end
 
         def call(conn, inputs) do
-          Action.new()
-          |> run(:me, fn -> find_me(conn) end)
-          |> run(:attrs, fn -> decode_inputs(inputs) end)
-          |> run(:operation, fn ctx -> #{ctx.operation_module_name}.run(ctx.me, ctx.attrs) end)
-          |> run(:serialized, fn ctx -> {:ok, %{something: Serializer.serialize(ctx.operation, level: :essential)}} end)
-          |> respond()
+          with(
+            {:ok, me} <- find_me(conn),
+            {:ok, resource} <- find_resource(me, inputs),
+            {:ok, :allowed} <- authorize(company),
+            {:ok, result} <- execute(#{ctx.operation_module_name}.run(ctx.me, ctx.attrs) end)
+            {:ok, seriliazed} <- %{person: Serializer.serialize(result, level: :full)}
+          ) do
+            {:ok, %{something: serialized}}
+          else
+            {:error, :forbidden} -> {:error, :forbidden}
+            {:error, :not_found} -> {:error, :not_found}
+            {:error, _} -> {:error, :internal_server_error}
+          end
         end
 
-        defp respond(result) do
-          case result do
-            {:ok, ctx} -> {:ok, ctx.serialized}
-            {:error, :attrs, _} -> {:error, :bad_request}
-            {:error, :space, _} -> {:error, :not_found}
-            {:error, :check_permissions, _} -> {:error, :forbidden}
-            {:error, :operation, _} -> {:error, :internal_server_error}
-            _ -> {:error, :internal_server_error}
-          end
+        defp authorize(resource) do
+          # Permissions.check(resource.request_info.access_level, :can_do_things)
+        end
+
+        defp find_resource(me, _inputs) do
+          # e.g. Project.get(me, id: inputs.project_id)
+        end
+
+        defp execute(me, resource, inputs) do
+          #{ctx.operation_module_name}.run(me, resource, inputs)
         end
       end
       """
