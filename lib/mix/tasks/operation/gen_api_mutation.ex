@@ -1,6 +1,19 @@
 defmodule Mix.Tasks.Operation.GenApiMutation do
 
   def gen(ctx) do
+    gen_content(ctx)
+    gen_router_snippet(ctx)
+  end
+
+  def gen_router_snippet(ctx) do
+    file_path = "lib/operately_web/api.ex"
+    content = "  mutation :#{ctx.action}_#{ctx.resource}, M.#{ctx.operation_module_name}"
+    line = find_insertion_point(file_path)
+
+    Mix.Operately.inject_into_file(file_path, content, line)
+  end
+
+  def gen_content(ctx) do
     fields = 
       ctx.activity_fields 
       |> Enum.map(fn {name, type} -> "field :#{name}, :#{type}" end)
@@ -52,6 +65,13 @@ defmodule Mix.Tasks.Operation.GenApiMutation do
       end
       """
     end)
+  end
+
+  defp find_insertion_point(file_path) do
+    file_path
+    |> File.read!()
+    |> String.split("\n")
+    |> Enum.find_index(fn line -> String.contains?(line, "mutation :") end)
   end
 
 end
