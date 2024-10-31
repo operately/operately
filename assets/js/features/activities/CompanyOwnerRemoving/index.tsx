@@ -1,10 +1,12 @@
-import { Activity, ActivityContentCompanyAdminRemoved } from "@/api";
-import { ActivityHandler } from "../interfaces";
-import { feedTitle } from "../feedItemLinks";
+import type { Activity } from "@/models/activities";
+import type { ActivityContentCompanyOwnerRemoving } from "@/api";
+import type { ActivityHandler } from "../interfaces";
 import { Paths } from "@/routes/paths";
+
+import { feedTitle } from "../feedItemLinks";
 import { firstName } from "@/models/people";
 
-const CompanyAdminRemoved: ActivityHandler = {
+const CompanyOwnerRemoving: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
     throw new Error("Not implemented");
   },
@@ -28,7 +30,7 @@ const CompanyAdminRemoved: ActivityHandler = {
   FeedItemTitle({ activity }: { activity: Activity; page: any }) {
     const name = firstName(content(activity).person!);
 
-    return feedTitle(activity, `has revoked ${name}'s admin privileges`);
+    return feedTitle(activity, `removed ${name} as an account owner`);
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {
@@ -48,16 +50,16 @@ const CompanyAdminRemoved: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return firstName(activity.author!) + " has revoked your admin privileges";
+    return firstName(activity.author!) + " has revoked your account owner status";
   },
 
-  NotificationLocation({ activity }: { activity: Activity }) {
-    return content(activity).company!.name!;
+  NotificationLocation(_props: { activity: Activity }) {
+    return null;
   },
 };
 
-export default CompanyAdminRemoved;
-
-function content(activity: Activity): ActivityContentCompanyAdminRemoved {
-  return activity.content as ActivityContentCompanyAdminRemoved;
+function content(activity: Activity): ActivityContentCompanyOwnerRemoving {
+  return activity.content as ActivityContentCompanyOwnerRemoving;
 }
+
+export default CompanyOwnerRemoving;

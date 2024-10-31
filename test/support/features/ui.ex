@@ -262,11 +262,7 @@ defmodule Operately.Support.Features.UI do
   end
 
   def refute_text(state, text) do
-    execute(state, fn session ->
-      visible_text = session |> Browser.text()
-      refute String.contains?(visible_text, text)
-      session
-    end)
+    refute_text(state, text, attempts: [50, 150, 250, 400, 1000])
   end
 
   def refute_text(state, text, testid: id) do
@@ -287,8 +283,8 @@ defmodule Operately.Support.Features.UI do
 
       cond do
         not text_found -> session
-        attempts == [] -> refute_text(state, text)
-        true -> refute_text(state, text, attempts: attempts)
+        attempts == [] -> refute_text(state, text).session
+        true -> refute_text(state, text, attempts: attempts).session
       end
     end)
   end
