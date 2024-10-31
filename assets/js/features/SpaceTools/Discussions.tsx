@@ -9,7 +9,7 @@ import { richContentToString } from "@/components/RichContent";
 import Avatar from "@/components/Avatar";
 import classNames from "classnames";
 
-import { Title, Container } from "./components";
+import { Title, Container, ZeroResourcesContainer } from "./components";
 
 interface DiscussionsProps {
   space: Space;
@@ -23,9 +23,13 @@ export function Discussions({ space, discussions, toolsCount }: DiscussionsProps
   return (
     <Container path={path} toolsCount={toolsCount}>
       <Title title="Discussions" />
-      <DiscussionList discussions={discussions} />
+      {discussions.length < 1 ? <ZeroDiscussions /> : <DiscussionList discussions={discussions} />}
     </Container>
   );
+}
+
+function ZeroDiscussions() {
+  return <ZeroResourcesContainer>Post announcements, pitch ideas, and start discussions.</ZeroResourcesContainer>;
 }
 
 function DiscussionList({ discussions }: { discussions: Discussion[] }) {

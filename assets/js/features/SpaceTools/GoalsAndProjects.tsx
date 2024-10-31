@@ -12,7 +12,7 @@ import { SmallStatusIndicator } from "@/components/status";
 import { assertPresent } from "@/utils/assertions";
 import { Paths } from "@/routes/paths";
 
-import { Container, Title } from "./components";
+import { Container, Title, ZeroResourcesContainer } from "./components";
 import { calculateStatus } from "./utils";
 
 interface GoalsAndProjectsProps {
@@ -39,13 +39,26 @@ export function GoalsAndProjects({ space, goals, projects, toolsCount }: GoalsAn
   return (
     <Container path={path} toolsCount={toolsCount}>
       <Title title="Goals & Projects" />
-      <Goals goals={slicedGoals} />
-      <Projects projects={projects} />
+
+      {goals.length < 1 && projects.length < 1 ? (
+        <ZeroGoalsAndProjects />
+      ) : (
+        <>
+          <Goals goals={slicedGoals} />
+          <Projects projects={projects} />
+        </>
+      )}
     </Container>
   );
 }
 
+function ZeroGoalsAndProjects() {
+  return <ZeroResourcesContainer>Add a new goal or project to begin tracking your progress!</ZeroResourcesContainer>;
+}
+
 function Goals({ goals }: { goals: Goal[] }) {
+  if (goals.length < 1) return <></>;
+
   return (
     <div className="flex flex-col gap-2 px-2 py-3">
       <Header goals={goals} type="goals" />
@@ -63,7 +76,10 @@ function GoalItem({ goal }: { goal: Goal }) {
   return (
     <div className="flex items-center gap-1 overflow-hidden">
       <GoalStatusIndicator goal={goal} />
-      <ProgressBar percentage={goal.progressPercentage} className="w-[50px] h-[9px]" />
+      {/* Extra div is necessary to ensure all bars have the same size */}
+      <div>
+        <ProgressBar percentage={goal.progressPercentage} className="w-[50px] h-[9px]" />
+      </div>
       <div className="truncate">{goal.name}</div>
     </div>
   );
@@ -76,6 +92,8 @@ function GoalStatusIndicator({ goal }: { goal: Goal }) {
 }
 
 function Projects({ projects }: { projects: Project[] }) {
+  if (projects.length < 1) return <></>;
+
   return (
     <div className="flex flex-col gap-2 px-2 py-3">
       <Header projects={projects} type="projects" />

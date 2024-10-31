@@ -15,7 +15,7 @@ import { Paths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 
 export function Page() {
-  const { space } = useLoadedData();
+  const { space, discussions } = useLoadedData();
 
   return (
     <Pages.Page title={space.name!}>
@@ -28,10 +28,19 @@ export function Page() {
               New Discussion
             </PrimaryButton>
           </div>
-          <DiscussionList />
+
+          {discussions.length < 1 ? <ZeroDiscussions /> : <DiscussionList />}
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
+  );
+}
+
+function ZeroDiscussions() {
+  return (
+    <div className="text-center text-base font-semibold mt-28">
+      Post announcements, pitch ideas, and start discussions.
+    </div>
   );
 }
 
