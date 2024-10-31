@@ -52,7 +52,7 @@ defmodule OperatelyWeb.Api do
   mutation :add_company, M.AddCompany
   mutation :add_company_admins, M.AddCompanyAdmins
   mutation :add_company_member, M.AddCompanyMember
-  mutation :add_company_onwers, M.AddCompanyOwners
+  mutation :add_company_owners, M.AddCompanyOwners
   mutation :add_company_trusted_email_domain, M.AddCompanyTrustedEmailDomain
   mutation :add_first_company, M.AddFirstCompany
   mutation :add_space_members, M.AddSpaceMembers

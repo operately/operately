@@ -167,6 +167,11 @@ export interface ActivityContentCompanyEditing {
   oldName?: string | null;
 }
 
+export interface ActivityContentCompanyOwnerRemoving {
+  companyId?: string | null;
+  personId?: string | null;
+}
+
 export interface ActivityContentCompanyOwnersAdding {
   company?: Company | null;
   owners?: Person[] | null;
@@ -1686,6 +1691,12 @@ export interface AddCompanyMemberResult {
   invitation?: Invitation | null;
 }
 
+export interface AddCompanyOwnersInput {
+  peopleIds?: Id[] | null;
+}
+
+export interface AddCompanyOwnersResult {}
+
 export interface AddCompanyTrustedEmailDomainInput {
   companyId?: string | null;
   domain?: string | null;
@@ -2212,6 +2223,12 @@ export interface RemoveCompanyMemberResult {
   person?: Person | null;
 }
 
+export interface RemoveCompanyOwnerInput {
+  personId?: Id | null;
+}
+
+export interface RemoveCompanyOwnerResult {}
+
 export interface RemoveCompanyTrustedEmailDomainInput {
   companyId?: string | null;
   domain?: string | null;
@@ -2565,6 +2582,10 @@ export class ApiClient {
     return this.post("/add_company_member", input);
   }
 
+  async addCompanyOwners(input: AddCompanyOwnersInput): Promise<AddCompanyOwnersResult> {
+    return this.post("/add_company_owners", input);
+  }
+
   async addCompanyTrustedEmailDomain(
     input: AddCompanyTrustedEmailDomainInput,
   ): Promise<AddCompanyTrustedEmailDomainResult> {
@@ -2781,6 +2802,10 @@ export class ApiClient {
     return this.post("/remove_company_member", input);
   }
 
+  async removeCompanyOwner(input: RemoveCompanyOwnerInput): Promise<RemoveCompanyOwnerResult> {
+    return this.post("/remove_company_owner", input);
+  }
+
   async removeCompanyTrustedEmailDomain(
     input: RemoveCompanyTrustedEmailDomainInput,
   ): Promise<RemoveCompanyTrustedEmailDomainResult> {
@@ -2990,6 +3015,9 @@ export async function addCompanyAdmins(input: AddCompanyAdminsInput): Promise<Ad
 export async function addCompanyMember(input: AddCompanyMemberInput): Promise<AddCompanyMemberResult> {
   return defaultApiClient.addCompanyMember(input);
 }
+export async function addCompanyOwners(input: AddCompanyOwnersInput): Promise<AddCompanyOwnersResult> {
+  return defaultApiClient.addCompanyOwners(input);
+}
 export async function addCompanyTrustedEmailDomain(
   input: AddCompanyTrustedEmailDomainInput,
 ): Promise<AddCompanyTrustedEmailDomainResult> {
@@ -3170,6 +3198,9 @@ export async function removeCompanyAdmin(input: RemoveCompanyAdminInput): Promis
 }
 export async function removeCompanyMember(input: RemoveCompanyMemberInput): Promise<RemoveCompanyMemberResult> {
   return defaultApiClient.removeCompanyMember(input);
+}
+export async function removeCompanyOwner(input: RemoveCompanyOwnerInput): Promise<RemoveCompanyOwnerResult> {
+  return defaultApiClient.removeCompanyOwner(input);
 }
 export async function removeCompanyTrustedEmailDomain(
   input: RemoveCompanyTrustedEmailDomainInput,
@@ -3426,6 +3457,12 @@ export function useAddCompanyAdmins(): UseMutationHookResult<AddCompanyAdminsInp
 export function useAddCompanyMember(): UseMutationHookResult<AddCompanyMemberInput, AddCompanyMemberResult> {
   return useMutation<AddCompanyMemberInput, AddCompanyMemberResult>((input) =>
     defaultApiClient.addCompanyMember(input),
+  );
+}
+
+export function useAddCompanyOwners(): UseMutationHookResult<AddCompanyOwnersInput, AddCompanyOwnersResult> {
+  return useMutation<AddCompanyOwnersInput, AddCompanyOwnersResult>((input) =>
+    defaultApiClient.addCompanyOwners(input),
   );
 }
 
@@ -3751,6 +3788,12 @@ export function useRemoveCompanyMember(): UseMutationHookResult<RemoveCompanyMem
   );
 }
 
+export function useRemoveCompanyOwner(): UseMutationHookResult<RemoveCompanyOwnerInput, RemoveCompanyOwnerResult> {
+  return useMutation<RemoveCompanyOwnerInput, RemoveCompanyOwnerResult>((input) =>
+    defaultApiClient.removeCompanyOwner(input),
+  );
+}
+
 export function useRemoveCompanyTrustedEmailDomain(): UseMutationHookResult<
   RemoveCompanyTrustedEmailDomainInput,
   RemoveCompanyTrustedEmailDomainResult
@@ -3953,6 +3996,8 @@ export default {
   useAddCompanyAdmins,
   addCompanyMember,
   useAddCompanyMember,
+  addCompanyOwners,
+  useAddCompanyOwners,
   addCompanyTrustedEmailDomain,
   useAddCompanyTrustedEmailDomain,
   addFirstCompany,
@@ -4059,6 +4104,8 @@ export default {
   useRemoveCompanyAdmin,
   removeCompanyMember,
   useRemoveCompanyMember,
+  removeCompanyOwner,
+  useRemoveCompanyOwner,
   removeCompanyTrustedEmailDomain,
   useRemoveCompanyTrustedEmailDomain,
   removeGroupMember,
