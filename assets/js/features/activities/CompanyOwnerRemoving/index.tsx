@@ -1,16 +1,17 @@
-import { Activity, ActivityContentCompanyAdminAdded } from "@/api";
-import { ActivityHandler } from "../interfaces";
-import { feedTitle } from "../feedItemLinks";
-import { Paths } from "@/routes/paths";
-import { firstName, namesListToString } from "@/models/people";
+import type { Activity } from "@/models/activities";
+import type { ActivityContentCompanyOwnerRemoving } from "@/api";
+import type { ActivityHandler } from "../interfaces";
 
-const CompanyAdminAdded: ActivityHandler = {
+import { feedTitle } from "../feedItemLinks";
+import { firstName } from "@/models/people";
+
+const CompanyOwnerRemoving: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
     throw new Error("Not implemented");
   },
 
-  pagePath(): string {
-    return Paths.orgChartPath();
+  pagePath(_activity: Activity) {
+    throw new Error("Not implemented");
   },
 
   PageTitle(_props: { activity: any }) {
@@ -26,9 +27,9 @@ const CompanyAdminAdded: ActivityHandler = {
   },
 
   FeedItemTitle({ activity }: { activity: Activity; page: any }) {
-    const names = namesListToString(content(activity).people!);
+    const name = firstName(content(activity).person!);
 
-    return feedTitle(activity, "has granted admin privileges to", names);
+    return feedTitle(activity, `has revoked ${name}'s owner privileges`);
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {
@@ -48,16 +49,16 @@ const CompanyAdminAdded: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return firstName(activity.author!) + " granted you admin privileges";
+    return firstName(activity.author!) + " has revoked your owner privileges";
   },
 
-  NotificationLocation({ activity }: { activity: Activity }) {
-    return content(activity).company!.name!;
+  NotificationLocation(_props: { activity: Activity }) {
+    return null;
   },
 };
 
-export default CompanyAdminAdded;
-
-function content(activity: Activity): ActivityContentCompanyAdminAdded {
-  return activity.content as ActivityContentCompanyAdminAdded;
+function content(activity: Activity): ActivityContentCompanyOwnerRemoving {
+  return activity.content as ActivityContentCompanyOwnerRemoving;
 }
+
+export default CompanyOwnerRemoving;

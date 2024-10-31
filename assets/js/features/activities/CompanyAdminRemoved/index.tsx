@@ -4,7 +4,7 @@ import { feedTitle } from "../feedItemLinks";
 import { Paths } from "@/routes/paths";
 import { firstName } from "@/models/people";
 
-const SpaceMembersAdded: ActivityHandler = {
+const CompanyAdminRemoved: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
     throw new Error("Not implemented");
   },
@@ -56,7 +56,7 @@ const SpaceMembersAdded: ActivityHandler = {
   },
 };
 
-export default SpaceMembersAdded;
+export default CompanyAdminRemoved;
 
 function content(activity: Activity): ActivityContentCompanyAdminRemoved {
   return activity.content as ActivityContentCompanyAdminRemoved;

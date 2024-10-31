@@ -1,0 +1,11 @@
+defimpl OperatelyWeb.Api.Serializable, for: Operately.Activities.Content.CompanyOwnerRemoving do
+  alias OperatelyWeb.Api.Serializer
+
+  def serialize(content, level: :essential) do
+    %{
+      company_id: Serializer.serialize(content["company_id"], level: :essential),
+      person_id: Serializer.serialize(content["person_id"], level: :essential),
+      person: Serializer.serialize(content["person"], level: :essential)
+    }
+  end
+end
