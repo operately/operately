@@ -76,7 +76,7 @@ function StatusDescription({ status, reviewer }: { status: StatusOptions; review
         </>
       );
     case "pending":
-      return <>Work on this goal hasn't started yet.</>;
+      return <>Work hasn't started yet.</>;
 
     default:
       throw new Error(`Unknown status: ${status}`);

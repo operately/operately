@@ -47,6 +47,22 @@ defmodule Operately.Features.GoalTreeTest do
     |> Steps.assert_goal_success_conditions_are_hidden()
   end
 
+  feature "display goal's last update", ctx do
+    ctx
+    |> Steps.given_goal_update_exist()
+    |> Steps.visit_goals_v2_page()
+    |> Steps.open_status_pop_up(%{goal: ctx.goal_1})
+    |> Steps.assert_goal_update_content()
+  end
+
+  feature "display project's last update", ctx do
+    ctx
+    |> Steps.given_project_check_in_exist()
+    |> Steps.visit_goals_v2_page()
+    |> Steps.open_status_pop_up(%{project: ctx.project_alpha})
+    |> Steps.assert_project_check_in_content()
+  end
+
   describe "filter goals and projects" do
     feature "active projects", ctx do
       ctx
