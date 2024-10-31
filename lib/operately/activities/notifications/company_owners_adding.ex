@@ -1,6 +1,4 @@
 defmodule Operately.Activities.Notifications.CompanyOwnersAdding do
-  alias Operately.Goals.Notifications
-
   def dispatch(activity) do
     Enum.map(activity.content["people"], fn p ->
       %{

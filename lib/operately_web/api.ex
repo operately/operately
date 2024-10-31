@@ -49,25 +49,17 @@ defmodule OperatelyWeb.Api do
   query :search_potential_space_members, Q.SearchPotentialSpaceMembers
   query :search_project_contributor_candidates, Q.SearchProjectContributorCandidates
 
-  mutation :acknowledge_goal_progress_update, M.AcknowledgeGoalProgressUpdate
-  mutation :acknowledge_project_check_in, M.AcknowledgeProjectCheckIn
+  mutation :add_company, M.AddCompany
   mutation :add_company_admins, M.AddCompanyAdmins
   mutation :add_company_member, M.AddCompanyMember
+  mutation :add_company_onwers, M.AddCompanyOwners
   mutation :add_company_trusted_email_domain, M.AddCompanyTrustedEmailDomain
   mutation :add_first_company, M.AddFirstCompany
-  mutation :add_company, M.AddCompany
   mutation :add_space_members, M.AddSpaceMembers
   mutation :add_key_resource, M.AddKeyResource
   mutation :add_project_contributor, M.AddProjectContributor
   mutation :add_project_contributors, M.AddProjectContributors
   mutation :add_reaction, M.AddReaction
-  mutation :archive_goal, M.ArchiveGoal
-  mutation :archive_project, M.ArchiveProject
-  mutation :change_goal_parent, M.ChangeGoalParent
-  mutation :change_task_description, M.ChangeTaskDescription
-  mutation :close_goal, M.CloseGoal
-  mutation :close_project, M.CloseProject
-  mutation :connect_goal_to_project, M.ConnectGoalToProject
 
   mutation :create_blob, M.CreateBlob
   mutation :create_comment, M.CreateComment
@@ -76,6 +68,15 @@ defmodule OperatelyWeb.Api do
   mutation :create_space, M.CreateSpace
   mutation :create_project, M.CreateProject
   mutation :create_task, M.CreateTask
+
+  mutation :remove_company_admin, M.RemoveCompanyAdmin
+  mutation :remove_company_member, M.RemoveCompanyMember
+  mutation :remove_company_trusted_email_domain, M.RemoveCompanyTrustedEmailDomain
+  mutation :remove_group_member, M.RemoveGroupMember
+  mutation :remove_key_resource, M.RemoveKeyResource
+  mutation :remove_project_contributor, M.RemoveProjectContributor
+  mutation :remove_project_milestone, M.RemoveProjectMilestone
+  mutation :remove_company_owner, M.RemoveCompanyOwner
 
   mutation :edit_company, M.EditCompany
   mutation :edit_comment, M.EditComment
@@ -108,13 +109,17 @@ defmodule OperatelyWeb.Api do
   mutation :post_goal_progress_update, M.PostGoalProgressUpdate
   mutation :post_milestone_comment, M.PostMilestoneComment
   mutation :post_project_check_in, M.PostProjectCheckIn
-  mutation :remove_company_admin, M.RemoveCompanyAdmin
-  mutation :remove_company_member, M.RemoveCompanyMember
-  mutation :remove_company_trusted_email_domain, M.RemoveCompanyTrustedEmailDomain
-  mutation :remove_group_member, M.RemoveGroupMember
-  mutation :remove_key_resource, M.RemoveKeyResource
-  mutation :remove_project_contributor, M.RemoveProjectContributor
-  mutation :remove_project_milestone, M.RemoveProjectMilestone
+
+  mutation :acknowledge_goal_progress_update, M.AcknowledgeGoalProgressUpdate
+  mutation :acknowledge_project_check_in, M.AcknowledgeProjectCheckIn
+  mutation :archive_goal, M.ArchiveGoal
+  mutation :archive_project, M.ArchiveProject
+  mutation :change_goal_parent, M.ChangeGoalParent
+  mutation :change_task_description, M.ChangeTaskDescription
+  mutation :close_goal, M.CloseGoal
+  mutation :close_project, M.CloseProject
+  mutation :connect_goal_to_project, M.ConnectGoalToProject
+
   mutation :reopen_goal, M.ReopenGoal
   mutation :resume_project, M.ResumeProject
   mutation :subscribe_to_notifications, M.SubscribeToNotifications
