@@ -1,8 +1,8 @@
 defmodule Operately.Activities.Notifications.CompanyOwnersAdding do
   def dispatch(activity) do
-    Enum.map(activity.content["owners"], fn p ->
+    Enum.map(activity.content["people"], fn p ->
       %{
-        person_id: p["id"],
+        person_id: p["person_id"],
         activity_id: activity.id,
         should_send_email: true,
       }

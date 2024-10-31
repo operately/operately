@@ -175,7 +175,11 @@ export interface ActivityContentCompanyOwnerRemoving {
 
 export interface ActivityContentCompanyOwnersAdding {
   company?: Company | null;
-  owners?: Person[] | null;
+  people?: ActivityContentCompanyOwnersAddingPerson[] | null;
+}
+
+export interface ActivityContentCompanyOwnersAddingPerson {
+  person?: Person | null;
 }
 
 export interface ActivityContentDiscussionCommentSubmitted {

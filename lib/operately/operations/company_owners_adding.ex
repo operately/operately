@@ -15,7 +15,7 @@ defmodule Operately.Operations.CompanyOwnersAdding do
     |> Activities.insert_sync(author.id, :company_owners_adding, fn _ ->
       %{
         company_id: author.company_id,
-        owner_ids: ids,
+        people: Enum.map(ids, fn id -> %{person_id: id} end)
       }
     end)
     |> Repo.transaction()

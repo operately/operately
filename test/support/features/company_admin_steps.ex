@@ -257,7 +257,7 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
   step :assert_company_feed_shows_the_company_name_change, ctx do
     ctx 
     |> UI.visit(Paths.feed_path(ctx.company))
-    |> UI.assert_feed_item(ctx.owner, "renamed the company to Dunder")
+    |> UI.assert_feed_item(ctx.admin, "renamed the company to Dunder")
   end
 
   step :add_company_owner, ctx do
@@ -312,12 +312,18 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
   end
 
   step :assert_notification_and_email_sent_to_new_owner, ctx do
-    name = Person.first_name(ctx.member)
-
     ctx 
     |> Factory.log_in_person(:member)
-    |> UI.visit(Paths.feed_path(ctx.company))
-    |> UI.assert_feed_item(ctx.owner, "removed #{name} as an account owner")
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.company.name,
+      to: ctx.member,
+      author: ctx.owner,
+      action: "promoted you to an account owner"
+    })
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.owner,
+      action: "promoted you to an account owner"
+    })
   end
 
   step :assert_feed_item_for_removed_owner, ctx do
@@ -329,9 +335,11 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
   end
 
   step :assert_feed_item_for_new_owner, ctx do
+    name = Person.short_name(ctx.member)
+
     ctx 
     |> UI.visit(Paths.feed_path(ctx.company))
-    |> UI.assert_feed_item(ctx.owner, "promoted Michael to an account owner")
+    |> UI.assert_feed_item(ctx.owner, "promoted #{name} to account owner")
   end
 
 end
