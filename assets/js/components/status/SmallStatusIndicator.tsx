@@ -7,15 +7,14 @@ import { match } from "ts-pattern";
 
 type Size = "std" | "sm";
 
-export function SmallStatusIndicator({
-  status,
-  size,
-  textClassName = "",
-}: {
+interface Props {
   status: string;
   size?: Size;
   textClassName?: string;
-}) {
+  hideText?: boolean;
+}
+
+export function SmallStatusIndicator({ status, size, textClassName = "", hideText }: Props) {
   const color = COLORS[status];
   const title = TITLES[status];
 
@@ -29,7 +28,7 @@ export function SmallStatusIndicator({
 
   const outerClasses = classNames("flex items-center gap-1.5");
   const innerClasses = classNames("py-1 rounded-full", contentSize, bgColor);
-  const textClasses = classNames(textSize, textClassName);
+  const textClasses = classNames(textSize, textClassName, { hidden: hideText });
 
   return (
     <div className={outerClasses}>
