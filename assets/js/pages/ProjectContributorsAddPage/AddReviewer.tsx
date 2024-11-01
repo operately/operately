@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
+import * as Projects from "@/models/projects";
 
 import { PermissionLevels } from "@/features/Permissions";
 import { ProjectContribsSubpageNavigation } from "@/components/ProjectPageNavigation";
@@ -13,7 +14,9 @@ import { LoaderResult } from "./loader";
 
 export function AddReviewer() {
   const { project } = Pages.useLoadedData() as LoaderResult;
+
   const form = useForm();
+  const search = Projects.useContributorSearchFn(project);
 
   return (
     <Paper.Root size="small">
@@ -28,7 +31,7 @@ export function AddReviewer() {
 
         <Forms.Form form={form}>
           <Forms.FieldGroup>
-            <Forms.SelectPerson field={"person"} label="Reviewer" />
+            <Forms.SelectPerson field={"person"} label="Reviewer" searchFn={search} />
           </Forms.FieldGroup>
 
           <Forms.Submit saveText="Add Reviewer" />

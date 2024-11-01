@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
+import * as Projects from "@/models/projects";
 
 import { PermissionLevels } from "@/features/Permissions";
 import { ProjectContribsSubpageNavigation } from "@/components/ProjectPageNavigation";
@@ -13,7 +14,9 @@ import { LoaderResult } from "./loader";
 
 export function AddChampion() {
   const { project } = Pages.useLoadedData() as LoaderResult;
+
   const form = useForm();
+  const search = Projects.useContributorSearchFn(project);
 
   return (
     <Paper.Root size="small">
@@ -24,7 +27,7 @@ export function AddChampion() {
 
         <Forms.Form form={form}>
           <Forms.FieldGroup>
-            <Forms.SelectPerson field={"person"} label="Champion" />
+            <Forms.SelectPerson field={"person"} label="Champion" searchFn={search} />
           </Forms.FieldGroup>
 
           <Forms.Submit saveText="Add Champion" />
