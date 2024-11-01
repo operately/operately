@@ -60,9 +60,15 @@ function ProjectHeader({ node }: { node: ProjectNode }) {
 
 function GoalHeader({ node }: { node: GoalNode }) {
   const [hovered, setHovered] = useState(false);
+  const testId = createTestId("goal", node.goal.name!);
 
   return (
-    <HeaderContainer node={node} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
+    <HeaderContainer
+      node={node}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      data-test-id={testId}
+    >
       <div className="flex items-center gap-1">
         <NodeExpandCollapseToggle node={node} />
         <NodeIcon node={node} />
