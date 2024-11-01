@@ -68,5 +68,4 @@ defmodule Operately.Features.GoalCreationTest do
     |> Steps.assert_subgoal_added(params)
     |> Steps.assert_subgoal_created_email_sent(@goal_params.name)
   end
-  
 end
