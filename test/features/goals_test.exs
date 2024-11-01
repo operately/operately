@@ -102,6 +102,18 @@ defmodule Operately.Features.GoalTest do
   end
 
   @tag login_as: :champion
+  feature "commenting on goal reopening", ctx do
+    ctx
+    |> Steps.visit_page()
+    |> Steps.close_goal(%{success: "yes", retrospective: "We did it!"})
+    |> Steps.reopen_goal(%{message: "It was too early to close it. Reopening."})
+    |> Steps.comment_on_the_goal_reopened()
+    |> Steps.assert_comment_on_the_goal_reopening_feed_posted()
+    |> Steps.assert_comment_on_the_goal_reopening_email_sent()
+    |> Steps.assert_comment_on_the_goal_reopening_notification_sent()
+  end
+
+  @tag login_as: :champion
   feature "editing the goal's timeframe", ctx do
     ctx
     |> Steps.visit_page()
@@ -122,5 +134,4 @@ defmodule Operately.Features.GoalTest do
     |> Steps.assert_comment_on_the_timeframe_change_email_sent()
     |> Steps.assert_comment_on_the_timeframe_change_notification_sent()
   end
-
 end

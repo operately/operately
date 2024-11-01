@@ -53,7 +53,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivitiesTest do
       assert {200, %{ activities: activities } = _res} = query(ctx.conn, :get_activities, ctx.attrs)
 
       assert length(activities) == 1
-      assert goal.id == hd(activities).content.goal.id
+      assert Paths.goal_id(goal) == hd(activities).content.goal.id
     end
 
     test "space members have no access", ctx do
@@ -80,7 +80,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivitiesTest do
       assert {200, %{ activities: activities } = _res} = query(ctx.conn, :get_activities, ctx.attrs)
 
       assert length(activities) == 1
-      assert goal.id == hd(activities).content.goal.id
+      assert Paths.goal_id(goal) == hd(activities).content.goal.id
     end
 
     test "reviewers have access", ctx do
@@ -97,7 +97,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivitiesTest do
       assert {200, %{ activities: activities } = _res} = query(conn, :get_activities, ctx.attrs)
 
       assert length(activities) == 1
-      assert goal.id == hd(activities).content.goal.id
+      assert Paths.goal_id(goal) == hd(activities).content.goal.id
     end
 
     test "champions have access", ctx do
@@ -114,7 +114,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivitiesTest do
       assert {200, %{ activities: activities } = _res} = query(conn, :get_activities, ctx.attrs)
 
       assert length(activities) == 1
-      assert goal.id == hd(activities).content.goal.id
+      assert Paths.goal_id(goal) == hd(activities).content.goal.id
     end
   end
 

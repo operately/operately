@@ -365,6 +365,43 @@ defmodule Operately.Support.Features.GoalSteps do
     |> UI.assert_page(Paths.goal_path(ctx.company, ctx.goal))
   end
 
+  step :comment_on_the_goal_reopened, ctx do
+    ctx
+    |> UI.login_as(ctx.reviewer)
+    |> NotificationsSteps.visit_notifications_page()
+    |> UI.click(testid: "notification-item-goal_reopening")
+    |> UI.click(testid: "add-comment")
+    |> UI.fill_rich_text("I think we did a great job!")
+    |> UI.click(testid: "post-comment")
+  end
+
+  step :assert_comment_on_the_goal_reopening_feed_posted, ctx do
+    ctx
+    |> UI.visit(Paths.goal_path(ctx.company, ctx.goal))
+    |> FeedSteps.assert_feed_item_exists(%{
+      author: ctx.reviewer,
+      title: "commented on the goal reopening",
+      subtitle: "I think we did a great job!"
+    })
+  end
+
+  step :assert_comment_on_the_goal_reopening_email_sent, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.goal.name,
+      to: ctx.champion,
+      author: ctx.reviewer,
+      action: "commented on goal reopening"
+    })
+  end
+
+  step :assert_comment_on_the_goal_reopening_notification_sent, ctx do
+    ctx
+    |> UI.login_as(ctx.champion)
+    |> NotificationsSteps.visit_notifications_page()
+    |> NotificationsSteps.assert_activity_notification(%{author: ctx.reviewer, action: "commented on goal reopening"})
+  end
+
   step :assert_goal_closed, ctx, %{success: success} do
     goal = Operately.Goals.get_goal!(ctx.goal.id)
 

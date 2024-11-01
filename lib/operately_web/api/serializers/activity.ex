@@ -359,7 +359,7 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
   def serialize_goal(nil), do: nil
   def serialize_goal(goal) do
     %{
-      id: goal.id,
+      id: Paths.goal_id(goal),
       name: goal.name,
       my_role: goal.my_role,
     }
