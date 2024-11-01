@@ -495,7 +495,8 @@ defmodule Operately.Support.Features.GoalSteps do
   step :initialize_goal_creation_from_global_goals_page, ctx do
     ctx
     |> UI.visit(Paths.goals_path(ctx.company))
-    |> UI.click(testid: "add-company-wide-goal")
+    |> UI.click(testid: "add-options")
+    |> UI.click(testid: "add-goal")
     |> UI.assert_has(testid: "goal-add-page")
   end
 
@@ -503,7 +504,6 @@ defmodule Operately.Support.Features.GoalSteps do
     ctx
     |> UI.visit(Paths.goals_path(ctx.company))
     |> UI.hover(testid: "goal-#{UI.testid(parent_goal_name)}")
-    |> UI.click(testid: "goal-options-#{UI.testid(parent_goal_name)}")
     |> UI.click(testid: "add-subgoal")
     |> UI.assert_has(testid: "goal-add-page")
   end
