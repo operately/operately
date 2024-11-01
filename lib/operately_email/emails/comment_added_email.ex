@@ -51,6 +51,9 @@ defmodule OperatelyEmail.Emails.CommentAddedEmail do
 
         "commented on: #{parent_comment_thread.title}"
 
+      activity.action == "goal_reopening" ->
+        "commented on goal reopening"
+
       true ->
         raise "Unsupported action: #{activity.action}"
     end
@@ -69,6 +72,9 @@ defmodule OperatelyEmail.Emails.CommentAddedEmail do
         Paths.goal_activity_path(company, activity, comment) |> Paths.to_url()
 
       activity.action == "goal_discussion_creation" ->
+        Paths.goal_activity_path(company, activity, comment) |> Paths.to_url()
+
+      activity.action == "goal_reopening" ->
         Paths.goal_activity_path(company, activity, comment) |> Paths.to_url()
 
       true ->
