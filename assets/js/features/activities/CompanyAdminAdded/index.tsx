@@ -10,7 +10,7 @@ const CompanyAdminAdded: ActivityHandler = {
   },
 
   pagePath(): string {
-    return Paths.orgChartPath();
+    return Paths.companyAdminPath();
   },
 
   PageTitle(_props: { activity: any }) {
