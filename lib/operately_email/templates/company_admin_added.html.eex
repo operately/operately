@@ -3,5 +3,5 @@
 <%= spacer() %>
 
 <%= row do %>
-  <%= cta_button(@link, "View Company") %>
+  <%= cta_button(@link, "View Company Admin Tools") %>
 <% end %>
