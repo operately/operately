@@ -8,6 +8,7 @@ import type {
   ActivityContentGoalClosing,
   ActivityContentGoalDiscussionCreation,
   ActivityContentGoalTimeframeEditing,
+  ActivityContentGoalReopening,
 } from "@/api";
 
 import { match } from "ts-pattern";
@@ -28,6 +29,7 @@ const CommentAdded: ActivityHandler = {
       .with("goal_timeframe_editing", () => Paths.goalActivityPath(commentedActivity.id!))
       .with("goal_closing", () => Paths.goalActivityPath(commentedActivity.id!))
       .with("goal_discussion_creation", () => Paths.goalActivityPath(commentedActivity.id!))
+      .with("goal_reopening", () => Paths.goalActivityPath(commentedActivity.id!))
       .otherwise(() => {
         throw new Error("Comment added not implemented for action: " + commentedActivity.action);
       });
@@ -85,6 +87,18 @@ const CommentAdded: ActivityHandler = {
           return feedTitle(activity, "commented on the", activityLink, "in the", goalLink(goal), "goal");
         }
       })
+      .with("goal_reopening", () => {
+        const c = commentedActivity.content as ActivityContentGoalReopening;
+        const goal = c.goal!;
+        const path = Paths.goalActivityPath(commentedActivity.id!);
+        const activityLink = <Link to={path}>goal reopening</Link>;
+
+        if (page === "goal") {
+          return feedTitle(activity, "commented on the", activityLink);
+        } else {
+          return feedTitle(activity, "commented on the", activityLink, "in the", goalLink(goal), "goal");
+        }
+      })
       .otherwise(() => {
         throw new Error("Comment added not implemented for action: " + commentedActivity.action);
       });
@@ -116,6 +130,7 @@ const CommentAdded: ActivityHandler = {
       .with("goal_timeframe_editing", () => "timeframe change")
       .with("goal_closing", () => "goal closing")
       .with("goal_discussion_creation", () => commentedActivity.commentThread!.title)
+      .with("goal_reopening", () => "goal reopening")
       .otherwise(() => {
         throw new Error("Comment added not implemented for action: " + commentedActivity.action);
       });
@@ -137,6 +152,10 @@ const CommentAdded: ActivityHandler = {
       })
       .with("goal_discussion_creation", () => {
         const c = commentedActivity.content as ActivityContentGoalDiscussionCreation;
+        return c.goal!.name!;
+      })
+      .with("goal_reopening", () => {
+        const c = commentedActivity.content as ActivityContentGoalReopening;
         return c.goal!.name!;
       })
       .otherwise(() => {
