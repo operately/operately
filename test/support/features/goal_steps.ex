@@ -503,7 +503,6 @@ defmodule Operately.Support.Features.GoalSteps do
     ctx
     |> UI.visit(Paths.goals_path(ctx.company))
     |> UI.hover(testid: "goal-#{UI.testid(parent_goal_name)}")
-    |> UI.click(testid: "goal-options-#{UI.testid(parent_goal_name)}")
     |> UI.click(testid: "add-subgoal")
     |> UI.assert_has(testid: "goal-add-page")
   end

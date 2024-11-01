@@ -71,7 +71,7 @@ export function GoalActions({ hovered, node }: { hovered: boolean; node: GoalNod
 
   return (
     <div className={containerClasses}>
-      <SecondaryButton linkTo={newGoalPath} size="xxs">
+      <SecondaryButton linkTo={newGoalPath} size="xxs" testId="add-subgoal">
         Add sub-goal
       </SecondaryButton>
       <SecondaryButton linkTo={newProjectPath} size="xxs">
