@@ -6,6 +6,7 @@ import classnames from "classnames";
 
 import { Card } from "./Card";
 import { PrivacyIndicator } from "@/features/spaces/PrivacyIndicator";
+import Avatar from "@/components/Avatar";
 
 export interface SpaceCardProps {
   space: Spaces.Space;
@@ -22,14 +23,14 @@ export function SpaceCard(props: SpaceCardProps) {
 
   const className = classnames(
     "cursor-pointer",
-    "rounded-lg",
+    "rounded-xl",
     "bg-surface-base",
-    "px-4 py-3 w-64",
     "border border-surface-outline",
     "relative",
+    "shadow-lg",
     {
-      "hover:shadow transition-shadow": shadowSize === "base",
-      "hover:shadow-lg transition-shadow": shadowSize === "lg",
+      "hover:shadow-xl transition-shadow": shadowSize === "base",
+      "hover:shadow-2xl transition-shadow": shadowSize === "lg",
     },
   );
 
@@ -41,15 +42,37 @@ export function SpaceCard(props: SpaceCardProps) {
 
   return (
     <Card className={className} title={name!} {...cardProps}>
-      <div className="mt-2"></div>
-      {React.createElement(iconElement, { size: 40, className: color, strokeWidth: 1 })}
+      <div className="flex gap-2 mb-4 items-start">
+        <div className="px-4 py-3">
+          <div className="flex items-center gap-1.5 mt-2">
+            <div className="font-semibold">{name}</div>
+            <PrivacyIndicator space={props.space} size={14} />
+          </div>
+          <div className="text-content-dimmed text-sm line-clamp-2">{mission}</div>
+        </div>
 
-      <div className="flex items-center gap-1.5 mt-2">
-        <div className="font-semibold">{name}</div>
-        <PrivacyIndicator space={props.space} size={14} />
+        <div className="border-l border-b border-stroke-base rounded-bl-lg rounded-tr-xl p-2 bg-surface-dimmed">
+          {React.createElement(iconElement, { size: 24, className: color })}
+        </div>
       </div>
 
-      <div className="text-content-dimmed text-xs line-clamp-3">{mission}</div>
+      <div className="bg-surface-dimmed px-4 py-2 mt-4 mb-2">
+        <PeopleList space={props.space} />
+      </div>
     </Card>
+  );
+}
+
+function PeopleList({ space }: { space: Spaces.Space }) {
+  const members = space.members!.slice(0, 8);
+
+  return (
+    <div className="text-sm text-content-dimmed flex items-center -space-x-1">
+      {members!.map((a) => (
+        <div className="border border-surface-base rounded-full flex items-center" key={a.id}>
+          <Avatar key={a.id} person={a} size={24} />
+        </div>
+      ))}
+    </div>
   );
 }
