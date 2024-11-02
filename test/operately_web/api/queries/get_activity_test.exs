@@ -126,7 +126,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivityTest do
 
       assert res.activity.author == Serializer.serialize(ctx.creator)
       assert res.activity.action == "goal_closing"
-      assert res.activity.content.goal.id == ctx.goal.id
+      assert res.activity.content.goal.id == Paths.goal_id(ctx.goal)
       assert res.activity.comment_thread.message == RichText.rich_text("content", :as_string)
     end
 
@@ -166,6 +166,6 @@ defmodule OperatelyWeb.Api.Queries.GetActivityTest do
 
     assert res.activity.id == Paths.activity_id(activity)
     assert res.activity.action == "goal_created"
-    assert res.activity.content.goal.id == goal.id
+    assert res.activity.content.goal.id == Paths.goal_id(goal)
   end
 end
