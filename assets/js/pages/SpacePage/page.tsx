@@ -5,10 +5,7 @@ import * as Paper from "@/components/PaperContainer";
 import * as Icons from "@tabler/icons-react";
 import * as Spaces from "@/models/spaces";
 
-import MemberList from "./MemberList";
-
-import { useLoadedData, useRefresh } from "./loader";
-import { SpacePageNavigation } from "@/components/SpacePageNavigation";
+import { SpacePageSettings } from "@/components/SpacePageNavigation";
 import { Feed, useItemsQuery } from "@/features/Feed";
 import { PrimaryButton } from "@/components/Buttons";
 
@@ -16,9 +13,13 @@ import { useJoinSpace } from "@/models/spaces";
 import { PrivacyIndicator } from "@/features/spaces/PrivacyIndicator";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { assertPresent } from "@/utils/assertions";
+import { ToolsSection } from "@/features/SpaceTools";
+
+import MemberList from "./MemberList";
+import { useLoadedData, useRefresh } from "./loader";
 
 export function Page() {
-  const { space } = useLoadedData();
+  const { space, discussions, goals, projects } = useLoadedData();
 
   assertPresent(space.notifications, "notifications must be present in space");
   useClearNotificationsOnLoad(space.notifications);
@@ -27,10 +28,11 @@ export function Page() {
     <Pages.Page title={space.name!} testId="space-page">
       <Paper.Root size="large">
         <Paper.Body>
-          <SpacePageNavigation space={space} activeTab="overview" />
+          <SpacePageSettings space={space} />
           <SpaceHeader space={space} />
           <SpaceMembers space={space} />
           <JoinButton space={space} />
+          <ToolsSection space={space} discussions={discussions} goals={goals} projects={projects} />
           <SpaceFooter space={space} />
         </Paper.Body>
       </Paper.Root>
