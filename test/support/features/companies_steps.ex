@@ -47,7 +47,7 @@ defmodule Operately.Support.Features.CompaniesSteps do
     person = Ecto.assoc(company, :people) |> Repo.all() |> hd()
 
     ctx 
-    |> UI.click(Paths.feed_path(company))
+    |> UI.visit(Paths.feed_path(company))
     |> UI.assert_feed_item(person, "created this company")
   end
 

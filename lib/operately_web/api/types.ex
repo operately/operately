@@ -62,6 +62,11 @@ defmodule OperatelyWeb.Api.Types do
     field :check_in, :project_check_in
   end
 
+  object :activity_content_company_adding do
+    field :company, :company
+    field :creator, :person
+  end
+
   object :activity_content_company_editing do
     field :company_id, :string
     field :company, :company
