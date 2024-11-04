@@ -84,8 +84,6 @@ import * as SpaceEditPage from "./SpaceEditPage";
 import * as SpaceGoalsPage from "./SpaceGoalsPage";
 import * as SpaceListPage from "./SpaceListPage";
 import * as SpacePage from "./SpacePage";
-import * as SpaceProjectsPage from "./SpaceProjectsPage";
-import * as SpaceTemporaryV2Page from "./SpaceTemporaryV2Page";
 import * as TaskPage from "./TaskPage";
 
 //
@@ -497,16 +495,6 @@ export default {
     name: "SpacePage",
     loader: SpacePage.loader,
     Page: SpacePage.Page,
-  },
-  SpaceProjectsPage: {
-    name: "SpaceProjectsPage",
-    loader: SpaceProjectsPage.loader,
-    Page: SpaceProjectsPage.Page,
-  },
-  SpaceTemporaryV2Page: {
-    name: "SpaceTemporaryV2Page",
-    loader: SpaceTemporaryV2Page.loader,
-    Page: SpaceTemporaryV2Page.Page,
   },
   TaskPage: {
     name: "TaskPage",

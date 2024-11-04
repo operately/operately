@@ -83,7 +83,7 @@ defmodule Operately.Support.Features.SpaceSteps do
     assert group.icon == icon
 
     ctx
-    |> UI.assert_has(Query.text(name, count: 2))
+    |> UI.assert_has(Query.text(name, count: 1))
     |> UI.assert_has(Query.text(mission))
   end
 
@@ -101,7 +101,7 @@ defmodule Operately.Support.Features.SpaceSteps do
     |> UI.visit(Paths.space_path(ctx.company, ctx.space))
     |> UI.click(testid: "access-management")
     |> UI.click(testid: "add-members")
-    
+
     ctx = Enum.reduce(Enum.with_index(members), ctx, fn {person, index}, ctx ->
       UI.find(ctx, UI.query(testid: "member-#{index}"), fn ctx ->
         UI.select_person_in(ctx, testid: "members-#{index}-personid", name: person.full_name)
@@ -161,9 +161,9 @@ defmodule Operately.Support.Features.SpaceSteps do
   step :given_the_space_has_several_projects, ctx, names do
     Enum.map(names, fn name ->
       project_fixture(%{
-        name: name, 
-        company_id: ctx.company.id, 
-        creator_id: ctx.person.id, 
+        name: name,
+        company_id: ctx.company.id,
+        creator_id: ctx.person.id,
         group_id: ctx.space.id,
       })
     end)
@@ -174,9 +174,9 @@ defmodule Operately.Support.Features.SpaceSteps do
   step :given_the_space_has_several_space_wide_projects, ctx, names do
     Enum.map(names, fn name ->
       project_fixture(%{
-        name: name, 
-        company_id: ctx.company.id, 
-        creator_id: ctx.person.id, 
+        name: name,
+        company_id: ctx.company.id,
+        creator_id: ctx.person.id,
         group_id: ctx.space.id,
         anonymous_access_level: Binding.no_access(),
         company_access_level: Binding.no_access(),
@@ -201,7 +201,7 @@ defmodule Operately.Support.Features.SpaceSteps do
   step :when_clicking_on_projects_tab, ctx do
     ctx
     |> UI.visit(Paths.space_path(ctx.company, ctx.space))
-    |> UI.click(testid: "projects-tab")
+    |> UI.click(testid: "goals-and-projects")
   end
 
   step :assert_projects_are_listed, ctx, names do
@@ -276,14 +276,14 @@ defmodule Operately.Support.Features.SpaceSteps do
   end
 
   step :save_appearance_changes, ctx do
-    ctx 
+    ctx
     |> UI.click(testid: "submit")
     |> UI.assert_has(testid: "space-page")
   end
 
   step :assert_space_appearance_changed, ctx, values do
     space = Operately.Groups.get_group_by_name(ctx.space.name)
-    
+
     assert space.color == values.color
     assert space.icon == values.icon
   end
