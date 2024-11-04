@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Component } from "react";
 
 import * as TipTap from "@tiptap/react";
 import * as People from "@/models/people";
@@ -22,6 +22,10 @@ type EditorMentionSearchFunc = ({ query }: { query: string }) => Promise<Person[
 export type Editor = TipTap.Editor;
 export { LinkEditForm } from "./LinkEditForm";
 export { EditorContext } from "./EditorContext";
+
+import { mergeAttributes } from "@tiptap/core";
+import { useGetPerson } from "@/api";
+import Avatar from "../Avatar";
 
 interface Person {
   id: string;
@@ -121,7 +125,7 @@ function useEditor(props: UseEditorProps): EditorState {
       Placeholder.configure({
         placeholder: props.placeholder,
       }),
-      Mention.configure({
+      CustomMention.configure({
         suggestion: {
           render: () => new MentionPopup(),
           items: props.peopleSearch || defaultPeopleSearch,
@@ -163,6 +167,38 @@ function useEditor(props: UseEditorProps): EditorState {
   });
 
   return { editor: editor, submittable: submittable, focused: focused, empty: empty, uploading: uploading };
+}
+
+const CustomMention = Mention.extend({
+  renderHTML({ HTMLAttributes }) {
+    return ["react-component", mergeAttributes(HTMLAttributes)];
+  },
+
+  addNodeView() {
+    return TipTap.ReactNodeViewRenderer(Example);
+  },
+});
+
+function Example({ node }) {
+  const { data, loading } = useGetPerson({ id: node.attrs.id });
+
+  const fullName = loading ? node.attrs.label : data?.person?.fullName;
+  const firstName = fullName.split(" ")[0];
+  const person = data?.person || { fullName: node.attrs.label };
+
+  return (
+    <TipTap.NodeViewWrapper className="inline">
+      <div className="translate-y-[1px] inline-block mr-0.5">
+        <Avatar person={person} size={18} />
+      </div>
+
+      <div className="translate-y-[1px] inline-block mr-0.5">
+        <Avatar person={{ fullName: node.attrs.label }} size={18} />
+      </div>
+
+      {firstName}
+    </TipTap.NodeViewWrapper>
+  );
 }
 
 const EditorContent = TipTap.EditorContent;
