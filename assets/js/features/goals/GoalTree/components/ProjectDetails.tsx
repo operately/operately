@@ -1,13 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 
-import Modal from "@/components/Modal";
 import FormattedTime from "@/components/FormattedTime";
 import Avatar from "@/components/Avatar";
 
-import { IconArrowUpRight } from "@tabler/icons-react";
 import { splitByStatus } from "@/models/milestones";
 import { Project, sortContributorsByRole } from "@/models/projects";
-import { StatusIndicator } from "@/features/ProjectListItem/StatusIndicator";
 import { StatusSection } from "@/features/projectCheckIns/StatusSection";
 import { DescriptionSection } from "@/features/projectCheckIns/DescriptionSection";
 import { MiniPieChart } from "@/components/MiniPieChart";
@@ -15,15 +12,15 @@ import { MilestoneIcon } from "@/components/MilestoneIcon";
 import { DivLink } from "@/components/Link";
 import { assertPresent } from "@/utils/assertions";
 import { truncateString } from "@/utils/strings";
-import { createTestId } from "@/utils/testid";
 import { Paths } from "@/routes/paths";
 
+import { Status } from "./Status";
 import { ProjectNode } from "../tree";
 
 export function ProjectDetails({ node }: { node: ProjectNode }) {
   return (
     <div className="pl-[20px] flex gap-10 items-center">
-      <Status project={node.project} />
+      <ProjectStatus project={node.project} />
       <MilestoneCompletion project={node.project} />
       <NextMilestone project={node.project} />
       <SpaceName project={node.project} />
@@ -32,46 +29,12 @@ export function ProjectDetails({ node }: { node: ProjectNode }) {
   );
 }
 
-function Status({ project }: { project: Project }) {
-  const [showCheckIn, setShowCheckIn] = useState(false);
-  const testId = createTestId("status", project.id!);
-
-  const toggleShowCheckIn = () => {
-    setShowCheckIn((prev) => !prev);
-  };
-
-  if (!project.lastCheckIn) {
-    return <StatusIndicator project={project} size="sm" textClassName="text-content-dimmed" />;
-  }
-
+function ProjectStatus({ project }: { project: Project }) {
   return (
-    // The 14px padding-right in the container is the same
-    // as the 14px offset in icon.
-    <div className="pr-[14px]">
-      <div onClick={toggleShowCheckIn} className="relative cursor-pointer" data-test-id={testId}>
-        <StatusIndicator project={project} size="sm" textClassName="text-content-dimmed" />
-        <IconArrowUpRight size={12} className="absolute top-0 right-[-14px]" />
-      </div>
-
-      <LatestProjectCheckIn project={project} showCheckIn={showCheckIn} toggleShowCheckIn={toggleShowCheckIn} />
-    </div>
-  );
-}
-
-interface LatestProjectCheckInProps {
-  project: Project;
-  showCheckIn: boolean;
-  toggleShowCheckIn: () => void;
-}
-
-function LatestProjectCheckIn({ project, showCheckIn, toggleShowCheckIn }: LatestProjectCheckInProps) {
-  assertPresent(project.lastCheckIn, "lastCheckIn must be present in project");
-
-  return (
-    <Modal title={project.name!} hideModal={toggleShowCheckIn} isOpen={showCheckIn}>
-      <StatusSection checkIn={project.lastCheckIn} reviewer={project.reviewer || undefined} />
-      <DescriptionSection checkIn={project.lastCheckIn} />
-    </Modal>
+    <Status resource={project}>
+      <StatusSection checkIn={project.lastCheckIn!} reviewer={project.reviewer || undefined} />
+      <DescriptionSection checkIn={project.lastCheckIn!} limit={120} />
+    </Status>
   );
 }
 

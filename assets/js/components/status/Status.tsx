@@ -24,7 +24,9 @@ export function Status({ status, reviewer, selectable, onSelected, testId }: Sta
 
   return (
     <div className={className} onClick={onSelected} data-test-id={testId}>
-      <Circle color={color} />
+      <div>
+        <Circle color={color} />
+      </div>
 
       <div>
         <p className="font-bold">{title}</p>

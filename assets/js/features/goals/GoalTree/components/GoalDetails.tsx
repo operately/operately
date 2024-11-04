@@ -1,31 +1,32 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 
 import * as Goals from "@/models/goals";
 import * as Timeframes from "@/utils/timeframes";
 
 import classNames from "classnames";
 import { match } from "ts-pattern";
-import { IconArrowUpRight, IconCalendar, IconMinus, IconPlus } from "@tabler/icons-react";
+import { IconCalendar, IconMinus, IconPlus } from "@tabler/icons-react";
 import { includesId, Paths } from "@/routes/paths";
 import { createTestId } from "@/utils/testid";
 import { assertPresent } from "@/utils/assertions";
-import Modal from "@/components/Modal";
 import { ProgressBar } from "@/components/ProgressBar";
 import { MiniPieChart } from "@/components/MiniPieChart";
 import { SecondaryButton } from "@/components/Buttons";
 import { DivLink } from "@/components/Link";
 import Avatar from "@/components/Avatar";
-import { StatusIndicator } from "@/features/ProjectListItem/StatusIndicator";
 import { DescriptionSection, StatusSection, TargetsSection } from "@/features/goals/GoalCheckIn";
 
 import { GoalNode, Node } from "../tree";
 import { useExpandable } from "../context/Expandable";
+import { Status } from "./Status";
 
 export function GoalDetails({ node }: { node: GoalNode }) {
+  const className = classNames(node.hasChildren ? "ml-[38px]" : "ml-[18px]", "mt-1");
+
   return (
-    <div className="pl-[42px]">
+    <div className={className}>
       <div className="flex gap-10 items-center">
-        <Status goal={node.goal} />
+        <GoalStatus goal={node.goal} />
         <GoalTimeframe goal={node.goal} />
         <ChampionAndSpace goal={node.goal} />
         <GoalChildrenCount node={node} />
@@ -81,47 +82,13 @@ export function GoalActions({ hovered, node }: { hovered: boolean; node: GoalNod
   );
 }
 
-function Status({ goal }: { goal: Goals.Goal }) {
-  const [showCheckIn, setShowCheckIn] = useState(false);
-  const testId = createTestId("status", goal.id!);
-
-  const toggleShowCheckIn = () => {
-    setShowCheckIn((prev) => !prev);
-  };
-
-  if (!goal.lastCheckIn) {
-    return <StatusIndicator project={goal} size="sm" textClassName="text-content-dimmed" />;
-  }
-
+function GoalStatus({ goal }: { goal: Goals.Goal }) {
   return (
-    // The 14px padding-right in the container is the same
-    // as the 14px offset in icon.
-    <div className="pr-[14px]">
-      <div onClick={toggleShowCheckIn} className="relative cursor-pointer" data-test-id={testId}>
-        <StatusIndicator project={goal} size="sm" textClassName="text-content-dimmed" />
-        <IconArrowUpRight size={12} className="absolute top-0 right-[-14px]" />
-      </div>
-
-      <LatestGoalUpdate goal={goal} showCheckIn={showCheckIn} toggleShowCheckIn={toggleShowCheckIn} />
-    </div>
-  );
-}
-
-interface LatestGoalUpdateProps {
-  goal: Goals.Goal;
-  showCheckIn: boolean;
-  toggleShowCheckIn: () => void;
-}
-
-function LatestGoalUpdate({ goal, showCheckIn, toggleShowCheckIn }: LatestGoalUpdateProps) {
-  assertPresent(goal.lastCheckIn, "lastCheckIn must be present in goal");
-
-  return (
-    <Modal title={goal.name!} hideModal={toggleShowCheckIn} isOpen={showCheckIn}>
-      <StatusSection update={goal.lastCheckIn} reviewer={goal.reviewer || undefined} />
-      <DescriptionSection update={goal.lastCheckIn} />
-      <TargetsSection update={goal.lastCheckIn} />
-    </Modal>
+    <Status resource={goal}>
+      <StatusSection update={goal.lastCheckIn!} reviewer={goal.reviewer || undefined} />
+      <DescriptionSection update={goal.lastCheckIn!} limit={120} />
+      <TargetsSection update={goal.lastCheckIn!} />
+    </Status>
   );
 }
 
