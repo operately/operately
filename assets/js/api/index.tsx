@@ -150,6 +150,11 @@ export interface ActivityContentCommentAdded {
   activity?: Activity | null;
 }
 
+export interface ActivityContentCompanyAdding {
+  company?: Company | null;
+  creator?: Person | null;
+}
+
 export interface ActivityContentCompanyAdminAdded {
   company?: Company | null;
   people?: Person[] | null;
