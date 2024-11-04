@@ -46,8 +46,10 @@ function NodeView({ node }: { node: Node }) {
 }
 
 function ProjectHeader({ node }: { node: ProjectNode }) {
+  const testId = createTestId("project", node.project.name!);
+
   return (
-    <HeaderContainer node={node}>
+    <HeaderContainer node={node} data-test-id={testId}>
       <div className="flex items-center gap-1">
         <NodeIcon node={node} />
         <NodeName node={node} />

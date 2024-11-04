@@ -81,7 +81,7 @@ defmodule Operately.Features.SpacesTest do
     |> UI.fill(testid: "purpose", with: "Let the world know about our products 2")
     |> UI.click(testid: "submit")
     |> UI.assert_has(testid: "space-page")
-    |> UI.assert_has(Query.text("Marketing 2", count: 2))
+    |> UI.assert_has(Query.text("Marketing 2", count: 1))
     |> UI.assert_has(Query.text("Let the world know about our products 2"))
   end
 

@@ -37,7 +37,7 @@ export function GoalsAndProjects({ space, goals, projects, toolsCount }: GoalsAn
   }, []);
 
   return (
-    <Container path={path} toolsCount={toolsCount}>
+    <Container path={path} toolsCount={toolsCount} testId="goals-and-projects">
       <Title title="Goals & Projects" />
 
       {goals.length < 1 && projects.length < 1 ? (
