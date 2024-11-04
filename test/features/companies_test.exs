@@ -1,36 +1,15 @@
 defmodule Operately.Features.CompaniesTest do
   use Operately.FeatureCase
 
-  import Operately.CompaniesFixtures
-  import Operately.PeopleFixtures
+  alias Operately.Support.Features.CompaniesSteps, as: Steps
 
-  alias Operately.Support.Features.UI
-
-  setup ctx do
-    company = company_fixture(%{name: "Test Org"})
-    person = person_fixture_with_account(%{full_name: "Kevin Kernel", company_id: company.id})
-
-    ctx = Map.merge(ctx, %{company: company, person: person})
-    ctx = UI.login_as(ctx, ctx.person)
-
+  feature "creating another company (not first one)", ctx do
     ctx
-  end
-
-  feature "creating a new company", ctx do
-    ctx
-    |> UI.visit("/")
-    |> UI.click(testid: "add-company-card")
-    |> UI.fill(testid: "companyname", with: "Acme Co.")
-    |> UI.fill(testid: "title", with: "System Administrator")
-    |> UI.click(testid: "submit")
-    |> UI.assert_text("Acme Co.")
-
-    company = Operately.Companies.get_company_by_name("Acme Co.")
-    assert company != nil
-
-    person = Ecto.assoc(company, :people) |> Repo.all() |> hd()
-    assert person != nil
-    assert person.title == "System Administrator"
-    assert person.account_id == ctx.person.account_id
+    |> Steps.given_a_user_is_logged_in_that_belongs_to_a_company()
+    |> Steps.navigate_to_the_loby()
+    |> Steps.click_on_the_add_company_button()
+    |> Steps.fill_in_company_form_and_submit()
+    |> Steps.assert_company_is_created()
+    |> Steps.assert_feed_displays_company_creation()
   end
 end

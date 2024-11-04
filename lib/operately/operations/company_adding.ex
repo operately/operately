@@ -163,11 +163,11 @@ defmodule Operately.Operations.CompanyAdding do
 
   defp insert_activity(multi) do
     multi 
-    |> Multi.merge(fn changes ->
-      Activities.insert_sync(Multi.new(), changes.person, :company_adding, fn changes ->
+    |> Multi.merge(fn parent_changes ->
+      Activities.insert_sync(Multi.new(), parent_changes.person.id, :company_adding, fn _changes ->
         %{
-          company_id: changes.company.id,
-          creator_id: changes.person.id,
+          company_id: parent_changes.company.id,
+          creator_id: parent_changes.person.id,
         }
       end)
     end)

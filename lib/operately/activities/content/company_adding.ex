@@ -2,8 +2,8 @@ defmodule Operately.Activities.Content.CompanyAdding do
   use Operately.Activities.Content
 
   embedded_schema do
-    belongs_to :company_id, Operately.Companies.Company
-    belongs_to :creator_id, Operately.People.Person
+    belongs_to :company, Operately.Companies.Company
+    belongs_to :creator, Operately.People.Person
   end
 
   def changeset(attrs) do
