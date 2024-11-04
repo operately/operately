@@ -7,6 +7,7 @@ defmodule Operately.Operations.CompanyAdding do
   alias Operately.People.Person
   alias Operately.{Access, Groups}
   alias Operately.Access.{Context, Group, Binding, GroupMembership}
+  alias Operately.Activities
 
   def run(attrs, account \\ nil) do
     Multi.new()
@@ -17,6 +18,7 @@ defmodule Operately.Operations.CompanyAdding do
     |> insert_group()
     |> insert_account_if_doesnt_exists(attrs, account)
     |> insert_person(attrs)
+    |> insert_activity()
     |> Repo.transaction()
     |> Repo.extract_result(:updated_company)
   end
@@ -156,6 +158,18 @@ defmodule Operately.Operations.CompanyAdding do
         context_id: changes.context.id,
         access_level: Binding.full_access(),
       })
+    end)
+  end
+
+  defp insert_activity(multi) do
+    multi 
+    |> Multi.merge(fn changes ->
+      Activities.insert_sync(Multi.new(), changes.person, :company_adding, fn changes ->
+        %{
+          company_id: changes.company.id,
+          creator_id: changes.person.id,
+        }
+      end)
     end)
   end
 end
