@@ -14,7 +14,7 @@ export function TargetsSection({ update }: { update: Update }) {
       <div className="flex flex-col gap-2 mt-2 border border-stroke-base rounded-lg p-4">
         {targets.map((target) => (
           <div key={target.id} className="flex justify-between items-center gap-2">
-            <div className="font-medium truncate">{target.name}</div>
+            <div className="truncate">{target.name}</div>
             <div className="h-px bg-stroke-base flex-1" />
             <TargetChange target={target} />
             <TargetProgress value={target.value} start={target.from} end={target.to} />

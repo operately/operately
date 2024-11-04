@@ -37,11 +37,12 @@ export function OptionsButton({ options, align = "center", testId }: Props) {
           sideOffset={5}
         >
           <Popover.Arrow className="fill-surface-outline scale-150" />
-          {options.map((option) => (
+          {options.map((option, idx) => (
             <div
               onClick={option.action}
               className="cursor-pointer px-4 py-2 border-b border-surface-outline hover:bg-surface-accent last:border-b-0"
               data-test-id={option.testId}
+              key={idx}
             >
               {option.label}
             </div>
