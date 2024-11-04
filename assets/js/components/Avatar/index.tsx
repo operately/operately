@@ -98,13 +98,13 @@ function initials(fullName: string): string {
 
 function BackupAvatar({ person, size }: AvatarProps): JSX.Element {
   const baseClass = classnames(
-    "flex items-center justify-center",
     "text-white-1",
     "bg-gray-500",
     "rounded-full",
     "shrink-0",
     "tracking-wider",
     "font-semibold",
+    "block",
   );
 
   const sizeClass = SizeClasses({ size });
@@ -115,7 +115,7 @@ function BackupAvatar({ person, size }: AvatarProps): JSX.Element {
 
   return (
     <div title={person!.fullName!} className={className} style={style}>
-      {initials(person!.fullName!)}
+      <div className="flex items-center justify-center h-full">{initials(person!.fullName!)}</div>
     </div>
   );
 }
@@ -133,27 +133,20 @@ function BackupAvatar({ person, size }: AvatarProps): JSX.Element {
 function ImageAvatar({ person, size }: AvatarProps): JSX.Element {
   if (!person) return <></>;
 
-  const baseClass = "rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base";
+  const baseClass = "rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block";
   const sizeClass = SizeClasses({ size });
   const className = `${baseClass} ${sizeClass}`;
 
   const style = typeof size === "number" ? { width: `${size}px`, height: "100%" } : {};
 
-  const image = React.useMemo(
-    () => (
+  return (
+    <div title={person.fullName!} className={className} style={style}>
       <img
         src={person.avatarUrl!}
         alt={person.fullName!}
         referrerPolicy="no-referrer"
-        style={{ height: "100%", width: "100%" }}
+        style={{ height: "100%", width: "100%", display: "block" }}
       />
-    ),
-    [person.avatarUrl, person.fullName],
-  );
-
-  return (
-    <div title={person.fullName!} className={className} style={style}>
-      {image}
     </div>
   );
 }
