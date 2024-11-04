@@ -50,7 +50,7 @@ function TextClasses({ size }: { size: AvatarSizeString | number }): string {
     }
 
     if ((size as number) <= 20) {
-      return "text-[10px] font-semibold";
+      return "text-[8px] font-semibold";
     }
 
     if ((size as number) <= 24) {
@@ -97,14 +97,16 @@ function initials(fullName: string): string {
 }
 
 function BackupAvatar({ person, size }: AvatarProps): JSX.Element {
+  const around = "rounded-full overflow-hidden shrink-0 border border-stroke-base inline-block";
+
   const baseClass = classnames(
     "text-white-1",
     "bg-gray-500",
+    "h-full",
     "rounded-full",
     "shrink-0",
     "tracking-wider",
     "font-semibold",
-    "block",
   );
 
   const sizeClass = SizeClasses({ size });
@@ -114,8 +116,10 @@ function BackupAvatar({ person, size }: AvatarProps): JSX.Element {
   const style = size.constructor.name === "Number" ? { width: size + "px", height: size + "px" } : {};
 
   return (
-    <div title={person!.fullName!} className={className} style={style}>
-      <div className="flex items-center justify-center h-full">{initials(person!.fullName!)}</div>
+    <div title={person!.fullName!} className={around} style={style}>
+      <div title={person!.fullName!} className={className}>
+        <div className="flex items-center justify-center h-full">{initials(person!.fullName!)}</div>
+      </div>
     </div>
   );
 }

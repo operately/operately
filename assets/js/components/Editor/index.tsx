@@ -188,12 +188,8 @@ function Example({ node }) {
 
   return (
     <TipTap.NodeViewWrapper className="inline">
-      <div className="translate-y-[1px] inline-block mr-0.5">
-        <Avatar person={person} size={18} />
-      </div>
-
-      <div className="translate-y-[1px] inline-block mr-0.5">
-        <Avatar person={{ fullName: node.attrs.label }} size={18} />
+      <div className="inline mr-0.5 align-sub">
+        <Avatar person={person} size={20} />
       </div>
 
       {firstName}
