@@ -33,9 +33,9 @@ defmodule Operately.Support.Features.InviteMemberSteps do
 
   step :invite_member, ctx, params do
     ctx
-    |> UI.fill(testid: "person-full-name", with: params[:fullName])
-    |> UI.fill(testid: "person-email", with: params[:email])
-    |> UI.fill(testid: "person-title", with: params[:title])
+    |> UI.fill(testid: "fullname", with: params[:fullName])
+    |> UI.fill(testid: "email", with: params[:email])
+    |> UI.fill(testid: "title", with: params[:title])
     |> UI.click(testid: "submit")
   end
 
