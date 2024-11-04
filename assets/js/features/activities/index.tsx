@@ -66,6 +66,7 @@ export default ActivityHandler;
 export const DISPLAYED_IN_FEED = [
   "company_owners_adding",
   "company_owner_removing",
+  "company_adding",
   "company_editing",
   "comment_added",
   "company_admin_added",
@@ -117,6 +118,7 @@ export const DISPLAYED_IN_FEED = [
 import { match } from "ts-pattern";
 
 import CommentAdded from "@/features/activities/CommentAdded";
+import CompanyAdding from "@/features/activities/CompanyAdding";
 import CompanyAdminAdded from "@/features/activities/CompanyAdminAdded";
 import CompanyAdminRemoved from "@/features/activities/CompanyAdminRemoved";
 import CompanyOwnersAdding from "@/features/activities/CompanyOwnersAdding";
@@ -162,6 +164,7 @@ function handler(activity: Activity) {
   return match(activity.action)
     .with("company_editing", () => CompanyEditing)
     .with("comment_added", () => CommentAdded)
+    .with("company_adding", () => CompanyAdding)
     .with("company_admin_added", () => CompanyAdminAdded)
     .with("company_admin_removed", () => CompanyAdminRemoved)
     .with("company_owners_adding", () => CompanyOwnersAdding)
