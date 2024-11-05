@@ -71,7 +71,7 @@ function GoalHeader({ node }: { node: GoalNode }) {
       onMouseLeave={() => setHovered(false)}
       data-test-id={testId}
     >
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-1 relative">
         <NodeExpandCollapseToggle node={node} />
         <NodeIcon node={node} />
         <NodeName node={node} />
@@ -103,7 +103,14 @@ function NodeExpandCollapseToggle({ node }: { node: Node }) {
   const handleClick = () => toggleExpanded(node.id);
   const ChevronIcon = expanded[node.id] ? IconChevronDown : IconChevronRight;
 
-  return <ChevronIcon size={16} className="cursor-pointer" onClick={handleClick} data-test-id={testId} />;
+  return (
+    <ChevronIcon
+      size={16}
+      className="absolute left-[-1.2rem] top-1 cursor-pointer"
+      onClick={handleClick}
+      data-test-id={testId}
+    />
+  );
 }
 
 function HeaderContainer(props) {

@@ -21,10 +21,8 @@ import { useExpandable } from "../context/Expandable";
 import { Status } from "./Status";
 
 export function GoalDetails({ node }: { node: GoalNode }) {
-  const className = classNames(node.hasChildren ? "ml-[38px]" : "ml-[18px]", "mt-1");
-
   return (
-    <div className={className}>
+    <div className="pl-[2px]">
       <div className="flex gap-10 items-center">
         <GoalStatus goal={node.goal} />
         <GoalTimeframe goal={node.goal} />
