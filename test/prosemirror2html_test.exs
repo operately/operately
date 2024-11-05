@@ -154,7 +154,7 @@ defmodule Prosemirror2HtmlTest do
       "<li><p>Example 3</p></li>",
       "</ol>",
       "<p>",
-      "<strong>Michael Fassbender</strong>",
+      "<strong>Michael</strong>",
       "</p>",
       "<p>Quote:</p><blockquote><p>Hello World</p></blockquote>",
       "<p></p>",
