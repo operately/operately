@@ -1,4 +1,5 @@
 export const COLORS = {
+  completed: "green",
   on_track: "green",
   caution: "yellow",
   issue: "red",
@@ -8,6 +9,7 @@ export const COLORS = {
 };
 
 export const TITLES = {
+  completed: "Completed",
   on_track: "On Track",
   caution: "Caution",
   issue: "Issue",
