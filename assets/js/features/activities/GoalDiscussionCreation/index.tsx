@@ -11,7 +11,7 @@ import { Paths } from "@/routes/paths";
 
 import { ActivityHandler } from "../interfaces";
 import { Link } from "@/components/Link";
-import { useMe } from "@/contexts/CurrentUserContext";
+import { useMe } from "@/contexts/CurrentCompanyContext";
 import { feedTitle, goalLink } from "./../feedItemLinks";
 
 const GoalDiscussionCreation: ActivityHandler = {

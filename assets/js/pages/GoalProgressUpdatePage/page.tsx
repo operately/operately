@@ -17,7 +17,7 @@ import { CurrentSubscriptions } from "@/features/Subscriptions";
 import Avatar from "@/components/Avatar";
 import { CommentSection, useForGoalCheckIn } from "@/features/CommentSection";
 import { Paths, compareIds } from "@/routes/paths";
-import { useMe } from "@/contexts/CurrentUserContext";
+import { useMe } from "@/contexts/CurrentCompanyContext";
 import { assertPresent } from "@/utils/assertions";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { DescriptionSection, StatusSection, TargetsSection } from "@/features/goals/GoalCheckIn";

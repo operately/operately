@@ -7,7 +7,7 @@ import * as Pages from "@/components/Pages";
 import { logOut } from "@/models/people";
 import { Paths } from "@/routes/paths";
 import { BurgerActionsGroup, BurgerLink, BurgerButton } from "./BurgerActions";
-import { useMe } from "@/contexts/CurrentUserContext";
+import { useMe } from "@/contexts/CurrentCompanyContext";
 
 export const loader = Pages.emptyLoader;
 

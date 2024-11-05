@@ -1,6 +1,6 @@
 import React from "react";
 import * as Companies from "@/models/companies";
-import { useMe } from "@/contexts/CurrentUserContext";
+import { useMe } from "@/contexts/CurrentCompanyContext";
 import { compareIds } from "@/routes/paths";
 
 export function ToggleCompanyOwner() {
