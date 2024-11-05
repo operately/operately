@@ -9,7 +9,7 @@ import { useLoadedData } from "./loader";
 import { OptionsMenuItem } from "./OptionsMenu";
 import { Paths, includesId } from "@/routes/paths";
 import { Link } from "@/components/Link";
-import { useMe } from "@/contexts/CurrentUserContext";
+import { useMe } from "@/contexts/CurrentCompanyContext";
 
 export function Page() {
   const { company } = useLoadedData();

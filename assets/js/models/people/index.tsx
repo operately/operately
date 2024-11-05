@@ -5,7 +5,7 @@ import Api from "@/api";
 
 export type Person = api.Person;
 
-export { useGetMe, getPerson, getPeople, updateProfile } from "@/api";
+export { useGetMe, getPerson, getPeople, updateProfile, useGetPeople } from "@/api";
 
 export type SearchScope =
   | { type: "company"; id?: undefined }
