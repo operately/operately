@@ -38,11 +38,8 @@ export function NodeView({ node }: { node: Node }) {
   React.useEffect(() => {
     if (!ref.current) return;
 
-    const style = window.getComputedStyle(ref.current, null);
-    const fontSize = parseFloat(style.getPropertyValue("font-size"));
-    const size = Math.floor(fontSize * 1.2);
-
-    setAvatarsize(size);
+    const size = getFontSize(ref.current);
+    if (size) setAvatarsize(size);
   }, [ref]);
 
   return (
@@ -54,4 +51,11 @@ export function NodeView({ node }: { node: Node }) {
       {People.firstName(person)}
     </TipTap.NodeViewWrapper>
   );
+}
+
+function getFontSize(element: HTMLElement): number {
+  const style = window.getComputedStyle(element, null);
+  const fontSize = parseFloat(style.getPropertyValue("font-size"));
+
+  return fontSize;
 }

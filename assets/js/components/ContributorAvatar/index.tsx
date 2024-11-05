@@ -21,7 +21,7 @@ interface ContributorAvatarProps {
 
 export function ContributorAvatar(props: ContributorAvatarProps) {
   return (
-    <div className={`shrink-0 relative ${borderClass(props.contributor.role!)}`}>
+    <div className={`shrink-0 relative ${borderClass(props.contributor.role!)} flex`}>
       <Avatar person={props.contributor.person!} size={32} />
     </div>
   );
