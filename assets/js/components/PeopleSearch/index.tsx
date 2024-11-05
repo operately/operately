@@ -1,7 +1,7 @@
 import React from "react";
 import AsyncSelect from "react-select/async";
 
-import Avatar, { AvatarSize } from "@/components/Avatar";
+import Avatar from "@/components/Avatar";
 import classnames from "classnames";
 
 import { Person } from "@/models/people";
@@ -137,7 +137,7 @@ function personAsOption(person: Person, showTitle = false): Option {
 function PersonLabel({ person, showTitle }: { person: Person; showTitle: boolean }) {
   return (
     <div className="flex items-center gap-2" data-test-id={createTestId("person-option", person.fullName!)}>
-      <Avatar person={person} size={AvatarSize.Tiny} />
+      <Avatar person={person} size="tiny" />
       {person.fullName}
       {showTitle && <>&middot; {person.title}</>}
     </div>
