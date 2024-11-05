@@ -5,46 +5,39 @@ import { Paths } from "@/routes/paths";
 
 import classnames from "classnames";
 
-export enum AvatarSize {
-  Tiny = "tiny",
-  Small = "small",
-  Normal = "normal",
-  Large = "large",
-  XLarge = "xlarge",
-  XXLarge = "xxlarge",
-}
-
 type AvatarSizeString = "tiny" | "small" | "normal" | "large" | "xlarge" | "xxlarge";
+
+export type AvatarSize = AvatarSizeString | number;
 
 interface AvatarProps {
   person: People.Person | null;
-  size: AvatarSize | AvatarSizeString | number;
+  size: AvatarSize;
 }
 
-function calculateSize(size: AvatarSize | AvatarSizeString | number): number {
+function calculateSize(size: AvatarSize): number {
   if (size.constructor.name === "Number") {
     return size as number;
   }
 
   switch (size) {
-    case AvatarSize.Tiny:
+    case "tiny":
       return 20;
-    case AvatarSize.Small:
+    case "small":
       return 32;
-    case AvatarSize.Normal:
+    case "normal":
       return 32;
-    case AvatarSize.Large:
+    case "large":
       return 40;
-    case AvatarSize.XLarge:
+    case "xlarge":
       return 56;
-    case AvatarSize.XXLarge:
+    case "xxlarge":
       return 96;
   }
 
   throw new Error("Invalid size");
 }
 
-function TextClasses({ size }: { size: AvatarSizeString | number }): string {
+function TextClasses({ size }: { size: AvatarSize }): string {
   if (size.constructor.name === "Number") {
     if ((size as number) <= 18) {
       return "text-[8px] font-semibold";
@@ -66,18 +59,18 @@ function TextClasses({ size }: { size: AvatarSizeString | number }): string {
   }
 
   switch (size) {
-    case AvatarSize.Tiny:
-      return "text-[9px] font-semibold";
-    case AvatarSize.Small:
+    case "tiny":
+      return "text-[7px] font-semibold";
+    case "small":
       return "text-[9px] font-extrabold";
-    case AvatarSize.Normal:
+    case "normal":
       return "text-base font-bold";
-    case AvatarSize.Large:
+    case "large":
+      return "text-sm font-bold";
+    case "xlarge":
       return "text-xl font-bold";
-    case AvatarSize.XLarge:
-      return "text-2xl font-bold";
-    case AvatarSize.XXLarge:
-      return "text-5xl font-bold";
+    case "xxlarge":
+      return "text-3xl font-bold";
   }
 
   return "";
