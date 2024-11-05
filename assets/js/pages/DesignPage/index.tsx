@@ -10,6 +10,7 @@ import { Tooltips } from "./Tooltips";
 import { Menus } from "./Menus";
 import { CalloutExamples } from "./Callouts";
 import { FormExamples } from "./Forms";
+import { Avatars } from "./Avatars";
 
 export const loader = Pages.emptyLoader;
 
@@ -27,6 +28,7 @@ export function Page() {
           <Tooltips />
           <CalloutExamples />
           <FormExamples />
+          <Avatars />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
