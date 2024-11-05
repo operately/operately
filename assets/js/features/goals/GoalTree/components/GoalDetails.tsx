@@ -13,7 +13,7 @@ import { ProgressBar } from "@/components/ProgressBar";
 import { MiniPieChart } from "@/components/MiniPieChart";
 import { SecondaryButton } from "@/components/Buttons";
 import { DivLink } from "@/components/Link";
-import Avatar from "@/components/Avatar";
+import { AvatarLink } from "@/components/Avatar";
 import { DescriptionSection, StatusSection, TargetsSection } from "@/features/goals/GoalCheckIn";
 
 import { GoalNode, Node } from "../tree";
@@ -111,8 +111,8 @@ function ChampionAndSpace({ goal }: { goal: Goals.Goal }) {
 
   return (
     <div className="flex items-center gap-1">
-      <Avatar person={goal.champion} size="tiny" />
-      <DivLink to={path} className="text-xs text-content-dimmed">
+      <AvatarLink person={goal.champion} size="tiny" />
+      <DivLink to={path} className="text-xs text-content-dimmed hover:underline underline-offset-2">
         {goal.space.name}
       </DivLink>
     </div>
