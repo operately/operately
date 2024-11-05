@@ -14,7 +14,7 @@ import { useClearNotificationOnIntersection } from "@/features/notifications";
 import { FormState } from "./form";
 import { useBoolState } from "@/utils/useBoolState";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
-import { useMe } from "@/contexts/CurrentUserContext";
+import { useMe } from "@/contexts/CurrentCompanyContext";
 import { compareIds } from "@/routes/paths";
 import { CommentParentType } from "@/models/comments";
 import { useScrollIntoViewOnLoad } from "./useScrollIntoViewOnLoad";
