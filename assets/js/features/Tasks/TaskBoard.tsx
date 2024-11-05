@@ -1,14 +1,13 @@
 import * as React from "react";
 import * as Tasks from "@/models/tasks";
 
-import Avatar from "@/components/Avatar";
-
 import { useIsDarkMode } from "@/contexts/ThemeContext";
 import { DivLink } from "@/components/Link";
 import { insertAt } from "@/utils/array";
 import { DragAndDropProvider, useDraggable, useDropZone, useDragAndDropContext } from "@/features/DragAndDrop";
 import { Paths, compareIds } from "@/routes/paths";
 import { match } from "ts-pattern";
+import AvatarList from "@/components/AvatarList";
 
 interface TaskBoardState {
   todoTasks: Tasks.Task[];
@@ -191,14 +190,7 @@ function TaskItem({
           to={Paths.taskPath(task.id!)}
         >
           <div className="font-medium">{task.name}</div>
-
-          <div className="text-sm text-content-dimmed flex items-center -space-x-2">
-            {task.assignees!.map((a) => (
-              <div className="border border-surface-base rounded-full flex items-center" key={a.id}>
-                <Avatar key={a.id} person={a} size={20} />
-              </div>
-            ))}
-          </div>
+          <AvatarList people={task.assignees!} size="tiny" stacked maxElements={5} />
         </DivLink>
       </div>
     </div>
