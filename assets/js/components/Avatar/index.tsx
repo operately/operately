@@ -3,6 +3,8 @@ import classnames from "classnames";
 
 import * as Icons from "@tabler/icons-react";
 import * as People from "@/models/people";
+import { DivLink } from "@/components/Link";
+import { Paths } from "@/routes/paths";
 
 export enum AvatarSize {
   Tiny = "tiny",
@@ -180,4 +182,12 @@ export default function Avatar(props: AvatarProps): JSX.Element {
   } else {
     return UnassingedAvatar(props);
   }
+}
+
+export function AvatarLink(props: AvatarProps) {
+  return (
+    <DivLink to={Paths.profilePath(props.person!.id!)}>
+      <Avatar {...props} />
+    </DivLink>
+  );
 }
