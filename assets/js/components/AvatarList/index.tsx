@@ -47,9 +47,12 @@ export default function AvatarList(props: Props) {
 }
 
 function CutOffIndicator({ count, stacked }: { count: number; stacked: boolean }) {
-  const className = classNames("flex items-center font-bold text-sm text-content-dimmed", {
-    "pl-4": stacked,
-  });
+  const className = classNames("flex items-center font-bold text-sm text-content-dimmed");
+  const style = { paddingLeft: stacked ? "0.75rem" : "" };
 
-  return <div className={className}>+{count}</div>;
+  return (
+    <div className={className} style={style}>
+      +{count}
+    </div>
+  );
 }
