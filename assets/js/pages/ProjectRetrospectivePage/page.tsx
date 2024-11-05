@@ -11,13 +11,13 @@ import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
 import { AvatarWithName } from "@/components/Avatar/AvatarWithName";
 import { Spacer } from "@/components/Spacer";
-import RichContent from "@/components/RichContent";
 import FormattedTime from "@/components/FormattedTime";
 import { CurrentSubscriptions } from "@/features/Subscriptions";
 
 import { useLoadedData, useRefresh } from "./loader";
 import { assertPresent } from "@/utils/assertions";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
+import { RetrospectiveContent } from "@/features/ProjectRetrospective";
 
 export function Page() {
   const { retrospective } = useLoadedData();
@@ -34,7 +34,7 @@ export function Page() {
           <Options />
 
           <Header />
-          <Content />
+          <RetrospectiveContent retrospective={retrospective} />
 
           <Spacer size={2} />
           <RetroReactions />
@@ -81,24 +81,6 @@ function Header() {
         <FormattedTime time={retrospective.closedAt} format="long-date" />
       </div>
     </>
-  );
-}
-
-function Content() {
-  const { retrospective } = useLoadedData();
-  const retro = JSON.parse(retrospective.content!);
-
-  return (
-    <div className="mb-8">
-      <QuestionTitle title="What went well?" />
-      <RichContent jsonContent={JSON.stringify(retro.whatWentWell)} />
-
-      <QuestionTitle title="What could've gone better?" />
-      <RichContent jsonContent={JSON.stringify(retro.whatCouldHaveGoneBetter)} />
-
-      <QuestionTitle title="What did you learn?" />
-      <RichContent jsonContent={JSON.stringify(retro.whatDidYouLearn)} />
-    </div>
   );
 }
 
@@ -155,8 +137,4 @@ function Subscriptions() {
       />
     </>
   );
-}
-
-function QuestionTitle({ title }: { title: string }) {
-  return <div className="text-content-accent font-extrabold mb-2 mt-8 text-xl">{title}</div>;
 }
