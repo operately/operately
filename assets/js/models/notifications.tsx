@@ -1,7 +1,7 @@
 import React from "react";
 import Api from "@/api";
 
-import { useUnreadNotificationCount } from "@/signals";
+import { useNotificationRefreshSignal, useUnreadNotificationCount } from "@/signals";
 
 export type { SubscriptionList, Subscription, Subscriber, Notification } from "@/api";
 export {
@@ -24,6 +24,7 @@ export function useUnreadCount() {
 
   React.useEffect(() => fetch(), []);
   useUnreadNotificationCount(fetch);
+  useNotificationRefreshSignal(fetch);
 
   return unread;
 }
