@@ -31,7 +31,7 @@ export function ProjectDetails({ node }: { node: ProjectNode }) {
 
 function ProjectStatus({ project }: { project: Project }) {
   return (
-    <Status resource={project}>
+    <Status resource={project} resourceType="project">
       <StatusSection checkIn={project.lastCheckIn!} reviewer={project.reviewer || undefined} />
       <DescriptionSection checkIn={project.lastCheckIn!} limit={120} />
     </Status>

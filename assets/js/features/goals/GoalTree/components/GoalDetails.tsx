@@ -84,7 +84,7 @@ export function GoalActions({ hovered, node }: { hovered: boolean; node: GoalNod
 
 function GoalStatus({ goal }: { goal: Goals.Goal }) {
   return (
-    <Status resource={goal}>
+    <Status resource={goal} resourceType="goal">
       <StatusSection update={goal.lastCheckIn!} reviewer={goal.reviewer || undefined} />
       <DescriptionSection update={goal.lastCheckIn!} limit={120} />
       <TargetsSection update={goal.lastCheckIn!} />
