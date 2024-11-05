@@ -11,7 +11,7 @@ import { useTreeContext } from "../treeContext";
 
 export function Controls() {
   const { expanded, expandAll, collapseAll } = useExpandable();
-  const isExpanded = Object.keys(expanded).length > 0;
+  const isExpanded = Object.values(expanded).some((value) => value);
   const [showOptions, setShowOptions] = useState(false);
 
   const toggleShowOptions = () => setShowOptions((prev) => !prev);

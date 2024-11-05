@@ -2,6 +2,7 @@ import * as React from "react";
 import * as Goals from "@/models/goals";
 import * as Projects from "@/models/projects";
 import { Person } from "@/models/people";
+import { useStateWithLocalStorage } from "@/hooks/useStateWithLocalStorage";
 
 import { Tree, buildTree, SortColumn, SortDirection, TreeOptions } from "./tree";
 import { ExpandableProvider } from "./context/Expandable";
@@ -43,9 +44,9 @@ interface TreeContextProviderPropsWithChildren extends TreeContextProviderProps 
 export function TreeContextProvider(props: TreeContextProviderPropsWithChildren) {
   const [sortColumn, setSortColumn] = React.useState<SortColumn>("name");
   const [sortDirection, setSortDirection] = React.useState<SortDirection>("asc");
-  const [showActive, setShowActive] = React.useState<boolean>(true);
-  const [showPaused, setShowPaused] = React.useState<boolean>(false);
-  const [showCompleted, setShowCompleted] = React.useState<boolean>(false);
+  const [showActive, setShowActive] = useStateWithLocalStorage<boolean>("showActive", true);
+  const [showPaused, setShowPaused] = useStateWithLocalStorage<boolean>("showPaused", false);
+  const [showCompleted, setShowCompleted] = useStateWithLocalStorage<boolean>("showComepleted", false);
   const [championedBy, setChampionedBy] = React.useState<Person>();
   const [reviewedBy, setReviewedBy] = React.useState<Person>();
 
