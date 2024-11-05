@@ -8,7 +8,7 @@ import classnames from "classnames";
 import Avatar from "@/components/Avatar";
 import Forms from "@/components/Forms";
 
-import { useMe } from "@/contexts/CurrentUserContext";
+import { useMe } from "@/contexts/CurrentCompanyContext";
 import { Paths } from "@/routes/paths";
 import { useNavigate } from "react-router-dom";
 import { useTheme, useSetTheme } from "@/contexts/ThemeContext";

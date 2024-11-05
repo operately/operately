@@ -4,7 +4,7 @@ import * as GoalCheckIns from "@/models/goalCheckIns";
 import { PrimaryButton } from "@/components/Buttons";
 
 import { useLoadedData, useRefresh } from "./loader";
-import { useMe } from "@/contexts/CurrentUserContext";
+import { useMe } from "@/contexts/CurrentCompanyContext";
 import { compareIds } from "@/routes/paths";
 
 export function AckCTA() {

@@ -6,6 +6,7 @@ import classnames from "classnames";
 
 import { Person } from "@/models/people";
 import { createTestId } from "@/utils/testid";
+import { throttle } from "@/utils/throttle";
 
 export interface Option {
   value: string | null;
@@ -142,18 +143,6 @@ function PersonLabel({ person, showTitle }: { person: Person; showTitle: boolean
     </div>
   );
 }
-
-const throttle = (callback: any, wait: number) => {
-  let timeoutId: number | null = null;
-
-  return (...args: any[]) => {
-    if (timeoutId) window.clearTimeout(timeoutId);
-
-    timeoutId = window.setTimeout(() => {
-      callback.apply(null, args);
-    }, wait);
-  };
-};
 
 function validateProps(props: PeopleSearchProps) {
   if (props.allowEmptySelection && !props.emptySelectionLabel) {
