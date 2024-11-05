@@ -3,7 +3,7 @@ import * as TipTap from "@tiptap/react";
 import * as People from "@/models/people";
 
 import Avatar from "@/components/Avatar";
-import { usePersonAvatar } from "@/contexts/CurrentCompanyContext";
+import { usePersonNameAndAvatar } from "@/contexts/CurrentCompanyContext";
 
 //
 // The node view is responsible for rendering the node as a DOM element.
@@ -22,14 +22,14 @@ interface Node {
 }
 
 export function NodeView({ node }: { node: Node }) {
-  const { avatar, loading } = usePersonAvatar(node.attrs.id);
+  const { fullName, avatar, loading } = usePersonNameAndAvatar(node.attrs.id);
 
   let person: People.Person;
 
   if (loading) {
     person = { fullName: node.attrs.label };
   } else {
-    person = { fullName: node.attrs.label, avatarUrl: avatar };
+    person = { fullName: fullName, avatarUrl: avatar };
   }
 
   return (
