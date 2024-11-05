@@ -26,14 +26,16 @@ defmodule Operately.Support.Features.GoalTreeSteps do
     ctx
   end
 
-  step :given_project_is_closed, ctx, project do
-    Operately.Projects.Project.changeset(project, %{status: "closed"})
+  step :given_project_is_closed, ctx, project_name do
+    {:ok, _} = Operately.Projects.Project.changeset(ctx[project_name], %{status: "closed"})
     |> Repo.update()
+
     ctx
+    |> Factory.add_project_retrospective(:retrospective, project_name, :creator)
   end
 
-  step :given_goal_is_closed, ctx, goal do
-    Operately.Operations.GoalClosing.run(ctx.creator, goal, "success", RichText.rich_text("text", :as_string))
+  step :given_goal_is_closed, ctx, goal_name do
+    Operately.Operations.GoalClosing.run(ctx.creator, ctx[goal_name], "success", RichText.rich_text("text", :as_string))
     ctx
   end
 

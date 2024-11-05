@@ -80,8 +80,8 @@ defmodule Operately.Features.GoalTreeTest do
 
     feature "completed goals and projects", ctx do
       ctx
-      |> Steps.given_goal_is_closed(ctx.goal_2)
-      |> Steps.given_project_is_closed(ctx.project_beta)
+      |> Steps.given_goal_is_closed(:goal_2)
+      |> Steps.given_project_is_closed(:project_beta)
       |> Steps.visit_goal_tree_page()
       |> Steps.assert_closed_goal_hidden(ctx.goal_2)
       |> Steps.assert_closed_project_hidden(ctx.project_beta)
@@ -166,8 +166,8 @@ defmodule Operately.Features.GoalTreeTest do
 
     feature "completed goals and projects", ctx do
       ctx
-      |> Steps.given_goal_is_closed(ctx.goal_2)
-      |> Steps.given_project_is_closed(ctx.project_beta)
+      |> Steps.given_goal_is_closed(:goal_2)
+      |> Steps.given_project_is_closed(:project_beta)
       |> Steps.visit_goal_tree_page()
       |> Steps.assert_closed_goal_hidden(ctx.goal_2)
       |> Steps.assert_closed_project_hidden(ctx.project_beta)

@@ -7,6 +7,7 @@ import { Goal } from "@/models/goals";
 import { Project } from "@/models/projects";
 import { createTestId } from "@/utils/testid";
 import { StatusIndicator } from "@/features/ProjectListItem/StatusIndicator";
+import { SmallStatusIndicator } from "@/components/status";
 import { IconArrowUpRight } from "@tabler/icons-react";
 import { Paths } from "@/routes/paths";
 
@@ -34,6 +35,8 @@ export function Status({ resource, resourceType, children }: GoalProps | Project
   const handleClick = () => {
     if (resourceType === "goal") {
       navigate(Paths.goalProgressUpdatePath(resource.lastCheckIn!.id!));
+    } else if (isProjectClosed(resource)) {
+      navigate(Paths.projectRetrospectivePath(resource.id!));
     } else {
       navigate(Paths.projectCheckInPath(resource.lastCheckIn!.id!));
     }
@@ -64,7 +67,11 @@ export function Status({ resource, resourceType, children }: GoalProps | Project
           className="flex items-end gap-[2px] cursor-pointer hover:underline underline-offset-4"
           data-test-id={testId}
         >
-          <StatusIndicator project={resource} size="sm" textClassName="text-content-dimmed" />
+          {resourceType === "project" && isProjectClosed(resource) ? (
+            <SmallStatusIndicator status="completed" size="sm" textClassName="text-content-dimmed" />
+          ) : (
+            <StatusIndicator project={resource} size="sm" textClassName="text-content-dimmed" />
+          )}
           <IconArrowUpRight size={12} className="mb-1" />
         </div>
       </Popover.Trigger>
@@ -107,4 +114,8 @@ function LatestCheckIn({ setHoveringContent, children }: LatestCheckInProps) {
       {children}
     </Popover.Content>
   );
+}
+
+function isProjectClosed(project: Project) {
+  return project.status === "closed";
 }

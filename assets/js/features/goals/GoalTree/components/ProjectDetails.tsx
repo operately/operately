@@ -16,6 +16,7 @@ import { Paths } from "@/routes/paths";
 
 import { Status } from "./Status";
 import { ProjectNode } from "../tree";
+import { RetrospectiveContent } from "@/features/ProjectRetrospective";
 
 export function ProjectDetails({ node }: { node: ProjectNode }) {
   return (
@@ -30,12 +31,22 @@ export function ProjectDetails({ node }: { node: ProjectNode }) {
 }
 
 function ProjectStatus({ project }: { project: Project }) {
-  return (
-    <Status resource={project} resourceType="project">
-      <StatusSection checkIn={project.lastCheckIn!} reviewer={project.reviewer || undefined} />
-      <DescriptionSection checkIn={project.lastCheckIn!} limit={120} />
-    </Status>
-  );
+  if (project.status === "closed") {
+    assertPresent(project.retrospective, "retrospective must be present in project");
+
+    return (
+      <Status resource={project} resourceType="project">
+        <RetrospectiveContent retrospective={project.retrospective} limit={120} size="sm" />
+      </Status>
+    );
+  } else {
+    return (
+      <Status resource={project} resourceType="project">
+        <StatusSection checkIn={project.lastCheckIn!} reviewer={project.reviewer || undefined} />
+        <DescriptionSection checkIn={project.lastCheckIn!} limit={120} />
+      </Status>
+    );
+  }
 }
 
 function MilestoneCompletion({ project }: { project: Project }) {
