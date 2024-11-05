@@ -20,6 +20,7 @@ interface PeopleSearchProps {
   filterOption?: (candidate: any) => boolean;
   placeholder: string;
   alreadySelected?: string[];
+  autoFocus?: boolean;
   defaultValue?: Person;
   value?: Person | undefined | null;
   inputId?: string;
@@ -39,7 +40,7 @@ export default function PeopleSearch(props: PeopleSearchProps) {
   return (
     <AsyncSelect
       unstyled
-      autoFocus={true}
+      autoFocus={props.autoFocus}
       placeholder={props.placeholder}
       onChange={props.onChange}
       inputId={props.inputId || "people-search"}
