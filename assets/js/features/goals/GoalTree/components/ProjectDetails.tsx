@@ -1,7 +1,7 @@
 import React from "react";
 
 import FormattedTime from "@/components/FormattedTime";
-import Avatar from "@/components/Avatar";
+import { AvatarLink } from "@/components/Avatar";
 
 import { splitByStatus } from "@/models/milestones";
 import { Project, sortContributorsByRole } from "@/models/projects";
@@ -58,14 +58,15 @@ function NextMilestone({ project }: { project: Project }) {
   if (!project.nextMilestone) return <></>;
 
   const name = truncateString(project.nextMilestone.title!, 40);
+  const path = Paths.projectMilestonePath(project.nextMilestone.id!);
 
   return (
-    <div className="flex items-center gap-2">
+    <DivLink to={path} className="flex items-center gap-2">
       <MilestoneIcon milestone={project.nextMilestone} />
-      <div className="flex-1 truncate text-xs text-content-dimmed">
+      <div className="flex-1 truncate text-xs text-content-dimmed hover:underline underline-offset-2">
         <FormattedTime time={project.nextMilestone.deadlineAt!} format="short-date" />: {name}
       </div>
-    </div>
+    </DivLink>
   );
 }
 
@@ -75,7 +76,7 @@ function SpaceName({ project }: { project: Project }) {
   const path = Paths.spacePath(project.space.id!);
 
   return (
-    <DivLink to={path} className="text-xs text-content-dimmed">
+    <DivLink to={path} className="text-xs text-content-dimmed hover:underline underline-offset-2">
       {project.space.name}
     </DivLink>
   );
@@ -90,7 +91,7 @@ function ContributorsList({ project }: { project: Project }) {
   return (
     <div className="flex items-center gap-1">
       {sortedContributors.slice(0, 8).map((contributor) => (
-        <Avatar key={contributor!.id} person={contributor!.person!} size="tiny" />
+        <AvatarLink key={contributor!.id} person={contributor!.person!} size="tiny" />
       ))}
 
       {hiddenContribsCount > 0 && (
