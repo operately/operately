@@ -1,10 +1,9 @@
-import React from "react";
-import classnames from "classnames";
-
-import * as Icons from "@tabler/icons-react";
+import * as React from "react";
 import * as People from "@/models/people";
 import { DivLink } from "@/components/Link";
 import { Paths } from "@/routes/paths";
+
+import classnames from "classnames";
 
 export enum AvatarSize {
   Tiny = "tiny",
@@ -22,27 +21,27 @@ interface AvatarProps {
   size: AvatarSize | AvatarSizeString | number;
 }
 
-function SizeClasses({ size }: { size: AvatarSizeString | number }): string {
+function calculateSize(size: AvatarSize | AvatarSizeString | number): number {
   if (size.constructor.name === "Number") {
-    return "";
+    return size as number;
   }
 
   switch (size) {
     case AvatarSize.Tiny:
-      return "w-[20px] h-[20px]";
+      return 20;
     case AvatarSize.Small:
-      return "w-8 h-8";
+      return 32;
     case AvatarSize.Normal:
-      return "w-8 h-8";
+      return 32;
     case AvatarSize.Large:
-      return "w-10 h-10";
+      return 40;
     case AvatarSize.XLarge:
-      return "w-14 h-14";
+      return 56;
     case AvatarSize.XXLarge:
-      return "w-24 h-24";
+      return 96;
   }
 
-  return "";
+  throw new Error("Invalid size");
 }
 
 function TextClasses({ size }: { size: AvatarSizeString | number }): string {
@@ -52,21 +51,27 @@ function TextClasses({ size }: { size: AvatarSizeString | number }): string {
     }
 
     if ((size as number) <= 20) {
-      return "text-[10px] font-semibold";
+      return "text-[8px] font-semibold";
     }
 
     if ((size as number) <= 24) {
       return "text-[11px] font-bold";
     }
+
+    if ((size as number) <= 40) {
+      return "text-base font-bold";
+    }
+
+    return "text-3xl font-bold";
   }
 
   switch (size) {
     case AvatarSize.Tiny:
       return "text-[9px] font-semibold";
     case AvatarSize.Small:
-      return "text font-extrabold";
+      return "text-[9px] font-extrabold";
     case AvatarSize.Normal:
-      return "text font-bold";
+      return "text-base font-bold";
     case AvatarSize.Large:
       return "text-xl font-bold";
     case AvatarSize.XLarge:
@@ -99,25 +104,28 @@ function initials(fullName: string): string {
 }
 
 function BackupAvatar({ person, size }: AvatarProps): JSX.Element {
+  const around = "rounded-full overflow-hidden shrink-0 border border-stroke-base inline-block";
+
   const baseClass = classnames(
-    "flex items-center justify-center",
     "text-white-1",
     "bg-gray-500",
+    "h-full",
     "rounded-full",
     "shrink-0",
     "tracking-wider",
     "font-semibold",
   );
 
-  const sizeClass = SizeClasses({ size });
-  const textClass = TextClasses({ size });
-  const className = baseClass + " " + sizeClass + " " + textClass;
+  const className = baseClass + " " + TextClasses({ size });
 
-  const style = size.constructor.name === "Number" ? { width: size + "px", height: size + "px" } : {};
+  const sizeNumber = calculateSize(size);
+  const style = { width: `${sizeNumber}px`, height: `${sizeNumber}px` };
 
   return (
-    <div title={person!.fullName!} className={className} style={style}>
-      {initials(person!.fullName!)}
+    <div title={person!.fullName!} className={around} style={style}>
+      <div className={className}>
+        <div className="flex items-center justify-center h-full">{initials(person!.fullName!)}</div>
+      </div>
     </div>
   );
 }
@@ -135,39 +143,19 @@ function BackupAvatar({ person, size }: AvatarProps): JSX.Element {
 function ImageAvatar({ person, size }: AvatarProps): JSX.Element {
   if (!person) return <></>;
 
-  const baseClass = "rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base";
-  const sizeClass = SizeClasses({ size });
-  const className = `${baseClass} ${sizeClass}`;
+  const className = "rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block";
 
-  const style = typeof size === "number" ? { width: `${size}px`, height: "100%" } : {};
+  const sizeNumber = calculateSize(size);
+  const style = { width: `${sizeNumber}px`, height: `${sizeNumber}px` };
 
-  const image = React.useMemo(
-    () => (
+  return (
+    <div title={person.fullName!} className={className} style={style}>
       <img
         src={person.avatarUrl!}
         alt={person.fullName!}
         referrerPolicy="no-referrer"
-        style={{ height: "100%", width: "100%" }}
+        style={{ height: "100%", width: "100%", display: "block", maxHeight: size + "px" }}
       />
-    ),
-    [person.avatarUrl, person.fullName],
-  );
-
-  return (
-    <div title={person.fullName!} className={className} style={style}>
-      {image}
-    </div>
-  );
-}
-
-function UnassingedAvatar({ size }: { size: AvatarSizeString | number }): JSX.Element {
-  const baseClass = "rounded-full overflow-hidden bg-surface-accent flex items-center justify-center shrink-0";
-  const sizeClass = SizeClasses({ size });
-  const className = baseClass + " " + sizeClass;
-
-  return (
-    <div title="Unassigned" className={className}>
-      <Icons.IconUser size={size} />
     </div>
   );
 }
@@ -180,7 +168,7 @@ export default function Avatar(props: AvatarProps): JSX.Element {
       return BackupAvatar(props);
     }
   } else {
-    return UnassingedAvatar(props);
+    return BackupAvatar({ person: { fullName: "?" }, size: props.size });
   }
 }
 

@@ -9,7 +9,7 @@ import { Timezones } from "./timezones";
 
 import Avatar from "@/components/Avatar";
 import Forms from "@/components/Forms";
-import { useMe } from "@/contexts/CurrentUserContext";
+import { useMe } from "@/contexts/CurrentCompanyContext";
 
 interface LoaderResult {
   person: People.Person;

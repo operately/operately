@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useMemo } from "react";
 
-import { useMe } from "@/contexts/CurrentUserContext";
+import { useMe } from "@/contexts/CurrentCompanyContext";
 import { Spacer } from "@/components/Spacer";
 import { Subscriber, SubscriptionList } from "@/models/notifications";
 import { ExistingSubscriptionsList } from "./current-subscriptions/ExistingSubscriptionsList";

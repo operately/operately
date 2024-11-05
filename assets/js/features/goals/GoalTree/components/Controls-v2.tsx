@@ -3,7 +3,7 @@ import React, { useMemo, useState } from "react";
 import Forms from "@/components/Forms";
 import Modal from "@/components/Modal";
 
-import { useMe } from "@/contexts/CurrentUserContext";
+import { useMe } from "@/contexts/CurrentCompanyContext";
 import { GhostButton } from "@/components/Buttons";
 
 import { useExpandable } from "../context/Expandable";

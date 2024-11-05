@@ -16,7 +16,7 @@ import { CopyToClipboard } from "@/components/CopyToClipboard";
 import Avatar from "@/components/Avatar";
 import Modal, { ModalState, useModalState } from "@/components/Modal";
 import { createTestId } from "@/utils/testid";
-import { useMe } from "@/contexts/CurrentUserContext";
+import { useMe } from "@/contexts/CurrentCompanyContext";
 
 interface LoaderResult {
   company: Companies.Company;
