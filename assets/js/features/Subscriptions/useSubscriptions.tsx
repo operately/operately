@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, useMemo, useState } from "react";
 
-import { useMe } from "@/contexts/CurrentUserContext";
+import { useMe } from "@/contexts/CurrentCompanyContext";
 import { compareIds } from "@/routes/paths";
 import { Subscriber } from "@/models/notifications";
 import { Options } from ".";

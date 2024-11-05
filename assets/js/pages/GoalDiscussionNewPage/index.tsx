@@ -14,7 +14,7 @@ import { InlinePeopleList } from "@/components/InlinePeopleList";
 import { Validators } from "@/utils/validators";
 
 import { useFormState, formValidator } from "@/components/Form/useFormState";
-import { useMe } from "@/contexts/CurrentUserContext";
+import { useMe } from "@/contexts/CurrentCompanyContext";
 import { useNavigate } from "react-router-dom";
 
 interface LoaderResult {

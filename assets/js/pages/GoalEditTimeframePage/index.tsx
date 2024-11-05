@@ -14,7 +14,7 @@ import { useNavigateTo } from "@/routes/useNavigateTo";
 import { Paths } from "@/routes/paths";
 import { DimmedLink } from "@/components/Link";
 import { Datepicker } from "@/components/Datepicker";
-import { useMe } from "@/contexts/CurrentUserContext";
+import { useMe } from "@/contexts/CurrentCompanyContext";
 
 interface LoaderResult {
   goal: Goals.Goal;
