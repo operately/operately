@@ -4,8 +4,7 @@ import * as Paper from "@/components/PaperContainer";
 import * as Icons from "@tabler/icons-react";
 import * as Notifications from "@/models/notifications";
 import * as Api from "@/api";
-
-import { useDocumentTitle } from "@/layouts/header";
+import * as Signals from "@/signals";
 
 import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
@@ -31,24 +30,24 @@ export async function loader(): Promise<LoaderResult> {
 }
 
 export function Page() {
-  useDocumentTitle("Notifications");
+  const onLoad = () => Signals.publish(Signals.LocalSignal.RefreshNotificationCount);
 
   return (
-    <Paper.Root size="medium">
-      <Paper.Body className="relative flex flex-col items-stretch">
-        <h1 className="text-2xl font-bold text-center">Notifications</h1>
-        <div className="text-center text-sm">Here's every notification you've received from Operately.</div>
+    <Pages.Page title="Notifications" onLoad={onLoad}>
+      <Paper.Root size="medium">
+        <Paper.Body className="relative flex flex-col items-stretch">
+          <h1 className="text-2xl font-bold text-center">Notifications</h1>
+          <div className="text-center text-sm">Here's every notification you've received from Operately.</div>
 
-        <UnreadNotifications />
-        <PreviousNotifications />
-      </Paper.Body>
-    </Paper.Root>
+          <UnreadNotifications />
+          <PreviousNotifications />
+        </Paper.Body>
+      </Paper.Root>
+    </Pages.Page>
   );
 }
 
 function UnreadNotifications() {
-  // useSubscribeToChanges();
-
   const { notifications } = Pages.useLoadedData<LoaderResult>();
 
   const unread = notifications.filter((n) => !n.read!);
@@ -157,13 +156,3 @@ function NotificationItem({ notification }: any) {
     </div>
   );
 }
-
-// export function useSubscribeToChanges() {
-// const refresh = Pages.useRefresh();
-// const subscription = gql`
-//   subscription NotificationsChanged {
-//     onUnreadNotificationCountChanged
-//   }
-// `;
-// useSubscription(subscription, { onData: refresh });
-// }

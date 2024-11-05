@@ -14,6 +14,7 @@ enum ApiSignal {
 
 export enum LocalSignal {
   RefreshReviewCount = "local:refresh_review_count",
+  RefreshNotificationCount = "local:refresh_notification_count",
 }
 
 export function publish(event: LocalSignal) {
@@ -38,4 +39,8 @@ export function useProfileUpdatedSignal(callback: () => void) {
 
 export function useReviewRefreshSignal(callback: () => void) {
   return Local.useSubscription(LocalSignal.RefreshReviewCount, callback);
+}
+
+export function useNotificationRefreshSignal(callback: () => void) {
+  return Local.useSubscription(LocalSignal.RefreshNotificationCount, callback);
 }
