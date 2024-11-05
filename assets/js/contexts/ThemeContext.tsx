@@ -1,5 +1,5 @@
 import React from "react";
-import { useMe } from "@/contexts/CurrentUserContext";
+import { useMe } from "@/contexts/CurrentCompanyContext";
 
 interface ThemeContextProps {
   theme: string;

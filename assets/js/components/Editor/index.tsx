@@ -5,28 +5,20 @@ import * as People from "@/models/people";
 
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
-import Mention from "@tiptap/extension-mention";
 import Link from "@tiptap/extension-link";
 import Highlight from "@tiptap/extension-highlight";
+import MentionPeople, { SearchFn } from "@/features/richtexteditor/extensions/MentionPeople";
 
 import { Toolbar } from "@/features/richtexteditor/components/Toolbar";
-import { MentionPopup } from "@/features/richtexteditor/components/MentionPopup";
 
 import Blob, { isUploadInProgress } from "./Blob";
 
 import { EditorContext } from "./EditorContext";
 import { useLinkEditFormClose } from "./LinkEditForm";
 
-type EditorMentionSearchFunc = ({ query }: { query: string }) => Promise<Person[]>;
-
 export type Editor = TipTap.Editor;
 export { LinkEditForm } from "./LinkEditForm";
 export { EditorContext } from "./EditorContext";
-
-interface Person {
-  id: string;
-  fullName: string;
-}
 
 interface OnSaveData {
   json: any;
@@ -59,7 +51,7 @@ function RootBody({ children, className = "" }): JSX.Element {
 }
 
 interface UseEditorProps {
-  peopleSearch?: EditorMentionSearchFunc;
+  peopleSearch?: SearchFn;
   placeholder?: string;
   content?: any;
   onSave?: (data: OnSaveData) => void;
@@ -89,6 +81,10 @@ function useEditor(props: UseEditorProps): EditorState {
   const autoFocus = props.autoFocus === undefined ? true : props.autoFocus;
 
   const defaultPeopleSearch = People.usePeopleSearch(props.mentionSearchScope);
+
+  const mentionPeople = React.useMemo(() => {
+    return MentionPeople.configure(props.peopleSearch || defaultPeopleSearch);
+  }, []);
 
   const editor = TipTap.useEditor({
     editable: editable,
@@ -121,14 +117,7 @@ function useEditor(props: UseEditorProps): EditorState {
       Placeholder.configure({
         placeholder: props.placeholder,
       }),
-      Mention.configure({
-        suggestion: {
-          render: () => new MentionPopup(),
-          items: props.peopleSearch || defaultPeopleSearch,
-          allowedPrefixes: [",", "\\s"],
-        },
-        deleteTriggerWithBackspace: true,
-      }),
+      mentionPeople,
       Highlight.configure({
         multicolor: true,
       }),

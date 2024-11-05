@@ -1,3 +1,4 @@
+import { NodeView } from "@/features/richtexteditor/extensions/MentionPeople/NodeView";
 import React from "react";
 
 //
@@ -85,12 +86,7 @@ export function truncate(extracted: ExtractResult[], characterCount: number): JS
 
     if (typeof node === "object") {
       length += node.label.length;
-
-      result.push(
-        <span key={i} className="font-medium text-link-base">
-          @{node.label}
-        </span>,
-      );
+      result.push(<NodeView key={i} node={{ attrs: { id: node.id, label: node.label } }} />);
     }
 
     if (length >= characterCount) {

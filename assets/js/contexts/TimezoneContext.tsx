@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as People from "@/models/people";
 
-import { useMe } from "@/contexts/CurrentUserContext";
+import { useMe } from "@/contexts/CurrentCompanyContext";
 
 interface TimezoneContextProps {
   timezone: string;

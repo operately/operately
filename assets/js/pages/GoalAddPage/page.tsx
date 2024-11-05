@@ -6,7 +6,7 @@ import * as Pages from "@/components/Pages";
 import { PrimaryButton } from "@/components/Buttons";
 import { useLoadedData } from "./loader";
 import { FormState, useForm, Form } from "@/features/goals/GoalForm";
-import { useMe } from "@/contexts/CurrentUserContext";
+import { useMe } from "@/contexts/CurrentCompanyContext";
 import { Paths } from "@/routes/paths";
 
 export function Page() {
