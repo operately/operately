@@ -12,7 +12,7 @@ import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
 import { useClearNotificationOnIntersection } from "@/features/notifications";
 
 import { FormState } from "./form";
-import { useBoolState } from "@/utils/useBoolState";
+import { useBoolState } from "@/hooks/useBoolState";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { compareIds } from "@/routes/paths";
