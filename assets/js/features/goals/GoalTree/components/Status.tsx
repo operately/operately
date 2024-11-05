@@ -97,7 +97,7 @@ function LatestCheckIn({ setHoveringContent, children }: LatestCheckInProps) {
 
   return (
     <Popover.Content
-      className="px-8 w-[500px] bg-surface-base rounded-lg border border-surface-outline z-[100] shadow-xl overflow-hidden"
+      className="px-8 w-[500px] max-h-[400px] bg-surface-base rounded-lg border border-surface-outline z-[100] shadow-xl overflow-y-scroll"
       align="start"
       sideOffset={8}
       onMouseEnter={handleMouseEnter}
