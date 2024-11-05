@@ -3,7 +3,7 @@ import * as People from "@/models/people";
 import * as Companies from "@/models/companies";
 
 import { useRefresh, useLoadedData } from "./loader";
-import { useMe } from "@/contexts/CurrentUserContext";
+import { useMe } from "@/contexts/CurrentCompanyContext";
 
 export interface FormState {
   me: People.Person;

@@ -8,19 +8,19 @@ import { Outlet, createBrowserRouter } from "react-router-dom";
 import { companyLoader } from "./companyLoader";
 import { pageRoute } from "./pageRoute";
 
-import { CurrentUserProvider } from "@/contexts/CurrentUserContext";
+import { CurrentCompanyProvider } from "@/contexts/CurrentCompanyContext";
 import { TimezoneProvider } from "@/contexts/TimezoneContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 
 function ProtectedRoutes() {
   return (
-    <CurrentUserProvider>
+    <CurrentCompanyProvider>
       <ThemeProvider>
         <TimezoneProvider>
           <DefaultLayout />
         </TimezoneProvider>
       </ThemeProvider>
-    </CurrentUserProvider>
+    </CurrentCompanyProvider>
   );
 }
 

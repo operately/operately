@@ -83,7 +83,8 @@ defmodule Prosemirror2Html do
   end
 
   def convert_node(%{"type" => "mention", "attrs" => %{"id" => _id, "label" => name}}, _opts) do
-    wrap(name, "strong")
+    first_name = String.split(name, " ") |> Enum.at(0)
+    wrap(first_name, "strong")
   end
 
   def convert_node(%{"type" => "blob", "attrs" => %{"title" => title, "src" => src}}, opts) do

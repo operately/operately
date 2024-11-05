@@ -13,7 +13,7 @@ import { AddAdminsModal } from "./AddAdminsModal";
 import Avatar from "@/components/Avatar";
 import { BlackLink } from "@/components/Link";
 import { SecondaryButton } from "@/components/Buttons";
-import { useMe } from "@/contexts/CurrentUserContext";
+import { useMe } from "@/contexts/CurrentCompanyContext";
 import { createTestId } from "@/utils/testid";
 
 export function Page() {

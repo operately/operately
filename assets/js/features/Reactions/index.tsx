@@ -7,7 +7,7 @@ import * as api from "@/api";
 import classNames from "classnames";
 
 import Avatar from "@/components/Avatar";
-import { useMe } from "@/contexts/CurrentUserContext";
+import { useMe } from "@/contexts/CurrentCompanyContext";
 
 interface ReactionsFormState {
   reactions: ReactionListItem[];

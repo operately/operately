@@ -20,7 +20,7 @@ import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { CommentSection, useForProjectCheckIn } from "@/features/CommentSection";
 
 import { useLoadedData, useRefresh } from "./loader";
-import { useMe } from "@/contexts/CurrentUserContext";
+import { useMe } from "@/contexts/CurrentCompanyContext";
 import { CurrentSubscriptions } from "@/features/Subscriptions";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { assertPresent } from "@/utils/assertions";
