@@ -13,6 +13,7 @@ import React from "react";
 
 import { Tree, getAllIds } from "../tree";
 import { compareIds, includesId } from "@/routes/paths";
+import { useStateWithLocalStorage } from "@/hooks/useStateWithLocalStorage";
 
 type ExpandedNodesMap = Record<string, boolean>;
 
@@ -33,8 +34,11 @@ interface ExpandableProviderProps {
 const ExpandableContext = React.createContext<ExpandableContextValue | null>(null);
 
 export function ExpandableProvider({ children, tree }: ExpandableProviderProps) {
-  const [expanded, setExpanded] = React.useState<ExpandedNodesMap>({});
-  const [goalExpanded, setGoalExpanded] = React.useState<string[]>([]);
+  const [expanded, setExpanded] = useStateWithLocalStorage<ExpandedNodesMap>(
+    "expanded",
+    getAllIds(tree).reduce((acc, id) => ({ ...acc, [id]: true }), {}),
+  );
+  const [goalExpanded, setGoalExpanded] = useStateWithLocalStorage<string[]>("goalExpanded", []);
 
   const toggleGoalExpanded = (goalId: string) => {
     if (includesId(goalExpanded, goalId)) {
@@ -53,10 +57,8 @@ export function ExpandableProvider({ children, tree }: ExpandableProviderProps) 
   };
 
   const collapseAll = () => {
-    setExpanded({});
+    setExpanded(getAllIds(tree).reduce((acc, id) => ({ ...acc, [id]: false }), {}));
   };
-
-  React.useEffect(expandAll, []);
 
   const state = {
     expanded,
