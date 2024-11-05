@@ -22,6 +22,7 @@ interface Node {
 }
 
 export function NodeView({ node }: { node: Node }) {
+  const ref = React.useRef<HTMLDivElement>(null);
   const { fullName, avatar, loading } = usePersonNameAndAvatar(node.attrs.id);
 
   let person: People.Person;
@@ -32,11 +33,24 @@ export function NodeView({ node }: { node: Node }) {
     person = { fullName: fullName, avatarUrl: avatar };
   }
 
+  const [avatarsize, setAvatarsize] = React.useState(20);
+
+  React.useEffect(() => {
+    if (!ref.current) return;
+
+    const style = window.getComputedStyle(ref.current, null);
+    const fontSize = parseFloat(style.getPropertyValue("font-size"));
+    const size = Math.floor(fontSize * 1.2);
+
+    setAvatarsize(size);
+  }, [ref]);
+
   return (
     <TipTap.NodeViewWrapper className="inline">
-      <div className="inline mr-0.5 align-sub">
-        <Avatar person={person} size={20} />
+      <div ref={ref} className="inline mr-0.5 align-sub">
+        <Avatar person={person} size={avatarsize} />
       </div>
+
       {People.firstName(person)}
     </TipTap.NodeViewWrapper>
   );
