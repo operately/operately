@@ -64,6 +64,12 @@ defmodule Operately.Support.Features.GoalTreeSteps do
     UI.visit(ctx, Paths.goals_path(ctx.company))
   end
 
+  step :visit_goal_page, ctx, goal do
+    ctx
+    |> UI.visit(Paths.goal_path(ctx.company, goal))
+    |> UI.sleep(200)
+  end
+
   step :assert_project_visible, ctx, id do
     UI.assert_text(ctx, ctx[id].name)
   end
