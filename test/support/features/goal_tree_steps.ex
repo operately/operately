@@ -67,7 +67,7 @@ defmodule Operately.Support.Features.GoalTreeSteps do
   step :visit_goal_page, ctx, goal do
     ctx
     |> UI.visit(Paths.goal_path(ctx.company, goal))
-    |> UI.sleep(200)
+    |> UI.assert_has(testid: "goal-page")
   end
 
   step :assert_project_visible, ctx, id do
