@@ -36,22 +36,20 @@ export function Page() {
 function Header({ form }: { form: FormState }) {
   return (
     <div>
-      <Paper.Banner className="justify-between py-4">
-        <div className="flex items-end justify-between my-2">
-          <h1 className="text-xl font-extrabold">Editing the project timeline</h1>
+      <Paper.Banner className="flex justify-between py-6">
+        <h1 className="text-xl font-extrabold">Editing the project timeline</h1>
 
-          {form.milestoneBeingEdited ? null : (
-            <div className="flex items-center gap-2">
-              <SecondaryButton onClick={form.cancel} size="sm" testId="cancel-edit">
-                Cancel
-              </SecondaryButton>
+        {form.milestoneBeingEdited ? null : (
+          <div className="flex items-center gap-2">
+            <SecondaryButton onClick={form.cancel} size="sm" testId="cancel-edit">
+              Cancel
+            </SecondaryButton>
 
-              <PrimaryButton onClick={form.submit} loading={form.submitting} size="sm" testId="save-changes">
-                Save Changes
-              </PrimaryButton>
-            </div>
-          )}
-        </div>
+            <PrimaryButton onClick={form.submit} loading={form.submitting} size="sm" testId="save-changes">
+              Save Changes
+            </PrimaryButton>
+          </div>
+        )}
       </Paper.Banner>
 
       {form.errors.length > 0 && (
