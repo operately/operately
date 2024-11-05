@@ -1,11 +1,12 @@
 defmodule Mix.Tasks.Operation.GenApiMutation do
 
   def gen(ctx) do
-    gen_content(ctx)
     gen_router_snippet(ctx)
+    gen_mutation_file(ctx)
+    gen_mutations_test_file(ctx)
   end
 
-  def gen_router_snippet(ctx) do
+  defp gen_router_snippet(ctx) do
     file_path = "lib/operately_web/api.ex"
     content = "  mutation :#{ctx.action}_#{ctx.resource}, M.#{ctx.operation_module_name}"
     line = find_insertion_point(file_path)
@@ -13,7 +14,7 @@ defmodule Mix.Tasks.Operation.GenApiMutation do
     Mix.Operately.inject_into_file(file_path, content, line)
   end
 
-  def gen_content(ctx) do
+  defp gen_mutation_file(ctx) do
     fields = 
       ctx.activity_fields 
       |> Enum.map(fn {name, type} -> "field :#{name}, :#{type}" end)
@@ -61,6 +62,32 @@ defmodule Mix.Tasks.Operation.GenApiMutation do
 
         defp execute(me, resource, inputs) do
           #{ctx.operation_module_name}.run(me, resource, inputs)
+        end
+      end
+      """
+    end)
+  end
+
+  defp gen_mutations_test_file(ctx) do
+    Mix.Operately.generate_file(ctx.api_mutation_test_file_path, fn _ ->
+      """
+      defmodule OperatelyWeb.Api.Mutations.#{ctx.api_module_name}Test do
+        use OperatelyWeb.TurboCase
+
+        setup ctx do
+          ctx |> Factory.setup()
+        end
+
+        describe "security" do
+          test "it requires authentication", ctx do
+            assert {401, _} = mutation(ctx.conn, :#{ctx.action}_#{ctx.resource}, %{})
+          end
+        end
+
+        describe "permissions" do
+        end
+
+        describe "functionality" do
         end
       end
       """

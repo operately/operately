@@ -73,6 +73,7 @@ defmodule Mix.Tasks.Operately.Gen.Operation do
       serializer_file_path: "lib/operately_web/api/serializers/activity_content/#{resource}_#{action_gerund}.ex",
       operation_file_path: "lib/operately/operations/#{resource}_#{action_gerund}.ex",
       api_mutation_file_path: "lib/operately_web/api/mutations/#{action}_#{resource}.ex",
+      api_mutation_test_file_path: "lib/operately_web/api/mutations/#{action}_#{resource}.ex",
       api_types_file_path: "lib/operately_web/api/types.ex",
       activity_schema_file_path: "lib/operately/activities/content/#{resource}_#{action_gerund}.ex",
       notification_handler_file_path: "lib/operately/activities/notifications/#{resource}_#{action_gerund}.ex",
