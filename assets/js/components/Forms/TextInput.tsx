@@ -13,6 +13,7 @@ import { createTestId } from "@/utils/testid";
 interface TextInputProps {
   field: string;
   label?: string;
+  autoFocus?: boolean;
   placeholder?: string;
   hidden?: boolean;
   required?: boolean;
@@ -42,6 +43,7 @@ export function TextInput(props: TextInputProps) {
     <InputField field={field} label={label} error={error} hidden={hidden}>
       <input
         name={field}
+        autoFocus={props.autoFocus}
         placeholder={placeholder}
         data-test-id={props.testId ?? createTestId(field)}
         className={styles(!!error)}

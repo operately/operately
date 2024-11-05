@@ -21,6 +21,7 @@ interface SelectPersonProps {
   exclude?: People.Person[];
   default?: People.Person | null;
   required?: boolean;
+  autoFocus?: boolean;
 }
 
 const DEFAULT_VALIDATION_PROPS = {
@@ -62,6 +63,7 @@ function SelectPersonInput(props: SelectPersonProps) {
   return (
     <div className="flex-1" data-test-id={createTestId(field)}>
       <PeopleSearch
+        autoFocus={props.autoFocus}
         inputId={createTestId(field)}
         onChange={onChange}
         placeholder="Search for person..."

@@ -114,7 +114,7 @@ function Contributor({ field, search, index, last, addMore }) {
     <div data-test-id={`contributor-${index}`}>
       <Paper.Body>
         <Forms.FieldGroup layout="horizontal">
-          <Forms.SelectPerson field={field + ".personId"} label="Contributor" searchFn={search} />
+          <Forms.SelectPerson field={field + ".personId"} label="Contributor" searchFn={search} autoFocus />
           <Forms.SelectBox field={field + ".accessLevel"} label="Access Level" options={PERMISSIONS_LIST} />
 
           <Forms.TextInput

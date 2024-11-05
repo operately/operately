@@ -105,7 +105,7 @@ function Form() {
     <Forms.Form form={form}>
       <Paper.Body minHeight="300px">
         <Forms.FieldGroup>
-          <Forms.TextInput label="Project Name" field="name" placeholder="e.g. HR System Update" />
+          <Forms.TextInput label="Project Name" field="name" placeholder="e.g. HR System Update" autoFocus />
           <Forms.SelectBox label="Space" field="space" hidden={!allowSpaceSelection} options={spaceOptions} />
           <Forms.SelectGoal label="Goal" field="goal" goals={goals} required={false} />
 
