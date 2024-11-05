@@ -25,6 +25,7 @@ export async function loader(): Promise<LoaderResult> {
       includePrivacy: true,
       includeReviewer: true,
       includeContributors: true,
+      includeRetrospective: true,
     }).then((data) => data.projects!),
   ]);
 

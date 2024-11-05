@@ -3,7 +3,7 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
 import { ProjectRetrospectiveNavigation } from "@/components/ProjectPageNavigation";
-import { useForm, Form } from "@/features/ProjectRetrospectiveForm";
+import { useForm, Form } from "@/features/ProjectRetrospective";
 import { useLoadedData } from "./loader";
 
 export function Page() {
