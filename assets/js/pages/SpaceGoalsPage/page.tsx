@@ -1,42 +1,51 @@
 import * as React from "react";
+import { useNavigate } from "react-router-dom";
+
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
 import { useLoadedData } from "./loader";
-import { GoalTree } from "@/features/goals/GoalTree";
-import { PrimaryButton } from "@/components/Buttons";
-import { SpacePageNavigation } from "@/components/SpacePageNavigation";
+import { GoalTree } from "@/features/goals/GoalTree/tree-v2";
+import { OptionsButton } from "@/components/Buttons";
 import { Paths } from "@/routes/paths";
+import { SpacePageNavigation } from "@/components/SpacePageNavigation";
 
 export function Page() {
-  const { space } = useLoadedData();
+  const { space, goals, projects } = useLoadedData();
 
   return (
     <Pages.Page title={space.name!}>
       <Paper.Root fluid>
+        <SpacePageNavigation space={space} />
+
         <Paper.Body minHeight="500px">
-          <SpacePageNavigation space={space} activeTab="goals" />
-          <Content />
+          <Header />
+          <GoalTree goals={goals} projects={projects} options={{ spaceId: space.id! }} />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
   );
 }
 
-function Content() {
-  const { space, goals, projects } = useLoadedData();
+function Header() {
+  const navigate = useNavigate();
+  const { space } = useLoadedData();
+
   const newGoalPath = Paths.spaceNewGoalPath(space.id!);
+  const newProjectPath = Paths.spaceNewProjectPath(space.id!);
 
   return (
-    <>
-      <div className="flex items-center justify-between mb-8">
-        <div className="font-extrabold text-3xl">Goals in {space.name}</div>
-        <PrimaryButton size="sm" linkTo={newGoalPath} testId="add-goal">
-          Add Goal
-        </PrimaryButton>
-      </div>
+    <div className="flex items-center justify-between mb-8">
+      <div className="font-extrabold text-3xl">Goals in {space.name}</div>
 
-      <GoalTree goals={goals} projects={projects} options={{ spaceId: space.id! }} />
-    </>
+      <OptionsButton
+        align="end"
+        options={[
+          { label: "Add goal", action: () => navigate(newGoalPath), testId: "add-goal" },
+          { label: "Add project", action: () => navigate(newProjectPath), testId: "add-project" },
+        ]}
+        testId="add-options"
+      />
+    </div>
   );
 }

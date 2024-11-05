@@ -11,9 +11,10 @@ interface ContainerProps {
   path: string;
   toolsCount: number;
   children: NonNullable<React.ReactNode>;
+  testId?: string;
 }
 
-export function Container({ children, path, toolsCount }: ContainerProps) {
+export function Container({ children, path, toolsCount, testId }: ContainerProps) {
   const large = toolsCount > 2 ? "lg:w-[calc(33%-1.33rem)]" : "lg:w-[340px]";
 
   const className = classNames(
@@ -25,7 +26,7 @@ export function Container({ children, path, toolsCount }: ContainerProps) {
   );
 
   return (
-    <DivLink to={path} className={className}>
+    <DivLink to={path} className={className} testId={testId}>
       {children}
     </DivLink>
   );

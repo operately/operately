@@ -1,10 +1,10 @@
 import React from "react";
+
 import * as Time from "@/utils/time";
 
 import { Discussion } from "@/models/discussions";
 import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
-import { SpacePageNavigation } from "@/components/SpacePageNavigation";
 import { DivLink } from "@/components/Link";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
@@ -13,6 +13,7 @@ import { useLoadedData } from "./loader";
 import { PrimaryButton } from "@/components/Buttons";
 import { Paths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
+import { SpacePageNavigation } from "@/components/SpacePageNavigation";
 
 export function Page() {
   const { space, discussions } = useLoadedData();
@@ -20,8 +21,9 @@ export function Page() {
   return (
     <Pages.Page title={space.name!}>
       <Paper.Root size="large">
+        <SpacePageNavigation space={space} />
+
         <Paper.Body minHeight="500px">
-          <SpacePageNavigation space={space} activeTab="discussions" />
           <div className="mt-4 mb-8 flex items-center justify-between">
             <div className="text-2xl font-extrabold">Discussions</div>
             <PrimaryButton linkTo={Paths.discussionNewPath(space.id!)} size="sm" testId="new-discussion">

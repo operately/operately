@@ -8,7 +8,8 @@ defmodule Operately.Support.Features.NotificationsSteps do
   step :given_a_project_creation_notification_exists, ctx do
     ctx
     |> UI.visit(Paths.space_path(ctx.company, ctx.group))
-    |> UI.click(testid: "projects-tab")
+    |> UI.click(testid: "goals-and-projects")
+    |> UI.click(testid: "add-options")
     |> UI.click(testid: "add-project")
     |> UI.fill(testid: "name", with: "Website Redesign")
     |> UI.select_person_in(id: "champion", name: ctx.champion.full_name)
