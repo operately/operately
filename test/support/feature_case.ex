@@ -37,15 +37,18 @@ defmodule Operately.FeatureCase do
         if sorted_by_time != [] do
           IO.puts("")
           IO.puts("")
-          IO.puts("Screenshots taken:")
-          IO.puts("")
+          IO.puts(blue("    Screenshots:"))
+
           Enum.each(sorted_by_time, fn path ->
             filename = Path.basename(path)
-            log = "  -> http://localhost:8000/#{filename}"
-            IO.puts(log)
+            IO.puts("    http://localhost:8000/#{filename}")
           end)
         end
       end
+
+      defp red(text), do: IO.ANSI.red() <> text <> IO.ANSI.reset()
+      defp green(text), do: IO.ANSI.green() <> text <> IO.ANSI.reset()
+      defp blue(text), do: IO.ANSI.blue() <> text <> IO.ANSI.reset()
 
       defp select(session, option_name, from: select_name) do
         alias Wallaby.Query

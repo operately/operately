@@ -102,7 +102,7 @@ test: test.init
 	@if [[ "$(FILE)" == assets/js* ]]; then \
 		$(MAKE) test.npm FILE=$(FILE); \
 	elif [[ "$(FILE)" == test/* ]]; then \
-		$(MAKE) test.mix FILE=$(FILE); \
+		./devenv mix test $(FILE); \
 	else \
 		$(MAKE) test.all; \
 	fi

@@ -6,11 +6,18 @@ defmodule CustomFormatter do
   end
 
   def init(_) do
-    {:ok, []}
+    config = %{
+      started_at: nil,
+      failed_counter: 0,
+      passed_counter: 0,
+      excluded_counter: 0
+    }
+
+    {:ok, config}
   end
 
-  def handle_cast({:suite_started, _}, state), do: {:noreply, state}
-  def handle_cast({:suite_finished, _}, state), do: {:noreply, state}
+  def handle_cast({:suite_started, _}, state), do: {:noreply, Map.put(state, :started_at, System.system_time(:millisecond))}
+  def handle_cast({:suite_finished, _}, state), do: display_suite_finished(state)
 
   # deprecated events
   def handle_cast({:case_started, _}, state), do: {:noreply, state}
@@ -31,6 +38,15 @@ defmodule CustomFormatter do
   # Private
   #
 
+  defp display_suite_finished(state) do
+    IO.puts("")
+    IO.puts("Finished in #{System.system_time(:millisecond) - state.started_at}ms")
+    IO.puts("#{state.failed_counter} failed, #{state.excluded_counter} excluded, #{state.passed_counter} passed")
+    IO.puts("")
+
+    {:noreply, state}
+  end
+
   defp display_module_started(mod, state) do
     name = String.replace(Atom.to_string(mod.name), "Elixir.", "")
     IO.puts("\n#{blue(name)}")
@@ -48,17 +64,43 @@ defmodule CustomFormatter do
   end
 
   defp display_test_finished(%ExUnit.Test{state: {:excluded, _}}, state) do
+    state = Map.update!(state, :excluded_counter, &(&1 + 1))
+
     {:noreply, state}
   end
 
   defp display_test_finished(%ExUnit.Test{state: nil}, state) do
     IO.puts("\n\n    #{green("PASSED")}")
+
+    state = Map.update!(state, :passed_counter, &(&1 + 1))
+
     {:noreply, state}
   end
 
-  defp display_test_finished(%ExUnit.Test{state: {:failed, _}}, state) do
-    IO.puts("\n\n    #{red("FAILED")}")
+  defp display_test_finished(test = %ExUnit.Test{state: {:failed, failures}}, state) do
+    IO.puts("")
+    IO.puts(red(format_failure(test, failures)))
+    IO.puts("")
+
+    state = Map.update!(state, :failed_counter, &(&1 + 1))
+
     {:noreply, state}
+  end
+
+  defp format_failure(test, failures) do
+    formatter_cb = fn key, value -> 
+      case key do
+        :test_info -> "FAILED"
+        :location_info -> ""
+        _ -> value
+      end
+    end
+
+    test
+    |> ExUnit.Formatter.format_test_failure(failures, 1, 80, formatter_cb)
+    |> String.split("\n")
+    |> Enum.map(fn line -> red("    | #{line}") end)
+    |> Enum.join("\n")
   end
 
   defp red(text), do: IO.ANSI.red() <> text <> IO.ANSI.reset()
