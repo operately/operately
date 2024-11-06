@@ -41,7 +41,7 @@ defmodule OperatelyWeb.Api.Queries.GetPeople do
       where: p.company_id == ^company_id,
       order_by: [asc: p.full_name]
     )
-    |> filter_by_suspended_status(inputs[:include_suspended], inputs[:only_suspended])
+    |> filter_by_suspended_status(!!inputs[:include_suspended], !!inputs[:only_suspended])
     |> include_manager(inputs[:include_manager])
     |> include_invitations(inputs[:include_invitations])
     |> Repo.all()
@@ -50,11 +50,11 @@ defmodule OperatelyWeb.Api.Queries.GetPeople do
   defp filter_by_suspended_status(query, include_suspended, only_suspended) do
     cond do
       only_suspended ->
-        from(p in query, where: p.suspended == true)
+        from(p in query, where: not is_nil(p.suspended_at))
       include_suspended ->
         query
       true ->
-        from(p in query, where: p.suspended == false)
+        from(p in query, where: is_nil(p.suspended_at))
     end
   end
 

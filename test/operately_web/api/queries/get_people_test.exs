@@ -92,13 +92,18 @@ defmodule OperatelyWeb.Api.Queries.GetPeopleTest do
       suspended_person = person_fixture(company_id: ctx.company.id, suspended_at: DateTime.utc_now())
       active_person = person_fixture(company_id: ctx.company.id)
 
-      assert {200, %{people: people}} = query(ctx.conn, :get_people, %{})
-      assert find_person_in_response(people, active_person)
-      refute find_person_in_response(people, suspended_person)
-
       assert {200, %{people: people}} = query(ctx.conn, :get_people, %{include_suspended: true})
       assert find_person_in_response(people, suspended_person)
       assert find_person_in_response(people, active_person)
+    end
+
+    test "only_suspended", ctx do
+      suspended_person = person_fixture(company_id: ctx.company.id, suspended_at: DateTime.utc_now())
+      active_person = person_fixture(company_id: ctx.company.id)
+
+      assert {200, %{people: people}} = query(ctx.conn, :get_people, %{only_suspended: true})
+      assert find_person_in_response(people, suspended_person)
+      refute find_person_in_response(people, active_person)
     end
 
     test "include_manager", ctx do
