@@ -5,7 +5,7 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
 import { useLoadedData } from "./loader";
-import { GoalTree } from "@/features/goals/GoalTree/tree-v2";
+import { GoalTree } from "@/features/goals/GoalTree";
 import { OptionsButton } from "@/components/Buttons";
 import { Paths } from "@/routes/paths";
 import { SpacePageNavigation } from "@/components/SpacePageNavigation";
