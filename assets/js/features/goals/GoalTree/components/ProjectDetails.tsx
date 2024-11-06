@@ -1,7 +1,6 @@
 import React from "react";
 
 import FormattedTime from "@/components/FormattedTime";
-import { AvatarLink } from "@/components/Avatar";
 
 import { splitByStatus } from "@/models/milestones";
 import { Project, sortContributorsByRole } from "@/models/projects";
@@ -14,6 +13,7 @@ import { assertPresent } from "@/utils/assertions";
 import { truncateString } from "@/utils/strings";
 import { Paths } from "@/routes/paths";
 import { RetrospectiveContent } from "@/features/ProjectRetrospective";
+import AvatarList from "@/components/AvatarList";
 
 import { Status } from "./Status";
 import { ProjectNode } from "../tree";
@@ -102,19 +102,6 @@ function ContributorsList({ project }: { project: Project }) {
   assertPresent(project.contributors, "contributors must be present in project");
 
   const sortedContributors = sortContributorsByRole(project.contributors);
-  const hiddenContribsCount = sortedContributors.length - 8;
 
-  return (
-    <div className="flex items-center gap-1">
-      {sortedContributors.slice(0, 8).map((contributor) => (
-        <AvatarLink key={contributor!.id} person={contributor!.person!} size="tiny" />
-      ))}
-
-      {hiddenContribsCount > 0 && (
-        <div className="flex items-center justify-center text-[.6rem] w-5 h-5 bg-surface-dimmed text-content-dimmed font-bold rounded-full">
-          +{hiddenContribsCount}
-        </div>
-      )}
-    </div>
-  );
+  return <AvatarList people={sortedContributors.map((c) => c.person!)} size="tiny" linked maxElements={8} />;
 }
