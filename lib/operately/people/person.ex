@@ -1,5 +1,6 @@
 defmodule Operately.People.Person do
   use Operately.Schema
+  use Operately.Repo.Getter
 
   schema "people" do
     belongs_to(:account, Operately.People.Account)
@@ -37,6 +38,7 @@ defmodule Operately.People.Person do
     field :access_level, :any, virtual: true
 
     timestamps()
+    request_info()
     requester_access_level()
   end
 

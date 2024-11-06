@@ -9,6 +9,7 @@ import * as CompanyAdminAddPeoplePage from "./CompanyAdminAddPeoplePage";
 import * as CompanyAdminManageAdminsPage from "./CompanyAdminManageAdminsPage";
 import * as CompanyAdminManagePeoplePage from "./CompanyAdminManagePeoplePage";
 import * as CompanyAdminPage from "./CompanyAdminPage";
+import * as CompanyAdminRestoreSuspendedPeoplePage from "./CompanyAdminRestoreSuspendedPeoplePage";
 import * as CompanyAdminTrustedEmailDomainsPage from "./CompanyAdminTrustedEmailDomainsPage";
 import * as CompanyPermissionsPage from "./CompanyPermissionsPage";
 import * as CompanyRenamePage from "./CompanyRenamePage";
@@ -120,6 +121,11 @@ export default {
     name: "CompanyAdminPage",
     loader: CompanyAdminPage.loader,
     Page: CompanyAdminPage.Page,
+  },
+  CompanyAdminRestoreSuspendedPeoplePage: {
+    name: "CompanyAdminRestoreSuspendedPeoplePage",
+    loader: CompanyAdminRestoreSuspendedPeoplePage.loader,
+    Page: CompanyAdminRestoreSuspendedPeoplePage.Page,
   },
   CompanyAdminTrustedEmailDomainsPage: {
     name: "CompanyAdminTrustedEmailDomainsPage",

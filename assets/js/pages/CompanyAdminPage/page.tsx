@@ -55,6 +55,7 @@ function AdminsMenu() {
 
   const managePeople = Paths.companyManagePeoplePath();
   const renameCompanyPath = Paths.companyRenamePath();
+  const restorePath = Paths.companyAdminRestoreSuspendedPeoplePath();
 
   let message = "";
 
@@ -82,6 +83,13 @@ function AdminsMenu() {
           linkTo={renameCompanyPath}
           icon={Icons.IconLetterCase}
           title="Rename the company"
+        />
+
+        <OptionsMenuItem
+          disabled={!(amIAdmin || amIOwner)}
+          linkTo={restorePath}
+          icon={Icons.IconUser}
+          title="Restore suspended people"
         />
       </div>
     </div>

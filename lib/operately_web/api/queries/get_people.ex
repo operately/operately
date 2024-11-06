@@ -8,6 +8,8 @@ defmodule OperatelyWeb.Api.Queries.GetPeople do
   alias Operately.Companies.Company
 
   inputs do
+    field :only_suspended, :boolean
+
     field :include_suspended, :boolean
     field :include_manager, :boolean
     field :include_invitations, :boolean
@@ -39,14 +41,22 @@ defmodule OperatelyWeb.Api.Queries.GetPeople do
       where: p.company_id == ^company_id,
       order_by: [asc: p.full_name]
     )
-    |> include_suspended(inputs[:include_suspended])
+    |> filter_by_suspended_status(!!inputs[:include_suspended], !!inputs[:only_suspended])
     |> include_manager(inputs[:include_manager])
     |> include_invitations(inputs[:include_invitations])
     |> Repo.all()
   end
 
-  defp include_suspended(q, true), do: q
-  defp include_suspended(q, _), do: from(p in q, where: is_nil(p.suspended_at))
+  defp filter_by_suspended_status(query, include_suspended, only_suspended) do
+    cond do
+      only_suspended ->
+        from(p in query, where: not is_nil(p.suspended_at))
+      include_suspended ->
+        query
+      true ->
+        from(p in query, where: is_nil(p.suspended_at))
+    end
+  end
 
   defp include_manager(q, true), do: from(p in q, preload: [:manager])
   defp include_manager(q, _), do: q

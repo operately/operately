@@ -79,10 +79,9 @@ function InvitationList() {
   if (invitedPeople.length === 0) return null;
 
   return (
-    <div>
-      <div className="font-bold text-2xl mb-6 mt-12">Invitations Awaiting Response</div>
+    <Paper.Section title="Invitations Awaiting Response">
       <PeopleList people={invitedPeople} />
-    </div>
+    </Paper.Section>
   );
 }
 
@@ -91,10 +90,9 @@ function MemberList() {
   if (currentMembers.length === 0) return null;
 
   return (
-    <div>
-      <div className="font-bold text-2xl mb-6 mt-12">Current Team Members</div>
+    <Paper.Section title="Current Team Members">
       <PeopleList people={currentMembers} />
-    </div>
+    </Paper.Section>
   );
 }
 
