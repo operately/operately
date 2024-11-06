@@ -1,1 +1,7 @@
-<%= title("...") %>
+<%= title("Your account has been restored as a company member by #{short_name(@author)}") %>
+
+<%= spacer() %>
+
+<%= row do %>
+  <%= cta_button(@link, "View Company") %>
+<% end %>

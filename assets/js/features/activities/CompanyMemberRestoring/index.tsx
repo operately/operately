@@ -1,8 +1,10 @@
 import * as People from "@/models/people";
+import { feedTitle } from "../feedItemLinks";
 
 import type { Activity } from "@/models/activities";
 import type { ActivityContentCompanyMemberRestoring } from "@/api";
 import type { ActivityHandler } from "../interfaces";
+import { Paths } from "@/routes/paths";
 
 const CompanyMemberRestoring: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -10,7 +12,7 @@ const CompanyMemberRestoring: ActivityHandler = {
   },
 
   pagePath(_activity: Activity) {
-    throw new Error("Not implemented");
+    return Paths.homePath();
   },
 
   PageTitle(_props: { activity: any }) {
@@ -25,8 +27,10 @@ const CompanyMemberRestoring: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle(_props: { activity: Activity }) {
-    return null;
+  FeedItemTitle({ activity }: { activity: Activity }) {
+    const name = People.firstName(content(activity).person!) + "'s";
+
+    return feedTitle(activity, "restored", name, "account");
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {
@@ -45,8 +49,8 @@ const CompanyMemberRestoring: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  NotificationTitle(_props: { activity: Activity }) {
-    return null;
+  NotificationTitle({ activity }: { activity: Activity }) {
+    return People.firstName(activity.author!) + " has restored your account";
   },
 
   NotificationLocation(_props: { activity: Activity }) {

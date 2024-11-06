@@ -119,12 +119,16 @@ function PersonInfo({ person }: { person: People.Person }) {
 }
 
 function RestoreButton({ person }: { person: People.Person }) {
+  const [restore, { loading }] = Companies.useRestoreCompanyMember();
+  const refresh = Pages.useRefresh();
+
+  const handler = async () => {
+    await restore({ personId: person.id! });
+    refresh();
+  };
+
   return (
-    <SecondaryButton
-      size="xs"
-      linkTo={Paths.profileEditPath(person.id!, { from: "admin-manage-people" })}
-      testId={createTestId("edit", person.id!)}
-    >
+    <SecondaryButton size="xs" testId={createTestId("restore", person.id!)} onClick={handler} loading={loading}>
       Restore
     </SecondaryButton>
   );

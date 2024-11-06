@@ -66,6 +66,7 @@ export default ActivityHandler;
 export const DISPLAYED_IN_FEED = [
   "company_owners_adding",
   "company_owner_removing",
+  "company_member_restoring",
   "company_adding",
   "company_editing",
   "comment_added",
@@ -159,6 +160,7 @@ import SpaceJoining from "@/features/activities/SpaceJoining";
 import SpaceMemberRemoved from "@/features/activities/SpaceMemberRemoved";
 import SpaceMembersAdded from "@/features/activities/SpaceMembersAdded";
 import CompanyEditing from "@/features/activities/CompanyEditing";
+import CompanyMemberRestoring from "@/features/activities/CompanyMemberRestoring";
 
 function handler(activity: Activity) {
   return match(activity.action)
@@ -169,6 +171,7 @@ function handler(activity: Activity) {
     .with("company_admin_removed", () => CompanyAdminRemoved)
     .with("company_owners_adding", () => CompanyOwnersAdding)
     .with("company_owner_removing", () => CompanyOwnerRemoving)
+    .with("company_member_restoring", () => CompanyMemberRestoring)
     .with("discussion_posting", () => DiscussionPosting)
     .with("discussion_comment_submitted", () => DiscussionCommentSubmitted)
     .with("goal_archived", () => GoalArchived)

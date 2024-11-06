@@ -18,8 +18,7 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :activity_content_company_member_restoring do
-    field :company_id, :string
-    field :person_id, :string
+    field :person, :person
   end
 
   object :activity_content_company_owner_removing do
