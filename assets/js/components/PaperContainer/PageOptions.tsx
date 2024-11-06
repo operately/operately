@@ -6,9 +6,7 @@ import { TestableElement } from "@/utils/testid";
 
 type RootProps = TestableElement & {
   children: React.ReactNode;
-
   position?: "top-right";
-  noBorder?: boolean;
 };
 
 const Context = React.createContext({
@@ -36,7 +34,7 @@ export function Root(props: RootProps) {
   return (
     <Context.Provider value={{ close: closeOptions }}>
       <div className={className}>
-        <Open onClick={openOptions} noBorder={props.noBorder} testId={props.testId} position={props.position} />
+        <Open onClick={openOptions} testId={props.testId} position={props.position} />
 
         {showOptions && <Dropdown closeOptions={closeOptions} children={props.children} />}
       </div>

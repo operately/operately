@@ -24,21 +24,19 @@ export function SpacePageSettings({ space }: { space: Spaces.Space }) {
   if (!space.permissions.canEdit) return null;
 
   return (
-    <div className="flex absolute right-5 top-4">
-      <PageOptions.Root noBorder testId="space-settings">
-        <PageOptions.Link
-          icon={Icons.IconEdit}
-          title="Edit name and purpose"
-          to={Paths.spaceEditPath(space.id!)}
-          testId="edit-name-and-purpose"
-        />
-        <PageOptions.Link
-          icon={Icons.IconPaint}
-          title="Change Appearance"
-          to={Paths.spaceAppearancePath(space.id!)}
-          testId="change-appearance"
-        />
-      </PageOptions.Root>
-    </div>
+    <PageOptions.Root testId="space-settings" position="top-right">
+      <PageOptions.Link
+        icon={Icons.IconEdit}
+        title="Edit name and purpose"
+        to={Paths.spaceEditPath(space.id!)}
+        testId="edit-name-and-purpose"
+      />
+      <PageOptions.Link
+        icon={Icons.IconPaint}
+        title="Change Appearance"
+        to={Paths.spaceAppearancePath(space.id!)}
+        testId="change-appearance"
+      />
+    </PageOptions.Root>
   );
 }
