@@ -23,6 +23,10 @@ export class Paths {
     return createCompanyPath(["admin", "rename"]);
   }
 
+  static companyAdminRestoreSuspendedPeoplePath() {
+    return createCompanyPath(["admin", "restore-suspended-people"]);
+  }
+
   static feedPath() {
     return createCompanyPath(["feed"]);
   }
