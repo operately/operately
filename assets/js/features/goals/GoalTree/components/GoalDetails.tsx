@@ -114,7 +114,7 @@ function ChampionAndSpace({ goal }: { goal: Goals.Goal }) {
 
   return (
     <div className="flex items-center gap-1">
-      <AvatarLink person={goal.champion} size="tiny" />
+      <AvatarLink person={goal.champion} size="tiny" className="mt-[6px]" />
       <DivLink to={path} className="text-xs text-content-dimmed hover:underline underline-offset-2">
         {goal.space.name}
       </DivLink>
