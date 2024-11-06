@@ -43,7 +43,7 @@ function Navigation() {
   const { spaceID, space } = useLoadedData();
 
   if (spaceID && space) {
-    const spaceProjectsPath = Paths.spaceProjectsPath(spaceID!);
+    const spaceProjectsPath = Paths.spaceGoalsPath(spaceID!);
 
     return <Paper.NavigateBack to={spaceProjectsPath} title={`Back to ${space!.name} Space`} />;
   } else {
