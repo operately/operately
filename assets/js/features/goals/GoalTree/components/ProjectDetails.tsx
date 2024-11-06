@@ -13,12 +13,17 @@ import { DivLink } from "@/components/Link";
 import { assertPresent } from "@/utils/assertions";
 import { truncateString } from "@/utils/strings";
 import { Paths } from "@/routes/paths";
+import { RetrospectiveContent } from "@/features/ProjectRetrospective";
 
 import { Status } from "./Status";
 import { ProjectNode } from "../tree";
-import { RetrospectiveContent } from "@/features/ProjectRetrospective";
+import { useTreeContext } from "../treeContext";
 
 export function ProjectDetails({ node }: { node: ProjectNode }) {
+  const { density } = useTreeContext();
+
+  if (density === "compact") return <></>;
+
   return (
     <div className="pl-[2px] flex gap-10 items-center">
       <ProjectStatus project={node.project} />
