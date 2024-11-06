@@ -42,7 +42,7 @@ export function Page() {
 
 function SpaceHeader({ space }: { space: Spaces.Space }) {
   return (
-    <div className="mt-12">
+    <div className="mt-2">
       <SpaceIcon space={space} />
       <SpaceName space={space} />
       <SpaceMission space={space} />
