@@ -83,6 +83,13 @@ function AdminsMenu() {
           icon={Icons.IconLetterCase}
           title="Rename the company"
         />
+
+        <OptionsMenuItem
+          disabled={!(amIAdmin || amIOwner)}
+          linkTo={renameCompanyPath}
+          icon={Icons.IconUser}
+          title="Restore suspended people"
+        />
       </div>
     </div>
   );
