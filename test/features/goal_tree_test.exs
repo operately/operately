@@ -179,5 +179,17 @@ defmodule Operately.Features.GoalTreeTest do
       |> Steps.assert_goal_visible(:goal_2)
       |> Steps.assert_project_visible(:project_beta)
     end
+
+    feature "default and compact view", ctx do
+      ctx
+      |> Steps.visit_goal_tree_page()
+      |> Steps.assert_all_goals_and_projects_are_visible_by_default()
+      |> Steps.assert_resources_details_visible_by_default()
+      |> Steps.select_compact_density()
+      |> Steps.assert_resources_details_hidden()
+      |> Steps.visit_goal_page(ctx.goal_1)
+      |> Steps.visit_goal_tree_page()
+      |> Steps.assert_resources_details_hidden()
+    end
   end
 end

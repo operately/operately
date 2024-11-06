@@ -43,6 +43,8 @@ function OptionsModal({ showOptions, toggleShowOptions }) {
     setShowCompleted,
     setChampionedBy,
     setReviewedBy,
+    density,
+    setDensity,
   } = useTreeContext();
 
   const filters = useMemo(() => {
@@ -60,6 +62,7 @@ function OptionsModal({ showOptions, toggleShowOptions }) {
       filters,
       ownedBy: "anyone",
       reviewedBy: "anyone",
+      density: density,
     },
     submit: () => {
       if (form.values.filters.includes("active")) setShowActive(true);
@@ -77,14 +80,16 @@ function OptionsModal({ showOptions, toggleShowOptions }) {
       if (form.values.reviewedBy === "me") setReviewedBy(me);
       else setReviewedBy(undefined);
 
+      if (form.values.density) setDensity(form.values.density);
+
       toggleShowOptions();
     },
   });
 
   return (
-    <Modal title="View options" isOpen={showOptions} hideModal={toggleShowOptions} size="lg">
+    <Modal title="View options" isOpen={showOptions} hideModal={toggleShowOptions} size="base">
       <Forms.Form form={form}>
-        <Forms.FieldGroup layout="grid" layoutOptions={{ gridTemplateColumns: "repeat(3, auto)" }}>
+        <Forms.FieldGroup layout="grid" layoutOptions={{ gridTemplateColumns: "repeat(2, auto)" }}>
           <Forms.CheckboxInput
             field="filters"
             label="Show goals and projects:"
@@ -108,6 +113,14 @@ function OptionsModal({ showOptions, toggleShowOptions }) {
             options={[
               { label: "Anyone", value: "anyone" },
               { label: "Me", value: "me" },
+            ]}
+          />
+          <Forms.RadioButtons
+            field="density"
+            label="Density:"
+            options={[
+              { label: "Default", value: "default" },
+              { label: "Compact", value: "compact" },
             ]}
           />
         </Forms.FieldGroup>
