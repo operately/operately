@@ -149,7 +149,6 @@ defmodule Operately.Repo.Getter do
 
   import Ecto.Query
 
-  alias Operately.People.Person
   alias Operately.Access.Binding
   alias Operately.Repo.RequestInfo
 
@@ -161,7 +160,7 @@ defmodule Operately.Repo.Getter do
 
     case requester do
       :system -> get_for_system(query, :system, args)
-      %Person{} -> get_for_person(query, requester, args)
+      %{} -> get_for_person(query, requester, args)
       _ -> {:error, :invalid_requester}
     end
   end
@@ -173,7 +172,7 @@ defmodule Operately.Repo.Getter do
     end
   end
 
-  def get_for_person(query, requester = %Person{}, args) do
+  def get_for_person(query, requester, args) do
     query = from([resource: r] in query,
       join: c in assoc(r, :access_context),
       join: b in assoc(c, :bindings), as: :binding,
