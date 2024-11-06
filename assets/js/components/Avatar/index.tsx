@@ -14,6 +14,10 @@ interface AvatarProps {
   size: AvatarSize;
 }
 
+interface AvatarLinkProps extends AvatarProps {
+  className?: string;
+}
+
 function calculateSize(size: AvatarSize): number {
   if (size.constructor.name === "Number") {
     return size as number;
@@ -165,9 +169,9 @@ export default function Avatar(props: AvatarProps): JSX.Element {
   }
 }
 
-export function AvatarLink(props: AvatarProps) {
+export function AvatarLink(props: AvatarLinkProps) {
   return (
-    <DivLink to={Paths.profilePath(props.person!.id!)}>
+    <DivLink to={Paths.profilePath(props.person!.id!)} className={props.className}>
       <Avatar {...props} />
     </DivLink>
   );
