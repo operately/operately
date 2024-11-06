@@ -2,8 +2,8 @@ defmodule Operately.Activities.Content.CompanyMemberRestoring do
   use Operately.Activities.Content
 
   embedded_schema do
-    field :company_id, :string
-    field :person_id, :string
+    belongs_to :person, Operately.People.Person
+    belongs_to :company, Operately.Companies.Company
   end
 
   def changeset(attrs) do

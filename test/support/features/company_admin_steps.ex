@@ -345,14 +345,7 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
   step :given_a_removed_company_member_exists, ctx do
     ctx
     |> Factory.add_company_member(:suspended, [name: "Suspended Memberson"])
-    |> then(fn ctx ->
-      {:ok, person} = Operately.People.update_person(ctx.member, %{
-        suspended: true, 
-        suspended_at: DateTime.utc_now()
-      })
-
-      Map.put(ctx, :suspended, person)
-    end)
+    |> Factory.suspend_company_member(:suspended)
   end
 
   step :open_restore_people_page, ctx do
@@ -384,9 +377,9 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
     |> UI.assert_feed_item(ctx.admin, "restored #{Person.first_name(ctx.suspended)}'s account")
     |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.company.name,
-      to: ctx.admin,
-      author: ctx.suspended,
-      action: "your account has been restored"
+      to: ctx.suspended,
+      author: ctx.admin,
+      action: "has restored your account"
     })
     |> Factory.log_in_person(:suspended)
     |> NotificationsSteps.assert_activity_notification(%{

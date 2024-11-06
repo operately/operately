@@ -16,6 +16,7 @@ export {
   useAddFirstCompany,
   useAddCompanyMember,
   useNewInvitationToken,
+  useRestoreCompanyMember,
 } from "@/api";
 
 export function createInvitationUrl(token: string) {

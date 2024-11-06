@@ -172,6 +172,10 @@ export interface ActivityContentCompanyEditing {
   oldName?: string | null;
 }
 
+export interface ActivityContentCompanyMemberRestoring {
+  person?: Person | null;
+}
+
 export interface ActivityContentCompanyOwnerRemoving {
   companyId?: string | null;
   personId?: string | null;
@@ -2274,6 +2278,12 @@ export interface ReopenGoalResult {
   goal?: Goal | null;
 }
 
+export interface RestoreCompanyMemberInput {
+  personId?: Id | null;
+}
+
+export interface RestoreCompanyMemberResult {}
+
 export interface ResumeProjectInput {
   projectId?: string | null;
 }
@@ -2828,6 +2838,10 @@ export class ApiClient {
     return this.post("/reopen_goal", input);
   }
 
+  async restoreCompanyMember(input: RestoreCompanyMemberInput): Promise<RestoreCompanyMemberResult> {
+    return this.post("/restore_company_member", input);
+  }
+
   async resumeProject(input: ResumeProjectInput): Promise<ResumeProjectResult> {
     return this.post("/resume_project", input);
   }
@@ -3221,6 +3235,9 @@ export async function removeProjectMilestone(
 }
 export async function reopenGoal(input: ReopenGoalInput): Promise<ReopenGoalResult> {
   return defaultApiClient.reopenGoal(input);
+}
+export async function restoreCompanyMember(input: RestoreCompanyMemberInput): Promise<RestoreCompanyMemberResult> {
+  return defaultApiClient.restoreCompanyMember(input);
 }
 export async function resumeProject(input: ResumeProjectInput): Promise<ResumeProjectResult> {
   return defaultApiClient.resumeProject(input);
@@ -3833,6 +3850,15 @@ export function useReopenGoal(): UseMutationHookResult<ReopenGoalInput, ReopenGo
   return useMutation<ReopenGoalInput, ReopenGoalResult>((input) => defaultApiClient.reopenGoal(input));
 }
 
+export function useRestoreCompanyMember(): UseMutationHookResult<
+  RestoreCompanyMemberInput,
+  RestoreCompanyMemberResult
+> {
+  return useMutation<RestoreCompanyMemberInput, RestoreCompanyMemberResult>((input) =>
+    defaultApiClient.restoreCompanyMember(input),
+  );
+}
+
 export function useResumeProject(): UseMutationHookResult<ResumeProjectInput, ResumeProjectResult> {
   return useMutation<ResumeProjectInput, ResumeProjectResult>((input) => defaultApiClient.resumeProject(input));
 }
@@ -4114,6 +4140,8 @@ export default {
   useRemoveProjectMilestone,
   reopenGoal,
   useReopenGoal,
+  restoreCompanyMember,
+  useRestoreCompanyMember,
   resumeProject,
   useResumeProject,
   subscribeToNotifications,
