@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
-import { GoalTree } from "@/features/goals/GoalTree/tree-v2";
+import { GoalTree } from "@/features/goals/GoalTree";
 import { OptionsButton } from "@/components/Buttons";
 import { Paths } from "@/routes/paths";
 import { useLoadedData } from "./loader";
