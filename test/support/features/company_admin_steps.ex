@@ -342,4 +342,61 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
     |> UI.assert_feed_item(ctx.owner, "promoted #{name} to account owner")
   end
 
+  step :given_a_removed_company_member_exists, ctx do
+    ctx
+    |> Factory.add_company_member(:suspended, [name: "Suspended Memberson"])
+    |> then(fn ctx ->
+      {:ok, person} = Operately.People.update_person(ctx.member, %{
+        suspended: true, 
+        suspended_at: DateTime.utc_now()
+      })
+
+      Map.put(ctx, :suspended, person)
+    end)
+  end
+
+  step :open_restore_people_page, ctx do
+    ctx 
+    |> UI.visit(Paths.company_admin_path(ctx.company))
+    |> UI.click(testid: "restore-suspended-people")
+    |> UI.assert_has(testid: "restore-suspended-people-page")
+  end
+
+  step :assert_removed_person_is_listed, ctx do
+    ctx |> UI.assert_text(ctx.suspended.full_name)
+  end
+
+  step :restore_company_member, ctx do
+    ctx |> UI.click(testid: UI.testid(["restore", Paths.person_id(ctx.suspended)]))
+  end
+
+  step :assert_member_restored, ctx do
+    person = Operately.Repo.reload(ctx.suspended)
+    assert person.suspended == false
+    assert person.suspended_at == nil
+
+    ctx
+  end
+
+  step :assert_feed_item_notification_and_email_sent_to_restored_member, ctx do
+    ctx
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.assert_feed_item(ctx.admin, "restored #{Person.first_name(ctx.suspended)}'s account")
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.company.name,
+      to: ctx.admin,
+      author: ctx.suspended,
+      action: "your account has been restored"
+    })
+    |> Factory.log_in_person(:suspended)
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.admin,
+      action: "has restored your account"
+    })
+  end
+
+  step :assert_no_suspended_people_message_is_displayed, ctx do
+    ctx |> UI.assert_text("No suspended people")
+  end
+
 end

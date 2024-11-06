@@ -105,6 +105,19 @@ defmodule Operately.Features.CompanyAdminTest do
     |> Steps.assert_member_removed()
   end
 
+  @tag role: :admin
+  feature "restore removed member", ctx do
+    ctx
+    |> Steps.given_a_company_admin_exists()
+    |> Steps.given_a_removed_company_member_exists()
+    |> Steps.open_restore_people_page()
+    |> Steps.assert_removed_person_is_listed()
+    |> Steps.restore_company_member()
+    |> Steps.assert_no_suspended_people_message_is_displayed()
+    |> Steps.assert_member_restored()
+    |> Steps.assert_feed_item_notification_and_email_sent_to_restored_member()
+  end
+
   @tag role: :member
   feature "visiting the company admin page as a member", ctx do
     ctx
