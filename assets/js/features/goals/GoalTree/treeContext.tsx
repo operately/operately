@@ -7,6 +7,8 @@ import { useStateWithLocalStorage } from "@/hooks/useStateWithLocalStorage";
 import { Tree, buildTree, SortColumn, SortDirection, TreeOptions } from "./tree";
 import { ExpandableProvider } from "./context/Expandable";
 
+type DensityType = "default" | "compact";
+
 interface TreeContextValue {
   tree: Tree;
 
@@ -25,6 +27,8 @@ interface TreeContextValue {
   setShowCompleted: (show: boolean) => void;
   setChampionedBy: (person?: Person) => void;
   setReviewedBy: (person?: Person) => void;
+  density: DensityType;
+  setDensity: (density: DensityType) => void;
 }
 
 const TreeContext = React.createContext<TreeContextValue | null>(null);
@@ -49,6 +53,7 @@ export function TreeContextProvider(props: TreeContextProviderPropsWithChildren)
   const [showCompleted, setShowCompleted] = useStateWithLocalStorage<boolean>("showComepleted", false);
   const [championedBy, setChampionedBy] = React.useState<Person>();
   const [reviewedBy, setReviewedBy] = React.useState<Person>();
+  const [density, setDensity] = useStateWithLocalStorage<DensityType>("density", "default");
 
   const treeOptions = {
     ...props.options,
@@ -81,6 +86,8 @@ export function TreeContextProvider(props: TreeContextProviderPropsWithChildren)
     setShowCompleted,
     setChampionedBy,
     setReviewedBy,
+    density,
+    setDensity,
   };
 
   return (
