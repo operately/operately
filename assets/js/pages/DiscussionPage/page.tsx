@@ -100,10 +100,12 @@ function Title({ discussion }) {
 function Navigation({ space }) {
   return (
     <Paper.Navigation>
-      <Paper.NavItem linkTo={Paths.spaceDiscussionsPath(space.id)}>
+      <Paper.NavItem linkTo={Paths.spacePath(space.id)}>
         {React.createElement(Icons[space.icon], { size: 16, className: space.color })}
         {space.name}
       </Paper.NavItem>
+      <Paper.NavSeparator />
+      <Paper.NavItem linkTo={Paths.spaceDiscussionsPath(space.id)}>Discussions</Paper.NavItem>
     </Paper.Navigation>
   );
 }
