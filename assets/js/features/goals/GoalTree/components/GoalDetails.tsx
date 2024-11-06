@@ -24,16 +24,16 @@ import { Status } from "./Status";
 export function GoalDetails({ node }: { node: GoalNode }) {
   const { density } = useTreeContext();
 
-  if (density === "compact") return <></>;
-
   return (
     <div className="pl-[2px]">
-      <div className="flex gap-10 items-center">
-        <GoalStatus goal={node.goal} />
-        <GoalTimeframe goal={node.goal} />
-        <ChampionAndSpace goal={node.goal} />
-        <GoalChildrenCount node={node} />
-      </div>
+      {density !== "compact" && (
+        <div className="flex gap-10 items-center">
+          <GoalStatus goal={node.goal} />
+          <GoalTimeframe goal={node.goal} />
+          <ChampionAndSpace goal={node.goal} />
+          <GoalChildrenCount node={node} />
+        </div>
+      )}
 
       <GoalSuccessConditions node={node} />
     </div>
