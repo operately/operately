@@ -200,10 +200,6 @@ export class Paths {
     return createCompanyPath(["spaces", spaceId, "goals"]);
   }
 
-  static spaceProjectsPath(spaceId: string) {
-    return createCompanyPath(["spaces", spaceId, "projects"]);
-  }
-
   static spaceDiscussionsPath(spaceId: string) {
     return createCompanyPath(["spaces", spaceId, "discussions"]);
   }
