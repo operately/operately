@@ -4,7 +4,7 @@ import classNames from "classnames";
 import { DivLink } from "@/components/Link";
 
 export function Title({ title }: { title: string }) {
-  return <div className="font-bold text-base text-center py-2 border-b border-stroke-base">{title}</div>;
+  return <div className="font-bold text-base text-center py-2">{title}</div>;
 }
 
 interface ContainerProps {

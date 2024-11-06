@@ -34,7 +34,7 @@ function ZeroDiscussions() {
 
 function DiscussionList({ discussions }: { discussions: Discussion[] }) {
   return (
-    <div>
+    <div className="bg-surface-dimmed mx-1.5 rounded p-1 h-full">
       {discussions.map((discussion) => (
         <DiscussionItem discussion={discussion} key={discussion.id} />
       ))}
@@ -56,7 +56,7 @@ function DiscussionItem({ discussion }: { discussion: Discussion }) {
 
   return (
     <div className={className}>
-      <Avatar person={discussion.author} size="normal" />
+      <Avatar person={discussion.author} size="small" />
       <DiscussionTitle title={discussion.title!} body={discussion.body!} />
       <CommnetsCount count={discussion.commentsCount} />
     </div>
@@ -82,7 +82,7 @@ function DiscussionTitle({ title, body }: { title: string; body: string }) {
   }, [setSubtitle]);
 
   return (
-    <div ref={textRef} className="font-bold overflow-hidden">
+    <div ref={textRef} className="font-bold overflow-hidden text-xs">
       {title}
 
       {subtitle && <div className="font-normal truncate pr-2">{subtitle}</div>}
