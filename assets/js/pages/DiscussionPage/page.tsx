@@ -86,8 +86,8 @@ function Title({ discussion }) {
       <div className="text-content-accent text-xl sm:text-2xl md:text-3xl font-extrabold text-center">
         {discussion.title}
       </div>
-      <div className="flex flex-wrap justify-center gap-2 mt-2 text-content-accent font-medium text-sm sm:text-[16px]">
-        <div className="flex items-center gap-2">
+      <div className="flex flex-wrap justify-center gap-1 items-center mt-2 text-content-accent font-medium text-sm sm:text-[16px]">
+        <div className="flex items-center gap-1">
           <Avatar person={discussion.author} size="tiny" /> {discussion.author.fullName}
         </div>
         <TextSeparator />
