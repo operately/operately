@@ -54,8 +54,8 @@ defmodule Operately.Features.GoalTreeTest do
     |> Steps.assert_project_check_in_content()
   end
 
-  describe "filter goals and projects" do
-    feature "active projects", ctx do
+  describe "view options" do
+    feature " filter active projects", ctx do
       ctx
       |> Steps.visit_goal_tree_page()
       |> Steps.assert_all_goals_and_projects_are_visible_by_default()
@@ -67,7 +67,7 @@ defmodule Operately.Features.GoalTreeTest do
       |> Steps.assert_project_visible(:project_beta)
     end
 
-    feature "paused projects", ctx do
+    feature "filter paused projects", ctx do
       ctx
       |> Steps.given_project_is_paused(ctx.project_beta)
       |> Steps.visit_goal_tree_page()
@@ -78,7 +78,7 @@ defmodule Operately.Features.GoalTreeTest do
       |> Steps.assert_paused_project_hidden(ctx.project_beta)
     end
 
-    feature "completed goals and projects", ctx do
+    feature "filter completed goals and projects", ctx do
       ctx
       |> Steps.given_goal_is_closed(:goal_2)
       |> Steps.given_project_is_closed(:project_beta)
@@ -93,7 +93,7 @@ defmodule Operately.Features.GoalTreeTest do
       |> Steps.assert_closed_project_hidden(ctx.project_beta)
     end
 
-    feature "owned by", ctx do
+    feature "filter by champion", ctx do
       ctx
       |> Steps.visit_goal_tree_page()
       |> Steps.assert_all_goals_and_projects_are_visible_by_default()
@@ -104,7 +104,7 @@ defmodule Operately.Features.GoalTreeTest do
       |> Steps.assert_project_visible(:project_beta)
     end
 
-    feature "reviewed by", ctx do
+    feature "filter by reviewer", ctx do
       ctx
       |> Steps.given_project_and_goal_with_other_reviewer_exists()
       |> Steps.visit_goal_tree_page()
@@ -113,6 +113,17 @@ defmodule Operately.Features.GoalTreeTest do
       |> Steps.select_reviewed_by_me_filter()
       |> Steps.refute_goal_visible(:goal_3)
       |> Steps.refute_project_visible(:project_omega)
+    end
+
+    feature "display default and compact view", ctx do
+      ctx
+      |> Steps.visit_goal_tree_page()
+      |> Steps.assert_all_goals_and_projects_are_visible_by_default()
+      |> Steps.assert_resources_details_visible_by_default()
+      |> Steps.select_compact_density()
+      |> Steps.assert_resources_details_hidden()
+      |> Steps.expand_goal_success_conditions(ctx.goal_1)
+      |> Steps.assert_goal_success_conditions_are_visible()
     end
   end
 
