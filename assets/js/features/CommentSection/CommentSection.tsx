@@ -203,7 +203,7 @@ function ViewComment({ comment, onEdit, commentParentType, canComment }) {
               </span>
 
               {compareIds(me.id, comment.author.id) && (
-                <PageOptions.Root testId="comment-options" noBorder>
+                <PageOptions.Root testId="comment-options">
                   <PageOptions.Action
                     onClick={onEdit}
                     icon={Icons.IconEdit}
