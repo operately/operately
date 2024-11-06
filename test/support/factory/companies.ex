@@ -68,4 +68,14 @@ defmodule Operately.Support.Factory.Companies do
     Operately.Access.bind(context, person_id: person.id, level: access_level)
   end
 
+  def suspend_company_member(ctx, key, _opts \\ []) do
+    person = Map.fetch!(ctx, key)
+
+    {:ok, person} = Operately.People.update_person(person, %{
+      suspended: true,
+      suspended_at: DateTime.utc_now(),
+    })
+
+    Map.put(ctx, key, person)
+  end
 end

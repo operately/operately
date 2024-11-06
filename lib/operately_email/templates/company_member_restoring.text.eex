@@ -1,0 +1,3 @@
+Your account has been restored as a company member by <%= short_name(@author) %>.
+
+Link: <%= @link %>

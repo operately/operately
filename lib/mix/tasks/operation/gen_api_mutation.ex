@@ -8,7 +8,7 @@ defmodule Mix.Tasks.Operation.GenApiMutation do
 
   defp gen_router_snippet(ctx) do
     file_path = "lib/operately_web/api.ex"
-    content = "  mutation :#{ctx.action}_#{ctx.resource}, M.#{ctx.operation_module_name}"
+    content = "  mutation :#{ctx.action}_#{ctx.resource}, M.#{ctx.api_module_name}"
     line = find_insertion_point(file_path)
 
     Mix.Operately.inject_into_file(file_path, content, line)
