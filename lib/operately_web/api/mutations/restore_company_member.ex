@@ -3,25 +3,23 @@ defmodule OperatelyWeb.Api.Mutations.RestoreCompanyMember do
   use OperatelyWeb.Api.Helpers
 
   alias Operately.Operations.CompanyMemberRestoring
+  alias Operately.Companies.Company
+  alias Operately.Companies.Permissions
+  alias Operately.People.Person
 
   inputs do
-    field :company_id, :string
-    field :person_id, :string
-  end
-
-  outputs do
-    field :something, :something  # TODO
+    field :person_id, :id
   end
 
   def call(conn, inputs) do
     with(
       {:ok, me} <- find_me(conn),
-      {:ok, resource} <- find_resource(me, inputs),
-      {:ok, :allowed} <- authorize(company),
-      {:ok, result} <- execute(CompanyMemberRestoring.run(ctx.me, ctx.attrs) end)
-      {:ok, seriliazed} <- %{person: Serializer.serialize(result, level: :full)}
+      {:ok, company} <- find_company(conn),
+      {:ok, person} <- find_person(conn, inputs.person_id),
+      {:ok, :allowed} <- authorize(company, person),
+      {:ok, _} <- execute(me, person)
     ) do
-      {:ok, %{something: serialized}}
+      {:ok, %{}}
     else
       {:error, :forbidden} -> {:error, :forbidden}
       {:error, :not_found} -> {:error, :not_found}
@@ -29,15 +27,23 @@ defmodule OperatelyWeb.Api.Mutations.RestoreCompanyMember do
     end
   end
 
-  defp authorize(resource) do
-    # Permissions.check(resource.request_info.access_level, :can_do_things)
+  defp authorize(company, person) do
+    if company.id == person.company_id do
+      Permissions.check(company.request_info.access_level, :can_restore_members)
+    else
+      {:error, :forbidden}
+    end
   end
 
-  defp find_resource(me, _inputs) do
-    # e.g. Project.get(me, id: inputs.project_id)
+  defp find_company(conn) do
+    Company.get(me(conn), id: me(conn).company_id)
   end
 
-  defp execute(me, resource, inputs) do
-    CompanyMemberRestoring.run(me, resource, inputs)
+  defp find_person(conn, person_id) do
+    Person.get(me(conn), id: person_id)
+  end
+
+  defp execute(me, person) do
+    CompanyMemberRestoring.run(me, person)
   end
 end

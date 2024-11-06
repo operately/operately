@@ -1,8 +1,11 @@
 defmodule OperatelyEmail.Emails.CompanyMemberRestoringEmail do
   import OperatelyEmail.Mailers.ActivityMailer
 
+  alias Operately.Repo
+
   def send(person, activity) do
     author = Repo.preload(activity, :author).author
+    company = Repo.preload(person, :company).company
 
     company
     |> new()

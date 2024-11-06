@@ -3,18 +3,19 @@ defmodule Operately.Operations.CompanyMemberRestoring do
   alias Operately.Repo
   alias Operately.Activities
 
-  def run(author, _attrs) do
-    raise "Operation for CompanyMemberRestoring not implemented"
-
+  def run(author, person) do
     Multi.new()
-    |> Multi.insert(:something, nil)
+    |> Multi.update(:person, person, %{
+      suspended: false,
+      suspended_at: nil
+    })
     |> Activities.insert_sync(author.id, :company_member_restoring, fn _changes ->
       %{
-        company_id: "TODO",
-        person_id: "TODO"
+        company_id: person.company_id,
+        person_id: person.id
       }
     end)
     |> Repo.transaction()
-    |> Repo.extract_result(:something)
+    |> Repo.extract_result(:person)
   end
 end
