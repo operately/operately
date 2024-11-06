@@ -18,9 +18,14 @@ import { DescriptionSection, StatusSection, TargetsSection } from "@/features/go
 
 import { GoalNode, Node } from "../tree";
 import { useExpandable } from "../context/Expandable";
+import { useTreeContext } from "../treeContext";
 import { Status } from "./Status";
 
 export function GoalDetails({ node }: { node: GoalNode }) {
+  const { density } = useTreeContext();
+
+  if (density === "compact") return <></>;
+
   return (
     <div className="pl-[2px]">
       <div className="flex gap-10 items-center">

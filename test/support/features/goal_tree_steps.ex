@@ -161,6 +161,13 @@ defmodule Operately.Support.Features.GoalTreeSteps do
     |> UI.click(testid: "submit")
   end
 
+  step :select_compact_density, ctx do
+    ctx
+    |> UI.click(testid: "view-options")
+    |> UI.click(testid: "density-compact")
+    |> UI.click(testid: "submit")
+  end
+
   step :open_status_pop_up, ctx, attrs do
     testid = cond do
       Map.has_key?(attrs, :goal) -> UI.testid(["status", Paths.goal_id(attrs.goal)])
@@ -212,6 +219,16 @@ defmodule Operately.Support.Features.GoalTreeSteps do
     |> UI.assert_text(ctx[:project_beta].name)
     |> UI.assert_text(ctx[:goal_1].name)
     |> UI.assert_text(ctx[:goal_2].name)
+  end
+
+  step :assert_resources_details_visible_by_default, ctx do
+    ctx
+    |> UI.assert_has(Query.text("On Track", count: 4))
+  end
+
+  step :assert_resources_details_hidden, ctx do
+    ctx
+    |> UI.refute_text("On Track")
   end
 
   step :assert_subgoals_and_projects_are_visible, ctx do
