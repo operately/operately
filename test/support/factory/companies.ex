@@ -69,7 +69,7 @@ defmodule Operately.Support.Factory.Companies do
   end
 
   def suspend_company_member(ctx, key, _opts \\ []) do
-    person = ctx[key]
+    person = Map.fetch!(ctx, key)
 
     {:ok, person} = Operately.People.update_person(person, %{
       suspended: true,
