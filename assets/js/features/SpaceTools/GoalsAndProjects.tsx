@@ -43,10 +43,10 @@ export function GoalsAndProjects({ space, goals, projects, toolsCount }: GoalsAn
       {goals.length < 1 && projects.length < 1 ? (
         <ZeroGoalsAndProjects />
       ) : (
-        <>
+        <div className="bg-surface-dimmed mx-1.5 rounded p-1">
           <Goals goals={slicedGoals} />
           <Projects projects={projects} />
-        </>
+        </div>
       )}
     </Container>
   );
