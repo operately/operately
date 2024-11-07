@@ -13,8 +13,6 @@ defmodule Operately.Demo.Spaces do
     {:ok, group} = Operately.Groups.create_group(owner, %{
       name: data.name,
       mission: data.description,
-      icon: data.icon,
-      color: data.color,
       company_permissions: 70,
       public_permissions: 0
     })

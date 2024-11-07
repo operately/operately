@@ -8,8 +8,6 @@ defmodule OperatelyWeb.Api.Mutations.CreateSpace do
   inputs do
     field :name, :string
     field :mission, :string
-    field :icon, :string
-    field :color, :string
 
     field :company_permissions, :integer
     field :public_permissions, :integer

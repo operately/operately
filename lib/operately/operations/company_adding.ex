@@ -47,8 +47,6 @@ defmodule Operately.Operations.CompanyAdding do
     attrs = %{
       name: "Company",
       mission: "Organization-wide announcements and resources",
-      icon: "IconBuildingEstate",
-      color: "text-cyan-500",
       company_permissions: Binding.view_access(),
     }
 

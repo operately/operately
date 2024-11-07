@@ -1,6 +1,5 @@
 import * as React from "react";
 import * as Spaces from "@/models/spaces";
-import * as Icons from "@tabler/icons-react";
 
 import classnames from "classnames";
 
@@ -17,12 +16,11 @@ export interface SpaceCardProps {
 }
 
 export function SpaceCard(props: SpaceCardProps) {
-  const { name, mission, color, icon } = props.space;
-  const iconElement = Icons[icon!];
+  const { name, mission } = props.space;
   const shadowSize = props.shadowSize ?? "base";
 
   const className = classnames(
-    "flex flex-col",
+    "flex flex-col gap-4",
     "cursor-pointer",
     "rounded-xl",
     "bg-surface-base",
@@ -30,6 +28,7 @@ export function SpaceCard(props: SpaceCardProps) {
     "shadow",
     "overflow-hidden",
     "hover:-translate-y-0.5",
+    "px-4 py-3",
     {
       "hover:shadow-lg transition-shadow": shadowSize === "base",
       "hover:shadow-xl transition-shadow": shadowSize === "lg",
@@ -44,21 +43,15 @@ export function SpaceCard(props: SpaceCardProps) {
 
   return (
     <Card className={className} title={name!} {...cardProps}>
-      <div className="flex gap-2 items-start flex-1">
-        <div className="px-4 py-3 flex-1">
-          <div className="flex items-center gap-1.5 mt-1">
-            <div className="font-semibold">{name}</div>
-            <PrivacyIndicator space={props.space} size={14} />
-          </div>
-          <div className="text-content-dimmed text-sm line-clamp-2">{mission}</div>
+      <div className="flex-1">
+        <div className="flex items-center gap-1.5">
+          <div className="font-semibold">{name}</div>
+          <PrivacyIndicator space={props.space} size={14} />
         </div>
+        <div className="text-content-dimmed text-xs line-clamp-2">{mission}</div>
       </div>
 
-      <div className="px-4 py-3 flex items-center justify-between">
-        <AvatarList people={props.space.members!} size={24} maxElements={10} stacked showCutOff={false} />
-
-        <div className="">{React.createElement(iconElement, { size: 24, className: color, strokeSize: 1 })}</div>
-      </div>
+      <AvatarList people={props.space.members!} size={24} maxElements={10} stacked showCutOff={false} />
     </Card>
   );
 }
