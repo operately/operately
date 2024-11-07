@@ -2,6 +2,7 @@ import React from "react";
 
 import { useNavigate } from "react-router-dom";
 import { ProjectCheckIn, useEditProjectCheckIn } from "@/models/projectCheckIns";
+import { Person } from "@/models/people";
 
 import Forms from "@/components/Forms";
 import { Spacer } from "@/components/Spacer";
@@ -45,7 +46,7 @@ export function Form({ checkIn }: { checkIn: ProjectCheckIn }) {
       <Header checkIn={checkIn} />
 
       <Forms.FieldGroup>
-        <StatusSection />
+        <StatusSection reviewer={checkIn.project?.reviewer || undefined} />
         <DescriptionSection checkIn={checkIn} />
       </Forms.FieldGroup>
 
@@ -66,12 +67,13 @@ function Header({ checkIn }: { checkIn: ProjectCheckIn }) {
   );
 }
 
-function StatusSection() {
+function StatusSection({ reviewer }: { reviewer?: Person }) {
   return (
     <div className="mt-8 mb-4">
       <Forms.SelectStatus
         label="1. How's the project going?"
         field="status"
+        reviewer={reviewer}
         options={["on_track", "caution", "issue"]}
       />
     </div>

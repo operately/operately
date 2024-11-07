@@ -3,6 +3,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { usePostProjectCheckIn } from "@/models/projectCheckIns";
 import { Project } from "@/models/projects";
+import { Person } from "@/models/people";
 
 import Forms from "@/components/Forms";
 import { Spacer } from "@/components/Spacer";
@@ -54,7 +55,7 @@ export function Form({ project }: { project: Project }) {
       <Header />
 
       <Forms.FieldGroup>
-        <StatusSection />
+        <StatusSection reviewer={project.reviewer || undefined} />
         <DescriptionSection project={project} />
       </Forms.FieldGroup>
 
@@ -75,12 +76,13 @@ function Header() {
   );
 }
 
-function StatusSection() {
+function StatusSection({ reviewer }: { reviewer?: Person }) {
   return (
     <div className="mt-8 mb-4">
       <Forms.SelectStatus
         label="1. How's the project going?"
         field="status"
+        reviewer={reviewer}
         options={["on_track", "caution", "issue"]}
       />
     </div>

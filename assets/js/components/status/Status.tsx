@@ -50,7 +50,7 @@ export function Placeholder() {
 }
 
 function StatusDescription({ status, reviewer }: { status: StatusOptions; reviewer?: People.Person | null }) {
-  const reviewerMention = reviewer ? People.firstName(reviewer) : "the reviewer";
+  const reviewerName = reviewer && People.firstName(reviewer);
 
   switch (status) {
     case "on_track":
@@ -58,7 +58,7 @@ function StatusDescription({ status, reviewer }: { status: StatusOptions; review
         <>
           Work is progressing as planned.
           <br />
-          No involvement by {reviewerMention} is needed at this time.
+          No involvement by {reviewerName || "the reviewer"} is needed at this time.
         </>
       );
     case "caution":
@@ -66,7 +66,7 @@ function StatusDescription({ status, reviewer }: { status: StatusOptions; review
         <>
           A potential problem may exist, perhaps in the future, if not monitored.
           <br />
-          <span className="capitalize">{reviewerMention}</span> should be aware, but no action is needed.
+          {reviewerName || "The reviewer"} should be aware, but no action is needed.
         </>
       );
     case "issue":
@@ -74,7 +74,7 @@ function StatusDescription({ status, reviewer }: { status: StatusOptions; review
         <>
           There’s a problem that may significantly affect time, cost, quality, or scope.
           <br />
-          <span className="capitalize">{reviewerMention}</span>’s involvement is necessary.
+          {reviewerName || "The reviewer"}’s involvement is necessary.
         </>
       );
     case "pending":
