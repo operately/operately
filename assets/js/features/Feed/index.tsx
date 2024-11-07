@@ -24,23 +24,53 @@ export function useItemsQuery(scopeType: ScopeType, scopeId: string) {
   });
 }
 
-export function Feed({ items, testId, page }: { items: Activity[]; testId?: string; page: Page }) {
+interface FeedConfig {
+  page: Page;
+  hideTopBorder?: boolean;
+  paddedGroups?: boolean;
+}
+
+interface FeedProps extends FeedConfig {
+  items: Activity[];
+  testId?: string;
+}
+
+const FEED_PROP_DEFAULTS = {
+  hideTopBorder: false,
+};
+
+export function Feed(props: FeedProps) {
+  props = { ...FEED_PROP_DEFAULTS, ...props };
+
   return (
     <ErrorBoundary fallback={<div>Ooops, something went wrong while loading the feed</div>}>
-      <div className="w-full" data-test-id={testId}>
-        {Activities.groupByDate(items).map((group, index) => (
-          <ActivityGroup key={index} group={group} page={page} />
+      <div className="w-full" data-test-id={props.testId}>
+        {Activities.groupByDate(props.items).map((group, index) => (
+          <ActivityGroup
+            key={index}
+            group={group}
+            page={props.page}
+            hideTopBorder={props.hideTopBorder}
+            paddedGroups={props.paddedGroups}
+          />
         ))}
       </div>
     </ErrorBoundary>
   );
 }
 
-function ActivityGroup({ group, page }: { group: Activities.ActivityGroup; page: string }) {
+function ActivityGroup(props: FeedConfig & { group: Activities.ActivityGroup }) {
+  const className = classNames("w-full border-stroke-base flex items-start gap-2", {
+    "border-t": !props.hideTopBorder,
+    "not-first:border-t": props.hideTopBorder,
+    "p-8": props.paddedGroups,
+    "py-4": !props.paddedGroups,
+  });
+
   return (
-    <div className="w-full border-t border-stroke-base py-4 flex items-start gap-2">
-      <ActivityGroupDate group={group} />
-      <ActivityGroupItems group={group} page={page} />
+    <div className={className}>
+      <ActivityGroupDate group={props.group} />
+      <ActivityGroupItems group={props.group} page={props.page} />
     </div>
   );
 }
