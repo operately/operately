@@ -13,6 +13,8 @@ export function Navigation({ space }: { space: Spaces.Space }) {
         {React.createElement(Icons[space.icon!], { size: 16, className: space.color })}
         {space.name}
       </Paper.NavItem>
+      <Paper.NavSeparator />
+      <Paper.NavItem linkTo={Paths.spaceGoalsPath(space.id!)}>Goals & Projects</Paper.NavItem>
     </Paper.Navigation>
   );
 }
