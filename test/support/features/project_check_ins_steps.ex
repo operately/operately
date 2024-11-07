@@ -19,6 +19,7 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
     |> Factory.setup()
     |> Factory.add_space(:space)
     |> Factory.add_project(:project, :space)
+    |> Factory.add_project_contributor(:developer, :project)
     |> then(fn ctx ->
       Map.put(ctx, :champion, ctx.creator)
     end)
@@ -197,4 +198,15 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
     |> UI.visit(Paths.feed_path(ctx.company))
     |> FeedSteps.assert_project_check_in_commented(author: ctx.champion, comment: "This is a comment.")
   end
+
+  step :assert_email_is_sent_to_contributors, ctx do
+    ctx 
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
+      to: ctx.developer,
+      author: ctx.champion,
+      action: "submitted a check-in",
+    })
+  end
+
 end
