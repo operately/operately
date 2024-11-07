@@ -6,7 +6,6 @@ defmodule Operately.Repo.Migrations.AddResourceHubResourceNodeAndFolder do
     create table(:resource_hubs, primary_key: false) do
       add :id, :binary_id, primary_key: true
       add :space_id, references(:groups, on_delete: :nothing, type: :binary_id)
-      add :access_context_id, references(:access_contexts, on_delete: :nothing, type: :binary_id)
 
       add :name, :string
       add :description, :map
@@ -15,7 +14,13 @@ defmodule Operately.Repo.Migrations.AddResourceHubResourceNodeAndFolder do
     end
 
     create index(:resource_hubs, [:space_id])
-    create index(:resource_hubs, [:access_context_id])
+
+    # Add resource_hub_id to access_contexts
+    alter table(:access_contexts) do
+      add :resource_hub_id, references(:resource_hubs, on_delete: :nothing, type: :binary_id), null: true
+    end
+
+    create unique_index(:access_contexts, [:resource_hub_id])
 
     # Create nodes
     create table(:resource_nodes, primary_key: false) do

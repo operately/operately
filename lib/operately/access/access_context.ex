@@ -6,6 +6,7 @@ defmodule Operately.Access.Context do
     belongs_to :group, Operately.Groups.Group, foreign_key: :group_id
     belongs_to :company, Operately.Companies.Company, foreign_key: :company_id
     belongs_to :goal, Operately.Goals.Goal, foreign_key: :goal_id
+    belongs_to :resource_hub, Operately.Goals.Goal, foreign_key: :resource_hub_id
 
     has_many :activities, Operately.Activities.Activity, foreign_key: :access_context_id
     has_many :bindings, Operately.Access.Binding, foreign_key: :context_id
@@ -19,19 +20,19 @@ defmodule Operately.Access.Context do
 
   def changeset(context, attrs) do
     context
-    |> cast(attrs, [:project_id, :group_id, :company_id, :goal_id])
-    |> validate_one_association
+    |> cast(attrs, [:project_id, :group_id, :company_id, :goal_id, :resource_hub_id])
+    |> validate_one_association()
     |> validate_required([])
   end
 
   defp validate_one_association(changeset) do
-    fields = [:project_id, :group_id, :company_id, :goal_id]
+    fields = [:project_id, :group_id, :company_id, :goal_id, :resource_hub_id]
     count = Enum.count(fields, fn field -> get_field(changeset, field) != nil end)
 
     if count == 1 do
       changeset
     else
-      add_error(changeset, :base, "Exactly one association (Project, Group, Goal or Company) must be set.")
+      add_error(changeset, :base, "Exactly one association (Resource Hub, Project, Group, Goal or Company) must be set.")
     end
   end
 end
