@@ -8,7 +8,7 @@ import FormattedTime from "@/components/FormattedTime";
 
 import { Link } from "@/components/Link";
 import { Paths } from "@/routes/paths";
-import { MiniPieChart } from "@/components/MiniPieChart";
+import { MiniPieChart } from "@/components/charts/MiniPieChart";
 import { MilestoneIcon } from "@/components/MilestoneIcon";
 import { StatusIndicator } from "@/features/ProjectListItem/StatusIndicator";
 import { PrivacyIndicator } from "@/features/projects/PrivacyIndicator";

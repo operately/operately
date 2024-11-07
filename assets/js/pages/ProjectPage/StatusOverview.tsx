@@ -2,7 +2,7 @@ import * as React from "react";
 import * as Projects from "@/models/projects";
 
 import { StatusIndicator } from "@/features/ProjectListItem/StatusIndicator";
-import { MiniPieChart } from "@/components/MiniPieChart";
+import { MiniPieChart } from "@/components/charts/MiniPieChart";
 import { DimmedLabel } from "./Label";
 
 export function StatusOverview({ project }) {
