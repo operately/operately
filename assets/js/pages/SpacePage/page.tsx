@@ -2,12 +2,10 @@ import React from "react";
 
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
-import * as Icons from "@tabler/icons-react";
 import * as Spaces from "@/models/spaces";
 
-import { SpacePageSettings } from "@/components/SpacePageNavigation";
 import { Feed, useItemsQuery } from "@/features/Feed";
-import { PrimaryButton } from "@/components/Buttons";
+import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
 
 import { useJoinSpace } from "@/models/spaces";
 import { PrivacyIndicator } from "@/features/spaces/PrivacyIndicator";
@@ -17,6 +15,7 @@ import { ToolsSection } from "@/features/SpaceTools";
 
 import MemberList from "./MemberList";
 import { useLoadedData, useRefresh } from "./loader";
+import { Paths } from "@/routes/paths";
 
 export function Page() {
   const { space, discussions, goals, projects } = useLoadedData();
@@ -28,7 +27,7 @@ export function Page() {
     <Pages.Page title={space.name!} testId="space-page">
       <Paper.Root size="large">
         <Paper.Body>
-          <SpacePageSettings space={space} />
+          <SpaceEdit />
           <SpaceHeader space={space} />
           <SpaceMembers space={space} />
           <JoinButton space={space} />
@@ -40,20 +39,25 @@ export function Page() {
   );
 }
 
-function SpaceHeader({ space }: { space: Spaces.Space }) {
+function SpaceEdit() {
+  const { space } = useLoadedData();
+
+  if (space.permissions?.canEdit !== true) return null;
+
   return (
-    <div className="mt-2">
-      <SpaceIcon space={space} />
-      <SpaceName space={space} />
-      <SpaceMission space={space} />
+    <div className="absolute right-4 top-4">
+      <SecondaryButton size="xs" linkTo={Paths.spaceEditPath(space.id!)} testId="edit-space">
+        Edit Space
+      </SecondaryButton>
     </div>
   );
 }
 
-function SpaceIcon({ space }: { space: Spaces.Space }) {
+function SpaceHeader({ space }: { space: Spaces.Space }) {
   return (
-    <div className="font-medium flex items-center gap-2 justify-center mb-2">
-      {React.createElement(Icons[space.icon!], { size: 48, className: space.color, strokeWidth: 1 })}
+    <div className="mt-2">
+      <SpaceName space={space} />
+      <SpaceMission space={space} />
     </div>
   );
 }

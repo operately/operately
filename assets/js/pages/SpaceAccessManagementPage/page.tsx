@@ -2,7 +2,6 @@ import React from "react";
 
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
-import * as Icons from "@tabler/icons-react";
 import * as People from "@/models/people";
 
 import { Paths } from "@/routes/paths";
@@ -69,10 +68,7 @@ function Title() {
 function Navigation({ space }: { space: Space }) {
   return (
     <Paper.Navigation>
-      <Paper.NavItem linkTo={Paths.spacePath(space.id!)}>
-        {React.createElement(Icons[space.icon!], { size: 16, className: space.color })}
-        {space.name}
-      </Paper.NavItem>
+      <Paper.NavItem linkTo={Paths.spacePath(space.id!)}>{space.name}</Paper.NavItem>
     </Paper.Navigation>
   );
 }
