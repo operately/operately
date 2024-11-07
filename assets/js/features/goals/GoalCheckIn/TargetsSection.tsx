@@ -1,6 +1,7 @@
 import React from "react";
 
 import { Update } from "@/models/goalCheckIns";
+import { limitDecimals } from "@/utils/numbers";
 
 export function TargetsSection({ update }: { update: Update }) {
   const targets = update
@@ -25,7 +26,7 @@ export function TargetsSection({ update }: { update: Update }) {
   );
 }
 
-function TargetProgress({ value, start, end }) {
+export function TargetProgress({ value, start, end }) {
   const total = end - start;
   const progress = (value - start) / total;
   const width = 100 * progress;
@@ -41,15 +42,15 @@ function TargetProgress({ value, start, end }) {
   );
 }
 
-function TargetChange({ target }) {
+export function TargetChange({ target }) {
   const newProgress = target.value - target.from;
   const oldProgress = target.previousValue - target.from;
-  const diff = newProgress - oldProgress;
+  const diff = limitDecimals(Math.abs(newProgress - oldProgress), 2);
 
   if (newProgress > oldProgress) {
-    return <div className="text-green-600 font-bold shrink-0 text-sm">+ {Math.abs(diff)}</div>;
+    return <div className="text-green-600 font-bold shrink-0 text-sm">+ {diff}</div>;
   } else if (newProgress < oldProgress) {
-    return <div className="text-content-error font-bold shrink-0 test-sm">- {Math.abs(diff)}</div>;
+    return <div className="text-content-error font-bold shrink-0 test-sm">- {diff}</div>;
   } else {
     return <div className="flex items-center gap-1 text-content-dimmed font-medium shrink-0 text-xs">No Change</div>;
   }
