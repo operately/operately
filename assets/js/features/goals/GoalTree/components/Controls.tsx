@@ -4,7 +4,7 @@ import Forms from "@/components/Forms";
 import Modal from "@/components/Modal";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
-import { GhostButton } from "@/components/Buttons";
+import { SecondaryButton } from "@/components/Buttons";
 
 import { useExpandable } from "../context/Expandable";
 import { useTreeContext } from "../treeContext";
@@ -19,12 +19,13 @@ export function Controls() {
   return (
     <>
       <div className="flex mb-4 items-center gap-2">
-        <GhostButton onClick={isExpanded ? collapseAll : expandAll} size="sm" testId="collapse-expand-all">
+        <SecondaryButton onClick={isExpanded ? collapseAll : expandAll} size="xs" testId="collapse-expand-all">
           {isExpanded ? "Collapse All" : "Expand all"}
-        </GhostButton>
-        <GhostButton onClick={toggleShowOptions} size="sm" testId="view-options">
+        </SecondaryButton>
+
+        <SecondaryButton onClick={toggleShowOptions} size="xs" testId="view-options">
           View options
-        </GhostButton>
+        </SecondaryButton>
       </div>
 
       <OptionsModal showOptions={showOptions} toggleShowOptions={toggleShowOptions} />
