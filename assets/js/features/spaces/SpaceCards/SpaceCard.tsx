@@ -6,6 +6,7 @@ import classnames from "classnames";
 
 import { Card } from "./Card";
 import { PrivacyIndicator } from "@/features/spaces/PrivacyIndicator";
+import AvatarList from "@/components/AvatarList";
 
 export interface SpaceCardProps {
   space: Spaces.Space;
@@ -21,15 +22,17 @@ export function SpaceCard(props: SpaceCardProps) {
   const shadowSize = props.shadowSize ?? "base";
 
   const className = classnames(
+    "flex flex-col",
     "cursor-pointer",
-    "rounded-lg",
+    "rounded-xl",
     "bg-surface-base",
-    "px-4 py-3 w-64",
-    "border border-surface-outline",
     "relative",
+    "shadow",
+    "overflow-hidden",
+    "hover:-translate-y-0.5",
     {
-      "hover:shadow transition-shadow": shadowSize === "base",
-      "hover:shadow-lg transition-shadow": shadowSize === "lg",
+      "hover:shadow-lg transition-shadow": shadowSize === "base",
+      "hover:shadow-xl transition-shadow": shadowSize === "lg",
     },
   );
 
@@ -41,15 +44,21 @@ export function SpaceCard(props: SpaceCardProps) {
 
   return (
     <Card className={className} title={name!} {...cardProps}>
-      <div className="mt-2"></div>
-      {React.createElement(iconElement, { size: 40, className: color, strokeWidth: 1 })}
-
-      <div className="flex items-center gap-1.5 mt-2">
-        <div className="font-semibold">{name}</div>
-        <PrivacyIndicator space={props.space} size={14} />
+      <div className="flex gap-2 items-start flex-1">
+        <div className="px-4 py-3 flex-1">
+          <div className="flex items-center gap-1.5 mt-1">
+            <div className="font-semibold">{name}</div>
+            <PrivacyIndicator space={props.space} size={14} />
+          </div>
+          <div className="text-content-dimmed text-sm line-clamp-2">{mission}</div>
+        </div>
       </div>
 
-      <div className="text-content-dimmed text-xs line-clamp-3">{mission}</div>
+      <div className="px-4 py-3 flex items-center justify-between">
+        <AvatarList people={props.space.members!} size={24} maxElements={10} stacked showCutOff={false} />
+
+        <div className="">{React.createElement(iconElement, { size: 24, className: color, strokeSize: 1 })}</div>
+      </div>
     </Card>
   );
 }

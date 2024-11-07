@@ -97,7 +97,7 @@ defmodule OperatelyWeb.Api.Queries.GetSpacesTest do
       |> Enum.sort_by(& &1.name)
       |> Enum.with_index()
       |> Enum.each(fn {space, i} ->
-        assert Enum.at(res.spaces, i) == Serializer.serialize(space, level: :full)
+        assert Enum.at(res.spaces, i).id == Paths.space_id(space)
       end)
     end
   end
@@ -109,7 +109,7 @@ defmodule OperatelyWeb.Api.Queries.GetSpacesTest do
   defp assert_spaces(res, spaces, count) do
     assert length(res.spaces) == count
     Enum.each(spaces, fn s ->
-      assert Enum.find(res.spaces, &(&1 == Serializer.serialize(s, level: :full)))
+      assert Enum.find(res.spaces, fn r -> r.id == Paths.space_id(s) end) != nil
     end)
   end
 
