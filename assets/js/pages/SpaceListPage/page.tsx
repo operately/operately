@@ -3,69 +3,53 @@ import React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as Spaces from "@/models/spaces";
-import * as Companies from "@/models/companies";
 import * as People from "@/models/people";
-import * as Icons from "@tabler/icons-react";
 
-import { GhostButton, SecondaryButton } from "@/components/Buttons";
 import { SpaceCardLink, SpaceCardGrid } from "@/features/spaces/SpaceCards";
 
 import { useLoadedData } from "./loader";
-import { Paths, compareIds } from "@/routes/paths";
-import { HorizontalLine } from "@/components/Line";
 import { Feed, useItemsQuery } from "@/features/Feed";
-import { useMe } from "@/contexts/CurrentUserContext";
-import { BlackLink } from "@/components/Link";
+import { useMe } from "@/contexts/CurrentCompanyContext";
+import { GhostButton } from "@/components/Buttons";
+import { Paths } from "@/routes/paths";
 
 export function Page() {
-  const me = useMe();
-  const { company, spaces } = useLoadedData();
-
   return (
     <Pages.Page title="Home" testId="company-home">
-      <Paper.Root size="large">
-        <p className=" text-center font-bold text-4xl mt-20">Good afternoon, {People.firstName(me!)}!</p>
-
-        <div className="border border-surface-outline bg-surface-base rounded-2xl p-3 w-[70%] m-auto mt-6 mb-4 flex items-center gap-4">
-          <Icons.IconSearch size={20} />
-          Search or jump to spaces, projects, goals...
-        </div>
-
-        <div className="flex items-center gap-4 justify-center mb-12 mt-2">
-          Quick links:
-          <BlackLink to="/new">New Project</BlackLink>
-          <BlackLink to="/new">New Goal</BlackLink>
-          <BlackLink to="/new">New Space</BlackLink>
-        </div>
-
-        <div className="p-12">
-          <div className="font-extrabold text-2xl">Your Spaces</div>
-          <p className="mb-8 w-96 text-sm mt-1">
-            Manage projects, track goals, and access company-wide information through your team spaces.
-          </p>
-
-          <SpaceGrid spaces={spaces} />
-        </div>
-
-        <div className="p-12">
-          <div className="font-extrabold text-2xl">What's new?</div>
-          <p className="mb-8 w-96 text-sm mt-1">
-            Showing the latest activity in {company.name}. Stay up to date with your team's progress.
-          </p>
-
-          <div className="bg-surface-base p-12 border border-surface-outline rounded-2xl">
-            <div className="flex items-center gap-4 mb-8">
-              View:
-              <BlackLink to="/new">All activity</BlackLink>
-              <BlackLink to="/new">My manager</BlackLink>
-              <BlackLink to="/new">My reports</BlackLink>
-            </div>
-
-            <ActivityFeed />
-          </div>
-        </div>
+      <Paper.Root size="medium">
+        <Greeting />
+        <SpacesSection />
+        <FeedSection />
       </Paper.Root>
     </Pages.Page>
+  );
+}
+
+function SpacesSection() {
+  const { spaces } = useLoadedData();
+
+  return (
+    <div className="mt-8">
+      <Paper.Section
+        title="Your Operately Spaces"
+        subtitle="Manage projects, track goals, and organize your team's work."
+        actions={<AddSpaceButton />}
+      >
+        <SpaceGrid spaces={spaces} />
+      </Paper.Section>
+    </div>
+  );
+}
+
+function FeedSection() {
+  return (
+    <div className="mt-8">
+      <Paper.Section title="What's new?" subtitle="Stay up to date with your team's progress.">
+        <div className="bg-surface-base shadow rounded-2xl">
+          <ActivityFeed />
+        </div>
+      </Paper.Section>
+    </div>
   );
 }
 
@@ -76,29 +60,44 @@ function ActivityFeed() {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error</div>;
 
-  return <Feed items={data!.activities!} testId="company-feed" page="company" />;
+  return <Feed items={data!.activities!} testId="company-feed" page="company" hideTopBorder paddedGroups />;
 }
 
-function AddNew() {
+function AddSpaceButton() {
   return (
-    <div className="flex items-center mt-8 mb-8 gap-2">
-      <SecondaryButton testId="add-space" linkTo={Paths.newSpacePath()} size="sm">
-        Set a new goal
-      </SecondaryButton>
+    <GhostButton linkTo={Paths.newSpacePath()} testId="add-space" size="sm">
+      Add Space
+    </GhostButton>
+  );
+}
 
-      <SecondaryButton testId="add-space" linkTo={Paths.newSpacePath()} size="sm">
-        Start a new project
-      </SecondaryButton>
+function Greeting() {
+  const me = useMe();
 
-      <SecondaryButton testId="add-space" linkTo={Paths.newSpacePath()} size="sm">
-        Add a new space
-      </SecondaryButton>
-    </div>
+  let hour = new Date().getHours();
+  let greeting = "";
+
+  if (hour < 12) {
+    greeting = "Good morning";
+  } else if (hour < 18) {
+    greeting = "Good afternoon";
+  } else {
+    greeting = "Good evening";
+  }
+
+  return (
+    <p className="font-bold text-3xl mt-20">
+      {greeting}, {People.firstName(me!)}!
+    </p>
   );
 }
 
 function SpaceGrid({ spaces }: { spaces: Spaces.Space[] }) {
-  const sorted = [...spaces].sort((a, b) => a.name!.localeCompare(b.name!));
+  const sorted = [...spaces].sort((a, b) => {
+    if (a.isCompanySpace) return -1;
+
+    return a.name!.localeCompare(b.name!);
+  });
 
   return (
     <SpaceCardGrid>
@@ -106,17 +105,5 @@ function SpaceGrid({ spaces }: { spaces: Spaces.Space[] }) {
         <SpaceCardLink key={space.id} space={space} />
       ))}
     </SpaceCardGrid>
-  );
-}
-
-function Title({ company }: { company: Companies.Company }) {
-  return (
-    <div className="relative w-80 px-4 py-3">
-      <div className="font-bold">Your {company.name} spaces</div>
-      <div className="text-sm mt-4">
-        Manage projects, track goals, and access company-wide information through your team spaces. Each space
-        represents a department or team initiative.
-      </div>
-    </div>
   );
 }

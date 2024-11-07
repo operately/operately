@@ -6,7 +6,7 @@ import classnames from "classnames";
 
 import { Card } from "./Card";
 import { PrivacyIndicator } from "@/features/spaces/PrivacyIndicator";
-import Avatar from "@/components/Avatar";
+import AvatarList from "@/components/AvatarList";
 
 export interface SpaceCardProps {
   space: Spaces.Space;
@@ -22,15 +22,17 @@ export function SpaceCard(props: SpaceCardProps) {
   const shadowSize = props.shadowSize ?? "base";
 
   const className = classnames(
+    "flex flex-col",
     "cursor-pointer",
     "rounded-xl",
     "bg-surface-base",
-    "border border-surface-outline",
     "relative",
-    "shadow-lg",
+    "shadow",
+    "overflow-hidden",
+    "hover:-translate-y-0.5",
     {
-      "hover:shadow-xl transition-shadow": shadowSize === "base",
-      "hover:shadow-2xl transition-shadow": shadowSize === "lg",
+      "hover:shadow-lg transition-shadow": shadowSize === "base",
+      "hover:shadow-xl transition-shadow": shadowSize === "lg",
     },
   );
 
@@ -42,37 +44,21 @@ export function SpaceCard(props: SpaceCardProps) {
 
   return (
     <Card className={className} title={name!} {...cardProps}>
-      <div className="flex gap-2 mb-4 items-start">
-        <div className="px-4 py-3">
-          <div className="flex items-center gap-1.5 mt-2">
+      <div className="flex gap-2 items-start flex-1">
+        <div className="px-4 py-3 flex-1">
+          <div className="flex items-center gap-1.5 mt-1">
             <div className="font-semibold">{name}</div>
             <PrivacyIndicator space={props.space} size={14} />
           </div>
           <div className="text-content-dimmed text-sm line-clamp-2">{mission}</div>
         </div>
-
-        <div className="border-l border-b border-stroke-base rounded-bl-lg rounded-tr-xl p-2 bg-surface-dimmed">
-          {React.createElement(iconElement, { size: 24, className: color })}
-        </div>
       </div>
 
-      <div className="bg-surface-dimmed px-4 py-2 mt-4 mb-2">
-        <PeopleList space={props.space} />
+      <div className="px-4 py-3 flex items-center justify-between">
+        <AvatarList people={props.space.members!} size={24} maxElements={10} stacked showCutOff={false} />
+
+        <div className="">{React.createElement(iconElement, { size: 24, className: color, strokeSize: 1 })}</div>
       </div>
     </Card>
-  );
-}
-
-function PeopleList({ space }: { space: Spaces.Space }) {
-  const members = space.members!.slice(0, 8);
-
-  return (
-    <div className="text-sm text-content-dimmed flex items-center -space-x-1">
-      {members!.map((a) => (
-        <div className="border border-surface-base rounded-full flex items-center" key={a.id}>
-          <Avatar key={a.id} person={a} size={24} />
-        </div>
-      ))}
-    </div>
   );
 }
