@@ -10,6 +10,7 @@ defmodule OperatelyWeb.Api.Queries.GetSpaces do
 
   inputs do
     field :include_access_levels, :boolean
+    field :include_members, :boolean
   end
 
   def call(conn, inputs) do
@@ -22,7 +23,7 @@ defmodule OperatelyWeb.Api.Queries.GetSpaces do
     from(g in Operately.Groups.Group,
       where: g.company_id == ^me.company_id,
       order_by: g.name,
-      preload: [:company]
+      preload: [:company, :members]
     )
     |> filter_by_view_access(me.id)
     |> Repo.all()
