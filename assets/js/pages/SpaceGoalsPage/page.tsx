@@ -15,7 +15,7 @@ export function Page() {
 
   return (
     <Pages.Page title={space.name!}>
-      <Paper.Root fluid>
+      <Paper.Root size="large">
         <SpacePageNavigation space={space} />
 
         <Paper.Body minHeight="500px">
