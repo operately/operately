@@ -2,12 +2,10 @@ import React from "react";
 
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
-import * as Icons from "@tabler/icons-react";
 import * as Spaces from "@/models/spaces";
 
-import { SpacePageSettings } from "@/components/SpacePageNavigation";
 import { Feed, useItemsQuery } from "@/features/Feed";
-import { PrimaryButton } from "@/components/Buttons";
+import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
 
 import { useJoinSpace } from "@/models/spaces";
 import { PrivacyIndicator } from "@/features/spaces/PrivacyIndicator";
@@ -17,6 +15,7 @@ import { ToolsSection } from "@/features/SpaceTools";
 
 import MemberList from "./MemberList";
 import { useLoadedData, useRefresh } from "./loader";
+import { Paths } from "@/routes/paths";
 
 export function Page() {
   const { space, discussions, goals, projects } = useLoadedData();
@@ -28,7 +27,7 @@ export function Page() {
     <Pages.Page title={space.name!} testId="space-page">
       <Paper.Root size="large">
         <Paper.Body>
-          <SpacePageSettings space={space} />
+          <SpaceEdit />
           <SpaceHeader space={space} />
           <SpaceMembers space={space} />
           <JoinButton space={space} />
@@ -37,6 +36,18 @@ export function Page() {
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
+  );
+}
+
+function SpaceEdit() {
+  const { space } = useLoadedData();
+
+  return (
+    <div className="absolute right-4 top-4">
+      <SecondaryButton size="xs" linkTo={Paths.spaceEditPath(space.id!)} testId="edit-space">
+        Edit Space
+      </SecondaryButton>
+    </div>
   );
 }
 
