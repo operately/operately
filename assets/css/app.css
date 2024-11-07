@@ -113,3 +113,10 @@ body {
   color: var(--color-content-base);
   background: var(--color-surface-bg);
 }
+
+/* Overriding the default style from tailwind, as it doesn't work well with long words */
+/* The word-break is needed in webkit browsers */
+.break-words {
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
