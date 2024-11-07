@@ -52,8 +52,6 @@ defmodule OperatelyWeb.Api.Mutations.CreateSpaceTest do
     mutation(conn, :create_space, %{
       name: "some name",
       mission: "some mission",
-      icon: "IconBuildingEstate",
-      color: "text-cyan-500",
       company_permissions: Binding.view_access(),
       public_permissions: Binding.no_access(),
     })

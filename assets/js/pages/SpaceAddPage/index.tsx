@@ -10,14 +10,7 @@ import Forms from "@/components/Forms";
 
 import { Paths } from "@/routes/paths";
 import { SecondaryButton } from "@/components/Buttons";
-import {
-  ColorChooser,
-  IconChooser,
-  AccessLevel,
-  AccessSelectors,
-  initialAccessLevels,
-  applyAccessLevelConstraints,
-} from "@/features/spaces";
+import { AccessLevel, AccessSelectors, initialAccessLevels, applyAccessLevelConstraints } from "@/features/spaces";
 
 export const loader = Pages.emptyLoader;
 
@@ -29,8 +22,6 @@ export function Page() {
     fields: {
       name: "",
       mission: "",
-      icon: "IconStar",
-      color: "text-blue-500",
       access: initialAccessLevels(),
       showAdvancedAccess: false,
     },
@@ -60,8 +51,6 @@ export function Page() {
             <Forms.FieldGroup>
               <NameInput field="name" />
               <PurposeInput field="mission" />
-              <IconChooser colorField="color" iconField="icon" />
-              <ColorChooser field="color" />
             </Forms.FieldGroup>
 
             <PrivacyLevel />
