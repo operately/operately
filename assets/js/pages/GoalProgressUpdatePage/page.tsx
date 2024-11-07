@@ -29,6 +29,7 @@ export function Page() {
   const { update } = useLoadedData();
 
   assertPresent(update.notifications, "Update notifications must be defined");
+  assertPresent(update.goal?.reviewer, "goal and reviewer must be present in update");
   useClearNotificationsOnLoad(update.notifications);
 
   return (
@@ -52,7 +53,7 @@ export function Page() {
 
           <Spacer size={4} />
 
-          <StatusSection update={update} />
+          <StatusSection update={update} reviewer={update.goal.reviewer} />
           <DescriptionSection update={update} />
           <TargetsSection update={update} />
 

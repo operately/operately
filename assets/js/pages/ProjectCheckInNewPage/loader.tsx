@@ -10,6 +10,7 @@ export async function loader({ params }): Promise<LoaderResult> {
     project: await Projects.getProject({
       id: params.projectID,
       includePotentialSubscribers: true,
+      includeReviewer: true,
     }).then((data) => data.project!),
   };
 }
