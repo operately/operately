@@ -5,7 +5,7 @@ defmodule Operately.Features.SpacesTest do
   import Operately.PeopleFixtures
 
   alias Operately.Access.Binding
-  alias Operately.Support.Features.SpaceSteps, as: Steps
+  alias Operately.Support.Features.SpacesSteps, as: Steps
 
   setup ctx, do: Steps.setup(ctx)
 
@@ -21,8 +21,6 @@ defmodule Operately.Features.SpacesTest do
     params = %{
       name: "Marketing",
       mission: "Let the world know about our products",
-      color: "text-green-500",
-      icon: "IconBolt"
     }
 
     ctx
@@ -70,19 +68,12 @@ defmodule Operately.Features.SpacesTest do
   end
 
   feature "editing space's name and purpose", ctx do
-    group = group_fixture(ctx.person, %{name: "Marketing", mission: "Let the world know about our products"})
-
     ctx
-    |> Steps.visit_home()
-    |> UI.click(title: group.name)
-    |> UI.click(testid: "space-settings")
-    |> UI.click(testid: "edit-name-and-purpose")
-    |> UI.fill(testid: "name", with: "Marketing 2")
-    |> UI.fill(testid: "purpose", with: "Let the world know about our products 2")
-    |> UI.click(testid: "submit")
-    |> UI.assert_has(testid: "space-page")
-    |> UI.assert_has(Query.text("Marketing 2", count: 1))
-    |> UI.assert_has(Query.text("Let the world know about our products 2"))
+    |> Steps.given_a_space_exists()
+    |> Steps.given_that_i_am_on_the_space_page()
+    |> Steps.click_edit_space()
+    |> Steps.change_space_name_and_purpose()
+    |> Steps.assert_space_name_and_purpose_changed()
   end
 
   feature "adding space members", ctx do
@@ -152,18 +143,5 @@ defmodule Operately.Features.SpacesTest do
     |> Steps.visit_access_management(space.name)
     |> Steps.change_access_level(%{member: member, access_level: "edit"})
     |> Steps.assert_access_level_changed("edit")
-  end
-
-  feature "edit space appearance", ctx do
-    values = %{color: "text-green-500", icon: "IconBolt"}
-
-    ctx
-    |> Steps.given_a_space_exists()
-    |> Steps.visit_space()
-    |> Steps.initialize_appearance_editing()
-    |> Steps.change_space_color(values.color)
-    |> Steps.change_space_icon(values.icon)
-    |> Steps.save_appearance_changes()
-    |> Steps.assert_space_appearance_changed(values)
   end
 end

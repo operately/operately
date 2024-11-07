@@ -1,4 +1,4 @@
-defmodule Operately.Support.Features.SpaceSteps do
+defmodule Operately.Support.Features.SpacesSteps do
   use Operately.FeatureCase
 
   alias Operately.Companies
@@ -63,24 +63,19 @@ defmodule Operately.Support.Features.SpaceSteps do
 
   step :click_on_add_space, ctx, do: UI.click(ctx, testid: "add-space")
 
-  step :fill_in_space_form, ctx, %{name: name, mission: mission, color: color, icon: icon} do
+  step :fill_in_space_form, ctx, %{name: name, mission: mission} do
     ctx
     |> UI.fill(testid: "name", with: name)
     |> UI.fill(testid: "mission", with: mission)
-    |> UI.click(testid: "color-#{color}")
-    |> UI.click(testid: "icon-#{icon}")
   end
 
   step :submit_space_form, ctx, do: UI.click(ctx, Query.button("Create Space"))
 
-  step :assert_space_created, ctx, %{name: name, mission: mission, color: color, icon: icon} do
+  step :assert_space_created, ctx, %{name: name, mission: mission} do
     UI.sleep(ctx, 500)
 
     group = Operately.Groups.get_group_by_name(name)
-
     assert group != nil
-    assert group.color == color
-    assert group.icon == icon
 
     ctx
     |> UI.assert_has(Query.text(name, count: 1))
@@ -261,31 +256,35 @@ defmodule Operately.Support.Features.SpaceSteps do
     ctx |> UI.assert_has(testid: "#{access_level}-access-badge")
   end
 
-  step :initialize_appearance_editing, ctx do
-    ctx
-    |> UI.click(testid: "space-settings")
-    |> UI.click(testid: "change-appearance")
-  end
-
-  step :change_space_color, ctx, color do
-    ctx |> UI.click(testid: "color-#{color}")
-  end
-
-  step :change_space_icon, ctx, icon do
-    ctx |> UI.click(testid: "icon-#{icon}")
-  end
-
-  step :save_appearance_changes, ctx do
-    ctx
-    |> UI.click(testid: "submit")
-    |> UI.assert_has(testid: "space-page")
-  end
-
   step :assert_space_appearance_changed, ctx, values do
     space = Operately.Groups.get_group_by_name(ctx.space.name)
 
     assert space.color == values.color
     assert space.icon == values.icon
+  end
+
+  step :given_that_i_am_on_the_space_page, ctx do
+    ctx 
+    |> UI.visit(Paths.space_path(ctx.company, ctx.space))
+    |> UI.assert_has(testid: "space-page")
+  end
+
+  step :click_edit_space, ctx do
+    ctx |> UI.click(testid: "edit-space")
+  end
+
+  step :change_space_name_and_purpose, ctx do
+    ctx 
+    |> UI.fill(testid: "name", with: "Marketing 2")
+    |> UI.fill(testid: "purpose", with: "Let the world know about our products 2")
+    |> UI.click(testid: "submit")
+    |> UI.assert_has(testid: "space-page")
+  end
+
+  step :assert_space_name_and_purpose_changed, ctx do
+    ctx 
+    |> UI.assert_text("Marketing 2")
+    |> UI.assert_text("Let the world know about our products 2")
   end
 
 end

@@ -125,7 +125,6 @@ defmodule OperatelyWeb.Api do
   mutation :resume_project, M.ResumeProject
   mutation :subscribe_to_notifications, M.SubscribeToNotifications
   mutation :unsubscribe_from_notifications, M.UnsubscribeFromNotifications
-  mutation :update_group_appearance, M.UpdateGroupAppearance
   mutation :update_milestone, M.UpdateMilestone
   mutation :update_milestone_description, M.UpdateMilestoneDescription
   mutation :update_profile, M.UpdateProfile
