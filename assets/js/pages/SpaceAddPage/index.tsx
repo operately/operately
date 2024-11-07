@@ -41,8 +41,6 @@ export function Page() {
       const res = await create({
         name: form.values.name,
         mission: form.values.mission,
-        icon: form.values.icon,
-        color: form.values.color,
         publicPermissions: form.values.access.anonymous,
         companyPermissions: form.values.access.companyMembers,
       });

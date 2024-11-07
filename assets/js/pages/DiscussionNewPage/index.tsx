@@ -2,7 +2,6 @@ import React from "react";
 
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
-import * as Icons from "@tabler/icons-react";
 import * as Spaces from "@/models/spaces";
 
 import { PrimaryButton } from "@/components/Buttons";
@@ -48,10 +47,7 @@ export function Page() {
 function Navigation({ space }) {
   return (
     <Paper.Navigation>
-      <Paper.NavItem linkTo={Paths.spaceDiscussionsPath(space.id)}>
-        {React.createElement(Icons[space.icon], { size: 16, className: space.color })}
-        {space.name}
-      </Paper.NavItem>
+      <Paper.NavItem linkTo={Paths.spaceDiscussionsPath(space.id)}>{space.name}</Paper.NavItem>
     </Paper.Navigation>
   );
 }

@@ -43,17 +43,8 @@ export function Page() {
 function SpaceHeader({ space }: { space: Spaces.Space }) {
   return (
     <div className="mt-2">
-      <SpaceIcon space={space} />
       <SpaceName space={space} />
       <SpaceMission space={space} />
-    </div>
-  );
-}
-
-function SpaceIcon({ space }: { space: Spaces.Space }) {
-  return (
-    <div className="font-medium flex items-center gap-2 justify-center mb-2">
-      {React.createElement(Icons[space.icon!], { size: 48, className: space.color, strokeWidth: 1 })}
     </div>
   );
 }

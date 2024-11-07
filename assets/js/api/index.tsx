@@ -1586,6 +1586,7 @@ export interface GetSpaceResult {
 
 export interface GetSpacesInput {
   includeAccessLevels?: boolean | null;
+  includeMembers?: boolean | null;
 }
 
 export interface GetSpacesResult {
@@ -2305,16 +2306,6 @@ export interface UnsubscribeFromNotificationsInput {
 
 export interface UnsubscribeFromNotificationsResult {}
 
-export interface UpdateGroupAppearanceInput {
-  id?: string | null;
-  icon?: string | null;
-  color?: string | null;
-}
-
-export interface UpdateGroupAppearanceResult {
-  space?: Space | null;
-}
-
 export interface UpdateMilestoneInput {
   milestoneId?: string | null;
   title?: string | null;
@@ -2856,10 +2847,6 @@ export class ApiClient {
     return this.post("/unsubscribe_from_notifications", input);
   }
 
-  async updateGroupAppearance(input: UpdateGroupAppearanceInput): Promise<UpdateGroupAppearanceResult> {
-    return this.post("/update_group_appearance", input);
-  }
-
   async updateMilestone(input: UpdateMilestoneInput): Promise<UpdateMilestoneResult> {
     return this.post("/update_milestone", input);
   }
@@ -3251,9 +3238,6 @@ export async function unsubscribeFromNotifications(
   input: UnsubscribeFromNotificationsInput,
 ): Promise<UnsubscribeFromNotificationsResult> {
   return defaultApiClient.unsubscribeFromNotifications(input);
-}
-export async function updateGroupAppearance(input: UpdateGroupAppearanceInput): Promise<UpdateGroupAppearanceResult> {
-  return defaultApiClient.updateGroupAppearance(input);
 }
 export async function updateMilestone(input: UpdateMilestoneInput): Promise<UpdateMilestoneResult> {
   return defaultApiClient.updateMilestone(input);
@@ -3881,15 +3865,6 @@ export function useUnsubscribeFromNotifications(): UseMutationHookResult<
   );
 }
 
-export function useUpdateGroupAppearance(): UseMutationHookResult<
-  UpdateGroupAppearanceInput,
-  UpdateGroupAppearanceResult
-> {
-  return useMutation<UpdateGroupAppearanceInput, UpdateGroupAppearanceResult>((input) =>
-    defaultApiClient.updateGroupAppearance(input),
-  );
-}
-
 export function useUpdateMilestone(): UseMutationHookResult<UpdateMilestoneInput, UpdateMilestoneResult> {
   return useMutation<UpdateMilestoneInput, UpdateMilestoneResult>((input) => defaultApiClient.updateMilestone(input));
 }
@@ -4148,8 +4123,6 @@ export default {
   useSubscribeToNotifications,
   unsubscribeFromNotifications,
   useUnsubscribeFromNotifications,
-  updateGroupAppearance,
-  useUpdateGroupAppearance,
   updateMilestone,
   useUpdateMilestone,
   updateMilestoneDescription,
