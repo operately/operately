@@ -25,27 +25,19 @@ interface GoalsAndProjectsProps {
 export function GoalsAndProjects({ space, goals, projects, toolsCount }: GoalsAndProjectsProps) {
   const path = Paths.spaceGoalsPath(space.id!);
 
-  // Limiting the number of goals to ensure that the component
-  // displays goals and projects evenly in the container.
-  // With the current fixed 380px height, only 9 goals and project
-  // can be displayed.
-  const slicedGoals = useMemo(() => {
-    if (projects.length > 4) {
-      return goals.slice(0, 5);
-    }
-    return goals.slice(0, 9 - projects.length);
-  }, []);
+  const openGoals = goals.filter((g) => !g.closedAt);
+  const openProjects = projects.filter((p) => p.status !== "closed" && p.status !== "paused");
 
   return (
     <Container path={path} toolsCount={toolsCount} testId="goals-and-projects">
       <Title title="Goals & Projects" />
 
-      {goals.length < 1 && projects.length < 1 ? (
+      {openGoals.length < 1 && openProjects.length < 1 ? (
         <ZeroGoalsAndProjects />
       ) : (
         <>
-          <Goals goals={slicedGoals} />
-          <Projects projects={projects} />
+          <Goals goals={openGoals} projectsCount={openProjects.length} />
+          <Projects projects={openProjects} />
         </>
       )}
     </Container>
@@ -56,14 +48,25 @@ function ZeroGoalsAndProjects() {
   return <ZeroResourcesContainer>Add a new goal or project to begin tracking your progress!</ZeroResourcesContainer>;
 }
 
-function Goals({ goals }: { goals: Goal[] }) {
+function Goals({ goals, projectsCount }: { goals: Goal[]; projectsCount: number }) {
   if (goals.length < 1) return <></>;
+
+  // Limiting the number of goals to ensure that the component
+  // displays goals and projects evenly in the container.
+  // With the current fixed 380px height, only 9 goals and project
+  // can be displayed.
+  const slicedGoals = useMemo(() => {
+    if (projectsCount > 4) {
+      return goals.slice(0, 5);
+    }
+    return goals.slice(0, 9 - projectsCount);
+  }, []);
 
   return (
     <div className="flex flex-col gap-2 px-2 py-3">
       <Header goals={goals} type="goals" />
 
-      {goals.map((goal) => (
+      {slicedGoals.map((goal) => (
         <GoalItem goal={goal} key={goal.id} />
       ))}
     </div>
