@@ -8,7 +8,6 @@ export {
   useEditSpacePermissions,
   useRemoveGroupMember,
   useAddSpaceMembers,
-  useUpdateGroupAppearance,
   useEditSpaceMembersPermissions,
   searchPotentialSpaceMembers,
   useSearchPotentialSpaceMembers,

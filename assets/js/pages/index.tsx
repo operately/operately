@@ -78,7 +78,6 @@ import * as SetupPage from "./SetupPage";
 import * as SpaceAccessManagementPage from "./SpaceAccessManagementPage";
 import * as SpaceAddMembersPage from "./SpaceAddMembersPage";
 import * as SpaceAddPage from "./SpaceAddPage";
-import * as SpaceAppearancePage from "./SpaceAppearancePage";
 import * as SpaceDiscussionsPage from "./SpaceDiscussionsPage";
 import * as SpaceEditGeneralAccessPage from "./SpaceEditGeneralAccessPage";
 import * as SpaceEditPage from "./SpaceEditPage";
@@ -466,11 +465,6 @@ export default {
     name: "SpaceAddPage",
     loader: SpaceAddPage.loader,
     Page: SpaceAddPage.Page,
-  },
-  SpaceAppearancePage: {
-    name: "SpaceAppearancePage",
-    loader: SpaceAppearancePage.loader,
-    Page: SpaceAppearancePage.Page,
   },
   SpaceDiscussionsPage: {
     name: "SpaceDiscussionsPage",

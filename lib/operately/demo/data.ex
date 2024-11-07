@@ -181,36 +181,26 @@ defmodule Operately.Demo.Data do
           key: :product_space,
           name: "Product",
           description: "Build and ship high quality features to our customers",
-          icon: "IconBox",
-          color: "text-blue-500"
         },
         %{
           key: :people_space,
           name: "People",
           description: "Hiring, internal operations, and employee experience",
-          icon: "IconFriends",
-          color: "text-yellow-500"
         },
         %{
           key: :marketing_space,
           name: "Marketing",
           description: "Create product awareness and bring leads",
-          icon: "IconSpeakerphone",
-          color: "text-pink-500"
         },
         %{
           key: :legal_space,
           name: "Legal",
           description: "Taking care of the legal side of things. Clarity, compliance, and confidence",
-          icon: "IconLifebuoy",
-          color: "text-yellow-500"
         },
         %{
           key: :finance_space,
           name: "Finance",
           description: "Providing accurate and timely financial info and safeguarding company assets",
-          icon: "IconReportMoney",
-          color: "text-red-500"
         }
       ],
       goals: [

@@ -13,8 +13,6 @@ defmodule Operately.Groups.Group do
 
     field :name, :string
     field :mission, :string
-    field :icon, :string, default: "IconPlanet"
-    field :color, :string, default: "text-green-500"
 
     # populated by after load hooks
     field :is_member, :boolean, virtual: true
@@ -35,8 +33,8 @@ defmodule Operately.Groups.Group do
 
   def changeset(group, attrs) do
     group
-    |> cast(attrs, [:company_id, :name, :mission, :icon, :color, :deleted_at])
-    |> validate_required([:company_id, :name, :mission, :icon, :color])
+    |> cast(attrs, [:company_id, :name, :mission, :deleted_at])
+    |> validate_required([:company_id, :name, :mission ])
   end
 
   #
