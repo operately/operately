@@ -15,6 +15,7 @@ export async function loader({ params }): Promise<LoaderResult> {
   const checkInPromise = GoalCheckIns.getGoalProgressUpdate({
     id: params.id,
     includeGoalTargets: true,
+    includeReviewer: true,
   }).then((data) => data.update!);
 
   return {

@@ -68,6 +68,7 @@ export function SelectStatus({ field, options, reviewer, label }: Props) {
                 key={status}
                 status={status}
                 selectable
+                reviewer={reviewer}
                 onSelected={handleSelected(status)}
                 testId={`status-dropdown-${status}`}
               />

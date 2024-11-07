@@ -2,12 +2,14 @@ import React from "react";
 
 import { Goal, Target } from "@/models/goals";
 import { Update } from "@/models/goalCheckIns";
+import { Person } from "@/models/people";
 
 import Forms from "@/components/Forms";
 import { SubscribersSelector, useSubscriptions } from "@/features/Subscriptions";
 import { Spacer } from "@/components/Spacer";
 import { createTestId } from "@/utils/testid";
 import { useForm } from "./useForm";
+import { assertPresent } from "@/utils/assertions";
 
 export interface CreateProps {
   goal: Goal;
@@ -22,6 +24,8 @@ export interface EditProps {
 export function Form(props: CreateProps | EditProps) {
   const { goal, mode } = props;
 
+  assertPresent(goal.reviewer, "reviewer must be present in goal");
+
   const subscriptionsState = useSubscriptions(mode === "create" ? goal.potentialSubscribers! : [], {
     ignoreMe: true,
     notifyPrioritySubscribers: true,
@@ -34,7 +38,7 @@ export function Form(props: CreateProps | EditProps) {
       <Header />
 
       <Forms.FieldGroup>
-        <Status />
+        <Status reviewer={goal.reviewer} />
         <TargetInputs />
         <Description goal={goal} />
       </Forms.FieldGroup>
@@ -52,12 +56,13 @@ function Header() {
   return <div className="text-3xl font-bold mb-8">Update Progress</div>;
 }
 
-function Status() {
+function Status({ reviewer }: { reviewer: Person }) {
   return (
     <div className="mt-8 mb-4">
       <Forms.SelectStatus
         label="1. How's the goal going?"
         field="status"
+        reviewer={reviewer}
         options={["on_track", "caution", "issue", "pending"]}
       />
     </div>
