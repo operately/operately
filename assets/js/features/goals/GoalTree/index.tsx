@@ -27,7 +27,7 @@ function GoalTreeRoots() {
     <div>
       <Controls />
 
-      <div className="border-b border-surface-outline">
+      <div className="border-b border-stroke-base">
         {context.tree.map((root) => (
           <NodeView key={root.id} node={root} />
         ))}
@@ -115,7 +115,7 @@ function NodeExpandCollapseToggle({ node }: { node: Node }) {
 
 function HeaderContainer(props) {
   return (
-    <div className="border-t border-surface-outline py-3" {...props}>
+    <div className="border-t border-stroke-base py-3" {...props}>
       <div style={{ paddingLeft: props.node.depth * 30 }}>{props.children}</div>
     </div>
   );
