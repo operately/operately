@@ -68,19 +68,12 @@ defmodule Operately.Features.SpacesTest do
   end
 
   feature "editing space's name and purpose", ctx do
-    group = group_fixture(ctx.person, %{name: "Marketing", mission: "Let the world know about our products"})
-
     ctx
-    |> Steps.visit_home()
-    |> UI.click(title: group.name)
-    |> UI.click(testid: "space-settings")
-    |> UI.click(testid: "edit-name-and-purpose")
-    |> UI.fill(testid: "name", with: "Marketing 2")
-    |> UI.fill(testid: "purpose", with: "Let the world know about our products 2")
-    |> UI.click(testid: "submit")
-    |> UI.assert_has(testid: "space-page")
-    |> UI.assert_has(Query.text("Marketing 2", count: 1))
-    |> UI.assert_has(Query.text("Let the world know about our products 2"))
+    |> Steps.given_a_space_exists()
+    |> Steps.given_that_i_am_on_the_space_page()
+    |> Steps.click_edit_space()
+    |> Steps.change_space_name_and_purpose()
+    |> Steps.assert_space_name_and_purpose_changed()
   end
 
   feature "adding space members", ctx do

@@ -263,4 +263,28 @@ defmodule Operately.Support.Features.SpacesSteps do
     assert space.icon == values.icon
   end
 
+  step :given_that_i_am_on_the_space_page, ctx do
+    ctx 
+    |> UI.visit(Paths.space_path(ctx.company, ctx.space))
+    |> UI.assert_has(testid: "space-page")
+  end
+
+  step :click_edit_space, ctx do
+    ctx |> UI.click(testid: "edit-space")
+  end
+
+  step :change_space_name_and_purpose, ctx do
+    ctx 
+    |> UI.fill(testid: "name", with: "Marketing 2")
+    |> UI.fill(testid: "purpose", with: "Let the world know about our products 2")
+    |> UI.click(testid: "submit")
+    |> UI.assert_has(testid: "space-page")
+  end
+
+  step :assert_space_name_and_purpose_changed, ctx do
+    ctx 
+    |> UI.assert_text("Marketing 2")
+    |> UI.assert_text("Let the world know about our products 2")
+  end
+
 end
