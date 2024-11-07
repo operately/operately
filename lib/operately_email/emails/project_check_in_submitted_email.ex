@@ -29,10 +29,10 @@ defmodule OperatelyEmail.Emails.ProjectCheckInSubmittedEmail do
     reviewer = Projects.get_person_by_role(project, :reviewer)
     url = Paths.project_check_in_path(company, check_in) |> Paths.to_url()
 
-    if person.id == reviewer.id do
-      {"Acknowledge", url <> "?acknowledge=true"}
-    else
-      {"View Check-In", url}
+    cond do
+      reviewer == nil -> {"View Check-In", url}
+      person.id == reviewer.id -> {"Acknowledge", url <> "?acknowledge=true"}
+      true -> {"View Check-In", url}
     end
   end
 end

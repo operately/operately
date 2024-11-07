@@ -4,7 +4,6 @@ defmodule OperatelyWeb.Api.Queries.GetGoalsTest do
   import Operately.GroupsFixtures
   import Operately.PeopleFixtures
   import Operately.GoalsFixtures
-  import OperatelyWeb.Api.Serializer
 
   alias OperatelyWeb.Paths
   alias Operately.Access.Binding
@@ -157,8 +156,11 @@ defmodule OperatelyWeb.Api.Queries.GetGoalsTest do
       assert {200, res} = query(ctx.conn, :get_goals, %{include_last_check_in: true})
       assert length(res.goals) == 2
 
-      assert Enum.find(res.goals, &(&1.last_check_in == serialize(update1, level: :full)))
-      assert Enum.find(res.goals, &(&1.last_check_in == serialize(update3, level: :full)))
+      assert goal1_response = Enum.find(res.goals, &(&1.id == Paths.goal_id(goal1)))
+      assert goal2_response = Enum.find(res.goals, &(&1.id == Paths.goal_id(goal2)))
+
+      assert goal1_response.last_check_in.id == Paths.goal_update_id(update1)
+      assert goal2_response.last_check_in.id == Paths.goal_update_id(update3)
     end
   end
 
