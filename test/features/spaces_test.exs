@@ -5,7 +5,7 @@ defmodule Operately.Features.SpacesTest do
   import Operately.PeopleFixtures
 
   alias Operately.Access.Binding
-  alias Operately.Support.Features.SpaceSteps, as: Steps
+  alias Operately.Support.Features.SpacesSteps, as: Steps
 
   setup ctx, do: Steps.setup(ctx)
 
@@ -21,8 +21,6 @@ defmodule Operately.Features.SpacesTest do
     params = %{
       name: "Marketing",
       mission: "Let the world know about our products",
-      color: "text-green-500",
-      icon: "IconBolt"
     }
 
     ctx
@@ -152,18 +150,5 @@ defmodule Operately.Features.SpacesTest do
     |> Steps.visit_access_management(space.name)
     |> Steps.change_access_level(%{member: member, access_level: "edit"})
     |> Steps.assert_access_level_changed("edit")
-  end
-
-  feature "edit space appearance", ctx do
-    values = %{color: "text-green-500", icon: "IconBolt"}
-
-    ctx
-    |> Steps.given_a_space_exists()
-    |> Steps.visit_space()
-    |> Steps.initialize_appearance_editing()
-    |> Steps.change_space_color(values.color)
-    |> Steps.change_space_icon(values.icon)
-    |> Steps.save_appearance_changes()
-    |> Steps.assert_space_appearance_changed(values)
   end
 end

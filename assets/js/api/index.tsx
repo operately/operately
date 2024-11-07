@@ -1905,8 +1905,6 @@ export interface CreateProjectResult {
 export interface CreateSpaceInput {
   name?: string | null;
   mission?: string | null;
-  icon?: string | null;
-  color?: string | null;
   companyPermissions?: number | null;
   publicPermissions?: number | null;
 }

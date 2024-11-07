@@ -1,4 +1,4 @@
-defmodule Operately.Support.Features.SpaceSteps do
+defmodule Operately.Support.Features.SpacesSteps do
   use Operately.FeatureCase
 
   alias Operately.Companies
@@ -63,24 +63,19 @@ defmodule Operately.Support.Features.SpaceSteps do
 
   step :click_on_add_space, ctx, do: UI.click(ctx, testid: "add-space")
 
-  step :fill_in_space_form, ctx, %{name: name, mission: mission, color: color, icon: icon} do
+  step :fill_in_space_form, ctx, %{name: name, mission: mission} do
     ctx
     |> UI.fill(testid: "name", with: name)
     |> UI.fill(testid: "mission", with: mission)
-    |> UI.click(testid: "color-#{color}")
-    |> UI.click(testid: "icon-#{icon}")
   end
 
   step :submit_space_form, ctx, do: UI.click(ctx, Query.button("Create Space"))
 
-  step :assert_space_created, ctx, %{name: name, mission: mission, color: color, icon: icon} do
+  step :assert_space_created, ctx, %{name: name, mission: mission} do
     UI.sleep(ctx, 500)
 
     group = Operately.Groups.get_group_by_name(name)
-
     assert group != nil
-    assert group.color == color
-    assert group.icon == icon
 
     ctx
     |> UI.assert_has(Query.text(name, count: 1))
@@ -259,26 +254,6 @@ defmodule Operately.Support.Features.SpaceSteps do
 
   step :assert_access_level_changed, ctx, access_level do
     ctx |> UI.assert_has(testid: "#{access_level}-access-badge")
-  end
-
-  step :initialize_appearance_editing, ctx do
-    ctx
-    |> UI.click(testid: "space-settings")
-    |> UI.click(testid: "change-appearance")
-  end
-
-  step :change_space_color, ctx, color do
-    ctx |> UI.click(testid: "color-#{color}")
-  end
-
-  step :change_space_icon, ctx, icon do
-    ctx |> UI.click(testid: "icon-#{icon}")
-  end
-
-  step :save_appearance_changes, ctx do
-    ctx
-    |> UI.click(testid: "submit")
-    |> UI.assert_has(testid: "space-page")
   end
 
   step :assert_space_appearance_changed, ctx, values do

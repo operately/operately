@@ -33,8 +33,8 @@ defmodule Operately.Groups.Group do
 
   def changeset(group, attrs) do
     group
-    |> cast(attrs, [:company_id, :name, :mission, :icon, :color, :deleted_at])
-    |> validate_required([:company_id, :name, :mission, :icon, :color])
+    |> cast(attrs, [:company_id, :name, :mission, :deleted_at])
+    |> validate_required([:company_id, :name, :mission ])
   end
 
   #
