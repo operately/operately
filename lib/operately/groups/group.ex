@@ -13,8 +13,6 @@ defmodule Operately.Groups.Group do
 
     field :name, :string
     field :mission, :string
-    field :icon, :string, default: "IconPlanet"
-    field :color, :string, default: "text-green-500"
 
     # populated by after load hooks
     field :is_member, :boolean, virtual: true
