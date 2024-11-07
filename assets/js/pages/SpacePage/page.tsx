@@ -13,9 +13,10 @@ import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { assertPresent } from "@/utils/assertions";
 import { ToolsSection } from "@/features/SpaceTools";
 
-import MemberList from "./MemberList";
 import { useLoadedData, useRefresh } from "./loader";
 import { Paths } from "@/routes/paths";
+import AvatarList from "@/components/AvatarList";
+import { match } from "ts-pattern";
 
 export function Page() {
   const { space, discussions, goals, projects } = useLoadedData();
@@ -47,7 +48,7 @@ function SpaceEdit() {
   return (
     <div className="absolute right-4 top-4">
       <SecondaryButton size="xs" linkTo={Paths.spaceEditPath(space.id!)} testId="edit-space">
-        Edit Space
+        Edit
       </SecondaryButton>
     </div>
   );
@@ -80,9 +81,18 @@ function SpaceMission({ space }: { space: Spaces.Space }) {
 }
 
 function SpaceMembers({ space }: { space: Spaces.Space }) {
+  const size = Pages.useWindowSizeBreakpoints();
+
+  const peopleToShow = match(size)
+    .with("xs", () => 5)
+    .with("sm", () => 10)
+    .with("md", () => 15)
+    .otherwise(() => 20);
+
   return (
     <div className="font-medium flex items-center gap-2 w-full justify-center mt-2" data-test-id="space-members">
-      <MemberList space={space!} />
+      <AvatarList people={space.members!} stacked size="small" maxElements={peopleToShow} />
+      <ManageAccessButton space={space} />
     </div>
   );
 }
@@ -122,5 +132,18 @@ function JoinButton({ space }) {
         Join this Space
       </PrimaryButton>
     </div>
+  );
+}
+
+function ManageAccessButton({ space }: { space: Spaces.Space }) {
+  const path = Paths.spaceAccessManagementPath(space.id!);
+
+  assertPresent(space.permissions, "permissions must be present in space");
+  if (!space.permissions.canAddMembers) return null;
+
+  return (
+    <SecondaryButton linkTo={path} size="xs" testId="access-management">
+      Manage access
+    </SecondaryButton>
   );
 }
