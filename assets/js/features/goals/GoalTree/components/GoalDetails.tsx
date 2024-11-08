@@ -86,10 +86,14 @@ export function ExpandGoalSuccessConditions({ node }: { node: GoalNode }) {
 }
 
 export function GoalActions({ hovered, node }: { hovered: boolean; node: GoalNode }) {
-  const containerClasses = classNames(
-    "ml-2 flex gap-2 items-center",
-    hovered ? "opacity-100 transition-opacity duration-300" : "opacity-0",
-  );
+  const size = useWindowSizeBreakpoints();
+
+  const containerClasses = classNames("ml-2 gap-2 items-center", {
+    "opacity-0": !hovered,
+    "opacity-100 transition-opacity duration-300": hovered,
+    hidden: size === "xs",
+    flex: size !== "xs",
+  });
   const newGoalPath = Paths.goalNewPath({ parentGoalId: node.goal.id! });
   const newProjectPath = Paths.newProjectPath();
 
