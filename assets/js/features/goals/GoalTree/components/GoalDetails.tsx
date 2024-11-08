@@ -25,7 +25,7 @@ export function GoalDetails({ node }: { node: GoalNode }) {
   const { density } = useTreeContext();
 
   return (
-    <div className="pl-[2px]">
+    <div className="pl-6 ml-[1px]">
       {density !== "compact" && (
         <div className="flex gap-10 items-center">
           <GoalStatus goal={node.goal} />

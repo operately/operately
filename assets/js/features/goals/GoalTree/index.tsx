@@ -51,6 +51,7 @@ function ProjectHeader({ node }: { node: ProjectNode }) {
   return (
     <HeaderContainer node={node} data-test-id={testId}>
       <div className="flex items-center gap-1">
+        <NodeExpandCollapseToggle node={node} />
         <NodeIcon node={node} />
         <NodeName node={node} />
       </div>
@@ -96,16 +97,18 @@ function NodeChildren({ node }: { node: Node }) {
 function NodeExpandCollapseToggle({ node }: { node: Node }) {
   const { expanded, toggleExpanded } = useExpandable();
 
-  if (node.children.length === 0) {
-    return <IconChevronRight size={16} className="cursor-pointer text-content-subtle" />;
-  }
-
   const resourceId = "goal" in node ? (node as GoalNode).goal.id : (node as ProjectNode).project.id;
   const testId = createTestId("toggle-node", resourceId!);
   const handleClick = () => toggleExpanded(node.id);
   const ChevronIcon = expanded[node.id] ? IconChevronDown : IconChevronRight;
 
-  return <ChevronIcon size={16} className="cursor-pointer" onClick={handleClick} data-test-id={testId} />;
+  return (
+    <div className="w-5">
+      {node.hasChildren && (
+        <ChevronIcon size={16} className="cursor-pointer" onClick={handleClick} data-test-id={testId} />
+      )}
+    </div>
+  );
 }
 
 function HeaderContainer(props: { node: Node } & React.HTMLAttributes<HTMLDivElement>) {
