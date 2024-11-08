@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 
 import * as Goals from "@/models/goals";
 import * as Timeframes from "@/utils/timeframes";
+import { useWindowSizeBreakpoints } from "@/components/Pages";
 
 import classNames from "classnames";
 import { match } from "ts-pattern";
@@ -22,12 +23,19 @@ import { useTreeContext } from "../treeContext";
 import { Status } from "./Status";
 
 export function GoalDetails({ node }: { node: GoalNode }) {
+  const size = useWindowSizeBreakpoints();
   const { density } = useTreeContext();
+
+  const layout = match(size)
+    .with("xs", () => "grid grid-cols-[auto,1fr] gap-y-0 mt-1")
+    .otherwise(() => "flex gap-y-2");
+
+  const className = classNames("gap-x-10 items-center", layout);
 
   return (
     <div className="pl-6 ml-[1px]">
       {density !== "compact" && (
-        <div className="flex gap-10 items-center">
+        <div className={className}>
           <GoalStatus goal={node.goal} />
           <GoalTimeframe goal={node.goal} />
           <ChampionAndSpace goal={node.goal} />
@@ -43,7 +51,17 @@ export function GoalDetails({ node }: { node: GoalNode }) {
 export function GoalProgressBar({ node }: { node: GoalNode }) {
   assertPresent(node.goal.progressPercentage, "progressPercentage must be present in goal");
 
-  return <ProgressBar percentage={node.goal.progressPercentage} className="ml-2" />;
+  const size = useWindowSizeBreakpoints();
+  const width = match(size)
+    .with("xs", () => "w-16")
+    .with("sm", () => "w-16")
+    .otherwise(() => undefined);
+
+  return (
+    <div style={{ height: "10px" }}>
+      <ProgressBar percentage={node.goal.progressPercentage} className="ml-2" width={width} />
+    </div>
+  );
 }
 
 export function ExpandGoalSuccessConditions({ node }: { node: GoalNode }) {
@@ -51,25 +69,31 @@ export function ExpandGoalSuccessConditions({ node }: { node: GoalNode }) {
   const testId = createTestId("toggle-goal", node.goal.id!);
 
   return (
-    <div
-      onClick={() => toggleGoalExpanded(node.goal.id!)}
-      className="ml-2 h-[20px] w-[20px] rounded-full border-2 border-surface-outline flex items-center justify-center cursor-pointer"
-      data-test-id={testId}
-    >
-      {includesId(goalExpanded, node.goal.id) ? (
-        <IconMinus size={12} stroke={3} className="border-surface-outline shrink-0" />
-      ) : (
-        <IconPlus size={12} stroke={3} className="border-surface-outline shrink-0" />
-      )}
+    <div>
+      <div
+        onClick={() => toggleGoalExpanded(node.goal.id!)}
+        className="ml-2 h-[20px] w-[20px] rounded-full border-2 border-surface-outline flex items-center justify-center cursor-pointer"
+        data-test-id={testId}
+      >
+        {includesId(goalExpanded, node.goal.id) ? (
+          <IconMinus size={12} stroke={3} className="border-surface-outline shrink-0" />
+        ) : (
+          <IconPlus size={12} stroke={3} className="border-surface-outline shrink-0" />
+        )}
+      </div>
     </div>
   );
 }
 
 export function GoalActions({ hovered, node }: { hovered: boolean; node: GoalNode }) {
-  const containerClasses = classNames(
-    "ml-2 flex gap-2 items-center",
-    hovered ? "opacity-100 transition-opacity duration-300" : "opacity-0",
-  );
+  const size = useWindowSizeBreakpoints();
+
+  const containerClasses = classNames("ml-2 gap-2 items-center", {
+    "opacity-0": !hovered,
+    "opacity-100 transition-opacity duration-300": hovered,
+    hidden: size === "xs",
+    flex: size !== "xs",
+  });
   const newGoalPath = Paths.goalNewPath({ parentGoalId: node.goal.id! });
   const newProjectPath = Paths.newProjectPath();
 

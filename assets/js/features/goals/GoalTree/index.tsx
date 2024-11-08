@@ -3,6 +3,8 @@ import React, { useState } from "react";
 import { IconChevronDown, IconChevronRight } from "@tabler/icons-react";
 import { createTestId } from "@/utils/testid";
 
+import { match } from "ts-pattern";
+import { useWindowSizeBreakpoints } from "@/components/Pages";
 import { useTreeContext, TreeContextProvider, TreeContextProviderProps } from "./treeContext";
 import { ExpandGoalSuccessConditions, GoalActions, GoalDetails, GoalProgressBar } from "./components/GoalDetails";
 import { ProjectDetails } from "./components/ProjectDetails";
@@ -27,7 +29,7 @@ function GoalTreeRoots() {
     <div>
       <Controls />
 
-      <div className="border-b border-stroke-base">
+      <div className="border-b border-stroke-base overflow-hidden">
         {context.tree.map((root) => (
           <NodeView key={root.id} node={root} />
         ))}
@@ -112,9 +114,18 @@ function NodeExpandCollapseToggle({ node }: { node: Node }) {
 }
 
 function HeaderContainer(props: { node: Node } & React.HTMLAttributes<HTMLDivElement>) {
+  const size = useWindowSizeBreakpoints();
+
+  const padding = match(size)
+    .with("xl", () => 45)
+    .with("lg", () => 40)
+    .with("md", () => 35)
+    .with("sm", () => 30)
+    .otherwise(() => 25);
+
   return (
     <div className="border-t border-stroke-base py-3" {...props}>
-      <div style={{ paddingLeft: props.node.depth * 45 }}>{props.children}</div>
+      <div style={{ paddingLeft: props.node.depth * padding }}>{props.children}</div>
     </div>
   );
 }
