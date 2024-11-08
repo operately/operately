@@ -1,4 +1,4 @@
-import React, { createElement, useMemo } from "react";
+import React, { useMemo } from "react";
 
 import { SelectBoxNoLabel } from "@/components/Form";
 import { IconBuildingCommunity, IconNetwork } from "@tabler/icons-react";
@@ -6,8 +6,6 @@ import { ReducerActions } from "./usePermissionsState";
 import { PermissionLevels, PermissionOptions, PERMISSIONS_LIST, PUBLIC_PERMISSIONS_LIST } from ".";
 import { calculatePrivacyLevel } from "./utils";
 
-import { IconRocket } from "@tabler/icons-react";
-import * as Icons from "@tabler/icons-react";
 import { PermissionsState } from "./usePermissionsState";
 
 interface DropdownOption {
@@ -64,12 +62,10 @@ function SpaceAccessLevel({ state }: { state: PermissionsState }) {
       <div className="flex items-center gap-2 pl-2 border border-surface-outline rounded-lg">
         {space ? (
           <>
-            {createElement(Icons[space.icon!], { size: 25 })}
             <span>Everyone in {space.name}</span>
           </>
         ) : (
           <>
-            <IconRocket size={25} />
             <span>Everyone in the space</span>
           </>
         )}
