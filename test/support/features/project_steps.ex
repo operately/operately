@@ -458,4 +458,27 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> UI.assert_page(Paths.project_path(ctx.company, ctx.project))
   end
 
+  step :add_link_as_key_resource, ctx do
+    ctx
+    |> UI.click(testid: "add-resources-link")
+    |> UI.click(testid: "add-resource-github-repository")
+    |> UI.fill("Name", with: "Code Repository")
+    |> UI.fill("URL", with: "https://github.com/operately/operately")
+    |> UI.click(testid: "save")
+  end
+
+  step :assert_new_key_resource_visible, ctx do
+    ctx
+    |> UI.assert_text("Code Repository")
+  end
+
+  step :assert_project_key_resource_added_visible_on_feed, ctx do
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> FeedSteps.assert_project_key_resource_added(author: ctx.champion)
+    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
+    |> FeedSteps.assert_project_key_resource_added(author: ctx.champion, project_name: ctx.project.name)
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> FeedSteps.assert_project_key_resource_added(author: ctx.champion, project_name: ctx.project.name)
+  end
 end

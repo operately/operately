@@ -26,16 +26,11 @@ defmodule Operately.Features.ProjectResourcesTest do
   feature "adding first key resource to a project", ctx do
     ctx
     |> ProjectSteps.visit_project_page()
-    |> UI.click(testid: "add-resources-link")
-    |> UI.click(testid: "add-resource-github-repository")
-    |> UI.fill("Name", with: "Code Repository")
-    |> UI.fill("URL", with: "https://github.com/operately/operately")
-    |> UI.click(testid: "save")
-    |> UI.assert_text("Code Repository")
-
-    ctx
+    |> ProjectSteps.add_link_as_key_resource()
+    |> ProjectSteps.assert_new_key_resource_visible()
     |> ProjectSteps.visit_project_page()
-    |> UI.assert_text("Code Repository")
+    |> ProjectSteps.assert_new_key_resource_visible()
+    |> ProjectSteps.assert_project_key_resource_added_visible_on_feed()
   end
 
   @tag login_as: :champion
