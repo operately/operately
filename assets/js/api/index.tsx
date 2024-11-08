@@ -405,6 +405,11 @@ export interface ActivityContentProjectGoalDisconnection {
   goal?: Goal | null;
 }
 
+export interface ActivityContentProjectKeyResourceAdded {
+  projectId?: string | null;
+  project?: Project | null;
+}
+
 export interface ActivityContentProjectMilestoneCommented {
   projectId?: string | null;
   project?: Project | null;

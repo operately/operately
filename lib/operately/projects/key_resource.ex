@@ -13,7 +13,10 @@ defmodule Operately.Projects.KeyResource do
     requester_access_level()
   end
 
-  @doc false
+  def changeset(attrs) do
+    changeset(%__MODULE__{}, attrs)
+  end
+
   def changeset(key_resource, attrs) do
     key_resource
     |> cast(attrs, [:title, :link, :project_id, :resource_type])
