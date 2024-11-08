@@ -12,16 +12,13 @@ interface NodeNameProps {
 }
 
 export function NodeName({ node, target = "_self" }: NodeNameProps) {
-  const titleClass = classNames({
+  const titleClass = classNames("decoration-content-subtle hover:underline truncate", {
     "font-bold": node.depth === 0,
     "font-medium": node.depth > 0,
-    "hover:underline": true,
-    "decoration-content-subtle": true,
-    truncate: true,
   });
 
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center gap-1 truncate">
       <DivLink to={node.linkTo()} className={titleClass} target={target}>
         {node.name}
       </DivLink>
