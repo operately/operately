@@ -11,6 +11,7 @@ defmodule Operately.Operations.ProjectKeyResourceAdding do
         company_id: project.company_id,
         space_id: project.group_id,
         project_id: attrs.project_id,
+        title: attrs.title,
       }
     end)
     |> Repo.transaction()

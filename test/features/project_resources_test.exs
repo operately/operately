@@ -31,6 +31,8 @@ defmodule Operately.Features.ProjectResourcesTest do
     |> ProjectSteps.visit_project_page()
     |> ProjectSteps.assert_new_key_resource_visible()
     |> ProjectSteps.assert_project_key_resource_added_visible_on_feed()
+    |> ProjectSteps.assert_key_resource_added_notification_sent()
+    |> ProjectSteps.assert_key_resource_email_sent()
   end
 
   @tag login_as: :champion
@@ -61,14 +63,10 @@ defmodule Operately.Features.ProjectResourcesTest do
 
     ctx
     |> ProjectSteps.visit_project_page()
-    |> UI.click(testid: "edit-resources-link")
-    |> UI.click(testid: "remove-resource-website")
-    |> UI.sleep(300)
-
-    ctx
+    |> ProjectSteps.delete_key_resource()
+    |> ProjectSteps.assert_key_resource_deleted()
     |> ProjectSteps.visit_project_page()
-    |> UI.assert_text("Code Repository")
-    |> UI.refute_text("Website")
+    |> ProjectSteps.assert_project_key_resource_deleted_visible_on_feed()
   end
 
   @tag login_as: :champion

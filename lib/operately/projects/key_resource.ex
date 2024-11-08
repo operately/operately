@@ -1,5 +1,6 @@
 defmodule Operately.Projects.KeyResource do
   use Operately.Schema
+  use Operately.Repo.Getter
 
   schema "project_key_resources" do
     belongs_to :project, Operately.Projects.Project, foreign_key: :project_id
@@ -10,6 +11,7 @@ defmodule Operately.Projects.KeyResource do
     field :resource_type, :string
 
     timestamps()
+    request_info()
     requester_access_level()
   end
 

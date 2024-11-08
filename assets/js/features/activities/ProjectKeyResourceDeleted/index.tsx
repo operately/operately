@@ -1,7 +1,7 @@
 import React from "react";
 import * as People from "@/models/people";
 import type { Activity } from "@/models/activities";
-import type { ActivityContentProjectKeyResourceAdded } from "@/api";
+import type { ActivityContentProjectKeyResourceDeleted } from "@/api";
 import type { ActivityHandler } from "../interfaces";
 
 import { feedTitle, projectLink } from "../feedItemLinks";
@@ -30,9 +30,9 @@ const ProjectKeyResourceAdded: ActivityHandler = {
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     if (page === "project") {
-      return feedTitle(activity, "added a key resource to the project");
+      return feedTitle(activity, "deleted a key resource from the project");
     } else {
-      return feedTitle(activity, "added a key resource to the", projectLink(content(activity).project!), "project");
+      return feedTitle(activity, "deleted a key resource from the", projectLink(content(activity).project!), "project");
     }
   },
 
@@ -66,7 +66,7 @@ const ProjectKeyResourceAdded: ActivityHandler = {
   NotificationTitle({ activity }: { activity: Activity }) {
     return (
       People.firstName(activity.author!) +
-      " added a key resource to the " +
+      " deleted a key resource from the " +
       content(activity).project!.name! +
       " project"
     );
@@ -77,8 +77,8 @@ const ProjectKeyResourceAdded: ActivityHandler = {
   },
 };
 
-function content(activity: Activity): ActivityContentProjectKeyResourceAdded {
-  return activity.content as ActivityContentProjectKeyResourceAdded;
+function content(activity: Activity): ActivityContentProjectKeyResourceDeleted {
+  return activity.content as ActivityContentProjectKeyResourceDeleted;
 }
 
 export default ProjectKeyResourceAdded;

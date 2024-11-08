@@ -1,4 +1,4 @@
-defmodule Operately.Activities.Content.ProjectKeyResourceAdded do
+defmodule Operately.Activities.Content.ProjectKeyResourceDeleted do
   use Operately.Activities.Content
 
   embedded_schema do
