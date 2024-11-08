@@ -100,6 +100,7 @@ defmodule Operately.Activities.ContextAutoAssigner do
     "project_retrospective_edited",
     "project_retrospective_commented",
     "project_key_resource_added",
+    "project_key_resource_deleted",
   ]
 
   @task_actions [

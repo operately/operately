@@ -96,6 +96,7 @@ export const DISPLAYED_IN_FEED = [
   "project_goal_connection",
   "project_goal_disconnection",
   "project_key_resource_added",
+  "project_key_resource_deleted",
   "project_milestone_commented",
   "project_moved",
   "project_pausing",
@@ -150,6 +151,7 @@ import ProjectCreated from "@/features/activities/ProjectCreated";
 import ProjectGoalConnection from "@/features/activities/ProjectGoalConnection";
 import ProjectGoalDisconnection from "@/features/activities/ProjectGoalDisconnection";
 import ProjectKeyResourceAdded from "@/features/activities/ProjectKeyResourceAdded";
+import ProjectKeyResourceDeleted from "@/features/activities/ProjectKeyResourceDeleted";
 import ProjectMilestoneCommented from "@/features/activities/ProjectMilestoneCommented";
 import ProjectMoved from "@/features/activities/ProjectMoved";
 import ProjectPausing from "@/features/activities/ProjectPausing";
@@ -199,6 +201,7 @@ function handler(activity: Activity) {
     .with("project_goal_connection", () => ProjectGoalConnection)
     .with("project_goal_disconnection", () => ProjectGoalDisconnection)
     .with("project_key_resource_added", () => ProjectKeyResourceAdded)
+    .with("project_key_resource_deleted", () => ProjectKeyResourceDeleted)
     .with("project_milestone_commented", () => ProjectMilestoneCommented)
     .with("project_moved", () => ProjectMoved)
     .with("project_pausing", () => ProjectPausing)

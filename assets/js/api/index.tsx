@@ -408,6 +408,13 @@ export interface ActivityContentProjectGoalDisconnection {
 export interface ActivityContentProjectKeyResourceAdded {
   projectId?: string | null;
   project?: Project | null;
+  title?: string | null;
+}
+
+export interface ActivityContentProjectKeyResourceDeleted {
+  projectId?: string | null;
+  project?: Project | null;
+  title?: string | null;
 }
 
 export interface ActivityContentProjectMilestoneCommented {
