@@ -116,6 +116,14 @@ defmodule Operately.Support.Features.FeedSteps do
     ctx |> assert_feed_item_exists(author, "connected the #{project_name} project to the #{goal_name} goal", "")
   end
 
+  def assert_project_key_resource_added(ctx, author: author) do
+    ctx |> assert_feed_item_exists(author, "added a key resource to the project", "")
+  end
+
+  def assert_project_key_resource_added(ctx, author: author, project_name: project_name) do
+    ctx |> assert_feed_item_exists(author, "added a key resource to the #{project_name} project", "")
+  end
+
   def assert_project_timeline_edited(ctx, attrs) do
     title = case Keyword.get(attrs, :project_name, nil) do
       nil -> "edited the timeline"
