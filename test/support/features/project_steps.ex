@@ -481,4 +481,45 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> UI.visit(Paths.feed_path(ctx.company))
     |> FeedSteps.assert_project_key_resource_added(author: ctx.champion, project_name: ctx.project.name)
   end
+
+  step :assert_key_resource_added_notification_sent, ctx do
+    ctx
+    |> UI.login_as(ctx.reviewer)
+    |> NotificationsSteps.visit_notifications_page()
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.champion,
+      action: "added a key resource to the #{ctx.project.name} project",
+    })
+  end
+
+  step :assert_key_resource_email_sent, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
+      to: ctx.reviewer,
+      action: "key resource added",
+      author: ctx.champion,
+    })
+  end
+
+  step :delete_key_resource, ctx do
+    ctx
+    |> UI.click(testid: "edit-resources-link")
+    |> UI.click(testid: "remove-resource-website")
+  end
+
+  step :assert_key_resource_deleted, ctx do
+    ctx
+    |> UI.refute_text("Website", attempts: [50, 100, 200, 500])
+  end
+
+  step :assert_project_key_resource_deleted_visible_on_feed, ctx do
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> FeedSteps.assert_project_key_resource_deleted(author: ctx.champion)
+    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
+    |> FeedSteps.assert_project_key_resource_deleted(author: ctx.champion, project_name: ctx.project.name)
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> FeedSteps.assert_project_key_resource_deleted(author: ctx.champion, project_name: ctx.project.name)
+  end
 end

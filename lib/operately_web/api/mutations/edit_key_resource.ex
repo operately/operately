@@ -3,7 +3,7 @@ defmodule OperatelyWeb.Api.Mutations.EditKeyResource do
   use OperatelyWeb.Api.Helpers
 
   alias Operately.Projects
-  alias Operately.Projects.Permissions
+  alias Operately.Projects.{Permissions, KeyResource}
 
   inputs do
     field :id, :string
@@ -19,8 +19,8 @@ defmodule OperatelyWeb.Api.Mutations.EditKeyResource do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:id, fn -> decode_id(inputs.id) end)
-    |> run(:resource, fn ctx -> Projects.get_key_resource_with_access_level(ctx.id, ctx.me.id) end)
-    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.resource.requester_access_level, :can_edit_resources) end)
+    |> run(:resource, fn ctx -> fetch_key_resource(ctx) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.resource.request_info.access_level, :can_edit_resources) end)
     |> run(:operation, fn ctx -> Projects.update_key_resource(ctx.resource, inputs) end)
     |> run(:serialized, fn ctx -> serialize(ctx.operation) end)
     |> respond()
@@ -35,6 +35,10 @@ defmodule OperatelyWeb.Api.Mutations.EditKeyResource do
       {:error, :operation, _} -> {:error, :internal_server_error}
       _ -> {:error, :internal_server_error}
     end
+  end
+
+  defp fetch_key_resource(ctx) do
+    KeyResource.get(ctx.me, id: ctx.id, opts: [preload: :project])
   end
 
   def serialize(resource) do
