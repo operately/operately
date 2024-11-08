@@ -51,6 +51,7 @@ function ProjectHeader({ node }: { node: ProjectNode }) {
   return (
     <HeaderContainer node={node} data-test-id={testId}>
       <div className="flex items-center gap-1">
+        <NodeExpandCollapseToggle node={node} />
         <NodeIcon node={node} />
         <NodeName node={node} />
       </div>
@@ -96,27 +97,24 @@ function NodeChildren({ node }: { node: Node }) {
 function NodeExpandCollapseToggle({ node }: { node: Node }) {
   const { expanded, toggleExpanded } = useExpandable();
 
-  if (node.children.length === 0) return <></>;
-
   const resourceId = "goal" in node ? (node as GoalNode).goal.id : (node as ProjectNode).project.id;
   const testId = createTestId("toggle-node", resourceId!);
   const handleClick = () => toggleExpanded(node.id);
   const ChevronIcon = expanded[node.id] ? IconChevronDown : IconChevronRight;
 
   return (
-    <ChevronIcon
-      size={16}
-      className="absolute left-[-1.2rem] top-1 cursor-pointer"
-      onClick={handleClick}
-      data-test-id={testId}
-    />
+    <div className="w-5">
+      {node.hasChildren && (
+        <ChevronIcon size={16} className="cursor-pointer" onClick={handleClick} data-test-id={testId} />
+      )}
+    </div>
   );
 }
 
-function HeaderContainer(props) {
+function HeaderContainer(props: { node: Node } & React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div className="border-t border-stroke-base py-3" {...props}>
-      <div style={{ paddingLeft: props.node.depth * 30 }}>{props.children}</div>
+      <div style={{ paddingLeft: props.node.depth * 45 }}>{props.children}</div>
     </div>
   );
 }

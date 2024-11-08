@@ -25,7 +25,7 @@ export function ProjectDetails({ node }: { node: ProjectNode }) {
   if (density === "compact") return <></>;
 
   return (
-    <div className="pl-[2px] flex gap-10 items-center">
+    <div className="pl-6 ml-[2px] flex gap-10 items-center">
       <ProjectStatus project={node.project} />
       <MilestoneCompletion project={node.project} />
       <NextMilestone project={node.project} />
