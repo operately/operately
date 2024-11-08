@@ -64,12 +64,10 @@ function SpaceAccessLevel({ state }: { state: PermissionsState }) {
       <div className="flex items-center gap-2 pl-2 border border-surface-outline rounded-lg">
         {space ? (
           <>
-            {createElement(Icons[space.icon!], { size: 25 })}
             <span>Everyone in {space.name}</span>
           </>
         ) : (
           <>
-            <IconRocket size={25} />
             <span>Everyone in the space</span>
           </>
         )}
