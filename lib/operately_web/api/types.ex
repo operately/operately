@@ -154,6 +154,11 @@ defmodule OperatelyWeb.Api.Types do
     field :project, :project
   end
 
+  object :activity_content_project_key_resource_added do
+    field :project_id, :string
+    field :project, :project
+  end
+
   object :activity_content_task_name_editing do
     field :company_id, :string
     field :space_id, :string
