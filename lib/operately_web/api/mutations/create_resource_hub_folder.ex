@@ -13,7 +13,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHubFolder do
   end
 
   outputs do
-    field :folder, :folder
+    field :folder, :resource_hub_folder
   end
 
   def call(conn, inputs) do

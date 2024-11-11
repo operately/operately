@@ -12,7 +12,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ResourceHubs.Folder do
       id: OperatelyWeb.Paths.folder_id(folder),
       name: folder.node.name,
       description: folder.description && Jason.encode!(folder.description),
-      privacy: OperatelyWeb.Api.Serializer.serialize(folder.privacy),
+      permissions: OperatelyWeb.Api.Serializer.serialize(folder.permissions),
     }
   end
 end
