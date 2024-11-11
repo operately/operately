@@ -981,6 +981,17 @@ export interface Reaction {
   person?: Person | null;
 }
 
+export interface ResourceHubFolder {
+  id?: string | null;
+  name?: string | null;
+  description?: string | null;
+  permissions?: ResourceHubPermissions | null;
+}
+
+export interface ResourceHubPermissions {
+  canCreateFolder?: boolean | null;
+}
+
 export interface ReviewAssignment {
   id?: string | null;
   name?: string | null;
@@ -1914,6 +1925,17 @@ export interface CreateProjectResult {
   project?: Project | null;
 }
 
+export interface CreateResourceHubFolderInput {
+  resourceHubId?: string | null;
+  folderId?: string | null;
+  name?: string | null;
+  description?: string | null;
+}
+
+export interface CreateResourceHubFolderResult {
+  folder?: ResourceHubFolder | null;
+}
+
 export interface CreateSpaceInput {
   name?: string | null;
   mission?: string | null;
@@ -2671,6 +2693,10 @@ export class ApiClient {
     return this.post("/create_project", input);
   }
 
+  async createResourceHubFolder(input: CreateResourceHubFolderInput): Promise<CreateResourceHubFolderResult> {
+    return this.post("/create_resource_hub_folder", input);
+  }
+
   async createSpace(input: CreateSpaceInput): Promise<CreateSpaceResult> {
     return this.post("/create_space", input);
   }
@@ -3085,6 +3111,11 @@ export async function createGoalDiscussion(input: CreateGoalDiscussionInput): Pr
 }
 export async function createProject(input: CreateProjectInput): Promise<CreateProjectResult> {
   return defaultApiClient.createProject(input);
+}
+export async function createResourceHubFolder(
+  input: CreateResourceHubFolderInput,
+): Promise<CreateResourceHubFolderResult> {
+  return defaultApiClient.createResourceHubFolder(input);
 }
 export async function createSpace(input: CreateSpaceInput): Promise<CreateSpaceResult> {
   return defaultApiClient.createSpace(input);
@@ -3581,6 +3612,15 @@ export function useCreateProject(): UseMutationHookResult<CreateProjectInput, Cr
   return useMutation<CreateProjectInput, CreateProjectResult>((input) => defaultApiClient.createProject(input));
 }
 
+export function useCreateResourceHubFolder(): UseMutationHookResult<
+  CreateResourceHubFolderInput,
+  CreateResourceHubFolderResult
+> {
+  return useMutation<CreateResourceHubFolderInput, CreateResourceHubFolderResult>((input) =>
+    defaultApiClient.createResourceHubFolder(input),
+  );
+}
+
 export function useCreateSpace(): UseMutationHookResult<CreateSpaceInput, CreateSpaceResult> {
   return useMutation<CreateSpaceInput, CreateSpaceResult>((input) => defaultApiClient.createSpace(input));
 }
@@ -4043,6 +4083,8 @@ export default {
   useCreateGoalDiscussion,
   createProject,
   useCreateProject,
+  createResourceHubFolder,
+  useCreateResourceHubFolder,
   createSpace,
   useCreateSpace,
   createTask,

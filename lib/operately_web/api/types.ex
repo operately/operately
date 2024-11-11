@@ -481,6 +481,17 @@ defmodule OperatelyWeb.Api.Types do
     field :contributor, :person
   end
 
+  object :resource_hub_permissions do
+    field :can_create_folder, :boolean
+  end
+
+  object :resource_hub_folder do
+    field :id, :string
+    field :name, :string
+    field :description, :string
+    field :permissions, :resource_hub_permissions
+  end
+
   object :project_permissions do
     field :can_view, :boolean
     field :can_create_milestone, :boolean

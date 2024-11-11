@@ -1,5 +1,5 @@
 defmodule Operately.Support.Factory do
-  alias Operately.Support.Factory.{Projects, Spaces, Companies, Accounts, Messages, Goals, Comments}
+  alias Operately.Support.Factory.{Projects, Spaces, Companies, Accounts, Messages, Goals, Comments, ResourceHubs}
 
   def setup(ctx) do
     ctx = add_account(ctx, :account)
@@ -51,4 +51,8 @@ defmodule Operately.Support.Factory do
 
   # comments
   defdelegate add_comment(ctx, testid, parent_name, opts \\ []), to: Comments
+
+  # resource hubs
+  defdelegate add_resource_hub(ctx, testid, space_name, space_access_level \\ :no_access), to: ResourceHubs
+  defdelegate add_folder(ctx, testid, hub_name, folder_name \\ nil), to: ResourceHubs
 end
