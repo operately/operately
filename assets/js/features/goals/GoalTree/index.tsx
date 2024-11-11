@@ -74,12 +74,14 @@ function GoalHeader({ node }: { node: GoalNode }) {
       onMouseLeave={() => setHovered(false)}
       data-test-id={testId}
     >
-      <div className="flex items-center gap-1 relative">
-        <NodeExpandCollapseToggle node={node} />
-        <NodeIcon node={node} />
-        <NodeName node={node} />
-        <GoalProgressBar node={node} />
-        <ExpandGoalSuccessConditions node={node} />
+      <div className="flex justify-between">
+        <div className="flex items-center gap-1 relative">
+          <NodeExpandCollapseToggle node={node} />
+          <NodeIcon node={node} />
+          <NodeName node={node} />
+          <GoalProgressBar node={node} />
+          <ExpandGoalSuccessConditions node={node} />
+        </div>
         <GoalActions node={node} hovered={hovered} />
       </div>
 
