@@ -6,7 +6,7 @@ defmodule Operately.Data.Change029CreateSubscriptionsListForMessages do
 
   def run do
     Repo.transaction(fn ->
-      from(m in Operately.Messages.Message)
+      from(m in "messages")
       |> Repo.all()
       |> create_subscriptions_list()
       |> create_subscriptions()
