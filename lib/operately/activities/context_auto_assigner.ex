@@ -110,6 +110,10 @@ defmodule Operately.Activities.ContextAutoAssigner do
     "task_update",
   ]
 
+  @resource_hub_actions [
+    "resource_hub_folder_created",
+  ]
+
   def assign_context(multi) do
     multi
     |> Multi.update(:updated_activity, fn %{activity: activity} ->
@@ -127,6 +131,7 @@ defmodule Operately.Activities.ContextAutoAssigner do
       activity.action in @goal_actions -> fetch_goal_context(activity.content)
       activity.action in @project_actions -> fetch_project_context(activity.content.project_id)
       activity.action in @task_actions -> fetch_task_project_context(activity.content.task_id)
+      activity.action in @resource_hub_actions-> fetch_resource_hub_context(activity.content.resource_hub_id)
       activity.action == "comment_added" -> fetch_comment_added_context(activity)
       true ->
         Logger.error("Unhandled activity: #{inspect(activity)}")
@@ -136,8 +141,7 @@ defmodule Operately.Activities.ContextAutoAssigner do
 
   defp fetch_company_context(company_id) do
     from(ac in Context,
-      join: c in assoc(ac, :company),
-      where: c.id == ^company_id,
+      where: ac.company_id == ^company_id,
       select: ac.id
     )
     |> Repo.one()
@@ -154,8 +158,7 @@ defmodule Operately.Activities.ContextAutoAssigner do
     end
 
     from(c in Context,
-      join: g in assoc(c, :group),
-      where: g.id == ^space_id,
+      where: c.group_id == ^space_id,
       select: c.id
     )
     |> Repo.one()
@@ -166,8 +169,7 @@ defmodule Operately.Activities.ContextAutoAssigner do
   defp fetch_goal_context(%{goal_id: goal_id}), do: fetch_goal_context(goal_id)
   defp fetch_goal_context(goal_id) do
     from(c in Context,
-      join: g in assoc(c, :goal),
-      where: g.id == ^goal_id,
+      where: c.goal_id == ^goal_id,
       select: c.id
     )
     |> Repo.one()
@@ -175,8 +177,7 @@ defmodule Operately.Activities.ContextAutoAssigner do
 
   defp fetch_project_context(project_id) do
     from(c in Context,
-      join: p in assoc(c, :project),
-      where: p.id == ^project_id,
+      where: c.project_id == ^project_id,
       select: c.id
     )
     |> Repo.one()
@@ -188,6 +189,14 @@ defmodule Operately.Activities.ContextAutoAssigner do
       join: m in assoc(p, :milestones),
       join: t in assoc(m, :tasks),
       where: t.id == ^task_id,
+      select: c.id
+    )
+    |> Repo.one()
+  end
+
+  defp fetch_resource_hub_context(resource_hub_id) do
+    from(c in Context,
+      where: c.resource_hub_id == ^resource_hub_id,
       select: c.id
     )
     |> Repo.one()
