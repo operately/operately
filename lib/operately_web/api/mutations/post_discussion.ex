@@ -47,10 +47,10 @@ defmodule OperatelyWeb.Api.Mutations.PostDiscussion do
       space_id: inputs.space_id,
       title: inputs.title,
       content: Jason.decode!(inputs.body),
-      post_as_draft: inputs.post_as_draft,
+      post_as_draft: inputs[:post_as_draft] || false,
       send_to_everyone: inputs[:send_notifications_to_everyone] || false,
       subscription_parent_type: :message,
-      subscriber_ids: inputs.subscriber_ids
+      subscriber_ids: inputs[:subscriber_ids] || []
     }}
   end
 end
