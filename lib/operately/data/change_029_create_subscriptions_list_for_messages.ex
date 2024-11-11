@@ -1,12 +1,12 @@
 defmodule Operately.Data.Change029CreateSubscriptionsListForMessages do
-  import Ecto.Query, only: [from: 1, from: 2]
+  import Ecto.Query, only: [from: 2]
 
   alias Operately.{Repo, Notifications}
   alias Operately.Notifications.{Subscription, SubscriptionList}
 
   def run do
     Repo.transaction(fn ->
-      from(m in Operately.Messages.Message)
+      from(m in Operately.Messages.Message, select: map(m, [:id, :subscription_list_id]))
       |> Repo.all()
       |> create_subscriptions_list()
       |> create_subscriptions()
