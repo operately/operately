@@ -15,6 +15,7 @@ defmodule Operately.Messages.Message do
 
     field :title
     field :body, :map
+    field :state, Ecto.Enum, values: [:draft, :published], default: :published
 
     # populated with after load hooks
     field :potential_subscribers, :any, virtual: true
@@ -33,8 +34,8 @@ defmodule Operately.Messages.Message do
 
   def changeset(update, attrs) do
     update
-    |> cast(attrs, [:space_id, :author_id, :title, :body, :subscription_list_id])
-    |> validate_required([:space_id, :author_id, :title, :body, :subscription_list_id])
+    |> cast(attrs, [:space_id, :author_id, :title, :body, :subscription_list_id, :state])
+    |> validate_required([:space_id, :author_id, :title, :body, :subscription_list_id, :state])
   end
 
   #

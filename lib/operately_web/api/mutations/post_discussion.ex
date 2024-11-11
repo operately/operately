@@ -7,11 +7,13 @@ defmodule OperatelyWeb.Api.Mutations.PostDiscussion do
   alias Operately.Operations.DiscussionPosting
 
   inputs do
-    field :space_id, :string
+    field :space_id, :id
     field :title, :string
     field :body, :string
+    field :post_as_draft, :boolean
+
     field :send_notifications_to_everyone, :boolean
-    field :subscriber_ids, list_of(:string)
+    field :subscriber_ids, list_of(:id)
   end
 
   outputs do
@@ -41,16 +43,14 @@ defmodule OperatelyWeb.Api.Mutations.PostDiscussion do
   end
 
   defp parse_inputs(inputs) do
-    {:ok, space_id} = decode_id(inputs.space_id)
-    {:ok, subscriber_ids} = decode_id(inputs[:subscriber_ids], :allow_nil)
-
     {:ok, %{
-      space_id: space_id,
+      space_id: inputs.space_id,
       title: inputs.title,
       content: Jason.decode!(inputs.body),
+      post_as_draft: inputs.post_as_draft,
       send_to_everyone: inputs[:send_notifications_to_everyone] || false,
       subscription_parent_type: :message,
-      subscriber_ids: subscriber_ids || []
+      subscriber_ids: inputs.subscriber_ids
     }}
   end
 end
