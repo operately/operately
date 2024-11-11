@@ -247,6 +247,15 @@ defmodule OperatelyWeb.Paths do
     Operately.ShortUuid.encode!(comment.id)
   end
 
+  def resource_hub_id(resource_hub) do
+    id = Operately.ShortUuid.encode!(resource_hub.id)
+    OperatelyWeb.Api.Helpers.id_with_comments(resource_hub.name, id)
+  end
+
+  def folder_id(folder) do
+    Operately.ShortUuid.encode!(folder.id)
+  end
+
   #
   # Path Construction Helpers
   #

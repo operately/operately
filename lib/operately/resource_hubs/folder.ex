@@ -5,6 +5,8 @@ defmodule Operately.ResourceHubs.Folder do
     belongs_to :node, Operately.ResourceHubs.Node
 
     field :description, :map
+
+    timestamps()
   end
 
   def changeset(attrs) do
