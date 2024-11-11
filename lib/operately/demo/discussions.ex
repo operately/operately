@@ -18,6 +18,7 @@ defmodule Operately.Demo.Discussions do
     {:ok, discussion} = DiscussionPosting.run(author, space, %{
       title: data.title,
       content: from_markdown(data.content),
+      post_as_draft: false,
       send_to_everyone: true,
       subscription_parent_type: :message,
       subscriber_ids: []
