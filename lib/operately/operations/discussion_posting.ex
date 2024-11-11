@@ -14,6 +14,7 @@ defmodule Operately.Operations.DiscussionPosting do
         space_id: space.id,
         title: attrs.title,
         body: attrs.content,
+        state: state(attrs),
         subscription_list_id: changes.subscription_list.id,
       })
     end)
@@ -26,5 +27,9 @@ defmodule Operately.Operations.DiscussionPosting do
     } end)
     |> Repo.transaction()
     |> Repo.extract_result(:message)
+  end
+
+  defp state(attrs) do
+    if attrs.post_as_draft, do: :draft, else: :published
   end
 end
