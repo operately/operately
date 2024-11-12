@@ -14,15 +14,7 @@ defmodule OperatelyWeb.AccountOauthController do
       image: account_info.image
     }
 
-    # 
-    # TODO
-    #
-    # This works for single tenant applications but will 
-    # need to be updated for multi-tenant
-    #
-    company = hd(Operately.Companies.list_companies())
-
-    case People.find_or_create_account(company, attrs) do
+    case People.find_or_create_account(attrs) do
       {:ok, account} ->
         AccountAuth.log_in_account(conn, account)
 
