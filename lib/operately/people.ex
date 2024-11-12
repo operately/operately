@@ -242,8 +242,8 @@ defmodule Operately.People do
     end
   end
 
-  def find_or_create_account(company, attrs) do
-    Operately.People.FetchOrCreateAccountOperation.call(company, attrs)
+  def find_or_create_account(attrs) do
+    Operately.People.FetchOrCreateAccountOperation.call(attrs)
   end
 
   def get_assignments(person, time_range_start, time_range_end) do
