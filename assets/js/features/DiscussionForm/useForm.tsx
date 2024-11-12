@@ -24,6 +24,7 @@ export interface FormState {
   space: Spaces.Space;
 
   submit: () => void;
+  submitDraft: () => void;
   submitting: boolean;
   submitDisabled?: boolean;
   submitButtonLabel?: string;
@@ -57,6 +58,35 @@ export function useForm({ space, mode, discussion, potentialSubscribers = [] }: 
   const [post, { loading: submittingPost }] = Discussions.usePostDiscussion();
   const [edit, { loading: submittingEdit }] = Discussions.useEditDiscussion();
 
+  const submitEdit = async (): Promise<boolean> => {
+    const res = await edit({
+      discussionId: discussion!.id,
+      title: title,
+      body: JSON.stringify(editor.getJSON()),
+    });
+
+    navigate(Paths.discussionPath(res.discussion.id));
+
+    return true;
+  };
+
+  const submitPost = async ({ draft }): Promise<boolean> => {
+    const res = await post({
+      spaceId: space.id,
+      title: title,
+      postAsDraft: draft,
+      body: JSON.stringify(editor.getJSON()),
+      sendNotificationsToEveryone: subscriptionsState.subscriptionType == Options.ALL,
+      subscriberIds: subscriptionsState.currentSubscribersList,
+    });
+
+    navigate(Paths.discussionPath(res.discussion.id));
+
+    return true;
+  };
+
+  const submitDraft = () => submitPost({ draft: true });
+
   const submit = async (): Promise<boolean> => {
     if (!editor) return false;
     if (uploading) return false;
@@ -71,27 +101,9 @@ export function useForm({ space, mode, discussion, potentialSubscribers = [] }: 
     }
 
     if (mode === "edit") {
-      const res = await edit({
-        discussionId: discussion!.id,
-        title: title,
-        body: JSON.stringify(editor.getJSON()),
-      });
-
-      navigate(Paths.discussionPath(res.discussion.id));
-
-      return true;
+      return submitEdit();
     } else {
-      const res = await post({
-        spaceId: space.id,
-        title: title,
-        body: JSON.stringify(editor.getJSON()),
-        sendNotificationsToEveryone: subscriptionsState.subscriptionType == Options.ALL,
-        subscriberIds: subscriptionsState.currentSubscribersList,
-      });
-
-      navigate(Paths.discussionPath(res.discussion.id));
-
-      return true;
+      return submitPost({ draft: false });
     }
   };
 
@@ -110,6 +122,7 @@ export function useForm({ space, mode, discussion, potentialSubscribers = [] }: 
 
     // empty,
     submit,
+    submitDraft,
     submitting,
     cancelPath,
     submitButtonLabel,

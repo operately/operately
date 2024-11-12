@@ -1361,7 +1361,7 @@ export interface GetDiscussionResult {
 }
 
 export interface GetDiscussionsInput {
-  spaceId?: string | null;
+  spaceId?: Id | null;
   includeAuthor?: boolean | null;
   includeCommentsCount?: boolean | null;
 }
@@ -2194,11 +2194,12 @@ export interface PauseProjectResult {
 }
 
 export interface PostDiscussionInput {
-  spaceId?: string | null;
+  spaceId?: Id | null;
   title?: string | null;
   body?: string | null;
+  postAsDraft?: boolean | null;
   sendNotificationsToEveryone?: boolean | null;
-  subscriberIds?: string[] | null;
+  subscriberIds?: Id[] | null;
 }
 
 export interface PostDiscussionResult {

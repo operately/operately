@@ -1,4 +1,4 @@
-defmodule Operately.Support.Features.DiscussionSteps do
+defmodule Operately.Support.Features.DiscussionsSteps do
   use Operately.FeatureCase
 
   alias Operately.Support.Features.UI
@@ -88,6 +88,37 @@ defmodule Operately.Support.Features.DiscussionSteps do
     |> UI.assert_page(Paths.message_path(ctx.company, message))
     |> UI.assert_text("Testing file attachment")
     |> UI.assert_text("README.md")
+  end
+
+  step :given_the_draft_experimental_feature_is_enabled, ctx do
+    Factory.enable_feature(ctx, "draft_discussions")
+  end
+
+  step :post_a_draft_discussion, ctx do
+    ctx
+    |> UI.visit(Paths.space_discussions_path(ctx.company, ctx.space))
+    |> UI.click(testid: "new-discussion")
+    |> UI.fill(testid: "discussion-title", with: "My draft discussion")
+    |> UI.fill_rich_text("This is the body of the discussion.")
+    |> UI.click(testid: "save-as-draft")
+    |> UI.assert_has(testid: "discussion-page")
+  end
+
+  step :assert_draft_discussion_is_posted, ctx do
+    discussion = last_message(ctx)
+
+    assert discussion.state == :draft
+    assert discussion.title == "My draft discussion"
+
+    ctx
+  end
+
+  step :assert_draft_is_not_listed_on_space_page, ctx do
+    ctx 
+    |> UI.visit(Paths.space_path(ctx.company, ctx.space))
+    |> UI.click(testid: "messages-tool")
+    |> UI.assert_has(testid: "discussions-page")
+    |> UI.refute_text("My draft discussion")
   end
 
   #
