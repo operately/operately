@@ -4,11 +4,16 @@ defmodule Operately.ResourceHubs do
   alias Operately.Repo
   alias Operately.ResourceHubs.{ResourceHub, Folder, Node}
 
-  def create_resource_hub(attrs \\ %{}) do
-    %ResourceHub{}
-    |> ResourceHub.changeset(attrs)
-    |> Repo.insert()
+  def list_resource_hubs(space) do
+    from(r in ResourceHub, where: r.space_id == ^space.id)
+    |> Repo.all()
   end
+
+  defdelegate create_resource_hub(creator, space, attrs), to: Operately.Operations.ResourceHubCreating, as: :run
+
+  #
+  # Folders
+  #
 
   def list_folders(resource_hub = %ResourceHub{}) do
     from(f in Folder,
@@ -29,10 +34,6 @@ defmodule Operately.ResourceHubs do
     )
     |> Repo.all()
   end
-
-  #
-  # Folders
-  #
 
   def create_folder(attrs \\ %{}) do
     %Folder{}
