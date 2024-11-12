@@ -46,7 +46,7 @@ export const Page = function () {
   const { goal } = Pages.useLoadedData<LoaderResult>();
 
   return (
-    <Pages.Page title={[goal.name!]}>
+    <Pages.Page title={[goal.name!]} testId="discussions-page">
       <Paper.Root size="large">
         <Navigation space={goal.space!} />
 
