@@ -1,5 +1,5 @@
 defmodule Operately.Support.Factory.ResourceHubs do
-  def add_resource_hub(ctx, testid, space_name, creator_name, attrs \\ %{}) do
+  def add_resource_hub(ctx, testid, space_name, creator_name, attrs \\ []) do
     space = Map.fetch!(ctx, space_name)
     creator = Map.fetch!(ctx, creator_name)
 
