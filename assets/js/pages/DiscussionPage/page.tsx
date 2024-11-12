@@ -32,7 +32,7 @@ export function Page() {
   useClearNotificationsOnLoad(discussion.notifications);
 
   return (
-    <Pages.Page title={discussion.title!}>
+    <Pages.Page title={discussion.title!} testId="discussion-page">
       <Paper.Root size="large">
         <Navigation space={discussion.space} />
 
