@@ -21,7 +21,7 @@ export function Discussions({ space, discussions, toolsCount }: DiscussionsProps
   const path = Paths.discussionsPath(space.id!);
 
   return (
-    <Container path={path} toolsCount={toolsCount}>
+    <Container path={path} toolsCount={toolsCount} testId="messages-tool">
       <Title title="Discussions" />
       {discussions.length < 1 ? <ZeroDiscussions /> : <DiscussionList discussions={discussions} />}
     </Container>

@@ -100,14 +100,14 @@ defmodule Operately.Support.Features.DiscussionsSteps do
     |> UI.click(testid: "new-discussion")
     |> UI.fill(testid: "discussion-title", with: "My draft discussion")
     |> UI.fill_rich_text("This is the body of the discussion.")
-    |> UI.click(testid: "post-draft-discussion")
+    |> UI.click(testid: "save-as-draft")
     |> UI.assert_has(testid: "discussion-page")
   end
 
   step :assert_draft_discussion_is_posted, ctx do
     discussion = last_message(ctx)
 
-    assert discussion.state == "draft"
+    assert discussion.state == :draft
     assert discussion.title == "My draft discussion"
 
     ctx
@@ -117,7 +117,8 @@ defmodule Operately.Support.Features.DiscussionsSteps do
     ctx 
     |> UI.visit(Paths.space_path(ctx.company, ctx.space))
     |> UI.click(testid: "messages-tool")
-    |> UI.refute_text("Draft discussion")
+    |> UI.assert_has(testid: "discussions-page")
+    |> UI.refute_text("My draft discussion")
   end
 
   #
