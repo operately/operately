@@ -3,10 +3,12 @@ defmodule Operately.ResourceHubs.Node do
 
   schema "resource_nodes" do
     belongs_to :resource_hub, Operately.ResourceHubs.ResourceHub
-    belongs_to :folder, Operately.ResourceHubs.Folder
+    belongs_to :parent_folder, Operately.ResourceHubs.Folder, foreign_key: :parent_folder_id
 
     field :name, :string
     field :type, Ecto.Enum, values: [:folder]
+
+    has_one :folder, Operately.ResourceHubs.Folder, foreign_key: :node_id
 
     timestamps()
   end
@@ -17,7 +19,7 @@ defmodule Operately.ResourceHubs.Node do
 
   def changeset(node, attrs) do
     node
-    |> cast(attrs, [:resource_hub_id, :folder_id, :name, :type])
+    |> cast(attrs, [:resource_hub_id, :parent_folder_id, :name, :type])
     |> validate_required([:resource_hub_id, :name, :type])
   end
 end

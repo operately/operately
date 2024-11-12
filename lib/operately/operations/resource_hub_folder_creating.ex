@@ -8,7 +8,7 @@ defmodule Operately.Operations.ResourceHubFolderCreating do
     Multi.new()
     |> Multi.insert(:node, Node.changeset(%{
       resource_hub_id: hub.id,
-      folder_id: attrs.folder_id,
+      parent_folder_id: attrs.parent_folder_id,
       name: attrs.name,
       type: :folder,
     }))
