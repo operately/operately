@@ -1,10 +1,8 @@
 import * as React from "react";
 import * as TipTapEditor from "@/components/Editor";
 
-import { Spacer } from "@/components/Spacer";
 import { FormState } from "./useForm";
 import { FormTitleInput } from "@/components/FormTitleInput";
-import { SubscribersSelector } from "@/features/Subscriptions";
 
 export function Form({ form }: { form: FormState }) {
   return (
@@ -16,9 +14,6 @@ export function Form({ form }: { form: FormState }) {
         error={!!form.errors.find((e) => e.field === "name")}
       />
       <Message editor={form.editor} />
-      <Spacer size={4} />
-
-      {form.mode === "create" && <SubscribersSelector state={form.subscriptionsState} spaceName={form.space.name!} />}
     </>
   );
 }
