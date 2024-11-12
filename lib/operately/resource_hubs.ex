@@ -29,7 +29,7 @@ defmodule Operately.ResourceHubs do
     from(f in Folder,
       join: n in assoc(f, :node),
       preload: [node: n],
-      where: n.folder_id == ^folder.id,
+      where: n.parent_folder_id == ^folder.id,
       select: f
     )
     |> Repo.all()

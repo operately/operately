@@ -54,6 +54,6 @@ defmodule Operately.Support.Factory do
   defdelegate add_comment(ctx, testid, parent_name, opts \\ []), to: Comments
 
   # resource hubs
-  defdelegate add_resource_hub(ctx, testid, space_name, space_access_level \\ :no_access), to: ResourceHubs
+  defdelegate add_resource_hub(ctx, testid, space_name, opts \\ []), to: ResourceHubs
   defdelegate add_folder(ctx, testid, hub_name, folder_name \\ nil), to: ResourceHubs
 end
