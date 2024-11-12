@@ -24,7 +24,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHubFolderTest do
       |> Factory.add_space(:space)
       |> Factory.add_space_member(:person, :space)
       |> Factory.log_in_person(:person)
-      |> Factory.add_resource_hub(:hub, :space, :edit_access)
+      |> Factory.add_resource_hub(:hub, :space, :person)
     end
 
     test "creates folder within hub", ctx do

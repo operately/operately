@@ -1,24 +1,17 @@
 defmodule Operately.ResourceHubsFixtures do
   alias Operately.Support.RichText
+  alias Operately.Access.Binding
 
-  def resource_hub_fixture(space_id, attrs \\ %{}) do
-    {:ok, hub} =
-      attrs
-      |> Enum.into(%{
-        space_id: space_id,
-        name: "Resource hub",
-        description: RichText.rich_text("This is a rosource hub")
-      })
-      |> Operately.ResourceHubs.create_resource_hub()
-
-    context = Operately.AccessFixtures.context_fixture(%{resource_hub_id: hub.id})
-    space_group = Operately.Access.get_group(group_id: space_id, tag: :standard)
-    Operately.AccessFixtures.binding_fixture(%{
-      group_id: space_group.id,
-      context_id: context.id,
-      access_level:  Operately.Access.Binding.from_atom(attrs[:space_access_level] || :no_access),
+  def resource_hub_fixture(creator, space, attrs \\ %{}) do
+    attrs = Enum.into(attrs, %{
+      name: "Resource hub",
+      description: RichText.rich_text("This is a rosource hub"),
+      anonymous_access_level: Binding.view_access(),
+      company_access_level: Binding.comment_access(),
+      space_access_level: Binding.edit_access(),
     })
 
+    {:ok, hub} = Operately.ResourceHubs.create_resource_hub(creator, space, attrs)
     hub
   end
 
