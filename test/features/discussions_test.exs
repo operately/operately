@@ -9,7 +9,7 @@ defmodule Operately.Features.DiscussionsTest do
   alias Operately.Support.Features.EmailSteps
   alias Operately.Access.Binding
 
-  alias Operately.Support.Features.DiscussionSteps, as: Steps
+  alias Operately.Support.Features.DiscussionsSteps, as: Steps
 
   setup ctx do
     company = company_fixture(%{name: "Test Org"})
@@ -35,6 +35,15 @@ defmodule Operately.Features.DiscussionsTest do
     title: "This is a discussion",
     body: "This is the body of the discussion."
   }
+
+  @tag login_as: :author
+  feature "post a draft discussion", ctx do
+    ctx
+    |> Steps.given_the_draft_experimental_feature_is_enabled()
+    |> Steps.post_a_draft_discussion()
+    |> Steps.assert_draft_discussion_is_posted()
+    |> Steps.assert_draft_is_not_listed_on_space_page()
+  end
 
   @tag login_as: :author
   feature "post a discussion", ctx do

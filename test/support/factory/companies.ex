@@ -78,4 +78,12 @@ defmodule Operately.Support.Factory.Companies do
 
     Map.put(ctx, key, person)
   end
+
+  def enable_feature(ctx, feature_name) do
+    company = Map.fetch!(ctx, :company)
+
+    {:ok, _} = Operately.Companies.enable_experimental_feature(company, feature_name)
+
+    ctx
+  end
 end

@@ -19,7 +19,7 @@ export function Page() {
   const { space, discussions } = useLoadedData();
 
   return (
-    <Pages.Page title={space.name!}>
+    <Pages.Page title={space.name!} testId="discussions-page">
       <Paper.Root size="large">
         <SpacePageNavigation space={space} />
 

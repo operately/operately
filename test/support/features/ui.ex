@@ -283,7 +283,7 @@ defmodule Operately.Support.Features.UI do
 
       cond do
         not text_found -> session
-        attempts == [] -> refute_text(state, text).session
+        attempts == [] -> raise "Text '#{text}' was found on the page"
         true -> refute_text(state, text, attempts: attempts).session
       end
     end)
