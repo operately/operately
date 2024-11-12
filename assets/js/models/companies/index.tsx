@@ -22,3 +22,7 @@ export {
 export function createInvitationUrl(token: string) {
   return `${window.location.protocol}//${window.location.host}/join?token=${token}`;
 }
+
+export function hasFeature(company: Company, feature: string) {
+  return company.enabledExperimentalFeatures.includes(feature);
+}
