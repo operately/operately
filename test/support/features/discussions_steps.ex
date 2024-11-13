@@ -5,12 +5,24 @@ defmodule Operately.Support.Features.DiscussionsSteps do
   alias Operately.Support.Features.NotificationsSteps
   alias Operately.Support.Features.EmailSteps
 
-  step :post_a_discussion, ctx, params do
+  @title "This is a discussion"
+  @body "This is the body of the discussion."
+
+  step :setup, ctx do
     ctx
-    |> UI.visit(Paths.space_discussions_path(ctx.company, ctx.space))
+    |> Factory.setup()
+    |> Factory.add_space(:marketing_space)
+    |> Factory.add_space_member(:author, :marketing_space)
+    |> Factory.add_space_member(:reader, :marketing_space)
+    |> Factory.log_in_person(:author)
+  end
+
+  step :post_a_discussion, ctx do
+    ctx
+    |> UI.visit(Paths.space_discussions_path(ctx.company, ctx.marketing_space))
     |> UI.click(testid: "new-discussion")
-    |> UI.fill(testid: "discussion-title", with: params[:title])
-    |> UI.fill_rich_text(params[:body])
+    |> UI.fill(testid: "discussion-title", with: @title)
+    |> UI.fill_rich_text(@body)
     |> UI.click(testid: "post-discussion")
   end
 
@@ -21,39 +33,39 @@ defmodule Operately.Support.Features.DiscussionsSteps do
 
     ctx
     |> UI.assert_page(Paths.message_path(ctx.company, message))
-    |> UI.assert_text("This is a discussion")
-    |> UI.assert_text("This is the body of the discussion.")
+    |> UI.assert_text(@title)
+    |> UI.assert_text(@body)
   end
 
-  step :assert_discussion_email_sent, ctx, params do
+  step :assert_discussion_email_sent, ctx do
     ctx
     |> EmailSteps.assert_activity_email_sent(%{
-      where: ctx.space.name,
+      where: ctx.marketing_space.name,
       to: ctx.reader,
       author: ctx.author,
-      action: "posted: #{params[:title]}"
+      action: "posted: #{@title}"
     })
   end
 
-  step :assert_discussion_notification_sent, ctx, params do
+  step :assert_discussion_notification_sent, ctx do
     ctx
     |> UI.login_as(ctx.reader)
-    |> NotificationsSteps.assert_discussion_posted(author: ctx.author, title: params[:title])
+    |> NotificationsSteps.assert_discussion_posted(author: ctx.author, title: @title)
   end
 
-  step :assert_discussion_feed_on_space_page, ctx, params do
+  step :assert_discussion_feed_on_space_page, ctx do
     ctx
-    |> UI.visit(Paths.space_path(ctx.company, ctx.space))
-    |> UI.assert_text(params[:title])
-    |> UI.assert_text(params[:body])
+    |> UI.visit(Paths.space_path(ctx.company, ctx.marketing_space))
+    |> UI.assert_text(@title)
+    |> UI.assert_text(@body)
   end
 
-  step :start_writting_discussion, ctx, params do
+  step :start_writting_discussion, ctx do
     ctx
-    |> UI.visit(Paths.space_discussions_path(ctx.company, ctx.space))
+    |> UI.visit(Paths.space_discussions_path(ctx.company, ctx.marketing_space))
     |> UI.click(testid: "new-discussion")
-    |> UI.assert_page(Paths.space_discussions_new_path(ctx.company, ctx.space))
-    |> UI.fill(testid: "discussion-title", with: params[:title])
+    |> UI.assert_page(Paths.space_discussions_new_path(ctx.company, ctx.marketing_space))
+    |> UI.fill(testid: "discussion-title", with: @title)
   end
 
   step :attach_file_to_discussion, ctx do
@@ -88,7 +100,7 @@ defmodule Operately.Support.Features.DiscussionsSteps do
 
     ctx
     |> UI.assert_page(Paths.message_path(ctx.company, message))
-    |> UI.assert_text("Testing file attachment")
+    |> UI.assert_text(@title)
     |> UI.assert_text("README.md")
   end
 
@@ -96,12 +108,42 @@ defmodule Operately.Support.Features.DiscussionsSteps do
     Factory.enable_feature(ctx, "draft_discussions")
   end
 
+  step :given_a_discussion_exists, ctx do
+    ctx
+    |> UI.visit(Paths.space_discussions_path(ctx.company, ctx.marketing_space))
+    |> UI.click(testid: "new-discussion")
+    |> UI.fill(testid: "discussion-title", with: "This is a discussion")
+    |> UI.fill_rich_text("This is the body of the discussion.")
+    |> UI.click(testid: "post-discussion")
+    |> UI.assert_has(testid: "discussion-page")
+  end
+
+  step :edit_discussion, ctx do
+    ctx
+    |> UI.click(testid: "options-button")
+    |> UI.click(testid: "edit-discussion")
+    |> UI.fill(testid: "discussion-title", with: "This is an edited discussion")
+    |> UI.fill_rich_text("This is the edited body of the discussion.")
+    |> UI.click(testid: "save-changes")
+    |> UI.assert_has(testid: "discussion-page")
+  end
+
+  step :assert_discussion_is_edited, ctx do
+    message = last_message(ctx)
+
+    assert message.title == "This is an edited discussion"
+
+    ctx
+    |> UI.assert_text("This is an edited discussion")
+    |> UI.assert_text("This is the edited body of the discussion")
+  end
+
   step :post_a_draft_discussion, ctx do
     ctx
-    |> UI.visit(Paths.space_discussions_path(ctx.company, ctx.space))
+    |> UI.visit(Paths.space_discussions_path(ctx.company, ctx.marketing_space))
     |> UI.click(testid: "new-discussion")
-    |> UI.fill(testid: "discussion-title", with: "My draft discussion")
-    |> UI.fill_rich_text("This is the body of the discussion.")
+    |> UI.fill(testid: "discussion-title", with: @title)
+    |> UI.fill_rich_text(@body)
     |> UI.click(testid: "save-as-draft")
     |> UI.assert_has(testid: "discussion-page")
   end
@@ -110,17 +152,17 @@ defmodule Operately.Support.Features.DiscussionsSteps do
     discussion = last_message(ctx)
 
     assert discussion.state == :draft
-    assert discussion.title == "My draft discussion"
+    assert discussion.title == @title
 
     ctx
   end
 
   step :assert_draft_is_not_listed_on_space_page, ctx do
     ctx 
-    |> UI.visit(Paths.space_path(ctx.company, ctx.space))
+    |> UI.visit(Paths.space_path(ctx.company, ctx.marketing_space))
     |> UI.click(testid: "messages-tool")
     |> UI.assert_has(testid: "discussions-page")
-    |> UI.refute_text("My draft discussion")
+    |> UI.refute_text(@title)
   end
 
   step :click_on_continue_editing, ctx do
@@ -131,8 +173,8 @@ defmodule Operately.Support.Features.DiscussionsSteps do
 
   step :modify_the_draft_discussion_and_save, ctx do
     ctx 
-    |> UI.fill(testid: "discussion-title", with: "My draft discussion 2")
-    |> UI.fill_rich_text("This is the body of the discussion. Edited.")
+    |> UI.fill(testid: "discussion-title", with: "This is a draft discussion (edited)")
+    |> UI.fill_rich_text("This is the body of the discussion. (edited)")
     |> UI.click(testid: "save-changes")
     |> UI.assert_has(testid: "discussion-page")
   end
@@ -141,7 +183,7 @@ defmodule Operately.Support.Features.DiscussionsSteps do
     discussion = last_message(ctx)
 
     assert discussion.state == :draft
-    assert discussion.title == "My draft discussion 2"
+    assert discussion.title == "This is a draft discussion (edited)"
 
     ctx
   end
@@ -152,12 +194,38 @@ defmodule Operately.Support.Features.DiscussionsSteps do
     |> UI.assert_has(testid: "discussion-page")
   end
 
+  step :leave_a_comment, ctx do
+    message = last_message(ctx)
+
+    ctx
+    |> UI.login_as(ctx.reader)
+    |> UI.visit(Paths.message_path(ctx.company, message))
+    |> UI.click(testid: "add-comment")
+    |> UI.fill_rich_text("This is a comment.")
+    |> UI.click(testid: "post-comment")
+  end
+
+  step :assert_comment_notification_and_email_sent, ctx do
+    ctx
+    |> UI.login_as(ctx.author)
+    |> NotificationsSteps.assert_discussion_commented_sent(author: ctx.reader, title: @title)
+
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.marketing_space.name,
+      to: ctx.author,
+      author: ctx.reader,
+      action: "commented on: #{@title}"
+    })
+  end
+
+
   #
   # Utilities
   #
 
   defp last_message(ctx) do
-    messages = Operately.Messages.list_messages(ctx.space.id)
+    messages = Operately.Messages.list_messages(ctx.marketing_space.id)
 
     if messages != [] do
       hd(messages)
@@ -165,7 +233,7 @@ defmodule Operately.Support.Features.DiscussionsSteps do
       # sometimes the updates are not immediately available
       # so we wait a bit and try again
       :timer.sleep(300)
-      Operately.Messages.list_messages(ctx.space.id) |> hd()
+      Operately.Messages.list_messages(ctx.marketing_space.id) |> hd()
     end
   end
 end

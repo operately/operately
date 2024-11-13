@@ -2257,6 +2257,14 @@ export interface PostProjectCheckInResult {
   checkIn?: ProjectCheckIn | null;
 }
 
+export interface PublishDiscussionInput {
+  id?: Id | null;
+}
+
+export interface PublishDiscussionResult {
+  discussion?: Discussion | null;
+}
+
 export interface RemoveCompanyAdminInput {
   personId?: Id | null;
 }
@@ -2848,6 +2856,10 @@ export class ApiClient {
     return this.post("/post_project_check_in", input);
   }
 
+  async publishDiscussion(input: PublishDiscussionInput): Promise<PublishDiscussionResult> {
+    return this.post("/publish_discussion", input);
+  }
+
   async removeCompanyAdmin(input: RemoveCompanyAdminInput): Promise<RemoveCompanyAdminResult> {
     return this.post("/remove_company_admin", input);
   }
@@ -3256,6 +3268,9 @@ export async function postMilestoneComment(input: PostMilestoneCommentInput): Pr
 }
 export async function postProjectCheckIn(input: PostProjectCheckInInput): Promise<PostProjectCheckInResult> {
   return defaultApiClient.postProjectCheckIn(input);
+}
+export async function publishDiscussion(input: PublishDiscussionInput): Promise<PublishDiscussionResult> {
+  return defaultApiClient.publishDiscussion(input);
 }
 export async function removeCompanyAdmin(input: RemoveCompanyAdminInput): Promise<RemoveCompanyAdminResult> {
   return defaultApiClient.removeCompanyAdmin(input);
@@ -3855,6 +3870,12 @@ export function usePostProjectCheckIn(): UseMutationHookResult<PostProjectCheckI
   );
 }
 
+export function usePublishDiscussion(): UseMutationHookResult<PublishDiscussionInput, PublishDiscussionResult> {
+  return useMutation<PublishDiscussionInput, PublishDiscussionResult>((input) =>
+    defaultApiClient.publishDiscussion(input),
+  );
+}
+
 export function useRemoveCompanyAdmin(): UseMutationHookResult<RemoveCompanyAdminInput, RemoveCompanyAdminResult> {
   return useMutation<RemoveCompanyAdminInput, RemoveCompanyAdminResult>((input) =>
     defaultApiClient.removeCompanyAdmin(input),
@@ -4183,6 +4204,8 @@ export default {
   usePostMilestoneComment,
   postProjectCheckIn,
   usePostProjectCheckIn,
+  publishDiscussion,
+  usePublishDiscussion,
   removeCompanyAdmin,
   useRemoveCompanyAdmin,
   removeCompanyMember,
