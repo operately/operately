@@ -3,6 +3,7 @@ defmodule OperatelyWeb.Api.Mutations.PostDiscussionTest do
 
   import Operately.GroupsFixtures
   import Operately.PeopleFixtures
+  import Operately.MessagesFixtures
 
   alias Operately.Access
   alias Operately.Access.Binding
@@ -20,6 +21,7 @@ defmodule OperatelyWeb.Api.Mutations.PostDiscussionTest do
     setup ctx do
       ctx = register_and_log_in_account(ctx)
       space = Operately.Groups.get_group!(ctx.company.company_space_id)
+      messages_board_fixture(space.id)
 
       Map.merge(ctx, %{space: space})
     end
@@ -59,6 +61,7 @@ defmodule OperatelyWeb.Api.Mutations.PostDiscussionTest do
     setup ctx do
       ctx = register_and_log_in_account(ctx)
       space = group_fixture(ctx.company_creator, %{company_id: ctx.company.id})
+      messages_board_fixture(space.id)
 
       Map.merge(ctx, %{space: space})
     end
@@ -104,6 +107,7 @@ defmodule OperatelyWeb.Api.Mutations.PostDiscussionTest do
 
     test "creates discussion within space", ctx do
       space = group_fixture(ctx.company_creator, %{company_id: ctx.company.id})
+      messages_board_fixture(space.id)
 
       assert {200, res} = request(ctx.conn, space)
       assert_discussion_created(res)
@@ -111,6 +115,7 @@ defmodule OperatelyWeb.Api.Mutations.PostDiscussionTest do
 
     test "creates discussion within company", ctx do
       space = Operately.Groups.get_group!(ctx.company.company_space_id)
+      messages_board_fixture(ctx.company.company_space_id)
 
       assert {200, res} = request(ctx.conn, space)
       assert_discussion_created(res)
@@ -121,6 +126,7 @@ defmodule OperatelyWeb.Api.Mutations.PostDiscussionTest do
     setup :register_and_log_in_account
     setup ctx do
       space = group_fixture(ctx.company_creator, %{company_id: ctx.company.id, company_permissions: Binding.edit_access()})
+      messages_board_fixture(space.id)
       people = Enum.map(1..3, fn _ ->
         person_fixture(%{company_id: ctx.company.id})
       end)
