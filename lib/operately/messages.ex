@@ -23,6 +23,9 @@ defmodule Operately.Messages do
 
   alias Operately.Messages.MessagesBoard
 
+  def get_messages_board(attrs) when is_list(attrs), do: Repo.get_by(MessagesBoard, attrs)
+  def get_messages_board!(attrs) when is_list(attrs), do: Repo.get_by!(MessagesBoard, attrs)
+
   def create_messages_board(attrs) do
     %MessagesBoard{}
     |> MessagesBoard.changeset(attrs)

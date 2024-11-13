@@ -121,4 +121,10 @@ defmodule Operately.Operations.GroupCreationTest do
     assert activity.content["company_id"] == ctx.company.id
     assert activity.content["name"] == group.name
   end
+
+  test "GroupCreation operation creates default messages group", ctx do
+    {:ok, group} = Operately.Operations.GroupCreation.run(ctx.creator, @group_attrs)
+
+    assert Operately.Messages.get_messages_board(space_id: group.id)
+  end
 end
