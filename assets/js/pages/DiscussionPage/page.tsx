@@ -182,11 +182,11 @@ function ContinueEditingDraft() {
       <div className="font-bold">This is an unpublished draft.</div>
 
       <div className="flex items-center justify-center gap-2">
-        <PrimaryButton linkTo={Paths.discussionEditPath(discussion.id!)} size="sm">
+        <PrimaryButton linkTo={Paths.discussionEditPath(discussion.id!)} size="sm" testId="continue-editing">
           Continue editing
         </PrimaryButton>
 
-        <GhostButton linkTo={Paths.discussionEditPath(discussion.id!)} size="sm">
+        <GhostButton linkTo={Paths.discussionEditPath(discussion.id!)} size="sm" testId="publish-now">
           Publish Now
         </GhostButton>
       </div>
