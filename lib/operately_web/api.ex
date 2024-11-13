@@ -109,6 +109,7 @@ defmodule OperatelyWeb.Api do
   mutation :new_invitation_token, M.NewInvitationToken
   mutation :pause_project, M.PauseProject
   mutation :post_discussion, M.PostDiscussion
+  mutation :publish_discussion, M.PublishDiscussion
   mutation :post_goal_progress_update, M.PostGoalProgressUpdate
   mutation :post_milestone_comment, M.PostMilestoneComment
   mutation :post_project_check_in, M.PostProjectCheckIn

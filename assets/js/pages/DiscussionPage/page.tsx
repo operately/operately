@@ -1,15 +1,14 @@
-import React from "react";
-
-import FormattedTime from "@/components/FormattedTime";
-
+import * as React from "react";
 import * as Icons from "@tabler/icons-react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import * as Reactions from "@/models/reactions";
+import * as Discussions from "@/models/discussions";
 
 import Avatar from "@/components/Avatar";
 import RichContent from "@/components/RichContent";
+import FormattedTime from "@/components/FormattedTime";
 
 import { TextSeparator } from "@/components/TextSeparator";
 import { Spacer } from "@/components/Spacer";
@@ -174,7 +173,6 @@ function DicusssionComments() {
 
 function ContinueEditingDraft() {
   const { discussion } = useLoadedData();
-
   if (discussion.state !== "draft") return null;
 
   return (
@@ -182,14 +180,37 @@ function ContinueEditingDraft() {
       <div className="font-bold">This is an unpublished draft.</div>
 
       <div className="flex items-center justify-center gap-2">
-        <PrimaryButton linkTo={Paths.discussionEditPath(discussion.id!)} size="sm" testId="continue-editing">
-          Continue editing
-        </PrimaryButton>
-
-        <GhostButton linkTo={Paths.discussionEditPath(discussion.id!)} size="sm" testId="publish-now">
-          Publish Now
-        </GhostButton>
+        <ContinueEditingButton />
+        <PublishNowButton />
       </div>
     </div>
+  );
+}
+
+function ContinueEditingButton() {
+  const { discussion } = useLoadedData();
+
+  return (
+    <PrimaryButton linkTo={Paths.discussionEditPath(discussion.id!)} size="sm" testId="continue-editing">
+      Continue editing
+    </PrimaryButton>
+  );
+}
+
+function PublishNowButton() {
+  const { discussion } = useLoadedData();
+
+  const refresh = Pages.useRefresh();
+  const [publish] = Discussions.usePublishDiscussion();
+
+  const onClick = async () => {
+    await publish({ id: discussion.id! });
+    refresh();
+  };
+
+  return (
+    <GhostButton onClick={onClick} size="sm" testId="publish-now">
+      Publish Now
+    </GhostButton>
   );
 }

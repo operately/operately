@@ -19,14 +19,22 @@ defmodule Operately.Operations.DiscussionPosting do
       })
     end)
     |> SubscriptionList.update(:message)
-    |> Activities.insert_sync(creator.id, :discussion_posting, fn changes -> %{
-      company_id: space.company_id,
-      space_id: space.id,
-      discussion_id: changes.message.id,
-      title: attrs.title,
-    } end)
+    |> record_activity(creator, space, attrs)
     |> Repo.transaction()
     |> Repo.extract_result(:message)
+  end
+
+  defp record_activity(multi, creator, space, attrs) do
+    if attrs.post_as_draft do
+      multi
+    else
+      Activities.insert_sync(multi, creator.id, :discussion_posting, fn changes -> %{
+        company_id: space.company_id,
+        space_id: space.id,
+        discussion_id: changes.message.id,
+        title: attrs.title,
+      } end)
+    end
   end
 
   defp state(attrs) do
