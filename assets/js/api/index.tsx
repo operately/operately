@@ -989,6 +989,12 @@ export interface ResourceHubFolder {
   permissions?: ResourceHubPermissions | null;
 }
 
+export interface ResourceHubNode {
+  id?: string | null;
+  name?: string | null;
+  type?: string | null;
+}
+
 export interface ResourceHubPermissions {
   canCreateFolder?: boolean | null;
 }
@@ -1641,6 +1647,15 @@ export interface GetUnreadNotificationCountInput {}
 
 export interface GetUnreadNotificationCountResult {
   unread?: number | null;
+}
+
+export interface ListResourceHubContentInput {
+  resourceHubId?: string | null;
+  parentFolderId?: string | null;
+}
+
+export interface ListResourceHubContentResult {
+  nodes?: ResourceHubNode[] | null;
 }
 
 export interface SearchPeopleInput {
@@ -2575,6 +2590,10 @@ export class ApiClient {
     return this.get("/get_unread_notification_count", input);
   }
 
+  async listResourceHubContent(input: ListResourceHubContentInput): Promise<ListResourceHubContentResult> {
+    return this.get("/list_resource_hub_content", input);
+  }
+
   async searchPeople(input: SearchPeopleInput): Promise<SearchPeopleResult> {
     return this.get("/search_people", input);
   }
@@ -3018,6 +3037,11 @@ export async function getUnreadNotificationCount(
 ): Promise<GetUnreadNotificationCountResult> {
   return defaultApiClient.getUnreadNotificationCount(input);
 }
+export async function listResourceHubContent(
+  input: ListResourceHubContentInput,
+): Promise<ListResourceHubContentResult> {
+  return defaultApiClient.listResourceHubContent(input);
+}
 export async function searchPeople(input: SearchPeopleInput): Promise<SearchPeopleResult> {
   return defaultApiClient.searchPeople(input);
 }
@@ -3446,6 +3470,12 @@ export function useGetUnreadNotificationCount(
   input: GetUnreadNotificationCountInput,
 ): UseQueryHookResult<GetUnreadNotificationCountResult> {
   return useQuery<GetUnreadNotificationCountResult>(() => defaultApiClient.getUnreadNotificationCount(input));
+}
+
+export function useListResourceHubContent(
+  input: ListResourceHubContentInput,
+): UseQueryHookResult<ListResourceHubContentResult> {
+  return useQuery<ListResourceHubContentResult>(() => defaultApiClient.listResourceHubContent(input));
 }
 
 export function useSearchPeople(input: SearchPeopleInput): UseQueryHookResult<SearchPeopleResult> {
@@ -4029,6 +4059,8 @@ export default {
   useGetTasks,
   getUnreadNotificationCount,
   useGetUnreadNotificationCount,
+  listResourceHubContent,
+  useListResourceHubContent,
   searchPeople,
   useSearchPeople,
   searchPotentialSpaceMembers,
