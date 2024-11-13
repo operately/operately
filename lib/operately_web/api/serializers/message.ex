@@ -3,6 +3,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Messages.Message do
     %{
       id: OperatelyWeb.Paths.message_id(message),
       title: message.title,
+      state: message.state,
       body: Jason.encode!(message.body),
       inserted_at: OperatelyWeb.Api.Serializer.serialize(message.inserted_at),
       updated_at: OperatelyWeb.Api.Serializer.serialize(message.updated_at),
@@ -12,13 +13,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Messages.Message do
   end
 
   def serialize(message, level: :full) do
-    %{
-      id: OperatelyWeb.Paths.message_id(message),
-      title: message.title,
-      body: Jason.encode!(message.body),
-      inserted_at: OperatelyWeb.Api.Serializer.serialize(message.inserted_at),
-      updated_at: OperatelyWeb.Api.Serializer.serialize(message.updated_at),
-      author: OperatelyWeb.Api.Serializer.serialize(message.author),
+    serialize(message, level: :essential) |> Map.merge(%{
       space: serialize_space(message.space),
       reactions: OperatelyWeb.Api.Serializer.serialize(message.reactions),
       comments: OperatelyWeb.Api.Serializer.serialize(message.comments),
@@ -26,7 +21,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Messages.Message do
       potential_subscribers: OperatelyWeb.Api.Serializer.serialize(message.potential_subscribers),
       notifications: OperatelyWeb.Api.Serializer.serialize(message.notifications),
       permissions: OperatelyWeb.Api.Serializer.serialize(message.permissions),
-    }
+    })
   end
 
   defp serialize_space(space) do
