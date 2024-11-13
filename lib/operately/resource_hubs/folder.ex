@@ -2,7 +2,7 @@ defmodule Operately.ResourceHubs.Folder do
   use Operately.Schema
 
   schema "resource_folders" do
-    belongs_to :node, Operately.ResourceHubs.Node
+    belongs_to :node, Operately.ResourceHubs.Node, foreign_key: :node_id
 
     field :description, :map
 
