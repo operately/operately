@@ -5,7 +5,7 @@ defmodule Operately.Messages do
   alias Operately.Messages.Message
 
   def list_messages(space_id) do
-    from(m in Message, where: m.space_id == ^space_id)
+    from(m in Message, join: s in assoc(m, :space), where: s.id == ^space_id)
     |> Repo.all()
   end
 
@@ -19,5 +19,16 @@ defmodule Operately.Messages do
     message
     |> Message.changeset(attrs)
     |> Repo.update()
+  end
+
+  alias Operately.Messages.MessagesBoard
+
+  def get_messages_board(attrs) when is_list(attrs), do: Repo.get_by(MessagesBoard, attrs)
+  def get_messages_board!(attrs) when is_list(attrs), do: Repo.get_by!(MessagesBoard, attrs)
+
+  def create_messages_board(attrs) do
+    %MessagesBoard{}
+    |> MessagesBoard.changeset(attrs)
+    |> Repo.insert()
   end
 end
