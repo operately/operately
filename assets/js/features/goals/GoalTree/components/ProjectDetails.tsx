@@ -9,7 +9,7 @@ import { splitByStatus } from "@/models/milestones";
 import { Project, sortContributorsByRole } from "@/models/projects";
 import { StatusSection } from "@/features/projectCheckIns/StatusSection";
 import { DescriptionSection } from "@/features/projectCheckIns/DescriptionSection";
-import { MiniPieChart } from "@/components/MiniPieChart";
+import { MiniPieChart } from "@/components/charts/MiniPieChart";
 import { MilestoneIcon } from "@/components/MilestoneIcon";
 import { DivLink } from "@/components/Link";
 import { assertPresent } from "@/utils/assertions";

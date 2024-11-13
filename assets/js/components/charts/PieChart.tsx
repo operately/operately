@@ -1,8 +1,10 @@
 import React from "react";
 
+import { COLORS } from "./constants";
+
 interface Slice {
   size: number;
-  color: "green" | "yellow" | "red" | "gray";
+  color: keyof typeof COLORS;
 }
 
 interface PieChartProps {
@@ -10,13 +12,6 @@ interface PieChartProps {
   total: number;
   slices: Slice[];
 }
-
-const COLORS = {
-  green: "rgb(22, 163, 74)",
-  yellow: "rgb(250, 204, 21)",
-  red: "rgb(239, 68, 68)",
-  gray: "rgb(107, 114, 128)",
-};
 
 export function PieChart({ size = 20, total, slices }: PieChartProps) {
   const className = `w-[${size}px] h-[${size}px] rounded-full`;
