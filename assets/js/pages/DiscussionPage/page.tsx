@@ -16,17 +16,16 @@ import { Spacer } from "@/components/Spacer";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { CommentSection, useComments } from "@/features/CommentSection";
 
-import { useLoadedData, useRefresh } from "./loader";
+import { useLoadedData } from "./loader";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { Paths, compareIds } from "@/routes/paths";
 import { CurrentSubscriptions } from "@/features/Subscriptions";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { assertPresent } from "@/utils/assertions";
+import { GhostButton, PrimaryButton } from "@/components/Buttons";
 
 export function Page() {
-  const me = useMe()!;
   const { discussion } = useLoadedData();
-  const refresh = useRefresh();
 
   assertPresent(discussion.notifications, "Discussion notifications must be defined");
   useClearNotificationsOnLoad(discussion.notifications);
@@ -36,30 +35,16 @@ export function Page() {
       <Paper.Root size="large">
         <Navigation space={discussion.space} />
 
-        <Paper.Body>
+        <Paper.Body minHeight="600px">
+          <Options />
+
           <div className="sm:px-8 lg:px-16">
-            {compareIds(me.id, discussion.author!.id) && <Options />}
-            <Title discussion={discussion} />
-
-            <Spacer size={4} />
-            <RichContent jsonContent={discussion.body!} className="text-md sm:text-lg" />
-
-            <Spacer size={2} />
+            <ContinueEditingDraft />
+            <DiscussionTitle />
+            <DiscussionBody />
             <DiscussionReactions />
-
-            <Spacer size={4} />
-
-            <Comments />
-
-            <div className="border-t border-stroke-base mt-16 mb-8" />
-
-            <CurrentSubscriptions
-              potentialSubscribers={discussion.potentialSubscribers!}
-              subscriptionList={discussion.subscriptionList!}
-              name="discussion"
-              type="message"
-              callback={refresh}
-            />
+            <DicusssionComments />
+            <DiscussionSubscriptions />
           </div>
         </Paper.Body>
       </Paper.Root>
@@ -67,8 +52,43 @@ export function Page() {
   );
 }
 
+function DiscussionBody() {
+  const { discussion } = useLoadedData();
+
+  return (
+    <>
+      <Spacer size={4} />
+      <RichContent jsonContent={discussion.body!} className="text-md sm:text-lg" />
+    </>
+  );
+}
+
+function DiscussionSubscriptions() {
+  const { discussion } = useLoadedData();
+  const refresh = Pages.useRefresh();
+
+  if (discussion.state === "draft") return null;
+
+  return (
+    <>
+      <div className="border-t border-stroke-base mt-16 mb-8" />
+
+      <CurrentSubscriptions
+        potentialSubscribers={discussion.potentialSubscribers!}
+        subscriptionList={discussion.subscriptionList!}
+        name="discussion"
+        type="message"
+        callback={refresh}
+      />
+    </>
+  );
+}
+
 function DiscussionReactions() {
   const { discussion } = useLoadedData();
+
+  if (discussion.state === "draft") return null;
+
   const reactions = discussion.reactions!.map((r) => r!);
   const entity = Reactions.entity(discussion.id!, "message");
   const addReactionForm = useReactionsForm(entity, reactions);
@@ -76,11 +96,16 @@ function DiscussionReactions() {
   assertPresent(discussion.permissions?.canCommentOnDiscussions, "permissions must be present in discussion");
 
   return (
-    <ReactionList size={24} form={addReactionForm} canAddReaction={discussion.permissions.canCommentOnDiscussions} />
+    <>
+      <Spacer size={2} />
+      <ReactionList size={24} form={addReactionForm} canAddReaction={discussion.permissions.canCommentOnDiscussions} />
+    </>
   );
 }
 
-function Title({ discussion }) {
+function DiscussionTitle() {
+  const { discussion } = useLoadedData();
+
   return (
     <div className="flex flex-col items-center">
       <div className="text-content-accent text-xl sm:text-2xl md:text-3xl font-extrabold text-center">
@@ -88,10 +113,10 @@ function Title({ discussion }) {
       </div>
       <div className="flex flex-wrap justify-center gap-1 items-center mt-2 text-content-accent font-medium text-sm sm:text-[16px]">
         <div className="flex items-center gap-1">
-          <Avatar person={discussion.author} size="tiny" /> {discussion.author.fullName}
+          <Avatar person={discussion.author!} size="tiny" /> {discussion.author!.fullName}
         </div>
         <TextSeparator />
-        <FormattedTime time={discussion.insertedAt} format="relative-time-or-date" />
+        <FormattedTime time={discussion.insertedAt!} format="relative-time-or-date" />
       </div>
     </div>
   );
@@ -108,7 +133,10 @@ function Navigation({ space }) {
 }
 
 function Options() {
+  const me = useMe()!;
   const { discussion } = useLoadedData();
+
+  if (!compareIds(me.id, discussion.author!.id)) return null;
 
   return (
     <PageOptions.Root position="top-right" testId="options-button">
@@ -122,14 +150,17 @@ function Options() {
   );
 }
 
-function Comments() {
+function DicusssionComments() {
   const { discussion } = useLoadedData();
   const commentsForm = useComments({ parent: discussion, parentType: "message" });
+
+  if (discussion.state === "draft") return null;
 
   assertPresent(discussion.permissions?.canCommentOnDiscussions, "permissions must be present in discussion");
 
   return (
     <>
+      <Spacer size={4} />
       <div className="border-t border-stroke-base mt-8" />
       <CommentSection
         form={commentsForm}
@@ -138,5 +169,27 @@ function Comments() {
         canComment={discussion.permissions.canCommentOnDiscussions}
       />
     </>
+  );
+}
+
+function ContinueEditingDraft() {
+  const { discussion } = useLoadedData();
+
+  if (discussion.state !== "draft") return null;
+
+  return (
+    <div className="mb-4 bg-surface-dimmed p-4 rounded-2xl flex flex-col items-center gap-4">
+      <div className="font-bold">This is an unpublished draft.</div>
+
+      <div className="flex items-center justify-center gap-2">
+        <PrimaryButton linkTo={Paths.discussionEditPath(discussion.id!)} size="sm" testId="continue-editing">
+          Continue editing
+        </PrimaryButton>
+
+        <GhostButton linkTo={Paths.discussionEditPath(discussion.id!)} size="sm" testId="publish-now">
+          Publish Now
+        </GhostButton>
+      </div>
+    </div>
   );
 }
