@@ -92,6 +92,30 @@ defmodule OperatelyWeb.Api.Queries.ListResourceHubContentTest do
         assert Enum.find(res.nodes, &(&1.id == Paths.node_id(node)))
       end)
     end
+
+    test "list all files within folder", ctx do
+      ctx =
+        ctx
+        |> Factory.add_folder(:folder6, :hub1, :folder1)
+        |> Factory.add_folder(:folder7, :hub1, :folder1)
+        |> Factory.add_folder(:folder8, :hub1, :folder2)
+
+      assert {200, res} = query(ctx.conn, :list_resource_hub_content, %{parent_folder_id: Paths.folder_id(ctx.folder1)})
+      assert length(res.nodes) == 2
+
+      [ctx.folder6, ctx.folder7]
+      |> Enum.each(fn folder ->
+        node = Repo.preload(folder, :node).node
+
+        assert Enum.find(res.nodes, &(&1.id == Paths.node_id(node)))
+      end)
+
+      assert {200, res} = query(ctx.conn, :list_resource_hub_content, %{parent_folder_id: Paths.folder_id(ctx.folder2)})
+      assert length(res.nodes) == 1
+
+      node8 = Repo.preload(ctx.folder8, :node).node
+      assert hd(res.nodes).id == Paths.node_id(node8)
+    end
   end
 
   #

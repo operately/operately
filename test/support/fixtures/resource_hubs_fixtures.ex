@@ -18,7 +18,7 @@ defmodule Operately.ResourceHubsFixtures do
   def folder_fixture(hub_id, attrs \\ %{}) do
     {:ok, node} = Operately.ResourceHubs.create_node(%{
       resource_hub_id: hub_id,
-      folder_id: attrs[:folder_id] && attrs.folder_id,
+      parent_folder_id: attrs[:parent_folder_id] && attrs.parent_folder_id,
       name: attrs[:name] || "some name",
       type: :folder,
     })
