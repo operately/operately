@@ -56,7 +56,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateComment do
       :project_retrospective -> Retrospective.get(person, id: id, opts: [preload: :project])
       :comment_thread -> Comments.get_thread_with_activity_and_access_level(id, person.id)
       :goal_update -> Update.get(person, id: id, opts: [preload: :goal])
-      :message -> Message.get(person, id: id)
+      :message -> Message.get(person, id: id, opts: [preload: :space])
     end
   end
 

@@ -127,6 +127,7 @@ defmodule Operately.Features.SubscriptionsTest do
   describe "Message" do
     setup ctx do
       ctx
+      |> Factory.add_messages_board(:messages_board, :space)
       |> Factory.add_space_member(:bob, :space)
       |> Factory.add_space_member(:fred, :space)
       |> Factory.add_space_member(:jane, :space)

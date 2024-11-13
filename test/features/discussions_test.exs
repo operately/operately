@@ -4,6 +4,7 @@ defmodule Operately.Features.DiscussionsTest do
   import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
   import Operately.GroupsFixtures
+  import Operately.MessagesFixtures
 
   alias Operately.Support.Features.NotificationsSteps
   alias Operately.Support.Features.EmailSteps
@@ -17,6 +18,7 @@ defmodule Operately.Features.DiscussionsTest do
     reader = person_fixture_with_account(%{full_name: "Randy Reader", company_id: company.id})
 
     space = group_fixture(author, %{name: "Marketing", mission: "Let the world know about our products"})
+    messages_board_fixture(space.id)
 
     Operately.Groups.add_members(author, space.id, [
       %{

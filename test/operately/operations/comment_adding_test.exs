@@ -245,10 +245,14 @@ defmodule Operately.Operations.CommentAddingTest do
       |> Factory.add_space_member(:mike, :space)
       |> Factory.add_space_member(:bob, :space)
       |> Factory.add_space_member(:jane, :space)
+      |> Factory.add_messages_board(:messages_board, :space)
     end
 
     test "Commenting on message notifies everyone", ctx do
-      ctx = Factory.add_message(ctx, :message, :space, send_to_everyone: true)
+      ctx =
+        ctx
+        |> Factory.add_message(:message, :messages_board, send_to_everyone: true)
+        |> Factory.preload(:message, :space)
 
       {:ok, comment} = Oban.Testing.with_testing_mode(:manual, fn ->
         CommentAdding.run(ctx.creator, ctx.message, "message", RichText.rich_text("Some comment"))
@@ -271,10 +275,13 @@ defmodule Operately.Operations.CommentAddingTest do
     end
 
     test "Commenting on message notifies selected people", ctx do
-      ctx = Factory.add_message(ctx, :message, :space, [
-        person_ids: [ctx.mike.id, ctx.jane.id],
-        send_to_everyone: false,
-      ])
+      ctx =
+        ctx
+        |> Factory.add_message(:message, :messages_board, [
+          person_ids: [ctx.mike.id, ctx.jane.id],
+          send_to_everyone: false,
+        ])
+        |> Factory.preload(:message, :space)
 
       {:ok, comment} = Oban.Testing.with_testing_mode(:manual, fn ->
         CommentAdding.run(ctx.creator, ctx.message, "message", RichText.rich_text("Some comment"))
@@ -297,7 +304,10 @@ defmodule Operately.Operations.CommentAddingTest do
     end
 
     test "Mentioned person is notified", ctx do
-      ctx = Factory.add_message(ctx, :message, :space, send_to_everyone: false)
+      ctx =
+        ctx
+        |> Factory.add_message(:message, :messages_board, send_to_everyone: false)
+        |> Factory.preload(:message, :space)
 
       # Without permissions
       person = person_fixture_with_account(%{company_id: ctx.company.id})

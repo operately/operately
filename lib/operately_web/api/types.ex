@@ -493,6 +493,12 @@ defmodule OperatelyWeb.Api.Types do
     field :permissions, :resource_hub_permissions
   end
 
+  object :resource_hub_node do
+    field :id, :string
+    field :name, :string
+    field :type, :string
+  end
+
   object :project_permissions do
     field :can_view, :boolean
     field :can_create_milestone, :boolean

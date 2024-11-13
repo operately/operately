@@ -26,7 +26,8 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussions do
 
   defp load_messages(me, inputs) do
     from(m in Message,
-      where: m.space_id == ^inputs.space_id and m.state != :draft,
+      join: b in assoc(m, :messages_board),
+      where: b.space_id == ^inputs.space_id and m.state != :draft,
       preload: ^preload(inputs),
       order_by: [desc: m.inserted_at]
     )
