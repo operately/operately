@@ -20,4 +20,12 @@ defmodule Operately.Messages do
     |> Message.changeset(attrs)
     |> Repo.update()
   end
+
+  alias Operately.Messages.MessagesBoard
+
+  def create_messages_board(attrs) do
+    %MessagesBoard{}
+    |> MessagesBoard.changeset(attrs)
+    |> Repo.insert()
+  end
 end

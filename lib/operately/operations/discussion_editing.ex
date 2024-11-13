@@ -16,7 +16,7 @@ defmodule Operately.Operations.DiscussionEditing do
     |> Operately.Operations.Notifications.Subscription.update_mentioned_people(attrs.body)
     |> Activities.insert_sync(creator.id, :discussion_editing, fn _ -> %{
       company_id: creator.company_id,
-      space_id: message.space_id,
+      space_id: message.space.id,
       discussion_id: message.id,
     } end)
     |> Repo.transaction()

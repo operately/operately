@@ -43,8 +43,10 @@ defmodule OperatelyWeb.Api.Mutations.PostDiscussion do
   end
 
   defp parse_inputs(inputs) do
+    board_id = fetch_board_id(inputs.space_id)
+
     {:ok, %{
-      space_id: inputs.space_id,
+      messages_board_id: board_id,
       title: inputs.title,
       content: Jason.decode!(inputs.body),
       post_as_draft: inputs[:post_as_draft] || false,
@@ -52,5 +54,12 @@ defmodule OperatelyWeb.Api.Mutations.PostDiscussion do
       subscription_parent_type: :message,
       subscriber_ids: inputs[:subscriber_ids] || []
     }}
+  end
+
+  # This is a temporary function.
+  # Once the Space Tools and Messages Boards are fully implemented,
+  # the messages_board_id will come from the frontend
+  defp fetch_board_id(space_id) do
+    from(b in Operately.Messages.MessagesBoard, where: b.space_id == ^space_id, select: b.id) |> Repo.one!()
   end
 end
