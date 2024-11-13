@@ -17,6 +17,8 @@ defmodule Operately.Support.Features.DiscussionsSteps do
   step :assert_discussion_is_posted, ctx do
     message = last_message(ctx)
 
+    assert message.state == :published
+
     ctx
     |> UI.assert_page(Paths.message_path(ctx.company, message))
     |> UI.assert_text("This is a discussion")
@@ -142,6 +144,12 @@ defmodule Operately.Support.Features.DiscussionsSteps do
     assert discussion.title == "My draft discussion 2"
 
     ctx
+  end
+
+  step :publish_draft, ctx do
+    ctx 
+    |> UI.click(testid: "publish-now")
+    |> UI.assert_has(testid: "discussion-page")
   end
 
   #

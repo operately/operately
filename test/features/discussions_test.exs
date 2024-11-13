@@ -56,6 +56,17 @@ defmodule Operately.Features.DiscussionsTest do
   end
 
   @tag login_as: :author
+  feature "publish a draft discussion", ctx do
+    ctx
+    |> Steps.given_the_draft_experimental_feature_is_enabled()
+    |> Steps.post_a_draft_discussion()
+    |> Steps.publish_draft()
+    |> Steps.assert_discussion_email_sent(@discussion)
+    |> Steps.assert_discussion_feed_on_space_page(@discussion)
+    |> Steps.assert_discussion_notification_sent(@discussion)
+  end
+
+  @tag login_as: :author
   feature "post a discussion", ctx do
     ctx
     |> Steps.post_a_discussion(@discussion)
