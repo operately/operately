@@ -121,6 +121,29 @@ defmodule Operately.Support.Features.DiscussionsSteps do
     |> UI.refute_text("My draft discussion")
   end
 
+  step :click_on_continue_editing, ctx do
+    ctx 
+    |> UI.click(testid: "continue-editing")
+    |> UI.assert_has(testid: "discussion-edit-page")
+  end
+
+  step :modify_the_draft_discussion_and_save, ctx do
+    ctx 
+    |> UI.fill(testid: "discussion-title", with: "My draft discussion 2")
+    |> UI.fill_rich_text("This is the body of the discussion. Edited.")
+    |> UI.click(testid: "save-changes")
+    |> UI.assert_has(testid: "discussion-page")
+  end
+
+  step :assert_draft_edit_is_saved, ctx do
+    discussion = last_message(ctx)
+
+    assert discussion.state == :draft
+    assert discussion.title == "My draft discussion 2"
+
+    ctx
+  end
+
   #
   # Utilities
   #

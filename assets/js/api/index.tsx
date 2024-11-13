@@ -666,6 +666,7 @@ export interface Discussion {
   id?: string | null;
   name?: string | null;
   insertedAt?: string | null;
+  state?: string | null;
   updatedAt?: string | null;
   author?: Person | null;
   title?: string | null;

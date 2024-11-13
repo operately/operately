@@ -12,7 +12,7 @@ export function Page() {
   const form = useForm({ space: discussion.space!, discussion, mode: "edit" });
 
   return (
-    <Pages.Page title={"Edit Post"}>
+    <Pages.Page title={"Edit Post"} testId="discussion-edit-page">
       <Paper.Root>
         <Paper.Body>
           <Header form={form} />

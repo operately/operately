@@ -46,6 +46,16 @@ defmodule Operately.Features.DiscussionsTest do
   end
 
   @tag login_as: :author
+  feature "continue editing a draft message", ctx do
+    ctx
+    |> Steps.given_the_draft_experimental_feature_is_enabled()
+    |> Steps.post_a_draft_discussion()
+    |> Steps.click_on_continue_editing()
+    |> Steps.modify_the_draft_discussion_and_save()
+    |> Steps.assert_draft_edit_is_saved()
+  end
+
+  @tag login_as: :author
   feature "post a discussion", ctx do
     ctx
     |> Steps.post_a_discussion(@discussion)
