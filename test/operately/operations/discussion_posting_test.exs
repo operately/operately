@@ -13,12 +13,13 @@ defmodule Operately.Operations.DiscussionPostingTest do
     |> Factory.add_space_member(:mike, :space)
     |> Factory.add_space_member(:bob, :space)
     |> Factory.add_space_member(:jane, :space)
+    |> Factory.add_messages_board(:messages_board, :space)
   end
 
   test "Creating message sends notifications to everyone", ctx do
     {:ok, message} = Oban.Testing.with_testing_mode(:manual, fn ->
       Operately.Operations.DiscussionPosting.run(ctx.creator, ctx.space, %{
-        space_id: ctx.space.id,
+        messages_board_id: ctx.messages_board.id,
         title: "Title",
         content: RichText.rich_text("Content"),
         post_as_draft: false,
@@ -47,7 +48,7 @@ defmodule Operately.Operations.DiscussionPostingTest do
   test "Creating message sends notifications to selected people", ctx do
     {:ok, message} = Oban.Testing.with_testing_mode(:manual, fn ->
       Operately.Operations.DiscussionPosting.run(ctx.creator, ctx.space, %{
-        space_id: ctx.space.id,
+        messages_board_id: ctx.messages_board.id,
         title: "Title",
         content: RichText.rich_text("Content"),
         post_as_draft: false,
@@ -79,7 +80,7 @@ defmodule Operately.Operations.DiscussionPostingTest do
     content = RichText.rich_text(mentioned_people: [person]) |> Jason.decode!()
 
     {:ok, message} = Operately.Operations.DiscussionPosting.run(ctx.creator, ctx.space, %{
-      space_id: ctx.space.id,
+      messages_board_id: ctx.messages_board.id,
       title: "Title",
       content: content,
       post_as_draft: false,
@@ -100,7 +101,7 @@ defmodule Operately.Operations.DiscussionPostingTest do
     ])
 
     {:ok, message} = Operately.Operations.DiscussionPosting.run(ctx.creator, ctx.space, %{
-      space_id: ctx.space.id,
+      messages_board_id: ctx.messages_board.id,
       title: "Title",
       content: content,
       post_as_draft: false,

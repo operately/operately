@@ -23,7 +23,7 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionsTest do
 
     test "company space - company members have access", ctx do
       messages = Enum.map(1..3, fn _ ->
-        message_fixture(ctx.creator.id, ctx.company.company_space_id)
+        create_message(ctx.creator.id, ctx.company.company_space_id)
       end)
       space = Operately.Groups.get_group!(ctx.company.company_space_id)
 
@@ -34,7 +34,7 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionsTest do
     test "company members have no access", ctx do
       space = create_space(ctx, company_permissions: Binding.no_access())
       Enum.each(1..3, fn _ ->
-        message_fixture(ctx.creator.id, space.id)
+        create_message(ctx.creator.id, space.id)
       end)
 
       assert {200, res} = query(ctx.conn, :get_discussions, %{space_id: Paths.space_id(space)})
@@ -44,7 +44,7 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionsTest do
     test "company members have access", ctx do
       space = create_space(ctx, company_permissions: Binding.view_access())
       messages = Enum.map(1..3, fn _ ->
-        message_fixture(ctx.creator.id, space.id)
+        create_message(ctx.creator.id, space.id)
       end)
 
       assert {200, res} = query(ctx.conn, :get_discussions, %{space_id: Paths.space_id(space)})
@@ -54,7 +54,7 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionsTest do
     test "space members have access", ctx do
       space = create_space(ctx, company_permissions: Binding.no_access())
       messages = Enum.map(1..3, fn _ ->
-        message_fixture(ctx.creator.id, space.id)
+        create_message(ctx.creator.id, space.id)
       end)
 
       assert {200, res} = query(ctx.conn, :get_discussions, %{space_id: Paths.space_id(space)})
@@ -73,7 +73,9 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionsTest do
       ctx
       |> Factory.setup()
       |> Factory.add_space(:space)
-      |> Factory.add_message(:message, :space)
+      |> Factory.add_messages_board(:messages_board, :space)
+      |> Factory.add_message(:message, :messages_board)
+      |> Factory.preload(:message, :space)
       |> Factory.add_comment(:comment1, :message)
       |> Factory.add_comment(:comment2, :message)
       |> Factory.log_in_person(:creator)
@@ -133,5 +135,10 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionsTest do
       id: ctx.person.id,
       access_level: Binding.view_access(),
     }])
+  end
+
+  defp create_message(creator_id, space_id) do
+    board = messages_board_fixture(space_id)
+    message_fixture(creator_id, board.id)
   end
 end

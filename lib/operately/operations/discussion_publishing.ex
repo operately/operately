@@ -9,7 +9,7 @@ defmodule Operately.Operations.DiscussionPublishing do
     |> Multi.update(:message, Message.changeset(discussion, %{state: :published}))
     |> Activities.insert_sync(creator.id, :discussion_posting, fn _changes -> %{
       company_id: creator.company_id,
-      space_id: discussion.space_id,
+      space_id: discussion.space.id,
       discussion_id: discussion.id,
       title: discussion.title,
     } end)

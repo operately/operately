@@ -25,7 +25,7 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionTest do
     end
 
     test "(company space) - company members have access", ctx do
-      message = message_fixture(ctx.creator.id,  ctx.company.company_space_id)
+      message = create_message(ctx.creator.id,  ctx.company.company_space_id)
 
       assert {200, res} = query(ctx.conn, :get_discussion, %{id: Paths.message_id(message)})
       assert_message(res)
@@ -33,7 +33,7 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionTest do
 
     test "company members have no access", ctx do
       space = create_space(ctx, company_access: Binding.no_access())
-      message = message_fixture(ctx.creator.id,  space.id)
+      message = create_message(ctx.creator.id,  space.id)
 
       assert {404, %{message: msg} = _res} = query(ctx.conn, :get_discussion, %{id: Paths.message_id(message)})
       assert msg == "The requested resource was not found"
@@ -41,7 +41,7 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionTest do
 
     test "company members have access", ctx do
       space = create_space(ctx, company_access: Binding.view_access())
-      message = message_fixture(ctx.creator.id,  space.id)
+      message = create_message(ctx.creator.id,  space.id)
 
       assert {200, res} = query(ctx.conn, :get_discussion, %{id: Paths.message_id(message)})
       assert_message(res)
@@ -49,7 +49,7 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionTest do
 
     test "space members have access", ctx do
       space = create_space(ctx, company_access: Binding.no_access())
-      message = message_fixture(ctx.creator.id,  space.id)
+      message = create_message(ctx.creator.id,  space.id)
       add_person_to_space(ctx, space)
 
       assert {200, res} = query(ctx.conn, :get_discussion, %{id: Paths.message_id(message)})
@@ -61,7 +61,7 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionTest do
     setup :register_and_log_in_account
 
     test "include_unread_notifications", ctx do
-      message = message_fixture(ctx.person.id, ctx.company.company_space_id)
+      message = create_message(ctx.person.id, ctx.company.company_space_id)
       a = activity_fixture(author_id: ctx.person.id, action: "discussion_posting", content: %{discussion_id: message.id})
       n = notification_fixture(person_id: ctx.person.id, read: false, activity_id: a.id)
 
@@ -78,7 +78,7 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionTest do
     end
 
     test "include_space", ctx do
-      message = message_fixture(ctx.person.id, ctx.company.company_space_id)
+      message = create_message(ctx.person.id, ctx.company.company_space_id)
 
       assert {200, res} = query(ctx.conn, :get_discussion, %{id: Paths.message_id(message)})
       assert res.discussion.space == nil
@@ -90,7 +90,7 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionTest do
     end
 
     test "include_author", ctx do
-      message = message_fixture(ctx.person.id, ctx.company.company_space_id)
+      message = create_message(ctx.person.id, ctx.company.company_space_id)
 
       assert {200, res} = query(ctx.conn, :get_discussion, %{id: Paths.message_id(message)})
       assert res.discussion.author == nil
@@ -100,7 +100,7 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionTest do
     end
 
     test "include_reactions", ctx do
-      message = message_fixture(ctx.person.id, ctx.company.company_space_id)
+      message = create_message(ctx.person.id, ctx.company.company_space_id)
 
       assert {200, res} = query(ctx.conn, :get_discussion, %{id: Paths.message_id(message)})
       assert res.discussion.reactions == nil
@@ -130,7 +130,8 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionTest do
         |> Factory.add_space_member(:member1, :space)
         |> Factory.add_space_member(:member2, :space)
         |> Factory.add_space_member(:member3, :space)
-        |> Factory.add_message(:message, :space)
+        |> Factory.add_messages_board(:messages_board, :space)
+        |> Factory.add_message(:message, :messages_board)
 
       {:ok, list} = SubscriptionList.get(:system, parent_id: ctx.message.id)
       subscription_fixture(%{subscription_list_id: list.id, person_id: ctx.creator.id})
@@ -183,5 +184,10 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionTest do
       id: ctx.person.id,
       access_level: Binding.view_access(),
     }])
+  end
+
+  defp create_message(creator_id, space_id) do
+    board = messages_board_fixture(space_id)
+    message_fixture(creator_id, board.id)
   end
 end
