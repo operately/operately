@@ -5,10 +5,7 @@ import { Goal } from "@/models/goals";
 import { Project } from "@/models/projects";
 import { splitByStatus } from "@/models/milestones";
 
-import { PieChart } from "@/components/PieChart";
-import { ProgressBar } from "@/components/ProgressBar";
-import { MiniPieChart } from "@/components/MiniPieChart";
-import { SmallStatusIndicator } from "@/components/status";
+import { PieChart, ProgressBar, MiniPieChart } from "@/components/charts";
 import { assertPresent } from "@/utils/assertions";
 import { Paths } from "@/routes/paths";
 
@@ -76,22 +73,21 @@ function Goals({ goals, projectsCount }: { goals: Goal[]; projectsCount: number 
 function GoalItem({ goal }: { goal: Goal }) {
   assertPresent(goal.progressPercentage, "progressPercentage must be present in goal");
 
+  const status = useMemo(() => {
+    if (goal.isOutdated) return "outdated";
+    if (!goal.lastCheckIn) return "on_track";
+    return goal.lastCheckIn.status!;
+  }, [goal.isOutdated, goal.lastCheckIn]);
+
   return (
     <div className="flex items-center gap-1 overflow-hidden">
-      <GoalStatusIndicator goal={goal} />
       {/* Extra div is necessary to ensure all bars have the same size */}
       <div>
-        <ProgressBar percentage={goal.progressPercentage} className="w-[50px] h-[9px]" />
+        <ProgressBar percentage={goal.progressPercentage} status={status} className="w-[50px] h-[9px]" />
       </div>
       <div className="truncate">{goal.name}</div>
     </div>
   );
-}
-
-function GoalStatusIndicator({ goal }: { goal: Goal }) {
-  if (goal.isOutdated) return <SmallStatusIndicator status="outdated" size="sm" hideText={true} />;
-
-  return <SmallStatusIndicator status={goal.lastCheckIn?.status || "on_track"} size="sm" hideText={true} />;
 }
 
 function Projects({ projects }: { projects: Project[] }) {
