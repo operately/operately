@@ -172,7 +172,8 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
     tabletest @space_table do
       test "if caller has levels company=#{@test.company}, space=#{@test.space} on the space, then expect code=#{@test.expected}", ctx do
         space = create_space(ctx, @test.company, @test.space)
-        message = message_fixture(ctx.creator.id, space.id)
+        board = messages_board_fixture(space.id)
+        message = message_fixture(ctx.creator.id, board.id)
 
         assert {code, res} = mutation(ctx.conn, :add_reaction, %{
           entity_id: Paths.message_id(message),
@@ -325,7 +326,8 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
     tabletest @space_table do
       test "message comment - if caller has levels company=#{@test.company}, space=#{@test.space} on the space, then expect code=#{@test.expected}", ctx do
         space = create_space(ctx, @test.company, @test.space)
-        message = message_fixture(ctx.creator.id, space.id)
+        board = messages_board_fixture(space.id)
+        message = message_fixture(ctx.creator.id, board.id) |> Repo.preload(:space)
         comment = create_comment(ctx, message, "message")
 
         assert {code, res} = mutation(ctx.conn, :add_reaction, %{
@@ -354,7 +356,8 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
       |> Factory.setup()
       |> Factory.add_company_owner(:owner)
       |> Factory.add_space(:product_space)
-      |> Factory.add_message(:hello_message, :product_space)
+      |> Factory.add_messages_board(:messages_board, :product_space)
+      |> Factory.add_message(:hello_message, :messages_board)
       |> Factory.log_in_person(:owner)
     end
 

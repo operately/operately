@@ -6,6 +6,8 @@ defmodule Operately.Demo.Discussions do
   def create_discussions(resources, nil), do: resources
 
   def create_discussions(resources, data) do
+    resources = create_messages_board(resources)
+
     Resources.create(resources, data, fn {resources, data} ->
       create_discussion(resources, data)
     end)
@@ -14,8 +16,10 @@ defmodule Operately.Demo.Discussions do
   defp create_discussion(resources, data) do
     author = Resources.get(resources, data.author)
     space = Resources.get(resources, data.space)
+    board = Resources.get(resources, :messages_board)
 
     {:ok, discussion} = DiscussionPosting.run(author, space, %{
+      messages_board_id: board.id,
       title: data.title,
       content: from_markdown(data.content),
       post_as_draft: false,
@@ -25,6 +29,16 @@ defmodule Operately.Demo.Discussions do
     })
 
     discussion
+  end
+
+  defp create_messages_board(resources) do
+    space = Resources.get(resources, :company_space)
+    {:ok, board} = Operately.Messages.create_messages_board(%{
+      space_id: space.id,
+      name: "Messages Board",
+    })
+
+    Resources.add(resources, :messages_board, board)
   end
 
   #
@@ -55,7 +69,7 @@ defmodule Operately.Demo.Discussions do
   end
 
   defp parse_bullet_list(block) do
-    items = 
+    items =
       block
       |> String.split("\n", trim: true)
       |> Enum.map(&parse_bullet_item/1)
