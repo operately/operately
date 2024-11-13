@@ -13,13 +13,14 @@ defmodule Operately.Data.Change029CreateSubscriptionsListForMessagesTest do
     |> Factory.add_space_member(:mike, :space)
     |> Factory.add_space_member(:bob, :space)
     |> Factory.add_space_member(:jane, :space)
+    |> Factory.add_messages_board(:messages_board, :space)
   end
 
   test "creates subscriptions list for existing messages", ctx do
     people = [ctx.creator, ctx.mike, ctx.bob, ctx.jane]
 
     messages = Enum.map(1..3, fn _ ->
-      message_fixture(ctx.creator.id, ctx.space.id)
+      message_fixture(ctx.creator.id, ctx.messages_board.id)
     end)
 
     Enum.each(messages, fn m ->

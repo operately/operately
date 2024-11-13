@@ -153,7 +153,8 @@ defmodule OperatelyWeb.Api.Mutations.EditCommentTest do
     tabletest @space_table do
       test "if caller has levels company=#{@test.company}, space=#{@test.space} on the space, then expect code=#{@test.expected}", ctx do
         space = create_space(ctx, @test.company, @test.space)
-        message = message_fixture(ctx.creator.id, space.id)
+        board = messages_board_fixture(space.id)
+        message = message_fixture(ctx.creator.id, board.id) |> Repo.preload(:space)
         comment = create_comment(ctx, message, "message")
 
         assert {code, res} = mutation(ctx.conn, :edit_comment, %{
@@ -244,7 +245,9 @@ defmodule OperatelyWeb.Api.Mutations.EditCommentTest do
       |> Factory.add_goal(:goal, :space)
       |> Factory.add_goal_update(:update, :goal, :creator)
       |> Factory.preload(:update, :goal)
-      |> Factory.add_message(:message, :space)
+      |> Factory.add_messages_board(:messages_board, :space)
+      |> Factory.add_message(:message, :messages_board)
+      |> Factory.preload(:message, :space)
     end
 
     tabletest @table do

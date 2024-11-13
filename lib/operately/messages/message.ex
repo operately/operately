@@ -5,11 +5,12 @@ defmodule Operately.Messages.Message do
   alias Operately.Notifications
 
   schema "messages" do
-    belongs_to :space, Operately.Groups.Group
-    belongs_to :author, Operately.People.Person
+    belongs_to :author, Operately.People.Person, foreign_key: :author_id
+    belongs_to :messages_board, Operately.Messages.MessagesBoard, foreign_key: :messages_board_id
     belongs_to :subscription_list, Notifications.SubscriptionList, foreign_key: :subscription_list_id
 
-    has_one :access_context, through: [:space, :access_context]
+    has_one :space, through: [:messages_board, :space]
+    has_one :access_context, through: [:messages_board, :space, :access_context]
     has_many :reactions, Operately.Updates.Reaction, where: [entity_type: :message], foreign_key: :entity_id
     has_many :comments, Operately.Updates.Comment, where: [entity_type: :message], foreign_key: :entity_id
 
@@ -34,8 +35,8 @@ defmodule Operately.Messages.Message do
 
   def changeset(update, attrs) do
     update
-    |> cast(attrs, [:space_id, :author_id, :title, :body, :subscription_list_id, :state])
-    |> validate_required([:space_id, :author_id, :title, :body, :subscription_list_id, :state])
+    |> cast(attrs, [:messages_board_id, :author_id, :title, :body, :subscription_list_id, :state])
+    |> validate_required([:messages_board_id, :author_id, :title, :body, :subscription_list_id, :state])
   end
 
   #

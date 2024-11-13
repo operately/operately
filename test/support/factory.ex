@@ -48,7 +48,8 @@ defmodule Operately.Support.Factory do
   defdelegate edit_project_space_members_access(ctx, project_name, access_level), to: Projects
 
   # messages
-  defdelegate add_message(ctx, testid, space_name, opts \\ []), to: Messages
+  defdelegate add_message(ctx, testid, board_name, opts \\ []), to: Messages
+  defdelegate add_messages_board(ctx, testid, space_name, opts \\ []), to: Messages
 
   # comments
   defdelegate add_comment(ctx, testid, parent_name, opts \\ []), to: Comments

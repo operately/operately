@@ -6,10 +6,10 @@ defmodule Operately.Groups.InsertGroup do
   def insert(multi, attrs) do
     multi
     |> insert_group(attrs)
-    |> insert_group_context()
-    |> insert_members_access_group()
-    |> insert_managers_access_group()
+    |> insert_context()
+    |> insert_access_groups()
     |> insert_bindings(attrs)
+    |> insert_default_messages_board()
   end
 
   defp insert_group(multi, attrs) do
@@ -21,7 +21,7 @@ defmodule Operately.Groups.InsertGroup do
     end)
   end
 
-  defp insert_group_context(multi) do
+  defp insert_context(multi) do
     multi
     |> Multi.insert(:context, fn changes ->
       Access.Context.changeset(%{
@@ -30,15 +30,11 @@ defmodule Operately.Groups.InsertGroup do
     end)
   end
 
-  defp insert_members_access_group(multi) do
+  defp insert_access_groups(multi) do
     multi
     |> Multi.insert(:space_members_access_group, fn %{group: group} ->
       Access.Group.changeset(%{group_id: group.id, tag: :standard})
     end)
-  end
-
-  defp insert_managers_access_group(multi) do
-    multi
     |> Multi.insert(:space_managers_access_group, fn %{group: group} ->
       Access.Group.changeset(%{group_id: group.id, tag: :full_access})
     end)
@@ -64,6 +60,16 @@ defmodule Operately.Groups.InsertGroup do
       else
         {:ok, nil}
       end
+    end)
+  end
+
+  defp insert_default_messages_board(multi) do
+    multi
+    |> Multi.insert(:messages_board, fn changes ->
+      Operately.Messages.MessagesBoard.changeset(%{
+        space_id: changes.group.id,
+        name: "Messages Board",
+      })
     end)
   end
 end

@@ -258,7 +258,7 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
     end
 
     test "company space - company members have access", ctx do
-      message = message_fixture(ctx.creator.id, ctx.company.company_space_id)
+      message = create_message(ctx.creator.id, ctx.company.company_space_id)
       comments = Enum.map(1..3, fn _ ->
         add_comment(ctx, message, "message")
       end)
@@ -272,7 +272,7 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
 
     test "company members have no access", ctx do
       space = create_space(ctx, company_permissions: Binding.no_access())
-      message = message_fixture(ctx.creator.id, space.id)
+      message = create_message(ctx.creator.id, space.id)
       Enum.each(1..3, fn _ ->
         add_comment(ctx, message, "message")
       end)
@@ -286,7 +286,7 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
 
     test "company members have access", ctx do
       space = create_space(ctx, company_permissions: Binding.view_access())
-      message = message_fixture(ctx.creator.id, space.id)
+      message = create_message(ctx.creator.id, space.id)
       comments = Enum.map(1..3, fn _ ->
         add_comment(ctx, message, "message")
       end)
@@ -300,7 +300,7 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
 
     test "space members have access", ctx do
       space = create_space(ctx, company_permissions: Binding.no_access())
-      message = message_fixture(ctx.creator.id, space.id)
+      message = create_message(ctx.creator.id, space.id)
       comments = Enum.map(1..3, fn _ ->
         add_comment(ctx, message, "message")
       end)
@@ -505,5 +505,12 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
     {:ok, comment} = Operately.Operations.CommentAdding.run(ctx.person, entity, entity_type, RichText.rich_text(content))
     Repo.preload(comment, :author)
     |> serialize(level: :full)
+  end
+
+  defp create_message(creator_id, space_id) do
+    board = messages_board_fixture(space_id)
+
+    message_fixture(creator_id, board.id)
+    |> Repo.preload(:space)
   end
 end

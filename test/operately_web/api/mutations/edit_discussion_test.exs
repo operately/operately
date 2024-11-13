@@ -27,14 +27,14 @@ defmodule OperatelyWeb.Api.Mutations.EditDiscussionTest do
 
     test "company member can see only their company", ctx do
       other_ctx = register_and_log_in_account(ctx)
-      message = message_fixture(ctx.creator_id, ctx.company.company_space_id)
+      message = create_message(ctx.creator_id, ctx.company.company_space_id)
 
       assert {404, res} = request(other_ctx.conn, message)
       assert res.message == "The requested resource was not found"
     end
 
     test "company members without edit access can't edit discussion", ctx do
-      message = message_fixture(ctx.creator_id, ctx.company.company_space_id)
+      message = create_message(ctx.creator_id, ctx.company.company_space_id)
 
       assert {403, res} = request(ctx.conn, message)
       assert res.message == "You don't have permission to perform this action"
@@ -42,14 +42,14 @@ defmodule OperatelyWeb.Api.Mutations.EditDiscussionTest do
 
     test "company members with edit access can edit discussion", ctx do
       give_person_edit_access(ctx)
-      message = message_fixture(ctx.creator_id, ctx.company.company_space_id)
+      message = create_message(ctx.creator_id, ctx.company.company_space_id)
 
       assert {200, _} = request(ctx.conn, message)
       assert_discussion_edited(message)
     end
 
     test "company owners can edit discussion", ctx do
-      message = message_fixture(ctx.creator_id, ctx.company.company_space_id)
+      message = create_message(ctx.creator_id, ctx.company.company_space_id)
 
       # Not owner
       assert {403, _} = request(ctx.conn, message)
@@ -72,14 +72,14 @@ defmodule OperatelyWeb.Api.Mutations.EditDiscussionTest do
     end
 
     test "company member without view access can't see space", ctx do
-      message = message_fixture(ctx.creator_id, ctx.space_id)
+      message = create_message(ctx.creator_id, ctx.space_id)
 
       assert {404, res} = request(ctx.conn, message)
       assert res.message == "The requested resource was not found"
     end
 
     test "space member without edit access can't edit discussion", ctx do
-      message = message_fixture(ctx.creator_id, ctx.space_id)
+      message = create_message(ctx.creator_id, ctx.space_id)
       add_person_to_space(ctx, Binding.comment_access())
 
       assert {403, res} = request(ctx.conn, message)
@@ -87,7 +87,7 @@ defmodule OperatelyWeb.Api.Mutations.EditDiscussionTest do
     end
 
     test "space members with edit access can edit discussion", ctx do
-      message = message_fixture(ctx.creator_id, ctx.space_id)
+      message = create_message(ctx.creator_id, ctx.space_id)
       add_person_to_space(ctx, Binding.edit_access())
 
       assert {200, _} = request(ctx.conn, message)
@@ -95,7 +95,7 @@ defmodule OperatelyWeb.Api.Mutations.EditDiscussionTest do
     end
 
     test "company owner can edit discussion", ctx do
-      message = message_fixture(ctx.creator_id, ctx.space_id)
+      message = create_message(ctx.creator_id, ctx.space_id)
 
       # Not owner
       assert {404, _} = request(ctx.conn, message)
@@ -117,14 +117,14 @@ defmodule OperatelyWeb.Api.Mutations.EditDiscussionTest do
     end
 
     test "edits discussion", ctx do
-      message = message_fixture(ctx.person.id, ctx.company.company_space_id)
+      message = create_message(ctx.person.id, ctx.company.company_space_id)
 
       assert {200, _} = request(ctx.conn, message)
       assert_discussion_edited(message)
     end
 
     test "mentioned people are added to subscriptions list", ctx do
-      message = message_fixture(ctx.person.id, ctx.company.company_space_id)
+      message = create_message(ctx.person.id, ctx.company.company_space_id)
 
       {:ok, list} = SubscriptionList.get(:system, parent_id: message.id, opts: [
         preload: :subscriptions
@@ -184,5 +184,10 @@ defmodule OperatelyWeb.Api.Mutations.EditDiscussionTest do
       id: ctx.person.id,
       access_level: access_level,
     }])
+  end
+
+  defp create_message(person_id, space_id) do
+      board = messages_board_fixture(space_id)
+      message_fixture(person_id, board.id)
   end
 end

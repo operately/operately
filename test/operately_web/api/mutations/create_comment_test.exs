@@ -166,7 +166,8 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
     tabletest @space_table do
       test "if caller has levels company=#{@test.company}, space=#{@test.space} on the space, then expect code=#{@test.expected}", ctx do
         space = create_space(ctx, @test.company, @test.space)
-        message = message_fixture(ctx.creator.id, space.id)
+        board = messages_board_fixture(space.id)
+        message = message_fixture(ctx.creator.id, board.id)
 
         assert {code, res} = mutation(ctx.conn, :create_comment, %{
           entity_id: Paths.message_id(message),
