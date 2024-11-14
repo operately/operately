@@ -87,7 +87,9 @@ function DiscussionListItem({ discussion }: { discussion: Discussion }) {
 
       <div className="flex-1 h-full">
         <div className="font-semibold leading-none mb-1">{discussion.title}</div>
-        <Summary jsonContent={discussion.body} characterCount={250} />
+        <div className="break-words">
+          <Summary jsonContent={discussion.body} characterCount={250} />
+        </div>
 
         <div className="flex gap-1 mt-1 text-xs">
           <div className="text-sm text-content-dimmed">{discussion.author.fullName}</div>
