@@ -1371,10 +1371,12 @@ export interface GetDiscussionsInput {
   spaceId?: Id | null;
   includeAuthor?: boolean | null;
   includeCommentsCount?: boolean | null;
+  includeMyDrafts?: boolean | null;
 }
 
 export interface GetDiscussionsResult {
   discussions?: Discussion[] | null;
+  myDrafts?: Discussion[] | null;
 }
 
 export interface GetGoalInput {
