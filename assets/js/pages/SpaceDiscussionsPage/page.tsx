@@ -66,7 +66,15 @@ function ContinueEditingDrafts() {
       </div>
     );
   } else {
-    return null; // multiple drafts are not yet supported
+    const path = Paths.discussionDraftsPath(space.id!);
+
+    return (
+      <div className="flex justify-center">
+        <Link className="font-medium" to={path} testId="continue-editing-draft">
+          Continue writing your {myDrafts.length} drafts&hellip;
+        </Link>
+      </div>
+    );
   }
 }
 

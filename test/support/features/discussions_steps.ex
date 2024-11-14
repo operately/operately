@@ -236,6 +236,23 @@ defmodule Operately.Support.Features.DiscussionsSteps do
     ctx |> UI.click(testid: "continue-editing-draft")
   end
 
+  step :given_multiple_draft_discussions_exist, ctx do
+    ctx
+    |> Factory.add_messages_board(:messages_board, :marketing_space)
+    |> Factory.add_message(:draft_discussion_1, :messages_board, [
+      state: :draft,
+      creator: ctx.author
+    ])
+    |> Factory.add_message(:draft_discussion_2, :messages_board, [
+      state: :draft,
+      creator: ctx.author
+    ])
+  end
+
+  step :click_on_continue_editing_draft, ctx do
+    ctx |> UI.click(testid: UI.testid(["continue-editing", "draft_discussion_1"]))
+  end
+
   #
   # Utilities
   #
