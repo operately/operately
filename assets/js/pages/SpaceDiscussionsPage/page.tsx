@@ -35,15 +35,18 @@ export function Page() {
 }
 
 function Header() {
+  return (
+    <Paper.Header title="Discussions" layout="title-center-actions-left" actions={<NewDiscussionButton />} underline />
+  );
+}
+
+function NewDiscussionButton() {
   const { space } = useLoadedData();
 
   return (
-    <div className="mt-4 mb-8 flex items-center justify-between">
-      <div className="text-2xl font-extrabold">Discussions</div>
-      <PrimaryButton linkTo={Paths.discussionNewPath(space.id!)} size="sm" testId="new-discussion">
-        New Discussion
-      </PrimaryButton>
-    </div>
+    <PrimaryButton linkTo={Paths.discussionNewPath(space.id!)} size="sm" testId="new-discussion">
+      New Discussion
+    </PrimaryButton>
   );
 }
 
