@@ -5,17 +5,22 @@ import * as Discussions from "@/models/discussions";
 interface LoadedData {
   space: Spaces.Space;
   discussions: Discussions.Discussion[];
+  myDrafts: Discussions.Discussion[];
 }
 
 export async function loader({ params }): Promise<LoadedData> {
-  const [space, discussions] = await Promise.all([
+  const [space, discussions, myDrafts] = await Promise.all([
     Spaces.getSpace({ id: params.id, includePermissions: true }),
-    Discussions.getDiscussions({ spaceId: params.id, includeAuthor: true }).then((data) => data.discussions!),
+    Discussions.getDiscussions({ spaceId: params.id, includeAuthor: true, includeMyDrafts: true }).then((data) => [
+      data.discussions!,
+      data.myDrafts!,
+    ]),
   ]);
 
   return {
     space,
     discussions,
+    myDrafts,
   };
 }
 

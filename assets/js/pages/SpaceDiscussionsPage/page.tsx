@@ -1,19 +1,20 @@
-import React from "react";
-
+import * as React from "react";
+import * as Pages from "@/components/Pages";
+import * as Paper from "@/components/PaperContainer";
 import * as Time from "@/utils/time";
 
 import { Discussion } from "@/models/discussions";
-import Avatar from "@/components/Avatar";
-import FormattedTime from "@/components/FormattedTime";
-import { DivLink } from "@/components/Link";
-import * as Pages from "@/components/Pages";
-import * as Paper from "@/components/PaperContainer";
+import { DivLink, Link } from "@/components/Link";
 import { Summary } from "@/components/RichContent";
-import { useLoadedData } from "./loader";
 import { PrimaryButton } from "@/components/Buttons";
 import { Paths } from "@/routes/paths";
-import { assertPresent } from "@/utils/assertions";
 import { SpacePageNavigation } from "@/components/SpacePageNavigation";
+
+import { useLoadedData } from "./loader";
+import { assertPresent } from "@/utils/assertions";
+
+import Avatar from "@/components/Avatar";
+import FormattedTime from "@/components/FormattedTime";
 
 export function Page() {
   const { space, discussions } = useLoadedData();
@@ -24,18 +25,44 @@ export function Page() {
         <SpacePageNavigation space={space} />
 
         <Paper.Body minHeight="500px">
-          <div className="mt-4 mb-8 flex items-center justify-between">
-            <div className="text-2xl font-extrabold">Discussions</div>
-            <PrimaryButton linkTo={Paths.discussionNewPath(space.id!)} size="sm" testId="new-discussion">
-              New Discussion
-            </PrimaryButton>
-          </div>
-
+          <Header />
+          <ContinueEditingDrafts />
           {discussions.length < 1 ? <ZeroDiscussions /> : <DiscussionList />}
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
   );
+}
+
+function Header() {
+  const { space } = useLoadedData();
+
+  return (
+    <div className="mt-4 mb-8 flex items-center justify-between">
+      <div className="text-2xl font-extrabold">Discussions</div>
+      <PrimaryButton linkTo={Paths.discussionNewPath(space.id!)} size="sm" testId="new-discussion">
+        New Discussion
+      </PrimaryButton>
+    </div>
+  );
+}
+
+function ContinueEditingDrafts() {
+  const { myDrafts } = useLoadedData();
+
+  if (myDrafts.length < 1) {
+    return null;
+  } else if (myDrafts.length === 1) {
+    const path = Paths.discussionEditPath(myDrafts[0]!.id!);
+
+    return (
+      <div>
+        <Link to={path}>Continue writing your draft</Link>
+      </div>
+    );
+  } else {
+    return null; // multiple drafts are not yet supported
+  }
 }
 
 function ZeroDiscussions() {
