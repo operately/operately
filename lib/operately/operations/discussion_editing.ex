@@ -14,12 +14,31 @@ defmodule Operately.Operations.DiscussionEditing do
       ])
     end)
     |> Operately.Operations.Notifications.Subscription.update_mentioned_people(attrs.body)
-    |> Activities.insert_sync(creator.id, :discussion_editing, fn _ -> %{
-      company_id: creator.company_id,
-      space_id: message.space.id,
-      discussion_id: message.id,
-    } end)
+    |> record_activity(creator, message, attrs)
     |> Repo.transaction()
     |> Repo.extract_result(:message)
+  end
+
+  defp record_activity(multi, creator, message, attrs) do
+    cond do
+      message.state == :draft && attrs[:state] == :published ->
+        Activities.insert_sync(multi, creator.id, :discussion_posting, fn _ -> %{
+          company_id: creator.company_id,
+          space_id: message.space.id,
+          discussion_id: message.id,
+          title: message.title,
+        } end)
+
+      message.state != :draft ->
+        Activities.insert_sync(multi, creator.id, :discussion_editing, fn _ -> %{
+          company_id: creator.company_id,
+          space_id: message.space.id,
+          discussion_id: message.id,
+        } end)
+
+      true ->
+        # it is a draft and it is not being published, do nothing
+        multi 
+    end
   end
 end

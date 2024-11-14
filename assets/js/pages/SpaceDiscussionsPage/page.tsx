@@ -119,7 +119,7 @@ function DiscussionListItem({ discussion }: { discussion: Discussion }) {
   return (
     <DivLink
       to={path}
-      className="flex items-start gap-4 py-3 last:border-b not-first:border-t border-stroke-base cursor-pointer hover:bg-surface-highlight px-1"
+      className="flex items-start gap-4 py-3 last:border-b border-t border-stroke-base cursor-pointer hover:bg-surface-highlight px-1"
     >
       <div className="shrink-0">
         <Avatar person={discussion.author} size="large" />

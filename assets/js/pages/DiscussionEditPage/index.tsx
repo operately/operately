@@ -6,7 +6,7 @@ import * as Discussions from "@/models/discussions";
 import * as Companies from "@/models/companies";
 
 import { PrimaryButton, GhostButton } from "@/components/Buttons";
-import { Form, useForm } from "@/features/DiscussionForm";
+import { Form, FormState, useForm } from "@/features/DiscussionForm";
 import { Paths } from "@/routes/paths";
 
 interface LoaderResult {
@@ -34,7 +34,7 @@ export function Page() {
   });
 
   return (
-    <Pages.Page title="Edit Discussion" testId="new-discussion">
+    <Pages.Page title="Edit Discussion" testId="discussion-edit-page">
       <Paper.Root>
         <Navigation space={discussion.space!} />
 
@@ -48,7 +48,7 @@ export function Page() {
   );
 }
 
-function Submit({ form }) {
+function Submit({ form }: { form: FormState }) {
   return (
     <Paper.DimmedSection>
       <div className="flex flex-col gap-8">
@@ -63,15 +63,15 @@ function Submit({ form }) {
   );
 }
 
-function SaveChanges({ form }) {
+function SaveChanges({ form }: { form: FormState }) {
   return (
-    <PrimaryButton loading={form.submitting} testId="save-changes" onClick={form.submit}>
+    <PrimaryButton loading={form.saveChangesSubmitting} testId="save-changes" onClick={form.saveChanges}>
       Save Changes
     </PrimaryButton>
   );
 }
 
-function PublishNow({ form }) {
+function PublishNow({ form }: { form: FormState }) {
   const { company, discussion } = Pages.useLoadedData<LoaderResult>();
   const hasDraftFeature = Companies.hasFeature(company, "draft_discussions");
 
@@ -79,7 +79,7 @@ function PublishNow({ form }) {
   if (discussion.state !== "draft") return null;
 
   return (
-    <GhostButton loading={form.draftSubmitting} testId="publish-now" onClick={form.submitDraft}>
+    <GhostButton loading={form.publishDraftSubmitting} testId="publish-now" onClick={form.publishDraft}>
       Publish Now
     </GhostButton>
   );

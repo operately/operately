@@ -104,14 +104,14 @@ export function useForm({ space, mode, discussion, potentialSubscribers = [] }: 
   };
 }
 
-function usePostMessage({ space, title, editor, subscriptionsState, validation }) {
+function usePostMessage({ space, title, editor, subscriptionsState, validate }): [() => Promise<boolean>, boolean] {
   const navigate = useNavigate();
   const [post] = Discussions.usePostDiscussion();
 
   const [submitting, setSubmitting] = React.useState(false);
 
   const postMessage = async (): Promise<boolean> => {
-    if (!validation()) return false;
+    if (!validate()) return false;
 
     setSubmitting(true);
 
@@ -134,14 +134,14 @@ function usePostMessage({ space, title, editor, subscriptionsState, validation }
   return [postMessage, submitting];
 }
 
-function usePostAsDraft({ space, title, editor, subscriptionsState, validation }) {
+function usePostAsDraft({ space, title, editor, subscriptionsState, validate }): [() => Promise<boolean>, boolean] {
   const navigate = useNavigate();
   const [post] = Discussions.usePostDiscussion();
 
   const [submitting, setSubmitting] = React.useState(false);
 
   const postMessage = async (): Promise<boolean> => {
-    if (!validation()) return false;
+    if (!validate()) return false;
 
     setSubmitting(true);
 
@@ -164,18 +164,18 @@ function usePostAsDraft({ space, title, editor, subscriptionsState, validation }
   return [postMessage, submitting];
 }
 
-function useSaveChanges({ discussion, title, editor, validation }) {
+function useSaveChanges({ discussion, title, editor, validate }): [() => Promise<boolean>, boolean] {
   const navigate = useNavigate();
   const [edit] = Discussions.useEditDiscussion();
   const [submitting, setSubmitting] = React.useState(false);
 
   const saveChanges = async () => {
-    if (!validation()) return false;
+    if (!validate()) return false;
 
     setSubmitting(true);
 
     const res = await edit({
-      discussionId: discussion!.id,
+      id: discussion!.id,
       title: title,
       body: JSON.stringify(editor.getJSON()),
     });
@@ -190,21 +190,21 @@ function useSaveChanges({ discussion, title, editor, validation }) {
   return [saveChanges, submitting];
 }
 
-function usePublishDraft({ discussion, title, editor, validation }) {
+function usePublishDraft({ discussion, title, editor, validate }): [() => Promise<boolean>, boolean] {
   const navigate = useNavigate();
   const [edit] = Discussions.useEditDiscussion();
   const [submitting, setSubmitting] = React.useState(false);
 
   const saveChanges = async () => {
-    if (!validation()) return false;
+    if (!validate()) return false;
 
     setSubmitting(true);
 
     const res = await edit({
-      discussionId: discussion!.id,
+      id: discussion!.id,
       title: title,
       body: JSON.stringify(editor.getJSON()),
-      publishDraft: true,
+      state: "published",
     });
 
     setSubmitting(false);
