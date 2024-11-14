@@ -290,7 +290,7 @@ defmodule Operately.Support.Features.DiscussionsSteps do
     |> UI.assert_text("This is a draft discussion (edited)")
     |> UI.assert_text("This is the body of the discussion. (edited)")
     |> UI.login_as(ctx.reader)
-    |> NotificationsSteps.assert_discussion_posted(author: ctx.author, title: @title)
+    |> NotificationsSteps.assert_discussion_posted(author: ctx.author, title: "This is a draft discussion (edited)")
   end
 
   #
