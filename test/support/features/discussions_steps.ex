@@ -241,32 +241,36 @@ defmodule Operately.Support.Features.DiscussionsSteps do
     |> Factory.add_messages_board(:messages_board, :marketing_space)
     |> Factory.add_message(:draft_discussion_1, :messages_board, [
       state: :draft,
-      creator: ctx.author
+      creator: ctx.author,
+      title: "Draft discussion 1"
     ])
     |> Factory.add_message(:draft_discussion_2, :messages_board, [
       state: :draft,
-      creator: ctx.author
+      creator: ctx.author,
+      title: "Draft discussion 2"
     ])
   end
 
   step :click_on_continue_editing_draft, ctx do
-    ctx |> UI.click(testid: UI.testid(["continue-editing", "draft_discussion_1"]))
+    ctx 
+    |> UI.click(testid: "continue-editing-draft")
+    |> UI.click(testid: "discussion-list-item-draft-discussion-1")
   end
 
   #
   # Utilities
   #
 
-  defp last_message(ctx) do
-    messages = Operately.Messages.list_messages(ctx.marketing_space.id)
+  defp last_message(ctx, attempts \\ 3) do
+    import Ecto.Query
+    message = Operately.Repo.one(from m in Operately.Messages.Message, order_by: [desc: m.updated_at], limit: 1)
 
-    if messages != [] do
-      hd(messages)
-    else
-      # sometimes the updates are not immediately available
-      # so we wait a bit and try again
-      :timer.sleep(300)
-      Operately.Messages.list_messages(ctx.marketing_space.id) |> hd()
+    cond do
+      message -> message
+      attempts <= 0 -> raise "Could not find the last message"
+      true -> 
+        :timer.sleep(300)
+        last_message(ctx, attempts - 1)
     end
   end
 end
