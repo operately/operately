@@ -158,7 +158,7 @@ defmodule Operately.Support.Features.DiscussionsSteps do
   end
 
   step :assert_draft_is_not_listed_on_space_page, ctx do
-    ctx 
+    ctx
     |> UI.visit(Paths.space_path(ctx.company, ctx.marketing_space))
     |> UI.click(testid: "messages-tool")
     |> UI.assert_has(testid: "discussions-page")
@@ -166,13 +166,13 @@ defmodule Operately.Support.Features.DiscussionsSteps do
   end
 
   step :click_on_continue_editing, ctx do
-    ctx 
+    ctx
     |> UI.click(testid: "continue-editing")
     |> UI.assert_has(testid: "discussion-edit-page")
   end
 
   step :modify_the_draft_discussion_and_save, ctx do
-    ctx 
+    ctx
     |> UI.fill(testid: "discussion-title", with: "This is a draft discussion (edited)")
     |> UI.fill_rich_text("This is the body of the discussion. (edited)")
     |> UI.click(testid: "save-changes")
@@ -189,7 +189,7 @@ defmodule Operately.Support.Features.DiscussionsSteps do
   end
 
   step :publish_draft, ctx do
-    ctx 
+    ctx
     |> UI.click(testid: "publish-now")
     |> UI.assert_has(testid: "discussion-page")
   end
@@ -224,7 +224,9 @@ defmodule Operately.Support.Features.DiscussionsSteps do
   end
 
   step :given_a_draft_discussion_exists, ctx do
-    ctx |> Factory.add_message(:draft_discussion, :marketing_space, [
+    ctx
+    |> Factory.add_messages_board(:messages_board, :marketing_space)
+    |> Factory.add_message(:draft_discussion, :messages_board, [
       state: :draft,
       creator: ctx.author
     ])
