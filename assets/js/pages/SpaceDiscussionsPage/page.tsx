@@ -56,8 +56,10 @@ function ContinueEditingDrafts() {
     const path = Paths.discussionEditPath(myDrafts[0]!.id!);
 
     return (
-      <div>
-        <Link to={path}>Continue writing your draft</Link>
+      <div className="flex justify-center">
+        <Link className="font-medium" to={path} testId="continue-editing-draft">
+          Continue writing your draft&hellip;
+        </Link>
       </div>
     );
   } else {

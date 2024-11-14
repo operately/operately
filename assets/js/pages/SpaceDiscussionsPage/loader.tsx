@@ -9,7 +9,7 @@ interface LoadedData {
 }
 
 export async function loader({ params }): Promise<LoadedData> {
-  const [space, discussions, myDrafts] = await Promise.all([
+  const [space, [discussions, myDrafts]] = await Promise.all([
     Spaces.getSpace({ id: params.id, includePermissions: true }),
     Discussions.getDiscussions({ spaceId: params.id, includeAuthor: true, includeMyDrafts: true }).then((data) => [
       data.discussions!,
@@ -19,8 +19,8 @@ export async function loader({ params }): Promise<LoadedData> {
 
   return {
     space,
-    discussions,
-    myDrafts,
+    discussions: discussions!,
+    myDrafts: myDrafts!,
   };
 }
 

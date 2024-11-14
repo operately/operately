@@ -219,14 +219,20 @@ defmodule Operately.Support.Features.DiscussionsSteps do
     })
   end
 
+  step :visit_the_discussion_board, ctx do
+    ctx |> UI.visit(Paths.space_discussions_path(ctx.company, ctx.marketing_space))
+  end
+
   step :given_a_draft_discussion_exists, ctx do
-    ctx |> Factory.add_message(:draft_discussion, :marketing_space, [state: :draft])
+    ctx |> Factory.add_message(:draft_discussion, :marketing_space, [
+      state: :draft,
+      creator: ctx.author
+    ])
   end
 
   step :click_on_continue_editing_last_draft, ctx do
     ctx |> UI.click(testid: "continue-editing-draft")
   end
-
 
   #
   # Utilities

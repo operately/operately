@@ -26,6 +26,7 @@ defmodule Operately.Features.DiscussionsTest do
     ctx
     |> Steps.given_the_draft_experimental_feature_is_enabled()
     |> Steps.given_a_draft_discussion_exists()
+    |> Steps.visit_the_discussion_board()
     |> Steps.click_on_continue_editing_last_draft()
     |> Steps.modify_the_draft_discussion_and_save()
     |> Steps.assert_draft_edit_is_saved()
