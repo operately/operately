@@ -51,7 +51,6 @@ defmodule OperatelyWeb.Api do
   query :search_potential_space_members, Q.SearchPotentialSpaceMembers
   query :search_project_contributor_candidates, Q.SearchProjectContributorCandidates
 
-  mutation :create_resource_hub_folder, M.CreateResourceHubFolder
   mutation :restore_company_member, M.RestoreCompanyMember
   mutation :add_company, M.AddCompany
   mutation :add_company_admins, M.AddCompanyAdmins
@@ -72,6 +71,8 @@ defmodule OperatelyWeb.Api do
   mutation :create_space, M.CreateSpace
   mutation :create_project, M.CreateProject
   mutation :create_task, M.CreateTask
+  mutation :create_resource_hub, M.CreateResourceHub
+  mutation :create_resource_hub_folder, M.CreateResourceHubFolder
 
   mutation :remove_company_admin, M.RemoveCompanyAdmin
   mutation :remove_company_member, M.RemoveCompanyMember
