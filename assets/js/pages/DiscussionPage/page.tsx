@@ -36,15 +36,12 @@ export function Page() {
 
         <Paper.Body minHeight="600px">
           <Options />
-
-          <div className="sm:px-8 lg:px-16">
-            <ContinueEditingDraft />
-            <DiscussionTitle />
-            <DiscussionBody />
-            <DiscussionReactions />
-            <DicusssionComments />
-            <DiscussionSubscriptions />
-          </div>
+          <ContinueEditingDraft />
+          <DiscussionTitle />
+          <DiscussionBody />
+          <DiscussionReactions />
+          <DicusssionComments />
+          <DiscussionSubscriptions />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>

@@ -52,7 +52,7 @@ const ProjectCheckInSubmitted: ActivityHandler = {
     return (
       <div className="flex flex-col gap-2">
         <SmallStatusIndicator status={checkIn.status!} />
-        <Summary jsonContent={checkIn.description} characterCount={200} />
+        <Summary jsonContent={checkIn.description!} characterCount={200} />
       </div>
     );
   },
