@@ -51,18 +51,22 @@ function Submit({ form }) {
 
   return (
     <Paper.DimmedSection>
-      <SubscribersSelector state={form.subscriptionsState} spaceName={form.space.name!} />
+      <div className="flex flex-col gap-8">
+        <SubscribersSelector state={form.subscriptionsState} spaceName={form.space.name!} />
 
-      <div className="flex items-center gap-2 mt-8">
-        <PostButton form={form} />
-        {hasDraftFeature && <SaveAsDraftButton form={form} />}
-      </div>
+        <div>
+          <div className="flex items-center gap-2">
+            <PostButton form={form} />
+            {hasDraftFeature && <SaveAsDraftButton form={form} />}
+          </div>
 
-      {hasDraftFeature && (
-        <div className="mt-4">
-          Or, <DiscardLink form={form} />
+          {hasDraftFeature && (
+            <div className="mt-4">
+              Or, <DiscardLink form={form} />
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </Paper.DimmedSection>
   );
 }
@@ -77,7 +81,7 @@ function PostButton({ form }) {
 
 function SaveAsDraftButton({ form }) {
   return (
-    <GhostButton loading={form.submitting} testId="save-as-draft" onClick={form.submitDraft}>
+    <GhostButton loading={form.draftSubmitting} testId="save-as-draft" onClick={form.submitDraft}>
       Save as draft
     </GhostButton>
   );
