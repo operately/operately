@@ -782,6 +782,16 @@ export interface Invitation {
   expiresAt?: string | null;
 }
 
+export interface MessagesBoard {
+  id?: string | null;
+  name?: string | null;
+  description?: string | null;
+  messages?: Discussion[] | null;
+  space?: Space | null;
+  insertedAt?: string | null;
+  updatedAt?: string | null;
+}
+
 export interface Milestone {
   id?: string | null;
   project?: Project | null;
@@ -982,6 +992,16 @@ export interface Reaction {
   person?: Person | null;
 }
 
+export interface ResourceHub {
+  id?: string | null;
+  name?: string | null;
+  description?: string | null;
+  space?: Space | null;
+  nodes?: ResourceHubNode[] | null;
+  insertedAt?: string | null;
+  updatedAt?: string | null;
+}
+
 export interface ResourceHubFolder {
   id?: string | null;
   name?: string | null;
@@ -1038,6 +1058,13 @@ export interface SpacePermissions {
   canView?: boolean | null;
   canViewMessage?: boolean | null;
   canAddMembers?: boolean | null;
+}
+
+export interface SpaceTools {
+  projects?: Project[] | null;
+  goals?: Goal[] | null;
+  messagesBoards?: MessagesBoard[] | null;
+  resourceHubs?: ResourceHub[] | null;
 }
 
 export interface Subscriber {
@@ -1658,6 +1685,14 @@ export interface ListResourceHubContentInput {
 
 export interface ListResourceHubContentResult {
   nodes?: ResourceHubNode[] | null;
+}
+
+export interface ListSpaceToolsInput {
+  spaceId?: string | null;
+}
+
+export interface ListSpaceToolsResult {
+  tools?: SpaceTools | null;
 }
 
 export interface SearchPeopleInput {
@@ -2604,6 +2639,10 @@ export class ApiClient {
     return this.get("/list_resource_hub_content", input);
   }
 
+  async listSpaceTools(input: ListSpaceToolsInput): Promise<ListSpaceToolsResult> {
+    return this.get("/list_space_tools", input);
+  }
+
   async searchPeople(input: SearchPeopleInput): Promise<SearchPeopleResult> {
     return this.get("/search_people", input);
   }
@@ -3056,6 +3095,9 @@ export async function listResourceHubContent(
 ): Promise<ListResourceHubContentResult> {
   return defaultApiClient.listResourceHubContent(input);
 }
+export async function listSpaceTools(input: ListSpaceToolsInput): Promise<ListSpaceToolsResult> {
+  return defaultApiClient.listSpaceTools(input);
+}
 export async function searchPeople(input: SearchPeopleInput): Promise<SearchPeopleResult> {
   return defaultApiClient.searchPeople(input);
 }
@@ -3493,6 +3535,10 @@ export function useListResourceHubContent(
   input: ListResourceHubContentInput,
 ): UseQueryHookResult<ListResourceHubContentResult> {
   return useQuery<ListResourceHubContentResult>(() => defaultApiClient.listResourceHubContent(input));
+}
+
+export function useListSpaceTools(input: ListSpaceToolsInput): UseQueryHookResult<ListSpaceToolsResult> {
+  return useQuery<ListSpaceToolsResult>(() => defaultApiClient.listSpaceTools(input));
 }
 
 export function useSearchPeople(input: SearchPeopleInput): UseQueryHookResult<SearchPeopleResult> {
@@ -4084,6 +4130,8 @@ export default {
   useGetUnreadNotificationCount,
   listResourceHubContent,
   useListResourceHubContent,
+  listSpaceTools,
+  useListSpaceTools,
   searchPeople,
   useSearchPeople,
   searchPotentialSpaceMembers,

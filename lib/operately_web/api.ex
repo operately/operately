@@ -14,7 +14,6 @@ defmodule OperatelyWeb.Api do
   alias OperatelyWeb.Api.Subscriptions, as: S
 
   query :get_activities, Q.GetActivities
-  query :list_resource_hub_content, Q.ListResourceHubContent
   query :get_activity, Q.GetActivity
   query :get_assignments_count, Q.GetAssignmentsCount
   query :get_assignments, Q.GetAssignments
@@ -46,6 +45,8 @@ defmodule OperatelyWeb.Api do
   query :get_tasks, Q.GetTasks
   query :get_binded_people, Q.GetBindedPeople
   query :get_unread_notification_count, Q.GetUnreadNotificationCount
+  query :list_resource_hub_content, Q.ListResourceHubContent
+  query :list_space_tools, Q.ListSpaceTools
   query :search_people, Q.SearchPeople
   query :search_potential_space_members, Q.SearchPotentialSpaceMembers
   query :search_project_contributor_candidates, Q.SearchProjectContributorCandidates

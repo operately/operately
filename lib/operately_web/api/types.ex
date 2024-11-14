@@ -236,6 +236,16 @@ defmodule OperatelyWeb.Api.Types do
     field :notifications, list_of(:notification)
   end
 
+  object :messages_board do
+    field :id, :string
+    field :name, :string
+    field :description, :string
+    field :messages, list_of(:discussion)
+    field :space, :space
+    field :inserted_at, :datetime
+    field :updated_at, :datetime
+  end
+
   object :discussion do
     field :id, :string
     field :name, :string
@@ -480,6 +490,23 @@ defmodule OperatelyWeb.Api.Types do
     field :contributor_id, :string
     field :contributor_role, :string
     field :contributor, :person
+  end
+
+  object :space_tools do
+    field :projects, list_of(:project)
+    field :goals, list_of(:goal)
+    field :messages_boards, list_of(:messages_board)
+    field :resource_hubs, list_of(:resource_hub)
+  end
+
+  object :resource_hub do
+    field :id, :string
+    field :name, :string
+    field :description, :string
+    field :space, :space
+    field :nodes, list_of(:resource_hub_node)
+    field :inserted_at, :date
+    field :updated_at, :date
   end
 
   object :resource_hub_permissions do
