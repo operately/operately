@@ -4,7 +4,23 @@ import * as People from "@/models/people";
 
 import { extract, truncate } from "./contentOps";
 
-export function Summary({ jsonContent, characterCount }): JSX.Element {
+type WrapperType = "div" | "span";
+
+interface SummaryProps {
+  jsonContent: string;
+  characterCount: number;
+  as?: WrapperType;
+}
+
+const DEFAULT_VALUES = {
+  as: "div" as WrapperType,
+};
+
+export function Summary(props: SummaryProps) {
+  props = { ...DEFAULT_VALUES, ...props };
+
+  const { jsonContent, characterCount, as } = props;
+
   const { editor } = TipTapEditor.useEditor({
     content: parseContent(jsonContent),
     editable: false,
@@ -27,7 +43,12 @@ export function Summary({ jsonContent, characterCount }): JSX.Element {
   }, [editor, jsonContent]);
 
   if (!editor) return <></>;
-  return <div>{summary}</div>;
+
+  if (as === "span") {
+    return <span>{summary}</span>;
+  } else {
+    return <div>{summary}</div>;
+  }
 }
 
 function parseContent(content?: string | any): any {
