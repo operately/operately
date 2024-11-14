@@ -37,8 +37,7 @@ export function Page() {
 
         <Paper.Body>
           <Form form={form} />
-
-          {form.mode === "create" && <Submit form={form} />}
+          <Submit form={form} />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
@@ -74,7 +73,7 @@ function Submit({ form }) {
 function PostButton({ form }) {
   return (
     <PrimaryButton loading={form.submitting} testId="post-discussion" onClick={form.submit}>
-      {form.submitButtonLabel}
+      Post discussion
     </PrimaryButton>
   );
 }

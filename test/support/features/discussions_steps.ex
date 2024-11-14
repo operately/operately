@@ -257,6 +257,42 @@ defmodule Operately.Support.Features.DiscussionsSteps do
     |> UI.click(testid: "discussion-list-item-draft-discussion-1")
   end
 
+  step :edit_and_publish_draft, ctx do
+    ctx 
+    |> UI.click(testid: "continue-editing")
+    |> UI.assert_has(testid: "discussion-edit-page")
+    |> UI.fill(testid: "discussion-title", with: "This is a draft discussion (edited)")
+    |> UI.fill_rich_text("This is the body of the discussion. (edited)")
+    |> UI.click(testid: "publish-now")
+    |> UI.assert_has(testid: "discussion-page")
+  end
+
+  step :assert_edited_discussion_is_posted, ctx do
+    message = last_message(ctx)
+
+    assert message.state == :published
+
+    ctx
+    |> UI.assert_page(Paths.message_path(ctx.company, message))
+    |> UI.assert_text("This is a draft discussion (edited)")
+    |> UI.assert_text("This is the body of the discussion. (edited)")
+  end
+
+  step :assert_edited_discussion_email_feed_and_notification_sent, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.marketing_space.name,
+      to: ctx.reader,
+      author: ctx.author,
+      action: "posted: This is a draft discussion (edited)"
+    })
+    |> UI.visit(Paths.space_path(ctx.company, ctx.marketing_space))
+    |> UI.assert_text("This is a draft discussion (edited)")
+    |> UI.assert_text("This is the body of the discussion. (edited)")
+    |> UI.login_as(ctx.reader)
+    |> NotificationsSteps.assert_discussion_posted(author: ctx.author, title: @title)
+  end
+
   #
   # Utilities
   #

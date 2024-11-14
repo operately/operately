@@ -42,7 +42,7 @@ defmodule Operately.Features.DiscussionsTest do
     |> Steps.assert_draft_edit_is_saved()
   end
 
-  feature "publish a draft discussion", ctx do
+  feature "publish a draft discussion (without editing)", ctx do
     ctx
     |> Steps.given_the_draft_experimental_feature_is_enabled()
     |> Steps.post_a_draft_discussion()
@@ -51,6 +51,15 @@ defmodule Operately.Features.DiscussionsTest do
     |> Steps.assert_discussion_email_sent()
     |> Steps.assert_discussion_feed_on_space_page()
     |> Steps.assert_discussion_notification_sent()
+  end
+
+  feature "edit draft and publish (from the edit draft page)", ctx do
+    ctx
+    |> Steps.given_the_draft_experimental_feature_is_enabled()
+    |> Steps.post_a_draft_discussion()
+    |> Steps.edit_and_publish_draft()
+    |> Steps.assert_edited_discussion_is_posted()
+    |> Steps.assert_edited_discussion_email_feed_and_notification_sent()
   end
 
   feature "post a discussion", ctx do
