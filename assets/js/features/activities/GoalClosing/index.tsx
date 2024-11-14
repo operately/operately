@@ -57,7 +57,7 @@ const GoalClosing: ActivityHandler = {
 
         {activity.commentThread && !isContentEmpty(activity.commentThread.message) && (
           <div className="mt-2">
-            <Summary jsonContent={activity.commentThread.message} characterCount={300} />
+            <Summary jsonContent={activity.commentThread.message!} characterCount={300} />
           </div>
         )}
       </div>

@@ -116,7 +116,7 @@ function CheckInCard({ checkIn }: { checkIn: ProjectCheckIns.ProjectCheckIn }) {
           </div>
 
           <div className="flex-1">
-            <Summary jsonContent={checkIn.description} characterCount={250} />
+            <Summary jsonContent={checkIn.description!} characterCount={250} />
           </div>
         </div>
 
