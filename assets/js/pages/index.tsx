@@ -14,6 +14,7 @@ import * as CompanyAdminTrustedEmailDomainsPage from "./CompanyAdminTrustedEmail
 import * as CompanyPermissionsPage from "./CompanyPermissionsPage";
 import * as CompanyRenamePage from "./CompanyRenamePage";
 import * as DesignPage from "./DesignPage";
+import * as DiscussionDraftsPage from "./DiscussionDraftsPage";
 import * as DiscussionEditPage from "./DiscussionEditPage";
 import * as DiscussionNewPage from "./DiscussionNewPage";
 import * as DiscussionPage from "./DiscussionPage";
@@ -145,6 +146,11 @@ export default {
     name: "DesignPage",
     loader: DesignPage.loader,
     Page: DesignPage.Page,
+  },
+  DiscussionDraftsPage: {
+    name: "DiscussionDraftsPage",
+    loader: DiscussionDraftsPage.loader,
+    Page: DiscussionDraftsPage.Page,
   },
   DiscussionEditPage: {
     name: "DiscussionEditPage",

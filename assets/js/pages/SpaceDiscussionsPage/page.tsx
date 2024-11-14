@@ -20,7 +20,7 @@ export function Page() {
   const { space, discussions } = useLoadedData();
 
   return (
-    <Pages.Page title={space.name!} testId="discussions-page">
+    <Pages.Page title={["Discussions", space.name!]} testId="discussions-page">
       <Paper.Root size="large">
         <SpacePageNavigation space={space} />
 
@@ -51,7 +51,7 @@ function NewDiscussionButton() {
 }
 
 function ContinueEditingDrafts() {
-  const { myDrafts } = useLoadedData();
+  const { space, myDrafts } = useLoadedData();
 
   if (myDrafts.length < 1) {
     return null;
@@ -66,7 +66,15 @@ function ContinueEditingDrafts() {
       </div>
     );
   } else {
-    return null; // multiple drafts are not yet supported
+    const path = Paths.discussionDraftsPath(space.id!);
+
+    return (
+      <div className="flex justify-center">
+        <Link className="font-medium" to={path} testId="continue-editing-draft">
+          Continue writing your {myDrafts.length} drafts&hellip;
+        </Link>
+      </div>
+    );
   }
 }
 
@@ -111,7 +119,7 @@ function DiscussionListItem({ discussion }: { discussion: Discussion }) {
   return (
     <DivLink
       to={path}
-      className="flex items-start gap-4 py-3 last:border-b border-t border-stroke-base cursor-pointer hover:bg-surface-highlight px-1"
+      className="flex items-start gap-4 py-3 last:border-b not-first:border-t border-stroke-base cursor-pointer hover:bg-surface-highlight px-1"
     >
       <div className="shrink-0">
         <Avatar person={discussion.author} size="large" />
@@ -120,7 +128,7 @@ function DiscussionListItem({ discussion }: { discussion: Discussion }) {
       <div className="flex-1 h-full">
         <div className="font-semibold leading-none mb-1">{discussion.title}</div>
         <div className="break-words">
-          <Summary jsonContent={discussion.body} characterCount={250} />
+          <Summary jsonContent={discussion.body!} characterCount={250} />
         </div>
 
         <div className="flex gap-1 mt-1 text-xs">
