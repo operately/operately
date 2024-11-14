@@ -21,4 +21,15 @@ defmodule Operately.Messages.MessagesBoard do
     |> cast(attrs, [:space_id, :name, :description])
     |> validate_required([:space_id, :name])
   end
+
+  #
+  # After load hooks
+  #
+
+  def load_messages_comments_count(messages_boards) when is_list(messages_boards) do
+    Enum.map(messages_boards, fn board ->
+      messages = Operately.Messages.Message.load_comments_count(board.messages)
+      Map.put(board, :messages, messages)
+    end)
+  end
 end
