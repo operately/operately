@@ -26,6 +26,7 @@ export interface FormState {
   submit: () => void;
   submitDraft: () => void;
   submitting: boolean;
+  draftSubmitting?: boolean;
   submitDisabled?: boolean;
   submitButtonLabel?: string;
   errors: Error[];
@@ -55,10 +56,15 @@ export function useForm({ space, mode, discussion, potentialSubscribers = [] }: 
     mentionSearchScope: { type: "space", id: space ? space.id! : discussion!.space!.id! },
   });
 
-  const [post, { loading: submittingPost }] = Discussions.usePostDiscussion();
-  const [edit, { loading: submittingEdit }] = Discussions.useEditDiscussion();
+  const [submitting, setSubmitting] = React.useState(false);
+  const [draftSubmitting, setDraftSubmitting] = React.useState(false);
+
+  const [post] = Discussions.usePostDiscussion();
+  const [edit] = Discussions.useEditDiscussion();
 
   const submitEdit = async (): Promise<boolean> => {
+    setSubmitting(true);
+
     const res = await edit({
       discussionId: discussion!.id,
       title: title,
@@ -67,10 +73,18 @@ export function useForm({ space, mode, discussion, potentialSubscribers = [] }: 
 
     navigate(Paths.discussionPath(res.discussion.id));
 
+    setSubmitting(false);
+
     return true;
   };
 
   const submitPost = async ({ draft }): Promise<boolean> => {
+    if (draft) {
+      setDraftSubmitting(true);
+    } else {
+      setSubmitting(true);
+    }
+
     const res = await post({
       spaceId: space.id,
       title: title,
@@ -81,6 +95,12 @@ export function useForm({ space, mode, discussion, potentialSubscribers = [] }: 
     });
 
     navigate(Paths.discussionPath(res.discussion.id));
+
+    if (draft) {
+      setDraftSubmitting(false);
+    } else {
+      setSubmitting(false);
+    }
 
     return true;
   };
@@ -107,7 +127,6 @@ export function useForm({ space, mode, discussion, potentialSubscribers = [] }: 
     }
   };
 
-  const submitting = submittingPost || submittingEdit;
   const cancelPath = mode === "edit" ? Paths.discussionPath(discussion?.id!) : Paths.spaceDiscussionsPath(space.id!);
   const submitButtonLabel = mode === "edit" ? "Save Changes" : "Post Discussion";
 
@@ -120,10 +139,10 @@ export function useForm({ space, mode, discussion, potentialSubscribers = [] }: 
     mode,
     subscriptionsState,
 
-    // empty,
     submit,
     submitDraft,
     submitting,
+    draftSubmitting,
     cancelPath,
     submitButtonLabel,
     errors,
