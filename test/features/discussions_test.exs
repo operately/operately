@@ -74,5 +74,4 @@ defmodule Operately.Features.DiscussionsTest do
     |> Steps.submit_discussion()
     |> Steps.assert_discussion_is_posted_with_attachment()
   end
-
 end

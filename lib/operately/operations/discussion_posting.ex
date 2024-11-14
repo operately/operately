@@ -11,7 +11,7 @@ defmodule Operately.Operations.DiscussionPosting do
     |> Multi.insert(:message, fn changes ->
       Operately.Messages.Message.changeset(%{
         author_id: creator.id,
-        space_id: space.id,
+        messages_board_id: attrs.messages_board_id,
         title: attrs.title,
         body: attrs.content,
         state: state(attrs),

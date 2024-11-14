@@ -16,7 +16,7 @@ defmodule OperatelyWeb.Api.Mutations.PublishDiscussion do
   def call(conn, inputs) do
     with(
       {:ok, me} <- find_me(conn),
-      {:ok, discussion} <- Message.get(me, id: inputs.id),
+      {:ok, discussion} <- Message.get(me, id: inputs.id, opts: [preload: :space]),
       {:ok, :allowed} <- authorize(me, discussion),
       {:ok, discussion} <- publish(me, discussion)
     ) do
