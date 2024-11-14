@@ -7,9 +7,10 @@ defmodule OperatelyWeb.Api.Mutations.EditDiscussion do
   alias Operately.Messages.Message
 
   inputs do
-    field :discussion_id, :string
+    field :id, :id
     field :title, :string
     field :body, :string
+    field :state, :string
   end
 
   outputs do
@@ -39,12 +40,14 @@ defmodule OperatelyWeb.Api.Mutations.EditDiscussion do
   end
 
   defp parse_inputs(inputs) do
-    {:ok, id} = decode_id(inputs.discussion_id)
+    inputs = Map.put(inputs, :body, Jason.decode!(inputs.body))
 
-    {:ok, %{
-      id: id,
-      title: inputs.title,
-      body: Jason.decode!(inputs.body),
-    }}
+    inputs = if Map.has_key?(inputs, :state) do
+      Map.put(inputs, :state, String.to_atom(inputs.state))
+    else
+      inputs
+    end
+
+    {:ok, inputs}
   end
 end

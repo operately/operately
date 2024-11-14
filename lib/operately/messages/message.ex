@@ -37,6 +37,16 @@ defmodule Operately.Messages.Message do
     update
     |> cast(attrs, [:messages_board_id, :author_id, :title, :body, :subscription_list_id, :state])
     |> validate_required([:messages_board_id, :author_id, :title, :body, :subscription_list_id, :state])
+    |> validate_state_change()
+  end
+
+  defp validate_state_change(changeset) do
+    case {get_field(changeset, :state), get_change(changeset, :state)} do
+      {:published, :draft} ->
+        add_error(changeset, :state, "cannot change from published to draft")
+      _ ->
+        changeset
+    end
   end
 
   #
