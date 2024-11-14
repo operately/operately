@@ -1,6 +1,6 @@
 import * as api from "@/api";
 
-export type { Space } from "@/api";
+export type { Space, SpaceTools } from "@/api";
 export {
   useCreateSpace,
   useJoinSpace,
@@ -11,6 +11,7 @@ export {
   useEditSpaceMembersPermissions,
   searchPotentialSpaceMembers,
   useSearchPotentialSpaceMembers,
+  listSpaceTools,
 } from "@/api";
 
 export async function getSpace(params: api.GetSpaceInput): Promise<api.Space> {
