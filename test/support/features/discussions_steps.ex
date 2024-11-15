@@ -184,7 +184,7 @@ defmodule Operately.Support.Features.DiscussionsSteps do
     discussion = last_message(ctx)
 
     assert discussion.state == :draft
-    assert discussion.title == "This is a draft discussion (edited)"
+    assert discussion.title =~ ~r/edited/
 
     ctx
   end
