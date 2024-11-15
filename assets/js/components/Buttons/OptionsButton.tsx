@@ -23,7 +23,7 @@ export function OptionsButton({ options, align = "center", testId }: Props) {
     <Popover.Root open={open} onOpenChange={setOpen}>
       <Popover.Trigger asChild>
         <div
-          className="flex items-center gap-1 py-1 px-3 border border-accent-1 rounded-lg text-white-1 bg-accent-1 hover:bg-accent-1-light cursor-pointer"
+          className="flex items-center justify-center gap-1 py-1 px-3 border border-accent-1 rounded-lg text-white-1 bg-accent-1 hover:bg-accent-1-light cursor-pointer"
           data-test-id={testId}
         >
           Add
