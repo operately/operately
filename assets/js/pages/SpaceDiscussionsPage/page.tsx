@@ -141,7 +141,7 @@ function DiscussionListItem({ discussion }: { discussion: Discussion }) {
           <div className="text-sm text-content-dimmed">{discussion.author.fullName}</div>
           <div className="text-sm text-content-dimmed">·</div>
           <div className="text-sm text-content-dimmed">
-            <FormattedTime time={discussion.publishedAt!} format="long-date" />
+            <FormattedTime time={discussion.publishedAt!} format="relative-weekday-or-date" />
           </div>
         </div>
       </div>
