@@ -122,6 +122,7 @@ defmodule Operately.Support.Features.DiscussionsSteps do
     ctx
     |> UI.click(testid: "options-button")
     |> UI.click(testid: "edit-discussion")
+    |> UI.fill(testid: "discussion-title", with: "")
     |> UI.fill(testid: "discussion-title", with: "This is an edited discussion")
     |> UI.fill_rich_text("This is the edited body of the discussion.")
     |> UI.click(testid: "save-changes")
@@ -252,7 +253,7 @@ defmodule Operately.Support.Features.DiscussionsSteps do
   end
 
   step :click_on_continue_editing_draft, ctx do
-    ctx 
+    ctx
     |> UI.click(testid: "continue-editing-draft")
     |> UI.click(testid: "discussion-list-item-draft-discussion-1")
   end
@@ -304,7 +305,7 @@ defmodule Operately.Support.Features.DiscussionsSteps do
     cond do
       message -> message
       attempts <= 0 -> raise "Could not find the last message"
-      true -> 
+      true ->
         :timer.sleep(300)
         last_message(ctx, attempts - 1)
     end

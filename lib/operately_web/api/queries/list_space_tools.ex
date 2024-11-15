@@ -59,7 +59,7 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceTools do
 
   defp load_goals(space_id, me) do
     goals =
-      from(g in Goal, as: :goals)
+      from(g in Goal, as: :goals, preload: :parent_goal)
       |> Goal.scope_space(space_id)
       |> Filters.filter_by_view_access(me.id)
       |> Repo.all()

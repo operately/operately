@@ -19,7 +19,7 @@ import AvatarList from "@/components/AvatarList";
 import { match } from "ts-pattern";
 
 export function Page() {
-  const { space, discussions, goals, projects } = useLoadedData();
+  const { space, tools } = useLoadedData();
 
   assertPresent(space.notifications, "notifications must be present in space");
   useClearNotificationsOnLoad(space.notifications);
@@ -32,7 +32,7 @@ export function Page() {
           <SpaceHeader space={space} />
           <SpaceMembers space={space} />
           <JoinButton space={space} />
-          <ToolsSection space={space} discussions={discussions} goals={goals} projects={projects} />
+          <ToolsSection space={space} tools={tools} />
           <SpaceFooter space={space} />
         </Paper.Body>
       </Paper.Root>
