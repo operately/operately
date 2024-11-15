@@ -108,7 +108,7 @@ function NodeExpandCollapseToggle({ node }: { node: Node }) {
 
   return (
     <div className="w-5">
-      {node.hasChildren && (
+      {node.children.length > 0 && (
         <ChevronIcon size={16} className="cursor-pointer" onClick={handleClick} data-test-id={testId} />
       )}
     </div>
