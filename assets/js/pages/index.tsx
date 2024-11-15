@@ -85,6 +85,7 @@ import * as SpaceEditPage from "./SpaceEditPage";
 import * as SpaceGoalsPage from "./SpaceGoalsPage";
 import * as SpaceListPage from "./SpaceListPage";
 import * as SpacePage from "./SpacePage";
+import * as SpaceResourceHubPage from "./SpaceResourceHubPage";
 import * as TaskPage from "./TaskPage";
 
 //
@@ -501,6 +502,11 @@ export default {
     name: "SpacePage",
     loader: SpacePage.loader,
     Page: SpacePage.Page,
+  },
+  SpaceResourceHubPage: {
+    name: "SpaceResourceHubPage",
+    loader: SpaceResourceHubPage.loader,
+    Page: SpaceResourceHubPage.Page,
   },
   TaskPage: {
     name: "TaskPage",
