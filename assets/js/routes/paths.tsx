@@ -204,6 +204,10 @@ export class Paths {
     return createCompanyPath(["spaces", spaceId, "edit", "general-access"]);
   }
 
+  static spaceResourceHubPath(spaceId: string, resourceHubId: string) {
+    return createCompanyPath(["spaces", spaceId, "resource-hubs", resourceHubId]);
+  }
+
   static spaceGoalsPath(spaceId: string) {
     return createCompanyPath(["spaces", spaceId, "goals"]);
   }
