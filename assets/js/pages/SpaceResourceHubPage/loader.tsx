@@ -1,22 +1,26 @@
 import * as Pages from "@/components/Pages";
 
-import { listResourceHubContent, ResourceHubNode } from "@/models/resourceHubs";
+import { getResourceHub, ResourceHub } from "@/models/resourceHubs";
 import { getSpace, Space } from "@/models/spaces";
 
 interface LoaderResult {
   space: Space;
-  nodes: ResourceHubNode[];
+  resourceHub: ResourceHub;
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
-  const [space, nodes] = await Promise.all([
+  const [space, resourceHub] = await Promise.all([
     getSpace({ id: params.spaceId }),
-    listResourceHubContent({ resourceHubId: params.id }).then((res) => res.nodes!),
+    getResourceHub({ id: params.id }).then((res) => res.resourceHub!),
   ]);
 
-  return { space, nodes };
+  return { space, resourceHub };
 }
 
 export function useLoadedData(): LoaderResult {
   return Pages.useLoadedData() as LoaderResult;
+}
+
+export function useRefresh() {
+  return Pages.useRefresh();
 }
