@@ -7,6 +7,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Messages.Message do
       body: Jason.encode!(message.body),
       inserted_at: OperatelyWeb.Api.Serializer.serialize(message.inserted_at),
       updated_at: OperatelyWeb.Api.Serializer.serialize(message.updated_at),
+      published_at: OperatelyWeb.Api.Serializer.serialize(message.published_at),
       author: OperatelyWeb.Api.Serializer.serialize(message.author),
       comments_count: message.comments_count,
     }

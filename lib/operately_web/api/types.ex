@@ -250,8 +250,9 @@ defmodule OperatelyWeb.Api.Types do
     field :id, :string
     field :name, :string
     field :inserted_at, :date
-    field :state, :string
     field :updated_at, :date
+    field :published_at, :date
+    field :state, :string
     field :author, :person
     field :title, :string
     field :body, :string
