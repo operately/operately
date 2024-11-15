@@ -6,7 +6,7 @@ import * as Spaces from "@/models/spaces";
 import * as Companies from "@/models/companies";
 
 import { PrimaryButton, GhostButton } from "@/components/Buttons";
-import { Form, useForm } from "@/features/DiscussionForm";
+import { Form, useForm, FormState } from "@/features/DiscussionForm";
 import { Paths } from "@/routes/paths";
 import { SubscribersSelector } from "@/features/Subscriptions";
 import { Link } from "@/components/Link";
@@ -37,8 +37,7 @@ export function Page() {
 
         <Paper.Body>
           <Form form={form} />
-
-          {form.mode === "create" && <Submit form={form} />}
+          <Submit form={form} />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
@@ -71,17 +70,17 @@ function Submit({ form }) {
   );
 }
 
-function PostButton({ form }) {
+function PostButton({ form }: { form: FormState }) {
   return (
-    <PrimaryButton loading={form.submitting} testId="post-discussion" onClick={form.submit}>
-      {form.submitButtonLabel}
+    <PrimaryButton loading={form.postMessageSubmitting} testId="post-discussion" onClick={form.postMessage}>
+      Post discussion
     </PrimaryButton>
   );
 }
 
-function SaveAsDraftButton({ form }) {
+function SaveAsDraftButton({ form }: { form: FormState }) {
   return (
-    <GhostButton loading={form.draftSubmitting} testId="save-as-draft" onClick={form.submitDraft}>
+    <GhostButton loading={form.postAsDraftSubmitting} testId="save-as-draft" onClick={form.postAsDraft}>
       Save as draft
     </GhostButton>
   );

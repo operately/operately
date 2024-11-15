@@ -15,6 +15,7 @@ import { assertPresent } from "@/utils/assertions";
 
 import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
+import classNames from "classnames";
 
 export function Page() {
   const { space, discussions } = useLoadedData();
@@ -116,11 +117,16 @@ function DiscussionListItem({ discussion }: { discussion: Discussion }) {
 
   const path = Paths.discussionPath(discussion.id!);
 
+  const className = classNames(
+    "flex items-start gap-4",
+    "py-3",
+    "last:border-b border-t border-stroke-base",
+    "cursor-pointer hover:bg-surface-highlight",
+    "px-1",
+  );
+
   return (
-    <DivLink
-      to={path}
-      className="flex items-start gap-4 py-3 last:border-b not-first:border-t border-stroke-base cursor-pointer hover:bg-surface-highlight px-1"
-    >
+    <DivLink to={path} className={className}>
       <div className="shrink-0">
         <Avatar person={discussion.author} size="large" />
       </div>
@@ -135,7 +141,7 @@ function DiscussionListItem({ discussion }: { discussion: Discussion }) {
           <div className="text-sm text-content-dimmed">{discussion.author.fullName}</div>
           <div className="text-sm text-content-dimmed">·</div>
           <div className="text-sm text-content-dimmed">
-            <FormattedTime time={discussion.insertedAt!} format="long-date" />
+            <FormattedTime time={discussion.publishedAt!} format="long-date" />
           </div>
         </div>
       </div>

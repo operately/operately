@@ -3,6 +3,7 @@ defmodule Operately.Messages.Message do
   use Operately.Repo.Getter
 
   alias Operately.Notifications
+  alias Operately.StateMachine
 
   schema "messages" do
     belongs_to :author, Operately.People.Person, foreign_key: :author_id
@@ -16,7 +17,8 @@ defmodule Operately.Messages.Message do
 
     field :title
     field :body, :map
-    field :state, Ecto.Enum, values: [:draft, :published], default: :published
+    field :state, Ecto.Enum, values: [:draft, :published]
+    field :published_at, :utc_datetime
 
     # populated with after load hooks
     field :potential_subscribers, :any, virtual: true
@@ -33,10 +35,21 @@ defmodule Operately.Messages.Message do
     changeset(%__MODULE__{}, attrs)
   end
 
-  def changeset(update, attrs) do
-    update
-    |> cast(attrs, [:messages_board_id, :author_id, :title, :body, :subscription_list_id, :state])
+  def changeset(message, attrs) do
+    message
+    |> cast(attrs, [:messages_board_id, :author_id, :title, :body, :subscription_list_id, :state, :published_at])
     |> validate_required([:messages_board_id, :author_id, :title, :body, :subscription_list_id, :state])
+    |> StateMachine.cast_and_validate(:state, %{
+      initial: :draft,
+      states: [
+        %{name: :draft, allow_transition_to: [:published]},
+        %{name: :published, on_enter: &set_published_at/1}
+      ]
+    })
+  end
+
+  defp set_published_at(changeset) do
+    put_change(changeset, :published_at, Operately.Time.utc_datetime_now())
   end
 
   #

@@ -134,7 +134,7 @@ defmodule OperatelyWeb.Api.Mutations.EditDiscussionTest do
       assert subscriptions == []
 
       assert {200, _} = mutation(ctx.conn, :edit_discussion, %{
-        discussion_id: Paths.message_id(message),
+        id: Paths.message_id(message),
         title: "New title",
         body: RichText.rich_text(mentioned_people: [ctx.company_creator]),
       })
@@ -154,7 +154,7 @@ defmodule OperatelyWeb.Api.Mutations.EditDiscussionTest do
 
   defp request(conn, message) do
     mutation(conn, :edit_discussion, %{
-      discussion_id: Paths.message_id(message),
+      id: Paths.message_id(message),
       title: "New title",
       body: RichText.rich_text("New body", :as_string),
     })
