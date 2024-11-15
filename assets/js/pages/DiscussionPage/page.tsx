@@ -102,6 +102,8 @@ function DiscussionReactions() {
 function DiscussionTitle() {
   const { discussion } = useLoadedData();
 
+  const time = discussion.state === "draft" ? discussion.insertedAt : discussion.publishedAt;
+
   return (
     <div className="flex flex-col items-center">
       <div className="text-content-accent text-xl sm:text-2xl md:text-3xl font-extrabold text-center">
@@ -112,7 +114,7 @@ function DiscussionTitle() {
           <Avatar person={discussion.author!} size="tiny" /> {discussion.author!.fullName}
         </div>
         <TextSeparator />
-        <FormattedTime time={discussion.insertedAt!} format="relative-time-or-date" />
+        <FormattedTime time={time!} format="relative-time-or-date" />
       </div>
     </div>
   );
