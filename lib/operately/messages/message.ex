@@ -17,6 +17,7 @@ defmodule Operately.Messages.Message do
     field :title
     field :body, :map
     field :state, Ecto.Enum, values: [:draft, :published], default: :published
+    field :published_at, :utc_datetime
 
     # populated with after load hooks
     field :potential_subscribers, :any, virtual: true
@@ -35,18 +36,34 @@ defmodule Operately.Messages.Message do
 
   def changeset(update, attrs) do
     update
-    |> cast(attrs, [:messages_board_id, :author_id, :title, :body, :subscription_list_id, :state])
+    |> cast(attrs, [:messages_board_id, :author_id, :title, :body, :subscription_list_id, :state, :published_at])
     |> validate_required([:messages_board_id, :author_id, :title, :body, :subscription_list_id, :state])
     |> validate_state_change()
+    |> set_published_at()
   end
 
   defp validate_state_change(changeset) do
-    case {get_field(changeset, :state), get_change(changeset, :state)} do
-      {:published, :draft} ->
-        add_error(changeset, :state, "cannot change from published to draft")
-      _ ->
+    case state_change(changeset) do
+      [from: :published, to: :draft] ->
+        add_error(changeset, :state, "invalid state change")
+      _ -> 
         changeset
     end
+  end
+
+  defp set_published_at(changeset) do
+    case state_change(changeset) do
+      [from: :published, to: :published] ->
+        changeset
+      [from: _, to: :published] ->
+        put_change(changeset, :published_at, NaiveDateTime.utc_now())
+      _ -> 
+        changeset
+    end
+  end
+
+  defp state_change(changeset) do
+    [from: get_field(changeset, :state), to: get_change(changeset, :state)]
   end
 
   #
