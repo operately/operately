@@ -23,6 +23,7 @@ defmodule Operately.MessagesFixtures do
         title: "Some message",
         body: Operately.Support.RichText.rich_text("Some content"),
         subscription_list_id: subscription_list.id,
+        state: :published,
       })
       |> Operately.Messages.create_message()
 

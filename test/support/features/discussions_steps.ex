@@ -243,12 +243,14 @@ defmodule Operately.Support.Features.DiscussionsSteps do
     |> Factory.add_message(:draft_discussion_1, :messages_board, [
       state: :draft,
       creator: ctx.author,
-      title: "Draft discussion 1"
+      title: "Draft discussion 1",
+      inserted_at: ~N[2021-01-01 00:00:00]
     ])
     |> Factory.add_message(:draft_discussion_2, :messages_board, [
       state: :draft,
       creator: ctx.author,
-      title: "Draft discussion 2"
+      title: "Draft discussion 2",
+      inserted_at: ~N[2021-01-01 00:00:00]
     ])
   end
 
