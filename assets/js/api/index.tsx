@@ -1630,6 +1630,14 @@ export interface GetProjectsResult {
   projects?: Project[] | null;
 }
 
+export interface GetResourceHubInput {
+  id?: string | null;
+}
+
+export interface GetResourceHubResult {
+  resourceHub?: ResourceHub | null;
+}
+
 export interface GetSpaceInput {
   id?: Id | null;
   includePermissions?: boolean | null;
@@ -1677,15 +1685,6 @@ export interface GetUnreadNotificationCountInput {}
 
 export interface GetUnreadNotificationCountResult {
   unread?: number | null;
-}
-
-export interface ListResourceHubContentInput {
-  resourceHubId?: string | null;
-  parentFolderId?: string | null;
-}
-
-export interface ListResourceHubContentResult {
-  nodes?: ResourceHubNode[] | null;
 }
 
 export interface ListSpaceToolsInput {
@@ -2630,6 +2629,10 @@ export class ApiClient {
     return this.get("/get_projects", input);
   }
 
+  async getResourceHub(input: GetResourceHubInput): Promise<GetResourceHubResult> {
+    return this.get("/get_resource_hub", input);
+  }
+
   async getSpace(input: GetSpaceInput): Promise<GetSpaceResult> {
     return this.get("/get_space", input);
   }
@@ -2648,10 +2651,6 @@ export class ApiClient {
 
   async getUnreadNotificationCount(input: GetUnreadNotificationCountInput): Promise<GetUnreadNotificationCountResult> {
     return this.get("/get_unread_notification_count", input);
-  }
-
-  async listResourceHubContent(input: ListResourceHubContentInput): Promise<ListResourceHubContentResult> {
-    return this.get("/list_resource_hub_content", input);
   }
 
   async listSpaceTools(input: ListSpaceToolsInput): Promise<ListSpaceToolsResult> {
@@ -3092,6 +3091,9 @@ export async function getProjectRetrospective(
 export async function getProjects(input: GetProjectsInput): Promise<GetProjectsResult> {
   return defaultApiClient.getProjects(input);
 }
+export async function getResourceHub(input: GetResourceHubInput): Promise<GetResourceHubResult> {
+  return defaultApiClient.getResourceHub(input);
+}
 export async function getSpace(input: GetSpaceInput): Promise<GetSpaceResult> {
   return defaultApiClient.getSpace(input);
 }
@@ -3108,11 +3110,6 @@ export async function getUnreadNotificationCount(
   input: GetUnreadNotificationCountInput,
 ): Promise<GetUnreadNotificationCountResult> {
   return defaultApiClient.getUnreadNotificationCount(input);
-}
-export async function listResourceHubContent(
-  input: ListResourceHubContentInput,
-): Promise<ListResourceHubContentResult> {
-  return defaultApiClient.listResourceHubContent(input);
 }
 export async function listSpaceTools(input: ListSpaceToolsInput): Promise<ListSpaceToolsResult> {
   return defaultApiClient.listSpaceTools(input);
@@ -3531,6 +3528,10 @@ export function useGetProjects(input: GetProjectsInput): UseQueryHookResult<GetP
   return useQuery<GetProjectsResult>(() => defaultApiClient.getProjects(input));
 }
 
+export function useGetResourceHub(input: GetResourceHubInput): UseQueryHookResult<GetResourceHubResult> {
+  return useQuery<GetResourceHubResult>(() => defaultApiClient.getResourceHub(input));
+}
+
 export function useGetSpace(input: GetSpaceInput): UseQueryHookResult<GetSpaceResult> {
   return useQuery<GetSpaceResult>(() => defaultApiClient.getSpace(input));
 }
@@ -3551,12 +3552,6 @@ export function useGetUnreadNotificationCount(
   input: GetUnreadNotificationCountInput,
 ): UseQueryHookResult<GetUnreadNotificationCountResult> {
   return useQuery<GetUnreadNotificationCountResult>(() => defaultApiClient.getUnreadNotificationCount(input));
-}
-
-export function useListResourceHubContent(
-  input: ListResourceHubContentInput,
-): UseQueryHookResult<ListResourceHubContentResult> {
-  return useQuery<ListResourceHubContentResult>(() => defaultApiClient.listResourceHubContent(input));
 }
 
 export function useListSpaceTools(input: ListSpaceToolsInput): UseQueryHookResult<ListSpaceToolsResult> {
@@ -4146,6 +4141,8 @@ export default {
   useGetProjectRetrospective,
   getProjects,
   useGetProjects,
+  getResourceHub,
+  useGetResourceHub,
   getSpace,
   useGetSpace,
   getSpaces,
@@ -4156,8 +4153,6 @@ export default {
   useGetTasks,
   getUnreadNotificationCount,
   useGetUnreadNotificationCount,
-  listResourceHubContent,
-  useListResourceHubContent,
   listSpaceTools,
   useListSpaceTools,
   searchPeople,
