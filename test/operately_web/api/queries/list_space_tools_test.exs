@@ -137,6 +137,8 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceToolsTest do
       |> Factory.add_project(:project2, :space)
       |> Factory.add_goal(:goal1, :space)
       |> Factory.add_goal(:goal2, :space)
+      |> Factory.preload(:goal1, :parent_goal)
+      |> Factory.preload(:goal2, :parent_goal)
       |> Factory.add_messages_board(:board1, :space)
       |> Factory.add_messages_board(:board2, :space)
       |> Factory.add_message(:message1, :board1)
@@ -156,16 +158,16 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceToolsTest do
       assert {200, res} = query(ctx.conn, :list_space_tools, %{space_id: Paths.space_id(ctx.space)})
 
       assert length(res.tools.projects) == 2
-      assert Enum.find(res.tools.projects, &(&1 == Serializer.serialize(ctx.project1)))
-      assert Enum.find(res.tools.projects, &(&1 == Serializer.serialize(ctx.project2)))
+      assert Enum.find(res.tools.projects, &(&1.id == Paths.project_id(ctx.project1)))
+      assert Enum.find(res.tools.projects, &(&1.id == Paths.project_id(ctx.project2)))
     end
 
     test "list goals", ctx do
       assert {200, res} = query(ctx.conn, :list_space_tools, %{space_id: Paths.space_id(ctx.space)})
 
       assert length(res.tools.goals) == 2
-      assert Enum.find(res.tools.goals, &(&1 == Serializer.serialize(ctx.goal1)))
-      assert Enum.find(res.tools.goals, &(&1 == Serializer.serialize(ctx.goal2)))
+      assert Enum.find(res.tools.goals, &(&1 == Serializer.serialize(ctx.goal1, level: :full)))
+      assert Enum.find(res.tools.goals, &(&1 == Serializer.serialize(ctx.goal2, level: :full)))
     end
 
     test "list messages boards", ctx do
