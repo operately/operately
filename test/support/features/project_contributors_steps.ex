@@ -172,6 +172,11 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
   end
 
   step :assert_contributor_removed, ctx, name: name do
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> UI.click(testid: "manage-team-button")
+    |> UI.refute_has(Query.text("Michael Scott"))
+
     contributors = Operately.Projects.list_project_contributors(ctx.project)
     contributors = Operately.Repo.preload(contributors, :person)
     contrib = Enum.find(contributors, fn c -> c.person.full_name == name end)
@@ -179,9 +184,6 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
     assert contrib == nil
 
     ctx
-    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
-    |> UI.click(testid: "manage-team-button")
-    |> UI.refute_has(Query.text("Michael Scott"))
   end
 
   step :assert_reviewer_removed, ctx do 

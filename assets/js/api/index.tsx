@@ -2039,9 +2039,10 @@ export interface EditCompanyResult {
 }
 
 export interface EditDiscussionInput {
-  discussionId?: string | null;
+  id?: Id | null;
   title?: string | null;
   body?: string | null;
+  state?: string | null;
 }
 
 export interface EditDiscussionResult {

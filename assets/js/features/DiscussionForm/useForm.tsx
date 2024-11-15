@@ -23,12 +23,16 @@ export interface FormState {
   mode: "create" | "edit";
   space: Spaces.Space;
 
-  submit: () => void;
-  submitDraft: () => void;
-  submitting: boolean;
-  draftSubmitting?: boolean;
-  submitDisabled?: boolean;
-  submitButtonLabel?: string;
+  postMessage: () => Promise<boolean>;
+  postAsDraft: () => Promise<boolean>;
+  saveChanges: () => Promise<boolean>;
+  publishDraft: () => Promise<boolean>;
+
+  postMessageSubmitting: boolean;
+  postAsDraftSubmitting: boolean;
+  saveChangesSubmitting: boolean;
+  publishDraftSubmitting: boolean;
+
   errors: Error[];
 
   cancelPath: string;
@@ -41,10 +45,7 @@ interface Error {
 }
 
 export function useForm({ space, mode, discussion, potentialSubscribers = [] }: UseFormOptions): FormState {
-  const navigate = useNavigate();
-  const subscriptionsState = useSubscriptions(potentialSubscribers, {
-    ignoreMe: true,
-  });
+  const subscriptionsState = useSubscriptions(potentialSubscribers, { ignoreMe: true });
 
   const [errors, setErrors] = React.useState<Error[]>([]);
   const [title, setTitle] = React.useState(() => discussion?.title || "");
@@ -56,58 +57,7 @@ export function useForm({ space, mode, discussion, potentialSubscribers = [] }: 
     mentionSearchScope: { type: "space", id: space ? space.id! : discussion!.space!.id! },
   });
 
-  const [submitting, setSubmitting] = React.useState(false);
-  const [draftSubmitting, setDraftSubmitting] = React.useState(false);
-
-  const [post] = Discussions.usePostDiscussion();
-  const [edit] = Discussions.useEditDiscussion();
-
-  const submitEdit = async (): Promise<boolean> => {
-    setSubmitting(true);
-
-    const res = await edit({
-      discussionId: discussion!.id,
-      title: title,
-      body: JSON.stringify(editor.getJSON()),
-    });
-
-    navigate(Paths.discussionPath(res.discussion.id));
-
-    setSubmitting(false);
-
-    return true;
-  };
-
-  const submitPost = async ({ draft }): Promise<boolean> => {
-    if (draft) {
-      setDraftSubmitting(true);
-    } else {
-      setSubmitting(true);
-    }
-
-    const res = await post({
-      spaceId: space.id,
-      title: title,
-      postAsDraft: draft,
-      body: JSON.stringify(editor.getJSON()),
-      sendNotificationsToEveryone: subscriptionsState.subscriptionType == Options.ALL,
-      subscriberIds: subscriptionsState.currentSubscribersList,
-    });
-
-    navigate(Paths.discussionPath(res.discussion.id));
-
-    if (draft) {
-      setDraftSubmitting(false);
-    } else {
-      setSubmitting(false);
-    }
-
-    return true;
-  };
-
-  const submitDraft = () => submitPost({ draft: true });
-
-  const submit = async (): Promise<boolean> => {
+  const validate = () => {
     if (!editor) return false;
     if (uploading) return false;
 
@@ -120,15 +70,15 @@ export function useForm({ space, mode, discussion, potentialSubscribers = [] }: 
       return false;
     }
 
-    if (mode === "edit") {
-      return submitEdit();
-    } else {
-      return submitPost({ draft: false });
-    }
+    return true;
   };
 
+  const [postMessage, postMessageSubmitting] = usePostMessage({ space, title, editor, subscriptionsState, validate });
+  const [postAsDraft, postAsDraftSubmitting] = usePostAsDraft({ space, title, editor, subscriptionsState, validate });
+  const [saveChanges, saveChangesSubmitting] = useSaveChanges({ discussion, title, editor, validate });
+  const [publishDraft, publishDraftSubmitting] = usePublishDraft({ discussion, title, editor, validate });
+
   const cancelPath = mode === "edit" ? Paths.discussionPath(discussion?.id!) : Paths.spaceDiscussionsPath(space.id!);
-  const submitButtonLabel = mode === "edit" ? "Save Changes" : "Post Discussion";
 
   return {
     title,
@@ -139,12 +89,130 @@ export function useForm({ space, mode, discussion, potentialSubscribers = [] }: 
     mode,
     subscriptionsState,
 
-    submit,
-    submitDraft,
-    submitting,
-    draftSubmitting,
+    postMessage,
+    postAsDraft,
+    saveChanges,
+    publishDraft,
+
+    postMessageSubmitting,
+    postAsDraftSubmitting,
+    saveChangesSubmitting,
+    publishDraftSubmitting,
+
     cancelPath,
-    submitButtonLabel,
     errors,
   };
+}
+
+function usePostMessage({ space, title, editor, subscriptionsState, validate }): [() => Promise<boolean>, boolean] {
+  const navigate = useNavigate();
+  const [post] = Discussions.usePostDiscussion();
+
+  const [submitting, setSubmitting] = React.useState(false);
+
+  const postMessage = async (): Promise<boolean> => {
+    if (!validate()) return false;
+
+    setSubmitting(true);
+
+    const res = await post({
+      spaceId: space.id,
+      title: title,
+      postAsDraft: false,
+      body: JSON.stringify(editor.getJSON()),
+      sendNotificationsToEveryone: subscriptionsState.subscriptionType == Options.ALL,
+      subscriberIds: subscriptionsState.currentSubscribersList,
+    });
+
+    setSubmitting(false);
+
+    navigate(Paths.discussionPath(res.discussion.id));
+
+    return true;
+  };
+
+  return [postMessage, submitting];
+}
+
+function usePostAsDraft({ space, title, editor, subscriptionsState, validate }): [() => Promise<boolean>, boolean] {
+  const navigate = useNavigate();
+  const [post] = Discussions.usePostDiscussion();
+
+  const [submitting, setSubmitting] = React.useState(false);
+
+  const postMessage = async (): Promise<boolean> => {
+    if (!validate()) return false;
+
+    setSubmitting(true);
+
+    const res = await post({
+      spaceId: space.id,
+      title: title,
+      postAsDraft: true,
+      body: JSON.stringify(editor.getJSON()),
+      sendNotificationsToEveryone: subscriptionsState.subscriptionType == Options.ALL,
+      subscriberIds: subscriptionsState.currentSubscribersList,
+    });
+
+    setSubmitting(false);
+
+    navigate(Paths.discussionPath(res.discussion.id));
+
+    return true;
+  };
+
+  return [postMessage, submitting];
+}
+
+function useSaveChanges({ discussion, title, editor, validate }): [() => Promise<boolean>, boolean] {
+  const navigate = useNavigate();
+  const [edit] = Discussions.useEditDiscussion();
+  const [submitting, setSubmitting] = React.useState(false);
+
+  const saveChanges = async () => {
+    if (!validate()) return false;
+
+    setSubmitting(true);
+
+    const res = await edit({
+      id: discussion!.id,
+      title: title,
+      body: JSON.stringify(editor.getJSON()),
+    });
+
+    setSubmitting(false);
+
+    navigate(Paths.discussionPath(res.discussion.id));
+
+    return true;
+  };
+
+  return [saveChanges, submitting];
+}
+
+function usePublishDraft({ discussion, title, editor, validate }): [() => Promise<boolean>, boolean] {
+  const navigate = useNavigate();
+  const [edit] = Discussions.useEditDiscussion();
+  const [submitting, setSubmitting] = React.useState(false);
+
+  const saveChanges = async () => {
+    if (!validate()) return false;
+
+    setSubmitting(true);
+
+    const res = await edit({
+      id: discussion!.id,
+      title: title,
+      body: JSON.stringify(editor.getJSON()),
+      state: "published",
+    });
+
+    setSubmitting(false);
+
+    navigate(Paths.discussionPath(res.discussion.id));
+
+    return true;
+  };
+
+  return [saveChanges, submitting];
 }
