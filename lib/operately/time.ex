@@ -1,5 +1,9 @@
 defmodule Operately.Time do
 
+  def utc_datetime_now() do
+    DateTime.truncate(DateTime.utc_now(), :second)
+  end
+
   @doc """
   Create a NaiveDateTime for a specific day in the current month.
   e.g. Time.day_in_current_month(15) will return a NaiveDateTime 
