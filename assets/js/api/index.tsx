@@ -312,6 +312,7 @@ export interface ActivityContentGroupEdited {
 export interface ActivityContentMessageArchiving {
   companyId?: string | null;
   spaceId?: string | null;
+  space?: Space | null;
   messageId?: string | null;
   title?: string | null;
 }

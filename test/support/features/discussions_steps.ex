@@ -326,7 +326,7 @@ defmodule Operately.Support.Features.DiscussionsSteps do
 
     ctx 
     |> UI.visit(Paths.space_path(ctx.company, ctx.marketing_space))
-    |> UI.assert_feed_item(ctx.creator, "archived #{message.title}")
+    |> UI.assert_feed_item(ctx.creator, "deleted: #{message.title}")
   end
 
   #
