@@ -309,6 +309,14 @@ export interface ActivityContentGroupEdited {
   exampleField?: string | null;
 }
 
+export interface ActivityContentMessageArchiving {
+  companyId?: string | null;
+  spaceId?: string | null;
+  space?: Space | null;
+  messageId?: string | null;
+  title?: string | null;
+}
+
 export interface ActivityContentProjectArchived {
   projectId?: string | null;
   project?: Project | null;
@@ -1855,6 +1863,12 @@ export interface ArchiveGoalResult {
   goal?: Goal | null;
 }
 
+export interface ArchiveMessageInput {
+  messageId?: Id | null;
+}
+
+export interface ArchiveMessageResult {}
+
 export interface ArchiveProjectInput {
   projectId?: string | null;
 }
@@ -2734,6 +2748,10 @@ export class ApiClient {
     return this.post("/archive_goal", input);
   }
 
+  async archiveMessage(input: ArchiveMessageInput): Promise<ArchiveMessageResult> {
+    return this.post("/archive_message", input);
+  }
+
   async archiveProject(input: ArchiveProjectInput): Promise<ArchiveProjectResult> {
     return this.post("/archive_project", input);
   }
@@ -3179,6 +3197,9 @@ export async function addSpaceMembers(input: AddSpaceMembersInput): Promise<AddS
 }
 export async function archiveGoal(input: ArchiveGoalInput): Promise<ArchiveGoalResult> {
   return defaultApiClient.archiveGoal(input);
+}
+export async function archiveMessage(input: ArchiveMessageInput): Promise<ArchiveMessageResult> {
+  return defaultApiClient.archiveMessage(input);
 }
 export async function archiveProject(input: ArchiveProjectInput): Promise<ArchiveProjectResult> {
   return defaultApiClient.archiveProject(input);
@@ -3666,6 +3687,10 @@ export function useAddSpaceMembers(): UseMutationHookResult<AddSpaceMembersInput
 
 export function useArchiveGoal(): UseMutationHookResult<ArchiveGoalInput, ArchiveGoalResult> {
   return useMutation<ArchiveGoalInput, ArchiveGoalResult>((input) => defaultApiClient.archiveGoal(input));
+}
+
+export function useArchiveMessage(): UseMutationHookResult<ArchiveMessageInput, ArchiveMessageResult> {
+  return useMutation<ArchiveMessageInput, ArchiveMessageResult>((input) => defaultApiClient.archiveMessage(input));
 }
 
 export function useArchiveProject(): UseMutationHookResult<ArchiveProjectInput, ArchiveProjectResult> {
@@ -4194,6 +4219,8 @@ export default {
   useAddSpaceMembers,
   archiveGoal,
   useArchiveGoal,
+  archiveMessage,
+  useArchiveMessage,
   archiveProject,
   useArchiveProject,
   changeGoalParent,

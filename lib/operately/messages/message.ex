@@ -29,6 +29,7 @@ defmodule Operately.Messages.Message do
     timestamps()
     requester_access_level()
     request_info()
+    soft_delete()
   end
 
   def changeset(attrs) do

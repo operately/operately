@@ -46,6 +46,7 @@ defmodule Operately.Activities.ContextAutoAssigner do
     "discussion_posting",
     "discussion_editing",
     "discussion_comment_submitted",
+    "message_archiving",
 
     "task_assignee_assignment",
     "task_description_change",

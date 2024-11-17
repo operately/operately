@@ -7,4 +7,5 @@ export {
   usePostDiscussion,
   usePublishDiscussion,
   useEditDiscussion,
+  useArchiveMessage,
 } from "@/api";

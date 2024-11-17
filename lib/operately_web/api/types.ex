@@ -17,6 +17,14 @@ defmodule OperatelyWeb.Api.Types do
     field :space, :integer
   end
 
+  object :activity_content_message_archiving do
+    field :company_id, :string
+    field :space_id, :string
+    field :space, :space
+    field :message_id, :string
+    field :title, :string
+  end
+
   object :activity_content_company_member_restoring do
     field :person, :person
   end

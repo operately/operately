@@ -17,4 +17,17 @@ defmodule Operately.Support.Factory.Messages do
 
     Map.put(ctx, testid, message)
   end
+
+  def add_draft_message(ctx, testid, board_name, opts \\ []) do
+    creator = Keyword.get(opts, :creator, ctx.creator)
+    board = Map.fetch!(ctx, board_name)
+
+    message = Operately.MessagesFixtures.message_fixture(
+      creator.id,
+      board.id,
+      [state: :draft] ++ opts
+    )
+
+    Map.put(ctx, testid, message)
+  end
 end
