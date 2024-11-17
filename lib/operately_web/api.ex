@@ -51,6 +51,7 @@ defmodule OperatelyWeb.Api do
   query :search_potential_space_members, Q.SearchPotentialSpaceMembers
   query :search_project_contributor_candidates, Q.SearchProjectContributorCandidates
 
+  mutation :archive_message, M.ArchiveMessage
   mutation :restore_company_member, M.RestoreCompanyMember
   mutation :add_company, M.AddCompany
   mutation :add_company_admins, M.AddCompanyAdmins
