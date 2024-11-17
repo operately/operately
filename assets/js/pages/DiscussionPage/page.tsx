@@ -22,6 +22,9 @@ import { CurrentSubscriptions } from "@/features/Subscriptions";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { assertPresent } from "@/utils/assertions";
 import { GhostButton, PrimaryButton } from "@/components/Buttons";
+import { ActionLink } from "@/components/Link";
+import { CopyToClipboard } from "@/components/CopyToClipboard";
+import { match } from "ts-pattern";
 
 export function Page() {
   const { discussion } = useLoadedData();
@@ -102,8 +105,6 @@ function DiscussionReactions() {
 function DiscussionTitle() {
   const { discussion } = useLoadedData();
 
-  const time = discussion.state === "draft" ? discussion.insertedAt : discussion.publishedAt;
-
   return (
     <div className="flex flex-col items-center">
       <div className="text-content-accent text-xl sm:text-2xl md:text-3xl font-extrabold text-center">
@@ -113,8 +114,13 @@ function DiscussionTitle() {
         <div className="flex items-center gap-1">
           <Avatar person={discussion.author!} size="tiny" /> {discussion.author!.fullName}
         </div>
-        <TextSeparator />
-        <FormattedTime time={time!} format="relative-time-or-date" />
+
+        {discussion.state !== "draft" && (
+          <>
+            <TextSeparator />
+            <FormattedTime time={discussion.publishedAt!} format="relative-time-or-date" />
+          </>
+        )}
       </div>
     </div>
   );
@@ -174,13 +180,55 @@ function ContinueEditingDraft() {
   const { discussion } = useLoadedData();
   if (discussion.state !== "draft") return null;
 
-  return (
-    <div className="mb-4 bg-surface-dimmed p-4 rounded-2xl flex flex-col items-center gap-4">
-      <div className="font-bold">This is an unpublished draft.</div>
+  const [state, setState] = React.useState<"actions" | "link">("actions");
 
-      <div className="flex items-center justify-center gap-2">
+  return match(state)
+    .with("actions", () => <ContinueEditingActions discussion={discussion} setLinkVisible={() => setState("link")} />)
+    .with("link", () => <ContinueEditingLink setActionsVisible={() => setState("actions")} />)
+    .exhaustive();
+}
+
+function ContinueEditingActions({ discussion, setLinkVisible }) {
+  return (
+    <div className="mb-4 bg-surface-dimmed p-4 rounded-2xl">
+      <div className="text-center">
+        <span className="font-bold">This is an unpublished draft.</span>{" "}
+        <span className="">
+          Last edit was made <FormattedTime time={discussion.updatedAt!} format="relative-time-or-date" />.
+        </span>
+      </div>
+      <div className="flex items-center justify-center gap-2 mt-4">
         <ContinueEditingButton />
         <PublishNowButton />
+      </div>
+
+      <div className="flex items-center justify-center gap-2 mt-4">
+        <ActionLink className="font-medium" onClick={setLinkVisible} testId="share-link">
+          Share a link
+        </ActionLink>
+      </div>
+    </div>
+  );
+}
+
+function ContinueEditingLink({ setActionsVisible }) {
+  return (
+    <div className="mb-4 bg-surface-dimmed p-4 rounded-2xl">
+      <div className="border border-stoke-base p-4 rounded-2xl relative">
+        <div
+          className="border border-stroke-base p-1 rounded-full absolute top-4 right-4 cursor-pointer hover:border-surface-outline"
+          onClick={setActionsVisible}
+        >
+          <Icons.IconX size={20} />
+        </div>
+
+        <p className="mb-1 mt-4">Share this link to this draft with anyone who has access to this space:</p>
+
+        <div className="text-content-primary border border-surface-outline rounded-lg px-3 py-1 font-medium flex items-center justify-between bg-surface-base">
+          {window.location.href}
+
+          <CopyToClipboard text={window.location.href} size={25} padding={1} containerClass="" />
+        </div>
       </div>
     </div>
   );
@@ -190,7 +238,7 @@ function ContinueEditingButton() {
   const { discussion } = useLoadedData();
 
   return (
-    <PrimaryButton linkTo={Paths.discussionEditPath(discussion.id!)} size="sm" testId="continue-editing">
+    <PrimaryButton linkTo={Paths.discussionEditPath(discussion.id!)} size="base" testId="continue-editing">
       Continue editing
     </PrimaryButton>
   );
@@ -208,8 +256,8 @@ function PublishNowButton() {
   };
 
   return (
-    <GhostButton onClick={onClick} size="sm" testId="publish-now">
-      Publish Now
+    <GhostButton onClick={onClick} size="base" testId="publish-now">
+      Publish now
     </GhostButton>
   );
 }

@@ -13,6 +13,14 @@ defmodule Operately.Features.DiscussionsTest do
     |> Steps.assert_draft_is_not_listed_on_space_page()
   end
 
+  feature "share a link to a draft", ctx do
+    ctx
+    |> Steps.given_the_draft_experimental_feature_is_enabled()
+    |> Steps.post_a_draft_discussion()
+    |> Steps.click_on_share_draft_link()
+    |> Steps.assert_link_is_visible()
+  end
+
   feature "continue editing a draft message", ctx do
     ctx
     |> Steps.given_the_draft_experimental_feature_is_enabled()
