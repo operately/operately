@@ -3,42 +3,25 @@ defmodule OperatelyWeb.Api.Mutations.ArchiveMessage do
   use OperatelyWeb.Api.Helpers
 
   alias Operately.Operations.MessageArchiving
+  alias Operately.Messages.Permissions
+  alias Operately.Messages.Message
 
   inputs do
-    field :company_id, :string
-    field :space_id, :string
-    field :message_id, :string
-  end
-
-  outputs do
-    field :something, :something  # TODO
+    field :message_id, :id
   end
 
   def call(conn, inputs) do
     with(
       {:ok, me} <- find_me(conn),
-      {:ok, resource} <- find_resource(me, inputs),
-      {:ok, :allowed} <- authorize(company),
-      {:ok, result} <- execute(MessageArchiving.run(ctx.me, ctx.attrs) end)
-      {:ok, seriliazed} <- %{person: Serializer.serialize(result, level: :full)}
+      {:ok, resource} <- Message.get(me, id: inputs.message_id),
+      {:ok, :allowed} <- Permissions.check(resource, :can_archive_message),
+      {:ok, _} <- MessageArchiving.run(me, resource)
     ) do
-      {:ok, %{something: serialized}}
+      {:ok, %{}}
     else
       {:error, :forbidden} -> {:error, :forbidden}
       {:error, :not_found} -> {:error, :not_found}
       {:error, _} -> {:error, :internal_server_error}
     end
-  end
-
-  defp authorize(resource) do
-    # Permissions.check(resource.request_info.access_level, :can_do_things)
-  end
-
-  defp find_resource(me, _inputs) do
-    # e.g. Project.get(me, id: inputs.project_id)
-  end
-
-  defp execute(me, resource, inputs) do
-    MessageArchiving.run(me, resource, inputs)
   end
 end

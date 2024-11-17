@@ -21,6 +21,7 @@ defmodule OperatelyWeb.Api.Types do
     field :company_id, :string
     field :space_id, :string
     field :message_id, :string
+    field :title, :string
   end
 
   object :activity_content_company_member_restoring do

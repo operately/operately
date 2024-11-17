@@ -1,5 +1,5 @@
 defmodule Operately.Activities.Notifications.MessageArchiving do
   def dispatch(_activity) do
-    Operately.Notifications.bulk_create([])
+    {:ok, []} # don't send any notifications
   end
 end
