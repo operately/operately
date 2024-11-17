@@ -1,6 +1,8 @@
 defmodule OperatelyWeb.Api.Mutations.ArchiveMessageTest do
   use OperatelyWeb.TurboCase
 
+  alias Operately.Messages.Message
+
   setup ctx do
     ctx 
     |> Factory.setup()
@@ -37,6 +39,7 @@ defmodule OperatelyWeb.Api.Mutations.ArchiveMessageTest do
   end
 
   defp assert_message_archived(message) do
-    assert Repo.get(Message, message.id).deleted_at != nil
+    assert {:ok, message} = Message.get(:system, id: message.id, opts: [with_deleted: true])
+    assert message.deleted_at
   end
 end

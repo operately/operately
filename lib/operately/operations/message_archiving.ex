@@ -14,10 +14,12 @@ defmodule Operately.Operations.MessageArchiving do
     if message.state == :draft do
       multi # do nothing
     else
+      message = Repo.preload(message, :space)
+
       Activities.insert_sync(multi, author.id, :message_archiving, fn _changes ->
         %{
           company_id: author.company_id,
-          space_id: message.space_id,
+          space_id: message.space.id,
           message_id: message.id,
           title: message.title
         }
