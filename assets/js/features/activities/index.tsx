@@ -109,6 +109,7 @@ export const DISPLAYED_IN_FEED = [
   "space_joining",
   "space_member_removed",
   "space_members_added",
+  "message_archiving",
 ];
 
 //
@@ -165,9 +166,11 @@ import SpaceMemberRemoved from "@/features/activities/SpaceMemberRemoved";
 import SpaceMembersAdded from "@/features/activities/SpaceMembersAdded";
 import CompanyEditing from "@/features/activities/CompanyEditing";
 import CompanyMemberRestoring from "@/features/activities/CompanyMemberRestoring";
+import MessageArchiving from "@/features/activities/MessageArchiving";
 
 function handler(activity: Activity) {
   return match(activity.action)
+    .with("message_archiving", () => MessageArchiving)
     .with("company_editing", () => CompanyEditing)
     .with("comment_added", () => CommentAdded)
     .with("company_adding", () => CompanyAdding)

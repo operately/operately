@@ -20,6 +20,7 @@ defmodule OperatelyWeb.Api.Types do
   object :activity_content_message_archiving do
     field :company_id, :string
     field :space_id, :string
+    field :space, :space
     field :message_id, :string
     field :title, :string
   end
