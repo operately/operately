@@ -5,18 +5,16 @@ defmodule Operately.Messages.Permissions do
     :can_archive_message,
   ]
 
-  def calculate(access_level) when is_integer(access_level) do
+  def calculate(person, message) do
+    access_level = message.request_info.access_level
+
     %__MODULE__{
-      can_archive_message: access_level >= Binding.full_access(),
+      can_archive_message: message.author_id == person.id || access_level >= Binding.full_access(),
     }
   end
 
-  def check(message = %Operately.Messages.Message{}, permission) do
-    check(message.request_info.access_level, permission)
-  end
-
-  def check(access_level, permission) when is_integer(access_level) and is_atom(permission) do
-    permissions = calculate(access_level)
+  def check(person, message, permission) do
+    permissions = calculate(person, message)
 
     case Map.get(permissions, permission) do
       true -> {:ok, :allowed}

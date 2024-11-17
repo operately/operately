@@ -13,9 +13,9 @@ defmodule OperatelyWeb.Api.Mutations.ArchiveMessage do
   def call(conn, inputs) do
     with(
       {:ok, me} <- find_me(conn),
-      {:ok, resource} <- Message.get(me, id: inputs.message_id),
-      {:ok, :allowed} <- Permissions.check(resource, :can_archive_message),
-      {:ok, _} <- MessageArchiving.run(me, resource)
+      {:ok, message} <- Message.get(me, id: inputs.message_id),
+      {:ok, :allowed} <- Permissions.check(me, message, :can_archive_message),
+      {:ok, _} <- MessageArchiving.run(me, message)
     ) do
       {:ok, %{}}
     else
