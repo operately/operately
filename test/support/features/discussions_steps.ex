@@ -296,6 +296,14 @@ defmodule Operately.Support.Features.DiscussionsSteps do
     |> NotificationsSteps.assert_discussion_posted(author: ctx.author, title: "This is a draft discussion (edited)")
   end
 
+  step :click_on_share_draft_link, ctx do
+    UI.click(ctx, testid: "share-link")
+  end
+
+  step :assert_link_is_visible, ctx do
+    UI.assert_text(ctx, Paths.message_path(ctx.company, last_message(ctx)))
+  end
+
   #
   # Utilities
   #

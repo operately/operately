@@ -79,10 +79,6 @@ defmodule OperatelyWeb.Paths do
     create_path([company_id(company), "notifications"])
   end
 
-  def discussion_path(company = %Company{}, discussion) do
-    create_path([company_id(company), "discussions", discussion_id(discussion)])
-  end
-
   def message_path(company = %Company{}, message) do
     create_path([company_id(company), "discussions", message_id(message)])
   end
@@ -167,12 +163,6 @@ defmodule OperatelyWeb.Paths do
   def task_id(task) do
     id = Operately.ShortUuid.encode!(task.id)
     OperatelyWeb.Api.Helpers.id_with_comments(task.name, id)
-  end
-
-  def discussion_id(discussion) do
-    id = Operately.ShortUuid.encode!(discussion.id)
-    title = discussion.content[:title] || discussion.content["title"] || ""
-    OperatelyWeb.Api.Helpers.id_with_comments(title, id)
   end
 
   def message_id(message) do
