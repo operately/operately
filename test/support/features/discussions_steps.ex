@@ -304,9 +304,52 @@ defmodule Operately.Support.Features.DiscussionsSteps do
     UI.assert_text(ctx, Paths.message_path(ctx.company, last_message(ctx)))
   end
 
+  step :archive_discussion, ctx do
+    message = last_message(ctx)
+
+    ctx 
+    |> UI.visit(Paths.message_path(ctx.company, message))
+    |> UI.click(testid: "options-button")
+    |> UI.click(testid: "archive-discussion")
+  end
+
+  step :assert_discussion_is_archived, ctx do
+    message = last_archived_message(ctx)
+
+    ctx 
+    |> UI.visit(Paths.space_discussions_path(ctx.company, ctx.marketing_space))
+    |> UI.refute_text(message.title)
+  end
+
+  step :assert_discussion_feed_events, ctx do
+    message = last_archived_message(ctx)
+
+    ctx 
+    |> UI.visit(Paths.space_path(ctx.company, ctx.marketing_space))
+    |> UI.assert_feed_item(ctx.creator, "deleted: #{message.title}")
+  end
+
   #
   # Utilities
   #
+
+  defp last_archived_message(ctx, attempts \\ 3) do
+    import Ecto.Query
+
+    message = Operately.Repo.one(
+      from m in Operately.Messages.Message, 
+      where: not is_nil(m.deleted_at),
+      limit: 1
+    )
+
+    cond do
+      message -> message
+      attempts <= 0 -> raise "Could not find the last archived message"
+      true -> 
+        :timer.sleep(300)
+        last_archived_message(ctx, attempts - 1)
+    end
+  end
 
   defp last_message(ctx, attempts \\ 3) do
     import Ecto.Query

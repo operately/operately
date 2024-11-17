@@ -25,6 +25,7 @@ import { GhostButton, PrimaryButton } from "@/components/Buttons";
 import { ActionLink } from "@/components/Link";
 import { CopyToClipboard } from "@/components/CopyToClipboard";
 import { match } from "ts-pattern";
+import { useNavigate } from "react-router-dom";
 
 export function Page() {
   const { discussion } = useLoadedData();
@@ -138,7 +139,14 @@ function Navigation({ space }) {
 
 function Options() {
   const me = useMe()!;
+  const navigate = useNavigate();
   const { discussion } = useLoadedData();
+  const [archive] = Discussions.useArchiveMessage();
+
+  const handleArchive = async () => {
+    await archive({ messageId: discussion.id! });
+    navigate(Paths.spaceDiscussionsPath(discussion.space!.id!));
+  };
 
   if (!compareIds(me.id, discussion.author!.id)) return null;
 
@@ -149,6 +157,13 @@ function Options() {
         title="Edit Post"
         to={Paths.discussionEditPath(discussion.id!)}
         testId="edit-discussion"
+      />
+
+      <PageOptions.Action
+        icon={Icons.IconEdit}
+        title="Delete Post"
+        onClick={handleArchive}
+        testId="archive-discussion"
       />
     </PageOptions.Root>
   );
