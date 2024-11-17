@@ -101,4 +101,12 @@ defmodule Operately.Features.DiscussionsTest do
     |> Steps.submit_discussion()
     |> Steps.assert_discussion_is_posted_with_attachment()
   end
+
+  feature "archive a discussion", ctx do
+    ctx
+    |> Steps.given_a_discussion_exists()
+    |> Steps.archive_discussion()
+    |> Steps.assert_discussion_is_archived()
+    |> Steps.assert_discussion_feed_events()
+  end
 end
