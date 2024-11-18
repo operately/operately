@@ -3,7 +3,6 @@ import React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as Spaces from "@/models/spaces";
-import * as Companies from "@/models/companies";
 
 import { PrimaryButton, GhostButton } from "@/components/Buttons";
 import { Form, useForm, FormState } from "@/features/DiscussionForm";
@@ -12,13 +11,11 @@ import { SubscribersSelector } from "@/features/Subscriptions";
 import { Link } from "@/components/Link";
 
 interface LoaderResult {
-  company: Companies.Company;
   space: Spaces.Space;
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
   return {
-    company: await Companies.getCompany({ id: params.companyId }).then((d) => d.company!),
     space: await Spaces.getSpace({
       id: params.id,
       includePotentialSubscribers: true,
@@ -45,9 +42,6 @@ export function Page() {
 }
 
 function Submit({ form }) {
-  const { company } = Pages.useLoadedData<LoaderResult>();
-  const hasDraftFeature = Companies.hasFeature(company, "draft_discussions");
-
   return (
     <Paper.DimmedSection>
       <div className="flex flex-col gap-8">
@@ -56,14 +50,12 @@ function Submit({ form }) {
         <div>
           <div className="flex items-center gap-2">
             <PostButton form={form} />
-            {hasDraftFeature && <SaveAsDraftButton form={form} />}
+            <SaveAsDraftButton form={form} />
           </div>
 
-          {hasDraftFeature && (
-            <div className="mt-4">
-              Or, <DiscardLink form={form} />
-            </div>
-          )}
+          <div className="mt-4">
+            Or, <DiscardLink form={form} />
+          </div>
         </div>
       </div>
     </Paper.DimmedSection>
