@@ -4,6 +4,7 @@ defmodule Operately.Support.Features.DiscussionsSteps do
   alias Operately.Support.Features.UI
   alias Operately.Support.Features.NotificationsSteps
   alias Operately.Support.Features.EmailSteps
+  alias Operately.Messages.Message
 
   @title "This is a discussion"
   @body "This is the body of the discussion."
@@ -143,6 +144,9 @@ defmodule Operately.Support.Features.DiscussionsSteps do
     |> UI.fill_rich_text(@body)
     |> UI.click(testid: "save-as-draft")
     |> UI.assert_has(testid: "discussion-page")
+    |> then(fn ctx ->
+      Map.put(ctx, :draft_discussion, last_message(ctx))
+    end)
   end
 
   step :assert_draft_discussion_is_posted, ctx do
@@ -176,8 +180,8 @@ defmodule Operately.Support.Features.DiscussionsSteps do
     |> UI.assert_has(testid: "discussion-page")
   end
 
-  step :assert_draft_edit_is_saved, ctx do
-    discussion = last_message(ctx)
+  step :assert_draft_edit_is_saved, ctx, message_name \\ :draft_discussion do
+    assert {:ok, discussion} = Message.get(:system, id: ctx[message_name].id)
 
     assert discussion.state == :draft
     assert discussion.title =~ ~r/edited/
@@ -239,14 +243,12 @@ defmodule Operately.Support.Features.DiscussionsSteps do
     |> Factory.add_message(:draft_discussion_1, :messages_board, [
       state: :draft,
       creator: ctx.author,
-      title: "Draft discussion 1",
-      inserted_at: ~N[2021-01-01 00:00:00]
+      title: "Draft discussion 1"
     ])
     |> Factory.add_message(:draft_discussion_2, :messages_board, [
       state: :draft,
       creator: ctx.author,
-      title: "Draft discussion 2",
-      inserted_at: ~N[2021-01-01 00:00:00]
+      title: "Draft discussion 2"
     ])
   end
 
