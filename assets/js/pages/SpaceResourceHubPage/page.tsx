@@ -4,22 +4,30 @@ import { ResourceHubNode } from "@/models/resourceHubs";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
-import { IconFile, IconFolder, IconUpload } from "@tabler/icons-react";
+import { IconFile, IconFolder } from "@tabler/icons-react";
 import { Paths } from "@/routes/paths";
-import { useLoadedData } from "./loader";
-import { OptionsButton } from "@/components/Buttons";
+import { useLoadedData, useRefresh } from "./loader";
+import { AddFilesButtonAndForms } from "./AddNewFiles";
+import { assertPresent } from "@/utils/assertions";
+import classNames from "classnames";
 
 export function Page() {
-  const { nodes } = useLoadedData();
+  const { resourceHub } = useLoadedData();
+  const refresh = useRefresh();
+
+  assertPresent(resourceHub.nodes, "nodes must be present in resourceHub");
 
   return (
-    <Pages.Page title="Resource Hub">
-      <Paper.Root size="large">
+    <Pages.Page title={resourceHub.name!}>
+      <Paper.Root>
         <PageNavigation />
 
         <Paper.Body minHeight="75vh">
-          <Header />
-          {nodes.length < 1 ? <ZeroNodes /> : <NodesList nodes={nodes} />}
+          <Title />
+
+          <AddFilesButtonAndForms resourceHub={resourceHub} refresh={refresh} />
+
+          {resourceHub.nodes.length < 1 ? <ZeroNodes /> : <NodesList nodes={resourceHub.nodes} />}
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
@@ -36,29 +44,10 @@ function PageNavigation() {
   );
 }
 
-function Header() {
-  return (
-    <div className="relative text-content-accent text-center text-3xl font-extrabold">
-      Resource Hub
-      <NewFileButton />
-    </div>
-  );
-}
+function Title() {
+  const { resourceHub } = useLoadedData();
 
-function NewFileButton() {
-  return (
-    <div className="absolute top-0 left-0 text-base font-normal">
-      <OptionsButton
-        align="start"
-        options={[
-          { icon: IconFile, label: "Write a new document", action: () => {}, testId: "new-document" },
-          { icon: IconFolder, label: "Create a new folder", action: () => {}, testId: "new-folder" },
-          { icon: IconUpload, label: "Upload files", action: () => {}, testId: "upload-files" },
-        ]}
-        testId="add-options"
-      />
-    </div>
-  );
+  return <div className="text-content-accent text-center text-3xl font-extrabold">{resourceHub.name}</div>;
 }
 
 function ZeroNodes() {
@@ -73,6 +62,30 @@ function ZeroNodes() {
   );
 }
 
-function NodesList({}: { nodes: ResourceHubNode[] }) {
-  return <></>;
+function NodesList({ nodes }: { nodes: ResourceHubNode[] }) {
+  return (
+    <div className="mt-12">
+      {nodes.map((node) => (
+        <NodeItem node={node} key={node.id} />
+      ))}
+    </div>
+  );
+}
+
+function NodeItem({ node }: { node: ResourceHubNode }) {
+  const className = classNames(
+    "flex gap-4 py-4",
+    "cursor-pointer hover:bg-surface-accent",
+    "border-b border-stroke-base first:border-t last:border-b-0",
+  );
+
+  return (
+    <div className={className}>
+      <IconFolder size={48} />
+      <div>
+        <div className="font-bold text-lg">{node.name}</div>
+        <div>3 items</div>
+      </div>
+    </div>
+  );
 }
