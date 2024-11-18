@@ -529,6 +529,13 @@ defmodule OperatelyWeb.Api.Types do
     field :permissions, :resource_hub_permissions
   end
 
+  object :resource_hub_document do
+    field :id, :string
+    field :name, :string
+    field :content, :string
+    field :permissions, :resource_hub_permissions
+  end
+
   object :resource_hub_node do
     field :id, :string
     field :name, :string
