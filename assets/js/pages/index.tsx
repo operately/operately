@@ -74,6 +74,7 @@ import * as ProjectResumePage from "./ProjectResumePage";
 import * as ProjectRetrospectiveEditPage from "./ProjectRetrospectiveEditPage";
 import * as ProjectRetrospectivePage from "./ProjectRetrospectivePage";
 import * as ProjectsPage from "./ProjectsPage";
+import * as ResourceHubNewDocumentPage from "./ResourceHubNewDocumentPage";
 import * as ReviewPage from "./ReviewPage";
 import * as SetupPage from "./SetupPage";
 import * as SpaceAccessManagementPage from "./SpaceAccessManagementPage";
@@ -447,6 +448,11 @@ export default {
     name: "ProjectsPage",
     loader: ProjectsPage.loader,
     Page: ProjectsPage.Page,
+  },
+  ResourceHubNewDocumentPage: {
+    name: "ResourceHubNewDocumentPage",
+    loader: ResourceHubNewDocumentPage.loader,
+    Page: ResourceHubNewDocumentPage.Page,
   },
   ReviewPage: {
     name: "ReviewPage",

@@ -1011,6 +1011,13 @@ export interface ResourceHub {
   updatedAt?: string | null;
 }
 
+export interface ResourceHubDocument {
+  id?: string | null;
+  name?: string | null;
+  content?: string | null;
+  permissions?: ResourceHubPermissions | null;
+}
+
 export interface ResourceHubFolder {
   id?: string | null;
   name?: string | null;
@@ -1639,7 +1646,8 @@ export interface GetProjectsResult {
 }
 
 export interface GetResourceHubInput {
-  id?: string | null;
+  id?: Id | null;
+  includeSpace?: boolean | null;
 }
 
 export interface GetResourceHubResult {
@@ -2003,6 +2011,17 @@ export interface CreateResourceHubInput {
 
 export interface CreateResourceHubResult {
   resourceHub?: ResourceHub | null;
+}
+
+export interface CreateResourceHubDocumentInput {
+  resourceHubId?: Id | null;
+  folderId?: Id | null;
+  name?: string | null;
+  content?: string | null;
+}
+
+export interface CreateResourceHubDocumentResult {
+  document?: Document | null;
 }
 
 export interface CreateResourceHubFolderInput {
@@ -2799,6 +2818,10 @@ export class ApiClient {
     return this.post("/create_resource_hub", input);
   }
 
+  async createResourceHubDocument(input: CreateResourceHubDocumentInput): Promise<CreateResourceHubDocumentResult> {
+    return this.post("/create_resource_hub_document", input);
+  }
+
   async createResourceHubFolder(input: CreateResourceHubFolderInput): Promise<CreateResourceHubFolderResult> {
     return this.post("/create_resource_hub_folder", input);
   }
@@ -3233,6 +3256,11 @@ export async function createProject(input: CreateProjectInput): Promise<CreatePr
 }
 export async function createResourceHub(input: CreateResourceHubInput): Promise<CreateResourceHubResult> {
   return defaultApiClient.createResourceHub(input);
+}
+export async function createResourceHubDocument(
+  input: CreateResourceHubDocumentInput,
+): Promise<CreateResourceHubDocumentResult> {
+  return defaultApiClient.createResourceHubDocument(input);
 }
 export async function createResourceHubFolder(
   input: CreateResourceHubFolderInput,
@@ -3755,6 +3783,15 @@ export function useCreateResourceHub(): UseMutationHookResult<CreateResourceHubI
   );
 }
 
+export function useCreateResourceHubDocument(): UseMutationHookResult<
+  CreateResourceHubDocumentInput,
+  CreateResourceHubDocumentResult
+> {
+  return useMutation<CreateResourceHubDocumentInput, CreateResourceHubDocumentResult>((input) =>
+    defaultApiClient.createResourceHubDocument(input),
+  );
+}
+
 export function useCreateResourceHubFolder(): UseMutationHookResult<
   CreateResourceHubFolderInput,
   CreateResourceHubFolderResult
@@ -4240,6 +4277,8 @@ export default {
   useCreateProject,
   createResourceHub,
   useCreateResourceHub,
+  createResourceHubDocument,
+  useCreateResourceHubDocument,
   createResourceHubFolder,
   useCreateResourceHubFolder,
   createSpace,
