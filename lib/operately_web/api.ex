@@ -73,6 +73,7 @@ defmodule OperatelyWeb.Api do
   mutation :create_project, M.CreateProject
   mutation :create_task, M.CreateTask
   mutation :create_resource_hub, M.CreateResourceHub
+  mutation :create_resource_hub_document, M.CreateResourceHubDocument
   mutation :create_resource_hub_folder, M.CreateResourceHubFolder
 
   mutation :remove_company_admin, M.RemoveCompanyAdmin

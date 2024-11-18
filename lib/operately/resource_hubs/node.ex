@@ -6,7 +6,7 @@ defmodule Operately.ResourceHubs.Node do
     belongs_to :parent_folder, Operately.ResourceHubs.Folder, foreign_key: :parent_folder_id
 
     field :name, :string
-    field :type, Ecto.Enum, values: [:folder]
+    field :type, Ecto.Enum, values: [:document, :folder]
 
     has_one :folder, Operately.ResourceHubs.Folder, foreign_key: :node_id
 
