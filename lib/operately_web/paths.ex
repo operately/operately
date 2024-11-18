@@ -255,6 +255,10 @@ defmodule OperatelyWeb.Paths do
     Operately.ShortUuid.encode!(node.id)
   end
 
+  def document_id(document) do
+    Operately.ShortUuid.encode!(document.id)
+  end
+
   #
   # Path Construction Helpers
   #
