@@ -2,11 +2,13 @@ defmodule Operately.ResourceHubs.Permissions do
   alias Operately.Access.Binding
 
   defstruct [
+    :can_create_document,
     :can_create_folder,
   ]
 
   def calculate(access_level) when is_integer(access_level) do
     %__MODULE__{
+      can_create_document: access_level >= Binding.edit_access(),
       can_create_folder: access_level >= Binding.edit_access(),
     }
   end
