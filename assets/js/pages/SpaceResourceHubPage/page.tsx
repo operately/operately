@@ -23,9 +23,11 @@ export function Page() {
         <PageNavigation />
 
         <Paper.Body minHeight="75vh">
-          <Title />
-
-          <AddFilesButtonAndForms resourceHub={resourceHub} refresh={refresh} />
+          <Paper.Header
+            actions={<AddFilesButtonAndForms resourceHub={resourceHub} refresh={refresh} />}
+            title={resourceHub.name!}
+            layout="title-center-actions-left"
+          />
 
           {resourceHub.nodes.length < 1 ? <ZeroNodes /> : <NodesList nodes={resourceHub.nodes} />}
         </Paper.Body>
@@ -42,12 +44,6 @@ function PageNavigation() {
       <Paper.NavItem linkTo={Paths.spacePath(space.id!)}>{space.name}</Paper.NavItem>
     </Paper.Navigation>
   );
-}
-
-function Title() {
-  const { resourceHub } = useLoadedData();
-
-  return <div className="text-content-accent text-center text-3xl font-extrabold">{resourceHub.name}</div>;
 }
 
 function ZeroNodes() {

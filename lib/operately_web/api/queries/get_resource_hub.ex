@@ -5,7 +5,7 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHub do
   alias Operately.ResourceHubs.ResourceHub
 
   inputs do
-    field :id, :string
+    field :id, :id
   end
 
   outputs do
@@ -15,8 +15,7 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHub do
   def call(conn, inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:id, fn -> decode_id(inputs.id) end)
-    |> run(:hub, fn ctx -> ResourceHub.get(ctx.me, id: ctx.id, opts: [preload: :nodes]) end)
+    |> run(:hub, fn ctx -> ResourceHub.get(ctx.me, id: inputs.id, opts: [preload: :nodes]) end)
     |> run(:serialized, fn ctx -> {:ok, %{resource_hub: Serializer.serialize(ctx.hub)}} end)
     |> respond()
   end
