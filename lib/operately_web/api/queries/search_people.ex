@@ -115,6 +115,15 @@ defmodule OperatelyWeb.Api.Queries.SearchPeople do
           join: c in assoc(b, :context),
           where: c.goal_id == ^id and b.access_level >= ^Binding.view_access(),
           group_by: p.id
+
+      {"resource_hub", id} ->
+        from p in query,
+          join: m in assoc(p, :access_group_memberships),
+          join: g in assoc(m, :group),
+          join: b in assoc(g, :bindings),
+          join: c in assoc(b, :context),
+          where: c.resource_hub_id == ^id and b.access_level >= ^Binding.view_access(),
+          group_by: p.id
     end
   end
 

@@ -1646,7 +1646,8 @@ export interface GetProjectsResult {
 }
 
 export interface GetResourceHubInput {
-  id?: string | null;
+  id?: Id | null;
+  includeSpace?: boolean | null;
 }
 
 export interface GetResourceHubResult {

@@ -11,17 +11,24 @@ interface RichTextAreaProps {
   label?: string;
   hidden?: boolean;
   placeholder?: string;
+  hideBorder?: boolean;
   mentionSearchScope: People.SearchScope;
 }
 
 export function RichTextArea(props: RichTextAreaProps) {
-  const { field, label, hidden, placeholder } = props;
+  const { field, label, hidden, placeholder, hideBorder } = props;
 
   const error = useFieldError(field);
 
   return (
     <InputField field={field} label={label} error={error} hidden={hidden}>
-      <Editor placeholder={placeholder} field={field} error={!!error} mentionSearchScope={props.mentionSearchScope} />
+      <Editor
+        placeholder={placeholder}
+        field={field}
+        error={!!error}
+        mentionSearchScope={props.mentionSearchScope}
+        hideBorder={hideBorder}
+      />
     </InputField>
   );
 }
@@ -31,9 +38,10 @@ interface EditorProps {
   field: string;
   error: boolean | undefined;
   mentionSearchScope: People.SearchScope;
+  hideBorder?: boolean;
 }
 
-function Editor({ placeholder, field, error, mentionSearchScope }: EditorProps) {
+function Editor({ placeholder, field, error, mentionSearchScope, hideBorder }: EditorProps) {
   const form = useFormContext();
   const [value, setValue] = useFieldValue(field);
 
@@ -60,7 +68,7 @@ function Editor({ placeholder, field, error, mentionSearchScope }: EditorProps) 
   }, [value, editor.editor]);
 
   return (
-    <div className={styles(!!error)}>
+    <div className={styles(!!error, hideBorder)}>
       <TipTapEditor.Root editor={editor.editor}>
         <TipTapEditor.Toolbar editor={editor.editor} noTopBorder />
         <TipTapEditor.EditorContent editor={editor.editor} />
@@ -69,11 +77,11 @@ function Editor({ placeholder, field, error, mentionSearchScope }: EditorProps) 
   );
 }
 
-function styles(error: boolean | undefined) {
+function styles(error: boolean | undefined, hideBorder?: boolean) {
   return classNames({
     "w-full": true,
     "bg-surface-base text-content-accent placeholder-content-subtle": true,
-    "border rounded-lg": true,
+    "border rounded-lg": !hideBorder,
     "border-surface-outline": !error,
     "border-red-500": error,
   });

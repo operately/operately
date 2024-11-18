@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { ResourceHub, useCreateResourceHubFolder } from "@/models/resourceHubs";
 
@@ -6,6 +7,7 @@ import { IconFile, IconFolder, IconUpload } from "@tabler/icons-react";
 import { OptionsButton } from "@/components/Buttons";
 import Modal from "@/components/Modal";
 import Forms from "@/components/Forms";
+import { Paths } from "@/routes/paths";
 
 interface FormProps {
   showForm: boolean;
@@ -15,9 +17,11 @@ interface FormProps {
 }
 
 export function AddFilesButtonAndForms({ resourceHub, refresh }: { resourceHub: ResourceHub; refresh: () => void }) {
+  const navigate = useNavigate();
   const [showAddFolder, setShowAddFolder] = useState(false);
 
   const toggleShowAddFolder = () => setShowAddFolder(!showAddFolder);
+  const navigateToNewDocument = () => navigate(Paths.resourceHubNewDocumentPath(resourceHub.id!));
 
   return (
     <>
@@ -25,7 +29,7 @@ export function AddFilesButtonAndForms({ resourceHub, refresh }: { resourceHub: 
         <OptionsButton
           align="start"
           options={[
-            { icon: IconFile, label: "Write a new document", action: () => {}, testId: "new-document" },
+            { icon: IconFile, label: "Write a new document", action: navigateToNewDocument, testId: "new-document" },
             { icon: IconFolder, label: "Create a new folder", action: toggleShowAddFolder, testId: "new-folder" },
             { icon: IconUpload, label: "Upload files", action: () => {}, testId: "upload-files" },
           ]}
