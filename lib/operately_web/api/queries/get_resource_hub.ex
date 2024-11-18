@@ -6,6 +6,7 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHub do
 
   inputs do
     field :id, :id
+    field :include_space, :boolean
   end
 
   outputs do
@@ -15,7 +16,7 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHub do
   def call(conn, inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:hub, fn ctx -> ResourceHub.get(ctx.me, id: inputs.id, opts: [preload: :nodes]) end)
+    |> run(:hub, fn ctx -> load(ctx, inputs) end)
     |> run(:serialized, fn ctx -> {:ok, %{resource_hub: Serializer.serialize(ctx.hub)}} end)
     |> respond()
   end
@@ -27,5 +28,18 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHub do
       {:error, :hub, _} -> {:error, :not_found}
       _ -> {:error, :internal_server_error}
     end
+  end
+
+  def load(ctx, inputs) do
+    ResourceHub.get(ctx.me, id: inputs.id, opts: [
+      preload: preload(inputs),
+    ])
+  end
+
+  def preload(inputs) do
+    Inputs.parse_includes(inputs, [
+      include_space: :space,
+      always_include: :nodes,
+    ])
   end
 end

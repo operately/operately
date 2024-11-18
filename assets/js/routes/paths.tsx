@@ -192,6 +192,10 @@ export class Paths {
     return createCompanyPath(["spaces", "new"]);
   }
 
+  static resourceHubNewDocumentPath(resourceHubId: string) {
+    return createCompanyPath(["resource-hubs", resourceHubId, "new-document"]);
+  }
+
   static spacePath(spaceId: string) {
     return createCompanyPath(["spaces", spaceId]);
   }

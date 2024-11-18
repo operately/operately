@@ -1,6 +1,7 @@
 import { Form } from "./Form";
 import { Submit } from "./Submit";
 import { TextInput } from "./TextInput";
+import { TitleInput } from "./TitleInput";
 import { SelectBox } from "./SelectBox";
 import { FieldGroup } from "./FieldGroup";
 import { SelectGoal } from "./SelectGoal";
@@ -24,6 +25,7 @@ export default {
   Form,
   Submit,
   TextInput,
+  TitleInput,
   SelectBox,
   FieldGroup,
   SelectGoal,

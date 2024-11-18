@@ -12,6 +12,7 @@ export type SearchScope =
   | { type: "project"; id: string }
   | { type: "space"; id: string }
   | { type: "goal"; id: string }
+  | { type: "resource_hub"; id: string }
   | { type: "none"; id?: undefined };
 
 export const CompanyWideSearchScope = { type: "company" } as SearchScope;
