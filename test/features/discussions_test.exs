@@ -7,7 +7,6 @@ defmodule Operately.Features.DiscussionsTest do
 
   feature "post a draft discussion", ctx do
     ctx
-    |> Steps.given_the_draft_experimental_feature_is_enabled()
     |> Steps.post_a_draft_discussion()
     |> Steps.assert_draft_discussion_is_posted()
     |> Steps.assert_draft_is_not_listed_on_space_page()
@@ -15,7 +14,6 @@ defmodule Operately.Features.DiscussionsTest do
 
   feature "share a link to a draft", ctx do
     ctx
-    |> Steps.given_the_draft_experimental_feature_is_enabled()
     |> Steps.post_a_draft_discussion()
     |> Steps.click_on_share_draft_link()
     |> Steps.assert_link_is_visible()
@@ -23,7 +21,6 @@ defmodule Operately.Features.DiscussionsTest do
 
   feature "continue editing a draft message", ctx do
     ctx
-    |> Steps.given_the_draft_experimental_feature_is_enabled()
     |> Steps.post_a_draft_discussion()
     |> Steps.click_on_continue_editing()
     |> Steps.modify_the_draft_discussion_and_save()
@@ -32,7 +29,6 @@ defmodule Operately.Features.DiscussionsTest do
 
   feature "continue editing last draft in a message board", ctx do
     ctx
-    |> Steps.given_the_draft_experimental_feature_is_enabled()
     |> Steps.given_a_draft_discussion_exists()
     |> Steps.visit_the_discussion_board()
     |> Steps.click_on_continue_editing_last_draft()
@@ -42,7 +38,6 @@ defmodule Operately.Features.DiscussionsTest do
 
   feature "listing my drafts and continue editing", ctx do
     ctx
-    |> Steps.given_the_draft_experimental_feature_is_enabled()
     |> Steps.given_multiple_draft_discussions_exist()
     |> Steps.visit_the_discussion_board()
     |> Steps.click_on_continue_editing_draft()
@@ -52,7 +47,6 @@ defmodule Operately.Features.DiscussionsTest do
 
   feature "publish a draft discussion (without editing)", ctx do
     ctx
-    |> Steps.given_the_draft_experimental_feature_is_enabled()
     |> Steps.post_a_draft_discussion()
     |> Steps.publish_draft()
     |> Steps.assert_discussion_is_posted()
@@ -63,7 +57,6 @@ defmodule Operately.Features.DiscussionsTest do
 
   feature "edit draft and publish (from the edit draft page)", ctx do
     ctx
-    |> Steps.given_the_draft_experimental_feature_is_enabled()
     |> Steps.post_a_draft_discussion()
     |> Steps.edit_and_publish_draft()
     |> Steps.assert_edited_discussion_is_posted()

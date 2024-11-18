@@ -3,20 +3,17 @@ import React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as Discussions from "@/models/discussions";
-import * as Companies from "@/models/companies";
 
 import { PrimaryButton, GhostButton } from "@/components/Buttons";
 import { Form, FormState, useForm } from "@/features/DiscussionForm";
 import { Paths } from "@/routes/paths";
 
 interface LoaderResult {
-  company: Companies.Company;
   discussion: Discussions.Discussion;
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
   return {
-    company: await Companies.getCompany({ id: params.companyId }).then((d) => d.company!),
     discussion: await Discussions.getDiscussion({
       id: params.id,
       includeSpace: true,
@@ -72,10 +69,7 @@ function SaveChanges({ form }: { form: FormState }) {
 }
 
 function PublishNow({ form }: { form: FormState }) {
-  const { company, discussion } = Pages.useLoadedData<LoaderResult>();
-  const hasDraftFeature = Companies.hasFeature(company, "draft_discussions");
-
-  if (!hasDraftFeature) return null;
+  const { discussion } = Pages.useLoadedData<LoaderResult>();
   if (discussion.state !== "draft") return null;
 
   return (

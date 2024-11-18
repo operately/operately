@@ -104,10 +104,6 @@ defmodule Operately.Support.Features.DiscussionsSteps do
     |> UI.assert_text("README.md")
   end
 
-  step :given_the_draft_experimental_feature_is_enabled, ctx do
-    Factory.enable_feature(ctx, "draft_discussions")
-  end
-
   step :given_a_discussion_exists, ctx do
     ctx
     |> UI.visit(Paths.space_discussions_path(ctx.company, ctx.marketing_space))
