@@ -42,7 +42,7 @@ defmodule Operately.Features.DiscussionsTest do
     |> Steps.visit_the_discussion_board()
     |> Steps.click_on_continue_editing_draft()
     |> Steps.modify_the_draft_discussion_and_save()
-    |> Steps.assert_draft_edit_is_saved()
+    |> Steps.assert_draft_edit_is_saved(:draft_discussion_1)
   end
 
   feature "publish a draft discussion (without editing)", ctx do
