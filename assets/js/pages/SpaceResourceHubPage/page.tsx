@@ -23,7 +23,7 @@ export function Page() {
         <PageNavigation />
 
         <Paper.Body minHeight="75vh">
-          <Title />
+          <Paper.Title>{resourceHub.name}</Paper.Title>
 
           <AddFilesButtonAndForms resourceHub={resourceHub} refresh={refresh} />
 
@@ -44,12 +44,6 @@ function PageNavigation() {
   );
 }
 
-function Title() {
-  const { resourceHub } = useLoadedData();
-
-  return <div className="text-content-accent text-center text-3xl font-extrabold">{resourceHub.name}</div>;
-}
-
 function ZeroNodes() {
   return (
     <div className="border border-dashed border-stroke-base p-4 w-[500px] mx-auto mt-12 flex gap-4">
@@ -64,7 +58,7 @@ function ZeroNodes() {
 
 function NodesList({ nodes }: { nodes: ResourceHubNode[] }) {
   return (
-    <div className="mt-12">
+    <div className="mt-8">
       {nodes.map((node) => (
         <NodeItem node={node} key={node.id} />
       ))}

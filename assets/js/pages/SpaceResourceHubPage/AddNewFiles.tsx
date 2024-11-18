@@ -21,7 +21,7 @@ export function AddFilesButtonAndForms({ resourceHub, refresh }: { resourceHub: 
 
   return (
     <>
-      <div className="absolute" style={{ top: "45px" }}>
+      <div className="w-min">
         <OptionsButton
           align="start"
           options={[
