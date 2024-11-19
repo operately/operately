@@ -16,6 +16,7 @@ export function Form({ project }: { project: Project }) {
 
   const [post] = usePostProjectCheckIn();
   const navigate = useNavigate();
+
   const subscriptionsState = useSubscriptions(project.potentialSubscribers, {
     ignoreMe: true,
     notifyPrioritySubscribers: true,
