@@ -77,6 +77,7 @@ defmodule Operately.Features.DiscussionsTest do
     |> Steps.given_a_discussion_exists()
     |> Steps.leave_a_comment()
     |> Steps.assert_comment_notification_and_email_sent()
+    |> Steps.assert_comment_is_listed_in_the_feed()
   end
 
   feature "edit a posted discussion", ctx do
