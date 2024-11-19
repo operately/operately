@@ -46,6 +46,7 @@ defmodule OperatelyWeb.Api do
   query :get_binded_people, Q.GetBindedPeople
   query :get_unread_notification_count, Q.GetUnreadNotificationCount
   query :get_resource_hub, Q.GetResourceHub
+  query :get_resource_hub_folder, Q.GetResourceHubFolder
   query :list_space_tools, Q.ListSpaceTools
   query :search_people, Q.SearchPeople
   query :search_potential_space_members, Q.SearchPotentialSpaceMembers
