@@ -57,7 +57,7 @@ function Editor({ placeholder, field, error, mentionSearchScope }: EditorProps) 
     if (editor.editor) {
       editor.editor.commands.setContent(value);
     }
-  }, [value, editor.editor]);
+  }, [editor.editor]);
 
   return (
     <div className={styles(!!error)}>
