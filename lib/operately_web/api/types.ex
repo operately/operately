@@ -524,6 +524,7 @@ defmodule OperatelyWeb.Api.Types do
 
   object :resource_hub_folder do
     field :id, :string
+    field :resource_hub, :resource_hub
     field :name, :string
     field :description, :string
     field :nodes, list_of(:resource_hub_node)
@@ -541,6 +542,8 @@ defmodule OperatelyWeb.Api.Types do
     field :id, :string
     field :name, :string
     field :type, :string
+    field :folder, :resource_hub_folder
+    field :document, :resource_hub_document
   end
 
   object :project_permissions do

@@ -6,6 +6,8 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubFolder do
 
   inputs do
     field :id, :id
+    field :include_nodes, :boolean
+    field :include_resource_hub, :boolean
   end
 
   outputs do
@@ -30,7 +32,15 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubFolder do
 
   def load(ctx, inputs) do
     Folder.get(ctx.me, id: inputs.id, opts: [
-      preload: [:node, :child_nodes]
+      preload: preload(inputs)
+    ])
+  end
+
+  def preload(inputs) do
+    Inputs.parse_includes(inputs, [
+      include_nodes: [child_nodes: [[folder: :node], [document: :node]]],
+      include_resource_hub: [node: :resource_hub],
+      always_include: :node,
     ])
   end
 end

@@ -7,6 +7,7 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHub do
   inputs do
     field :id, :id
     field :include_space, :boolean
+    field :include_nodes, :boolean
   end
 
   outputs do
@@ -39,7 +40,7 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHub do
   def preload(inputs) do
     Inputs.parse_includes(inputs, [
       include_space: :space,
-      always_include: :nodes,
+      include_nodes: [nodes: [[folder: :node], [document: :node]]],
     ])
   end
 end

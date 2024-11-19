@@ -3,6 +3,8 @@ import React from "react";
 import { ResourceHubNode } from "@/models/resourceHubs";
 import { IconFolder, IconFile } from "@tabler/icons-react";
 import classNames from "classnames";
+import { Paths } from "@/routes/paths";
+import { DivLink } from "@/components/Link";
 
 type NodeType = "document" | "folder";
 
@@ -23,15 +25,16 @@ function NodeItem({ node }: { node: ResourceHubNode }) {
     "border-b border-stroke-base first:border-t last:border-b-0",
   );
   const Icon = findIcon(node.type as NodeType);
+  const path = findPath(node.type as NodeType, node);
 
   return (
-    <div className={className}>
+    <DivLink to={path} className={className}>
       <Icon size={48} />
       <div>
         <div className="font-bold text-lg">{node.name}</div>
         <div>3 items</div>
       </div>
-    </div>
+    </DivLink>
   );
 }
 
@@ -41,5 +44,14 @@ function findIcon(nodeType: NodeType) {
       return IconFile;
     case "folder":
       return IconFolder;
+  }
+}
+
+function findPath(nodeType: NodeType, node: ResourceHubNode) {
+  switch (nodeType) {
+    case "document":
+      return "";
+    case "folder":
+      return Paths.resourceHubFolderPath(node.folder!.id!);
   }
 }
