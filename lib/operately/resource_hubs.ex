@@ -65,6 +65,12 @@ defmodule Operately.ResourceHubs do
     |> Repo.all()
   end
 
+  def create_document(attrs \\ %{}) do
+    %Document{}
+    |> Document.changeset(attrs)
+    |> Repo.insert()
+  end
+
   #
   # Nodes
   #

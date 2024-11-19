@@ -58,4 +58,5 @@ defmodule Operately.Support.Factory do
   # resource hubs
   defdelegate add_resource_hub(ctx, testid, space_name, creator_name, opts \\ []), to: ResourceHubs
   defdelegate add_folder(ctx, testid, hub_name, folder_name \\ nil), to: ResourceHubs
+  defdelegate add_document(ctx, testid, hub_name, folder_name \\ nil), to: ResourceHubs
 end

@@ -30,4 +30,20 @@ defmodule Operately.ResourceHubsFixtures do
 
     folder
   end
+
+  def document_fixture(hub_id, attrs \\ []) do
+    {:ok, node} = Operately.ResourceHubs.create_node(%{
+      resource_hub_id: hub_id,
+      parent_folder_id: attrs[:parent_folder_id] && attrs.parent_folder_id,
+      name: attrs[:name] || "some name",
+      type: :document,
+    })
+
+    {:ok, document} = Operately.ResourceHubs.create_document(%{
+      node_id: node.id,
+      content: attrs[:content] || RichText.rich_text("Content"),
+    })
+
+    document
+  end
 end

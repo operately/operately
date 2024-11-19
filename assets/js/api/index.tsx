@@ -1023,6 +1023,7 @@ export interface ResourceHubFolder {
   id?: string | null;
   name?: string | null;
   description?: string | null;
+  nodes?: ResourceHubNode[] | null;
   permissions?: ResourceHubPermissions | null;
 }
 
@@ -1652,6 +1653,14 @@ export interface GetResourceHubInput {
 
 export interface GetResourceHubResult {
   resourceHub?: ResourceHub | null;
+}
+
+export interface GetResourceHubFolderInput {
+  id?: Id | null;
+}
+
+export interface GetResourceHubFolderResult {
+  folder?: ResourceHubFolder | null;
 }
 
 export interface GetSpaceInput {
@@ -2666,6 +2675,10 @@ export class ApiClient {
     return this.get("/get_resource_hub", input);
   }
 
+  async getResourceHubFolder(input: GetResourceHubFolderInput): Promise<GetResourceHubFolderResult> {
+    return this.get("/get_resource_hub_folder", input);
+  }
+
   async getSpace(input: GetSpaceInput): Promise<GetSpaceResult> {
     return this.get("/get_space", input);
   }
@@ -3135,6 +3148,9 @@ export async function getProjects(input: GetProjectsInput): Promise<GetProjectsR
 export async function getResourceHub(input: GetResourceHubInput): Promise<GetResourceHubResult> {
   return defaultApiClient.getResourceHub(input);
 }
+export async function getResourceHubFolder(input: GetResourceHubFolderInput): Promise<GetResourceHubFolderResult> {
+  return defaultApiClient.getResourceHubFolder(input);
+}
 export async function getSpace(input: GetSpaceInput): Promise<GetSpaceResult> {
   return defaultApiClient.getSpace(input);
 }
@@ -3579,6 +3595,12 @@ export function useGetProjects(input: GetProjectsInput): UseQueryHookResult<GetP
 
 export function useGetResourceHub(input: GetResourceHubInput): UseQueryHookResult<GetResourceHubResult> {
   return useQuery<GetResourceHubResult>(() => defaultApiClient.getResourceHub(input));
+}
+
+export function useGetResourceHubFolder(
+  input: GetResourceHubFolderInput,
+): UseQueryHookResult<GetResourceHubFolderResult> {
+  return useQuery<GetResourceHubFolderResult>(() => defaultApiClient.getResourceHubFolder(input));
 }
 
 export function useGetSpace(input: GetSpaceInput): UseQueryHookResult<GetSpaceResult> {
@@ -4205,6 +4227,8 @@ export default {
   useGetProjects,
   getResourceHub,
   useGetResourceHub,
+  getResourceHubFolder,
+  useGetResourceHubFolder,
   getSpace,
   useGetSpace,
   getSpaces,
