@@ -1,15 +1,14 @@
 import React from "react";
 
-import { ResourceHubNode } from "@/models/resourceHubs";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
-import { IconFile, IconFolder } from "@tabler/icons-react";
+import { IconFile } from "@tabler/icons-react";
 import { Paths } from "@/routes/paths";
 import { useLoadedData, useRefresh } from "./loader";
 import { AddFilesButtonAndForms } from "./AddNewFiles";
 import { assertPresent } from "@/utils/assertions";
-import classNames from "classnames";
+import { NodesList } from "./NodesList";
 
 export function Page() {
   const { resourceHub } = useLoadedData();
@@ -53,34 +52,6 @@ function ZeroNodes() {
       <div>
         <div className="font-bold">Nothing here just yet.</div>A place to share rich text documents, images, videos, and
         other files.
-      </div>
-    </div>
-  );
-}
-
-function NodesList({ nodes }: { nodes: ResourceHubNode[] }) {
-  return (
-    <div className="mt-12">
-      {nodes.map((node) => (
-        <NodeItem node={node} key={node.id} />
-      ))}
-    </div>
-  );
-}
-
-function NodeItem({ node }: { node: ResourceHubNode }) {
-  const className = classNames(
-    "flex gap-4 py-4",
-    "cursor-pointer hover:bg-surface-accent",
-    "border-b border-stroke-base first:border-t last:border-b-0",
-  );
-
-  return (
-    <div className={className}>
-      <IconFolder size={48} />
-      <div>
-        <div className="font-bold text-lg">{node.name}</div>
-        <div>3 items</div>
       </div>
     </div>
   );
