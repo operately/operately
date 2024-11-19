@@ -771,6 +771,7 @@ defmodule OperatelyWeb.Api.Types do
     field :space_id, :string
     field :discussion_id, :string
     field :discussion, :discussion
+    field :comment, :comment
     field :space, :space
     field :title, :string
   end

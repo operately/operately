@@ -5,6 +5,10 @@ import type { ActivityContentDiscussionCommentSubmitted } from "@/api";
 import type { ActivityHandler } from "../interfaces";
 
 import { Paths } from "@/routes/paths";
+import { Summary } from "@/components/RichContent";
+import React from "react";
+import { Link } from "@/components/Link";
+import { feedTitle } from "../feedItemLinks";
 
 const DiscussionCommentSubmitted: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -27,12 +31,24 @@ const DiscussionCommentSubmitted: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle(_props: { activity: Activity; page: any }) {
-    throw new Error("Not implemented");
+  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+    const discussion = content(activity).discussion!;
+    const space = content(activity).space!;
+
+    const path = Paths.discussionPath(discussion.id!);
+    const activityLink = <Link to={path}>{discussion.title}</Link>;
+
+    if (page === "space") {
+      return feedTitle(activity, "commented on", activityLink);
+    } else {
+      return feedTitle(activity, "commented on", activityLink, "in", space.name!, "space");
+    }
   },
 
-  FeedItemContent(_props: { activity: Activity; page: any }) {
-    throw new Error("Not implemented");
+  FeedItemContent({ activity }: { activity: Activity }) {
+    const comment = content(activity).comment!;
+    const commentContent = JSON.parse(comment.content!)["message"];
+    return <Summary jsonContent={commentContent} characterCount={200} />;
   },
 
   feedItemAlignment(_activity: Activity): "items-start" | "items-center" {
