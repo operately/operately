@@ -30,9 +30,7 @@ function Navigation() {
     <Paper.Navigation>
       <Paper.NavItem linkTo={Paths.spacePath(resourceHub.space.id!)}>{resourceHub.space.name}</Paper.NavItem>
       <Paper.NavSeparator />
-      <Paper.NavItem linkTo={Paths.spaceResourceHubPath(resourceHub.space.id!, resourceHub.id!)}>
-        {resourceHub.name}
-      </Paper.NavItem>
+      <Paper.NavItem linkTo={Paths.resourceHubPath(resourceHub.id!)}>{resourceHub.name}</Paper.NavItem>
     </Paper.Navigation>
   );
 }
