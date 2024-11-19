@@ -327,6 +327,14 @@ defmodule Operately.Support.Features.DiscussionsSteps do
     |> UI.assert_feed_item(ctx.creator, "deleted: #{message.title}")
   end
 
+  step :assert_comment_is_listed_in_the_feed, ctx do
+    ctx 
+    |> UI.visit(Paths.space_path(ctx.company, ctx.marketing_space))
+    |> UI.assert_feed_item(ctx.reader, "commented on #{@title}")
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.assert_feed_item(ctx.reader, "commented on #{@title}")
+  end
+
   #
   # Utilities
   #

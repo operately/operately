@@ -110,6 +110,7 @@ export const DISPLAYED_IN_FEED = [
   "space_member_removed",
   "space_members_added",
   "message_archiving",
+  "discussion_comment_submitted",
 ];
 
 //

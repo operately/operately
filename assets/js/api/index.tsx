@@ -195,6 +195,7 @@ export interface ActivityContentDiscussionCommentSubmitted {
   spaceId?: string | null;
   discussionId?: string | null;
   discussion?: Discussion | null;
+  comment?: Comment | null;
   space?: Space | null;
   title?: string | null;
 }
@@ -1646,7 +1647,7 @@ export interface GetProjectsResult {
 }
 
 export interface GetResourceHubInput {
-  id?: string | null;
+  id?: Id | null;
 }
 
 export interface GetResourceHubResult {
