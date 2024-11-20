@@ -126,6 +126,11 @@ export interface AccessLevels {
   space?: number | null;
 }
 
+export interface Account {
+  fullName?: string | null;
+  siteAdmin?: boolean | null;
+}
+
 export interface Activity {
   id?: string | null;
   scopeType?: string | null;
@@ -1328,6 +1333,12 @@ export type UpdateContent =
   | UpdateContentReview
   | UpdateContentProjectDiscussion
   | UpdateContentMessage;
+
+export interface GetAccountInput {}
+
+export interface GetAccountResult {
+  account?: Account | null;
+}
 
 export interface GetActivitiesInput {
   scopeId?: string | null;
@@ -2570,6 +2581,10 @@ export class ApiClient {
     return toCamel(response.data);
   }
 
+  async getAccount(input: GetAccountInput): Promise<GetAccountResult> {
+    return this.get("/get_account", input);
+  }
+
   async getActivities(input: GetActivitiesInput): Promise<GetActivitiesResult> {
     return this.get("/get_activities", input);
   }
@@ -3067,6 +3082,9 @@ export class ApiClient {
 
 const defaultApiClient = new ApiClient();
 
+export async function getAccount(input: GetAccountInput): Promise<GetAccountResult> {
+  return defaultApiClient.getAccount(input);
+}
 export async function getActivities(input: GetActivitiesInput): Promise<GetActivitiesResult> {
   return defaultApiClient.getActivities(input);
 }
@@ -3482,6 +3500,10 @@ export async function updateTask(input: UpdateTaskInput): Promise<UpdateTaskResu
 }
 export async function updateTaskStatus(input: UpdateTaskStatusInput): Promise<UpdateTaskStatusResult> {
   return defaultApiClient.updateTaskStatus(input);
+}
+
+export function useGetAccount(input: GetAccountInput): UseQueryHookResult<GetAccountResult> {
+  return useQuery<GetAccountResult>(() => defaultApiClient.getAccount(input));
 }
 
 export function useGetActivities(input: GetActivitiesInput): UseQueryHookResult<GetActivitiesResult> {
@@ -4178,6 +4200,8 @@ export function useUpdateTaskStatus(): UseMutationHookResult<UpdateTaskStatusInp
 export default {
   default: defaultApiClient,
 
+  getAccount,
+  useGetAccount,
   getActivities,
   useGetActivities,
   getActivity,

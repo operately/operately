@@ -2,6 +2,7 @@ import * as Api from "@/api";
 import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Icons from "@tabler/icons-react";
+import * as People from "@/models/people";
 
 import { OperatelyLogo } from "@/components/OperatelyLogo";
 import { DivLink, Link } from "@/components/Link";
@@ -11,11 +12,13 @@ import { Paths } from "@/routes/paths";
 import plurarize from "@/utils/plurarize";
 
 interface LoaderResult {
+  account: Api.Account;
   companies: Api.Company[];
 }
 
 export async function loader(): Promise<LoaderResult> {
   return {
+    account: await Api.getAccount({}).then((res) => res.account!),
     companies: await Api.getCompanies({
       includeMemberCount: true,
     }).then((res) => res.companies!),
@@ -23,13 +26,15 @@ export async function loader(): Promise<LoaderResult> {
 }
 
 export function Page() {
-  const { companies } = Pages.useLoadedData<LoaderResult>();
+  const { account, companies } = Pages.useLoadedData<LoaderResult>();
+
+  const fistName = People.firstName(account);
 
   return (
     <Pages.Page title={"Lobby"}>
       <div className="m-12">
         <OperatelyLogo width="32px" height="32px" />
-        <div className="font-medium mt-8">Hey there! How's it going?</div>
+        <div className="font-medium mt-8">Hey there, {fistName}! How's it going?</div>
         <div className="font-medium">Select one of your organizations below to get started:</div>
         <CompanyCards companies={companies} />
         <AdminsAndDevLinks />
@@ -39,7 +44,12 @@ export function Page() {
 }
 
 function AdminsAndDevLinks() {
-  if (!window.appConfig.showDevBar) return null;
+  const { account } = Pages.useLoadedData<LoaderResult>();
+
+  const isAdmin = account.siteAdmin;
+  const isDev = window.appConfig.showDevBar;
+
+  if (!isAdmin && !isDev) return null;
 
   const adminLink = (
     <Link to="/admin" className="font-medium">
@@ -53,11 +63,23 @@ function AdminsAndDevLinks() {
     </Link>
   );
 
-  return (
-    <div className="font-medium mt-8">
-      Or, visit the {adminLink} or the {designLink}.
-    </div>
-  );
+  if (isAdmin && isDev) {
+    return (
+      <div className="font-medium mt-8">
+        Or, visit the {adminLink} or the {designLink}.
+      </div>
+    );
+  }
+
+  if (isAdmin) {
+    return <div className="font-medium mt-8">Or, visit the {adminLink}.</div>;
+  }
+
+  if (isDev) {
+    return <div className="font-medium mt-8">Or, visit the {designLink}.</div>;
+  }
+
+  throw new Error("This should never happen");
 }
 
 function CompanyCards({ companies }: { companies: Api.Company[] }) {

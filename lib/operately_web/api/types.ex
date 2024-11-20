@@ -11,6 +11,11 @@ defmodule OperatelyWeb.Api.Types do
     decoded_type: :number,
     decode_with: &OperatelyWeb.Api.Ids.decode_company_id/1
 
+  object :account do
+    field :full_name, :string
+    field :site_admin, :boolean
+  end
+
   object :access_levels do
     field :public, :integer
     field :company, :integer

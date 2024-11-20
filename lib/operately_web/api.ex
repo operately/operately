@@ -13,6 +13,7 @@ defmodule OperatelyWeb.Api do
   alias OperatelyWeb.Api.Mutations, as: M
   alias OperatelyWeb.Api.Subscriptions, as: S
 
+  query :get_account, Q.GetAccount
   query :get_activities, Q.GetActivities
   query :get_activity, Q.GetActivity
   query :get_assignments_count, Q.GetAssignmentsCount

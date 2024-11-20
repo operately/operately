@@ -9,6 +9,7 @@ defmodule Operately.People.Account do
     field :password, :string, virtual: true, redact: true
     field :hashed_password, :string, redact: true
     field :confirmed_at, :naive_datetime
+    field :site_admin, :boolean, default: false
 
     timestamps()
   end
@@ -60,10 +61,6 @@ defmodule Operately.People.Account do
     changeset
     |> validate_required([:password])
     |> validate_length(:password, min: 12, max: 72)
-    # Examples of additional password validation:
-    # |> validate_format(:password, ~r/[a-z]/, message: "at least one lower case character")
-    # |> validate_format(:password, ~r/[A-Z]/, message: "at least one upper case character")
-    # |> validate_format(:password, ~r/[!?@#$%^&*_0-9]/, message: "at least one digit or punctuation character")
     |> maybe_hash_password(opts)
   end
 
@@ -134,6 +131,18 @@ defmodule Operately.People.Account do
   def confirm_changeset(account) do
     now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
     change(account, confirmed_at: now)
+  end
+
+  def promote_to_admin(account) do
+    account
+    |> change(site_admin: true)
+    |> Operately.Repo.update()
+  end
+
+  def demote_from_admin(account) do
+    account
+    |> change(site_admin: false)
+    |> Operately.Repo.update()
   end
 
   @doc """
