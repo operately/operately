@@ -1021,6 +1021,7 @@ export interface ResourceHubDocument {
 
 export interface ResourceHubFolder {
   id?: string | null;
+  resourceHub?: ResourceHub | null;
   name?: string | null;
   description?: string | null;
   nodes?: ResourceHubNode[] | null;
@@ -1031,6 +1032,8 @@ export interface ResourceHubNode {
   id?: string | null;
   name?: string | null;
   type?: string | null;
+  folder?: ResourceHubFolder | null;
+  document?: ResourceHubDocument | null;
 }
 
 export interface ResourceHubPermissions {
@@ -1650,6 +1653,7 @@ export interface GetProjectsResult {
 export interface GetResourceHubInput {
   id?: Id | null;
   includeSpace?: boolean | null;
+  includeNodes?: boolean | null;
 }
 
 export interface GetResourceHubResult {
@@ -1658,6 +1662,8 @@ export interface GetResourceHubResult {
 
 export interface GetResourceHubFolderInput {
   id?: Id | null;
+  includeNodes?: boolean | null;
+  includeResourceHub?: boolean | null;
 }
 
 export interface GetResourceHubFolderResult {

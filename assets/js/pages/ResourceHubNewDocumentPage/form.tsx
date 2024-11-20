@@ -7,7 +7,7 @@ import Forms from "@/components/Forms";
 import { Paths } from "@/routes/paths";
 import { useLoadedData } from "./loader";
 
-export function Form() {
+export function Form({ folderId }: { folderId: string | null }) {
   const { resourceHub } = useLoadedData();
   const navigate = useNavigate();
   const [post] = useCreateResourceHubDocument();
@@ -31,6 +31,7 @@ export function Form() {
     submit: async () => {
       await post({
         resourceHubId: resourceHub.id,
+        folderId: folderId,
         name: form.values.title,
         content: JSON.stringify(form.values.content),
       });
