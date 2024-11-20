@@ -36,11 +36,13 @@ export function Page() {
 }
 
 function PageNavigation() {
-  const { space } = useLoadedData();
+  const { resourceHub } = useLoadedData();
+
+  assertPresent(resourceHub.space, "space must be present in resourceHub");
 
   return (
     <Paper.Navigation>
-      <Paper.NavItem linkTo={Paths.spacePath(space.id!)}>{space.name}</Paper.NavItem>
+      <Paper.NavItem linkTo={Paths.spacePath(resourceHub.space.id!)}>{resourceHub.space.name}</Paper.NavItem>
     </Paper.Navigation>
   );
 }
