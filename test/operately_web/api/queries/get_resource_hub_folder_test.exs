@@ -43,7 +43,10 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubFolderTest do
         document_fixture(resource_hub.id, %{parent_folder_id: folder.id})
         document_fixture(resource_hub.id, %{parent_folder_id: folder.id})
 
-        assert {code, res} = query(ctx.conn, :get_resource_hub_folder, %{id: Paths.folder_id(folder)})
+        assert {code, res} = query(ctx.conn, :get_resource_hub_folder, %{
+          id: Paths.folder_id(folder),
+          include_nodes: true,
+        })
 
         assert code == @test.expected
 
@@ -74,8 +77,11 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubFolderTest do
       |> Factory.add_document(:doc4, :hub, :folder2)
     end
 
-    test "list all files within folder", ctx do
-      assert {200, res} = query(ctx.conn, :get_resource_hub_folder, %{id: Paths.folder_id(ctx.folder1)})
+    test "include_nodes", ctx do
+      assert {200, res} = query(ctx.conn, :get_resource_hub_folder, %{
+        id: Paths.folder_id(ctx.folder1),
+        include_nodes: true,
+      })
 
       assert res.folder.name == ctx.folder1.node.name
       assert length(res.folder.nodes) == 2
@@ -87,7 +93,10 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubFolderTest do
         assert Enum.find(res.folder.nodes, &(&1.id == Paths.node_id(node)))
       end)
 
-      assert {200, res} = query(ctx.conn, :get_resource_hub_folder, %{id: Paths.folder_id(ctx.folder2)})
+      assert {200, res} = query(ctx.conn, :get_resource_hub_folder, %{
+        id: Paths.folder_id(ctx.folder2),
+        include_nodes: true,
+      })
 
       assert res.folder.name == ctx.folder2.node.name
       assert length(res.folder.nodes) == 2
@@ -98,6 +107,20 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubFolderTest do
 
         assert Enum.find(res.folder.nodes, &(&1.id == Paths.node_id(node)))
       end)
+    end
+
+    test "include_resource_hub", ctx do
+      assert {200, res} = query(ctx.conn, :get_resource_hub_folder, %{
+        id: Paths.folder_id(ctx.folder1),
+      })
+
+      refute res.folder.resource_hub
+
+      assert {200, res} = query(ctx.conn, :get_resource_hub_folder, %{
+        id: Paths.folder_id(ctx.folder1),
+        include_resource_hub: true,
+      })
+      assert res.folder.resource_hub.id == Paths.resource_hub_id(ctx.hub)
     end
   end
 

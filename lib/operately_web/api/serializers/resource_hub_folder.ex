@@ -10,6 +10,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ResourceHubs.Folder do
   def serialize(folder, level: :full) do
     %{
       id: OperatelyWeb.Paths.folder_id(folder),
+      resource_hub: OperatelyWeb.Api.Serializer.serialize(folder.node.resource_hub),
       name: folder.node.name,
       description: folder.description && Jason.encode!(folder.description),
       nodes: OperatelyWeb.Api.Serializer.serialize(folder.child_nodes),
