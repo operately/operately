@@ -2,7 +2,7 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHub do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
-  alias Operately.ResourceHubs.ResourceHub
+  alias Operately.ResourceHubs.{ResourceHub, Node}
 
   inputs do
     field :id, :id
@@ -38,9 +38,11 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHub do
   end
 
   def preload(inputs) do
+    q = from(n in Node, where: is_nil(n.parent_folder_id), preload: [folder: :node, document: :node])
+
     Inputs.parse_includes(inputs, [
       include_space: :space,
-      include_nodes: [nodes: [[folder: :node], [document: :node]]],
+      include_nodes: [nodes: q],
     ])
   end
 end
