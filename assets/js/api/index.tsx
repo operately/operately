@@ -1672,6 +1672,14 @@ export interface GetResourceHubResult {
   resourceHub?: ResourceHub | null;
 }
 
+export interface GetResourceHubDocumentInput {
+  id?: Id | null;
+}
+
+export interface GetResourceHubDocumentResult {
+  document?: ResourceHubDocument | null;
+}
+
 export interface GetResourceHubFolderInput {
   id?: Id | null;
   includeNodes?: boolean | null;
@@ -2699,6 +2707,10 @@ export class ApiClient {
     return this.get("/get_resource_hub", input);
   }
 
+  async getResourceHubDocument(input: GetResourceHubDocumentInput): Promise<GetResourceHubDocumentResult> {
+    return this.get("/get_resource_hub_document", input);
+  }
+
   async getResourceHubFolder(input: GetResourceHubFolderInput): Promise<GetResourceHubFolderResult> {
     return this.get("/get_resource_hub_folder", input);
   }
@@ -3175,6 +3187,11 @@ export async function getProjects(input: GetProjectsInput): Promise<GetProjectsR
 export async function getResourceHub(input: GetResourceHubInput): Promise<GetResourceHubResult> {
   return defaultApiClient.getResourceHub(input);
 }
+export async function getResourceHubDocument(
+  input: GetResourceHubDocumentInput,
+): Promise<GetResourceHubDocumentResult> {
+  return defaultApiClient.getResourceHubDocument(input);
+}
 export async function getResourceHubFolder(input: GetResourceHubFolderInput): Promise<GetResourceHubFolderResult> {
   return defaultApiClient.getResourceHubFolder(input);
 }
@@ -3626,6 +3643,12 @@ export function useGetProjects(input: GetProjectsInput): UseQueryHookResult<GetP
 
 export function useGetResourceHub(input: GetResourceHubInput): UseQueryHookResult<GetResourceHubResult> {
   return useQuery<GetResourceHubResult>(() => defaultApiClient.getResourceHub(input));
+}
+
+export function useGetResourceHubDocument(
+  input: GetResourceHubDocumentInput,
+): UseQueryHookResult<GetResourceHubDocumentResult> {
+  return useQuery<GetResourceHubDocumentResult>(() => defaultApiClient.getResourceHubDocument(input));
 }
 
 export function useGetResourceHubFolder(
@@ -4260,6 +4283,8 @@ export default {
   useGetProjects,
   getResourceHub,
   useGetResourceHub,
+  getResourceHubDocument,
+  useGetResourceHubDocument,
   getResourceHubFolder,
   useGetResourceHubFolder,
   getSpace,
