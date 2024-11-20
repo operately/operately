@@ -1,7 +1,9 @@
 defmodule Mix.Tasks.Operately.Gen.Typescript.Api do
   def run(_) do
-    content = TurboConnect.TsGen.generate(OperatelyWeb.Api)
+    api = TurboConnect.TsGen.generate(OperatelyWeb.Api)
+    File.write!("assets/js/api/index.tsx", api)
 
-    File.write!("assets/js/api/index.tsx", content)
+    admin_api = TurboConnect.TsGen.generate(OperatelyEE.AdminApi)
+    File.write!("assets/js/ee/admin_api/index.tsx", admin_api)
   end
 end
