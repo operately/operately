@@ -32,8 +32,23 @@ export function Page() {
         <div className="font-medium mt-8">Hey there! How's it going?</div>
         <div className="font-medium">Select one of your organizations below to get started:</div>
         <CompanyCards companies={companies} />
+        <AdminsAndDevLinks />
       </div>
     </Pages.Page>
+  );
+}
+
+function AdminsAndDevLinks() {
+  if (!window.appConfig.showDevBar) return null;
+
+  return (
+    <div>
+      <div className="font-medium mt-8">Or, use one of the following:</div>
+      <div className="flex flex-wrap gap-4 mt-4">
+        <AdminPanel />
+        <DesignSystem />
+      </div>
+    </div>
   );
 }
 
@@ -88,6 +103,34 @@ function AddCompanyCard() {
       <div className="flex justify-end mt-3">
         <Icons.IconSparkles size={32} className="text-white-1" strokeWidth={1} />
       </div>
+    </DivLink>
+  );
+}
+
+function DesignSystem() {
+  return <ToolCard icon={<Icons.IconPalette size={24} />} title="Design System" to={"/__design__"} />;
+}
+
+function AdminPanel() {
+  return <ToolCard icon={<Icons.IconAdjustments size={24} />} title="Admin Panel" to={"/admin"} />;
+}
+
+function ToolCard({ icon, title, to }: { icon: React.ReactNode; title: string; to: string }) {
+  const className = classnames(
+    "cursor-pointer",
+    "bg-surface-base",
+    "rounded-lg",
+    "px-4 py-4 w-64",
+    "relative",
+    "border border-surface-outline",
+    "hover:shadow transition-shadow",
+    "flex items-center gap-2",
+  );
+
+  return (
+    <DivLink to={to} className={className}>
+      {icon}
+      <div className="font-medium">{title}</div>
     </DivLink>
   );
 }
