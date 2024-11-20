@@ -9,19 +9,18 @@ import Modal from "@/components/Modal";
 import Forms from "@/components/Forms";
 import { Paths } from "@/routes/paths";
 
-interface FormProps {
-  showForm: boolean;
-  toggleForm: () => void;
-  refresh: () => void;
+interface Props {
   resourceHub: ResourceHub;
+  refresh: () => void;
+  folderId?: string;
 }
 
-export function AddFilesButtonAndForms({ resourceHub, refresh }: { resourceHub: ResourceHub; refresh: () => void }) {
+export function AddFilesButtonAndForms({ resourceHub, refresh, folderId }: Props) {
   const navigate = useNavigate();
   const [showAddFolder, setShowAddFolder] = useState(false);
 
   const toggleShowAddFolder = () => setShowAddFolder(!showAddFolder);
-  const navigateToNewDocument = () => navigate(Paths.resourceHubNewDocumentPath(resourceHub.id!));
+  const navigateToNewDocument = () => navigate(Paths.resourceHubNewDocumentPath(resourceHub.id!, folderId));
 
   return (
     <>
@@ -42,12 +41,21 @@ export function AddFilesButtonAndForms({ resourceHub, refresh }: { resourceHub: 
         showForm={showAddFolder}
         toggleForm={toggleShowAddFolder}
         refresh={refresh}
+        folderId={folderId}
       />
     </>
   );
 }
 
-function AddFolderModal({ resourceHub, showForm, toggleForm, refresh }: FormProps) {
+interface FormProps {
+  showForm: boolean;
+  toggleForm: () => void;
+  refresh: () => void;
+  resourceHub: ResourceHub;
+  folderId?: string;
+}
+
+function AddFolderModal({ resourceHub, showForm, toggleForm, refresh, folderId }: FormProps) {
   const [post] = useCreateResourceHubFolder();
 
   const form = Forms.useForm({
@@ -64,6 +72,7 @@ function AddFolderModal({ resourceHub, showForm, toggleForm, refresh }: FormProp
     submit: async () => {
       await post({
         resourceHubId: resourceHub.id,
+        folderId: folderId,
         name: form.values.name,
         description: JSON.stringify(form.values.description),
       });

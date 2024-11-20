@@ -196,8 +196,16 @@ export class Paths {
     return createCompanyPath(["resource-hubs", resourceHubId]);
   }
 
-  static resourceHubNewDocumentPath(resourceHubId: string) {
-    return createCompanyPath(["resource-hubs", resourceHubId, "new-document"]);
+  static resourceHubFolderPath(folderId: string) {
+    return createCompanyPath(["folders", folderId]);
+  }
+
+  static resourceHubNewDocumentPath(resourceHubId: string, folderId?: string) {
+    if (folderId) {
+      return createCompanyPath(["resource-hubs", resourceHubId, "new-document"]) + "?folderId=" + folderId;
+    } else {
+      return createCompanyPath(["resource-hubs", resourceHubId, "new-document"]);
+    }
   }
 
   static spacePath(spaceId: string) {

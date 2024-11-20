@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { useCreateResourceHubDocument } from "@/models/resourceHubs";
 
@@ -10,6 +10,7 @@ import { useLoadedData } from "./loader";
 export function Form() {
   const { resourceHub } = useLoadedData();
   const navigate = useNavigate();
+  const location = useLocation();
   const [post] = useCreateResourceHubDocument();
 
   const form = Forms.useForm({
@@ -29,8 +30,12 @@ export function Form() {
       navigate(Paths.resourceHubPath(resourceHub.id!));
     },
     submit: async () => {
+      const params = new URLSearchParams(location.search);
+      const folderId = params.get("folderId");
+
       await post({
         resourceHubId: resourceHub.id,
+        folderId: folderId,
         name: form.values.title,
         content: JSON.stringify(form.values.content),
       });

@@ -41,7 +41,7 @@ defmodule OperatelyWeb.Api.Queries.ListResourceHubContentTest do
         resource_hub = create_resource_hub(ctx, space, @test.company, @test.space)
         folder_fixture(resource_hub.id)
 
-        assert {code, res} = query(ctx.conn, :get_resource_hub, %{id: Paths.resource_hub_id(resource_hub)})
+        assert {code, res} = query(ctx.conn, :get_resource_hub, %{id: Paths.resource_hub_id(resource_hub), include_nodes: true})
 
         assert code == @test.expected
 
@@ -70,8 +70,8 @@ defmodule OperatelyWeb.Api.Queries.ListResourceHubContentTest do
       |> Factory.add_folder(:folder5, :hub2)
     end
 
-    test "list all files within hub", ctx do
-      assert {200, res} = query(ctx.conn, :get_resource_hub, %{id: Paths.resource_hub_id(ctx.hub1)})
+    test "include_nodes", ctx do
+      assert {200, res} = query(ctx.conn, :get_resource_hub, %{id: Paths.resource_hub_id(ctx.hub1), include_nodes: true})
 
       assert res.resource_hub.name == ctx.hub1.name
       assert length(res.resource_hub.nodes) == 3
@@ -83,7 +83,7 @@ defmodule OperatelyWeb.Api.Queries.ListResourceHubContentTest do
         assert Enum.find(res.resource_hub.nodes, &(&1.id == Paths.node_id(node)))
       end)
 
-      assert {200, res} = query(ctx.conn, :get_resource_hub, %{id: Paths.resource_hub_id(ctx.hub2)})
+      assert {200, res} = query(ctx.conn, :get_resource_hub, %{id: Paths.resource_hub_id(ctx.hub2), include_nodes: true})
 
       assert res.resource_hub.name == ctx.hub2.name
       assert length(res.resource_hub.nodes) == 2
