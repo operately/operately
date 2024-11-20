@@ -1026,6 +1026,7 @@ export interface ResourceHubFolder {
   description?: string | null;
   nodes?: ResourceHubNode[] | null;
   permissions?: ResourceHubPermissions | null;
+  pathToFolder?: ResourceHubFolder[] | null;
 }
 
 export interface ResourceHubNode {
@@ -1664,6 +1665,7 @@ export interface GetResourceHubFolderInput {
   id?: Id | null;
   includeNodes?: boolean | null;
   includeResourceHub?: boolean | null;
+  includePathToFolder?: boolean | null;
 }
 
 export interface GetResourceHubFolderResult {
