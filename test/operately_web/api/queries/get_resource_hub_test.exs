@@ -95,6 +95,14 @@ defmodule OperatelyWeb.Api.Queries.ListResourceHubContentTest do
         assert Enum.find(res.resource_hub.nodes, &(&1.id == Paths.node_id(node)))
       end)
     end
+
+    test "include_space", ctx do
+      assert {200, res} = query(ctx.conn, :get_resource_hub, %{id: Paths.resource_hub_id(ctx.hub1)})
+      refute res.resource_hub.space
+
+      assert {200, res} = query(ctx.conn, :get_resource_hub, %{id: Paths.resource_hub_id(ctx.hub1), include_space: true})
+      assert res.resource_hub.space == Serializer.serialize(ctx.space, level: :essential)
+    end
   end
 
   #
