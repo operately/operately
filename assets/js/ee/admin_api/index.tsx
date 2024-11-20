@@ -1,61 +1,65 @@
 import React from "react";
 import axios from "axios";
 
-function toCamel(o : any) {
-  var newO : any, origKey : any, newKey : any, value : any;
+function toCamel(o: any) {
+  var newO: any, origKey: any, newKey: any, value: any;
 
   if (o instanceof Array) {
-    return o.map(function(value) {
-        if (typeof value === "object") {
-          value = toCamel(value)
-        }
-        return value
-    })
+    return o.map(function (value) {
+      if (typeof value === "object") {
+        value = toCamel(value);
+      }
+      return value;
+    });
   } else {
-    newO = {}
+    newO = {};
     for (origKey in o) {
       if (o.hasOwnProperty(origKey) && typeof o[origKey] !== "undefined") {
-        newKey = origKey.replace(/_([a-z])/g, function(_a : string, b : string) { return b.toUpperCase() })
-        value = o[origKey]
+        newKey = origKey.replace(/_([a-z])/g, function (_a: string, b: string) {
+          return b.toUpperCase();
+        });
+        value = o[origKey];
         if (value instanceof Array || (value !== null && value.constructor === Object)) {
-          value = toCamel(value)
+          value = toCamel(value);
         }
-        newO[newKey] = value
+        newO[newKey] = value;
       }
     }
   }
-  return newO
+  return newO;
 }
 
-function toSnake(o : any) {
-  var newO : any, origKey : any, newKey : any, value : any;
+function toSnake(o: any) {
+  var newO: any, origKey: any, newKey: any, value: any;
 
   if (o instanceof Array) {
-    return o.map(function(value) {
-        if (typeof value === "object") {
-          value = toSnake(value)
-        }
-        return value
-    })
+    return o.map(function (value) {
+      if (typeof value === "object") {
+        value = toSnake(value);
+      }
+      return value;
+    });
   } else {
-    newO = {}
+    newO = {};
     for (origKey in o) {
       if (o.hasOwnProperty(origKey) && typeof o[origKey] !== "undefined") {
-        newKey = origKey.replace(/([A-Z])/g, function(a : string) { return "_" + a.toLowerCase() })
-        value = o[origKey]
+        newKey = origKey.replace(/([A-Z])/g, function (a: string) {
+          return "_" + a.toLowerCase();
+        });
+        value = o[origKey];
         if (value instanceof Array || (value !== null && value.constructor === Object)) {
-          value = toSnake(value)
+          value = toSnake(value);
         }
-        newO[newKey] = value
+        newO[newKey] = value;
       }
     }
   }
-  return newO
+  return newO;
 }
 
-type UseQueryHookResult<ResultT> = { data: ResultT | null, loading: boolean, error: Error | null, refetch: () => void };
+type UseQueryHookResult<ResultT> = { data: ResultT | null; loading: boolean; error: Error | null; refetch: () => void };
 
-export function useQuery<ResultT>(fn: () => Promise<ResultT>) : UseQueryHookResult<ResultT> {
+export function useQuery<ResultT>(fn: () => Promise<ResultT>): UseQueryHookResult<ResultT> {
   const [data, setData] = React.useState<ResultT | null>(null);
   const [loading, setLoading] = React.useState<boolean>(true);
   const [error, setError] = React.useState<Error | null>(null);
@@ -63,7 +67,10 @@ export function useQuery<ResultT>(fn: () => Promise<ResultT>) : UseQueryHookResu
   const fetchData = React.useCallback(() => {
     setError(null);
 
-    fn().then(setData).catch(setError).finally(() => setLoading(false));
+    fn()
+      .then(setData)
+      .catch(setError)
+      .finally(() => setLoading(false));
   }, []);
 
   React.useEffect(() => fetchData(), []);
@@ -78,10 +85,12 @@ export function useQuery<ResultT>(fn: () => Promise<ResultT>) : UseQueryHookResu
 
 type UseMutationHookResult<InputT, ResultT> = [
   (input: InputT) => Promise<ResultT | any>,
-  { data: ResultT | null, loading: boolean, error: Error | null }
+  { data: ResultT | null; loading: boolean; error: Error | null },
 ];
 
-export function useMutation<InputT, ResultT>(fn: (input: InputT) => Promise<ResultT>) : UseMutationHookResult<InputT, ResultT> {
+export function useMutation<InputT, ResultT>(
+  fn: (input: InputT) => Promise<ResultT>,
+): UseMutationHookResult<InputT, ResultT> {
   const [data, setData] = React.useState<ResultT | null>(null);
   const [loading, setLoading] = React.useState<boolean>(false);
   const [error, setError] = React.useState<Error | null>(null);
@@ -107,7 +116,6 @@ export function useMutation<InputT, ResultT>(fn: (input: InputT) => Promise<Resu
   return [execute, { data, loading, error }];
 }
 
-
 export interface Company {
   id?: string | null;
   name?: string | null;
@@ -124,15 +132,11 @@ export interface Person {
   avatarUrl?: string | null;
 }
 
-
-export interface GetCompaniesInput {
-
-}
+export interface GetCompaniesInput {}
 
 export interface GetCompaniesResult {
   companies?: Company[] | null;
 }
-
 
 export class ApiClient {
   private basePath: string;
@@ -158,37 +162,34 @@ export class ApiClient {
   private async post(path: string, data: any) {
     const response = await axios.post(this.getBasePath() + path, toSnake(data), { headers: this.getHeaders() });
     return toCamel(response.data);
-  } 
+  }
 
   private async get(path: string, params: any) {
-    const response = await axios.get(this.getBasePath() + path, { params: toSnake(params), headers: this.getHeaders() });
+    const response = await axios.get(this.getBasePath() + path, {
+      params: toSnake(params),
+      headers: this.getHeaders(),
+    });
     return toCamel(response.data);
   }
 
   async getCompanies(input: GetCompaniesInput): Promise<GetCompaniesResult> {
     return this.get("/get_companies", input);
   }
-
-
 }
 
 const defaultApiClient = new ApiClient();
 
-export async function getCompanies(input: GetCompaniesInput) : Promise<GetCompaniesResult> {
+export async function getCompanies(input: GetCompaniesInput): Promise<GetCompaniesResult> {
   return defaultApiClient.getCompanies(input);
 }
 
-
-export function useGetCompanies(input: GetCompaniesInput) : UseQueryHookResult<GetCompaniesResult> {
+export function useGetCompanies(input: GetCompaniesInput): UseQueryHookResult<GetCompaniesResult> {
   return useQuery<GetCompaniesResult>(() => defaultApiClient.getCompanies(input));
 }
-
 
 export default {
   default: defaultApiClient,
 
   getCompanies,
   useGetCompanies,
-
 };
-
