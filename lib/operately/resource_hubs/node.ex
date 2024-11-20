@@ -9,6 +9,7 @@ defmodule Operately.ResourceHubs.Node do
     field :type, Ecto.Enum, values: [:document, :folder]
 
     has_one :folder, Operately.ResourceHubs.Folder, foreign_key: :node_id
+    has_one :document, Operately.ResourceHubs.Document, foreign_key: :node_id
 
     timestamps()
   end

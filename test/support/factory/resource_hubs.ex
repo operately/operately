@@ -16,4 +16,13 @@ defmodule Operately.Support.Factory.ResourceHubs do
 
     Map.put(ctx, testid, folder)
   end
+
+  def add_document(ctx, testid, hub_name, folder_name \\ nil) do
+    hub = Map.fetch!(ctx, hub_name)
+    folder = folder_name && Map.fetch!(ctx, folder_name)
+
+    document = Operately.ResourceHubsFixtures.document_fixture(hub.id, %{parent_folder_id: folder && folder.id})
+
+    Map.put(ctx, testid, document)
+  end
 end
