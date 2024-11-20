@@ -62,13 +62,53 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubDocumentTest do
       |> Factory.log_in_person(:creator)
       |> Factory.add_space(:space)
       |> Factory.add_resource_hub(:hub, :space, :creator)
-      |> Factory.add_document(:doc, :hub)
+      |> Factory.add_folder(:folder, :hub)
+      |> Factory.add_document(:doc, :hub, folder: :folder)
     end
 
     test "get document", ctx do
       assert {200, res} = query(ctx.conn, :get_resource_hub_document, %{id: Paths.document_id(ctx.doc)})
 
       assert res.document.id == Paths.document_id(ctx.doc)
+    end
+
+    test "include_author", ctx do
+      assert {200, res} = query(ctx.conn, :get_resource_hub_document, %{id: Paths.document_id(ctx.doc)})
+
+      refute res.document.author
+
+      assert {200, res} = query(ctx.conn, :get_resource_hub_document, %{
+        id: Paths.document_id(ctx.doc),
+        include_author: true
+      })
+
+      assert res.document.author == Serializer.serialize(ctx.creator)
+    end
+
+    test "include_resource_hub", ctx do
+      assert {200, res} = query(ctx.conn, :get_resource_hub_document, %{id: Paths.document_id(ctx.doc)})
+
+      refute res.document.resource_hub
+
+      assert {200, res} = query(ctx.conn, :get_resource_hub_document, %{
+        id: Paths.document_id(ctx.doc),
+        include_resource_hub: true,
+      })
+
+      assert res.document.resource_hub == Serializer.serialize(ctx.hub)
+    end
+
+    test "include_parent_folder", ctx do
+      assert {200, res} = query(ctx.conn, :get_resource_hub_document, %{id: Paths.document_id(ctx.doc)})
+
+      refute res.document.parent_folder
+
+      assert {200, res} = query(ctx.conn, :get_resource_hub_document, %{
+        id: Paths.document_id(ctx.doc),
+        include_parent_folder: true,
+      })
+
+      assert res.document.parent_folder == Repo.preload(ctx.folder, :node) |> Serializer.serialize()
     end
   end
 
