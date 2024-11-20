@@ -122,6 +122,41 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubFolderTest do
       })
       assert res.folder.resource_hub.id == Paths.resource_hub_id(ctx.hub)
     end
+
+    test "include_path_to_folder", ctx do
+      ctx =
+        ctx
+        |> Factory.add_folder(:subfolder1, :hub, :folder1)
+        |> Factory.add_folder(:subfolder2, :hub, :subfolder1)
+        |> Factory.add_folder(:subfolder3, :hub, :subfolder2)
+        |> Factory.add_folder(:subfolder4, :hub, :subfolder3)
+
+      # Not include
+      assert {200, res} = query(ctx.conn, :get_resource_hub_folder, %{
+        id: Paths.folder_id(ctx.subfolder4),
+      })
+
+      refute res.folder.path_to_folder
+
+      # Include
+      assert {200, res} = query(ctx.conn, :get_resource_hub_folder, %{
+        id: Paths.folder_id(ctx.subfolder4),
+        include_path_to_folder: true,
+      })
+
+      List.zip([res.folder.path_to_folder, [ctx.folder1, ctx.subfolder1, ctx.subfolder2, ctx.subfolder3]])
+      |> Enum.each(fn {f1, f2} ->
+        assert f1.id == Paths.folder_id(f2)
+      end)
+
+      # Include, but no parent folder
+      assert {200, res} = query(ctx.conn, :get_resource_hub_folder, %{
+        id: Paths.folder_id(ctx.folder1),
+        include_path_to_folder: true,
+      })
+
+      assert res.folder.path_to_folder == []
+    end
   end
 
   #

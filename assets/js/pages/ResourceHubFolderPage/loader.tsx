@@ -11,6 +11,7 @@ export async function loader({ params }): Promise<LoaderResult> {
       id: params.id,
       includeNodes: true,
       includeResourceHub: true,
+      includePathToFolder: true,
     }).then((res) => res.folder!),
   };
 }
