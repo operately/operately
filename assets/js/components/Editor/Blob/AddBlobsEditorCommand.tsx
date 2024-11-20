@@ -17,12 +17,20 @@ async function handleUpload(file: File, view: any, pos: any) {
   createNode(tempId, file, view, pos);
 
   // Step 2: Start the upload process and hook up progress updates.
-  const { id, url } = await Blobs.uploadFile(file, (progress) => {
+  const promise = Blobs.uploadFile(file, (progress) => {
     updateNodeAttrs(tempId, { progress: progress }, view);
   });
 
-  // Step 3: Update the node with the final path.
-  updateNodeAttrs(tempId, { id: id, src: url, status: "uploaded" }, view);
+  // Step 3: Handle the result of the upload
+  promise
+    .then(({ id, url }) => {
+      // On success, update the node with the new data.
+      updateNodeAttrs(tempId, { id: id, src: url, status: "uploaded" }, view);
+    })
+    .catch(() => {
+      // In case of an error, delete the node.
+      deleteNode(tempId, view);
+    });
 }
 
 function generateUniqueId() {
@@ -58,6 +66,15 @@ function updateNodeAttrs(id: string, attrs: any, view: any) {
     transaction.setNodeAttribute(n.pos, key, attrs[key]);
   });
 
+  view.dispatch(transaction);
+}
+
+function deleteNode(id: string, view: any) {
+  const n = findNode(id, view.state.doc);
+  if (!n.node) return;
+  if (!n.pos) return;
+
+  const transaction = view.state.tr.delete(n.pos, n.pos + 1);
   view.dispatch(transaction);
 }
 
