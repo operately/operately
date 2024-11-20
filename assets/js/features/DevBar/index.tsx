@@ -1,16 +1,11 @@
 import React from "react";
 
 import { useDevBarData } from "./useDevBarData";
-import { useGetMe } from "@/models/people";
 import { ToggleTestIds } from "./ToggleTestIds";
 import { ToggleCompanyOwner } from "./ToggleCompanyOwner";
 
 export function DevBar() {
-  const meData = useGetMe({});
-
-  if (meData?.loading) return null;
-  if (meData?.error) return null;
-  if (!meData?.data?.me?.showDevBar) return null;
+  if (!window.appConfig.showDevBar) return;
 
   return (
     <div className="bg-black text-white-1 p-1 text-sm font-mono z-50">

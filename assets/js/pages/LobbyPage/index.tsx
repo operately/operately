@@ -3,7 +3,7 @@ import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Icons from "@tabler/icons-react";
 
-import { Logo } from "@/layouts/DefaultLayout/Logo";
+import { OperatelyLogo } from "@/components/OperatelyLogo";
 import { DivLink } from "@/components/Link";
 
 import classnames from "classnames";
@@ -28,7 +28,7 @@ export function Page() {
   return (
     <Pages.Page title={"Lobby"}>
       <div className="m-12">
-        <Logo width="32px" height="32px" />
+        <OperatelyLogo width="32px" height="32px" />
         <div className="font-medium mt-8">Hey there! How's it going?</div>
         <div className="font-medium">Select one of your organizations below to get started:</div>
         <CompanyCards companies={companies} />
