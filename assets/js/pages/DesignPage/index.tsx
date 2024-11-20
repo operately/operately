@@ -2,7 +2,7 @@ import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
-import { Logo } from "@/layouts/DefaultLayout/Logo";
+import { OperatelyLogo } from "@/components/OperatelyLogo";
 import { Colors } from "./Colors";
 import { Links } from "./Links";
 import { Buttons } from "./Buttons";
@@ -38,7 +38,7 @@ export function Page() {
 function TitleRow() {
   return (
     <div className="flex items-center gap-4 mb-8">
-      <Logo width="30px" height="30px" />
+      <OperatelyLogo width="30px" height="30px" />
       <div className="text-content-accent text-2xl font-semibold">Operately Design System</div>
     </div>
   );

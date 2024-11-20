@@ -4,7 +4,7 @@ import * as Paper from "@/components/PaperContainer";
 import * as Api from "@/api";
 
 import { Paths } from "@/routes/paths";
-import { Logo } from "@/layouts/DefaultLayout/Logo";
+import { OperatelyLogo } from "@/components/OperatelyLogo";
 import { useNavigate } from "react-router-dom";
 
 import Forms from "@/components/Forms";
@@ -71,7 +71,7 @@ function PageTitle() {
         <div className="text-content-accent text-xl font-semibold">New Company</div>
         <div className="text-content-accent">Let&apos;s set up your company in Operately.</div>
       </div>
-      <Logo width="40" height="40" />
+      <OperatelyLogo width="40" height="40" />
     </div>
   );
 }

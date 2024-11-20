@@ -1,10 +1,9 @@
 import React from "react";
 import ErrorPage from "./ErrorPage";
-import DefaultLayout from "@/layouts/DefaultLayout";
 
 import pages from "@/pages";
 
-import { Outlet, createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 import { companyLoader } from "./companyLoader";
 import { pageRoute } from "./pageRoute";
 
@@ -12,42 +11,47 @@ import { CurrentCompanyProvider } from "@/contexts/CurrentCompanyContext";
 import { TimezoneProvider } from "@/contexts/TimezoneContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 
-function ProtectedRoutes() {
+import CompanyLayout from "@/layouts/CompanyLayout";
+import NonCompanyLayout from "@/layouts/NonCompanyLayout";
+
+function NonCompanyRoutes() {
+  return (
+    <ThemeProvider>
+      <NonCompanyLayout />
+    </ThemeProvider>
+  );
+}
+
+function CompanyRoutes() {
   return (
     <CurrentCompanyProvider>
       <ThemeProvider>
         <TimezoneProvider>
-          <DefaultLayout />
+          <CompanyLayout />
         </TimezoneProvider>
       </ThemeProvider>
     </CurrentCompanyProvider>
   );
 }
 
-function PublicRoutes() {
-  return (
-    <ThemeProvider>
-      <Outlet />
-    </ThemeProvider>
-  );
-}
-
 export function createAppRoutes() {
   return createBrowserRouter([
-    pageRoute("/", pages.LobbyPage),
-    pageRoute("/new", pages.NewCompanyPage),
-    pageRoute("/setup", pages.SetupPage),
-    pageRoute("/join", pages.JoinPage),
     {
       path: "/",
-      element: <PublicRoutes />,
+      element: <NonCompanyRoutes />,
       errorElement: <ErrorPage />,
-      children: [pageRoute("/__design__", pages.DesignPage)],
+      children: [
+        pageRoute("", pages.LobbyPage),
+        pageRoute("/new", pages.NewCompanyPage),
+        pageRoute("/setup", pages.SetupPage),
+        pageRoute("/join", pages.JoinPage),
+        pageRoute("/__design__", pages.DesignPage),
+      ],
     },
     {
       path: "/:companyId",
       loader: companyLoader,
-      element: <ProtectedRoutes />,
+      element: <CompanyRoutes />,
       errorElement: <ErrorPage />,
       children: [
         pageRoute("", pages.SpaceListPage),
