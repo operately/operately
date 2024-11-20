@@ -529,6 +529,7 @@ defmodule OperatelyWeb.Api.Types do
     field :description, :string
     field :nodes, list_of(:resource_hub_node)
     field :permissions, :resource_hub_permissions
+    field :path_to_folder, list_of(:resource_hub_folder)
   end
 
   object :resource_hub_document do

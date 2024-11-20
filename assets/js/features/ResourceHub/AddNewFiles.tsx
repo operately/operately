@@ -78,6 +78,7 @@ function AddFolderModal({ resourceHub, showForm, toggleForm, refresh, folderId }
       });
       refresh();
       toggleForm();
+      form.actions.reset();
     },
   });
 
