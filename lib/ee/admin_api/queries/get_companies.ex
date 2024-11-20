@@ -1,4 +1,4 @@
-defmodule Operately.EE.AdminAPI.Queries.GetCompanies do
+defmodule OperatelyEE.AdminAPI.Queries.GetCompanies do
   use TurboConnect.Query
 
   inputs do

@@ -1,4 +1,4 @@
-defmodule Operately.EE.AdminAPI.Plugs.RequireSiteAdmin do
+defmodule OperatelyEE.AdminAPI.Plugs.RequireSiteAdmin do
   import Plug.Conn
 
   def init(opts), do: opts
