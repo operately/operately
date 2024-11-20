@@ -1,4 +1,4 @@
-defmodule Operately.EE.AdminAPI.Types do
+defmodule OperatelyEE.AdminApi.Types do
   use TurboConnect.Types
 
   object :company do
