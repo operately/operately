@@ -26,7 +26,7 @@ export function Form() {
       }
     },
     cancel: () => {
-      navigate(Paths.spaceResourceHubPath(resourceHub.space!.id!, resourceHub.id!));
+      navigate(Paths.resourceHubPath(resourceHub.id!));
     },
     submit: async () => {
       await post({
@@ -36,7 +36,7 @@ export function Form() {
       });
       // This redirect is temporary.
       // Once we have the document page, the user will be redirected to it.
-      navigate(Paths.spaceResourceHubPath(resourceHub.space!.id!, resourceHub.id!));
+      navigate(Paths.resourceHubPath(resourceHub.id!));
     },
   });
 

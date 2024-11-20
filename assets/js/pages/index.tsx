@@ -74,6 +74,7 @@ import * as ProjectResumePage from "./ProjectResumePage";
 import * as ProjectRetrospectiveEditPage from "./ProjectRetrospectiveEditPage";
 import * as ProjectRetrospectivePage from "./ProjectRetrospectivePage";
 import * as ProjectsPage from "./ProjectsPage";
+import * as ResourceHubPage from "./ResourceHubPage";
 import * as ResourceHubNewDocumentPage from "./ResourceHubNewDocumentPage";
 import * as ReviewPage from "./ReviewPage";
 import * as SetupPage from "./SetupPage";
@@ -86,7 +87,6 @@ import * as SpaceEditPage from "./SpaceEditPage";
 import * as SpaceGoalsPage from "./SpaceGoalsPage";
 import * as SpaceListPage from "./SpaceListPage";
 import * as SpacePage from "./SpacePage";
-import * as SpaceResourceHubPage from "./SpaceResourceHubPage";
 import * as TaskPage from "./TaskPage";
 
 //
@@ -449,6 +449,11 @@ export default {
     loader: ProjectsPage.loader,
     Page: ProjectsPage.Page,
   },
+  ResourceHubPage: {
+    name: "ResourceHubPage",
+    loader: ResourceHubPage.loader,
+    Page: ResourceHubPage.Page,
+  },
   ResourceHubNewDocumentPage: {
     name: "ResourceHubNewDocumentPage",
     loader: ResourceHubNewDocumentPage.loader,
@@ -508,11 +513,6 @@ export default {
     name: "SpacePage",
     loader: SpacePage.loader,
     Page: SpacePage.Page,
-  },
-  SpaceResourceHubPage: {
-    name: "SpaceResourceHubPage",
-    loader: SpaceResourceHubPage.loader,
-    Page: SpaceResourceHubPage.Page,
   },
   TaskPage: {
     name: "TaskPage",

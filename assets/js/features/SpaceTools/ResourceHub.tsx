@@ -1,6 +1,5 @@
 import React from "react";
 
-import { Space } from "@/models/spaces";
 import { ResourceHub, ResourceHubNode } from "@/models/resourceHubs";
 
 import { Paths } from "@/routes/paths";
@@ -10,15 +9,14 @@ import classNames from "classnames";
 import { IconFolder } from "@tabler/icons-react";
 
 interface ResourceHubProps {
-  space: Space;
   resourceHub: ResourceHub;
   toolsCount: number;
 }
 
-export function ResourceHub({ space, resourceHub, toolsCount }: ResourceHubProps) {
+export function ResourceHub({ resourceHub, toolsCount }: ResourceHubProps) {
   assertPresent(resourceHub.nodes, "nodes must be present in resourceHub");
 
-  const path = Paths.spaceResourceHubPath(space.id!, resourceHub.id!);
+  const path = Paths.resourceHubPath(resourceHub.id!);
 
   return (
     <Container path={path} toolsCount={toolsCount} testId="messages-tool">

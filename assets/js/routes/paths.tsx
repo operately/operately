@@ -192,6 +192,10 @@ export class Paths {
     return createCompanyPath(["spaces", "new"]);
   }
 
+  static resourceHubPath(resourceHubId: string) {
+    return createCompanyPath(["resource-hubs", resourceHubId]);
+  }
+
   static resourceHubNewDocumentPath(resourceHubId: string) {
     return createCompanyPath(["resource-hubs", resourceHubId, "new-document"]);
   }
@@ -206,10 +210,6 @@ export class Paths {
 
   static spaceEditGeneralAccessPath(spaceId: string) {
     return createCompanyPath(["spaces", spaceId, "edit", "general-access"]);
-  }
-
-  static spaceResourceHubPath(spaceId: string, resourceHubId: string) {
-    return createCompanyPath(["spaces", spaceId, "resource-hubs", resourceHubId]);
   }
 
   static spaceGoalsPath(spaceId: string) {
