@@ -14,6 +14,7 @@ import {
 import { createAppRoutes } from "./routes";
 
 import Api from "@/api";
+import AdminApi from "@/ee/admin_api";
 import "./i18n";
 
 import { setupTestErrorLogger } from "@/utils/errorLogger";
@@ -25,6 +26,8 @@ setupTestErrorLogger();
 // don't run this code on the login page, it's handled separately on the backend
 if (window.location.pathname !== "/accounts/log_in") {
   Api.default.setBasePath("/api/v2");
+  AdminApi.default.setBasePath("/admin/api/v1");
+
   Signals.init();
 
   if (window.appConfig.sentry.enabled) {
