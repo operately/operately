@@ -4,7 +4,7 @@ import * as Pages from "@/components/Pages";
 import * as Icons from "@tabler/icons-react";
 
 import { OperatelyLogo } from "@/components/OperatelyLogo";
-import { DivLink } from "@/components/Link";
+import { DivLink, Link } from "@/components/Link";
 
 import classnames from "classnames";
 import { Paths } from "@/routes/paths";
@@ -32,8 +32,31 @@ export function Page() {
         <div className="font-medium mt-8">Hey there! How's it going?</div>
         <div className="font-medium">Select one of your organizations below to get started:</div>
         <CompanyCards companies={companies} />
+        <AdminsAndDevLinks />
       </div>
     </Pages.Page>
+  );
+}
+
+function AdminsAndDevLinks() {
+  if (!window.appConfig.showDevBar) return null;
+
+  const adminLink = (
+    <Link to="/admin" className="font-medium">
+      Admin Panel
+    </Link>
+  );
+
+  const designLink = (
+    <Link to="/__design__" className="font-medium">
+      Design System
+    </Link>
+  );
+
+  return (
+    <div className="font-medium mt-8">
+      Or, visit the {adminLink} or the {designLink}.
+    </div>
   );
 }
 
