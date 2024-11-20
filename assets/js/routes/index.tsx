@@ -13,6 +13,7 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 
 import CompanyLayout from "@/layouts/CompanyLayout";
 import NonCompanyLayout from "@/layouts/NonCompanyLayout";
+import { saasAdminRoutes } from "@/ee/routes";
 
 function NonCompanyRoutes() {
   return (
@@ -48,6 +49,7 @@ export function createAppRoutes() {
         pageRoute("/__design__", pages.DesignPage),
       ],
     },
+    saasAdminRoutes(),
     {
       path: "/:companyId",
       loader: companyLoader,
