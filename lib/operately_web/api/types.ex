@@ -539,8 +539,10 @@ defmodule OperatelyWeb.Api.Types do
 
   object :resource_hub_document do
     field :id, :string
+    field :author, :person
     field :name, :string
     field :content, :string
+    field :inserted_at, :string
     field :permissions, :resource_hub_permissions
   end
 

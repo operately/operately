@@ -6,6 +6,7 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubDocument do
 
   inputs do
     field :id, :id
+    field :include_author, :boolean
   end
 
   outputs do
@@ -30,7 +31,14 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubDocument do
 
   def load(ctx, inputs) do
     Document.get(ctx.me, id: inputs.id, opts: [
-      preload: :node
+      preload: preload(inputs),
+    ])
+  end
+
+  def preload(inputs) do
+    Inputs.parse_includes(inputs, [
+      include_author: :author,
+      always_include: :node,
     ])
   end
 end

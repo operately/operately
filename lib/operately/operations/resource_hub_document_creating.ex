@@ -15,6 +15,7 @@ defmodule Operately.Operations.ResourceHubDocumentCreating do
     |> Multi.insert(:document, fn changes ->
       Document.changeset(%{
         node_id: changes.node.id,
+        author_id: author.id,
         content: attrs.content,
       })
     end)
