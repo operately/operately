@@ -2,19 +2,20 @@ import * as React from "react";
 import * as Icons from "@tabler/icons-react";
 import * as Api from "@/api";
 
-import { useLoaderData, useLocation } from "react-router-dom";
+import { useLoaderData } from "react-router-dom";
 
 import { DivLink } from "@/components/Link";
 import { Outlet } from "react-router-dom";
 import { User } from "./User";
 import { Bell } from "./Bell";
-import { Logo } from "./Logo";
+import { OperatelyLogo } from "@/components/OperatelyLogo";
 import { Review } from "./Review";
 import { CompanyDropdown } from "./CompanyDropdown";
 import { NewDropdown } from "./NewDropdown";
 
 import { DevBar } from "@/features/DevBar";
 import { Paths } from "@/routes/paths";
+import { useScrollToTopOnNavigationChange } from "@/hooks/useScrollToTopOnNavigationChange";
 
 function NavigationContainer({ children }) {
   return <div className="transition-all z-50 py-1.5 bg-base border-b border-surface-outline">{children}</div>;
@@ -26,7 +27,7 @@ function Navigation({ company }: { company: Api.Company }) {
       <div className="flex items-center justify-between px-4">
         <div className="flex items-center">
           <DivLink className="flex items-center gap-2 cursor-pointer" to={Paths.homePath()}>
-            <Logo />
+            <OperatelyLogo />
           </DivLink>
 
           <div className="border-l border-surface-outline px-2.5 ml-4">
@@ -75,20 +76,11 @@ function SectionLink({ to, children, icon }) {
   );
 }
 
-export default function DefaultLayout() {
-  const { pathname } = useLocation();
+export default function CompanyLayout() {
   const { company } = useLoaderData() as { company: Api.Company };
   const outletDiv = React.useRef<HTMLDivElement>(null);
 
-  React.useLayoutEffect(() => {
-    if (!outletDiv.current) return;
-
-    outletDiv.current.scrollTo({
-      top: 0,
-      left: 0,
-      behavior: "instant",
-    });
-  }, [pathname, outletDiv]);
+  useScrollToTopOnNavigationChange({ outletDiv });
 
   return (
     <div className="flex flex-col h-screen">

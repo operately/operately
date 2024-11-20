@@ -4,7 +4,7 @@ import * as Paper from "@/components/PaperContainer";
 import * as Accounts from "@/models/accounts";
 import * as Invitations from "@/models/invitations";
 
-import { Logo } from "@/layouts/DefaultLayout/Logo";
+import { OperatelyLogo } from "@/components/OperatelyLogo";
 import { logIn } from "@/models/people";
 import { redirect } from "react-router-dom";
 
@@ -52,7 +52,7 @@ function Header() {
           You were invited by {invitation.admin!.fullName} to join {invitation.company!.name}.
         </div>
       </div>
-      <Logo width="40" height="40" />
+      <OperatelyLogo width="40" height="40" />
     </div>
   );
 }

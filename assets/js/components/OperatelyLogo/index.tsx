@@ -1,6 +1,6 @@
 import React from "react";
 
-export function Logo(props: { width?: string; height?: string }) {
+export function OperatelyLogo(props: { width?: string; height?: string }) {
   const width = props.width || "22px";
   const height = props.height || "22px";
 

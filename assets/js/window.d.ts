@@ -14,6 +14,8 @@ declare global {
 
     sentry: SentryConfig;
     api: ApiConfig;
+
+    showDevBar: boolean;
   }
 
   interface Window {
