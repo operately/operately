@@ -35,5 +35,11 @@
     }
   },
   "include": ["./js/**/*.ts", "./js/**/*.tsx"],
-  "exclude": ["node_modules/**/*"]
+  "exclude": ["node_modules/**/*"],
+
+  "linterOptions": {
+    "exclude": [
+      "./js/ee/**/*",
+    ]
+  }
 }
