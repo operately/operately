@@ -67,6 +67,12 @@ defmodule OperatelyWeb.Router do
 
   forward "/media", OperatelyLocalMediaStorage.Plug
 
+  scope "/admin/api" do
+    pipe_through [:api]
+
+    forward "/v1", OperatelyEE.AdminApi
+  end
+
   scope "/api" do
     pipe_through [:api]
 
