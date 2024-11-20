@@ -4,7 +4,7 @@ import * as Pages from "@/components/Pages";
 import * as Icons from "@tabler/icons-react";
 
 import { OperatelyLogo } from "@/components/OperatelyLogo";
-import { DivLink } from "@/components/Link";
+import { DivLink, Link } from "@/components/Link";
 
 import classnames from "classnames";
 import { Paths } from "@/routes/paths";
@@ -41,13 +41,21 @@ export function Page() {
 function AdminsAndDevLinks() {
   if (!window.appConfig.showDevBar) return null;
 
+  const adminLink = (
+    <Link to="/admin" className="font-medium">
+      Admin Panel
+    </Link>
+  );
+
+  const designLink = (
+    <Link to="/__design__" className="font-medium">
+      Design System
+    </Link>
+  );
+
   return (
-    <div>
-      <div className="font-medium mt-8">Or, use one of the following:</div>
-      <div className="flex flex-wrap gap-4 mt-4">
-        <AdminPanel />
-        <DesignSystem />
-      </div>
+    <div className="font-medium mt-8">
+      Or, visit the {adminLink} or the {designLink}.
     </div>
   );
 }
@@ -103,34 +111,6 @@ function AddCompanyCard() {
       <div className="flex justify-end mt-3">
         <Icons.IconSparkles size={32} className="text-white-1" strokeWidth={1} />
       </div>
-    </DivLink>
-  );
-}
-
-function DesignSystem() {
-  return <ToolCard icon={<Icons.IconPalette size={24} />} title="Design System" to={"/__design__"} />;
-}
-
-function AdminPanel() {
-  return <ToolCard icon={<Icons.IconAdjustments size={24} />} title="Admin Panel" to={"/admin"} />;
-}
-
-function ToolCard({ icon, title, to }: { icon: React.ReactNode; title: string; to: string }) {
-  const className = classnames(
-    "cursor-pointer",
-    "bg-surface-base",
-    "rounded-lg",
-    "px-4 py-4 w-64",
-    "relative",
-    "border border-surface-outline",
-    "hover:shadow transition-shadow",
-    "flex items-center gap-2",
-  );
-
-  return (
-    <DivLink to={to} className={className}>
-      {icon}
-      <div className="font-medium">{title}</div>
     </DivLink>
   );
 }
