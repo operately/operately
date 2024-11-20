@@ -82,6 +82,11 @@ dev.seed.env:
 dev.mix.deps.clean:
 	./devenv mix deps.clean --unlock --unused
 
+dev.teardown:
+	./devenv bash -c "MIX_ENV=dev mix ecto.drop"
+	./devenv bash -c "MIX_ENV=test mix ecto.drop"
+	./devenv down
+
 #
 # Testing tasks
 #
