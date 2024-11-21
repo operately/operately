@@ -100,4 +100,12 @@ defmodule Operately.Repo do
       error -> error
     end
   end
+
+  #
+  # Utility function to print the SQL of a query
+  #
+  def inspect_sql(query) do
+    IO.inspect(Ecto.Adapters.SQL.to_sql(:all, __MODULE__, query))
+    query
+  end
 end
