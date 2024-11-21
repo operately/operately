@@ -39,7 +39,7 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubDocumentTest do
       test "if caller has levels company=#{@test.company} and space=#{@test.space}, then expect code=#{@test.expected}", ctx do
         space = create_space(ctx)
         resource_hub = create_resource_hub(ctx, space, @test.company, @test.space)
-        doc = document_fixture(resource_hub.id)
+        doc = document_fixture(resource_hub.id, ctx.creator.id)
 
         assert {code, res} = query(ctx.conn, :get_resource_hub_document, %{id: Paths.document_id(doc)})
 

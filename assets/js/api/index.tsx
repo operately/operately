@@ -1019,8 +1019,10 @@ export interface ResourceHub {
 
 export interface ResourceHubDocument {
   id?: string | null;
+  author?: Person | null;
   name?: string | null;
   content?: string | null;
+  insertedAt?: string | null;
   permissions?: ResourceHubPermissions | null;
 }
 
@@ -1674,6 +1676,7 @@ export interface GetResourceHubResult {
 
 export interface GetResourceHubDocumentInput {
   id?: Id | null;
+  includeAuthor?: boolean | null;
 }
 
 export interface GetResourceHubDocumentResult {
