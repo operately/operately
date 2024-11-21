@@ -2,6 +2,7 @@ import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as AdminApi from "@/ee/admin_api";
+
 import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
 
@@ -26,7 +27,7 @@ export function Page() {
           <div className="text-3xl font-semibold">{company.name}</div>
           <OwnersSection company={company} />
           <StatsSection company={company} />
-          <LastActivity company={company} />
+          <ActivitySection company={company} />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
@@ -72,11 +73,28 @@ function OwnersSection({ company }: { company: AdminApi.Company }) {
   );
 }
 
-function LastActivity({ company }: { company: AdminApi.Company }) {
+function ActivitySection({ company }: { company: AdminApi.Company }) {
+  const { data } = AdminApi.useGetActivities({ companyId: company.id! });
+
+  if (!data || !data.activities) return null;
+
+  const activities = data.activities;
+
   return (
-    <div className="mt-8 text-sm">
-      Last Activity{" "}
-      {company.lastActivityAt ? <FormattedTime time={company.lastActivityAt} format="relative" /> : "Never"}
+    <div className="mt-8">
+      <div className="border-y border-stroke-base py-2 flex items-center gap-4 bg-surface-dimmed uppercase text-xs font-bold">
+        <div className="px-4 w-32">Time</div>
+        <div className="px-4">Activity Description</div>
+      </div>
+
+      {activities!.map((activity: AdminApi.Activity) => (
+        <div key={activity.id} className="border-b border-stroke-base py-2 flex items-center gap-4">
+          <div className="px-4 text-sm text-content-dimmed w-32">
+            <FormattedTime time={activity.insertedAt!} format="relative" />
+          </div>
+          <div className="px-4 text-sm">{activity.action!.split("_").join(" ")}</div>
+        </div>
+      ))}
     </div>
   );
 }
