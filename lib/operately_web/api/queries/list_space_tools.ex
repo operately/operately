@@ -4,7 +4,7 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceTools do
 
   alias Operately.Goals.Goal
   alias Operately.Projects.Project
-  alias Operately.Messages.MessagesBoard
+  alias Operately.Messages.{MessagesBoard, Message}
   alias Operately.ResourceHubs.ResourceHub
   alias Operately.Groups.SpaceTools
   alias Operately.Access.Filters
@@ -68,10 +68,16 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceTools do
   end
 
   defp load_messages_boards(space_id, me) do
+    subquery = from(m in Message,
+      where: m.state != :draft,
+      preload: :author,
+      order_by: [desc: m.published_at]
+    )
+
     boards =
       from(b in MessagesBoard,
         join: s in assoc(b, :space), as: :space,
-        preload: [messages: :author],
+        preload: [messages: ^subquery],
         where: b.space_id == ^space_id
       )
       |> Filters.filter_by_view_access(me.id, named_binding: :space)
