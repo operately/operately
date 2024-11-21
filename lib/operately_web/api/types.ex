@@ -540,6 +540,8 @@ defmodule OperatelyWeb.Api.Types do
   object :resource_hub_document do
     field :id, :string
     field :author, :person
+    field :resource_hub, :resource_hub
+    field :parent_folder, :resource_hub_folder
     field :name, :string
     field :content, :string
     field :inserted_at, :string

@@ -95,6 +95,7 @@ export function createAppRoutes() {
         pageRoute("resource-hubs/:id", pages.ResourceHubPage),
         pageRoute("resource-hubs/:id/new-document", pages.ResourceHubNewDocumentPage),
         pageRoute("folders/:id", pages.ResourceHubFolderPage),
+        pageRoute("documents/:id", pages.ResourceHubDocumentPage),
 
         pageRoute("tasks/:id", pages.TaskPage),
 

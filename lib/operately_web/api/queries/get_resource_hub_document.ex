@@ -7,6 +7,8 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubDocument do
   inputs do
     field :id, :id
     field :include_author, :boolean
+    field :include_resource_hub, :boolean
+    field :include_parent_folder, :boolean
   end
 
   outputs do
@@ -38,6 +40,8 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubDocument do
   def preload(inputs) do
     Inputs.parse_includes(inputs, [
       include_author: :author,
+      include_resource_hub: [node: :resource_hub],
+      include_parent_folder: [node: [parent_folder: :node]],
       always_include: :node,
     ])
   end
