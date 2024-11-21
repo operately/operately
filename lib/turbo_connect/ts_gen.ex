@@ -60,11 +60,13 @@ defmodule TurboConnect.TsGen do
         return this.headers || {};
       }
 
+      // @ts-ignore
       private async post(path: string, data: any) {
         const response = await axios.post(this.getBasePath() + path, toSnake(data), { headers: this.getHeaders() });
         return toCamel(response.data);
       } 
 
+      // @ts-ignore
       private async get(path: string, params: any) {
         const response = await axios.get(this.getBasePath() + path, { params: toSnake(params), headers: this.getHeaders() });
         return toCamel(response.data);
