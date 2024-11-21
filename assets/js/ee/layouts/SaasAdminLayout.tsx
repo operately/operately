@@ -27,7 +27,7 @@ export default function SaasAdminLayout() {
 
 function Navigation() {
   return (
-    <div className="mt-8 max-w-6xl mx-auto w-full">
+    <div className="mt-8 max-w-6xl mx-auto w-full px-8">
       <div className="flex items-center justify-between">
         <DivLink className="flex items-center gap-2 cursor-pointer" to={"/admin"}>
           <OperatelyLogo width="32px" height="32px" />

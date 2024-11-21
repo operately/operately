@@ -25,4 +25,10 @@ defmodule OperatelyEE.AdminApi.Types do
     field :avatar_url, :string
   end
 
+  object :activity do
+    field :id, :string
+    field :action, :string
+    field :inserted_at, :datetime
+  end
+
 end
