@@ -33,7 +33,7 @@ defmodule OperatelyEE.AdminApi.Queries.GetCompanies do
 
   defp serialize_company(company) do
     %{
-      id: company.short_id,
+      id: OperatelyWeb.Paths.company_id(company),
       name: company.name,
       people_count: company.people_count,
       goals_count: company.goals_count,

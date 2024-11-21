@@ -113,7 +113,7 @@ defmodule Operately.Companies.Company do
     Map.put(company, :permissions, permissions)
   end
 
-  def load_people_count(companies) do
+  def load_people_count(companies) when is_list(companies) do
     query = from(c in __MODULE__, 
       join: p in assoc(c, :people),
       where: c.id in ^ids(companies),
@@ -124,7 +124,11 @@ defmodule Operately.Companies.Company do
     load_aggregate(companies, query, :people_count)
   end
 
-  def load_goals_count(companies) do
+  def load_people_count(company) do
+    [company] |> load_people_count() |> hd()
+  end
+
+  def load_goals_count(companies) when is_list(companies) do
     query = from(c in __MODULE__, 
       join: g in assoc(c, :goals), 
       where: c.id in ^ids(companies),
@@ -135,7 +139,11 @@ defmodule Operately.Companies.Company do
     load_aggregate(companies, query, :goals_count)
   end
 
-  def load_spaces_count(companies) do
+  def load_goals_count(company) do
+    [company] |> load_goals_count() |> hd()
+  end
+
+  def load_spaces_count(companies) when is_list(companies) do
     query = from(c in __MODULE__, 
       join: s in assoc(c, :spaces), 
       where: c.id in ^ids(companies),
@@ -146,7 +154,11 @@ defmodule Operately.Companies.Company do
     load_aggregate(companies, query, :spaces_count)
   end
 
-  def load_projects_count(companies) do
+  def load_spaces_count(company) do
+    [company] |> load_spaces_count() |> hd()
+  end
+
+  def load_projects_count(companies) when is_list(companies) do
     query = from(c in __MODULE__, 
       join: p in assoc(c, :projects), 
       where: c.id in ^ids(companies),
@@ -157,7 +169,11 @@ defmodule Operately.Companies.Company do
     load_aggregate(companies, query, :projects_count)
   end
 
-  def load_last_activity_event(companies) do
+  def load_projects_count(company) do
+    [company] |> load_projects_count() |> hd()
+  end
+
+  def load_last_activity_event(companies) when is_list(companies) do
     ids = Enum.map(companies, fn c -> to_string(c.id) end)
 
     query = from a in Operately.Activities.Activity,
@@ -166,6 +182,10 @@ defmodule Operately.Companies.Company do
       select: {fragment("?->>?", a.content, "company_id"), max(a.inserted_at)}
 
     load_aggregate(companies, query, :last_activity_at, nil)
+  end
+
+  def load_last_activity_event(company) do
+    [company] |> load_last_activity_event() |> hd()
   end
 
   defp load_aggregate(companies, query, key, default \\ 0) do
