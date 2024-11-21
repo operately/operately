@@ -140,6 +140,14 @@ export interface GetCompaniesResult {
   companies?: Company[] | null;
 }
 
+export interface GetCompanyInput {
+  id?: CompanyId | null;
+}
+
+export interface GetCompanyResult {
+  company?: Company | null;
+}
+
 export class ApiClient {
   private basePath: string;
   private headers: any;
@@ -179,6 +187,10 @@ export class ApiClient {
   async getCompanies(input: GetCompaniesInput): Promise<GetCompaniesResult> {
     return this.get("/get_companies", input);
   }
+
+  async getCompany(input: GetCompanyInput): Promise<GetCompanyResult> {
+    return this.get("/get_company", input);
+  }
 }
 
 const defaultApiClient = new ApiClient();
@@ -186,9 +198,16 @@ const defaultApiClient = new ApiClient();
 export async function getCompanies(input: GetCompaniesInput): Promise<GetCompaniesResult> {
   return defaultApiClient.getCompanies(input);
 }
+export async function getCompany(input: GetCompanyInput): Promise<GetCompanyResult> {
+  return defaultApiClient.getCompany(input);
+}
 
 export function useGetCompanies(input: GetCompaniesInput): UseQueryHookResult<GetCompaniesResult> {
   return useQuery<GetCompaniesResult>(() => defaultApiClient.getCompanies(input));
+}
+
+export function useGetCompany(input: GetCompanyInput): UseQueryHookResult<GetCompanyResult> {
+  return useQuery<GetCompanyResult>(() => defaultApiClient.getCompany(input));
 }
 
 export default {
@@ -196,4 +215,6 @@ export default {
 
   getCompanies,
   useGetCompanies,
+  getCompany,
+  useGetCompany,
 };

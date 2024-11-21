@@ -6,6 +6,7 @@ import * as AdminApi from "@/ee/admin_api";
 import classNames from "classnames";
 import AvatarList from "@/components/AvatarList";
 import FormattedTime from "@/components/FormattedTime";
+import { DivLink } from "@/components/Link";
 
 interface LoaderData {
   companies: AdminApi.Company[];
@@ -44,7 +45,7 @@ function CompanyList() {
       </TableRow>
 
       {companies.map((company) => (
-        <TableRow key={company.id}>
+        <TableRow key={company.id} linkTo={`/admin/companies/${company.id}`}>
           <div>{company.name}</div>
           <div className="text-right">{company.peopleCount}</div>
           <div className="text-right">{company.spacesCount}</div>
@@ -64,7 +65,7 @@ function CompanyList() {
   );
 }
 
-function TableRow({ header, children }: { header?: boolean; children: React.ReactNode }) {
+function TableRow({ header, children, linkTo }: { header?: boolean; children: React.ReactNode; linkTo?: string }) {
   const className = classNames("grid pt-3 pb-2 items-center gap-2", {
     "border-y border-stroke-base": header,
     "border-b border-stroke-base": !header,
@@ -76,9 +77,11 @@ function TableRow({ header, children }: { header?: boolean; children: React.Reac
     "cursor-pointer": !header,
   });
 
-  return (
-    <div className={className} style={{ gridTemplateColumns: "2fr 1fr 1fr 1fr 1fr 1fr 1fr" }}>
-      {children}
-    </div>
-  );
+  const style = { gridTemplateColumns: "2fr 1fr 1fr 1fr 1fr 1fr 1fr" };
+
+  if (linkTo) {
+    return <DivLink to={linkTo} className={className} style={style} children={children} />;
+  } else {
+    return <div className={className} style={style} children={children} />;
+  }
 }
