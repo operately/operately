@@ -116,6 +116,14 @@ export function useMutation<InputT, ResultT>(
   return [execute, { data, loading, error }];
 }
 
+export type CompanyId = string;
+
+export interface Activity {
+  id?: string | null;
+  action?: string | null;
+  insertedAt?: string | null;
+}
+
 export interface Company {
   id?: string | null;
   name?: string | null;
@@ -132,6 +140,14 @@ export interface Person {
   fullName?: string | null;
   email?: string | null;
   avatarUrl?: string | null;
+}
+
+export interface GetActivitiesInput {
+  companyId?: CompanyId | null;
+}
+
+export interface GetActivitiesResult {
+  activities?: Activity[] | null;
 }
 
 export interface GetCompaniesInput {}
@@ -184,6 +200,10 @@ export class ApiClient {
     return toCamel(response.data);
   }
 
+  async getActivities(input: GetActivitiesInput): Promise<GetActivitiesResult> {
+    return this.get("/get_activities", input);
+  }
+
   async getCompanies(input: GetCompaniesInput): Promise<GetCompaniesResult> {
     return this.get("/get_companies", input);
   }
@@ -195,11 +215,18 @@ export class ApiClient {
 
 const defaultApiClient = new ApiClient();
 
+export async function getActivities(input: GetActivitiesInput): Promise<GetActivitiesResult> {
+  return defaultApiClient.getActivities(input);
+}
 export async function getCompanies(input: GetCompaniesInput): Promise<GetCompaniesResult> {
   return defaultApiClient.getCompanies(input);
 }
 export async function getCompany(input: GetCompanyInput): Promise<GetCompanyResult> {
   return defaultApiClient.getCompany(input);
+}
+
+export function useGetActivities(input: GetActivitiesInput): UseQueryHookResult<GetActivitiesResult> {
+  return useQuery<GetActivitiesResult>(() => defaultApiClient.getActivities(input));
 }
 
 export function useGetCompanies(input: GetCompaniesInput): UseQueryHookResult<GetCompaniesResult> {
@@ -213,6 +240,8 @@ export function useGetCompany(input: GetCompanyInput): UseQueryHookResult<GetCom
 export default {
   default: defaultApiClient,
 
+  getActivities,
+  useGetActivities,
   getCompanies,
   useGetCompanies,
   getCompany,

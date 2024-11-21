@@ -9,4 +9,5 @@ defmodule OperatelyEE.AdminApi do
 
   query :get_companies, Q.GetCompanies
   query :get_company, Q.GetCompany
+  query :get_activities, Q.GetActivities
 end
