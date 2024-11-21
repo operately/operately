@@ -1,2 +1,7 @@
-export type { ResourceHub, ResourceHubNode } from "@/api";
-export { getResourceHub, useCreateResourceHubFolder, useCreateResourceHubDocument } from "@/api";
+export type { ResourceHub, ResourceHubNode, ResourceHubDocument } from "@/api";
+export {
+  getResourceHub,
+  getResourceHubDocument,
+  useCreateResourceHubFolder,
+  useCreateResourceHubDocument,
+} from "@/api";

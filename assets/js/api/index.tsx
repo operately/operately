@@ -1020,6 +1020,8 @@ export interface ResourceHub {
 export interface ResourceHubDocument {
   id?: string | null;
   author?: Person | null;
+  resourceHub?: ResourceHub | null;
+  parentFolder?: ResourceHubFolder | null;
   name?: string | null;
   content?: string | null;
   insertedAt?: string | null;
@@ -1677,6 +1679,8 @@ export interface GetResourceHubResult {
 export interface GetResourceHubDocumentInput {
   id?: Id | null;
   includeAuthor?: boolean | null;
+  includeResourceHub?: boolean | null;
+  includeParentFolder?: boolean | null;
 }
 
 export interface GetResourceHubDocumentResult {

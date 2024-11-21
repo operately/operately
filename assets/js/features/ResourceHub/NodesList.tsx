@@ -50,7 +50,7 @@ function findIcon(nodeType: NodeType) {
 function findPath(nodeType: NodeType, node: ResourceHubNode) {
   switch (nodeType) {
     case "document":
-      return "";
+      return Paths.resourceHubDocumentPath(node.document!.id!);
     case "folder":
       return Paths.resourceHubFolderPath(node.folder!.id!);
   }

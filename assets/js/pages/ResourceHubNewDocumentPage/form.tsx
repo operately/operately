@@ -29,15 +29,13 @@ export function Form({ folderId }: { folderId: string | null }) {
       navigate(Paths.resourceHubPath(resourceHub.id!));
     },
     submit: async () => {
-      await post({
+      const res = await post({
         resourceHubId: resourceHub.id,
         folderId: folderId,
         name: form.values.title,
         content: JSON.stringify(form.values.content),
       });
-      // This redirect is temporary.
-      // Once we have the document page, the user will be redirected to it.
-      navigate(Paths.resourceHubPath(resourceHub.id!));
+      navigate(Paths.resourceHubDocumentPath(res.document.id));
     },
   });
 
