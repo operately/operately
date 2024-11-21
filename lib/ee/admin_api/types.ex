@@ -7,8 +7,9 @@ defmodule OperatelyEE.AdminApi.Types do
     field :owners, list_of(:person)
 
     field :people_count, :integer
-    field :goal_count, :integer
-    field :project_count, :integer
+    field :goals_count, :integer
+    field :spaces_count, :integer
+    field :projects_count, :integer
   end
 
   object :person do

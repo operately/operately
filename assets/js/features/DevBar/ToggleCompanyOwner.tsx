@@ -4,6 +4,8 @@ import { useMe } from "@/contexts/CurrentCompanyContext";
 import { compareIds } from "@/routes/paths";
 
 export function ToggleCompanyOwner() {
+  if (!companyPath()) return null;
+
   return (
     <div className="">
       CompanyOwner [<Toggle />]
@@ -41,4 +43,16 @@ function Toggle() {
       {loading ? "..." : status}
     </span>
   );
+}
+
+function companyPath() {
+  const path = window.location.pathname;
+
+  // Every company id includes at least one 0 and a delimiter between the company name and short id
+  const hasCompanyID = path.includes("-0");
+
+  const isAdmin = path.startsWith("/admin");
+  const isJoin = path.startsWith("/join");
+
+  return !isAdmin && !isJoin && hasCompanyID;
 }
