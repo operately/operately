@@ -10,6 +10,7 @@ defmodule OperatelyEE.AdminApi.Types do
     field :goals_count, :integer
     field :spaces_count, :integer
     field :projects_count, :integer
+    field :last_activity_at, :datetime
   end
 
   object :person do

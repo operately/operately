@@ -124,6 +124,7 @@ export interface Company {
   goalsCount?: number | null;
   spacesCount?: number | null;
   projectsCount?: number | null;
+  lastActivityAt?: string | null;
 }
 
 export interface Person {
