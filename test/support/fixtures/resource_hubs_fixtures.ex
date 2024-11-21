@@ -47,4 +47,24 @@ defmodule Operately.ResourceHubsFixtures do
 
     document
   end
+
+  def file_fixture(hub, author, attrs \\ []) do
+    {:ok, node} = Operately.ResourceHubs.create_node(%{
+      resource_hub_id: hub.id,
+      parent_folder_id: Keyword.get(attrs, :parent_folder_id),
+      name: Keyword.get(attrs, :name, "some name"),
+      type: :file,
+    })
+
+    blob = Operately.BlobsFixtures.blob_fixture(%{author_id: author.id, company_id: author.company_id})
+
+    {:ok, file} = Operately.ResourceHubs.create_file(%{
+      node_id: node.id,
+      author_id: author.id,
+      blob_id: blob.id,
+      description: Keyword.get(attrs, :description, RichText.rich_text("Content")) ,
+    })
+
+    file
+  end
 end
