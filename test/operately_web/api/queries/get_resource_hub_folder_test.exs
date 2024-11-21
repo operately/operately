@@ -40,8 +40,8 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubFolderTest do
         space = create_space(ctx)
         resource_hub = create_resource_hub(ctx, space, @test.company, @test.space)
         folder = folder_fixture(resource_hub.id)
-        document_fixture(resource_hub.id, %{parent_folder_id: folder.id})
-        document_fixture(resource_hub.id, %{parent_folder_id: folder.id})
+        document_fixture(resource_hub.id, ctx.creator.id, %{parent_folder_id: folder.id})
+        document_fixture(resource_hub.id, ctx.creator.id, %{parent_folder_id: folder.id})
 
         assert {code, res} = query(ctx.conn, :get_resource_hub_folder, %{
           id: Paths.folder_id(folder),
@@ -69,12 +69,12 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubFolderTest do
       |> Factory.add_resource_hub(:hub, :space, :creator)
       |> Factory.add_folder(:folder1, :hub)
       |> Factory.preload(:folder1, :node)
-      |> Factory.add_document(:doc1, :hub, :folder1)
-      |> Factory.add_document(:doc2, :hub, :folder1)
+      |> Factory.add_document(:doc1, :hub, folder: :folder1)
+      |> Factory.add_document(:doc2, :hub, folder: :folder1)
       |> Factory.add_folder(:folder2, :hub)
       |> Factory.preload(:folder2, :node)
-      |> Factory.add_document(:doc3, :hub, :folder2)
-      |> Factory.add_document(:doc4, :hub, :folder2)
+      |> Factory.add_document(:doc3, :hub, folder: :folder2)
+      |> Factory.add_document(:doc4, :hub, folder: :folder2)
     end
 
     test "include_nodes", ctx do
