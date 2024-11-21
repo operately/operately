@@ -2,10 +2,10 @@ import React from "react";
 
 import adminpages from "@/ee/pages";
 import { pageRoute } from "@/routes/pageRoute";
-import NonCompanyLayout from "@/layouts/NonCompanyLayout";
+import SaasAdminLayout from "@/ee/layouts/SaasAdminLayout";
 
 function SaasAdminRoutes() {
-  return <NonCompanyLayout />;
+  return <SaasAdminLayout />;
 }
 
 export function saasAdminRoutes() {

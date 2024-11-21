@@ -171,8 +171,6 @@ defmodule Operately.Companies.Company do
   defp load_aggregate(companies, query, key, default \\ 0) do
     results = Operately.Repo.all(query)
     
-    IO.inspect(results)
-
     Enum.map(companies, fn company ->
       case Enum.find(results, fn {id, _} -> id == company.id end) do
         {_, count} -> Map.put(company, key, count)
