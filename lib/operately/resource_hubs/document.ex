@@ -22,8 +22,8 @@ defmodule Operately.ResourceHubs.Document do
     changeset(%__MODULE__{}, attrs)
   end
 
-  def changeset(folder, attrs) do
-    folder
+  def changeset(document, attrs) do
+    document
     |> cast(attrs, [:node_id, :author_id, :subscription_list_id, :content])
     |> validate_required([:node_id, :author_id, :content])
   end
