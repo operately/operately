@@ -2,7 +2,7 @@ defmodule Operately.ResourceHubs do
   import Ecto.Query, warn: false
 
   alias Operately.Repo
-  alias Operately.ResourceHubs.{ResourceHub, Folder, Node, Document}
+  alias Operately.ResourceHubs.{ResourceHub, Folder, Node, Document, File}
 
   def list_resource_hubs(space) do
     from(r in ResourceHub, where: r.space_id == ^space.id)
@@ -68,6 +68,36 @@ defmodule Operately.ResourceHubs do
   def create_document(attrs \\ %{}) do
     %Document{}
     |> Document.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  #
+  # Files
+  #
+
+  def list_files(resource_hub = %ResourceHub{}) do
+    from(f in File,
+      join: n in assoc(f, :node),
+      preload: [node: n],
+      where: n.resource_hub_id == ^resource_hub.id,
+      select: f
+    )
+    |> Repo.all()
+  end
+
+  def list_files(folder = %Folder{}) do
+    from(f in File,
+      join: n in assoc(f, :node),
+      preload: [node: n],
+      where: n.parent_folder_id == ^folder.id,
+      select: f
+    )
+    |> Repo.all()
+  end
+
+ def create_file(attrs \\ %{}) do
+    %File{}
+    |> File.changeset(attrs)
     |> Repo.insert()
   end
 

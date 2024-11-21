@@ -1,5 +1,5 @@
 defmodule Operately.Support.Factory do
-  alias Operately.Support.Factory.{Projects, Spaces, Companies, Accounts, Messages, Goals, Comments, ResourceHubs}
+  alias Operately.Support.Factory.{Projects, Spaces, Companies, Accounts, Messages, Goals, Comments, ResourceHubs, Blobs}
 
   def setup(ctx) do
     ctx = add_account(ctx, :account)
@@ -59,4 +59,8 @@ defmodule Operately.Support.Factory do
   defdelegate add_resource_hub(ctx, testid, space_name, creator_name, opts \\ []), to: ResourceHubs
   defdelegate add_folder(ctx, testid, hub_name, folder_name \\ nil), to: ResourceHubs
   defdelegate add_document(ctx, testid, hub_name, opts \\ []), to: ResourceHubs
+  defdelegate add_file(ctx, testid, hub_name, opts \\ []), to: ResourceHubs
+
+  # blobs
+  defdelegate add_blob(ctx, testid, author_name \\ :creator), to: Blobs
 end

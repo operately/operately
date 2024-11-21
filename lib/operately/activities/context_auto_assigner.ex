@@ -114,6 +114,7 @@ defmodule Operately.Activities.ContextAutoAssigner do
   @resource_hub_actions [
     "resource_hub_created",
     "resource_hub_document_created",
+    "resource_hub_file_created",
     "resource_hub_folder_created",
   ]
 
