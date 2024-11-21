@@ -121,8 +121,10 @@ export interface Company {
   name?: string | null;
   owners?: Person[] | null;
   peopleCount?: number | null;
-  goalCount?: number | null;
-  projectCount?: number | null;
+  goalsCount?: number | null;
+  spacesCount?: number | null;
+  projectsCount?: number | null;
+  lastActivityAt?: string | null;
 }
 
 export interface Person {
