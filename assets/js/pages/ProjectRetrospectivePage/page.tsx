@@ -103,7 +103,7 @@ function RetroReactions() {
 
 function Comments() {
   const { retrospective } = useLoadedData();
-  const commentsForm = useComments({ parent: retrospective, parentType: "project_retrospective" });
+  const commentsForm = useComments({ retrospective: retrospective, parentType: "project_retrospective" });
 
   assertPresent(retrospective.permissions?.canCommentOnRetrospective, "permissions must be present in retrospective");
 

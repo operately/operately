@@ -37,5 +37,6 @@ defmodule Operately.Operations.CommentAdding do
   defp find_action(%Operately.Projects.CheckIn{}), do: :project_check_in_commented
   defp find_action(%Operately.Projects.Retrospective{}), do: :project_retrospective_commented
   defp find_action(%Operately.Comments.CommentThread{}), do: :comment_added
+  defp find_action(%Operately.ResourceHubs.Document{}), do: :resource_hub_document_commented
   defp find_action(e), do: raise("Unknown entity type #{inspect(e)}")
 end
