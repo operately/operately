@@ -64,7 +64,8 @@
       "**/?(*.)+(test).+(ts|tsx|js)"
     ],
     "moduleNameMapper": {
-      "^@/(.*)$": "<rootDir>/js/$1"
+      "^@/ee/(.*)$": "<rootDir>/ee/assets/js/$1",
+      "^@/(.*)$": "<rootDir>/assets/js/$1"
     }
   }
 }
