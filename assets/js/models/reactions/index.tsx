@@ -10,7 +10,8 @@ type EntityType =
   | "comment_thread"
   | "goal_update"
   | "message"
-  | "comment";
+  | "comment"
+  | "resource_hub_document";
 
 // Which entity the reactions are for
 export type Entity = {

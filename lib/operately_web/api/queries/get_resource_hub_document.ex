@@ -9,6 +9,8 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubDocument do
     field :include_author, :boolean
     field :include_resource_hub, :boolean
     field :include_parent_folder, :boolean
+    field :include_reactions, :boolean
+    field :include_permissions, :boolean
   end
 
   outputs do
@@ -34,15 +36,23 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubDocument do
   def load(ctx, inputs) do
     Document.get(ctx.me, id: inputs.id, opts: [
       preload: preload(inputs),
+      after_load: after_load(inputs),
     ])
   end
 
   def preload(inputs) do
     Inputs.parse_includes(inputs, [
       include_author: :author,
+      include_reactions: [reactions: :person],
       include_resource_hub: [node: :resource_hub],
       include_parent_folder: [node: [parent_folder: :node]],
       always_include: :node,
+    ])
+  end
+
+  defp after_load(inputs) do
+    Inputs.parse_includes(inputs, [
+      include_permissions: &Document.set_permissions/1,
     ])
   end
 end

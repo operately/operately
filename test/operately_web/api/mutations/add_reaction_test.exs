@@ -8,6 +8,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
   import Operately.GoalsFixtures
   import Operately.CommentsFixtures
   import Operately.MessagesFixtures
+  import Operately.ResourceHubsFixtures
 
   alias Operately.Access.Binding
   alias Operately.Activities.Activity
@@ -114,6 +115,29 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
         case @test.expected do
           200 ->
             reaction = get_reaction(retrospective.id, :project_retrospective)
+            assert res.reaction == Serializer.serialize(reaction, level: :essential)
+          403 -> assert res.message == "You don't have permission to perform this action"
+          404 -> assert res.message == "The requested resource was not found"
+        end
+      end
+    end
+
+    tabletest @space_table do
+      test "resource hub document - if caller has levels company=#{@test.company} and space=#{@test.space}, then expect code=#{@test.expected}", ctx do
+        space = create_space(ctx)
+        resource_hub = create_resource_hub(ctx, space, @test.company, @test.space)
+        doc = document_fixture(resource_hub.id, ctx.creator.id)
+
+        assert {code, res} = mutation(ctx.conn, :add_reaction, %{
+          entity_id: Paths.document_id(doc),
+          entity_type: "resource_hub_document",
+          emoji: "👍"
+        })
+        assert code == @test.expected
+
+        case @test.expected do
+          200 ->
+            reaction = get_reaction(doc.id, :resource_hub_document)
             assert res.reaction == Serializer.serialize(reaction, level: :essential)
           403 -> assert res.message == "You don't have permission to perform this action"
           404 -> assert res.message == "The requested resource was not found"
@@ -484,5 +508,22 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
       }
     )
     Operately.Updates.get_comment!(milestone_comment.comment_id)
+  end
+
+  def create_resource_hub(ctx, space, company_members_level, space_members_level) do
+    resource_hub = resource_hub_fixture(ctx.creator, space, %{
+      anonymous_access_level: Binding.no_access(),
+      company_access_level: Binding.from_atom(company_members_level),
+      space_access_level: Binding.from_atom(space_members_level),
+    })
+
+    if space_members_level != :no_access do
+      {:ok, _} = Operately.Groups.add_members(ctx.creator, space.id, [%{
+        id: ctx.person.id,
+        access_level: Binding.from_atom(space_members_level)
+      }])
+    end
+
+    resource_hub
   end
 end

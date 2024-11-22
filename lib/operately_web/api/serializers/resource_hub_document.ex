@@ -15,6 +15,8 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ResourceHubs.Document do
       parent_folder: OperatelyWeb.Api.Serializer.serialize(document.node.parent_folder),
       name: document.node.name,
       content: Jason.encode!(document.content),
+      reactions: OperatelyWeb.Api.Serializer.serialize(document.reactions),
+      comments: OperatelyWeb.Api.Serializer.serialize(document.comments),
       inserted_at: OperatelyWeb.Api.Serializer.serialize(document.inserted_at),
       permissions: OperatelyWeb.Api.Serializer.serialize(document.permissions),
     }

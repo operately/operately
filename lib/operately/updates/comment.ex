@@ -7,7 +7,15 @@ defmodule Operately.Updates.Comment do
     belongs_to :author, Operately.People.Person
 
     field :entity_id, Ecto.UUID
-    field :entity_type, Ecto.Enum, values: [:project_check_in, :goal_update, :message, :update, :comment_thread, :project_retrospective]
+    field :entity_type, Ecto.Enum, values: [
+      :project_check_in,
+      :goal_update,
+      :message,
+      :update,
+      :comment_thread,
+      :project_retrospective,
+      :resource_hub_document,
+    ]
 
     field :content, :map
 
