@@ -14,7 +14,7 @@ CERTS_DIR ?= $(PWD)/tmp/certs
 
 gen:
 	./devenv bash -c "mix operately.gen.page.index && mix operately.gen.typescript.api"
-	./devenv bash -c "cd assets && npx prettier --write js/api && npx prettier --write js/pages/index.tsx && npx prettier --write js/ee/admin_api/index.tsx"
+	./devenv bash -c "npx prettier --write assets/js/api && npx prettier --write assets/js/pages/index.tsx && npx prettier --write ee/assets/js/ee/admin_api/index.tsx"
 
 gen.migration:
 	./devenv mix ecto.gen.migration $(NAME)
@@ -26,7 +26,7 @@ gen.operation:
 	./devenv bash -c "ERL_FLAGS=+B mix operately.gen.operation"
 
 js.fmt.fix:
-	./devenv bash -c "cd assets && npx prettier --write js"
+	./devenv bash -c "npx prettier --write js"
 
 
 #
@@ -39,7 +39,7 @@ dev.build:
 	./devenv mix local.hex --force --if-missing
 	./devenv mix deps.get
 	./devenv mix compile
-	./devenv bash -c "cd assets && npm install"
+	./devenv npm install
 	$(MAKE) dev.db.create
 	$(MAKE) test.db.create
 	$(MAKE) dev.db.migrate
@@ -98,7 +98,7 @@ test.build:
 	./devenv bash -c "MIX_ENV=test mix local.hex --force --if-missing"
 	./devenv bash -c "MIX_ENV=test mix deps.get"
 	./devenv bash -c "MIX_ENV=test mix compile"
-	./devenv bash -c "MIX_ENV=test cd assets && npm install"
+	./devenv bash -c "MIX_ENV=test npm install"
 	./devenv bash -c "MIX_ENV=test mix assets.deploy"
 	$(MAKE) test.db.create
 	$(MAKE) test.db.migrate
@@ -131,7 +131,7 @@ test.mix.features: test.init
 	./devenv mix test $$(find test -name "*_test.exs" | grep "test/features" | ./scripts/split.rb $(INDEX) $(TOTAL))
 
 test.npm: test.init
-	./devenv bash -c "cd assets && npm test"
+	./devenv npm test
 
 test.db.migrate:
 	./devenv bash -c "MIX_ENV=test mix ecto.migrate"
@@ -156,10 +156,10 @@ test.license.check:
 	bash scripts/license-check.sh
 
 test.js.dead.code:
-	./devenv bash -c "cd assets && npm --no-update-notifier run knip"
+	./devenv bash -c "npm --no-update-notifier run knip"
 
 test.tsc.lint:
-	./devenv bash -c "cd assets && npx tsc --noEmit -p ."
+	./devenv bash -c "npx tsc --noEmit -p ."
 
 test.pr.name:
 	ruby scripts/pr-name-check
