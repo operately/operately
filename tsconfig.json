@@ -31,15 +31,23 @@
 
     // A series of entries which re-map imports to lookup locations relative to the baseUrl
     "paths": {
-      "@/*": ["./js/*"]
+      "@/ee/*": ["./ee/assets/js/*"],
+      "@/*": ["./assets/js/*"]
     }
   },
-  "include": ["./js/**/*.ts", "./js/**/*.tsx"],
+
+  "include": [
+    "./assets/js/**/*.ts", 
+    "./assets/js/**/*.tsx", 
+    "./ee/assets/js/**/*.ts", 
+    "./ee/assets/js/**/*.tsx"
+  ],
+
   "exclude": ["node_modules/**/*"],
 
   "linterOptions": {
     "exclude": [
-      "./js/ee/**/*",
+      "./ee/assets/js/admin_api/**/*",
     ]
   }
 }
