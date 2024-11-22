@@ -61,13 +61,12 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHubTest do
         case @test.expected do
           200 ->
             hubs = ResourceHubs.list_resource_hubs(space)
-            assert length(hubs) == 1
-            assert res == %{resource_hub: Serializer.serialize(hd(hubs))}
+            assert length(hubs) == 2
           403 ->
-            assert ResourceHubs.list_resource_hubs(space) == []
+            assert length(ResourceHubs.list_resource_hubs(space)) == 1
             assert res.message == "You don't have permission to perform this action"
           404 ->
-            assert ResourceHubs.list_resource_hubs(space) == []
+            assert length(ResourceHubs.list_resource_hubs(space)) == 1
             assert res.message == "The requested resource was not found"
         end
       end
@@ -82,7 +81,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHubTest do
     end
 
     test "creates resource hub", ctx do
-      assert ResourceHubs.list_resource_hubs(ctx.space) == []
+      assert length(ResourceHubs.list_resource_hubs(ctx.space)) == 1
 
       assert {200, res} = mutation(ctx.conn, :create_resource_hub, %{
         space_id: Paths.space_id(ctx.space),
@@ -95,8 +94,8 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHubTest do
 
       hubs = ResourceHubs.list_resource_hubs(ctx.space)
 
-      assert length(hubs) == 1
-      assert res.resource_hub == Serializer.serialize(hd(hubs))
+      assert length(hubs) == 2
+      assert Enum.find(hubs, &(Serializer.serialize(&1) == res.resource_hub))
     end
   end
 

@@ -27,7 +27,7 @@ defmodule Operately.AccessBindingsTest do
 
       bindings_list = Access.list_bindings()
 
-      assert 6 == length(bindings_list)
+      assert 10 == length(bindings_list)
       assert Enum.member?(bindings_list, binding)
     end
 
