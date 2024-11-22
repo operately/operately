@@ -84,6 +84,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReaction do
       :goal_update -> Goals.Permissions.check(parent.requester_access_level, :can_comment_on_update)
       :message -> Groups.Permissions.check(parent.requester_access_level, :can_comment_on_discussions)
       :milestone -> Projects.Permissions.check(parent.requester_access_level, :can_comment_on_milestone)
+      :resource_hub_document -> ResourceHubs.Permissions.check(parent.requester_access_level, :can_comment_on_document)
     end
   end
 
