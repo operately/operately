@@ -431,7 +431,7 @@ defmodule Operately.Support.Features.UI do
       cond do
         is_current_month ->
           ctx
-          |> click(css: ".react-datepicker__day.react-datepicker__day--#{day}")
+          |> click(css: ".react-datepicker__day.react-datepicker__day--#{day}:not(.react-datepicker__day--disabled)")
 
         is_last_month ->
           ctx
