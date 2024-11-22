@@ -4,6 +4,6 @@ defmodule Mix.Tasks.Operately.Gen.Typescript.Api do
     File.write!("assets/js/api/index.tsx", api)
 
     admin_api = TurboConnect.TsGen.generate(OperatelyEE.AdminApi)
-    File.write!("assets/js/ee/admin_api/index.tsx", admin_api)
+    File.write!("ee/assets/js/admin_api/index.tsx", admin_api)
   end
 end
