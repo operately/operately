@@ -59,10 +59,10 @@ RUN mix deps.compile
 
 COPY priv priv
 
-COPY lib lib
-
 COPY assets assets
-COPY ee/assets ee/assets
+COPY lib lib
+COPY ee ee
+
 COPY package.json package-lock.json ./
 COPY tsconfig.json ./
 
