@@ -6,6 +6,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ResourceHubs.Node do
       type: node.type,
       folder: OperatelyWeb.Api.Serializer.serialize(node.folder),
       document: OperatelyWeb.Api.Serializer.serialize(node.document),
+      file: OperatelyWeb.Api.Serializer.serialize(node.file),
     }
   end
 end

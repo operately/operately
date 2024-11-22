@@ -44,7 +44,7 @@ export function AddFilesButtonAndForms({ resourceHub, refresh, folderId }: Props
         folderId={folderId}
       />
 
-      <AddFileModal {...fileProps} />
+      <AddFileModal resourceHubId={resourceHub.id!} folderId={folderId} refresh={refresh} {...fileProps} />
     </>
   );
 }

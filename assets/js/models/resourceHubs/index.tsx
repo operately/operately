@@ -4,4 +4,5 @@ export {
   getResourceHubDocument,
   useCreateResourceHubFolder,
   useCreateResourceHubDocument,
+  useCreateResourceHubFile,
 } from "@/api";

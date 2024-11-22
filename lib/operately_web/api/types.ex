@@ -557,6 +557,8 @@ defmodule OperatelyWeb.Api.Types do
     field :description, :string
     field :inserted_at, :string
     field :permissions, :resource_hub_permissions
+    field :type, :string
+    field :size, :integer
   end
 
   object :resource_hub_node do
@@ -565,6 +567,7 @@ defmodule OperatelyWeb.Api.Types do
     field :type, :string
     field :folder, :resource_hub_folder
     field :document, :resource_hub_document
+    field :file, :resource_hub_file
   end
 
   object :project_permissions do
