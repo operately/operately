@@ -67,9 +67,9 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceToolsTest do
 
         case @test.expected do
           :forbidden ->
-            assert length(res.tools.resource_hubs) == 0
+            assert length(res.tools.resource_hubs) == 1
           :allowed ->
-            assert length(res.tools.resource_hubs) == 2
+            assert length(res.tools.resource_hubs) == 3
         end
       end
     end
@@ -188,7 +188,7 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceToolsTest do
     test "list resource hubs", ctx do
       assert {200, res} = query(ctx.conn, :list_space_tools, %{space_id: Paths.space_id(ctx.space)})
 
-      assert length(res.tools.resource_hubs) == 2
+      assert length(res.tools.resource_hubs) == 3
 
       hub1 = Enum.find(res.tools.resource_hubs, &(&1.id == Paths.resource_hub_id(ctx.hub1)))
       assert length(hub1.nodes) == 2
