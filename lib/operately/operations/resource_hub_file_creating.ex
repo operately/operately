@@ -24,6 +24,10 @@ defmodule Operately.Operations.ResourceHubFileCreating do
       file = Map.put(changes.file, :node, changes.node)
       {:ok, file}
     end)
+    |> Multi.run(:blob, fn _, _ ->
+      blob = Operately.Blobs.get_blob!(attrs.blob_id)
+      Operately.Blobs.update_blob(blob, %{status: :uploaded})
+    end)
     |> Activities.insert_sync(author.id, :resource_hub_file_created, fn changes ->
       %{
         company_id: author.company_id,

@@ -1,12 +1,12 @@
 import React from "react";
 
 import { ResourceHubNode } from "@/models/resourceHubs";
-import { IconFolder, IconFile } from "@tabler/icons-react";
+import { IconFolder, IconFile, IconPhoto, IconFileTypePdf, IconMovie } from "@tabler/icons-react";
 import classNames from "classnames";
 import { Paths } from "@/routes/paths";
 import { DivLink } from "@/components/Link";
 
-type NodeType = "document" | "folder";
+type NodeType = "document" | "folder" | "file";
 
 export function NodesList({ nodes }: { nodes: ResourceHubNode[] }) {
   return (
@@ -24,7 +24,7 @@ function NodeItem({ node }: { node: ResourceHubNode }) {
     "cursor-pointer hover:bg-surface-accent",
     "border-b border-stroke-base first:border-t last:border-b-0",
   );
-  const Icon = findIcon(node.type as NodeType);
+  const Icon = findIcon(node.type as NodeType, node);
   const path = findPath(node.type as NodeType, node);
 
   return (
@@ -38,12 +38,17 @@ function NodeItem({ node }: { node: ResourceHubNode }) {
   );
 }
 
-function findIcon(nodeType: NodeType) {
+function findIcon(nodeType: NodeType, node: ResourceHubNode) {
   switch (nodeType) {
     case "document":
       return IconFile;
     case "folder":
       return IconFolder;
+    case "file":
+      if (node.file?.type?.includes("image")) return IconPhoto;
+      if (node.file?.type?.includes("pdf")) return IconFileTypePdf;
+      if (node.file?.type?.includes("video")) return IconMovie;
+      return IconFile;
   }
 }
 
@@ -53,5 +58,7 @@ function findPath(nodeType: NodeType, node: ResourceHubNode) {
       return Paths.resourceHubDocumentPath(node.document!.id!);
     case "folder":
       return Paths.resourceHubFolderPath(node.folder!.id!);
+    case "file":
+      return "";
   }
 }
