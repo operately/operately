@@ -127,4 +127,22 @@ defmodule Operately.Operations.GroupCreationTest do
 
     assert Operately.Messages.get_messages_board(space_id: group.id)
   end
+
+  test "GroupCreation operation creates default resource hub", ctx do
+    {:ok, group} = Operately.Operations.GroupCreation.run(ctx.creator, @group_attrs)
+
+    hubs = Operately.ResourceHubs.list_resource_hubs(group)
+    assert length(hubs) == 1
+
+    context = Access.get_context(resource_hub_id: hd(hubs).id)
+    company_full = Access.get_group!(company_id: ctx.company.id, tag: :full_access)
+    space_full = Access.get_group!(group_id: group.id, tag: :full_access)
+    company_standard = Access.get_group!(company_id: ctx.company.id, tag: :standard)
+    space_standard = Access.get_group!(group_id: group.id, tag: :standard)
+
+    assert Access.get_binding(group_id: company_full.id, context_id: context.id, access_level: Binding.full_access())
+    assert Access.get_binding(group_id: space_full.id, context_id: context.id, access_level: Binding.full_access())
+    assert Access.get_binding(group_id: company_standard.id, context_id: context.id, access_level: Binding.comment_access())
+    assert Access.get_binding(group_id: space_standard.id, context_id: context.id, access_level: Binding.edit_access())
+  end
 end

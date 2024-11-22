@@ -16,10 +16,6 @@ defmodule Operately.Data.Change041CreateOneResourceHubForEachExistingSpaceTest d
       group_fixture(ctx.creator)
     end)
 
-    Enum.each(spaces, fn s ->
-      assert {:error, :not_found} = ResourceHub.get(:system, space_id: s.id)
-    end)
-
     Operately.Data.Change041CreateOneResourceHubForEachExistingSpace.run()
 
     Enum.each(spaces, fn s ->
