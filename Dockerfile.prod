@@ -62,6 +62,8 @@ COPY priv priv
 COPY lib lib
 
 COPY assets assets
+COPY package.json package-lock.json ./
+COPY tsconfig.json ./
 
 # compile assets
 RUN npm install
