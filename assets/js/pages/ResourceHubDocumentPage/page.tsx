@@ -1,5 +1,6 @@
 import React from "react";
 
+import * as Reactions from "@/models/reactions";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
@@ -10,6 +11,8 @@ import { TextSeparator } from "@/components/TextSeparator";
 import { Spacer } from "@/components/Spacer";
 import { Paths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
+import { ReactionList, useReactionsForm } from "@/features/Reactions";
+import { CommentSection, useComments } from "@/features/CommentSection";
 
 import { useLoadedData } from "./loader";
 
@@ -24,6 +27,8 @@ export function Page() {
         <Paper.Body>
           <Title />
           <Body />
+          <DocumentReactions />
+          <DicusssionComments />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
@@ -74,6 +79,43 @@ function Body() {
     <>
       <Spacer size={4} />
       <RichContent jsonContent={document.content!} className="text-md sm:text-lg" />
+    </>
+  );
+}
+
+function DocumentReactions() {
+  const { document } = useLoadedData();
+
+  assertPresent(document.permissions?.canCommentOnDocument, "permissions must be present in discussion");
+
+  const reactions = document.reactions!.map((r) => r!);
+  const entity = Reactions.entity(document.id!, "resource_hub_document");
+  const addReactionForm = useReactionsForm(entity, reactions);
+
+  return (
+    <>
+      <Spacer size={2} />
+      <ReactionList size={24} form={addReactionForm} canAddReaction={document.permissions.canCommentOnDocument} />
+    </>
+  );
+}
+
+function DicusssionComments() {
+  const { document } = useLoadedData();
+  const commentsForm = useComments({ parentType: "resource_hub_document", document: document });
+
+  assertPresent(document.permissions?.canCommentOnDocument, "permissions must be present in document");
+
+  return (
+    <>
+      <Spacer size={4} />
+      <div className="border-t border-stroke-base mt-8" />
+      <CommentSection
+        form={commentsForm}
+        refresh={() => {}}
+        commentParentType="resource_hub_document"
+        canComment={document.permissions.canCommentOnDocument}
+      />
     </>
   );
 }

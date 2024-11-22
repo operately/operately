@@ -3,34 +3,40 @@ import { useEffect, useState } from "react";
 import * as Comments from "@/models/comments";
 import { Discussion } from "@/models/discussions";
 import { ProjectRetrospective } from "@/models/projects";
+import { ResourceHubDocument } from "@/models/resourceHubs";
 
 import { parse } from "@/utils/time";
 import { ItemType, FormState } from "./form";
-import { SearchScope } from "@/models/people";
 
 interface ParentDiscussion {
-  parent: Discussion;
+  discussion: Discussion;
   parentType: "message";
 }
 
 interface ParentProjectRetrospective {
-  parent: ProjectRetrospective;
+  retrospective: ProjectRetrospective;
   parentType: "project_retrospective";
 }
 
-type UseCommentsInput = ParentDiscussion | ParentProjectRetrospective;
+interface ParentResourceHubDocument {
+  document: ResourceHubDocument;
+  parentType: "resource_hub_document";
+}
 
-export function useComments({ parent, parentType }: UseCommentsInput): FormState {
+type UseCommentsInput = ParentDiscussion | ParentProjectRetrospective | ParentResourceHubDocument;
+
+export function useComments(props: UseCommentsInput): FormState {
+  const parent = findParent(props);
   const [post, { loading: submittingPost }] = Comments.useCreateComment();
   const [edit, { loading: submittingEdit }] = Comments.useEditComment();
-  const { items, loading, error, refetch } = useLoadAndReloadComments(parent.id, parentType);
+  const { items, loading, error, refetch } = useLoadAndReloadComments(parent.id, props.parentType);
 
   Comments.useDiscussionCommentsChangeSignal(refetch, { discussionId: parent.id! });
 
   const postComment = async (content: string) => {
     await post({
       entityId: parent.id,
-      entityType: parentType,
+      entityType: props.parentType,
       content: JSON.stringify(content),
     });
   };
@@ -39,7 +45,7 @@ export function useComments({ parent, parentType }: UseCommentsInput): FormState
     await edit({
       commentId: commentID,
       content: JSON.stringify(content),
-      parentType: parentType,
+      parentType: props.parentType,
     });
   };
 
@@ -59,7 +65,7 @@ export function useComments({ parent, parentType }: UseCommentsInput): FormState
     postComment,
     editComment,
     submitting: submittingPost || submittingEdit,
-    mentionSearchScope: findMentionedScope({ parent, parentType }),
+    mentionSearchScope: { type: findMentionedScope(props), id: parent.id! },
   };
 }
 
@@ -96,11 +102,24 @@ function parseComments(comments?: Comments.Comment[] | null) {
   });
 }
 
-function findMentionedScope({ parent, parentType }: UseCommentsInput): SearchScope {
-  switch (parentType) {
+function findParent(props: UseCommentsInput) {
+  switch (props.parentType) {
     case "message":
-      return { type: "space", id: parent.space!.id! };
+      return props.discussion;
     case "project_retrospective":
-      return { type: "project", id: parent.project!.id! };
+      return props.retrospective;
+    case "resource_hub_document":
+      return props.document;
+  }
+}
+
+function findMentionedScope(props: UseCommentsInput) {
+  switch (props.parentType) {
+    case "message":
+      return "space";
+    case "project_retrospective":
+      return "project";
+    case "resource_hub_document":
+      return "resource_hub";
   }
 }

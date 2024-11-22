@@ -2,6 +2,7 @@ defmodule Operately.ResourceHubs.Permissions do
   alias Operately.Access.Binding
 
   defstruct [
+    :can_comment_on_document,
     :can_create_document,
     :can_create_folder,
     :can_create_file,
@@ -9,6 +10,7 @@ defmodule Operately.ResourceHubs.Permissions do
 
   def calculate(access_level) when is_integer(access_level) do
     %__MODULE__{
+      can_comment_on_document: access_level >= Binding.comment_access(),
       can_create_document: access_level >= Binding.edit_access(),
       can_create_folder: access_level >= Binding.edit_access(),
       can_create_file: access_level >= Binding.edit_access(),

@@ -9,10 +9,12 @@ defmodule OperatelyWeb.Api.Mutations.AddReaction do
     Updates,
     Goals,
     Groups,
+    ResourceHubs,
   }
   alias Operately.Goals.Update
   alias Operately.Messages.Message
   alias Operately.Projects.Retrospective
+  alias Operately.ResourceHubs.Document
   alias Operately.Operations.ReactionAdding
 
   inputs do
@@ -58,6 +60,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReaction do
       :goal_update -> Update.get(person, id: id)
       :message -> Message.get(person, id: id)
       :comment -> Updates.get_comment_with_access_level(id, person.id, parent_type)
+      :resource_hub_document -> Document.get(person, id: id)
     end
   end
 
@@ -69,6 +72,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReaction do
       :goal_update -> Goals.Permissions.check(parent.request_info.access_level, :can_comment_on_update)
       :message -> Groups.Permissions.check(parent.request_info.access_level, :can_comment_on_discussions)
       :comment -> check_comment_permissions(parent, parent_type)
+      :resource_hub_document -> ResourceHubs.Permissions.check(parent.request_info.access_level, :can_comment_on_document)
     end
   end
 
@@ -80,6 +84,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReaction do
       :goal_update -> Goals.Permissions.check(parent.requester_access_level, :can_comment_on_update)
       :message -> Groups.Permissions.check(parent.requester_access_level, :can_comment_on_discussions)
       :milestone -> Projects.Permissions.check(parent.requester_access_level, :can_comment_on_milestone)
+      :resource_hub_document -> ResourceHubs.Permissions.check(parent.requester_access_level, :can_comment_on_document)
     end
   end
 

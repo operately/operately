@@ -7,7 +7,10 @@ defmodule Operately.ResourceHubs.Document do
     belongs_to :author, Operately.People.Person, foreign_key: :author_id
     belongs_to :subscription_list, Operately.Notifications.SubscriptionList, foreign_key: :subscription_list_id
 
+    has_one :resource_hub, through: [:node, :resource_hub]
     has_one :access_context, through: [:node, :resource_hub, :access_context]
+    has_many :reactions, Operately.Updates.Reaction, where: [entity_type: :resource_hub_document], foreign_key: :entity_id
+    has_many :comments, Operately.Updates.Comment, where: [entity_type: :resource_hub_document], foreign_key: :entity_id
 
     field :content, :map
 
@@ -26,5 +29,14 @@ defmodule Operately.ResourceHubs.Document do
     document
     |> cast(attrs, [:node_id, :author_id, :subscription_list_id, :content])
     |> validate_required([:node_id, :author_id, :content])
+  end
+
+  #
+  # Helpers
+  #
+
+  def set_permissions(document = %__MODULE__{}) do
+    perms = Operately.ResourceHubs.Permissions.calculate(document.request_info.access_level)
+    Map.put(document, :permissions, perms)
   end
 end

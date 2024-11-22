@@ -6,7 +6,16 @@ defmodule Operately.Updates.Reaction do
     belongs_to :person, Operately.People.Person
 
     field :entity_id, Ecto.UUID
-    field :entity_type, Ecto.Enum, values: [:message, :update, :goal_update, :comment, :project_check_in, :comment_thread, :project_retrospective]
+    field :entity_type, Ecto.Enum, values: [
+      :message,
+      :update,
+      :goal_update,
+      :comment,
+      :project_check_in,
+      :comment_thread,
+      :project_retrospective,
+      :resource_hub_document,
+    ]
     field :emoji, :string
 
     # deprecated

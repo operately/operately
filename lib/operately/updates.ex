@@ -373,6 +373,11 @@ defmodule Operately.Updates do
           join: p in assoc(m, :project), as: :resource,
           where: c.id == ^id
         )
+      :resource_hub_document ->
+        from(c in Comment, as: :comment,
+          join: d in Operately.ResourceHubs.Document, on: c.entity_id == d.id, as: :resource,
+          where: c.id == ^id
+        )
     end
     |> Fetch.get_resource_with_access_level(person_id, selected_resource: :comment)
   end

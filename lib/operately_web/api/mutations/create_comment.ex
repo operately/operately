@@ -8,9 +8,11 @@ defmodule OperatelyWeb.Api.Mutations.CreateComment do
     Projects,
     Goals,
     Groups,
+    ResourceHubs,
   }
   alias Operately.Goals.Update
   alias Operately.Messages.Message
+  alias Operately.ResourceHubs.Document
   alias Operately.Projects.{CheckIn, Retrospective}
   alias Operately.Operations.CommentAdding
 
@@ -57,6 +59,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateComment do
       :comment_thread -> Comments.get_thread_with_activity_and_access_level(id, person.id)
       :goal_update -> Update.get(person, id: id, opts: [preload: :goal])
       :message -> Message.get(person, id: id, opts: [preload: :space])
+      :resource_hub_document -> Document.get(person, id: id, opts: [preload: :resource_hub])
     end
   end
 
@@ -67,6 +70,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateComment do
       :comment_thread -> Activities.Permissions.check(parent.activity.requester_access_level, :can_comment_on_thread)
       :goal_update -> Goals.Permissions.check(parent.request_info.access_level, :can_comment_on_update)
       :message -> Groups.Permissions.check(parent.request_info.access_level, :can_comment_on_discussions)
+      :resource_hub_document -> ResourceHubs.Permissions.check(parent.request_info.access_level, :can_comment_on_document)
     end
   end
 
