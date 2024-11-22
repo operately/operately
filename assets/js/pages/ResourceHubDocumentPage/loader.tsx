@@ -12,6 +12,8 @@ export async function loader({ params }): Promise<LoaderResult> {
       includeAuthor: true,
       includeResourceHub: true,
       includeParentFolder: true,
+      includeReactions: true,
+      includePermissions: true,
     }).then((res) => res.document!),
   };
 }

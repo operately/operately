@@ -1026,6 +1026,8 @@ export interface ResourceHubDocument {
   content?: string | null;
   insertedAt?: string | null;
   permissions?: ResourceHubPermissions | null;
+  reactions?: Reaction[] | null;
+  comments?: Comment[] | null;
 }
 
 export interface ResourceHubFile {
@@ -1058,7 +1060,10 @@ export interface ResourceHubNode {
 }
 
 export interface ResourceHubPermissions {
+  canCommentOnDocument?: boolean | null;
+  canCreateDocument?: boolean | null;
   canCreateFolder?: boolean | null;
+  canCreateFile?: boolean | null;
 }
 
 export interface ReviewAssignment {
@@ -1692,6 +1697,8 @@ export interface GetResourceHubDocumentInput {
   includeAuthor?: boolean | null;
   includeResourceHub?: boolean | null;
   includeParentFolder?: boolean | null;
+  includeReactions?: boolean | null;
+  includePermissions?: boolean | null;
 }
 
 export interface GetResourceHubDocumentResult {
