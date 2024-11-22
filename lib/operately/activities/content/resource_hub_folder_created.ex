@@ -5,6 +5,7 @@ defmodule Operately.Activities.Content.ResourceHubFolderCreated do
     belongs_to :company, Operately.Companies.Company
     belongs_to :space, Operately.Groups.Group
     belongs_to :resource_hub, Operately.ResourceHubs.ResourceHub
+    belongs_to :node, Operately.ResourceHubs.Node
     belongs_to :folder, Operately.ResourceHubs.Folder
     field :resource_name, :string
   end
