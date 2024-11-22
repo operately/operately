@@ -1037,6 +1037,8 @@ export interface ResourceHubFile {
   description?: string | null;
   insertedAt?: string | null;
   permissions?: ResourceHubPermissions | null;
+  type?: string | null;
+  size?: number | null;
 }
 
 export interface ResourceHubFolder {
@@ -1055,6 +1057,7 @@ export interface ResourceHubNode {
   type?: string | null;
   folder?: ResourceHubFolder | null;
   document?: ResourceHubDocument | null;
+  file?: ResourceHubFile | null;
 }
 
 export interface ResourceHubPermissions {
