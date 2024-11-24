@@ -21,11 +21,14 @@ defmodule Operately.Operations.ResourceHubCreatingTest do
   }
 
   test "ResourceHubCreating operation creates resource hub", ctx do
-    assert ResourceHubs.list_resource_hubs(ctx.space) == []
+    assert length(ResourceHubs.list_resource_hubs(ctx.space)) == 1
 
     {:ok, resource_hub} = Operately.Operations.ResourceHubCreating.run(ctx.creator, ctx.space, @attrs)
 
-    assert ResourceHubs.list_resource_hubs(ctx.space) == [resource_hub]
+    hubs = ResourceHubs.list_resource_hubs(ctx.space)
+
+    assert length(hubs) == 2
+    assert Enum.find(hubs, &(&1 == resource_hub))
   end
 
   test "ResourceHubCreating operation creates context", ctx do
