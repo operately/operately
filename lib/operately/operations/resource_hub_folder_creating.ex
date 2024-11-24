@@ -27,6 +27,7 @@ defmodule Operately.Operations.ResourceHubFolderCreating do
         company_id: author.company_id,
         space_id: hub.space_id,
         resource_hub_id: hub.id,
+        node_id: changes.node.id,
         folder_id: changes.folder.id,
         resource_name: attrs.name,
       }

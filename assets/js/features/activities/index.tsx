@@ -105,6 +105,7 @@ export const DISPLAYED_IN_FEED = [
   "project_resuming",
   "project_timeline_edited",
   "project_retrospective_commented",
+  "resource_hub_folder_created",
   "space_added",
   "space_joining",
   "space_member_removed",
@@ -161,6 +162,7 @@ import ProjectRenamed from "@/features/activities/ProjectRenamed";
 import ProjectResuming from "@/features/activities/ProjectResuming";
 import ProjectRetrospectiveCommented from "@/features/activities/ProjectRetrospectiveCommented";
 import ProjectTimelineEdited from "@/features/activities/ProjectTimelineEdited";
+import ResourceHubFolderCreated from "@/features/activities/ResourceHubFolderCreated";
 import SpaceAdded from "@/features/activities/SpaceAdded";
 import SpaceJoining from "@/features/activities/SpaceJoining";
 import SpaceMemberRemoved from "@/features/activities/SpaceMemberRemoved";
@@ -213,6 +215,7 @@ function handler(activity: Activity) {
     .with("project_resuming", () => ProjectResuming)
     .with("project_retrospective_commented", () => ProjectRetrospectiveCommented)
     .with("project_timeline_edited", () => ProjectTimelineEdited)
+    .with("resource_hub_folder_created", () => ResourceHubFolderCreated)
     .with("space_added", () => SpaceAdded)
     .with("space_joining", () => SpaceJoining)
     .with("space_member_removed", () => SpaceMemberRemoved)

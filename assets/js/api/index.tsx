@@ -503,6 +503,11 @@ export interface ActivityContentProjectTimelineEdited {
   updatedMilestones?: Milestone[] | null;
 }
 
+export interface ActivityContentResourceHubFolderCreated {
+  resourceHub?: ResourceHub | null;
+  folder?: ResourceHubFolder | null;
+}
+
 export interface ActivityContentSpaceAdded {
   companyId?: string | null;
   spaceId?: string | null;
