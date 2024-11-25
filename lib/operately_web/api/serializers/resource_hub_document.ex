@@ -19,6 +19,8 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ResourceHubs.Document do
       comments: OperatelyWeb.Api.Serializer.serialize(document.comments),
       inserted_at: OperatelyWeb.Api.Serializer.serialize(document.inserted_at),
       permissions: OperatelyWeb.Api.Serializer.serialize(document.permissions),
+      potential_subscribers: OperatelyWeb.Api.Serializer.serialize(document.potential_subscribers),
+      subscription_list: OperatelyWeb.Api.Serializer.serialize(document.subscription_list),
     }
   end
 end

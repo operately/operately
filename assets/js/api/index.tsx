@@ -1034,6 +1034,8 @@ export interface ResourceHubDocument {
   permissions?: ResourceHubPermissions | null;
   reactions?: Reaction[] | null;
   comments?: Comment[] | null;
+  potentialSubscribers?: Subscriber[] | null;
+  subscriptionList?: SubscriptionList | null;
 }
 
 export interface ResourceHubFile {
@@ -1709,6 +1711,7 @@ export interface GetResourceHubDocumentInput {
   includeParentFolder?: boolean | null;
   includeReactions?: boolean | null;
   includePermissions?: boolean | null;
+  includeSubscriptionsList?: boolean | null;
   includePotentialSubscribers?: boolean | null;
 }
 
