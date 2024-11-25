@@ -23,6 +23,7 @@ defmodule Operately.Activities.Preloader do
     |> preload(Operately.Messages.Message)
     |> preload(Operately.ResourceHubs.ResourceHub)
     |> preload(Operately.ResourceHubs.Folder)
+    |> preload(Operately.ResourceHubs.Document)
     |> preload(Operately.ResourceHubs.Node)
     |> preload_sub_activities()
   end
