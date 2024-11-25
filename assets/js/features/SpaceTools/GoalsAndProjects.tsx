@@ -16,17 +16,16 @@ interface GoalsAndProjectsProps {
   space: Space;
   goals: Goal[];
   projects: Project[];
-  toolsCount: number;
 }
 
-export function GoalsAndProjects({ space, goals, projects, toolsCount }: GoalsAndProjectsProps) {
+export function GoalsAndProjects({ space, goals, projects }: GoalsAndProjectsProps) {
   const path = Paths.spaceGoalsPath(space.id!);
 
   const openGoals = goals.filter((g) => !g.closedAt);
   const openProjects = projects.filter((p) => p.status !== "closed" && p.status !== "paused");
 
   return (
-    <Container path={path} toolsCount={toolsCount} testId="goals-and-projects">
+    <Container path={path} testId="goals-and-projects">
       <Title title="Goals & Projects" />
 
       {openGoals.length < 1 && openProjects.length < 1 ? (

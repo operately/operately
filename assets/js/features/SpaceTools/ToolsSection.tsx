@@ -27,13 +27,12 @@ export function ToolsSection({ space, tools, hasResourceHubsFeature }: ToolsSect
 
   return (
     <div className="mt-6 py-6">
-      <div className="flex justify-center items-start flex-wrap gap-8">
-        <GoalsAndProjects space={space} goals={tools.goals} projects={tools.projects} toolsCount={toolsCount} />
+      <div className="flex justify-center items-start flex-wrap gap-4">
+        <GoalsAndProjects space={space} goals={tools.goals} projects={tools.projects} />
         {tools.messagesBoards.map((boards) => (
-          <Discussions space={space} discussions={boards.messages!} toolsCount={toolsCount} key={boards.id} />
+          <Discussions space={space} discussions={boards.messages!} key={boards.id} />
         ))}
-        {hasResourceHubsFeature &&
-          tools.resourceHubs.map((hub) => <ResourceHub resourceHub={hub} toolsCount={toolsCount} key={hub.id} />)}
+        {hasResourceHubsFeature && tools.resourceHubs.map((hub) => <ResourceHub resourceHub={hub} key={hub.id} />)}
       </div>
     </div>
   );
