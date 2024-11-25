@@ -4,7 +4,7 @@ import classNames from "classnames";
 import { DivLink } from "@/components/Link";
 
 export function Title({ title }: { title: string }) {
-  return <div className="font-bold text-base text-center py-2 border-b border-stroke-base">{title}</div>;
+  return <div className="font-bold text-base text-center py-2">{title}</div>;
 }
 
 interface ContainerProps {
@@ -18,11 +18,11 @@ export function Container({ children, path, toolsCount, testId }: ContainerProps
   const large = toolsCount > 2 ? "lg:w-[calc(33%-1.33rem)]" : "lg:w-[340px]";
 
   const className = classNames(
-    "text-sm",
+    "text-xs",
     "h-[380px] max-w-[340px] overflow-hidden",
     `w-full md:w-[calc(50%-1rem)] ${large}`,
     "border border-stroke-base",
-    "rounded-lg shadow transition-shadow duration-300 hover:border-surface-outline",
+    "rounded-lg shadow-sm transition-shadow duration-300 hover:shadow hover:border-surface-outline",
   );
 
   return (
