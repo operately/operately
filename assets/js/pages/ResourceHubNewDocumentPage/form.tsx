@@ -4,13 +4,24 @@ import { useNavigate } from "react-router-dom";
 import { useCreateResourceHubDocument } from "@/models/resourceHubs";
 
 import Forms from "@/components/Forms";
+import { DimmedSection } from "@/components/PaperContainer";
+import { Spacer } from "@/components/Spacer";
+import { Options, SubscribersSelector, useSubscriptions } from "@/features/Subscriptions";
 import { Paths } from "@/routes/paths";
+import { assertPresent } from "@/utils/assertions";
+
 import { useLoadedData } from "./loader";
 
 export function Form({ folderId }: { folderId: string | null }) {
   const { resourceHub } = useLoadedData();
   const navigate = useNavigate();
   const [post] = useCreateResourceHubDocument();
+
+  assertPresent(resourceHub.potentialSubscribers, "potentialSubscribers must be present in resourceHub");
+
+  const subscriptionsState = useSubscriptions(resourceHub.potentialSubscribers, {
+    ignoreMe: true,
+  });
 
   const form = Forms.useForm({
     fields: {
@@ -34,6 +45,8 @@ export function Form({ folderId }: { folderId: string | null }) {
         folderId: folderId,
         name: form.values.title,
         content: JSON.stringify(form.values.content),
+        sendNotificationsToEveryone: subscriptionsState.subscriptionType == Options.ALL,
+        subscriberIds: subscriptionsState.currentSubscribersList,
       });
       navigate(Paths.resourceHubDocumentPath(res.document.id));
     },
@@ -53,7 +66,13 @@ export function Form({ folderId }: { folderId: string | null }) {
           hideBorder
         />
       </Forms.FieldGroup>
-      <Forms.Submit saveText="Submit" buttonSize="base" />
+
+      <DimmedSection>
+        <Spacer size={4} />
+        <SubscribersSelector state={subscriptionsState} resourceHubName={resourceHub.name!} />
+
+        <Forms.Submit saveText="Submit" buttonSize="base" />
+      </DimmedSection>
     </Forms.Form>
   );
 }

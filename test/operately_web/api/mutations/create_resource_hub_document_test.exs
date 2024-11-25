@@ -4,6 +4,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHubDocumentTest do
   alias Operately.ResourceHubs
   alias Operately.Access.Binding
   alias Operately.Support.RichText
+  alias Operately.Notifications.SubscriptionList
 
   import Operately.GroupsFixtures
   import Operately.ResourceHubsFixtures
@@ -104,6 +105,84 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHubDocumentTest do
 
       assert length(documents) == 1
       assert res.document.id == Paths.document_id(hd(documents))
+    end
+  end
+
+  describe "subscriptions to notifications" do
+    setup ctx do
+      ctx
+      |> Factory.add_space(:space)
+      |> Factory.add_space_member(:p1, :space)
+      |> Factory.add_space_member(:p2, :space)
+      |> Factory.add_space_member(:p3, :space)
+      |> Factory.log_in_person(:creator)
+      |> Factory.add_resource_hub(:hub, :space, :creator)
+    end
+
+    test "creates subscription list for document", ctx do
+      people = [ctx.p1, ctx.p2, ctx.p3]
+
+      assert {200, res} = mutation(ctx.conn, :create_resource_hub_document, %{
+        resource_hub_id: Paths.resource_hub_id(ctx.hub),
+        name: "My document",
+        content: RichText.rich_text("content", :as_string),
+        send_notifications_to_everyone: true,
+        subscriber_ids: Enum.map(people, &(Paths.person_id(&1))),
+      })
+
+      {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.document.id)
+      {:ok, list} = SubscriptionList.get(:system, parent_id: id, opts: [preload: :subscriptions])
+
+      assert list.send_to_everyone
+      assert length(list.subscriptions) == 4
+
+      Enum.each([ctx.creator | people], fn p ->
+        assert Enum.filter(list.subscriptions, &(&1.person_id == p.id))
+      end)
+    end
+
+    test "adds mentioned people to subscription list", ctx do
+      people = [ctx.p1, ctx.p2, ctx.p3]
+      content = RichText.rich_text(mentioned_people: people)
+
+      assert {200, res} = mutation(ctx.conn, :create_resource_hub_document, %{
+        resource_hub_id: Paths.resource_hub_id(ctx.hub),
+        name: "My document",
+        content: content,
+        send_notifications_to_everyone: false,
+        subscriber_ids: [],
+      })
+
+      {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.document.id)
+      {:ok, list} = SubscriptionList.get(:system, parent_id: id, opts: [preload: :subscriptions])
+
+      assert length(list.subscriptions) == 4
+
+      Enum.each([ctx.creator | people], fn p ->
+        assert Enum.filter(list.subscriptions, &(&1.person_id == p.id))
+      end)
+    end
+
+    test "doesn't create repeated subscription", ctx do
+      people = [ctx.creator, ctx.p1, ctx.p2, ctx.p3]
+      content = RichText.rich_text(mentioned_people: people)
+
+      assert {200, res} = mutation(ctx.conn, :create_resource_hub_document, %{
+        resource_hub_id: Paths.resource_hub_id(ctx.hub),
+        name: "My document",
+        content: content,
+        send_notifications_to_everyone: false,
+        subscriber_ids: Enum.map(people, &(Paths.person_id(&1))),
+      })
+
+      {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.document.id)
+      {:ok, list} = SubscriptionList.get(:system, parent_id: id, opts: [preload: :subscriptions])
+
+      assert length(list.subscriptions) == 4
+
+      Enum.each(people, fn p ->
+        assert Enum.filter(list.subscriptions, &(&1.person_id == p.id))
+      end)
     end
   end
 
