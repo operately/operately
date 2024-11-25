@@ -5,7 +5,7 @@ import { Goal } from "@/models/goals";
 import { Project } from "@/models/projects";
 import { splitByStatus } from "@/models/milestones";
 
-import { PieChart, ProgressBar, MiniPieChart } from "@/components/charts";
+import { PieChart, ProgressBar } from "@/components/charts";
 import { assertPresent } from "@/utils/assertions";
 import { Paths } from "@/routes/paths";
 
@@ -32,10 +32,10 @@ export function GoalsAndProjects({ space, goals, projects, toolsCount }: GoalsAn
       {openGoals.length < 1 && openProjects.length < 1 ? (
         <ZeroGoalsAndProjects />
       ) : (
-        <>
+        <div className="bg-surface-dimmed rounded mx-2">
           <Goals goals={openGoals} projectsCount={openProjects.length} />
           <Projects projects={openProjects} />
-        </>
+        </div>
       )}
     </Container>
   );
@@ -60,7 +60,7 @@ function Goals({ goals, projectsCount }: { goals: Goal[]; projectsCount: number 
   }, []);
 
   return (
-    <div className="flex flex-col gap-2 px-2 py-3">
+    <div className="flex flex-col px-2 py-3">
       <Header goals={goals} type="goals" />
 
       {slicedGoals.map((goal) => (
@@ -80,12 +80,16 @@ function GoalItem({ goal }: { goal: Goal }) {
   }, [goal.isOutdated, goal.lastCheckIn]);
 
   return (
-    <div className="flex items-center gap-1 overflow-hidden">
-      {/* Extra div is necessary to ensure all bars have the same size */}
-      <div>
-        <ProgressBar percentage={goal.progressPercentage} status={status} className="w-[50px] h-[9px]" />
+    <div className="flex gap-2 items-center">
+      <div className="border-l border-surface-outline ml-2 h-[20px]"></div>
+
+      <div className="flex items-center justify-between gap-1 overflow-hidden flex-1 mr-2">
+        {/* Extra div is necessary to ensure all bars have the same size */}
+        <div className="truncate ml-1">{goal.name}</div>
+        <div>
+          <ProgressBar percentage={goal.progressPercentage} status={status} className="w-[50px] h-[9px]" />
+        </div>
       </div>
-      <div className="truncate">{goal.name}</div>
     </div>
   );
 }
@@ -94,7 +98,7 @@ function Projects({ projects }: { projects: Project[] }) {
   if (projects.length < 1) return <></>;
 
   return (
-    <div className="flex flex-col gap-2 px-2 py-3">
+    <div className="flex flex-col px-2 py-3">
       <Header projects={projects} type="projects" />
 
       {projects.map((project) => (
@@ -110,12 +114,18 @@ function ProjectItem({ project }: { project: Project }) {
   const total = project.milestones.length;
   const { done } = splitByStatus(project.milestones);
 
+  const percentage = total === 0 ? 0 : (done.length / total) * 100;
+
   return (
-    <div className="flex items-center gap-1 overflow-hidden">
-      <div>
-        <MiniPieChart completed={done.length} total={total} />
+    <div className="flex gap-2 items-center">
+      <div className="border-l border-surface-outline ml-2 h-[20px]"></div>
+
+      <div className="flex items-center justify-between gap-1 overflow-hidden flex-1 mr-2">
+        <div className="truncate">{project.name}</div>
+        <div>
+          <ProgressBar percentage={percentage} status={project.status!} className="w-[50px] h-[9px]" />
+        </div>
       </div>
-      <div className="truncate">{project.name}</div>
     </div>
   );
 }
@@ -147,7 +157,7 @@ function Header(props: GoalsHeader | ProjectsHeader) {
   }, []);
 
   return (
-    <div className="font-bold flex items-center gap-2">
+    <div className="font-bold flex items-center gap-2 text-sm mb-2">
       <PieChart
         total={status.total}
         slices={[
