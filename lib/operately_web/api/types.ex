@@ -557,6 +557,8 @@ defmodule OperatelyWeb.Api.Types do
     field :permissions, :resource_hub_permissions
     field :reactions, list_of(:reaction)
     field :comments, list_of(:comment)
+    field :potential_subscribers, list_of(:subscriber)
+    field :subscription_list, :subscription_list
   end
 
   object :resource_hub_file do

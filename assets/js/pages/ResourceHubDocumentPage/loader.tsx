@@ -14,6 +14,8 @@ export async function loader({ params }): Promise<LoaderResult> {
       includeParentFolder: true,
       includeReactions: true,
       includePermissions: true,
+      includePotentialSubscribers: true,
+      includeSubscriptionsList: true,
     }).then((res) => res.document!),
   };
 }

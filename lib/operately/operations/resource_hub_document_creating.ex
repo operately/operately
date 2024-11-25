@@ -20,6 +20,7 @@ defmodule Operately.Operations.ResourceHubDocumentCreating do
         node_id: changes.node.id,
         author_id: author.id,
         content: attrs.content,
+        subscription_list_id: changes.subscription_list.id,
       })
     end)
     |> SubscriptionList.update(:document)
