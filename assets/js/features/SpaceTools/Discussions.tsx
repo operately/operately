@@ -34,7 +34,7 @@ function ZeroDiscussions() {
 
 function DiscussionList({ discussions }: { discussions: Discussion[] }) {
   return (
-    <div>
+    <div className="bg-surface-dimmed rounded mx-2">
       {discussions.map((discussion) => (
         <DiscussionItem discussion={discussion} key={discussion.id} />
       ))}
@@ -49,14 +49,14 @@ function DiscussionItem({ discussion }: { discussion: Discussion }) {
   const className = classNames(
     // 2rem is the size of <Avatar size="normal" />
     discussion.commentsCount > 0 ? "grid-cols-[2rem_1fr_20px]" : "grid-cols-[2rem_1fr]",
-    "grid items-center gap-2",
-    "py-3 px-2",
+    "grid items-center gap-1",
+    "py-2 px-2",
     "border-b border-stroke-base last:border-b-0",
   );
 
   return (
     <div className={className}>
-      <Avatar person={discussion.author} size="normal" />
+      <Avatar person={discussion.author} size={30} />
       <DiscussionTitle title={discussion.title!} body={discussion.body!} />
       <CommnetsCount count={discussion.commentsCount} />
     </div>
@@ -64,28 +64,10 @@ function DiscussionItem({ discussion }: { discussion: Discussion }) {
 }
 
 function DiscussionTitle({ title, body }: { title: string; body: string }) {
-  const [subtitle, setSubtitle] = React.useState<string>();
-  const textRef = React.useRef<HTMLDivElement>(null);
-
-  React.useEffect(() => {
-    if (textRef.current) {
-      const computedStyle = window.getComputedStyle(textRef.current);
-      const lineHeight = parseFloat(computedStyle.lineHeight);
-      const height = textRef.current.clientHeight;
-
-      const lines = Math.round(height / lineHeight);
-
-      if (lines <= 1) {
-        setSubtitle(richContentToString(JSON.parse(body)));
-      }
-    }
-  }, [setSubtitle]);
-
   return (
-    <div ref={textRef} className="font-bold overflow-hidden">
-      {title}
-
-      {subtitle && <div className="font-normal truncate pr-2">{subtitle}</div>}
+    <div className="font-bold overflow-hidden">
+      <div className="truncate pr-2">{title}</div>
+      <div className="font-normal truncate pr-2">{richContentToString(JSON.parse(body))}</div>
     </div>
   );
 }
@@ -95,7 +77,7 @@ function CommnetsCount({ count }: { count: number }) {
 
   return (
     <div>
-      <div className="w-[20px] h-[20px] text-xs bg-blue-500 text-white-1 flex items-center justify-center rounded-full">
+      <div className="w-[16px] h-[16px] bg-blue-500 text-white-1 flex items-center justify-center rounded-full text-[9px] font-bold">
         {count}
       </div>
     </div>
