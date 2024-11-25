@@ -11,6 +11,8 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubDocument do
     field :include_parent_folder, :boolean
     field :include_reactions, :boolean
     field :include_permissions, :boolean
+    field :include_subscriptions_list, :boolean
+    field :include_potential_subscribers, :boolean
   end
 
   outputs do
@@ -46,6 +48,7 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubDocument do
       include_reactions: [reactions: :person],
       include_resource_hub: [node: :resource_hub],
       include_parent_folder: [node: [parent_folder: :node]],
+      include_subscriptions_list: :subscription_list,
       always_include: :node,
     ])
   end
@@ -53,6 +56,7 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubDocument do
   defp after_load(inputs) do
     Inputs.parse_includes(inputs, [
       include_permissions: &Document.set_permissions/1,
+      include_potential_subscribers: &Document.load_potential_subscribers/1,
     ])
   end
 end

@@ -13,6 +13,7 @@ import { Paths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { CommentSection, useComments } from "@/features/CommentSection";
+import { CurrentSubscriptions } from "@/features/Subscriptions";
 
 import { useLoadedData } from "./loader";
 
@@ -28,7 +29,8 @@ export function Page() {
           <Title />
           <Body />
           <DocumentReactions />
-          <DicusssionComments />
+          <DocumentComments />
+          <DocumentSubscriptions />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
@@ -100,7 +102,7 @@ function DocumentReactions() {
   );
 }
 
-function DicusssionComments() {
+function DocumentComments() {
   const { document } = useLoadedData();
   const commentsForm = useComments({ parentType: "resource_hub_document", document: document });
 
@@ -115,6 +117,27 @@ function DicusssionComments() {
         refresh={() => {}}
         commentParentType="resource_hub_document"
         canComment={document.permissions.canCommentOnDocument}
+      />
+    </>
+  );
+}
+
+function DocumentSubscriptions() {
+  const { document } = useLoadedData();
+  const refresh = Pages.useRefresh();
+
+  assertPresent(document.subscriptionList, "subscriptionList should be present in document");
+
+  return (
+    <>
+      <div className="border-t border-stroke-base mt-16 mb-8" />
+
+      <CurrentSubscriptions
+        potentialSubscribers={document.potentialSubscribers!}
+        subscriptionList={document.subscriptionList}
+        name="document"
+        type="resource_hub_document"
+        callback={refresh}
       />
     </>
   );
