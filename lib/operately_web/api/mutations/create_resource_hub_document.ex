@@ -10,6 +10,8 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHubDocument do
     field :folder_id, :id
     field :name, :string
     field :content, :string
+    field :send_notifications_to_everyone, :boolean
+    field :subscriber_ids, list_of(:id)
   end
 
   outputs do
@@ -40,6 +42,11 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHubDocument do
 
   defp parse_inputs(inputs) do
     content = Jason.decode!(inputs.content)
-    {:ok, Map.put(inputs, :content, content)}
+    {:ok, Map.merge(inputs, %{
+      content: content,
+      send_to_everyone: inputs[:send_notifications_to_everyone] || false,
+      subscription_parent_type: :resource_hub_document,
+      subscriber_ids: inputs[:subscriber_ids] || []
+    })}
   end
 end

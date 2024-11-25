@@ -524,6 +524,7 @@ defmodule OperatelyWeb.Api.Types do
     field :description, :string
     field :space, :space
     field :nodes, list_of(:resource_hub_node)
+    field :potential_subscribers, list_of(:subscriber)
     field :inserted_at, :date
     field :updated_at, :date
   end

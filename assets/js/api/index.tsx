@@ -1018,6 +1018,7 @@ export interface ResourceHub {
   description?: string | null;
   space?: Space | null;
   nodes?: ResourceHubNode[] | null;
+  potentialSubscribers?: Subscriber[] | null;
   insertedAt?: string | null;
   updatedAt?: string | null;
 }
@@ -1694,6 +1695,7 @@ export interface GetResourceHubInput {
   id?: Id | null;
   includeSpace?: boolean | null;
   includeNodes?: boolean | null;
+  includePotentialSubscribers?: boolean | null;
 }
 
 export interface GetResourceHubResult {
@@ -1707,6 +1709,7 @@ export interface GetResourceHubDocumentInput {
   includeParentFolder?: boolean | null;
   includeReactions?: boolean | null;
   includePermissions?: boolean | null;
+  includePotentialSubscribers?: boolean | null;
 }
 
 export interface GetResourceHubDocumentResult {
@@ -2088,6 +2091,8 @@ export interface CreateResourceHubDocumentInput {
   folderId?: Id | null;
   name?: string | null;
   content?: string | null;
+  sendNotificationsToEveryone?: boolean | null;
+  subscriberIds?: Id[] | null;
 }
 
 export interface CreateResourceHubDocumentResult {
