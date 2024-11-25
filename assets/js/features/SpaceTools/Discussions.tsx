@@ -14,14 +14,13 @@ import { Title, Container, ZeroResourcesContainer } from "./components";
 interface DiscussionsProps {
   space: Space;
   discussions: Discussion[];
-  toolsCount: number;
 }
 
-export function Discussions({ space, discussions, toolsCount }: DiscussionsProps) {
+export function Discussions({ space, discussions }: DiscussionsProps) {
   const path = Paths.discussionsPath(space.id!);
 
   return (
-    <Container path={path} toolsCount={toolsCount} testId="messages-tool">
+    <Container path={path} testId="messages-tool">
       <Title title="Discussions" />
       {discussions.length < 1 ? <ZeroDiscussions /> : <DiscussionList discussions={discussions} />}
     </Container>

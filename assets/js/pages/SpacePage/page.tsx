@@ -28,7 +28,7 @@ export function Page() {
 
   return (
     <Pages.Page title={space.name!} testId="space-page">
-      <Paper.Root size="large">
+      <Paper.Root size="xlarge">
         <Paper.Body>
           <SpaceEdit />
           <SpaceHeader space={space} />

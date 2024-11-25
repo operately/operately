@@ -9,18 +9,14 @@ export function Title({ title }: { title: string }) {
 
 interface ContainerProps {
   path: string;
-  toolsCount: number;
   children: NonNullable<React.ReactNode>;
   testId?: string;
 }
 
-export function Container({ children, path, toolsCount, testId }: ContainerProps) {
-  const large = toolsCount > 2 ? "lg:w-[calc(33%-1.33rem)]" : "lg:w-[340px]";
-
+export function Container({ children, path, testId }: ContainerProps) {
   const className = classNames(
     "text-xs",
-    "h-[380px] max-w-[340px] overflow-hidden",
-    `w-full md:w-[calc(50%-1rem)] ${large}`,
+    "w-full h-[380px] w-[340] max-w-[340px] overflow-hidden",
     "border border-stroke-base",
     "rounded-lg shadow-sm transition-shadow duration-300 hover:shadow hover:border-surface-outline",
   );
