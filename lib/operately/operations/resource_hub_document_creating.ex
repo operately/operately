@@ -3,9 +3,12 @@ defmodule Operately.Operations.ResourceHubDocumentCreating do
   alias Operately.Repo
   alias Operately.Activities
   alias Operately.ResourceHubs.{Document, Node}
+  alias Operately.Operations.Notifications.{Subscription, SubscriptionList}
 
   def run(author, hub, attrs) do
     Multi.new()
+    |> SubscriptionList.insert(attrs)
+    |> Subscription.insert(author, attrs)
     |> Multi.insert(:node, Node.changeset(%{
       resource_hub_id: hub.id,
       parent_folder_id: attrs[:folder_id],
@@ -19,6 +22,7 @@ defmodule Operately.Operations.ResourceHubDocumentCreating do
         content: attrs.content,
       })
     end)
+    |> SubscriptionList.update(:document)
     |> Multi.run(:document_with_node, fn _, changes ->
       document = Map.put(changes.document, :node, changes.node)
       {:ok, document}

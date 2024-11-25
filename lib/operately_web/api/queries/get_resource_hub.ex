@@ -8,6 +8,7 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHub do
     field :id, :id
     field :include_space, :boolean
     field :include_nodes, :boolean
+    field :include_potential_subscribers, :boolean
   end
 
   outputs do
@@ -31,18 +32,25 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHub do
     end
   end
 
-  def load(ctx, inputs) do
+  defp load(ctx, inputs) do
     ResourceHub.get(ctx.me, id: inputs.id, opts: [
       preload: preload(inputs),
+      after_load: after_load(inputs),
     ])
   end
 
-  def preload(inputs) do
+  defp preload(inputs) do
     q = from(n in Node, where: is_nil(n.parent_folder_id), preload: [folder: :node, document: :node, file: [:node, :blob]])
 
     Inputs.parse_includes(inputs, [
       include_space: :space,
       include_nodes: [nodes: q],
+    ])
+  end
+
+  defp after_load(inputs) do
+    Inputs.parse_includes(inputs, [
+      include_potential_subscribers: &ResourceHub.load_potential_subscribers/1,
     ])
   end
 end
