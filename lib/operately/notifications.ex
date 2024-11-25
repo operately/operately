@@ -145,6 +145,11 @@ defmodule Operately.Notifications do
           join: s in assoc(m, :subscription_list), as: :subscription_list,
           where: s.id == ^id
         )
+      :resource_hub_document ->
+        from(d in Operately.ResourceHubs.Document, as: :resource,
+          join: s in assoc(d, :subscription_list), as: :subscription_list,
+          where: s.id == ^id
+        )
     end
     |> Fetch.get_resource_with_access_level(person_id, selected_resource: :subscription_list)
   end
@@ -169,6 +174,11 @@ defmodule Operately.Notifications do
       :message ->
         from(m in Operately.Messages.Message, as: :resource,
           join: s in assoc(m, :subscription_list),
+          where: s.id == ^id
+        )
+      :resource_hub_document ->
+        from(d in Operately.ResourceHubs.Document, as: :resource,
+          join: s in assoc(d, :subscription_list),
           where: s.id == ^id
         )
     end

@@ -39,10 +39,18 @@ defmodule Operately.ResourceHubsFixtures do
       type: :document,
     })
 
+    {:ok, subscription_list} = Operately.Notifications.create_subscription_list()
+
     {:ok, document} = Operately.ResourceHubs.create_document(%{
       node_id: node.id,
       author_id: author_id,
       content: attrs[:content] || RichText.rich_text("Content"),
+      subscription_list_id: subscription_list.id,
+    })
+
+    {:ok, _} = Operately.Notifications.update_subscription_list(subscription_list, %{
+      parent_type: :resource_hub_document,
+      parent_id: document.id,
     })
 
     document
