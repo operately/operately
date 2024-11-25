@@ -13,13 +13,13 @@ interface ResourceHubProps {
   toolsCount: number;
 }
 
-export function ResourceHub({ resourceHub, toolsCount }: ResourceHubProps) {
+export function ResourceHub({ resourceHub }: ResourceHubProps) {
   assertPresent(resourceHub.nodes, "nodes must be present in resourceHub");
 
   const path = Paths.resourceHubPath(resourceHub.id!);
 
   return (
-    <Container path={path} toolsCount={toolsCount} testId="messages-tool">
+    <Container path={path} testId="messages-tool">
       <Title title={resourceHub.name!} />
       {resourceHub.nodes.length < 1 ? <ZeroResources /> : <NodesList nodes={resourceHub.nodes} />}
     </Container>
