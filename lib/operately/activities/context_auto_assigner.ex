@@ -116,6 +116,7 @@ defmodule Operately.Activities.ContextAutoAssigner do
     "resource_hub_document_created",
     "resource_hub_file_created",
     "resource_hub_folder_created",
+    "resource_hub_document_commented",
   ]
 
   def assign_context(multi) do

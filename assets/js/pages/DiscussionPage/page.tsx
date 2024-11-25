@@ -171,7 +171,7 @@ function Options() {
 
 function DicusssionComments() {
   const { discussion } = useLoadedData();
-  const commentsForm = useComments({ parent: discussion, parentType: "message" });
+  const commentsForm = useComments({ discussion: discussion, parentType: "message" });
 
   if (discussion.state === "draft") return null;
 
