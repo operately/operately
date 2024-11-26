@@ -11,6 +11,7 @@ interface PasswordInputProps {
   field: string;
   label?: string;
   required?: boolean;
+  placeholder?: string;
   minLength?: number;
   maxLength?: number;
 }
@@ -39,6 +40,7 @@ export function PasswordInput(props: PasswordInputProps) {
         className={styles(!!error)}
         value={value}
         onChange={(e) => setValue(e.target.value)}
+        placeholder={props.placeholder}
       />
     </InputField>
   );

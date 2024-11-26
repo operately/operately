@@ -6,8 +6,6 @@ defmodule OperatelyWeb.Router do
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
-    plug :fetch_live_flash
-    plug :put_root_layout, {OperatelyWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
     plug :fetch_current_account
@@ -36,7 +34,6 @@ defmodule OperatelyWeb.Router do
   scope "/", OperatelyWeb do
     pipe_through [:browser, :redirect_if_account_is_authenticated]
 
-    get "/accounts/log_in", AccountSessionController, :new
     post "/accounts/log_in", AccountSessionController, :create
 
     #
