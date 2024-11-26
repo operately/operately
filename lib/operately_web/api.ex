@@ -103,6 +103,7 @@ defmodule OperatelyWeb.Api do
   mutation :edit_project_permissions, M.EditProjectPermissions
   mutation :edit_project_retrospective, M.EditProjectRetrospective
   mutation :edit_project_timeline, M.EditProjectTimeline
+  mutation :edit_resource_hub_document, M.EditResourceHubDocument
   mutation :edit_space_members_permissions, M.EditSpaceMembersPermissions
   mutation :edit_space_permissions, M.EditSpacePermissions
   mutation :edit_subscriptions_list, M.EditSubscriptionsList
