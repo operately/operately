@@ -80,6 +80,8 @@ defmodule OperatelyWeb.Api do
   mutation :create_resource_hub_file, M.CreateResourceHubFile
   mutation :create_resource_hub_folder, M.CreateResourceHubFolder
 
+  mutation :delete_resource_hub_document, M.DeleteResourceHubDocument
+
   mutation :remove_company_admin, M.RemoveCompanyAdmin
   mutation :remove_company_member, M.RemoveCompanyMember
   mutation :remove_company_trusted_email_domain, M.RemoveCompanyTrustedEmailDomain
