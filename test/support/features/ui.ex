@@ -348,7 +348,7 @@ defmodule Operately.Support.Features.UI do
 
   alias Operately.Support.Features.UI.Emails, as: Emails
 
-  def list_sent_emails(_state) do 
+  def list_sent_emails(_state) do
     Emails.list_sent_emails()
   end
 
@@ -419,7 +419,7 @@ defmodule Operately.Support.Features.UI do
     is_last_month = date.month == Date.utc_today().month - 1
     is_next_month = date.month == Date.utc_today().month + 1
 
-    day = if date.day < 10 do 
+    day = if date.day < 10 do
       "00#{date.day}"
     else
       "0#{date.day}"
@@ -441,7 +441,7 @@ defmodule Operately.Support.Features.UI do
         is_next_month ->
           ctx
           |> click(css: ".react-datepicker__navigation.react-datepicker__navigation--next")
-          |> click(css: ".react-datepicker__day.react-datepicker__day--#{day}")
+          |> click(css: ".react-datepicker__day.react-datepicker__day--#{day}:not(.react-datepicker__day--disabled)")
       end
     end)
   end
