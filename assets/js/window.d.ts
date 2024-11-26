@@ -11,11 +11,15 @@ declare global {
   interface AppConfig {
     environment: string;
     demoBuilder: boolean;
+    allowLoginWithGoogle: boolean;
 
     sentry: SentryConfig;
     api: ApiConfig;
 
     showDevBar: boolean;
+    account: {
+      id: number;
+    };
   }
 
   interface Window {

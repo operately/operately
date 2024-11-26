@@ -22,8 +22,6 @@ defmodule OperatelyWeb.ConnCase do
       # The default endpoint for testing
       @endpoint OperatelyWeb.Endpoint
 
-      use OperatelyWeb, :verified_routes
-
       # Import conveniences for testing with connections
       import Plug.Conn
       import Phoenix.ConnTest
