@@ -27,6 +27,7 @@
       window.appConfig.demoBuilder = <%= Application.get_env(:operately, :demo_builder_allowed) %>;
       window.appConfig.showDevBar = <%= Application.get_env(:operately, :app_env) == :dev %>;
       window.appConfig.allowLoginWithGoogle = <%= Application.get_env(:operately, :allow_login_with_google) %>;
+      window.appConfig.configured = <%= Operately.Companies.count_companies() > 0 %>;
 
       <%= if @current_account do %>
         window.appConfig.api = {};
