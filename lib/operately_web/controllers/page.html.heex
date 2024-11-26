@@ -7,7 +7,7 @@
 
     <title>Operately</title>
 
-    <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
+    <link phx-track-static rel="stylesheet" href="/assets/app.css" />
 
     <script>
       // Disable annoying Download the React DevTools for a better
@@ -26,9 +26,11 @@
       window.appConfig.environment = "<%= Application.get_env(:operately, :app_env) %>";
       window.appConfig.demoBuilder = <%= Application.get_env(:operately, :demo_builder_allowed) %>;
       window.appConfig.showDevBar = <%= Application.get_env(:operately, :app_env) == :dev %>;
+      window.appConfig.allowLoginWithGoogle = <%= Application.get_env(:operately, :allow_login_with_google) %>;
 
       <%= if @current_account do %>
         window.appConfig.api = {};
+        window.appConfig.account = { id: "<%= @current_account.id %>" };
         window.appConfig.api.socketToken = "<%= OperatelyWeb.ApiSocket.gen_token(@conn) %>";
       <% end %>
 
@@ -48,11 +50,13 @@
 
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 
-    <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}>
+    <script defer phx-track-static type="text/javascript" src={"/assets/app.js"}>
     </script>
   </head>
 
   <body class="antialiased overscroll-none" style="" data-theme="light">
-    <%= @inner_content %>
+    <div id="root">
+      <!-- This is where the app will be mounted -->
+    </div>
   </body>
 </html>

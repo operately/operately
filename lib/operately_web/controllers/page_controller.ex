@@ -1,11 +1,6 @@
 defmodule OperatelyWeb.PageController do
   use OperatelyWeb, :controller
 
-  @public_pages [
-    "/accounts/log_in",
-    "/join",
-  ]
-
   def index(conn, _params) do
     if configured?() do
       handle_operately_is_configured(conn)
@@ -17,39 +12,15 @@ defmodule OperatelyWeb.PageController do
   defp handle_operately_is_configured(conn) do
     cond do
       conn.request_path == "/setup" -> redirect_to_homepage(conn)
-      conn.request_path in @public_pages -> public_page(conn)
-      true -> private_page(conn)
+      true -> render(conn, :page)
     end
   end
 
   defp handle_operately_is_not_configured(conn) do
     if conn.request_path == "/setup" do
-      render(conn, :home)
+      render(conn, :page)
     else
-      conn |> redirect(to: ~p"/setup") |> halt()
-    end
-  end
-
-  defp public_page(conn) do
-    render(conn, :home)
-  end
-
-  #
-  # If the page is not public, we check whether the request
-  # is authenticated. The :fetch_current_account in the router
-  # is responsible for fetching the current account and
-  # assigning it to the conn. This function redirects the
-  # user to the login page if the current account is not assigned
-  # to the conn.
-  #
-  defp private_page(conn) do
-    if conn.assigns[:current_account] do
-      render(conn, :home)
-    else
-      conn
-      |> put_session(:redirect_to, conn.request_path)
-      |> redirect(to: ~p"/accounts/log_in")
-      |> halt()
+      conn |> redirect(to: "/setup") |> halt()
     end
   end
 

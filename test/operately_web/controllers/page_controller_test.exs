@@ -4,7 +4,7 @@ defmodule OperatelyWeb.PageControllerTest do
   setup :register_and_log_in_account
 
   test "GET /", %{conn: conn} do
-    conn = get(conn, ~p"/")
+    conn = get(conn, "/")
     assert html_response(conn, 200)
   end
 end
