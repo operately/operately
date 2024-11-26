@@ -6,7 +6,7 @@ import Forms from "@/components/Forms";
 import { OperatelyLogo } from "@/components/OperatelyLogo";
 
 import classNames from "classnames";
-import { logIn } from "@/models/accounts";
+import { logIn } from "@/routes/auth";
 
 interface LoaderResult {}
 
@@ -21,11 +21,9 @@ export function Page() {
       password: "",
     },
     submit: async () => {
-      const res = await logIn(form.values.email, form.values.password);
+      const res = await logIn(form.values.email, form.values.password, { followAfterLogInRedirect: true });
 
-      if (res === "success") {
-        window.location.href = "/";
-      } else {
+      if (res === "failure") {
         console.log("Login failed");
       }
     },

@@ -78,6 +78,11 @@ function redirectToLoginIfUnauthorized(error: any) {
 }
 
 export function checkAuth() {
+  if (!window.appConfig.configured) {
+    stopProgressIndicator();
+    throw redirect("/setup");
+  }
+
   if (!window.appConfig.account?.id) {
     stopProgressIndicator();
     throw redirect("/log_in");
