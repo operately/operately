@@ -13,6 +13,7 @@ defmodule Operately.ResourceHubs.Node do
     has_one :file, Operately.ResourceHubs.File, foreign_key: :node_id
 
     timestamps()
+    soft_delete()
   end
 
   def changeset(attrs) do
