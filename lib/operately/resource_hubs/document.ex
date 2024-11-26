@@ -21,6 +21,7 @@ defmodule Operately.ResourceHubs.Document do
     field :permissions, :any, virtual: true
 
     timestamps()
+    soft_delete()
     request_info()
   end
 
