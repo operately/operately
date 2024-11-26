@@ -55,6 +55,7 @@ defmodule Operately.Operations.CommentAdding.Activity do
         space_id: entity.resource_hub.space_id,
         resource_hub_id: entity.resource_hub.id,
         document_id: entity.id,
+        node_id: entity.node.id,
         comment_id: changes.comment.id,
       }
     end)

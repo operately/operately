@@ -503,6 +503,11 @@ export interface ActivityContentProjectTimelineEdited {
   updatedMilestones?: Milestone[] | null;
 }
 
+export interface ActivityContentResourceHubDocumentCommented {
+  document?: ResourceHubDocument | null;
+  comment?: Comment | null;
+}
+
 export interface ActivityContentResourceHubDocumentCreated {
   resourceHub?: ResourceHub | null;
   document?: ResourceHubDocument | null;

@@ -6,6 +6,7 @@ defmodule Operately.Activities.Content.ResourceHubDocumentCommented do
     belongs_to :space, Operately.Groups.Group
     belongs_to :resource_hub, Operately.ResourceHubs.ResourceHub
     belongs_to :document, Operately.ResourceHubs.Document
+    belongs_to :node, Operately.ResourceHubs.Node
     belongs_to :comment, Operately.Updates.Comment
   end
 
