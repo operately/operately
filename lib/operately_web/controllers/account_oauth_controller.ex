@@ -20,9 +20,7 @@ defmodule OperatelyWeb.AccountOauthController do
 
       e ->
         Logger.error("Failed to fetch or create account: #{inspect(e)}")
-        conn
-        |> put_flash(:error, "Authentication failed")
-        |> redirect(to: "/")
+        conn |> redirect(to: "/")
     end
   end
 

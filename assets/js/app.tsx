@@ -23,41 +23,40 @@ import "@/api/socket";
 
 setupTestErrorLogger();
 
-// don't run this code on the login page, it's handled separately on the backend
-if (window.location.pathname !== "/accounts/log_in") {
-  Api.default.setBasePath("/api/v2");
-  AdminApi.default.setBasePath("/admin/api/v1");
+Api.default.setBasePath("/api/v2");
+AdminApi.default.setBasePath("/admin/api/v1");
 
-  Signals.init();
+Signals.init();
 
-  if (window.appConfig.sentry.enabled) {
-    Sentry.init({
-      dsn: window.appConfig.sentry.dsn,
-      integrations: [
-        new Sentry.BrowserTracing({
-          routingInstrumentation: Sentry.reactRouterV6Instrumentation(
-            React.useEffect,
-            useLocation,
-            useNavigationType,
-            createRoutesFromChildren,
-            matchRoutes,
-          ),
-        }),
-      ],
-      enableTracing: false,
-    });
-  }
+if (window.appConfig.sentry.enabled) {
+  Sentry.init({
+    dsn: window.appConfig.sentry.dsn,
+    integrations: [
+      new Sentry.BrowserTracing({
+        routingInstrumentation: Sentry.reactRouterV6Instrumentation(
+          React.useEffect,
+          useLocation,
+          useNavigationType,
+          createRoutesFromChildren,
+          matchRoutes,
+        ),
+      }),
+    ],
+    enableTracing: false,
+  });
+}
 
-  const rootElement: HTMLElement | null = document.getElementById("root");
-  const routes = createAppRoutes();
+const rootElement: HTMLElement | null = document.getElementById("root");
+const routes = createAppRoutes();
 
-  const App: JSX.Element = (
-    <React.StrictMode>
-      <RouterProvider router={routes} />
-    </React.StrictMode>
-  );
+const App: JSX.Element = (
+  <React.StrictMode>
+    <RouterProvider router={routes} />
+  </React.StrictMode>
+);
 
-  if (rootElement !== null) {
-    createRoot(rootElement).render(App);
-  }
+if (rootElement !== null) {
+  createRoot(rootElement).render(App);
+} else {
+  console.error("Root element not found");
 }

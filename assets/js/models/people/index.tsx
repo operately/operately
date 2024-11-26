@@ -90,36 +90,6 @@ export function namesListToString(members: Person[]) {
   }
 }
 
-export function logOut() {
-  const csrfToken = document.querySelector<HTMLMetaElement>("meta[name=csrf-token]")?.content;
-
-  const headers = {
-    "x-csrf-token": csrfToken,
-  } as HeadersInit;
-
-  return fetch("/accounts/log_out", {
-    method: "DELETE",
-    headers: headers,
-  });
-}
-
-export function logIn(email: string, password: string) {
-  const csrfToken = document.querySelector<HTMLMetaElement>("meta[name=csrf-token]")?.content;
-
-  const headers = { "x-csrf-token": csrfToken, "Content-Type": "application/json" } as HeadersInit;
-
-  const data = {
-    email,
-    password,
-  };
-
-  return fetch("/accounts/log_in", {
-    method: "POST",
-    headers: headers,
-    body: JSON.stringify(data),
-  });
-}
-
 export function sortByName(people: Person[]): Person[] {
   return people
     .slice()
