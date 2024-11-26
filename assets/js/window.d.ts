@@ -9,6 +9,7 @@ declare global {
   }
 
   interface AppConfig {
+    configured: boolean;
     environment: string;
     demoBuilder: boolean;
     allowLoginWithGoogle: boolean;

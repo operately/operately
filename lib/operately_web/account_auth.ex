@@ -17,11 +17,6 @@ defmodule OperatelyWeb.AccountAuth do
   It renews the session ID and clears the whole session
   to avoid fixation attacks. See the renew_session
   function to customize this behaviour.
-
-  It also sets a `:live_socket_id` key in the session,
-  so LiveView sessions are identified and automatically
-  disconnected on log out. The line can be safely removed
-  if you are not using LiveView.
   """
   def log_in_account(conn, account, params \\ %{}) do
     token = People.generate_account_session_token(account)
@@ -43,7 +38,7 @@ defmodule OperatelyWeb.AccountAuth do
   end
 
   @spec after_login_path(Operately.Account.t) :: String.t
-  def after_login_path(account) do
+  defp after_login_path(account) do
     companies = Operately.Companies.list_companies(account)
 
     if length(companies) == 1 do
@@ -151,7 +146,7 @@ defmodule OperatelyWeb.AccountAuth do
   def redirect_if_account_is_authenticated(conn, _opts) do
     if conn.assigns[:current_account] do
       conn
-      |> redirect(to: signed_in_path(conn))
+      |> redirect(to: after_login_path(conn.assigns[:current_account]))
       |> halt()
     else
       conn
@@ -186,6 +181,4 @@ defmodule OperatelyWeb.AccountAuth do
   end
 
   defp maybe_store_return_to(conn), do: conn
-
-  defp signed_in_path(_conn), do: "/"
 end
