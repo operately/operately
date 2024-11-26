@@ -105,9 +105,17 @@ defmodule Operately.ResourceHubs do
   # Nodes
   #
 
+  def get_node!(id), do: Repo.get!(Node, id)
+
   def create_node(attrs \\ %{}) do
     %Node{}
     |> Node.changeset(attrs)
     |> Repo.insert()
+  end
+
+  def update_node(%Node{} = node, attrs) do
+    node
+    |> Node.changeset(attrs)
+    |> Repo.update()
   end
 end
