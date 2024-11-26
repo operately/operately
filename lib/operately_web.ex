@@ -26,7 +26,6 @@ defmodule OperatelyWeb do
       # Import common connection and controller functions to use in pipelines
       import Plug.Conn
       import Phoenix.Controller
-      import Phoenix.LiveView.Router
     end
   end
 
@@ -40,28 +39,9 @@ defmodule OperatelyWeb do
     quote do
       use Phoenix.Controller,
         formats: [:html, :json],
-        layouts: [html: OperatelyWeb.Layouts]
+        layouts: []
 
       import Plug.Conn
-
-      unquote(verified_routes())
-    end
-  end
-
-  def live_view do
-    quote do
-      use Phoenix.LiveView,
-        layout: {OperatelyWeb.Layouts, :app}
-
-      unquote(html_helpers())
-    end
-  end
-
-  def live_component do
-    quote do
-      use Phoenix.LiveComponent
-
-      unquote(html_helpers())
     end
   end
 
@@ -69,34 +49,7 @@ defmodule OperatelyWeb do
     quote do
       use Phoenix.Component
 
-      # Import convenience functions from controllers
-      import Phoenix.Controller,
-        only: [get_csrf_token: 0, view_module: 1, view_template: 1]
-
-      # Include general helpers for rendering HTML
-      unquote(html_helpers())
-    end
-  end
-
-  defp html_helpers do
-    quote do
-      # HTML escaping functionality
-      import Phoenix.HTML
-
-      # Shortcut for generating JS commands
-      alias Phoenix.LiveView.JS
-
-      # Routes generation with the ~p sigil
-      unquote(verified_routes())
-    end
-  end
-
-  def verified_routes do
-    quote do
-      use Phoenix.VerifiedRoutes,
-        endpoint: OperatelyWeb.Endpoint,
-        router: OperatelyWeb.Router,
-        statics: OperatelyWeb.static_paths()
+      import Phoenix.Controller, only: [get_csrf_token: 0]
     end
   end
 
