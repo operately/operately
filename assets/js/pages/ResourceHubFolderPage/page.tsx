@@ -15,6 +15,7 @@ export function Page() {
 
   assertPresent(folder.nodes, "nodes must be present in folder");
   assertPresent(folder.resourceHub, "resourceHub must be present in folder");
+  assertPresent(folder.permissions, "permissions must be present in folder");
 
   return (
     <Pages.Page title={folder.name!}>
@@ -30,7 +31,11 @@ export function Page() {
             layout="title-center-actions-left"
           />
 
-          {folder.nodes.length < 1 ? <ZeroNodes /> : <NodesList nodes={folder.nodes} />}
+          {folder.nodes.length < 1 ? (
+            <ZeroNodes />
+          ) : (
+            <NodesList nodes={folder.nodes} permissions={folder.permissions} />
+          )}
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>

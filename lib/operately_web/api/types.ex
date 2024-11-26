@@ -535,6 +535,7 @@ defmodule OperatelyWeb.Api.Types do
     field :space, :space
     field :nodes, list_of(:resource_hub_node)
     field :potential_subscribers, list_of(:subscriber)
+    field :permissions, :resource_hub_permissions
     field :inserted_at, :date
     field :updated_at, :date
   end
@@ -544,6 +545,8 @@ defmodule OperatelyWeb.Api.Types do
     field :can_create_document, :boolean
     field :can_create_folder, :boolean
     field :can_create_file, :boolean
+    field :can_edit_document, :boolean
+    field :can_view, :boolean
   end
 
   object :resource_hub_folder do

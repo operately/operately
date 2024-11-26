@@ -3,6 +3,8 @@ import React from "react";
 import * as Reactions from "@/models/reactions";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
+import * as PageOptions from "@/components/PaperContainer/PageOptions";
+import { IconEdit } from "@tabler/icons-react";
 
 import FormattedTime from "@/components/FormattedTime";
 import RichContent from "@/components/RichContent";
@@ -26,6 +28,8 @@ export function Page() {
         <Navigation />
 
         <Paper.Body>
+          <Options />
+
           <Title />
           <Body />
           <DocumentReactions />
@@ -82,6 +86,25 @@ function Body() {
       <Spacer size={4} />
       <RichContent jsonContent={document.content!} className="text-md sm:text-lg" />
     </>
+  );
+}
+
+function Options() {
+  const { document } = useLoadedData();
+
+  assertPresent(document.permissions, "permissions must be present in document");
+
+  return (
+    <PageOptions.Root testId="project-options-button" position="top-right">
+      {document.permissions.canEditDocument && (
+        <PageOptions.Link
+          icon={IconEdit}
+          title="Edit document"
+          to={Paths.resourceHubEditDocumentPath(document.id!)}
+          testId="edit-document-link"
+        />
+      )}
+    </PageOptions.Root>
   );
 }
 

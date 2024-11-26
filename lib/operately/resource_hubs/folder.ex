@@ -63,4 +63,9 @@ defmodule Operately.ResourceHubs.Folder do
 
     Map.put(folder, :path_to_folder, path)
   end
+
+  def set_permissions(folder = %__MODULE__{}) do
+    perms = Operately.ResourceHubs.Permissions.calculate(folder.request_info.access_level)
+    Map.put(folder, :permissions, perms)
+  end
 end

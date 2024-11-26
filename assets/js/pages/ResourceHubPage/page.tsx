@@ -13,6 +13,7 @@ export function Page() {
   const refresh = useRefresh();
 
   assertPresent(resourceHub.nodes, "nodes must be present in resourceHub");
+  assertPresent(resourceHub.permissions, "permissions must be present in resourceHub");
 
   return (
     <Pages.Page title={resourceHub.name!}>
@@ -26,7 +27,11 @@ export function Page() {
             layout="title-center-actions-left"
           />
 
-          {resourceHub.nodes.length < 1 ? <ZeroNodes /> : <NodesList nodes={resourceHub.nodes} />}
+          {resourceHub.nodes.length < 1 ? (
+            <ZeroNodes />
+          ) : (
+            <NodesList nodes={resourceHub.nodes} permissions={resourceHub.permissions} />
+          )}
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
