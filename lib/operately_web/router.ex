@@ -44,7 +44,7 @@ defmodule OperatelyWeb.Router do
     # email address of the user to log in as.
     #
     if Application.compile_env(:operately, :test_routes) do
-      get "/accounts/auth/test_login", AccountTestSessionController, :test_login
+      get "/accounts/auth/test_login", AccountSessionController, :test_login
     end
   end
 

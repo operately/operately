@@ -16,13 +16,13 @@ defmodule OperatelyWeb.AccountOauthController do
 
     case People.find_or_create_account(attrs) do
       {:ok, account} ->
-        AccountAuth.log_in_account(conn, account)
+        conn
+        |> AccountAuth.log_in_account(account)
+        |> redirect(to: "/")
 
       e ->
         Logger.error("Failed to fetch or create account: #{inspect(e)}")
-        conn
-        |> put_flash(:error, "Authentication failed")
-        |> redirect(to: "/")
+        conn |> redirect(to: "/")
     end
   end
 
