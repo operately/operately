@@ -27,9 +27,10 @@ import classNames from "classnames";
 
 import { Context } from "./Context";
 
-type Size = "small" | "medium" | "large" | "xlarge" | "xxlarge";
+type Size = "tiny" | "small" | "medium" | "large" | "xlarge" | "xxlarge";
 
 const sizes = {
+  tiny: "max-w-xl",
   small: "max-w-2xl",
   medium: "max-w-4xl",
   large: "max-w-screen-lg w-[90%]",
@@ -60,6 +61,7 @@ export function Root({ size, children, className, fluid = false }: RootProps): J
 }
 
 const bodyPaddings = {
+  tiny: "px-10 py-8",
   small: "px-10 py-8",
   medium: "px-12 py-10",
   large: "px-12 py-10",
