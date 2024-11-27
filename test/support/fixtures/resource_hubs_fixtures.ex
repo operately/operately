@@ -25,7 +25,6 @@ defmodule Operately.ResourceHubsFixtures do
 
     {:ok, folder} = Operately.ResourceHubs.create_folder(%{
       node_id: node.id,
-      description: attrs[:description] || RichText.rich_text("This is a rosource hub"),
     })
 
     folder

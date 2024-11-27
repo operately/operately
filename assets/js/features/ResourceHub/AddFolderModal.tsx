@@ -18,7 +18,6 @@ export function AddFolderModal({ resourceHub, showForm, toggleForm, refresh, fol
   const form = Forms.useForm({
     fields: {
       name: "",
-      description: null,
     },
     validate: (addError) => {
       if (!form.values.name) {
@@ -31,7 +30,6 @@ export function AddFolderModal({ resourceHub, showForm, toggleForm, refresh, fol
         resourceHubId: resourceHub.id,
         folderId: folderId,
         name: form.values.name,
-        description: JSON.stringify(form.values.description),
       });
       refresh();
       toggleForm();
@@ -44,12 +42,6 @@ export function AddFolderModal({ resourceHub, showForm, toggleForm, refresh, fol
       <Forms.Form form={form}>
         <Forms.FieldGroup>
           <Forms.TextInput label="Name" field="name" />
-          <Forms.RichTextArea
-            label="Description"
-            field="description"
-            mentionSearchScope={{ type: "none" }}
-            placeholder="Description..."
-          />
         </Forms.FieldGroup>
 
         <Forms.Submit cancelText="Cancel" />
