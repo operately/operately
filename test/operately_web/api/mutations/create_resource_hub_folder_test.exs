@@ -1,7 +1,6 @@
 defmodule OperatelyWeb.Api.Mutations.CreateResourceHubFolderTest do
   use OperatelyWeb.TurboCase
 
-  alias Operately.Support.RichText
   alias Operately.ResourceHubs
   alias Operately.Access.Binding
 
@@ -45,7 +44,6 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHubFolderTest do
         assert {code, res} = mutation(ctx.conn, :create_resource_hub_folder, %{
           resource_hub_id: Paths.resource_hub_id(resource_hub),
           name: "My folder",
-          description: RichText.rich_text("description", :as_string)
         })
         assert code == @test.expected
 
@@ -79,7 +77,6 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHubFolderTest do
       assert {200, res} = mutation(ctx.conn, :create_resource_hub_folder, %{
         resource_hub_id: Paths.resource_hub_id(ctx.hub),
         name: "My folder",
-        description: RichText.rich_text("description", :as_string)
       })
 
       folders = ResourceHubs.list_folders(ctx.hub)
@@ -97,7 +94,6 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHubFolderTest do
         resource_hub_id: Paths.resource_hub_id(ctx.hub),
         folder_id: Paths.folder_id(ctx.folder),
         name: "My folder",
-        description: RichText.rich_text("description", :as_string)
       })
 
       folders = ResourceHubs.list_folders(ctx.folder)
