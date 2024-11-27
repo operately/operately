@@ -25,7 +25,7 @@ defmodule OperatelyWeb.AccountOauthControllerTest do
         }
       })
 
-      conn = get(conn, ~p"/accounts/auth/google/callback", %{"provider" => "google"})
+      conn = get(conn, "/accounts/auth/google/callback", %{"provider" => "google"})
       assert conn.status == 302
 
       people = Operately.People.list_people(ctx.company.id)
@@ -57,7 +57,7 @@ defmodule OperatelyWeb.AccountOauthControllerTest do
         }
       })
 
-      conn = get(conn, ~p"/accounts/auth/google/callback", %{"provider" => "google"})
+      conn = get(conn, "/accounts/auth/google/callback", %{"provider" => "google"})
       assert conn.status == 302
 
       assert Operately.Repo.aggregate(Operately.People.Person, :count, :id) == 2 # company creator + person

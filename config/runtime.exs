@@ -29,7 +29,7 @@ config :operately, :storage_type, System.get_env("OPERATELY_STORAGE_TYPE", "loca
 # Determines if the 'Sign in with Google' feature is enabled.
 # Set `ALLOW_LOGIN_WITH_GOOGLE` in the .env file to "yes"
 # to enable user sign-in with Google.
-config :operately, allow_login_with_google: System.get_env("ALLOW_LOGIN_WITH_GOOGLE", "no")
+config :operately, allow_login_with_google: System.get_env("ALLOW_LOGIN_WITH_GOOGLE", "no") == "yes"
 
 if config_env() == :prod do
   database_url =

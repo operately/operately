@@ -31,7 +31,7 @@ export function Page() {
   const fistName = People.firstName(account);
 
   return (
-    <Pages.Page title={"Lobby"}>
+    <Pages.Page title={"Lobby"} testId="lobby-page">
       <div className="m-12">
         <OperatelyLogo width="32px" height="32px" />
         <div className="font-medium mt-8">Hey there, {fistName}! How's it going?</div>

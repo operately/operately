@@ -45,6 +45,7 @@ defmodule Operately.Support.Features.InviteMemberSteps do
     |> UI.fill(testid: "passwordConfirmation", with: password)
     |> UI.click(testid: "submit")
     |> UI.assert_has(testid: "company-home")
+    |> UI.sleep(200) # Wait for the redirect to complete
   end
 
   step :reissue_invitation_token, ctx, name do

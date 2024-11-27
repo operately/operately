@@ -26,8 +26,7 @@ gen.operation:
 	./devenv bash -c "ERL_FLAGS=+B mix operately.gen.operation"
 
 js.fmt.fix:
-	./devenv bash -c "npx prettier --write js"
-
+	./devenv bash -c "npx prettier --write assets/js && npx prettier --write ee/assets/js"
 
 #
 # Development tasks
