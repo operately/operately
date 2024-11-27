@@ -1,10 +1,8 @@
 defmodule OperatelyWeb.AccountAuthTest do
   use OperatelyWeb.ConnCase, async: true
 
-  alias Phoenix.LiveView
   alias Operately.People
   alias OperatelyWeb.AccountAuth
-  import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
 
   @remember_me_cookie "_operately_web_account_remember_me"
@@ -23,8 +21,8 @@ defmodule OperatelyWeb.AccountAuthTest do
       conn = AccountAuth.log_in_account(conn, account)
       assert token = get_session(conn, :account_token)
       assert get_session(conn, :live_socket_id) == "accounts_sessions:#{Base.url_encode64(token)}"
-      assert redirected_to(conn) == ~p"/"
       assert People.get_account_by_session_token(token)
+      assert conn.status == 200
     end
 
     test "clears everything previously stored in the session", %{conn: conn, account: account} do
@@ -56,26 +54,15 @@ defmodule OperatelyWeb.AccountAuthTest do
       refute get_session(conn, :account_token)
       refute conn.cookies[@remember_me_cookie]
       assert %{max_age: 0} = conn.resp_cookies[@remember_me_cookie]
-      assert redirected_to(conn) == ~p"/"
       refute People.get_account_by_session_token(account_token)
-    end
-
-    test "broadcasts to the given live_socket_id", %{conn: conn} do
-      live_socket_id = "accounts_sessions:abcdef-token"
-      OperatelyWeb.Endpoint.subscribe(live_socket_id)
-
-      conn
-      |> put_session(:live_socket_id, live_socket_id)
-      |> AccountAuth.log_out_account()
-
-      assert_receive %Phoenix.Socket.Broadcast{event: "disconnect", topic: ^live_socket_id}
+      assert conn.status == 200
     end
 
     test "works even if account is already logged out", %{conn: conn} do
       conn = conn |> fetch_cookies() |> AccountAuth.log_out_account()
       refute get_session(conn, :account_token)
       assert %{max_age: 0} = conn.resp_cookies[@remember_me_cookie]
-      assert redirected_to(conn) == ~p"/"
+      assert conn.status == 200
     end
   end
 
@@ -113,106 +100,11 @@ defmodule OperatelyWeb.AccountAuthTest do
     end
   end
 
-  describe "on_mount: mount_current_account" do
-    test "assigns current_account based on a valid account_token ", %{conn: conn, account: account} do
-      account_token = People.generate_account_session_token(account)
-      session = conn |> put_session(:account_token, account_token) |> get_session()
-
-      {:cont, updated_socket} =
-        AccountAuth.on_mount(:mount_current_account, %{}, session, %LiveView.Socket{})
-
-      assert updated_socket.assigns.current_account.id == account.id
-    end
-
-    test "assigns nil to current_account assign if there isn't a valid account_token ", %{conn: conn} do
-      account_token = "invalid_token"
-      session = conn |> put_session(:account_token, account_token) |> get_session()
-
-      {:cont, updated_socket} =
-        AccountAuth.on_mount(:mount_current_account, %{}, session, %LiveView.Socket{})
-
-      assert updated_socket.assigns.current_account == nil
-    end
-
-    test "assigns nil to current_account assign if there isn't a account_token", %{conn: conn} do
-      session = conn |> get_session()
-
-      {:cont, updated_socket} =
-        AccountAuth.on_mount(:mount_current_account, %{}, session, %LiveView.Socket{})
-
-      assert updated_socket.assigns.current_account == nil
-    end
-  end
-
-  describe "on_mount: ensure_authenticated" do
-    test "authenticates current_account based on a valid account_token ", %{conn: conn, account: account} do
-      account_token = People.generate_account_session_token(account)
-      session = conn |> put_session(:account_token, account_token) |> get_session()
-
-      {:cont, updated_socket} =
-        AccountAuth.on_mount(:ensure_authenticated, %{}, session, %LiveView.Socket{})
-
-      assert updated_socket.assigns.current_account.id == account.id
-    end
-
-    test "redirects to login page if there isn't a valid account_token ", %{conn: conn} do
-      account_token = "invalid_token"
-      session = conn |> put_session(:account_token, account_token) |> get_session()
-
-      socket = %LiveView.Socket{
-        endpoint: OperatelyWeb.Endpoint,
-        assigns: %{__changed__: %{}, flash: %{}}
-      }
-
-      {:halt, updated_socket} = AccountAuth.on_mount(:ensure_authenticated, %{}, session, socket)
-      assert updated_socket.assigns.current_account == nil
-    end
-
-    test "redirects to login page if there isn't a account_token ", %{conn: conn} do
-      session = conn |> get_session()
-
-      socket = %LiveView.Socket{
-        endpoint: OperatelyWeb.Endpoint,
-        assigns: %{__changed__: %{}, flash: %{}}
-      }
-
-      {:halt, updated_socket} = AccountAuth.on_mount(:ensure_authenticated, %{}, session, socket)
-      assert updated_socket.assigns.current_account == nil
-    end
-  end
-
-  describe "on_mount: :redirect_if_account_is_authenticated" do
-    test "redirects if there is an authenticated  account ", %{conn: conn, account: account} do
-      account_token = People.generate_account_session_token(account)
-      session = conn |> put_session(:account_token, account_token) |> get_session()
-
-      assert {:halt, _updated_socket} =
-               AccountAuth.on_mount(
-                 :redirect_if_account_is_authenticated,
-                 %{},
-                 session,
-                 %LiveView.Socket{}
-               )
-    end
-
-    test "Don't redirect is there is no authenticated account", %{conn: conn} do
-      session = conn |> get_session()
-
-      assert {:cont, _updated_socket} =
-               AccountAuth.on_mount(
-                 :redirect_if_account_is_authenticated,
-                 %{},
-                 session,
-                 %LiveView.Socket{}
-               )
-    end
-  end
-
   describe "redirect_if_account_is_authenticated/2" do
     test "redirects if account is authenticated", %{conn: conn, account: account} do
       conn = conn |> assign(:current_account, account) |> AccountAuth.redirect_if_account_is_authenticated([])
       assert conn.halted
-      assert redirected_to(conn) == ~p"/"
+      assert redirected_to(conn) == "/"
     end
 
     test "does not redirect if account is not authenticated", %{conn: conn} do
@@ -227,7 +119,7 @@ defmodule OperatelyWeb.AccountAuthTest do
       conn = conn |> fetch_flash() |> AccountAuth.require_authenticated_account([])
       assert conn.halted
 
-      assert redirected_to(conn) == ~p"/accounts/log_in"
+      assert conn.status == 302
     end
 
     test "stores the path to redirect to on GET", %{conn: conn} do
@@ -260,46 +152,6 @@ defmodule OperatelyWeb.AccountAuthTest do
       conn = conn |> assign(:current_account, account) |> AccountAuth.require_authenticated_account([])
       refute conn.halted
       refute conn.status
-    end
-  end
-
-  describe "redirect to previously visited page after login" do
-    setup ctx do
-      company_id = company_fixture() |> OperatelyWeb.Paths.company_id()
-
-      {:ok, Map.merge(ctx, %{company_id: company_id})}
-    end
-
-    test "redirects to login, then to goals page", %{conn: conn, account: account, company_id: company_id} do
-      original_path = "/#{company_id}/goals"
-
-      conn = get(conn, original_path)
-
-      assert conn.halted
-      assert redirected_to(conn) == ~p"/accounts/log_in"
-
-      conn = build_conn()
-        |> init_test_session(%{})
-        |> put_session(:redirect_to, conn.request_path)
-        |> AccountAuth.log_in_account(account)
-
-      assert redirected_to(conn) == original_path
-    end
-
-    test "redirects to login, then to projects page", %{conn: conn, account: account, company_id: company_id} do
-      original_path = "/#{company_id}/projects"
-
-      conn = get(conn, original_path)
-
-      assert conn.halted
-      assert redirected_to(conn) == ~p"/accounts/log_in"
-
-      conn = build_conn()
-        |> init_test_session(%{})
-        |> put_session(:redirect_to, conn.request_path)
-        |> AccountAuth.log_in_account(account)
-
-      assert redirected_to(conn) == original_path
     end
   end
 end

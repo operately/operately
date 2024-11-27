@@ -5,7 +5,7 @@ import * as Accounts from "@/models/accounts";
 import * as Invitations from "@/models/invitations";
 
 import { OperatelyLogo } from "@/components/OperatelyLogo";
-import { logIn } from "@/models/people";
+import { logIn } from "@/models/accounts";
 import { redirect } from "react-router-dom";
 
 import Forms from "@/components/Forms";
@@ -111,6 +111,11 @@ function Form() {
 }
 
 async function logInAndGotoCompany(invitation: Invitations.Invitation, password: string) {
-  await logIn(invitation.member!.email!, password);
-  window.location.href = `/${invitation.company!.id}`;
+  const res = await logIn(invitation.member!.email!, password);
+
+  if (res === "success") {
+    window.location.href = `/${invitation.company!.id}`;
+  } else {
+    console.log("Login failed");
+  }
 }
