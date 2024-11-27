@@ -34,7 +34,7 @@ export function Page() {
           {folder.nodes.length < 1 ? (
             <ZeroNodes />
           ) : (
-            <NodesList nodes={folder.nodes} permissions={folder.permissions} />
+            <NodesList nodes={folder.nodes} permissions={folder.permissions} refetch={refresh} />
           )}
         </Paper.Body>
       </Paper.Root>

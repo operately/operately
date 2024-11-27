@@ -30,7 +30,7 @@ export function Page() {
           {resourceHub.nodes.length < 1 ? (
             <ZeroNodes />
           ) : (
-            <NodesList nodes={resourceHub.nodes} permissions={resourceHub.permissions} />
+            <NodesList nodes={resourceHub.nodes} permissions={resourceHub.permissions} refetch={refresh} />
           )}
         </Paper.Body>
       </Paper.Root>
