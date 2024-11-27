@@ -15,7 +15,6 @@ defmodule Operately.Operations.ResourceHubFolderCreating do
     |> Multi.insert(:folder, fn changes ->
       Folder.changeset(%{
         node_id: changes.node.id,
-        description: attrs.description,
       })
     end)
     |> Multi.run(:folder_with_node, fn _, changes ->
