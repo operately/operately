@@ -513,6 +513,11 @@ export interface ActivityContentResourceHubDocumentCreated {
   document?: ResourceHubDocument | null;
 }
 
+export interface ActivityContentResourceHubDocumentEdited {
+  resourceHub?: ResourceHub | null;
+  document?: ResourceHubDocument | null;
+}
+
 export interface ActivityContentResourceHubFolderCreated {
   resourceHub?: ResourceHub | null;
   folder?: ResourceHubFolder | null;
@@ -2158,6 +2163,14 @@ export interface CreateTaskResult {
   task?: Task | null;
 }
 
+export interface DeleteResourceHubDocumentInput {
+  documentId?: Id | null;
+}
+
+export interface DeleteResourceHubDocumentResult {
+  document?: Document | null;
+}
+
 export interface DisconnectGoalFromProjectInput {
   projectId?: string | null;
   goalId?: string | null;
@@ -2963,6 +2976,10 @@ export class ApiClient {
     return this.post("/create_task", input);
   }
 
+  async deleteResourceHubDocument(input: DeleteResourceHubDocumentInput): Promise<DeleteResourceHubDocumentResult> {
+    return this.post("/delete_resource_hub_document", input);
+  }
+
   async disconnectGoalFromProject(input: DisconnectGoalFromProjectInput): Promise<DisconnectGoalFromProjectResult> {
     return this.post("/disconnect_goal_from_project", input);
   }
@@ -3419,6 +3436,11 @@ export async function createSpace(input: CreateSpaceInput): Promise<CreateSpaceR
 }
 export async function createTask(input: CreateTaskInput): Promise<CreateTaskResult> {
   return defaultApiClient.createTask(input);
+}
+export async function deleteResourceHubDocument(
+  input: DeleteResourceHubDocumentInput,
+): Promise<DeleteResourceHubDocumentResult> {
+  return defaultApiClient.deleteResourceHubDocument(input);
 }
 export async function disconnectGoalFromProject(
   input: DisconnectGoalFromProjectInput,
@@ -3986,6 +4008,15 @@ export function useCreateTask(): UseMutationHookResult<CreateTaskInput, CreateTa
   return useMutation<CreateTaskInput, CreateTaskResult>((input) => defaultApiClient.createTask(input));
 }
 
+export function useDeleteResourceHubDocument(): UseMutationHookResult<
+  DeleteResourceHubDocumentInput,
+  DeleteResourceHubDocumentResult
+> {
+  return useMutation<DeleteResourceHubDocumentInput, DeleteResourceHubDocumentResult>((input) =>
+    defaultApiClient.deleteResourceHubDocument(input),
+  );
+}
+
 export function useDisconnectGoalFromProject(): UseMutationHookResult<
   DisconnectGoalFromProjectInput,
   DisconnectGoalFromProjectResult
@@ -4479,6 +4510,8 @@ export default {
   useCreateSpace,
   createTask,
   useCreateTask,
+  deleteResourceHubDocument,
+  useDeleteResourceHubDocument,
   disconnectGoalFromProject,
   useDisconnectGoalFromProject,
   editComment,
