@@ -1034,6 +1034,7 @@ export interface ResourceHub {
   space?: Space | null;
   nodes?: ResourceHubNode[] | null;
   potentialSubscribers?: Subscriber[] | null;
+  permissions?: ResourceHubPermissions | null;
   insertedAt?: string | null;
   updatedAt?: string | null;
 }
@@ -1091,6 +1092,8 @@ export interface ResourceHubPermissions {
   canCreateDocument?: boolean | null;
   canCreateFolder?: boolean | null;
   canCreateFile?: boolean | null;
+  canEditDocument?: boolean | null;
+  canView?: boolean | null;
 }
 
 export interface ReviewAssignment {
@@ -1714,6 +1717,7 @@ export interface GetResourceHubInput {
   includeSpace?: boolean | null;
   includeNodes?: boolean | null;
   includePotentialSubscribers?: boolean | null;
+  includePermissions?: boolean | null;
 }
 
 export interface GetResourceHubResult {
@@ -1740,6 +1744,7 @@ export interface GetResourceHubFolderInput {
   includeNodes?: boolean | null;
   includeResourceHub?: boolean | null;
   includePathToFolder?: boolean | null;
+  includePermissions?: boolean | null;
 }
 
 export interface GetResourceHubFolderResult {

@@ -1,4 +1,4 @@
-export type { ResourceHub, ResourceHubNode, ResourceHubDocument } from "@/api";
+export type { ResourceHub, ResourceHubNode, ResourceHubDocument, ResourceHubPermissions } from "@/api";
 export {
   getResourceHub,
   getResourceHubDocument,
