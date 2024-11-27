@@ -204,6 +204,10 @@ export class Paths {
     return createCompanyPath(["documents", documentId]);
   }
 
+  static resourceHubEditDocumentPath(documentId: string) {
+    return createCompanyPath(["documents", documentId, "edit"]);
+  }
+
   static resourceHubNewDocumentPath(resourceHubId: string, folderId?: string) {
     if (folderId) {
       return createCompanyPath(["resource-hubs", resourceHubId, "new-document"]) + "?folderId=" + folderId;
