@@ -10,7 +10,7 @@ defmodule Operately.Operations.CommentAddingTest do
   alias Operately.{Groups, Projects}
   alias Operately.Support.{Factory, RichText}
   alias Operately.Access.Binding
-  alias Operately.Operations.{GoalCheckIn, ProjectCheckIn, CommentAdding, ProjectClosed}
+  alias Operately.Operations.{GoalCheckIn, ProjectCheckIn, CommentAdding, ProjectClosed, ResourceHubDocumentCreating}
 
   setup ctx do
     ctx
@@ -354,7 +354,7 @@ defmodule Operately.Operations.CommentAddingTest do
       |> Factory.preload(:project, :group)
     end
 
-    test "Commenting on message notifies everyone", ctx do
+    test "Commenting on retrospective notifies everyone", ctx do
       {:ok, retrospective} = ProjectClosed.run(ctx.creator, ctx.project, %{
         retrospective: @retrospective_content,
         content: %{},
@@ -385,7 +385,7 @@ defmodule Operately.Operations.CommentAddingTest do
       end)
     end
 
-    test "Commenting on message notifies selected people", ctx do
+    test "Commenting on retrospective notifies selected people", ctx do
       {:ok, retrospective} = ProjectClosed.run(ctx.creator, ctx.project, %{
         retrospective: @retrospective_content,
         content: %{},
@@ -445,6 +445,114 @@ defmodule Operately.Operations.CommentAddingTest do
       notifications = fetch_notifications(activity.id, action: action)
 
       assert notifications_count(action: action) == 1
+      assert hd(notifications).person_id == person.id
+    end
+  end
+
+  describe "Commenting on resource hub document" do
+    @action "resource_hub_document_commented"
+
+    setup ctx do
+      ctx
+      |> Factory.add_space(:space)
+      |> Factory.add_space_member(:mike, :space)
+      |> Factory.add_space_member(:bob, :space)
+      |> Factory.add_space_member(:jane, :space)
+      |> Factory.add_resource_hub(:hub, :space, :creator)
+    end
+
+    test "Commenting on document notifies everyone", ctx do
+      {:ok, document} = ResourceHubDocumentCreating.run(ctx.creator, ctx.hub, %{
+        name: "A document",
+        content: RichText.rich_text("Some content"),
+        send_to_everyone: true,
+        subscription_parent_type: :resource_hub_document,
+        subscriber_ids: [],
+      })
+      document = Repo.preload(document, :resource_hub)
+
+      {:ok, comment} = Oban.Testing.with_testing_mode(:manual, fn ->
+        CommentAdding.run(ctx.creator, document, "resource_hub_document", RichText.rich_text("Some comment"))
+      end)
+
+      activity = get_activity(comment, @action)
+
+      assert notifications_count(action: @action) == 0
+
+      perform_job(activity.id)
+
+      assert notifications_count(action: @action) == 3
+
+      notifications = fetch_notifications(activity.id, action: @action)
+
+      Enum.each([ctx.mike, ctx.bob, ctx.jane], fn p ->
+        assert Enum.find(notifications, &(&1.person_id == p.id))
+      end)
+    end
+
+    test "Commenting on document notifies selected people", ctx do
+      {:ok, document} = ResourceHubDocumentCreating.run(ctx.creator, ctx.hub, %{
+        name: "A document",
+        content: RichText.rich_text("Some content"),
+        send_to_everyone: false,
+        subscription_parent_type: :resource_hub_document,
+        subscriber_ids: [ctx.mike.id],
+      })
+      document = Repo.preload(document, :resource_hub)
+
+      {:ok, comment} = Oban.Testing.with_testing_mode(:manual, fn ->
+        CommentAdding.run(ctx.creator, document, "resource_hub_document", RichText.rich_text("Some comment"))
+      end)
+
+      activity = get_activity(comment, @action)
+
+      assert notifications_count(action: @action) == 0
+
+      perform_job(activity.id)
+
+      assert notifications_count(action: @action) == 1
+
+      notification = fetch_notification(activity.id)
+      assert notification.person_id == ctx.mike.id
+    end
+
+    test "Mentioned person is notified", ctx do
+      ctx =
+        ctx
+        |> Factory.add_space(:space)
+        |> Factory.add_resource_hub(:hub, :space, :creator, company_access_level: Binding.no_access())
+
+      {:ok, document} = ResourceHubDocumentCreating.run(ctx.creator, ctx.hub, %{
+        name: "A document",
+        content: RichText.rich_text("Some content"),
+        send_to_everyone: true,
+        subscription_parent_type: :resource_hub_document,
+        subscriber_ids: [],
+      })
+      document = Repo.preload(document, :resource_hub)
+
+      # Without permissions
+      person = person_fixture_with_account(%{company_id: ctx.company.id})
+      content = RichText.rich_text(mentioned_people: [person]) |> Jason.decode!()
+
+      {:ok, comment} = CommentAdding.run(ctx.creator, document, "resource_hub_document", content)
+
+      activity = get_activity(comment, @action)
+
+      assert notifications_count(action: @action) == 0
+      assert fetch_notifications(activity.id, action: @action) == []
+
+      # With permissions
+      {:ok, _} = Groups.add_members(ctx.creator, ctx.space.id, [
+        %{id: person.id, access_level: Binding.view_access()}
+      ])
+
+      {:ok, comment} = CommentAdding.run(ctx.creator, document, "resource_hub_document", content)
+
+      activity = get_activity(comment, @action)
+      notifications = fetch_notifications(activity.id, action: @action)
+
+      assert notifications_count(action: @action) == 1
       assert hd(notifications).person_id == person.id
     end
   end
