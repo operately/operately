@@ -32,7 +32,7 @@ export function Page() {
 
   return (
     <Pages.Page title={"Lobby"} testId="lobby-page">
-      <div className="m-12">
+      <div className="p-8 lg:p-12">
         <OperatelyLogo width="32px" height="32px" />
         <div className="font-medium mt-8">Hey there, {fistName}! How's it going?</div>
         <div className="font-medium">Select one of your organizations below to get started:</div>
@@ -99,7 +99,7 @@ function CompanyCard({ company }: { company: Api.Company }) {
     "cursor-pointer",
     "rounded-lg",
     "bg-surface-base",
-    "px-4 py-3 w-64",
+    "px-4 py-3 w-40 sm:px-4 sm:py-3 sm:w-64",
     "border border-surface-outline",
     "relative",
     "hover:shadow transition-shadow",
@@ -120,7 +120,7 @@ function AddCompanyCard() {
     "rounded-lg",
     "bg-accent-1",
     "text-white-1",
-    "px-4 py-3 w-64",
+    "px-4 py-3 w-40 sm:px-4 sm:py-3 sm:w-64",
     "border border-surface-outline",
     "relative",
     "hover:shadow transition-shadow",
@@ -128,8 +128,8 @@ function AddCompanyCard() {
 
   return (
     <DivLink to={Paths.newCompanyPath()} className={className} testId="add-company-card">
-      <div className="font-bold text-lg">+ Create new</div>
-      <div className="text-sm font-medium">Add new organization</div>
+      <div className="font-bold sm:text-lg">+ Create new</div>
+      <div className="text-xs sm:text-sm font-medium">Add new organization</div>
       <div className="flex justify-end mt-3">
         <Icons.IconSparkles size={32} className="text-white-1" strokeWidth={1} />
       </div>

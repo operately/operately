@@ -6,7 +6,7 @@ export function DimmedSection(props: { children: React.ReactNode }) {
   const { size } = React.useContext(Context);
 
   const negativeMargin = calcNegativeMargins(size);
-  const className = classnames("mt-6 border-t border-surface-outline bg-surface-dimmed rounded-b", negativeMargin);
+  const className = classnames("mt-6 border-t border-surface-outline bg-surface-dimmed rounded-b-lg", negativeMargin);
 
   return <div className={className}>{props.children}</div>;
 }
