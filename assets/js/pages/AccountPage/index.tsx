@@ -4,7 +4,7 @@ import * as Icons from "@tabler/icons-react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 
-import { logOut } from "@/models/people";
+import { logOut } from "@/routes/auth";
 import { Paths } from "@/routes/paths";
 import { BurgerActionsGroup, BurgerLink, BurgerButton } from "./BurgerActions";
 import { useMe } from "@/contexts/CurrentCompanyContext";
@@ -54,8 +54,11 @@ function AppearanceLink() {
 
 function LogOutButton() {
   const handleClick = async () => {
-    await logOut();
-    window.location.href = "/";
+    const res = await logOut();
+
+    if (res === "success") {
+      window.location.href = "/";
+    }
   };
 
   return (
