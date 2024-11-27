@@ -59,7 +59,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateComment do
       :comment_thread -> Comments.get_thread_with_activity_and_access_level(id, person.id)
       :goal_update -> Update.get(person, id: id, opts: [preload: :goal])
       :message -> Message.get(person, id: id, opts: [preload: :space])
-      :resource_hub_document -> Document.get(person, id: id, opts: [preload: :resource_hub])
+      :resource_hub_document -> Document.get(person, id: id, opts: [preload: [:resource_hub, :node]])
     end
   end
 
