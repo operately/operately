@@ -12,6 +12,7 @@ defmodule Operately.ResourceHubs.ResourceHub do
 
     # populated by after load hooks
     field :potential_subscribers, :any, virtual: true
+    field :permissions, :any, virtual: true
 
     timestamps()
     requester_access_level()
@@ -37,5 +38,10 @@ defmodule Operately.ResourceHubs.ResourceHub do
 
     subscribers = Operately.Notifications.Subscriber.from_space_members(resource_hub.space.members)
     Map.put(resource_hub, :potential_subscribers, subscribers)
+  end
+
+  def set_permissions(resource_hub = %__MODULE__{}) do
+    perms = Operately.ResourceHubs.Permissions.calculate(resource_hub.request_info.access_level)
+    Map.put(resource_hub, :permissions, perms)
   end
 end
