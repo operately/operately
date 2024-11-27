@@ -9,7 +9,6 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHubFolder do
     field :resource_hub_id, :string
     field :folder_id, :string
     field :name, :string
-    field :description, :string
   end
 
   outputs do
@@ -46,7 +45,6 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHubFolder do
     {:ok, Map.merge(inputs, %{
       resource_hub_id: resource_hub_id,
       parent_folder_id: folder_id,
-      description: Jason.decode!(inputs.description),
     })}
   end
 
