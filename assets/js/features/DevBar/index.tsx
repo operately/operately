@@ -3,12 +3,18 @@ import React from "react";
 import { useDevBarData } from "./useDevBarData";
 import { ToggleTestIds } from "./ToggleTestIds";
 import { ToggleCompanyOwner } from "./ToggleCompanyOwner";
+import classNames from "classnames";
 
 export function DevBar() {
   if (!window.appConfig.showDevBar) return;
 
+  const className = classNames(
+    "bg-black text-white-1 p-1 text-sm font-mono z-50",
+    "hidden lg:block", // hidden on mobile, start showing on large screens
+  );
+
   return (
-    <div className="bg-black text-white-1 p-1 text-sm font-mono z-50">
+    <div className={className}>
       <div className="flex justify-between">
         <Left />
         <Right />
