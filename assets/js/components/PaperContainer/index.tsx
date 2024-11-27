@@ -48,10 +48,16 @@ interface RootProps {
 export function Root({ size, children, className, fluid = false }: RootProps): JSX.Element {
   size = size || "medium";
 
-  className = classNames(className, "flex-1 mx-auto my-5 sm:my-10 relative", {
-    "w-[90%]": fluid,
-    [sizes[size]]: !fluid,
-  });
+  className = classNames(
+    className,
+    "mx-auto relative",
+    "sm:my-10", // no margin on mobile, 10 margin on larger screens
+    "h-full",
+    {
+      "w-[90%]": fluid,
+      [sizes[size]]: !fluid,
+    },
+  );
 
   return (
     <Context.Provider value={{ size }}>
@@ -79,14 +85,22 @@ export function Body({
   const { size } = React.useContext(Context);
   const padding = noPadding ? "" : bodyPaddings[size];
 
+  const bodyClassName = classNames(
+    "relative",
+    backgroundColor,
+    padding,
+    className,
+    "min-h-full sm:min-h-0", // full height on mobile, no min height on larger screens
+    "overflow-hidden", // hide overflowing content
+
+    // apply border shadow and rounded corners on larger screens
+    "sm:border sm:border-surface-outline",
+    "sm:rounded-lg",
+    "sm:shadow-xl",
+  );
+
   return (
-    //
-    <div
-      className={`relative ${backgroundColor} rounded shadow-xl ${padding} ${className} border border-surface-outline`}
-      style={{
-        minHeight: minHeight,
-      }}
-    >
+    <div className={bodyClassName} style={{ minHeight: minHeight }}>
       {children}
     </div>
   );
