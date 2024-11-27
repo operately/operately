@@ -44,6 +44,6 @@ defmodule Operately.Support.Features.SelfHostedSetupSteps do
   step :assert_setup_page_is_no_longer_accessible, ctx do
     ctx 
     |> UI.visit("/setup") 
-    |> UI.assert_has(testid: "company-home")
+    |> UI.assert_has(testid: "lobby-page")
   end
 end

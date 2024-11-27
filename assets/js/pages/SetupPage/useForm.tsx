@@ -1,8 +1,6 @@
-import Api from "@/api";
-import * as Socket from "@/api/socket";
 import * as Companies from "@/models/companies";
 
-import { logIn } from "@/models/people";
+import { logIn } from "@/routes/auth";
 import { useState } from "react";
 import { camelCaseToSpacedWords } from "@/utils/strings";
 
@@ -89,12 +87,13 @@ function useSubmit(fields: FormFields) {
       passwordConfirmation: fields.passwordConfirmation,
     });
 
-    logIn(fields.email, fields.password).then(() => {
-      Api.default.setHeaders({ "x-company-id": res.company.id });
-      Socket.setHeaders({ "x-company-id": res.company.id });
+    const logInRes = await logIn(fields.email, fields.password, { followAfterLogInRedirect: false });
 
+    if (logInRes === "success") {
       window.location.href = "/" + res.company.id;
-    });
+    } else {
+      console.log("Login failed");
+    }
 
     return true;
   };
