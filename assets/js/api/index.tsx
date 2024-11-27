@@ -1092,6 +1092,7 @@ export interface ResourceHubPermissions {
   canCreateDocument?: boolean | null;
   canCreateFolder?: boolean | null;
   canCreateFile?: boolean | null;
+  canDeleteDocument?: boolean | null;
   canEditDocument?: boolean | null;
   canView?: boolean | null;
 }
@@ -2139,7 +2140,6 @@ export interface CreateResourceHubFolderInput {
   resourceHubId?: string | null;
   folderId?: string | null;
   name?: string | null;
-  description?: string | null;
 }
 
 export interface CreateResourceHubFolderResult {
