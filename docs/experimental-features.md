@@ -51,7 +51,7 @@ To enable an experimental feature for a company, add the feature to the
 `enabled_experimental_features` list in the company record.
 
 ```elixir
-company = Company.get(:system, id: company_id)
+company = Operately.Companies.get_company_by_name("your-company-name")
 
 Operately.Companies.enable_experimental_feature(company, "my-experimental-feature")
 ```
