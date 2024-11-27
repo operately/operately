@@ -42,10 +42,12 @@ export function createAppRoutes() {
       element: <NonCompanyRoutes />,
       errorElement: <ErrorPage />,
       children: [
+        pageRoute("/log_in", pages.LoginPage, { auth: false }),
+
         pageRoute("", pages.LobbyPage),
         pageRoute("/new", pages.NewCompanyPage),
-        pageRoute("/setup", pages.SetupPage),
-        pageRoute("/join", pages.JoinPage),
+        pageRoute("/setup", pages.SetupPage, { auth: false }),
+        pageRoute("/join", pages.JoinPage, { auth: false }),
         pageRoute("/__design__", pages.DesignPage),
       ],
     },

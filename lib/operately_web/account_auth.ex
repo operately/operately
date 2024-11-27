@@ -1,6 +1,4 @@
 defmodule OperatelyWeb.AccountAuth do
-  use OperatelyWeb, :verified_routes
-
   import Plug.Conn
   import Phoenix.Controller
 
@@ -19,11 +17,6 @@ defmodule OperatelyWeb.AccountAuth do
   It renews the session ID and clears the whole session
   to avoid fixation attacks. See the renew_session
   function to customize this behaviour.
-
-  It also sets a `:live_socket_id` key in the session,
-  so LiveView sessions are identified and automatically
-  disconnected on log out. The line can be safely removed
-  if you are not using LiveView.
   """
   def log_in_account(conn, account, params \\ %{}) do
     token = People.generate_account_session_token(account)
@@ -45,7 +38,7 @@ defmodule OperatelyWeb.AccountAuth do
   end
 
   @spec after_login_path(Operately.Account.t) :: String.t
-  def after_login_path(account) do
+  defp after_login_path(account) do
     companies = Operately.Companies.list_companies(account)
 
     if length(companies) == 1 do
@@ -92,7 +85,7 @@ defmodule OperatelyWeb.AccountAuth do
     conn
     |> renew_session()
     |> delete_resp_cookie(@remember_me_cookie)
-    |> redirect(to: ~p"/")
+    |> send_resp(200, "")
   end
 
   @doc """
@@ -148,84 +141,12 @@ defmodule OperatelyWeb.AccountAuth do
   end
 
   @doc """
-  Handles mounting and authenticating the current_account in LiveViews.
-
-  ## `on_mount` arguments
-
-    * `:mount_current_account` - Assigns current_account
-      to socket assigns based on account_token, or nil if
-      there's no account_token or no matching account.
-
-    * `:ensure_authenticated` - Authenticates the account from the session,
-      and assigns the current_account to socket assigns based
-      on account_token.
-      Redirects to login page if there's no logged account.
-
-    * `:redirect_if_account_is_authenticated` - Authenticates the account from the session.
-      Redirects to signed_in_path if there's a logged account.
-
-  ## Examples
-
-  Use the `on_mount` lifecycle macro in LiveViews to mount or authenticate
-  the current_account:
-
-      defmodule OperatelyWeb.PageLive do
-        use OperatelyWeb, :live_view
-
-        on_mount {OperatelyWeb.AccountAuth, :mount_current_account}
-        ...
-      end
-
-  Or use the `live_session` of your router to invoke the on_mount callback:
-
-      live_session :authenticated, on_mount: [{OperatelyWeb.AccountAuth, :ensure_authenticated}] do
-        live "/profile", ProfileLive, :index
-      end
-  """
-  def on_mount(:mount_current_account, _params, session, socket) do
-    {:cont, mount_current_account(session, socket)}
-  end
-
-  def on_mount(:ensure_authenticated, _params, session, socket) do
-    socket = mount_current_account(session, socket)
-
-    if socket.assigns.current_account do
-      {:cont, socket}
-    else
-      socket =
-        socket
-        |> Phoenix.LiveView.put_flash(:error, "You must log in to access this page.")
-        |> Phoenix.LiveView.redirect(to: ~p"/accounts/log_in")
-
-      {:halt, socket}
-    end
-  end
-
-  def on_mount(:redirect_if_account_is_authenticated, _params, session, socket) do
-    socket = mount_current_account(session, socket)
-
-    if socket.assigns.current_account do
-      {:halt, Phoenix.LiveView.redirect(socket, to: signed_in_path(socket))}
-    else
-      {:cont, socket}
-    end
-  end
-
-  defp mount_current_account(session, socket) do
-    Phoenix.Component.assign_new(socket, :current_account, fn ->
-      if account_token = session["account_token"] do
-        People.get_account_by_session_token(account_token)
-      end
-    end)
-  end
-
-  @doc """
   Used for routes that require the account to not be authenticated.
   """
   def redirect_if_account_is_authenticated(conn, _opts) do
     if conn.assigns[:current_account] do
       conn
-      |> redirect(to: signed_in_path(conn))
+      |> redirect(to: after_login_path(conn.assigns[:current_account]))
       |> halt()
     else
       conn
@@ -244,7 +165,7 @@ defmodule OperatelyWeb.AccountAuth do
     else
       conn
       |> maybe_store_return_to()
-      |> redirect(to: ~p"/accounts/log_in")
+      |> redirect(to: "/log_in")
       |> halt()
     end
   end
@@ -260,6 +181,4 @@ defmodule OperatelyWeb.AccountAuth do
   end
 
   defp maybe_store_return_to(conn), do: conn
-
-  defp signed_in_path(_conn), do: ~p"/"
 end

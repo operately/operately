@@ -39,6 +39,7 @@ import * as GoalSubgoalsPage from "./GoalSubgoalsPage";
 import * as GoalsAndProjectsPage from "./GoalsAndProjectsPage";
 import * as JoinPage from "./JoinPage";
 import * as LobbyPage from "./LobbyPage";
+import * as LoginPage from "./LoginPage";
 import * as NewCompanyPage from "./NewCompanyPage";
 import * as NotFoundPage from "./NotFoundPage";
 import * as NotificationsPage from "./NotificationsPage";
@@ -276,6 +277,11 @@ export default {
     name: "LobbyPage",
     loader: LobbyPage.loader,
     Page: LobbyPage.Page,
+  },
+  LoginPage: {
+    name: "LoginPage",
+    loader: LoginPage.loader,
+    Page: LoginPage.Page,
   },
   NewCompanyPage: {
     name: "NewCompanyPage",
