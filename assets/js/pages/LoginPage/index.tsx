@@ -34,8 +34,8 @@ export function Page() {
   return (
     <Pages.Page title={["Sign In"]} testId="login-page">
       <Paper.Root size="tiny">
-        <Paper.Body>
-          <div className="px-4 py-4">
+        <Paper.Body className="h-dvh">
+          <div className="py-8 sm:px-4 sm:py-4">
             <OperatelyLogo width="40px" height="40px" />
             <h1 className="text-2xl font-bold mt-4">Operately</h1>
             <p className="text-content-dimmed mb-8">Please enter your details to sign in</p>
