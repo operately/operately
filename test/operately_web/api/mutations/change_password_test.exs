@@ -24,6 +24,11 @@ defmodule OperatelyWeb.Api.Mutations.ChangePasswordTest do
       assert {401, _} = mutation(ctx.conn, :change_password, %{})
     end
 
+    test "it fails with empty params", ctx do
+      ctx = ctx |> Factory.log_in_person(:member)
+      assert {403, _} = mutation(ctx.conn, :change_password, %{})
+    end
+
     test "it requires a valid current password", ctx do
       ctx = ctx |> Factory.log_in_person(:member)
     
