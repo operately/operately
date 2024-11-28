@@ -21,10 +21,10 @@ defmodule Operately.Support.Factory.Companies do
   def add_company_member(ctx, testid, opts \\ []) do
     name = Keyword.get(opts, :name) || Utils.testid_to_name(testid)
 
-    attrs = %{
+    attrs = Enum.into(opts, %{
       company_id: ctx.company.id,
       full_name: name,
-    }
+    })
 
     person = Operately.PeopleFixtures.person_fixture_with_account(attrs)
 
