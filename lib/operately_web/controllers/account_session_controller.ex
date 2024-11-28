@@ -13,7 +13,7 @@ defmodule OperatelyWeb.AccountSessionController do
     if account do
       AccountAuth.log_in_account(conn, account, account_params)
     else
-      conn |> put_status(401)
+      conn |> send_resp(401, "")
     end
   end
 
