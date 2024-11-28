@@ -32,10 +32,10 @@ export function Page() {
 
   return (
     <Pages.Page title={"Lobby"} testId="lobby-page">
-      <div className="p-8 lg:p-12">
+      <div className="p-4 py-8 sm:p-8 lg:p-12">
         <OperatelyLogo width="32px" height="32px" />
-        <div className="font-medium mt-8">Hey there, {fistName}! How's it going?</div>
-        <div className="font-medium">Select one of your organizations below to get started:</div>
+        <div className="font-medium mt-4 sm:mt-8">Hey there, {fistName}! How's it going?</div>
+        <div className="font-medium hidden sm:block">Select one of your organizations below to get started:</div>
         <CompanyCards companies={companies} />
         <AdminsAndDevLinks />
       </div>
@@ -84,7 +84,7 @@ function AdminsAndDevLinks() {
 
 function CompanyCards({ companies }: { companies: Api.Company[] }) {
   return (
-    <div className="flex flex-wrap gap-4 mt-8">
+    <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-4 mt-8">
       {companies.map((company) => (
         <CompanyCard key={company.id} company={company} />
       ))}
@@ -99,7 +99,7 @@ function CompanyCard({ company }: { company: Api.Company }) {
     "cursor-pointer",
     "rounded-lg",
     "bg-surface-base",
-    "px-4 py-3 w-40 sm:px-4 sm:py-3 sm:w-64",
+    "px-4 py-3 w-full sm:w-64 sm:px-4 sm:py-3",
     "border border-surface-outline",
     "relative",
     "hover:shadow transition-shadow",
@@ -120,7 +120,7 @@ function AddCompanyCard() {
     "rounded-lg",
     "bg-accent-1",
     "text-white-1",
-    "px-4 py-3 w-40 sm:px-4 sm:py-3 sm:w-64",
+    "px-4 py-3 w-full sm:w-64 sm:px-4 sm:py-3",
     "border border-surface-outline",
     "relative",
     "hover:shadow transition-shadow",
