@@ -5,13 +5,13 @@ import * as Icons from "@tabler/icons-react";
 import * as People from "@/models/people";
 
 import classnames from "classnames";
-import Avatar from "@/components/Avatar";
 import Forms from "@/components/Forms";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { Paths } from "@/routes/paths";
 import { useNavigate } from "react-router-dom";
 import { useTheme, useSetTheme } from "@/contexts/ThemeContext";
+import { PageNavigation } from "@/features/accounts/PageNavigation";
 
 export const loader = Pages.emptyLoader;
 
@@ -19,7 +19,7 @@ export function Page() {
   return (
     <Pages.Page title={["Apperance", "Account"]}>
       <Paper.Root size="small">
-        <Navigation />
+        <PageNavigation />
         <Paper.Body>
           <Form />
         </Paper.Body>
@@ -60,19 +60,6 @@ function Form() {
 
       <Forms.Submit saveText="Save Changes" />
     </Forms.Form>
-  );
-}
-
-function Navigation() {
-  const me = useMe()!;
-
-  return (
-    <Paper.Navigation>
-      <Paper.NavItem linkTo={Paths.accountPath()}>
-        <Avatar person={me} size="tiny" />
-        Account
-      </Paper.NavItem>
-    </Paper.Navigation>
   );
 }
 

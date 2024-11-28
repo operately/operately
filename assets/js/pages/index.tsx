@@ -4,7 +4,9 @@
 //
 
 import * as AccountAppearancePage from "./AccountAppearancePage";
+import * as AccountChangePasswordPage from "./AccountChangePasswordPage";
 import * as AccountPage from "./AccountPage";
+import * as AccountSecurityPage from "./AccountSecurityPage";
 import * as CompanyAdminAddPeoplePage from "./CompanyAdminAddPeoplePage";
 import * as CompanyAdminManageAdminsPage from "./CompanyAdminManageAdminsPage";
 import * as CompanyAdminManagePeoplePage from "./CompanyAdminManagePeoplePage";
@@ -103,10 +105,20 @@ export default {
     loader: AccountAppearancePage.loader,
     Page: AccountAppearancePage.Page,
   },
+  AccountChangePasswordPage: {
+    name: "AccountChangePasswordPage",
+    loader: AccountChangePasswordPage.loader,
+    Page: AccountChangePasswordPage.Page,
+  },
   AccountPage: {
     name: "AccountPage",
     loader: AccountPage.loader,
     Page: AccountPage.Page,
+  },
+  AccountSecurityPage: {
+    name: "AccountSecurityPage",
+    loader: AccountSecurityPage.loader,
+    Page: AccountSecurityPage.Page,
   },
   CompanyAdminAddPeoplePage: {
     name: "CompanyAdminAddPeoplePage",
