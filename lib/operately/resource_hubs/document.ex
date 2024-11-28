@@ -19,6 +19,7 @@ defmodule Operately.ResourceHubs.Document do
     # populated with after load hooks
     field :potential_subscribers, :any, virtual: true
     field :permissions, :any, virtual: true
+    field :notifications, :any, virtual: true, default: []
 
     timestamps()
     soft_delete()
@@ -38,6 +39,24 @@ defmodule Operately.ResourceHubs.Document do
   #
   # After load hooks
   #
+
+  def load_unread_notifications(document = %__MODULE__{}, person) do
+    actions = [
+      "resource_hub_document_created",
+      "resource_hub_document_edited"
+    ]
+
+    notifications =
+      from(n in Operately.Notifications.Notification,
+        join: a in assoc(n, :activity),
+        where: a.action in ^actions and a.content["document_id"] == ^document.id,
+        where: n.person_id == ^person.id and not n.read,
+        select: n
+      )
+      |> Repo.all()
+
+    Map.put(document, :notifications, notifications)
+  end
 
   def load_potential_subscribers(document = %__MODULE__{}) do
     document = Repo.preload(document, [:access_context, resource_hub: [space: :members]])
