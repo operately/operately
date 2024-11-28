@@ -50,6 +50,18 @@ defmodule OperatelyWeb do
       use Phoenix.Component
 
       import Phoenix.Controller, only: [get_csrf_token: 0]
+
+      # Routes generation with the ~p sigil
+      unquote(verified_routes())
+    end
+  end
+
+  def verified_routes do
+    quote do
+      use Phoenix.VerifiedRoutes,
+        endpoint: OperatelyWeb.Endpoint,
+        router: OperatelyWeb.Router,
+        statics: OperatelyWeb.static_paths()
     end
   end
 
