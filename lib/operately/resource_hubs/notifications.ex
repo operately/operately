@@ -6,6 +6,7 @@ defmodule Operately.ResourceHubs.Notifications do
 
   def get_document_subscribers(document_id, opts \\ []) do
     ignore = Keyword.get(opts, :ignore, [])
+    with_deleted = Keyword.get(opts, :with_deleted, false)
 
     document =
       from(document in Operately.ResourceHubs.Document,
@@ -16,7 +17,7 @@ defmodule Operately.ResourceHubs.Notifications do
         preload: [resource_hub: {h, space: {s, members: m}}, access_context: c],
         where: document.id == ^document_id
       )
-      |> Repo.one()
+      |> Repo.one(with_deleted: with_deleted)
 
     SubscribersLoader.load_for_notifications(document, document.resource_hub.space.members, ignore)
   end
