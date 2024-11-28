@@ -40,6 +40,11 @@ defmodule Operately.ResourceHubs.ResourceHub do
     Map.put(resource_hub, :potential_subscribers, subscribers)
   end
 
+  def set_children_count(resource_hub = %__MODULE__{}) do
+    nodes = Operately.ResourceHubs.Folder.find_children_count(resource_hub.nodes)
+    Map.put(resource_hub, :nodes, nodes)
+  end
+
   def set_permissions(resource_hub = %__MODULE__{}) do
     perms = Operately.ResourceHubs.Permissions.calculate(resource_hub.request_info.access_level)
     Map.put(resource_hub, :permissions, perms)
