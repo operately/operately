@@ -15,6 +15,8 @@ export async function loader({}): Promise<LoaderResult> {
 }
 
 export function Page() {
+  const [error, setError] = React.useState<string | null>(null);
+
   const form = Forms.useForm({
     fields: {
       email: "",
@@ -24,13 +26,13 @@ export function Page() {
       const res = await logIn(form.values.email, form.values.password, { followAfterLogInRedirect: true });
 
       if (res === "failure") {
-        console.log("Login failed");
+        setError("Invalid email or password");
       }
     },
   });
 
   return (
-    <Pages.Page title={["Sign In"]}>
+    <Pages.Page title={["Sign In"]} testId="login-page">
       <Paper.Root size="tiny">
         <Paper.Body>
           <div className="px-4 py-4">
@@ -43,6 +45,8 @@ export function Page() {
                 <Forms.TextInput field={"email"} label="Email" placeholder="your@email.com" required />
                 <Forms.PasswordInput field={"password"} label="Password" placeholder="Password" required />
               </Forms.FieldGroup>
+
+              <div className="text-red-600 text-sm mt-2">{error}</div>
 
               <div className="mt-8">
                 <SubmitButton onClick={form.actions.submit} />
@@ -71,7 +75,7 @@ function SubmitButton({ onClick }: { onClick: () => void }) {
   );
 
   return (
-    <button className={className} onClick={onClick} type="button">
+    <button className={className} onClick={onClick} type="button" data-test-id="submit">
       Sign in
     </button>
   );
