@@ -21,7 +21,7 @@ export function Page() {
   });
 
   return (
-    <Pages.Page title="Goals & Projects">
+    <Pages.Page title="Goals & Projects" testId="goals-and-projects-page">
       <Paper.Root size="xlarge">
         <Paper.Body noPadding={noPadding} className={bodyClassName}>
           <Header />
