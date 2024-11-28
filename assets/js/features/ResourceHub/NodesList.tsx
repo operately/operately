@@ -6,6 +6,9 @@ import classNames from "classnames";
 import { Paths } from "@/routes/paths";
 import { DivLink } from "@/components/Link";
 import { Menu, MenuLinkItem, MenuActionItem } from "@/components/Menu";
+import { richContentToString } from "@/components/RichContent";
+import { truncateString } from "@/utils/strings";
+import { assertPresent } from "@/utils/assertions";
 
 type NodeType = "document" | "folder" | "file";
 
@@ -43,6 +46,7 @@ function NodeItem({ node, permissions, refetch }: NodeItemProps) {
   );
   const Icon = findIcon(node.type as NodeType, node);
   const path = findPath(node.type as NodeType, node);
+  const subtitle = findSubtitle(node.type as NodeType, node);
 
   return (
     <div className={className}>
@@ -50,7 +54,7 @@ function NodeItem({ node, permissions, refetch }: NodeItemProps) {
         <Icon size={48} />
         <div>
           <div className="font-bold text-lg">{node.name}</div>
-          <div>3 items</div>
+          <div>{subtitle}</div>
         </div>
       </DivLink>
 
@@ -112,6 +116,19 @@ function findPath(nodeType: NodeType, node: Hub.ResourceHubNode) {
       return Paths.resourceHubDocumentPath(node.document!.id!);
     case "folder":
       return Paths.resourceHubFolderPath(node.folder!.id!);
+    case "file":
+      return "";
+  }
+}
+
+function findSubtitle(nodeType: NodeType, node: Hub.ResourceHubNode) {
+  switch (nodeType) {
+    case "document":
+      const content = richContentToString(JSON.parse(node.document?.content!));
+      return truncateString(content, 60);
+    case "folder":
+      assertPresent(node.folder?.childrenCount, "childrenCount must be present in node.folder");
+      return node.folder.childrenCount === 1 ? "1 item" : `${node.folder.childrenCount} items`;
     case "file":
       return "";
   }

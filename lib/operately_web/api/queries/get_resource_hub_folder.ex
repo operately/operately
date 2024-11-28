@@ -10,6 +10,7 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubFolder do
     field :include_resource_hub, :boolean
     field :include_path_to_folder, :boolean
     field :include_permissions, :boolean
+    field :include_children_count, :boolean
   end
 
   outputs do
@@ -50,6 +51,7 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubFolder do
   def after_load(inputs) do
     Inputs.parse_includes(inputs, [
       include_path_to_folder: &Folder.find_path_to_folder/1,
+      include_children_count: &Folder.set_children_count/1,
       include_permissions: &Folder.set_permissions/1,
     ])
   end
