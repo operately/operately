@@ -16,11 +16,15 @@ import { assertPresent } from "@/utils/assertions";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { CommentSection, useComments } from "@/features/CommentSection";
 import { CurrentSubscriptions } from "@/features/Subscriptions";
+import { useClearNotificationsOnLoad } from "@/features/notifications";
 
 import { useLoadedData } from "./loader";
 
 export function Page() {
   const { document } = useLoadedData();
+
+  assertPresent(document.notifications, "notifications must be present in document");
+  useClearNotificationsOnLoad(document.notifications);
 
   return (
     <Pages.Page title={document.name!}>

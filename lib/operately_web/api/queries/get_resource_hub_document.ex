@@ -13,6 +13,7 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubDocument do
     field :include_permissions, :boolean
     field :include_subscriptions_list, :boolean
     field :include_potential_subscribers, :boolean
+    field :include_unread_notifications, :boolean
   end
 
   outputs do
@@ -38,7 +39,7 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubDocument do
   def load(ctx, inputs) do
     Document.get(ctx.me, id: inputs.id, opts: [
       preload: preload(inputs),
-      after_load: after_load(inputs),
+      after_load: after_load(inputs, ctx.me),
     ])
   end
 
@@ -53,10 +54,17 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubDocument do
     ])
   end
 
-  defp after_load(inputs) do
+  defp after_load(inputs, me) do
     Inputs.parse_includes(inputs, [
       include_permissions: &Document.set_permissions/1,
+      include_unread_notifications: load_unread_notifications(me),
       include_potential_subscribers: &Document.load_potential_subscribers/1,
     ])
+  end
+
+  defp load_unread_notifications(person) do
+    fn document ->
+      Document.load_unread_notifications(document, person)
+    end
   end
 end
