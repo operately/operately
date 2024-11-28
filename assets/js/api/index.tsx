@@ -1996,6 +1996,14 @@ export interface ChangeGoalParentResult {
   goal?: Goal | null;
 }
 
+export interface ChangePasswordInput {
+  currentPassword?: string | null;
+  newPassword?: string | null;
+  newPasswordConfirmation?: string | null;
+}
+
+export interface ChangePasswordResult {}
+
 export interface ChangeTaskDescriptionInput {
   taskId?: string | null;
   description?: string | null;
@@ -2926,6 +2934,10 @@ export class ApiClient {
     return this.post("/change_goal_parent", input);
   }
 
+  async changePassword(input: ChangePasswordInput): Promise<ChangePasswordResult> {
+    return this.post("/change_password", input);
+  }
+
   async changeTaskDescription(input: ChangeTaskDescriptionInput): Promise<ChangeTaskDescriptionResult> {
     return this.post("/change_task_description", input);
   }
@@ -3397,6 +3409,9 @@ export async function archiveProject(input: ArchiveProjectInput): Promise<Archiv
 }
 export async function changeGoalParent(input: ChangeGoalParentInput): Promise<ChangeGoalParentResult> {
   return defaultApiClient.changeGoalParent(input);
+}
+export async function changePassword(input: ChangePasswordInput): Promise<ChangePasswordResult> {
+  return defaultApiClient.changePassword(input);
 }
 export async function changeTaskDescription(input: ChangeTaskDescriptionInput): Promise<ChangeTaskDescriptionResult> {
   return defaultApiClient.changeTaskDescription(input);
@@ -3924,6 +3939,10 @@ export function useChangeGoalParent(): UseMutationHookResult<ChangeGoalParentInp
   return useMutation<ChangeGoalParentInput, ChangeGoalParentResult>((input) =>
     defaultApiClient.changeGoalParent(input),
   );
+}
+
+export function useChangePassword(): UseMutationHookResult<ChangePasswordInput, ChangePasswordResult> {
+  return useMutation<ChangePasswordInput, ChangePasswordResult>((input) => defaultApiClient.changePassword(input));
 }
 
 export function useChangeTaskDescription(): UseMutationHookResult<
@@ -4490,6 +4509,8 @@ export default {
   useArchiveProject,
   changeGoalParent,
   useChangeGoalParent,
+  changePassword,
+  useChangePassword,
   changeTaskDescription,
   useChangeTaskDescription,
   closeGoal,

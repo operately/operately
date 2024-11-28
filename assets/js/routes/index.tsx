@@ -74,6 +74,8 @@ export function createAppRoutes() {
 
         pageRoute("account", pages.AccountPage),
         pageRoute("account/appearance", pages.AccountAppearancePage),
+        pageRoute("account/security", pages.AccountSecurityPage),
+        pageRoute("account/security/change-password", pages.AccountChangePasswordPage),
 
         pageRoute("people", pages.PeoplePage),
         pageRoute("people/org-chart", pages.PeopleOrgChartPage),
