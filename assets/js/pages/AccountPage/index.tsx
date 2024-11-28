@@ -22,6 +22,7 @@ export function Page() {
             <BurgerActionsGroup>
               <ProfileLink />
               <AppearanceLink />
+              <PasswordLink />
             </BurgerActionsGroup>
 
             <BurgerActionsGroup>
@@ -48,6 +49,14 @@ function AppearanceLink() {
   return (
     <BurgerLink icon={Icons.IconPalette} to={Paths.accountAppearancePath()} testId="appearance-link">
       Appearance
+    </BurgerLink>
+  );
+}
+
+function PasswordLink() {
+  return (
+    <BurgerLink icon={Icons.IconLockPassword} to={Paths.accountSecurityPath()} testId="password-link">
+      Password &amp; Security
     </BurgerLink>
   );
 }

@@ -2,13 +2,19 @@ import * as React from "react";
 import * as Icons from "@tabler/icons-react";
 
 import { Link } from "@/components/Link";
+import classNames from "classnames";
 
 export function Navigation({ children }) {
-  return (
-    <div className="bg-surface-dimmed flex items-center flex-wrap justify-center gap-1 pt-2 pb-1 mx-2 sm:mx-10 font-semibold rounded-t border-t border-x border-surface-outline">
-      {children}
-    </div>
+  const className = classNames(
+    "bg-surface-dimmed",
+    "flex items-center flex-wrap",
+    "justify-center gap-1",
+    "pt-2 pb-1 mx-0 sm:mx-10",
+    "font-semibold rounded-t",
+    "border-b sm:border-b-0 sm:border-t sm:border-x border-surface-outline",
   );
+
+  return <div className={className}>{children}</div>;
 }
 
 interface NavItemProps {
