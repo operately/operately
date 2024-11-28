@@ -52,7 +52,7 @@ export function Root({ size, children, className, fluid = false }: RootProps): J
     className,
     "mx-auto relative",
     "sm:my-10", // no margin on mobile, 10 margin on larger screens
-    "h-full",
+    "h-dvh",
     {
       "w-[90%]": fluid,
       [sizes[size]]: !fluid,
@@ -67,7 +67,7 @@ export function Root({ size, children, className, fluid = false }: RootProps): J
 }
 
 const bodyPaddings = {
-  tiny: "px-10 py-8",
+  tiny: "px-8 py-6 sm:px-10 sm:py-8",
   small: "px-10 py-8",
   medium: "px-12 py-10",
   large: "px-12 py-10",
@@ -90,7 +90,7 @@ export function Body({
     backgroundColor,
     padding,
     className,
-    "min-h-full sm:min-h-0", // full height on mobile, no min height on larger screens
+    "min-h-dvh sm:min-h-0", // full height on mobile, no min height on larger screens
 
     // apply border shadow and rounded corners on larger screens
     "sm:border sm:border-surface-outline",

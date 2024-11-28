@@ -11,7 +11,7 @@ export default function NonCompanyLayout() {
   useScrollToTopOnNavigationChange({ outletDiv });
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-dvh">
       <div className="flex-1 overflow-y-auto" ref={outletDiv}>
         <Outlet />
       </div>
