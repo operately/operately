@@ -111,11 +111,5 @@ function Form() {
 }
 
 async function logInAndGotoCompany(invitation: Invitations.Invitation, password: string) {
-  const res = await logIn(invitation.member!.email!, password, { followAfterLogInRedirect: false });
-
-  if (res === "success") {
-    window.location.href = `/${invitation.company!.id}`;
-  } else {
-    console.log("Login failed");
-  }
+  await logIn(invitation.member!.email!, password, { redirectTo: `/${invitation.company!.id}` });
 }

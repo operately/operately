@@ -8,11 +8,7 @@ import { OperatelyLogo } from "@/components/OperatelyLogo";
 import classNames from "classnames";
 import { logIn } from "@/routes/auth";
 
-interface LoaderResult {}
-
-export async function loader({}): Promise<LoaderResult> {
-  return {};
-}
+export const loader = Pages.emptyLoader;
 
 export function Page() {
   const [error, setError] = React.useState<string | null>(null);
@@ -23,7 +19,9 @@ export function Page() {
       password: "",
     },
     submit: async () => {
-      const res = await logIn(form.values.email, form.values.password, { followAfterLogInRedirect: true });
+      const res = await logIn(form.values.email, form.values.password, {
+        redirectTo: getRedirectTo(),
+      });
 
       if (res === "failure") {
         setError("Invalid email or password");
@@ -34,7 +32,7 @@ export function Page() {
   return (
     <Pages.Page title={["Sign In"]} testId="login-page">
       <Paper.Root size="tiny">
-        <Paper.Body className="h-dvh">
+        <Paper.Body className="h-dvh sm:h-auto">
           <div className="py-8 sm:px-4 sm:py-4">
             <OperatelyLogo width="40px" height="40px" />
             <h1 className="text-2xl font-bold mt-4">Operately</h1>
@@ -123,4 +121,17 @@ function GoogleLogo() {
       ></path>
     </svg>
   );
+}
+
+function getRedirectTo(): string | null {
+  const query = new URLSearchParams(window.location.search);
+  const redirectTo = query.get("redirect_to");
+
+  if (redirectTo) {
+    const decoded = decodeURIComponent(redirectTo);
+
+    return decoded.startsWith("/") ? decoded : null;
+  } else {
+    return null;
+  }
 }

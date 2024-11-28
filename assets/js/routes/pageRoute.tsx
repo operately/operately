@@ -85,6 +85,11 @@ export function checkAuth() {
 
   if (!window.appConfig.account?.id) {
     stopProgressIndicator();
-    throw redirect("/log_in");
+
+    if (window.location.pathname === "/") {
+      throw redirect("/log_in");
+    } else {
+      throw redirect("/log_in?redirect_to=" + encodeURIComponent(window.location.pathname));
+    }
   }
 }

@@ -87,13 +87,7 @@ function useSubmit(fields: FormFields) {
       passwordConfirmation: fields.passwordConfirmation,
     });
 
-    const logInRes = await logIn(fields.email, fields.password, { followAfterLogInRedirect: false });
-
-    if (logInRes === "success") {
-      window.location.href = "/" + res.company.id;
-    } else {
-      console.log("Login failed");
-    }
+    await logIn(fields.email, fields.password, { redirectTo: `/${res.company.id}` });
 
     return true;
   };
