@@ -8,7 +8,7 @@ export async function logOut(): Promise<LogOutResult> {
 }
 
 interface LogInOptions {
-  followAfterLogInRedirect: boolean;
+  redirectTo: string | null;
 }
 
 export async function logIn(email: string, password: string, options: LogInOptions): Promise<LogInResult> {
@@ -17,8 +17,12 @@ export async function logIn(email: string, password: string, options: LogInOptio
   const res = await fetch("/accounts/log_in", { method: "POST", headers: autheaders(), body: JSON.stringify(data) });
 
   if (res.status === 200) {
-    if (options.followAfterLogInRedirect && res.redirected) {
+    if (options.redirectTo) {
+      window.location.href = options.redirectTo;
+    } else if (res.redirected) {
       window.location.href = res.url;
+    } else {
+      window.location.href = "/";
     }
 
     return "success";

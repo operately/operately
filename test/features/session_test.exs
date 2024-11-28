@@ -48,4 +48,14 @@ defmodule Operately.Features.SessionTest do
     |> Steps.assert_password_changed()
   end
 
+  feature "redirect after login to the page I was trying to access", ctx do
+    ctx
+    |> Steps.given_i_have_an_account(@account_info)
+    |> Steps.visit_a_protected_page()
+    |> Steps.assert_i_am_redirected_to_login_page()
+    |> Steps.fill_out_login_form(@account_info)
+    |> Steps.submit_login_form()
+    |> Steps.assert_on_the_protected_page()
+  end
+
 end

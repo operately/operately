@@ -69,4 +69,17 @@ defmodule Operately.Support.Features.SessionTestSteps do
     ctx
   end
 
+  step :visit_a_protected_page, ctx do
+    ctx 
+    |> UI.visit(Paths.goals_path(ctx.company))
+  end
+
+  step :assert_i_am_redirected_to_login_page, ctx do
+    ctx |> UI.click(testid: "login-page")
+  end
+
+  step :assert_on_the_protected_page, ctx do
+    ctx |> UI.click(testid: "goals-and-projects-page")
+  end
+
 end
