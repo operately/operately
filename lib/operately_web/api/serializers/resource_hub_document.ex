@@ -22,6 +22,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ResourceHubs.Document do
       permissions: OperatelyWeb.Api.Serializer.serialize(document.permissions),
       potential_subscribers: OperatelyWeb.Api.Serializer.serialize(document.potential_subscribers),
       subscription_list: OperatelyWeb.Api.Serializer.serialize(document.subscription_list),
+      notifications: OperatelyWeb.Api.Serializer.serialize(document.notifications),
     }
   end
 end

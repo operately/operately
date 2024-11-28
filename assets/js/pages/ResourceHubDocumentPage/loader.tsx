@@ -16,6 +16,7 @@ export async function loader({ params }): Promise<LoaderResult> {
       includePermissions: true,
       includePotentialSubscribers: true,
       includeSubscriptionsList: true,
+      includeUnreadNotifications: true,
     }).then((res) => res.document!),
   };
 }

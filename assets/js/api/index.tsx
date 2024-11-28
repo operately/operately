@@ -1053,6 +1053,7 @@ export interface ResourceHubDocument {
   comments?: Comment[] | null;
   potentialSubscribers?: Subscriber[] | null;
   subscriptionList?: SubscriptionList | null;
+  notifications?: Notification[] | null;
 }
 
 export interface ResourceHubFile {
@@ -1734,6 +1735,7 @@ export interface GetResourceHubDocumentInput {
   includePermissions?: boolean | null;
   includeSubscriptionsList?: boolean | null;
   includePotentialSubscribers?: boolean | null;
+  includeUnreadNotifications?: boolean | null;
 }
 
 export interface GetResourceHubDocumentResult {
