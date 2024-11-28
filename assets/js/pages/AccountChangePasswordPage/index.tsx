@@ -36,7 +36,7 @@ export function Page() {
   });
 
   return (
-    <Pages.Page title={"Change Password"}>
+    <Pages.Page title={"Change Password"} testId="change-password-page">
       <Paper.Root size="small">
         <Paper.Body>
           <Paper.Header title="Change Password" />

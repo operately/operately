@@ -11,7 +11,7 @@ defmodule Operately.Features.SessionTest do
 
   feature "successful login", ctx do
     ctx
-    |> Steps.assert_i_have_an_account(@account_info)
+    |> Steps.given_i_have_an_account(@account_info)
     |> Steps.open_operately()
     |> Steps.assert_on_the_login_page()
     |> Steps.fill_out_login_form(@account_info)
@@ -21,7 +21,7 @@ defmodule Operately.Features.SessionTest do
 
   feature "login with incorrect email", ctx do
     ctx
-    |> Steps.assert_i_have_an_account(@account_info)
+    |> Steps.given_i_have_an_account(@account_info)
     |> Steps.open_operately()
     |> Steps.assert_on_the_login_page()
     |> Steps.fill_out_login_form(%{email: "non-existing@email.com", password: @account_info[:password]})
@@ -31,12 +31,21 @@ defmodule Operately.Features.SessionTest do
 
   feature "login with incorrect password", ctx do
     ctx
-    |> Steps.assert_i_have_an_account(@account_info)
+    |> Steps.given_i_have_an_account(@account_info)
     |> Steps.open_operately()
     |> Steps.assert_on_the_login_page()
     |> Steps.fill_out_login_form(%{email: @account_info[:email], password: "incorrect-password"})
     |> Steps.submit_login_form()
     |> Steps.assert_wrong_password_error()
+  end
+
+  feature "reset password", ctx do
+    ctx
+    |> Steps.given_im_logged_in(@account_info)
+    |> Steps.navigate_to_password_reset_page()
+    |> Steps.fill_in_reset_password_form(@account_info)
+    |> Steps.submit_reset_password_form()
+    |> Steps.assert_password_changed()
   end
 
 end
