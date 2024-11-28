@@ -10,6 +10,7 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHub do
     field :include_nodes, :boolean
     field :include_potential_subscribers, :boolean
     field :include_permissions, :boolean
+    field :include_children_count, :boolean
   end
 
   outputs do
@@ -52,6 +53,7 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHub do
   defp after_load(inputs) do
     Inputs.parse_includes(inputs, [
       include_potential_subscribers: &ResourceHub.load_potential_subscribers/1,
+      include_children_count: &ResourceHub.set_children_count/1,
       include_permissions: &ResourceHub.set_permissions/1,
     ])
   end
