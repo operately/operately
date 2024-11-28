@@ -43,6 +43,18 @@ export class Paths {
     return createCompanyPath(["account"]);
   }
 
+  static accountAppearancePath() {
+    return createCompanyPath(["account", "appearance"]);
+  }
+
+  static accountSecurityPath() {
+    return createCompanyPath(["account", "security"]);
+  }
+
+  static accountChangePasswordPath() {
+    return createCompanyPath(["account", "security", "change-password"]);
+  }
+
   static notificationsPath() {
     return createCompanyPath(["notifications"]);
   }
@@ -59,10 +71,6 @@ export class Paths {
     } else {
       return path;
     }
-  }
-
-  static accountAppearancePath() {
-    return createCompanyPath(["account", "appearance"]);
   }
 
   static companyAdminPath() {

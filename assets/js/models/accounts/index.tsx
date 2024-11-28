@@ -1,1 +1,1 @@
-export { getAccount, useJoinCompany } from "@/api";
+export { changePassword, getAccount, useJoinCompany } from "@/api";

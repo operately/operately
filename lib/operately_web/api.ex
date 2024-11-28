@@ -129,11 +129,13 @@ defmodule OperatelyWeb.Api do
   mutation :acknowledge_project_check_in, M.AcknowledgeProjectCheckIn
   mutation :archive_goal, M.ArchiveGoal
   mutation :archive_project, M.ArchiveProject
-  mutation :change_goal_parent, M.ChangeGoalParent
-  mutation :change_task_description, M.ChangeTaskDescription
   mutation :close_goal, M.CloseGoal
   mutation :close_project, M.CloseProject
   mutation :connect_goal_to_project, M.ConnectGoalToProject
+
+  mutation :change_password, M.ChangePassword
+  mutation :change_goal_parent, M.ChangeGoalParent
+  mutation :change_task_description, M.ChangeTaskDescription
 
   mutation :reopen_goal, M.ReopenGoal
   mutation :resume_project, M.ResumeProject
