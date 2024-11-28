@@ -13,6 +13,7 @@ export async function loader({ params }): Promise<LoaderResult> {
       includeResourceHub: true,
       includePathToFolder: true,
       includePermissions: true,
+      includeChildrenCount: true,
     }).then((res) => res.folder!),
   };
 }

@@ -11,6 +11,7 @@ defmodule Operately.ResourceHubs.Folder do
     # populated with after load hooks
     field :permissions, :any, virtual: true
     field :path_to_folder, :any, virtual: true
+    field :children_count, :any, virtual: true
 
     timestamps()
     request_info()
@@ -24,6 +25,32 @@ defmodule Operately.ResourceHubs.Folder do
     folder
     |> cast(attrs, [:node_id])
     |> validate_required([:node_id])
+  end
+
+  def find_children_count(nodes) when is_list(nodes) do
+    folder_ids =
+      nodes
+      |> Enum.filter(&(&1.type == :folder))
+      |> Enum.map(&(&1.folder.id))
+
+    counts =
+      from(n in Operately.ResourceHubs.Node,
+        where: n.parent_folder_id in ^folder_ids,
+        group_by: n.parent_folder_id,
+        select: {n.parent_folder_id, count(n.id)}
+      )
+      |> Repo.all()
+      |> Enum.into(%{})
+
+    Enum.map(nodes, fn n ->
+      if n.type == :folder do
+        count = Map.get(counts, n.folder.id, 0)
+        folder = Map.put(n.folder, :children_count, count)
+        Map.put(n, :folder, folder)
+      else
+        n
+      end
+    end)
   end
 
   #
@@ -60,6 +87,11 @@ defmodule Operately.ResourceHubs.Folder do
       end)
 
     Map.put(folder, :path_to_folder, path)
+  end
+
+  def set_children_count(folder = %__MODULE__{}) do
+    nodes = Operately.ResourceHubs.Folder.find_children_count(folder.child_nodes)
+    Map.put(folder, :child_nodes, nodes)
   end
 
   def set_permissions(folder = %__MODULE__{}) do

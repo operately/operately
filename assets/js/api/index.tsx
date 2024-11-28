@@ -1076,6 +1076,7 @@ export interface ResourceHubFolder {
   nodes?: ResourceHubNode[] | null;
   permissions?: ResourceHubPermissions | null;
   pathToFolder?: ResourceHubFolder[] | null;
+  childrenCount?: number | null;
 }
 
 export interface ResourceHubNode {
@@ -1719,6 +1720,7 @@ export interface GetResourceHubInput {
   includeNodes?: boolean | null;
   includePotentialSubscribers?: boolean | null;
   includePermissions?: boolean | null;
+  includeChildrenCount?: boolean | null;
 }
 
 export interface GetResourceHubResult {
@@ -1746,6 +1748,7 @@ export interface GetResourceHubFolderInput {
   includeResourceHub?: boolean | null;
   includePathToFolder?: boolean | null;
   includePermissions?: boolean | null;
+  includeChildrenCount?: boolean | null;
 }
 
 export interface GetResourceHubFolderResult {
