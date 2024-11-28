@@ -69,5 +69,4 @@ defmodule Operately.Support.Features.SessionTestSteps do
     ctx
   end
 
-
 end
