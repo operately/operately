@@ -11,7 +11,7 @@ defmodule Operately.ResourceHubs.Folder do
     # populated with after load hooks
     field :permissions, :any, virtual: true
     field :path_to_folder, :any, virtual: true
-    field :children_count, :any, virtual: true
+    field :children_count, :integer, virtual: true
 
     timestamps()
     request_info()

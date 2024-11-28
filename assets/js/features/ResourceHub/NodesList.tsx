@@ -124,7 +124,8 @@ function findPath(nodeType: NodeType, node: Hub.ResourceHubNode) {
 function findSubtitle(nodeType: NodeType, node: Hub.ResourceHubNode) {
   switch (nodeType) {
     case "document":
-      const content = richContentToString(JSON.parse(node.document?.content!));
+      assertPresent(node.document?.content, "content must be present in node.document");
+      const content = richContentToString(JSON.parse(node.document.content));
       return truncateString(content, 60);
     case "folder":
       assertPresent(node.folder?.childrenCount, "childrenCount must be present in node.folder");
