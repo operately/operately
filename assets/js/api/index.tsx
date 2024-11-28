@@ -513,6 +513,11 @@ export interface ActivityContentResourceHubDocumentCreated {
   document?: ResourceHubDocument | null;
 }
 
+export interface ActivityContentResourceHubDocumentDeleted {
+  resourceHub?: ResourceHub | null;
+  document?: ResourceHubDocument | null;
+}
+
 export interface ActivityContentResourceHubDocumentEdited {
   resourceHub?: ResourceHub | null;
   document?: ResourceHubDocument | null;
