@@ -41,7 +41,7 @@ export function AddFolderModal({ resourceHub, showForm, toggleForm, refresh, fol
     <Modal title="New folder" isOpen={showForm} hideModal={toggleForm}>
       <Forms.Form form={form}>
         <Forms.FieldGroup>
-          <Forms.TextInput label="Name" field="name" />
+          <Forms.TextInput label="Name" field="name" testId="new-folder-name" />
         </Forms.FieldGroup>
 
         <Forms.Submit cancelText="Cancel" />

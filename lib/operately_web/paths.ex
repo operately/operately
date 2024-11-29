@@ -129,6 +129,14 @@ defmodule OperatelyWeb.Paths do
     create_path([company_id(company), "resource-hubs", resource_hub_id(resource_hub)])
   end
 
+  def new_document_path(company = %Company{}, resource_hub) do
+    create_path([company_id(company), "resource-hubs", resource_hub_id(resource_hub), "new-document"])
+  end
+
+  def folder_path(company = %Company{}, folder) do
+    create_path([company_id(company), "folders", folder_id(folder)])
+  end
+
   def document_path(company = %Company{}, document) do
     create_path([company_id(company), "documents", document_id(document)])
   end
@@ -137,6 +145,10 @@ defmodule OperatelyWeb.Paths do
     document_with_comment = document_id(document) <> "#" <> comment_id(comment)
 
     create_path([company_id(company), "documents", document_with_comment])
+  end
+
+  def edit_document_path(company = %Company{}, document) do
+    create_path([company_id(company), "documents", document_id(document), "edit"])
   end
 
   @doc """
