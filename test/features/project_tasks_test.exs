@@ -73,7 +73,7 @@ defmodule Operately.Features.ProjectTasksTest do
       test_id: "todo_0",
     }
     name = "new name"
-    description = " - new description"
+    description = "new description"
 
     ctx
     |> Steps.visit_milestone_page()
@@ -85,7 +85,7 @@ defmodule Operately.Features.ProjectTasksTest do
     |> UI.assert_text(name)
     |> UI.refute_text(description)
     |> Steps.edit_task_description(description)
-    |> UI.assert_text(attrs.description <> description)
+    |> UI.assert_text(description)
   end
 
   @tag login_as: :champion
