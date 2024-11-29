@@ -7,6 +7,7 @@ import { Container, Title, ZeroResourcesContainer } from "./components";
 import { assertPresent } from "@/utils/assertions";
 import classNames from "classnames";
 import { IconFolder } from "@tabler/icons-react";
+import { createTestId } from "@/utils/testid";
 
 interface ResourceHubProps {
   resourceHub: ResourceHub;
@@ -15,10 +16,11 @@ interface ResourceHubProps {
 export function ResourceHub({ resourceHub }: ResourceHubProps) {
   assertPresent(resourceHub.nodes, "nodes must be present in resourceHub");
 
+  const testid = createTestId(resourceHub.name!);
   const path = Paths.resourceHubPath(resourceHub.id!);
 
   return (
-    <Container path={path} testId="messages-tool">
+    <Container path={path} testId={testid}>
       <Title title={resourceHub.name!} />
       {resourceHub.nodes.length < 1 ? <ZeroResources /> : <NodesList nodes={resourceHub.nodes} />}
     </Container>
