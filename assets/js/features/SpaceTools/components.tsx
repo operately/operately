@@ -18,6 +18,7 @@ export function Container({ children, path, testId }: ContainerProps) {
     "text-xs",
     "w-full h-[380px] w-[340] max-w-[340px] overflow-hidden",
     "border border-stroke-base",
+    "bg-surface-base",
     "rounded-lg shadow-sm transition-shadow duration-300 hover:shadow hover:border-surface-outline",
   );
 

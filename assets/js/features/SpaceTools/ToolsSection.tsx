@@ -28,7 +28,8 @@ export function ToolsSection({ space, tools, hasResourceHubsFeature }: ToolsSect
   return (
     <div className="mt-6 py-6">
       <div className="flex justify-center items-start flex-wrap gap-4">
-        <GoalsAndProjects space={space} goals={tools.goals} projects={tools.projects} />
+        <GoalsAndProjects title="Goals & Projects" space={space} goals={tools.goals} projects={tools.projects} />
+
         {tools.messagesBoards.map((boards) => (
           <Discussions space={space} discussions={boards.messages!} key={boards.id} />
         ))}

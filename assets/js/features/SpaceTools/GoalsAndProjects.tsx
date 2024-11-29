@@ -13,12 +13,13 @@ import { Container, Title, ZeroResourcesContainer } from "./components";
 import { calculateStatus } from "./utils";
 
 interface GoalsAndProjectsProps {
+  title: string;
   space: Space;
   goals: Goal[];
   projects: Project[];
 }
 
-export function GoalsAndProjects({ space, goals, projects }: GoalsAndProjectsProps) {
+export function GoalsAndProjects({ title, space, goals, projects }: GoalsAndProjectsProps) {
   const path = Paths.spaceGoalsPath(space.id!);
 
   const openGoals = goals.filter((g) => !g.closedAt);
@@ -26,7 +27,7 @@ export function GoalsAndProjects({ space, goals, projects }: GoalsAndProjectsPro
 
   return (
     <Container path={path} testId="goals-and-projects">
-      <Title title="Goals & Projects" />
+      <Title title={title} />
 
       {openGoals.length < 1 && openProjects.length < 1 ? (
         <ZeroGoalsAndProjects />
