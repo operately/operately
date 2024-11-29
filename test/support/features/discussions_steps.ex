@@ -119,7 +119,7 @@ defmodule Operately.Support.Features.DiscussionsSteps do
     ctx
     |> UI.click(testid: "options-button")
     |> UI.click(testid: "edit-discussion")
-    |> UI.fill(testid: "discussion-title", with: "")
+    |> UI.assert_text(@title)
     |> UI.fill(testid: "discussion-title", with: "This is an edited discussion")
     |> UI.fill_rich_text("This is the edited body of the discussion.")
     |> UI.click(testid: "save-changes")
@@ -259,7 +259,7 @@ defmodule Operately.Support.Features.DiscussionsSteps do
   end
 
   step :edit_and_publish_draft, ctx do
-    ctx 
+    ctx
     |> UI.click(testid: "continue-editing")
     |> UI.assert_has(testid: "discussion-edit-page")
     |> UI.fill(testid: "discussion-title", with: "This is a draft discussion (edited)")
@@ -305,7 +305,7 @@ defmodule Operately.Support.Features.DiscussionsSteps do
   step :archive_discussion, ctx do
     message = last_message(ctx)
 
-    ctx 
+    ctx
     |> UI.visit(Paths.message_path(ctx.company, message))
     |> UI.click(testid: "options-button")
     |> UI.click(testid: "archive-discussion")
@@ -314,7 +314,7 @@ defmodule Operately.Support.Features.DiscussionsSteps do
   step :assert_discussion_is_archived, ctx do
     message = last_archived_message(ctx)
 
-    ctx 
+    ctx
     |> UI.visit(Paths.space_discussions_path(ctx.company, ctx.marketing_space))
     |> UI.refute_text(message.title)
   end
@@ -322,13 +322,13 @@ defmodule Operately.Support.Features.DiscussionsSteps do
   step :assert_discussion_feed_events, ctx do
     message = last_archived_message(ctx)
 
-    ctx 
+    ctx
     |> UI.visit(Paths.space_path(ctx.company, ctx.marketing_space))
     |> UI.assert_feed_item(ctx.creator, "deleted: #{message.title}")
   end
 
   step :assert_comment_is_listed_in_the_feed, ctx do
-    ctx 
+    ctx
     |> UI.visit(Paths.space_path(ctx.company, ctx.marketing_space))
     |> UI.assert_feed_item(ctx.reader, "commented on #{@title}")
     |> UI.visit(Paths.feed_path(ctx.company))
@@ -343,7 +343,7 @@ defmodule Operately.Support.Features.DiscussionsSteps do
     import Ecto.Query
 
     message = Operately.Repo.one(
-      from m in Operately.Messages.Message, 
+      from m in Operately.Messages.Message,
       where: not is_nil(m.deleted_at),
       limit: 1
     )
@@ -351,7 +351,7 @@ defmodule Operately.Support.Features.DiscussionsSteps do
     cond do
       message -> message
       attempts <= 0 -> raise "Could not find the last archived message"
-      true -> 
+      true ->
         :timer.sleep(300)
         last_archived_message(ctx, attempts - 1)
     end
