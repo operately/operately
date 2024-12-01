@@ -16,21 +16,12 @@ defmodule OperatelyWeb.Api.Mutations.CreateAccount do
     with(
       {:ok, activation} <- EmailActivationCode.get(:system, email: inputs.email, code: inputs.code),
       {:ok, :valid} <- check_validity(activation),
-      {:ok, _} <- create_account(inputs)
+      {:ok, _} <- Account.create(inputs.full_name, inputs.email, inputs.password)
     ) do
       {:ok, %{}}
     else
       {:error, _} -> {:error, :internal_server_error}
     end
-  end
-
-  def create_account(inputs) do
-    Account.registration_changeset(%{
-      full_name: inputs.full_name,
-      email: inputs.email,
-      password: inputs.password
-    })
-    |> Repo.insert()
   end
 
   def check_validity(activation) do
