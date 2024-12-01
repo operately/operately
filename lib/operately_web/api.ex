@@ -4,7 +4,9 @@ defmodule OperatelyWeb.Api do
   plug OperatelyWeb.Api.Plugs.RequireAuthenticatedAccount, except: [
     {:query, :get_invitation},
     {:mutation, :add_first_company},
-    {:mutation, :join_company}
+    {:mutation, :join_company},
+    {:mutation, :create_email_activation_code},
+    {:mutation, :create_account}
   ]
 
   use_types OperatelyWeb.Api.Types
@@ -68,6 +70,7 @@ defmodule OperatelyWeb.Api do
   mutation :add_project_contributors, M.AddProjectContributors
   mutation :add_reaction, M.AddReaction
 
+  mutation :create_account, M.CreateAccount
   mutation :create_blob, M.CreateBlob
   mutation :create_comment, M.CreateComment
   mutation :create_goal, M.CreateGoal
@@ -79,6 +82,7 @@ defmodule OperatelyWeb.Api do
   mutation :create_resource_hub_document, M.CreateResourceHubDocument
   mutation :create_resource_hub_file, M.CreateResourceHubFile
   mutation :create_resource_hub_folder, M.CreateResourceHubFolder
+  mutation :create_email_activation_code, M.CreateEmailActivationCode
 
   mutation :delete_resource_hub_document, M.DeleteResourceHubDocument
 
