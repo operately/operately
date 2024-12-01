@@ -2048,6 +2048,15 @@ export interface ConnectGoalToProjectResult {
   project?: Project | null;
 }
 
+export interface CreateAccountInput {
+  code?: string | null;
+  email?: string | null;
+  password?: string | null;
+  fullName?: string | null;
+}
+
+export interface CreateAccountResult {}
+
 export interface CreateBlobInput {
   filename?: string | null;
   size?: number | null;
@@ -2070,6 +2079,12 @@ export interface CreateCommentInput {
 export interface CreateCommentResult {
   comment?: Comment | null;
 }
+
+export interface CreateEmailActivationCodeInput {
+  email?: string | null;
+}
+
+export interface CreateEmailActivationCodeResult {}
 
 export interface CreateGoalInput {
   spaceId?: string | null;
@@ -2959,12 +2974,20 @@ export class ApiClient {
     return this.post("/connect_goal_to_project", input);
   }
 
+  async createAccount(input: CreateAccountInput): Promise<CreateAccountResult> {
+    return this.post("/create_account", input);
+  }
+
   async createBlob(input: CreateBlobInput): Promise<CreateBlobResult> {
     return this.post("/create_blob", input);
   }
 
   async createComment(input: CreateCommentInput): Promise<CreateCommentResult> {
     return this.post("/create_comment", input);
+  }
+
+  async createEmailActivationCode(input: CreateEmailActivationCodeInput): Promise<CreateEmailActivationCodeResult> {
+    return this.post("/create_email_activation_code", input);
   }
 
   async createGoal(input: CreateGoalInput): Promise<CreateGoalResult> {
@@ -3430,11 +3453,19 @@ export async function closeProject(input: CloseProjectInput): Promise<CloseProje
 export async function connectGoalToProject(input: ConnectGoalToProjectInput): Promise<ConnectGoalToProjectResult> {
   return defaultApiClient.connectGoalToProject(input);
 }
+export async function createAccount(input: CreateAccountInput): Promise<CreateAccountResult> {
+  return defaultApiClient.createAccount(input);
+}
 export async function createBlob(input: CreateBlobInput): Promise<CreateBlobResult> {
   return defaultApiClient.createBlob(input);
 }
 export async function createComment(input: CreateCommentInput): Promise<CreateCommentResult> {
   return defaultApiClient.createComment(input);
+}
+export async function createEmailActivationCode(
+  input: CreateEmailActivationCodeInput,
+): Promise<CreateEmailActivationCodeResult> {
+  return defaultApiClient.createEmailActivationCode(input);
 }
 export async function createGoal(input: CreateGoalInput): Promise<CreateGoalResult> {
   return defaultApiClient.createGoal(input);
@@ -3976,12 +4007,25 @@ export function useConnectGoalToProject(): UseMutationHookResult<
   );
 }
 
+export function useCreateAccount(): UseMutationHookResult<CreateAccountInput, CreateAccountResult> {
+  return useMutation<CreateAccountInput, CreateAccountResult>((input) => defaultApiClient.createAccount(input));
+}
+
 export function useCreateBlob(): UseMutationHookResult<CreateBlobInput, CreateBlobResult> {
   return useMutation<CreateBlobInput, CreateBlobResult>((input) => defaultApiClient.createBlob(input));
 }
 
 export function useCreateComment(): UseMutationHookResult<CreateCommentInput, CreateCommentResult> {
   return useMutation<CreateCommentInput, CreateCommentResult>((input) => defaultApiClient.createComment(input));
+}
+
+export function useCreateEmailActivationCode(): UseMutationHookResult<
+  CreateEmailActivationCodeInput,
+  CreateEmailActivationCodeResult
+> {
+  return useMutation<CreateEmailActivationCodeInput, CreateEmailActivationCodeResult>((input) =>
+    defaultApiClient.createEmailActivationCode(input),
+  );
 }
 
 export function useCreateGoal(): UseMutationHookResult<CreateGoalInput, CreateGoalResult> {
@@ -4524,10 +4568,14 @@ export default {
   useCloseProject,
   connectGoalToProject,
   useConnectGoalToProject,
+  createAccount,
+  useCreateAccount,
   createBlob,
   useCreateBlob,
   createComment,
   useCreateComment,
+  createEmailActivationCode,
+  useCreateEmailActivationCode,
   createGoal,
   useCreateGoal,
   createGoalDiscussion,
