@@ -7,6 +7,7 @@ import { OperatelyLogo } from "@/components/OperatelyLogo";
 
 import classNames from "classnames";
 import { logIn } from "@/routes/auth";
+import { Link } from "@/components/Link";
 
 export const loader = Pages.emptyLoader;
 
@@ -55,6 +56,10 @@ export function Page() {
                     <SignInWithGoogleButton />
                   </>
                 )}
+              </div>
+
+              <div className="mt-8 text-center text-sm font-medium">
+                Don't have an account? <Link to="/sign_up">Create an account</Link>
               </div>
             </Forms.Form>
           </div>
