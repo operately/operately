@@ -7,6 +7,8 @@ defmodule Operately.People do
   alias Operately.People.{Person, Account}
   alias Operately.Access.Binding
   alias Operately.Access.Fetch
+  alias Operately.People.Account
+  alias Operately.People.AccountToken
 
   def list_people(company_id) do
     Repo.all(from p in Person, where: p.company_id == ^company_id and not p.suspended)
@@ -94,11 +96,6 @@ defmodule Operately.People do
     Person.changeset(person, attrs)
   end
 
-  alias Operately.People.{Account, AccountToken, AccountNotifier}
-
-
-  # def get_account!(id), do: Repo.get!(Account, id)
-
   def register_account(attrs) do
     %Account{}
     |> Account.registration_changeset(attrs)
@@ -143,14 +140,6 @@ defmodule Operately.People do
     |> Ecto.Multi.delete_all(:tokens, AccountToken.account_and_contexts_query(account, [context]))
   end
 
-  def deliver_account_update_email_instructions(%Account{} = account, current_email, update_email_url_fun)
-      when is_function(update_email_url_fun, 1) do
-    {encoded_token, account_token} = AccountToken.build_email_token(account, "change:#{current_email}")
-
-    Repo.insert!(account_token)
-    AccountNotifier.deliver_update_email_instructions(account, update_email_url_fun.(encoded_token))
-  end
-
   def change_account_password(account, attrs \\ %{}) do
     Account.password_changeset(account, attrs, hash_password: false)
   end
@@ -186,40 +175,6 @@ defmodule Operately.People do
   def delete_account_session_token(token) do
     Repo.delete_all(AccountToken.token_and_context_query(token, "session"))
     :ok
-  end
-
-  def deliver_account_confirmation_instructions(%Account{} = account, confirmation_url_fun)
-      when is_function(confirmation_url_fun, 1) do
-    if account.confirmed_at do
-      {:error, :already_confirmed}
-    else
-      {encoded_token, account_token} = AccountToken.build_email_token(account, "confirm")
-      Repo.insert!(account_token)
-      AccountNotifier.deliver_confirmation_instructions(account, confirmation_url_fun.(encoded_token))
-    end
-  end
-
-  def confirm_account(token) do
-    with {:ok, query} <- AccountToken.verify_email_token_query(token, "confirm"),
-         %Account{} = account <- Repo.one(query),
-         {:ok, %{account: account}} <- Repo.transaction(confirm_account_multi(account)) do
-      {:ok, account}
-    else
-      _ -> :error
-    end
-  end
-
-  defp confirm_account_multi(account) do
-    Ecto.Multi.new()
-    |> Ecto.Multi.update(:account, Account.confirm_changeset(account))
-    |> Ecto.Multi.delete_all(:tokens, AccountToken.account_and_contexts_query(account, ["confirm"]))
-  end
-
-  def deliver_account_reset_password_instructions(%Account{} = account, reset_password_url_fun)
-      when is_function(reset_password_url_fun, 1) do
-    {encoded_token, account_token} = AccountToken.build_email_token(account, "reset_password")
-    Repo.insert!(account_token)
-    AccountNotifier.deliver_reset_password_instructions(account, reset_password_url_fun.(encoded_token))
   end
 
   def get_account_by_reset_password_token(token) do

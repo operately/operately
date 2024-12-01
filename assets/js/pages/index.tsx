@@ -85,6 +85,7 @@ import * as ResourceHubNewDocumentPage from "./ResourceHubNewDocumentPage";
 import * as ResourceHubPage from "./ResourceHubPage";
 import * as ReviewPage from "./ReviewPage";
 import * as SetupPage from "./SetupPage";
+import * as SignUpPage from "./SignUpPage";
 import * as SpaceAccessManagementPage from "./SpaceAccessManagementPage";
 import * as SpaceAddMembersPage from "./SpaceAddMembersPage";
 import * as SpaceAddPage from "./SpaceAddPage";
@@ -510,6 +511,11 @@ export default {
     name: "SetupPage",
     loader: SetupPage.loader,
     Page: SetupPage.Page,
+  },
+  SignUpPage: {
+    name: "SignUpPage",
+    loader: SignUpPage.loader,
+    Page: SignUpPage.Page,
   },
   SpaceAccessManagementPage: {
     name: "SpaceAccessManagementPage",

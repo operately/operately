@@ -1,0 +1,23 @@
+<%= title("Confirm your email address") %>
+
+<%= spacer() %>
+
+<%= row do %>
+  Your confirmation code is below — enter it in your open 
+  browser window and we'll help you get signed in.
+<% end %>
+
+<%= spacer() %>
+
+<tr style="height: 80px; font-size: 40px; font-family: monospace;">
+  <td>
+    <%= @code %>
+  </td>
+</tr>
+
+<%= spacer() %>
+
+<%= row do %>
+  If you didn’t request this email, there’s nothing to worry 
+  about — you can safely ignore it.
+<% end %>

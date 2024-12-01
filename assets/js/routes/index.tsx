@@ -43,6 +43,7 @@ export function createAppRoutes() {
       errorElement: <ErrorPage />,
       children: [
         pageRoute("/log_in", pages.LoginPage, { auth: false }),
+        pageRoute("/sign_up", pages.SignUpPage, { auth: false }),
 
         pageRoute("", pages.LobbyPage),
         pageRoute("/new", pages.NewCompanyPage),
