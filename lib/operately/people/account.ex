@@ -1,5 +1,6 @@
 defmodule Operately.People.Account do
   use Operately.Schema
+  use Operately.Repo.Getter
 
   schema "accounts" do
     has_many :people, Operately.People.Person, foreign_key: :account_id
@@ -11,37 +12,22 @@ defmodule Operately.People.Account do
     field :confirmed_at, :naive_datetime
     field :site_admin, :boolean, default: false
 
+    request_info()
     timestamps()
   end
 
-  @doc """
-  A account changeset for registration.
+  def create(full_name, email, password) do
+    Ecto.Multi.new()
+    |> Ecto.Multi.insert(:account, registration_changeset(%{full_name: full_name, email: email, password: password}))
+    |> Oban.insert(fn %{account: account} -> OperatelyEE.AccountOnboardingJob.new(%{account_id: account.id}) end)
+    |> Repo.transaction()
+  end
 
-  It is important to validate the length of both email and password.
-  Otherwise databases may truncate the email without warnings, which
-  could lead to unpredictable or insecure behaviour. Long passwords may
-  also be very expensive to hash for certain algorithms.
-
-  ## Options
-
-    * `:hash_password` - Hashes the password so it can be stored securely
-      in the database and ensures the password field is cleared to prevent
-      leaks in the logs. If password hashing is not needed and clearing the
-      password field is not desired (like when using this changeset for
-      validations on a LiveView form), this option can be set to `false`.
-      Defaults to `true`.
-
-    * `:validate_email` - Validates the uniqueness of the email, in case
-      you don't want to validate the uniqueness of the email (like when
-      using this changeset for validations on a LiveView form before
-      submitting the form), this option can be set to `false`.
-      Defaults to `true`.
-  """
-  def registration_changeset(attrs) do
+  defp registration_changeset(attrs) do
     registration_changeset(%__MODULE__{}, attrs)
   end
 
-  def registration_changeset(account, attrs, opts \\ []) do
+  defp registration_changeset(account, attrs, opts \\ []) do
     account
     |> cast(attrs, [:email, :password, :full_name])
     |> validate_email(opts)
@@ -91,11 +77,6 @@ defmodule Operately.People.Account do
     end
   end
 
-  @doc """
-  A account changeset for changing the email.
-
-  It requires the email to change otherwise an error is added.
-  """
   def email_changeset(account, attrs, opts \\ []) do
     account
     |> cast(attrs, [:email])
@@ -106,18 +87,6 @@ defmodule Operately.People.Account do
     end
   end
 
-  @doc """
-  A account changeset for changing the password.
-
-  ## Options
-
-    * `:hash_password` - Hashes the password so it can be stored securely
-      in the database and ensures the password field is cleared to prevent
-      leaks in the logs. If password hashing is not needed and clearing the
-      password field is not desired (like when using this changeset for
-      validations on a LiveView form), this option can be set to `false`.
-      Defaults to `true`.
-  """
   def password_changeset(account, attrs, opts \\ []) do
     account
     |> cast(attrs, [:password])
