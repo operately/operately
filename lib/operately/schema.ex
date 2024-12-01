@@ -46,6 +46,8 @@ defmodule Operately.Schema do
       @primary_key {:id, :binary_id, autogenerate: true}
       @foreign_key_type :binary_id
 
+      alias Operately.Repo
+
       requester_access_level_setter()
     end
   end
