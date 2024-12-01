@@ -1,7 +1,4 @@
 defmodule Operately.People.FetchOrCreateAccountOperation do
-  alias Ecto.Multi
-  alias Operately.Repo
-  alias Operately.People
   alias Operately.People.Account
 
   def call(attrs = %{email: _email, name: _name, image: _image}) do
@@ -18,7 +15,7 @@ defmodule Operately.People.FetchOrCreateAccountOperation do
   #
 
   defp find_existing_account(%{email: email, image: image}) do
-    account = People.get_account_by_email(email)
+    account = Account.get(:system, email: email)
 
     if account == nil do
       {:error, "Not found"}
@@ -36,14 +33,7 @@ defmodule Operately.People.FetchOrCreateAccountOperation do
   end
 
   defp create_new_account(attrs) do
-    Multi.new()
-    |> Multi.insert(:account, Account.registration_changeset(%{
-      full_name: attrs.name,
-      email: attrs.email, 
-      password: random_password()
-    }))
-    |> Repo.transaction()
-    |> Repo.extract_result(:account)
+    Account.create(attrs[:name], attrs[:email], random_password())
   end
 
   #
