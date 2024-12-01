@@ -3,8 +3,9 @@ defmodule OperatelyEE.AccountOnboardingJob do
   alias Operately.People.Account
 
   def perform(job) do
+    IO.inspect(job)
     if Application.get_env(:operately, :send_onboarding_emails) == true do
-      send_onboarding_email(job["account_id"])
+      send_onboarding_email(job.args["account_id"])
     end
   end
 
@@ -28,10 +29,10 @@ defmodule OperatelyEE.AccountOnboardingJob do
 
     url = "#{@sendgrid_base_url}/marketing/contacts"
 
-    list_id = Application.get_env(:operately, :sendgrid_saas_onboarding_list_id)
     email = account.email
-    first_name = String.split(account.name, " ") |> List.first()
-    last_name = String.split(account.name, " ") |> List.last()
+    list_id = Application.get_env(:operately, :sendgrid_saas_onboarding_list_id)
+    first_name = String.split(account.full_name, " ") |> List.first()
+    last_name = String.split(account.full_name, " ") |> List.last()
 
     body = %{
       list_ids: [list_id],
@@ -44,6 +45,6 @@ defmodule OperatelyEE.AccountOnboardingJob do
       ]
     }
 
-    Finch.request(:post, url, headers, body)
+    {:ok, %{status: 200}} = Req.post!(url, headers: headers, json: body)
   end
 end
