@@ -1,5 +1,4 @@
 defmodule OperatelyEmail.Emails.EmailActivationCodeEmail do
-  alias Operately.People.EmailActivationCode
   import OperatelyEmail.Mailers.NotificationMailer, only: [html: 2, text: 2]
 
   def send(email_activation_code) do

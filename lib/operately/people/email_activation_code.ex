@@ -36,7 +36,7 @@ defmodule Operately.People.EmailActivationCode do
       {:error, :failed}
     else
       code = generate_code()
-      expires_at = DateTime.utc_now() |> DateTime.add(24, :hour)
+      expires_at = DateTime.utc_now() |> DateTime.add(30, :minute)
 
       cs = changeset(%{
         email: email, 
