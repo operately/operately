@@ -34,6 +34,7 @@ config :operately, :allow_login_with_google, System.get_env("ALLOW_LOGIN_WITH_GO
 config :operately, :allow_signup_with_google, System.get_env("ALLOW_SIGNUP_WITH_GOOGLE", "no") == "yes"
 
 config :operately, :send_onboarding_emails, System.get_env("SEND_ONBOARDING_EMAILS", "no") == "yes"
+config :operately, :sendgrid_saas_onboarding_list_id, System.get_env("SENDGRID_SAAS_ONBOARDING_LIST_ID")
 
 if config_env() == :prod do
   database_url =
