@@ -9,8 +9,6 @@ import classNames from "classnames";
 import { useFieldValue } from "@/components/Forms/FormContext";
 import { PageState } from "./index";
 
-export const loader = Pages.emptyLoader;
-
 export function SignUpCodeVerification({ email, setState }: { email: string; setState: (state: PageState) => void }) {
   const form = Forms.useForm({
     fields: {
@@ -61,7 +59,7 @@ function CodeInput({ field }: { field: string }) {
       autoFocus
       data-test-id="code"
       className={
-        "text-4xl border border-surface-outline rounded-lg px-3 py-1.5 text-center placeholder-content-subtle w-60"
+        "text-4xl border border-surface-outline rounded-lg px-3 py-1.5 text-center placeholder-content-subtle w-60 bg-surface-base text-content-base"
       }
       type="text"
       value={value}
