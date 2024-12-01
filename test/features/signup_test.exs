@@ -10,5 +10,6 @@ defmodule Operately.Features.SignupTest do
     |> Steps.enter_email()
     |> Steps.click_continue_button()
     |> Steps.fill_in_activation_code_from_email()
+    |> Steps.enter_name_and_password()
   end
 end

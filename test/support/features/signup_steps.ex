@@ -21,7 +21,18 @@ defmodule Operately.Support.Features.SignupSteps do
     subject = hd(emails).subject
     code = String.split(subject, ": ") |> List.last()
 
-    ctx |> UI.fill(testid: "code", with: code)
+    ctx 
+    |> UI.fill(testid: "code", with: code)
+    |> UI.click(testid: "submit")
+  end
+
+  step :enter_name_and_password, ctx do
+    ctx
+    |> UI.fill(testid: "name", with: "Michael")
+    |> UI.fill(testid: "password", with: "123456789ABCDER")
+    |> UI.fill(testid: "confirmPassword", with: "123456789ABCDER")
+    |> UI.click(testid: "submit")
+    |> UI.assert_has(testid: "lobby-page")
   end
 
 end
