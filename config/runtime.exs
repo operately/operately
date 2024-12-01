@@ -26,10 +26,12 @@ config :operately, :js_sentry_enabled, System.get_env("OPERATELY_JS_SENTRY_ENABL
 config :operately, :js_sentry_dsn, System.get_env("OPERATELY_JS_SENTRY_DSN")
 config :operately, :storage_type, System.get_env("OPERATELY_STORAGE_TYPE", "local")
 
-# Determines if the 'Sign in with Google' feature is enabled.
-# Set `ALLOW_LOGIN_WITH_GOOGLE` in the .env file to "yes"
-# to enable user sign-in with Google.
-config :operately, allow_login_with_google: System.get_env("ALLOW_LOGIN_WITH_GOOGLE", "no") == "yes"
+config :operately, :allow_login_with_email, System.get_env("ALLOW_LOGIN_WITH_EMAIL", "yes") == "yes"
+config :operately, :allow_signup_with_email, System.get_env("ALLOW_SIGNUP_WITH_EMAIL", "yes") == "yes"
+config :operately, :require_email_verification, System.get_env("REQUIRE_EMAIL_VERIFICATION", "no") == "yes"
+
+config :operately, :allow_login_with_google, System.get_env("ALLOW_LOGIN_WITH_GOOGLE", "no") == "yes"
+config :operately, :allow_signup_with_google, System.get_env("ALLOW_SIGNUP_WITH_GOOGLE", "no") == "yes"
 
 if config_env() == :prod do
   database_url =

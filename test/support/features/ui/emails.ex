@@ -88,6 +88,23 @@ defmodule Operately.Support.Features.UI.Emails do
     end
   end
 
+  def wait_for_email_for(email, attempts: attempts) do
+    emails = list_sent_emails()
+    emails = Enum.filter(emails, fn s -> hd(s.to) == email end)
+
+    case emails do
+      [] -> 
+        if attempts == 0 do
+          raise "#{email} did not receive an email"
+        else
+          :timer.sleep(1000)
+          wait_for_email_for(email, attempts: attempts - 1)
+        end
+
+      _ -> emails
+    end
+  end
+
   defmodule SentEmail do
     defstruct subject: nil, to: nil, html: nil, text: nil
 
