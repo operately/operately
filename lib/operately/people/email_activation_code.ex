@@ -1,11 +1,13 @@
 defmodule Operately.People.EmailActivationCode do
   use Operately.Schema
+  use Operately.Repo.Getter
 
   schema "email_activation_codes" do
     field :email, :string
     field :code, :string
     field :expires_at, :utc_datetime
 
+    request_info()
     timestamps()
   end
 

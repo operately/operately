@@ -2048,6 +2048,15 @@ export interface ConnectGoalToProjectResult {
   project?: Project | null;
 }
 
+export interface CreateAccountInput {
+  code?: string | null;
+  email?: string | null;
+  password?: string | null;
+  fullName?: string | null;
+}
+
+export interface CreateAccountResult {}
+
 export interface CreateBlobInput {
   filename?: string | null;
   size?: number | null;
@@ -2965,6 +2974,10 @@ export class ApiClient {
     return this.post("/connect_goal_to_project", input);
   }
 
+  async createAccount(input: CreateAccountInput): Promise<CreateAccountResult> {
+    return this.post("/create_account", input);
+  }
+
   async createBlob(input: CreateBlobInput): Promise<CreateBlobResult> {
     return this.post("/create_blob", input);
   }
@@ -3439,6 +3452,9 @@ export async function closeProject(input: CloseProjectInput): Promise<CloseProje
 }
 export async function connectGoalToProject(input: ConnectGoalToProjectInput): Promise<ConnectGoalToProjectResult> {
   return defaultApiClient.connectGoalToProject(input);
+}
+export async function createAccount(input: CreateAccountInput): Promise<CreateAccountResult> {
+  return defaultApiClient.createAccount(input);
 }
 export async function createBlob(input: CreateBlobInput): Promise<CreateBlobResult> {
   return defaultApiClient.createBlob(input);
@@ -3989,6 +4005,10 @@ export function useConnectGoalToProject(): UseMutationHookResult<
   return useMutation<ConnectGoalToProjectInput, ConnectGoalToProjectResult>((input) =>
     defaultApiClient.connectGoalToProject(input),
   );
+}
+
+export function useCreateAccount(): UseMutationHookResult<CreateAccountInput, CreateAccountResult> {
+  return useMutation<CreateAccountInput, CreateAccountResult>((input) => defaultApiClient.createAccount(input));
 }
 
 export function useCreateBlob(): UseMutationHookResult<CreateBlobInput, CreateBlobResult> {
@@ -4548,6 +4568,8 @@ export default {
   useCloseProject,
   connectGoalToProject,
   useConnectGoalToProject,
+  createAccount,
+  useCreateAccount,
   createBlob,
   useCreateBlob,
   createComment,
