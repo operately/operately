@@ -31,7 +31,7 @@ export function Page() {
   });
 
   return (
-    <Pages.Page title={["Sign In"]} testId="login-page">
+    <Pages.Page title={["Sign Up"]} testId="sign-up-page">
       <Paper.Root size="tiny">
         <Paper.Body className="h-dvh sm:h-auto">
           <div className="py-8 sm:px-4 sm:py-4">

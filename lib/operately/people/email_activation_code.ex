@@ -10,7 +10,11 @@ defmodule Operately.People.EmailActivationCode do
   end
 
   def create(email) do
-    create_unique_code(email, attempts_left: 10)
+    {:ok, code} = create_unique_code(email, attempts_left: 10)
+
+    OperatelyEmail.Emails.EmailActivationCodeEmail.send(code)
+
+    {:ok, code}
   end
 
   defp changeset(attrs) do
