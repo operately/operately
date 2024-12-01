@@ -362,6 +362,11 @@ defmodule Operately.Support.Features.UI do
     state
   end
 
+  def wait_for_email_for(state, receiver) do
+    Emails.wait_for_email_for(receiver, attempts: 10)
+    state
+  end
+
   def upload_file(state, testid: id, path: path) do
     query = Query.css("[data-test-id=\"#{id}\"]", visible: false)
 

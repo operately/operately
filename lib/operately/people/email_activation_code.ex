@@ -10,11 +10,12 @@ defmodule Operately.People.EmailActivationCode do
   end
 
   def create(email) do
-    {:ok, code} = create_unique_code(email, attempts_left: 10)
-
-    OperatelyEmail.Emails.EmailActivationCodeEmail.send(code)
-
-    {:ok, code}
+    with(
+      {:ok, code} <- create_unique_code(email, attempts_left: 10),
+      {:ok, _} <- OperatelyEmail.Emails.EmailActivationCodeEmail.send(code)
+    ) do
+      {:ok, code}
+    end
   end
 
   defp changeset(attrs) do
@@ -36,24 +37,27 @@ defmodule Operately.People.EmailActivationCode do
     else
       code = generate_code()
       expires_at = DateTime.utc_now() |> DateTime.add(24, :hour)
-      cs = changeset(%{email: email, code: code, expires_at: expires_at})
+
+      cs = changeset(%{
+        email: email, 
+        code: code, 
+        expires_at: expires_at
+      })
 
       case Repo.insert(cs) do
-        {:ok, _} -> {:ok, code}
+        {:ok, record} -> {:ok, record}
         {:error, _} -> create_unique_code(email, attempts_left: n - 1)
       end
     end
   end
 
+  @allowed_chars "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+
   defp generate_code() do
-    :crypto.strong_rand_bytes(10)
-    |> Base.url_encode64
-    |> binary_part(0, 6)
-    |> String.upcase()
+    alpabet = String.split(@allowed_chars, "", trim: true)
+
+    Enum.map(1..6, fn _ -> Enum.random(alpabet) end) 
+    |> Enum.join()
   end
 
-  def format_code(code) do
-    <<c1::8, c2::8, c3::8, c4::8, c5::8, c6::8>> = code
-    "#{c1}#{c2}#{c3}-#{c4}#{c5}#{c6}"
-  end
 end

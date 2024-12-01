@@ -2071,6 +2071,12 @@ export interface CreateCommentResult {
   comment?: Comment | null;
 }
 
+export interface CreateEmailActivationCodeInput {
+  email?: string | null;
+}
+
+export interface CreateEmailActivationCodeResult {}
+
 export interface CreateGoalInput {
   spaceId?: string | null;
   name?: string | null;
@@ -2967,6 +2973,10 @@ export class ApiClient {
     return this.post("/create_comment", input);
   }
 
+  async createEmailActivationCode(input: CreateEmailActivationCodeInput): Promise<CreateEmailActivationCodeResult> {
+    return this.post("/create_email_activation_code", input);
+  }
+
   async createGoal(input: CreateGoalInput): Promise<CreateGoalResult> {
     return this.post("/create_goal", input);
   }
@@ -3435,6 +3445,11 @@ export async function createBlob(input: CreateBlobInput): Promise<CreateBlobResu
 }
 export async function createComment(input: CreateCommentInput): Promise<CreateCommentResult> {
   return defaultApiClient.createComment(input);
+}
+export async function createEmailActivationCode(
+  input: CreateEmailActivationCodeInput,
+): Promise<CreateEmailActivationCodeResult> {
+  return defaultApiClient.createEmailActivationCode(input);
 }
 export async function createGoal(input: CreateGoalInput): Promise<CreateGoalResult> {
   return defaultApiClient.createGoal(input);
@@ -3984,6 +3999,15 @@ export function useCreateComment(): UseMutationHookResult<CreateCommentInput, Cr
   return useMutation<CreateCommentInput, CreateCommentResult>((input) => defaultApiClient.createComment(input));
 }
 
+export function useCreateEmailActivationCode(): UseMutationHookResult<
+  CreateEmailActivationCodeInput,
+  CreateEmailActivationCodeResult
+> {
+  return useMutation<CreateEmailActivationCodeInput, CreateEmailActivationCodeResult>((input) =>
+    defaultApiClient.createEmailActivationCode(input),
+  );
+}
+
 export function useCreateGoal(): UseMutationHookResult<CreateGoalInput, CreateGoalResult> {
   return useMutation<CreateGoalInput, CreateGoalResult>((input) => defaultApiClient.createGoal(input));
 }
@@ -4528,6 +4552,8 @@ export default {
   useCreateBlob,
   createComment,
   useCreateComment,
+  createEmailActivationCode,
+  useCreateEmailActivationCode,
   createGoal,
   useCreateGoal,
   createGoalDiscussion,

@@ -1,32 +1,23 @@
 import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
+import * as Api from "@/api";
 
 import Forms from "@/components/Forms";
 import { OperatelyLogo } from "@/components/OperatelyLogo";
 
 import classNames from "classnames";
-import { logIn } from "@/routes/auth";
 import { Link } from "@/components/Link";
 
 export const loader = Pages.emptyLoader;
 
 export function Page() {
-  const [error, setError] = React.useState<string | null>(null);
-
   const form = Forms.useForm({
     fields: {
       email: "",
-      password: "",
     },
     submit: async () => {
-      const res = await logIn(form.values.email, form.values.password, {
-        redirectTo: getRedirectTo(),
-      });
-
-      if (res === "failure") {
-        setError("Invalid email or password");
-      }
+      await Api.createEmailActivationCode({ email: form.values.email });
     },
   });
 
@@ -43,8 +34,6 @@ export function Page() {
               <Forms.FieldGroup>
                 <Forms.TextInput field={"email"} label="Work Email" placeholder="Enter your email address" required />
               </Forms.FieldGroup>
-
-              {error && <div className="text-red-600 text-sm mt-2">{error}</div>}
 
               <div className="mt-6">
                 <SubmitButton onClick={form.actions.submit} />
