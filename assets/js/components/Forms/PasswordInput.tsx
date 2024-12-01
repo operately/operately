@@ -14,6 +14,7 @@ interface PasswordInputProps {
   placeholder?: string;
   minLength?: number;
   maxLength?: number;
+  noAutofill?: boolean;
 }
 
 const DEFAULT_VALIDATION_PROPS = {
@@ -41,6 +42,7 @@ export function PasswordInput(props: PasswordInputProps) {
         value={value}
         onChange={(e) => setValue(e.target.value)}
         placeholder={props.placeholder}
+        autoComplete={props.noAutofill ? "one-time-code" : ""}
       />
     </InputField>
   );
