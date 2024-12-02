@@ -11,6 +11,7 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubFolder do
     field :include_path_to_folder, :boolean
     field :include_permissions, :boolean
     field :include_children_count, :boolean
+    field :include_potential_subscribers, :boolean
   end
 
   outputs do
@@ -53,6 +54,7 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubFolder do
       include_path_to_folder: &Folder.find_path_to_folder/1,
       include_children_count: &Folder.set_children_count/1,
       include_permissions: &Folder.set_permissions/1,
+      include_potential_subscribers: &Folder.load_potential_subscribers/1,
     ])
   end
 end

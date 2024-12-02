@@ -48,7 +48,9 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHubFileTest do
           resource_hub_id: Paths.resource_hub_id(resource_hub),
           blob_id: blob.id,
           name: "My file",
-          description: RichText.rich_text("description", :as_string)
+          description: RichText.rich_text("description", :as_string),
+          send_notifications_to_everyone: true,
+          subscriber_ids: [],
         })
         assert code == @test.expected
 
@@ -84,7 +86,9 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHubFileTest do
         resource_hub_id: Paths.resource_hub_id(ctx.hub),
         blob_id: ctx.blob.id,
         name: "My file",
-        description: RichText.rich_text("description", :as_string)
+        description: RichText.rich_text("description", :as_string),
+        send_notifications_to_everyone: true,
+        subscriber_ids: [],
       })
 
       files = ResourceHubs.list_files(ctx.hub)

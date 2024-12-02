@@ -566,6 +566,7 @@ defmodule OperatelyWeb.Api.Types do
     field :name, :string
     field :description, :string
     field :nodes, list_of(:resource_hub_node)
+    field :potential_subscribers, list_of(:subscriber)
     field :permissions, :resource_hub_permissions
     field :path_to_folder, list_of(:resource_hub_folder)
     field :children_count, :integer
