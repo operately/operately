@@ -45,8 +45,8 @@ defmodule Operately.Features.ProjectResourcesTest do
     |> ProjectSteps.visit_project_page()
     |> UI.click(testid: "edit-resources-link")
     |> UI.click(testid: "add-resource-slack-channel")
-    |> UI.fill("Name", with: "#product")
-    |> UI.fill("URL", with: "https://operately.slack.com")
+    |> UI.fill(label: "Name", with: "#product")
+    |> UI.fill(label: "URL", with: "https://operately.slack.com")
     |> UI.click(testid: "save")
     |> UI.sleep(300)
 
@@ -79,8 +79,8 @@ defmodule Operately.Features.ProjectResourcesTest do
     |> ProjectSteps.visit_project_page()
     |> UI.click(testid: "edit-resources-link")
     |> UI.click(testid: "edit-resource-code-repository")
-    |> UI.fill("Name", with: "Operately Repo")
-    |> UI.fill("URL", with: "https://github.com/operately/operately")
+    |> UI.fill(label: "Name", with: "Operately Repo")
+    |> UI.fill(label: "URL", with: "https://github.com/operately/operately")
     |> UI.click(testid: "save")
     |> UI.assert_has(testid: "project-edit-resources-page")
 
