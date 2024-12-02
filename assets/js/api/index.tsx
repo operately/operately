@@ -1072,6 +1072,7 @@ export interface ResourceHubFile {
   permissions?: ResourceHubPermissions | null;
   type?: string | null;
   size?: number | null;
+  url?: string | null;
 }
 
 export interface ResourceHubFolder {
@@ -1747,6 +1748,15 @@ export interface GetResourceHubDocumentInput {
 
 export interface GetResourceHubDocumentResult {
   document?: ResourceHubDocument | null;
+}
+
+export interface GetResourceHubFileInput {
+  id?: Id | null;
+  includeAuthor?: boolean | null;
+}
+
+export interface GetResourceHubFileResult {
+  file?: ResourceHubFile | null;
 }
 
 export interface GetResourceHubFolderInput {
@@ -2838,6 +2848,10 @@ export class ApiClient {
     return this.get("/get_resource_hub_document", input);
   }
 
+  async getResourceHubFile(input: GetResourceHubFileInput): Promise<GetResourceHubFileResult> {
+    return this.get("/get_resource_hub_file", input);
+  }
+
   async getResourceHubFolder(input: GetResourceHubFolderInput): Promise<GetResourceHubFolderResult> {
     return this.get("/get_resource_hub_folder", input);
   }
@@ -3343,6 +3357,9 @@ export async function getResourceHubDocument(
 ): Promise<GetResourceHubDocumentResult> {
   return defaultApiClient.getResourceHubDocument(input);
 }
+export async function getResourceHubFile(input: GetResourceHubFileInput): Promise<GetResourceHubFileResult> {
+  return defaultApiClient.getResourceHubFile(input);
+}
 export async function getResourceHubFolder(input: GetResourceHubFolderInput): Promise<GetResourceHubFolderResult> {
   return defaultApiClient.getResourceHubFolder(input);
 }
@@ -3824,6 +3841,10 @@ export function useGetResourceHubDocument(
   input: GetResourceHubDocumentInput,
 ): UseQueryHookResult<GetResourceHubDocumentResult> {
   return useQuery<GetResourceHubDocumentResult>(() => defaultApiClient.getResourceHubDocument(input));
+}
+
+export function useGetResourceHubFile(input: GetResourceHubFileInput): UseQueryHookResult<GetResourceHubFileResult> {
+  return useQuery<GetResourceHubFileResult>(() => defaultApiClient.getResourceHubFile(input));
 }
 
 export function useGetResourceHubFolder(
@@ -4504,6 +4525,8 @@ export default {
   useGetResourceHub,
   getResourceHubDocument,
   useGetResourceHubDocument,
+  getResourceHubFile,
+  useGetResourceHubFile,
   getResourceHubFolder,
   useGetResourceHubFolder,
   getSpace,

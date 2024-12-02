@@ -21,6 +21,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ResourceHubs.File do
       permissions: OperatelyWeb.Api.Serializer.serialize(file.permissions),
       type: Ecto.assoc_loaded?(file.blob) && file.blob.content_type,
       size: Ecto.assoc_loaded?(file.blob) && file.blob.size,
+      url: Ecto.assoc_loaded?(file.blob) && Operately.Blobs.Blob.url(file.blob),
     }
   end
 end
