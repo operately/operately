@@ -15,20 +15,9 @@ defmodule Operately.People.FetchOrCreateAccountOperation do
   #
 
   defp find_existing_account(%{email: email, image: image}) do
-    account = Account.get(:system, email: email)
-
-    if account == nil do
-      {:error, "Not found"}
-    else
-      people = Operately.Repo.preload(account, :people).people
-
-      Enum.each(people, fn person ->
-        if person.avatar_url != image do
-          {:ok, _} = Operately.People.update_person(person, %{avatar_url: image})
-        end
-      end)
-
-      {:ok, account}
+    case Account.get(:system, email: email) do
+      {:ok, account} -> update_avatar(account, image)
+      {:error, _reason} -> {:error, "Not found"}
     end
   end
 
@@ -42,7 +31,7 @@ defmodule Operately.People.FetchOrCreateAccountOperation do
 
   defp first_succesfull([strategy | rest], params, on_not_found: on_not_found) do
     case strategy.(params) do
-      {:ok, result} ->    {:ok, result}
+      {:ok, result} ->     {:ok, result}
       {:error, _reason} -> first_succesfull(rest, params, on_not_found: on_not_found)
     end
   end
@@ -55,6 +44,18 @@ defmodule Operately.People.FetchOrCreateAccountOperation do
 
   defp random_password do
     :crypto.strong_rand_bytes(@rand_pass_length) |> Base.encode64()
+  end
+
+  defp update_avatar(account, image) do
+    people = Operately.Repo.preload(account, :people).people
+
+    Enum.each(people, fn person ->
+      if person.avatar_url != image do
+        {:ok, _} = Operately.People.update_person(person, %{avatar_url: image})
+      end
+    end)
+
+    {:ok, account}
   end
 
 end

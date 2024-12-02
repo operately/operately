@@ -23,11 +23,11 @@ defmodule Operately.People.Account do
     |> Repo.transaction()
   end
 
-  defp registration_changeset(attrs) do
+  def registration_changeset(attrs) do
     registration_changeset(%__MODULE__{}, attrs)
   end
 
-  defp registration_changeset(account, attrs, opts \\ []) do
+  def registration_changeset(account, attrs, opts \\ []) do
     account
     |> cast(attrs, [:email, :password, :full_name])
     |> validate_email(opts)

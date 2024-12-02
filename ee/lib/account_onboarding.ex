@@ -3,17 +3,17 @@ defmodule OperatelyEE.AccountOnboardingJob do
   alias Operately.People.Account
 
   def perform(job) do
-    IO.inspect(job)
     if Application.get_env(:operately, :send_onboarding_emails) == true do
       send_onboarding_email(job.args["account_id"])
     end
   end
 
-  defp send_onboarding_email(account_id) do
+  def send_onboarding_email(account_id) do
     with(
-      {:ok, account} = Account.get(:system, id: account_id),
+      {:ok, account} <- Account.get(:system, id: account_id),
       :ok <- add_to_contact_list(account)
     ) do
+      :ok
     end
   end
 
@@ -45,6 +45,12 @@ defmodule OperatelyEE.AccountOnboardingJob do
       ]
     }
 
-    {:ok, %{status: 200}} = Req.post!(url, headers: headers, json: body)
+    case Req.put!(url, headers: headers, json: body) do
+      {:ok, res} -> verify_response(res)
+      {:error, _} -> {:error, "Failed to add contact to SendGrid list"}
+    end
   end
+
+  defp verify_response(%{status: 202}), do: :ok
+  defp verify_response(%{status: status}), do: {:error, "Unexpected status code: #{status}"}
 end
