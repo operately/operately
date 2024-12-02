@@ -127,7 +127,7 @@ test.mix.unit: test.init
 	./devenv mix test $$(find test -name "*_test.exs" | grep -v "test/features")
 
 test.mix.features: test.init
-	./devenv mix test $$(find test -name "*_test.exs" | grep "test/features" | ./scripts/split.rb $(INDEX) $(TOTAL))
+	./scripts/test_features_with_retries.sh $(INDEX) $(TOTAL)
 
 test.npm: test.init
 	./devenv npm test
