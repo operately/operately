@@ -99,7 +99,7 @@ function Options() {
   assertPresent(document.permissions, "permissions must be present in document");
 
   return (
-    <PageOptions.Root testId="project-options-button" position="top-right">
+    <PageOptions.Root testId="document-options-button" position="top-right">
       {document.permissions.canEditDocument && (
         <PageOptions.Link
           icon={IconEdit}

@@ -9,6 +9,7 @@ import { Menu, MenuLinkItem, MenuActionItem } from "@/components/Menu";
 import { richContentToString } from "@/components/RichContent";
 import { truncateString } from "@/utils/strings";
 import { assertPresent } from "@/utils/assertions";
+import { createTestId } from "@/utils/testid";
 
 type NodeType = "document" | "folder" | "file";
 
@@ -23,6 +24,7 @@ interface NodesListProps extends Props {
 
 interface NodeItemProps extends Props {
   node: Hub.ResourceHubNode;
+  testid: string;
 }
 
 interface DocumentMenuProps extends Props {
@@ -32,14 +34,20 @@ interface DocumentMenuProps extends Props {
 export function NodesList({ nodes, permissions, refetch }: NodesListProps) {
   return (
     <div className="mt-12">
-      {nodes.map((node) => (
-        <NodeItem node={node} permissions={permissions} refetch={refetch} key={node.id} />
+      {nodes.map((node, idx) => (
+        <NodeItem
+          node={node}
+          permissions={permissions}
+          refetch={refetch}
+          testid={createTestId("node", idx.toString())}
+          key={node.id}
+        />
       ))}
     </div>
   );
 }
 
-function NodeItem({ node, permissions, refetch }: NodeItemProps) {
+function NodeItem({ node, permissions, refetch, testid }: NodeItemProps) {
   const className = classNames(
     "grid grid-cols-[1fr,20px]",
     "border-b border-stroke-base first:border-t last:border-b-0",
@@ -49,7 +57,7 @@ function NodeItem({ node, permissions, refetch }: NodeItemProps) {
   const subtitle = findSubtitle(node.type as NodeType, node);
 
   return (
-    <div className={className}>
+    <div className={className} data-test-id={testid}>
       <DivLink to={path} className="flex gap-4 py-4 cursor-pointer">
         <Icon size={48} />
         <div>
@@ -71,11 +79,18 @@ function DocumentMenu({ document, permissions, refetch }: DocumentMenuProps) {
   const editPath = Paths.resourceHubEditDocumentPath(document.id!);
   const relevantPermissions = [permissions.canEditDocument, permissions.canDeleteDocument];
 
+  const menuId = createTestId("document-menu", document.id!);
+  const editId = createTestId("edit", document.id!);
+
   if (!relevantPermissions.some(Boolean)) return <></>;
 
   return (
-    <Menu size="medium">
-      {permissions.canEditDocument && <MenuLinkItem to={editPath}>Edit document</MenuLinkItem>}
+    <Menu size="medium" testId={menuId}>
+      {permissions.canEditDocument && (
+        <MenuLinkItem to={editPath} testId={editId}>
+          Edit document
+        </MenuLinkItem>
+      )}
 
       {permissions.canDeleteDocument && <DeleteDocumentMenuItem document={document} refetch={refetch} />}
     </Menu>
@@ -88,9 +103,10 @@ function DeleteDocumentMenuItem({ document, refetch }: { document: Hub.ResourceH
     await remove({ documentId: document.id });
     refetch();
   };
+  const deleteId = createTestId("delete", document.id!);
 
   return (
-    <MenuActionItem onClick={handleDelete} danger>
+    <MenuActionItem onClick={handleDelete} testId={deleteId} danger>
       Delete document
     </MenuActionItem>
   );

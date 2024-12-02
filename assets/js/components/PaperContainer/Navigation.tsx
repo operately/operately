@@ -4,7 +4,7 @@ import * as Icons from "@tabler/icons-react";
 import { Link } from "@/components/Link";
 import classNames from "classnames";
 
-export function Navigation({ children }) {
+export function Navigation({ children, testId }: { children: React.ReactNode; testId?: string }) {
   const className = classNames(
     "bg-surface-dimmed",
     "flex items-center flex-wrap",
@@ -14,7 +14,11 @@ export function Navigation({ children }) {
     "border-b sm:border-b-0 sm:border-t sm:border-x border-surface-outline",
   );
 
-  return <div className={className}>{children}</div>;
+  return (
+    <div className={className} data-test-id={testId}>
+      {children}
+    </div>
+  );
 }
 
 interface NavItemProps {

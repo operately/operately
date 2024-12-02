@@ -49,7 +49,7 @@ function PageNavigation() {
   assertPresent(folder.pathToFolder, "pathToFolder must be present in folder");
 
   return (
-    <Paper.Navigation>
+    <Paper.Navigation testId="navigation">
       <Paper.NavItem linkTo={Paths.resourceHubPath(folder.resourceHub.id!)}>{folder.resourceHub.name}</Paper.NavItem>
       {folder.pathToFolder.map((folder) => (
         <React.Fragment key={folder.id}>
