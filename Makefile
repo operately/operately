@@ -105,7 +105,7 @@ test.build:
 test: test.init
 	@if [[ "$(FILE)" == assets/js* ]]; then \
 		$(MAKE) test.npm FILE=$(FILE); \
-	elif [[ "$(FILE)" == test/* ]]; then \
+	elif [[ "$(FILE)" == test/* ]] || [[ "$(FILE)" == ee/test/* ]]; then \
 		./devenv mix test $(FILE); \
 	else \
 		$(MAKE) test.all; \
@@ -122,6 +122,9 @@ test.all: test.init
 
 test.mix: test.init
 	./devenv mix test $(FILE)
+
+test.ee:
+	./devenv mix test ee/test/**/*_test.exs
 
 test.mix.unit: test.init
 	./devenv mix test $$(find test -name "*_test.exs" | grep -v "test/features")

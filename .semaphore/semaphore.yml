@@ -36,6 +36,7 @@ blocks:
         - name: Unit Tests
           commands:
             - make test.mix.unit
+            - make test.ee
             - make test.npm
 
         - name: Features
