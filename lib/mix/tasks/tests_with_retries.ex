@@ -4,7 +4,7 @@ defmodule Mix.Tasks.TestsWithRetries do
   def run(args) do
     case System.cmd("mix", ["test"] ++ args, into: IO.stream(:stdio, :line)) do
       {output, 0} ->
-        IO.inspect(output)
+        output
 
       {output, _} ->
         IO.inspect(output)
@@ -16,7 +16,7 @@ defmodule Mix.Tasks.TestsWithRetries do
   def retry(args, count) when count <= @limit do
     case System.cmd("mix", ["test", "--failed"] ++ args, into: IO.stream(:stdio, :line)) do
       {output, 0} ->
-        IO.inspect(output)
+        output
 
       {output, _} ->
         IO.inspect(output)
