@@ -30,5 +30,5 @@ export function Container({ children, path, testId }: ContainerProps) {
 }
 
 export function ZeroResourcesContainer({ children }) {
-  return <div className="text-center text-base font-semibold py-4 px-2">{children}</div>;
+  return <div className="text-center text-sm py-4 px-2">{children}</div>;
 }
