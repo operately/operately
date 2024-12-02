@@ -523,6 +523,12 @@ export interface ActivityContentResourceHubDocumentEdited {
   document?: ResourceHubDocument | null;
 }
 
+export interface ActivityContentResourceHubFileCreated {
+  fileId?: string | null;
+  fileName?: string | null;
+  resourceHub?: ResourceHub | null;
+}
+
 export interface ActivityContentResourceHubFolderCreated {
   resourceHub?: ResourceHub | null;
   folder?: ResourceHubFolder | null;
