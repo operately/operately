@@ -5,6 +5,7 @@ defmodule Operately.ResourceHubs.Folder do
   schema "resource_folders" do
     belongs_to :node, Operately.ResourceHubs.Node, foreign_key: :node_id
 
+    has_one :space, through: [:node, :resource_hub, :space]
     has_one :access_context, through: [:node, :resource_hub, :access_context]
     has_many :child_nodes, Operately.ResourceHubs.Node, foreign_key: :parent_folder_id
 
@@ -12,6 +13,7 @@ defmodule Operately.ResourceHubs.Folder do
     field :permissions, :any, virtual: true
     field :path_to_folder, :any, virtual: true
     field :children_count, :integer, virtual: true
+    field :potential_subscribers, :any, virtual: true
 
     timestamps()
     request_info()
@@ -87,6 +89,13 @@ defmodule Operately.ResourceHubs.Folder do
       end)
 
     Map.put(folder, :path_to_folder, path)
+  end
+
+  def load_potential_subscribers(folder = %__MODULE__{}) do
+    folder = Repo.preload(folder, space: :members)
+
+    subscribers = Operately.Notifications.Subscriber.from_space_members(folder.space.members)
+    Map.put(folder, :potential_subscribers, subscribers)
   end
 
   def set_children_count(folder = %__MODULE__{}) do
