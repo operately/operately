@@ -462,8 +462,8 @@ defmodule Operately.Support.Features.ProjectSteps do
     ctx
     |> UI.click(testid: "add-resources-link")
     |> UI.click(testid: "add-resource-github-repository")
-    |> UI.fill("Name", with: "Code Repository")
-    |> UI.fill("URL", with: "https://github.com/operately/operately")
+    |> UI.fill(label: "Name", with: "Code Repository")
+    |> UI.fill(label: "URL", with: "https://github.com/operately/operately")
     |> UI.click(testid: "save")
   end
 
