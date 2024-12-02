@@ -425,6 +425,12 @@ defmodule OperatelyWeb.Api.Types do
     field :folder, :resource_hub_folder
   end
 
+  object :activity_content_resource_hub_file_created do
+    field :file_id, :string
+    field :file_name, :string
+    field :resource_hub, :resource_hub
+  end
+
   object :activity_content_resource_hub_document_created do
     field :resource_hub, :resource_hub
     field :document, :resource_hub_document

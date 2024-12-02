@@ -109,6 +109,7 @@ export const DISPLAYED_IN_FEED = [
   "resource_hub_document_edited",
   "resource_hub_document_commented",
   "resource_hub_document_deleted",
+  "resource_hub_file_created",
   "resource_hub_folder_created",
   "space_added",
   "space_joining",
@@ -170,6 +171,7 @@ import ResourceHubDocumentCreated from "@/features/activities/ResourceHubDocumen
 import ResourceHubDocumentEdited from "@/features/activities/ResourceHubDocumentEdited";
 import ResourceHubDocumentCommented from "@/features/activities/ResourceHubDocumentCommented";
 import ResourceHubDocumentDeleted from "@/features/activities/ResourceHubDocumentDeleted";
+import ResourceHubFileCreated from "@/features/activities/ResourceHubFileCreated";
 import ResourceHubFolderCreated from "@/features/activities/ResourceHubFolderCreated";
 import SpaceAdded from "@/features/activities/SpaceAdded";
 import SpaceJoining from "@/features/activities/SpaceJoining";
@@ -227,6 +229,7 @@ function handler(activity: Activity) {
     .with("resource_hub_document_edited", () => ResourceHubDocumentEdited)
     .with("resource_hub_document_commented", () => ResourceHubDocumentCommented)
     .with("resource_hub_document_deleted", () => ResourceHubDocumentDeleted)
+    .with("resource_hub_file_created", () => ResourceHubFileCreated)
     .with("resource_hub_folder_created", () => ResourceHubFolderCreated)
     .with("space_added", () => SpaceAdded)
     .with("space_joining", () => SpaceJoining)
