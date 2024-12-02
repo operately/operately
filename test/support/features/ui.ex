@@ -148,32 +148,33 @@ defmodule Operately.Support.Features.UI do
     end)
   end
 
-  def fill_in(state, query, with: value) do
-    execute(state, fn session ->
-      session |> Browser.fill_in(query, with: value)
+  def fill(ctx, query, with: value) do
+    #
+    # Why do we need to sleep here?
+    #
+    # The reason is that the input field is cleared before the React component
+    # has a chance to update the value. This is a common problem with React
+    # components that use controlled inputs. The sleep gives the component
+    # time to update the value before we clear it.
+    #
+    # 50ms seems to be a good value for this. It's enough time for the component
+    # to update the value, but not too long to slow down the tests. We've tried
+    # 10ms, but that was too short.
+    #
+    execute(ctx, fn session ->
+      session 
+      |> sleep(50)
+      |> Browser.clear(query)
+      |> Browser.fill_in(query, with: value)
     end)
   end
 
-  def fill(state, label, with: value) when is_binary(label) do
-    execute(state, fn session ->
-      session |> Browser.fill_in(Query.text_field(label), with: value)
-    end)
+  def fill(ctx, placeholder: placeholder, with: value) do
+    fill(ctx, Query.css("[placeholder=\"#{placeholder}\"]"), with: value)
   end
 
-  def fill(state, placeholder: placeholder, with: value) do
-    query = Query.css("[placeholder=\"#{placeholder}\"]")
-
-    execute(state, fn session ->
-      session |> Browser.clear(query) |> Browser.fill_in(query, with: value)
-    end)
-  end
-
-  def fill(state, testid: id, with: value) do
-    q = query(testid: id)
-
-    execute(state, fn session ->
-      session |> Browser.clear(q) |> Browser.fill_in(q, with: value)
-    end)
+  def fill(ctx, testid: id, with: value) do
+    fill(ctx, query(testid: id), with: value)
   end
 
   def fill_rich_text(state, message) when is_binary(message) do

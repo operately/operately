@@ -65,7 +65,7 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
   step :add_company_admin, ctx do
     ctx
     |> UI.click(testid: "add-admins")
-    |> UI.fill_in(Query.css("#people-search"), with: String.slice(ctx.member.full_name, 0, 4))
+    |> UI.fill(Query.css("#people-search"), with: String.slice(ctx.member.full_name, 0, 4))
     |> UI.assert_text(ctx.member.full_name)
     |> UI.send_keys([:enter])
     |> UI.click(testid: "save-admins")
@@ -263,7 +263,7 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
   step :add_company_owner, ctx do
     ctx
     |> UI.click(testid: "add-owners")
-    |> UI.fill_in(Query.css("#people-search"), with: String.slice(ctx.member.full_name, 0, 4))
+    |> UI.fill(Query.css("#people-search"), with: String.slice(ctx.member.full_name, 0, 4))
     |> UI.assert_text(ctx.member.full_name)
     |> UI.send_keys([:enter])
     |> UI.click(testid: "save-owners")
