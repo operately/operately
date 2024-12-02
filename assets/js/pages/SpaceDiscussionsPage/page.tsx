@@ -81,7 +81,7 @@ function ContinueEditingDrafts() {
 
 function ZeroDiscussions() {
   return (
-    <div className="text-center text-base font-semibold mt-28">
+    <div className="text-center text-base text-content-dimmed mt-28">
       Post announcements, pitch ideas, and start discussions.
     </div>
   );
