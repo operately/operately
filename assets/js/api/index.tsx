@@ -1087,6 +1087,7 @@ export interface ResourceHubFolder {
   name?: string | null;
   description?: string | null;
   nodes?: ResourceHubNode[] | null;
+  potentialSubscribers?: Subscriber[] | null;
   permissions?: ResourceHubPermissions | null;
   pathToFolder?: ResourceHubFolder[] | null;
   childrenCount?: number | null;
@@ -1772,6 +1773,7 @@ export interface GetResourceHubFolderInput {
   includePathToFolder?: boolean | null;
   includePermissions?: boolean | null;
   includeChildrenCount?: boolean | null;
+  includePotentialSubscribers?: boolean | null;
 }
 
 export interface GetResourceHubFolderResult {
@@ -2179,6 +2181,8 @@ export interface CreateResourceHubFileInput {
   blobId?: string | null;
   name?: string | null;
   description?: string | null;
+  sendNotificationsToEveryone?: boolean | null;
+  subscriberIds?: Id[] | null;
 }
 
 export interface CreateResourceHubFileResult {

@@ -10,6 +10,7 @@ defmodule Operately.Notifications.SubscriptionList do
       :goal_update,
       :message,
       :resource_hub_document,
+      :resource_hub_file,
     ]
     field :send_to_everyone, :boolean, default: false
 

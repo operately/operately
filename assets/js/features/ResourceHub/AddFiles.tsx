@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 
 import { uploadFile } from "@/models/blobs";
-import { useCreateResourceHubFile } from "@/models/resourceHubs";
+import { ResourceHub, ResourceHubFolder, useCreateResourceHubFile } from "@/models/resourceHubs";
 
 import Forms from "@/components/Forms";
 import Modal from "@/components/Modal";
+import { Options, SubscribersSelector, useSubscriptions } from "@/features/Subscriptions";
+import { assertPresent } from "@/utils/assertions";
+import { Spacer } from "@/components/Spacer";
 
 interface UseFormProps {
   file: any;
@@ -13,20 +16,20 @@ interface UseFormProps {
 }
 
 interface FormProps extends UseFormProps {
-  resourceHubId: string;
-  folderId?: string;
+  resourceHub: ResourceHub;
+  folder?: ResourceHubFolder;
   refresh: () => void;
 }
 
-export function AddFileModal({
-  file,
-  resourceHubId,
-  folderId,
-  hideAddFilePopUp,
-  showAddFilePopUp,
-  refresh,
-}: FormProps) {
+export function AddFileModal({ file, resourceHub, folder, hideAddFilePopUp, showAddFilePopUp, refresh }: FormProps) {
+  const potentialSubscribers = folder?.potentialSubscribers || resourceHub.potentialSubscribers;
+
+  assertPresent(potentialSubscribers, "potentialSubscribers must be present in folder or resourceHub");
+
   const [post] = useCreateResourceHubFile();
+  const subscriptionsState = useSubscriptions(potentialSubscribers, {
+    ignoreMe: true,
+  });
 
   const form = Forms.useForm({
     fields: {
@@ -45,8 +48,10 @@ export function AddFileModal({
         name: form.values.name,
         description: JSON.stringify(form.values.description),
         blobId: blob.id,
-        resourceHubId: resourceHubId,
-        folderId: folderId,
+        resourceHubId: resourceHub.id,
+        folderId: folder?.id,
+        sendNotificationsToEveryone: subscriptionsState.subscriptionType == Options.ALL,
+        subscriberIds: subscriptionsState.currentSubscribersList,
       });
       refresh();
       hideAddFilePopUp();
@@ -57,19 +62,24 @@ export function AddFileModal({
   return (
     <Modal title="Upload file" isOpen={Boolean(file)} hideModal={hideAddFilePopUp}>
       <Forms.Form form={form}>
-        <Forms.FieldGroup>
-          <Forms.TextInput label="Name" field="name" />
-          <Forms.RichTextArea
-            label="Description"
-            field="description"
-            mentionSearchScope={{ type: "none" }}
-            placeholder="Description..."
-          />
-          <div>
-            <div>File: {file?.name}</div>
-            <div>Size: {findFileSize(file?.size)}</div>
-          </div>
-        </Forms.FieldGroup>
+        <div className="max-h-[70vh] overflow-y-scroll">
+          <Forms.FieldGroup>
+            <Forms.TextInput label="Name" field="name" />
+            <Forms.RichTextArea
+              label="Description"
+              field="description"
+              mentionSearchScope={{ type: "none" }}
+              placeholder="Description..."
+            />
+            <div>
+              <div>File: {file?.name}</div>
+              <div>Size: {findFileSize(file?.size)}</div>
+            </div>
+          </Forms.FieldGroup>
+
+          <Spacer size={4} />
+          <SubscribersSelector state={subscriptionsState} resourceHubName={resourceHub.name!} />
+        </div>
 
         <Forms.Submit cancelText="Change file" />
       </Forms.Form>

@@ -11,6 +11,8 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHubFile do
     field :blob_id, :string
     field :name, :string
     field :description, :string
+    field :send_notifications_to_everyone, :boolean
+    field :subscriber_ids, list_of(:id)
   end
 
   outputs do
@@ -41,6 +43,12 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHubFile do
 
   defp parse_inputs(inputs) do
     description = Jason.decode!(inputs.description)
-    {:ok, Map.put(inputs, :description, description)}
+
+    {:ok, Map.merge(inputs, %{
+      content: description,
+      send_to_everyone: inputs[:send_notifications_to_everyone] || false,
+      subscription_parent_type: :resource_hub_file,
+      subscriber_ids: inputs[:subscriber_ids] || []
+    })}
   end
 end

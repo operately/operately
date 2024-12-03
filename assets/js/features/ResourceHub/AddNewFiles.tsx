@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { ResourceHub } from "@/models/resourceHubs";
+import { ResourceHub, ResourceHubFolder } from "@/models/resourceHubs";
 import { IconFile, IconFolder } from "@tabler/icons-react";
 import { OptionsButton } from "@/components/Buttons";
 import { Paths } from "@/routes/paths";
@@ -11,16 +11,17 @@ import { AddFileModal, useAddFile } from "./AddFiles";
 interface Props {
   resourceHub: ResourceHub;
   refresh: () => void;
-  folderId?: string;
+  folder?: ResourceHubFolder;
 }
 
-export function AddFilesButtonAndForms({ resourceHub, refresh, folderId }: Props) {
+export function AddFilesButtonAndForms({ resourceHub, refresh, folder }: Props) {
   const navigate = useNavigate();
   const [showAddFolder, setShowAddFolder] = useState(false);
   const fileProps = useAddFile();
 
   const toggleShowAddFolder = () => setShowAddFolder(!showAddFolder);
-  const navigateToNewDocument = () => navigate(Paths.resourceHubNewDocumentPath(resourceHub.id!, folderId));
+  const navigateToNewDocument = () =>
+    navigate(Paths.resourceHubNewDocumentPath(resourceHub.id!, folder?.id || undefined));
 
   return (
     <>
@@ -40,10 +41,10 @@ export function AddFilesButtonAndForms({ resourceHub, refresh, folderId }: Props
         showForm={showAddFolder}
         toggleForm={toggleShowAddFolder}
         refresh={refresh}
-        folderId={folderId}
+        folderId={folder?.id || undefined}
       />
 
-      <AddFileModal resourceHubId={resourceHub.id!} folderId={folderId} refresh={refresh} {...fileProps} />
+      <AddFileModal resourceHub={resourceHub} folder={folder} refresh={refresh} {...fileProps} />
     </>
   );
 }

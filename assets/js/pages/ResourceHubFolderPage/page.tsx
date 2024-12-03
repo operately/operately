@@ -24,9 +24,7 @@ export function Page() {
 
         <Paper.Body minHeight="75vh">
           <Paper.Header
-            actions={
-              <AddFilesButtonAndForms resourceHub={folder.resourceHub} refresh={refresh} folderId={folder.id!} />
-            }
+            actions={<AddFilesButtonAndForms resourceHub={folder.resourceHub} refresh={refresh} folder={folder} />}
             title={folder.name!}
             layout="title-center-actions-left"
           />
