@@ -21,4 +21,22 @@ defmodule Operately.ResourceHubs.Notifications do
 
     SubscribersLoader.load_for_notifications(document, document.resource_hub.space.members, ignore)
   end
+
+  def get_file_subscribers(file_id, opts \\ []) do
+    ignore = Keyword.get(opts, :ignore, [])
+    with_deleted = Keyword.get(opts, :with_deleted, false)
+
+    file =
+      from(file in Operately.ResourceHubs.File,
+        join: c in assoc(file, :access_context), as: :context,
+        join: h in assoc(file, :resource_hub),
+        join: s in assoc(h, :space),
+        join: m in assoc(s, :members),
+        preload: [resource_hub: {h, space: {s, members: m}}, access_context: c],
+        where: file.id == ^file_id
+      )
+      |> Repo.one(with_deleted: with_deleted)
+
+    SubscribersLoader.load_for_notifications(file, file.resource_hub.space.members, ignore)
+  end
 end
