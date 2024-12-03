@@ -208,6 +208,10 @@ export class Paths {
     return createCompanyPath(["folders", folderId]);
   }
 
+  static resourceHubFilePath(fileId: string) {
+    return createCompanyPath(["files", fileId]);
+  }
+
   static resourceHubDocumentPath(documentId: string) {
     return createCompanyPath(["documents", documentId]);
   }
