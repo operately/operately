@@ -2,22 +2,37 @@ import * as React from "react";
 import * as Icons from "@tabler/icons-react";
 import classNames from "classnames";
 
+export interface PasswordValidation {
+  isValid: boolean;
+  hasMinLength: boolean;
+  hasUpperCase: boolean;
+  hasLowerCase: boolean;
+  hasNumber: boolean;
+}
+
+export function validatePassword(password: string): PasswordValidation {
+  return {
+    hasMinLength: password.length >= 12,
+    hasUpperCase: /[A-Z]/.test(password),
+    hasLowerCase: /[a-z]/.test(password),
+    hasNumber: /[0-9]/.test(password),
+    isValid: password.length >= 12 && /[A-Z]/.test(password) && /[a-z]/.test(password) && /[0-9]/.test(password),
+  };
+}
+
 export function PasswordStrength({ password }) {
   if (password.length === 0) return null;
 
-  const atLeast12Characters = password.length >= 12;
-  const atLeast1Uppercase = /[A-Z]/.test(password);
-  const atLeast1Number = /[0-9]/.test(password);
-  const atLeast1Lowercase = /[a-z]/.test(password);
+  const validation = validatePassword(password);
 
-  if (atLeast12Characters && atLeast1Uppercase && atLeast1Number && atLeast1Lowercase) return null;
+  if (validation.isValid) return null;
 
   return (
     <div className="text-sm font-medium flex flex-col gap-1">
-      <CheckMark title="At least 12 characters" ok={atLeast12Characters} />
-      <CheckMark title="At least 1 uppercase letter" ok={atLeast1Uppercase} />
-      <CheckMark title="At least 1 number" ok={atLeast1Number} />
-      <CheckMark title="At least 1 lowercase" ok={atLeast1Lowercase} />
+      <CheckMark title="At least 12 characters" ok={validation.hasMinLength} />
+      <CheckMark title="At least 1 uppercase letter" ok={validation.hasUpperCase} />
+      <CheckMark title="At least 1 number" ok={validation.hasNumber} />
+      <CheckMark title="At least 1 lowercase" ok={validation.hasLowerCase} />
     </div>
   );
 }

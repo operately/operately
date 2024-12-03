@@ -8,7 +8,7 @@ import classNames from "classnames";
 
 import { OperatelyLogo } from "@/components/OperatelyLogo";
 import { TosAndPrivacyPolicy } from "@/features/SignUp/AgreeToTosAndPp";
-import { PasswordStrength } from "@/features/SignUp/PasswordStrength";
+import { PasswordStrength, validatePassword } from "@/features/SignUp/PasswordStrength";
 
 import { match } from "ts-pattern";
 import { useFieldValue } from "@/components/Forms/FormContext";
@@ -70,17 +70,7 @@ export function Page() {
 }
 
 function Form({ form }) {
-  const emailOk = form.values.email.trim() !== "" && form.values.email.match(/.+@.+\..+/);
-  const nameOk = form.values.name.split(" ").map((s: string) => s!.trim()).length >= 2;
-
-  const passwordOk =
-    form.values.password.length >= 12 &&
-    /[A-Z]/.test(form.values.password) &&
-    /[0-9]/.test(form.values.password) &&
-    /[a-z]/.test(form.values.password);
-
-  const confirmPasswordOk = passwordOk && form.values.password === form.values.confirmPassword;
-  const submitDisabled = !emailOk || !nameOk || !passwordOk || !confirmPasswordOk;
+  const validation = validateForm(form);
 
   return (
     <Pages.Page title={["Sign Up"]} testId="sign-up-page">
@@ -98,7 +88,7 @@ function Form({ form }) {
                   label="Work Email"
                   placeholder="name@company.com"
                   required
-                  okSign={emailOk}
+                  okSign={validation.email}
                 />
 
                 <Forms.TextInput
@@ -106,7 +96,7 @@ function Form({ form }) {
                   label="Full Name"
                   placeholder="Enter your full name"
                   required
-                  okSign={nameOk}
+                  okSign={validation.name}
                 />
 
                 <Forms.PasswordInput
@@ -116,7 +106,7 @@ function Form({ form }) {
                   placeholder="At least 12 characters"
                   required
                   noAutofill
-                  okSign={passwordOk}
+                  okSign={validation.password}
                 />
 
                 <PasswordStrength password={form.values.password} />
@@ -128,12 +118,12 @@ function Form({ form }) {
                   placeholder="At least 12 characters"
                   required
                   noAutofill
-                  okSign={confirmPasswordOk}
+                  okSign={validation.confirmPassword}
                 />
               </Forms.FieldGroup>
 
               <div className="my-6">
-                <SubmitButton onClick={form.actions.submit} disabled={submitDisabled} />
+                <SubmitButton onClick={form.actions.submit} disabled={!validation.isValid} />
               </div>
 
               <TosAndPrivacyPolicy />
@@ -233,4 +223,23 @@ function VerifyButton({ onClick }: { onClick: () => void }) {
       Continue -&gt;
     </button>
   );
+}
+
+interface FormValidation {
+  email: boolean;
+  name: boolean;
+  password: boolean;
+  confirmPassword: boolean;
+  isValid: boolean;
+}
+
+function validateForm(form: any): FormValidation {
+  const email = form.values.email.trim() !== "" && form.values.email.match(/.+@.+\..+/);
+  const name = form.values.name.trim() !== "";
+  const password = validatePassword(form.values.password).isValid;
+  const confirmPassword = password && form.values.password === form.values.confirmPassword;
+
+  const isValid = email && name && password && confirmPassword;
+
+  return { email, name, password, confirmPassword, isValid };
 }
