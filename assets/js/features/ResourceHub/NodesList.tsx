@@ -133,7 +133,7 @@ function findPath(nodeType: NodeType, node: Hub.ResourceHubNode) {
     case "folder":
       return Paths.resourceHubFolderPath(node.folder!.id!);
     case "file":
-      return "";
+      return Paths.resourceHubFilePath(node.file!.id!);
   }
 }
 
