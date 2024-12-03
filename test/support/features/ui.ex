@@ -182,18 +182,24 @@ defmodule Operately.Support.Features.UI do
   end
 
   def fill_rich_text(state, message) when is_binary(message) do
+    query = Query.css(".ProseMirror[contenteditable=true]")
+
     execute(state, fn session ->
       session
-      |> Browser.find(Query.css(".ProseMirror[contenteditable=true]"), fn element ->
+      |> Browser.clear(query)
+      |> Browser.find(query, fn element ->
         element |> Browser.send_keys(message)
       end)
     end)
   end
 
   def fill_rich_text(state, testid: id, with: message) when is_binary(message) do
+    query = Query.css("[data-test-id=\"#{id}\"] .ProseMirror[contenteditable=true]")
+
     execute(state, fn session ->
       session
-      |> Browser.find(Query.css("[data-test-id=\"#{id}\"] .ProseMirror[contenteditable=true]"), fn element ->
+      |> Browser.clear(query)
+      |> Browser.find(query, fn element ->
         element |> Browser.send_keys(message)
       end)
     end)
