@@ -64,11 +64,13 @@ defmodule Operately.ResourceHubsFixtures do
     })
 
     blob = Operately.BlobsFixtures.blob_fixture(%{author_id: author.id, company_id: author.company_id})
+    {:ok, subscription_list} = Operately.Notifications.create_subscription_list()
 
     {:ok, file} = Operately.ResourceHubs.create_file(%{
       node_id: node.id,
       author_id: author.id,
       blob_id: blob.id,
+      subscription_list_id: subscription_list.id,
       description: Keyword.get(attrs, :description, RichText.rich_text("Content")) ,
     })
 
