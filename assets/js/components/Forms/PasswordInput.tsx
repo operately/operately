@@ -1,4 +1,5 @@
 import * as React from "react";
+import * as Icons from "@tabler/icons-react";
 
 import classNames from "classnames";
 import { InputField } from "./FieldGroup";
@@ -15,6 +16,7 @@ interface PasswordInputProps {
   minLength?: number;
   maxLength?: number;
   noAutofill?: boolean;
+  okSign?: boolean;
 }
 
 const DEFAULT_VALIDATION_PROPS = {
@@ -34,16 +36,24 @@ export function PasswordInput(props: PasswordInputProps) {
 
   return (
     <InputField field={field} label={label} error={error}>
-      <input
-        name={field}
-        type="password"
-        data-test-id={field}
-        className={styles(!!error)}
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        placeholder={props.placeholder}
-        autoComplete={props.noAutofill ? "one-time-code" : ""}
-      />
+      <div className="relative">
+        <input
+          name={field}
+          type="password"
+          data-test-id={field}
+          className={styles(!!error)}
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          placeholder={props.placeholder}
+          autoComplete={props.noAutofill ? "one-time-code" : ""}
+        />
+
+        {!error && props.okSign && (
+          <div className="absolute inset-y-0 right-0 flex items-center pr-4 text-accent-1">
+            <Icons.IconCheck size={20} />
+          </div>
+        )}
+      </div>
     </InputField>
   );
 }

@@ -16,8 +16,8 @@ defmodule Operately.Support.Features.SignupSteps do
     ctx
     |> UI.fill(testid: "email", with: @email)
     |> UI.fill(testid: "name", with: "Michael")
-    |> UI.fill(testid: "password", with: "123456789ABCDER")
-    |> UI.fill(testid: "confirmPassword", with: "123456789ABCDER")
+    |> UI.fill(testid: "password", with: "123456789ABCder")
+    |> UI.fill(testid: "confirmPassword", with: "123456789ABCder")
     |> UI.click(testid: "submit")
   end
 
