@@ -7,9 +7,9 @@ defmodule Operately.Features.SignupTest do
   feature "signup with valid email", ctx do
     ctx
     |> Steps.visit_signup_page()
-    |> Steps.enter_email()
-    |> Steps.click_continue_button()
+    |> Steps.choose_signup_with_email()
+    |> Steps.fill_in_details()
     |> Steps.fill_in_activation_code_from_email()
-    |> Steps.enter_name_and_password()
+    |> Steps.assert_signup_successful()
   end
 end
