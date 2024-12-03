@@ -80,6 +80,7 @@ function Form({ form }) {
     /[a-z]/.test(form.values.password);
 
   const confirmPasswordOk = passwordOk && form.values.password === form.values.confirmPassword;
+  const submitDisabled = !emailOk || !nameOk || !passwordOk || !confirmPasswordOk;
 
   return (
     <Pages.Page title={["Sign Up"]} testId="sign-up-page">
@@ -132,7 +133,7 @@ function Form({ form }) {
               </Forms.FieldGroup>
 
               <div className="my-6">
-                <SubmitButton onClick={form.actions.submit} />
+                <SubmitButton onClick={form.actions.submit} disabled={submitDisabled} />
               </div>
 
               <TosAndPrivacyPolicy />
@@ -153,17 +154,20 @@ function WhatHappensNext() {
   );
 }
 
-function SubmitButton({ onClick }: { onClick: () => void }) {
+function SubmitButton({ onClick, disabled }) {
   const className = classNames(
     "w-full flex justify-center py-2 px-4",
     "border border-transparent",
     "rounded-md shadow-sm font-medium text-white-1",
     "bg-blue-600 hover:bg-blue-700",
+    {
+      "bg-blue-400 cursor-not-allowed": disabled,
+    },
   );
 
   return (
-    <button className={className} onClick={onClick} type="submit" data-test-id="submit">
-      Continue -&gt;
+    <button className={className} onClick={onClick} type="submit" data-test-id="submit" disabled={disabled}>
+      {disabled ? "Please fill in all fields" : "Continue ->"}
     </button>
   );
 }
