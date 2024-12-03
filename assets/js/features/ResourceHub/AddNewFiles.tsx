@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { ResourceHub, ResourceHubFolder } from "@/models/resourceHubs";
-import { IconFile, IconFolder } from "@tabler/icons-react";
+import { IconFile, IconFolder, IconUpload } from "@tabler/icons-react";
 import { OptionsButton } from "@/components/Buttons";
 import { Paths } from "@/routes/paths";
 import { AddFolderModal } from "./AddFolderModal";
@@ -31,6 +31,7 @@ export function AddFilesButtonAndForms({ resourceHub, refresh, folder }: Props) 
           options={[
             { icon: IconFile, label: "Write a new document", action: navigateToNewDocument, testId: "new-document" },
             { icon: IconFolder, label: "Create a new folder", action: toggleShowAddFolder, testId: "new-folder" },
+            { icon: IconUpload, label: "Upload files", action: fileProps.showAddFilePopUp, testId: "upload-files" },
           ]}
           testId="add-options"
         />

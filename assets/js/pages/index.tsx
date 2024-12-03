@@ -80,6 +80,7 @@ import * as ProjectsPage from "./ProjectsPage";
 import * as RadarPage from "./RadarPage";
 import * as ResourceHubDocumentPage from "./ResourceHubDocumentPage";
 import * as ResourceHubEditDocumentPage from "./ResourceHubEditDocumentPage";
+import * as ResourceHubFilePage from "./ResourceHubFilePage";
 import * as ResourceHubFolderPage from "./ResourceHubFolderPage";
 import * as ResourceHubNewDocumentPage from "./ResourceHubNewDocumentPage";
 import * as ResourceHubPage from "./ResourceHubPage";
@@ -487,6 +488,11 @@ export default {
     name: "ResourceHubEditDocumentPage",
     loader: ResourceHubEditDocumentPage.loader,
     Page: ResourceHubEditDocumentPage.Page,
+  },
+  ResourceHubFilePage: {
+    name: "ResourceHubFilePage",
+    loader: ResourceHubFilePage.loader,
+    Page: ResourceHubFilePage.Page,
   },
   ResourceHubFolderPage: {
     name: "ResourceHubFolderPage",

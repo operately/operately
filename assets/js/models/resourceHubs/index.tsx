@@ -4,10 +4,12 @@ export type {
   ResourceHubDocument,
   ResourceHubPermissions,
   ResourceHubFolder,
+  ResourceHubFile,
 } from "@/api";
 export {
   getResourceHub,
   getResourceHubDocument,
+  getResourceHubFile,
   useCreateResourceHubFolder,
   useCreateResourceHubDocument,
   useCreateResourceHubFile,
