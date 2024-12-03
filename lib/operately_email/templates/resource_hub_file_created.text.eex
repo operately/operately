@@ -1,0 +1,3 @@
+<%= short_name(@author) %> added a file: <%= @file.node.name %>
+
+Link: <%= @cta_url %>
