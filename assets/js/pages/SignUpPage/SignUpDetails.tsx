@@ -53,6 +53,7 @@ export function SignUpDetails({ email, code }: { email: string; code: string }) 
                   minLength={12}
                   placeholder="At least 12 characters"
                   required
+                  noAutofill
                 />
                 <Forms.PasswordInput
                   field={"confirmPassword"}
@@ -60,6 +61,7 @@ export function SignUpDetails({ email, code }: { email: string; code: string }) 
                   minLength={12}
                   placeholder="At least 12 characters"
                   required
+                  noAutofill
                 />
               </Forms.FieldGroup>
 
