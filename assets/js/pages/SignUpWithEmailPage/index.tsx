@@ -8,7 +8,8 @@ import classNames from "classnames";
 
 import { OperatelyLogo } from "@/components/OperatelyLogo";
 import { TosAndPrivacyPolicy } from "@/features/SignUp/AgreeToTosAndPp";
-import { PasswordStrength, validatePassword } from "@/features/SignUp/PasswordStrength";
+import { PasswordStrength } from "@/features/SignUp/PasswordStrength";
+import { validatePassword } from "@/features/SignUp/validatePassword";
 
 import { match } from "ts-pattern";
 import { useFieldValue } from "@/components/Forms/FormContext";
