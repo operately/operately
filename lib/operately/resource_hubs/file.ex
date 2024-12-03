@@ -8,6 +8,7 @@ defmodule Operately.ResourceHubs.File do
     belongs_to :blob, Operately.Blobs.Blob, foreign_key: :blob_id
     belongs_to :subscription_list, Operately.Notifications.SubscriptionList, foreign_key: :subscription_list_id
 
+    has_one :resource_hub, through: [:node, :resource_hub]
     has_one :access_context, through: [:node, :resource_hub, :access_context]
 
     field :description, :map
