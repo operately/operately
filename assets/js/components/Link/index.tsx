@@ -29,6 +29,7 @@ interface DivLinkProps extends Props {
   to: string;
   className?: string;
   style?: React.CSSProperties;
+  external?: boolean;
 }
 
 const baseLinkClass = classnames("cursor-pointer", "transition-colors");
@@ -97,12 +98,20 @@ export function DimmedLink(props: LinkProps) {
   return <UnstyledLink {...props} className={className} />;
 }
 
-export function DivLink({ to, children, testId, target, ...props }: DivLinkProps) {
-  return (
-    <Router.Link to={to} data-test-id={testId} {...props} target={target}>
-      {children}
-    </Router.Link>
-  );
+export function DivLink({ to, children, testId, target, external, ...props }: DivLinkProps) {
+  if (external) {
+    return (
+      <a href={to} data-test-id={testId} {...props} target={target}>
+        {children}
+      </a>
+    );
+  } else {
+    return (
+      <Router.Link to={to} data-test-id={testId} {...props} target={target}>
+        {children}
+      </Router.Link>
+    );
+  }
 }
 
 function underlineClass(underline: "always" | "hover" | "never" | undefined) {

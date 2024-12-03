@@ -8,12 +8,17 @@ defmodule Operately.Support.Features.SignupSteps do
     ctx |> UI.visit("/sign_up")
   end
 
-  step :enter_email, ctx do
-    ctx |> UI.fill(testid: "email", with: @email)
+  step :choose_signup_with_email, ctx do
+    ctx |> UI.click(testid: "sign-up-with-email")
   end
 
-  step :click_continue_button, ctx do
-    ctx |> UI.click(testid: "submit")
+  step :fill_in_details, ctx do
+    ctx
+    |> UI.fill(testid: "email", with: @email)
+    |> UI.fill(testid: "name", with: "Michael")
+    |> UI.fill(testid: "password", with: "123456789ABCDER")
+    |> UI.fill(testid: "confirmPassword", with: "123456789ABCDER")
+    |> UI.click(testid: "submit")
   end
 
   step :fill_in_activation_code_from_email, ctx do
@@ -26,13 +31,8 @@ defmodule Operately.Support.Features.SignupSteps do
     |> UI.click(testid: "submit")
   end
 
-  step :enter_name_and_password, ctx do
-    ctx
-    |> UI.fill(testid: "name", with: "Michael")
-    |> UI.fill(testid: "password", with: "123456789ABCDER")
-    |> UI.fill(testid: "confirmPassword", with: "123456789ABCDER")
-    |> UI.click(testid: "submit")
-    |> UI.assert_has(testid: "lobby-page")
+  step :assert_signup_successful, ctx do
+    ctx |> UI.assert_has(testid: "lobby-page")
   end
 
 end
