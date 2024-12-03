@@ -1,4 +1,5 @@
 import * as React from "react";
+import * as Icons from "@tabler/icons-react";
 
 import classNames from "classnames";
 import { InputField } from "./FieldGroup";
@@ -21,6 +22,7 @@ interface TextInputProps {
   maxLength?: number;
   onEnter?: (e: React.KeyboardEvent) => void;
   testId?: string;
+  okSign?: boolean;
 }
 
 const DEFAULT_VALIDATION_PROPS = {
@@ -41,21 +43,29 @@ export function TextInput(props: TextInputProps) {
 
   return (
     <InputField field={field} label={label} error={error} hidden={hidden}>
-      <input
-        name={field}
-        autoFocus={props.autoFocus}
-        placeholder={placeholder}
-        data-test-id={props.testId ?? createTestId(field)}
-        className={styles(!!error)}
-        type="text"
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" && props.onEnter) {
-            props.onEnter(e);
-          }
-        }}
-      />
+      <div className="relative">
+        <input
+          name={field}
+          autoFocus={props.autoFocus}
+          placeholder={placeholder}
+          data-test-id={props.testId ?? createTestId(field)}
+          className={styles(!!error)}
+          type="text"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && props.onEnter) {
+              props.onEnter(e);
+            }
+          }}
+        />
+
+        {!error && props.okSign && (
+          <div className="absolute inset-y-0 right-0 flex items-center pr-4 text-accent-1">
+            <Icons.IconCheck size={20} />
+          </div>
+        )}
+      </div>
     </InputField>
   );
 }
