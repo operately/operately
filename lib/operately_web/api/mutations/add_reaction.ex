@@ -14,7 +14,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReaction do
   alias Operately.Goals.Update
   alias Operately.Messages.Message
   alias Operately.Projects.Retrospective
-  alias Operately.ResourceHubs.Document
+  alias Operately.ResourceHubs.{Document, File}
   alias Operately.Operations.ReactionAdding
 
   inputs do
@@ -61,6 +61,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReaction do
       :message -> Message.get(person, id: id)
       :comment -> Updates.get_comment_with_access_level(id, person.id, parent_type)
       :resource_hub_document -> Document.get(person, id: id)
+      :resource_hub_file -> File.get(person, id: id)
     end
   end
 
@@ -73,6 +74,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReaction do
       :message -> Groups.Permissions.check(parent.request_info.access_level, :can_comment_on_discussions)
       :comment -> check_comment_permissions(parent, parent_type)
       :resource_hub_document -> ResourceHubs.Permissions.check(parent.request_info.access_level, :can_comment_on_document)
+      :resource_hub_file -> ResourceHubs.Permissions.check(parent.request_info.access_level, :can_comment_on_file)
     end
   end
 
