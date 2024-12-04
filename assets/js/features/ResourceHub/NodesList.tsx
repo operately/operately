@@ -5,11 +5,11 @@ import { IconFolder, IconFile, IconPhoto, IconFileTypePdf, IconMovie } from "@ta
 import classNames from "classnames";
 import { Paths } from "@/routes/paths";
 import { DivLink } from "@/components/Link";
-import { Menu, MenuLinkItem, MenuActionItem } from "@/components/Menu";
 import { richContentToString } from "@/components/RichContent";
 import { truncateString } from "@/utils/strings";
 import { assertPresent } from "@/utils/assertions";
 import { createTestId } from "@/utils/testid";
+import { DocumentMenu, FileMenu } from "./components";
 
 type NodeType = "document" | "folder" | "file";
 
@@ -25,10 +25,6 @@ interface NodesListProps extends Props {
 interface NodeItemProps extends Props {
   node: Hub.ResourceHubNode;
   testid: string;
-}
-
-interface DocumentMenuProps extends Props {
-  document: Hub.ResourceHubDocument;
 }
 
 export function NodesList({ nodes, permissions, refetch }: NodesListProps) {
@@ -71,44 +67,12 @@ function NodeItem({ node, permissions, refetch, testid }: NodeItemProps) {
           <DocumentMenu document={node.document} permissions={permissions} refetch={refetch} />
         </div>
       )}
-    </div>
-  );
-}
-
-function DocumentMenu({ document, permissions, refetch }: DocumentMenuProps) {
-  const editPath = Paths.resourceHubEditDocumentPath(document.id!);
-  const relevantPermissions = [permissions.canEditDocument, permissions.canDeleteDocument];
-
-  const menuId = createTestId("document-menu", document.id!);
-  const editId = createTestId("edit", document.id!);
-
-  if (!relevantPermissions.some(Boolean)) return <></>;
-
-  return (
-    <Menu size="medium" testId={menuId}>
-      {permissions.canEditDocument && (
-        <MenuLinkItem to={editPath} testId={editId}>
-          Edit document
-        </MenuLinkItem>
+      {node.file && (
+        <div className="flex items-center">
+          <FileMenu file={node.file} permissions={permissions} refetch={refetch} />
+        </div>
       )}
-
-      {permissions.canDeleteDocument && <DeleteDocumentMenuItem document={document} refetch={refetch} />}
-    </Menu>
-  );
-}
-
-function DeleteDocumentMenuItem({ document, refetch }: { document: Hub.ResourceHubDocument; refetch: () => void }) {
-  const [remove] = Hub.useDeleteResourceHubDocument();
-  const handleDelete = async () => {
-    await remove({ documentId: document.id });
-    refetch();
-  };
-  const deleteId = createTestId("delete", document.id!);
-
-  return (
-    <MenuActionItem onClick={handleDelete} testId={deleteId} danger>
-      Delete document
-    </MenuActionItem>
+    </div>
   );
 }
 

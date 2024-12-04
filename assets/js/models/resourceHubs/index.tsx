@@ -15,4 +15,5 @@ export {
   useCreateResourceHubFile,
   useEditResourceHubDocument,
   useDeleteResourceHubDocument,
+  useDeleteResourceHubFile,
 } from "@/api";
