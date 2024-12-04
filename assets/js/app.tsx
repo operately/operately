@@ -16,6 +16,7 @@ import { createAppRoutes } from "./routes";
 import Api from "@/api";
 import AdminApi from "@/ee/admin_api";
 import "./i18n";
+import "../css/app.css";
 
 import { setupTestErrorLogger } from "@/utils/errorLogger";
 
