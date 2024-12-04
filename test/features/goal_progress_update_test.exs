@@ -50,6 +50,8 @@ defmodule Operately.Features.GoalProgressUpdateTest do
     |> Steps.update_progress(params)
     |> Steps.comment_on_progress_update_as_reviewer("Great job!")
     |> Steps.assert_progress_update_commented_in_feed("Great job!")
+    |> Steps.assert_progress_update_commented_in_notifications()
+    |> Steps.assert_progress_update_commented_notification_redirects_on_click()
     |> Steps.assert_comment_email_sent()
   end
 end
