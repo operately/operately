@@ -529,6 +529,11 @@ export interface ActivityContentResourceHubFileCreated {
   resourceHub?: ResourceHub | null;
 }
 
+export interface ActivityContentResourceHubFileDeleted {
+  resourceHub?: ResourceHub | null;
+  file?: ResourceHubFile | null;
+}
+
 export interface ActivityContentResourceHubFolderCreated {
   resourceHub?: ResourceHub | null;
   folder?: ResourceHubFolder | null;
