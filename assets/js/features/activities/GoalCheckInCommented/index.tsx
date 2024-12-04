@@ -17,7 +17,7 @@ const GoalUpdateCommented: ActivityHandler = {
   },
 
   pagePath(activity: Activity): string {
-    return Paths.goalProgressUpdatePath(content(activity).goalId!);
+    return Paths.goalProgressUpdatePath(content(activity).update?.id!);
   },
 
   PageTitle(_props: { activity: any }) {

@@ -196,6 +196,24 @@ defmodule Operately.Support.Features.GoalProgressUpdateSteps do
     |> FeedSteps.assert_goal_check_in_commented(author: ctx.champion, goal_name: ctx.goal.name, comment: comment)
   end
 
+  step :assert_progress_update_commented_in_notifications, ctx do
+    ctx
+    |> UI.login_as(ctx.champion)
+    |> NotificationsSteps.visit_notifications_page()
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.reviewer,
+      action: "commented on the goal update"
+    })
+  end
+
+  step :assert_progress_update_commented_notification_redirects_on_click, ctx do
+    update = Operately.Goals.list_updates(ctx.goal) |> hd()
+
+    ctx
+    |> UI.click(testid: "notification-item-goal_check_in_commented")
+    |> UI.assert_page(Paths.goal_check_in_path(ctx.company, update))
+  end
+
   step :assert_comment_email_sent, ctx do
     ctx
     |> EmailSteps.assert_activity_email_sent(%{
