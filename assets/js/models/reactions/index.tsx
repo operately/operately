@@ -11,7 +11,8 @@ type EntityType =
   | "goal_update"
   | "message"
   | "comment"
-  | "resource_hub_document";
+  | "resource_hub_document"
+  | "resource_hub_file";
 
 // Which entity the reactions are for
 export type Entity = {
