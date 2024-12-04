@@ -8,6 +8,7 @@ defmodule Operately.ResourceHubs.Permissions do
     :can_create_folder,
     :can_create_file,
     :can_delete_document,
+    :can_delete_file,
     :can_edit_document,
   ]
 
@@ -19,6 +20,7 @@ defmodule Operately.ResourceHubs.Permissions do
       can_create_folder: access_level >= Binding.edit_access(),
       can_create_file: access_level >= Binding.edit_access(),
       can_delete_document: access_level >= Binding.edit_access(),
+      can_delete_file: access_level >= Binding.edit_access(),
       can_edit_document: access_level >= Binding.edit_access(),
     }
   end

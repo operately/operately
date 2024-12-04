@@ -86,6 +86,7 @@ defmodule OperatelyWeb.Api do
   mutation :create_email_activation_code, M.CreateEmailActivationCode
 
   mutation :delete_resource_hub_document, M.DeleteResourceHubDocument
+  mutation :delete_resource_hub_file, M.DeleteResourceHubFile
 
   mutation :remove_company_admin, M.RemoveCompanyAdmin
   mutation :remove_company_member, M.RemoveCompanyMember
