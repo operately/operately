@@ -10,6 +10,7 @@ defmodule Operately.ResourceHubs.File do
 
     has_one :resource_hub, through: [:node, :resource_hub]
     has_one :access_context, through: [:node, :resource_hub, :access_context]
+    has_many :reactions, Operately.Updates.Reaction, where: [entity_type: :resource_hub_file], foreign_key: :entity_id
 
     field :description, :map
 
@@ -28,5 +29,14 @@ defmodule Operately.ResourceHubs.File do
     file
     |> cast(attrs, [:node_id, :author_id, :blob_id, :description, :subscription_list_id])
     |> validate_required([:node_id, :author_id, :blob_id, :subscription_list_id])
+  end
+
+  #
+  # After load hooks
+  #
+
+  def set_permissions(file = %__MODULE__{}) do
+    perms = Operately.ResourceHubs.Permissions.calculate(file.request_info.access_level)
+    Map.put(file, :permissions, perms)
   end
 end

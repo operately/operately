@@ -558,6 +558,7 @@ defmodule OperatelyWeb.Api.Types do
 
   object :resource_hub_permissions do
     field :can_comment_on_document, :boolean
+    field :can_comment_on_file, :boolean
     field :can_create_document, :boolean
     field :can_create_folder, :boolean
     field :can_create_file, :boolean
@@ -604,6 +605,7 @@ defmodule OperatelyWeb.Api.Types do
     field :description, :string
     field :inserted_at, :string
     field :permissions, :resource_hub_permissions
+    field :reactions, list_of(:reaction)
     field :type, :string
     field :size, :integer
     field :url, :string
