@@ -1,14 +1,12 @@
 import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
-import * as Icons from "@tabler/icons-react";
 
 import { OperatelyLogo } from "@/components/OperatelyLogo";
-import { DivLink, Link } from "@/components/Link";
-import classNames from "classnames";
+import { Link } from "@/components/Link";
 
-import { GoogleLogo } from "@/features/SignUp/GoogleLogo";
-import { TosAndPrivacyPolicy } from "@/features/SignUp/AgreeToTosAndPp";
+import { TosAndPrivacyPolicy } from "@/features/auth/AgreeToTosAndPp";
+import { SignUpWithEmail, SignUpWithGoogleButton } from "@/features/auth/Buttons";
 
 export const loader = Pages.emptyLoader;
 
@@ -21,8 +19,8 @@ export function Page() {
             <Header />
 
             <div className="flex flex-col gap-3 mb-8">
-              <SignUpWithGoogleButton />
-              <SignUpWithEmail />
+              {window.appConfig.allowSignupWithGoogle && <SignUpWithGoogleButton />}
+              {window.appConfig.allowSignupWithEmail && <SignUpWithEmail />}
             </div>
 
             <TosAndPrivacyPolicy />
@@ -49,51 +47,5 @@ function SignInLink() {
     <div className="text-center font-medium mt-8 pt-8 border-t border-stroke-base text-sm">
       Already have an account? <Link to="/log_in">Sign in</Link>
     </div>
-  );
-}
-
-function SignUpWithEmail() {
-  return (
-    <SignUpButton
-      title="Sign up with email"
-      link="/sign_up/email"
-      icon={<Icons.IconMail size={24} className="text-content-dimmed" />}
-      testId="sign-up-with-email"
-    />
-  );
-}
-
-function SignUpWithGoogleButton() {
-  return (
-    <SignUpButton
-      title="Sign up with Google"
-      link="/accounts/auth/google"
-      icon={<GoogleLogo />}
-      external
-      testId="sign-up-with-google"
-    />
-  );
-}
-
-interface SignUpButtonProps {
-  title: string;
-  link: string;
-  icon: React.ReactNode;
-  external?: boolean;
-  testId?: string;
-}
-
-function SignUpButton({ title, link, icon, external, testId }: SignUpButtonProps) {
-  const className = classNames(
-    "w-full inline-flex gap-3 py-3 px-4",
-    "bg-surface-base rounded-md shadow",
-    "hover:bg-surface-dimmed font-medium border border-surface-outline",
-  );
-
-  return (
-    <DivLink to={link} className={className} data-test-id={testId} external={external}>
-      {icon}
-      <div className="text-center w-10/12 font-medium">{title}</div>
-    </DivLink>
   );
 }

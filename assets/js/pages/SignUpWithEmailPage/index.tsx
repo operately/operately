@@ -7,9 +7,9 @@ import Forms from "@/components/Forms";
 import classNames from "classnames";
 
 import { OperatelyLogo } from "@/components/OperatelyLogo";
-import { TosAndPrivacyPolicy } from "@/features/SignUp/AgreeToTosAndPp";
-import { PasswordStrength } from "@/features/SignUp/PasswordStrength";
-import { validatePassword } from "@/features/SignUp/validatePassword";
+import { TosAndPrivacyPolicy } from "@/features/auth/AgreeToTosAndPp";
+import { PasswordStrength } from "@/features/auth/PasswordStrength";
+import { validatePassword } from "@/features/auth/validatePassword";
 
 import { match } from "ts-pattern";
 import { useFieldValue } from "@/components/Forms/FormContext";
