@@ -8,6 +8,9 @@ import classNames from "classnames";
 
 import { OperatelyLogo } from "@/components/OperatelyLogo";
 import { TosAndPrivacyPolicy } from "@/features/SignUp/AgreeToTosAndPp";
+import { PasswordStrength } from "@/features/SignUp/PasswordStrength";
+import { validatePassword } from "@/features/SignUp/validatePassword";
+
 import { match } from "ts-pattern";
 import { useFieldValue } from "@/components/Forms/FormContext";
 import { logIn } from "@/routes/auth";
@@ -68,6 +71,8 @@ export function Page() {
 }
 
 function Form({ form }) {
+  const validation = validateForm(form);
+
   return (
     <Pages.Page title={["Sign Up"]} testId="sign-up-page">
       <Paper.Root size="tiny">
@@ -79,8 +84,22 @@ function Form({ form }) {
 
             <Forms.Form form={form}>
               <Forms.FieldGroup>
-                <Forms.TextInput field={"email"} label="Work Email" placeholder="name@company.com" required />
-                <Forms.TextInput field={"name"} label="Full Name" placeholder="Enter your full name" required />
+                <Forms.TextInput
+                  field={"email"}
+                  label="Work Email"
+                  placeholder="name@company.com"
+                  required
+                  okSign={validation.email}
+                />
+
+                <Forms.TextInput
+                  field={"name"}
+                  label="Full Name"
+                  placeholder="Enter your full name"
+                  required
+                  okSign={validation.name}
+                />
+
                 <Forms.PasswordInput
                   field={"password"}
                   label="Password"
@@ -88,7 +107,11 @@ function Form({ form }) {
                   placeholder="At least 12 characters"
                   required
                   noAutofill
+                  okSign={validation.password}
                 />
+
+                <PasswordStrength password={form.values.password} />
+
                 <Forms.PasswordInput
                   field={"confirmPassword"}
                   label="Confirm Password"
@@ -96,11 +119,12 @@ function Form({ form }) {
                   placeholder="At least 12 characters"
                   required
                   noAutofill
+                  okSign={validation.confirmPassword}
                 />
               </Forms.FieldGroup>
 
               <div className="my-6">
-                <SubmitButton onClick={form.actions.submit} />
+                <SubmitButton onClick={form.actions.submit} disabled={!validation.isValid} />
               </div>
 
               <TosAndPrivacyPolicy />
@@ -121,17 +145,20 @@ function WhatHappensNext() {
   );
 }
 
-function SubmitButton({ onClick }: { onClick: () => void }) {
+function SubmitButton({ onClick, disabled }) {
   const className = classNames(
     "w-full flex justify-center py-2 px-4",
     "border border-transparent",
     "rounded-md shadow-sm font-medium text-white-1",
-    "bg-blue-600 hover:bg-blue-700",
+    {
+      "bg-blue-400 cursor-not-allowed": disabled,
+      "bg-blue-600 hover:bg-blue-700": !disabled,
+    },
   );
 
   return (
-    <button className={className} onClick={onClick} type="submit" data-test-id="submit">
-      Continue -&gt;
+    <button className={className} onClick={onClick} type="submit" data-test-id="submit" disabled={disabled}>
+      {disabled ? "Please fill in all fields" : "Continue ->"}
     </button>
   );
 }
@@ -197,4 +224,23 @@ function VerifyButton({ onClick }: { onClick: () => void }) {
       Continue -&gt;
     </button>
   );
+}
+
+interface FormValidation {
+  email: boolean;
+  name: boolean;
+  password: boolean;
+  confirmPassword: boolean;
+  isValid: boolean;
+}
+
+function validateForm(form: any): FormValidation {
+  const email = form.values.email.trim() !== "" && form.values.email.match(/.+@.+\..+/);
+  const name = form.values.name.trim() !== "";
+  const password = validatePassword(form.values.password).isValid;
+  const confirmPassword = password && form.values.password === form.values.confirmPassword;
+
+  const isValid = email && name && password && confirmPassword;
+
+  return { email, name, password, confirmPassword, isValid };
 }
