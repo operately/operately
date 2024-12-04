@@ -16,6 +16,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateAccount do
 
   def call(_conn, inputs) do
     with(
+      {:ok, :allowed} <- check_signup_allowed(),
       {:ok, code} <- parse_code(inputs.code),
       {:ok, activation} <- EmailActivationCode.get(:system, email: inputs.email, code: code),
       {:ok, :valid} <- check_validity(activation),
@@ -26,6 +27,14 @@ defmodule OperatelyWeb.Api.Mutations.CreateAccount do
       {:error, error} -> 
         Logger.error("Failed to create account. error: #{inspect(error)}")
         {:error, :internal_server_error}
+    end
+  end
+
+  defp check_signup_allowed() do
+    if Application.get_env(:operately, :allow_signup_with_email) do
+      {:ok, :allowed}
+    else
+      {:error, :signup_not_allowed}
     end
   end
 

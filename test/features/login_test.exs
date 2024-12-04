@@ -6,7 +6,7 @@ defmodule Operately.Features.LoginTest do
 
   alias Operately.Support.Features.UI
 
-  @google_sign_in_query Query.css("[data-test-id=google-sign-in]")
+  @google_sign_in_query Query.css("[data-test-id=sign-in-with-google]")
 
   setup ctx do
     company = company_fixture()
