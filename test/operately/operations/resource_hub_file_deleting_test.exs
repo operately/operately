@@ -1,9 +1,10 @@
-defmodule Operately.Operations.ResourceHubDocumentDeletingTest do
+defmodule Operately.Operations.ResourceHubFileDeletingTest do
   use Operately.DataCase
   use Operately.Support.Notifications
 
   alias Operately.Access.Binding
   alias Operately.Support.RichText
+  alias Operately.Operations.ResourceHubFileDeleting
 
   setup ctx do
     ctx
@@ -15,16 +16,16 @@ defmodule Operately.Operations.ResourceHubDocumentDeletingTest do
     |> Factory.add_resource_hub(:hub, :space, :creator, company_access_level: Binding.no_access())
   end
 
-  @action "resource_hub_document_deleted"
+  @action "resource_hub_file_deleted"
 
-  test "Deleting document sends notifications to everyone", ctx do
-    document = create_document(ctx, true, [])
+  test "Deleting file sends notifications to everyone", ctx do
+    file = create_file(ctx, true, [])
 
     {:ok, _} = Oban.Testing.with_testing_mode(:manual, fn ->
-      Operately.Operations.ResourceHubDocumentDeleting.run(ctx.creator, document)
+      ResourceHubFileDeleting.run(ctx.creator, file)
     end)
 
-    activity = get_activity(document, @action)
+    activity = get_activity(file, @action)
 
     assert 0 == notifications_count(action: @action)
 
@@ -39,14 +40,14 @@ defmodule Operately.Operations.ResourceHubDocumentDeletingTest do
     end)
   end
 
-  test "Deleting document sends notifications to selected people", ctx do
-    document = create_document(ctx, false, [ctx.mike.id, ctx.jane.id])
+  test "Deleting file sends notifications to selected people", ctx do
+    file = create_file(ctx, false, [ctx.mike.id, ctx.jane.id])
 
     {:ok, _} = Oban.Testing.with_testing_mode(:manual, fn ->
-      Operately.Operations.ResourceHubDocumentDeleting.run(ctx.creator, document)
+      ResourceHubFileDeleting.run(ctx.creator, file)
     end)
 
-    activity = get_activity(document, @action)
+    activity = get_activity(file, @action)
 
     assert 0 == notifications_count(action: @action)
 
@@ -65,13 +66,13 @@ defmodule Operately.Operations.ResourceHubDocumentDeletingTest do
     ctx = Factory.add_company_member(ctx, :person)
 
     content = RichText.rich_text(mentioned_people: [ctx.person]) |> Jason.decode!()
-    document = create_document(ctx, false, [ctx.person.id], content)
+    file = create_file(ctx, false, [ctx.person.id], content)
 
     {:ok, _} = Oban.Testing.with_testing_mode(:manual, fn ->
-      Operately.Operations.ResourceHubDocumentDeleting.run(ctx.creator, document)
+      ResourceHubFileDeleting.run(ctx.creator, file)
     end)
 
-    activity = get_activity(document, @action)
+    activity = get_activity(file, @action)
     perform_job(activity.id)
 
     assert notifications_count(action: @action) == 0
@@ -82,20 +83,23 @@ defmodule Operately.Operations.ResourceHubDocumentDeletingTest do
   # Helpers
   #
 
-  defp create_document(ctx, send_to_everyone, people_list, content \\ nil) do
-    {:ok, document} = Operately.Operations.ResourceHubDocumentCreating.run(ctx.creator, ctx.hub, %{
+  defp create_file(ctx, send_to_everyone, people_list, content \\ nil) do
+    blob = Operately.BlobsFixtures.blob_fixture(%{author_id: ctx.creator.id, company_id: ctx.company.id})
+
+    {:ok, file} = Operately.Operations.ResourceHubFileCreating.run(ctx.creator, ctx.hub, %{
       name: "Some name",
       content: content || RichText.rich_text("Content"),
       send_to_everyone: send_to_everyone,
-      subscription_parent_type: :resource_hub_document,
+      subscription_parent_type: :resource_hub_file,
       subscriber_ids: people_list,
+      blob_id: blob.id,
     })
-    Repo.preload(document, :resource_hub)
+    Repo.preload(file, :resource_hub)
   end
 
-  defp get_activity(document, action) do
+  defp get_activity(file, action) do
     from(a in Operately.Activities.Activity,
-      where: a.action == ^action and a.content["document_id"] == ^document.id
+      where: a.action == ^action and a.content["file_id"] == ^file.id
     )
     |> Repo.one()
   end
