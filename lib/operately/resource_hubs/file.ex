@@ -11,6 +11,7 @@ defmodule Operately.ResourceHubs.File do
     has_one :resource_hub, through: [:node, :resource_hub]
     has_one :access_context, through: [:node, :resource_hub, :access_context]
     has_many :reactions, Operately.Updates.Reaction, where: [entity_type: :resource_hub_file], foreign_key: :entity_id
+    has_many :comments, Operately.Updates.Comment, where: [entity_type: :resource_hub_file], foreign_key: :entity_id
 
     field :description, :map
 

@@ -61,6 +61,19 @@ defmodule Operately.Operations.CommentAdding.Activity do
     end)
   end
 
+  def insert(multi, creator, action = :resource_hub_file_commented, entity) do
+    Activities.insert_sync(multi, creator.id, action, fn changes ->
+      %{
+        company_id: creator.company_id,
+        space_id: entity.resource_hub.space_id,
+        resource_hub_id: entity.resource_hub.id,
+        file_id: entity.id,
+        node_id: entity.node.id,
+        comment_id: changes.comment.id,
+      }
+    end)
+  end
+
   def insert(multi, creator, action = :comment_added, %Operately.Comments.CommentThread{} = entity) do
     activity = Operately.Activities.get_activity!(entity.parent_id)
 
