@@ -21,27 +21,10 @@
         }
       })()
 
-      window.appConfig = {};
-
-      window.appConfig.environment = "<%= Application.get_env(:operately, :app_env) %>";
-      window.appConfig.demoBuilder = <%= Application.get_env(:operately, :demo_builder_allowed) %>;
-      window.appConfig.showDevBar = <%= Application.get_env(:operately, :app_env) == :dev %>;
-      window.appConfig.allowLoginWithGoogle = <%= Application.get_env(:operately, :allow_login_with_google) %>;
-      window.appConfig.configured = <%= Operately.Companies.count_companies() > 0 %>;
-
-      <%= if @current_account do %>
-        window.appConfig.api = {};
-        window.appConfig.account = { id: "<%= @current_account.id %>" };
-        window.appConfig.api.socketToken = "<%= OperatelyWeb.ApiSocket.gen_token(@conn) %>";
-      <% end %>
-
-      window.appConfig.sentry = {};
-      window.appConfig.sentry.enabled = <%= Application.get_env(:operately, :js_sentry_enabled) %>;
-      window.appConfig.sentry.dsn = "<%= Application.get_env(:operately, :js_sentry_dsn) %>";
+      window.appConfig = <%= Jason.encode!(@app_config) |> Phoenix.HTML.raw() %>
     </script>
 
     <style>
-      @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&display=swap');
       @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
 
       body {
