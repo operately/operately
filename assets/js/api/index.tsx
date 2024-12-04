@@ -2229,6 +2229,14 @@ export interface DeleteResourceHubDocumentResult {
   document?: Document | null;
 }
 
+export interface DeleteResourceHubFileInput {
+  fileId?: Id | null;
+}
+
+export interface DeleteResourceHubFileResult {
+  file?: ResourceHubFile | null;
+}
+
 export interface DisconnectGoalFromProjectInput {
   projectId?: string | null;
   goalId?: string | null;
@@ -3054,6 +3062,10 @@ export class ApiClient {
     return this.post("/delete_resource_hub_document", input);
   }
 
+  async deleteResourceHubFile(input: DeleteResourceHubFileInput): Promise<DeleteResourceHubFileResult> {
+    return this.post("/delete_resource_hub_file", input);
+  }
+
   async disconnectGoalFromProject(input: DisconnectGoalFromProjectInput): Promise<DisconnectGoalFromProjectResult> {
     return this.post("/disconnect_goal_from_project", input);
   }
@@ -3529,6 +3541,9 @@ export async function deleteResourceHubDocument(
   input: DeleteResourceHubDocumentInput,
 ): Promise<DeleteResourceHubDocumentResult> {
   return defaultApiClient.deleteResourceHubDocument(input);
+}
+export async function deleteResourceHubFile(input: DeleteResourceHubFileInput): Promise<DeleteResourceHubFileResult> {
+  return defaultApiClient.deleteResourceHubFile(input);
 }
 export async function disconnectGoalFromProject(
   input: DisconnectGoalFromProjectInput,
@@ -4126,6 +4141,15 @@ export function useDeleteResourceHubDocument(): UseMutationHookResult<
   );
 }
 
+export function useDeleteResourceHubFile(): UseMutationHookResult<
+  DeleteResourceHubFileInput,
+  DeleteResourceHubFileResult
+> {
+  return useMutation<DeleteResourceHubFileInput, DeleteResourceHubFileResult>((input) =>
+    defaultApiClient.deleteResourceHubFile(input),
+  );
+}
+
 export function useDisconnectGoalFromProject(): UseMutationHookResult<
   DisconnectGoalFromProjectInput,
   DisconnectGoalFromProjectResult
@@ -4629,6 +4653,8 @@ export default {
   useCreateTask,
   deleteResourceHubDocument,
   useDeleteResourceHubDocument,
+  deleteResourceHubFile,
+  useDeleteResourceHubFile,
   disconnectGoalFromProject,
   useDisconnectGoalFromProject,
   editComment,
