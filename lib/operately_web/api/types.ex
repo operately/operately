@@ -431,6 +431,11 @@ defmodule OperatelyWeb.Api.Types do
     field :resource_hub, :resource_hub
   end
 
+  object :activity_content_resource_hub_file_deleted do
+    field :resource_hub, :resource_hub
+    field :file, :resource_hub_file
+  end
+
   object :activity_content_resource_hub_document_created do
     field :resource_hub, :resource_hub
     field :document, :resource_hub_document
