@@ -12,7 +12,12 @@ declare global {
     configured: boolean;
     environment: string;
     demoBuilder: boolean;
+
+    allowLoginWithEmail: boolean;
+    allowSignupWithEmail: boolean;
+
     allowLoginWithGoogle: boolean;
+    allowSignupWithGoogle: boolean;
 
     sentry: SentryConfig;
     api: ApiConfig;

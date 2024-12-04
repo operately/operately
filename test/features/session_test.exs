@@ -7,7 +7,19 @@ defmodule Operately.Features.SessionTest do
     password: "Aa12345#&!123"
   }
 
-  setup ctx, do: Factory.setup(ctx)
+  setup ctx do 
+    ctx = Factory.setup(ctx)
+
+    Application.put_env(:operately, :allow_login_with_google, true)
+    Application.put_env(:operately, :allow_signup_with_google, true)
+
+    on_exit(fn -> 
+      Application.put_env(:operately, :allow_login_with_google, false)
+      Application.put_env(:operately, :allow_signup_with_google, false)
+    end)
+
+    {:ok, ctx}
+  end
 
   feature "successful login", ctx do
     ctx
