@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import * as Comments from "@/models/comments";
 import { Discussion } from "@/models/discussions";
 import { ProjectRetrospective } from "@/models/projects";
-import { ResourceHubDocument } from "@/models/resourceHubs";
+import { ResourceHubDocument, ResourceHubFile } from "@/models/resourceHubs";
 
 import { parse } from "@/utils/time";
 import { ItemType, FormState } from "./form";
@@ -23,7 +23,16 @@ interface ParentResourceHubDocument {
   parentType: "resource_hub_document";
 }
 
-type UseCommentsInput = ParentDiscussion | ParentProjectRetrospective | ParentResourceHubDocument;
+interface ParentResourceHubFile {
+  file: ResourceHubFile;
+  parentType: "resource_hub_file";
+}
+
+type UseCommentsInput =
+  | ParentDiscussion
+  | ParentProjectRetrospective
+  | ParentResourceHubDocument
+  | ParentResourceHubFile;
 
 export function useComments(props: UseCommentsInput): FormState {
   const parent = findParent(props);
@@ -110,6 +119,8 @@ function findParent(props: UseCommentsInput) {
       return props.retrospective;
     case "resource_hub_document":
       return props.document;
+    case "resource_hub_file":
+      return props.file;
   }
 }
 
@@ -120,6 +131,8 @@ function findMentionedScope(props: UseCommentsInput) {
     case "project_retrospective":
       return "project";
     case "resource_hub_document":
+      return "resource_hub";
+    case "resource_hub_file":
       return "resource_hub";
   }
 }

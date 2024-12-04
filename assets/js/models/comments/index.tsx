@@ -10,7 +10,8 @@ export type CommentParentType =
   | "message"
   | "milestone"
   | "project_retrospective"
-  | "resource_hub_document";
+  | "resource_hub_document"
+  | "resource_hub_file";
 
 export type { Comment };
 export { useCreateComment, useEditComment, useGetComments, getComments } from "@/api";

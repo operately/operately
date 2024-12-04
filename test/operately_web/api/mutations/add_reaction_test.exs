@@ -420,6 +420,31 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
         end
       end
     end
+
+    tabletest @space_table do
+      test "resource hub file comment - if caller has levels company=#{@test.company} and space=#{@test.space}, then expect code=#{@test.expected}", ctx do
+        space = create_space(ctx)
+        resource_hub = create_resource_hub(ctx, space, @test.company, @test.space)
+        file = file_fixture(resource_hub, ctx.creator) |> Repo.preload(:resource_hub)
+        comment = create_comment(ctx, file, "resource_hub_file")
+
+        assert {code, res} = mutation(ctx.conn, :add_reaction, %{
+          entity_id: Paths.comment_id(comment),
+          entity_type: "comment",
+          parent_type: "resource_hub_file",
+          emoji: "👍"
+        })
+        assert code == @test.expected
+
+        case @test.expected do
+          200 ->
+            reaction = get_reaction(comment.id, :comment)
+            assert res.reaction == Serializer.serialize(reaction, level: :essential)
+          403 -> assert res.message == "You don't have permission to perform this action"
+          404 -> assert res.message == "The requested resource was not found"
+        end
+      end
+    end
   end
 
   describe "add_reaction functionality" do

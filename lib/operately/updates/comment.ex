@@ -15,6 +15,7 @@ defmodule Operately.Updates.Comment do
       :comment_thread,
       :project_retrospective,
       :resource_hub_document,
+      :resource_hub_file,
     ]
 
     field :content, :map

@@ -10,6 +10,7 @@ import { assertPresent } from "@/utils/assertions";
 
 import { useLoadedData } from "./loader";
 import { Content } from "./Content";
+import { CommentSection, useComments } from "@/features/CommentSection";
 
 export function Page() {
   const { file } = useLoadedData();
@@ -22,6 +23,7 @@ export function Page() {
 
           <Content />
           <FileReactions />
+          <FileComments />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
@@ -41,6 +43,26 @@ function FileReactions() {
     <>
       <Spacer size={2} />
       <ReactionList size={24} form={addReactionForm} canAddReaction={file.permissions.canCommentOnFile} />
+    </>
+  );
+}
+
+function FileComments() {
+  const { file } = useLoadedData();
+  const commentsForm = useComments({ parentType: "resource_hub_file", file: file });
+
+  assertPresent(file.permissions?.canCommentOnFile, "permissions must be present in file");
+
+  return (
+    <>
+      <Spacer size={4} />
+      <div className="border-t border-stroke-base mt-8" />
+      <CommentSection
+        form={commentsForm}
+        refresh={() => {}}
+        commentParentType="resource_hub_file"
+        canComment={file.permissions.canCommentOnFile}
+      />
     </>
   );
 }
