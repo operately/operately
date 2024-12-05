@@ -9,6 +9,8 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubFile do
     field :include_author, :boolean
     field :include_reactions, :boolean
     field :include_permissions, :boolean
+    field :include_subscriptions_list, :boolean
+    field :include_potential_subscribers, :boolean
   end
 
   outputs do
@@ -42,6 +44,7 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubFile do
     Inputs.parse_includes(inputs, [
       include_author: :author,
       include_reactions: [reactions: :person],
+      include_subscriptions_list: :subscription_list,
       always_include: [:node, :blob],
     ])
   end
@@ -49,6 +52,7 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubFile do
   defp after_load(inputs, _me) do
     Inputs.parse_includes(inputs, [
       include_permissions: &File.set_permissions/1,
+      include_potential_subscribers: &File.load_potential_subscribers/1,
     ])
   end
 end
