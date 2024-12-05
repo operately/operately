@@ -2,11 +2,13 @@ defmodule Operately.ResourceHubs.File do
   use Operately.Schema
   use Operately.Repo.Getter
 
+  alias Operately.Notifications
+
   schema "resource_files" do
     belongs_to :node, Operately.ResourceHubs.Node, foreign_key: :node_id
     belongs_to :author, Operately.People.Person, foreign_key: :author_id
     belongs_to :blob, Operately.Blobs.Blob, foreign_key: :blob_id
-    belongs_to :subscription_list, Operately.Notifications.SubscriptionList, foreign_key: :subscription_list_id
+    belongs_to :subscription_list, Notifications.SubscriptionList, foreign_key: :subscription_list_id
 
     has_one :resource_hub, through: [:node, :resource_hub]
     has_one :access_context, through: [:node, :resource_hub, :access_context]
@@ -16,6 +18,7 @@ defmodule Operately.ResourceHubs.File do
     field :description, :map
 
     # populated with after load hooks
+    field :potential_subscribers, :any, virtual: true
     field :permissions, :any, virtual: true
 
     timestamps()
@@ -36,6 +39,17 @@ defmodule Operately.ResourceHubs.File do
   #
   # After load hooks
   #
+
+  def load_potential_subscribers(file = %__MODULE__{}) do
+    file = Repo.preload(file, [:access_context, resource_hub: [space: :members]])
+
+    subs =
+      file
+      |> Notifications.SubscribersLoader.preload_subscriptions()
+      |> Notifications.Subscriber.from_resource_hub_child()
+
+    %{file | potential_subscribers: subs}
+  end
 
   def set_permissions(file = %__MODULE__{}) do
     perms = Operately.ResourceHubs.Permissions.calculate(file.request_info.access_level)

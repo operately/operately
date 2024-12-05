@@ -11,6 +11,7 @@ import { assertPresent } from "@/utils/assertions";
 import { useLoadedData } from "./loader";
 import { Content } from "./Content";
 import { CommentSection, useComments } from "@/features/CommentSection";
+import { CurrentSubscriptions } from "@/features/Subscriptions";
 
 export function Page() {
   const { file } = useLoadedData();
@@ -24,6 +25,7 @@ export function Page() {
           <Content />
           <FileReactions />
           <FileComments />
+          <FileSubscriptions />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
@@ -62,6 +64,28 @@ function FileComments() {
         refresh={() => {}}
         commentParentType="resource_hub_file"
         canComment={file.permissions.canCommentOnFile}
+      />
+    </>
+  );
+}
+
+function FileSubscriptions() {
+  const { file } = useLoadedData();
+  const refresh = Pages.useRefresh();
+
+  assertPresent(file.potentialSubscribers, "potentialSubscribers should be present in file");
+  assertPresent(file.subscriptionList, "subscriptionList should be present in file");
+
+  return (
+    <>
+      <div className="border-t border-stroke-base mt-16 mb-8" />
+
+      <CurrentSubscriptions
+        potentialSubscribers={file.potentialSubscribers}
+        subscriptionList={file.subscriptionList}
+        name="file"
+        type="resource_hub_file"
+        callback={refresh}
       />
     </>
   );
