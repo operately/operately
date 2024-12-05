@@ -15,6 +15,8 @@ defmodule Operately.Blobs.Blob do
     field :filename, :string
     field :size, :integer, default: 0
     field :content_type, :string
+    field :height, :integer
+    field :width, :integer
 
     timestamps()
   end
@@ -22,7 +24,7 @@ defmodule Operately.Blobs.Blob do
   @doc false
   def changeset(blob, attrs) do
     blob
-    |> cast(attrs, [:filename, :author_id, :company_id, :status, :size, :content_type])
+    |> cast(attrs, [:filename, :author_id, :company_id, :status, :size, :content_type, :height, :width])
     |> set_storage_type()
     |> validate_required([:filename, :author_id, :company_id, :status, :storage_type, :size, :content_type])
   end
