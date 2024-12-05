@@ -83,9 +83,11 @@ function findIcon(nodeType: NodeType, node: Hub.ResourceHubNode) {
     case "folder":
       return IconFolder;
     case "file":
-      if (node.file?.type?.includes("image")) return IconPhoto;
-      if (node.file?.type?.includes("pdf")) return IconFileTypePdf;
-      if (node.file?.type?.includes("video")) return IconMovie;
+      assertPresent(node.file?.blob, "file.blob must be present in node");
+
+      if (node.file.blob.contentType?.includes("image")) return IconPhoto;
+      if (node.file.blob.contentType?.includes("pdf")) return IconFileTypePdf;
+      if (node.file.blob.contentType?.includes("video")) return IconMovie;
       return IconFile;
   }
 }
