@@ -115,6 +115,7 @@ defmodule OperatelyWeb.Api do
   mutation :edit_space_members_permissions, M.EditSpaceMembersPermissions
   mutation :edit_space_permissions, M.EditSpacePermissions
   mutation :edit_subscriptions_list, M.EditSubscriptionsList
+  mutation :rename_resource_hub_folder, M.RenameResourceHubFolder
 
   mutation :disconnect_goal_from_project, M.DisconnectGoalFromProject
   mutation :join_space, M.JoinSpace

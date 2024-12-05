@@ -6,6 +6,7 @@ defmodule Operately.ResourceHubs.Folder do
     belongs_to :node, Operately.ResourceHubs.Node, foreign_key: :node_id
 
     has_one :space, through: [:node, :resource_hub, :space]
+    has_one :resource_hub, through: [:node, :resource_hub]
     has_one :access_context, through: [:node, :resource_hub, :access_context]
     has_many :child_nodes, Operately.ResourceHubs.Node, foreign_key: :parent_folder_id
 
