@@ -557,6 +557,91 @@ defmodule Operately.Operations.CommentAddingTest do
     end
   end
 
+  describe "Commenting on resource hub file" do
+    @action "resource_hub_file_commented"
+
+    setup ctx do
+      ctx
+      |> Factory.add_space(:space)
+      |> Factory.add_space_member(:mike, :space)
+      |> Factory.add_space_member(:bob, :space)
+      |> Factory.add_space_member(:jane, :space)
+      |> Factory.add_resource_hub(:hub, :space, :creator)
+    end
+
+    test "Commenting on file notifies everyone", ctx do
+      file = create_file(ctx, true, [])
+
+      {:ok, comment} = Oban.Testing.with_testing_mode(:manual, fn ->
+        CommentAdding.run(ctx.creator, file, "resource_hub_file", RichText.rich_text("Some comment"))
+      end)
+
+      activity = get_activity(comment, @action)
+
+      assert notifications_count(action: @action) == 0
+
+      perform_job(activity.id)
+
+      assert notifications_count(action: @action) == 3
+
+      notifications = fetch_notifications(activity.id, action: @action)
+
+      Enum.each([ctx.mike, ctx.bob, ctx.jane], fn p ->
+        assert Enum.find(notifications, &(&1.person_id == p.id))
+      end)
+    end
+
+    test "Commenting on file notifies selected people", ctx do
+      file = create_file(ctx, false, [ctx.mike.id])
+
+      {:ok, comment} = Oban.Testing.with_testing_mode(:manual, fn ->
+        CommentAdding.run(ctx.creator, file, "resource_hub_file", RichText.rich_text("Some comment"))
+      end)
+
+      activity = get_activity(comment, @action)
+
+      assert notifications_count(action: @action) == 0
+
+      perform_job(activity.id)
+
+      assert notifications_count(action: @action) == 1
+
+      notification = fetch_notification(activity.id)
+      assert notification.person_id == ctx.mike.id
+    end
+
+    test "Mentioned person is notified", ctx do
+      ctx =
+        ctx
+        |> Factory.add_space(:space)
+        |> Factory.add_resource_hub(:hub, :space, :creator, company_access_level: Binding.no_access())
+        |> Factory.add_company_member(:person)
+
+      file = create_file(ctx, true, [])
+      content = RichText.rich_text(mentioned_people: [ctx.person]) |> Jason.decode!()
+
+      # Without permissions
+      {:ok, comment} = CommentAdding.run(ctx.creator, file, "resource_hub_file", content)
+
+      activity = get_activity(comment, @action)
+
+      assert notifications_count(action: @action) == 0
+      assert fetch_notifications(activity.id, action: @action) == []
+
+      # With permissions
+      {:ok, _} = Groups.add_members(ctx.creator, ctx.space.id, [
+        %{id: ctx.person.id, access_level: Binding.view_access()}
+      ])
+
+      {:ok, comment} = CommentAdding.run(ctx.creator, file, "resource_hub_file", content)
+
+      activity = get_activity(comment, @action)
+
+      assert notifications_count(action: @action) == 1
+      assert fetch_notification(activity.id).person_id == ctx.person.id
+    end
+  end
+
   #
   # Helpers
   #
@@ -566,5 +651,19 @@ defmodule Operately.Operations.CommentAddingTest do
       where: a.action == ^action and a.content["comment_id"] == ^comment.id
     )
     |> Repo.one()
+  end
+
+  defp create_file(ctx, send_to_everyone, people_list, content \\ nil) do
+    blob = Operately.BlobsFixtures.blob_fixture(%{author_id: ctx.creator.id, company_id: ctx.company.id})
+
+    {:ok, file} = Operately.Operations.ResourceHubFileCreating.run(ctx.creator, ctx.hub, %{
+      name: "Some name",
+      content: content || RichText.rich_text("Content"),
+      send_to_everyone: send_to_everyone,
+      subscription_parent_type: :resource_hub_file,
+      subscriber_ids: people_list,
+      blob_id: blob.id,
+    })
+    Repo.preload(file, :resource_hub)
   end
 end

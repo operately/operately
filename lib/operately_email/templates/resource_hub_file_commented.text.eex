@@ -1,0 +1,3 @@
+<%= short_name(@author) %> commented on: <%= @name %>
+
+Link: <%= @cta_url %>
