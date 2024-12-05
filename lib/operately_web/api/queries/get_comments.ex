@@ -96,6 +96,17 @@ defmodule OperatelyWeb.Api.Queries.GetComments do
     |> load_notifications(person, action: "resource_hub_document_commented")
   end
 
+  defp load(id, :resource_hub_file, person) do
+    from(c in Comment,
+      join: f in Operately.ResourceHubs.File, on: c.entity_id == f.id, as: :file,
+      where: f.id == ^id
+    )
+    |> preload_resources()
+    |> filter_by_view_access(person.id, named_binding: :file)
+    |> Repo.all()
+    |> load_notifications(person, action: "resource_hub_file_commented")
+  end
+
   defp preload_resources(query) do
     from(c in query,
       preload: [:author, reactions: :person],
