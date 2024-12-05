@@ -85,6 +85,17 @@ services:
     volumes:
       - ./locals3root:/containers3root
 
+  telegraf:
+    image: telegraf:latest
+    volumes:
+      - ./telegraf.conf:/etc/telegraf/telegraf.conf # Mount telegraf configuration file
+    env_file:
+      - telegraf.env
+    environment:
+      - NAME=devbox
+      - TELEGRAF_CONFIG=/etc/telegraf/telegraf.conf
+    restart: unless-stopped
+
 volumes:
   postgres-data:
     driver: local

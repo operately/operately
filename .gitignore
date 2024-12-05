@@ -46,6 +46,7 @@ media
 
 # Don't store environment secrets in the repository
 .env
+telegraf.env
 
 # Ignore test reports
 testreports
