@@ -293,6 +293,10 @@ defmodule OperatelyWeb.Paths do
     Operately.ShortUuid.encode!(file.id)
   end
 
+  def blob_id(blob) do
+    Operately.ShortUuid.encode!(blob.id)
+  end
+
   #
   # Path Construction Helpers
   #
