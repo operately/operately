@@ -45,6 +45,7 @@ defmodule OperatelyWeb.Api.Mutations.SubscribeToNotifications do
       :goal_update -> Goals.Permissions.check(access_level, :can_view)
       :message -> Groups.Permissions.check(access_level, :can_view)
       :resource_hub_document -> ResourceHubs.Permissions.check(access_level, :can_view)
+      :resource_hub_file -> ResourceHubs.Permissions.check(access_level, :can_view)
     end
   end
 end

@@ -64,7 +64,7 @@ defmodule Operately.ResourceHubs.Document do
     subs =
       document
       |> Notifications.SubscribersLoader.preload_subscriptions()
-      |> Notifications.Subscriber.from_resource_hub_document()
+      |> Notifications.Subscriber.from_resource_hub_child()
 
     %{document | potential_subscribers: subs}
   end

@@ -11,6 +11,7 @@ defmodule Operately.ResourceHubs.Permissions do
     :can_delete_document,
     :can_delete_file,
     :can_edit_document,
+    :can_edit_file,
   ]
 
   def calculate(access_level) when is_integer(access_level) do
@@ -24,6 +25,7 @@ defmodule Operately.ResourceHubs.Permissions do
       can_delete_document: access_level >= Binding.edit_access(),
       can_delete_file: access_level >= Binding.edit_access(),
       can_edit_document: access_level >= Binding.edit_access(),
+      can_edit_file: access_level >= Binding.edit_access(),
     }
   end
 

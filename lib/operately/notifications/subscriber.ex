@@ -84,14 +84,14 @@ defmodule Operately.Notifications.Subscriber do
     |> Map.values()
   end
 
-  def from_resource_hub_document(document) do
+  def from_resource_hub_child(resource_hub_child) do
     subs =
-      exclude_canceled_subscriptions(document.subscription_list)
+      exclude_canceled_subscriptions(resource_hub_child.subscription_list)
       |> Enum.into(%{}, fn s ->
       {s.person.id, from_subscription(s)}
     end)
 
-    potential_subs = Enum.into(document.resource_hub.space.members, %{}, fn p ->
+    potential_subs = Enum.into(resource_hub_child.resource_hub.space.members, %{}, fn p ->
       {p.id, from_person(p)}
     end)
 

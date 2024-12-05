@@ -5,6 +5,7 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubFileTest do
   import Operately.ResourceHubsFixtures
 
   alias Operately.Access.Binding
+  alias Operately.Notifications.SubscriptionList
 
   describe "security" do
     test "it requires authentication", ctx do
@@ -85,6 +86,35 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubFileTest do
       })
 
       assert res.file.author == Serializer.serialize(ctx.creator)
+    end
+
+    test "include_subscriptions_list", ctx do
+      assert {200, res} = query(ctx.conn, :get_resource_hub_file, %{id: Paths.file_id(ctx.my_file)})
+
+      refute res.file.subscription_list
+
+      assert {200, res} = query(ctx.conn, :get_resource_hub_file, %{
+        id: Paths.file_id(ctx.my_file),
+        include_subscriptions_list: true
+      })
+
+      {:ok, list} = SubscriptionList.get(:system, parent_id: ctx.my_file.id)
+
+      assert res.file.subscription_list.id == Paths.subscription_list_id(list)
+    end
+
+    test "include_potential_subscribers", ctx do
+      assert {200, res} = query(ctx.conn, :get_resource_hub_file, %{id: Paths.file_id(ctx.my_file)})
+
+      refute res.file.potential_subscribers
+
+      assert {200, res} = query(ctx.conn, :get_resource_hub_file, %{
+        id: Paths.file_id(ctx.my_file),
+        include_potential_subscribers: true,
+      })
+
+      assert length(res.file.potential_subscribers) == 1
+      assert hd(res.file.potential_subscribers).person == Serializer.serialize(ctx.creator)
     end
   end
 

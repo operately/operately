@@ -17,6 +17,8 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ResourceHubs.File do
       parent_folder: OperatelyWeb.Api.Serializer.serialize(file.node.parent_folder),
       name: file.node.name,
       description: Jason.encode!(file.description),
+      potential_subscribers: OperatelyWeb.Api.Serializer.serialize(file.potential_subscribers),
+      subscription_list: OperatelyWeb.Api.Serializer.serialize(file.subscription_list),
       reactions: OperatelyWeb.Api.Serializer.serialize(file.reactions),
       inserted_at: OperatelyWeb.Api.Serializer.serialize(file.inserted_at),
       permissions: OperatelyWeb.Api.Serializer.serialize(file.permissions),
