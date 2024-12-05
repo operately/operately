@@ -1,13 +1,4 @@
-<div align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://github.com/operately/operately/raw/main/docs/images/logo-black.svg">
-    <img alt="Operately logo" src="https://github.com/operately/operately/raw/main/docs/images/logo-white.svg" height="300px">
-  </picture>
-</div>
-
-<br><br>
-
-<h1 align="center">The Open-Source Startup Operating System</h1>
+<h1 align="center">Operately: The Open Source Startup Operating System</h1>
 
 <p align="center">
   Run your projects, goals, and processes like a high performance startup.
@@ -21,7 +12,7 @@
   ·
   <a href="https://github.com/operately/operately/issues">Issues</a>
   ·
-  <a href="https://twitter.com/operately">Twitter</a>
+  <a href="https://x.com/operately">𝕏</a>
 </p>
 
 <p align="center">
@@ -33,12 +24,12 @@
 
 ## About the project
 
+<img width="100%" alt="Operately screenshot" src="https://github.com/operately/website/blob/main/src/pages/_index/operately-v3-screenshot.png?raw=true">
+
 Every startup needs to align on goals, run projects, track KPIs, and standardize processes. However, figuring out the right systems that tie everything together is tough, and keeping them in order, even tougher.
 
 That’s why we’re building Operately: to give startups and SMBs the tools to become a high-performance 
 organization with 10x less effort.
-
-This project is in alpha and may experience significant changes.
 
 ## Installation
 
