@@ -42,8 +42,6 @@ defmodule Operately.MixProject do
       {:phoenix_live_view, "~> 0.20.17"},
       {:swoosh, "~> 1.17"},
       {:finch, "~> 0.19"},
-      {:telemetry_metrics, "~> 1.0"},
-      {:telemetry_poller, "~> 1.1"},
       {:jason, "~> 1.4"},
       {:plug_cowboy, "~> 2.7"},
       {:ueberauth, "~> 0.10"},
@@ -58,6 +56,10 @@ defmodule Operately.MixProject do
       {:hackney, "~> 1.20"},
       {:sweet_xml, "~> 0.7"},
       {:req, "~> 0.5.0"},
+
+      {:telemetry_metrics, "~> 1.0"},
+      {:telemetry_poller, "~> 1.1"},
+      {:telemetry_metrics_statsd, "~> 0.7.1"},
 
       # only in dev
       {:phoenix_live_reload, "~> 1.5", only: :dev},

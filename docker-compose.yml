@@ -17,6 +17,7 @@ services:
     depends_on:
       - db
       - s3mock
+      - telegraf
     environment:
       - DB_HOST=db
       - DB_USERNAME=postgres
@@ -91,8 +92,8 @@ services:
       - ./telegraf.conf:/etc/telegraf/telegraf.conf # Mount telegraf configuration file
     env_file:
       - telegraf.env
+    hostname: devbox
     environment:
-      - NAME=devbox
       - TELEGRAF_CONFIG=/etc/telegraf/telegraf.conf
     restart: unless-stopped
 
