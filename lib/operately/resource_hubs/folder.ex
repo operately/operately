@@ -17,6 +17,7 @@ defmodule Operately.ResourceHubs.Folder do
     field :potential_subscribers, :any, virtual: true
 
     timestamps()
+    soft_delete()
     request_info()
   end
 
