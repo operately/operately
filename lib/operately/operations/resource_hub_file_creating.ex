@@ -20,6 +20,7 @@ defmodule Operately.Operations.ResourceHubFileCreating do
         node_id: changes.node.id,
         author_id: author.id,
         blob_id: attrs.blob_id,
+        preview_blob_id: attrs[:preview_blob_id],
         description: attrs.content,
         subscription_list_id: changes.subscription_list.id,
       })
@@ -32,6 +33,14 @@ defmodule Operately.Operations.ResourceHubFileCreating do
     |> Multi.run(:blob, fn _, _ ->
       blob = Operately.Blobs.get_blob!(attrs.blob_id)
       Operately.Blobs.update_blob(blob, %{status: :uploaded})
+    end)
+    |> Multi.run(:preview_blob, fn _, _ ->
+      if attrs[:preview_blob_id] do
+        blob = Operately.Blobs.get_blob!(attrs.preview_blob_id)
+        Operately.Blobs.update_blob(blob, %{status: :uploaded})
+      else
+        {:ok, nil}
+      end
     end)
     |> Activities.insert_sync(author.id, :resource_hub_file_created, fn changes ->
       %{

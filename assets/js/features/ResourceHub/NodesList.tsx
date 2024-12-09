@@ -1,10 +1,13 @@
 import React from "react";
 
 import * as Hub from "@/models/resourceHubs";
-import { IconFolder, IconFile, IconPhoto, IconFileTypePdf, IconMovie } from "@tabler/icons-react";
+import { findFileSize } from "@/models/blobs";
+
+import { IconFolder, IconFile, IconPhoto, IconFileTypePdf, IconMovie, IconMusic } from "@tabler/icons-react";
 import classNames from "classnames";
 import { Paths } from "@/routes/paths";
 import { DivLink } from "@/components/Link";
+import { ImageWithPlaceholder } from "@/components/Image";
 import { richContentToString } from "@/components/RichContent";
 import { truncateString } from "@/utils/strings";
 import { assertPresent } from "@/utils/assertions";
@@ -48,14 +51,13 @@ function NodeItem({ node, permissions, refetch, testid }: NodeItemProps) {
     "grid grid-cols-[1fr,20px]",
     "border-b border-stroke-base first:border-t last:border-b-0",
   );
-  const Icon = findIcon(node.type as NodeType, node);
   const path = findPath(node.type as NodeType, node);
   const subtitle = findSubtitle(node.type as NodeType, node);
 
   return (
     <div className={className} data-test-id={testid}>
-      <DivLink to={path} className="flex gap-4 py-4 cursor-pointer">
-        <Icon size={48} />
+      <DivLink to={path} className="flex gap-4 py-4 items-center cursor-pointer">
+        <FilePreview node={node} />
         <div>
           <div className="font-bold text-lg">{node.name}</div>
           <div>{subtitle}</div>
@@ -81,6 +83,28 @@ function NodeItem({ node, permissions, refetch, testid }: NodeItemProps) {
   );
 }
 
+function FilePreview({ node }: { node: Hub.ResourceHubNode }) {
+  const Icon = findIcon(node.type as NodeType, node);
+
+  if (node.file?.blob?.contentType?.includes("image")) {
+    return <Thumbnail file={node.file} />;
+  } else {
+    return <Icon size={48} color="#444" />;
+  }
+}
+
+function Thumbnail({ file }: { file: Hub.ResourceHubFile }) {
+  assertPresent(file.blob, "blob must be present in file");
+
+  const imgRatio = file.blob.height! / file.blob.width!;
+
+  return (
+    <div className={`w-[48px] h-[${48 * imgRatio}px]`}>
+      <ImageWithPlaceholder src={file.blob.url!} alt={file.name!} ratio={imgRatio} />
+    </div>
+  );
+}
+
 function findIcon(nodeType: NodeType, node: Hub.ResourceHubNode) {
   switch (nodeType) {
     case "document":
@@ -93,6 +117,7 @@ function findIcon(nodeType: NodeType, node: Hub.ResourceHubNode) {
       if (node.file.blob.contentType?.includes("image")) return IconPhoto;
       if (node.file.blob.contentType?.includes("pdf")) return IconFileTypePdf;
       if (node.file.blob.contentType?.includes("video")) return IconMovie;
+      if (node.file.blob.contentType?.includes("audio")) return IconMusic;
       return IconFile;
   }
 }
@@ -112,12 +137,19 @@ function findSubtitle(nodeType: NodeType, node: Hub.ResourceHubNode) {
   switch (nodeType) {
     case "document":
       assertPresent(node.document?.content, "content must be present in node.document");
+
       const content = richContentToString(JSON.parse(node.document.content));
       return truncateString(content, 60);
     case "folder":
       assertPresent(node.folder?.childrenCount, "childrenCount must be present in node.folder");
+
       return node.folder.childrenCount === 1 ? "1 item" : `${node.folder.childrenCount} items`;
     case "file":
-      return "";
+      assertPresent(node.file?.size, "size must be present in node.file");
+      assertPresent(node.file?.description, "description must be present in node.file");
+
+      const size = findFileSize(node.file.size);
+      const description = richContentToString(JSON.parse(node.file.description));
+      return size + (description ? ` - ${truncateString(description, 50)}` : "");
   }
 }
