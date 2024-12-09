@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import { uploadFile } from "@/models/blobs";
+import { findFileSize, resizeImage, uploadFile } from "@/models/blobs";
 import { ResourceHub, ResourceHubFolder, useCreateResourceHubFile } from "@/models/resourceHubs";
 
 import Forms from "@/components/Forms";
@@ -44,15 +44,20 @@ export function AddFileModal({ file, resourceHub, folder, hideAddFilePopUp, show
     cancel: showAddFilePopUp,
     submit: async () => {
       const blob = await uploadFile(file, () => {});
+      const previewBlobId = await maybeUploadPreviewBlob(file);
+
       await post({
         name: form.values.name,
         description: JSON.stringify(form.values.description),
         blobId: blob.id,
+        previewBlobId,
         resourceHubId: resourceHub.id,
         folderId: folder?.id,
         sendNotificationsToEveryone: subscriptionsState.subscriptionType == Options.ALL,
         subscriberIds: subscriptionsState.currentSubscribersList,
       });
+
+      // Reset and clean up
       refresh();
       hideAddFilePopUp();
       form.actions.reset();
@@ -107,12 +112,11 @@ export function useAddFile(): UseFormProps {
   return { file, showAddFilePopUp, hideAddFilePopUp };
 }
 
-function findFileSize(size: number) {
-  const units = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
-
-  for (let unit of units) {
-    if (size < 1024) return `${Math.round(size)}${unit}`;
-    size /= 1024;
+async function maybeUploadPreviewBlob(file: File) {
+  if (file.type.includes("image")) {
+    const compressedImage = await resizeImage(file, { width: 100 });
+    const previewBlob = await uploadFile(compressedImage as any, () => {});
+    return previewBlob.id;
   }
 
   return;
