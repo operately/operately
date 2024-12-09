@@ -155,6 +155,12 @@ defmodule OperatelyWeb.Paths do
     create_path([company_id(company), "files", file_id(file)])
   end
 
+  def file_path(company = %Company{}, file, comment = %Comment{}) do
+    file_with_comment = file_id(file) <> "#" <> comment_id(comment)
+
+    create_path([company_id(company), "files", file_with_comment])
+  end
+
   @doc """
   Returns the URL for the given path.
 
