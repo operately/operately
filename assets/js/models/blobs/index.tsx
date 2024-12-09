@@ -5,13 +5,25 @@ import { createBlob } from "@/api";
 
 type ProgressCallback = (number: number) => any;
 type UploadResult = { id: string; url: string };
+interface FileDimensions {
+  width: number;
+  height: number;
+}
 
 export async function uploadFile(file: File, progressCallback: ProgressCallback): Promise<UploadResult> {
-  const blob = await createBlob({
+  let blob;
+  const attrs = {
     filename: file.name,
     size: file.size,
     contentType: file.type,
-  });
+  };
+
+  if (file.type.includes("image")) {
+    const dimensions = await findImageDimensions(file);
+    blob = await createBlob({ ...attrs, ...dimensions });
+  } else {
+    blob = await createBlob(attrs);
+  }
 
   const url = blob.signedUploadUrl!;
 
@@ -57,4 +69,20 @@ async function multipartUpload(file: File, url: string, progressCallback: Progre
   formData.append("file", file);
 
   await client.put(url, formData, config);
+}
+
+function findImageDimensions(imgFile: File): Promise<FileDimensions> {
+  return new Promise((resolve, _) => {
+    const reader = new FileReader();
+
+    reader.onload = (readerEvent) => {
+      const image = new Image();
+      image.onload = () => {
+        resolve({ width: image.width, height: image.height });
+      };
+      image.src = readerEvent.target?.result as string;
+    };
+
+    reader.readAsDataURL(imgFile);
+  });
 }

@@ -661,6 +661,17 @@ export interface Assignments {
   assignments?: Assignment[] | null;
 }
 
+export interface Blob {
+  id?: string | null;
+  status?: string | null;
+  filename?: string | null;
+  size?: number | null;
+  contentType?: string | null;
+  height?: number | null;
+  width?: number | null;
+  url?: string | null;
+}
+
 export interface Comment {
   id?: string | null;
   insertedAt?: string | null;
@@ -1082,9 +1093,7 @@ export interface ResourceHubFile {
   insertedAt?: string | null;
   permissions?: ResourceHubPermissions | null;
   reactions?: Reaction[] | null;
-  type?: string | null;
-  size?: number | null;
-  url?: string | null;
+  blob?: Blob | null;
 }
 
 export interface ResourceHubFolder {
@@ -2089,6 +2098,8 @@ export interface CreateBlobInput {
   filename?: string | null;
   size?: number | null;
   contentType?: string | null;
+  width?: number | null;
+  height?: number | null;
 }
 
 export interface CreateBlobResult {
