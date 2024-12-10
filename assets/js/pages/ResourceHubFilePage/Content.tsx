@@ -10,6 +10,7 @@ export function Content() {
 
   if (file.blob.contentType?.includes("image")) return <Image />;
   if (file.blob.contentType?.includes("video")) return <Video />;
+  if (file.blob.contentType?.includes("pdf")) return <Pdf />;
 
   return <></>;
 }
@@ -42,6 +43,17 @@ function Video() {
         <source src={file.blob.url!} type="video/mp4" />
         Your browser does not support videos.
       </video>
+    </div>
+  );
+}
+
+function Pdf() {
+  const { file } = useLoadedData();
+  assertPresent(file.blob, "blob must be present in file");
+
+  return (
+    <div style={{ width: "100%", height: "500px" }}>
+      <iframe src={file.blob.url! + "#toolbar=0"} width="100%" height="100%" style={{ border: "none" }} />
     </div>
   );
 }
