@@ -19,6 +19,21 @@ export function findImageDimensions(imgFile: File): Promise<FileDimensions> {
   });
 }
 
+export function findVideoDimensions(videoFile: File): Promise<FileDimensions> {
+  return new Promise((resolve, reject) => {
+    const video = document.createElement("video");
+    video.src = URL.createObjectURL(videoFile);
+
+    video.onloadedmetadata = () => {
+      resolve({ width: video.videoWidth, height: video.videoHeight });
+    };
+
+    video.onerror = (error) => {
+      reject(error);
+    };
+  });
+}
+
 export async function resizeImage(imgFile: File, { height, width }: Partial<FileDimensions>): Promise<File> {
   const { width: originalWidth, height: originalHeight } = await findImageDimensions(imgFile);
 
