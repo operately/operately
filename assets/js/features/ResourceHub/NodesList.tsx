@@ -9,7 +9,7 @@ import { richContentToString } from "@/components/RichContent";
 import { truncateString } from "@/utils/strings";
 import { assertPresent } from "@/utils/assertions";
 import { createTestId } from "@/utils/testid";
-import { DocumentMenu, FileMenu } from "./components";
+import { DocumentMenu, FileMenu, FolderMenu } from "./components";
 
 type NodeType = "document" | "folder" | "file";
 
@@ -62,6 +62,11 @@ function NodeItem({ node, permissions, refetch, testid }: NodeItemProps) {
         </div>
       </DivLink>
 
+      {node.folder && (
+        <div className="flex items-center">
+          <FolderMenu folder={node.folder} permissions={permissions} refetch={refetch} />
+        </div>
+      )}
       {node.document && (
         <div className="flex items-center">
           <DocumentMenu document={node.document} permissions={permissions} refetch={refetch} />
