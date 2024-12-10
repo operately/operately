@@ -7,10 +7,11 @@ import * as Paper from "@/components/PaperContainer";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { Spacer } from "@/components/Spacer";
 import { assertPresent } from "@/utils/assertions";
+import { CommentSection, useComments } from "@/features/CommentSection";
+import { Paths } from "@/routes/paths";
 
 import { useLoadedData } from "./loader";
 import { Content } from "./Content";
-import { CommentSection, useComments } from "@/features/CommentSection";
 
 export function Page() {
   const { file } = useLoadedData();
@@ -18,6 +19,8 @@ export function Page() {
   return (
     <Pages.Page title={file.name!}>
       <Paper.Root>
+        <Navigation />
+
         <Paper.Body>
           <Paper.Header title={file.name!} layout="title-left-actions-right" />
 
@@ -27,6 +30,23 @@ export function Page() {
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
+  );
+}
+
+function Navigation() {
+  const { file } = useLoadedData();
+
+  assertPresent(file.resourceHub, "resourceHub must be present in file");
+
+  const name = file.parentFolder?.name || file.resourceHub.name;
+  const path = file.parentFolder
+    ? Paths.resourceHubFolderPath(file.parentFolder.id!)
+    : Paths.resourceHubPath(file.resourceHub.id!);
+
+  return (
+    <Paper.Navigation>
+      <Paper.NavItem linkTo={path}>{name}</Paper.NavItem>
+    </Paper.Navigation>
   );
 }
 

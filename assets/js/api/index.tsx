@@ -1782,6 +1782,8 @@ export interface GetResourceHubDocumentResult {
 export interface GetResourceHubFileInput {
   id?: Id | null;
   includeAuthor?: boolean | null;
+  includeResourceHub?: boolean | null;
+  includeParentFolder?: boolean | null;
   includeReactions?: boolean | null;
   includePermissions?: boolean | null;
 }
