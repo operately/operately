@@ -1095,6 +1095,8 @@ export interface ResourceHubFile {
   parentFolder?: ResourceHubFolder | null;
   name?: string | null;
   description?: string | null;
+  potentialSubscribers?: Subscriber[] | null;
+  subscriptionList?: SubscriptionList | null;
   insertedAt?: string | null;
   permissions?: ResourceHubPermissions | null;
   reactions?: Reaction[] | null;
@@ -1784,6 +1786,8 @@ export interface GetResourceHubFileInput {
   includeAuthor?: boolean | null;
   includeReactions?: boolean | null;
   includePermissions?: boolean | null;
+  includeSubscriptionsList?: boolean | null;
+  includePotentialSubscribers?: boolean | null;
 }
 
 export interface GetResourceHubFileResult {
