@@ -74,6 +74,11 @@ defmodule Operately.ResourceHubsFixtures do
       description: Keyword.get(attrs, :description, RichText.rich_text("Content")) ,
     })
 
+    {:ok, _} = Operately.Notifications.update_subscription_list(subscription_list, %{
+      parent_id: file.id,
+      parent_type: :resource_hub_file,
+    })
+
     file
   end
 end
