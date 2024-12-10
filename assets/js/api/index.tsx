@@ -544,6 +544,13 @@ export interface ActivityContentResourceHubFolderCreated {
   folder?: ResourceHubFolder | null;
 }
 
+export interface ActivityContentResourceHubFolderRenamed {
+  resourceHub?: ResourceHub | null;
+  folder?: ResourceHubFolder | null;
+  oldName?: string | null;
+  newName?: string | null;
+}
+
 export interface ActivityContentSpaceAdded {
   companyId?: string | null;
   spaceId?: string | null;
@@ -2627,6 +2634,15 @@ export interface RemoveProjectMilestoneResult {
   milestone?: Milestone | null;
 }
 
+export interface RenameResourceHubFolderInput {
+  folderId?: Id | null;
+  newName?: string | null;
+}
+
+export interface RenameResourceHubFolderResult {
+  success?: boolean | null;
+}
+
 export interface ReopenGoalInput {
   id?: string | null;
   message?: string | null;
@@ -3256,6 +3272,10 @@ export class ApiClient {
     return this.post("/remove_project_milestone", input);
   }
 
+  async renameResourceHubFolder(input: RenameResourceHubFolderInput): Promise<RenameResourceHubFolderResult> {
+    return this.post("/rename_resource_hub_folder", input);
+  }
+
   async reopenGoal(input: ReopenGoalInput): Promise<ReopenGoalResult> {
     return this.post("/reopen_goal", input);
   }
@@ -3716,6 +3736,11 @@ export async function removeProjectMilestone(
   input: RemoveProjectMilestoneInput,
 ): Promise<RemoveProjectMilestoneResult> {
   return defaultApiClient.removeProjectMilestone(input);
+}
+export async function renameResourceHubFolder(
+  input: RenameResourceHubFolderInput,
+): Promise<RenameResourceHubFolderResult> {
+  return defaultApiClient.renameResourceHubFolder(input);
 }
 export async function reopenGoal(input: ReopenGoalInput): Promise<ReopenGoalResult> {
   return defaultApiClient.reopenGoal(input);
@@ -4442,6 +4467,15 @@ export function useRemoveProjectMilestone(): UseMutationHookResult<
   );
 }
 
+export function useRenameResourceHubFolder(): UseMutationHookResult<
+  RenameResourceHubFolderInput,
+  RenameResourceHubFolderResult
+> {
+  return useMutation<RenameResourceHubFolderInput, RenameResourceHubFolderResult>((input) =>
+    defaultApiClient.renameResourceHubFolder(input),
+  );
+}
+
 export function useReopenGoal(): UseMutationHookResult<ReopenGoalInput, ReopenGoalResult> {
   return useMutation<ReopenGoalInput, ReopenGoalResult>((input) => defaultApiClient.reopenGoal(input));
 }
@@ -4761,6 +4795,8 @@ export default {
   useRemoveProjectContributor,
   removeProjectMilestone,
   useRemoveProjectMilestone,
+  renameResourceHubFolder,
+  useRenameResourceHubFolder,
   reopenGoal,
   useReopenGoal,
   restoreCompanyMember,
