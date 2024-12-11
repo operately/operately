@@ -3,6 +3,10 @@ defmodule Operately.Demo.Resources do
     %{}
   end
 
+  def get(resources, keys) when is_list(keys) do
+    Enum.map(keys, fn key -> get(resources, key) end)
+  end
+
   def get(resources, key) do
     case Map.get(resources, key) do
       nil -> raise "Key #{key} not found in resources"
