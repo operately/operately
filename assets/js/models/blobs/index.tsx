@@ -3,6 +3,8 @@ import csrftoken from "@/utils/csrf_token";
 
 import { createBlob } from "@/api";
 
+export { useDownloadFile } from "./useDownloadFile";
+
 type ProgressCallback = (number: number) => any;
 type UploadResult = { id: string; url: string };
 interface FileDimensions {
