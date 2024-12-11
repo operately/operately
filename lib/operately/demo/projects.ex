@@ -3,7 +3,7 @@ defmodule Operately.Demo.Projects do
   alias Operately.Projects.Milestone
 
   def create_projects(resources, data) do
-    Resources.create(resources, data, fn {resources, data} ->
+    Resources.create(resources, data, fn {resources, data, _index} ->
       create_project(resources, data)
     end)
   end

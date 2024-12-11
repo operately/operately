@@ -2,7 +2,7 @@ defmodule Operately.Demo.Spaces do
   alias Operately.Demo.Resources
 
   def create_spaces(resources, data) do
-    Resources.create(resources, data, fn {resources, data} ->
+    Resources.create(resources, data, fn {resources, data, _index} ->
       create_space(resources, data)
     end)
   end

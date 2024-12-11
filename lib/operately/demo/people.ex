@@ -2,7 +2,7 @@ defmodule Operately.Demo.People do
   alias Operately.Demo.Resources
 
   def create_people(resources, data) do
-    Resources.create(resources, data, fn {resources, d} ->
+    Resources.create(resources, data, fn {resources, d, _index} ->
       create_person(resources, d)
     end)
   end

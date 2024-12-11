@@ -7,12 +7,12 @@ defmodule Operately.Demo.Discussions do
   def create_discussions(resources, nil), do: resources
 
   def create_discussions(resources, data) do
-    Resources.create(resources, data, fn {resources, data} ->
-      create_discussion(resources, data)
+    Resources.create(resources, data, fn {resources, data, index} ->
+      create_discussion(resources, data, index)
     end)
   end
 
-  defp create_discussion(resources, data) do
+  defp create_discussion(resources, data, index) do
     author = Resources.get(resources, data.author)
     space = Resources.get(resources, data.space)
     board = Operately.Messages.get_messages_board(space_id: space.id)
@@ -27,7 +27,8 @@ defmodule Operately.Demo.Discussions do
       subscriber_ids: []
     })
 
-    {:ok, _} = create_comments(resources, discussion, data[:comments])
+    update_inserted_at(discussion, index)
+    create_comments(resources, discussion, data[:comments])
 
     discussion
   end
@@ -36,18 +37,34 @@ defmodule Operately.Demo.Discussions do
   defp create_comments(_, discussion, nil), do: {:ok, discussion}
 
   defp create_comments(resources, discussion, comments) do
-    Enum.map(comments, fn comment ->
-      {:ok, _} = create_comment(resources, discussion, comment)
-    end)
-
-    {:ok, discussion}
+    comments
+    |> Enum.with_index()
+    |> Enum.map(fn {comment, index} -> create_comment(resources, discussion, comment, index) end)
   end
 
-  defp create_comment(resources, discussion, data) do
+  defp create_comment(resources, discussion, data, index) do
     author = Resources.get(resources, data.author)
     discussion = Operately.Repo.preload(discussion, :space)
     content = PoorMansMarkdown.from_markdown(data.content)
-    Operately.Operations.CommentAdding.run(author, discussion, "message", content)
+
+    {:ok, comment} = Operately.Operations.CommentAdding.run(author, discussion, "message", content)
+
+    update_comment_inserted_at(comment, index)
+  end
+
+  # if every comment is inserted at the same time, they will have the same inserted_at value
+  # and the sorting will not have a well defined order
+
+  defp update_inserted_at(discussion, index) do
+    discussion
+    |> Operately.Messages.Message.changeset(%{inserted_at: NaiveDateTime.add(discussion.inserted_at, index, :second)})
+    |> Operately.Repo.update()
+  end
+
+  defp update_comment_inserted_at(comment, index) do
+    comment
+    |> Operately.Updates.Comment.changeset(%{inserted_at: NaiveDateTime.add(comment.inserted_at, index, :second)})
+    |> Operately.Repo.update()
   end
 
 

@@ -25,8 +25,8 @@ defmodule Operately.Demo.Resources do
   end
 
   def create(resources, data, fun) when is_list(data) do
-    Enum.reduce(data, resources, fn d, resources ->
-      add(resources, d.key, fun.({resources, d}))
+    Enum.reduce(Enum.with_index(data), resources, fn {d, index}, resources ->
+      add(resources, d.key, fun.({resources, d, index}))
     end)
   end
 end
