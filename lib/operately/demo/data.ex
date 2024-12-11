@@ -50,7 +50,7 @@ defmodule Operately.Demo.Data do
           reports_to: :owner
         },
         %{
-          key: :charlie_davis,
+          key: :martin_smith,
           name: "Martin Smith",
           title: "Chief Financial Officer (CFO)",
           avatar: "photo-1472099645785-5658abf4ff4e",
@@ -127,7 +127,7 @@ defmodule Operately.Demo.Data do
           reports_to: :frank_miller
         },
         %{
-          key: :nathan_morris,
+          key: :noah_lewis,
           name: "Noah Lewis",
           title: "Director of Sales",
           avatar: "photo-1568602471122-7832951cc4c5",
@@ -181,26 +181,40 @@ defmodule Operately.Demo.Data do
           key: :product_space,
           name: "Product",
           description: "Build and ship high quality features to our customers",
+          members: [
+            :walter_baker,
+            :liam_harris,
+            :frank_miller,
+          ]
         },
         %{
           key: :people_space,
           name: "People",
           description: "Hiring, internal operations, and employee experience",
+          members: [
+            :karen_martinez,
+          ],
+          privacy: :invite_only
         },
         %{
           key: :marketing_space,
           name: "Marketing",
           description: "Create product awareness and bring leads",
-        },
-        %{
-          key: :legal_space,
-          name: "Legal",
-          description: "Taking care of the legal side of things. Clarity, compliance, and confidence",
+          members: [
+            :rachel_king,
+            :olivia_hall,
+            :emily_davis,
+            :noah_lewis,
+            :paul_young
+          ]
         },
         %{
           key: :finance_space,
           name: "Finance",
           description: "Providing accurate and timely financial info and safeguarding company assets",
+          members: [
+            :martin_smith,
+          ]
         }
       ],
       goals: [
@@ -240,7 +254,7 @@ defmodule Operately.Demo.Data do
           key: :optimize_roi_of_ads,
           name: "Optimize ROI of ads",
           space: :marketing_space,
-          champion: :nathan_morris,
+          champion: :noah_lewis,
           reviewer: :rachel_king,
           parent: :increase_user_acquisition,
           targets: [
@@ -363,7 +377,7 @@ defmodule Operately.Demo.Data do
           key: :ensure_financial_stability,
           name: "Ensure Financial Stability",
           space: :finance_space,
-          champion: :charlie_davis,
+          champion: :martin_smith,
           reviewer: :owner,
           parent: :scale_up_company,
           targets: [
@@ -381,10 +395,10 @@ defmodule Operately.Demo.Data do
           key: :refine_ad_targeting,
           name: "Refine ad targeting on social media platforms",
           space: :marketing_space,
-          champion: :nathan_morris,
+          champion: :noah_lewis,
           reviewer: :emily_davis,
           contributors: [
-            %{person: :nathan_morris, responsibility: "Growth Marketer"}
+            %{person: :noah_lewis, responsibility: "Growth Marketer"}
           ],
           goal: :optimize_roi_of_ads,
           description: "This project aims to improve our ad targeting strategies on major social media platforms. By analyzing user behavior and creating an ideal customer profile, we'll develop more effective ad creatives. The project includes A/B testing different ad placements and content to maximize our return on investment. Success will be measured by increased click-through rates and improved conversion from ads to signups.",
@@ -561,10 +575,10 @@ defmodule Operately.Demo.Data do
           key: :prepare_series_a,
           name: "Prepare pitch deck and financial projections for Series A funding",
           space: :finance_space,
-          champion: :charlie_davis,
+          champion: :martin_smith,
           reviewer: :owner,
           contributors: [
-            %{person: :charlie_davis, responsibility: "CFO"}
+            %{person: :martin_smith, responsibility: "CFO"}
           ],
           goal: :ensure_financial_stability,
           description: "This project is critical for securing our Series A funding. We'll gather key metrics and growth data from all departments to develop a comprehensive financial model with 3-year projections. The project includes creating a compelling narrative and designing an impactful pitch deck. We'll also prepare for investor meetings by rehearsing with mentors and advisors. Success will be measured by securing the desired funding amount and establishing valuable relationships with investors.",
@@ -620,6 +634,42 @@ defmodule Operately.Demo.Data do
 
           Welcome aboard, Tina! 🎉
           """
+        },
+        %{
+          key: :quarterly_company_update,
+          space: :company_space,
+          author: :bob_williams,
+          title: "Quarterly Company Update & 2024 Strategic Focus",
+          content: """
+          As we wrap up another incredible quarter, I wanted to share some key
+          updates and our strategic focus areas for 2024. We've made
+          significant progress on our scale-up initiatives, growing from 15 to
+          18 employees and increasing our ARR to $1.44M. Our process
+          documentation project has reached 60% completion, setting us up for
+          more efficient onboarding and operations.
+
+          Looking ahead to 2024, we're focusing on three key areas:
+
+          1. Accelerating our market expansion, particularly in European markets
+          2. Strengthening our product capabilities through new collaborative features
+          3. Building out our core teams, especially in Product and Customer Support
+
+          Thanks to everyone for your continued dedication and hard work!
+          """,
+          comments: [
+            %{
+              author: :martin_smith,
+              content: """
+              Great update, Bob. The financial metrics are trending positively. Looking forward to discussing the Series A preparation in our next leadership meeting.
+              """,
+            },
+            %{
+              author: :karen_martinez,
+              content: """
+              The new documentation is already making a difference in our onboarding process. I've received positive feedback from our recent hires.
+              """
+            }
+          ]
         }
       ]
     }
