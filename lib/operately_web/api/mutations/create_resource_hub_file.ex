@@ -9,6 +9,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHubFile do
     field :resource_hub_id, :id
     field :folder_id, :id
     field :blob_id, :string
+    field :preview_blob_id, :string
     field :name, :string
     field :description, :string
     field :send_notifications_to_everyone, :boolean

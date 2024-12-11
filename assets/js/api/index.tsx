@@ -1112,6 +1112,8 @@ export interface ResourceHubFile {
   insertedAt?: string | null;
   permissions?: ResourceHubPermissions | null;
   reactions?: Reaction[] | null;
+  type?: string | null;
+  size?: number | null;
   blob?: Blob | null;
 }
 
@@ -2224,6 +2226,7 @@ export interface CreateResourceHubFileInput {
   resourceHubId?: Id | null;
   folderId?: Id | null;
   blobId?: string | null;
+  previewBlobId?: string | null;
   name?: string | null;
   description?: string | null;
   sendNotificationsToEveryone?: boolean | null;

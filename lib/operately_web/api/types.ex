@@ -643,6 +643,8 @@ defmodule OperatelyWeb.Api.Types do
     field :inserted_at, :string
     field :permissions, :resource_hub_permissions
     field :reactions, list_of(:reaction)
+    field :type, :string
+    field :size, :integer
     field :blob, :blob
   end
 
