@@ -634,6 +634,42 @@ defmodule Operately.Demo.Data do
 
           Welcome aboard, Tina! 🎉
           """
+        },
+        %{
+          key: :quarterly_company_update,
+          space: :company_space,
+          author: :bob_williams,
+          title: "Quarterly Company Update & 2024 Strategic Focus",
+          content: """
+          As we wrap up another incredible quarter, I wanted to share some key
+          updates and our strategic focus areas for 2024. We've made
+          significant progress on our scale-up initiatives, growing from 15 to
+          18 employees and increasing our ARR to $1.44M. Our process
+          documentation project has reached 60% completion, setting us up for
+          more efficient onboarding and operations.
+
+          Looking ahead to 2024, we're focusing on three key areas:
+
+          1. Accelerating our market expansion, particularly in European markets
+          2. Strengthening our product capabilities through new collaborative features
+          3. Building out our core teams, especially in Product and Customer Support
+
+          Thanks to everyone for your continued dedication and hard work!
+          """,
+          comments: [
+            %{
+              author: :martin_smith,
+              content: """
+              Great update, Bob. The financial metrics are trending positively. Looking forward to discussing the Series A preparation in our next leadership meeting.
+              """,
+            },
+            %{
+              author: :karen_martinez,
+              content: """
+              The new documentation is already making a difference in our onboarding process. I've received positive feedback from our recent hires.
+              """
+            }
+          ]
         }
       ]
     }

@@ -1,6 +1,7 @@
 defmodule Operately.Demo.Discussions do
   alias Operately.Demo.Resources
   alias Operately.Operations.DiscussionPosting
+  alias Operately.Demo.PoorMansMarkdown
 
   # no discussions to create
   def create_discussions(resources, nil), do: resources
@@ -19,97 +20,35 @@ defmodule Operately.Demo.Discussions do
     {:ok, discussion} = DiscussionPosting.run(author, space, %{
       messages_board_id: board.id,
       title: data.title,
-      content: from_markdown(data.content),
+      content: PoorMansMarkdown.from_markdown(data.content),
       post_as_draft: false,
       send_to_everyone: true,
       subscription_parent_type: :message,
       subscriber_ids: []
     })
 
+    {:ok, _} = create_comments(resources, discussion, data[:comments])
+
     discussion
   end
 
-  #
-  # Poor man's Markdown to ProseMirror conversion.
-  # Markdown support is limited to paragraphs and bullet points.
-  #
+  # no comments to create
+  defp create_comments(_, discussion, nil), do: {:ok, discussion}
 
-  defp from_markdown(markdown) do
-    markdown
-    |> String.split("\n\n", trim: true)   # Split into blocks (paragraphs/lists)
-    |> Enum.reduce([], &parse_block/2)    # Parse each block
-    |> build_prosemirror_doc()            # Build the ProseMirror document
+  defp create_comments(resources, discussion, comments) do
+    Enum.map(comments, fn comment ->
+      {:ok, _} = create_comment(resources, discussion, comment)
+    end)
+
+    {:ok, discussion}
   end
 
-  defp build_prosemirror_doc(content) do
-    %{
-      "type" => "doc",
-      "content" => content
-    }
+  defp create_comment(resources, discussion, data) do
+    author = Resources.get(resources, data.author)
+    discussion = Operately.Repo.preload(discussion, :space)
+    content = PoorMansMarkdown.from_markdown(data.content)
+    Operately.Operations.CommentAdding.run(author, discussion, "message", content)
   end
 
-  defp parse_block(block, acc) do
-    if String.starts_with?(block, "- ") do
-      acc ++ [parse_bullet_list(block)]
-    else
-      acc ++ parse_paragraph(block)
-    end
-  end
 
-  defp parse_bullet_list(block) do
-    items =
-      block
-      |> String.split("\n", trim: true)
-      |> Enum.map(&parse_bullet_item/1)
-
-    %{
-      "type" => "bulletList",
-      "content" => items
-    }
-  end
-
-  defp parse_bullet_item(item) do
-    cleaned_item = String.trim_leading(item, "- ")
-
-    %{
-      "type" => "listItem",
-      "content" => [%{"type" => "paragraph", "content" => [%{"type" => "text", "text" => cleaned_item}]}]
-    }
-  end
-
-  defp parse_paragraph(block) do
-    [
-      %{
-        "type" => "paragraph",
-        "content" => parse_text(block)
-      },
-      %{"type" => "paragraph"}
-    ]
-  end
-
-  defp parse_text(text) do
-    # support for bold text e.g **text**
-    regex = ~r/\*\*(.*?)\*\*/
-
-    String.split(text, regex, include_captures: true, trim: true)
-    |> Enum.map(&build_text_node/1)
-  end
-
-  defp build_text_node(text) do
-    cond do
-      String.starts_with?(text, "**") && String.ends_with?(text, "**") ->
-        bold_text = String.trim(text, "**")
-        %{
-          "type" => "text",
-          "text" => bold_text,
-          "marks" => [%{"type" => "bold"}]
-        }
-
-      true ->
-        %{
-          "type" => "text",
-          "text" => text
-        }
-    end
-  end
 end
