@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 
 import { findFileSize, resizeImage, uploadFile } from "@/models/blobs";
-import { ResourceHub, ResourceHubFolder, useCreateResourceHubFile } from "@/models/resourceHubs";
+import { ResourceHub, ResourceHubFile, ResourceHubFolder, useCreateResourceHubFile } from "@/models/resourceHubs";
 
 import Forms from "@/components/Forms";
 import Modal from "@/components/Modal";
 import { Options, SubscribersSelector, useSubscriptions } from "@/features/Subscriptions";
 import { assertPresent } from "@/utils/assertions";
 import { Spacer } from "@/components/Spacer";
+import { LoadingProgressBar } from "@/components/LoadingProgressBar";
 
 interface UseFormProps {
   file: any;
@@ -26,6 +27,7 @@ export function AddFileModal({ file, resourceHub, folder, hideAddFilePopUp, show
 
   assertPresent(potentialSubscribers, "potentialSubscribers must be present in folder or resourceHub");
 
+  const [progress, setProgress] = useState(0);
   const [post] = useCreateResourceHubFile();
   const subscriptionsState = useSubscriptions(potentialSubscribers, {
     ignoreMe: true,
@@ -43,13 +45,13 @@ export function AddFileModal({ file, resourceHub, folder, hideAddFilePopUp, show
     },
     cancel: showAddFilePopUp,
     submit: async () => {
-      const blob = await uploadFile(file, () => {});
-      const previewBlobId = await maybeUploadPreviewBlob(file);
+      const previewBlobId = await maybeUploadPreviewBlob(file, setProgress);
+      const blobId = await uploadMainBlob(file, setProgress);
 
       await post({
         name: form.values.name,
         description: JSON.stringify(form.values.description),
-        blobId: blob.id,
+        blobId,
         previewBlobId,
         resourceHubId: resourceHub.id,
         folderId: folder?.id,
@@ -64,10 +66,12 @@ export function AddFileModal({ file, resourceHub, folder, hideAddFilePopUp, show
     },
   });
 
+  if (form.state === "submitting") return <UploadingModal progress={progress} isOpen={Boolean(file)} />;
+
   return (
     <Modal title="Upload file" isOpen={Boolean(file)} hideModal={hideAddFilePopUp}>
       <Forms.Form form={form}>
-        <div className="max-h-[70vh] overflow-y-scroll">
+        <div className="max-h-[65vh] overflow-y-scroll">
           <Forms.FieldGroup>
             <Forms.TextInput label="Name" field="name" />
             <Forms.RichTextArea
@@ -75,14 +79,12 @@ export function AddFileModal({ file, resourceHub, folder, hideAddFilePopUp, show
               field="description"
               mentionSearchScope={{ type: "none" }}
               placeholder="Description..."
+              height="min-h-[120px]"
             />
-            <div>
-              <div>File: {file?.name}</div>
-              <div>Size: {findFileSize(file?.size)}</div>
-            </div>
+            <FileDetails file={file} />
           </Forms.FieldGroup>
 
-          <Spacer size={4} />
+          <Spacer size={2} />
           <SubscribersSelector state={subscriptionsState} resourceHubName={resourceHub.name!} />
         </div>
 
@@ -112,10 +114,47 @@ export function useAddFile(): UseFormProps {
   return { file, showAddFilePopUp, hideAddFilePopUp };
 }
 
-async function maybeUploadPreviewBlob(file: File) {
+function FileDetails({ file }: { file: ResourceHubFile }) {
+  return (
+    <div className="flex gap-4 items-center">
+      <div>
+        <b>File:</b> {file.name}
+      </div>
+      <div>&middot;</div>
+      <div>
+        <b>Size:</b> {findFileSize(file.size!)}
+      </div>
+    </div>
+  );
+}
+
+function UploadingModal({ progress, isOpen }) {
+  return (
+    <Modal isOpen={isOpen}>
+      <div className="text-center">Uploading file</div>
+      <LoadingProgressBar progress={progress} barClassName="mt-2" />
+    </Modal>
+  );
+}
+
+async function uploadMainBlob(file: File, setProgress: React.Dispatch<React.SetStateAction<number>>) {
+  const blob = await uploadFile(file, (progress) => {
+    // If the file is an image, a preview blob is uploaded
+    // before the main blob, which accounts for the first 20%
+    // of the progress bar.
+    if (file.type.includes("image")) {
+      setProgress(20 + progress * 0.8);
+    } else {
+      setProgress(progress);
+    }
+  });
+  return blob.id;
+}
+
+async function maybeUploadPreviewBlob(file: File, setProgress: React.Dispatch<React.SetStateAction<number>>) {
   if (file.type.includes("image")) {
     const compressedImage = await resizeImage(file, { width: 100 });
-    const previewBlob = await uploadFile(compressedImage as any, () => {});
+    const previewBlob = await uploadFile(compressedImage, (progress) => setProgress(progress * 0.2));
     return previewBlob.id;
   }
 
