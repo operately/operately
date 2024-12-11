@@ -2,15 +2,13 @@ import axios, { AxiosRequestConfig } from "axios";
 import csrftoken from "@/utils/csrf_token";
 
 import { createBlob } from "@/api";
+import { findImageDimensions } from "./utils";
 
 export { useDownloadFile } from "./useDownloadFile";
+export { resizeImage, findFileSize } from "./utils";
 
 type ProgressCallback = (number: number) => any;
 type UploadResult = { id: string; url: string };
-interface FileDimensions {
-  width: number;
-  height: number;
-}
 
 export async function uploadFile(file: File, progressCallback: ProgressCallback): Promise<UploadResult> {
   let blob;
@@ -71,20 +69,4 @@ async function multipartUpload(file: File, url: string, progressCallback: Progre
   formData.append("file", file);
 
   await client.put(url, formData, config);
-}
-
-function findImageDimensions(imgFile: File): Promise<FileDimensions> {
-  return new Promise((resolve, _) => {
-    const reader = new FileReader();
-
-    reader.onload = (readerEvent) => {
-      const image = new Image();
-      image.onload = () => {
-        resolve({ width: image.width, height: image.height });
-      };
-      image.src = readerEvent.target?.result as string;
-    };
-
-    reader.readAsDataURL(imgFile);
-  });
 }

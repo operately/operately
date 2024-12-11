@@ -6,7 +6,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ResourceHubs.File do
       description: Jason.encode!(file.description),
       type: Ecto.assoc_loaded?(file.blob) && file.blob.content_type,
       size: Ecto.assoc_loaded?(file.blob) && file.blob.size,
-      blob: OperatelyWeb.Api.Serializer.serialize(file.blob),
+      blob: OperatelyWeb.Api.Serializer.serialize(file.preview_blob || file.blob),
     }
   end
 
@@ -23,6 +23,8 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ResourceHubs.File do
       reactions: OperatelyWeb.Api.Serializer.serialize(file.reactions),
       inserted_at: OperatelyWeb.Api.Serializer.serialize(file.inserted_at),
       permissions: OperatelyWeb.Api.Serializer.serialize(file.permissions),
+      type: Ecto.assoc_loaded?(file.blob) && file.blob.content_type,
+      size: Ecto.assoc_loaded?(file.blob) && file.blob.size,
       blob: OperatelyWeb.Api.Serializer.serialize(file.blob),
     }
   end
