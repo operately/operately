@@ -2,13 +2,13 @@ import React from "react";
 import * as People from "@/models/people";
 
 import type { Activity } from "@/models/activities";
-import type { ActivityContentResourceHubDocumentDeleted } from "@/api";
+import type { ActivityContentResourceHubFolderDeleted } from "@/api";
 import type { ActivityHandler } from "../interfaces";
 import { Paths } from "@/routes/paths";
 import { Link } from "@/components/Link";
 import { feedTitle } from "../feedItemLinks";
 
-const ResourceHubDocumentDeleted: ActivityHandler = {
+const ResourceHubFolderDeleted: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
     throw new Error("Not implemented");
   },
@@ -31,12 +31,12 @@ const ResourceHubDocumentDeleted: ActivityHandler = {
 
   FeedItemTitle({ activity }: { activity: Activity }) {
     const resourceHub = content(activity).resourceHub!;
-    const document = content(activity).document!;
+    const folder = content(activity).folder!;
 
     const path = Paths.resourceHubPath(resourceHub.id!);
     const link = <Link to={path}>{resourceHub.name}</Link>;
 
-    return feedTitle(activity, "deleted", document.name!, "from", link);
+    return feedTitle(activity, "deleted the", folder.name!, "folder from", link);
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {
@@ -56,7 +56,7 @@ const ResourceHubDocumentDeleted: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " deleted a document: " + content(activity).document!.name!;
+    return People.firstName(activity.author!) + " deleted a folder: " + content(activity).folder!.name!;
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
@@ -64,8 +64,8 @@ const ResourceHubDocumentDeleted: ActivityHandler = {
   },
 };
 
-function content(activity: Activity): ActivityContentResourceHubDocumentDeleted {
-  return activity.content as ActivityContentResourceHubDocumentDeleted;
+function content(activity: Activity): ActivityContentResourceHubFolderDeleted {
+  return activity.content as ActivityContentResourceHubFolderDeleted;
 }
 
-export default ResourceHubDocumentDeleted;
+export default ResourceHubFolderDeleted;

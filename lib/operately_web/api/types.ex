@@ -425,6 +425,11 @@ defmodule OperatelyWeb.Api.Types do
     field :folder, :resource_hub_folder
   end
 
+  object :activity_content_resource_hub_folder_deleted do
+    field :resource_hub, :resource_hub
+    field :folder, :resource_hub_folder
+  end
+
   object :activity_content_resource_hub_folder_renamed do
     field :resource_hub, :resource_hub
     field :folder, :resource_hub_folder

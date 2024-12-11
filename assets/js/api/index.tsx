@@ -544,6 +544,11 @@ export interface ActivityContentResourceHubFolderCreated {
   folder?: ResourceHubFolder | null;
 }
 
+export interface ActivityContentResourceHubFolderDeleted {
+  resourceHub?: ResourceHub | null;
+  folder?: ResourceHubFolder | null;
+}
+
 export interface ActivityContentResourceHubFolderRenamed {
   resourceHub?: ResourceHub | null;
   folder?: ResourceHubFolder | null;
@@ -2277,6 +2282,14 @@ export interface DeleteResourceHubFileResult {
   file?: ResourceHubFile | null;
 }
 
+export interface DeleteResourceHubFolderInput {
+  folderId?: Id | null;
+}
+
+export interface DeleteResourceHubFolderResult {
+  success?: boolean | null;
+}
+
 export interface DisconnectGoalFromProjectInput {
   projectId?: string | null;
   goalId?: string | null;
@@ -3115,6 +3128,10 @@ export class ApiClient {
     return this.post("/delete_resource_hub_file", input);
   }
 
+  async deleteResourceHubFolder(input: DeleteResourceHubFolderInput): Promise<DeleteResourceHubFolderResult> {
+    return this.post("/delete_resource_hub_folder", input);
+  }
+
   async disconnectGoalFromProject(input: DisconnectGoalFromProjectInput): Promise<DisconnectGoalFromProjectResult> {
     return this.post("/disconnect_goal_from_project", input);
   }
@@ -3597,6 +3614,11 @@ export async function deleteResourceHubDocument(
 }
 export async function deleteResourceHubFile(input: DeleteResourceHubFileInput): Promise<DeleteResourceHubFileResult> {
   return defaultApiClient.deleteResourceHubFile(input);
+}
+export async function deleteResourceHubFolder(
+  input: DeleteResourceHubFolderInput,
+): Promise<DeleteResourceHubFolderResult> {
+  return defaultApiClient.deleteResourceHubFolder(input);
 }
 export async function disconnectGoalFromProject(
   input: DisconnectGoalFromProjectInput,
@@ -4208,6 +4230,15 @@ export function useDeleteResourceHubFile(): UseMutationHookResult<
   );
 }
 
+export function useDeleteResourceHubFolder(): UseMutationHookResult<
+  DeleteResourceHubFolderInput,
+  DeleteResourceHubFolderResult
+> {
+  return useMutation<DeleteResourceHubFolderInput, DeleteResourceHubFolderResult>((input) =>
+    defaultApiClient.deleteResourceHubFolder(input),
+  );
+}
+
 export function useDisconnectGoalFromProject(): UseMutationHookResult<
   DisconnectGoalFromProjectInput,
   DisconnectGoalFromProjectResult
@@ -4722,6 +4753,8 @@ export default {
   useDeleteResourceHubDocument,
   deleteResourceHubFile,
   useDeleteResourceHubFile,
+  deleteResourceHubFolder,
+  useDeleteResourceHubFolder,
   disconnectGoalFromProject,
   useDisconnectGoalFromProject,
   editComment,
