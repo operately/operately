@@ -38,7 +38,7 @@ defmodule Operately.Messages.Message do
 
   def changeset(message, attrs) do
     message
-    |> cast(attrs, [:messages_board_id, :author_id, :title, :body, :subscription_list_id, :state, :published_at])
+    |> cast(attrs, [:messages_board_id, :author_id, :title, :body, :subscription_list_id, :state, :published_at, :inserted_at])
     |> StateMachine.cast_and_validate(:state, %{
       initial: :draft,
       states: [

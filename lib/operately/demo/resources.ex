@@ -3,6 +3,10 @@ defmodule Operately.Demo.Resources do
     %{}
   end
 
+  def get(resources, keys) when is_list(keys) do
+    Enum.map(keys, fn key -> get(resources, key) end)
+  end
+
   def get(resources, key) do
     case Map.get(resources, key) do
       nil -> raise "Key #{key} not found in resources"
@@ -21,8 +25,8 @@ defmodule Operately.Demo.Resources do
   end
 
   def create(resources, data, fun) when is_list(data) do
-    Enum.reduce(data, resources, fn d, resources ->
-      add(resources, d.key, fun.({resources, d}))
+    Enum.reduce(Enum.with_index(data), resources, fn {d, index}, resources ->
+      add(resources, d.key, fun.({resources, d, index}))
     end)
   end
 end

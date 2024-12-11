@@ -2,7 +2,7 @@ defmodule Operately.Demo.Goals do
   alias Operately.Demo.Resources
 
   def create_goals(resources, data) do
-    Resources.create(resources, data, fn {resources, data} ->
+    Resources.create(resources, data, fn {resources, data, _index} ->
       create_goal(resources, data)
     end)
   end
