@@ -6,8 +6,8 @@ import { Paths } from "@/routes/paths";
 import { Container, Title, ZeroResourcesContainer } from "./components";
 import { assertPresent } from "@/utils/assertions";
 import classNames from "classnames";
-import { IconFolder } from "@tabler/icons-react";
 import { createTestId } from "@/utils/testid";
+import { findIcon, findSubtitle, NodeType } from "@/features/ResourceHub";
 
 interface ResourceHubProps {
   resourceHub: ResourceHub;
@@ -50,15 +50,17 @@ function NodesList({ nodes }: { nodes: ResourceHubNode[] }) {
 
 function NodeItem({ node }: { node: ResourceHubNode }) {
   const className = classNames("flex gap-2 p-2", "border-b border-stroke-base last:border-b-0");
+  const Icon = findIcon(node.type as NodeType, node);
+  const subtitle = findSubtitle(node.type as NodeType, node);
 
   return (
     <div key={node.id} className={className}>
       <div>
-        <IconFolder size={32} />
+        <Icon size={32} />
       </div>
       <div className="overflow-hidden">
         <div className="font-bold truncate">{node.name}</div>
-        <div className="truncate">3 items</div>
+        <div className="truncate">{subtitle}</div>
       </div>
     </div>
   );
