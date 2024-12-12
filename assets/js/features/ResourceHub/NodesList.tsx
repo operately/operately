@@ -7,8 +7,8 @@ import { DivLink } from "@/components/Link";
 import { ImageWithPlaceholder } from "@/components/Image";
 import { assertPresent } from "@/utils/assertions";
 import { createTestId } from "@/utils/testid";
-import { DocumentMenu, FileMenu, FolderMenu } from "./components";
 import { findIcon, findPath, findSubtitle, NodeType } from "./utils";
+import { DocumentMenu, FileMenu, FolderMenu, ZeroNodes } from "./components";
 
 interface Props {
   permissions: Hub.ResourceHubPermissions;
@@ -25,6 +25,8 @@ interface NodeItemProps extends Props {
 }
 
 export function NodesList({ nodes, permissions, refetch }: NodesListProps) {
+  if (nodes.length < 1) return <ZeroNodes />;
+
   return (
     <div className="mt-12">
       {nodes.map((node, idx) => (

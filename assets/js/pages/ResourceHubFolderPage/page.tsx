@@ -2,10 +2,10 @@ import React from "react";
 
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
+import * as Hub from "@/features/ResourceHub";
 
 import { useLoadedData, useRefresh } from "./loader";
 import { assertPresent } from "@/utils/assertions";
-import { AddFilesButtonAndForms, NodesList, ZeroNodes } from "@/features/ResourceHub";
 import { Paths } from "@/routes/paths";
 import { truncateString } from "@/utils/strings";
 
@@ -19,23 +19,22 @@ export function Page() {
 
   return (
     <Pages.Page title={folder.name!}>
-      <Paper.Root>
-        <PageNavigation />
+      <Hub.NewFileModalsProvider folder={folder} resourceHub={folder.resourceHub}>
+        <Hub.FileDragAndDropArea>
+          <Paper.Root>
+            <PageNavigation />
 
-        <Paper.Body minHeight="75vh">
-          <Paper.Header
-            actions={<AddFilesButtonAndForms resourceHub={folder.resourceHub} refresh={refresh} folder={folder} />}
-            title={folder.name!}
-            layout="title-center-actions-left"
-          />
+            <Paper.Body minHeight="75vh">
+              <Paper.Header actions={<Hub.AddFilesButton />} title={folder.name!} layout="title-center-actions-left" />
 
-          {folder.nodes.length < 1 ? (
-            <ZeroNodes />
-          ) : (
-            <NodesList nodes={folder.nodes} permissions={folder.permissions} refetch={refresh} />
-          )}
-        </Paper.Body>
-      </Paper.Root>
+              <Hub.NodesList nodes={folder.nodes} permissions={folder.permissions} refetch={refresh} />
+
+              <Hub.AddFolderModal folder={folder} resourceHub={folder.resourceHub} refresh={refresh} />
+              <Hub.AddFileModal folder={folder} resourceHub={folder.resourceHub} refresh={refresh} />
+            </Paper.Body>
+          </Paper.Root>
+        </Hub.FileDragAndDropArea>
+      </Hub.NewFileModalsProvider>
     </Pages.Page>
   );
 }
