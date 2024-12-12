@@ -3,8 +3,6 @@ import React from "react";
 import * as Reactions from "@/models/reactions";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
-import * as PageOptions from "@/components/PaperContainer/PageOptions";
-import { IconEdit } from "@tabler/icons-react";
 
 import FormattedTime from "@/components/FormattedTime";
 import RichContent from "@/components/RichContent";
@@ -19,6 +17,7 @@ import { CurrentSubscriptions } from "@/features/Subscriptions";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 
 import { useLoadedData } from "./loader";
+import { Options } from "./Options";
 
 export function Page() {
   const { document } = useLoadedData();
@@ -90,25 +89,6 @@ function Body() {
       <Spacer size={4} />
       <RichContent jsonContent={document.content!} className="text-md sm:text-lg" />
     </>
-  );
-}
-
-function Options() {
-  const { document } = useLoadedData();
-
-  assertPresent(document.permissions, "permissions must be present in document");
-
-  return (
-    <PageOptions.Root testId="document-options-button" position="top-right">
-      {document.permissions.canEditDocument && (
-        <PageOptions.Link
-          icon={IconEdit}
-          title="Edit document"
-          to={Paths.resourceHubEditDocumentPath(document.id!)}
-          testId="edit-document-link"
-        />
-      )}
-    </PageOptions.Root>
   );
 }
 
