@@ -1,19 +1,19 @@
 import React from "react";
 
-import { ResourceHub, useCreateResourceHubFolder } from "@/models/resourceHubs";
+import { ResourceHub, ResourceHubFolder, useCreateResourceHubFolder } from "@/models/resourceHubs";
 import Modal from "@/components/Modal";
 import Forms from "@/components/Forms";
+import { useNewFileModalsContext } from "./contexts/NewFileModalsContext";
 
 interface FormProps {
-  showForm: boolean;
-  toggleForm: () => void;
   refresh: () => void;
   resourceHub: ResourceHub;
-  folderId?: string;
+  folder?: ResourceHubFolder;
 }
 
-export function AddFolderModal({ resourceHub, showForm, toggleForm, refresh, folderId }: FormProps) {
+export function AddFolderModal({ resourceHub, refresh, folder }: FormProps) {
   const [post] = useCreateResourceHubFolder();
+  const { showAddFolder, toggleShowAddFolder } = useNewFileModalsContext();
 
   const form = Forms.useForm({
     fields: {
@@ -24,21 +24,21 @@ export function AddFolderModal({ resourceHub, showForm, toggleForm, refresh, fol
         addError("name", "Name is required");
       }
     },
-    cancel: toggleForm,
+    cancel: toggleShowAddFolder,
     submit: async () => {
       await post({
         resourceHubId: resourceHub.id,
-        folderId: folderId,
+        folderId: folder?.id,
         name: form.values.name,
       });
       refresh();
-      toggleForm();
+      toggleShowAddFolder();
       form.actions.reset();
     },
   });
 
   return (
-    <Modal title="New folder" isOpen={showForm} hideModal={toggleForm}>
+    <Modal title="New folder" isOpen={showAddFolder} hideModal={toggleShowAddFolder}>
       <Forms.Form form={form}>
         <Forms.FieldGroup>
           <Forms.TextInput label="Name" field="name" testId="new-folder-name" />
