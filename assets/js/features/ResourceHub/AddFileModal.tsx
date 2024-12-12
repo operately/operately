@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { findFileSize, resizeImage, uploadFile } from "@/models/blobs";
 import { ResourceHub, ResourceHubFile, ResourceHubFolder, useCreateResourceHubFile } from "@/models/resourceHubs";
@@ -46,7 +46,7 @@ export function AddFileModal({ resourceHub, folder, refresh }: FormProps) {
 
       await post({
         name: form.values.name,
-        description: JSON.stringify(form.values.description),
+        description: JSON.stringify(form.values.description || {}),
         blobId,
         previewBlobId,
         resourceHubId: resourceHub.id,
@@ -61,6 +61,13 @@ export function AddFileModal({ resourceHub, folder, refresh }: FormProps) {
       form.actions.reset();
     },
   });
+
+  useEffect(() => {
+    if (form && file) {
+      form.actions.setValue("name", file.name);
+      setProgress(0);
+    }
+  }, [file]);
 
   if (form.state === "submitting") return <UploadingModal progress={progress} isOpen={Boolean(file)} />;
 
