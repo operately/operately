@@ -10,23 +10,9 @@ blocks:
       when: "branch = 'main'"
     task:
       secrets:
-        - name: infra-repository-ssh-keys
+        - name: prod-deployment-vars
       jobs:
         - name: "Deploy"
           commands:
-            - echo "Hello"
-            # - chmod 0600 /home/semaphore/.ssh/infra_deploy_key
-            # - ssh-add /home/semaphore/.ssh/infra_deploy_key
-            # - checkout
-            # - export DOCKER_TAG=$(git rev-parse --short HEAD)
-            # - cd /tmp
-            # - git clone git@github.com:/operately/infra
-            # - cd infra
-            # - "make prod.update.app.image TAG=${DOCKER_TAG} > /dev/null"
-            # - "make prod.app.deploy > /tmp/deploy.txt"
-            # - artifact push job /tmp/deploy.txt
-            # - git config --global user.email "hello@operately.com"
-            # - git config --global user.name "Semaphore"
-            # - git add .
-            # - git commit -m "Release new app image operately/operately:${DOCKER_TAG} to staging"
-            # - git push
+            - checkout
+            - ruby scripts/deploy.rb
