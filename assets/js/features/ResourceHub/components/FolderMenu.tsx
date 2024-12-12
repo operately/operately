@@ -16,7 +16,7 @@ interface FolderMenuProps {
 export function FolderMenu({ permissions, folder, refetch }: FolderMenuProps) {
   const [showRenameForm, setShowRenameForm] = useState(false);
 
-  const relevantPermissions = [permissions.canRenameFolder];
+  const relevantPermissions = [permissions.canRenameFolder, permissions.canDeleteFolder];
   const menuId = createTestId("folder-menu", folder.id!);
 
   if (!relevantPermissions.some(Boolean)) return <></>;
@@ -27,6 +27,7 @@ export function FolderMenu({ permissions, folder, refetch }: FolderMenuProps) {
         {permissions.canRenameFolder && (
           <RenameFolderMenuItem folder={folder} showForm={() => setShowRenameForm(true)} />
         )}
+        {permissions.canDeleteFolder && <DeleteFolderMenuItem folder={folder} refetch={refetch} />}
       </Menu>
 
       <RenameFolderModal
@@ -36,6 +37,21 @@ export function FolderMenu({ permissions, folder, refetch }: FolderMenuProps) {
         toggleForm={() => setShowRenameForm(!showRenameForm)}
       />
     </>
+  );
+}
+
+function DeleteFolderMenuItem({ folder, refetch }: { folder: Hub.ResourceHubFolder; refetch: () => void }) {
+  const [remove] = Hub.useDeleteResourceHubFolder();
+  const handleDelete = async () => {
+    await remove({ folderId: folder.id });
+    refetch();
+  };
+  const deleteId = createTestId("delete", folder.id!);
+
+  return (
+    <MenuActionItem onClick={handleDelete} testId={deleteId} danger>
+      Delete folder
+    </MenuActionItem>
   );
 }
 
