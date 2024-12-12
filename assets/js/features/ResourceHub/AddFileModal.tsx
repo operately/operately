@@ -9,21 +9,17 @@ import { Options, SubscribersSelector, useSubscriptions } from "@/features/Subsc
 import { assertPresent } from "@/utils/assertions";
 import { Spacer } from "@/components/Spacer";
 import { LoadingProgressBar } from "@/components/LoadingProgressBar";
+import { useNewFileModalsContext } from "./contexts/NewFileModalsContext";
 
-interface UseFormProps {
-  file: any;
-  hideAddFilePopUp: () => void;
-  showAddFilePopUp: () => void;
-}
-
-interface FormProps extends UseFormProps {
+interface FormProps {
   resourceHub: ResourceHub;
   folder?: ResourceHubFolder;
   refresh: () => void;
 }
 
-export function AddFileModal({ file, resourceHub, folder, hideAddFilePopUp, showAddFilePopUp, refresh }: FormProps) {
+export function AddFileModal({ resourceHub, folder, refresh }: FormProps) {
   const potentialSubscribers = folder?.potentialSubscribers || resourceHub.potentialSubscribers;
+  const { file, hideAddFilePopUp, showAddFilePopUp } = useNewFileModalsContext();
 
   assertPresent(potentialSubscribers, "potentialSubscribers must be present in folder or resourceHub");
 
@@ -94,35 +90,15 @@ export function AddFileModal({ file, resourceHub, folder, hideAddFilePopUp, show
   );
 }
 
-export function useAddFile(): UseFormProps {
-  const [file, setFile] = useState();
-
-  const showAddFilePopUp = () => {
-    const fileInput = document.createElement("input");
-    fileInput.type = "file";
-
-    fileInput.onchange = (e: any) => {
-      const file = e.target?.files[0];
-      setFile(file);
-    };
-
-    fileInput.click();
-  };
-
-  const hideAddFilePopUp = () => setFile(undefined);
-
-  return { file, showAddFilePopUp, hideAddFilePopUp };
-}
-
-function FileDetails({ file }: { file: ResourceHubFile }) {
+function FileDetails({ file }: { file?: ResourceHubFile }) {
   return (
     <div className="flex gap-4 items-center">
       <div>
-        <b>File:</b> {file.name}
+        <b>File:</b> {file?.name}
       </div>
       <div>&middot;</div>
       <div>
-        <b>Size:</b> {findFileSize(file.size!)}
+        <b>Size:</b> {file && findFileSize(file.size!)}
       </div>
     </div>
   );
