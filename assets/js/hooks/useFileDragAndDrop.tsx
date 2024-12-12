@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from "react";
 
-export interface FileDragAndDrop {
+interface FileDragAndDrop {
   isFileDragging: boolean;
   onDragOver: (event: React.DragEvent<HTMLDivElement>) => void;
   onDragLeave: () => void;
