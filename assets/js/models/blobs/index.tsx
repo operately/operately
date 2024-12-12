@@ -2,7 +2,7 @@ import axios, { AxiosRequestConfig } from "axios";
 import csrftoken from "@/utils/csrf_token";
 
 import { createBlob } from "@/api";
-import { findImageDimensions } from "./utils";
+import { findImageDimensions, findVideoDimensions } from "./utils";
 
 export { useDownloadFile } from "./useDownloadFile";
 export { resizeImage, findFileSize } from "./utils";
@@ -11,7 +11,7 @@ type ProgressCallback = (number: number) => any;
 type UploadResult = { id: string; url: string };
 
 export async function uploadFile(file: File, progressCallback: ProgressCallback): Promise<UploadResult> {
-  let blob;
+  let dimensions = {};
   const attrs = {
     filename: file.name,
     size: file.size,
@@ -19,12 +19,12 @@ export async function uploadFile(file: File, progressCallback: ProgressCallback)
   };
 
   if (file.type.includes("image")) {
-    const dimensions = await findImageDimensions(file);
-    blob = await createBlob({ ...attrs, ...dimensions });
-  } else {
-    blob = await createBlob(attrs);
+    dimensions = await findImageDimensions(file);
+  } else if (file.type.includes("video")) {
+    dimensions = await findVideoDimensions(file);
   }
 
+  const blob = await createBlob({ ...attrs, ...dimensions });
   const url = blob.signedUploadUrl!;
 
   if (blob.uploadStrategy === "direct") {
