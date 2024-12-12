@@ -4,15 +4,18 @@ import * as Reactions from "@/models/reactions";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
+import { findFileExtension } from "@/models/blobs";
+import { CommentSection, useComments } from "@/features/CommentSection";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
+import { CurrentSubscriptions } from "@/features/Subscriptions";
+import RichContent, { richContentToString } from "@/components/RichContent";
 import { Spacer } from "@/components/Spacer";
 import { assertPresent } from "@/utils/assertions";
-import { CommentSection, useComments } from "@/features/CommentSection";
-import { CurrentSubscriptions } from "@/features/Subscriptions";
 import { Paths } from "@/routes/paths";
 
 import { useLoadedData } from "./loader";
 import { Content } from "./Content";
+import { Options } from "./Options";
 
 export function Page() {
   const { file } = useLoadedData();
@@ -24,8 +27,11 @@ export function Page() {
 
         <Paper.Body>
           <Paper.Header title={file.name!} layout="title-left-actions-right" />
+          <Options />
 
           <Content />
+          <FileNameAndType />
+          <Description />
           <FileReactions />
           <FileComments />
           <FileSubscriptions />
@@ -49,6 +55,44 @@ function Navigation() {
     <Paper.Navigation>
       <Paper.NavItem linkTo={path}>{name}</Paper.NavItem>
     </Paper.Navigation>
+  );
+}
+
+function FileNameAndType() {
+  const { file } = useLoadedData();
+  assertPresent(file.blob?.filename, "filename must be present in file.blob");
+
+  const extension = findFileExtension(file.blob.filename);
+
+  return (
+    <>
+      <Spacer size={1} />
+      <div className="flex gap-4 items-center">
+        <div>
+          <b>File:</b> {file.blob.filename}
+        </div>
+        <div>&middot;</div>
+        <div>
+          <b>Type:</b> {extension}
+        </div>
+      </div>
+    </>
+  );
+}
+
+function Description() {
+  const { file } = useLoadedData();
+  assertPresent(file.description, "description must be present in file");
+
+  const hasDescription = Boolean(richContentToString(JSON.parse(file.description)).trim());
+
+  if (!hasDescription) return <></>;
+
+  return (
+    <>
+      <Spacer size={2} />
+      <RichContent jsonContent={file.description} className="text-md sm:text-lg" />
+    </>
   );
 }
 
