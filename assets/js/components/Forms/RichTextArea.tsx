@@ -12,6 +12,7 @@ interface RichTextAreaProps {
   hidden?: boolean;
   placeholder?: string;
   hideBorder?: boolean;
+  height?: string;
   mentionSearchScope: People.SearchScope;
 }
 
@@ -28,6 +29,7 @@ export function RichTextArea(props: RichTextAreaProps) {
         error={!!error}
         mentionSearchScope={props.mentionSearchScope}
         hideBorder={hideBorder}
+        height={props.height || "min-h-[250px]"}
       />
     </InputField>
   );
@@ -39,15 +41,16 @@ interface EditorProps {
   error: boolean | undefined;
   mentionSearchScope: People.SearchScope;
   hideBorder?: boolean;
+  height: string;
 }
 
-function Editor({ placeholder, field, error, mentionSearchScope, hideBorder }: EditorProps) {
+function Editor({ placeholder, field, error, mentionSearchScope, hideBorder, height }: EditorProps) {
   const form = useFormContext();
   const [value, setValue] = useFieldValue(field);
 
   const editor = TipTapEditor.useEditor({
     placeholder: placeholder,
-    className: "min-h-[250px] px-3 py-2 font-medium",
+    className: `px-3 py-2 font-medium ${height}`,
     mentionSearchScope,
     onBlur: () => {
       setValue(editor.editor.getJSON());

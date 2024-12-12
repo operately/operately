@@ -21,8 +21,8 @@ export function useModalState(initial?: boolean): ModalState {
 
 interface ModalProps {
   isOpen: boolean;
-  hideModal: () => void;
-  title: string;
+  hideModal?: () => void;
+  title?: string;
   children: React.ReactNode;
 
   height?: string;
@@ -77,7 +77,7 @@ export default function Modal({ isOpen, hideModal, title, children, height, size
         },
       }}
     >
-      <Header title={title} hideModal={hideModal} />
+      {Boolean(title && hideModal) && <Header title={title} hideModal={hideModal} />}
       <div className="flex-1">{children}</div>
     </ReactModal>
   );

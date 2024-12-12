@@ -4,6 +4,8 @@ import { NodeViewWrapper, NodeViewContent } from "@tiptap/react";
 import * as Icons from "@tabler/icons-react";
 import classnames from "classnames";
 
+import { LoadingProgressBar } from "@/components/LoadingProgressBar";
+
 //
 // This is view component for the blob node for the TipTap editor.
 //
@@ -61,9 +63,7 @@ function VideoView({ node, deleteNode, view, updateAttributes }) {
 
       {view.editable && node.attrs.status === "uploading" && (
         <div className="top-1/2 left-1/2 absolute transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center">
-          <div className="bg-content-accent rounded-xl text-content-accent font-medium w-32 h-5 overflow-hidden">
-            <div className="bg-accent-1 h-full" style={{ width: `${node.attrs.progress}%` }}></div>
-          </div>
+          <LoadingProgressBar progress={node.attrs.progress} barClassName="w-32" />
         </div>
       )}
 
@@ -150,9 +150,7 @@ function ImageView({ node, deleteNode, updateAttributes, view }) {
 
       {view.editable && node.attrs.status === "uploading" && (
         <div className="top-1/2 left-1/2 absolute transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center">
-          <div className="bg-content-accent rounded-xl text-content-accent font-medium w-32 h-5 overflow-hidden">
-            <div className="bg-accent-1 h-full" style={{ width: `${node.attrs.progress}%` }}></div>
-          </div>
+          <LoadingProgressBar progress={node.attrs.progress} barClassName="w-32" />
         </div>
       )}
 
@@ -197,9 +195,7 @@ function FileView({ node, deleteNode, view }) {
 
       {view.editable && node.attrs.status === "uploading" && (
         <div className="top-1/2 left-1/2 absolute transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center">
-          <div className="bg-content-accent rounded-xl text-content-base font-medium w-32 h-5 overflow-hidden">
-            <div className="bg-accent-1 h-full" style={{ width: `${node.attrs.progress}%` }}></div>
-          </div>
+          <LoadingProgressBar progress={node.attrs.progress} barClassName="w-32" />
         </div>
       )}
 
