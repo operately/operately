@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { findFileSize, resizeImage, uploadFile } from "@/models/blobs";
 import { ResourceHub, ResourceHubFile, ResourceHubFolder, useCreateResourceHubFile } from "@/models/resourceHubs";
@@ -28,6 +28,13 @@ export function AddFileModal({ resourceHub, folder, refresh }: FormProps) {
   const subscriptionsState = useSubscriptions(potentialSubscribers, {
     ignoreMe: true,
   });
+
+  useEffect(() => {
+    if (form && file) {
+      form.actions.setValue("name", file.name);
+      setProgress(0);
+    }
+  }, [file]);
 
   const form = Forms.useForm({
     fields: {
