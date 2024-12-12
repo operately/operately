@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { findFileSize, resizeImage, uploadFile } from "@/models/blobs";
 import { ResourceHub, ResourceHubFile, ResourceHubFolder, useCreateResourceHubFile } from "@/models/resourceHubs";
@@ -28,6 +28,12 @@ export function AddFileModal({ resourceHub, folder, refresh }: FormProps) {
   const subscriptionsState = useSubscriptions(potentialSubscribers, {
     ignoreMe: true,
   });
+
+  useEffect(() => {
+    if (form && file) {
+      form.actions.setValue("name", formatFileName(file.name));
+    }
+  }, [file]);
 
   const form = Forms.useForm({
     fields: {
@@ -135,4 +141,12 @@ async function maybeUploadPreviewBlob(file: File, setProgress: React.Dispatch<Re
   }
 
   return;
+}
+
+function formatFileName(fileName: string) {
+  const nameWithoutExtension = fileName.replace(/\.[^\.]+$/, "");
+  const nameWithSpaces = nameWithoutExtension.replace(/[-_]/g, " ");
+  const nameCapitalized = nameWithSpaces.charAt(0).toUpperCase() + nameWithSpaces.slice(1);
+
+  return nameCapitalized;
 }
