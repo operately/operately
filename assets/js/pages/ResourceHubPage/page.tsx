@@ -24,7 +24,7 @@ export function Page() {
 
             <Paper.Body minHeight="75vh">
               <Paper.Header
-                actions={<Hub.AddFilesButton />}
+                actions={<Hub.AddFilesButton permissions={resourceHub.permissions} />}
                 title={resourceHub.name!}
                 layout="title-center-actions-left"
               />
