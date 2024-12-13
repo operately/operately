@@ -12,6 +12,7 @@ defmodule Operately.ResourceHubs.Permissions do
     :can_delete_file,
     :can_delete_folder,
     :can_edit_document,
+    :can_edit_parent_folder,
     :can_rename_folder,
     :can_edit_file,
   ]
@@ -28,6 +29,7 @@ defmodule Operately.ResourceHubs.Permissions do
       can_delete_file: access_level >= Binding.edit_access(),
       can_delete_folder: access_level >= Binding.edit_access(),
       can_edit_document: access_level >= Binding.edit_access(),
+      can_edit_parent_folder: access_level >= Binding.edit_access(),
       can_rename_folder: access_level >= Binding.edit_access(),
       can_edit_file: access_level >= Binding.edit_access(),
     }
