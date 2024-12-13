@@ -40,8 +40,8 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHubDocumentTest do
 
     tabletest @table do
       test "if caller has levels company=#{@test.company} and space=#{@test.space}, then expect code=#{@test.expected}", ctx do
-        space = create_space(ctx)
-        resource_hub = create_resource_hub(ctx, space, @test.company, @test.space)
+        space = create_space(ctx, @test.company, @test.space)
+        resource_hub = resource_hub_fixture(ctx.creator, space)
 
         assert {code, res} = mutation(ctx.conn, :create_resource_hub_document, %{
           resource_hub_id: Paths.resource_hub_id(resource_hub),
@@ -190,16 +190,8 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHubDocumentTest do
   # Helpers
   #
 
-  def create_space(ctx) do
-    group_fixture(ctx.creator, %{company_id: ctx.company.id, company_permissions: Binding.no_access()})
-  end
-
-  def create_resource_hub(ctx, space, company_members_level, space_members_level) do
-    resource_hub = resource_hub_fixture(ctx.creator, space, %{
-      anonymous_access_level: Binding.no_access(),
-      company_access_level: Binding.from_atom(company_members_level),
-      space_access_level: Binding.from_atom(space_members_level),
-    })
+  defp create_space(ctx, company_members_level, space_members_level) do
+    space = group_fixture(ctx.creator, %{company_id: ctx.company.id, company_permissions: Binding.from_atom(company_members_level)})
 
     if space_members_level != :no_access do
       {:ok, _} = Operately.Groups.add_members(ctx.creator, space.id, [%{
@@ -208,6 +200,6 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHubDocumentTest do
       }])
     end
 
-    resource_hub
+    space
   end
 end

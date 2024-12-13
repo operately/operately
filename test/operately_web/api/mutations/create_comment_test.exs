@@ -122,8 +122,8 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
 
     tabletest @space_table do
       test "resource hub document - if caller has levels company=#{@test.company}, space=#{@test.space}, then expect code=#{@test.expected}", ctx do
-        space = create_space(ctx)
-        resource_hub = create_resource_hub(ctx, space, @test.company, @test.space)
+        space = create_space(ctx, @test.company, @test.space)
+        resource_hub = resource_hub_fixture(ctx.creator, space)
         doc = document_fixture(resource_hub.id, ctx.creator.id)
 
         assert {code, res} = mutation(ctx.conn, :create_comment, %{
@@ -144,8 +144,8 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
 
     tabletest @space_table do
       test "resource hub file - if caller has levels company=#{@test.company}, space=#{@test.space}, then expect code=#{@test.expected}", ctx do
-        space = create_space(ctx)
-        resource_hub = create_resource_hub(ctx, space, @test.company, @test.space)
+        space = create_space(ctx, @test.company, @test.space)
+        resource_hub = resource_hub_fixture(ctx.creator, space)
         file = file_fixture(resource_hub, ctx.creator)
 
         assert {code, res} = mutation(ctx.conn, :create_comment, %{
@@ -314,11 +314,11 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
   # Helpers
   #
 
-  def create_space(ctx) do
+  defp create_space(ctx) do
     group_fixture(ctx.creator, %{company_id: ctx.company.id, company_permissions: Binding.no_access()})
   end
 
-  def create_space(ctx, company_members_level, space_members_level) do
+  defp create_space(ctx, company_members_level, space_members_level) do
     space = group_fixture(ctx.creator, %{
       company_id: ctx.company.id,
       company_permissions: Binding.from_atom(company_members_level),
@@ -334,7 +334,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
     space
   end
 
-  def create_project(ctx, space, company_members_level, space_members_level, project_member_level) do
+  defp create_project(ctx, space, company_members_level, space_members_level, project_member_level) do
     project = project_fixture(%{
       company_id: ctx.company.id,
       creator_id: ctx.creator.id,
@@ -362,11 +362,11 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
     project
   end
 
-  def create_check_in(author, project) do
+  defp create_check_in(author, project) do
     check_in_fixture(%{author_id: author.id, project_id: project.id})
   end
 
-  def create_goal(ctx, space, company_members_level, space_members_level, goal_member_level) do
+  defp create_goal(ctx, space, company_members_level, space_members_level, goal_member_level) do
     attrs = case goal_member_level do
       :champion -> [champion_id: ctx.person.id]
       :reviewer -> [reviewer_id: ctx.person.id]
@@ -396,22 +396,5 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
 
   defp create_goal_update(ctx, goal) do
     goal_update_fixture(ctx.creator, goal)
-  end
-
-  def create_resource_hub(ctx, space, company_members_level, space_members_level) do
-    resource_hub = resource_hub_fixture(ctx.creator, space, %{
-      anonymous_access_level: Binding.no_access(),
-      company_access_level: Binding.from_atom(company_members_level),
-      space_access_level: Binding.from_atom(space_members_level),
-    })
-
-    if space_members_level != :no_access do
-      {:ok, _} = Operately.Groups.add_members(ctx.creator, space.id, [%{
-        id: ctx.person.id,
-        access_level: Binding.from_atom(space_members_level)
-      }])
-    end
-
-    resource_hub
   end
 end
