@@ -25,7 +25,11 @@ export function Page() {
             <PageNavigation />
 
             <Paper.Body minHeight="75vh">
-              <Paper.Header actions={<Hub.AddFilesButton />} title={folder.name!} layout="title-center-actions-left" />
+              <Paper.Header
+                actions={<Hub.AddFilesButton permissions={folder.permissions} />}
+                title={folder.name!}
+                layout="title-center-actions-left"
+              />
 
               <Hub.NodesList nodes={folder.nodes} permissions={folder.permissions} refetch={refresh} />
 

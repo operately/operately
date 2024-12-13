@@ -6,6 +6,7 @@ import { IconChevronDown, IconProps } from "@tabler/icons-react";
 interface Option {
   label: string;
   action: () => void;
+  hidden?: boolean;
   icon?: React.ComponentType<IconProps>;
   testId?: string;
 }
@@ -18,6 +19,9 @@ interface Props {
 
 export function OptionsButton({ options, align = "center", testId }: Props) {
   const [open, setOpen] = React.useState(false);
+  const availableOptions = options.filter((option) => !option.hidden);
+
+  if (availableOptions.length < 1) return <></>;
 
   return (
     <Popover.Root open={open} onOpenChange={setOpen}>
@@ -38,7 +42,7 @@ export function OptionsButton({ options, align = "center", testId }: Props) {
           sideOffset={5}
         >
           <Popover.Arrow className="fill-surface-outline scale-150" />
-          {options.map((option, idx) => (
+          {availableOptions.map((option, idx) => (
             <div
               onClick={option.action}
               className="cursor-pointer px-4 py-2 flex items-center gap-1 border-b border-surface-outline hover:bg-surface-accent last:border-b-0"
