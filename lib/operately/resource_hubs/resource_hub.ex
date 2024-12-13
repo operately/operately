@@ -4,7 +4,7 @@ defmodule Operately.ResourceHubs.ResourceHub do
 
   schema "resource_hubs" do
     belongs_to :space, Operately.Groups.Group
-    has_one :access_context, Operately.Access.Context, foreign_key: :resource_hub_id
+    has_one :access_context, through: [:space, :access_context]
     has_many :nodes, Operately.ResourceHubs.Node, foreign_key: :resource_hub_id
 
     field :name, :string
