@@ -61,7 +61,6 @@ defmodule Operately.MixProject do
 
       # only in dev
       {:phoenix_live_reload, "~> 1.5", only: :dev},
-      {:tailwind, "~> 0.2.3", runtime: Mix.env() == :dev},
 
       # only in tests
       {:wallaby, "~> 0.30.9", runtime: false, only: :test},
@@ -83,9 +82,12 @@ defmodule Operately.MixProject do
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
-      "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
-      "assets.build": ["tailwind default", "esbuild default"],
-      "assets.deploy": ["tailwind default --minify", "cmd --cd assets node build.js --deploy", "phx.digest"]
+      "assets.setup": ["cmd --cd assets npm install"],
+      "assets.build": ["cmd --cd assets npx vite build --config vite.config.mjs"],
+      "assets.deploy": [
+        "cmd --cd assets npx vite build --mode production --config vite.config.mjs",
+        "phx.digest"
+      ]
     ]
   end
 end
