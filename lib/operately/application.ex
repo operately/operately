@@ -10,7 +10,10 @@ defmodule Operately.Application do
     children = [
       OperatelyWeb.Telemetry,
       Operately.Repo,
-      {Phoenix.PubSub, name: Operately.PubSub},
+      {Phoenix.PubSub, [
+        name: Operately.PubSub,
+        adapter: Operately.PubSub.PostgresPubSub
+      ]},
       {Finch, name: Operately.Finch},
       OperatelyWeb.Endpoint,
       {Oban, Application.fetch_env!(:operately, Oban)}
