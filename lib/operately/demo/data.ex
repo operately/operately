@@ -597,6 +597,89 @@ defmodule Operately.Demo.Data do
       ],
       discussions: [
         %{
+          key: :market_expansion_update,
+          space: :marketing_space,
+          author: :emily_davis,
+          title: "Market Expansion Update: Germany & Spain Progress",
+          content: """
+          Quick update on our market expansion efforts! Our research in Germany is progressing well, with some valuable insights from our Berlin-based consultant. Key findings suggest strong demand for our collaborative features among German SMEs.
+
+          For Spanish-speaking markets, we're adapting our approach based on recent user feedback. The "Siesta-Friendly" scheduling feature concept has received positive initial responses, though we're still working through some UX challenges.
+
+          Next steps:
+          - Finalizing German market entry strategy
+          - Recruiting local partners in Madrid
+          - Adapting our UI for Spanish-speaking users
+          """,
+          comments: [
+            %{
+              author: :paul_young,
+              content: "The Berlin tech community has been very receptive during our initial outreach. We should have our full market analysis ready by next week."
+            },
+            %{
+              author: :rachel_king,
+              content: "Working with the product team on the Spanish localization. We might need to bring in a local UX consultant to help with cultural nuances."
+            }
+          ]
+        },
+        %{
+          key: :learning_development_launch,
+          space: :people_space,
+          author: :karen_martinez,
+          title: "Learning & Development Initiative Launch",
+          content: """
+          I'm thrilled to announce our new Learning & Development initiative! As part of our goal to expand team capabilities, we're introducing structured development plans and learning resources for all team members.
+
+          Program highlights:
+          - Personalized development plans aligned with career goals
+          - Monthly skill-sharing sessions led by team members
+          - Access to online learning platforms and conference opportunities
+
+          75% of the team has already completed their individual development plans, and we're seeing great engagement with the skill-sharing sessions.
+          """,
+          comments: [
+            %{
+              author: :grace_wilson,
+              content: "The compliance training modules have been particularly helpful. Looking forward to leading a session on regulatory requirements next month."
+            },
+            %{
+              author: :henry_taylor,
+              content: "Great initiative! The engineering team is especially excited about the conference opportunities."
+            }
+          ]
+        },
+        %{
+          key: :collaborative_features_beta,
+          space: :product_space,
+          author: :frank_miller,
+          title: "New Collaborative Features Beta Launch",
+          content: """
+          Excited to announce that we're launching the beta of our new collaborative features next week! The development team has done an amazing job implementing real-time document collaboration, and early internal testing shows promising results.
+
+          Key features in this release:
+
+          - Real-time document editing with conflict resolution
+          - Enhanced commenting system
+          - New permission management controls
+
+          We'll be rolling this out to our power users first for feedback before the full release next month. Special thanks to Walter and the engineering team for their outstanding work on this initiative.
+          """,
+          comments: [
+            %{
+              author: :walter_baker,
+              content: "Thanks, Frank! The team is ready to support the beta users and gather feedback. We've set up dedicated monitoring for the real-time sync functionality."
+            },
+            %{
+              author: :david_brown,
+              content: "This is a game-changer for our product. Looking forward to seeing how our users leverage these new capabilities."
+            },
+            %{
+              author: :olivia_hall,
+              content: "Already getting excited messages from some of our power users who heard about the beta. They're eager to try it out!"
+            }
+          ]
+        },
+        %{
           key: :welcome_tina_scott,
           space: :company_space,
           author: :karen_martinez,
