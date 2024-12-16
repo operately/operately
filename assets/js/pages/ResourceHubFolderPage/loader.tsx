@@ -1,5 +1,5 @@
 import * as Pages from "@/components/Pages";
-import { getResourceHubFolder, ResourceHubFolder } from "@/api";
+import { getResourceHubFolder, ResourceHubFolder } from "@/models/resourceHubs";
 
 interface LoaderResult {
   folder: ResourceHubFolder;

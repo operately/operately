@@ -4,14 +4,14 @@ import * as Hub from "@/models/resourceHubs";
 import { Menu, MenuLinkItem, MenuActionItem } from "@/components/Menu";
 import { Paths } from "@/routes/paths";
 import { createTestId } from "@/utils/testid";
+import { useNodesContext } from "../contexts/NodesContext";
 
-interface DocumentMenuProps {
-  permissions: Hub.ResourceHubPermissions;
-  refetch: () => void;
+interface Props {
   document: Hub.ResourceHubDocument;
 }
 
-export function DocumentMenu({ document, permissions, refetch }: DocumentMenuProps) {
+export function DocumentMenu({ document }: Props) {
+  const { permissions } = useNodesContext();
   const editPath = Paths.resourceHubEditDocumentPath(document.id!);
   const relevantPermissions = [permissions.canEditDocument, permissions.canDeleteDocument];
 
@@ -27,14 +27,15 @@ export function DocumentMenu({ document, permissions, refetch }: DocumentMenuPro
           Edit document
         </MenuLinkItem>
       )}
-
-      {permissions.canDeleteDocument && <DeleteDocumentMenuItem document={document} refetch={refetch} />}
+      {permissions.canDeleteDocument && <DeleteDocumentMenuItem document={document} />}
     </Menu>
   );
 }
 
-function DeleteDocumentMenuItem({ document, refetch }: { document: Hub.ResourceHubDocument; refetch: () => void }) {
+function DeleteDocumentMenuItem({ document }: Props) {
+  const { refetch } = useNodesContext();
   const [remove] = Hub.useDeleteResourceHubDocument();
+
   const handleDelete = async () => {
     await remove({ documentId: document.id });
     refetch();

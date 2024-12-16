@@ -1148,6 +1148,7 @@ export interface ResourceHubPermissions {
   canDeleteFile?: boolean | null;
   canDeleteFolder?: boolean | null;
   canEditDocument?: boolean | null;
+  canEditParentFolder?: boolean | null;
   canRenameFolder?: boolean | null;
   canView?: boolean | null;
 }
@@ -2389,6 +2390,16 @@ export interface EditKeyResourceResult {
   keyResource?: ProjectKeyResource | null;
 }
 
+export interface EditParentFolderInResourceHubInput {
+  resourceId?: Id | null;
+  resourceType?: string | null;
+  newFolderId?: Id | null;
+}
+
+export interface EditParentFolderInResourceHubResult {
+  success?: boolean | null;
+}
+
 export interface EditProjectCheckInInput {
   checkInId?: string | null;
   status?: string | null;
@@ -3172,6 +3183,12 @@ export class ApiClient {
     return this.post("/edit_key_resource", input);
   }
 
+  async editParentFolderInResourceHub(
+    input: EditParentFolderInResourceHubInput,
+  ): Promise<EditParentFolderInResourceHubResult> {
+    return this.post("/edit_parent_folder_in_resource_hub", input);
+  }
+
   async editProjectCheckIn(input: EditProjectCheckInInput): Promise<EditProjectCheckInResult> {
     return this.post("/edit_project_check_in", input);
   }
@@ -3654,6 +3671,11 @@ export async function editGoalTimeframe(input: EditGoalTimeframeInput): Promise<
 }
 export async function editKeyResource(input: EditKeyResourceInput): Promise<EditKeyResourceResult> {
   return defaultApiClient.editKeyResource(input);
+}
+export async function editParentFolderInResourceHub(
+  input: EditParentFolderInResourceHubInput,
+): Promise<EditParentFolderInResourceHubResult> {
+  return defaultApiClient.editParentFolderInResourceHub(input);
 }
 export async function editProjectCheckIn(input: EditProjectCheckInInput): Promise<EditProjectCheckInResult> {
   return defaultApiClient.editProjectCheckIn(input);
@@ -4293,6 +4315,15 @@ export function useEditKeyResource(): UseMutationHookResult<EditKeyResourceInput
   return useMutation<EditKeyResourceInput, EditKeyResourceResult>((input) => defaultApiClient.editKeyResource(input));
 }
 
+export function useEditParentFolderInResourceHub(): UseMutationHookResult<
+  EditParentFolderInResourceHubInput,
+  EditParentFolderInResourceHubResult
+> {
+  return useMutation<EditParentFolderInResourceHubInput, EditParentFolderInResourceHubResult>((input) =>
+    defaultApiClient.editParentFolderInResourceHub(input),
+  );
+}
+
 export function useEditProjectCheckIn(): UseMutationHookResult<EditProjectCheckInInput, EditProjectCheckInResult> {
   return useMutation<EditProjectCheckInInput, EditProjectCheckInResult>((input) =>
     defaultApiClient.editProjectCheckIn(input),
@@ -4777,6 +4808,8 @@ export default {
   useEditGoalTimeframe,
   editKeyResource,
   useEditKeyResource,
+  editParentFolderInResourceHub,
+  useEditParentFolderInResourceHub,
   editProjectCheckIn,
   useEditProjectCheckIn,
   editProjectName,

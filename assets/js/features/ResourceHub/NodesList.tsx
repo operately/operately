@@ -9,40 +9,32 @@ import { assertPresent } from "@/utils/assertions";
 import { createTestId } from "@/utils/testid";
 import { findIcon, findPath, findSubtitle, NodeType } from "./utils";
 import { DocumentMenu, FileMenu, FolderMenu, ZeroNodes } from "./components";
+import { NodesProps, NodesProvider } from "./contexts/NodesContext";
 
-interface Props {
-  permissions: Hub.ResourceHubPermissions;
-  refetch: () => void;
+export function NodesList(props: NodesProps) {
+  const resource = props.type === "resource_hub" ? props.resourceHub : props.folder;
+
+  assertPresent(resource.nodes, `nodes must be present in ${props.type}`);
+
+  if (resource.nodes.length < 1) return <ZeroNodes />;
+
+  return (
+    <NodesProvider {...props}>
+      <div className="mt-12">
+        {resource.nodes.map((node, idx) => (
+          <NodeItem node={node} testid={createTestId("node", idx.toString())} key={node.id} />
+        ))}
+      </div>
+    </NodesProvider>
+  );
 }
 
-interface NodesListProps extends Props {
-  nodes: Hub.ResourceHubNode[];
-}
-
-interface NodeItemProps extends Props {
+interface NodeItemProps {
   node: Hub.ResourceHubNode;
   testid: string;
 }
 
-export function NodesList({ nodes, permissions, refetch }: NodesListProps) {
-  if (nodes.length < 1) return <ZeroNodes />;
-
-  return (
-    <div className="mt-12">
-      {nodes.map((node, idx) => (
-        <NodeItem
-          node={node}
-          permissions={permissions}
-          refetch={refetch}
-          testid={createTestId("node", idx.toString())}
-          key={node.id}
-        />
-      ))}
-    </div>
-  );
-}
-
-function NodeItem({ node, permissions, refetch, testid }: NodeItemProps) {
+function NodeItem({ node, testid }: NodeItemProps) {
   const className = classNames(
     "grid grid-cols-[1fr,20px]",
     "border-b border-stroke-base first:border-t last:border-b-0",
@@ -62,17 +54,17 @@ function NodeItem({ node, permissions, refetch, testid }: NodeItemProps) {
 
       {node.folder && (
         <div className="flex items-center">
-          <FolderMenu folder={node.folder} permissions={permissions} refetch={refetch} />
+          <FolderMenu folder={node.folder} />
         </div>
       )}
       {node.document && (
         <div className="flex items-center">
-          <DocumentMenu document={node.document} permissions={permissions} refetch={refetch} />
+          <DocumentMenu document={node.document} />
         </div>
       )}
       {node.file && (
         <div className="flex items-center">
-          <FileMenu file={node.file} permissions={permissions} refetch={refetch} />
+          <FileMenu file={node.file} />
         </div>
       )}
     </div>
