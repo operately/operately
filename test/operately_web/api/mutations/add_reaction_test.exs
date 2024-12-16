@@ -124,8 +124,8 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
 
     tabletest @space_table do
       test "resource hub document - if caller has levels company=#{@test.company} and space=#{@test.space}, then expect code=#{@test.expected}", ctx do
-        space = create_space(ctx)
-        resource_hub = create_resource_hub(ctx, space, @test.company, @test.space)
+        space = create_space(ctx, @test.company, @test.space)
+        resource_hub = resource_hub_fixture(ctx.creator, space)
         doc = document_fixture(resource_hub.id, ctx.creator.id)
 
         assert {code, res} = mutation(ctx.conn, :add_reaction, %{
@@ -147,8 +147,8 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
 
     tabletest @space_table do
       test "resource hub file - if caller has levels company=#{@test.company} and space=#{@test.space}, then expect code=#{@test.expected}", ctx do
-        space = create_space(ctx)
-        resource_hub = create_resource_hub(ctx, space, @test.company, @test.space)
+        space = create_space(ctx, @test.company, @test.space)
+        resource_hub = resource_hub_fixture(ctx.creator, space)
         file = file_fixture(resource_hub, ctx.creator)
 
         assert {code, res} = mutation(ctx.conn, :add_reaction, %{
@@ -398,8 +398,8 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
 
     tabletest @space_table do
       test "resource hub document comment - if caller has levels company=#{@test.company} and space=#{@test.space}, then expect code=#{@test.expected}", ctx do
-        space = create_space(ctx)
-        resource_hub = create_resource_hub(ctx, space, @test.company, @test.space)
+        space = create_space(ctx, @test.company, @test.space)
+        resource_hub = resource_hub_fixture(ctx.creator, space)
         doc = document_fixture(resource_hub.id, ctx.creator.id) |> Repo.preload(resource_hub: :space)
         comment = create_comment(ctx, doc, "resource_hub_document")
 
@@ -423,8 +423,8 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
 
     tabletest @space_table do
       test "resource hub file comment - if caller has levels company=#{@test.company} and space=#{@test.space}, then expect code=#{@test.expected}", ctx do
-        space = create_space(ctx)
-        resource_hub = create_resource_hub(ctx, space, @test.company, @test.space)
+        space = create_space(ctx, @test.company, @test.space)
+        resource_hub = resource_hub_fixture(ctx.creator, space)
         file = file_fixture(resource_hub, ctx.creator) |> Repo.preload(:resource_hub)
         comment = create_comment(ctx, file, "resource_hub_file")
 
@@ -479,7 +479,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
     hd(Operately.Updates.list_reactions(id, type))
   end
 
-  def create_space(ctx) do
+  defp create_space(ctx) do
     group_fixture(ctx.creator, %{company_id: ctx.company.id, company_permissions: Binding.no_access()})
   end
 
@@ -581,22 +581,5 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
       }
     )
     Operately.Updates.get_comment!(milestone_comment.comment_id)
-  end
-
-  def create_resource_hub(ctx, space, company_members_level, space_members_level) do
-    resource_hub = resource_hub_fixture(ctx.creator, space, %{
-      anonymous_access_level: Binding.no_access(),
-      company_access_level: Binding.from_atom(company_members_level),
-      space_access_level: Binding.from_atom(space_members_level),
-    })
-
-    if space_members_level != :no_access do
-      {:ok, _} = Operately.Groups.add_members(ctx.creator, space.id, [%{
-        id: ctx.person.id,
-        access_level: Binding.from_atom(space_members_level)
-      }])
-    end
-
-    resource_hub
   end
 end
