@@ -87,7 +87,7 @@ defmodule Operately.ResourceHubs.Folder do
       |> Enum.reverse()
       |> Enum.map(fn [id, name] ->
         {:ok, str_id} = Ecto.UUID.cast(id)
-        %__MODULE__{id: str_id, node: %{name: name}}
+        %__MODULE__{id: str_id, node: %{name: name, parent_folder_id: nil}}
       end)
 
     Map.put(folder, :path_to_folder, path)

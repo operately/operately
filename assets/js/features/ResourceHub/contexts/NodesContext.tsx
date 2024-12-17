@@ -1,16 +1,17 @@
 import React from "react";
 
-import * as Hub from "@/models/resourceHubs";
+import { ResourceHub, ResourceHubFolder, ResourceHubPermissions } from "@/models/resourceHubs";
 import { assertPresent } from "@/utils/assertions";
+import { Location } from "../components/MoveResources";
 
 interface ResourceHubProps {
-  resourceHub: Hub.ResourceHub;
+  resourceHub: ResourceHub;
   type: "resource_hub";
   refetch: () => void;
 }
 
 interface FolderProps {
-  folder: Hub.ResourceHubFolder;
+  folder: ResourceHubFolder;
   type: "folder";
   refetch: () => void;
 }
@@ -18,9 +19,9 @@ interface FolderProps {
 export type NodesProps = ResourceHubProps | FolderProps;
 
 interface NodesContext {
-  parent: Hub.ResourceHub | Hub.ResourceHubFolder;
+  parent: Location;
   refetch: () => void;
-  permissions: Hub.ResourceHubPermissions;
+  permissions: ResourceHubPermissions;
 
   locationEditingNodeId: string | undefined;
   setLocationEditingNodeId: (id: string | undefined) => void;

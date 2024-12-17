@@ -614,6 +614,7 @@ defmodule OperatelyWeb.Api.Types do
     field :permissions, :resource_hub_permissions
     field :path_to_folder, list_of(:resource_hub_folder)
     field :children_count, :integer
+    field :parent_folder_id, :string
   end
 
   object :resource_hub_document do
@@ -622,6 +623,7 @@ defmodule OperatelyWeb.Api.Types do
     field :resource_hub_id, :string
     field :resource_hub, :resource_hub
     field :parent_folder, :resource_hub_folder
+    field :parent_folder_id, :string
     field :name, :string
     field :content, :string
     field :inserted_at, :string

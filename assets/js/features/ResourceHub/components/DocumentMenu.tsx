@@ -4,7 +4,8 @@ import * as Hub from "@/models/resourceHubs";
 import { Menu, MenuLinkItem, MenuActionItem } from "@/components/Menu";
 import { Paths } from "@/routes/paths";
 import { createTestId } from "@/utils/testid";
-import { useNodesContext } from "../contexts/NodesContext";
+import { useNodesContext } from "@/features/ResourceHub";
+import { MoveResourceMenuItem, MoveResourceModal } from "./MoveResources";
 
 interface Props {
   document: Hub.ResourceHubDocument;
@@ -21,14 +22,19 @@ export function DocumentMenu({ document }: Props) {
   if (!relevantPermissions.some(Boolean)) return <></>;
 
   return (
-    <Menu size="medium" testId={menuId}>
-      {permissions.canEditDocument && (
-        <MenuLinkItem to={editPath} testId={editId}>
-          Edit document
-        </MenuLinkItem>
-      )}
-      {permissions.canDeleteDocument && <DeleteDocumentMenuItem document={document} />}
-    </Menu>
+    <>
+      <Menu size="medium" testId={menuId}>
+        {permissions.canEditDocument && (
+          <MenuLinkItem to={editPath} testId={editId}>
+            Edit
+          </MenuLinkItem>
+        )}
+        {permissions.canEditParentFolder && <MoveResourceMenuItem resource={document} />}
+        {permissions.canDeleteDocument && <DeleteDocumentMenuItem document={document} />}
+      </Menu>
+
+      <MoveResourceModal resource={document} resourceType="document" />
+    </>
   );
 }
 
@@ -44,7 +50,7 @@ function DeleteDocumentMenuItem({ document }: Props) {
 
   return (
     <MenuActionItem onClick={handleDelete} testId={deleteId} danger>
-      Delete document
+      Delete
     </MenuActionItem>
   );
 }

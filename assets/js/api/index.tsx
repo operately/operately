@@ -1089,6 +1089,7 @@ export interface ResourceHubDocument {
   resourceHubId?: string | null;
   resourceHub?: ResourceHub | null;
   parentFolder?: ResourceHubFolder | null;
+  parentFolderId?: string | null;
   name?: string | null;
   content?: string | null;
   insertedAt?: string | null;
@@ -1128,6 +1129,7 @@ export interface ResourceHubFolder {
   permissions?: ResourceHubPermissions | null;
   pathToFolder?: ResourceHubFolder[] | null;
   childrenCount?: number | null;
+  parentFolderId?: string | null;
 }
 
 export interface ResourceHubNode {

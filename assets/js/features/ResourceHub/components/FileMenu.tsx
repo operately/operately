@@ -5,8 +5,8 @@ import { Menu, MenuActionItem } from "@/components/Menu";
 import { createTestId } from "@/utils/testid";
 import { assertPresent } from "@/utils/assertions";
 import { useDownloadFile } from "@/models/blobs";
-import { MoveResourceMenuItem, MoveResourceModal } from "./MoveResource";
-import { useNodesContext } from "../contexts/NodesContext";
+import { useNodesContext } from "@/features/ResourceHub";
+import { MoveResourceMenuItem, MoveResourceModal } from "./MoveResources";
 
 interface Props {
   file: Hub.ResourceHubFile;

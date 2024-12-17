@@ -7,11 +7,16 @@ import Forms from "@/components/Forms";
 import { MenuActionItem } from "@/components/Menu";
 import { createTestId } from "@/utils/testid";
 import { compareIds } from "@/routes/paths";
+import { useNodesContext } from "@/features/ResourceHub";
 
-import { useNodesContext } from "../contexts/NodesContext";
 import { FolderSelectField } from "./FolderSelectField";
+import { MovableResource, MovableType } from ".";
 
-export function MoveResourceMenuItem({ resource }: { resource: Hub.ResourceHubFile }) {
+interface Props {
+  resource: MovableResource;
+}
+
+export function MoveResourceMenuItem({ resource }: Props) {
   const { setLocationEditingNodeId } = useNodesContext();
   const testId = createTestId("move-resource", resource.id!);
 
@@ -23,8 +28,8 @@ export function MoveResourceMenuItem({ resource }: { resource: Hub.ResourceHubFi
 }
 
 interface FormProps {
-  resource: Hub.ResourceHubFile;
-  resourceType: "file";
+  resource: MovableResource;
+  resourceType: MovableType;
 }
 
 export function MoveResourceModal({ resource, resourceType }: FormProps) {
@@ -42,6 +47,11 @@ export function MoveResourceModal({ resource, resourceType }: FormProps) {
   const form = Forms.useForm({
     fields: {
       newFolderId: "pathToFolder" in parent ? parent.id : null,
+    },
+    validate: (addError) => {
+      if (resource.id === form.values.newFolderId) {
+        addError("newFolderId", "Folder cannot be moved inside itself.");
+      }
     },
     cancel: hideModal,
     submit: async () => {
@@ -64,7 +74,7 @@ export function MoveResourceModal({ resource, resourceType }: FormProps) {
     <Modal title={`Move “${resource.name}”`} isOpen={isOpen} hideModal={hideModal}>
       <Forms.Form form={form}>
         <Forms.FieldGroup>
-          <FolderSelectField field="newFolderId" startLocation={parent} />
+          <FolderSelectField resource={resource} field="newFolderId" startLocation={parent} />
         </Forms.FieldGroup>
 
         <Forms.Submit saveText="Move" cancelText="Cancel" />

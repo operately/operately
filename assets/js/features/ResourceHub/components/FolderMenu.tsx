@@ -6,7 +6,8 @@ import Modal from "@/components/Modal";
 import Forms from "@/components/Forms";
 import { Menu, MenuActionItem } from "@/components/Menu";
 import { createTestId } from "@/utils/testid";
-import { useNodesContext } from "../contexts/NodesContext";
+import { useNodesContext } from "@/features/ResourceHub";
+import { MoveResourceMenuItem, MoveResourceModal } from "./MoveResources";
 
 interface Props {
   folder: Hub.ResourceHubFolder;
@@ -27,6 +28,7 @@ export function FolderMenu({ folder }: Props) {
         {permissions.canRenameFolder && (
           <RenameFolderMenuItem folder={folder} showForm={() => setShowRenameForm(true)} />
         )}
+        {permissions.canEditParentFolder && <MoveResourceMenuItem resource={folder} />}
         {permissions.canDeleteFolder && <DeleteFolderMenuItem folder={folder} />}
       </Menu>
 
@@ -35,6 +37,7 @@ export function FolderMenu({ folder }: Props) {
         showForm={showRenameForm}
         toggleForm={() => setShowRenameForm(!showRenameForm)}
       />
+      <MoveResourceModal resource={folder} resourceType="folder" />
     </>
   );
 }
@@ -51,7 +54,7 @@ function DeleteFolderMenuItem({ folder }: Props) {
 
   return (
     <MenuActionItem onClick={handleDelete} testId={deleteId} danger>
-      Delete folder
+      Delete
     </MenuActionItem>
   );
 }
@@ -61,7 +64,7 @@ function RenameFolderMenuItem({ folder, showForm }: { folder: Hub.ResourceHubFol
 
   return (
     <MenuActionItem onClick={showForm} testId={testId}>
-      Rename folder
+      Rename
     </MenuActionItem>
   );
 }

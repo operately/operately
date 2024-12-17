@@ -5,17 +5,19 @@ import classNames from "classnames";
 import * as Hub from "@/models/resourceHubs";
 
 import { IconArrowLeft } from "@tabler/icons-react";
-import { useFieldValue } from "@/components/Forms/FormContext";
+import { findIcon, NodeType } from "@/features/ResourceHub/utils";
+import { useFieldError, useFieldValue } from "@/components/Forms/FormContext";
 import { assertPresent } from "@/utils/assertions";
 
-import { findIcon, NodeType } from "../utils";
+import { Location, MovableResource } from ".";
 
 interface FolderSelectFieldProps {
+  resource: MovableResource;
   field: string;
-  startLocation: Hub.ResourceHub | Hub.ResourceHubFolder;
+  startLocation: Location;
 }
 
-export function FolderSelectField({ field, startLocation }: FolderSelectFieldProps) {
+export function FolderSelectField({ resource, field, startLocation }: FolderSelectFieldProps) {
   const [_, setValue] = useFieldValue<string | null>(field);
   const [currentLocation, setCurrentLocation] = useState(startLocation);
   const [loading, setLoading] = useState<string>();
@@ -50,13 +52,20 @@ export function FolderSelectField({ field, startLocation }: FolderSelectFieldPro
         selectResourceHub={selectResourceHub}
         loading={loading}
       />
-      <OptionsList currentLocation={currentLocation} selectFolder={selectFolder} loading={loading} />
+      <OptionsList
+        resource={resource}
+        currentLocation={currentLocation}
+        selectFolder={selectFolder}
+        loading={loading}
+      />
+
+      <Error field={field} />
     </div>
   );
 }
 
 interface HeaderProps {
-  currentLocation: Hub.ResourceHub | Hub.ResourceHubFolder;
+  currentLocation: Location;
   selectFolder: (id: string) => void;
   selectResourceHub: (id: string) => void;
   loading: string | undefined;
@@ -88,12 +97,13 @@ function Header({ currentLocation, selectFolder, selectResourceHub, loading }: H
 }
 
 interface OptionsListProps {
-  currentLocation: Hub.ResourceHub | Hub.ResourceHubFolder;
+  resource: MovableResource;
+  currentLocation: Location;
   selectFolder: (id: string) => void;
   loading: string | undefined;
 }
 
-function OptionsList({ currentLocation, selectFolder, loading }: OptionsListProps) {
+function OptionsList({ resource, currentLocation, selectFolder, loading }: OptionsListProps) {
   const options = useMemo(() => {
     return currentLocation.nodes?.sort((a, b) => {
       if (a.type === "folder" && b.type !== "folder") return -1;
@@ -105,30 +115,38 @@ function OptionsList({ currentLocation, selectFolder, loading }: OptionsListProp
   return (
     <div className="h-[240px]">
       {options?.map((node) => (
-        <Option node={node} loading={loading} callback={() => selectFolder(node.folder?.id!)} key={node.id} />
+        <Option
+          resource={resource}
+          node={node}
+          loading={loading}
+          callback={() => selectFolder(node.folder?.id!)}
+          key={node.id}
+        />
       ))}
     </div>
   );
 }
 
 interface OptionProps {
+  resource: MovableResource;
   node: Hub.ResourceHubNode;
   loading: string | undefined;
   callback: (node: Hub.ResourceHubNode) => void;
 }
 
-function Option({ node, callback, loading }: OptionProps) {
+function Option({ resource, node, callback, loading }: OptionProps) {
   const isFolder = node.type === "folder";
+  const disabled = !isFolder || loading || resource.id === node.folder?.id;
 
   const Icon = findIcon(node.type as NodeType, node);
   const className = classNames(
     "flex items-center justify-between p-2",
     !loading && "cursor-pointer hover:bg-surface-highlight",
-    (!isFolder || loading) && "opacity-40",
+    disabled && "opacity-40",
   );
 
   const handleClick = () => {
-    if (!isFolder || loading) return;
+    if (disabled) return;
 
     callback(node);
   };
@@ -142,4 +160,12 @@ function Option({ node, callback, loading }: OptionProps) {
       {loading && loading === node.folder?.id && <BeatLoader size={7} />}
     </div>
   );
+}
+
+function Error({ field }: { field: string }) {
+  const error = useFieldError(field);
+
+  if (!error) return <></>;
+
+  return <div className="translate-y-6 text-sm text-red-500">{error}</div>;
 }
