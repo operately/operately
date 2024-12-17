@@ -31,7 +31,7 @@ export function Page() {
                 layout="title-center-actions-left"
               />
 
-              <Hub.NodesList nodes={folder.nodes} permissions={folder.permissions} refetch={refresh} />
+              <Hub.NodesList folder={folder} type="folder" refetch={refresh} />
 
               <Hub.AddFolderModal folder={folder} resourceHub={folder.resourceHub} refresh={refresh} />
               <Hub.AddFileModal folder={folder} resourceHub={folder.resourceHub} refresh={refresh} />
