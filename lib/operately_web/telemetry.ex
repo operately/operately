@@ -31,32 +31,32 @@ defmodule OperatelyWeb.Telemetry do
 
   def metrics do
     [
-      # API metrics
-      summary("api.request.duration",
+      # API Metrics
+      counter("operately.api.request.status",
+        event_name: "phoenix.router_dispatch.stop",
+        tag_values: fn meta -> Map.put(meta, :status, meta.conn.status) end,
+        tags: [:status]
+      ),
+      summary("operately.api.request.duration",
         event_name: "phoenix.router_dispatch.stop",
         measurement: :duration,
         unit: {:native, :millisecond},
         keep: fn a -> String.starts_with?(a.conn.request_path, "/api/v2") end
       ),
 
-      counter("api.request.status",
-        event_name: "phoenix.router_dispatch.stop",
-        measurement: :duration
+      # Database Metrics
+      summary("operately.repo.query.total_time",
+        unit: {:native, :millisecond},
+        description: "Total time spent executing a query including queue, query, decode and idle time"
       ),
-
-      # # Database Metrics
-      # summary("operately.repo.query.total_time",
-      #   unit: {:native, :millisecond},
-      #   description: "Total time spent executing a query including queue, query, decode and idle time"
-      # ),
-      # summary("operately.repo.query.query_time",
-      #   unit: {:native, :millisecond},
-      #   description: "The time spent executing the query"
-      # ),
-      # summary("operately.repo.query.queue_time",
-      #   unit: {:native, :millisecond},
-      #   description: "The time spent waiting for a database connection"
-      # ),
+      summary("operately.repo.query.query_time",
+        unit: {:native, :millisecond},
+        description: "The time spent executing the query"
+      ),
+      summary("operately.repo.query.queue_time",
+        unit: {:native, :millisecond},
+        description: "The time spent waiting for a database connection"
+      )
     ]
   end
 
