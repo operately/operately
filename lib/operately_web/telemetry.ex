@@ -8,57 +8,46 @@ defmodule OperatelyWeb.Telemetry do
 
   @impl true
   def init(_arg) do
-    children = [
-      # Telemetry poller will execute the given period measurements
-      # every 10_000ms. Learn more here: https://hexdocs.pm/telemetry_metrics
-      {:telemetry_poller, measurements: periodic_measurements(), period: 10_000}
-      # Add reporters as children of your supervision tree.
-      # {Telemetry.Metrics.ConsoleReporter, metrics: metrics()}
-    ]
+    children = []
+    children = children ++ start_vm_metrics()
+    children = children ++ start_statsd_if_enabled()
 
     Supervisor.init(children, strategy: :one_for_one)
   end
 
+  defp start_vm_metrics do
+    [{:telemetry_poller, measurements: periodic_measurements(), period: 10_000}]
+  end
+
+  defp start_statsd_if_enabled do
+    config = statsd_config()
+
+    if config.enabled do
+      [{TelemetryMetricsStatsd, metrics: metrics(), host: config.host, port: config.port}]
+    else
+      []
+    end
+  end
+
   def metrics do
     [
-      # Phoenix Metrics
-      summary("phoenix.endpoint.start.system_time",
-        unit: {:native, :millisecond}
+      # API Metrics
+      counter("operately.api.request.status",
+        event_name: "phoenix.router_dispatch.stop",
+        tag_values: fn meta -> Map.put(meta, :status, meta.conn.status) end,
+        tags: [:status]
       ),
-      summary("phoenix.endpoint.stop.duration",
-        unit: {:native, :millisecond}
-      ),
-      summary("phoenix.router_dispatch.start.system_time",
-        tags: [:route],
-        unit: {:native, :millisecond}
-      ),
-      summary("phoenix.router_dispatch.exception.duration",
-        tags: [:route],
-        unit: {:native, :millisecond}
-      ),
-      summary("phoenix.router_dispatch.stop.duration",
-        tags: [:route],
-        unit: {:native, :millisecond}
-      ),
-      summary("phoenix.socket_connected.duration",
-        unit: {:native, :millisecond}
-      ),
-      summary("phoenix.channel_join.duration",
-        unit: {:native, :millisecond}
-      ),
-      summary("phoenix.channel_handled_in.duration",
-        tags: [:event],
-        unit: {:native, :millisecond}
+      summary("operately.api.request.duration",
+        event_name: "phoenix.router_dispatch.stop",
+        measurement: :duration,
+        unit: {:native, :millisecond},
+        keep: fn a -> String.starts_with?(a.conn.request_path, "/api/v2") end
       ),
 
       # Database Metrics
       summary("operately.repo.query.total_time",
         unit: {:native, :millisecond},
-        description: "The sum of the other measurements"
-      ),
-      summary("operately.repo.query.decode_time",
-        unit: {:native, :millisecond},
-        description: "The time spent decoding the data received from the database"
+        description: "Total time spent executing a query including queue, query, decode and idle time"
       ),
       summary("operately.repo.query.query_time",
         unit: {:native, :millisecond},
@@ -67,18 +56,7 @@ defmodule OperatelyWeb.Telemetry do
       summary("operately.repo.query.queue_time",
         unit: {:native, :millisecond},
         description: "The time spent waiting for a database connection"
-      ),
-      summary("operately.repo.query.idle_time",
-        unit: {:native, :millisecond},
-        description:
-          "The time the connection spent waiting before being checked out for the query"
-      ),
-
-      # VM Metrics
-      summary("vm.memory.total", unit: {:byte, :kilobyte}),
-      summary("vm.total_run_queue_lengths.total"),
-      summary("vm.total_run_queue_lengths.cpu"),
-      summary("vm.total_run_queue_lengths.io")
+      )
     ]
   end
 
@@ -89,4 +67,28 @@ defmodule OperatelyWeb.Telemetry do
       # {OperatelyWeb, :count_users, []}
     ]
   end
+
+  defp statsd_config do
+    if Application.get_env(:operately, :app_env) == :test do
+      %{host: "localhost", port: 8125, enabled: true}
+    else
+      enabled = System.get_env("STATSD_ENABLED") == "yes"
+      
+      if enabled do
+        host = System.get_env("STATSD_HOST")
+        port = case Integer.parse(System.get_env("STATSD_PORT")) do
+          {port, _} -> port
+          :error -> 
+            require Logger
+            Logger.warning("Invalid STATSD_PORT value, falling back to default port 8125")
+            8125
+        end
+
+        %{host: host, port: port, enabled: enabled}
+      else
+        %{enabled: false}
+      end
+    end
+  end
+
 end
