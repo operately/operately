@@ -58,6 +58,7 @@ defmodule Operately.MixProject do
       {:hackney, "~> 1.20"},
       {:sweet_xml, "~> 0.7"},
       {:req, "~> 0.5.0"},
+      {:telemetry_metrics_statsd, "~> 0.7.0"},
 
       # only in dev
       {:phoenix_live_reload, "~> 1.5", only: :dev},
