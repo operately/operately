@@ -4,14 +4,15 @@ import * as Hub from "@/models/resourceHubs";
 import { Menu, MenuLinkItem, MenuActionItem } from "@/components/Menu";
 import { Paths } from "@/routes/paths";
 import { createTestId } from "@/utils/testid";
+import { useNodesContext } from "@/features/ResourceHub";
+import { MoveResourceMenuItem, MoveResourceModal } from "./MoveResources";
 
-interface DocumentMenuProps {
-  permissions: Hub.ResourceHubPermissions;
-  refetch: () => void;
+interface Props {
   document: Hub.ResourceHubDocument;
 }
 
-export function DocumentMenu({ document, permissions, refetch }: DocumentMenuProps) {
+export function DocumentMenu({ document }: Props) {
+  const { permissions } = useNodesContext();
   const editPath = Paths.resourceHubEditDocumentPath(document.id!);
   const relevantPermissions = [permissions.canEditDocument, permissions.canDeleteDocument];
 
@@ -21,20 +22,26 @@ export function DocumentMenu({ document, permissions, refetch }: DocumentMenuPro
   if (!relevantPermissions.some(Boolean)) return <></>;
 
   return (
-    <Menu size="medium" testId={menuId}>
-      {permissions.canEditDocument && (
-        <MenuLinkItem to={editPath} testId={editId}>
-          Edit document
-        </MenuLinkItem>
-      )}
+    <>
+      <Menu size="medium" testId={menuId}>
+        {permissions.canEditDocument && (
+          <MenuLinkItem to={editPath} testId={editId}>
+            Edit
+          </MenuLinkItem>
+        )}
+        {permissions.canEditParentFolder && <MoveResourceMenuItem resource={document} />}
+        {permissions.canDeleteDocument && <DeleteDocumentMenuItem document={document} />}
+      </Menu>
 
-      {permissions.canDeleteDocument && <DeleteDocumentMenuItem document={document} refetch={refetch} />}
-    </Menu>
+      <MoveResourceModal resource={document} resourceType="document" />
+    </>
   );
 }
 
-function DeleteDocumentMenuItem({ document, refetch }: { document: Hub.ResourceHubDocument; refetch: () => void }) {
+function DeleteDocumentMenuItem({ document }: Props) {
+  const { refetch } = useNodesContext();
   const [remove] = Hub.useDeleteResourceHubDocument();
+
   const handleDelete = async () => {
     await remove({ documentId: document.id });
     refetch();
@@ -43,7 +50,7 @@ function DeleteDocumentMenuItem({ document, refetch }: { document: Hub.ResourceH
 
   return (
     <MenuActionItem onClick={handleDelete} testId={deleteId} danger>
-      Delete document
+      Delete
     </MenuActionItem>
   );
 }

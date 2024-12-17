@@ -5,28 +5,35 @@ import { Menu, MenuActionItem } from "@/components/Menu";
 import { createTestId } from "@/utils/testid";
 import { assertPresent } from "@/utils/assertions";
 import { useDownloadFile } from "@/models/blobs";
+import { useNodesContext } from "@/features/ResourceHub";
+import { MoveResourceMenuItem, MoveResourceModal } from "./MoveResources";
 
-interface FileMenuProps {
-  permissions: Hub.ResourceHubPermissions;
-  refetch: () => void;
+interface Props {
   file: Hub.ResourceHubFile;
 }
 
-export function FileMenu({ file, permissions, refetch }: FileMenuProps) {
-  const relevantPermissions = [permissions.canDeleteFile, permissions.canView];
+export function FileMenu({ file }: Props) {
+  const { permissions } = useNodesContext();
+
+  const relevantPermissions = [permissions.canView, permissions.canEditParentFolder, permissions.canDeleteFile];
   const menuId = createTestId("file-menu", file.id!);
 
   if (!relevantPermissions.some(Boolean)) return <></>;
 
   return (
-    <Menu size="medium" testId={menuId}>
-      {permissions.canView && <DownloadFileMenuItem file={file} />}
-      {permissions.canDeleteFile && <DeleteFileMenuItem file={file} refetch={refetch} />}
-    </Menu>
+    <>
+      <Menu size="medium" testId={menuId}>
+        {permissions.canView && <DownloadFileMenuItem file={file} />}
+        {permissions.canEditParentFolder && <MoveResourceMenuItem resource={file} />}
+        {permissions.canDeleteFile && <DeleteFileMenuItem file={file} />}
+      </Menu>
+
+      <MoveResourceModal resource={file} resourceType="file" />
+    </>
   );
 }
 
-function DownloadFileMenuItem({ file }: { file: Hub.ResourceHubFile }) {
+function DownloadFileMenuItem({ file }: Props) {
   assertPresent(file.blob?.url, "blob.url must be present in file");
   assertPresent(file.blob.filename, "blob.filename must be present in file");
 
@@ -35,8 +42,10 @@ function DownloadFileMenuItem({ file }: { file: Hub.ResourceHubFile }) {
   return <MenuActionItem onClick={downloadFile}>Download</MenuActionItem>;
 }
 
-function DeleteFileMenuItem({ file, refetch }: { file: Hub.ResourceHubFile; refetch: () => void }) {
+function DeleteFileMenuItem({ file }: Props) {
+  const { refetch } = useNodesContext();
   const [remove] = Hub.useDeleteResourceHubFile();
+
   const handleDelete = async () => {
     await remove({ fileId: file.id });
     refetch();
@@ -45,7 +54,7 @@ function DeleteFileMenuItem({ file, refetch }: { file: Hub.ResourceHubFile; refe
 
   return (
     <MenuActionItem onClick={handleDelete} testId={deleteId} danger>
-      Delete file
+      Delete
     </MenuActionItem>
   );
 }

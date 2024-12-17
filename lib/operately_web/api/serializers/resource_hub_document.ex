@@ -4,6 +4,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ResourceHubs.Document do
       id: OperatelyWeb.Paths.document_id(document),
       name: document.node.name,
       content: Jason.encode!(document.content),
+      parent_folder_id: document.node.parent_folder_id && OperatelyWeb.Paths.folder_id(document.node.parent_folder_id),
     }
   end
 

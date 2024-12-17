@@ -599,6 +599,7 @@ defmodule OperatelyWeb.Api.Types do
     field :can_delete_file, :boolean
     field :can_delete_folder, :boolean
     field :can_edit_document, :boolean
+    field :can_edit_parent_folder, :boolean
     field :can_rename_folder, :boolean
     field :can_view, :boolean
   end
@@ -613,6 +614,7 @@ defmodule OperatelyWeb.Api.Types do
     field :permissions, :resource_hub_permissions
     field :path_to_folder, list_of(:resource_hub_folder)
     field :children_count, :integer
+    field :parent_folder_id, :string
   end
 
   object :resource_hub_document do
@@ -621,6 +623,7 @@ defmodule OperatelyWeb.Api.Types do
     field :resource_hub_id, :string
     field :resource_hub, :resource_hub
     field :parent_folder, :resource_hub_folder
+    field :parent_folder_id, :string
     field :name, :string
     field :content, :string
     field :inserted_at, :string
@@ -637,6 +640,7 @@ defmodule OperatelyWeb.Api.Types do
     field :author, :person
     field :resource_hub, :resource_hub
     field :parent_folder, :resource_hub_folder
+    field :parent_folder_id, :string
     field :name, :string
     field :description, :string
     field :potential_subscribers, list_of(:subscriber)
