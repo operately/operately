@@ -33,20 +33,28 @@ export function MoveResourceModal({ resource, resourceType }: FormProps) {
   const [edit] = Hub.useEditParentFolderInResourceHub();
 
   const hideModal = () => setLocationEditingNodeId(undefined);
+  const locationChanged = () => {
+    if (!resource.parentFolderId && !form.values.newFolderId) return false;
+    if (resource.parentFolderId === form.values.newFolderId) return false;
+    return true;
+  };
 
   const form = Forms.useForm({
     fields: {
-      newFolderId: "",
+      newFolderId: "pathToFolder" in parent ? parent.id : null,
     },
     cancel: hideModal,
     submit: async () => {
-      await edit({
-        newFolderId: form.values.newFolderId,
-        resourceId: resource.id,
-        resourceType: resourceType,
-      });
+      if (locationChanged()) {
+        await edit({
+          newFolderId: form.values.newFolderId,
+          resourceId: resource.id,
+          resourceType: resourceType,
+        });
 
-      refetch();
+        refetch();
+      }
+
       hideModal();
       form.actions.reset();
     },
@@ -59,7 +67,7 @@ export function MoveResourceModal({ resource, resourceType }: FormProps) {
           <FolderSelectField field="newFolderId" startLocation={parent} />
         </Forms.FieldGroup>
 
-        <Forms.Submit cancelText="Cancel" />
+        <Forms.Submit saveText="Move" cancelText="Cancel" />
       </Forms.Form>
     </Modal>
   );

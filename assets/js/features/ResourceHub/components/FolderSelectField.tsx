@@ -25,6 +25,7 @@ export function FolderSelectField({ field, startLocation }: FolderSelectFieldPro
     Hub.getResourceHubFolder({ id, includeNodes: true, includePathToFolder: true, includeResourceHub: true })
       .then((res) => {
         setCurrentLocation(res.folder!);
+        setValue(res.folder?.id!);
       })
       .finally(() => setIsLoading(false));
   };
@@ -48,7 +49,7 @@ export function FolderSelectField({ field, startLocation }: FolderSelectFieldPro
         selectResourceHub={selectResourceHub}
         isLoading={isLoading}
       />
-      <OptionsList currentLocation={currentLocation} field={field} selectFolder={selectFolder} isLoading={isLoading} />
+      <OptionsList currentLocation={currentLocation} selectFolder={selectFolder} isLoading={isLoading} />
     </div>
   );
 }
@@ -87,12 +88,11 @@ function Header({ currentLocation, selectFolder, selectResourceHub }: HeaderProp
 
 interface OptionsListProps {
   currentLocation: Hub.ResourceHub | Hub.ResourceHubFolder;
-  field: string;
   selectFolder: (id: string) => void;
   isLoading: boolean;
 }
 
-function OptionsList({ currentLocation, field, selectFolder, isLoading }: OptionsListProps) {
+function OptionsList({ currentLocation, selectFolder, isLoading }: OptionsListProps) {
   const options = useMemo(() => {
     return currentLocation.nodes?.sort((a, b) => {
       if (a.type === "folder" && b.type !== "folder") return -1;
@@ -104,13 +104,7 @@ function OptionsList({ currentLocation, field, selectFolder, isLoading }: Option
   return (
     <div className="h-[240px]">
       {options?.map((node) => (
-        <Option
-          node={node}
-          field={field}
-          isLoading={isLoading}
-          callback={() => selectFolder(node.folder?.id!)}
-          key={node.id}
-        />
+        <Option node={node} isLoading={isLoading} callback={() => selectFolder(node.folder?.id!)} key={node.id} />
       ))}
     </div>
   );
@@ -118,13 +112,11 @@ function OptionsList({ currentLocation, field, selectFolder, isLoading }: Option
 
 interface OptionProps {
   node: Hub.ResourceHubNode;
-  field: string;
   isLoading: boolean;
-  callback?: (node: Hub.ResourceHubNode) => void;
+  callback: (node: Hub.ResourceHubNode) => void;
 }
 
-function Option({ node, field, callback }: OptionProps) {
-  const [_, setValue] = useFieldValue<string>(field);
+function Option({ node, callback }: OptionProps) {
   const isFolder = node.type === "folder";
 
   const Icon = findIcon(node.type as NodeType, node);
@@ -137,10 +129,7 @@ function Option({ node, field, callback }: OptionProps) {
   const handleClick = () => {
     if (!isFolder) return;
 
-    setValue(node.folder?.id!);
-    if (callback) {
-      callback(node);
-    }
+    callback(node);
   };
 
   return (

@@ -1105,6 +1105,7 @@ export interface ResourceHubFile {
   author?: Person | null;
   resourceHub?: ResourceHub | null;
   parentFolder?: ResourceHubFolder | null;
+  parentFolderId?: string | null;
   name?: string | null;
   description?: string | null;
   potentialSubscribers?: Subscriber[] | null;

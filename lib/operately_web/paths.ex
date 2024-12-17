@@ -283,8 +283,12 @@ defmodule OperatelyWeb.Paths do
     OperatelyWeb.Api.Helpers.id_with_comments(resource_hub.name, id)
   end
 
-  def folder_id(folder) do
+  def folder_id(folder = %Operately.ResourceHubs.Folder{}) do
     Operately.ShortUuid.encode!(folder.id)
+  end
+
+  def folder_id(folder_id) do
+    Operately.ShortUuid.encode!(folder_id)
   end
 
   def node_id(node) do

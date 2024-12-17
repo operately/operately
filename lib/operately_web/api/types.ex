@@ -638,6 +638,7 @@ defmodule OperatelyWeb.Api.Types do
     field :author, :person
     field :resource_hub, :resource_hub
     field :parent_folder, :resource_hub_folder
+    field :parent_folder_id, :string
     field :name, :string
     field :description, :string
     field :potential_subscribers, list_of(:subscriber)

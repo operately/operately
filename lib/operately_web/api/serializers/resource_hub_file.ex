@@ -7,6 +7,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ResourceHubs.File do
       type: Ecto.assoc_loaded?(file.blob) && file.blob.content_type,
       size: Ecto.assoc_loaded?(file.blob) && file.blob.size,
       blob: OperatelyWeb.Api.Serializer.serialize(file.preview_blob || file.blob),
+      parent_folder_id: file.node.parent_folder_id && OperatelyWeb.Paths.folder_id(file.node.parent_folder_id),
     }
   end
 
