@@ -76,7 +76,13 @@ defmodule OperatelyWeb.Telemetry do
       
       if enabled do
         host = System.get_env("STATSD_HOST")
-        port = System.get_env("STATSD_PORT") |> Integer.parse() |> elem(0)
+        port = case Integer.parse(System.get_env("STATSD_PORT")) do
+          {port, _} -> port
+          :error -> 
+            require Logger
+            Logger.warning("Invalid STATSD_PORT value, falling back to default port 8125")
+            8125
+        end
 
         %{host: host, port: port, enabled: enabled}
       else
