@@ -22,15 +22,11 @@ interface NodesContext {
   parent: Location;
   refetch: () => void;
   permissions: ResourceHubPermissions;
-
-  locationEditingNodeId: string | undefined;
-  setLocationEditingNodeId: (id: string | undefined) => void;
 }
 
 const Context = React.createContext<NodesContext | undefined>(undefined);
 
 export function NodesProvider(props: NodesProps & { children: React.ReactNode }) {
-  const [locationEditingNodeId, setLocationEditingNodeId] = React.useState<string>();
   const parent = props.type === "resource_hub" ? props.resourceHub : props.folder;
 
   assertPresent(parent.permissions, `permissions must be present in ${props.type}`);
@@ -41,8 +37,6 @@ export function NodesProvider(props: NodesProps & { children: React.ReactNode })
         parent,
         refetch: props.refetch,
         permissions: parent.permissions,
-        locationEditingNodeId,
-        setLocationEditingNodeId,
       }}
     >
       {props.children}

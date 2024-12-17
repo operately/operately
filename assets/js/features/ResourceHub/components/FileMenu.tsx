@@ -1,6 +1,8 @@
 import React from "react";
 
 import * as Hub from "@/models/resourceHubs";
+
+import { useBoolState } from "@/hooks/useBoolState";
 import { Menu, MenuActionItem } from "@/components/Menu";
 import { createTestId } from "@/utils/testid";
 import { assertPresent } from "@/utils/assertions";
@@ -14,6 +16,7 @@ interface Props {
 
 export function FileMenu({ file }: Props) {
   const { permissions } = useNodesContext();
+  const [showMoveForm, toggleMoveForm] = useBoolState(false);
 
   const relevantPermissions = [permissions.canView, permissions.canEditParentFolder, permissions.canDeleteFile];
   const menuId = createTestId("file-menu", file.id!);
@@ -24,11 +27,11 @@ export function FileMenu({ file }: Props) {
     <>
       <Menu size="medium" testId={menuId}>
         {permissions.canView && <DownloadFileMenuItem file={file} />}
-        {permissions.canEditParentFolder && <MoveResourceMenuItem resource={file} />}
+        {permissions.canEditParentFolder && <MoveResourceMenuItem resource={file} showModal={toggleMoveForm} />}
         {permissions.canDeleteFile && <DeleteFileMenuItem file={file} />}
       </Menu>
 
-      <MoveResourceModal resource={file} resourceType="file" />
+      <MoveResourceModal resource={file} resourceType="file" isOpen={showMoveForm} hideModal={toggleMoveForm} />
     </>
   );
 }

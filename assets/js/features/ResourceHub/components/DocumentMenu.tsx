@@ -1,6 +1,8 @@
 import React from "react";
 
 import * as Hub from "@/models/resourceHubs";
+
+import { useBoolState } from "@/hooks/useBoolState";
 import { Menu, MenuLinkItem, MenuActionItem } from "@/components/Menu";
 import { Paths } from "@/routes/paths";
 import { createTestId } from "@/utils/testid";
@@ -13,9 +15,10 @@ interface Props {
 
 export function DocumentMenu({ document }: Props) {
   const { permissions } = useNodesContext();
+  const [showMoveForm, toggleMoveForm] = useBoolState(false);
+
   const editPath = Paths.resourceHubEditDocumentPath(document.id!);
   const relevantPermissions = [permissions.canEditDocument, permissions.canDeleteDocument];
-
   const menuId = createTestId("document-menu", document.id!);
   const editId = createTestId("edit", document.id!);
 
@@ -29,11 +32,11 @@ export function DocumentMenu({ document }: Props) {
             Edit
           </MenuLinkItem>
         )}
-        {permissions.canEditParentFolder && <MoveResourceMenuItem resource={document} />}
+        {permissions.canEditParentFolder && <MoveResourceMenuItem resource={document} showModal={toggleMoveForm} />}
         {permissions.canDeleteDocument && <DeleteDocumentMenuItem document={document} />}
       </Menu>
 
-      <MoveResourceModal resource={document} resourceType="document" />
+      <MoveResourceModal resource={document} resourceType="document" isOpen={showMoveForm} hideModal={toggleMoveForm} />
     </>
   );
 }

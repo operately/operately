@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 
 import * as Hub from "@/models/resourceHubs";
 
@@ -6,7 +6,6 @@ import Modal from "@/components/Modal";
 import Forms from "@/components/Forms";
 import { MenuActionItem } from "@/components/Menu";
 import { createTestId } from "@/utils/testid";
-import { compareIds } from "@/routes/paths";
 import { useNodesContext } from "@/features/ResourceHub";
 
 import { FolderSelectField } from "./FolderSelectField";
@@ -14,14 +13,14 @@ import { MovableResource, MovableType } from ".";
 
 interface Props {
   resource: MovableResource;
+  showModal: () => void;
 }
 
-export function MoveResourceMenuItem({ resource }: Props) {
-  const { setLocationEditingNodeId } = useNodesContext();
+export function MoveResourceMenuItem({ resource, showModal }: Props) {
   const testId = createTestId("move-resource", resource.id!);
 
   return (
-    <MenuActionItem onClick={() => setLocationEditingNodeId(resource.id!)} testId={testId}>
+    <MenuActionItem onClick={showModal} testId={testId}>
       Move
     </MenuActionItem>
   );
@@ -30,14 +29,14 @@ export function MoveResourceMenuItem({ resource }: Props) {
 interface FormProps {
   resource: MovableResource;
   resourceType: MovableType;
+  isOpen: boolean;
+  hideModal: () => void;
 }
 
-export function MoveResourceModal({ resource, resourceType }: FormProps) {
-  const { parent, locationEditingNodeId, setLocationEditingNodeId, refetch } = useNodesContext();
-  const isOpen = useMemo(() => compareIds(locationEditingNodeId, resource.id), [locationEditingNodeId]);
+export function MoveResourceModal({ resource, resourceType, isOpen, hideModal }: FormProps) {
+  const { parent, refetch } = useNodesContext();
   const [edit] = Hub.useEditParentFolderInResourceHub();
 
-  const hideModal = () => setLocationEditingNodeId(undefined);
   const locationChanged = () => {
     if (!resource.parentFolderId && !form.values.newFolderId) return false;
     if (resource.parentFolderId === form.values.newFolderId) return false;

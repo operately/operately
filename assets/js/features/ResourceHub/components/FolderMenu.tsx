@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 
 import * as Hub from "@/models/resourceHubs";
 
 import Modal from "@/components/Modal";
 import Forms from "@/components/Forms";
+import { useBoolState } from "@/hooks/useBoolState";
 import { Menu, MenuActionItem } from "@/components/Menu";
 import { createTestId } from "@/utils/testid";
 import { useNodesContext } from "@/features/ResourceHub";
@@ -15,7 +16,8 @@ interface Props {
 
 export function FolderMenu({ folder }: Props) {
   const { permissions } = useNodesContext();
-  const [showRenameForm, setShowRenameForm] = useState(false);
+  const [showRenameForm, toggleRenameForm] = useBoolState(false);
+  const [showMoveForm, toggleMoveForm] = useBoolState(false);
 
   const relevantPermissions = [permissions.canRenameFolder, permissions.canDeleteFolder];
   const menuId = createTestId("folder-menu", folder.id!);
@@ -25,19 +27,13 @@ export function FolderMenu({ folder }: Props) {
   return (
     <>
       <Menu size="medium" testId={menuId}>
-        {permissions.canRenameFolder && (
-          <RenameFolderMenuItem folder={folder} showForm={() => setShowRenameForm(true)} />
-        )}
-        {permissions.canEditParentFolder && <MoveResourceMenuItem resource={folder} />}
+        {permissions.canRenameFolder && <RenameFolderMenuItem folder={folder} showForm={toggleRenameForm} />}
+        {permissions.canEditParentFolder && <MoveResourceMenuItem resource={folder} showModal={toggleMoveForm} />}
         {permissions.canDeleteFolder && <DeleteFolderMenuItem folder={folder} />}
       </Menu>
 
-      <RenameFolderModal
-        folder={folder}
-        showForm={showRenameForm}
-        toggleForm={() => setShowRenameForm(!showRenameForm)}
-      />
-      <MoveResourceModal resource={folder} resourceType="folder" />
+      <RenameFolderModal folder={folder} showForm={showRenameForm} toggleForm={toggleRenameForm} />
+      <MoveResourceModal resource={folder} resourceType="folder" isOpen={showMoveForm} hideModal={toggleMoveForm} />
     </>
   );
 }
