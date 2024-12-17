@@ -1,8 +1,9 @@
 import React, { useMemo, useState } from "react";
+import { BeatLoader } from "react-spinners";
+import classNames from "classnames";
 
 import * as Hub from "@/models/resourceHubs";
 
-import classNames from "classnames";
 import { IconArrowLeft } from "@tabler/icons-react";
 import { useFieldValue } from "@/components/Forms/FormContext";
 import { assertPresent } from "@/utils/assertions";
@@ -17,28 +18,28 @@ interface FolderSelectFieldProps {
 export function FolderSelectField({ field, startLocation }: FolderSelectFieldProps) {
   const [_, setValue] = useFieldValue<string | null>(field);
   const [currentLocation, setCurrentLocation] = useState(startLocation);
-  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState<string>();
 
   const selectFolder = (id: string) => {
-    setIsLoading(true);
+    setLoading(id);
 
     Hub.getResourceHubFolder({ id, includeNodes: true, includePathToFolder: true, includeResourceHub: true })
       .then((res) => {
         setCurrentLocation(res.folder!);
         setValue(res.folder?.id!);
       })
-      .finally(() => setIsLoading(false));
+      .finally(() => setLoading(undefined));
   };
 
   const selectResourceHub = (id: string) => {
-    setIsLoading(true);
+    setLoading(id);
 
     Hub.getResourceHub({ id, includeNodes: true })
       .then((res) => {
         setCurrentLocation(res.resourceHub!);
         setValue(null);
       })
-      .finally(() => setIsLoading(false));
+      .finally(() => setLoading(undefined));
   };
 
   return (
@@ -47,9 +48,9 @@ export function FolderSelectField({ field, startLocation }: FolderSelectFieldPro
         currentLocation={currentLocation}
         selectFolder={selectFolder}
         selectResourceHub={selectResourceHub}
-        isLoading={isLoading}
+        loading={loading}
       />
-      <OptionsList currentLocation={currentLocation} selectFolder={selectFolder} isLoading={isLoading} />
+      <OptionsList currentLocation={currentLocation} selectFolder={selectFolder} loading={loading} />
     </div>
   );
 }
@@ -58,14 +59,14 @@ interface HeaderProps {
   currentLocation: Hub.ResourceHub | Hub.ResourceHubFolder;
   selectFolder: (id: string) => void;
   selectResourceHub: (id: string) => void;
-  isLoading: boolean;
+  loading: string | undefined;
 }
 
-function Header({ currentLocation, selectFolder, selectResourceHub }: HeaderProps) {
+function Header({ currentLocation, selectFolder, selectResourceHub, loading }: HeaderProps) {
   const isCurrentLocationFolder = "pathToFolder" in currentLocation;
 
   const goBack = () => {
-    if (!isCurrentLocationFolder) return;
+    if (!isCurrentLocationFolder || loading) return;
 
     assertPresent(currentLocation.pathToFolder, "pathToFolder must be present in folder");
     assertPresent(currentLocation.resourceHub, "resourceHub must be present in folder");
@@ -89,10 +90,10 @@ function Header({ currentLocation, selectFolder, selectResourceHub }: HeaderProp
 interface OptionsListProps {
   currentLocation: Hub.ResourceHub | Hub.ResourceHubFolder;
   selectFolder: (id: string) => void;
-  isLoading: boolean;
+  loading: string | undefined;
 }
 
-function OptionsList({ currentLocation, selectFolder, isLoading }: OptionsListProps) {
+function OptionsList({ currentLocation, selectFolder, loading }: OptionsListProps) {
   const options = useMemo(() => {
     return currentLocation.nodes?.sort((a, b) => {
       if (a.type === "folder" && b.type !== "folder") return -1;
@@ -104,7 +105,7 @@ function OptionsList({ currentLocation, selectFolder, isLoading }: OptionsListPr
   return (
     <div className="h-[240px]">
       {options?.map((node) => (
-        <Option node={node} isLoading={isLoading} callback={() => selectFolder(node.folder?.id!)} key={node.id} />
+        <Option node={node} loading={loading} callback={() => selectFolder(node.folder?.id!)} key={node.id} />
       ))}
     </div>
   );
@@ -112,30 +113,33 @@ function OptionsList({ currentLocation, selectFolder, isLoading }: OptionsListPr
 
 interface OptionProps {
   node: Hub.ResourceHubNode;
-  isLoading: boolean;
+  loading: string | undefined;
   callback: (node: Hub.ResourceHubNode) => void;
 }
 
-function Option({ node, callback }: OptionProps) {
+function Option({ node, callback, loading }: OptionProps) {
   const isFolder = node.type === "folder";
 
   const Icon = findIcon(node.type as NodeType, node);
   const className = classNames(
-    "flex items-center p-2 gap-2",
-    "cursor-pointer hover:bg-surface-highlight",
-    !isFolder && "opacity-40",
+    "flex items-center justify-between p-2",
+    !loading && "cursor-pointer hover:bg-surface-highlight",
+    (!isFolder || loading) && "opacity-40",
   );
 
   const handleClick = () => {
-    if (!isFolder) return;
+    if (!isFolder || loading) return;
 
     callback(node);
   };
 
   return (
     <div className={className} onClick={handleClick}>
-      <Icon size={18} />
-      {node.name}
+      <div className="flex items-center gap-2">
+        <Icon size={18} />
+        {node.name}
+      </div>
+      {loading && loading === node.folder?.id && <BeatLoader size={7} />}
     </div>
   );
 }
