@@ -3,11 +3,13 @@ import React from "react";
 import * as Hub from "@/models/resourceHubs";
 
 import { useBoolState } from "@/hooks/useBoolState";
-import { Menu, MenuActionItem } from "@/components/Menu";
+import { Menu, MenuActionItem, MenuLinkItem } from "@/components/Menu";
 import { createTestId } from "@/utils/testid";
 import { assertPresent } from "@/utils/assertions";
 import { useDownloadFile } from "@/models/blobs";
 import { useNodesContext } from "@/features/ResourceHub";
+import { Paths } from "@/routes/paths";
+
 import { MoveResourceMenuItem, MoveResourceModal } from "./MoveResources";
 
 interface Props {
@@ -19,6 +21,8 @@ export function FileMenu({ file }: Props) {
   const [showMoveForm, toggleMoveForm] = useBoolState(false);
 
   const relevantPermissions = [permissions.canView, permissions.canEditParentFolder, permissions.canDeleteFile];
+
+  const editPath = Paths.resourceHubEditFilePath(file.id!);
   const menuId = createTestId("file-menu", file.id!);
 
   if (!relevantPermissions.some(Boolean)) return <></>;
@@ -27,6 +31,7 @@ export function FileMenu({ file }: Props) {
     <>
       <Menu size="medium" testId={menuId}>
         {permissions.canView && <DownloadFileMenuItem file={file} />}
+        {permissions.canEditFile && <MenuLinkItem to={editPath}>Edit</MenuLinkItem>}
         {permissions.canEditParentFolder && <MoveResourceMenuItem resource={file} showModal={toggleMoveForm} />}
         {permissions.canDeleteFile && <DeleteFileMenuItem file={file} />}
       </Menu>

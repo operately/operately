@@ -17,6 +17,16 @@ export function Options() {
   return (
     <PageOptions.Root testId="project-options-button" position="top-right">
       {file.permissions.canView && <DownloadAction />}
+
+      {file.permissions.canEditFile && (
+        <PageOptions.Link
+          icon={Icons.IconEdit}
+          title="Edit"
+          to={Paths.resourceHubEditFilePath(file.id!)}
+          testId="edit-file-link"
+        />
+      )}
+
       {file.permissions.canDeleteFile && <DeleteAction />}
     </PageOptions.Root>
   );

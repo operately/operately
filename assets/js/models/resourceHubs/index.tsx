@@ -16,6 +16,7 @@ export {
   useCreateResourceHubFile,
   useEditParentFolderInResourceHub,
   useEditResourceHubDocument,
+  useEditResourceHubFile,
   useDeleteResourceHubDocument,
   useDeleteResourceHubFile,
   useDeleteResourceHubFolder,
