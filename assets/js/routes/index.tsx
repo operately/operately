@@ -105,6 +105,7 @@ export function createAppRoutes() {
         pageRoute("documents/:id", pages.ResourceHubDocumentPage),
         pageRoute("documents/:id/edit", pages.ResourceHubEditDocumentPage),
         pageRoute("files/:id", pages.ResourceHubFilePage),
+        pageRoute("files/:id/edit", pages.ResourceHubEditFilePage),
 
         pageRoute("tasks/:id", pages.TaskPage),
 

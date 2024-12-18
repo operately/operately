@@ -15,6 +15,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ResourceHubs.File do
     %{
       id: OperatelyWeb.Paths.file_id(file),
       author: OperatelyWeb.Api.Serializer.serialize(file.author),
+      resource_hub_id: file.node.resource_hub_id,
       resource_hub: OperatelyWeb.Api.Serializer.serialize(file.node.resource_hub),
       parent_folder: OperatelyWeb.Api.Serializer.serialize(file.node.parent_folder),
       name: file.node.name,
