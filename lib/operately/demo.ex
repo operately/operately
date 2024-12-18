@@ -1,5 +1,5 @@
 defmodule Operately.Demo do
-  alias Operately.Demo.{Resources, Company, People, Spaces, Goals, Projects, Discussions}
+  alias Operately.Demo.{Resources, Company, People, Spaces, Goals, Projects, Discussions, ResourceHubs}
 
   def run(account, company_name, title) do
     run(account, company_name, title, Operately.Demo.Data.data())
@@ -18,6 +18,7 @@ defmodule Operately.Demo do
       |> Goals.create_goals(data[:goals])
       |> Projects.create_projects(data[:projects])
       |> Discussions.create_discussions(data[:discussions])
+      |> ResourceHubs.create_documents(data[:documents])
     end)
 
     :timer.sleep(2000) # wait for background job to finish
