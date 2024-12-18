@@ -764,35 +764,42 @@ defmodule Operately.Demo.Data do
           Our guide to building and shipping features that delight customers while maintaining high quality standards.
 
           ### Overview
+
           This playbook outlines our product development methodology, from ideation to launch. It serves as the single source of truth for how we build and ship features.
 
           ### Core Principles
+
           - User-First: Every feature starts with user needs
           - Data-Driven: Decisions backed by metrics and user feedback
           - Iterative Development: Build, measure, learn, repeat
           - Quality-Focused: Comprehensive testing at every stage
 
           ### Development Process
+
           1) Discovery Phase
-            - User research and feedback analysis
-            - Market and competitor analysis
-            - Technical feasibility assessment
+
+          - User research and feedback analysis
+          - Market and competitor analysis
+          - Technical feasibility assessment
 
           2) Planning Phase
-            - Feature specification
-            - Success metrics definition
-            - Resource allocation
+
+          - Feature specification
+          - Success metrics definition
+          - Resource allocation
 
           3) Development Phase
-            - Sprint planning and execution
-            - Regular progress updates
-            - Quality assurance
+
+          - Sprint planning and execution
+          - Regular progress updates
+          - Quality assurance
 
           4) Launch Phase
-            - Beta testing
-            - Documentation
-            - Marketing coordination
-            - Post-launch monitoring
+
+          - Beta testing
+          - Documentation
+          - Marketing coordination
+          - Post-launch monitoring
           """,
           comments: [
             %{
@@ -817,6 +824,7 @@ defmodule Operately.Demo.Data do
           A comprehensive overview of our system architecture, tech stack, and infrastructure.
 
           ### System Components
+
           - Frontend: React/TypeScript
           - Backend: Elixir/Phoenix
           - Database: PostgreSQL
@@ -824,6 +832,7 @@ defmodule Operately.Demo.Data do
           - Message Queue: RabbitMQ
 
           ### Infrastructure
+
           - Cloud Provider: AWS
           - Deployment: Docker/Kubernetes
           - CI/CD: Semaphore
@@ -838,18 +847,21 @@ defmodule Operately.Demo.Data do
           Our comprehensive guide to maintaining consistent brand voice and visual identity.
 
           ### Brand Voice
+
           - Professional yet approachable
           - Solutions-oriented
           - Empowering
           - Clear and concise
 
           ### Visual Elements
+
           - Color palette
           - Typography
           - Logo usage
           - Image style guide
 
           ### Content Guidelines
+
           - Writing style
           - Social media tone
           - Email marketing templates
@@ -880,16 +892,18 @@ defmodule Operately.Demo.Data do
           ### Target Markets
 
           Germany
-            - Market size: €2.8B
-            - Key competitors
-            - Entry barriers
-            - Growth potential
+
+          - Market size: €2.8B
+          - Key competitors
+          - Entry barriers
+          - Growth potential
 
           Spain
-            - Market size: €1.5B
-            - Cultural considerations
-            - Localization requirements
-            - Partnership opportunities
+
+          - Market size: €1.5B
+          - Cultural considerations
+          - Localization requirements
+          - Partnership opportunities
 
           ### Go-to-Market Strategy
 
@@ -907,18 +921,21 @@ defmodule Operately.Demo.Data do
           A comprehensive guide to company policies, benefits, and culture.
 
           ### Company Culture
+
           - Mission and values
           - Work environment
           - Communication guidelines
           - Remote work policy
 
           ### Benefits & Policies
+
           - Health insurance
           - Flexible PTO
           - Professional development
           - Parental leave
 
           ### Career Development
+
           - Growth framework
           - Performance reviews
           - Mentorship program
@@ -933,12 +950,14 @@ defmodule Operately.Demo.Data do
           Step-by-step guide for bringing new team members up to speed.
 
           ### Week 1
+
           - System access setup
           - Team introductions
           - Tool training
           - Initial assignments
 
           ### First Month
+
           - Role-specific training
           - Key stakeholder meetings
           - Project assignments
@@ -953,18 +972,21 @@ defmodule Operately.Demo.Data do
           Comprehensive guide to financial procedures and controls.
 
           ### Expense Policies
+
           - Approval processes
           - Reimbursement procedures
           - Corporate card usage
           - Travel expenses
 
           ### Revenue Recognition
+
           - Subscription revenue
           - Contract terms
           - Payment processing
           - Reconciliation procedures
 
           ### Reporting Procedures
+
           - Monthly close process
           - Board reporting
           - Audit preparation

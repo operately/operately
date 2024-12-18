@@ -4,7 +4,7 @@ defmodule Operately.Demo.PoorMansMarkdown do
   # Poor man's Markdown to ProseMirror conversion.
   #
   # As there is no markdown -> ProseMirror conversion library available in Elixir, we
-  # are shipping a simple implementation here. This implementation is limited to 
+  # are shipping a simple implementation here. This implementation is limited to
   # paragraphs, bullet points, numbered lists, and bold text.
   #
 
@@ -28,6 +28,8 @@ defmodule Operately.Demo.PoorMansMarkdown do
         acc ++ parse_bullet_list(block)
       String.starts_with?(block, "1. ") ->
         acc ++ parse_numbered_list(block)
+      String.match?(block, ~r/^#+\s/) ->
+        acc ++ parse_heading(block)
       true ->
         acc ++ parse_paragraph(block)
     end
@@ -80,6 +82,26 @@ defmodule Operately.Demo.PoorMansMarkdown do
       "type" => "listItem",
       "content" => [%{"type" => "paragraph", "content" => [%{"type" => "text", "text" => cleaned_item}]}]
     }
+  end
+
+  defp parse_heading(heading) do
+    [_fulltext, hashes, cleaned_heading] = Regex.run(~r/^(#+)\s(.+)/, heading)
+    level = String.length(hashes)
+
+    [
+      %{
+        "type" => "heading",
+        "content" => [
+          %{
+            "type" => "text",
+            "text" => cleaned_heading
+          }
+        ],
+        "attrs" => %{
+          "level" => level
+        }
+      }
+    ]
   end
 
   defp parse_paragraph(block) do
