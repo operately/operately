@@ -600,6 +600,7 @@ defmodule OperatelyWeb.Api.Types do
     field :can_delete_folder, :boolean
     field :can_edit_document, :boolean
     field :can_edit_parent_folder, :boolean
+    field :can_edit_file, :boolean
     field :can_rename_folder, :boolean
     field :can_view, :boolean
   end
@@ -638,6 +639,7 @@ defmodule OperatelyWeb.Api.Types do
   object :resource_hub_file do
     field :id, :string
     field :author, :person
+    field :resource_hub_id, :string
     field :resource_hub, :resource_hub
     field :parent_folder, :resource_hub_folder
     field :parent_folder_id, :string
