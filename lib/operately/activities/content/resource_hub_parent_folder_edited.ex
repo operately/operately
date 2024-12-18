@@ -15,7 +15,7 @@ defmodule Operately.Activities.Content.ResourceHubParentFolderEdited do
   def changeset(attrs) do
     %__MODULE__{}
     |> cast(attrs, __schema__(:fields))
-    |> validate_required(__schema__(:fields))
+    |> validate_required([:company_id, :space_id, :resource_hub_id, :node_id, :resource_id, :resource_type])
   end
 
   def build(params) do

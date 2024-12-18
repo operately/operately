@@ -4,6 +4,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ResourceHubs.Folder do
       id: OperatelyWeb.Paths.folder_id(folder),
       name: folder.node.name,
       children_count: folder.children_count,
+      parent_folder_id: folder.node.parent_folder_id && OperatelyWeb.Paths.folder_id(folder.node.parent_folder_id),
     }
   end
 

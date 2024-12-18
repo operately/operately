@@ -29,7 +29,7 @@ export function Page() {
                 layout="title-center-actions-left"
               />
 
-              <Hub.NodesList nodes={resourceHub.nodes} permissions={resourceHub.permissions} refetch={refresh} />
+              <Hub.NodesList resourceHub={resourceHub} type="resource_hub" refetch={refresh} />
 
               <Hub.AddFolderModal resourceHub={resourceHub} refresh={refresh} />
               <Hub.AddFileModal resourceHub={resourceHub} refresh={refresh} />
