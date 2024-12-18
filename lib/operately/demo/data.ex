@@ -754,6 +754,223 @@ defmodule Operately.Demo.Data do
             }
           ]
         }
+      ],
+      documents: [
+        %{
+          key: :product_development_playbook,
+          space: :product_space,
+          name: "Product Development Playbook",
+          content: """
+          Our guide to building and shipping features that delight customers while maintaining high quality standards.
+
+          ### Overview
+          This playbook outlines our product development methodology, from ideation to launch. It serves as the single source of truth for how we build and ship features.
+
+          ### Core Principles
+          - User-First: Every feature starts with user needs
+          - Data-Driven: Decisions backed by metrics and user feedback
+          - Iterative Development: Build, measure, learn, repeat
+          - Quality-Focused: Comprehensive testing at every stage
+
+          ### Development Process
+          1) Discovery Phase
+            - User research and feedback analysis
+            - Market and competitor analysis
+            - Technical feasibility assessment
+
+          2) Planning Phase
+            - Feature specification
+            - Success metrics definition
+            - Resource allocation
+
+          3) Development Phase
+            - Sprint planning and execution
+            - Regular progress updates
+            - Quality assurance
+
+          4) Launch Phase
+            - Beta testing
+            - Documentation
+            - Marketing coordination
+            - Post-launch monitoring
+          """,
+          comments: [
+            %{
+              author: :walter_baker,
+              content: """
+              The development process section has been incredibly helpful for our new team members. I'd suggest adding a subsection about our code review standards and deployment checklist. Also, could we include more details about our feature flagging strategy? It's become a crucial part of how we safely roll out new features.
+              """,
+            },
+            %{
+              author: :mia_clark,
+              content: """
+              Agreed with Walter about the code review standards. I'd also love to see a section about our technical debt management strategy and how we prioritize it alongside new feature development. The current sprint planning section could use some real-world examples from our recent collaborative features project.
+              """,
+            }
+          ]
+        },
+        %{
+          key: :technical_architecture_overview,
+          space: :product_space,
+          name: "Technical Architecture Overview",
+          content: """
+          A comprehensive overview of our system architecture, tech stack, and infrastructure.
+
+          ### System Components
+          - Frontend: React/TypeScript
+          - Backend: Elixir/Phoenix
+          - Database: PostgreSQL
+          - Cache Layer: Redis
+          - Message Queue: RabbitMQ
+
+          ### Infrastructure
+          - Cloud Provider: AWS
+          - Deployment: Docker/Kubernetes
+          - CI/CD: Semaphore
+          - Monitoring: Grafana
+          """
+        },
+        %{
+          key: :brand_guidelines,
+          space: :marketing_space,
+          name: "Brand Guidelines",
+          content: """
+          Our comprehensive guide to maintaining consistent brand voice and visual identity.
+
+          ### Brand Voice
+          - Professional yet approachable
+          - Solutions-oriented
+          - Empowering
+          - Clear and concise
+
+          ### Visual Elements
+          - Color palette
+          - Typography
+          - Logo usage
+          - Image style guide
+
+          ### Content Guidelines
+          - Writing style
+          - Social media tone
+          - Email marketing templates
+          - Blog post formats
+          """,
+          comments: [
+            %{
+              author: :rachel_king,
+              content: """
+              The updated brand voice guidelines have really improved our content consistency. I've noticed our social media engagement has increased by 23% since we implemented these changes. One thing we should consider adding is guidelines for video content, especially with our upcoming product launch videos.
+              """,
+            },
+            %{
+              author: :emily_davis,
+              content: """
+              Excellent point about video content, Rachel. Let's also add guidelines for webinar presentations and virtual events. @olivia - Could you share some insights about how these guidelines have influenced our product marketing materials for the new collaborative features?
+              """,
+            }
+          ]
+        },
+        %{
+          key: :market_expansion_strategy,
+          space: :marketing_space,
+          name: "Market Expansion Strategy",
+          content: """
+          Detailed analysis and strategy for entering new markets.
+
+          ### Target Markets
+
+          Germany
+            - Market size: €2.8B
+            - Key competitors
+            - Entry barriers
+            - Growth potential
+
+          Spain
+            - Market size: €1.5B
+            - Cultural considerations
+            - Localization requirements
+            - Partnership opportunities
+
+          ### Go-to-Market Strategy
+
+          - Localization approach
+          - Marketing channels
+          - Pricing strategy
+          - Partnership model
+          """
+        },
+        %{
+          key: :employee_handbook,
+          space: :people_space,
+          name: "Employee Handbook",
+          content: """
+          A comprehensive guide to company policies, benefits, and culture.
+
+          ### Company Culture
+          - Mission and values
+          - Work environment
+          - Communication guidelines
+          - Remote work policy
+
+          ### Benefits & Policies
+          - Health insurance
+          - Flexible PTO
+          - Professional development
+          - Parental leave
+
+          ### Career Development
+          - Growth framework
+          - Performance reviews
+          - Mentorship program
+          - Learning resources
+          """
+        },
+        %{
+          key: :onboarding_process_guide,
+          space: :people_space,
+          name: "Onboarding Process Guide",
+          content: """
+          Step-by-step guide for bringing new team members up to speed.
+
+          ### Week 1
+          - System access setup
+          - Team introductions
+          - Tool training
+          - Initial assignments
+
+          ### First Month
+          - Role-specific training
+          - Key stakeholder meetings
+          - Project assignments
+          - Progress check-ins
+          """
+        },
+        %{
+          key: :financial_controls_handbook,
+          space: :finance_space,
+          name: "Financial Controls Handbook",
+          content: """
+          Comprehensive guide to financial procedures and controls.
+
+          ### Expense Policies
+          - Approval processes
+          - Reimbursement procedures
+          - Corporate card usage
+          - Travel expenses
+
+          ### Revenue Recognition
+          - Subscription revenue
+          - Contract terms
+          - Payment processing
+          - Reconciliation procedures
+
+          ### Reporting Procedures
+          - Monthly close process
+          - Board reporting
+          - Audit preparation
+          - Compliance requirements
+          """
+        },
       ]
     }
   end
