@@ -110,6 +110,7 @@ export const DISPLAYED_IN_FEED = [
   "resource_hub_document_commented",
   "resource_hub_document_deleted",
   "resource_hub_file_created",
+  "resource_hub_file_edited",
   "resource_hub_file_deleted",
   "resource_hub_file_commented",
   "resource_hub_folder_created",
@@ -176,6 +177,7 @@ import ResourceHubDocumentEdited from "@/features/activities/ResourceHubDocument
 import ResourceHubDocumentCommented from "@/features/activities/ResourceHubDocumentCommented";
 import ResourceHubDocumentDeleted from "@/features/activities/ResourceHubDocumentDeleted";
 import ResourceHubFileCreated from "@/features/activities/ResourceHubFileCreated";
+import ResourceHubFileEdited from "@/features/activities/ResourceHubFileEdited";
 import ResourceHubFileDeleted from "@/features/activities/ResourceHubFileDeleted";
 import ResourceHubFileCommented from "@/features/activities/ResourceHubFileCommented";
 import ResourceHubFolderCreated from "@/features/activities/ResourceHubFolderCreated";
@@ -239,6 +241,7 @@ function handler(activity: Activity) {
     .with("resource_hub_document_deleted", () => ResourceHubDocumentDeleted)
     .with("resource_hub_file_created", () => ResourceHubFileCreated)
     .with("resource_hub_file_deleted", () => ResourceHubFileDeleted)
+    .with("resource_hub_file_edited", () => ResourceHubFileEdited)
     .with("resource_hub_file_commented", () => ResourceHubFileCommented)
     .with("resource_hub_folder_created", () => ResourceHubFolderCreated)
     .with("resource_hub_folder_deleted", () => ResourceHubFolderDeleted)
