@@ -877,7 +877,7 @@ defmodule Operately.Demo.Data do
             %{
               author: :emily_davis,
               content: """
-              Excellent point about video content, Rachel. Let's also add guidelines for webinar presentations and virtual events. @olivia - Could you share some insights about how these guidelines have influenced our product marketing materials for the new collaborative features?
+              Excellent point about video content, Rachel. Let's also add guidelines for webinar presentations and virtual events. @olivia_hall - Could you share some insights about how these guidelines have influenced our product marketing materials for the new collaborative features?
               """,
             }
           ]

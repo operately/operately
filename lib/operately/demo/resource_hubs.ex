@@ -18,7 +18,7 @@ defmodule Operately.Demo.ResourceHubs do
 
     {:ok, document} = ResourceHubDocumentCreating.run(owner, hub, %{
       name: data.name,
-      content: PoorMansMarkdown.from_markdown(data.content),
+      content: PoorMansMarkdown.from_markdown(data.content, resources),
       send_to_everyone: true,
       subscription_parent_type: :resource_hub_document,
       subscriber_ids: [],

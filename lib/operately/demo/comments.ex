@@ -18,7 +18,7 @@ defmodule Operately.Demo.Comments do
     author = Resources.get(resources, data.author)
     parent = preload(parent)
     parent_type = find_parent_type(parent)
-    content = PoorMansMarkdown.from_markdown(data.content)
+    content = PoorMansMarkdown.from_markdown(data.content, resources)
 
     {:ok, comment} = Operately.Operations.CommentAdding.run(author, parent, parent_type, content)
 
