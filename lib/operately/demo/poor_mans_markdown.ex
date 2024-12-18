@@ -134,16 +134,16 @@ defmodule Operately.Demo.PoorMansMarkdown do
           "marks" => [%{"type" => "bold"}]
         }
 
-        String.starts_with?(text, "@") ->
-          person = get_mentioned_person(text, resources)
+      String.starts_with?(text, "@") ->
+        person = get_mentioned_person(text, resources)
 
-          %{
-            "attrs" => %{
-              "id" => OperatelyWeb.Paths.person_id(person),
-              "label" => person.full_name,
-            },
-            "type" => "mention"
-          }
+        %{
+          "attrs" => %{
+            "id" => OperatelyWeb.Paths.person_id(person),
+            "label" => person.full_name,
+          },
+          "type" => "mention"
+        }
 
       true ->
         %{
