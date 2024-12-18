@@ -110,8 +110,8 @@ defmodule Operately.Support.Features.ResourceHubSteps do
   step :assert_zero_state, ctx do
     ctx
     |> UI.assert_text("Resource Hub")
-    |> UI.assert_text("Nothing here just yet.")
-    |> UI.assert_text("A place to share rich text documents, images, videos, and other files")
+    |> UI.assert_text("Ready for your first document")
+    |> UI.assert_text("Your team's central hub for sharing documents, images, videos, and files. Click 'Add' to get started.")
   end
 
   step :assert_zero_state_on_space_page, ctx do
