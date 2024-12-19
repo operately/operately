@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 
 import * as Hub from "@/models/resourceHubs";
 
@@ -7,7 +7,7 @@ import { DivLink } from "@/components/Link";
 import { ImageWithPlaceholder } from "@/components/Image";
 import { assertPresent } from "@/utils/assertions";
 import { createTestId } from "@/utils/testid";
-import { findIcon, findPath, findSubtitle, NodeType } from "./utils";
+import { findIcon, findPath, findSubtitle, NodeType, sortNodesWithFoldersFirst } from "./utils";
 import { DocumentMenu, FileMenu, FolderMenu, ZeroNodes } from "./components";
 import { NodesProps, NodesProvider } from "./contexts/NodesContext";
 
@@ -15,13 +15,14 @@ export function NodesList(props: NodesProps) {
   const resource = props.type === "resource_hub" ? props.resourceHub : props.folder;
 
   assertPresent(resource.nodes, `nodes must be present in ${props.type}`);
+  const nodes = useMemo(() => sortNodesWithFoldersFirst(resource.nodes!), [resource.nodes]);
 
-  if (resource.nodes.length < 1) return <ZeroNodes />;
+  if (nodes.length < 1) return <ZeroNodes />;
 
   return (
     <NodesProvider {...props}>
       <div className="mt-12">
-        {resource.nodes.map((node, idx) => (
+        {nodes.map((node, idx) => (
           <NodeItem node={node} testid={createTestId("node", idx.toString())} key={node.id} />
         ))}
       </div>
