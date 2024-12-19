@@ -48,9 +48,9 @@ function NodeItem({ node, testid }: NodeItemProps) {
     <div className={className} data-test-id={testid}>
       <DivLink to={path} className="flex gap-4 py-4 items-center cursor-pointer">
         <FilePreview node={node} />
-        <div>
+        <div className="w-full">
           <div className="font-bold text-lg">{node.name}</div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center justify-between gap-2">
             <div>{subtitle}</div>
             <CommentsCountIndicator count={commentsCount} />
           </div>
