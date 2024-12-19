@@ -8,7 +8,7 @@ import { ImageWithPlaceholder } from "@/components/Image";
 import { assertPresent } from "@/utils/assertions";
 import { createTestId } from "@/utils/testid";
 import { findIcon, findPath, findSubtitle, NodeType } from "./utils";
-import { DocumentMenu, FileMenu, FolderMenu, ZeroNodes } from "./components";
+import { DocumentMenu, FileMenu, FolderMenu, FolderZeroNodes, HubZeroNodes } from "./components";
 import { NodesProps, NodesProvider } from "./contexts/NodesContext";
 
 export function NodesList(props: NodesProps) {
@@ -16,7 +16,10 @@ export function NodesList(props: NodesProps) {
 
   assertPresent(resource.nodes, `nodes must be present in ${props.type}`);
 
-  if (resource.nodes.length < 1) return <ZeroNodes />;
+  if (resource.nodes.length < 1) {
+    if (props.type === "resource_hub") return <HubZeroNodes />;
+    else return <FolderZeroNodes />;
+  }
 
   return (
     <NodesProvider {...props}>
