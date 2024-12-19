@@ -5,9 +5,10 @@ import * as Hub from "@/models/resourceHubs";
 import classNames from "classnames";
 import { DivLink } from "@/components/Link";
 import { ImageWithPlaceholder } from "@/components/Image";
+import { CommentsCountIndicator } from "@/features/Comments";
 import { assertPresent } from "@/utils/assertions";
 import { createTestId } from "@/utils/testid";
-import { findIcon, findPath, findSubtitle, NodeType, sortNodesWithFoldersFirst } from "./utils";
+import { findCommentsCount, findIcon, findPath, findSubtitle, NodeType, sortNodesWithFoldersFirst } from "./utils";
 import { DocumentMenu, FileMenu, FolderMenu, FolderZeroNodes, HubZeroNodes } from "./components";
 import { NodesProps, NodesProvider } from "./contexts/NodesContext";
 
@@ -45,6 +46,7 @@ function NodeItem({ node, testid }: NodeItemProps) {
   );
   const path = findPath(node.type as NodeType, node);
   const subtitle = findSubtitle(node.type as NodeType, node);
+  const commentsCount = findCommentsCount(node.type as NodeType, node);
 
   return (
     <div className={className} data-test-id={testid}>
@@ -52,7 +54,10 @@ function NodeItem({ node, testid }: NodeItemProps) {
         <FilePreview node={node} />
         <div>
           <div className="font-bold text-lg">{node.name}</div>
-          <div>{subtitle}</div>
+          <div className="flex items-center gap-4">
+            <div>{subtitle}</div>
+            <CommentsCountIndicator count={commentsCount} />
+          </div>
         </div>
       </DivLink>
 
