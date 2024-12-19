@@ -46,7 +46,7 @@ defmodule Features.Features.ResourceHubTest do
       |> Steps.assert_folder_created(%{name: folder4, index: 1})
       |> Steps.navigate_back(folder1)
       |> Steps.assert_items_count(%{index: 0, items_count: "2 items"})
-      |> Steps.navigate_back("Resource Hub")
+      |> Steps.navigate_back("Documents & Files")
       |> Steps.assert_items_count(%{index: 0, items_count: "1 item"})
     end
 
@@ -124,7 +124,7 @@ defmodule Features.Features.ResourceHubTest do
       |> Steps.visit_resource_hub_page()
       |> Steps.create_document(doc)
       |> Steps.assert_document_content(doc)
-      |> Steps.navigate_back("Resource Hub")
+      |> Steps.navigate_back("Documents & Files")
       |> Steps.delete_document(doc.name)
       |> Steps.assert_document_deleted(doc.name)
       |> Steps.assert_document_deleted_on_space_feed(doc.name)

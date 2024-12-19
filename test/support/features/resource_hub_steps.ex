@@ -44,7 +44,7 @@ defmodule Operately.Support.Features.ResourceHubSteps do
   end
 
   step :navigate_to_resource_hub_page, ctx do
-    UI.click(ctx, testid: "resource-hub")
+    UI.click(ctx, testid: "documents-files")
   end
 
   step :navigate_to_folder, ctx, index: index do
@@ -109,15 +109,15 @@ defmodule Operately.Support.Features.ResourceHubSteps do
 
   step :assert_zero_state, ctx do
     ctx
-    |> UI.assert_text("Resource Hub")
+    |> UI.assert_text("Documents & Files")
     |> UI.assert_text("Nothing here just yet.")
     |> UI.assert_text("A place to share rich text documents, images, videos, and other files")
   end
 
   step :assert_zero_state_on_space_page, ctx do
-    UI.find(ctx, UI.query(testid: "resource-hub"), fn ctx ->
+    UI.find(ctx, UI.query(testid: "documents-files"), fn ctx ->
       ctx
-      |> UI.assert_text("Resource Hub")
+      |> UI.assert_text("Documents & Files")
       |> UI.assert_text("Nothing here just yet.")
       |> UI.assert_text("A place to share rich text documents, images, videos, and other files")
     end)
@@ -175,13 +175,13 @@ defmodule Operately.Support.Features.ResourceHubSteps do
   step :assert_folder_created_on_space_feed, ctx, folder_name do
     ctx
     |> UI.visit(Paths.space_path(ctx.company, ctx.space))
-    |> UI.assert_text("created the #{folder_name} folder in Resource Hub")
+    |> UI.assert_text("created the #{folder_name} folder in Documents & Files")
   end
 
   step :assert_folder_created_on_company_feed, ctx, folder_name do
     ctx
     |> UI.visit(Paths.feed_path(ctx.company))
-    |> UI.assert_text("created the #{folder_name} folder in Resource Hub")
+    |> UI.assert_text("created the #{folder_name} folder in Documents & Files")
   end
 
   step :assert_document_created_on_space_feed, ctx, attrs do
@@ -213,13 +213,13 @@ defmodule Operately.Support.Features.ResourceHubSteps do
   step :assert_document_deleted_on_space_feed, ctx, document_name do
     ctx
     |> UI.visit(Paths.space_path(ctx.company, ctx.space))
-    |> UI.assert_text("deleted #{document_name} from Resource Hub")
+    |> UI.assert_text("deleted #{document_name} from Documents & Files")
   end
 
   step :assert_document_deleted_on_company_feed, ctx, document_name do
     ctx
     |> UI.visit(Paths.feed_path(ctx.company))
-    |> UI.assert_text("deleted #{document_name} from Resource Hub")
+    |> UI.assert_text("deleted #{document_name} from Documents & Files")
   end
 
   #
