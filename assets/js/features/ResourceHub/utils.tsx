@@ -58,3 +58,20 @@ export function findSubtitle(nodeType: NodeType, node: ResourceHubNode) {
       return size + (description ? ` - ${truncateString(description, 50)}` : "");
   }
 }
+
+export function sortNodesWithFoldersFirst(nodes: ResourceHubNode[]) {
+  const folders: ResourceHubNode[] = [];
+  const others: ResourceHubNode[] = [];
+
+  nodes.forEach((node) => {
+    if (node.type === "folder") {
+      folders.push(node);
+    } else {
+      others.push(node);
+    }
+  });
+
+  folders.sort((a, b) => a.name!.localeCompare(b.name!));
+
+  return [...folders, ...others];
+}
