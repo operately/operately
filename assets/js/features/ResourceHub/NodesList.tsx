@@ -5,9 +5,10 @@ import * as Hub from "@/models/resourceHubs";
 import classNames from "classnames";
 import { DivLink } from "@/components/Link";
 import { ImageWithPlaceholder } from "@/components/Image";
+import { CommentsCountIndicator } from "@/features/Comments";
 import { assertPresent } from "@/utils/assertions";
 import { createTestId } from "@/utils/testid";
-import { findIcon, findPath, findSubtitle, NodeType } from "./utils";
+import { findCommentsCount, findIcon, findPath, findSubtitle, NodeType } from "./utils";
 import { DocumentMenu, FileMenu, FolderMenu, ZeroNodes } from "./components";
 import { NodesProps, NodesProvider } from "./contexts/NodesContext";
 
@@ -41,14 +42,18 @@ function NodeItem({ node, testid }: NodeItemProps) {
   );
   const path = findPath(node.type as NodeType, node);
   const subtitle = findSubtitle(node.type as NodeType, node);
+  const commentsCount = findCommentsCount(node.type as NodeType, node);
 
   return (
     <div className={className} data-test-id={testid}>
       <DivLink to={path} className="flex gap-4 py-4 items-center cursor-pointer">
         <FilePreview node={node} />
-        <div>
+        <div className="w-full">
           <div className="font-bold text-lg">{node.name}</div>
-          <div>{subtitle}</div>
+          <div className="flex items-center justify-between gap-2">
+            <div>{subtitle}</div>
+            <CommentsCountIndicator count={commentsCount} />
+          </div>
         </div>
       </DivLink>
 

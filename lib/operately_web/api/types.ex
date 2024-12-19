@@ -635,7 +635,7 @@ defmodule OperatelyWeb.Api.Types do
     field :inserted_at, :string
     field :permissions, :resource_hub_permissions
     field :reactions, list_of(:reaction)
-    field :comments, list_of(:comment)
+    field :comments_count, :integer
     field :potential_subscribers, list_of(:subscriber)
     field :subscription_list, :subscription_list
     field :notifications, list_of(:notification)
@@ -655,6 +655,7 @@ defmodule OperatelyWeb.Api.Types do
     field :inserted_at, :string
     field :permissions, :resource_hub_permissions
     field :reactions, list_of(:reaction)
+    field :comments_count, :integer
     field :type, :string
     field :size, :integer
     field :blob, :blob

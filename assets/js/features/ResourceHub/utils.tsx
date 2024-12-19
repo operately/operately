@@ -58,3 +58,18 @@ export function findSubtitle(nodeType: NodeType, node: ResourceHubNode) {
       return size + (description ? ` - ${truncateString(description, 50)}` : "");
   }
 }
+
+export function findCommentsCount(nodeType: NodeType, node: ResourceHubNode) {
+  switch (nodeType) {
+    case "document":
+      assertPresent(node.document?.commentsCount, "commentsCount must be present in document");
+      return node.document.commentsCount;
+
+    case "file":
+      assertPresent(node.file?.commentsCount, "commentsCount must be present in file");
+      return node.file.commentsCount;
+
+    default:
+      return 0;
+  }
+}

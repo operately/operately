@@ -28,4 +28,41 @@ defmodule Operately.ResourceHubs.Node do
     |> cast(attrs, [:resource_hub_id, :parent_folder_id, :name, :type])
     |> validate_required([:resource_hub_id, :name, :type])
   end
+
+  def load_comments_count(nodes) when is_list(nodes) do
+    ids = Enum.reduce(nodes, [], fn n, acc ->
+      if n.type in [:document, :file] do
+        id = if n.document, do: n.document.id, else: n.file.id
+        [id | acc]
+      else
+        acc
+      end
+    end)
+
+    counts =
+      from(c in Operately.Updates.Comment,
+        where: c.entity_id in ^ids,
+        group_by: c.entity_id,
+        select: {c.entity_id, count(c.id)}
+      )
+      |> Operately.Repo.all()
+      |> Enum.into(%{})
+
+    Enum.map(nodes, fn %{document: document, file: file} = node ->
+      cond do
+        document ->
+          count = Map.get(counts, document.id, 0)
+          document = Map.put(document, :comments_count, count)
+          %{node | document: document}
+
+        file ->
+          count = Map.get(counts, file.id, 0)
+          file = Map.put(file, :comments_count, count)
+          %{node | file: file}
+
+        true ->
+          node
+      end
+    end)
+  end
 end
