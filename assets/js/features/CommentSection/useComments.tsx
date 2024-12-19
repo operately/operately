@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 
 import * as Comments from "@/models/comments";
+import { SearchScope } from "@/models/people";
 import { Discussion } from "@/models/discussions";
 import { ProjectRetrospective } from "@/models/projects";
 import { ResourceHubDocument, ResourceHubFile } from "@/models/resourceHubs";
 
+import { assertPresent } from "@/utils/assertions";
 import { parse } from "@/utils/time";
 import { ItemType, FormState } from "./form";
 
@@ -74,7 +76,7 @@ export function useComments(props: UseCommentsInput): FormState {
     postComment,
     editComment,
     submitting: submittingPost || submittingEdit,
-    mentionSearchScope: { type: findMentionedScope(props), id: parent.id! },
+    mentionSearchScope: findMentionedScope(props),
   };
 }
 
@@ -124,15 +126,19 @@ function findParent(props: UseCommentsInput) {
   }
 }
 
-function findMentionedScope(props: UseCommentsInput) {
+function findMentionedScope(props: UseCommentsInput): SearchScope {
   switch (props.parentType) {
     case "message":
-      return "space";
+      assertPresent(props.discussion.space, "space must be present in discussion");
+      return { type: "space", id: props.discussion.space.id! };
     case "project_retrospective":
-      return "project";
+      assertPresent(props.retrospective.project, "project must be present in retrospective");
+      return { type: "project", id: props.retrospective.project.id! };
     case "resource_hub_document":
-      return "resource_hub";
+      assertPresent(props.document.resourceHub?.space, "resourceHub.space must be present in document");
+      return { type: "space", id: props.document.resourceHub.space.id! };
     case "resource_hub_file":
-      return "resource_hub";
+      assertPresent(props.file.resourceHub?.space, "resourceHub.space must be present in file");
+      return { type: "space", id: props.file.resourceHub.space.id! };
   }
 }
