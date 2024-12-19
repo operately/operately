@@ -12,6 +12,7 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubFolder do
     field :include_permissions, :boolean
     field :include_children_count, :boolean
     field :include_potential_subscribers, :boolean
+    field :include_comments_count, :boolean
   end
 
   outputs do
@@ -55,6 +56,7 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubFolder do
       include_children_count: &Folder.set_children_count/1,
       include_permissions: &Folder.set_permissions/1,
       include_potential_subscribers: &Folder.load_potential_subscribers/1,
+      include_comments_count: &Folder.load_comments_count/1,
     ])
   end
 end
