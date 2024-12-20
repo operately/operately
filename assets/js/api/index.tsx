@@ -511,6 +511,7 @@ export interface ActivityContentResourceHubDocumentCommented {
 export interface ActivityContentResourceHubDocumentCreated {
   resourceHub?: ResourceHub | null;
   document?: ResourceHubDocument | null;
+  copiedDocument?: ResourceHubDocument | null;
 }
 
 export interface ActivityContentResourceHubDocumentDeleted {

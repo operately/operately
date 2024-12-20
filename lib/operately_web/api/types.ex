@@ -461,6 +461,7 @@ defmodule OperatelyWeb.Api.Types do
   object :activity_content_resource_hub_document_created do
     field :resource_hub, :resource_hub
     field :document, :resource_hub_document
+    field :copied_document, :resource_hub_document
   end
 
   object :activity_content_resource_hub_document_edited do
