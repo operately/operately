@@ -1138,6 +1138,24 @@ export interface ResourceHubFolder {
   parentFolderId?: string | null;
 }
 
+export interface ResourceHubLink {
+  id?: string | null;
+  author?: Person | null;
+  resourceHubId?: string | null;
+  resourceHub?: ResourceHub | null;
+  parentFolder?: ResourceHubFolder | null;
+  parentFolderId?: string | null;
+  name?: string | null;
+  url?: string | null;
+  description?: string | null;
+  type?: string | null;
+  potentialSubscribers?: Subscriber[] | null;
+  subscriptionList?: SubscriptionList | null;
+  insertedAt?: string | null;
+  permissions?: ResourceHubPermissions | null;
+  reactions?: Reaction[] | null;
+}
+
 export interface ResourceHubNode {
   id?: string | null;
   name?: string | null;
@@ -2259,6 +2277,21 @@ export interface CreateResourceHubFolderResult {
   folder?: ResourceHubFolder | null;
 }
 
+export interface CreateResourceHubLinkInput {
+  resourceHubId?: Id | null;
+  folderId?: Id | null;
+  name?: string | null;
+  url?: string | null;
+  description?: string | null;
+  type?: string | null;
+  sendNotificationsToEveryone?: boolean | null;
+  subscriberIds?: Id[] | null;
+}
+
+export interface CreateResourceHubLinkResult {
+  link?: ResourceHubLink | null;
+}
+
 export interface CreateSpaceInput {
   name?: string | null;
   mission?: string | null;
@@ -3147,6 +3180,10 @@ export class ApiClient {
     return this.post("/create_resource_hub_folder", input);
   }
 
+  async createResourceHubLink(input: CreateResourceHubLinkInput): Promise<CreateResourceHubLinkResult> {
+    return this.post("/create_resource_hub_link", input);
+  }
+
   async createSpace(input: CreateSpaceInput): Promise<CreateSpaceResult> {
     return this.post("/create_space", input);
   }
@@ -3645,6 +3682,9 @@ export async function createResourceHubFolder(
   input: CreateResourceHubFolderInput,
 ): Promise<CreateResourceHubFolderResult> {
   return defaultApiClient.createResourceHubFolder(input);
+}
+export async function createResourceHubLink(input: CreateResourceHubLinkInput): Promise<CreateResourceHubLinkResult> {
+  return defaultApiClient.createResourceHubLink(input);
 }
 export async function createSpace(input: CreateSpaceInput): Promise<CreateSpaceResult> {
   return defaultApiClient.createSpace(input);
@@ -4257,6 +4297,15 @@ export function useCreateResourceHubFolder(): UseMutationHookResult<
   );
 }
 
+export function useCreateResourceHubLink(): UseMutationHookResult<
+  CreateResourceHubLinkInput,
+  CreateResourceHubLinkResult
+> {
+  return useMutation<CreateResourceHubLinkInput, CreateResourceHubLinkResult>((input) =>
+    defaultApiClient.createResourceHubLink(input),
+  );
+}
+
 export function useCreateSpace(): UseMutationHookResult<CreateSpaceInput, CreateSpaceResult> {
   return useMutation<CreateSpaceInput, CreateSpaceResult>((input) => defaultApiClient.createSpace(input));
 }
@@ -4813,6 +4862,8 @@ export default {
   useCreateResourceHubFile,
   createResourceHubFolder,
   useCreateResourceHubFolder,
+  createResourceHubLink,
+  useCreateResourceHubLink,
   createSpace,
   useCreateSpace,
   createTask,

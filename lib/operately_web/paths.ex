@@ -303,6 +303,10 @@ defmodule OperatelyWeb.Paths do
     Operately.ShortUuid.encode!(file.id)
   end
 
+  def link_id(link) do
+    Operately.ShortUuid.encode!(link.id)
+  end
+
   def blob_id(blob) do
     Operately.ShortUuid.encode!(blob.id)
   end
