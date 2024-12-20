@@ -83,6 +83,7 @@ defmodule OperatelyWeb.Api do
   mutation :create_resource_hub_document, M.CreateResourceHubDocument
   mutation :create_resource_hub_file, M.CreateResourceHubFile
   mutation :create_resource_hub_folder, M.CreateResourceHubFolder
+  mutation :create_resource_hub_link, M.CreateResourceHubLink
   mutation :create_email_activation_code, M.CreateEmailActivationCode
 
   mutation :delete_resource_hub_document, M.DeleteResourceHubDocument

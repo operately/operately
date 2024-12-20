@@ -11,6 +11,7 @@ defmodule Operately.Notifications.SubscriptionList do
       :message,
       :resource_hub_document,
       :resource_hub_file,
+      :resource_hub_link,
     ]
     field :send_to_everyone, :boolean, default: false
 
