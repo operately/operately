@@ -51,6 +51,7 @@ export function Form() {
         content: JSON.stringify(form.values.content),
         sendNotificationsToEveryone: subscriptionsState.subscriptionType == Options.ALL,
         subscriberIds: subscriptionsState.currentSubscribersList,
+        copiedDocumentId: document.id,
       });
       navigate(Paths.resourceHubDocumentPath(res.document.id));
     },

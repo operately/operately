@@ -36,6 +36,8 @@ defmodule Operately.Operations.ResourceHubDocumentCreating do
         document_id: changes.document.id,
         node_id: changes.node.id,
         name: changes.node.name,
+        copied_document_id: attrs[:copied_document] && attrs.copied_document.id,
+        copied_document_node_id: attrs[:copied_document] && attrs.copied_document.node_id,
       }
     end)
     |> Repo.transaction()
