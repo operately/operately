@@ -2249,6 +2249,7 @@ export interface CreateResourceHubDocumentInput {
   content?: string | null;
   sendNotificationsToEveryone?: boolean | null;
   subscriberIds?: Id[] | null;
+  copiedDocumentId?: Id | null;
 }
 
 export interface CreateResourceHubDocumentResult {
