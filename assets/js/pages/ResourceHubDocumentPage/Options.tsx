@@ -7,7 +7,7 @@ import { Paths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 
 import { useLoadedData } from "./loader";
-import { IconEdit, IconTrash } from "@tabler/icons-react";
+import { IconCopy, IconEdit, IconTrash } from "@tabler/icons-react";
 
 export function Options() {
   const { document } = useLoadedData();
@@ -18,13 +18,29 @@ export function Options() {
       {document.permissions.canEditDocument && (
         <PageOptions.Link
           icon={IconEdit}
-          title="Edit document"
+          title="Edit"
           to={Paths.resourceHubEditDocumentPath(document.id!)}
           testId="edit-document-link"
         />
       )}
+      {document.permissions.canCreateDocument && <CopyLink />}
       {document.permissions.canDeleteDocument && <DeleteAction />}
     </PageOptions.Root>
+  );
+}
+
+function CopyLink() {
+  const { document } = useLoadedData();
+  const parentId = document.parentFolderId || document.resourceHubId!;
+  const parentType = document.parentFolderId ? "folder" : "resource_hub";
+
+  return (
+    <PageOptions.Link
+      icon={IconCopy}
+      title="Copy"
+      to={Paths.resourceHubCopyDocumentPath(document.id!, parentId, parentType)}
+      testId="copy-document-link"
+    />
   );
 }
 

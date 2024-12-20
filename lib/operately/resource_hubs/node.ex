@@ -29,6 +29,12 @@ defmodule Operately.ResourceHubs.Node do
     |> validate_required([:resource_hub_id, :name, :type])
   end
 
+  def preload_nodes, do: [folder: :node, document: :node, file: [:node, :preview_blob, :blob]]
+
+  #
+  # After load hooks
+  #
+
   def load_comments_count(nodes) when is_list(nodes) do
     ids = Enum.reduce(nodes, [], fn n, acc ->
       if n.type in [:document, :file] do
