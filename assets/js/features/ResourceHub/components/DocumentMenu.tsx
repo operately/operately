@@ -17,27 +17,47 @@ export function DocumentMenu({ document }: Props) {
   const { permissions } = useNodesContext();
   const [showMoveForm, toggleMoveForm] = useBoolState(false);
 
-  const editPath = Paths.resourceHubEditDocumentPath(document.id!);
   const relevantPermissions = [permissions.canEditDocument, permissions.canDeleteDocument];
   const menuId = createTestId("document-menu", document.id!);
-  const editId = createTestId("edit", document.id!);
 
   if (!relevantPermissions.some(Boolean)) return <></>;
 
   return (
     <>
       <Menu size="medium" testId={menuId}>
-        {permissions.canEditDocument && (
-          <MenuLinkItem to={editPath} testId={editId}>
-            Edit
-          </MenuLinkItem>
-        )}
+        {permissions.canEditDocument && <EditDocumentMenuItem document={document} />}
+        {permissions.canCreateDocument && <CopyDocumentMenuItem document={document} />}
         {permissions.canEditParentFolder && <MoveResourceMenuItem resource={document} showModal={toggleMoveForm} />}
         {permissions.canDeleteDocument && <DeleteDocumentMenuItem document={document} />}
       </Menu>
 
       <MoveResourceModal resource={document} resourceType="document" isOpen={showMoveForm} hideModal={toggleMoveForm} />
     </>
+  );
+}
+
+function EditDocumentMenuItem({ document }: Props) {
+  const editPath = Paths.resourceHubEditDocumentPath(document.id!);
+  const editId = createTestId("edit", document.id!);
+
+  return (
+    <MenuLinkItem to={editPath} testId={editId}>
+      Edit
+    </MenuLinkItem>
+  );
+}
+
+function CopyDocumentMenuItem({ document }: Props) {
+  const parentId = document.parentFolderId || document.resourceHubId!;
+  const parentType = document.parentFolderId ? "folder" : "resource_hub";
+  const copyPath = Paths.resourceHubCopyDocumentPath(document.id!, parentId, parentType);
+
+  const copyId = createTestId("copy", document.id!);
+
+  return (
+    <MenuLinkItem to={copyPath} testId={copyId}>
+      Copy
+    </MenuLinkItem>
   );
 }
 
