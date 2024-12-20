@@ -88,11 +88,7 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceTools do
   end
 
   defp load_resource_hubs(space_id, me) do
-    nodes_q =
-      from(n in Node,
-        where: is_nil(n.parent_folder_id),
-        preload: [document: :node, folder: :node, file: [:node, :preview_blob, :blob]]
-      )
+    nodes_q = from(n in Node, where: is_nil(n.parent_folder_id), preload: ^Node.preload_nodes())
 
     hubs =
       from(h in ResourceHub,

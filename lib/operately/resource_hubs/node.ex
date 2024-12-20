@@ -28,4 +28,6 @@ defmodule Operately.ResourceHubs.Node do
     |> cast(attrs, [:resource_hub_id, :parent_folder_id, :name, :type])
     |> validate_required([:resource_hub_id, :name, :type])
   end
+
+  def preload_nodes, do: [folder: :node, document: :node, file: [:node, :preview_blob, :blob]]
 end

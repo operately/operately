@@ -232,6 +232,10 @@ export class Paths {
     }
   }
 
+  static resourceHubCopyDocumentPath(documentId: string, parentId: string, parentType: "folder" | "resource_hub") {
+    return createCompanyPath(["documents", documentId, "copy"]) + `?${parentType}=${parentId}`;
+  }
+
   static spacePath(spaceId: string) {
     return createCompanyPath(["spaces", spaceId]);
   }
