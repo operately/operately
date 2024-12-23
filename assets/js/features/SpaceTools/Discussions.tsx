@@ -25,10 +25,14 @@ export function Discussions({ space, discussions }: DiscussionsProps) {
   return (
     <Container path={path} testId="messages-tool">
       <div className="group">
-        <div className="relative w-full h-[180px] mx-[110px] mt-8 opacity-75">
-          <DocExample className="absolute top-2 left-8 rotate-12 group-hover:left-14 group-hover:rotate-[15deg]" />
-          <DocExample className="absolute top-0 group-hover:-top-2" />
-          <DocExample className="absolute top-2 -left-8 -rotate-12 group-hover:-left-14 group-hover:rotate-[-15deg]" />
+        <div className="relative w-full h-[170px] mt-10 opacity-75 px-[65px] flex flex-col gap-3">
+          <DiscussionsExample
+            icon={Icons.IconSpeakerphone}
+            title="Post Announcements"
+            body="We have a new team member..."
+          />
+          <DiscussionsExample icon={Icons.IconBulb} title="Pitch Ideas" body="I have an idea to expand..." />
+          <DiscussionsExample icon={Icons.IconMessage} title="Discuss ideas" body="We need to make a decision..." />
         </div>
 
         <div className="flex flex-col justify-center items-center group">
@@ -47,19 +51,15 @@ export function Discussions({ space, discussions }: DiscussionsProps) {
   );
 }
 
-function DocExample({ className }: { className: string }) {
-  const klass = classNames(
-    "absolute bg-surface-base border border-surface-outline",
-    "rounded-sm p-2 h-[140px] w-[100px] overflow-hidden transition-all",
-    className,
-  );
-
+function DiscussionsExample({ icon, title, body }: { icon: any; title: string; body: string }) {
   return (
-    <div className={klass}>
-      <div className="font-extrabold text-center mb-1 text-[9px]">Quorterly Report</div>
-      <div className="text-[4px]" style={{ lineHeight: "1.1" }}>
-        This is a discussion about the quorterly report. Please share your thoughts and ideas. Do you think we should
-        include more data in the report?
+    <div className="flex items-center gap-2 group-hover:gap-3 transition-all shadow-sm pb-2">
+      <div className="bg-stone-300 dark:bg-stone-600 group-hover:bg-yellow-300 group-hover:dark:bg-yellow-500 group-hover:text-stone-900 rounded-full p-1.5 transition-all">
+        {React.createElement(icon, { size: 22, stroke: 1.5 })}
+      </div>
+      <div>
+        <div className="font-bold text-[10px] leading-none">{title}</div>
+        <div className="text-[10px]">{body}</div>
       </div>
     </div>
   );

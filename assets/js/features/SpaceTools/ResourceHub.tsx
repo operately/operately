@@ -58,21 +58,21 @@ function DocExample({ className }: { className: string }) {
         Example report document
       </div>
 
+      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1 mr-2"></div>
       <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1"></div>
       <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1"></div>
+      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1 mr-6"></div>
+      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1"></div>
+      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1 mr-1"></div>
       <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1"></div>
       <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1"></div>
+      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1 mr-7"></div>
       <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1"></div>
       <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1"></div>
+      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1 mr-1"></div>
       <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1"></div>
-      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1"></div>
-      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1"></div>
-      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1"></div>
-      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1"></div>
-      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1"></div>
-      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1"></div>
-      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1"></div>
-      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1"></div>
+      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1 mr-1"></div>
+      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1 mr-5"></div>
       <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1"></div>
     </div>
   );
