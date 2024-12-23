@@ -78,7 +78,7 @@ defmodule OperatelyWeb.Api.Mutations.EditResourceHubDocumentTest do
     end
 
     test "edits document", ctx do
-      assert ctx.document.node.name == "some name"
+      assert ctx.document.node.name == "Document"
       assert ctx.document.content == RichText.rich_text("Content")
 
       assert {200, _} = mutation(ctx.conn, :edit_resource_hub_document, %{

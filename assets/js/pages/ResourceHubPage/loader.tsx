@@ -15,6 +15,7 @@ export async function loader({ params }): Promise<LoaderResult> {
       includePermissions: true,
       includeChildrenCount: true,
       includePotentialSubscribers: true,
+      includeCommentsCount: true,
     }).then((res) => res.resourceHub!),
   };
 }

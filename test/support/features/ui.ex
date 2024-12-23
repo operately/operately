@@ -162,7 +162,7 @@ defmodule Operately.Support.Features.UI do
     # 10ms, but that was too short.
     #
     execute(ctx, fn session ->
-      session 
+      session
       |> sleep(50)
       |> Browser.clear(query)
       |> Browser.fill_in(query, with: value)
@@ -267,8 +267,20 @@ defmodule Operately.Support.Features.UI do
     {_, opts} = Keyword.pop(opts, :in)
     css_query = compose_css_query(opts)
 
+    refute_has(state, Query.css(css_query), attempts: [50, 150, 250, 400, 1000])
+  end
+
+  defp refute_has(state, query, attempts: [delay | attempts]) do
     execute(state, fn session ->
-      session |> Browser.refute_has(Query.css(css_query))
+      :timer.sleep(delay)
+
+      has_element = session |> Browser.has?(query)
+
+      cond do
+        not has_element -> session
+        attempts == [] -> raise "Element matching '#{query}' was found on the page"
+        true -> refute_has(state, query, attempts: attempts).session
+      end
     end)
   end
 

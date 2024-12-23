@@ -1100,7 +1100,7 @@ export interface ResourceHubDocument {
   insertedAt?: string | null;
   permissions?: ResourceHubPermissions | null;
   reactions?: Reaction[] | null;
-  comments?: Comment[] | null;
+  commentsCount?: number | null;
   potentialSubscribers?: Subscriber[] | null;
   subscriptionList?: SubscriptionList | null;
   notifications?: Notification[] | null;
@@ -1120,6 +1120,7 @@ export interface ResourceHubFile {
   insertedAt?: string | null;
   permissions?: ResourceHubPermissions | null;
   reactions?: Reaction[] | null;
+  commentsCount?: number | null;
   type?: string | null;
   size?: number | null;
   blob?: Blob | null;
@@ -1804,6 +1805,7 @@ export interface GetResourceHubInput {
   includePotentialSubscribers?: boolean | null;
   includePermissions?: boolean | null;
   includeChildrenCount?: boolean | null;
+  includeCommentsCount?: boolean | null;
 }
 
 export interface GetResourceHubResult {
@@ -1849,6 +1851,7 @@ export interface GetResourceHubFolderInput {
   includePermissions?: boolean | null;
   includeChildrenCount?: boolean | null;
   includePotentialSubscribers?: boolean | null;
+  includeCommentsCount?: boolean | null;
 }
 
 export interface GetResourceHubFolderResult {
