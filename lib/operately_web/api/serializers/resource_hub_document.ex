@@ -5,6 +5,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ResourceHubs.Document do
       name: document.node.name,
       content: Jason.encode!(document.content),
       parent_folder_id: document.node.parent_folder_id && OperatelyWeb.Paths.folder_id(document.node.parent_folder_id),
+      comments_count: document.comments_count,
     }
   end
 
@@ -18,7 +19,6 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ResourceHubs.Document do
       name: document.node.name,
       content: Jason.encode!(document.content),
       reactions: OperatelyWeb.Api.Serializer.serialize(document.reactions),
-      comments: OperatelyWeb.Api.Serializer.serialize(document.comments),
       inserted_at: OperatelyWeb.Api.Serializer.serialize(document.inserted_at),
       permissions: OperatelyWeb.Api.Serializer.serialize(document.permissions),
       potential_subscribers: OperatelyWeb.Api.Serializer.serialize(document.potential_subscribers),

@@ -26,6 +26,13 @@ defmodule Operately.Support.Features.ResourceHubSteps do
     |> Factory.add_folder(:five, :hub, :four)
   end
 
+  step :give_document_and_file_exist, ctx do
+    ctx
+    |> Factory.add_resource_hub(:hub, :space, :creator, name: "Second Resource Hub")
+    |> Factory.add_document(:document, :hub)
+    |> Factory.add_file(:file, :hub)
+  end
+
   step :visit_space_page, ctx do
     UI.visit(ctx, Paths.space_path(ctx.company, ctx.space))
   end
@@ -41,6 +48,10 @@ defmodule Operately.Support.Features.ResourceHubSteps do
 
   step :visit_document_page, ctx do
     UI.visit(ctx, Paths.document_path(ctx.company, ctx.document))
+  end
+
+  step :visit_file_page, ctx do
+    UI.visit(ctx, Paths.file_path(ctx.company, ctx.file))
   end
 
   step :navigate_to_resource_hub_page, ctx do
@@ -103,6 +114,14 @@ defmodule Operately.Support.Features.ResourceHubSteps do
     |> UI.click(testid: delete_id)
   end
 
+  step :leave_comment, ctx do
+    ctx
+    |> UI.click(testid: "add-comment")
+    |> UI.fill_rich_text("This is a comment.")
+    |> UI.click(testid: "post-comment")
+    |> UI.refute_has(testid: "post-comment")
+  end
+
   #
   # Assertions
   #
@@ -135,6 +154,13 @@ defmodule Operately.Support.Features.ResourceHubSteps do
     UI.find(ctx, UI.query(testid: "node-#{attrs.index}"), fn ctx ->
       ctx
       |> UI.assert_text(attrs.items_count)
+    end)
+  end
+
+  step :assert_comments_count, ctx, attrs do
+    UI.find(ctx, UI.query(testid: "node-#{attrs.index}"), fn ctx ->
+      ctx
+      |> UI.assert_text(attrs.count)
     end)
   end
 
