@@ -63,7 +63,20 @@ const ResourceHubDocumentCreating: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " added: " + content(activity).document!.name!;
+    const document = content(activity).document!;
+    const copiedDocument = content(activity).copiedDocument;
+
+    if (copiedDocument) {
+      return (
+        People.firstName(activity.author!) +
+        " created a copy of " +
+        copiedDocument.name +
+        " and named it " +
+        document.name
+      );
+    } else {
+      return People.firstName(activity.author!) + " added: " + document.name!;
+    }
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
