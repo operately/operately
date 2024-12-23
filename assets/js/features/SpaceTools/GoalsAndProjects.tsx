@@ -13,6 +13,8 @@ import { Container, Title, ZeroResourcesContainer } from "./components";
 import { calculateStatus } from "./utils";
 import { GhostButton, SecondaryButton } from "@/components/Buttons";
 
+import * as Icons from "@tabler/icons-react";
+
 interface GoalsAndProjectsProps {
   title: string;
   space: Space;
@@ -29,12 +31,7 @@ export function GoalsAndProjects({ title, space, goals, projects }: GoalsAndProj
   return (
     <Container path={path} testId="goals-and-projects">
       <div className="flex flex-col items-center justify-center w-full mt-8">
-        <img
-          src="https://notioly.com/wp-content/uploads/2024/04/380.Accomplishment.png"
-          width="170px"
-          height="170px"
-          alt="Goals and Projects"
-        />
+        <Icons.IconTargetArrow width={100} height={100} stroke={1} />
 
         <div className="text-base font-bold mt-4">Goals &amp; Projects</div>
 

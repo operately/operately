@@ -22,25 +22,59 @@ export function ResourceHub({ resourceHub }: ResourceHubProps) {
 
   return (
     <Container path={path} testId={testid}>
-      <div className="flex flex-col items-center justify-center w-full mt-8">
-        <img
-          src="https://notioly.com/wp-content/uploads/2024/03/365.Archive-Files.png"
-          width="170px"
-          height="170px"
-          alt="Goals and Projects"
-        />
-
-        <div className="text-base font-bold mt-4">Documents &amp; Files</div>
-
-        <div className="flex gap-2 mt-1 mb-4 text-center px-6 text-sm">
-          A place to share rich text documents, images, videos, and other files
+      <div className="group">
+        <div className="relative w-full h-[180px] mx-[115px] mt-8 opacity-75">
+          <DocExample className="absolute top-2 left-8 rotate-12 group-hover:left-14 group-hover:rotate-[15deg]" />
+          <DocExample className="absolute top-0 group-hover:-top-2" />
+          <DocExample className="absolute top-2 -left-8 -rotate-12 group-hover:-left-14 group-hover:rotate-[-15deg]" />
         </div>
 
-        <GhostButton size="sm" linkTo={"/"} testId="edit-space">
-          Add doc &amp; file
-        </GhostButton>
+        <div className="flex flex-col justify-center items-center group">
+          <div className="text-base font-bold">Documents &amp; Files</div>
+
+          <div className="flex gap-2 mt-1 mb-4 text-center px-6 text-sm">
+            A place to share rich text documents, images, videos, and other files
+          </div>
+
+          <GhostButton size="sm" linkTo={"/"} testId="edit-space">
+            Add a document or file
+          </GhostButton>
+        </div>
       </div>
     </Container>
+  );
+}
+
+function DocExample({ className }: { className: string }) {
+  const klass = classNames(
+    "absolute bg-surface-base border border-stone-300 dark:border-stone-500 shadow-sm",
+    "rounded-sm p-2 h-[140px] w-[100px] overflow-hidden transition-all",
+    className,
+  );
+
+  return (
+    <div className={klass}>
+      <div className="font-bold mb-2 text-[6px]" style={{ lineHeight: 1 }}>
+        Example report document
+      </div>
+
+      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1"></div>
+      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1"></div>
+      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1"></div>
+      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1"></div>
+      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1"></div>
+      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1"></div>
+      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1"></div>
+      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1"></div>
+      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1"></div>
+      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1"></div>
+      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1"></div>
+      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1"></div>
+      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1"></div>
+      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1"></div>
+      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1"></div>
+      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1"></div>
+    </div>
   );
 }
 

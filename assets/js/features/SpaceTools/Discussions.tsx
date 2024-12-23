@@ -12,6 +12,7 @@ import classNames from "classnames";
 
 import { Title, Container, ZeroResourcesContainer } from "./components";
 import { GhostButton } from "@/components/Buttons";
+import * as Icons from "@tabler/icons-react";
 
 interface DiscussionsProps {
   space: Space;
@@ -23,25 +24,44 @@ export function Discussions({ space, discussions }: DiscussionsProps) {
 
   return (
     <Container path={path} testId="messages-tool">
-      <div className="flex flex-col items-center justify-center w-full mt-8">
-        <img
-          src="https://notioly.com/wp-content/uploads/2024/01/345.Group-Chat.png"
-          width="170px"
-          height="170px"
-          alt="Goals and Projects"
-        />
-
-        <div className="text-base font-bold mt-4">Discussions</div>
-
-        <div className="flex gap-2 mt-1 mb-4 text-center px-6 text-sm">
-          Post announcements, pitch ideas, and discuss ideas with your team.
+      <div className="group">
+        <div className="relative w-full h-[180px] mx-[110px] mt-8 opacity-75">
+          <DocExample className="absolute top-2 left-8 rotate-12 group-hover:left-14 group-hover:rotate-[15deg]" />
+          <DocExample className="absolute top-0 group-hover:-top-2" />
+          <DocExample className="absolute top-2 -left-8 -rotate-12 group-hover:-left-14 group-hover:rotate-[-15deg]" />
         </div>
 
-        <GhostButton size="sm" linkTo={Paths.spaceGoalsPath(space.id!)} testId="edit-space">
-          Write a new post
-        </GhostButton>
+        <div className="flex flex-col justify-center items-center group">
+          <div className="text-base font-bold">Discussions</div>
+
+          <div className="flex gap-2 mt-1 mb-4 text-center px-6 text-sm">
+            Post announcements, pitch ideas, and discuss ideas with your team.
+          </div>
+
+          <GhostButton size="sm" linkTo={Paths.spaceGoalsPath(space.id!)} testId="edit-space">
+            Write a new post
+          </GhostButton>
+        </div>
       </div>
     </Container>
+  );
+}
+
+function DocExample({ className }: { className: string }) {
+  const klass = classNames(
+    "absolute bg-surface-base border border-surface-outline",
+    "rounded-sm p-2 h-[140px] w-[100px] overflow-hidden transition-all",
+    className,
+  );
+
+  return (
+    <div className={klass}>
+      <div className="font-extrabold text-center mb-1 text-[9px]">Quorterly Report</div>
+      <div className="text-[4px]" style={{ lineHeight: "1.1" }}>
+        This is a discussion about the quorterly report. Please share your thoughts and ideas. Do you think we should
+        include more data in the report?
+      </div>
+    </div>
   );
 }
 
