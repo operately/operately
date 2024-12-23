@@ -6,6 +6,7 @@ import { Discussion } from "@/models/discussions";
 import { Paths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { richContentToString } from "@/components/RichContent";
+import { CommentsCountIndicator } from "@/features/Comments";
 import Avatar from "@/components/Avatar";
 import classNames from "classnames";
 
@@ -57,7 +58,7 @@ function DiscussionItem({ discussion }: { discussion: Discussion }) {
     <div className={className}>
       <Avatar person={discussion.author} size={30} />
       <DiscussionTitle title={discussion.title!} body={discussion.body!} />
-      <CommnetsCount count={discussion.commentsCount} />
+      <CommentsCountIndicator count={discussion.commentsCount} />
     </div>
   );
 }
@@ -67,18 +68,6 @@ function DiscussionTitle({ title, body }: { title: string; body: string }) {
     <div className="font-bold overflow-hidden">
       <div className="truncate pr-2">{title}</div>
       <div className="font-normal truncate pr-2">{richContentToString(JSON.parse(body))}</div>
-    </div>
-  );
-}
-
-function CommnetsCount({ count }: { count: number }) {
-  if (count < 1) return <></>;
-
-  return (
-    <div>
-      <div className="w-[16px] h-[16px] bg-blue-500 text-white-1 flex items-center justify-center rounded-full text-[9px] font-bold">
-        {count}
-      </div>
     </div>
   );
 }

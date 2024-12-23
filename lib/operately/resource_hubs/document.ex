@@ -21,6 +21,7 @@ defmodule Operately.ResourceHubs.Document do
     field :potential_subscribers, :any, virtual: true
     field :permissions, :any, virtual: true
     field :notifications, :any, virtual: true, default: []
+    field :comments_count, :integer, virtual: true
 
     timestamps()
     soft_delete()

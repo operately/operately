@@ -22,6 +22,7 @@ defmodule Operately.ResourceHubs.File do
     # populated with after load hooks
     field :potential_subscribers, :any, virtual: true
     field :permissions, :any, virtual: true
+    field :comments_count, :integer, virtual: true
 
     timestamps()
     soft_delete()
