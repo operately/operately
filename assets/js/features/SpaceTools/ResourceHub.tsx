@@ -24,9 +24,15 @@ export function ResourceHub({ resourceHub }: ResourceHubProps) {
     <Container path={path} testId={testid}>
       <div className="group">
         <div className="relative w-full h-[180px] mx-[115px] mt-8 opacity-75">
-          <DocExample className="absolute top-2 left-8 rotate-12 group-hover:left-14 group-hover:rotate-[15deg]" />
-          <DocExample className="absolute top-0 group-hover:-top-2" />
-          <DocExample className="absolute top-2 -left-8 -rotate-12 group-hover:-left-14 group-hover:rotate-[-15deg]" />
+          <DocExample
+            className="absolute top-2 left-8 rotate-12 group-hover:left-14 group-hover:rotate-[15deg]"
+            title="Product Roadmap"
+          />
+          <DocExample className="absolute top-0 group-hover:-top-2" title="Monthly Reports" />
+          <DocExample
+            className="absolute top-2 -left-8 -rotate-12 group-hover:-left-14 group-hover:rotate-[-15deg]"
+            title="Employee Handbook"
+          />
         </div>
 
         <div className="flex flex-col justify-center items-center group">
@@ -45,7 +51,7 @@ export function ResourceHub({ resourceHub }: ResourceHubProps) {
   );
 }
 
-function DocExample({ className }: { className: string }) {
+function DocExample({ title, className }: { title: string; className?: string }) {
   const klass = classNames(
     "absolute bg-surface-base border border-stone-300 dark:border-stone-500 shadow-sm",
     "rounded-sm p-2 h-[140px] w-[100px] overflow-hidden transition-all",
@@ -54,26 +60,29 @@ function DocExample({ className }: { className: string }) {
 
   return (
     <div className={klass}>
-      <div className="font-bold mb-2 text-[6px]" style={{ lineHeight: 1 }}>
-        Example report document
+      <div className="font-bold mb-2 text-[9px]" style={{ lineHeight: 1.1 }}>
+        {title}
       </div>
 
-      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1 mr-2"></div>
-      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1"></div>
-      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1"></div>
-      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1 mr-6"></div>
-      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1"></div>
-      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1 mr-1"></div>
-      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1"></div>
-      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1"></div>
-      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1 mr-7"></div>
-      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1"></div>
-      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1"></div>
-      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1 mr-1"></div>
-      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1"></div>
-      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1 mr-1"></div>
-      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1 mr-5"></div>
-      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-1"></div>
+      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-0.5 mr-2"></div>
+      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-0.5"></div>
+      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-0.5"></div>
+      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-0.5 mr-6"></div>
+      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-0.5"></div>
+      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-0.5 mr-1"></div>
+      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-0.5"></div>
+      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-0.5"></div>
+      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-0.5 mr-7"></div>
+      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-0.5"></div>
+      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-0.5"></div>
+      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-0.5 mr-1"></div>
+      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-0.5"></div>
+      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-0.5 mr-1"></div>
+      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-0.5"></div>
+      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-0.5"></div>
+      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-0.5 mr-1"></div>
+      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-0.5"></div>
+      <div className="border-t border-stone-400 dark:border-stone-500 mt-0.5 pt-0.5 mr-1"></div>
     </div>
   );
 }
