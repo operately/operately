@@ -93,6 +93,11 @@ defmodule Operately.ResourceHubs.Folder do
     Map.put(folder, :path_to_folder, path)
   end
 
+  def load_comments_count(folder = %__MODULE__{}) do
+    nodes = Operately.ResourceHubs.Node.load_comments_count(folder.child_nodes)
+    Map.put(folder, :child_nodes, nodes)
+  end
+
   def load_potential_subscribers(folder = %__MODULE__{}) do
     folder = Repo.preload(folder, space: :members)
 

@@ -26,6 +26,23 @@ defmodule Operately.Support.Features.ResourceHubSteps do
     |> Factory.add_folder(:five, :hub, :four)
   end
 
+  step :given_file_exists, ctx do
+    {:ok, hub} = ResourceHub.get(:system, space_id: ctx.space.id)
+
+    blob = Operately.BlobsFixtures.blob_fixture(%{author_id: ctx.creator.id, company_id: ctx.company.id})
+
+    {:ok, file} = Operately.Operations.ResourceHubFileCreating.run(ctx.creator, hub, %{
+      name: "File",
+      content: Operately.Support.RichText.rich_text("Content"),
+      send_to_everyone: true,
+      subscription_parent_type: :resource_hub_file,
+      subscriber_ids: [ctx.other_user.id],
+      blob_id: blob.id,
+    })
+
+    Map.put(ctx, :file, file)
+  end
+
   step :visit_space_page, ctx do
     UI.visit(ctx, Paths.space_path(ctx.company, ctx.space))
   end
@@ -41,6 +58,10 @@ defmodule Operately.Support.Features.ResourceHubSteps do
 
   step :visit_document_page, ctx do
     UI.visit(ctx, Paths.document_path(ctx.company, ctx.document))
+  end
+
+  step :visit_file_page, ctx do
+    UI.visit(ctx, Paths.file_path(ctx.company, ctx.file))
   end
 
   step :navigate_to_resource_hub_page, ctx do
@@ -103,6 +124,14 @@ defmodule Operately.Support.Features.ResourceHubSteps do
     |> UI.click(testid: delete_id)
   end
 
+  step :leave_comment, ctx do
+    ctx
+    |> UI.click(testid: "add-comment")
+    |> UI.fill_rich_text("This is a comment.")
+    |> UI.click(testid: "post-comment")
+    |> UI.refute_has(testid: "post-comment")
+  end
+
   #
   # Assertions
   #
@@ -135,6 +164,13 @@ defmodule Operately.Support.Features.ResourceHubSteps do
     UI.find(ctx, UI.query(testid: "node-#{attrs.index}"), fn ctx ->
       ctx
       |> UI.assert_text(attrs.items_count)
+    end)
+  end
+
+  step :assert_comments_count, ctx, attrs do
+    UI.find(ctx, UI.query(testid: "node-#{attrs.index}"), fn ctx ->
+      ctx
+      |> UI.assert_text(attrs.count)
     end)
   end
 
@@ -222,6 +258,30 @@ defmodule Operately.Support.Features.ResourceHubSteps do
     |> UI.assert_text("deleted #{document_name} from Documents & Files")
   end
 
+  step :assert_document_commented_on_company_feed, ctx, document_name do
+    ctx
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.assert_text("commented on #{document_name}")
+  end
+
+  step :assert_document_commented_on_space_feed, ctx, document_name do
+    ctx
+    |> UI.visit(Paths.space_path(ctx.company, ctx.space))
+    |> UI.assert_text("commented on #{document_name}")
+  end
+
+  step :assert_file_commented_on_company_feed, ctx do
+    ctx
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.assert_text("commented on File")
+  end
+
+  step :assert_file_commented_on_space_feed, ctx do
+    ctx
+    |> UI.visit(Paths.space_path(ctx.company, ctx.space))
+    |> UI.assert_text("commented on File")
+  end
+
   #
   # Notifications
   #
@@ -253,6 +313,26 @@ defmodule Operately.Support.Features.ResourceHubSteps do
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.creator,
       action: "deleted a document: #{document_name}",
+    })
+  end
+
+  step :assert_document_commented_notification_sent, ctx, document_name do
+    ctx
+    |> UI.login_as(ctx.other_user)
+    |> NotificationsSteps.visit_notifications_page()
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.creator,
+      action: "commented on: #{document_name}",
+    })
+  end
+
+  step :assert_file_commented_notification_sent, ctx do
+    ctx
+    |> UI.login_as(ctx.other_user)
+    |> NotificationsSteps.visit_notifications_page()
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.creator,
+      action: "commented on: File",
     })
   end
 
@@ -289,6 +369,28 @@ defmodule Operately.Support.Features.ResourceHubSteps do
       where: hub.name,
       to: ctx.other_user,
       action: "deleted a document: #{document_name}",
+      author: ctx.creator,
+    })
+  end
+
+  step :assert_document_commented_email_sent, ctx, document_name do
+    {:ok, hub} = ResourceHub.get(:system, space_id: ctx.space.id)
+
+    ctx |> EmailSteps.assert_activity_email_sent(%{
+      where: hub.name,
+      to: ctx.other_user,
+      action: "commented on: #{document_name}",
+      author: ctx.creator,
+    })
+  end
+
+  step :assert_file_commented_email_sent, ctx do
+    {:ok, hub} = ResourceHub.get(:system, space_id: ctx.space.id)
+
+    ctx |> EmailSteps.assert_activity_email_sent(%{
+      where: hub.name,
+      to: ctx.other_user,
+      action: "commented on: File",
       author: ctx.creator,
     })
   end
