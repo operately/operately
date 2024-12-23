@@ -135,23 +135,36 @@ defmodule Features.Features.ResourceHubTest do
   end
 
   describe "comments" do
-    test "add comment to document", ctx do
+    feature "add comment to document", ctx do
+      doc = %{
+        name: "My First Document",
+        content: "This is the document's content",
+      }
+
       ctx
-      |> Steps.give_document_and_file_exist()
-      |> Steps.visit_document_page()
+      |> Steps.visit_resource_hub_page()
+      |> Steps.create_document(doc)
       |> Steps.leave_comment()
       |> Steps.leave_comment()
-      |> Steps.navigate_back("Second Resource Hub")
+      |> Steps.navigate_back("Documents & Files")
       |> Steps.assert_comments_count(%{index: 0, count: "2"})
+      |> Steps.assert_document_commented_on_company_feed(doc.name)
+      |> Steps.assert_document_commented_on_space_feed(doc.name)
+      |> Steps.assert_document_commented_notification_sent(doc.name)
+      |> Steps.assert_document_commented_email_sent(doc.name)
     end
 
     test "add comment to file", ctx do
       ctx
-      |> Steps.give_document_and_file_exist()
+      |> Steps.given_file_exists()
       |> Steps.visit_file_page()
       |> Steps.leave_comment()
-      |> Steps.navigate_back("Second Resource Hub")
-      |> Steps.assert_comments_count(%{index: 1, count: "1"})
+      |> Steps.navigate_back("Documents & Files")
+      |> Steps.assert_comments_count(%{index: 0, count: "1"})
+      |> Steps.assert_file_commented_on_company_feed()
+      |> Steps.assert_file_commented_on_space_feed()
+      |> Steps.assert_file_commented_notification_sent()
+      |> Steps.assert_file_commented_email_sent()
     end
   end
 end
