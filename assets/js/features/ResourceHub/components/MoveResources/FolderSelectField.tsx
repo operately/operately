@@ -5,7 +5,7 @@ import classNames from "classnames";
 import * as Hub from "@/models/resourceHubs";
 
 import { IconArrowLeft } from "@tabler/icons-react";
-import { findIcon, NodeType } from "@/features/ResourceHub/utils";
+import { findIcon, NodeType, sortNodesWithFoldersFirst } from "@/features/ResourceHub/utils";
 import { useFieldError, useFieldValue } from "@/components/Forms/FormContext";
 import { assertPresent } from "@/utils/assertions";
 
@@ -104,13 +104,7 @@ interface OptionsListProps {
 }
 
 function OptionsList({ resource, currentLocation, selectFolder, loading }: OptionsListProps) {
-  const options = useMemo(() => {
-    return currentLocation.nodes?.sort((a, b) => {
-      if (a.type === "folder" && b.type !== "folder") return -1;
-      if (a.type !== "folder" && b.type === "folder") return 1;
-      return 0;
-    });
-  }, [currentLocation]);
+  const options = useMemo(() => sortNodesWithFoldersFirst(currentLocation.nodes!), [currentLocation]);
 
   return (
     <div className="h-[240px] overflow-scroll">
