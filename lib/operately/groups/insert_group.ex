@@ -81,7 +81,7 @@ defmodule Operately.Groups.InsertGroup do
     |> Multi.insert(:resource_hub, fn changes ->
       Operately.ResourceHubs.ResourceHub.changeset(%{
         space_id: changes.group.id,
-        name: "Resource Hub",
+        name: "Documents & Files",
       })
     end)
     |> Multi.insert(:hub_context, fn changes ->
