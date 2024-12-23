@@ -6,7 +6,7 @@ defmodule Operately.Access.Context do
     belongs_to :group, Operately.Groups.Group, foreign_key: :group_id
     belongs_to :company, Operately.Companies.Company, foreign_key: :company_id
     belongs_to :goal, Operately.Goals.Goal, foreign_key: :goal_id
-    belongs_to :resource_hub, Operately.Goals.Goal, foreign_key: :resource_hub_id
+    belongs_to :resource_hub, Operately.ResourceHubs.ResourceHub, foreign_key: :resource_hub_id
 
     has_many :activities, Operately.Activities.Activity, foreign_key: :access_context_id
     has_many :bindings, Operately.Access.Binding, foreign_key: :context_id
