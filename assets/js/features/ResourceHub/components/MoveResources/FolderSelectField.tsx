@@ -113,7 +113,7 @@ function OptionsList({ resource, currentLocation, selectFolder, loading }: Optio
   }, [currentLocation]);
 
   return (
-    <div className="h-[240px]">
+    <div className="h-[240px] overflow-scroll">
       {options?.map((node) => (
         <Option
           resource={resource}
