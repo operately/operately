@@ -43,7 +43,7 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHub do
   end
 
   defp preload(inputs) do
-    q = from(n in Node, where: is_nil(n.parent_folder_id), preload: [folder: :node, document: :node, file: [:node, :preview_blob, :blob]])
+    q = from(n in Node, where: is_nil(n.parent_folder_id), preload: ^Node.preload_nodes())
 
     Inputs.parse_includes(inputs, [
       include_space: :space,

@@ -108,12 +108,13 @@ function OptionsList({ resource, currentLocation, selectFolder, loading }: Optio
 
   return (
     <div className="h-[240px] overflow-scroll">
-      {options?.map((node) => (
+      {options?.map((node, idx) => (
         <Option
           resource={resource}
           node={node}
           loading={loading}
           callback={() => selectFolder(node.folder?.id!)}
+          testid={`node-${idx}`}
           key={node.id}
         />
       ))}
@@ -126,9 +127,10 @@ interface OptionProps {
   node: Hub.ResourceHubNode;
   loading: string | undefined;
   callback: (node: Hub.ResourceHubNode) => void;
+  testid: string;
 }
 
-function Option({ resource, node, callback, loading }: OptionProps) {
+function Option({ resource, node, callback, loading, testid }: OptionProps) {
   const isFolder = node.type === "folder";
   const disabled = !isFolder || loading || resource.id === node.folder?.id;
 
@@ -146,7 +148,7 @@ function Option({ resource, node, callback, loading }: OptionProps) {
   };
 
   return (
-    <div className={className} onClick={handleClick}>
+    <div className={className} onClick={handleClick} data-test-id={testid}>
       <div className="flex items-center gap-2">
         <Icon size={18} />
         {node.name}

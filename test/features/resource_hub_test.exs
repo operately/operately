@@ -132,6 +132,49 @@ defmodule Features.Features.ResourceHubTest do
       |> Steps.assert_document_deleted_notification_sent(doc.name)
       |> Steps.assert_document_deleted_email_sent(doc.name)
     end
+
+    feature "copy document in the same folder", ctx do
+      doc = %{
+        name: "My First Document",
+        content: "This is the document's content",
+      }
+      new_name = "Document (copy)"
+
+      ctx
+      |> Steps.visit_resource_hub_page()
+      |> Steps.create_document(doc)
+      |> Steps.go_to_copy_document_page(doc.name)
+      |> Steps.enter_document_name(new_name)
+      |> Steps.copy_document()
+      |> Steps.visit_resource_hub_page()
+      |> Steps.assert_document_present_in_files_list(new_name)
+      |> Steps.assert_document_copied_on_company_feed(%{name: doc.name, new_name: new_name})
+      |> Steps.assert_document_copied_on_space_feed(%{name: doc.name, new_name: new_name})
+      |> Steps.assert_document_copied_notification_sent(%{name: doc.name, new_name: new_name})
+      |> Steps.assert_document_copied_email_sent(new_name)
+    end
+
+    feature "copy document into another folder", ctx do
+      doc = %{
+        name: "My First Document",
+        content: "This is the document's content",
+      }
+      new_name = "Document (copy)"
+
+      ctx
+      |> Steps.visit_resource_hub_page()
+      |> Steps.create_folder("My Folder")
+      |> Steps.visit_resource_hub_page()
+      |> Steps.create_document(doc)
+      |> Steps.go_to_copy_document_page(doc.name)
+      |> Steps.enter_document_name(new_name)
+      |> Steps.navigate_to_folder(index: 0)
+      |> Steps.copy_document()
+      |> Steps.visit_resource_hub_page()
+      |> Steps.refute_document_present_in_files_list(new_name)
+      |> Steps.navigate_to_folder(index: 0)
+      |> Steps.assert_document_present_in_files_list(new_name)
+    end
   end
 
   describe "comments" do

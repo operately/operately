@@ -151,6 +151,10 @@ defmodule OperatelyWeb.Paths do
     create_path([company_id(company), "documents", document_id(document), "edit"])
   end
 
+  def copy_document_path(company = %Company{}, document) do
+    create_path([company_id(company), "documents", document_id(document), "copy"])
+  end
+
   def file_path(company = %Company{}, file) do
     create_path([company_id(company), "files", file_id(file)])
   end
@@ -278,9 +282,13 @@ defmodule OperatelyWeb.Paths do
     Operately.ShortUuid.encode!(comment.id)
   end
 
-  def resource_hub_id(resource_hub) do
+  def resource_hub_id(resource_hub = %Operately.ResourceHubs.ResourceHub{}) do
     id = Operately.ShortUuid.encode!(resource_hub.id)
     OperatelyWeb.Api.Helpers.id_with_comments(resource_hub.name, id)
+  end
+
+  def resource_hub_id(resource_hub_id) do
+    Operately.ShortUuid.encode!(resource_hub_id)
   end
 
   def folder_id(folder = %Operately.ResourceHubs.Folder{}) do
