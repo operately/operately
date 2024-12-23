@@ -6,3 +6,4 @@ export { useNodesContext } from "./contexts/NodesContext";
 export { AddFolderModal } from "./AddFolderModal";
 export { AddFileModal } from "./AddFileModal";
 export { FileDragAndDropArea } from "./FileDragAndDropArea";
+export { FolderSelectField } from "./components/MoveResources/FolderSelectField";
