@@ -6,7 +6,7 @@ defmodule Features.Features.ResourceHubTest do
   setup ctx, do: Steps.setup(ctx)
 
   describe "folders" do
-    test "resource hub zero state", ctx do
+    feature "resource hub zero state", ctx do
       ctx
       |> Steps.visit_space_page()
       |> Steps.assert_zero_state_on_space_page()
@@ -14,7 +14,7 @@ defmodule Features.Features.ResourceHubTest do
       |> Steps.assert_zero_state()
     end
 
-    test "create folders at the root of resource hub", ctx do
+    feature "create folders at the root of resource hub", ctx do
       folder1 = "First Folder"
       folder2 = "Second Folder"
 
@@ -26,7 +26,7 @@ defmodule Features.Features.ResourceHubTest do
       |> Steps.assert_folder_created(%{name: folder2, index: 1})
     end
 
-    test "create nested folders", ctx do
+    feature "create nested folders", ctx do
       folder1 = "First Folder"
       folder2 = "Second Folder"
       folder3 = "Third Folder"
@@ -50,7 +50,7 @@ defmodule Features.Features.ResourceHubTest do
       |> Steps.assert_items_count(%{index: 0, items_count: "1 item"})
     end
 
-    test "folder navigation works", ctx do
+    feature "folder navigation works", ctx do
       ctx
       |> Steps.given_nested_folders_exist()
       |> Steps.visit_folder_page(:five)
@@ -63,7 +63,7 @@ defmodule Features.Features.ResourceHubTest do
       |> Steps.assert_navigation_links(["Resource hub"])
     end
 
-    test "folder created feed event", ctx do
+    feature "folder created feed event", ctx do
       folder = "Documents"
 
       ctx
@@ -76,7 +76,7 @@ defmodule Features.Features.ResourceHubTest do
   end
 
   describe "documents" do
-    test "create document", ctx do
+    feature "create document", ctx do
       doc = %{
         name: "My First Document",
         content: "This is the document's content",
@@ -92,7 +92,7 @@ defmodule Features.Features.ResourceHubTest do
       |> Steps.assert_document_created_email_sent(doc.name)
     end
 
-    test "edit document", ctx do
+    feature "edit document", ctx do
       default_doc = %{
         name: "some name",
         content: "Content",
@@ -114,7 +114,7 @@ defmodule Features.Features.ResourceHubTest do
       |> Steps.assert_document_edited_email_sent(new_doc.name)
     end
 
-    test "delete document", ctx do
+    feature "delete document", ctx do
       doc = %{
         name: "My First Document",
         content: "This is the document's content",
