@@ -133,4 +133,25 @@ defmodule Features.Features.ResourceHubTest do
       |> Steps.assert_document_deleted_email_sent(doc.name)
     end
   end
+
+  describe "comments" do
+    test "add comment to document", ctx do
+      ctx
+      |> Steps.give_document_and_file_exist()
+      |> Steps.visit_document_page()
+      |> Steps.leave_comment()
+      |> Steps.leave_comment()
+      |> Steps.navigate_back("Second Resource Hub")
+      |> Steps.assert_comments_count(%{index: 0, count: "2"})
+    end
+
+    test "add comment to file", ctx do
+      ctx
+      |> Steps.give_document_and_file_exist()
+      |> Steps.visit_file_page()
+      |> Steps.leave_comment()
+      |> Steps.navigate_back("Second Resource Hub")
+      |> Steps.assert_comments_count(%{index: 1, count: "1"})
+    end
+  end
 end
