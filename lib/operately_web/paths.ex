@@ -151,6 +151,10 @@ defmodule OperatelyWeb.Paths do
     create_path([company_id(company), "documents", document_id(document), "edit"])
   end
 
+  def copy_document_path(company = %Company{}, document) do
+    create_path([company_id(company), "documents", document_id(document), "copy"])
+  end
+
   def file_path(company = %Company{}, file) do
     create_path([company_id(company), "files", file_id(file)])
   end
