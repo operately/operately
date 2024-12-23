@@ -660,6 +660,24 @@ defmodule OperatelyWeb.Api.Types do
     field :blob, :blob
   end
 
+  object :resource_hub_link do
+    field :id, :string
+    field :author, :person
+    field :resource_hub_id, :string
+    field :resource_hub, :resource_hub
+    field :parent_folder, :resource_hub_folder
+    field :parent_folder_id, :string
+    field :name, :string
+    field :url, :string
+    field :description, :string
+    field :type, :string
+    field :potential_subscribers, list_of(:subscriber)
+    field :subscription_list, :subscription_list
+    field :inserted_at, :string
+    field :permissions, :resource_hub_permissions
+    field :reactions, list_of(:reaction)
+  end
+
   object :resource_hub_node do
     field :id, :string
     field :name, :string
