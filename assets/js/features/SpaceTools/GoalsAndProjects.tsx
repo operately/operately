@@ -11,6 +11,7 @@ import { Paths } from "@/routes/paths";
 
 import { Container, Title, ZeroResourcesContainer } from "./components";
 import { calculateStatus } from "./utils";
+import { GhostButton, SecondaryButton } from "@/components/Buttons";
 
 interface GoalsAndProjectsProps {
   title: string;
@@ -27,16 +28,24 @@ export function GoalsAndProjects({ title, space, goals, projects }: GoalsAndProj
 
   return (
     <Container path={path} testId="goals-and-projects">
-      <Title title={title} />
+      <div className="flex flex-col items-center justify-center w-full mt-8">
+        <img
+          src="https://notioly.com/wp-content/uploads/2024/04/380.Accomplishment.png"
+          width="170px"
+          height="170px"
+          alt="Goals and Projects"
+        />
 
-      {openGoals.length < 1 && openProjects.length < 1 ? (
-        <ZeroGoalsAndProjects />
-      ) : (
-        <div className="bg-surface-dimmed rounded mx-2">
-          <Goals goals={openGoals} projectsCount={openProjects.length} />
-          <Projects projects={openProjects} />
+        <div className="text-base font-bold mt-4">Goals &amp; Projects</div>
+
+        <div className="flex gap-2 mt-1 mb-4 text-center px-6 text-sm">
+          Set goals, track your progress, and collaborate with your team to achieve them.
         </div>
-      )}
+
+        <GhostButton size="sm" linkTo={Paths.spaceGoalsPath(space.id!)} testId="edit-space">
+          Add goal or project
+        </GhostButton>
+      </div>
     </Container>
   );
 }

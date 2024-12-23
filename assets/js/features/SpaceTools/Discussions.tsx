@@ -11,6 +11,7 @@ import Avatar from "@/components/Avatar";
 import classNames from "classnames";
 
 import { Title, Container, ZeroResourcesContainer } from "./components";
+import { GhostButton } from "@/components/Buttons";
 
 interface DiscussionsProps {
   space: Space;
@@ -22,8 +23,24 @@ export function Discussions({ space, discussions }: DiscussionsProps) {
 
   return (
     <Container path={path} testId="messages-tool">
-      <Title title="Discussions" />
-      {discussions.length < 1 ? <ZeroDiscussions /> : <DiscussionList discussions={discussions} />}
+      <div className="flex flex-col items-center justify-center w-full mt-8">
+        <img
+          src="https://notioly.com/wp-content/uploads/2024/01/345.Group-Chat.png"
+          width="170px"
+          height="170px"
+          alt="Goals and Projects"
+        />
+
+        <div className="text-base font-bold mt-4">Discussions</div>
+
+        <div className="flex gap-2 mt-1 mb-4 text-center px-6 text-sm">
+          Post announcements, pitch ideas, and discuss ideas with your team.
+        </div>
+
+        <GhostButton size="sm" linkTo={Paths.spaceGoalsPath(space.id!)} testId="edit-space">
+          Write a new post
+        </GhostButton>
+      </div>
     </Container>
   );
 }

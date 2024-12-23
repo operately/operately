@@ -8,6 +8,7 @@ import { assertPresent } from "@/utils/assertions";
 import classNames from "classnames";
 import { createTestId } from "@/utils/testid";
 import { findIcon, findSubtitle, NodeType } from "@/features/ResourceHub";
+import { GhostButton } from "@/components/Buttons";
 
 interface ResourceHubProps {
   resourceHub: ResourceHub;
@@ -21,8 +22,24 @@ export function ResourceHub({ resourceHub }: ResourceHubProps) {
 
   return (
     <Container path={path} testId={testid}>
-      <Title title={resourceHub.name!} />
-      {resourceHub.nodes.length < 1 ? <ZeroResources /> : <NodesList nodes={resourceHub.nodes} />}
+      <div className="flex flex-col items-center justify-center w-full mt-8">
+        <img
+          src="https://notioly.com/wp-content/uploads/2024/03/365.Archive-Files.png"
+          width="170px"
+          height="170px"
+          alt="Goals and Projects"
+        />
+
+        <div className="text-base font-bold mt-4">Documents &amp; Files</div>
+
+        <div className="flex gap-2 mt-1 mb-4 text-center px-6 text-sm">
+          A place to share rich text documents, images, videos, and other files
+        </div>
+
+        <GhostButton size="sm" linkTo={"/"} testId="edit-space">
+          Add doc &amp; file
+        </GhostButton>
+      </div>
     </Container>
   );
 }
