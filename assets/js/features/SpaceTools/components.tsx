@@ -20,6 +20,7 @@ export function Container({ children, path, testId }: ContainerProps) {
     "border border-stroke-base",
     "bg-surface-base",
     "rounded-lg shadow-sm transition-shadow duration-300 hover:shadow hover:border-surface-outline",
+    "group",
   );
 
   return (
@@ -27,8 +28,4 @@ export function Container({ children, path, testId }: ContainerProps) {
       {children}
     </DivLink>
   );
-}
-
-export function ZeroResourcesContainer({ children }) {
-  return <div className="text-center text-sm py-4 px-2">{children}</div>;
 }
