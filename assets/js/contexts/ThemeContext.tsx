@@ -35,9 +35,9 @@ function Context({ userTheme, children }: { userTheme: string; children: React.R
   useSystemColorModeListener(theme, setColorMode);
 
   React.useEffect(() => {
-    document.querySelector("body")!.dataset.theme = colorMode;
-    document.querySelector("html")!.classList.remove("dark", "light");
-    document.querySelector("html")!.classList.add(colorMode);
+    const html = document.querySelector("html")!;
+    html.classList.remove("dark", "light");
+    html.classList.add(colorMode);
   }, [colorMode]);
 
   return <ThemeContext.Provider value={{ theme, colorMode, setTheme }}>{children}</ThemeContext.Provider>;

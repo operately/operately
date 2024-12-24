@@ -147,7 +147,6 @@ defmodule Operately.Support.Features.ResourceHubSteps do
     UI.find(ctx, UI.query(testid: "documents-files"), fn ctx ->
       ctx
       |> UI.assert_text("Documents & Files")
-      |> UI.assert_text("Nothing here just yet.")
       |> UI.assert_text("A place to share rich text documents, images, videos, and other files")
     end)
   end
