@@ -45,7 +45,7 @@ export function GoalsAndProjects({ title, space, goals, projects }: GoalsAndProj
             Set goals, track your progress, and collaborate with your team to achieve them.
           </div>
 
-          <GhostButton size="sm" linkTo={Paths.spaceGoalsPath(space.id!)} testId="edit-space">
+          <GhostButton size="sm" linkTo={path}>
             Add goal or project
           </GhostButton>
         </div>
