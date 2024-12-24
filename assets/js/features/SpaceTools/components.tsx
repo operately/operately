@@ -20,6 +20,7 @@ export function Container({ children, path, testId }: ContainerProps) {
     "border border-stroke-base",
     "bg-surface-base",
     "rounded-lg shadow-sm transition-shadow duration-300 hover:shadow hover:border-surface-outline",
+    "group",
   );
 
   return (
