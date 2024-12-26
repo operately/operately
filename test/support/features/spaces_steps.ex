@@ -1,32 +1,23 @@
 defmodule Operately.Support.Features.SpacesSteps do
   use Operately.FeatureCase
 
-  alias Operately.Companies
   alias Operately.Access.Binding
   alias Operately.Support.Features.UI
   alias Operately.Support.Features.NotificationsSteps
   alias Operately.Support.Features.EmailSteps
 
-  import Operately.CompaniesFixtures
   import Operately.GroupsFixtures
   import Operately.PeopleFixtures
   import Operately.ProjectsFixtures
 
   step :setup, ctx do
-    company = company_fixture(%{name: "Test Org"})
-    admin = hd(Companies.list_owners(company))
-
-    person = person_fixture_with_account(%{full_name: "Kevin Kernel", company_id: company.id})
-    Companies.add_admins(admin, person.id)
-
-    ctx = Map.merge(ctx, %{company: company, person: person})
-    ctx = UI.login_as(ctx, ctx.person)
-
     ctx
+    |> Factory.setup()
+    |> Factory.log_in_person(:creator)
   end
 
   step :visit_home, ctx, do: UI.visit(ctx, Paths.home_path(ctx.company))
-  step :visit_space, ctx, do: UI.visit(ctx, Paths.space_path(ctx.company, ctx.space))
+  step :visit_space, ctx, do: UI.visit(ctx, Paths.space_path(ctx.company, ctx.marketing))
 
   step :visit_access_management, ctx, name do
     ctx
@@ -35,17 +26,17 @@ defmodule Operately.Support.Features.SpacesSteps do
   end
 
   step :given_two_spaces_exists, ctx do
-    space1 = group_fixture(ctx.person, %{name: "Marketing", mission: "Let the world know about our products", company_permissions: Binding.view_access()})
-    space2 = group_fixture(ctx.person, %{name: "Engineering", mission: "Build the best product", company_permissions: Binding.no_access()})
+    space1 = group_fixture(ctx.creator, %{name: "Marketing", mission: "Let the world know about our products", company_permissions: Binding.view_access()})
+    space2 = group_fixture(ctx.creator, %{name: "Engineering", mission: "Build the best product", company_permissions: Binding.no_access()})
 
     Map.merge(ctx, %{spaces: [space1, space2]})
   end
 
   step :given_space_with_member_exists, ctx, attrs do
-    space = group_fixture(ctx.person, %{name: attrs.space_name})
+    space = group_fixture(ctx.creator, %{name: attrs.space_name})
     member = person_fixture_with_account(%{full_name: attrs.person_name, company_id: ctx.company.id})
 
-    Operately.Groups.add_members(ctx.person, space.id, [%{
+    Operately.Groups.add_members(ctx.creator, space.id, [%{
       id: member.id,
       access_level: attrs[:access_level] || Operately.Access.Binding.comment_access(),
     }])
@@ -86,14 +77,14 @@ defmodule Operately.Support.Features.SpacesSteps do
     group = Operately.Groups.get_group_by_name(name)
 
     members = Operately.Groups.list_members(group)
-    assert Enum.find(members, fn member -> member.id == ctx.person.id end) != nil
+    assert Enum.find(members, fn member -> member.id == ctx.creator.id end) != nil
 
     ctx
   end
 
   step :add_new_members, ctx, members do
     ctx
-    |> UI.visit(Paths.space_path(ctx.company, ctx.space))
+    |> UI.visit(Paths.space_path(ctx.company, ctx.marketing))
     |> UI.click(testid: "access-management")
     |> UI.click(testid: "add-members")
 
@@ -138,19 +129,19 @@ defmodule Operately.Support.Features.SpacesSteps do
     Enum.reduce(members, ctx, fn member, ctx ->
       ctx
       |> UI.login_as(member)
-      |> NotificationsSteps.assert_space_members_added_sent(author: ctx.person, title: ctx.space.name)
+      |> NotificationsSteps.assert_space_members_added_sent(author: ctx.creator, title: ctx.marketing.name)
     end)
   end
 
   step :assert_members_added_email_sent, ctx, members do
     Enum.reduce(members, ctx, fn member, ctx ->
       ctx
-      |> EmailSteps.assert_space_members_added_sent(author: ctx.person, to: member, title: ctx.space.name)
+      |> EmailSteps.assert_space_members_added_sent(author: ctx.creator, to: member, title: ctx.marketing.name)
     end)
   end
 
   step :given_a_space_exists, ctx do
-    ctx |> Map.put(:space, group_fixture(ctx.person, %{name: "Marketing"}))
+    ctx |> Factory.add_space(:marketing, name: "Marketing")
   end
 
   step :given_the_space_has_several_projects, ctx, names do
@@ -158,8 +149,8 @@ defmodule Operately.Support.Features.SpacesSteps do
       project_fixture(%{
         name: name,
         company_id: ctx.company.id,
-        creator_id: ctx.person.id,
-        group_id: ctx.space.id,
+        creator_id: ctx.creator.id,
+        group_id: ctx.marketing.id,
       })
     end)
 
@@ -171,8 +162,8 @@ defmodule Operately.Support.Features.SpacesSteps do
       project_fixture(%{
         name: name,
         company_id: ctx.company.id,
-        creator_id: ctx.person.id,
-        group_id: ctx.space.id,
+        creator_id: ctx.creator.id,
+        group_id: ctx.marketing.id,
         anonymous_access_level: Binding.no_access(),
         company_access_level: Binding.no_access(),
         space_access_level: Binding.comment_access(),
@@ -183,19 +174,19 @@ defmodule Operately.Support.Features.SpacesSteps do
   end
 
   step :click_on_space, ctx do
-    ctx |> UI.click(title: ctx.space.name)
+    ctx |> UI.click(title: ctx.marketing.name)
   end
 
   step :assert_space_name_mission_and_privacy_indicator, ctx do
     ctx
-    |> UI.assert_text(ctx.space.name)
-    |> UI.assert_text(ctx.space.mission)
+    |> UI.assert_text(ctx.marketing.name)
+    |> UI.assert_text(ctx.marketing.mission)
     |> UI.assert_has(testid: "secret-space-tooltip")
   end
 
   step :when_clicking_on_projects_tab, ctx do
     ctx
-    |> UI.visit(Paths.space_path(ctx.company, ctx.space))
+    |> UI.visit(Paths.space_path(ctx.company, ctx.marketing))
     |> UI.click(testid: "goals-and-projects")
   end
 
@@ -210,9 +201,9 @@ defmodule Operately.Support.Features.SpacesSteps do
 
     ctx
     |> UI.visit(Paths.space_path(ctx.company, space))
-    |> UI.assert_feed_item(ctx.person, "created this space")
+    |> UI.assert_feed_item(ctx.creator, "created this space")
     |> UI.visit(Paths.feed_path(ctx.company))
-    |> UI.assert_feed_item(ctx.person, "created the #{attrs.name} space")
+    |> UI.assert_feed_item(ctx.creator, "created the #{attrs.name} space")
   end
 
   step :assert_privacy_indicator_is_visible, ctx do
@@ -257,7 +248,7 @@ defmodule Operately.Support.Features.SpacesSteps do
   end
 
   step :assert_space_appearance_changed, ctx, values do
-    space = Operately.Groups.get_group_by_name(ctx.space.name)
+    space = Operately.Groups.get_group_by_name(ctx.marketing.name)
 
     assert space.color == values.color
     assert space.icon == values.icon
@@ -265,7 +256,7 @@ defmodule Operately.Support.Features.SpacesSteps do
 
   step :given_that_i_am_on_the_space_page, ctx do
     ctx 
-    |> UI.visit(Paths.space_path(ctx.company, ctx.space))
+    |> UI.visit(Paths.space_path(ctx.company, ctx.marketing))
     |> UI.assert_has(testid: "space-page")
   end
 
@@ -285,6 +276,35 @@ defmodule Operately.Support.Features.SpacesSteps do
     ctx 
     |> UI.assert_text("Marketing 2")
     |> UI.assert_text("Let the world know about our products 2")
+  end
+
+  step :given_a_completed_project_exists, ctx do
+    ctx 
+    |> Factory.add_project(:project_a, :marketing)
+    |> then(fn ctx ->
+      ctx.project_a 
+      |> Operately.Projects.Project.changeset(%{status: "closed", closed_at: DateTime.utc_now()}) 
+      |> Repo.update()
+
+      ctx
+    end)
+  end
+
+  step :given_a_completed_goal_exists, ctx do
+    ctx 
+    |> Factory.add_goal(:goal_a, :marketing)
+    |> then(fn ctx ->
+      ctx.goal_a 
+      |> Operately.Goals.Goal.changeset(%{closed_at: DateTime.utc_now()}) 
+      |> Repo.update()
+
+      ctx
+    end)
+  end
+
+  step :assert_all_goals_and_projects_are_completed_message, ctx do
+    ctx |> UI.assert_text("All done!")
+    ctx |> UI.assert_text("1 goal and 1 project completed this quarter")
   end
 
 end

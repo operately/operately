@@ -42,7 +42,7 @@ defmodule Operately.Features.SpacesTest do
   end
 
   feature "joining a space", ctx do
-    group = group_fixture(ctx.person, %{name: "Marketing", company_permissions: Binding.view_access()})
+    group = group_fixture(ctx.creator, %{name: "Marketing", company_permissions: Binding.view_access()})
     person = person_fixture_with_account(%{full_name: "Mati Aharoni", company_id: ctx.company.id})
 
     ctx
@@ -54,7 +54,7 @@ defmodule Operately.Features.SpacesTest do
     |> UI.assert_text("Mati joined the space")
 
     members = Operately.Groups.list_members(group)
-    assert Enum.find(members, fn member -> member.id == ctx.person.id end) != nil
+    assert Enum.find(members, fn member -> member.id == ctx.creator.id end) != nil
   end
 
   feature "listing projects in a space", ctx do
@@ -143,5 +143,14 @@ defmodule Operately.Features.SpacesTest do
     |> Steps.visit_access_management(space.name)
     |> Steps.change_access_level(%{member: member, access_level: "edit"})
     |> Steps.assert_access_level_changed("edit")
+  end
+
+  feature "all goals and projects are completed", ctx do
+    ctx
+    |> Steps.given_a_space_exists()
+    |> Steps.given_a_completed_project_exists()
+    |> Steps.given_a_completed_goal_exists()
+    |> Steps.visit_space()
+    |> Steps.assert_all_goals_and_projects_are_completed_message()
   end
 end

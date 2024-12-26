@@ -16,6 +16,38 @@ export function isThisWeek(date: Date) {
   return datefsn.isThisWeek(date);
 }
 
+export function isThisQuarter(date: Date) {
+  return datefsn.isThisQuarter(date);
+}
+
+export function isThisYear(date: Date) {
+  return datefsn.isThisYear(date);
+}
+
+export function isLastWeek(date: Date) {
+  const today = new Date();
+  const lastWeek = datefsn.subWeeks(today, 1);
+  return datefsn.isSameWeek(date, lastWeek);
+}
+
+export function isLastMonth(date: Date) {
+  const today = new Date();
+  const lastMonth = datefsn.subMonths(today, 1);
+  return datefsn.isSameMonth(date, lastMonth);
+}
+
+export function isLastQuarter(date: Date) {
+  const today = new Date();
+  const lastQuarter = datefsn.subQuarters(today, 1);
+  return datefsn.isSameQuarter(date, lastQuarter);
+}
+
+export function isLastYear(date: Date) {
+  const today = new Date();
+  const lastYear = datefsn.subYears(today, 1);
+  return datefsn.isSameYear(date, lastYear);
+}
+
 export function isFirstDayOfMonth(date: Date) {
   return date.getDate() === 1;
 }
