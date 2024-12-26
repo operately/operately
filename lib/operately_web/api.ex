@@ -52,6 +52,7 @@ defmodule OperatelyWeb.Api do
   query :get_resource_hub_document, Q.GetResourceHubDocument
   query :get_resource_hub_file, Q.GetResourceHubFile
   query :get_resource_hub_folder, Q.GetResourceHubFolder
+  query :get_resource_hub_link, Q.GetResourceHubLink
   query :list_space_tools, Q.ListSpaceTools
   query :search_people, Q.SearchPeople
   query :search_potential_space_members, Q.SearchPotentialSpaceMembers
