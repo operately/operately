@@ -30,7 +30,7 @@ defmodule Operately.ResourceHubsFixtures do
     folder
   end
 
-  def document_fixture(hub_id, author_id, attrs \\ []) do
+  def document_fixture(hub_id, author_id, attrs \\ %{}) do
     {:ok, node} = Operately.ResourceHubs.create_node(%{
       resource_hub_id: hub_id,
       parent_folder_id: attrs[:parent_folder_id] && attrs.parent_folder_id,
@@ -55,7 +55,7 @@ defmodule Operately.ResourceHubsFixtures do
     document
   end
 
-  def file_fixture(hub, author, attrs \\ []) do
+  def file_fixture(hub, author, attrs \\ %{}) do
     {:ok, node} = Operately.ResourceHubs.create_node(%{
       resource_hub_id: hub.id,
       parent_folder_id: Keyword.get(attrs, :parent_folder_id),
@@ -80,5 +80,27 @@ defmodule Operately.ResourceHubsFixtures do
     })
 
     file
+  end
+
+  def link_fixture(hub, author, attrs \\ %{}) do
+    {:ok, node} = Operately.ResourceHubs.create_node(%{
+      resource_hub_id: hub.id,
+      parent_folder_id: attrs[:parent_folder_id] && attrs.parent_folder_id,
+      name: attrs[:name] || "Link",
+      type: :link,
+    })
+
+    {:ok, subscription_list} = Operately.Notifications.create_subscription_list()
+
+    {:ok, link} = Operately.ResourceHubs.create_link(%{
+      node_id: node.id,
+      author_id: author.id,
+      subscription_list_id: subscription_list.id,
+      url: attrs[:url] || "http://localhost:4000",
+      description: attrs[:description] || RichText.rich_text("Description"),
+      type: attrs[:type] || :other,
+    })
+
+    link
   end
 end

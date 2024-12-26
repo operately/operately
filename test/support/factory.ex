@@ -60,6 +60,7 @@ defmodule Operately.Support.Factory do
   defdelegate add_folder(ctx, testid, hub_name, folder_name \\ nil), to: ResourceHubs
   defdelegate add_document(ctx, testid, hub_name, opts \\ []), to: ResourceHubs
   defdelegate add_file(ctx, testid, hub_name, opts \\ []), to: ResourceHubs
+  defdelegate add_link(ctx, testid, hub_name, opts \\ []), to: ResourceHubs
 
   # blobs
   defdelegate add_blob(ctx, testid, author_name \\ :creator), to: Blobs
