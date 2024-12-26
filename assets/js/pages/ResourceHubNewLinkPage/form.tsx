@@ -1,21 +1,21 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-import { useCreateResourceHubDocument } from "@/models/resourceHubs";
+import { useCreateResourceHubLink } from "@/models/resourceHubs";
 
 import Forms from "@/components/Forms";
 import { DimmedSection } from "@/components/PaperContainer";
-import { Spacer } from "@/components/Spacer";
 import { Options, SubscribersSelector, useSubscriptions } from "@/features/Subscriptions";
 import { Paths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
+import { isValidURL } from "@/utils/validators";
 
 import { useLoadedData } from "./loader";
 
 export function Form({ folderId }: { folderId: string | null }) {
   const { resourceHub } = useLoadedData();
   const navigate = useNavigate();
-  const [post] = useCreateResourceHubDocument();
+  const [post] = useCreateResourceHubLink();
 
   assertPresent(resourceHub.potentialSubscribers, "potentialSubscribers must be present in resourceHub");
 
@@ -26,29 +26,35 @@ export function Form({ folderId }: { folderId: string | null }) {
   const form = Forms.useForm({
     fields: {
       title: "",
-      content: null,
+      link: "",
+      description: null,
     },
     validate: (addError) => {
       if (!form.values.title) {
         addError("title", "Title is required");
       }
-      if (!form.values.content) {
-        addError("content", "Content is required");
+      if (!form.values.link) {
+        addError("link", "Link is required");
+      }
+      if (!isValidURL(form.values.link)) {
+        addError("link", "Invalid link");
       }
     },
     cancel: () => {
       navigate(Paths.resourceHubPath(resourceHub.id!));
     },
     submit: async () => {
-      const res = await post({
+      await post({
         resourceHubId: resourceHub.id,
         folderId: folderId,
         name: form.values.title,
-        content: JSON.stringify(form.values.content),
+        url: form.values.link,
+        type: "other",
+        description: JSON.stringify(form.values.description),
         sendNotificationsToEveryone: subscriptionsState.subscriptionType === Options.ALL,
         subscriberIds: subscriptionsState.currentSubscribersList,
       });
-      navigate(Paths.resourceHubDocumentPath(res.document.id));
+      navigate(Paths.resourceHubPath(resourceHub.id!));
     },
   });
 
@@ -57,18 +63,23 @@ export function Form({ folderId }: { folderId: string | null }) {
   return (
     <Forms.Form form={form}>
       <Forms.FieldGroup>
-        <Forms.TitleInput field="title" placeholder="Title..." />
+        <Forms.TextInput
+          label="What do you want to call this link?"
+          placeholder="Type the title of this link"
+          field="title"
+        />
+
+        <Forms.TextInput label="Paste the link" placeholder="eg. https://www.example.com/file/8430762" field="link" />
 
         <Forms.RichTextArea
-          field="content"
+          label="Notes (optional)"
+          field="description"
           mentionSearchScope={mentionSearchScope}
-          placeholder="Write here..."
-          hideBorder
+          placeholder="Add any notes here..."
         />
       </Forms.FieldGroup>
 
       <DimmedSection>
-        <Spacer size={4} />
         <SubscribersSelector state={subscriptionsState} resourceHubName={resourceHub.name!} />
 
         <Forms.Submit saveText="Submit" buttonSize="base" />

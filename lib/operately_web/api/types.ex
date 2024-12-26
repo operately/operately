@@ -601,6 +601,7 @@ defmodule OperatelyWeb.Api.Types do
     field :can_create_document, :boolean
     field :can_create_folder, :boolean
     field :can_create_file, :boolean
+    field :can_create_link, :boolean
     field :can_delete_document, :boolean
     field :can_delete_file, :boolean
     field :can_delete_folder, :boolean
