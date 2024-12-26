@@ -1,7 +1,5 @@
 import { IconFile, IconFileTypePdf, IconFolder, IconMovie, IconMusic, IconPhoto } from "@tabler/icons-react";
-
 import { ResourceHubNode } from "@/models/resourceHubs";
-import { findFileSize } from "@/models/blobs";
 
 import { richContentToString } from "@/components/RichContent";
 import { Paths } from "@/routes/paths";
@@ -50,12 +48,10 @@ export function findSubtitle(nodeType: NodeType, node: ResourceHubNode) {
 
       return node.folder.childrenCount === 1 ? "1 item" : `${node.folder.childrenCount} items`;
     case "file":
-      assertPresent(node.file?.size, "size must be present in node.file");
       assertPresent(node.file?.description, "description must be present in node.file");
 
-      const size = findFileSize(node.file.size);
       const description = richContentToString(JSON.parse(node.file.description));
-      return size + (description ? ` - ${truncateString(description, 50)}` : "");
+      return truncateString(description, 50);
   }
 }
 
