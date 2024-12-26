@@ -1864,6 +1864,21 @@ export interface GetResourceHubFolderResult {
   folder?: ResourceHubFolder | null;
 }
 
+export interface GetResourceHubLinkInput {
+  id?: Id | null;
+  includeAuthor?: boolean | null;
+  includeResourceHub?: boolean | null;
+  includeParentFolder?: boolean | null;
+  includeReactions?: boolean | null;
+  includePermissions?: boolean | null;
+  includeSubscriptionsList?: boolean | null;
+  includePotentialSubscribers?: boolean | null;
+}
+
+export interface GetResourceHubLinkResult {
+  link?: ResourceHubLink | null;
+}
+
 export interface GetSpaceInput {
   id?: Id | null;
   includePermissions?: boolean | null;
@@ -3014,6 +3029,10 @@ export class ApiClient {
     return this.get("/get_resource_hub_folder", input);
   }
 
+  async getResourceHubLink(input: GetResourceHubLinkInput): Promise<GetResourceHubLinkResult> {
+    return this.get("/get_resource_hub_link", input);
+  }
+
   async getSpace(input: GetSpaceInput): Promise<GetSpaceResult> {
     return this.get("/get_space", input);
   }
@@ -3547,6 +3566,9 @@ export async function getResourceHubFile(input: GetResourceHubFileInput): Promis
 export async function getResourceHubFolder(input: GetResourceHubFolderInput): Promise<GetResourceHubFolderResult> {
   return defaultApiClient.getResourceHubFolder(input);
 }
+export async function getResourceHubLink(input: GetResourceHubLinkInput): Promise<GetResourceHubLinkResult> {
+  return defaultApiClient.getResourceHubLink(input);
+}
 export async function getSpace(input: GetSpaceInput): Promise<GetSpaceResult> {
   return defaultApiClient.getSpace(input);
 }
@@ -4059,6 +4081,10 @@ export function useGetResourceHubFolder(
   input: GetResourceHubFolderInput,
 ): UseQueryHookResult<GetResourceHubFolderResult> {
   return useQuery<GetResourceHubFolderResult>(() => defaultApiClient.getResourceHubFolder(input));
+}
+
+export function useGetResourceHubLink(input: GetResourceHubLinkInput): UseQueryHookResult<GetResourceHubLinkResult> {
+  return useQuery<GetResourceHubLinkResult>(() => defaultApiClient.getResourceHubLink(input));
 }
 
 export function useGetSpace(input: GetSpaceInput): UseQueryHookResult<GetSpaceResult> {
@@ -4788,6 +4814,8 @@ export default {
   useGetResourceHubFile,
   getResourceHubFolder,
   useGetResourceHubFolder,
+  getResourceHubLink,
+  useGetResourceHubLink,
   getSpace,
   useGetSpace,
   getSpaces,

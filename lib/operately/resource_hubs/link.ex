@@ -11,6 +11,7 @@ defmodule Operately.ResourceHubs.Link do
 
     has_one :resource_hub, through: [:node, :resource_hub]
     has_one :access_context, through: [:node, :resource_hub, :access_context]
+    has_many :reactions, Operately.Updates.Reaction, where: [entity_type: :resource_hub_link], foreign_key: :entity_id
 
     field :url, :string
     field :description, :map
@@ -34,5 +35,25 @@ def changeset(attrs) do
     link
     |> cast(attrs, [:node_id, :author_id, :subscription_list_id, :url, :description, :type])
     |> validate_required([:node_id, :author_id, :url, :type])
+  end
+
+  #
+  # After load hooks
+  #
+
+  def load_potential_subscribers(link = %__MODULE__{}) do
+    link = Repo.preload(link, [:access_context, resource_hub: [space: :members]])
+
+    subs =
+      link
+      |> Notifications.SubscribersLoader.preload_subscriptions()
+      |> Notifications.Subscriber.from_resource_hub_child()
+
+    %{link | potential_subscribers: subs}
+  end
+
+  def set_permissions(link = %__MODULE__{}) do
+    perms = Operately.ResourceHubs.Permissions.calculate(link.request_info.access_level)
+    Map.put(link, :permissions, perms)
   end
 end
