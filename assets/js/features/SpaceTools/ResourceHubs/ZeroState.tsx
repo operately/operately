@@ -21,9 +21,7 @@ function ExplanationAndButton() {
         A place to share rich text documents, images, videos, and other files
       </div>
 
-      <GhostButton size="sm" linkTo={"/"} testId="edit-space">
-        Add a document or file
-      </GhostButton>
+      <GhostButton size="sm">Add a document or file</GhostButton>
     </div>
   );
 }
