@@ -11,9 +11,12 @@ interface Props {
 
 export function RegularState(props: Props) {
   return (
-    <div>
+    <div className="flex flex-col h-full">
       <Title title={props.resourceHub.name!} />
-      <NodesList nodes={props.resourceHub.nodes!} />
+
+      <div className="bg-surface-dimmed rounded mx-2 flex-1">
+        <NodesList nodes={props.resourceHub.nodes!} />
+      </div>
     </div>
   );
 }
@@ -29,7 +32,10 @@ function NodesList({ nodes }: { nodes: ResourceHubNode[] }) {
 }
 
 function NodeItem({ node }: { node: ResourceHubNode }) {
-  const className = classNames("flex gap-2 p-2", "border-b border-stroke-base last:border-b-0");
+  const className = classNames(
+    "flex gap-2 px-2 py-1.5",
+    "border-b border-stroke-base last:border-b-0 flex items-center",
+  );
   const subtitle = findSubtitle(node.type as NodeType, node);
 
   return (
@@ -37,9 +43,9 @@ function NodeItem({ node }: { node: ResourceHubNode }) {
       <div>
         <NodeIcon node={node} size={32} />
       </div>
-      <div className="overflow-hidden">
+      <div className="overflow-hidden leading-snug">
         <div className="font-bold truncate">{node.name}</div>
-        <div className="truncate">{subtitle}</div>
+        <div className="truncate text-[10px]">{subtitle}</div>
       </div>
     </div>
   );

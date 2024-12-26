@@ -25,7 +25,7 @@ export function Header(props: Props) {
   const className = classNames("flex items-center justify-between", {
     "mb-6": true,
     "pt-5 pb-4": props.underline,
-    "border-b border-surface-outline": props.underline,
+    "border-b border-stroke-base": props.underline,
     [negHor]: props.underline,
     [negTop]: props.underline,
     "px-8": props.underline,
