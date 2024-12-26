@@ -24,18 +24,6 @@ export function isThisYear(date: Date) {
   return datefsn.isThisYear(date);
 }
 
-export function isLastWeek(date: Date) {
-  const today = new Date();
-  const lastWeek = datefsn.subWeeks(today, 1);
-  return datefsn.isSameWeek(date, lastWeek);
-}
-
-export function isLastMonth(date: Date) {
-  const today = new Date();
-  const lastMonth = datefsn.subMonths(today, 1);
-  return datefsn.isSameMonth(date, lastMonth);
-}
-
 export function isLastQuarter(date: Date) {
   const today = new Date();
   const lastQuarter = datefsn.subQuarters(today, 1);
