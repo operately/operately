@@ -115,6 +115,12 @@ defmodule Operately.ResourceHubs do
     |> Repo.all()
   end
 
+  def create_link(attrs \\ %{}) do
+    %Link{}
+    |> Link.changeset(attrs)
+    |> Repo.insert()
+  end
+
   #
   # Nodes
   #

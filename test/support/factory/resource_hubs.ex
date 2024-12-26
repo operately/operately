@@ -43,8 +43,22 @@ defmodule Operately.Support.Factory.ResourceHubs do
     folder_key = Keyword.get(opts, :folder)
     folder = folder_key && Map.fetch!(ctx, folder_key)
 
-    file = Operately.ResourceHubsFixtures.file_fixture(hub, author, parent_folder_id: folder && folder.id)
+    file = Operately.ResourceHubsFixtures.file_fixture(hub, author, %{parent_folder_id: folder && folder.id})
 
     Map.put(ctx, testid, file)
+  end
+
+  def add_link(ctx, testid, hub_name, opts \\ []) do
+    hub = Map.fetch!(ctx, hub_name)
+
+    author_key = Keyword.get(opts, :author, :creator)
+    author = Map.fetch!(ctx, author_key)
+
+    folder_key = Keyword.get(opts, :folder)
+    folder = folder_key && Map.fetch!(ctx, folder_key)
+
+    link = Operately.ResourceHubsFixtures.link_fixture(hub, author, %{parent_folder_id: folder && folder.id})
+
+    Map.put(ctx, testid, link)
   end
 end
