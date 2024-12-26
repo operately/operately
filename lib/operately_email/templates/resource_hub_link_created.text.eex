@@ -1,0 +1,3 @@
+<%= short_name(@author) %> added a link
+
+Link: <%= @cta_url %>

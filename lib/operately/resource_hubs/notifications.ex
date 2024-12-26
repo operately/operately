@@ -39,4 +39,22 @@ defmodule Operately.ResourceHubs.Notifications do
 
     SubscribersLoader.load_for_notifications(file, file.resource_hub.space.members, ignore)
   end
+
+  def get_link_subscribers(link_id, opts \\ []) do
+    ignore = Keyword.get(opts, :ignore, [])
+    with_deleted = Keyword.get(opts, :with_deleted, false)
+
+    link =
+      from(link in Operately.ResourceHubs.Link,
+        join: c in assoc(link, :access_context), as: :context,
+        join: h in assoc(link, :resource_hub),
+        join: s in assoc(h, :space),
+        join: m in assoc(s, :members),
+        preload: [resource_hub: {h, space: {s, members: m}}, access_context: c],
+        where: link.id == ^link_id
+      )
+      |> Repo.one(with_deleted: with_deleted)
+
+    SubscribersLoader.load_for_notifications(link, link.resource_hub.space.members, ignore)
+  end
 end
