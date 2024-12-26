@@ -236,6 +236,10 @@ export class Paths {
     return createCompanyPath(["documents", documentId, "copy"]) + `?${parentType}=${parentId}`;
   }
 
+  static resourceHubLinkPath(linkId: string) {
+    return createCompanyPath(["links", linkId]);
+  }
+
   static spacePath(spaceId: string) {
     return createCompanyPath(["spaces", spaceId]);
   }

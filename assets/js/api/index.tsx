@@ -562,6 +562,11 @@ export interface ActivityContentResourceHubFolderRenamed {
   newName?: string | null;
 }
 
+export interface ActivityContentResourceHubLinkCreated {
+  resourceHub?: ResourceHub | null;
+  link?: ResourceHubLink | null;
+}
+
 export interface ActivityContentSpaceAdded {
   companyId?: string | null;
   spaceId?: string | null;
