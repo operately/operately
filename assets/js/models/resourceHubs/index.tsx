@@ -34,7 +34,7 @@ export function isFolder(node: ResourceHubNode): boolean {
   return node.type === "folder";
 }
 
-export function isFile(node: ResourceHubNode): boolean {
+function isFile(node: ResourceHubNode): boolean {
   return node.type === "file";
 }
 
