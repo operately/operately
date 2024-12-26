@@ -479,6 +479,11 @@ defmodule OperatelyWeb.Api.Types do
     field :comment, :comment
   end
 
+  object :activity_content_resource_hub_link_created do
+    field :resource_hub, :resource_hub
+    field :link, :resource_hub_link
+  end
+
   object :activity_content_project_discussion_submitted do
     field :project_id, :string
     field :discussion_id, :string
