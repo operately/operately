@@ -25,6 +25,7 @@ defmodule Operately.Activities.Preloader do
     |> preload(Operately.ResourceHubs.Folder)
     |> preload(Operately.ResourceHubs.File)
     |> preload(Operately.ResourceHubs.Document)
+    |> preload(Operately.ResourceHubs.Link)
     |> preload(Operately.ResourceHubs.Node)
     |> preload_sub_activities()
   end
