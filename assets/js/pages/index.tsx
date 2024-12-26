@@ -85,6 +85,7 @@ import * as ResourceHubEditFilePage from "./ResourceHubEditFilePage";
 import * as ResourceHubFilePage from "./ResourceHubFilePage";
 import * as ResourceHubFolderPage from "./ResourceHubFolderPage";
 import * as ResourceHubNewDocumentPage from "./ResourceHubNewDocumentPage";
+import * as ResourceHubNewLinkPage from "./ResourceHubNewLinkPage";
 import * as ResourceHubPage from "./ResourceHubPage";
 import * as ReviewPage from "./ReviewPage";
 import * as SetupPage from "./SetupPage";
@@ -515,6 +516,11 @@ export default {
     name: "ResourceHubNewDocumentPage",
     loader: ResourceHubNewDocumentPage.loader,
     Page: ResourceHubNewDocumentPage.Page,
+  },
+  ResourceHubNewLinkPage: {
+    name: "ResourceHubNewLinkPage",
+    loader: ResourceHubNewLinkPage.loader,
+    Page: ResourceHubNewLinkPage.Page,
   },
   ResourceHubPage: {
     name: "ResourceHubPage",
