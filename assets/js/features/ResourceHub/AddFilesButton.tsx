@@ -1,13 +1,13 @@
 import React from "react";
 
-import { IconFile, IconFolder, IconUpload } from "@tabler/icons-react";
+import { IconFile, IconFolder, IconLink, IconUpload } from "@tabler/icons-react";
 import { ResourceHubPermissions } from "@/models/resourceHubs";
 import { OptionsButton } from "@/components/Buttons";
 
 import { useNewFileModalsContext } from "./contexts/NewFileModalsContext";
 
 export function AddFilesButton({ permissions }: { permissions: ResourceHubPermissions }) {
-  const { navigateToNewDocument, toggleShowAddFolder, showAddFilePopUp } = useNewFileModalsContext();
+  const { navigateToNewDocument, navigateToNewLink, toggleShowAddFolder, showAddFilePopUp } = useNewFileModalsContext();
 
   return (
     <div className="w-min mt-2">
@@ -34,6 +34,17 @@ export function AddFilesButton({ permissions }: { permissions: ResourceHubPermis
             action: showAddFilePopUp,
             testId: "upload-files",
             hidden: !permissions.canCreateFile,
+          },
+          {
+            element: <div className="text-sm text-center">Or link to files from:</div>,
+            hidden: !permissions.canCreateLink,
+          },
+          {
+            icon: IconLink,
+            label: "Any external resource",
+            action: navigateToNewLink,
+            testId: "link-to-external-resources",
+            hidden: !permissions.canCreateLink,
           },
         ]}
         testId="add-options"
