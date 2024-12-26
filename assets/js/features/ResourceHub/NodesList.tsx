@@ -25,7 +25,7 @@ export function NodesList(props: NodesProps) {
 
   return (
     <NodesProvider {...props}>
-      <div className="mt-12">
+      <div className="mt-6">
         {nodes.map((node, idx) => (
           <NodeItem node={node} testid={createTestId("node", idx.toString())} key={node.id} />
         ))}
@@ -40,23 +40,20 @@ interface NodeItemProps {
 }
 
 function NodeItem({ node, testid }: NodeItemProps) {
-  const className = classNames(
-    "grid grid-cols-[1fr,20px]",
-    "border-b border-stroke-base first:border-t last:border-b-0",
-  );
+  const className = classNames("flex justify-between gap-2 py-4 px-2", "border-b border-stroke-base first:border-t-0");
   const path = findPath(node.type as NodeType, node);
   const subtitle = findSubtitle(node.type as NodeType, node);
   const commentsCount = findCommentsCount(node.type as NodeType, node);
 
   return (
     <div className={className} data-test-id={testid}>
-      <DivLink to={path} className="flex gap-4 py-4 items-center cursor-pointer">
+      <DivLink to={path} className="flex gap-4 items-center cursor-pointer">
         <NodeIcon node={node} size={48} />
 
-        <div className="w-full">
-          <div className="font-bold text-lg">{node.name}</div>
+        <div className="flex-1">
+          <div className="font-bold text-base">{node.name}</div>
           <div className="flex items-center justify-between gap-2">
-            <div>{subtitle}</div>
+            <div className="text-xs">{subtitle}</div>
             <CommentsCountIndicator count={commentsCount} />
           </div>
         </div>
