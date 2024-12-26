@@ -8,6 +8,7 @@ import { DimmedSection } from "@/components/PaperContainer";
 import { Options, SubscribersSelector, useSubscriptions } from "@/features/Subscriptions";
 import { Paths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
+import { isValidURL } from "@/utils/validators";
 
 import { useLoadedData } from "./loader";
 
@@ -34,6 +35,9 @@ export function Form({ folderId }: { folderId: string | null }) {
       }
       if (!form.values.link) {
         addError("link", "Link is required");
+      }
+      if (!isValidURL(form.values.link)) {
+        addError("link", "Invalid link");
       }
     },
     cancel: () => {
