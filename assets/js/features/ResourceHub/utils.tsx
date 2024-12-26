@@ -1,4 +1,4 @@
-import { IconFile, IconFileTypePdf, IconFolder, IconMovie, IconMusic, IconPhoto } from "@tabler/icons-react";
+import { IconFile, IconFileTypePdf, IconFolder, IconLink, IconMovie, IconMusic, IconPhoto } from "@tabler/icons-react";
 
 import { ResourceHubNode } from "@/models/resourceHubs";
 import { findFileSize } from "@/models/blobs";
@@ -8,7 +8,7 @@ import { Paths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { truncateString } from "@/utils/strings";
 
-export type NodeType = "document" | "folder" | "file";
+export type NodeType = "document" | "folder" | "file" | "link";
 
 export function findIcon(nodeType: NodeType, node: ResourceHubNode) {
   switch (nodeType) {
@@ -16,6 +16,8 @@ export function findIcon(nodeType: NodeType, node: ResourceHubNode) {
       return IconFile;
     case "folder":
       return IconFolder;
+    case "link":
+      return IconLink;
     case "file":
       assertPresent(node.file?.blob, "file.blob must be present in node");
 
@@ -33,6 +35,8 @@ export function findPath(nodeType: NodeType, node: ResourceHubNode) {
       return Paths.resourceHubDocumentPath(node.document!.id!);
     case "folder":
       return Paths.resourceHubFolderPath(node.folder!.id!);
+    case "link":
+      return "";
     case "file":
       return Paths.resourceHubFilePath(node.file!.id!);
   }
@@ -49,6 +53,8 @@ export function findSubtitle(nodeType: NodeType, node: ResourceHubNode) {
       assertPresent(node.folder?.childrenCount, "childrenCount must be present in node.folder");
 
       return node.folder.childrenCount === 1 ? "1 item" : `${node.folder.childrenCount} items`;
+    case "link":
+      return "";
     case "file":
       assertPresent(node.file?.size, "size must be present in node.file");
       assertPresent(node.file?.description, "description must be present in node.file");

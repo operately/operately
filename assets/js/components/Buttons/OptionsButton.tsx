@@ -1,9 +1,9 @@
-import React from "react";
+import React, { ReactNode } from "react";
 
 import * as Popover from "@radix-ui/react-popover";
 import { IconChevronDown, IconProps } from "@tabler/icons-react";
 
-interface Option {
+interface ActionOption {
   label: string;
   action: () => void;
   hidden?: boolean;
@@ -11,8 +11,13 @@ interface Option {
   testId?: string;
 }
 
+interface ElementOption {
+  element: ReactNode;
+  hidden?: boolean;
+}
+
 interface Props {
-  options: Option[];
+  options: (ActionOption | ElementOption)[];
   align?: "center" | "start" | "end";
   testId?: string;
 }
@@ -43,18 +48,36 @@ export function OptionsButton({ options, align = "center", testId }: Props) {
         >
           <Popover.Arrow className="fill-surface-outline scale-150" />
           {availableOptions.map((option, idx) => (
-            <div
-              onClick={option.action}
-              className="cursor-pointer px-4 py-2 flex items-center gap-1 border-b border-surface-outline hover:bg-surface-accent last:border-b-0"
-              data-test-id={option.testId}
-              key={idx}
-            >
-              {option.icon && <option.icon size={20} />}
-              {option.label}
-            </div>
+            <Option option={option} key={idx} />
           ))}
         </Popover.Content>
       </Popover.Portal>
     </Popover.Root>
   );
+}
+
+function Option({ option }: { option: ActionOption | ElementOption }) {
+  if ("label" in option && "action" in option)
+    return (
+      <Border>
+        <div
+          className="cursor-pointer px-4 py-2 flex items-center gap-1 hover:bg-surface-accent"
+          onClick={option.action}
+          data-test-id={option.testId}
+        >
+          {option.icon && <option.icon size={20} />}
+          {option.label}
+        </div>
+      </Border>
+    );
+
+  return (
+    <Border>
+      <div className="px-4 py-2">{option.element}</div>
+    </Border>
+  );
+}
+
+function Border({ children }: { children: ReactNode }) {
+  return <div className="border-b border-surface-outline last:border-b-0">{children}</div>;
 }

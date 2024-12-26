@@ -16,6 +16,7 @@ interface NewFileModalsContext extends AddFileProps {
   showAddFolder: boolean;
   toggleShowAddFolder: () => void;
   navigateToNewDocument: () => void;
+  navigateToNewLink: () => void;
 }
 
 const Context = React.createContext<NewFileModalsContext | undefined>(undefined);
@@ -28,6 +29,7 @@ export function NewFileModalsProvider({ children, resourceHub, folder }: Props) 
   const toggleShowAddFolder = () => setShowAddFolder(!showAddFolder);
   const navigateToNewDocument = () =>
     navigate(Paths.resourceHubNewDocumentPath(resourceHub.id!, folder?.id || undefined));
+  const navigateToNewLink = () => navigate(Paths.resourceHubNewLinkPath(resourceHub.id!, folder?.id || undefined));
 
   return (
     <Context.Provider
@@ -35,6 +37,7 @@ export function NewFileModalsProvider({ children, resourceHub, folder }: Props) 
         showAddFolder,
         toggleShowAddFolder,
         navigateToNewDocument,
+        navigateToNewLink,
         ...fileProps,
       }}
     >

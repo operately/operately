@@ -6,6 +6,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ResourceHubs.Permissions d
       can_create_document: permissions.can_create_document,
       can_create_folder: permissions.can_create_folder,
       can_create_file: permissions.can_create_file,
+      can_create_link: permissions.can_create_link,
       can_delete_document: permissions.can_delete_document,
       can_delete_file: permissions.can_delete_file,
       can_delete_folder: permissions.can_delete_folder,
