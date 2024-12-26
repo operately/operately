@@ -40,7 +40,7 @@ function calcOpenGoals(props: Props) {
 }
 
 function calcOpenProjects(props: Props) {
-  return props.projects.filter((p) => p.status !== "closed" && p.status !== "paused");
+  return props.projects.filter((p) => p.status !== "closed");
 }
 
 function Goals({ goals, projectsCount }: { goals: Goal[]; projectsCount: number }) {
