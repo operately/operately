@@ -84,6 +84,25 @@ defmodule Operately.Support.Features.ResourceHubSteps do
     |> UI.click(testid: "submit")
   end
 
+  step :go_to_copy_document_page, ctx, document_name do
+    {:ok, node} = Node.get(:system, name: document_name, opts: [preload: :document])
+
+    ctx
+    |> UI.click(testid: "document-options-button")
+    |> UI.click(testid: "copy-document-link")
+    |> UI.assert_page(Paths.copy_document_path(ctx.company, node.document))
+  end
+
+  step :enter_document_name, ctx, name do
+    ctx
+    |> UI.fill(testid: "title", with: name)
+  end
+
+  step :copy_document, ctx do
+    ctx
+    |> UI.click(testid: "submit")
+  end
+
   step :create_document, ctx, attrs do
     {:ok, hub} = ResourceHub.get(:system, space_id: ctx.space.id)
 
@@ -203,6 +222,16 @@ defmodule Operately.Support.Features.ResourceHubSteps do
     |> UI.refute_text(document_name)
   end
 
+  step :assert_document_present_in_files_list, ctx, document_name do
+    ctx
+    |> UI.assert_text(document_name)
+  end
+
+  step :refute_document_present_in_files_list, ctx, document_name do
+    ctx
+    |> UI.refute_text(document_name)
+  end
+
   #
   # Feed
   #
@@ -255,6 +284,18 @@ defmodule Operately.Support.Features.ResourceHubSteps do
     ctx
     |> UI.visit(Paths.feed_path(ctx.company))
     |> UI.assert_text("deleted #{document_name} from Documents & Files")
+  end
+
+  step :assert_document_copied_on_company_feed, ctx, attrs do
+    ctx
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.assert_text("created a copy of #{attrs.name} and named it #{attrs.new_name}")
+  end
+
+  step :assert_document_copied_on_space_feed, ctx, attrs do
+    ctx
+    |> UI.visit(Paths.space_path(ctx.company, ctx.space))
+    |> UI.assert_text("created a copy of #{attrs.name} and named it #{attrs.new_name}")
   end
 
   step :assert_document_commented_on_company_feed, ctx, document_name do
@@ -315,6 +356,16 @@ defmodule Operately.Support.Features.ResourceHubSteps do
     })
   end
 
+  step :assert_document_copied_notification_sent, ctx, attrs do
+    ctx
+    |> UI.login_as(ctx.other_user)
+    |> NotificationsSteps.visit_notifications_page()
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.creator,
+      action: "created a copy of #{attrs.name} and named it #{attrs.new_name}",
+    })
+  end
+
   step :assert_document_commented_notification_sent, ctx, document_name do
     ctx
     |> UI.login_as(ctx.other_user)
@@ -368,6 +419,17 @@ defmodule Operately.Support.Features.ResourceHubSteps do
       where: hub.name,
       to: ctx.other_user,
       action: "deleted a document: #{document_name}",
+      author: ctx.creator,
+    })
+  end
+
+  step :assert_document_copied_email_sent, ctx, document_name do
+    {:ok, hub} = ResourceHub.get(:system, space_id: ctx.space.id)
+
+    ctx |> EmailSteps.assert_activity_email_sent(%{
+      where: hub.name,
+      to: ctx.other_user,
+      action: "copied a document: #{document_name}",
       author: ctx.creator,
     })
   end

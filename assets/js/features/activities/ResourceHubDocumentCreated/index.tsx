@@ -31,11 +31,19 @@ const ResourceHubDocumentCreating: ActivityHandler = {
 
   FeedItemTitle({ activity }: { activity: Activity; page: any }) {
     const document = content(activity).document!;
+    const copiedDocument = content(activity).copiedDocument;
 
     const path = Paths.resourceHubDocumentPath(document.id!);
     const link = <Link to={path}>{document.name}</Link>;
 
-    return feedTitle(activity, "added the", link, "document");
+    if (copiedDocument) {
+      const copiedDocumentPath = Paths.resourceHubDocumentPath(copiedDocument.id!);
+      const copiedDocumentLink = <Link to={copiedDocumentPath}>{copiedDocument.name}</Link>;
+
+      return feedTitle(activity, "created a copy of", copiedDocumentLink, "and named it", link);
+    } else {
+      return feedTitle(activity, "added the", link, "document");
+    }
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {
@@ -55,7 +63,20 @@ const ResourceHubDocumentCreating: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " added: " + content(activity).document!.name!;
+    const document = content(activity).document!;
+    const copiedDocument = content(activity).copiedDocument;
+
+    if (copiedDocument) {
+      return (
+        People.firstName(activity.author!) +
+        " created a copy of " +
+        copiedDocument.name +
+        " and named it " +
+        document.name
+      );
+    } else {
+      return People.firstName(activity.author!) + " added: " + document.name!;
+    }
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
