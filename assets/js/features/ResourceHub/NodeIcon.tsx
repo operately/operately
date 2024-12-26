@@ -47,7 +47,42 @@ export function FolderIcon({ size }: { size: number }) {
   return <Icons.IconFolderFilled size={size} className="text-sky-500" />;
 }
 
-function FileIcon({ size, filetype, color, icon }: { size: number; filetype?: string; color?: string; icon?: any }) {
+interface FileIconProps {
+  size: number;
+  filetype?: string;
+  color?: string;
+  icon?: any;
+}
+
+function FileIcon({ size, filetype, color, icon }: FileIconProps) {
+  const wrapperStyle = { width: size, height: size };
+  const docSize = { width: size * 0.7, height: size };
+  const innerIconSize = size * 0.45;
+
+  const docClass = classNames(
+    "bg-surface-base",
+    "border border-stroke-base",
+    "rounded-sm",
+    "shadow-sm",
+    "flex flex-col items-center justify-between gap-0.5",
+  );
+
+  icon = icon || Icons.IconLogs;
+
+  return (
+    <div style={wrapperStyle} className="flex items-center justify-center relative">
+      <div className={docClass} style={docSize}>
+        <div className="flex-1 flex flex-col items-center justify-center">
+          {React.createElement(icon, { size: innerIconSize, className: "text-surface-outline" })}
+        </div>
+
+        {filetype && <FileIconBadge size={size} filetype={filetype} color={color} />}
+      </div>
+    </div>
+  );
+}
+
+function FileIconBadge({ size, filetype, color }: FileIconProps) {
   const badgeClass = classNames(
     "text-center",
     "text-white-1",
@@ -56,29 +91,14 @@ function FileIcon({ size, filetype, color, icon }: { size: number; filetype?: st
     color || "bg-stone-500",
   );
 
-  icon = icon || Icons.IconLogs;
+  const style = {
+    fontSize: size * 0.17,
+    paddingTop: size * 0.07,
+    paddingBottom: size * 0.065,
+    lineHeight: 1,
+  };
 
-  return (
-    <div style={{ width: size, height: size }} className="flex items-center justify-center relative">
-      <div
-        className="bg-surface-base border border-stroke-base rounded-sm shadow-sm flex flex-col items-center justify-between gap-0.5"
-        style={{ width: size * 0.7, height: size }}
-      >
-        <div className="flex-1 flex flex-col items-center justify-center">
-          {React.createElement(icon, { size: size * 0.45, className: "text-surface-outline" })}
-        </div>
-
-        {filetype && (
-          <div
-            className={badgeClass}
-            style={{ fontSize: size * 0.17, paddingTop: size * 0.07, paddingBottom: size * 0.065, lineHeight: 1 }}
-          >
-            {filetype}
-          </div>
-        )}
-      </div>
-    </div>
-  );
+  return <div className={badgeClass} style={style} children={filetype} />;
 }
 
 function Thumbnail({ file, size }: { file: Hub.ResourceHubFile; size: number }) {
