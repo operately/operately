@@ -4,13 +4,13 @@ import * as Hub from "@/models/resourceHubs";
 
 import classNames from "classnames";
 import { DivLink } from "@/components/Link";
-import { ImageWithPlaceholder } from "@/components/Image";
 import { CommentsCountIndicator } from "@/features/Comments";
 import { assertPresent } from "@/utils/assertions";
 import { createTestId } from "@/utils/testid";
-import { findCommentsCount, findIcon, findPath, findSubtitle, NodeType, sortNodesWithFoldersFirst } from "./utils";
+import { findCommentsCount, findPath, findSubtitle, NodeType, sortNodesWithFoldersFirst } from "./utils";
 import { DocumentMenu, FileMenu, FolderMenu, FolderZeroNodes, HubZeroNodes } from "./components";
 import { NodesProps, NodesProvider } from "./contexts/NodesContext";
+import { NodeIcon } from "./NodeIcon";
 
 export function NodesList(props: NodesProps) {
   const resource = props.type === "resource_hub" ? props.resourceHub : props.folder;
@@ -51,7 +51,8 @@ function NodeItem({ node, testid }: NodeItemProps) {
   return (
     <div className={className} data-test-id={testid}>
       <DivLink to={path} className="flex gap-4 py-4 items-center cursor-pointer">
-        <FilePreview node={node} />
+        <NodeIcon node={node} size={48} />
+
         <div className="w-full">
           <div className="font-bold text-lg">{node.name}</div>
           <div className="flex items-center justify-between gap-2">
@@ -76,28 +77,6 @@ function NodeItem({ node, testid }: NodeItemProps) {
           <FileMenu file={node.file} />
         </div>
       )}
-    </div>
-  );
-}
-
-function FilePreview({ node }: { node: Hub.ResourceHubNode }) {
-  const Icon = findIcon(node.type as NodeType, node);
-
-  if (node.file?.blob?.contentType?.includes("image")) {
-    return <Thumbnail file={node.file} />;
-  } else {
-    return <Icon size={48} color="#444" />;
-  }
-}
-
-function Thumbnail({ file }: { file: Hub.ResourceHubFile }) {
-  assertPresent(file.blob, "blob must be present in file");
-
-  const imgRatio = file.blob.height! / file.blob.width!;
-
-  return (
-    <div style={{ width: 48, height: 48 * imgRatio }}>
-      <ImageWithPlaceholder src={file.blob.url!} alt={file.name!} ratio={imgRatio} />
     </div>
   );
 }
