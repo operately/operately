@@ -5,10 +5,10 @@ import classNames from "classnames";
 import * as Hub from "@/models/resourceHubs";
 
 import { IconArrowLeft } from "@tabler/icons-react";
-import { NodeType, sortNodesWithFoldersFirst } from "@/features/ResourceHub/utils";
+import { sortNodesWithFoldersFirst } from "@/features/ResourceHub/utils";
 import { useFieldError, useFieldValue } from "@/components/Forms/FormContext";
 import { assertPresent } from "@/utils/assertions";
-import { FolderIcon } from "@/features/ResourceHub/NodeIcon";
+import { NodeIcon } from "@/features/ResourceHub/NodeIcon";
 
 import { Location, MovableResource } from ".";
 
@@ -150,7 +150,7 @@ function Option({ resource, node, callback, loading, testid }: OptionProps) {
   return (
     <div className={className} onClick={handleClick} data-test-id={testid}>
       <div className="flex items-center gap-2">
-        <FolderIcon size={18} />
+        <NodeIcon size={18} node={node} />
         {node.name}
       </div>
       {loading && loading === node.folder?.id && <BeatLoader size={7} />}
