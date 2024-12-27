@@ -1,0 +1,17 @@
+<%= title("#{short_name(@author)} added a link") %>
+
+<%= spacer() %>
+
+<%= row do %>
+  <%= @link.node.name %>:
+<% end %>
+<%= row do %>
+  <%= @link.url %>
+<% end %>
+
+<%= spacer() %>
+<%= spacer() %>
+
+<%= row do %>
+  <%= cta_button(@cta_url, "View Link") %>
+<% end %>
