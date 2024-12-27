@@ -19,7 +19,7 @@ export function Page() {
     <Pages.Page title={resourceHub.name!}>
       <Hub.NewFileModalsProvider resourceHub={resourceHub}>
         <Hub.FileDragAndDropArea>
-          <Paper.Root>
+          <Paper.Root size="large">
             <PageNavigation />
 
             <Paper.Body minHeight="75vh">
@@ -27,9 +27,12 @@ export function Page() {
                 actions={<Hub.AddFilesButton permissions={resourceHub.permissions} />}
                 title={resourceHub.name!}
                 layout="title-center-actions-left"
+                underline
               />
 
-              <Hub.NodesList resourceHub={resourceHub} type="resource_hub" refetch={refresh} />
+              <div className="mx-6">
+                <Hub.NodesList resourceHub={resourceHub} type="resource_hub" refetch={refresh} />
+              </div>
 
               <Hub.AddFolderModal resourceHub={resourceHub} refresh={refresh} />
               <Hub.AddFileModal resourceHub={resourceHub} refresh={refresh} />

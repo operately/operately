@@ -1,5 +1,5 @@
 export { NodesList } from "./NodesList";
-export { findIcon, findSubtitle, NodeType } from "./utils";
+export { findSubtitle, NodeType } from "./utils";
 export { AddFilesButton } from "./AddFilesButton";
 export { NewFileModalsProvider, useNewFileModalsContext } from "./contexts/NewFileModalsContext";
 export { useNodesContext } from "./contexts/NodesContext";
