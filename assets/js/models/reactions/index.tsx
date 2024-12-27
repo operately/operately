@@ -12,7 +12,8 @@ type EntityType =
   | "message"
   | "comment"
   | "resource_hub_document"
-  | "resource_hub_file";
+  | "resource_hub_file"
+  | "resource_hub_link";
 
 // Which entity the reactions are for
 export type Entity = {

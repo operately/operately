@@ -603,6 +603,7 @@ defmodule OperatelyWeb.Api.Types do
   object :resource_hub_permissions do
     field :can_comment_on_document, :boolean
     field :can_comment_on_file, :boolean
+    field :can_comment_on_link, :boolean
     field :can_create_document, :boolean
     field :can_create_folder, :boolean
     field :can_create_file, :boolean
