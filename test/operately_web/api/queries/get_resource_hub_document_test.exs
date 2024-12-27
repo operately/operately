@@ -18,7 +18,6 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubDocumentTest do
       |> Factory.setup()
       |> Factory.add_company_member(:person)
       |> Factory.log_in_person(:person)
-      |> Factory.add_space(:space)
     end
 
     @table [
