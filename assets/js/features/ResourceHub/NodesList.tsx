@@ -25,7 +25,7 @@ export function NodesList(props: NodesProps) {
 
   return (
     <NodesProvider {...props}>
-      <div className="mt-6">
+      <div className="m-6">
         {nodes.map((node, idx) => (
           <NodeItem node={node} testid={createTestId("node", idx.toString())} key={node.id} />
         ))}
@@ -40,7 +40,11 @@ interface NodeItemProps {
 }
 
 function NodeItem({ node, testid }: NodeItemProps) {
-  const className = classNames("flex justify-between gap-2 py-4 px-2", "border-b border-stroke-base first:border-t-0");
+  const className = classNames(
+    "flex justify-between gap-2 py-4 px-2 items-center",
+    "border-b border-stroke-base first:border-t-0",
+  );
+
   const path = findPath(node.type as NodeType, node);
   const subtitle = findSubtitle(node.type as NodeType, node);
   const commentsCount = findCommentsCount(node.type as NodeType, node);
@@ -54,10 +58,11 @@ function NodeItem({ node, testid }: NodeItemProps) {
           <div className="font-bold text-base">{node.name}</div>
           <div className="flex items-center justify-between gap-2">
             <div className="text-xs">{subtitle}</div>
-            <CommentsCountIndicator count={commentsCount} />
           </div>
         </div>
       </DivLink>
+
+      <CommentsCountIndicator count={commentsCount} size={24} />
 
       {node.folder && (
         <div className="flex items-center">
