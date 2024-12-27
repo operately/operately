@@ -5,9 +5,10 @@ import classNames from "classnames";
 import * as Hub from "@/models/resourceHubs";
 
 import { IconArrowLeft } from "@tabler/icons-react";
-import { findIcon, NodeType, sortNodesWithFoldersFirst } from "@/features/ResourceHub/utils";
+import { NodeType, sortNodesWithFoldersFirst } from "@/features/ResourceHub/utils";
 import { useFieldError, useFieldValue } from "@/components/Forms/FormContext";
 import { assertPresent } from "@/utils/assertions";
+import { FolderIcon } from "@/features/ResourceHub/NodeIcon";
 
 import { Location, MovableResource } from ".";
 
@@ -134,7 +135,6 @@ function Option({ resource, node, callback, loading, testid }: OptionProps) {
   const isFolder = node.type === "folder";
   const disabled = !isFolder || loading || resource.id === node.folder?.id;
 
-  const Icon = findIcon(node.type as NodeType, node);
   const className = classNames(
     "flex items-center justify-between p-2",
     !loading && "cursor-pointer hover:bg-surface-highlight",
@@ -150,7 +150,7 @@ function Option({ resource, node, callback, loading, testid }: OptionProps) {
   return (
     <div className={className} onClick={handleClick} data-test-id={testid}>
       <div className="flex items-center gap-2">
-        <Icon size={18} />
+        <FolderIcon size={18} />
         {node.name}
       </div>
       {loading && loading === node.folder?.id && <BeatLoader size={7} />}

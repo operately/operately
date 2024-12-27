@@ -4,13 +4,13 @@ import * as Hub from "@/models/resourceHubs";
 
 import classNames from "classnames";
 import { DivLink } from "@/components/Link";
-import { ImageWithPlaceholder } from "@/components/Image";
 import { CommentsCountIndicator } from "@/features/Comments";
 import { assertPresent } from "@/utils/assertions";
 import { createTestId } from "@/utils/testid";
-import { findCommentsCount, findIcon, findPath, findSubtitle, NodeType, sortNodesWithFoldersFirst } from "./utils";
+import { findCommentsCount, findPath, findSubtitle, NodeType, sortNodesWithFoldersFirst } from "./utils";
 import { DocumentMenu, FileMenu, FolderMenu, FolderZeroNodes, HubZeroNodes } from "./components";
 import { NodesProps, NodesProvider } from "./contexts/NodesContext";
+import { NodeIcon } from "./NodeIcon";
 
 export function NodesList(props: NodesProps) {
   const resource = props.type === "resource_hub" ? props.resourceHub : props.folder;
@@ -25,7 +25,7 @@ export function NodesList(props: NodesProps) {
 
   return (
     <NodesProvider {...props}>
-      <div className="mt-12">
+      <div className="mt-6">
         {nodes.map((node, idx) => (
           <NodeItem node={node} testid={createTestId("node", idx.toString())} key={node.id} />
         ))}
@@ -40,22 +40,20 @@ interface NodeItemProps {
 }
 
 function NodeItem({ node, testid }: NodeItemProps) {
-  const className = classNames(
-    "grid grid-cols-[1fr,20px]",
-    "border-b border-stroke-base first:border-t last:border-b-0",
-  );
+  const className = classNames("flex justify-between gap-2 py-4 px-2", "border-b border-stroke-base first:border-t-0");
   const path = findPath(node.type as NodeType, node);
   const subtitle = findSubtitle(node.type as NodeType, node);
   const commentsCount = findCommentsCount(node.type as NodeType, node);
 
   return (
     <div className={className} data-test-id={testid}>
-      <DivLink to={path} className="flex gap-4 py-4 items-center cursor-pointer">
-        <FilePreview node={node} />
-        <div className="w-full">
-          <div className="font-bold text-lg">{node.name}</div>
+      <DivLink to={path} className="flex gap-4 items-center cursor-pointer">
+        <NodeIcon node={node} size={48} />
+
+        <div className="flex-1">
+          <div className="font-bold text-base">{node.name}</div>
           <div className="flex items-center justify-between gap-2">
-            <div>{subtitle}</div>
+            <div className="text-xs">{subtitle}</div>
             <CommentsCountIndicator count={commentsCount} />
           </div>
         </div>
@@ -76,28 +74,6 @@ function NodeItem({ node, testid }: NodeItemProps) {
           <FileMenu file={node.file} />
         </div>
       )}
-    </div>
-  );
-}
-
-function FilePreview({ node }: { node: Hub.ResourceHubNode }) {
-  const Icon = findIcon(node.type as NodeType, node);
-
-  if (node.file?.blob?.contentType?.includes("image")) {
-    return <Thumbnail file={node.file} />;
-  } else {
-    return <Icon size={48} color="#444" />;
-  }
-}
-
-function Thumbnail({ file }: { file: Hub.ResourceHubFile }) {
-  assertPresent(file.blob, "blob must be present in file");
-
-  const imgRatio = file.blob.height! / file.blob.width!;
-
-  return (
-    <div style={{ width: 48, height: 48 * imgRatio }}>
-      <ImageWithPlaceholder src={file.blob.url!} alt={file.name!} ratio={imgRatio} />
     </div>
   );
 }
