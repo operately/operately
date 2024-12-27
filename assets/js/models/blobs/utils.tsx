@@ -98,9 +98,3 @@ export function findFileSize(size: number) {
 
   return "";
 }
-
-export function findFileExtension(fileName: string) {
-  const pieces = fileName.split(".");
-  const extension = pieces[pieces.length - 1];
-  return extension?.toUpperCase();
-}
