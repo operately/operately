@@ -47,10 +47,10 @@ function NodeItem({ node, testid }: NodeItemProps) {
 
   return (
     <div className={className} data-test-id={testid}>
-      <DivLink to={path} className="flex gap-4 items-center cursor-pointer">
+      <DivLink to={path} className="flex gap-4 items-center cursor-pointer flex-1">
         <NodeIcon node={node} size={48} />
 
-        <div className="flex-1">
+        <div>
           <div className="font-bold text-base">{node.name}</div>
           <div className="flex items-center justify-between gap-2">
             <div className="text-xs">{subtitle}</div>

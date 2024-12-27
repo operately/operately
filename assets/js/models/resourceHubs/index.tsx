@@ -35,6 +35,10 @@ export function isFolder(node: ResourceHubNode): boolean {
   return node.type === "folder";
 }
 
+export function isLink(node: ResourceHubNode): boolean {
+  return node.type === "link";
+}
+
 function isFile(node: ResourceHubNode): boolean {
   return node.type === "file";
 }
