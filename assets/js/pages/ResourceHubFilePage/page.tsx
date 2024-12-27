@@ -4,7 +4,7 @@ import * as Reactions from "@/models/reactions";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
-import { findFileExtension } from "@/models/blobs";
+import { findFileSize, useDownloadFile } from "@/models/blobs";
 import { CommentSection, useComments } from "@/features/CommentSection";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { CurrentSubscriptions } from "@/features/Subscriptions";
@@ -12,6 +12,9 @@ import RichContent, { richContentToString } from "@/components/RichContent";
 import { Spacer } from "@/components/Spacer";
 import { assertPresent } from "@/utils/assertions";
 import { Paths } from "@/routes/paths";
+import Avatar from "@/components/Avatar";
+import FormattedTime from "@/components/FormattedTime";
+import { TextSeparator } from "@/components/TextSeparator";
 
 import { useLoadedData } from "./loader";
 import { Content } from "./Content";
@@ -26,12 +29,15 @@ export function Page() {
         <Navigation />
 
         <Paper.Body>
-          <Paper.Header title={file.name!} layout="title-left-actions-right" />
+          <Title />
           <Options />
 
           <Content />
-          <FileNameAndType />
+          <Spacer size={1} />
+
+          <FileInfo />
           <Description />
+
           <FileReactions />
           <FileComments />
           <FileSubscriptions />
@@ -58,25 +64,47 @@ function Navigation() {
   );
 }
 
-function FileNameAndType() {
+function Title() {
+  const { file } = useLoadedData();
+
+  assertPresent(file.author, "author must be present in file");
+
+  return (
+    <div className="mb-8 flex flex-col items-center">
+      <Paper.Header title={file.name!} />
+      <div className="flex flex-wrap justify-center gap-1 items-center text-content-accent font-medium text-sm sm:text-[16px]">
+        <div className="flex items-center gap-1">
+          <Avatar person={file.author} size="tiny" /> {file.author.fullName}
+        </div>
+
+        <TextSeparator />
+        <FormattedTime time={file.insertedAt!} format="relative-time-or-date" />
+      </div>
+    </div>
+  );
+}
+
+function FileInfo() {
   const { file } = useLoadedData();
   assertPresent(file.blob?.filename, "filename must be present in file.blob");
 
-  const extension = findFileExtension(file.blob.filename);
+  const size = findFileSize(file.blob.size!);
+  const [downloadFile] = useDownloadFile(file.blob.url!, file.blob.filename!);
 
   return (
-    <>
-      <Spacer size={1} />
-      <div className="flex gap-4 items-center">
-        <div>
-          <b>File:</b> {file.blob.filename}
-        </div>
-        <div>&middot;</div>
-        <div>
-          <b>Type:</b> {extension}
-        </div>
+    <div className="flex gap-2 justify-center items-center">
+      <div className="text-content-dimmed">
+        {file.blob.filename} ({size})
       </div>
-    </>
+      <div className="text-content-dimmed">•</div>
+      <div className="text-content-dimmed underline cursor-pointer" onClick={downloadFile}>
+        Download
+      </div>
+      <div className="text-content-dimmed">•</div>
+      <a className="text-content-dimmed underline cursor-pointer" href={file.blob.url!} target="_blank">
+        View
+      </a>
+    </div>
   );
 }
 
