@@ -5,7 +5,7 @@ import { createBlob } from "@/api";
 import { findImageDimensions, findVideoDimensions } from "./utils";
 
 export { useDownloadFile } from "./useDownloadFile";
-export { resizeImage, findFileSize, findFileExtension } from "./utils";
+export { resizeImage, findFileSize } from "./utils";
 
 type ProgressCallback = (number: number) => any;
 type UploadResult = { id: string; url: string };
