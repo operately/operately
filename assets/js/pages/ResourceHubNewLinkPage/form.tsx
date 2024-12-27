@@ -44,7 +44,7 @@ export function Form({ folderId }: { folderId: string | null }) {
       navigate(Paths.resourceHubPath(resourceHub.id!));
     },
     submit: async () => {
-      await post({
+      post({
         resourceHubId: resourceHub.id,
         folderId: folderId,
         name: form.values.title,
@@ -53,8 +53,9 @@ export function Form({ folderId }: { folderId: string | null }) {
         description: JSON.stringify(form.values.description),
         sendNotificationsToEveryone: subscriptionsState.subscriptionType === Options.ALL,
         subscriberIds: subscriptionsState.currentSubscribersList,
+      }).then((res) => {
+        navigate(Paths.resourceHubLinkPath(res.link.id));
       });
-      navigate(Paths.resourceHubPath(resourceHub.id!));
     },
   });
 

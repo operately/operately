@@ -1170,6 +1170,7 @@ export interface ResourceHubNode {
   folder?: ResourceHubFolder | null;
   document?: ResourceHubDocument | null;
   file?: ResourceHubFile | null;
+  link?: ResourceHubLink | null;
 }
 
 export interface ResourceHubPermissions {

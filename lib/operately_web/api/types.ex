@@ -693,6 +693,7 @@ defmodule OperatelyWeb.Api.Types do
     field :folder, :resource_hub_folder
     field :document, :resource_hub_document
     field :file, :resource_hub_file
+    field :link, :resource_hub_link
   end
 
   object :project_permissions do
