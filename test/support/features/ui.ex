@@ -439,8 +439,8 @@ defmodule Operately.Support.Features.UI do
 
   def select_day_in_datepicker(ctx, testid: testid, date: date) do
     is_current_month = date.month == Date.utc_today().month
-    is_last_month = date.month == Date.utc_today().month - 1
-    is_next_month = date.month == Date.utc_today().month + 1
+    is_last_month = date.month == get_last_month()
+    is_next_month = date.month == get_next_month()
 
     day = if date.day < 10 do
       "00#{date.day}"
@@ -467,5 +467,19 @@ defmodule Operately.Support.Features.UI do
           |> click(css: ".react-datepicker__day.react-datepicker__day--#{day}:not(.react-datepicker__day--disabled)")
       end
     end)
+  end
+
+  defp get_next_month do
+    case Date.utc_today().month + 1 do
+      13 -> 1
+      month -> month
+    end
+  end
+
+  defp get_last_month do
+    case Date.utc_today().month - 1 do
+      0 -> 12
+      month -> month
+    end
   end
 end
