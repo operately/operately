@@ -169,6 +169,12 @@ defmodule OperatelyWeb.Paths do
     create_path([company_id(company), "links", link_id(link)])
   end
 
+  def link_path(company = %Company{}, link, comment = %Comment{}) do
+    link_with_comment = link_id(link) <> "#" <> comment_id(comment)
+
+    create_path([company_id(company), "links", link_with_comment])
+  end
+
   @doc """
   Returns the URL for the given path.
 
