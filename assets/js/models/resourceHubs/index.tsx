@@ -5,12 +5,14 @@ export type {
   ResourceHubPermissions,
   ResourceHubFolder,
   ResourceHubFile,
+  ResourceHubLink,
 } from "@/api";
 export {
   getResourceHub,
   getResourceHubDocument,
   getResourceHubFile,
   getResourceHubFolder,
+  getResourceHubLink,
   useCreateResourceHubFolder,
   useCreateResourceHubDocument,
   useCreateResourceHubFile,

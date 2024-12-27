@@ -4,20 +4,23 @@ import { richContentToString } from "@/components/RichContent";
 import { Paths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { truncateString } from "@/utils/strings";
-import { findFileSize } from "@/models/blobs";
 
 export type NodeType = "document" | "folder" | "file" | "link";
 
 export function findPath(nodeType: NodeType, node: ResourceHubNode) {
   switch (nodeType) {
     case "document":
-      return Paths.resourceHubDocumentPath(node.document!.id!);
+      assertPresent(node.document?.id, "document must be present in node");
+      return Paths.resourceHubDocumentPath(node.document.id);
     case "folder":
-      return Paths.resourceHubFolderPath(node.folder!.id!);
+      assertPresent(node.folder?.id, "folder must be present in node");
+      return Paths.resourceHubFolderPath(node.folder.id);
     case "link":
-      return "";
+      assertPresent(node.link?.id, "link must be present in node");
+      return Paths.resourceHubLinkPath(node.link.id);
     case "file":
-      return Paths.resourceHubFilePath(node.file!.id!);
+      assertPresent(node.file?.id, "file must be present in node");
+      return Paths.resourceHubFilePath(node.file.id);
   }
 }
 
@@ -37,12 +40,8 @@ export function findSubtitle(nodeType: NodeType, node: ResourceHubNode) {
 
     case "file":
       assertPresent(node.file?.description, "description must be present in node.file");
-      assertPresent(node.file?.size, "size must be present in node.file");
-
-      const size = findFileSize(node.file.size);
       const description = richContentToString(JSON.parse(node.file.description));
-
-      return size + (description ? ` - ${truncateString(description, 50)}` : "");
+      return truncateString(description, 50);
   }
 }
 

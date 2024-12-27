@@ -13,6 +13,7 @@ defmodule Operately.ResourceHubs.Node do
     has_one :folder, Operately.ResourceHubs.Folder, foreign_key: :node_id
     has_one :document, Operately.ResourceHubs.Document, foreign_key: :node_id
     has_one :file, Operately.ResourceHubs.File, foreign_key: :node_id
+    has_one :link, Operately.ResourceHubs.Link, foreign_key: :node_id
 
     timestamps()
     soft_delete()
@@ -29,7 +30,7 @@ defmodule Operately.ResourceHubs.Node do
     |> validate_required([:resource_hub_id, :name, :type])
   end
 
-  def preload_nodes, do: [folder: :node, document: :node, file: [:node, :preview_blob, :blob]]
+  def preload_nodes, do: [folder: :node, document: :node, link: :node, file: [:node, :preview_blob, :blob]]
 
   #
   # After load hooks

@@ -53,6 +53,7 @@ defmodule OperatelyWeb.Api.Mutations.EditSubscriptionsList do
       :message -> Groups.Permissions.check(access_level, :can_edit_discussions)
       :resource_hub_document -> ResourceHubs.Permissions.check(access_level, :can_edit_document)
       :resource_hub_file -> ResourceHubs.Permissions.check(access_level, :can_edit_file)
+      :resource_hub_link -> ResourceHubs.Permissions.check(access_level, :can_edit_link)
     end
   end
 end
