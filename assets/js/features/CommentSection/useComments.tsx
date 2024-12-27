@@ -4,7 +4,7 @@ import * as Comments from "@/models/comments";
 import { SearchScope } from "@/models/people";
 import { Discussion } from "@/models/discussions";
 import { ProjectRetrospective } from "@/models/projects";
-import { ResourceHubDocument, ResourceHubFile } from "@/models/resourceHubs";
+import { ResourceHubDocument, ResourceHubFile, ResourceHubLink } from "@/models/resourceHubs";
 
 import { assertPresent } from "@/utils/assertions";
 import { parse } from "@/utils/time";
@@ -30,11 +30,17 @@ interface ParentResourceHubFile {
   parentType: "resource_hub_file";
 }
 
+interface ParentResourceHubLink {
+  link: ResourceHubLink;
+  parentType: "resource_hub_link";
+}
+
 type UseCommentsInput =
   | ParentDiscussion
   | ParentProjectRetrospective
   | ParentResourceHubDocument
-  | ParentResourceHubFile;
+  | ParentResourceHubFile
+  | ParentResourceHubLink;
 
 export function useComments(props: UseCommentsInput): FormState {
   const parent = findParent(props);
@@ -123,6 +129,8 @@ function findParent(props: UseCommentsInput) {
       return props.document;
     case "resource_hub_file":
       return props.file;
+    case "resource_hub_link":
+      return props.link;
   }
 }
 
@@ -140,5 +148,8 @@ function findMentionedScope(props: UseCommentsInput): SearchScope {
     case "resource_hub_file":
       assertPresent(props.file.resourceHub?.space, "resourceHub.space must be present in file");
       return { type: "space", id: props.file.resourceHub.space.id! };
+    case "resource_hub_link":
+      assertPresent(props.link.resourceHub?.space, "resourceHub.space must be present in link");
+      return { type: "space", id: props.link.resourceHub.space.id! };
   }
 }

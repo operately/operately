@@ -164,6 +164,28 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
       end
     end
 
+    tabletest @space_table do
+      test "resource hub link - if caller has levels company=#{@test.company}, space=#{@test.space}, then expect code=#{@test.expected}", ctx do
+        space = create_space(ctx, @test.company, @test.space)
+        resource_hub = resource_hub_fixture(ctx.creator, space)
+        link = link_fixture(resource_hub, ctx.creator)
+
+        assert {code, res} = mutation(ctx.conn, :create_comment, %{
+          entity_id: Paths.link_id(link),
+          entity_type: "resource_hub_link",
+          content: RichText.rich_text("Content", :as_string)
+        })
+
+        assert code == @test.expected
+
+        case @test.expected do
+          200 -> assert Updates.count_comments(link.id, :resource_hub_link) == 1
+          403 -> assert res.message == "You don't have permission to perform this action"
+          404 -> assert res.message == "The requested resource was not found"
+        end
+      end
+    end
+
     tabletest @goal_table do
       test "if caller has levels company=#{@test.company}, space=#{@test.space}, goal=#{@test.goal} on the comment thread, then expect code=#{@test.expected}", ctx do
         space = create_space(ctx)

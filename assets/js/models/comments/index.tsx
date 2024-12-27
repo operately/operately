@@ -11,7 +11,8 @@ export type CommentParentType =
   | "milestone"
   | "project_retrospective"
   | "resource_hub_document"
-  | "resource_hub_file";
+  | "resource_hub_file"
+  | "resource_hub_link";
 
 export type { Comment };
 export { useCreateComment, useEditComment, useGetComments, getComments } from "@/api";

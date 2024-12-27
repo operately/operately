@@ -95,7 +95,7 @@ function Body() {
 function DocumentReactions() {
   const { document } = useLoadedData();
 
-  assertPresent(document.permissions?.canCommentOnDocument, "permissions must be present in discussion");
+  assertPresent(document.permissions?.canCommentOnDocument, "permissions must be present in document");
 
   const reactions = document.reactions!.map((r) => r!);
   const entity = Reactions.entity(document.id!, "resource_hub_document");
