@@ -39,5 +39,6 @@ defmodule Operately.Operations.CommentAdding do
   defp find_action(%Operately.Comments.CommentThread{}), do: :comment_added
   defp find_action(%Operately.ResourceHubs.Document{}), do: :resource_hub_document_commented
   defp find_action(%Operately.ResourceHubs.File{}), do: :resource_hub_file_commented
+  defp find_action(%Operately.ResourceHubs.Link{}), do: :resource_hub_link_commented
   defp find_action(e), do: raise("Unknown entity type #{inspect(e)}")
 end

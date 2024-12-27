@@ -1176,6 +1176,7 @@ export interface ResourceHubNode {
 export interface ResourceHubPermissions {
   canCommentOnDocument?: boolean | null;
   canCommentOnFile?: boolean | null;
+  canCommentOnLink?: boolean | null;
   canCreateDocument?: boolean | null;
   canCreateFolder?: boolean | null;
   canCreateFile?: boolean | null;

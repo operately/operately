@@ -1,14 +1,20 @@
 import React from "react";
 import { IconExternalLink } from "@tabler/icons-react";
 
+import * as Reactions from "@/models/reactions";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
+
 import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
 import { TextSeparator } from "@/components/TextSeparator";
 import { CopyToClipboard } from "@/components/CopyToClipboard";
-import { CurrentSubscriptions } from "@/features/Subscriptions";
+import { Spacer } from "@/components/Spacer";
 import { assertPresent } from "@/utils/assertions";
+
+import { ReactionList, useReactionsForm } from "@/features/Reactions";
+import { CurrentSubscriptions } from "@/features/Subscriptions";
+import { CommentSection, useComments } from "@/features/CommentSection";
 
 import { useLoadedData } from "./loader";
 
@@ -21,6 +27,8 @@ export function Page() {
         <Paper.Body>
           <Title />
           <Url />
+          <LinkReactions />
+          <LinkComments />
           <LinkSubscriptions />
         </Paper.Body>
       </Paper.Root>
@@ -73,6 +81,44 @@ function OpenLinkIcon({ url, size }: { url: string; size: number }) {
   };
 
   return <IconExternalLink size={size} onClick={redirect} className="cursor-pointer" />;
+}
+
+function LinkReactions() {
+  const { link } = useLoadedData();
+
+  assertPresent(link.permissions?.canCommentOnLink, "permissions must be present in link");
+  assertPresent(link.reactions, "reactions must be present in link");
+
+  const reactions = link.reactions.map((r) => r!);
+  const entity = Reactions.entity(link.id!, "resource_hub_link");
+  const addReactionForm = useReactionsForm(entity, reactions);
+
+  return (
+    <>
+      <Spacer size={2} />
+      <ReactionList size={24} form={addReactionForm} canAddReaction={link.permissions.canCommentOnLink} />
+    </>
+  );
+}
+
+function LinkComments() {
+  const { link } = useLoadedData();
+  const commentsForm = useComments({ parentType: "resource_hub_link", link: link });
+
+  assertPresent(link.permissions?.canCommentOnLink, "permissions must be present in link");
+
+  return (
+    <>
+      <Spacer size={4} />
+      <div className="border-t border-stroke-base mt-8" />
+      <CommentSection
+        form={commentsForm}
+        refresh={() => {}}
+        commentParentType="resource_hub_link"
+        canComment={link.permissions.canCommentOnLink}
+      />
+    </>
+  );
 }
 
 function LinkSubscriptions() {

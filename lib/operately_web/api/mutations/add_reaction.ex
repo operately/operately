@@ -14,7 +14,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReaction do
   alias Operately.Goals.Update
   alias Operately.Messages.Message
   alias Operately.Projects.Retrospective
-  alias Operately.ResourceHubs.{Document, File}
+  alias Operately.ResourceHubs.{Document, File, Link}
   alias Operately.Operations.ReactionAdding
 
   inputs do
@@ -62,6 +62,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReaction do
       :comment -> Updates.get_comment_with_access_level(id, person.id, parent_type)
       :resource_hub_document -> Document.get(person, id: id)
       :resource_hub_file -> File.get(person, id: id)
+      :resource_hub_link -> Link.get(person, id: id)
     end
   end
 
@@ -75,6 +76,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReaction do
       :comment -> check_comment_permissions(parent, parent_type)
       :resource_hub_document -> ResourceHubs.Permissions.check(parent.request_info.access_level, :can_comment_on_document)
       :resource_hub_file -> ResourceHubs.Permissions.check(parent.request_info.access_level, :can_comment_on_file)
+      :resource_hub_link -> ResourceHubs.Permissions.check(parent.request_info.access_level, :can_comment_on_link)
     end
   end
 
@@ -88,6 +90,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReaction do
       :milestone -> Projects.Permissions.check(parent.requester_access_level, :can_comment_on_milestone)
       :resource_hub_document -> ResourceHubs.Permissions.check(parent.requester_access_level, :can_comment_on_document)
       :resource_hub_file -> ResourceHubs.Permissions.check(parent.requester_access_level, :can_comment_on_file)
+      :resource_hub_link -> ResourceHubs.Permissions.check(parent.requester_access_level, :can_comment_on_link)
     end
   end
 
