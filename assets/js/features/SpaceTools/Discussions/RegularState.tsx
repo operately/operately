@@ -51,7 +51,7 @@ function DiscussionItem({ discussion }: { discussion: Discussion }) {
     <div className={className}>
       <Avatar person={discussion.author} size={30} />
       <DiscussionTitle title={discussion.title!} body={discussion.body!} />
-      <CommentsCountIndicator count={discussion.commentsCount} />
+      <CommentsCountIndicator count={discussion.commentsCount} size={16} />
     </div>
   );
 }
