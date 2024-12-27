@@ -12,6 +12,10 @@ export function NodeIcon({ node, size }: { node: Hub.ResourceHubNode; size: numb
     return <FolderIcon size={size} />;
   }
 
+  if (Hub.isLink(node)) {
+    return <FileIcon size={size} icon={Icons.IconLink} />;
+  }
+
   if (Hub.isImage(node)) {
     return <Thumbnail file={node.file!} size={size} />;
   }
