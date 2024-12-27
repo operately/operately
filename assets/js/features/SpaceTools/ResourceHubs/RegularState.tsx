@@ -4,6 +4,8 @@ import { ResourceHub, ResourceHubNode } from "@/models/resourceHubs";
 import { Title } from "../components";
 import { findSubtitle, NodeType } from "@/features/ResourceHub";
 import { NodeIcon } from "@/features/ResourceHub/NodeIcon";
+import { CommentsCountIndicator } from "@/features/Comments";
+import { findCommentsCount } from "@/features/ResourceHub/utils";
 
 interface Props {
   resourceHub: ResourceHub;
@@ -36,7 +38,9 @@ function NodeItem({ node }: { node: ResourceHubNode }) {
     "flex gap-2 px-2 py-1.5",
     "border-b border-stroke-base last:border-b-0 flex items-center",
   );
+
   const subtitle = findSubtitle(node.type as NodeType, node);
+  const commentsCount = findCommentsCount(node.type as NodeType, node);
 
   return (
     <div key={node.id} className={className}>
@@ -47,6 +51,7 @@ function NodeItem({ node }: { node: ResourceHubNode }) {
         <div className="font-bold truncate">{node.name}</div>
         <div className="truncate text-[10px]">{subtitle}</div>
       </div>
+      <CommentsCountIndicator count={commentsCount} size={16} />
     </div>
   );
 }

@@ -40,6 +40,10 @@ defmodule Operately.ResourceHubs.ResourceHub do
     Map.put(resource_hub, :potential_subscribers, subscribers)
   end
 
+  def load_comments_count(resource_hubs) when is_list(resource_hubs) do
+    Enum.map(resource_hubs, &load_comments_count/1)
+  end
+
   def load_comments_count(resource_hub = %__MODULE__{}) do
     nodes = Operately.ResourceHubs.Node.load_comments_count(resource_hub.nodes)
     Map.put(resource_hub, :nodes, nodes)

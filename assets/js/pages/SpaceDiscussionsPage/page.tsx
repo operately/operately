@@ -16,6 +16,7 @@ import { assertPresent } from "@/utils/assertions";
 import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
 import classNames from "classnames";
+import { CommentsCountIndicator } from "@/features/Comments";
 
 export function Page() {
   const { space, discussions } = useLoadedData();
@@ -104,7 +105,7 @@ function DiscussionList() {
   });
 
   return (
-    <div className="mt-4 flex flex-col">
+    <div className="p-6 flex flex-col">
       {sortedDiscussions.map((discussion) => (
         <DiscussionListItem key={discussion.id} discussion={discussion} />
       ))}
@@ -114,13 +115,14 @@ function DiscussionList() {
 
 function DiscussionListItem({ discussion }: { discussion: Discussion }) {
   assertPresent(discussion.author, "author must be present in discussion");
+  assertPresent(discussion.commentsCount, "commentsCount must be present in discussion");
 
   const path = Paths.discussionPath(discussion.id!);
 
   const className = classNames(
-    "flex items-start gap-4",
+    "flex gap-4",
     "py-3",
-    "last:border-b border-t border-stroke-base",
+    "last:border-b not-first:border-t border-stroke-base",
     "cursor-pointer hover:bg-surface-highlight",
     "px-1",
   );
@@ -134,7 +136,7 @@ function DiscussionListItem({ discussion }: { discussion: Discussion }) {
       <div className="flex-1 h-full">
         <div className="font-semibold leading-none mb-1">{discussion.title}</div>
         <div className="break-words">
-          <Summary jsonContent={discussion.body!} characterCount={250} />
+          <Summary jsonContent={discussion.body!} characterCount={150} />
         </div>
 
         <div className="flex gap-1 mt-1 text-xs">
@@ -144,6 +146,10 @@ function DiscussionListItem({ discussion }: { discussion: Discussion }) {
             <FormattedTime time={discussion.publishedAt!} format="relative-weekday-or-date" />
           </div>
         </div>
+      </div>
+
+      <div className="mt-8">
+        <CommentsCountIndicator count={discussion.commentsCount} size={28} />
       </div>
     </DivLink>
   );

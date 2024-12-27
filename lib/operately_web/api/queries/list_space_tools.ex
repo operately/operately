@@ -98,6 +98,7 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceTools do
       |> Filters.filter_by_view_access(me.id)
       |> Repo.all()
       |> ResourceHub.set_children_count()
+      |> ResourceHub.load_comments_count()
 
     {:ok, hubs}
   end

@@ -21,18 +21,12 @@ export function Page() {
     <Pages.Page title={folder.name!}>
       <Hub.NewFileModalsProvider folder={folder} resourceHub={folder.resourceHub}>
         <Hub.FileDragAndDropArea>
-          <Paper.Root>
+          <Paper.Root size="large">
             <PageNavigation />
 
             <Paper.Body minHeight="75vh">
-              <Paper.Header
-                actions={<Hub.AddFilesButton permissions={folder.permissions} />}
-                title={folder.name!}
-                layout="title-center-actions-left"
-              />
-
+              <Hub.Header resource={folder} />
               <Hub.NodesList folder={folder} type="folder" refetch={refresh} />
-
               <Hub.AddFolderModal folder={folder} resourceHub={folder.resourceHub} refresh={refresh} />
               <Hub.AddFileModal folder={folder} resourceHub={folder.resourceHub} refresh={refresh} />
             </Paper.Body>
@@ -51,6 +45,8 @@ function PageNavigation() {
 
   return (
     <Paper.Navigation testId="navigation">
+      <NavSpaceLink />
+      <Paper.NavSeparator />
       <Paper.NavItem linkTo={Paths.resourceHubPath(folder.resourceHub.id!)}>{folder.resourceHub.name}</Paper.NavItem>
       {folder.pathToFolder.map((folder) => (
         <React.Fragment key={folder.id}>
@@ -61,5 +57,15 @@ function PageNavigation() {
         </React.Fragment>
       ))}
     </Paper.Navigation>
+  );
+}
+
+function NavSpaceLink() {
+  const { folder } = useLoadedData();
+
+  return (
+    <Paper.NavItem linkTo={Paths.spacePath(folder.resourceHub!.space!.id!)}>
+      {folder.resourceHub!.space!.name}
+    </Paper.NavItem>
   );
 }
