@@ -12,6 +12,10 @@ export function NodeIcon({ node, size }: { node: Hub.ResourceHubNode; size: numb
     return <FolderIcon size={size} />;
   }
 
+  if (Hub.isLink(node)) {
+    return <FileIcon size={size} icon={Icons.IconLink} />;
+  }
+
   if (Hub.isImage(node)) {
     return <Thumbnail file={node.file!} size={size} />;
   }
@@ -43,7 +47,7 @@ export function NodeIcon({ node, size }: { node: Hub.ResourceHubNode; size: numb
   return <FileIcon size={size} icon={Icons.IconAlignJustified} />;
 }
 
-export function FolderIcon({ size }: { size: number }) {
+function FolderIcon({ size }: { size: number }) {
   return <Icons.IconFolderFilled size={size} className="text-sky-500" />;
 }
 
