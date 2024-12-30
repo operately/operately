@@ -6,7 +6,7 @@ import * as Paper from "@/components/PaperContainer";
 
 import { useLoadedData } from "./loader";
 import { GoalTree } from "@/features/goals/GoalTree";
-import { OptionsButton } from "@/components/Buttons";
+import { PrimaryButton } from "@/components/Buttons";
 import { Paths } from "@/routes/paths";
 import { SpacePageNavigation } from "@/components/SpacePageNavigation";
 
@@ -38,14 +38,17 @@ function Header() {
     <div className="flex items-center justify-between mb-8">
       <div className="font-extrabold text-3xl">Goals in {space.name}</div>
 
-      <OptionsButton
-        align="end"
+      <PrimaryButton
+        size="sm"
+        optionsAlign="end"
         options={[
           { label: "Add goal", action: () => navigate(newGoalPath), testId: "add-goal" },
           { label: "Add project", action: () => navigate(newProjectPath), testId: "add-project" },
         ]}
         testId="add-options"
-      />
+      >
+        Add
+      </PrimaryButton>
     </div>
   );
 }
