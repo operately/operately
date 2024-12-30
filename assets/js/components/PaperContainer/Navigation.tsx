@@ -1,7 +1,12 @@
 import * as React from "react";
 import * as Icons from "@tabler/icons-react";
 
+import { Space } from "@/models/spaces";
+import { ResourceHub, ResourceHubFolder } from "@/models/resourceHubs";
+
+import { Paths } from "@/routes/paths";
 import { Link } from "@/components/Link";
+import { truncateString } from "@/utils/strings";
 import classNames from "classnames";
 
 export function Navigation({ children, testId }: { children: React.ReactNode; testId?: string }) {
@@ -52,4 +57,16 @@ export function NavigateBack({ to, title }) {
       </Link>
     </div>
   );
+}
+
+export function NavSpaceLink({ space }: { space: Space }) {
+  return <NavItem linkTo={Paths.spacePath(space.id!)}>{space.name}</NavItem>;
+}
+
+export function NavResourceHubLink({ resourceHub }: { resourceHub: ResourceHub }) {
+  return <NavItem linkTo={Paths.resourceHubPath(resourceHub.id!)}>{resourceHub.name}</NavItem>;
+}
+
+export function NavFolderLink({ folder }: { folder: ResourceHubFolder }) {
+  return <NavItem linkTo={Paths.resourceHubFolderPath(folder.id!)}>{truncateString(folder.name!, 20)}</NavItem>;
 }
