@@ -4,10 +4,7 @@ import * as Reactions from "@/models/reactions";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
-import FormattedTime from "@/components/FormattedTime";
 import RichContent from "@/components/RichContent";
-import Avatar from "@/components/Avatar";
-import { TextSeparator } from "@/components/TextSeparator";
 import { Spacer } from "@/components/Spacer";
 import { Paths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
