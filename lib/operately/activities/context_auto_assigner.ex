@@ -127,6 +127,7 @@ defmodule Operately.Activities.ContextAutoAssigner do
     "resource_hub_parent_folder_edited",
     "resource_hub_link_created",
     "resource_hub_link_commented",
+    "resource_hub_link_deleted",
   ]
 
   def assign_context(multi) do
