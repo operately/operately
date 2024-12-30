@@ -1,26 +1,39 @@
 import * as React from "react";
+import * as Pages from "@/components/Pages";
+import * as Paper from "@/components/PaperContainer";
 import * as Icons from "@tabler/icons-react";
 
-import { Section, SectionTitle } from "./Section";
 import { Tooltip } from "@/components/Tooltip";
 
-export function Tooltips() {
+export const loader = Pages.emptyLoader;
+
+export function Page() {
   return (
-    <Section>
-      <SectionTitle>Tooltips</SectionTitle>
+    <Pages.Page title={"Tooltips"}>
+      <Paper.Root>
+        <Paper.Navigation>
+          <Paper.NavItem linkTo="/__design__">Lobby</Paper.NavItem>
+          <Paper.NavSeparator />
+          <Paper.NavItem linkTo="/__design__">Design System</Paper.NavItem>
+        </Paper.Navigation>
 
-      <div className="max-w-2xl mt-2 mb-10">
-        Operately uses tooltips to provide additional information about an element when the user hovers over it.
-        Tooltips should be used sparingly and only when the information is not immediately clear from the element
-        itself.
-      </div>
+        <Paper.Body>
+          <Paper.Header title="Tooltips" />
 
-      <div className="flex items-center gap-4">
-        <AnyoneOnTheInternetTooltip />
-        <PrivateIndicatorTooltip />
-        <SecretIndicatorTooltip />
-      </div>
-    </Section>
+          <div className="mt-2 mb-10">
+            Operately uses tooltips to provide additional information about an element when the user hovers over it.
+            Tooltips should be used sparingly and only when the information is not immediately clear from the element
+            itself.
+          </div>
+
+          <div className="flex items-center gap-4">
+            <AnyoneOnTheInternetTooltip />
+            <PrivateIndicatorTooltip />
+            <SecretIndicatorTooltip />
+          </div>
+        </Paper.Body>
+      </Paper.Root>
+    </Pages.Page>
   );
 }
 
