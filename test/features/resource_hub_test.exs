@@ -50,19 +50,6 @@ defmodule Features.Features.ResourceHubTest do
       |> Steps.assert_items_count(%{index: 0, items_count: "1 item"})
     end
 
-    feature "folder navigation works", ctx do
-      ctx
-      |> Steps.given_nested_folders_exist()
-      |> Steps.visit_folder_page(:five)
-      |> Steps.assert_navigation_links(["Resource hub", "one", "two", "three", "four"])
-      |> Steps.navigate_back("three")
-      |> Steps.refute_navigation_links(["three", "four"])
-      |> Steps.assert_navigation_links(["Resource hub", "one", "two"])
-      |> Steps.navigate_back("one")
-      |> Steps.refute_navigation_links(["one", "two"])
-      |> Steps.assert_navigation_links(["Resource hub"])
-    end
-
     feature "folder created feed event", ctx do
       folder = "Documents"
 
@@ -208,6 +195,34 @@ defmodule Features.Features.ResourceHubTest do
       |> Steps.assert_file_commented_on_space_feed()
       |> Steps.assert_file_commented_notification_sent()
       |> Steps.assert_file_commented_email_sent()
+    end
+  end
+
+  describe "navigation" do
+    feature "folder navigation works", ctx do
+      ctx
+      |> Steps.given_nested_folders_exist()
+      |> Steps.visit_folder_page(:five)
+      |> Steps.assert_navigation_links(["Resource hub", "one", "two", "three", "four"])
+      |> Steps.navigate_back("three")
+      |> Steps.refute_navigation_links(["three", "four"])
+      |> Steps.assert_navigation_links(["Resource hub", "one", "two"])
+      |> Steps.navigate_back("one")
+      |> Steps.refute_navigation_links(["one", "two"])
+      |> Steps.assert_navigation_links(["Resource hub"])
+    end
+
+    feature "document navigation works", ctx do
+      ctx
+      |> Steps.given_document_within_nested_folders_exists()
+      |> Steps.visit_document_page()
+      |> Steps.assert_navigation_links(["Resource hub", "one", "two", "three", "four", "five"])
+      |> Steps.navigate_back("four")
+      |> Steps.refute_navigation_links(["four", "five"])
+      |> Steps.assert_navigation_links(["Resource hub", "one", "two", "three"])
+      |> Steps.navigate_back("one")
+      |> Steps.refute_navigation_links(["one", "two", "three"])
+      |> Steps.assert_navigation_links(["Resource hub"])
     end
   end
 end

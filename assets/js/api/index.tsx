@@ -1110,6 +1110,7 @@ export interface ResourceHubDocument {
   potentialSubscribers?: Subscriber[] | null;
   subscriptionList?: SubscriptionList | null;
   notifications?: Notification[] | null;
+  pathToDocument?: ResourceHubFolder[] | null;
 }
 
 export interface ResourceHubFile {
@@ -1831,6 +1832,7 @@ export interface GetResourceHubDocumentInput {
   includeSubscriptionsList?: boolean | null;
   includePotentialSubscribers?: boolean | null;
   includeUnreadNotifications?: boolean | null;
+  includePathToDocument?: boolean | null;
 }
 
 export interface GetResourceHubDocumentResult {

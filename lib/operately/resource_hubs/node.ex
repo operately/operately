@@ -72,4 +72,48 @@ defmodule Operately.ResourceHubs.Node do
       end
     end)
   end
+
+  @doc """
+  Takes a resource ID and the name of the resource table and
+  recursively queries all the parent folders of the resource.
+
+  Example:
+    find_all_parent_folders(folder.id, "resource_folders")
+    find_all_parent_folders(document.id, "resource_documents")
+  """
+  def find_all_parent_folders(resource_id, resource_table) do
+    allowed_tables = ["resource_folders", "resource_documents", "resource_links"]
+
+    unless resource_table in allowed_tables do
+      raise ArgumentError, "#{resource_table} is not an allowed table. Allowed tables: #{allowed_tables |> Enum.join(", ")}"
+    end
+
+    q = """
+      WITH RECURSIVE folder_hierarchy AS (
+        SELECT r.id, n.parent_folder_id, n.name
+        FROM #{resource_table} r
+        JOIN resource_nodes n ON r.node_id = n.id
+        WHERE r.id = $1
+
+        UNION ALL
+
+        SELECT f.id, n.parent_folder_id, n.name
+        FROM resource_folders f
+        JOIN resource_nodes n ON f.node_id = n.id
+        JOIN folder_hierarchy fh ON f.id = fh.parent_folder_id
+
+      )
+      SELECT id, name FROM folder_hierarchy WHERE id != $1;
+    """
+
+    {:ok, id} = Ecto.UUID.dump(resource_id)
+    {:ok, %{rows: rows}} = Operately.Repo.query(q, [id])
+
+    rows
+    |> Enum.reverse()
+    |> Enum.map(fn [id, name] ->
+      {:ok, str_id} = Ecto.UUID.cast(id)
+      %Operately.ResourceHubs.Folder{id: str_id, node: %{name: name, parent_folder_id: nil}}
+    end)
+  end
 end

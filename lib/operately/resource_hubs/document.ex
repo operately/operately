@@ -22,6 +22,7 @@ defmodule Operately.ResourceHubs.Document do
     field :permissions, :any, virtual: true
     field :notifications, :any, virtual: true, default: []
     field :comments_count, :integer, virtual: true
+    field :path_to_document, :any, virtual: true
 
     timestamps()
     soft_delete()
@@ -74,5 +75,11 @@ defmodule Operately.ResourceHubs.Document do
   def set_permissions(document = %__MODULE__{}) do
     perms = Operately.ResourceHubs.Permissions.calculate(document.request_info.access_level)
     Map.put(document, :permissions, perms)
+  end
+
+  def find_path_to_document(document = %__MODULE__{}) do
+    path = Operately.ResourceHubs.Node.find_all_parent_folders(document.id, "resource_documents")
+
+    Map.put(document, :path_to_document, path)
   end
 end
