@@ -647,6 +647,7 @@ defmodule OperatelyWeb.Api.Types do
     field :potential_subscribers, list_of(:subscriber)
     field :subscription_list, :subscription_list
     field :notifications, list_of(:notification)
+    field :path_to_document, list_of(:resource_hub_folder)
   end
 
   object :resource_hub_file do
