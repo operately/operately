@@ -4,10 +4,7 @@ import * as Reactions from "@/models/reactions";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
-import FormattedTime from "@/components/FormattedTime";
 import RichContent from "@/components/RichContent";
-import Avatar from "@/components/Avatar";
-import { TextSeparator } from "@/components/TextSeparator";
 import { Spacer } from "@/components/Spacer";
 import { Paths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
@@ -18,6 +15,7 @@ import { useClearNotificationsOnLoad } from "@/features/notifications";
 
 import { useLoadedData } from "./loader";
 import { Options } from "./Options";
+import { DocumentTitle } from "@/features/documents/DocumentTitle";
 
 export function Page() {
   const { document } = useLoadedData();
@@ -67,17 +65,12 @@ function Title() {
   assertPresent(document.author, "author must be present in document");
 
   return (
-    <div className="flex flex-col items-center">
-      <Paper.Header title={document.name!} />
-      <div className="flex flex-wrap justify-center gap-1 items-center mt-2 text-content-accent font-medium text-sm sm:text-[16px]">
-        <div className="flex items-center gap-1">
-          <Avatar person={document.author} size="tiny" /> {document.author.fullName}
-        </div>
-
-        <TextSeparator />
-        <FormattedTime time={document.insertedAt!} format="relative-time-or-date" />
-      </div>
-    </div>
+    <DocumentTitle
+      title={document.name!}
+      author={document.author}
+      publishedAt={document.insertedAt!}
+      state="published"
+    />
   );
 }
 
