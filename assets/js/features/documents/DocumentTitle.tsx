@@ -15,6 +15,7 @@ interface TitleProps {
 
 export function DocumentTitle({ title, author, state, publishedAt }: TitleProps) {
   verifyState(state);
+  verifyPublishedAt(state, publishedAt);
 
   return (
     <div className="flex flex-col items-center">
@@ -38,5 +39,11 @@ export function DocumentTitle({ title, author, state, publishedAt }: TitleProps)
 function verifyState(state: string) {
   if (!validStates.includes(state)) {
     throw new Error(`Invalid state: ${state}`);
+  }
+}
+
+function verifyPublishedAt(state: string, publishedAt?: string) {
+  if (state === "published" && !publishedAt) {
+    throw new Error("Published documents must have a publishedAt date");
   }
 }
