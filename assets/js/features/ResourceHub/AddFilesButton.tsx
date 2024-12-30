@@ -2,7 +2,7 @@ import React from "react";
 
 import { IconFile, IconFolder, IconLink, IconUpload } from "@tabler/icons-react";
 import { ResourceHubPermissions } from "@/models/resourceHubs";
-import { OptionsButton } from "@/components/Buttons";
+import { PrimaryButton } from "@/components/Buttons";
 
 import { useNewFileModalsContext } from "./contexts/NewFileModalsContext";
 
@@ -11,8 +11,9 @@ export function AddFilesButton({ permissions }: { permissions: ResourceHubPermis
 
   return (
     <div className="w-min mt-2">
-      <OptionsButton
-        align="start"
+      <PrimaryButton
+        size="sm"
+        optionsAlign="start"
         options={[
           {
             icon: IconFile,
@@ -48,7 +49,9 @@ export function AddFilesButton({ permissions }: { permissions: ResourceHubPermis
           },
         ]}
         testId="add-options"
-      />
+      >
+        Add
+      </PrimaryButton>
     </div>
   );
 }

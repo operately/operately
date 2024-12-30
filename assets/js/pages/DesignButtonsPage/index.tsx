@@ -110,8 +110,38 @@ export function Page() {
               Button text
             </SecondaryButton>
           </div>
+
+          <h3 className="font-bold mt-8 mb-4">Buttons with menu</h3>
+
+          <div className="flex items-center space-x-4 w-auto mt-4">
+            <PrimaryButton size="xxs" options={buttonOptions}>
+              Add
+            </PrimaryButton>
+
+            <SecondaryButton size="xs" options={buttonOptions}>
+              New
+            </SecondaryButton>
+
+            <GhostButton size="sm" options={buttonOptions}>
+              New
+            </GhostButton>
+
+            <PrimaryButton size="base" options={buttonOptions}>
+              New
+            </PrimaryButton>
+
+            <SecondaryButton size="lg" options={buttonOptions}>
+              New
+            </SecondaryButton>
+          </div>
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
   );
 }
+
+const buttonOptions = [
+  { label: "Option 1", action: () => console.log("Option 1") },
+  { label: "Option 2", action: () => console.log("Option 2") },
+  { label: "Option 3", action: () => console.log("Option 3") },
+];
