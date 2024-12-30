@@ -1,29 +1,43 @@
 import * as React from "react";
-import * as Icons from "@tabler/icons-react";
+import * as Pages from "@/components/Pages";
+import * as Paper from "@/components/PaperContainer";
 import * as People from "@/models/people";
+import * as Icons from "@tabler/icons-react";
 
-import { Section, SectionTitle } from "./Section";
 import Forms from "@/components/Forms";
 import { SecondaryButton } from "@/components/Buttons";
 
-export function FormExamples() {
+export const loader = Pages.emptyLoader;
+
+export function Page() {
   return (
-    <Section>
-      <SectionTitle>Forms</SectionTitle>
+    <Pages.Page title={"Forms"}>
+      <Paper.Root>
+        <Paper.Navigation>
+          <Paper.NavItem linkTo="/__design__">Lobby</Paper.NavItem>
+          <Paper.NavSeparator />
+          <Paper.NavItem linkTo="/__design__">Design System</Paper.NavItem>
+        </Paper.Navigation>
 
-      <div className="max-w-2xl mt-2 mb-10">
-        The components/Forms directory contains a collection of form-related components that can be used to build forms.
-      </div>
+        <Paper.Body>
+          <Paper.Header title="Forms" />
 
-      <div className="flex flex-col gap-10">
-        <VerticalForm />
-        <HorizontalForm />
-        <HorizontalFormCustomized />
-        <GridForm />
-        <ArrayForm />
-        <RichTextForm />
-      </div>
-    </Section>
+          <div className="mt-2 mb-10">
+            The components/Forms directory contains a collection of form-related components that can be used to build
+            forms.
+          </div>
+
+          <div className="flex flex-col gap-10">
+            <VerticalForm />
+            <HorizontalForm />
+            <HorizontalFormCustomized />
+            <GridForm />
+            <ArrayForm />
+            <RichTextForm />
+          </div>
+        </Paper.Body>
+      </Paper.Root>
+    </Pages.Page>
   );
 }
 

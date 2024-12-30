@@ -15,7 +15,15 @@ import * as CompanyAdminRestoreSuspendedPeoplePage from "./CompanyAdminRestoreSu
 import * as CompanyAdminTrustedEmailDomainsPage from "./CompanyAdminTrustedEmailDomainsPage";
 import * as CompanyPermissionsPage from "./CompanyPermissionsPage";
 import * as CompanyRenamePage from "./CompanyRenamePage";
+import * as DesignAvatarsPage from "./DesignAvatarsPage";
+import * as DesignButtonsPage from "./DesignButtonsPage";
+import * as DesignCalloutsPage from "./DesignCalloutsPage";
+import * as DesignColorsPage from "./DesignColorsPage";
+import * as DesignFormsPage from "./DesignFormsPage";
+import * as DesignLinksPage from "./DesignLinksPage";
+import * as DesignMenusPage from "./DesignMenusPage";
 import * as DesignPage from "./DesignPage";
+import * as DesignTooltipsPage from "./DesignTooltipsPage";
 import * as DiscussionDraftsPage from "./DiscussionDraftsPage";
 import * as DiscussionEditPage from "./DiscussionEditPage";
 import * as DiscussionNewPage from "./DiscussionNewPage";
@@ -168,10 +176,50 @@ export default {
     loader: CompanyRenamePage.loader,
     Page: CompanyRenamePage.Page,
   },
+  DesignAvatarsPage: {
+    name: "DesignAvatarsPage",
+    loader: DesignAvatarsPage.loader,
+    Page: DesignAvatarsPage.Page,
+  },
+  DesignButtonsPage: {
+    name: "DesignButtonsPage",
+    loader: DesignButtonsPage.loader,
+    Page: DesignButtonsPage.Page,
+  },
+  DesignCalloutsPage: {
+    name: "DesignCalloutsPage",
+    loader: DesignCalloutsPage.loader,
+    Page: DesignCalloutsPage.Page,
+  },
+  DesignColorsPage: {
+    name: "DesignColorsPage",
+    loader: DesignColorsPage.loader,
+    Page: DesignColorsPage.Page,
+  },
+  DesignFormsPage: {
+    name: "DesignFormsPage",
+    loader: DesignFormsPage.loader,
+    Page: DesignFormsPage.Page,
+  },
+  DesignLinksPage: {
+    name: "DesignLinksPage",
+    loader: DesignLinksPage.loader,
+    Page: DesignLinksPage.Page,
+  },
+  DesignMenusPage: {
+    name: "DesignMenusPage",
+    loader: DesignMenusPage.loader,
+    Page: DesignMenusPage.Page,
+  },
   DesignPage: {
     name: "DesignPage",
     loader: DesignPage.loader,
     Page: DesignPage.Page,
+  },
+  DesignTooltipsPage: {
+    name: "DesignTooltipsPage",
+    loader: DesignTooltipsPage.loader,
+    Page: DesignTooltipsPage.Page,
   },
   DiscussionDraftsPage: {
     name: "DiscussionDraftsPage",
