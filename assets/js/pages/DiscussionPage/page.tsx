@@ -6,26 +6,26 @@ import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import * as Reactions from "@/models/reactions";
 import * as Discussions from "@/models/discussions";
 
-import Avatar from "@/components/Avatar";
 import RichContent from "@/components/RichContent";
 import FormattedTime from "@/components/FormattedTime";
 
-import { TextSeparator } from "@/components/TextSeparator";
 import { Spacer } from "@/components/Spacer";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { CommentSection, useComments } from "@/features/CommentSection";
 
-import { useLoadedData } from "./loader";
-import { useMe } from "@/contexts/CurrentCompanyContext";
 import { Paths, compareIds } from "@/routes/paths";
 import { CurrentSubscriptions } from "@/features/Subscriptions";
-import { useClearNotificationsOnLoad } from "@/features/notifications";
-import { assertPresent } from "@/utils/assertions";
 import { GhostButton, PrimaryButton } from "@/components/Buttons";
 import { ActionLink } from "@/components/Link";
 import { CopyToClipboard } from "@/components/CopyToClipboard";
+import { DocumentTitle } from "@/features/documents/DocumentTitle";
+
+import { useMe } from "@/contexts/CurrentCompanyContext";
 import { match } from "ts-pattern";
 import { useNavigate } from "react-router-dom";
+import { assertPresent } from "@/utils/assertions";
+import { useLoadedData } from "./loader";
+import { useClearNotificationsOnLoad } from "@/features/notifications";
 
 export function Page() {
   const { discussion } = useLoadedData();
@@ -107,23 +107,12 @@ function DiscussionTitle() {
   const { discussion } = useLoadedData();
 
   return (
-    <div className="flex flex-col items-center">
-      <div className="text-content-accent text-xl sm:text-2xl md:text-3xl font-extrabold text-center">
-        {discussion.title}
-      </div>
-      <div className="flex flex-wrap justify-center gap-1 items-center mt-2 text-content-accent font-medium text-sm sm:text-[16px]">
-        <div className="flex items-center gap-1">
-          <Avatar person={discussion.author!} size="tiny" /> {discussion.author!.fullName}
-        </div>
-
-        {discussion.state !== "draft" && (
-          <>
-            <TextSeparator />
-            <FormattedTime time={discussion.publishedAt!} format="relative-time-or-date" />
-          </>
-        )}
-      </div>
-    </div>
+    <DocumentTitle
+      title={discussion.title!}
+      author={discussion.author!}
+      state={discussion.state!}
+      publishedAt={discussion.publishedAt!}
+    />
   );
 }
 
