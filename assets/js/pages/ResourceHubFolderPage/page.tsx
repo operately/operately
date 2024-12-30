@@ -6,8 +6,6 @@ import * as Hub from "@/features/ResourceHub";
 
 import { useLoadedData, useRefresh } from "./loader";
 import { assertPresent } from "@/utils/assertions";
-import { Paths } from "@/routes/paths";
-import { truncateString } from "@/utils/strings";
 
 export function Page() {
   const { folder } = useLoadedData();
@@ -41,31 +39,15 @@ function PageNavigation() {
   const { folder } = useLoadedData();
 
   assertPresent(folder.resourceHub, "resourceHub must be present in folder");
+  assertPresent(folder.resourceHub.space, "space must be present in folder.resourceHub");
   assertPresent(folder.pathToFolder, "pathToFolder must be present in folder");
 
   return (
     <Paper.Navigation testId="navigation">
-      <NavSpaceLink />
+      <Paper.NavSpaceLink space={folder.resourceHub.space} />
       <Paper.NavSeparator />
-      <Paper.NavItem linkTo={Paths.resourceHubPath(folder.resourceHub.id!)}>{folder.resourceHub.name}</Paper.NavItem>
-      {folder.pathToFolder.map((folder) => (
-        <React.Fragment key={folder.id}>
-          <Paper.NavSeparator />
-          <Paper.NavItem linkTo={Paths.resourceHubFolderPath(folder.id!)}>
-            {truncateString(folder.name!, 20)}
-          </Paper.NavItem>
-        </React.Fragment>
-      ))}
+      <Paper.NavResourceHubLink resourceHub={folder.resourceHub} />
+      <Hub.NestedFolderNavigation folders={folder.pathToFolder} />
     </Paper.Navigation>
-  );
-}
-
-function NavSpaceLink() {
-  const { folder } = useLoadedData();
-
-  return (
-    <Paper.NavItem linkTo={Paths.spacePath(folder.resourceHub!.space!.id!)}>
-      {folder.resourceHub!.space!.name}
-    </Paper.NavItem>
   );
 }

@@ -26,6 +26,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ResourceHubs.Document do
       potential_subscribers: OperatelyWeb.Api.Serializer.serialize(document.potential_subscribers),
       subscription_list: OperatelyWeb.Api.Serializer.serialize(document.subscription_list),
       notifications: OperatelyWeb.Api.Serializer.serialize(document.notifications),
+      path_to_document: OperatelyWeb.Api.Serializer.serialize(document.path_to_document),
     }
   end
 end
