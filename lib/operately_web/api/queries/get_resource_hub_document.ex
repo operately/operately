@@ -14,6 +14,7 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubDocument do
     field :include_subscriptions_list, :boolean
     field :include_potential_subscribers, :boolean
     field :include_unread_notifications, :boolean
+    field :include_path_to_document, :boolean
   end
 
   outputs do
@@ -59,6 +60,7 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubDocument do
       include_permissions: &Document.set_permissions/1,
       include_unread_notifications: load_unread_notifications(me),
       include_potential_subscribers: &Document.load_potential_subscribers/1,
+      include_path_to_document: &Document.find_path_to_document/1,
     ])
   end
 
