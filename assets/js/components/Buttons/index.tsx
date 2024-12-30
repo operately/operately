@@ -4,8 +4,6 @@ import { BaseButtonProps, UnstyledButton } from "./UnstalyedButton";
 import { Spinner } from "./Spinner";
 import { calcClassName } from "./calcClassNames";
 
-export { OptionsButton } from "./OptionsButton";
-
 export function PrimaryButton(props: BaseButtonProps) {
   const className = calcClassName(props, {
     always: "border border-accent-1",

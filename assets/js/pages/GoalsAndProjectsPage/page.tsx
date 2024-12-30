@@ -5,7 +5,7 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
 import { GoalTree } from "@/features/goals/GoalTree";
-import { OptionsButton } from "@/components/Buttons";
+import { PrimaryButton } from "@/components/Buttons";
 import { Paths } from "@/routes/paths";
 import { useLoadedData } from "./loader";
 import classNames from "classnames";
@@ -42,14 +42,16 @@ function Header() {
     <div className="flex items-center justify-between mb-8">
       <h1 className="text-3xl font-bold mb-2">Goals & Projects</h1>
 
-      <OptionsButton
-        align="end"
+      <PrimaryButton
+        optionsAlign="end"
         options={[
           { label: "Add goal", action: () => navigate(newGoalPath), testId: "add-goal" },
           { label: "Add project", action: () => navigate(newProjectPath), testId: "add-project" },
         ]}
         testId="add-options"
-      />
+      >
+        Add
+      </PrimaryButton>
     </div>
   );
 }
