@@ -26,6 +26,17 @@ defmodule Operately.Support.Features.ResourceHubSteps do
     |> Factory.add_folder(:five, :hub, :four)
   end
 
+  step :give_document_within_nested_folders_exists, ctx do
+    ctx
+    |> Factory.add_resource_hub(:hub, :space, :creator)
+    |> Factory.add_folder(:one, :hub)
+    |> Factory.add_folder(:two, :hub, :one)
+    |> Factory.add_folder(:three, :hub, :two)
+    |> Factory.add_folder(:four, :hub, :three)
+    |> Factory.add_folder(:five, :hub, :four)
+    |> Factory.add_document(:document, :hub, folder: :five)
+  end
+
   step :given_file_exists, ctx do
     {:ok, hub} = ResourceHub.get(:system, space_id: ctx.space.id)
 

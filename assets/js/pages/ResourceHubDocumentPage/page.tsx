@@ -9,12 +9,12 @@ import RichContent from "@/components/RichContent";
 import Avatar from "@/components/Avatar";
 import { TextSeparator } from "@/components/TextSeparator";
 import { Spacer } from "@/components/Spacer";
-import { Paths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { CommentSection, useComments } from "@/features/CommentSection";
 import { CurrentSubscriptions } from "@/features/Subscriptions";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
+import { NestedFolderNavigation } from "@/features/ResourceHub";
 
 import { useLoadedData } from "./loader";
 import { Options } from "./Options";
@@ -48,15 +48,15 @@ function Navigation() {
   const { document } = useLoadedData();
 
   assertPresent(document.resourceHub, "resourceHub must be present in document");
-
-  const name = document.parentFolder?.name || document.resourceHub.name;
-  const path = document.parentFolder
-    ? Paths.resourceHubFolderPath(document.parentFolder.id!)
-    : Paths.resourceHubPath(document.resourceHub.id!);
+  assertPresent(document.resourceHub.space, "space must be present in document.resourceHub");
+  assertPresent(document.pathToDocument, "pathToDocument must be present in document");
 
   return (
-    <Paper.Navigation>
-      <Paper.NavItem linkTo={path}>{name}</Paper.NavItem>
+    <Paper.Navigation testId="navigation">
+      <Paper.NavSpaceLink space={document.resourceHub.space} />
+      <Paper.NavSeparator />
+      <Paper.NavResourceHubLink resourceHub={document.resourceHub} />
+      <NestedFolderNavigation folders={document.pathToDocument} />
     </Paper.Navigation>
   );
 }
