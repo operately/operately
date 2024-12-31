@@ -82,7 +82,7 @@ defmodule Operately.ResourceHubs.Node do
     find_all_parent_folders(document.id, "resource_documents")
   """
   def find_all_parent_folders(resource_id, resource_table) do
-    allowed_tables = ["resource_folders", "resource_documents", "resource_links"]
+    allowed_tables = ["resource_folders", "resource_documents", "resource_links", "resource_files"]
 
     unless resource_table in allowed_tables do
       raise ArgumentError, "#{resource_table} is not an allowed table. Allowed tables: #{allowed_tables |> Enum.join(", ")}"

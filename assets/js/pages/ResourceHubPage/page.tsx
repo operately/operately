@@ -41,7 +41,7 @@ function PageNavigation() {
   assertPresent(resourceHub.space, "space must be present in resourceHub");
 
   return (
-    <Paper.Navigation>
+    <Paper.Navigation testId="navigation">
       <Paper.NavItem linkTo={Paths.spacePath(resourceHub.space.id!)}>{resourceHub.space.name}</Paper.NavItem>
     </Paper.Navigation>
   );

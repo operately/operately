@@ -1131,6 +1131,7 @@ export interface ResourceHubFile {
   type?: string | null;
   size?: number | null;
   blob?: Blob | null;
+  pathToFile?: ResourceHubFolder[] | null;
 }
 
 export interface ResourceHubFolder {
@@ -1162,6 +1163,7 @@ export interface ResourceHubLink {
   insertedAt?: string | null;
   permissions?: ResourceHubPermissions | null;
   reactions?: Reaction[] | null;
+  pathToLink?: ResourceHubFolder[] | null;
 }
 
 export interface ResourceHubNode {
@@ -1848,6 +1850,7 @@ export interface GetResourceHubFileInput {
   includePermissions?: boolean | null;
   includeSubscriptionsList?: boolean | null;
   includePotentialSubscribers?: boolean | null;
+  includePathToFile?: boolean | null;
 }
 
 export interface GetResourceHubFileResult {
@@ -1878,6 +1881,7 @@ export interface GetResourceHubLinkInput {
   includePermissions?: boolean | null;
   includeSubscriptionsList?: boolean | null;
   includePotentialSubscribers?: boolean | null;
+  includePathToLink?: boolean | null;
 }
 
 export interface GetResourceHubLinkResult {
@@ -2365,6 +2369,14 @@ export interface DeleteResourceHubFolderInput {
 }
 
 export interface DeleteResourceHubFolderResult {
+  success?: boolean | null;
+}
+
+export interface DeleteResourceHubLinkInput {
+  linkId?: Id | null;
+}
+
+export interface DeleteResourceHubLinkResult {
   success?: boolean | null;
 }
 
@@ -3238,6 +3250,10 @@ export class ApiClient {
     return this.post("/delete_resource_hub_folder", input);
   }
 
+  async deleteResourceHubLink(input: DeleteResourceHubLinkInput): Promise<DeleteResourceHubLinkResult> {
+    return this.post("/delete_resource_hub_link", input);
+  }
+
   async disconnectGoalFromProject(input: DisconnectGoalFromProjectInput): Promise<DisconnectGoalFromProjectResult> {
     return this.post("/disconnect_goal_from_project", input);
   }
@@ -3741,6 +3757,9 @@ export async function deleteResourceHubFolder(
   input: DeleteResourceHubFolderInput,
 ): Promise<DeleteResourceHubFolderResult> {
   return defaultApiClient.deleteResourceHubFolder(input);
+}
+export async function deleteResourceHubLink(input: DeleteResourceHubLinkInput): Promise<DeleteResourceHubLinkResult> {
+  return defaultApiClient.deleteResourceHubLink(input);
 }
 export async function disconnectGoalFromProject(
   input: DisconnectGoalFromProjectInput,
@@ -4382,6 +4401,15 @@ export function useDeleteResourceHubFolder(): UseMutationHookResult<
   );
 }
 
+export function useDeleteResourceHubLink(): UseMutationHookResult<
+  DeleteResourceHubLinkInput,
+  DeleteResourceHubLinkResult
+> {
+  return useMutation<DeleteResourceHubLinkInput, DeleteResourceHubLinkResult>((input) =>
+    defaultApiClient.deleteResourceHubLink(input),
+  );
+}
+
 export function useDisconnectGoalFromProject(): UseMutationHookResult<
   DisconnectGoalFromProjectInput,
   DisconnectGoalFromProjectResult
@@ -4917,6 +4945,8 @@ export default {
   useDeleteResourceHubFile,
   deleteResourceHubFolder,
   useDeleteResourceHubFolder,
+  deleteResourceHubLink,
+  useDeleteResourceHubLink,
   disconnectGoalFromProject,
   useDisconnectGoalFromProject,
   editComment,

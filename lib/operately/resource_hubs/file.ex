@@ -23,6 +23,7 @@ defmodule Operately.ResourceHubs.File do
     field :potential_subscribers, :any, virtual: true
     field :permissions, :any, virtual: true
     field :comments_count, :integer, virtual: true
+    field :path_to_file, :any, virtual: true
 
     timestamps()
     soft_delete()
@@ -57,5 +58,11 @@ defmodule Operately.ResourceHubs.File do
   def set_permissions(file = %__MODULE__{}) do
     perms = Operately.ResourceHubs.Permissions.calculate(file.request_info.access_level)
     Map.put(file, :permissions, perms)
+  end
+
+  def find_path_to_file(file = %__MODULE__{}) do
+    path = Operately.ResourceHubs.Node.find_all_parent_folders(file.id, "resource_files")
+
+    Map.put(file, :path_to_file, path)
   end
 end
