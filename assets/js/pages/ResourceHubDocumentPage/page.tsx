@@ -25,10 +25,10 @@ export function Page() {
 
   return (
     <Pages.Page title={document.name!}>
-      <Paper.Root>
+      <Paper.Root size="large">
         <Navigation />
 
-        <Paper.Body>
+        <Paper.Body minHeight="600px" className="lg:px-28">
           <Options />
 
           <Title />
