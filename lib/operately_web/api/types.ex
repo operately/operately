@@ -484,6 +484,12 @@ defmodule OperatelyWeb.Api.Types do
     field :link, :resource_hub_link
   end
 
+  object :activity_content_resource_hub_link_deleted do
+    field :resource_hub, :resource_hub
+    field :space, :space
+    field :link, :resource_hub_link
+  end
+
   object :activity_content_project_discussion_submitted do
     field :project_id, :string
     field :discussion_id, :string
