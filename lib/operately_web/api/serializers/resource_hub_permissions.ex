@@ -11,6 +11,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ResourceHubs.Permissions d
       can_delete_document: permissions.can_delete_document,
       can_delete_file: permissions.can_delete_file,
       can_delete_folder: permissions.can_delete_folder,
+      can_delete_link: permissions.can_delete_link,
       can_edit_document: permissions.can_edit_document,
       can_edit_parent_folder: permissions.can_edit_parent_folder,
       can_edit_file: permissions.can_edit_file,

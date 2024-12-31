@@ -611,6 +611,7 @@ defmodule OperatelyWeb.Api.Types do
     field :can_delete_document, :boolean
     field :can_delete_file, :boolean
     field :can_delete_folder, :boolean
+    field :can_delete_link, :boolean
     field :can_edit_document, :boolean
     field :can_edit_parent_folder, :boolean
     field :can_edit_file, :boolean

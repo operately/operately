@@ -17,6 +17,7 @@ import { CurrentSubscriptions } from "@/features/Subscriptions";
 import { CommentSection, useComments } from "@/features/CommentSection";
 import { NestedFolderNavigation } from "@/features/ResourceHub";
 
+import { Options } from "./Options";
 import { useLoadedData } from "./loader";
 
 export function Page() {
@@ -29,6 +30,8 @@ export function Page() {
 
         <Paper.Body>
           <Title />
+          <Options />
+
           <Url />
           <LinkReactions />
           <LinkComments />
