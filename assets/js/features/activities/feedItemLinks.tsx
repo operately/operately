@@ -37,3 +37,10 @@ export const spaceLink = (space: api.Space) => {
 
   return <Link to={path}>{name}</Link>;
 };
+
+export const resourceHubLink = (hub: api.ResourceHub) => {
+  const path = Paths.resourceHubPath(hub.id!);
+  const name = hub.name!;
+
+  return <Link to={path}>{name}</Link>;
+};

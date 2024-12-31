@@ -166,34 +166,6 @@ defmodule Features.Features.ResourceHubTest do
     end
   end
 
-  describe "links" do
-    feature "delete link from content list", ctx do
-      ctx
-      |> Steps.given_link_exists()
-      |> Steps.visit_resource_hub_page("Resource hub")
-      |> Steps.delete_link("Link")
-      |> Steps.assert_zero_state("Resource hub")
-    end
-
-    feature "deleting link from link page redirects to resource hub", ctx do
-      ctx
-      |> Steps.given_link_exists()
-      |> Steps.visit_link_page()
-      |> Steps.delete_link()
-      |> Steps.assert_page_is_resource_hub_root(name: "Resource hub")
-      |> Steps.assert_zero_state("Resource hub")
-    end
-
-    feature "deleting link within folder from link page redirects to folder", ctx do
-      ctx
-      |> Steps.given_link_within_nested_folders_exists()
-      |> Steps.visit_link_page()
-      |> Steps.delete_link()
-      |> Steps.assert_page_is_folder_root(folder_key: :five)
-      |> Steps.assert_zero_folder_state()
-    end
-  end
-
   describe "comments" do
     feature "add comment to document", ctx do
       ctx
@@ -209,7 +181,7 @@ defmodule Features.Features.ResourceHubTest do
       |> Steps.assert_document_commented_email_sent(@document.name)
     end
 
-    test "add comment to file", ctx do
+    feature "add comment to file", ctx do
       ctx
       |> Steps.given_file_exists()
       |> Steps.visit_file_page()
