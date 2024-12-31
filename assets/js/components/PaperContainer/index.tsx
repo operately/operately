@@ -33,9 +33,9 @@ const sizes = {
   tiny: "max-w-xl",
   small: "max-w-2xl",
   medium: "max-w-4xl",
-  large: "max-w-screen-lg w-[90%]",
-  xlarge: "max-w-6xl",
-  xxlarge: "max-w-7xl",
+  large: "sm:max-w-[90%] lg:max-w-5xl ",
+  xlarge: "sm:max-w-[90%] lg:max-w-6xl ",
+  xxlarge: "sm:max-w-[90%] lg:max-w-7xl",
 };
 
 interface RootProps {
@@ -70,7 +70,7 @@ const bodyPaddings = {
   tiny: "px-8 py-6 sm:px-10 sm:py-8",
   small: "px-10 py-8",
   medium: "px-12 py-10",
-  large: "px-12 py-10",
+  large: "px-4 sm:px-12 py-10",
   xlarge: "px-12 py-10",
   xxlarge: "px-16 py-12",
 };
