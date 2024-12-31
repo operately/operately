@@ -13,7 +13,7 @@ export function Page() {
   const { space, goals, projects } = useLoadedData();
 
   return (
-    <Pages.Page title={space.name!}>
+    <Pages.Page title={["Goal Map", space.name!]} testId="space-goals-page">
       <Paper.Root size="large">
         <SpacePageNavigation space={space} />
 
@@ -33,9 +33,11 @@ function Header() {
   const newProjectPath = Paths.spaceNewProjectPath(space.id!);
 
   return (
-    <div className="flex items-center justify-between mb-8">
-      <div className="font-extrabold text-3xl">Goals in {space.name}</div>
-      <AddGoalOrProjectButton newGoalPath={newGoalPath} newProjectPath={newProjectPath} />
-    </div>
+    <Paper.Header
+      title="Goal Map"
+      actions={<AddGoalOrProjectButton newGoalPath={newGoalPath} newProjectPath={newProjectPath} />}
+      layout="title-center-actions-left"
+      underline
+    />
   );
 }
