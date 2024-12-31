@@ -668,6 +668,7 @@ defmodule OperatelyWeb.Api.Types do
     field :type, :string
     field :size, :integer
     field :blob, :blob
+    field :path_to_file, list_of(:resource_hub_folder)
   end
 
   object :resource_hub_link do
@@ -686,6 +687,7 @@ defmodule OperatelyWeb.Api.Types do
     field :inserted_at, :string
     field :permissions, :resource_hub_permissions
     field :reactions, list_of(:reaction)
+    field :path_to_link, list_of(:resource_hub_folder)
   end
 
   object :resource_hub_node do

@@ -29,6 +29,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ResourceHubs.File do
       type: Ecto.assoc_loaded?(file.blob) && file.blob.content_type,
       size: Ecto.assoc_loaded?(file.blob) && file.blob.size,
       blob: OperatelyWeb.Api.Serializer.serialize(file.blob),
+      path_to_file: OperatelyWeb.Api.Serializer.serialize(file.path_to_file),
     }
   end
 end

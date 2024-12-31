@@ -203,26 +203,52 @@ defmodule Features.Features.ResourceHubTest do
       ctx
       |> Steps.given_nested_folders_exist()
       |> Steps.visit_folder_page(:five)
-      |> Steps.assert_navigation_links(["Resource hub", "one", "two", "three", "four"])
+      |> Steps.assert_navigation_links(["Product Space", "Resource hub", "one", "two", "three", "four"])
       |> Steps.navigate_back("three")
       |> Steps.refute_navigation_links(["three", "four"])
-      |> Steps.assert_navigation_links(["Resource hub", "one", "two"])
+      |> Steps.assert_navigation_links(["Product Space", "Resource hub", "one", "two"])
       |> Steps.navigate_back("one")
       |> Steps.refute_navigation_links(["one", "two"])
-      |> Steps.assert_navigation_links(["Resource hub"])
+      |> Steps.assert_navigation_links(["Product Space", "Resource hub"])
     end
 
     feature "document navigation works", ctx do
       ctx
       |> Steps.given_document_within_nested_folders_exists()
       |> Steps.visit_document_page()
-      |> Steps.assert_navigation_links(["Resource hub", "one", "two", "three", "four", "five"])
+      |> Steps.assert_navigation_links(["Product Space", "Resource hub", "one", "two", "three", "four", "five"])
       |> Steps.navigate_back("four")
       |> Steps.refute_navigation_links(["four", "five"])
-      |> Steps.assert_navigation_links(["Resource hub", "one", "two", "three"])
+      |> Steps.assert_navigation_links(["Product Space", "Resource hub", "one", "two", "three"])
       |> Steps.navigate_back("one")
       |> Steps.refute_navigation_links(["one", "two", "three"])
-      |> Steps.assert_navigation_links(["Resource hub"])
+      |> Steps.assert_navigation_links(["Product Space", "Resource hub"])
+    end
+
+    feature "link navigation works", ctx do
+      ctx
+      |> Steps.given_link_within_nested_folders_exists()
+      |> Steps.visit_link_page()
+      |> Steps.assert_navigation_links(["Product Space", "Resource hub", "one", "two", "three", "four", "five"])
+      |> Steps.navigate_back("two")
+      |> Steps.refute_navigation_links(["two", "three", "four", "five"])
+      |> Steps.assert_navigation_links(["Product Space", "Resource hub", "one"])
+      |> Steps.navigate_back("Resource hub")
+      |> Steps.refute_navigation_links(["Resource hub", "one"])
+      |> Steps.assert_navigation_links(["Product Space"])
+    end
+
+    feature "file navigation works", ctx do
+      ctx
+      |> Steps.given_file_within_nested_folders_exists()
+      |> Steps.visit_file_page()
+      |> Steps.assert_navigation_links(["Product Space", "Resource hub", "one", "two", "three", "four", "five"])
+      |> Steps.navigate_back("four")
+      |> Steps.refute_navigation_links(["four", "five"])
+      |> Steps.assert_navigation_links(["Product Space", "Resource hub", "one", "two", "three"])
+      |> Steps.navigate_back("Resource hub")
+      |> Steps.refute_navigation_links(["Resource hub", "one", "two", "three"])
+      |> Steps.assert_navigation_links(["Product Space"])
     end
   end
 end

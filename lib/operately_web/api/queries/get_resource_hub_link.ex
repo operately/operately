@@ -13,6 +13,7 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubLink do
     field :include_permissions, :boolean
     field :include_subscriptions_list, :boolean
     field :include_potential_subscribers, :boolean
+    field :include_path_to_link, :boolean
   end
 
   outputs do
@@ -57,6 +58,7 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubLink do
     Inputs.parse_includes(inputs, [
       include_permissions: &Link.set_permissions/1,
       include_potential_subscribers: &Link.load_potential_subscribers/1,
+      include_path_to_link: &Link.find_path_to_link/1,
     ])
   end
 end

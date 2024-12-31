@@ -27,6 +27,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ResourceHubs.Link do
       potential_subscribers: OperatelyWeb.Api.Serializer.serialize(link.potential_subscribers),
       subscription_list: OperatelyWeb.Api.Serializer.serialize(link.subscription_list),
       notifications: OperatelyWeb.Api.Serializer.serialize(link.notifications),
+      path_to_link: OperatelyWeb.Api.Serializer.serialize(link.path_to_link),
     }
   end
 end

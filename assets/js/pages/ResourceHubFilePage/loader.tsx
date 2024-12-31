@@ -16,6 +16,7 @@ export async function loader({ params }): Promise<LoaderResult> {
       includePermissions: true,
       includeSubscriptionsList: true,
       includePotentialSubscribers: true,
+      includePathToFile: true,
     }).then((res) => res.file!),
   };
 }
