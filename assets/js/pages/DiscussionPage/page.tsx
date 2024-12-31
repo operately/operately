@@ -38,7 +38,7 @@ export function Page() {
       <Paper.Root size="large">
         <Navigation space={discussion.space} />
 
-        <Paper.Body minHeight="600px">
+        <Paper.Body minHeight="600px" className="lg:px-28">
           <Options />
           <ContinueEditingDraft />
           <DiscussionTitle />
