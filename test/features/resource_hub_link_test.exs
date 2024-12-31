@@ -15,6 +15,8 @@ defmodule Features.ResourceHubLinkTest do
       |> Steps.assert_zero_state("Resource hub")
       |> LinkSteps.assert_link_deleted_on_space_feed()
       |> LinkSteps.assert_link_deleted_on_company_feed()
+      |> LinkSteps.assert_link_deleted_notification_sent()
+      |> LinkSteps.assert_link_deleted_email_sent()
     end
 
     feature "deleting link from link page redirects to resource hub", ctx do

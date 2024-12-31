@@ -1,0 +1,3 @@
+<%= short_name(@author) %> deleted a link: <%= @link.node.name %>
+
+Link: <%= @cta_url %>

@@ -2,6 +2,8 @@ defmodule Operately.Support.Features.ResourceHubLinkSteps do
   use Operately.FeatureCase
 
   alias Operately.ResourceHubs.Node
+  alias Operately.Support.Features.NotificationsSteps
+  alias Operately.Support.Features.EmailSteps
 
   step :given_link_exists, ctx do
     ctx
@@ -55,5 +57,32 @@ defmodule Operately.Support.Features.ResourceHubLinkSteps do
     ctx
     |> UI.visit(Paths.feed_path(ctx.company))
     |> UI.assert_text("deleted Link from Resource hub in the Product Space space")
+  end
+
+  #
+  # Notifications
+  #
+
+  step :assert_link_deleted_notification_sent, ctx do
+    ctx
+    |> UI.login_as(ctx.other_user)
+    |> NotificationsSteps.visit_notifications_page()
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.creator,
+      action: "deleted a link: Link",
+    })
+  end
+
+  #
+  # Emails
+  #
+
+  step :assert_link_deleted_email_sent, ctx do
+    ctx |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.space.name,
+      to: ctx.other_user,
+      action: "deleted a link: Link",
+      author: ctx.creator,
+    })
   end
 end
