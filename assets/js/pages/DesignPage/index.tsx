@@ -24,7 +24,7 @@ export function Page() {
     <Pages.Page title={"Design System"}>
       <Paper.Root size="tiny">
         <Paper.Navigation>
-          <Paper.NavItem linkTo="/__design__">Lobby</Paper.NavItem>
+          <Paper.NavItem linkTo="/">Lobby</Paper.NavItem>
         </Paper.Navigation>
         <Paper.Body>
           <TitleRow />
