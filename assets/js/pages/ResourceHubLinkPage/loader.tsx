@@ -14,6 +14,7 @@ export async function loader({ params }): Promise<LoaderResult> {
       includePotentialSubscribers: true,
       includePermissions: true,
       includeReactions: true,
+      includePathToLink: true,
     }).then((res) => res.link!),
   };
 }

@@ -11,10 +11,10 @@ import { CurrentSubscriptions } from "@/features/Subscriptions";
 import RichContent, { richContentToString } from "@/components/RichContent";
 import { Spacer } from "@/components/Spacer";
 import { assertPresent } from "@/utils/assertions";
-import { Paths } from "@/routes/paths";
 import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
 import { TextSeparator } from "@/components/TextSeparator";
+import { NestedFolderNavigation } from "@/features/ResourceHub";
 
 import { useLoadedData } from "./loader";
 import { Content } from "./Content";
@@ -51,15 +51,15 @@ function Navigation() {
   const { file } = useLoadedData();
 
   assertPresent(file.resourceHub, "resourceHub must be present in file");
-
-  const name = file.parentFolder?.name || file.resourceHub.name;
-  const path = file.parentFolder
-    ? Paths.resourceHubFolderPath(file.parentFolder.id!)
-    : Paths.resourceHubPath(file.resourceHub.id!);
+  assertPresent(file.resourceHub.space, "space must be present in file.resourceHub");
+  assertPresent(file.pathToFile, "pathToFile must be present in file");
 
   return (
-    <Paper.Navigation>
-      <Paper.NavItem linkTo={path}>{name}</Paper.NavItem>
+    <Paper.Navigation testId="navigation">
+      <Paper.NavSpaceLink space={file.resourceHub.space} />
+      <Paper.NavSeparator />
+      <Paper.NavResourceHubLink resourceHub={file.resourceHub} />
+      <NestedFolderNavigation folders={file.pathToFile} />
     </Paper.Navigation>
   );
 }

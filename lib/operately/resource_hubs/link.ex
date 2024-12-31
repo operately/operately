@@ -21,6 +21,7 @@ defmodule Operately.ResourceHubs.Link do
     field :potential_subscribers, :any, virtual: true
     field :permissions, :any, virtual: true
     field :notifications, :any, virtual: true, default: []
+    field :path_to_link, :any, virtual: true
 
     timestamps()
     soft_delete()
@@ -55,5 +56,11 @@ def changeset(attrs) do
   def set_permissions(link = %__MODULE__{}) do
     perms = Operately.ResourceHubs.Permissions.calculate(link.request_info.access_level)
     Map.put(link, :permissions, perms)
+  end
+
+  def find_path_to_link(link = %__MODULE__{}) do
+    path = Operately.ResourceHubs.Node.find_all_parent_folders(link.id, "resource_links")
+
+    Map.put(link, :path_to_link, path)
   end
 end

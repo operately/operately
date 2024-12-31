@@ -37,20 +37,35 @@ defmodule Operately.Support.Features.ResourceHubSteps do
     |> Factory.add_document(:document, :hub, folder: :five)
   end
 
+  step :given_link_within_nested_folders_exists, ctx do
+    ctx
+    |> Factory.add_resource_hub(:hub, :space, :creator)
+    |> Factory.add_folder(:one, :hub)
+    |> Factory.add_folder(:two, :hub, :one)
+    |> Factory.add_folder(:three, :hub, :two)
+    |> Factory.add_folder(:four, :hub, :three)
+    |> Factory.add_folder(:five, :hub, :four)
+    |> Factory.add_link(:link, :hub, folder: :five)
+  end
+
+  step :given_file_within_nested_folders_exists, ctx do
+    ctx =
+      ctx
+      |> Factory.add_resource_hub(:hub, :space, :creator)
+      |> Factory.add_folder(:one, :hub)
+      |> Factory.add_folder(:two, :hub, :one)
+      |> Factory.add_folder(:three, :hub, :two)
+      |> Factory.add_folder(:four, :hub, :three)
+      |> Factory.add_folder(:five, :hub, :four)
+
+    file = create_file(ctx, ctx.hub, ctx.five.id)
+    Map.put(ctx, :file, file)
+  end
+
   step :given_file_exists, ctx do
     {:ok, hub} = ResourceHub.get(:system, space_id: ctx.space.id)
 
-    blob = Operately.BlobsFixtures.blob_fixture(%{author_id: ctx.creator.id, company_id: ctx.company.id})
-
-    {:ok, file} = Operately.Operations.ResourceHubFileCreating.run(ctx.creator, hub, %{
-      name: "File",
-      content: Operately.Support.RichText.rich_text("Content"),
-      send_to_everyone: true,
-      subscription_parent_type: :resource_hub_file,
-      subscriber_ids: [ctx.other_user.id],
-      blob_id: blob.id,
-    })
-
+    file = create_file(ctx, hub)
     Map.put(ctx, :file, file)
   end
 
@@ -73,6 +88,10 @@ defmodule Operately.Support.Features.ResourceHubSteps do
 
   step :visit_file_page, ctx do
     UI.visit(ctx, Paths.file_path(ctx.company, ctx.file))
+  end
+
+  step :visit_link_page, ctx do
+    UI.visit(ctx, Paths.link_path(ctx.company, ctx.link))
   end
 
   step :navigate_to_resource_hub_page, ctx do
@@ -465,5 +484,25 @@ defmodule Operately.Support.Features.ResourceHubSteps do
       action: "commented on: File",
       author: ctx.creator,
     })
+  end
+
+  #
+  # Helpers
+  #
+
+  defp create_file(ctx, hub, folder_id \\ nil) do
+    blob = Operately.BlobsFixtures.blob_fixture(%{author_id: ctx.creator.id, company_id: ctx.company.id})
+
+    {:ok, file} = Operately.Operations.ResourceHubFileCreating.run(ctx.creator, hub, %{
+      name: "File",
+      content: Operately.Support.RichText.rich_text("Content"),
+      send_to_everyone: true,
+      subscription_parent_type: :resource_hub_file,
+      subscriber_ids: [ctx.other_user.id],
+      blob_id: blob.id,
+      folder_id: folder_id,
+    })
+
+    file
   end
 end
