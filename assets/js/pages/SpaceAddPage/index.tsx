@@ -73,7 +73,7 @@ function Title() {
 }
 
 function NameInput({ field }: { field: string }) {
-  return <Forms.TextInput label="Space Name" field={field} placeholder="e.g. Marketing Team" required />;
+  return <Forms.TextInput label="Space Name" field={field} placeholder="e.g. Marketing" required />;
 }
 
 function PurposeInput({ field }: { field: string }) {
