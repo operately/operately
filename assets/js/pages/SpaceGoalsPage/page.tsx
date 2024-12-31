@@ -1,14 +1,13 @@
 import * as React from "react";
-import { useNavigate } from "react-router-dom";
 
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
 import { useLoadedData } from "./loader";
 import { GoalTree } from "@/features/goals/GoalTree";
-import { PrimaryButton } from "@/components/Buttons";
 import { Paths } from "@/routes/paths";
 import { SpacePageNavigation } from "@/components/SpacePageNavigation";
+import { AddGoalOrProjectButton } from "@/features/goals/AddGoalOrProjectButton";
 
 export function Page() {
   const { space, goals, projects } = useLoadedData();
@@ -28,7 +27,6 @@ export function Page() {
 }
 
 function Header() {
-  const navigate = useNavigate();
   const { space } = useLoadedData();
 
   const newGoalPath = Paths.spaceNewGoalPath(space.id!);
@@ -37,18 +35,7 @@ function Header() {
   return (
     <div className="flex items-center justify-between mb-8">
       <div className="font-extrabold text-3xl">Goals in {space.name}</div>
-
-      <PrimaryButton
-        size="sm"
-        optionsAlign="end"
-        options={[
-          { label: "Add goal", action: () => navigate(newGoalPath), testId: "add-goal" },
-          { label: "Add project", action: () => navigate(newProjectPath), testId: "add-project" },
-        ]}
-        testId="add-options"
-      >
-        Add
-      </PrimaryButton>
+      <AddGoalOrProjectButton newGoalPath={newGoalPath} newProjectPath={newProjectPath} />
     </div>
   );
 }
