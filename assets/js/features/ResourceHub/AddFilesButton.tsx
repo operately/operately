@@ -1,57 +1,53 @@
-import React from "react";
+import * as React from "react";
+import * as Icons from "@tabler/icons-react";
 
-import { IconFile, IconFolder, IconLink, IconUpload } from "@tabler/icons-react";
 import { ResourceHubPermissions } from "@/models/resourceHubs";
 import { PrimaryButton } from "@/components/Buttons";
 
 import { useNewFileModalsContext } from "./contexts/NewFileModalsContext";
+import { MenuActionItem } from "@/components/Menu";
 
 export function AddFilesButton({ permissions }: { permissions: ResourceHubPermissions }) {
-  const { navigateToNewDocument, navigateToNewLink, toggleShowAddFolder, showAddFilePopUp } = useNewFileModalsContext();
+  const options = Options({ permissions });
 
   return (
-    <div className="w-min mt-2">
-      <PrimaryButton
-        size="sm"
-        optionsAlign="start"
-        options={[
-          {
-            icon: IconFile,
-            label: "Write a new document",
-            action: navigateToNewDocument,
-            testId: "new-document",
-            hidden: !permissions.canCreateDocument,
-          },
-          {
-            icon: IconFolder,
-            label: "Create a new folder",
-            action: toggleShowAddFolder,
-            testId: "new-folder",
-            hidden: !permissions.canCreateFolder,
-          },
-          {
-            icon: IconUpload,
-            label: "Upload files",
-            action: showAddFilePopUp,
-            testId: "upload-files",
-            hidden: !permissions.canCreateFile,
-          },
-          {
-            element: <div className="text-sm text-center">Or link to files from:</div>,
-            hidden: !permissions.canCreateLink,
-          },
-          {
-            icon: IconLink,
-            label: "Any external resource",
-            action: navigateToNewLink,
-            testId: "link-to-external-resources",
-            hidden: !permissions.canCreateLink,
-          },
-        ]}
-        testId="add-options"
-      >
-        Add
-      </PrimaryButton>
-    </div>
+    <PrimaryButton size="sm" optionsAlign="start" options={options} testId="add-options">
+      Add
+    </PrimaryButton>
   );
+}
+
+function Options({ permissions }: { permissions: ResourceHubPermissions }) {
+  const { navigateToNewDocument, navigateToNewLink, toggleShowAddFolder, showAddFilePopUp } = useNewFileModalsContext();
+
+  return [
+    <MenuActionItem
+      icon={Icons.IconFile}
+      onClick={navigateToNewDocument}
+      testId="new-document"
+      hidden={!permissions.canCreateDocument}
+      children="New document"
+    />,
+    <MenuActionItem
+      icon={Icons.IconFolderFilled}
+      onClick={toggleShowAddFolder}
+      testId="new-folder"
+      hidden={!permissions.canCreateFolder}
+      children="New folder"
+    />,
+    <MenuActionItem
+      icon={Icons.IconUpload}
+      onClick={showAddFilePopUp}
+      testId="upload-files"
+      hidden={!permissions.canCreateFile}
+      children="Upload files"
+    />,
+    <MenuActionItem
+      onClick={navigateToNewLink}
+      testId="link-to-external-resources"
+      hidden={!permissions.canCreateLink}
+      icon={Icons.IconLink}
+      children="Add link"
+    />,
+  ];
 }

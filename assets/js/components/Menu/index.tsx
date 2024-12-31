@@ -10,6 +10,7 @@ type Size = "small" | "medium" | "large" | "xlarge" | "xxlarge" | "xxxlarge";
 
 interface MenuProps extends TestableElement {
   children: React.ReactNode;
+  customTrigger?: React.ReactNode;
   size?: Size;
 }
 
@@ -38,9 +39,7 @@ interface SubMenuProps {
 export function Menu(props: MenuProps) {
   return (
     <DropdownMenu.Root>
-      <DropdownMenu.Trigger className={menuTriggerClass} data-test-id={props.testId}>
-        <Icons.IconDots size={20} />
-      </DropdownMenu.Trigger>
+      <Trigger {...props} />
 
       <DropdownMenu.Portal>
         <DropdownMenu.Content className={menuContentClass} style={menuContentStyle(props.size)}>
@@ -49,6 +48,22 @@ export function Menu(props: MenuProps) {
       </DropdownMenu.Portal>
     </DropdownMenu.Root>
   );
+}
+
+function Trigger(props: MenuProps) {
+  if (props.customTrigger) {
+    return (
+      <DropdownMenu.Trigger asChild data-test-id={props.testId}>
+        {props.customTrigger}
+      </DropdownMenu.Trigger>
+    );
+  } else {
+    return (
+      <DropdownMenu.Trigger className={menuTriggerClass} data-test-id={props.testId}>
+        <Icons.IconDots size={20} />
+      </DropdownMenu.Trigger>
+    );
+  }
 }
 
 export function SubMenu({ label, icon, children, hidden }: SubMenuProps) {
