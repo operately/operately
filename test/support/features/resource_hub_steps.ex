@@ -37,17 +37,6 @@ defmodule Operately.Support.Features.ResourceHubSteps do
     |> Factory.add_document(:document, :hub, folder: :five)
   end
 
-  step :given_link_within_nested_folders_exists, ctx do
-    ctx
-    |> Factory.add_resource_hub(:hub, :space, :creator)
-    |> Factory.add_folder(:one, :hub)
-    |> Factory.add_folder(:two, :hub, :one)
-    |> Factory.add_folder(:three, :hub, :two)
-    |> Factory.add_folder(:four, :hub, :three)
-    |> Factory.add_folder(:five, :hub, :four)
-    |> Factory.add_link(:link, :hub, folder: :five)
-  end
-
   step :given_file_within_nested_folders_exists, ctx do
     ctx =
       ctx
@@ -69,12 +58,6 @@ defmodule Operately.Support.Features.ResourceHubSteps do
     Map.put(ctx, :file, file)
   end
 
-  step :given_link_exists, ctx do
-    ctx
-    |> Factory.add_resource_hub(:hub, :space, :creator)
-    |> Factory.add_link(:link, :hub)
-  end
-
   step :visit_space_page, ctx do
     UI.visit(ctx, Paths.space_path(ctx.company, ctx.space))
   end
@@ -94,10 +77,6 @@ defmodule Operately.Support.Features.ResourceHubSteps do
 
   step :visit_file_page, ctx do
     UI.visit(ctx, Paths.file_path(ctx.company, ctx.file))
-  end
-
-  step :visit_link_page, ctx do
-    UI.visit(ctx, Paths.link_path(ctx.company, ctx.link))
   end
 
   step :navigate_to_resource_hub_page, ctx do
@@ -179,23 +158,6 @@ defmodule Operately.Support.Features.ResourceHubSteps do
 
     menu_id = UI.testid(["document-menu", Paths.document_id(node.document)])
     delete_id = UI.testid(["delete", Paths.document_id(node.document)])
-
-    ctx
-    |> UI.click(testid: menu_id)
-    |> UI.click(testid: delete_id)
-  end
-
-  step :delete_link, ctx do
-    ctx
-    |> UI.click(testid: "options-button")
-    |> UI.click(testid: "delete-link")
-  end
-
-  step :delete_link, ctx, link_name do
-    {:ok, node} = Node.get(:system, name: link_name, opts: [preload: :link])
-
-    menu_id = UI.testid(["link-menu", Paths.link_id(node.link)])
-    delete_id = UI.testid(["delete", Paths.link_id(node.link)])
 
     ctx
     |> UI.click(testid: menu_id)
