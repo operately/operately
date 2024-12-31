@@ -12,7 +12,7 @@ export function Page() {
     <Pages.Page title={"Menus"}>
       <Paper.Root>
         <Paper.Navigation>
-          <Paper.NavItem linkTo="/__design__">Lobby</Paper.NavItem>
+          <Paper.NavItem linkTo="/">Lobby</Paper.NavItem>
           <Paper.NavSeparator />
           <Paper.NavItem linkTo="/__design__">Design System</Paper.NavItem>
         </Paper.Navigation>
