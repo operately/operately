@@ -49,11 +49,18 @@ function DeleteAction() {
   const [remove] = useDeleteResourceHubDocument();
   const navigate = useNavigate();
 
-  const handleDelete = async () => {
-    remove({ documentId: document.id }).then(() => {
+  const redirect = () => {
+    if (document.parentFolder) {
+      navigate(Paths.resourceHubFolderPath(document.parentFolder.id!));
+    } else {
       assertPresent(document.resourceHub, "resourceHub must be present in document");
       navigate(Paths.resourceHubPath(document.resourceHub.id!));
-    });
+    }
+  };
+
+  const handleDelete = async () => {
+    await remove({ documentId: document.id });
+    redirect();
   };
 
   return <PageOptions.Action icon={IconTrash} title="Delete" onClick={handleDelete} testId="delete-document-link" />;

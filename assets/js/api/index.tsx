@@ -1187,6 +1187,7 @@ export interface ResourceHubPermissions {
   canDeleteDocument?: boolean | null;
   canDeleteFile?: boolean | null;
   canDeleteFolder?: boolean | null;
+  canDeleteLink?: boolean | null;
   canEditDocument?: boolean | null;
   canEditParentFolder?: boolean | null;
   canEditFile?: boolean | null;

@@ -3,6 +3,11 @@ defmodule Features.Features.ResourceHubTest do
 
   alias Operately.Support.Features.ResourceHubSteps, as: Steps
 
+  @document %{
+    name: "My First Document",
+    content: "This is the document's content",
+  }
+
   setup ctx, do: Steps.setup(ctx)
 
   describe "folders" do
@@ -64,26 +69,17 @@ defmodule Features.Features.ResourceHubTest do
 
   describe "documents" do
     feature "create document", ctx do
-      doc = %{
-        name: "My First Document",
-        content: "This is the document's content",
-      }
-
       ctx
       |> Steps.visit_resource_hub_page()
-      |> Steps.create_document(doc)
-      |> Steps.assert_document_content(doc)
-      |> Steps.assert_document_created_on_space_feed(doc)
-      |> Steps.assert_document_created_on_company_feed(doc)
-      |> Steps.assert_document_created_notification_sent(doc.name)
-      |> Steps.assert_document_created_email_sent(doc.name)
+      |> Steps.create_document(@document)
+      |> Steps.assert_document_content(@document)
+      |> Steps.assert_document_created_on_space_feed(@document)
+      |> Steps.assert_document_created_on_company_feed(@document)
+      |> Steps.assert_document_created_notification_sent(@document.name)
+      |> Steps.assert_document_created_email_sent(@document.name)
     end
 
     feature "edit document", ctx do
-      default_doc = %{
-        name: "some name",
-        content: "Content",
-      }
       new_doc = %{
         name: "Edited name",
         content: "Brand new content",
@@ -91,8 +87,8 @@ defmodule Features.Features.ResourceHubTest do
 
       ctx
       |> Steps.visit_resource_hub_page()
-      |> Steps.create_document(default_doc)
-      |> Steps.assert_document_content(default_doc)
+      |> Steps.create_document(@document)
+      |> Steps.assert_document_content(@document)
       |> Steps.edit_document(new_doc)
       |> Steps.assert_document_content(new_doc)
       |> Steps.assert_document_edited_on_space_feed(new_doc.name)
@@ -101,59 +97,65 @@ defmodule Features.Features.ResourceHubTest do
       |> Steps.assert_document_edited_email_sent(new_doc.name)
     end
 
-    feature "delete document", ctx do
-      doc = %{
-        name: "My First Document",
-        content: "This is the document's content",
-      }
-
+    feature "delete document from content list", ctx do
       ctx
       |> Steps.visit_resource_hub_page()
-      |> Steps.create_document(doc)
-      |> Steps.assert_document_content(doc)
+      |> Steps.create_document(@document)
+      |> Steps.assert_document_content(@document)
       |> Steps.navigate_back("Documents & Files")
-      |> Steps.delete_document(doc.name)
-      |> Steps.assert_document_deleted(doc.name)
-      |> Steps.assert_document_deleted_on_space_feed(doc.name)
-      |> Steps.assert_document_deleted_on_company_feed(doc.name)
-      |> Steps.assert_document_deleted_notification_sent(doc.name)
-      |> Steps.assert_document_deleted_email_sent(doc.name)
+      |> Steps.delete_document(@document.name)
+      |> Steps.assert_document_deleted(@document.name)
+      |> Steps.assert_document_deleted_on_space_feed(@document.name)
+      |> Steps.assert_document_deleted_on_company_feed(@document.name)
+      |> Steps.assert_document_deleted_notification_sent(@document.name)
+      |> Steps.assert_document_deleted_email_sent(@document.name)
+    end
+
+    feature "deleting document from document page redirects to resource hub", ctx do
+      ctx
+      |> Steps.visit_resource_hub_page()
+      |> Steps.create_document(@document)
+      |> Steps.assert_document_content(@document)
+      |> Steps.delete_document()
+      |> Steps.assert_page_is_resource_hub_root(name: "Documents & Files")
+      |> Steps.assert_zero_state()
+    end
+
+    feature "deleting document within folder from document page redirects to folder", ctx do
+      ctx
+      |> Steps.given_document_within_nested_folders_exists()
+      |> Steps.visit_document_page()
+      |> Steps.delete_document()
+      |> Steps.assert_page_is_folder_root(folder_key: :five)
+      |> Steps.assert_zero_folder_state()
     end
 
     feature "copy document in the same folder", ctx do
-      doc = %{
-        name: "My First Document",
-        content: "This is the document's content",
-      }
       new_name = "Document (copy)"
 
       ctx
       |> Steps.visit_resource_hub_page()
-      |> Steps.create_document(doc)
-      |> Steps.go_to_copy_document_page(doc.name)
+      |> Steps.create_document(@document)
+      |> Steps.go_to_copy_document_page(@document.name)
       |> Steps.enter_document_name(new_name)
       |> Steps.copy_document()
       |> Steps.visit_resource_hub_page()
       |> Steps.assert_document_present_in_files_list(new_name)
-      |> Steps.assert_document_copied_on_company_feed(%{name: doc.name, new_name: new_name})
-      |> Steps.assert_document_copied_on_space_feed(%{name: doc.name, new_name: new_name})
-      |> Steps.assert_document_copied_notification_sent(%{name: doc.name, new_name: new_name})
+      |> Steps.assert_document_copied_on_company_feed(%{name: @document.name, new_name: new_name})
+      |> Steps.assert_document_copied_on_space_feed(%{name: @document.name, new_name: new_name})
+      |> Steps.assert_document_copied_notification_sent(%{name: @document.name, new_name: new_name})
       |> Steps.assert_document_copied_email_sent(new_name)
     end
 
     feature "copy document into another folder", ctx do
-      doc = %{
-        name: "My First Document",
-        content: "This is the document's content",
-      }
       new_name = "Document (copy)"
 
       ctx
       |> Steps.visit_resource_hub_page()
       |> Steps.create_folder("My Folder")
       |> Steps.visit_resource_hub_page()
-      |> Steps.create_document(doc)
-      |> Steps.go_to_copy_document_page(doc.name)
+      |> Steps.create_document(@document)
+      |> Steps.go_to_copy_document_page(@document.name)
       |> Steps.enter_document_name(new_name)
       |> Steps.navigate_to_folder(index: 0)
       |> Steps.copy_document()
@@ -164,24 +166,47 @@ defmodule Features.Features.ResourceHubTest do
     end
   end
 
+  describe "links" do
+    feature "delete link from content list", ctx do
+      ctx
+      |> Steps.given_link_exists()
+      |> Steps.visit_resource_hub_page("Resource hub")
+      |> Steps.delete_link("Link")
+      |> Steps.assert_zero_state("Resource hub")
+    end
+
+    feature "deleting link from link page redirects to resource hub", ctx do
+      ctx
+      |> Steps.given_link_exists()
+      |> Steps.visit_link_page()
+      |> Steps.delete_link()
+      |> Steps.assert_page_is_resource_hub_root(name: "Resource hub")
+      |> Steps.assert_zero_state("Resource hub")
+    end
+
+    feature "deleting link within folder from link page redirects to folder", ctx do
+      ctx
+      |> Steps.given_link_within_nested_folders_exists()
+      |> Steps.visit_link_page()
+      |> Steps.delete_link()
+      |> Steps.assert_page_is_folder_root(folder_key: :five)
+      |> Steps.assert_zero_folder_state()
+    end
+  end
+
   describe "comments" do
     feature "add comment to document", ctx do
-      doc = %{
-        name: "My First Document",
-        content: "This is the document's content",
-      }
-
       ctx
       |> Steps.visit_resource_hub_page()
-      |> Steps.create_document(doc)
+      |> Steps.create_document(@document)
       |> Steps.leave_comment()
       |> Steps.leave_comment()
       |> Steps.navigate_back("Documents & Files")
       |> Steps.assert_comments_count(%{index: 0, count: "2"})
-      |> Steps.assert_document_commented_on_company_feed(doc.name)
-      |> Steps.assert_document_commented_on_space_feed(doc.name)
-      |> Steps.assert_document_commented_notification_sent(doc.name)
-      |> Steps.assert_document_commented_email_sent(doc.name)
+      |> Steps.assert_document_commented_on_company_feed(@document.name)
+      |> Steps.assert_document_commented_on_space_feed(@document.name)
+      |> Steps.assert_document_commented_notification_sent(@document.name)
+      |> Steps.assert_document_commented_email_sent(@document.name)
     end
 
     test "add comment to file", ctx do
