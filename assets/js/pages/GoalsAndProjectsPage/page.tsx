@@ -21,9 +21,9 @@ export function Page() {
   });
 
   return (
-    <Pages.Page title="Goals & Projects" testId="goals-and-projects-page">
-      <Paper.Root size="xlarge">
-        <Paper.Body noPadding={noPadding} className={bodyClassName}>
+    <Pages.Page title="Goal Map" testId="goals-and-projects-page">
+      <Paper.Root size="large">
+        <Paper.Body noPadding={noPadding} className={bodyClassName} minHeight="500px">
           <Header />
           <GoalTree goals={goals} projects={projects} options={{}} />
         </Paper.Body>
@@ -37,9 +37,11 @@ function Header() {
   const newProjectPath = Paths.newProjectPath();
 
   return (
-    <div className="flex items-center justify-between mb-8">
-      <h1 className="text-3xl font-bold mb-2">Goals & Projects</h1>
-      <AddGoalOrProjectButton newGoalPath={newGoalPath} newProjectPath={newProjectPath} />
-    </div>
+    <Paper.Header
+      title="Goal Map"
+      actions={<AddGoalOrProjectButton newGoalPath={newGoalPath} newProjectPath={newProjectPath} />}
+      layout="title-center-actions-left"
+      underline
+    />
   );
 }
