@@ -1,8 +1,10 @@
 import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
+import * as Icons from "@tabler/icons-react";
 
 import { PrimaryButton, GhostButton, SecondaryButton } from "@/components/Buttons";
+import { MenuLinkItem, SubMenu } from "@/components/Menu";
 
 export const loader = Pages.emptyLoader;
 
@@ -141,7 +143,18 @@ export function Page() {
 }
 
 const buttonOptions = [
-  { label: "Option 1", action: () => console.log("Option 1") },
-  { label: "Option 2", action: () => console.log("Option 2") },
-  { label: "Option 3", action: () => console.log("Option 3") },
+  <MenuLinkItem to="" icon={Icons.IconFile}>
+    New document
+  </MenuLinkItem>,
+  <MenuLinkItem to="" icon={Icons.IconFolderFilled}>
+    Create a new folder
+  </MenuLinkItem>,
+  <MenuLinkItem to="" icon={Icons.IconUpload}>
+    Upload files
+  </MenuLinkItem>,
+  <SubMenu label="Add link to..." icon={Icons.IconLink}>
+    <MenuLinkItem to="" icon={Icons.IconUpload}>
+      Google Drive
+    </MenuLinkItem>
+  </SubMenu>,
 ];
