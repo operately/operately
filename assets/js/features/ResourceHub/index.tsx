@@ -8,3 +8,4 @@ export { AddFolderModal } from "./AddFolderModal";
 export { AddFileModal } from "./AddFileModal";
 export { FileDragAndDropArea } from "./FileDragAndDropArea";
 export { FolderSelectField } from "./components/MoveResources/FolderSelectField";
+export { NestedFolderNavigation } from "./NestedFolderNavigation";
