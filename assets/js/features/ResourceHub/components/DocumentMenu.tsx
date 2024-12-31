@@ -17,7 +17,12 @@ export function DocumentMenu({ document }: Props) {
   const { permissions } = useNodesContext();
   const [showMoveForm, toggleMoveForm] = useBoolState(false);
 
-  const relevantPermissions = [permissions.canEditDocument, permissions.canDeleteDocument];
+  const relevantPermissions = [
+    permissions.canEditDocument,
+    permissions.canCreateDocument,
+    permissions.canEditParentFolder,
+    permissions.canDeleteDocument,
+  ];
   const menuId = createTestId("document-menu", document.id!);
 
   if (!relevantPermissions.some(Boolean)) return <></>;

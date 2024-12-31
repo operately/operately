@@ -8,7 +8,7 @@ import { CommentsCountIndicator } from "@/features/Comments";
 import { assertPresent } from "@/utils/assertions";
 import { createTestId } from "@/utils/testid";
 import { findCommentsCount, findPath, findSubtitle, NodeType, sortNodesWithFoldersFirst } from "./utils";
-import { DocumentMenu, FileMenu, FolderMenu, FolderZeroNodes, HubZeroNodes } from "./components";
+import { DocumentMenu, FileMenu, FolderMenu, LinkMenu, FolderZeroNodes, HubZeroNodes } from "./components";
 import { NodesProps, NodesProvider } from "./contexts/NodesContext";
 import { NodeIcon } from "./NodeIcon";
 
@@ -77,6 +77,11 @@ function NodeItem({ node, testid }: NodeItemProps) {
       {node.file && (
         <div className="flex items-center">
           <FileMenu file={node.file} />
+        </div>
+      )}
+      {node.link && (
+        <div className="flex items-center">
+          <LinkMenu link={node.link} />
         </div>
       )}
     </div>

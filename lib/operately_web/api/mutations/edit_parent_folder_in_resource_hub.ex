@@ -2,7 +2,7 @@ defmodule OperatelyWeb.Api.Mutations.EditParentFolderInResourceHub do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
-  alias Operately.ResourceHubs.{Folder, Document, File, Permissions}
+  alias Operately.ResourceHubs.{Folder, Document, File, Link, Permissions}
   alias Operately.Operations.ResourceHubParentFolderEditing
 
   inputs do
@@ -45,5 +45,9 @@ defmodule OperatelyWeb.Api.Mutations.EditParentFolderInResourceHub do
 
   defp find_resource(me, id, "file") do
     File.get(me, id: id, opts: [preload: [:node, :space]])
+  end
+
+  defp find_resource(me, id, "link") do
+    Link.get(me, id: id, opts: [preload: [:node, :space]])
   end
 end

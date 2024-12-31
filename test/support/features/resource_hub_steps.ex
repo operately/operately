@@ -69,12 +69,18 @@ defmodule Operately.Support.Features.ResourceHubSteps do
     Map.put(ctx, :file, file)
   end
 
+  step :given_link_exists, ctx do
+    ctx
+    |> Factory.add_resource_hub(:hub, :space, :creator)
+    |> Factory.add_link(:link, :hub)
+  end
+
   step :visit_space_page, ctx do
     UI.visit(ctx, Paths.space_path(ctx.company, ctx.space))
   end
 
-  step :visit_resource_hub_page, ctx do
-    {:ok, hub} = ResourceHub.get(:system, space_id: ctx.space.id)
+  step :visit_resource_hub_page, ctx, name \\ "Documents & Files" do
+    {:ok, hub} = ResourceHub.get(:system, space_id: ctx.space.id, name: name)
     UI.visit(ctx, Paths.resource_hub_path(ctx.company, hub))
   end
 
@@ -162,11 +168,34 @@ defmodule Operately.Support.Features.ResourceHubSteps do
     |> UI.refute_has(testid: "submit")
   end
 
+  step :delete_document, ctx do
+    ctx
+    |> UI.click(testid: "document-options-button")
+    |> UI.click(testid: "delete-document-link")
+  end
+
   step :delete_document, ctx, document_name do
     {:ok, node} = Node.get(:system, name: document_name, opts: [preload: :document])
 
     menu_id = UI.testid(["document-menu", Paths.document_id(node.document)])
     delete_id = UI.testid(["delete", Paths.document_id(node.document)])
+
+    ctx
+    |> UI.click(testid: menu_id)
+    |> UI.click(testid: delete_id)
+  end
+
+  step :delete_link, ctx do
+    ctx
+    |> UI.click(testid: "options-button")
+    |> UI.click(testid: "delete-link")
+  end
+
+  step :delete_link, ctx, link_name do
+    {:ok, node} = Node.get(:system, name: link_name, opts: [preload: :link])
+
+    menu_id = UI.testid(["link-menu", Paths.link_id(node.link)])
+    delete_id = UI.testid(["delete", Paths.link_id(node.link)])
 
     ctx
     |> UI.click(testid: menu_id)
@@ -185,11 +214,17 @@ defmodule Operately.Support.Features.ResourceHubSteps do
   # Assertions
   #
 
-  step :assert_zero_state, ctx do
+  step :assert_zero_state, ctx, name \\ "Documents & Files"  do
     ctx
-    |> UI.assert_text("Documents & Files")
+    |> UI.assert_text(name)
     |> UI.assert_text("Ready for your first document")
     |> UI.assert_text("Your team's central hub for sharing documents, images, videos, and files. Click 'Add' to get started.")
+  end
+
+  step :assert_zero_folder_state, ctx do
+    ctx
+    |> UI.assert_text("Ready for your first document")
+    |> UI.assert_text("This folder is empty. Click 'Add' to upload your first file.")
   end
 
   step :assert_zero_state_on_space_page, ctx do
@@ -260,6 +295,18 @@ defmodule Operately.Support.Features.ResourceHubSteps do
   step :refute_document_present_in_files_list, ctx, document_name do
     ctx
     |> UI.refute_text(document_name)
+  end
+
+  step :assert_page_is_resource_hub_root, ctx, name: name do
+    {:ok, hub} = ResourceHub.get(:system, space_id: ctx.space.id, name: name)
+
+    ctx
+    |> UI.assert_page(Paths.resource_hub_path(ctx.company, hub))
+  end
+
+  step :assert_page_is_folder_root, ctx, folder_key: key do
+    ctx
+    |> UI.assert_page(Paths.folder_path(ctx.company, ctx[key]))
   end
 
   #

@@ -23,6 +23,7 @@ export {
   useDeleteResourceHubDocument,
   useDeleteResourceHubFile,
   useDeleteResourceHubFolder,
+  useDeleteResourceHubLink,
   useRenameResourceHubFolder,
 } from "@/api";
 
