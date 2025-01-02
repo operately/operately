@@ -15,6 +15,14 @@ export function Options() {
 
   return (
     <PageOptions.Root testId="options-button" position="top-right">
+      {link.permissions.canEditLink && (
+        <PageOptions.Link
+          icon={Icons.IconEdit}
+          title="Edit"
+          to={Paths.resourceHubEditLinkPath(link.id!)}
+          testId="edit-link-link"
+        />
+      )}
       {link.permissions.canDeleteLink && <DeleteAction />}
     </PageOptions.Root>
   );

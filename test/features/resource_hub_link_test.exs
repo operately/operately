@@ -7,11 +7,37 @@ defmodule Features.ResourceHubLinkTest do
   @link %{
     title: "Link",
     link: "http://localhost:4000",
+    notes: "This is a link",
   }
 
   setup ctx, do: Steps.setup(ctx)
 
   describe "links" do
+    feature "create link", ctx do
+      ctx
+      |> Steps.visit_resource_hub_page()
+      |> LinkSteps.create_link(@link)
+      |> LinkSteps.assert_link_content(@link)
+      |> LinkSteps.assert_link_created_on_space_feed(@link.title)
+      |> LinkSteps.assert_link_created_on_company_feed(@link.title)
+      |> LinkSteps.assert_link_created_notification_sent(@link.title)
+      |> LinkSteps.assert_link_created_email_sent()
+    end
+
+    feature "edit link", ctx do
+      link = %{
+        title: "Link (edited)",
+        link: "http://localhost:3000",
+        notes: "This is a link (also edited)",
+      }
+
+      ctx
+      |> Steps.visit_resource_hub_page()
+      |> LinkSteps.create_link(@link)
+      |> LinkSteps.edit_link(link)
+      |> LinkSteps.assert_link_content(link)
+    end
+
     feature "delete link from content list", ctx do
       ctx
       |> Steps.visit_resource_hub_page()

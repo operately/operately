@@ -244,6 +244,10 @@ export class Paths {
     }
   }
 
+  static resourceHubEditLinkPath(linkId: string) {
+    return createCompanyPath(["links", linkId, "edit"]);
+  }
+
   static resourceHubLinkPath(linkId: string) {
     return createCompanyPath(["links", linkId]);
   }

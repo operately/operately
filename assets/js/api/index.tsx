@@ -1197,6 +1197,7 @@ export interface ResourceHubPermissions {
   canEditDocument?: boolean | null;
   canEditParentFolder?: boolean | null;
   canEditFile?: boolean | null;
+  canEditLink?: boolean | null;
   canRenameFolder?: boolean | null;
   canView?: boolean | null;
 }
@@ -2561,6 +2562,18 @@ export interface EditResourceHubFileResult {
   file?: ResourceHubFile | null;
 }
 
+export interface EditResourceHubLinkInput {
+  linkId?: Id | null;
+  name?: string | null;
+  type?: string | null;
+  url?: string | null;
+  description?: string | null;
+}
+
+export interface EditResourceHubLinkResult {
+  link?: ResourceHubLink | null;
+}
+
 export interface EditSpaceInput {
   id?: Id | null;
   name?: string | null;
@@ -3331,6 +3344,10 @@ export class ApiClient {
     return this.post("/edit_resource_hub_file", input);
   }
 
+  async editResourceHubLink(input: EditResourceHubLinkInput): Promise<EditResourceHubLinkResult> {
+    return this.post("/edit_resource_hub_link", input);
+  }
+
   async editSpace(input: EditSpaceInput): Promise<EditSpaceResult> {
     return this.post("/edit_space", input);
   }
@@ -3830,6 +3847,9 @@ export async function editResourceHubDocument(
 }
 export async function editResourceHubFile(input: EditResourceHubFileInput): Promise<EditResourceHubFileResult> {
   return defaultApiClient.editResourceHubFile(input);
+}
+export async function editResourceHubLink(input: EditResourceHubLinkInput): Promise<EditResourceHubLinkResult> {
+  return defaultApiClient.editResourceHubLink(input);
 }
 export async function editSpace(input: EditSpaceInput): Promise<EditSpaceResult> {
   return defaultApiClient.editSpace(input);
@@ -4525,6 +4545,12 @@ export function useEditResourceHubFile(): UseMutationHookResult<EditResourceHubF
   );
 }
 
+export function useEditResourceHubLink(): UseMutationHookResult<EditResourceHubLinkInput, EditResourceHubLinkResult> {
+  return useMutation<EditResourceHubLinkInput, EditResourceHubLinkResult>((input) =>
+    defaultApiClient.editResourceHubLink(input),
+  );
+}
+
 export function useEditSpace(): UseMutationHookResult<EditSpaceInput, EditSpaceResult> {
   return useMutation<EditSpaceInput, EditSpaceResult>((input) => defaultApiClient.editSpace(input));
 }
@@ -4988,6 +5014,8 @@ export default {
   useEditResourceHubDocument,
   editResourceHubFile,
   useEditResourceHubFile,
+  editResourceHubLink,
+  useEditResourceHubLink,
   editSpace,
   useEditSpace,
   editSpaceMembersPermissions,

@@ -11,6 +11,7 @@ import { TextSeparator } from "@/components/TextSeparator";
 import { CopyToClipboard } from "@/components/CopyToClipboard";
 import { Spacer } from "@/components/Spacer";
 import { assertPresent } from "@/utils/assertions";
+import RichContent, { richContentToString } from "@/components/RichContent";
 
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { CurrentSubscriptions } from "@/features/Subscriptions";
@@ -33,6 +34,8 @@ export function Page() {
           <Options />
 
           <Url />
+          <Description />
+
           <LinkReactions />
           <LinkComments />
           <LinkSubscriptions />
@@ -104,6 +107,23 @@ function OpenLinkIcon({ url, size }: { url: string; size: number }) {
   };
 
   return <IconExternalLink size={size} onClick={redirect} className="cursor-pointer" />;
+}
+
+function Description() {
+  const { link } = useLoadedData();
+  assertPresent(link.description, "description must be present in link");
+
+  const hasDescription = Boolean(richContentToString(JSON.parse(link.description)).trim());
+
+  if (!hasDescription) return <></>;
+
+  return (
+    <>
+      <Spacer size={2} />
+      <div className="font-bold text-content-accent">Notes:</div>
+      <RichContent jsonContent={link.description} />
+    </>
+  );
 }
 
 function LinkReactions() {

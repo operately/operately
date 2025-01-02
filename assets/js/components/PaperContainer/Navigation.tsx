@@ -2,7 +2,7 @@ import * as React from "react";
 import * as Icons from "@tabler/icons-react";
 
 import { Space } from "@/models/spaces";
-import { ResourceHub, ResourceHubFolder } from "@/models/resourceHubs";
+import { ResourceHub, ResourceHubFolder, ResourceHubLink } from "@/models/resourceHubs";
 
 import { Paths } from "@/routes/paths";
 import { Link } from "@/components/Link";
@@ -69,4 +69,8 @@ export function NavResourceHubLink({ resourceHub }: { resourceHub: ResourceHub }
 
 export function NavFolderLink({ folder }: { folder: ResourceHubFolder }) {
   return <NavItem linkTo={Paths.resourceHubFolderPath(folder.id!)}>{truncateString(folder.name!, 20)}</NavItem>;
+}
+
+export function NavLinkLink({ link }: { link: ResourceHubLink }) {
+  return <NavItem linkTo={Paths.resourceHubLinkPath(link.id!)}>{link.name!}</NavItem>;
 }
