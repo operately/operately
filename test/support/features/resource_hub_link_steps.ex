@@ -1,7 +1,7 @@
 defmodule Operately.Support.Features.ResourceHubLinkSteps do
   use Operately.FeatureCase
 
-  alias Operately.ResourceHubs.{ResourceHub, Node}
+  alias Operately.ResourceHubs.Node
   alias Operately.Support.Features.NotificationsSteps
   alias Operately.Support.Features.EmailSteps
 
@@ -148,10 +148,8 @@ defmodule Operately.Support.Features.ResourceHubLinkSteps do
   #
 
   step :assert_link_created_email_sent, ctx do
-    {:ok, hub} = ResourceHub.get(:system, space_id: ctx.space.id)
-
     ctx |> EmailSteps.assert_activity_email_sent(%{
-      where: hub.name,
+      where: ctx.space.name,
       to: ctx.other_user,
       action: "added a link",
       author: ctx.creator,

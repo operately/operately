@@ -430,10 +430,8 @@ defmodule Operately.Support.Features.ResourceHubSteps do
   #
 
   step :assert_document_created_email_sent, ctx, document_name do
-    {:ok, hub} = ResourceHub.get(:system, space_id: ctx.space.id)
-
     ctx |> EmailSteps.assert_activity_email_sent(%{
-      where: hub.name,
+      where: ctx.space.name,
       to: ctx.other_user,
       action: "added a document: #{document_name}",
       author: ctx.creator,
@@ -441,10 +439,8 @@ defmodule Operately.Support.Features.ResourceHubSteps do
   end
 
   step :assert_document_edited_email_sent, ctx, document_name do
-    {:ok, hub} = ResourceHub.get(:system, space_id: ctx.space.id)
-
     ctx |> EmailSteps.assert_activity_email_sent(%{
-      where: hub.name,
+      where: ctx.space.name,
       to: ctx.other_user,
       action: "edited a document: #{document_name}",
       author: ctx.creator,
@@ -452,10 +448,8 @@ defmodule Operately.Support.Features.ResourceHubSteps do
   end
 
   step :assert_document_deleted_email_sent, ctx, document_name do
-    {:ok, hub} = ResourceHub.get(:system, space_id: ctx.space.id)
-
     ctx |> EmailSteps.assert_activity_email_sent(%{
-      where: hub.name,
+      where: ctx.space.name,
       to: ctx.other_user,
       action: "deleted a document: #{document_name}",
       author: ctx.creator,
@@ -463,10 +457,8 @@ defmodule Operately.Support.Features.ResourceHubSteps do
   end
 
   step :assert_document_copied_email_sent, ctx, document_name do
-    {:ok, hub} = ResourceHub.get(:system, space_id: ctx.space.id)
-
     ctx |> EmailSteps.assert_activity_email_sent(%{
-      where: hub.name,
+      where: ctx.space.name,
       to: ctx.other_user,
       action: "copied a document: #{document_name}",
       author: ctx.creator,
@@ -474,10 +466,8 @@ defmodule Operately.Support.Features.ResourceHubSteps do
   end
 
   step :assert_document_commented_email_sent, ctx, document_name do
-    {:ok, hub} = ResourceHub.get(:system, space_id: ctx.space.id)
-
     ctx |> EmailSteps.assert_activity_email_sent(%{
-      where: hub.name,
+      where: ctx.space.name,
       to: ctx.other_user,
       action: "commented on: #{document_name}",
       author: ctx.creator,
@@ -485,10 +475,8 @@ defmodule Operately.Support.Features.ResourceHubSteps do
   end
 
   step :assert_file_commented_email_sent, ctx do
-    {:ok, hub} = ResourceHub.get(:system, space_id: ctx.space.id)
-
     ctx |> EmailSteps.assert_activity_email_sent(%{
-      where: hub.name,
+      where: ctx.space.name,
       to: ctx.other_user,
       action: "commented on: File",
       author: ctx.creator,
