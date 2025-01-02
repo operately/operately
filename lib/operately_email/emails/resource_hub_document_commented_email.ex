@@ -7,14 +7,16 @@ defmodule OperatelyEmail.Emails.ResourceHubDocumentCommentedEmail do
 
   def send(person, activity) do
     %{author: author = %{company: company}} = Repo.preload(activity, author: :company)
-    {:ok, document} = Document.get(:system, id: activity.content["document_id"], opts: [preload: [:node, :resource_hub]])
+    {:ok, document} = Document.get(:system, id: activity.content["document_id"], opts: [
+      preload: [:node, :space]
+    ])
     comment = Updates.get_comment!(activity.content["comment_id"])
 
     company
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: document.resource_hub.name, who: author, action: "commented on: #{document.node.name}")
+    |> subject(where: document.space.name, who: author, action: "commented on: #{document.node.name}")
     |> assign(:author, author)
     |> assign(:comment, comment)
     |> assign(:name, document.node.name)
