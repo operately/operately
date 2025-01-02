@@ -9,14 +9,14 @@ defmodule OperatelyEmail.Emails.ResourceHubLinkCreatedEmail do
     company = Repo.preload(author, :company).company
 
     {:ok, link} = Link.get(:system, id: activity.content["link_id"], opts: [
-      preload: [:resource_hub],
+      preload: [:node, :space],
     ])
 
     company
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: link.resource_hub.name, who: author, action: "added a link")
+    |> subject(where: link.space.name, who: author, action: "added a link")
     |> assign(:author, author)
     |> assign(:link, link)
     |> assign(:cta_url, OperatelyWeb.Paths.link_path(company, link) |> OperatelyWeb.Paths.to_url())
