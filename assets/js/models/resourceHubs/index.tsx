@@ -20,6 +20,7 @@ export {
   useEditParentFolderInResourceHub,
   useEditResourceHubDocument,
   useEditResourceHubFile,
+  useEditResourceHubLink,
   useDeleteResourceHubDocument,
   useDeleteResourceHubFile,
   useDeleteResourceHubFolder,

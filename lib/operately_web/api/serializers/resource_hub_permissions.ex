@@ -15,6 +15,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ResourceHubs.Permissions d
       can_edit_document: permissions.can_edit_document,
       can_edit_parent_folder: permissions.can_edit_parent_folder,
       can_edit_file: permissions.can_edit_file,
+      can_edit_link: permissions.can_edit_link,
       can_rename_folder: permissions.can_rename_folder,
       can_view: permissions.can_view,
     }
