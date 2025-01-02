@@ -573,6 +573,15 @@ export interface ActivityContentResourceHubLinkDeleted {
   link?: ResourceHubLink | null;
 }
 
+export interface ActivityContentResourceHubLinkEdited {
+  resourceHub?: ResourceHub | null;
+  space?: Space | null;
+  link?: ResourceHubLink | null;
+  previousName?: string | null;
+  previousType?: string | null;
+  previousUrl?: string | null;
+}
+
 export interface ActivityContentSpaceAdded {
   companyId?: string | null;
   spaceId?: string | null;
