@@ -1,0 +1,3 @@
+<%= short_name(@author) %> edited a link: <%= @link.node.name %>
+
+Link: <%= @cta_url %>
