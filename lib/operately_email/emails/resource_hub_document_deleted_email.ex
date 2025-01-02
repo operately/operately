@@ -9,7 +9,7 @@ defmodule OperatelyEmail.Emails.ResourceHubDocumentDeletedEmail do
     company = Repo.preload(author, :company).company
 
     {:ok, document} = Document.get(:system, id: activity.content["document_id"], opts: [
-      preload: [:node, :resource_hub],
+      preload: [:node, :space, :resource_hub],
       with_deleted: true,
     ])
 
@@ -17,7 +17,7 @@ defmodule OperatelyEmail.Emails.ResourceHubDocumentDeletedEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: document.resource_hub.name, who: author, action: "deleted a document: #{document.node.name}")
+    |> subject(where: document.space.name, who: author, action: "deleted a document: #{document.node.name}")
     |> assign(:author, author)
     |> assign(:document, document)
     |> assign(:cta_url, OperatelyWeb.Paths.resource_hub_path(company, document.resource_hub) |> OperatelyWeb.Paths.to_url())
