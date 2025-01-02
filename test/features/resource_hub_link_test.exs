@@ -6,7 +6,7 @@ defmodule Features.ResourceHubLinkTest do
 
   @link %{
     title: "Link",
-    link: "http://localhost:4000",
+    url: "http://localhost:4000",
     notes: "This is a link",
   }
 
@@ -27,8 +27,11 @@ defmodule Features.ResourceHubLinkTest do
     feature "edit link", ctx do
       link = %{
         title: "Link (edited)",
-        link: "http://localhost:3000",
+        url: "http://localhost:3000",
         notes: "This is a link (also edited)",
+
+        previous_title: @link.title,
+        previous_url: @link.url,
       }
 
       ctx
@@ -36,6 +39,8 @@ defmodule Features.ResourceHubLinkTest do
       |> LinkSteps.create_link(@link)
       |> LinkSteps.edit_link(link)
       |> LinkSteps.assert_link_content(link)
+      |> LinkSteps.assert_link_edited_on_space_feed(link)
+      |> LinkSteps.assert_link_edited_on_company_feed(link)
     end
 
     feature "delete link from content list", ctx do

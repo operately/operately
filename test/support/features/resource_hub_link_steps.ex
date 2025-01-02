@@ -31,7 +31,7 @@ defmodule Operately.Support.Features.ResourceHubLinkSteps do
     |> UI.click(testid: "add-options")
     |> UI.click(testid: "link-to-external-resources")
     |> UI.fill(testid: "title", with: attrs.title)
-    |> UI.fill(testid: "link", with: attrs.link)
+    |> UI.fill(testid: "link", with: attrs.url)
     |> UI.fill_rich_text(attrs.notes)
     |> UI.click(testid: "submit")
     |> UI.refute_has(testid: "submit")
@@ -42,7 +42,7 @@ defmodule Operately.Support.Features.ResourceHubLinkSteps do
     |> UI.click(testid: "options-button")
     |> UI.click(testid: "edit-link-link")
     |> UI.fill(testid: "title", with: attrs.title)
-    |> UI.fill(testid: "link", with: attrs.link)
+    |> UI.fill(testid: "link", with: attrs.url)
     |> UI.fill_rich_text(attrs.notes)
     |> UI.click(testid: "submit")
     |> UI.refute_has(testid: "submit")
@@ -71,7 +71,7 @@ defmodule Operately.Support.Features.ResourceHubLinkSteps do
     ctx
     |> UI.assert_page(Paths.link_path(ctx.company, node.link))
     |> UI.assert_text(attrs.title)
-    |> UI.assert_text(attrs.link)
+    |> UI.assert_text(attrs.url)
     |> UI.assert_text(attrs.notes)
   end
 
@@ -89,6 +89,22 @@ defmodule Operately.Support.Features.ResourceHubLinkSteps do
     ctx
     |> UI.visit(Paths.feed_path(ctx.company))
     |> UI.assert_text("added a link: #{link_name}")
+  end
+
+  step :assert_link_edited_on_space_feed, ctx, attrs do
+    ctx
+    |> UI.visit(Paths.space_path(ctx.company, ctx.space))
+    |> UI.assert_text("edited a link: #{attrs.title}")
+    |> UI.assert_text("#{attrs.previous_title} → #{attrs.title}")
+    |> UI.assert_text("#{attrs.previous_url} → #{attrs.url}")
+  end
+
+  step :assert_link_edited_on_company_feed, ctx, attrs do
+    ctx
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.assert_text("edited a link in the #{ctx.space.name} space: #{attrs.title}")
+    |> UI.assert_text("#{attrs.previous_title} → #{attrs.title}")
+    |> UI.assert_text("#{attrs.previous_url} → #{attrs.url}")
   end
 
   step :assert_link_deleted_on_space_feed, ctx do
