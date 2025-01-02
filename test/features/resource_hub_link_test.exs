@@ -4,17 +4,25 @@ defmodule Features.ResourceHubLinkTest do
   alias Operately.Support.Features.ResourceHubSteps, as: Steps
   alias Operately.Support.Features.ResourceHubLinkSteps, as: LinkSteps
 
+  @link %{
+    title: "Link",
+    link: "http://localhost:4000",
+  }
+
   setup ctx, do: Steps.setup(ctx)
 
   describe "links" do
     feature "delete link from content list", ctx do
       ctx
-      |> LinkSteps.given_link_exists()
-      |> Steps.visit_resource_hub_page("Resource hub")
-      |> LinkSteps.delete_link("Link")
-      |> Steps.assert_zero_state("Resource hub")
+      |> Steps.visit_resource_hub_page()
+      |> LinkSteps.create_link(@link)
+      |> Steps.visit_resource_hub_page()
+      |> LinkSteps.delete_link(@link.title)
+      |> Steps.assert_zero_state()
       |> LinkSteps.assert_link_deleted_on_space_feed()
       |> LinkSteps.assert_link_deleted_on_company_feed()
+      |> LinkSteps.assert_link_deleted_notification_sent()
+      |> LinkSteps.assert_link_deleted_email_sent()
     end
 
     feature "deleting link from link page redirects to resource hub", ctx do
