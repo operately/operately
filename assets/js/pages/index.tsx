@@ -90,6 +90,7 @@ import * as ResourceHubCopyDocumentPage from "./ResourceHubCopyDocumentPage";
 import * as ResourceHubDocumentPage from "./ResourceHubDocumentPage";
 import * as ResourceHubEditDocumentPage from "./ResourceHubEditDocumentPage";
 import * as ResourceHubEditFilePage from "./ResourceHubEditFilePage";
+import * as ResourceHubEditLinkPage from "./ResourceHubEditLinkPage";
 import * as ResourceHubFilePage from "./ResourceHubFilePage";
 import * as ResourceHubFolderPage from "./ResourceHubFolderPage";
 import * as ResourceHubLinkPage from "./ResourceHubLinkPage";
@@ -550,6 +551,11 @@ export default {
     name: "ResourceHubEditFilePage",
     loader: ResourceHubEditFilePage.loader,
     Page: ResourceHubEditFilePage.Page,
+  },
+  ResourceHubEditLinkPage: {
+    name: "ResourceHubEditLinkPage",
+    loader: ResourceHubEditLinkPage.loader,
+    Page: ResourceHubEditLinkPage.Page,
   },
   ResourceHubFilePage: {
     name: "ResourceHubFilePage",

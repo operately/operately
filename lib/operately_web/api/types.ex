@@ -621,6 +621,7 @@ defmodule OperatelyWeb.Api.Types do
     field :can_edit_document, :boolean
     field :can_edit_parent_folder, :boolean
     field :can_edit_file, :boolean
+    field :can_edit_link, :boolean
     field :can_rename_folder, :boolean
     field :can_view, :boolean
   end
