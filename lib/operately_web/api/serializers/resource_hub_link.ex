@@ -5,7 +5,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ResourceHubs.Link do
       name: link.node.name,
       url: link.url,
       description: Jason.encode!(link.description),
-      type: link.type,
+      type: Atom.to_string(link.type),
       parent_folder_id: link.node.parent_folder_id && OperatelyWeb.Paths.folder_id(link.node.parent_folder_id),
     }
   end
