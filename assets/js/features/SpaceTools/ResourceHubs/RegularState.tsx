@@ -1,11 +1,11 @@
-import React from "react";
+import React, { useMemo } from "react";
 import classNames from "classnames";
 import { ResourceHub, ResourceHubNode } from "@/models/resourceHubs";
 import { Title } from "../components";
 import { findSubtitle, NodeType } from "@/features/ResourceHub";
 import { NodeIcon } from "@/features/ResourceHub/NodeIcon";
 import { CommentsCountIndicator } from "@/features/Comments";
-import { findCommentsCount } from "@/features/ResourceHub/utils";
+import { findCommentsCount, sortNodesWithFoldersFirst } from "@/features/ResourceHub/utils";
 
 interface Props {
   resourceHub: ResourceHub;
@@ -24,9 +24,11 @@ export function RegularState(props: Props) {
 }
 
 function NodesList({ nodes }: { nodes: ResourceHubNode[] }) {
+  const sortedNodes = useMemo(() => sortNodesWithFoldersFirst(nodes), [nodes]);
+
   return (
     <div>
-      {nodes.map((node) => (
+      {sortedNodes.map((node) => (
         <NodeItem key={node.id} node={node} />
       ))}
     </div>
