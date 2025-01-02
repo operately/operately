@@ -26,6 +26,16 @@ defmodule Operately.Support.Features.ResourceHubLinkSteps do
     UI.visit(ctx, Paths.link_path(ctx.company, ctx.link))
   end
 
+  step :create_link, ctx, attrs do
+    ctx
+    |> UI.click(testid: "add-options")
+    |> UI.click(testid: "link-to-external-resources")
+    |> UI.fill(testid: "title", with: attrs.title)
+    |> UI.fill(testid: "link", with: attrs.link)
+    |> UI.click(testid: "submit")
+    |> UI.refute_has(testid: "submit")
+  end
+
   step :delete_link, ctx do
     ctx
     |> UI.click(testid: "options-button")
@@ -50,13 +60,13 @@ defmodule Operately.Support.Features.ResourceHubLinkSteps do
   step :assert_link_deleted_on_space_feed, ctx do
     ctx
     |> UI.visit(Paths.space_path(ctx.company, ctx.space))
-    |> UI.assert_text("deleted Link from Resource hub")
+    |> UI.assert_text("deleted Link from Documents & Files")
   end
 
   step :assert_link_deleted_on_company_feed, ctx do
     ctx
     |> UI.visit(Paths.feed_path(ctx.company))
-    |> UI.assert_text("deleted Link from Resource hub in the Product Space space")
+    |> UI.assert_text("deleted Link from Documents & Files in the Product Space space")
   end
 
   #
