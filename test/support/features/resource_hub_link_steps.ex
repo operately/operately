@@ -88,7 +88,7 @@ defmodule Operately.Support.Features.ResourceHubLinkSteps do
   step :assert_link_created_on_company_feed, ctx, link_name do
     ctx
     |> UI.visit(Paths.feed_path(ctx.company))
-    |> UI.assert_text("added a link: #{link_name}")
+    |> UI.assert_text("added a link to Documents & Files in the #{ctx.space.name} space: #{link_name}")
   end
 
   step :assert_link_edited_on_space_feed, ctx, attrs do
@@ -110,13 +110,13 @@ defmodule Operately.Support.Features.ResourceHubLinkSteps do
   step :assert_link_deleted_on_space_feed, ctx do
     ctx
     |> UI.visit(Paths.space_path(ctx.company, ctx.space))
-    |> UI.assert_text("deleted Link from Documents & Files")
+    |> UI.assert_text("deleted the \"Link\" link from Documents & Files")
   end
 
   step :assert_link_deleted_on_company_feed, ctx do
     ctx
     |> UI.visit(Paths.feed_path(ctx.company))
-    |> UI.assert_text("deleted Link from Documents & Files in the Product Space space")
+    |> UI.assert_text("deleted the \"Link\" link from Documents & Files in the Product Space space")
   end
 
   #
