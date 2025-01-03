@@ -5,6 +5,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Activities.Content.Resourc
     document = Map.put(content["document"], :node, content["node"])
 
     %{
+      space: Serializer.serialize(content["space"], level: :essential),
       document: Serializer.serialize(document, level: :essential),
       comment: Serializer.serialize(content["comment"], level: :essential),
     }
