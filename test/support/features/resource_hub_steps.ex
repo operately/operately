@@ -278,26 +278,26 @@ defmodule Operately.Support.Features.ResourceHubSteps do
   step :assert_folder_created_on_space_feed, ctx, folder_name do
     ctx
     |> UI.visit(Paths.space_path(ctx.company, ctx.space))
-    |> UI.assert_text("created the #{folder_name} folder in Documents & Files")
+    |> UI.assert_text("created a folder: #{folder_name}")
   end
 
   step :assert_folder_created_on_company_feed, ctx, folder_name do
     ctx
     |> UI.visit(Paths.feed_path(ctx.company))
-    |> UI.assert_text("created the #{folder_name} folder in Documents & Files")
+    |> UI.assert_text("created a folder in the #{ctx.space.name} space: #{folder_name}")
   end
 
   step :assert_document_created_on_space_feed, ctx, attrs do
     ctx
     |> UI.visit(Paths.space_path(ctx.company, ctx.space))
-    |> UI.assert_text("added the #{attrs.name} document")
+    |> UI.assert_text("created a document: #{attrs.name}")
     |> UI.assert_text(attrs.content)
   end
 
   step :assert_document_created_on_company_feed, ctx, attrs do
     ctx
     |> UI.visit(Paths.feed_path(ctx.company))
-    |> UI.assert_text("added the #{attrs.name} document")
+    |> UI.assert_text("created a document in the #{ctx.space.name} space: #{attrs.name}")
     |> UI.assert_text(attrs.content)
   end
 
@@ -310,25 +310,25 @@ defmodule Operately.Support.Features.ResourceHubSteps do
   step :assert_document_edited_on_company_feed, ctx, document_name do
     ctx
     |> UI.visit(Paths.feed_path(ctx.company))
-    |> UI.assert_text("edited #{document_name}")
+    |> UI.assert_text("edited #{document_name} in the #{ctx.space.name} space")
   end
 
   step :assert_document_deleted_on_space_feed, ctx, document_name do
     ctx
     |> UI.visit(Paths.space_path(ctx.company, ctx.space))
-    |> UI.assert_text("deleted #{document_name} from Documents & Files")
+    |> UI.assert_text("deleted \"#{document_name}\" from Documents & Files")
   end
 
   step :assert_document_deleted_on_company_feed, ctx, document_name do
     ctx
     |> UI.visit(Paths.feed_path(ctx.company))
-    |> UI.assert_text("deleted #{document_name} from Documents & Files")
+    |> UI.assert_text("deleted \"#{document_name}\" from Documents & Files in the #{ctx.space.name} space")
   end
 
   step :assert_document_copied_on_company_feed, ctx, attrs do
     ctx
     |> UI.visit(Paths.feed_path(ctx.company))
-    |> UI.assert_text("created a copy of #{attrs.name} and named it #{attrs.new_name}")
+    |> UI.assert_text("created a copy of #{attrs.name} and named it #{attrs.new_name} in the #{ctx.space.name} space")
   end
 
   step :assert_document_copied_on_space_feed, ctx, attrs do
@@ -340,7 +340,7 @@ defmodule Operately.Support.Features.ResourceHubSteps do
   step :assert_document_commented_on_company_feed, ctx, document_name do
     ctx
     |> UI.visit(Paths.feed_path(ctx.company))
-    |> UI.assert_text("commented on #{document_name}")
+    |> UI.assert_text("commented on #{document_name} in the #{ctx.space.name} space")
   end
 
   step :assert_document_commented_on_space_feed, ctx, document_name do
@@ -352,7 +352,7 @@ defmodule Operately.Support.Features.ResourceHubSteps do
   step :assert_file_commented_on_company_feed, ctx do
     ctx
     |> UI.visit(Paths.feed_path(ctx.company))
-    |> UI.assert_text("commented on File")
+    |> UI.assert_text("commented on File in the #{ctx.space.name} space")
   end
 
   step :assert_file_commented_on_space_feed, ctx do
