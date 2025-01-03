@@ -6,8 +6,7 @@ import type { ActivityContentResourceHubFolderRenamed } from "@/api";
 import type { ActivityHandler } from "../interfaces";
 import { Paths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
-import { Link } from "@/components/Link";
-import { feedTitle } from "../feedItemLinks";
+import { feedTitle, folderLink, spaceLink } from "../feedItemLinks";
 
 const ResourceHubFolderRenamed: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -33,18 +32,17 @@ const ResourceHubFolderRenamed: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity }: { activity: Activity }) {
-    const resourceHub = content(activity).resourceHub;
-    const folder = content(activity).folder;
-    assertPresent(folder?.id, "folder.id must be present in ResourceHubFolderRenamed activity content");
-    assertPresent(resourceHub?.id, "resourceHub.id must be present in ResourceHubFolderRenamed activity content");
+  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+    const data = content(activity);
 
-    const path = Paths.resourceHubFolderPath(folder.id);
-    const link = <Link to={path}>{folder.name}</Link>;
-    const hubPath = Paths.resourceHubPath(resourceHub.id);
-    const hubLink = <Link to={hubPath}>{resourceHub.name}</Link>;
+    const space = spaceLink(data.space!);
+    const folder = folderLink(data.folder!);
 
-    return feedTitle(activity, "renamed the", link, "folder in", hubLink);
+    if (page === "space") {
+      return feedTitle(activity, "renamed the", folder, "folder");
+    } else {
+      return feedTitle(activity, "renamed the", folder, "folder in the", space, "space");
+    }
   },
 
   FeedItemContent({ activity }: { activity: Activity; page: any }) {

@@ -1,12 +1,10 @@
-import React from "react";
 import * as People from "@/models/people";
 
 import type { Activity } from "@/models/activities";
 import type { ActivityContentResourceHubFolderDeleted } from "@/api";
 import type { ActivityHandler } from "../interfaces";
 import { Paths } from "@/routes/paths";
-import { Link } from "@/components/Link";
-import { feedTitle } from "../feedItemLinks";
+import { feedTitle, resourceHubLink, spaceLink } from "../feedItemLinks";
 
 const ResourceHubFolderDeleted: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -29,14 +27,18 @@ const ResourceHubFolderDeleted: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity }: { activity: Activity }) {
-    const resourceHub = content(activity).resourceHub!;
-    const folder = content(activity).folder!;
+  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+    const data = content(activity);
 
-    const path = Paths.resourceHubPath(resourceHub.id!);
-    const link = <Link to={path}>{resourceHub.name}</Link>;
+    const space = spaceLink(data.space!);
+    const resourceHub = resourceHubLink(data.resourceHub!);
+    const folder = data.folder!;
 
-    return feedTitle(activity, "deleted the", folder.name!, "folder from", link);
+    if (page === "space") {
+      return feedTitle(activity, `deleted the "${folder.name}" folder from`, resourceHub);
+    } else {
+      return feedTitle(activity, `deleted the "${folder.name}" folder from`, resourceHub, "in the", space, "space");
+    }
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {

@@ -33,9 +33,9 @@ const ResourceHubLinkDeleted: ActivityHandler = {
     const link = content(activity).link!.name!;
 
     if (page === "space") {
-      return feedTitle(activity, "deleted", link, "from", resourceHub);
+      return feedTitle(activity, `deleted the "${link}" link from`, resourceHub);
     } else {
-      return feedTitle(activity, "deleted", link, "from", resourceHub, "in the", space, "space");
+      return feedTitle(activity, `deleted the "${link}" link from`, resourceHub, "in the", space, "space");
     }
   },
 
