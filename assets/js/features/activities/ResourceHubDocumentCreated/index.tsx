@@ -4,8 +4,7 @@ import type { Activity } from "@/models/activities";
 import type { ActivityContentResourceHubDocumentCreated } from "@/api";
 import type { ActivityHandler } from "../interfaces";
 import { Paths } from "@/routes/paths";
-import { Link } from "@/components/Link";
-import { feedTitle } from "../feedItemLinks";
+import { documentLink, feedTitle, spaceLink } from "../feedItemLinks";
 import { Summary } from "@/components/RichContent";
 
 const ResourceHubDocumentCreating: ActivityHandler = {
@@ -29,21 +28,20 @@ const ResourceHubDocumentCreating: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity }: { activity: Activity; page: any }) {
-    const document = content(activity).document!;
-    const copiedDocument = content(activity).copiedDocument;
+  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+    const data = content(activity);
+    const document = documentLink(data.document!);
 
-    const path = Paths.resourceHubDocumentPath(document.id!);
-    const link = <Link to={path}>{document.name}</Link>;
+    const coreMessage = data.copiedDocument
+      ? ["created a copy of", documentLink(data.copiedDocument), "and named it", document]
+      : ["created a document", document];
 
-    if (copiedDocument) {
-      const copiedDocumentPath = Paths.resourceHubDocumentPath(copiedDocument.id!);
-      const copiedDocumentLink = <Link to={copiedDocumentPath}>{copiedDocument.name}</Link>;
-
-      return feedTitle(activity, "created a copy of", copiedDocumentLink, "and named it", link);
-    } else {
-      return feedTitle(activity, "added the", link, "document");
+    if (page !== "space") {
+      const space = spaceLink(data.space!);
+      return feedTitle(activity, ...coreMessage, "in the", space, "space");
     }
+
+    return feedTitle(activity, ...coreMessage);
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {

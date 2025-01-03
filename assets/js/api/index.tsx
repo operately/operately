@@ -504,27 +504,32 @@ export interface ActivityContentProjectTimelineEdited {
 }
 
 export interface ActivityContentResourceHubDocumentCommented {
+  space?: Space | null;
   document?: ResourceHubDocument | null;
   comment?: Comment | null;
 }
 
 export interface ActivityContentResourceHubDocumentCreated {
+  space?: Space | null;
   resourceHub?: ResourceHub | null;
   document?: ResourceHubDocument | null;
   copiedDocument?: ResourceHubDocument | null;
 }
 
 export interface ActivityContentResourceHubDocumentDeleted {
+  space?: Space | null;
   resourceHub?: ResourceHub | null;
   document?: ResourceHubDocument | null;
 }
 
 export interface ActivityContentResourceHubDocumentEdited {
+  space?: Space | null;
   resourceHub?: ResourceHub | null;
   document?: ResourceHubDocument | null;
 }
 
 export interface ActivityContentResourceHubFileCommented {
+  space?: Space | null;
   file?: ResourceHubFile | null;
   comment?: Comment | null;
 }
@@ -533,29 +538,35 @@ export interface ActivityContentResourceHubFileCreated {
   fileId?: string | null;
   fileName?: string | null;
   resourceHub?: ResourceHub | null;
+  space?: Space | null;
 }
 
 export interface ActivityContentResourceHubFileDeleted {
+  space?: Space | null;
   resourceHub?: ResourceHub | null;
   file?: ResourceHubFile | null;
 }
 
 export interface ActivityContentResourceHubFileEdited {
+  space?: Space | null;
   resourceHub?: ResourceHub | null;
   file?: ResourceHubFile | null;
 }
 
 export interface ActivityContentResourceHubFolderCreated {
+  space?: Space | null;
   resourceHub?: ResourceHub | null;
   folder?: ResourceHubFolder | null;
 }
 
 export interface ActivityContentResourceHubFolderDeleted {
+  space?: Space | null;
   resourceHub?: ResourceHub | null;
   folder?: ResourceHubFolder | null;
 }
 
 export interface ActivityContentResourceHubFolderRenamed {
+  space?: Space | null;
   resourceHub?: ResourceHub | null;
   folder?: ResourceHubFolder | null;
   oldName?: string | null;
@@ -563,6 +574,7 @@ export interface ActivityContentResourceHubFolderRenamed {
 }
 
 export interface ActivityContentResourceHubLinkCreated {
+  space?: Space | null;
   resourceHub?: ResourceHub | null;
   link?: ResourceHubLink | null;
 }

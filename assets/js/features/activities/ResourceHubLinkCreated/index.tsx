@@ -5,8 +5,7 @@ import type { Activity } from "@/models/activities";
 import type { ActivityContentResourceHubLinkCreated } from "@/api";
 import type { ActivityHandler } from "../interfaces";
 import { Paths } from "@/routes/paths";
-import { Link } from "@/components/Link";
-import { feedTitle } from "../feedItemLinks";
+import { feedTitle, linkLink, resourceHubLink, spaceLink } from "../feedItemLinks";
 
 const ResourceHubLinkCreated: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -29,15 +28,23 @@ const ResourceHubLinkCreated: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity }: { activity: Activity }) {
-    const path = Paths.resourceHubLinkPath(content(activity).link?.id!);
-    const link = <Link to={path}>{content(activity).link?.name}</Link>;
+  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+    const data = content(activity);
 
-    return feedTitle(activity, "added a link:", link);
+    const space = spaceLink(data.space!);
+    const resourceHub = resourceHubLink(data.resourceHub!);
+    const link = linkLink(data.link!);
+
+    if (page === "space") {
+      return feedTitle(activity, "added a link:", link);
+    } else {
+      return feedTitle(activity, "added a link to", resourceHub, "in the", space, "space:", link);
+    }
   },
 
-  FeedItemContent(_props: { activity: Activity; page: any }) {
-    return null;
+  FeedItemContent({ activity }: { activity: Activity; page: any }) {
+    const link = content(activity).link!;
+    return <div>{link.url}</div>;
   },
 
   feedItemAlignment(_activity: Activity): "items-start" | "items-center" {

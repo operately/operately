@@ -5,8 +5,7 @@ import type { Activity } from "@/models/activities";
 import type { ActivityContentResourceHubFileEdited } from "@/api";
 import type { ActivityHandler } from "../interfaces";
 import { Paths } from "@/routes/paths";
-import { Link } from "@/components/Link";
-import { feedTitle } from "../feedItemLinks";
+import { feedTitle, fileLink, spaceLink } from "../feedItemLinks";
 import { Summary } from "@/components/RichContent";
 
 const ResourceHubFileEdited: ActivityHandler = {
@@ -31,13 +30,17 @@ const ResourceHubFileEdited: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity }: { activity: Activity }) {
-    const file = content(activity).file!;
+  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+    const data = content(activity);
 
-    const path = Paths.resourceHubFilePath(file.id!);
-    const link = <Link to={path}>{file.name}</Link>;
+    const space = spaceLink(data.space!);
+    const file = fileLink(data.file!);
 
-    return feedTitle(activity, "edited a file:", link);
+    if (page === "space") {
+      return feedTitle(activity, "edited a file:", file);
+    } else {
+      return feedTitle(activity, "edited a file in the", space, "space:", file);
+    }
   },
 
   FeedItemContent({ activity }: { activity: Activity; page: any }) {

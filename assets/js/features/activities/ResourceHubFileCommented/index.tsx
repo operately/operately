@@ -7,8 +7,7 @@ import type { ActivityHandler } from "../interfaces";
 import { Paths } from "@/routes/paths";
 import { Summary } from "@/components/RichContent";
 import React from "react";
-import { Link } from "@/components/Link";
-import { feedTitle } from "../feedItemLinks";
+import { feedTitle, fileLink, spaceLink } from "../feedItemLinks";
 
 const ResourceHubFileCommented: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -31,13 +30,17 @@ const ResourceHubFileCommented: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity }: { activity: Activity; page: any }) {
-    const file = content(activity).file!;
+  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+    const data = content(activity);
 
-    const path = Paths.resourceHubFilePath(file.id!);
-    const activityLink = <Link to={path}>{file.name}</Link>;
+    const file = fileLink(data.file!);
+    const space = spaceLink(data.space!);
 
-    return feedTitle(activity, "commented on", activityLink);
+    if (page === "space") {
+      return feedTitle(activity, "commented on", file);
+    } else {
+      return feedTitle(activity, "commented on", file, "in the", space, "space");
+    }
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {

@@ -1,12 +1,10 @@
-import React from "react";
 import * as People from "@/models/people";
 
 import type { Activity } from "@/models/activities";
 import type { ActivityContentResourceHubDocumentEdited } from "@/api";
 import type { ActivityHandler } from "../interfaces";
 import { Paths } from "@/routes/paths";
-import { feedTitle } from "../feedItemLinks";
-import { Link } from "@/components/Link";
+import { documentLink, feedTitle, spaceLink } from "../feedItemLinks";
 
 const ResourceHubDocumentEdited: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -29,13 +27,17 @@ const ResourceHubDocumentEdited: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity }: { activity: Activity }) {
-    const document = content(activity).document!;
+  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+    const data = content(activity);
 
-    const path = Paths.resourceHubDocumentPath(document.id!);
-    const activityLink = <Link to={path}>{document.name}</Link>;
+    const document = documentLink(data.document!);
+    const space = spaceLink(data.space!);
 
-    return feedTitle(activity, "edited", activityLink);
+    if (page === "space") {
+      return feedTitle(activity, "edited", document);
+    } else {
+      return feedTitle(activity, "edited", document, "in the", space, "space");
+    }
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {
