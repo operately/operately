@@ -29,11 +29,19 @@ const ResourceHubDocumentCreating: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    if (content(activity).copiedDocument) {
-      return ItemCopiedTitle(activity, page);
-    } else {
-      return ItemCreatedTitle(activity, page);
+    const data = content(activity);
+    const document = documentLink(data.document!);
+
+    const coreMessage = data.copiedDocument
+      ? ["created a copy of", documentLink(data.copiedDocument), "and named it", document]
+      : ["created a document", document];
+
+    if (page !== "space") {
+      const space = spaceLink(data.space!);
+      return feedTitle(activity, ...coreMessage, "in the", space, "space");
     }
+
+    return feedTitle(activity, ...coreMessage);
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {
@@ -79,30 +87,3 @@ function content(activity: Activity): ActivityContentResourceHubDocumentCreated 
 }
 
 export default ResourceHubDocumentCreating;
-
-function ItemCopiedTitle(activity: Activity, page: string) {
-  const data = content(activity);
-
-  const space = spaceLink(data.space!);
-  const document = documentLink(data.document!);
-  const copiedDocument = documentLink(data.copiedDocument!);
-
-  if (page === "space") {
-    return feedTitle(activity, "created a copy of", copiedDocument, "and named it", document);
-  } else {
-    return feedTitle(activity, "created a copy of", copiedDocument, "and named it", document, "in the", space, "space");
-  }
-}
-
-function ItemCreatedTitle(activity: Activity, page: string) {
-  const data = content(activity);
-
-  const space = spaceLink(data.space!);
-  const document = documentLink(data.document!);
-
-  if (page === "space") {
-    return feedTitle(activity, "created a document:", document);
-  } else {
-    return feedTitle(activity, "created a document in the", space, "space:", document);
-  }
-}
