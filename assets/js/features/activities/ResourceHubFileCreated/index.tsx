@@ -6,7 +6,7 @@ import type { ActivityContentResourceHubFileCreated } from "@/api";
 import type { ActivityHandler } from "../interfaces";
 import { Paths } from "@/routes/paths";
 import { Link } from "@/components/Link";
-import { feedTitle } from "../feedItemLinks";
+import { feedTitle, resourceHubLink, spaceLink } from "../feedItemLinks";
 
 const ResourceHubFileCreated: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -29,11 +29,19 @@ const ResourceHubFileCreated: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity }: { activity: Activity; page: any }) {
-    const path = Paths.resourceHubFilePath(content(activity).fileId!);
-    const link = <Link to={path}>{content(activity).fileName}</Link>;
+  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+    const data = content(activity);
 
-    return feedTitle(activity, "added a file:", link);
+    const space = spaceLink(data.space!);
+    const resourceHub = resourceHubLink(data.resourceHub!);
+    const path = Paths.resourceHubFilePath(data.fileId!);
+    const file = <Link to={path}>{data.fileName}</Link>;
+
+    if (page === "space") {
+      return feedTitle(activity, "added a file:", file);
+    } else {
+      return feedTitle(activity, "added a file to", resourceHub, "in the", space, "space:", file);
+    }
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {
