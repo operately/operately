@@ -58,6 +58,7 @@ export function sortNodesWithFoldersFirst(nodes: ResourceHubNode[]) {
   });
 
   folders.sort((a, b) => a.name!.localeCompare(b.name!));
+  others.sort((a, b) => a.name!.localeCompare(b.name!));
 
   return [...folders, ...others];
 }
