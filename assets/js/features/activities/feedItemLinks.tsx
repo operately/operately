@@ -44,3 +44,31 @@ export const resourceHubLink = (hub: api.ResourceHub) => {
 
   return <Link to={path}>{name}</Link>;
 };
+
+export const documentLink = (document: api.ResourceHubDocument) => {
+  const path = Paths.resourceHubDocumentPath(document.id!);
+  const name = document.name!;
+
+  return <Link to={path}>{name}</Link>;
+};
+
+export const fileLink = (file: api.ResourceHubFile) => {
+  const path = Paths.resourceHubFilePath(file.id!);
+  const name = file.name!;
+
+  return <Link to={path}>{name}</Link>;
+};
+
+export const folderLink = (folder: api.ResourceHubFolder) => {
+  const path = Paths.resourceHubFolderPath(folder.id!);
+  const name = folder.name!;
+
+  return <Link to={path}>{name}</Link>;
+};
+
+export const linkLink = (link: api.ResourceHubLink) => {
+  const path = Paths.resourceHubLinkPath(link.id!);
+  const name = link.name!;
+
+  return <Link to={path}>{name}</Link>;
+};

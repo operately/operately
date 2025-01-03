@@ -4,8 +4,7 @@ import type { Activity } from "@/models/activities";
 import type { ActivityContentResourceHubDocumentCreated } from "@/api";
 import type { ActivityHandler } from "../interfaces";
 import { Paths } from "@/routes/paths";
-import { Link } from "@/components/Link";
-import { feedTitle } from "../feedItemLinks";
+import { documentLink, feedTitle, spaceLink } from "../feedItemLinks";
 import { Summary } from "@/components/RichContent";
 
 const ResourceHubDocumentCreating: ActivityHandler = {
@@ -29,20 +28,11 @@ const ResourceHubDocumentCreating: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity }: { activity: Activity; page: any }) {
-    const document = content(activity).document!;
-    const copiedDocument = content(activity).copiedDocument;
-
-    const path = Paths.resourceHubDocumentPath(document.id!);
-    const link = <Link to={path}>{document.name}</Link>;
-
-    if (copiedDocument) {
-      const copiedDocumentPath = Paths.resourceHubDocumentPath(copiedDocument.id!);
-      const copiedDocumentLink = <Link to={copiedDocumentPath}>{copiedDocument.name}</Link>;
-
-      return feedTitle(activity, "created a copy of", copiedDocumentLink, "and named it", link);
+  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+    if (content(activity).copiedDocument) {
+      return ItemCopiedTitle(activity, page);
     } else {
-      return feedTitle(activity, "added the", link, "document");
+      return ItemCreatedTitle(activity, page);
     }
   },
 
@@ -89,3 +79,30 @@ function content(activity: Activity): ActivityContentResourceHubDocumentCreated 
 }
 
 export default ResourceHubDocumentCreating;
+
+function ItemCopiedTitle(activity: Activity, page: string) {
+  const data = content(activity);
+
+  const space = spaceLink(data.space!);
+  const document = documentLink(data.document!);
+  const copiedDocument = documentLink(data.copiedDocument!);
+
+  if (page === "space") {
+    return feedTitle(activity, "created a copy of", copiedDocument, "and named it", document);
+  } else {
+    return feedTitle(activity, "created a copy of", copiedDocument, "and named it", document, "in the", space, "space");
+  }
+}
+
+function ItemCreatedTitle(activity: Activity, page: string) {
+  const data = content(activity);
+
+  const space = spaceLink(data.space!);
+  const document = documentLink(data.document!);
+
+  if (page === "space") {
+    return feedTitle(activity, "created a document:", document);
+  } else {
+    return feedTitle(activity, "created a document in the", space, "space:", document);
+  }
+}

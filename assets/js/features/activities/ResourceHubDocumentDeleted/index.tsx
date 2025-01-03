@@ -1,12 +1,10 @@
-import React from "react";
 import * as People from "@/models/people";
 
 import type { Activity } from "@/models/activities";
 import type { ActivityContentResourceHubDocumentDeleted } from "@/api";
 import type { ActivityHandler } from "../interfaces";
 import { Paths } from "@/routes/paths";
-import { Link } from "@/components/Link";
-import { feedTitle } from "../feedItemLinks";
+import { feedTitle, resourceHubLink, spaceLink } from "../feedItemLinks";
 
 const ResourceHubDocumentDeleted: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -29,14 +27,18 @@ const ResourceHubDocumentDeleted: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity }: { activity: Activity }) {
-    const resourceHub = content(activity).resourceHub!;
+  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+    const data = content(activity);
+
+    const space = spaceLink(data.space!);
+    const resourceHub = resourceHubLink(data.resourceHub!);
     const document = content(activity).document!;
 
-    const path = Paths.resourceHubPath(resourceHub.id!);
-    const link = <Link to={path}>{resourceHub.name}</Link>;
-
-    return feedTitle(activity, "deleted", document.name!, "from", link);
+    if (page === "space") {
+      return feedTitle(activity, `deleted "${document.name}" from`, resourceHub);
+    } else {
+      return feedTitle(activity, `deleted "${document.name}" from`, resourceHub, "in the", space, "space");
+    }
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {

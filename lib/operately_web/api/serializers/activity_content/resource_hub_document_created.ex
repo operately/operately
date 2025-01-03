@@ -6,6 +6,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Activities.Content.Resourc
     copied_document = get_copied_document(content)
 
     %{
+      space: Serializer.serialize(content["space"], level: :essential),
       resource_hub: Serializer.serialize(content["resource_hub"], level: :essential),
       document: Serializer.serialize(document, level: :essential),
       copied_document: Serializer.serialize(copied_document, level: :essential),

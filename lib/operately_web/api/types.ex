@@ -421,16 +421,19 @@ defmodule OperatelyWeb.Api.Types do
   ]
 
   object :activity_content_resource_hub_folder_created do
+    field :space, :space
     field :resource_hub, :resource_hub
     field :folder, :resource_hub_folder
   end
 
   object :activity_content_resource_hub_folder_deleted do
+    field :space, :space
     field :resource_hub, :resource_hub
     field :folder, :resource_hub_folder
   end
 
   object :activity_content_resource_hub_folder_renamed do
+    field :space, :space
     field :resource_hub, :resource_hub
     field :folder, :resource_hub_folder
     field :old_name, :string
@@ -441,45 +444,54 @@ defmodule OperatelyWeb.Api.Types do
     field :file_id, :string
     field :file_name, :string
     field :resource_hub, :resource_hub
+    field :space, :space
   end
 
   object :activity_content_resource_hub_file_deleted do
+    field :space, :space
     field :resource_hub, :resource_hub
     field :file, :resource_hub_file
   end
 
   object :activity_content_resource_hub_file_edited do
+    field :space, :space
     field :resource_hub, :resource_hub
     field :file, :resource_hub_file
   end
 
   object :activity_content_resource_hub_file_commented do
+    field :space, :space
     field :file, :resource_hub_file
     field :comment, :comment
   end
 
   object :activity_content_resource_hub_document_created do
+    field :space, :space
     field :resource_hub, :resource_hub
     field :document, :resource_hub_document
     field :copied_document, :resource_hub_document
   end
 
   object :activity_content_resource_hub_document_edited do
+    field :space, :space
     field :resource_hub, :resource_hub
     field :document, :resource_hub_document
   end
 
   object :activity_content_resource_hub_document_deleted do
+    field :space, :space
     field :resource_hub, :resource_hub
     field :document, :resource_hub_document
   end
 
   object :activity_content_resource_hub_document_commented do
+    field :space, :space
     field :document, :resource_hub_document
     field :comment, :comment
   end
 
   object :activity_content_resource_hub_link_created do
+    field :space, :space
     field :resource_hub, :resource_hub
     field :link, :resource_hub_link
   end
