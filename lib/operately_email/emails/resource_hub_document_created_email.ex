@@ -9,7 +9,7 @@ defmodule OperatelyEmail.Emails.ResourceHubDocumentCreatedEmail do
     company = Repo.preload(author, :company).company
 
     {:ok, document} = Document.get(:system, id: activity.content["document_id"], opts: [
-      preload: [resource_hub: :space],
+      preload: [:node, :space],
     ])
 
     copied_document = get_copied_document(activity.content.copied_document_id)
@@ -19,7 +19,7 @@ defmodule OperatelyEmail.Emails.ResourceHubDocumentCreatedEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: document.resource_hub.name, who: author, action: "#{action} a document: #{document.node.name}")
+    |> subject(where: document.space.name, who: author, action: "#{action} a document: #{document.node.name}")
     |> assign(:author, author)
     |> assign(:document, document)
     |> assign(:copied_document, copied_document)

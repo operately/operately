@@ -7,7 +7,9 @@ defmodule OperatelyEmail.Emails.ResourceHubLinkCommentedEmail do
 
   def send(person, activity) do
     %{author: author = %{company: company}} = Repo.preload(activity, author: :company)
-    {:ok, link} = Link.get(:system, id: activity.content["link_id"], opts: [preload: [:node, :resource_hub]])
+    {:ok, link} = Link.get(:system, id: activity.content["link_id"], opts: [
+      preload: [:node, :space]
+    ])
 
     comment = Updates.get_comment!(activity.content["comment_id"])
 
@@ -15,7 +17,7 @@ defmodule OperatelyEmail.Emails.ResourceHubLinkCommentedEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: link.resource_hub.name, who: author, action: "commented on: #{link.node.name}")
+    |> subject(where: link.space.name, who: author, action: "commented on: #{link.node.name}")
     |> assign(:author, author)
     |> assign(:comment, comment)
     |> assign(:name, link.node.name)
