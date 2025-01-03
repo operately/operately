@@ -41,6 +41,8 @@ defmodule Features.ResourceHubLinkTest do
       |> LinkSteps.assert_link_content(link)
       |> LinkSteps.assert_link_edited_on_space_feed(link)
       |> LinkSteps.assert_link_edited_on_company_feed(link)
+      |> LinkSteps.assert_link_edited_notification_sent(link.title)
+      |> LinkSteps.assert_link_edited_email_sent(link.title)
     end
 
     feature "delete link from content list", ctx do
