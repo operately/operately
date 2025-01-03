@@ -88,7 +88,7 @@ defmodule Operately.Support.Features.ResourceHubLinkSteps do
   step :assert_link_created_on_company_feed, ctx, link_name do
     ctx
     |> UI.visit(Paths.feed_path(ctx.company))
-    |> UI.assert_text("added a link: #{link_name}")
+    |> UI.assert_text("added a link to Documents & Files in the #{ctx.space.name} space: #{link_name}")
   end
 
   step :assert_link_edited_on_space_feed, ctx, attrs do
