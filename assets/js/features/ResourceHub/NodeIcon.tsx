@@ -58,7 +58,7 @@ interface FileIconProps {
   icon?: any;
 }
 
-function FileIcon({ size, filetype, color, icon }: FileIconProps) {
+export function FileIcon({ size, filetype, color, icon }: FileIconProps) {
   const wrapperStyle = { width: size, height: size };
   const docSize = { width: size * 0.7, height: size };
   const innerIconSize = size * 0.45;
