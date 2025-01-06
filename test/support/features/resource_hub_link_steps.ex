@@ -29,7 +29,8 @@ defmodule Operately.Support.Features.ResourceHubLinkSteps do
   step :create_link, ctx, attrs do
     ctx
     |> UI.click(testid: "add-options")
-    |> UI.click(testid: "link-to-external-resources")
+    |> UI.click(testid: "add-link")
+    |> UI.click(testid: "link-to-other-resource")
     |> UI.fill(testid: "title", with: attrs.title)
     |> UI.fill(testid: "link", with: attrs.url)
     |> UI.fill_rich_text(attrs.notes)
