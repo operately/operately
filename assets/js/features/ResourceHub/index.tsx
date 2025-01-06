@@ -1,6 +1,7 @@
 export { Header } from "./Header";
 export { NodesList } from "./NodesList";
-export { findSubtitle, NodeType } from "./utils";
+export { NodeType } from "./utils";
+export { NodeDescription } from "./NodeDescription";
 export { AddFilesButton } from "./AddFilesButton";
 export { NewFileModalsProvider, useNewFileModalsContext } from "./contexts/NewFileModalsContext";
 export { useNodesContext } from "./contexts/NodesContext";

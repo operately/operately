@@ -7,10 +7,11 @@ import { DivLink } from "@/components/Link";
 import { CommentsCountIndicator } from "@/features/Comments";
 import { assertPresent } from "@/utils/assertions";
 import { createTestId } from "@/utils/testid";
-import { findCommentsCount, findPath, findSubtitle, NodeType, sortNodesWithFoldersFirst } from "./utils";
+import { findCommentsCount, findPath, NodeType, sortNodesWithFoldersFirst } from "./utils";
 import { DocumentMenu, FileMenu, FolderMenu, LinkMenu, FolderZeroNodes, HubZeroNodes } from "./components";
 import { NodesProps, NodesProvider } from "./contexts/NodesContext";
 import { NodeIcon } from "./NodeIcon";
+import { NodeDescription } from "./NodeDescription";
 
 export function NodesList(props: NodesProps) {
   const resource = props.type === "resource_hub" ? props.resourceHub : props.folder;
@@ -46,7 +47,6 @@ function NodeItem({ node, testid }: NodeItemProps) {
   );
 
   const path = findPath(node.type as NodeType, node);
-  const subtitle = findSubtitle(node.type as NodeType, node);
   const commentsCount = findCommentsCount(node.type as NodeType, node);
 
   return (
@@ -55,35 +55,53 @@ function NodeItem({ node, testid }: NodeItemProps) {
         <NodeIcon node={node} size={48} />
 
         <div>
-          <div className="font-bold text-base">{node.name}</div>
-          <div className="flex items-center justify-between gap-2">
-            <div className="text-xs">{subtitle}</div>
-          </div>
+          <NodeName node={node} />
+          <NodeDescription node={node} />
         </div>
       </DivLink>
 
       <CommentsCountIndicator count={commentsCount} size={24} />
-
-      {node.folder && (
-        <div className="flex items-center">
-          <FolderMenu folder={node.folder} />
-        </div>
-      )}
-      {node.document && (
-        <div className="flex items-center">
-          <DocumentMenu document={node.document} />
-        </div>
-      )}
-      {node.file && (
-        <div className="flex items-center">
-          <FileMenu file={node.file} />
-        </div>
-      )}
-      {node.link && (
-        <div className="flex items-center">
-          <LinkMenu link={node.link} />
-        </div>
-      )}
+      <NodeMenu node={node} />
     </div>
   );
+}
+
+function NodeName({ node }: { node: Hub.ResourceHubNode }) {
+  return <div className="font-bold text-base">{node.name}</div>;
+}
+
+function NodeMenu({ node }: { node: Hub.ResourceHubNode }) {
+  if (node.folder) {
+    return (
+      <div className="flex items-center">
+        <FolderMenu folder={node.folder} />
+      </div>
+    );
+  }
+
+  if (node.document) {
+    return (
+      <div className="flex items-center">
+        <DocumentMenu document={node.document} />
+      </div>
+    );
+  }
+
+  if (node.file) {
+    return (
+      <div className="flex items-center">
+        <FileMenu file={node.file} />
+      </div>
+    );
+  }
+
+  if (node.link) {
+    return (
+      <div className="flex items-center">
+        <LinkMenu link={node.link} />
+      </div>
+    );
+  }
+
+  return null;
 }

@@ -30,7 +30,7 @@ defmodule Operately.ResourceHubs.Node do
     |> validate_required([:resource_hub_id, :name, :type])
   end
 
-  def preload_nodes, do: [folder: :node, document: :node, link: :node, file: [:node, :preview_blob, :blob]]
+  def preload_nodes, do: [folder: :node, document: [:author, :node], link: [:author, :node], file: [:author, :node, :preview_blob, :blob]]
 
   #
   # After load hooks
