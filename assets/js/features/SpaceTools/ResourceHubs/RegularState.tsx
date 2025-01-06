@@ -2,8 +2,9 @@ import React, { useMemo } from "react";
 import classNames from "classnames";
 import { ResourceHub, ResourceHubNode } from "@/models/resourceHubs";
 import { Title } from "../components";
-import { findSubtitle, NodeType } from "@/features/ResourceHub";
+import { NodeType } from "@/features/ResourceHub";
 import { NodeIcon } from "@/features/ResourceHub/NodeIcon";
+import { NodeDescription } from "@/features/ResourceHub";
 import { CommentsCountIndicator } from "@/features/Comments";
 import { findCommentsCount, sortNodesWithFoldersFirst } from "@/features/ResourceHub/utils";
 
@@ -41,7 +42,6 @@ function NodeItem({ node }: { node: ResourceHubNode }) {
     "border-b border-stroke-base last:border-b-0 flex items-center",
   );
 
-  const subtitle = findSubtitle(node.type as NodeType, node);
   const commentsCount = findCommentsCount(node.type as NodeType, node);
 
   return (
@@ -51,7 +51,7 @@ function NodeItem({ node }: { node: ResourceHubNode }) {
       </div>
       <div className="overflow-hidden leading-snug">
         <div className="font-bold truncate">{node.name}</div>
-        <div className="truncate text-[10px]">{subtitle}</div>
+        <NodeDescription node={node} fontSize="text-[10px] truncate" />
       </div>
       <CommentsCountIndicator count={commentsCount} size={16} />
     </div>
