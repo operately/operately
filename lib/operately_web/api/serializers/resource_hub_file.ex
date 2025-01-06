@@ -3,6 +3,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ResourceHubs.File do
     %{
       id: OperatelyWeb.Paths.file_id(file),
       name: file.node.name,
+      author: OperatelyWeb.Api.Serializer.serialize(file.author),
       description: Jason.encode!(file.description),
       type: Ecto.assoc_loaded?(file.blob) && file.blob.content_type,
       size: Ecto.assoc_loaded?(file.blob) && file.blob.size,

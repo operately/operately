@@ -3,6 +3,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ResourceHubs.Document do
     %{
       id: OperatelyWeb.Paths.document_id(document),
       name: document.node.name,
+      author: OperatelyWeb.Api.Serializer.serialize(document.author),
       content: Jason.encode!(document.content),
       resource_hub_id: OperatelyWeb.Paths.resource_hub_id(document.node.resource_hub_id),
       parent_folder_id: document.node.parent_folder_id && OperatelyWeb.Paths.folder_id(document.node.parent_folder_id),
