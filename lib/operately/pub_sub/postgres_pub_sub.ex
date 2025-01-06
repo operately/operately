@@ -12,10 +12,8 @@ defmodule Operately.PubSub.PostgresPubSub do
     GenServer.start_link(__MODULE__, opts)
   end
 
-  def node_name(), do: :erlang.node()
-
   @impl Phoenix.PubSub.Adapter
-  def node_name(_adapter_name), do: :erlang.node()
+  def node_name(adapter_name), do: "#{:erlang.node()}-#{adapter_name}"
 
   @impl Phoenix.PubSub.Adapter
   def broadcast(adapter_name, topic, message, dispatcher) do
@@ -47,12 +45,22 @@ defmodule Operately.PubSub.PostgresPubSub do
   # to the local Phoenix.PubSub.
   #
 
+  defmodule ServerState do
+    defstruct [:pubsub_name, :adapter_name, :notifications_pid]
+  end
+
   @impl GenServer
   def init(opts) do
     {:ok, pid} = Postgrex.Notifications.start_link(Operately.Repo.config())
     {:ok, _ref} = Postgrex.Notifications.listen(pid, @name)
 
-    {:ok, Keyword.put_new(opts, :notifications_pid, pid)}
+    state = %__MODULE__.ServerState{
+      pubsub_name: Keyword.get(opts, :pubsub_name, Operately.PubSub),
+      adapter_name: Keyword.get(opts, :adapter_name),
+      notifications_pid: pid
+    }
+
+    {:ok, state}
   end
 
   @impl GenServer
@@ -68,16 +76,19 @@ defmodule Operately.PubSub.PostgresPubSub do
 
   defp handle_payload(payload, state) do
     payload = decode_payload(payload)
+    node_name = node_name(state.adapter_name)
+    message = payload.message
 
-    if for_this_node?(payload["mode"], payload["node_name"]) do
-      Phoenix.PubSub.local_broadcast(state.pubsub_name, payload["topic"], payload["message"], payload["dispatcher"])
+    if for_this_node?(payload.mode, payload.node_name, node_name) do
+      OperatelyWeb.Endpoint.local_broadcast(message.topic, message.event, message.payload)
     end
   end
 
-  defp for_this_node?(mode, target_node) do
+  defp for_this_node?(mode, target_node, this_node) do
     case mode do
-      "except" -> target_node != node_name()
-      "only" -> target_node == node_name()
+      :except -> target_node != node_name(this_node)
+      :only -> target_node == node_name(this_node)
+      _ -> raise "invalid mode: #{mode}"
     end
   end
 
