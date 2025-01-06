@@ -7,7 +7,7 @@ export function GoogleSheets({ size }: { size: number }) {
       xmlnsXlink="http://www.w3.org/1999/xlink"
       width={size + "px"}
       height={size + "px"}
-      viewBox="0 0 49 67"
+      viewBox="0 0 48 66"
     >
       <defs>
         <path

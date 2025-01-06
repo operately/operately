@@ -3,9 +3,11 @@ import React from "react";
 import * as Hub from "@/models/resourceHubs";
 import * as Icons from "@tabler/icons-react";
 
+import classNames from "classnames";
 import { assertPresent } from "@/utils/assertions";
 import { ImageWithPlaceholder } from "@/components/Image";
-import classNames from "classnames";
+import { LinkIcon } from "./LinkIcon";
+import { LinkOptions } from ".";
 
 export function NodeIcon({ node, size }: { node: Hub.ResourceHubNode; size: number }) {
   if (Hub.isFolder(node)) {
@@ -13,7 +15,11 @@ export function NodeIcon({ node, size }: { node: Hub.ResourceHubNode; size: numb
   }
 
   if (Hub.isLink(node)) {
-    return <FileIcon size={size} icon={Icons.IconLink} />;
+    if (node.link?.type && node.link.type !== "other") {
+      return <LinkIcon type={node.link.type as LinkOptions} size={size} />;
+    } else {
+      return <FileIcon size={size} icon={Icons.IconLink} />;
+    }
   }
 
   if (Hub.isImage(node)) {
