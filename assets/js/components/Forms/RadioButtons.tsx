@@ -15,12 +15,15 @@ interface RadioButtonsProps {
   label?: string;
   hidden?: boolean;
   options: Option[];
+  containerClass?: string;
 }
 
-export function RadioButtons({ field, label, hidden, options }: RadioButtonsProps) {
+export function RadioButtons({ field, label, hidden, options, containerClass }: RadioButtonsProps) {
+  const className = classNames("mt-1", containerClass ?? "flex flex-col gap-2");
+
   return (
     <InputField field={field} label={label} hidden={hidden}>
-      <div className="flex flex-col gap-2 mt-1">
+      <div className={className}>
         {options.map((option: Option) => (
           <RadioButton key={option.value} field={field} value={option.value} label={option.label} />
         ))}

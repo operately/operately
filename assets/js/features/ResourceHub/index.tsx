@@ -9,3 +9,14 @@ export { AddFileModal } from "./AddFileModal";
 export { FileDragAndDropArea } from "./FileDragAndDropArea";
 export { FolderSelectField } from "./components/MoveResources/FolderSelectField";
 export { NestedFolderNavigation } from "./NestedFolderNavigation";
+export { LinkIcon } from "./LinkIcon";
+
+export type LinkOptions =
+  | "airtable"
+  | "dropbox"
+  | "figma"
+  | "google"
+  | "google_doc"
+  | "google_sheet"
+  | "google_slides"
+  | "notion";

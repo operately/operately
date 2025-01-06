@@ -3,7 +3,7 @@ import * as Icons from "@tabler/icons-react";
 
 import classNames from "classnames";
 import { DivLink } from "@/components/Link";
-import { GoogleLogo } from "./GoogleLogo";
+import { GoogleLogo } from "@/components/Brands";
 
 export function SignUpWithEmail() {
   return (
