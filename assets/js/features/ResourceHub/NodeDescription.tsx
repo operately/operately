@@ -1,14 +1,12 @@
 import * as React from "react";
-import * as Icons from "@tabler/icons-react";
+import * as Hub from "@/models/resourceHubs";
 
 import { richContentToString } from "@/components/RichContent";
 import { truncateString } from "@/utils/strings";
-
-import * as Hub from "@/models/resourceHubs";
-
 import { assertPresent } from "@/utils/assertions";
-import plurarize from "@/utils/plurarize";
 import { match } from "ts-pattern";
+
+import plurarize from "@/utils/plurarize";
 
 interface NodeDescriptionProps {
   node: Hub.ResourceHubNode;
