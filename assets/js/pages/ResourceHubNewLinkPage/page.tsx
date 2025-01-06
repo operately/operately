@@ -6,6 +6,8 @@ import * as Paper from "@/components/PaperContainer";
 
 import { Paths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
+import { LinkOptions } from "@/features/ResourceHub";
+
 import { Form } from "./form";
 import { useLoadedData } from "./loader";
 
@@ -13,13 +15,14 @@ export function Page() {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const folderId = params.get("folderId");
+  const type = params.get("type") as LinkOptions;
 
   return (
     <Pages.Page title="New Link">
       <Paper.Root>
         <Navigation />
         <Paper.Body>
-          <Form folderId={folderId} />
+          <Form folderId={folderId} type={type} />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>

@@ -1,6 +1,7 @@
 import * as ProfileEditPage from "@/pages/ProfileEditPage";
 import * as ProjectContributorsAddPage from "@/pages/ProjectContributorsAddPage";
 import * as ProjectContributorsEditPage from "@/pages/ProjectContributorsEditPage";
+import { LinkOptions } from "@/features/ResourceHub";
 
 export class Paths {
   static lobbyPath() {
@@ -236,9 +237,15 @@ export class Paths {
     }
   }
 
-  static resourceHubNewLinkPath(resourceHubId: string, folderId?: string) {
-    if (folderId) {
+  static resourceHubNewLinkPath(resourceHubId: string, attrs: { folderId?: string; type?: LinkOptions }) {
+    const { folderId, type } = attrs;
+
+    if (folderId && type) {
+      return createCompanyPath(["resource-hubs", resourceHubId, "new-link"]) + `?folderId=${folderId}&type=${type}`;
+    } else if (folderId) {
       return createCompanyPath(["resource-hubs", resourceHubId, "new-link"]) + "?folderId=" + folderId;
+    } else if (type) {
+      return createCompanyPath(["resource-hubs", resourceHubId, "new-link"]) + "?type=" + type;
     } else {
       return createCompanyPath(["resource-hubs", resourceHubId, "new-link"]);
     }
