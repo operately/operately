@@ -701,6 +701,13 @@ defmodule OperatelyWeb.Api.Types do
     field :path_to_file, list_of(:resource_hub_folder)
   end
 
+  object :resource_hub_uploaded_file do
+    field :blob_id, :string
+    field :preview_blob_id, :string
+    field :name, :string
+    field :description, :string
+  end
+
   object :resource_hub_link do
     field :id, :string
     field :author, :person

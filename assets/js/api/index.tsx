@@ -1223,6 +1223,13 @@ export interface ResourceHubPermissions {
   canView?: boolean | null;
 }
 
+export interface ResourceHubUploadedFile {
+  blobId?: string | null;
+  previewBlobId?: string | null;
+  name?: string | null;
+  description?: string | null;
+}
+
 export interface ReviewAssignment {
   id?: string | null;
   name?: string | null;
@@ -2318,16 +2325,13 @@ export interface CreateResourceHubDocumentResult {
 export interface CreateResourceHubFileInput {
   resourceHubId?: Id | null;
   folderId?: Id | null;
-  blobId?: string | null;
-  previewBlobId?: string | null;
-  name?: string | null;
-  description?: string | null;
+  files?: ResourceHubUploadedFile[] | null;
   sendNotificationsToEveryone?: boolean | null;
   subscriberIds?: Id[] | null;
 }
 
 export interface CreateResourceHubFileResult {
-  file?: ResourceHubFile | null;
+  files?: ResourceHubFile[] | null;
 }
 
 export interface CreateResourceHubFolderInput {
