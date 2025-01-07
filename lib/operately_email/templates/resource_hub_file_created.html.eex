@@ -1,7 +1,13 @@
-<%= title("#{short_name(@author)} added a file: #{@file.node.name}") %>
+<%= title("#{short_name(@author)} #{@action}") %>
 
 <%= spacer() %>
 
-<%= row do %>
-  <%= cta_button(@cta_url, "View File") %>
+<%= if length(@files) == 1 do %>
+  <%= row do %>
+    <%= cta_button(@file_url, "View File") %>
+  <% end %>
+<% else %>
+  <%= row do %>
+    <%= cta_button(@cta_url, "View Files") %>
+  <% end %>
 <% end %>

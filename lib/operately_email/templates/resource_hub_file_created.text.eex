@@ -1,3 +1,7 @@
-<%= short_name(@author) %> added a file: <%= @file.node.name %>
+<%= short_name(@author) %> <%= @action %>
 
-Link: <%= @cta_url %>
+<%= if length(@files) == 1 do %>
+    Link: <%= @file_url %>
+<% else %>
+    Link: <%= @cta_url %>
+<% end %>

@@ -45,10 +45,14 @@ export function AddFileModal({ resourceHub, folder, refresh }: FormProps) {
       const blobId = await uploadMainBlob(file, setProgress);
 
       await post({
-        name: form.values.name,
-        description: JSON.stringify(form.values.description || {}),
-        blobId,
-        previewBlobId,
+        files: [
+          {
+            name: form.values.name,
+            description: JSON.stringify(form.values.description || {}),
+            blobId,
+            previewBlobId,
+          },
+        ],
         resourceHubId: resourceHub.id,
         folderId: folder?.id,
         sendNotificationsToEveryone: subscriptionsState.subscriptionType == Options.ALL,
