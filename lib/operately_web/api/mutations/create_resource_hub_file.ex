@@ -8,16 +8,13 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHubFile do
   inputs do
     field :resource_hub_id, :id
     field :folder_id, :id
-    field :blob_id, :string
-    field :preview_blob_id, :string
-    field :name, :string
-    field :description, :string
+    field :files, list_of(:resource_hub_uploaded_file)
     field :send_notifications_to_everyone, :boolean
     field :subscriber_ids, list_of(:id)
   end
 
   outputs do
-    field :file, :resource_hub_file
+    field :files, list_of(:resource_hub_file)
   end
 
   def call(conn, inputs) do
@@ -27,7 +24,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHubFile do
     |> run(:resource_hub, fn ctx -> ResourceHub.get(ctx.me, id: ctx.attrs.resource_hub_id) end)
     |> run(:permissions, fn ctx -> Permissions.check(ctx.resource_hub.request_info.access_level, :can_create_file) end)
     |> run(:operation, fn ctx -> ResourceHubFileCreating.run(ctx.me, ctx.resource_hub, ctx.attrs) end)
-    |> run(:serialized, fn ctx -> {:ok, %{file: Serializer.serialize(ctx.operation)}} end)
+    |> run(:serialized, fn ctx -> {:ok, %{files: Serializer.serialize(ctx.operation)}} end)
     |> respond()
   end
 
@@ -43,12 +40,14 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHubFile do
   end
 
   defp parse_inputs(inputs) do
-    description = Jason.decode!(inputs.description)
+    files = Enum.map(inputs.files, fn f ->
+      description = Jason.decode!(f.description)
+      %{f | description: description}
+    end)
 
     {:ok, Map.merge(inputs, %{
-      content: description,
+      files: files,
       send_to_everyone: inputs[:send_notifications_to_everyone] || false,
-      subscription_parent_type: :resource_hub_file,
       subscriber_ids: inputs[:subscriber_ids] || []
     })}
   end
