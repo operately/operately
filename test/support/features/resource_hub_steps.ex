@@ -490,16 +490,20 @@ defmodule Operately.Support.Features.ResourceHubSteps do
   defp create_file(ctx, hub, folder_id \\ nil) do
     blob = Operately.BlobsFixtures.blob_fixture(%{author_id: ctx.creator.id, company_id: ctx.company.id})
 
-    {:ok, file} = Operately.Operations.ResourceHubFileCreating.run(ctx.creator, hub, %{
-      name: "File",
-      content: Operately.Support.RichText.rich_text("Content"),
+    {:ok, files} = Operately.Operations.ResourceHubFileCreating.run(ctx.creator, hub, %{
+      files: [
+        %{
+          blob_id: blob.id,
+          name: "Some name",
+          description: Operately.Support.RichText.rich_text("Content"),
+        }
+      ],
       send_to_everyone: true,
       subscription_parent_type: :resource_hub_file,
       subscriber_ids: [ctx.other_user.id],
-      blob_id: blob.id,
       folder_id: folder_id,
     })
 
-    file
+    hd(files)
   end
 end
