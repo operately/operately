@@ -24,6 +24,70 @@ defmodule Features.ResourceHubLinkTest do
       |> LinkSteps.assert_link_created_email_sent()
     end
 
+    feature "create Airtable link", ctx do
+      ctx
+      |> Steps.visit_resource_hub_page()
+      |> LinkSteps.create_airtable_link(@link)
+      |> LinkSteps.assert_link_content(@link)
+      |> LinkSteps.assert_link_is_airtable(@link.title)
+    end
+
+    feature "create Dropbox link", ctx do
+      ctx
+      |> Steps.visit_resource_hub_page()
+      |> LinkSteps.create_dropbox_link(@link)
+      |> LinkSteps.assert_link_content(@link)
+      |> LinkSteps.assert_link_is_dropbox(@link.title)
+    end
+
+    feature "create Figma link", ctx do
+      ctx
+      |> Steps.visit_resource_hub_page()
+      |> LinkSteps.create_figma_link(@link)
+      |> LinkSteps.assert_link_content(@link)
+      |> LinkSteps.assert_link_is_figma(@link.title)
+    end
+
+    feature "create Notion link", ctx do
+      ctx
+      |> Steps.visit_resource_hub_page()
+      |> LinkSteps.create_notion_link(@link)
+      |> LinkSteps.assert_link_content(@link)
+      |> LinkSteps.assert_link_is_notion(@link.title)
+    end
+
+    feature "create Google Doc link", ctx do
+      ctx
+      |> Steps.visit_resource_hub_page()
+      |> LinkSteps.create_google_doc_link(@link)
+      |> LinkSteps.assert_link_content(@link)
+      |> LinkSteps.assert_link_is_google_doc(@link.title)
+    end
+
+    feature "create Google Sheet link", ctx do
+      ctx
+      |> Steps.visit_resource_hub_page()
+      |> LinkSteps.create_google_sheet_link(@link)
+      |> LinkSteps.assert_link_content(@link)
+      |> LinkSteps.assert_link_is_google_sheet(@link.title)
+    end
+
+    feature "create Google Slide link", ctx do
+      ctx
+      |> Steps.visit_resource_hub_page()
+      |> LinkSteps.create_google_slide_link(@link)
+      |> LinkSteps.assert_link_content(@link)
+      |> LinkSteps.assert_link_is_google_slide(@link.title)
+    end
+
+    feature "create Google link", ctx do
+      ctx
+      |> Steps.visit_resource_hub_page()
+      |> LinkSteps.create_google_link(@link)
+      |> LinkSteps.assert_link_content(@link)
+      |> LinkSteps.assert_link_is_google(@link.title)
+    end
+
     feature "edit link", ctx do
       link = %{
         title: "Link (edited)",

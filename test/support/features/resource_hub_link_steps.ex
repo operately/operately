@@ -26,15 +26,69 @@ defmodule Operately.Support.Features.ResourceHubLinkSteps do
     UI.visit(ctx, Paths.link_path(ctx.company, ctx.link))
   end
 
-  step :create_link, ctx, attrs do
+  defp create_link(ctx, attrs, testid, type_testid \\ nil) do
     ctx
     |> UI.click(testid: "add-options")
-    |> UI.click(testid: "link-to-external-resources")
+    |> UI.click(testid: "add-link")
+    |> UI.click(testid: testid)
     |> UI.fill(testid: "title", with: attrs.title)
     |> UI.fill(testid: "link", with: attrs.url)
+    |> then(fn ctx ->
+      if type_testid do
+        ctx
+        |> UI.click(testid: type_testid)
+      else
+        ctx
+      end
+    end)
     |> UI.fill_rich_text(attrs.notes)
     |> UI.click(testid: "submit")
     |> UI.refute_has(testid: "submit")
+  end
+
+  step :create_link, ctx, attrs do
+    ctx
+    |> create_link(attrs, "link-to-other-resource")
+  end
+
+  step :create_airtable_link, ctx, attrs do
+    ctx
+    |> create_link(attrs, "link-to-airtable")
+  end
+
+  step :create_dropbox_link, ctx, attrs do
+    ctx
+    |> create_link(attrs, "link-to-dropbox")
+  end
+
+  step :create_figma_link, ctx, attrs do
+    ctx
+    |> create_link(attrs, "link-to-figma")
+  end
+
+  step :create_notion_link, ctx, attrs do
+    ctx
+    |> create_link(attrs, "link-to-notion")
+  end
+
+  step :create_google_doc_link, ctx, attrs do
+    ctx
+    |> create_link(attrs, "link-to-google-drive", "type-google_doc")
+  end
+
+  step :create_google_sheet_link, ctx, attrs do
+    ctx
+    |> create_link(attrs, "link-to-google-drive", "type-google_sheet")
+  end
+
+  step :create_google_slide_link, ctx, attrs do
+    ctx
+    |> create_link(attrs, "link-to-google-drive", "type-google_slides")
+  end
+
+  step :create_google_link, ctx, attrs do
+    ctx
+    |> create_link(attrs, "link-to-google-drive", "type-google")
   end
 
   step :edit_link, ctx, attrs do
@@ -73,6 +127,59 @@ defmodule Operately.Support.Features.ResourceHubLinkSteps do
     |> UI.assert_text(attrs.title)
     |> UI.assert_text(attrs.url)
     |> UI.assert_text(attrs.notes)
+  end
+
+  defp assert_link_type(link_name, type) do
+    {:ok, node} = Node.get(:system, name: link_name, type: :link, opts: [preload: :link])
+    assert node.link.type == type
+  end
+
+  step :assert_link_is_airtable, ctx, title do
+    assert_link_type(title, :airtable)
+
+    ctx
+  end
+
+  step :assert_link_is_dropbox, ctx, title do
+    assert_link_type(title, :dropbox)
+
+    ctx
+  end
+
+  step :assert_link_is_figma, ctx, title do
+    assert_link_type(title, :figma)
+
+    ctx
+  end
+
+  step :assert_link_is_notion, ctx, title do
+    assert_link_type(title, :notion)
+
+    ctx
+  end
+
+  step :assert_link_is_google_doc, ctx, title do
+    assert_link_type(title, :google_doc)
+
+    ctx
+  end
+
+  step :assert_link_is_google_sheet, ctx, title do
+    assert_link_type(title, :google_sheet)
+
+    ctx
+  end
+
+  step :assert_link_is_google_slide, ctx, title do
+    assert_link_type(title, :google_slides)
+
+    ctx
+  end
+
+  step :assert_link_is_google, ctx, title do
+    assert_link_type(title, :google)
+
+    ctx
   end
 
   #
