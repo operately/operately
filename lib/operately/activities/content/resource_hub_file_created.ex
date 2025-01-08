@@ -6,7 +6,7 @@ defmodule Operately.Activities.Content.ResourceHubFileCreated do
 
     embedded_schema do
       belongs_to :file, Operately.ResourceHubs.File
-      belongs_to :node, Operately.ResourceHubs.File
+      belongs_to :node, Operately.ResourceHubs.Node
     end
 
     def changeset(file, attrs) do

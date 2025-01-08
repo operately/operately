@@ -352,13 +352,13 @@ defmodule Operately.Support.Features.ResourceHubSteps do
   step :assert_file_commented_on_company_feed, ctx do
     ctx
     |> UI.visit(Paths.feed_path(ctx.company))
-    |> UI.assert_text("commented on File in the #{ctx.space.name} space")
+    |> UI.assert_text("commented on #{ctx.file.node.name} in the #{ctx.space.name} space")
   end
 
   step :assert_file_commented_on_space_feed, ctx do
     ctx
     |> UI.visit(Paths.space_path(ctx.company, ctx.space))
-    |> UI.assert_text("commented on File")
+    |> UI.assert_text("commented on #{ctx.file.node.name}")
   end
 
   #
@@ -421,7 +421,7 @@ defmodule Operately.Support.Features.ResourceHubSteps do
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.creator,
-      action: "commented on: File",
+      action: "commented on: #{ctx.file.node.name}",
     })
   end
 
@@ -478,7 +478,7 @@ defmodule Operately.Support.Features.ResourceHubSteps do
     ctx |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.space.name,
       to: ctx.other_user,
-      action: "commented on: File",
+      action: "commented on: #{ctx.file.node.name}",
       author: ctx.creator,
     })
   end

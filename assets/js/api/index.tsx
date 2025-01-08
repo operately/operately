@@ -535,10 +535,9 @@ export interface ActivityContentResourceHubFileCommented {
 }
 
 export interface ActivityContentResourceHubFileCreated {
-  fileId?: string | null;
-  fileName?: string | null;
   resourceHub?: ResourceHub | null;
   space?: Space | null;
+  files?: ResourceHubFile[] | null;
 }
 
 export interface ActivityContentResourceHubFileDeleted {

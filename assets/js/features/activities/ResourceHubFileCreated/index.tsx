@@ -6,15 +6,24 @@ import type { ActivityContentResourceHubFileCreated } from "@/api";
 import type { ActivityHandler } from "../interfaces";
 import { Paths } from "@/routes/paths";
 import { Link } from "@/components/Link";
-import { feedTitle, resourceHubLink, spaceLink } from "../feedItemLinks";
+import { feedTitle, fileLink, resourceHubLink, spaceLink } from "../feedItemLinks";
+import { assertPresent } from "@/utils/assertions";
 
 const ResourceHubFileCreated: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
     throw new Error("Not implemented");
   },
 
-  pagePath(_activity: Activity) {
-    return Paths.resourceHubFilePath(content(_activity).fileId!);
+  pagePath(activity: Activity) {
+    const data = content(activity);
+
+    assertPresent(data.files, "files must be present in FileCreated activity");
+
+    if (data.files.length > 1) {
+      return Paths.resourceHubPath(data.resourceHub?.id!);
+    } else {
+      return Paths.resourceHubFilePath(data.files[0]?.id!);
+    }
   },
 
   PageTitle(_props: { activity: any }) {
@@ -34,17 +43,44 @@ const ResourceHubFileCreated: ActivityHandler = {
 
     const space = spaceLink(data.space!);
     const resourceHub = resourceHubLink(data.resourceHub!);
-    const path = Paths.resourceHubFilePath(data.fileId!);
-    const file = <Link to={path}>{data.fileName}</Link>;
 
-    if (page === "space") {
-      return feedTitle(activity, "added a file:", file);
+    if (data.files?.length === 1) {
+      const file = fileLink(data.files[0]!);
+
+      if (page === "space") {
+        return feedTitle(activity, "added a file:", file);
+      } else {
+        return feedTitle(activity, "added a file to", resourceHub, "in the", space, "space:", file);
+      }
     } else {
-      return feedTitle(activity, "added a file to", resourceHub, "in the", space, "space:", file);
+      if (page === "space") {
+        return feedTitle(activity, "added some files:");
+      } else {
+        return feedTitle(activity, "added some files to", resourceHub, "in the", space, "space:");
+      }
     }
   },
 
-  FeedItemContent(_props: { activity: Activity; page: any }) {
+  FeedItemContent({ activity }: { activity: Activity; page: any }) {
+    const data = content(activity);
+
+    if (data.files && data.files.length > 1) {
+      return (
+        <ul className="list-disc ml-4">
+          {data.files.map((file, idx) => {
+            const path = Paths.resourceHubFilePath(file.id!);
+            const name = file.name!;
+
+            return (
+              <li key={idx}>
+                <Link to={path}>{name}</Link>
+              </li>
+            );
+          })}
+        </ul>
+      );
+    }
+
     return null;
   },
 
@@ -61,7 +97,13 @@ const ResourceHubFileCreated: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " added a file: " + content(activity).fileName;
+    const data = content(activity);
+
+    if (data.files?.length === 1) {
+      return People.firstName(activity.author!) + " added a file: " + data.files[0]?.name;
+    } else {
+      return People.firstName(activity.author!) + " added some files";
+    }
   },
 
   NotificationLocation(_props: { activity: Activity }) {
