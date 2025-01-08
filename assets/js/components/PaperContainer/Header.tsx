@@ -1,4 +1,5 @@
-import React from "react";
+import * as React from "react";
+
 import classNames from "classnames";
 import { usePaperSizeHelpers } from "./";
 
@@ -28,7 +29,7 @@ export function Header(props: Props) {
     "border-b border-stroke-base": props.underline,
     [negHor]: props.underline,
     [negTop]: props.underline,
-    "px-8": props.underline,
+    "px-4 sm:px-8": props.underline,
   });
 
   if (props.layout === "title-center-actions-left") {
@@ -58,20 +59,20 @@ function HeaderLeft(props: Props & { className: string }) {
 function HeaderCentered(props: Props & { className: string }) {
   return (
     <div className={props.className}>
-      <div className="w-1/3">{props.actions}</div>
+      <div className="w-1/4">{props.actions}</div>
 
-      <div className="w-1/3 text-center flex-1">
+      <div className="w-2/4 text-center flex-1">
         <Title title={props.title} />
         {props.subtitle && <Subtitle message={props.subtitle} />}
       </div>
 
-      <div className="w-1/3" />
+      <div className="w-1/4" />
     </div>
   );
 }
 
 function Title({ title }) {
-  return <div className="text-content-accent text-2xl font-extrabold">{title}</div>;
+  return <div className="text-content-accent text-lg md:text-2xl font-extrabold">{title}</div>;
 }
 
 function Subtitle({ message }) {
