@@ -12,6 +12,7 @@ interface SubmitProps {
   layout?: "left" | "centered";
   buttonSize?: BaseButtonProps["size"];
   submitOnEnter?: boolean;
+  noMargin?: boolean;
 }
 
 const DefaultSubmitProps: SubmitProps = {

@@ -76,7 +76,7 @@ export function MoveResourceModal({ resource, resourceType, isOpen, hideModal }:
           <FolderSelectField resource={resource} field="newFolderId" startLocation={parent} />
         </Forms.FieldGroup>
 
-        <Forms.Submit saveText="Move" cancelText="Cancel" />
+        <Forms.Submit saveText="Move" cancelText="Cancel" noMargin />
       </Forms.Form>
     </Modal>
   );
