@@ -26,7 +26,7 @@ export function NodesList(props: NodesProps) {
 
   return (
     <NodesProvider {...props}>
-      <div className="m-6">
+      <div className="md:m-6">
         {nodes.map((node, idx) => (
           <NodeItem node={node} testid={createTestId("node", idx.toString())} key={node.id} />
         ))}

@@ -1,5 +1,6 @@
 import * as React from "react";
 import * as Icons from "@tabler/icons-react";
+import * as Pages from "@/components/Pages";
 
 import { ResourceHubPermissions } from "@/models/resourceHubs";
 
@@ -10,10 +11,12 @@ import { MenuActionItem, SubMenu } from "@/components/Menu";
 import { useNewFileModalsContext } from "./contexts/NewFileModalsContext";
 
 export function AddFilesButton({ permissions }: { permissions: ResourceHubPermissions }) {
+  const breakpoint = Pages.useWindowSizeBreakpoints();
   const options = Options({ permissions });
+  const size = breakpoint === "xs" ? "xs" : "sm";
 
   return (
-    <PrimaryButton size="sm" optionsAlign="start" options={options} testId="add-options">
+    <PrimaryButton size={size} optionsAlign="start" options={options} testId="add-options">
       Add
     </PrimaryButton>
   );
