@@ -46,18 +46,22 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHubFileTest do
 
         assert {code, res} = mutation(ctx.conn, :create_resource_hub_file, %{
           resource_hub_id: Paths.resource_hub_id(resource_hub),
-          blob_id: blob.id,
-          name: "My file",
-          description: RichText.rich_text("description", :as_string),
           send_notifications_to_everyone: true,
           subscriber_ids: [],
+          files: [
+            %{
+              blob_id: blob.id,
+              name: "My file",
+              description: RichText.rich_text("description", :as_string),
+            }
+          ]
         })
         assert code == @test.expected
 
         case @test.expected do
           200 ->
             files = ResourceHubs.list_files(resource_hub)
-            assert res.file.id == Paths.document_id(hd(files))
+            assert hd(res.files).id == Paths.document_id(hd(files))
           403 ->
             assert ResourceHubs.list_files(resource_hub) == []
             assert res.message == "You don't have permission to perform this action"
@@ -76,25 +80,67 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHubFileTest do
       |> Factory.add_space_member(:person, :space)
       |> Factory.log_in_person(:person)
       |> Factory.add_resource_hub(:hub, :space, :person)
-      |> Factory.add_blob(:blob)
+      |> Factory.add_blob(:blob1)
+      |> Factory.add_blob(:blob2)
+      |> Factory.add_blob(:blob3)
     end
 
-    test "creates file within hub", ctx do
+    test "creates a single file within hub", ctx do
       assert ResourceHubs.list_files(ctx.hub) == []
 
       assert {200, res} = mutation(ctx.conn, :create_resource_hub_file, %{
         resource_hub_id: Paths.resource_hub_id(ctx.hub),
-        blob_id: ctx.blob.id,
-        name: "My file",
-        description: RichText.rich_text("description", :as_string),
         send_notifications_to_everyone: true,
         subscriber_ids: [],
+        files: [
+          %{
+            blob_id: ctx.blob1.id,
+            name: "My file",
+            description: RichText.rich_text("description", :as_string),
+          }
+        ]
       })
+      assert length(res.files) == 1
 
       files = ResourceHubs.list_files(ctx.hub)
 
       assert length(files) == 1
-      assert res.file.id == Paths.file_id(hd(files))
+      assert hd(res.files).id == Paths.file_id(hd(files))
+    end
+
+    test "creates multiple files", ctx do
+      assert ResourceHubs.list_files(ctx.hub) == []
+
+      assert {200, res} = mutation(ctx.conn, :create_resource_hub_file, %{
+        resource_hub_id: Paths.resource_hub_id(ctx.hub),
+        send_notifications_to_everyone: true,
+        subscriber_ids: [],
+        files: [
+          %{
+            blob_id: ctx.blob1.id,
+            name: "My file",
+            description: RichText.rich_text("description", :as_string),
+          },
+          %{
+            blob_id: ctx.blob2.id,
+            name: "My file",
+            description: RichText.rich_text("description", :as_string),
+          },
+          %{
+            blob_id: ctx.blob3.id,
+            name: "My file",
+            description: RichText.rich_text("description", :as_string),
+          },
+        ]
+      })
+      assert length(res.files) == 3
+
+      files = ResourceHubs.list_files(ctx.hub)
+
+      assert length(files) == 3
+      Enum.each(files, fn f ->
+        assert Enum.find(res.files, &(&1.id == Paths.file_id(f)))
+      end)
     end
   end
 

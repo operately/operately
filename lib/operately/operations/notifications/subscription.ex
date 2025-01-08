@@ -59,7 +59,7 @@ defmodule Operately.Operations.Notifications.Subscription do
   # Helpers
   #
 
-  defp categorize_ids(invited, mentioned) do
+  def categorize_ids(invited, mentioned) do
     mentioned ++ invited
     |> Enum.uniq()
     |> Enum.map(fn id ->
