@@ -139,7 +139,7 @@ export function usePaperSizeHelpers(): { size: Size; negHor: string; negTop: str
       negHor = "-mx-12";
       break;
     case "large":
-      negHor = "-mx-12";
+      negHor = "-mx-4 sm:-mx-12";
       break;
     case "xlarge":
       negHor = "-mx-12";
