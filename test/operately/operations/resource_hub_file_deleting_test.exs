@@ -83,18 +83,22 @@ defmodule Operately.Operations.ResourceHubFileDeletingTest do
   # Helpers
   #
 
-  defp create_file(ctx, send_to_everyone, people_list, content \\ nil) do
+  defp create_file(ctx, send_to_everyone, people_list, description \\ nil) do
     blob = Operately.BlobsFixtures.blob_fixture(%{author_id: ctx.creator.id, company_id: ctx.company.id})
 
-    {:ok, file} = Operately.Operations.ResourceHubFileCreating.run(ctx.creator, ctx.hub, %{
-      name: "Some name",
-      content: content || RichText.rich_text("Content"),
+    {:ok, files} = Operately.Operations.ResourceHubFileCreating.run(ctx.creator, ctx.hub, %{
+      files: [
+        %{
+          blob_id: blob.id,
+          name: "Some name",
+          description: description || RichText.rich_text("Content"),
+        }
+      ],
       send_to_everyone: send_to_everyone,
       subscription_parent_type: :resource_hub_file,
       subscriber_ids: people_list,
-      blob_id: blob.id,
     })
-    Repo.preload(file, :resource_hub)
+    Repo.preload(hd(files), :resource_hub)
   end
 
   defp get_activity(file, action) do
