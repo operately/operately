@@ -88,6 +88,7 @@ SENDGRID_API_KEY=$SENDGRID_TOKEN
 NOTIFICATION_EMAIL="notifications@${DOMAIN}"
 
 echo "OPERATELY_HOST=\"${DOMAIN}\"" >> operately.env
+echo "OPERATELY_BLOB_TOKEN_SECRET_KEY=\"${OPERATELY_BLOB_TOKEN_SECRET_KEY}\"" >> operately.env
 echo "CERT_DOMAIN=\"${CERT_DOMAIN}\"" >> operately.env
 echo "CERT_AUTO_RENEW=\"${CERT_AUTO_RENEW}\"" >> operately.env
 echo "CERT_EMAILS=\"${CERT_EMAILS}\"" >> operately.env
