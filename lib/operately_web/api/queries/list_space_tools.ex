@@ -10,7 +10,7 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceTools do
   alias Operately.Access.Filters
 
   inputs do
-    field :space_id, :string
+    field :space_id, :id
   end
 
   outputs do
@@ -34,6 +34,7 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceTools do
       {:ok, ctx} -> {:ok, ctx.serialized}
       {:error, :id, _} -> {:error, :bad_request}
       {:error, :nodes, _} -> {:error, :not_found}
+      {:error, :bad_request, message} -> {:error, :bad_request, message}
       _ -> {:error, :internal_server_error}
     end
   end
