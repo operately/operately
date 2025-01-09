@@ -9,6 +9,7 @@ import { sortNodesWithFoldersFirst } from "@/features/ResourceHub/utils";
 import { useFieldError, useFieldValue } from "@/components/Forms/FormContext";
 import { assertPresent } from "@/utils/assertions";
 import { NodeIcon } from "@/features/ResourceHub/NodeIcon";
+import { InputField } from "@/components/Forms/FieldGroup";
 
 import { Location, MovableResource } from ".";
 
@@ -16,10 +17,14 @@ interface FolderSelectFieldProps {
   resource: MovableResource;
   field: string;
   startLocation: Location;
+  label: string;
+  hidden?: boolean;
 }
 
-export function FolderSelectField({ resource, field, startLocation }: FolderSelectFieldProps) {
+export function FolderSelectField({ resource, field, startLocation, label, hidden }: FolderSelectFieldProps) {
   const [_, setValue] = useFieldValue<string | null>(field);
+  const error = useFieldError(field);
+
   const [currentLocation, setCurrentLocation] = useState(startLocation);
   const [loading, setLoading] = useState<string>();
 
@@ -46,22 +51,22 @@ export function FolderSelectField({ resource, field, startLocation }: FolderSele
   };
 
   return (
-    <div>
-      <Header
-        currentLocation={currentLocation}
-        selectFolder={selectFolder}
-        selectResourceHub={selectResourceHub}
-        loading={loading}
-      />
-      <OptionsList
-        resource={resource}
-        currentLocation={currentLocation}
-        selectFolder={selectFolder}
-        loading={loading}
-      />
-
-      <Error field={field} />
-    </div>
+    <InputField field={field} label={label} error={error} hidden={hidden}>
+      <div className="border border-surface-outline rounded-lg">
+        <Header
+          currentLocation={currentLocation}
+          selectFolder={selectFolder}
+          selectResourceHub={selectResourceHub}
+          loading={loading}
+        />
+        <OptionsList
+          resource={resource}
+          currentLocation={currentLocation}
+          selectFolder={selectFolder}
+          loading={loading}
+        />
+      </div>
+    </InputField>
   );
 }
 
@@ -90,9 +95,9 @@ function Header({ currentLocation, selectFolder, selectResourceHub, loading }: H
   };
 
   return (
-    <div className="h-8 flex items-center gap-2 pb-2 border-b border-stroke-base">
-      {isCurrentLocationFolder && <IconArrowLeft className="cursor-pointer" size={24} onClick={goBack} />}
-      <div className="text-lg">{currentLocation.name}</div>
+    <div className="flex items-center gap-2 p-2 border-b border-stroke-base">
+      {isCurrentLocationFolder && <IconArrowLeft className="cursor-pointer" size={16} onClick={goBack} />}
+      <div className="font-medium text-sm">Product / {currentLocation.name}</div>
     </div>
   );
 }
@@ -108,7 +113,7 @@ function OptionsList({ resource, currentLocation, selectFolder, loading }: Optio
   const options = useMemo(() => sortNodesWithFoldersFirst(currentLocation.nodes!), [currentLocation]);
 
   return (
-    <div className="h-[240px] overflow-scroll">
+    <div className="h-[240px] overflow-scroll text-sm">
       {options?.map((node, idx) => (
         <Option
           resource={resource}
@@ -136,9 +141,8 @@ function Option({ resource, node, callback, loading, testid }: OptionProps) {
   const disabled = !isFolder || loading || resource.id === node.folder?.id;
 
   const className = classNames(
-    "flex items-center justify-between p-2",
+    "flex items-center justify-between py-1.5 px-2 mx-0.5 even:bg-surface-dimmed",
     !loading && "cursor-pointer hover:bg-surface-highlight",
-    disabled && "opacity-40",
   );
 
   const handleClick = () => {
@@ -149,19 +153,12 @@ function Option({ resource, node, callback, loading, testid }: OptionProps) {
 
   return (
     <div className={className} onClick={handleClick} data-test-id={testid}>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2" style={{ opacity: disabled ? 0.5 : 1 }}>
         <NodeIcon size={18} node={node} />
         {node.name}
       </div>
+
       {loading && loading === node.folder?.id && <BeatLoader size={7} />}
     </div>
   );
-}
-
-function Error({ field }: { field: string }) {
-  const error = useFieldError(field);
-
-  if (!error) return <></>;
-
-  return <div className="translate-y-6 text-sm text-red-500">{error}</div>;
 }
