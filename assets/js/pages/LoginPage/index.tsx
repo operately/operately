@@ -90,7 +90,7 @@ function SubmitButton({ onClick }: { onClick: () => void }) {
   );
 
   return (
-    <button className={className} onClick={onClick} type="button" data-test-id="submit">
+    <button type="submit" className={className} onClick={onClick} data-test-id="submit">
       Sign in
     </button>
   );
