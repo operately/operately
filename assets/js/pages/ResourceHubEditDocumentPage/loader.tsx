@@ -9,6 +9,10 @@ export async function loader({ params }): Promise<LoaderResult> {
   return {
     document: await getResourceHubDocument({
       id: params.id,
+      includeSpace: true,
+      includeResourceHub: true,
+      includeParentFolder: true,
+      includePathToDocument: true,
     }).then((res) => res.document!),
   };
 }

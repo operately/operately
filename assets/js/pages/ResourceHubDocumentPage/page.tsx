@@ -11,11 +11,11 @@ import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { CommentSection, useComments } from "@/features/CommentSection";
 import { CurrentSubscriptions } from "@/features/Subscriptions";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
-import { NestedFolderNavigation } from "@/features/ResourceHub";
 
 import { useLoadedData } from "./loader";
 import { Options } from "./Options";
 import { DocumentTitle } from "@/features/documents/DocumentTitle";
+import { DocumentPageNavigation } from "@/features/ResourceHub";
 
 export function Page() {
   const { document } = useLoadedData();
@@ -26,7 +26,7 @@ export function Page() {
   return (
     <Pages.Page title={document.name!}>
       <Paper.Root size="large">
-        <Navigation />
+        <DocumentPageNavigation document={document} />
 
         <Paper.Body minHeight="600px" className="lg:px-28">
           <Options />
@@ -39,23 +39,6 @@ export function Page() {
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
-  );
-}
-
-function Navigation() {
-  const { document } = useLoadedData();
-
-  assertPresent(document.resourceHub, "resourceHub must be present in document");
-  assertPresent(document.resourceHub.space, "space must be present in document.resourceHub");
-  assertPresent(document.pathToDocument, "pathToDocument must be present in document");
-
-  return (
-    <Paper.Navigation testId="navigation">
-      <Paper.NavSpaceLink space={document.resourceHub.space} />
-      <Paper.NavSeparator />
-      <Paper.NavResourceHubLink resourceHub={document.resourceHub} />
-      <NestedFolderNavigation folders={document.pathToDocument} />
-    </Paper.Navigation>
   );
 }
 
