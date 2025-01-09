@@ -15,7 +15,7 @@ export function Options() {
   assertPresent(file.permissions, "permissions must be present in file");
 
   return (
-    <PageOptions.Root testId="project-options-button" position="top-right">
+    <PageOptions.Root testId="project-options-button">
       {file.permissions.canView && <DownloadAction />}
 
       {file.permissions.canEditFile && (

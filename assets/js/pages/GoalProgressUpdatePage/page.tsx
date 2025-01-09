@@ -144,7 +144,7 @@ function Options() {
   const { update } = useLoadedData();
 
   return (
-    <PageOptions.Root position="top-right" testId="options-button">
+    <PageOptions.Root testId="options-button">
       <PageOptions.Link
         icon={Icons.IconEdit}
         title="Edit Update"

@@ -1,58 +1,87 @@
 import * as React from "react";
 import * as Icons from "@tabler/icons-react";
+import * as Pages from "@/components/Pages";
+
 import { DivLink } from "../Link";
 import classNames from "classnames";
 import { TestableElement } from "@/utils/testid";
+import { SecondaryButton } from "../Buttons";
 
-type RootProps = TestableElement & {
-  children: React.ReactNode;
-  position?: "top-right";
-};
+type RootProps = TestableElement & { children: React.ReactNode };
 
 const Context = React.createContext({
+  isOpen: false,
+  open: () => {},
   close: () => {},
 });
 
 export function Root(props: RootProps) {
-  const [showOptions, setShowOptions] = React.useState(false);
+  const isScreenBig = Pages.useWindowSizeBiggerOrEqualTo("lg");
+  const [outside, inside] = splitChildrenToOutsideAndInside(isScreenBig, props.children);
 
-  const openOptions = () => setShowOptions(true);
-  const closeOptions = () => setShowOptions(false);
+  const [isOpen, setIsOpen] = React.useState(false);
 
-  const className = React.useMemo(() => {
-    if (props.position === "top-right") {
-      return "absolute right-0 top-0";
-    }
-
-    return "";
-  }, [props.position]);
-
-  if (React.Children.toArray(props.children).length === 0) {
-    return null;
-  }
+  const open = () => setIsOpen(true);
+  const close = () => setIsOpen(false);
 
   return (
-    <Context.Provider value={{ close: closeOptions }}>
-      <div className={className}>
-        <Open onClick={openOptions} testId={props.testId} position={props.position} />
-
-        {showOptions && <Dropdown closeOptions={closeOptions} children={props.children} />}
-      </div>
+    <Context.Provider value={{ isOpen, open, close }}>
+      <Body inside={inside} outside={outside} testId={props.testId} />
     </Context.Provider>
   );
+}
+
+function Body({ inside, outside, testId }) {
+  return (
+    <div className="absolute right-0 top-0">
+      <div className="absolute right-2.5 top-2.5 flex items-center gap-2">
+        <OutsideButtons outsideButtons={outside} />
+        {inside.length > 0 && <Trigger testId={testId} />}
+      </div>
+
+      {inside.length > 0 && <Dropdown children={inside} />}
+    </div>
+  );
+}
+
+function OutsideButtons({ outsideButtons }) {
+  return <div>{outsideButtons}</div>;
 }
 
 type LinkProps = TestableElement & {
   icon: React.ElementType;
   title: string;
   to: string;
+  keepOutsideOnBigScreen?: boolean;
 };
 
-export function Link({ icon, title, to, testId }: LinkProps) {
+export function Link(props: LinkProps) {
+  const isBig = Pages.useWindowSizeBiggerOrEqualTo("lg");
+
+  if (isBig && props.keepOutsideOnBigScreen) {
+    return <LinkAsOutsideButton {...props} />;
+  } else {
+    return <LinkAsDropdownElement {...props} />;
+  }
+}
+
+function LinkAsOutsideButton(props: LinkProps) {
   return (
-    <DivLink to={to} className="flex items-center gap-2 py-2 px-4 hover:bg-shade-1 cursor-pointer" testId={testId}>
-      {React.createElement(icon, { size: 20 })}
-      {title}
+    <SecondaryButton size="xs" linkTo={props.to} testId={props.testId}>
+      {props.title}
+    </SecondaryButton>
+  );
+}
+
+function LinkAsDropdownElement(props: LinkProps) {
+  return (
+    <DivLink
+      to={props.to}
+      className="flex items-center gap-2 py-2 px-4 hover:bg-shade-1 cursor-pointer"
+      testId={props.testId}
+    >
+      {React.createElement(props.icon, { size: 20 })}
+      {props.title}
     </DivLink>
   );
 }
@@ -83,31 +112,28 @@ export function Action({ icon, title, onClick, testId }: ActionProps) {
   );
 }
 
-function Dropdown({ closeOptions, children }) {
+function Dropdown({ children }) {
+  const { isOpen, close } = React.useContext(Context);
+  if (!isOpen) return null;
+
   return (
     <div className="absolute right-0 top-0 z-50 shadow-lg bg-accent-1 w-[300px] text-white-1 font-medium flex flex-col">
-      <Close onClick={closeOptions} />
+      <Close onClick={close} />
       {children}
     </div>
   );
 }
 
-type OpenProps = TestableElement & {
-  onClick: () => void;
-  noBorder?: boolean;
-  position?: "top-right";
-};
+function Trigger({ testId }) {
+  const { open } = React.useContext(Context);
 
-function Open({ onClick, noBorder, testId, position }: OpenProps) {
   const className = classNames({
-    "rounded-full border border-stroke-base cursor-pointer": true,
-    "border-transparent": noBorder,
-    "p-1 hover:border-surface-outline transition-colors duration-200": !noBorder,
-    "absolute right-2.5 top-2.5": position === "top-right",
+    "rounded-full border border-surface-outline cursor-pointer": true,
+    "p-1 hover:bg-surface-dimmed": true,
   });
 
   return (
-    <div className={className} onClick={onClick} data-test-id={testId}>
+    <div className={className} onClick={open} data-test-id={testId}>
       <Icons.IconDots size={20} />
     </div>
   );
@@ -125,4 +151,29 @@ function Close({ onClick }) {
       </div>
     </div>
   );
+}
+
+//
+// Split children into two arrays: outside and inside.
+//
+// Outside children are shown as buttons outside of the dropdown, but only on big screens.
+// Inside children are shown inside the dropdown.
+//
+function splitChildrenToOutsideAndInside(isScreenBig: boolean, children: React.ReactNode) {
+  let outsideElements: React.ReactNode[] = [];
+  let insideElements: React.ReactNode[] = [];
+
+  React.Children.toArray(children).forEach((child) => {
+    if (!React.isValidElement(child)) {
+      throw new Error("PageOptions.Root can only have React elements as children");
+    } else if (!isScreenBig) {
+      insideElements.push(child);
+    } else if (!child.props["keepOutsideOnBigScreen"]) {
+      insideElements.push(child);
+    } else {
+      outsideElements.push(child);
+    }
+  });
+
+  return [outsideElements, insideElements];
 }
