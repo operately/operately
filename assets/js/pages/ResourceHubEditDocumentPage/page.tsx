@@ -2,9 +2,9 @@ import React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
-import { Paths } from "@/routes/paths";
 import { Form } from "./form";
 import { useLoadedData } from "./loader";
+import { DocumentPageNavigation } from "@/features/ResourceHub";
 
 export function Page() {
   const { document } = useLoadedData();
@@ -12,21 +12,12 @@ export function Page() {
   return (
     <Pages.Page title="Edit Document">
       <Paper.Root>
-        <Navigation />
+        <DocumentPageNavigation document={document} />
+
         <Paper.Body>
           <Form document={document} />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
-  );
-}
-
-function Navigation() {
-  const { document } = useLoadedData();
-
-  return (
-    <Paper.Navigation>
-      <Paper.NavItem linkTo={Paths.resourceHubDocumentPath(document.id!)}>{document.name}</Paper.NavItem>
-    </Paper.Navigation>
   );
 }
