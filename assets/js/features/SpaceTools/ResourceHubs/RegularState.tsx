@@ -37,10 +37,7 @@ function NodesList({ nodes }: { nodes: ResourceHubNode[] }) {
 }
 
 function NodeItem({ node }: { node: ResourceHubNode }) {
-  const className = classNames(
-    "flex gap-2 px-2 py-1.5",
-    "border-b border-stroke-base last:border-b-0 flex items-center",
-  );
+  const className = classNames("px-2 py-1.5", "border-b border-stroke-base last:border-b-0", "flex items-center gap-2");
 
   const commentsCount = findCommentsCount(node.type as NodeType, node);
 
@@ -49,7 +46,7 @@ function NodeItem({ node }: { node: ResourceHubNode }) {
       <div>
         <NodeIcon node={node} size={32} />
       </div>
-      <div className="overflow-hidden leading-snug">
+      <div className="overflow-hidden leading-snug flex-1">
         <div className="font-bold truncate">{node.name}</div>
         <NodeDescription node={node} fontSize="text-[10px] truncate" />
       </div>
