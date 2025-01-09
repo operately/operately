@@ -169,3 +169,38 @@ export function countCharacters(jsonContent: string, opts?: { skipParse?: boolea
 
   return count;
 }
+
+export function areRichTextObjectsEqual(obj1: any, obj2: any) {
+  // Only one is object
+  if (typeof obj1 !== "object" && typeof obj2 === "object") {
+    return false;
+  }
+
+  // Only one is array
+  if (Array.isArray(obj1) && !Array.isArray(obj2)) {
+    return false;
+  }
+
+  // Compare non-objects
+  if (typeof obj1 !== "object" && typeof obj2 !== "object") {
+    return obj1 === obj2;
+  }
+
+  // Compare arrays
+  if (Array.isArray(obj1) && Array.isArray(obj2)) {
+    if (obj1.length !== obj2.length) {
+      return false;
+    }
+    return obj1.every((item, index) => areRichTextObjectsEqual(item, obj2[index]));
+  }
+
+  // Compare objects
+  const keys1 = Object.keys(obj1);
+  const keys2 = Object.keys(obj2);
+
+  if (keys1.length !== keys2.length) {
+    return false;
+  }
+
+  return keys1.every((key) => areRichTextObjectsEqual(obj1[key], obj2[key]));
+}
