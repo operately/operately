@@ -27,6 +27,7 @@ function Options({ permissions }: { permissions: ResourceHubPermissions }) {
 
   return [
     <MenuActionItem
+      key={1}
       icon={Icons.IconFile}
       onClick={navigateToNewDocument}
       testId="new-document"
@@ -34,6 +35,7 @@ function Options({ permissions }: { permissions: ResourceHubPermissions }) {
       children="New document"
     />,
     <MenuActionItem
+      key={2}
       icon={Icons.IconFolderFilled}
       onClick={toggleShowAddFolder}
       testId="new-folder"
@@ -41,13 +43,14 @@ function Options({ permissions }: { permissions: ResourceHubPermissions }) {
       children="New folder"
     />,
     <MenuActionItem
+      key={3}
       icon={Icons.IconUpload}
       onClick={showAddFilePopUp}
       testId="upload-files"
       hidden={!permissions.canCreateFile}
       children="Upload files"
     />,
-    <NewLinkSubMenu permissions={permissions} />,
+    <NewLinkSubMenu key={4} permissions={permissions} />,
   ];
 }
 
