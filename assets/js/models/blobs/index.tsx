@@ -24,7 +24,13 @@ export async function uploadFile(file: File, progressCallback: ProgressCallback)
     dimensions = await findVideoDimensions(file);
   }
 
-  const blob = await createBlob({ ...attrs, ...dimensions });
+  const res = await createBlob({ files: [{ ...attrs, ...dimensions }] });
+
+  if (!res.blobs || res.blobs!.length < 0) {
+    throw Error("Failed to create blobs");
+  }
+
+  const blob = res.blobs[0]!;
   const url = blob.signedUploadUrl!;
 
   if (blob.uploadStrategy === "direct") {

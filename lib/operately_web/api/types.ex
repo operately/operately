@@ -604,6 +604,21 @@ defmodule OperatelyWeb.Api.Types do
     field :resource_hubs, list_of(:resource_hub)
   end
 
+  object :blob_creation_input do
+    field :filename, :string
+    field :size, :integer
+    field :content_type, :string
+    field :width, :integer
+    field :height, :integer
+  end
+
+  object :blob_creation_output do
+    field :id, :string
+    field :url, :string
+    field :signed_upload_url, :string
+    field :upload_strategy, :string # "direct", "multipart"
+  end
+
   object :blob do
     field :id, :string
     field :status, :string
