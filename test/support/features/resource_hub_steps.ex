@@ -136,7 +136,6 @@ defmodule Operately.Support.Features.ResourceHubSteps do
     {:ok, node} = Node.get(:system, type: :document, opts: [preload: :document])
 
     ctx
-    |> UI.click(testid: "document-options-button")
     |> UI.click(testid: "edit-document-link")
     |> UI.assert_page(Paths.edit_document_path(ctx.company, node.document))
     |> UI.sleep(500)

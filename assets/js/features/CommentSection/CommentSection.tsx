@@ -1,7 +1,6 @@
 import React from "react";
 
 import * as Icons from "@tabler/icons-react";
-import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import * as TipTapEditor from "@/components/Editor";
 import * as Reactions from "@/models/reactions";
 
@@ -18,6 +17,7 @@ import { useMe } from "@/contexts/CurrentCompanyContext";
 import { compareIds } from "@/routes/paths";
 import { CommentParentType } from "@/models/comments";
 import { useScrollIntoViewOnLoad } from "./useScrollIntoViewOnLoad";
+import { Menu, MenuActionItem } from "@/components/Menu";
 
 interface CommentSectionProps {
   form: FormState;
@@ -171,7 +171,6 @@ function MilestoneReopened({ comment }) {
 }
 
 function ViewComment({ comment, onEdit, commentParentType, canComment }) {
-  const me = useMe()!;
   const commentRef = useClearNotificationOnIntersection(comment.notification);
   useScrollIntoViewOnLoad(comment.id);
 
@@ -202,16 +201,7 @@ function ViewComment({ comment, onEdit, commentParentType, canComment }) {
                 <FormattedTime time={comment.insertedAt} format="relative" />
               </span>
 
-              {compareIds(me.id, comment.author.id) && (
-                <PageOptions.Root testId="comment-options">
-                  <PageOptions.Action
-                    onClick={onEdit}
-                    icon={Icons.IconEdit}
-                    title="Edit Comment"
-                    testId="edit-comment"
-                  />
-                </PageOptions.Root>
-              )}
+              <CommentDropdownMenu comment={comment} onEdit={onEdit} />
             </div>
           </div>
         </div>
@@ -223,6 +213,19 @@ function ViewComment({ comment, onEdit, commentParentType, canComment }) {
         <ReactionList form={addReactionForm} size={20} canAddReaction={canComment} />
       </div>
     </div>
+  );
+}
+
+function CommentDropdownMenu({ comment, onEdit }) {
+  const me = useMe()!;
+  if (!compareIds(me.id, comment.author.id)) return null;
+
+  return (
+    <Menu size="small" testId="comment-options">
+      <MenuActionItem onClick={onEdit} testId="edit-comment" icon={Icons.IconEdit}>
+        Edit
+      </MenuActionItem>
+    </Menu>
   );
 }
 

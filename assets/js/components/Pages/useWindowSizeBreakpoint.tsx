@@ -22,3 +22,10 @@ function getWindowSizeBreakpoint(): WindowSizeBreakpoint {
 
   return "xl";
 }
+
+const order: WindowSizeBreakpoint[] = ["xs", "sm", "md", "lg", "xl"];
+
+export function useWindowSizeBiggerOrEqualTo(breakpoint: WindowSizeBreakpoint): boolean {
+  const size = useWindowSizeBreakpoints();
+  return order.indexOf(size) >= order.indexOf(breakpoint);
+}

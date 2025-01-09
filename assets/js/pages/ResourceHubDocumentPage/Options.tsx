@@ -14,13 +14,14 @@ export function Options() {
   assertPresent(document.permissions, "permissions must be present in document");
 
   return (
-    <PageOptions.Root testId="document-options-button" position="top-right">
+    <PageOptions.Root testId="document-options-button">
       {document.permissions.canEditDocument && (
         <PageOptions.Link
           icon={IconEdit}
           title="Edit"
           to={Paths.resourceHubEditDocumentPath(document.id!)}
           testId="edit-document-link"
+          keepOutsideOnBigScreen
         />
       )}
       {document.permissions.canCreateDocument && <CopyLink />}
