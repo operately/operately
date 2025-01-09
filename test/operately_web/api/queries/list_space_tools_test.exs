@@ -15,6 +15,18 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceToolsTest do
     end
   end
 
+  describe "invalid space" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.add_company_member(:person)
+      |> Factory.log_in_person(:person)
+    end
+
+    test "it returns 422 invalid id", ctx do
+      assert {422, "Invalid id format"} = query(ctx.conn, :list_space_tools, %{space_id: "a;b;c"})
+    end
+  end
 
   describe "permissions" do
     setup ctx do
