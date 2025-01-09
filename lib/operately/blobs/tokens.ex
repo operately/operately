@@ -1,16 +1,9 @@
 defmodule Operately.Blobs.Tokens do
-  @cipher :aes_256_gcm
-  @tag_size 16
-  @iv_size 32
-  @aad "blobs"
 
-  def gen_new_secret_key do
-    :crypto.strong_rand_bytes(32) |> :base64.encode()
-  end
+  alias Operately.Blobs.Encryption
 
   def validate(operation, path, token) do
-    with {:ok, decoded} <- decode_url_64(token),
-         {:ok, decoded} <- decrypt_raw(decoded),
+    with {:ok, decoded} <- Encryption.decrypt_raw(token),
          {:ok, decoded} <- Jason.decode(decoded),
          {:ok, _} <- validate_operation(operation, decoded),
          {:ok, _} <- validate_path(path, decoded),
@@ -22,19 +15,29 @@ defmodule Operately.Blobs.Tokens do
   end
 
   def gen_upload_token(path) do
-    %{
+    token = Jason.encode!(%{
       path: path, 
       operation: "upload",
       expires_at: expires_at_timestamp(1, :hour)
-    } |> Jason.encode! |> encrypt_raw()
+    })
+
+    case Encryption.encrypt_raw(token) do
+      {:ok, encrypted} -> encrypted
+      _ -> {:error, :invalid_token}
+    end
   end
 
   def gen_get_token(path) do
-    %{
+    token = Jason.encode!(%{
       path: path, 
       operation: :get,
       expires_at: expires_at_timestamp(1, :hour)
-    } |> Jason.encode! |> encrypt_raw()
+    }) 
+
+    case Encryption.encrypt_raw(token) do
+      {:ok, encrypted} -> encrypted
+      _ -> {:error, :invalid_token}
+    end
   end
 
   defp validate_operation(operation, decoded) do
@@ -70,40 +73,8 @@ defmodule Operately.Blobs.Tokens do
     end
   end
 
-  defp key do
-    Application.get_env(:operately, :blob_token_secret_key)
-  end
-
-  defp encrypt_raw(val) do
-    secret_key = :base64.decode(key())
-    iv         = :crypto.strong_rand_bytes(@iv_size)
-
-    {ciphertext, tag} = :crypto.crypto_one_time_aead(@cipher, secret_key, iv, val, @aad, true)
-
-    Base.url_encode64(iv <> tag <> ciphertext)
-  end
-
-  defp decrypt_raw(ciphertext) do
-    secret_key = :base64.decode(key())
-
-    iv = binary_part(ciphertext, 0, @iv_size)
-    tag = binary_part(ciphertext, @iv_size, @tag_size)
-    ciphertext = binary_part(ciphertext, @iv_size + @tag_size, byte_size(ciphertext) - @iv_size - @tag_size)
-
-    {:ok, :crypto.crypto_one_time_aead(@cipher, secret_key, iv, ciphertext, @aad, tag, false)}
-  rescue
-    _ -> {:error, :invalid_token}
-  end
-
   defp expires_at_timestamp(amount, unit) do
     DateTime.utc_now() |> DateTime.add(amount, unit) |> DateTime.to_unix()
-  end
-
-  defp decode_url_64(val) do
-    case Base.url_decode64(val) do
-      {:ok, decoded} -> {:ok, decoded}
-      _ -> {:error, :invalid_token}
-    end
   end
 
 end
