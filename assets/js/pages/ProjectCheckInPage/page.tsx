@@ -151,7 +151,7 @@ function Options() {
   if (!compareIds(me.id!, checkIn.author!.id!)) return null;
 
   return (
-    <PageOptions.Root position="top-right" testId="options-button">
+    <PageOptions.Root testId="options-button">
       <PageOptions.Link
         icon={Icons.IconEdit}
         title="Edit check-in"

@@ -41,7 +41,7 @@ const GoalDiscussionCreation: ActivityHandler = {
     const me = useMe()!;
 
     return (
-      <PageOptions.Root testId="options" position="top-right">
+      <PageOptions.Root testId="options">
         {activity.author!.id! === me?.id && (
           <PageOptions.Link
             icon={Icons.IconEdit}

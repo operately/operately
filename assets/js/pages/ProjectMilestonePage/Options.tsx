@@ -7,7 +7,7 @@ export function Options({ form }: { form: FormState }) {
   if (form.titleAndDeadline.state === "edit") return null;
 
   return (
-    <PageOptions.Root testId="project-options-button" position="top-right">
+    <PageOptions.Root testId="project-options-button">
       {form.milestone.permissions?.canEditMilestone && (
         <PageOptions.Action
           icon={Icons.IconEdit}

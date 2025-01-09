@@ -120,7 +120,7 @@ function Banner({ goal }) {
 
 function Options({ goal }) {
   return (
-    <PageOptions.Root testId="goal-options" position="top-right">
+    <PageOptions.Root testId="goal-options">
       {goal.permissions.canEdit && !goal.isClosed && (
         <PageOptions.Link
           icon={Icons.IconEdit}
