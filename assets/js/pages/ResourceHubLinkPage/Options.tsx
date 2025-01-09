@@ -14,7 +14,7 @@ export function Options() {
   assertPresent(link.permissions, "permissions must be present in link");
 
   return (
-    <PageOptions.Root testId="options-button" position="top-right">
+    <PageOptions.Root testId="options-button">
       {link.permissions.canEditLink && (
         <PageOptions.Link
           icon={Icons.IconEdit}

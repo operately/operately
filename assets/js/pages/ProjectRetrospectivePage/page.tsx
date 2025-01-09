@@ -53,7 +53,7 @@ function Options() {
   const { retrospective } = useLoadedData();
 
   return (
-    <PageOptions.Root testId="project-options-button" position="top-right">
+    <PageOptions.Root testId="project-options-button">
       {retrospective.permissions?.canEditRetrospective && (
         <PageOptions.Link
           icon={IconEdit}
