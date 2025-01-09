@@ -7,6 +7,7 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubDocument do
   inputs do
     field :id, :id
     field :include_author, :boolean
+    field :include_space, :boolean
     field :include_resource_hub, :boolean
     field :include_parent_folder, :boolean
     field :include_reactions, :boolean
@@ -50,6 +51,7 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubDocument do
       include_reactions: [reactions: :person],
       include_resource_hub: [node: :resource_hub],
       include_parent_folder: [node: [parent_folder: :node]],
+      include_space: [:space],
       include_subscriptions_list: :subscription_list,
       always_include: :node,
     ])
