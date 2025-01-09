@@ -726,6 +726,21 @@ export interface Blob {
   url?: string | null;
 }
 
+export interface BlobCreationInput {
+  filename?: string | null;
+  size?: number | null;
+  contentType?: string | null;
+  width?: number | null;
+  height?: number | null;
+}
+
+export interface BlobCreationOutput {
+  id?: string | null;
+  url?: string | null;
+  signedUploadUrl?: string | null;
+  uploadStrategy?: string | null;
+}
+
 export interface Comment {
   id?: string | null;
   insertedAt?: string | null;
@@ -1973,7 +1988,7 @@ export interface GetUnreadNotificationCountResult {
 }
 
 export interface ListSpaceToolsInput {
-  spaceId?: string | null;
+  spaceId?: Id | null;
 }
 
 export interface ListSpaceToolsResult {
@@ -2219,18 +2234,11 @@ export interface CreateAccountInput {
 export interface CreateAccountResult {}
 
 export interface CreateBlobInput {
-  filename?: string | null;
-  size?: number | null;
-  contentType?: string | null;
-  width?: number | null;
-  height?: number | null;
+  files?: BlobCreationInput[] | null;
 }
 
 export interface CreateBlobResult {
-  id?: string | null;
-  url?: string | null;
-  signedUploadUrl?: string | null;
-  uploadStrategy?: string | null;
+  blobs?: BlobCreationOutput[] | null;
 }
 
 export interface CreateCommentInput {
