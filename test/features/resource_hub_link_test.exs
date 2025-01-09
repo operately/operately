@@ -109,6 +109,16 @@ defmodule Features.ResourceHubLinkTest do
       |> LinkSteps.assert_link_edited_email_sent(link.title)
     end
 
+    feature "editing a link without any changes doesn't make an API call", ctx do
+      ctx
+      |> Steps.visit_resource_hub_page()
+      |> LinkSteps.create_link(@link)
+      |> LinkSteps.edit_link(@link)
+      |> LinkSteps.assert_link_content(@link)
+      |> LinkSteps.refute_link_edited_on_space_feed(@link)
+      |> LinkSteps.refute_link_edited_on_company_feed(@link)
+    end
+
     feature "delete link from content list", ctx do
       ctx
       |> Steps.visit_resource_hub_page()

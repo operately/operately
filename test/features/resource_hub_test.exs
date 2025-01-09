@@ -97,6 +97,16 @@ defmodule Features.Features.ResourceHubTest do
       |> Steps.assert_document_edited_email_sent(new_doc.name)
     end
 
+    feature "editing a document without any changes doesn't make an API call", ctx do
+      ctx
+      |> Steps.visit_resource_hub_page()
+      |> Steps.create_document(@document)
+      |> Steps.assert_document_content(@document)
+      |> Steps.edit_document(@document)
+      |> Steps.refute_document_edited_on_space_feed(@document.name)
+      |> Steps.refute_document_edited_on_company_feed(@document.name)
+    end
+
     feature "delete document from content list", ctx do
       ctx
       |> Steps.visit_resource_hub_page()

@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-import { useEditResourceHubLink } from "@/models/resourceHubs";
+import { ResourceHubLink, useEditResourceHubLink } from "@/models/resourceHubs";
 
 import Forms from "@/components/Forms";
 import { Paths } from "@/routes/paths";
@@ -9,6 +9,7 @@ import { assertPresent } from "@/utils/assertions";
 import { isValidURL } from "@/utils/validators";
 
 import { useLoadedData } from "./loader";
+import { areRichTextObjectsEqual } from "@/components/RichContent";
 
 export function Form() {
   const { link } = useLoadedData();
@@ -22,17 +23,17 @@ export function Form() {
   const form = Forms.useForm({
     fields: {
       title: link.name,
-      link: link.url,
+      url: link.url,
       description: JSON.parse(link.description!),
     },
     validate: (addError) => {
       if (!form.values.title) {
         addError("title", "Title is required");
       }
-      if (!form.values.link) {
-        addError("link", "Link is required");
+      if (!form.values.url) {
+        addError("url", "Link is required");
       }
-      if (!isValidURL(form.values.link)) {
+      if (!isValidURL(form.values.url)) {
         addError("link", "Invalid link");
       }
     },
@@ -40,14 +41,20 @@ export function Form() {
       navigate(Paths.resourceHubLinkPath(link.id!));
     },
     submit: async () => {
-      await edit({
-        linkId: link.id,
-        name: form.values.title,
-        url: form.values.link,
-        description: JSON.stringify(form.values.description),
-        type: link.type,
-      });
-      navigate(Paths.resourceHubLinkPath(link.id!));
+      const { title, url, description } = form.values;
+
+      if (linkHasChanged(link, title, url, description)) {
+        await edit({
+          linkId: link.id,
+          name: title,
+          url: url,
+          description: JSON.stringify(description),
+          type: link.type,
+        });
+        navigate(Paths.resourceHubLinkPath(link.id!));
+      } else {
+        navigate(Paths.resourceHubLinkPath(link.id!));
+      }
     },
   });
 
@@ -63,7 +70,7 @@ export function Form() {
           field="title"
         />
 
-        <Forms.TextInput label="Paste the link" placeholder="eg. https://www.example.com/file/8430762" field="link" />
+        <Forms.TextInput label="Paste the link" placeholder="eg. https://www.example.com/file/8430762" field="url" />
 
         <Forms.RichTextArea
           label="Notes (optional)"
@@ -73,7 +80,14 @@ export function Form() {
         />
       </Forms.FieldGroup>
 
-      <Forms.Submit saveText="Submit" buttonSize="base" />
+      <Forms.Submit saveText="Save" buttonSize="base" />
     </Forms.Form>
   );
+}
+
+function linkHasChanged(file: ResourceHubLink, name: string, url: string, description: any) {
+  if (file.name !== name) return true;
+  if (file.url !== url) return true;
+  if (!areRichTextObjectsEqual(JSON.parse(file.description!), description)) return true;
+  return false;
 }

@@ -96,7 +96,7 @@ defmodule Operately.Support.Features.ResourceHubLinkSteps do
     |> UI.click(testid: "options-button")
     |> UI.click(testid: "edit-link-link")
     |> UI.fill(testid: "title", with: attrs.title)
-    |> UI.fill(testid: "link", with: attrs.url)
+    |> UI.fill(testid: "url", with: attrs.url)
     |> UI.fill_rich_text(attrs.notes)
     |> UI.click(testid: "submit")
     |> UI.refute_has(testid: "submit")
@@ -212,6 +212,18 @@ defmodule Operately.Support.Features.ResourceHubLinkSteps do
     |> UI.assert_text("edited a link in the #{ctx.space.name} space: #{attrs.title}")
     |> UI.assert_text("#{attrs.previous_title} → #{attrs.title}")
     |> UI.assert_text("#{attrs.previous_url} → #{attrs.url}")
+  end
+
+  step :refute_link_edited_on_space_feed, ctx, attrs do
+    ctx
+    |> UI.visit(Paths.space_path(ctx.company, ctx.space))
+    |> UI.refute_text("edited a link: #{attrs.title}")
+  end
+
+  step :refute_link_edited_on_company_feed, ctx, attrs do
+    ctx
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.refute_text("edited a link in the #{ctx.space.name} space: #{attrs.title}")
   end
 
   step :assert_link_deleted_on_space_feed, ctx do
