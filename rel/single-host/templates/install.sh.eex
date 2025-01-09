@@ -77,7 +77,7 @@ case $MANAGE_CERTS_YN in
                 sed -i '/443:4001/d' docker-compose.yml
                 ;;
 esac
-OPERATELY_BLOB_TOKEN_SECRET_KEY=$(openssl rand -hex 32)
+OPERATELY_BLOB_TOKEN_SECRET_KEY=$(openssl rand -base64 32)
 SECRET_KEY_BASE=$(openssl rand -hex 32)
 
 DB_USERNAME="operately"
