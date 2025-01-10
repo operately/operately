@@ -34,7 +34,8 @@ export function ToolsSection({ space, tools, hasResourceHubsFeature }: ToolsSect
           <Discussions space={space} discussions={boards.messages!} key={boards.id} />
         ))}
 
-        {hasResourceHubsFeature && tools.resourceHubs.map((hub) => <ResourceHub resourceHub={hub} key={hub.id} />)}
+        {hasResourceHubsFeature &&
+          tools.resourceHubs.map((hub) => <ResourceHub space={space} resourceHub={hub} key={hub.id} />)}
       </div>
     </div>
   );

@@ -7,9 +7,10 @@ import { assertPresent } from "@/utils/assertions";
 import { match } from "ts-pattern";
 
 import plurarize from "@/utils/plurarize";
+import { DecoratedNode } from "./DecoratedNode";
 
 interface NodeDescriptionProps {
-  node: Hub.ResourceHubNode;
+  node: DecoratedNode;
   fontSize?: string;
   maxCharacters?: number;
 }
@@ -25,9 +26,9 @@ export function NodeDescription(props: NodeDescriptionProps) {
   return (
     <div className={props.fontSize}>
       <SubItemsCount node={props.node} />
-      <Author node={props.node} />
-      <FileSize node={props.node} />
-      <ContentSnippet node={props.node} maxCharacters={props.maxCharacters!} />
+      <Author node={props.node.rawNode} />
+      <FileSize node={props.node.rawNode} />
+      <ContentSnippet node={props.node.rawNode} maxCharacters={props.maxCharacters!} />
     </div>
   );
 }
@@ -57,12 +58,13 @@ function FileSize({ node }: { node: Hub.ResourceHubNode }) {
   );
 }
 
-function SubItemsCount({ node }: { node: Hub.ResourceHubNode }) {
+function SubItemsCount({ node }: { node: DecoratedNode }) {
   if (node.type !== "folder") return null;
 
-  assertPresent(node.folder?.childrenCount, "childrenCount must be present in node.folder");
+  const folder = node.rawNode.folder as Hub.ResourceHubFolder;
+  assertPresent(folder.childrenCount, "childrenCount must be present in node.folder");
 
-  return <span className="font-medium">{plurarize(node.folder.childrenCount, "item", "items")}</span>;
+  return <span className="font-medium">{plurarize(folder.childrenCount, "item", "items")}</span>;
 }
 
 function ContentSnippet({ node, maxCharacters }: { node: Hub.ResourceHubNode; maxCharacters: number }) {

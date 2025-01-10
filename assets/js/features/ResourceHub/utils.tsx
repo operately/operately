@@ -2,6 +2,7 @@ import { ResourceHubNode } from "@/models/resourceHubs";
 
 import { Paths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
+import { DecoratedNode } from "./DecoratedNode";
 
 export type NodeType = "document" | "folder" | "file" | "link";
 
@@ -22,9 +23,9 @@ export function findPath(nodeType: NodeType, node: ResourceHubNode) {
   }
 }
 
-export function sortNodesWithFoldersFirst(nodes: ResourceHubNode[]) {
-  const folders: ResourceHubNode[] = [];
-  const others: ResourceHubNode[] = [];
+export function sortNodesWithFoldersFirst(nodes: DecoratedNode[]): DecoratedNode[] {
+  const folders: DecoratedNode[] = [];
+  const others: DecoratedNode[] = [];
 
   nodes.forEach((node) => {
     if (node.type === "folder") {

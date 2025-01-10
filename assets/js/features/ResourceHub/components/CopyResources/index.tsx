@@ -1,62 +1,60 @@
 import * as React from "react";
 import * as Hub from "@/models/resourceHubs";
+import * as Pages from "@/components/Pages";
 
 import { MenuActionItem } from "@/components/Menu";
 import { createTestId } from "@/utils/testid";
-import { useNodesContext } from "@/features/ResourceHub";
 
 import Modal from "@/components/Modal";
 import Forms from "@/components/Forms";
 
 import { FolderSelectField } from "../MoveResources/FolderSelectField";
+import { assertPresent } from "@/utils/assertions";
+import { DecoratedNode } from "../../DecoratedNode";
 
 export type CopyableResource = Hub.ResourceHubDocument;
 
 interface Props {
-  resource: CopyableResource;
+  node: DecoratedNode;
   showModal: () => void;
 }
 
-export function CopyResourceMenuItem({ resource, showModal }: Props) {
-  return <MenuActionItem testId={createTestId("copy", resource.id!)} onClick={showModal} children="Copy" />;
+export function CopyResourceMenuItem({ node, showModal }: Props) {
+  return <MenuActionItem testId={createTestId("copy", node.resource.id!)} onClick={showModal} children="Copy" />;
 }
 
-export function CopyResourceModal({ resource, resourceType, isOpen, hideModal }) {
-  const { parent, refetch } = useNodesContext();
+export function CopyResourceModal({ node, isOpen, hideModal }) {
+  const refresh = Pages.useRefresh();
   const [edit] = Hub.useEditParentFolderInResourceHub();
+
+  assertPresent(node.resource.id, "resource.id must be present");
 
   const form = Forms.useForm({
     fields: {
-      name: resource.name,
+      name: node.name,
       spaceId: "product",
-      newFolderId: "pathToFolder" in parent ? parent.id : null,
+      path: node.path,
     },
     cancel: hideModal,
     submit: async () => {
       await edit({
-        newFolderId: form.values.newFolderId,
-        resourceId: resource.id,
-        resourceType: resourceType,
+        // newFolderId: form.values.newFolderId,
+        resourceId: node.resource.id,
+        resourceType: node.type,
       });
 
-      refetch();
+      refresh();
       hideModal();
       form.actions.reset();
     },
   });
 
   return (
-    <Modal title={`Create a copy of ${resource.name}`} isOpen={true} hideModal={hideModal}>
+    <Modal title={`Create a copy of ${node.name}`} isOpen={true} hideModal={hideModal}>
       <Forms.Form form={form}>
         <Forms.FieldGroup>
-          <Forms.TextInput label="New file Name" field="name" />
-
-          <FolderSelectField
-            resource={resource}
-            field="newFolderId"
-            startLocation={parent}
-            label="Destination Folder"
-          />
+          <Forms.TextInput label="New file name" field="name" />
+          <FolderSelectField node={node} field="path" label="Destination folder" />
         </Forms.FieldGroup>
 
         <Forms.Submit saveText="Copy File" cancelText="Cancel" />

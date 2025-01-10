@@ -11,7 +11,9 @@ export {
   useEditSpaceMembersPermissions,
   searchPotentialSpaceMembers,
   useSearchPotentialSpaceMembers,
+  useGetSpaces,
   listSpaceTools,
+  useListSpaceTools,
 } from "@/api";
 
 export async function getSpace(params: api.GetSpaceInput): Promise<api.Space> {

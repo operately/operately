@@ -6,6 +6,7 @@ import * as Hub from "@/features/ResourceHub";
 
 import { useLoadedData, useRefresh } from "./loader";
 import { assertPresent } from "@/utils/assertions";
+import { decorateNodes } from "@/features/ResourceHub/DecoratedNode";
 
 export function Page() {
   const { folder } = useLoadedData();
@@ -14,6 +15,8 @@ export function Page() {
   assertPresent(folder.nodes, "nodes must be present in folder");
   assertPresent(folder.resourceHub, "resourceHub must be present in folder");
   assertPresent(folder.permissions, "permissions must be present in folder");
+
+  let nodes = decorateNodes(folder.resourceHub.space!, folder.resourceHub, folder.nodes);
 
   return (
     <Pages.Page title={folder.name!}>
@@ -24,7 +27,7 @@ export function Page() {
 
             <Paper.Body minHeight="75vh">
               <Hub.Header resource={folder} />
-              <Hub.NodesList folder={folder} type="folder" refetch={refresh} />
+              <Hub.NodesList nodes={nodes} refresh={refresh} />
               <Hub.AddFolderModal folder={folder} resourceHub={folder.resourceHub} refresh={refresh} />
               <Hub.AddFileModal folder={folder} resourceHub={folder.resourceHub} refresh={refresh} />
             </Paper.Body>
@@ -34,6 +37,11 @@ export function Page() {
     </Pages.Page>
   );
 }
+
+// if (nodes.length < 1) {
+//   if (type === "resource_hub") return <HubZeroNodes />;
+//   else return <FolderZeroNodes />;
+// }
 
 function PageNavigation() {
   const { folder } = useLoadedData();

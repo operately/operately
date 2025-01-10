@@ -3,6 +3,7 @@ import React from "react";
 import { assertPresent } from "@/utils/assertions";
 import { createTestId } from "@/utils/testid";
 
+import { Space } from "@/models/spaces";
 import { ResourceHub } from "@/models/resourceHubs";
 import { Paths } from "@/routes/paths";
 import { Container } from "./components";
@@ -10,6 +11,7 @@ import { ZeroState } from "./ResourceHubs/ZeroState";
 import { RegularState } from "./ResourceHubs/RegularState";
 
 interface Props {
+  space: Space;
   resourceHub: ResourceHub;
 }
 

@@ -7,6 +7,7 @@ import * as Hub from "@/features/ResourceHub";
 import { Paths } from "@/routes/paths";
 import { useLoadedData, useRefresh } from "./loader";
 import { assertPresent } from "@/utils/assertions";
+import { decorateNodes } from "@/features/ResourceHub/DecoratedNode";
 
 export function Page() {
   const { resourceHub } = useLoadedData();
@@ -14,6 +15,8 @@ export function Page() {
 
   assertPresent(resourceHub.nodes, "nodes must be present in resourceHub");
   assertPresent(resourceHub.permissions, "permissions must be present in resourceHub");
+
+  let nodes = decorateNodes(resourceHub.space!, resourceHub, resourceHub.nodes);
 
   return (
     <Pages.Page title={resourceHub.name!}>
@@ -24,7 +27,7 @@ export function Page() {
 
             <Paper.Body minHeight="75vh">
               <Hub.Header resource={resourceHub} />
-              <Hub.NodesList resourceHub={resourceHub} type="resource_hub" refetch={refresh} />
+              <Hub.NodesList nodes={nodes} refresh={refresh} />
               <Hub.AddFolderModal resourceHub={resourceHub} refresh={refresh} />
               <Hub.AddFileModal resourceHub={resourceHub} refresh={refresh} />
             </Paper.Body>

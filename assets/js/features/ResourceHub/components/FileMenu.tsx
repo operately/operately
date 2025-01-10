@@ -1,47 +1,53 @@
 import React from "react";
 
 import * as Hub from "@/models/resourceHubs";
+import * as Pages from "@/components/Pages";
 
 import { useBoolState } from "@/hooks/useBoolState";
 import { Menu, MenuActionItem, MenuLinkItem } from "@/components/Menu";
 import { createTestId } from "@/utils/testid";
 import { assertPresent } from "@/utils/assertions";
 import { useDownloadFile } from "@/models/blobs";
-import { useNodesContext } from "@/features/ResourceHub";
 import { Paths } from "@/routes/paths";
 
 import { MoveResourceMenuItem, MoveResourceModal } from "./MoveResources";
+import { DecoratedNode } from "../DecoratedNode";
 
 interface Props {
-  file: Hub.ResourceHubFile;
+  node: DecoratedNode;
 }
 
-export function FileMenu({ file }: Props) {
-  const { permissions } = useNodesContext();
+export function FileMenu({ node }: Props) {
   const [showMoveForm, toggleMoveForm] = useBoolState(false);
 
-  const relevantPermissions = [permissions.canView, permissions.canEditParentFolder, permissions.canDeleteFile];
+  const relevantPermissions = [
+    node.permissions.canView,
+    node.permissions.canEditParentFolder,
+    node.permissions.canDeleteFile,
+  ];
 
-  const editPath = Paths.resourceHubEditFilePath(file.id!);
-  const menuId = createTestId("file-menu", file.id!);
+  const editPath = Paths.resourceHubEditFilePath(node.resource.id!);
+  const menuId = createTestId("file-menu", node.resource.id!);
 
   if (!relevantPermissions.some(Boolean)) return <></>;
 
   return (
     <>
       <Menu size="medium" testId={menuId}>
-        {permissions.canView && <DownloadFileMenuItem file={file} />}
-        {permissions.canEditFile && <MenuLinkItem to={editPath}>Edit</MenuLinkItem>}
-        {permissions.canEditParentFolder && <MoveResourceMenuItem resource={file} showModal={toggleMoveForm} />}
-        {permissions.canDeleteFile && <DeleteFileMenuItem file={file} />}
+        {node.permissions.canView && <DownloadFileMenuItem node={node} />}
+        {node.permissions.canEditFile && <MenuLinkItem to={editPath}>Edit</MenuLinkItem>}
+        {node.permissions.canEditParentFolder && <MoveResourceMenuItem node={node} showModal={toggleMoveForm} />}
+        {node.permissions.canDeleteFile && <DeleteFileMenuItem node={node} />}
       </Menu>
 
-      <MoveResourceModal resource={file} resourceType="file" isOpen={showMoveForm} hideModal={toggleMoveForm} />
+      <MoveResourceModal node={node} isOpen={showMoveForm} hideModal={toggleMoveForm} />
     </>
   );
 }
 
-function DownloadFileMenuItem({ file }: Props) {
+function DownloadFileMenuItem({ node }: Props) {
+  const file = node.resource as Hub.ResourceHubFile;
+
   assertPresent(file.blob?.url, "blob.url must be present in file");
   assertPresent(file.blob.filename, "blob.filename must be present in file");
 
@@ -50,15 +56,16 @@ function DownloadFileMenuItem({ file }: Props) {
   return <MenuActionItem onClick={downloadFile}>Download</MenuActionItem>;
 }
 
-function DeleteFileMenuItem({ file }: Props) {
-  const { refetch } = useNodesContext();
+function DeleteFileMenuItem({ node }: Props) {
+  const refresh = Pages.useRefresh();
   const [remove] = Hub.useDeleteResourceHubFile();
 
   const handleDelete = async () => {
-    await remove({ fileId: file.id });
-    refetch();
+    await remove({ fileId: node.resource.id });
+    refresh();
   };
-  const deleteId = createTestId("delete", file.id!);
+
+  const deleteId = createTestId("delete", node.resource.id!);
 
   return (
     <MenuActionItem onClick={handleDelete} testId={deleteId} danger>

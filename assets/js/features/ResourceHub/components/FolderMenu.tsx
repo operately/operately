@@ -1,25 +1,26 @@
 import React from "react";
 
 import * as Hub from "@/models/resourceHubs";
+import * as Pages from "@/components/Pages";
 
 import Modal from "@/components/Modal";
 import Forms from "@/components/Forms";
 import { useBoolState } from "@/hooks/useBoolState";
 import { Menu, MenuActionItem } from "@/components/Menu";
 import { createTestId } from "@/utils/testid";
-import { useNodesContext } from "@/features/ResourceHub";
 import { MoveResourceMenuItem, MoveResourceModal } from "./MoveResources";
+import { DecoratedNode } from "../DecoratedNode";
 
 interface Props {
-  folder: Hub.ResourceHubFolder;
+  node: DecoratedNode;
 }
 
-export function FolderMenu({ folder }: Props) {
-  const { permissions } = useNodesContext();
+export function FolderMenu({ node }: Props) {
+  const folder = node.resource as Hub.ResourceHubFolder;
   const [showRenameForm, toggleRenameForm] = useBoolState(false);
   const [showMoveForm, toggleMoveForm] = useBoolState(false);
 
-  const relevantPermissions = [permissions.canRenameFolder, permissions.canDeleteFolder];
+  const relevantPermissions = [node.permissions.canRenameFolder, node.permissions.canDeleteFolder];
   const menuId = createTestId("folder-menu", folder.id!);
 
   if (!relevantPermissions.some(Boolean)) return <></>;
@@ -27,26 +28,26 @@ export function FolderMenu({ folder }: Props) {
   return (
     <>
       <Menu size="medium" testId={menuId}>
-        {permissions.canRenameFolder && <RenameFolderMenuItem folder={folder} showForm={toggleRenameForm} />}
-        {permissions.canEditParentFolder && <MoveResourceMenuItem resource={folder} showModal={toggleMoveForm} />}
-        {permissions.canDeleteFolder && <DeleteFolderMenuItem folder={folder} />}
+        {node.permissions.canRenameFolder && <RenameFolderMenuItem folder={folder} showForm={toggleRenameForm} />}
+        {node.permissions.canEditParentFolder && <MoveResourceMenuItem resource={folder} showModal={toggleMoveForm} />}
+        {node.permissions.canDeleteFolder && <DeleteFolderMenuItem folder={folder} />}
       </Menu>
 
       <RenameFolderModal folder={folder} showForm={showRenameForm} toggleForm={toggleRenameForm} />
-      <MoveResourceModal resource={folder} resourceType="folder" isOpen={showMoveForm} hideModal={toggleMoveForm} />
+      <MoveResourceModal node={node} isOpen={showMoveForm} hideModal={toggleMoveForm} />
     </>
   );
 }
 
-function DeleteFolderMenuItem({ folder }: Props) {
-  const { refetch } = useNodesContext();
+function DeleteFolderMenuItem({ node }: Props) {
+  const refresh = Pages.useRefresh();
   const [remove] = Hub.useDeleteResourceHubFolder();
 
   const handleDelete = async () => {
-    await remove({ folderId: folder.id });
-    refetch();
+    await remove({ folderId: node.resource.id });
+    refresh();
   };
-  const deleteId = createTestId("delete", folder.id!);
+  const deleteId = createTestId("delete", node.resource.id!);
 
   return (
     <MenuActionItem onClick={handleDelete} testId={deleteId} danger>
@@ -72,7 +73,7 @@ interface FormProps {
 }
 
 function RenameFolderModal({ folder, showForm, toggleForm }: FormProps) {
-  const { refetch } = useNodesContext();
+  const refetch = Pages.useRefresh();
   const [rename] = Hub.useRenameResourceHubFolder();
 
   const form = Forms.useForm({

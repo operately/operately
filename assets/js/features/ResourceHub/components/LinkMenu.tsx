@@ -1,6 +1,7 @@
 import React from "react";
 
 import * as Hub from "@/models/resourceHubs";
+import * as Pages from "@/components/Pages";
 
 import { useBoolState } from "@/hooks/useBoolState";
 import { useNodesContext } from "@/features/ResourceHub";
@@ -8,36 +9,41 @@ import { Menu, MenuActionItem, MenuLinkItem } from "@/components/Menu";
 import { createTestId } from "@/utils/testid";
 import { Paths } from "@/routes/paths";
 import { MoveResourceMenuItem, MoveResourceModal } from "./MoveResources";
+import { DecoratedNode } from "../DecoratedNode";
 
 interface Props {
-  link: Hub.ResourceHubLink;
+  node: DecoratedNode;
 }
 
-export function LinkMenu({ link }: Props) {
-  const { permissions } = useNodesContext();
+export function LinkMenu({ node }: Props) {
   const [showMoveForm, toggleMoveForm] = useBoolState(false);
 
-  const relevantPermissions = [permissions.canEditParentFolder, permissions.canEditLink, permissions.canDeleteLink];
-  const menuId = createTestId("link-menu", link.id!);
+  const relevantPermissions = [
+    node.permissions.canEditParentFolder,
+    node.permissions.canEditLink,
+    node.permissions.canDeleteLink,
+  ];
+
+  const menuId = createTestId("link-menu", node.resource.id!);
 
   if (!relevantPermissions.some(Boolean)) return <></>;
 
   return (
     <>
       <Menu size="medium" testId={menuId}>
-        {permissions.canEditParentFolder && <MoveResourceMenuItem resource={link} showModal={toggleMoveForm} />}
-        {permissions.canEditLink && <EditLinkMenuItem link={link} />}
-        {permissions.canDeleteLink && <DeleteLinkMenuItem link={link} />}
+        {node.permissions.canEditParentFolder && <MoveResourceMenuItem node={node} showModal={toggleMoveForm} />}
+        {node.permissions.canEditLink && <EditLinkMenuItem node={node} />}
+        {node.permissions.canDeleteLink && <DeleteLinkMenuItem node={node} />}
       </Menu>
 
-      <MoveResourceModal resource={link} resourceType="link" isOpen={showMoveForm} hideModal={toggleMoveForm} />
+      <MoveResourceModal node={node} isOpen={showMoveForm} hideModal={toggleMoveForm} />
     </>
   );
 }
 
-function EditLinkMenuItem({ link }: Props) {
-  const editPath = Paths.resourceHubEditLinkPath(link.id!);
-  const editId = createTestId("edit", link.id!);
+function EditLinkMenuItem({ node }: Props) {
+  const editPath = Paths.resourceHubEditLinkPath(node.resource.id!);
+  const editId = createTestId("edit", node.resource.id!);
 
   return (
     <MenuLinkItem to={editPath} testId={editId}>
@@ -46,15 +52,16 @@ function EditLinkMenuItem({ link }: Props) {
   );
 }
 
-function DeleteLinkMenuItem({ link }: Props) {
-  const { refetch } = useNodesContext();
+function DeleteLinkMenuItem({ node }: Props) {
+  const refresh = Pages.useRefresh();
   const [remove] = Hub.useDeleteResourceHubLink();
 
   const handleDelete = async () => {
-    await remove({ linkId: link.id });
-    refetch();
+    await remove({ linkId: node.resource.id });
+    refresh();
   };
-  const deleteId = createTestId("delete", link.id!);
+
+  const deleteId = createTestId("delete", node.resource.id!);
 
   return (
     <MenuActionItem onClick={handleDelete} testId={deleteId} danger>
