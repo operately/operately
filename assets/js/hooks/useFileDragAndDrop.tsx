@@ -7,7 +7,7 @@ interface FileDragAndDrop {
   onDrop: (event: React.DragEvent<HTMLDivElement>) => void;
 }
 
-export function useFileDragAndDrop(callback: (file: File) => void): FileDragAndDrop {
+export function useFileDragAndDrop(callback: (file: File[]) => void): FileDragAndDrop {
   const [isFileDragging, setIsFileDragging] = useState(false);
 
   const onDragOver = useCallback(
@@ -30,9 +30,8 @@ export function useFileDragAndDrop(callback: (file: File) => void): FileDragAndD
       const files = event.dataTransfer.files;
 
       if (files && files.length > 0) {
-        const file = files[0]!;
         if (callback) {
-          callback(file);
+          callback(Array.from(files));
         }
       }
     },

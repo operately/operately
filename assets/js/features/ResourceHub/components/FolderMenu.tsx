@@ -111,7 +111,7 @@ function RenameFolderModal({ folder, showForm, toggleForm }: FormProps) {
     <Modal title="Rename folder" isOpen={showForm} hideModal={toggleForm}>
       <Forms.Form form={form}>
         <Forms.FieldGroup>
-          <Forms.TextInput label="Name" field="name" testId="new-folder-name" />
+          <Forms.TextInput label="Name" field="name" testId="new-folder-name" autoFocus />
         </Forms.FieldGroup>
 
         <Forms.Submit cancelText="Cancel" />
