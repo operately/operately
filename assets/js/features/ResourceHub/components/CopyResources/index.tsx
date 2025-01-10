@@ -25,49 +25,41 @@ export function CopyResourceModal({ resource, resourceType, isOpen, hideModal })
   const { parent, refetch } = useNodesContext();
   const [edit] = Hub.useEditParentFolderInResourceHub();
 
-  const locationChanged = () => {
-    if (!resource.parentFolderId && !form.values.newFolderId) return false;
-    if (resource.parentFolderId === form.values.newFolderId) return false;
-    return true;
-  };
-
   const form = Forms.useForm({
     fields: {
-      name: resource.name + " (copy)",
+      name: resource.name,
+      spaceId: "product",
       newFolderId: "pathToFolder" in parent ? parent.id : null,
     },
     cancel: hideModal,
     submit: async () => {
-      if (locationChanged()) {
-        await edit({
-          newFolderId: form.values.newFolderId,
-          resourceId: resource.id,
-          resourceType: resourceType,
-        });
+      await edit({
+        newFolderId: form.values.newFolderId,
+        resourceId: resource.id,
+        resourceType: resourceType,
+      });
 
-        refetch();
-      }
-
+      refetch();
       hideModal();
       form.actions.reset();
     },
   });
 
   return (
-    <Modal title={`Copy “${resource.name}”`} isOpen={true} hideModal={hideModal}>
+    <Modal title={`Create a copy of ${resource.name}`} isOpen={true} hideModal={hideModal}>
       <Forms.Form form={form}>
         <Forms.FieldGroup>
-          <Forms.TextInput label="Name of the copy" field="name" />
+          <Forms.TextInput label="New file Name" field="name" />
 
           <FolderSelectField
             resource={resource}
             field="newFolderId"
             startLocation={parent}
-            label="Choose where to copy"
+            label="Destination Folder"
           />
         </Forms.FieldGroup>
 
-        <Forms.Submit saveText="Copy" cancelText="Cancel" />
+        <Forms.Submit saveText="Copy File" cancelText="Cancel" />
       </Forms.Form>
     </Modal>
   );

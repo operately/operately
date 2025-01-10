@@ -3,6 +3,7 @@ import { BeatLoader } from "react-spinners";
 import classNames from "classnames";
 
 import * as Hub from "@/models/resourceHubs";
+import * as Icons from "@tabler/icons-react";
 
 import { IconArrowLeft } from "@tabler/icons-react";
 import { sortNodesWithFoldersFirst } from "@/features/ResourceHub/utils";
@@ -95,9 +96,17 @@ function Header({ currentLocation, selectFolder, selectResourceHub, loading }: H
   };
 
   return (
-    <div className="flex items-center gap-2 p-2 border-b border-stroke-base">
+    <div className="flex items-center gap-2 m-2 ml-3">
       {isCurrentLocationFolder && <IconArrowLeft className="cursor-pointer" size={16} onClick={goBack} />}
-      <div className="font-medium text-sm">Product / {currentLocation.name}</div>
+      <div className="font-medium text-sm inline-flex items-center gap-1">
+        <Icons.IconHomeFilled size={14} />
+        <Icons.IconChevronRight size={14} />
+        <span className="hover:underline underline-offset-2">Product</span>
+        <Icons.IconChevronRight size={14} />
+        <span className="hover:underline underline-offset-2">Documents &amp; Files</span>
+        <Icons.IconChevronRight size={14} />
+        <span className="hover:underline underline-offset-2 font-bold">Hello</span>
+      </div>
     </div>
   );
 }
