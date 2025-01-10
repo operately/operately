@@ -5,6 +5,7 @@ import { ResourceHubFile, useEditResourceHubFile } from "@/models/resourceHubs";
 
 import Forms from "@/components/Forms";
 import { Paths } from "@/routes/paths";
+import { areRichTextObjectsEqual } from "@/components/RichContent";
 
 export function Form({ file }: { file: ResourceHubFile }) {
   const navigate = useNavigate();
@@ -12,7 +13,7 @@ export function Form({ file }: { file: ResourceHubFile }) {
 
   const form = Forms.useForm({
     fields: {
-      title: file.name,
+      title: file.name!,
       description: JSON.parse(file.description!),
     },
     validate: (addError) => {
@@ -27,12 +28,18 @@ export function Form({ file }: { file: ResourceHubFile }) {
       navigate(Paths.resourceHubFilePath(file.id!));
     },
     submit: async () => {
-      const res = await edit({
-        fileId: file.id,
-        name: form.values.title,
-        description: JSON.stringify(form.values.description),
-      });
-      navigate(Paths.resourceHubFilePath(res.file.id));
+      const { title, description } = form.values;
+
+      if (fileHasChanged(file, title, description)) {
+        const res = await edit({
+          fileId: file.id,
+          name: title,
+          description: JSON.stringify(description),
+        });
+        navigate(Paths.resourceHubFilePath(res.file.id));
+      } else {
+        navigate(Paths.resourceHubFilePath(file.id!));
+      }
     },
   });
 
@@ -53,4 +60,10 @@ export function Form({ file }: { file: ResourceHubFile }) {
       <Forms.Submit saveText="Save" buttonSize="base" />
     </Forms.Form>
   );
+}
+
+function fileHasChanged(file: ResourceHubFile, name: string, description: any) {
+  if (file.name !== name) return true;
+  if (!areRichTextObjectsEqual(JSON.parse(file.description!), description)) return true;
+  return false;
 }

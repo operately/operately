@@ -32,7 +32,14 @@ export function FolderMenu({ folder }: Props) {
         {permissions.canDeleteFolder && <DeleteFolderMenuItem folder={folder} />}
       </Menu>
 
-      <RenameFolderModal folder={folder} showForm={showRenameForm} toggleForm={toggleRenameForm} />
+      <RenameFolderModal
+        folder={folder}
+        showForm={showRenameForm}
+        toggleForm={toggleRenameForm}
+        // Key is needed because when the folder's name changes, if the component
+        // is not rerendered, the old name will appear in the form
+        key={folder.name}
+      />
       <MoveResourceModal resource={folder} resourceType="folder" isOpen={showMoveForm} hideModal={toggleMoveForm} />
     </>
   );
@@ -86,11 +93,15 @@ function RenameFolderModal({ folder, showForm, toggleForm }: FormProps) {
     },
     cancel: toggleForm,
     submit: async () => {
-      await rename({
-        folderId: folder.id,
-        newName: form.values.name,
-      });
-      refetch();
+      const { name } = form.values;
+
+      if (name !== folder.name) {
+        await rename({
+          folderId: folder.id,
+          newName: name,
+        });
+        refetch();
+      }
       toggleForm();
       form.actions.reset();
     },

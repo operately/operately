@@ -312,6 +312,18 @@ defmodule Operately.Support.Features.ResourceHubSteps do
     |> UI.assert_text("edited #{document_name} in the #{ctx.space.name} space")
   end
 
+  step :refute_document_edited_on_space_feed, ctx, document_name do
+    ctx
+    |> UI.visit(Paths.space_path(ctx.company, ctx.space))
+    |> UI.refute_text("edited #{document_name}")
+  end
+
+  step :refute_document_edited_on_company_feed, ctx, document_name do
+    ctx
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.refute_text("edited #{document_name} in the #{ctx.space.name} space")
+  end
+
   step :assert_document_deleted_on_space_feed, ctx, document_name do
     ctx
     |> UI.visit(Paths.space_path(ctx.company, ctx.space))

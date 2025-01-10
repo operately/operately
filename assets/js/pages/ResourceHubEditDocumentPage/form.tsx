@@ -5,6 +5,7 @@ import { useEditResourceHubDocument, ResourceHubDocument } from "@/models/resour
 
 import Forms from "@/components/Forms";
 import { Paths } from "@/routes/paths";
+import { areRichTextObjectsEqual } from "@/components/RichContent";
 
 export function Form({ document }: { document: ResourceHubDocument }) {
   const navigate = useNavigate();
@@ -12,7 +13,7 @@ export function Form({ document }: { document: ResourceHubDocument }) {
 
   const form = Forms.useForm({
     fields: {
-      title: document.name,
+      title: document.name!,
       content: JSON.parse(document.content!),
     },
     validate: (addError) => {
@@ -27,12 +28,18 @@ export function Form({ document }: { document: ResourceHubDocument }) {
       navigate(Paths.resourceHubDocumentPath(document.id!));
     },
     submit: async () => {
-      const res = await edit({
-        documentId: document.id!,
-        name: form.values.title,
-        content: JSON.stringify(form.values.content),
-      });
-      navigate(Paths.resourceHubDocumentPath(res.document.id));
+      const { title, content } = form.values;
+
+      if (documentHasChanged(document, title, content)) {
+        const res = await edit({
+          documentId: document.id!,
+          name: title,
+          content: JSON.stringify(content),
+        });
+        navigate(Paths.resourceHubDocumentPath(res.document.id));
+      } else {
+        navigate(Paths.resourceHubDocumentPath(document.id!));
+      }
     },
   });
 
@@ -53,4 +60,10 @@ export function Form({ document }: { document: ResourceHubDocument }) {
       <Forms.Submit saveText="Save" buttonSize="base" />
     </Forms.Form>
   );
+}
+
+function documentHasChanged(document: ResourceHubDocument, name: string, content: any) {
+  if (document.name !== name) return true;
+  if (!areRichTextObjectsEqual(JSON.parse(document.content!), content)) return true;
+  return false;
 }
