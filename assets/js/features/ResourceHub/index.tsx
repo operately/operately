@@ -6,7 +6,7 @@ export { AddFilesButton } from "./AddFilesButton";
 export { NewFileModalsProvider, useNewFileModalsContext } from "./contexts/NewFileModalsContext";
 export { useNodesContext } from "./contexts/NodesContext";
 export { AddFolderModal } from "./AddFolderModal";
-export { AddFileModal } from "./AddFileModal";
+export { AddFileWidget } from "./AddFileWidget";
 export { FileDragAndDropArea } from "./FileDragAndDropArea";
 export { FolderSelectField } from "./components/MoveResources/FolderSelectField";
 export { NestedFolderNavigation } from "./NestedFolderNavigation";

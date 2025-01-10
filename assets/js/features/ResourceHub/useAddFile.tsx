@@ -1,28 +1,31 @@
-import { useState } from "react";
+import React, { useMemo, useState } from "react";
 
 export interface AddFileProps {
-  file: any;
-  setFile: (file: File) => void;
-  hideAddFilePopUp: () => void;
-  showAddFilePopUp: () => void;
+  files: File[] | undefined;
+  setFiles: React.Dispatch<React.SetStateAction<File[] | undefined>>;
+  selectFiles: () => void;
+  filesSelected: boolean;
 }
 
 export function useAddFile(): AddFileProps {
-  const [file, setFile] = useState<File>();
+  const [files, setFiles] = useState<File[]>();
 
-  const showAddFilePopUp = () => {
+  const filesSelected = useMemo(() => {
+    return Boolean(files && files.length > 0);
+  }, [files]);
+
+  const selectFiles = () => {
     const fileInput = document.createElement("input");
     fileInput.type = "file";
 
     fileInput.onchange = (e: any) => {
-      const file = e.target?.files[0];
-      setFile(file);
+      if (e.target?.files) {
+        setFiles(Array.from(e.target.files));
+      }
     };
 
     fileInput.click();
   };
 
-  const hideAddFilePopUp = () => setFile(undefined);
-
-  return { file, setFile, showAddFilePopUp, hideAddFilePopUp };
+  return { files, setFiles, selectFiles, filesSelected };
 }
