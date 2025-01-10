@@ -37,6 +37,9 @@ interface SubMenuProps {
 }
 
 export function Menu(props: MenuProps) {
+  const visibleChildren = useVisibleChildren(props.children);
+  if (visibleChildren.length === 0) return null;
+
   return (
     <DropdownMenu.Root>
       <Trigger {...props} />
@@ -166,5 +169,14 @@ function menuItemClassNames(props: MenuItemProps) {
   return classNames(menuItemClass, {
     "hover:text-content-base": !props.danger,
     "hover:text-content-error": props.danger,
+  });
+}
+
+function useVisibleChildren(children: React.ReactNode) {
+  return React.Children.toArray(children).filter((child) => {
+    if (React.isValidElement(child)) {
+      return !child.props.hidden;
+    }
+    return true;
   });
 }

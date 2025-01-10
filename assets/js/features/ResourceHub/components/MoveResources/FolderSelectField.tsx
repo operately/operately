@@ -13,12 +13,12 @@ import { NodeIcon } from "@/features/ResourceHub/NodeIcon";
 import { Location, MovableResource } from ".";
 
 interface FolderSelectFieldProps {
-  resource: MovableResource;
+  node: Node;
   field: string;
   startLocation: Location;
 }
 
-export function FolderSelectField({ resource, field, startLocation }: FolderSelectFieldProps) {
+export function FolderSelectField({ node, field, startLocation }: FolderSelectFieldProps) {
   const [_, setValue] = useFieldValue<string | null>(field);
   const [currentLocation, setCurrentLocation] = useState(startLocation);
   const [loading, setLoading] = useState<string>();
