@@ -9,6 +9,11 @@ type Resource = Hub.ResourceHubFolder | Hub.ResourceHubFile | Hub.ResourceHubDoc
 
 export interface Node {
   id: string;
+
+  spaceId: string;
+  hubId: string;
+  folderId: string;
+
   name: string;
   type: NodeType;
   resource: Resource;

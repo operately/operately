@@ -3,7 +3,7 @@ import React from "react";
 import Modal from "@/components/Modal";
 import Forms from "@/components/Forms";
 
-import { FolderSelectField } from "./MoveResources/FolderSelectField";
+import { FolderSelectField } from "./FolderSelectField";
 import { Node } from "@/features/ResourceHub/models";
 
 interface FormProps {
@@ -24,7 +24,11 @@ export function MoveNodeModal({ node, isOpen, hideModal }: FormProps) {
 
   const form = Forms.useForm({
     fields: {
-      // newFolderId: "pathToFolder" in parent ? parent.id : null,
+      location: {
+        spaceId: node.spaceId,
+        hubId: node.hubId,
+        folderId: node.folderId,
+      },
     },
     // validate: (addError) => {
     //   // if (resource.id === form.values.newFolderId) {
@@ -50,7 +54,7 @@ export function MoveNodeModal({ node, isOpen, hideModal }: FormProps) {
     <Modal title={`Move “${node.name}”`} isOpen={isOpen} hideModal={hideModal}>
       <Forms.Form form={form}>
         <Forms.FieldGroup>
-          <FolderSelectField node={node} />
+          <FolderSelectField node={node} field="location" />
         </Forms.FieldGroup>
 
         <Forms.Submit saveText="Move" cancelText="Cancel" />
