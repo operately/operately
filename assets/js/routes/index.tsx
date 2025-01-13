@@ -113,7 +113,6 @@ export function createAppRoutes() {
         pageRoute("folders/:id", pages.ResourceHubFolderPage),
         pageRoute("documents/:id", pages.ResourceHubDocumentPage),
         pageRoute("documents/:id/edit", pages.ResourceHubEditDocumentPage),
-        pageRoute("documents/:id/copy", pages.ResourceHubCopyDocumentPage),
         pageRoute("files/:id", pages.ResourceHubFilePage),
         pageRoute("files/:id/edit", pages.ResourceHubEditFilePage),
         pageRoute("links/:id", pages.ResourceHubLinkPage),
