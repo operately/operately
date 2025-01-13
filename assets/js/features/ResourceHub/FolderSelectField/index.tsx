@@ -7,21 +7,24 @@ import { NodeIcon } from "@/features/ResourceHub/NodeIcon";
 
 import { useViewModel, ViewModel, ViewModelNode, NotAllowedSelection } from "./viewModel";
 import classNames from "classnames";
+import Forms from "@/components/Forms";
 
 interface FolderSelectFieldProps {
+  label: string;
   field: string;
   notAllowedSelections?: NotAllowedSelection[];
 }
 
-export function FolderSelectField({ field, notAllowedSelections }: FolderSelectFieldProps) {
+export function FolderSelectField({ label, field, notAllowedSelections }: FolderSelectFieldProps) {
   const viewModel = useViewModel(field, notAllowedSelections || []);
 
   return (
-    <div>
-      <Navigation viewModel={viewModel} />
-      <NodeList viewModel={viewModel} />
-      <Error error={viewModel.error} />
-    </div>
+    <Forms.InputField label={label} field={field} error={viewModel.error}>
+      <div className="border border-surface-outline rounded-lg">
+        <Navigation viewModel={viewModel} />
+        <NodeList viewModel={viewModel} />
+      </div>
+    </Forms.InputField>
   );
 }
 
@@ -29,9 +32,9 @@ function Navigation({ viewModel }: { viewModel: ViewModel }) {
   if (!viewModel.currentNode) return <></>;
 
   return (
-    <div className="h-8 flex items-center gap-2 pb-2 border-b border-stroke-base">
+    <div className="h-8 flex items-center gap-2 p-2 border-b border-stroke-base">
       <NavigateBack viewModel={viewModel} />
-      <div className="text-lg">{viewModel.currentNode!.name}</div>
+      <div className="text-sm">{viewModel.currentNode!.name}</div>
     </div>
   );
 }
@@ -43,7 +46,7 @@ function NavigateBack({ viewModel }: { viewModel: ViewModel }) {
   return (
     <IconArrowLeft
       className="cursor-pointer"
-      size={20}
+      size={16}
       onClick={() => viewModel.select(viewModel.currentNode!.parent!)}
     />
   );
@@ -60,25 +63,23 @@ function NodeList({ viewModel }: { viewModel: ViewModel }) {
 }
 
 function NodeItem({ viewModel, node, index }: { viewModel: ViewModel; node: ViewModelNode; index: number }) {
-  const className = classNames("flex items-center justify-between p-2", {
+  const className = classNames("flex items-center justify-between", "p-2", "even:bg-surface-dimmed", {
     "cursor-pointer": node.selectable,
-    "opacity-40": !node.selectable,
     "hover:bg-surface-highlight": !viewModel.isNodeLoading(node),
+  });
+
+  const innerClassName = classNames("flex items-center gap-2 text-sm", {
+    "opacity-40": !node.selectable,
   });
 
   return (
     <div className={className} onClick={() => viewModel.select(node)} data-test-id={`node-${index}`}>
-      <div className="flex items-center gap-2">
-        <NodeIcon size={18} node={node.apiNode!} />
+      <div className={innerClassName}>
+        <NodeIcon size={16} node={node.apiNode!} />
         {node.name}
       </div>
 
       {viewModel.isNodeLoading(node) && <BeatLoader size={4} />}
     </div>
   );
-}
-
-function Error({ error }) {
-  if (!error) return <></>;
-  return <div className="translate-y-6 text-sm text-red-500">{error}</div>;
 }
