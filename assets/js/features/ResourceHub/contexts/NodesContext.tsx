@@ -2,7 +2,6 @@ import React from "react";
 
 import { ResourceHub, ResourceHubFolder, ResourceHubPermissions } from "@/models/resourceHubs";
 import { assertPresent } from "@/utils/assertions";
-import { Location } from "../components/MoveResources";
 
 interface ResourceHubProps {
   resourceHub: ResourceHub;
@@ -19,7 +18,7 @@ interface FolderProps {
 export type NodesProps = ResourceHubProps | FolderProps;
 
 interface NodesContext {
-  parent: Location;
+  parent: ResourceHub | ResourceHubFolder;
   refetch: () => void;
   permissions: ResourceHubPermissions;
 }
