@@ -30,7 +30,10 @@ export function Form() {
     fields: {
       title: document.name,
       content: JSON.parse(document.content!),
-      folderId: document.parentFolderId,
+      location: {
+        id: parent.id,
+        type: "pathToFolder" in parent ? "folder" : "resource_hub",
+      },
     },
     validate: (addError) => {
       if (!form.values.title) {
@@ -46,7 +49,7 @@ export function Form() {
     submit: async () => {
       const res = await post({
         resourceHubId: document.resourceHubId,
-        folderId: form.values.folderId,
+        folderId: form.values.location.id,
         name: form.values.title,
         content: JSON.stringify(form.values.content),
         sendNotificationsToEveryone: subscriptionsState.subscriptionType == Options.ALL,
@@ -73,7 +76,7 @@ export function Form() {
       </Forms.FieldGroup>
 
       <DimmedSection>
-        <FolderSelectField field="folderId" resource={document} startLocation={parent} />
+        <FolderSelectField field="location" />
         <Spacer size={2} />
         <SubscribersSelector state={subscriptionsState} resourceHubName={parent.name!} />
 
