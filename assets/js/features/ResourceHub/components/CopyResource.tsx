@@ -9,6 +9,8 @@ import { useNodesContext } from "@/features/ResourceHub";
 import { FolderSelectField } from "@/features/ResourceHub/FolderSelectField";
 import { useSubscriptions } from "@/features/Subscriptions";
 import { assertPresent } from "@/utils/assertions";
+import { Paths } from "@/routes/paths";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
   resource: Hub.Resource;
@@ -32,8 +34,9 @@ interface FormProps {
 }
 
 export function CopyResourceModal({ resource, isOpen, hideModal }: FormProps) {
-  const { parent, refetch } = useNodesContext();
+  const { parent } = useNodesContext();
   const [post] = Hub.useCreateResourceHubDocument();
+  const navigate = useNavigate();
 
   assertPresent(parent?.potentialSubscribers, "potentialSubscribers must be present in resourceHub or folder");
   assertPresent(resource.resourceHubId, "resourceHubId must be present in resource");
@@ -50,7 +53,7 @@ export function CopyResourceModal({ resource, isOpen, hideModal }: FormProps) {
     },
     cancel: hideModal,
     submit: async () => {
-      await post({
+      const res = await post({
         resourceHubId: resource.resourceHubId,
         folderId: form.values.location.type == "folder" ? form.values.location.id : undefined,
         name: form.values.name,
@@ -60,21 +63,19 @@ export function CopyResourceModal({ resource, isOpen, hideModal }: FormProps) {
         copiedDocumentId: resource.id,
       });
 
-      refetch();
-      hideModal();
-      form.actions.reset();
+      navigate(Paths.resourceHubDocumentPath(res.document.id));
     },
   });
 
   return (
-    <Modal title={`Copy “${resource.name}”`} isOpen={isOpen} hideModal={hideModal}>
+    <Modal title={`Create a copy of ${resource.name}`} isOpen={isOpen} hideModal={hideModal}>
       <Forms.Form form={form}>
         <Forms.FieldGroup>
-          <Forms.TextInput field="name" label="New Name" />
-          <FolderSelectField field="location" />
+          <Forms.TextInput field="name" label="New document name" />
+          <FolderSelectField field="location" label="Select destination" />
         </Forms.FieldGroup>
 
-        <Forms.Submit saveText="Copy" cancelText="Cancel" />
+        <Forms.Submit saveText="Create Copy" cancelText="Cancel" />
       </Forms.Form>
     </Modal>
   );

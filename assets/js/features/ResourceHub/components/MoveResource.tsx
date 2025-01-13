@@ -73,13 +73,13 @@ export function MoveResourceModal({ resource, resourceType, isOpen, hideModal }:
   const notAllowedSelections = [{ id: resource.id!, type: resourceType }];
 
   return (
-    <Modal title={`Move “${resource.name}”`} isOpen={isOpen} hideModal={hideModal}>
+    <Modal title={`Move ${resource.name}`} isOpen={isOpen} hideModal={hideModal}>
       <Forms.Form form={form}>
         <Forms.FieldGroup>
-          <FolderSelectField field="location" notAllowedSelections={notAllowedSelections} />
+          <FolderSelectField field="location" notAllowedSelections={notAllowedSelections} label="Select destination" />
         </Forms.FieldGroup>
 
-        <Forms.Submit saveText="Move" cancelText="Cancel" />
+        <Forms.Submit saveText="Move Here" cancelText="Cancel" />
       </Forms.Form>
     </Modal>
   );

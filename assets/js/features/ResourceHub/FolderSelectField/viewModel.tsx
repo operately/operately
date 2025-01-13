@@ -94,7 +94,7 @@ export function useViewModel(fieldName: string, notAllowedSelections?: NotAllowe
 
   const isNodeLoading = (node: ViewModelNode) => {
     if (!loading) return false;
-    return compareIds(loading.id, node.id);
+    return compareIds(loading.id, node.resource.id);
   };
 
   return {
