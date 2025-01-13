@@ -42,6 +42,7 @@ export function CopyResourceModal({ resource, isOpen, hideModal }: FormProps) {
 
   const form = Forms.useForm({
     fields: {
+      name: resource.name + " - Copy",
       location: {
         id: parent?.id,
         type: "pathToFolder" in parent ? "folder" : "resourceHub",
@@ -52,7 +53,7 @@ export function CopyResourceModal({ resource, isOpen, hideModal }: FormProps) {
       await post({
         resourceHubId: resource.resourceHubId,
         folderId: form.values.location.type == "folder" ? form.values.location.id : undefined,
-        name: resource.name,
+        name: form.values.name,
         content: resource.content,
         sendNotificationsToEveryone: true,
         subscriberIds: subscriptionsState.currentSubscribersList,
@@ -69,6 +70,7 @@ export function CopyResourceModal({ resource, isOpen, hideModal }: FormProps) {
     <Modal title={`Copy “${resource.name}”`} isOpen={isOpen} hideModal={hideModal}>
       <Forms.Form form={form}>
         <Forms.FieldGroup>
+          <Forms.TextInput field="name" label="New Name" />
           <FolderSelectField field="location" />
         </Forms.FieldGroup>
 
