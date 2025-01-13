@@ -2,7 +2,7 @@ import React from "react";
 
 import * as Hub from "@/models/resourceHubs";
 
-import { MoveResourceMenuItem, MoveResourceModal } from "./MoveResources";
+import { MoveResourceMenuItem, MoveResourceModal } from "./MoveResource";
 
 import { useBoolState } from "@/hooks/useBoolState";
 import { Menu, MenuActionItem, MenuLinkItem } from "@/components/Menu";

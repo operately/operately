@@ -7,7 +7,7 @@ import { useNodesContext } from "@/features/ResourceHub";
 import { Menu, MenuActionItem, MenuLinkItem } from "@/components/Menu";
 import { createTestId } from "@/utils/testid";
 import { Paths } from "@/routes/paths";
-import { MoveResourceMenuItem, MoveResourceModal } from "./MoveResources";
+import { MoveResourceMenuItem, MoveResourceModal } from "./MoveResource";
 
 interface Props {
   link: Hub.ResourceHubLink;

@@ -8,7 +8,7 @@ import { useBoolState } from "@/hooks/useBoolState";
 import { Menu, MenuActionItem } from "@/components/Menu";
 import { createTestId } from "@/utils/testid";
 import { useNodesContext } from "@/features/ResourceHub";
-import { MoveResourceMenuItem, MoveResourceModal } from "./MoveResources";
+import { MoveResourceMenuItem, MoveResourceModal } from "./MoveResource";
 
 interface Props {
   folder: Hub.ResourceHubFolder;

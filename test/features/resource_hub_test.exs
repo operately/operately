@@ -141,38 +141,19 @@ defmodule Features.Features.ResourceHubTest do
     end
 
     feature "copy document in the same folder", ctx do
-      new_name = "Document (copy)"
+      new_name = "Document - Copy"
 
       ctx
       |> Steps.visit_resource_hub_page()
       |> Steps.create_document(@document)
-      |> Steps.go_to_copy_document_page(@document.name)
-      |> Steps.enter_document_name(new_name)
-      |> Steps.copy_document()
+      |> Steps.visit_resource_hub_page()
+      |> Steps.copy_document(new_name)
       |> Steps.visit_resource_hub_page()
       |> Steps.assert_document_present_in_files_list(new_name)
       |> Steps.assert_document_copied_on_company_feed(%{name: @document.name, new_name: new_name})
       |> Steps.assert_document_copied_on_space_feed(%{name: @document.name, new_name: new_name})
       |> Steps.assert_document_copied_notification_sent(%{name: @document.name, new_name: new_name})
       |> Steps.assert_document_copied_email_sent(new_name)
-    end
-
-    feature "copy document into another folder", ctx do
-      new_name = "Document (copy)"
-
-      ctx
-      |> Steps.visit_resource_hub_page()
-      |> Steps.create_folder("My Folder")
-      |> Steps.visit_resource_hub_page()
-      |> Steps.create_document(@document)
-      |> Steps.go_to_copy_document_page(@document.name)
-      |> Steps.enter_document_name(new_name)
-      |> Steps.navigate_to_folder(index: 0)
-      |> Steps.copy_document()
-      |> Steps.visit_resource_hub_page()
-      |> Steps.refute_document_present_in_files_list(new_name)
-      |> Steps.navigate_to_folder(index: 0)
-      |> Steps.assert_document_present_in_files_list(new_name)
     end
   end
 
