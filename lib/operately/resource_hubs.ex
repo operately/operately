@@ -115,6 +115,16 @@ defmodule Operately.ResourceHubs do
     |> Repo.all()
   end
 
+  def list_links(folder = %Folder{}) do
+    from(l in Link,
+      join: n in assoc(l, :node),
+      preload: [node: n],
+      where: n.parent_folder_id == ^folder.id,
+      select: l
+    )
+    |> Repo.all()
+  end
+
   def create_link(attrs \\ %{}) do
     %Link{}
     |> Link.changeset(attrs)
@@ -126,6 +136,16 @@ defmodule Operately.ResourceHubs do
   #
 
   def get_node!(id), do: Repo.get!(Node, id)
+
+  def count_children(resource_hub = %ResourceHub{}) do
+    from(n in Node, where: n.resource_hub_id == ^resource_hub.id)
+    |> Repo.aggregate(:count, :id)
+  end
+
+  def count_children(folder = %Folder{}) do
+    from(n in Node, where: n.parent_folder_id == ^folder.id)
+    |> Repo.aggregate(:count, :id)
+  end
 
   def create_node(attrs \\ %{}) do
     %Node{}

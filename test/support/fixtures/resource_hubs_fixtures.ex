@@ -101,6 +101,11 @@ defmodule Operately.ResourceHubsFixtures do
       type: attrs[:type] || :other,
     })
 
+    {:ok, _} = Operately.Notifications.update_subscription_list(subscription_list, %{
+      parent_id: link.id,
+      parent_type: :resource_hub_link,
+    })
+
     link
   end
 end
