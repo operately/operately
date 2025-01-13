@@ -204,3 +204,7 @@ export function areRichTextObjectsEqual(obj1: any, obj2: any) {
 
   return keys1.every((key) => areRichTextObjectsEqual(obj1[key], obj2[key]));
 }
+
+export function emptyContent() {
+  return { type: "doc", content: [{ type: "paragraph" }] };
+}

@@ -23,7 +23,7 @@ export function AddFilesButton({ permissions }: { permissions: ResourceHubPermis
 }
 
 function Options({ permissions }: { permissions: ResourceHubPermissions }) {
-  const { navigateToNewDocument, toggleShowAddFolder, showAddFilePopUp } = useNewFileModalsContext();
+  const { navigateToNewDocument, toggleShowAddFolder, selectFiles } = useNewFileModalsContext();
 
   return [
     <MenuActionItem
@@ -45,7 +45,7 @@ function Options({ permissions }: { permissions: ResourceHubPermissions }) {
     <MenuActionItem
       key={3}
       icon={Icons.IconUpload}
-      onClick={showAddFilePopUp}
+      onClick={selectFiles}
       testId="upload-files"
       hidden={!permissions.canCreateFile}
       children="Upload files"

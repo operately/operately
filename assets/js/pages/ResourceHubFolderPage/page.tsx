@@ -24,9 +24,9 @@ export function Page() {
 
             <Paper.Body minHeight="75vh">
               <Hub.Header resource={folder} />
+              <Hub.AddFileWidget folder={folder} resourceHub={folder.resourceHub} refresh={refresh} />
               <Hub.NodesList folder={folder} type="folder" refetch={refresh} />
               <Hub.AddFolderModal folder={folder} resourceHub={folder.resourceHub} refresh={refresh} />
-              <Hub.AddFileModal folder={folder} resourceHub={folder.resourceHub} refresh={refresh} />
             </Paper.Body>
           </Paper.Root>
         </Hub.FileDragAndDropArea>
