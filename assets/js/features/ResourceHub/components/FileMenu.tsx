@@ -2,6 +2,8 @@ import React from "react";
 
 import * as Hub from "@/models/resourceHubs";
 
+import { MoveResourceMenuItem, MoveResourceModal } from "./MoveResources";
+
 import { useBoolState } from "@/hooks/useBoolState";
 import { Menu, MenuActionItem, MenuLinkItem } from "@/components/Menu";
 import { createTestId } from "@/utils/testid";
@@ -9,8 +11,6 @@ import { assertPresent } from "@/utils/assertions";
 import { useDownloadFile } from "@/models/blobs";
 import { useNodesContext } from "@/features/ResourceHub";
 import { Paths } from "@/routes/paths";
-
-import { MoveResourceMenuItem, MoveResourceModal } from "./MoveResources";
 
 interface Props {
   file: Hub.ResourceHubFile;
