@@ -1,6 +1,7 @@
 import React from "react";
 
-import * as Icons from "@/components/Brands";
+import * as BrandIcons from "@/components/Brands";
+import * as Icons from "@tabler/icons-react";
 import { LinkOptions } from ".";
 
 interface Props {
@@ -11,20 +12,23 @@ interface Props {
 export function LinkIcon({ type, size }: Props) {
   switch (type) {
     case "airtable":
-      return <Icons.Airtable size={size} />;
+      return <BrandIcons.Airtable size={size} />;
     case "dropbox":
-      return <Icons.Dropbox size={size} />;
+      return <BrandIcons.Dropbox size={size} />;
     case "figma":
-      return <Icons.Figma size={size} />;
+      return <BrandIcons.Figma size={size} />;
     case "google":
-      return <Icons.GoogleLogo size={size} />;
+      return <BrandIcons.GoogleLogo size={size} />;
     case "google_doc":
-      return <Icons.GoogleDoc size={size} />;
+      return <BrandIcons.GoogleDoc size={size} />;
     case "google_sheet":
-      return <Icons.GoogleSheets size={size} />;
+      return <BrandIcons.GoogleSheets size={size} />;
     case "google_slides":
-      return <Icons.GoogleSlides size={size} />;
+      return <BrandIcons.GoogleSlides size={size} />;
     case "notion":
-      return <Icons.Notion size={size} />;
+      return <BrandIcons.Notion size={size} />;
+    case "generic":
+    default:
+      return <Icons.IconLink size={size} />;
   }
 }

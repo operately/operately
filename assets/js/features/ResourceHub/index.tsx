@@ -21,4 +21,5 @@ export type LinkOptions =
   | "google_doc"
   | "google_sheet"
   | "google_slides"
-  | "notion";
+  | "notion"
+  | "generic";
