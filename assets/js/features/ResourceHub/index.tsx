@@ -8,7 +8,7 @@ export { useNodesContext } from "./contexts/NodesContext";
 export { AddFolderModal } from "./AddFolderModal";
 export { AddFileWidget } from "./AddFileWidget";
 export { FileDragAndDropArea } from "./FileDragAndDropArea";
-export { FolderSelectField } from "./components/MoveResources/FolderSelectField";
+export { FolderSelectField } from "./FolderSelectField";
 export { NestedFolderNavigation } from "./NestedFolderNavigation";
 export { LinkIcon } from "./LinkIcon";
 export { DocumentPageNavigation } from "./DocumentPageNavigation";
