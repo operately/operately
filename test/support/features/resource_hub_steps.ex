@@ -99,22 +99,11 @@ defmodule Operately.Support.Features.ResourceHubSteps do
     |> UI.click(testid: "submit")
   end
 
-  step :go_to_copy_document_page, ctx, document_name do
-    {:ok, node} = Node.get(:system, name: document_name, opts: [preload: :document])
-
+  step :copy_document, ctx, new_name do
     ctx
-    |> UI.click(testid: "document-options-button")
-    |> UI.click(testid: "copy-document-link")
-    |> UI.assert_page(Paths.copy_document_path(ctx.company, node.document))
-  end
-
-  step :enter_document_name, ctx, name do
-    ctx
-    |> UI.fill(testid: "title", with: name)
-  end
-
-  step :copy_document, ctx do
-    ctx
+    |> UI.click(testid: UI.testid("document-menu-#{Paths.document_id(ctx.document)}"))
+    |> UI.click(testid: UI.testid("copy-resource-#{Paths.document_id(ctx.document)}"))
+    |> UI.fill(testid: "name", with: new_name)
     |> UI.click(testid: "submit")
   end
 
@@ -130,6 +119,11 @@ defmodule Operately.Support.Features.ResourceHubSteps do
     |> UI.click(testid: "submit")
     |> UI.sleep(200)
     |> UI.refute_has(testid: "submit")
+    |> then(fn ctx ->
+      {:ok, node} = Node.get(:system, name: attrs.name, opts: [preload: :document])
+      Map.put(ctx, :document, node.document)
+    end)
+    |> UI.take_screenshot()
   end
 
   step :edit_document, ctx, attrs do

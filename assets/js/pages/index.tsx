@@ -86,7 +86,6 @@ import * as ProjectRetrospectiveEditPage from "./ProjectRetrospectiveEditPage";
 import * as ProjectRetrospectivePage from "./ProjectRetrospectivePage";
 import * as ProjectsPage from "./ProjectsPage";
 import * as RadarPage from "./RadarPage";
-import * as ResourceHubCopyDocumentPage from "./ResourceHubCopyDocumentPage";
 import * as ResourceHubDocumentPage from "./ResourceHubDocumentPage";
 import * as ResourceHubEditDocumentPage from "./ResourceHubEditDocumentPage";
 import * as ResourceHubEditFilePage from "./ResourceHubEditFilePage";
@@ -531,11 +530,6 @@ export default {
     name: "RadarPage",
     loader: RadarPage.loader,
     Page: RadarPage.Page,
-  },
-  ResourceHubCopyDocumentPage: {
-    name: "ResourceHubCopyDocumentPage",
-    loader: ResourceHubCopyDocumentPage.loader,
-    Page: ResourceHubCopyDocumentPage.Page,
   },
   ResourceHubDocumentPage: {
     name: "ResourceHubDocumentPage",
