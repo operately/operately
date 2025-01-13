@@ -5,7 +5,6 @@ import { useCreateResourceHubLink } from "@/models/resourceHubs";
 
 import Forms from "@/components/Forms";
 import { useFieldValue } from "@/components/Forms/FormContext";
-import { DimmedSection } from "@/components/PaperContainer";
 import { Options, SubscribersSelector, useSubscriptions } from "@/features/Subscriptions";
 import { Paths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
@@ -38,12 +37,6 @@ export function Form({ folderId, type }: Props) {
       description: null,
     },
     validate: (addError) => {
-      if (!form.values.title) {
-        addError("title", "Title is required");
-      }
-      if (!form.values.link) {
-        addError("link", "Link is required");
-      }
       if (!isValidURL(form.values.link)) {
         addError("link", "Invalid link");
       }
@@ -68,22 +61,20 @@ export function Form({ folderId, type }: Props) {
 
   return (
     <Forms.Form form={form}>
-      {type ? (
-        <div className="grid grid-cols-[150px,1fr]">
-          <div className="pt-8">
-            <LinkIcon type={form.values.type!} size={100} />
-          </div>
-          <FormFields />
+      <div className="grid grid-cols-[150px,1fr]">
+        <div className="pt-8">
+          <LinkIcon type={form.values.type!} size={100} />
         </div>
-      ) : (
-        <FormFields />
-      )}
 
-      <DimmedSection>
-        <SubscribersSelector state={subscriptionsState} resourceHubName={resourceHub.name!} />
+        <div>
+          <FormFields />
 
-        <Forms.Submit saveText="Submit" buttonSize="base" />
-      </DimmedSection>
+          <div className="mt-12">
+            <SubscribersSelector state={subscriptionsState} resourceHubName={resourceHub.name!} />
+            <Forms.Submit saveText="Add To Documents" buttonSize="base" />
+          </div>
+        </div>
+      </div>
     </Forms.Form>
   );
 }
@@ -94,18 +85,13 @@ function FormFields() {
 
   return (
     <Forms.FieldGroup>
-      <Forms.TextInput
-        label="What do you want to call this link?"
-        placeholder="Type the title of this link"
-        field="title"
-      />
-
-      <Forms.TextInput label="Paste the link" placeholder="eg. https://www.example.com/file/8430762" field="link" />
+      <Forms.TextInput label="Link Title" placeholder="Type the title of this link" field="title" required />
+      <Forms.TextInput label="URL" placeholder="eg. https://www.example.com/file/8430762" field="link" required />
 
       <SelectTypeField />
 
       <Forms.RichTextArea
-        label="Notes (optional)"
+        label="Description (optional)"
         field="description"
         mentionSearchScope={mentionSearchScope}
         placeholder="Add any notes here..."

@@ -15,7 +15,7 @@ export function Page() {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const folderId = params.get("folderId");
-  const type = params.get("type") as LinkOptions;
+  const type = (params.get("type") || "generic") as LinkOptions;
 
   return (
     <Pages.Page title="New Link">
