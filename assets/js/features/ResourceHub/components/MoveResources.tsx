@@ -1,5 +1,4 @@
-import React from "react";
-
+import * as React from "react";
 import * as Hub from "@/models/resourceHubs";
 
 import Modal from "@/components/Modal";
@@ -7,12 +6,10 @@ import Forms from "@/components/Forms";
 import { MenuActionItem } from "@/components/Menu";
 import { createTestId } from "@/utils/testid";
 import { useNodesContext } from "@/features/ResourceHub";
-
-import { FolderSelectField } from "./FolderSelectField";
-import { MovableResource, MovableType } from ".";
+import { FolderSelectField } from "@/features/ResourceHub/FolderSelectField";
 
 interface Props {
-  resource: MovableResource;
+  resource: Hub.Resource;
   showModal: () => void;
 }
 
@@ -27,8 +24,8 @@ export function MoveResourceMenuItem({ resource, showModal }: Props) {
 }
 
 interface FormProps {
-  resource: MovableResource;
-  resourceType: MovableType;
+  resource: Hub.Resource;
+  resourceType: Hub.ResourceTypeName;
   isOpen: boolean;
   hideModal: () => void;
 }
@@ -38,25 +35,28 @@ export function MoveResourceModal({ resource, resourceType, isOpen, hideModal }:
   const [edit] = Hub.useEditParentFolderInResourceHub();
 
   const locationChanged = () => {
-    if (!resource.parentFolderId && !form.values.newFolderId) return false;
-    if (resource.parentFolderId === form.values.newFolderId) return false;
+    if (!resource.parentFolderId && !form.values.location.id) return false;
+    if (resource.parentFolderId === form.values.location.id) return false;
     return true;
   };
 
   const form = Forms.useForm({
     fields: {
-      newFolderId: "pathToFolder" in parent ? parent.id : null,
+      location: {
+        id: parent?.id,
+        type: "pathToFolder" in parent ? "folder" : "resourceHub",
+      },
     },
     validate: (addError) => {
-      if (resource.id === form.values.newFolderId) {
-        addError("newFolderId", "Folder cannot be moved inside itself.");
+      if (resource.id === form.values.location.id) {
+        addError("location", "Folder cannot be moved inside itself.");
       }
     },
     cancel: hideModal,
     submit: async () => {
       if (locationChanged()) {
         await edit({
-          newFolderId: form.values.newFolderId,
+          newFolderId: form.values.location.type === "folder" ? form.values.location.id : null,
           resourceId: resource.id,
           resourceType: resourceType,
         });
@@ -69,11 +69,14 @@ export function MoveResourceModal({ resource, resourceType, isOpen, hideModal }:
     },
   });
 
+  // prevent moving a folder into itself
+  const notAllowedSelections = [{ id: resource.id!, type: resourceType }];
+
   return (
     <Modal title={`Move “${resource.name}”`} isOpen={isOpen} hideModal={hideModal}>
       <Forms.Form form={form}>
         <Forms.FieldGroup>
-          <FolderSelectField resource={resource} field="newFolderId" startLocation={parent} />
+          <FolderSelectField field="location" notAllowedSelections={notAllowedSelections} />
         </Forms.FieldGroup>
 
         <Forms.Submit saveText="Move" cancelText="Cancel" />

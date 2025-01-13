@@ -1,3 +1,6 @@
+import { ResourceHubNode, ResourceHubFile, ResourceHubFolder, ResourceHubDocument, ResourceHubLink } from "@/api";
+import { assertPresent } from "@/utils/assertions";
+
 export type {
   ResourceHub,
   ResourceHubNode,
@@ -7,6 +10,7 @@ export type {
   ResourceHubFile,
   ResourceHubLink,
 } from "@/api";
+
 export {
   getResourceHub,
   getResourceHubDocument,
@@ -29,8 +33,8 @@ export {
   useRenameResourceHubFolder,
 } from "@/api";
 
-import { ResourceHubNode } from "@/api";
-import { assertPresent } from "@/utils/assertions";
+export type Resource = ResourceHubDocument | ResourceHubFile | ResourceHubFolder | ResourceHubLink;
+export type ResourceTypeName = "document" | "file" | "folder" | "link";
 
 export function isDocument(node: ResourceHubNode): boolean {
   return node.type === "document";
