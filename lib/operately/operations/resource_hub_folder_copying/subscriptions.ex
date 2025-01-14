@@ -1,7 +1,14 @@
-defmodule Operately.Operations.ResourceHubFolderCopying.Subscription do
+defmodule Operately.Operations.ResourceHubFolderCopying.Subscriptions do
   alias Operately.Repo
   alias Operately.Notifications.Subscription
 
+  @moduledoc """
+  Takes a list of nodes (documents, files and links) and copies
+  all their subscriptions.
+
+  Returns the nodes unchanged, which will be copied later in the
+  same transaction.
+  """
   def copy(nodes) do
     subscriptions = extract_subscriptions(nodes)
 
@@ -16,9 +23,9 @@ defmodule Operately.Operations.ResourceHubFolderCopying.Subscription do
   defp extract_subscriptions(nodes) do
     Enum.map(nodes, fn n ->
       cond do
-        n.link -> {n.link.subscription_list_id, n.link.subscription_list.subscriptions}
-        n.file -> {n.file.subscription_list_id, n.file.subscription_list.subscriptions}
-        n.document -> {n.document.subscription_list_id, n.document.subscription_list.subscriptions}
+        n.link -> {n.link.subscription_list.id, n.link.subscription_list.subscriptions}
+        n.file -> {n.file.subscription_list.id, n.file.subscription_list.subscriptions}
+        n.document -> {n.document.subscription_list.id, n.document.subscription_list.subscriptions}
         true -> {nil, []}
       end
     end)

@@ -4,6 +4,13 @@ defmodule Operately.Operations.ResourceHubFolderCopying.Queries do
   alias Operately.Repo
   alias Operately.ResourceHubs.Node
 
+  @doc """
+  Fetches all children nodes of a given folder with their associated resources
+  (folders, files, documents, links), subscriptions list and subscriptions.
+
+  ## Parameters
+    * folder_id - The ID of the parent folder
+  """
   def query_folder_children(folder_id) do
     from(n in Node, where: n.parent_folder_id == ^folder_id)
     |> with_folders()

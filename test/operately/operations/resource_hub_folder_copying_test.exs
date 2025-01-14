@@ -76,7 +76,7 @@ defmodule Operately.Operations.ResourceHubFolderCopyingTest do
       assert ResourceHubs.count_children(ctx.folder1) == 1
       assert ResourceHubs.count_children(ctx.hub) == 2
 
-      assert_document_content(ctx.doc)
+      assert_document_content(ctx.doc, ctx.creator)
 
       Operately.Operations.ResourceHubFolderCopying.run(ctx.hub, ctx.folder1)
 
@@ -92,7 +92,7 @@ defmodule Operately.Operations.ResourceHubFolderCopyingTest do
 
         docs = ResourceHubs.list_documents(f)
         assert length(docs) == 1
-        assert_document_content(hd(docs))
+        assert_document_content(hd(docs), ctx.creator)
       end)
     end
 
@@ -105,7 +105,7 @@ defmodule Operately.Operations.ResourceHubFolderCopyingTest do
       assert ResourceHubs.count_children(ctx.folder1) == 1
       assert ResourceHubs.count_children(ctx.hub) == 2
 
-      assert_file_content(ctx.file)
+      assert_file_content(ctx.file, ctx.creator)
 
       Operately.Operations.ResourceHubFolderCopying.run(ctx.hub, ctx.folder1)
 
@@ -121,7 +121,7 @@ defmodule Operately.Operations.ResourceHubFolderCopyingTest do
 
         files = ResourceHubs.list_files(f)
         assert length(files) == 1
-        assert_file_content(hd(files))
+        assert_file_content(hd(files), ctx.creator)
       end)
     end
 
@@ -134,7 +134,7 @@ defmodule Operately.Operations.ResourceHubFolderCopyingTest do
       assert ResourceHubs.count_children(ctx.folder1) == 1
       assert ResourceHubs.count_children(ctx.hub) == 2
 
-      assert_link_content(ctx.link)
+      assert_link_content(ctx.link, ctx.creator)
 
       Operately.Operations.ResourceHubFolderCopying.run(ctx.hub, ctx.folder1)
 
@@ -150,7 +150,7 @@ defmodule Operately.Operations.ResourceHubFolderCopyingTest do
 
         links = ResourceHubs.list_links(f)
         assert length(links) == 1
-        assert_link_content(hd(links))
+        assert_link_content(hd(links), ctx.creator)
       end)
     end
   end
@@ -212,24 +212,27 @@ defmodule Operately.Operations.ResourceHubFolderCopyingTest do
     assert folder.node.type == :folder
   end
 
-  defp assert_document_content(document) do
+  defp assert_document_content(document, creator) do
     assert document.node.name == "Document"
     assert document.node.type == :document
     assert document.content == RichText.rich_text("Content")
+    assert document.author_id == creator.id
   end
 
-  defp assert_file_content(file) do
+  defp assert_file_content(file, creator) do
     assert file.node.name == "some name"
     assert file.node.type == :file
     assert file.description == RichText.rich_text("Content")
+    assert file.author_id == creator.id
   end
 
-  defp assert_link_content(link) do
+  defp assert_link_content(link, creator) do
     assert link.node.name == "Link"
     assert link.node.type == :link
     assert link.description == RichText.rich_text("Description")
     assert link.url == "http://localhost:4000"
     assert link.type == :other
+    assert link.author_id == creator.id
   end
 
   defp assert_subscriptions_copied(ctx, new_resource, original_resource) do
