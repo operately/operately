@@ -36,7 +36,6 @@ export function GoalDetails({ node }: { node: GoalNode }) {
       {density !== "compact" && (
         <div className={className}>
           <GoalStatus goal={node.goal} />
-          <GoalTimeframe goal={node.goal} />
           <ChampionAndSpace goal={node.goal} />
           <GoalChildrenCount node={node} />
         </div>
@@ -52,12 +51,12 @@ export function GoalProgressBar({ node }: { node: GoalNode }) {
 
   const size = useWindowSizeBreakpoints();
   const width = match(size)
-    .with("xs", () => "w-16")
-    .with("sm", () => "w-16")
-    .otherwise(() => undefined);
+    .with("xs", () => "w-12")
+    .with("sm", () => "w-12")
+    .otherwise(() => "w-16");
 
   return (
-    <div style={{ height: "10px" }}>
+    <div style={{ height: "8px" }}>
       <ProgressBar percentage={node.goal.progressPercentage} className="ml-2" width={width} />
     </div>
   );
@@ -71,13 +70,13 @@ export function ExpandGoalSuccessConditions({ node }: { node: GoalNode }) {
     <div>
       <div
         onClick={() => toggleGoalExpanded(node.goal.id!)}
-        className="ml-2 h-[20px] w-[20px] rounded-full border-2 border-surface-outline flex items-center justify-center cursor-pointer"
+        className="ml-2 h-[16px] w-[16px] rounded-full border-2 border-surface-outline flex items-center justify-center cursor-pointer"
         data-test-id={testId}
       >
         {includesId(goalExpanded, node.goal.id) ? (
-          <IconMinus size={12} stroke={3} className="border-surface-outline shrink-0" />
+          <IconMinus size={10} stroke={3} className="border-surface-outline shrink-0" />
         ) : (
-          <IconPlus size={12} stroke={3} className="border-surface-outline shrink-0" />
+          <IconPlus size={10} stroke={3} className="border-surface-outline shrink-0" />
         )}
       </div>
     </div>
@@ -118,11 +117,11 @@ function GoalStatus({ goal }: { goal: Goals.Goal }) {
   );
 }
 
-function GoalTimeframe({ goal }: { goal: Goals.Goal }) {
+export function GoalTimeframe({ goal }: { goal: Goals.Goal }) {
   const timeframe = Timeframes.parse(goal.timeframe!);
 
   return (
-    <div className="flex gap-1 items-center text-xs text-content-dimmed">
+    <div className="flex gap-1 items-center text-xs text-content-dimmed w-20">
       <IconCalendar size={13} className="text-content-dimmed mb-[1px]" />
       {Timeframes.format(timeframe)}
     </div>

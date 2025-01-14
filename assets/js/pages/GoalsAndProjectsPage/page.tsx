@@ -22,7 +22,7 @@ export function Page() {
 
   return (
     <Pages.Page title="Goal Map" testId="goals-and-projects-page">
-      <Paper.Root size="large">
+      <Paper.Root size="xlarge">
         <Paper.Body noPadding={noPadding} className={bodyClassName} minHeight="500px">
           <Header />
           <GoalTree goals={goals} projects={projects} options={{}} />

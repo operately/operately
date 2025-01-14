@@ -82,7 +82,7 @@ function MilestoneCompletion({ project }: { project: Project }) {
   );
 }
 
-function NextMilestone({ project }: { project: Project }) {
+export function NextMilestone({ project }: { project: Project }) {
   const size = useWindowSizeBreakpoints();
 
   if (!project.nextMilestone) return <></>;
@@ -92,8 +92,8 @@ function NextMilestone({ project }: { project: Project }) {
 
   return (
     <DivLink to={path} className="flex items-center gap-2">
-      <MilestoneIcon milestone={project.nextMilestone} />
-      <div className="flex-1 truncate text-xs text-content-dimmed hover:underline underline-offset-2">
+      <MilestoneIcon milestone={project.nextMilestone} size={12} />
+      <div className="flex-1 truncate text-xs hover:underline underline-offset-2">
         <FormattedTime time={project.nextMilestone.deadlineAt!} format="short-date" />: {name}
       </div>
     </DivLink>
@@ -112,7 +112,7 @@ function SpaceName({ project }: { project: Project }) {
   );
 }
 
-function ContributorsList({ project }: { project: Project }) {
+export function ContributorsList({ project }: { project: Project }) {
   assertPresent(project.contributors, "contributors must be present in project");
 
   const size = useWindowSizeBreakpoints();
@@ -123,5 +123,7 @@ function ContributorsList({ project }: { project: Project }) {
     .with("lg", () => 6)
     .otherwise(() => 4);
 
-  return <AvatarList people={sortedContributors.map((c) => c.person!)} size="tiny" linked maxElements={maxElements} />;
+  return (
+    <AvatarList stacked people={sortedContributors.map((c) => c.person!)} size={16} linked maxElements={maxElements} />
+  );
 }

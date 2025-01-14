@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import * as Icons from "@tabler/icons-react";
 
 import { IconChevronDown, IconChevronRight } from "@tabler/icons-react";
 import { createTestId } from "@/utils/testid";
@@ -6,13 +7,20 @@ import { createTestId } from "@/utils/testid";
 import { match } from "ts-pattern";
 import { useWindowSizeBreakpoints } from "@/components/Pages";
 import { useTreeContext, TreeContextProvider, TreeContextProviderProps } from "./treeContext";
-import { ExpandGoalSuccessConditions, GoalActions, GoalDetails, GoalProgressBar } from "./components/GoalDetails";
-import { ProjectDetails } from "./components/ProjectDetails";
+import {
+  ExpandGoalSuccessConditions,
+  GoalActions,
+  GoalDetails,
+  GoalProgressBar,
+  GoalTimeframe,
+} from "./components/GoalDetails";
+import { ContributorsList, NextMilestone, ProjectDetails } from "./components/ProjectDetails";
 import { GoalNode, Node, ProjectNode } from "./tree";
 import { useExpandable } from "./context/Expandable";
 import { NodeIcon } from "./components/NodeIcon";
 import { NodeName } from "./components/NodeName";
 import { Controls } from "./components/Controls";
+import classNames from "classnames";
 
 export function GoalTree(props: TreeContextProviderProps) {
   return (
@@ -29,7 +37,7 @@ function GoalTreeRoots() {
     <div>
       <Controls />
 
-      <div className="border-b border-stroke-base overflow-hidden">
+      <div className="border-b border-stroke-base border-dotted">
         {context.tree.map((root) => (
           <NodeView key={root.id} node={root} />
         ))}
@@ -52,16 +60,22 @@ function ProjectHeader({ node }: { node: ProjectNode }) {
 
   return (
     <HeaderContainer node={node} data-test-id={testId}>
-      <div className="flex items-center gap-1">
-        <NodeExpandCollapseToggle node={node} />
-        <NodeIcon node={node} />
-        <NodeName node={node} />
+      <div className="flex justify-between items-center relative flex-1 gap-4">
+        <div className="flex-1 flex items-center gap-1">
+          <NodeExpandCollapseToggle node={node} />
+          <NodeIcon node={node} />
+          <div className="leading-snug ml-2">
+            <NodeName node={node} />
+            <div className="text-[10px]">{node.space.name}</div>
+          </div>
+        </div>
       </div>
 
       <ProjectDetails node={node} />
     </HeaderContainer>
   );
 }
+// <ContributorsList project={node.project} />
 
 function GoalHeader({ node }: { node: GoalNode }) {
   const [hovered, setHovered] = useState(false);
@@ -75,19 +89,39 @@ function GoalHeader({ node }: { node: GoalNode }) {
       data-test-id={testId}
     >
       <div className="flex justify-between">
-        <div className="flex items-center gap-1 relative">
-          <NodeExpandCollapseToggle node={node} />
-          <NodeIcon node={node} />
-          <NodeName node={node} />
-          <GoalProgressBar node={node} />
-          <ExpandGoalSuccessConditions node={node} />
-        </div>
-        <GoalActions node={node} hovered={hovered} />
-      </div>
+        <div className="flex justify-between items-center relative flex-1 gap-4">
+          <div className="flex-1 flex items-center gap-1">
+            <NodeExpandCollapseToggle node={node} />
+            <NodeIcon node={node} />
 
-      <GoalDetails node={node} />
+            <div className="ml-2 leading-snug">
+              <NodeName node={node} />
+              <div className="text-[11px]">
+                {node.space.name}
+                <Middot /> 4 targets, 10 subgoals, 3 projects
+              </div>
+            </div>
+          </div>
+
+          <GoalTimeframe goal={node.goal} />
+          <div
+            className="text-xs text-left w-24 py-1 bg-sky-100 rounded px-2"
+            style={{
+              fontWeight: node.goal.isClosed ? "bold" : "normal",
+            }}
+          >
+            {node.goal.isClosed ? "Completed" : "On track"}
+          </div>
+          <GoalProgressBar node={node} />
+          <Icons.IconDotsVertical size={16} className="cursor-pointer text-content-dimmed" />
+        </div>
+      </div>
     </HeaderContainer>
   );
+}
+
+function Middot() {
+  return <span className="text-content-dimmed mx-0.5">•</span>;
 }
 
 function NodeChildren({ node }: { node: Node }) {
@@ -107,9 +141,11 @@ function NodeExpandCollapseToggle({ node }: { node: Node }) {
   const ChevronIcon = expanded[node.id] ? IconChevronDown : IconChevronRight;
 
   return (
-    <div className="w-5">
-      {node.children.length > 0 && (
-        <ChevronIcon size={16} className="cursor-pointer" onClick={handleClick} data-test-id={testId} />
+    <div className="mr-2 p-0.5">
+      {node.children.length > 0 ? (
+        <ChevronIcon size={12} className="cursor-pointer" onClick={handleClick} data-test-id={testId} />
+      ) : (
+        <div className="w-3 h-3" />
       )}
     </div>
   );
@@ -119,15 +155,26 @@ function HeaderContainer(props: { node: Node } & React.HTMLAttributes<HTMLDivEle
   const size = useWindowSizeBreakpoints();
 
   const padding = match(size)
-    .with("xl", () => 45)
+    .with("xl", () => 40)
     .with("lg", () => 40)
     .with("md", () => 35)
     .with("sm", () => 30)
     .otherwise(() => 25);
 
+  const className = classNames("border-t py-2.5", {
+    "border-stroke-base": true,
+    "border-dotted": true,
+  });
+
   return (
-    <div className="border-t border-stroke-base py-3" {...props}>
-      <div style={{ paddingLeft: props.node.depth * padding }}>{props.children}</div>
+    <div
+      className={className}
+      style={{
+        paddingLeft: props.node.depth * padding,
+      }}
+      {...props}
+    >
+      <div>{props.children}</div>
     </div>
   );
 }

@@ -11,7 +11,7 @@ interface Props {
 }
 
 export function ProgressBar({ percentage, className, status, width }: Props) {
-  className = classNames("h-2.5 bg-surface-outline rounded relative", className || "", width || "w-24");
+  className = classNames("h-2 bg-surface-outline rounded relative", className || "", width || "w-24");
   const color = status && STATUS_COLORS[status];
 
   return (

@@ -13,8 +13,8 @@ interface NodeNameProps {
 
 export function NodeName({ node, target = "_self" }: NodeNameProps) {
   const titleClass = classNames("decoration-content-subtle hover:underline truncate", {
-    "font-bold": node.depth === 0,
-    "font-medium": node.depth > 0,
+    "font-bold": true,
+    "text-sm": node.type === "project",
   });
 
   return (
