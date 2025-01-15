@@ -33,6 +33,7 @@ export function projectMock(
     id: name,
     name,
     spaceId: "1",
+    status: "active",
     space,
     champion,
     championId: champion.id,

@@ -2,7 +2,7 @@
   "$schema": "https://unpkg.com/knip@2/schema.json",
   "entry": ["assets/js/app.tsx", "assets/build.js", "assets/codegen.ts"],
   "project": ["assets/js/**/*.ts", "assets/js/**/*.tsx", "ee/assets/js/**/*.ts", "ee/assets/js/**/*.tsx"],
-  "ignore": ["assets/js/api/index.tsx", "ee/assets/js/admin_api/index.tsx"],
+  "ignore": ["assets/js/api/index.tsx", "ee/assets/js/admin_api/index.tsx", "**/__tests__/**"],
   "ignoreDependencies": ["@types/jest"],
 
   "rules": {
