@@ -134,7 +134,7 @@ test.mix.features: test.init
 	./devenv mix tests_with_retries $$(find test -name "*_test.exs" | grep "test/features" | ./scripts/split.rb $(INDEX) $(TOTAL))
 
 test.npm: test.init
-	./devenv npm test
+	./devenv npx jest $(shell echo $(FILE) | cut -d':' -f1)
 
 test.db.migrate:
 	./devenv bash -c "MIX_ENV=test mix ecto.migrate"

@@ -2,6 +2,7 @@ import type { SortColumn, SortDirection } from "./";
 
 import * as People from "@/models/people";
 import * as Spaces from "@/models/spaces";
+import { compareIds } from "@/routes/paths";
 import * as Time from "@/utils/time";
 
 type NodeTypes = "goal" | "project";
@@ -43,6 +44,18 @@ export abstract class Node {
     }
 
     return true;
+  }
+
+  hasNoParent(): boolean {
+    return this.parent === undefined;
+  }
+
+  isFromSpace(spaceId: string): boolean {
+    return compareIds(this.spaceId, spaceId);
+  }
+
+  hasDescendantFromSpace(spaceId: string): boolean {
+    return this.children.some((child) => child.isFromSpace(spaceId) || child.hasDescendantFromSpace(spaceId));
   }
 
   setParent(parent: Node | undefined): void {

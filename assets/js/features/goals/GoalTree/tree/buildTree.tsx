@@ -51,6 +51,8 @@ class TreeBuilder {
     this.connectNodes();
     this.findRoots();
     this.sortNodes();
+
+    this.filterBySpace();
     this.showHideActive();
     this.showHidePaused();
     this.showHideCompleted();
@@ -88,11 +90,9 @@ class TreeBuilder {
   }
 
   private rootNodesForSpace(): Node[] {
-    return this.nodes.filter(
-      (n) =>
-        compareIds(n.space.id, this.options.spaceId!) &&
-        n.hasNoParentWith((node) => compareIds(node.space.id, this.options.spaceId)),
-    );
+    return this.nodes
+      .filter((n) => n.hasNoParent())
+      .filter((n) => n.isFromSpace(this.options.spaceId!) || n.hasDescendantFromSpace(this.options.spaceId!));
   }
 
   private rootNodesForPerson(): Node[] {
@@ -141,6 +141,12 @@ class TreeBuilder {
     }
   }
 
+  private filterBySpace(): void {
+    if (this.options.spaceId) {
+      this.rootNodes = TreeBuilder.filterBySpace(this.rootNodes, this.options.spaceId);
+    }
+  }
+
   // Recursive utility functions
 
   static sortNodes(nodes: Node[], column: SortColumn, direction: SortDirection): Node[] {
@@ -175,6 +181,18 @@ class TreeBuilder {
       .filter((n) => n.type === "goal" || (n as ProjectNode).project?.status !== status)
       .map((n) => {
         n.children = TreeBuilder.hideProjectByStatus(n.children, status);
+
+        return n;
+      });
+  }
+
+  static filterBySpace(nodes: Node[], spaceId: string): Node[] {
+    return nodes
+      .filter((n) => n.isFromSpace(spaceId) || n.hasDescendantFromSpace(spaceId))
+      .map((n) => {
+        if (!n.isFromSpace(spaceId)) {
+          n.children = TreeBuilder.filterBySpace(n.children, spaceId);
+        }
 
         return n;
       });
