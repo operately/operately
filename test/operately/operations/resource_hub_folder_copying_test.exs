@@ -192,14 +192,17 @@ defmodule Operately.Operations.ResourceHubFolderCopyingTest do
       docs = ResourceHubs.list_documents(folder)
       assert length(docs) == 1
       assert_subscriptions_copied(ctx, hd(docs), ctx.doc1)
+      assert_subscription_list_parent_id(hd(docs), ctx.doc1)
 
       files = ResourceHubs.list_files(folder)
       assert length(files) == 1
       assert_subscriptions_copied(ctx, hd(files), ctx.file1)
+      assert_subscription_list_parent_id(hd(files), ctx.file1)
 
       links = ResourceHubs.list_links(folder)
       assert length(links) == 1
       assert_subscriptions_copied(ctx, hd(links), ctx.link1)
+      assert_subscription_list_parent_id(hd(links), ctx.link1)
     end
   end
 
@@ -242,6 +245,12 @@ defmodule Operately.Operations.ResourceHubFolderCopyingTest do
     assert length(new_resource.subscription_list.subscriptions) == 2
     assert Enum.find(new_resource.subscription_list.subscriptions, &(&1.person_id == ctx.creator.id))
     assert Enum.find(new_resource.subscription_list.subscriptions, &(&1.person_id == ctx.mike.id))
+  end
+
+  defp assert_subscription_list_parent_id(resource, original_resource) do
+    {:ok, _} = SubscriptionList.get(:system, parent_id: resource.id)
+    {:ok, _} = SubscriptionList.get(:system, parent_id: original_resource.id)
+    refute resource.id == original_resource.id
   end
 
   #

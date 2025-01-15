@@ -16,6 +16,7 @@ defmodule Operately.Operations.ResourceHubFolderCopying do
       |> SubscriptionsLists.copy()
       |> Subscriptions.copy()
       |> Resources.copy()
+      |> SubscriptionsLists.update_parent_ids()
     end)
   end
 end

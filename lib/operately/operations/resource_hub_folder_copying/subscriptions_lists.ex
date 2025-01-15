@@ -4,6 +4,52 @@ defmodule Operately.Operations.ResourceHubFolderCopying.SubscriptionsLists do
   alias Operately.ResourceHubs.{Document, File, Link}
 
   @doc """
+  Updates parent_id values for multiple subscription lists.
+
+  Takes a list of resources (documents, links and files) where each resource
+  has a subscription_list. The resource's ID will become the subscription_list's
+  new parent_id.
+  """
+  def update_parent_ids([]), do: :ok
+  def update_parent_ids(resources) do
+    params = prepare_update_params(resources)
+
+    case_statement = build_update_case_statement(params)
+
+    ids = Enum.map(resources, &("'#{&1.subscription_list.id}'")) |> Enum.join(", ")
+
+    q = """
+    UPDATE subscription_lists
+    SET parent_id = CASE id
+      #{case_statement}
+    END
+    WHERE id in (#{ids});
+    """
+
+    {:ok, _} = Operately.Repo.query(q, params)
+  end
+
+  defp prepare_update_params(resources) do
+    Enum.flat_map(resources, fn r ->
+      {:ok, list_id} = Ecto.UUID.dump(r.subscription_list.id)
+      {:ok, parent_id} = Ecto.UUID.dump(r.id)
+
+      [list_id, parent_id]
+    end)
+  end
+
+  defp build_update_case_statement(params) do
+    params
+    |> Enum.with_index(1)
+    |> Enum.filter(fn {_, idx} -> rem(idx, 2) != 0 end)
+    |> Enum.map(fn {_, idx} ->
+
+      "WHEN $#{idx}::uuid THEN $#{idx + 1}::uuid"
+    end)
+    |> Enum.join(" ")
+  end
+
+  @doc """
   Takes a list of nodes (documents, files and links) and copies
   their subscription lists.
 
