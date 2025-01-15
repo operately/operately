@@ -22,6 +22,8 @@ export function GoalSelector({ goals, onSelect }: GoalSelectorProps) {
   const options = {
     sortColumn: "name",
     sortDirection: "asc",
+    showActive: true,
+    showPaused: false,
     showCompleted: false,
   } as TreeOptions;
 
