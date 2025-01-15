@@ -4,6 +4,7 @@ import * as Spaces from "@/models/spaces";
 import { Project } from "@/models/projects";
 import { Paths } from "@/routes/paths";
 import { Node } from "./node";
+import { assertPresent } from "@/utils/assertions";
 
 export class ProjectNode extends Node {
   public project: Project;
@@ -21,7 +22,13 @@ export class ProjectNode extends Node {
     this.champion = project.champion!;
     this.reviewer = project.reviewer!;
     this.space = project.space as Spaces.Space;
+
+    assertPresent(project.status, "Project status is required");
+
+    this.isActive = project.status === "active";
     this.isClosed = project.status === "closed";
+    this.isPaused = project.status === "paused";
+
     this.progress = this.calculateProgress();
     this.lastCheckInDate = Time.parseDate(project.lastCheckIn?.insertedAt);
     this.spaceId = project.space!.id!;
