@@ -1,4 +1,4 @@
-import { buildTree } from "./index";
+import { buildTree, TreeOptions } from "./index";
 
 import { assertTreeShape } from "@/__tests__/utils/assertTreeShape";
 import { projectMock, personMock, spaceMock, goalMock } from "@/__tests__/mocks";
@@ -11,6 +11,14 @@ describe("Tree", () => {
   const company = spaceMock("Company");
   const product = spaceMock("Product");
   const marketing = spaceMock("Marketing");
+
+  const defaultOpts = {
+    sortColumn: "name",
+    sortDirection: "asc",
+    showCompleted: false,
+    showActive: true,
+    showPaused: false,
+  } as TreeOptions;
 
   it("can display the full three recursivly", () => {
     const g1 = goalMock("G1", company, john);
@@ -87,57 +95,61 @@ describe("Tree", () => {
     assertTreeShape(tree, ["name"], expected);
   });
 
-  it("can display goals belonging to a space", () => {
-    const g1 = goalMock("G1", company, john);
-    const g11 = goalMock("G11", marketing, sarah, { parentGoalId: g1.id });
+  describe("filtering by space", () => {
+    it("shows only goals from the selected space", () => {
+      const goals = [
+        goalMock("G1", marketing, john),
+        goalMock("G2", product, sarah),
+        goalMock("G3", company, john),
+        goalMock("G31", marketing, john, { parentGoalId: "G3" }),
+        goalMock("G32", product, sarah, { parentGoalId: "G3" }),
+      ];
 
-    const g2 = goalMock("G2", company, peter);
-    const g21 = goalMock("G21", marketing, sarah, { parentGoalId: g2.id });
-    const g211 = goalMock("G211", marketing, sarah, { parentGoalId: g21.id });
+      const tree = buildTree(goals, [], { ...defaultOpts, spaceId: marketing.id! });
 
-    const tree = buildTree([g1, g11, g2, g21, g211], [], {
-      sortColumn: "name",
-      sortDirection: "asc",
-      showCompleted: false,
-      spaceId: marketing.id!,
-      showActive: true,
-      showPaused: false,
+      const expected = `
+        G1 Marketing
+        G3 Company
+          G31 Marketing
+      `;
+
+      assertTreeShape(tree, ["name", "space"], expected);
     });
 
-    const expected = `
-      G11 Marketing
-      G21 Marketing
-        G211 Marketing
-    `;
+    it("displays descendants of a goal from other spaces", () => {
+      const goals = [
+        goalMock("G1", marketing, peter),
+        goalMock("G11", product, sarah, { parentGoalId: "G1" }),
+        goalMock("G111", product, sarah, { parentGoalId: "G11" }),
+      ];
 
-    assertTreeShape(tree, ["name", "space"], expected);
-  });
+      const tree = buildTree(goals, [], { ...defaultOpts, spaceId: marketing.id! });
+      const expected = `
+        G1 Marketing
+          G11 Product
+            G111 Product
+      `;
 
-  it("displays descendants of a goal from other spaces when showing goals for a space", () => {
-    const g1 = goalMock("G1", company, john);
-    const g11 = goalMock("G11", marketing, sarah, { parentGoalId: g1.id });
-
-    const g2 = goalMock("G2", marketing, peter);
-    const g21 = goalMock("G21", product, sarah, { parentGoalId: g2.id });
-    const g211 = goalMock("G211", product, sarah, { parentGoalId: g21.id });
-
-    const tree = buildTree([g1, g11, g2, g21, g211], [], {
-      sortColumn: "name",
-      sortDirection: "asc",
-      showCompleted: false,
-      spaceId: marketing.id!,
-      showActive: true,
-      showPaused: false,
+      assertTreeShape(tree, ["name", "space"], expected);
     });
 
-    const expected = `
-      G11 Marketing
-      G2 Marketing
-        G21 Product
-          G211 Product
-    `;
+    it("displays ancestors of a goal from other spaces", () => {
+      const goals = [
+        goalMock("G1", company, john),
+        goalMock("G11", product, john, { parentGoalId: "G1" }),
+        goalMock("G111", marketing, sarah, { parentGoalId: "G11" }),
+      ];
 
-    assertTreeShape(tree, ["name", "space"], expected);
+      const tree = buildTree(goals, [], { ...defaultOpts, spaceId: marketing.id! });
+
+      const expected = `
+        G1 Company
+          G11 Product
+            G111 Marketing
+      `;
+
+      assertTreeShape(tree, ["name", "space"], expected);
+    });
   });
 
   it("is able to select goals and projects for a person", () => {
