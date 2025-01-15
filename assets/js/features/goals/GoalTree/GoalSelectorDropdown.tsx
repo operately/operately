@@ -24,6 +24,8 @@ export function GoalSelectorDropdown({ goals, onSelect, selected, error }: GoalS
     sortColumn: "name",
     sortDirection: "asc",
     showCompleted: false,
+    showActive: true,
+    showPaused: true,
   } as TreeOptions;
 
   const tree = React.useMemo(() => buildTree(goals, [], options), [goals, options]);
