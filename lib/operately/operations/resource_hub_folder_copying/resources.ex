@@ -12,6 +12,7 @@ defmodule Operately.Operations.ResourceHubFolderCopying.Resources do
     nodes
     |> separate_nodes()
     |> Enum.flat_map(&copy_node_children/1)
+    |> then(fn resources -> {:ok, resources} end)
   end
 
   defp copy_node_children({:documents, documents}) do

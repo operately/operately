@@ -17,10 +17,15 @@ defmodule Operately.Operations.ResourceHubFolderCopying.Folders do
     new_folder = copy_parent_folder(folder, parent_folder_id)
     children = fetch_and_categorize_children(folder.id)
 
-    nested_children = Enum.map(children.folders, fn n -> copy(n.folder, new_folder.id) end)
+    nested_children = Enum.map(children.folders, fn n ->
+      {:ok, {_folder, nodes}} = copy(n.folder, new_folder.id)
+      nodes
+    end)
     curr_children = Enum.map(children.others, fn n -> Map.put(n, :parent_folder_id, new_folder.id) end)
 
-    List.flatten(nested_children ++ curr_children)
+    all_children = List.flatten(nested_children ++ curr_children)
+
+    {:ok, {new_folder, all_children}}
   end
 
   defp copy_parent_folder(folder, parent_folder_id) do

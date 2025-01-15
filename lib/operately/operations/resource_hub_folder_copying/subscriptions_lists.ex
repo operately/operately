@@ -10,7 +10,7 @@ defmodule Operately.Operations.ResourceHubFolderCopying.SubscriptionsLists do
   has a subscription_list. The resource's ID will become the subscription_list's
   new parent_id.
   """
-  def update_parent_ids([]), do: :ok
+  def update_parent_ids([]), do: {:ok, []}
   def update_parent_ids(resources) do
     query = """
     WITH mapping (id, parent_id) AS (
@@ -48,7 +48,7 @@ defmodule Operately.Operations.ResourceHubFolderCopying.SubscriptionsLists do
     count = length(data)
     {^count, new_lists} = Repo.insert_all(SubscriptionList, data, returning: true)
 
-    update_nodes(nodes, new_lists)
+    {:ok, update_nodes(nodes, new_lists)}
   end
 
   defp generate_new_ids(nodes) when is_list(nodes) do

@@ -17,7 +17,7 @@ defmodule Operately.Operations.ResourceHubFolderCopying.Subscriptions do
     count = length(data)
     {^count, _} = Repo.insert_all(Subscription, data)
 
-    nodes
+    {:ok, nodes}
   end
 
   defp extract_subscriptions(nodes) do

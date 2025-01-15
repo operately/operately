@@ -20,7 +20,7 @@ defmodule Operately.Operations.ResourceHubFolderCopying.Nodes do
     count = length(data)
     {^count, new_nodes} = Repo.insert_all(Node, data, returning: true)
 
-    merge_resources(new_nodes, nodes)
+    {:ok, merge_resources(new_nodes, nodes)}
   end
 
   defp generate_new_ids(nodes) do
