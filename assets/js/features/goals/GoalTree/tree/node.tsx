@@ -72,6 +72,14 @@ export abstract class Node {
     return this.children.some((child) => child.isActive || child.hasActiveDescendant());
   }
 
+  hasPausedDescendant(): boolean {
+    return this.children.some((child) => child.isPaused || child.hasPausedDescendant());
+  }
+
+  hasClosedDescendant(): boolean {
+    return this.children.some((child) => child.isClosed || child.hasClosedDescendant());
+  }
+
   setParent(parent: Node | undefined): void {
     this.parent = parent;
     this.parentId = parent?.id;

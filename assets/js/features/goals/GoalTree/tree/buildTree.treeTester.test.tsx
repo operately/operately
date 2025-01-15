@@ -1,4 +1,46 @@
-import { Node } from "@/features/goals/GoalTree/tree/node";
+import { buildTree, TreeOptions, Node } from "@/features/goals/GoalTree/tree";
+import { projectMock, goalMock } from "@/__tests__/mocks";
+
+import { Space } from "@/models/spaces";
+import { Person } from "@/models/people";
+
+type ParentId = string | null;
+
+export class TreeTester {
+  private goals: any[];
+  private projects: any[];
+  private display: string[];
+  private options: TreeOptions;
+
+  private defaultOpts = {
+    sortColumn: "name",
+    sortDirection: "asc",
+    showCompleted: false,
+    showActive: true,
+    showPaused: false,
+  } as TreeOptions;
+
+  constructor(display: string[] = ["name"], options: any = {}) {
+    this.goals = [];
+    this.projects = [];
+    this.display = display;
+    this.options = { ...this.defaultOpts, ...options };
+  }
+
+  addGoal(name: string, space: Space, champion: Person, parentId: ParentId = null, options: any = {}) {
+    this.goals.push(goalMock(name, space, champion, { parentGoalId: parentId, ...options }));
+  }
+
+  addProj(name: string, space: Space, champion: Person, parentId: ParentId = null, options: any = {}) {
+    this.projects.push(projectMock(name, space, champion, { goal: { id: parentId }, ...options }));
+  }
+
+  assertShape(expected: string) {
+    const tree = buildTree(this.goals, this.projects, this.options);
+
+    assertTreeShape(tree, this.display, expected);
+  }
+}
 
 export function assertTreeShape(nodes: Node[], fields: string[], expected: string): void {
   const actual = drawTree(nodes, fields);
