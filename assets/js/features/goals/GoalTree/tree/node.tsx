@@ -26,7 +26,11 @@ export abstract class Node {
   public children: Node[];
   public hasChildren: boolean;
   public space: Spaces.Space;
+
+  public isActive: boolean;
+  public isPaused: boolean;
   public isClosed: boolean;
+
   public progress: number;
   public lastCheckInDate: Date | null;
   public spaceId: string;
@@ -56,6 +60,16 @@ export abstract class Node {
 
   hasDescendantFromSpace(spaceId: string): boolean {
     return this.children.some((child) => child.isFromSpace(spaceId) || child.hasDescendantFromSpace(spaceId));
+  }
+
+  hasAncestorFromSpace(spaceId: string): boolean {
+    if (!this.parent) return false;
+
+    return this.parent.isFromSpace(spaceId) || this.parent.hasAncestorFromSpace(spaceId);
+  }
+
+  hasActiveDescendant(): boolean {
+    return this.children.some((child) => child.isActive || child.hasActiveDescendant());
   }
 
   setParent(parent: Node | undefined): void {

@@ -52,13 +52,15 @@ class TreeBuilder {
     this.findRoots();
     this.sortNodes();
 
-    this.filterBySpace();
-    this.showHideActive();
-    this.showHidePaused();
-    this.showHideCompleted();
+    // this.filterBySpace();
+    // this.showHideActive();
+    // this.showHidePaused();
+    // this.showHideCompleted();
+
+    this.nodes = TreeFilter.filter(this.rootNodes, this.options);
     this.setDepth();
 
-    return this.rootNodes;
+    return this.nodes;
   }
 
   private createNodes(): void {
@@ -123,30 +125,6 @@ class TreeBuilder {
     TreeBuilder.sortNodes(this.rootNodes, this.options.sortColumn, this.options.sortDirection);
   }
 
-  private showHideActive(): void {
-    if (!this.options.showActive) {
-      this.rootNodes = TreeBuilder.hideProjectByStatus(this.rootNodes, "active");
-    }
-  }
-
-  private showHidePaused(): void {
-    if (!this.options.showPaused) {
-      this.rootNodes = TreeBuilder.hideProjectByStatus(this.rootNodes, "paused");
-    }
-  }
-
-  private showHideCompleted(): void {
-    if (!this.options.showCompleted) {
-      this.rootNodes = TreeBuilder.hideCompleted(this.rootNodes);
-    }
-  }
-
-  private filterBySpace(): void {
-    if (this.options.spaceId) {
-      this.rootNodes = TreeBuilder.filterBySpace(this.rootNodes, this.options.spaceId);
-    }
-  }
-
   // Recursive utility functions
 
   static sortNodes(nodes: Node[], column: SortColumn, direction: SortDirection): Node[] {
@@ -165,36 +143,102 @@ class TreeBuilder {
       TreeBuilder.setDepth(n.children, depth + 1);
     });
   }
+}
 
-  static hideCompleted(nodes: Node[]): Node[] {
-    return nodes
-      .filter((n) => !n.isClosed)
-      .map((n) => {
-        n.children = TreeBuilder.hideCompleted(n.children);
-
-        return n;
-      });
+class TreeFilter {
+  static filter(nodes: Node[], options: TreeOptions): Node[] {
+    return new TreeFilter(options).filter(nodes);
   }
 
-  static hideProjectByStatus(nodes: Node[], status: "active" | "paused"): Node[] {
-    return nodes
-      .filter((n) => n.type === "goal" || (n as ProjectNode).project?.status !== status)
-      .map((n) => {
-        n.children = TreeBuilder.hideProjectByStatus(n.children, status);
+  private options: TreeOptions;
 
-        return n;
-      });
+  constructor(options: TreeOptions) {
+    this.options = options;
   }
 
-  static filterBySpace(nodes: Node[], spaceId: string): Node[] {
-    return nodes
-      .filter((n) => n.isFromSpace(spaceId) || n.hasDescendantFromSpace(spaceId))
-      .map((n) => {
-        if (!n.isFromSpace(spaceId)) {
-          n.children = TreeBuilder.filterBySpace(n.children, spaceId);
-        }
-
-        return n;
-      });
+  filter(nodes: Node[]): Node[] {
+    return nodes.filter((n) => this.isNodeVisible(n)).map((n) => this.filterChildren(n));
   }
+
+  filterChildren(node: Node): Node {
+    node.children = this.filter(node.children);
+    return node;
+  }
+
+  isNodeVisible(node: Node): boolean {
+    return this.spaceFilter(node) && this.activeFilter(node);
+  }
+
+  private spaceFilter(node: Node): boolean {
+    if (!this.options.spaceId) return true;
+
+    return (
+      node.isFromSpace(this.options.spaceId) ||
+      node.hasDescendantFromSpace(this.options.spaceId) ||
+      node.hasAncestorFromSpace(this.options.spaceId)
+    );
+  }
+
+  private activeFilter(node: Node): boolean {
+    if (!this.options.showActive && node.isActive) return false;
+    return true;
+  }
+
+  // private showHideActive(): void {
+  //   if (!this.options.showActive) {
+  //     this.rootNodes = TreeBuilder.hideProjectByStatus(this.rootNodes, "active");
+  //   }
+  // }
+
+  // private showHidePaused(): void {
+  //   if (!this.options.showPaused) {
+  //     this.rootNodes = TreeBuilder.hideProjectByStatus(this.rootNodes, "paused");
+  //   }
+  // }
+
+  // private showHideCompleted(): void {
+  //   if (!this.options.showCompleted) {
+  //     this.rootNodes = TreeBuilder.hideCompleted(this.rootNodes);
+  //   }
+  // }
+
+  // private filterBySpace(): void {
+  //   if (this.options.spaceId) {
+  //     this.rootNodes = TreeBuilder.filterBySpace(this.rootNodes, this.options.spaceId);
+  //   }
+  // }
+
+  // static hideCompleted(nodes: Node[]): Node[] {
+  //   return nodes
+  //     .filter((n) => n.isActive() || n.hasActiveDescendant())
+  //     .map((n) => {
+  //       if (!n.isActive()) {
+  //         n.children = TreeBuilder.hideCompleted(n.children);
+  //       }
+
+  //       return n;
+  //     });
+  // }
+
+  // static hideProjectByStatus(nodes: Node[], status: "active" | "paused"): Node[] {
+  //   return nodes
+  //     .filter((n) => n.type === "goal" || (n as ProjectNode).project?.status !== status)
+  //     .map((n) => {
+  //       n.children = TreeBuilder.hideProjectByStatus(n.children, status);
+
+  //       return n;
+  //     });
+  // }
+
+  // static filterBySpace(nodes: Node[], spaceId: string): Node[] {
+  //   return nodes
+  //     .filter((n) => n.isFromSpace(spaceId) || n.hasDescendantFromSpace(spaceId))
+  //     .map((n) => {
+  //       if (!n.isFromSpace(spaceId)) {
+  //         n.children = TreeBuilder.filterBySpace(n.children, spaceId);
+  //       }
+
+  //       return n;
+  //     });
+  // }
 }
