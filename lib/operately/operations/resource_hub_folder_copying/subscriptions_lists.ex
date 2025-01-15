@@ -12,41 +12,25 @@ defmodule Operately.Operations.ResourceHubFolderCopying.SubscriptionsLists do
   """
   def update_parent_ids([]), do: :ok
   def update_parent_ids(resources) do
-    params = prepare_update_params(resources)
-
-    case_statement = build_update_case_statement(params)
-
-    ids = Enum.map(resources, &("'#{&1.subscription_list.id}'")) |> Enum.join(", ")
-
-    q = """
-    UPDATE subscription_lists
-    SET parent_id = CASE id
-      #{case_statement}
-    END
-    WHERE id in (#{ids});
+    query = """
+    WITH mapping (id, parent_id) AS (
+      SELECT unnest($1::uuid[]), unnest($2::uuid[])
+    )
+    UPDATE subscription_lists sl
+    SET parent_id = m.parent_id
+    FROM mapping m
+    WHERE sl.id = m.id;
     """
 
-    {:ok, _} = Operately.Repo.query(q, params)
-  end
-
-  defp prepare_update_params(resources) do
-    Enum.flat_map(resources, fn r ->
+    params = Enum.map(resources, fn r ->
       {:ok, list_id} = Ecto.UUID.dump(r.subscription_list.id)
       {:ok, parent_id} = Ecto.UUID.dump(r.id)
 
-      [list_id, parent_id]
+      {list_id, parent_id}
     end)
-  end
+    {ids, parent_ids} = Enum.unzip(params)
 
-  defp build_update_case_statement(params) do
-    params
-    |> Enum.with_index(1)
-    |> Enum.filter(fn {_, idx} -> rem(idx, 2) != 0 end)
-    |> Enum.map(fn {_, idx} ->
-
-      "WHEN $#{idx}::uuid THEN $#{idx + 1}::uuid"
-    end)
-    |> Enum.join(" ")
+    {:ok, _} = Repo.query(query, [ids, parent_ids])
   end
 
   @doc """
