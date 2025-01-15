@@ -1,4 +1,4 @@
-import { TreeTester } from "./buildTree.treeTester.test";
+import { TreeTester } from "./treeTester";
 import { personMock, spaceMock } from "@/__tests__/mocks";
 
 describe("Tree", () => {
