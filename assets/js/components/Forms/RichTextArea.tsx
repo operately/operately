@@ -4,7 +4,10 @@ import * as People from "@/models/people";
 
 import { InputField } from "./FieldGroup";
 import { useFieldError, useFieldValue, useFormContext } from "./FormContext";
+import { useValidation } from "./validations/hook";
+
 import classNames from "classnames";
+import { validateRichContentPresence } from "./validations/richContentPresence";
 
 interface RichTextAreaProps {
   field: string;
@@ -14,21 +17,27 @@ interface RichTextAreaProps {
   hideBorder?: boolean;
   height?: string;
   mentionSearchScope: People.SearchScope;
+  required?: boolean;
 }
 
-export function RichTextArea(props: RichTextAreaProps) {
-  const { field, label, hidden, placeholder, hideBorder } = props;
+const DEFAULT_VALUES = {
+  required: false,
+};
 
-  const error = useFieldError(field);
+export function RichTextArea(props: RichTextAreaProps) {
+  props = { ...DEFAULT_VALUES, ...props };
+  const error = useFieldError(props.field);
+
+  useValidation(props.field, validateRichContentPresence(props.required));
 
   return (
-    <InputField field={field} label={label} error={error} hidden={hidden}>
+    <InputField field={props.field} label={props.label} error={error} hidden={props.hidden}>
       <Editor
-        placeholder={placeholder}
-        field={field}
+        placeholder={props.placeholder}
+        field={props.field}
         error={!!error}
         mentionSearchScope={props.mentionSearchScope}
-        hideBorder={hideBorder}
+        hideBorder={props.hideBorder}
         height={props.height || "min-h-[250px]"}
       />
     </InputField>

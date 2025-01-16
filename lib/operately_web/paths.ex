@@ -196,9 +196,13 @@ defmodule OperatelyWeb.Paths do
     OperatelyWeb.Api.Helpers.id_with_comments(space.name, id)
   end
 
-  def goal_id(goal) do
-    id = Operately.ShortUuid.encode!(goal.id)
-    OperatelyWeb.Api.Helpers.id_with_comments(goal.name, id)
+  def goal_id(goal_id) when is_binary(goal_id) do
+    Operately.ShortUuid.encode!(goal_id)
+  end
+
+  def goal_id(%{id: id, name: name}) do
+    id = Operately.ShortUuid.encode!(id)
+    OperatelyWeb.Api.Helpers.id_with_comments(name, id)
   end
 
   def project_id(project) do
