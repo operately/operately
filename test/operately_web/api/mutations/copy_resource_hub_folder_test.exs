@@ -174,6 +174,47 @@ defmodule OperatelyWeb.Api.Mutations.CopyResourceHubFolderTest do
 
       assert_folder_copied(ctx, res.folder_id)
     end
+
+    test "folder is copied and copy has a different name", ctx do
+      assert ResourceHubs.count_children(ctx.hub) == 4
+      assert ResourceHubs.count_children(ctx.folder) == 3
+
+      assert {200, res} = mutation(ctx.conn, :copy_resource_hub_folder, %{
+        folder_name: "Brand new name",
+        folder_id: Paths.folder_id(ctx.folder),
+        dest_resource_hub_id: Paths.resource_hub_id(ctx.hub),
+        dest_parent_folder_id: nil,
+      })
+
+      assert ResourceHubs.count_children(ctx.hub) == 8
+      assert ResourceHubs.count_children(ctx.folder) == 3
+
+      assert_folder_copied(ctx, res.folder_id)
+
+      new_folder = fetch_folder(res.folder_id)
+
+      refute ctx.folder.node.name == new_folder.node.name
+      assert new_folder.node.name == "Brand new name"
+    end
+
+    test "folder is copied and copy has the same name", ctx do
+      assert ResourceHubs.count_children(ctx.hub) == 4
+      assert ResourceHubs.count_children(ctx.folder) == 3
+
+      assert {200, res} = mutation(ctx.conn, :copy_resource_hub_folder, %{
+        folder_id: Paths.folder_id(ctx.folder),
+        dest_resource_hub_id: Paths.resource_hub_id(ctx.hub),
+        dest_parent_folder_id: nil,
+      })
+
+      assert ResourceHubs.count_children(ctx.hub) == 8
+      assert ResourceHubs.count_children(ctx.folder) == 3
+
+      assert_folder_copied(ctx, res.folder_id)
+
+      new_folder = fetch_folder(res.folder_id)
+      assert ctx.folder.node.name == new_folder.node.name
+    end
   end
 
   #

@@ -8,7 +8,8 @@ import { Paths } from "@/routes/paths";
 import { createTestId } from "@/utils/testid";
 import { useNodesContext } from "@/features/ResourceHub";
 import { MoveResourceMenuItem, MoveResourceModal } from "./MoveResource";
-import { CopyResourceMenuItem, CopyResourceModal } from "./CopyResource";
+import { CopyResourceMenuItem } from "./CopyResource";
+import { CopyDocumentModal } from "./CopyDocument";
 
 interface Props {
   document: Hub.ResourceHubDocument;
@@ -40,7 +41,7 @@ export function DocumentMenu({ document }: Props) {
       </Menu>
 
       <MoveResourceModal resource={document} resourceType="document" isOpen={showMoveForm} hideModal={toggleMoveForm} />
-      <CopyResourceModal resource={document} isOpen={showCopyForm} hideModal={toggleCopyForm} />
+      <CopyDocumentModal resource={document} isOpen={showCopyForm} hideModal={toggleCopyForm} />
     </>
   );
 }
