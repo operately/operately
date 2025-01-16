@@ -6,6 +6,7 @@ defmodule Operately.Features.GoalTest do
   setup ctx do
     ctx = Steps.create_goal(ctx)
     ctx = UI.login_based_on_tag(ctx)
+    ctx = Steps.visit_page(ctx)
 
     {:ok, ctx}
   end
@@ -13,7 +14,6 @@ defmodule Operately.Features.GoalTest do
   @tag login_as: :champion
   feature "archive goal", ctx do
     ctx
-    |> Steps.visit_page()
     |> Steps.archive_goal()
     |> Steps.assert_goal_archived()
     |> Steps.assert_goal_archived_email_sent()
@@ -23,7 +23,6 @@ defmodule Operately.Features.GoalTest do
   @tag login_as: :champion
   feature "editing goals", ctx do
     ctx
-    |> Steps.visit_page()
     |> Steps.edit_goal()
     |> Steps.assert_goal_edited()
     |> Steps.assert_goal_edited_email_sent()
@@ -43,7 +42,6 @@ defmodule Operately.Features.GoalTest do
   @tag login_as: :champion
   feature "changing goal parent", ctx do
     ctx
-    |> Steps.visit_page()
     |> Steps.assert_goal_is_company_wide()
     |> Steps.given_a_goal_exists(@parent_goal_params)
     |> Steps.change_goal_parent(@parent_goal_params.name)
@@ -55,9 +53,22 @@ defmodule Operately.Features.GoalTest do
     params = %{success: "yes", retrospective: "We did it!"}
 
     ctx
-    |> Steps.visit_page()
     |> Steps.close_goal(params)
-    |> Steps.assert_goal_closed(params)
+    |> Steps.assert_goal_closed_as_accomplished()
+    |> Steps.assert_goal_is_not_editable()
+    |> Steps.assert_goal_closed_email_sent()
+    |> Steps.assert_goal_closed_feed_posted()
+    |> Steps.assert_goal_closed_notification_sent()
+  end
+
+  @tag login_as: :champion
+  feature "closing a goal that has active subitems", ctx do
+    ctx
+    |> Steps.given_a_goal_has_active_subitems()
+    |> Steps.initiate_goal_closing()
+    |> Steps.assert_warning_about_active_subitems()
+    |> Steps.close_goal_with_active_subitems()
+    |> Steps.assert_goal_closed_as_accomplished()
     |> Steps.assert_goal_is_not_editable()
     |> Steps.assert_goal_closed_email_sent()
     |> Steps.assert_goal_closed_feed_posted()
@@ -127,7 +138,6 @@ defmodule Operately.Features.GoalTest do
   @tag login_as: :champion
   feature "commenting on the goal's timeframe change", ctx do
     ctx
-    |> Steps.visit_page()
     |> Steps.edit_goal_timeframe()
     |> Steps.comment_on_the_timeframe_change()
     |> Steps.assert_comment_on_the_timeframe_change_feed_posted()

@@ -993,6 +993,7 @@ export interface Project {
   closedAt?: string | null;
   retrospective?: ProjectRetrospective | null;
   description?: string | null;
+  goalId?: string | null;
   goal?: Goal | null;
   lastCheckIn?: ProjectCheckIn | null;
   milestones?: Milestone[] | null;
