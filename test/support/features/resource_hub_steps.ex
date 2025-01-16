@@ -16,16 +16,6 @@ defmodule Operately.Support.Features.ResourceHubSteps do
     UI.login_as(ctx, ctx.creator)
   end
 
-  step :given_nested_folders_exist, ctx do
-    ctx
-    |> Factory.add_resource_hub(:hub, :space, :creator)
-    |> Factory.add_folder(:one, :hub)
-    |> Factory.add_folder(:two, :hub, :one)
-    |> Factory.add_folder(:three, :hub, :two)
-    |> Factory.add_folder(:four, :hub, :three)
-    |> Factory.add_folder(:five, :hub, :four)
-  end
-
   step :given_document_within_nested_folders_exists, ctx do
     ctx
     |> Factory.add_resource_hub(:hub, :space, :creator)
@@ -67,10 +57,6 @@ defmodule Operately.Support.Features.ResourceHubSteps do
     UI.visit(ctx, Paths.resource_hub_path(ctx.company, hub))
   end
 
-  step :visit_folder_page, ctx, folder_name do
-    UI.visit(ctx, Paths.folder_path(ctx.company, ctx[folder_name]))
-  end
-
   step :visit_document_page, ctx do
     UI.visit(ctx, Paths.document_path(ctx.company, ctx.document))
   end
@@ -83,20 +69,8 @@ defmodule Operately.Support.Features.ResourceHubSteps do
     UI.click(ctx, testid: "documents-files")
   end
 
-  step :navigate_to_folder, ctx, index: index do
-    UI.click(ctx, testid: "node-#{index}")
-  end
-
   step :navigate_back, ctx, name do
     UI.click_link(ctx, name)
-  end
-
-  step :create_folder, ctx, folder_name do
-    ctx
-    |> UI.click(testid: "add-options")
-    |> UI.click(testid: "new-folder")
-    |> UI.fill(testid: "new-folder-name", with: folder_name)
-    |> UI.click(testid: "submit")
   end
 
   step :copy_document, ctx, new_name do
@@ -123,7 +97,6 @@ defmodule Operately.Support.Features.ResourceHubSteps do
       {:ok, node} = Node.get(:system, name: attrs.name, opts: [preload: :document])
       Map.put(ctx, :document, node.document)
     end)
-    |> UI.take_screenshot()
   end
 
   step :edit_document, ctx, attrs do
@@ -190,21 +163,6 @@ defmodule Operately.Support.Features.ResourceHubSteps do
     end)
   end
 
-  step :assert_folder_created, ctx, attrs do
-    UI.find(ctx, UI.query(testid: "node-#{attrs.index}"), fn ctx ->
-      ctx
-      |> UI.assert_text(attrs.name)
-      |> UI.assert_text("0 items")
-    end)
-  end
-
-  step :assert_items_count, ctx, attrs do
-    UI.find(ctx, UI.query(testid: "node-#{attrs.index}"), fn ctx ->
-      ctx
-      |> UI.assert_text(attrs.items_count)
-    end)
-  end
-
   step :assert_comments_count, ctx, attrs do
     UI.find(ctx, UI.query(testid: "node-#{attrs.index}"), fn ctx ->
       ctx
@@ -267,18 +225,6 @@ defmodule Operately.Support.Features.ResourceHubSteps do
   #
   # Feed
   #
-
-  step :assert_folder_created_on_space_feed, ctx, folder_name do
-    ctx
-    |> UI.visit(Paths.space_path(ctx.company, ctx.space))
-    |> UI.assert_text("created a folder: #{folder_name}")
-  end
-
-  step :assert_folder_created_on_company_feed, ctx, folder_name do
-    ctx
-    |> UI.visit(Paths.feed_path(ctx.company))
-    |> UI.assert_text("created a folder in the #{ctx.space.name} space: #{folder_name}")
-  end
 
   step :assert_document_created_on_space_feed, ctx, attrs do
     ctx
