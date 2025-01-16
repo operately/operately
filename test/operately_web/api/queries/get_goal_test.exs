@@ -119,7 +119,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
     setup :register_and_log_in_account
 
     test "when id is not provided", ctx do
-      assert query(ctx.conn, :get_goal, %{}) == bad_request_response()
+      assert query(ctx.conn, :get_goal, %{}) == {400, %{error: "Bad request", message: "id is required"}}
     end
 
     test "when goal does not exist", ctx do

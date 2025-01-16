@@ -7,57 +7,31 @@ defmodule Operately.Support.Features.GoalSteps do
   alias Operately.Support.Features.EmailSteps
   alias Operately.Support.Features.NotificationsSteps
 
-  import Operately.CompaniesFixtures
-  import Operately.GroupsFixtures
   import Operately.PeopleFixtures
 
-  import Ecto.Query, only: [from: 2]
-
-  def create_goal(ctx) do
-    company = company_fixture(%{name: "Test Org", enabled_experimental_features: ["goals"]})
-    champion = person_fixture_with_account(%{company_id: company.id, full_name: "John Champion"})
-    reviewer = person_fixture_with_account(%{company_id: company.id, full_name: "Leonardo Reviewer"})
-    group = group_fixture(champion, %{company_id: company.id, name: "Test Group"})
-
-    {:ok, goal} = Operately.Goals.create_goal(champion, %{
-      company_id: company.id,
-      space_id: group.id,
-      name: "Improve support first response time",
-      champion_id: champion.id,
-      reviewer_id: reviewer.id,
+  def setup(ctx) do
+    ctx
+    |> Factory.setup()
+    |> Factory.add_space(:product)
+    |> Factory.add_space_member(:champion, :product)
+    |> Factory.add_space_member(:reviewer, :product)
+    |> Factory.add_goal(:goal, :product, [
+      name: "Improve support first response time", 
+      champion: :champion,
+      reviewer: :reviewer,
       timeframe: %{
         start_date: ~D[2023-01-01],
         end_date: ~D[2023-12-31],
         type: "year"
-      },
-      targets: [
-        %{
-          name: "First response time",
-          from: 30,
-          to: 15,
-          unit: "minutes",
-          index: 0
-        },
-        %{
-          name: "Increase feedback score to 90%",
-          from: 80,
-          to: 90,
-          unit: "percent",
-          index: 1
-        }
-      ],
-      company_access_level: Binding.comment_access(),
-      space_access_level: Binding.edit_access(),
-      anonymous_access_level: Binding.view_access(),
-    })
-
-    Map.merge(ctx, %{company: company, champion: champion, reviewer: reviewer, group: group, goal: goal})
+      }
+    ])
+    |> Factory.log_in_person(:champion)
   end
 
   step :given_a_goal_exists, ctx, goal_params do
-    {:ok, _} = Operately.Goals.create_goal(ctx.champion, %{
+    {:ok, _} = Operately.Goals.create_goal(ctx.creator, %{
       company_id: ctx.company.id,
-      space_id: ctx.group.id,
+      space_id: ctx.product.id,
       name: goal_params.name,
       champion_id: ctx.champion.id,
       reviewer_id: ctx.reviewer.id,
@@ -123,7 +97,7 @@ defmodule Operately.Support.Features.GoalSteps do
   step :assert_goal_archived_email_sent, ctx do
     ctx
     |> EmailSteps.assert_activity_email_sent(%{
-      where: ctx.group.name,
+      where: ctx.product.name,
       to: ctx.reviewer,
       author: ctx.champion,
       action: "archived the #{ctx.goal.name} goal"
@@ -212,7 +186,7 @@ defmodule Operately.Support.Features.GoalSteps do
     goal = Repo.reload(ctx.goal)
 
     ctx
-    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
+    |> UI.visit(Paths.space_path(ctx.company, ctx.product))
     |> FeedSteps.assert_goal_edited(author: ctx.champion, goal_name: goal.name)
   end
 
@@ -350,7 +324,7 @@ defmodule Operately.Support.Features.GoalSteps do
     |> UI.assert_text("Close Goal")
     |> UI.click(testid: "success-#{params.success}")
     |> UI.fill_rich_text(params.retrospective)
-    |> UI.click(testid: "confirm-close-goal")
+    |> UI.click(testid: "submit")
     |> UI.assert_page(Paths.goal_path(ctx.company, ctx.goal))
   end
 
@@ -402,12 +376,24 @@ defmodule Operately.Support.Features.GoalSteps do
     |> NotificationsSteps.assert_activity_notification(%{author: ctx.reviewer, action: "commented on goal reopening"})
   end
 
-  step :assert_goal_closed, ctx, %{success: success} do
+  step :assert_goal_closed_as_accomplished, ctx do
     goal = Operately.Goals.get_goal!(ctx.goal.id)
 
     assert goal.closed_at != nil
     assert goal.closed_by_id == ctx.champion.id
-    assert goal.success == success
+    assert goal.success == "yes"
+
+    ctx
+    |> UI.assert_page(Paths.goal_path(ctx.company, ctx.goal))
+    |> UI.assert_text("This goal was closed on")
+  end
+
+  step :assert_goal_closed_as_dropped, ctx do
+    goal = Operately.Goals.get_goal!(ctx.goal.id)
+
+    assert goal.closed_at != nil
+    assert goal.closed_by_id == ctx.champion.id
+    assert goal.success == "no"
 
     ctx
     |> UI.assert_page(Paths.goal_path(ctx.company, ctx.goal))
@@ -428,7 +414,7 @@ defmodule Operately.Support.Features.GoalSteps do
   step :assert_goal_closed_email_sent, ctx do
     ctx
     |> EmailSteps.assert_activity_email_sent(%{
-      where: ctx.group.name,
+      where: ctx.product.name,
       to: ctx.reviewer,
       author: ctx.champion,
       action: "closed the #{ctx.goal.name} goal"
@@ -438,7 +424,7 @@ defmodule Operately.Support.Features.GoalSteps do
   step :assert_goal_reopened_email_sent, ctx do
     ctx
     |> EmailSteps.assert_activity_email_sent(%{
-      where: ctx.group.name,
+      where: ctx.product.name,
       to: ctx.reviewer,
       author: ctx.champion,
       action: "reopened the #{ctx.goal.name} goal"
@@ -449,7 +435,7 @@ defmodule Operately.Support.Features.GoalSteps do
     ctx
     |> UI.visit(Paths.goal_path(ctx.company, ctx.goal))
     |> FeedSteps.assert_feed_item_exists(%{author: ctx.champion, title: "reopened the goal"})
-    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
+    |> UI.visit(Paths.space_path(ctx.company, ctx.product))
     |> FeedSteps.assert_feed_item_exists(%{author: ctx.champion, title: "reopened the #{ctx.goal.name} goal"})
     |> UI.visit(Paths.feed_path(ctx.company))
     |> FeedSteps.assert_feed_item_exists(%{author: ctx.champion, title: "reopened the #{ctx.goal.name} goal"})
@@ -459,7 +445,7 @@ defmodule Operately.Support.Features.GoalSteps do
     ctx
     |> UI.visit(Paths.goal_path(ctx.company, ctx.goal))
     |> FeedSteps.assert_feed_item_exists(%{author: ctx.champion, title: "closed the goal"})
-    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
+    |> UI.visit(Paths.space_path(ctx.company, ctx.product))
     |> FeedSteps.assert_feed_item_exists(%{author: ctx.champion, title: "closed the #{ctx.goal.name} goal"})
     |> UI.visit(Paths.feed_path(ctx.company))
     |> FeedSteps.assert_feed_item_exists(%{author: ctx.champion, title: "closed the #{ctx.goal.name} goal"})
@@ -486,7 +472,7 @@ defmodule Operately.Support.Features.GoalSteps do
   end
 
   step :visit_goal_list_page, ctx do
-    UI.visit(ctx, Paths.space_goals_path(ctx.company, ctx.group))
+    UI.visit(ctx, Paths.space_goals_path(ctx.company, ctx.product))
   end
 
   step :assert_goal_is_not_editable, ctx do
@@ -498,114 +484,44 @@ defmodule Operately.Support.Features.GoalSteps do
     |> UI.refute_text("Mark as Complete")
   end
 
-  step :assert_company_goal_added, ctx, %{name: name, target_name: target_name, from: current, to: target, unit: unit} do
-    goal = Operately.Repo.one(from g in Operately.Goals.Goal, where: g.name == ^name, preload: [:targets])
-
-    assert goal != nil
-    assert goal.champion_id == ctx.champion.id
-    assert goal.reviewer_id == ctx.reviewer.id
-    assert goal.company_id == ctx.company.id
-    assert goal.parent_goal_id == nil
-    assert goal.group_id == ctx.group.id
-    assert goal.targets != nil
-    assert Enum.count(goal.targets) == 1
-    assert Enum.at(goal.targets, 0).name == target_name
-    assert Enum.at(goal.targets, 0).from == Float.parse(current) |> elem(0)
-    assert Enum.at(goal.targets, 0).to == Float.parse(target) |> elem(0)
-    assert Enum.at(goal.targets, 0).unit == unit
-
+  step :given_a_goal_has_active_subitems, ctx do
     ctx
-    |> UI.visit(Paths.goals_path(ctx.company))
-    |> UI.assert_text(name)
-  end
-
-  step :assert_company_goal_created_email_sent, ctx, goal_name do
-    ctx
-    |> EmailSteps.assert_activity_email_sent(%{
-      where: ctx.group.name,
-      to: ctx.reviewer,
-      author: ctx.champion,
-      action: "added the #{goal_name} goal"
-    })
-  end
-
-  step :initialize_goal_creation_from_global_goals_page, ctx do
-    ctx
-    |> UI.visit(Paths.goals_path(ctx.company))
-    |> UI.click(testid: "add-options")
-    |> UI.click(testid: "add-goal")
-    |> UI.assert_has(testid: "goal-add-page")
-  end
-
-  step :initialize_goal_creation_from_goals_page_via_parent_goal, ctx, parent_goal_name do
-    ctx
-    |> UI.visit(Paths.goals_path(ctx.company))
-    |> UI.hover(testid: "goal-#{UI.testid(parent_goal_name)}")
-    |> UI.click(testid: "add-subgoal")
-    |> UI.assert_has(testid: "goal-add-page")
-  end
-
-  step :initialize_goal_creation_from_global_new_navigation, ctx do
-    ctx
-    |> UI.click(testid: "new-dropdown")
-    |> UI.click(testid: "company-dropdown-new-goal")
-    |> UI.assert_has(testid: "goal-add-page")
-  end
-
-  step :add_goal, ctx, goal_params do
-    ctx
-    |> UI.fill(testid: "goal-name", with: goal_params.name)
-    |> UI.select_person_in(id: "champion-search", name: ctx.champion.full_name)
-    |> UI.select_person_in(id: "reviewer-search", name: ctx.reviewer.full_name)
-    |> UI.fill(testid: "target-0-name", with: goal_params.target_name)
-    |> UI.fill(testid: "target-0-current", with: goal_params.from)
-    |> UI.fill(testid: "target-0-target", with: goal_params.to)
-    |> UI.fill(testid: "target-0-unit", with: goal_params.unit)
-    |> UI.select(testid: "space-selector", option: ctx.group.name)
+    |> Factory.add_goal(:subgoal1, :product)
+    |> Factory.add_goal(:subgoal2, :product)
+    |> Factory.add_project(:project1, :product)
     |> then(fn ctx ->
-      if Map.has_key?(goal_params, :parent_name) do
-        ctx
-        |> UI.click(testid: "goal-selector")
-        |> UI.click(testid: UI.testid(["goal", goal_params.parent_name]))
-      else
-        ctx
-      end
+      {:ok, _} = Operately.Goals.update_goal(ctx.subgoal1, %{parent_goal_id: ctx.goal.id})
+      {:ok, _} = Operately.Goals.update_goal(ctx.subgoal2, %{parent_goal_id: ctx.subgoal1.id})
+      {:ok, _} = Operately.Projects.update_project(ctx.project1, %{goal_id: ctx.subgoal2.id})
+      ctx
     end)
-    |> UI.click(testid: "add-goal-button")
-    |> UI.assert_has(testid: "goal-page")
   end
 
-  step :assert_subgoal_added, ctx, goal_params do
-    parent_goal = Operately.Repo.one(from g in Operately.Goals.Goal, where: g.name == ^goal_params.parent_name)
-    goal = Operately.Repo.one(from g in Operately.Goals.Goal, where: g.name == ^goal_params.name, preload: [:targets])
-
-    assert goal != nil
-    assert goal.champion_id == ctx.champion.id
-    assert goal.reviewer_id == ctx.reviewer.id
-    assert goal.company_id == ctx.company.id
-    assert goal.parent_goal_id == parent_goal.id
-    assert goal.group_id == ctx.group.id
-    assert goal.targets != nil
-    assert Enum.count(goal.targets) == 1
-    assert Enum.at(goal.targets, 0).name == goal_params.target_name
-    assert Enum.at(goal.targets, 0).from == Float.parse(goal_params.from) |> elem(0)
-    assert Enum.at(goal.targets, 0).to == Float.parse(goal_params.to) |> elem(0)
-    assert Enum.at(goal.targets, 0).unit == goal_params.unit
-
+  step :initiate_goal_closing, ctx do
     ctx
-    |> UI.visit(Paths.goal_path(ctx.company, goal))
-    |> UI.assert_text(goal_params.name)
-    |> UI.assert_text(goal_params.target_name)
-    |> UI.assert_text(goal_params.parent_name)
+    |> UI.click(testid: "goal-options")
+    |> UI.click(testid: "close-goal")
+    |> UI.assert_text("Close Goal")
   end
 
-  step :assert_subgoal_created_email_sent, ctx, goal_name do
-    ctx
-    |> EmailSteps.assert_activity_email_sent(%{
-      where: ctx.group.name,
-      to: ctx.reviewer,
-      author: ctx.champion,
-      action: "added the #{goal_name} goal"
-    })
+  step :assert_warning_about_active_subitems, ctx do
+    ctx 
+    |> UI.assert_text("This goal contains 2 sub-goals and 1 project that will remain active:")
+    |> UI.assert_text(ctx.subgoal1.name)
+    |> UI.assert_text(ctx.subgoal2.name)
+    |> UI.assert_text(ctx.project1.name)
   end
+
+  step :close_goal_with_active_subitems, ctx do
+    ctx
+    |> UI.click(testid: "success-yes")
+    |> UI.fill_rich_text("Closing the goal with active subitems.")
+    |> UI.click(testid: "submit")
+    |> UI.assert_page(Paths.goal_path(ctx.company, ctx.goal))
+  end
+
+  step :assert_goal_closed, ctx do
+    ctx |> UI.click(testid: "something")
+  end
+
 end
