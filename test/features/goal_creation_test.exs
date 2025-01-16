@@ -5,7 +5,7 @@ defmodule Operately.Features.GoalCreationTest do
   import Operately.GroupsFixtures
   import Operately.PeopleFixtures
 
-  alias Operately.Support.Features.GoalSteps, as: Steps
+  alias Operately.Support.Features.GoalCreationTestSteps, as: Steps
 
   setup ctx do
     company = company_fixture(%{name: "Test Org", enabled_experimental_features: ["goals"]})
