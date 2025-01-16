@@ -113,6 +113,7 @@ export const DISPLAYED_IN_FEED = [
   "resource_hub_file_edited",
   "resource_hub_file_deleted",
   "resource_hub_file_commented",
+  "resource_hub_folder_copied",
   "resource_hub_folder_created",
   "resource_hub_folder_deleted",
   "resource_hub_folder_renamed",
@@ -183,6 +184,7 @@ import ResourceHubFileCreated from "@/features/activities/ResourceHubFileCreated
 import ResourceHubFileEdited from "@/features/activities/ResourceHubFileEdited";
 import ResourceHubFileDeleted from "@/features/activities/ResourceHubFileDeleted";
 import ResourceHubFileCommented from "@/features/activities/ResourceHubFileCommented";
+import ResourceHubFolderCopied from "@/features/activities/ResourceHubFolderCopied";
 import ResourceHubFolderCreated from "@/features/activities/ResourceHubFolderCreated";
 import ResourceHubFolderDeleted from "@/features/activities/ResourceHubFolderDeleted";
 import ResourceHubFolderRenamed from "@/features/activities/ResourceHubFolderRenamed";
@@ -249,6 +251,7 @@ function handler(activity: Activity) {
     .with("resource_hub_file_deleted", () => ResourceHubFileDeleted)
     .with("resource_hub_file_edited", () => ResourceHubFileEdited)
     .with("resource_hub_file_commented", () => ResourceHubFileCommented)
+    .with("resource_hub_folder_copied", () => ResourceHubFolderCopied)
     .with("resource_hub_folder_created", () => ResourceHubFolderCreated)
     .with("resource_hub_folder_deleted", () => ResourceHubFolderDeleted)
     .with("resource_hub_folder_renamed", () => ResourceHubFolderRenamed)

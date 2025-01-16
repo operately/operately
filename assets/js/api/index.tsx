@@ -552,6 +552,13 @@ export interface ActivityContentResourceHubFileEdited {
   file?: ResourceHubFile | null;
 }
 
+export interface ActivityContentResourceHubFolderCopied {
+  space?: Space | null;
+  resourceHub?: ResourceHub | null;
+  folder?: ResourceHubFolder | null;
+  originalFolder?: ResourceHubFolder | null;
+}
+
 export interface ActivityContentResourceHubFolderCreated {
   space?: Space | null;
   resourceHub?: ResourceHub | null;
