@@ -402,12 +402,24 @@ defmodule Operately.Support.Features.GoalSteps do
     |> NotificationsSteps.assert_activity_notification(%{author: ctx.reviewer, action: "commented on goal reopening"})
   end
 
-  step :assert_goal_closed, ctx, %{success: success} do
+  step :assert_goal_closed_as_accomplished, ctx do
     goal = Operately.Goals.get_goal!(ctx.goal.id)
 
     assert goal.closed_at != nil
     assert goal.closed_by_id == ctx.champion.id
-    assert goal.success == success
+    assert goal.success == "yes"
+
+    ctx
+    |> UI.assert_page(Paths.goal_path(ctx.company, ctx.goal))
+    |> UI.assert_text("This goal was closed on")
+  end
+
+  step :assert_goal_closed_as_dropped, ctx do
+    goal = Operately.Goals.get_goal!(ctx.goal.id)
+
+    assert goal.closed_at != nil
+    assert goal.closed_by_id == ctx.champion.id
+    assert goal.success == "no"
 
     ctx
     |> UI.assert_page(Paths.goal_path(ctx.company, ctx.goal))
@@ -608,4 +620,32 @@ defmodule Operately.Support.Features.GoalSteps do
       action: "added the #{goal_name} goal"
     })
   end
+
+  step :given_a_goal_has_active_subitems, ctx do
+    ctx
+  end
+
+  step :initiate_goal_closing, ctx do
+    ctx
+    |> UI.click(testid: "goal-options")
+    |> UI.click(testid: "close-goal")
+    |> UI.assert_text("Close Goal")
+  end
+
+  step :assert_warning_about_active_subitems, ctx do
+    ctx |> UI.click(testid: "something")
+  end
+
+  step :close_goal_with_active_subitems, ctx do
+    ctx
+    |> UI.click(testid: "success-yes")
+    |> UI.fill_rich_text("Closing the goal with active subitems.")
+    |> UI.click(testid: "submit")
+    |> UI.assert_page(Paths.goal_path(ctx.company, ctx.goal))
+  end
+
+  step :assert_goal_closed, ctx do
+    ctx |> UI.click(testid: "something")
+  end
+
 end
