@@ -5,15 +5,13 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Project do
       name: project.name,
       privacy: OperatelyWeb.Api.Serializer.serialize(project.privacy),
       status: project.status,
+      goal_id: project.goal_id && OperatelyWeb.Paths.goal_id(project.goal_id),
     }
   end
 
   def serialize(project, level: :full) do
-    %{
-      id: OperatelyWeb.Paths.project_id(project),
-      name: project.name,
-      privacy: OperatelyWeb.Api.Serializer.serialize(project.privacy),
-      status: project.status,
+    serialize(project, level: :essential) 
+    |> Map.merge(%{
       next_check_in_scheduled_at: OperatelyWeb.Api.Serializer.serialize(project.next_check_in_scheduled_at),
       description: project.description && Jason.encode!(project.description),
       retrospective: OperatelyWeb.Api.Serializer.serialize(project.retrospective),
@@ -37,7 +35,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Project do
       access_levels: OperatelyWeb.Api.Serializer.serialize(project.access_levels, level: :full),
       potential_subscribers: OperatelyWeb.Api.Serializer.serialize(project.potential_subscribers),
       notifications: OperatelyWeb.Api.Serializer.serialize(project.notifications),
-    }
+    })
   end
 
   defp exclude_suspended(project) do

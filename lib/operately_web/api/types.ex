@@ -215,6 +215,7 @@ defmodule OperatelyWeb.Api.Types do
     field :closed_at, :date
     field :retrospective, :project_retrospective
     field :description, :string
+    field :goal_id, :string
     field :goal, :goal
     field :last_check_in, :project_check_in
     field :milestones, list_of(:milestone)

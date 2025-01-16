@@ -6,7 +6,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
   alias Operately.Goals.{Goal, Permissions}
 
   inputs do
-    field :id, :string
+    field :id, :id
 
     field :include_champion, :boolean
     field :include_closed_by, :boolean
@@ -26,10 +26,9 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
     field :goal, :goal
   end
 
-  def call(conn, %{id: id} = inputs) do
+  def call(conn, %{id: _id} = inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:id, fn -> decode_id(id) end)
     |> run(:goal, fn ctx -> load(ctx, inputs) end)
     |> run(:check_permissions, fn ctx -> Permissions.check(ctx.goal.request_info.access_level, :can_view) end)
     |> run(:serialized, fn ctx -> {:ok, %{goal: Serializer.serialize(ctx.goal, level: :full)}} end)
@@ -37,7 +36,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
   end
 
   def call(_conn, _) do
-    {:error, :bad_request}
+    {:error, :bad_request, "id is required"}
   end
 
   defp respond(result) do
@@ -51,7 +50,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
   end
 
   defp load(ctx, inputs) do
-    Goal.get(ctx.me, id: ctx.id, company_id: ctx.me.company_id, opts: [
+    Goal.get(ctx.me, id: inputs.id, company_id: ctx.me.company_id, opts: [
       with_deleted: true,
       preload: preload(inputs),
       after_load: after_load(inputs, ctx.me),
