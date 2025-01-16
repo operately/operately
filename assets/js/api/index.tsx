@@ -2225,6 +2225,16 @@ export interface ConnectGoalToProjectResult {
   project?: Project | null;
 }
 
+export interface CopyResourceHubFolderInput {
+  folderId?: Id | null;
+  destResourceHubId?: Id | null;
+  destParentFolderId?: Id | null;
+}
+
+export interface CopyResourceHubFolderResult {
+  folderId?: Id | null;
+}
+
 export interface CreateAccountInput {
   code?: string | null;
   email?: string | null;
@@ -3235,6 +3245,10 @@ export class ApiClient {
     return this.post("/connect_goal_to_project", input);
   }
 
+  async copyResourceHubFolder(input: CopyResourceHubFolderInput): Promise<CopyResourceHubFolderResult> {
+    return this.post("/copy_resource_hub_folder", input);
+  }
+
   async createAccount(input: CreateAccountInput): Promise<CreateAccountResult> {
     return this.post("/create_account", input);
   }
@@ -3753,6 +3767,9 @@ export async function closeProject(input: CloseProjectInput): Promise<CloseProje
 }
 export async function connectGoalToProject(input: ConnectGoalToProjectInput): Promise<ConnectGoalToProjectResult> {
   return defaultApiClient.connectGoalToProject(input);
+}
+export async function copyResourceHubFolder(input: CopyResourceHubFolderInput): Promise<CopyResourceHubFolderResult> {
+  return defaultApiClient.copyResourceHubFolder(input);
 }
 export async function createAccount(input: CreateAccountInput): Promise<CreateAccountResult> {
   return defaultApiClient.createAccount(input);
@@ -4343,6 +4360,15 @@ export function useConnectGoalToProject(): UseMutationHookResult<
 > {
   return useMutation<ConnectGoalToProjectInput, ConnectGoalToProjectResult>((input) =>
     defaultApiClient.connectGoalToProject(input),
+  );
+}
+
+export function useCopyResourceHubFolder(): UseMutationHookResult<
+  CopyResourceHubFolderInput,
+  CopyResourceHubFolderResult
+> {
+  return useMutation<CopyResourceHubFolderInput, CopyResourceHubFolderResult>((input) =>
+    defaultApiClient.copyResourceHubFolder(input),
   );
 }
 
@@ -4977,6 +5003,8 @@ export default {
   useCloseProject,
   connectGoalToProject,
   useConnectGoalToProject,
+  copyResourceHubFolder,
+  useCopyResourceHubFolder,
   createAccount,
   useCreateAccount,
   createBlob,
