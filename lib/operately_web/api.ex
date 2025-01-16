@@ -72,6 +72,7 @@ defmodule OperatelyWeb.Api do
   mutation :add_project_contributors, M.AddProjectContributors
   mutation :add_reaction, M.AddReaction
 
+  mutation :copy_resource_hub_folder, M.CopyResourceHubFolder
   mutation :create_account, M.CreateAccount
   mutation :create_blob, M.CreateBlob
   mutation :create_comment, M.CreateComment

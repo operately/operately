@@ -30,21 +30,24 @@ defmodule Operately.Operations.ResourceHubFolderCopying do
     |> Multi.run(:updated_subscription_lists, fn _, changes ->
       SubscriptionsLists.update_parent_ids(changes.resources)
     end)
+    |> Multi.run(:new_folder, fn _, changes ->
+      {new_folder, _} = changes.folder_and_nodes
+      {:ok, new_folder}
+    end)
     |> insert_activity(author, folder, dest_resource_hub)
     |> Repo.transaction()
+    |> Repo.extract_result(:new_folder)
   end
 
   defp insert_activity(multi, author, folder, dest_resource_hub) do
     multi
     |> Activities.insert_sync(author.id, :resource_hub_folder_copied, fn changes ->
-      {new_folder, _} = changes.folder_and_nodes
-
       %{
         company_id: author.company_id,
         space_id: dest_resource_hub.space_id,
         resource_hub_id: dest_resource_hub.id,
-        node_id: new_folder.node_id,
-        folder_id: new_folder.id,
+        node_id: changes.new_folder.node_id,
+        folder_id: changes.new_folder.id,
         original_folder: %{
           space_id: folder.resource_hub.space_id,
           resource_hub_id: folder.resource_hub.id,
