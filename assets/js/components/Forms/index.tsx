@@ -17,6 +17,8 @@ import { SelectStatus } from "./SelectStatus";
 import { useForm } from "./useForm";
 import { useFieldError, useFieldValue } from "./FormContext";
 
+export type { FormState } from "./useForm";
+
 export default {
   useForm,
   useFieldError,
