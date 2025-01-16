@@ -6,8 +6,7 @@ import * as Goals from "@/models/goals";
 import Forms from "@/components/Forms";
 
 import { Paths } from "@/routes/paths";
-import { BlackLink } from "@/components/Link";
-import { WarningCallout } from "@/components/Callouts";
+import { ActiveSubitemsWarning } from "./ActiveSubitemsWarning";
 
 import { useLoadedData } from "./loader";
 import { useNavigateTo } from "@/routes/useNavigateTo";
@@ -102,33 +101,5 @@ function Navigation() {
 }
 
 function PageTitle() {
-  return <div className="text-content-accent text-2xl font-extrabold">Review &amp; Close Goal</div>;
-}
-
-function ActiveSubitemsWarning() {
-  return (
-    <div className="my-6">
-      <WarningCallout
-        message="This goal contains 3 active sub-goals and 1 project that will remain active:"
-        description={
-          <div>
-            <ul className="flex flex-col gap-1 mt-2">
-              <li>
-                <BlackLink to={Paths.goalPath("123")}>Document core business processes in company playbook</BlackLink>
-              </li>
-              <li>
-                <BlackLink to={Paths.goalPath("123")}>Ensure Financial Stability</BlackLink>
-              </li>
-              <li>
-                <BlackLink to={Paths.projectPath("123")}>Expand team capbilities</BlackLink>
-              </li>
-              <li>
-                <BlackLink to={Paths.projectPath("123")}>Website Redesign</BlackLink>
-              </li>
-            </ul>
-          </div>
-        }
-      />
-    </div>
-  );
+  return <div className="mb-6 text-content-accent text-2xl font-extrabold">Review &amp; Close Goal</div>;
 }
