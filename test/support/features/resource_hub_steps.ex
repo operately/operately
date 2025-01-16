@@ -2,8 +2,6 @@ defmodule Operately.Support.Features.ResourceHubSteps do
   use Operately.FeatureCase
 
   alias Operately.ResourceHubs.{ResourceHub, Node}
-  alias Operately.Support.Features.NotificationsSteps
-  alias Operately.Support.Features.EmailSteps
 
   step :setup, ctx do
     ctx =
@@ -31,23 +29,6 @@ defmodule Operately.Support.Features.ResourceHubSteps do
 
   step :navigate_back, ctx, name do
     UI.click_link(ctx, name)
-  end
-
-  step :delete_document, ctx do
-    ctx
-    |> UI.click(testid: "document-options-button")
-    |> UI.click(testid: "delete-document-link")
-  end
-
-  step :delete_document, ctx, document_name do
-    {:ok, node} = Node.get(:system, name: document_name, opts: [preload: :document])
-
-    menu_id = UI.testid(["document-menu", Paths.document_id(node.document)])
-    delete_id = UI.testid(["delete", Paths.document_id(node.document)])
-
-    ctx
-    |> UI.click(testid: menu_id)
-    |> UI.click(testid: delete_id)
   end
 
   step :leave_comment, ctx do
@@ -106,12 +87,6 @@ defmodule Operately.Support.Features.ResourceHubSteps do
     end)
   end
 
-
-  step :assert_document_deleted, ctx, document_name do
-    ctx
-    |> UI.refute_text(document_name)
-  end
-
   step :refute_document_present_in_files_list, ctx, document_name do
     ctx
     |> UI.refute_text(document_name)
@@ -130,45 +105,64 @@ defmodule Operately.Support.Features.ResourceHubSteps do
   end
 
   #
-  # Feed
+  # Deleting resource
   #
 
-  step :assert_document_deleted_on_space_feed, ctx, document_name do
+ def delete_resource_from_nodes_list(ctx, resource_name) do
     ctx
-    |> UI.visit(Paths.space_path(ctx.company, ctx.space))
-    |> UI.assert_text("deleted \"#{document_name}\" from Documents & Files")
+    |> visit_resource_hub_page()
+    |> delete_resource(resource_name)
+    |> assert_resource_deleted(resource_name)
   end
 
-  step :assert_document_deleted_on_company_feed, ctx, document_name do
+  def delete_resource_redirects_to_resource_hub(ctx) do
     ctx
-    |> UI.visit(Paths.feed_path(ctx.company))
-    |> UI.assert_text("deleted \"#{document_name}\" from Documents & Files in the #{ctx.space.name} space")
+    |> delete_resource()
+    |> assert_page_is_resource_hub_root(name: "Resource hub")
+    |> assert_zero_state("Resource hub")
+  end
+
+  def delete_resource_redirects_to_folder(ctx) do
+    ctx
+    |> delete_resource()
+    |> assert_page_is_folder_root(folder_key: :folder)
+    |> assert_zero_folder_state()
+  end
+
+  step :given_resource_was_deleted, ctx, resource_name do
+    delete_resource_from_nodes_list(ctx, resource_name)
+  end
+
+  step :delete_resource, ctx, resource_name do
+    resource_id = get_resource_id(resource_name)
+    menu_id = UI.testid(["menu", resource_id])
+    delete_id = UI.testid(["delete", resource_id])
+
+    ctx
+    |> UI.click(testid: menu_id)
+    |> UI.click(testid: delete_id)
+  end
+
+  step :delete_resource, ctx do
+    ctx
+    |> UI.click(testid: "options-button")
+    |> UI.click(testid: "delete-resource-link")
+  end
+
+  step :assert_resource_deleted, ctx, resource_name do
+    ctx
+    |> UI.refute_text(resource_name)
   end
 
   #
-  # Notifications
+  # Helpers
   #
 
-  step :assert_document_deleted_notification_sent, ctx, document_name do
-    ctx
-    |> UI.login_as(ctx.other_user)
-    |> NotificationsSteps.visit_notifications_page()
-    |> NotificationsSteps.assert_activity_notification(%{
-      author: ctx.creator,
-      action: "deleted a document: #{document_name}",
-    })
-  end
+  defp get_resource_id(resource_name) do
+    {:ok, node} = Node.get(:system, name: resource_name, opts: [preload: :document])
 
-  #
-  # Emails
-  #
-
-  step :assert_document_deleted_email_sent, ctx, document_name do
-    ctx |> EmailSteps.assert_activity_email_sent(%{
-      where: ctx.space.name,
-      to: ctx.other_user,
-      action: "deleted a document: #{document_name}",
-      author: ctx.creator,
-    })
+    cond do
+      node.document -> Paths.document_id(node.document)
+    end
   end
 end

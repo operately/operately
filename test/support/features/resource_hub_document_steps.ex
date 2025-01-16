@@ -16,6 +16,19 @@ defmodule Operately.Support.Features.ResourceHubDocumentSteps do
     |> Factory.add_document(:document, :hub, folder: :five)
   end
 
+  step :given_document_within_resource_hub_root_exists, ctx do
+    ctx
+    |> Factory.add_resource_hub(:hub, :space, :creator)
+    |> Factory.add_document(:document, :hub)
+  end
+
+  step :given_document_within_folder_exists, ctx do
+    ctx
+    |> Factory.add_resource_hub(:hub, :space, :creator)
+    |> Factory.add_folder(:folder, :hub)
+    |> Factory.add_document(:document, :hub, folder: :folder)
+  end
+
   step :visit_document_page, ctx do
     UI.visit(ctx, Paths.document_path(ctx.company, ctx.document))
   end
@@ -54,7 +67,7 @@ defmodule Operately.Support.Features.ResourceHubDocumentSteps do
 
   step :copy_document, ctx, new_name do
     ctx
-    |> UI.click(testid: UI.testid("document-menu-#{Paths.document_id(ctx.document)}"))
+    |> UI.click(testid: UI.testid("menu-#{Paths.document_id(ctx.document)}"))
     |> UI.click(testid: UI.testid("copy-resource-#{Paths.document_id(ctx.document)}"))
     |> UI.fill(testid: "name", with: new_name)
     |> UI.click(testid: "submit")
@@ -140,6 +153,18 @@ defmodule Operately.Support.Features.ResourceHubDocumentSteps do
     |> UI.assert_text("commented on #{document_name}")
   end
 
+  step :assert_document_deleted_on_space_feed, ctx, document_name do
+    ctx
+    |> UI.visit(Paths.space_path(ctx.company, ctx.space))
+    |> UI.assert_text("deleted \"#{document_name}\" from Documents & Files")
+  end
+
+  step :assert_document_deleted_on_company_feed, ctx, document_name do
+    ctx
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.assert_text("deleted \"#{document_name}\" from Documents & Files in the #{ctx.space.name} space")
+  end
+
   #
   # Notifications
   #
@@ -184,6 +209,16 @@ defmodule Operately.Support.Features.ResourceHubDocumentSteps do
     })
   end
 
+  step :assert_document_deleted_notification_sent, ctx, document_name do
+    ctx
+    |> UI.login_as(ctx.other_user)
+    |> NotificationsSteps.visit_notifications_page()
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.creator,
+      action: "deleted a document: #{document_name}",
+    })
+  end
+
   #
   # Emails
   #
@@ -220,6 +255,15 @@ defmodule Operately.Support.Features.ResourceHubDocumentSteps do
       where: ctx.space.name,
       to: ctx.other_user,
       action: "commented on: #{document_name}",
+      author: ctx.creator,
+    })
+  end
+
+  step :assert_document_deleted_email_sent, ctx, document_name do
+    ctx |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.space.name,
+      to: ctx.other_user,
+      action: "deleted a document: #{document_name}",
       author: ctx.creator,
     })
   end

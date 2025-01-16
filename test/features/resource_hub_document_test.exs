@@ -50,39 +50,6 @@ defmodule Operately.Features.ResourceHubDocumentTest do
     |> DocumentSteps.refute_document_edited_on_company_feed(@document.name)
   end
 
-  feature "delete document from content list", ctx do
-    ctx
-    |> Steps.visit_resource_hub_page()
-    |> DocumentSteps.create_document(@document)
-    |> DocumentSteps.assert_document_content(@document)
-    |> Steps.navigate_back("Documents & Files")
-    |> Steps.delete_document(@document.name)
-    |> Steps.assert_document_deleted(@document.name)
-    |> Steps.assert_document_deleted_on_space_feed(@document.name)
-    |> Steps.assert_document_deleted_on_company_feed(@document.name)
-    |> Steps.assert_document_deleted_notification_sent(@document.name)
-    |> Steps.assert_document_deleted_email_sent(@document.name)
-  end
-
-  feature "deleting document from document page redirects to resource hub", ctx do
-    ctx
-    |> Steps.visit_resource_hub_page()
-    |> DocumentSteps.create_document(@document)
-    |> DocumentSteps.assert_document_content(@document)
-    |> Steps.delete_document()
-    |> Steps.assert_page_is_resource_hub_root(name: "Documents & Files")
-    |> Steps.assert_zero_state()
-  end
-
-  feature "deleting document within folder from document page redirects to folder", ctx do
-    ctx
-    |> DocumentSteps.given_document_within_nested_folders_exists()
-    |> DocumentSteps.visit_document_page()
-    |> Steps.delete_document()
-    |> Steps.assert_page_is_folder_root(folder_key: :five)
-    |> Steps.assert_zero_folder_state()
-  end
-
   feature "copy document in the same folder", ctx do
     new_name = "Document - Copy"
 
@@ -124,5 +91,49 @@ defmodule Operately.Features.ResourceHubDocumentTest do
     |> Steps.navigate_back("one")
     |> Steps.refute_navigation_links(["one", "two", "three"])
     |> Steps.assert_navigation_links(["Product Space", "Resource hub"])
+  end
+
+  describe "Delete" do
+    feature "deleting document adds event to feed", ctx do
+      ctx
+      |> Steps.visit_resource_hub_page()
+      |> DocumentSteps.create_document(@document)
+      |> DocumentSteps.assert_document_content(@document)
+      |> Steps.given_resource_was_deleted(@document.name)
+      |> DocumentSteps.assert_document_deleted_on_space_feed(@document.name)
+      |> DocumentSteps.assert_document_deleted_on_company_feed(@document.name)
+    end
+
+    feature "deleting document sends notifications", ctx do
+      ctx
+      |> Steps.visit_resource_hub_page()
+      |> DocumentSteps.create_document(@document)
+      |> DocumentSteps.assert_document_content(@document)
+      |> Steps.given_resource_was_deleted(@document.name)
+      |> DocumentSteps.assert_document_deleted_notification_sent(@document.name)
+      |> DocumentSteps.assert_document_deleted_email_sent(@document.name)
+    end
+
+    feature "delete document from content list", ctx do
+      ctx
+      |> Steps.visit_resource_hub_page()
+      |> DocumentSteps.create_document(@document)
+      |> DocumentSteps.assert_document_content(@document)
+      |> Steps.delete_resource_from_nodes_list(@document.name)
+    end
+
+    feature "deleting document from document page redirects to resource hub", ctx do
+      ctx
+      |> DocumentSteps.given_document_within_resource_hub_root_exists()
+      |> DocumentSteps.visit_document_page()
+      |> Steps.delete_resource_redirects_to_resource_hub()
+    end
+
+    feature "deleting document within folder from document page redirects to folder", ctx do
+      ctx
+      |> DocumentSteps.given_document_within_folder_exists()
+      |> DocumentSteps.visit_document_page()
+      |> Steps.delete_resource_redirects_to_folder()
+    end
   end
 end
