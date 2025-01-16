@@ -49,6 +49,6 @@ defmodule OperatelyWeb.Api.Mutations.CopyResourceHubFolder do
   end
 
   defp execute(ctx, inputs) do
-    ResourceHubFolderCopying.run(ctx.me, ctx.folder, ctx.resource_hub, inputs.dest_parent_folder_id)
+    ResourceHubFolderCopying.run(ctx.me, ctx.folder, ctx.resource_hub, inputs[:dest_parent_folder_id])
   end
 end

@@ -9,6 +9,8 @@ import { Menu, MenuActionItem } from "@/components/Menu";
 import { createTestId } from "@/utils/testid";
 import { useNodesContext } from "@/features/ResourceHub";
 import { MoveResourceMenuItem, MoveResourceModal } from "./MoveResource";
+import { CopyResourceMenuItem } from "./CopyResource";
+import { CopyFolderModal } from "./CopyFolder";
 
 interface Props {
   folder: Hub.ResourceHubFolder;
@@ -18,8 +20,14 @@ export function FolderMenu({ folder }: Props) {
   const { permissions } = useNodesContext();
   const [showRenameForm, toggleRenameForm] = useBoolState(false);
   const [showMoveForm, toggleMoveForm] = useBoolState(false);
+  const [showCopyForm, toggleCopyForm] = useBoolState(false);
 
-  const relevantPermissions = [permissions.canRenameFolder, permissions.canDeleteFolder];
+  const relevantPermissions = [
+    permissions.canRenameFolder,
+    permissions.canCopyFolder,
+    permissions.canEditParentFolder,
+    permissions.canDeleteFolder,
+  ];
   const menuId = createTestId("folder-menu", folder.id!);
 
   if (!relevantPermissions.some(Boolean)) return <></>;
@@ -28,6 +36,7 @@ export function FolderMenu({ folder }: Props) {
     <>
       <Menu size="medium" testId={menuId}>
         {permissions.canRenameFolder && <RenameFolderMenuItem folder={folder} showForm={toggleRenameForm} />}
+        {permissions.canCopyFolder && <CopyResourceMenuItem resource={folder} showModal={toggleCopyForm} />}
         {permissions.canEditParentFolder && <MoveResourceMenuItem resource={folder} showModal={toggleMoveForm} />}
         {permissions.canDeleteFolder && <DeleteFolderMenuItem folder={folder} />}
       </Menu>
@@ -41,6 +50,7 @@ export function FolderMenu({ folder }: Props) {
         key={folder.name}
       />
       <MoveResourceModal resource={folder} resourceType="folder" isOpen={showMoveForm} hideModal={toggleMoveForm} />
+      <CopyFolderModal resource={folder} isOpen={showCopyForm} hideModal={toggleCopyForm} />
     </>
   );
 }
