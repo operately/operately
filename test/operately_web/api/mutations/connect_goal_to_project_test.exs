@@ -178,6 +178,7 @@ defmodule OperatelyWeb.Api.Mutations.ConnectGoalToProjectTest do
 
       assert {200, res} = request(ctx.conn, project, goal)
 
+      project = Repo.reload(project)
       assert res.project == Serializer.serialize(project)
       assert_connected(project, goal)
     end

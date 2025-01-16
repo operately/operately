@@ -171,7 +171,7 @@ defmodule Operately.Support.Features.GoalTreeSteps do
   step :open_status_pop_up, ctx, attrs do
     testid = cond do
       Map.has_key?(attrs, :goal) -> UI.testid(["status", Paths.goal_id(attrs.goal)])
-      Map.has_key?(attrs, :project) -> UI.testid(["status", Paths.goal_id(attrs.project)])
+      Map.has_key?(attrs, :project) -> UI.testid(["status", Paths.project_id(attrs.project)])
     end
 
     ctx

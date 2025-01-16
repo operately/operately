@@ -1,24 +1,8 @@
 defmodule Operately.Features.GoalCreationTest do
   use Operately.FeatureCase
+  alias Operately.Support.Features.GoalCreationTestSteps, as: Steps
 
-  import Operately.CompaniesFixtures
-  import Operately.GroupsFixtures
-  import Operately.PeopleFixtures
-
-  alias Operately.Support.Features.GoalSteps, as: Steps
-
-  setup ctx do
-    company = company_fixture(%{name: "Test Org", enabled_experimental_features: ["goals"]})
-    champion = person_fixture_with_account(%{company_id: company.id, full_name: "John Champion"})
-    reviewer = person_fixture_with_account(%{company_id: company.id, full_name: "Leonardo Reviewer"})
-
-    group = group_fixture(champion, %{company_id: company.id, name: "Test Group"})
-
-    ctx = Map.merge(ctx, %{company: company, champion: champion, reviewer: reviewer, group: group})
-    ctx = UI.login_based_on_tag(ctx)
-
-    {:ok, ctx}
-  end
+  setup ctx, do: Steps.setup(ctx)
 
   @parent_goal_params %{
     name: "Improve support first response time",
@@ -36,7 +20,6 @@ defmodule Operately.Features.GoalCreationTest do
     unit: "minutes",
   }
 
-  @tag login_as: :champion
   feature "add a company wide goal", ctx do
     ctx
     |> Steps.initialize_goal_creation_from_global_goals_page()
@@ -45,7 +28,6 @@ defmodule Operately.Features.GoalCreationTest do
     |> Steps.assert_company_goal_created_email_sent(@goal_params.name)
   end
 
-  @tag login_as: :champion
   feature "create a new goal and set parent goal", ctx do
     params = Map.merge(@goal_params, %{parent_name: @parent_goal_params.name})
 
@@ -57,7 +39,6 @@ defmodule Operately.Features.GoalCreationTest do
     |> Steps.assert_subgoal_created_email_sent(@goal_params.name)
   end
 
-  @tag login_as: :champion
   feature "add subgoal to a company wide goal", ctx do
     params = Map.merge(@goal_params, %{parent_name: @parent_goal_params.name})
 

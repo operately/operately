@@ -17,6 +17,11 @@ defmodule Operately.Support.Factory.Goals do
       reviewer_id: ctx[reviewer].id,
       company_access_level: company_access,
       space_access_level: space_access,
+      timeframe: opts[:timeframe] || %{
+        start_date: ~D[2020-01-01],
+        end_date: ~D[2020-03-31],
+        type: "quarter"
+      }
     })
 
     Map.put(ctx, testid, goal)
