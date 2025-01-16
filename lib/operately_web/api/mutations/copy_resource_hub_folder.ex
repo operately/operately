@@ -7,6 +7,7 @@ defmodule OperatelyWeb.Api.Mutations.CopyResourceHubFolder do
   alias Operately.ResourceHubs.{Permissions, ResourceHub, Folder}
 
   inputs do
+    field :folder_name, :string
     field :folder_id, :id
     field :dest_resource_hub_id, :id
     field :dest_parent_folder_id, :id
@@ -49,6 +50,9 @@ defmodule OperatelyWeb.Api.Mutations.CopyResourceHubFolder do
   end
 
   defp execute(ctx, inputs) do
-    ResourceHubFolderCopying.run(ctx.me, ctx.folder, ctx.resource_hub, inputs[:dest_parent_folder_id])
+    ResourceHubFolderCopying.run(ctx.me, ctx.folder, ctx.resource_hub, %{
+      name: inputs[:folder_name],
+      parent_folder_id: inputs[:dest_parent_folder_id],
+    })
   end
 end

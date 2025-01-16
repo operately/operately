@@ -2228,6 +2228,7 @@ export interface ConnectGoalToProjectResult {
 }
 
 export interface CopyResourceHubFolderInput {
+  folderName?: string | null;
   folderId?: Id | null;
   destResourceHubId?: Id | null;
   destParentFolderId?: Id | null;

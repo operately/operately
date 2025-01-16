@@ -9,10 +9,10 @@ defmodule Operately.Operations.ResourceHubFolderCopying do
     Subscriptions,
   }
 
-  def run(author, folder, dest_resource_hub, dest_parent_folder_id \\ nil) do
+  def run(author, folder, dest_resource_hub, attrs) do
     Multi.new()
     |> Multi.run(:folder_and_nodes, fn _, _ ->
-      Folders.copy(folder, dest_resource_hub, dest_parent_folder_id)
+      Folders.copy(folder, dest_resource_hub, attrs)
     end)
     |> Multi.run(:nodes, fn _, changes ->
       {_, nodes} = changes.folder_and_nodes

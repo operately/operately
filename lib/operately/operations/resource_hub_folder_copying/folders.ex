@@ -13,12 +13,12 @@ defmodule Operately.Operations.ResourceHubFolderCopying.Folders do
     * folder - The source folder to copy
     * parent_folder_id - ID of the new parent folder
   """
-  def copy(folder, dest_resource_hub, dest_parent_folder_id) do
-    new_folder = copy_parent_folder(folder, dest_resource_hub, dest_parent_folder_id)
+  def copy(folder, dest_resource_hub, attrs) do
+    new_folder = copy_parent_folder(folder, dest_resource_hub, attrs)
     children = fetch_and_categorize_children(folder.id)
 
     nested_children = Enum.map(children.folders, fn n ->
-      {:ok, {_folder, nodes}} = copy(n.folder, dest_resource_hub, new_folder.id)
+      {:ok, {_folder, nodes}} = copy(n.folder, dest_resource_hub, %{parent_folder_id: new_folder.id})
       nodes
     end)
     curr_children = Enum.map(children.others, fn n -> Map.put(n, :parent_folder_id, new_folder.id) end)
@@ -28,8 +28,8 @@ defmodule Operately.Operations.ResourceHubFolderCopying.Folders do
     {:ok, {new_folder, all_children}}
   end
 
-  defp copy_parent_folder(folder, resource_hub, parent_folder_id) do
-      node_attrs = prepare_node_attrs(folder.node, resource_hub, parent_folder_id)
+  defp copy_parent_folder(folder, resource_hub, attrs) do
+      node_attrs = prepare_node_attrs(folder.node, resource_hub, attrs)
       {:ok, new_node} = ResourceHubs.create_node(node_attrs)
 
       folder_attrs = prepare_folder_attrs(folder, new_node)
@@ -38,13 +38,14 @@ defmodule Operately.Operations.ResourceHubFolderCopying.Folders do
       new_folder
   end
 
-  defp prepare_node_attrs(node, resource_hub, parent_folder_id) do
+  defp prepare_node_attrs(node, resource_hub, node_attrs) do
     node
     |> Map.from_struct()
     |> then(fn attrs ->
       Map.merge(attrs, %{
         resource_hub_id: resource_hub.id,
-        parent_folder_id: parent_folder_id,
+        parent_folder_id: node_attrs[:parent_folder_id],
+        name: node_attrs[:name] || attrs.name,
       })
     end)
   end
