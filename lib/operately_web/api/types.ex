@@ -420,6 +420,13 @@ defmodule OperatelyWeb.Api.Types do
     :activity_content_task_update
   ]
 
+  object :activity_content_resource_hub_folder_copied do
+    field :space, :space
+    field :resource_hub, :resource_hub
+    field :folder, :resource_hub_folder
+    field :original_folder, :resource_hub_folder
+  end
+
   object :activity_content_resource_hub_folder_created do
     field :space, :space
     field :resource_hub, :resource_hub
