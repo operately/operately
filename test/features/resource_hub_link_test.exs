@@ -1,4 +1,4 @@
-defmodule Features.ResourceHubLinkTest do
+defmodule Operately.Features.ResourceHubLinkTest do
   use Operately.FeatureCase
 
   alias Operately.Support.Features.ResourceHubSteps, as: Steps
