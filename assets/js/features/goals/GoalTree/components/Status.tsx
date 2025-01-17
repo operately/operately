@@ -3,44 +3,23 @@ import { useNavigate } from "react-router-dom";
 
 import * as Popover from "@radix-ui/react-popover";
 
-import { Goal } from "@/models/goals";
-import { Project } from "@/models/projects";
 import { createTestId } from "@/utils/testid";
 import { StatusIndicator } from "@/features/ProjectListItem/StatusIndicator";
 import { SmallStatusIndicator } from "@/components/status";
 import { IconArrowUpRight } from "@tabler/icons-react";
 import { Paths } from "@/routes/paths";
+import { Node } from "../tree";
 
-interface GoalProps {
-  resource: Goal;
-  resourceType: "goal";
-  children: ReactNode;
-}
-interface ProjectProps {
-  resource: Project;
-  resourceType: "project";
-  children: ReactNode;
-}
-
-export function Status({ resource, resourceType, children }: GoalProps | ProjectProps) {
-  const navigate = useNavigate();
+export function Status({ node, children }: { node: Node; children: ReactNode }) {
   const [hoveringTrigger, setHoveringTrigger] = useState(false);
   const [hoveringContent, setHoveringContent] = useState(false);
 
   const showTimeoutRef = useRef<NodeJS.Timeout>();
   const hideTimeoutRef = useRef<NodeJS.Timeout>();
-  const testId = createTestId("status", resource.id!);
+  const testId = createTestId("status", node.id!);
   const open = hoveringTrigger || hoveringContent;
 
-  const handleClick = () => {
-    if (resourceType === "goal") {
-      navigate(Paths.goalProgressUpdatePath(resource.lastCheckIn!.id!));
-    } else if (isProjectClosed(resource)) {
-      navigate(Paths.projectRetrospectivePath(resource.id!));
-    } else {
-      navigate(Paths.projectCheckInPath(resource.lastCheckIn!.id!));
-    }
-  };
+  const handleClick = useClickHandler(node);
 
   const handleMouseEnter = () => {
     clearTimeout(hideTimeoutRef.current);
@@ -56,8 +35,8 @@ export function Status({ resource, resourceType, children }: GoalProps | Project
     }, 1000);
   };
 
-  if (!resource.lastCheckIn) {
-    return <StatusIndicator project={resource} size="sm" textClassName="text-content-dimmed" />;
+  if (node.type === "project" && !node.asProjectNode().lastCheckIn) {
+    return <NodeStatusIndicator node={node} />;
   }
 
   return (
@@ -67,11 +46,7 @@ export function Status({ resource, resourceType, children }: GoalProps | Project
           className="flex items-end gap-[2px] cursor-pointer hover:underline underline-offset-4"
           data-test-id={testId}
         >
-          {resourceType === "project" && isProjectClosed(resource) ? (
-            <SmallStatusIndicator status="completed" size="sm" textClassName="text-content-dimmed" />
-          ) : (
-            <StatusIndicator project={resource} size="sm" textClassName="text-content-dimmed" />
-          )}
+          <NodeStatusIndicator node={node} />
           <IconArrowUpRight size={12} className="mb-1" />
         </div>
       </Popover.Trigger>
@@ -81,6 +56,53 @@ export function Status({ resource, resourceType, children }: GoalProps | Project
       </Popover.Portal>
     </Popover.Root>
   );
+}
+
+function useClickHandler(node: Node) {
+  const navigate = useNavigate();
+
+  return () => {
+    if (node.type === "goal") {
+      if (node.isClosed) {
+        return navigate(Paths.goalPath(node.id!));
+      } else {
+        return navigate(Paths.goalProgressUpdatePath(node.asGoalNode()!.lastCheckIn!.id!));
+      }
+    }
+
+    if (node.type === "project") {
+      if (node.isClosed) {
+        return navigate(Paths.projectRetrospectivePath(node.id!));
+      } else {
+        return navigate(Paths.projectCheckInPath(node.asProjectNode()!.lastCheckIn!.id!));
+      }
+    }
+
+    throw new Error(`Invalid node type: ${node.type}`);
+  };
+}
+
+function NodeStatusIndicator({ node }: { node: Node }) {
+  if (node.type === "project") {
+    if (node.isClosed) {
+      return <SmallStatusIndicator status="completed" size="sm" textClassName="text-content-dimmed" />;
+    } else {
+      return <StatusIndicator project={node.asProjectNode().project} size="sm" textClassName="text-content-dimmed" />;
+    }
+  }
+
+  if (node.type === "goal") {
+    if (node.isClosed) {
+      const status = node.asGoalNode().goal!.success ? "accomplished" : "not_accomplished";
+
+      return <SmallStatusIndicator status={status} size="sm" textClassName="text-content-dimmed" />;
+    } else {
+      const status = node.asGoalNode().lastCheckIn?.status! || "on_track";
+      return <SmallStatusIndicator status={status} size="sm" textClassName="text-content-dimmed" />;
+    }
+  }
+
+  throw new Error("Invalid node type");
 }
 
 interface LatestCheckInProps {
@@ -114,8 +136,4 @@ function LatestCheckIn({ setHoveringContent, children }: LatestCheckInProps) {
       {children}
     </Popover.Content>
   );
-}
-
-function isProjectClosed(project: Project) {
-  return project.status === "closed";
 }

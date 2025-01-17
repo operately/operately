@@ -5,9 +5,14 @@ import { Project } from "@/models/projects";
 import { Paths } from "@/routes/paths";
 import { Node } from "./node";
 import { assertPresent } from "@/utils/assertions";
+import { ProjectCheckIn } from "@/api";
+import { ProjectRetrospective } from "@/models/projects";
 
 export class ProjectNode extends Node {
   public project: Project;
+  public lastCheckIn: ProjectCheckIn | null | undefined;
+  public status: string;
+  public retrospective: ProjectRetrospective | null | undefined;
 
   constructor(project: Project) {
     super();
@@ -21,17 +26,22 @@ export class ProjectNode extends Node {
 
     this.champion = project.champion!;
     this.reviewer = project.reviewer!;
+
+    this.spaceId = project.space!.id!;
     this.space = project.space as Spaces.Space;
 
     assertPresent(project.status, "Project status is required");
 
+    this.status = project.status;
     this.isActive = project.status === "active";
     this.isClosed = project.status === "closed";
     this.isPaused = project.status === "paused";
 
     this.progress = this.calculateProgress();
     this.lastCheckInDate = Time.parseDate(project.lastCheckIn?.insertedAt);
-    this.spaceId = project.space!.id!;
+
+    this.retrospective = project.retrospective;
+    this.lastCheckIn = project.lastCheckIn;
   }
 
   linkTo(): string {

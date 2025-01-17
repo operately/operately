@@ -865,6 +865,7 @@ export interface Goal {
   accessLevels?: AccessLevels | null;
   potentialSubscribers?: Subscriber[] | null;
   notifications?: Notification[] | null;
+  success?: boolean | null;
 }
 
 export interface GoalEditingUpdatedTarget {
@@ -1648,7 +1649,7 @@ export interface GetDiscussionsResult {
 }
 
 export interface GetGoalInput {
-  id?: string | null;
+  id?: Id | null;
   includeChampion?: boolean | null;
   includeClosedBy?: boolean | null;
   includeLastCheckIn?: boolean | null;

@@ -67,10 +67,10 @@ function AccomplishedOrDropped() {
   return (
     <Forms.RadioButtons
       field="success"
-      label="Was this goal accomplished or dropped?"
+      label="Was this goal accomplished?"
       options={[
         { value: "yes", label: "Accomplished" },
-        { value: "no", label: "Dropped" },
+        { value: "no", label: "Not accomplished" },
       ]}
     />
   );
