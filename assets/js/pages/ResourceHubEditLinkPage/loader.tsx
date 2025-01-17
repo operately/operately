@@ -7,7 +7,12 @@ interface LoaderResult {
 
 export async function loader({ params }): Promise<LoaderResult> {
   return {
-    link: await getResourceHubLink({ id: params.id }).then((res) => res.link!),
+    link: await getResourceHubLink({
+      id: params.id,
+      includePathToLink: true,
+      includeResourceHub: true,
+      includeSpace: true,
+    }).then((res) => res.link!),
   };
 }
 
