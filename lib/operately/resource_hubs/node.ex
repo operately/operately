@@ -113,7 +113,11 @@ defmodule Operately.ResourceHubs.Node do
     |> Enum.reverse()
     |> Enum.map(fn [id, name] ->
       {:ok, str_id} = Ecto.UUID.cast(id)
-      %Operately.ResourceHubs.Folder{id: str_id, node: %{name: name, parent_folder_id: nil}}
+
+      %Operately.ResourceHubs.Folder{
+        id: str_id,
+        node: %{name: name, parent_folder_id: nil, resource_hub_id: nil}
+      }
     end)
   end
 end

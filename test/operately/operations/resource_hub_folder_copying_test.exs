@@ -31,7 +31,7 @@ defmodule Operately.Operations.ResourceHubFolderCopyingTest do
         assert Enum.find(folders, &(&1.id == f.id))
       end)
 
-      {:ok, _} = Operately.Operations.ResourceHubFolderCopying.run(ctx.creator, ctx.folder1, ctx.hub)
+      {:ok, _} = Operately.Operations.ResourceHubFolderCopying.run(ctx.creator, ctx.folder1, ctx.hub, %{})
 
       assert ResourceHubs.count_children(ctx.folder1) == 7
       assert ResourceHubs.count_children(ctx.folder2) == 3
@@ -55,7 +55,7 @@ defmodule Operately.Operations.ResourceHubFolderCopyingTest do
 
       assert_folder_content(ctx.folder1)
 
-      {:ok, _} = Operately.Operations.ResourceHubFolderCopying.run(ctx.creator, ctx.folder1, ctx.hub)
+      {:ok, _} = Operately.Operations.ResourceHubFolderCopying.run(ctx.creator, ctx.folder1, ctx.hub, %{})
 
       assert ResourceHubs.count_children(ctx.folder1) == 0
       assert ResourceHubs.count_children(ctx.hub) == 2
@@ -78,7 +78,7 @@ defmodule Operately.Operations.ResourceHubFolderCopyingTest do
 
       assert_document_content(ctx.doc, ctx.creator)
 
-      {:ok, _} = Operately.Operations.ResourceHubFolderCopying.run(ctx.creator, ctx.folder1, ctx.hub)
+      {:ok, _} = Operately.Operations.ResourceHubFolderCopying.run(ctx.creator, ctx.folder1, ctx.hub, %{})
 
       assert ResourceHubs.count_children(ctx.folder1) == 1
       assert ResourceHubs.count_children(ctx.hub) == 4
@@ -107,7 +107,7 @@ defmodule Operately.Operations.ResourceHubFolderCopyingTest do
 
       assert_file_content(ctx.file, ctx.creator)
 
-      {:ok, _} = Operately.Operations.ResourceHubFolderCopying.run(ctx.creator, ctx.folder1, ctx.hub)
+      {:ok, _} = Operately.Operations.ResourceHubFolderCopying.run(ctx.creator, ctx.folder1, ctx.hub, %{})
 
       assert ResourceHubs.count_children(ctx.folder1) == 1
       assert ResourceHubs.count_children(ctx.hub) == 4
@@ -136,7 +136,7 @@ defmodule Operately.Operations.ResourceHubFolderCopyingTest do
 
       assert_link_content(ctx.link, ctx.creator)
 
-      {:ok, _} = Operately.Operations.ResourceHubFolderCopying.run(ctx.creator, ctx.folder1, ctx.hub)
+      {:ok, _} = Operately.Operations.ResourceHubFolderCopying.run(ctx.creator, ctx.folder1, ctx.hub, %{})
 
       assert ResourceHubs.count_children(ctx.folder1) == 1
       assert ResourceHubs.count_children(ctx.hub) == 4
@@ -172,7 +172,9 @@ defmodule Operately.Operations.ResourceHubFolderCopyingTest do
       assert ResourceHubs.count_children(ctx.folder1) == 1
       assert ResourceHubs.count_children(ctx.dest_folder) == 0
 
-      {:ok, _} = Operately.Operations.ResourceHubFolderCopying.run(ctx.creator, ctx.copied_folder, ctx.hub, ctx.dest_folder.id)
+      {:ok, _} = Operately.Operations.ResourceHubFolderCopying.run(ctx.creator, ctx.copied_folder, ctx.hub, %{
+        parent_folder_id: ctx.dest_folder.id,
+      })
 
       assert ResourceHubs.count_children(ctx.hub) == 10
       assert ResourceHubs.count_children(ctx.folder1) == 1
@@ -192,7 +194,7 @@ defmodule Operately.Operations.ResourceHubFolderCopyingTest do
       assert ResourceHubs.count_children(ctx.hub) == 5
       assert ResourceHubs.count_children(ctx.dest_hub) == 0
 
-      {:ok, _} = Operately.Operations.ResourceHubFolderCopying.run(ctx.creator, ctx.copied_folder, ctx.dest_hub)
+      {:ok, _} = Operately.Operations.ResourceHubFolderCopying.run(ctx.creator, ctx.copied_folder, ctx.dest_hub, %{})
 
       assert ResourceHubs.count_children(ctx.hub) == 5
       assert ResourceHubs.count_children(ctx.dest_hub) == 4
@@ -214,7 +216,9 @@ defmodule Operately.Operations.ResourceHubFolderCopyingTest do
       assert ResourceHubs.count_children(ctx.dest_hub) == 1
       assert ResourceHubs.count_children(ctx.dest_folder) == 0
 
-      {:ok, _} = Operately.Operations.ResourceHubFolderCopying.run(ctx.creator, ctx.copied_folder, ctx.dest_hub, ctx.dest_folder.id)
+      {:ok, _} = Operately.Operations.ResourceHubFolderCopying.run(ctx.creator, ctx.copied_folder, ctx.dest_hub, %{
+        parent_folder_id: ctx.dest_folder.id,
+      })
 
       assert ResourceHubs.count_children(ctx.hub) == 5
       assert ResourceHubs.count_children(ctx.dest_hub) == 5
@@ -252,7 +256,7 @@ defmodule Operately.Operations.ResourceHubFolderCopyingTest do
       folders = ResourceHubs.list_folders(ctx.hub)
       assert length(folders) == 1
 
-      {:ok, _} = Operately.Operations.ResourceHubFolderCopying.run(ctx.creator, ctx.folder1, ctx.hub)
+      {:ok, _} = Operately.Operations.ResourceHubFolderCopying.run(ctx.creator, ctx.folder1, ctx.hub, %{})
 
       assert ResourceHubs.count_children(ctx.folder1) == 3
       assert ResourceHubs.count_children(ctx.hub) == 8

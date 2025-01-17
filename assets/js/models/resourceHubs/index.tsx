@@ -18,6 +18,7 @@ export {
   getResourceHubFolder,
   getResourceHubLink,
   createResourceHubFile,
+  useCopyResourceHubFolder,
   useCreateResourceHubFolder,
   useCreateResourceHubDocument,
   useCreateResourceHubFile,
