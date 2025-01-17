@@ -2,6 +2,7 @@ import plurarize from "@/utils/plurarize";
 
 import { Node } from "./node";
 import { Goal } from "@/models/goals";
+import { GoalProgressUpdate } from "@/api";
 import { Paths } from "@/routes/paths";
 
 import * as Time from "@/utils/time";
@@ -10,6 +11,7 @@ import * as Spaces from "@/models/spaces";
 
 export class GoalNode extends Node {
   public goal: Goal;
+  public lastCheckIn: GoalProgressUpdate | null | undefined;
 
   constructor(goal: Goal) {
     super();
@@ -30,6 +32,7 @@ export class GoalNode extends Node {
 
     this.progress = this.goal.progressPercentage!;
     this.lastCheckInDate = Time.parseDate(goal.lastCheckIn?.insertedAt);
+    this.lastCheckIn = goal.lastCheckIn;
 
     this.space = goal.space as Spaces.Space;
     this.spaceId = goal.space!.id!;

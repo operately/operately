@@ -7,6 +7,9 @@ import * as Time from "@/utils/time";
 
 type NodeTypes = "goal" | "project";
 
+import type { GoalNode } from "./goalNode";
+import type { ProjectNode } from "./projectNode";
+
 import { match } from "ts-pattern";
 
 export abstract class Node {
@@ -38,6 +41,14 @@ export abstract class Node {
   abstract childrenInfoLabel(): string | null;
   abstract compareTimeframe(b: Node): number;
   abstract linkTo(): string;
+
+  asGoalNode() {
+    return this as unknown as GoalNode;
+  }
+
+  asProjectNode() {
+    return this as unknown as ProjectNode;
+  }
 
   hasNoParentWith(predicate: (n: Node) => boolean): boolean {
     let current: Node | undefined = this.parent;
