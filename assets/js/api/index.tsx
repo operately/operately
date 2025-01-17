@@ -1185,6 +1185,7 @@ export interface ResourceHubFile {
 
 export interface ResourceHubFolder {
   id?: string | null;
+  resourceHubId?: string | null;
   resourceHub?: ResourceHub | null;
   name?: string | null;
   description?: string | null;
@@ -1229,6 +1230,7 @@ export interface ResourceHubPermissions {
   canCommentOnDocument?: boolean | null;
   canCommentOnFile?: boolean | null;
   canCommentOnLink?: boolean | null;
+  canCopyFolder?: boolean | null;
   canCreateDocument?: boolean | null;
   canCreateFolder?: boolean | null;
   canCreateFile?: boolean | null;
@@ -2234,6 +2236,7 @@ export interface ConnectGoalToProjectResult {
 }
 
 export interface CopyResourceHubFolderInput {
+  folderName?: string | null;
   folderId?: Id | null;
   destResourceHubId?: Id | null;
   destParentFolderId?: Id | null;
