@@ -18,7 +18,7 @@ export function LinkMenu({ link }: Props) {
   const [showMoveForm, toggleMoveForm] = useBoolState(false);
 
   const relevantPermissions = [permissions.canEditParentFolder, permissions.canEditLink, permissions.canDeleteLink];
-  const menuId = createTestId("link-menu", link.id!);
+  const menuId = createTestId("menu", link.id!);
 
   if (!relevantPermissions.some(Boolean)) return <></>;
 

@@ -14,7 +14,7 @@ export function Options() {
   assertPresent(document.permissions, "permissions must be present in document");
 
   return (
-    <PageOptions.Root testId="document-options-button">
+    <PageOptions.Root testId="options-button">
       {document.permissions.canEditDocument && (
         <PageOptions.Link
           icon={IconEdit}
@@ -64,5 +64,5 @@ function DeleteAction() {
     redirect();
   };
 
-  return <PageOptions.Action icon={IconTrash} title="Delete" onClick={handleDelete} testId="delete-document-link" />;
+  return <PageOptions.Action icon={IconTrash} title="Delete" onClick={handleDelete} testId="delete-resource-link" />;
 }
