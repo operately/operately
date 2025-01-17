@@ -4,6 +4,13 @@ defmodule Operately.Support.Features.ResourceHubDocumentSteps do
   alias Operately.ResourceHubs.{ResourceHub, Node}
   alias Operately.Support.Features.NotificationsSteps
   alias Operately.Support.Features.EmailSteps
+  alias Operately.Support.Features.ResourceHubSteps, as: Steps
+
+  def setup(ctx), do: Steps.setup(ctx)
+  def visit_resource_hub_page(ctx), do: Steps.visit_resource_hub_page(ctx)
+  def navigate_back(ctx, link), do: Steps.navigate_back(ctx, link)
+  def assert_navigation_links(ctx, links), do: Steps.assert_navigation_links(ctx, links)
+  def refute_navigation_links(ctx, links), do: Steps.refute_navigation_links(ctx, links)
 
   step :given_document_within_nested_folders_exists, ctx do
     ctx

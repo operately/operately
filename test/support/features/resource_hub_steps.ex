@@ -108,31 +108,6 @@ defmodule Operately.Support.Features.ResourceHubSteps do
   # Deleting resource
   #
 
- def delete_resource_from_nodes_list(ctx, resource_name) do
-    ctx
-    |> visit_resource_hub_page()
-    |> delete_resource(resource_name)
-    |> assert_resource_deleted(resource_name)
-  end
-
-  def delete_resource_redirects_to_resource_hub(ctx) do
-    ctx
-    |> delete_resource()
-    |> assert_page_is_resource_hub_root(name: "Resource hub")
-    |> assert_zero_state("Resource hub")
-  end
-
-  def delete_resource_redirects_to_folder(ctx) do
-    ctx
-    |> delete_resource()
-    |> assert_page_is_folder_root(folder_key: :folder)
-    |> assert_zero_folder_state()
-  end
-
-  step :given_resource_was_deleted, ctx, resource_name do
-    delete_resource_from_nodes_list(ctx, resource_name)
-  end
-
   step :delete_resource, ctx, resource_name do
     resource_id = get_resource_id(resource_name)
     menu_id = UI.testid(["menu", resource_id])
