@@ -1648,7 +1648,7 @@ export interface GetDiscussionsResult {
 }
 
 export interface GetGoalInput {
-  id?: string | null;
+  id?: Id | null;
   includeChampion?: boolean | null;
   includeClosedBy?: boolean | null;
   includeLastCheckIn?: boolean | null;
@@ -1906,6 +1906,7 @@ export interface GetResourceHubFileInput {
   id?: Id | null;
   includeAuthor?: boolean | null;
   includeResourceHub?: boolean | null;
+  includeSpace?: boolean | null;
   includeParentFolder?: boolean | null;
   includeReactions?: boolean | null;
   includePermissions?: boolean | null;
@@ -1936,6 +1937,7 @@ export interface GetResourceHubFolderResult {
 export interface GetResourceHubLinkInput {
   id?: Id | null;
   includeAuthor?: boolean | null;
+  includeSpace?: boolean | null;
   includeResourceHub?: boolean | null;
   includeParentFolder?: boolean | null;
   includeReactions?: boolean | null;

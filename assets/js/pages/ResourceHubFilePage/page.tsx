@@ -14,7 +14,7 @@ import { assertPresent } from "@/utils/assertions";
 import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
 import { TextSeparator } from "@/components/TextSeparator";
-import { NestedFolderNavigation } from "@/features/ResourceHub";
+import { FilePageNavigation } from "@/features/ResourceHub";
 
 import { useLoadedData } from "./loader";
 import { Content } from "./Content";
@@ -26,7 +26,7 @@ export function Page() {
   return (
     <Pages.Page title={file.name!}>
       <Paper.Root>
-        <Navigation />
+        <FilePageNavigation file={file} />
 
         <Paper.Body>
           <Title />
@@ -44,23 +44,6 @@ export function Page() {
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
-  );
-}
-
-function Navigation() {
-  const { file } = useLoadedData();
-
-  assertPresent(file.resourceHub, "resourceHub must be present in file");
-  assertPresent(file.resourceHub.space, "space must be present in file.resourceHub");
-  assertPresent(file.pathToFile, "pathToFile must be present in file");
-
-  return (
-    <Paper.Navigation testId="navigation">
-      <Paper.NavSpaceLink space={file.resourceHub.space} />
-      <Paper.NavSeparator />
-      <Paper.NavResourceHubLink resourceHub={file.resourceHub} />
-      <NestedFolderNavigation folders={file.pathToFile} />
-    </Paper.Navigation>
   );
 }
 
