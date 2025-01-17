@@ -38,7 +38,7 @@ export function ProjectDetails({ node }: { node: ProjectNode }) {
 
   return (
     <div className={className}>
-      <ProjectStatus project={node.project} />
+      <ProjectStatus node={node} />
       <MilestoneCompletion project={node.project} />
       <NextMilestone project={node.project} />
       <SpaceName project={node.project} />
@@ -47,20 +47,20 @@ export function ProjectDetails({ node }: { node: ProjectNode }) {
   );
 }
 
-function ProjectStatus({ project }: { project: Project }) {
-  if (project.status === "closed") {
-    assertPresent(project.retrospective, "retrospective must be present in project");
+function ProjectStatus({ node }: { node: ProjectNode }) {
+  if (node.status === "closed") {
+    assertPresent(node.retrospective, "retrospective must be present in project");
 
     return (
-      <Status resource={project} resourceType="project">
-        <RetrospectiveContent retrospective={project.retrospective} limit={120} size="sm" />
+      <Status node={node}>
+        <RetrospectiveContent retrospective={node.retrospective} limit={120} size="sm" />
       </Status>
     );
   } else {
     return (
-      <Status resource={project} resourceType="project">
-        <StatusSection checkIn={project.lastCheckIn!} reviewer={project.reviewer || undefined} />
-        <DescriptionSection checkIn={project.lastCheckIn!} limit={120} />
+      <Status node={node}>
+        <StatusSection checkIn={node.lastCheckIn!} reviewer={node.reviewer || undefined} />
+        <DescriptionSection checkIn={node.lastCheckIn!} limit={120} />
       </Status>
     );
   }
