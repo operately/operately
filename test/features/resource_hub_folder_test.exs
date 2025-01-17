@@ -1,8 +1,8 @@
 defmodule Operately.Features.ResourceHubFolderTest do
   use Operately.FeatureCase
+  use Operately.Support.ResourceHub.Deletion
 
-  alias Operately.Support.Features.ResourceHubSteps, as: Steps
-  alias Operately.Support.Features.ResourceHubFolderSteps, as: FolderSteps
+  alias Operately.Support.Features.ResourceHubFolderSteps, as: Steps
 
   setup ctx, do: Steps.setup(ctx)
 
@@ -21,10 +21,10 @@ defmodule Operately.Features.ResourceHubFolderTest do
 
       ctx
       |> Steps.visit_resource_hub_page()
-      |> FolderSteps.create_folder(folder1)
-      |> FolderSteps.assert_folder_created(%{name: folder1, index: 0})
-      |> FolderSteps.create_folder(folder2)
-      |> FolderSteps.assert_folder_created(%{name: folder2, index: 1})
+      |> Steps.create_folder(folder1)
+      |> Steps.assert_folder_created(%{name: folder1, index: 0})
+      |> Steps.create_folder(folder2)
+      |> Steps.assert_folder_created(%{name: folder2, index: 1})
     end
 
     feature "create nested folders", ctx do
@@ -35,20 +35,20 @@ defmodule Operately.Features.ResourceHubFolderTest do
 
       ctx
       |> Steps.visit_resource_hub_page()
-      |> FolderSteps.create_folder(folder1)
-      |> FolderSteps.assert_folder_created(%{name: folder1, index: 0})
-      |> FolderSteps.navigate_to_folder(index: 0)
-      |> FolderSteps.create_folder(folder2)
-      |> FolderSteps.assert_folder_created(%{name: folder2, index: 0})
-      |> FolderSteps.navigate_to_folder(index: 0)
-      |> FolderSteps.create_folder(folder4)
-      |> FolderSteps.assert_folder_created(%{name: folder4, index: 0})
-      |> FolderSteps.create_folder(folder3)
-      |> FolderSteps.assert_folder_created(%{name: folder3, index: 1})
+      |> Steps.create_folder(folder1)
+      |> Steps.assert_folder_created(%{name: folder1, index: 0})
+      |> Steps.navigate_to_folder(index: 0)
+      |> Steps.create_folder(folder2)
+      |> Steps.assert_folder_created(%{name: folder2, index: 0})
+      |> Steps.navigate_to_folder(index: 0)
+      |> Steps.create_folder(folder4)
+      |> Steps.assert_folder_created(%{name: folder4, index: 0})
+      |> Steps.create_folder(folder3)
+      |> Steps.assert_folder_created(%{name: folder3, index: 1})
       |> Steps.navigate_back(folder1)
-      |> FolderSteps.assert_items_count(%{index: 0, items_count: "2 items"})
+      |> Steps.assert_items_count(%{index: 0, items_count: "2 items"})
       |> Steps.navigate_back("Documents & Files")
-      |> FolderSteps.assert_items_count(%{index: 0, items_count: "1 item"})
+      |> Steps.assert_items_count(%{index: 0, items_count: "1 item"})
     end
 
     feature "folder created feed event", ctx do
@@ -56,16 +56,16 @@ defmodule Operately.Features.ResourceHubFolderTest do
 
       ctx
       |> Steps.visit_resource_hub_page()
-      |> FolderSteps.create_folder(folder)
-      |> FolderSteps.assert_folder_created(%{name: folder, index: 0})
-      |> FolderSteps.assert_folder_created_on_space_feed(folder)
-      |> FolderSteps.assert_folder_created_on_company_feed(folder)
+      |> Steps.create_folder(folder)
+      |> Steps.assert_folder_created(%{name: folder, index: 0})
+      |> Steps.assert_folder_created_on_space_feed(folder)
+      |> Steps.assert_folder_created_on_company_feed(folder)
     end
 
     feature "folder navigation works", ctx do
       ctx
-      |> FolderSteps.given_nested_folders_exist()
-      |> FolderSteps.visit_folder_page(:five)
+      |> Steps.given_nested_folders_exist()
+      |> Steps.visit_folder_page(:five)
       |> Steps.assert_navigation_links(["Product Space", "Resource hub", "one", "two", "three", "four"])
       |> Steps.navigate_back("three")
       |> Steps.refute_navigation_links(["three", "four"])
@@ -73,6 +73,30 @@ defmodule Operately.Features.ResourceHubFolderTest do
       |> Steps.navigate_back("one")
       |> Steps.refute_navigation_links(["one", "two"])
       |> Steps.assert_navigation_links(["Product Space", "Resource hub"])
+    end
+  end
+
+  describe "Delete" do
+    feature "deleting folder adds event to feed", ctx do
+      name = "Folder"
+
+      ctx
+      |> Steps.visit_resource_hub_page()
+      |> Steps.create_folder(name)
+      |> Steps.assert_folder_created(%{name: name, index: 0})
+      |> delete_resource_from_nodes_list(name)
+      |> Steps.assert_folder_deleted_on_space_feed(name)
+      |> Steps.assert_folder_deleted_on_company_feed(name)
+    end
+
+    feature "delete folder from content list", ctx do
+      name = "Folder"
+
+      ctx
+      |> Steps.visit_resource_hub_page()
+      |> Steps.create_folder(name)
+      |> Steps.assert_folder_created(%{name: name, index: 0})
+      |> delete_resource_from_nodes_list(name)
     end
   end
 end

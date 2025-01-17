@@ -14,17 +14,9 @@ defmodule Operately.Support.Features.ResourceHubSteps do
     UI.login_as(ctx, ctx.creator)
   end
 
-  step :visit_space_page, ctx do
-    UI.visit(ctx, Paths.space_path(ctx.company, ctx.space))
-  end
-
   step :visit_resource_hub_page, ctx, name \\ "Documents & Files" do
     {:ok, hub} = ResourceHub.get(:system, space_id: ctx.space.id, name: name)
     UI.visit(ctx, Paths.resource_hub_path(ctx.company, hub))
-  end
-
-  step :navigate_to_resource_hub_page, ctx do
-    UI.click(ctx, testid: "documents-files")
   end
 
   step :navigate_back, ctx, name do
@@ -54,14 +46,6 @@ defmodule Operately.Support.Features.ResourceHubSteps do
     ctx
     |> UI.assert_text("Ready for your first document")
     |> UI.assert_text("This folder is empty. Click 'Add' to upload your first file.")
-  end
-
-  step :assert_zero_state_on_space_page, ctx do
-    UI.find(ctx, UI.query(testid: "documents-files"), fn ctx ->
-      ctx
-      |> UI.assert_text("Documents & Files")
-      |> UI.assert_text("A place to share rich text documents, images, videos, and other files")
-    end)
   end
 
   step :assert_comments_count, ctx, attrs do
@@ -134,11 +118,14 @@ defmodule Operately.Support.Features.ResourceHubSteps do
   #
 
   defp get_resource_id(resource_name) do
-    {:ok, node} = Node.get(:system, name: resource_name, opts: [preload: [:document, :link]])
+    {:ok, node} = Node.get(:system, name: resource_name, opts: [
+      preload: [:document, :link, :folder]
+    ])
 
     cond do
       node.document -> Paths.document_id(node.document)
       node.link -> Paths.link_id(node.link)
+      node.folder -> Paths.folder_id(node.folder)
     end
   end
 end
