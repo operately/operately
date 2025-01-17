@@ -14,11 +14,11 @@ defmodule Operately.Support.ResourceHub.Deletion do
     |> Steps.assert_resource_deleted(resource_name)
   end
 
-  def delete_resource_redirects_to_resource_hub(ctx) do
+  def delete_resource_redirects_to_resource_hub(ctx, hub_name \\ "Resource hub") do
     ctx
     |> Steps.delete_resource()
-    |> Steps.assert_page_is_resource_hub_root(name: "Resource hub")
-    |> Steps.assert_zero_state("Resource hub")
+    |> Steps.assert_page_is_resource_hub_root(name: hub_name)
+    |> Steps.assert_zero_state(hub_name)
   end
 
   def delete_resource_redirects_to_folder(ctx) do

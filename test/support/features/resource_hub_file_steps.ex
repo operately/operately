@@ -4,6 +4,13 @@ defmodule Operately.Support.Features.ResourceHubFileSteps do
   alias Operately.ResourceHubs.ResourceHub
   alias Operately.Support.Features.NotificationsSteps
   alias Operately.Support.Features.EmailSteps
+  alias Operately.Support.Features.ResourceHubSteps, as: Steps
+
+  def setup(ctx), do: Steps.setup(ctx)
+  def visit_resource_hub_page(ctx), do: Steps.visit_resource_hub_page(ctx)
+  def navigate_back(ctx, link), do: Steps.navigate_back(ctx, link)
+  def assert_navigation_links(ctx, links), do: Steps.assert_navigation_links(ctx, links)
+  def refute_navigation_links(ctx, links), do: Steps.refute_navigation_links(ctx, links)
 
   step :given_file_within_nested_folders_exists, ctx do
     ctx =
@@ -16,6 +23,16 @@ defmodule Operately.Support.Features.ResourceHubFileSteps do
       |> Factory.add_folder(:five, :hub, :four)
 
     file = create_file(ctx, ctx.hub, ctx.five.id)
+    Map.put(ctx, :file, file)
+  end
+
+  step :given_file_within_folder_exists, ctx do
+    ctx =
+      ctx
+      |> Factory.add_resource_hub(:hub, :space, :creator)
+      |> Factory.add_folder(:folder, :hub)
+
+    file = create_file(ctx, ctx.hub, ctx.folder.id)
     Map.put(ctx, :file, file)
   end
 
@@ -46,6 +63,18 @@ defmodule Operately.Support.Features.ResourceHubFileSteps do
     |> UI.assert_text("commented on #{ctx.file.node.name}")
   end
 
+  step :assert_file_deleted_on_space_feed, ctx do
+    ctx
+    |> UI.visit(Paths.space_path(ctx.company, ctx.space))
+    |> UI.assert_text("deleted \"Some File\" from Documents & Files")
+  end
+
+  step :assert_file_deleted_on_company_feed, ctx do
+    ctx
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.assert_text("deleted \"Some File\" from Documents & Files in the Product Space space")
+  end
+
   #
   # Notifications
   #
@@ -57,6 +86,16 @@ defmodule Operately.Support.Features.ResourceHubFileSteps do
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.creator,
       action: "commented on: #{ctx.file.node.name}",
+    })
+  end
+
+  step :assert_file_deleted_notification_sent, ctx do
+    ctx
+    |> UI.login_as(ctx.other_user)
+    |> NotificationsSteps.visit_notifications_page()
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.creator,
+      action: "deleted a file: Some File",
     })
   end
 
@@ -73,6 +112,15 @@ defmodule Operately.Support.Features.ResourceHubFileSteps do
     })
   end
 
+  step :assert_file_deleted_email_sent, ctx do
+    ctx |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.space.name,
+      to: ctx.other_user,
+      action: "deleted a file: Some File",
+      author: ctx.creator,
+    })
+  end
+
   #
   # Helpers
   #
@@ -84,7 +132,7 @@ defmodule Operately.Support.Features.ResourceHubFileSteps do
       files: [
         %{
           blob_id: blob.id,
-          name: "Some name",
+          name: "Some File",
           description: Operately.Support.RichText.rich_text("Content"),
         }
       ],

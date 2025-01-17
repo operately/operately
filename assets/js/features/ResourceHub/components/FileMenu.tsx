@@ -23,7 +23,7 @@ export function FileMenu({ file }: Props) {
   const relevantPermissions = [permissions.canView, permissions.canEditParentFolder, permissions.canDeleteFile];
 
   const editPath = Paths.resourceHubEditFilePath(file.id!);
-  const menuId = createTestId("file-menu", file.id!);
+  const menuId = createTestId("menu", file.id!);
 
   if (!relevantPermissions.some(Boolean)) return <></>;
 
