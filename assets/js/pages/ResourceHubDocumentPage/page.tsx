@@ -15,7 +15,7 @@ import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { useLoadedData } from "./loader";
 import { Options } from "./Options";
 import { DocumentTitle } from "@/features/documents/DocumentTitle";
-import { DocumentPageNavigation } from "@/features/ResourceHub";
+import { ResourcePageNavigation } from "@/features/ResourceHub";
 
 export function Page() {
   const { document } = useLoadedData();
@@ -26,7 +26,7 @@ export function Page() {
   return (
     <Pages.Page title={document.name!}>
       <Paper.Root size="large">
-        <DocumentPageNavigation document={document} />
+        <ResourcePageNavigation resource={document} />
 
         <Paper.Body minHeight="600px" className="lg:px-28">
           <Options />

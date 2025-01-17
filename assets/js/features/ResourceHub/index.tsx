@@ -11,7 +11,7 @@ export { FileDragAndDropArea } from "./FileDragAndDropArea";
 export { FolderSelectField } from "./FolderSelectField";
 export { NestedFolderNavigation } from "./NestedFolderNavigation";
 export { LinkIcon } from "./LinkIcon";
-export { DocumentPageNavigation } from "./DocumentPageNavigation";
+export { ResourcePageNavigation } from "./ResourcePageNavigation";
 
 export type LinkOptions =
   | "airtable"
