@@ -134,10 +134,11 @@ defmodule Operately.Support.Features.ResourceHubSteps do
   #
 
   defp get_resource_id(resource_name) do
-    {:ok, node} = Node.get(:system, name: resource_name, opts: [preload: :document])
+    {:ok, node} = Node.get(:system, name: resource_name, opts: [preload: [:document, :link]])
 
     cond do
       node.document -> Paths.document_id(node.document)
+      node.link -> Paths.link_id(node.link)
     end
   end
 end
