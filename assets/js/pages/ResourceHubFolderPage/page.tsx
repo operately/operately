@@ -20,7 +20,7 @@ export function Page() {
       <Hub.NewFileModalsProvider folder={folder} resourceHub={folder.resourceHub}>
         <Hub.FileDragAndDropArea>
           <Paper.Root size="large">
-            <PageNavigation />
+            <Hub.ResourcePageNavigation resource={folder} />
 
             <Paper.Body minHeight="75vh">
               <Hub.Header resource={folder} />
@@ -32,22 +32,5 @@ export function Page() {
         </Hub.FileDragAndDropArea>
       </Hub.NewFileModalsProvider>
     </Pages.Page>
-  );
-}
-
-function PageNavigation() {
-  const { folder } = useLoadedData();
-
-  assertPresent(folder.resourceHub, "resourceHub must be present in folder");
-  assertPresent(folder.resourceHub.space, "space must be present in folder.resourceHub");
-  assertPresent(folder.pathToFolder, "pathToFolder must be present in folder");
-
-  return (
-    <Paper.Navigation testId="navigation">
-      <Paper.NavSpaceLink space={folder.resourceHub.space} />
-      <Paper.NavSeparator />
-      <Paper.NavResourceHubLink resourceHub={folder.resourceHub} />
-      <Hub.NestedFolderNavigation folders={folder.pathToFolder} />
-    </Paper.Navigation>
   );
 }

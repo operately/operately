@@ -4,7 +4,7 @@ import * as Paper from "@/components/PaperContainer";
 
 import { Form } from "./form";
 import { useLoadedData } from "./loader";
-import { DocumentPageNavigation } from "@/features/ResourceHub";
+import { ResourcePageNavigation } from "@/features/ResourceHub";
 
 export function Page() {
   const { document } = useLoadedData();
@@ -12,7 +12,7 @@ export function Page() {
   return (
     <Pages.Page title="Edit Document">
       <Paper.Root>
-        <DocumentPageNavigation document={document} />
+        <ResourcePageNavigation resource={document} />
 
         <Paper.Body>
           <Form document={document} />
