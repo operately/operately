@@ -16,7 +16,7 @@ import RichContent, { richContentToString } from "@/components/RichContent";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { CurrentSubscriptions } from "@/features/Subscriptions";
 import { CommentSection, useComments } from "@/features/CommentSection";
-import { NestedFolderNavigation } from "@/features/ResourceHub";
+import { LinkPageNavigation } from "@/features/ResourceHub";
 
 import { Options } from "./Options";
 import { useLoadedData } from "./loader";
@@ -27,7 +27,7 @@ export function Page() {
   return (
     <Pages.Page title={link.name!}>
       <Paper.Root>
-        <Navigation />
+        <LinkPageNavigation link={link} />
 
         <Paper.Body>
           <Title />
@@ -42,23 +42,6 @@ export function Page() {
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
-  );
-}
-
-function Navigation() {
-  const { link } = useLoadedData();
-
-  assertPresent(link.resourceHub, "resourceHub must be present in link");
-  assertPresent(link.resourceHub.space, "space must be present in link.resourceHub");
-  assertPresent(link.pathToLink, "pathToLink must be present in link");
-
-  return (
-    <Paper.Navigation testId="navigation">
-      <Paper.NavSpaceLink space={link.resourceHub.space} />
-      <Paper.NavSeparator />
-      <Paper.NavResourceHubLink resourceHub={link.resourceHub} />
-      <NestedFolderNavigation folders={link.pathToLink} />
-    </Paper.Navigation>
   );
 }
 

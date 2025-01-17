@@ -12,6 +12,8 @@ export { FolderSelectField } from "./FolderSelectField";
 export { NestedFolderNavigation } from "./NestedFolderNavigation";
 export { LinkIcon } from "./LinkIcon";
 export { DocumentPageNavigation } from "./DocumentPageNavigation";
+export { FilePageNavigation } from "./FilePageNavigation";
+export { LinkPageNavigation } from "./LinkPageNavigation";
 
 export type LinkOptions =
   | "airtable"
