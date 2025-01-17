@@ -34,7 +34,7 @@ export function CopyResourceModal({ form, resource, isOpen, hideModal }: FormPro
     <Modal title={`Create a copy of ${resource.name}`} isOpen={isOpen} hideModal={hideModal}>
       <Forms.Form form={form}>
         <Forms.FieldGroup>
-          <Forms.TextInput field="name" label="New document name" />
+          <Forms.TextInput field="name" label="New document name" required />
           <FolderSelectField field="location" label="Select destination" />
         </Forms.FieldGroup>
 

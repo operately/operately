@@ -33,11 +33,6 @@ export function CopyFolderModal(props: FormProps) {
         type: "pathToFolder" in parent ? "folder" : "resourceHub",
       },
     },
-    validate: (addError) => {
-      if (!form.values.name) {
-        addError("name", "Name is required");
-      }
-    },
     cancel: hideModal,
     submit: async () => {
       const res = await post({
