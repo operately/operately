@@ -865,6 +865,7 @@ export interface Goal {
   accessLevels?: AccessLevels | null;
   potentialSubscribers?: Subscriber[] | null;
   notifications?: Notification[] | null;
+  success?: boolean | null;
 }
 
 export interface GoalEditingUpdatedTarget {

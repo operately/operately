@@ -54,8 +54,22 @@ defmodule Operately.Features.GoalTreeTest do
     |> Steps.assert_project_check_in_content()
   end
 
+  feature "display if closed goal was accomplished", ctx do
+    ctx
+    |> Steps.given_goal_is_closed_as_accomplished(:goal_1)
+    |> Steps.visit_goal_tree_page()
+    |> Steps.assert_goal_accomplished_status()
+  end
+
+  feature "display if closed goal was not accomplished", ctx do
+    ctx
+    |> Steps.given_goal_is_closed_as_not_accomplished(:goal_1)
+    |> Steps.visit_goal_tree_page()
+    |> Steps.assert_goal_not_accomplished_status()
+  end
+
   describe "view options" do
-    feature " filter active projects", ctx do
+    feature "filter active projects", ctx do
       ctx
       |> Steps.visit_goal_tree_page()
       |> Steps.assert_all_goals_and_projects_are_visible_by_default()

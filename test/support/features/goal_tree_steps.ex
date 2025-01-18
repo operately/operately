@@ -35,7 +35,7 @@ defmodule Operately.Support.Features.GoalTreeSteps do
   end
 
   step :given_goal_is_closed, ctx, goal_name do
-    Operately.Operations.GoalClosing.run(ctx.creator, ctx[goal_name], "success", RichText.rich_text("text", :as_string))
+    Operately.Operations.GoalClosing.run(ctx.creator, ctx[goal_name], "yes", RichText.rich_text("text", :as_string))
     ctx
   end
 
@@ -259,4 +259,23 @@ defmodule Operately.Support.Features.GoalTreeSteps do
     ctx
     |> UI.refute_text(goal.name)
   end
+
+  step :given_goal_is_closed_as_accomplished, ctx, goal_name do
+    Operately.Operations.GoalClosing.run(ctx.creator, ctx[goal_name], "yes", RichText.rich_text("text", :as_string))
+    ctx
+  end
+
+  step :given_goal_is_closed_as_not_accomplished, ctx, goal_name do
+    Operately.Operations.GoalClosing.run(ctx.creator, ctx[goal_name], "no", RichText.rich_text("text", :as_string))
+    ctx
+  end
+
+  step :assert_goal_accomplished_status, ctx do
+    ctx |> UI.assert_text("Accomplished")
+  end
+
+  step :assert_goal_not_accomplished_status, ctx do
+    ctx |> UI.assert_text("Not Accomplished")
+  end
+
 end
