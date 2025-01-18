@@ -20,6 +20,7 @@ import { GoalNode, Node } from "../tree";
 import { useExpandable } from "../context/Expandable";
 import { useTreeContext } from "../treeContext";
 import { Status } from "./Status";
+import { SmallStatusIndicator } from "@/components/status";
 
 export function GoalDetails({ node }: { node: GoalNode }) {
   const size = useWindowSizeBreakpoints();
@@ -35,7 +36,7 @@ export function GoalDetails({ node }: { node: GoalNode }) {
     <div className="pl-6 ml-[1px]">
       {density !== "compact" && (
         <div className={className}>
-          <GoalStatus goal={node.goal} />
+          <GoalStatus goal={node} />
           <GoalTimeframe goal={node.goal} />
           <ChampionAndSpace goal={node.goal} />
           <GoalChildrenCount node={node} />
@@ -49,6 +50,8 @@ export function GoalDetails({ node }: { node: GoalNode }) {
 
 export function GoalProgressBar({ node }: { node: GoalNode }) {
   assertPresent(node.goal.progressPercentage, "progressPercentage must be present in goal");
+
+  if (node.goal.isClosed) return <></>;
 
   const size = useWindowSizeBreakpoints();
   const width = match(size)
@@ -108,14 +111,23 @@ export function GoalActions({ hovered, node }: { hovered: boolean; node: GoalNod
   );
 }
 
-function GoalStatus({ goal }: { goal: Goals.Goal }) {
-  return (
-    <Status resource={goal} resourceType="goal">
-      <StatusSection update={goal.lastCheckIn!} reviewer={goal.reviewer || undefined} />
-      <DescriptionSection update={goal.lastCheckIn!} limit={120} />
-      <TargetsSection update={goal.lastCheckIn!} />
-    </Status>
-  );
+function GoalStatus({ goal }: { goal: GoalNode }) {
+  if (goal.isClosed) {
+    const status = goal.goal!.success ? "accomplished" : "not_accomplished";
+    return <SmallStatusIndicator status={status} size="sm" textClassName="text-content-dimmed" />;
+  } else {
+    return (
+      <Status node={goal}>
+        {goal.lastCheckIn && (
+          <>
+            <StatusSection update={goal.lastCheckIn!} reviewer={goal.reviewer || undefined} />
+            <DescriptionSection update={goal.lastCheckIn!} limit={120} />
+            <TargetsSection update={goal.asGoalNode().lastCheckIn!} />
+          </>
+        )}
+      </Status>
+    );
+  }
 }
 
 function GoalTimeframe({ goal }: { goal: Goals.Goal }) {

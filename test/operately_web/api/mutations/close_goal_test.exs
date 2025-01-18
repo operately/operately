@@ -145,6 +145,7 @@ defmodule OperatelyWeb.Api.Mutations.CloseGoalTest do
 
       assert {200, res} = request(ctx.conn, goal)
 
+      goal = Repo.reload(goal)
       assert_goal_closed(goal, ctx.person)
       assert res.goal == Serializer.serialize(goal)
     end
