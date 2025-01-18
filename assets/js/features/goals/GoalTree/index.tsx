@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import * as Timeframes from "@/utils/timeframes";
 
 import { IconChevronDown, IconChevronRight } from "@tabler/icons-react";
 import { createTestId } from "@/utils/testid";
@@ -13,6 +14,7 @@ import { useExpandable } from "./context/Expandable";
 import { NodeIcon } from "./components/NodeIcon";
 import { NodeName } from "./components/NodeName";
 import { Controls } from "./components/Controls";
+import { durationHumanized } from "@/utils/time";
 
 export function GoalTree(props: TreeContextProviderProps) {
   return (
@@ -80,12 +82,32 @@ function GoalHeader({ node }: { node: GoalNode }) {
           <NodeIcon node={node} />
           <NodeName node={node} />
           <GoalProgressBar node={node} />
+          <GoalOverdueIndicator node={node} />
         </div>
         <GoalActions node={node} hovered={hovered} />
       </div>
 
       <GoalDetails node={node} />
     </HeaderContainer>
+  );
+}
+
+function GoalOverdueIndicator({ node }: { node: Node }) {
+  const { density } = useTreeContext();
+
+  if (density !== "compact") return null;
+  if (node.type !== "goal") return null;
+
+  const goal = node.asGoalNode().goal!;
+  const timeframe = Timeframes.parse(goal.timeframe!);
+  const isOverdue = Timeframes.isOverdue(timeframe) && !goal.isClosed;
+
+  if (!isOverdue) return null;
+
+  return (
+    <span className="text-sm ml-1.5 font-medium">
+      <span className="text-content-error">Overdue by {durationHumanized(timeframe.endDate!, new Date())}</span>
+    </span>
   );
 }
 
