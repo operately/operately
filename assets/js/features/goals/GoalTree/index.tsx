@@ -6,7 +6,7 @@ import { createTestId } from "@/utils/testid";
 import { match } from "ts-pattern";
 import { useWindowSizeBreakpoints } from "@/components/Pages";
 import { useTreeContext, TreeContextProvider, TreeContextProviderProps } from "./treeContext";
-import { ExpandGoalSuccessConditions, GoalActions, GoalDetails, GoalProgressBar } from "./components/GoalDetails";
+import { GoalActions, GoalDetails, GoalProgressBar } from "./components/GoalDetails";
 import { ProjectDetails } from "./components/ProjectDetails";
 import { GoalNode, Node, ProjectNode } from "./tree";
 import { useExpandable } from "./context/Expandable";
@@ -80,7 +80,6 @@ function GoalHeader({ node }: { node: GoalNode }) {
           <NodeIcon node={node} />
           <NodeName node={node} />
           <GoalProgressBar node={node} />
-          <ExpandGoalSuccessConditions node={node} />
         </div>
         <GoalActions node={node} hovered={hovered} />
       </div>
