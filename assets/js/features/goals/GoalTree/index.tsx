@@ -13,6 +13,8 @@ import { useExpandable } from "./context/Expandable";
 import { NodeIcon } from "./components/NodeIcon";
 import { NodeName } from "./components/NodeName";
 import { Controls } from "./components/Controls";
+import { GoalStatusCompact } from "./components/GoalStatusCompact";
+import classNames from "classnames";
 
 export function GoalTree(props: TreeContextProviderProps) {
   return (
@@ -80,6 +82,7 @@ function GoalHeader({ node }: { node: GoalNode }) {
           <NodeIcon node={node} />
           <NodeName node={node} />
           <GoalProgressBar node={node} />
+          <GoalStatusCompact node={node} />
         </div>
         <GoalActions node={node} hovered={hovered} />
       </div>
@@ -116,6 +119,7 @@ function NodeExpandCollapseToggle({ node }: { node: Node }) {
 
 function HeaderContainer(props: { node: Node } & React.HTMLAttributes<HTMLDivElement>) {
   const size = useWindowSizeBreakpoints();
+  const { density } = useTreeContext();
 
   const padding = match(size)
     .with("xl", () => 45)
@@ -124,9 +128,17 @@ function HeaderContainer(props: { node: Node } & React.HTMLAttributes<HTMLDivEle
     .with("sm", () => 30)
     .otherwise(() => 25);
 
+  const className = classNames("border-t border-stroke-base", {});
+
+  const inner = classNames("my-0.5 py-2", {
+    "bg-surface-dimmed": density === "compact" && props.node.isClosed,
+  });
+
   return (
-    <div className="border-t border-stroke-base py-3" {...props}>
-      <div style={{ paddingLeft: props.node.depth * padding }}>{props.children}</div>
+    <div className={className} {...props}>
+      <div className={inner}>
+        <div style={{ paddingLeft: props.node.depth * padding }}>{props.children}</div>
+      </div>
     </div>
   );
 }
