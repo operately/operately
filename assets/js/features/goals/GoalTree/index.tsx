@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import * as Timeframes from "@/utils/timeframes";
 
 import { IconChevronDown, IconChevronRight } from "@tabler/icons-react";
 import { createTestId } from "@/utils/testid";
@@ -14,7 +13,8 @@ import { useExpandable } from "./context/Expandable";
 import { NodeIcon } from "./components/NodeIcon";
 import { NodeName } from "./components/NodeName";
 import { Controls } from "./components/Controls";
-import { durationHumanized } from "@/utils/time";
+import { GoalStatusCompact } from "./components/GoalStatusCompact";
+import classNames from "classnames";
 
 export function GoalTree(props: TreeContextProviderProps) {
   return (
@@ -82,32 +82,13 @@ function GoalHeader({ node }: { node: GoalNode }) {
           <NodeIcon node={node} />
           <NodeName node={node} />
           <GoalProgressBar node={node} />
-          <GoalOverdueIndicator node={node} />
+          <GoalStatusCompact node={node} />
         </div>
         <GoalActions node={node} hovered={hovered} />
       </div>
 
       <GoalDetails node={node} />
     </HeaderContainer>
-  );
-}
-
-function GoalOverdueIndicator({ node }: { node: Node }) {
-  const { density } = useTreeContext();
-
-  if (density !== "compact") return null;
-  if (node.type !== "goal") return null;
-
-  const goal = node.asGoalNode().goal!;
-  const timeframe = Timeframes.parse(goal.timeframe!);
-  const isOverdue = Timeframes.isOverdue(timeframe) && !goal.isClosed;
-
-  if (!isOverdue) return null;
-
-  return (
-    <span className="text-sm ml-1.5 font-medium">
-      <span className="text-content-error">Overdue by {durationHumanized(timeframe.endDate!, new Date())}</span>
-    </span>
   );
 }
 
@@ -138,6 +119,7 @@ function NodeExpandCollapseToggle({ node }: { node: Node }) {
 
 function HeaderContainer(props: { node: Node } & React.HTMLAttributes<HTMLDivElement>) {
   const size = useWindowSizeBreakpoints();
+  const { density } = useTreeContext();
 
   const padding = match(size)
     .with("xl", () => 45)
@@ -146,9 +128,17 @@ function HeaderContainer(props: { node: Node } & React.HTMLAttributes<HTMLDivEle
     .with("sm", () => 30)
     .otherwise(() => 25);
 
+  const className = classNames("border-t border-stroke-base", {});
+
+  const inner = classNames("my-0.5 py-2", {
+    "bg-surface-dimmed": density === "compact" && props.node.isClosed,
+  });
+
   return (
-    <div className="border-t border-stroke-base py-3" {...props}>
-      <div style={{ paddingLeft: props.node.depth * padding }}>{props.children}</div>
+    <div className={className} {...props}>
+      <div className={inner}>
+        <div style={{ paddingLeft: props.node.depth * padding }}>{props.children}</div>
+      </div>
     </div>
   );
 }
