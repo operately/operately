@@ -2,11 +2,12 @@ import React, { useMemo } from "react";
 
 import * as Goals from "@/models/goals";
 import * as Timeframes from "@/utils/timeframes";
+import * as Icons from "@tabler/icons-react";
+
 import { useWindowSizeBreakpoints } from "@/components/Pages";
 
 import classNames from "classnames";
 import { match } from "ts-pattern";
-import { IconCalendar } from "@tabler/icons-react";
 import { Paths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { ProgressBar } from "@/components/charts";
@@ -56,11 +57,7 @@ export function GoalProgressBar({ node }: { node: GoalNode }) {
     .with("sm", () => "w-16")
     .otherwise(() => undefined);
 
-  return (
-    <div style={{ height: "10px" }}>
-      <ProgressBar percentage={node.goal.progressPercentage} className="ml-2" width={width} />
-    </div>
-  );
+  return <ProgressBar percentage={node.goal.progressPercentage} className="ml-2 h-2" width={width} />;
 }
 
 export function GoalActions({ hovered, node }: { hovered: boolean; node: GoalNode }) {
@@ -108,13 +105,26 @@ function GoalStatus({ goal }: { goal: GoalNode }) {
 
 function GoalTimeframe({ goal }: { goal: Goals.Goal }) {
   const timeframe = Timeframes.parse(goal.timeframe!);
+  const isOverdue = Timeframes.isOverdue(timeframe) && !goal.isClosed;
+
+  const className = classNames("flex gap-1 items-center text-xs text-content-dimmed", {
+    "text-callout-warning-message": isOverdue,
+  });
 
   return (
-    <div className="flex gap-1 items-center text-xs text-content-dimmed">
-      <IconCalendar size={13} className="text-content-dimmed mb-[1px]" />
+    <div className={className}>
+      <GoalTimeframeIcon isOverdue={isOverdue} />
       {Timeframes.format(timeframe)}
     </div>
   );
+}
+
+function GoalTimeframeIcon({ isOverdue }: { isOverdue: boolean }) {
+  if (isOverdue) {
+    return <Icons.IconAlertTriangle size={13} className="text-callout-warning-message mb-[1px]" />;
+  } else {
+    return <Icons.IconCalendar size={13} className="text-content-dimmed mb-[1px]" />;
+  }
 }
 
 function ChampionAndSpace({ goal }: { goal: Goals.Goal }) {
