@@ -112,20 +112,6 @@ defmodule Operately.Support.Features.GoalTreeSteps do
     |> UI.click(testid: "collapse-expand-all")
   end
 
-  step :expand_goal_success_conditions, ctx, goal do
-    testid = UI.testid(["toggle-goal", Paths.goal_id(goal)])
-
-    ctx
-    |> UI.click(testid: testid)
-  end
-
-  step :collapse_goal_success_conditions, ctx, goal do
-    testid = UI.testid(["toggle-goal", Paths.goal_id(goal)])
-
-    ctx
-    |> UI.click(testid: testid)
-  end
-
   step :toggle_active_filter, ctx do
     ctx
     |> UI.click(testid: "view-options")
@@ -193,24 +179,6 @@ defmodule Operately.Support.Features.GoalTreeSteps do
     |> UI.assert_text("On Track")
     |> UI.assert_text("Work is progressing as planned")
     |> UI.assert_text("2. What's new since the last check-in?")
-  end
-
-  step :assert_goal_success_conditions_are_visible, ctx do
-    ctx
-    |> UI.assert_text("First response time")
-    |> UI.assert_text("Increase feedback score to 90%")
-  end
-
-  step :assert_goal_success_conditions_are_hidden, ctx do
-    ctx
-    |> UI.refute_text("First response time")
-    |> UI.refute_text("Increase feedback score to 90%")
-  end
-
-  step :assert_goal_success_conditions_are_hidden_by_default, ctx do
-    ctx
-    |> UI.refute_text("First response time")
-    |> UI.refute_text("Increase feedback score to 90%")
   end
 
   step :assert_all_goals_and_projects_are_visible_by_default, ctx do
