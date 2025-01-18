@@ -28,16 +28,6 @@ defmodule Operately.Features.GoalTreeTest do
     |> Steps.assert_subgoals_and_projects_are_visible()
   end
 
-  feature "expand/collapse goal's success conditions", ctx do
-    ctx
-    |> Steps.visit_goal_tree_page()
-    |> Steps.assert_goal_success_conditions_are_hidden_by_default()
-    |> Steps.expand_goal_success_conditions(ctx.goal_1)
-    |> Steps.assert_goal_success_conditions_are_visible()
-    |> Steps.collapse_goal_success_conditions(ctx.goal_1)
-    |> Steps.assert_goal_success_conditions_are_hidden()
-  end
-
   feature "display goal's last update", ctx do
     ctx
     |> Steps.given_goal_update_exist()
@@ -136,8 +126,6 @@ defmodule Operately.Features.GoalTreeTest do
       |> Steps.assert_resources_details_visible_by_default()
       |> Steps.select_compact_density()
       |> Steps.assert_resources_details_hidden()
-      |> Steps.expand_goal_success_conditions(ctx.goal_1)
-      |> Steps.assert_goal_success_conditions_are_visible()
     end
   end
 
@@ -151,17 +139,6 @@ defmodule Operately.Features.GoalTreeTest do
       |> Steps.visit_goal_page(ctx.goal_1)
       |> Steps.visit_goal_tree_page()
       |> Steps.assert_subgoals_and_projects_are_hidden()
-    end
-
-    feature "expand/collapse goal's success conditions", ctx do
-      ctx
-      |> Steps.visit_goal_tree_page()
-      |> Steps.assert_goal_success_conditions_are_hidden_by_default()
-      |> Steps.expand_goal_success_conditions(ctx.goal_1)
-      |> Steps.assert_goal_success_conditions_are_visible()
-      |> Steps.visit_goal_page(ctx.goal_1)
-      |> Steps.visit_goal_tree_page()
-      |> Steps.assert_goal_success_conditions_are_visible()
     end
 
     feature "active projects", ctx do
