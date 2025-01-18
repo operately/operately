@@ -4,11 +4,25 @@ defmodule Operately.Support.Features.ResourceHubLinkSteps do
   alias Operately.ResourceHubs.Node
   alias Operately.Support.Features.NotificationsSteps
   alias Operately.Support.Features.EmailSteps
+  alias Operately.Support.Features.ResourceHubSteps, as: Steps
+
+  def setup(ctx), do: Steps.setup(ctx)
+  def visit_resource_hub_page(ctx), do: Steps.visit_resource_hub_page(ctx)
+  def navigate_back(ctx, link), do: Steps.navigate_back(ctx, link)
+  def assert_navigation_links(ctx, links), do: Steps.assert_navigation_links(ctx, links)
+  def refute_navigation_links(ctx, links), do: Steps.refute_navigation_links(ctx, links)
 
   step :given_link_exists, ctx do
     ctx
     |> Factory.add_resource_hub(:hub, :space, :creator)
     |> Factory.add_link(:link, :hub)
+  end
+
+  step :given_link_within_folder_exists, ctx do
+    ctx
+    |> Factory.add_resource_hub(:hub, :space, :creator)
+    |> Factory.add_folder(:folder, :hub)
+    |> Factory.add_link(:link, :hub, folder: :folder)
   end
 
   step :given_link_within_nested_folders_exists, ctx do

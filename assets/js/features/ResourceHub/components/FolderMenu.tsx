@@ -28,7 +28,7 @@ export function FolderMenu({ folder }: Props) {
     permissions.canEditParentFolder,
     permissions.canDeleteFolder,
   ];
-  const menuId = createTestId("folder-menu", folder.id!);
+  const menuId = createTestId("menu", folder.id!);
 
   if (!relevantPermissions.some(Boolean)) return <></>;
 

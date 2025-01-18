@@ -27,7 +27,7 @@ export function DocumentMenu({ document }: Props) {
     permissions.canEditParentFolder,
     permissions.canDeleteDocument,
   ];
-  const menuId = createTestId("document-menu", document.id!);
+  const menuId = createTestId("menu", document.id!);
 
   if (!relevantPermissions.some(Boolean)) return <></>;
 

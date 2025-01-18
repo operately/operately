@@ -15,7 +15,7 @@ export function Options() {
   assertPresent(file.permissions, "permissions must be present in file");
 
   return (
-    <PageOptions.Root testId="project-options-button">
+    <PageOptions.Root testId="options-button">
       {file.permissions.canView && <DownloadAction />}
 
       {file.permissions.canEditFile && (
@@ -62,5 +62,7 @@ function DeleteAction() {
     redirect();
   };
 
-  return <PageOptions.Action icon={Icons.IconTrash} title="Delete" onClick={handleDelete} testId="delete-file-link" />;
+  return (
+    <PageOptions.Action icon={Icons.IconTrash} title="Delete" onClick={handleDelete} testId="delete-resource-link" />
+  );
 }

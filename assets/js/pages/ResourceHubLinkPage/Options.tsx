@@ -47,5 +47,7 @@ function DeleteAction() {
     redirect();
   };
 
-  return <PageOptions.Action icon={Icons.IconTrash} title="Delete" onClick={handleDelete} testId="delete-link" />;
+  return (
+    <PageOptions.Action icon={Icons.IconTrash} title="Delete" onClick={handleDelete} testId="delete-resource-link" />
+  );
 }
