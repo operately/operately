@@ -1,4 +1,5 @@
 import * as Time from "@/utils/time";
+import * as Timeframes from "@/utils/timeframes";
 
 import { TreeTester } from "./treeTester";
 import { personMock, spaceMock } from "@/__tests__/mocks";
@@ -85,12 +86,24 @@ describe("Tree", () => {
 
     describe("timeframe is set to current year", () => {
       it("shows only goals and projects from the current year", () => {
-        const t = new TreeTester(["name"], { timeframe: currentYear, showActive: false, showCompleted: true });
+        const t = new TreeTester(["name"], {
+          timeframe: Timeframes.parse(currentYear),
+          showActive: false,
+          showCompleted: true,
+        });
 
         t.addGoal("G1", company, john, null, { timeframe: severalYearsAgo, isClosed: true });
         t.addGoal("G2", company, john, null, { timeframe: currentYear, isClosed: true });
-        t.addProj("P1", company, john, null, { startedAt: severalYearsAgo.startDate, status: "closed" });
-        t.addProj("P2", company, john, null, { startedAt: currentYear.startDate, status: "closed" });
+        t.addProj("P1", company, john, null, {
+          startedAt: severalYearsAgo.startDate,
+          closedAt: severalYearsAgo.endDate,
+          status: "closed",
+        });
+        t.addProj("P2", company, john, null, {
+          startedAt: severalYearsAgo.startDate,
+          closedAt: currentYear.endDate,
+          status: "closed",
+        });
 
         t.assertShape(`
           G2

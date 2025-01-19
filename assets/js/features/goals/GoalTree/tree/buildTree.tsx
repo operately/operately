@@ -1,5 +1,4 @@
 import * as Timeframes from "@/utils/timeframes";
-import * as Time from "@/utils/time";
 
 import { Goal } from "@/models/goals";
 import { Project } from "@/models/projects";
@@ -156,7 +155,7 @@ class TreeFilter {
   }
 
   filter(nodes: Node[]): Node[] {
-    return nodes.filter((n) => this.isNodeVisible(n)).map((n) => this.filterChildren(n));
+    return nodes.map((n) => this.filterChildren(n)).filter((n) => this.isNodeVisible(n) || n.children.length > 0);
   }
 
   private filterChildren(node: Node): Node {
@@ -171,11 +170,7 @@ class TreeFilter {
   private spaceFilter(node: Node): boolean {
     if (!this.options.spaceId) return true;
 
-    return (
-      node.isFromSpace(this.options.spaceId) ||
-      node.hasDescendantFromSpace(this.options.spaceId) ||
-      node.hasAncestorFromSpace(this.options.spaceId)
-    );
+    return node.isFromSpace(this.options.spaceId) || node.hasAncestorFromSpace(this.options.spaceId);
   }
 
   private statusFilter(node: Node): boolean {
@@ -189,10 +184,6 @@ class TreeFilter {
   private timeframeFilter(node: Node): boolean {
     if (!this.options.timeframe) return true;
 
-    if (node.isClosed) {
-      return Timeframes.hasOverlap(this.options.timeframe, node.timeframe());
-    } else {
-      return Time.compareAsc(this.options.timeframe.startDate, node.startedAt) >= 0;
-    }
+    return Timeframes.hasOverlap(this.options.timeframe, node.activeTimeframe());
   }
 }

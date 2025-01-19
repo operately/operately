@@ -186,7 +186,7 @@ export function dayCount(timeframe: Timeframe): number {
 }
 
 export function hasOverlap(a: Timeframe, b: Timeframe): boolean {
-  return false;
+  return Time.compareAsc(a.startDate, b.endDate) <= 0 && Time.compareAsc(b.startDate, a.endDate) <= 0;
 }
 
 //

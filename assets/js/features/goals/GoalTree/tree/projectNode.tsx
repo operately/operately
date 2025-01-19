@@ -47,14 +47,20 @@ export class ProjectNode extends Node {
     this.startedAt = Time.parseDate(project.startedAt)!;
   }
 
-  timeframe(): Timeframes.Timeframe {
-    if (!this.isClosed) throw new Error("Project is not closed");
-
-    return {
-      startDate: Time.parseDate(this.project.startedAt),
-      endDate: Time.parseDate(this.project.deadline),
-      type: "days",
-    };
+  activeTimeframe(): Timeframes.Timeframe {
+    if (!this.isClosed) {
+      return {
+        startDate: Time.parseDate(this.project.startedAt),
+        endDate: new Date(),
+        type: "days",
+      };
+    } else {
+      return {
+        startDate: Time.parseDate(this.project.startedAt),
+        endDate: Time.parseDate(this.project.closedAt!),
+        type: "days",
+      };
+    }
   }
 
   linkTo(): string {
