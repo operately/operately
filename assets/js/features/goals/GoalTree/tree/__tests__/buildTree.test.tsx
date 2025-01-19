@@ -1,3 +1,5 @@
+import * as Time from "@/utils/time";
+
 import { TreeTester } from "./treeTester";
 import { personMock, spaceMock } from "@/__tests__/mocks";
 
@@ -52,6 +54,50 @@ describe("Tree", () => {
       P1
       P2
     `);
+  });
+
+  describe("filtering by timeframe", () => {
+    const severalYearsAgo = {
+      startDate: new Date("2020-01-01").toISOString(),
+      endDate: new Date("2020-12-31").toISOString(),
+      type: "year",
+    };
+
+    const currentYear = {
+      startDate: Time.startOfCurrentYear().toISOString(),
+      endDate: Time.endOfCurrentYear().toISOString(),
+      type: "year",
+    };
+
+    describe("timeframe is not set", () => {
+      it("shows all goals and projects", () => {
+        const t = new TreeTester(["name"], { timeframe: null, showActive: false, showCompleted: true });
+
+        t.addGoal("G1", company, john, null, { timeframe: severalYearsAgo, isClosed: true });
+        t.addGoal("G2", company, john, null, { timeframe: currentYear, isClosed: true });
+
+        t.assertShape(`
+          G1
+          G2
+        `);
+      });
+    });
+
+    describe("timeframe is set to current year", () => {
+      it("shows only goals and projects from the current year", () => {
+        const t = new TreeTester(["name"], { timeframe: currentYear, showActive: false, showCompleted: true });
+
+        t.addGoal("G1", company, john, null, { timeframe: severalYearsAgo, isClosed: true });
+        t.addGoal("G2", company, john, null, { timeframe: currentYear, isClosed: true });
+        t.addProj("P1", company, john, null, { startedAt: severalYearsAgo.startDate, status: "closed" });
+        t.addProj("P2", company, john, null, { startedAt: currentYear.startDate, status: "closed" });
+
+        t.assertShape(`
+          G2
+          P2
+        `);
+      });
+    });
   });
 
   describe("filtering by status", () => {

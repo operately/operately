@@ -1,5 +1,6 @@
 import * as Time from "@/utils/time";
 import * as Spaces from "@/models/spaces";
+import * as Timeframes from "@/utils/timeframes";
 
 import { Project } from "@/models/projects";
 import { Paths } from "@/routes/paths";
@@ -42,6 +43,18 @@ export class ProjectNode extends Node {
 
     this.retrospective = project.retrospective;
     this.lastCheckIn = project.lastCheckIn;
+
+    this.startedAt = Time.parseDate(project.startedAt)!;
+  }
+
+  timeframe(): Timeframes.Timeframe {
+    if (!this.isClosed) throw new Error("Project is not closed");
+
+    return {
+      startDate: Time.parseDate(this.project.startedAt),
+      endDate: Time.parseDate(this.project.deadline),
+      type: "days",
+    };
   }
 
   linkTo(): string {

@@ -185,6 +185,10 @@ export function dayCount(timeframe: Timeframe): number {
   return Time.daysBetween(timeframe.startDate, timeframe.endDate);
 }
 
+export function hasOverlap(a: Timeframe, b: Timeframe): boolean {
+  return false;
+}
+
 //
 // Comparison functions
 //

@@ -1,3 +1,6 @@
+import * as Timeframes from "@/utils/timeframes";
+import * as Time from "@/utils/time";
+
 import { Goal } from "@/models/goals";
 import { Project } from "@/models/projects";
 
@@ -5,7 +8,6 @@ import { Node } from "./node";
 import { GoalNode } from "./goalNode";
 import { ProjectNode } from "./projectNode";
 import { compareIds } from "@/routes/paths";
-import { Timeframe } from "@/api";
 
 export type SortColumn = "name" | "space" | "timeframe" | "progress" | "lastCheckIn" | "champion";
 export type SortDirection = "asc" | "desc";
@@ -21,7 +23,7 @@ export interface TreeOptions {
   personId?: string;
   reviewerId?: string;
   goalId?: string;
-  timeframe?: Timeframe;
+  timeframe?: Timeframes.Timeframe;
 }
 
 export type Tree = Node[];
@@ -163,7 +165,7 @@ class TreeFilter {
   }
 
   private isNodeVisible(node: Node): boolean {
-    return this.spaceFilter(node) && this.statusFilter(node);
+    return this.spaceFilter(node) && this.statusFilter(node) && this.timeframeFilter(node);
   }
 
   private spaceFilter(node: Node): boolean {
@@ -182,5 +184,15 @@ class TreeFilter {
     if (this.options.showCompleted && (node.isClosed || node.hasClosedDescendant())) return true;
 
     return false;
+  }
+
+  private timeframeFilter(node: Node): boolean {
+    if (!this.options.timeframe) return true;
+
+    if (node.isClosed) {
+      return Timeframes.hasOverlap(this.options.timeframe, node.timeframe());
+    } else {
+      return Time.compareAsc(this.options.timeframe.startDate, node.startedAt) >= 0;
+    }
   }
 }
