@@ -45,7 +45,7 @@ export abstract class Node {
   abstract childrenInfoLabel(): string | null;
   abstract compareTimeframe(b: Node): number;
   abstract linkTo(): string;
-  abstract timeframe(): Timeframes.Timeframe;
+  abstract activeTimeframe(): Timeframes.Timeframe;
 
   asGoalNode() {
     return this as unknown as GoalNode;

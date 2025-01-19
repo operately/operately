@@ -40,8 +40,16 @@ export class GoalNode extends Node {
     this.startedAt = Timeframes.parse(goal.timeframe!).startDate!;
   }
 
-  timeframe(): Timeframes.Timeframe {
-    return Timeframes.parse(this.goal.timeframe!);
+  activeTimeframe(): Timeframes.Timeframe {
+    if (this.isClosed) {
+      return Timeframes.parse(this.goal.timeframe!);
+    } else {
+      return {
+        startDate: this.startedAt,
+        endDate: new Date(),
+        type: "days",
+      };
+    }
   }
 
   linkTo(): string {
