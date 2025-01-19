@@ -77,7 +77,7 @@ function GoalHeader({ node }: { node: GoalNode }) {
       data-test-id={testId}
     >
       <div className="flex justify-between">
-        <div className="flex items-center gap-1 relative">
+        <div className="flex items-center gap-1 relative truncate">
           <NodeExpandCollapseToggle node={node} />
           <NodeIcon node={node} />
           <NodeName node={node} />
@@ -119,7 +119,6 @@ function NodeExpandCollapseToggle({ node }: { node: Node }) {
 
 function HeaderContainer(props: { node: Node } & React.HTMLAttributes<HTMLDivElement>) {
   const size = useWindowSizeBreakpoints();
-  const { density } = useTreeContext();
 
   const padding = match(size)
     .with("xl", () => 45)
@@ -131,7 +130,7 @@ function HeaderContainer(props: { node: Node } & React.HTMLAttributes<HTMLDivEle
   const className = classNames("border-t border-stroke-base", {});
 
   const inner = classNames("my-0.5 py-2", {
-    "bg-surface-dimmed": density === "compact" && props.node.isClosed,
+    "bg-surface-dimmed": props.node.isClosed,
   });
 
   return (

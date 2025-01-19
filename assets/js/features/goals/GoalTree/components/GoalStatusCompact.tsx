@@ -24,7 +24,7 @@ export function GoalStatusCompact({ node }: { node: GoalNode }) {
 
 function OverdueIndicator({ timeframe }: { timeframe: Timeframes.Timeframe }) {
   return (
-    <span className="text-sm ml-1.5 font-medium">
+    <span className="text-sm ml-1.5 font-medium shrink-0">
       <span className="text-content-error">Overdue by {durationHumanized(timeframe.endDate!, new Date())}</span>
     </span>
   );
@@ -32,7 +32,7 @@ function OverdueIndicator({ timeframe }: { timeframe: Timeframes.Timeframe }) {
 
 function ClosedIndicator({ goal }: { goal: GoalNode["goal"] }) {
   return (
-    <span className="text-sm ml-1.5 font-medium">
+    <span className="text-sm ml-1.5 font-medium shrink-0">
       {goal.success ? (
         <span className="text-callout-success-message flex items-center gap-1">
           <Icons.IconCircleCheckFilled size={16} /> Accomplished
