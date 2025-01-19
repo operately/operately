@@ -2,8 +2,10 @@ import type { SortColumn, SortDirection } from "./";
 
 import * as People from "@/models/people";
 import * as Spaces from "@/models/spaces";
-import { compareIds } from "@/routes/paths";
+import * as Timeframes from "@/utils/timeframes";
 import * as Time from "@/utils/time";
+
+import { compareIds } from "@/routes/paths";
 
 type NodeTypes = "goal" | "project";
 
@@ -38,9 +40,12 @@ export abstract class Node {
   public lastCheckInDate: Date | null;
   public spaceId: string;
 
+  public startedAt: Date;
+
   abstract childrenInfoLabel(): string | null;
   abstract compareTimeframe(b: Node): number;
   abstract linkTo(): string;
+  abstract activeTimeframe(): Timeframes.Timeframe;
 
   asGoalNode() {
     return this as unknown as GoalNode;
