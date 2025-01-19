@@ -1,4 +1,5 @@
 import * as Api from "@/api";
+import * as Time from "@/utils/time";
 
 import { Space } from "@/models/spaces";
 import { Person } from "@/models/people";
@@ -11,6 +12,11 @@ export function goalMock(name: string, space: Space, champion: Person, params: P
     space,
     champion,
     championId: champion.id,
+    timeframe: params.timeframe || {
+      startDate: Time.startOfCurrentYear().toISOString(),
+      endDate: Time.endOfCurrentYear().toISOString(),
+      type: "year",
+    },
     ...params,
   } as unknown as Api.Goal;
 }
@@ -38,6 +44,7 @@ export function projectMock(
     champion,
     championId: champion.id,
     milestones: [],
+    startedAt: Time.startOfCurrentYear().toISOString(),
     ...params,
   } as unknown as Api.Project;
 }

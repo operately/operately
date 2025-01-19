@@ -1,11 +1,14 @@
 import * as React from "react";
 import * as Goals from "@/models/goals";
 import * as Projects from "@/models/projects";
+import * as Time from "@/utils/time";
+
 import { Person } from "@/models/people";
 import { useStateWithLocalStorage } from "@/hooks/useStateWithLocalStorage";
 
 import { Tree, buildTree, SortColumn, SortDirection, TreeOptions } from "./tree";
 import { ExpandableProvider } from "./context/Expandable";
+import { Timeframe, TimeframeType } from "@/utils/timeframes";
 
 type DensityType = "default" | "compact";
 
@@ -27,8 +30,12 @@ interface TreeContextValue {
   setShowCompleted: (show: boolean) => void;
   setChampionedBy: (person?: Person) => void;
   setReviewedBy: (person?: Person) => void;
+
   density: DensityType;
   setDensity: (density: DensityType) => void;
+
+  timeframe: Timeframe;
+  setTimeframe: (timeframe: Timeframe) => void;
 }
 
 const TreeContext = React.createContext<TreeContextValue | null>(null);
@@ -54,6 +61,11 @@ export function TreeContextProvider(props: TreeContextProviderPropsWithChildren)
   const [championedBy, setChampionedBy] = React.useState<Person>();
   const [reviewedBy, setReviewedBy] = React.useState<Person>();
   const [density, setDensity] = useStateWithLocalStorage<DensityType>("density", "default");
+  const [timeframe, setTimeframe] = React.useState<Timeframe>({
+    startDate: Time.startOfCurrentYear(),
+    endDate: Time.endOfCurrentYear(),
+    type: "year" as TimeframeType,
+  });
 
   const treeOptions = {
     ...props.options,
@@ -64,7 +76,8 @@ export function TreeContextProvider(props: TreeContextProviderPropsWithChildren)
     showActive,
     showPaused,
     showCompleted,
-  };
+    timeframe,
+  } as TreeOptions;
 
   const tree = React.useMemo(
     () => buildTree(props.goals, props.projects, treeOptions),
@@ -88,6 +101,8 @@ export function TreeContextProvider(props: TreeContextProviderPropsWithChildren)
     setReviewedBy,
     density,
     setDensity,
+    timeframe,
+    setTimeframe,
   };
 
   return (

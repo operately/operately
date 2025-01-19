@@ -18,9 +18,9 @@ defmodule Operately.Support.Factory.Goals do
       company_access_level: company_access,
       space_access_level: space_access,
       timeframe: opts[:timeframe] || %{
-        start_date: ~D[2020-01-01],
-        end_date: ~D[2020-03-31],
-        type: "quarter"
+        start_date: current_year_start_date(),
+        end_date: current_year_end_date(),
+        type: "year"
       }
     })
 
@@ -34,5 +34,15 @@ defmodule Operately.Support.Factory.Goals do
     update = Operately.GoalsFixtures.goal_update_fixture(person, goal)
 
     Map.put(ctx, testid, update)
+  end
+
+  defp current_year_start_date do
+    {year, _, _} = Date.utc_today() |> Date.to_erl()
+    Date.from_erl!({year, 1, 1})
+  end
+
+  defp current_year_end_date do
+    {year, _, _} = Date.utc_today() |> Date.to_erl()
+    Date.from_erl!({year, 12, 31})
   end
 end

@@ -1,3 +1,5 @@
+import * as Timeframes from "@/utils/timeframes";
+
 import { Goal } from "@/models/goals";
 import { Project } from "@/models/projects";
 
@@ -20,6 +22,7 @@ export interface TreeOptions {
   personId?: string;
   reviewerId?: string;
   goalId?: string;
+  timeframe?: Timeframes.Timeframe;
 }
 
 export type Tree = Node[];
@@ -152,7 +155,7 @@ class TreeFilter {
   }
 
   filter(nodes: Node[]): Node[] {
-    return nodes.filter((n) => this.isNodeVisible(n)).map((n) => this.filterChildren(n));
+    return nodes.map((n) => this.filterChildren(n)).filter((n) => this.isNodeVisible(n) || n.children.length > 0);
   }
 
   private filterChildren(node: Node): Node {
@@ -161,17 +164,13 @@ class TreeFilter {
   }
 
   private isNodeVisible(node: Node): boolean {
-    return this.spaceFilter(node) && this.statusFilter(node);
+    return this.spaceFilter(node) && this.statusFilter(node) && this.timeframeFilter(node);
   }
 
   private spaceFilter(node: Node): boolean {
     if (!this.options.spaceId) return true;
 
-    return (
-      node.isFromSpace(this.options.spaceId) ||
-      node.hasDescendantFromSpace(this.options.spaceId) ||
-      node.hasAncestorFromSpace(this.options.spaceId)
-    );
+    return node.isFromSpace(this.options.spaceId) || node.hasAncestorFromSpace(this.options.spaceId);
   }
 
   private statusFilter(node: Node): boolean {
@@ -180,5 +179,11 @@ class TreeFilter {
     if (this.options.showCompleted && (node.isClosed || node.hasClosedDescendant())) return true;
 
     return false;
+  }
+
+  private timeframeFilter(node: Node): boolean {
+    if (!this.options.timeframe) return true;
+
+    return Timeframes.hasOverlap(this.options.timeframe, node.activeTimeframe());
   }
 }

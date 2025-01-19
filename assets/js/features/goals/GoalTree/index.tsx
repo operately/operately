@@ -77,7 +77,7 @@ function GoalHeader({ node }: { node: GoalNode }) {
       data-test-id={testId}
     >
       <div className="flex justify-between">
-        <div className="flex items-center gap-1 relative">
+        <div className="flex items-center gap-1 relative truncate">
           <NodeExpandCollapseToggle node={node} />
           <NodeIcon node={node} />
           <NodeName node={node} />
@@ -119,7 +119,6 @@ function NodeExpandCollapseToggle({ node }: { node: Node }) {
 
 function HeaderContainer(props: { node: Node } & React.HTMLAttributes<HTMLDivElement>) {
   const size = useWindowSizeBreakpoints();
-  const { density } = useTreeContext();
 
   const padding = match(size)
     .with("xl", () => 45)
@@ -128,10 +127,10 @@ function HeaderContainer(props: { node: Node } & React.HTMLAttributes<HTMLDivEle
     .with("sm", () => 30)
     .otherwise(() => 25);
 
-  const className = classNames("border-t border-stroke-base", {});
+  const className = classNames("border-t border-stroke-base relative");
 
-  const inner = classNames("my-0.5 py-2", {
-    "bg-surface-dimmed": density === "compact" && props.node.isClosed,
+  const inner = classNames("my-0.5 py-2 relative z-2", {
+    "bg-gray-50 dark:bg-gray-900/40": props.node.isClosed,
   });
 
   return (
@@ -139,6 +138,12 @@ function HeaderContainer(props: { node: Node } & React.HTMLAttributes<HTMLDivEle
       <div className={inner}>
         <div style={{ paddingLeft: props.node.depth * padding }}>{props.children}</div>
       </div>
+
+      {props.node.isClosed && (
+        <div className="absolute right-4 -translate-y-1/2 top-1/2 select-none">
+          <span className="text-xs uppercase tracking-wide opacity-25">Closed</span>
+        </div>
+      )}
     </div>
   );
 }

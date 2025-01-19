@@ -36,6 +36,20 @@ export class GoalNode extends Node {
 
     this.space = goal.space as Spaces.Space;
     this.spaceId = goal.space!.id!;
+
+    this.startedAt = Timeframes.parse(goal.timeframe!).startDate!;
+  }
+
+  activeTimeframe(): Timeframes.Timeframe {
+    if (this.isClosed) {
+      return Timeframes.parse(this.goal.timeframe!);
+    } else {
+      return {
+        startDate: this.startedAt,
+        endDate: new Date(),
+        type: "days",
+      };
+    }
   }
 
   linkTo(): string {

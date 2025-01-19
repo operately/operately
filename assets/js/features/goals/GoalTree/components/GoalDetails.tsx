@@ -26,6 +26,8 @@ export function GoalDetails({ node }: { node: GoalNode }) {
   const size = useWindowSizeBreakpoints();
   const { density } = useTreeContext();
 
+  if (density === "compact") return null;
+
   const layout = match(size)
     .with("xs", () => "grid grid-cols-[auto,1fr] gap-y-0 mt-1")
     .otherwise(() => "flex gap-y-2");
@@ -33,15 +35,13 @@ export function GoalDetails({ node }: { node: GoalNode }) {
   const className = classNames("gap-x-10 items-center", layout);
 
   return (
-    <div className="pl-6 ml-[1px]">
-      {density !== "compact" && (
-        <div className={className}>
-          <GoalStatus goal={node} />
-          <GoalTimeframe goal={node.goal} />
-          <ChampionAndSpace goal={node.goal} />
-          <GoalChildrenCount node={node} />
-        </div>
-      )}
+    <div className="pl-6 ml-[2px] mt-2">
+      <div className={className}>
+        <GoalStatus goal={node} />
+        <GoalTimeframe goal={node.goal} />
+        <ChampionAndSpace goal={node.goal} />
+        <GoalChildrenCount node={node} />
+      </div>
     </div>
   );
 }
@@ -63,12 +63,15 @@ export function GoalProgressBar({ node }: { node: GoalNode }) {
 export function GoalActions({ hovered, node }: { hovered: boolean; node: GoalNode }) {
   const size = useWindowSizeBreakpoints();
 
-  const containerClasses = classNames("ml-2 gap-2 items-center", {
+  if (node.isClosed) return <></>;
+
+  const containerClasses = classNames("ml-2 gap-1 items-center shrink-0", {
     "opacity-0": !hovered,
     "opacity-100 transition-opacity duration-300": hovered,
     hidden: size === "xs",
     flex: size !== "xs",
   });
+
   const newGoalPath = Paths.goalNewPath({ parentGoalId: node.goal.id! });
   const newProjectPath = Paths.newProjectPath();
 
@@ -135,7 +138,7 @@ function ChampionAndSpace({ goal }: { goal: Goals.Goal }) {
 
   return (
     <div className="flex items-center gap-1">
-      <AvatarLink person={goal.champion} size="tiny" className="mt-[6px]" />
+      <AvatarLink person={goal.champion} size="tiny" className="flex flex-col items-center" />
       <DivLink to={path} className="text-xs text-content-dimmed hover:underline underline-offset-2">
         {goal.space.name}
       </DivLink>
