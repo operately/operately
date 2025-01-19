@@ -5,6 +5,7 @@ import { Node } from "./node";
 import { GoalNode } from "./goalNode";
 import { ProjectNode } from "./projectNode";
 import { compareIds } from "@/routes/paths";
+import { Timeframe } from "@/api";
 
 export type SortColumn = "name" | "space" | "timeframe" | "progress" | "lastCheckIn" | "champion";
 export type SortDirection = "asc" | "desc";
@@ -20,6 +21,7 @@ export interface TreeOptions {
   personId?: string;
   reviewerId?: string;
   goalId?: string;
+  timeframe?: Timeframe;
 }
 
 export type Tree = Node[];

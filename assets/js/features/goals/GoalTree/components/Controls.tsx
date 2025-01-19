@@ -1,5 +1,3 @@
-import * as Time from "@/utils/time";
-
 import React, { useMemo, useState } from "react";
 
 import Forms from "@/components/Forms";
@@ -11,18 +9,13 @@ import { SecondaryButton } from "@/components/Buttons";
 import { useExpandable } from "../context/Expandable";
 import { useTreeContext } from "../treeContext";
 import { TimeframeSelector } from "@/components/TimeframeSelector";
-import { Timeframe, TimeframeType } from "@/utils/timeframes";
 
 export function Controls() {
   const { expanded, expandAll, collapseAll } = useExpandable();
+  const { timeframe, setTimeframe } = useTreeContext();
 
   const isExpanded = Object.values(expanded).some((value) => value);
   const [showOptions, setShowOptions] = useState(false);
-  const [timeframe, setTimeframe] = useState<Timeframe>({
-    startDate: Time.startOfCurrentYear(),
-    endDate: Time.endOfCurrentYear(),
-    type: "year" as TimeframeType,
-  });
 
   const toggleShowOptions = () => setShowOptions((prev) => !prev);
 

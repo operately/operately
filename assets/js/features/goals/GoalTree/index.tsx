@@ -130,7 +130,7 @@ function HeaderContainer(props: { node: Node } & React.HTMLAttributes<HTMLDivEle
   const className = classNames("border-t border-stroke-base relative");
 
   const inner = classNames("my-0.5 py-2 relative z-2", {
-    "bg-surface-dimmed": props.node.isClosed,
+    "bg-gray-50 dark:bg-gray-900/40": props.node.isClosed,
   });
 
   return (
