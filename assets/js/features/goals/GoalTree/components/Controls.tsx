@@ -1,3 +1,5 @@
+import * as Time from "@/utils/time";
+
 import React, { useMemo, useState } from "react";
 
 import Forms from "@/components/Forms";
@@ -8,17 +10,25 @@ import { SecondaryButton } from "@/components/Buttons";
 
 import { useExpandable } from "../context/Expandable";
 import { useTreeContext } from "../treeContext";
+import { TimeframeSelector } from "@/components/TimeframeSelector";
+import { Timeframe, TimeframeType } from "@/utils/timeframes";
 
 export function Controls() {
   const { expanded, expandAll, collapseAll } = useExpandable();
+
   const isExpanded = Object.values(expanded).some((value) => value);
   const [showOptions, setShowOptions] = useState(false);
+  const [timeframe, setTimeframe] = useState<Timeframe>({
+    startDate: Time.startOfCurrentYear(),
+    endDate: Time.endOfCurrentYear(),
+    type: "year" as TimeframeType,
+  });
 
   const toggleShowOptions = () => setShowOptions((prev) => !prev);
 
   return (
-    <>
-      <div className="flex mb-4 items-center gap-2">
+    <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center gap-2">
         <SecondaryButton onClick={isExpanded ? collapseAll : expandAll} size="xs" testId="collapse-expand-all">
           {isExpanded ? "Collapse All" : "Expand all"}
         </SecondaryButton>
@@ -28,8 +38,12 @@ export function Controls() {
         </SecondaryButton>
       </div>
 
+      <div className="flex items-center gap-2">
+        <TimeframeSelector timeframe={timeframe} setTimeframe={setTimeframe} size="xs" alignContent="end" />
+      </div>
+
       <OptionsModal showOptions={showOptions} toggleShowOptions={toggleShowOptions} />
-    </>
+    </div>
   );
 }
 
