@@ -202,3 +202,13 @@ function withSuffix(str: string, suffix?: string): string {
     return str;
   }
 }
+
+export function startOfCurrentYear() {
+  const now = new Date();
+  return new Date(now.getFullYear(), 0, 1);
+}
+
+export function endOfCurrentYear() {
+  const now = new Date();
+  return new Date(now.getFullYear(), 11, 31);
+}

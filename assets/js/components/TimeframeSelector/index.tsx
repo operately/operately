@@ -16,9 +16,18 @@ import classNames from "classnames";
 interface TimeframeSelectorProps {
   timeframe: Timeframes.Timeframe;
   setTimeframe: Timeframes.SetTimeframe;
+  size?: "xs" | "base";
+  alignContent?: "start" | "end";
 }
 
+const DEFAULTS = {
+  size: "base" as const,
+  alignContent: "start" as const,
+};
+
 export function TimeframeSelector(props: TimeframeSelectorProps) {
+  props = { ...DEFAULTS, ...props };
+
   const [open, setOpen] = React.useState(false);
 
   return (
@@ -30,10 +39,25 @@ export function TimeframeSelector(props: TimeframeSelectorProps) {
 }
 
 function TimeframeSelectorFormElement(props: TimeframeSelectorProps) {
+  const className = classNames(
+    "border border-surface-outline",
+    "rounded-lg",
+    "flex items-center gap-1",
+    "cursor-pointer bg-surface-base truncate",
+    {
+      "px-3 py-1.5": props.size === "base",
+      "px-3 py-1": props.size === "xs",
+      "text-base": props.size === "base",
+      "text-sm": props.size === "xs",
+    },
+  );
+
+  const iconSize = props.size === "base" ? 18 : 16;
+
   return (
     <Popover.Trigger asChild>
-      <div className="border border-surface-outline rounded-lg px-3 py-1.5 flex items-center gap-1 cursor-pointer bg-surface-base truncate">
-        <Icons.IconCalendar size={18} className="shrink-0" />
+      <div className={className}>
+        <Icons.IconCalendar size={iconSize} className="shrink-0" />
         <span className="truncate">{Timeframes.format(props.timeframe)}</span>
       </div>
     </Popover.Trigger>
@@ -51,9 +75,9 @@ function PopeverContent(props: TimeframeSelectorProps) {
 
   return (
     <Popover.Portal>
-      <Popover.Content className={className} align="start" sideOffset={5}>
-        <TimeframeSelectorHeader timeframe={props.timeframe} setTimeframe={props.setTimeframe} />
-        <TimeframeSelectorContent timeframe={props.timeframe} setTimeframe={props.setTimeframe} />
+      <Popover.Content className={className} align={props.alignContent} sideOffset={5}>
+        <TimeframeSelectorHeader {...props} />
+        <TimeframeSelectorContent {...props} />
       </Popover.Content>
     </Popover.Portal>
   );
@@ -67,7 +91,7 @@ function TimeframeSelectorHeader(props: TimeframeSelectorProps) {
         <div className="text-content-dimmed text-xs">{Timeframes.format(props.timeframe)}</div>
       </div>
 
-      <TimeframeSelectorTypeSelector timeframe={props.timeframe} setTimeframe={props.setTimeframe} />
+      <TimeframeSelectorTypeSelector {...props} />
     </div>
   );
 }
