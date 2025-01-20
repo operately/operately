@@ -38,6 +38,16 @@ defmodule Operately.Support.Features.DiscussionsSteps do
     |> UI.assert_text(@body)
   end
 
+  step :assert_discussion_is_posted_with_blank_body, ctx do
+    message = last_message(ctx)
+
+    assert message.state == :published
+
+    ctx
+    |> UI.assert_page(Paths.message_path(ctx.company, message))
+    |> UI.assert_text(@title)
+  end
+
   step :assert_discussion_email_sent, ctx do
     ctx
     |> EmailSteps.assert_activity_email_sent(%{
@@ -74,6 +84,14 @@ defmodule Operately.Support.Features.DiscussionsSteps do
     |> UI.visit(Paths.space_discussions_path(ctx.company, ctx.marketing_space))
     |> UI.click(testid: "new-discussion")
     |> UI.assert_page(Paths.space_discussions_new_path(ctx.company, ctx.marketing_space))
+  end
+
+  step :start_writting_discussion_with_blank_body, ctx do
+    ctx
+    |> UI.visit(Paths.space_discussions_path(ctx.company, ctx.marketing_space))
+    |> UI.click(testid: "new-discussion")
+    |> UI.assert_page(Paths.space_discussions_new_path(ctx.company, ctx.marketing_space))
+    |> UI.fill(testid: "discussion-title", with: @title)
   end
 
   step :try_to_submit_draft, ctx do
