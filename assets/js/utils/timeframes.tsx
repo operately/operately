@@ -37,6 +37,15 @@ export function serialize(timeframe: Timeframe): api.Timeframe {
   };
 }
 
+export function asJson(timeframe: Timeframe): string {
+  return JSON.stringify(serialize(timeframe));
+}
+
+export function fromJson(json: string): Timeframe {
+  const value = JSON.parse(json);
+  return parse(value);
+}
+
 //
 // Formatting the timeframe for display
 //
