@@ -2,13 +2,13 @@ import * as React from "react";
 import * as Goals from "@/models/goals";
 import * as Projects from "@/models/projects";
 import * as Time from "@/utils/time";
+import * as Timeframes from "@/utils/timeframes";
 
 import { Person } from "@/models/people";
 import { useStateWithLocalStorage } from "@/hooks/useStateWithLocalStorage";
 
 import { Tree, buildTree, SortColumn, SortDirection, TreeOptions } from "./tree";
 import { ExpandableProvider } from "./context/Expandable";
-import { Timeframe, TimeframeType } from "@/utils/timeframes";
 
 type DensityType = "default" | "compact";
 
@@ -34,8 +34,8 @@ interface TreeContextValue {
   density: DensityType;
   setDensity: (density: DensityType) => void;
 
-  timeframe: Timeframe;
-  setTimeframe: (timeframe: Timeframe) => void;
+  timeframe: Timeframes.Timeframe;
+  setTimeframe: (timeframe: Timeframes.Timeframe) => void;
 }
 
 const TreeContext = React.createContext<TreeContextValue | null>(null);
@@ -52,20 +52,32 @@ interface TreeContextProviderPropsWithChildren extends TreeContextProviderProps 
   children: React.ReactNode;
 }
 
+const defaultTimeframe: Timeframes.Timeframe = {
+  startDate: Time.startOfCurrentYear(),
+  endDate: Time.endOfCurrentYear(),
+  type: "year",
+};
+
+const timeframeSerialization = {
+  serialize: Timeframes.asJson,
+  deserialize: Timeframes.fromJson,
+};
+
 export function TreeContextProvider(props: TreeContextProviderPropsWithChildren) {
   const [sortColumn, setSortColumn] = React.useState<SortColumn>("name");
   const [sortDirection, setSortDirection] = React.useState<SortDirection>("asc");
-  const [showActive, setShowActive] = useStateWithLocalStorage<boolean>("showActive", true);
-  const [showPaused, setShowPaused] = useStateWithLocalStorage<boolean>("showPaused", false);
-  const [showCompleted, setShowCompleted] = useStateWithLocalStorage<boolean>("showComepleted", false);
+  const [showActive, setShowActive] = useStateWithLocalStorage<boolean>("goal-tree", "showActive", true);
+  const [showPaused, setShowPaused] = useStateWithLocalStorage<boolean>("goal-tree", "showPaused", false);
+  const [showCompleted, setShowCompleted] = useStateWithLocalStorage<boolean>("goal-tree", "showComepleted", false);
   const [championedBy, setChampionedBy] = React.useState<Person>();
   const [reviewedBy, setReviewedBy] = React.useState<Person>();
-  const [density, setDensity] = useStateWithLocalStorage<DensityType>("density", "default");
-  const [timeframe, setTimeframe] = React.useState<Timeframe>({
-    startDate: Time.startOfCurrentYear(),
-    endDate: Time.endOfCurrentYear(),
-    type: "year" as TimeframeType,
-  });
+  const [density, setDensity] = useStateWithLocalStorage<DensityType>("goal-tree", "density", "default");
+  const [timeframe, setTimeframe] = useStateWithLocalStorage<Timeframes.Timeframe>(
+    "goal-tree",
+    "timeframe",
+    defaultTimeframe,
+    timeframeSerialization,
+  );
 
   const treeOptions = {
     ...props.options,
