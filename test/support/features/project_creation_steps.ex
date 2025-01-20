@@ -268,10 +268,11 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
     |> UI.click(testid: "add-project")
   end
 
-  step :assert_project_form_prefilled_with_goal, ctx do
+  step :assert_project_form_prefilled_with_goal_and_its_space, ctx do
     ctx 
     |> UI.assert_text("Start a new project")
     |> UI.assert_text(ctx.goal.name)
+    |> UI.assert_text(ctx.group.name)
   end
 
 end

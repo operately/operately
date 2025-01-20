@@ -40,22 +40,17 @@ function PageTitle() {
 }
 
 function Navigation() {
-  const { spaceID, space } = useLoadedData();
+  const { backPath, backPathName } = useLoadedData();
+  if (!backPath) return null;
 
-  if (spaceID && space) {
-    const spaceProjectsPath = Paths.spaceGoalsPath(spaceID!);
-
-    return <Paper.NavigateBack to={spaceProjectsPath} title={`Back to ${space!.name} Space`} />;
-  } else {
-    return <Paper.NavigateBack to={Paths.projectsPath()} title="Back to Projects" />;
-  }
+  return <Paper.NavigateBack to={backPath} title={backPathName} />;
 }
 
 function Form() {
   const me = useMe()!;
   const navigate = useNavigate();
   const [add] = Projects.useCreateProject();
-  const { space, spaces, spaceOptions, goal, goals, allowSpaceSelection } = useLoadedData();
+  const { space, spaces, spaceOptions, goal, goals } = useLoadedData();
 
   const form = Forms.useForm({
     fields: {
@@ -106,7 +101,7 @@ function Form() {
       <Paper.Body minHeight="300px">
         <Forms.FieldGroup>
           <Forms.TextInput label="Project Name" field="name" placeholder="e.g. HR System Update" autoFocus />
-          <Forms.SelectBox label="Space" field="space" hidden={!allowSpaceSelection} options={spaceOptions} />
+          <Forms.SelectBox label="Space" field="space" options={spaceOptions} />
           <Forms.SelectGoal label="Goal" field="goal" goals={goals} required={false} />
 
           <Forms.FieldGroup layout="grid">

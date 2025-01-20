@@ -30,7 +30,11 @@ function Header() {
   const { space } = useLoadedData();
 
   const newGoalPath = Paths.spaceNewGoalPath(space.id!);
-  const newProjectPath = Paths.spaceNewProjectPath(space.id!);
+  const newProjectPath = Paths.newProjectPath({
+    spaceId: space.id!,
+    backPath: Paths.spaceGoalsPath(space.id!),
+    backPathName: `Back to ${space.name} Goal Map`,
+  });
 
   return (
     <Paper.Header
