@@ -45,6 +45,7 @@ export function createAppRoutes() {
         pageRoute("/log_in", pages.LoginPage, { auth: false }),
         pageRoute("/sign_up", pages.SignUpPage, { auth: false }),
         pageRoute("/sign_up/email", pages.SignUpWithEmailPage, { auth: false }),
+        pageRoute("/forgot-password", pages.ForgotPasswordPage, { auth: false }),
 
         pageRoute("", pages.LobbyPage),
         pageRoute("/new", pages.NewCompanyPage),
