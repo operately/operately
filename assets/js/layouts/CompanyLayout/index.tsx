@@ -61,7 +61,7 @@ function Navigation({ company }: { company: Api.Company }) {
 
           <div className="border-r border-surface-outline px-2.5 mr-2 flex items-center gap-2">
             <NewDropdown />
-            <HelpDropdown />
+            <HelpDropdown company={company} />
           </div>
         </div>
       </div>

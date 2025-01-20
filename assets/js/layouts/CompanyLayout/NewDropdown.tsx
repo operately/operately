@@ -6,7 +6,7 @@ import { DropdownMenu, DropdownLinkItem, DropdownSeparator } from "./DropdownMen
 
 export function NewDropdown() {
   return (
-    <DropdownMenu testId="new-dropdown" name="New" icon={Icons.IconPlus}>
+    <DropdownMenu testId="new-dropdown" name="New" icon={Icons.IconPlus} align="end">
       <DropdownLinkItem path={Paths.newGoalPath()} icon={Icons.IconTargetArrow} title="New goal" />
       <DropdownLinkItem path={Paths.newProjectPath()} icon={Icons.IconTable} title="New project" />
       <DropdownSeparator />

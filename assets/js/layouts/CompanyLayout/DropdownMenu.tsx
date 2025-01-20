@@ -40,11 +40,16 @@ interface DropdownMenuProps {
 
   align?: "start" | "center" | "end";
   showDropdownIcon?: boolean;
+  minWidth?: number;
 }
 
 export function DropdownMenu(props: DropdownMenuProps) {
   const [open, setOpen] = React.useState(false);
   const close = () => setOpen(false);
+
+  const contentStyle = {
+    minWidth: props.minWidth ?? 230,
+  };
 
   return (
     <Popover.Root open={open} onOpenChange={setOpen}>
@@ -58,7 +63,9 @@ export function DropdownMenu(props: DropdownMenuProps) {
 
       <Popover.Portal>
         <Popover.Content className={contentClassName} align={props.align} sideOffset={12} onClick={close}>
-          <div className="bg-surface-base p-2 min-w-[250px]">{props.children}</div>
+          <div className="bg-surface-base p-2" style={contentStyle}>
+            {props.children}
+          </div>
         </Popover.Content>
       </Popover.Portal>
     </Popover.Root>
