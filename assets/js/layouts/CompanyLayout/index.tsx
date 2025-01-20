@@ -12,6 +12,7 @@ import { OperatelyLogo } from "@/components/OperatelyLogo";
 import { Review } from "./Review";
 import { CompanyDropdown } from "./CompanyDropdown";
 import { NewDropdown } from "./NewDropdown";
+import { HelpDropdown } from "./HelpDropdown";
 
 import { DevBar } from "@/features/DevBar";
 import { Paths } from "@/routes/paths";
@@ -57,7 +58,11 @@ function Navigation({ company }: { company: Api.Company }) {
         <div className="flex items-center gap-2 flex-row-reverse">
           <User />
           <Bell />
-          <NewDropdown />
+
+          <div className="border-r border-surface-outline px-2.5 mr-2 flex items-center gap-2">
+            <NewDropdown />
+            <HelpDropdown />
+          </div>
         </div>
       </div>
     </NavigationContainer>

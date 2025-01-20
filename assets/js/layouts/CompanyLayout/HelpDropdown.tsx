@@ -4,9 +4,9 @@ import * as Icons from "@tabler/icons-react";
 import { Paths } from "@/routes/paths";
 import { DropdownMenu, DropdownLinkItem, DropdownSeparator } from "./DropdownMenu";
 
-export function NewDropdown() {
+export function HelpDropdown() {
   return (
-    <DropdownMenu testId="new-dropdown" name="New" icon={Icons.IconPlus}>
+    <DropdownMenu testId="help-dropdown" name="Help" icon={Icons.IconLifebuoy} align="center">
       <DropdownLinkItem path={Paths.newGoalPath()} icon={Icons.IconTargetArrow} title="New goal" />
       <DropdownLinkItem path={Paths.newProjectPath()} icon={Icons.IconTable} title="New project" />
       <DropdownSeparator />
