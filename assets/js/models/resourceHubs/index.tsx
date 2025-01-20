@@ -32,6 +32,7 @@ export {
   useDeleteResourceHubFile,
   useDeleteResourceHubFolder,
   useDeleteResourceHubLink,
+  usePublishResourceHubDocument,
   useRenameResourceHubFolder,
 } from "@/api";
 

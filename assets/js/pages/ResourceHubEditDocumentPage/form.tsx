@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-import { useEditResourceHubDocument, ResourceHubDocument } from "@/models/resourceHubs";
+import { useEditResourceHubDocument, ResourceHubDocument, usePublishResourceHubDocument } from "@/models/resourceHubs";
 
 import Forms from "@/components/Forms";
 import { Paths } from "@/routes/paths";
@@ -10,6 +10,7 @@ import { areRichTextObjectsEqual } from "@/components/RichContent";
 export function Form({ document }: { document: ResourceHubDocument }) {
   const navigate = useNavigate();
   const [edit] = useEditResourceHubDocument();
+  const [publish] = usePublishResourceHubDocument();
 
   const form = Forms.useForm({
     fields: {
@@ -24,22 +25,22 @@ export function Form({ document }: { document: ResourceHubDocument }) {
         addError("content", "Content is required");
       }
     },
-    cancel: () => {
-      navigate(Paths.resourceHubDocumentPath(document.id!));
-    },
-    submit: async () => {
+    submit: async (type) => {
       const { title, content } = form.values;
 
-      if (documentHasChanged(document, title, content)) {
-        const res = await edit({
-          documentId: document.id!,
-          name: title,
-          content: JSON.stringify(content),
-        });
-        navigate(Paths.resourceHubDocumentPath(res.document.id));
-      } else {
-        navigate(Paths.resourceHubDocumentPath(document.id!));
+      if (type == "primary") {
+        if (documentHasChanged(document, title, content)) {
+          await edit({
+            documentId: document.id,
+            name: title,
+            content: JSON.stringify(content),
+          });
+        }
+      } else if (type == "secondary") {
+        await publish({ documentId: document.id });
       }
+
+      navigate(Paths.resourceHubDocumentPath(document.id!));
     },
   });
 
@@ -57,7 +58,7 @@ export function Form({ document }: { document: ResourceHubDocument }) {
         />
       </Forms.FieldGroup>
 
-      <Forms.Submit saveText="Save" buttonSize="base" />
+      <Forms.Submit saveText="Save Changes" secondarySubmitText="Publish Now" buttonSize="base" />
     </Forms.Form>
   );
 }

@@ -2789,6 +2789,14 @@ export interface PublishDiscussionResult {
   discussion?: Discussion | null;
 }
 
+export interface PublishResourceHubDocumentInput {
+  documentId?: Id | null;
+}
+
+export interface PublishResourceHubDocumentResult {
+  document?: ResourceHubDocument | null;
+}
+
 export interface RemoveCompanyAdminInput {
   personId?: Id | null;
 }
@@ -3493,6 +3501,10 @@ export class ApiClient {
     return this.post("/publish_discussion", input);
   }
 
+  async publishResourceHubDocument(input: PublishResourceHubDocumentInput): Promise<PublishResourceHubDocumentResult> {
+    return this.post("/publish_resource_hub_document", input);
+  }
+
   async removeCompanyAdmin(input: RemoveCompanyAdminInput): Promise<RemoveCompanyAdminResult> {
     return this.post("/remove_company_admin", input);
   }
@@ -3992,6 +4004,11 @@ export async function postProjectCheckIn(input: PostProjectCheckInInput): Promis
 }
 export async function publishDiscussion(input: PublishDiscussionInput): Promise<PublishDiscussionResult> {
   return defaultApiClient.publishDiscussion(input);
+}
+export async function publishResourceHubDocument(
+  input: PublishResourceHubDocumentInput,
+): Promise<PublishResourceHubDocumentResult> {
+  return defaultApiClient.publishResourceHubDocument(input);
 }
 export async function removeCompanyAdmin(input: RemoveCompanyAdminInput): Promise<RemoveCompanyAdminResult> {
   return defaultApiClient.removeCompanyAdmin(input);
@@ -4763,6 +4780,15 @@ export function usePublishDiscussion(): UseMutationHookResult<PublishDiscussionI
   );
 }
 
+export function usePublishResourceHubDocument(): UseMutationHookResult<
+  PublishResourceHubDocumentInput,
+  PublishResourceHubDocumentResult
+> {
+  return useMutation<PublishResourceHubDocumentInput, PublishResourceHubDocumentResult>((input) =>
+    defaultApiClient.publishResourceHubDocument(input),
+  );
+}
+
 export function useRemoveCompanyAdmin(): UseMutationHookResult<RemoveCompanyAdminInput, RemoveCompanyAdminResult> {
   return useMutation<RemoveCompanyAdminInput, RemoveCompanyAdminResult>((input) =>
     defaultApiClient.removeCompanyAdmin(input),
@@ -5150,6 +5176,8 @@ export default {
   usePostProjectCheckIn,
   publishDiscussion,
   usePublishDiscussion,
+  publishResourceHubDocument,
+  usePublishResourceHubDocument,
   removeCompanyAdmin,
   useRemoveCompanyAdmin,
   removeCompanyMember,
