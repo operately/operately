@@ -11,10 +11,13 @@ import { useTreeContext } from "../treeContext";
 import { TimeframeSelector } from "@/components/TimeframeSelector";
 
 export function Controls() {
+  const { tree } = useTreeContext();
   const { expanded, expandAll, collapseAll } = useExpandable();
   const { timeframe, setTimeframe } = useTreeContext();
 
-  const isExpanded = Object.values(expanded).some((value) => value);
+  const rootGoals = tree.filter((node) => node.type === "goal");
+
+  const isExpanded = rootGoals.some((goal) => expanded[goal.id]);
   const [showOptions, setShowOptions] = useState(false);
 
   const toggleShowOptions = () => setShowOptions((prev) => !prev);
