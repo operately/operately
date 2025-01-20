@@ -69,6 +69,21 @@ defmodule Operately.Support.Features.DiscussionsSteps do
     |> UI.fill(testid: "discussion-title", with: @title)
   end
 
+  step :start_writting_discussion_with_no_title, ctx do
+    ctx
+    |> UI.visit(Paths.space_discussions_path(ctx.company, ctx.marketing_space))
+    |> UI.click(testid: "new-discussion")
+    |> UI.assert_page(Paths.space_discussions_new_path(ctx.company, ctx.marketing_space))
+  end
+
+  step :try_to_submit_draft, ctx do
+    ctx |> UI.click(testid: "save-as-draft")
+  end
+
+  step :assert_validation_error, ctx do
+    ctx |> UI.assert_text("Please add a title")
+  end
+
   step :attach_file_to_discussion, ctx do
     # There is no direct way to interact with the file input field in Wallaby
     # so as a workaround, we do two implicit tests:

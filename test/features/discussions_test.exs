@@ -5,6 +5,13 @@ defmodule Operately.Features.DiscussionsTest do
 
   setup ctx, do: Steps.setup(ctx)
 
+  feature "trying to post a discussion without a title", ctx do
+    ctx
+    |> Steps.start_writting_discussion_with_no_title()
+    |> Steps.try_to_submit_draft()
+    |> Steps.assert_validation_error()
+  end
+
   feature "post a draft discussion", ctx do
     ctx
     |> Steps.post_a_draft_discussion()
