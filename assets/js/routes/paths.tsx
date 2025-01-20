@@ -496,7 +496,7 @@ function idWithoutComments(id: string) {
   return parts[parts.length - 1];
 }
 
-function encodeUrlParams(params?: Record<any, any>) {
+export function encodeUrlParams(params?: Record<any, any>) {
   if (!params) return "";
 
   const queryStr = Object.entries(params)

@@ -62,7 +62,7 @@ defmodule Operately.Support.Features.GoalCreationTestSteps do
   step :initialize_goal_creation_from_global_new_navigation, ctx do
     ctx
     |> UI.click(testid: "new-dropdown")
-    |> UI.click(testid: "company-dropdown-new-goal")
+    |> UI.click(testid: "new-dropdown-new-goal")
     |> UI.assert_has(testid: "goal-add-page")
   end
 
