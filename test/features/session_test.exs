@@ -41,7 +41,7 @@ defmodule Operately.Features.SessionTest do
     |> Steps.assert_invalid_email_error()
   end
 
-  feature "login with incorrect password", ctx do
+  feature "attemp login with incorrect password", ctx do
     ctx
     |> Steps.given_i_have_an_account(@account_info)
     |> Steps.open_operately()
@@ -59,6 +59,18 @@ defmodule Operately.Features.SessionTest do
     |> Steps.fill_out_login_form(@account_info)
     |> Steps.submit_login_form()
     |> Steps.assert_on_the_protected_page()
+  end
+
+  feature "forgot password", ctx do
+    ctx
+    |> Steps.given_i_have_an_account(@account_info)
+    |> Steps.open_operately()
+    |> Steps.assert_on_the_login_page()
+    |> Steps.click_forgot_password_link()
+    |> Steps.fill_out_forgot_password_form_and_submit(@account_info)
+    |> Steps.open_password_reset_link_from_email()
+    |> Steps.fill_out_reset_password_form(@account_info)
+    |> Steps.assert_password_changed()
   end
 
 end
