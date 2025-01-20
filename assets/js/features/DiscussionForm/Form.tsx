@@ -11,7 +11,7 @@ export function Form({ form }: { form: FormState }) {
         testId="discussion-title"
         value={form.title}
         onChange={form.setTitle}
-        error={!!form.errors.find((e) => e.field === "name")}
+        error={!!form.errors.find((e) => e.field === "title")}
       />
       <Message editor={form.editor} />
     </>
