@@ -3,53 +3,63 @@ import * as Companies from "@/models/companies";
 import * as Spaces from "@/models/spaces";
 import * as Goals from "@/models/goals";
 
+export interface UrlParams {
+  goalId?: string;
+  spaceId?: string;
+
+  backPath?: string;
+  backPathName?: string;
+}
+
 interface LoaderResult {
   company: Companies.Company;
 
   space?: Spaces.Space;
   spaceID?: string;
   spaces?: Spaces.Space[];
+
   goal?: Goals.Goal;
   goals: Goals.Goal[];
 
-  allowSpaceSelection: boolean;
+  backPath?: string;
+  backPathName?: string;
+
   spaceOptions: { value: string; label: string }[];
 }
 
-// There are two ways we can end up on this page:
-// 1. We are navigating to a specific space, and we have the space ID in the URL.
-// 2. We are navigating to /projects/new, and we need to pick a space.
-
 export async function loader({ request, params }): Promise<LoaderResult> {
-  const spaceID = params.id;
   const searchParams = new URL(request.url).searchParams;
+
+  const backPath = searchParams.get("backPath") || undefined;
+  const backPathName = searchParams.get("backPathName") || undefined;
+
+  validateBackParams(backPath, backPathName);
+
+  const spaceID = params.id || searchParams.get("spaceId") || undefined;
+
   const goalID = searchParams.get("goalId") || undefined;
   const goal = goalID ? await Goals.getGoal({ id: goalID }).then((data) => data.goal!) : undefined;
 
   const company = await Companies.getCompany({ id: params.companyId }).then((data) => data.company!);
-  const goals = await Goals.getGoals({
-    includeSpace: true,
-    includeChampion: true,
-  }).then((data) => data.goals!);
+  const goals = await Goals.getGoals({ includeSpace: true, includeChampion: true }).then((data) => data.goals!);
 
-  let space: Spaces.Space | undefined;
-  let spaces: Spaces.Space[] | undefined;
-  let allowSpaceSelection: boolean;
-  let spaceOptions: { value: string; label: string }[] = [];
+  const spaces = await Spaces.getSpaces({ includeAccessLevels: true });
+  const space = spaceID ? await Spaces.getSpace({ id: spaceID }) : undefined;
+  const spaceOptions = spaces.map((space) => ({ value: space.id!, label: space.name! }));
 
-  if (spaceID) {
-    space = await Spaces.getSpace({ id: spaceID, includeAccessLevels: true });
-    allowSpaceSelection = false;
-    spaceOptions = [{ value: space.id!, label: space.name! }];
-  } else {
-    spaces = await Spaces.getSpaces({ includeAccessLevels: true });
-    allowSpaceSelection = true;
-    spaceOptions = spaces.map((space) => ({ value: space.id!, label: space.name! }));
-  }
-
-  return { company, spaceID, space, spaces, allowSpaceSelection, goal, goals, spaceOptions };
+  return { company, spaceID, space, spaces, goal, goals, spaceOptions, backPath, backPathName };
 }
 
 export function useLoadedData(): LoaderResult {
   return Pages.useLoadedData() as LoaderResult;
+}
+
+function validateBackParams(backPath: string | undefined, backPathName: string | undefined) {
+  if (backPath && !backPathName) {
+    throw new Error("backPathName is required when backPath is provided");
+  }
+
+  if (!backPath && backPathName) {
+    throw new Error("backPath is required when backPathName is provided");
+  }
 }

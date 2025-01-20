@@ -12,6 +12,11 @@ import { Paths } from "@/routes/paths";
 export function Page() {
   const { projects } = useLoadedData();
 
+  const newProjectPath = Paths.newProjectPath({
+    backPath: Paths.projectsPath(),
+    backPathName: "Back to Projects",
+  });
+
   return (
     <Pages.Page title={"Projects"}>
       <Paper.Root size="large">
@@ -20,7 +25,7 @@ export function Page() {
           <Title />
 
           <div className="flex items-center justify-center mb-10 gap-4">
-            <PrimaryButton linkTo={Paths.newProjectPath()}>Add Project</PrimaryButton>
+            <PrimaryButton linkTo={newProjectPath}>Add Project</PrimaryButton>
           </div>
 
           <ProjectList projects={projects} showSpace />

@@ -1,6 +1,7 @@
 import * as ProfileEditPage from "@/pages/ProfileEditPage";
 import * as ProjectContributorsAddPage from "@/pages/ProjectContributorsAddPage";
 import * as ProjectContributorsEditPage from "@/pages/ProjectContributorsEditPage";
+import * as ProjectAddPage from "@/pages/ProjectAddPage";
 import { LinkOptions } from "@/features/ResourceHub";
 
 export class Paths {
@@ -307,12 +308,8 @@ export class Paths {
     return createCompanyPath(["spaces", spaceId, "goals", "new"]);
   }
 
-  static spaceNewProjectPath(spaceId: string) {
-    return createCompanyPath(["spaces", spaceId, "projects", "new"]);
-  }
-
-  static newProjectPath() {
-    return createCompanyPath(["projects", "new"]);
+  static newProjectPath(params?: ProjectAddPage.UrlParams) {
+    return createCompanyPath(["projects", "new"]) + encodeUrlParams(params);
   }
 
   static projectsPath() {
