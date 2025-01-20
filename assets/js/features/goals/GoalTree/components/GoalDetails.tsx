@@ -80,7 +80,7 @@ export function GoalActions({ hovered, node }: { hovered: boolean; node: GoalNod
       <SecondaryButton linkTo={newGoalPath} size="xxs" testId="add-subgoal">
         Add sub-goal
       </SecondaryButton>
-      <SecondaryButton linkTo={newProjectPath} size="xxs">
+      <SecondaryButton linkTo={newProjectPath} size="xxs" testId="add-project">
         Create project
       </SecondaryButton>
     </div>
