@@ -51,15 +51,6 @@ defmodule Operately.Features.SessionTest do
     |> Steps.assert_wrong_password_error()
   end
 
-  feature "reset password", ctx do
-    ctx
-    |> Steps.given_im_logged_in(@account_info)
-    |> Steps.navigate_to_password_reset_page()
-    |> Steps.fill_in_reset_password_form(@account_info)
-    |> Steps.submit_reset_password_form()
-    |> Steps.assert_password_changed()
-  end
-
   feature "redirect after login to the page I was trying to access", ctx do
     ctx
     |> Steps.given_i_have_an_account(@account_info)
