@@ -34,7 +34,10 @@ export function Page() {
 
 function Header() {
   const newGoalPath = Paths.newGoalPath({ companyWide: true });
-  const newProjectPath = Paths.newProjectPath();
+  const newProjectPath = Paths.newProjectPath({
+    backPath: Paths.goalsPath(),
+    backPathName: "Back to Goal Map",
+  });
 
   return (
     <Paper.Header

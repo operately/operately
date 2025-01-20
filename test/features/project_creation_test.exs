@@ -144,4 +144,11 @@ defmodule Operately.Features.ProjectCreationTest do
     |> Steps.assert_space_members_cant_see_project(params)
     |> Steps.assert_project_created_feed()
   end
+
+  @tag login_as: :champion
+  feature "add project from the goal map", ctx do
+    ctx
+    |> Steps.start_adding_project_from_goal_map()
+    |> Steps.assert_project_form_prefilled_with_goal_and_its_space()
+  end
 end

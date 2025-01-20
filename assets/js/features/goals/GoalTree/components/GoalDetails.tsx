@@ -73,14 +73,19 @@ export function GoalActions({ hovered, node }: { hovered: boolean; node: GoalNod
   });
 
   const newGoalPath = Paths.goalNewPath({ parentGoalId: node.goal.id! });
-  const newProjectPath = Paths.newProjectPath();
+  const newProjectPath = Paths.newProjectPath({
+    goalId: node.goal.id!,
+    spaceId: node.goal.space!.id!,
+    backPathName: "Back to Goal Map",
+    backPath: window.location.pathname,
+  });
 
   return (
     <div className={containerClasses}>
       <SecondaryButton linkTo={newGoalPath} size="xxs" testId="add-subgoal">
         Add sub-goal
       </SecondaryButton>
-      <SecondaryButton linkTo={newProjectPath} size="xxs">
+      <SecondaryButton linkTo={newProjectPath} size="xxs" testId="add-project">
         Create project
       </SecondaryButton>
     </div>

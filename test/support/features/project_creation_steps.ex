@@ -261,4 +261,18 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
     if condition, do: fun.(ctx), else: ctx
   end
 
+  step :start_adding_project_from_goal_map, ctx do
+    ctx 
+    |> UI.visit(Paths.goals_path(ctx.company))
+    |> UI.hover(testid: UI.testid(["goal", ctx.goal.name]))
+    |> UI.click(testid: "add-project")
+  end
+
+  step :assert_project_form_prefilled_with_goal_and_its_space, ctx do
+    ctx 
+    |> UI.assert_text("Start a new project")
+    |> UI.assert_text(ctx.goal.name)
+    |> UI.assert_text(ctx.group.name)
+  end
+
 end
