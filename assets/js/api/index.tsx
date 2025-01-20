@@ -1215,6 +1215,7 @@ export interface ResourceHubLink {
   permissions?: ResourceHubPermissions | null;
   reactions?: Reaction[] | null;
   pathToLink?: ResourceHubFolder[] | null;
+  commentsCount?: number | null;
 }
 
 export interface ResourceHubNode {

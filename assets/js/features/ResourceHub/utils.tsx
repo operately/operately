@@ -50,6 +50,10 @@ export function findCommentsCount(nodeType: NodeType, node: ResourceHubNode) {
       assertPresent(node.file?.commentsCount, "commentsCount must be present in file");
       return node.file.commentsCount;
 
+    case "link":
+      assertPresent(node.link?.commentsCount, "commentsCount must be present in link");
+      return node.link.commentsCount;
+
     default:
       return 0;
   }
