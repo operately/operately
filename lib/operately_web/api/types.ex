@@ -749,6 +749,7 @@ defmodule OperatelyWeb.Api.Types do
     field :permissions, :resource_hub_permissions
     field :reactions, list_of(:reaction)
     field :path_to_link, list_of(:resource_hub_folder)
+    field :comments_count, :integer
   end
 
   object :resource_hub_node do

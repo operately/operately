@@ -1,17 +1,19 @@
 import React from "react";
 
-import { ResourceHub, ResourceHubFolder, ResourceHubPermissions } from "@/models/resourceHubs";
+import { ResourceHub, ResourceHubFolder, ResourceHubNode, ResourceHubPermissions } from "@/models/resourceHubs";
 import { assertPresent } from "@/utils/assertions";
 
 interface ResourceHubProps {
   resourceHub: ResourceHub;
   type: "resource_hub";
+  nodes: ResourceHubNode[];
   refetch: () => void;
 }
 
 interface FolderProps {
   folder: ResourceHubFolder;
   type: "folder";
+  nodes: ResourceHubNode[];
   refetch: () => void;
 }
 

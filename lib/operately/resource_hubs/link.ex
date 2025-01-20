@@ -33,6 +33,7 @@ defmodule Operately.ResourceHubs.Link do
     field :permissions, :any, virtual: true
     field :notifications, :any, virtual: true, default: []
     field :path_to_link, :any, virtual: true
+    field :comments_count, :integer, virtual: true
 
     timestamps()
     soft_delete()

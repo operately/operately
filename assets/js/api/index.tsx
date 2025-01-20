@@ -1215,6 +1215,7 @@ export interface ResourceHubLink {
   permissions?: ResourceHubPermissions | null;
   reactions?: Reaction[] | null;
   pathToLink?: ResourceHubFolder[] | null;
+  commentsCount?: number | null;
 }
 
 export interface ResourceHubNode {
@@ -1877,8 +1878,6 @@ export interface GetResourceHubInput {
   includeNodes?: boolean | null;
   includePotentialSubscribers?: boolean | null;
   includePermissions?: boolean | null;
-  includeChildrenCount?: boolean | null;
-  includeCommentsCount?: boolean | null;
 }
 
 export interface GetResourceHubResult {
@@ -1926,9 +1925,7 @@ export interface GetResourceHubFolderInput {
   includeResourceHub?: boolean | null;
   includePathToFolder?: boolean | null;
   includePermissions?: boolean | null;
-  includeChildrenCount?: boolean | null;
   includePotentialSubscribers?: boolean | null;
-  includeCommentsCount?: boolean | null;
 }
 
 export interface GetResourceHubFolderResult {
@@ -1999,6 +1996,18 @@ export interface GetUnreadNotificationCountInput {}
 
 export interface GetUnreadNotificationCountResult {
   unread?: number | null;
+}
+
+export interface ListResourceHubNodesInput {
+  resourceHubId?: Id | null;
+  folderId?: Id | null;
+  includeCommentsCount?: boolean | null;
+  includeChildrenCount?: boolean | null;
+}
+
+export interface ListResourceHubNodesResult {
+  nodes?: ResourceHubNode[] | null;
+  draftNodes?: ResourceHubNode[] | null;
 }
 
 export interface ListSpaceToolsInput {
@@ -2345,6 +2354,7 @@ export interface CreateResourceHubDocumentInput {
   folderId?: Id | null;
   name?: string | null;
   content?: string | null;
+  postAsDraft?: boolean | null;
   sendNotificationsToEveryone?: boolean | null;
   subscriberIds?: Id[] | null;
   copiedDocumentId?: Id | null;
@@ -2779,6 +2789,14 @@ export interface PublishDiscussionResult {
   discussion?: Discussion | null;
 }
 
+export interface PublishResourceHubDocumentInput {
+  documentId?: Id | null;
+}
+
+export interface PublishResourceHubDocumentResult {
+  document?: ResourceHubDocument | null;
+}
+
 export interface RemoveCompanyAdminInput {
   personId?: Id | null;
 }
@@ -3147,6 +3165,10 @@ export class ApiClient {
     return this.get("/get_unread_notification_count", input);
   }
 
+  async listResourceHubNodes(input: ListResourceHubNodesInput): Promise<ListResourceHubNodesResult> {
+    return this.get("/list_resource_hub_nodes", input);
+  }
+
   async listSpaceTools(input: ListSpaceToolsInput): Promise<ListSpaceToolsResult> {
     return this.get("/list_space_tools", input);
   }
@@ -3479,6 +3501,10 @@ export class ApiClient {
     return this.post("/publish_discussion", input);
   }
 
+  async publishResourceHubDocument(input: PublishResourceHubDocumentInput): Promise<PublishResourceHubDocumentResult> {
+    return this.post("/publish_resource_hub_document", input);
+  }
+
   async removeCompanyAdmin(input: RemoveCompanyAdminInput): Promise<RemoveCompanyAdminResult> {
     return this.post("/remove_company_admin", input);
   }
@@ -3691,6 +3717,9 @@ export async function getUnreadNotificationCount(
   input: GetUnreadNotificationCountInput,
 ): Promise<GetUnreadNotificationCountResult> {
   return defaultApiClient.getUnreadNotificationCount(input);
+}
+export async function listResourceHubNodes(input: ListResourceHubNodesInput): Promise<ListResourceHubNodesResult> {
+  return defaultApiClient.listResourceHubNodes(input);
 }
 export async function listSpaceTools(input: ListSpaceToolsInput): Promise<ListSpaceToolsResult> {
   return defaultApiClient.listSpaceTools(input);
@@ -3976,6 +4005,11 @@ export async function postProjectCheckIn(input: PostProjectCheckInInput): Promis
 export async function publishDiscussion(input: PublishDiscussionInput): Promise<PublishDiscussionResult> {
   return defaultApiClient.publishDiscussion(input);
 }
+export async function publishResourceHubDocument(
+  input: PublishResourceHubDocumentInput,
+): Promise<PublishResourceHubDocumentResult> {
+  return defaultApiClient.publishResourceHubDocument(input);
+}
 export async function removeCompanyAdmin(input: RemoveCompanyAdminInput): Promise<RemoveCompanyAdminResult> {
   return defaultApiClient.removeCompanyAdmin(input);
 }
@@ -4222,6 +4256,12 @@ export function useGetUnreadNotificationCount(
   input: GetUnreadNotificationCountInput,
 ): UseQueryHookResult<GetUnreadNotificationCountResult> {
   return useQuery<GetUnreadNotificationCountResult>(() => defaultApiClient.getUnreadNotificationCount(input));
+}
+
+export function useListResourceHubNodes(
+  input: ListResourceHubNodesInput,
+): UseQueryHookResult<ListResourceHubNodesResult> {
+  return useQuery<ListResourceHubNodesResult>(() => defaultApiClient.listResourceHubNodes(input));
 }
 
 export function useListSpaceTools(input: ListSpaceToolsInput): UseQueryHookResult<ListSpaceToolsResult> {
@@ -4740,6 +4780,15 @@ export function usePublishDiscussion(): UseMutationHookResult<PublishDiscussionI
   );
 }
 
+export function usePublishResourceHubDocument(): UseMutationHookResult<
+  PublishResourceHubDocumentInput,
+  PublishResourceHubDocumentResult
+> {
+  return useMutation<PublishResourceHubDocumentInput, PublishResourceHubDocumentResult>((input) =>
+    defaultApiClient.publishResourceHubDocument(input),
+  );
+}
+
 export function useRemoveCompanyAdmin(): UseMutationHookResult<RemoveCompanyAdminInput, RemoveCompanyAdminResult> {
   return useMutation<RemoveCompanyAdminInput, RemoveCompanyAdminResult>((input) =>
     defaultApiClient.removeCompanyAdmin(input),
@@ -4965,6 +5014,8 @@ export default {
   useGetTasks,
   getUnreadNotificationCount,
   useGetUnreadNotificationCount,
+  listResourceHubNodes,
+  useListResourceHubNodes,
   listSpaceTools,
   useListSpaceTools,
   searchPeople,
@@ -5125,6 +5176,8 @@ export default {
   usePostProjectCheckIn,
   publishDiscussion,
   usePublishDiscussion,
+  publishResourceHubDocument,
+  usePublishResourceHubDocument,
   removeCompanyAdmin,
   useRemoveCompanyAdmin,
   removeCompanyMember,
