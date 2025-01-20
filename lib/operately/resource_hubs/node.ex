@@ -1,4 +1,5 @@
 defmodule Operately.ResourceHubs.Node do
+  import Ecto.Query, only: [from: 2]
   use Operately.Schema
   use Operately.Repo.Getter
 
@@ -30,19 +31,57 @@ defmodule Operately.ResourceHubs.Node do
     |> validate_required([:resource_hub_id, :name, :type])
   end
 
-  def preload_nodes, do: [folder: :node, document: [:author, :node], link: [:author, :node], file: [:author, :node, :preview_blob, :blob]]
+  #
+  # Scopes
+  #
+
+  def preload_content(q, author) do
+    from(n in q,
+      left_join: folder in assoc(n, :folder),
+      left_join: node_folder in assoc(folder, :node),
+
+      left_join: document in Operately.ResourceHubs.Document,
+      on: document.node_id == n.id and ((document.author_id == ^author.id and document.state == :draft) or document.state == :published),
+      left_join: node_document in assoc(document, :node),
+      left_join: author_document in assoc(document, :author),
+
+      left_join: link in assoc(n, :link),
+      left_join: node_link in assoc(link, :node),
+      left_join: author_link in assoc(link, :author),
+
+      left_join: file in assoc(n, :file),
+      left_join: node_file in assoc(file, :node),
+      left_join: author_file in assoc(file, :author),
+      left_join: blob_file in assoc(file, :blob),
+      left_join: preview_blob_file in assoc(file, :preview_blob),
+
+      preload: [
+        folder: {folder, node: node_folder},
+        document: {document, node: node_document, author: author_document},
+        link: {link, node: node_link, author: author_link},
+        file: {file, node: node_file, author: author_file, blob: blob_file, preview_blob: preview_blob_file}
+      ],
+
+      where: not is_nil(folder.id) or not is_nil(document.id) or not is_nil(link.id) or not is_nil(file.id)
+    )
+  end
 
   #
   # After load hooks
   #
 
+  def separate_drafts(nodes) when is_list(nodes) do
+    Enum.split_with(nodes, fn node ->
+      node.type == :document and node.document.state == :draft
+    end)
+  end
+
   def load_comments_count(nodes) when is_list(nodes) do
     ids = Enum.reduce(nodes, [], fn n, acc ->
-      if n.type in [:document, :file] do
-        id = if n.document, do: n.document.id, else: n.file.id
-        [id | acc]
-      else
-        acc
+      cond do
+        n.type == :document -> [n.document.id | acc]
+        n.type == :file -> [n.file.id | acc]
+        true -> acc
       end
     end)
 

@@ -1874,7 +1874,6 @@ export interface GetProjectsResult {
 export interface GetResourceHubInput {
   id?: Id | null;
   includeSpace?: boolean | null;
-  includeNodes?: boolean | null;
   includePotentialSubscribers?: boolean | null;
   includePermissions?: boolean | null;
   includeChildrenCount?: boolean | null;
@@ -1999,6 +1998,18 @@ export interface GetUnreadNotificationCountInput {}
 
 export interface GetUnreadNotificationCountResult {
   unread?: number | null;
+}
+
+export interface ListResourceHubNodesInput {
+  resourceHubId?: Id | null;
+  folderId?: Id | null;
+  includeCommentsCount?: boolean | null;
+  includeChildrenCount?: boolean | null;
+}
+
+export interface ListResourceHubNodesResult {
+  nodes?: ResourceHubNode[] | null;
+  draftNodes?: ResourceHubNode[] | null;
 }
 
 export interface ListSpaceToolsInput {
@@ -3148,6 +3159,10 @@ export class ApiClient {
     return this.get("/get_unread_notification_count", input);
   }
 
+  async listResourceHubNodes(input: ListResourceHubNodesInput): Promise<ListResourceHubNodesResult> {
+    return this.get("/list_resource_hub_nodes", input);
+  }
+
   async listSpaceTools(input: ListSpaceToolsInput): Promise<ListSpaceToolsResult> {
     return this.get("/list_space_tools", input);
   }
@@ -3693,6 +3708,9 @@ export async function getUnreadNotificationCount(
 ): Promise<GetUnreadNotificationCountResult> {
   return defaultApiClient.getUnreadNotificationCount(input);
 }
+export async function listResourceHubNodes(input: ListResourceHubNodesInput): Promise<ListResourceHubNodesResult> {
+  return defaultApiClient.listResourceHubNodes(input);
+}
 export async function listSpaceTools(input: ListSpaceToolsInput): Promise<ListSpaceToolsResult> {
   return defaultApiClient.listSpaceTools(input);
 }
@@ -4223,6 +4241,12 @@ export function useGetUnreadNotificationCount(
   input: GetUnreadNotificationCountInput,
 ): UseQueryHookResult<GetUnreadNotificationCountResult> {
   return useQuery<GetUnreadNotificationCountResult>(() => defaultApiClient.getUnreadNotificationCount(input));
+}
+
+export function useListResourceHubNodes(
+  input: ListResourceHubNodesInput,
+): UseQueryHookResult<ListResourceHubNodesResult> {
+  return useQuery<ListResourceHubNodesResult>(() => defaultApiClient.listResourceHubNodes(input));
 }
 
 export function useListSpaceTools(input: ListSpaceToolsInput): UseQueryHookResult<ListSpaceToolsResult> {
@@ -4966,6 +4990,8 @@ export default {
   useGetTasks,
   getUnreadNotificationCount,
   useGetUnreadNotificationCount,
+  listResourceHubNodes,
+  useListResourceHubNodes,
   listSpaceTools,
   useListSpaceTools,
   searchPeople,
