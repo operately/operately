@@ -9,7 +9,7 @@ import { useLoadedData, useRefresh } from "./loader";
 import { assertPresent } from "@/utils/assertions";
 
 export function Page() {
-  const { resourceHub, nodes } = useLoadedData();
+  const { resourceHub, nodes, draftNodes } = useLoadedData();
   const refresh = useRefresh();
 
   assertPresent(resourceHub.permissions, "permissions must be present in resourceHub");
@@ -23,6 +23,7 @@ export function Page() {
 
             <Paper.Body minHeight="75vh">
               <Hub.Header resource={resourceHub} />
+              <Hub.ContinueEditingDrafts resourceHubId={resourceHub.id!} drafts={draftNodes} />
               <Hub.AddFileWidget resourceHub={resourceHub} refresh={refresh} />
               <Hub.NodesList resourceHub={resourceHub} type="resource_hub" nodes={nodes} refetch={refresh} />
               <Hub.AddFolderModal resourceHub={resourceHub} refresh={refresh} />

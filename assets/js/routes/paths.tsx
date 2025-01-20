@@ -205,6 +205,10 @@ export class Paths {
     return createCompanyPath(["resource-hubs", resourceHubId]);
   }
 
+  static resourceHubDraftsPath(resourceHubId: string) {
+    return createCompanyPath(["resource-hubs", resourceHubId, "drafts"]);
+  }
+
   static resourceHubFolderPath(folderId: string) {
     return createCompanyPath(["folders", folderId]);
   }
