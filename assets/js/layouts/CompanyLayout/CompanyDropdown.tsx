@@ -14,12 +14,39 @@ export function CompanyDropdown({ company }: { company: Companies.Company }) {
       align="start"
       showDropdownIcon
     >
-      <DropdownLinkItem path={Paths.feedPath()} icon={Icons.IconRss} title="The Feed" />
-      <DropdownLinkItem path={Paths.peoplePath()} icon={Icons.IconUserCircle} title="People" />
-      <DropdownLinkItem path={Paths.orgChartPath()} icon={Icons.IconBinaryTree2} title="Org Chart" />
+      <DropdownLinkItem
+        path={Paths.feedPath()}
+        icon={Icons.IconRss}
+        title="The Feed"
+        testId="company-dropdown-company-feed"
+      />
+      <DropdownLinkItem
+        path={Paths.peoplePath()}
+        icon={Icons.IconUserCircle}
+        title="People"
+        testId="company-dropdown-people"
+      />
+      <DropdownLinkItem
+        path={Paths.orgChartPath()}
+        icon={Icons.IconBinaryTree2}
+        title="Org Chart"
+        testId="company-dropdown-org-chart"
+      />
+
       <DropdownSeparator />
-      <DropdownLinkItem path={Paths.companyAdminPath()} icon={Icons.IconCircleKey} title="Company Admin" />
-      <DropdownLinkItem path={Paths.lobbyPath()} icon={Icons.IconSwitch} title="Switch Company" />
+
+      <DropdownLinkItem
+        path={Paths.companyAdminPath()}
+        icon={Icons.IconCircleKey}
+        title="Company Admin"
+        testId="company-dropdown-company-admin"
+      />
+      <DropdownLinkItem
+        path={Paths.lobbyPath()}
+        icon={Icons.IconSwitch}
+        title="Switch Company"
+        testId="company-dropdown-switch"
+      />
     </DropdownMenu>
   );
 }

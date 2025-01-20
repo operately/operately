@@ -77,11 +77,12 @@ interface DropdownLinkItemProps {
   icon: React.ElementType;
   title: string;
   testId?: string;
+  target?: string;
 }
 
-export function DropdownLinkItem({ path, icon, title, testId }: DropdownLinkItemProps) {
+export function DropdownLinkItem({ path, icon, title, testId, target }: DropdownLinkItemProps) {
   return (
-    <DivLink className={itemClassName} to={path} testId={testId}>
+    <DivLink className={itemClassName} to={path} testId={testId} target={target}>
       {React.createElement(icon, { size: 18, strokeWidth: 2 })}
       <div className="font-medium">{title}</div>
     </DivLink>
