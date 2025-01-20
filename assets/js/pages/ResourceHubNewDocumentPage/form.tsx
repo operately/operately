@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { useCreateResourceHubDocument } from "@/models/resourceHubs";
 
 import Forms from "@/components/Forms";
+import { match } from "ts-pattern";
+import { Link } from "@/components/Link";
 import { DimmedSection } from "@/components/PaperContainer";
 import { Spacer } from "@/components/Spacer";
 import { Options, SubscribersSelector, useSubscriptions } from "@/features/Subscriptions";
@@ -36,10 +38,12 @@ export function Form({ folderId }: { folderId: string | null }) {
         addError("content", "Content is required");
       }
     },
-    cancel: () => {
-      navigate(Paths.resourceHubPath(resourceHub.id!));
-    },
-    submit: async () => {
+    submit: async (type) => {
+      const postAsDraft = match(type)
+        .with("primary", () => false)
+        .with("secondary", () => true)
+        .exhaustive();
+
       const res = await post({
         resourceHubId: resourceHub.id,
         folderId: folderId,
@@ -47,6 +51,7 @@ export function Form({ folderId }: { folderId: string | null }) {
         content: JSON.stringify(form.values.content),
         sendNotificationsToEveryone: subscriptionsState.subscriptionType === Options.ALL,
         subscriberIds: subscriptionsState.currentSubscribersList,
+        postAsDraft,
       });
       navigate(Paths.resourceHubDocumentPath(res.document.id));
     },
@@ -71,8 +76,22 @@ export function Form({ folderId }: { folderId: string | null }) {
         <Spacer size={4} />
         <SubscribersSelector state={subscriptionsState} resourceHubName={resourceHub.name!} />
 
-        <Forms.Submit saveText="Submit" buttonSize="base" />
+        <div>
+          <Forms.Submit saveText="Create document" secondarySubmitText="Save as draft" buttonSize="base" />
+
+          <div className="mt-4">
+            Or, <DiscardLink resourceHubId={resourceHub.id!} />
+          </div>
+        </div>
       </DimmedSection>
     </Forms.Form>
+  );
+}
+
+function DiscardLink({ resourceHubId }: { resourceHubId: string }) {
+  return (
+    <Link to={Paths.resourceHubPath(resourceHubId)} testId="discard" className="font-medium">
+      Discard this document
+    </Link>
   );
 }

@@ -2345,6 +2345,7 @@ export interface CreateResourceHubDocumentInput {
   folderId?: Id | null;
   name?: string | null;
   content?: string | null;
+  postAsDraft?: boolean | null;
   sendNotificationsToEveryone?: boolean | null;
   subscriberIds?: Id[] | null;
   copiedDocumentId?: Id | null;
