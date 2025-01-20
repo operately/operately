@@ -1875,10 +1875,9 @@ export interface GetProjectsResult {
 export interface GetResourceHubInput {
   id?: Id | null;
   includeSpace?: boolean | null;
+  includeNodes?: boolean | null;
   includePotentialSubscribers?: boolean | null;
   includePermissions?: boolean | null;
-  includeChildrenCount?: boolean | null;
-  includeCommentsCount?: boolean | null;
 }
 
 export interface GetResourceHubResult {
@@ -1926,9 +1925,7 @@ export interface GetResourceHubFolderInput {
   includeResourceHub?: boolean | null;
   includePathToFolder?: boolean | null;
   includePermissions?: boolean | null;
-  includeChildrenCount?: boolean | null;
   includePotentialSubscribers?: boolean | null;
-  includeCommentsCount?: boolean | null;
 }
 
 export interface GetResourceHubFolderResult {

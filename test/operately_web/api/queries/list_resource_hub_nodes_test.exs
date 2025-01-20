@@ -106,7 +106,6 @@ defmodule OperatelyWeb.Api.Queries.ListResourceHubNodesTest do
       assert length(res.draft_nodes) == 1
 
       assert {200, res} = query(ctx.conn, :list_resource_hub_nodes, %{
-        resource_hub_id: Paths.resource_hub_id(ctx.hub),
         folder_id: Paths.folder_id(ctx.folder)
       })
 
@@ -155,7 +154,6 @@ defmodule OperatelyWeb.Api.Queries.ListResourceHubNodesTest do
         |> Factory.add_file(:file3, :hub, folder: :folder)
 
       assert {200, res} = query(ctx.conn, :list_resource_hub_nodes, %{
-        resource_hub_id: Paths.resource_hub_id(ctx.hub),
         folder_id: Paths.folder_id(ctx.parent_folder)
       })
 
@@ -163,7 +161,6 @@ defmodule OperatelyWeb.Api.Queries.ListResourceHubNodesTest do
       refute node.folder.children_count
 
       assert {200, res} = query(ctx.conn, :list_resource_hub_nodes, %{
-        resource_hub_id: Paths.resource_hub_id(ctx.hub),
         folder_id: Paths.folder_id(ctx.parent_folder),
         include_children_count: true,
       })

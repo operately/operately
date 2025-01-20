@@ -36,12 +36,9 @@ defmodule OperatelyWeb.Api.Queries.ListResourceHubNodes do
 
   defp load_nodes(me, inputs) do
     nodes =
-      from(n in Node,
-        where: n.resource_hub_id == ^inputs.resource_hub_id,
-        order_by: [desc: n.inserted_at]
-      )
+      from(n in Node, order_by: [desc: n.inserted_at])
+      |> filter_nodes(inputs)
       |> Node.preload_content(me)
-      |> filter_by_folder(inputs[:folder_id])
       |> Filters.filter_by_view_access(me.id)
       |> Repo.all()
       |> load_comments_count(inputs[:include_comments_count])
@@ -59,10 +56,10 @@ defmodule OperatelyWeb.Api.Queries.ListResourceHubNodes do
     }}
   end
 
-  defp filter_by_folder(q, nil) do
-    from(n in q, where: is_nil(n.parent_folder_id))
+  defp filter_nodes(q, %{resource_hub_id: resource_hub_id}) do
+    from(n in q, where: n.resource_hub_id == ^resource_hub_id and is_nil(n.parent_folder_id))
   end
-  defp filter_by_folder(q, folder_id) do
+  defp filter_nodes(q, %{folder_id: folder_id}) do
     from(n in q, where: n.parent_folder_id == ^folder_id)
   end
 
