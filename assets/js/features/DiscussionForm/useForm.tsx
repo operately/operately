@@ -50,7 +50,7 @@ export function useForm({ space, mode, discussion, potentialSubscribers = [] }: 
   const [errors, setErrors] = React.useState<Error[]>([]);
   const [title, setTitle] = React.useState(() => discussion?.title || "");
 
-  const { editor, uploading, empty } = TipTapEditor.useEditor({
+  const { editor, uploading } = TipTapEditor.useEditor({
     placeholder: "Write here...",
     className: "min-h-[350px] py-2 px-1",
     content: discussion?.body && JSON.parse(discussion.body),
@@ -62,8 +62,7 @@ export function useForm({ space, mode, discussion, potentialSubscribers = [] }: 
     if (uploading) return false;
 
     const foundErrors: Error[] = [];
-    if (!title.trim()) foundErrors.push({ field: "title", message: "Title is required" });
-    if (empty) foundErrors.push({ field: "body", message: "Body is required" });
+    if (title.trim() === "") foundErrors.push({ field: "title", message: "Title is required" });
 
     if (foundErrors.length) {
       setErrors(foundErrors);

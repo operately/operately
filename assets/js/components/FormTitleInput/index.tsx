@@ -38,14 +38,18 @@ export function FormTitleInput({ value, onChange, error, testId }: FormTitleInpu
   }, [value]);
 
   return (
-    <textarea
-      ref={textareaRef}
-      autoFocus
-      className={className}
-      placeholder="Title&hellip;"
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      data-test-id={testId}
-    ></textarea>
+    <>
+      {error && <div className="text-red-500 text-sm my-2">Please add a title</div>}
+
+      <textarea
+        ref={textareaRef}
+        autoFocus
+        className={className}
+        placeholder="Title&hellip;"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        data-test-id={testId}
+      ></textarea>
+    </>
   );
 }

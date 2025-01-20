@@ -38,6 +38,16 @@ defmodule Operately.Support.Features.DiscussionsSteps do
     |> UI.assert_text(@body)
   end
 
+  step :assert_discussion_is_posted_with_blank_body, ctx do
+    message = last_message(ctx)
+
+    assert message.state == :published
+
+    ctx
+    |> UI.assert_page(Paths.message_path(ctx.company, message))
+    |> UI.assert_text(@title)
+  end
+
   step :assert_discussion_email_sent, ctx do
     ctx
     |> EmailSteps.assert_activity_email_sent(%{
@@ -67,6 +77,29 @@ defmodule Operately.Support.Features.DiscussionsSteps do
     |> UI.click(testid: "new-discussion")
     |> UI.assert_page(Paths.space_discussions_new_path(ctx.company, ctx.marketing_space))
     |> UI.fill(testid: "discussion-title", with: @title)
+  end
+
+  step :start_writting_discussion_with_no_title, ctx do
+    ctx
+    |> UI.visit(Paths.space_discussions_path(ctx.company, ctx.marketing_space))
+    |> UI.click(testid: "new-discussion")
+    |> UI.assert_page(Paths.space_discussions_new_path(ctx.company, ctx.marketing_space))
+  end
+
+  step :start_writting_discussion_with_blank_body, ctx do
+    ctx
+    |> UI.visit(Paths.space_discussions_path(ctx.company, ctx.marketing_space))
+    |> UI.click(testid: "new-discussion")
+    |> UI.assert_page(Paths.space_discussions_new_path(ctx.company, ctx.marketing_space))
+    |> UI.fill(testid: "discussion-title", with: @title)
+  end
+
+  step :try_to_submit_draft, ctx do
+    ctx |> UI.click(testid: "save-as-draft")
+  end
+
+  step :assert_validation_error, ctx do
+    ctx |> UI.assert_text("Please add a title")
   end
 
   step :attach_file_to_discussion, ctx do
