@@ -31,6 +31,7 @@ const ExpandableContext = React.createContext<ExpandableContextValue | null>(nul
 
 export function ExpandableProvider({ children, tree }: ExpandableProviderProps) {
   const [expanded, setExpanded] = useStateWithLocalStorage<ExpandedNodesMap>(
+    "goal-tree",
     "expanded",
     getAllIds(tree).reduce((acc, id) => ({ ...acc, [id]: true }), {}),
   );
