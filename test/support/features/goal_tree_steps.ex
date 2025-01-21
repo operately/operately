@@ -246,4 +246,18 @@ defmodule Operately.Support.Features.GoalTreeSteps do
     ctx |> UI.assert_text("Not Accomplished")
   end
 
+  step :show_only_goals, ctx do
+    ctx
+    |> UI.click(testid: "view-options")
+    |> UI.click(testid: "nodeType-goal")
+    |> UI.click(testid: "submit")
+  end
+
+  step :show_only_projects, ctx do
+    ctx
+    |> UI.click(testid: "view-options")
+    |> UI.click(testid: "nodeType-project")
+    |> UI.click(testid: "submit")
+  end
+
 end

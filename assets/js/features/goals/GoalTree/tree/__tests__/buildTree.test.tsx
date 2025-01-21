@@ -57,6 +57,52 @@ describe("Tree", () => {
     `);
   });
 
+  describe("filtering by node type", () => {
+    test("showing both goals and projects", () => {
+      const t = new TreeTester(["name"], { showProjects: true, showGoals: true });
+
+      t.addGoal("G1", company, john);
+      t.addProj("P1", company, john);
+      t.addGoal("G2", company, john, "G1");
+      t.addProj("P2", company, john, "G2");
+
+      t.assertShape(`
+        G1
+          G2
+            P2
+        P1
+      `);
+    });
+
+    test("showing only goals", () => {
+      const t = new TreeTester(["name"], { showProjects: false });
+
+      t.addGoal("G1", company, john);
+      t.addProj("P1", company, john);
+      t.addGoal("G2", company, john, "G1");
+      t.addProj("P2", company, john, "G2");
+
+      t.assertShape(`
+        G1
+          G2
+      `);
+    });
+
+    test("showing only projects", () => {
+      const t = new TreeTester(["name"], { showProjects: true, showGoals: false });
+
+      t.addGoal("G1", company, john);
+      t.addProj("P1", company, john);
+      t.addGoal("G2", company, john, "G1");
+      t.addProj("P2", company, john, "G2");
+
+      t.assertShape(`
+        P1
+        P2
+      `);
+    });
+  });
+
   describe("filtering by timeframe", () => {
     const severalYearsAgo = {
       startDate: new Date("2020-01-01").toISOString(),
