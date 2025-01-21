@@ -694,7 +694,9 @@ defmodule OperatelyWeb.Api.Types do
     field :parent_folder_id, :string
     field :name, :string
     field :content, :string
+    field :state, :string
     field :inserted_at, :string
+    field :updated_at, :date
     field :permissions, :resource_hub_permissions
     field :reactions, list_of(:reaction)
     field :comments_count, :integer

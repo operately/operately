@@ -25,6 +25,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ResourceHubs.Document do
       content: Jason.encode!(document.content),
       reactions: OperatelyWeb.Api.Serializer.serialize(document.reactions),
       inserted_at: OperatelyWeb.Api.Serializer.serialize(document.inserted_at),
+      updated_at: OperatelyWeb.Api.Serializer.serialize(document.updated_at),
       permissions: OperatelyWeb.Api.Serializer.serialize(document.permissions),
       potential_subscribers: OperatelyWeb.Api.Serializer.serialize(document.potential_subscribers),
       subscription_list: OperatelyWeb.Api.Serializer.serialize(document.subscription_list),

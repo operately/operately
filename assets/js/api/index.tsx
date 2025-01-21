@@ -1153,7 +1153,9 @@ export interface ResourceHubDocument {
   parentFolderId?: string | null;
   name?: string | null;
   content?: string | null;
+  state?: string | null;
   insertedAt?: string | null;
+  updatedAt?: string | null;
   permissions?: ResourceHubPermissions | null;
   reactions?: Reaction[] | null;
   commentsCount?: number | null;
