@@ -7,7 +7,7 @@ defmodule Operately.Support.Features.ResourceHubDocumentSteps do
   alias Operately.Support.Features.ResourceHubSteps, as: Steps
 
   def setup(ctx), do: Steps.setup(ctx)
-  def visit_resource_hub_page(ctx), do: Steps.visit_resource_hub_page(ctx)
+  def visit_resource_hub_page(ctx, name \\ "Documents & Files"), do: Steps.visit_resource_hub_page(ctx, name)
   def navigate_back(ctx, link), do: Steps.navigate_back(ctx, link)
   def assert_navigation_links(ctx, links), do: Steps.assert_navigation_links(ctx, links)
   def refute_navigation_links(ctx, links), do: Steps.refute_navigation_links(ctx, links)
@@ -36,6 +36,20 @@ defmodule Operately.Support.Features.ResourceHubDocumentSteps do
     |> Factory.add_document(:document, :hub, folder: :folder)
   end
 
+  step :given_a_single_draft_document_exists, ctx do
+    ctx
+    |> Factory.add_resource_hub(:hub, :space, :creator)
+    |> Factory.add_document(:document, :hub, state: :draft)
+  end
+
+  step :given_several_draft_documents_exist, ctx do
+    ctx
+    |> Factory.add_resource_hub(:hub, :space, :creator)
+    |> Factory.add_document(:document, :hub, state: :draft, name: "First Draft")
+    |> Factory.add_document(:document2, :hub, state: :draft, name: "Second Draft")
+    |> Factory.add_document(:document3, :hub, state: :draft, name: "Third Draft")
+  end
+
   step :visit_document_page, ctx do
     UI.visit(ctx, Paths.document_path(ctx.company, ctx.document))
   end
@@ -56,6 +70,40 @@ defmodule Operately.Support.Features.ResourceHubDocumentSteps do
       {:ok, node} = Node.get(:system, name: attrs.name, opts: [preload: :document])
       Map.put(ctx, :document, node.document)
     end)
+  end
+
+  step :create_draft_document, ctx, attrs do
+    {:ok, hub} = ResourceHub.get(:system, space_id: ctx.space.id)
+
+    ctx
+    |> UI.click(testid: "add-options")
+    |> UI.click(testid: "new-document")
+    |> UI.assert_page(Paths.new_document_path(ctx.company, hub))
+    |> UI.fill(testid: "title", with: attrs.name)
+    |> UI.fill_rich_text(attrs.content)
+    |> UI.click(testid: "save-as-draft")
+    |> UI.refute_has(testid: "save-as-draft")
+    |> then(fn ctx ->
+      {:ok, node} = Node.get(:system, name: attrs.name, opts: [preload: :document])
+      Map.put(ctx, :document, node.document)
+    end)
+  end
+
+  step :publish_document, ctx do
+    ctx
+    |> UI.assert_text("This is an unpublished draft.")
+    |> UI.click(testid: "publish-now")
+    |> UI.refute_text("This is an unpublished draft.")
+  end
+
+  step :edit_and_publish_document, ctx, attrs do
+    ctx
+    |> UI.click(testid: "continue-editing")
+    |> UI.assert_page(Paths.edit_document_path(ctx.company, ctx.document))
+    |> UI.fill(testid: "title", with: attrs.name)
+    |> UI.fill_rich_text(attrs.content)
+    |> UI.click(testid: "publish-draft")
+    |> UI.refute_has(testid: "publish-draft")
   end
 
   step :edit_document, ctx, attrs do
@@ -80,6 +128,30 @@ defmodule Operately.Support.Features.ResourceHubDocumentSteps do
     |> UI.click(testid: "submit")
   end
 
+  step :click_on_continue_writing_draft_link, ctx do
+    ctx
+    |> UI.click(testid: "continue-editing-draft")
+  end
+
+  #
+  # Assertions
+  #
+
+  step :assert_page_is_document_page, ctx do
+    ctx
+    |> UI.assert_page(Paths.document_path(ctx.company, ctx.document))
+  end
+
+  step :assert_page_is_document_editing, ctx do
+    ctx
+    |> UI.assert_page(Paths.edit_document_path(ctx.company, ctx.document))
+  end
+
+  step :assert_page_is_resource_hub_drafts, ctx do
+    ctx
+    |> UI.assert_page(Paths.resource_hub_drafts_path(ctx.company, ctx.hub))
+  end
+
   step :assert_document_content, ctx, attrs do
     {:ok, node} = Node.get(:system, name: attrs.name, opts: [preload: :document])
 
@@ -92,6 +164,34 @@ defmodule Operately.Support.Features.ResourceHubDocumentSteps do
   step :assert_document_present_in_files_list, ctx, document_name do
     ctx
     |> UI.assert_text(document_name)
+  end
+
+  step :assert_document_is_draft, ctx do
+    ctx
+    |> UI.assert_text("This is an unpublished draft.")
+  end
+
+  step :assert_draft_actions_on_the_page, ctx do
+    ctx
+    |> UI.assert_has(testid: "continue-editing")
+    |> UI.assert_has(testid: "publish-now")
+    |> UI.assert_has(testid: "share-link")
+  end
+
+  step :assert_single_draft_document_link_is_visible, ctx do
+    ctx
+    |> UI.assert_text("Continue writing your draft document")
+  end
+
+  step :assert_several_draft_documents_link_is_visible, ctx do
+    ctx
+    |> UI.assert_text("Continue writing your 3 draft documents")
+  end
+
+  step :assert_draft_document_not_visible_and_state_is_zero, ctx do
+    ctx
+    |> UI.assert_text("Ready for your first document")
+    |> UI.assert_text("Your team's central hub for sharing documents, images, videos, and files. Click 'Add' to get started.")
   end
 
   #

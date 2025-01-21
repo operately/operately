@@ -10,9 +10,7 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubFolder do
     field :include_resource_hub, :boolean
     field :include_path_to_folder, :boolean
     field :include_permissions, :boolean
-    field :include_children_count, :boolean
     field :include_potential_subscribers, :boolean
-    field :include_comments_count, :boolean
   end
 
   outputs do
@@ -43,8 +41,10 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubFolder do
   end
 
   def preload(inputs) do
+    q = Node.preload_content(Node)
+
     Inputs.parse_includes(inputs, [
-      include_nodes: [child_nodes: Node.preload_nodes()],
+      include_nodes: [child_nodes: q],
       include_resource_hub: [node: :resource_hub],
       always_include: :node,
     ])
@@ -53,10 +53,8 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubFolder do
   def after_load(inputs) do
     Inputs.parse_includes(inputs, [
       include_path_to_folder: &Folder.find_path_to_folder/1,
-      include_children_count: &Folder.set_children_count/1,
       include_permissions: &Folder.set_permissions/1,
       include_potential_subscribers: &Folder.load_potential_subscribers/1,
-      include_comments_count: &Folder.load_comments_count/1,
     ])
   end
 end
