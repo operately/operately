@@ -2,7 +2,6 @@ import * as Api from "@/api";
 import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
-import * as Icons from "@tabler/icons-react";
 
 import Forms from "@/components/Forms";
 import classNames from "classnames";

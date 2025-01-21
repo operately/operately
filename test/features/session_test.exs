@@ -70,7 +70,7 @@ defmodule Operately.Features.SessionTest do
     |> Steps.fill_out_forgot_password_form_and_submit(@account_info)
     |> Steps.open_password_reset_link_from_email()
     |> Steps.fill_out_reset_password_form(@account_info)
-    # |> Steps.assert_password_changed()
+    |> Steps.assert_password_changed(@account_info)
   end
 
 end

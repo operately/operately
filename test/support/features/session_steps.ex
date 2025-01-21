@@ -76,14 +76,15 @@ defmodule Operately.Support.Features.SessionTestSteps do
   step :fill_out_reset_password_form, ctx, account_info do
     ctx 
     |> UI.fill(testid: "email", with: account_info[:email])
-    |> UI.fill(testid: "password", with: "new-password-123")
-    |> UI.fill(testid: "confirmPassword", with: "new-password-123")
+    |> UI.fill(testid: "password", with: "new-password-123-ABC")
+    |> UI.fill(testid: "confirmPassword", with: "new-password-123-ABC")
     |> UI.click(testid: "submit")
+    |> UI.assert_has(testid: "login-page")
   end
 
-  step :assert_password_changed, ctx do
-    account = Operately.People.get_account!(ctx.member.account_id)
-    assert Operately.People.Account.valid_password?(account, "new-password-123")
+  step :assert_password_changed, ctx, account_info do
+    account = Operately.People.get_account_by_email(account_info[:email])
+    assert Operately.People.Account.valid_password?(account, "new-password-123-ABC")
 
     ctx
   end

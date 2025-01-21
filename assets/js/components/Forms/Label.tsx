@@ -2,7 +2,7 @@ import * as React from "react";
 
 interface LabelProps {
   field: string;
-  label: string;
+  label: string | React.ReactNode;
   icon?: React.ReactNode;
 }
 
