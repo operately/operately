@@ -8,6 +8,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ResourceHubs.Link do
       type: Atom.to_string(link.type),
       parent_folder_id: link.node.parent_folder_id && OperatelyWeb.Paths.folder_id(link.node.parent_folder_id),
       author: OperatelyWeb.Api.Serializer.serialize(link.author),
+      comments_count: link.comments_count,
     }
   end
 

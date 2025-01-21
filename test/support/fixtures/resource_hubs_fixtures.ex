@@ -43,6 +43,7 @@ defmodule Operately.ResourceHubsFixtures do
     {:ok, document} = Operately.ResourceHubs.create_document(%{
       node_id: node.id,
       author_id: author_id,
+      state: attrs[:state] || :published,
       content: attrs[:content] || RichText.rich_text("Content"),
       subscription_list_id: subscription_list.id,
     })
