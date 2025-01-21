@@ -18,6 +18,8 @@ export class TreeTester {
     showCompleted: false,
     showActive: true,
     showPaused: false,
+    showGoals: true,
+    showProjects: true,
   } as TreeOptions;
 
   constructor(display: string[] = ["name"], options: any = {}) {

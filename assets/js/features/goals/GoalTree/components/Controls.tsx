@@ -56,6 +56,10 @@ function OptionsModal({ showOptions, toggleShowOptions }) {
     setReviewedBy,
     density,
     setDensity,
+    showGoals,
+    setShowGoals,
+    showProjects,
+    setShowProjects,
   } = useTreeContext();
 
   const filters = useMemo(() => {
@@ -68,11 +72,19 @@ function OptionsModal({ showOptions, toggleShowOptions }) {
     return result;
   }, [showActive, showPaused, showCompleted]);
 
+  const nodeType = useMemo(() => {
+    if (showGoals && showProjects) return "any";
+    if (showGoals) return "goal";
+    if (showProjects) return "project";
+    return "any";
+  }, [showGoals, showProjects]);
+
   const form = Forms.useForm({
     fields: {
       filters,
       ownedBy: "anyone",
       reviewedBy: "anyone",
+      nodeType: nodeType,
       density: density,
     },
     submit: () => {
@@ -93,6 +105,21 @@ function OptionsModal({ showOptions, toggleShowOptions }) {
 
       if (form.values.density) setDensity(form.values.density);
 
+      if (form.values.nodeType === "any") {
+        setShowGoals(true);
+        setShowProjects(true);
+      }
+
+      if (form.values.nodeType === "goal") {
+        setShowGoals(true);
+        setShowProjects(false);
+      }
+
+      if (form.values.nodeType === "project") {
+        setShowGoals(false);
+        setShowProjects(true);
+      }
+
       toggleShowOptions();
     },
   });
@@ -100,10 +127,19 @@ function OptionsModal({ showOptions, toggleShowOptions }) {
   return (
     <Modal title="View options" isOpen={showOptions} hideModal={toggleShowOptions} size="base">
       <Forms.Form form={form}>
-        <Forms.FieldGroup layout="grid" layoutOptions={{ gridTemplateColumns: "repeat(2, auto)" }}>
+        <Forms.FieldGroup layout="grid" layoutOptions={{ gridTemplateColumns: "repeat(3, auto)" }}>
+          <Forms.RadioButtons
+            field="nodeType"
+            label="Show"
+            options={[
+              { label: "Goals and projects", value: "any" },
+              { label: "Goals only", value: "goal" },
+              { label: "Projects only", value: "project" },
+            ]}
+          />
           <Forms.CheckboxInput
             field="filters"
-            label="Show goals and projects:"
+            label="Status"
             options={[
               { label: "Active", value: "active" },
               { label: "Paused", value: "paused" },
@@ -112,7 +148,7 @@ function OptionsModal({ showOptions, toggleShowOptions }) {
           />
           <Forms.RadioButtons
             field="ownedBy"
-            label="Owned by:"
+            label="Owned by"
             options={[
               { label: "Anyone", value: "anyone" },
               { label: "Me", value: "me" },
@@ -120,7 +156,7 @@ function OptionsModal({ showOptions, toggleShowOptions }) {
           />
           <Forms.RadioButtons
             field="reviewedBy"
-            label="Reviewed by:"
+            label="Reviewed by"
             options={[
               { label: "Anyone", value: "anyone" },
               { label: "Me", value: "me" },
@@ -128,7 +164,7 @@ function OptionsModal({ showOptions, toggleShowOptions }) {
           />
           <Forms.RadioButtons
             field="density"
-            label="Density:"
+            label="Density"
             options={[
               { label: "Default", value: "default" },
               { label: "Compact", value: "compact" },
