@@ -22,6 +22,12 @@ interface TreeContextValue {
 
   hideSpaceColumn?: boolean;
 
+  showGoals: boolean;
+  setShowGoals: (show: boolean) => void;
+
+  showProjects: boolean;
+  setShowProjects: (show: boolean) => void;
+
   showActive: boolean;
   setShowActive: (show: boolean) => void;
   showPaused: boolean;
@@ -72,6 +78,8 @@ export function TreeContextProvider(props: TreeContextProviderPropsWithChildren)
   const [championedBy, setChampionedBy] = React.useState<Person>();
   const [reviewedBy, setReviewedBy] = React.useState<Person>();
   const [density, setDensity] = useStateWithLocalStorage<DensityType>("goal-tree", "density", "default");
+  const [showGoals, setShowGoals] = useStateWithLocalStorage<boolean>("goal-tree", "showGoals", true);
+  const [showProjects, setShowProjects] = useStateWithLocalStorage<boolean>("goal-tree", "showProjects", true);
   const [timeframe, setTimeframe] = useStateWithLocalStorage<Timeframes.Timeframe>(
     "goal-tree",
     "timeframe",
@@ -89,6 +97,8 @@ export function TreeContextProvider(props: TreeContextProviderPropsWithChildren)
     showPaused,
     showCompleted,
     timeframe,
+    showGoals,
+    showProjects,
   } as TreeOptions;
 
   const tree = React.useMemo(
@@ -111,6 +121,10 @@ export function TreeContextProvider(props: TreeContextProviderPropsWithChildren)
     setShowCompleted,
     setChampionedBy,
     setReviewedBy,
+    showGoals,
+    setShowGoals,
+    showProjects,
+    setShowProjects,
     density,
     setDensity,
     timeframe,

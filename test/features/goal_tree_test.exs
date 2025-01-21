@@ -58,6 +58,24 @@ defmodule Operately.Features.GoalTreeTest do
     |> Steps.assert_goal_not_accomplished_status()
   end
 
+  feature "show only goals", ctx do
+    ctx
+    |> Steps.visit_goal_tree_page()
+    |> Steps.assert_all_goals_and_projects_are_visible_by_default()
+    |> Steps.show_only_goals()
+    |> Steps.assert_goal_visible(:goal_1)
+    |> Steps.refute_project_visible(:project_alpha)
+  end
+
+  feature "show only projects", ctx do
+    ctx
+    |> Steps.visit_goal_tree_page()
+    |> Steps.assert_all_goals_and_projects_are_visible_by_default()
+    |> Steps.show_only_projects()
+    |> Steps.refute_goal_visible(:goal_1)
+    |> Steps.assert_project_visible(:project_alpha)
+  end
+
   describe "view options" do
     feature "filter active projects", ctx do
       ctx
