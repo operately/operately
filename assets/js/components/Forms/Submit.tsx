@@ -37,7 +37,7 @@ export function Submit(props: SubmitProps) {
 
   const onSubmitClick = async (e: React.MouseEvent) => {
     e.preventDefault();
-    await form.actions.submit();
+    await form.actions.submit("primary");
   };
 
   // If submitOnEnter is true, the button type should be "submit" to allow form submission on enter key press
@@ -59,10 +59,10 @@ export function Submit(props: SubmitProps) {
       {props.secondarySubmitText && (
         <GhostButton
           type="button"
-          loading={form.state === "submitting"}
+          loading={form.state === "secondary-submitting"}
           testId="submit-secondary"
           size={props.buttonSize}
-          onClick={form.actions.submit}
+          onClick={() => form.actions.submit("secondary")}
         >
           {props.secondarySubmitText}
         </GhostButton>

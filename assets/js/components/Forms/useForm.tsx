@@ -7,10 +7,12 @@ import { useFormState } from "./useForm/state";
 import { useValidations, runValidations } from "./useForm/validations";
 import { State } from "./useForm/state";
 
+type SubmitOptions = "primary" | "secondary";
+
 interface FormProps<T extends FieldObject> {
   fields: T;
   validate?: (addError: AddErrorFn) => void;
-  submit: () => Promise<void> | void;
+  submit: (type: SubmitOptions) => Promise<void> | void;
   cancel?: () => Promise<void> | void;
   onChange?: OnChangeFn<T>;
 }
@@ -22,7 +24,7 @@ export interface FormState<T extends FieldObject> {
   hasCancel: boolean;
   actions: {
     clearErrors: () => void;
-    submit: () => void | Promise<void>;
+    submit: (type: SubmitOptions) => void | Promise<void>;
     cancel: () => void | Promise<void>;
     reset: () => void;
     addValidation: (field: string, validation: ValidationFn) => void;
@@ -54,7 +56,7 @@ export function useForm<T extends FieldObject>(props: FormProps<T>): FormState<T
       removeValidation,
       getValue,
       setValue,
-      submit: async () => {
+      submit: async (type: SubmitOptions) => {
         try {
           if (state !== "idle") return;
 
@@ -67,8 +69,16 @@ export function useForm<T extends FieldObject>(props: FormProps<T>): FormState<T
             return;
           }
 
-          setState("submitting");
-          await props.submit();
+          switch (type) {
+            case "primary":
+              setState("submitting");
+              break;
+            case "secondary":
+              setState("secondary-submitting");
+              break;
+          }
+
+          await props.submit(type);
 
           setState("idle");
         } catch (e) {
