@@ -221,3 +221,21 @@ export function compareDuration(a: Timeframe, b: Timeframe): number {
 
   return 0;
 }
+
+export function currentYear(): Timeframe {
+  const now = new Date();
+  return {
+    startDate: new Date(now.getFullYear(), 0, 1),
+    endDate: new Date(now.getFullYear(), 11, 31),
+    type: "year",
+  };
+}
+
+export function currentMonth(): Timeframe {
+  const now = new Date();
+  return {
+    startDate: new Date(now.getFullYear(), now.getMonth(), 1),
+    endDate: new Date(now.getFullYear(), now.getMonth() + 1, 0),
+    type: "month",
+  };
+}
