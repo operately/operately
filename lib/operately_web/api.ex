@@ -6,7 +6,9 @@ defmodule OperatelyWeb.Api do
     {:mutation, :add_first_company},
     {:mutation, :join_company},
     {:mutation, :create_email_activation_code},
-    {:mutation, :create_account}
+    {:mutation, :create_account},
+    {:mutation, :request_password_reset},
+    {:mutation, :reset_password}
   ]
 
   use_types OperatelyWeb.Api.Types
@@ -148,7 +150,10 @@ defmodule OperatelyWeb.Api do
   mutation :close_project, M.CloseProject
   mutation :connect_goal_to_project, M.ConnectGoalToProject
 
+  mutation :request_password_reset, M.RequestPasswordReset
+  mutation :reset_password, M.ResetPassword
   mutation :change_password, M.ChangePassword
+
   mutation :change_goal_parent, M.ChangeGoalParent
   mutation :change_task_description, M.ChangeTaskDescription
 

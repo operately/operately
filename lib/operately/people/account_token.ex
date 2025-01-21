@@ -67,6 +67,36 @@ defmodule Operately.People.AccountToken do
   end
 
   @doc """
+  Builds a token and its hash to be delivered to the account's email.
+  The non-hashed token is sent to the account email while the
+  hashed part is stored in the database. The original token cannot be reconstructed,
+  which means anyone with read-only access to the database cannot directly use
+  the token in the application to gain access. Furthermore, if the user changes
+  their email in the system, the tokens sent to the previous email are no longer
+  valid.
+
+  Users can easily adapt the existing code to provide other types of delivery methods,
+  for example, by phone numbers.
+  """
+
+  def build_email_token(account, context) do
+    build_hashed_token(account, context, account.email)
+  end
+
+  defp build_hashed_token(account, context, sent_to) do
+    token = :crypto.strong_rand_bytes(@rand_size)
+    hashed_token = :crypto.hash(@hash_algorithm, token)
+
+    {Base.url_encode64(token, padding: false),
+     %AccountToken{
+       token: hashed_token,
+       context: context,
+       sent_to: sent_to,
+       account_id: account.id
+     }}
+  end
+
+  @doc """
   Checks if the token is valid and returns its underlying lookup query.
 
   The query returns the account found by the token, if any.
