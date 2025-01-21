@@ -7,6 +7,8 @@ defmodule OperatelyWeb.Api.Mutations.PublishResourceHubDocument do
 
   inputs do
     field :document_id, :id
+    field :name, :string
+    field :content, :string
   end
 
   outputs do
@@ -16,9 +18,10 @@ defmodule OperatelyWeb.Api.Mutations.PublishResourceHubDocument do
   def call(conn, inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
+    |> run(:attrs, fn -> parse_attrs(inputs) end)
     |> run(:document, fn ctx -> load(ctx.me, inputs.document_id) end)
     |> run(:permissions, fn ctx -> authorize(ctx.me, ctx.document) end)
-    |> run(:operation, fn ctx -> ResourceHubDocumentPublishing.run(ctx.me, ctx.document) end)
+    |> run(:operation, fn ctx -> ResourceHubDocumentPublishing.run(ctx.me, ctx.document, ctx.attrs) end)
     |> run(:serialized, fn ctx -> {:ok, %{document: Serializer.serialize(ctx.operation)}} end)
     |> respond()
   end
@@ -26,11 +29,17 @@ defmodule OperatelyWeb.Api.Mutations.PublishResourceHubDocument do
   defp respond(result) do
     case result do
       {:ok, ctx} -> {:ok, ctx.serialized}
+      {:error, :attrs, _} -> {:error, :bad_request}
       {:error, :document, _} -> {:error, :not_found}
       {:error, :permissions, _} -> {:error, :forbidden}
       {:error, :operation, _} -> {:error, :internal_server_error}
       _ -> {:error, :internal_server_error}
     end
+  end
+
+  defp parse_attrs(inputs) do
+    content = Jason.decode!(inputs.content)
+    {:ok, Map.put(inputs, :content, content)}
   end
 
   defp load(me, document_id) do

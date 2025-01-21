@@ -38,7 +38,11 @@ export function Form({ document }: { document: ResourceHubDocument }) {
           });
         }
       } else if (type === "publish-draft") {
-        await publish({ documentId: document.id });
+        await publish({
+          documentId: document.id,
+          name: title,
+          content: JSON.stringify(content),
+        });
       }
 
       navigate(Paths.resourceHubDocumentPath(document.id!));

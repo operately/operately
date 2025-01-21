@@ -96,6 +96,16 @@ defmodule Operately.Support.Features.ResourceHubDocumentSteps do
     |> UI.refute_text("This is an unpublished draft.")
   end
 
+  step :edit_and_publish_document, ctx, attrs do
+    ctx
+    |> UI.click(testid: "continue-editing")
+    |> UI.assert_page(Paths.edit_document_path(ctx.company, ctx.document))
+    |> UI.fill(testid: "title", with: attrs.name)
+    |> UI.fill_rich_text(attrs.content)
+    |> UI.click(testid: "publish-draft")
+    |> UI.refute_has(testid: "publish-draft")
+  end
+
   step :edit_document, ctx, attrs do
     {:ok, node} = Node.get(:system, type: :document, opts: [preload: :document])
 

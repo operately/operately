@@ -2,6 +2,8 @@ defmodule OperatelyWeb.Api.Mutations.PublishResourceHubDocumentTest do
   import Ecto.Query, only: [from: 2]
   use OperatelyWeb.TurboCase
 
+  alias Operately.Support.RichText
+
   describe "security" do
     test "it requires authentication", ctx do
       assert {401, _} = mutation(ctx.conn, :publish_resource_hub_document, %{})
@@ -24,7 +26,9 @@ defmodule OperatelyWeb.Api.Mutations.PublishResourceHubDocumentTest do
       ctx = Factory.log_in_person(ctx, :user_no_permissions)
 
       assert {404, res} = mutation(ctx.conn, :publish_resource_hub_document, %{
-        document_id: Paths.document_id(ctx.document)
+        document_id: Paths.document_id(ctx.document),
+        name: "some name",
+        content: RichText.rich_text("content", :as_string)
       })
       assert res == %{ error: "Not found", message: "The requested resource was not found" }
     end
@@ -33,7 +37,9 @@ defmodule OperatelyWeb.Api.Mutations.PublishResourceHubDocumentTest do
       ctx = Factory.log_in_person(ctx, :user_view_access)
 
       assert {403, res} = mutation(ctx.conn, :publish_resource_hub_document, %{
-        document_id: Paths.document_id(ctx.document)
+        document_id: Paths.document_id(ctx.document),
+        name: "some name",
+        content: RichText.rich_text("content", :as_string)
       })
       assert res == %{ error: "Forbidden", message: "You don't have permission to perform this action" }
     end
@@ -42,7 +48,9 @@ defmodule OperatelyWeb.Api.Mutations.PublishResourceHubDocumentTest do
       ctx = Factory.log_in_person(ctx, :creator)
 
       assert {200, res} = mutation(ctx.conn, :publish_resource_hub_document, %{
-        document_id: Paths.document_id(ctx.document)
+        document_id: Paths.document_id(ctx.document),
+        name: "some name",
+        content: RichText.rich_text("content", :as_string)
       })
       document = Repo.reload(ctx.document) |> Repo.preload(:node)
 
@@ -64,7 +72,9 @@ defmodule OperatelyWeb.Api.Mutations.PublishResourceHubDocumentTest do
       assert ctx.document.state == :draft
 
       assert {200, res} = mutation(ctx.conn, :publish_resource_hub_document, %{
-        document_id: Paths.document_id(ctx.document)
+        document_id: Paths.document_id(ctx.document),
+        name: "some name",
+        content: RichText.rich_text("content", :as_string)
       })
       document = Repo.reload(ctx.document) |> Repo.preload(:node)
 
@@ -76,7 +86,9 @@ defmodule OperatelyWeb.Api.Mutations.PublishResourceHubDocumentTest do
       refute get_activity(ctx.document)
 
       assert {200, _} = mutation(ctx.conn, :publish_resource_hub_document, %{
-        document_id: Paths.document_id(ctx.document)
+        document_id: Paths.document_id(ctx.document),
+        name: "some name",
+        content: RichText.rich_text("content", :as_string)
       })
 
       assert get_activity(ctx.document)

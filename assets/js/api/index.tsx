@@ -2793,6 +2793,8 @@ export interface PublishDiscussionResult {
 
 export interface PublishResourceHubDocumentInput {
   documentId?: Id | null;
+  name?: string | null;
+  content?: string | null;
 }
 
 export interface PublishResourceHubDocumentResult {

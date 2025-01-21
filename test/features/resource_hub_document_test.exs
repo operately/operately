@@ -135,6 +135,23 @@ defmodule Operately.Features.ResourceHubDocumentTest do
       |> Steps.visit_resource_hub_page("Resource hub")
       |> Steps.assert_document_present_in_files_list("Document")
     end
+
+    feature "Draft document can be edited and published", ctx do
+      new_doc = %{
+        name: "Edited draft",
+        content: "Edited draft content",
+      }
+
+      ctx
+      |> Steps.given_a_single_draft_document_exists()
+      |> Steps.visit_resource_hub_page("Resource hub")
+      |> Steps.assert_draft_document_not_visible_and_state_is_zero()
+      |> Steps.visit_document_page()
+      |> Steps.edit_and_publish_document(new_doc)
+      |> Steps.assert_document_content(new_doc)
+      |> Steps.visit_resource_hub_page("Resource hub")
+      |> Steps.assert_document_present_in_files_list(new_doc.name)
+    end
   end
 
   describe "Delete" do
