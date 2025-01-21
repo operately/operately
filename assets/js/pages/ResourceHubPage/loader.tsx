@@ -1,22 +1,32 @@
 import * as Pages from "@/components/Pages";
 
-import { getResourceHub, ResourceHub } from "@/models/resourceHubs";
+import { getResourceHub, listResourceHubNodes, ResourceHub, ResourceHubNode } from "@/models/resourceHubs";
 
 interface LoaderResult {
   resourceHub: ResourceHub;
+  nodes: ResourceHubNode[];
+  draftNodes: ResourceHubNode[];
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
-  return {
-    resourceHub: await getResourceHub({
+  const [resourceHub, nodes] = await Promise.all([
+    getResourceHub({
       id: params.id,
       includeSpace: true,
-      includeNodes: true,
       includePermissions: true,
-      includeChildrenCount: true,
       includePotentialSubscribers: true,
-      includeCommentsCount: true,
     }).then((res) => res.resourceHub!),
+    listResourceHubNodes({
+      resourceHubId: params.id,
+      includeCommentsCount: true,
+      includeChildrenCount: true,
+    }),
+  ]);
+
+  return {
+    resourceHub,
+    nodes: nodes.nodes!,
+    draftNodes: nodes.draftNodes!,
   };
 }
 

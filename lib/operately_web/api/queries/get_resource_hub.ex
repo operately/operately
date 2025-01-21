@@ -10,8 +10,6 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHub do
     field :include_nodes, :boolean
     field :include_potential_subscribers, :boolean
     field :include_permissions, :boolean
-    field :include_children_count, :boolean
-    field :include_comments_count, :boolean
   end
 
   outputs do
@@ -43,7 +41,7 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHub do
   end
 
   defp preload(inputs) do
-    q = from(n in Node, where: is_nil(n.parent_folder_id), preload: ^Node.preload_nodes())
+    q = from(n in Node, where: is_nil(n.parent_folder_id)) |> Node.preload_content()
 
     Inputs.parse_includes(inputs, [
       include_space: :space,
@@ -54,9 +52,7 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHub do
   defp after_load(inputs) do
     Inputs.parse_includes(inputs, [
       include_potential_subscribers: &ResourceHub.load_potential_subscribers/1,
-      include_children_count: &ResourceHub.set_children_count/1,
       include_permissions: &ResourceHub.set_permissions/1,
-      include_comments_count: &ResourceHub.load_comments_count/1,
     ])
   end
 end
