@@ -14,9 +14,13 @@ export type SortDirection = "asc" | "desc";
 export interface TreeOptions {
   sortColumn: SortColumn;
   sortDirection: SortDirection;
+
   showActive: boolean;
   showPaused: boolean;
   showCompleted: boolean;
+
+  showGoals: boolean;
+  showProjects: boolean;
 
   spaceId?: string;
   personId?: string;
@@ -62,9 +66,29 @@ class TreeBuilder {
   }
 
   private createNodes(): void {
-    this.goalNodes = this.allGoals.map((g) => new GoalNode(g));
-    this.projectNodes = this.allProjects.map((p) => new ProjectNode(p));
+    this.goalNodes = this.createGoalNodes();
+    this.projectNodes = this.createProjectNodes();
+
+    console.log(this.goalNodes);
+    console.log(this.projectNodes);
+
     this.nodes = [...this.goalNodes, ...this.projectNodes];
+  }
+
+  private createGoalNodes(): GoalNode[] {
+    if (this.options.showGoals) {
+      return this.allGoals.map((g) => new GoalNode(g));
+    } else {
+      return [];
+    }
+  }
+
+  private createProjectNodes(): ProjectNode[] {
+    if (this.options.showProjects) {
+      return this.allProjects.map((p) => new ProjectNode(p));
+    } else {
+      return [];
+    }
   }
 
   private connectNodes(): void {

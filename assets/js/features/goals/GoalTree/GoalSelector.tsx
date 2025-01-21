@@ -25,6 +25,8 @@ export function GoalSelector({ goals, onSelect }: GoalSelectorProps) {
     showActive: true,
     showPaused: false,
     showCompleted: false,
+    showGoals: true,
+    showProjects: false,
   } as TreeOptions;
 
   const tree = React.useMemo(() => buildTree(goals, [], options), [goals, options]);
