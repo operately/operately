@@ -69,9 +69,6 @@ class TreeBuilder {
     this.goalNodes = this.createGoalNodes();
     this.projectNodes = this.createProjectNodes();
 
-    console.log(this.goalNodes);
-    console.log(this.projectNodes);
-
     this.nodes = [...this.goalNodes, ...this.projectNodes];
   }
 
