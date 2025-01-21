@@ -29,7 +29,9 @@ defmodule Operately.Support.Factory.ResourceHubs do
     folder_key = Keyword.get(opts, :folder)
     folder = folder_key && Map.fetch!(ctx, folder_key)
 
-    document = Operately.ResourceHubsFixtures.document_fixture(hub.id, author.id, %{parent_folder_id: folder && folder.id})
+    attrs = Enum.into(opts, %{parent_folder_id: folder && folder.id})
+
+    document = Operately.ResourceHubsFixtures.document_fixture(hub.id, author.id, attrs)
 
     Map.put(ctx, testid, document)
   end

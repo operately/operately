@@ -1,5 +1,6 @@
 import React from "react";
 
+import { usePublishResourceHubDocument } from "@/models/resourceHubs";
 import * as Reactions from "@/models/reactions";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
@@ -11,11 +12,13 @@ import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { CommentSection, useComments } from "@/features/CommentSection";
 import { CurrentSubscriptions } from "@/features/Subscriptions";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
+import { DocumentTitle } from "@/features/documents/DocumentTitle";
+import { ResourcePageNavigation } from "@/features/ResourceHub";
+import { OngoingDraftActions } from "@/features/drafts";
+import { Paths } from "@/routes/paths";
 
 import { useLoadedData } from "./loader";
 import { Options } from "./Options";
-import { DocumentTitle } from "@/features/documents/DocumentTitle";
-import { ResourcePageNavigation } from "@/features/ResourceHub";
 
 export function Page() {
   const { document } = useLoadedData();
@@ -30,6 +33,8 @@ export function Page() {
 
         <Paper.Body minHeight="600px" className="lg:px-28">
           <Options />
+
+          <ContinueEditingDraft />
 
           <Title />
           <Body />
@@ -124,4 +129,19 @@ function DocumentSubscriptions() {
       />
     </>
   );
+}
+
+function ContinueEditingDraft() {
+  const { document } = useLoadedData();
+
+  const [publish] = usePublishResourceHubDocument();
+  const refresh = Pages.useRefresh();
+  const editPath = Paths.resourceHubEditDocumentPath(document.id!);
+
+  const publishHandler = async () => {
+    await publish({ documentId: document.id });
+    refresh();
+  };
+
+  return <OngoingDraftActions resource={document} editResourcePath={editPath} publish={publishHandler} />;
 }
