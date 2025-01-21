@@ -4,8 +4,9 @@ import { useNavigate } from "react-router-dom";
 import { useEditResourceHubDocument, ResourceHubDocument, usePublishResourceHubDocument } from "@/models/resourceHubs";
 
 import Forms from "@/components/Forms";
-import { Paths } from "@/routes/paths";
+import { useFormContext } from "@/components/Forms/FormContext";
 import { areRichTextObjectsEqual } from "@/components/RichContent";
+import { Paths } from "@/routes/paths";
 
 export function Form({ document }: { document: ResourceHubDocument }) {
   const navigate = useNavigate();
@@ -25,10 +26,10 @@ export function Form({ document }: { document: ResourceHubDocument }) {
         addError("content", "Content is required");
       }
     },
-    submit: async (type) => {
+    submit: async (type: "save" | "publish-draft") => {
       const { title, content } = form.values;
 
-      if (type == "primary") {
+      if (type === "save") {
         if (documentHasChanged(document, title, content)) {
           await edit({
             documentId: document.id,
@@ -36,7 +37,7 @@ export function Form({ document }: { document: ResourceHubDocument }) {
             content: JSON.stringify(content),
           });
         }
-      } else if (type == "secondary") {
+      } else if (type === "publish-draft") {
         await publish({ documentId: document.id });
       }
 
@@ -58,8 +59,32 @@ export function Form({ document }: { document: ResourceHubDocument }) {
         />
       </Forms.FieldGroup>
 
-      <Forms.Submit saveText="Save Changes" secondarySubmitText="Publish Now" buttonSize="base" />
+      <FormActions document={document} />
     </Forms.Form>
+  );
+}
+
+function FormActions({ document }: { document: ResourceHubDocument }) {
+  const form = useFormContext();
+
+  return (
+    <div className="flex items-center justify-start gap-4 mt-8">
+      <Forms.Button
+        name="submit"
+        text="Save Changes"
+        buttonSize="base"
+        primary
+        onClick={() => form.actions.submit("save")}
+      />
+      {document.state === "draft" && (
+        <Forms.Button
+          name="publish-draft"
+          text="Publish Now"
+          buttonSize="base"
+          onClick={() => form.actions.submit("publish-draft")}
+        />
+      )}
+    </div>
   );
 }
 

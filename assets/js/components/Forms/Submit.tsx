@@ -1,13 +1,12 @@
 import * as React from "react";
 
 import { useFormContext } from "./FormContext";
-import { GhostButton, PrimaryButton, SecondaryButton } from "@/components/Buttons";
+import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
 import classNames from "classnames";
 import { BaseButtonProps } from "../Buttons/UnstalyedButton";
 
 interface SubmitProps {
   saveText?: string;
-  secondarySubmitText?: string;
   cancelText?: string;
   layout?: "left" | "centered";
   buttonSize?: BaseButtonProps["size"];
@@ -37,7 +36,7 @@ export function Submit(props: SubmitProps) {
 
   const onSubmitClick = async (e: React.MouseEvent) => {
     e.preventDefault();
-    await form.actions.submit("primary");
+    await form.actions.submit();
   };
 
   // If submitOnEnter is true, the button type should be "submit" to allow form submission on enter key press
@@ -55,18 +54,6 @@ export function Submit(props: SubmitProps) {
       >
         {buttonText}
       </PrimaryButton>
-
-      {props.secondarySubmitText && (
-        <GhostButton
-          type="button"
-          loading={form.state === "secondary-submitting"}
-          testId="submit-secondary"
-          size={props.buttonSize}
-          onClick={() => form.actions.submit("secondary")}
-        >
-          {props.secondarySubmitText}
-        </GhostButton>
-      )}
 
       {form.hasCancel && (
         <SecondaryButton onClick={form.actions.cancel} testId="cancel" size={props.buttonSize}>
