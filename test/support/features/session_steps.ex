@@ -77,7 +77,7 @@ defmodule Operately.Support.Features.SessionTestSteps do
     ctx 
     |> UI.fill(testid: "email", with: account_info[:email])
     |> UI.fill(testid: "password", with: "new-password-123")
-    |> UI.fill(testid: "password-confirmation", with: "new-password-123")
+    |> UI.fill(testid: "confirmPassword", with: "new-password-123")
     |> UI.click(testid: "submit")
   end
 

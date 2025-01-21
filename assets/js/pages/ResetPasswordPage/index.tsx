@@ -32,7 +32,7 @@ export function Page() {
     },
     submit: async () => {
       await reset({
-        email: form.values.email,
+        email: form.values.email.trim(),
         password: form.values.password,
         passwordConfirmation: form.values.confirmPassword,
         resetPasswordToken: token,
