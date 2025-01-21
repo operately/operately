@@ -87,6 +87,7 @@ import * as ProjectRetrospectiveEditPage from "./ProjectRetrospectiveEditPage";
 import * as ProjectRetrospectivePage from "./ProjectRetrospectivePage";
 import * as ProjectsPage from "./ProjectsPage";
 import * as RadarPage from "./RadarPage";
+import * as ResetPasswordPage from "./ResetPasswordPage";
 import * as ResourceHubDocumentPage from "./ResourceHubDocumentPage";
 import * as ResourceHubEditDocumentPage from "./ResourceHubEditDocumentPage";
 import * as ResourceHubEditFilePage from "./ResourceHubEditFilePage";
@@ -536,6 +537,11 @@ export default {
     name: "RadarPage",
     loader: RadarPage.loader,
     Page: RadarPage.Page,
+  },
+  ResetPasswordPage: {
+    name: "ResetPasswordPage",
+    loader: ResetPasswordPage.loader,
+    Page: ResetPasswordPage.Page,
   },
   ResourceHubDocumentPage: {
     name: "ResourceHubDocumentPage",

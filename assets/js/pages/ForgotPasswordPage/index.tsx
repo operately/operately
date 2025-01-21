@@ -2,6 +2,7 @@ import * as Api from "@/api";
 import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
+import * as Icons from "@tabler/icons-react";
 
 import Forms from "@/components/Forms";
 import classNames from "classnames";
@@ -18,7 +19,7 @@ export function Page() {
       email: "",
     },
     submit: async () => {
-      await req({ email: form.values.email });
+      await req({ email: form.values.email.trim() });
       setShowEmailSent(true);
     },
   });
@@ -51,6 +52,7 @@ export function Page() {
 function EmailSentMessage() {
   return (
     <p className="text-sm text-content-dimmed mt-4">
+      <Icons.IconCheck size={16} className="inline-block mr-1" />
       Password reset instructions have been sent to your email. Check your inbox for an email.
     </p>
   );
