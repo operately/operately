@@ -20,6 +20,7 @@ defmodule Operately.Operations.ResourceHubDocumentCreatingTest do
       Operately.Operations.ResourceHubDocumentCreating.run(ctx.creator, ctx.hub, %{
         name: "Some name",
         content: RichText.rich_text("Content"),
+        post_as_draft: false,
         send_to_everyone: true,
         subscription_parent_type: :resource_hub_document,
         subscriber_ids: [],
@@ -47,6 +48,7 @@ defmodule Operately.Operations.ResourceHubDocumentCreatingTest do
       Operately.Operations.ResourceHubDocumentCreating.run(ctx.creator, ctx.hub, %{
         name: "Some name",
         content: RichText.rich_text("Content"),
+        post_as_draft: false,
         send_to_everyone: false,
         subscription_parent_type: :resource_hub_document,
         subscriber_ids: [ctx.mike.id, ctx.jane.id],
@@ -81,6 +83,7 @@ defmodule Operately.Operations.ResourceHubDocumentCreatingTest do
     {:ok, document} = Operately.Operations.ResourceHubDocumentCreating.run(ctx.creator, ctx.hub2, %{
       name: "Some name",
       content: content,
+      post_as_draft: false,
       send_to_everyone: false,
       subscription_parent_type: :resource_hub_document,
       subscriber_ids: [],
@@ -100,6 +103,7 @@ defmodule Operately.Operations.ResourceHubDocumentCreatingTest do
     {:ok, document} = Operately.Operations.ResourceHubDocumentCreating.run(ctx.creator, ctx.hub2, %{
       name: "Some name",
       content: content,
+      post_as_draft: false,
       send_to_everyone: false,
       subscription_parent_type: :resource_hub_document,
       subscriber_ids: [],
