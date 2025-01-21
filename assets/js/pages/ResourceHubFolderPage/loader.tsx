@@ -1,22 +1,32 @@
 import * as Pages from "@/components/Pages";
-import { getResourceHubFolder, ResourceHubFolder } from "@/models/resourceHubs";
+import { getResourceHubFolder, listResourceHubNodes, ResourceHubNode, ResourceHubFolder } from "@/models/resourceHubs";
 
 interface LoaderResult {
   folder: ResourceHubFolder;
+  nodes: ResourceHubNode[];
+  draftNodes: ResourceHubNode[];
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
-  return {
-    folder: await getResourceHubFolder({
+  const [folder, nodes] = await Promise.all([
+    getResourceHubFolder({
       id: params.id,
-      includeNodes: true,
       includeResourceHub: true,
       includePathToFolder: true,
       includePermissions: true,
-      includeChildrenCount: true,
       includePotentialSubscribers: true,
-      includeCommentsCount: true,
     }).then((res) => res.folder!),
+    listResourceHubNodes({
+      folderId: params.id,
+      includeChildrenCount: true,
+      includeCommentsCount: true,
+    }),
+  ]);
+
+  return {
+    folder,
+    nodes: nodes.nodes!,
+    draftNodes: nodes.draftNodes!,
   };
 }
 

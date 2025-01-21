@@ -1,9 +1,11 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-import { useCreateResourceHubDocument } from "@/models/resourceHubs";
+import { ResourceHub, useCreateResourceHubDocument } from "@/models/resourceHubs";
 
 import Forms from "@/components/Forms";
+import { useFormContext } from "@/components/Forms/FormContext";
+import { Link } from "@/components/Link";
 import { DimmedSection } from "@/components/PaperContainer";
 import { Spacer } from "@/components/Spacer";
 import { Options, SubscribersSelector, useSubscriptions } from "@/features/Subscriptions";
@@ -36,10 +38,7 @@ export function Form({ folderId }: { folderId: string | null }) {
         addError("content", "Content is required");
       }
     },
-    cancel: () => {
-      navigate(Paths.resourceHubPath(resourceHub.id!));
-    },
-    submit: async () => {
+    submit: async (isDraft?: boolean) => {
       const res = await post({
         resourceHubId: resourceHub.id,
         folderId: folderId,
@@ -47,10 +46,12 @@ export function Form({ folderId }: { folderId: string | null }) {
         content: JSON.stringify(form.values.content),
         sendNotificationsToEveryone: subscriptionsState.subscriptionType === Options.ALL,
         subscriberIds: subscriptionsState.currentSubscribersList,
+        postAsDraft: isDraft,
       });
       navigate(Paths.resourceHubDocumentPath(res.document.id));
     },
   });
+  form.actions.setState;
 
   const mentionSearchScope = { type: "resource_hub", id: resourceHub.id! } as const;
 
@@ -71,8 +72,44 @@ export function Form({ folderId }: { folderId: string | null }) {
         <Spacer size={4} />
         <SubscribersSelector state={subscriptionsState} resourceHubName={resourceHub.name!} />
 
-        <Forms.Submit saveText="Submit" buttonSize="base" />
+        <FormActions resourceHub={resourceHub} />
       </DimmedSection>
     </Forms.Form>
+  );
+}
+
+function FormActions({ resourceHub }: { resourceHub: ResourceHub }) {
+  const form = useFormContext();
+
+  return (
+    <div>
+      <div className="flex items-center justify-start gap-4 mt-8">
+        <Forms.Button
+          name="submit"
+          text="Create document"
+          buttonSize="base"
+          primary
+          onClick={() => form.actions.submit(false)}
+        />
+        <Forms.Button
+          name="save-as-draft"
+          text="Save as draft"
+          buttonSize="base"
+          onClick={() => form.actions.submit(true)}
+        />
+      </div>
+
+      <div className="mt-4">
+        Or, <DiscardLink resourceHubId={resourceHub.id!} />
+      </div>
+    </div>
+  );
+}
+
+function DiscardLink({ resourceHubId }: { resourceHubId: string }) {
+  return (
+    <Link to={Paths.resourceHubPath(resourceHubId)} testId="discard" className="font-medium">
+      Discard this document
+    </Link>
   );
 }

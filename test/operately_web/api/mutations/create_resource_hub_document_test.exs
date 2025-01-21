@@ -1,4 +1,5 @@
 defmodule OperatelyWeb.Api.Mutations.CreateResourceHubDocumentTest do
+  import Ecto.Query, only: [from: 2]
   use OperatelyWeb.TurboCase
 
   alias Operately.ResourceHubs
@@ -87,6 +88,8 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHubDocumentTest do
 
       assert length(documents) == 1
       assert res.document.id == Paths.document_id(hd(documents))
+      assert res.document.state == "published"
+      assert get_activity(res)
     end
 
     test "creates document within folder", ctx do
@@ -105,6 +108,20 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHubDocumentTest do
 
       assert length(documents) == 1
       assert res.document.id == Paths.document_id(hd(documents))
+    end
+
+    test "creates draft document", ctx do
+      assert ResourceHubs.list_documents(ctx.hub) == []
+
+      assert {200, res} = mutation(ctx.conn, :create_resource_hub_document, %{
+        resource_hub_id: Paths.resource_hub_id(ctx.hub),
+        name: "My document",
+        content: RichText.rich_text("content", :as_string),
+        post_as_draft: true,
+      })
+
+      assert res.document.state == "draft"
+      refute get_activity(res)
     end
   end
 
@@ -201,5 +218,14 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHubDocumentTest do
     end
 
     space
+  end
+
+  defp get_activity(res) do
+    {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.document.id)
+
+    from(a in Operately.Activities.Activity,
+      where: a.action == "resource_hub_document_created" and a.content["document_id"] == ^id
+    )
+    |> Repo.one()
   end
 end

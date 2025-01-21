@@ -1,15 +1,17 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-import { useEditResourceHubDocument, ResourceHubDocument } from "@/models/resourceHubs";
+import { useEditResourceHubDocument, ResourceHubDocument, usePublishResourceHubDocument } from "@/models/resourceHubs";
 
 import Forms from "@/components/Forms";
-import { Paths } from "@/routes/paths";
+import { useFormContext } from "@/components/Forms/FormContext";
 import { areRichTextObjectsEqual } from "@/components/RichContent";
+import { Paths } from "@/routes/paths";
 
 export function Form({ document }: { document: ResourceHubDocument }) {
   const navigate = useNavigate();
   const [edit] = useEditResourceHubDocument();
+  const [publish] = usePublishResourceHubDocument();
 
   const form = Forms.useForm({
     fields: {
@@ -24,22 +26,22 @@ export function Form({ document }: { document: ResourceHubDocument }) {
         addError("content", "Content is required");
       }
     },
-    cancel: () => {
-      navigate(Paths.resourceHubDocumentPath(document.id!));
-    },
-    submit: async () => {
+    submit: async (type: "save" | "publish-draft") => {
       const { title, content } = form.values;
 
-      if (documentHasChanged(document, title, content)) {
-        const res = await edit({
-          documentId: document.id!,
-          name: title,
-          content: JSON.stringify(content),
-        });
-        navigate(Paths.resourceHubDocumentPath(res.document.id));
-      } else {
-        navigate(Paths.resourceHubDocumentPath(document.id!));
+      if (type === "save") {
+        if (documentHasChanged(document, title, content)) {
+          await edit({
+            documentId: document.id,
+            name: title,
+            content: JSON.stringify(content),
+          });
+        }
+      } else if (type === "publish-draft") {
+        await publish({ documentId: document.id });
       }
+
+      navigate(Paths.resourceHubDocumentPath(document.id!));
     },
   });
 
@@ -57,8 +59,32 @@ export function Form({ document }: { document: ResourceHubDocument }) {
         />
       </Forms.FieldGroup>
 
-      <Forms.Submit saveText="Save" buttonSize="base" />
+      <FormActions document={document} />
     </Forms.Form>
+  );
+}
+
+function FormActions({ document }: { document: ResourceHubDocument }) {
+  const form = useFormContext();
+
+  return (
+    <div className="flex items-center justify-start gap-4 mt-8">
+      <Forms.Button
+        name="submit"
+        text="Save Changes"
+        buttonSize="base"
+        primary
+        onClick={() => form.actions.submit("save")}
+      />
+      {document.state === "draft" && (
+        <Forms.Button
+          name="publish-draft"
+          text="Publish Now"
+          buttonSize="base"
+          onClick={() => form.actions.submit("publish-draft")}
+        />
+      )}
+    </div>
   );
 }
 

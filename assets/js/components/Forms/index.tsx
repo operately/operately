@@ -1,3 +1,4 @@
+import { Button } from "./Button";
 import { Form } from "./Form";
 import { Submit } from "./Submit";
 import { TextInput } from "./TextInput";
@@ -24,6 +25,7 @@ export default {
   useFieldError,
   useFieldValue,
 
+  Button,
   Form,
   Submit,
   TextInput,

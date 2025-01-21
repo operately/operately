@@ -86,6 +86,7 @@ defmodule Operately.Operations.ResourceHubDocumentDeletingTest do
     {:ok, document} = Operately.Operations.ResourceHubDocumentCreating.run(ctx.creator, ctx.hub, %{
       name: "Some name",
       content: content || RichText.rich_text("Content"),
+      post_as_draft: false,
       send_to_everyone: send_to_everyone,
       subscription_parent_type: :resource_hub_document,
       subscriber_ids: people_list,
