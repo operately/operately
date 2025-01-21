@@ -129,6 +129,10 @@ defmodule OperatelyWeb.Paths do
     create_path([company_id(company), "resource-hubs", resource_hub_id(resource_hub)])
   end
 
+  def resource_hub_drafts_path(company = %Company{}, resource_hub) do
+    create_path([company_id(company), "resource-hubs", resource_hub_id(resource_hub), "drafts"])
+  end
+
   def new_document_path(company = %Company{}, resource_hub) do
     create_path([company_id(company), "resource-hubs", resource_hub_id(resource_hub), "new-document"])
   end
