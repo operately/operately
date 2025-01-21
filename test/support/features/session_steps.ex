@@ -62,15 +62,15 @@ defmodule Operately.Support.Features.SessionTestSteps do
     ctx 
     |> UI.fill(testid: "email", with: account_info[:email]) 
     |> UI.click(testid: "submit")
+    |> UI.assert_text("Password reset instructions have been sent to your email.")
   end
 
   step :open_password_reset_link_from_email, ctx do
     email = UI.Emails.last_sent_email()
-    link = UI.Emails.find_link(email, "Reset Password")
+    link = UI.Emails.find_link(email, "Reset password")
 
     ctx
     |> UI.visit(link)
-    |> UI.assert_text("What's new since the last check-in?")
   end
 
   step :fill_out_reset_password_form, ctx, account_info do

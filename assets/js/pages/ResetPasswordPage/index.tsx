@@ -8,24 +8,25 @@ import classNames from "classnames";
 import { OperatelyLogo } from "@/components/OperatelyLogo";
 import { useNavigate } from "react-router-dom";
 
-import { validateEmailPassword } from "@/features/auth/validateEmailPassword";
+import { validateEmail } from "@/features/auth/validateEmail";
+import { validatePassword } from "@/features/auth/validatePassword";
 import { PasswordStrength } from "@/features/auth/PasswordStrength";
 
 export const loader = Pages.emptyLoader;
 
 export function Page() {
   const [reset] = Api.useResetPassword();
-  const token = new URLSearchParams(window.location.search).get("token")!;
+  const token = new URLSearchParams(window.location.search).get("token");
   const navigate = useNavigate();
 
   const form = Forms.useForm({
     fields: {
       email: "",
       password: "",
-      passwordConfirmation: "",
+      confirmPassword: "",
     },
     validate: (addError) => {
-      if (form.values.password !== form.values.passwordConfirmation) {
+      if (form.values.password !== form.values.confirmPassword) {
         addError("confirmPassword", "Passwords do not match");
       }
     },
@@ -33,7 +34,7 @@ export function Page() {
       await reset({
         email: form.values.email,
         password: form.values.password,
-        passwordConfirmation: form.values.passwordConfirmation,
+        passwordConfirmation: form.values.confirmPassword,
         resetPasswordToken: token,
       });
 
@@ -41,33 +42,38 @@ export function Page() {
     },
   });
 
-  const validation = validateEmailPassword(form);
-
   return (
     <Pages.Page title={["Reset Password"]} testId="reset-password-page">
       <Paper.Root size="tiny">
         <Paper.Body className="h-dvh sm:h-auto">
           <div className="py-8 sm:px-4 sm:py-4">
             <OperatelyLogo width="30px" height="30px" />
-            <h1 className="text-2xl font-bold mt-4">Reset Password</h1>
+            <h1 className="text-2xl font-bold my-4">Reset Password</h1>
 
             <Forms.Form form={form}>
               <Forms.FieldGroup>
-                <Forms.TextInput field="email" label="Email" placeholder="e.g. your@email.com" required />
+                <Forms.TextInput
+                  field="email"
+                  label="Email"
+                  placeholder="e.g. your@email.com"
+                  required
+                  okSign={validateEmail(form.values.email)}
+                />
+
                 <Forms.PasswordInput
                   field="password"
                   label="Password"
                   placeholder="Enter your new password"
                   required
-                  okSign={validation.password}
+                  okSign={validatePassword(form.values.password).isValid}
                 />
 
                 <Forms.PasswordInput
-                  field="password_confirmation"
+                  field="confirmPassword"
                   label="Confirm Password"
                   placeholder="Re-enter your new password"
                   required
-                  okSign={validation.email}
+                  okSign={form.values.password !== "" && form.values.password === form.values.confirmPassword}
                 />
 
                 <PasswordStrength password={form.values.password} />

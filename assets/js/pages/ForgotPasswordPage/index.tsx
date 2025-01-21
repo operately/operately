@@ -7,6 +7,7 @@ import * as Icons from "@tabler/icons-react";
 import Forms from "@/components/Forms";
 import classNames from "classnames";
 import { OperatelyLogo } from "@/components/OperatelyLogo";
+import { ActionLink } from "@/components/Link";
 
 export const loader = Pages.emptyLoader;
 
@@ -24,6 +25,8 @@ export function Page() {
     },
   });
 
+  const retry = () => setShowEmailSent(false);
+
   return (
     <Pages.Page title={["Forgot Password"]} testId="forgot-password-page">
       <Paper.Root size="tiny">
@@ -34,14 +37,7 @@ export function Page() {
             <h1 className="text-2xl font-bold mt-4">Forgot Password?</h1>
             <p className="text-content-dimmed mb-4">Get reset instructions via email.</p>
 
-            <Forms.Form form={form}>
-              <Forms.FieldGroup>
-                <Forms.TextInput field="email" label="Email" placeholder="e.g. your@email.com" required />
-              </Forms.FieldGroup>
-
-              <SubmitButton onClick={form.actions.submit} />
-              {showEmailSent && <EmailSentMessage />}
-            </Forms.Form>
+            {showEmailSent ? <EmailSentMessage retry={retry} /> : <Form form={form} />}
           </div>
         </Paper.Body>
       </Paper.Root>
@@ -49,12 +45,24 @@ export function Page() {
   );
 }
 
-function EmailSentMessage() {
+function Form({ form }) {
   return (
-    <p className="text-sm text-content-dimmed mt-4">
-      <Icons.IconCheck size={16} className="inline-block mr-1" />
-      Password reset instructions have been sent to your email. Check your inbox for an email.
-    </p>
+    <Forms.Form form={form}>
+      <Forms.FieldGroup>
+        <Forms.TextInput field="email" label="Email" placeholder="e.g. your@email.com" required />
+      </Forms.FieldGroup>
+
+      <SubmitButton onClick={form.actions.submit} />
+    </Forms.Form>
+  );
+}
+
+function EmailSentMessage({ retry }) {
+  return (
+    <div>
+      <p className="text-content-dimmed mt-4">Password reset instructions have been sent to your email.</p>
+      <ActionLink onClick={retry}>Resend Instructions</ActionLink>
+    </div>
   );
 }
 
