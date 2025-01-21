@@ -29,6 +29,7 @@ import * as DiscussionEditPage from "./DiscussionEditPage";
 import * as DiscussionNewPage from "./DiscussionNewPage";
 import * as DiscussionPage from "./DiscussionPage";
 import * as FeedPage from "./FeedPage";
+import * as ForgotPasswordPage from "./ForgotPasswordPage";
 import * as GoalAboutPage from "./GoalAboutPage";
 import * as GoalActivityPage from "./GoalActivityPage";
 import * as GoalAddPage from "./GoalAddPage";
@@ -245,6 +246,11 @@ export default {
     name: "FeedPage",
     loader: FeedPage.loader,
     Page: FeedPage.Page,
+  },
+  ForgotPasswordPage: {
+    name: "ForgotPasswordPage",
+    loader: ForgotPasswordPage.loader,
+    Page: ForgotPasswordPage.Page,
   },
   GoalAboutPage: {
     name: "GoalAboutPage",

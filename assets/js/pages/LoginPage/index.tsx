@@ -7,8 +7,9 @@ import { OperatelyLogo } from "@/components/OperatelyLogo";
 
 import classNames from "classnames";
 import { logIn } from "@/routes/auth";
-import { Link } from "@/components/Link";
+import { Link, DimmedLink } from "@/components/Link";
 import { SignInWithGoogleButton } from "@/features/auth/Buttons";
+import { Paths } from "@/routes/paths";
 
 export const loader = Pages.emptyLoader;
 
@@ -60,7 +61,7 @@ function EmailLogin({ form, error }: { form: any; error: string | null }) {
     <div>
       <Forms.FieldGroup>
         <Forms.TextInput field={"email"} label="Email" placeholder="your@email.com" required />
-        <Forms.PasswordInput field={"password"} label="Password" placeholder="Password" required />
+        <PasswordInput />
       </Forms.FieldGroup>
 
       {error && <div className="text-red-600 text-sm mt-2">{error}</div>}
@@ -69,6 +70,30 @@ function EmailLogin({ form, error }: { form: any; error: string | null }) {
         <SubmitButton onClick={form.actions.submit} />
       </div>
     </div>
+  );
+}
+
+function PasswordInput() {
+  return (
+    <Forms.PasswordInput
+      field={"password"}
+      label={
+        <div className="flex justify-between w-full">
+          <span>Password</span>
+          <ForgotPasswordLink />
+        </div>
+      }
+      placeholder="Password"
+      required
+    />
+  );
+}
+
+function ForgotPasswordLink() {
+  return (
+    <DimmedLink to={Paths.forgotPasswordPath()} className="text-sm font-normal" testId="forgot-password-link">
+      Forgot password?
+    </DimmedLink>
   );
 }
 

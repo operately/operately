@@ -9,6 +9,10 @@ export class Paths {
     return "/";
   }
 
+  static forgotPasswordPath() {
+    return "/forgot-password";
+  }
+
   static newCompanyPath() {
     return createPath(["new"]);
   }
