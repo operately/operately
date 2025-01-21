@@ -41,34 +41,6 @@ defmodule Operately.Support.Features.SessionTestSteps do
     ctx |> UI.assert_text("Invalid email or password")
   end
 
-  step :navigate_to_password_reset_page, ctx do
-    ctx 
-    |> UI.click(testid: "account-menu")
-    |> UI.click(testid: "password-link")
-    |> UI.click(testid: "change-password")
-    |> UI.assert_has(testid: "change-password-page")
-  end
-
-  step :fill_in_reset_password_form, ctx, account_info do
-    ctx 
-    |> UI.fill(testid: "currentPassword", with: account_info[:password])
-    |> UI.fill(testid: "newPassword", with: "new-password-123")
-    |> UI.fill(testid: "confirmPassword", with: "new-password-123")
-  end
-
-  step :submit_reset_password_form, ctx do
-    ctx 
-    |> UI.click(testid: "submit")
-    |> UI.assert_has(testid: "account-security-page")
-  end
-
-  step :assert_password_changed, ctx do
-    account = Operately.People.get_account!(ctx.member.account_id)
-    assert Operately.People.Account.valid_password?(account, "new-password-123")
-
-    ctx
-  end
-
   step :visit_a_protected_page, ctx do
     ctx 
     |> UI.visit(Paths.goals_path(ctx.company))
@@ -80,6 +52,40 @@ defmodule Operately.Support.Features.SessionTestSteps do
 
   step :assert_on_the_protected_page, ctx do
     ctx |> UI.click(testid: "goals-and-projects-page")
+  end
+
+  step :click_forgot_password_link, ctx do
+    ctx |> UI.click(testid: "forgot-password-link")
+  end
+
+  step :fill_out_forgot_password_form_and_submit, ctx, account_info do
+    ctx 
+    |> UI.fill(testid: "email", with: account_info[:email]) 
+    |> UI.click(testid: "submit")
+  end
+
+  step :open_password_reset_link_from_email, ctx do
+    email = UI.Emails.last_sent_email()
+    link = UI.Emails.find_link(email, "Reset Password")
+
+    ctx
+    |> UI.visit(link)
+    |> UI.assert_text("What's new since the last check-in?")
+  end
+
+  step :fill_out_reset_password_form, ctx, account_info do
+    ctx 
+    |> UI.fill(testid: "email", with: account_info[:email])
+    |> UI.fill(testid: "password", with: "new-password-123")
+    |> UI.fill(testid: "password-confirmation", with: "new-password-123")
+    |> UI.click(testid: "submit")
+  end
+
+  step :assert_password_changed, ctx do
+    account = Operately.People.get_account!(ctx.member.account_id)
+    assert Operately.People.Account.valid_password?(account, "new-password-123")
+
+    ctx
   end
 
 end
