@@ -152,6 +152,18 @@ defmodule Operately.Features.ResourceHubDocumentTest do
       |> Steps.visit_resource_hub_page("Resource hub")
       |> Steps.assert_document_present_in_files_list(new_doc.name)
     end
+
+    feature "Feed event is created only when draft is published", ctx do
+      ctx
+      |> Steps.visit_resource_hub_page()
+      |> Steps.create_draft_document(@document)
+      |> Steps.refute_document_created_on_space_feed(@document)
+      |> Steps.refute_document_created_on_company_feed(@document)
+      |> Steps.visit_document_page()
+      |> Steps.publish_document()
+      |> Steps.assert_document_created_on_space_feed(@document)
+      |> Steps.assert_document_created_on_company_feed(@document)
+    end
   end
 
   describe "Delete" do

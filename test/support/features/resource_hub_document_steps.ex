@@ -212,6 +212,20 @@ defmodule Operately.Support.Features.ResourceHubDocumentSteps do
     |> UI.assert_text(attrs.content)
   end
 
+  step :refute_document_created_on_space_feed, ctx, attrs do
+    ctx
+    |> UI.visit(Paths.space_path(ctx.company, ctx.space))
+    |> UI.refute_text("created a document: #{attrs.name}")
+    |> UI.refute_text(attrs.content)
+  end
+
+  step :refute_document_created_on_company_feed, ctx, attrs do
+    ctx
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.refute_text("created a document in the #{ctx.space.name} space: #{attrs.name}")
+    |> UI.refute_text(attrs.content)
+  end
+
   step :assert_document_edited_on_space_feed, ctx, document_name do
     ctx
     |> UI.visit(Paths.space_path(ctx.company, ctx.space))
