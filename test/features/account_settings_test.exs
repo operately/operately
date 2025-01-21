@@ -56,4 +56,13 @@ defmodule Operately.Features.AccountSettingsTest do
     |> Steps.set_no_manager()
     |> Steps.assert_person_has_no_manager()
   end
+
+  feature "change password", ctx do
+    ctx
+    |> Steps.navigate_to_password_reset_page()
+    |> Steps.fill_in_reset_password_form()
+    |> Steps.submit_reset_password_form()
+    |> Steps.assert_password_changed()
+  end
+
 end
