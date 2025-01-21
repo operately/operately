@@ -35,13 +35,13 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubFolder do
 
   def load(ctx, inputs) do
     Folder.get(ctx.me, id: inputs.id, opts: [
-      preload: preload(inputs, ctx.me),
+      preload: preload(inputs),
       after_load: after_load(inputs),
     ])
   end
 
-  def preload(inputs, me) do
-    q = Node.preload_content(Node, me)
+  def preload(inputs) do
+    q = Node.preload_content(Node)
 
     Inputs.parse_includes(inputs, [
       include_nodes: [child_nodes: q],

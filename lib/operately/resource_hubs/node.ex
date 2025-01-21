@@ -35,36 +35,7 @@ defmodule Operately.ResourceHubs.Node do
   # Scopes
   #
 
-  def preload_content(q, author) do
-    from(n in q,
-      left_join: folder in assoc(n, :folder),
-      left_join: node_folder in assoc(folder, :node),
-
-      left_join: document in Operately.ResourceHubs.Document,
-      on: document.node_id == n.id and ((document.author_id == ^author.id and document.state == :draft) or document.state == :published),
-      left_join: node_document in assoc(document, :node),
-      left_join: author_document in assoc(document, :author),
-
-      left_join: link in assoc(n, :link),
-      left_join: node_link in assoc(link, :node),
-      left_join: author_link in assoc(link, :author),
-
-      left_join: file in assoc(n, :file),
-      left_join: node_file in assoc(file, :node),
-      left_join: author_file in assoc(file, :author),
-      left_join: blob_file in assoc(file, :blob),
-      left_join: preview_blob_file in assoc(file, :preview_blob),
-
-      preload: [
-        folder: {folder, node: node_folder},
-        document: {document, node: node_document, author: author_document},
-        link: {link, node: node_link, author: author_link},
-        file: {file, node: node_file, author: author_file, blob: blob_file, preview_blob: preview_blob_file}
-      ],
-
-      where: not is_nil(folder.id) or not is_nil(document.id) or not is_nil(link.id) or not is_nil(file.id)
-    )
-  end
+  defdelegate preload_content(query, drafts_author \\ nil), to: Operately.ResourceHubs.NodeScopes
 
   #
   # After load hooks
