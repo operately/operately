@@ -10,7 +10,7 @@ import { validateTextLength } from "./validations/textLength";
 
 interface PasswordInputProps {
   field: string;
-  label?: string;
+  label?: string | React.ReactNode;
   required?: boolean;
   placeholder?: string;
   minLength?: number;

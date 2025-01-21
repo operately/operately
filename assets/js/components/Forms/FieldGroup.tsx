@@ -46,7 +46,7 @@ export interface InputFieldProps {
   children: React.ReactNode;
 
   hidden?: boolean;
-  label?: string;
+  label?: string | React.ReactNode;
   labelIcon?: React.ReactNode;
   error?: string;
 }
