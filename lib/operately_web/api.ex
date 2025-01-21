@@ -53,6 +53,7 @@ defmodule OperatelyWeb.Api do
   query :get_resource_hub_file, Q.GetResourceHubFile
   query :get_resource_hub_folder, Q.GetResourceHubFolder
   query :get_resource_hub_link, Q.GetResourceHubLink
+  query :list_resource_hub_nodes, Q.ListResourceHubNodes
   query :list_space_tools, Q.ListSpaceTools
   query :search_people, Q.SearchPeople
   query :search_potential_space_members, Q.SearchPotentialSpaceMembers
@@ -87,6 +88,7 @@ defmodule OperatelyWeb.Api do
   mutation :create_resource_hub_folder, M.CreateResourceHubFolder
   mutation :create_resource_hub_link, M.CreateResourceHubLink
   mutation :create_email_activation_code, M.CreateEmailActivationCode
+  mutation :publish_resource_hub_document, M.PublishResourceHubDocument
 
   mutation :delete_resource_hub_document, M.DeleteResourceHubDocument
   mutation :delete_resource_hub_file, M.DeleteResourceHubFile

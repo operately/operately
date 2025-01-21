@@ -19,4 +19,7 @@ defmodule Operately.Support.Factory.Comments do
   defp find_entity_type(%Operately.Goals.Update{}), do: "goal_update"
   defp find_entity_type(%Operately.Comments.CommentThread{}), do: "comment_thread"
   defp find_entity_type(%Operately.Projects.Retrospective{}), do: "project_retrospective"
+  defp find_entity_type(%Operately.ResourceHubs.Document{}), do: "resource_hub_document"
+  defp find_entity_type(%Operately.ResourceHubs.File{}), do: "resource_hub_file"
+  defp find_entity_type(%Operately.ResourceHubs.Link{}), do: "resource_hub_link"
 end

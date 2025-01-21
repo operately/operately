@@ -18,6 +18,7 @@ export {
   getResourceHubFolder,
   getResourceHubLink,
   createResourceHubFile,
+  listResourceHubNodes,
   useCopyResourceHubFolder,
   useCreateResourceHubFolder,
   useCreateResourceHubDocument,
@@ -31,6 +32,7 @@ export {
   useDeleteResourceHubFile,
   useDeleteResourceHubFolder,
   useDeleteResourceHubLink,
+  usePublishResourceHubDocument,
   useRenameResourceHubFolder,
 } from "@/api";
 

@@ -465,6 +465,7 @@ defmodule Operately.Operations.CommentAddingTest do
       {:ok, document} = ResourceHubDocumentCreating.run(ctx.creator, ctx.hub, %{
         name: "A document",
         content: RichText.rich_text("Some content"),
+        post_as_draft: false,
         send_to_everyone: true,
         subscription_parent_type: :resource_hub_document,
         subscriber_ids: [],
@@ -494,6 +495,7 @@ defmodule Operately.Operations.CommentAddingTest do
       {:ok, document} = ResourceHubDocumentCreating.run(ctx.creator, ctx.hub, %{
         name: "A document",
         content: RichText.rich_text("Some content"),
+        post_as_draft: false,
         send_to_everyone: false,
         subscription_parent_type: :resource_hub_document,
         subscriber_ids: [ctx.mike.id],
@@ -525,6 +527,7 @@ defmodule Operately.Operations.CommentAddingTest do
       {:ok, document} = ResourceHubDocumentCreating.run(ctx.creator, ctx.hub, %{
         name: "A document",
         content: RichText.rich_text("Some content"),
+        post_as_draft: false,
         send_to_everyone: true,
         subscription_parent_type: :resource_hub_document,
         subscriber_ids: [],

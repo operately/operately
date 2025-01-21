@@ -5,7 +5,6 @@ import * as Hub from "@/models/resourceHubs";
 import classNames from "classnames";
 import { DivLink } from "@/components/Link";
 import { CommentsCountIndicator } from "@/features/Comments";
-import { assertPresent } from "@/utils/assertions";
 import { createTestId } from "@/utils/testid";
 import { findCommentsCount, findPath, NodeType, sortNodesWithFoldersFirst } from "./utils";
 import { DocumentMenu, FileMenu, FolderMenu, LinkMenu, FolderZeroNodes, HubZeroNodes } from "./components";
@@ -15,13 +14,11 @@ import { NodeIcon } from "./NodeIcon";
 import { NodeDescription } from "./NodeDescription";
 
 export function NodesList(props: NodesProps) {
-  const resource = props.type === "resource_hub" ? props.resourceHub : props.folder;
   const { filesSelected } = useNewFileModalsContext();
 
-  assertPresent(resource.nodes, `nodes must be present in ${props.type}`);
-  const nodes = useMemo(() => sortNodesWithFoldersFirst(resource.nodes!), [resource.nodes]);
+  const nodes = useMemo(() => sortNodesWithFoldersFirst(props.nodes!), [props.nodes]);
 
-  if (resource.nodes.length < 1) {
+  if (props.nodes.length < 1) {
     if (filesSelected) return <></>;
     if (props.type === "resource_hub") return <HubZeroNodes />;
     else return <FolderZeroNodes />;
