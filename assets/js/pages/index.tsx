@@ -29,6 +29,7 @@ import * as DiscussionEditPage from "./DiscussionEditPage";
 import * as DiscussionNewPage from "./DiscussionNewPage";
 import * as DiscussionPage from "./DiscussionPage";
 import * as FeedPage from "./FeedPage";
+import * as ForgotPasswordPage from "./ForgotPasswordPage";
 import * as GoalAboutPage from "./GoalAboutPage";
 import * as GoalActivityPage from "./GoalActivityPage";
 import * as GoalAddPage from "./GoalAddPage";
@@ -86,6 +87,7 @@ import * as ProjectRetrospectiveEditPage from "./ProjectRetrospectiveEditPage";
 import * as ProjectRetrospectivePage from "./ProjectRetrospectivePage";
 import * as ProjectsPage from "./ProjectsPage";
 import * as RadarPage from "./RadarPage";
+import * as ResetPasswordPage from "./ResetPasswordPage";
 import * as ResourceHubDocumentPage from "./ResourceHubDocumentPage";
 import * as ResourceHubDraftsPage from "./ResourceHubDraftsPage";
 import * as ResourceHubEditDocumentPage from "./ResourceHubEditDocumentPage";
@@ -246,6 +248,11 @@ export default {
     name: "FeedPage",
     loader: FeedPage.loader,
     Page: FeedPage.Page,
+  },
+  ForgotPasswordPage: {
+    name: "ForgotPasswordPage",
+    loader: ForgotPasswordPage.loader,
+    Page: ForgotPasswordPage.Page,
   },
   GoalAboutPage: {
     name: "GoalAboutPage",
@@ -531,6 +538,11 @@ export default {
     name: "RadarPage",
     loader: RadarPage.loader,
     Page: RadarPage.Page,
+  },
+  ResetPasswordPage: {
+    name: "ResetPasswordPage",
+    loader: ResetPasswordPage.loader,
+    Page: ResetPasswordPage.Page,
   },
   ResourceHubDocumentPage: {
     name: "ResourceHubDocumentPage",
