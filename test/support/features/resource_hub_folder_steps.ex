@@ -9,6 +9,7 @@ defmodule Operately.Support.Features.ResourceHubFolderSteps do
   def assert_navigation_links(ctx, links), do: Steps.assert_navigation_links(ctx, links)
   def refute_navigation_links(ctx, links), do: Steps.refute_navigation_links(ctx, links)
   def assert_zero_state(ctx, name \\ "Documents & Files"), do: Steps.assert_zero_state(ctx, name)
+  def assert_zero_folder_state(ctx), do: Steps.assert_zero_folder_state(ctx)
 
   step :given_nested_folders_exist, ctx do
     ctx
@@ -53,7 +54,9 @@ defmodule Operately.Support.Features.ResourceHubFolderSteps do
   end
 
   step :assert_items_count, ctx, attrs do
-    UI.find(ctx, UI.query(testid: "node-#{attrs.index}"), fn ctx ->
+    ctx
+    |> UI.sleep(100)
+    |> UI.find(UI.query(testid: "node-#{attrs.index}"), fn ctx ->
       ctx
       |> UI.assert_text(attrs.items_count)
     end)
