@@ -10,6 +10,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHubDocument do
     field :folder_id, :id
     field :name, :string
     field :content, :string
+    field :post_as_draft, :boolean
     field :send_notifications_to_everyone, :boolean
     field :subscriber_ids, list_of(:id)
     field :copied_document_id, :id
@@ -48,6 +49,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHubDocument do
 
     {:ok, Map.merge(inputs, %{
       content: content,
+      post_as_draft: inputs[:post_as_draft] || false,
       send_to_everyone: inputs[:send_notifications_to_everyone] || false,
       subscription_parent_type: :resource_hub_document,
       subscriber_ids: inputs[:subscriber_ids] || [],
