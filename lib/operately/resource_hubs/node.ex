@@ -1,4 +1,5 @@
 defmodule Operately.ResourceHubs.Node do
+  import Ecto.Query, only: [from: 2]
   use Operately.Schema
   use Operately.Repo.Getter
 
@@ -30,19 +31,29 @@ defmodule Operately.ResourceHubs.Node do
     |> validate_required([:resource_hub_id, :name, :type])
   end
 
-  def preload_nodes, do: [folder: :node, document: [:author, :node], link: [:author, :node], file: [:author, :node, :preview_blob, :blob]]
+  #
+  # Scopes
+  #
+
+  defdelegate preload_content(query, drafts_author \\ nil), to: Operately.ResourceHubs.NodeScopes
 
   #
   # After load hooks
   #
 
+  def separate_drafts(nodes) when is_list(nodes) do
+    Enum.split_with(nodes, fn node ->
+      node.type == :document and node.document.state == :draft
+    end)
+  end
+
   def load_comments_count(nodes) when is_list(nodes) do
     ids = Enum.reduce(nodes, [], fn n, acc ->
-      if n.type in [:document, :file] do
-        id = if n.document, do: n.document.id, else: n.file.id
-        [id | acc]
-      else
-        acc
+      cond do
+        n.type == :document -> [n.document.id | acc]
+        n.type == :file -> [n.file.id | acc]
+        n.type == :link -> [n.link.id | acc]
+        true -> acc
       end
     end)
 
@@ -55,22 +66,29 @@ defmodule Operately.ResourceHubs.Node do
       |> Operately.Repo.all()
       |> Enum.into(%{})
 
-    Enum.map(nodes, fn %{document: document, file: file} = node ->
+    Enum.map(nodes, fn %{document: document, file: file, link: link} = node ->
       cond do
         document ->
-          count = Map.get(counts, document.id, 0)
-          document = Map.put(document, :comments_count, count)
+          document = put_comments_count(counts, document)
           %{node | document: document}
 
         file ->
-          count = Map.get(counts, file.id, 0)
-          file = Map.put(file, :comments_count, count)
+          file = put_comments_count(counts, file)
           %{node | file: file}
+
+        link ->
+          link = put_comments_count(counts, link)
+          %{node | link: link}
 
         true ->
           node
       end
     end)
+  end
+
+  defp put_comments_count(counts_list, resource) do
+    count = Map.get(counts_list, resource.id, 0)
+    Map.put(resource, :comments_count, count)
   end
 
   @doc """

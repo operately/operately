@@ -31,7 +31,11 @@ defmodule Operately.ResourceHubs.Folder do
     |> validate_required([:node_id])
   end
 
-  def find_children_count(nodes) when is_list(nodes) do
+  #
+  # After load hooks
+  #
+
+  def set_children_count(nodes) when is_list(nodes) do
     folder_ids =
       nodes
       |> Enum.filter(&(&1.type == :folder))
@@ -39,7 +43,9 @@ defmodule Operately.ResourceHubs.Folder do
 
     counts =
       from(n in Operately.ResourceHubs.Node,
+        left_join: document in assoc(n, :document),
         where: n.parent_folder_id in ^folder_ids,
+        where: n.type != :document or document.state != :draft,
         group_by: n.parent_folder_id,
         select: {n.parent_folder_id, count(n.id)}
       )
@@ -57,10 +63,6 @@ defmodule Operately.ResourceHubs.Folder do
     end)
   end
 
-  #
-  # After load hooks
-  #
-
   def find_path_to_folder(folder = %__MODULE__{}) do
     path = Operately.ResourceHubs.Node.find_all_parent_folders(folder.id, "resource_folders")
 
@@ -77,11 +79,6 @@ defmodule Operately.ResourceHubs.Folder do
 
     subscribers = Operately.Notifications.Subscriber.from_space_members(folder.space.members)
     Map.put(folder, :potential_subscribers, subscribers)
-  end
-
-  def set_children_count(folder = %__MODULE__{}) do
-    nodes = Operately.ResourceHubs.Folder.find_children_count(folder.child_nodes)
-    Map.put(folder, :child_nodes, nodes)
   end
 
   def set_permissions(folder = %__MODULE__{}) do
