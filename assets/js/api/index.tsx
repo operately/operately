@@ -2859,6 +2859,21 @@ export interface ReopenGoalResult {
   goal?: Goal | null;
 }
 
+export interface RequestPasswordResetInput {
+  email?: string | null;
+}
+
+export interface RequestPasswordResetResult {}
+
+export interface ResetPasswordInput {
+  email?: string | null;
+  password?: string | null;
+  passwordConfirmation?: string | null;
+  resetPasswordToken?: string | null;
+}
+
+export interface ResetPasswordResult {}
+
 export interface RestoreCompanyMemberInput {
   personId?: Id | null;
 }
@@ -3521,6 +3536,14 @@ export class ApiClient {
     return this.post("/reopen_goal", input);
   }
 
+  async requestPasswordReset(input: RequestPasswordResetInput): Promise<RequestPasswordResetResult> {
+    return this.post("/request_password_reset", input);
+  }
+
+  async resetPassword(input: ResetPasswordInput): Promise<ResetPasswordResult> {
+    return this.post("/reset_password", input);
+  }
+
   async restoreCompanyMember(input: RestoreCompanyMemberInput): Promise<RestoreCompanyMemberResult> {
     return this.post("/restore_company_member", input);
   }
@@ -4013,6 +4036,12 @@ export async function renameResourceHubFolder(
 }
 export async function reopenGoal(input: ReopenGoalInput): Promise<ReopenGoalResult> {
   return defaultApiClient.reopenGoal(input);
+}
+export async function requestPasswordReset(input: RequestPasswordResetInput): Promise<RequestPasswordResetResult> {
+  return defaultApiClient.requestPasswordReset(input);
+}
+export async function resetPassword(input: ResetPasswordInput): Promise<ResetPasswordResult> {
+  return defaultApiClient.resetPassword(input);
 }
 export async function restoreCompanyMember(input: RestoreCompanyMemberInput): Promise<RestoreCompanyMemberResult> {
   return defaultApiClient.restoreCompanyMember(input);
@@ -4810,6 +4839,19 @@ export function useReopenGoal(): UseMutationHookResult<ReopenGoalInput, ReopenGo
   return useMutation<ReopenGoalInput, ReopenGoalResult>((input) => defaultApiClient.reopenGoal(input));
 }
 
+export function useRequestPasswordReset(): UseMutationHookResult<
+  RequestPasswordResetInput,
+  RequestPasswordResetResult
+> {
+  return useMutation<RequestPasswordResetInput, RequestPasswordResetResult>((input) =>
+    defaultApiClient.requestPasswordReset(input),
+  );
+}
+
+export function useResetPassword(): UseMutationHookResult<ResetPasswordInput, ResetPasswordResult> {
+  return useMutation<ResetPasswordInput, ResetPasswordResult>((input) => defaultApiClient.resetPassword(input));
+}
+
 export function useRestoreCompanyMember(): UseMutationHookResult<
   RestoreCompanyMemberInput,
   RestoreCompanyMemberResult
@@ -5145,6 +5187,10 @@ export default {
   useRenameResourceHubFolder,
   reopenGoal,
   useReopenGoal,
+  requestPasswordReset,
+  useRequestPasswordReset,
+  resetPassword,
+  useResetPassword,
   restoreCompanyMember,
   useRestoreCompanyMember,
   resumeProject,

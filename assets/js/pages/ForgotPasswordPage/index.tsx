@@ -1,3 +1,4 @@
+import * as Api from "@/api";
 import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
@@ -9,11 +10,17 @@ import { OperatelyLogo } from "@/components/OperatelyLogo";
 export const loader = Pages.emptyLoader;
 
 export function Page() {
+  const [req] = Api.useRequestPasswordReset();
+  const [showEmailSent, setShowEmailSent] = React.useState(false);
+
   const form = Forms.useForm({
     fields: {
       email: "",
     },
-    submit: async () => {},
+    submit: async () => {
+      await req({ email: form.values.email });
+      setShowEmailSent(true);
+    },
   });
 
   return (
@@ -32,11 +39,20 @@ export function Page() {
               </Forms.FieldGroup>
 
               <SubmitButton onClick={form.actions.submit} />
+              {showEmailSent && <EmailSentMessage />}
             </Forms.Form>
           </div>
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
+  );
+}
+
+function EmailSentMessage() {
+  return (
+    <p className="text-sm text-content-dimmed mt-4">
+      Password reset instructions have been sent to your email. Check your inbox for an email.
+    </p>
   );
 }
 
