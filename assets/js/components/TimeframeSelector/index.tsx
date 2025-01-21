@@ -97,6 +97,15 @@ function TimeframeSelectorHeader(props: TimeframeSelectorProps) {
 }
 
 function TimeframeSelectorTypeSelector(props: TimeframeSelectorProps) {
+  const changeHandler = (value: Timeframes.TimeframeType) => {
+    match(value)
+      .with("year", () => props.setTimeframe(Timeframes.currentYear()))
+      .with("quarter", () => props.setTimeframe(Timeframes.currentQuarter()))
+      .with("month", () => props.setTimeframe(Timeframes.currentMonth()))
+      .with("days", () => props.setTimeframe({ ...props.timeframe, type: "days" }))
+      .exhaustive();
+  };
+
   return (
     <SegmentedControl
       options={[
@@ -106,7 +115,7 @@ function TimeframeSelectorTypeSelector(props: TimeframeSelectorProps) {
         { label: "Custom", value: "days" },
       ]}
       value={props.timeframe.type}
-      onChange={(value) => props.setTimeframe({ ...props.timeframe, type: value as Timeframes.TimeframeType })}
+      onChange={changeHandler}
     />
   );
 }
