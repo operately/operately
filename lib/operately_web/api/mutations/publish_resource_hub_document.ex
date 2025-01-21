@@ -38,8 +38,12 @@ defmodule OperatelyWeb.Api.Mutations.PublishResourceHubDocument do
   end
 
   defp parse_attrs(inputs) do
-    content = Jason.decode!(inputs.content)
-    {:ok, Map.put(inputs, :content, content)}
+    if inputs[:content] do
+      content = Jason.decode!(inputs.content)
+      {:ok, Map.put(inputs, :content, content)}
+    else
+      {:ok, inputs}
+    end
   end
 
   defp load(me, document_id) do
