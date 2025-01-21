@@ -54,7 +54,7 @@ defmodule Operately.ResourceHubs.ResourceHub do
   end
 
   def set_children_count(resource_hub = %__MODULE__{}) do
-    nodes = Operately.ResourceHubs.Folder.find_children_count(resource_hub.nodes)
+    nodes = Operately.ResourceHubs.Folder.set_children_count(resource_hub.nodes)
     Map.put(resource_hub, :nodes, nodes)
   end
 

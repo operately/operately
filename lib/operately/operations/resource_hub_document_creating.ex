@@ -20,6 +20,7 @@ defmodule Operately.Operations.ResourceHubDocumentCreating do
         node_id: changes.node.id,
         author_id: author.id,
         content: attrs.content,
+        state: state(attrs),
         subscription_list_id: changes.subscription_list.id,
       })
     end)
@@ -28,7 +29,17 @@ defmodule Operately.Operations.ResourceHubDocumentCreating do
       document = Map.put(changes.document, :node, changes.node)
       {:ok, document}
     end)
-    |> Activities.insert_sync(author.id, :resource_hub_document_created, fn changes ->
+
+    |> record_activity(author, hub, attrs)
+    |> Repo.transaction()
+    |> Repo.extract_result(:document_with_node)
+  end
+
+  defp record_activity(multi, author, hub, attrs) do
+    if attrs.post_as_draft do
+      multi
+    else
+      Activities.insert_sync(multi, author.id, :resource_hub_document_created, fn changes ->
       %{
         company_id: author.company_id,
         space_id: hub.space_id,
@@ -40,7 +51,10 @@ defmodule Operately.Operations.ResourceHubDocumentCreating do
         copied_document_node_id: attrs[:copied_document] && attrs.copied_document.node_id,
       }
     end)
-    |> Repo.transaction()
-    |> Repo.extract_result(:document_with_node)
+    end
+  end
+
+  defp state(attrs) do
+    if attrs.post_as_draft, do: :draft, else: :published
   end
 end
