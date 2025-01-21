@@ -42,6 +42,11 @@ export function Page() {
     },
   });
 
+  const okEmail = validateEmail(form.values.email);
+  const okPassword = validatePassword(form.values.password).isValid;
+  const okConfirmPassword = form.values.password !== "" && form.values.password === form.values.confirmPassword;
+  const okForm = okEmail && okPassword && okConfirmPassword;
+
   return (
     <Pages.Page title={["Reset Password"]} testId="reset-password-page">
       <Paper.Root size="tiny">
@@ -57,7 +62,7 @@ export function Page() {
                   label="Email"
                   placeholder="e.g. your@email.com"
                   required
-                  okSign={validateEmail(form.values.email)}
+                  okSign={okEmail}
                 />
 
                 <Forms.PasswordInput
@@ -65,7 +70,7 @@ export function Page() {
                   label="Password"
                   placeholder="Enter your new password"
                   required
-                  okSign={validatePassword(form.values.password).isValid}
+                  okSign={okPassword}
                 />
 
                 <Forms.PasswordInput
@@ -73,13 +78,13 @@ export function Page() {
                   label="Confirm Password"
                   placeholder="Re-enter your new password"
                   required
-                  okSign={form.values.password !== "" && form.values.password === form.values.confirmPassword}
+                  okSign={okConfirmPassword}
                 />
 
                 <PasswordStrength password={form.values.password} />
               </Forms.FieldGroup>
 
-              <SubmitButton onClick={form.actions.submit} />
+              <SubmitButton onClick={form.actions.submit} disabled={!okForm} />
             </Forms.Form>
           </div>
         </Paper.Body>
@@ -88,18 +93,20 @@ export function Page() {
   );
 }
 
-function SubmitButton({ onClick }: { onClick: () => void }) {
+function SubmitButton({ onClick, disabled }) {
   const className = classNames(
-    "w-full flex justify-center py-2 px-4",
+    "w-full flex justify-center py-2 px-4 mt-6",
     "border border-transparent",
     "rounded-md shadow-sm font-medium text-white-1",
-    "bg-blue-600 hover:bg-blue-700",
-    "mt-6",
+    {
+      "bg-blue-400 cursor-not-allowed": disabled,
+      "bg-blue-600 hover:bg-blue-700": !disabled,
+    },
   );
 
   return (
-    <button type="submit" className={className} onClick={onClick} data-test-id="submit">
-      Reset Password
+    <button className={className} onClick={onClick} type="submit" data-test-id="submit" disabled={disabled}>
+      {disabled ? "Please fill in all fields" : "Reset Password"}
     </button>
   );
 }
