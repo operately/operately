@@ -58,6 +58,22 @@ describe("Tree", () => {
   });
 
   describe("filtering by node type", () => {
+    test("showing both goals and projects", () => {
+      const t = new TreeTester(["name"], { showProjects: true, showGoals: true });
+
+      t.addGoal("G1", company, john);
+      t.addProj("P1", company, john);
+      t.addGoal("G2", company, john, "G1");
+      t.addProj("P2", company, john, "G2");
+
+      t.assertShape(`
+        G1
+          G2
+            P2
+        P1
+      `);
+    });
+
     test("showing only goals", () => {
       const t = new TreeTester(["name"], { showProjects: false });
 
