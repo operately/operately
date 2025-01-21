@@ -4,15 +4,14 @@ import { FieldObject } from "./useForm/field";
 import { ErrorMap, AddErrorFn, ValidationFn } from "./useForm/errors";
 import { useFieldValues, OnChangeFn } from "./useForm/values";
 import { useFormState } from "./useForm/state";
+import { useSubmitTrigger } from "./useForm/trigger";
 import { useValidations, runValidations } from "./useForm/validations";
 import { State } from "./useForm/state";
-
-type SubmitOptions = "primary" | "secondary";
 
 interface FormProps<T extends FieldObject> {
   fields: T;
   validate?: (addError: AddErrorFn) => void;
-  submit: (type: SubmitOptions) => Promise<void> | void;
+  submit: (attrs?: any) => Promise<void> | void;
   cancel?: () => Promise<void> | void;
   onChange?: OnChangeFn<T>;
 }
@@ -20,11 +19,12 @@ interface FormProps<T extends FieldObject> {
 export interface FormState<T extends FieldObject> {
   values: T;
   state: State;
+  trigger: string | undefined;
   errors: ErrorMap;
   hasCancel: boolean;
   actions: {
     clearErrors: () => void;
-    submit: (type: SubmitOptions) => void | Promise<void>;
+    submit: (attrs?: any) => void | Promise<void>;
     cancel: () => void | Promise<void>;
     reset: () => void;
     addValidation: (field: string, validation: ValidationFn) => void;
@@ -32,6 +32,7 @@ export interface FormState<T extends FieldObject> {
     getValue: (key: string) => any;
     setValue: (key: string, value: any) => void;
     setState: (state: State) => void;
+    setTrigger: React.Dispatch<React.SetStateAction<string | undefined>>;
   };
 }
 
@@ -42,12 +43,14 @@ export function useForm<T extends FieldObject>(props: FormProps<T>): FormState<T
   const clearErrors = () => setErrors({});
 
   const { state, setState } = useFormState();
+  const { trigger, setTrigger } = useSubmitTrigger();
   const { values, getValue, setValue, resetValues } = useFieldValues<T>(props.fields, props.onChange);
   const { validations, addValidation, removeValidation } = useValidations();
 
   const form = {
     values,
     state,
+    trigger,
     errors,
     hasCancel,
     actions: {
@@ -56,7 +59,7 @@ export function useForm<T extends FieldObject>(props: FormProps<T>): FormState<T
       removeValidation,
       getValue,
       setValue,
-      submit: async (type: SubmitOptions) => {
+      submit: async (attrs: any) => {
         try {
           if (state !== "idle") return;
 
@@ -69,16 +72,8 @@ export function useForm<T extends FieldObject>(props: FormProps<T>): FormState<T
             return;
           }
 
-          switch (type) {
-            case "primary":
-              setState("submitting");
-              break;
-            case "secondary":
-              setState("secondary-submitting");
-              break;
-          }
-
-          await props.submit(type);
+          setState("submitting");
+          await props.submit(attrs);
 
           setState("idle");
         } catch (e) {
@@ -96,6 +91,7 @@ export function useForm<T extends FieldObject>(props: FormProps<T>): FormState<T
         resetValues();
       },
       setState,
+      setTrigger,
     },
   };
 
