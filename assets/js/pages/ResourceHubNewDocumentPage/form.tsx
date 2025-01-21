@@ -14,8 +14,8 @@ import { assertPresent } from "@/utils/assertions";
 
 import { useLoadedData } from "./loader";
 
-export function Form({ folderId }: { folderId: string | null }) {
-  const { resourceHub } = useLoadedData();
+export function Form() {
+  const { resourceHub, folder } = useLoadedData();
   const navigate = useNavigate();
   const [post] = useCreateResourceHubDocument();
 
@@ -41,7 +41,7 @@ export function Form({ folderId }: { folderId: string | null }) {
     submit: async (isDraft?: boolean) => {
       const res = await post({
         resourceHubId: resourceHub.id,
-        folderId: folderId,
+        folderId: folder?.id,
         name: form.values.title,
         content: JSON.stringify(form.values.content),
         sendNotificationsToEveryone: subscriptionsState.subscriptionType === Options.ALL,

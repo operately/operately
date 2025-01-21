@@ -13,13 +13,8 @@ import { LinkOptions, LinkIcon } from "@/features/ResourceHub";
 
 import { useLoadedData } from "./loader";
 
-interface Props {
-  folderId: string | null;
-  type: LinkOptions | null;
-}
-
-export function Form({ folderId, type }: Props) {
-  const { resourceHub } = useLoadedData();
+export function Form() {
+  const { resourceHub, folder, linkType } = useLoadedData();
   const navigate = useNavigate();
   const [post] = useCreateResourceHubLink();
 
@@ -33,7 +28,7 @@ export function Form({ folderId, type }: Props) {
     fields: {
       title: "",
       link: "",
-      type: type,
+      type: linkType,
       description: null,
     },
     validate: (addError) => {
@@ -47,7 +42,7 @@ export function Form({ folderId, type }: Props) {
     submit: async () => {
       const res = await post({
         resourceHubId: resourceHub.id,
-        folderId: folderId,
+        folderId: folder?.id,
         name: form.values.title,
         url: form.values.link,
         type: form.values.type || "other",
