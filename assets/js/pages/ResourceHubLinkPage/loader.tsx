@@ -16,6 +16,7 @@ export async function loader({ params }): Promise<LoaderResult> {
       includeReactions: true,
       includePathToLink: true,
       includeResourceHub: true,
+      includeUnreadNotifications: true,
       includeParentFolder: true,
     }).then((res) => res.link!),
   };
