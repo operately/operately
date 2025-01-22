@@ -33,3 +33,8 @@ defimpl Operately.Notifications.NotifiableResource, for: Operately.ResourceHubs.
   def actions(_), do: ["resource_hub_link_created", "resource_hub_link_edited"]
   def field(_), do: "link_id"
 end
+
+defimpl Operately.Notifications.NotifiableResource, for: Operately.ResourceHubs.Document do
+  def actions(_), do: ["resource_hub_document_created", "resource_hub_document_edited"]
+  def field(_), do: "document_id"
+end

@@ -68,7 +68,7 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubDocument do
 
   defp load_unread_notifications(person) do
     fn document ->
-      Document.load_unread_notifications(document, person)
+      Operately.Notifications.UnreadNotificationsLoader.load(document, person)
     end
   end
 end
