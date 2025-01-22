@@ -63,3 +63,8 @@ defimpl Operately.Notifications.NotifiableResource, for: Operately.Projects.Proj
   end
   def field(_), do: "project_id"
 end
+
+defimpl Operately.Notifications.NotifiableResource, for: Operately.Groups.Group do
+  def actions(_), do: ["space_members_added"]
+  def field(_), do: "space_id"
+end
