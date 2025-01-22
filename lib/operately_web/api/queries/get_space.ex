@@ -77,7 +77,7 @@ defmodule OperatelyWeb.Api.Queries.GetSpace do
 
   defp load_unread_notifications(person) do
     fn space ->
-      Group.load_unread_notifications(space, person)
+      Operately.Notifications.UnreadNotificationsLoader.load(space, person)
     end
   end
 end
