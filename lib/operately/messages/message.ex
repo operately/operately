@@ -59,19 +59,6 @@ defmodule Operately.Messages.Message do
 
   import Ecto.Query, only: [from: 2]
 
-  def load_unread_notifications(message = %__MODULE__{}, person) do
-    notifications =
-      from(n in Operately.Notifications.Notification,
-        join: a in assoc(n, :activity),
-        where: a.action == "discussion_posting" and a.content["discussion_id"] == ^message.id,
-        where: n.person_id == ^person.id and not n.read,
-        select: n
-      )
-      |> Repo.all()
-
-    Map.put(message, :notifications, notifications)
-  end
-
   def load_comments_count(messages) do
     message_ids = Enum.map(messages, &(&1.id))
 

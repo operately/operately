@@ -42,24 +42,6 @@ defmodule Operately.Projects.CheckIn do
 
   import Ecto.Query, only: [from: 2]
 
-  def load_unread_notifications(check_in = %__MODULE__{}, person) do
-    actions = [
-      "project_check_in_submitted",
-      "project_check_in_acknowledged"
-    ]
-
-    notifications =
-      from(n in Operately.Notifications.Notification,
-        join: a in assoc(n, :activity),
-        where: a.action in ^actions and a.content["check_in_id"] == ^check_in.id,
-        where: n.person_id == ^person.id and not n.read,
-        select: n
-      )
-      |> Repo.all()
-
-    Map.put(check_in, :notifications, notifications)
-  end
-
   def load_potential_subscribers(check_in = %__MODULE__{}) do
     q = from(c in Operately.Projects.Contributor, join: p in assoc(c, :person), preload: :person)
     tmp_check_in = Repo.preload(check_in, [:access_context, [project: [contributors: q]]], force: true)

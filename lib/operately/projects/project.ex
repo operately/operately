@@ -163,29 +163,6 @@ defmodule Operately.Projects.Project do
     end
   end
 
-  def load_unread_notifications(project = %__MODULE__{}, person) do
-    actions = [
-      "project_created",
-      "project_closed",
-      "project_goal_connection",
-      "project_moved",
-      "project_pausing",
-      "project_resuming",
-      "project_timeline_edited"
-    ]
-
-    notifications =
-      from(n in Operately.Notifications.Notification,
-        join: a in assoc(n, :activity),
-        where: a.action in ^actions and a.content["project_id"] == ^project.id,
-        where: n.person_id == ^person.id and not n.read,
-        select: n
-      )
-      |> Repo.all()
-
-    Map.put(project, :notifications, notifications)
-  end
-
   def load_contributor_access_levels(project) do
     contribs = Contributor.load_project_access_levels(project.contributors)
     Map.put(project, :contributors, contribs)
