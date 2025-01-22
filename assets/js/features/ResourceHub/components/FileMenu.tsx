@@ -43,9 +43,9 @@ export function FileMenu({ file }: Props) {
 
 function DownloadFileMenuItem({ file }: Props) {
   assertPresent(file.blob?.url, "blob.url must be present in file");
-  assertPresent(file.blob.filename, "blob.filename must be present in file");
+  assertPresent(file.name, "name must be present in file");
 
-  const [downloadFile] = useDownloadFile(file.blob.url, file.blob.filename);
+  const [downloadFile] = useDownloadFile(file.blob.url, file.name);
 
   return <MenuActionItem onClick={downloadFile}>Download</MenuActionItem>;
 }

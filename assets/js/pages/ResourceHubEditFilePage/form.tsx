@@ -6,14 +6,17 @@ import { ResourceHubFile, useEditResourceHubFile } from "@/models/resourceHubs";
 import Forms from "@/components/Forms";
 import { Paths } from "@/routes/paths";
 import { areRichTextObjectsEqual } from "@/components/RichContent";
+import { findNameAndExtension } from "@/features/ResourceHub";
 
 export function Form({ file }: { file: ResourceHubFile }) {
   const navigate = useNavigate();
   const [edit] = useEditResourceHubFile();
 
+  const { name, extension } = findNameAndExtension(file.name!);
+
   const form = Forms.useForm({
     fields: {
-      title: file.name!,
+      title: name,
       description: JSON.parse(file.description!),
     },
     validate: (addError) => {
@@ -33,7 +36,7 @@ export function Form({ file }: { file: ResourceHubFile }) {
       if (fileHasChanged(file, title, description)) {
         const res = await edit({
           fileId: file.id,
-          name: title,
+          name: !extension ? title : [title, extension].join("."),
           description: JSON.stringify(description),
         });
         navigate(Paths.resourceHubFilePath(res.file.id));
