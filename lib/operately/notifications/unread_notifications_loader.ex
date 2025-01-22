@@ -70,6 +70,11 @@ defimpl Operately.Notifications.NotifiableResource, for: Operately.Projects.Proj
   def field(_), do: "project_id"
 end
 
+defimpl Operately.Notifications.NotifiableResource, for: Operately.Projects.CheckIn do
+  def actions(_), do: ["project_check_in_submitted", "project_check_in_acknowledged"]
+  def field(_), do: "check_in_id"
+end
+
 defimpl Operately.Notifications.NotifiableResource, for: Operately.Groups.Group do
   def actions(_), do: ["space_members_added"]
   def field(_), do: "space_id"
