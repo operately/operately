@@ -38,3 +38,18 @@ defimpl Operately.Notifications.NotifiableResource, for: Operately.ResourceHubs.
   def actions(_), do: ["resource_hub_document_created", "resource_hub_document_edited"]
   def field(_), do: "document_id"
 end
+
+defimpl Operately.Notifications.NotifiableResource, for: Operately.Projects.Project do
+  def actions(_) do
+    [
+      "project_created",
+      "project_closed",
+      "project_goal_connection",
+      "project_moved",
+      "project_pausing",
+      "project_resuming",
+      "project_timeline_edited"
+    ]
+  end
+  def field(_), do: "project_id"
+end
