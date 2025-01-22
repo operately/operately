@@ -85,8 +85,8 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdate do
   end
 
   defp load_unread_notifications(person) do
-    fn activity ->
-      Update.load_unread_notifications(activity, person)
+    fn update ->
+      Operately.Notifications.UnreadNotificationsLoader.load(update, person)
     end
   end
 end

@@ -44,6 +44,11 @@ defimpl Operately.Notifications.NotifiableResource, for: Operately.Goals.Goal do
   def field(_), do: "goal_id"
 end
 
+defimpl Operately.Notifications.NotifiableResource, for: Operately.Goals.Update do
+  def actions(_), do: ["goal_check_in", "goal_check_in_acknowledgement"]
+  def field(_), do: "update_id"
+end
+
 defimpl Operately.Notifications.NotifiableResource, for: Operately.Projects.Project do
   def actions(_) do
     [
