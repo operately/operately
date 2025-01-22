@@ -3,6 +3,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectRetrospective do
   use OperatelyWeb.Api.Helpers
 
   alias Operately.Projects.{Permissions, Retrospective}
+  alias Operately.Notifications.UnreadNotificationsLoader
 
   inputs do
     field :project_id, :string
@@ -61,13 +62,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectRetrospective do
     Inputs.parse_includes(inputs, [
       include_permissions: &Retrospective.set_permissions/1,
       include_potential_subscribers: &Retrospective.load_potential_subscribers/1,
-      include_unread_notifications: load_unread_notifications(person),
+      include_unread_notifications: UnreadNotificationsLoader.load(person),
     ])
-  end
-
-  defp load_unread_notifications(person) do
-    fn retrospective ->
-      Retrospective.load_unread_notifications(retrospective, person)
-    end
   end
 end
