@@ -4,6 +4,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
 
   alias OperatelyWeb.Api.Serializer
   alias Operately.Goals.{Goal, Permissions}
+  alias Operately.Notifications.UnreadNotificationsLoader
 
   inputs do
     field :id, :id
@@ -77,13 +78,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
       include_permissions: &Goal.preload_permissions/1,
       include_access_levels: &Goal.preload_access_levels/1,
       include_potential_subscribers: &Goal.set_potential_subscribers/1,
-      include_unread_notifications: load_unread_notifications(me),
+      include_unread_notifications: UnreadNotificationsLoader.load(me),
     ])
-  end
-
-  defp load_unread_notifications(person) do
-    fn goal ->
-      Operately.Notifications.UnreadNotificationsLoader.load(goal, person)
-    end
   end
 end

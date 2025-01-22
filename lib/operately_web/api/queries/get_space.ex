@@ -3,6 +3,7 @@ defmodule OperatelyWeb.Api.Queries.GetSpace do
   use OperatelyWeb.Api.Helpers
 
   alias Operately.Groups.{Group, Permissions}
+  alias Operately.Notifications.UnreadNotificationsLoader
 
   inputs do
     field :id, :id
@@ -58,7 +59,7 @@ defmodule OperatelyWeb.Api.Queries.GetSpace do
       include_access_levels: &Group.preload_access_levels/1,
       include_members_access_levels: &Group.preload_members_access_level/1,
       include_potential_subscribers: &Group.set_potential_subscribers/1,
-      include_unread_notifications: load_unread_notifications(me),
+      include_unread_notifications: UnreadNotificationsLoader.load(me),
       always_include: preload_is_member(me),
       always_include: &sort_members/1,
     ])
@@ -74,10 +75,4 @@ defmodule OperatelyWeb.Api.Queries.GetSpace do
     %{group | members: Enum.sort_by(group.members, & &1.full_name) }
   end
   defp sort_members(group), do: group
-
-  defp load_unread_notifications(person) do
-    fn space ->
-      Operately.Notifications.UnreadNotificationsLoader.load(space, person)
-    end
-  end
 end
