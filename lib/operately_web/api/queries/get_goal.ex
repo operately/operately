@@ -83,7 +83,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
 
   defp load_unread_notifications(person) do
     fn goal ->
-      Goal.load_unread_notifications(goal, person)
+      Operately.Notifications.UnreadNotificationsLoader.load(goal, person)
     end
   end
 end

@@ -121,25 +121,6 @@ defmodule Operately.Goals.Goal do
     [goal] |> preload_last_check_in() |> hd()
   end
 
-  def load_unread_notifications(goal = %__MODULE__{}, person) do
-    actions = [
-      "goal_created",
-      "goal_editing",
-      "goal_archived",
-    ]
-
-    notifications =
-      from(n in Operately.Notifications.Notification,
-        join: a in assoc(n, :activity),
-        where: a.action in ^actions and a.content["goal_id"] == ^goal.id,
-        where: n.person_id == ^person.id and not n.read,
-        select: n
-      )
-      |> Repo.all()
-
-    Map.put(goal, :notifications, notifications)
-  end
-
   def set_permissions(%{goal: goal = %__MODULE__{}} = parent) do
     goal = preload_permissions(goal, parent.request_info.access_level)
 
