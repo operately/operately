@@ -117,7 +117,7 @@ defmodule Operately.Support.Features.ResourceHubSteps do
   # Helpers
   #
 
-  defp get_resource_id(resource_name) do
+  def get_resource_id(resource_name) do
     {:ok, node} = Node.get(:system, name: resource_name, opts: [
       preload: [:document, :link, :folder, :file]
     ])
