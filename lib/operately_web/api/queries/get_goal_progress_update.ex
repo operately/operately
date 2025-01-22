@@ -3,6 +3,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdate do
   use OperatelyWeb.Api.Helpers
 
   alias Operately.Goals.{Goal, Update, Permissions}
+  alias Operately.Notifications.UnreadNotificationsLoader
 
   inputs do
     field :id, :string
@@ -69,7 +70,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdate do
   defp after_load(inputs, me) do
     Inputs.parse_includes(inputs, [
       include_potential_subscribers: &Update.set_potential_subscribers/1,
-      include_unread_notifications: load_unread_notifications(me),
+      include_unread_notifications: UnreadNotificationsLoader.load(me),
       include_permissions: &Goal.set_permissions/1,
       always_include: &load_goal_permissions/1,
     ])
@@ -81,12 +82,6 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdate do
       %{update | goal: goal}
     else
       update
-    end
-  end
-
-  defp load_unread_notifications(person) do
-    fn update ->
-      Operately.Notifications.UnreadNotificationsLoader.load(update, person)
     end
   end
 end

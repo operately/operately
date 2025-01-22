@@ -3,6 +3,7 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubDocument do
   use OperatelyWeb.Api.Helpers
 
   alias Operately.ResourceHubs.Document
+  alias Operately.Notifications.UnreadNotificationsLoader
 
   inputs do
     field :id, :id
@@ -60,15 +61,9 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubDocument do
   defp after_load(inputs, me) do
     Inputs.parse_includes(inputs, [
       include_permissions: &Document.set_permissions/1,
-      include_unread_notifications: load_unread_notifications(me),
+      include_unread_notifications: UnreadNotificationsLoader.load(me),
       include_potential_subscribers: &Document.load_potential_subscribers/1,
       include_path_to_document: &Document.find_path_to_document/1,
     ])
-  end
-
-  defp load_unread_notifications(person) do
-    fn document ->
-      Operately.Notifications.UnreadNotificationsLoader.load(document, person)
-    end
   end
 end
