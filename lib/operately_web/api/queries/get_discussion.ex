@@ -4,6 +4,7 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussion do
 
   alias Operately.Messages.Message
   alias Operately.Groups.Permissions
+  alias Operately.Notifications.UnreadNotificationsLoader
 
   inputs do
     field :id, :string
@@ -62,14 +63,8 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussion do
   defp after_load(inputs, me) do
     Inputs.parse_includes(inputs, [
       include_potential_subscribers: &Message.set_potential_subscribers/1,
-      include_unread_notifications: load_unread_notifications(me),
+      include_unread_notifications: UnreadNotificationsLoader.load(me),
       include_permissions: &Message.set_permissions/1,
     ])
-  end
-
-  defp load_unread_notifications(person) do
-    fn message ->
-      Message.load_unread_notifications(message, person)
-    end
   end
 end
