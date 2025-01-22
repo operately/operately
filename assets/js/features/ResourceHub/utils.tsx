@@ -58,3 +58,19 @@ export function findCommentsCount(nodeType: NodeType, node: ResourceHubNode) {
       return 0;
   }
 }
+
+export function findNameAndExtension(fileName: string) {
+  const lastDotIndex = fileName.lastIndexOf(".");
+
+  if (lastDotIndex === -1 || lastDotIndex === 0) {
+    return {
+      name: fileName,
+      extension: "",
+    };
+  }
+
+  return {
+    name: fileName.slice(0, lastDotIndex),
+    extension: fileName.slice(lastDotIndex + 1),
+  };
+}
