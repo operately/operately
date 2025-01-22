@@ -89,7 +89,7 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
 
   defp load_unread_notifications(person) do
     fn project ->
-      Project.load_unread_notifications(project, person)
+      Operately.Notifications.UnreadNotificationsLoader.load(project, person)
     end
   end
 end
