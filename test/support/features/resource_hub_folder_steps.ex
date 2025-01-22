@@ -4,7 +4,7 @@ defmodule Operately.Support.Features.ResourceHubFolderSteps do
   alias Operately.Support.Features.ResourceHubSteps, as: Steps
 
   def setup(ctx), do: Steps.setup(ctx)
-  def visit_resource_hub_page(ctx), do: Steps.visit_resource_hub_page(ctx)
+  def visit_resource_hub_page(ctx, name \\ "Documents & Files"), do: Steps.visit_resource_hub_page(ctx, name)
   def navigate_back(ctx, link), do: Steps.navigate_back(ctx, link)
   def assert_navigation_links(ctx, links), do: Steps.assert_navigation_links(ctx, links)
   def refute_navigation_links(ctx, links), do: Steps.refute_navigation_links(ctx, links)
@@ -19,6 +19,12 @@ defmodule Operately.Support.Features.ResourceHubFolderSteps do
     |> Factory.add_folder(:three, :hub, :two)
     |> Factory.add_folder(:four, :hub, :three)
     |> Factory.add_folder(:five, :hub, :four)
+  end
+
+  step :given_folder_exists, ctx do
+    ctx
+    |> Factory.add_resource_hub(:hub, :space, :creator)
+    |> Factory.add_folder(:folder, :hub)
   end
 
   step :navigate_to_folder, ctx, index: index do
@@ -43,6 +49,26 @@ defmodule Operately.Support.Features.ResourceHubFolderSteps do
     |> UI.click(testid: "new-folder")
     |> UI.fill(testid: "new-folder-name", with: folder_name)
     |> UI.click(testid: "submit")
+  end
+
+  step :rename_folder, ctx, attrs do
+    folder_id = Steps.get_resource_id(attrs.current_name)
+    menu_id = UI.testid(["menu", folder_id])
+    rename_id = UI.testid(["rename", "folder", folder_id])
+
+    ctx
+    |> UI.click(testid: menu_id)
+    |> UI.click(testid: rename_id)
+    |> UI.fill(testid: "new-folder-name", with: attrs.new_name)
+    |> UI.click(testid: "submit")
+    |> UI.refute_has(testid: "submit")
+  end
+
+  step :assert_folder_name, ctx, attrs do
+    UI.find(ctx, UI.query(testid: "node-#{attrs.index}"), fn ctx ->
+      ctx
+      |> UI.assert_text(attrs.name)
+    end)
   end
 
   step :assert_folder_created, ctx, attrs do

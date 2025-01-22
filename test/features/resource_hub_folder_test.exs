@@ -76,6 +76,20 @@ defmodule Operately.Features.ResourceHubFolderTest do
       |> Steps.refute_navigation_links(["one", "two"])
       |> Steps.assert_navigation_links(["Product Space", "Resource hub"])
     end
+
+    feature "folder can be renamed", ctx do
+      attrs = %{
+        current_name: "folder",
+        new_name: "edited folder",
+      }
+
+      ctx
+      |> Steps.given_folder_exists()
+      |> Steps.visit_resource_hub_page("Resource hub")
+      |> Steps.assert_folder_created(%{name: attrs.current_name, index: 0})
+      |> Steps.rename_folder(attrs)
+      |> Steps.assert_folder_name(%{name: attrs.new_name, index: 0})
+    end
   end
 
   describe "Delete" do
