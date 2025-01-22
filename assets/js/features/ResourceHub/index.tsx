@@ -1,6 +1,5 @@
 export { Header } from "./Header";
 export { NodesList } from "./NodesList";
-export { NodeType } from "./utils";
 export { NodeDescription } from "./NodeDescription";
 export { AddFilesButton } from "./AddFilesButton";
 export { NewFileModalsProvider, useNewFileModalsContext } from "./contexts/NewFileModalsContext";
@@ -12,6 +11,7 @@ export { FolderSelectField } from "./FolderSelectField";
 export { LinkIcon } from "./LinkIcon";
 export * from "./Drafts";
 export * from "./Navigation";
+export * from "./utils";
 
 export type LinkOptions =
   | "airtable"
