@@ -4,6 +4,12 @@ defmodule Operately.Notifications.UnreadNotificationsLoader do
   alias Operately.Repo
   alias Operately.Notifications.NotifiableResource
 
+  def load(person = %Operately.People.Person{}) do
+    fn resource ->
+      load(resource, person)
+    end
+  end
+
   def load(resource, person) do
     actions = NotifiableResource.actions(resource)
     id_field = NotifiableResource.field(resource)
@@ -67,4 +73,9 @@ end
 defimpl Operately.Notifications.NotifiableResource, for: Operately.Groups.Group do
   def actions(_), do: ["space_members_added"]
   def field(_), do: "space_id"
+end
+
+defimpl Operately.Notifications.NotifiableResource, for: Operately.Messages.Message do
+  def actions(_), do: ["discussion_posting"]
+  def field(_), do: "discussion_id"
 end
