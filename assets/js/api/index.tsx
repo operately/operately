@@ -1217,6 +1217,7 @@ export interface ResourceHubLink {
   permissions?: ResourceHubPermissions | null;
   reactions?: Reaction[] | null;
   pathToLink?: ResourceHubFolder[] | null;
+  notifications?: Notification[] | null;
   commentsCount?: number | null;
 }
 
@@ -1944,6 +1945,7 @@ export interface GetResourceHubLinkInput {
   includePermissions?: boolean | null;
   includeSubscriptionsList?: boolean | null;
   includePotentialSubscribers?: boolean | null;
+  includeUnreadNotifications?: boolean | null;
   includePathToLink?: boolean | null;
 }
 
