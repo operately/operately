@@ -9,10 +9,9 @@ export { AddFolderModal } from "./AddFolderModal";
 export { AddFileWidget } from "./AddFileWidget";
 export { FileDragAndDropArea } from "./FileDragAndDropArea";
 export { FolderSelectField } from "./FolderSelectField";
-export { NestedFolderNavigation } from "./NestedFolderNavigation";
 export { LinkIcon } from "./LinkIcon";
-export { ResourcePageNavigation } from "./ResourcePageNavigation";
 export * from "./Drafts";
+export * from "./Navigation";
 
 export type LinkOptions =
   | "airtable"
