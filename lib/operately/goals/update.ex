@@ -44,24 +44,6 @@ defmodule Operately.Goals.Update do
   # After load hooks
   #
 
-  def load_unread_notifications(update = %__MODULE__{}, person) do
-    actions = [
-      "goal_check_in",
-      "goal_check_in_acknowledgement"
-    ]
-
-    notifications =
-      from(n in Operately.Notifications.Notification,
-        join: a in assoc(n, :activity),
-        where: a.action in ^actions and a.content["update_id"] == ^update.id,
-        where: n.person_id == ^person.id and not n.read,
-        select: n
-      )
-      |> Repo.all()
-
-    Map.put(update, :notifications, notifications)
-  end
-
   def set_potential_subscribers(update = %__MODULE__{}) do
     subs =
       update
