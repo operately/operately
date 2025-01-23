@@ -116,7 +116,7 @@ function GoalTimeframe({ goal }: { goal: Goals.Goal }) {
   const isOverdue = Timeframes.isOverdue(timeframe) && !goal.isClosed;
 
   const className = classNames("flex gap-1 items-center text-xs text-content-dimmed", {
-    "text-callout-warning-message": isOverdue,
+    "text-content-error": isOverdue,
   });
 
   return (
@@ -129,7 +129,7 @@ function GoalTimeframe({ goal }: { goal: Goals.Goal }) {
 
 function GoalTimeframeIcon({ isOverdue }: { isOverdue: boolean }) {
   if (isOverdue) {
-    return <Icons.IconAlertTriangle size={13} className="text-callout-warning-message mb-[1px]" />;
+    return <Icons.IconAlertTriangle size={13} className="text-content-error mb-[1px]" />;
   } else {
     return <Icons.IconCalendar size={13} className="text-content-dimmed mb-[1px]" />;
   }
