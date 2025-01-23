@@ -1,7 +1,7 @@
 defmodule Operately.Support.Features.ResourceHubFileSteps do
   use Operately.FeatureCase
 
-  alias Operately.ResourceHubs.ResourceHub
+  alias Operately.ResourceHubs.{ResourceHub, Node}
   alias Operately.Support.Features.NotificationsSteps
   alias Operately.Support.Features.EmailSteps
   alias Operately.Support.Features.ResourceHubSteps, as: Steps
@@ -48,6 +48,41 @@ defmodule Operately.Support.Features.ResourceHubFileSteps do
 
   step :visit_file_page, ctx do
     UI.visit(ctx, Paths.file_path(ctx.company, ctx.file))
+  end
+
+  step :edit_file, ctx, attrs do
+    ctx
+    |> UI.click(testid: "options-button")
+    |> UI.click(testid: "edit-file-link")
+    |> UI.refute_has(testid: "edit-file-link")
+    |> UI.fill(testid: "title", with: attrs.title)
+    |> UI.fill_rich_text(attrs.description)
+    |> UI.click(testid: "submit")
+    |> UI.refute_has(testid: "submit")
+  end
+
+  step :edit_file_from_files_list, ctx, attrs do
+    file_id = Steps.get_resource_id(attrs.original_title)
+    menu_id = UI.testid(["menu", file_id])
+    edit_id = UI.testid(["edit", file_id])
+
+    ctx
+    |> UI.click(testid: menu_id)
+    |> UI.click(testid: edit_id)
+    |> UI.refute_has(testid: edit_id)
+    |> UI.fill(testid: "title", with: attrs.title)
+    |> UI.fill_rich_text(attrs.description)
+    |> UI.click(testid: "submit")
+    |> UI.refute_has(testid: "submit")
+  end
+
+  step :assert_file_content, ctx, attrs do
+    {:ok, node} = Node.get(:system, name: attrs.title, type: :file, opts: [preload: :file])
+
+    ctx
+    |> UI.assert_page(Paths.file_path(ctx.company, node.file))
+    |> UI.assert_text(attrs.title)
+    |> UI.assert_text(attrs.description)
   end
 
   #
