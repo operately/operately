@@ -133,6 +133,17 @@ defmodule Operately.Features.ResourceHubLinkTest do
       |> Steps.refute_navigation_links(["Resource hub", "one"])
       |> Steps.assert_navigation_links(["Product Space"])
     end
+
+    feature "add comment to link", ctx do
+      ctx
+      |> Steps.visit_resource_hub_page()
+      |> Steps.create_link(@link)
+      |> comment_on_resource()
+      |> Steps.assert_link_commented_on_space_feed(@link.title)
+      |> Steps.assert_link_commented_on_company_feed(@link.title)
+      |> Steps.assert_link_commented_notification_sent(@link.title)
+      |> Steps.assert_link_commented_email_sent(@link.title)
+    end
   end
 
   describe "Delete" do
