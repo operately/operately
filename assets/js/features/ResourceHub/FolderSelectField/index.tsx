@@ -49,6 +49,7 @@ function NavigateBack({ viewModel }: { viewModel: ViewModel }) {
       className="cursor-pointer"
       size={16}
       onClick={() => viewModel.select(viewModel.currentNode!.parent!)}
+      data-test-id="go-back-icon"
     />
   );
 }

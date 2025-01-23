@@ -19,4 +19,16 @@ defmodule Operately.Support.ResourceHub.Moving do
     |> Steps.visit_resource_hub_page(hub_name)
     |> Steps.refute_resource_present_in_files_list(resource_name)
   end
+
+  def move_resource_to_parent_folder(ctx, attrs) do
+    resource_name = Keyword.get(attrs, :resource_name)
+
+    ctx
+    |> Steps.visit_folder_page(:five)
+    |> Steps.move_resource_to_parent_folder(resource_name)
+    |> Steps.visit_folder_page(:one)
+    |> Steps.assert_resource_present_in_files_list(resource_name)
+    |> Steps.visit_folder_page(:five)
+    |> Steps.refute_resource_present_in_files_list(resource_name)
+  end
 end

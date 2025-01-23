@@ -137,6 +137,31 @@ defmodule Operately.Support.Features.ResourceHubSteps do
     |> UI.refute_text("Select destination")
   end
 
+  step :move_resource_to_parent_folder, ctx, resource_name do
+    resource_id = get_resource_id(resource_name)
+    menu_id = UI.testid(["menu", resource_id])
+    move_id = UI.testid(["move", resource_id])
+
+    ctx
+    |> UI.click(testid: menu_id)
+    |> UI.click(testid: move_id)
+    |> UI.assert_text("Select destination")
+    |> UI.find(UI.query(testid: "move-resource-modal"), fn el ->
+      el
+      |> UI.assert_text(resource_name)
+      |> UI.click(testid: "go-back-icon")
+      |> UI.assert_text("five")
+      |> UI.click(testid: "go-back-icon")
+      |> UI.assert_text("four")
+      |> UI.click(testid: "go-back-icon")
+      |> UI.assert_text("three")
+      |> UI.click(testid: "go-back-icon")
+      |> UI.assert_text("two")
+      |> UI.click(testid: "submit")
+    end)
+    |> UI.refute_text("Select destination")
+  end
+
   step :assert_resource_present_in_files_list, ctx, resource_name do
     ctx
     |> UI.assert_text(resource_name)
