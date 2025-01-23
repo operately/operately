@@ -6,12 +6,13 @@ import { createTestId } from "@/utils/testid";
 import { match } from "ts-pattern";
 import { useWindowSizeBreakpoints } from "@/components/Pages";
 import { useTreeContext, TreeContextProvider, TreeContextProviderProps } from "./treeContext";
-import { GoalActions, GoalDetails, GoalProgressBar } from "./components/GoalDetails";
+import { GoalActions, GoalDetails } from "./components/GoalDetails";
 import { ProjectDetails } from "./components/ProjectDetails";
 import { GoalNode, Node, ProjectNode } from "./tree";
 import { useExpandable } from "./context/Expandable";
 import { NodeIcon } from "./components/NodeIcon";
 import { NodeName } from "./components/NodeName";
+import { NodeProgress } from "./components/NodeProgress";
 import { Controls } from "./components/Controls";
 import { GoalStatusCompact } from "./components/GoalStatusCompact";
 import classNames from "classnames";
@@ -58,6 +59,7 @@ function ProjectHeader({ node }: { node: ProjectNode }) {
         <NodeExpandCollapseToggle node={node} />
         <NodeIcon node={node} />
         <NodeName node={node} />
+        <NodeProgress node={node} />
       </div>
 
       <ProjectDetails node={node} />
@@ -65,9 +67,9 @@ function ProjectHeader({ node }: { node: ProjectNode }) {
   );
 }
 
-function GoalHeader({ node }: { node: GoalNode }) {
+function GoalHeader({ node }: { node: Node }) {
   const [hovered, setHovered] = useState(false);
-  const testId = createTestId("goal", node.goal.name!);
+  const testId = createTestId("goal", node.name!);
 
   return (
     <HeaderContainer
@@ -81,13 +83,13 @@ function GoalHeader({ node }: { node: GoalNode }) {
           <NodeExpandCollapseToggle node={node} />
           <NodeIcon node={node} />
           <NodeName node={node} />
-          <GoalProgressBar node={node} />
-          <GoalStatusCompact node={node} />
+          <NodeProgress node={node} />
+          <GoalStatusCompact node={node.asGoalNode()} />
         </div>
-        <GoalActions node={node} hovered={hovered} />
+        <GoalActions node={node.asGoalNode()} hovered={hovered} />
       </div>
 
-      <GoalDetails node={node} />
+      <GoalDetails node={node.asGoalNode()} />
     </HeaderContainer>
   );
 }
