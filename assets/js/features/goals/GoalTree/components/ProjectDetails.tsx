@@ -5,11 +5,9 @@ import { useWindowSizeBreakpoints } from "@/components/Pages";
 
 import classNames from "classnames";
 import { match } from "ts-pattern";
-import { splitByStatus } from "@/models/milestones";
 import { Project, sortContributorsByRole } from "@/models/projects";
 import { StatusSection } from "@/features/projectCheckIns/StatusSection";
 import { DescriptionSection } from "@/features/projectCheckIns/DescriptionSection";
-import { MiniPieChart } from "@/components/charts/MiniPieChart";
 import { MilestoneIcon } from "@/components/MilestoneIcon";
 import { DivLink } from "@/components/Link";
 import { assertPresent } from "@/utils/assertions";
@@ -39,7 +37,6 @@ export function ProjectDetails({ node }: { node: ProjectNode }) {
   return (
     <div className={className}>
       <ProjectStatus node={node} />
-      <MilestoneCompletion project={node.project} />
       <NextMilestone project={node.project} />
       <SpaceName project={node.project} />
       <ContributorsList project={node.project} />
@@ -64,22 +61,6 @@ function ProjectStatus({ node }: { node: ProjectNode }) {
       </Status>
     );
   }
-}
-
-function MilestoneCompletion({ project }: { project: Project }) {
-  assertPresent(project.milestones, "milestones must be present in project");
-
-  let { pending, done } = splitByStatus(project.milestones);
-  const totalCount = pending.length + done.length;
-
-  if (totalCount === 0) return <></>;
-
-  return (
-    <div className="flex items-center gap-2 shrink-0 text-xs text-content-dimmed">
-      <MiniPieChart completed={done.length} total={totalCount} />
-      {done.length}/{totalCount} completed
-    </div>
-  );
 }
 
 function NextMilestone({ project }: { project: Project }) {
