@@ -1,6 +1,6 @@
 defmodule Operately.Features.ResourceHubDocumentTest do
   use Operately.FeatureCase
-  use Operately.Support.ResourceHub.{Deletion, Comments}
+  use Operately.Support.ResourceHub.{Deletion, Comments, Moving}
 
   alias Operately.Support.Features.ResourceHubDocumentSteps, as: Steps
 
@@ -207,6 +207,18 @@ defmodule Operately.Features.ResourceHubDocumentTest do
       |> Steps.given_document_within_folder_exists()
       |> Steps.visit_document_page()
       |> delete_resource_redirects_to_folder()
+    end
+  end
+
+  describe "Move" do
+    feature "Moving document to child folder", ctx do
+      ctx
+      |> Steps.given_nested_folders_exist()
+      |> Steps.given_document_within_resource_hub_root_exists(:hub)
+      |> move_resource_to_child_folder(resource_name: "Document")
+
+      |> UI.sleep(200)
+      |> UI.take_screenshot()
     end
   end
 end

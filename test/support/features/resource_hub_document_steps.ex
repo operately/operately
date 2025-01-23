@@ -12,7 +12,7 @@ defmodule Operately.Support.Features.ResourceHubDocumentSteps do
   def assert_navigation_links(ctx, links), do: Steps.assert_navigation_links(ctx, links)
   def refute_navigation_links(ctx, links), do: Steps.refute_navigation_links(ctx, links)
 
-  step :given_document_within_nested_folders_exists, ctx do
+  defp create_nested_folders(ctx) do
     ctx
     |> Factory.add_resource_hub(:hub, :space, :creator)
     |> Factory.add_folder(:one, :hub)
@@ -20,13 +20,27 @@ defmodule Operately.Support.Features.ResourceHubDocumentSteps do
     |> Factory.add_folder(:three, :hub, :two)
     |> Factory.add_folder(:four, :hub, :three)
     |> Factory.add_folder(:five, :hub, :four)
+  end
+
+  step :given_nested_folders_exist, ctx do
+    ctx
+    |> create_nested_folders()
+  end
+
+  step :given_document_within_nested_folders_exists, ctx do
+    ctx
+    |> create_nested_folders()
     |> Factory.add_document(:document, :hub, folder: :five)
   end
 
-  step :given_document_within_resource_hub_root_exists, ctx do
-    ctx
-    |> Factory.add_resource_hub(:hub, :space, :creator)
-    |> Factory.add_document(:document, :hub)
+  step :given_document_within_resource_hub_root_exists, ctx, hub_key \\ nil do
+    if hub_key do
+      Factory.add_document(ctx, :document, hub_key)
+    else
+      ctx
+      |> Factory.add_resource_hub(:hub, :space, :creator)
+      |> Factory.add_document(:document, :hub)
+    end
   end
 
   step :given_document_within_folder_exists, ctx do
