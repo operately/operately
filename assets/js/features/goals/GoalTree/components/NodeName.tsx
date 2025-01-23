@@ -12,10 +12,7 @@ interface NodeNameProps {
 }
 
 export function NodeName({ node, target = "_self" }: NodeNameProps) {
-  const titleClass = classNames("decoration-content-subtle hover:underline truncate", {
-    "font-bold": node.type === "goal",
-    "font-medium": node.type === "project",
-  });
+  const titleClass = classNames("decoration-content-subtle hover:underline truncate");
 
   return (
     <div className="flex items-center gap-1 truncate">
