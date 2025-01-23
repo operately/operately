@@ -14,7 +14,7 @@ interface Props {
 }
 
 export function MoveResourceMenuItem({ resource, showModal }: Props) {
-  const testId = createTestId("move-resource", resource.id!);
+  const testId = createTestId("move", resource.id!);
 
   return (
     <MenuActionItem onClick={showModal} testId={testId}>
@@ -74,7 +74,7 @@ export function MoveResourceModal({ resource, resourceType, isOpen, hideModal }:
 
   return (
     <Modal title={`Move ${resource.name}`} isOpen={isOpen} hideModal={hideModal}>
-      <Forms.Form form={form}>
+      <Forms.Form form={form} testId="move-resource-modal">
         <Forms.FieldGroup>
           <FolderSelectField field="location" notAllowedSelections={notAllowedSelections} label="Select destination" />
         </Forms.FieldGroup>

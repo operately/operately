@@ -1,6 +1,6 @@
 defmodule Operately.Features.ResourceHubFileTest do
   use Operately.FeatureCase
-  use Operately.Support.ResourceHub.{Deletion, Comments}
+  use Operately.Support.ResourceHub.{Deletion, Comments, Moving}
 
   alias Operately.Support.Features.ResourceHubFileSteps, as: Steps
 
@@ -65,6 +65,29 @@ defmodule Operately.Features.ResourceHubFileTest do
       |> Steps.given_file_within_folder_exists()
       |> Steps.visit_file_page()
       |> delete_resource_redirects_to_folder()
+    end
+  end
+
+  describe "Move" do
+    @resource_name "Some File"
+
+    feature "Moving file to child folder", ctx do
+      ctx
+      |> Steps.given_nested_folders_exist()
+      |> Steps.given_file_exists(:hub)
+      |> move_resource_to_child_folder(resource_name: @resource_name)
+    end
+
+    feature "Moving file to parent folder", ctx do
+      ctx
+      |> Steps.given_file_within_nested_folders_exists()
+      |> move_resource_to_parent_folder(resource_name: @resource_name)
+    end
+
+    feature "Moving file to resource hub root", ctx do
+      ctx
+      |> Steps.given_file_within_nested_folders_exists()
+      |> move_resource_to_hub_root(resource_name: @resource_name)
     end
   end
 end
