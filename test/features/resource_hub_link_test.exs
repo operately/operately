@@ -1,6 +1,6 @@
 defmodule Operately.Features.ResourceHubLinkTest do
   use Operately.FeatureCase
-  use Operately.Support.ResourceHub.{Deletion, Comments}
+  use Operately.Support.ResourceHub.{Deletion, Comments, Moving}
 
   alias Operately.Support.Features.ResourceHubLinkSteps, as: Steps
 
@@ -176,6 +176,29 @@ defmodule Operately.Features.ResourceHubLinkTest do
       |> Steps.given_link_within_folder_exists()
       |> Steps.visit_link_page()
       |> delete_resource_redirects_to_folder()
+    end
+  end
+
+  describe "Move" do
+    @resource_name "Link"
+
+    feature "Moving link to child folder", ctx do
+      ctx
+      |> Steps.given_nested_folders_exist()
+      |> Steps.given_link_exists(:hub)
+      |> move_resource_to_child_folder(resource_name: @resource_name)
+    end
+
+    feature "Moving link to parent folder", ctx do
+      ctx
+      |> Steps.given_link_within_nested_folders_exists()
+      |> move_resource_to_parent_folder(resource_name: @resource_name)
+    end
+
+    feature "Moving link to resource hub root", ctx do
+      ctx
+      |> Steps.given_link_within_nested_folders_exists()
+      |> move_resource_to_hub_root(resource_name: @resource_name)
     end
   end
 end

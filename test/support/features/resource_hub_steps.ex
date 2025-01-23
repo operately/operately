@@ -204,6 +204,16 @@ defmodule Operately.Support.Features.ResourceHubSteps do
   # Helpers
   #
 
+  def create_nested_folders(ctx) do
+    ctx
+    |> Factory.add_resource_hub(:hub, :space, :creator)
+    |> Factory.add_folder(:one, :hub)
+    |> Factory.add_folder(:two, :hub, :one)
+    |> Factory.add_folder(:three, :hub, :two)
+    |> Factory.add_folder(:four, :hub, :three)
+    |> Factory.add_folder(:five, :hub, :four)
+  end
+
   def get_resource_id(resource_name) do
     {:ok, node} = Node.get(:system, name: resource_name, opts: [
       preload: [:document, :link, :folder, :file]

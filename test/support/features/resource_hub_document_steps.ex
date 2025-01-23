@@ -12,24 +12,14 @@ defmodule Operately.Support.Features.ResourceHubDocumentSteps do
   def assert_navigation_links(ctx, links), do: Steps.assert_navigation_links(ctx, links)
   def refute_navigation_links(ctx, links), do: Steps.refute_navigation_links(ctx, links)
 
-  defp create_nested_folders(ctx) do
-    ctx
-    |> Factory.add_resource_hub(:hub, :space, :creator)
-    |> Factory.add_folder(:one, :hub)
-    |> Factory.add_folder(:two, :hub, :one)
-    |> Factory.add_folder(:three, :hub, :two)
-    |> Factory.add_folder(:four, :hub, :three)
-    |> Factory.add_folder(:five, :hub, :four)
-  end
-
   step :given_nested_folders_exist, ctx do
     ctx
-    |> create_nested_folders()
+    |> Steps.create_nested_folders()
   end
 
   step :given_document_within_nested_folders_exists, ctx do
     ctx
-    |> create_nested_folders()
+    |> Steps.create_nested_folders()
     |> Factory.add_document(:document, :hub, folder: :five)
   end
 
