@@ -11,13 +11,13 @@ interface Props {
 }
 
 export function ProgressBar({ percentage, className, status, width }: Props) {
-  className = classNames("h-2.5 bg-surface-outline rounded relative", className || "", width || "w-24");
+  className = classNames("h-2 bg-stone-300 relative rounded-sm", className || "", width || "w-24");
   const color = status && STATUS_COLORS[status];
 
   return (
     <div className={className}>
       <div
-        className="bg-accent-1 rounded absolute top-0 bottom-0 left-0"
+        className="bg-accent-1 absolute top-0 bottom-0 left-0 rounded-sm"
         style={{
           width: `${percentage}%`,
           backgroundColor: color && COLORS[color],
