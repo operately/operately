@@ -8,6 +8,7 @@ import { NodeIcon } from "@/features/ResourceHub/NodeIcon";
 import { useViewModel, ViewModel, ViewModelNode, NotAllowedSelection } from "./viewModel";
 import classNames from "classnames";
 import Forms from "@/components/Forms";
+import { createTestId } from "@/utils/testid";
 
 interface FolderSelectFieldProps {
   label: string;
@@ -48,6 +49,7 @@ function NavigateBack({ viewModel }: { viewModel: ViewModel }) {
       className="cursor-pointer"
       size={16}
       onClick={() => viewModel.select(viewModel.currentNode!.parent!)}
+      data-test-id="go-back-icon"
     />
   );
 }
@@ -71,9 +73,10 @@ function NodeItem({ viewModel, node, index }: { viewModel: ViewModel; node: View
   const innerClassName = classNames("flex items-center gap-2 text-sm", {
     "opacity-40": !node.selectable,
   });
+  const testId = createTestId(node.name, index.toString());
 
   return (
-    <div className={className} onClick={() => viewModel.select(node)} data-test-id={`node-${index}`}>
+    <div className={className} onClick={() => viewModel.select(node)} data-test-id={testId}>
       <div className={innerClassName}>
         <NodeIcon size={16} node={node.apiNode!} />
         {node.name}

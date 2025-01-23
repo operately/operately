@@ -13,18 +13,17 @@ defmodule Operately.Support.Features.ResourceHubFolderSteps do
 
   step :given_nested_folders_exist, ctx do
     ctx
-    |> Factory.add_resource_hub(:hub, :space, :creator)
-    |> Factory.add_folder(:one, :hub)
-    |> Factory.add_folder(:two, :hub, :one)
-    |> Factory.add_folder(:three, :hub, :two)
-    |> Factory.add_folder(:four, :hub, :three)
-    |> Factory.add_folder(:five, :hub, :four)
+    |> Steps.create_nested_folders()
   end
 
-  step :given_folder_exists, ctx do
-    ctx
-    |> Factory.add_resource_hub(:hub, :space, :creator)
-    |> Factory.add_folder(:folder, :hub)
+  step :given_folder_exists, ctx, hub_key \\ nil do
+    if hub_key do
+      Factory.add_folder(ctx, :unique_folder, hub_key)
+    else
+      ctx
+      |> Factory.add_resource_hub(:hub, :space, :creator)
+      |> Factory.add_folder(:folder, :hub)
+    end
   end
 
   step :navigate_to_folder, ctx, index: index do
@@ -49,6 +48,7 @@ defmodule Operately.Support.Features.ResourceHubFolderSteps do
     |> UI.click(testid: "new-folder")
     |> UI.fill(testid: "new-folder-name", with: folder_name)
     |> UI.click(testid: "submit")
+    |> UI.refute_has(testid: "submit")
   end
 
   step :rename_folder, ctx, attrs do

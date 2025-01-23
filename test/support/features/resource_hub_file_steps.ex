@@ -12,15 +12,13 @@ defmodule Operately.Support.Features.ResourceHubFileSteps do
   def assert_navigation_links(ctx, links), do: Steps.assert_navigation_links(ctx, links)
   def refute_navigation_links(ctx, links), do: Steps.refute_navigation_links(ctx, links)
 
+  step :given_nested_folders_exist, ctx do
+    ctx
+    |> Steps.create_nested_folders()
+  end
+
   step :given_file_within_nested_folders_exists, ctx do
-    ctx =
-      ctx
-      |> Factory.add_resource_hub(:hub, :space, :creator)
-      |> Factory.add_folder(:one, :hub)
-      |> Factory.add_folder(:two, :hub, :one)
-      |> Factory.add_folder(:three, :hub, :two)
-      |> Factory.add_folder(:four, :hub, :three)
-      |> Factory.add_folder(:five, :hub, :four)
+    ctx = Steps.create_nested_folders(ctx)
 
     file = create_file(ctx, ctx.hub, ctx.five.id)
     Map.put(ctx, :file, file)
@@ -36,10 +34,15 @@ defmodule Operately.Support.Features.ResourceHubFileSteps do
     Map.put(ctx, :file, file)
   end
 
-  step :given_file_exists, ctx do
-    {:ok, hub} = ResourceHub.get(:system, space_id: ctx.space.id)
+  step :given_file_exists, ctx, hub_key \\ nil do
+    file = if hub_key do
+      create_file(ctx, ctx[hub_key])
+    else
+      {:ok, hub} = ResourceHub.get(:system, space_id: ctx.space.id)
 
-    file = create_file(ctx, hub)
+      create_file(ctx, hub)
+    end
+
     Map.put(ctx, :file, file)
   end
 

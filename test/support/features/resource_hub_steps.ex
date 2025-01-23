@@ -19,6 +19,10 @@ defmodule Operately.Support.Features.ResourceHubSteps do
     UI.visit(ctx, Paths.resource_hub_path(ctx.company, hub))
   end
 
+ step :visit_folder_page, ctx, folder_name do
+    UI.visit(ctx, Paths.folder_path(ctx.company, ctx[folder_name]))
+  end
+
   step :navigate_back, ctx, name do
     UI.click_link(ctx, name)
   end
@@ -71,11 +75,6 @@ defmodule Operately.Support.Features.ResourceHubSteps do
     end)
   end
 
-  step :refute_document_present_in_files_list, ctx, document_name do
-    ctx
-    |> UI.refute_text(document_name)
-  end
-
   step :assert_page_is_resource_hub_root, ctx, name: name do
     {:ok, hub} = ResourceHub.get(:system, space_id: ctx.space.id, name: name)
 
@@ -114,8 +113,106 @@ defmodule Operately.Support.Features.ResourceHubSteps do
   end
 
   #
+  # Moving resource
+  #
+
+  step :move_resource_to_child_folder, ctx, resource_name do
+    resource_id = get_resource_id(resource_name)
+    menu_id = UI.testid(["menu", resource_id])
+    move_id = UI.testid(["move", resource_id])
+
+    ctx
+    |> UI.click(testid: menu_id)
+    |> UI.click(testid: move_id)
+    |> UI.assert_text("Select destination")
+    |> UI.find(UI.query(testid: "move-resource-modal"), fn el ->
+      el
+      |> UI.click(testid: "one-0")
+      |> UI.click(testid: "two-0")
+      |> UI.click(testid: "three-0")
+      |> UI.click(testid: "four-0")
+      |> UI.click(testid: "five-0")
+      |> UI.click(testid: "submit")
+    end)
+    |> UI.refute_text("Select destination")
+  end
+
+  step :move_resource_to_parent_folder, ctx, resource_name do
+    resource_id = get_resource_id(resource_name)
+    menu_id = UI.testid(["menu", resource_id])
+    move_id = UI.testid(["move", resource_id])
+
+    ctx
+    |> UI.click(testid: menu_id)
+    |> UI.click(testid: move_id)
+    |> UI.assert_text("Select destination")
+    |> UI.find(UI.query(testid: "move-resource-modal"), fn el ->
+      el
+      |> UI.assert_text(resource_name)
+      |> UI.click(testid: "go-back-icon")
+      |> UI.assert_text("five")
+      |> UI.click(testid: "go-back-icon")
+      |> UI.assert_text("four")
+      |> UI.click(testid: "go-back-icon")
+      |> UI.assert_text("three")
+      |> UI.click(testid: "go-back-icon")
+      |> UI.assert_text("two")
+      |> UI.click(testid: "submit")
+    end)
+    |> UI.refute_text("Select destination")
+  end
+
+  step :move_resource_to_hub_root, ctx, resource_name do
+    resource_id = get_resource_id(resource_name)
+    menu_id = UI.testid(["menu", resource_id])
+    move_id = UI.testid(["move", resource_id])
+
+    ctx
+    |> UI.click(testid: menu_id)
+    |> UI.click(testid: move_id)
+    |> UI.assert_text("Select destination")
+    |> UI.find(UI.query(testid: "move-resource-modal"), fn el ->
+      el
+      |> UI.assert_text(resource_name)
+      |> UI.click(testid: "go-back-icon")
+      |> UI.assert_text("five")
+      |> UI.click(testid: "go-back-icon")
+      |> UI.assert_text("four")
+      |> UI.click(testid: "go-back-icon")
+      |> UI.assert_text("three")
+      |> UI.click(testid: "go-back-icon")
+      |> UI.assert_text("two")
+      |> UI.click(testid: "go-back-icon")
+      |> UI.assert_text("one")
+      |> UI.assert_text("Resource hub")
+      |> UI.click(testid: "submit")
+    end)
+    |> UI.refute_text("Select destination")
+  end
+
+  step :assert_resource_present_in_files_list, ctx, resource_name do
+    ctx
+    |> UI.assert_text(resource_name)
+  end
+
+  step :refute_resource_present_in_files_list, ctx, document_name do
+    ctx
+    |> UI.refute_text(document_name)
+  end
+
+  #
   # Helpers
   #
+
+  def create_nested_folders(ctx) do
+    ctx
+    |> Factory.add_resource_hub(:hub, :space, :creator)
+    |> Factory.add_folder(:one, :hub)
+    |> Factory.add_folder(:two, :hub, :one)
+    |> Factory.add_folder(:three, :hub, :two)
+    |> Factory.add_folder(:four, :hub, :three)
+    |> Factory.add_folder(:five, :hub, :four)
+  end
 
   def get_resource_id(resource_name) do
     {:ok, node} = Node.get(:system, name: resource_name, opts: [
