@@ -3,7 +3,7 @@ import * as Icons from "@tabler/icons-react";
 
 import { Node } from "../tree";
 
-export function NodeIcon({ node }: { node: Pick<Node, "type"> }) {
+export function NodeIcon({ node }: { node: Node }) {
   switch (node.type) {
     case "goal":
       return <Icons.IconTarget size={15} className="text-content-error shrink-0" />;

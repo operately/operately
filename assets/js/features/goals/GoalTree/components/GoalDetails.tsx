@@ -10,7 +10,6 @@ import classNames from "classnames";
 import { match } from "ts-pattern";
 import { Paths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
-import { ProgressBar } from "@/components/charts";
 import { SecondaryButton } from "@/components/Buttons";
 import { DivLink } from "@/components/Link";
 import { AvatarLink } from "@/components/Avatar";
@@ -44,20 +43,6 @@ export function GoalDetails({ node }: { node: GoalNode }) {
       </div>
     </div>
   );
-}
-
-export function GoalProgressBar({ node }: { node: GoalNode }) {
-  assertPresent(node.goal.progressPercentage, "progressPercentage must be present in goal");
-
-  if (node.goal.isClosed) return <></>;
-
-  const size = useWindowSizeBreakpoints();
-  const width = match(size)
-    .with("xs", () => "w-16")
-    .with("sm", () => "w-16")
-    .otherwise(() => undefined);
-
-  return <ProgressBar percentage={node.goal.progressPercentage} className="ml-2 h-2" width={width} />;
 }
 
 export function GoalActions({ hovered, node }: { hovered: boolean; node: GoalNode }) {
