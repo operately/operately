@@ -19,11 +19,9 @@ interface Props {
 export function FileMenu({ file }: Props) {
   const { permissions } = useNodesContext();
   const [showMoveForm, toggleMoveForm] = useBoolState(false);
+  const menuId = createTestId("menu", file.id!);
 
   const relevantPermissions = [permissions.canView, permissions.canEditParentFolder, permissions.canDeleteFile];
-
-  const editPath = Paths.resourceHubEditFilePath(file.id!);
-  const menuId = createTestId("menu", file.id!);
 
   if (!relevantPermissions.some(Boolean)) return <></>;
 
@@ -31,7 +29,7 @@ export function FileMenu({ file }: Props) {
     <>
       <Menu size="medium" testId={menuId}>
         {permissions.canView && <DownloadFileMenuItem file={file} />}
-        {permissions.canEditFile && <MenuLinkItem to={editPath}>Edit</MenuLinkItem>}
+        {permissions.canEditFile && <EditFileMenuItem file={file} />}
         {permissions.canEditParentFolder && <MoveResourceMenuItem resource={file} showModal={toggleMoveForm} />}
         {permissions.canDeleteFile && <DeleteFileMenuItem file={file} />}
       </Menu>
@@ -48,6 +46,17 @@ function DownloadFileMenuItem({ file }: Props) {
   const [downloadFile] = useDownloadFile(file.blob.url, file.blob.filename);
 
   return <MenuActionItem onClick={downloadFile}>Download</MenuActionItem>;
+}
+
+function EditFileMenuItem({ file }: Props) {
+  const editPath = Paths.resourceHubEditFilePath(file.id!);
+  const editId = createTestId("edit", file.id!);
+
+  return (
+    <MenuLinkItem testId={editId} to={editPath}>
+      Edit
+    </MenuLinkItem>
+  );
 }
 
 function DeleteFileMenuItem({ file }: Props) {
