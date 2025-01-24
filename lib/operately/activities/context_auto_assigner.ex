@@ -178,8 +178,6 @@ defmodule Operately.Activities.ContextAutoAssigner do
     |> Repo.one()
   end
 
-
-  defp fetch_goal_context(%{new_parent_goal_id: goal_id}), do: fetch_goal_context(goal_id)
   defp fetch_goal_context(%{goal_id: goal_id}), do: fetch_goal_context(goal_id)
   defp fetch_goal_context(goal_id) do
     from(c in Context,
