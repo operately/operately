@@ -12,7 +12,6 @@ import { ProjectRetrospective } from "@/models/projects";
 export class ProjectNode extends Node {
   public project: Project;
   public lastCheckIn: ProjectCheckIn | null | undefined;
-  public status: string;
   public retrospective: ProjectRetrospective | null | undefined;
 
   constructor(project: Project) {
