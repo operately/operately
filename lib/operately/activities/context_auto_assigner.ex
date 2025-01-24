@@ -71,8 +71,6 @@ defmodule Operately.Activities.ContextAutoAssigner do
     "goal_editing",
     "goal_reopening",
     "goal_timeframe_editing",
-
-    # exceptions
     "goal_reparent",
   ]
 
@@ -169,8 +167,6 @@ defmodule Operately.Activities.ContextAutoAssigner do
     space_id = case activity.action do
       "group_edited" ->
         activity.content.group_id
-      "goal_reparent" ->
-        activity.content.new_parent_goal_id
       _ ->
         activity.content.space_id
     end
