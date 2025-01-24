@@ -45,6 +45,8 @@ defmodule Operately.Features.GoalTest do
     |> Steps.assert_goal_reparent_on_goal_feed(new_name: @parent_goal_params.name)
     |> Steps.assert_goal_reparent_on_space_feed(new_name: @parent_goal_params.name)
     |> Steps.assert_goal_reparent_on_company_feed(new_name: @parent_goal_params.name)
+    |> Steps.assert_goal_reparent_notification()
+    |> Steps.assert_goal_reparent_email_sent()
   end
 
   feature "changing goal parent", ctx do
@@ -57,6 +59,8 @@ defmodule Operately.Features.GoalTest do
     |> Steps.assert_goal_reparent_on_goal_feed(new_name: ctx.parent2.name, old_name: ctx.parent1.name)
     |> Steps.assert_goal_reparent_on_space_feed(new_name: ctx.parent2.name, old_name: ctx.parent1.name)
     |> Steps.assert_goal_reparent_on_company_feed(new_name: ctx.parent2.name, old_name: ctx.parent1.name)
+    |> Steps.assert_goal_reparent_notification()
+    |> Steps.assert_goal_reparent_email_sent()
   end
 
   feature "closing goal", ctx do

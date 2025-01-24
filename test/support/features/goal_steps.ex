@@ -113,6 +113,25 @@ defmodule Operately.Support.Features.GoalSteps do
     |> UI.assert_text("changed the parent goal of #{ctx.goal.name} from #{old_name} to #{new_name}")
   end
 
+  step :assert_goal_reparent_notification, ctx do
+    ctx
+    |> UI.login_as(ctx.reviewer)
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.champion,
+      action: "changed the parent goal of #{ctx.goal.name}"
+    })
+  end
+
+  step :assert_goal_reparent_email_sent, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.goal.name,
+      to: ctx.reviewer,
+      author: ctx.champion,
+      action: "changed the goal parent of #{ctx.goal.name}"
+    })
+  end
+
   step :assert_goal_is_company_wide, ctx do
     ctx
     |> UI.assert_text("Company-wide goal")
