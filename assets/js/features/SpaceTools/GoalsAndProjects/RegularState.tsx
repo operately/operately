@@ -11,6 +11,7 @@ import { assertPresent } from "@/utils/assertions";
 
 import { Title } from "../components";
 import { calculateStatus } from "../utils";
+import { statusColor } from "@/components/status/colors";
 
 interface Props {
   title: string;
@@ -74,8 +75,11 @@ function GoalItem({ goal }: { goal: Goal }) {
   const status = useMemo(() => {
     if (goal.isOutdated) return "outdated";
     if (!goal.lastCheckIn) return "on_track";
+
     return goal.lastCheckIn.status!;
   }, [goal.isOutdated, goal.lastCheckIn]);
+
+  const color = statusColor(status);
 
   return (
     <div className="flex gap-2 items-center">
@@ -85,7 +89,7 @@ function GoalItem({ goal }: { goal: Goal }) {
         {/* Extra div is necessary to ensure all bars have the same size */}
         <div className="truncate ml-1">{goal.name}</div>
         <div>
-          <ProgressBar percentage={goal.progressPercentage} status={status} className="w-[50px] h-[9px]" />
+          <ProgressBar percentage={goal.progressPercentage} width="w-[50px]" height="h-[9px]" color={color} />
         </div>
       </div>
     </div>
@@ -113,6 +117,7 @@ function ProjectItem({ project }: { project: Project }) {
   const { done } = splitByStatus(project.milestones);
 
   const percentage = total === 0 ? 0 : (done.length / total) * 100;
+  const color = statusColor(project.lastCheckIn?.status ?? "on_track");
 
   return (
     <div className="flex gap-2 items-center">
@@ -121,7 +126,7 @@ function ProjectItem({ project }: { project: Project }) {
       <div className="flex items-center justify-between gap-1 overflow-hidden flex-1 mr-2">
         <div className="truncate">{project.name}</div>
         <div>
-          <ProgressBar percentage={percentage} status={project.status!} className="w-[50px] h-[9px]" />
+          <ProgressBar percentage={percentage} width="w-[50px]" height="h-[9px]" color={color} />
         </div>
       </div>
     </div>

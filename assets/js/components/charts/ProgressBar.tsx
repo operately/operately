@@ -1,30 +1,29 @@
 import React from "react";
 import classNames from "classnames";
-import { COLORS } from "./constants";
-import { COLORS as STATUS_COLORS } from "../status/constants";
 
 interface Props {
   percentage: number;
-  status: string;
-  className?: string;
+  color: string;
+
+  bgColor?: string;
   width?: string;
-  color?: string;
+  height?: string;
 }
 
 const DEFAULTS = {
   width: "w-24",
-  className: "",
+  height: "h-2.5",
+  bgColor: "bg-surface-outline",
 };
 
 export function ProgressBar(props: Props) {
   props = { ...DEFAULTS, ...props };
 
-  const className = classNames("h-2.5 bg-surface-outline rounded relative", props.className, props.width);
-  const color = STATUS_COLORS[props.status];
+  const className = classNames("rounded relative", props.color, props.height, props.width, props.bgColor);
 
   const style = {
     width: `${props.percentage}%`,
-    backgroundColor: color && COLORS[color],
+    backgroundColor: props.color,
   };
 
   return (
