@@ -1310,9 +1310,9 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :activity_content_goal_reparent do
-    field :company_id, :string
-    field :old_parent_goal_id, :string
-    field :new_parent_goal_id, :string
+    field :goal, :goal
+    field :old_parent_goal, :goal
+    field :new_parent_goal, :goal
   end
 
   object :activity_content_project_created do

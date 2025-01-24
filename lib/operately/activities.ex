@@ -11,6 +11,11 @@ defmodule Operately.Activities do
     Repo.get!(Activity, id) |> cast_content()
   end
 
+  def get_activity(id) do
+    activity = Repo.get(Activity, id)
+    activity && cast_content(activity)
+  end
+
   def list_activities(scope_type, scope_id, actions) do
     ListActivitiesOperation.run(scope_type, scope_id, actions)
   end
