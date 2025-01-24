@@ -10,20 +10,13 @@ import { ResourceHub } from "./ResourceHub";
 interface ToolsSectionPros {
   space: Space;
   tools: SpaceTools;
-  hasResourceHubsFeature: boolean;
 }
 
-export function ToolsSection({ space, tools, hasResourceHubsFeature }: ToolsSectionPros) {
+export function ToolsSection({ space, tools }: ToolsSectionPros) {
   assertPresent(tools.goals, "goals must be present in tools");
   assertPresent(tools.projects, "projects must be present in tools");
   assertPresent(tools.messagesBoards, "messagesBoards must be present in tools");
   assertPresent(tools.resourceHubs, "resourceHubs must be present in tools");
-
-  let toolsCount = 1 + tools.messagesBoards.length;
-
-  if (hasResourceHubsFeature) {
-    toolsCount += tools.resourceHubs.length;
-  }
 
   return (
     <div className="mt-6 py-6">
@@ -34,7 +27,9 @@ export function ToolsSection({ space, tools, hasResourceHubsFeature }: ToolsSect
           <Discussions space={space} discussions={boards.messages!} key={boards.id} />
         ))}
 
-        {hasResourceHubsFeature && tools.resourceHubs.map((hub) => <ResourceHub resourceHub={hub} key={hub.id} />)}
+        {tools.resourceHubs.map((hub) => (
+          <ResourceHub resourceHub={hub} key={hub.id} />
+        ))}
       </div>
     </div>
   );
