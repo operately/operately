@@ -59,7 +59,10 @@ function ProjectHeader({ node }: { node: ProjectNode }) {
         <NodeExpandCollapseToggle node={node} />
         <NodeIcon node={node} />
         <NodeName node={node} />
-        <NodeProgress node={node} />
+
+        <div className="ml-2">
+          <NodeProgress node={node} />
+        </div>
       </div>
 
       <ProjectDetails node={node} />
@@ -83,8 +86,10 @@ function GoalHeader({ node }: { node: Node }) {
           <NodeExpandCollapseToggle node={node} />
           <NodeIcon node={node} />
           <NodeName node={node} />
-          <NodeProgress node={node} />
-          <GoalStatusCompact node={node.asGoalNode()} />
+          <div className="ml-2 flex items-center gap-2 shrink-0">
+            <NodeProgress node={node} />
+            <GoalStatusCompact node={node.asGoalNode()} />
+          </div>
         </div>
         <GoalActions node={node.asGoalNode()} hovered={hovered} />
       </div>
