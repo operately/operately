@@ -62,6 +62,10 @@ defmodule Operately.Support.Features.ResourceHubLinkSteps do
     |> UI.fill_rich_text(attrs.notes)
     |> UI.click(testid: "submit")
     |> UI.refute_has(testid: "submit")
+    |> then(fn ctx ->
+      {:ok, node} = Node.get(:system, name: attrs.title, opts: [preload: :link])
+      Map.put(ctx, :link, node.link)
+    end)
   end
 
   step :create_link, ctx, attrs do
@@ -256,6 +260,18 @@ defmodule Operately.Support.Features.ResourceHubLinkSteps do
     |> UI.assert_text("deleted the \"Link\" link from Documents & Files in the Product Space space")
   end
 
+  step :assert_link_commented_on_space_feed, ctx, link_title do
+    ctx
+    |> UI.visit(Paths.space_path(ctx.company, ctx.space))
+    |> UI.assert_text("commented on #{link_title}")
+  end
+
+  step :assert_link_commented_on_company_feed, ctx, link_title do
+    ctx
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.assert_text("commented on #{link_title} in the #{ctx.space.name} space")
+  end
+
   #
   # Notifications
   #
@@ -290,6 +306,16 @@ defmodule Operately.Support.Features.ResourceHubLinkSteps do
     })
   end
 
+  step :assert_link_commented_notification_sent, ctx, link_title do
+    ctx
+    |> UI.login_as(ctx.other_user)
+    |> NotificationsSteps.visit_notifications_page()
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.creator,
+      action: "commented on: #{link_title}",
+    })
+  end
+
   #
   # Emails
   #
@@ -317,6 +343,15 @@ defmodule Operately.Support.Features.ResourceHubLinkSteps do
       where: ctx.space.name,
       to: ctx.other_user,
       action: "deleted a link: Link",
+      author: ctx.creator,
+    })
+  end
+
+  step :assert_link_commented_email_sent, ctx, link_title do
+    ctx |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.space.name,
+      to: ctx.other_user,
+      action: "commented on: #{link_title}",
       author: ctx.creator,
     })
   end

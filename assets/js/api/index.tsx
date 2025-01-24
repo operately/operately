@@ -579,6 +579,12 @@ export interface ActivityContentResourceHubFolderRenamed {
   newName?: string | null;
 }
 
+export interface ActivityContentResourceHubLinkCommented {
+  space?: Space | null;
+  link?: ResourceHubLink | null;
+  comment?: Comment | null;
+}
+
 export interface ActivityContentResourceHubLinkCreated {
   space?: Space | null;
   resourceHub?: ResourceHub | null;
