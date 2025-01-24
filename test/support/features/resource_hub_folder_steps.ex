@@ -26,6 +26,14 @@ defmodule Operately.Support.Features.ResourceHubFolderSteps do
     end
   end
 
+  step :given_folder_with_content_exists, ctx, parent_key do
+    ctx
+    |> Factory.add_folder(:folder, :hub, parent_key)
+    |> Factory.add_document(:document, :hub, folder: :folder)
+    |> Factory.add_link(:link, :hub, folder: :folder)
+    |> Factory.add_file(:file, :hub, folder: :folder)
+  end
+
   step :navigate_to_folder, ctx, index: index do
     UI.click(ctx, testid: "node-#{index}")
   end
@@ -64,6 +72,51 @@ defmodule Operately.Support.Features.ResourceHubFolderSteps do
     |> UI.refute_has(testid: "submit")
   end
 
+  step :copy_folder, ctx, new_name do
+    ctx
+    |> UI.click(testid: UI.testid("menu-#{Paths.folder_id(ctx.folder)}"))
+    |> UI.click(testid: UI.testid("copy-resource-#{Paths.folder_id(ctx.folder)}"))
+    |> UI.fill(testid: "name", with: new_name)
+    |> UI.click(testid: "submit")
+    |> UI.refute_has(testid: "submit")
+  end
+
+  step :copy_folder_into_another_folder, ctx, new_name do
+    ctx
+    |> UI.click(testid: UI.testid("menu-#{Paths.folder_id(ctx.folder)}"))
+    |> UI.click(testid: UI.testid("copy-resource-#{Paths.folder_id(ctx.folder)}"))
+    |> UI.fill(testid: "name", with: new_name)
+    |> UI.find(UI.query(testid: "copy-resource-modal"), fn el ->
+      el
+      |> UI.click(testid: "three-1")
+      |> UI.click(testid: "four-0")
+      |> UI.click(testid: "five-0")
+      |> UI.refute_has(testid: "five-0")
+      |> UI.click(testid: "submit")
+    end)
+    |> UI.refute_has(testid: "submit")
+  end
+
+  step :copy_folder_into_resource_hub_root, ctx, new_name do
+    ctx
+    |> UI.click(testid: UI.testid("menu-#{Paths.folder_id(ctx.folder)}"))
+    |> UI.click(testid: UI.testid("copy-resource-#{Paths.folder_id(ctx.folder)}"))
+    |> UI.fill(testid: "name", with: new_name)
+    |> UI.find(UI.query(testid: "copy-resource-modal"), fn el ->
+      el
+      |> UI.click(testid: "go-back-icon")
+      |> UI.assert_text("three")
+      |> UI.click(testid: "go-back-icon")
+      |> UI.assert_text("two")
+      |> UI.click(testid: "go-back-icon")
+      |> UI.assert_text("one")
+      |> UI.click(testid: "go-back-icon")
+      |> UI.assert_text("Resource hub")
+      |> UI.click(testid: "submit")
+    end)
+    |> UI.refute_has(testid: "submit")
+  end
+
   step :assert_folder_name, ctx, attrs do
     UI.find(ctx, UI.query(testid: "node-#{attrs.index}"), fn ctx ->
       ctx
@@ -96,6 +149,25 @@ defmodule Operately.Support.Features.ResourceHubFolderSteps do
     end)
   end
 
+  step :refute_folder_in_files_list, ctx, folder_name do
+    ctx
+    |> UI.refute_text(folder_name)
+  end
+
+  step :assert_folder_and_its_content_was_copied, ctx, attrs do
+    UI.find(ctx, UI.query(testid: "node-#{attrs.index}"), fn ctx ->
+      ctx
+      |> UI.assert_text(attrs.name)
+      |> UI.assert_text("3 items")
+    end)
+
+    ctx
+    |> UI.click(testid: "node-#{attrs.index}")
+    |> UI.assert_text("Document")
+    |> UI.assert_text("Link")
+    |> UI.assert_text("some name")
+  end
+
   #
   # Feed
   #
@@ -122,5 +194,17 @@ defmodule Operately.Support.Features.ResourceHubFolderSteps do
     ctx
     |> UI.visit(Paths.feed_path(ctx.company))
     |> UI.assert_text("deleted the \"#{folder_name}\" folder from Documents & Files in the #{ctx.space.name} space")
+  end
+
+  step :assert_folder_copied_on_space_feed, ctx, attrs do
+    ctx
+    |> UI.visit(Paths.space_path(ctx.company, ctx.space))
+    |> UI.assert_text("made a copy of the #{attrs.original_name} folder and named it #{attrs.name}")
+  end
+
+  step :assert_folder_copied_on_company_feed, ctx, attrs do
+    ctx
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.assert_text("made a copy of the #{attrs.original_name} folder in the #{ctx.space.name} space and named it #{attrs.name}")
   end
 end

@@ -32,7 +32,7 @@ interface FormProps {
 export function CopyResourceModal({ form, resource, isOpen, hideModal }: FormProps) {
   return (
     <Modal title={`Create a copy of ${resource.name}`} isOpen={isOpen} hideModal={hideModal}>
-      <Forms.Form form={form}>
+      <Forms.Form form={form} testId="copy-resource-modal">
         <Forms.FieldGroup>
           <Forms.TextInput field="name" label="New document name" required />
           <FolderSelectField field="location" label="Select destination" />
