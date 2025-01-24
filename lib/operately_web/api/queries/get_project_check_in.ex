@@ -3,6 +3,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckIn do
   use OperatelyWeb.Api.Helpers
 
   alias Operately.Projects.{CheckIn, Project}
+  alias Operately.Notifications.UnreadNotificationsLoader
 
   inputs do
     field :id, :string
@@ -58,13 +59,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckIn do
     Inputs.parse_includes(inputs, [
       include_project: &Project.set_permissions/1,
       include_potential_subscribers: &CheckIn.load_potential_subscribers/1,
-      include_unread_notifications: load_unread_notifications(person),
+      include_unread_notifications: UnreadNotificationsLoader.load(person),
     ])
-  end
-
-  defp load_unread_notifications(person) do
-    fn check_in ->
-      CheckIn.load_unread_notifications(check_in, person)
-    end
   end
 end

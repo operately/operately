@@ -17,12 +17,16 @@ import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { CurrentSubscriptions } from "@/features/Subscriptions";
 import { CommentSection, useComments } from "@/features/CommentSection";
 import { ResourcePageNavigation } from "@/features/ResourceHub";
+import { useClearNotificationsOnLoad } from "@/features/notifications";
 
 import { Options } from "./Options";
 import { useLoadedData } from "./loader";
 
 export function Page() {
   const { link } = useLoadedData();
+
+  assertPresent(link.notifications, "notifications must be present in link");
+  useClearNotificationsOnLoad(link.notifications);
 
   return (
     <Pages.Page title={link.name!}>
