@@ -3,7 +3,6 @@ import React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Spaces from "@/models/spaces";
-import * as Companies from "@/models/companies";
 
 import { Feed, useItemsQuery } from "@/features/Feed";
 import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
@@ -20,8 +19,7 @@ import AvatarList from "@/components/AvatarList";
 import { match } from "ts-pattern";
 
 export function Page() {
-  const { company, space, tools } = useLoadedData();
-  const hasResourceHubsFeature = Companies.hasFeature(company, "resource_hubs");
+  const { space, tools } = useLoadedData();
 
   assertPresent(space.notifications, "notifications must be present in space");
   useClearNotificationsOnLoad(space.notifications);
@@ -34,7 +32,7 @@ export function Page() {
           <SpaceHeader space={space} />
           <SpaceMembers space={space} />
           <JoinButton space={space} />
-          <ToolsSection space={space} tools={tools} hasResourceHubsFeature={hasResourceHubsFeature} />
+          <ToolsSection space={space} tools={tools} />
           <SpaceFooter space={space} />
         </Paper.Body>
       </Paper.Root>
