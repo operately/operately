@@ -36,6 +36,7 @@ export class GoalNode extends Node {
 
     this.space = goal.space as Spaces.Space;
     this.spaceId = goal.space!.id!;
+    this.status = goal.lastCheckIn ? goal.lastCheckIn.status! : "on_track";
 
     this.startedAt = Timeframes.parse(goal.timeframe!).startDate!;
   }
