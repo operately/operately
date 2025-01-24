@@ -1,1 +1,14 @@
-<%= raise "HTML Email for GoalReparent not implemented" %>
+<%= title("#{short_name(@author)} changed the goal parent of #{@goal.name}") %>
+
+<%= spacer() %>
+
+<%= row do %>
+  The parent goal of <%= @goal.name %> was changed to <%= @new_parent_goal.name %>
+<% end %>
+
+<%= spacer() %>
+<%= spacer() %>
+
+<%= row do %>
+  <%= cta_button(@cta_url, "View Goal") %>
+<% end %>

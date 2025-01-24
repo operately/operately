@@ -1,1 +1,3 @@
-<%= raise "Text Email for GoalReparent not implemented" %>
+<%= "#{short_name(@author)} changed the parent goal of #{@goal.name}" %>
+
+Link: <%= @cta_url %>
