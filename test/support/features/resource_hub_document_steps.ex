@@ -8,6 +8,7 @@ defmodule Operately.Support.Features.ResourceHubDocumentSteps do
 
   def setup(ctx), do: Steps.setup(ctx)
   def visit_resource_hub_page(ctx, name \\ "Documents & Files"), do: Steps.visit_resource_hub_page(ctx, name)
+  def visit_folder_page(ctx, folder_key), do: Steps.visit_folder_page(ctx, folder_key)
   def navigate_back(ctx, link), do: Steps.navigate_back(ctx, link)
   def assert_navigation_links(ctx, links), do: Steps.assert_navigation_links(ctx, links)
   def refute_navigation_links(ctx, links), do: Steps.refute_navigation_links(ctx, links)
@@ -56,6 +57,10 @@ defmodule Operately.Support.Features.ResourceHubDocumentSteps do
 
   step :visit_document_page, ctx do
     UI.visit(ctx, Paths.document_path(ctx.company, ctx.document))
+  end
+
+  step :navigate_to_document, ctx, index: index do
+    UI.click(ctx, testid: "node-#{index}")
   end
 
   step :create_document, ctx, attrs do
@@ -132,6 +137,23 @@ defmodule Operately.Support.Features.ResourceHubDocumentSteps do
     |> UI.click(testid: "submit")
   end
 
+  step :copy_document_into_folder, ctx, document_name do
+    ctx
+    |> UI.click(testid: UI.testid("menu-#{Paths.document_id(ctx.document)}"))
+    |> UI.click(testid: UI.testid("copy-resource-#{Paths.document_id(ctx.document)}"))
+    |> UI.assert_text("Create a copy of #{document_name}")
+    |> UI.find(UI.query(testid: "copy-resource-modal"), fn el ->
+      el
+      |> UI.assert_text(document_name)
+      |> UI.click(testid: "go-back-icon")
+      |> UI.assert_text("five")
+      |> UI.click(testid: "go-back-icon")
+      |> UI.assert_text("four")
+      |> UI.click(testid: "submit")
+    end)
+    |> UI.refute_text("Create a copy of #{document_name}")
+  end
+
   step :click_on_continue_writing_draft_link, ctx do
     ctx
     |> UI.click(testid: "continue-editing-draft")
@@ -168,6 +190,11 @@ defmodule Operately.Support.Features.ResourceHubDocumentSteps do
   step :assert_document_present_in_files_list, ctx, document_name do
     ctx
     |> UI.assert_text(document_name)
+  end
+
+  step :refute_document_present_in_files_list, ctx, document_name do
+    ctx
+    |> UI.refute_text(document_name)
   end
 
   step :assert_document_is_draft, ctx do
