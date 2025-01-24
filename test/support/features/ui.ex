@@ -2,7 +2,7 @@ defmodule Operately.Support.Features.UI do
   use ExUnit.CaseTemplate
   alias Wallaby.Query
 
-  alias Wallaby.Browser
+  alias Wallaby.{Browser, Element}
   require Wallaby.Browser
   import Wallaby.Browser, only: [execute_query: 2]
 
@@ -289,10 +289,23 @@ defmodule Operately.Support.Features.UI do
   end
 
   def refute_text(state, text, testid: id) do
+    refute_text(state, text, testid: id, attempts: [50, 150, 250, 400, 1000])
+  end
+
+  def refute_text(state, text, testid: id, attempts: [delay | attempts]) do
     execute(state, fn session ->
+      :timer.sleep(delay)
+
       session
       |> Browser.find(query(testid: id), fn element ->
-        element |> Browser.refute_has(Query.text(text))
+        visible_text = element |> Element.text()
+        text_found = String.contains?(visible_text, text)
+
+        cond do
+          not text_found -> element
+          attempts == [] -> raise "Text '#{text}' was found on the page"
+          true -> refute_text(state, text, testid: id, attempts: attempts)
+        end
       end)
     end)
   end
