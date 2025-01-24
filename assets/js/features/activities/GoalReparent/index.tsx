@@ -34,14 +34,17 @@ const GoalReparent: ActivityHandler = {
     const data = content(activity);
 
     assertPresent(data.goal, "goal must be present in activity");
-    assertPresent(data.oldParentGoal, "oldParentGoal must be present in activity");
     assertPresent(data.newParentGoal, "newParentGoal must be present in activity");
 
     const goal = goalLink(data.goal);
-    const oldParent = goalLink(data.oldParentGoal);
     const newParent = goalLink(data.newParentGoal);
 
-    return feedTitle(activity, "changed the parent goal of", goal, "from", oldParent, "to", newParent);
+    if (data.oldParentGoal) {
+      const oldParent = goalLink(data.oldParentGoal);
+      return feedTitle(activity, "changed the parent goal of", goal, "from", oldParent, "to", newParent);
+    } else {
+      return feedTitle(activity, "changed the parent goal of", goal, "to", newParent);
+    }
   },
 
   FeedItemContent(_props: { activity: Activity }) {

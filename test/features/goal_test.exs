@@ -36,12 +36,27 @@ defmodule Operately.Features.GoalTest do
     unit: "minutes",
   }
 
-  feature "changing goal parent", ctx do
+  feature "adding goal parent", ctx do
     ctx
     |> Steps.assert_goal_is_company_wide()
     |> Steps.given_a_goal_exists(@parent_goal_params)
     |> Steps.change_goal_parent(@parent_goal_params.name)
     |> Steps.assert_goal_parent_changed(@parent_goal_params.name)
+    |> Steps.assert_goal_reparent_on_goal_feed(new_name: @parent_goal_params.name)
+    |> Steps.assert_goal_reparent_on_space_feed(new_name: @parent_goal_params.name)
+    |> Steps.assert_goal_reparent_on_company_feed(new_name: @parent_goal_params.name)
+  end
+
+  feature "changing goal parent", ctx do
+    ctx = Steps.given_goal_and_potential_parent_goals_exist(ctx)
+
+    ctx
+    |> Steps.visit_page()
+    |> Steps.change_goal_parent(ctx.parent2.name)
+    |> Steps.assert_goal_parent_changed(ctx.parent2.name)
+    |> Steps.assert_goal_reparent_on_goal_feed(new_name: ctx.parent2.name, old_name: ctx.parent1.name)
+    |> Steps.assert_goal_reparent_on_space_feed(new_name: ctx.parent2.name, old_name: ctx.parent1.name)
+    |> Steps.assert_goal_reparent_on_company_feed(new_name: ctx.parent2.name, old_name: ctx.parent1.name)
   end
 
   feature "closing goal", ctx do

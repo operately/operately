@@ -16,7 +16,7 @@ defmodule Operately.Support.Features.GoalSteps do
     |> Factory.add_space_member(:champion, :product)
     |> Factory.add_space_member(:reviewer, :product)
     |> Factory.add_goal(:goal, :product, [
-      name: "Improve support first response time", 
+      name: "Improve support first response time",
       champion: :champion,
       reviewer: :reviewer,
       timeframe: %{
@@ -57,6 +57,13 @@ defmodule Operately.Support.Features.GoalSteps do
     ctx
   end
 
+  step :given_goal_and_potential_parent_goals_exist, ctx do
+    ctx
+    |> Factory.add_goal(:parent1, :product, name: "Parent 1", champion: :champion, reviewer: :reviewer)
+    |> Factory.add_goal(:parent2, :product, name: "Parent 2", champion: :champion, reviewer: :reviewer)
+    |> Factory.add_goal(:goal, :product, name: "Goal", champion: :champion, reviewer: :reviewer, parent_goal: :parent1)
+  end
+
   step :change_goal_parent, ctx, parent_goal_name do
     ctx
     |> UI.click(testid: "goal-options")
@@ -68,6 +75,42 @@ defmodule Operately.Support.Features.GoalSteps do
     ctx
     |> UI.assert_page(Paths.goal_path(ctx.company, ctx.goal))
     |> UI.assert_text(parent_goal_name)
+  end
+
+  step :assert_goal_reparent_on_goal_feed, ctx, new_name: new_name do
+    ctx
+    |> UI.visit(Paths.goal_path(ctx.company, ctx.goal))
+    |> UI.assert_text("changed the parent goal of #{ctx.goal.name} to #{new_name}")
+  end
+
+  step :assert_goal_reparent_on_goal_feed, ctx, new_name: new_name, old_name: old_name do
+    ctx
+    |> UI.visit(Paths.goal_path(ctx.company, ctx.goal))
+    |> UI.assert_text("changed the parent goal of #{ctx.goal.name} from #{old_name} to #{new_name}")
+  end
+
+  step :assert_goal_reparent_on_space_feed, ctx, new_name: new_name do
+    ctx
+    |> UI.visit(Paths.space_path(ctx.company, ctx.product))
+    |> UI.assert_text("changed the parent goal of #{ctx.goal.name} to #{new_name}")
+  end
+
+  step :assert_goal_reparent_on_space_feed, ctx, new_name: new_name, old_name: old_name do
+    ctx
+    |> UI.visit(Paths.space_path(ctx.company, ctx.product))
+    |> UI.assert_text("changed the parent goal of #{ctx.goal.name} from #{old_name} to #{new_name}")
+  end
+
+  step :assert_goal_reparent_on_company_feed, ctx, new_name: new_name do
+    ctx
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.assert_text("changed the parent goal of #{ctx.goal.name} to #{new_name}")
+  end
+
+  step :assert_goal_reparent_on_company_feed, ctx, new_name: new_name, old_name: old_name do
+    ctx
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.assert_text("changed the parent goal of #{ctx.goal.name} from #{old_name} to #{new_name}")
   end
 
   step :assert_goal_is_company_wide, ctx do
@@ -505,7 +548,7 @@ defmodule Operately.Support.Features.GoalSteps do
   end
 
   step :assert_warning_about_active_subitems, ctx do
-    ctx 
+    ctx
     |> UI.assert_text("This goal contains 2 sub-goals and 1 project that will remain active:")
     |> UI.assert_text(ctx.subgoal1.name)
     |> UI.assert_text(ctx.subgoal2.name)
