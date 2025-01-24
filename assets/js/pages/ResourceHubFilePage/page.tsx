@@ -69,10 +69,12 @@ function Title() {
 
 function FileInfo() {
   const { file } = useLoadedData();
-  assertPresent(file.blob?.filename, "filename must be present in file.blob");
+  assertPresent(file.blob?.url, "url must be present in file.blob");
+  assertPresent(file.blob.size, "size must be present in file.blob");
+  assertPresent(file.name, "name must be present in file");
 
-  const size = findFileSize(file.blob.size!);
-  const [downloadFile] = useDownloadFile(file.blob.url!, file.blob.filename!);
+  const size = findFileSize(file.blob.size);
+  const [downloadFile] = useDownloadFile(file.blob.url, file.name);
 
   return (
     <div className="flex gap-2 justify-center items-center">
