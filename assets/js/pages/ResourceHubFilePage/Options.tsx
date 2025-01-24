@@ -34,9 +34,10 @@ export function Options() {
 
 function DownloadAction() {
   const { file } = useLoadedData();
-  assertPresent(file.blob, "blob must be present in file");
+  assertPresent(file.blob?.url, "blob.url must be present in file");
+  assertPresent(file.name, "name must be present in file");
 
-  const [downloadFile] = useDownloadFile(file.blob.url!, file.blob.filename!);
+  const [downloadFile] = useDownloadFile(file.blob.url, file.name);
 
   return (
     <PageOptions.Action icon={Icons.IconDownload} title="Download" onClick={downloadFile} testId="download-file-link" />

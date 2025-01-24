@@ -14,6 +14,7 @@ import { emptyContent } from "@/components/RichContent";
 
 import { useNewFileModalsContext } from "./contexts/NewFileModalsContext";
 import { FileIcon } from "./NodeIcon";
+import { findNameAndExtension } from "./utils";
 
 interface FormProps {
   resourceHub: ResourceHub;
@@ -62,7 +63,7 @@ export function AddFileWidget({ resourceHub, folder, refresh }: FormProps) {
 
   useEffect(() => {
     if (form && files) {
-      const initialFileItems = parseNewFileItems(files);
+      const initialFileItems = files.map((file) => new PayloadItem(file));
       form.actions.setValue("items", initialFileItems);
       setProgress(0);
     }
@@ -113,7 +114,7 @@ function FileForm({ index }) {
 
   return (
     <div className="border border-stroke-base p-4 rounded-lg mb-4 flex items-start gap-4 relative">
-      <FileIcon size={60} filetype={parseFileType(item.mainFile.file.type)} />
+      <FileIcon size={60} filetype={item.fileType} />
 
       <div className="flex-1">
         <Forms.FieldGroup layout="vertical">
@@ -166,39 +167,10 @@ function UploadingModal({ progress, isOpen }) {
   );
 }
 
-function parseNewFileItems(files: File[]): PayloadItem[] {
-  return files.map((file) => ({
-    mainFile: {
-      file: file,
-      blobId: undefined,
-      progress: 0,
-    },
-    name: file.name,
-    description: emptyContent(),
-  }));
-}
-
-function parseFileType(fileType: string) {
-  const pieces = fileType.split("/");
-
-  if (pieces.length == 2) {
-    return pieces[pieces.length - 1];
-  }
-
-  return fileType;
-}
-
 interface FileForUpload {
   file: File;
   blobId?: string;
   progress: number;
-}
-
-interface PayloadItem {
-  mainFile: FileForUpload;
-  previewFile?: FileForUpload;
-  name: string;
-  description: any;
 }
 
 interface FileUploaderAttrs {
@@ -237,7 +209,7 @@ class FileUploader {
   private async uploadFiles() {
     await createResourceHubFile({
       files: this.items.map((item) => ({
-        name: item.name,
+        name: item.nameWithExtension,
         description: JSON.stringify(item.description),
         blobId: item.mainFile.blobId,
         previewBlobId: item.previewFile?.blobId,
@@ -250,7 +222,7 @@ class FileUploader {
   }
 
   private async uploadBlobs() {
-    this.items = await Promise.all(
+    await Promise.all(
       this.items.map(async (item) => {
         const [blobId, previewBlobId] = await this.uploadBlobAndBlobPreview(item);
 
@@ -258,8 +230,6 @@ class FileUploader {
           item.previewFile.blobId = previewBlobId!;
         }
         item.mainFile.blobId = blobId!;
-
-        return item;
       }),
     );
   }
@@ -284,15 +254,12 @@ class FileUploader {
   }
 
   private async generatePreviewBlob() {
-    this.items = await Promise.all(
+    await Promise.all(
       this.items.map(async (item) => {
         if (item.mainFile.file.type.includes("image")) {
           const file = await resizeImage(item.mainFile.file, { width: 100 });
           const previewFile: FileForUpload = { file: file, blobId: undefined, progress: 0 };
-
-          return { ...item, previewFile };
-        } else {
-          return item;
+          item.previewFile = previewFile;
         }
       }),
     );
@@ -309,5 +276,47 @@ class FileUploader {
     });
 
     this.totalSize = total;
+  }
+}
+
+class PayloadItem {
+  mainFile: FileForUpload;
+  previewFile?: FileForUpload;
+  name: string;
+  extension: string;
+  description: any;
+
+  constructor(file: File) {
+    this.mainFile = {
+      file: file,
+      blobId: undefined,
+      progress: 0,
+    };
+    this.description = emptyContent();
+    this.setNameAndExtension(file.name);
+  }
+
+  get fileType() {
+    const fileType = this.mainFile.file.type;
+    const pieces = fileType.split("/");
+
+    if (pieces.length == 2) {
+      return pieces[pieces.length - 1]!;
+    }
+
+    return fileType;
+  }
+
+  get nameWithExtension() {
+    if (!this.extension) return this.name;
+
+    return [this.name, this.extension].join(".");
+  }
+
+  private setNameAndExtension(fileName: string) {
+    const { name, extension } = findNameAndExtension(fileName);
+
+    this.name = name;
+    this.extension = extension;
   }
 }
