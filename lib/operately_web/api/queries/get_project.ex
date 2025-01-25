@@ -4,6 +4,7 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
 
   alias Operately.Projects.Project
   alias OperatelyWeb.Api.Serializer
+  alias Operately.Notifications.UnreadNotificationsLoader
 
   inputs do
     field :id, :string
@@ -66,7 +67,7 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
       include_access_levels: &Project.load_access_levels/1,
       include_privacy: &Project.load_privacy/1,
       include_potential_subscribers: &Project.load_potential_subscribers/1,
-      include_unread_notifications: load_unread_notifications(person),
+      include_unread_notifications: UnreadNotificationsLoader.load(person),
     ])
   end
 
@@ -84,12 +85,6 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
 
       true ->
         :ok
-    end
-  end
-
-  defp load_unread_notifications(person) do
-    fn project ->
-      Project.load_unread_notifications(project, person)
     end
   end
 end

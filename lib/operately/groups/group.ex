@@ -57,23 +57,6 @@ defmodule Operately.Groups.Group do
     %{group | is_member: is_member}
   end
 
-  def load_unread_notifications(space = %__MODULE__{}, person) do
-    actions = [
-      "space_members_added",
-    ]
-
-    notifications =
-      from(n in Operately.Notifications.Notification,
-        join: a in assoc(n, :activity),
-        where: a.action in ^actions and a.content["space_id"] == ^space.id,
-        where: n.person_id == ^person.id and not n.read,
-        select: n
-      )
-      |> Repo.all()
-
-    Map.put(space, :notifications, notifications)
-  end
-
   def preload_access_levels(group) do
     context = Operately.Access.get_context!(group_id: group.id)
     access_levels = Operately.Access.AccessLevels.load(context.id, group.company_id, group.id)
