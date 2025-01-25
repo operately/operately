@@ -7,7 +7,6 @@ defmodule Operately.Support.Features.ResourceHubSteps do
     ctx =
       ctx
       |> Factory.setup()
-      |> Factory.enable_feature("resource_hubs")
       |> Factory.add_space(:space)
       |> Factory.add_space_member(:other_user, :space)
 
