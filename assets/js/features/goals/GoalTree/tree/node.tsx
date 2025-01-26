@@ -24,6 +24,7 @@ export abstract class Node {
   public sortColumn: SortColumn;
   public sortDirection: SortDirection;
   public showCompleted: boolean;
+  public lastCheckInStatus: string;
 
   public champion: People.Person;
   public reviewer?: People.Person;

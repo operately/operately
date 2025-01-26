@@ -31,8 +31,10 @@ export class GoalNode extends Node {
     this.isClosed = goal.isClosed!;
 
     this.progress = this.goal.progressPercentage!;
-    this.lastCheckInDate = Time.parseDate(goal.lastCheckIn?.insertedAt);
+
     this.lastCheckIn = goal.lastCheckIn;
+    this.lastCheckInDate = Time.parseDate(goal.lastCheckIn?.insertedAt);
+    this.lastCheckInStatus = goal.lastCheckIn ? goal.lastCheckIn.status! : "on_track";
 
     this.space = goal.space as Spaces.Space;
     this.spaceId = goal.space!.id!;

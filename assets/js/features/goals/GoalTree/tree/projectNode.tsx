@@ -12,7 +12,6 @@ import { ProjectRetrospective } from "@/models/projects";
 export class ProjectNode extends Node {
   public project: Project;
   public lastCheckIn: ProjectCheckIn | null | undefined;
-  public status: string;
   public retrospective: ProjectRetrospective | null | undefined;
 
   constructor(project: Project) {
@@ -33,7 +32,6 @@ export class ProjectNode extends Node {
 
     assertPresent(project.status, "Project status is required");
 
-    this.status = project.status;
     this.isActive = project.status === "active";
     this.isClosed = project.status === "closed";
     this.isPaused = project.status === "paused";
@@ -43,6 +41,7 @@ export class ProjectNode extends Node {
 
     this.retrospective = project.retrospective;
     this.lastCheckIn = project.lastCheckIn;
+    this.lastCheckInStatus = project.lastCheckIn?.status || "on_track";
 
     this.startedAt = Time.parseDate(project.startedAt)!;
   }
