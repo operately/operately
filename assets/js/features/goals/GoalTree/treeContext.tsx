@@ -47,6 +47,7 @@ interface TreeContextValue {
 const TreeContext = React.createContext<TreeContextValue | null>(null);
 
 export interface TreeContextProviderProps {
+  settingsNamespace: string;
   goals: Goals.Goal[];
   projects: Projects.Project[];
   options: Pick<TreeOptions, "spaceId" | "personId" | "goalId">;
@@ -70,18 +71,24 @@ const timeframeSerialization = {
 };
 
 export function TreeContextProvider(props: TreeContextProviderPropsWithChildren) {
+  const namespace = "goals-and-projects::" + props.settingsNamespace;
+
   const [sortColumn, setSortColumn] = React.useState<SortColumn>("name");
   const [sortDirection, setSortDirection] = React.useState<SortDirection>("asc");
-  const [showActive, setShowActive] = useStateWithLocalStorage<boolean>("goal-tree", "showActive", true);
-  const [showPaused, setShowPaused] = useStateWithLocalStorage<boolean>("goal-tree", "showPaused", false);
-  const [showCompleted, setShowCompleted] = useStateWithLocalStorage<boolean>("goal-tree", "showComepleted", false);
+
   const [championedBy, setChampionedBy] = React.useState<Person>();
   const [reviewedBy, setReviewedBy] = React.useState<Person>();
-  const [density, setDensity] = useStateWithLocalStorage<DensityType>("goal-tree", "density", "default");
-  const [showGoals, setShowGoals] = useStateWithLocalStorage<boolean>("goal-tree", "showGoals", true);
-  const [showProjects, setShowProjects] = useStateWithLocalStorage<boolean>("goal-tree", "showProjects", true);
+
+  const [showActive, setShowActive] = useStateWithLocalStorage<boolean>(namespace, "showActive", true);
+  const [showPaused, setShowPaused] = useStateWithLocalStorage<boolean>(namespace, "showPaused", false);
+  const [showCompleted, setShowCompleted] = useStateWithLocalStorage<boolean>(namespace, "showCompleted", false);
+
+  const [density, setDensity] = useStateWithLocalStorage<DensityType>(namespace, "density", "default");
+  const [showGoals, setShowGoals] = useStateWithLocalStorage<boolean>(namespace, "showGoals", true);
+  const [showProjects, setShowProjects] = useStateWithLocalStorage<boolean>(namespace, "showProjects", true);
+
   const [timeframe, setTimeframe] = useStateWithLocalStorage<Timeframes.Timeframe>(
-    "goal-tree",
+    namespace,
     "timeframe",
     defaultTimeframe,
     timeframeSerialization,

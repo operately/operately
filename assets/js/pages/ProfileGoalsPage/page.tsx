@@ -20,7 +20,12 @@ export function Page() {
 
           <div className="mt-4" />
 
-          <GoalTree goals={goals} projects={projects} options={{ personId: person.id! }} />
+          <GoalTree
+            goals={goals}
+            projects={projects}
+            options={{ personId: person.id! }}
+            settingsNamespace={`person-${person.id}-goals`}
+          />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
