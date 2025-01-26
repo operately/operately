@@ -11,6 +11,7 @@ import { ExpandableProvider, useExpandable } from "./context/Expandable";
 
 import classNames from "classnames";
 import { createTestId } from "@/utils/testid";
+import { useMe } from "@/contexts/CurrentCompanyContext";
 
 interface GoalSelectorDropdownProps {
   goals: Goals.Goal[];
@@ -20,6 +21,8 @@ interface GoalSelectorDropdownProps {
 }
 
 export function GoalSelectorDropdown({ goals, onSelect, selected, error }: GoalSelectorDropdownProps) {
+  const me = useMe();
+
   const options = {
     sortColumn: "name",
     sortDirection: "asc",
@@ -30,7 +33,7 @@ export function GoalSelectorDropdown({ goals, onSelect, selected, error }: GoalS
     showProjects: false,
   } as TreeOptions;
 
-  const tree = React.useMemo(() => buildTree(goals, [], options), [goals, options]);
+  const tree = React.useMemo(() => buildTree(me!, goals, [], options), [goals, options]);
 
   const [open, setOpen] = React.useState(false);
 

@@ -1,5 +1,6 @@
 import * as Timeframes from "@/utils/timeframes";
 
+import { Person } from "@/models/people";
 import { Goal } from "@/models/goals";
 import { Project } from "@/models/projects";
 
@@ -22,17 +23,20 @@ export interface TreeOptions {
   showGoals: boolean;
   showProjects: boolean;
 
+  ownedBy: "anyone" | "me";
+  reviewedBy: "anyone" | "me";
+
   spaceId?: string;
   personId?: string;
-  reviewerId?: string;
+
   goalId?: string;
   timeframe?: Timeframes.Timeframe;
 }
 
 export type Tree = Node[];
 
-export function buildTree(allGoals: Goal[], allProjects: Project[], options: TreeOptions): Node[] {
-  return new TreeBuilder(allGoals, allProjects, options).build();
+export function buildTree(me: Person, allGoals: Goal[], allProjects: Project[], options: TreeOptions): Node[] {
+  return new TreeBuilder(me, allGoals, allProjects, options).build();
 }
 
 export function getAllIds(nodes: Node[]): string[] {
@@ -43,6 +47,7 @@ export function getAllIds(nodes: Node[]): string[] {
 
 class TreeBuilder {
   constructor(
+    private me: Person,
     private allGoals: Goal[],
     private allProjects: Project[],
     private options: TreeOptions,
@@ -59,10 +64,14 @@ class TreeBuilder {
     this.findRoots();
     this.sortNodes();
 
-    this.rootNodes = TreeFilter.filter(this.rootNodes, this.options);
+    this.rootNodes = TreeFilter.filter(this.me, this.rootNodes, this.options);
     this.setDepth();
 
     return this.rootNodes;
+  }
+
+  setMeId(meId: string): void {
+    this.me.id = meId;
   }
 
   private createNodes(): void {
@@ -101,7 +110,7 @@ class TreeBuilder {
   private findRoots(): void {
     if (this.options.spaceId) {
       this.rootNodes = this.rootNodesForSpace();
-    } else if (this.options.personId || this.options.reviewerId) {
+    } else if (this.options.personId) {
       this.rootNodes = this.rootNodesForPerson();
     } else if (this.options.goalId) {
       this.rootNodes = this.rootNodesForGoal();
@@ -119,12 +128,8 @@ class TreeBuilder {
   private rootNodesForPerson(): Node[] {
     return this.nodes.filter(
       (n) =>
-        (compareIds(n.champion?.id, this.options.personId!) || compareIds(n.reviewer?.id, this.options.reviewerId)) &&
-        n.hasNoParentWith(
-          (node) =>
-            compareIds(node.champion?.id, this.options.personId) ||
-            compareIds(node.reviewer?.id, this.options.reviewerId),
-        ),
+        compareIds(n.champion?.id, this.options.personId!) &&
+        n.hasNoParentWith((node) => compareIds(node.champion?.id, this.options.personId)),
     );
   }
 
@@ -165,13 +170,15 @@ class TreeBuilder {
 }
 
 class TreeFilter {
-  static filter(nodes: Node[], options: TreeOptions): Node[] {
-    return new TreeFilter(options).filter(nodes);
+  static filter(me: Person, nodes: Node[], options: TreeOptions): Node[] {
+    return new TreeFilter(me, options).filter(nodes);
   }
 
   private options: TreeOptions;
+  private me: Person;
 
-  constructor(options: TreeOptions) {
+  constructor(me: Person, options: TreeOptions) {
+    this.me = me;
     this.options = options;
   }
 
@@ -185,7 +192,7 @@ class TreeFilter {
   }
 
   private isNodeVisible(node: Node): boolean {
-    return this.spaceFilter(node) && this.statusFilter(node) && this.timeframeFilter(node);
+    return this.spaceFilter(node) && this.statusFilter(node) && this.timeframeFilter(node) && this.myRoleFilter(node);
   }
 
   private spaceFilter(node: Node): boolean {
@@ -206,5 +213,14 @@ class TreeFilter {
     if (!this.options.timeframe) return true;
 
     return Timeframes.hasOverlap(this.options.timeframe, node.activeTimeframe());
+  }
+
+  private myRoleFilter(node: Node): boolean {
+    if (this.options.ownedBy === "anyone" && this.options.reviewedBy === "anyone") return true;
+
+    const ownedByMe = this.options.ownedBy === "me" && compareIds(node.champion?.id, this.me.id);
+    const reviewedByMe = this.options.reviewedBy === "me" && compareIds(node.reviewer?.id, this.me.id);
+
+    return ownedByMe || reviewedByMe;
   }
 }

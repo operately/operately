@@ -12,6 +12,7 @@ import { ExpandableProvider, useExpandable } from "./context/Expandable";
 
 import classNames from "classnames";
 import { createTestId } from "@/utils/testid";
+import { useMe } from "@/contexts/CurrentCompanyContext";
 
 interface GoalSelectorProps {
   goals: Goals.Goal[];
@@ -19,6 +20,8 @@ interface GoalSelectorProps {
 }
 
 export function GoalSelector({ goals, onSelect }: GoalSelectorProps) {
+  const me = useMe();
+
   const options = {
     sortColumn: "name",
     sortDirection: "asc",
@@ -29,7 +32,7 @@ export function GoalSelector({ goals, onSelect }: GoalSelectorProps) {
     showProjects: false,
   } as TreeOptions;
 
-  const tree = React.useMemo(() => buildTree(goals, [], options), [goals, options]);
+  const tree = React.useMemo(() => buildTree(me!, goals, [], options), [goals, options]);
 
   return (
     <ExpandableProvider tree={tree}>
