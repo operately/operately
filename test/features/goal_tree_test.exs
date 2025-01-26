@@ -115,18 +115,18 @@ defmodule Operately.Features.GoalTreeTest do
       |> Steps.assert_closed_project_hidden(ctx.project_beta)
     end
 
-    feature "filter by champion", ctx do
+    feature "filter by my role = owner", ctx do
       ctx
       |> Steps.visit_goal_tree_page()
       |> Steps.assert_all_goals_and_projects_are_visible_by_default()
       |> Steps.select_owned_by_me_filter()
-      |> Steps.refute_goal_visible(:goal_1)
+      |> Steps.assert_goal_visible(:goal_1)
       |> Steps.assert_goal_visible(:goal_2)
       |> Steps.assert_project_visible(:project_alpha)
       |> Steps.assert_project_visible(:project_beta)
     end
 
-    feature "filter by reviewer", ctx do
+    feature "filter by my role = reviewer", ctx do
       ctx
       |> Steps.given_project_and_goal_with_other_reviewer_exists()
       |> Steps.visit_goal_tree_page()
