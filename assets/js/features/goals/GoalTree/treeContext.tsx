@@ -4,11 +4,11 @@ import * as Projects from "@/models/projects";
 import * as Time from "@/utils/time";
 import * as Timeframes from "@/utils/timeframes";
 
-import { Person } from "@/models/people";
 import { useStateWithLocalStorage } from "@/hooks/useStateWithLocalStorage";
 
 import { Tree, buildTree, SortColumn, SortDirection, TreeOptions } from "./tree";
 import { ExpandableProvider } from "./context/Expandable";
+import { useMe } from "@/contexts/CurrentCompanyContext";
 
 type DensityType = "default" | "compact";
 
@@ -34,8 +34,12 @@ interface TreeContextValue {
   setShowPaused: (show: boolean) => void;
   showCompleted: boolean;
   setShowCompleted: (show: boolean) => void;
-  setChampionedBy: (person?: Person) => void;
-  setReviewedBy: (person?: Person) => void;
+
+  ownedBy: string;
+  setOwnedBy: (string: string) => void;
+
+  reviewedBy: string;
+  setReviewedBy: (string: string) => void;
 
   density: DensityType;
   setDensity: (density: DensityType) => void;
@@ -71,13 +75,14 @@ const timeframeSerialization = {
 };
 
 export function TreeContextProvider(props: TreeContextProviderPropsWithChildren) {
+  const me = useMe();
   const namespace = "goals-and-projects::" + props.settingsNamespace;
 
   const [sortColumn, setSortColumn] = React.useState<SortColumn>("name");
   const [sortDirection, setSortDirection] = React.useState<SortDirection>("asc");
 
-  const [championedBy, setChampionedBy] = React.useState<Person>();
-  const [reviewedBy, setReviewedBy] = React.useState<Person>();
+  const [ownedBy, setOwnedBy] = useStateWithLocalStorage<string>(namespace, "ownedBy", "anyone");
+  const [reviewedBy, setReviewedBy] = useStateWithLocalStorage<string>(namespace, "reviewedBy", "anyone");
 
   const [showActive, setShowActive] = useStateWithLocalStorage<boolean>(namespace, "showActive", true);
   const [showPaused, setShowPaused] = useStateWithLocalStorage<boolean>(namespace, "showPaused", false);
@@ -96,8 +101,9 @@ export function TreeContextProvider(props: TreeContextProviderPropsWithChildren)
 
   const treeOptions = {
     ...props.options,
-    personId: props.options.personId || championedBy?.id!,
-    reviewerId: reviewedBy?.id!,
+    personId: props.options.personId,
+    ownedBy,
+    reviewedBy,
     sortColumn,
     sortDirection,
     showActive,
@@ -109,7 +115,7 @@ export function TreeContextProvider(props: TreeContextProviderPropsWithChildren)
   } as TreeOptions;
 
   const tree = React.useMemo(
-    () => buildTree(props.goals, props.projects, treeOptions),
+    () => buildTree(me!, props.goals, props.projects, treeOptions),
     [props.goals, props.projects, treeOptions],
   );
 
@@ -126,7 +132,9 @@ export function TreeContextProvider(props: TreeContextProviderPropsWithChildren)
     setShowPaused,
     showCompleted,
     setShowCompleted,
-    setChampionedBy,
+    ownedBy,
+    setOwnedBy,
+    reviewedBy,
     setReviewedBy,
     showGoals,
     setShowGoals,

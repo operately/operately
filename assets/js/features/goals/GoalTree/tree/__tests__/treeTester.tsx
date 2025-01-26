@@ -7,6 +7,7 @@ import { Person } from "@/models/people";
 type ParentId = string | null;
 
 export class TreeTester {
+  private me: Person;
   private goals: any[];
   private projects: any[];
   private display: string[];
@@ -20,13 +21,20 @@ export class TreeTester {
     showPaused: false,
     showGoals: true,
     showProjects: true,
+    ownedBy: "anyone",
+    reviewedBy: "anyone",
   } as TreeOptions;
 
   constructor(display: string[] = ["name"], options: any = {}) {
+    this.me = { id: "1", fullName: "Me" } as Person;
     this.goals = [];
     this.projects = [];
     this.display = display;
     this.options = { ...this.defaultOpts, ...options };
+  }
+
+  setMe(person: Person) {
+    this.me = person;
   }
 
   addGoal(name: string, space: Space, champion: Person, parentId: ParentId = null, options: any = {}) {
@@ -38,7 +46,7 @@ export class TreeTester {
   }
 
   assertShape(expected: string) {
-    const tree = buildTree(this.goals, this.projects, this.options);
+    const tree = buildTree(this.me, this.goals, this.projects, this.options);
 
     assertTreeShape(tree, this.display, expected);
   }
