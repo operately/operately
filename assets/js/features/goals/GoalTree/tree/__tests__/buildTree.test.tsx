@@ -244,6 +244,51 @@ describe("Tree", () => {
     });
   });
 
+  describe("filtering by my role", () => {
+    describe("ownedBy me", () => {
+      it("show only goals where the user is the champion", () => {
+        const t = new TreeTester(["name", "champion"], { ownedBy: "me" });
+        t.setMe(john);
+
+        t.addGoal("G1", company, sarah);
+        t.addGoal("G11", marketing, sarah, "G1");
+
+        t.addGoal("G2", marketing, peter);
+        t.addGoal("G21", product, sarah, "G2");
+        t.addGoal("G211", product, john, "G21");
+        t.addProj("P1", product, john, "G2");
+
+        t.assertShape(`
+          G2 Peter
+            G21 Sarah
+              G211 John
+            P1 John
+        `);
+      });
+    });
+
+    describe("reviewedBy me", () => {
+      it("show only goals where the user is the reviewer", () => {
+        const t = new TreeTester(["name", "champion"], { reviewedBy: "me" });
+        t.setMe(john);
+
+        t.addGoal("G1", company, sarah);
+        t.addGoal("G11", marketing, sarah, "G1");
+
+        t.addGoal("G2", marketing, peter);
+        t.addGoal("G21", product, sarah, "G2");
+        t.addGoal("G211", product, john, "G21", { reviewer: john });
+        t.addProj("P1", product, peter, "G2");
+
+        t.assertShape(`
+          G2 Peter
+            G21 Sarah
+              G211 John
+        `);
+      });
+    });
+  });
+
   describe("filtering by space", () => {
     it("shows only goals from the selected space", () => {
       const t = new TreeTester(["name", "space"], { spaceId: marketing.id });
@@ -346,25 +391,6 @@ describe("Tree", () => {
           D
       `);
     });
-  });
-
-  it("is able to select goals and projects for a person", () => {
-    const t = new TreeTester(["name", "champion"], { personId: john.id });
-
-    t.addGoal("G1", company, john);
-    t.addGoal("G11", marketing, sarah, "G1");
-
-    t.addGoal("G2", marketing, peter);
-    t.addGoal("G21", product, sarah, "G2");
-    t.addGoal("G211", product, john, "G21");
-    t.addProj("P1", product, john, "G2");
-
-    t.assertShape(`
-      G1 John
-        G11 Sarah
-      G211 John
-      P1 John
-    `);
   });
 
   it("is able to select subgoals and projects for a goal", () => {
