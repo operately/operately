@@ -25,7 +25,7 @@ export function Page() {
       <Paper.Root size="large">
         <Paper.Body noPadding={noPadding} className={bodyClassName} minHeight="500px">
           <Header />
-          <GoalTree goals={goals} projects={projects} options={{}} />
+          <GoalTree goals={goals} projects={projects} options={{}} settingsNamespace="global" />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
