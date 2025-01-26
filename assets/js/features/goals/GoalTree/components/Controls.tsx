@@ -3,7 +3,6 @@ import React, { useMemo, useState } from "react";
 import Forms from "@/components/Forms";
 import Modal from "@/components/Modal";
 
-import { useMe } from "@/contexts/CurrentCompanyContext";
 import { SecondaryButton } from "@/components/Buttons";
 
 import { useExpandable } from "../context/Expandable";
@@ -44,7 +43,6 @@ export function Controls() {
 }
 
 function OptionsModal({ showOptions, toggleShowOptions }) {
-  const me = useMe()!;
   const {
     showActive,
     setShowActive,
@@ -52,7 +50,9 @@ function OptionsModal({ showOptions, toggleShowOptions }) {
     setShowPaused,
     showCompleted,
     setShowCompleted,
-    setChampionedBy,
+    ownedBy,
+    setOwnedBy,
+    reviewedBy,
     setReviewedBy,
     density,
     setDensity,
@@ -82,8 +82,8 @@ function OptionsModal({ showOptions, toggleShowOptions }) {
   const form = Forms.useForm({
     fields: {
       filters,
-      ownedBy: "anyone",
-      reviewedBy: "anyone",
+      ownedBy: ownedBy,
+      reviewedBy: reviewedBy,
       nodeType: nodeType,
       density: density,
     },
@@ -97,11 +97,8 @@ function OptionsModal({ showOptions, toggleShowOptions }) {
       if (form.values.filters.includes("completed")) setShowCompleted(true);
       else setShowCompleted(false);
 
-      if (form.values.ownedBy === "me") setChampionedBy(me);
-      else setChampionedBy(undefined);
-
-      if (form.values.reviewedBy === "me") setReviewedBy(me);
-      else setReviewedBy(undefined);
+      setOwnedBy(form.values.ownedBy);
+      setReviewedBy(form.values.reviewedBy);
 
       if (form.values.density) setDensity(form.values.density);
 
