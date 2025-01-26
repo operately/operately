@@ -27,6 +27,7 @@ export function Page() {
             options={{
               goalId: goal.id!,
             }}
+            settingsNamespace={`goal-${goal.id}-subgoals`}
           />
         </Paper.Body>
       </Paper.Root>
