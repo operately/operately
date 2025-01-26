@@ -30,18 +30,6 @@ config :operately, OperatelyWeb.Endpoint,
 # at the `config/runtime.exs`.
 config :operately, Operately.Mailer, adapter: Swoosh.Adapters.Local
 
-# Configure tailwind (the version is required)
-config :tailwind,
-  version: "3.2.4",
-  default: [
-    args: ~w(
-      --config=tailwind.config.js
-      --input=css/app.css
-      --output=../priv/static/assets/app.css
-    ),
-    cd: Path.expand("../assets", __DIR__)
-  ]
-
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
