@@ -45,7 +45,7 @@ export function ProjectDetails({ node }: { node: ProjectNode }) {
 }
 
 function ProjectStatus({ node }: { node: ProjectNode }) {
-  if (node.status === "closed") {
+  if (node.isClosed) {
     assertPresent(node.retrospective, "retrospective must be present in project");
 
     return (
