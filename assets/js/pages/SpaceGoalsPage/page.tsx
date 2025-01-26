@@ -19,7 +19,12 @@ export function Page() {
 
         <Paper.Body minHeight="500px">
           <Header />
-          <GoalTree goals={goals} projects={projects} options={{ spaceId: space.id! }} />
+          <GoalTree
+            goals={goals}
+            projects={projects}
+            options={{ spaceId: space.id! }}
+            settingsNamespace={`space-${space.id}-goals`}
+          />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
