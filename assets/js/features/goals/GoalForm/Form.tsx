@@ -107,7 +107,8 @@ function FormFooter({ form }: { form: FormState }) {
             defaultValue={form.fields.champion}
             error={form.errors.find((e) => e.field === "champion")}
             inputId="champion-search"
-            scope={findScope(form.config.space, form.config.goal)}
+            scope={findScope(form.fields.space, form.config.goal)}
+            key={form.fields.space?.id}
           />
         </div>
 
@@ -118,8 +119,8 @@ function FormFooter({ form }: { form: FormState }) {
             defaultValue={form.fields.reviewer}
             inputId="reviewer-search"
             error={form.errors.find((e) => e.field === "reviewer")}
-            space={form.config.space}
-            scope={findScope(form.config.space, form.config.goal)}
+            scope={findScope(form.fields.space, form.config.goal)}
+            key={form.fields.space?.id}
           />
         </div>
 
@@ -240,7 +241,7 @@ function SectionHeader({ form, title, subtitle }: { form: FormState; title: stri
   );
 }
 
-function findScope(space: Space | undefined, goal: Goal | undefined) {
+function findScope(space: Space | null, goal: Goal | undefined) {
   if (goal) {
     return People.goalScope(goal.id!);
   }
