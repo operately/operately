@@ -2,7 +2,7 @@ import * as React from "react";
 import * as People from "@/models/people";
 import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
-import { TextSeparator } from "@/components/TextSeparator";
+import { BulletDot } from "@/components/TextElements";
 
 const validStates = ["draft", "published"];
 
@@ -27,7 +27,8 @@ export function DocumentTitle({ title, author, state, publishedAt }: TitleProps)
 
         {state !== "draft" && (
           <>
-            <TextSeparator />
+            <BulletDot margin="mx-0.5" />
+            <span>Posted</span>
             <FormattedTime time={publishedAt!} format="relative-time-or-date" />
           </>
         )}

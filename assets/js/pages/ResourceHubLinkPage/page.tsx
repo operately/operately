@@ -1,14 +1,9 @@
 import React from "react";
-import { IconExternalLink } from "@tabler/icons-react";
 
 import * as Reactions from "@/models/reactions";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
-import Avatar from "@/components/Avatar";
-import FormattedTime from "@/components/FormattedTime";
-import { TextSeparator } from "@/components/TextSeparator";
-import { CopyToClipboard } from "@/components/CopyToClipboard";
 import { Spacer } from "@/components/Spacer";
 import { assertPresent } from "@/utils/assertions";
 import RichContent, { richContentToString } from "@/components/RichContent";
@@ -16,11 +11,14 @@ import RichContent, { richContentToString } from "@/components/RichContent";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { CurrentSubscriptions } from "@/features/Subscriptions";
 import { CommentSection, useComments } from "@/features/CommentSection";
-import { ResourcePageNavigation } from "@/features/ResourceHub";
+import { LinkIcon, LinkOptions, ResourcePageNavigation } from "@/features/ResourceHub";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 
 import { Options } from "./Options";
 import { useLoadedData } from "./loader";
+import { PrimaryButton } from "@/components/Buttons";
+import { BulletDot } from "@/components/TextElements";
+import FormattedTime from "@/components/FormattedTime";
 
 export function Page() {
   const { link } = useLoadedData();
@@ -33,11 +31,11 @@ export function Page() {
       <Paper.Root>
         <ResourcePageNavigation resource={link} />
 
-        <Paper.Body>
-          <Title />
+        <Paper.Body className="lg:px-28">
           <Options />
 
-          <Url />
+          <Title />
+          <Actions />
           <Description />
 
           <LinkReactions />
@@ -49,51 +47,44 @@ export function Page() {
   );
 }
 
-function Title() {
-  const { link } = useLoadedData();
-
-  assertPresent(link.author, "author must be present in link");
-
-  return (
-    <div className="flex flex-col items-center">
-      <Paper.Header title={link.name!} />
-      <div className="flex flex-wrap justify-center gap-1 items-center mt-2 text-content-accent font-medium text-sm sm:text-[16px]">
-        <div className="flex items-center gap-1">
-          <Avatar person={link.author} size="tiny" /> {link.author.fullName}
-        </div>
-
-        <TextSeparator />
-        <FormattedTime time={link.insertedAt!} format="relative-time-or-date" />
-      </div>
-    </div>
-  );
-}
-
-function Url() {
+function Actions() {
   const { link } = useLoadedData();
 
   assertPresent(link.url, "url must be present in link");
 
   return (
-    <div className="mt-4 flex flex-col gap-2">
-      <div className="font-bold text-content-accent">Link:</div>
-      <div className="text-content-primary border border-surface-outline rounded-lg px-3 py-2 font-medium flex items-center justify-between">
-        {link.url}
-      </div>
-      <div className="flex justify-start items-center gap-2">
-        <CopyToClipboard text={link.url} size={25} />
-        <OpenLinkIcon url={link.url} size={25} />
+    <div className="flex flex-col items-center mt-4">
+      <div className="flex flex-col rounded gap-4">
+        <div className="flex items-center gap-2">
+          <PrimaryButton linkTo={link.url} linkTarget="_blank">
+            Open Link
+          </PrimaryButton>
+        </div>
       </div>
     </div>
   );
 }
 
-function OpenLinkIcon({ url, size }: { url: string; size: number }) {
-  const redirect = () => {
-    window.open(url, "_blank", "noopener,noreferrer");
-  };
+function Title() {
+  const { link } = useLoadedData();
 
-  return <IconExternalLink size={size} onClick={redirect} className="cursor-pointer" />;
+  assertPresent(link.name, "name must be present in link");
+  assertPresent(link.url, "url must be present in link");
+  assertPresent(link.author, "author must be present in link");
+  assertPresent(link.insertedAt, "insertedAt must be present in link");
+
+  return (
+    <div className="flex flex-col items-center">
+      <LinkIcon type={link.type! as LinkOptions} size={70} />
+      <div className="text-2xl font-extrabold mt-4">{link.name}</div>
+      <div className="font-medium inline-flex gap-1">
+        <span>{link.author.fullName}</span>
+        <BulletDot />
+        <span>Posted</span>
+        <FormattedTime time={link.insertedAt} format="relative-time-or-date" />
+      </div>
+    </div>
+  );
 }
 
 function Description() {
