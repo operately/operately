@@ -1,6 +1,7 @@
 import React from "react";
 import * as Time from "@/utils/time";
 import { useTranslation } from "react-i18next";
+import { findOrdinalNumberSuffix } from "@/utils/numbers";
 
 export default function LongDate({ time }: { time: Date }): JSX.Element {
   const { t } = useTranslation();
@@ -14,19 +15,8 @@ export default function LongDate({ time }: { time: Date }): JSX.Element {
       },
     },
   };
-
-  let day = time.getDate();
-
-  let suffix = "";
-  if (day === 1) {
-    suffix = "st";
-  } else if (day === 2) {
-    suffix = "nd";
-  } else if (day === 3) {
-    suffix = "rd";
-  } else {
-    suffix = "th";
-  }
+  const day = time.getDate();
+  const suffix = findOrdinalNumberSuffix(day);
 
   return (
     <>
