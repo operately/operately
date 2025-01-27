@@ -5,9 +5,9 @@ defmodule Operately.Repo.Getter do
 
   ## System requester
 
-  A special requester, `:system`, can be used to get a resource with full 
-  access which bypasses the access level check. The `:system` requester 
-  is used when the system itself is requesting the resource, e.g. when 
+  A special requester, `:system`, can be used to get a resource with full
+  access which bypasses the access level check. The `:system` requester
+  is used when the system itself is requesting the resource, e.g. when
   sending an emails, or when the system is performing a background task,
   or in tests.
 
@@ -21,12 +21,12 @@ defmodule Operately.Repo.Getter do
 
       schema "my_schema" do
         ...
-        
+
         requester_info()             <---- Add this line
       end
     end
 
-  When added, you can use the `get/2` function to get a resource with the 
+  When added, you can use the `get/2` function to get a resource with the
   requester's access level.
 
     MySchema.get(person, id: "123")
@@ -161,6 +161,7 @@ defmodule Operately.Repo.Getter do
     case requester do
       :system -> get_for_system(query, :system, args)
       %{} -> get_for_person(query, requester, args)
+      requester_id when is_binary(requester_id) -> get_for_person_id(query, requester_id, args)
       _ -> {:error, :invalid_requester}
     end
   end
@@ -172,23 +173,41 @@ defmodule Operately.Repo.Getter do
     end
   end
 
+  def get_for_person_id(query, requester_id, args) do
+    query =
+      base_query(query, requester_id)
+      |> group_by([resource: r, person: p], [r.id, p.id])
+      |> select([resource: r, binding: b, person: p], {r, max(b.access_level), p})
+
+    case load(query, args) do
+      {:ok, {resource, access_level, requester}} -> process_resource(resource, requester, access_level, args)
+      {:error, :not_found} -> {:error, :not_found}
+    end
+  end
+
   def get_for_person(query, requester, args) do
-    query = from([resource: r] in query,
-      join: c in assoc(r, :access_context),
-      join: b in assoc(c, :bindings), as: :binding,
-      join: g in assoc(b, :group),
-      join: m in assoc(g, :memberships),
-      join: p in assoc(m, :person),
-      where: m.person_id == ^requester.id,
-      where: is_nil(p.suspended_at),
-      where: b.access_level >= ^Binding.view_access(),
-      group_by: r.id,
-      select: {r, max(b.access_level)})
+    query =
+      base_query(query, requester.id)
+      |> group_by([resource: r], r.id)
+      |> select([resource: r, binding: b], {r, max(b.access_level)})
 
     case load(query, args) do
       {:ok, {resource, access_level}} -> process_resource(resource, requester, access_level, args)
       {:error, :not_found} -> {:error, :not_found}
     end
+  end
+
+  defp base_query(query, requester_id) do
+    from([resource: r] in query,
+      join: c in assoc(r, :access_context),
+      join: b in assoc(c, :bindings), as: :binding,
+      join: g in assoc(b, :group),
+      join: m in assoc(g, :memberships),
+      join: p in assoc(m, :person), as: :person,
+      where: m.person_id == ^requester_id,
+      where: is_nil(p.suspended_at),
+      where: b.access_level >= ^Binding.view_access()
+    )
   end
 
   defp load(query, args) do
