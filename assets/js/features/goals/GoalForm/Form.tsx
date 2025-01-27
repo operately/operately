@@ -3,6 +3,8 @@ import React from "react";
 import classnames from "classnames";
 import PeopleSearch from "@/components/PeopleSearch";
 
+import { Space } from "@/models/spaces";
+import { Goal } from "@/models/goals";
 import * as Paper from "@/components/PaperContainer";
 import * as Forms from "@/components/Form";
 import * as People from "@/models/people";
@@ -102,9 +104,11 @@ function FormFooter({ form }: { form: FormState }) {
           <ContributorSearch
             title="Champion"
             onSelect={form.fields.setChampion}
-            defaultValue={form.fields.champion}
+            value={form.fields.champion}
             error={form.errors.find((e) => e.field === "champion")}
             inputId="champion-search"
+            scope={findScope(form.fields.space, form.config.goal)}
+            key={form.fields.space?.id}
           />
         </div>
 
@@ -112,9 +116,11 @@ function FormFooter({ form }: { form: FormState }) {
           <ContributorSearch
             title="Reviewer"
             onSelect={form.fields.setReviewer}
-            defaultValue={form.fields.reviewer}
+            value={form.fields.reviewer}
             inputId="reviewer-search"
             error={form.errors.find((e) => e.field === "reviewer")}
+            scope={findScope(form.fields.space, form.config.goal)}
+            key={form.fields.space?.id}
           />
         </div>
 
@@ -172,8 +178,8 @@ function SpaceSelector({ form }: { form: FormState }) {
   );
 }
 
-function ContributorSearch({ title, onSelect, defaultValue, inputId, error }: any) {
-  const loader = People.usePeopleSearch(People.CompanyWideSearchScope);
+function ContributorSearch({ title, onSelect, value, inputId, error, scope }: any) {
+  const loader = People.usePeopleSearch(scope);
 
   return (
     <div>
@@ -181,7 +187,7 @@ function ContributorSearch({ title, onSelect, defaultValue, inputId, error }: an
       <div className="flex-1">
         <PeopleSearch
           onChange={(option) => onSelect(option?.person)}
-          defaultValue={defaultValue}
+          value={value}
           placeholder="Search for person..."
           inputId={inputId}
           loader={loader}
@@ -233,4 +239,14 @@ function SectionHeader({ form, title, subtitle }: { form: FormState; title: stri
       {subtitle && <div className="mt-1 text-sm text-content-dimmed">{subtitle}</div>}
     </div>
   );
+}
+
+function findScope(space: Space | null, goal: Goal | undefined) {
+  if (goal) {
+    return People.goalScope(goal.id!);
+  }
+  if (space) {
+    return People.spaceScope(space.id!);
+  }
+  return People.CompanyWideSearchScope;
 }
