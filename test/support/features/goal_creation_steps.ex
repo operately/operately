@@ -23,13 +23,13 @@ defmodule Operately.Support.Features.GoalCreationTestSteps do
   step :add_goal, ctx, goal_params do
     ctx
     |> UI.fill(testid: "goal-name", with: goal_params.name)
+    |> UI.select(testid: "space-selector", option: ctx.space.name)
     |> UI.select_person_in(id: "champion-search", name: ctx.champion.full_name)
     |> UI.select_person_in(id: "reviewer-search", name: ctx.reviewer.full_name)
     |> UI.fill(testid: "target-0-name", with: goal_params.target_name)
     |> UI.fill(testid: "target-0-current", with: goal_params.from)
     |> UI.fill(testid: "target-0-target", with: goal_params.to)
     |> UI.fill(testid: "target-0-unit", with: goal_params.unit)
-    |> UI.select(testid: "space-selector", option: ctx.space.name)
     |> then(fn ctx ->
       if Map.has_key?(goal_params, :parent_name) do
         ctx

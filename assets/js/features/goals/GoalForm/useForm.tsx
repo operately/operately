@@ -192,7 +192,6 @@ function useResetContributorsOnSpaceChange(config: FormConfig, fields: Fields) {
     if (config.mode === "create") {
       fields.setChampion(config.me);
       fields.setReviewer(null);
-      console.log("run");
     }
   }, [fields.space]);
 }
