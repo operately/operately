@@ -44,25 +44,7 @@ defmodule Operately.Blobs do
 
     case blob.storage_type do
       :s3 -> 
-        # Tell the browser what filename to use when downloading the file
-        #
-        # readmore: 
-        # - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition
-        # - https://elixirforum.com/t/presigned-urls-with-exaws/15708/10
-        #
-
-        #
-        # It must be uri encoded twice because the first encoding is for the query params for the s3 presigned url
-        # while the second encoding is for the filename in the content-disposition header
-        #
-        uri_encoded_filename = blob.filename |> URI.encode() |> URI.encode()
-
-        query_params = case disposition do
-          "attachment" -> [{"response-content-disposition", "attachment; filename=#{uri_encoded_filename}"}]
-          "inline" -> [{"response-content-disposition", "inline; filename=#{uri_encoded_filename}"}]
-          _ -> raise ArgumentError, "Invalid disposition type #{disposition}"
-        end
-
+        query_params = disposition_query_params(disposition, blob.filename)
         presigned_s3_url(:get, path, 3600, [], query_params)
 
       :local ->
@@ -73,6 +55,23 @@ defmodule Operately.Blobs do
         {:ok, "#{host}/media/#{path}?token=#{token}"}
       _ ->
         {:error, "Storage type not supported"}
+    end
+  end
+
+  defp disposition_query_params(disposition, filename) do
+    #
+    # Tell the browser what filename to use when downloading the file
+    #
+    # readmore: 
+    # - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition
+    # - https://elixirforum.com/t/presigned-urls-with-exaws/15708/10
+    #
+    uri_encoded_filename = URI.encode_www_form(filename)
+
+    case disposition do
+      "attachment" -> [{"response-content-disposition", "attachment; filename=#{uri_encoded_filename}"}]
+      "inline" -> [{"response-content-disposition", "inline; filename=#{uri_encoded_filename}"}]
+      _ -> raise ArgumentError, "Invalid disposition type #{disposition}"
     end
   end
 
