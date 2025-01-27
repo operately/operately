@@ -136,6 +136,7 @@ export function useForm(config: FormConfig): FormState {
     setParentGoal,
   } as Fields;
 
+  useResetContributorsOnSpaceChange(config, fields);
   const [submit, cancel, submitting, errors] = useSubmit(fields, config);
 
   return {
@@ -180,6 +181,20 @@ function useSpaces(config: FormConfig): [SpaceOption | null, (space: SpaceOption
   }, [config.spaces, config.allowSpaceSelection]);
 
   return [space, setSpace, options];
+}
+
+function useResetContributorsOnSpaceChange(config: FormConfig, fields: Fields) {
+  // When a new Space is selected, the search scope updates
+  // to only include people with access to that Space.
+  // The champion and reviewer are reset to ensure the selected
+  // individuals have access to the newly chosen Space.
+  React.useEffect(() => {
+    if (config.mode === "create") {
+      fields.setChampion(config.me);
+      fields.setReviewer(null);
+      console.log("run");
+    }
+  }, [fields.space]);
 }
 
 type TargetList = Target[];
