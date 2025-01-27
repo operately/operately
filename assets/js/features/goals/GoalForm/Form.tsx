@@ -104,7 +104,7 @@ function FormFooter({ form }: { form: FormState }) {
           <ContributorSearch
             title="Champion"
             onSelect={form.fields.setChampion}
-            defaultValue={form.fields.champion}
+            value={form.fields.champion}
             error={form.errors.find((e) => e.field === "champion")}
             inputId="champion-search"
             scope={findScope(form.fields.space, form.config.goal)}
@@ -116,7 +116,7 @@ function FormFooter({ form }: { form: FormState }) {
           <ContributorSearch
             title="Reviewer"
             onSelect={form.fields.setReviewer}
-            defaultValue={form.fields.reviewer}
+            value={form.fields.reviewer}
             inputId="reviewer-search"
             error={form.errors.find((e) => e.field === "reviewer")}
             scope={findScope(form.fields.space, form.config.goal)}
@@ -178,7 +178,7 @@ function SpaceSelector({ form }: { form: FormState }) {
   );
 }
 
-function ContributorSearch({ title, onSelect, defaultValue, inputId, error, scope }: any) {
+function ContributorSearch({ title, onSelect, value, inputId, error, scope }: any) {
   const loader = People.usePeopleSearch(scope);
 
   return (
@@ -187,7 +187,7 @@ function ContributorSearch({ title, onSelect, defaultValue, inputId, error, scop
       <div className="flex-1">
         <PeopleSearch
           onChange={(option) => onSelect(option?.person)}
-          defaultValue={defaultValue}
+          value={value}
           placeholder="Search for person..."
           inputId={inputId}
           loader={loader}
