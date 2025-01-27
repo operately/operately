@@ -22,6 +22,10 @@ export const spaceScope = (spaceId: string) => {
   return { type: "space", id: spaceId } as SearchScope;
 };
 
+export const goalScope = (goalId: string) => {
+  return { type: "goal", id: goalId } as SearchScope;
+};
+
 export function usePeopleSearch(scope: SearchScope) {
   //
   // There are multiple components that use this hook. Some of them
