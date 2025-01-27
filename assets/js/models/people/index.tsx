@@ -18,6 +18,10 @@ export type SearchScope =
 export const CompanyWideSearchScope = { type: "company" } as SearchScope;
 export const NoneSearchScope = { type: "none" } as SearchScope;
 
+export const spaceScope = (spaceId: string) => {
+  return { type: "space", id: spaceId } as SearchScope;
+};
+
 export function usePeopleSearch(scope: SearchScope) {
   //
   // There are multiple components that use this hook. Some of them

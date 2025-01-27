@@ -105,6 +105,7 @@ function FormFooter({ form }: { form: FormState }) {
             defaultValue={form.fields.champion}
             error={form.errors.find((e) => e.field === "champion")}
             inputId="champion-search"
+            space={form.config.space}
           />
         </div>
 
@@ -115,6 +116,7 @@ function FormFooter({ form }: { form: FormState }) {
             defaultValue={form.fields.reviewer}
             inputId="reviewer-search"
             error={form.errors.find((e) => e.field === "reviewer")}
+            space={form.config.space}
           />
         </div>
 
@@ -172,8 +174,9 @@ function SpaceSelector({ form }: { form: FormState }) {
   );
 }
 
-function ContributorSearch({ title, onSelect, defaultValue, inputId, error }: any) {
-  const loader = People.usePeopleSearch(People.CompanyWideSearchScope);
+function ContributorSearch({ title, onSelect, defaultValue, inputId, error, space }: any) {
+  const scope = space ? People.spaceScope(space.id) : People.CompanyWideSearchScope;
+  const loader = People.usePeopleSearch(scope);
 
   return (
     <div>
