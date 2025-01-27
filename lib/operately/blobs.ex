@@ -50,9 +50,16 @@ defmodule Operately.Blobs do
         # - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition
         # - https://elixirforum.com/t/presigned-urls-with-exaws/15708/10
         #
+
+        #
+        # It must be uri encoded twice because the first encoding is for the query params for the s3 presigned url
+        # while the second encoding is for the filename in the content-disposition header
+        #
+        uri_encoded_filename = blob.filename |> URI.encode() |> URI.encode()
+
         query_params = case disposition do
-          "attachment" -> [{"response-content-disposition", "attachment; filename=#{URI.encode(blob.filename)}"}]
-          "inline" -> [{"response-content-disposition", "inline; filename=#{URI.encode(blob.filename)}"}]
+          "attachment" -> [{"response-content-disposition", "attachment; filename=#{uri_encoded_filename}"}]
+          "inline" -> [{"response-content-disposition", "inline; filename=#{uri_encoded_filename}"}]
           _ -> raise ArgumentError, "Invalid disposition type #{disposition}"
         end
 
