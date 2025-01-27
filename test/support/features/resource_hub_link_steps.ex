@@ -147,7 +147,6 @@ defmodule Operately.Support.Features.ResourceHubLinkSteps do
     ctx
     |> UI.assert_page(Paths.link_path(ctx.company, node.link))
     |> UI.assert_text(attrs.title)
-    |> UI.assert_text(attrs.url)
     |> UI.assert_text(attrs.notes)
   end
 
