@@ -5,6 +5,7 @@ import type { ActivityContentResourceHubFileDeleted } from "@/api";
 import type { ActivityHandler } from "../interfaces";
 import { Paths } from "@/routes/paths";
 import { feedTitle, resourceHubLink, spaceLink } from "../feedItemLinks";
+import { assertPresent } from "@/utils/assertions";
 
 const ResourceHubFileDeleted: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -12,6 +13,9 @@ const ResourceHubFileDeleted: ActivityHandler = {
   },
 
   pagePath(activity: Activity) {
+    const data = content(activity);
+    assertPresent(data.resourceHub?.id, "resourceHub must be present in activity");
+
     return Paths.resourceHubPath(content(activity).resourceHub!.id!);
   },
 

@@ -8,6 +8,7 @@ import { Paths } from "@/routes/paths";
 import { Summary } from "@/components/RichContent";
 import React from "react";
 import { feedTitle, fileLink, spaceLink } from "../feedItemLinks";
+import { assertPresent } from "@/utils/assertions";
 
 const ResourceHubFileCommented: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -15,7 +16,10 @@ const ResourceHubFileCommented: ActivityHandler = {
   },
 
   pagePath(activity: Activity): string {
-    return Paths.resourceHubFilePath(content(activity).file!.id!);
+    const data = content(activity);
+    assertPresent(data.file?.id, "file must be present in activity");
+
+    return Paths.resourceHubFilePath(data.file.id);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -33,8 +37,11 @@ const ResourceHubFileCommented: ActivityHandler = {
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const data = content(activity);
 
-    const file = fileLink(data.file!);
-    const space = spaceLink(data.space!);
+    assertPresent(data.file, "file must be present in activity");
+    assertPresent(data.space, "space must be present in activity");
+
+    const file = fileLink(data.file);
+    const space = spaceLink(data.space);
 
     if (page === "space") {
       return feedTitle(activity, "commented on", file);
@@ -44,8 +51,10 @@ const ResourceHubFileCommented: ActivityHandler = {
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {
-    const comment = content(activity).comment!;
-    const commentContent = JSON.parse(comment.content!)["message"];
+    const data = content(activity);
+    assertPresent(data.comment?.content, "comment must be present in activity");
+
+    const commentContent = JSON.parse(data.comment.content)["message"];
     return <Summary jsonContent={commentContent} characterCount={200} />;
   },
 
