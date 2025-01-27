@@ -7,6 +7,7 @@ import { assertPresent } from "@/utils/assertions";
 import { match } from "ts-pattern";
 
 import plurarize from "@/utils/plurarize";
+import { BulletDot, MDash } from "@/components/TextElements";
 
 interface NodeDescriptionProps {
   node: Hub.ResourceHubNode;
@@ -52,7 +53,7 @@ function FileSize({ node }: { node: Hub.ResourceHubNode }) {
   return (
     <span className="font-medium">
       {" "}
-      <MiddotDot /> {humanReadableSize(node.file!)}
+      <BulletDot /> {humanReadableSize(node.file!)}
     </span>
   );
 }
@@ -85,17 +86,9 @@ function ContentSnippet({ node, maxCharacters }: { node: Hub.ResourceHubNode; ma
   return (
     <>
       {" "}
-      <Dash /> {truncateString(content, maxCharacters)}
+      <MDash /> {truncateString(content, maxCharacters)}
     </>
   );
-}
-
-function MiddotDot() {
-  return <span className="text-content-dimmed">•</span>;
-}
-
-function Dash() {
-  return <span className="text-content-dimmed">&mdash;</span>;
 }
 
 function humanReadableSize(file: Hub.ResourceHubFile) {
