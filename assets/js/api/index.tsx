@@ -300,9 +300,9 @@ export interface ActivityContentGoalReopening {
 }
 
 export interface ActivityContentGoalReparent {
-  companyId?: string | null;
-  oldParentGoalId?: string | null;
-  newParentGoalId?: string | null;
+  goal?: Goal | null;
+  oldParentGoal?: Goal | null;
+  newParentGoal?: Goal | null;
 }
 
 export interface ActivityContentGoalTimeframeEditing {

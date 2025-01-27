@@ -9,6 +9,8 @@ defmodule Operately.Operations.GoalReparent do
     |> Activities.insert_sync(author.id, :goal_reparent, fn changes ->
       %{
         company_id: goal.company_id,
+        space_id: goal.group_id,
+        goal_id: goal.id,
         old_parent_goal_id: goal.parent_goal_id,
         new_parent_goal_id: changes.goal.parent_goal_id,
       }

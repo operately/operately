@@ -157,10 +157,6 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
     }
   end
 
-  def serialize_content("goal_reparent", _content) do
-    %{}
-  end
-
   def serialize_content("goal_timeframe_editing", content) do
     %{
       goal: serialize_goal(content["goal"]),

@@ -221,7 +221,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "goal_reparent",
         author_id: ctx.author.id,
-        content: %{ new_parent_goal_id: ctx.goal.id, company_id: "-", old_parent_goal_id: "-" }
+        content: %{ goal_id: ctx.goal.id, new_parent_goal_id: "-", company_id: "-" }
       }
 
       create_activity(attrs)
