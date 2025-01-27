@@ -18,11 +18,12 @@ const ResourceHubFileCreated: ActivityHandler = {
     const data = content(activity);
 
     assertPresent(data.files, "files must be present in FileCreated activity");
+    assertPresent(data.resourceHub?.id, "resourceHub must be present in FileCreated activity");
 
-    if (data.files.length > 1) {
-      return Paths.resourceHubPath(data.resourceHub?.id!);
+    if (data.files.length === 1 && data.files[0]) {
+      return Paths.resourceHubFilePath(data.files[0].id!);
     } else {
-      return Paths.resourceHubFilePath(data.files[0]?.id!);
+      return Paths.resourceHubPath(data.resourceHub.id);
     }
   },
 
@@ -41,11 +42,15 @@ const ResourceHubFileCreated: ActivityHandler = {
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const data = content(activity);
 
-    const space = spaceLink(data.space!);
-    const resourceHub = resourceHubLink(data.resourceHub!);
+    assertPresent(data.space, "space must be present in FileCreated activity");
+    assertPresent(data.files, "files must be present in FileCreated activity");
+    assertPresent(data.resourceHub, "resourceHub must be present in FileCreated activity");
 
-    if (data.files?.length === 1) {
-      const file = fileLink(data.files[0]!);
+    const space = spaceLink(data.space);
+    const resourceHub = resourceHubLink(data.resourceHub);
+
+    if (data.files.length === 1 && data.files[0]) {
+      const file = fileLink(data.files[0]);
 
       if (page === "space") {
         return feedTitle(activity, "added a file:", file);
@@ -68,8 +73,11 @@ const ResourceHubFileCreated: ActivityHandler = {
       return (
         <ul className="list-disc ml-4">
           {data.files.map((file, idx) => {
-            const path = Paths.resourceHubFilePath(file.id!);
-            const name = file.name!;
+            assertPresent(file.id, "id must be present in file");
+            assertPresent(file.name, "name must be present in file");
+
+            const path = Paths.resourceHubFilePath(file.id);
+            const name = file.name;
 
             return (
               <li key={idx}>
