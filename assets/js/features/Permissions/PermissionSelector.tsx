@@ -7,46 +7,23 @@ import { PermissionOptions } from ".";
 import { calculatePrivacyLevel } from "./utils";
 
 export function ResourcePermissionSelector({ state }: { state: PermissionsState }) {
-  const { space, company, dispatch, hasPermissions, permissions } = state;
+  const { space, company, dispatch, permissions } = state;
+  const companySpaceSelected = isCompanySpaceSelected(company, space);
 
-  const companySpaceSelected =
-    !company.companySpaceId || !space?.id ? false : compareIds(company.companySpaceId, space.id);
+  const privacyOptions = useMemo(() => getPrivacyOptions(companySpaceSelected), [companySpaceSelected]);
 
   useEffect(() => {
-    if (!hasPermissions) {
-      dispatch({ type: ReducerActions.SET_SECRET });
+    if (companySpaceSelected && calculatePrivacyLevel(permissions) === PermissionOptions.CONFIDENTIAL) {
+      dispatch({ type: ReducerActions.SET_FOR_COMPANY_SPACE });
     }
-  }, [space]);
-
-  const privacyOptions = useMemo(() => {
-    let options = [
-      { label: "Public - Anyone on the internet", value: PermissionOptions.PUBLIC },
-      { label: "Internal - All organization members", value: PermissionOptions.INTERNAL },
-      { label: "Confidential - All people invited to the space", value: PermissionOptions.CONFIDENTIAL },
-      { label: "Secret - Only people explicitly invited", value: PermissionOptions.SECRET },
-    ];
-
-    if (companySpaceSelected) {
-      options = options.filter((obj) => obj.value != PermissionOptions.CONFIDENTIAL);
-    }
-
-    return options;
   }, [companySpaceSelected]);
-
-  const defaultPrivacyLevel = useMemo(() => {
-    if (hasPermissions) {
-      return calculatePrivacyLevel(permissions);
-    } else {
-      return PermissionOptions.SECRET;
-    }
-  }, []);
 
   return (
     <>
       <PrivacyLevel
         description="Who can access this project?"
         options={privacyOptions}
-        defaultValue={defaultPrivacyLevel}
+        defaultValue={calculatePrivacyLevel(permissions)}
         key={space?.id}
         state={state}
       />
@@ -54,3 +31,19 @@ export function ResourcePermissionSelector({ state }: { state: PermissionsState 
     </>
   );
 }
+
+const isCompanySpaceSelected = (company, space) => {
+  return company?.companySpaceId && space?.id && compareIds(company.companySpaceId, space.id);
+};
+
+const getPrivacyOptions = (isCompanySpaceSelected: boolean) => {
+  const options = [
+    { label: "Public - Anyone on the internet", value: PermissionOptions.PUBLIC },
+    { label: "Internal - All organization members", value: PermissionOptions.INTERNAL },
+    { label: "Confidential - All people invited to the space", value: PermissionOptions.CONFIDENTIAL },
+    { label: "Secret - Only people explicitly invited", value: PermissionOptions.SECRET },
+  ];
+
+  // Remove CONFIDENTIAL option if company space is selected
+  return isCompanySpaceSelected ? options.filter((option) => option.value !== PermissionOptions.CONFIDENTIAL) : options;
+};
