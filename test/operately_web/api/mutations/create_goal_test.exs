@@ -91,6 +91,54 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoalTest do
     end
   end
 
+  describe "goal's reviewer and chamption permissions" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.add_space(:space)
+      |> Factory.add_space_member(:person, :space)
+      |> Factory.log_in_person(:person)
+      |> Factory.add_company_member(:company_member)
+      |> Factory.add_space_member(:space_member, :space)
+    end
+
+    test "Goal isn't created when champion doesn't have access to the space", ctx do
+      assert {400, res} = request(ctx.conn, ctx, %{
+        space_id: Paths.space_id(ctx.space),
+        reviewer_id: Paths.person_id(ctx.creator),
+        champion_id: Paths.person_id(ctx.company_member),
+      })
+      assert res.message == "The selected champion doesn't have access to the selected space"
+    end
+
+    test "Goal successfully created when champion has access to the space", ctx do
+      assert {200, res} = request(ctx.conn, ctx, %{
+        space_id: Paths.space_id(ctx.space),
+        reviewer_id: Paths.person_id(ctx.creator),
+        champion_id: Paths.person_id(ctx.space_member),
+      })
+      assert_goal_created(res)
+    end
+
+    test "Goal isn't created when reviewer doesn't have access to the space", ctx do
+      assert {400, res} = request(ctx.conn, ctx, %{
+        space_id: Paths.space_id(ctx.space),
+        reviewer_id: Paths.person_id(ctx.company_member),
+        champion_id: Paths.person_id(ctx.creator),
+      })
+      assert res.message == "The selected reviewer doesn't have access to the selected space"
+    end
+
+    test "Goal successfully created when reviewer has access to the space", ctx do
+      assert {200, res} = request(ctx.conn, ctx, %{
+        space_id: Paths.space_id(ctx.space),
+        reviewer_id: Paths.person_id(ctx.space_member),
+        champion_id: Paths.person_id(ctx.creator),
+      })
+      assert_goal_created(res)
+    end
+  end
+
   describe "create_goal functionality" do
     setup ctx do
       ctx = register_and_log_in_account(ctx)
