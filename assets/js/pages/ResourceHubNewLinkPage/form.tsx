@@ -66,7 +66,7 @@ export function Form() {
 
           <div className="mt-12">
             <SubscribersSelector state={subscriptionsState} resourceHubName={resourceHub.name!} />
-            <Forms.Submit saveText="Add To Documents" buttonSize="base" />
+            <Forms.Submit saveText="Add link" buttonSize="base" />
           </div>
         </div>
       </div>

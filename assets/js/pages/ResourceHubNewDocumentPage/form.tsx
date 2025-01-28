@@ -65,6 +65,10 @@ export function Form() {
           mentionSearchScope={mentionSearchScope}
           placeholder="Write here..."
           hideBorder
+          showToolbarTopBorder
+          fontSize="text-lg"
+          horizontalPadding="px-0"
+          verticalPadding="pt-2"
         />
       </Forms.FieldGroup>
 
