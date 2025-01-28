@@ -16,9 +16,5 @@ export function Page({ title, children, testId, onLoad }: PageProps): JSX.Elemen
     if (onLoad) onLoad();
   }, []);
 
-  return (
-    <div className="h-dvh" data-test-id={testId}>
-      {children}
-    </div>
-  );
+  return <div data-test-id={testId}>{children}</div>;
 }
