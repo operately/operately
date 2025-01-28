@@ -155,9 +155,14 @@ defmodule Operately.Support.Features.ReviewSteps do
     |> UI.click(testid: "acknowledge-check-in")
   end
 
-  step :assert_title, ctx, count do
+  step :assert_my_work, ctx, count do
     ctx
-    |> UI.assert_text("Review (#{count})")
+    |> UI.assert_text("My work (#{count})")
+  end
+
+  step :assert_reviews, ctx, count do
+    ctx
+    |> UI.assert_text("To review (#{count})")
   end
 
   step :assert_navbar_count, ctx, count do
