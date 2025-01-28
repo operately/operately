@@ -14,7 +14,6 @@ export function Page() {
   const { goals, projects } = useLoadedData();
   const size = Pages.useWindowSizeBreakpoints();
 
-  const noPadding = ["xs", "sm"].includes(size);
   const bodyClassName = classNames({
     "p-6": size === "sm",
     "p-4": size === "xs",
@@ -23,7 +22,7 @@ export function Page() {
   return (
     <Pages.Page title="Goal Map" testId="goals-and-projects-page">
       <Paper.Root size="large">
-        <Paper.Body noPadding={noPadding} className={bodyClassName} minHeight="500px">
+        <Paper.Body className={bodyClassName} minHeight="500px">
           <Header />
           <GoalTree goals={goals} projects={projects} options={{}} settingsNamespace="global" />
         </Paper.Body>
