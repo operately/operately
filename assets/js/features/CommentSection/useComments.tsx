@@ -3,17 +3,23 @@ import { useEffect, useState } from "react";
 import * as Comments from "@/models/comments";
 import { SearchScope } from "@/models/people";
 import { Discussion } from "@/models/discussions";
+import { ProjectCheckIn } from "@/models/projectCheckIns";
 import { ProjectRetrospective } from "@/models/projects";
 import { ResourceHubDocument, ResourceHubFile, ResourceHubLink } from "@/models/resourceHubs";
 
+import { useMe } from "@/contexts/CurrentCompanyContext";
 import { assertPresent } from "@/utils/assertions";
 import { parse } from "@/utils/time";
 import { ItemType, FormState } from "./form";
-import { useMe } from "@/contexts/CurrentCompanyContext";
 
 interface ParentDiscussion {
   discussion: Discussion;
   parentType: "message";
+}
+
+interface ParentProjectCheckIn {
+  checkIn: ProjectCheckIn;
+  parentType: "project_check_in";
 }
 
 interface ParentProjectRetrospective {
@@ -38,6 +44,7 @@ interface ParentResourceHubLink {
 
 type UseCommentsInput =
   | ParentDiscussion
+  | ParentProjectCheckIn
   | ParentProjectRetrospective
   | ParentResourceHubDocument
   | ParentResourceHubFile
@@ -200,6 +207,8 @@ function findParent(props: UseCommentsInput) {
   switch (props.parentType) {
     case "message":
       return props.discussion;
+    case "project_check_in":
+      return props.checkIn;
     case "project_retrospective":
       return props.retrospective;
     case "resource_hub_document":
@@ -216,6 +225,9 @@ function findMentionedScope(props: UseCommentsInput): SearchScope {
     case "message":
       assertPresent(props.discussion.space, "space must be present in discussion");
       return { type: "space", id: props.discussion.space.id! };
+    case "project_check_in":
+      assertPresent(props.checkIn?.project?.id, "project must be present in checkIn");
+      return { type: "project", id: props.checkIn.project.id };
     case "project_retrospective":
       assertPresent(props.retrospective.project, "project must be present in retrospective");
       return { type: "project", id: props.retrospective.project.id! };
