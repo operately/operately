@@ -16,21 +16,26 @@ interface Props {
   maxElements?: number;
 
   showCutOff?: boolean;
+  wrap?: boolean;
+  stackSpacing?: string;
 }
 
 const DEFAULT_VALUES = {
   stacked: false,
+  stackSpacing: "-space-x-2",
   maxElements: 5,
   showCutOff: true,
+  wrap: true,
 };
 
 export default function AvatarList(props: Props) {
   const navigate = useNavigate();
   props = { ...DEFAULT_VALUES, ...props };
 
-  const className = classNames("flex items-center flex-wrap", {
-    "-space-x-2": props.stacked,
+  const className = classNames("flex items-center", {
+    [props.stackSpacing!]: props.stacked,
     "gap-1": !props.stacked,
+    "flex-wrap": props.wrap,
   });
   const avatarClassName = classNames("border border-surface-base rounded-full flex items-center", {
     "cursor-pointer": props.linked,
