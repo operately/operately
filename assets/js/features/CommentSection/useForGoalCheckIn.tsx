@@ -1,77 +1,29 @@
+import { useMemo } from "react";
+
 import * as GoalCheckIns from "@/models/goalCheckIns";
 import * as Comments from "@/models/comments";
 import * as Time from "@/utils/time";
-import * as People from "@/models/people";
 
-import { FormState, Item, ItemType } from "./form";
+import { FormState } from "./form";
+import { useComments } from "./useComments";
 
 export function useForGoalCheckIn(update: GoalCheckIns.Update): FormState {
-  const mentionSearchScope = { type: "goal", id: update.goal!.id! } as People.SearchScope;
+  const form = useComments({ update, parentType: "goal_update" });
 
-  const { data, loading, error, refetch } = Comments.useGetComments({
-    entityId: update.id!,
-    entityType: "goal_update",
-  });
+  const comments: Comments.CommentItem[] = useMemo(() => {
+    if (!form.items) return [];
+    if (!update.acknowledged) return form.items;
 
-  const [post, { loading: submittingPost }] = Comments.useCreateComment();
-  const [edit, { loading: submittingEdit }] = Comments.useEditComment();
+    const { before, after } = Comments.splitComments(form.items, update.acknowledgedAt!);
 
-  if (loading)
-    return {
-      items: [],
-      postComment: async (_content: string) => {},
-      editComment: async (_commentID: string, _content: string) => {},
-      submitting: false,
-      mentionSearchScope,
-    };
-
-  if (error) throw error;
-
-  const { before, after } = Comments.splitComments(data!.comments!, update.acknowledgedAt!);
-
-  let items: Item[] = [];
-
-  before.forEach((c) => {
-    items.push({ type: "comment" as ItemType, insertedAt: Time.parse(c.insertedAt)!, value: c });
-  });
-
-  if (update.acknowledged) {
-    items.push({
-      type: "acknowledgement" as ItemType,
+    const acknowledgement = {
+      type: "acknowledgement",
       insertedAt: Time.parse(update.acknowledgedAt)!,
       value: update.acknowledgingPerson,
-    });
-  }
+    } as Comments.CommentItem;
 
-  after.forEach((c) => {
-    items.push({ type: "comment" as ItemType, insertedAt: Time.parse(c.insertedAt)!, value: c });
-  });
+    return [...before, acknowledgement, ...after];
+  }, [form.items, update]);
 
-  const postComment = async (content: string) => {
-    await post({
-      entityType: "goal_update",
-      entityId: update.id,
-      content: JSON.stringify(content),
-    });
-
-    refetch();
-  };
-
-  const editComment = async (commentID: string, content: string) => {
-    await edit({
-      commentId: commentID,
-      content: JSON.stringify(content),
-      parentType: "goal_update",
-    });
-
-    refetch();
-  };
-
-  return {
-    items,
-    postComment,
-    editComment,
-    submitting: submittingPost || submittingEdit,
-    mentionSearchScope,
-  };
+  return { ...form, items: comments };
 }

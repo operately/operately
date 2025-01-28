@@ -12,7 +12,8 @@ import { ResourceHubDocument, ResourceHubFile, ResourceHubLink } from "@/models/
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { assertPresent } from "@/utils/assertions";
 import { parse } from "@/utils/time";
-import { ItemType, FormState } from "./form";
+import { FormState } from "./form";
+import { Update } from "@/models/goalCheckIns";
 
 interface ParentDiscussion {
   discussion: Discussion;
@@ -44,6 +45,11 @@ interface ParentResourceHubLink {
   parentType: "resource_hub_link";
 }
 
+interface ParentGoalUpdate {
+  update: Update;
+  parentType: "goal_update";
+}
+
 interface ParentCommentThread {
   thread: CommentThread;
   goal: Goal;
@@ -57,6 +63,7 @@ type UseCommentsInput =
   | ParentResourceHubDocument
   | ParentResourceHubFile
   | ParentResourceHubLink
+  | ParentGoalUpdate
   | ParentCommentThread;
 
 export function useComments(props: UseCommentsInput): FormState {
@@ -206,7 +213,7 @@ function parseComments(comments?: Comments.Comment[] | null) {
 
 function parseComment(comment: Comments.Comment) {
   return {
-    type: "comment" as ItemType,
+    type: "comment" as Comments.ItemType,
     insertedAt: parse(comment.insertedAt)!,
     value: comment,
   };
@@ -226,6 +233,8 @@ function findParent(props: UseCommentsInput) {
       return props.file;
     case "resource_hub_link":
       return props.link;
+    case "goal_update":
+      return props.update;
     case "comment_thread":
       return props.thread;
   }
@@ -251,6 +260,9 @@ function findMentionedScope(props: UseCommentsInput): SearchScope {
     case "resource_hub_link":
       assertPresent(props.link.resourceHub?.space, "resourceHub.space must be present in link");
       return { type: "space", id: props.link.resourceHub.space.id! };
+    case "goal_update":
+      assertPresent(props.update?.goal?.id, "goal must be present in update");
+      return { type: "goal", id: props.update.goal.id };
     case "comment_thread":
       assertPresent(props.goal?.id, "Goal must be provided along with CommentThread");
       return { type: "goal", id: props.goal.id };
