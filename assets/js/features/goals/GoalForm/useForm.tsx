@@ -96,7 +96,7 @@ export function useForm(config: FormConfig): FormState {
 
   const permissions = usePermissionsState({
     company: config.company,
-    space: space,
+    space: space ?? config.goal?.space,
     currentPermissions: config.goal?.accessLevels,
   });
 
