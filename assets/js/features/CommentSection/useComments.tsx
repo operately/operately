@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 
 import * as Comments from "@/models/comments";
 import { SearchScope } from "@/models/people";
+import { Goal } from "@/models/goals";
+import { CommentThread } from "@/models/activities";
 import { Discussion } from "@/models/discussions";
 import { ProjectCheckIn } from "@/models/projectCheckIns";
 import { ProjectRetrospective } from "@/models/projects";
@@ -42,13 +44,20 @@ interface ParentResourceHubLink {
   parentType: "resource_hub_link";
 }
 
+interface ParentCommentThread {
+  thread: CommentThread;
+  goal: Goal;
+  parentType: "comment_thread";
+}
+
 type UseCommentsInput =
   | ParentDiscussion
   | ParentProjectCheckIn
   | ParentProjectRetrospective
   | ParentResourceHubDocument
   | ParentResourceHubFile
-  | ParentResourceHubLink;
+  | ParentResourceHubLink
+  | ParentCommentThread;
 
 export function useComments(props: UseCommentsInput): FormState {
   const parent = findParent(props);
@@ -217,6 +226,8 @@ function findParent(props: UseCommentsInput) {
       return props.file;
     case "resource_hub_link":
       return props.link;
+    case "comment_thread":
+      return props.thread;
   }
 }
 
@@ -240,5 +251,8 @@ function findMentionedScope(props: UseCommentsInput): SearchScope {
     case "resource_hub_link":
       assertPresent(props.link.resourceHub?.space, "resourceHub.space must be present in link");
       return { type: "space", id: props.link.resourceHub.space.id! };
+    case "comment_thread":
+      assertPresent(props.goal?.id, "Goal must be provided along with CommentThread");
+      return { type: "goal", id: props.goal.id };
   }
 }

@@ -1,5 +1,5 @@
 import Api, { Activity, GetActivitiesInput, GetActivityInput } from "@/api";
-export type { Activity } from "@/api";
+export type { Activity, CommentThread } from "@/api";
 
 import * as Time from "@/utils/time";
 import * as api from "@/api";
