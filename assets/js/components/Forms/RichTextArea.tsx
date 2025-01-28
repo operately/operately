@@ -11,23 +11,28 @@ import { validateRichContentPresence } from "./validations/richContentPresence";
 
 interface RichTextAreaProps {
   field: string;
+  mentionSearchScope: People.SearchScope;
+
   label?: string;
   hidden?: boolean;
   placeholder?: string;
   hideBorder?: boolean;
-  showToolbarTopBorder?: boolean;
-  height?: string;
-  mentionSearchScope: People.SearchScope;
   required?: boolean;
-
+  height?: string;
   horizontalPadding?: string;
   verticalPadding?: string;
   fontSize?: string;
   fontWeight?: string;
+  showToolbarTopBorder?: boolean;
 }
 
 const DEFAULT_VALUES = {
   required: false,
+  horizontalPadding: "px-3",
+  verticalPadding: "py-2",
+  fontSize: "text-base",
+  fontWeight: "font-medium",
+  height: "min-h-[250px]",
 };
 
 export function RichTextArea(props: RichTextAreaProps) {
@@ -38,62 +43,18 @@ export function RichTextArea(props: RichTextAreaProps) {
 
   return (
     <InputField field={props.field} label={props.label} error={error} hidden={props.hidden}>
-      <Editor
-        placeholder={props.placeholder}
-        field={props.field}
-        error={!!error}
-        mentionSearchScope={props.mentionSearchScope}
-        hideBorder={props.hideBorder}
-        showToolbarTopBorder={props.showToolbarTopBorder}
-        height={props.height || "min-h-[250px]"}
-        horizontalPadding={props.horizontalPadding}
-        verticalPadding={props.verticalPadding}
-        fontSize={props.fontSize}
-        fontWeight={props.fontWeight}
-      />
+      <Editor {...props} error={!!error} />
     </InputField>
   );
 }
 
-interface EditorProps {
-  placeholder: string | undefined;
-  field: string;
-  error: boolean | undefined;
-  mentionSearchScope: People.SearchScope;
-  hideBorder?: boolean;
-  showToolbarTopBorder?: boolean;
-  height: string;
-
-  horizontalPadding?: string;
-  verticalPadding?: string;
-  fontSize?: string;
-  fontWeight?: string;
-}
-
-const DEFAULT_EDITOR_PROPS = {
-  horizontalPadding: "px-3",
-  verticalPadding: "py-2",
-  fontSize: "text-base",
-  fontWeight: "font-medium",
-};
-
-function Editor(props: EditorProps) {
-  props = { ...DEFAULT_EDITOR_PROPS, ...props };
-
+function Editor(props: RichTextAreaProps & { error: boolean }) {
   const form = useFormContext();
   const [value, setValue] = useFieldValue(props.field);
 
-  const className = classNames(
-    props.horizontalPadding,
-    props.verticalPadding,
-    props.fontSize,
-    props.fontWeight,
-    props.height,
-  );
-
   const editor = TipTapEditor.useEditor({
     placeholder: props.placeholder,
-    className: className,
+    className: contentClassName(props),
     mentionSearchScope: props.mentionSearchScope,
     onBlur: () => {
       setValue(editor.editor.getJSON());
@@ -114,7 +75,7 @@ function Editor(props: EditorProps) {
   }, [editor.editor]);
 
   return (
-    <div className={styles(!!props.error, props.hideBorder)}>
+    <div className={wrapperClassName(props)}>
       <TipTapEditor.Root editor={editor.editor}>
         <TipTapEditor.Toolbar editor={editor.editor} noTopBorder={!props.showToolbarTopBorder} />
         <TipTapEditor.EditorContent editor={editor.editor} />
@@ -123,12 +84,16 @@ function Editor(props: EditorProps) {
   );
 }
 
-function styles(error: boolean | undefined, hideBorder?: boolean) {
+function contentClassName(props: RichTextAreaProps) {
+  return classNames(props.horizontalPadding, props.verticalPadding, props.fontSize, props.fontWeight, props.height);
+}
+
+function wrapperClassName(props: RichTextAreaProps & { error: boolean }) {
   return classNames({
     "w-full": true,
     "bg-surface-base text-content-accent placeholder-content-subtle": true,
-    "border rounded-lg": !hideBorder,
-    "border-surface-outline": !error,
-    "border-red-500": error,
+    "border rounded-lg": !props.hideBorder,
+    "border-surface-outline": !props.error,
+    "border-red-500": props.error,
   });
 }
