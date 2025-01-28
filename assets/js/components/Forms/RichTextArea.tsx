@@ -15,9 +15,15 @@ interface RichTextAreaProps {
   hidden?: boolean;
   placeholder?: string;
   hideBorder?: boolean;
+  showToolbarTopBorder?: boolean;
   height?: string;
   mentionSearchScope: People.SearchScope;
   required?: boolean;
+
+  horizontalPadding?: string;
+  verticalPadding?: string;
+  fontSize?: string;
+  fontWeight?: string;
 }
 
 const DEFAULT_VALUES = {
@@ -38,7 +44,12 @@ export function RichTextArea(props: RichTextAreaProps) {
         error={!!error}
         mentionSearchScope={props.mentionSearchScope}
         hideBorder={props.hideBorder}
+        showToolbarTopBorder={props.showToolbarTopBorder}
         height={props.height || "min-h-[250px]"}
+        horizontalPadding={props.horizontalPadding}
+        verticalPadding={props.verticalPadding}
+        fontSize={props.fontSize}
+        fontWeight={props.fontWeight}
       />
     </InputField>
   );
@@ -50,17 +61,40 @@ interface EditorProps {
   error: boolean | undefined;
   mentionSearchScope: People.SearchScope;
   hideBorder?: boolean;
+  showToolbarTopBorder?: boolean;
   height: string;
+
+  horizontalPadding?: string;
+  verticalPadding?: string;
+  fontSize?: string;
+  fontWeight?: string;
 }
 
-function Editor({ placeholder, field, error, mentionSearchScope, hideBorder, height }: EditorProps) {
+const DEFAULT_EDITOR_PROPS = {
+  horizontalPadding: "px-3",
+  verticalPadding: "py-2",
+  fontSize: "text-base",
+  fontWeight: "font-medium",
+};
+
+function Editor(props: EditorProps) {
+  props = { ...DEFAULT_EDITOR_PROPS, ...props };
+
   const form = useFormContext();
-  const [value, setValue] = useFieldValue(field);
+  const [value, setValue] = useFieldValue(props.field);
+
+  const className = classNames(
+    props.horizontalPadding,
+    props.verticalPadding,
+    props.fontSize,
+    props.fontWeight,
+    props.height,
+  );
 
   const editor = TipTapEditor.useEditor({
-    placeholder: placeholder,
-    className: `px-3 py-2 font-medium ${height}`,
-    mentionSearchScope,
+    placeholder: props.placeholder,
+    className: className,
+    mentionSearchScope: props.mentionSearchScope,
     onBlur: () => {
       setValue(editor.editor.getJSON());
     },
@@ -80,9 +114,9 @@ function Editor({ placeholder, field, error, mentionSearchScope, hideBorder, hei
   }, [editor.editor]);
 
   return (
-    <div className={styles(!!error, hideBorder)}>
+    <div className={styles(!!props.error, props.hideBorder)}>
       <TipTapEditor.Root editor={editor.editor}>
-        <TipTapEditor.Toolbar editor={editor.editor} noTopBorder />
+        <TipTapEditor.Toolbar editor={editor.editor} noTopBorder={!props.showToolbarTopBorder} />
         <TipTapEditor.EditorContent editor={editor.editor} />
       </TipTapEditor.Root>
     </div>
