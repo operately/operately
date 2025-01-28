@@ -104,5 +104,15 @@ function ContributorsList({ project }: { project: Project }) {
     .with("lg", () => 6)
     .otherwise(() => 4);
 
-  return <AvatarList people={sortedContributors.map((c) => c.person!)} size="tiny" linked maxElements={maxElements} />;
+  return (
+    <AvatarList
+      people={sortedContributors.map((c) => c.person!)}
+      size={16}
+      linked
+      stacked
+      maxElements={maxElements}
+      wrap={false}
+      stackSpacing="-space-x-1.5"
+    />
+  );
 }
