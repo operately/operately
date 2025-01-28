@@ -45,20 +45,12 @@ type UseCommentsInput =
 
 export function useComments(props: UseCommentsInput): FormState {
   const parent = findParent(props);
-  const [edit, { loading: submittingEdit }] = Comments.useEditComment();
 
   const { items, setItems, loading, error, refetch } = useLoadAndReloadComments(parent.id!, props.parentType);
-  const { postComment, loading: submittingPost } = useCreateComment(setItems, parent.id, props.parentType);
+  const { postComment, loading: creating } = useCreateComment(setItems, parent.id, props.parentType);
+  const { editComment, loading: editing } = useEditComment(items, setItems, props.parentType);
 
   Comments.useDiscussionCommentsChangeSignal(refetch, { discussionId: parent.id! });
-
-  const editComment = async (commentID: string, content: string) => {
-    await edit({
-      commentId: commentID,
-      content: JSON.stringify(content),
-      parentType: props.parentType,
-    });
-  };
 
   if (loading && items.length < 1)
     return {
@@ -75,7 +67,7 @@ export function useComments(props: UseCommentsInput): FormState {
     items,
     postComment,
     editComment,
-    submitting: submittingPost || submittingEdit,
+    submitting: creating || editing,
     mentionSearchScope: findMentionedScope(props),
   };
 }
@@ -147,6 +139,49 @@ function useCreateComment(setComments, entityId, entityType) {
 
   return { postComment, loading };
 }
+
+function useEditComment(comments, setComments, parentType) {
+  const [edit, { loading }] = Comments.useEditComment();
+
+  const editComment = async (commentID: string, content: string) => {
+    setComments((comments) =>
+      comments.map((c) => {
+        if (c.value.id === commentID) {
+          const comment = { ...c.value, content: JSON.stringify({ message: content }) };
+          return parseComment(comment);
+        } else {
+          return c;
+        }
+      }),
+    );
+
+    try {
+      await edit({
+        commentId: commentID,
+        content: JSON.stringify(content),
+        parentType,
+      });
+    } catch {
+      const comment = comments.find((c) => c.value.id === commentID);
+
+      setComments((comments) =>
+        comments.map((c) => {
+          if (c.value.id === commentID) {
+            return comment;
+          } else {
+            return c;
+          }
+        }),
+      );
+    }
+  };
+
+  return { editComment, loading };
+}
+
+//
+// Helpers
+//
 
 function parseComments(comments?: Comments.Comment[] | null) {
   if (!comments) return [];

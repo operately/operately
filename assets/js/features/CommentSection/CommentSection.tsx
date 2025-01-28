@@ -86,8 +86,8 @@ function EditComment({ comment, onCancel, form }) {
     if (!editor) return;
     if (uploading) return;
 
-    await form.editComment(comment.id, editor.getJSON());
-    await onCancel();
+    form.editComment(comment.id, editor.getJSON());
+    onCancel();
   };
 
   return (
