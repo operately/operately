@@ -9,6 +9,7 @@ import { ResourceHubDocument, ResourceHubFile, ResourceHubLink } from "@/models/
 import { assertPresent } from "@/utils/assertions";
 import { parse } from "@/utils/time";
 import { ItemType, FormState } from "./form";
+import { useMe } from "@/contexts/CurrentCompanyContext";
 
 interface ParentDiscussion {
   discussion: Discussion;
@@ -44,19 +45,12 @@ type UseCommentsInput =
 
 export function useComments(props: UseCommentsInput): FormState {
   const parent = findParent(props);
-  const [post, { loading: submittingPost }] = Comments.useCreateComment();
   const [edit, { loading: submittingEdit }] = Comments.useEditComment();
-  const { items, loading, error, refetch } = useLoadAndReloadComments(parent.id, props.parentType);
+
+  const { items, setItems, loading, error, refetch } = useLoadAndReloadComments(parent.id!, props.parentType);
+  const { postComment, loading: submittingPost } = useCreateComment(setItems, parent.id, props.parentType);
 
   Comments.useDiscussionCommentsChangeSignal(refetch, { discussionId: parent.id! });
-
-  const postComment = async (content: string) => {
-    await post({
-      entityId: parent.id,
-      entityType: props.parentType,
-      content: JSON.stringify(content),
-    });
-  };
 
   const editComment = async (commentID: string, content: string) => {
     await edit({
@@ -86,7 +80,7 @@ export function useComments(props: UseCommentsInput): FormState {
   };
 }
 
-function useLoadAndReloadComments(parentId, parentType) {
+function useLoadAndReloadComments(parentId: string, parentType: UseCommentsInput["parentType"]) {
   const { data, loading, error, refetch } = Comments.useGetComments({
     entityId: parentId,
     entityType: parentType,
@@ -101,22 +95,70 @@ function useLoadAndReloadComments(parentId, parentType) {
 
   return {
     items,
+    setItems,
     loading,
     error,
     refetch,
   };
 }
 
+function useCreateComment(setComments, entityId, entityType) {
+  const me = useMe()!;
+  const [post, { loading }] = Comments.useCreateComment();
+
+  const postComment = async (content: string) => {
+    const tempId = `temp-${Date.now()}`;
+
+    setComments((comments) => {
+      const newComment: Comments.Comment = {
+        id: tempId,
+        insertedAt: new Date().toISOString(),
+        content: JSON.stringify({ message: content }),
+        author: me,
+        reactions: [],
+      };
+
+      return [...comments, parseComment(newComment)];
+    });
+
+    try {
+      const res = await post({
+        entityId,
+        entityType,
+        content: JSON.stringify(content),
+      });
+
+      setComments((comments) => {
+        return comments.map((c) => {
+          if (c.value.id === tempId) {
+            const comment = { ...c.value, id: res.comment?.id };
+            return parseComment(comment);
+          } else {
+            return c;
+          }
+        });
+      });
+    } catch (error) {
+      setComments((comments) => {
+        return comments.filter((c) => c.value.id !== tempId);
+      });
+    }
+  };
+
+  return { postComment, loading };
+}
+
 function parseComments(comments?: Comments.Comment[] | null) {
   if (!comments) return [];
+  return comments.map((comment) => parseComment(comment));
+}
 
-  return comments.map((comment) => {
-    return {
-      type: "comment" as ItemType,
-      insertedAt: parse(comment.insertedAt)!,
-      value: comment,
-    };
-  });
+function parseComment(comment: Comments.Comment) {
+  return {
+    type: "comment" as ItemType,
+    insertedAt: parse(comment.insertedAt)!,
+    value: comment,
+  };
 }
 
 function findParent(props: UseCommentsInput) {

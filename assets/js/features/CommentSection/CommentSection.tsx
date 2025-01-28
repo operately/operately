@@ -21,7 +21,6 @@ import { Menu, MenuActionItem } from "@/components/Menu";
 
 interface CommentSectionProps {
   form: FormState;
-  refresh: () => void;
   commentParentType: CommentParentType;
   canComment: boolean;
 }
@@ -34,10 +33,9 @@ export function CommentSection(props: CommentSectionProps) {
           if (item.type === "comment") {
             return (
               <Comment
-                key={item.value.id}
+                key={index}
                 comment={item.value}
                 form={props.form}
-                refresh={props.refresh}
                 commentParentType={props.commentParentType}
                 canComment={props.canComment}
               />
@@ -51,17 +49,17 @@ export function CommentSection(props: CommentSectionProps) {
           }
         })}
 
-        {props.canComment && <CommentBox refresh={props.refresh} form={props.form} />}
+        {props.canComment && <CommentBox form={props.form} />}
       </div>
     </>
   );
 }
 
-function Comment({ comment, form, refresh, commentParentType, canComment }) {
+function Comment({ comment, form, commentParentType, canComment }) {
   const [editing, _, startEditing, stopEditing] = useBoolState(false);
 
   if (editing) {
-    return <EditComment comment={comment} onCancel={stopEditing} form={form} refresh={refresh} />;
+    return <EditComment comment={comment} onCancel={stopEditing} form={form} />;
   } else {
     return (
       <ViewComment
@@ -74,7 +72,7 @@ function Comment({ comment, form, refresh, commentParentType, canComment }) {
   }
 }
 
-function EditComment({ comment, onCancel, form, refresh }) {
+function EditComment({ comment, onCancel, form }) {
   const me = useMe()!;
 
   const { editor, uploading } = TipTapEditor.useEditor({
@@ -89,7 +87,6 @@ function EditComment({ comment, onCancel, form, refresh }) {
     if (uploading) return;
 
     await form.editComment(comment.id, editor.getJSON());
-    await refresh();
     await onCancel();
   };
 
@@ -252,16 +249,11 @@ function AckComment({ person, ackAt }) {
   );
 }
 
-function CommentBox({ refresh, form }) {
+function CommentBox({ form }) {
   const [active, _, activate, deactivate] = useBoolState(false);
 
-  const onPost = () => {
-    refresh();
-    setTimeout(() => deactivate(), 300);
-  };
-
   if (active) {
-    return <AddCommentActive onBlur={deactivate} onPost={onPost} form={form} />;
+    return <AddCommentActive onBlur={deactivate} onPost={deactivate} form={form} />;
   } else {
     return <AddCommentNonActive onClick={activate} />;
   }
@@ -296,8 +288,8 @@ function AddCommentActive({ onBlur, onPost, form }) {
     if (!editor) return;
     if (uploading) return;
 
-    await form.postComment(editor.getJSON());
-    await onPost();
+    form.postComment(editor.getJSON());
+    onPost();
   };
 
   React.useEffect(() => {
