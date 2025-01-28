@@ -9,6 +9,7 @@ export enum ReducerActions {
   SET_INTERNAL,
   SET_CONFIDENTIAL,
   SET_SECRET,
+  SET_FOR_COMPANY_SPACE,
   SET_PUBLIC_ACCESS,
   SET_COMPANY_ACCESS,
   SET_SPACE_ACCESS,
@@ -20,6 +21,7 @@ type ActionOptions =
   | { type: ReducerActions.SET_INTERNAL }
   | { type: ReducerActions.SET_CONFIDENTIAL }
   | { type: ReducerActions.SET_SECRET }
+  | { type: ReducerActions.SET_FOR_COMPANY_SPACE }
   | { type: ReducerActions.SET_PUBLIC_ACCESS; access_level: PermissionLevels }
   | { type: ReducerActions.SET_COMPANY_ACCESS; access_level: PermissionLevels }
   | { type: ReducerActions.SET_SPACE_ACCESS; access_level: PermissionLevels }
@@ -33,7 +35,7 @@ export interface Permissions {
 
 const DEFAULT_PERMISSIONS = {
   public: PermissionLevels.NO_ACCESS,
-  company: PermissionLevels.EDIT_ACCESS,
+  company: PermissionLevels.COMMENT_ACCESS,
   space: PermissionLevels.EDIT_ACCESS,
 };
 
@@ -42,13 +44,13 @@ function reducerFunction(state: Permissions, action: ActionOptions) {
     case ReducerActions.SET_PUBLIC:
       return {
         space: PermissionLevels.EDIT_ACCESS,
-        company: PermissionLevels.EDIT_ACCESS,
+        company: PermissionLevels.COMMENT_ACCESS,
         public: PermissionLevels.VIEW_ACCESS,
       };
     case ReducerActions.SET_INTERNAL:
       return {
         space: PermissionLevels.EDIT_ACCESS,
-        company: PermissionLevels.EDIT_ACCESS,
+        company: PermissionLevels.COMMENT_ACCESS,
         public: PermissionLevels.NO_ACCESS,
       };
     case ReducerActions.SET_CONFIDENTIAL:
@@ -61,6 +63,12 @@ function reducerFunction(state: Permissions, action: ActionOptions) {
       return {
         space: PermissionLevels.NO_ACCESS,
         company: PermissionLevels.NO_ACCESS,
+        public: PermissionLevels.NO_ACCESS,
+      };
+    case ReducerActions.SET_FOR_COMPANY_SPACE:
+      return {
+        space: PermissionLevels.NO_ACCESS,
+        company: PermissionLevels.COMMENT_ACCESS,
         public: PermissionLevels.NO_ACCESS,
       };
 
