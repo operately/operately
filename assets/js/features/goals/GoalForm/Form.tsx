@@ -16,6 +16,7 @@ import { FormState } from "./useForm";
 import { GoalSelectorDropdown } from "@/features/goals/GoalTree/GoalSelectorDropdown";
 import { TimeframeSelector } from "@/components/TimeframeSelector";
 import { ResourcePermissionSelector } from "@/features/Permissions";
+import { assertPresent } from "@/utils/assertions";
 
 export function Form({ form }: { form: FormState }) {
   return (
@@ -243,7 +244,8 @@ function SectionHeader({ form, title, subtitle }: { form: FormState; title: stri
 
 function findScope(space: Space | null, goal: Goal | undefined) {
   if (goal) {
-    return People.goalScope(goal.id!);
+    assertPresent(goal.space?.id, "space.id must be present in goal");
+    return People.spaceScope(goal.space.id);
   }
   if (space) {
     return People.spaceScope(space.id!);
