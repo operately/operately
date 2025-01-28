@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React from "react";
 
 import { IconTarget, IconHexagons } from "@tabler/icons-react";
 import { ReviewAssignment, AssignmentType } from "@/models/assignments";
@@ -29,21 +29,17 @@ export function AssignmentsList({ assignments }: { assignments: ReviewAssignment
 
 function AssignmentItem({ assignment }: { assignment: ReviewAssignment }) {
   const { link } = parseInformation(assignment);
-
   const navigate = useNavigateTo(link);
-  const [isHovered, setIsHovered] = useState(false);
 
   return (
     <div
       onClick={navigate}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      className="flex gap-4 items-center pt-6 pb-6 border-b first:border-t hover:cursor-pointer"
+      className="flex gap-4 items-center pt-6 pb-6 border-b first:border-t hover:cursor-pointer group"
     >
       <DueDate date={assignment.due!} />
       <div className="flex gap-4 items-start">
         <AssignmentIcon type={assignment.type as AssignmentType} />
-        <AssignmentInfo assignment={assignment} isHovered={isHovered} />
+        <AssignmentInfo assignment={assignment} />
       </div>
     </div>
   );
@@ -51,7 +47,7 @@ function AssignmentItem({ assignment }: { assignment: ReviewAssignment }) {
 
 function DueDate({ date }: { date: string }) {
   const daysAgo = relativeDay(parseDate(date)!);
-  const isRed = useMemo(() => !["Today", "Yesterday"].includes(daysAgo), []);
+  const isRed = !["Today", "Yesterday"].includes(daysAgo);
 
   return (
     <div className="flex flex-col min-w-[110px]">
@@ -80,14 +76,12 @@ function AssignmentIcon({ type }: { type: AssignmentType }) {
   }
 }
 
-function AssignmentInfo({ assignment, isHovered }: { assignment: ReviewAssignment; isHovered: boolean }) {
+function AssignmentInfo({ assignment }: { assignment: ReviewAssignment }) {
   const { title, content } = parseInformation(assignment);
-
-  const className = `mb-1 transition-colors duration-300 ${isHovered && "text-link-base"}`;
 
   return (
     <div data-test-id={assignment.id}>
-      <p className={className}>
+      <p className="mb-1 transition-colors duration-300 group-hover:text-link-base">
         <b>{title}</b> {assignment.name}
       </p>
       {content && (
