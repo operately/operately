@@ -2,84 +2,27 @@ import { useEffect, useState } from "react";
 
 import * as Comments from "@/models/comments";
 import { SearchScope } from "@/models/people";
-import { Goal } from "@/models/goals";
-import { CommentThread } from "@/models/activities";
-import { Discussion } from "@/models/discussions";
-import { ProjectCheckIn } from "@/models/projectCheckIns";
-import { ProjectRetrospective } from "@/models/projects";
-import { Update } from "@/models/goalCheckIns";
-import { ResourceHubDocument, ResourceHubFile, ResourceHubLink } from "@/models/resourceHubs";
-
-import { useMe } from "@/contexts/CurrentCompanyContext";
 import { assertPresent } from "@/utils/assertions";
-import { parse } from "@/utils/time";
 
 import { FormState } from "./form";
-import { useEditComment } from "./utils";
+import { parseComments, useCreateComment, useEditComment } from "./utils";
 
-interface ParentDiscussion {
-  discussion: Discussion;
-  parentType: "message";
-}
-
-interface ParentProjectCheckIn {
-  checkIn: ProjectCheckIn;
-  parentType: "project_check_in";
-}
-
-interface ParentProjectRetrospective {
-  retrospective: ProjectRetrospective;
-  parentType: "project_retrospective";
-}
-
-interface ParentResourceHubDocument {
-  document: ResourceHubDocument;
-  parentType: "resource_hub_document";
-}
-
-interface ParentResourceHubFile {
-  file: ResourceHubFile;
-  parentType: "resource_hub_file";
-}
-
-interface ParentResourceHubLink {
-  link: ResourceHubLink;
-  parentType: "resource_hub_link";
-}
-
-interface ParentGoalUpdate {
-  update: Update;
-  parentType: "goal_update";
-}
-
-interface ParentCommentThread {
-  thread: CommentThread;
-  goal: Goal;
-  parentType: "comment_thread";
-}
-
-type UseCommentsInput =
-  | ParentDiscussion
-  | ParentProjectCheckIn
-  | ParentProjectRetrospective
-  | ParentResourceHubDocument
-  | ParentResourceHubFile
-  | ParentResourceHubLink
-  | ParentGoalUpdate
-  | ParentCommentThread;
-
-export function useComments(props: UseCommentsInput): FormState {
+export function useComments(props: Comments.CommentableResource): FormState {
   const parent = findParent(props);
 
   const { items, setItems, loading, error, refetch } = useLoadAndReloadComments(parent.id!, props.parentType);
-  const { postComment, loading: creating } = useCreateComment(setItems, parent.id, props.parentType);
+  Comments.useDiscussionCommentsChangeSignal(refetch, { discussionId: parent.id! });
+
+  const { postComment, loading: creating } = useCreateComment({
+    setComments: setItems,
+    entityId: parent.id!,
+    entityType: props.parentType,
+  });
   const { editComment, loading: editing } = useEditComment({
     comments: items,
     setComments: setItems,
     parentType: props.parentType,
   });
-
-  Comments.useDiscussionCommentsChangeSignal(refetch, { discussionId: parent.id! });
 
   if (loading && items.length < 1)
     return {
@@ -101,7 +44,7 @@ export function useComments(props: UseCommentsInput): FormState {
   };
 }
 
-function useLoadAndReloadComments(parentId: string, parentType: UseCommentsInput["parentType"]) {
+function useLoadAndReloadComments(parentId: string, parentType: Comments.CommentableResource["parentType"]) {
   const { data, loading, error, refetch } = Comments.useGetComments({
     entityId: parentId,
     entityType: parentType,
@@ -123,70 +66,7 @@ function useLoadAndReloadComments(parentId: string, parentType: UseCommentsInput
   };
 }
 
-function useCreateComment(setComments, entityId, entityType) {
-  const me = useMe()!;
-  const [post, { loading }] = Comments.useCreateComment();
-
-  const postComment = async (content: string) => {
-    const tempId = `temp-${Date.now()}`;
-
-    setComments((comments) => {
-      const newComment: Comments.Comment = {
-        id: tempId,
-        insertedAt: new Date().toISOString(),
-        content: JSON.stringify({ message: content }),
-        author: me,
-        reactions: [],
-      };
-
-      return [...comments, parseComment(newComment)];
-    });
-
-    try {
-      const res = await post({
-        entityId,
-        entityType,
-        content: JSON.stringify(content),
-      });
-
-      setComments((comments) => {
-        return comments.map((c) => {
-          if (c.value.id === tempId) {
-            const comment = { ...c.value, id: res.comment?.id };
-            return parseComment(comment);
-          } else {
-            return c;
-          }
-        });
-      });
-    } catch (error) {
-      setComments((comments) => {
-        return comments.filter((c) => c.value.id !== tempId);
-      });
-    }
-  };
-
-  return { postComment, loading };
-}
-
-//
-// Helpers
-//
-
-function parseComments(comments?: Comments.Comment[] | null) {
-  if (!comments) return [];
-  return comments.map((comment) => parseComment(comment));
-}
-
-function parseComment(comment: Comments.Comment) {
-  return {
-    type: "comment" as Comments.ItemType,
-    insertedAt: parse(comment.insertedAt)!,
-    value: comment,
-  };
-}
-
-function findParent(props: UseCommentsInput) {
+function findParent(props: Comments.CommentableResource) {
   switch (props.parentType) {
     case "message":
       return props.discussion;
@@ -207,7 +87,7 @@ function findParent(props: UseCommentsInput) {
   }
 }
 
-function findMentionedScope(props: UseCommentsInput): SearchScope {
+function findMentionedScope(props: Comments.CommentableResource): SearchScope {
   switch (props.parentType) {
     case "message":
       assertPresent(props.discussion.space, "space must be present in discussion");

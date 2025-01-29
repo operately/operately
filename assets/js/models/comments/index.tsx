@@ -3,6 +3,7 @@ import * as Time from "@/utils/time";
 
 type Comment = api.Comment;
 
+export type { CommentableResource } from "./CommentableResource";
 export type CommentParentType =
   | "project_check_in"
   | "comment_thread"
