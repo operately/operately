@@ -4,7 +4,7 @@ import * as Paper from "@/components/PaperContainer";
 import * as Icons from "@tabler/icons-react";
 import * as Tasks from "@/models/tasks";
 
-import { useLoadedData, useRefresh } from "./loader";
+import { useLoadedData } from "./loader";
 import { useFormState } from "./useForm";
 
 import { ProjectMilestonesNavigation } from "@/components/ProjectPageNavigation";
@@ -20,7 +20,6 @@ import classNames from "classnames";
 import { assertPresent } from "@/utils/assertions";
 
 export function Page() {
-  const refresh = useRefresh();
   const { milestone } = useLoadedData();
 
   assertPresent(milestone.project, "project must be present in milestone");
@@ -48,7 +47,6 @@ export function Page() {
           <PageSection title="Comments &amp; Activity Feed" />
           <CommentSection
             form={commentsForm}
-            refresh={refresh}
             commentParentType="milestone"
             canComment={milestone.permissions.canCommentOnMilestone}
           />

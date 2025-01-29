@@ -1,46 +1,31 @@
+import { useState } from "react";
+
 import * as Milestones from "@/models/milestones";
 import * as Comments from "@/models/comments";
-import * as Time from "@/utils/time";
 import * as People from "@/models/people";
+import * as Time from "@/utils/time";
 
-import { Item, ItemType, FormState } from "./form";
+import { assertPresent } from "@/utils/assertions";
+import { FormState } from "./form";
+import { useEditComment } from "./utils";
 
 export function useForMilestone(milestone: Milestones.Milestone): FormState {
-  let items: Item[] = milestone.comments!.map((c) => {
-    const comment = c!.comment!;
-    const action = c!.action;
+  assertPresent(milestone.comments, "comments must be present in milestone");
 
-    if (action === "none") {
-      return { type: "comment" as ItemType, insertedAt: Time.parse(comment.insertedAt)!, value: comment };
-    }
-
-    if (action === "complete") {
-      return { type: "milestone-completed" as ItemType, insertedAt: Time.parse(comment.insertedAt)!, value: comment };
-    }
-
-    if (action === "reopen") {
-      return { type: "milestone-reopened" as ItemType, insertedAt: Time.parse(comment.insertedAt)!, value: comment };
-    }
-
-    throw new Error("Invalid comment action " + action);
-  });
+  const [items, setItems] = useParseComments(milestone.comments);
 
   const [post, { loading: submittingPost }] = Milestones.usePostMilestoneComment();
-  const [edit, { loading: submittingEdit }] = Comments.useEditComment();
+  const { editComment, loading: submittingEdit } = useEditComment({
+    comments: items,
+    setComments: setItems,
+    parentType: "milestone",
+  });
 
   const postComment = async (content: string) => {
     await post({
       milestoneId: milestone.id,
       content: JSON.stringify(content),
       action: "none",
-    });
-  };
-
-  const editComment = async (commentID: string, content: string) => {
-    await edit({
-      commentId: commentID,
-      content: JSON.stringify(content),
-      parentType: "milestone",
     });
   };
 
@@ -53,4 +38,42 @@ export function useForMilestone(milestone: Milestones.Milestone): FormState {
   };
 
   return res;
+}
+
+function useParseComments(comments: Milestones.MilestoneComment[]) {
+  const [items, setItems] = useState(parseComments(comments));
+
+  return [items, setItems] as const;
+}
+
+//
+// Helpers
+//
+
+function parseComments(comments: Milestones.MilestoneComment[]): Comments.CommentItem[] {
+  return comments.map(({ action, comment }) => {
+    assertPresent(comment, "comment must be present in commentMilestone");
+
+    if (action === "none") {
+      return { type: "comment" as Comments.ItemType, insertedAt: Time.parse(comment.insertedAt)!, value: comment };
+    }
+
+    if (action === "complete") {
+      return {
+        type: "milestone-completed" as Comments.ItemType,
+        insertedAt: Time.parse(comment.insertedAt)!,
+        value: comment,
+      };
+    }
+
+    if (action === "reopen") {
+      return {
+        type: "milestone-reopened" as Comments.ItemType,
+        insertedAt: Time.parse(comment.insertedAt)!,
+        value: comment,
+      };
+    }
+
+    throw new Error("Invalid comment action " + action);
+  });
 }
