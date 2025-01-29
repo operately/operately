@@ -1,7 +1,7 @@
 import * as Time from "@/utils/time";
-import * as Api from "@/api";
+import { Milestone, MilestoneComment } from "@/api";
 
-export type Milestone = Api.Milestone;
+export type { Milestone, MilestoneComment };
 export {
   getMilestone,
   useUpdateMilestone,
