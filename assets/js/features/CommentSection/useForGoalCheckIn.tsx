@@ -12,9 +12,9 @@ export function useForGoalCheckIn(update: GoalCheckIns.Update): FormState {
 
   const comments: Comments.CommentItem[] = useMemo(() => {
     if (!form.items) return [];
-    if (!update.acknowledged) return form.items;
+    if (!update.acknowledged || !update.acknowledgedAt) return form.items;
 
-    const { before, after } = Comments.splitComments(form.items, update.acknowledgedAt!);
+    const { before, after } = Comments.splitComments(form.items, update.acknowledgedAt);
 
     const acknowledgement = {
       type: "acknowledgement",

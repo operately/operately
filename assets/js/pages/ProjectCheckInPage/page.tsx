@@ -17,7 +17,7 @@ import { StatusSection } from "@/features/projectCheckIns/StatusSection";
 import { DescriptionSection } from "@/features/projectCheckIns/DescriptionSection";
 
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
-import { CommentSection, useComments } from "@/features/CommentSection";
+import { CommentSection, useForProjectCheckIn } from "@/features/CommentSection";
 
 import { useLoadedData, useRefresh } from "./loader";
 import { useMe } from "@/contexts/CurrentCompanyContext";
@@ -69,7 +69,7 @@ export function Page() {
 
 function Comments() {
   const { checkIn } = useLoadedData();
-  const commentsForm = useComments({ checkIn, parentType: "project_check_in" });
+  const commentsForm = useForProjectCheckIn(checkIn);
 
   assertPresent(checkIn.project?.permissions?.canCommentOnCheckIn, "permissions must be present in project checkIn");
 
