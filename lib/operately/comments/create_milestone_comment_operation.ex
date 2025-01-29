@@ -14,6 +14,13 @@ defmodule Operately.Comments.CreateMilestoneCommentOperation do
     |> record_activity(author, milestone, action)
     |> Repo.transaction()
     |> Repo.extract_result(:result)
+    |> case do
+      {:ok, comment} ->
+        OperatelyWeb.ApiSocket.broadcast!("api:discussion_comments:#{comment.milestone_id}")
+        {:ok, comment}
+
+      error -> error
+    end
   end
 
   defp insert_milestone_comment(multi, milestone, action) do

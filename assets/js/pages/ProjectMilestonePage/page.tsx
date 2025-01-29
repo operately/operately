@@ -4,7 +4,7 @@ import * as Paper from "@/components/PaperContainer";
 import * as Icons from "@tabler/icons-react";
 import * as Tasks from "@/models/tasks";
 
-import { useLoadedData } from "./loader";
+import { useLoadedData, useRefresh } from "./loader";
 import { useFormState } from "./useForm";
 
 import { ProjectMilestonesNavigation } from "@/components/ProjectPageNavigation";
@@ -21,12 +21,13 @@ import { assertPresent } from "@/utils/assertions";
 
 export function Page() {
   const { milestone } = useLoadedData();
+  const refresh = useRefresh();
 
   assertPresent(milestone.project, "project must be present in milestone");
   assertPresent(milestone.permissions?.canCommentOnMilestone, "permissions must be present in milestone");
 
   const form = useFormState(milestone.project, milestone);
-  const commentsForm = useForMilestone(milestone);
+  const commentsForm = useForMilestone(milestone, refresh);
 
   return (
     <Pages.Page title={[milestone.title!, milestone.project.name!]}>

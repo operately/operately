@@ -9,6 +9,7 @@ defmodule Operately.Updates.Comment do
     field :entity_id, Ecto.UUID
     field :entity_type, Ecto.Enum, values: [
       :project_check_in,
+      :project_milestone,
       :goal_update,
       :message,
       :update,
