@@ -36,11 +36,13 @@ defmodule Operately.CommentsTest do
     end
 
     test "list_milestone_comments/0 returns all milestone_comments", ctx do
-      assert Comments.list_milestone_comments() == [ctx.milestone_comment]
+      comments = Comments.list_milestone_comments() |> Enum.map(&(Repo.preload(&1, :comment)))
+      assert comments == [ctx.milestone_comment]
     end
 
     test "get_milestone_comment!/1 returns the milestone_comment with given id", ctx do
-      assert Comments.get_milestone_comment!(ctx.milestone_comment.id) == ctx.milestone_comment
+      comment = Comments.get_milestone_comment!(ctx.milestone_comment.id) |> Repo.preload(:comment)
+      assert comment == ctx.milestone_comment
     end
 
     test "update_milestone_comment/2 with valid data updates the milestone_comment", ctx do
@@ -53,7 +55,9 @@ defmodule Operately.CommentsTest do
       update_attrs = %{action: nil}
 
       assert {:error, %Ecto.Changeset{}} = Comments.update_milestone_comment(ctx.milestone_comment, update_attrs)
-      assert ctx.milestone_comment == Comments.get_milestone_comment!(ctx.milestone_comment.id)
+
+      comment = Comments.get_milestone_comment!(ctx.milestone_comment.id) |> Repo.preload(:comment)
+      assert ctx.milestone_comment == comment
     end
 
     test "delete_milestone_comment/1 deletes the milestone_comment", ctx do

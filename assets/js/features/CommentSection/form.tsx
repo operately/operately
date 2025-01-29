@@ -1,15 +1,8 @@
+import { CommentItem } from "@/models/comments";
 import * as People from "@/models/people";
 
-export type ItemType = "comment" | "acknowledgement" | "milestone-completed" | "milestone-reopened";
-
-export interface Item {
-  type: ItemType;
-  insertedAt: Date;
-  value: any;
-}
-
 export interface FormState {
-  items: Item[];
+  items: CommentItem[];
   postComment: (content: string) => void;
   editComment: (commentID: string, content: string) => void;
   submitting: boolean;

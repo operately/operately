@@ -3,6 +3,7 @@ import * as Time from "@/utils/time";
 
 type Comment = api.Comment;
 
+export type { CommentableResource } from "./CommentableResource";
 export type CommentParentType =
   | "project_check_in"
   | "comment_thread"
@@ -16,9 +17,20 @@ export type CommentParentType =
 
 export type { Comment };
 export { useCreateComment, useEditComment, useGetComments, getComments } from "@/api";
-export { useDiscussionCommentsChangeSignal } from "@/signals";
+export { useReloadCommentsSignal } from "@/signals";
 
-export function splitComments(comments: Comment[], timestamp: string): { before: Comment[]; after: Comment[] } {
+export type ItemType = "comment" | "acknowledgement" | "milestone-completed" | "milestone-reopened";
+
+export interface CommentItem {
+  type: ItemType;
+  insertedAt: Date;
+  value: any;
+}
+
+export function splitComments(
+  comments: CommentItem[],
+  timestamp: string,
+): { before: CommentItem[]; after: CommentItem[] } {
   const before = comments.filter((comment) => {
     return Time.parse(comment.insertedAt)! < Time.parse(timestamp)!;
   });

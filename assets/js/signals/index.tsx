@@ -7,7 +7,7 @@ export function init() {
 
 enum ApiSignal {
   AssignmentsCount = "api:assignments_count",
-  DiscussionCommentsChange = "api:discussion_comments",
+  ReloadComments = "api:reload_comments",
   UnreadNotificationCount = "api:unread_notifications_count",
   ProfileUpdated = "api:profile_updated",
 }
@@ -25,8 +25,8 @@ export function useAssignmentsCount(callback: () => void) {
   return Api.useSubscription(ApiSignal.AssignmentsCount, callback);
 }
 
-export function useDiscussionCommentsChangeSignal(callback: () => void, payload: { discussionId: string }) {
-  return Api.useSubscription(ApiSignal.DiscussionCommentsChange, callback, payload);
+export function useReloadCommentsSignal(callback: () => void, payload: { resourceId: string }) {
+  return Api.useSubscription(ApiSignal.ReloadComments, callback, payload);
 }
 
 export function useUnreadNotificationCount(callback: () => void) {

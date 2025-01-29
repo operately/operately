@@ -134,7 +134,6 @@ function LinkComments() {
       <div className="border-t border-stroke-base mt-8" />
       <CommentSection
         form={commentsForm}
-        refresh={() => {}}
         commentParentType="resource_hub_link"
         canComment={link.permissions.canCommentOnLink}
       />

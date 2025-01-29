@@ -7,7 +7,7 @@ import * as Reactions from "@/models/reactions";
 
 import { GoalSubpageNavigation } from "@/features/goals/GoalSubpageNavigation";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
-import { CommentSection, useForCommentThread } from "@/features/CommentSection";
+import { CommentSection, useComments } from "@/features/CommentSection";
 
 import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
@@ -95,14 +95,13 @@ function Comments({ goal }: { goal: Goals.Goal }) {
   assertPresent(activity.commentThread, "commentThread must be present in activity");
   assertPresent(activity.permissions?.canCommentOnThread, "permissions must be present in activity");
 
-  const commentsForm = useForCommentThread(activity.commentThread, { type: "goal", id: goal.id! });
+  const commentsForm = useComments({ thread: activity.commentThread, goal: goal, parentType: "comment_thread" });
 
   return (
     <>
       <div className="border-t border-stroke-base mt-8" />
       <CommentSection
         form={commentsForm}
-        refresh={() => {}}
         commentParentType="comment_thread"
         canComment={activity.permissions.canCommentOnThread}
       />
