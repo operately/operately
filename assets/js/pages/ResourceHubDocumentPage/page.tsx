@@ -102,7 +102,6 @@ function DocumentComments() {
       <div className="border-t border-stroke-base mt-8" />
       <CommentSection
         form={commentsForm}
-        refresh={() => {}}
         commentParentType="resource_hub_document"
         canComment={document.permissions.canCommentOnDocument}
       />

@@ -69,7 +69,6 @@ export function Page() {
 
 function Comments() {
   const { checkIn } = useLoadedData();
-  const refresh = useRefresh();
   const commentsForm = useForProjectCheckIn(checkIn);
 
   assertPresent(checkIn.project?.permissions?.canCommentOnCheckIn, "permissions must be present in project checkIn");
@@ -77,7 +76,6 @@ function Comments() {
   return (
     <CommentSection
       form={commentsForm}
-      refresh={refresh}
       commentParentType="project_check_in"
       canComment={checkIn.project.permissions.canCommentOnCheckIn}
     />

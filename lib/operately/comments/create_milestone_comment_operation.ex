@@ -13,16 +13,28 @@ defmodule Operately.Comments.CreateMilestoneCommentOperation do
     |> apply_comment_action(milestone, action)
     |> record_activity(author, milestone, action)
     |> Repo.transaction()
-    |> Repo.extract_result(:milestone_comment)
+    |> Repo.extract_result(:result)
+    |> case do
+      {:ok, comment} ->
+        OperatelyWeb.ApiSocket.broadcast!("api:reload_comments:#{comment.milestone_id}")
+        {:ok, comment}
+
+      error -> error
+    end
   end
 
   defp insert_milestone_comment(multi, milestone, action) do
-    Multi.insert(multi, :milestone_comment, fn changes ->
+    multi
+    |> Multi.insert(:milestone_comment, fn changes ->
       MilestoneComment.changeset(%{
         milestone_id: milestone.id,
         comment_id: changes[:comment].id,
         action: action
       })
+    end)
+    |> Multi.run(:result, fn _, changes ->
+      comment = Map.put(changes.milestone_comment, :comment, changes.comment)
+      {:ok, comment}
     end)
   end
 
