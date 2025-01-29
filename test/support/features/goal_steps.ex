@@ -7,8 +7,6 @@ defmodule Operately.Support.Features.GoalSteps do
   alias Operately.Support.Features.EmailSteps
   alias Operately.Support.Features.NotificationsSteps
 
-  import Operately.PeopleFixtures
-
   def setup(ctx) do
     ctx
     |> Factory.setup()
@@ -176,10 +174,13 @@ defmodule Operately.Support.Features.GoalSteps do
   end
 
   step :edit_goal, ctx do
+    ctx =
+      ctx
+      |> Factory.add_space_member(:new_champion, :product, name: "John New Champion")
+      |> Factory.add_space_member(:new_reviewer, :product, name: "Leonardo New Reviewer")
+
     values = %{
       name: "New Goal Name",
-      new_champion: person_fixture_with_account(%{company_id: ctx.company.id, full_name: "John New Champion"}),
-      new_reviewer: person_fixture_with_account(%{company_id: ctx.company.id, full_name: "Leonardo New Reviewer"}),
       new_targets: [%{name: "Sold 1000 units", current: 0, target: 1000, unit: "units"}]
     }
 
@@ -190,8 +191,8 @@ defmodule Operately.Support.Features.GoalSteps do
     |> UI.click(testid: "goal-options")
     |> UI.click(testid: "edit-goal-definition")
     |> UI.fill(testid: "goal-name", with: values.name)
-    |> UI.select_person_in(id: "champion-search", name: values.new_champion.full_name)
-    |> UI.select_person_in(id: "reviewer-search", name: values.new_reviewer.full_name)
+    |> UI.select_person_in(id: "champion-search", name: ctx.new_champion.full_name)
+    |> UI.select_person_in(id: "reviewer-search", name: ctx.new_reviewer.full_name)
     |> UI.click(testid: "add-target")
     |> then(fn ctx ->
       values.new_targets
@@ -212,8 +213,8 @@ defmodule Operately.Support.Features.GoalSteps do
     ctx
     |> UI.assert_page(Paths.goal_path(ctx.company, Operately.Goals.get_goal!(ctx.goal.id)))
     |> UI.assert_text(ctx.edit_values.name)
-    |> UI.assert_text(ctx.edit_values.new_champion.full_name)
-    |> UI.assert_text(ctx.edit_values.new_reviewer.full_name)
+    |> UI.assert_text(ctx.new_champion.full_name)
+    |> UI.assert_text(ctx.new_reviewer.full_name)
     |> then(fn ctx ->
       ctx.edit_values.new_targets
       |> Enum.reduce(ctx, fn target, ctx ->
@@ -228,13 +229,13 @@ defmodule Operately.Support.Features.GoalSteps do
     ctx
     |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.edit_values.name,
-      to: ctx.edit_values.new_reviewer,
+      to: ctx.new_reviewer,
       author: ctx.champion,
       action: "edited the goal"
     })
     |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.edit_values.name,
-      to: ctx.edit_values.new_champion,
+      to: ctx.new_champion,
       author: ctx.champion,
       action: "edited the goal"
     })
