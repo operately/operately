@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { useDiscussionCommentsChangeSignal } from "@/models/comments";
+import { useReloadCommentsSignal } from "@/models/comments";
 import * as Milestones from "@/models/milestones";
 import * as People from "@/models/people";
 
@@ -12,7 +12,7 @@ export function useForMilestone(milestone: Milestones.Milestone, refresh: () => 
   assertPresent(milestone.comments, "comments must be present in milestone");
 
   const [items, setItems] = useParseComments(milestone.comments);
-  useDiscussionCommentsChangeSignal(refresh, { discussionId: milestone.id! });
+  useReloadCommentsSignal(refresh, { resourceId: milestone.id! });
 
   const { postComment, loading: submittingPost } = useCreateComment({
     setComments: setItems,

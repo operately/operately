@@ -11,7 +11,7 @@ export function useComments(props: Comments.CommentableResource): FormState {
   const parent = findParent(props);
 
   const { items, setItems, loading, error, refetch } = useLoadAndReloadComments(parent.id!, props.parentType);
-  Comments.useDiscussionCommentsChangeSignal(refetch, { discussionId: parent.id! });
+  Comments.useReloadCommentsSignal(refetch, { resourceId: parent.id! });
 
   const { postComment, loading: creating } = useCreateComment({
     setComments: setItems,

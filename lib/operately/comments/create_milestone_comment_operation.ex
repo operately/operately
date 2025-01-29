@@ -16,7 +16,7 @@ defmodule Operately.Comments.CreateMilestoneCommentOperation do
     |> Repo.extract_result(:result)
     |> case do
       {:ok, comment} ->
-        OperatelyWeb.ApiSocket.broadcast!("api:discussion_comments:#{comment.milestone_id}")
+        OperatelyWeb.ApiSocket.broadcast!("api:reload_comments:#{comment.milestone_id}")
         {:ok, comment}
 
       error -> error

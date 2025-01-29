@@ -17,7 +17,7 @@ export type CommentParentType =
 
 export type { Comment };
 export { useCreateComment, useEditComment, useGetComments, getComments } from "@/api";
-export { useDiscussionCommentsChangeSignal } from "@/signals";
+export { useReloadCommentsSignal } from "@/signals";
 
 export type ItemType = "comment" | "acknowledgement" | "milestone-completed" | "milestone-reopened";
 
