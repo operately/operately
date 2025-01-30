@@ -33,7 +33,7 @@ export function Page() {
   useClearNotificationsOnLoad(update.notifications);
 
   return (
-    <Pages.Page title={["Goal Progress Update", update.goal!.name!]}>
+    <Pages.Page title={["Goal Progress Update", update.goal!.name!]} testId="goal-progress-update-page">
       <Paper.Root>
         <Navigation goal={update.goal!} />
 

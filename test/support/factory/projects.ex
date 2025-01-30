@@ -3,6 +3,7 @@ defmodule Operately.Support.Factory.Projects do
   alias Operately.Access
   alias Operately.Access.Binding
   alias Operately.Support.Factory.Utils
+  alias Operately.Support.RichText
 
   def add_project(ctx, testid, space_name, opts \\ []) do
     creator = Keyword.get(opts, :creator, :creator)
@@ -146,6 +147,36 @@ defmodule Operately.Support.Factory.Projects do
     binding = Operately.Access.get_binding(group_id: group.id, context_id: context.id)
 
     {:ok, _} = Operately.Access.update_binding(binding, %{access_level: Binding.from_atom(access_level)})
+
+    ctx
+  end
+
+  def set_project_next_check_in_date(ctx, project_name, date) do
+    project = Map.fetch!(ctx, project_name)
+
+    {:ok, project} = Operately.Projects.update_project(project, %{
+      next_check_in_scheduled_at: date
+    })
+
+    Map.put(ctx, project_name, project)
+  end
+
+  def close_project(ctx, project_name) do
+    project = Map.fetch!(ctx, project_name)
+
+    retrospective_content = %{
+      "whatWentWell" => RichText.rich_text("some content"),
+      "whatDidYouLearn" => RichText.rich_text("some content"),
+      "whatCouldHaveGoneBetter" => RichText.rich_text("some content"),
+    }
+
+    {:ok, _} = Operately.Operations.ProjectClosed.run(ctx.creator, project, %{
+        retrospective: retrospective_content,
+        content: %{},
+        send_to_everyone: true,
+        subscription_parent_type: :project_retrospective,
+        subscriber_ids: []
+    })
 
     ctx
   end

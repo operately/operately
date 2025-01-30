@@ -1,184 +1,171 @@
 defmodule Operately.Support.Features.ReviewSteps do
   use Operately.FeatureCase
 
-  import Ecto.Query, only: [from: 2]
-  import Operately.CompaniesFixtures
-  import Operately.PeopleFixtures
-  import Operately.ProjectsFixtures
-  import Operately.GoalsFixtures
-
-  alias OperatelyWeb.Paths
-  alias Operately.Goals.{Goal, Update}
-  alias Operately.Projects.{Project, CheckIn}
-
   step :setup, ctx do
-    company = company_fixture(%{name: "Test Org"})
-
-    person = person_fixture_with_account(%{full_name: "John Scott", company_id: company.id})
-    other_person = person_fixture_with_account(%{full_name: "Other Person", company_id: company.id})
-
-    ctx = Map.merge(ctx, %{company: company, person: person, other_person: other_person})
-    ctx = UI.login_as(ctx, ctx.person)
-
     ctx
+    |> Factory.setup()
+    |> Factory.add_company_member(:me, [name: "Michael Scott"])
+    |> Factory.add_company_member(:my_manager, [name: "David Wallace"])
+    |> Factory.add_company_member(:my_report, [name: "Dwight Schrute"])
+    |> Factory.add_space(:product_space)
+    |> Factory.log_in_person(:me)
   end
 
-  step :setup_projects, ctx, attrs do
-    create_project(ctx.person, ctx.other_person, ctx.company, DateTime.utc_now(), attrs.today)
-    create_project(ctx.person, ctx.other_person, ctx.company, past_date(), attrs.due)
-    create_project(ctx.person, ctx.other_person, ctx.company, upcoming_date())
-    create_project(ctx.person, ctx.other_person, ctx.company, past_date()) |> close_project()
-
+  step :assert_zero_state_message, ctx do
     ctx
-  end
-
-  step :setup_check_ins, ctx, name do
-    create_project(ctx.other_person, ctx.person, ctx.company, DateTime.utc_now(), name)
-    |> create_check_in()
-
-    create_project(ctx.other_person, ctx.person, ctx.company, past_date())
-    |> create_check_in()
-
-    ctx
-  end
-
-  step :setup_goals, ctx, attrs do
-    create_goal(ctx.person, ctx.other_person, ctx.company, DateTime.utc_now(), attrs.today)
-    create_goal(ctx.person, ctx.other_person, ctx.company, past_date(), attrs.due)
-    create_goal(ctx.person, ctx.other_person, ctx.company, upcoming_date())
-    create_goal(ctx.person, ctx.other_person, ctx.company, past_date()) |> close_goal()
-
-    ctx
-  end
-
-  step :setup_updates, ctx, name do
-    goal = create_goal(ctx.other_person, ctx.person, ctx.company, DateTime.utc_now(), name)
-    goal_update_fixture(ctx.other_person, goal)
-
-    goal = create_goal(ctx.other_person, ctx.person, ctx.company, past_date(), name)
-    goal_update_fixture(ctx.other_person, goal)
-
-    ctx
+    |> UI.assert_text("Review")
+    |> UI.assert_text("You're all caught up!")
   end
 
   step :visit_review_page, ctx do
-    ctx
-    |> UI.visit(Paths.home_path(ctx.company))
-    |> UI.click(testid: "review-link")
+    ctx |> UI.visit(Paths.review_path(ctx.company))
   end
 
-  step :check_in_project, ctx, name do
-    test_id = from(p in Project,
-        where: p.name == ^name,
-        select: p
-      )
-      |> Repo.all()
-      |> List.first()
-      |> Paths.project_id()
-
+  step :given_there_are_due_project_check_ins, ctx do
     ctx
-    |> UI.find(testid: test_id)
-    |> UI.assert_text("Write the weekly check-in:")
-    |> UI.assert_text(name)
+    |> Factory.add_project(:project, :product_space, [
+      champion: :me, 
+      reviewer: :my_manager, 
+      name: "Release Dunder Mifflin Infinity"
+    ])
+    |> Factory.set_project_next_check_in_date(:project, past_date())
+  end
 
+  step :assert_the_due_project_is_listed, ctx do
+    ctx 
+    |> UI.visit(Paths.review_path(ctx.company))
+    |> UI.assert_text("Write the weekly check-in: #{ctx.project.name}")
+  end
+
+  step :when_a_project_check_in_is_submitted, ctx do
     ctx
-    |> UI.click(testid: test_id)
+    |> UI.click(testid: Paths.project_id(ctx.project))
     |> UI.click(testid: "status-dropdown")
     |> UI.click(testid: "status-dropdown-on_track")
     |> UI.fill_rich_text("Going well")
     |> UI.click(testid: "submit")
-    |> UI.assert_text("Check-In from")
+    |> UI.assert_has(testid: "project-check-in-page")
   end
 
-  step :check_in_goal, ctx, name do
-    test_id = from(
-        g in Goal,
-        where: g.name == ^name,
-        select: g
-      )
-      |> Repo.all()
-      |> List.first()
-      |> Paths.goal_id()
+  step :assert_the_checked_in_project_is_no_longer_displayed, ctx do
+    ctx 
+    |> UI.visit(Paths.review_path(ctx.company))
+    |> UI.refute_text(ctx.project.name)
+    |> UI.assert_text("You're all caught up!")
+  end
 
-    ctx
-    |> UI.find(testid: test_id)
-    |> UI.assert_text("Update progress:")
-    |> UI.assert_text(name)
+  step :given_there_are_due_goal_updates, ctx do
+    ctx 
+    |> Factory.add_goal(:goal, :product_space, [
+      champion: :me, 
+      reviewer: :my_manager, 
+      name: "Expand the customer base"
+    ])
+    |> Factory.set_goal_next_update_date(:goal, past_date())
+  end
 
+  step :assert_the_due_goal_is_listed, ctx do
     ctx
-    |> UI.click(testid: test_id)
+    |> UI.visit(Paths.review_path(ctx.company))
+    |> UI.assert_text("Update progress: #{ctx.goal.name}")
+  end
+
+  step :when_a_goal_update_is_submitted, ctx do
+    ctx 
+    |> UI.click(testid: Paths.goal_id(ctx.goal))
     |> UI.click(testid: "status-dropdown")
     |> UI.click(testid: "status-dropdown-on_track")
     |> UI.fill_rich_text("Going well")
     |> UI.click(testid: "submit")
-    |> UI.assert_text("Progress Update from")
+    |> UI.assert_has(testid: "goal-progress-update-page")
   end
 
-  step :acknowledge_check_in, ctx, name do
-    test_id = from(c in CheckIn,
-        join: p in assoc(c, :project),
-        where: p.name == ^name,
-        select: c
-      )
-      |> Repo.all()
-      |> List.first()
-      |> Paths.project_check_in_id()
-
+  step :assert_the_updated_goal_is_no_longer_displayed, ctx do
     ctx
-    |> UI.find(testid: test_id)
-    |> UI.assert_text("Review:")
-    |> UI.assert_text(name)
-    |> UI.assert_text(ctx.other_person.full_name <> " submitted a weekly check-in")
+    |> UI.visit(Paths.review_path(ctx.company))
+    |> UI.refute_text(ctx.goal.name)
+    |> UI.assert_text("You're all caught up!")
+  end
 
+  step :given_there_are_submitted_project_check_ins, ctx do
     ctx
-    |> UI.click(testid: test_id)
+    |> Factory.add_project(:project, :product_space, [
+      champion: :my_report, 
+      reviewer: :me, 
+      name: "Release Dunder Mifflin Infinity"
+    ])
+    |> Factory.add_project_check_in(:check_in, :project, :my_report)
+  end
+
+  step :assert_the_submitted_project_is_listed, ctx do
+    ctx
+    |> UI.visit(Paths.review_path(ctx.company))
+    |> UI.assert_text("Review: #{ctx.project.name}")
+  end
+
+  step :when_a_project_check_in_is_acknowledged, ctx do
+    ctx
+    |> UI.click(testid: Paths.project_check_in_id(ctx.check_in))
     |> UI.click(testid: "acknowledge-check-in")
+    |> UI.assert_text("Acknowledged")
   end
 
-  step :acknowledge_goal_check_in, ctx, name do
-    test_id = from(u in Update,
-        join: g in assoc(u, :goal),
-        where: g.name == ^name,
-        limit: 1
-      )
-      |> Repo.one()
-      |> Paths.goal_update_id()
-
+  step :assert_the_acknowledged_project_is_no_longer_displayed, ctx do
     ctx
-    |> UI.find(testid: test_id)
-    |> UI.assert_text("Review:")
-    |> UI.assert_text(name)
-    |> UI.assert_text(ctx.other_person.full_name <> " submitted an update")
+    |> UI.visit(Paths.review_path(ctx.company))
+    |> UI.refute_text(ctx.project.name)
+    |> UI.assert_text("You're all caught up!")
+  end
 
+  step :given_there_are_submitted_goal_updates, ctx do
+    ctx 
+    |> Factory.add_goal(:goal, :product_space, [
+      champion: :my_report, 
+      reviewer: :me, 
+      name: "Expand the customer base"
+    ])
+    |> Factory.add_goal_update(:goal_update, :goal, :my_report)
+  end
+
+  step :assert_the_submitted_goal_is_listed, ctx do
+    ctx 
+    |> UI.visit(Paths.review_path(ctx.company))
+    |> UI.assert_text("Review: #{ctx.goal.name}")
+  end
+
+  step :when_a_goal_update_is_acknowledged, ctx do
     ctx
-    |> UI.click(testid: test_id)
+    |> UI.click(testid: Paths.goal_update_id(ctx.goal_update))
     |> UI.click(testid: "acknowledge-check-in")
+    |> UI.assert_text("Acknowledged")
   end
 
-  step :assert_my_work, ctx, count do
+  step :assert_the_acknowledged_goal_is_no_longer_displayed, ctx do
     ctx
-    |> UI.assert_text("My work (#{count})")
+    |> UI.visit(Paths.review_path(ctx.company))
+    |> UI.refute_text(ctx.goal.name)
+    |> UI.assert_text("You're all caught up!")
   end
 
-  step :assert_reviews, ctx, count do
+  step :assert_the_review_item_count, ctx, [is: count] do
     ctx
-    |> UI.assert_text("To review (#{count})")
-  end
-
-  step :assert_navbar_count, ctx, count do
-    ctx
+    |> UI.visit(Paths.review_path(ctx.company))
     |> UI.assert_text(Integer.to_string(count), testid: "review-link-count")
+  end
+
+  step :when_a_project_is_closed, ctx do
+    ctx |> Factory.close_project(:project)
+  end
+
+  step :assert_the_closed_project_is_no_longer_displayed, ctx do
+    ctx
+    |> UI.visit(Paths.review_path(ctx.company))
+    |> UI.refute_text(ctx.project.name)
   end
 
   #
   # Helpers
   #
-
-  defp upcoming_date do
-    Date.utc_today()
-    |> Date.add(3)
-    |> Operately.Time.as_datetime()
-  end
 
   defp past_date do
     Date.utc_today()
@@ -186,62 +173,4 @@ defmodule Operately.Support.Features.ReviewSteps do
     |> Operately.Time.as_datetime()
   end
 
-  defp create_project(person, reviewer, company, date, name \\ "some name") do
-    {:ok, project} =
-      project_fixture(%{
-        company_id: company.id,
-        creator_id: person.id,
-        reviewer_id: reviewer.id,
-        group_id: company.company_space_id,
-        name: name,
-      })
-      |> Project.changeset(%{next_check_in_scheduled_at: date})
-      |> Repo.update()
-
-    project
-  end
-
-  defp close_project(project) do
-    {:ok, project} =
-      Project.changeset(project, %{
-        status: "closed",
-        closed_at: DateTime.utc_now(),
-        closed_by_id: project.creator_id,
-      })
-      |> Repo.update()
-
-    project
-  end
-
-  defp create_goal(person, reviewer, company, date, name \\ "some name") do
-    {:ok, goal} =
-      goal_fixture(person, %{
-        space_id: company.company_space_id,
-        reviewer_id: reviewer.id,
-        name: name,
-      })
-      |> Goal.changeset(%{next_update_scheduled_at: date})
-      |> Repo.update()
-
-    goal
-  end
-
-  defp close_goal(goal) do
-    {:ok, goal} =
-      Goal.changeset(goal, %{
-        closed_at: DateTime.utc_now(),
-        closed_by_id: goal.creator_id,
-      })
-      |> Repo.update()
-
-    goal
-  end
-
-  defp create_check_in(project) do
-    project = Repo.preload(project, :champion)
-    check_in_fixture(%{
-      author_id: project.champion.id,
-      project_id: project.id,
-    })
-  end
 end
