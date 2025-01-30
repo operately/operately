@@ -9,7 +9,7 @@ defmodule Operately.Assignments.Assignment do
     :due,
     :type,
     :path,
-    :author_short_id,
+    :author_id,
     :author_name,
   ]
 
@@ -34,7 +34,7 @@ defmodule Operately.Assignments.Assignment do
       due: normalize_date(check_in.inserted_at),
       type: :check_in,
       path: Paths.project_check_in_path(company, check_in),
-      author_short_id: Paths.person_id(check_in.author),
+      author_id: Paths.person_id(check_in.author),
       author_name: check_in.author.full_name,
     }
   end
@@ -66,7 +66,7 @@ defmodule Operately.Assignments.Assignment do
       due: normalize_date(update.inserted_at),
       type: :goal_update,
       path: Paths.goal_check_in_path(company, update),
-      author_short_id: Paths.person_id(update.author),
+      author_id: Paths.person_id(update.author),
       author_name: update.author.full_name,
     }
   end
