@@ -112,7 +112,6 @@ function Comments() {
       <div className="border-t border-stroke-base mt-8" />
       <CommentSection
         form={commentsForm}
-        refresh={() => {}}
         commentParentType="project_retrospective"
         canComment={retrospective.permissions.canCommentOnRetrospective}
       />

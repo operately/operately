@@ -90,7 +90,6 @@ function GoalUpdateReactions() {
 }
 
 function Comments() {
-  const refresh = useRefresh();
   const { update } = useLoadedData();
   const commentsForm = useForGoalCheckIn(update);
 
@@ -101,7 +100,6 @@ function Comments() {
       <div className="border-t border-stroke-base mt-8" />
       <CommentSection
         form={commentsForm}
-        refresh={refresh}
         commentParentType="goal_update"
         canComment={update.goal.permissions.canCommentOnUpdate}
       />

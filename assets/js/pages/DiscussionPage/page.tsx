@@ -168,7 +168,6 @@ function DicusssionComments() {
       <div className="border-t border-stroke-base mt-8" />
       <CommentSection
         form={commentsForm}
-        refresh={() => {}}
         commentParentType="message"
         canComment={discussion.permissions.canCommentOnDiscussions}
       />

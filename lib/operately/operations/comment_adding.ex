@@ -21,7 +21,7 @@ defmodule Operately.Operations.CommentAdding do
     |> Repo.extract_result(:comment)
     |> case do
       {:ok, comment} ->
-        OperatelyWeb.ApiSocket.broadcast!("api:discussion_comments:#{comment.entity_id}")
+        OperatelyWeb.ApiSocket.broadcast!("api:reload_comments:#{comment.entity_id}")
         {:ok, comment}
 
       error -> error
