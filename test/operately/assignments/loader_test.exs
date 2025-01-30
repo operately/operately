@@ -30,6 +30,15 @@ defmodule Operately.Assignments.LoaderTest do
       refute Enum.find(assignments, &(&1.id == ctx.project1.id))
       refute Enum.find(assignments, &(&1.id == ctx.project2.id))
     end
+
+    test "doesn't return due projects to non-champions", ctx do
+      assignments = Loader.load(ctx.reviewer, ctx.company)
+
+      refute Enum.find(assignments, &(&1.id == ctx.due_project1.id))
+      refute Enum.find(assignments, &(&1.id == ctx.due_project2.id))
+      refute Enum.find(assignments, &(&1.id == ctx.project1.id))
+      refute Enum.find(assignments, &(&1.id == ctx.project2.id))
+    end
   end
 
   describe "project check-ins" do
@@ -49,6 +58,15 @@ defmodule Operately.Assignments.LoaderTest do
       assert Enum.find(assignments, &(&1.id == ctx.due_check_in1.id))
       assert Enum.find(assignments, &(&1.id == ctx.due_check_in2.id))
 
+      refute Enum.find(assignments, &(&1.id == ctx.check_in1.id))
+      refute Enum.find(assignments, &(&1.id == ctx.check_in2.id))
+    end
+
+    test "doesn't return due check-ins to non-reviewers", ctx do
+      assignments = Loader.load(ctx.champion, ctx.company)
+
+      refute Enum.find(assignments, &(&1.id == ctx.due_check_in1.id))
+      refute Enum.find(assignments, &(&1.id == ctx.due_check_in2.id))
       refute Enum.find(assignments, &(&1.id == ctx.check_in1.id))
       refute Enum.find(assignments, &(&1.id == ctx.check_in2.id))
     end
@@ -74,6 +92,15 @@ defmodule Operately.Assignments.LoaderTest do
       refute Enum.find(assignments, &(&1.id == ctx.milestone1.id))
       refute Enum.find(assignments, &(&1.id == ctx.milestone2.id))
     end
+
+    test "doesn't return due milestone to non-champions", ctx do
+      assignments = Loader.load(ctx.reviewer, ctx.company)
+
+      refute Enum.find(assignments, &(&1.id == ctx.due_milestone1.id))
+      refute Enum.find(assignments, &(&1.id == ctx.due_milestone2.id))
+      refute Enum.find(assignments, &(&1.id == ctx.milestone1.id))
+      refute Enum.find(assignments, &(&1.id == ctx.milestone2.id))
+    end
   end
 
   describe "goals" do
@@ -92,6 +119,15 @@ defmodule Operately.Assignments.LoaderTest do
       assert Enum.find(assignments, &(&1.id == ctx.due_goal1.id))
       assert Enum.find(assignments, &(&1.id == ctx.due_goal2.id))
 
+      refute Enum.find(assignments, &(&1.id == ctx.goal1.id))
+      refute Enum.find(assignments, &(&1.id == ctx.goal2.id))
+    end
+
+    test "doesn't return due goals to non-champions", ctx do
+      assignments = Loader.load(ctx.reviewer, ctx.company)
+
+      refute Enum.find(assignments, &(&1.id == ctx.due_goal1.id))
+      refute Enum.find(assignments, &(&1.id == ctx.due_goal2.id))
       refute Enum.find(assignments, &(&1.id == ctx.goal1.id))
       refute Enum.find(assignments, &(&1.id == ctx.goal2.id))
     end
@@ -114,6 +150,15 @@ defmodule Operately.Assignments.LoaderTest do
       assert Enum.find(assignments, &(&1.id == ctx.due_update1.id))
       assert Enum.find(assignments, &(&1.id == ctx.due_update2.id))
 
+      refute Enum.find(assignments, &(&1.id == ctx.update1.id))
+      refute Enum.find(assignments, &(&1.id == ctx.update2.id))
+    end
+
+    test "doesn't return due updates to non-reviewer", ctx do
+      assignments = Loader.load(ctx.champion, ctx.company)
+
+      refute Enum.find(assignments, &(&1.id == ctx.due_update1.id))
+      refute Enum.find(assignments, &(&1.id == ctx.due_update2.id))
       refute Enum.find(assignments, &(&1.id == ctx.update1.id))
       refute Enum.find(assignments, &(&1.id == ctx.update2.id))
     end
