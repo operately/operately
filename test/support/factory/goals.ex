@@ -36,6 +36,16 @@ defmodule Operately.Support.Factory.Goals do
     Map.put(ctx, testid, update)
   end
 
+  def set_goal_next_update_date(ctx, goal_name, date) do
+    goal = Map.fetch!(ctx, goal_name)
+
+    goal
+    |> Operately.Goals.Goal.changeset(%{next_update_scheduled_at: date})
+    |> Operately.Repo.update()
+
+    Map.put(ctx, goal_name, goal)
+  end
+
   defp current_year_start_date do
     {year, _, _} = Date.utc_today() |> Date.to_erl()
     Date.from_erl!({year, 1, 1})
@@ -45,4 +55,5 @@ defmodule Operately.Support.Factory.Goals do
     {year, _, _} = Date.utc_today() |> Date.to_erl()
     Date.from_erl!({year, 12, 31})
   end
+
 end
