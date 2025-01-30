@@ -10,6 +10,8 @@ defmodule Operately.Support.Features.UI do
     Map.merge(ctx, state)
   end
 
+  defdelegate debug(ctx, params), to: Operately.Support.Features.UI.Debug
+
   def login_based_on_tag(state) do
     field = state[:login_as]
     if !field, do: raise "No :login_as tag found on the test"

@@ -18,7 +18,6 @@ export function Page() {
       <Paper.Root size="large">
         <Paper.Body minHeight="600px">
           <Title />
-
           {noAssignments ? <ZeroAssignments /> : <AllAssignments />}
         </Paper.Body>
       </Paper.Root>
