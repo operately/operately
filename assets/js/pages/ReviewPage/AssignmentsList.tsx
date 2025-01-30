@@ -8,18 +8,9 @@ import { Paths } from "@/routes/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { parseDate, relativeDay } from "@/utils/time";
 
-export function AssignmentsHeader({ title, description }: { title: string; description: string }) {
-  return (
-    <>
-      <h2 className="text-xl font-semibold text-content-accent mb-1">{title}</h2>
-      <p className="text-content-dimmed text-sm mb-4">{description}</p>
-    </>
-  );
-}
-
 export function AssignmentsList({ assignments }: { assignments: ReviewAssignment[] }) {
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col mt-4">
       {assignments.map((assignment) => (
         <AssignmentItem assignment={assignment} key={assignment.id} />
       ))}
@@ -32,12 +23,10 @@ function AssignmentItem({ assignment }: { assignment: ReviewAssignment }) {
   const navigate = useNavigateTo(link);
 
   return (
-    <div
-      onClick={navigate}
-      className="flex gap-4 items-center pt-6 pb-6 border-b first:border-t hover:cursor-pointer group"
-    >
+    <div onClick={navigate} className="flex gap-4 items-center p-1.5 hover:cursor-pointer hover:bg-surface-highlight">
       <DueDate date={assignment.due!} />
-      <div className="flex gap-4 items-start">
+
+      <div className="flex gap-4 items-center">
         <AssignmentIcon type={assignment.type as AssignmentType} />
         <AssignmentInfo assignment={assignment} />
       </div>
@@ -50,17 +39,15 @@ function DueDate({ date }: { date: string }) {
   const isRed = !["Today", "Yesterday"].includes(daysAgo);
 
   return (
-    <div className="flex flex-col min-w-[110px]">
-      <b>
-        <FormattedTime time={date} format="short-date" />
-      </b>
-      <span className={`text-sm ${isRed ? "text-content-error" : "text-content-dimmed"}`}>{daysAgo}</span>
+    <div className="flex flex-col min-w-[110px] text-sm font-medium uppercase">
+      <FormattedTime time={date} format="short-date" />
+      <span className={`text-xs ${isRed ? "text-content-error" : "text-content-dimmed"}`}>{daysAgo}</span>
     </div>
   );
 }
 
 function AssignmentIcon({ type }: { type: AssignmentType }) {
-  const SIZE = 26;
+  const SIZE = 20;
   const GOAL_COLOR = "text-red-500 shrink-0";
   const PROJECT_COLOR = "text-indigo-500 shrink-0";
 
@@ -77,13 +64,11 @@ function AssignmentIcon({ type }: { type: AssignmentType }) {
 }
 
 function AssignmentInfo({ assignment }: { assignment: ReviewAssignment }) {
-  const { title, content } = parseInformation(assignment);
+  const { content } = parseInformation(assignment);
 
   return (
     <div data-test-id={assignment.id}>
-      <p className="mb-1 transition-colors duration-300 group-hover:text-link-base">
-        <b>{title}</b> {assignment.name}
-      </p>
+      <p className="font-bold">{assignment.name}</p>
       {content && (
         <p className="text-sm">
           {assignment.championName} {content}
