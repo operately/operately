@@ -71,7 +71,16 @@ function SendingEmailsBanner() {
 }
 
 function PageSection({ children }) {
-  return <section className="px-12 border-t border-stroke-base py-8">{children}</section>;
+  return (
+    <section
+      className="px-12 border-t border-stroke-base py-8"
+      style={{
+        minHeight: "300px",
+      }}
+    >
+      {children}
+    </section>
+  );
 }
 
 function SectionTitle({ title, description }) {
