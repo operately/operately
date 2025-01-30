@@ -227,8 +227,8 @@ function PersonOptionRemove({ person, onClick }: { person: People.Person; onClic
   if (me!.id === person.id) return null;
 
   return (
-    <MenuActionItem icon={Icons.IconTrash} onClick={onClick} danger testId={createTestId("remove-person", person.id!)}>
-      Remove
+    <MenuActionItem icon={Icons.IconUserX} onClick={onClick} danger testId={createTestId("remove-person", person.id!)}>
+      Deactivate Account
     </MenuActionItem>
   );
 }
@@ -243,12 +243,18 @@ function RemovePersonModal({ person, state }: { person: People.Person; state: Mo
   };
 
   return (
-    <Modal title="Remove Company Member" isOpen={state.isOpen} hideModal={state.hide}>
-      <div>Are you sure you want to remove {person.fullName} from the company?</div>
-      <div className="mt-8 flex justify-center">
+    <Modal title={`Remove ${People.firstName(person)} from the company?`} isOpen={state.isOpen} hideModal={state.hide}>
+      <div>
+        This will deactivate {People.firstName(person)}'s account, restricting access to company resources. You can
+        restore access later if needed.
+      </div>
+      <div className="mt-8 flex gap-2">
         <PrimaryButton onClick={handleRemoveMember} loading={loading} testId="confirm-remove-member" size="sm">
-          Remove Member
+          Deactivate
         </PrimaryButton>
+        <SecondaryButton onClick={state.hide} testId="cancel-remove-member" size="sm">
+          Cancel
+        </SecondaryButton>
       </div>
     </Modal>
   );

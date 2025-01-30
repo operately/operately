@@ -31,15 +31,12 @@ export function Page() {
   const { company, suspendedPeople } = Pages.useLoadedData() as LoaderResult;
 
   return (
-    <Pages.Page title={["Restore Suspended People", company.name!]} testId="restore-suspended-people-page">
+    <Pages.Page title={["Restore Deactivated Team Members", company.name!]} testId="restore-suspended-people-page">
       <Paper.Root size="medium">
         <Navigation />
 
         <Paper.Body>
-          <Paper.Header
-            title="Restore Suspended People"
-            subtitle="Restore access for suspended users to re-enable their company access."
-          />
+          <Paper.Header title="Restore Deactivated Team Members" />
 
           {suspendedPeople.length === 0 ? <NoSuspenedPeopleMessage /> : <SuspendedPeopleList />}
         </Paper.Body>
@@ -62,11 +59,10 @@ function NoSuspenedPeopleMessage() {
   return (
     <div className="max-w-xl mx-auto">
       <InfoCallout
-        message={`No suspended people`}
+        message={`No deactivated team members`}
         description={
           <p>
-            There are no suspended people in {company.name}. Suspended people are users who have been removed from the
-            company. If you want to suspend a user, go to the{" "}
+            There are no deactivated people in {company.name}. To remove access for departing team members, visit the{" "}
             <Link to={Paths.companyManagePeoplePath()}>Manage People</Link> page.
           </p>
         }
@@ -129,7 +125,7 @@ function RestoreButton({ person }: { person: People.Person }) {
 
   return (
     <SecondaryButton size="xs" testId={createTestId("restore", person.id!)} onClick={handler} loading={loading}>
-      Restore
+      Reactivate Account
     </SecondaryButton>
   );
 }

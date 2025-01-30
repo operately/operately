@@ -351,7 +351,7 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
   step :open_restore_people_page, ctx do
     ctx 
     |> UI.visit(Paths.company_admin_path(ctx.company))
-    |> UI.click(testid: "restore-suspended-people")
+    |> UI.click(testid: "restore-access-for-previously-deactivated-team-members")
     |> UI.assert_has(testid: "restore-suspended-people-page")
   end
 
@@ -389,7 +389,7 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
   end
 
   step :assert_no_suspended_people_message_is_displayed, ctx do
-    ctx |> UI.assert_text("No suspended people")
+    ctx |> UI.assert_text("No deactivated team members")
   end
 
 end
