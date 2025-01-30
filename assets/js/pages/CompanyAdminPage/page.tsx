@@ -80,16 +80,16 @@ function AdminsMenu() {
 
         <OptionsMenuItem
           disabled={!(amIAdmin || amIOwner)}
-          linkTo={renameCompanyPath}
-          icon={Icons.IconLetterCase}
-          title="Rename the company"
+          linkTo={restorePath}
+          icon={Icons.IconUser}
+          title="Restore access for previously deactivated team members"
         />
 
         <OptionsMenuItem
           disabled={!(amIAdmin || amIOwner)}
-          linkTo={restorePath}
-          icon={Icons.IconUser}
-          title="Restore suspended people"
+          linkTo={renameCompanyPath}
+          icon={Icons.IconLetterCase}
+          title="Rename the company"
         />
       </div>
     </div>
