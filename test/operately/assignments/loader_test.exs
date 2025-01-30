@@ -2,6 +2,7 @@ defmodule Operately.Assignments.LoaderTest do
   use Operately.DataCase
 
   alias Operately.Assignments.Loader
+  alias OperatelyWeb.Paths
 
   setup ctx do
     ctx
@@ -24,20 +25,20 @@ defmodule Operately.Assignments.LoaderTest do
     test "returns all due projects", ctx do
       assignments = Loader.load(ctx.champion, ctx.company)
 
-      assert Enum.find(assignments, &(&1.id == ctx.due_project1.id))
-      assert Enum.find(assignments, &(&1.id == ctx.due_project2.id))
+      assert Enum.find(assignments, &(&1.resource_id == Paths.project_id(ctx.due_project1)))
+      assert Enum.find(assignments, &(&1.resource_id == Paths.project_id(ctx.due_project2)))
 
-      refute Enum.find(assignments, &(&1.id == ctx.project1.id))
-      refute Enum.find(assignments, &(&1.id == ctx.project2.id))
+      refute Enum.find(assignments, &(&1.resource_id == Paths.project_id(ctx.project1)))
+      refute Enum.find(assignments, &(&1.resource_id == Paths.project_id(ctx.project2)))
     end
 
     test "doesn't return due projects to non-champions", ctx do
       assignments = Loader.load(ctx.reviewer, ctx.company)
 
-      refute Enum.find(assignments, &(&1.id == ctx.due_project1.id))
-      refute Enum.find(assignments, &(&1.id == ctx.due_project2.id))
-      refute Enum.find(assignments, &(&1.id == ctx.project1.id))
-      refute Enum.find(assignments, &(&1.id == ctx.project2.id))
+      refute Enum.find(assignments, &(&1.resource_id == Paths.project_id(ctx.due_project1)))
+      refute Enum.find(assignments, &(&1.resource_id == Paths.project_id(ctx.due_project2)))
+      refute Enum.find(assignments, &(&1.resource_id == Paths.project_id(ctx.project1)))
+      refute Enum.find(assignments, &(&1.resource_id == Paths.project_id(ctx.project2)))
     end
   end
 
@@ -55,20 +56,20 @@ defmodule Operately.Assignments.LoaderTest do
     test "returns all due check-ins", ctx do
       assignments = Loader.load(ctx.reviewer, ctx.company)
 
-      assert Enum.find(assignments, &(&1.id == ctx.due_check_in1.id))
-      assert Enum.find(assignments, &(&1.id == ctx.due_check_in2.id))
+      assert Enum.find(assignments, &(&1.resource_id == Paths.project_check_in_id(ctx.due_check_in1)))
+      assert Enum.find(assignments, &(&1.resource_id == Paths.project_check_in_id(ctx.due_check_in2)))
 
-      refute Enum.find(assignments, &(&1.id == ctx.check_in1.id))
-      refute Enum.find(assignments, &(&1.id == ctx.check_in2.id))
+      refute Enum.find(assignments, &(&1.resource_id == Paths.project_check_in_id(ctx.check_in1)))
+      refute Enum.find(assignments, &(&1.resource_id == Paths.project_check_in_id(ctx.check_in2)))
     end
 
     test "doesn't return due check-ins to non-reviewers", ctx do
       assignments = Loader.load(ctx.champion, ctx.company)
 
-      refute Enum.find(assignments, &(&1.id == ctx.due_check_in1.id))
-      refute Enum.find(assignments, &(&1.id == ctx.due_check_in2.id))
-      refute Enum.find(assignments, &(&1.id == ctx.check_in1.id))
-      refute Enum.find(assignments, &(&1.id == ctx.check_in2.id))
+      refute Enum.find(assignments, &(&1.resource_id == Paths.project_check_in_id(ctx.due_check_in1)))
+      refute Enum.find(assignments, &(&1.resource_id == Paths.project_check_in_id(ctx.due_check_in2)))
+      refute Enum.find(assignments, &(&1.resource_id == Paths.project_check_in_id(ctx.check_in1)))
+      refute Enum.find(assignments, &(&1.resource_id == Paths.project_check_in_id(ctx.check_in2)))
     end
   end
 
@@ -86,20 +87,20 @@ defmodule Operately.Assignments.LoaderTest do
     test "returns all due milestones", ctx do
       assignments = Loader.load(ctx.champion, ctx.company)
 
-      assert Enum.find(assignments, &(&1.id == ctx.due_milestone1.id))
-      assert Enum.find(assignments, &(&1.id == ctx.due_milestone2.id))
+      assert Enum.find(assignments, &(&1.resource_id == Paths.milestone_id(ctx.due_milestone1)))
+      assert Enum.find(assignments, &(&1.resource_id == Paths.milestone_id(ctx.due_milestone2)))
 
-      refute Enum.find(assignments, &(&1.id == ctx.milestone1.id))
-      refute Enum.find(assignments, &(&1.id == ctx.milestone2.id))
+      refute Enum.find(assignments, &(&1.resource_id == Paths.milestone_id(ctx.milestone1)))
+      refute Enum.find(assignments, &(&1.resource_id == Paths.milestone_id(ctx.milestone2)))
     end
 
     test "doesn't return due milestone to non-champions", ctx do
       assignments = Loader.load(ctx.reviewer, ctx.company)
 
-      refute Enum.find(assignments, &(&1.id == ctx.due_milestone1.id))
-      refute Enum.find(assignments, &(&1.id == ctx.due_milestone2.id))
-      refute Enum.find(assignments, &(&1.id == ctx.milestone1.id))
-      refute Enum.find(assignments, &(&1.id == ctx.milestone2.id))
+      refute Enum.find(assignments, &(&1.resource_id == Paths.milestone_id(ctx.due_milestone1)))
+      refute Enum.find(assignments, &(&1.resource_id == Paths.milestone_id(ctx.due_milestone2)))
+      refute Enum.find(assignments, &(&1.resource_id == Paths.milestone_id(ctx.milestone1)))
+      refute Enum.find(assignments, &(&1.resource_id == Paths.milestone_id(ctx.milestone2)))
     end
   end
 
@@ -116,20 +117,20 @@ defmodule Operately.Assignments.LoaderTest do
     test "returns all due goals", ctx do
       assignments = Loader.load(ctx.champion, ctx.company)
 
-      assert Enum.find(assignments, &(&1.id == ctx.due_goal1.id))
-      assert Enum.find(assignments, &(&1.id == ctx.due_goal2.id))
+      assert Enum.find(assignments, &(&1.resource_id == Paths.goal_id(ctx.due_goal1)))
+      assert Enum.find(assignments, &(&1.resource_id == Paths.goal_id(ctx.due_goal2)))
 
-      refute Enum.find(assignments, &(&1.id == ctx.goal1.id))
-      refute Enum.find(assignments, &(&1.id == ctx.goal2.id))
+      refute Enum.find(assignments, &(&1.resource_id == Paths.goal_id(ctx.goal1)))
+      refute Enum.find(assignments, &(&1.resource_id == Paths.goal_id(ctx.goal2)))
     end
 
     test "doesn't return due goals to non-champions", ctx do
       assignments = Loader.load(ctx.reviewer, ctx.company)
 
-      refute Enum.find(assignments, &(&1.id == ctx.due_goal1.id))
-      refute Enum.find(assignments, &(&1.id == ctx.due_goal2.id))
-      refute Enum.find(assignments, &(&1.id == ctx.goal1.id))
-      refute Enum.find(assignments, &(&1.id == ctx.goal2.id))
+      refute Enum.find(assignments, &(&1.resource_id == Paths.goal_id(ctx.due_goal1)))
+      refute Enum.find(assignments, &(&1.resource_id == Paths.goal_id(ctx.due_goal2)))
+      refute Enum.find(assignments, &(&1.resource_id == Paths.goal_id(ctx.goal1)))
+      refute Enum.find(assignments, &(&1.resource_id == Paths.goal_id(ctx.goal2)))
     end
   end
 
@@ -147,20 +148,20 @@ defmodule Operately.Assignments.LoaderTest do
     test "returns all due updates", ctx do
       assignments = Loader.load(ctx.reviewer, ctx.company)
 
-      assert Enum.find(assignments, &(&1.id == ctx.due_update1.id))
-      assert Enum.find(assignments, &(&1.id == ctx.due_update2.id))
+      assert Enum.find(assignments, &(&1.resource_id == Paths.goal_update_id(ctx.due_update1)))
+      assert Enum.find(assignments, &(&1.resource_id == Paths.goal_update_id(ctx.due_update2)))
 
-      refute Enum.find(assignments, &(&1.id == ctx.update1.id))
-      refute Enum.find(assignments, &(&1.id == ctx.update2.id))
+      refute Enum.find(assignments, &(&1.resource_id == Paths.goal_update_id(ctx.update1)))
+      refute Enum.find(assignments, &(&1.resource_id == Paths.goal_update_id(ctx.update2)))
     end
 
     test "doesn't return due updates to non-reviewer", ctx do
       assignments = Loader.load(ctx.champion, ctx.company)
 
-      refute Enum.find(assignments, &(&1.id == ctx.due_update1.id))
-      refute Enum.find(assignments, &(&1.id == ctx.due_update2.id))
-      refute Enum.find(assignments, &(&1.id == ctx.update1.id))
-      refute Enum.find(assignments, &(&1.id == ctx.update2.id))
+      refute Enum.find(assignments, &(&1.resource_id == Paths.goal_update_id(ctx.due_update1)))
+      refute Enum.find(assignments, &(&1.resource_id == Paths.goal_update_id(ctx.due_update2)))
+      refute Enum.find(assignments, &(&1.resource_id == Paths.goal_update_id(ctx.update1)))
+      refute Enum.find(assignments, &(&1.resource_id == Paths.goal_update_id(ctx.update2)))
     end
   end
 
