@@ -1,75 +1,127 @@
-import React, { useMemo } from "react";
+import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Signals from "@/signals";
+import * as Icons from "@tabler/icons-react";
 
 import { useLoadedData } from "./loader";
-import { AssignmentsHeader, AssignmentsList } from "./AssignmentsList";
+import { AssignmentsList } from "./AssignmentsList";
+import classNames from "classnames";
 
 export function Page() {
-  const { assignmentsCount } = useLoadedData();
-
   const onLoad = () => Signals.publish(Signals.LocalSignal.RefreshReviewCount);
-  const noAssignments = assignmentsCount === 0;
-  const title = noAssignments ? "Review" : `Review (${assignmentsCount})`;
+  const title = useHtmlTitle();
 
   return (
     <Pages.Page title={title} onLoad={onLoad}>
-      <Paper.Root size="large">
-        <Paper.Body minHeight="600px">
+      <Paper.Root size="medium">
+        <Paper.Body minHeight="600px" noPadding>
+          <SendingEmailsBanner />
           <Title />
 
-          {noAssignments ? <ZeroAssignments /> : <AllAssignments />}
+          <MyWork />
+          <ForReview />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
   );
 }
 
-function Title() {
-  return <div className="text-content-dimmed text-lg">Review</div>;
+function useHtmlTitle() {
+  const { assignmentsCount } = useLoadedData();
+
+  const noAssignments = assignmentsCount === 0;
+  return noAssignments ? "Review" : `Review (${assignmentsCount})`;
 }
 
-function ZeroAssignments() {
+function Title() {
   return (
-    <div className="text-center mt-12">
-      <span className="text-2xl">🎉</span>
-      <div className="mt-2 text-lg">You're all caught up!</div>
+    <div className="my-6">
+      <TitleIcon />
+
+      <h1 className="text-2xl font-extrabold text-center mt-2">Review</h1>
+      <div className="text-center">Stay on top of your responsibilities</div>
     </div>
   );
 }
 
-function AllAssignments() {
-  const { assignments } = useLoadedData();
+function TitleIcon() {
+  return (
+    <div className="flex items-center justify-center">
+      <Icons.IconCoffee size={24} className="text-content-dimmed" />
+    </div>
+  );
+}
 
-  const myWork = useMemo(() => assignments.filter((a) => a.type === "project" || a.type === "goal"), [assignments]);
-
-  const toReview = useMemo(
-    () => assignments.filter((a) => a.type === "check_in" || a.type === "goal_update"),
-    [assignments],
+function SendingEmailsBanner() {
+  const className = classNames(
+    "text-sm font-medium",
+    "bg-callout-success text-callout-success-message",
+    "px-2 py-1",
+    "rounded",
+    "border border-callout-success",
+    "absolute top-2 right-2",
   );
 
   return (
-    <div className="flex flex-col space-y-8 mt-6">
-      {myWork.length > 0 && (
-        <section>
-          <AssignmentsHeader
-            title={`My work (${myWork.length})`}
-            description="Due updates you are responsible for as a champion"
-          />
-          <AssignmentsList assignments={myWork} />
-        </section>
-      )}
+    <div className={className}>
+      Sending you an email every morning
+      <Icons.IconMailFast size={20} className="inline-block ml-2" />
+    </div>
+  );
+}
 
-      {toReview.length > 0 && (
-        <section>
-          <AssignmentsHeader
-            title={`To review (${toReview.length})`}
-            description="Updates from others needing your acknowledgment"
-          />
-          <AssignmentsList assignments={toReview} />
-        </section>
-      )}
+function PageSection({ children }) {
+  return <section className="px-12 border-t border-stroke-base py-8">{children}</section>;
+}
+
+function SectionTitle({ title, description }) {
+  return (
+    <div>
+      <div className="text-sm uppercase font-extrabold">{title}</div>
+      <div className="text-sm text-content-dimmed">{description}</div>
+    </div>
+  );
+}
+
+function MyWork() {
+  const { myWork } = useLoadedData();
+
+  return (
+    <PageSection>
+      <SectionTitle title="My work" description="Due updates you are responsible for as a champion" />
+
+      {myWork.length === 0 ? <MyWorkEmpty /> : <AssignmentsList assignments={myWork} />}
+    </PageSection>
+  );
+}
+
+function ForReview() {
+  const { forReview } = useLoadedData();
+
+  return (
+    <PageSection>
+      <SectionTitle title="For review" description="Updates from others needing your acknowledgment" />
+
+      {forReview.length === 0 ? <ForReviewEmpty /> : <AssignmentsList assignments={forReview} />}
+    </PageSection>
+  );
+}
+
+function MyWorkEmpty() {
+  return (
+    <div className="px-4 mt-4 flex items-center justify-center py-20 gap-2">
+      <Icons.IconSparkles size={20} className="text-yellow-500" />
+      All caught up!
+    </div>
+  );
+}
+
+function ForReviewEmpty() {
+  return (
+    <div className="px-4 mt-4 flex items-center justify-center py-28 gap-2">
+      <Icons.IconSparkles size={20} className="text-yellow-500" />
+      Nothing to review.
     </div>
   );
 }
