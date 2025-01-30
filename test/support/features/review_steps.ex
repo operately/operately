@@ -14,7 +14,8 @@ defmodule Operately.Support.Features.ReviewSteps do
   step :assert_zero_state_message, ctx do
     ctx
     |> UI.assert_text("Review")
-    |> UI.assert_text("You're all caught up!")
+    |> UI.assert_text("All caught up!")
+    |> UI.assert_text("Nothing to review")
   end
 
   step :visit_review_page, ctx do
@@ -39,7 +40,7 @@ defmodule Operately.Support.Features.ReviewSteps do
 
   step :when_a_project_check_in_is_submitted, ctx do
     ctx
-    |> UI.click(testid: Paths.project_id(ctx.project))
+    |> UI.click(testid: "assignment-" <> Paths.project_id(ctx.project))
     |> UI.click(testid: "status-dropdown")
     |> UI.click(testid: "status-dropdown-on_track")
     |> UI.fill_rich_text("Going well")
@@ -51,7 +52,7 @@ defmodule Operately.Support.Features.ReviewSteps do
     ctx 
     |> UI.visit(Paths.review_path(ctx.company))
     |> UI.refute_text(ctx.project.name)
-    |> UI.assert_text("You're all caught up!")
+    |> UI.assert_text("All caught up!")
   end
 
   step :given_there_are_due_goal_updates, ctx do
@@ -72,7 +73,7 @@ defmodule Operately.Support.Features.ReviewSteps do
 
   step :when_a_goal_update_is_submitted, ctx do
     ctx 
-    |> UI.click(testid: Paths.goal_id(ctx.goal))
+    |> UI.click(testid: "assignment-" <> Paths.goal_id(ctx.goal))
     |> UI.click(testid: "status-dropdown")
     |> UI.click(testid: "status-dropdown-on_track")
     |> UI.fill_rich_text("Going well")
@@ -84,7 +85,7 @@ defmodule Operately.Support.Features.ReviewSteps do
     ctx
     |> UI.visit(Paths.review_path(ctx.company))
     |> UI.refute_text(ctx.goal.name)
-    |> UI.assert_text("You're all caught up!")
+    |> UI.assert_text("Nothing to review")
   end
 
   step :given_there_are_submitted_project_check_ins, ctx do
@@ -105,7 +106,7 @@ defmodule Operately.Support.Features.ReviewSteps do
 
   step :when_a_project_check_in_is_acknowledged, ctx do
     ctx
-    |> UI.click(testid: Paths.project_check_in_id(ctx.check_in))
+    |> UI.click(testid: "assignment-" <> Paths.project_check_in_id(ctx.check_in))
     |> UI.click(testid: "acknowledge-check-in")
     |> UI.assert_text("Acknowledged")
   end
@@ -114,7 +115,7 @@ defmodule Operately.Support.Features.ReviewSteps do
     ctx
     |> UI.visit(Paths.review_path(ctx.company))
     |> UI.refute_text(ctx.project.name)
-    |> UI.assert_text("You're all caught up!")
+    |> UI.assert_text("Nothing to review")
   end
 
   step :given_there_are_submitted_goal_updates, ctx do
@@ -130,12 +131,12 @@ defmodule Operately.Support.Features.ReviewSteps do
   step :assert_the_submitted_goal_is_listed, ctx do
     ctx 
     |> UI.visit(Paths.review_path(ctx.company))
-    |> UI.assert_text("Review: #{ctx.goal.name}")
+    |> UI.assert_text(ctx.goal.name)
   end
 
   step :when_a_goal_update_is_acknowledged, ctx do
     ctx
-    |> UI.click(testid: Paths.goal_update_id(ctx.goal_update))
+    |> UI.click(testid: "assignment-" <> Paths.goal_update_id(ctx.goal_update))
     |> UI.click(testid: "acknowledge-check-in")
     |> UI.assert_text("Acknowledged")
   end
@@ -144,7 +145,7 @@ defmodule Operately.Support.Features.ReviewSteps do
     ctx
     |> UI.visit(Paths.review_path(ctx.company))
     |> UI.refute_text(ctx.goal.name)
-    |> UI.assert_text("You're all caught up!")
+    |> UI.assert_text("All caught up!")
   end
 
   step :assert_the_review_item_count, ctx, [is: count] do
