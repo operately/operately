@@ -50,7 +50,7 @@ defmodule Operately.Support.Features.UI.UserSession do
   end
 
   defp login_url(person) do
-    URI.encode("/accounts/auth/test_login?email=#{person.email}&full_name=#{person.full_name}")
+    "/accounts/auth/test_login?" <> URI.encode_query(%{ id: person.account_id })
   end
 
   defp default_login_attempts() do

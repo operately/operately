@@ -14,7 +14,7 @@ defmodule Operately.Support.Features.ReviewSteps do
   step :setup, ctx do
     company = company_fixture(%{name: "Test Org"})
 
-    person = person_fixture_with_account(%{full_name: "Main Person", company_id: company.id})
+    person = person_fixture_with_account(%{full_name: "John Scott", company_id: company.id})
     other_person = person_fixture_with_account(%{full_name: "Other Person", company_id: company.id})
 
     ctx = Map.merge(ctx, %{company: company, person: person, other_person: other_person})
