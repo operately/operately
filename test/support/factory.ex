@@ -36,6 +36,7 @@ defmodule Operately.Support.Factory do
   # goals
   defdelegate add_goal(ctx, testid, space_name, opts \\ []), to: Goals
   defdelegate add_goal_update(ctx, testid, goal_name, person_name) , to: Goals
+  defdelegate set_goal_next_update_date(ctx, goal_name, date), to: Goals
 
   # projects
   defdelegate add_project(ctx, testid, space_name, opts \\ []), to: Projects
@@ -46,6 +47,8 @@ defmodule Operately.Support.Factory do
   defdelegate add_project_milestone(ctx, testid, project_name, opts \\ []), to: Projects
   defdelegate edit_project_company_members_access(ctx, project_name, access_level), to: Projects
   defdelegate edit_project_space_members_access(ctx, project_name, access_level), to: Projects
+  defdelegate set_project_next_check_in_date(ctx, project_name, date), to: Projects
+  defdelegate close_project(ctx, project_name), to: Projects
 
   # messages
   defdelegate add_messages_board(ctx, testid, space_name, opts \\ []), to: Messages
