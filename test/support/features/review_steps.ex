@@ -25,15 +25,21 @@ defmodule Operately.Support.Features.ReviewSteps do
   step :given_there_are_due_project_check_ins, ctx do
     ctx
     |> Factory.add_project(:project, :product_space, [
-      champion: :me, 
-      reviewer: :my_manager, 
+      champion: :me,
+      reviewer: :my_manager,
       name: "Release Dunder Mifflin Infinity"
     ])
     |> Factory.set_project_next_check_in_date(:project, past_date())
   end
 
+  step :given_there_are_due_project_milestones, ctx do
+    ctx
+    |> Factory.add_project_milestone(:milestone, :project)
+    |> Factory.set_project_milestone_deadline(:milestone, past_date())
+  end
+
   step :assert_the_due_project_is_listed, ctx do
-    ctx 
+    ctx
     |> UI.visit(Paths.review_path(ctx.company))
     |> UI.assert_text("Write the weekly check-in: #{ctx.project.name}")
   end
@@ -49,17 +55,17 @@ defmodule Operately.Support.Features.ReviewSteps do
   end
 
   step :assert_the_checked_in_project_is_no_longer_displayed, ctx do
-    ctx 
+    ctx
     |> UI.visit(Paths.review_path(ctx.company))
     |> UI.refute_text(ctx.project.name)
     |> UI.assert_text("All caught up!")
   end
 
   step :given_there_are_due_goal_updates, ctx do
-    ctx 
+    ctx
     |> Factory.add_goal(:goal, :product_space, [
-      champion: :me, 
-      reviewer: :my_manager, 
+      champion: :me,
+      reviewer: :my_manager,
       name: "Expand the customer base"
     ])
     |> Factory.set_goal_next_update_date(:goal, past_date())
@@ -72,7 +78,7 @@ defmodule Operately.Support.Features.ReviewSteps do
   end
 
   step :when_a_goal_update_is_submitted, ctx do
-    ctx 
+    ctx
     |> UI.click(testid: "assignment-" <> Paths.goal_id(ctx.goal))
     |> UI.click(testid: "status-dropdown")
     |> UI.click(testid: "status-dropdown-on_track")
@@ -91,8 +97,8 @@ defmodule Operately.Support.Features.ReviewSteps do
   step :given_there_are_submitted_project_check_ins, ctx do
     ctx
     |> Factory.add_project(:project, :product_space, [
-      champion: :my_report, 
-      reviewer: :me, 
+      champion: :my_report,
+      reviewer: :me,
       name: "Release Dunder Mifflin Infinity"
     ])
     |> Factory.add_project_check_in(:check_in, :project, :my_report)
@@ -119,17 +125,17 @@ defmodule Operately.Support.Features.ReviewSteps do
   end
 
   step :given_there_are_submitted_goal_updates, ctx do
-    ctx 
+    ctx
     |> Factory.add_goal(:goal, :product_space, [
-      champion: :my_report, 
-      reviewer: :me, 
+      champion: :my_report,
+      reviewer: :me,
       name: "Expand the customer base"
     ])
     |> Factory.add_goal_update(:goal_update, :goal, :my_report)
   end
 
   step :assert_the_submitted_goal_is_listed, ctx do
-    ctx 
+    ctx
     |> UI.visit(Paths.review_path(ctx.company))
     |> UI.assert_text(ctx.goal.name)
   end
@@ -162,6 +168,13 @@ defmodule Operately.Support.Features.ReviewSteps do
     ctx
     |> UI.visit(Paths.review_path(ctx.company))
     |> UI.refute_text(ctx.project.name)
+  end
+
+  step :assert_loader_returns_milestone, ctx do
+    assignments = Operately.Assignments.Loader.load(ctx.me, ctx.company)
+    assert Enum.find(assignments, &(&1.resource_id == Paths.milestone_id(ctx.milestone)))
+
+    ctx
   end
 
   #

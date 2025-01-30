@@ -115,7 +115,7 @@ defmodule Operately.Support.Factory.Projects do
 
   def add_project_milestone(ctx, testid, project_name, opts \\ []) do
     project = Map.fetch!(ctx, project_name)
-    
+
     attrs = %{
       project_id: project.id,
       title: Keyword.get(opts, :title, "Milestone #{testid}"),
@@ -159,6 +159,16 @@ defmodule Operately.Support.Factory.Projects do
     })
 
     Map.put(ctx, project_name, project)
+  end
+
+  def set_project_milestone_deadline(ctx, milestone_name, date) do
+    milestone = Map.fetch!(ctx, milestone_name)
+
+    {:ok, milestone} = Operately.Projects.update_milestone(milestone, %{
+      deadline_at: date
+    })
+
+    Map.put(ctx, milestone_name, milestone)
   end
 
   def close_project(ctx, project_name) do
@@ -211,7 +221,7 @@ defmodule Operately.Support.Factory.Projects do
         deadline: Keyword.get(opts, :deadline)
       })
 
-      project 
+      project
     else
       project
     end

@@ -48,6 +48,7 @@ defmodule Operately.Support.Factory do
   defdelegate edit_project_company_members_access(ctx, project_name, access_level), to: Projects
   defdelegate edit_project_space_members_access(ctx, project_name, access_level), to: Projects
   defdelegate set_project_next_check_in_date(ctx, project_name, date), to: Projects
+  defdelegate set_project_milestone_deadline(ctx, milestone_name, date), to: Projects
   defdelegate close_project(ctx, project_name), to: Projects
 
   # messages
