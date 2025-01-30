@@ -5,7 +5,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Assignments.Assignment do
        name: assignment.name,
        due: assignment.due,
        type: Atom.to_string(assignment.type),
-       author_id: assignment.author_short_id,
+       author_id: assignment.author_id,
        author_name: assignment.author_name,
        path: assignment.path,
     }
