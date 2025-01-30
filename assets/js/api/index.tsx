@@ -1266,12 +1266,13 @@ export interface ResourceHubUploadedFile {
 }
 
 export interface ReviewAssignment {
-  id?: string | null;
+  resourceId?: string | null;
   name?: string | null;
   due?: string | null;
   type?: string | null;
-  championId?: string | null;
-  championName?: string | null;
+  authorId?: string | null;
+  authorName?: string | null;
+  path?: string | null;
 }
 
 export interface Space {
@@ -2302,14 +2303,14 @@ export interface CreateEmailActivationCodeInput {
 export interface CreateEmailActivationCodeResult {}
 
 export interface CreateGoalInput {
-  spaceId?: string | null;
+  spaceId?: Id | null;
   name?: string | null;
-  championId?: string | null;
-  reviewerId?: string | null;
+  championId?: Id | null;
+  reviewerId?: Id | null;
   timeframe?: Timeframe | null;
   targets?: CreateTargetInput[] | null;
   description?: string | null;
-  parentGoalId?: string | null;
+  parentGoalId?: Id | null;
   anonymousAccessLevel?: number | null;
   companyAccessLevel?: number | null;
   spaceAccessLevel?: number | null;
