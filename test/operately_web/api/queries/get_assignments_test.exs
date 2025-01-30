@@ -36,11 +36,11 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
 
       [p1, p2] = assignments
 
-      assert p1.id == Paths.project_id(today_project)
+      assert p1.resource_id == Paths.project_id(today_project)
       assert p1.name == "today"
       assert p1.due
       assert p1.type == "project"
-      assert p2.id == Paths.project_id(due_project)
+      assert p2.resource_id == Paths.project_id(due_project)
       assert p2.name == "3 days ago"
       assert p2.due
       assert p2.type == "project"
@@ -58,7 +58,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
 
       [p] = assignments
 
-      assert p.id == Paths.project_id(due_project)
+      assert p.resource_id == Paths.project_id(due_project)
       assert p.name == "single project"
       assert p.due
       assert p.type == "project"
@@ -81,11 +81,11 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
 
       [g1, g2] = assignments
 
-      assert g1.id == Paths.goal_id(today_goal)
+      assert g1.resource_id == Paths.goal_id(today_goal)
       assert g1.name == "today"
       assert g1.due
       assert g1.type == "goal"
-      assert g2.id == Paths.goal_id(due_goal)
+      assert g2.resource_id == Paths.goal_id(due_goal)
       assert g2.name == "3 days ago"
       assert g2.due
       assert g2.type == "goal"
@@ -103,7 +103,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
 
       [g] = assignments
 
-      assert g.id == Paths.goal_id(due_goal)
+      assert g.resource_id == Paths.goal_id(due_goal)
       assert g.name == "single goal"
       assert g.due
       assert g.type == "goal"
@@ -131,19 +131,19 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
 
       [c1, c2] = assignments
 
-      assert c1.id == Paths.project_check_in_id(check_in2)
+      assert c1.resource_id == Paths.project_check_in_id(check_in1)
       assert c1.name == "project"
       assert c1.due
       assert c1.type == "check_in"
-      assert c1.champion_id == another_person.id
-      assert c1.champion_name == "champion"
+      assert c1.author_id == Paths.person_id(another_person)
+      assert c1.author_name == "champion"
 
-      assert c2.id == Paths.project_check_in_id(check_in1)
+      assert c2.resource_id == Paths.project_check_in_id(check_in2)
       assert c2.name == "project"
       assert c2.due
       assert c2.type == "check_in"
-      assert c2.champion_id == another_person.id
-      assert c2.champion_name == "champion"
+      assert c2.author_id == Paths.person_id(another_person)
+      assert c2.author_name == "champion"
     end
 
     test "get_due_goal_updates", ctx do
@@ -167,19 +167,19 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
       assert Repo.aggregate(Update, :count, :id) == 4
       assert length(assignments) == 2
 
-      u1 = Enum.find(assignments, &(&1.id == Paths.goal_update_id(update1)))
+      u1 = Enum.find(assignments, &(&1.resource_id == Paths.goal_update_id(update1)))
       assert u1.name == "goal"
       assert u1.due
       assert u1.type == "goal_update"
-      assert u1.champion_id == another_person.id
-      assert u1.champion_name == "champion"
+      assert u1.author_id == Paths.person_id(another_person)
+      assert u1.author_name == "champion"
 
-      u2 = Enum.find(assignments, &(&1.id == Paths.goal_update_id(update2)))
+      u2 = Enum.find(assignments, &(&1.resource_id == Paths.goal_update_id(update2)))
       assert u2.name == "goal"
       assert u2.due
       assert u2.type == "goal_update"
-      assert u2.champion_id == another_person.id
-      assert u2.champion_name == "champion"
+      assert u2.author_id == Paths.person_id(another_person)
+      assert u2.author_name == "champion"
     end
 
     test "returns project check-in creator, not current champion", ctx do
@@ -193,8 +193,8 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
 
       # Before updating champion
       assert {200, %{assignments: [check_in]}} = query(ctx.conn, :get_assignments, %{})
-      assert check_in.champion_name == "first"
-      assert check_in.champion_id == champion1.id
+      assert check_in.author_name == "first"
+      assert check_in.author_id == Paths.person_id(champion1)
 
       # Update champion
       champion2 = person_fixture_with_account(%{full_name: "second", company_id: ctx.company.id})
@@ -203,8 +203,8 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
 
       # After updating champion
       assert {200, %{assignments: [check_in]}} = query(ctx.conn, :get_assignments, %{})
-      assert check_in.champion_name == "first"
-      assert check_in.champion_id == champion1.id
+      assert check_in.author_name == "first"
+      assert check_in.author_id == Paths.person_id(champion1)
     end
 
     test "returns goal update creator, not current champion", ctx do
@@ -218,8 +218,8 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
 
       # Before updating champion
       assert {200, %{assignments: [update]}} = query(ctx.conn, :get_assignments, %{})
-      assert update.champion_name == "first"
-      assert update.champion_id == champion1.id
+      assert update.author_name == "first"
+      assert update.author_id == Paths.person_id(champion1)
 
       # Update champion
       champion2 = person_fixture_with_account(%{full_name: "second", company_id: ctx.company.id})
@@ -227,8 +227,8 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
 
       # After updating champion
       assert {200, %{assignments: [update]}} = query(ctx.conn, :get_assignments, %{})
-      assert update.champion_name == "first"
-      assert update.champion_id == champion1.id
+      assert update.author_name == "first"
+      assert update.author_id == Paths.person_id(champion1)
     end
   end
 
