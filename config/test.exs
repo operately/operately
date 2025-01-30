@@ -20,10 +20,8 @@ config :operately, Operately.Repo,
   pool: Ecto.Adapters.SQL.Sandbox,
   pool_size: 10
 
-# We don't run a server during test. If one is required,
-# you can enable the server option below.
 config :operately, OperatelyWeb.Endpoint,
-  http: [ip: {127, 0, 0, 1}, port: 4002],
+  http: [ip: {0, 0, 0, 0}, port: 4002],
   https: false,
   secret_key_base: "NFTmJV4MLY6l2RZWQQYr5XdVpKZ2hIpKsTdJOuUiyc/iHf4rXH1iCdHcNKtWjdV3",
   server: true
