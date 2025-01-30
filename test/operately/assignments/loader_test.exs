@@ -22,7 +22,7 @@ defmodule Operately.Assignments.LoaderTest do
     end
 
     test "returns all due projects", ctx do
-      assignments = Loader.load(ctx.champion)
+      assignments = Loader.load(ctx.champion, ctx.company)
 
       assert Enum.find(assignments, &(&1.id == ctx.due_project1.id))
       assert Enum.find(assignments, &(&1.id == ctx.due_project2.id))
@@ -44,7 +44,7 @@ defmodule Operately.Assignments.LoaderTest do
     end
 
     test "returns all due check-ins", ctx do
-      assignments = Loader.load(ctx.reviewer)
+      assignments = Loader.load(ctx.reviewer, ctx.company)
 
       assert Enum.find(assignments, &(&1.id == ctx.due_check_in1.id))
       assert Enum.find(assignments, &(&1.id == ctx.due_check_in2.id))
@@ -66,7 +66,7 @@ defmodule Operately.Assignments.LoaderTest do
     end
 
     test "returns all due milestones", ctx do
-      assignments = Loader.load(ctx.champion)
+      assignments = Loader.load(ctx.champion, ctx.company)
 
       assert Enum.find(assignments, &(&1.id == ctx.due_milestone1.id))
       assert Enum.find(assignments, &(&1.id == ctx.due_milestone2.id))
@@ -87,7 +87,7 @@ defmodule Operately.Assignments.LoaderTest do
     end
 
     test "returns all due goals", ctx do
-      assignments = Loader.load(ctx.champion)
+      assignments = Loader.load(ctx.champion, ctx.company)
 
       assert Enum.find(assignments, &(&1.id == ctx.due_goal1.id))
       assert Enum.find(assignments, &(&1.id == ctx.due_goal2.id))
@@ -109,7 +109,7 @@ defmodule Operately.Assignments.LoaderTest do
     end
 
     test "returns all due updates", ctx do
-      assignments = Loader.load(ctx.reviewer)
+      assignments = Loader.load(ctx.reviewer, ctx.company)
 
       assert Enum.find(assignments, &(&1.id == ctx.due_update1.id))
       assert Enum.find(assignments, &(&1.id == ctx.due_update2.id))
