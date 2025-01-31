@@ -46,7 +46,7 @@ defmodule Operately.Assignments.Loader do
   defp load_projects(person_id, all_person_ids) do
     from(p in Project,
       join: champion in assoc(p, :champion),
-      join: reviewer in assoc(p, :reviewer),
+      left_join: reviewer in assoc(p, :reviewer),
       where: champion.id in ^all_person_ids or reviewer.id == ^person_id,
       where: p.next_check_in_scheduled_at <= ^DateTime.utc_now(),
       where: p.status == "active",
@@ -68,7 +68,7 @@ defmodule Operately.Assignments.Loader do
     from(c in CheckIn,
       join: project in assoc(c, :project),
       join: author in assoc(c, :author),
-      join: reviewer in assoc(project, :reviewer),
+      left_join: reviewer in assoc(project, :reviewer),
       where: reviewer.id in ^person_ids,
       where: is_nil(c.acknowledged_by_id),
       preload: [project: {project, reviewer: reviewer}, author: author]
