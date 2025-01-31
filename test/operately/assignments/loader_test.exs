@@ -114,9 +114,8 @@ defmodule Operately.Assignments.LoaderTest do
     setup :late_projects_setup
 
     test "only more than 3 days late", ctx do
-      [mine: mine, reports: reports] = Loader.load(ctx.reviewer, ctx.company)
+      [mine: [], reports: reports] = Loader.load(ctx.reviewer, ctx.company)
 
-      assert length(mine) == 0
       assert length(reports) == 2
 
       assert Enum.find(reports, &(&1.resource_id == Paths.project_id(ctx.three_days_late)))
@@ -128,9 +127,8 @@ defmodule Operately.Assignments.LoaderTest do
     setup :late_goals_setup
 
     test "only more than 3 days late", ctx do
-      [mine: mine, reports: reports] = Loader.load(ctx.reviewer, ctx.company)
+      [mine: [], reports: reports] = Loader.load(ctx.reviewer, ctx.company)
 
-      assert length(mine) == 0
       assert length(reports) == 2
 
       assert Enum.find(reports, &(&1.resource_id == Paths.goal_id(ctx.three_days_late)))
@@ -142,9 +140,8 @@ defmodule Operately.Assignments.LoaderTest do
     setup [:managers_setup, :late_projects_setup, :very_late_projects_setup]
 
     test "more than 5 days late", ctx do
-      [mine: mine, reports: reports] = Loader.load(ctx.manager, ctx.company)
+      [mine: [], reports: reports] = Loader.load(ctx.manager, ctx.company)
 
-      assert length(mine) == 0
       assert length(reports) == 4
 
       assert Enum.find(reports, &(&1.resource_id == Paths.project_id(ctx.seven_days_late)))
@@ -154,9 +151,8 @@ defmodule Operately.Assignments.LoaderTest do
     end
 
     test "more than 10 days late", ctx do
-      [mine: mine, reports: reports] = Loader.load(ctx.senior_manager, ctx.company)
+      [mine: [], reports: reports] = Loader.load(ctx.senior_manager, ctx.company)
 
-      assert length(mine) == 0
       assert length(reports) == 3
 
       assert Enum.find(reports, &(&1.resource_id == Paths.project_id(ctx.twelve_days_late)))
@@ -165,9 +161,8 @@ defmodule Operately.Assignments.LoaderTest do
     end
 
     test "more than 15 days late", ctx do
-      [mine: mine, reports: reports] = Loader.load(ctx.director, ctx.company)
+      [mine: [], reports: reports] = Loader.load(ctx.director, ctx.company)
 
-      assert length(mine) == 0
       assert length(reports) == 1
 
       assert Enum.find(reports, &(&1.resource_id == Paths.project_id(ctx.twenty_days_late)))
@@ -177,13 +172,48 @@ defmodule Operately.Assignments.LoaderTest do
     end
   end
 
+  describe "late project check-in acknowledgement notifies managers" do
+    setup [:managers_setup, :late_project_check_in_setup]
+
+    test "more than 5 days late", ctx do
+      [mine: [], reports: reports] = Loader.load(ctx.manager, ctx.company)
+
+      assert length(reports) == 4
+
+      assert Enum.find(reports, &(&1.resource_id == Paths.project_check_in_id(ctx.seven_days_late)))
+      assert Enum.find(reports, &(&1.resource_id == Paths.project_check_in_id(ctx.twelve_days_late)))
+      assert Enum.find(reports, &(&1.resource_id == Paths.project_check_in_id(ctx.fifteen_days_late)))
+      assert Enum.find(reports, &(&1.resource_id == Paths.project_check_in_id(ctx.twenty_days_late)))
+    end
+
+    test "more than 10 days late", ctx do
+      [mine: [], reports: reports] = Loader.load(ctx.senior_manager, ctx.company)
+
+      assert length(reports) == 3
+
+      assert Enum.find(reports, &(&1.resource_id == Paths.project_check_in_id(ctx.twelve_days_late)))
+      assert Enum.find(reports, &(&1.resource_id == Paths.project_check_in_id(ctx.fifteen_days_late)))
+      assert Enum.find(reports, &(&1.resource_id == Paths.project_check_in_id(ctx.twenty_days_late)))
+    end
+
+    test "more than 15 days late", ctx do
+      [mine: [], reports: reports] = Loader.load(ctx.director, ctx.company)
+
+      assert length(reports) == 1
+
+      assert Enum.find(reports, &(&1.resource_id == Paths.project_check_in_id(ctx.twenty_days_late)))
+
+      # Takes weekends into account
+      refute Enum.find(reports, &(&1.resource_id == Paths.project_check_in_id(ctx.fifteen_days_late)))
+    end
+  end
+
   describe "late goal notifies managers" do
     setup [:managers_setup, :late_goals_setup, :very_late_goals_setup]
 
     test "more than 5 days late", ctx do
-      [mine: mine, reports: reports] = Loader.load(ctx.manager, ctx.company)
+      [mine: [], reports: reports] = Loader.load(ctx.manager, ctx.company)
 
-      assert length(mine) == 0
       assert length(reports) == 4
 
       assert Enum.find(reports, &(&1.resource_id == Paths.goal_id(ctx.seven_days_late)))
@@ -193,9 +223,8 @@ defmodule Operately.Assignments.LoaderTest do
     end
 
     test "more than 10 days late", ctx do
-      [mine: mine, reports: reports] = Loader.load(ctx.senior_manager, ctx.company)
+      [mine: [], reports: reports] = Loader.load(ctx.senior_manager, ctx.company)
 
-      assert length(mine) == 0
       assert length(reports) == 3
 
       assert Enum.find(reports, &(&1.resource_id == Paths.goal_id(ctx.twelve_days_late)))
@@ -204,15 +233,50 @@ defmodule Operately.Assignments.LoaderTest do
     end
 
     test "more than 15 days late", ctx do
-      [mine: mine, reports: reports] = Loader.load(ctx.director, ctx.company)
+      [mine: [], reports: reports] = Loader.load(ctx.director, ctx.company)
 
-      assert length(mine) == 0
       assert length(reports) == 1
 
       assert Enum.find(reports, &(&1.resource_id == Paths.goal_id(ctx.twenty_days_late)))
 
       # Takes weekends into account
       refute Enum.find(reports, &(&1.resource_id == Paths.goal_id(ctx.fifteen_days_late)))
+    end
+  end
+
+  describe "late goal update acknowledgement notifies managers" do
+    setup [:managers_setup, :late_goal_update_setup]
+
+    test "more than 5 days late", ctx do
+      [mine: [], reports: reports] = Loader.load(ctx.manager, ctx.company)
+
+      assert length(reports) == 4
+
+      assert Enum.find(reports, &(&1.resource_id == Paths.goal_update_id(ctx.seven_days_late)))
+      assert Enum.find(reports, &(&1.resource_id == Paths.goal_update_id(ctx.twelve_days_late)))
+      assert Enum.find(reports, &(&1.resource_id == Paths.goal_update_id(ctx.fifteen_days_late)))
+      assert Enum.find(reports, &(&1.resource_id == Paths.goal_update_id(ctx.twenty_days_late)))
+    end
+
+    test "more than 10 days late", ctx do
+      [mine: [], reports: reports] = Loader.load(ctx.senior_manager, ctx.company)
+
+      assert length(reports) == 3
+
+      assert Enum.find(reports, &(&1.resource_id == Paths.goal_update_id(ctx.twelve_days_late)))
+      assert Enum.find(reports, &(&1.resource_id == Paths.goal_update_id(ctx.fifteen_days_late)))
+      assert Enum.find(reports, &(&1.resource_id == Paths.goal_update_id(ctx.twenty_days_late)))
+    end
+
+    test "more than 15 days late", ctx do
+      [mine: [], reports: reports] = Loader.load(ctx.director, ctx.company)
+
+      assert length(reports) == 1
+
+      assert Enum.find(reports, &(&1.resource_id == Paths.goal_update_id(ctx.twenty_days_late)))
+
+      # Takes weekends into account
+      refute Enum.find(reports, &(&1.resource_id == Paths.goal_update_id(ctx.fifteen_days_late)))
     end
   end
 
@@ -224,6 +288,7 @@ defmodule Operately.Assignments.LoaderTest do
     ctx
     |> Factory.add_space_member(:manager, :space)
     |> Factory.set_person_manager(:champion, :manager)
+    |> Factory.set_person_manager(:reviewer, :manager)
     |> Factory.add_space_member(:senior_manager, :space)
     |> Factory.set_person_manager(:manager, :senior_manager)
     |> Factory.add_space_member(:director, :space)
@@ -249,6 +314,26 @@ defmodule Operately.Assignments.LoaderTest do
     |> Factory.set_project_next_check_in_date(:twelve_days_late, past_date(12))
     |> Factory.set_project_next_check_in_date(:fifteen_days_late, past_date(15))
     |> Factory.set_project_next_check_in_date(:twenty_days_late, past_date(20))
+  end
+
+  defp late_project_check_in_setup(ctx) do
+    ctx
+    |> Factory.add_project(:project, :space, champion: :champion, reviewer: :reviewer)
+    |> create_late_check_in(:two_days_late, days_late: 2)
+    |> create_late_check_in(:seven_days_late, days_late: 7)
+    |> create_late_check_in(:twelve_days_late, days_late: 12)
+    |> create_late_check_in(:fifteen_days_late, days_late: 15)
+    |> create_late_check_in(:twenty_days_late, days_late: 20)
+  end
+
+  defp late_goal_update_setup(ctx) do
+    ctx
+    |> Factory.add_goal(:goal, :space, champion: :champion, reviewer: :reviewer)
+    |> create_late_update(:two_days_late, days_late: 2)
+    |> create_late_update(:seven_days_late, days_late: 7)
+    |> create_late_update(:twelve_days_late, days_late: 12)
+    |> create_late_update(:fifteen_days_late, days_late: 15)
+    |> create_late_update(:twenty_days_late, days_late: 20)
   end
 
   defp late_goals_setup(ctx) do
@@ -320,6 +405,30 @@ defmodule Operately.Assignments.LoaderTest do
         |> Repo.update()
       Map.put(ctx, key, update)
     end)
+  end
+
+  defp create_late_check_in(ctx, key, days_late: days_late) do
+    ctx = Factory.add_project_check_in(ctx, key, :project, :champion)
+    date = past_date(days_late)
+
+    {1, nil} =
+      from(c in Operately.Projects.CheckIn, where: c.id == ^ctx[key].id)
+      |> Repo.update_all(set: [inserted_at: date])
+
+    check_in = Repo.reload(ctx[key])
+    Map.put(ctx, key, check_in)
+  end
+
+  defp create_late_update(ctx, key, days_late: days_late) do
+    ctx = Factory.add_goal_update(ctx, key, :goal, :champion)
+    date = past_date(days_late)
+
+    {1, nil} =
+      from(u in Operately.Goals.Update, where: u.id == ^ctx[key].id)
+      |> Repo.update_all(set: [inserted_at: date])
+
+    update = Repo.reload(ctx[key])
+    Map.put(ctx, key, update)
   end
 
   defp past_date(num \\ 2) do
