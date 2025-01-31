@@ -35,7 +35,7 @@ defmodule Operately.Assignments.FilterLateAssignments do
     end
   end
 
-  defp business_days_between(from, to) do
+  def business_days_between(from, to) do
     if Date.before?(from, to) do
       count_business_days(from, to, 0)
     else
