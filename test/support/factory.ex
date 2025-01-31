@@ -26,6 +26,7 @@ defmodule Operately.Support.Factory do
   defdelegate add_company_member(ctx, testid, opts \\ []), to: Companies
   defdelegate add_company_admin(ctx, testid, opts \\ []), to: Companies
   defdelegate add_company_owner(ctx, testid, opts \\ []), to: Companies
+  defdelegate set_person_manager(ctx, testid, manager_key), to: Companies
   defdelegate suspend_company_member(ctx, testid, opts \\ []), to: Companies
   defdelegate enable_feature(ctx, feature_name), to: Companies
 

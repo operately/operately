@@ -13,8 +13,8 @@ defmodule OperatelyWeb.Api.Queries.GetAssignments do
     company = company(conn)
     me = me(conn)
 
-    assignments = Loader.load(me, company)
+    [mine: my_assignments, reports: _] = Loader.load(me, company)
 
-    {:ok, %{assignments: Serializer.serialize(assignments)}}
+    {:ok, %{assignments: Serializer.serialize(my_assignments)}}
   end
 end
