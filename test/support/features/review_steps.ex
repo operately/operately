@@ -32,12 +32,6 @@ defmodule Operately.Support.Features.ReviewSteps do
     |> Factory.set_project_next_check_in_date(:project, past_date())
   end
 
-  step :given_there_are_due_project_milestones, ctx do
-    ctx
-    |> Factory.add_project_milestone(:milestone, :project)
-    |> Factory.set_project_milestone_deadline(:milestone, past_date())
-  end
-
   step :assert_the_due_project_is_listed, ctx do
     ctx
     |> UI.visit(Paths.review_path(ctx.company))
@@ -168,13 +162,6 @@ defmodule Operately.Support.Features.ReviewSteps do
     ctx
     |> UI.visit(Paths.review_path(ctx.company))
     |> UI.refute_text(ctx.project.name)
-  end
-
-  step :assert_loader_returns_milestone, ctx do
-    assignments = Operately.Assignments.Loader.load(ctx.me, ctx.company)
-    assert Enum.find(assignments, &(&1.resource_id == Paths.milestone_id(ctx.milestone)))
-
-    ctx
   end
 
   #

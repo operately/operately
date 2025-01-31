@@ -62,11 +62,4 @@ defmodule Operately.Features.ReviewTest do
     |> Steps.assert_the_closed_project_is_no_longer_displayed()
   end
 
-  feature "milestone returned in the loader doesn't break the page", ctx do
-    ctx
-    |> Steps.given_there_are_due_project_check_ins()
-    |> Steps.given_there_are_due_project_milestones()
-    |> Steps.assert_loader_returns_milestone()
-    |> Steps.assert_the_due_project_is_listed()
-  end
 end

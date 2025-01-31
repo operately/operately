@@ -15,7 +15,6 @@ defmodule Operately.Assignments.Loader do
       Task.async(fn -> load_projects(person) end),
       Task.async(fn -> load_goals(person) end),
       Task.async(fn -> load_due_project_check_ins(person) end),
-      Task.async(fn -> load_due_milestones(person) end),
       Task.async(fn -> load_due_goal_updates(person) end),
     ]
     |> Task.await_many()
@@ -49,16 +48,6 @@ defmodule Operately.Assignments.Loader do
       where: contrib.person_id == ^person.id and contrib.role == :reviewer,
       where: is_nil(c.acknowledged_by_id),
       preload: [project: project, author: author]
-    )
-    |> Repo.all()
-  end
-
-  defp load_due_milestones(person) do
-    from(m in Operately.Projects.Milestone,
-      join: project in assoc(m, :project),
-      join: champion in assoc(project, :champion),
-      where: champion.id == ^person.id,
-      where: m.deadline_at <= ^DateTime.utc_now() and is_nil(m.completed_at)
     )
     |> Repo.all()
   end
