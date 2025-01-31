@@ -73,37 +73,6 @@ defmodule Operately.Assignments.LoaderTest do
     end
   end
 
-  describe "project milestones" do
-    setup ctx do
-      ctx
-      |> Factory.add_project(:project, :space, champion: :champion, reviewer: :reviewer)
-      |> Factory.add_project_milestone(:due_milestone1, :project)
-      |> Factory.add_project_milestone(:due_milestone2, :project)
-      |> Factory.add_project_milestone(:milestone1, :project)
-      |> Factory.add_project_milestone(:milestone2, :project)
-      |> complete_milestones()
-    end
-
-    test "returns all due milestones", ctx do
-      assignments = Loader.load(ctx.champion, ctx.company)
-
-      assert Enum.find(assignments, &(&1.resource_id == Paths.milestone_id(ctx.due_milestone1)))
-      assert Enum.find(assignments, &(&1.resource_id == Paths.milestone_id(ctx.due_milestone2)))
-
-      refute Enum.find(assignments, &(&1.resource_id == Paths.milestone_id(ctx.milestone1)))
-      refute Enum.find(assignments, &(&1.resource_id == Paths.milestone_id(ctx.milestone2)))
-    end
-
-    test "doesn't return due milestone to non-champions", ctx do
-      assignments = Loader.load(ctx.reviewer, ctx.company)
-
-      refute Enum.find(assignments, &(&1.resource_id == Paths.milestone_id(ctx.due_milestone1)))
-      refute Enum.find(assignments, &(&1.resource_id == Paths.milestone_id(ctx.due_milestone2)))
-      refute Enum.find(assignments, &(&1.resource_id == Paths.milestone_id(ctx.milestone1)))
-      refute Enum.find(assignments, &(&1.resource_id == Paths.milestone_id(ctx.milestone2)))
-    end
-  end
-
   describe "goals" do
     setup ctx do
       ctx
@@ -189,19 +158,6 @@ defmodule Operately.Assignments.LoaderTest do
         })
         |> Repo.update()
       Map.put(ctx, key, check_in)
-    end)
-  end
-
-  defp complete_milestones(ctx) do
-    Enum.reduce([:milestone1, :milestone2], ctx, fn key, ctx ->
-      {:ok, milestone} =
-        ctx[key]
-        |> Operately.Projects.Milestone.changeset(%{
-          status: :done,
-          completed_at: NaiveDateTime.utc_now(),
-        })
-        |> Repo.update()
-      Map.put(ctx, key, milestone)
     end)
   end
 

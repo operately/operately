@@ -39,16 +39,6 @@ defmodule Operately.Assignments.Assignment do
     }
   end
 
-  def build(milestone = %Projects.Milestone{}, company) do
-    %__MODULE__{
-      resource_id: Paths.milestone_id(milestone),
-      name: milestone.title,
-      due: normalize_date(milestone.deadline_at),
-      type: :milestone,
-      path: Paths.project_milestone_path(company, milestone),
-    }
-  end
-
   def build(goal = %Goals.Goal{}, company) do
     %__MODULE__{
       resource_id: Paths.goal_id(goal),
