@@ -4,25 +4,25 @@ import { IconTarget, IconHexagons } from "@tabler/icons-react";
 import { ReviewAssignment, AssignmentType } from "@/models/assignments";
 
 import FormattedTime from "@/components/FormattedTime";
-import { Paths } from "@/routes/paths";
 import { parseDate, relativeDay } from "@/utils/time";
 import { match } from "ts-pattern";
 import { DivLink } from "@/components/Link";
 import classNames from "classnames";
+import { assertPresent } from "@/utils/assertions";
 
 export function AssignmentsList({ assignments }: { assignments: ReviewAssignment[] }) {
   return (
     <div className="flex flex-col mt-4">
       {assignments.map((assignment) => (
-        <AssignmentItem assignment={assignment} key={assignment.id} />
+        <AssignmentItem assignment={assignment} key={assignment.resourceId} />
       ))}
     </div>
   );
 }
 
 function AssignmentItem({ assignment }: { assignment: ReviewAssignment }) {
-  const path = findPath(assignment);
-  const testId = `assignment-${assignment.id}`;
+  assertPresent(assignment.path, "path must be present in assingment");
+  const testId = `assignment-${assignment.resourceId}`;
 
   const className = classNames(
     "flex gap-4 items-center",
@@ -32,7 +32,7 @@ function AssignmentItem({ assignment }: { assignment: ReviewAssignment }) {
   );
 
   return (
-    <DivLink to={path} className={className} testId={testId}>
+    <DivLink to={assignment.path} className={className} testId={testId}>
       <DueDate date={assignment.due!} />
 
       <div className="flex gap-4 items-center">
@@ -92,7 +92,7 @@ function AcknowledgeProjectCheckIn({ assignment }: { assignment: ReviewAssignmen
         <span className="font-bold">Review:</span> {assignment.name}
       </div>
 
-      <p className="text-xs">{assignment.championName} submitted a weekly check-in</p>
+      <p className="text-xs">{assignment.authorName} submitted a weekly check-in</p>
     </div>
   );
 }
@@ -111,16 +111,7 @@ function AcknowledgeGoalUpdate({ assignment }: { assignment: ReviewAssignment })
       <div>
         <span className="font-bold">Review:</span> {assignment.name}
       </div>
-      <p className="text-xs">{assignment.championName} submitted an update</p>
+      <p className="text-xs">{assignment.authorName} submitted an update</p>
     </div>
   );
-}
-
-function findPath(assignment: ReviewAssignment) {
-  return match(assignment.type as AssignmentType)
-    .with("project", () => Paths.projectCheckInNewPath(assignment.id!))
-    .with("goal", () => Paths.goalProgressUpdateNewPath(assignment.id!))
-    .with("check_in", () => Paths.projectCheckInPath(assignment.id!))
-    .with("goal_update", () => Paths.goalProgressUpdatePath(assignment.id!))
-    .exhaustive();
 }

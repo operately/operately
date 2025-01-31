@@ -92,12 +92,13 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :review_assignment do
-    field :id, :string
+    field :resource_id, :string
     field :name, :string
     field :due, :date
     field :type, :string
-    field :champion_id, :string
-    field :champion_name, :string
+    field :author_id, :string
+    field :author_name, :string
+    field :path, :string
   end
 
   union :update_content, types: [
