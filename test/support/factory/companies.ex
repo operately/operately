@@ -42,7 +42,7 @@ defmodule Operately.Support.Factory.Companies do
     person = Operately.PeopleFixtures.person_fixture_with_account(attrs)
 
     set_access_level(ctx, person, Operately.Access.Binding.edit_access())
-    
+
     Map.put(ctx, testid, person)
   end
 
@@ -59,13 +59,22 @@ defmodule Operately.Support.Factory.Companies do
 
     group = Operately.Access.get_group(company_id: ctx.company.id, tag: :full_access)
     {:ok, _} = Operately.Access.add_to_group(group, person_id: person.id)
-    
+
     Map.put(ctx, testid, person)
   end
 
   defp set_access_level(ctx, person, access_level) do
     context = Operately.Access.get_context(company_id: ctx.company.id)
     Operately.Access.bind(context, person_id: person.id, level: access_level)
+  end
+
+  def set_person_manager(ctx, testid, manager_key) do
+    person = Map.fetch!(ctx, testid)
+    manager = Map.fetch!(ctx, manager_key)
+
+    {:ok, person} = Operately.People.update_person(person, %{manager_id: manager.id})
+
+    Map.put(ctx, testid, person)
   end
 
   def suspend_company_member(ctx, key, _opts \\ []) do
