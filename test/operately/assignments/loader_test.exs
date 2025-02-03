@@ -163,12 +163,10 @@ defmodule Operately.Assignments.LoaderTest do
     test "more than 15 days late", ctx do
       [mine: [], reports: reports] = Loader.load(ctx.director, ctx.company)
 
-      assert length(reports) == 1
+      assert length(reports) == 2
 
       assert Enum.find(reports, &(&1.resource_id == Paths.project_id(ctx.twenty_days_late)))
-
-      # Takes weekends into account
-      refute Enum.find(reports, &(&1.resource_id == Paths.project_id(ctx.fifteen_days_late)))
+      assert Enum.find(reports, &(&1.resource_id == Paths.project_id(ctx.fifteen_days_late)))
     end
   end
 
@@ -199,12 +197,10 @@ defmodule Operately.Assignments.LoaderTest do
     test "more than 15 days late", ctx do
       [mine: [], reports: reports] = Loader.load(ctx.director, ctx.company)
 
-      assert length(reports) == 1
+      assert length(reports) == 2
 
       assert Enum.find(reports, &(&1.resource_id == Paths.project_check_in_id(ctx.twenty_days_late)))
-
-      # Takes weekends into account
-      refute Enum.find(reports, &(&1.resource_id == Paths.project_check_in_id(ctx.fifteen_days_late)))
+      assert Enum.find(reports, &(&1.resource_id == Paths.project_check_in_id(ctx.fifteen_days_late)))
     end
   end
 
@@ -235,12 +231,10 @@ defmodule Operately.Assignments.LoaderTest do
     test "more than 15 days late", ctx do
       [mine: [], reports: reports] = Loader.load(ctx.director, ctx.company)
 
-      assert length(reports) == 1
+      assert length(reports) == 2
 
       assert Enum.find(reports, &(&1.resource_id == Paths.goal_id(ctx.twenty_days_late)))
-
-      # Takes weekends into account
-      refute Enum.find(reports, &(&1.resource_id == Paths.goal_id(ctx.fifteen_days_late)))
+      assert Enum.find(reports, &(&1.resource_id == Paths.goal_id(ctx.fifteen_days_late)))
     end
   end
 
@@ -271,12 +265,10 @@ defmodule Operately.Assignments.LoaderTest do
     test "more than 15 days late", ctx do
       [mine: [], reports: reports] = Loader.load(ctx.director, ctx.company)
 
-      assert length(reports) == 1
+      assert length(reports) == 2
 
       assert Enum.find(reports, &(&1.resource_id == Paths.goal_update_id(ctx.twenty_days_late)))
-
-      # Takes weekends into account
-      refute Enum.find(reports, &(&1.resource_id == Paths.goal_update_id(ctx.fifteen_days_late)))
+      assert Enum.find(reports, &(&1.resource_id == Paths.goal_update_id(ctx.fifteen_days_late)))
     end
   end
 
@@ -287,7 +279,6 @@ defmodule Operately.Assignments.LoaderTest do
   defp managers_setup(ctx) do
     ctx
     |> Factory.add_space_member(:manager, :space)
-    |> Factory.set_person_manager(:champion, :manager)
     |> Factory.set_person_manager(:reviewer, :manager)
     |> Factory.add_space_member(:senior_manager, :space)
     |> Factory.set_person_manager(:manager, :senior_manager)
@@ -433,7 +424,18 @@ defmodule Operately.Assignments.LoaderTest do
 
   defp past_date(num \\ 2) do
     Date.utc_today()
-    |> Date.add(num * -1)
+    |> subtract_days(num)
     |> Operately.Time.as_datetime()
+  end
+
+  def subtract_days(date, 0), do: date
+  def subtract_days(date, days) do
+    prev_date = Date.add(date, -1)
+
+    if Date.day_of_week(prev_date) in [6, 7] do
+      subtract_days(prev_date, days)
+    else
+      subtract_days(prev_date, days - 1)
+    end
   end
 end
