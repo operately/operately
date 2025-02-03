@@ -13,7 +13,7 @@ export function ConditionChanges({ update }: { update: GoalCheckIns.Update }) {
     <div className="flex flex-col gap-2">
       <div className="flex flex-col py-2">
         {targets.map((target) => (
-          <div key={target.id} className="flex justify-between items-center gap-2 py-1.5">
+          <div key={target.id} className="grid grid-cols-[auto,1fr,auto,60px] items-center gap-2 py-1.5">
             <div className="font-medium truncate">{target.name}</div>
             <div className="h-px bg-stroke-base flex-1" />
             <TargetChange target={target} />
