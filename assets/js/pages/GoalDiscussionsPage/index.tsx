@@ -3,7 +3,6 @@ import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as Goals from "@/models/goals";
 import * as Activities from "@/models/activities";
-import * as Icons from "@tabler/icons-react";
 
 import { Paths } from "@/routes/paths";
 import { Navigation } from "@/features/goals/GoalPageNavigation";
@@ -13,7 +12,6 @@ import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
 import FormattedTime from "@/components/FormattedTime";
 import Avatar from "@/components/Avatar";
 
-import plurarize from "@/utils/plurarize";
 import { DivLink } from "@/components/Link";
 
 import ActivityHandler from "@/features/activities";
@@ -116,15 +114,6 @@ function ActivityItem({ activity }: { activity: Activities.Activity }) {
               <SecondaryButton size="xxs" linkTo={path}>
                 Discuss
               </SecondaryButton>
-
-              {ActivityHandler.hasComments(activity) && (
-                <div className="flex items-center gap-1 text-sm leading-none text-content-dimmed">
-                  <Icons.IconMessage size={14} />{" "}
-                  <DivLink to={path} className="hover:underline cursor-pointer">
-                    {plurarize(ActivityHandler.commentCount(activity), "comment", "comments")}
-                  </DivLink>
-                </div>
-              )}
             </div>
           </div>
         </div>

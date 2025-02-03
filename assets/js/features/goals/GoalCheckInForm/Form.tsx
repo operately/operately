@@ -80,7 +80,7 @@ function TargetInputs() {
         {targets.map((target, index) => {
           return (
             <div
-              className="flex items-center justify-between bg-surface-dimmed border border-stroke-base p-3 rounded"
+              className="grid grid-cols-[1fr,auto] items-center bg-surface-dimmed border border-stroke-base p-3 rounded"
               key={index}
             >
               <div className="flex flex-col">
