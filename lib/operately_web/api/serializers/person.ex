@@ -15,7 +15,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.People.Person do
       full_name: data.full_name,
       avatar_url: data.avatar_url,
       title: data.title,
-      has_open_invitation: data.has_open_invitation,
+      has_open_invitation: data[:has_open_invitation],
     }
     |> then(fn map ->
       case data.access_level do
@@ -37,7 +37,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.People.Person do
       manager: OperatelyWeb.Api.Serializer.serialize(data.manager),
       reports: OperatelyWeb.Api.Serializer.serialize(data.reports),
       peers: OperatelyWeb.Api.Serializer.serialize(data.peers),
-      has_open_invitation: data.has_open_invitation,
+      has_open_invitation: data[:has_open_invitation],
       invitation: data.invitation && OperatelyWeb.Api.Serializer.serialize(data.invitation),
     }
   end

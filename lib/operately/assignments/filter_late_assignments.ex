@@ -61,8 +61,8 @@ defmodule Operately.Assignments.FilterLateAssignments do
   end
 
   defp find_manager_depth(resource, reports) do
-    Enum.find_value(reports, fn %{person_id: person_id, depth: depth} ->
-      if is_resposible_for_resource?(resource, person_id), do: depth
+    Enum.find_value(reports, fn {%{id: id}, depth} ->
+      if is_resposible_for_resource?(resource, id), do: depth
     end)
   end
 
