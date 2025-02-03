@@ -15,30 +15,24 @@ defmodule Operately.Assignments.LoaderTest do
   describe "projects" do
     setup ctx do
       ctx
-      |> Factory.add_project(:due_project1, :space, champion: :champion, reviewer: :reviewer)
-      |> Factory.add_project(:due_project2, :space, champion: :champion, reviewer: :reviewer)
+      |> Factory.add_project(:late_project1, :space, champion: :champion, reviewer: :reviewer)
+      |> Factory.add_project(:late_project2, :space, champion: :champion, reviewer: :reviewer)
       |> Factory.add_project(:project1, :space, champion: :champion, reviewer: :reviewer)
       |> Factory.add_project(:project2, :space, champion: :champion, reviewer: :reviewer)
-      |> set_due_projects()
+      |> set_late_projects()
     end
 
-    test "returns all due projects", ctx do
-      assignments = Loader.load(ctx.champion, ctx.company)
+    test "returns all late projects", ctx do
+      [mine: mine, reports: []] = Loader.load(ctx.champion, ctx.company)
 
-      assert Enum.find(assignments, &(&1.resource_id == Paths.project_id(ctx.due_project1)))
-      assert Enum.find(assignments, &(&1.resource_id == Paths.project_id(ctx.due_project2)))
+      assert length(mine) == 2
 
-      refute Enum.find(assignments, &(&1.resource_id == Paths.project_id(ctx.project1)))
-      refute Enum.find(assignments, &(&1.resource_id == Paths.project_id(ctx.project2)))
+      assert Enum.find(mine, &(&1.resource_id == Paths.project_id(ctx.late_project1)))
+      assert Enum.find(mine, &(&1.resource_id == Paths.project_id(ctx.late_project2)))
     end
 
-    test "doesn't return due projects to non-champions", ctx do
-      assignments = Loader.load(ctx.reviewer, ctx.company)
-
-      refute Enum.find(assignments, &(&1.resource_id == Paths.project_id(ctx.due_project1)))
-      refute Enum.find(assignments, &(&1.resource_id == Paths.project_id(ctx.due_project2)))
-      refute Enum.find(assignments, &(&1.resource_id == Paths.project_id(ctx.project1)))
-      refute Enum.find(assignments, &(&1.resource_id == Paths.project_id(ctx.project2)))
+    test "doesn't return late projects to non-champions", ctx do
+      [mine: [], reports: []] = Loader.load(ctx.reviewer, ctx.company)
     end
   end
 
@@ -46,60 +40,48 @@ defmodule Operately.Assignments.LoaderTest do
     setup ctx do
       ctx
       |> Factory.add_project(:project, :space, champion: :champion, reviewer: :reviewer)
-      |> Factory.add_project_check_in(:due_check_in1, :project, :champion)
-      |> Factory.add_project_check_in(:due_check_in2, :project, :champion)
+      |> Factory.add_project_check_in(:late_check_in1, :project, :champion)
+      |> Factory.add_project_check_in(:late_check_in2, :project, :champion)
       |> Factory.add_project_check_in(:check_in1, :project, :champion)
       |> Factory.add_project_check_in(:check_in2, :project, :champion)
       |> acknowledge_check_ins()
     end
 
-    test "returns all due check-ins", ctx do
-      assignments = Loader.load(ctx.reviewer, ctx.company)
+    test "returns all late check-ins", ctx do
+      [mine: mine, reports: []] = Loader.load(ctx.reviewer, ctx.company)
 
-      assert Enum.find(assignments, &(&1.resource_id == Paths.project_check_in_id(ctx.due_check_in1)))
-      assert Enum.find(assignments, &(&1.resource_id == Paths.project_check_in_id(ctx.due_check_in2)))
+      assert length(mine) == 2
 
-      refute Enum.find(assignments, &(&1.resource_id == Paths.project_check_in_id(ctx.check_in1)))
-      refute Enum.find(assignments, &(&1.resource_id == Paths.project_check_in_id(ctx.check_in2)))
+      assert Enum.find(mine, &(&1.resource_id == Paths.project_check_in_id(ctx.late_check_in1)))
+      assert Enum.find(mine, &(&1.resource_id == Paths.project_check_in_id(ctx.late_check_in2)))
     end
 
-    test "doesn't return due check-ins to non-reviewers", ctx do
-      assignments = Loader.load(ctx.champion, ctx.company)
-
-      refute Enum.find(assignments, &(&1.resource_id == Paths.project_check_in_id(ctx.due_check_in1)))
-      refute Enum.find(assignments, &(&1.resource_id == Paths.project_check_in_id(ctx.due_check_in2)))
-      refute Enum.find(assignments, &(&1.resource_id == Paths.project_check_in_id(ctx.check_in1)))
-      refute Enum.find(assignments, &(&1.resource_id == Paths.project_check_in_id(ctx.check_in2)))
+    test "doesn't return late check-ins to non-reviewers", ctx do
+      [mine: [], reports: []] = Loader.load(ctx.champion, ctx.company)
     end
   end
 
   describe "goals" do
     setup ctx do
       ctx
-      |> Factory.add_goal(:due_goal1, :space, champion: :champion, reviewer: :reviewer)
-      |> Factory.add_goal(:due_goal2, :space, champion: :champion, reviewer: :reviewer)
+      |> Factory.add_goal(:late_goal1, :space, champion: :champion, reviewer: :reviewer)
+      |> Factory.add_goal(:late_goal2, :space, champion: :champion, reviewer: :reviewer)
       |> Factory.add_goal(:goal1, :space, champion: :champion, reviewer: :reviewer)
       |> Factory.add_goal(:goal2, :space, champion: :champion, reviewer: :reviewer)
-      |> set_due_goals()
+      |> set_late_goals()
     end
 
-    test "returns all due goals", ctx do
-      assignments = Loader.load(ctx.champion, ctx.company)
+    test "returns all late goals", ctx do
+      [mine: mine, reports: []] = Loader.load(ctx.champion, ctx.company)
 
-      assert Enum.find(assignments, &(&1.resource_id == Paths.goal_id(ctx.due_goal1)))
-      assert Enum.find(assignments, &(&1.resource_id == Paths.goal_id(ctx.due_goal2)))
+      assert length(mine) == 2
 
-      refute Enum.find(assignments, &(&1.resource_id == Paths.goal_id(ctx.goal1)))
-      refute Enum.find(assignments, &(&1.resource_id == Paths.goal_id(ctx.goal2)))
+      assert Enum.find(mine, &(&1.resource_id == Paths.goal_id(ctx.late_goal1)))
+      assert Enum.find(mine, &(&1.resource_id == Paths.goal_id(ctx.late_goal2)))
     end
 
-    test "doesn't return due goals to non-champions", ctx do
-      assignments = Loader.load(ctx.reviewer, ctx.company)
-
-      refute Enum.find(assignments, &(&1.resource_id == Paths.goal_id(ctx.due_goal1)))
-      refute Enum.find(assignments, &(&1.resource_id == Paths.goal_id(ctx.due_goal2)))
-      refute Enum.find(assignments, &(&1.resource_id == Paths.goal_id(ctx.goal1)))
-      refute Enum.find(assignments, &(&1.resource_id == Paths.goal_id(ctx.goal2)))
+    test "doesn't return late goals to non-champions", ctx do
+      [mine: [], reports: []] = Loader.load(ctx.reviewer, ctx.company)
     end
   end
 
@@ -107,44 +89,276 @@ defmodule Operately.Assignments.LoaderTest do
     setup ctx do
       ctx
       |> Factory.add_goal(:goal, :space, champion: :champion, reviewer: :reviewer)
-      |> Factory.add_goal_update(:due_update1, :goal, :champion)
-      |> Factory.add_goal_update(:due_update2, :goal, :champion)
+      |> Factory.add_goal_update(:late_update1, :goal, :champion)
+      |> Factory.add_goal_update(:late_update2, :goal, :champion)
       |> Factory.add_goal_update(:update1, :goal, :champion)
       |> Factory.add_goal_update(:update2, :goal, :champion)
       |> acknowledge_updates()
     end
 
-    test "returns all due updates", ctx do
-      assignments = Loader.load(ctx.reviewer, ctx.company)
+    test "returns all late updates", ctx do
+      [mine: mine, reports: []] = Loader.load(ctx.reviewer, ctx.company)
 
-      assert Enum.find(assignments, &(&1.resource_id == Paths.goal_update_id(ctx.due_update1)))
-      assert Enum.find(assignments, &(&1.resource_id == Paths.goal_update_id(ctx.due_update2)))
+      assert length(mine) == 2
 
-      refute Enum.find(assignments, &(&1.resource_id == Paths.goal_update_id(ctx.update1)))
-      refute Enum.find(assignments, &(&1.resource_id == Paths.goal_update_id(ctx.update2)))
+      assert Enum.find(mine, &(&1.resource_id == Paths.goal_update_id(ctx.late_update1)))
+      assert Enum.find(mine, &(&1.resource_id == Paths.goal_update_id(ctx.late_update2)))
     end
 
-    test "doesn't return due updates to non-reviewer", ctx do
-      assignments = Loader.load(ctx.champion, ctx.company)
-
-      refute Enum.find(assignments, &(&1.resource_id == Paths.goal_update_id(ctx.due_update1)))
-      refute Enum.find(assignments, &(&1.resource_id == Paths.goal_update_id(ctx.due_update2)))
-      refute Enum.find(assignments, &(&1.resource_id == Paths.goal_update_id(ctx.update1)))
-      refute Enum.find(assignments, &(&1.resource_id == Paths.goal_update_id(ctx.update2)))
+    test "doesn't return late updates to non-reviewer", ctx do
+      [mine: [], reports: []] = Loader.load(ctx.champion, ctx.company)
     end
+  end
+
+  describe "late project notifies reviewer" do
+    setup :late_projects_setup
+
+    test "only more than 3 days late", ctx do
+      [mine: [], reports: reports] = Loader.load(ctx.reviewer, ctx.company)
+
+      assert length(reports) == 2
+
+      assert Enum.find(reports, &(&1.resource_id == Paths.project_id(ctx.three_days_late)))
+      assert Enum.find(reports, &(&1.resource_id == Paths.project_id(ctx.seven_days_late)))
+    end
+  end
+
+  describe "late goal notifies reviewer" do
+    setup :late_goals_setup
+
+    test "only more than 3 days late", ctx do
+      [mine: [], reports: reports] = Loader.load(ctx.reviewer, ctx.company)
+
+      assert length(reports) == 2
+
+      assert Enum.find(reports, &(&1.resource_id == Paths.goal_id(ctx.three_days_late)))
+      assert Enum.find(reports, &(&1.resource_id == Paths.goal_id(ctx.seven_days_late)))
+    end
+  end
+
+  describe "late project notifies managers" do
+    setup [:managers_setup, :late_projects_setup, :very_late_projects_setup]
+
+    test "more than 5 days late", ctx do
+      [mine: [], reports: reports] = Loader.load(ctx.manager, ctx.company)
+
+      assert length(reports) == 4
+
+      assert Enum.find(reports, &(&1.resource_id == Paths.project_id(ctx.seven_days_late)))
+      assert Enum.find(reports, &(&1.resource_id == Paths.project_id(ctx.twelve_days_late)))
+      assert Enum.find(reports, &(&1.resource_id == Paths.project_id(ctx.fifteen_days_late)))
+      assert Enum.find(reports, &(&1.resource_id == Paths.project_id(ctx.twenty_days_late)))
+    end
+
+    test "more than 10 days late", ctx do
+      [mine: [], reports: reports] = Loader.load(ctx.senior_manager, ctx.company)
+
+      assert length(reports) == 3
+
+      assert Enum.find(reports, &(&1.resource_id == Paths.project_id(ctx.twelve_days_late)))
+      assert Enum.find(reports, &(&1.resource_id == Paths.project_id(ctx.fifteen_days_late)))
+      assert Enum.find(reports, &(&1.resource_id == Paths.project_id(ctx.twenty_days_late)))
+    end
+
+    test "more than 15 days late", ctx do
+      [mine: [], reports: reports] = Loader.load(ctx.director, ctx.company)
+
+      assert length(reports) == 2
+
+      assert Enum.find(reports, &(&1.resource_id == Paths.project_id(ctx.twenty_days_late)))
+      assert Enum.find(reports, &(&1.resource_id == Paths.project_id(ctx.fifteen_days_late)))
+    end
+  end
+
+  describe "late project check-in acknowledgement notifies managers" do
+    setup [:managers_setup, :late_project_check_in_setup]
+
+    test "more than 5 days late", ctx do
+      [mine: [], reports: reports] = Loader.load(ctx.manager, ctx.company)
+
+      assert length(reports) == 4
+
+      assert Enum.find(reports, &(&1.resource_id == Paths.project_check_in_id(ctx.seven_days_late)))
+      assert Enum.find(reports, &(&1.resource_id == Paths.project_check_in_id(ctx.twelve_days_late)))
+      assert Enum.find(reports, &(&1.resource_id == Paths.project_check_in_id(ctx.fifteen_days_late)))
+      assert Enum.find(reports, &(&1.resource_id == Paths.project_check_in_id(ctx.twenty_days_late)))
+    end
+
+    test "more than 10 days late", ctx do
+      [mine: [], reports: reports] = Loader.load(ctx.senior_manager, ctx.company)
+
+      assert length(reports) == 3
+
+      assert Enum.find(reports, &(&1.resource_id == Paths.project_check_in_id(ctx.twelve_days_late)))
+      assert Enum.find(reports, &(&1.resource_id == Paths.project_check_in_id(ctx.fifteen_days_late)))
+      assert Enum.find(reports, &(&1.resource_id == Paths.project_check_in_id(ctx.twenty_days_late)))
+    end
+
+    test "more than 15 days late", ctx do
+      [mine: [], reports: reports] = Loader.load(ctx.director, ctx.company)
+
+      assert length(reports) == 2
+
+      assert Enum.find(reports, &(&1.resource_id == Paths.project_check_in_id(ctx.twenty_days_late)))
+      assert Enum.find(reports, &(&1.resource_id == Paths.project_check_in_id(ctx.fifteen_days_late)))
+    end
+  end
+
+  describe "late goal notifies managers" do
+    setup [:managers_setup, :late_goals_setup, :very_late_goals_setup]
+
+    test "more than 5 days late", ctx do
+      [mine: [], reports: reports] = Loader.load(ctx.manager, ctx.company)
+
+      assert length(reports) == 4
+
+      assert Enum.find(reports, &(&1.resource_id == Paths.goal_id(ctx.seven_days_late)))
+      assert Enum.find(reports, &(&1.resource_id == Paths.goal_id(ctx.twelve_days_late)))
+      assert Enum.find(reports, &(&1.resource_id == Paths.goal_id(ctx.fifteen_days_late)))
+      assert Enum.find(reports, &(&1.resource_id == Paths.goal_id(ctx.twenty_days_late)))
+    end
+
+    test "more than 10 days late", ctx do
+      [mine: [], reports: reports] = Loader.load(ctx.senior_manager, ctx.company)
+
+      assert length(reports) == 3
+
+      assert Enum.find(reports, &(&1.resource_id == Paths.goal_id(ctx.twelve_days_late)))
+      assert Enum.find(reports, &(&1.resource_id == Paths.goal_id(ctx.fifteen_days_late)))
+      assert Enum.find(reports, &(&1.resource_id == Paths.goal_id(ctx.twenty_days_late)))
+    end
+
+    test "more than 15 days late", ctx do
+      [mine: [], reports: reports] = Loader.load(ctx.director, ctx.company)
+
+      assert length(reports) == 2
+
+      assert Enum.find(reports, &(&1.resource_id == Paths.goal_id(ctx.twenty_days_late)))
+      assert Enum.find(reports, &(&1.resource_id == Paths.goal_id(ctx.fifteen_days_late)))
+    end
+  end
+
+  describe "late goal update acknowledgement notifies managers" do
+    setup [:managers_setup, :late_goal_update_setup]
+
+    test "more than 5 days late", ctx do
+      [mine: [], reports: reports] = Loader.load(ctx.manager, ctx.company)
+
+      assert length(reports) == 4
+
+      assert Enum.find(reports, &(&1.resource_id == Paths.goal_update_id(ctx.seven_days_late)))
+      assert Enum.find(reports, &(&1.resource_id == Paths.goal_update_id(ctx.twelve_days_late)))
+      assert Enum.find(reports, &(&1.resource_id == Paths.goal_update_id(ctx.fifteen_days_late)))
+      assert Enum.find(reports, &(&1.resource_id == Paths.goal_update_id(ctx.twenty_days_late)))
+    end
+
+    test "more than 10 days late", ctx do
+      [mine: [], reports: reports] = Loader.load(ctx.senior_manager, ctx.company)
+
+      assert length(reports) == 3
+
+      assert Enum.find(reports, &(&1.resource_id == Paths.goal_update_id(ctx.twelve_days_late)))
+      assert Enum.find(reports, &(&1.resource_id == Paths.goal_update_id(ctx.fifteen_days_late)))
+      assert Enum.find(reports, &(&1.resource_id == Paths.goal_update_id(ctx.twenty_days_late)))
+    end
+
+    test "more than 15 days late", ctx do
+      [mine: [], reports: reports] = Loader.load(ctx.director, ctx.company)
+
+      assert length(reports) == 2
+
+      assert Enum.find(reports, &(&1.resource_id == Paths.goal_update_id(ctx.twenty_days_late)))
+      assert Enum.find(reports, &(&1.resource_id == Paths.goal_update_id(ctx.fifteen_days_late)))
+    end
+  end
+
+  #
+  # Setup
+  #
+
+  defp managers_setup(ctx) do
+    ctx
+    |> Factory.add_space_member(:manager, :space)
+    |> Factory.set_person_manager(:reviewer, :manager)
+    |> Factory.add_space_member(:senior_manager, :space)
+    |> Factory.set_person_manager(:manager, :senior_manager)
+    |> Factory.add_space_member(:director, :space)
+    |> Factory.set_person_manager(:senior_manager, :director)
+  end
+
+  defp late_projects_setup(ctx) do
+    ctx
+    |> Factory.add_project(:not_late, :space, champion: :champion, reviewer: :reviewer)
+    |> Factory.add_project(:two_days_late, :space, champion: :champion, reviewer: :reviewer)
+    |> Factory.add_project(:three_days_late, :space, champion: :champion, reviewer: :reviewer)
+    |> Factory.add_project(:seven_days_late, :space, champion: :champion, reviewer: :reviewer)
+    |> Factory.set_project_next_check_in_date(:two_days_late, past_date(2))
+    |> Factory.set_project_next_check_in_date(:three_days_late, past_date(3))
+    |> Factory.set_project_next_check_in_date(:seven_days_late, past_date(7))
+  end
+
+  defp very_late_projects_setup(ctx) do
+    ctx
+    |> Factory.add_project(:twelve_days_late, :space, champion: :champion, reviewer: :reviewer)
+    |> Factory.add_project(:fifteen_days_late, :space, champion: :champion, reviewer: :reviewer)
+    |> Factory.add_project(:twenty_days_late, :space, champion: :champion, reviewer: :reviewer)
+    |> Factory.set_project_next_check_in_date(:twelve_days_late, past_date(12))
+    |> Factory.set_project_next_check_in_date(:fifteen_days_late, past_date(15))
+    |> Factory.set_project_next_check_in_date(:twenty_days_late, past_date(20))
+  end
+
+  defp late_project_check_in_setup(ctx) do
+    ctx
+    |> Factory.add_project(:project, :space, champion: :champion, reviewer: :reviewer)
+    |> create_late_check_in(:two_days_late, days_late: 2)
+    |> create_late_check_in(:seven_days_late, days_late: 7)
+    |> create_late_check_in(:twelve_days_late, days_late: 12)
+    |> create_late_check_in(:fifteen_days_late, days_late: 15)
+    |> create_late_check_in(:twenty_days_late, days_late: 20)
+  end
+
+  defp late_goal_update_setup(ctx) do
+    ctx
+    |> Factory.add_goal(:goal, :space, champion: :champion, reviewer: :reviewer)
+    |> create_late_update(:two_days_late, days_late: 2)
+    |> create_late_update(:seven_days_late, days_late: 7)
+    |> create_late_update(:twelve_days_late, days_late: 12)
+    |> create_late_update(:fifteen_days_late, days_late: 15)
+    |> create_late_update(:twenty_days_late, days_late: 20)
+  end
+
+  defp late_goals_setup(ctx) do
+    ctx
+    |> Factory.add_goal(:not_late, :space, champion: :champion, reviewer: :reviewer)
+    |> Factory.add_goal(:two_days_late, :space, champion: :champion, reviewer: :reviewer)
+    |> Factory.add_goal(:three_days_late, :space, champion: :champion, reviewer: :reviewer)
+    |> Factory.add_goal(:seven_days_late, :space, champion: :champion, reviewer: :reviewer)
+    |> Factory.set_goal_next_update_date(:two_days_late, past_date(2))
+    |> Factory.set_goal_next_update_date(:three_days_late, past_date(3))
+    |> Factory.set_goal_next_update_date(:seven_days_late, past_date(7))
+  end
+
+  defp very_late_goals_setup(ctx) do
+    ctx
+    |> Factory.add_goal(:twelve_days_late, :space, champion: :champion, reviewer: :reviewer)
+    |> Factory.add_goal(:fifteen_days_late, :space, champion: :champion, reviewer: :reviewer)
+    |> Factory.add_goal(:twenty_days_late, :space, champion: :champion, reviewer: :reviewer)
+    |> Factory.set_goal_next_update_date(:twelve_days_late, past_date(12))
+    |> Factory.set_goal_next_update_date(:fifteen_days_late, past_date(15))
+    |> Factory.set_goal_next_update_date(:twenty_days_late, past_date(20))
   end
 
   #
   # Helpers
   #
 
-  defp set_due_projects(ctx) do
-    Enum.reduce([:due_project1, :due_project2], ctx, fn key, ctx ->
-      {:ok, due_project} =
+  defp set_late_projects(ctx) do
+    Enum.reduce([:late_project1, :late_project2], ctx, fn key, ctx ->
+      {:ok, late_project} =
         ctx[key]
         |> Operately.Projects.Project.changeset(%{next_check_in_scheduled_at: past_date()})
         |> Repo.update()
-      Map.put(ctx, key, due_project)
+      Map.put(ctx, key, late_project)
     end)
   end
 
@@ -161,13 +375,13 @@ defmodule Operately.Assignments.LoaderTest do
     end)
   end
 
-  defp set_due_goals(ctx) do
-    Enum.reduce([:due_goal1, :due_goal2], ctx, fn key, ctx ->
-      {:ok, due_goal} =
+  defp set_late_goals(ctx) do
+    Enum.reduce([:late_goal1, :late_goal2], ctx, fn key, ctx ->
+      {:ok, late_goal} =
         ctx[key]
         |> Operately.Goals.Goal.changeset(%{next_update_scheduled_at: past_date()})
         |> Repo.update()
-      Map.put(ctx, key, due_goal)
+      Map.put(ctx, key, late_goal)
     end)
   end
 
@@ -184,9 +398,44 @@ defmodule Operately.Assignments.LoaderTest do
     end)
   end
 
-  defp past_date do
+  defp create_late_check_in(ctx, key, days_late: days_late) do
+    ctx = Factory.add_project_check_in(ctx, key, :project, :champion)
+    date = past_date(days_late)
+
+    {1, nil} =
+      from(c in Operately.Projects.CheckIn, where: c.id == ^ctx[key].id)
+      |> Repo.update_all(set: [inserted_at: date])
+
+    check_in = Repo.reload(ctx[key])
+    Map.put(ctx, key, check_in)
+  end
+
+  defp create_late_update(ctx, key, days_late: days_late) do
+    ctx = Factory.add_goal_update(ctx, key, :goal, :champion)
+    date = past_date(days_late)
+
+    {1, nil} =
+      from(u in Operately.Goals.Update, where: u.id == ^ctx[key].id)
+      |> Repo.update_all(set: [inserted_at: date])
+
+    update = Repo.reload(ctx[key])
+    Map.put(ctx, key, update)
+  end
+
+  defp past_date(num \\ 2) do
     Date.utc_today()
-    |> Date.add(-3)
+    |> subtract_days(num)
     |> Operately.Time.as_datetime()
+  end
+
+  def subtract_days(date, 0), do: date
+  def subtract_days(date, days) do
+    prev_date = Date.add(date, -1)
+
+    if Date.day_of_week(prev_date) in [6, 7] do
+      subtract_days(prev_date, days)
+    else
+      subtract_days(prev_date, days - 1)
+    end
   end
 end
