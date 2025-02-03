@@ -92,26 +92,28 @@ defmodule Operately.Assignments.Loader do
   Fetches a list of all the employees under that person in the
   company's hierarchy based on the manager_id property.
 
-  Returns a list of `{person_id, management_level}` tuples
-  `management_level` indicates the depth in the management chain:
+  Returns a list of maps with person_id, manager_id and depth keys.
+
+  "depth" indicates the depth in the management chain:
     - 0: Directly under the given person
     - 1: Under the people who are directly under the given person
     - 2: etc...
 
-  The `management_level` is used later to determine notification thresholds:
-  - Level 0 (direct reports): Shorter notification threshold (e.g., 3 business days)
-  - Level 1+ (indirect reports): Longer notification threshold (e.g., 10 business days)
+  "depth" is used later to determine notification thresholds:
+  - depth 0 (direct reports): Shorter notification threshold (e.g., 3 business days)
+  - depth 1 (indirect reports): Longer notification threshold (e.g., 5 business days)
+  - etc...
   """
   def load_reports(person) do
     query = """
     WITH RECURSIVE reports AS (
-      SELECT id, 0 AS level
+      SELECT id, manager_id, 0 AS depth
       FROM people
       WHERE manager_id = $1
 
       UNION ALL
 
-      SELECT p.id, r.level + 1 AS level
+      SELECT p.id, p.manager_id, r.depth + 1 AS depth
       FROM people p
       INNER JOIN reports r ON p.manager_id = r.id
     )
@@ -121,14 +123,16 @@ defmodule Operately.Assignments.Loader do
     {:ok, person_id} = Ecto.UUID.dump(person.id)
     {:ok, %{rows: result}} = Repo.query(query, [person_id])
 
-    Enum.map(result, fn [id, level] ->
+    Enum.map(result, fn [id, manager_id, depth] ->
       {:ok, id} = Ecto.UUID.cast(id)
-      {id, level}
+      {:ok, manager_id} = Ecto.UUID.cast(manager_id)
+
+      %{person_id: id, manager_id: manager_id, depth: depth}
     end)
   end
 
   defp extract_ids(person, reports) do
-    ids = Enum.map(reports, fn {id, _} -> id end)
+    ids = Enum.map(reports, fn %{person_id: id} -> id end)
     [person.id | ids]
   end
 
