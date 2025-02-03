@@ -47,7 +47,7 @@ defmodule Operately.Assignments.Loader do
     from(p in Project,
       join: champion in assoc(p, :champion),
       left_join: reviewer in assoc(p, :reviewer),
-      where: champion.id in ^all_person_ids or reviewer.id == ^person_id,
+      where: reviewer.id in ^all_person_ids or champion.id == ^person_id,
       where: p.next_check_in_scheduled_at <= ^DateTime.utc_now(),
       where: p.status == "active",
       preload: [champion: champion, reviewer: reviewer]
@@ -59,7 +59,7 @@ defmodule Operately.Assignments.Loader do
     from(g in Goal,
       where: g.next_update_scheduled_at <= ^DateTime.utc_now(),
       where: is_nil(g.closed_at),
-      where: g.champion_id in ^all_person_ids or g.reviewer_id == ^person_id
+      where: g.reviewer_id in ^all_person_ids or g.champion_id == ^person_id
     )
     |> Repo.all()
   end

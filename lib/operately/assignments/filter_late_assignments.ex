@@ -66,8 +66,8 @@ defmodule Operately.Assignments.FilterLateAssignments do
     end)
   end
 
-  defp is_resposible_for_resource?(resource = %Project{}, person_id), do: resource.champion.id == person_id
-  defp is_resposible_for_resource?(resource = %Goal{}, person_id), do: resource.champion_id == person_id
+  defp is_resposible_for_resource?(resource = %Project{}, person_id), do: resource.reviewer.id == person_id
+  defp is_resposible_for_resource?(resource = %Goal{}, person_id), do: resource.reviewer_id == person_id
   defp is_resposible_for_resource?(resource = %CheckIn{}, person_id), do: resource.project.reviewer.id == person_id
   defp is_resposible_for_resource?(resource = %Update{}, person_id), do: resource.goal.reviewer_id == person_id
 
