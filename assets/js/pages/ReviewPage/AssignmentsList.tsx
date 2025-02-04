@@ -1,6 +1,6 @@
 import React from "react";
 
-import { IconTarget, IconHexagons, IconCornerDownRight } from "@tabler/icons-react";
+import { IconTarget, IconHexagons } from "@tabler/icons-react";
 import { ReviewAssignment, AssignmentType } from "@/models/assignments";
 
 import FormattedTime from "@/components/FormattedTime";
@@ -9,7 +9,6 @@ import { match } from "ts-pattern";
 import { DivLink } from "@/components/Link";
 import classNames from "classnames";
 import { assertPresent } from "@/utils/assertions";
-import Avatar from "@/components/Avatar";
 
 export function AssignmentsList({ assignments }: { assignments: ReviewAssignment[] }) {
   return (
@@ -40,7 +39,7 @@ export function Escalation({ title, type, champion, escalations }) {
 
         <p className="text-xs"></p>
         <p className="text-xs">
-          {champion} is the goal champion &bull; Escalated to{" "}
+          {champion} didn't submit an update on time. Escalated to:
           {escalations.map((e, index) => (
             <>
               {index !== 0 && <> -&gt;</>} {e.fullName} ({e.when})

@@ -136,7 +136,7 @@ function Escalations() {
 
         <Escalation
           title="Ensure financial stability"
-          type="Missed Goal Update"
+          type="Review the goal status with John"
           champion="John Doe"
           escalations={[{ fullName: "You", when: "today" }]}
         />
@@ -147,7 +147,7 @@ function Escalations() {
 
         <Escalation
           title="Document core business processes in company playbook"
-          type="Missed Goal Update"
+          type="Review the goal status with Jane"
           champion="Jane Doe"
           escalations={[
             { fullName: "John Doe", when: "7 days ago" },
@@ -157,7 +157,7 @@ function Escalations() {
 
         <Escalation
           title="Improve product"
-          type="Missed Goal Update"
+          type="Review the goal status with Jane"
           champion="Jane Doe"
           escalations={[
             { fullName: "John Doe", when: "7 days ago" },
@@ -171,7 +171,7 @@ function Escalations() {
 
         <Escalation
           title="Launch new product"
-          type="Missed Goal Update"
+          type="Review the goal status with Tina"
           champion="Tina Doe"
           escalations={[
             { fullName: "John Doe", when: "10 days ago" },
@@ -182,8 +182,8 @@ function Escalations() {
 
         <Escalation
           title="Solve world hunger"
-          type="Missed Goal Update"
-          champion="Jane Doe"
+          type="Review the goal status with Michael"
+          champion="Michael Phelps"
           escalations={[
             { fullName: "John Doe", when: "10 days ago" },
             { fullName: "Sally Smith", when: "5 days ago" },
