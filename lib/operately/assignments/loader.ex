@@ -26,7 +26,7 @@ defmodule Operately.Assignments.Loader do
 
     [
       mine: Assignment.build(person_assignments, company),
-      reports: Assignment.build(late_assignments, company),
+      reports: Assignment.build(late_assignments, company, reports),
     ]
   end
 
@@ -88,47 +88,67 @@ defmodule Operately.Assignments.Loader do
     |> Repo.all()
   end
 
-  @doc """
-  Fetches a list of all the employees under that person in the
-  company's hierarchy based on the manager_id property.
 
-  Returns a list of `{person_id, management_level}` tuples
-  `management_level` indicates the depth in the management chain:
+  @doc """
+  Fetches the complete hierarchical tree of employees under the given person,
+  including profile information and management depth.
+
+  ## Returns
+  A list of `{%Operately.People.Person{}, depth}` tuples where:
+
+  - `%Operately.People.Person{}` contains:
+    - `id`
+    - `full_name`
+    - `title`
+    - `avatar_url`
+    - `manager_id`
+
+  - `depth` indicates the hierarchical distance from the root person:
     - 0: Directly under the given person
     - 1: Under the people who are directly under the given person
     - 2: etc...
 
-  The `management_level` is used later to determine notification thresholds:
-  - Level 0 (direct reports): Shorter notification threshold (e.g., 3 business days)
-  - Level 1+ (indirect reports): Longer notification threshold (e.g., 10 business days)
+  `depth` is used later to determine notification thresholds:
+    - 0 (direct reports): Shorter notification threshold (e.g., 3 business days)
+    - 1 (indirect reports): Longer notification threshold (e.g., 5 business days)
+    - etc...
   """
   def load_reports(person) do
     query = """
     WITH RECURSIVE reports AS (
-      SELECT id, 0 AS level
+      SELECT
+        id,
+        full_name,
+        title,
+        avatar_url,
+        manager_id,
+        0 AS depth
       FROM people
       WHERE manager_id = $1
 
       UNION ALL
 
-      SELECT p.id, r.level + 1 AS level
+      SELECT
+        p.id,
+        p.full_name,
+        p.title,
+        p.avatar_url,
+        p.manager_id,
+        r.depth + 1 AS depth
       FROM people p
       INNER JOIN reports r ON p.manager_id = r.id
     )
     SELECT * FROM reports
     """
 
-    {:ok, person_id} = Ecto.UUID.dump(person.id)
-    {:ok, %{rows: result}} = Repo.query(query, [person_id])
+    person_id = Ecto.UUID.dump!(person.id)
+    %{rows: result} = Repo.query!(query, [person_id])
 
-    Enum.map(result, fn [id, level] ->
-      {:ok, id} = Ecto.UUID.cast(id)
-      {id, level}
-    end)
+    Enum.map(result, &person_depth_tuple/1)
   end
 
   defp extract_ids(person, reports) do
-    ids = Enum.map(reports, fn {id, _} -> id end)
+    ids = Enum.map(reports, fn {%{id: id}, _depth} -> id end)
     [person.id | ids]
   end
 
@@ -149,5 +169,17 @@ defmodule Operately.Assignments.Loader do
       _ ->
         false
     end)
+  end
+
+  defp person_depth_tuple([id, full_name, title, avatar_url, manager_id, depth]) do
+    person = %Operately.People.Person{
+      id: Ecto.UUID.cast!(id),
+      manager_id: Ecto.UUID.cast!(manager_id),
+      full_name: full_name,
+      title: title,
+      avatar_url: avatar_url,
+    }
+
+    {person, depth}
   end
 end
