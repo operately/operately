@@ -1,6 +1,6 @@
 import React from "react";
 
-import { IconTarget, IconHexagons } from "@tabler/icons-react";
+import { IconTarget, IconHexagons, IconCornerDownRight } from "@tabler/icons-react";
 import { ReviewAssignment, AssignmentType } from "@/models/assignments";
 
 import FormattedTime from "@/components/FormattedTime";
@@ -9,6 +9,7 @@ import { match } from "ts-pattern";
 import { DivLink } from "@/components/Link";
 import classNames from "classnames";
 import { assertPresent } from "@/utils/assertions";
+import Avatar from "@/components/Avatar";
 
 export function AssignmentsList({ assignments }: { assignments: ReviewAssignment[] }) {
   return (
@@ -16,6 +17,37 @@ export function AssignmentsList({ assignments }: { assignments: ReviewAssignment
       {assignments.map((assignment) => (
         <AssignmentItem assignment={assignment} key={assignment.resourceId} />
       ))}
+    </div>
+  );
+}
+
+export function Escalation({ title, type, champion, escalations }) {
+  const className = classNames(
+    "flex gap-3 items-center",
+    "p-1.5 -mx-1.5",
+    "hover:cursor-pointer",
+    "hover:bg-surface-highlight",
+  );
+
+  return (
+    <div className={className}>
+      <AssignmentIcon type={"goal"} />
+      <div>
+        <div>
+          <span className="font-bold">{type}: </span>
+          {title}
+        </div>
+
+        <p className="text-xs"></p>
+        <p className="text-xs">
+          {champion} is the goal champion &bull; Escalated to{" "}
+          {escalations.map((e, index) => (
+            <>
+              {index !== 0 && <> -&gt;</>} {e.fullName} ({e.when})
+            </>
+          ))}
+        </p>
+      </div>
     </div>
   );
 }

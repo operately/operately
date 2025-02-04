@@ -5,7 +5,7 @@ import * as Signals from "@/signals";
 import * as Icons from "@tabler/icons-react";
 
 import { useLoadedData } from "./loader";
-import { AssignmentsList } from "./AssignmentsList";
+import { AssignmentsList, Escalation } from "./AssignmentsList";
 import classNames from "classnames";
 
 export function Page() {
@@ -20,6 +20,7 @@ export function Page() {
           <Title />
           <MyWork />
           <ForReview />
+          <Escalations />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
@@ -71,16 +72,7 @@ function SendingEmailsBanner() {
 }
 
 function PageSection({ children }) {
-  return (
-    <section
-      className="px-12 border-t border-stroke-base py-8"
-      style={{
-        minHeight: "300px",
-      }}
-    >
-      {children}
-    </section>
-  );
+  return <section className="px-16 border-t border-stroke-base py-8">{children}</section>;
 }
 
 function SectionTitle({ title, description }) {
@@ -109,7 +101,7 @@ function ForReview() {
 
   return (
     <PageSection>
-      <SectionTitle title="For review" description="Updates from others needing your acknowledgment" />
+      <SectionTitle title="For review" description="Updates from others needing your help or acknowledgment" />
 
       {forReview.length === 0 ? <ForReviewEmpty /> : <AssignmentsList assignments={forReview} />}
     </PageSection>
@@ -118,7 +110,7 @@ function ForReview() {
 
 function MyWorkEmpty() {
   return (
-    <div className="px-4 mt-4 flex items-center justify-center py-20 gap-2">
+    <div className="flex items-center justify-center gap-2 mb-6 mt-12">
       <Icons.IconSparkles size={20} className="text-yellow-500" />
       All caught up!
     </div>
@@ -127,9 +119,78 @@ function MyWorkEmpty() {
 
 function ForReviewEmpty() {
   return (
-    <div className="px-4 mt-4 flex items-center justify-center py-28 gap-2">
+    <div className="flex items-center justify-center gap-2 mb-6 mt-12">
       <Icons.IconSparkles size={20} className="text-yellow-500" />
       Nothing to review.
     </div>
+  );
+}
+
+function Escalations() {
+  return (
+    <PageSection>
+      <SectionTitle title="Escalated to me" description="Updates and acknowlegements neglected by your reports" />
+
+      <div className="flex flex-col mt-8">
+        <div className="text-xs uppercase font-extrabold text-content-error mb-1 tracking-wide">2 days overdue</div>
+
+        <Escalation
+          title="Ensure financial stability"
+          type="Missed Goal Update"
+          champion="John Doe"
+          escalations={[{ fullName: "You", when: "today" }]}
+        />
+
+        <div className="text-xs uppercase font-extrabold text-content-error mb-1 tracking-wide mt-6">
+          10 days overdue
+        </div>
+
+        <Escalation
+          title="Document core business processes in company playbook"
+          type="Missed Goal Update"
+          champion="Jane Doe"
+          escalations={[
+            { fullName: "John Doe", when: "7 days ago" },
+            { fullName: "You", when: "today" },
+          ]}
+        />
+
+        <Escalation
+          title="Improve product"
+          type="Missed Goal Update"
+          champion="Jane Doe"
+          escalations={[
+            { fullName: "John Doe", when: "7 days ago" },
+            { fullName: "You", when: "today" },
+          ]}
+        />
+
+        <div className="text-xs uppercase font-extrabold text-content-error mb-1 tracking-wide mt-6">
+          2 weeks overdue
+        </div>
+
+        <Escalation
+          title="Launch new product"
+          type="Missed Goal Update"
+          champion="Tina Doe"
+          escalations={[
+            { fullName: "John Doe", when: "10 days ago" },
+            { fullName: "Sally Smith", when: "5 days ago" },
+            { fullName: "You", when: "today" },
+          ]}
+        />
+
+        <Escalation
+          title="Solve world hunger"
+          type="Missed Goal Update"
+          champion="Jane Doe"
+          escalations={[
+            { fullName: "John Doe", when: "10 days ago" },
+            { fullName: "Sally Smith", when: "5 days ago" },
+            { fullName: "You", when: "today" },
+          ]}
+        />
+      </div>
+    </PageSection>
   );
 }
