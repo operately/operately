@@ -165,15 +165,6 @@ function Options({ goal }) {
           testId="reopen-goal"
         />
       )}
-
-      {goal.permissions.canArchive && !goal.isArchived && (
-        <PageOptions.Link
-          icon={Icons.IconTrash}
-          title="Archive"
-          to={Paths.goalArchivePath(goal.id)}
-          testId="archive-goal"
-        />
-      )}
     </PageOptions.Root>
   );
 }
