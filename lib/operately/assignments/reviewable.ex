@@ -7,11 +7,11 @@ defprotocol Operately.Assignments.Reviewable do
 end
 
 defimpl Operately.Assignments.Reviewable, for: Operately.Projects.Project do
-  def reviewer_id(project), do: project.reviewer.id
+  def reviewer_id(project), do: project.reviewer && project.reviewer.id
 
   def due_date(project), do: project.next_check_in_scheduled_at
 
-  def is_reviewer?(project, person), do: project.reviewer.id == person.id
+  def is_reviewer?(project, person), do: project.reviewer && project.reviewer.id == person.id
 end
 
 defimpl Operately.Assignments.Reviewable, for: Operately.Projects.CheckIn do
