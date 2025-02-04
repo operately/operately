@@ -1,4 +1,5 @@
 defmodule Operately.Assignments.FilterLateAssignments do
+  alias Operately.Assignments.Reviewable
   alias Operately.Goals.{Goal, Update}
   alias Operately.Projects.{CheckIn, Project}
 
@@ -14,29 +15,26 @@ defmodule Operately.Assignments.FilterLateAssignments do
   end
 
   defp late_goal_or_project?(assignment, reports, person) do
-    days_late = find_days_late(assignment)
+    due_date = Reviewable.due_date(assignment)
+    days_late = business_days_between(due_date, Date.utc_today())
 
-    if is_reviewer?(assignment, person) do
+    if Reviewable.is_reviewer?(assignment, person) do
       days_late >= 3
     else
       assignment
-      |> find_manager_depth(reports)
+      |> get_manager_depth(reports)
       |> is_late?(days_late)
     end
   end
 
   defp late_check_in_or_update?(assignment, reports) do
-    days_late = find_days_late(assignment)
+    due_date = Reviewable.due_date(assignment)
+    days_late = business_days_between(due_date, Date.utc_today())
 
     assignment
-    |> find_manager_depth(reports)
+    |> get_manager_depth(reports)
     |> is_late?(days_late)
   end
-
-  defp find_days_late(%Project{} = project), do: business_days_between(project.next_check_in_scheduled_at, Date.utc_today())
-  defp find_days_late(%Goal{} = goal), do: business_days_between(goal.next_update_scheduled_at, Date.utc_today())
-  defp find_days_late(%CheckIn{} = check_in), do: business_days_between(check_in.inserted_at, Date.utc_today())
-  defp find_days_late(%Update{} = update), do: business_days_between(update.inserted_at, Date.utc_today())
 
   def business_days_between(from, to) do
     if Date.before?(from, to) do
@@ -60,21 +58,13 @@ defmodule Operately.Assignments.FilterLateAssignments do
     end
   end
 
-  defp find_manager_depth(resource, reports) do
-    Enum.find_value(reports, fn {%{id: id}, depth} ->
-      if is_resposible_for_resource?(resource, id), do: depth
+  defp get_manager_depth(resource, reports) do
+    Enum.find_value(reports, fn {person, depth} ->
+      if Reviewable.is_reviewer?(resource, person), do: depth
     end)
   end
-
-  defp is_resposible_for_resource?(resource = %Project{}, person_id), do: resource.reviewer.id == person_id
-  defp is_resposible_for_resource?(resource = %Goal{}, person_id), do: resource.reviewer_id == person_id
-  defp is_resposible_for_resource?(resource = %CheckIn{}, person_id), do: resource.project.reviewer.id == person_id
-  defp is_resposible_for_resource?(resource = %Update{}, person_id), do: resource.goal.reviewer_id == person_id
 
   defp is_late?(_manager_depth = 0, days_late), do: days_late >= 5
   defp is_late?(_manager_depth = 1, days_late), do: days_late >= 10
   defp is_late?(_manager_depth, days_late), do: days_late >= 15
-
-  defp is_reviewer?(resource = %Project{}, person), do: resource.reviewer.id == person.id
-  defp is_reviewer?(resource = %Goal{}, person), do: resource.reviewer_id == person.id
 end

@@ -1,9 +1,8 @@
 defmodule Operately.Assignments.ManagementHierarchy do
-  alias Operately.Goals.{Goal, Update}
-  alias Operately.Projects.{CheckIn, Project}
+  alias Operately.Assignments.Reviewable
 
   def find(assignment, reports) do
-    reviewer_id = reviewer_id(assignment)
+    reviewer_id = Reviewable.reviewer_id(assignment)
     get_hierarchy(reviewer_id, reports)
   end
 
@@ -18,9 +17,4 @@ defmodule Operately.Assignments.ManagementHierarchy do
       person -> get_hierarchy(person.manager_id, people, [person | acc])
     end
   end
-
-  defp reviewer_id(resource = %Project{}), do: resource.reviewer.id
-  defp reviewer_id(resource = %Goal{}), do: resource.reviewer_id
-  defp reviewer_id(resource = %CheckIn{}), do: resource.project.reviewer.id
-  defp reviewer_id(resource = %Update{}), do: resource.goal.reviewer_id
 end
