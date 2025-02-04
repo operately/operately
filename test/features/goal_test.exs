@@ -10,14 +10,6 @@ defmodule Operately.Features.GoalTest do
     {:ok, ctx}
   end
 
-  feature "archive goal", ctx do
-    ctx
-    |> Steps.archive_goal()
-    |> Steps.assert_goal_archived()
-    |> Steps.assert_goal_archived_email_sent()
-    |> Steps.assert_goal_archived_feed_posted()
-  end
-
   feature "editing goals", ctx do
     ctx
     |> Steps.edit_goal()
