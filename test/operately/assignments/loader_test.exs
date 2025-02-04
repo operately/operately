@@ -272,6 +272,30 @@ defmodule Operately.Assignments.LoaderTest do
     end
   end
 
+  describe "management hierarchy" do
+    setup [
+      :managers_setup,
+      :late_goal_update_setup,
+      :very_late_goals_setup,
+      :late_project_check_in_setup,
+      :very_late_projects_setup
+    ]
+
+    test "includes management hierarchy", ctx do
+      [mine: [], reports: reports] = Loader.load(ctx.director, ctx.company)
+
+      assert length(reports) == 8
+
+      Enum.each(reports, fn assignment ->
+        [senior_manager, manager, reviewer] = assignment.management_hierarchy
+
+        assert senior_manager.id == ctx.senior_manager.id
+        assert manager.id == ctx.manager.id
+        assert reviewer.id == ctx.reviewer.id
+      end)
+    end
+  end
+
   #
   # Setup
   #
@@ -358,6 +382,7 @@ defmodule Operately.Assignments.LoaderTest do
         ctx[key]
         |> Operately.Projects.Project.changeset(%{next_check_in_scheduled_at: past_date()})
         |> Repo.update()
+
       Map.put(ctx, key, late_project)
     end)
   end
@@ -368,9 +393,10 @@ defmodule Operately.Assignments.LoaderTest do
         ctx[key]
         |> Operately.Projects.CheckIn.changeset(%{
           acknowledged_by_id: ctx.reviewer.id,
-          acknowledged_at: NaiveDateTime.utc_now(),
+          acknowledged_at: NaiveDateTime.utc_now()
         })
         |> Repo.update()
+
       Map.put(ctx, key, check_in)
     end)
   end
@@ -381,6 +407,7 @@ defmodule Operately.Assignments.LoaderTest do
         ctx[key]
         |> Operately.Goals.Goal.changeset(%{next_update_scheduled_at: past_date()})
         |> Repo.update()
+
       Map.put(ctx, key, late_goal)
     end)
   end
@@ -391,9 +418,10 @@ defmodule Operately.Assignments.LoaderTest do
         ctx[key]
         |> Operately.Goals.Update.changeset(%{
           acknowledged_at: DateTime.utc_now(),
-          acknowledged_by_id: ctx.reviewer.id,
+          acknowledged_by_id: ctx.reviewer.id
         })
         |> Repo.update()
+
       Map.put(ctx, key, update)
     end)
   end
@@ -429,6 +457,7 @@ defmodule Operately.Assignments.LoaderTest do
   end
 
   def subtract_days(date, 0), do: date
+
   def subtract_days(date, days) do
     prev_date = Date.add(date, -1)
 
