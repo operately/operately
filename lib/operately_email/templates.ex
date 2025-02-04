@@ -46,18 +46,16 @@ defmodule OperatelyEmail.Templates do
     {:safe, Prosemirror2Html.convert(content, opts)}
   end
 
-  def assignments_to_text(assignments) do
-    Enum.map(assignments, &assignment_to_text/1) |> Enum.join("\n")
-  end
-
   def assignment_to_text(assignment) do
     case assignment.type do
-    :project_check_in ->
+    :project ->
       "- Check-In #{assignment.url}"
-    :goal_check_in ->
+    :goal ->
       "- Progress Update #{assignment.url}"
-    :milestone ->
-      "- Complete the #{assignment.name} milestone #{assignment.url}"
+    :check_in ->
+      "- Acknowledge Check-In #{assignment.url}"
+    :goal_update ->
+      "- Acknowledge Progress Update #{assignment.url}"
     end
   end
 

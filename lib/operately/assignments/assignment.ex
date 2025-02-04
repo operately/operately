@@ -10,6 +10,7 @@ defmodule Operately.Assignments.Assignment do
     :due,
     :type,
     :path,
+    :url,
     :author_id,
     :author_name,
     :management_hierarchy
@@ -28,6 +29,7 @@ defmodule Operately.Assignments.Assignment do
       due: Operately.Time.as_datetime(project.next_check_in_scheduled_at),
       type: :project,
       path: Paths.project_check_in_new_path(company, project),
+      url: Paths.project_check_in_new_path(company, project) |> Paths.to_url(),
       management_hierarchy: ManagementHierarchy.find(project, reports)
     }
   end
@@ -39,6 +41,7 @@ defmodule Operately.Assignments.Assignment do
       due: Operately.Time.as_datetime(check_in.inserted_at),
       type: :check_in,
       path: Paths.project_check_in_path(company, check_in),
+      url: Paths.project_check_in_path(company, check_in) |> Paths.to_url(),
       author_id: Paths.person_id(check_in.author),
       author_name: check_in.author.full_name,
       management_hierarchy: ManagementHierarchy.find(check_in, reports)
@@ -52,6 +55,7 @@ defmodule Operately.Assignments.Assignment do
       due: Operately.Time.as_datetime(goal.next_update_scheduled_at),
       type: :goal,
       path: Paths.goal_check_in_new_path(company, goal),
+      url: Paths.goal_check_in_new_path(company, goal) |> Paths.to_url(),
       management_hierarchy: ManagementHierarchy.find(goal, reports)
     }
   end
@@ -63,6 +67,7 @@ defmodule Operately.Assignments.Assignment do
       due: Operately.Time.as_datetime(update.inserted_at),
       type: :goal_update,
       path: Paths.goal_check_in_path(company, update),
+      url: Paths.goal_check_in_path(company, update) |> Paths.to_url(),
       author_id: Paths.person_id(update.author),
       author_name: update.author.full_name,
       management_hierarchy: ManagementHierarchy.find(update, reports)

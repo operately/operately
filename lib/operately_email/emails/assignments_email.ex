@@ -10,22 +10,20 @@ defmodule OperatelyEmail.Emails.AssignmentsEmail do
   #
 
   def send(person) do
-    result = OperatelyEmail.Assignments.Loader.load(person)
+    company = Repo.preload(person, [:company]).company
+    [mine: assignments, reports: _] = Operately.Assignments.Loader.load(person, company)
 
-    if result != [] do
-      company = Repo.preload(person, [:company]).company
-
+    if assignments != [] do
       company
       |> new()
       |> from("Operately")
       |> to(person)
       |> subject("Your assignments for today")
       |> assign(:company, company)
-      |> assign(:assignment_groups, result)
+      |> assign(:assignments, assignments)
       |> render("assignments")
     else
       Logger.info("No assignments for #{person.full_name}")
     end
   end
-
 end
