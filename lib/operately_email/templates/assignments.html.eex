@@ -1,27 +1,30 @@
-<%= title(@company.name) %>  
-<%= title("Here are your assignments") %>  
+<%= title(@company.name) %>
+<%= title("Here are your assignments") %>
 
 <%= spacer() %>
 <%= line() %>
 
-<%= Enum.map @assignment_groups, fn group -> %>
-  <%= title(group.name, font_size: 20) %>
+<%= Enum.map @assignments, fn assignment -> %>
+  <%= title(assignment.name, font_size: 20) %>
 
-  <%= Enum.map group.assignments, fn assignment -> %>
-    <%= case assignment.type do %>
-    <% :project_check_in -> %>
-      <%= row(%{padding_top: 2, padding_bottom: 2}) do %>
-        <%= link(assignment.url, "Check-In") %> <%= subtle(assignment.due) %>
-      <% end %>
-    <% :goal_check_in -> %>
-      <%= row(%{padding_top: 2, padding_bottom: 2}) do %>
-        <%= link(assignment.url, "Progress Update") %> <%= subtle(assignment.due) %>
-      <% end %>
-    <% :milestone -> %>
-      <%= row(%{padding_top: 2, padding_bottom: 2}) do %>
-        <%= link(assignment.url, "Complete the #{assignment.name} milestone") %> <%= subtle(assignment.due) %>
-      <% end %>
+  <%= case assignment.type do %>
+  <% :project -> %>
+    <%= row(%{padding_top: 2, padding_bottom: 2}) do %>
+      <%= link(assignment.url, "Check-In") %> <%= subtle(assignment.due) %>
+    <% end %>
+  <% :goal -> %>
+    <%= row(%{padding_top: 2, padding_bottom: 2}) do %>
+      <%= link(assignment.url, "Progress Update") %> <%= subtle(assignment.due) %>
+    <% end %>
+  <% :check_in -> %>
+    <%= row(%{padding_top: 2, padding_bottom: 2}) do %>
+      <%= link(assignment.url, "Acknowledge Check-In") %> <%= subtle(assignment.due) %>
+    <% end %>
+  <% :goal_update -> %>
+    <%= row(%{padding_top: 2, padding_bottom: 2}) do %>
+      <%= link(assignment.url, "Acknowledge Progress Update") %> <%= subtle(assignment.due) %>
     <% end %>
   <% end %>
+
   <%= spacer() %>
 <% end %>
