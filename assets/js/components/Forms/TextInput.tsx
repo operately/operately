@@ -46,7 +46,6 @@ export function TextInput(props: TextInputProps) {
       <div className="relative">
         <input
           name={field}
-          autoFocus={props.autoFocus}
           placeholder={placeholder}
           data-test-id={props.testId ?? createTestId(field)}
           className={styles(!!error)}
@@ -58,6 +57,16 @@ export function TextInput(props: TextInputProps) {
               props.onEnter(e);
             }
           }}
+          //
+          // The standard autoFocus works if the input is rendered outside of a modal.
+          // However, if the input is inside of a modal, the autoFocus prop does not work.
+          //
+          // To handle this edge case, we set the data-autofocus attribute to true, and then
+          // in the component/Modal, we use a onOpen callback to focus the input field
+          // with the data-autofocus attribute.
+          //
+          autoFocus={props.autoFocus}
+          data-autofocus={props.autoFocus}
         />
 
         {!error && props.okSign && (
