@@ -20,6 +20,7 @@ import "./i18n";
 import { setupTestErrorLogger } from "@/utils/errorLogger";
 
 import "@/api/socket";
+import ReactModal from "react-modal";
 
 setupTestErrorLogger();
 
@@ -57,6 +58,8 @@ const App: JSX.Element = (
 
 if (rootElement !== null) {
   createRoot(rootElement).render(App);
+
+  ReactModal.setAppElement(rootElement);
 } else {
   console.error("Root element not found");
 }
