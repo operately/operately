@@ -45,7 +45,7 @@ export function AddFolderModal({ resourceHub, refresh, folder }: FormProps) {
             label="Name"
             field="name"
             testId="new-folder-name"
-            autoFocus
+            autoFocus={showAddFolder}
             placeholder="e.g. Monthly Reports"
           />
         </Forms.FieldGroup>
