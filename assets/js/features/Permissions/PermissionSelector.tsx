@@ -38,7 +38,6 @@ const isCompanySpaceSelected = (company, space) => {
 
 const getPrivacyOptions = (isCompanySpaceSelected: boolean) => {
   const options = [
-    { label: "Public - Anyone on the internet", value: PermissionOptions.PUBLIC },
     { label: "Internal - All organization members", value: PermissionOptions.INTERNAL },
     { label: "Confidential - All people invited to the space", value: PermissionOptions.CONFIDENTIAL },
     { label: "Secret - Only people explicitly invited", value: PermissionOptions.SECRET },
