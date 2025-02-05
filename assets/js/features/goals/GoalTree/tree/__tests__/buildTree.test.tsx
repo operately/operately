@@ -335,6 +335,64 @@ describe("Tree", () => {
     });
   });
 
+  describe("filtering by person", () => {
+    it("shows only goals from the selected person", () => {
+      const t = new TreeTester(["name", "space"], { personId: john.id });
+
+      t.addGoal("G1", marketing, sarah);
+      t.addGoal("G2", product, sarah);
+      t.addGoal("G3", company, john);
+      t.addGoal("G31", marketing, john, "G3");
+      t.addGoal("G4", product, john);
+
+      t.assertShape(`
+        G3 Company
+          G31 Marketing
+        G4 Product
+      `);
+    });
+
+    it("displays descendants of a goal from other people", () => {
+      const t = new TreeTester(["name", "space"], { personId: john.id });
+
+      t.addGoal("G1", marketing, john);
+      t.addGoal("G11", product, sarah, "G1");
+      t.addGoal("G111", product, john, "G11");
+      t.addGoal("G12", company, peter, "G1");
+      t.addProj("P13", product, sarah, "G1");
+
+      t.assertShape(`
+        G1 Marketing
+          G11 Product
+            G111 Product
+          G12 Company
+          P13 Product
+      `);
+    });
+
+    it("displays ancestors of a goal or project from other people", () => {
+      const t = new TreeTester(["name", "space"], { personId: john.id });
+
+      t.addGoal("G1", company, peter);
+      t.addGoal("G11", product, sarah, "G1");
+      t.addGoal("G111", marketing, john, "G11");
+      t.addGoal("G2", company, sarah);
+      t.addGoal("G22", company, john, "G2");
+      t.addGoal("G3", company, sarah);
+      t.addProj("P31", marketing, john, "G3");
+
+      t.assertShape(`
+        G1 Company
+          G11 Product
+            G111 Marketing
+        G2 Company
+          G22 Company
+        G3 Company
+          P31 Marketing
+      `);
+    });
+  });
+
   describe("sorting", () => {
     it("closed goals are sorted last", () => {
       const t = new TreeTester(["name"], { showCompleted: true });
