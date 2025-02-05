@@ -68,7 +68,7 @@ defmodule Operately.Support.Features.ProfileSteps do
     goal2 = goal_fixture(ctx.person, %{
       company_id: ctx.company.id,
       space_id: ctx.company.company_space_id,
-      champion_id: nil,
+      champion_id: hd(ctx.peers).id,
       name: "Increase customer satisfaction",
     })
 

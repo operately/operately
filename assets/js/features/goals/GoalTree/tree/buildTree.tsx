@@ -126,11 +126,12 @@ class TreeBuilder {
   }
 
   private rootNodesForPerson(): Node[] {
-    return this.nodes.filter(
-      (n) =>
-        compareIds(n.champion?.id, this.options.personId!) &&
-        n.hasNoParentWith((node) => compareIds(node.champion?.id, this.options.personId)),
-    );
+    return this.nodes
+      .filter((n) => n.hasNoParent())
+      .filter(
+        (n) =>
+          n.isChampionOrReviewer(this.options.personId!) || n.isChampionOrReviewerOfDescendant(this.options.personId!),
+      );
   }
 
   private rootNodesInTheCompany(): Node[] {
@@ -192,13 +193,27 @@ class TreeFilter {
   }
 
   private isNodeVisible(node: Node): boolean {
-    return this.spaceFilter(node) && this.statusFilter(node) && this.timeframeFilter(node) && this.myRoleFilter(node);
+    return (
+      this.spaceFilter(node) &&
+      this.personFilter(node) &&
+      this.statusFilter(node) &&
+      this.timeframeFilter(node) &&
+      this.myRoleFilter(node)
+    );
   }
 
   private spaceFilter(node: Node): boolean {
     if (!this.options.spaceId) return true;
 
     return node.isFromSpace(this.options.spaceId) || node.hasAncestorFromSpace(this.options.spaceId);
+  }
+
+  private personFilter(node: Node): boolean {
+    if (!this.options.personId) return true;
+
+    return (
+      node.isChampionOrReviewer(this.options.personId) || node.isChampionOrReviewerOfAncestor(this.options.personId)
+    );
   }
 
   private statusFilter(node: Node): boolean {

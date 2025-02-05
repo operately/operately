@@ -85,6 +85,22 @@ export abstract class Node {
     return this.parent.isFromSpace(spaceId) || this.parent.hasAncestorFromSpace(spaceId);
   }
 
+  isChampionOrReviewer(personId: string): boolean {
+    return compareIds(this.champion?.id, personId) || compareIds(this.reviewer?.id, personId);
+  }
+
+  isChampionOrReviewerOfDescendant(personId: string): boolean {
+    return this.children.some(
+      (child) => child.isChampionOrReviewer(personId) || child.isChampionOrReviewerOfDescendant(personId),
+    );
+  }
+
+  isChampionOrReviewerOfAncestor(personId: string): boolean {
+    if (!this.parent) return false;
+
+    return this.parent.isChampionOrReviewer(personId) || this.parent.isChampionOrReviewerOfAncestor(personId);
+  }
+
   hasActiveDescendant(): boolean {
     return this.children.some((child) => child.isActive || child.hasActiveDescendant());
   }
