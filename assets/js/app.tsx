@@ -20,6 +20,7 @@ import "./i18n";
 import { setupTestErrorLogger } from "@/utils/errorLogger";
 
 import "@/api/socket";
+import ReactModal from "react-modal";
 
 setupTestErrorLogger();
 
@@ -57,6 +58,10 @@ const App: JSX.Element = (
 
 if (rootElement !== null) {
   createRoot(rootElement).render(App);
+
+  // The app element must be set for all ReactModal instances
+  // read more: https://reactcommunity.org/react-modal/accessibility/#app-element
+  ReactModal.setAppElement(rootElement);
 } else {
   console.error("Root element not found");
 }
