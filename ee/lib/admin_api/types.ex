@@ -16,6 +16,7 @@ defmodule OperatelyEE.AdminApi.Types do
     field :spaces_count, :integer
     field :projects_count, :integer
     field :last_activity_at, :datetime
+    field :inserted_at, :datetime
   end
 
   object :person do
