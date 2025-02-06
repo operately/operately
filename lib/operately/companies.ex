@@ -7,7 +7,7 @@ defmodule Operately.Companies do
   alias Operately.Access.Fetch
 
   def list_companies do
-    Repo.all(Company)
+    Repo.all(from c in Company, order_by: [desc: c.inserted_at])
   end
 
   def list_admins(company), do: Company.load_admins(company).admins
