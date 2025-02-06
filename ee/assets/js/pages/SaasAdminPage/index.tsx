@@ -42,6 +42,7 @@ function CompanyList() {
         <div className="text-right">Projects</div>
         <div className="text-right">Owners</div>
         <div className="text-right">Last Activity</div>
+        <div className="text-right">Created At</div>
       </TableRow>
 
       {companies.map((company) => (
@@ -58,6 +59,10 @@ function CompanyList() {
 
           <div className="text-right">
             {company.lastActivityAt && <FormattedTime time={company.lastActivityAt!} format="relative" />}
+          </div>
+
+          <div className="text-right">
+            <FormattedTime time={company.insertedAt!} format="relative" />
           </div>
         </TableRow>
       ))}
@@ -77,7 +82,7 @@ function TableRow({ header, children, linkTo }: { header?: boolean; children: Re
     "cursor-pointer": !header,
   });
 
-  const style = { gridTemplateColumns: "2fr 1fr 1fr 1fr 1fr 1fr 1fr" };
+  const style = { gridTemplateColumns: "4fr 1fr 1fr 1fr 1fr 1fr 1.5fr 1.5fr" };
 
   if (linkTo) {
     return <DivLink to={linkTo} className={className} style={style} children={children} />;

@@ -133,6 +133,7 @@ export interface Company {
   spacesCount?: number | null;
   projectsCount?: number | null;
   lastActivityAt?: string | null;
+  insertedAt?: string | null;
 }
 
 export interface Person {
