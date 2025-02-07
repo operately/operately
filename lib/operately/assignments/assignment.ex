@@ -1,9 +1,10 @@
 defmodule Operately.Assignments.Assignment do
-  @enforce_keys [:resource_id, :name, :due, :type, :path]
+  @enforce_keys [:resource_id, :name, :due, :relative_due, :type, :path]
   defstruct [
     :resource_id,
     :name,
     :due,
+    :relative_due,
     :type,
     :path,
     :url,
