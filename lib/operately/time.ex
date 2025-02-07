@@ -6,12 +6,12 @@ defmodule Operately.Time do
 
   @doc """
   Create a NaiveDateTime for a specific day in the current month.
-  e.g. Time.day_in_current_month(15) will return a NaiveDateTime 
+  e.g. Time.day_in_current_month(15) will return a NaiveDateTime
   for the 15th of the current month.
   """
   def day_in_current_month(day) do
     NaiveDateTime.from_erl!({
-      {Date.utc_today().year, Date.utc_today().month, day}, 
+      {Date.utc_today().year, Date.utc_today().month, day},
       {0, 0, 0}
     })
   end
@@ -147,6 +147,20 @@ defmodule Operately.Time do
 
   def current_day do
     Date.utc_today().day
+  end
+
+  def relative_due_days(due) do
+    today = DateTime.utc_now() |> DateTime.to_date()
+    due = as_datetime(due)
+
+    case Date.compare(due, today) do
+      :lt ->
+        days_ago = Date.diff(today, due)
+
+        "was due #{days_ago} days ago"
+      :eq ->
+        "is due today"
+    end
   end
 
 end
