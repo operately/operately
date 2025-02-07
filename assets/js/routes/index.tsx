@@ -70,7 +70,7 @@ export function createAppRoutes() {
       element: <CompanyRoutes />,
       errorElement: <ErrorPage />,
       children: [
-        pageRoute("", pages.SpaceListPage),
+        pageRoute("", pages.HomePage),
         pageRoute("feed", pages.FeedPage),
         pageRoute("review", pages.ReviewPage),
         pageRoute("notifications", pages.NotificationsPage),
