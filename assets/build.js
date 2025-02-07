@@ -29,26 +29,13 @@ if (deploy) {
 }
 
 if (watch) {
-  console.log(esbuild.version);
-
-  opts = {
-    ...opts,
-    sourcemap: "inline",
-    watch: {
-      onRebuild(error, result) {
-        if (error) {
-          console.error("watch build failed:", error);
-        } else {
-          console.log("watch build succeeded:", result);
-        }
-      }
-    }
-  };
+  opts = {...opts, sourcemap: "inline"};
 
   esbuild
-    .build(opts)
-    .then((result) => {
-      console.log("watch build succeeded:", result);
+    .context(opts)
+    .then(context => {
+      context.watch();;
+      console.log("watching files...");
     })
     .catch((_error) => {
       console.error("watch build failed:", _error);
