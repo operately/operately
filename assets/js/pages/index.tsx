@@ -48,6 +48,7 @@ import * as GoalProgressUpdatePage from "./GoalProgressUpdatePage";
 import * as GoalReopenPage from "./GoalReopenPage";
 import * as GoalSubgoalsPage from "./GoalSubgoalsPage";
 import * as GoalsAndProjectsPage from "./GoalsAndProjectsPage";
+import * as HomePage from "./HomePage";
 import * as JoinPage from "./JoinPage";
 import * as LobbyPage from "./LobbyPage";
 import * as LoginPage from "./LoginPage";
@@ -110,7 +111,6 @@ import * as SpaceDiscussionsPage from "./SpaceDiscussionsPage";
 import * as SpaceEditGeneralAccessPage from "./SpaceEditGeneralAccessPage";
 import * as SpaceEditPage from "./SpaceEditPage";
 import * as SpaceGoalsPage from "./SpaceGoalsPage";
-import * as SpaceListPage from "./SpaceListPage";
 import * as SpacePage from "./SpacePage";
 import * as TaskPage from "./TaskPage";
 
@@ -343,6 +343,11 @@ export default {
     name: "GoalsAndProjectsPage",
     loader: GoalsAndProjectsPage.loader,
     Page: GoalsAndProjectsPage.Page,
+  },
+  HomePage: {
+    name: "HomePage",
+    loader: HomePage.loader,
+    Page: HomePage.Page,
   },
   JoinPage: {
     name: "JoinPage",
@@ -653,11 +658,6 @@ export default {
     name: "SpaceGoalsPage",
     loader: SpaceGoalsPage.loader,
     Page: SpaceGoalsPage.Page,
-  },
-  SpaceListPage: {
-    name: "SpaceListPage",
-    loader: SpaceListPage.loader,
-    Page: SpaceListPage.Page,
   },
   SpacePage: {
     name: "SpacePage",
