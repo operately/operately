@@ -17,11 +17,11 @@ defmodule Operately.Time do
   end
 
   def days_ago(n) do
-    DateTime.utc_now() |> DateTime.add(-n, :day)
+    DateTime.utc_now() |> DateTime.add(-n, :day) |> DateTime.truncate(:second)
   end
 
   def days_from_now(n) do
-    DateTime.utc_now() |> DateTime.add(n, :day)
+    DateTime.utc_now() |> DateTime.add(n, :day) |> DateTime.truncate(:second)
   end
 
   def short_date(date) do
