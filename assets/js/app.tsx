@@ -33,14 +33,12 @@ if (window.appConfig.sentry.enabled) {
   Sentry.init({
     dsn: window.appConfig.sentry.dsn,
     integrations: [
-      new Sentry.BrowserTracing({
-        routingInstrumentation: Sentry.reactRouterV6Instrumentation(
-          React.useEffect,
-          useLocation,
-          useNavigationType,
-          createRoutesFromChildren,
-          matchRoutes,
-        ),
+      Sentry.reactRouterV7BrowserTracingIntegration({
+        useEffect: React.useEffect,
+        useLocation,
+        useNavigationType,
+        createRoutesFromChildren,
+        matchRoutes,
       }),
     ],
     enableTracing: false,
@@ -50,7 +48,7 @@ if (window.appConfig.sentry.enabled) {
 const rootElement: HTMLElement | null = document.getElementById("root");
 const routes = createAppRoutes();
 
-const App: JSX.Element = (
+const App = (
   <React.StrictMode>
     <RouterProvider router={routes} />
   </React.StrictMode>
