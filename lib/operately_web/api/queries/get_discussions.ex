@@ -36,7 +36,7 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussions do
       join: b in assoc(m, :messages_board),
       where: b.space_id == ^inputs.space_id and m.state != :draft,
       preload: ^preload(inputs),
-      order_by: [desc: m.inserted_at]
+      order_by: [desc: m.published_at]
     )
     |> Filters.filter_by_view_access(me.id)
     |> Repo.all()

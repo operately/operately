@@ -6,6 +6,7 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionsTest do
   import Operately.MessagesFixtures
 
   alias Operately.Access.Binding
+  alias Operately.Time
 
   describe "security" do
     test "it requires authentication", ctx do
@@ -67,7 +68,6 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionsTest do
     end
   end
 
-
   describe "get_discussions functionality" do
     setup ctx do
       ctx
@@ -79,6 +79,22 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionsTest do
       |> Factory.add_comment(:comment1, :message)
       |> Factory.add_comment(:comment2, :message)
       |> Factory.log_in_person(:creator)
+    end
+
+    test "discussions are sorted by published_at desc", ctx do
+      ctx = Enum.reduce(1..3, ctx, fn i, ctx -> Factory.add_message(ctx, :"message#{i}", :messages_board) end)
+
+      update_published_at(ctx.message1, Time.days_ago(10))
+      update_published_at(ctx.message2, Time.days_ago(2))
+      update_published_at(ctx.message3, Time.days_ago(5))
+
+      assert {200, res} = query(ctx.conn, :get_discussions, %{space_id: Paths.space_id(ctx.space)})
+
+      assert length(res.discussions) == 4
+      assert Enum.at(res.discussions, 0).id == OperatelyWeb.Paths.message_id(ctx.message)
+      assert Enum.at(res.discussions, 1).id == OperatelyWeb.Paths.message_id(ctx.message2)
+      assert Enum.at(res.discussions, 2).id == OperatelyWeb.Paths.message_id(ctx.message3)
+      assert Enum.at(res.discussions, 3).id == OperatelyWeb.Paths.message_id(ctx.message1)
     end
 
     test "with no includes", ctx do
@@ -140,5 +156,11 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionsTest do
   defp create_message(creator_id, space_id) do
     board = messages_board_fixture(space_id)
     message_fixture(creator_id, board.id)
+  end
+
+  defp update_published_at(message, value) do
+    message
+    |> Ecto.Changeset.change(%{published_at: value})
+    |> Operately.Repo.update()
   end
 end
