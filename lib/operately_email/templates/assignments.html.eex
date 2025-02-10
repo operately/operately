@@ -10,19 +10,19 @@
   <%= case assignment.type do %>
   <% :project -> %>
     <%= row(%{padding_top: 2, padding_bottom: 2}) do %>
-      <%= link(assignment.url, "Check-In") %> <%= subtle(assignment.due) %>
+      <%= link(assignment.url, "Check-In") %> <%= subtle(assignment.relative_due) %>
     <% end %>
   <% :goal -> %>
     <%= row(%{padding_top: 2, padding_bottom: 2}) do %>
-      <%= link(assignment.url, "Progress Update") %> <%= subtle(assignment.due) %>
+      <%= link(assignment.url, "Progress Update") %> <%= subtle(assignment.relative_due) %>
     <% end %>
   <% :check_in -> %>
     <%= row(%{padding_top: 2, padding_bottom: 2}) do %>
-      <%= link(assignment.url, "Acknowledge Check-In") %> <%= subtle(assignment.due) %>
+      <%= link(assignment.url, "Acknowledge Check-In") %> <%= subtle(assignment.relative_due) %>
     <% end %>
   <% :goal_update -> %>
     <%= row(%{padding_top: 2, padding_bottom: 2}) do %>
-      <%= link(assignment.url, "Acknowledge Progress Update") %> <%= subtle(assignment.due) %>
+      <%= link(assignment.url, "Acknowledge Progress Update") %> <%= subtle(assignment.relative_due) %>
     <% end %>
   <% end %>
 
