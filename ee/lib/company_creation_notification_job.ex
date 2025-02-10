@@ -30,16 +30,11 @@ defmodule OperatelyEE.CompanyCreationNotificationJob do
     url = Application.get_env(:operately, :company_creation_notification_webhook_url)
     headers = [{"Content-Type", "application/json"}]
     company_url = "#{OperatelyWeb.Endpoint.url()}/admin/companies/#{OperatelyWeb.Paths.company_id(company)}"
-
-    body = %{
-      content: "#{account.full_name} (#{account.email}) has added a new company: [#{company.name}](<#{company_url}>)"
-    }
+    body = %{content: "#{account.full_name} (#{account.email}) has added a new company: [#{company.name}](<#{company_url}>)"}
 
     case Req.post!(url, headers: headers, json: body) do
       {:ok, res} -> verify_response(res)
-      e -> 
-        IO.inspect(e)
-        Logger.error("Failed to send company creation notification")
+      e -> Logger.error("Failed to send company creation notification, error: #{inspect(e)}")
     end
   end
 
