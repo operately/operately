@@ -1,108 +1,26 @@
-import { NodeView } from "@/features/richtexteditor/extensions/MentionPeople/NodeView";
 import React from "react";
 
 //
-// Implementation of extract and truncate for ProseMirror nodes.
+// Sumarize removes non-text content from a rich text object,
+// and truncates the text content to a given character limit.
 //
-// The extract function, extracts text-like content from a ProseMirror node.
-// These are the text nodes and mention nodes. The mention nodes are converted
-// to a Mention object with an id and label.
+function summarize(content: any, limit: number): any {
+  const richText = richContentToString(parseContent(content));
+  return shortenContent(richText, limit, { skipParse: true });
+}
+
+export function useSumarizedContent(content: any, limit: number): any {
+  return React.useMemo(() => summarize(content, limit), [content, limit]);
+}
+
 //
-// The truncate function, truncates the extracted content to a given character
-// count. The result is an array of JSX elements. The mention nodes are
-// converted to a span with a link class.
+// ShortenContent truncates the text content of a rich text object to a given character limit.
+// It does not remove non-text content.
 //
-
-interface Mention {
-  id: string;
-  label: string;
-}
-
-type ExtractResult = string | Mention;
-
-export function extract(node: any): ExtractResult[] {
-  let result: ExtractResult[] = [];
-
-  if (node.type.name === "text") {
-    result.push(node.text);
-  } else if (node.type.name === "mention") {
-    const mention = { id: node.attrs.id, label: node.attrs.label } as Mention;
-
-    result.push(mention);
-  } else if (node.content) {
-    node.content.forEach((child: any) => {
-      result.push(...extract(child));
-    });
-
-    if (node.type.name === "paragraph") {
-      result.push(" ");
-    }
-  }
-
-  return result;
-}
-
-export function richContentToString(node: any): string {
-  let result: string[] = [];
-
-  if (node.type === "text") {
-    result.push(node.text);
-  } else if (node.type === "mention") {
-    result.push(node.attrs.label);
-  } else if (node.content) {
-    node.content.forEach((child: any) => {
-      result.push(richContentToString(child));
-    });
-
-    if (node.type.name === "paragraph") {
-      result.push(" ");
-    }
-  }
-
-  return result.join(" ");
-}
-
-export function truncate(extracted: ExtractResult[], characterCount: number): JSX.Element[] {
-  let result: JSX.Element[] = [];
-  let length = 0;
-
-  for (let i = 0; i < extracted.length; i++) {
-    const node = extracted[i];
-
-    if (!node) continue;
-
-    if (typeof node === "string") {
-      if (length + node.length > characterCount) {
-        const remaining = characterCount - length;
-        const text = node.substring(0, remaining);
-
-        length += remaining;
-        result.push(<React.Fragment key={i}>{text}</React.Fragment>);
-      } else {
-        length += node.length;
-        result.push(<React.Fragment key={i}>{node}</React.Fragment>);
-      }
-    }
-
-    if (typeof node === "object") {
-      length += node.label.length;
-      result.push(<NodeView key={i} node={{ attrs: { id: node.id, label: node.label } }} />);
-    }
-
-    if (length >= characterCount) {
-      result.push(<React.Fragment key={i + 1}>&hellip;</React.Fragment>);
-
-      break;
-    }
-  }
-
-  return result;
-}
-
 export function shortenContent(jsonContent: string, limit: number, opts?: { skipParse?: boolean; suffix?: string }) {
   const content = opts?.skipParse ? jsonContent : JSON.parse(jsonContent);
 
-  const dfs = (content, count) => {
+  const dfs = (content: any, count: number) => {
     if (content.text) {
       const total = content.text.length + count;
 
@@ -130,7 +48,7 @@ export function shortenContent(jsonContent: string, limit: number, opts?: { skip
     if (content.content) {
       let included = 1;
 
-      content.content.forEach((child) => {
+      content.content.forEach((child: any) => {
         count = dfs(child, count);
 
         if (count < limit) {
@@ -207,4 +125,32 @@ export function areRichTextObjectsEqual(obj1: any, obj2: any) {
 
 export function emptyContent() {
   return { type: "doc", content: [{ type: "paragraph" }] };
+}
+
+export function richContentToString(node: any): string {
+  let result: string[] = [];
+
+  if (node.type === "text") {
+    result.push(node.text);
+  } else if (node.type === "mention") {
+    result.push(node.attrs.label);
+  } else if (node.content) {
+    node.content.forEach((child: any) => {
+      result.push(richContentToString(child));
+    });
+
+    if (node.type.name === "paragraph") {
+      result.push(" ");
+    }
+  }
+
+  return result.join(" ");
+}
+
+function parseContent(content?: string | any): any {
+  if (content?.constructor?.name === "String") {
+    return JSON.parse(content);
+  } else {
+    return content;
+  }
 }
