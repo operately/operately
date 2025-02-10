@@ -1,4 +1,4 @@
-defmodule OperatelyEE.AccountOnboardingTest do
+defmodule OperatelyEE.AccountOnboardingJobTest do
   use Operately.DataCase
   import Mock
 
