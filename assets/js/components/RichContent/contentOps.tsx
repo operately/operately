@@ -1,19 +1,3 @@
-import React from "react";
-
-//
-// Sumarize removes non-text content from a rich text object,
-// and truncates the text content to a given character limit.
-//
-function summarize(content: any, limit: number): any {
-  const richText = richContentToString(parseContent(content));
-  return shortenContent(richText, limit, { skipParse: true });
-}
-
-export function useSumarizedContent(content: any, limit: number): any {
-  return React.useMemo(() => summarize(content, limit), [content, limit]);
-}
-
-//
 // ShortenContent truncates the text content of a rich text object to a given character limit.
 // It does not remove non-text content.
 //
@@ -147,10 +131,6 @@ export function richContentToString(node: any): string {
   return result.join(" ");
 }
 
-function parseContent(content?: string | any): any {
-  if (content?.constructor?.name === "String") {
-    return JSON.parse(content);
-  } else {
-    return content;
-  }
+export function parseContent(content?: string | any): any {
+  return typeof content === "string" ? JSON.parse(content) : content;
 }
