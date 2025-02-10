@@ -36,6 +36,9 @@ config :operately, :allow_signup_with_google, System.get_env("ALLOW_SIGNUP_WITH_
 config :operately, :send_onboarding_emails, System.get_env("SEND_ONBOARDING_EMAILS", "no") == "yes"
 config :operately, :sendgrid_saas_onboarding_list_id, System.get_env("SENDGRID_SAAS_ONBOARDING_LIST_ID")
 
+config :operately, :send_company_creation_notifications, System.get_env("SEND_COMPANY_CREATION_NOTIFICATIONS", "no") == "yes"
+config :operately, :company_creation_notification_webhook_url, System.get_env("COMPANY_CREATION_NOTIFICATION_WEBHOOK_URL")
+
 if config_env() == :prod do
   database_url =
     System.get_env("DATABASE_URL") ||
