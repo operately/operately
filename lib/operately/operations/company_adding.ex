@@ -19,6 +19,7 @@ defmodule Operately.Operations.CompanyAdding do
     |> insert_account_if_doesnt_exists(attrs, account)
     |> insert_person(attrs)
     |> insert_activity()
+    |> send_discord_notification()
     |> Repo.transaction()
     |> Repo.extract_result(:updated_company)
   end
@@ -168,6 +169,16 @@ defmodule Operately.Operations.CompanyAdding do
           creator_id: parent_changes.person.id,
         }
       end)
+    end)
+  end
+
+  defp send_discord_notification(multi) do
+    multi
+    |> Oban.insert(:send_discord_notification, fn %{account: account, company: company} ->
+      OperatelyEE.CompanyCreationNotificationJob.new(%{
+        company_id: company.id,
+        account_id: account.id,
+      })
     end)
   end
 end
