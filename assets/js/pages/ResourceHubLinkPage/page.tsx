@@ -4,9 +4,10 @@ import * as Reactions from "@/models/reactions";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
+import RichContent from "@/components/RichContent";
 import { Spacer } from "@/components/Spacer";
 import { assertPresent } from "@/utils/assertions";
-import RichContent, { richContentToString } from "@/components/RichContent";
+import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { CurrentSubscriptions } from "@/features/Subscriptions";
@@ -91,7 +92,7 @@ function Description() {
   const { link } = useLoadedData();
   assertPresent(link.description, "description must be present in link");
 
-  const hasDescription = Boolean(richContentToString(JSON.parse(link.description)).trim());
+  const hasDescription = !isContentEmpty(link.description);
 
   if (!hasDescription) return <></>;
 

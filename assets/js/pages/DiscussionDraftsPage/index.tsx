@@ -7,16 +7,16 @@ import * as Time from "@/utils/time";
 
 import { Discussion } from "@/models/discussions";
 import { DivLink } from "@/components/Link";
-import { Summary } from "@/components/RichContent";
 import { Paths } from "@/routes/paths";
-
+import { PrimaryButton } from "@/components/Buttons";
+import { createTestId } from "@/utils/testid";
+import { truncateString } from "@/utils/strings";
 import { assertPresent } from "@/utils/assertions";
+import { richContentToString } from "@/components/RichContent";
 
 import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
-import { PrimaryButton } from "@/components/Buttons";
 import classNames from "classnames";
-import { createTestId } from "@/utils/testid";
 
 interface LoadedData {
   space: Spaces.Space;
@@ -126,6 +126,7 @@ function DiscussionListItem({ discussion }: { discussion: Discussion }) {
   );
 
   const testId = createTestId("discussion-list-item", discussion.title!);
+  const contentSnippet = richContentToString(JSON.parse(discussion.body!));
 
   return (
     <DivLink to={path} className={className} testId={testId}>
@@ -139,7 +140,7 @@ function DiscussionListItem({ discussion }: { discussion: Discussion }) {
           <span className="font-medium text-content-dimmed">
             Last edited on <FormattedTime time={discussion.updatedAt!} format="relative-time-or-date" /> &mdash;{" "}
           </span>
-          <Summary jsonContent={discussion.body!} characterCount={250} as="span" />
+          {truncateString(contentSnippet, 60)}
         </div>
       </div>
     </DivLink>
