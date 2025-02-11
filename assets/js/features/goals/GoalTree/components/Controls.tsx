@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 
+import { IconSettings } from "@tabler/icons-react";
 import Forms from "@/components/Forms";
 import Modal from "@/components/Modal";
 
@@ -24,12 +25,15 @@ export function Controls() {
   return (
     <div className="flex items-center justify-between mb-4">
       <div className="flex items-center gap-2">
-        <SecondaryButton onClick={isExpanded ? collapseAll : expandAll} size="xs" testId="collapse-expand-all">
-          {isExpanded ? "Collapse All" : "Expand all"}
+        <SecondaryButton onClick={toggleShowOptions} size="xs" testId="view-options">
+          <div className="flex items-center gap-1">
+            <IconSettings size={18} />
+            Customize view
+          </div>
         </SecondaryButton>
 
-        <SecondaryButton onClick={toggleShowOptions} size="xs" testId="view-options">
-          View options
+        <SecondaryButton onClick={isExpanded ? collapseAll : expandAll} size="xs" testId="collapse-expand-all">
+          {isExpanded ? "Collapse All" : "Expand all"}
         </SecondaryButton>
       </div>
 
