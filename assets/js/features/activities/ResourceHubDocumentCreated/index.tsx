@@ -41,7 +41,7 @@ const ResourceHubDocumentCreating: ActivityHandler = {
   },
 
   feedItemAlignment(_activity: Activity): "items-start" | "items-center" {
-    return "items-center";
+    return "items-start";
   },
 
   commentCount(_activity: Activity): number {
