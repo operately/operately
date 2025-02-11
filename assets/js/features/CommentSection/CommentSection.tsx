@@ -120,13 +120,13 @@ function EditComment({ comment, onCancel, form }) {
 function MilestoneCompleted({ comment }) {
   return (
     <div className="flex items-center justify-between gap-3 py-3 not-first:border-t border-stroke-base text-content-accent relative">
-      <div className="shrink-0">
+      <div className="shrink-0 mt-1">
         <Avatar person={comment.author} size="normal" />
       </div>
 
       <div className="flex-1">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1 mt-1.5">
+          <div className="flex items-center gap-1">
             <Icons.IconSquareCheckFilled size={20} className="text-accent-1" />
             <div className="flex-1 pr-2 font-semibold text-content-accent">Completed the Milestone</div>
           </div>
@@ -145,7 +145,7 @@ function MilestoneCompleted({ comment }) {
 function MilestoneReopened({ comment }) {
   return (
     <div className="flex items-center justify-between gap-3 py-3 not-first:border-t border-stroke-base text-content-accent relative">
-      <div className="shrink-0">
+      <div className="shrink-0 mt-1">
         <Avatar person={comment.author} size="normal" />
       </div>
 
