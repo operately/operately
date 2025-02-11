@@ -15,6 +15,8 @@ import { UndoButton } from "./UndoButton";
 
 import { LinkEditForm } from "@/components/Editor";
 import { CodeBlockButton } from "./CodeBlockButton";
+import { Brush } from "./Brush";
+import { DividerButton } from "./DividerButton";
 
 interface Props {
   editor: any;
@@ -39,14 +41,16 @@ export function Toolbar({ editor, noTopBorder }: Props): JSX.Element {
             <H2Button editor={editor} iconSize={20} />
 
             <Separator />
+            <Brush editor={editor} iconSize={18} />
+            <Separator />
 
             <BulletListButton editor={editor} iconSize={20} />
             <NumberListButton editor={editor} iconSize={20} />
             <BlockquoteButton editor={editor} iconSize={20} />
             <CodeBlockButton editor={editor} iconSize={20} />
+            <DividerButton editor={editor} iconSize={20} />
 
             <Separator />
-
             <LinkButton editor={editor} iconSize={20} />
           </div>
 
