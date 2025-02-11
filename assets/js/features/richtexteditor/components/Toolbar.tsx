@@ -14,6 +14,7 @@ import { StrikeButton } from "./StrikeButton";
 import { UndoButton } from "./UndoButton";
 
 import { LinkEditForm } from "@/components/Editor";
+import { CodeBlockButton } from "./CodeBlockButton";
 
 interface Props {
   editor: any;
@@ -31,19 +32,27 @@ export function Toolbar({ editor, noTopBorder }: Props): JSX.Element {
             <BoldButton editor={editor} iconSize={20} />
             <ItalicButton editor={editor} iconSize={20} />
             <StrikeButton editor={editor} iconSize={20} />
-            <LinkButton editor={editor} iconSize={20} />
 
-            <BulletListButton editor={editor} iconSize={20} />
-            <NumberListButton editor={editor} iconSize={20} />
+            <Separator />
 
             <H1Button editor={editor} iconSize={20} />
             <H2Button editor={editor} iconSize={20} />
 
+            <Separator />
+
+            <BulletListButton editor={editor} iconSize={20} />
+            <NumberListButton editor={editor} iconSize={20} />
             <BlockquoteButton editor={editor} iconSize={20} />
-            <AttachmentButton editor={editor} iconSize={20} />
+            <CodeBlockButton editor={editor} iconSize={20} />
+
+            <Separator />
+
+            <LinkButton editor={editor} iconSize={20} />
           </div>
 
           <div className="flex items-center gap-1">
+            <AttachmentButton editor={editor} iconSize={20} />
+            <Separator />
             <UndoButton editor={editor} iconSize={20} />
             <RedoButton editor={editor} iconSize={20} />
           </div>
@@ -53,4 +62,8 @@ export function Toolbar({ editor, noTopBorder }: Props): JSX.Element {
       <LinkEditForm editor={editor} />
     </div>
   );
+}
+
+function Separator(): React.ReactElement {
+  return <div className="border-l border-stroke-base h-4 mx-2" />;
 }
