@@ -47,7 +47,7 @@ export function summarize(node: any): any {
     case "hard_break":
     case "horizontal_rule":
     case "blob":
-      return null;
+      return summarizeBlob(node);
     default:
       return node;
   }
@@ -102,6 +102,10 @@ function flatten(nodes: any[]): any[] {
 
 function summarizeText(node: any): any {
   return { type: "text", text: richContentToString(node) };
+}
+
+function summarizeBlob(node: any) {
+  return { type: "text", text: node.attrs.title };
 }
 
 const summarizeMention = (node: any) => node;
