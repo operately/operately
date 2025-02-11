@@ -1,4 +1,3 @@
-import React from "react";
 import * as People from "@/models/people";
 
 import type { Activity } from "@/models/activities";
@@ -42,9 +41,8 @@ const ResourceHubLinkCreated: ActivityHandler = {
     }
   },
 
-  FeedItemContent({ activity }: { activity: Activity; page: any }) {
-    const link = content(activity).link!;
-    return <div>{link.url}</div>;
+  FeedItemContent(_props: { activity: Activity; page: any }) {
+    return null;
   },
 
   feedItemAlignment(_activity: Activity): "items-start" | "items-center" {
