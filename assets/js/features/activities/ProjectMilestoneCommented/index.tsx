@@ -49,7 +49,11 @@ const ProjectMilestoneCommented: ActivityHandler = {
     const comment = content(activity).comment!;
     const commentMessage = JSON.parse(comment.content!)["message"];
 
-    return <Summary jsonContent={commentMessage} characterCount={200} />;
+    if (commentMessage) {
+      return <Summary jsonContent={commentMessage} characterCount={200} />;
+    } else {
+      return null;
+    }
   },
 
   feedItemAlignment(_activity: Activity): "items-start" | "items-center" {
