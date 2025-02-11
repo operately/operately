@@ -31,10 +31,10 @@
 }
 
 .ProseMirror hr {
-  height: 1px;
-  background-color: var(--color-stroke-base);
+  height: 0.5px;
+  background-color: var(--color-stroke-dimmed);
   border: none;
-  width: 50px !important;
+  width: 100%;
   margin-top: 1em !important;
   margin-bottom: 1em !important;
   margin-left: auto !important;
@@ -98,7 +98,9 @@
 .ProseMirror code {
   background-color: var(--color-surface-dimmed);
   color: var(--color-content-accent);
+  font-size: 1rem !important;
 }
+
 .ProseMirror pre {
   background: var(--color-surface-dimmed);
   color: var(--color-content-accent);
