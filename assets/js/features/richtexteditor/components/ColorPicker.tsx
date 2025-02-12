@@ -3,6 +3,7 @@ import * as Popover from "@radix-ui/react-popover";
 
 import { PaintBucket } from "lucide-react";
 import classNames from "classnames";
+import { SecondaryButton } from "@/components/Buttons";
 
 const DROPDOWN_CLASS = classNames(
   "border border-t-4 border-stroke-base",
@@ -35,6 +36,8 @@ export function ColorPicker({ editor, iconSize }): React.ReactElement {
             <Option color={"bgBlue"} editor={editor} />
             <Option color={"bgGreen"} editor={editor} />
           </div>
+
+          <ClearOption editor={editor} />
         </Popover.Content>
       </Popover.Portal>
     </Popover.Root>
@@ -58,6 +61,29 @@ function BucketIcon({ iconSize, editor }): React.ReactElement {
       </mark>
     </div>
   );
+}
+
+function ClearOption({ editor }): React.ReactElement {
+  const hasHighlight = editor?.isActive("highlight");
+
+  const handleClick = React.useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    editor.chain().focus().unsetHighlight().run();
+  }, []);
+
+  if (hasHighlight) {
+    return (
+      <div className="mt-4 flex items-center justify-center">
+        <SecondaryButton size="xs" onClick={handleClick}>
+          Remove Highlight
+        </SecondaryButton>
+      </div>
+    );
+  } else {
+    return <></>;
+  }
 }
 
 function Option({ color, editor }): React.ReactElement {
