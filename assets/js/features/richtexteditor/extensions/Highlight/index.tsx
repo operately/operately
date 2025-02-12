@@ -6,7 +6,7 @@
 //
 import { Mark, markInputRule, markPasteRule, mergeAttributes } from "@tiptap/core";
 
-export interface CustomHighlightOptions {
+export interface HighlightOptions {
   HTMLAttributes: Record<string, any>;
 }
 
@@ -30,7 +30,7 @@ export const inputRegex = /(?:^|\s)(==(?!\s+==)((?:[^=]+))==(?!\s+==))$/;
  */
 export const pasteRegex = /(?:^|\s)(==(?!\s+==)((?:[^=]+))==(?!\s+==))/g;
 
-export const Highlight = Mark.create<CustomHighlightOptions>({
+export const Highlight = Mark.create<HighlightOptions>({
   name: "highlight",
 
   addOptions() {
