@@ -3,12 +3,12 @@ import React from "react";
 import * as TipTap from "@tiptap/react";
 import * as People from "@/models/people";
 
+import Link from "@tiptap/extension-link";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
-import Link from "@tiptap/extension-link";
-import Highlight from "@tiptap/extension-highlight";
 import MentionPeople, { SearchFn } from "@/features/richtexteditor/extensions/MentionPeople";
-
+import Highlight from "@/features/richtexteditor/extensions/Highlight";
+import FakeTextSelection from "@/features/richtexteditor/extensions/FakeTextSelection";
 import { Toolbar } from "@/features/richtexteditor/components/Toolbar";
 
 import Blob, { isUploadInProgress } from "./Blob";
@@ -109,21 +109,14 @@ function useEditor(props: UseEditorProps): EditorState {
         dropcursor: false,
       }),
       Blob,
-      Link.extend({
-        inclusive: false,
-      }).configure({
-        openOnClick: false,
-      }),
-      Placeholder.configure({
-        placeholder: props.placeholder,
-      }),
+      Link.extend({ inclusive: false }).configure({ openOnClick: false }),
+      Placeholder.configure({ placeholder: props.placeholder }),
       mentionPeople,
-      Highlight.configure({
-        multicolor: true,
-      }),
+      Highlight,
+      FakeTextSelection,
     ],
     onFocus({ editor }) {
-      editor.chain().unsetHighlight().run(); // remove highlighted text for link edit
+      editor.chain().unsetFakeTextSelection().run();
 
       setFocused(true);
     },
