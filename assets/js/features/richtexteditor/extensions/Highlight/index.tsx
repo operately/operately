@@ -31,7 +31,7 @@ export const inputRegex = /(?:^|\s)(==(?!\s+==)((?:[^=]+))==(?!\s+==))$/;
 export const pasteRegex = /(?:^|\s)(==(?!\s+==)((?:[^=]+))==(?!\s+==))/g;
 
 export const Highlight = Mark.create<CustomHighlightOptions>({
-  name: "color",
+  name: "highlight",
 
   addOptions() {
     return {

@@ -12,8 +12,8 @@ const DROPDOWN_CLASS = classNames(
 export function ColorPicker({ editor, iconSize }): React.ReactElement {
   return (
     <Popover.Root>
-      <Popover.Trigger asChild>
-        <PaintBucket size={iconSize - 1} className="cursor-pointer mx-1" />
+      <Popover.Trigger className="cursor-pointer">
+        <BucketIcon iconSize={iconSize} editor={editor} />
       </Popover.Trigger>
 
       <Popover.Portal>
@@ -38,6 +38,25 @@ export function ColorPicker({ editor, iconSize }): React.ReactElement {
         </Popover.Content>
       </Popover.Portal>
     </Popover.Root>
+  );
+}
+
+function BucketIcon({ iconSize, editor }): React.ReactElement {
+  const color = editor?.getAttributes("highlight")?.color || "unset";
+
+  //
+  // Here we are using the combination of the ProseMirror and the mark element
+  // to highlight the component as the text would be highlighted in the editor.
+  //
+  // See prosemirror.css for how the styles look and which highlight colors are
+  // available.
+  //
+  return (
+    <div className="ProseMirror">
+      <mark data-highlight={color} className="block px-1 py-0.5 rounded">
+        <PaintBucket size={iconSize - 1} />
+      </mark>
+    </div>
   );
 }
 
