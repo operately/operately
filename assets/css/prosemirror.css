@@ -218,79 +218,79 @@
 }
 
 .light body .ProseMirror mark[data-highlight="bgYellow"] {
-  background-color: var(--color-yellow-300);
+  background-color: var(--color-yellow-200);
 }
 
 .light body .ProseMirror mark[data-highlight="bgOrange"] {
-  background-color: var(--color-orange-300);
+  background-color: var(--color-orange-200);
 }
 
 .light body .ProseMirror mark[data-highlight="bgRed"] {
-  background-color: var(--color-red-300);
+  background-color: var(--color-red-200);
 }
 
 .light body .ProseMirror mark[data-highlight="bgPurple"] {
-  background-color: var(--color-purple-300);
+  background-color: var(--color-purple-200);
 }
 
 .light body .ProseMirror mark[data-highlight="bgBlue"] {
-  background-color: var(--color-blue-300);
+  background-color: var(--color-blue-200);
 }
 
 .light body .ProseMirror mark[data-highlight="bgGreen"] {
-  background-color: var(--color-green-300);
+  background-color: var(--color-green-200);
 }
 
 .dark body .ProseMirror mark[data-highlight="textYellow"] {
-  color: var(--color-yellow-700);
+  color: var(--color-yellow-500);
   background-color: transparent;
 }
 
 .dark body .ProseMirror mark[data-highlight="textOrange"] {
-  color: var(--color-orange-700);
+  color: var(--color-orange-500);
   background-color: transparent;
 }
 
 .dark body .ProseMirror mark[data-highlight="textRed"] {
-  color: var(--color-red-700);
+  color: var(--color-red-500);
   background-color: transparent;
 }
 
 .dark body .ProseMirror mark[data-highlight="textPurple"] {
-  color: var(--color-purple-700);
+  color: var(--color-purple-500);
   background-color: transparent;
 }
 
 .dark body .ProseMirror mark[data-highlight="textBlue"] {
-  color: var(--color-blue-700);
+  color: var(--color-blue-500);
   background-color: transparent;
 }
 
 .dark body .ProseMirror mark[data-highlight="textGreen"] {
-  color: var(--color-green-700);
+  color: var(--color-green-500);
   background-color: transparent;
 }
 
 .dark body .ProseMirror mark[data-highlight="bgYellow"] {
-  background-color: var(--color-yellow-700);
+  background-color: var(--color-yellow-500);
 }
 
 .dark body .ProseMirror mark[data-highlight="bgOrange"] {
-  background-color: var(--color-orange-700);
+  background-color: var(--color-orange-500);
 }
 
 .dark body .ProseMirror mark[data-highlight="bgRed"] {
-  background-color: var(--color-red-700);
+  background-color: var(--color-red-500);
 }
 
 .dark body .ProseMirror mark[data-highlight="bgPurple"] {
-  background-color: var(--color-purple-700);
+  background-color: var(--color-purple-500);
 }
 
 .dark body .ProseMirror mark[data-highlight="bgBlue"] {
-  background-color: var(--color-blue-700);
+  background-color: var(--color-blue-500);
 }
 
 .dark body .ProseMirror mark[data-highlight="bgGreen"] {
-  background-color: var(--color-green-700);
+  background-color: var(--color-green-500);
 }

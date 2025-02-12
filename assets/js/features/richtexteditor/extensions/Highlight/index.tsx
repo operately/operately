@@ -12,9 +12,9 @@ export interface HighlightOptions {
 
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
-    color: {
-      setHighlight: (attrs: { color: string }) => ReturnType;
-      toggleHighlight: (attrs: { color: string }) => ReturnType;
+    highlight: {
+      setHighlight: (attrs: { highlight: string }) => ReturnType;
+      toggleHighlight: (attrs: { highlight: string }) => ReturnType;
       unsetHighlight: () => ReturnType;
     };
   }
@@ -35,23 +35,23 @@ export const Highlight = Mark.create<HighlightOptions>({
 
   addOptions() {
     return {
-      multicolor: false,
       HTMLAttributes: {},
     };
   },
 
   addAttributes() {
     return {
-      color: {
+      highlight: {
         default: null,
-        parseHTML: (element) => element.getAttribute("data-color"),
+        parseHTML: (element) => element.getAttribute("data-highlight"),
         renderHTML: (attributes) => {
-          if (!attributes.color) {
+          console.log(attributes);
+          if (!attributes.highlight) {
             return {};
           }
 
           return {
-            "data-highlight": attributes.color,
+            "data-highlight": attributes.highlight,
           };
         },
       },
@@ -92,7 +92,7 @@ export const Highlight = Mark.create<HighlightOptions>({
 
   addKeyboardShortcuts() {
     return {
-      "Mod-Shift-h": () => this.editor.commands.toggleHighlight({ color: "textYellow" }),
+      "Mod-Shift-h": () => this.editor.commands.toggleHighlight({ highlight: "textYellow" }),
     };
   },
 
