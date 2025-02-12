@@ -30,21 +30,21 @@ export function ColorPicker({ editor, iconSize }): React.ReactElement {
       <Popover.Portal>
         <Popover.Content className={DROPDOWN_CLASS} align="center" sideOffset={6}>
           <div className="flex items-center gap-1.5">
-            <Option color={"textYellow"} editor={editor} />
-            <Option color={"textOrange"} editor={editor} />
-            <Option color={"textRed"} editor={editor} />
-            <Option color={"textPurple"} editor={editor} />
-            <Option color={"textBlue"} editor={editor} />
-            <Option color={"textGreen"} editor={editor} />
+            <Option highlight={"textYellow"} editor={editor} />
+            <Option highlight={"textOrange"} editor={editor} />
+            <Option highlight={"textRed"} editor={editor} />
+            <Option highlight={"textPurple"} editor={editor} />
+            <Option highlight={"textBlue"} editor={editor} />
+            <Option highlight={"textGreen"} editor={editor} />
           </div>
 
           <div className="flex items-center gap-1.5 mt-1">
-            <Option color={"bgYellow"} editor={editor} />
-            <Option color={"bgOrange"} editor={editor} />
-            <Option color={"bgRed"} editor={editor} />
-            <Option color={"bgPurple"} editor={editor} />
-            <Option color={"bgBlue"} editor={editor} />
-            <Option color={"bgGreen"} editor={editor} />
+            <Option highlight={"bgYellow"} editor={editor} />
+            <Option highlight={"bgOrange"} editor={editor} />
+            <Option highlight={"bgRed"} editor={editor} />
+            <Option highlight={"bgPurple"} editor={editor} />
+            <Option highlight={"bgBlue"} editor={editor} />
+            <Option highlight={"bgGreen"} editor={editor} />
           </div>
 
           <ClearOption editor={editor} />
@@ -55,7 +55,7 @@ export function ColorPicker({ editor, iconSize }): React.ReactElement {
 }
 
 function BucketIcon({ iconSize, editor }): React.ReactElement {
-  const color = editor?.getAttributes("highlight")?.color || "unset";
+  const highlight = editor?.getAttributes("highlight")?.highlight || "unset";
 
   //
   // Here we are using the combination of the ProseMirror and the mark element
@@ -66,7 +66,7 @@ function BucketIcon({ iconSize, editor }): React.ReactElement {
   //
   return (
     <div className="ProseMirror">
-      <mark data-highlight={color} className="block px-1 py-0.5 rounded">
+      <mark data-highlight={highlight} className="block px-1 py-0.5 rounded">
         <PaintBucket size={iconSize - 1} />
       </mark>
     </div>
@@ -96,14 +96,14 @@ function ClearOption({ editor }): React.ReactElement {
   }
 }
 
-function Option({ color, editor }): React.ReactElement {
+function Option({ highlight, editor }): React.ReactElement {
   const className = classNames("shrink-0 cursor-pointer px-1.5 py-1.5 leading-none block");
 
   const handleClick = React.useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
-    editor.chain().focus().setHighlight({ color }).run();
+    editor.chain().focus().setHighlight({ highlight }).run();
   }, []);
 
   //
@@ -115,7 +115,7 @@ function Option({ color, editor }): React.ReactElement {
   //
   return (
     <div className="ProseMirror">
-      <mark className={className} onClick={handleClick} data-highlight={color}>
+      <mark className={className} onClick={handleClick} data-highlight={highlight}>
         Az
       </mark>
     </div>
