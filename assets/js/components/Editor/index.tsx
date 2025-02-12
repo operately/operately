@@ -8,6 +8,7 @@ import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import MentionPeople, { SearchFn } from "@/features/richtexteditor/extensions/MentionPeople";
 import Highlight from "@/features/richtexteditor/extensions/Highlight";
+import FakeTextSelection from "@/features/richtexteditor/extensions/FakeTextSelection";
 import { Toolbar } from "@/features/richtexteditor/components/Toolbar";
 
 import Blob, { isUploadInProgress } from "./Blob";
@@ -112,8 +113,11 @@ function useEditor(props: UseEditorProps): EditorState {
       Placeholder.configure({ placeholder: props.placeholder }),
       mentionPeople,
       Highlight,
+      FakeTextSelection,
     ],
-    onFocus() {
+    onFocus({ editor }) {
+      editor.chain().unsetFakeTextSelection().run();
+
       setFocused(true);
     },
     onBlur: ({ editor }) => {

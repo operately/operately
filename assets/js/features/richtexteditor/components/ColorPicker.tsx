@@ -11,8 +11,18 @@ const DROPDOWN_CLASS = classNames(
 );
 
 export function ColorPicker({ editor, iconSize }): React.ReactElement {
+  const [open, setOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    if (open) {
+      editor?.chain().setFakeTextSelection().run();
+    } else {
+      editor?.chain().unsetFakeTextSelection().run();
+    }
+  }, [open]);
+
   return (
-    <Popover.Root>
+    <Popover.Root open={open} onOpenChange={setOpen}>
       <Popover.Trigger className="cursor-pointer">
         <BucketIcon iconSize={iconSize} editor={editor} />
       </Popover.Trigger>
