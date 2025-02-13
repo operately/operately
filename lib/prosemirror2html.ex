@@ -117,6 +117,10 @@ defmodule Prosemirror2Html do
     wrap(text, "strike")
   end
 
+  def convert_mark(text, %{"attrs" => %{"highlight" => highlight}, "type" => "highlight"}) do
+    wrap(text, "mark", [{"data-highlight", highlight}])
+  end
+
   defp wrap(html, tag) do
     wrap(html, tag, [])
   end

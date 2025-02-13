@@ -41,7 +41,6 @@ const Highlight = Mark.create<HighlightOptions>({
         default: null,
         parseHTML: (element) => element.getAttribute("data-highlight"),
         renderHTML: (attributes) => {
-          console.log(attributes);
           if (!attributes.highlight) {
             return {};
           }

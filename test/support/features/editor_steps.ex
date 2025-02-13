@@ -55,12 +55,24 @@ defmodule Operately.Support.Features.EditorSteps do
   end
 
   step :assert_highlight_is_visible_on_discussion_page, ctx do
+    ctx
+    |> UI.assert_has(Query.css("mark[data-highlight='textYellow']", text: "Yellow"))
+    |> UI.assert_has(Query.css("mark[data-highlight='bgOrange']", text: "Orange"))
   end
 
   step :assert_highlight_removed_from_feed_summary, ctx do
+    ctx
+    |> UI.visit(Paths.space_path(ctx.company, ctx.marketing_space))
+    |> UI.refute_has(Query.css("mark[data-highlight='textYellow']", text: "Yellow"))
+    |> UI.refute_has(Query.css("mark[data-highlight='bgOrange']", text: "Orange"))
+    |> UI.assert_text("YellowOrange")
   end
 
-  step :assert_highlight_is_visible_in_email, ctx do
+  step :assert_highlight_is_visible_in_email, _ctx do
+    email = UI.Emails.last_sent_email()
+    
+    assert String.contains?(email.html, "<mark data-highlight=\"textYellow\">Yellow</mark>")
+    assert String.contains?(email.html, "<mark data-highlight=\"bgOrange\">Orange</mark>")
   end
 
   step :assert_bold_italics_strikethrough_are_visible_on_discussion_page, ctx do
