@@ -61,6 +61,7 @@ interface UseEditorProps {
   editable?: boolean;
   autoFocus?: boolean;
   mentionSearchScope: People.SearchScope;
+  tabindex?: string;
 }
 
 export interface EditorState {
@@ -94,6 +95,7 @@ function useEditor(props: UseEditorProps): EditorState {
     editorProps: {
       attributes: {
         class: "focus:outline-none" + " " + props.className,
+        tabindex: props.tabindex ?? "",
       },
     },
     extensions: [
