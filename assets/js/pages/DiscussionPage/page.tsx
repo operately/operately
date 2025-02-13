@@ -139,14 +139,15 @@ function Options() {
     <PageOptions.Root testId="options-button">
       <PageOptions.Link
         icon={Icons.IconEdit}
-        title="Edit Post"
+        title="Edit"
         to={Paths.discussionEditPath(discussion.id!)}
         testId="edit-discussion"
+        keepOutsideOnBigScreen
       />
 
       <PageOptions.Action
-        icon={Icons.IconEdit}
-        title="Delete Post"
+        icon={Icons.IconTrash}
+        title="Delete"
         onClick={handleArchive}
         testId="archive-discussion"
       />
