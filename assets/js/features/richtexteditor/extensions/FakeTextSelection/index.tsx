@@ -31,7 +31,7 @@ declare module "@tiptap/core" {
   }
 }
 
-export const FakeTextSelection = Mark.create<FakeTextSelectionOptions>({
+const FakeTextSelection = Mark.create<FakeTextSelectionOptions>({
   name: "fakeTextSelection",
 
   addOptions() {

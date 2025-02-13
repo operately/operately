@@ -20,15 +20,11 @@ declare module "@tiptap/core" {
   }
 }
 
-/**
- * Matches a highlight to a ==highlight== on input.
- */
-export const inputRegex = /(?:^|\s)(==(?!\s+==)((?:[^=]+))==(?!\s+==))$/;
-
-/**
- * Matches a highlight to a ==highlight== on paste.
- */
-export const pasteRegex = /(?:^|\s)(==(?!\s+==)((?:[^=]+))==(?!\s+==))/g;
+//
+// Matches a highlight to a ==highlight== on input or paste.
+//
+const inputRegex = /(?:^|\s)(==(?!\s+==)((?:[^=]+))==(?!\s+==))$/;
+const pasteRegex = /(?:^|\s)(==(?!\s+==)((?:[^=]+))==(?!\s+==))/g;
 
 export const Highlight = Mark.create<HighlightOptions>({
   name: "highlight",
