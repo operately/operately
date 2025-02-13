@@ -9,6 +9,8 @@ export function ToolbarToggleButton({ children, isActive, title, onClick }): JSX
     "hover:bg-surface-highlight cursor-pointer": !isActive,
   });
 
+  const testId = createTestId("toolbar-button", title);
+
   const handleClick = React.useCallback(
     (e: React.MouseEvent) => {
       e.preventDefault();
@@ -17,8 +19,6 @@ export function ToolbarToggleButton({ children, isActive, title, onClick }): JSX
     },
     [onClick],
   );
-
-  const testId = createTestId("toolbar", title);
 
   return (
     <button onClick={handleClick} className={className} title={title} data-test-id={testId}>

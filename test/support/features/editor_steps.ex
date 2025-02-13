@@ -35,6 +35,15 @@ defmodule Operately.Support.Features.EditorSteps do
     |> submit_discussion()
   end
 
+  step :post_message_with_divider, ctx do
+    ctx 
+    |> start_new_discussion()
+    |> append_text("This is a discussion with a divider")
+    |> add_divider()
+    |> append_text("This is the second part of the discussion")
+    |> submit_discussion()
+  end
+
   step :assert_bold_italics_strikethrough_are_visible_on_discussion_page, ctx do
     ctx
     |> UI.assert_has(Query.css("strong", text: "bolded text"))
@@ -59,6 +68,21 @@ defmodule Operately.Support.Features.EditorSteps do
     assert String.contains?(email.html, "<strike>strikethrough text</strike>")
   end
 
+  step :assert_divider_is_visible_on_discussion_page, ctx do
+    ctx |> UI.assert_has(Query.css("hr"))
+  end
+
+  step :assert_divider_removed_from_feed_summary, ctx do
+    ctx 
+    |> UI.visit(Paths.space_path(ctx.company, ctx.marketing_space))
+    |> UI.refute_has(Query.css("hr"))
+  end
+
+  step :assert_divider_is_visible_in_email, _ctx do
+    email = UI.Emails.last_sent_email()
+    assert String.contains?(email.html, "<hr>")
+  end
+
   #
   # Utilities
   #
@@ -71,15 +95,15 @@ defmodule Operately.Support.Features.EditorSteps do
   end
 
   def toggle_bold(ctx) do
-    ctx |> UI.click(testid: "toolbar-bold")
+    ctx |> UI.click(testid: "toolbar-button-bold")
   end
 
   def toggle_italics(ctx) do
-    ctx |> UI.click(testid: "toolbar-italic")
+    ctx |> UI.click(testid: "toolbar-button-italics")
   end
 
   def toggle_strikethrough(ctx) do
-    ctx |> UI.click(testid: "toolbar-strikethrough")
+    ctx |> UI.click(testid: "toolbar-button-strikethrough")
   end
 
   def append_text(ctx, text) do
@@ -92,5 +116,9 @@ defmodule Operately.Support.Features.EditorSteps do
     ctx
     |> UI.click(testid: "post-discussion")
     |> UI.assert_has(testid: "discussion-page")
+  end
+
+  def add_divider(ctx) do
+    ctx |> UI.click(testid: "toolbar-button-divider")
   end
 end
