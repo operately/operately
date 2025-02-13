@@ -18,10 +18,6 @@
 
 import { Mark, mergeAttributes } from "@tiptap/core";
 
-export interface FakeTextSelectionOptions {
-  HTMLAttributes: Record<string, any>;
-}
-
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
     fakeTextSelection: {
@@ -29,6 +25,10 @@ declare module "@tiptap/core" {
       unsetFakeTextSelection: () => ReturnType;
     };
   }
+}
+
+interface FakeTextSelectionOptions {
+  HTMLAttributes: Record<string, any>;
 }
 
 const FakeTextSelection = Mark.create<FakeTextSelectionOptions>({

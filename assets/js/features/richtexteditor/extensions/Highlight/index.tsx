@@ -6,10 +6,6 @@
 //
 import { Mark, markInputRule, markPasteRule, mergeAttributes } from "@tiptap/core";
 
-export interface HighlightOptions {
-  HTMLAttributes: Record<string, any>;
-}
-
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
     highlight: {
@@ -26,7 +22,11 @@ declare module "@tiptap/core" {
 const inputRegex = /(?:^|\s)(==(?!\s+==)((?:[^=]+))==(?!\s+==))$/;
 const pasteRegex = /(?:^|\s)(==(?!\s+==)((?:[^=]+))==(?!\s+==))/g;
 
-export const Highlight = Mark.create<HighlightOptions>({
+interface HighlightOptions {
+  HTMLAttributes: Record<string, any>;
+}
+
+const Highlight = Mark.create<HighlightOptions>({
   name: "highlight",
 
   addOptions() {
