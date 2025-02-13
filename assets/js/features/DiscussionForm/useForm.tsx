@@ -55,6 +55,7 @@ export function useForm({ space, mode, discussion, potentialSubscribers = [] }: 
     className: "min-h-[350px] py-2 px-1",
     content: discussion?.body && JSON.parse(discussion.body),
     mentionSearchScope: { type: "space", id: space ? space.id! : discussion!.space!.id! },
+    tabindex: "2",
   });
 
   const validate = () => {
