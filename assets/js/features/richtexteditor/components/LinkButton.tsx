@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as Icons from "@tabler/icons-react";
+import * as Icons from "lucide-react";
 
 import { ToolbarToggleButton } from "./ToolbarToggleButton";
 
@@ -22,7 +22,7 @@ export function LinkButton({ editor, iconSize }): JSX.Element {
       isActive={editor?.isActive("link") || linkEditActive}
       title="Add/Edit Links"
     >
-      <Icons.IconLink size={iconSize} />
+      <Icons.Link size={iconSize - 2} />
     </ToolbarToggleButton>
   );
 }
