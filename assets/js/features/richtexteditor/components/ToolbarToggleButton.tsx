@@ -1,6 +1,7 @@
 import React from "react";
 
 import classnames from "classnames";
+import { createTestId } from "@/utils/testid";
 
 export function ToolbarToggleButton({ children, isActive, title, onClick }): JSX.Element {
   let className = classnames("p-1.5 text-content-accent", {
@@ -17,8 +18,10 @@ export function ToolbarToggleButton({ children, isActive, title, onClick }): JSX
     [onClick],
   );
 
+  const testId = createTestId("toolbar", title);
+
   return (
-    <button onClick={handleClick} className={className} title={title}>
+    <button onClick={handleClick} className={className} title={title} data-test-id={testId}>
       {children}
     </button>
   );
