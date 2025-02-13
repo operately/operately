@@ -45,7 +45,7 @@ function FormMain({ form }: { form: FormState }) {
 }
 
 function TargetSection({ form }: { form: FormState }) {
-  const placeholders = [["e.g. Avarage Onboarding Time is twice as fast", "30", "15", "minutes"]];
+  const placeholders = [["e.g. Average Onboarding Time is twice as fast", "30", "15", "minutes"]];
 
   return (
     <>
