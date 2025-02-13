@@ -150,7 +150,6 @@ defmodule Operately.Support.Features.DiscussionsSteps do
 
   step :edit_discussion, ctx do
     ctx
-    |> UI.click(testid: "options-button")
     |> UI.click(testid: "edit-discussion")
     |> UI.fill(testid: "discussion-title", with: "This is an edited discussion")
     |> UI.fill_rich_text("This is the edited body of the discussion.")
