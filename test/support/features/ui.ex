@@ -357,6 +357,12 @@ defmodule Operately.Support.Features.UI do
     end)
   end
 
+  def find(state, %Wallaby.Query{} = query) do
+    execute(state, fn session ->
+      session |> Browser.find(query)
+    end)
+  end
+
   def find(state, %Wallaby.Query{} = query, callback) do
     execute(state, fn session ->
       session
