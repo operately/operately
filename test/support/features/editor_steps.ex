@@ -44,6 +44,25 @@ defmodule Operately.Support.Features.EditorSteps do
     |> submit_discussion()
   end
 
+  step :post_message_with_highlight, ctx do
+    ctx 
+    |> start_new_discussion()
+    |> select_color("textYellow")
+    |> append_text("Yellow")
+    |> select_color("bgOrange")
+    |> append_text("Orange")
+    |> submit_discussion()
+  end
+
+  step :assert_highlight_is_visible_on_discussion_page, ctx do
+  end
+
+  step :assert_highlight_removed_from_feed_summary, ctx do
+  end
+
+  step :assert_highlight_is_visible_in_email, ctx do
+  end
+
   step :assert_bold_italics_strikethrough_are_visible_on_discussion_page, ctx do
     ctx
     |> UI.assert_has(Query.css("strong", text: "bolded text"))
@@ -120,5 +139,11 @@ defmodule Operately.Support.Features.EditorSteps do
 
   def add_divider(ctx) do
     ctx |> UI.click(testid: "toolbar-button-divider")
+  end
+
+  def select_color(ctx, color) do
+    ctx 
+    |> UI.click(testid: "toolbar-button-highlight")
+    |> UI.click(testid: color)
   end
 end

@@ -19,4 +19,12 @@ defmodule Operately.Features.EditorTest do
     |> Steps.assert_divider_removed_from_feed_summary()
     |> Steps.assert_divider_is_visible_in_email()
   end
+
+  feature "support for highlighting", ctx do
+    ctx
+    |> Steps.post_message_with_highlight()
+    |> Steps.assert_highlight_is_visible_on_discussion_page()
+    |> Steps.assert_highlight_removed_from_feed_summary()
+    |> Steps.assert_highlight_is_visible_in_email()
+  end
 end

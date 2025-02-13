@@ -4,6 +4,7 @@ import * as Popover from "@radix-ui/react-popover";
 import { PaintBucket } from "lucide-react";
 import classNames from "classnames";
 import { SecondaryButton } from "@/components/Buttons";
+import { createTestId } from "@/utils/testid";
 
 const DROPDOWN_CLASS = classNames(
   "border border-t-4 border-stroke-base",
@@ -12,6 +13,8 @@ const DROPDOWN_CLASS = classNames(
 
 export function ColorPicker({ editor, iconSize }): React.ReactElement {
   const [open, setOpen] = React.useState(false);
+
+  const testId = createTestId("toolbar-button", "highlight");
 
   React.useEffect(() => {
     if (open) {
@@ -23,7 +26,7 @@ export function ColorPicker({ editor, iconSize }): React.ReactElement {
 
   return (
     <Popover.Root open={open} onOpenChange={setOpen}>
-      <Popover.Trigger className="cursor-pointer">
+      <Popover.Trigger className="cursor-pointer" data-test-id={testId}>
         <BucketIcon iconSize={iconSize} editor={editor} />
       </Popover.Trigger>
 
@@ -114,7 +117,7 @@ function Option({ highlight, editor }): React.ReactElement {
   // available.
   //
   return (
-    <div className="ProseMirror">
+    <div className="ProseMirror" data-test-id={highlight}>
       <mark className={className} onClick={handleClick} data-highlight={highlight}>
         Az
       </mark>
