@@ -40,9 +40,27 @@ defmodule OperatelyEmail.Templates do
     render "partials/_subtle.html", text: text
   end
 
-  def rich_text(content) do
-    opts = [domain: OperatelyWeb.Endpoint.url()]
+  # Keep this in sync with the colors in the Operately UI
+  # defined in assets/css/prosemirror.css
 
+  @highlights %{
+    "textYellow" => "color: #eab308; background-color: transparent;",
+    "textOrange" => "color: #f97316; background-color: transparent;",
+    "textRed" => "color: #ef4444; background-color: transparent;",
+    "textPurple" => "color: #a855f7; background-color: transparent;",
+    "textBlue" => "color: #3b82f6; background-color: transparent;",
+    "textGreen" => "color: #22c55e; background-color: transparent;",
+
+    "bgYellow" => "background-color: #fef08a;",
+    "bgOrange" => "background-color: #fed7aa;",
+    "bgRed" => "background-color: #fecaca;",
+    "bgPurple" => "background-color: #e9d5ff;",
+    "bgBlue" => "background-color: #bfdbfe;",
+    "bgGreen" => "background-color: #bbf7d0;"
+  }
+
+  def rich_text(content) do
+    opts = struct!(Prosemirror2Html.Options, domain: OperatelyWeb.Endpoint.url(), highlights: @highlights)
     {:safe, Prosemirror2Html.convert(content, opts)}
   end
 

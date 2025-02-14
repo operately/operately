@@ -13,63 +13,6 @@
         margin-bottom: 20px;
         font-weight: bold;
       }
-
-      /* Keep this in sync with the colors in the Operately UI */
-      /* defined in assets/css/prosemirror.css */
-
-      mark[data-highlight="textYellow"] {
-        color: #eab308;
-        background-color: transparent;
-      }
-
-      mark[data-highlight="textOrange"] {
-        color: #f97316;
-        background-color: transparent;
-      }
-
-      mark[data-highlight="textRed"] {
-        color: #ef4444;
-        background-color: transparent;
-      }
-
-      mark[data-highlight="textPurple"] {
-        color: #a855f7;
-        background-color: transparent;
-      }
-
-      mark[data-highlight="textBlue"] {
-        color: #3b82f6;
-        background-color: transparent;
-      }
-
-      mark[data-highlight="textGreen"] {
-        color: #22c55e;
-        background-color: transparent;
-      }
-
-      mark[data-highlight="bgYellow"] {
-        background-color: #fef08a;
-      }
-
-      mark[data-highlight="bgOrange"] {
-        background-color: #fed7aa;
-      }
-
-      mark[data-highlight="bgRed"] {
-        background-color: #fecaca;
-      }
-
-      mark[data-highlight="bgPurple"] {
-        background-color: #e9d5ff;
-      }
-
-      mark[data-highlight="bgBlue"] {
-        background-color: #bfdbfe;
-      }
-
-      mark[data-highlight="bgGreen"] {
-        background-color: #bbf7d0;
-      }
     </style>
   </head>
 
