@@ -44,11 +44,13 @@ export function summarize(node: any): any {
       return summarizeMention(node);
     case "heading":
       return summarizeText(node);
-    case "hard_break":
-    case "horizontal_rule":
+    case "hardBreak":
+    case "horizontalRule":
+    case "codeBlock":
     case "blob":
       return null;
     default:
+      console.log("Unknown node type", node.type);
       return node;
   }
 }
