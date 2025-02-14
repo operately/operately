@@ -5,7 +5,11 @@ defmodule Prosemirror2Html do
   Link: https://github.com/inputhq/prosemirror_to_html
   """
 
-  def convert(%{"type" => "doc", "content" => content}, opts \\ []) do
+  defmodule Options do
+    defstruct domain: nil, highlights: %{}
+  end
+
+  def convert(%{"type" => "doc", "content" => content}, opts = %__MODULE__.Options{}) do
     content
     |> Enum.map(fn node -> convert_node(node, opts) end)
     |> Enum.join("")
@@ -72,10 +76,10 @@ defmodule Prosemirror2Html do
     "<hr>"
   end
 
-  def convert_node(%{"type" => "text", "text" => text, "marks" => marks}, _opts) do
+  def convert_node(%{"type" => "text", "text" => text, "marks" => marks}, opts) do
     marks
     |> Enum.reverse()
-    |> Enum.reduce(text, fn mark, acc -> convert_mark(acc, mark) end)
+    |> Enum.reduce(text, fn mark, acc -> convert_mark(acc, mark, opts) end)
   end
 
   def convert_node(%{"type" => "text", "text" => text}, _opts) do
@@ -88,37 +92,37 @@ defmodule Prosemirror2Html do
   end
 
   def convert_node(%{"type" => "blob", "attrs" => %{"title" => title, "src" => src}}, opts) do
-    domain = Keyword.get(opts, :domain, nil) || raise("Missing domain option")
-
-    "<div>&#128206; <a href=\"#{domain}#{src}\">#{title}</a></div>"
+    "<div>&#128206; <a href=\"#{opts.domain}#{src}\">#{title}</a></div>"
   end
 
   #
   # Marks
   #
 
-  def convert_mark(text, %{"type" => "bold"}) do
+  def convert_mark(text, %{"type" => "bold"}, _opts) do
     wrap(text, "strong")
   end
 
-  def convert_mark(text, %{"type" => "italic"}) do
+  def convert_mark(text, %{"type" => "italic"}, _opts) do
     wrap(text, "em")
   end
 
-  def convert_mark(text, %{"type" => "code"}) do
+  def convert_mark(text, %{"type" => "code"}, _opts) do
     wrap(text, "code")
   end
 
-  def convert_mark(text, %{"type" => "link", "attrs" => %{"href" => href}}) do
+  def convert_mark(text, %{"type" => "link", "attrs" => %{"href" => href}}, _opts) do
     wrap(text, "a", href: href)
   end
 
-  def convert_mark(text, %{"type" => "strike"}) do
+  def convert_mark(text, %{"type" => "strike"}, _opts) do
     wrap(text, "strike")
   end
 
-  def convert_mark(text, %{"attrs" => %{"highlight" => highlight}, "type" => "highlight"}) do
-    wrap(text, "mark", [{"data-highlight", highlight}])
+  def convert_mark(text, %{"attrs" => %{"highlight" => highlight}, "type" => "highlight"}, opts) do
+    style = opts.highlights[highlight] || ""
+
+    wrap(text, "mark", [{"style", style}])
   end
 
   defp wrap(html, tag) do

@@ -71,8 +71,8 @@ defmodule Operately.Support.Features.EditorSteps do
   step :assert_highlight_is_visible_in_email, _ctx do
     email = UI.Emails.last_sent_email()
     
-    assert String.contains?(email.html, "<mark data-highlight=\"textYellow\">Yellow</mark>")
-    assert String.contains?(email.html, "<mark data-highlight=\"bgOrange\">Orange</mark>")
+    assert String.contains?(email.html, "<mark style=\"color: #eab308; background-color: transparent;\">")
+    assert String.contains?(email.html, "<mark style=\"background-color: #fed7aa;\">")
   end
 
   step :assert_bold_italics_strikethrough_are_visible_on_discussion_page, ctx do
