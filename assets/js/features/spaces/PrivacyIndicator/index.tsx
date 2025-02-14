@@ -54,7 +54,7 @@ function InviteOnly({ size }: { size: number }) {
   );
 
   return (
-    <Tooltip content={content} testId="secret-space-tooltip" delayDuration={100}>
+    <Tooltip content={content} testId="secret-space-tooltip" delayDuration={100} className="z-50">
       <Icons.IconLockFilled size={size} />
     </Tooltip>
   );
