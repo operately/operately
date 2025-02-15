@@ -2,6 +2,9 @@ defmodule Operately.Features.SignupTest do
   use Operately.FeatureCase
   alias Operately.Support.Features.SignupSteps, as: Steps
 
+  set_app_config(:allow_signup_with_email, true)
+  set_app_config(:allow_login_with_email, true)
+
   setup ctx, do: Factory.setup(ctx)
 
   feature "signup with valid email", ctx do

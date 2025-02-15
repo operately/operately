@@ -16,6 +16,8 @@ defmodule Operately.FeatureCase do
 
       import Wallaby.Browser, except: [assert_text: 2, click: 2, fill: 2, find: 2, visit: 1]
 
+      import Operately.FeatureCase
+
       setup data do
         Wallaby.Browser.resize_window(data.session, 1920, 2000)
 
@@ -61,6 +63,21 @@ defmodule Operately.FeatureCase do
 
       def scroll_into_view(session, css_selector) do
         session |> Wallaby.Browser.execute_script("document.querySelector('#{css_selector}').scrollIntoView()")
+      end
+    end
+  end
+
+  defmacro set_app_config(key, value) do
+    quote do
+      setup ctx do
+        previous_value = Application.get_env(:operately, unquote(key))
+        Application.put_env(:operately, unquote(key), unquote(value))
+
+        on_exit(fn ->
+          Application.put_env(:operately, unquote(key), previous_value)
+        end)
+
+        {:ok, ctx}
       end
     end
   end
