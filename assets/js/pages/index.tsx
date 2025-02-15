@@ -43,6 +43,7 @@ import * as GoalEditParentPage from "./GoalEditParentPage";
 import * as GoalEditTimeframePage from "./GoalEditTimeframePage";
 import * as GoalPage from "./GoalPage";
 import * as GoalPageV2 from "./GoalPageV2";
+import * as GoalPageV3 from "./GoalPageV3";
 import * as GoalProgressUpdateEditPage from "./GoalProgressUpdateEditPage";
 import * as GoalProgressUpdateNewPage from "./GoalProgressUpdateNewPage";
 import * as GoalProgressUpdatePage from "./GoalProgressUpdatePage";
@@ -319,6 +320,11 @@ export default {
     name: "GoalPageV2",
     loader: GoalPageV2.loader,
     Page: GoalPageV2.Page,
+  },
+  GoalPageV3: {
+    name: "GoalPageV3",
+    loader: GoalPageV3.loader,
+    Page: GoalPageV3.Page,
   },
   GoalProgressUpdateEditPage: {
     name: "GoalProgressUpdateEditPage",
