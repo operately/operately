@@ -451,8 +451,16 @@ defmodule Operately.Assignments.LoaderTest do
   end
 
   defp past_date(num \\ 2) do
+    day_of_week = Date.utc_today() |> Date.day_of_week()
+    
+    extra_days = cond do
+      day_of_week == 6 -> 1
+      day_of_week == 7 -> 2
+      true -> 0
+    end
+
     Date.utc_today()
-    |> subtract_days(num)
+    |> subtract_days(num + extra_days)
     |> Operately.Time.as_datetime()
   end
 

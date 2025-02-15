@@ -42,8 +42,6 @@ export function summarize(node: any): any {
       return summarizeOrderedList(node);
     case "mention":
       return summarizeMention(node);
-    case "heading":
-      return summarizeText(node);
     case "hardBreak":
     case "horizontalRule":
     case "codeBlock":

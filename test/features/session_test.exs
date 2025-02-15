@@ -2,24 +2,17 @@ defmodule Operately.Features.SessionTest do
   use Operately.FeatureCase
   alias Operately.Support.Features.SessionTestSteps, as: Steps
 
+  set_app_config(:allow_signup_with_email, true)
+  set_app_config(:allow_login_with_email, true)
+  set_app_config(:allow_login_with_google, true)
+  set_app_config(:allow_signup_with_google, true)
+
   @account_info %{
     email: "hello@localhost.test",
     password: "Aa12345#&!123"
   }
 
-  setup ctx do 
-    ctx = Factory.setup(ctx)
-
-    Application.put_env(:operately, :allow_login_with_google, true)
-    Application.put_env(:operately, :allow_signup_with_google, true)
-
-    on_exit(fn -> 
-      Application.put_env(:operately, :allow_login_with_google, false)
-      Application.put_env(:operately, :allow_signup_with_google, false)
-    end)
-
-    {:ok, ctx}
-  end
+  setup ctx, do: Factory.setup(ctx)
 
   feature "successful login", ctx do
     ctx
