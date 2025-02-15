@@ -42,18 +42,24 @@ export function Page() {
             <p className="text-content-dimmed mb-8">Please enter your details to sign in</p>
 
             <Forms.Form form={form}>
-              {window.appConfig.allowLoginWithGoogle && <EmailLogin form={form} error={error} />}
+              {window.appConfig.allowLoginWithEmail && <EmailLogin form={form} error={error} />}
               {window.appConfig.allowLoginWithGoogle && <GoogleLogin />}
 
-              <div className="mt-8 text-center text-sm font-medium">
-                Don't have an account? <Link to="/sign_up">Create an account</Link>
-              </div>
+              {isSignupEnabled() && (
+                <div className="mt-8 text-center text-sm font-medium">
+                  Don't have an account? <Link to="/sign_up">Create an account</Link>
+                </div>
+              )}
             </Forms.Form>
           </div>
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
   );
+}
+
+function isSignupEnabled(): boolean {
+  return window.appConfig.allowSignupWithEmail || window.appConfig.allowSignupWithGoogle;
 }
 
 function EmailLogin({ form, error }: { form: any; error: string | null }) {
