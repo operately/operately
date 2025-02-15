@@ -10,7 +10,7 @@ export function Targets() {
   return (
     <Section title="Targets" icon={<IconTarget size={14} />}>
       <div className="flex flex-col">
-        <div className="py-4 border-stroke-base ">
+        <div className="pb-4 border-stroke-base ">
           <div className="flex items-start justify-between">
             <div className="font-medium">
               <span className="font-semibold">Figure out how to open a new office in Brazil</span>

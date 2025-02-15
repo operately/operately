@@ -72,37 +72,42 @@ export function Page() {
 
   return (
     <Pages.Page title={[goal.name!]} testId="goal-page">
-      <Paper.Root size="medium">
+      <Paper.Root size="large">
         <Navigation space={goal.space!} />
 
         <Paper.Body minHeight="none" noPadding>
-          <div className="px-20 pt-10 ">
+          <div className="px-32 pt-14 ">
             <Header goal={goal} />
           </div>
 
-          <div className="text-sm flex items-center gap-4 mt-6 px-20 font-medium border-y pt-2 border-stroke-base">
-            <div className="text-content-base border-b border-dark-1 pb-2 -mb-px">Overview</div>
-            <div className="text-content-dimmed border-b border-transparent pb-2 -mb-px">
-              Targets{" "}
-              <span className="text-[10px] text-content-dimmed bg-stone-100 p-1 rounded-full leading-none">3</span>
+          <div className="sticky top-0 bg-surface-base border-b z-10 border-stroke-base mt-8">
+            <div className="text-sm flex items-center gap-4 px-32 font-medium pt-2.5">
+              <div className="text-content-base border-b-2 border-dark-1 pb-2.5 -mb-[2px]">Overview</div>
+              <div className="text-content-dimmed border-b border-transparent pb-2 -mb-px">
+                Targets{" "}
+                <span className="text-[10px] text-content-dimmed bg-stone-100 p-1 rounded-full leading-none">3</span>
+              </div>
+              <div className="text-content-dimmed border-b border-transparent pb-2.5 -mb-px">
+                Messages{" "}
+                <span className="text-[10px] text-content-dimmed bg-stone-100 p-1 rounded-full leading-none">45</span>
+              </div>
+              <div className="text-content-dimmed border-b border-transparent pb-2.5 -mb-px">
+                Sub-Goals &amp; Projects{" "}
+                <span className="text-[10px] text-content-dimmed bg-stone-100 p-1 rounded-full leading-none">7</span>
+              </div>
+              <div className="text-content-dimmed border-b border-transparent pb-2.5 -mb-px">Activity</div>
             </div>
-            <div className="text-content-dimmed border-b border-transparent pb-2 -mb-px">
-              Messages{" "}
-              <span className="text-[10px] text-content-dimmed bg-stone-100 p-1 rounded-full leading-none">45</span>
-            </div>
-            <div className="text-content-dimmed border-b border-transparent pb-2 -mb-px">
-              Sub-Goals &amp; Projects{" "}
-              <span className="text-[10px] text-content-dimmed bg-stone-100 p-1 rounded-full leading-none">7</span>
-            </div>
-            <div className="text-content-dimmed border-b border-transparent pb-2 -mb-px">Activity</div>
           </div>
 
-          <div className="mt-2" />
-          <Overview />
-          <Targets />
-          <Messages />
+          <div>
+            <Overview />
+            <Targets />
+            <Messages />
+          </div>
 
-          <GoalFeed />
+          <div className="px-12 pt-14 pb-4">
+            <GoalFeed />
+          </div>
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
