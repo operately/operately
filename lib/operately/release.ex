@@ -10,7 +10,7 @@ defmodule Operately.Release do
     :ok = wait_until_db_ready(attempts: 10, timeout: 1000)
 
     IO.puts("Creating database")
-    case repo().__adapter__.storage_up(repo().config) do
+    case storage_up?() do
       :ok -> :ok
       {:error, :already_up} -> :ok
       {:error, term} -> raise term
@@ -40,12 +40,21 @@ defmodule Operately.Release do
     Application.load(@app)
   end
 
-  def wait_until_db_ready(attempts: attempts, timeout: timeout) do
-    host = Keyword.get(repo().config, :hostname) |> String.to_charlist()
-    port = Keyword.get(repo().config, :port) || 5432
+  defp storage_up? do
+    repo().__adapter__.storage_up(repo().config())
+  end
 
+  defp storage_host do
+    Keyword.get(repo().config(), :hostname) |> String.to_charlist()
+  end
+
+  defp storage_port do
+    Keyword.get(repo().config(), :port) || 5432
+  end
+
+  def wait_until_db_ready(attempts: attempts, timeout: timeout) do
     if attempts > 0 do
-      case :gen_tcp.connect(host, port, []) do
+      case :gen_tcp.connect(storage_host(), storage_port(), []) do
         {:ok, _} -> 
           IO.puts("")
           :ok
