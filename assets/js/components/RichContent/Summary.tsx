@@ -46,7 +46,7 @@ export function summarize(node: any): any {
     case "horizontalRule":
     case "codeBlock":
     case "blob":
-      return null;
+      return summarizeBlob(node);
     default:
       console.log("Unknown node type", node.type);
       return node;
@@ -102,6 +102,11 @@ function flatten(nodes: any[]): any[] {
 
 function summarizeText(node: any): any {
   return { type: "text", text: richContentToString(node) };
+}
+
+function summarizeBlob(node: any) {
+  if (!node.attrs?.title) return null;
+  return { type: "text", text: node.attrs.title };
 }
 
 const summarizeMention = (node: any) => node;
