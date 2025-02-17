@@ -1,11 +1,13 @@
 defmodule Operately.Operations.CompanyMemberAdding do
   alias Ecto.Multi
-  alias Operately.Repo
+  alias Operately.{Access, Repo}
 
   def run(admin, attrs) do
     result = Multi.new()
     |> insert_account(attrs)
     |> insert_person(admin, attrs)
+    |> insert_membership_with_company_space_group()
+    |> insert_binding_to_company_space()
     |> insert_invitation(admin)
     |> insert_activity(admin)
     |> Repo.transaction()
@@ -24,7 +26,7 @@ defmodule Operately.Operations.CompanyMemberAdding do
 
     Multi.insert(multi, :account,
       Operately.People.Account.registration_changeset(%{
-        email: attrs.email, 
+        email: attrs.email,
         password: password,
         full_name: attrs.full_name
       })
@@ -46,6 +48,32 @@ defmodule Operately.Operations.CompanyMemberAdding do
         email: attrs.email,
         title: attrs.title,
         has_open_invitation: true,
+      })
+    end)
+  end
+
+  defp insert_membership_with_company_space_group(multi) do
+    multi
+    |> Multi.run(:space_access_group, fn _, %{company_space: space} ->
+      {:ok, Access.get_group!(group_id: space.id, tag: :standard)}
+    end)
+    |> Multi.insert(:space_access_membership, fn changes ->
+      Access.GroupMembership.changeset(%{
+        group_id: changes.space_access_group.id,
+        person_id: changes.person.id,
+      })
+    end)
+  end
+
+  defp insert_binding_to_company_space(multi) do
+    multi
+    |> Multi.run(:binding_to_space_group, fn _, changes ->
+      context = Access.get_context!(group_id: changes.company_space.id)
+
+      Access.create_binding(%{
+        group_id: changes.person_access_group.id,
+        context_id: context.id,
+        access_level: Access.Binding.comment_access(),
       })
     end)
   end
