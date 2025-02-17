@@ -42,7 +42,6 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.People.Person do
     }
   end
 
-  defp find_access_level([]), do: nil
   defp find_access_level(bindings) do
     Enum.max_by(bindings, &(&1.access_level)).access_level
   end
