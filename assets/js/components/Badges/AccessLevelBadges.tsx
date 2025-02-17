@@ -9,6 +9,7 @@ import { TestableElement } from "@/utils/testid";
 // Public interface
 
 export function ProjectAccessLevelBadge({ accessLevel }: { accessLevel: PermissionLevels }) {
+  if (!accessLevel) return <></>
   const data = permissionData[accessLevel];
   assertPresent(data, `Invalid access level: ${accessLevel}`);
 
@@ -16,6 +17,7 @@ export function ProjectAccessLevelBadge({ accessLevel }: { accessLevel: Permissi
 }
 
 export function SpaceAccessLevelBadge({ accessLevel }: { accessLevel: PermissionLevels }) {
+  if (!accessLevel) return <></>
   const data = permissionData[accessLevel];
   assertPresent(data, `Invalid access level: ${accessLevel}`);
 
