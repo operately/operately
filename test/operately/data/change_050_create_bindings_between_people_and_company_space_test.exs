@@ -60,7 +60,7 @@ defmodule Operately.Data.Change050CreateBindingsBetweenPeopleAndCompanySpaceTest
     [ctx.bob, ctx.mike, ctx.emily]
     |> Enum.each(fn p ->
       group = Access.get_group!(person_id: p.id)
-      assert Access.get_binding(context_id: context.id, group_id: group.id)
+      assert Access.get_binding(context_id: context.id, group_id: group.id, access_level: Access.Binding.edit_access())
     end)
   end
 

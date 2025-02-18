@@ -39,7 +39,7 @@ defmodule Operately.Data.Change050CreateBindingsBetweenPeopleAndCompanySpace do
         {:ok, _} = Access.create_binding(%{
           group_id: group_id,
           context_id: context_id,
-          access_level: Binding.comment_access()
+          access_level: Binding.edit_access()
         })
 
       _ -> :ok
