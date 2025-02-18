@@ -73,7 +73,7 @@ defmodule Operately.Operations.CompanyMemberAdding do
       Access.create_binding(%{
         group_id: changes.person_access_group.id,
         context_id: context.id,
-        access_level: Access.Binding.comment_access(),
+        access_level: Access.Binding.edit_access(),
       })
     end)
   end
