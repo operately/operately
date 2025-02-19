@@ -15,7 +15,10 @@ export function Targets() {
         <div className="">
           <div className="flex items-start justify-between">
             <div className="font-medium">
-              <BlackLink to={Paths.targetPath("1")} underline="hover" className="font-semibold">
+              <BlackLink
+                to={Paths.targetPath("1")}
+                className="font-semibold decoration-stone-400 hover:decoration-black hover:text-black"
+              >
                 Figure out how to open a new office in Brazil
               </BlackLink>
 
@@ -33,7 +36,10 @@ export function Targets() {
         <div className="">
           <div className="flex items-start justify-between">
             <div className="font-medium">
-              <BlackLink to={Paths.targetPath("2")} underline="hover" className="font-semibold">
+              <BlackLink
+                to={Paths.targetPath("2")}
+                className="font-semibold decoration-stone-400 hover:decoration-black hover:text-black"
+              >
                 Eliminate blockers for selling in China
               </BlackLink>
 
@@ -51,7 +57,10 @@ export function Targets() {
         <div className="">
           <div className="flex items-start justify-between">
             <div className="font-medium">
-              <BlackLink to={Paths.targetPath("3")} underline="hover" className="font-semibold">
+              <BlackLink
+                to={Paths.targetPath("3")}
+                className="font-semibold decoration-stone-400 hover:decoration-black hover:text-black"
+              >
                 Achieve 1000+ active users in new countries
               </BlackLink>
               <div className="text-xs text-content-subtle mt-0.5">No description</div>
@@ -66,7 +75,12 @@ export function Targets() {
         <div className="">
           <div className="flex items-start justify-between">
             <div className="font-medium">
-              <span className="font-semibold">Increase revenue by 20% from international sales</span>
+              <BlackLink
+                to={Paths.targetPath("3")}
+                className="font-semibold decoration-stone-400 hover:decoration-black hover:text-black"
+              >
+                Increase revenue by 20% from international sales
+              </BlackLink>
               <div className="text-xs text-content-dimmed mt-0.5">Increase revenue by 20% compared to last quarter</div>
             </div>
 
