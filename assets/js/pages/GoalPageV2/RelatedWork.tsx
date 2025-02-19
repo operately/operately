@@ -5,19 +5,15 @@ import { useMe } from "@/contexts/CurrentCompanyContext";
 
 import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
-import { SecondaryButton } from "@/components/Buttons";
 
 export const DimmedLabel = ({ children }) => <div className="text-xs uppercase font-medium mb-1">{children}</div>;
 
-export function Messages() {
+export function RelatedWork() {
   return (
     <Section title="Messages">
       <CheckIn status="On Track" color="bg-accent-1" />
       <Delays />
       <CheckIn status="Off Track" color="bg-red-500" />
-
-      <div className="mt-2" />
-      <SecondaryButton size="xs">Write a message</SecondaryButton>
     </Section>
   );
 }
@@ -28,7 +24,7 @@ function CheckIn({ status, color }) {
   const statusClass = `${color} rounded-full px-1.5 py-0.5 text-[10px] uppercase font-semibold text-white-1`;
 
   return (
-    <div className="flex items-start gap-3 pb-4">
+    <div className="flex items-start gap-3 not-first:pt-4 pb-4 border-b border-stroke-base">
       <div className="font-bold flex items-center gap-1 pt-1">{avatar}</div>
 
       <div>
@@ -57,7 +53,7 @@ function Delays() {
   const avatar = <Avatar person={author} size={30} />;
 
   return (
-    <div className="flex items-start gap-3 pb-4">
+    <div className="flex items-start gap-3 py-4 border-b border-stroke-base">
       <div className="font-bold flex items-center gap-1 pt-1">{avatar}</div>
 
       <div>

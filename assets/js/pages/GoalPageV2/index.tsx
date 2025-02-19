@@ -12,6 +12,7 @@ import { assertPresent } from "@/utils/assertions";
 import { Overview } from "./Overview";
 import { Targets } from "./Targets";
 import { Messages } from "./Messages";
+import { RelatedWork } from "./RelatedWork";
 
 interface LoaderResult {
   goal: Goals.Goal;
@@ -50,6 +51,7 @@ export function Page() {
           <Overview />
           <Targets />
           <Messages />
+          <RelatedWork />
 
           <GoalFeed />
         </Paper.Body>
