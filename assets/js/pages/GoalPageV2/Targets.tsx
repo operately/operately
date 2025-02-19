@@ -3,6 +3,8 @@ import * as React from "react";
 import { Section } from "./Section";
 import { SecondaryButton } from "@/components/Buttons";
 import classNames from "classnames";
+import { BlackLink } from "@/components/Link";
+import { Paths } from "@/routes/paths";
 
 export const DimmedLabel = ({ children }) => <div className="text-xs uppercase font-medium mb-1">{children}</div>;
 
@@ -13,7 +15,10 @@ export function Targets() {
         <div className="">
           <div className="flex items-start justify-between">
             <div className="font-medium">
-              <span className="font-semibold">Figure out how to open a new office in Brazil</span>
+              <BlackLink to={Paths.targetPath("1")} underline="hover" className="font-semibold">
+                Figure out how to open a new office in Brazil
+              </BlackLink>
+
               <div className="text-xs text-content-dimmed mt-0.5">
                 To be able to conduct business in Brazil, we need to open an office there as per local regulations.
               </div>
@@ -28,7 +33,10 @@ export function Targets() {
         <div className="">
           <div className="flex items-start justify-between">
             <div className="font-medium">
-              <span className="font-semibold">Eliminate blockers for selling in China</span>
+              <BlackLink to={Paths.targetPath("2")} underline="hover" className="font-semibold">
+                Eliminate blockers for selling in China
+              </BlackLink>
+
               <div className="text-xs text-content-dimmed mt-0.5">
                 We have identified 20 key blockers that are preventing us from selling...
               </div>
@@ -43,7 +51,9 @@ export function Targets() {
         <div className="">
           <div className="flex items-start justify-between">
             <div className="font-medium">
-              <span className="font-semibold">Achieve 1000+ active users in new countries</span>
+              <BlackLink to={Paths.targetPath("3")} underline="hover" className="font-semibold">
+                Achieve 1000+ active users in new countries
+              </BlackLink>
               <div className="text-xs text-content-subtle mt-0.5">No description</div>
             </div>
 

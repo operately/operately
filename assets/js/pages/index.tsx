@@ -114,6 +114,7 @@ import * as SpaceEditGeneralAccessPage from "./SpaceEditGeneralAccessPage";
 import * as SpaceEditPage from "./SpaceEditPage";
 import * as SpaceGoalsPage from "./SpaceGoalsPage";
 import * as SpacePage from "./SpacePage";
+import * as TargetV2Page from "./TargetV2Page";
 import * as TaskPage from "./TaskPage";
 
 //
@@ -675,6 +676,11 @@ export default {
     name: "SpacePage",
     loader: SpacePage.loader,
     Page: SpacePage.Page,
+  },
+  TargetV2Page: {
+    name: "TargetV2Page",
+    loader: TargetV2Page.loader,
+    Page: TargetV2Page.Page,
   },
   TaskPage: {
     name: "TaskPage",
