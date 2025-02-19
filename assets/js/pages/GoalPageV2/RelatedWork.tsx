@@ -1,80 +1,90 @@
 import * as React from "react";
+import * as Icons from "@tabler/icons-react";
 
 import { Section } from "./Section";
+import AvatarList from "@/components/AvatarList";
 import { useMe } from "@/contexts/CurrentCompanyContext";
-
-import Avatar from "@/components/Avatar";
-import FormattedTime from "@/components/FormattedTime";
+import { SecondaryButton } from "@/components/Buttons";
 
 export const DimmedLabel = ({ children }) => <div className="text-xs uppercase font-medium mb-1">{children}</div>;
 
 export function RelatedWork() {
+  const me = useMe()!;
+  const other = { fullName: "John Doe" };
+
   return (
-    <Section title="Messages">
-      <CheckIn status="On Track" color="bg-accent-1" />
-      <Delays />
-      <CheckIn status="Off Track" color="bg-red-500" />
+    <Section title="Related Work">
+      <div className="flex flex-col gap-3">
+        <div className="flex items-center gap-2">
+          <Icons.IconTarget size={16} className="text-red-500" />{" "}
+          <div className="font-bold">Expand into New Markets</div>
+        </div>
+
+        <div className="flex items-center gap-2 ml-6">
+          <Icons.IconTarget size={16} className="text-red-500" /> <div>Expand onto the German market</div>
+          <Dots />
+          <AvatarList people={[me, other, other, other, other]} size={20} stacked />
+          <Progress progress={10} color="bg-red-100" textColor="text-red-700" />
+        </div>
+
+        <div className="flex items-center gap-2 ml-12">
+          <Icons.IconHexagons size={16} className="text-indigo-500" />{" "}
+          <div>
+            <s>Germany market research</s>
+          </div>
+          <Icons.IconCircleCheckFilled size={16} className="text-green-700" />
+          <div className="text-sm text-green-700 font-medium">Done</div>
+          <Dots />
+          <AvatarList people={[me, other, me]} size={20} stacked />
+          <Progress progress={100} color="bg-green-100" textColor="text-green-700" />
+        </div>
+
+        <div className="flex items-center gap-2 ml-12">
+          <Icons.IconHexagons size={16} className="text-indigo-500" /> <div>Open a new office in Germany</div>
+          <Dots />
+          <AvatarList people={[me]} size={20} stacked />
+          <Progress progress={60} color="bg-green-100" textColor="text-green-700" />
+        </div>
+
+        <div className="flex items-center gap-2 ml-5">
+          <Icons.IconTarget size={16} className="text-red-500" /> <div>Expand onto the Chinese market</div>
+          <Dots />
+          <AvatarList people={[me, other]} size={20} stacked />
+          <Progress progress={20} color="bg-green-100" textColor="text-green-700" />
+        </div>
+
+        <div className="flex items-center gap-1 ml-12">
+          <Icons.IconHexagons size={16} className="text-indigo-500" />{" "}
+          <div>
+            <s>Localize the product for Chinese market</s>
+          </div>
+          <Icons.IconCircleCheckFilled size={16} className="text-green-700" />
+          <div className="text-sm text-green-700 font-medium">Done</div>
+          <Dots />
+          <AvatarList people={[me, other, me]} size={20} stacked />
+          <Progress progress={100} color="bg-green-100" textColor="text-green-700" />
+        </div>
+
+        <div className="flex items-center gap-2 mt-4">
+          <SecondaryButton size="xs">Add subgoal</SecondaryButton>
+          <SecondaryButton size="xs">Start project</SecondaryButton>
+        </div>
+      </div>
     </Section>
   );
 }
 
-function CheckIn({ status, color }) {
-  const author = useMe()!;
-  const avatar = <Avatar person={author} size={30} />;
-  const statusClass = `${color} rounded-full px-1.5 py-0.5 text-[10px] uppercase font-semibold text-white-1`;
-
-  return (
-    <div className="flex items-start gap-3 not-first:pt-4 pb-4 border-b border-stroke-base">
-      <div className="font-bold flex items-center gap-1 pt-1">{avatar}</div>
-
-      <div>
-        <div className="inline-flex items-center gap-2">
-          <span className="font-bold">Progress Update</span>
-          <div className={statusClass}>{status}</div>
-        </div>
-
-        <div className="text-sm mt-0.5">
-          <span className="text-stone-500">
-            <FormattedTime time={new Date()} format="long-date" />
-          </span>
-          <span className="mx-1 text-stone-500">&bull;</span>
-          <span className="text-stone-500">John Smith</span>
-          <span className="mx-1 text-stone-500">&bull;</span>
-          Everything is going well. We are on track to meet our goals. We are working hard to make sure we are
-          successful. Next week we will be meeting with the...
-        </div>
-      </div>
-    </div>
-  );
+function Dots() {
+  return <div className="border-t-2 border-dotted border-stroke-base flex-1 mx-1" />;
 }
 
-function Delays() {
-  const author = useMe()!;
-  const avatar = <Avatar person={author} size={30} />;
+function Progress({ progress, color, textColor }) {
+  const outerClass = `rounded-lg px-2 py-0.5 shrink-0 ${color}`;
+  const innerClass = `text-sm font-medium font-mono ${textColor}`;
 
   return (
-    <div className="flex items-start gap-3 py-4 border-b border-stroke-base">
-      <div className="font-bold flex items-center gap-1 pt-1">{avatar}</div>
-
-      <div>
-        <div className="inline-flex items-center gap-2">
-          <span className="font-bold">Delay</span>
-          <div className="bg-orange-500 rounded-full px-1.5 py-0.5 text-[10px] uppercase font-semibold text-white-1">
-            30 days added
-          </div>
-        </div>
-
-        <div className="text-sm mt-0.5">
-          <span className="text-stone-500">
-            <FormattedTime time={new Date()} format="long-date" />
-          </span>
-          <span className="mx-1 text-stone-500">&bull;</span>
-          <span className="text-stone-500">John Smith</span>
-          <span className="mx-1 text-stone-500">&bull;</span>
-          Everything is going well. We are on track to meet our goals. We are working hard to make sure we are
-          successful. Next week we will be meeting with the...
-        </div>
-      </div>
+    <div className={outerClass}>
+      <div className={innerClass}>{progress}%</div>
     </div>
   );
 }

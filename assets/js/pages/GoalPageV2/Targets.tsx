@@ -18,6 +18,7 @@ export function Targets() {
               <BlackLink
                 to={Paths.targetPath("1")}
                 className="font-semibold decoration-stone-400 hover:decoration-black hover:text-black"
+                underline="hover"
               >
                 Figure out how to open a new office in Brazil
               </BlackLink>
@@ -39,6 +40,7 @@ export function Targets() {
               <BlackLink
                 to={Paths.targetPath("2")}
                 className="font-semibold decoration-stone-400 hover:decoration-black hover:text-black"
+                underline="hover"
               >
                 Eliminate blockers for selling in China
               </BlackLink>
@@ -60,6 +62,7 @@ export function Targets() {
               <BlackLink
                 to={Paths.targetPath("3")}
                 className="font-semibold decoration-stone-400 hover:decoration-black hover:text-black"
+                underline="hover"
               >
                 Achieve 1000+ active users in new countries
               </BlackLink>
@@ -78,6 +81,7 @@ export function Targets() {
               <BlackLink
                 to={Paths.targetPath("3")}
                 className="font-semibold decoration-stone-400 hover:decoration-black hover:text-black"
+                underline="hover"
               >
                 Increase revenue by 20% from international sales
               </BlackLink>
