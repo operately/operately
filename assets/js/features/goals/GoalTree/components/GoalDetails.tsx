@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 
+import { Update } from "@/models/goalCheckIns";
 import * as Goals from "@/models/goals";
 import * as Timeframes from "@/utils/timeframes";
 import * as Icons from "@tabler/icons-react";
@@ -14,6 +15,7 @@ import { SecondaryButton } from "@/components/Buttons";
 import { DivLink } from "@/components/Link";
 import { AvatarLink } from "@/components/Avatar";
 import { DescriptionSection, StatusSection, TargetsSection } from "@/features/goals/GoalCheckIn";
+import FormattedTime from "@/components/FormattedTime";
 
 import { GoalNode, Node } from "../tree";
 import { useExpandable } from "../context/Expandable";
@@ -86,14 +88,23 @@ function GoalStatus({ goal }: { goal: GoalNode }) {
       <Status node={goal}>
         {goal.lastCheckIn && (
           <>
-            <StatusSection update={goal.lastCheckIn!} reviewer={goal.reviewer || undefined} />
-            <DescriptionSection update={goal.lastCheckIn!} limit={120} />
-            <TargetsSection update={goal.asGoalNode().lastCheckIn!} />
+            <LastUpdateTimestamp update={goal.lastCheckIn} />
+            <StatusSection update={goal.lastCheckIn} reviewer={goal.reviewer || undefined} />
+            <DescriptionSection update={goal.lastCheckIn} limit={120} />
+            <TargetsSection update={goal.lastCheckIn} />
           </>
         )}
       </Status>
     );
   }
+}
+
+function LastUpdateTimestamp({ update }: { update: Update }) {
+  return (
+    <div className="mt-4 font-bold">
+      Updated on <FormattedTime time={update.insertedAt!} format="long-date" />
+    </div>
+  );
 }
 
 function GoalTimeframe({ goal }: { goal: Goals.Goal }) {

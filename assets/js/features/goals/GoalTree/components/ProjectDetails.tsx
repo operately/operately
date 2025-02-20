@@ -2,6 +2,7 @@ import React from "react";
 
 import FormattedTime from "@/components/FormattedTime";
 import { useWindowSizeBreakpoints } from "@/components/Pages";
+import { ProjectCheckIn } from "@/models/projectCheckIns";
 
 import classNames from "classnames";
 import { match } from "ts-pattern";
@@ -56,11 +57,20 @@ function ProjectStatus({ node }: { node: ProjectNode }) {
   } else {
     return (
       <Status node={node}>
+        <LastCheckInTimestamp checkIn={node.lastCheckIn!} />
         <StatusSection checkIn={node.lastCheckIn!} reviewer={node.reviewer || undefined} />
         <DescriptionSection checkIn={node.lastCheckIn!} limit={120} />
       </Status>
     );
   }
+}
+
+function LastCheckInTimestamp({ checkIn }: { checkIn: ProjectCheckIn }) {
+  return (
+    <div className="mt-4 font-bold">
+      Checked in on <FormattedTime time={checkIn.insertedAt!} format="long-date" />
+    </div>
+  );
 }
 
 function NextMilestone({ project }: { project: Project }) {
