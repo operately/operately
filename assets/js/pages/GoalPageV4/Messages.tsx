@@ -14,9 +14,9 @@ export function Messages() {
     <div className="mt-6 pt-6 mb-4 border-t border-stroke-base">
       <div className="mb-4 uppercase text-sm font-semibold tracking-wide">Conversations</div>
 
-      <CheckIn status="On Track" color="bg-green-200 text-black" />
+      <CheckIn status="On Track" color="bg-green-200" />
       <Delays />
-      <CheckIn status="Off Track" color="bg-red-200 text-black" />
+      <CheckIn status="Off Track" color="bg-red-200" />
 
       <div className="mt-2" />
       <SecondaryButton size="xs">Write message</SecondaryButton>
@@ -27,7 +27,7 @@ export function Messages() {
 function CheckIn({ status, color }) {
   const author = useMe()!;
   const avatar = <Avatar person={author} size={30} />;
-  const statusClass = `${color} rounded-full px-1.5 py-0.5 text-[10px] uppercase font-semibold text-white-1`;
+  const statusClass = `${color} rounded-full px-1.5 py-0.5 text-[10px] uppercase font-semibold text-black`;
 
   return (
     <div className="flex items-start gap-3 pb-4">

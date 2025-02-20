@@ -33,37 +33,16 @@ export function Header({ goal }: HeaderProps) {
 
 function GoalTitleRow({ goal }: { goal: Goals.Goal }) {
   return (
-    <div className="flex items-start gap-3">
-      <div className="gap-2 mt-1 w-full text-content-accent">
-        <div className="flex items-start gap-4 justify-between">
-          <GoalTitle goal={goal} />
-        </div>
-      </div>
+    <div className="flex items-center gap-4 mt-1">
+      <GoalTitle goal={goal} />
+
+      <div className="bg-green-200 rounded-full px-1.5 py-0.5 text-[10px] uppercase font-semibold mt-1">On Track</div>
     </div>
   );
 }
 
 function GoalTitle({ goal }: { goal: Goals.Goal }) {
-  return <div className="font-bold text-3xl text-content-accent flex-1">{goal.name}</div>;
-}
-
-function GoalIcon() {
-  return (
-    <div className="bg-red-500/10 p-1.5 rounded-lg">
-      <Icons.IconTarget size={24} className="text-content-error" />
-    </div>
-  );
-}
-
-function GoalTabs({ activeTab, goal }: { activeTab: HeaderProps["activeTab"]; goal: Goals.Goal }) {
-  return (
-    <Tabs.Root activeTab={activeTab}>
-      <Tabs.Tab id="status" title="Current Status" linkTo={Paths.goalPath(goal.id!)} />
-      <Tabs.Tab id="subgoals" title="Sub-Goals and Projects" linkTo={Paths.goalSubgoalsPath(goal.id!)} />
-      <Tabs.Tab id="discussions" title="Discussions" linkTo={Paths.goalDiscussionsPath(goal.id!)} />
-      <Tabs.Tab id="about" title="About" linkTo={Paths.goalAboutPath(goal.id!)} />
-    </Tabs.Root>
-  );
+  return <div className="font-bold text-3xl text-content-accent">{goal.name}</div>;
 }
 
 function ParentGoal({ goal }: { goal: Goals.Goal | null | undefined }) {
