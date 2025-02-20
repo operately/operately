@@ -111,13 +111,11 @@ function Form({ hideForm }) {
     fields: {
       name: "",
       type: "number",
-      dueDate: "",
       from: "",
       to: "",
       unit: "",
       tasks: [newTask()],
       currency: "USD",
-      description: null,
     },
     validate: (addError) => {
       if (!form.values.name) {
@@ -130,11 +128,8 @@ function Form({ hideForm }) {
   return (
     <Forms.Form form={form}>
       <div className="flex flex-col gap-2 p-4 border border-stroke-base  shadow-lg rounded">
-        <Forms.FieldGroup>
-          <Forms.TextInput label="Name" field="name" autoFocus placeholder="e.g. Monthly Reports" />
-        </Forms.FieldGroup>
-
         <Forms.FieldGroup layout="grid">
+          <Forms.TextInput label="Name" field="name" autoFocus placeholder="e.g. Monthly Reports" />
           <Forms.SelectBox
             label="Type"
             field="type"
@@ -144,17 +139,6 @@ function Form({ hideForm }) {
               { value: "boolean", label: "Yes/No" },
               { value: "tasks", label: "Tasks" },
             ]}
-          />
-
-          <Forms.TextInput label="Due date (optional)" field="dueDate" autoFocus />
-        </Forms.FieldGroup>
-
-        <Forms.FieldGroup>
-          <Forms.RichTextArea
-            label="Description (optional)"
-            height="60px"
-            field="description"
-            mentionSearchScope={{ type: "none" }}
           />
         </Forms.FieldGroup>
 
