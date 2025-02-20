@@ -1,7 +1,6 @@
 import * as React from "react";
 import * as Icons from "@tabler/icons-react";
 import * as Goals from "@/models/goals";
-import * as Tabs from "@/components/Tabs";
 import * as Paper from "@/components/PaperContainer";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import * as Timeframes from "@/utils/timeframes";
@@ -16,16 +15,21 @@ import plurarize from "@/utils/plurarize";
 
 interface HeaderProps {
   goal: Goals.Goal;
+  hideOptions?: boolean;
 }
 
-export function Header({ goal }: HeaderProps) {
+export function Header({ goal, hideOptions }: HeaderProps) {
   return (
-    <div>
-      <Options goal={goal} />
-      <Banner goal={goal} />
-      <ParentGoal goal={goal.parentGoal} />
-      <GoalTitleRow goal={goal} />
-    </div>
+    <>
+      <div>
+        {!hideOptions && <Options goal={goal} />}
+        <Banner goal={goal} />
+        <ParentGoal goal={goal.parentGoal} />
+        <GoalTitleRow goal={goal} />
+      </div>
+
+      <div className="mb-8" />
+    </>
   );
 }
 
@@ -55,17 +59,6 @@ function GoalIcon() {
     <div className="bg-red-500/10 p-1.5 rounded-lg">
       <Icons.IconTarget size={24} className="text-content-error" />
     </div>
-  );
-}
-
-function GoalTabs({ activeTab, goal }: { activeTab: HeaderProps["activeTab"]; goal: Goals.Goal }) {
-  return (
-    <Tabs.Root activeTab={activeTab}>
-      <Tabs.Tab id="status" title="Current Status" linkTo={Paths.goalPath(goal.id!)} />
-      <Tabs.Tab id="subgoals" title="Sub-Goals and Projects" linkTo={Paths.goalSubgoalsPath(goal.id!)} />
-      <Tabs.Tab id="discussions" title="Discussions" linkTo={Paths.goalDiscussionsPath(goal.id!)} />
-      <Tabs.Tab id="about" title="About" linkTo={Paths.goalAboutPath(goal.id!)} />
-    </Tabs.Root>
   );
 }
 
