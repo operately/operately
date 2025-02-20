@@ -7,6 +7,7 @@ import { BlackLink } from "@/components/Link";
 import { Paths } from "@/routes/paths";
 import Forms from "@/components/Forms";
 import { IconPlus } from "@tabler/icons-react";
+import { truncateString } from "@/utils/strings";
 
 export const DimmedLabel = ({ children }) => <div className="text-xs uppercase font-medium mb-1">{children}</div>;
 
@@ -24,18 +25,21 @@ export function Targets() {
                 className="font-semibold decoration-stone-400 hover:decoration-black hover:text-black"
                 underline="hover"
               >
-                Figure out how to open a new office in Brazil
+                Physical Location Setup
               </BlackLink>
 
               <div className="text-xs text-content-dimmed mt-0.5">
-                To be able to conduct business in Brazil, we need to open an office there as per local regulations.
+                {truncateString(
+                  "Create a fully functional, professional workspace that reflects our company culture and meets all operational needs. The setup should enable efficient work processes while ensuring security and comfort for employees and visitors.",
+                  100,
+                )}
               </div>
             </div>
 
-            <div className="tracking-wide text-sm font-medium">PENDING</div>
+            <div className="tracking-wide text-sm font-medium">3 / 11</div>
           </div>
 
-          <LargeProgress progress={0} color="bg-orange-500" />
+          <LargeProgress progress={33} color="bg-accent-1" />
         </div>
 
         <div className="">
@@ -46,11 +50,14 @@ export function Targets() {
                 className="font-semibold decoration-stone-400 hover:decoration-black hover:text-black"
                 underline="hover"
               >
-                Eliminate blockers for selling in China
+                HR & Staffing
               </BlackLink>
 
               <div className="text-xs text-content-dimmed mt-0.5">
-                We have identified 20 key blockers that are preventing us from selling...
+                {truncateString(
+                  "Build a competent, well-trained team and establish all necessary HR processes. This ensures we have the right people in place and proper systems to manage employee relations, development, and compliance.",
+                  100,
+                )}
               </div>
             </div>
 
@@ -68,34 +75,21 @@ export function Targets() {
                 className="font-semibold decoration-stone-400 hover:decoration-black hover:text-black"
                 underline="hover"
               >
-                Achieve 1000+ active users in new countries
+                Operations Setup
               </BlackLink>
-              <div className="text-xs text-content-subtle mt-0.5">No description</div>
+
+              <div className="text-xs text-content-dimmed mt-0.5">
+                {truncateString(
+                  "Establish efficient operational systems and procedures that align with company standards while accommodating local requirements. This ensures smooth daily operations and consistent service delivery.",
+                  100,
+                )}
+              </div>
             </div>
 
-            <div className="tracking-wider text-sm font-medium">700 / 1000</div>
+            <div className="tracking-wider text-sm font-medium">4 / 8</div>
           </div>
 
-          <LargeProgress progress={70} color="bg-accent-1" />
-        </div>
-
-        <div className="">
-          <div className="flex items-start justify-between">
-            <div className="font-medium">
-              <BlackLink
-                to={Paths.targetPath("3")}
-                className="font-semibold decoration-stone-400 hover:decoration-black hover:text-black"
-                underline="hover"
-              >
-                Increase revenue by 20% from international sales
-              </BlackLink>
-              <div className="text-xs text-content-dimmed mt-0.5">Increase revenue by 20% compared to last quarter</div>
-            </div>
-
-            <div className="tracking-wider text-sm font-medium">$ 1.2M / $ 1M</div>
-          </div>
-
-          <LargeProgress progress={100} color="bg-accent-1" />
+          <LargeProgress progress={50} color="bg-accent-1" />
         </div>
       </div>
 
@@ -139,7 +133,6 @@ function Form({ hideForm }) {
         <Forms.FieldGroup>
           <Forms.TextInput label="Name" field="name" autoFocus placeholder="e.g. Monthly Reports" />
         </Forms.FieldGroup>
-
 
         <Forms.FieldGroup layout="grid">
           <Forms.SelectBox
