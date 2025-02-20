@@ -11,15 +11,15 @@ export const DimmedLabel = ({ children }) => <div className="text-xs uppercase f
 
 export function Messages() {
   return (
-    <div>
-      <div className="mb-4 uppercase text-sm font-semibold tracking-wide mt-8">Conversations</div>
+    <div className="mt-6 pt-6 mb-4 border-t border-stroke-base">
+      <div className="mb-4 uppercase text-sm font-semibold tracking-wide">Conversations</div>
 
-      <CheckIn status="On Track" color="bg-accent-1" />
+      <CheckIn status="On Track" color="bg-green-200 text-black" />
       <Delays />
-      <CheckIn status="Off Track" color="bg-red-500" />
+      <CheckIn status="Off Track" color="bg-red-200 text-black" />
 
       <div className="mt-2" />
-      <SecondaryButton size="xs">Write a message</SecondaryButton>
+      <SecondaryButton size="xs">Write message</SecondaryButton>
     </div>
   );
 }
@@ -35,7 +35,7 @@ function CheckIn({ status, color }) {
 
       <div>
         <div className="inline-flex items-center gap-2">
-          <span className="font-bold">Progress Update</span>
+          <span className="font-bold">Check In</span>
           <div className={statusClass}>{status}</div>
         </div>
 
@@ -64,10 +64,7 @@ function Delays() {
 
       <div>
         <div className="inline-flex items-center gap-2">
-          <span className="font-bold">Delay</span>
-          <div className="bg-orange-500 rounded-full px-1.5 py-0.5 text-[10px] uppercase font-semibold text-white-1">
-            30 days added
-          </div>
+          <span className="font-bold">Delay &bull; Deadline extended by 2 weeks</span>
         </div>
 
         <div className="text-sm mt-0.5">

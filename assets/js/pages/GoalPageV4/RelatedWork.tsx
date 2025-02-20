@@ -13,8 +13,8 @@ export function RelatedWork() {
   const other = { fullName: "John Doe" };
 
   return (
-    <div>
-      <div className="mt-8 mb-4 uppercase text-sm font-bold tracking-wider">Related Work</div>
+    <div className="mt-6 pt-6 mb-4 border-t border-stroke-base">
+      <div className="mb-4 uppercase text-sm font-bold tracking-wider">Related Work</div>
 
       <div className="flex flex-col gap-3">
         <div className="flex items-center gap-2">
