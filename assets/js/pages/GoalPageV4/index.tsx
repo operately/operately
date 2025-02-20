@@ -17,6 +17,8 @@ import { Messages } from "./Messages";
 import { RelatedWork } from "./RelatedWork";
 import Avatar from "@/components/Avatar";
 import { DimmedLink } from "@/components/Link";
+import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
+import { MenuActionItem } from "@/components/Menu";
 
 interface LoaderResult {
   goal: Goals.Goal;
@@ -46,20 +48,44 @@ export function Page() {
 
   return (
     <Pages.Page title={[goal.name!]} testId="goal-page">
-      <Paper.Root size="large">
+      <Paper.Root size="xlarge">
         <Navigation space={goal.space!} />
 
         <Paper.Body minHeight="none">
           <div className="flex gap-12">
             <div className="flex-1">
               <Header goal={goal} />
+              <Overview />
               <Targets />
               <Messages />
               <RelatedWork />
             </div>
 
-            <div className="w-[250px] text-sm">
-              <div className="mt-6 mb-2 uppercase text-xs font-bold tracking-wider">Timeframe</div>
+            <div className="w-[260px] text-sm mt-6">
+              <div className="flex justify-end gap-2 items-center border-b border-stroke-base pb-4 mb-8">
+                <SecondaryButton linkTo={""} testId="update-progress-button" size="sm">
+                  <Icons.IconStarFilled size={16} />
+                </SecondaryButton>
+
+                <SecondaryButton
+                  linkTo={""}
+                  testId="update-progress-button"
+                  size="sm"
+                  options={[
+                    <MenuActionItem onClick={() => {}}>All Updates</MenuActionItem>,
+                    <MenuActionItem onClick={() => {}}>Check-ins</MenuActionItem>,
+                  ]}
+                >
+                  <Icons.IconBell size={16} />
+                  Follow
+                </SecondaryButton>
+
+                <PrimaryButton linkTo={""} testId="update-progress-button" size="sm">
+                  Check In
+                </PrimaryButton>
+              </div>
+
+              <div className="mb-2 uppercase text-xs font-bold tracking-wider">Timeframe</div>
 
               <div className="flex flex-col gap-2">
                 <div className="flex items-center gap-3">
