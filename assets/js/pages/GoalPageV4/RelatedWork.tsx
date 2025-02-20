@@ -13,21 +13,18 @@ export function RelatedWork() {
   const other = { fullName: "John Doe" };
 
   return (
-    <Section title="Related Work">
+    <div>
+      <div className="mt-8 mb-4 uppercase text-sm font-bold tracking-wider">Related Work</div>
+
       <div className="flex flex-col gap-3">
         <div className="flex items-center gap-2">
-          <Icons.IconTarget size={16} className="text-red-500" />{" "}
-          <div className="font-bold">Expand into New Markets</div>
-        </div>
-
-        <div className="flex items-center gap-2 ml-6">
           <Icons.IconTarget size={16} className="text-red-500" /> <div>Expand onto the German market</div>
           <Dots />
           <AvatarList people={[me, other, other, other, other]} size={20} stacked />
           <Progress progress={10} color="bg-red-100" textColor="text-red-700" />
         </div>
 
-        <div className="flex items-center gap-2 ml-12">
+        <div className="flex items-center gap-2 ml-6">
           <Icons.IconHexagons size={16} className="text-indigo-500" />{" "}
           <div>
             <s>Germany market research</s>
@@ -39,21 +36,21 @@ export function RelatedWork() {
           <Progress progress={100} color="bg-green-100" textColor="text-green-700" />
         </div>
 
-        <div className="flex items-center gap-2 ml-12">
+        <div className="flex items-center gap-2 ml-6">
           <Icons.IconHexagons size={16} className="text-indigo-500" /> <div>Open a new office in Germany</div>
           <Dots />
           <AvatarList people={[me]} size={20} stacked />
           <Progress progress={60} color="bg-green-100" textColor="text-green-700" />
         </div>
 
-        <div className="flex items-center gap-2 ml-5">
+        <div className="flex items-center gap-2">
           <Icons.IconTarget size={16} className="text-red-500" /> <div>Expand onto the Chinese market</div>
           <Dots />
           <AvatarList people={[me, other]} size={20} stacked />
           <Progress progress={20} color="bg-green-100" textColor="text-green-700" />
         </div>
 
-        <div className="flex items-center gap-1 ml-12">
+        <div className="flex items-center gap-1 ml-6">
           <Icons.IconHexagons size={16} className="text-indigo-500" />{" "}
           <div>
             <s>Localize the product for Chinese market</s>
@@ -70,7 +67,7 @@ export function RelatedWork() {
           <SecondaryButton size="xs">Start project</SecondaryButton>
         </div>
       </div>
-    </Section>
+    </div>
   );
 }
 

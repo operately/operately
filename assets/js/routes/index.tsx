@@ -131,6 +131,7 @@ export function createAppRoutes() {
         pageRoute("goals/:id", pages.GoalPage),
         pageRoute("goals/:id/v2", pages.GoalPageV2),
         pageRoute("goals/:id/v3", pages.GoalPageV3),
+        pageRoute("goals/:id/v4", pages.GoalPageV4),
         pageRoute("goals/:id/subgoals", pages.GoalSubgoalsPage),
         pageRoute("goals/:id/about", pages.GoalAboutPage),
         pageRoute("goals/:goalId/edit", pages.GoalEditPage),

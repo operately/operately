@@ -10,77 +10,46 @@ export const DimmedLabel = ({ children }) => <div className="text-xs uppercase f
 
 export function Targets() {
   return (
-    <div className="grid grid-cols-1 gap-4 mt-4">
-      <div className="border border-stroke-base p-4 rounded-lg shadow">
-        <div className="flex items-start justify-between">
-          <div className="font-medium">
-            <BlackLink
-              to={Paths.targetPath("1")}
-              className="font-semibold decoration-stone-400 hover:decoration-black hover:text-black"
-              underline="hover"
-            >
-              Figure out how to open a new office in Brazil
-            </BlackLink>
-          </div>
-        </div>
+    <div className="">
+      <div className="mt-8 mb-4 uppercase text-sm font-bold tracking-wider">Targets</div>
 
-        <div className="tracking-wide text-xs font-medium">PENDING</div>
-
-        <LargeProgress progress={0} color="bg-orange-500" />
+      <div className="grid grid-cols-1 gap-4">
+        <Target name="Figure out how to open a new office in Brazil" value={0} total={0} progress={0} />
+        <Target name="Eliminate blockers for selling in China" value={4} total={20} progress={20} />
+        <Target name="Achieve 1000+ active users in new countries" value={700} total={1000} progress={70} />
+        <Target
+          name="Increase revenue by 20% from international sales"
+          value={"$ 1.2M"}
+          total={"$ 1M"}
+          progress={100}
+        />
       </div>
 
-      <div className="border border-stroke-base p-4 rounded-lg shadow">
-        <div className="flex items-start justify-between">
-          <div className="font-medium">
-            <BlackLink
-              to={Paths.targetPath("2")}
-              className="font-semibold decoration-stone-400 hover:decoration-black hover:text-black"
-              underline="hover"
-            >
-              Eliminate blockers for selling in China
-            </BlackLink>
-          </div>
-        </div>
-        <div className="tracking-wider text-sm font-medium">4 / 20</div>
+      <div className="mt-6" />
+      <SecondaryButton size="xs">Add target</SecondaryButton>
+    </div>
+  );
+}
 
-        <LargeProgress progress={20} color="bg-orange-500" />
+function Target({ name, value, total, progress }) {
+  return (
+    <div className="">
+      <div className="flex items-start justify-between">
+        <div className="font-medium">
+          <BlackLink
+            to={Paths.targetPath("3")}
+            className="font-medium decoration-stone-400 hover:decoration-black hover:text-black"
+            underline="hover"
+          >
+            {name}
+          </BlackLink>
+        </div>
+        <div className="tracking-wider text-sm font-medium">
+          {value} / {total}
+        </div>
       </div>
 
-      <div className="border border-stroke-base p-4 rounded-lg shadow">
-        <div className="flex items-start justify-between">
-          <div className="font-medium">
-            <BlackLink
-              to={Paths.targetPath("3")}
-              className="font-semibold decoration-stone-400 hover:decoration-black hover:text-black"
-              underline="hover"
-            >
-              Achieve 1000+ active users in new countries
-            </BlackLink>
-          </div>
-        </div>
-
-        <div className="tracking-wider text-sm font-medium">700 / 1000</div>
-
-        <LargeProgress progress={70} color="bg-accent-1" />
-      </div>
-
-      <div className="border border-stroke-base p-4 rounded-lg shadow">
-        <div className="flex items-start justify-between">
-          <div className="font-medium">
-            <BlackLink
-              to={Paths.targetPath("3")}
-              className="font-semibold decoration-stone-400 hover:decoration-black hover:text-black"
-              underline="hover"
-            >
-              Increase revenue by 20% from international sales
-            </BlackLink>
-          </div>
-        </div>
-
-        <div className="tracking-wider text-sm font-medium">$ 1.2M / $ 1M</div>
-
-        <LargeProgress progress={100} color="bg-accent-1" />
-      </div>
+      <LargeProgress progress={progress} color="bg-accent-1" />
     </div>
   );
 }

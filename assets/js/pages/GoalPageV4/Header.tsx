@@ -37,6 +37,7 @@ export function Header({ goal }: HeaderProps) {
     </div>
   );
 }
+// <UpdateProgressButton goal={goal} />
 
 function GoalTitleRow({ goal }: { goal: Goals.Goal }) {
   return (
@@ -44,7 +45,6 @@ function GoalTitleRow({ goal }: { goal: Goals.Goal }) {
       <div className="gap-2 mt-1 w-full text-content-accent">
         <div className="flex items-start gap-4 justify-between">
           <GoalTitle goal={goal} />
-          <UpdateProgressButton goal={goal} />
         </div>
       </div>
     </div>
