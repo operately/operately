@@ -5,21 +5,6 @@ import * as Icons from "@tabler/icons-react";
 import { useColorMode } from "@/contexts/ThemeContext";
 import { useNavigate } from "react-router-dom";
 
-export interface ModalState {
-  isOpen: boolean;
-  show: () => void;
-  hide: () => void;
-}
-
-export function useModalState(initial?: boolean): ModalState {
-  const [isOpen, setIsOpen] = React.useState<boolean>(initial || false);
-
-  const showModal = () => setIsOpen(true);
-  const hideModal = () => setIsOpen(false);
-
-  return { isOpen, show: showModal, hide: hideModal };
-}
-
 interface ModalProps {
   isOpen: boolean;
   hideModal?: () => void;

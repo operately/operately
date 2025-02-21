@@ -12,6 +12,7 @@ import { useListState } from "@/hooks/useListState";
 import { Paths } from "@/routes/paths";
 import { PermissionsState } from "@/features/Permissions/usePermissionsState";
 import { usePermissionsState } from "@/features/Permissions/usePermissionsState";
+import { clearGoal } from "@/api/new_api";
 
 export interface FormState {
   config: FormConfig;
@@ -313,7 +314,8 @@ function useSubmit(fields: Fields, config: FormConfig): [() => Promise<boolean>,
         spaceAccessLevel: fields.permissions.permissions.space,
       });
 
-      navigate(Paths.goalPath(res.goal.id!));
+      clearGoal(res.goal.id);
+      navigate(Paths.goalPath(res.goal.id));
       return true;
     }
   };

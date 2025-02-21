@@ -1,15 +1,24 @@
 import React from "react";
 import axios from "axios";
-import { mutate } from "swr";
 
 import type * as Types from ".";
 import { toCamel, toSnake } from ".";
 
-export const globalCache = new Map();
+const globalCache = new Map();
+
+function clearCacheEntry(endpoint: string, id?: string) {
+  for (const key of globalCache.keys()) {
+    if (typeof key === "string" && key.startsWith(endpoint) && (!id || key.includes(id))) {
+      globalCache.delete(key);
+    }
+  }
+}
 
 class ApiClient {
   private basePath: string;
   private headers: any;
+  private ttl = 300_000; // 5 minutes
+  private pendingRequests = new Map<string, Promise<any>>();
 
   setBasePath(basePath: string) {
     this.basePath = basePath;
@@ -28,36 +37,60 @@ class ApiClient {
     return this.headers || {};
   }
 
-  // Build a unique cache key based on the URL and parameters.
   private buildKey(path: string, params: any): string {
-    const queryString = new URLSearchParams(toSnake(params)).toString();
-    return `${this.getBasePath()}${path}?${queryString}`;
+    const keys = Object.keys(params).sort();
+    const searchParams = new URLSearchParams();
+
+    keys.forEach((key) => {
+      searchParams.append(key, params[key]);
+    });
+
+    return `${this.getBasePath()}${path}?${searchParams.toString()}`;
   }
 
-  // @ts-ignore
-  private async get(path: string, params: any) {
-    console.log(globalCache)
-    const key = this.buildKey(path, params);
-    const cachedData = globalCache.get(key);
+  private isCached(cachedEntry: any) {
+    return cachedEntry && Date.now() - cachedEntry.timestamp < this.ttl;
+  }
 
-    if (cachedData) {
+  private setCacheEntry(key: string, data: any) {
+    globalCache.set(key, { data, timestamp: Date.now() });
+  }
+
+  private async get(path: string, params: any) {
+    const key = this.buildKey(path, params);
+    const cachedEntry = globalCache.get(key);
+
+    if (this.isCached(cachedEntry)) {
       console.log("cache hit");
-      return cachedData;
+      return cachedEntry.data;
     }
 
-    const response = await axios.get(this.getBasePath() + path, {
-      params: toSnake(params),
-      headers: this.getHeaders(),
-    });
-    const data = toCamel(response.data);
+    // Deduplicate in-flight requests
+    if (this.pendingRequests.has(key)) {
+      console.log("works!!!")
+      return this.pendingRequests.get(key);
+    }
 
-    globalCache.set(key, data);
-    console.log("request");
-    return data;
+    const request = axios
+      .get(this.getBasePath() + path, {
+        params: toSnake(params),
+        headers: this.getHeaders(),
+      })
+      .then((res) => {
+        const data = toCamel(res.data);
+        this.setCacheEntry(key, data);
+        return data;
+      })
+      .finally(() => {
+        this.pendingRequests.delete(key);
+      });
+
+    this.pendingRequests.set(key, request);
+    return request;
   }
 
-  getGoalKey(input: Types.GetGoalInput): string {
-    return this.buildKey("/get_goal", input);
+  clearGoal(input: Types.GetGoalInput) {
+    clearCacheEntry(`${this.getBasePath()}/get_goal?`, input.id || undefined);
   }
 
   async getGoal(input: Types.GetGoalInput): Promise<Types.GetGoalResult> {
@@ -68,11 +101,15 @@ class ApiClient {
 export const defaultApiClient = new ApiClient();
 defaultApiClient.setBasePath("/api/v2");
 
+export function clearGoal(id: string) {
+  defaultApiClient.clearGoal({ id });
+}
+
 export async function getGoal(input: Types.GetGoalInput): Promise<Types.GetGoalResult> {
   return defaultApiClient.getGoal(input);
 }
 
-export function useQuery<ResultT>(fn: () => Promise<ResultT>, cacheKey: string): Types.UseQueryHookResult<ResultT> {
+function useQuery<ResultT>(fn: () => Promise<ResultT>, clearCache: () => void): Types.UseQueryHookResult<ResultT> {
   const [data, setData] = React.useState<ResultT | null>(null);
   const [loading, setLoading] = React.useState<boolean>(true);
   const [error, setError] = React.useState<Error | null>(null);
@@ -90,13 +127,16 @@ export function useQuery<ResultT>(fn: () => Promise<ResultT>, cacheKey: string):
   React.useEffect(() => fetchData(), []);
 
   const refetch = React.useCallback(() => {
-    mutate(cacheKey, undefined, false);
+    clearCache();
     fetchData();
-  }, [cacheKey, fetchData]);
+  }, [fetchData]);
 
   return { data, loading, error, refetch };
 }
 
 export function useGetGoal(input: Types.GetGoalInput): Types.UseQueryHookResult<Types.GetGoalResult> {
-  return useQuery<Types.GetGoalResult>(() => defaultApiClient.getGoal(input), defaultApiClient.getGoalKey(input));
+  return useQuery<Types.GetGoalResult>(
+    () => defaultApiClient.getGoal(input),
+    () => defaultApiClient.clearGoal(input),
+  );
 }

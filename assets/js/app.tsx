@@ -21,8 +21,6 @@ import { setupTestErrorLogger } from "@/utils/errorLogger";
 
 import "@/api/socket";
 import ReactModal from "react-modal";
-import { SWRConfig } from "swr";
-import { globalCache } from "./api/new_api";
 
 setupTestErrorLogger();
 
@@ -54,14 +52,7 @@ const routes = createAppRoutes();
 
 const App: JSX.Element = (
   <React.StrictMode>
-    <SWRConfig
-      value={{
-        provider: () => globalCache,
-        dedupingInterval: 300000, // 5 minutes
-      }}
-    >
-      <RouterProvider router={routes} />
-    </SWRConfig>
+    <RouterProvider router={routes} />
   </React.StrictMode>
 );
 
