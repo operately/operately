@@ -11,11 +11,12 @@ import { ProjectDetails } from "./components/ProjectDetails";
 import { GoalNode, Node, ProjectNode } from "./tree";
 import { useExpandable } from "./context/Expandable";
 import { NodeIcon } from "./components/NodeIcon";
-import { NodeName } from "./components/NodeName";
+import { GoalNodeName, NodeName } from "./components/NodeName";
 import { NodeProgress } from "./components/NodeProgress";
 import { Controls } from "./components/Controls";
 import { GoalStatusCompact } from "./components/GoalStatusCompact";
 import classNames from "classnames";
+import { GoalPageModal } from "@/modal-pages";
 
 export function GoalTree(props: TreeContextProviderProps) {
   return (
@@ -72,30 +73,35 @@ function ProjectHeader({ node }: { node: ProjectNode }) {
 
 function GoalHeader({ node }: { node: Node }) {
   const [hovered, setHovered] = useState(false);
+  const [showPage, setShowPage] = useState(false);
   const testId = createTestId("goal", node.name!);
 
   return (
-    <HeaderContainer
-      node={node}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      data-test-id={testId}
-    >
-      <div className="flex justify-between">
-        <div className="flex items-center gap-1 relative truncate">
-          <NodeExpandCollapseToggle node={node} />
-          <NodeIcon node={node} />
-          <NodeName node={node} />
-          <div className="ml-2 flex items-center gap-2 shrink-0">
-            <NodeProgress node={node} />
-            <GoalStatusCompact node={node.asGoalNode()} />
+    <>
+      <HeaderContainer
+        node={node}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        data-test-id={testId}
+      >
+        <div className="flex justify-between">
+          <div className="flex items-center gap-1 relative truncate">
+            <NodeExpandCollapseToggle node={node} />
+            <NodeIcon node={node} />
+            <GoalNodeName node={node} setShowPage={setShowPage} />
+            <div className="ml-2 flex items-center gap-2 shrink-0">
+              <NodeProgress node={node} />
+              <GoalStatusCompact node={node.asGoalNode()} />
+            </div>
           </div>
+          <GoalActions node={node.asGoalNode()} hovered={hovered} />
         </div>
-        <GoalActions node={node.asGoalNode()} hovered={hovered} />
-      </div>
 
-      <GoalDetails node={node.asGoalNode()} />
-    </HeaderContainer>
+        <GoalDetails node={node.asGoalNode()} />
+      </HeaderContainer>
+
+      <GoalPageModal setShowPage={setShowPage} goalId={(node as GoalNode).goal.id!} isOpen={showPage} />
+    </>
   );
 }
 

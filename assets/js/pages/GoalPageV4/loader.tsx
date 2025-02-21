@@ -1,0 +1,26 @@
+import * as Goals from "@/models/goals";
+import * as Pages from "@/components/Pages";
+import { getGoal } from "@/api/new_api";
+
+interface LoaderResult {
+  goal: Goals.Goal;
+}
+
+export async function loader({ params }): Promise<LoaderResult> {
+  return {
+    goal: await getGoal({
+      id: params.id,
+      includeSpace: true,
+      includeTargets: true,
+      includeProjects: true,
+      includeLastCheckIn: true,
+      includePermissions: true,
+      includeUnreadNotifications: true,
+    }).then((data) => data.goal!),
+  };
+}
+
+export function useLoadedData(): LoaderResult {
+  return Pages.useLoadedData() as LoaderResult;
+}
+

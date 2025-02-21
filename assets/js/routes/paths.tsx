@@ -21,6 +21,10 @@ export class Paths {
     return createPath([companyId]);
   }
 
+  static targetPath(targetId: string) {
+    return createCompanyPath(["targets", targetId]);
+  }
+
   static companyPermissionsPath() {
     return createCompanyPath(["admin", "permissions"]);
   }
@@ -305,7 +309,7 @@ export class Paths {
   }
 
   static goalPath(goalId: string) {
-    return createCompanyPath(["goals", goalId]);
+    return createCompanyPath(["goals", goalId, "v4"]);
   }
 
   static newGoalPath(params?: { companyWide: boolean }) {
