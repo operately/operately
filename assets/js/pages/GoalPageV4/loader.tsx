@@ -1,5 +1,6 @@
 import * as Goals from "@/models/goals";
 import * as Pages from "@/components/Pages";
+import { getGoal } from "@/api/new_api";
 
 interface LoaderResult {
   goal: Goals.Goal;
@@ -7,7 +8,7 @@ interface LoaderResult {
 
 export async function loader({ params }): Promise<LoaderResult> {
   return {
-    goal: await Goals.getGoal({
+    goal: await getGoal({
       id: params.id,
       includeSpace: true,
       includeTargets: true,

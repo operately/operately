@@ -14,18 +14,18 @@ interface Props {
 export function GoalPageModal({ goalId, isOpen, setShowPage }: Props) {
   const { data, loading } = useLoadedData(goalId);
 
-  if (!data?.goal || loading) return <></>
+  if (!data?.goal || loading) return <></>;
 
   const path = Paths.goalPath(data.goal.id!);
 
   return (
     <Modal isOpen={isOpen} size="xl" hideModal={() => setShowPage(false)} path={path}>
-        <Header goal={data.goal} hideOptions />
-        <Overview />
-        <Targets />
-        <Messages />
-        <RelatedWork />
-        <GoalFeed goal={data.goal} />
+      <Header goal={data.goal} hideOptions />
+      <Overview />
+      <Targets />
+      <Messages />
+      <RelatedWork />
+      <GoalFeed goal={data.goal} />
     </Modal>
   );
 }

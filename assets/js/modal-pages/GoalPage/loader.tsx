@@ -1,8 +1,7 @@
-import * as Goals from "@/models/goals";
-
+import { useGetGoal } from "@/api/new_api";
 
 export function useLoadedData(goalId: string) {
-  return Goals.useGetGoal({
+  return useGetGoal({
     id: goalId,
     includeSpace: true,
     includeTargets: true,

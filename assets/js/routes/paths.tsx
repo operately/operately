@@ -309,7 +309,7 @@ export class Paths {
   }
 
   static goalPath(goalId: string) {
-    return createCompanyPath(["goals", goalId]);
+    return createCompanyPath(["goals", goalId, "v4"]);
   }
 
   static newGoalPath(params?: { companyWide: boolean }) {
