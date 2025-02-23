@@ -1,7 +1,7 @@
 import React from "react";
 import { routes } from "@/routes";
 
-import { matchRoutes, useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { matchRoutes, useFetcher, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { ErrorBoundary } from "@sentry/react";
 
 const Context = React.createContext<{ active: boolean } | null>(null);
@@ -29,6 +29,35 @@ function usePeekPath(): string | null {
   return params.get("peek");
 }
 
+const cache = {};
+
+export async function prefetch(path: string): Promise<void> {
+  console.log("prefetch", path);
+  if (cache[path]) return;
+
+  const matchedRoutes = matchRoutes(routes, path);
+  if (!matchedRoutes || matchedRoutes.length === 0) return;
+
+  // Get the most specific (deepest) match
+  const matchedRoute = matchedRoutes[matchedRoutes.length - 1];
+  if (!matchedRoute || !matchedRoute.route) return;
+
+  if (!matchedRoute) return;
+
+  const route = matchedRoute.route;
+
+  if (route["loader"]) {
+    const loader = route["loader"] as any as (props: any) => Promise<any>;
+
+    const result = await loader({
+      params: matchedRoute.params,
+      request: new Request(path),
+    });
+
+    cache[path] = result;
+  }
+}
+
 function PeekWindowContent({ path }: { path: string }) {
   const [page, setPage] = React.useState<any>(null);
 
@@ -45,17 +74,21 @@ function PeekWindowContent({ path }: { path: string }) {
 
       const route = matchedRoute.route;
 
+      if (cache[path]) {
+        setPage({
+          element: route.element,
+          data: cache[path],
+        });
+        return;
+      }
+
       if (route["loader"]) {
         const loader = route["loader"] as any as (props: any) => Promise<any>;
-
-        console.log("PeekWindowContent", path);
 
         const result = await loader({
           params: matchedRoute.params,
           request: new Request(path),
         });
-
-        console.log("PeekWindowContent", result);
 
         setPage({
           element: route.element,

@@ -1,13 +1,11 @@
 import React from "react";
-import classnames from "classnames";
-
-import * as Router from "react-router-dom";
 import classNames from "classnames";
-import { usePeekContext } from "@/layouts/CompanyLayout/PeekWindow";
+
+import { Link as RouterLink } from "@/routes/Link";
 
 interface Props {
   children: React.ReactNode;
-  target?: string;
+  target?: "_self" | "_blank" | "_peek";
   testId?: string;
   className?: string;
 }
@@ -31,32 +29,16 @@ interface DivLinkProps extends Props {
   className?: string;
   style?: React.CSSProperties;
   external?: boolean;
-  peek?: boolean;
 }
 
-const baseLinkClass = classnames("cursor-pointer", "transition-colors");
+const baseLinkClass = classNames("cursor-pointer", "transition-colors");
 
 function UnstyledLink(props: LinkProps) {
-  const peek = usePeekContext();
-
-  if (peek) {
-    const location = Router.useLocation();
-    const searchParams = new URLSearchParams(location.search);
-    searchParams.set("peek", props.to);
-    const to = `${location.pathname}?${searchParams.toString()}`;
-
-    return (
-      <Router.Link to={to} className={props.className} data-test-id={props.testId} target={props.target}>
-        {props.children}
-      </Router.Link>
-    );
-  } else {
-    return (
-      <Router.Link to={props.to} className={props.className} data-test-id={props.testId} target={props.target}>
-        {props.children}
-      </Router.Link>
-    );
-  }
+  return (
+    <RouterLink to={props.to} className={props.className} testId={props.testId} target={props.target}>
+      {props.children}
+    </RouterLink>
+  );
 }
 
 export function Link(props: LinkProps) {
@@ -105,7 +87,7 @@ export function ActionLink(props: ActionLinkProps) {
 }
 
 export function DimmedLink(props: LinkProps) {
-  const className = classnames(
+  const className = classNames(
     baseLinkClass,
     underlineClass(props.underline),
     "text-content-dimmed hover:text-content-base",
@@ -116,30 +98,11 @@ export function DimmedLink(props: LinkProps) {
 }
 
 export function DivLink({ to, children, testId, target, external, peek, ...props }: DivLinkProps) {
-  if (external) {
-    return (
-      <a href={to} data-test-id={testId} {...props} target={target}>
-        {children}
-      </a>
-    );
-  } else {
-    const location = Router.useLocation();
-    let linkTo = "";
-
-    if (peek) {
-      const searchParams = new URLSearchParams(location.search);
-      searchParams.set("peek", to);
-      linkTo = `${location.pathname}?${searchParams.toString()}`;
-    } else {
-      linkTo = to;
-    }
-
-    return (
-      <Router.Link to={linkTo} data-test-id={testId} {...props} target={target}>
-        {children}
-      </Router.Link>
-    );
-  }
+  return (
+    <RouterLink to={to} testId={testId} {...props} target={external ? "_blank" : target}>
+      {children}
+    </RouterLink>
+  );
 }
 
 function underlineClass(underline: "always" | "hover" | "never" | undefined) {
