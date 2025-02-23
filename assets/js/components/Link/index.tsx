@@ -3,6 +3,7 @@ import classnames from "classnames";
 
 import * as Router from "react-router-dom";
 import classNames from "classnames";
+import { usePeekContext } from "@/layouts/CompanyLayout/PeekWindow";
 
 interface Props {
   children: React.ReactNode;
@@ -35,11 +36,24 @@ interface DivLinkProps extends Props {
 const baseLinkClass = classnames("cursor-pointer", "transition-colors");
 
 function UnstyledLink(props: LinkProps) {
-  return (
-    <Router.Link to={props.to} className={props.className} data-test-id={props.testId} target={props.target}>
-      {props.children}
-    </Router.Link>
-  );
+  const peek = usePeekContext();
+
+  if (peek) {
+    const params = new URLSearchParams(props.to);
+    const to = { search: `?${params.toString()}` };
+
+    return (
+      <Router.Link to={to} className={props.className} data-test-id={props.testId} target={props.target}>
+        {props.children}
+      </Router.Link>
+    );
+  } else {
+    return (
+      <Router.Link to={props.to} className={props.className} data-test-id={props.testId} target={props.target}>
+        {props.children}
+      </Router.Link>
+    );
+  }
 }
 
 export function Link(props: LinkProps) {

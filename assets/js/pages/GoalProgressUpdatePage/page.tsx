@@ -28,6 +28,8 @@ export function Page() {
 
   const { update } = useLoadedData();
 
+  console.log("GoalProgressUpdatePage", update);
+
   assertPresent(update.notifications, "Update notifications must be defined");
   assertPresent(update.goal?.reviewer, "goal and reviewer must be present in update");
   useClearNotificationsOnLoad(update.notifications);
