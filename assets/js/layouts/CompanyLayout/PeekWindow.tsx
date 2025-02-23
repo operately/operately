@@ -1,7 +1,7 @@
 import React from "react";
 import { routes } from "@/routes";
 
-import { matchRoutes, useSearchParams } from "react-router-dom";
+import { matchRoutes, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { ErrorBoundary } from "@sentry/react";
 
 const Context = React.createContext<{ active: boolean } | null>(null);
@@ -30,8 +30,7 @@ function usePeekPath(): string | null {
 }
 
 function PeekWindowContent({ path }: { path: string }) {
-  const [element, setElement] = React.useState(null);
-  const [data, setData] = React.useState<any>(null);
+  const [page, setPage] = React.useState<any>(null);
 
   React.useEffect(() => {
     const loadData = async () => {
@@ -49,6 +48,8 @@ function PeekWindowContent({ path }: { path: string }) {
       if (route["loader"]) {
         const loader = route["loader"] as any as (props: any) => Promise<any>;
 
+        console.log("PeekWindowContent", path);
+
         const result = await loader({
           params: matchedRoute.params,
           request: new Request(path),
@@ -56,8 +57,10 @@ function PeekWindowContent({ path }: { path: string }) {
 
         console.log("PeekWindowContent", result);
 
-        setData(result);
-        setElement(route.element);
+        setPage({
+          element: route.element,
+          data: result,
+        });
       }
 
       return null;
@@ -66,21 +69,30 @@ function PeekWindowContent({ path }: { path: string }) {
     loadData();
   }, [path]);
 
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const close = () => {
+    const searchParams = new URLSearchParams(location.search);
+    searchParams.delete("peek");
+    navigate({ search: searchParams.toString() });
+  };
+
   return (
-    <LoaderDataContext.Provider value={data}>
+    <LoaderDataContext.Provider value={page?.data}>
       <div className="bg-stone-500/40 absolute top-0 left-0 right-0 bottom-0 z-[1000]">
         <div className="absolute inset-36 bg-surface-base p-4 rounded-lg overflow-auto">
           <div className="text-lg font-bold">Peek Window</div>
           <div className="text-sm">Path: {path}</div>
 
-          {data ? (
-            <ErrorBoundary fallback={<div>Error loading peek window</div>}>{element}</ErrorBoundary>
+          {page ? (
+            <ErrorBoundary fallback={<div>Error loading peek window</div>}>{page.element}</ErrorBoundary>
           ) : (
             <div>Loading...</div>
           )}
 
           <div className="absolute top-4 right-4">
-            <button onClick={() => {}} className="bg-surface-base text-primary-base px-2 py-1 rounded-lg">
+            <button onClick={close} className="bg-surface-base text-primary-base px-2 py-1 rounded-lg">
               Close
             </button>
           </div>

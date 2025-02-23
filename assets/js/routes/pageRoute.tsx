@@ -26,6 +26,34 @@ export function pageRoute(path: string, pageModule: any, options: Options = {}) 
     id: pageModule.name + path,
     loader: pageLoader(path, pageModule.name, loader, options),
     element: <Element />,
+    shouldRevalidate: ({ currentUrl, nextUrl }) => {
+      console.log("shouldRevalidate", nextUrl, currentUrl);
+
+      if (currentUrl?.pathname === nextUrl?.pathname && currentUrl?.search !== nextUrl?.search) {
+        const oldParams = new URLSearchParams(currentUrl.search);
+        const newParams = new URLSearchParams(nextUrl.search);
+        const oldKeys = Array.from(oldParams).map(([key]) => key);
+        const newKeys = Array.from(newParams).map(([key]) => key);
+
+        const addedKeys = newKeys.filter((key) => !oldKeys.includes(key));
+        const removedKeys = oldKeys.filter((key) => !newKeys.includes(key));
+
+        const diff = { addedKeys, removedKeys };
+
+        if (diff.addedKeys.length === 0 && diff.removedKeys.length === 0) {
+          return false;
+        }
+
+        if (diff.addedKeys.toString() === "peek" || diff.removedKeys.toString() === "peek") {
+          return false;
+        }
+
+        return true;
+      }
+
+      console.log("shouldRevalidate", "true2");
+      return true;
+    },
   };
 }
 

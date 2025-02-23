@@ -31,6 +31,7 @@ interface DivLinkProps extends Props {
   className?: string;
   style?: React.CSSProperties;
   external?: boolean;
+  peek?: boolean;
 }
 
 const baseLinkClass = classnames("cursor-pointer", "transition-colors");
@@ -39,8 +40,10 @@ function UnstyledLink(props: LinkProps) {
   const peek = usePeekContext();
 
   if (peek) {
-    const params = new URLSearchParams(props.to);
-    const to = { search: `?${params.toString()}` };
+    const location = Router.useLocation();
+    const searchParams = new URLSearchParams(location.search);
+    searchParams.set("peek", props.to);
+    const to = `${location.pathname}?${searchParams.toString()}`;
 
     return (
       <Router.Link to={to} className={props.className} data-test-id={props.testId} target={props.target}>
@@ -112,7 +115,7 @@ export function DimmedLink(props: LinkProps) {
   return <UnstyledLink {...props} className={className} />;
 }
 
-export function DivLink({ to, children, testId, target, external, ...props }: DivLinkProps) {
+export function DivLink({ to, children, testId, target, external, peek, ...props }: DivLinkProps) {
   if (external) {
     return (
       <a href={to} data-test-id={testId} {...props} target={target}>
@@ -120,8 +123,19 @@ export function DivLink({ to, children, testId, target, external, ...props }: Di
       </a>
     );
   } else {
+    const location = Router.useLocation();
+    let linkTo = "";
+
+    if (peek) {
+      const searchParams = new URLSearchParams(location.search);
+      searchParams.set("peek", to);
+      linkTo = `${location.pathname}?${searchParams.toString()}`;
+    } else {
+      linkTo = to;
+    }
+
     return (
-      <Router.Link to={to} data-test-id={testId} {...props} target={target}>
+      <Router.Link to={linkTo} data-test-id={testId} {...props} target={target}>
         {children}
       </Router.Link>
     );

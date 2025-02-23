@@ -89,7 +89,7 @@ export function Body({
   const padding = noPadding ? "" : bodyPaddings[size];
   const peek = usePeekContext();
 
-  if (peek.active) {
+  if (peek?.active) {
     return <div className="p-8">{children}</div>;
   }
 
