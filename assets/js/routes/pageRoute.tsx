@@ -23,6 +23,7 @@ export function pageRoute(path: string, pageModule: any, options: Options = {}) 
 
   return {
     path: path,
+    id: pageModule.name + path,
     loader: pageLoader(path, pageModule.name, loader, options),
     element: <Element />,
   };

@@ -8,6 +8,7 @@ import { DivLink } from "@/components/Link";
 import { Outlet } from "react-router-dom";
 import { User } from "./User";
 import { Bell } from "./Bell";
+import { PeekWindow } from "./PeekWindow";
 import { OperatelyLogo } from "@/components/OperatelyLogo";
 import { Review } from "./Review";
 import { CompanyDropdown } from "./CompanyDropdown";
@@ -94,6 +95,7 @@ export default function CompanyLayout() {
         <Outlet />
       </div>
       <DevBar />
+      <PeekWindow />
     </div>
   );
 }

@@ -26,6 +26,7 @@ import React from "react";
 import classNames from "classnames";
 
 import { Context } from "./Context";
+import { usePeekContext } from "@/layouts/CompanyLayout/PeekWindow";
 
 type Size = "tiny" | "small" | "medium" | "large" | "xlarge" | "xxlarge";
 
@@ -46,17 +47,20 @@ interface RootProps {
 }
 
 export function Root({ size, children, className, fluid = false }: RootProps): JSX.Element {
+  const peek = usePeekContext();
   size = size || "medium";
 
-  className = classNames(
-    className,
-    "mx-auto relative",
-    "sm:my-10", // no margin on mobile, 10 margin on larger screens
-    {
-      "w-[90%]": fluid,
-      [sizes[size]]: !fluid,
-    },
-  );
+  className = peek?.active
+    ? ""
+    : classNames(
+        className,
+        "mx-auto relative",
+        "sm:my-10", // no margin on mobile, 10 margin on larger screens
+        {
+          "w-[90%]": fluid,
+          [sizes[size]]: !fluid,
+        },
+      );
 
   return (
     <Context.Provider value={{ size }}>
@@ -83,6 +87,11 @@ export function Body({
 }) {
   const { size } = React.useContext(Context);
   const padding = noPadding ? "" : bodyPaddings[size];
+  const peek = usePeekContext();
+
+  if (peek.active) {
+    return <div className="p-8">{children}</div>;
+  }
 
   const bodyClassName = classNames(
     "relative",
