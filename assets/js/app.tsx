@@ -3,15 +3,9 @@ import { createRoot } from "react-dom/client";
 
 import * as Signals from "@/signals";
 import * as Sentry from "@sentry/react";
-import {
-  useLocation,
-  useNavigationType,
-  createRoutesFromChildren,
-  matchRoutes,
-  RouterProvider,
-} from "react-router-dom";
+import { useLocation, useNavigationType, createRoutesFromChildren, matchRoutes } from "react-router-dom";
 
-import { createAppRoutes } from "./routes";
+import { routes } from "./routes";
 
 import Api from "@/api";
 import AdminApi from "@/ee/admin_api";
@@ -48,11 +42,10 @@ if (window.appConfig.sentry.enabled) {
 }
 
 const rootElement: HTMLElement | null = document.getElementById("root");
-const routes = createAppRoutes();
 
 const App: JSX.Element = (
   <React.StrictMode>
-    <RouterProvider router={routes} />
+    <Routes routes={routes} />
   </React.StrictMode>
 );
 

@@ -1,7 +1,7 @@
 import React from "react";
 import { routes } from "@/routes";
 
-import { matchRoutes, useFetcher, useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { matchRoutes, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { ErrorBoundary } from "@sentry/react";
 
 const Context = React.createContext<{ active: boolean } | null>(null);
@@ -32,7 +32,6 @@ function usePeekPath(): string | null {
 const cache = {};
 
 export async function prefetch(path: string): Promise<void> {
-  console.log("prefetch", path);
   if (cache[path]) return;
 
   const matchedRoutes = matchRoutes(routes, path);
