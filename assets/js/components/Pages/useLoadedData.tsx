@@ -1,13 +1,5 @@
-import { useLoaderData } from "react-router-dom";
-import { usePeekLoaderData } from "@/layouts/CompanyLayout/PeekWindow";
+import * as Routes from "@/routes/Routes";
 
 export function useLoadedData<T = any>(): T {
-  const data = useLoaderData() as T;
-  const peek = usePeekLoaderData() as T;
-
-  if (peek) {
-    return peek;
-  } else {
-    return data;
-  }
+  return Routes.useLoadedData() as T;
 }
