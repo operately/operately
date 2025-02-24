@@ -2,7 +2,6 @@ import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as Goals from "@/models/goals";
-import * as Person from "@/models/people";
 import * as Icons from "@tabler/icons-react";
 
 import { Feed, useItemsQuery } from "@/features/Feed";
@@ -48,7 +47,7 @@ export function Page() {
 
   return (
     <Pages.Page title={[goal.name!]} testId="goal-page">
-      <Paper.Root size="xlarge">
+      <Paper.Root size="large">
         <Navigation space={goal.space!} />
 
         <Paper.Body minHeight="none">
