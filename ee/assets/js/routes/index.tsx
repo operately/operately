@@ -14,8 +14,8 @@ export function saasAdminRoutes() {
     path: "/admin",
     element: <SaasAdminRoutes />,
     children: [
-      pageRoute("", adminpages.SaasAdminPage),
-      pageRoute("companies/:companyId", adminpages.SaasAdminCompanyPage),
+      pageRoute("/", adminpages.SaasAdminPage),
+      pageRoute("/companies/:companyId", adminpages.SaasAdminCompanyPage),
     ],
   };
 }

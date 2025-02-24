@@ -2,16 +2,9 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 
 import * as Signals from "@/signals";
-import * as Sentry from "@sentry/react";
-import {
-  useLocation,
-  useNavigationType,
-  createRoutesFromChildren,
-  matchRoutes,
-  RouterProvider,
-} from "react-router-dom";
 
-import { createAppRoutes } from "./routes";
+import { routes } from "./routes";
+import { Routes } from "./routes/Routes";
 
 import Api from "@/api";
 import AdminApi from "@/ee/admin_api";
@@ -29,30 +22,11 @@ AdminApi.default.setBasePath("/admin/api/v1");
 
 Signals.init();
 
-if (window.appConfig.sentry.enabled) {
-  Sentry.init({
-    dsn: window.appConfig.sentry.dsn,
-    integrations: [
-      new Sentry.BrowserTracing({
-        routingInstrumentation: Sentry.reactRouterV6Instrumentation(
-          React.useEffect,
-          useLocation,
-          useNavigationType,
-          createRoutesFromChildren,
-          matchRoutes,
-        ),
-      }),
-    ],
-    enableTracing: false,
-  });
-}
-
 const rootElement: HTMLElement | null = document.getElementById("root");
-const routes = createAppRoutes();
 
 const App: JSX.Element = (
   <React.StrictMode>
-    <RouterProvider router={routes} />
+    <Routes routes={routes} />
   </React.StrictMode>
 );
 
