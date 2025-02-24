@@ -12,7 +12,7 @@ export const DimmedLabel = ({ children }) => <div className="text-xs uppercase f
 export function Messages() {
   return (
     <div className="mt-6 pt-6 mb-4 border-t border-stroke-base">
-      <div className="mb-4 uppercase text-sm font-semibold tracking-wide">Conversations</div>
+      <div className="mb-4 uppercase text-xs font-semibold tracking-wide">Conversations</div>
 
       <CheckIn status="On Track" color="bg-green-200" />
       <Delays />

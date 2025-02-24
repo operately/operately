@@ -4,8 +4,8 @@ import { DimmedLink } from "@/components/Link";
 
 export function Timeframe() {
   return (
-    <div className="mt-6 mb-2">
-      <div className="uppercase text-xs font-bold tracking-wider">Timeframe</div>
+    <div className="mt-6">
+      <div className="mb-2 uppercase text-xs font-bold tracking-wider">Timeframe</div>
 
       <div className="flex flex-col gap-2">
         <div className="border border-stroke-base shadow-sm bg-surface-dimmed text-xs rounded-lg px-2 py-2 flex items-center justify-between gap-1 relative overflow-hidden group cursor-pointer">
