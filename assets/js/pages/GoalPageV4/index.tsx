@@ -3,11 +3,11 @@ import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as Goals from "@/models/goals";
 
-import { Header } from "./Header";
 import { Navigation } from "@/features/goals/GoalPageNavigation";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { assertPresent } from "@/utils/assertions";
 
+import { Header } from "./Header";
 import { Overview } from "./Overview";
 import { Targets } from "./Targets";
 import { Messages } from "./Messages";

@@ -1,5 +1,6 @@
 import * as React from "react";
 import * as Icons from "@tabler/icons-react";
+import Forms from "@/components/Forms";
 
 import { SecondaryButton } from "@/components/Buttons";
 import classNames from "classnames";
@@ -28,7 +29,7 @@ export function Targets() {
         </div>
 
         <div className="mt-6" />
-        <SecondaryButton size="xs">Add target</SecondaryButton>
+        <AddTarget />
       </div>
     </div>
   );
@@ -64,6 +65,50 @@ function LargeProgress({ progress, color }) {
   return (
     <div className={outer}>
       <div className={inner} style={{ width: progress + "%" }} />
+    </div>
+  );
+}
+
+function AddTarget() {
+  const [state, setState] = React.useState<"idle" | "form">("form");
+
+  if (state === "idle") {
+    return <AddTargetButton onClick={() => setState("form")} />;
+  } else {
+    return <AddTargetForm />;
+  }
+}
+
+function AddTargetButton({ onClick }) {
+  return (
+    <SecondaryButton size="xs" onClick={onClick}>
+      Add target
+    </SecondaryButton>
+  );
+}
+
+function AddTargetForm() {
+  const form = Forms.useForm({
+    fields: {
+      name: "",
+      start: "",
+      target: "",
+    },
+    submit: (values) => {
+      console.log("submit", values);
+    },
+  });
+
+  return (
+    <div className="border border-surface-outline p-4 pt-8 rounded-lg relative">
+      <Icons.IconX size={16} onClick={close} className="absolute top-2 right-2 cursor-pointer" />
+      <Forms.Form form={form}>
+        <Forms.FieldGroup layout="horizontal">
+          <Forms.TextInput field="name" placeholder="e.g. Increase revenue by 20%" label="Name" />
+          <Forms.TextInput field="start" placeholder="e.g. 1000" label="Start Value" />
+          <Forms.TextInput field="target" placeholder="e.g. 10000" label="Target Value" />
+        </Forms.FieldGroup>
+      </Forms.Form>
     </div>
   );
 }
