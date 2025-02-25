@@ -28,13 +28,11 @@ export function Page() {
 
   return (
     <Pages.Page title={["Goal Progress Update", goal.name!]}>
-      <Paper.Root>
+      <Paper.Root size="medium">
         <Navigation goal={goal} />
 
         <Paper.Body>
-          <div className="px-12">
-            <Form goal={goal} mode="create" />
-          </div>
+          <Form goal={goal} mode="create" />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>

@@ -2,18 +2,18 @@ import React from "react";
 
 import { Goal, Target } from "@/models/goals";
 import { Update } from "@/models/goalCheckIns";
-import { Person } from "@/models/people";
 
 import Forms from "@/components/Forms";
-import { SubscribersSelector, useSubscriptions } from "@/features/Subscriptions";
+import { useSubscriptions } from "@/features/Subscriptions";
 import { Spacer } from "@/components/Spacer";
 import { createTestId } from "@/utils/testid";
 import { useForm } from "./useForm";
 import { assertPresent } from "@/utils/assertions";
-import { DimmedLink, DivLink } from "@/components/Link";
+import { DivLink } from "@/components/Link";
 import { Paths } from "@/routes/paths";
 import classNames from "classnames";
-import { AddTarget } from "../GoalForm/Target";
+import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
+import AvatarList from "@/components/AvatarList";
 
 export interface CreateProps {
   goal: Goal;
@@ -42,9 +42,9 @@ export function Form(props: CreateProps | EditProps) {
       <Header />
 
       <Forms.FieldGroup>
-        <div className="flex items-start gap-8">
+        <div className="flex items-start gap-8 mt-6">
           <div>
-            <div className="font-bold text-sm mb-2">Status</div>
+            <div className="font-bold text-sm mb-2">Current Status</div>
 
             <div className="w-48">
               <div className="border border-stroke-base shadow-sm bg-surface-dimmed text-sm rounded-lg px-2 py-1.5 flex items-center gap-2 relative overflow-hidden group cursor-pointer">
@@ -55,9 +55,7 @@ export function Form(props: CreateProps | EditProps) {
           </div>
 
           <div>
-            <div className="text-sm mb-2 flex items-center gap-2">
-              <div className="font-bold">Timeframe</div>
-            </div>
+            <div className="text-sm mb-2 font-bold">Is the deadline still correct?</div>
 
             <div className="w-64">
               <Chronograph start="Jan 1" end="Dec 31" />
@@ -65,51 +63,37 @@ export function Form(props: CreateProps | EditProps) {
           </div>
         </div>
 
-        <Targets />
         <Description goal={goal} />
+
+        <Targets />
       </Forms.FieldGroup>
 
       <Spacer size={4} />
 
-      {mode === "create" && <SubscribersSelector state={subscriptionsState} spaceName={goal.space?.name!} />}
+      <div className="">
+        <div className="font-bold text-sm mb-1">Who to notify?</div>
 
-      <Forms.Submit saveText={mode === "create" ? "Submit Update" : "Save"} buttonSize="base" />
+        <div className="flex items-center gap-2">
+          <AvatarList
+            people={subscriptionsState.subscribers.map((s) => s.person!)}
+            size={26}
+            stacked
+            stackSpacing={"-space-x-1"}
+          />
+          <SecondaryButton size="xs">Add/Remove</SecondaryButton>
+        </div>
+
+        <div className="flex items-center gap-2 mt-4">
+          <PrimaryButton size="sm">Sumbit</PrimaryButton>
+          <SecondaryButton size="sm">Cancel</SecondaryButton>
+        </div>
+      </div>
     </Forms.Form>
   );
 }
 
 function Header() {
-  return <div className="text-3xl font-bold mb-8">How's the goal progressing?</div>;
-}
-
-function TargetInputs() {
-  const [targets] = Forms.useFieldValue<Target[]>("targets");
-
-  return (
-    <div>
-      <div className="font-bold mb-1 text-sm mt-4">Targets</div>
-
-      <div className="flex flex-col gap-4">
-        {targets.map((target, index) => {
-          return (
-            <div
-              className="grid grid-cols-[1fr,auto] items-center bg-surface-dimmed border border-stroke-base p-3 rounded"
-              key={index}
-            >
-              <div className="flex flex-col">
-                <div className="font-semibold text-content-accent">{target.name}</div>
-                <div className="text-content-dimmed text-sm">
-                  Target: {target.to} {target.unit}
-                </div>
-              </div>
-
-              <Forms.TextInput field={`targets[${index}].value`} testId={createTestId("target", target.name!)} />
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
+  return <div className="text-2xl font-bold">Check-in Feb 24th, 2024</div>;
 }
 
 function Description({ goal }: { goal: Goal }) {
@@ -117,11 +101,13 @@ function Description({ goal }: { goal: Goal }) {
 
   return (
     <div className="mt-4">
+      <div className="text-sm mb-2 font-bold">What's new since your last update?</div>
+
       <Forms.RichTextArea
-        label="3. Describe your progress and any learnings"
         field="description"
         mentionSearchScope={mentionSearchScope}
-        placeholder="Write your update here..."
+        fontSize="text-base"
+        placeholder="Describe your progress, risks, and blockers..."
       />
     </div>
   );
@@ -151,23 +137,20 @@ function Chronograph({ start, end }: { start: string; end: string }) {
 
 function Targets() {
   return (
-    <div className="mt-6 pt-6 mb-4 border-t border-stroke-base">
-      <div className="flex items-center gap-2 mb-4">
-        <div className="uppercase text-xs font-bold tracking-wider">Targets</div>
-      </div>
-      <div className="">
-        <div className="grid grid-cols-1">
-          <Target name="Figure out how to open a new office in Brazil" value={0} total={0} progress={0} index={1} />
-          <Target name="Eliminate blockers for selling in China" value={4} total={20} progress={20} index={2} />
-          <Target name="Achieve 1000+ active users in new countries" value={700} total={1000} progress={70} index={3} />
-          <Target
-            name="Increase revenue by 20% from international sales"
-            value={"$ 1.2M"}
-            total={"$ 1M"}
-            progress={100}
-            index={4}
-          />
-        </div>
+    <div className="mt-4">
+      <div className="text-sm mb-1 font-bold">Update targets</div>
+
+      <div className="grid grid-cols-1">
+        <Target name="Figure out how to open a new office in Brazil" value={0} total={0} progress={0} index={1} />
+        <Target name="Eliminate blockers for selling in China" value={4} total={20} progress={20} index={2} />
+        <Target name="Achieve 1000+ active users in new countries" value={700} total={1000} progress={70} index={3} />
+        <Target
+          name="Increase revenue by 20% from international sales"
+          value={"$ 1.2M"}
+          total={"$ 1M"}
+          progress={100}
+          index={4}
+        />
       </div>
     </div>
   );
