@@ -28,7 +28,7 @@ export function Page() {
 
   return (
     <Pages.Page title={["Goal Progress Update", goal.name!]}>
-      <Paper.Root>
+      <Paper.Root size="medium">
         <Navigation goal={goal} />
 
         <Paper.Body>
