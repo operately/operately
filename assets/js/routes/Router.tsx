@@ -1,9 +1,10 @@
-import React, { useCallback } from "react";
+import React from "react";
 import { matchPath, Route } from "./createRoutes";
 
 interface Router {
   loadedData: any;
-  location: string;
+  error: any;
+  location: Location;
   navigate: (path: string) => void;
   revalidate: () => void;
 }
@@ -11,72 +12,94 @@ interface Router {
 interface State {
   status: "loading" | "loaded";
   data: any;
+  error: any;
+  location: Location;
+  pathname: string;
 }
 
-const Context = React.createContext<Router | undefined>(undefined);
+type RouterAction =
+  | { type: "NAVIGATE"; pathname: string }
+  | { type: "LOAD_DATA_START" }
+  | { type: "LOAD_DATA_SUCCESS"; data: any }
+  | { type: "LOAD_DATA_ERROR"; error: any };
+
+function routerReducer(state: State, action: RouterAction): State {
+  switch (action.type) {
+    case "NAVIGATE":
+      return { ...state, pathname: action.pathname, status: "loading" };
+    case "LOAD_DATA_START":
+      return { ...state, status: "loading" };
+    case "LOAD_DATA_SUCCESS":
+      return { ...state, status: "loaded", data: action.data, location: window.location };
+    case "LOAD_DATA_ERROR":
+      return { ...state, status: "loaded", error: action.error };
+  }
+}
 
 export function Router({ routes }: { routes: Route[] }) {
-  const [location, setLocation] = React.useState(window.location.pathname);
-  const [state, setState] = React.useState<State>({
+  const [state, dispatch] = React.useReducer(routerReducer, {
+    pathname: window.location.pathname,
     status: "loading",
-    data: {},
+    data: null,
+    error: null,
+    location: window.location,
   });
 
-  const setLoading = React.useCallback(
-    () =>
-      setState((prev) => {
-        return { ...prev, status: "loading" };
-      }),
-    [setState],
-  );
-
   const match = React.useMemo(() => {
-    setLoading();
-    return matchPath(routes, location);
-  }, [routes, location]);
+    return matchPath(routes, state.pathname);
+  }, [routes, state.pathname]);
 
-  const navigate = React.useCallback(
-    (path: string) => {
-      window.history.pushState({}, "", path);
-      setLoading();
-      setLocation(path);
+  const navigate = React.useCallback((path: string) => {
+    const url = new URL(path, window.location.href);
+    window.history.pushState({}, "", url);
+    dispatch({ type: "NAVIGATE", pathname: url.pathname });
+  }, []);
+
+  const loadData = React.useCallback(
+    async (opts?: { skipLoading: boolean }) => {
+      if (!match) return;
+
+      try {
+        if (!opts?.skipLoading) dispatch({ type: "LOAD_DATA_START" });
+
+        const request = new Request(window.location.href);
+        const data = await match.route.loader({
+          params: match.params,
+          request,
+        });
+
+        dispatch({ type: "LOAD_DATA_SUCCESS", data });
+      } catch (error) {
+        dispatch({ type: "LOAD_DATA_ERROR", error });
+      }
     },
-    [setLocation, setLoading],
+    [match],
   );
-
-  const loadData = useCallback(async () => {
-    if (!match) return;
-
-    const request = new Request(window.location.href);
-    const data = await match.route.loader({
-      params: match.params,
-      request: request,
-    });
-
-    setState({ status: "loaded", data });
-  }, [match, setState]);
 
   React.useEffect(() => {
     const handlePopState = () => {
-      setLocation(window.location.pathname);
+      dispatch({ type: "NAVIGATE", pathname: window.location.pathname });
     };
-    window.addEventListener("popstate", handlePopState);
 
-    return () => {
-      window.removeEventListener("popstate", handlePopState);
-    };
-  }, [setLocation]);
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
 
   React.useEffect(() => {
-    if (match) {
-      setLoading();
-      loadData();
-    }
-  }, [match, loadData]);
+    loadData();
+  }, [loadData]);
 
   if (match) {
     return (
-      <Context.Provider value={{ loadedData: state.data, location, navigate, revalidate: loadData }}>
+      <Context.Provider
+        value={{
+          loadedData: state.data,
+          error: state.error,
+          location: state.location,
+          navigate,
+          revalidate: () => loadData({ skipLoading: true }),
+        }}
+      >
         {state.status === "loaded" ? match.route.element : null}
       </Context.Provider>
     );
@@ -84,6 +107,8 @@ export function Router({ routes }: { routes: Route[] }) {
     return <div>Page not found</div>;
   }
 }
+
+const Context = React.createContext<Router | undefined>(undefined);
 
 export function useRouter() {
   const context = React.useContext(Context);

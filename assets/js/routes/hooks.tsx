@@ -7,7 +7,7 @@ export function useNavigate() {
 
 export function useLocation() {
   const { location } = useRouter();
-  return { pathname: location };
+  return location;
 }
 
 export function useRevalidator() {
