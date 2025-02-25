@@ -2,10 +2,9 @@ import * as React from "react";
 import * as Icons from "@tabler/icons-react";
 import * as Api from "@/api";
 
-import { useLoaderData } from "react-router-dom";
+import { useLoadedData } from "@/routes/hooks";
 
 import { DivLink } from "@/components/Link";
-import { Outlet } from "react-router-dom";
 import { User } from "./User";
 import { Bell } from "./Bell";
 import { OperatelyLogo } from "@/components/OperatelyLogo";
@@ -81,8 +80,8 @@ function SectionLink({ to, children, icon }) {
   );
 }
 
-export default function CompanyLayout() {
-  const { company } = useLoaderData() as { company: Api.Company };
+export default function CompanyLayout({children}) {
+  const { company } = useLoadedData() as { company: Api.Company };
   const outletDiv = React.useRef<HTMLDivElement>(null);
 
   useScrollToTopOnNavigationChange({ outletDiv });
@@ -91,7 +90,7 @@ export default function CompanyLayout() {
     <div className="flex flex-col h-screen">
       <Navigation company={company} />
       <div className="flex-1 overflow-y-auto" ref={outletDiv}>
-        <Outlet />
+        {children}
       </div>
       <DevBar />
     </div>

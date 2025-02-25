@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { Link } from "react-router-dom";
+import { DivLink } from "@/components/Link";
 
 interface CardProps extends React.HTMLAttributes<HTMLElement> {
   children: React.ReactNode;
@@ -11,9 +11,9 @@ interface CardProps extends React.HTMLAttributes<HTMLElement> {
 export function Card({ children, linkTo, testId, ...props }: CardProps) {
   if (linkTo) {
     return (
-      <Link to={linkTo} {...props} data-test-id={testId}>
+      <DivLink to={linkTo} {...props} data-test-id={testId}>
         {children}
-      </Link>
+      </DivLink>
     );
   } else {
     return (
