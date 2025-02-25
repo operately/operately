@@ -32,7 +32,9 @@ export function Page() {
         <Navigation goal={goal} />
 
         <Paper.Body>
-          <Form goal={goal} mode="create" />
+          <div className="px-12">
+            <Form goal={goal} mode="create" />
+          </div>
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
