@@ -56,7 +56,7 @@ export function Page() {
               <Header goal={goal} />
               <Overview />
               <Targets />
-              <Messages />
+              <Messages goal={goal} />
               <RelatedWork />
             </div>
 
