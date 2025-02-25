@@ -3,7 +3,7 @@ import * as Paper from "@/components/PaperContainer";
 import * as People from "@/models/people";
 import * as Pages from "@/components/Pages";
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@/routes/hooks";
 import { Paths } from "@/routes/paths";
 import { Timezones } from "./timezones";
 

@@ -7,7 +7,7 @@ import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
 import { useLoadedData } from "./loader";
 import { Paths } from "@/routes/paths";
 import { GoalSelector } from "@/features/goals/GoalTree/GoalSelector";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@/routes/hooks";
 
 export function Page() {
   const { project } = useLoadedData();

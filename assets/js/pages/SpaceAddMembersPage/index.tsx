@@ -11,7 +11,7 @@ import Forms from "@/components/Forms";
 import { Paths, compareIds } from "@/routes/paths";
 import { SecondaryButton } from "@/components/Buttons";
 import { createTestId } from "@/utils/testid";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@/routes/hooks";
 
 interface LoaderResult {
   space: Spaces.Space;

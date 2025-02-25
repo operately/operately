@@ -3,7 +3,7 @@ import React from "react";
 import { ResourceHubDocument, useCreateResourceHubDocument } from "@/models/resourceHubs";
 import Forms from "@/components/Forms";
 import { useNodesContext } from "../contexts/NodesContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@/routes/hooks";
 import { assertPresent } from "@/utils/assertions";
 import { useSubscriptions } from "@/features/Subscriptions";
 import { Paths } from "@/routes/paths";

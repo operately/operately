@@ -8,7 +8,7 @@ import * as Spaces from "@/models/spaces";
 import { useLoadedData } from "./loader";
 import { Paths, compareIds } from "@/routes/paths";
 import { useMe } from "@/contexts/CurrentCompanyContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@/routes/hooks";
 
 import Forms from "@/components/Forms";
 import { SecondaryButton } from "@/components/Buttons";

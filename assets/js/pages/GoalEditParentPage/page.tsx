@@ -5,7 +5,7 @@ import * as Goals from "@/models/goals";
 
 import { useLoadedData } from "./loader";
 import { Paths } from "@/routes/paths";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@/routes/hooks";
 import { GoalSelector } from "@/features/goals/GoalTree/GoalSelector";
 
 export function Page() {

@@ -5,7 +5,7 @@ import * as Companies from "@/models/companies";
 
 import { Paths } from "@/routes/paths";
 import Forms from "@/components/Forms";
-import { useNavigate, useRevalidator } from "react-router-dom";
+import { useNavigate, useRevalidator } from "@/routes/hooks";
 
 interface LoaderResult {
   company: Companies.Company;
