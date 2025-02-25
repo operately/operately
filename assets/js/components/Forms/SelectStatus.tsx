@@ -32,7 +32,7 @@ export function SelectStatus({ field, options, reviewer, label }: Props) {
   }, [ref.current]);
 
   const triggerClassName = classNames(
-    "flex justify-between items-center border border-surface-outline w-full rounded cursor-pointer",
+    "flex justify-between items-center border border-surface-outline w-full rounded cursor-pointer p-2",
     {
       "border-red-500": error,
     },
