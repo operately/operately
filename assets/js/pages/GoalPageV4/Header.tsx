@@ -1,19 +1,13 @@
 import * as React from "react";
 import * as Icons from "@tabler/icons-react";
 import * as Goals from "@/models/goals";
-import * as Tabs from "@/components/Tabs";
 import * as Paper from "@/components/PaperContainer";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
-import * as Timeframes from "@/utils/timeframes";
 
 import { GhostLink } from "@/components/Link/GhostList";
 import { Paths } from "@/routes/paths";
-import { PrimaryButton } from "@/components/Buttons";
 
 import FormattedTime from "@/components/FormattedTime";
-
-import plurarize from "@/utils/plurarize";
-import { DimmedLink } from "@/components/Link";
 
 interface HeaderProps {
   goal: Goals.Goal;
@@ -33,16 +27,76 @@ export function Header({ goal }: HeaderProps) {
 
 function GoalTitleRow({ goal }: { goal: Goals.Goal }) {
   return (
-    <div className="flex items-center gap-4 mt-1">
+    <div className="mt-1">
       <GoalTitle goal={goal} />
 
-      <div className="bg-green-200 rounded-full px-1.5 py-0.5 text-[10px] uppercase font-semibold mt-1">On Track</div>
+      <span
+        className="bg-green-200 rounded-full px-1.5 py-0.5 text-[10px] uppercase font-semibold mt-1 inline-block"
+        style={{ verticalAlign: "4px" }}
+      >
+        On Track
+      </span>
     </div>
   );
 }
 
 function GoalTitle({ goal }: { goal: Goals.Goal }) {
-  return <div className="font-bold text-3xl text-content-accent">{goal.name}</div>;
+  const [title, setTitle] = React.useState(goal.name);
+
+  const ref = React.useRef<HTMLSpanElement>(null);
+
+  const handleSave = () => {
+    console.log("Handling save");
+
+    if (ref.current) {
+      setTitle(ref.current.innerText.trim());
+
+      ref.current.innerText = ref.current.innerText.trim();
+      ref.current.blur();
+    }
+  };
+
+  const handleCancel = () => {
+    console.log("Handling cancel");
+
+    setTitle(title);
+
+    if (ref.current) {
+      ref.current.innerText = title || "";
+      ref.current.blur();
+    }
+  };
+
+  const handleSaveAndCancel = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleSave();
+    }
+
+    if (e.key === "Escape") {
+      e.preventDefault();
+      handleCancel();
+    }
+  };
+
+  React.useEffect(() => {
+    if (ref.current) {
+      ref.current.innerText = title || "";
+    }
+  }, [title]);
+
+  return (
+    <span className="relative">
+      <span
+        className="font-bold text-3xl text-content-accent cursor-pointer break-words pr-3"
+        ref={ref}
+        contentEditable={true}
+        onKeyDown={(e) => handleSaveAndCancel(e)}
+        suppressContentEditableWarning={true}
+        spellCheck={false}
+      ></span>
+    </span>
+  );
 }
 
 function ParentGoal({ goal }: { goal: Goals.Goal | null | undefined }) {
@@ -135,70 +189,5 @@ function Options({ goal }) {
         />
       )}
     </PageOptions.Root>
-  );
-}
-
-function Timeframe({ goal }: { goal: Goals.Goal }) {
-  const timeframe = Timeframes.parse(goal.timeframe!);
-
-  return (
-    <div className="font-medium text-sm mt-1 text-content-dimmed">
-      Timeframe: {Timeframes.format(timeframe)} <TimeframeState goal={goal} />
-    </div>
-  );
-}
-
-function TimeframeState({ goal }) {
-  if (goal.isClosed) {
-    return (
-      <span>
-        &middot; Closed on <FormattedTime time={goal.closedAt} format="long-date" />
-      </span>
-    );
-  }
-
-  const timeframe = Timeframes.parse(goal.timeframe);
-  if (!Timeframes.isStarted(timeframe)) {
-    return (
-      <span>
-        &middot;{" "}
-        <span className="text-accent-1">
-          Scheduled to start in {plurarize(Timeframes.startsInDays(timeframe), "day", "days")}
-        </span>
-      </span>
-    );
-  }
-
-  if (Timeframes.isOverdue(timeframe)) {
-    return (
-      <span>
-        &middot;{" "}
-        <span className="text-content-error">
-          Overdue by {plurarize(Timeframes.overdueDays(timeframe), "day", "days")}
-        </span>
-      </span>
-    );
-  } else {
-    return (
-      <span>
-        &middot;{" "}
-        <span className="text-accent-1">{plurarize(Timeframes.remainingDays(timeframe), "day", "days")} left</span>
-      </span>
-    );
-  }
-}
-
-function UpdateProgressButton({ goal }) {
-  if (!goal.permissions.canCheckIn) return null;
-  if (goal.isClosed || goal.isArchived) return null;
-
-  const path = Paths.goalProgressUpdateNewPath(goal.id);
-
-  return (
-    <div className="mt-1">
-      <PrimaryButton linkTo={path} testId="update-progress-button" size="sm">
-        Update Progress
-      </PrimaryButton>
-    </div>
   );
 }

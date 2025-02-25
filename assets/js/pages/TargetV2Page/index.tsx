@@ -49,11 +49,6 @@ function Target1() {
         Figure out how to open a new office in Brazil
       </div>
 
-      <div className="mt-1 max-w-xl mx-auto text-center">
-        To be able to conduct business in Brazil, we need to open an office there as per local regulations. We've never
-        done this before, so ideally we'd like to have a local partner to help us navigate the process.
-      </div>
-
       <div className="mt-8 flex items-center justify-center">
         <PrimaryButton size="sm">Mark as Complete</PrimaryButton>
       </div>
@@ -66,11 +61,6 @@ function Target2() {
     <div>
       <div className="text-content-accent text-2xl font-extrabold text-center">
         Eliminate blockers for selling in China
-      </div>
-
-      <div className="mt-1 max-w-xl mx-auto text-center">
-        We have identified 20 key blockers that are preventing us from selling our products in China. Some of these
-        blockers are regulatory, some are technical, and some are related to our sales process.
       </div>
 
       <div className="mt-8"></div>
@@ -96,8 +86,6 @@ function Target3() {
       <div className="text-content-accent text-2xl font-extrabold text-center">
         Achieve 1000+ active users in new countries
       </div>
-
-      <div className="mt-1 max-w-xl mx-auto text-center text-content-dimmed">No description</div>
 
       <div className="mt-8"></div>
 
