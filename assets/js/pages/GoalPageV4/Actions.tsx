@@ -3,8 +3,11 @@ import * as Icons from "@tabler/icons-react";
 
 import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
 import { MenuActionItem } from "@/components/Menu";
+import { Paths } from "@/routes/paths";
 
-export function Actions() {
+export function Actions({ goal }) {
+  const checkInPath = Paths.goalProgressUpdateNewPath(goal.id);
+
   return (
     <div className="flex justify-end gap-2 items-center border-b border-stroke-base pb-4 mb-8">
       <SecondaryButton linkTo={""} testId="update-progress-button" size="sm">
@@ -24,7 +27,7 @@ export function Actions() {
         Follow
       </SecondaryButton>
 
-      <PrimaryButton linkTo={""} testId="update-progress-button" size="sm">
+      <PrimaryButton linkTo={checkInPath} testId="update-progress-button" size="sm">
         Check In
       </PrimaryButton>
     </div>

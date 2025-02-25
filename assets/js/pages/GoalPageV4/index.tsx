@@ -61,7 +61,7 @@ export function Page() {
             </div>
 
             <div className="w-[260px] text-sm mt-6 sticky top-10">
-              <Actions />
+              <Actions goal={goal} />
               <Timeframe goal={goal} />
               <Champion goal={goal} />
               <Reviewer goal={goal} />
