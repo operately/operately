@@ -7,6 +7,7 @@ import * as Discussions from "@/models/discussions";
 import { PrimaryButton, GhostButton } from "@/components/Buttons";
 import { Form, FormState, useForm } from "@/features/DiscussionForm";
 import { Paths } from "@/routes/paths";
+import { Link } from "@/components/Link";
 
 interface LoaderResult {
   discussion: Discussions.Discussion;
@@ -54,6 +55,10 @@ function Submit({ form }: { form: FormState }) {
             <SaveChanges form={form} />
             <PublishNow form={form} />
           </div>
+
+          <div className="mt-4">
+            Or, <CancelLink form={form} />
+          </div>
         </div>
       </div>
     </Paper.DimmedSection>
@@ -76,6 +81,14 @@ function PublishNow({ form }: { form: FormState }) {
     <GhostButton loading={form.publishDraftSubmitting} testId="publish-now" onClick={form.publishDraft}>
       Publish Now
     </GhostButton>
+  );
+}
+
+function CancelLink({ form }: { form: FormState }) {
+  return (
+    <Link to={form.cancelPath} testId="cancel-edit" className="font-medium">
+      Cancel changes
+    </Link>
   );
 }
 
