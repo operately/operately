@@ -6,7 +6,7 @@
   <a href="https://operately.com"><strong>Learn more →</strong></a>
   <br />
   <br />
-  <a href="https://discord.gg/qn7aUCep">Discord</a>
+  <a href="https://discord.gg/2ngnragJYV">Discord</a>
   ·
   <a href="https://operately.com">Website</a>
   ·
@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/operately/operately/blob/main/LICENSE"><img src="https://img.shields.io/github/license/operately/operately" alt="License"></a>
+  <a href="https://github.com/operately/operately/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-Apache_2.0-blue.svg" alt="License"></a>
   <a href="https://operately.semaphoreci.com/projects/operately"><img src="https://operately.semaphoreci.com/badges/operately/branches/main.svg?style=shields" alt="CI/CD Status" /></a>
   <a href="https://github.com/operately/operately/pulse"><img src="https://img.shields.io/github/commit-activity/m/operately/operately" alt="GitHub commit activity"/></a>
   <a href="https://discord.gg/qn7aUCep"><img src="https://img.shields.io/discord/1080898715268698152?label=discord" alt="Discord server" /></a>
