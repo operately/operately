@@ -3,7 +3,7 @@ import React from "react";
 import { matchPath, Route } from "./createRoutes";
 import { REDIRECT_EVENT, RedirectError } from "./redirect";
 
-interface Router {
+interface RouterContextValue {
   loadedData: any;
   error: any;
   location: Location;
@@ -11,7 +11,7 @@ interface Router {
   revalidate: () => void;
 }
 
-interface State {
+interface RouterState {
   status: "page-changed" | "loading" | "loaded" | "error";
   data: any;
   error: any;
@@ -25,7 +25,7 @@ type RouterAction =
   | { type: "LOAD_DATA_SUCCESS"; data: any; pathname: string }
   | { type: "LOAD_DATA_ERROR"; error: any; pathname: string };
 
-function routerReducer(state: State, action: RouterAction): State {
+function routerReducer(state: RouterState, action: RouterAction): RouterState {
   switch (action.type) {
     case "NAVIGATE":
       return { ...state, status: "page-changed", pathname: action.pathname };
@@ -50,6 +50,54 @@ export function Router({ routes }: { routes: Route[] }) {
     location: window.location,
   });
 
+  const loaderController = useDataLoaderController();
+  const { abortActiveLoader } = loaderController;
+
+  const match = React.useMemo(() => {
+    return matchPath(routes, state.pathname);
+  }, [routes, state.pathname]);
+
+  useNavigationEvents(dispatch, abortActiveLoader);
+  const navigate = useNavigation(dispatch, abortActiveLoader);
+
+  const loadData = useRouteDataLoader(match, state.pathname, dispatch, loaderController);
+
+  React.useEffect(() => {
+    loadData();
+  }, [loadData]);
+
+  const contextValue: RouterContextValue = {
+    loadedData: state.data,
+    error: state.error,
+    location: state.location,
+    navigate,
+    revalidate: () => loadData({ skipLoading: true }),
+  };
+
+  if (match) {
+    return (
+      <RouterContext.Provider value={contextValue}>
+        {state.status === "loaded" ? match.route.element : null}
+      </RouterContext.Provider>
+    );
+  } else {
+    return <div>Page not found</div>;
+  }
+}
+
+const RouterContext = React.createContext<RouterContextValue | undefined>(undefined);
+
+export function useRouter() {
+  const context = React.useContext(RouterContext);
+
+  if (context === undefined) {
+    throw new Error("useRouter must be used within a Router");
+  }
+
+  return context;
+}
+
+function useDataLoaderController() {
   const activeLoaderRef = React.useRef<AbortController | null>(null);
 
   const abortActiveLoader = React.useCallback(() => {
@@ -59,33 +107,75 @@ export function Router({ routes }: { routes: Route[] }) {
     }
   }, []);
 
-  const match = React.useMemo(() => {
-    return matchPath(routes, state.pathname);
-  }, [routes, state.pathname]);
+  const createLoader = React.useCallback(() => {
+    abortActiveLoader();
 
+    const abortController = new AbortController();
+    activeLoaderRef.current = abortController;
+
+    return abortController;
+  }, [abortActiveLoader]);
+
+  const clearLoader = React.useCallback((controller: AbortController) => {
+    if (activeLoaderRef.current === controller) {
+      activeLoaderRef.current = null;
+    }
+  }, []);
+
+  return { abortActiveLoader, createLoader, clearLoader };
+}
+
+function useNavigation(dispatch: React.Dispatch<RouterAction>, abortActiveLoader: () => void) {
   const navigate = React.useCallback(
     (path: string) => {
       const url = new URL(path, window.location.href);
       window.history.pushState({}, "", url);
 
       abortActiveLoader();
-
       dispatch({ type: "NAVIGATE", pathname: url.pathname });
     },
-    [abortActiveLoader],
+    [dispatch, abortActiveLoader],
   );
 
+  return navigate;
+}
+
+function useNavigationEvents(dispatch: React.Dispatch<RouterAction>, abortActiveLoader: () => void) {
+  React.useEffect(() => {
+    const handlePopState = () => {
+      abortActiveLoader();
+      dispatch({ type: "NAVIGATE", pathname: window.location.pathname });
+    };
+
+    const handleRedirect = (e: CustomEvent) => {
+      abortActiveLoader();
+      dispatch({ type: "NAVIGATE", pathname: e.detail?.destination });
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    window.addEventListener(REDIRECT_EVENT, handleRedirect as EventListener);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+      window.removeEventListener(REDIRECT_EVENT, handleRedirect as EventListener);
+    };
+  }, [dispatch, abortActiveLoader]);
+}
+
+function useRouteDataLoader(
+  match: ReturnType<typeof matchPath>,
+  pathname: string,
+  dispatch: React.Dispatch<RouterAction>,
+  loaderController: ReturnType<typeof useDataLoaderController>,
+) {
+  const { createLoader, clearLoader } = loaderController;
+
   const loadData = React.useCallback(
-    async (opts?: { skipLoading?: boolean; signal?: AbortSignal }) => {
+    async (opts?: { skipLoading?: boolean }) => {
       if (!match) return;
 
-      abortActiveLoader();
-
-      // Create a new abort controller for this request
-      const abortController = new AbortController();
-      activeLoaderRef.current = abortController;
-
-      const currentPathname = state.pathname;
+      const abortController = createLoader();
+      const currentPathname = pathname;
 
       try {
         if (!opts?.skipLoading) {
@@ -102,7 +192,7 @@ export function Router({ routes }: { routes: Route[] }) {
         });
 
         // Check if we're still on the same pathname
-        if (currentPathname === state.pathname) {
+        if (currentPathname === pathname) {
           dispatch({ type: "LOAD_DATA_SUCCESS", data, pathname: currentPathname });
         }
       } catch (error) {
@@ -116,69 +206,15 @@ export function Router({ routes }: { routes: Route[] }) {
         }
 
         // Only dispatch error if we're still on the same pathname
-        if (currentPathname === state.pathname) {
+        if (currentPathname === pathname) {
           dispatch({ type: "LOAD_DATA_ERROR", error, pathname: currentPathname });
         }
       } finally {
-        // Clear the active loader ref if it's the current one
-        if (activeLoaderRef.current === abortController) {
-          activeLoaderRef.current = null;
-        }
+        clearLoader(abortController);
       }
     },
-    [match, state.pathname, abortActiveLoader],
+    [match, pathname, dispatch, createLoader, clearLoader],
   );
 
-  React.useEffect(() => {
-    const handlePopState = () => {
-      abortActiveLoader();
-      dispatch({ type: "NAVIGATE", pathname: window.location.pathname });
-    };
-    const handleRedirect = (e) => {
-      abortActiveLoader();
-      dispatch({ type: "NAVIGATE", pathname: e.detail?.destination });
-    };
-
-    window.addEventListener("popstate", handlePopState);
-    window.addEventListener(REDIRECT_EVENT, handleRedirect);
-
-    return () => {
-      window.removeEventListener("popstate", handlePopState);
-      window.removeEventListener(REDIRECT_EVENT, handleRedirect);
-    };
-  }, [abortActiveLoader]);
-
-  React.useEffect(() => {
-    loadData();
-  }, [loadData]);
-
-  if (match) {
-    return (
-      <Context.Provider
-        value={{
-          loadedData: state.data,
-          error: state.error,
-          location: state.location,
-          navigate,
-          revalidate: () => loadData({ skipLoading: true }),
-        }}
-      >
-        {state.status === "loaded" ? match.route.element : null}
-      </Context.Provider>
-    );
-  } else {
-    return <div>Page not found</div>;
-  }
-}
-
-const Context = React.createContext<Router | undefined>(undefined);
-
-export function useRouter() {
-  const context = React.useContext(Context);
-
-  if (context === undefined) {
-    throw new Error("useRouter must be used within a Router");
-  }
-
-  return context;
+  return loadData;
 }
