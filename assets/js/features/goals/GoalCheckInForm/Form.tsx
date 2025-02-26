@@ -1,15 +1,19 @@
 import React from "react";
 
-import { Goal, Target } from "@/models/goals";
+import { Goal } from "@/models/goals";
 import { Update } from "@/models/goalCheckIns";
-import { Person } from "@/models/people";
 
 import Forms from "@/components/Forms";
-import { SubscribersSelector, useSubscriptions } from "@/features/Subscriptions";
+import { useSubscriptions } from "@/features/Subscriptions";
 import { Spacer } from "@/components/Spacer";
-import { createTestId } from "@/utils/testid";
 import { useForm } from "./useForm";
 import { assertPresent } from "@/utils/assertions";
+import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
+import AvatarList from "@/components/AvatarList";
+
+import { StatusPicker } from "./StatusPicker";
+import { Timeframe } from "./Timeframe";
+import { Targets } from "./Targets";
 
 export interface CreateProps {
   goal: Goal;
@@ -22,11 +26,11 @@ export interface EditProps {
 }
 
 export function Form(props: CreateProps | EditProps) {
-  const { goal, mode } = props;
+  const { goal } = props;
 
   assertPresent(goal.reviewer, "reviewer must be present in goal");
 
-  const subscriptionsState = useSubscriptions(mode === "create" ? goal.potentialSubscribers! : [], {
+  const subscriptionsState = useSubscriptions(goal.potentialSubscribers!, {
     ignoreMe: true,
     notifyPrioritySubscribers: true,
   });
@@ -38,63 +42,33 @@ export function Form(props: CreateProps | EditProps) {
       <Header />
 
       <Forms.FieldGroup>
-        <Status reviewer={goal.reviewer} />
-        <TargetInputs />
+        <div className="flex items-start gap-8 mt-6">
+          <StatusPicker />
+          <Timeframe goal={goal} />
+        </div>
+
+        <Targets />
         <Description goal={goal} />
       </Forms.FieldGroup>
 
       <Spacer size={4} />
 
-      {mode === "create" && <SubscribersSelector state={subscriptionsState} spaceName={goal.space?.name!} />}
-
-      <Forms.Submit saveText={mode === "create" ? "Submit Update" : "Save"} buttonSize="base" />
+      <div className="">
+        <WhoToNotify subscriptionsState={subscriptionsState} />
+        <div className="flex items-center gap-2 mt-8">
+          <PrimaryButton>Post Update</PrimaryButton>
+          <SecondaryButton>Cancel</SecondaryButton>
+        </div>
+      </div>
     </Forms.Form>
   );
 }
 
 function Header() {
-  return <div className="text-3xl font-bold mb-8">Update Progress</div>;
-}
-
-function Status({ reviewer }: { reviewer: Person }) {
-  return (
-    <div className="mt-8 mb-4">
-      <Forms.SelectStatus
-        label="1. How's the goal going?"
-        field="status"
-        reviewer={reviewer}
-        options={["on_track", "caution", "issue", "pending"]}
-      />
-    </div>
-  );
-}
-
-function TargetInputs() {
-  const [targets] = Forms.useFieldValue<Target[]>("targets");
-
   return (
     <div>
-      <div className="font-bold mb-1">2. Success Conditions</div>
-
-      <div className="flex flex-col gap-4">
-        {targets.map((target, index) => {
-          return (
-            <div
-              className="grid grid-cols-[1fr,auto] items-center bg-surface-dimmed border border-stroke-base p-3 rounded"
-              key={index}
-            >
-              <div className="flex flex-col">
-                <div className="font-semibold text-content-accent">{target.name}</div>
-                <div className="text-content-dimmed text-sm">
-                  Target: {target.to} {target.unit}
-                </div>
-              </div>
-
-              <Forms.TextInput field={`targets[${index}].value`} testId={createTestId("target", target.name!)} />
-            </div>
-          );
-        })}
-      </div>
+      <div className="text-3xl font-bold">Goal Check-in</div>
+      <div className="">Share the progress with the team</div>
     </div>
   );
 }
@@ -104,12 +78,32 @@ function Description({ goal }: { goal: Goal }) {
 
   return (
     <div className="mt-4">
+      <div className="mb-2 font-bold">What's new since your last update?</div>
+
       <Forms.RichTextArea
-        label="3. Describe your progress and any learnings"
         field="description"
         mentionSearchScope={mentionSearchScope}
-        placeholder="Write your update here..."
+        fontSize="text-base"
+        placeholder="Describe your progress, risks, and blockers..."
       />
+    </div>
+  );
+}
+
+function WhoToNotify({ subscriptionsState }) {
+  return (
+    <div>
+      <div className="font-bold mb-1">When I post this, notify:</div>
+
+      <div className="flex items-center gap-2">
+        <AvatarList
+          people={subscriptionsState.subscribers.map((s: any) => s.person!)}
+          size={30}
+          stacked
+          stackSpacing={"-space-x-1"}
+        />
+        <SecondaryButton size="xs">Add/Remove</SecondaryButton>
+      </div>
     </div>
   );
 }

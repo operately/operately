@@ -21,6 +21,10 @@ export class Paths {
     return createPath([companyId]);
   }
 
+  static targetPath(targetId: string) {
+    return createCompanyPath(["targets", targetId]);
+  }
+
   static companyPermissionsPath() {
     return createCompanyPath(["admin", "permissions"]);
   }
