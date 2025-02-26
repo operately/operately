@@ -91,7 +91,7 @@ function createLoader(loaders: RouteDefinition["loader"][]) {
 }
 
 function pathToRegex(path: string) {
-  return new RegExp("^" + path.replace(/:([a-zA-Z0-9_]+)/g, "(?<$1>[^/]+)") + "$");
+  return new RegExp("^" + path.replace(/:([a-zA-Z0-9_]+)/g, "(?<$1>[^/]+)") + "(?:/)?(?:\\?[^#]*)?(?:#.*)?$");
 }
 
 export function matchPath(routes: Route[], path: string): { route: Route; params: any } | null {

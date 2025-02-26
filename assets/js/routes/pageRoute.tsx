@@ -3,7 +3,7 @@ import { AxiosError } from "axios";
 
 import nprogress from "nprogress";
 import { setDevData } from "@/features/DevBar/useDevBarData";
-import { redirect } from "react-router-dom";
+import { redirect } from "./redirect";
 
 type Loader = ({ params }: { params: any }) => Promise<any>;
 

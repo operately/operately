@@ -38,7 +38,7 @@ function CompanyRoutes({ children }) {
 
 export const routes = createRoutes([
   {
-    path: "/",
+    path: "",
     layout: NonCompanyRoutes,
     errorElement: <ErrorPage />,
     children: [
@@ -48,7 +48,7 @@ export const routes = createRoutes([
       pageRoute("/forgot-password", pages.ForgotPasswordPage, { auth: false }),
       pageRoute("/reset-password", pages.ResetPasswordPage, { auth: false }),
 
-      pageRoute("", pages.LobbyPage),
+      pageRoute("/", pages.LobbyPage),
       pageRoute("/new", pages.NewCompanyPage),
       pageRoute("/setup", pages.SetupPage, { auth: false }),
       pageRoute("/join", pages.JoinPage, { auth: false }),
