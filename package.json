@@ -32,18 +32,24 @@
     "react-select": "^5.8.0",
     "react-spinners": "^0.13.8",
     "tippy.js": "^6.3.7",
-    "ts-pattern": "^5.0.8"
+    "ts-pattern": "^5.0.8",
+    "vite": "^6.0.2"
   },
   "devDependencies": {
+    "@tailwindcss/forms": "^0.5.9",
     "@types/jest": "^29.5.12",
     "@types/nprogress": "^0.2.0",
     "@types/react": "^18.3.5",
     "@types/react-dom": "^18.3.0",
     "@types/react-modal": "^3.13.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.20",
     "esbuild": "^0.14.54",
     "jest": "^29.6.1",
     "knip": "^5.30.0",
+    "postcss": "^8.4.49",
     "prettier": "3.3.3",
+    "tailwindcss": "^3.4.16",
     "ts-jest": "^29.1.2",
     "typescript": "^5.4.3"
   },
