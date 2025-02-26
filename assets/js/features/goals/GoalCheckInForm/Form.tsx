@@ -9,11 +9,11 @@ import { Spacer } from "@/components/Spacer";
 import { useForm } from "./useForm";
 import { assertPresent } from "@/utils/assertions";
 import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
-import AvatarList from "@/components/AvatarList";
 
 import { StatusPicker } from "./StatusPicker";
 import { Timeframe } from "./Timeframe";
 import { Targets } from "./Targets";
+import { WhoToNotify } from "./WhoToNotify";
 
 export interface CreateProps {
   goal: Goal;
@@ -86,24 +86,6 @@ function Description({ goal }: { goal: Goal }) {
         fontSize="text-base"
         placeholder="Write here..."
       />
-    </div>
-  );
-}
-
-function WhoToNotify({ subscriptionsState }) {
-  return (
-    <div>
-      <div className="font-bold mb-1">When I post this, notify:</div>
-
-      <div className="flex items-center gap-2">
-        <AvatarList
-          people={subscriptionsState.subscribers.map((s: any) => s.person!)}
-          size={30}
-          stacked
-          stackSpacing={"-space-x-1"}
-        />
-        <SecondaryButton size="xs">Add/Remove</SecondaryButton>
-      </div>
     </div>
   );
 }

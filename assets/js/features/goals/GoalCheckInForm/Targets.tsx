@@ -70,7 +70,7 @@ function Target({ name, value, total, progress }) {
       <div className="w-96 p-4">
         <Forms.Form form={form}>
           <Forms.FieldGroup>
-            <Forms.TextInput field="value" label="Current value" autoFocus />
+            <Forms.TextInput field="value" label="New value" autoFocus />
           </Forms.FieldGroup>
         </Forms.Form>
 
