@@ -46,7 +46,7 @@ export function Timeframe({ goal }: { goal: Goal }) {
 
   return (
     <div>
-      <div className="mb-2 font-bold">Still on track for this deadline?</div>
+      <div className="mb-2 font-bold">Timeframe</div>
 
       <div className="flex items-center gap-4">
         <div className="w-64">
@@ -87,7 +87,7 @@ function Chronograph({ start, end }: { start: Date; end: Date }) {
   const progress = (diffToday / diff) * 100;
 
   return (
-    <div className="border border-stroke-base shadow-sm bg-surface-dimmed text-xs rounded-lg px-2 py-2 flex items-center justify-between gap-1 relative overflow-hidden group cursor-pointer">
+    <div className="border border-stroke-base shadow-sm bg-surface-dimmed text-xs rounded-lg px-2 py-2 flex items-center justify-between gap-1 relative overflow-hidden group">
       <div className="absolute top-0 left-0 bottom-0 bg-indigo-500" style={{ width: progress + "%" }} />
 
       <span className="text-xs z-1 relative text-white-1 font-bold">

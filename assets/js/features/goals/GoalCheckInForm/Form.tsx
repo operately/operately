@@ -78,13 +78,13 @@ function Description({ goal }: { goal: Goal }) {
 
   return (
     <div className="mt-4">
-      <div className="mb-2 font-bold">What's new since your last update?</div>
+      <div className="mb-2 font-bold">Describe key wins, obstacles and needs</div>
 
       <Forms.RichTextArea
         field="description"
         mentionSearchScope={mentionSearchScope}
         fontSize="text-base"
-        placeholder="Describe your progress, risks, and blockers..."
+        placeholder="Write here..."
       />
     </div>
   );
