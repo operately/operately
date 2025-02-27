@@ -3,7 +3,7 @@ import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as Companies from "@/models/companies";
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@/routes/hooks";
 import { Paths } from "@/routes/paths";
 import { CopyToClipboard } from "@/components/CopyToClipboard";
 import { PrimaryButton } from "@/components/Buttons";

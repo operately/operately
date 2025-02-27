@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@/routes/hooks";
 
 type Error = { field: string; message: string };
 type Validator<F> = (fields: F) => Error | null;

@@ -1,8 +1,6 @@
 import React from "react";
-import classnames from "classnames";
-
-import * as Router from "react-router-dom";
 import classNames from "classnames";
+import { useNavigate } from "@/routes/hooks";
 
 interface Props {
   children: React.ReactNode;
@@ -32,13 +30,26 @@ interface DivLinkProps extends Props {
   external?: boolean;
 }
 
-const baseLinkClass = classnames("cursor-pointer", "transition-colors");
+const baseLinkClass = classNames("cursor-pointer", "transition-colors");
 
 function UnstyledLink(props: LinkProps) {
+  const navigate = useNavigate();
+
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    navigate(props.to);
+  };
+
   return (
-    <Router.Link to={props.to} className={props.className} data-test-id={props.testId} target={props.target}>
+    <a
+      href={props.to}
+      onClick={handleClick}
+      className={props.className}
+      data-test-id={props.testId}
+      target={props.target}
+    >
       {props.children}
-    </Router.Link>
+    </a>
   );
 }
 
@@ -88,7 +99,7 @@ export function ActionLink(props: ActionLinkProps) {
 }
 
 export function DimmedLink(props: LinkProps) {
-  const className = classnames(
+  const className = classNames(
     baseLinkClass,
     underlineClass(props.underline),
     "text-content-dimmed hover:text-content-base",
@@ -99,19 +110,18 @@ export function DimmedLink(props: LinkProps) {
 }
 
 export function DivLink({ to, children, testId, target, external, ...props }: DivLinkProps) {
-  if (external) {
-    return (
-      <a href={to} data-test-id={testId} {...props} target={target}>
-        {children}
-      </a>
-    );
-  } else {
-    return (
-      <Router.Link to={to} data-test-id={testId} {...props} target={target}>
-        {children}
-      </Router.Link>
-    );
-  }
+  const navigate = useNavigate();
+
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    navigate(to);
+  };
+
+  return (
+    <a href={to} onClick={!external ? handleClick : undefined} data-test-id={testId} target={target} {...props}>
+      {children}
+    </a>
+  );
 }
 
 function underlineClass(underline: "always" | "hover" | "never" | undefined) {

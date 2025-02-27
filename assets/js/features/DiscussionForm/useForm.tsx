@@ -3,7 +3,7 @@ import * as TipTapEditor from "@/components/Editor";
 import * as Discussions from "@/models/discussions";
 import * as Spaces from "@/models/spaces";
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@/routes/hooks";
 import { Paths } from "@/routes/paths";
 import { Subscriber } from "@/models/notifications";
 import { Options, SubscriptionsState, useSubscriptions } from "@/features/Subscriptions";

@@ -2,7 +2,7 @@ import * as React from "react";
 import * as Projects from "@/models/projects";
 import * as Time from "@/utils/time";
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@/routes/hooks";
 import { useMilestoneListState, MilestoneListState } from "./useMilestoneListState";
 import { Paths } from "@/routes/paths";
 

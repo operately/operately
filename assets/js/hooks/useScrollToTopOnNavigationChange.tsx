@@ -1,6 +1,6 @@
 import React from "react";
 
-import { useLocation } from "react-router-dom";
+import { useLocation } from "@/routes/hooks";
 
 export function useScrollToTopOnNavigationChange({ outletDiv }: { outletDiv: React.RefObject<HTMLDivElement> }) {
   const { pathname } = useLocation();

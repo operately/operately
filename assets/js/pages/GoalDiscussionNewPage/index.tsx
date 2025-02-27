@@ -15,7 +15,7 @@ import { Validators } from "@/utils/validators";
 
 import { useFormState, formValidator } from "@/components/Form/useFormState";
 import { useMe } from "@/contexts/CurrentCompanyContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@/routes/hooks";
 
 interface LoaderResult {
   goal: Goals.Goal;

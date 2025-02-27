@@ -1,4 +1,4 @@
-import { useRevalidator } from "react-router-dom";
+import { useRevalidator } from "@/routes/hooks";
 
 export function useRefresh() {
   const { revalidate } = useRevalidator();

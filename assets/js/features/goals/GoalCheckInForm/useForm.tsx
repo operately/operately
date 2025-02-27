@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@/routes/hooks";
 
 import { useEditGoalProgressUpdate, usePostGoalProgressUpdate } from "@/models/goalCheckIns";
 import { Target } from "@/models/goals";

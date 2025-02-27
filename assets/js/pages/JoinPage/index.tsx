@@ -6,7 +6,7 @@ import * as Invitations from "@/models/invitations";
 
 import { OperatelyLogo } from "@/components/OperatelyLogo";
 import { logIn } from "@/routes/auth";
-import { redirect } from "react-router-dom";
+import { redirect } from "@/routes/redirect";
 
 import Forms from "@/components/Forms";
 

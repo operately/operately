@@ -1,5 +1,5 @@
-import { useLoaderData } from "react-router-dom";
+import * as Routes from "@/routes/hooks";
 
 export function useLoadedData<T = any>(): T {
-  return useLoaderData() as T;
+  return Routes.useLoadedData() as T;
 }

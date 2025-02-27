@@ -2,7 +2,7 @@ import React from "react";
 import { GhostButton } from "@/components/Buttons";
 import { Paths } from "./paths";
 
-import { useRouteError } from "react-router-dom";
+import { useRouteError } from "./hooks";
 
 export default function ErrorPage() {
   return (

@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as People from "@/models/people";
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@/routes/hooks";
 import { Paths } from "@/routes/paths";
 
 import Avatar, { AvatarSize } from "@/components/Avatar";

@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation } from "@/routes/hooks";
 
 export function useScrollIntoViewOnLoad(id: string) {
   const location = useLocation();

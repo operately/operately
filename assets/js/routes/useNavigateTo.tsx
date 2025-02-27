@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "./hooks";
 
 export function useNavigateTo(path: string) {
   const navigate = useNavigate();

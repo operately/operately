@@ -17,7 +17,7 @@ import { CurrentSubscriptions } from "@/features/Subscriptions";
 import { DocumentTitle } from "@/features/documents/DocumentTitle";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@/routes/hooks";
 import { assertPresent } from "@/utils/assertions";
 import { useLoadedData } from "./loader";
 import { useClearNotificationsOnLoad } from "@/features/notifications";

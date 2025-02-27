@@ -28,7 +28,6 @@
     "react-dom": "^18.3.0",
     "react-i18next": "^12.2.0",
     "react-modal": "^3.16.1",
-    "react-router-dom": "^6.10.0",
     "react-select": "^5.8.0",
     "react-spinners": "^0.13.8",
     "tippy.js": "^6.3.7",
