@@ -24,3 +24,17 @@ export function NodeName({ node, target = "_self" }: NodeNameProps) {
     </div>
   );
 }
+
+export function GoalNodeName({node, setShowPage}) {
+  const titleClass = classNames("decoration-content-subtle hover:underline truncate");
+
+  return (
+    <div className="flex items-center gap-1 truncate">
+      <div className={titleClass} onClick={() => setShowPage(true)}>
+        {node.name}
+      </div>
+
+      {node.type === "project" && <PrivacyIndicator project={(node as ProjectNode).project} size={16} />}
+    </div>
+  );
+}

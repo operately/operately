@@ -42,6 +42,9 @@ import * as GoalEditPage from "./GoalEditPage";
 import * as GoalEditParentPage from "./GoalEditParentPage";
 import * as GoalEditTimeframePage from "./GoalEditTimeframePage";
 import * as GoalPage from "./GoalPage";
+import * as GoalPageV2 from "./GoalPageV2";
+import * as GoalPageV3 from "./GoalPageV3";
+import * as GoalPageV4 from "./GoalPageV4";
 import * as GoalProgressUpdateEditPage from "./GoalProgressUpdateEditPage";
 import * as GoalProgressUpdateNewPage from "./GoalProgressUpdateNewPage";
 import * as GoalProgressUpdatePage from "./GoalProgressUpdatePage";
@@ -112,6 +115,7 @@ import * as SpaceEditGeneralAccessPage from "./SpaceEditGeneralAccessPage";
 import * as SpaceEditPage from "./SpaceEditPage";
 import * as SpaceGoalsPage from "./SpaceGoalsPage";
 import * as SpacePage from "./SpacePage";
+import * as TargetV2Page from "./TargetV2Page";
 import * as TaskPage from "./TaskPage";
 
 //
@@ -313,6 +317,21 @@ export default {
     name: "GoalPage",
     loader: GoalPage.loader,
     Page: GoalPage.Page,
+  },
+  GoalPageV2: {
+    name: "GoalPageV2",
+    loader: GoalPageV2.loader,
+    Page: GoalPageV2.Page,
+  },
+  GoalPageV3: {
+    name: "GoalPageV3",
+    loader: GoalPageV3.loader,
+    Page: GoalPageV3.Page,
+  },
+  GoalPageV4: {
+    name: "GoalPageV4",
+    loader: GoalPageV4.loader,
+    Page: GoalPageV4.Page,
   },
   GoalProgressUpdateEditPage: {
     name: "GoalProgressUpdateEditPage",
@@ -663,6 +682,11 @@ export default {
     name: "SpacePage",
     loader: SpacePage.loader,
     Page: SpacePage.Page,
+  },
+  TargetV2Page: {
+    name: "TargetV2Page",
+    loader: TargetV2Page.loader,
+    Page: TargetV2Page.Page,
   },
   TaskPage: {
     name: "TaskPage",

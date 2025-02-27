@@ -1,7 +1,7 @@
 import React from "react";
 import axios from "axios";
 
-function toCamel(o: any) {
+export function toCamel(o: any) {
   var newO: any, origKey: any, newKey: any, value: any;
 
   if (o instanceof Array) {
@@ -29,7 +29,7 @@ function toCamel(o: any) {
   return newO;
 }
 
-function toSnake(o: any) {
+export function toSnake(o: any) {
   var newO: any, origKey: any, newKey: any, value: any;
 
   if (o instanceof Array) {
@@ -57,7 +57,7 @@ function toSnake(o: any) {
   return newO;
 }
 
-type UseQueryHookResult<ResultT> = { data: ResultT | null; loading: boolean; error: Error | null; refetch: () => void };
+export type UseQueryHookResult<ResultT> = { data: ResultT | null; loading: boolean; error: Error | null; refetch: () => void };
 
 export function useQuery<ResultT>(fn: () => Promise<ResultT>): UseQueryHookResult<ResultT> {
   const [data, setData] = React.useState<ResultT | null>(null);

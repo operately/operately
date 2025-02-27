@@ -39,7 +39,7 @@ function SelectBoxInput({ field, placeholder, options }: SelectBoxProps) {
     <div data-test-id={createTestId(field)} className="flex-1">
       <Select
         unstyled={true}
-        className="flex-1"
+        className="flex-1 z-[12]"
         placeholder={placeholder}
         classNames={selectBoxClassNames(!!error)}
         value={options.find(({ value: v }) => v === value)}
