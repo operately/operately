@@ -8,8 +8,15 @@ import { Paths } from "@/routes/paths";
 import { Link } from "@/components/Link";
 import { truncateString } from "@/utils/strings";
 import classNames from "classnames";
+import { usePeekContext } from "@/layouts/CompanyLayout/PeekWindow";
 
 export function Navigation({ children, testId }: { children: React.ReactNode; testId?: string }) {
+  const peek = usePeekContext();
+
+  if (peek) {
+    return null;
+  }
+
   const className = classNames(
     "bg-surface-dimmed",
     "flex items-center flex-wrap",

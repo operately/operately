@@ -11,12 +11,12 @@ interface NodeNameProps {
   target?: React.HTMLAttributeAnchorTarget;
 }
 
-export function NodeName({ node, target = "_self" }: NodeNameProps) {
+export function NodeName({ node }: NodeNameProps) {
   const titleClass = classNames("decoration-content-subtle hover:underline truncate");
 
   return (
     <div className="flex items-center gap-1 truncate">
-      <DivLink to={node.linkTo()} className={titleClass} target={target}>
+      <DivLink to={node.linkTo()} className={titleClass} target={"_peek"}>
         {node.name}
       </DivLink>
 
