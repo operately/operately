@@ -1,4 +1,5 @@
 import { useRouter } from "./Router";
+export { useSearchParams } from "./useSearchParams";
 
 export function useNavigate() {
   const { navigate } = useRouter();
