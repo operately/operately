@@ -37,6 +37,10 @@ export class Paths {
     return createCompanyPath(["admin", "restore-suspended-people"]);
   }
 
+  static newTargetPath(goalId: string) {
+    return createCompanyPath(["goals", goalId, "targets", "new"]);
+  }
+
   static feedPath() {
     return createCompanyPath(["feed"]);
   }

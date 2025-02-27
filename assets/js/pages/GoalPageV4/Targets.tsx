@@ -9,7 +9,8 @@ import { Paths } from "@/routes/paths";
 
 export const DimmedLabel = ({ children }) => <div className="text-xs uppercase font-medium mb-1">{children}</div>;
 
-export function Targets() {
+export function Targets({ goal }) {
+  console.log("Goal", goal);
   return (
     <div className="mt-6 pt-6 mb-4 border-t border-stroke-base">
       <div className="flex items-center gap-2 mb-4">
@@ -30,7 +31,10 @@ export function Targets() {
         </div>
 
         <div className="mt-4" />
-        <AddTarget />
+
+        <SecondaryButton size="xs" linkTo={Paths.newTargetPath(goal.id)}>
+          Add target
+        </SecondaryButton>
       </div>
     </div>
   );
@@ -58,50 +62,6 @@ function LargeProgress({ progress, color }) {
   return (
     <div className={outer}>
       <div className={inner} style={{ width: progress + "%" }} />
-    </div>
-  );
-}
-
-function AddTarget() {
-  const [state, setState] = React.useState<"idle" | "form">("idle");
-
-  if (state === "idle") {
-    return <AddTargetButton onClick={() => setState("form")} />;
-  } else {
-    return <AddTargetForm />;
-  }
-}
-
-function AddTargetButton({ onClick }) {
-  return (
-    <SecondaryButton size="xs" onClick={onClick}>
-      Add target
-    </SecondaryButton>
-  );
-}
-
-function AddTargetForm() {
-  const form = Forms.useForm({
-    fields: {
-      name: "",
-      start: "",
-      target: "",
-    },
-    submit: (values) => {
-      console.log("submit", values);
-    },
-  });
-
-  return (
-    <div className="border border-surface-outline p-4 pt-8 rounded-lg relative">
-      <Icons.IconX size={16} onClick={close} className="absolute top-2 right-2 cursor-pointer" />
-      <Forms.Form form={form}>
-        <Forms.FieldGroup layout="horizontal">
-          <Forms.TextInput field="name" placeholder="e.g. Increase revenue by 20%" label="Name" />
-          <Forms.TextInput field="start" placeholder="e.g. 1000" label="Start Value" />
-          <Forms.TextInput field="target" placeholder="e.g. 10000" label="Target Value" />
-        </Forms.FieldGroup>
-      </Forms.Form>
     </div>
   );
 }

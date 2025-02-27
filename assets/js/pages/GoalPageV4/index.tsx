@@ -55,7 +55,7 @@ export function Page() {
             <div className="flex-1">
               <Header goal={goal} />
               <Overview />
-              <Targets />
+              <Targets goal={goal} />
               <Messages goal={goal} />
               <RelatedWork />
             </div>
