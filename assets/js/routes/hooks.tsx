@@ -20,3 +20,8 @@ export function useLoadedData() {
   const { loadedData } = useRouter();
   return loadedData;
 }
+
+export function useRouteError() {
+  const { error } = useRouter();
+  return error;
+}
