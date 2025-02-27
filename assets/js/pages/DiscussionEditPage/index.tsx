@@ -87,7 +87,7 @@ function PublishNow({ form }: { form: FormState }) {
 function CancelLink({ form }: { form: FormState }) {
   return (
     <Link to={form.cancelPath} testId="cancel-edit" className="font-medium">
-      Cancel changes
+      Cancel
     </Link>
   );
 }
