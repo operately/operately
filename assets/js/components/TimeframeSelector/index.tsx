@@ -17,7 +17,8 @@ interface TimeframeSelectorProps {
   timeframe: Timeframes.Timeframe;
   setTimeframe: Timeframes.SetTimeframe;
   size?: "xs" | "base";
-  alignContent?: "start" | "end";
+  alignContent?: "start" | "end" | "center";
+  customTrigger?: React.ReactNode;
 }
 
 const DEFAULTS = {
@@ -32,7 +33,11 @@ export function TimeframeSelector(props: TimeframeSelectorProps) {
 
   return (
     <Popover.Root open={open} onOpenChange={setOpen}>
-      <TimeframeSelectorFormElement {...props} />
+      {props.customTrigger ? (
+        <Popover.Trigger>{props.customTrigger}</Popover.Trigger>
+      ) : (
+        <TimeframeSelectorFormElement {...props} />
+      )}
       <PopeverContent {...props} />
     </Popover.Root>
   );
