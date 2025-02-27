@@ -2,6 +2,7 @@ import React from "react";
 
 import { matchPath, Route } from "./createRoutes";
 import { REDIRECT_EVENT, RedirectError } from "./redirect";
+import ErrorPage from "./ErrorPage";
 
 interface RouterContextValue {
   loadedData: any;
@@ -12,7 +13,8 @@ interface RouterContextValue {
 }
 
 interface RouterState {
-  status: "page-changed" | "loading" | "loaded" | "error";
+  status: "loading" | "loaded" | "error";
+  element: React.ReactNode | null;
   data: any;
   error: any;
   location: Location;
@@ -21,20 +23,16 @@ interface RouterState {
 
 type RouterAction =
   | { type: "NAVIGATE"; pathname: string }
-  | { type: "LOAD_DATA_START"; pathname: string }
-  | { type: "LOAD_DATA_SUCCESS"; data: any; pathname: string }
+  | { type: "LOAD_DATA_SUCCESS"; data: any; pathname: string; element: React.ReactNode }
   | { type: "LOAD_DATA_ERROR"; error: any; pathname: string };
 
 function routerReducer(state: RouterState, action: RouterAction): RouterState {
   switch (action.type) {
     case "NAVIGATE":
-      return { ...state, status: "page-changed", pathname: action.pathname };
-    case "LOAD_DATA_START":
-      if (action.pathname !== state.pathname) return state;
-      return { ...state, status: "loading" };
+      return { ...state, status: "loading", pathname: action.pathname };
     case "LOAD_DATA_SUCCESS":
       if (action.pathname !== state.pathname) return state;
-      return { ...state, status: "loaded", data: action.data, location: window.location };
+      return { ...state, status: "loaded", data: action.data, location: window.location, element: action.element };
     case "LOAD_DATA_ERROR":
       if (action.pathname !== state.pathname) return state;
       return { ...state, status: "error", error: action.error };
@@ -45,6 +43,7 @@ export function Router({ routes }: { routes: Route[] }) {
   const [state, dispatch] = React.useReducer(routerReducer, {
     pathname: window.location.pathname,
     status: "loading",
+    element: null,
     data: null,
     error: null,
     location: window.location,
@@ -71,13 +70,13 @@ export function Router({ routes }: { routes: Route[] }) {
     error: state.error,
     location: state.location,
     navigate,
-    revalidate: () => loadData({ skipLoading: true }),
+    revalidate: loadData,
   };
 
   if (match) {
     return (
       <RouterContext.Provider value={contextValue}>
-        {state.status === "loaded" ? match.route.element : null}
+        {state.status === "error" ? <ErrorPage /> : state.element}
       </RouterContext.Provider>
     );
   } else {
@@ -170,51 +169,44 @@ function useRouteDataLoader(
 ) {
   const { createLoader, clearLoader } = loaderController;
 
-  const loadData = React.useCallback(
-    async (opts?: { skipLoading?: boolean }) => {
-      if (!match) return;
+  const loadData = React.useCallback(async () => {
+    if (!match) return;
 
-      const abortController = createLoader();
-      const currentPathname = pathname;
+    const abortController = createLoader();
+    const currentPathname = pathname;
 
-      try {
-        if (!opts?.skipLoading) {
-          dispatch({ type: "LOAD_DATA_START", pathname: currentPathname });
-        }
+    try {
+      const request = new Request(window.location.href, {
+        signal: abortController.signal,
+      });
 
-        const request = new Request(window.location.href, {
-          signal: abortController.signal,
-        });
+      const data = await match.route.loader({
+        params: match.params,
+        request,
+      });
 
-        const data = await match.route.loader({
-          params: match.params,
-          request,
-        });
-
-        // Check if we're still on the same pathname
-        if (currentPathname === pathname) {
-          dispatch({ type: "LOAD_DATA_SUCCESS", data, pathname: currentPathname });
-        }
-      } catch (error) {
-        if (error.name === "AbortError") {
-          console.log("Data loading aborted");
-          return;
-        }
-        if (error instanceof RedirectError) {
-          console.log("Redirect detected during data loading");
-          return;
-        }
-
-        // Only dispatch error if we're still on the same pathname
-        if (currentPathname === pathname) {
-          dispatch({ type: "LOAD_DATA_ERROR", error, pathname: currentPathname });
-        }
-      } finally {
-        clearLoader(abortController);
+      // Check if we're still on the same pathname
+      if (currentPathname === pathname) {
+        dispatch({ type: "LOAD_DATA_SUCCESS", data, pathname: currentPathname, element: match.route.element });
       }
-    },
-    [match, pathname, dispatch, createLoader, clearLoader],
-  );
+    } catch (error) {
+      if (error.name === "AbortError") {
+        console.log("Data loading aborted");
+        return;
+      }
+      if (error instanceof RedirectError) {
+        console.log("Redirect detected during data loading");
+        return;
+      }
+
+      // Only dispatch error if we're still on the same pathname
+      if (currentPathname === pathname) {
+        dispatch({ type: "LOAD_DATA_ERROR", error, pathname: currentPathname });
+      }
+    } finally {
+      clearLoader(abortController);
+    }
+  }, [match, pathname, dispatch, createLoader, clearLoader]);
 
   return loadData;
 }
