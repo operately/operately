@@ -6,6 +6,7 @@ import { Goal } from "@/models/goals";
 import FormattedTime from "@/components/FormattedTime";
 import { IconDots } from "@tabler/icons-react";
 import { TimeframeSelector } from "@/components/TimeframeSelector";
+import { SecondaryButton } from "@/components/Buttons";
 
 const increaseByOneMonth = (date: Date) => {
   if (Time.isLastDayOfMonth(date)) {
@@ -30,53 +31,32 @@ const decreaseByOneMonth = (date: Date) => {
 export function Timeframe({ goal }: { goal: Goal }) {
   const [timeframe, setTimeframe] = React.useState(Timeframes.parse(goal.timeframe!));
 
-  const plusOneMonth = () => {
-    setTimeframe({
-      ...timeframe,
-      endDate: increaseByOneMonth(timeframe.endDate!),
-    });
-  };
+  // const plusOneMonth = () => {
+  //   setTimeframe({
+  //     ...timeframe,
+  //     endDate: increaseByOneMonth(timeframe.endDate!),
+  //   });
+  // };
 
-  const minusOneMonth = () => {
-    setTimeframe({
-      ...timeframe,
-      endDate: decreaseByOneMonth(timeframe.endDate!),
-    });
-  };
+  // const minusOneMonth = () => {
+  //   setTimeframe({
+  //     ...timeframe,
+  //     endDate: decreaseByOneMonth(timeframe.endDate!),
+  //   });
+  // };
 
   return (
     <div>
-      <div className="mb-2 font-bold">Timeframe</div>
+      <div className="mb-2 flex items-center gap-2">
+        <div className="font-bold">Timeframe</div>
+        <SecondaryButton size="xxs">Edit</SecondaryButton>
+      </div>
 
       <div className="flex items-center gap-4">
         <div className="w-64">
           <Chronograph start={timeframe.startDate!} end={timeframe.endDate!} />
         </div>
-
-        <div className="flex items-center gap-2">
-          <SubtleButton onClick={minusOneMonth}>-1 month</SubtleButton>
-          <SubtleButton onClick={plusOneMonth}>+1 month</SubtleButton>
-
-          <TimeframeSelector
-            timeframe={timeframe}
-            setTimeframe={setTimeframe}
-            alignContent="center"
-            customTrigger={
-              <SubtleButton>
-                <IconDots size={14} />
-              </SubtleButton>
-            }
-          />
-        </div>
       </div>
-    </div>
-  );
-}
-
-function SubtleButton({ onClick = undefined, children }: { onClick?: () => void; children: React.ReactNode }) {
-  return (
-    <div className="text-xs bg-surface-dimmed px-2 py-1 rounded cursor-pointer" onClick={onClick}>
-      {children}
     </div>
   );
 }

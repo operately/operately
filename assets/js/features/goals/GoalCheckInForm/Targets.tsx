@@ -3,7 +3,7 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 
 import { Target } from "@/models/goals";
 import classNames from "classnames";
-import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
+import { GhostButton, PrimaryButton, SecondaryButton } from "@/components/Buttons";
 import Forms from "@/components/Forms";
 
 export function Targets() {
@@ -40,18 +40,24 @@ function Target({ name, value, total, progress }) {
   const trigger = (
     <div
       className={
-        "hover:bg-surface-highlight px-2 py-2 -mx-2 cursor-pointer" + " " + (open ? "bg-surface-highlight" : "")
+        "px-2 py-2 -mx-2 cursor-pointer group hover:bg-surface-dimmed" + " " + (open ? "bg-surface-highlight" : "")
       }
     >
-      <div className="flex items-start gap-3">
+      <div className="flex items-center gap-3">
         <div className="flex-1">
           <div className="flex items-start justify-between">
             <div className="font-medium">{name}</div>
-            <div className="tracking-wider text-sm font-medium">
-              {value} / {total}
+
+            <div className="flex items-center gap-2">
+              <div className="tracking-wider text-sm font-medium">
+                {value} / {total}
+              </div>
+
+              <GhostButton size="xxs" onClick={(e) => e.stopPropagation()}>
+                Edit
+              </GhostButton>
             </div>
           </div>
-
           <LargeProgress progress={progress} color="bg-accent-1" />
         </div>
       </div>
@@ -91,7 +97,7 @@ function Target({ name, value, total, progress }) {
       <DropdownMenu.Trigger>{trigger}</DropdownMenu.Trigger>
 
       <DropdownMenu.Portal>
-        <DropdownMenu.Content className={menuContentClass} align="center" sideOffset={-25}>
+        <DropdownMenu.Content className={menuContentClass} align="end" sideOffset={-25}>
           {content}
         </DropdownMenu.Content>
       </DropdownMenu.Portal>
