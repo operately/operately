@@ -21,6 +21,7 @@ defmodule Operately.People.Account do
     |> Ecto.Multi.insert(:account, registration_changeset(%{full_name: full_name, email: email, password: password}))
     |> Oban.insert(:send_onboarding_email, fn %{account: account} -> OperatelyEE.AccountOnboardingJob.new(%{account_id: account.id}) end)
     |> Repo.transaction()
+    |> Repo.extract_result(:account)
   end
 
   def registration_changeset(attrs) do

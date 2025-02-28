@@ -12,6 +12,21 @@ defmodule OperatelyWeb.AccountOauthControllerTest do
   end
 
   describe "callback/2" do
+    test "creating a new account while attempting log in", ctx do
+      conn = Plug.Conn.assign(ctx.conn, :ueberauth_auth, %{
+        info: %{
+          email: "john@example.localhost",
+          image: "http://example.com/image.png",
+          name: "John Doe"
+        }
+      })
+
+      conn = get(conn, "/accounts/auth/google/callback", %{"provider" => "google"})
+      assert conn.status == 302
+
+      assert Operately.People.get_account_by_email("john@example.localhost")
+    end
+
     test "when a person with the given email exists in the company", ctx do
       assert Operately.Repo.aggregate(Operately.People.Person, :count, :id) == 1 # company creator
 
