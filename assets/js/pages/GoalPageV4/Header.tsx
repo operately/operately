@@ -8,6 +8,7 @@ import { GhostLink } from "@/components/Link/GhostList";
 import { Paths } from "@/routes/paths";
 
 import FormattedTime from "@/components/FormattedTime";
+import { SecondaryButton } from "@/components/Buttons";
 
 interface HeaderProps {
   goal: Goals.Goal;
@@ -41,30 +42,31 @@ function GoalTitleRow({ goal }: { goal: Goals.Goal }) {
 }
 
 function GoalTitle({ goal }: { goal: Goals.Goal }) {
-  const [title, setTitle] = React.useState(goal.name);
+  const [title, setTitle] = React.useState(goal.name!);
+  const [tempTitle, setTempTitle] = React.useState(goal.name!);
+  const [isEditing, setIsEditing] = React.useState(false);
 
-  const ref = React.useRef<HTMLSpanElement>(null);
+  const ref = React.useRef<HTMLTextAreaElement>(null);
 
   const handleSave = () => {
-    console.log("Handling save");
-
-    if (ref.current) {
-      setTitle(ref.current.innerText.trim());
-
-      ref.current.innerText = ref.current.innerText.trim();
-      ref.current.blur();
-    }
+    setTitle(tempTitle);
+    setIsEditing(false);
   };
 
   const handleCancel = () => {
-    console.log("Handling cancel");
+    setIsEditing(false);
+  };
 
-    setTitle(title);
+  const startEditing = () => {
+    setTempTitle(title);
+    setIsEditing(true);
 
-    if (ref.current) {
-      ref.current.innerText = title || "";
-      ref.current.blur();
-    }
+    setTimeout(() => {
+      adjustHeight();
+      if (!ref.current) return;
+      ref.current.focus();
+      ref.current.selectionStart = ref.current.value.length;
+    }, 10);
   };
 
   const handleSaveAndCancel = (e: React.KeyboardEvent) => {
@@ -79,34 +81,58 @@ function GoalTitle({ goal }: { goal: Goals.Goal }) {
     }
   };
 
-  React.useEffect(() => {
-    if (ref.current) {
-      ref.current.innerText = title || "";
-    }
-  }, [title]);
+  function adjustHeight() {
+    if (!ref.current) return;
 
-  return (
-    <span className="relative">
+    ref.current.style.height = "inherit";
+    ref.current.style.height = `${ref.current.scrollHeight + 40}px`;
+  }
+
+  React.useLayoutEffect(adjustHeight, []);
+
+  if (isEditing) {
+    return (
+      <div className="w-full border-stroke-base rounded">
+        <textarea
+          ref={ref}
+          className="font-bold text-3xl text-content-accent break-words ring-0 padding-0 focus:ring-0 focus:outline-none w-full p-0 border-none focus:border-none"
+          value={tempTitle}
+          onChange={(e) => setTempTitle(e.target.value)}
+          onKeyDown={handleSaveAndCancel}
+          onKeyUp={adjustHeight}
+          onBlur={handleSave}
+          autoFocus
+        />
+      </div>
+    );
+  } else {
+    return (
       <span
-        className="font-bold text-3xl text-content-accent cursor-pointer break-words pr-3"
-        ref={ref}
-        contentEditable={true}
-        onKeyDown={(e) => handleSaveAndCancel(e)}
-        suppressContentEditableWarning={true}
-        spellCheck={false}
-      ></span>
-    </span>
-  );
+        className="font-bold text-3xl text-content-accent cursor-pointer break-words pr-3 hover:bg-surface-highlight"
+        onClick={startEditing}
+      >
+        {title}
+      </span>
+    );
+  }
 }
 
 function ParentGoal({ goal }: { goal: Goals.Goal | null | undefined }) {
   let content: React.ReactNode;
 
+  const editParent = Paths.goalEditParentPath(goal?.id!);
+
   if (goal) {
     content = (
-      <div className="flex items-center gap-1">
-        <Icons.IconTarget size={14} className="text-red-500" />
-        <GhostLink to={Paths.goalPath(goal.id!)} text={goal.name!} testId="project-goal-link" dimmed size="sm" />
+      <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
+          <Icons.IconTarget size={14} className="text-red-500" />
+          <GhostLink to={Paths.goalPath(goal.id!)} text={goal.name!} testId="project-goal-link" dimmed size="sm" />
+        </div>
+
+        <SecondaryButton size="xxs" linkTo={editParent}>
+          Edit
+        </SecondaryButton>
       </div>
     );
   } else {
