@@ -7,6 +7,7 @@ import { GhostLink } from "@/components/Link/GhostList";
 import { Paths } from "@/routes/paths";
 
 import FormattedTime from "@/components/FormattedTime";
+import { usePageMode } from ".";
 
 interface HeaderProps {
   goal: Goals.Goal;
@@ -31,75 +32,42 @@ function GoalTitleRow({ goal }: { goal: Goals.Goal }) {
 }
 
 function GoalTitle({ goal }: { goal: Goals.Goal }) {
-  const [title, setTitle] = React.useState(goal.name!);
-  const [tempTitle, setTempTitle] = React.useState(goal.name!);
-  const [isEditing, setIsEditing] = React.useState(false);
-
+  const [title, setTitle] = React.useState(goal.name);
+  const mode = usePageMode();
   const ref = React.useRef<HTMLTextAreaElement>(null);
-
-  const handleSave = () => {
-    setTitle(tempTitle);
-    setIsEditing(false);
-  };
-
-  const handleCancel = () => {
-    setIsEditing(false);
-  };
-
-  const startEditing = () => {
-    setTempTitle(title);
-    setIsEditing(true);
-
-    setTimeout(() => {
-      adjustHeight();
-      if (!ref.current) return;
-      ref.current.focus();
-      ref.current.selectionStart = ref.current.value.length;
-    }, 10);
-  };
-
-  const handleSaveAndCancel = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      handleSave();
-    }
-
-    if (e.key === "Escape") {
-      e.preventDefault();
-      handleCancel();
-    }
-  };
 
   function adjustHeight() {
     if (!ref.current) return;
 
     ref.current.style.height = "inherit";
-    ref.current.style.height = `${ref.current.scrollHeight + 40}px`;
+    ref.current.style.height = `${ref.current.scrollHeight - 35}px`;
   }
 
-  React.useLayoutEffect(adjustHeight, []);
+  React.useEffect(() => {
+    setTimeout(() => {
+      adjustHeight();
+    }, 0);
+  }, [title, mode]);
 
-  if (isEditing) {
+  React.useEffect(() => {
+    if (ref.current) {
+      ref.current.selectionStart = title!.length;
+    }
+  }, [mode, ref, title]);
+
+  if (mode === "edit") {
     return (
-      <div className="w-full border-stroke-base rounded">
-        <textarea
-          ref={ref}
-          className="font-bold text-3xl text-content-accent break-words ring-0 padding-0 focus:ring-0 focus:outline-none w-full p-0 border-none focus:border-none"
-          value={tempTitle}
-          onChange={(e) => setTempTitle(e.target.value)}
-          onKeyDown={handleSaveAndCancel}
-          onKeyUp={adjustHeight}
-          onBlur={handleSave}
-          autoFocus
-        />
-      </div>
+      <textarea
+        ref={ref}
+        className="font-bold text-3xl text-content-accent break-words ring-0 padding-0 focus:ring-0 focus:outline-none w-full p-0 border-none focus:border-none resize-none"
+        value={title!}
+        onChange={(e) => setTitle(e.target.value)}
+        autoFocus
+      />
     );
   } else {
     return (
-      <span
-        className="font-bold text-3xl text-content-accent cursor-pointer break-words pr-3 hover:bg-surface-highlight"
-        onClick={startEditing}
-      >
+      <span className="font-bold text-3xl text-content-accent cursor-pointer break-words pr-3 hover:bg-surface-highlight">
         {title}
 
         <span

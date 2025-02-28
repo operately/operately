@@ -1,14 +1,14 @@
 import * as React from "react";
-import * as Pages from "@/components/Pages";
+import { usePageMode } from ".";
 
 export function DisableInEditMode({ children }) {
-  const mode = Pages.useLoadedData()["mode"];
+  const mode = usePageMode();
 
   return (
     <div
       className="transition-opacity duration-200"
       style={{
-        opacity: mode === "edit" ? "20%" : "100%",
+        opacity: mode === "edit" ? "10%" : "100%",
         pointerEvents: mode === "edit" ? "none" : "auto",
       }}
     >

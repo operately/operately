@@ -4,11 +4,11 @@ import * as PageOptions from "@/components/PaperContainer/PageOptions";
 
 import { Paths } from "@/routes/paths";
 
-import { useSearchParams } from "react-router-dom";
+import { useSetPageMode } from ".";
 
 export function Options({ goal }) {
-  const [_, setSearch] = useSearchParams();
-  const editMode = () => setSearch({ mode: "edit" });
+  const setPageMode = useSetPageMode();
+  const editMode = () => setPageMode("edit");
 
   return (
     <PageOptions.Root testId="goal-options">
