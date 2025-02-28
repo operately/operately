@@ -21,6 +21,10 @@ export class Paths {
     return createPath([companyId]);
   }
 
+  static targetPath(targetId: string) {
+    return createCompanyPath(["targets", targetId]);
+  }
+
   static companyPermissionsPath() {
     return createCompanyPath(["admin", "permissions"]);
   }
@@ -31,6 +35,10 @@ export class Paths {
 
   static companyAdminRestoreSuspendedPeoplePath() {
     return createCompanyPath(["admin", "restore-suspended-people"]);
+  }
+
+  static newTargetPath(goalId: string) {
+    return createCompanyPath(["goals", goalId, "targets", "new"]);
   }
 
   static feedPath() {
