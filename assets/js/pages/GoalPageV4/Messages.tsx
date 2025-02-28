@@ -6,6 +6,7 @@ import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
 import { SecondaryButton } from "@/components/Buttons";
 import { Paths } from "@/routes/paths";
+import { DisableInEditMode } from "./DisableInEditMode";
 
 export const DimmedLabel = ({ children }) => <div className="text-xs uppercase font-medium mb-1">{children}</div>;
 
@@ -13,18 +14,20 @@ export function Messages({ goal }) {
   const writeMessagePath = Paths.newGoalDiscussionPath(goal.id);
 
   return (
-    <div className="mt-6 pt-6 mb-4 border-t border-stroke-base">
-      <div className="mb-4 uppercase text-xs font-semibold tracking-wide">Conversations</div>
+    <DisableInEditMode>
+      <div className="mt-6 pt-6 mb-4 border-t border-stroke-base">
+        <div className="mb-4 uppercase text-xs font-semibold tracking-wide">Conversations</div>
 
-      <CheckIn status="On Track" color="bg-green-200" />
-      <Delays />
-      <CheckIn status="Off Track" color="bg-red-200" />
+        <CheckIn status="On Track" color="bg-green-200" />
+        <Delays />
+        <CheckIn status="Off Track" color="bg-red-200" />
 
-      <div className="mt-2" />
-      <SecondaryButton size="xs" linkTo={writeMessagePath}>
-        Write message
-      </SecondaryButton>
-    </div>
+        <div className="mt-2" />
+        <SecondaryButton size="xs" linkTo={writeMessagePath}>
+          Write message
+        </SecondaryButton>
+      </div>
+    </DisableInEditMode>
   );
 }
 

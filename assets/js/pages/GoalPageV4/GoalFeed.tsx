@@ -2,12 +2,15 @@ import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 
 import { Feed, useItemsQuery } from "@/features/Feed";
+import { DisableInEditMode } from "./DisableInEditMode";
 
 export function GoalFeed({ goal }) {
   return (
     <Paper.DimmedSection>
       <div className="uppercase text-xs text-content-accent font-semibold mb-4">Activity</div>
-      <GoalFeedItems goal={goal} />
+      <DisableInEditMode>
+        <GoalFeedItems goal={goal} />
+      </DisableInEditMode>
     </Paper.DimmedSection>
   );
 }
