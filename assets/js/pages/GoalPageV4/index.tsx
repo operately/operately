@@ -18,6 +18,7 @@ import { Champion } from "./Champion";
 import { Reviewer } from "./Reviewer";
 import { Contributors } from "./Contributors";
 import { GoalFeed } from "./GoalFeed";
+import { Options } from "./Options";
 
 interface LoaderResult {
   goal: Goals.Goal;
@@ -51,17 +52,22 @@ export function Page() {
         <Navigation space={goal.space!} />
 
         <Paper.Body minHeight="none">
+          <Options goal={goal} />
+
+          <div className="flex items-center gap-4 mt-4">
+            <Header goal={goal} />
+            <Actions goal={goal} />
+          </div>
+
           <div className="flex gap-12">
             <div className="flex-1">
-              <Header goal={goal} />
               <Overview />
               <Targets goal={goal} />
               <Messages goal={goal} />
               <RelatedWork />
             </div>
 
-            <div className="w-[260px] text-sm mt-6 sticky top-10">
-              <Actions goal={goal} />
+            <div className="w-[260px] text-sm">
               <Timeframe goal={goal} />
               <Champion goal={goal} />
               <Reviewer goal={goal} />

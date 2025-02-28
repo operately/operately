@@ -10,7 +10,6 @@ import { Paths } from "@/routes/paths";
 export const DimmedLabel = ({ children }) => <div className="text-xs uppercase font-medium mb-1">{children}</div>;
 
 export function Targets({ goal }) {
-  console.log("Goal", goal);
   return (
     <div className="mt-6 pt-6 mb-4 border-t border-stroke-base">
       <div className="flex items-center gap-2 mb-4">
