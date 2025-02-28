@@ -1,5 +1,7 @@
 import { useRouter } from "./Router";
+
 export { useSearchParams } from "./useSearchParams";
+export { useLoadedData } from "./loadedData";
 
 export function useNavigate() {
   const { navigate } = useRouter();
@@ -14,11 +16,6 @@ export function useLocation() {
 export function useRevalidator() {
   const { revalidate } = useRouter();
   return { revalidate };
-}
-
-export function useLoadedData() {
-  const { loadedData } = useRouter();
-  return loadedData;
 }
 
 export function useRouteError() {

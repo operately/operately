@@ -25,6 +25,7 @@ import React from "react";
 
 import classNames from "classnames";
 
+import { useIsPeekWindow } from "@/routes/loadedData";
 import { Context } from "./Context";
 
 type Size = "tiny" | "small" | "medium" | "large" | "xlarge" | "xxlarge";
@@ -46,17 +47,20 @@ interface RootProps {
 }
 
 export function Root({ size, children, className, fluid = false }: RootProps): JSX.Element {
+  const isPeekWindow = useIsPeekWindow();
   size = size || "medium";
 
-  className = classNames(
-    className,
-    "mx-auto relative",
-    "sm:my-10", // no margin on mobile, 10 margin on larger screens
-    {
-      "w-[90%]": fluid,
-      [sizes[size]]: !fluid,
-    },
-  );
+  className = isPeekWindow
+    ? ""
+    : classNames(
+        className,
+        "mx-auto relative",
+        "sm:my-10", // no margin on mobile, 10 margin on larger screens
+        {
+          "w-[90%]": fluid,
+          [sizes[size]]: !fluid,
+        },
+      );
 
   return (
     <Context.Provider value={{ size }}>

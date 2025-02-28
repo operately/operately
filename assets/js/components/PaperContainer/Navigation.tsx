@@ -8,8 +8,13 @@ import { Paths } from "@/routes/paths";
 import { Link } from "@/components/Link";
 import { truncateString } from "@/utils/strings";
 import classNames from "classnames";
+import { useIsPeekWindow } from "@/routes/loadedData";
 
 export function Navigation({ children, testId }: { children: React.ReactNode; testId?: string }) {
+  const isPeekWindow = useIsPeekWindow();
+
+  if (isPeekWindow) return null;
+
   const className = classNames(
     "bg-surface-dimmed",
     "flex items-center flex-wrap",

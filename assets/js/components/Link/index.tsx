@@ -12,6 +12,7 @@ interface Props {
 interface LinkProps extends Props {
   to: string;
   underline?: "always" | "hover" | "never";
+  toPeekWindow?: boolean;
 }
 
 interface ButtonLinkProps extends Props {
@@ -28,6 +29,7 @@ interface DivLinkProps extends Props {
   className?: string;
   style?: React.CSSProperties;
   external?: boolean;
+  toPeekWindow?: boolean;
 }
 
 const baseLinkClass = classNames("cursor-pointer", "transition-colors");
@@ -37,7 +39,7 @@ function UnstyledLink(props: LinkProps) {
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    navigate(props.to);
+    navigate(props.to, props.toPeekWindow);
   };
 
   return (
@@ -114,7 +116,7 @@ export function DivLink({ to, children, testId, target, external, ...props }: Di
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    navigate(to);
+    navigate(to, props.toPeekWindow);
   };
 
   return (

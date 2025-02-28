@@ -14,6 +14,7 @@ interface RouteDefinition {
 export interface Route {
   id: string;
   element: React.ReactNode;
+  elementWithoutLayout: React.ReactNode;
   path: string;
   pathRegex: RegExp;
 
@@ -61,6 +62,7 @@ function createRoute(route: RouteDefinition, parents: RouteDefinition[]): Route 
   return {
     id: route.id || generateRouteId(fullPath),
     element: element,
+    elementWithoutLayout: route.element,
     loader: createLoader(allLoaders.concat(route.loader)),
     path: fullPath,
     pathRegex: pathToRegex(fullPath),
