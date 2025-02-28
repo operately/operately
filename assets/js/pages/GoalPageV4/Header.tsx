@@ -24,7 +24,6 @@ export function Header({ goal }: HeaderProps) {
     </div>
   );
 }
-// <UpdateProgressButton goal={goal} />
 
 function GoalTitleRow({ goal }: { goal: Goals.Goal }) {
   return (
