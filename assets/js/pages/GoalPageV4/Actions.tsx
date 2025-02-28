@@ -9,7 +9,7 @@ export function Actions({ goal }) {
   const checkInPath = Paths.goalProgressUpdateNewPath(goal.id);
 
   return (
-    <div className="flex justify-end gap-2 items-center border-b border-stroke-base pb-4 mb-8">
+    <div className="flex justify-end gap-2 items-center mt-6">
       <SecondaryButton linkTo={""} testId="update-progress-button" size="sm">
         <Icons.IconStarFilled size={16} />
       </SecondaryButton>

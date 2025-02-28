@@ -54,9 +54,18 @@ export function Page() {
         <Paper.Body minHeight="none">
           <Options goal={goal} />
 
-          <div className="flex items-center gap-4 mt-4">
-            <Header goal={goal} />
-            <Actions goal={goal} />
+          <div className="border-b border-stroke-base pb-2 mb-6">
+            <div className="flex items-start justify-between gap-4">
+              <Header goal={goal} />
+              <Actions goal={goal} />
+            </div>
+
+            <span
+              className="bg-green-200 rounded-full px-1.5 py-0.5 text-[10px] uppercase font-semibold mt-2 inline-block"
+              style={{ verticalAlign: "4px" }}
+            >
+              On Track
+            </span>
           </div>
 
           <div className="flex gap-12">

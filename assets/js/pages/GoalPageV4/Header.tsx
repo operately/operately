@@ -27,13 +27,6 @@ function GoalTitleRow({ goal }: { goal: Goals.Goal }) {
   return (
     <div className="mt-1">
       <GoalTitle goal={goal} />
-
-      <span
-        className="bg-green-200 rounded-full px-1.5 py-0.5 text-[10px] uppercase font-semibold mt-1 inline-block"
-        style={{ verticalAlign: "4px" }}
-      >
-        On Track
-      </span>
     </div>
   );
 }
@@ -117,8 +110,6 @@ function GoalTitle({ goal }: { goal: Goals.Goal }) {
 function ParentGoal({ goal }: { goal: Goals.Goal | null | undefined }) {
   let content: React.ReactNode;
 
-  const editParent = Paths.goalEditParentPath(goal?.id!);
-
   if (goal) {
     content = (
       <div className="flex items-center gap-2">
@@ -126,10 +117,6 @@ function ParentGoal({ goal }: { goal: Goals.Goal | null | undefined }) {
           <Icons.IconTarget size={14} className="text-red-500" />
           <GhostLink to={Paths.goalPath(goal.id!)} text={goal.name!} testId="project-goal-link" dimmed size="sm" />
         </div>
-
-        <SecondaryButton size="xxs" linkTo={editParent}>
-          Edit
-        </SecondaryButton>
       </div>
     );
   } else {

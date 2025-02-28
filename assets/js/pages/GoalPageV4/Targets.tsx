@@ -12,7 +12,7 @@ export const DimmedLabel = ({ children }) => <div className="text-xs uppercase f
 export function Targets({ goal }) {
   return (
     <div className="mt-6 pt-6 mb-4 border-t border-stroke-base">
-      <div className="flex items-center gap-2 mb-4">
+      <div className="flex items-center gap-2 mb-2">
         <div className="uppercase text-xs font-bold tracking-wider">Targets</div>
       </div>
       <div className="">

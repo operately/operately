@@ -7,7 +7,7 @@ export function Timeframe({ goal }) {
   const editPath = Paths.goalEditTimeframePath(goal.id);
 
   return (
-    <div className="mt-6">
+    <div className="">
       <div className="mb-2 uppercase text-xs font-bold tracking-wider">Timeframe</div>
 
       <div className="flex flex-col gap-2">
