@@ -3,7 +3,7 @@ import { AxiosError } from "axios";
 
 import nprogress from "nprogress";
 import { setDevData } from "@/features/DevBar/useDevBarData";
-import { redirect } from "react-router-dom";
+import { redirect } from "./redirect";
 
 type Loader = ({ params }: { params: any }) => Promise<any>;
 
@@ -88,7 +88,7 @@ export function checkAuth() {
 
     if (window.location.pathname === "/") {
       throw redirect("/log_in");
-    } else {
+    } else if (window.location.pathname !== "/log_in") {
       throw redirect("/log_in?redirect_to=" + encodeURIComponent(window.location.pathname));
     }
   }

@@ -7,7 +7,7 @@ import * as Spaces from "@/models/spaces";
 import * as Timeframes from "@/utils/timeframes";
 
 import { useNavigateTo } from "@/routes/useNavigateTo";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@/routes/hooks";
 import { useListState } from "@/hooks/useListState";
 import { Paths } from "@/routes/paths";
 import { PermissionsState } from "@/features/Permissions/usePermissionsState";

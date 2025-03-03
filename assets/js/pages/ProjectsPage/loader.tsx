@@ -2,7 +2,7 @@ import * as Pages from "@/components/Pages";
 import * as Projects from "@/models/projects";
 import * as Companies from "@/models/companies";
 
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams } from "@/routes/useSearchParams";
 
 type Filter = "my-projects" | "reviewed-by-me" | "all-projects";
 

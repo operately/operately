@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@/routes/hooks";
 
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import { useDeleteResourceHubDocument } from "@/models/resourceHubs";

@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@/routes/hooks";
 
 import { ResourceHub, ResourceHubFolder } from "@/models/resourceHubs";
 import { Paths } from "@/routes/paths";

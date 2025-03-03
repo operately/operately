@@ -1,8 +1,8 @@
 import React, { ReactNode, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 import * as Popover from "@radix-ui/react-popover";
 
+import { useNavigate } from "@/routes/hooks";
 import { createTestId } from "@/utils/testid";
 import { StatusIndicator } from "@/features/ProjectListItem/StatusIndicator";
 import { SmallStatusIndicator } from "@/components/status";

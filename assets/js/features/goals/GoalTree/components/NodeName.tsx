@@ -16,7 +16,7 @@ export function NodeName({ node, target = "_self" }: NodeNameProps) {
 
   return (
     <div className="flex items-center gap-1 truncate">
-      <DivLink to={node.linkTo()} className={titleClass} target={target}>
+      <DivLink to={node.linkTo()} className={titleClass} target={target} toPeekWindow={true} >
         {node.name}
       </DivLink>
 

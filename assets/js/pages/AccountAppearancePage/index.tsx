@@ -9,7 +9,7 @@ import Forms from "@/components/Forms";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { Paths } from "@/routes/paths";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@/routes/hooks";
 import { useTheme, useSetTheme } from "@/contexts/ThemeContext";
 import { PageNavigation } from "@/features/accounts/PageNavigation";
 

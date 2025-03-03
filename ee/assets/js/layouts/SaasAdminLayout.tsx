@@ -1,15 +1,13 @@
 import * as React from "react";
 import * as Icons from "@tabler/icons-react";
 
-import { Outlet } from "react-router-dom";
-
 import { DevBar } from "@/features/DevBar";
 import { useScrollToTopOnNavigationChange } from "@/hooks/useScrollToTopOnNavigationChange";
 import { DivLink } from "@/components/Link";
 import { OperatelyLogo } from "@/components/OperatelyLogo";
 import { SecondaryButton } from "@/components/Buttons";
 
-export default function SaasAdminLayout() {
+export default function SaasAdminLayout({children}) {
   const outletDiv = React.useRef<HTMLDivElement>(null);
 
   useScrollToTopOnNavigationChange({ outletDiv });
@@ -18,7 +16,7 @@ export default function SaasAdminLayout() {
     <div className="flex flex-col h-screen">
       <Navigation />
       <div className="flex-1 overflow-y-auto" ref={outletDiv}>
-        <Outlet />
+        {children}
       </div>
       <DevBar />
     </div>

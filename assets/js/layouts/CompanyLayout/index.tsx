@@ -2,10 +2,10 @@ import * as React from "react";
 import * as Icons from "@tabler/icons-react";
 import * as Api from "@/api";
 
-import { useLoaderData } from "react-router-dom";
+import { useLoadedData } from "@/routes/hooks";
+import { LoadedDataPageProvider, LoadedDataPeekWindowProvider } from "@/routes/loadedData";
 
 import { DivLink } from "@/components/Link";
-import { Outlet } from "react-router-dom";
 import { User } from "./User";
 import { Bell } from "./Bell";
 import { OperatelyLogo } from "@/components/OperatelyLogo";
@@ -13,6 +13,7 @@ import { Review } from "./Review";
 import { CompanyDropdown } from "./CompanyDropdown";
 import { NewDropdown } from "./NewDropdown";
 import { HelpDropdown } from "./HelpDropdown";
+import PeekWindow from "./PeekWindow";
 
 import { DevBar } from "@/features/DevBar";
 import { Paths } from "@/routes/paths";
@@ -22,7 +23,9 @@ function NavigationContainer({ children }) {
   return <div className="transition-all z-50 py-1.5 bg-base border-b border-surface-outline">{children}</div>;
 }
 
-function Navigation({ company }: { company: Api.Company }) {
+function Navigation() {
+  const { company } = useLoadedData() as { company: Api.Company };
+
   return (
     <NavigationContainer>
       <div className="flex items-center justify-between px-4">
@@ -81,19 +84,23 @@ function SectionLink({ to, children, icon }) {
   );
 }
 
-export default function CompanyLayout() {
-  const { company } = useLoaderData() as { company: Api.Company };
+export default function CompanyLayout({ children }) {
   const outletDiv = React.useRef<HTMLDivElement>(null);
 
   useScrollToTopOnNavigationChange({ outletDiv });
 
   return (
     <div className="flex flex-col h-screen">
-      <Navigation company={company} />
-      <div className="flex-1 overflow-y-auto" ref={outletDiv}>
-        <Outlet />
-      </div>
-      <DevBar />
+      <LoadedDataPageProvider>
+        <Navigation />
+        <div className="flex-1 overflow-y-auto" ref={outletDiv}>
+          {children}
+        </div>
+        <DevBar />
+      </LoadedDataPageProvider>
+      <LoadedDataPeekWindowProvider>
+        <PeekWindow />
+      </LoadedDataPeekWindowProvider>
     </div>
   );
 }

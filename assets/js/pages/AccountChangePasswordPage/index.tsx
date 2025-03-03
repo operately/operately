@@ -5,7 +5,7 @@ import * as Accounts from "@/models/accounts";
 
 import Forms from "@/components/Forms";
 import { Paths } from "@/routes/paths";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@/routes/hooks";
 
 export const loader = Pages.emptyLoader;
 

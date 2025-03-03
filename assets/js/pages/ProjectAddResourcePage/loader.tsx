@@ -1,7 +1,7 @@
 import * as Pages from "@/components/Pages";
 import * as Projects from "@/models/projects";
 
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams } from "@/routes/useSearchParams";
 
 interface LoaderResult {
   project: Projects.Project;

@@ -7,7 +7,7 @@ import * as Editor from "@/components/Editor";
 import { Paths } from "@/routes/paths";
 import { PrimaryButton } from "@/components/Buttons";
 import { DimmedLink } from "@/components/Link";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@/routes/hooks";
 
 interface LoaderResult {
   goal: Goals.Goal;

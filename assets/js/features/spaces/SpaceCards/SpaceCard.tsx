@@ -9,7 +9,6 @@ import AvatarList from "@/components/AvatarList";
 
 export interface SpaceCardProps {
   space: Spaces.Space;
-  onClick?: () => void;
   shadowSize?: "base" | "lg";
   testId?: string;
   linkTo?: string;
@@ -38,7 +37,6 @@ export function SpaceCard(props: SpaceCardProps) {
   const cardProps = {
     linkTo: props.linkTo,
     testId: props.testId,
-    onClick: props.onClick,
   };
 
   return (
