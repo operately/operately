@@ -23,6 +23,7 @@ import * as DesignFormsPage from "./DesignFormsPage";
 import * as DesignLinksPage from "./DesignLinksPage";
 import * as DesignMenusPage from "./DesignMenusPage";
 import * as DesignPage from "./DesignPage";
+import * as DesignProgressPage from "./DesignProgressPage";
 import * as DesignTooltipsPage from "./DesignTooltipsPage";
 import * as DiscussionDraftsPage from "./DiscussionDraftsPage";
 import * as DiscussionEditPage from "./DiscussionEditPage";
@@ -218,6 +219,11 @@ export default {
     name: "DesignPage",
     loader: DesignPage.loader,
     Page: DesignPage.Page,
+  },
+  DesignProgressPage: {
+    name: "DesignProgressPage",
+    loader: DesignProgressPage.loader,
+    Page: DesignProgressPage.Page,
   },
   DesignTooltipsPage: {
     name: "DesignTooltipsPage",

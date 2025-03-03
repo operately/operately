@@ -61,6 +61,7 @@ export function createAppRoutes() {
         pageRoute("/__design__/menus", pages.DesignMenusPage),
         pageRoute("/__design__/callouts", pages.DesignCalloutsPage),
         pageRoute("/__design__/tooltips", pages.DesignTooltipsPage),
+        pageRoute("/__design__/progress", pages.DesignProgressPage),
       ],
     },
     saasAdminRoutes(),
