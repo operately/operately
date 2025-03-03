@@ -109,7 +109,7 @@ export function Page() {
           </div>
 
           <p className="mt-8 mb-4">Values outside of the 0-100 range are clamped.</p>
-          <div className="flex flex-col">
+          <div className="flex flex-col gap-2">
             <div className="flex items-center gap-4">
               <ProgressBar
                 percentage={-20}
@@ -118,7 +118,8 @@ export function Page() {
                 rounded={false}
                 bgColor="var(--color-stroke-base)"
               />
-              -20%
+
+              <div className="font-mono text-xs text-right w-10">-20%</div>
             </div>
 
             <div className="flex items-center gap-4">
@@ -129,7 +130,7 @@ export function Page() {
                 rounded={false}
                 bgColor="var(--color-stroke-base)"
               />
-              60%
+              <div className="font-mono text-xs text-right w-10">60%</div>
             </div>
 
             <div className="flex items-center gap-4">
@@ -140,7 +141,7 @@ export function Page() {
                 rounded={false}
                 bgColor="var(--color-stroke-base)"
               />
-              120%
+              <div className="font-mono text-xs text-right w-10">120%</div>
             </div>
           </div>
         </Paper.Body>
