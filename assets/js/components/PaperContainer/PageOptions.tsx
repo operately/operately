@@ -90,24 +90,43 @@ type ActionProps = TestableElement & {
   icon: React.ElementType;
   title: string;
   onClick: () => void;
+  keepOutsideOnBigScreen?: boolean;
 };
 
-export function Action({ icon, title, onClick, testId }: ActionProps) {
+export function Action(props: ActionProps) {
   const { close } = React.useContext(Context);
 
   const handleClick = () => {
     close();
-    onClick();
+    props.onClick();
   };
 
+  const isBig = Pages.useWindowSizeBiggerOrEqualTo("lg");
+
+  if (isBig && props.keepOutsideOnBigScreen) {
+    return <ActionAsOutsideButton {...props} onClick={handleClick} />;
+  } else {
+    return <ActionAsDropdownElement {...props} onClick={handleClick} />;
+  }
+}
+
+function ActionAsOutsideButton(props: ActionProps) {
+  return (
+    <SecondaryButton size="xs" onClick={props.onClick} testId={props.testId}>
+      {props.title}
+    </SecondaryButton>
+  );
+}
+
+function ActionAsDropdownElement(props: ActionProps) {
   return (
     <div
-      onClick={handleClick}
+      onClick={props.onClick}
       className="flex items-center gap-2 py-2 px-4 hover:bg-shade-1 cursor-pointer"
-      data-test-id={testId}
+      data-test-id={props.testId}
     >
-      {React.createElement(icon, { size: 20 })}
-      {title}
+      {React.createElement(props.icon, { size: 20 })}
+      {props.title}
     </div>
   );
 }

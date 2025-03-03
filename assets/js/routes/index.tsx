@@ -129,6 +129,9 @@ export function createAppRoutes() {
         pageRoute("goals", pages.GoalsAndProjectsPage),
         pageRoute("goals/new", pages.GoalAddPage),
         pageRoute("goals/:id", pages.GoalPage),
+        pageRoute("goals/:id/v2", pages.GoalPageV2),
+        pageRoute("goals/:id/v3", pages.GoalPageV3),
+        pageRoute("goals/:id/v4", pages.GoalPageV4),
         pageRoute("goals/:id/subgoals", pages.GoalSubgoalsPage),
         pageRoute("goals/:id/about", pages.GoalAboutPage),
         pageRoute("goals/:goalId/edit", pages.GoalEditPage),
@@ -140,6 +143,9 @@ export function createAppRoutes() {
         pageRoute("goals/:goalId/progress-updates/new", pages.GoalProgressUpdateNewPage),
         pageRoute("goals/:goalId/discussions", pages.GoalDiscussionsPage),
         pageRoute("goals/:goalId/discussions/new", pages.GoalDiscussionNewPage),
+        pageRoute("goals/:goalId/targets/new", pages.TargetAddPage),
+
+        pageRoute("targets/:id", pages.TargetV2Page),
 
         pageRoute("goal-updates/:id", pages.GoalProgressUpdatePage),
         pageRoute("goal-updates/:id/edit", pages.GoalProgressUpdateEditPage),
