@@ -43,11 +43,11 @@ export function StatusPicker() {
       />
 
       <StatusPickerOption
-        status="Off Track"
+        status="Issue"
         color="bg-red-500"
-        description="There are blockers. Stefan's help is needed."
-        isSelected={status === "Off Track"}
-        onClick={() => setStatus("Off Track")}
+        description="Blocked or significantly behind. Stefan's help is needed."
+        isSelected={status === "Issue"}
+        onClick={() => setStatus("Issue")}
       />
     </div>
   );
@@ -161,7 +161,7 @@ function StatusTriggerValue({ status }) {
         <div className="font-medium">Concern</div>
       </div>
     ))
-    .with("Off Track", () => (
+    .with("Issue", () => (
       <div className="flex items-center gap-2">
         <Circle size={18} color="bg-red-500" />
         <div className="font-medium">Off Track</div>
