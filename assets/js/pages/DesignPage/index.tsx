@@ -17,6 +17,7 @@ const subpages = [
   { title: "Tooltips", path: "/__design__/tooltips", icon: Icons.IconMessageCircle },
   { title: "Callouts", path: "/__design__/callouts", icon: Icons.IconAlertTriangle },
   { title: "Forms", path: "/__design__/forms", icon: Icons.IconFileText },
+  { title: "Progress Bars", path: "/__design__/progress", icon: Icons.IconChartPie },
 ];
 
 export function Page() {
