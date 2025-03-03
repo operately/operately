@@ -140,6 +140,7 @@ export function createAppRoutes() {
         pageRoute("goals/:goalId/reopen", pages.GoalReopenPage),
         pageRoute("goals/:goalId/archive", pages.GoalArchivePage),
         pageRoute("goals/:goalId/progress-updates/new", pages.GoalProgressUpdateNewPage),
+        pageRoute("goals/:goalId/check-ins/new", pages.GoalCheckInNewPage),
         pageRoute("goals/:goalId/discussions", pages.GoalDiscussionsPage),
         pageRoute("goals/:goalId/discussions/new", pages.GoalDiscussionNewPage),
 
