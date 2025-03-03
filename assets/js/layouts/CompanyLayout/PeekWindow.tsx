@@ -4,7 +4,6 @@ import * as Icons from "@tabler/icons-react";
 
 import { useColorMode } from "@/contexts/ThemeContext";
 import { useRouter } from "@/routes/Router";
-import { useNavigate } from "@/routes/hooks";
 
 export default function PeekWindow() {
   const { isPeekWindowOpen, closePeekWindow, peekWindowElement } = useRouter();
@@ -28,15 +27,11 @@ export default function PeekWindow() {
 }
 
 function Header() {
-  const navigate = useNavigate();
-
-  const handleNavigation = () => {
-    navigate;
-  };
+  const { expandPeekWindow } = useRouter();
 
   return (
     <div className="mt-[-1rem] ml-[-1rem]">
-      <Icons.IconArrowsDiagonal2 size={18} onClick={handleNavigation} className="text-content-subtle cursor-pointer" />
+      <Icons.IconArrowsDiagonal2 size={18} onClick={expandPeekWindow} className="text-content-subtle cursor-pointer" />
     </div>
   );
 }

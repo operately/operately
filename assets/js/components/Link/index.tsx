@@ -39,7 +39,7 @@ function UnstyledLink(props: LinkProps) {
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    navigate(props.to, props.toPeekWindow);
+    navigate(props.to, { openPeekWindow: props.toPeekWindow });
   };
 
   return (
@@ -116,7 +116,7 @@ export function DivLink({ to, children, testId, target, external, ...props }: Di
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    navigate(to, props.toPeekWindow);
+    navigate(to, { openPeekWindow: props.toPeekWindow });
   };
 
   return (

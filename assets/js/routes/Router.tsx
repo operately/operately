@@ -4,29 +4,39 @@ import { matchPath, Route } from "./createRoutes";
 import { REDIRECT_EVENT, RedirectError } from "./redirect";
 import ErrorPage from "./ErrorPage";
 
+interface NavigationOptions {
+  openPeekWindow?: boolean;
+  exitPeekWindow?: boolean;
+}
+
 interface RouterContextValue {
   loadedData: any;
   error: any;
   location: Location;
-  navigate: (path: string, toPeekWindow?: boolean) => void;
+  navigate: (path: string, opts?: NavigationOptions) => void;
   revalidate: () => void;
 
   isPeekWindowOpen: boolean;
   peekWindowData: any;
   peekWindowElement: React.ReactNode | null;
   closePeekWindow: () => void;
+  expandPeekWindow: () => void;
 }
+
+type RouteStatus = "loading" | "loaded" | "error";
 
 interface RouterState {
   location: Location;
 
-  status: "loading" | "loaded" | "error";
+  // Main route state
+  status: RouteStatus;
   element: React.ReactNode | null;
   data: any;
   error: any;
   pathname: string;
 
-  peekStatus: "loading" | "loaded" | "error";
+  // Peek window state
+  peekStatus: RouteStatus;
   peekElement: React.ReactNode | null;
   peekData: any;
   peekPathname: string | null;
@@ -38,24 +48,54 @@ type RouterAction =
   | { type: "LOAD_DATA_SUCCESS"; data: any; pathname: string; element: React.ReactNode }
   | { type: "LOAD_DATA_ERROR"; error: any; pathname: string }
   | { type: "PEEK_NAVIGATE"; pathname: string | null }
+  | { type: "CLOSE_PEEK_WINDOW" }
   | { type: "PEEK_LOAD_DATA_SUCCESS"; data: any; pathname: string | null; element: React.ReactNode }
   | { type: "PEEK_LOAD_DATA_ERROR"; error: any; pathname: string | null };
 
 function routerReducer(state: RouterState, action: RouterAction): RouterState {
   switch (action.type) {
     case "NAVIGATE":
-      return { ...state, status: "loading", pathname: action.pathname, error: null };
+      return {
+        ...state,
+        status: "loading",
+        pathname: action.pathname,
+        error: null,
+      };
 
     case "LOAD_DATA_SUCCESS":
       if (action.pathname !== state.pathname) return state;
-      return { ...state, status: "loaded", data: action.data, location: window.location, element: action.element };
+      return {
+        ...state,
+        status: "loaded",
+        data: action.data,
+        location: window.location,
+        element: action.element,
+      };
 
     case "LOAD_DATA_ERROR":
       if (action.pathname !== state.pathname) return state;
-      return { ...state, status: "error", error: action.error };
+      return {
+        ...state,
+        status: "error",
+        error: action.error,
+      };
 
     case "PEEK_NAVIGATE":
-      return { ...state, peekStatus: "loading", peekPathname: action.pathname, peekError: null };
+      return {
+        ...state,
+        peekStatus: "loading",
+        peekPathname: action.pathname,
+        peekError: null,
+      };
+
+    case "CLOSE_PEEK_WINDOW":
+      return {
+        ...state,
+        peekPathname: null,
+        peekError: null,
+        peekData: null,
+        peekElement: null,
+      };
 
     case "PEEK_LOAD_DATA_SUCCESS":
       if (action.pathname !== state.peekPathname) return state;
@@ -69,17 +109,18 @@ function routerReducer(state: RouterState, action: RouterAction): RouterState {
 
     case "PEEK_LOAD_DATA_ERROR":
       if (action.pathname !== state.peekPathname) return state;
-      return { ...state, peekStatus: "error", peekError: action.error };
+      return {
+        ...state,
+        peekStatus: "error",
+        peekError: action.error,
+      };
   }
 }
 
-const initialize = () => {
+function initializeState(): RouterState {
   const searchParams = new URLSearchParams(window.location.search);
-  return searchParams.get("peek");
-};
 
-export function Router({ routes }: { routes: Route[] }) {
-  const [state, dispatch] = React.useReducer(routerReducer, {
+  return {
     location: window.location,
 
     pathname: window.location.pathname,
@@ -88,12 +129,16 @@ export function Router({ routes }: { routes: Route[] }) {
     data: null,
     error: null,
 
-    peekPathname: initialize(),
+    peekPathname: searchParams.get("peek"),
     peekStatus: "loading",
     peekElement: null,
     peekData: null,
     peekError: null,
-  });
+  };
+}
+
+export function Router({ routes }: { routes: Route[] }) {
+  const [state, dispatch] = React.useReducer(routerReducer, initializeState());
 
   const loaderController = useDataLoaderController();
 
@@ -114,14 +159,6 @@ export function Router({ routes }: { routes: Route[] }) {
   const isPeekWindowOpen = React.useMemo(() => {
     return peekPath !== null;
   }, [peekPath]);
-
-  const closePeekWindow = React.useCallback(() => {
-    const url = new URL(window.location.href);
-    url.searchParams.delete("peek");
-    window.history.pushState({}, "", url);
-
-    dispatch({ type: "PEEK_NAVIGATE", pathname: null });
-  }, []);
 
   useNavigationEvents(dispatch, loaderController.abortMainLoader, loaderController.abortPeekLoader);
   const navigate = useNavigation(dispatch, loaderController.abortMainLoader, loaderController.abortPeekLoader);
@@ -162,6 +199,23 @@ export function Router({ routes }: { routes: Route[] }) {
     }
   }, [peekPath, loadPeekRouteData]);
 
+  const closePeekWindow = React.useCallback(() => {
+    const url = new URL(window.location.href);
+    url.searchParams.delete("peek");
+    window.history.pushState({}, "", url);
+
+    dispatch({ type: "CLOSE_PEEK_WINDOW" });
+  }, []);
+
+  const expandPeekWindow = React.useCallback(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const peekPath = searchParams.get("peek");
+
+    if (peekPath) {
+      navigate(peekPath, { exitPeekWindow: true });
+    }
+  }, [navigate, location.search]);
+
   const contextValue: RouterContextValue = {
     loadedData: state.data,
     error: state.error,
@@ -173,6 +227,7 @@ export function Router({ routes }: { routes: Route[] }) {
     peekWindowData: state.peekData,
     peekWindowElement: state.peekElement,
     closePeekWindow,
+    expandPeekWindow,
   };
 
   if (match) {
@@ -262,8 +317,11 @@ function useNavigation(
   abortPeekLoader: () => void,
 ) {
   const navigate = React.useCallback(
-    (path: string, toPeekWindow?: boolean) => {
-      if (toPeekWindow) {
+    (path: string, opts?: NavigationOptions) => {
+      const currentUrl = new URL(window.location.href);
+      const isPeekWindow = currentUrl.searchParams.has("peek");
+
+      if ((opts?.openPeekWindow || isPeekWindow) && !opts?.exitPeekWindow) {
         abortPeekLoader();
 
         const url = new URL(window.location.href);
