@@ -53,6 +53,7 @@ function pageLoader(path: string, pageName: string, loader: Loader, options: Opt
       redirectToLoginIfUnauthorized(error);
 
       console.log("Error loading page", path, error);
+      throw error;
     }
   };
 }
