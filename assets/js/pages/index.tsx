@@ -18,6 +18,7 @@ import * as CompanyRenamePage from "./CompanyRenamePage";
 import * as DesignAvatarsPage from "./DesignAvatarsPage";
 import * as DesignButtonsPage from "./DesignButtonsPage";
 import * as DesignCalloutsPage from "./DesignCalloutsPage";
+import * as DesignChronometerPage from "./DesignChronometerPage";
 import * as DesignColorsPage from "./DesignColorsPage";
 import * as DesignFormsPage from "./DesignFormsPage";
 import * as DesignLinksPage from "./DesignLinksPage";
@@ -194,6 +195,11 @@ export default {
     name: "DesignCalloutsPage",
     loader: DesignCalloutsPage.loader,
     Page: DesignCalloutsPage.Page,
+  },
+  DesignChronometerPage: {
+    name: "DesignChronometerPage",
+    loader: DesignChronometerPage.loader,
+    Page: DesignChronometerPage.Page,
   },
   DesignColorsPage: {
     name: "DesignColorsPage",
