@@ -27,7 +27,10 @@ export function Chronometer({ start, end, width = "w-64", progress }: Props) {
   return (
     <div className={width}>
       <div className="border border-stroke-base shadow-sm bg-surface-dimmed text-xs rounded-lg py-4 relative overflow-hidden">
-        <div className="absolute top-0 left-0 bottom-0 transition-all duration-300 bg-indigo-500 z-10" style={{ width: progress + "%" }} />
+        <div
+          className="absolute top-0 left-0 bottom-0 transition-all duration-300 bg-indigo-500 z-10"
+          style={{ width: progress + "%" }}
+        />
 
         <div
           className={gridLayout}
@@ -42,13 +45,14 @@ export function Chronometer({ start, end, width = "w-64", progress }: Props) {
           <TimeDisplay time={end} isHighlighted={true} />
         </div>
 
-        <div 
-          className={gridLayout} 
-          style={{ 
+        <div
+          className={gridLayout}
+          style={{
             clipPath: `inset(0 0 0 ${progress}%)`,
             WebkitClipPath: `inset(0 0 0 ${progress}%)`,
             zIndex: 10,
-          }}>
+          }}
+        >
           <TimeDisplay time={start} />
           <div ref={dividerContainerRef} className="flex-1 flex items-center justify-center overflow-hidden">
             {dividers.length > 0 ? dividers : null}
@@ -92,4 +96,3 @@ function generateDividers(containerWidth: number) {
     return <span key={index} className={`mx-1 border-l border-surface-outline ${height} inline-block flex-shrink-0`} />;
   });
 }
-

@@ -59,7 +59,7 @@ export function Page() {
 
           <h2 className="font-bold text-lg mt-8 mb-4">Behavior</h2>
 
-          <p className="mb-4">When the progress  value changes, the bar animates to the new value.</p>
+          <p className="mb-4">When the progress value changes, the bar animates to the new value.</p>
 
           <div className="grid grid-cols-2 items-center gap-4">
             <Chronometer progress={value1} start={fifteenDaysAgo} end={thirtyDaysFromNow} />
