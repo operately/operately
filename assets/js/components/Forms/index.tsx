@@ -11,9 +11,10 @@ import { RadioButtons } from "./RadioButtons";
 import { SelectPerson } from "./SelectPerson";
 import { RichTextArea } from "./RichTextArea";
 import { PasswordInput } from "./PasswordInput";
-import { MultiPeopleSelectField } from "./MultiPeopleSelectField";
 import { CheckboxInput } from "./CheckboxInput";
 import { SelectStatus } from "./SelectStatus";
+import { SelectGoalStatus } from "./SelectGoalStatus";
+import { MultiPeopleSelectField } from "./MultiPeopleSelectField";
 
 import { useForm } from "./useForm";
 import { useFieldError, useFieldValue } from "./FormContext";
@@ -37,6 +38,7 @@ export default {
   RadioButtons,
   RichTextArea,
   SelectPerson,
+  SelectGoalStatus,
   PasswordInput,
   MultiPeopleSelectField,
   CheckboxInput,
