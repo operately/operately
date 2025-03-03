@@ -28,7 +28,7 @@ export function Page() {
 
   return (
     <Pages.Page title={["Goal Progress Update", goal.name!]}>
-      <Paper.Root>
+      <Paper.Root size="medium">
         <Navigation goal={goal} />
 
         <Paper.Body>
@@ -42,6 +42,10 @@ export function Page() {
 function Navigation({ goal }) {
   return (
     <Paper.Navigation>
+      <Paper.NavItem linkTo={Paths.spacePath(goal.space.id)}>{goal.space.name}</Paper.NavItem>
+      <Paper.NavSeparator />
+      <Paper.NavItem linkTo={Paths.goalPath(goal.id)}>Goals &amp; Projects</Paper.NavItem>
+      <Paper.NavSeparator />
       <Paper.NavItem linkTo={Paths.goalPath(goal.id)}>{goal.name}</Paper.NavItem>
     </Paper.Navigation>
   );
