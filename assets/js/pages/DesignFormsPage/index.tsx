@@ -33,6 +33,7 @@ export function Page() {
             <HorizontalFormCustomized />
             <GridForm />
             <ArrayForm />
+            <GoalStatusForm />
             <RichTextForm />
           </div>
         </Paper.Body>
@@ -264,4 +265,31 @@ function Remove({ index }: { index: number }) {
   };
 
   return <Icons.IconTrash onClick={onClick} className="cursor-pointer mt-6" size={20} />;
+}
+
+function GoalStatusForm() {
+  const form = Forms.useForm({
+    fields: {
+      statusA: null,
+      statusB: null,
+    },
+    submit: async () => {
+      console.log("Form submitted with values:", form);
+    },
+  });
+
+  return (
+    <div className="p-6 border border-surface-outline rounded shadow-sm">
+      <Forms.Form form={form}>
+        <div className="mb-4 font-bold text-lg">Select Goal Status</div>
+
+        <Forms.FieldGroup>
+          <Forms.SelectGoalStatus field={"statusA"} reviewerFirstName="John" label="Status" />
+          <Forms.SelectGoalStatus field={"statusB"} label="With no reviewer" noReviewer />
+        </Forms.FieldGroup>
+
+        <Forms.Submit saveText="Submit" />
+      </Forms.Form>
+    </div>
+  );
 }
