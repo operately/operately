@@ -3,6 +3,7 @@ import * as Icons from "@tabler/icons-react";
 
 import { Space } from "@/models/spaces";
 import { ResourceHub, ResourceHubFolder } from "@/models/resourceHubs";
+import { Goal } from "@/models/goals";
 
 import { Paths } from "@/routes/paths";
 import { Link } from "@/components/Link";
@@ -61,6 +62,14 @@ export function NavigateBack({ to, title }) {
 
 export function NavSpaceLink({ space }: { space: Space }) {
   return <NavItem linkTo={Paths.spacePath(space.id!)}>{space.name}</NavItem>;
+}
+
+export function NavSpaceWorkMapLink({ space }: { space: Space }) {
+  return <NavItem linkTo={Paths.spaceGoalsPath(space.id!)}>Goals & Projects</NavItem>;
+}
+
+export function NavGoalLink({ goal }: { goal: Goal }) {
+  return <NavItem linkTo={Paths.goalPath(goal.id!)}>{goal.name}</NavItem>;
 }
 
 export function NavResourceHubLink({ resourceHub }: { resourceHub: ResourceHub }) {

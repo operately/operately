@@ -1,25 +1,59 @@
 import * as React from "react";
+
+import * as Goals from "@/models/goals";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
+import { assertPresent } from "@/utils/assertions";
+import { Form } from "./form";
+
 interface LoaderResult {
-  // TODO: Define what is loaded when you visit this page
+  goal: Goals.Goal;
 }
 
-export async function loader({}): Promise<LoaderResult> {
-  return {}; // TODO: Load data here
+export async function loader({ params }): Promise<LoaderResult> {
+  return {
+    goal: await Goals.getGoal({
+      id: params.goalId,
+      includeSpace: true,
+      includeTargets: true,
+      includeReviewer: true,
+      includePotentialSubscribers: true,
+    }).then((data) => data.goal!),
+  };
 }
 
 export function Page() {
-  // const data = Pages.useLoadedData<LoaderResult>();
+  const { goal } = Pages.useLoadedData<LoaderResult>();
 
   return (
-    <Pages.Page title={"GoalCheckInNewPage"}>
+    <Pages.Page title={["Check-In", goal.name!]}>
       <Paper.Root>
+        <Navigation />
+
         <Paper.Body>
-          <div className="text-content-accent text-3xl font-extrabold">Placeholder for new goal check-in form</div>
+          <div className="text-3xl font-bold">Goal Check-in</div>
+          <div>Share the progress with the team</div>
+
+          <Form goal={goal} />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
+  );
+}
+
+function Navigation() {
+  const { goal } = Pages.useLoadedData<LoaderResult>();
+
+  assertPresent(goal.space, "space must be present in goal");
+
+  return (
+    <Paper.Navigation>
+      <Paper.NavSpaceLink space={goal.space} />
+      <Paper.NavSeparator />
+      <Paper.NavSpaceWorkMapLink space={goal.space} />
+      <Paper.NavSeparator />
+      <Paper.NavGoalLink goal={goal} />
+    </Paper.Navigation>
   );
 }
