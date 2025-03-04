@@ -5,12 +5,18 @@ import * as React from "react";
 
 import { Paths } from "@/routes/paths";
 import { Form } from "@/features/goals/GoalCheckInForm";
+import { redirectIfFeatureEnabled } from "@/routes/redirectIfFeatureEnabled";
 
 interface LoaderResult {
   goal: Goals.Goal;
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
+  await redirectIfFeatureEnabled(params, {
+    feature: "new_goal_check_ins",
+    path: Paths.goalCheckInNewPath(params.goalId),
+  });
+
   return {
     goal: await Goals.getGoal({
       id: params.goalId,
