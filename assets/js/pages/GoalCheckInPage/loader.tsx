@@ -1,12 +1,16 @@
 import * as Pages from "@/components/Pages";
+import * as Goals from "@/models/goals";
 import * as GoalCheckIns from "@/models/goalCheckIns";
 
+import { assertPresent } from "@/utils/assertions";
+
 interface LoaderResult {
+  goal: Goals.Goal;
   update: GoalCheckIns.Update;
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
-  const updatePromise = GoalCheckIns.getGoalProgressUpdate({
+  const update = await GoalCheckIns.getGoalProgressUpdate({
     id: params.id,
     includeGoalTargets: true,
     includeAcknowledgedBy: true,
@@ -18,8 +22,11 @@ export async function loader({ params }): Promise<LoaderResult> {
     includePermissions: true,
   }).then((data) => data.update!);
 
+  assertPresent(update.goal, "Goal must be present in update");
+
   return {
-    update: await updatePromise,
+    goal: update.goal!,
+    update: update,
   };
 }
 
