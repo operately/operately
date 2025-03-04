@@ -52,8 +52,13 @@ function pageLoader(path: string, pageName: string, loader: Loader, options: Opt
       stopProgressIndicator();
       redirectToLoginIfUnauthorized(error);
 
-      console.log("Error loading page", path, error);
-      throw error;
+      if (error.status === 302) {
+        // This is a redirect triggered by the page loader, just throw it to let the router handle it
+        throw error;
+      } else {
+        console.log("Error loading page", path, error);
+        throw error;
+      }
     }
   };
 }

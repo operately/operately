@@ -11,7 +11,7 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
     |> Factory.add_company_member(:champion)
     |> Factory.add_company_member(:reviewer)
     |> Factory.add_space(:space)
-    |> Factory.add_goal(:goal, :space, %{champion: :champion, reviewer: :reviewer})
+    |> Factory.add_goal(:goal, :space, champion: :champion, reviewer: :reviewer)
     |> Factory.log_in_person(:champion)
     |> then(fn ctx ->
       UI.visit(ctx, Paths.goal_path(ctx.company, ctx.goal))
@@ -118,7 +118,7 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
   end
 
   step :given_i_submitted_a_check_in, ctx do
-    ctx |> UI.click(testid: "something")
+    ctx |> Factory.add_goal_update(:check_in, :goal, :champion)
   end
 
   step :initiate_editing_check_in, ctx do
