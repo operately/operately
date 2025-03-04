@@ -20,7 +20,7 @@ defmodule Operately.Support.Features.FeedSteps do
 
   def assert_goal_checked_in(ctx, author: author, texts: texts) do
     UI.find(ctx, UI.query(testid: "goal-feed"), fn ctx ->
-      assert_feed_item_exists(ctx, author, "updated the progress", "")
+      assert_feed_item_exists(ctx, author, "submitted a check-in", "")
 
       Enum.reduce(texts, ctx, fn text, ctx ->
         UI.assert_text(ctx, text)
@@ -29,7 +29,7 @@ defmodule Operately.Support.Features.FeedSteps do
   end
 
   def assert_goal_checked_in(ctx, author: author, goal_name: goal_name, texts: texts) do
-    ctx |> assert_feed_item_exists(author, "updated the progress in the #{goal_name}", "")
+    ctx |> assert_feed_item_exists(author, "submitted a check-in for #{goal_name}", "")
 
     Enum.reduce(texts, ctx, fn text, ctx ->
       UI.assert_text(ctx, text)
