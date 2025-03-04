@@ -340,6 +340,10 @@ export class Paths {
     return createCompanyPath(["goals", "new"]) + "?parentGoalId=" + parentGoalId;
   }
 
+  static goalCheckInPath(checkInId: string) {
+    return createCompanyPath(["goal-check-in", checkInId]);
+  }
+
   static goalProgressUpdatePath(checkInId: string) {
     return createCompanyPath(["goal-updates", checkInId]);
   }
