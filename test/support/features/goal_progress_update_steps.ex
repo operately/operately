@@ -54,7 +54,7 @@ defmodule Operately.Support.Features.GoalProgressUpdateSteps do
     })
 
     ctx = Map.merge(ctx, %{company: company, champion: champion, reviewer: reviewer, group: group, goal: goal})
-    ctx = UI.login_based_on_tag(ctx)
+    ctx = UI.login_as(ctx, ctx.champion)
 
     ctx
   end
@@ -220,8 +220,16 @@ defmodule Operately.Support.Features.GoalProgressUpdateSteps do
       where: ctx.goal.name,
       to: ctx.champion,
       author: ctx.reviewer,
-      action: "commented on the progress update"
+      action: "commented on the check-in"
     })
+  end
+
+  step :acknowledge_check_in_from_email, ctx do
+    ctx = Factory.log_in_person(ctx, :reviewer)
+    email = UI.Emails.last_sent_email()
+    link = UI.Emails.find_link(email, "Acknowledge")
+
+    UI.visit(ctx, link)
   end
 
   defp format_status(status) do

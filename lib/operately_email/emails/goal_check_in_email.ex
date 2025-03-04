@@ -8,17 +8,34 @@ defmodule OperatelyEmail.Emails.GoalCheckInEmail do
     author = Repo.preload(activity, :author).author
     company = Repo.preload(author, :company).company
     goal = Goals.get_goal!(activity.content["goal_id"])
+
     {:ok, update} = Update.get(:system, id: activity.content["update_id"])
+    {cta_text, cta_url} = construct_cta_text_and_url(person, company, goal, update)
 
     company
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: goal.name, who: author, action: "updated the progress")
+    |> subject(where: goal.name, who: author, action: "submitted a check-in")
     |> assign(:author, author)
     |> assign(:goal, goal)
     |> assign(:update, update)
-    |> assign(:cta_url, Paths.goal_check_in_path(company, update) |> Paths.to_url())
+    |> assign(:cta_url, cta_url)
+    |> assign(:cta_text, cta_text)
     |> render("goal_check_in")
+  end
+
+  defp construct_cta_text_and_url(person, company, goal, check_in) do
+    url = check_in_url(company, check_in)
+
+    if goal.reviewer_id == person.id do
+      {"Acknowledge", url <> "?acknowledge=true"}
+    else
+      {"View Check-In", url}
+    end
+  end
+
+  defp check_in_url(company, check_in) do
+    Paths.goal_check_in_path(company, check_in) |> Paths.to_url()
   end
 end

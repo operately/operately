@@ -10,7 +10,7 @@ defmodule OperatelyEmail.Emails.GoalCheckInCommentedEmail do
     goal = Goals.get_goal!(activity.content["goal_id"])
     {:ok, update} = Update.get(:system, id: activity.content["goal_check_in_id"])
     comment = Updates.get_comment!(activity.content["comment_id"])
-    action = "commented on the progress update"
+    action = "commented on the check-in"
 
     company
     |> new()
