@@ -19,11 +19,11 @@ const GoalCheckIn: ActivityHandler = {
   },
 
   pageHtmlTitle(_activity: Activity): string {
-    return "Progress Update";
+    return "Check In";
   },
 
   PageTitle(_props: { activity: any }) {
-    return <>Progress Update</>;
+    return <>Check In</>;
   },
 
   PageContent({ activity }: { activity: Activity }) {
@@ -53,12 +53,12 @@ const GoalCheckIn: ActivityHandler = {
 
   FeedItemTitle({ activity, page }) {
     const path = Paths.goalProgressUpdatePath(content(activity).update!.id!);
-    const link = <Link to={path}>updated the progress</Link>;
+    const link = <Link to={path}>submitted a check-in</Link>;
 
     if (page === "goal") {
       return feedTitle(activity, link);
     } else {
-      return feedTitle(activity, link, "in the", goalLink(content(activity).goal!));
+      return feedTitle(activity, link, "for", goalLink(content(activity).goal!));
     }
   },
 
@@ -75,7 +75,7 @@ const GoalCheckIn: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " updated the progress for " + content(activity).goal!.name!;
+    return People.firstName(activity.author!) + " submitted a check-in for " + content(activity).goal!.name!;
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
