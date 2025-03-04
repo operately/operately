@@ -39,7 +39,7 @@ function GoalTitleRow({ goal }: { goal: Goals.Goal }) {
       <div className="gap-2 mt-1 w-full text-content-accent">
         <div className="flex items-start gap-4 justify-between">
           <GoalTitle goal={goal} />
-          <UpdateProgressButton goal={goal} />
+          <CheckInButton goal={goal} />
         </div>
 
         <Timeframe goal={goal} />
@@ -219,7 +219,7 @@ function TimeframeState({ goal }) {
   }
 }
 
-function UpdateProgressButton({ goal }) {
+function CheckInButton({ goal }) {
   if (!goal.permissions.canCheckIn) return null;
   if (goal.isClosed || goal.isArchived) return null;
 
@@ -227,8 +227,8 @@ function UpdateProgressButton({ goal }) {
 
   return (
     <div className="mt-1">
-      <PrimaryButton linkTo={path} testId="update-progress-button" size="sm">
-        Update Progress
+      <PrimaryButton linkTo={path} testId="check-in-button" size="sm">
+        Check In
       </PrimaryButton>
     </div>
   );
