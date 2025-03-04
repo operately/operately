@@ -2,10 +2,10 @@ import * as React from "react";
 import * as Goals from "@/models/goals";
 import * as Icons from "@tabler/icons-react";
 
-export function SuccessConditions({ goal }: { goal: Goals.Goal }) {
+export function GoalTargets({ goal }: { goal: Goals.Goal }) {
   return (
     <div className="flex flex-col gap-2">
-      <div className="text-sm font-bold uppercase mb-3">SUCCESS CONDITIONS</div>
+      <div className="text-sm font-bold uppercase mb-3">Targets</div>
 
       <div className="flex flex-col gap-2.5">
         {goal.targets!.map((target) => (
