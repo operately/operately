@@ -6,7 +6,7 @@ import * as Goals from "@/models/goals";
 import { Feed, useItemsQuery } from "@/features/Feed";
 import { Navigation } from "@/features/goals/GoalPageNavigation";
 import { Header } from "@/features/goals/GoalPageHeader";
-import { SuccessConditions } from "@/features/goals/SuccessConditions";
+import { GoalTargets } from "@/features/goals/GoalTargets";
 import { LastCheckInMessage } from "@/features/goals/GoalCheckIn";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { assertPresent } from "@/utils/assertions";
@@ -44,7 +44,7 @@ export function Page() {
           <Header goal={goal} activeTab="status" />
 
           <div className="flex flex-col gap-10 mt-8 mb-10">
-            <SuccessConditions goal={goal} />
+            <GoalTargets goal={goal} />
             <LastCheckInMessage goal={goal} />
           </div>
 
