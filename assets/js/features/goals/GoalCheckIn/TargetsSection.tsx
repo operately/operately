@@ -11,7 +11,7 @@ export function TargetsSection({ update }: { update: Update }) {
 
   return (
     <div className="my-8">
-      <div className="text-lg font-bold mx-auto">3. Success conditions</div>
+      <div className="text-lg font-bold mx-auto">3. Targets</div>
       <div className="flex flex-col gap-2 mt-2 border border-stroke-base rounded-lg p-4">
         {targets.map((target) => (
           <div key={target.id} className="grid grid-cols-[auto,1fr,auto,60px] items-center gap-2">
