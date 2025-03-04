@@ -6,24 +6,9 @@ import { IconCheck } from "@tabler/icons-react";
 import { Circle } from "@/components/Circle";
 import { InputField } from "./FieldGroup";
 import { useFieldValue, useFieldError } from "./FormContext";
-
-type Status = "pending" | "on_track" | "concern" | "issue";
+import { Status, STATUS_COLORS, STATUS_LABELS, StatusValue } from "@/features/goals/GoalCheckIn";
 
 const STATUS_OPTIONS = ["pending", "on_track", "concern", "issue"] as const;
-
-const STATUS_COLORS = {
-  pending: "bg-stone-500",
-  on_track: "bg-accent-1",
-  concern: "bg-yellow-500",
-  issue: "bg-red-500",
-};
-
-const STATUS_LABELS = {
-  pending: "Pending",
-  on_track: "On Track",
-  concern: "Concern",
-  issue: "Issue",
-};
 
 const STATUS_DESCRIPTIONS_TEMPLATE = (reviewer: string) => ({
   pending: "Work has not started yet.",
@@ -72,13 +57,7 @@ type StatusPickerProps = {
 };
 
 function SelectDropdown({ value, setValue, reviewerFirstName }: StatusPickerProps) {
-  const trigger = (
-    <div className="w-48">
-      <div className="border border-stroke-base shadow-sm bg-surface-dimmed text-sm rounded-lg px-2 py-1.5 relative overflow-hidden group cursor-pointer">
-        <StatusTriggerValue value={value} />
-      </div>
-    </div>
-  );
+  const trigger = <StatusValue value={value} className="cursor-pointer" />;
 
   const content = (
     <div>
@@ -141,24 +120,6 @@ function StatusPickerOption({ status, description, color, isSelected, onClick })
       </div>
     </DropdownMenu.Item>
   );
-}
-
-function StatusTriggerValue({ value }: { value: Status | null }) {
-  if (value === null) {
-    return (
-      <div className="flex items-center gap-2">
-        <Circle size={18} border="border-surface-outline" noFill borderSize={2} borderDashed />
-        <div className="font-medium">Pick a status&hellip;</div>
-      </div>
-    );
-  } else {
-    return (
-      <div className="flex items-center gap-2">
-        <Circle size={18} color={STATUS_COLORS[value]} />
-        <div className="font-medium">{STATUS_LABELS[value]}</div>
-      </div>
-    );
-  }
 }
 
 function assertValidStatus(value: string | null): asserts value is Status | null {
