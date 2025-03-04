@@ -10,7 +10,7 @@ defmodule OperatelyEmail.Emails.GoalCheckInEmail do
     goal = Goals.get_goal!(activity.content["goal_id"])
 
     {:ok, update} = Update.get(:system, id: activity.content["update_id"])
-    {cta_text, cta_url} = contruct_cta_text_and_url(person, company, goal, update)
+    {cta_text, cta_url} = construct_cta_text_and_url(person, company, goal, update)
 
     company
     |> new()
@@ -25,13 +25,17 @@ defmodule OperatelyEmail.Emails.GoalCheckInEmail do
     |> render("goal_check_in")
   end
 
-  defp contruct_cta_text_and_url(person, company, goal, check_in) do
-    url = Paths.goal_check_in_path(company, check_in) |> Paths.to_url()
+  defp construct_cta_text_and_url(person, company, goal, check_in) do
+    url = check_in_url(company, check_in)
 
     if goal.reviewer_id == person.id do
       {"Acknowledge", url <> "?acknowledge=true"}
     else
       {"View Check-In", url}
     end
+  end
+
+  defp check_in_url(company, check_in) do
+    Paths.goal_check_in_path(company, check_in) |> Paths.to_url()
   end
 end
