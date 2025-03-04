@@ -1,6 +1,122 @@
 defmodule Operately.Support.Features.GoalCheckInsSteps do
   use Operately.FeatureCase
 
+  step :setup, ctx do
+    ctx
+  end
+
+  step :initiate_check_in, ctx do
+    ctx |> UI.click(testid: "something")
+  end
+
+  step :select_on_track, ctx do
+    ctx |> UI.click(testid: "something")
+  end
+
+  step :update_target, ctx do
+    ctx |> UI.click(testid: "something")
+  end
+
+  step :fill_in_message, ctx do
+    ctx |> UI.click(testid: "something")
+  end
+
+  step :submit_check_in, ctx do
+    ctx |> UI.click(testid: "something")
+  end
+
+  step :assert_check_in_submitted, ctx do
+    ctx |> UI.click(testid: "something")
+  end
+
+  step :assert_check_in_in_feed, ctx do
+    ctx |> UI.click(testid: "something")
+  end
+
+  step :assert_check_in_in_notifications, ctx do
+    ctx |> UI.click(testid: "something")
+  end
+
+  step :assert_check_in_email_sent, ctx do
+    ctx |> UI.click(testid: "something")
+  end
+
+  step :extend_timeframe, ctx do
+    ctx |> UI.click(testid: "something")
+  end
+
+  step :assert_timeframe_extended_message_visible, ctx do
+    ctx |> UI.click(testid: "something")
+  end
+
+  step :given_a_check_in_was_submitted_on_a_goal_that_i_review, ctx do
+    ctx |> UI.click(testid: "something")
+  end
+
+  step :acknowledge_check_in, ctx do
+    ctx |> UI.click(testid: "something")
+  end
+
+  step :assert_acknowledge_email_sent, ctx do
+    ctx |> UI.click(testid: "something")
+  end
+
+  step :assert_check_in_acknowledged_email_sent_to_champion, ctx do
+    ctx |> UI.click(testid: "something")
+  end
+
+  step :assert_check_in_acknowledged_in_feed, ctx do
+    ctx |> UI.click(testid: "something")
+  end
+
+  step :assert_check_in_acknowledged_in_notifications, ctx do
+    ctx |> UI.click(testid: "something")
+  end
+
+  step :assert_incoming_email, ctx do
+    ctx |> UI.click(testid: "something")
+  end
+
+  step :acknowledge_check_in_from_email, ctx do
+    ctx |> UI.click(testid: "something")
+  end
+
+  step :given_i_submitted_a_check_in, ctx do
+    ctx |> UI.click(testid: "something")
+  end
+
+  step :initiate_editing_check_in, ctx do
+    ctx |> UI.click(testid: "something")
+  end
+
+  step :select_caution, ctx do
+    ctx |> UI.click(testid: "something")
+  end
+
+  step :assert_check_in_edited, ctx do
+    ctx |> UI.click(testid: "something")
+  end
+
+  step :given_a_check_in_exists, ctx do
+    ctx |> UI.click(testid: "something")
+  end
+
+  step :comment_on_check_in, ctx do
+    ctx |> UI.click(testid: "something")
+  end
+
+  step :assert_check_in_commented_in_feed, ctx do
+    ctx |> UI.click(testid: "something")
+  end
+
+  step :assert_check_in_commented_in_notifications, ctx do
+    ctx |> UI.click(testid: "something")
+  end
+
+  step :assert_check_in_commented_email_sent, ctx do
+    ctx |> UI.click(testid: "something")
+  end
+
   # alias Operately.Access.Binding
   # alias Operately.Support.Features.UI
   # alias Operately.Support.Features.FeedSteps
