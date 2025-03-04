@@ -37,6 +37,7 @@ import * as GoalActivityPage from "./GoalActivityPage";
 import * as GoalAddPage from "./GoalAddPage";
 import * as GoalArchivePage from "./GoalArchivePage";
 import * as GoalCheckInNewPage from "./GoalCheckInNewPage";
+import * as GoalCheckInPage from "./GoalCheckInPage";
 import * as GoalClosingPage from "./GoalClosingPage";
 import * as GoalDiscussionEditPage from "./GoalDiscussionEditPage";
 import * as GoalDiscussionNewPage from "./GoalDiscussionNewPage";
@@ -291,6 +292,11 @@ export default {
     name: "GoalCheckInNewPage",
     loader: GoalCheckInNewPage.loader,
     Page: GoalCheckInNewPage.Page,
+  },
+  GoalCheckInPage: {
+    name: "GoalCheckInPage",
+    loader: GoalCheckInPage.loader,
+    Page: GoalCheckInPage.Page,
   },
   GoalClosingPage: {
     name: "GoalClosingPage",
