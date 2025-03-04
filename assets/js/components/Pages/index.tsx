@@ -1,4 +1,4 @@
-export { Page } from "./Page";
+export * from "./Page";
 
 export { useRefresh } from "./useRefresh";
 export { useLoadedData } from "./useLoadedData";
