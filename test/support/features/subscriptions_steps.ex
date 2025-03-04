@@ -56,7 +56,7 @@ defmodule Operately.Support.Features.SubscriptionsSteps do
   step :go_to_new_goal_update_page, ctx do
     ctx
     |> UI.visit(Paths.goal_path(ctx.company, ctx.goal))
-    |> UI.click(testid: "update-progress-button")
+    |> UI.click(testid: "check-in-button")
   end
 
   step :fill_out_goal_update_form, ctx do

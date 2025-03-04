@@ -31,7 +31,7 @@ export function LastCheckInMessage({ goal }: { goal: Goals.Goal }) {
       </DivLink>
       <div className="flex flex-col gap-1 -mt-1">
         <div className="font-semibold">
-          Last progress update from <FormattedTime time={goal.lastCheckIn.insertedAt!} format="short-date" />
+          Last check-in from <FormattedTime time={goal.lastCheckIn.insertedAt!} format="short-date" />
         </div>
 
         <div className="flex flex-col gap-3 w-full">

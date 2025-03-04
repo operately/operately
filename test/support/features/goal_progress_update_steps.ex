@@ -62,7 +62,7 @@ defmodule Operately.Support.Features.GoalProgressUpdateSteps do
   step :update_progress, ctx, params do
     ctx
     |> UI.visit(Paths.goal_path(ctx.company, ctx.goal))
-    |> UI.click(testid: "update-progress-button")
+    |> UI.click(testid: "check-in-button")
     |> UI.click(testid: "status-dropdown")
     |> UI.click(testid: "status-dropdown-#{params.status}")
     |> UI.fill_rich_text(params.message)
@@ -111,7 +111,7 @@ defmodule Operately.Support.Features.GoalProgressUpdateSteps do
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.champion,
-      action: "updated the progress"
+      action: "submitted a check-in"
     })
   end
 
