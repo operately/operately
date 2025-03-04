@@ -3,8 +3,8 @@ import FormattedTime from "@/components/FormattedTime";
 import classNames from "classnames";
 
 interface Props {
-  start: Date;
-  end: Date;
+  start: Date | string;
+  end: Date | string;
   width?: string;
   progress?: number;
 }
@@ -64,10 +64,14 @@ export function Chronometer({ start, end, width = "w-64", progress }: Props) {
   );
 }
 
-function TimeDisplay({ time, isHighlighted = false }: { time: Date; isHighlighted?: boolean }) {
+function TimeDisplay({ time, isHighlighted = false }: { time: Date | string; isHighlighted?: boolean }) {
   const containerClass = classNames("text-xs z-1 relative whitespace-nowrap", {
     "text-white-1 font-bold": isHighlighted,
   });
+
+  if (typeof time === "string") {
+    time = new Date(time);
+  }
 
   return (
     <span className={containerClass}>
@@ -76,7 +80,14 @@ function TimeDisplay({ time, isHighlighted = false }: { time: Date; isHighlighte
   );
 }
 
-function findProgress(start: Date, end: Date) {
+function findProgress(start: Date | string, end: Date | string) {
+  if (typeof start === "string") {
+    start = new Date(start);
+  }
+  if (typeof end === "string") {
+    end = new Date(end);
+  }
+
   const startTime = start.getTime();
   const endTime = end.getTime();
   const currentTime = new Date().getTime();

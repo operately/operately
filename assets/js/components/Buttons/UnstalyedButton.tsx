@@ -25,6 +25,7 @@ export interface BaseButtonProps extends MenuOptions, Linkable, Clickable, Testa
   loading?: boolean;
   type?: "button" | "submit";
   size?: "xxs" | "xs" | "sm" | "base" | "lg";
+  spanButton?: boolean;
 }
 
 interface UnstyledButtonProps extends BaseButtonProps {
@@ -47,6 +48,8 @@ export function UnstyledButton(props: UnstyledButtonProps) {
 
   if (props.linkTo) {
     return UnstyledLinkButton(props);
+  } else if (props.spanButton) {
+    return UnstyledSpanButton(props);
   } else if (props.options) {
     return UnstyledMenuButton(props);
   } else {
@@ -92,4 +95,18 @@ function UnstyledMenuButton(props: UnstyledButtonProps) {
   );
 
   return <Menu customTrigger={trigger}>{props.options}</Menu>;
+}
+
+function UnstyledSpanButton(props: UnstyledButtonProps) {
+  const handleClick = (e: any) => {
+    if (props.loading) return;
+    if (props.onClick) props.onClick(e);
+  };
+
+  return (
+    <span className={props.className} onClick={handleClick} data-test-id={props.testId}>
+      {props.children}
+      {props.spinner}
+    </span>
+  );
 }

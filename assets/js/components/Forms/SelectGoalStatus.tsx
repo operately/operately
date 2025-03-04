@@ -82,8 +82,9 @@ function SelectDropdown({ value, setValue, reviewerFirstName }: StatusPickerProp
 
   const content = (
     <div>
-      {STATUS_OPTIONS.map((status) => (
+      {STATUS_OPTIONS.map((status, idx) => (
         <StatusPickerOption
+          key={idx}
           status={STATUS_LABELS[status]}
           color={STATUS_COLORS[status]}
           description={STATUS_DESCRIPTIONS_TEMPLATE(reviewerFirstName)[status]}
