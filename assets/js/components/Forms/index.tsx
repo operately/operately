@@ -15,6 +15,7 @@ import { CheckboxInput } from "./CheckboxInput";
 import { SelectStatus } from "./SelectStatus";
 import { SelectGoalStatus } from "./SelectGoalStatus";
 import { MultiPeopleSelectField } from "./MultiPeopleSelectField";
+import { TimeframeField } from "./TimeframeField";
 
 import { useForm } from "./useForm";
 import { useFieldError, useFieldValue } from "./FormContext";
@@ -43,4 +44,5 @@ export default {
   MultiPeopleSelectField,
   CheckboxInput,
   SelectStatus,
+  TimeframeField,
 };
