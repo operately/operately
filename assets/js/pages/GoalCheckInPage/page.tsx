@@ -3,6 +3,7 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
 import { Navigation } from "./Navigation";
+import { Options } from "./Options";
 import { Header } from "./Header";
 import { AckCTA } from "./AckCTA";
 
@@ -13,6 +14,7 @@ export function Page() {
         <Navigation />
 
         <Paper.Body>
+          <Options />
           <Header />
           <AckCTA />
         </Paper.Body>
