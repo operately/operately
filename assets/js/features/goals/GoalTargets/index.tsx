@@ -25,8 +25,7 @@ function TargetItem({ target }: { target: Goals.Target }) {
       <div className="flex items-end justify-between mb-1.5">
         <div className="font-semibold flex-1">{target.name}</div>
         <div className="text-sm">
-          {target.value} / {target.to}
-          {target.unit}
+          {target.value} / {target.to} {target.unit}
         </div>
       </div>
 
