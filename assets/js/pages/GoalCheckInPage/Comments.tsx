@@ -3,12 +3,16 @@ import * as React from "react";
 import { useLoadedData } from "./loader";
 import { CommentSection, useForGoalCheckIn } from "@/features/CommentSection";
 import { assertPresent } from "@/utils/assertions";
+import { useIsEditMode } from "@/components/Pages";
 
 export function Comments() {
   const { update } = useLoadedData();
+  const isEditMode = useIsEditMode();
   const commentsForm = useForGoalCheckIn(update);
 
   assertPresent(update.goal?.permissions?.canCommentOnUpdate, "permissions must be present in update");
+
+  if (isEditMode) return null;
 
   return (
     <>

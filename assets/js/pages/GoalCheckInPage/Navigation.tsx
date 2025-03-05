@@ -2,7 +2,7 @@ import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 
 import { Paths } from "@/routes/paths";
-import { useLoadedData } from "@/components/Pages";
+import { useLoadedData } from "./loader";
 import { assertPresent } from "@/utils/assertions";
 
 export function Navigation() {
