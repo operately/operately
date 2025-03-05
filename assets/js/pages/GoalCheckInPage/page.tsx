@@ -3,6 +3,7 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
 import { useClearGoalCheckInNotifications } from "./useClearGoalCheckInNotifications";
+import { useGoalCheckInPageTitle } from "./useGoalCheckInPageTitle";
 
 import { Navigation } from "./Navigation";
 import { Options } from "./Options";
@@ -14,10 +15,11 @@ import { CheckInReactions } from "./CheckInReactions";
 import { Subscriptions } from "./Subscriptions";
 
 export function Page() {
+  const title = useGoalCheckInPageTitle();
   useClearGoalCheckInNotifications();
 
   return (
-    <Pages.Page title={"GoalCheckInPage"}>
+    <Pages.Page title={title} testId="goal-check-in-page">
       <Paper.Root>
         <Navigation />
 
