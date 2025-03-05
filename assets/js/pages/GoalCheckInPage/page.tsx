@@ -6,6 +6,7 @@ import { Navigation } from "./Navigation";
 import { Options } from "./Options";
 import { Header } from "./Header";
 import { AckCTA } from "./AckCTA";
+import { Comments } from "./Comments";
 
 export function Page() {
   return (
@@ -17,6 +18,7 @@ export function Page() {
           <Options />
           <Header />
           <AckCTA />
+          <Comments />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
