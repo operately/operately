@@ -1,6 +1,7 @@
 import React from "react";
 
 import { useEditGoalProgressUpdate } from "@/models/goalCheckIns";
+import * as People from "@/models/people";
 import * as Pages from "@/components/Pages";
 
 import Forms from "@/components/Forms";
@@ -10,14 +11,14 @@ import { Spacer } from "@/components/Spacer";
 import { useLoadedData } from "./loader";
 
 export function Form() {
-  const { update } = useLoadedData();
+  const { update, goal } = useLoadedData();
   const [edit] = useEditGoalProgressUpdate();
 
   const isViewMode = Pages.useIsViewMode();
   const setPageMode = Pages.useSetPageMode();
 
   assertPresent(update.goal?.timeframe, "goal.timeframe must be present in update");
-  assertPresent(update.goal?.reviewer, "goal.reviewer must be present in update");
+  assertPresent(goal.reviewer, "reviewer must be present in goal");
 
   const form = Forms.useForm({
     fields: {
@@ -52,7 +53,7 @@ export function Form() {
             readonly={isViewMode}
             label="Status"
             field="status"
-            reviewerFirstName={update.goal.reviewer.fullName!}
+            reviewerFirstName={People.firstName(goal.reviewer)}
           />
           <Forms.TimeframeField readonly={isViewMode} label="Timeframe" field="timeframe" />
         </div>
@@ -61,14 +62,18 @@ export function Form() {
       <Spacer size={4} />
 
       <Forms.FieldGroup>
-        <Forms.GoalTargetsField readonly={isViewMode} field="targets" label={false ? "Update targets" : "Targets"} />
+        <Forms.GoalTargetsField
+          readonly={isViewMode}
+          field="targets"
+          label={isViewMode ? "Targets" : "Update targets"}
+        />
       </Forms.FieldGroup>
 
       <Spacer size={4} />
 
       <Forms.FieldGroup>
         <Forms.RichTextArea
-          label={false ? "Describe key wins, obstacles and needs" : "Description"}
+          label={isViewMode ? "Description" : "Describe key wins, obstacles and needs"}
           field="description"
           placeholder="Write here..."
           mentionSearchScope={mentionSearchScope}

@@ -48,7 +48,7 @@ export function AckCTA() {
 }
 
 function showAcknowledgeButton(update: GoalCheckIns.Update, me: People.Person) {
-  const isViewMode = Pages.useIsViewMode()
+  const isViewMode = Pages.useIsViewMode();
 
   if (!isViewMode) return false;
   if (update.acknowledgedAt) return false;
