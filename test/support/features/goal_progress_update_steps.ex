@@ -202,7 +202,7 @@ defmodule Operately.Support.Features.GoalProgressUpdateSteps do
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.reviewer,
-      action: "commented on the goal update"
+      action: "commented on the goal check-in"
     })
   end
 
