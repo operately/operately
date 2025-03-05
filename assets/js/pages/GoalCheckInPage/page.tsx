@@ -7,8 +7,9 @@ import { Options } from "./Options";
 import { Header } from "./Header";
 import { AckCTA } from "./AckCTA";
 import { Comments } from "./Comments";
-import { CheckInReactions } from "./CheckInReactions";
 import { Form } from "./Form";
+import { CheckInReactions } from "./CheckInReactions";
+import { Subscriptions } from "./Subscriptions";
 
 export function Page() {
   return (
@@ -23,6 +24,7 @@ export function Page() {
           <AckCTA />
           <CheckInReactions />
           <Comments />
+          <Subscriptions />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
