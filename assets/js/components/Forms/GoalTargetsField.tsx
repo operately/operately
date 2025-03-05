@@ -89,8 +89,9 @@ function TargetField({ field, target, currentOpenTarget, setTargetOpen, readonly
 }
 
 function Target({ target, isOpen, readonly }) {
-  const containerClass = classNames("px-2 py-2 -mx-2 cursor-pointer group hover:bg-surface-dimmed", {
+  const containerClass = classNames("px-2 py-2 -mx-2", {
     "bg-surface-highlight": isOpen,
+    "cursor-pointer group hover:bg-surface-dimmed": !readonly,
   });
 
   return (
