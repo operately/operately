@@ -44,6 +44,14 @@ export function usePageMode(): "view" | "edit" {
   return usePageContext().mode;
 }
 
+export function useIsViewMode() {
+  return usePageContext().mode === "view";
+}
+
+export function useIsEditMode() {
+  return usePageContext().mode === "edit";
+}
+
 export function useSetPageMode(): (mode: "view" | "edit") => void {
   return usePageContext().setMode;
 }

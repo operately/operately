@@ -8,6 +8,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Goals.Goal do
       space: serialize_space(goal.group),
       champion: OperatelyWeb.Api.Serializer.serialize(goal.champion),
       reviewer: OperatelyWeb.Api.Serializer.serialize(goal.reviewer),
+      timeframe: OperatelyWeb.Api.Serializer.serialize(goal.timeframe),
       success: goal.success == "yes"
     }
   end
