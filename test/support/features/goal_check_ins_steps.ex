@@ -3,14 +3,15 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
 
   alias Operately.Support.Features.FeedSteps
   alias Operately.Support.Features.EmailSteps
+  alias Operately.Support.Features.NotificationsSteps
 
   step :setup, ctx do
     ctx
     |> Factory.setup()
     |> Factory.enable_feature("new_goal_check_ins")
-    |> Factory.add_company_member(:champion)
-    |> Factory.add_company_member(:reviewer)
     |> Factory.add_space(:space)
+    |> Factory.add_space_member(:champion, :space)
+    |> Factory.add_space_member(:reviewer, :space)
     |> Factory.add_goal(:goal, :space, champion: :champion, reviewer: :reviewer)
     |> Factory.log_in_person(:champion)
     |> then(fn ctx ->
@@ -150,18 +151,30 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
     ctx
     |> UI.visit(Paths.goal_path(ctx.company, ctx.goal))
     |> FeedSteps.assert_goal_check_in_commented(author: ctx.champion, comment: message)
-    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
+    |> UI.visit(Paths.space_path(ctx.company, ctx.space))
     |> FeedSteps.assert_goal_check_in_commented(author: ctx.champion, goal_name: ctx.goal.name, comment: message)
     |> UI.visit(Paths.feed_path(ctx.company))
     |> FeedSteps.assert_goal_check_in_commented(author: ctx.champion, goal_name: ctx.goal.name, comment: message)
   end
 
   step :assert_check_in_commented_in_notifications, ctx do
-    ctx |> UI.click(testid: "something")
+    ctx
+    |> UI.login_as(ctx.champion)
+    |> NotificationsSteps.visit_notifications_page()
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.reviewer,
+      action: "commented on the goal check-in"
+    })
   end
 
   step :assert_check_in_commented_email_sent, ctx do
-    ctx |> UI.click(testid: "something")
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.goal.name,
+      to: ctx.champion,
+      author: ctx.reviewer,
+      action: "commented on the check-in"
+    })
   end
 
   defp target_test_id(target) do

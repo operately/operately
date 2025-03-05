@@ -39,13 +39,13 @@ const GoalUpdateCommented: ActivityHandler = {
     assertPresent(data.update, "Update must be present in activity content");
     assertPresent(data.update.id, "Update ID must be present in activity content");
 
-    const updatePath = Paths.goalProgressUpdatePath(data.update.id);
-    const updateLink = <Link to={updatePath}>Update</Link>;
+    const checkInPath = Paths.goalProgressUpdatePath(data.update.id);
+    const checkInLink = <Link to={checkInPath}>Check-In</Link>;
 
     if (page === "goal") {
-      return feedTitle(activity, "commented on", updateLink);
+      return feedTitle(activity, "commented on a", checkInLink);
     } else {
-      return feedTitle(activity, "commented on", updateLink, " in the ", goalLink(data.goal), "goal");
+      return feedTitle(activity, "commented on a", checkInLink, " in the ", goalLink(data.goal), "goal");
     }
   },
 
@@ -69,7 +69,7 @@ const GoalUpdateCommented: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " commented on the goal update";
+    return People.firstName(activity.author!) + " commented on the goal check-in";
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

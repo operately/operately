@@ -45,11 +45,11 @@ defmodule Operately.Support.Features.FeedSteps do
   end
 
   def assert_goal_check_in_commented(ctx, author: author, comment: comment) do
-    ctx |> assert_feed_item_exists(author, "commented on Update", comment)
+    ctx |> assert_feed_item_exists(author, "commented on a Check-In", comment)
   end
 
   def assert_goal_check_in_commented(ctx, author: author, goal_name: goal_name, comment: comment) do
-    ctx |> assert_feed_item_exists(author, "commented on Update in the #{goal_name} goal", comment)
+    ctx |> assert_feed_item_exists(author, "commented on a Check-In in the #{goal_name} goal", comment)
   end
 
   #
