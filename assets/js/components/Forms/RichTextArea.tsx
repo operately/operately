@@ -45,13 +45,13 @@ export function RichTextArea(props: RichTextAreaProps) {
 
   return (
     <InputField field={props.field} label={props.label} error={error} hidden={props.hidden}>
-      {props.readonly ? <ReadonlyContent {...props} /> : <Editor {...props} error={!!error} />}
+      {props.readonly ? <ReadonlyContent field={props.field} /> : <Editor {...props} error={!!error} />}
     </InputField>
   );
 }
 
-function ReadonlyContent(props: RichTextAreaProps) {
-  const [value] = useFieldValue(props.field);
+function ReadonlyContent({ field }: { field: string }) {
+  const [value] = useFieldValue(field);
 
   return (
     <div className="p-2 border border-stroke-base rounded-lg">
