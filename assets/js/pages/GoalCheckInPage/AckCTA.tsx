@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as People from "@/models/people";
 import * as GoalCheckIns from "@/models/goalCheckIns";
+import * as Pages from "@/components/Pages";
 
 import { PrimaryButton } from "@/components/Buttons";
 
@@ -38,7 +39,7 @@ export function AckCTA() {
   if (ackOnLoad || !showButton) return null;
 
   return (
-    <div className="flex flex-row items-center justify-center mt-4 mb-4">
+    <div className="flex flex-row items-center justify-center mt-8 mb-4">
       <PrimaryButton testId="acknowledge-check-in" onClick={ackHandler}>
         Acknowledge this Check-In
       </PrimaryButton>
@@ -47,6 +48,9 @@ export function AckCTA() {
 }
 
 function showAcknowledgeButton(update: GoalCheckIns.Update, me: People.Person) {
+  const isViewMode = Pages.useIsViewMode()
+
+  if (!isViewMode) return false;
   if (update.acknowledgedAt) return false;
   if (!update.goal!.permissions!.canAcknowledgeCheckIn) return false;
 
