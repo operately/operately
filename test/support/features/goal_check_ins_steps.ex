@@ -56,7 +56,7 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
     ctx
     |> UI.visit(Paths.goal_path(ctx.company, ctx.goal))
     |> FeedSteps.assert_goal_checked_in(author: ctx.champion, texts: feed_texts)
-    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
+    |> UI.visit(Paths.space_path(ctx.company, ctx.space))
     |> FeedSteps.assert_goal_checked_in(author: ctx.champion, goal_name: ctx.goal.name, texts: feed_texts)
     |> UI.visit(Paths.feed_path(ctx.company))
     |> FeedSteps.assert_goal_checked_in(author: ctx.champion, goal_name: ctx.goal.name, texts: feed_texts)
@@ -91,23 +91,40 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
   end
 
   step :acknowledge_check_in, ctx do
-    ctx |> UI.click(testid: "acknowledge-check-in")
-  end
-
-  step :assert_acknowledge_email_sent, ctx do
-    ctx |> UI.click(testid: "something")
+    ctx 
+    |> UI.login_as(ctx.reviewer)
+    |> UI.visit(Paths.goal_check_in_path(ctx.company, ctx.check_in))
+    |> UI.click(testid: "acknowledge-check-in")
   end
 
   step :assert_check_in_acknowledged_email_sent_to_champion, ctx do
-    ctx |> UI.click(testid: "something")
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.goal.name,
+      to: ctx.champion,
+      author: ctx.reviewer,
+      action: "acknowledged your check-in"
+    })
   end
 
   step :assert_check_in_acknowledged_in_feed, ctx do
-    ctx |> UI.click(testid: "something")
+    ctx
+    |> UI.visit(Paths.goal_path(ctx.company, ctx.goal))
+    |> FeedSteps.assert_goal_check_in_acknowledgement(author: ctx.champion)
+    |> UI.visit(Paths.space_path(ctx.company, ctx.space))
+    |> FeedSteps.assert_goal_check_in_acknowledgement(author: ctx.champion, goal_name: ctx.goal.name)
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> FeedSteps.assert_goal_check_in_acknowledgement(author: ctx.champion, goal_name: ctx.goal.name)
   end
 
   step :assert_check_in_acknowledged_in_notifications, ctx do
-    ctx |> UI.click(testid: "something")
+    ctx
+    |> UI.login_as(ctx.champion)
+    |> NotificationsSteps.visit_notifications_page()
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.reviewer,
+      action: "acknowledged your check-in"
+    })
   end
 
   step :assert_incoming_email, ctx do
