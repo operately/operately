@@ -2,6 +2,7 @@ import * as React from "react";
 import * as TipTapEditor from "@/components/Editor";
 import * as People from "@/models/people";
 
+import RichContent from "@/components/RichContent";
 import { InputField } from "./FieldGroup";
 import { useFieldError, useFieldValue, useFormContext } from "./FormContext";
 import { useValidation } from "./validations/hook";
@@ -24,6 +25,7 @@ interface RichTextAreaProps {
   fontSize?: string;
   fontWeight?: string;
   showToolbarTopBorder?: boolean;
+  readonly?: boolean;
 }
 
 const DEFAULT_VALUES = {
@@ -43,8 +45,18 @@ export function RichTextArea(props: RichTextAreaProps) {
 
   return (
     <InputField field={props.field} label={props.label} error={error} hidden={props.hidden}>
-      <Editor {...props} error={!!error} />
+      {props.readonly ? <ReadonlyContent field={props.field} /> : <Editor {...props} error={!!error} />}
     </InputField>
+  );
+}
+
+function ReadonlyContent({ field }: { field: string }) {
+  const [value] = useFieldValue(field);
+
+  return (
+    <div className="p-2 border border-stroke-base rounded-lg">
+      <RichContent jsonContent={value} skipParse />
+    </div>
   );
 }
 
