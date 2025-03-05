@@ -134,7 +134,7 @@ defmodule Operately.Support.Features.GoalProgressUpdateSteps do
       where: ctx.goal.name,
       to: ctx.champion,
       author: ctx.reviewer,
-      action: "acknowledged your progress update"
+      action: "acknowledged your check-in"
     })
   end
 
@@ -154,7 +154,7 @@ defmodule Operately.Support.Features.GoalProgressUpdateSteps do
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.reviewer,
-      action: "acknowledged your progress update"
+      action: "acknowledged your check-in"
     })
   end
 

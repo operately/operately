@@ -35,7 +35,7 @@ const GoalCheckInAcknowledgement: ActivityHandler = {
     const update = content(activity).update!;
 
     const path = Paths.goalProgressUpdatePath(update.id!);
-    const link = <Link to={path}>Progress Update</Link>;
+    const link = <Link to={path}>Check-In</Link>;
 
     if (page === "goal") {
       return feedTitle(activity, "acknowledged the", link);
@@ -61,7 +61,7 @@ const GoalCheckInAcknowledgement: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " acknowledged your progress update";
+    return People.firstName(activity.author!) + " acknowledged your check-in";
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
