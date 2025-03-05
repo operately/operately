@@ -32,12 +32,10 @@ defmodule Operately.Features.GoalCheckInsTest do
   feature "acknowledge a progress update in the web app", ctx do
     ctx
     |> Steps.given_a_check_in_was_submitted_on_a_goal_that_i_review()
-    |> UI.sleep(1000) # delete this line
-    # |> Steps.acknowledge_check_in()
-    # |> Steps.assert_acknowledge_email_sent()
-    # |> Steps.assert_check_in_acknowledged_email_sent_to_champion()
-    # |> Steps.assert_check_in_acknowledged_in_feed()
-    # |> Steps.assert_check_in_acknowledged_in_notifications()
+    |> Steps.acknowledge_check_in()
+    |> Steps.assert_check_in_acknowledged_email_sent_to_champion()
+    |> Steps.assert_check_in_acknowledged_in_feed()
+    |> Steps.assert_check_in_acknowledged_in_notifications()
   end
 
   feature "acknowledge a check-in from the email", ctx do

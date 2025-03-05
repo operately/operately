@@ -1,7 +1,7 @@
-<%= title("#{short_name(@author)} acknowledged the progress update for #{@goal.name} goal") %>
+<%= title("#{short_name(@author)} acknowledged the check-in for #{@goal.name}.") %>
 
 <%= spacer() %>
 
 <%= row do %>
-  <%= cta_button(@cta_url, "View Update") %>
+  <%= cta_button(@cta_url, "View Check-In") %>
 <% end %>
