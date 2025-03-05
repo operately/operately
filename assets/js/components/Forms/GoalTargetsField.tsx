@@ -15,9 +15,10 @@ import { InputField } from "./FieldGroup";
 interface Props {
   field: string;
   label?: string;
+  readonly?: boolean;
 }
 
-export function GoalTargetsField({ field, label }: Props) {
+export function GoalTargetsField({ field, label, readonly }: Props) {
   const [targets] = useFieldValue<Goals.Target[]>(field);
   const [targetOpen, setTargetOpen] = React.useState<string>();
 
@@ -29,6 +30,7 @@ export function GoalTargetsField({ field, label }: Props) {
           target={target}
           currentOpenTarget={targetOpen}
           setTargetOpen={setTargetOpen}
+          readonly={readonly}
           key={target.id}
         />
       ))}
@@ -46,15 +48,19 @@ interface TargetFieldProps {
   target: Goals.Target;
   currentOpenTarget: string | undefined;
   setTargetOpen: React.Dispatch<React.SetStateAction<string | undefined>>;
+  readonly?: boolean;
 }
 
-function TargetField({ field, target, currentOpenTarget, setTargetOpen }: TargetFieldProps) {
+function TargetField({ field, target, currentOpenTarget, setTargetOpen, readonly }: TargetFieldProps) {
   const [targets, setTargets] = useFieldValue<Goals.Target[]>(field);
 
   const targetName = `target-${target.id}`;
   const isOpen = React.useMemo(() => compareIds(target.id, currentOpenTarget), [target.id, currentOpenTarget]);
 
-  const open = () => setTargetOpen(target.id!);
+  const open = () => {
+    if (readonly) return;
+    setTargetOpen(target.id!);
+  };
   const close = () => setTargetOpen(undefined);
 
   const form = Forms.useForm({
@@ -76,13 +82,13 @@ function TargetField({ field, target, currentOpenTarget, setTargetOpen }: Target
 
   return (
     <DropdownMenu.Root open={isOpen} onOpenChange={open}>
-      <Target target={target} isOpen={isOpen} />
+      <Target readonly={readonly} target={target} isOpen={isOpen} />
       <PopupContent form={form} targetName={targetName} />
     </DropdownMenu.Root>
   );
 }
 
-function Target({ target, isOpen }) {
+function Target({ target, isOpen, readonly }) {
   const containerClass = classNames("px-2 py-2 -mx-2 cursor-pointer group hover:bg-surface-dimmed", {
     "bg-surface-highlight": isOpen,
   });
@@ -98,7 +104,7 @@ function Target({ target, isOpen }) {
               <div className="tracking-wider text-sm font-medium">
                 {target.value} / {target.to}
               </div>
-              <PopupTrigger />
+              {!readonly && <PopupTrigger />}
             </div>
           </div>
 

@@ -14,6 +14,7 @@ import { Label } from "./Label";
 interface Props {
   field: string;
   label?: string;
+  readonly?: boolean;
 }
 
 //
@@ -31,7 +32,7 @@ interface Props {
 // });
 //
 
-export function TimeframeField({ field, label }: Props) {
+export function TimeframeField({ field, label, readonly }: Props) {
   const [open, setOpen] = React.useState(false);
   const [value] = useFieldValue<Timeframe>(field);
 
@@ -41,11 +42,13 @@ export function TimeframeField({ field, label }: Props) {
         <div className="mb-[2px] flex items-center gap-2">
           <Label label={label} field={field} />
 
-          <Popover.Trigger>
-            <SecondaryButton size="xxs" spanButton>
-              Edit
-            </SecondaryButton>
-          </Popover.Trigger>
+          {!readonly && (
+            <Popover.Trigger>
+              <SecondaryButton size="xxs" spanButton>
+                Edit
+              </SecondaryButton>
+            </Popover.Trigger>
+          )}
         </div>
         <Chronometer start={value.startDate!} end={value.endDate!} />
       </div>

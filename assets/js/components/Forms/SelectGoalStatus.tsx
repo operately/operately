@@ -6,9 +6,24 @@ import { IconCheck } from "@tabler/icons-react";
 import { Circle } from "@/components/Circle";
 import { InputField } from "./FieldGroup";
 import { useFieldValue, useFieldError } from "./FormContext";
-import { Status, STATUS_COLORS, STATUS_LABELS, StatusValue } from "@/features/goals/GoalCheckIn";
+
+type Status = "pending" | "on_track" | "concern" | "issue";
 
 const STATUS_OPTIONS = ["pending", "on_track", "concern", "issue"] as const;
+
+const STATUS_COLORS = {
+  pending: "bg-stone-500",
+  on_track: "bg-accent-1",
+  concern: "bg-yellow-500",
+  issue: "bg-red-500",
+};
+
+const STATUS_LABELS = {
+  pending: "Pending",
+  on_track: "On Track",
+  concern: "Concern",
+  issue: "Issue",
+};
 
 const STATUS_DESCRIPTIONS_TEMPLATE = (reviewer: string) => ({
   pending: "Work has not started yet.",
@@ -25,6 +40,7 @@ interface SelectGoalStatusProps {
   hidden?: boolean;
   required?: boolean;
   noReviewer?: boolean;
+  readonly?: boolean;
 }
 
 const DEFAULT_PROPS = {
@@ -45,7 +61,11 @@ export function SelectGoalStatus(props: SelectGoalStatusProps) {
 
   return (
     <InputField field={props.field} label={props.label} error={error} hidden={props.hidden}>
-      <SelectDropdown value={value} setValue={setValue} reviewerFirstName={reviewer} />
+      {props.readonly ? (
+        <StatusValue value={value} />
+      ) : (
+        <SelectDropdown value={value} setValue={setValue} reviewerFirstName={reviewer} />
+      )}
     </InputField>
   );
 }
@@ -57,7 +77,7 @@ type StatusPickerProps = {
 };
 
 function SelectDropdown({ value, setValue, reviewerFirstName }: StatusPickerProps) {
-  const trigger = <StatusValue value={value} className="cursor-pointer" />;
+  const trigger = <StatusValue value={value} />;
 
   const content = (
     <div>
@@ -119,6 +139,26 @@ function StatusPickerOption({ status, description, color, isSelected, onClick })
         </div>
       </div>
     </DropdownMenu.Item>
+  );
+}
+
+function StatusValue({ value }: { value: Status | null }) {
+  return (
+    <div className="w-48">
+      <div className="border border-stroke-base shadow-sm bg-surface-dimmed text-sm rounded-lg px-2 py-1.5 relative overflow-hidden group cursor-pointer">
+        {value === null ? (
+          <div className="flex items-center gap-2">
+            <Circle size={18} border="border-surface-outline" noFill borderSize={2} borderDashed />
+            <div className="font-medium">Pick a status&hellip;</div>
+          </div>
+        ) : (
+          <div className="flex items-center gap-2">
+            <Circle size={18} color={STATUS_COLORS[value]} />
+            <div className="font-medium">{STATUS_LABELS[value]}</div>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
 
