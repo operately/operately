@@ -61,14 +61,18 @@ export function Form() {
       <Spacer size={4} />
 
       <Forms.FieldGroup>
-        <Forms.GoalTargetsField readonly={isViewMode} field="targets" label={false ? "Update targets" : "Targets"} />
+        <Forms.GoalTargetsField
+          readonly={isViewMode}
+          field="targets"
+          label={isViewMode ? "Targets" : "Update targets"}
+        />
       </Forms.FieldGroup>
 
       <Spacer size={4} />
 
       <Forms.FieldGroup>
         <Forms.RichTextArea
-          label={false ? "Describe key wins, obstacles and needs" : "Description"}
+          label={isViewMode ? "Description" : "Describe key wins, obstacles and needs"}
           field="description"
           placeholder="Write here..."
           mentionSearchScope={mentionSearchScope}
