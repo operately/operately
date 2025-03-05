@@ -149,12 +149,12 @@ defmodule Operately.Goals.Timeframe do
     parse_json!(Jason.decode!(json))
   end
 
-  def parse_json!(map) do 
+  def parse_json!(map) do
     %{"start_date" => start_date, "end_date" => end_date, "type" => type} = map
 
     %__MODULE__{
-      start_date: Date.from_iso8601!(start_date), 
-      end_date: Date.from_iso8601!(end_date), 
+      start_date: Date.from_iso8601!(start_date),
+      end_date: Date.from_iso8601!(end_date),
       type: type
     }
   end
