@@ -66,10 +66,9 @@ defmodule Operately.Features.GoalCheckInsTest do
   feature "commenting on a progress update", ctx do
     ctx
     |> Steps.given_a_check_in_exists()
-    |> UI.sleep(1000) # delete this line
-    # |> Steps.comment_on_check_in("Great job!")
-    # |> Steps.assert_check_in_commented_in_feed("Great job!")
-    # |> Steps.assert_check_in_commented_in_notifications()
-    # |> Steps.assert_check_in_commented_email_sent()
+    |> Steps.comment_on_check_in("Great job!")
+    |> Steps.assert_check_in_commented_in_feed("Great job!")
+    |> Steps.assert_check_in_commented_in_notifications()
+    |> Steps.assert_check_in_commented_email_sent()
   end
 end
