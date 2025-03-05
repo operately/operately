@@ -62,7 +62,7 @@ export function SelectGoalStatus(props: SelectGoalStatusProps) {
   return (
     <InputField field={props.field} label={props.label} error={error} hidden={props.hidden}>
       {props.readonly ? (
-        <StatusValue value={value} />
+        <StatusValue value={value} readonly />
       ) : (
         <SelectDropdown value={value} setValue={setValue} reviewerFirstName={reviewer} />
       )}
@@ -142,10 +142,17 @@ function StatusPickerOption({ status, description, color, isSelected, onClick })
   );
 }
 
-function StatusValue({ value }: { value: Status | null }) {
+function StatusValue({ value, readonly }: { value: Status | null; readonly?: boolean }) {
+  const className = classNames(
+    "border border-stroke-base shadow-sm bg-surface-dimmed text-sm rounded-lg px-2 py-1.5 relative overflow-hidden group",
+    {
+      "cursor-pointer": !readonly,
+    },
+  );
+
   return (
     <div className="w-48">
-      <div className="border border-stroke-base shadow-sm bg-surface-dimmed text-sm rounded-lg px-2 py-1.5 relative overflow-hidden group cursor-pointer">
+      <div className={className}>
         {value === null ? (
           <div className="flex items-center gap-2">
             <Circle size={18} border="border-surface-outline" noFill borderSize={2} borderDashed />

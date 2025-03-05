@@ -32,11 +32,11 @@ export function Form() {
     cancel: () => setPageMode("view"),
     submit: async () => {
       await edit({
-          id: update.id,
-          status: form.values.status,
-          content: JSON.stringify(form.values.description),
-          newTargetValues: JSON.stringify(form.values.targets.map((t) => ({ id: t.id, value: t.value }))),
-        });
+        id: update.id,
+        status: form.values.status,
+        content: JSON.stringify(form.values.description),
+        newTargetValues: JSON.stringify(form.values.targets.map((t) => ({ id: t.id, value: t.value }))),
+      });
 
       setPageMode("view");
     },
@@ -54,7 +54,7 @@ export function Form() {
             field="status"
             reviewerFirstName={update.goal.reviewer.fullName!}
           />
-          <Forms.TimeframeField readonly label="Timeframe" field="timeframe" />
+          <Forms.TimeframeField readonly={isViewMode} label="Timeframe" field="timeframe" />
         </div>
       </Forms.FieldGroup>
 
