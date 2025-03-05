@@ -30,7 +30,7 @@ export function Form({ goal }: { goal: Goal }) {
 
   const form = Forms.useForm({
     fields: {
-      status: "pending",
+      status: null,
       timeframe: { startDate: new Date(goal.timeframe.startDate!), endDate: new Date(goal.timeframe.endDate!) },
       targets: goal.targets,
       description: emptyContent(),
