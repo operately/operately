@@ -9,6 +9,7 @@ import { assertPresent } from "@/utils/assertions";
 import { Spacer } from "@/components/Spacer";
 
 import { useLoadedData } from "./loader";
+import { EditBar } from "@/components/Pages/EditBar";
 
 export function Form() {
   const { update, goal } = useLoadedData();
@@ -73,7 +74,7 @@ export function Form() {
 
       <Forms.FieldGroup>
         <Forms.RichTextArea
-          label={isViewMode ? "Description" : "Describe key wins, obstacles and needs"}
+          label={isViewMode ? "Key wins, obstacles and needs" : "Describe key wins, obstacles and needs"}
           field="description"
           placeholder="Write here..."
           mentionSearchScope={mentionSearchScope}
@@ -82,7 +83,7 @@ export function Form() {
         />
       </Forms.FieldGroup>
 
-      {!isViewMode && <Forms.Submit />}
+      <EditBar save={form.actions.submit} cancel={form.actions.cancel} />
     </Forms.Form>
   );
 }
