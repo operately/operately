@@ -127,12 +127,12 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
     })
   end
 
-  step :assert_incoming_email, ctx do
-    ctx |> UI.click(testid: "something")
-  end
-
   step :acknowledge_check_in_from_email, ctx do
-    ctx |> UI.click(testid: "something")
+    ctx = Factory.log_in_person(ctx, :reviewer)
+    email = UI.Emails.last_sent_email()
+    link = UI.Emails.find_link(email, "Acknowledge")
+
+    UI.visit(ctx, link)
   end
 
   step :given_i_submitted_a_check_in, ctx do
