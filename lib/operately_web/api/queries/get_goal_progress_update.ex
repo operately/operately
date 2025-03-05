@@ -11,6 +11,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdate do
     field :include_acknowledged_by, :boolean
     field :include_reactions, :boolean
     field :include_goal, :boolean
+    field :include_goal_space, :boolean
     field :include_goal_targets, :boolean
     field :include_reviewer, :boolean
     field :include_champion, :boolean
@@ -58,6 +59,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdate do
       include_acknowledged_by: :acknowledged_by,
       include_reactions: [reactions: :person],
       include_goal: :goal,
+      include_goal_space: [goal: :group],
       include_goal_targets: [goal: :targets],
       include_champion: [goal: :champion],
       include_reviewer: [goal: :reviewer],

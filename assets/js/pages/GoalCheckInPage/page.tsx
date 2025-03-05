@@ -8,6 +8,7 @@ import { Header } from "./Header";
 import { AckCTA } from "./AckCTA";
 import { Comments } from "./Comments";
 import { CheckInReactions } from "./CheckInReactions";
+import { Form } from "./Form";
 
 export function Page() {
   return (
@@ -18,6 +19,7 @@ export function Page() {
         <Paper.Body>
           <Options />
           <Header />
+          <Form />
           <AckCTA />
           <CheckInReactions />
           <Comments />

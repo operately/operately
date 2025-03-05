@@ -2,7 +2,6 @@ import * as Pages from "@/components/Pages";
 import * as GoalCheckIns from "@/models/goalCheckIns";
 
 import { Paths } from "@/routes/paths";
-
 import { redirectIfFeatureEnabled } from "@/routes/redirectIfFeatureEnabled";
 
 interface LoaderResult {
