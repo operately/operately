@@ -6,12 +6,17 @@ defmodule Operately.Activities.Content.GoalCheckIn do
     belongs_to :space, Operately.Groups.Group
     belongs_to :goal, Operately.Goals.Goal
     belongs_to :update, Operately.Goals.Update
+
+    embeds_one :old_timeframe, Operately.Goals.Timeframe
+    embeds_one :new_timeframe, Operately.Goals.Timeframe
   end
 
   def changeset(attrs) do
     %__MODULE__{}
-    |> cast(attrs, __schema__(:fields))
-    |> validate_required(__schema__(:fields))
+    |> cast(attrs, [:company_id, :space_id, :goal_id, :update_id])
+    |> cast_embed(:old_timeframe)
+    |> cast_embed(:new_timeframe)
+    |> validate_required([:company_id, :space_id, :goal_id, :update_id])
   end
 
   def build(params) do

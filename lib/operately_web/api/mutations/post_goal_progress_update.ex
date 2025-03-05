@@ -10,6 +10,7 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdate do
     field :status, :string
     field :content, :string
     field :goal_id, :string
+    field :timeframe, :timeframe
     field :new_target_values, :string
     field :send_notifications_to_everyone, :boolean
     field :subscriber_ids, list_of(:string)
@@ -50,6 +51,7 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdate do
       target_values: Jason.decode!(inputs.new_target_values),
       content: Jason.decode!(inputs.content),
       status: inputs.status,
+      timeframe: inputs[:timeframe],
       send_to_everyone: inputs[:send_notifications_to_everyone] || false,
       subscription_parent_type: :goal_update,
       subscriber_ids: subscriber_ids || []
