@@ -1,4 +1,5 @@
 import React from "react";
+import * as People from "@/models/people";
 import { useNavigate } from "react-router-dom";
 
 import { Goal } from "@/models/goals";
@@ -55,7 +56,12 @@ export function Form({ goal }: { goal: Goal }) {
     <Forms.Form form={form}>
       <Forms.FieldGroup>
         <div className="flex items-start gap-8 mt-6">
-          <Forms.SelectGoalStatus required label="Status" field="status" reviewerFirstName={goal.reviewer.fullName!} />
+          <Forms.SelectGoalStatus
+            required
+            label="Status"
+            field="status"
+            reviewerFirstName={People.firstName(goal.reviewer)}
+          />
           <Forms.TimeframeField label="Timeframe" field="timeframe" />
         </div>
       </Forms.FieldGroup>
