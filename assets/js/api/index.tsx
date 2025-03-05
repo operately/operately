@@ -1685,6 +1685,7 @@ export interface GetGoalProgressUpdateInput {
   includeAcknowledgedBy?: boolean | null;
   includeReactions?: boolean | null;
   includeGoal?: boolean | null;
+  includeGoalSpace?: boolean | null;
   includeGoalTargets?: boolean | null;
   includeReviewer?: boolean | null;
   includeChampion?: boolean | null;
