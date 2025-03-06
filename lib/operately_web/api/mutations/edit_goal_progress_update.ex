@@ -10,6 +10,7 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalProgressUpdate do
     field :status, :string
     field :content, :string
     field :new_target_values, :string
+    field :timeframe, :timeframe
   end
 
   outputs do
@@ -45,6 +46,7 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalProgressUpdate do
       status: inputs.status,
       content: Jason.decode!(inputs.content),
       new_target_values: Jason.decode!(inputs.new_target_values),
+      timeframe: inputs[:timeframe],
     }}
   end
 
