@@ -12,6 +12,8 @@ import { Activity, ActivityContentGoalTimeframeEditing } from "@/api";
 import RichContent from "@/components/RichContent";
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 import { ActivityHandler } from "../interfaces";
+import { TimeframeEdited } from "./TimeframeEdited";
+import { assertPresent } from "@/utils/assertions";
 
 const GoalTimeframeEditing: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -77,29 +79,17 @@ const GoalTimeframeEditing: ActivityHandler = {
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {
-    const oldTimeframe = Timeframes.parse(content(activity).oldTimeframe!);
-    const newTimeframe = Timeframes.parse(content(activity).newTimeframe!);
+    const data = content(activity);
+
+    assertPresent(data.newTimeframe, "newTimeframe must be present in activity");
+    assertPresent(data.oldTimeframe, "oldTimeframe must be present in activity");
 
     return (
-      <div className="my-2">
-        <div className="flex items-center gap-1 text-sm">
-          <div className="flex items-center gap-1 font-medium">
-            <div className="border border-stroke-base rounded-md px-2 bg-stone-400/20 font-medium text-sm">
-              {Timeframes.format(oldTimeframe)}
-            </div>
-          </div>
-
-          <Icons.IconArrowRight size={14} />
-
-          <div className="flex items-center gap-1 font-medium">
-            <div className="border border-stroke-base rounded-md px-2 bg-stone-400/20 font-medium text-sm">
-              {Timeframes.format(newTimeframe)}
-            </div>
-          </div>
-        </div>
+      <div>
+        <TimeframeEdited newTimeframe={data.newTimeframe} oldTimeframe={data.oldTimeframe} />
 
         {activity.commentThread && !isContentEmpty(activity.commentThread.message) && (
-          <div className="mt-2">
+          <div className="my-2">
             <RichContent jsonContent={activity.commentThread!.message!} />
           </div>
         )}
