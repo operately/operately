@@ -9,58 +9,64 @@ interface Props {
   progress?: number;
 }
 
+const gridLayout = "px-2 py-2 w-full grid grid-cols-[auto_1fr_auto] items-center gap-2 absolute top-0 left-0 bottom-0";
+
 export function Chronometer({ start, end, width = "w-64", progress }: Props) {
+  //
+  // We are displaying two separate grids, one for the completed part and one for the remaining part.
+  // The completed part is clipped to the left, and the remaining part is clipped to the right.
+  // This way we can optimize the colors for the completed and remaining parts.
+  //
+
   progress = React.useMemo(() => progress ?? findProgress(start, end), [start, end, progress]);
-  const dividerContainerRef = React.useRef<HTMLDivElement>(null);
-  const [dividers, setDividers] = React.useState<React.ReactNode[]>([]);
 
-  React.useEffect(() => {
-    if (dividerContainerRef.current) {
-      const containerWidth = dividerContainerRef.current.offsetWidth;
-      setDividers(generateDividers(containerWidth));
-    }
-  }, [width]);
+  const completedStyle = {
+    clipPath: `inset(0 ${100 - progress}% 0 0)`,
+    WebkitClipPath: `inset(0 ${100 - progress}% 0 0)`,
+    zIndex: 20,
+  };
 
-  const gridLayout =
-    "px-2 py-2 w-full grid grid-cols-[auto_1fr_auto] items-center gap-2 absolute top-0 left-0 bottom-0";
+  const remainingStyle = {
+    clipPath: `inset(0 0 0 ${progress}%)`,
+    WebkitClipPath: `inset(0 0 0 ${progress}%)`,
+    zIndex: 10,
+  };
 
+  return (
+    <ChronometerContainer width={width}>
+      <ChronometerProgress progress={progress} />
+
+      <div className={gridLayout} style={completedStyle}>
+        <TimeDisplay time={start} isHighlighted={true} />
+        <Dividers width={width} color="border-indigo-300" />
+        <TimeDisplay time={end} isHighlighted={true} />
+      </div>
+
+      <div className={gridLayout} style={remainingStyle}>
+        <TimeDisplay time={start} />
+        <Dividers width={width} color="border-surface-outline" />
+        <TimeDisplay time={end} />
+      </div>
+    </ChronometerContainer>
+  );
+}
+
+function ChronometerContainer({ width, children }: { width: string; children: React.ReactNode }) {
   return (
     <div className={width}>
       <div className="border border-stroke-base shadow-sm bg-surface-dimmed text-xs rounded-lg py-4 relative overflow-hidden">
-        <div
-          className="absolute top-0 left-0 bottom-0 transition-all duration-300 bg-indigo-500 z-10"
-          style={{ width: progress + "%" }}
-        />
-
-        <div
-          className={gridLayout}
-          style={{
-            clipPath: `inset(0 ${100 - progress}% 0 0)`,
-            WebkitClipPath: `inset(0 ${100 - progress}% 0 0)`,
-            zIndex: 20,
-          }}
-        >
-          <TimeDisplay time={start} isHighlighted={true} />
-          <div />
-          <TimeDisplay time={end} isHighlighted={true} />
-        </div>
-
-        <div
-          className={gridLayout}
-          style={{
-            clipPath: `inset(0 0 0 ${progress}%)`,
-            WebkitClipPath: `inset(0 0 0 ${progress}%)`,
-            zIndex: 10,
-          }}
-        >
-          <TimeDisplay time={start} />
-          <div ref={dividerContainerRef} className="flex-1 flex items-center justify-center overflow-hidden">
-            {dividers.length > 0 ? dividers : null}
-          </div>
-          <TimeDisplay time={end} />
-        </div>
+        {children}
       </div>
     </div>
+  );
+}
+
+function ChronometerProgress({ progress }: { progress: number }) {
+  return (
+    <div
+      className="absolute top-0 left-0 bottom-0 transition-all duration-300 bg-indigo-500 z-10"
+      style={{ width: progress + "%" }}
+    />
   );
 }
 
@@ -98,12 +104,30 @@ function findProgress(start: Date | string, end: Date | string) {
   return Math.min(100, Math.max(0, (elapsedTime / totalDuration) * 100));
 }
 
-function generateDividers(containerWidth: number) {
+function Dividers({ width, color }: { width: string; color: string }) {
+  const ref = React.useRef<HTMLDivElement>(null);
+  const [dividers, setDividers] = React.useState<React.ReactNode[]>([]);
+
+  React.useEffect(() => {
+    if (ref.current) {
+      const containerWidth = ref.current.offsetWidth;
+      setDividers(generateDividers(containerWidth, color));
+    }
+  }, [width, color]);
+
+  return (
+    <div ref={ref} className="flex-1 flex items-center justify-center overflow-hidden">
+      {dividers.length > 0 ? dividers : null}
+    </div>
+  );
+}
+
+function generateDividers(containerWidth: number, color: string) {
   const dividerSpacing = 8;
   const count = Math.max(3, Math.floor(containerWidth / dividerSpacing));
 
   return Array.from({ length: count }).map((_, index) => {
     const height = index % 3 === 0 ? "h-3" : "h-2";
-    return <span key={index} className={`mx-1 border-l border-surface-outline ${height} inline-block flex-shrink-0`} />;
+    return <span key={index} className={`mx-1 border-l ${color} ${height} inline-block flex-shrink-0`} />;
   });
 }
