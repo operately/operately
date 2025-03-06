@@ -3,10 +3,19 @@ import * as React from "react";
 import { FormContext } from "./FormContext";
 import { FormState } from "./useForm";
 
-export function Form({ form, children, testId }: { form: FormState<any>; children: React.ReactNode; testId?: string }) {
+interface Props {
+  form: FormState<any>;
+  children: React.ReactNode;
+  testId?: string;
+  preventSubmitOnEnter?: boolean;
+}
+
+export function Form({ form, children, testId, preventSubmitOnEnter }: Props) {
   const action = (e: React.FormEvent) => {
     e.preventDefault();
-    form.actions.submit("primary");
+    if (!preventSubmitOnEnter) {
+      form.actions.submit("primary");
+    }
   };
 
   return (
