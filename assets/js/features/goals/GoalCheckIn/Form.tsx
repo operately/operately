@@ -10,7 +10,7 @@ interface Props {
   form: any;
   readonly: boolean;
   goal: Goal;
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 export function Form({ form, readonly, goal, children }: Props) {
@@ -19,7 +19,7 @@ export function Form({ form, readonly, goal, children }: Props) {
   assertPresent(goal.reviewer, "reviewer must be present in goal");
 
   return (
-    <Forms.Form form={form}>
+    <Forms.Form form={form} preventSubmitOnEnter >
       <Forms.FieldGroup>
         <div className="flex items-start gap-8 mt-6">
           <Forms.SelectGoalStatus
