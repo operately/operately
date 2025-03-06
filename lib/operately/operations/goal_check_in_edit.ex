@@ -71,6 +71,7 @@ defmodule Operately.Operations.GoalCheckInEdit do
         goal_id: goal.id,
         check_in_id: changes.check_in.id
       }
+      |> maybe_add_timeframes_to_activity(changes[:goal], goal)
     end)
   end
 
@@ -89,5 +90,18 @@ defmodule Operately.Operations.GoalCheckInEdit do
 
   defp timeframe_changed?(new, old) do
     new.start_date != old.start_date or new.end_date != old.end_date
+  end
+
+  defp maybe_add_timeframes_to_activity(content, nil, _), do: content
+
+  defp maybe_add_timeframes_to_activity(content, updated_goal, goal) do
+    if timeframe_changed?(updated_goal.timeframe, goal.timeframe) do
+      Map.merge(content, %{
+        new_timeframe: Map.from_struct(updated_goal.timeframe),
+        old_timeframe: Map.from_struct(goal.timeframe)
+      })
+    else
+      content
+    end
   end
 end
