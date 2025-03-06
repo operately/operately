@@ -38,7 +38,7 @@ export function Chronometer({ start, end, width = "w-64", progress }: Props) {
 
       <div className={gridLayout} style={completedStyle}>
         <TimeDisplay time={start} isHighlighted={true} />
-        <Dividers width={width} color="border-indigo-300" />
+        <Dividers width={width} color={progress >= 100 ? "border-red-300" : "border-indigo-300"} />
         <TimeDisplay time={end} isHighlighted={true} />
       </div>
 
@@ -47,6 +47,8 @@ export function Chronometer({ start, end, width = "w-64", progress }: Props) {
         <Dividers width={width} color="border-surface-outline" />
         <TimeDisplay time={end} />
       </div>
+
+      <ChronometerOverdue progress={progress} />
     </ChronometerContainer>
   );
 }
@@ -62,11 +64,27 @@ function ChronometerContainer({ width, children }: { width: string; children: Re
 }
 
 function ChronometerProgress({ progress }: { progress: number }) {
+  const style = { width: progress + "%" };
+
+  const className = classNames("absolute top-0 left-0 bottom-0 z-10", "transition-all duration-300", {
+    "bg-indigo-500": progress < 100,
+    "bg-red-500": progress >= 100,
+  });
+
+  return <div className={className} style={style} />;
+}
+
+function ChronometerOverdue({ progress }: { progress: number }) {
+  if (progress < 100) {
+    return null;
+  }
+
   return (
-    <div
-      className="absolute top-0 left-0 bottom-0 transition-all duration-300 bg-indigo-500 z-10"
-      style={{ width: progress + "%" }}
-    />
+    <div className="absolute top-0 left-0 bottom-0 w-full z-30">
+      <div className="flex items-center justify-center h-full">
+        <span className="bg-red-500 px-3 py-0.5 rounded text-white-1 text-xs font-bold">Overdue</span>
+      </div>
+    </div>
   );
 }
 

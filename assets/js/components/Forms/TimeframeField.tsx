@@ -50,7 +50,11 @@ export function TimeframeField({ field, label, readonly }: Props) {
             </Popover.Trigger>
           )}
         </div>
-        <Chronometer start={value.startDate!} end={value.endDate!} />
+
+        <div className="flex items-center gap-2">
+          <Chronometer start={value.startDate!} end={value.endDate!} />
+          <div className="text-xs text-red-500 font-bold">Overdue by 2 days</div>
+        </div>
       </div>
 
       <PopoverContent field={field} />
