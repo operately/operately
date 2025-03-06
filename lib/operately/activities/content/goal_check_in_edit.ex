@@ -5,12 +5,17 @@ defmodule Operately.Activities.Content.GoalCheckInEdit do
     belongs_to :company, Operately.Companies.Company
     belongs_to :goal, Operately.Goals.Goal
     belongs_to :check_in, Operately.Goals.Update
+
+    embeds_one :old_timeframe, Operately.Goals.Timeframe
+    embeds_one :new_timeframe, Operately.Goals.Timeframe
   end
 
   def changeset(attrs) do
     %__MODULE__{}
-    |> cast(attrs, __schema__(:fields))
-    |> validate_required(__schema__(:fields))
+    |> cast(attrs, [:company_id, :goal_id, :check_in_id])
+    |> cast_embed(:old_timeframe)
+    |> cast_embed(:new_timeframe)
+    |> validate_required([:company_id, :goal_id, :check_in_id])
   end
 
   def build(params) do
