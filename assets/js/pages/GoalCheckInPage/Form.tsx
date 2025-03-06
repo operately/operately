@@ -1,50 +1,23 @@
 import React from "react";
 
-import { useEditGoalProgressUpdate } from "@/models/goalCheckIns";
 import * as People from "@/models/people";
 import * as Pages from "@/components/Pages";
 
 import Forms from "@/components/Forms";
 import { assertPresent } from "@/utils/assertions";
 import { Spacer } from "@/components/Spacer";
-
-import { useLoadedData } from "./loader";
 import { EditBar } from "@/components/Pages/EditBar";
+import { useForm } from "@/features/goals/GoalCheckIn";
+import { useLoadedData } from "./loader";
 
 export function Form() {
   const { update, goal } = useLoadedData();
-  const [edit] = useEditGoalProgressUpdate();
-
   const isViewMode = Pages.useIsViewMode();
-  const setPageMode = Pages.useSetPageMode();
 
-  assertPresent(update.goal?.timeframe, "goal.timeframe must be present in update");
+  const form = useForm({ mode: "edit", goal, update });
+  const mentionSearchScope = { type: "goal", id: goal.id! } as const;
+
   assertPresent(goal.reviewer, "reviewer must be present in goal");
-
-  const form = Forms.useForm({
-    fields: {
-      status: update.status,
-      timeframe: {
-        startDate: new Date(update.goal.timeframe.startDate!),
-        endDate: new Date(update.goal.timeframe.endDate!),
-      },
-      targets: update.goal.targets!,
-      description: JSON.parse(update.message!),
-    },
-    cancel: () => setPageMode("view"),
-    submit: async () => {
-      await edit({
-        id: update.id,
-        status: form.values.status,
-        content: JSON.stringify(form.values.description),
-        newTargetValues: JSON.stringify(form.values.targets.map((t) => ({ id: t.id, value: t.value }))),
-      });
-
-      setPageMode("view");
-    },
-  });
-
-  const mentionSearchScope = { type: "goal", id: update.goal.id! } as const;
 
   return (
     <Forms.Form form={form}>

@@ -1,61 +1,25 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 
 import * as People from "@/models/people";
-import * as Timeframes from "@/utils/timeframes";
-
 import { Goal } from "@/models/goals";
-import { usePostGoalProgressUpdate } from "@/models/goalCheckIns";
 
 import Forms from "@/components/Forms";
-
-import { Options, SubscribersSelector, useSubscriptions } from "@/features/Subscriptions";
-import { emptyContent } from "@/components/RichContent";
+import { SubscribersSelector, useSubscriptions } from "@/features/Subscriptions";
 import { Spacer } from "@/components/Spacer";
 import { assertPresent } from "@/utils/assertions";
-import { Paths } from "@/routes/paths";
+import { useForm } from "@/features/goals/GoalCheckIn";
 
 export function Form({ goal }: { goal: Goal }) {
-  const [post] = usePostGoalProgressUpdate();
-  const navigate = useNavigate();
-
   assertPresent(goal.space, "space must be present in goal");
-  assertPresent(goal.targets, "targets must be present in goal");
   assertPresent(goal.reviewer, "reviewer must be present in goal");
-  assertPresent(goal.timeframe, "timeframe must be present in goal");
   assertPresent(goal.potentialSubscribers, "potentialSubscribers must be present in goal");
 
-  const currTimeframe = { startDate: new Date(goal.timeframe.startDate!), endDate: new Date(goal.timeframe.endDate!) };
   const subscriptionsState = useSubscriptions(goal.potentialSubscribers, {
     ignoreMe: true,
     notifyPrioritySubscribers: true,
   });
 
-  const form = Forms.useForm({
-    fields: {
-      status: null,
-      timeframe: currTimeframe,
-      targets: goal.targets,
-      description: emptyContent(),
-    },
-    cancel: () => navigate(Paths.goalPath(goal.id!)),
-    submit: async () => {
-      const payload = {
-        goalId: goal.id,
-        status: form.values.status,
-        content: JSON.stringify(form.values.description),
-        newTargetValues: JSON.stringify(form.values.targets.map((t) => ({ id: t.id, value: t.value }))),
-        sendNotificationsToEveryone: subscriptionsState.subscriptionType == Options.ALL,
-        subscriberIds: subscriptionsState.currentSubscribersList,
-      };
-      maybeIncludeTimeframe(payload, form.values.timeframe, currTimeframe);
-
-      const res = await post(payload);
-
-      navigate(Paths.goalProgressUpdatePath(res.update!.id));
-    },
-  });
-
+  const form = useForm({ mode: "create", goal, subscriptionsState });
   const mentionSearchScope = { type: "goal", id: goal.id! } as const;
 
   return (
@@ -97,15 +61,4 @@ export function Form({ goal }: { goal: Goal }) {
       <Forms.Submit saveText="Check In" />
     </Forms.Form>
   );
-}
-
-function maybeIncludeTimeframe(payload, newTimeframe, oldTimeframe) {
-  const timeframesEqual = Timeframes.equalDates(
-    newTimeframe as Timeframes.Timeframe,
-    oldTimeframe as Timeframes.Timeframe,
-  );
-
-  if (!timeframesEqual) {
-    payload.timeframe = Timeframes.serialize({ ...newTimeframe, type: "days" });
-  }
 }
