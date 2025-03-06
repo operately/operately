@@ -6,6 +6,8 @@ import { IconCheck } from "@tabler/icons-react";
 import { Circle } from "@/components/Circle";
 import { InputField } from "./FieldGroup";
 import { useFieldValue, useFieldError } from "./FormContext";
+import { useValidation } from "./validations/hook";
+import { AddErrorFn } from "./useForm/errors";
 
 type Status = "pending" | "on_track" | "concern" | "issue";
 
@@ -59,12 +61,14 @@ export function SelectGoalStatus(props: SelectGoalStatusProps) {
 
   const reviewer = props.noReviewer ? "Reviewer" : props.reviewerFirstName;
 
+  useValidation(props.field, validateStatus(props.required));
+
   return (
     <InputField field={props.field} label={props.label} error={error} hidden={props.hidden}>
       {props.readonly ? (
         <StatusValue value={value} readonly />
       ) : (
-        <SelectDropdown value={value} setValue={setValue} reviewerFirstName={reviewer} />
+        <SelectDropdown value={value} setValue={setValue} reviewerFirstName={reviewer} error={!!error} />
       )}
     </InputField>
   );
@@ -74,10 +78,11 @@ type StatusPickerProps = {
   value: Status;
   setValue: (value: Status) => void;
   reviewerFirstName: string;
+  error: boolean;
 };
 
-function SelectDropdown({ value, setValue, reviewerFirstName }: StatusPickerProps) {
-  const trigger = <StatusValue value={value} />;
+function SelectDropdown({ value, setValue, reviewerFirstName, error }: StatusPickerProps) {
+  const trigger = <StatusValue value={value} error={error} />;
 
   const content = (
     <div>
@@ -142,11 +147,13 @@ function StatusPickerOption({ status, description, color, isSelected, onClick })
   );
 }
 
-function StatusValue({ value, readonly }: { value: Status | null; readonly?: boolean }) {
+function StatusValue({ value, readonly, error }: { value: Status | null; readonly?: boolean; error?: boolean }) {
   const className = classNames(
-    "border border-stroke-base shadow-sm bg-surface-dimmed text-sm rounded-lg px-2 py-1.5 relative overflow-hidden group",
+    "border shadow-sm bg-surface-dimmed text-sm rounded-lg px-2 py-1.5 relative overflow-hidden group",
     {
       "cursor-pointer": !readonly,
+      "border-stroke-base": !error,
+      "border-red-500": error,
     },
   );
 
@@ -197,4 +204,12 @@ function assertReviewer(reviewer: string | undefined, noReviewer: boolean | unde
       throw new Error("Reviewer should be a single word, the first name only");
     }
   }
+}
+
+function validateStatus(required?: boolean) {
+  return (field: string, value: string, addError: AddErrorFn) => {
+    if (required && !STATUS_OPTIONS.includes(value as Status)) {
+      return addError(field, `Must be selected`);
+    }
+  };
 }
