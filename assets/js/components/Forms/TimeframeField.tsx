@@ -39,7 +39,7 @@ export function TimeframeField({ field, label, readonly }: Props) {
   return (
     <Popover.Root open={open} onOpenChange={setOpen}>
       <div>
-        <div className="mb-[2px] flex items-center gap-2">
+        <div className="-mt-px mb-[2px] flex items-center gap-2">
           <Label label={label} field={field} />
 
           {!readonly && (

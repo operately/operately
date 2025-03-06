@@ -54,7 +54,7 @@ function ReadonlyContent({ field }: { field: string }) {
   const [value] = useFieldValue(field);
 
   return (
-    <div className="p-2 border border-stroke-base rounded-lg">
+    <div className="border-surface-outline">
       <RichContent jsonContent={value} skipParse />
     </div>
   );

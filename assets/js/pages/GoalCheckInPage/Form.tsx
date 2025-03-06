@@ -49,38 +49,48 @@ export function Form() {
   return (
     <Forms.Form form={form}>
       <Forms.FieldGroup>
-        <div className="flex items-start gap-8 mt-6">
-          <Forms.SelectGoalStatus
-            readonly={isViewMode}
-            label="Status"
-            field="status"
-            reviewerFirstName={People.firstName(goal.reviewer)}
-          />
-          <Forms.TimeframeField readonly={isViewMode} label="Timeframe" field="timeframe" />
+        <div className="flex items-start gap-8 mt-4 justify-center">
+          {isViewMode ? null : (
+            <Forms.SelectGoalStatus
+              readonly={isViewMode}
+              label={"Status"}
+              field="status"
+              reviewerFirstName={People.firstName(goal.reviewer)}
+            />
+          )}
+
+          <div>
+            <Forms.TimeframeField
+              readonly={isViewMode}
+              label={isViewMode ? undefined : "Timeframe"}
+              field="timeframe"
+            />
+          </div>
         </div>
       </Forms.FieldGroup>
 
       <Spacer size={4} />
 
       <Forms.FieldGroup>
-        <Forms.GoalTargetsField
-          readonly={isViewMode}
-          field="targets"
-          label={isViewMode ? "Targets" : "Update targets"}
-        />
+        <div>
+          <div className="text-lg font-bold mb-1">Targets</div>
+          <Forms.GoalTargetsField readonly={isViewMode} field="targets" />
+        </div>
       </Forms.FieldGroup>
 
       <Spacer size={4} />
 
       <Forms.FieldGroup>
-        <Forms.RichTextArea
-          label={isViewMode ? "Key wins, obstacles and needs" : "Describe key wins, obstacles and needs"}
-          field="description"
-          placeholder="Write here..."
-          mentionSearchScope={mentionSearchScope}
-          readonly={isViewMode}
-          required
-        />
+        <div>
+          <div className="text-lg font-bold mb-3">Key wins, obstacles and needs</div>
+          <Forms.RichTextArea
+            field="description"
+            placeholder="Write here..."
+            mentionSearchScope={mentionSearchScope}
+            readonly={isViewMode}
+            required
+          />
+        </div>
       </Forms.FieldGroup>
 
       <EditBar save={form.actions.submit} cancel={form.actions.cancel} />

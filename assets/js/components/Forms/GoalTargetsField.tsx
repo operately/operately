@@ -98,7 +98,7 @@ function Target({ target, isOpen, readonly }) {
     <div className={containerClass}>
       <div className="flex items-center gap-3">
         <div className="flex-1">
-          <div className="mb-2 flex items-start justify-between">
+          <div className="mb-1.5 flex items-end justify-between">
             <div className="font-medium">{target.name}</div>
 
             <div className="flex items-center gap-2">

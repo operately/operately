@@ -23,21 +23,28 @@ export function Header() {
 }
 
 function Title({ update }: { update: Update }) {
-  assertPresent(update.insertedAt, "Update insertedAt must be defined");
-
   return (
-    <div className="text-content-accent text-2xl font-extrabold">
-      Check-In from <FormattedTime time={update.insertedAt} format="long-date" />
+    <div className="text-content-accent text-3xl font-extrabold">
+      Check-In
+      <span
+        className="ml-2 bg-green-200 px-2 py-1 text-xs uppercase font-semibold inline-block rounded-full"
+        style={{ verticalAlign: "5px" }}
+      >
+        On Track
+      </span>
     </div>
   );
 }
 
 function Subtitle({ update }: { update: Update }) {
   assertPresent(update.author, "Update author must be defined");
+  assertPresent(update.insertedAt, "Update insertedAt must be defined");
 
   return (
     <div className="flex gap-1.5 items-center mt-1 font-medium">
       <AvatarAndName person={update.author} />
+      <BulletDot />
+      <FormattedTime time={update.insertedAt} format="long-date" />
       <BulletDot />
       <Acknowledgement update={update} />
     </div>
