@@ -2762,6 +2762,7 @@ export interface PostGoalProgressUpdateInput {
   status?: string | null;
   content?: string | null;
   goalId?: string | null;
+  timeframe?: Timeframe | null;
   newTargetValues?: string | null;
   sendNotificationsToEveryone?: boolean | null;
   subscriberIds?: string[] | null;
