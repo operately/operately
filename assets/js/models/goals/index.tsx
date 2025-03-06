@@ -4,6 +4,7 @@ export type Goal = api.Goal;
 export type Target = api.Target;
 
 export {
+  Timeframe,
   getGoal,
   getGoals,
   useGetGoals,

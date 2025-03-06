@@ -559,6 +559,9 @@ defmodule OperatelyWeb.Api.Types do
     field :goal_id, :string
     field :goal, :goal
     field :update, :goal_progress_update
+
+    field :old_timeframe, :timeframe
+    field :new_timeframe, :timeframe
   end
 
   object :activity_content_discussion_posting do

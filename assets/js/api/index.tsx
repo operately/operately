@@ -228,6 +228,8 @@ export interface ActivityContentGoalCheckIn {
   goalId?: string | null;
   goal?: Goal | null;
   update?: GoalProgressUpdate | null;
+  oldTimeframe?: Timeframe | null;
+  newTimeframe?: Timeframe | null;
 }
 
 export interface ActivityContentGoalCheckInAcknowledgement {
