@@ -2538,6 +2538,7 @@ export interface EditGoalProgressUpdateInput {
   status?: string | null;
   content?: string | null;
   newTargetValues?: string | null;
+  timeframe?: Timeframe | null;
 }
 
 export interface EditGoalProgressUpdateResult {
