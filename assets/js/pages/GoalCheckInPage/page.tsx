@@ -20,10 +20,10 @@ export function Page() {
 
   return (
     <Pages.Page title={title} testId="goal-check-in-page">
-      <Paper.Root>
+      <Paper.Root size="large">
         <Navigation />
 
-        <Paper.Body>
+        <Paper.Body className="lg:px-40">
           <Options />
           <Header />
           <Form />

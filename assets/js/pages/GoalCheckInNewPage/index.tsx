@@ -28,17 +28,24 @@ export function Page() {
 
   return (
     <Pages.Page title={["Check-In", goal.name!]}>
-      <Paper.Root>
+      <Paper.Root size="large">
         <Navigation />
 
-        <Paper.Body>
-          <div className="text-3xl font-bold">Goal Check-in</div>
-          <div>Share the progress with the team</div>
-
+        <Paper.Body className="lg:px-40">
+          <Header />
           <Form goal={goal} />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
+  );
+}
+
+function Header() {
+  return (
+    <div className="flex flex-col items-center mb-2">
+      <div className="text-3xl font-extrabold">Goal Check-in</div>
+      <div>Share the progress with the team</div>
+    </div>
   );
 }
 
