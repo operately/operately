@@ -14,7 +14,7 @@ defmodule Operately.Goals.Update do
     has_many :comments, Operately.Updates.Comment, foreign_key: :entity_id, where: [entity_type: :goal_update]
 
     field :message, :map
-    field :status, Ecto.Enum, values: [:on_track, :caution, :issue, :pending]
+    field :status, Ecto.Enum, values: [:on_track, :concern, :caution, :issue, :pending]
 
     field :acknowledged_at, :utc_datetime
     belongs_to :acknowledged_by, Operately.People.Person, foreign_key: :acknowledged_by_id
