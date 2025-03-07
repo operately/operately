@@ -69,6 +69,14 @@ function StatusDescription({ status, reviewer }: { status: StatusOptions; review
           {reviewerName || "The reviewer"} should be aware, but no action is needed.
         </>
       );
+    case "concern":
+      return (
+        <>
+          A potential problem may exist, perhaps in the future, if not monitored.
+          <br />
+          {reviewerName || "The reviewer"} should be aware, but no action is needed.
+        </>
+      );
     case "issue":
       return (
         <>
