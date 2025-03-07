@@ -4,6 +4,7 @@ import { Goal } from "@/models/goals";
 
 import * as Timeframes from "@/utils/timeframes";
 import * as Pages from "@/components/Pages";
+import * as Time from "@/utils/time";
 
 import Forms from "@/components/Forms";
 import { Paths } from "@/routes/paths";
@@ -34,7 +35,10 @@ export function useForm(props: EditProps | CreateProps) {
   assertPresent(goal?.timeframe, "timeframe must be present in goal");
   assertPresent(goal?.targets, "targets must be present in goal");
 
-  const currTimeframe = { startDate: new Date(goal.timeframe.startDate!), endDate: new Date(goal.timeframe.endDate!) };
+  const currTimeframe = {
+    startDate: Time.parseDate(goal.timeframe.startDate),
+    endDate: Time.parseDate(goal.timeframe.endDate),
+  };
 
   const form = Forms.useForm({
     fields: {
