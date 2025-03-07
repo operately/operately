@@ -78,7 +78,13 @@ export function SelectGoalStatus(props: SelectGoalStatusProps) {
       {props.readonly ? (
         <StatusValue value={value} readonly />
       ) : (
-        <SelectDropdown value={normalizedValue} rawValue={value} setValue={setValue} reviewerFirstName={reviewer} error={!!error} />
+        <SelectDropdown
+          value={normalizedValue}
+          rawValue={value}
+          setValue={setValue}
+          reviewerFirstName={reviewer}
+          error={!!error}
+        />
       )}
     </InputField>
   );
