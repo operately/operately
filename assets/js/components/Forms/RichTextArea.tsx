@@ -26,6 +26,7 @@ interface RichTextAreaProps {
   fontWeight?: string;
   showToolbarTopBorder?: boolean;
   readonly?: boolean;
+  hideToolbar?: boolean;
 }
 
 const DEFAULT_VALUES = {
@@ -45,16 +46,20 @@ export function RichTextArea(props: RichTextAreaProps) {
 
   return (
     <InputField field={props.field} label={props.label} error={error} hidden={props.hidden}>
-      {props.readonly ? <ReadonlyContent field={props.field} /> : <Editor {...props} error={!!error} />}
+      {props.readonly ? <ReadonlyContent {...props} /> : <Editor {...props} error={!!error} />}
     </InputField>
   );
 }
 
-function ReadonlyContent({ field }: { field: string }) {
+function ReadonlyContent({ field, hideBorder }: RichTextAreaProps) {
   const [value] = useFieldValue(field);
+  const className = classNames({
+    "p-2 rounded-lg": true,
+    "border border-stroke-base": !hideBorder,
+  });
 
   return (
-    <div className="p-2 border border-stroke-base rounded-lg">
+    <div className={className}>
       <RichContent jsonContent={value} skipParse />
     </div>
   );
@@ -89,7 +94,9 @@ function Editor(props: RichTextAreaProps & { error: boolean }) {
   return (
     <div className={wrapperClassName(props)}>
       <TipTapEditor.Root editor={editor.editor}>
-        <TipTapEditor.Toolbar editor={editor.editor} noTopBorder={!props.showToolbarTopBorder} />
+        {!props.hideToolbar && (
+          <TipTapEditor.Toolbar editor={editor.editor} noTopBorder={!props.showToolbarTopBorder} />
+        )}
         <TipTapEditor.EditorContent editor={editor.editor} />
       </TipTapEditor.Root>
     </div>
