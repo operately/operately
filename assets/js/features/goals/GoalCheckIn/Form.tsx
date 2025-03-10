@@ -113,7 +113,7 @@ function Description({ readonly, goal }: { readonly: boolean; goal: Goal }) {
 }
 
 function DescriptionViewMode({ value }: { value: string }) {
-  return <RichContent jsonContent={JSON.stringify(value)} />;
+  return <RichContent jsonContent={JSON.stringify(value)} className="text-lg" />;
 }
 
 function DescriptionEditMode({ goal }: { goal: Goal }) {
