@@ -17,6 +17,7 @@ interface TitleInputProps {
   minLength?: number;
   maxLength?: number;
   testId?: string;
+  readonly?: boolean;
 }
 
 const DEFAULT_VALIDATION_PROPS = {
@@ -36,16 +37,20 @@ export function TitleInput(props: TitleInputProps) {
 
   return (
     <InputField field={field} error={error}>
-      <input
-        name={field}
-        autoFocus={props.autoFocus}
-        placeholder={placeholder}
-        data-test-id={props.testId ?? createTestId(field)}
-        className={styles(!!error)}
-        type="text"
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-      />
+      {props.readonly ? (
+        <div className={styles(false)}>{value}</div>
+      ) : (
+        <input
+          name={field}
+          autoFocus={props.autoFocus}
+          placeholder={placeholder}
+          data-test-id={props.testId ?? createTestId(field)}
+          className={styles(!!error)}
+          type="text"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+        />
+      )}
     </InputField>
   );
 }

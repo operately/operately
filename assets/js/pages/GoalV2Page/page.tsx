@@ -1,0 +1,28 @@
+import React from "react";
+
+import * as Pages from "@/components/Pages";
+import * as Paper from "@/components/PaperContainer";
+import { useClearNotificationsOnLoad } from "@/features/notifications";
+import { assertPresent } from "@/utils/assertions";
+
+import { useLoadedData } from "./loader";
+import { Form } from "./Form";
+import { Options } from "./Options";
+
+export function Page() {
+  const { goal } = useLoadedData();
+
+  assertPresent(goal.notifications, "Goal notifications must be defined");
+  useClearNotificationsOnLoad(goal.notifications);
+
+  return (
+    <Pages.Page title={goal.name!}>
+      <Paper.Root size="large">
+        <Paper.Body>
+          <Options />
+          <Form />
+        </Paper.Body>
+      </Paper.Root>
+    </Pages.Page>
+  );
+}
