@@ -14,6 +14,10 @@ export function statusColor(status: string): string {
     return COLORS.yellow;
   }
 
+  if (status === "concern") {
+    return COLORS.yellow;
+  }
+
   if (status === "issue") {
     return COLORS.red;
   }
