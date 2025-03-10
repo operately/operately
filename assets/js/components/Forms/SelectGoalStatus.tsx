@@ -10,20 +10,29 @@ import { useValidation } from "./validations/hook";
 import { AddErrorFn } from "./useForm/errors";
 
 type Status = "pending" | "on_track" | "concern" | "issue";
+type LegacyStatus = "caution";
+
+type AnyStatus = Status | LegacyStatus;
 
 const STATUS_OPTIONS = ["pending", "on_track", "concern", "issue"] as const;
 
-const STATUS_COLORS = {
+const LEGACY_STATUS_MAP: Record<LegacyStatus, Status> = {
+  caution: "concern",
+};
+
+const STATUS_COLORS: Record<AnyStatus, string> = {
   pending: "bg-stone-500",
   on_track: "bg-accent-1",
   concern: "bg-yellow-500",
+  caution: "bg-yellow-500",
   issue: "bg-red-500",
 };
 
-const STATUS_LABELS = {
+const STATUS_LABELS: Record<AnyStatus, string> = {
   pending: "Pending",
   on_track: "On Track",
   concern: "Concern",
+  caution: "Caution",
   issue: "Issue",
 };
 
@@ -59,6 +68,7 @@ export function SelectGoalStatus(props: SelectGoalStatusProps) {
   assertValidStatus(value);
   assertReviewer(props.reviewerFirstName, props.noReviewer);
 
+  const normalizedValue = normalizeStatus(value);
   const reviewer = props.noReviewer ? "Reviewer" : props.reviewerFirstName;
 
   useValidation(props.field, validateStatus(props.required));
@@ -68,21 +78,28 @@ export function SelectGoalStatus(props: SelectGoalStatusProps) {
       {props.readonly ? (
         <StatusValue value={value} readonly />
       ) : (
-        <SelectDropdown value={value} setValue={setValue} reviewerFirstName={reviewer} error={!!error} />
+        <SelectDropdown
+          value={normalizedValue}
+          rawValue={value}
+          setValue={setValue}
+          reviewerFirstName={reviewer}
+          error={!!error}
+        />
       )}
     </InputField>
   );
 }
 
 type StatusPickerProps = {
-  value: Status;
+  value: Status | null;
+  rawValue: AnyStatus;
   setValue: (value: Status) => void;
   reviewerFirstName: string;
   error: boolean;
 };
 
-function SelectDropdown({ value, setValue, reviewerFirstName, error }: StatusPickerProps) {
-  const trigger = <StatusValue value={value} error={error} />;
+function SelectDropdown({ value, rawValue, setValue, reviewerFirstName, error }: StatusPickerProps) {
+  const trigger = <StatusValue value={rawValue} error={error} />;
 
   const content = (
     <div>
@@ -147,7 +164,7 @@ function StatusPickerOption({ status, description, color, isSelected, onClick })
   );
 }
 
-function StatusValue({ value, readonly, error }: { value: Status | null; readonly?: boolean; error?: boolean }) {
+function StatusValue({ value, readonly, error }: { value: AnyStatus | null; readonly?: boolean; error?: boolean }) {
   const className = classNames(
     "border shadow-sm bg-surface-dimmed text-sm rounded-lg px-2 py-1.5 relative overflow-hidden group",
     {
@@ -176,12 +193,28 @@ function StatusValue({ value, readonly, error }: { value: Status | null; readonl
   );
 }
 
-function assertValidStatus(value: string | null): asserts value is Status | null {
+function normalizeStatus(value: string | null) {
+  if (value === null) return null;
+
+  if (STATUS_OPTIONS.includes(value as Status)) {
+    return value as Status;
+  }
+
+  if (value in LEGACY_STATUS_MAP) {
+    return LEGACY_STATUS_MAP[value as LegacyStatus];
+  }
+
+  throw new Error(`Invalid status value: ${value}`);
+}
+
+function assertValidStatus(value: string | null): asserts value is AnyStatus | null {
   if (value === null) return;
 
-  if (!STATUS_OPTIONS.includes(value as Status)) {
-    throw new Error(`Invalid status value: ${value}`);
+  if (STATUS_OPTIONS.includes(value as Status) || value in LEGACY_STATUS_MAP) {
+    return;
   }
+
+  throw new Error(`Invalid status value: ${value}`);
 }
 
 function assertReviewer(reviewer: string | undefined, noReviewer: boolean | undefined): asserts reviewer is string {
