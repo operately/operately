@@ -308,6 +308,11 @@ export class Paths {
     return createCompanyPath(["goals", goalId]);
   }
 
+  // Temporary path
+  static goalV2Path(goalId: string) {
+    return createCompanyPath(["goals", goalId, "v2"]);
+  }
+
   static newGoalPath(params?: { companyWide: boolean }) {
     return createCompanyPath(["goals", "new"]) + (params?.companyWide ? "?company-wide=true" : "");
   }
