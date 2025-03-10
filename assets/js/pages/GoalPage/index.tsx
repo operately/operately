@@ -10,12 +10,19 @@ import { GoalTargets } from "@/features/goals/GoalTargets";
 import { LastCheckInMessage } from "@/features/goals/GoalCheckIn";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { assertPresent } from "@/utils/assertions";
+import { redirectIfFeatureEnabled } from "@/routes/redirectIfFeatureEnabled";
+import { Paths } from "@/routes/paths";
 
 interface LoaderResult {
   goal: Goals.Goal;
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
+  await redirectIfFeatureEnabled(params, {
+    feature: "new_goal_page",
+    path: Paths.goalV2Path(params.id),
+  });
+
   return {
     goal: await Goals.getGoal({
       id: params.id,
