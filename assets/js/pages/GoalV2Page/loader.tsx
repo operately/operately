@@ -9,6 +9,7 @@ export async function loader({ params }): Promise<LoaderResult> {
   return {
     goal: await Goals.getGoal({
       id: params.id,
+      includeTargets: true,
       includePermissions: true,
       includeUnreadNotifications: true,
     }).then((data) => data.goal!),
