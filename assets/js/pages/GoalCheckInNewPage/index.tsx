@@ -28,7 +28,7 @@ export function Page() {
 
   return (
     <Pages.Page title={["Check-In", goal.name!]}>
-      <Paper.Root>
+      <Paper.Root size="small">
         <Navigation />
 
         <Paper.Body>
