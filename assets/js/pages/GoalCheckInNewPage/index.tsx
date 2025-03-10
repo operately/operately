@@ -28,12 +28,12 @@ export function Page() {
 
   return (
     <Pages.Page title={["Check-In", goal.name!]}>
-      <Paper.Root size="small">
+      <Paper.Root>
         <Navigation />
 
-        <Paper.Body>
-          <div className="text-3xl font-bold">Goal Check-in</div>
-          <div>Share the progress with the team</div>
+        <Paper.Body className="lg:px-28">
+          <div className="text-3xl font-bold text-center">Check-in: {goal.name}</div>
+          <div className="text-center mt-1">Share the progress with the team</div>
 
           <Form goal={goal} />
         </Paper.Body>

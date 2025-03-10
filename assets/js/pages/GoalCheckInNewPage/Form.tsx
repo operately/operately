@@ -23,7 +23,7 @@ export function Form({ goal }: { goal: Goal }) {
     <CheckInForm form={form} goal={goal} readonly={false}>
       <Spacer size={4} />
       <SubscribersSelector state={subscriptionsState} spaceName={goal.space.name!} />
-      <Forms.Submit saveText="Check In" />
+      <Forms.Submit saveText="Submit" buttonSize="base" />
     </CheckInForm>
   );
 }
