@@ -62,12 +62,7 @@ function MessageItem({ activity }: Props) {
 
     case "goal_timeframe_editing":
       const content = activity.content as Activities.ActivityContentGoalTimeframeEditing;
-      const { days, type } = calculateTimeframeChange(content.oldTimeframe, content.newTimeframe);
-      const title = match(type)
-        .with("+", () => `Delay • Deadline extended by ${days}`)
-        .with("-", () => `Acceleration • Deadline reduced by ${days}`)
-        .otherwise(() => "Timeframe changed");
-
+      const title = findTimeframeTitle(content.oldTimeframe, content.newTimeframe);
       return <CommentThread activity={activity} title={title} />;
 
     case "goal_discussion_creation":
@@ -188,6 +183,17 @@ function MessageTitle({ title, children }: { title: string; children?: React.Rea
 function PageLink({ activity, children }) {
   const path = ActivityHandler.pagePath(activity);
   return <DivLink to={path}>{children}</DivLink>;
+}
+
+function findTimeframeTitle(oldTimeframe, newTimeframe) {
+  const { days, type } = calculateTimeframeChange(oldTimeframe, newTimeframe);
+
+  const daysStr = days === 1 ? "1 day" : `${days} days`;
+
+  return match(type)
+    .with("+", () => `Delay • Deadline extended by ${daysStr}`)
+    .with("-", () => `Acceleration • Deadline reduced by ${daysStr}`)
+    .otherwise(() => "Timeframe changed");
 }
 
 function calculateTimeframeChange(oldTimeframe, newTimeframe) {
