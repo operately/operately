@@ -30,7 +30,7 @@ function Title() {
   const { goal } = useLoadedData();
 
   return (
-    <div className="text-content-accent text-3xl font-extrabold">
+    <div className="text-content-accent text-3xl font-extrabold text-center">
       Check-In: {goal.name} <Status />
     </div>
   );
