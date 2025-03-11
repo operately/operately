@@ -36,3 +36,35 @@ export function statusColor(status: string): string {
 
   throw new Error(`Unknown status: ${status}`);
 }
+
+export function statusBGColorClass(status: string): string {
+  if (status === "on_track") {
+    return "bg-green-200";
+  }
+
+  if (status === "caution") {
+    return "bg-yellow-200";
+  }
+
+  if (status === "concern") {
+    return "bg-yellow-200";
+  }
+
+  if (status === "issue") {
+    return "bg-red-200";
+  }
+
+  if (status === "paused") {
+    return "bg-gray-200";
+  }
+
+  if (status === "outdated") {
+    return "bg-gray-200";
+  }
+
+  if (status === "pending") {
+    return "bg-gray-200";
+  }
+
+  throw new Error(`Unknown status: ${status}`);
+}

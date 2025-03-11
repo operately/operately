@@ -5,6 +5,7 @@ export type Target = api.Target;
 
 export {
   Timeframe,
+  Update as CheckIn,
   getGoal,
   getGoals,
   useGetGoals,
@@ -21,6 +22,21 @@ export {
 } from "@/api";
 
 export { filterPossibleParentGoals } from "./filterPossibleParentGoals";
+
+export type GoalActivities =
+  | "goal_timeframe_editing"
+  | "goal_closing"
+  | "goal_check_in"
+  | "goal_reopening"
+  | "goal_discussion_creation";
+
+export const GOAL_ACTIVITIES: GoalActivities[] = [
+  "goal_timeframe_editing",
+  "goal_closing",
+  "goal_check_in",
+  "goal_reopening",
+  "goal_discussion_creation",
+];
 
 export function targetProgressPercentage(target: Target): number {
   const from = target.from!;
