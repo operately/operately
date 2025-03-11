@@ -12,6 +12,7 @@ import { Chronometer } from "@/components/Chronometer";
 import { CustomRangePicker } from "@/components/TimeframeSelector/CustomRangePicker";
 import classNames from "classnames";
 import { compareIds } from "@/routes/paths";
+import { ProgressBar } from "@/components/charts";
 
 interface Props {
   form: any;
@@ -138,40 +139,73 @@ function Targets({ readonly, goal }: { readonly: boolean; goal: Goals.Goal }) {
     <div className="mt-8">
       <p className="text-lg font-bold mb-2">Targets</p>
 
-      <div className="space-y-4">
+      <div className="grid lg:grid-cols-2 gap-4">
         {goal.targets!.map((target) => (
           <TargetCard readonly={readonly} target={target} />
         ))}
+
+        <TargetCard2 readonly={readonly} />
       </div>
     </div>
   );
 }
 
 function TargetCard({ readonly, target }: { readonly: boolean; target: Goals.Target }) {
-  return (
-    <div className="flex border border-surface-outline rounded-lg overflow-hidden">
-      <TargetValues target={target} />
+  const [value] = Forms.useFieldValue<Goals.Target[]>("targets");
+  const currTarget = value.find((t: Goals.Target) => compareIds(t.id, target.id))!;
 
-      <div className="flex-1 px-4 flex items-center gap-4 justify-between">
+  return (
+    <div className="border border-surface-outline rounded-lg overflow-hidden h-full">
+      <div className="bg-stone-100 p-4">
         <div className="font-medium leading-tight">{target.name}</div>
-        <TargetEditButton target={target} readonly={readonly} />
+      </div>
+
+      <div className="p-4">
+        <div className="flex items-end justify-between mb-2">
+          <div className="text-xl font-bold text-gray-800">100M</div>
+          <div className="text-xs">
+            +7.50 <span className="text-accent-1 font-semibold">(+1.2%)</span>
+          </div>
+        </div>
+
+        <ProgressBar percentage={20} width="w-full" height="h-2" rounded={false} bgColor="var(--color-stroke-base)" />
+
+        <div className="flex items-center justify-between mt-1">
+          <div className="text-[10px] text-gray-500">30M</div>
+          <div className="text-[10px] text-gray-500">250M</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function TargetCard2({ readonly, target }: { readonly: boolean; target: Goals.Target }) {
+  return (
+    <div className="border border-surface-outline rounded-lg overflow-hidden h-full p-4">
+      <div className="font-medium leading-tight">Reduce infrastructure costs</div>
+      <div className="border-t border-surface-outline mt-2 w-12" />
+
+      <div className="flex items-end justify-between mt-6 mb-2">
+        <div className="text-xl font-bold text-gray-800">$200M</div>
+        <div className="text-xs">
+          +2 <span className="text-accent-1 font-semibold">(-10.2%)</span>
+        </div>
+      </div>
+
+      <ProgressBar percentage={20} width="w-full" height="h-2" rounded={false} bgColor="var(--color-stroke-base)" />
+
+      <div className="flex items-center justify-between mt-1">
+        <div className="text-[10px] text-gray-500">$300M</div>
+        <div className="text-[10px] text-gray-500">$100M</div>
       </div>
     </div>
   );
 }
 
 function TargetValues({ target }: { target: Goals.Target }) {
-  const [value] = Forms.useFieldValue<Goals.Target[]>("targets");
-  const currTarget = value.find((t: Goals.Target) => compareIds(t.id, target.id))!;
-
   return (
-    <div className="bg-stone-50 w-32 flex flex-col items-center justify-center py-2 border-r border-surface-outline relative shrink-0">
-      <TargetProgress target={currTarget} />
-
-      <div className="relative">
-        <div className="text-xl font-bold text-gray-800 text-center">{currTarget.value}</div>
-        <div className="text-xs text-gray-500">Target: {target.to}</div>
-      </div>
+    <div className="bg-stone-50 flex flex-col items-center justify-center py-2 border-r border-surface-outline relative shrink-0">
+      <div className="relative flex items-center justify-center"></div>
     </div>
   );
 }
@@ -181,7 +215,7 @@ function TargetProgress({ target }: { target: Goals.Target }) {
 
   return (
     <div
-      className="top-0 left-0 bottom-0 width-10 bg-green-200 absolute"
+      className="top-0 left-0 bottom-0 width-10 bg-green-300 absolute"
       style={{ height: "100px", width: progress + "%" }}
     />
   );
