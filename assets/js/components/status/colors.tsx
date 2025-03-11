@@ -36,3 +36,22 @@ export function statusColor(status: string): string {
 
   throw new Error(`Unknown status: ${status}`);
 }
+
+const bgColorMap: Record<string, string> = {
+  "on_track": "bg-green-200",
+  "caution": "bg-yellow-200",
+  "concern": "bg-yellow-200",
+  "issue":   "bg-red-200",
+  "paused":  "bg-gray-200",
+  "outdated": "bg-gray-200",
+  "pending": "bg-gray-200",
+};
+
+
+export function statusBGColorClass(status: string): string {
+  const colorClass = bgColorMap[status];
+  if (!colorClass) {
+    throw new Error(`Unknown status: ${status}`);
+  }
+  return colorClass;
+}

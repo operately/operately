@@ -8,15 +8,15 @@ import { EditBar } from "@/components/Pages/EditBar";
 import { assertPresent } from "@/utils/assertions";
 
 import { useLoadedData } from "./loader";
+import { Messages } from "./Messages";
+import { HorizontalRule, Title } from "./components";
 
 export function Form() {
   const { goal } = useLoadedData();
   const [edit] = Goals.useEditGoal();
+  const setPageMode = useSetPageMode();
 
   assertPresent(goal.targets, "targets must be present in goal");
-
-  const isViewMode = useIsViewMode();
-  const setPageMode = useSetPageMode();
 
   const form = Forms.useForm({
     fields: {
@@ -37,30 +37,15 @@ export function Form() {
     },
   });
 
-  const mentionSearchScope = { type: "goal", id: goal.id! } as const;
-
   return (
     <Forms.Form form={form} preventSubmitOnEnter>
       <div className="flex gap-12">
         <div className="flex-1">
-          <Forms.FieldGroup>
-            <Forms.TitleInput field="name" readonly={isViewMode} />
-            <Forms.RichTextArea
-              field="description"
-              placeholder="Write here..."
-              mentionSearchScope={mentionSearchScope}
-              readonly={isViewMode}
-              height="3rem"
-              hideBorder
-              hideToolbar
-            />
-
-            <div className="my-2 border-t border-stroke-base" />
-
-            <Forms.FieldGroup>
-              <Forms.GoalTargetsField readonly={isViewMode} field="targets" label="Targets" />
-            </Forms.FieldGroup>
-          </Forms.FieldGroup>
+          <TitleAndDescription />
+          <HorizontalRule />
+          <Targets />
+          <HorizontalRule />
+          <Messages />
         </div>
 
         <div className="w-[260px] sticky top-0 self-start"></div>
@@ -68,6 +53,41 @@ export function Form() {
 
       <EditBar save={form.actions.submit} cancel={form.actions.cancel} />
     </Forms.Form>
+  );
+}
+
+function TitleAndDescription() {
+  const { goal } = useLoadedData();
+  const isViewMode = useIsViewMode();
+
+  const mentionSearchScope = { type: "goal", id: goal.id! } as const;
+
+  return (
+    <Forms.FieldGroup>
+      <Forms.TitleInput field="name" readonly={isViewMode} />
+      <Forms.RichTextArea
+        field="description"
+        placeholder="Write here..."
+        mentionSearchScope={mentionSearchScope}
+        readonly={isViewMode}
+        height="3rem"
+        hideBorder
+        hideToolbar
+      />
+    </Forms.FieldGroup>
+  );
+}
+
+function Targets() {
+  const isViewMode = useIsViewMode();
+
+  return (
+    <div>
+      <Title title="Targets" />
+      <Forms.FieldGroup>
+        <Forms.GoalTargetsField readonly={isViewMode} field="targets" />
+      </Forms.FieldGroup>
+    </div>
   );
 }
 
