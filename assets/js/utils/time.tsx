@@ -212,3 +212,27 @@ export function endOfCurrentYear() {
   const now = new Date();
   return new Date(now.getFullYear(), 11, 31);
 }
+
+export function getDateDifference(date1: string | Date, date2: string | Date) {
+  const parsedDate1 = typeof date1 === "string" ? parse(date1) : date1;
+  const parsedDate2 = typeof date2 === "string" ? parse(date2) : date2;
+
+  if (!parsedDate1 || !parsedDate2) {
+    throw new Error("Invalid date input");
+  }
+
+  const [startDate, endDate] =
+    datefsn.compareAsc(parsedDate1, parsedDate2) <= 0 ? [parsedDate1, parsedDate2] : [parsedDate2, parsedDate1];
+
+  // Calculate months difference
+  const months = datefsn.differenceInMonths(endDate, startDate);
+  const afterMonths = datefsn.addMonths(startDate, months);
+
+  // Calculate remaining days
+  const daysAfterMonths = daysBetween(afterMonths, endDate);
+
+  const weeks = Math.floor(daysAfterMonths / 7);
+  const days = daysAfterMonths % 7;
+
+  return { months, weeks, days };
+}
