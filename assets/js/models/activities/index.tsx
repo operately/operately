@@ -1,5 +1,5 @@
 import Api, { Activity, GetActivitiesInput, GetActivityInput } from "@/api";
-export type { Activity, CommentThread } from "@/api";
+export type { Activity, CommentThread, ActivityContentGoalCheckIn, ActivityContentGoalTimeframeEditing } from "@/api";
 
 import * as Time from "@/utils/time";
 import * as api from "@/api";

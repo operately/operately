@@ -191,7 +191,10 @@ export function dayCount(timeframe: Timeframe): number {
   if (!timeframe.startDate) return 0;
   if (!timeframe.endDate) return 0;
 
-  return Time.daysBetween(timeframe.startDate, timeframe.endDate);
+  const startDate = typeof timeframe.startDate === "string" ? new Date(timeframe.startDate) : timeframe.startDate;
+  const endDate = typeof timeframe.endDate === "string" ? new Date(timeframe.endDate) : timeframe.endDate;
+
+  return Time.daysBetween(startDate, endDate);
 }
 
 export function hasOverlap(a: Timeframe, b: Timeframe): boolean {
