@@ -1,6 +1,7 @@
 import React from "react";
 
 import * as Goals from "@/models/goals";
+import * as Time from "@/utils/time";
 
 import Forms from "@/components/Forms";
 import FormattedTime from "@/components/FormattedTime";
@@ -10,10 +11,12 @@ import { EditBar } from "@/components/Pages/EditBar";
 import { assertPresent } from "@/utils/assertions";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { Paths } from "@/routes/paths";
+import { Spacer } from "@/components/Spacer";
 
 import { useLoadedData } from "./loader";
 import { Messages } from "./Messages";
 import { DisableInEditMode, HorizontalRule, Title } from "./components";
+import { findTimeLeft, findUpdatedTargets } from "./utils";
 
 export function Form() {
   const { goal } = useLoadedData();
@@ -21,12 +24,19 @@ export function Form() {
   const setPageMode = useSetPageMode();
 
   assertPresent(goal.targets, "targets must be present in goal");
+  assertPresent(goal.timeframe, "timeframe must be present in goal");
+
+  const currTimeframe = {
+    startDate: Time.parseDate(goal.timeframe.startDate),
+    endDate: Time.parseDate(goal.timeframe.endDate),
+  };
 
   const form = Forms.useForm({
     fields: {
       name: goal.name!,
       description: JSON.parse(goal.description!),
       targets: goal.targets,
+      timeframe: currTimeframe,
     },
     cancel: () => setPageMode("view"),
     submit: async () => {
@@ -55,6 +65,8 @@ export function Form() {
 
         <div className="w-[260px] sticky top-0 self-start">
           <Status />
+          <Spacer size={3} />
+          <Timeframe />
         </div>
       </div>
 
@@ -128,17 +140,18 @@ function Status() {
   );
 }
 
-function findUpdatedTargets(targets: Goals.Target[], updatedTargets: Goals.Target[]) {
-  const originalTargets: Map<string, Goals.Target> = new Map();
+function Timeframe() {
+  const { goal } = useLoadedData();
+  const isViewMode = useIsViewMode();
 
-  targets.forEach((target) => {
-    originalTargets.set(target.id!, target);
-  });
+  assertPresent(goal.timeframe, "timeframe must be present in goal");
 
-  const changedTargets = updatedTargets.filter((target) => {
-    const originalTarget = originalTargets.get(target.id!);
-    return target.value !== originalTarget?.value;
-  });
+  const timeLeft = findTimeLeft(goal.timeframe);
 
-  return changedTargets;
+  return (
+    <Forms.FieldGroup>
+      <Forms.TimeframeField readonly={isViewMode} field="timeframe" customLabel={<Title title="Timeframe" />} />
+      <div className="text-xs text-content-dimmed">{timeLeft}</div>
+    </Forms.FieldGroup>
+  );
 }

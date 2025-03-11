@@ -15,6 +15,7 @@ interface Props {
   field: string;
   label?: string;
   readonly?: boolean;
+  customLabel?: React.ReactNode;
 }
 
 //
@@ -32,7 +33,7 @@ interface Props {
 // });
 //
 
-export function TimeframeField({ field, label, readonly }: Props) {
+export function TimeframeField({ field, label, readonly, customLabel }: Props) {
   const [open, setOpen] = React.useState(false);
   const [value] = useFieldValue<Timeframe>(field);
 
@@ -40,7 +41,7 @@ export function TimeframeField({ field, label, readonly }: Props) {
     <Popover.Root open={open} onOpenChange={setOpen}>
       <div>
         <div className="mb-[2px] flex items-center gap-2">
-          <Label label={label} field={field} />
+          {customLabel || <Label label={label} field={field} />}
 
           {!readonly && (
             <Popover.Trigger>
