@@ -31,7 +31,7 @@ export function Page(props: PageProps): JSX.Element {
 
   return (
     <PageContext.Provider value={{ mode, setMode }}>
-      <div data-test-id={props.testId}>{props.children}</div>;
+      <div data-test-id={props.testId}>{props.children}</div>
     </PageContext.Provider>
   );
 }

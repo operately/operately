@@ -1,0 +1,205 @@
+import * as React from "react";
+
+import * as Activities from "@/models/activities";
+import { GoalActivities } from "@/models/goals";
+import ActivityHandler from "@/features/activities";
+import * as Timeframes from "@/utils/timeframes";
+
+import classNames from "classnames";
+import { match } from "ts-pattern";
+
+import FormattedTime from "@/components/FormattedTime";
+import { AvatarLink } from "@/components/Avatar";
+import { SecondaryButton } from "@/components/Buttons";
+import { Spacer } from "@/components/Spacer";
+import { richContentToString } from "@/components/RichContent";
+import { statusBGColorClass } from "@/components/status/colors";
+import { DivLink } from "@/components/Link";
+import { Paths } from "@/routes/paths";
+import { assertPresent } from "@/utils/assertions";
+import { truncateString } from "@/utils/strings";
+
+import { DisableInEditMode, Title } from "./components";
+import { useLoadedData } from "./loader";
+
+interface Props {
+  activity: Activities.Activity;
+}
+
+export function Messages() {
+  const { goal } = useLoadedData();
+  const writeMessagePath = Paths.newGoalDiscussionPath(goal.id!);
+
+  return (
+    <DisableInEditMode>
+      <Title title="Conversations" />
+      <MessagesList />
+
+      <Spacer size={2} />
+      <SecondaryButton size="xs" linkTo={writeMessagePath}>
+        Write message
+      </SecondaryButton>
+    </DisableInEditMode>
+  );
+}
+
+function MessagesList() {
+  const { activities } = useLoadedData();
+
+  return (
+    <div className="mt-4">
+      {activities.map((activity) => (
+        <MessageItem key={activity.id} activity={activity} />
+      ))}
+    </div>
+  );
+}
+
+function MessageItem({ activity }: Props) {
+  switch (activity.action as GoalActivities) {
+    case "goal_check_in":
+      return <CheckIn activity={activity} />;
+
+    case "goal_timeframe_editing":
+      const content = activity.content as Activities.ActivityContentGoalTimeframeEditing;
+      const { days, type } = calculateTimeframeChange(content.oldTimeframe, content.newTimeframe);
+      const title = match(type)
+        .with("+", () => `Delay • Deadline extended by ${days}`)
+        .with("-", () => `Acceleration • Deadline reduced by ${days}`)
+        .otherwise(() => "Timeframe changed");
+
+      return <CommentThread activity={activity} title={title} />;
+
+    case "goal_discussion_creation":
+      assertPresent(activity.commentThread, "commentThread must be present in activity");
+      const discussionTitle = `Discussion • ${activity.commentThread.title}`;
+      return <CommentThread activity={activity} title={discussionTitle} />;
+
+    case "goal_closing":
+      return <CommentThread activity={activity} title="Goal closed" />;
+
+    case "goal_reopening":
+      return <CommentThread activity={activity} title="Goal reopened" />;
+  }
+}
+
+function CheckIn({ activity }: Props) {
+  const content = activity.content as Activities.ActivityContentGoalCheckIn;
+
+  assertPresent(activity.author, "author must be present in activity");
+  assertPresent(content.update, "update must be present in activity content");
+
+  return (
+    <Container>
+      <Author author={activity.author} />
+
+      <PageLink activity={activity}>
+        <MessageTitle title="Check In">
+          <StatusLabel status={content.update.status!} />
+        </MessageTitle>
+
+        <Content
+          authorName={activity.author.fullName!}
+          date={content.update.insertedAt!}
+          content={content.update.message!}
+        />
+      </PageLink>
+    </Container>
+  );
+}
+
+function StatusLabel({ status }: { status: string }) {
+  const color = statusBGColorClass(status);
+  const statusClass = classNames(color, "rounded-full px-1.5 py-0.5 text-[10px] uppercase font-semibold text-black");
+  const text = status.replace("_", " ");
+
+  return <div className={statusClass}>{text}</div>;
+}
+
+interface CommentThreadProps extends Props {
+  title: string;
+}
+
+function CommentThread({ activity, title }: CommentThreadProps) {
+  assertPresent(activity.author, "author must be present in activity");
+  assertPresent(activity.commentThread, "commentThread must be present in activity");
+
+  return (
+    <Container>
+      <Author author={activity.author} />
+
+      <PageLink activity={activity}>
+        <MessageTitle title={title} />
+
+        <Content
+          authorName={activity.author.fullName!}
+          date={activity.insertedAt!}
+          content={activity.commentThread.message!}
+        />
+      </PageLink>
+    </Container>
+  );
+}
+
+interface ContentProps {
+  authorName: string;
+  date: string;
+  content: string;
+}
+
+function Content({ authorName, date, content }: ContentProps) {
+  const fullMessage = richContentToString(JSON.parse(content));
+  const message = truncateString(fullMessage, 180);
+
+  return (
+    <div className="text-sm mt-0.5">
+      <span className="text-stone-500">
+        <FormattedTime time={date} format="long-date" />
+      </span>
+      <span className="mx-1 text-stone-500">&bull;</span>
+      <span className="text-stone-500">{authorName}</span>
+      <span className="mx-1 text-stone-500">&bull;</span>
+      {message}
+    </div>
+  );
+}
+
+function Author({ author }) {
+  return (
+    <div className="font-bold flex items-center gap-1 pt-1">
+      <AvatarLink person={author} size={30} />
+    </div>
+  );
+}
+
+function Container({ children }) {
+  return <div className="flex items-start gap-3 pb-4">{children}</div>;
+}
+
+function MessageTitle({ title, children }: { title: string; children?: React.ReactNode }) {
+  return (
+    <div className="inline-flex items-center gap-2">
+      <span className="font-bold">{title}</span>
+      {children}
+    </div>
+  );
+}
+
+function PageLink({ activity, children }) {
+  const path = ActivityHandler.pagePath(activity);
+  return <DivLink to={path}>{children}</DivLink>;
+}
+
+function calculateTimeframeChange(oldTimeframe, newTimeframe) {
+  const prevCount = Timeframes.dayCount(oldTimeframe);
+  const currCount = Timeframes.dayCount(newTimeframe);
+  const diff = Math.abs(prevCount - currCount);
+
+  if (prevCount < currCount) {
+    return { days: diff, type: "+" };
+  } else if (currCount < prevCount) {
+    return { days: diff, type: "-" };
+  } else {
+    return { days: 0, type: "" };
+  }
+}
