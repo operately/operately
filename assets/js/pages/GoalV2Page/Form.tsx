@@ -16,6 +16,7 @@ import { Spacer } from "@/components/Spacer";
 import { useLoadedData } from "./loader";
 import { Messages } from "./Messages";
 import { DisableInEditMode, HorizontalRule, Title } from "./components";
+import { findTimeLeft, findUpdatedTargets } from "./utils";
 
 export function Form() {
   const { goal } = useLoadedData();
@@ -153,34 +154,4 @@ function Timeframe() {
       <div className="text-xs text-content-dimmed">{timeLeft}</div>
     </Forms.FieldGroup>
   );
-}
-
-function findUpdatedTargets(targets: Goals.Target[], updatedTargets: Goals.Target[]) {
-  const originalTargets: Map<string, Goals.Target> = new Map();
-
-  targets.forEach((target) => {
-    originalTargets.set(target.id!, target);
-  });
-
-  const changedTargets = updatedTargets.filter((target) => {
-    const originalTarget = originalTargets.get(target.id!);
-    return target.value !== originalTarget?.value;
-  });
-
-  return changedTargets;
-}
-
-function findTimeLeft(timeframe) {
-  const { months, weeks, days } = Time.getDateDifference(timeframe.startDate, timeframe.endDate);
-
-  if (months > 0) {
-    return months === 1 ? "1 month left" : `${months} months left`;
-  }
-  if (weeks > 0) {
-    return weeks === 1 ? "1 week left" : `${months} weeks left`;
-  }
-  if (days > 0) {
-    return days === 1 ? "1 day left" : `${days} days left`;
-  }
-  return "";
 }
