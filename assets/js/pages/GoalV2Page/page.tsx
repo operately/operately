@@ -8,6 +8,7 @@ import { assertPresent } from "@/utils/assertions";
 import { useLoadedData } from "./loader";
 import { Form } from "./Form";
 import { Options } from "./Options";
+import { GoalFeed } from "./GoalFeed";
 
 export function Page() {
   const { goal } = useLoadedData();
@@ -21,6 +22,7 @@ export function Page() {
         <Paper.Body>
           <Options />
           <Form />
+          <GoalFeed />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
