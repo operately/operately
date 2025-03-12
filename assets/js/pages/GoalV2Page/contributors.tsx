@@ -1,11 +1,27 @@
 import React from "react";
 
 import Forms from "@/components/Forms";
-
-import { useLoadedData } from "./loader";
-import { Title } from "./components";
+import AvatarList from "@/components/AvatarList";
 import { AvatarLink } from "@/components/Avatar";
 import { useIsViewMode } from "@/components/Pages";
+
+import { useLoadedData } from "./loader";
+import { DisableInEditMode, Title } from "./components";
+
+export function Contributors() {
+  const { contributors } = useLoadedData();
+  const text = contributors.length === 1 ? "1 person" : `${contributors.length} people`;
+
+  return (
+    <DisableInEditMode>
+      <Title title="Contributors" />
+      <AvatarList people={contributors} size="tiny" maxElements={20} />
+      <div className="text-xs text-content-dimmed mt-2">
+        {text} contributed by working on related projects and sub-goals
+      </div>
+    </DisableInEditMode>
+  );
+}
 
 export function Champion() {
   const { goal } = useLoadedData();
