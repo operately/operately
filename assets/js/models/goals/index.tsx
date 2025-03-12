@@ -8,6 +8,7 @@ export {
   Update as CheckIn,
   getGoal,
   getGoals,
+  listGoalContributors,
   useGetGoals,
   useCreateGoal,
   useEditGoal,
