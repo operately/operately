@@ -5,7 +5,6 @@ import { GoalActivities } from "@/models/goals";
 import ActivityHandler from "@/features/activities";
 import * as Timeframes from "@/utils/timeframes";
 
-import classNames from "classnames";
 import { match } from "ts-pattern";
 
 import FormattedTime from "@/components/FormattedTime";
@@ -13,7 +12,6 @@ import { AvatarLink } from "@/components/Avatar";
 import { SecondaryButton } from "@/components/Buttons";
 import { Spacer } from "@/components/Spacer";
 import { richContentToString } from "@/components/RichContent";
-import { statusBGColorClass } from "@/components/status/colors";
 import { DivLink } from "@/components/Link";
 import { Paths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
@@ -21,6 +19,7 @@ import { truncateString } from "@/utils/strings";
 
 import { DisableInEditMode, Title } from "./components";
 import { useLoadedData } from "./loader";
+import { GoalStatusBadge } from "@/features/goals/GoalStatusBadge";
 
 interface Props {
   activity: Activities.Activity;
@@ -90,7 +89,7 @@ function CheckIn({ activity }: Props) {
 
       <PageLink activity={activity}>
         <MessageTitle title="Check In">
-          <StatusLabel status={content.update.status!} />
+          <GoalStatusBadge status={content.update.status!} size="xs" />
         </MessageTitle>
 
         <Content
@@ -101,14 +100,6 @@ function CheckIn({ activity }: Props) {
       </PageLink>
     </Container>
   );
-}
-
-function StatusLabel({ status }: { status: string }) {
-  const color = statusBGColorClass(status);
-  const statusClass = classNames(color, "rounded-full px-1.5 py-0.5 text-[10px] uppercase font-semibold text-black");
-  const text = status.replace("_", " ");
-
-  return <div className={statusClass}>{text}</div>;
 }
 
 interface CommentThreadProps extends Props {

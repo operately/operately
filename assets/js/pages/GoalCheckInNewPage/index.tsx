@@ -46,7 +46,7 @@ export function Page() {
 function Header({ goal }: { goal: Goals.Goal }) {
   return (
     <div>
-      <h1 className="text-3xl font-bold text-center">Check-in: {goal.name}</h1>
+      <h1 className="text-3xl font-extrabold text-center">Check-in: {goal.name}</h1>
       <p className="text-center mt-1">Share the progress with the team</p>
     </div>
   );
