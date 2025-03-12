@@ -11,6 +11,8 @@ export async function loader({ params }): Promise<LoaderResult> {
   const [goal, activities] = await Promise.all([
     Goals.getGoal({
       id: params.id,
+      includeChampion: true,
+      includeReviewer: true,
       includeTargets: true,
       includePermissions: true,
       includeUnreadNotifications: true,
