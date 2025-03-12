@@ -1,5 +1,6 @@
 import * as React from "react";
 import * as Icons from "@tabler/icons-react";
+import * as Pages from "@/components/Pages";
 
 import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
@@ -19,7 +20,7 @@ export function Header() {
     <div className="flex flex-col items-center">
       <div className="text-center">
         <Title update={update} />
-        <GoalStatusBadge status={update.status!} className="inline-block ml-2 align-[5px]" />
+        <Status update={update} />
       </div>
 
       <Subtitle update={update} />
@@ -46,6 +47,16 @@ function Subtitle({ update }: { update: Update }) {
       <Acknowledgement update={update} />
     </div>
   );
+}
+
+function Status({ update }: { update: Update }) {
+  const mode = Pages.usePageMode();
+
+  if (mode === "view") {
+    return <GoalStatusBadge status={update.status!} className="inline-block ml-2 align-[5px]" />;
+  } else {
+    return null;
+  }
 }
 
 function AvatarAndName({ person }: { person: Person }) {
