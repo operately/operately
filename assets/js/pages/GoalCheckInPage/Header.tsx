@@ -10,13 +10,18 @@ import { assertPresent } from "@/utils/assertions";
 import { Update } from "@/models/goalCheckIns";
 import { BulletDot } from "@/components/TextElements";
 import { Person } from "@/api";
+import { GoalStatusBadge } from "@/features/goals/GoalStatusBadge";
 
 export function Header() {
   const { update } = useLoadedData();
 
   return (
     <div className="flex flex-col items-center">
-      <Title update={update} />
+      <div className="text-center">
+        <Title update={update} />
+        <GoalStatusBadge status={update.status!} className="inline-block ml-2 align-[5px]" />
+      </div>
+
       <Subtitle update={update} />
     </div>
   );
@@ -26,7 +31,7 @@ function Title({ update }: { update: Update }) {
   assertPresent(update.insertedAt, "Update insertedAt must be defined");
   assertPresent(update.goal, "Update goal must be defined");
 
-  return <div className="text-content-accent text-3xl font-extrabold">Check-In: {update.goal.name}</div>;
+  return <span className="text-content-accent text-3xl font-extrabold">Check-In: {update.goal.name}</span>;
 }
 
 function Subtitle({ update }: { update: Update }) {
