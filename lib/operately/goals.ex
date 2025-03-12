@@ -2,8 +2,8 @@ defmodule Operately.Goals do
   import Ecto.Query, warn: false
 
   alias Operately.Repo
-  alias Operately.Goals.Goal
-  alias Operately.Goals.Target
+  alias Operately.Goals.{Goal, Target}
+  alias Operately.People.Person
   alias Operately.Access.Fetch
 
   def list_goals do
@@ -112,6 +112,32 @@ defmodule Operately.Goals do
     else
       true
     end
+  end
+
+  def list_goal_contributors(goal_id, requester: requester) when is_binary(goal_id) do
+    initial_query = goal_contribs_initial_query(goal_id, requester)
+    recursive_query = from(g in Goal, join: parent in "goal_tree", on: g.parent_goal_id == parent.id)
+
+    goal_tree_query = union_all(initial_query, ^recursive_query)
+
+    {"goal_tree", Goal}
+    |> recursive_ctes(true)
+    |> with_cte("goal_tree", as: ^goal_tree_query)
+    |> join(:left, [g], assoc(g, :projects))
+    |> join(:left, [_, p], assoc(p, :contributors), as: :contrib)
+    |> join(:left, [contrib: c], assoc(c, :person), as: :person)
+    |> select([contrib: c, person: p], %{c | person: p})
+    |> distinct([contrib: c], c.id)
+    |> Repo.all()
+  end
+
+  defp goal_contribs_initial_query(goal_id, nil) do
+    from(g in Goal, where: g.id == ^goal_id)
+  end
+
+  defp goal_contribs_initial_query(goal_id, requester = %Person{}) do
+    from(g in Goal, as: :resource, where: g.id == ^goal_id)
+    |> Fetch.join_access_level(requester.id)
   end
 
   alias Operately.Goals.Update

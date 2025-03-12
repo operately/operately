@@ -44,6 +44,7 @@ defmodule Operately.Access.Fetch do
       join: g in assoc(b, :group),
       join: m in assoc(g, :memberships),
       join: p in assoc(m, :person),
+      where: b.access_level >= ^Binding.view_access(),
       where: m.person_id == ^person_id and is_nil(p.suspended_at)
     )
   end
