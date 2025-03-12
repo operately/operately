@@ -172,53 +172,61 @@ function TargetCard({ index, target, readonly }: { index: number; target: Goals.
 
   return (
     <div className="border border-surface-outline rounded-lg overflow-hidden h-full p-4 flex flex-col justify-between">
-      <div>
-        <div className="font-medium leading-tight">{target.name}</div>
-      </div>
+      <div className="font-medium leading-tight">{target.name}</div>
 
       <div>
-        {readonly ? (
-          <div>
-            <div className="border-t border-surface-outline mt-2 w-12" />
-            <div className="flex items-end justify-between mt-6 mb-2">
-              <div className="text-xl font-bold text-gray-800">
-                {target.value} {target.unit}
-              </div>
-              <div className="text-xs">
-                +2 <span className="text-accent-1 font-semibold">(-10.2%)</span>
-              </div>
+        <div className="border-t border-surface-outline mt-2 w-12" />
+        <div className="flex items-end justify-between mt-4 mb-2">
+          {readonly ? (
+            <div className="text-xl font-bold text-gray-800">
+              {target.value} {target.unit}
             </div>
-            <ProgressBar
-              percentage={progress}
-              width="w-full"
-              height="h-2"
-              rounded={false}
-              bgColor="var(--color-stroke-base)"
-            />
-
-            <div className="flex items-center justify-between mt-1">
-              <div className="text-[10px] text-gray-500">
-                {target.from} {target.unit}
-              </div>
-              <div className="text-[10px] text-gray-500">
-                {target.to} {target.unit}
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="mt-4 bg-surface-dimmed -mx-4 px-4 py-4 border-y border-stroke-base">
-            <div className="text-xs mb-0.5 font-medium uppercase">Current Value</div>
-            <div className="border border-surface-outline rounded-lg">
+          ) : (
+            <div className="border border-surface-outline">
               <input
                 type="text"
                 onChange={updateValue}
                 value={target.value!}
-                className="border-none ring-0 outline-none p-2 rounded-lg w-full"
+                className="border-none ring-0 outline-none p-2 w-20 text-sm font-medium"
               />
             </div>
+          )}
+          <div className="text-xs">
+            +2 <span className="text-accent-1 font-semibold">(-10.2%)</span>
           </div>
-        )}
+        </div>
+
+        <ProgressBar
+          percentage={progress}
+          width="w-full"
+          height="h-2"
+          rounded={false}
+          bgColor="var(--color-stroke-base)"
+        />
+
+        <div className="flex items-center justify-between mt-1">
+          <div className="text-[10px] text-gray-500">
+            {target.from} {target.unit}
+          </div>
+          <div className="text-[10px] text-gray-500">
+            {target.to} {target.unit}
+          </div>
+        </div>
       </div>
     </div>
   );
 }
+// ) : (
+//   <div className="mt-4 bg-surface-dimmed -mx-4 px-4 py-4 border-y border-stroke-base">
+//     <div className="text-xs mb-0.5 font-medium uppercase">Current Value</div>
+//     <div className="border border-surface-outline rounded-lg">
+//       <input
+//         type="text"
+//         onChange={updateValue}
+//         value={target.value!}
+//         className="border-none ring-0 outline-none p-2 rounded-lg w-full"
+//       />
+//     </div>
+//   </div>
+// )}
+// </div>
