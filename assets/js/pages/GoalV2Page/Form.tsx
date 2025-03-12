@@ -4,19 +4,17 @@ import * as Goals from "@/models/goals";
 import * as Time from "@/utils/time";
 
 import Forms from "@/components/Forms";
-import FormattedTime from "@/components/FormattedTime";
 import { useIsViewMode, useSetPageMode } from "@/components/Pages";
-import { PrimaryButton } from "@/components/Buttons";
 import { EditBar } from "@/components/Pages/EditBar";
 import { assertPresent } from "@/utils/assertions";
-import { useNavigateTo } from "@/routes/useNavigateTo";
-import { Paths } from "@/routes/paths";
-import { Spacer } from "@/components/Spacer";
 
 import { useLoadedData } from "./loader";
 import { Messages } from "./Messages";
-import { DisableInEditMode, HorizontalRule, Title } from "./components";
-import { findTimeLeft, findUpdatedTargets } from "./utils";
+import { HorizontalRule, Title } from "./components";
+import { findUpdatedTargets } from "./utils";
+import { Champion, Reviewer } from "./contributors";
+import { Timeframe } from "./Timeframe";
+import { NextCheckIn } from "./NextCheckIn";
 
 export function Form() {
   const { goal } = useLoadedData();
@@ -25,6 +23,8 @@ export function Form() {
 
   assertPresent(goal.targets, "targets must be present in goal");
   assertPresent(goal.timeframe, "timeframe must be present in goal");
+  assertPresent(goal.champion, "champion must be present in goal");
+  assertPresent(goal.reviewer, "reviewer must be present in goal");
 
   const currTimeframe = {
     startDate: Time.parseDate(goal.timeframe.startDate),
@@ -37,6 +37,8 @@ export function Form() {
       description: JSON.parse(goal.description!),
       targets: goal.targets,
       timeframe: currTimeframe,
+      champion: goal.champion.id,
+      reviewer: goal.reviewer.id,
     },
     cancel: () => setPageMode("view"),
     submit: async () => {
@@ -63,10 +65,11 @@ export function Form() {
           <Messages />
         </div>
 
-        <div className="w-[260px] sticky top-0 self-start">
-          <Status />
-          <Spacer size={3} />
+        <div className="w-[260px] flex flex-col gap-4 sticky top-0 self-start">
+          <NextCheckIn />
           <Timeframe />
+          <Champion />
+          <Reviewer />
         </div>
       </div>
 
@@ -116,42 +119,5 @@ function Targets() {
         <Forms.GoalTargetsField readonly={isViewMode} field="targets" />
       </Forms.FieldGroup>
     </div>
-  );
-}
-
-function Status() {
-  const { goal } = useLoadedData();
-  const navigate = useNavigateTo(Paths.goalCheckInNewPath(goal.id!));
-
-  assertPresent(goal.nextUpdateScheduledAt, "nextUpdateScheduledAt must be present in goal");
-
-  return (
-    <DisableInEditMode>
-      <Title title="Next Check-in" />
-      <div className="text-xs mb-2">
-        Scheduled for <FormattedTime time={goal.nextUpdateScheduledAt} format="long-date" />
-      </div>
-      <div className="text-base">
-        <PrimaryButton onClick={navigate} size="xs">
-          Check-in Now
-        </PrimaryButton>
-      </div>
-    </DisableInEditMode>
-  );
-}
-
-function Timeframe() {
-  const { goal } = useLoadedData();
-  const isViewMode = useIsViewMode();
-
-  assertPresent(goal.timeframe, "timeframe must be present in goal");
-
-  const timeLeft = findTimeLeft(goal.timeframe);
-
-  return (
-    <Forms.FieldGroup>
-      <Forms.TimeframeField readonly={isViewMode} field="timeframe" customLabel={<Title title="Timeframe" />} />
-      <div className="text-xs text-content-dimmed">{timeLeft}</div>
-    </Forms.FieldGroup>
   );
 }
