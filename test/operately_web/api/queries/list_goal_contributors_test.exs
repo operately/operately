@@ -66,47 +66,38 @@ defmodule OperatelyWeb.Api.Queries.ListGoalContributorsTest do
       |> Factory.add_space(:space)
       |> Factory.add_goal(:parent_goal, :space)
       |> Factory.add_goal(:child_goal, :space, parent_goal: :parent_goal)
+      |> Factory.add_goal(:childless_goal, :space, parent_goal: :child_goal)
       |> Factory.add_project(:project1, :space, goal: :parent_goal)
       |> Factory.add_project(:project2, :space, goal: :child_goal)
       |> Factory.add_project(:project3, :space, goal: :child_goal)
-      |> Factory.add_project_contributor(:contrib1, :project1)
-      |> Factory.add_project_contributor(:contrib2, :project1)
-      |> Factory.add_project_contributor(:contrib3, :project2)
-      |> Factory.add_project_contributor(:contrib4, :project2)
-      |> Factory.add_project_contributor(:contrib5, :project3)
+      |> Factory.add_project_contributor(:contrib1, :project1, :as_person)
+      |> Factory.add_project_contributor(:contrib2, :project1, :as_person)
+      |> Factory.add_project_contributor(:contrib3, :project2, :as_person)
+      |> Factory.add_project_contributor(:contrib4, :project2, :as_person)
+      |> Factory.add_project_contributor(:contrib5, :project3, :as_person)
     end
 
     test "returns contributors for goal with child goals", ctx do
       assert {200, res} = query(ctx.conn, :list_goal_contributors, %{goal_id: Paths.goal_id(ctx.parent_goal)})
 
-      {contribs, champions} = Enum.split_with(res.contributors, fn c -> c.role == "contributor" end)
-      people = [ctx.contrib1, ctx.contrib2, ctx.contrib3, ctx.contrib4, ctx.contrib5]
+      people = [ctx.creator, ctx.contrib1, ctx.contrib2, ctx.contrib3, ctx.contrib4, ctx.contrib5]
 
-      assert length(res.contributors) == 8
+      assert length(res.contributors) == 6
 
       Enum.each(people, fn p ->
-        person = Repo.preload(p, :person).person
-        assert Enum.find(contribs, &(Paths.person_id(person) == &1.person.id))
-      end)
-      Enum.each(champions, fn c ->
-        assert Paths.person_id(ctx.creator) == c.person.id
+        assert Enum.find(res.contributors, &(Paths.person_id(p) == &1.id))
       end)
     end
 
     test "returns contributors for goal without child goals", ctx do
       assert {200, res} = query(ctx.conn, :list_goal_contributors, %{goal_id: Paths.goal_id(ctx.child_goal)})
 
-      {contribs, champions} = Enum.split_with(res.contributors, fn c -> c.role == "contributor" end)
-      people = [ctx.contrib3, ctx.contrib4, ctx.contrib5]
+      people = [ctx.creator, ctx.contrib3, ctx.contrib4, ctx.contrib5]
 
-      assert length(res.contributors) == 5
+      assert length(res.contributors) == 4
 
       Enum.each(people, fn p ->
-        person = Repo.preload(p, :person).person
-        assert Enum.find(contribs, &(Paths.person_id(person) == &1.person.id))
-      end)
-      Enum.each(champions, fn c ->
-        assert Paths.person_id(ctx.creator) == c.person.id
+        assert Enum.find(res.contributors, &(Paths.person_id(p) == &1.id))
       end)
     end
   end
