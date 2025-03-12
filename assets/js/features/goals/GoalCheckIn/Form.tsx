@@ -1,9 +1,15 @@
 import * as React from "react";
 import * as People from "@/models/people";
 import * as Goals from "@/models/goals";
+import * as Popover from "@radix-ui/react-popover";
+import * as Timeframes from "@/utils/timeframes";
 
 import Forms from "@/components/Forms";
 import RichContent from "@/components/RichContent";
+import { SecondaryButton } from "@/components/Buttons";
+import { Chronometer } from "@/components/Chronometer";
+import { CustomRangePicker } from "@/components/TimeframeSelector/CustomRangePicker";
+import classNames from "classnames";
 
 interface Props {
   form: any;
@@ -33,7 +39,7 @@ function StatusAndTimeframe({ goal, readonly }: { goal: Goals.Goal; readonly: bo
     <Forms.FieldGroup>
       <div className="flex items-start gap-8">
         <StatusSelector goal={goal} />
-        <Forms.TimeframeField label="Timeframe" field="timeframe" />
+        <TimeframeSelector />
       </div>
     </Forms.FieldGroup>
   );
@@ -44,7 +50,10 @@ function StatusSelector({ goal }: { goal: Goals.Goal }) {
   const reviewerName = goal.reviewer ? People.firstName(goal.reviewer) : "";
 
   return (
-    <Forms.SelectGoalStatus label="Status" field="status" reviewerFirstName={reviewerName} noReviewer={noReviewer} />
+    <div>
+      <Label text="Status" />
+      <Forms.SelectGoalStatus field="status" reviewerFirstName={reviewerName} noReviewer={noReviewer} />
+    </div>
   );
 }
 
@@ -85,8 +94,8 @@ function DescriptionEdit({ goal }: { goal: Goals.Goal }) {
   );
 }
 
-function Label({ text }: { text: string }) {
-  return <div className="text-lg font-bold mb-2">{text}</div>;
+function Label({ text, className = "" }: { text: string; className?: string }) {
+  return <div className={"text-lg font-bold mb-2 " + className}>{text}</div>;
 }
 
 function Targets({ readonly }: { readonly: boolean }) {
@@ -98,5 +107,51 @@ function Targets({ readonly }: { readonly: boolean }) {
         <Forms.GoalTargetsField readonly={readonly} field="targets" />
       </Forms.FieldGroup>
     </div>
+  );
+}
+
+function TimeframeSelector() {
+  const [value, setValue] = Forms.useFieldValue<Timeframes.Timeframe>("timeframe");
+
+  return (
+    <div>
+      <div className="flex items-center gap-2 mb-2">
+        <Label text="Timeframe" className="mb-0" />
+        <TimeframeEditButton value={value} setValue={setValue} />
+      </div>
+
+      <Chronometer start={value.startDate!} end={value.endDate!} />
+    </div>
+  );
+}
+
+interface TimeframeEditButtonProps {
+  value: Timeframes.Timeframe;
+  setValue: (value: Timeframes.Timeframe) => void;
+}
+
+function TimeframeEditButton({ value, setValue }: TimeframeEditButtonProps) {
+  const [open, setOpen] = React.useState(false);
+
+  const contentClassName = classNames(
+    "z-[100] overflow-hidden",
+    "border border-surface-outline",
+    "rounded-lg shadow-xl",
+    "bg-surface-base",
+    "flex flex-col items-start p-4",
+  );
+
+  return (
+    <Popover.Root open={open} onOpenChange={setOpen}>
+      <Popover.Trigger>
+        <SecondaryButton size="xxs">Edit</SecondaryButton>
+      </Popover.Trigger>
+
+      <Popover.Portal>
+        <Popover.Content className={contentClassName} align="center" sideOffset={50}>
+          <CustomRangePicker timeframe={value} setTimeframe={setValue} />
+        </Popover.Content>
+      </Popover.Portal>
+    </Popover.Root>
   );
 }
