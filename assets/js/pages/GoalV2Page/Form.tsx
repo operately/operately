@@ -12,7 +12,7 @@ import { useLoadedData } from "./loader";
 import { Messages } from "./Messages";
 import { HorizontalRule, Title } from "./components";
 import { findUpdatedTargets } from "./utils";
-import { Champion, Reviewer } from "./contributors";
+import { Champion, Contributors, Reviewer } from "./contributors";
 import { Timeframe } from "./Timeframe";
 import { NextCheckIn } from "./NextCheckIn";
 
@@ -70,6 +70,7 @@ export function Form() {
           <Timeframe />
           <Champion />
           <Reviewer />
+          <Contributors />
         </div>
       </div>
 

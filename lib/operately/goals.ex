@@ -123,11 +123,11 @@ defmodule Operately.Goals do
     {"goal_tree", Goal}
     |> recursive_ctes(true)
     |> with_cte("goal_tree", as: ^goal_tree_query)
-    |> join(:left, [g], assoc(g, :projects))
-    |> join(:left, [_, p], assoc(p, :contributors), as: :contrib)
-    |> join(:left, [contrib: c], assoc(c, :person), as: :person)
-    |> select([contrib: c, person: p], %{c | person: p})
-    |> distinct([contrib: c], c.id)
+    |> join(:inner, [g], assoc(g, :projects))
+    |> join(:inner, [_, p], assoc(p, :contributors), as: :contrib)
+    |> join(:inner, [contrib: c], assoc(c, :person), as: :person)
+    |> select([person: p], p)
+    |> distinct([person: p], p.id)
     |> Repo.all()
   end
 
