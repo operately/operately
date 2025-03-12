@@ -10,6 +10,7 @@ import { SecondaryButton } from "@/components/Buttons";
 import { Chronometer } from "@/components/Chronometer";
 import { CustomRangePicker } from "@/components/TimeframeSelector/CustomRangePicker";
 import classNames from "classnames";
+import { ProgressBar } from "@/components/charts";
 
 interface Props {
   form: any;
@@ -98,18 +99,6 @@ function Label({ text, className = "" }: { text: string; className?: string }) {
   return <div className={"text-lg font-bold mb-2 " + className}>{text}</div>;
 }
 
-function Targets({ readonly }: { readonly: boolean }) {
-  return (
-    <div>
-      <Label text={readonly ? "Targets" : "Update targets"} />
-
-      <Forms.FieldGroup>
-        <Forms.GoalTargetsField readonly={readonly} field="targets" />
-      </Forms.FieldGroup>
-    </div>
-  );
-}
-
 function TimeframeSelector() {
   const [value, setValue] = Forms.useFieldValue<Timeframes.Timeframe>("timeframe");
 
@@ -153,5 +142,83 @@ function TimeframeEditButton({ value, setValue }: TimeframeEditButtonProps) {
         </Popover.Content>
       </Popover.Portal>
     </Popover.Root>
+  );
+}
+
+function Targets({ readonly }: { readonly: boolean }) {
+  const [targets] = Forms.useFieldValue<Goals.Target[]>("targets");
+
+  return (
+    <div>
+      <Label text={readonly ? "Targets" : "Update targets"} />
+
+      <div className="grid grid-cols-2 gap-4">
+        {targets.map((target, index) => (
+          <TargetCard key={index} index={index} target={target} readonly={readonly} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function TargetCard({ index, target, readonly }: { index: number; target: Goals.Target; readonly: boolean }) {
+  const progress = Goals.targetProgressPercentage(target);
+
+  const [_, setFieldValue] = Forms.useFieldValue<Goals.Target>(`targets[${index}]`);
+
+  const updateValue = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFieldValue({ ...target, value: e.target.value });
+  };
+
+  return (
+    <div className="border border-surface-outline rounded-lg overflow-hidden h-full p-4 flex flex-col justify-between">
+      <div>
+        <div className="font-medium leading-tight">{target.name}</div>
+      </div>
+
+      <div>
+        {readonly ? (
+          <div>
+            <div className="border-t border-surface-outline mt-2 w-12" />
+            <div className="flex items-end justify-between mt-6 mb-2">
+              <div className="text-xl font-bold text-gray-800">
+                {target.value} {target.unit}
+              </div>
+              <div className="text-xs">
+                +2 <span className="text-accent-1 font-semibold">(-10.2%)</span>
+              </div>
+            </div>
+            <ProgressBar
+              percentage={progress}
+              width="w-full"
+              height="h-2"
+              rounded={false}
+              bgColor="var(--color-stroke-base)"
+            />
+
+            <div className="flex items-center justify-between mt-1">
+              <div className="text-[10px] text-gray-500">
+                {target.from} {target.unit}
+              </div>
+              <div className="text-[10px] text-gray-500">
+                {target.to} {target.unit}
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="mt-4 bg-surface-dimmed -mx-4 px-4 py-4 border-y border-stroke-base">
+            <div className="text-xs mb-0.5 font-medium uppercase">Current Value</div>
+            <div className="border border-surface-outline rounded-lg">
+              <input
+                type="text"
+                onChange={updateValue}
+                value={target.value!}
+                className="border-none ring-0 outline-none p-2 rounded-lg w-full"
+              />
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
