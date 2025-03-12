@@ -2012,6 +2012,14 @@ export interface GetUnreadNotificationCountResult {
   unread?: number | null;
 }
 
+export interface ListGoalContributorsInput {
+  goalId?: Id | null;
+}
+
+export interface ListGoalContributorsResult {
+  contributors?: ProjectContributor[] | null;
+}
+
 export interface ListResourceHubNodesInput {
   resourceHubId?: Id | null;
   folderId?: Id | null;
@@ -3198,6 +3206,10 @@ export class ApiClient {
     return this.get("/get_unread_notification_count", input);
   }
 
+  async listGoalContributors(input: ListGoalContributorsInput): Promise<ListGoalContributorsResult> {
+    return this.get("/list_goal_contributors", input);
+  }
+
   async listResourceHubNodes(input: ListResourceHubNodesInput): Promise<ListResourceHubNodesResult> {
     return this.get("/list_resource_hub_nodes", input);
   }
@@ -3759,6 +3771,9 @@ export async function getUnreadNotificationCount(
 ): Promise<GetUnreadNotificationCountResult> {
   return defaultApiClient.getUnreadNotificationCount(input);
 }
+export async function listGoalContributors(input: ListGoalContributorsInput): Promise<ListGoalContributorsResult> {
+  return defaultApiClient.listGoalContributors(input);
+}
 export async function listResourceHubNodes(input: ListResourceHubNodesInput): Promise<ListResourceHubNodesResult> {
   return defaultApiClient.listResourceHubNodes(input);
 }
@@ -4303,6 +4318,12 @@ export function useGetUnreadNotificationCount(
   input: GetUnreadNotificationCountInput,
 ): UseQueryHookResult<GetUnreadNotificationCountResult> {
   return useQuery<GetUnreadNotificationCountResult>(() => defaultApiClient.getUnreadNotificationCount(input));
+}
+
+export function useListGoalContributors(
+  input: ListGoalContributorsInput,
+): UseQueryHookResult<ListGoalContributorsResult> {
+  return useQuery<ListGoalContributorsResult>(() => defaultApiClient.listGoalContributors(input));
 }
 
 export function useListResourceHubNodes(
@@ -5074,6 +5095,8 @@ export default {
   useGetTasks,
   getUnreadNotificationCount,
   useGetUnreadNotificationCount,
+  listGoalContributors,
+  useListGoalContributors,
   listResourceHubNodes,
   useListResourceHubNodes,
   listSpaceTools,
