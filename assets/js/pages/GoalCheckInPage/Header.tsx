@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as Icons from "@tabler/icons-react";
 import * as Pages from "@/components/Pages";
+import * as Timeframes from "@/utils/timeframes";
 
 import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
@@ -12,6 +13,7 @@ import { Update } from "@/models/goalCheckIns";
 import { BulletDot } from "@/components/TextElements";
 import { Person } from "@/api";
 import { GoalStatusBadge } from "@/features/goals/GoalStatusBadge";
+import { Chronometer } from "@/components/Chronometer";
 
 export function Header() {
   const { update } = useLoadedData();
@@ -24,6 +26,7 @@ export function Header() {
       </div>
 
       <Subtitle update={update} />
+      <Timeframe update={update} />
     </div>
   );
 }
@@ -57,6 +60,19 @@ function Status({ update }: { update: Update }) {
   } else {
     return null;
   }
+}
+
+function Timeframe({ update }: { update: Update }) {
+  const mode = Pages.usePageMode();
+  const tf = Timeframes.parse(update.goal!.timeframe!);
+
+  if (mode !== "view") return null;
+
+  return (
+    <div className="flex items-center mt-4">
+      <Chronometer start={tf.startDate!} end={tf.endDate!} />
+    </div>
+  );
 }
 
 function AvatarAndName({ person }: { person: Person }) {
