@@ -23,7 +23,7 @@ export function Page() {
       <Paper.Root>
         <Navigation />
 
-        <Paper.Body>
+        <Paper.Body className="lg:px-28">
           <Options />
           <Header />
           <Form />
