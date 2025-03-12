@@ -2017,7 +2017,7 @@ export interface ListGoalContributorsInput {
 }
 
 export interface ListGoalContributorsResult {
-  contributors?: ProjectContributor[] | null;
+  contributors?: Person[] | null;
 }
 
 export interface ListResourceHubNodesInput {

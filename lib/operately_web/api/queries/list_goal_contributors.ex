@@ -9,7 +9,7 @@ defmodule OperatelyWeb.Api.Queries.ListGoalContributors do
   end
 
   outputs do
-    field :contributors, list_of(:project_contributor)
+    field :contributors, list_of(:person)
   end
 
   def call(conn, inputs) do
