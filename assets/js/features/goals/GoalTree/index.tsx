@@ -17,6 +17,8 @@ import { Controls } from "./components/Controls";
 import { GoalStatusCompact } from "./components/GoalStatusCompact";
 import classNames from "classnames";
 
+export { MinimalTree } from "./MinimalTree";
+
 export function GoalTree(props: TreeContextProviderProps) {
   return (
     <TreeContextProvider {...props}>

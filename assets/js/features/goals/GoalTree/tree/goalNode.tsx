@@ -8,12 +8,15 @@ import { Paths } from "@/routes/paths";
 import * as Time from "@/utils/time";
 import * as Timeframes from "@/utils/timeframes";
 import * as Spaces from "@/models/spaces";
+import { assertPresent } from "@/utils/assertions";
 
 export class GoalNode extends Node {
   public goal: Goal;
   public lastCheckIn: GoalProgressUpdate | null | undefined;
 
   constructor(goal: Goal) {
+    assertPresent(goal.space, "space must be present in goal");
+
     super();
 
     this.goal = goal;
@@ -37,7 +40,7 @@ export class GoalNode extends Node {
     this.lastCheckInStatus = goal.lastCheckIn ? goal.lastCheckIn.status! : "on_track";
 
     this.space = goal.space as Spaces.Space;
-    this.spaceId = goal.space!.id!;
+    this.spaceId = goal.space.id!;
 
     this.startedAt = Timeframes.parse(goal.timeframe!).startDate!;
   }
