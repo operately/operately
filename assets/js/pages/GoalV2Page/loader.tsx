@@ -22,6 +22,7 @@ export async function loader({ params }): Promise<LoaderResult> {
       includeTargets: true,
       includePermissions: true,
       includeUnreadNotifications: true,
+      includeLastCheckIn: true,
     }).then((data) => data.goal!),
     Activities.getActivities({
       scopeType: "goal",
