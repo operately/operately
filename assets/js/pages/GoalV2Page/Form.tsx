@@ -9,14 +9,15 @@ import { EditBar } from "@/components/Pages/EditBar";
 import { assertPresent } from "@/utils/assertions";
 
 import { useLoadedData } from "./loader";
+import { findUpdatedTargets } from "./utils";
 import { Messages } from "./Messages";
 import { HorizontalRule, Title } from "./components";
-import { findUpdatedTargets } from "./utils";
 import { Champion, Contributors, Reviewer } from "./contributors";
 import { Timeframe } from "./Timeframe";
 import { NextCheckIn } from "./NextCheckIn";
 import { RelatedWork } from "./RelatedWork";
-import { Header } from "./Header";
+import { GoalName } from "./Name";
+import { ParentGoal } from "./ParentGoal";
 
 export function Form() {
   const { goal } = useLoadedData();
@@ -41,6 +42,7 @@ export function Form() {
       timeframe: currTimeframe,
       champion: goal.champion.id,
       reviewer: goal.reviewer.id,
+      parentGoal: goal.parentGoal,
     },
     cancel: () => setPageMode("view"),
     submit: async () => {
@@ -59,7 +61,8 @@ export function Form() {
     <Forms.Form form={form} preventSubmitOnEnter>
       <div className="flex gap-12">
         <div className="flex-1">
-          <Header />
+          <ParentGoal />
+          <GoalName />
           <Description />
           <HorizontalRule />
           <Targets />
@@ -91,15 +94,17 @@ function Description() {
 
   return (
     <Forms.FieldGroup>
-      <Forms.RichTextArea
-        field="description"
-        placeholder="Write here..."
-        mentionSearchScope={mentionSearchScope}
-        readonly={isViewMode}
-        height="3rem"
-        hideBorder
-        hideToolbar
-      />
+      <div className="-ml-2">
+        <Forms.RichTextArea
+          field="description"
+          placeholder="Write here..."
+          mentionSearchScope={mentionSearchScope}
+          readonly={isViewMode}
+          height="3rem"
+          hideBorder
+          hideToolbar
+        />
+      </div>
     </Forms.FieldGroup>
   );
 }
