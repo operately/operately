@@ -5,14 +5,16 @@ import * as GoalCheckIns from "@/models/goalCheckIns";
 import * as Popover from "@radix-ui/react-popover";
 import * as Timeframes from "@/utils/timeframes";
 
-import Forms from "@/components/Forms";
-import RichContent from "@/components/RichContent";
 import { SecondaryButton } from "@/components/Buttons";
 import { Chronometer } from "@/components/Chronometer";
 import { CustomRangePicker } from "@/components/TimeframeSelector/CustomRangePicker";
-import classNames from "classnames";
 import { ProgressBar } from "@/components/charts";
 import { isPresent } from "@/utils/isPresent";
+
+import Forms from "@/components/Forms";
+import RichContent from "@/components/RichContent";
+
+import classNames from "classnames";
 
 interface Props {
   form: any;
@@ -148,7 +150,7 @@ function TimeframeEditButton({ value, setValue }: TimeframeEditButtonProps) {
 }
 
 function Targets({ readonly }: { readonly: boolean }) {
-  const [targets] = Forms.useFieldValue<Goals.Target[]>("targets");
+  const [targets] = Forms.useFieldValue<GoalCheckIns.Target[]>("targets");
 
   return (
     <div>
@@ -176,8 +178,11 @@ function TargetCard({ index, target, readonly }: { index: number; target: GoalCh
   return (
     <div className={targetCardClassName}>
       <TargetName target={target} />
-      {readonly ? <TargetValueAndDiff target={target} /> : <TargetInput target={target} index={index} />}
-      <TargetProgressBar target={target} />
+
+      <div>
+        {readonly ? <TargetValueAndDiff target={target} /> : <TargetInput target={target} index={index} />}
+        <TargetProgressBar target={target} />
+      </div>
     </div>
   );
 }
@@ -217,6 +222,14 @@ function TargetInput({ index }: { target: Goals.Target; index: number }) {
     }
   };
 
+  const keyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      e.currentTarget.blur();
+      onBlur();
+    }
+  };
+
   return (
     <div className="mb-3 mt-4">
       <div className={className}>
@@ -225,6 +238,8 @@ function TargetInput({ index }: { target: Goals.Target; index: number }) {
           onChange={(e) => setTempValue(e.target.value)}
           onBlur={onBlur}
           value={tempValue || ""}
+          onKeyUp={keyPress}
+          onKeyDown={keyPress}
           className="border-none ring-0 outline-none p-2 text-sm font-medium w-full text-right"
         />
       </div>
@@ -240,6 +255,8 @@ function TargetName({ target }: { target: GoalCheckIns.Target }) {
 
 function TargetProgressBar({ target }: { target: GoalCheckIns.Target }) {
   const progress = Goals.targetProgressPercentage(target);
+  const prevProgress = Goals.targetProgressPercentage({ ...target, value: target.previousValue });
+  const sentiment = GoalCheckIns.targetChangeSentiment(target);
 
   return (
     <div>
@@ -249,6 +266,9 @@ function TargetProgressBar({ target }: { target: GoalCheckIns.Target }) {
         height="h-2"
         rounded={false}
         bgColor="var(--color-stroke-base)"
+        color={sentiment === "negative" ? "var(--color-content-error)" : "var(--color-accent-1)"}
+        previousValue={prevProgress}
+        previousValueColor={sentiment === "negative" ? "var(--color-content-error)" : "var(--color-green-800)"}
       />
 
       <div className="flex items-center justify-between mt-1">

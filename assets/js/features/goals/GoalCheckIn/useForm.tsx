@@ -1,33 +1,32 @@
-import { useNavigate } from "react-router-dom";
-import { Update, useEditGoalProgressUpdate, usePostGoalProgressUpdate } from "@/models/goalCheckIns";
-import { Goal } from "@/models/goals";
-
 import * as Timeframes from "@/utils/timeframes";
 import * as Pages from "@/components/Pages";
 import * as Time from "@/utils/time";
+import * as GoalCheckIns from "@/models/goalCheckIns";
+import * as Goals from "@/models/goals";
 
 import Forms from "@/components/Forms";
 import { Paths } from "@/routes/paths";
+import { useNavigate } from "react-router-dom";
 import { emptyContent } from "@/components/RichContent";
 import { assertPresent } from "@/utils/assertions";
 import { Options, SubscriptionsState } from "@/features/Subscriptions";
 
 interface EditProps {
   mode: "edit";
-  update: Update;
-  goal: Goal;
+  update: GoalCheckIns.Update;
+  goal: Goals.Goal;
 }
 
 interface CreateProps {
   mode: "create";
-  goal: Goal;
+  goal: Goals.Goal;
   subscriptionsState: SubscriptionsState;
 }
 
 export function useForm(props: EditProps | CreateProps) {
   const { mode, goal } = props;
-  const [post] = usePostGoalProgressUpdate();
-  const [edit] = useEditGoalProgressUpdate();
+  const [post] = GoalCheckIns.usePostGoalProgressUpdate();
+  const [edit] = GoalCheckIns.useEditGoalProgressUpdate();
 
   const navigate = useNavigate();
   const setPageMode = Pages.useSetPageMode();
@@ -44,7 +43,7 @@ export function useForm(props: EditProps | CreateProps) {
     fields: {
       status: mode === "edit" ? props.update.status : null,
       timeframe: currTimeframe,
-      targets: mode === "edit" ? props.update.goalTargetUpdates : goal.targets,
+      targets: initialTargets(props),
       description: mode === "edit" ? JSON.parse(props.update.message!) : emptyContent(),
     },
     cancel: () => {
@@ -93,6 +92,12 @@ export function useForm(props: EditProps | CreateProps) {
   });
 
   return form;
+}
+
+function initialTargets(props: EditProps | CreateProps): GoalCheckIns.Target[] {
+  return props.mode === "edit"
+    ? props.update.goalTargetUpdates!
+    : props.goal.targets!.map((t) => ({ previousValue: t.value, ...t }));
 }
 
 function maybeIncludeTimeframe(payload, newTimeframe, oldTimeframe) {

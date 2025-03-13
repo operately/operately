@@ -39,8 +39,7 @@ export function Page() {
             <ProgressBar percentage={100} width="w-[50px]" height="h-[9px]" />
           </div>
 
-          <h2 className="font-bold text-lg mt-8">Full-width Progress Bars</h2>
-          <p className="mb-4">Used for goal targets</p>
+          <h2 className="font-bold text-lg mt-8 mb-2">Full-width Progress Bars</h2>
 
           <div className="flex flex-col gap-4">
             <ProgressBar
@@ -70,6 +69,32 @@ export function Page() {
               height="h-1.5"
               rounded={false}
               bgColor="var(--color-stroke-base)"
+            />
+          </div>
+
+          <h2 className="font-bold text-lg mt-8 mb-2">Previous Value Markers</h2>
+
+          <div className="flex flex-col gap-4">
+            <ProgressBar
+              percentage={20}
+              width="w-full"
+              height="h-3"
+              rounded={false}
+              bgColor="var(--color-stroke-base)"
+              color="var(--color-red-500)"
+              previousValue={60}
+              previousValueColor="var(--color-red-500)"
+            />
+
+            <ProgressBar
+              percentage={70}
+              width="w-full"
+              height="h-3"
+              rounded={false}
+              bgColor="var(--color-stroke-base)"
+              color="var(--color-accent-1)"
+              previousValue={40}
+              previousValueColor="var(--color-green-800)"
             />
           </div>
 
