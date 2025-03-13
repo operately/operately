@@ -22,6 +22,7 @@ export function GoalStatusBadge({ status, className = "", size = "base" }: Props
     statusBGColorClass(status),
     sizeClass[size],
     "rounded-full uppercase font-semibold text-black",
+    "whitespace-nowrap",
     className,
   );
 
