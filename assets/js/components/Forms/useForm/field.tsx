@@ -1,4 +1,4 @@
-import { Target } from "@/models/goals";
+import { Target, Goal } from "@/models/goals";
 
 export type FieldValue =
   | number
@@ -7,6 +7,7 @@ export type FieldValue =
   | null
   | undefined
   | Date
+  | Goal
   | Target[]
   | FieldObject
   | FieldObject[]

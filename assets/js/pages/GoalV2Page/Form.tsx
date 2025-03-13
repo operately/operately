@@ -41,6 +41,7 @@ export function Form() {
       timeframe: currTimeframe,
       champion: goal.champion.id,
       reviewer: goal.reviewer.id,
+      parentGoal: goal.parentGoal,
     },
     cancel: () => setPageMode("view"),
     submit: async () => {
@@ -91,15 +92,17 @@ function Description() {
 
   return (
     <Forms.FieldGroup>
-      <Forms.RichTextArea
-        field="description"
-        placeholder="Write here..."
-        mentionSearchScope={mentionSearchScope}
-        readonly={isViewMode}
-        height="3rem"
-        hideBorder
-        hideToolbar
-      />
+      <div className="-ml-2">
+        <Forms.RichTextArea
+          field="description"
+          placeholder="Write here..."
+          mentionSearchScope={mentionSearchScope}
+          readonly={isViewMode}
+          height="3rem"
+          hideBorder
+          hideToolbar
+        />
+      </div>
     </Forms.FieldGroup>
   );
 }
