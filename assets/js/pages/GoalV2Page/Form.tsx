@@ -16,6 +16,7 @@ import { Champion, Contributors, Reviewer } from "./contributors";
 import { Timeframe } from "./Timeframe";
 import { NextCheckIn } from "./NextCheckIn";
 import { RelatedWork } from "./RelatedWork";
+import { Header } from "./Header";
 
 export function Form() {
   const { goal } = useLoadedData();
@@ -79,16 +80,6 @@ export function Form() {
 
       <EditBar save={form.actions.submit} cancel={form.actions.cancel} />
     </Forms.Form>
-  );
-}
-
-function Header() {
-  const isViewMode = useIsViewMode();
-
-  return (
-    <Forms.FieldGroup>
-      <Forms.TitleInput field="name" readonly={isViewMode} />
-    </Forms.FieldGroup>
   );
 }
 
