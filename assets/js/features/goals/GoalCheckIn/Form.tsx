@@ -196,8 +196,9 @@ function TargetValueAndDiff({ target }: { target: GoalCheckIns.Target }) {
   );
 }
 
-function TargetInput({ target, index }: { target: Goals.Target; index: number }) {
-  const [_, setValue] = Forms.useFieldValue<number | null>(`targets[${index}].value`);
+function TargetInput({ index }: { target: Goals.Target; index: number }) {
+  const [value, setValue] = Forms.useFieldValue<number | null>(`targets[${index}].value`);
+  const [tempValue, setTempValue] = React.useState<string>(value?.toString() || "");
   const error = Forms.useFieldError(`targets[${index}].value`);
 
   const className = classNames("border", {
@@ -205,14 +206,25 @@ function TargetInput({ target, index }: { target: Goals.Target; index: number })
     "border-content-error": error,
   });
 
+  const onBlur = () => {
+    const parsedValue = parseFloat(tempValue);
+
+    if (isNaN(parsedValue)) {
+      setTempValue(value?.toString() || "");
+    } else {
+      setValue(parsedValue);
+      setTempValue(parsedValue.toString());
+    }
+  };
+
   return (
     <div className="mb-3 mt-4">
       <div className={className}>
         <input
           type="text"
-          pattern="\d*"
-          onChange={(e) => setValue(parseFloat(e.target.value) || null)}
-          value={target.value! || ""}
+          onChange={(e) => setTempValue(e.target.value)}
+          onBlur={onBlur}
+          value={tempValue || ""}
           className="border-none ring-0 outline-none p-2 text-sm font-medium w-full text-right"
         />
       </div>
