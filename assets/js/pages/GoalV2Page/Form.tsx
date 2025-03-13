@@ -1,15 +1,10 @@
 import React from "react";
 
-import * as Goals from "@/models/goals";
-import * as Time from "@/utils/time";
-
 import Forms from "@/components/Forms";
-import { useIsViewMode, useSetPageMode } from "@/components/Pages";
+import { useIsViewMode } from "@/components/Pages";
 import { EditBar } from "@/components/Pages/EditBar";
-import { assertPresent } from "@/utils/assertions";
 
 import { useLoadedData } from "./loader";
-import { findUpdatedTargets } from "./utils";
 import { Messages } from "./Messages";
 import { HorizontalRule, Title } from "./components";
 import { Champion, Contributors, Reviewer } from "./contributors";
@@ -18,44 +13,10 @@ import { NextCheckIn } from "./NextCheckIn";
 import { RelatedWork } from "./RelatedWork";
 import { GoalName } from "./Name";
 import { ParentGoal } from "./ParentGoal";
+import { useForm } from "./useForm";
 
 export function Form() {
-  const { goal } = useLoadedData();
-  const [edit] = Goals.useEditGoal();
-  const setPageMode = useSetPageMode();
-
-  assertPresent(goal.targets, "targets must be present in goal");
-  assertPresent(goal.timeframe, "timeframe must be present in goal");
-  assertPresent(goal.champion, "champion must be present in goal");
-  assertPresent(goal.reviewer, "reviewer must be present in goal");
-
-  const currTimeframe = {
-    startDate: Time.parseDate(goal.timeframe.startDate),
-    endDate: Time.parseDate(goal.timeframe.endDate),
-  };
-
-  const form = Forms.useForm({
-    fields: {
-      name: goal.name!,
-      description: JSON.parse(goal.description!),
-      targets: goal.targets,
-      timeframe: currTimeframe,
-      champion: goal.champion.id,
-      reviewer: goal.reviewer.id,
-      parentGoal: goal.parentGoal,
-    },
-    cancel: () => setPageMode("view"),
-    submit: async () => {
-      await edit({
-        goalId: goal.id,
-        name: form.values.name,
-        description: JSON.stringify(form.values.description),
-        updatedTargets: findUpdatedTargets(goal.targets!, form.values.targets),
-      });
-
-      setPageMode("view");
-    },
-  });
+  const form = useForm();
 
   return (
     <Forms.Form form={form} preventSubmitOnEnter>
