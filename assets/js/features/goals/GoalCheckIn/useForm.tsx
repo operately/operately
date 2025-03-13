@@ -44,7 +44,7 @@ export function useForm(props: EditProps | CreateProps) {
     fields: {
       status: mode === "edit" ? props.update.status : null,
       timeframe: currTimeframe,
-      targets: goal.targets,
+      targets: mode === "edit" ? props.update.goalTargetUpdates : goal.targets,
       description: mode === "edit" ? JSON.parse(props.update.message!) : emptyContent(),
     },
     cancel: () => {
@@ -54,11 +54,18 @@ export function useForm(props: EditProps | CreateProps) {
         setPageMode("view");
       }
     },
+    validate: (addErrors) => {
+      form.values.targets?.forEach((t, i) => {
+        if (t.value === null || t.value === undefined) {
+          addErrors(`targets[${i}].value`, "Can't be empty");
+        }
+      });
+    },
     submit: async () => {
       const commonAttrs = {
         status: form.values.status,
         content: JSON.stringify(form.values.description),
-        newTargetValues: JSON.stringify(form.values.targets.map((t) => ({ id: t.id, value: t.value }))),
+        newTargetValues: JSON.stringify(form.values.targets!.map((t) => ({ id: t.id, value: t.value }))),
       };
 
       if (mode === "create") {

@@ -242,7 +242,7 @@ function assertReviewer(reviewer: string | undefined, noReviewer: boolean | unde
 function validateStatus(required?: boolean) {
   return (field: string, value: string, addError: AddErrorFn) => {
     if (required && !STATUS_OPTIONS.includes(value as Status)) {
-      return addError(field, `Must be selected`);
+      return addError(field, `Status is required`);
     }
   };
 }
