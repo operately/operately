@@ -44,7 +44,8 @@ export function useForm(props: EditProps | CreateProps) {
     fields: {
       status: mode === "edit" ? props.update.status : null,
       timeframe: currTimeframe,
-      targets: goal.targets,
+      targets:
+        mode === "edit" ? props.update.goalTargetUpdates : goal.targets.map((t) => ({ id: t.id, value: t.value })),
       description: mode === "edit" ? JSON.parse(props.update.message!) : emptyContent(),
     },
     cancel: () => {
