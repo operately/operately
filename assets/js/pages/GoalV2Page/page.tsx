@@ -17,7 +17,7 @@ export function Page() {
   useClearNotificationsOnLoad(goal.notifications);
 
   return (
-    <Pages.Page title={goal.name!}>
+    <Pages.Page title={goal.name!} key={goal.id}>
       <Paper.Root size="large">
         <Paper.Body>
           <Options />
