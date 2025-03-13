@@ -38,19 +38,34 @@ export function statusColor(status: string): string {
 }
 
 const bgColorMap: Record<string, string> = {
-  on_track: "bg-green-200",
-  caution: "bg-yellow-200",
-  concern: "bg-yellow-200",
-  issue: "bg-red-200",
-  paused: "bg-gray-200",
-  outdated: "bg-gray-200",
-  pending: "bg-gray-200",
+  on_track: "green-200",
+  caution: "yellow-200",
+  concern: "yellow-200",
+  issue: "red-200",
+  paused: "gray-200",
+  outdated: "gray-200",
+  pending: "gray-200",
 };
 
-export function statusBGColorClass(status: string): string {
+function statusColorClass(status: string, opts?: { customShade?: number }): string {
   const colorClass = bgColorMap[status];
   if (!colorClass) {
     throw new Error(`Unknown status: ${status}`);
   }
+
+  if (opts?.customShade) {
+    return colorClass.replace("200", opts.customShade.toString());
+  }
+
   return colorClass;
+}
+
+export function statusTextColorClass(status: string, opts?: { customShade?: number }): string {
+  const color = statusColorClass(status, opts);
+  return "text-" + color;
+}
+
+export function statusBGColorClass(status: string, opts?: { customShade?: number }): string {
+  const color = statusColorClass(status, opts);
+  return "bg-" + color;
 }
