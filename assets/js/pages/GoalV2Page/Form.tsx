@@ -15,6 +15,7 @@ import { findUpdatedTargets } from "./utils";
 import { Champion, Contributors, Reviewer } from "./contributors";
 import { Timeframe } from "./Timeframe";
 import { NextCheckIn } from "./NextCheckIn";
+import { RelatedWork } from "./RelatedWork";
 
 export function Form() {
   const { goal } = useLoadedData();
@@ -63,6 +64,8 @@ export function Form() {
           <Targets />
           <HorizontalRule />
           <Messages />
+          <HorizontalRule />
+          <RelatedWork />
         </div>
 
         <div className="w-[260px] flex flex-col gap-4 sticky top-0 self-start">
