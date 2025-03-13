@@ -2,6 +2,7 @@ import React from "react";
 
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
+import { Navigation } from "@/features/goals/GoalPageNavigation";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { assertPresent } from "@/utils/assertions";
 
@@ -14,11 +15,15 @@ export function Page() {
   const { goal } = useLoadedData();
 
   assertPresent(goal.notifications, "Goal notifications must be defined");
+  assertPresent(goal.space, "Goal space must be defined");
+
   useClearNotificationsOnLoad(goal.notifications);
 
   return (
     <Pages.Page title={goal.name!} key={goal.id}>
       <Paper.Root size="large">
+        <Navigation space={goal.space} />
+
         <Paper.Body>
           <Options />
           <Form />
