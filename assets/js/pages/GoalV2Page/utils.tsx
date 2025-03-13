@@ -1,19 +1,16 @@
 import * as Goals from "@/models/goals";
 import * as Time from "@/utils/time";
+import * as Timeframes from "@/utils/timeframes";
 
-export function findUpdatedTargets(targets: Goals.Target[], updatedTargets: Goals.Target[]) {
-  const originalTargets: Map<string, Goals.Target> = new Map();
-
-  targets.forEach((target) => {
-    originalTargets.set(target.id!, target);
-  });
-
-  const changedTargets = updatedTargets.filter((target) => {
-    const originalTarget = originalTargets.get(target.id!);
-    return target.value !== originalTarget?.value;
-  });
-
-  return changedTargets;
+export function parseTargets(targets: Goals.Target[]) {
+  return targets.map((t, index) => ({
+    id: t.id,
+    name: t.name,
+    from: t.from,
+    to: t.to,
+    unit: t.unit,
+    index: index,
+  }));
 }
 
 export function findTimeLeft(timeframe: Goals.Timeframe) {
@@ -29,4 +26,17 @@ export function findTimeLeft(timeframe: Goals.Timeframe) {
     return days === 1 ? "1 day left" : `${days} days left`;
   }
   return "";
+}
+
+export function serializeTimeframe(newTimeframe, oldTimeframe) {
+  const timeframesEqual = Timeframes.equalDates(
+    newTimeframe as Timeframes.Timeframe,
+    oldTimeframe as Timeframes.Timeframe,
+  );
+
+  if (timeframesEqual) {
+    return Timeframes.serialize(oldTimeframe);
+  } else {
+    return Timeframes.serialize({ ...newTimeframe, type: "days" });
+  }
 }

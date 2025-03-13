@@ -23,6 +23,7 @@ export async function loader({ params }): Promise<LoaderResult> {
       includePermissions: true,
       includeUnreadNotifications: true,
       includeLastCheckIn: true,
+      includeAccessLevels: true,
     }).then((data) => data.goal!),
     Activities.getActivities({
       scopeType: "goal",
@@ -50,4 +51,8 @@ export async function loader({ params }): Promise<LoaderResult> {
 
 export function useLoadedData(): LoaderResult {
   return Pages.useLoadedData() as LoaderResult;
+}
+
+export function useRefresh() {
+  return Pages.useRefresh();
 }
