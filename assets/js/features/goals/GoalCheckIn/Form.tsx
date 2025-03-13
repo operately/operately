@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as People from "@/models/people";
 import * as Goals from "@/models/goals";
+import * as GoalCheckIns from "@/models/goalCheckIns";
 import * as Popover from "@radix-ui/react-popover";
 import * as Timeframes from "@/utils/timeframes";
 
@@ -10,6 +11,8 @@ import { SecondaryButton } from "@/components/Buttons";
 import { Chronometer } from "@/components/Chronometer";
 import { CustomRangePicker } from "@/components/TimeframeSelector/CustomRangePicker";
 import classNames from "classnames";
+import { ProgressBar } from "@/components/charts";
+import { isPresent } from "@/utils/isPresent";
 
 interface Props {
   form: any;
@@ -98,18 +101,6 @@ function Label({ text, className = "" }: { text: string; className?: string }) {
   return <div className={"text-lg font-bold mb-2 " + className}>{text}</div>;
 }
 
-function Targets({ readonly }: { readonly: boolean }) {
-  return (
-    <div>
-      <Label text={readonly ? "Targets" : "Update targets"} />
-
-      <Forms.FieldGroup>
-        <Forms.GoalTargetsField readonly={readonly} field="targets" />
-      </Forms.FieldGroup>
-    </div>
-  );
-}
-
 function TimeframeSelector() {
   const [value, setValue] = Forms.useFieldValue<Timeframes.Timeframe>("timeframe");
 
@@ -153,5 +144,134 @@ function TimeframeEditButton({ value, setValue }: TimeframeEditButtonProps) {
         </Popover.Content>
       </Popover.Portal>
     </Popover.Root>
+  );
+}
+
+function Targets({ readonly }: { readonly: boolean }) {
+  const [targets] = Forms.useFieldValue<Goals.Target[]>("targets");
+
+  return (
+    <div>
+      <Label text={readonly ? "Targets" : "Update targets"} />
+
+      <div className="grid grid-cols-2 gap-4">
+        {targets.map((target, index) => (
+          <TargetCard key={index} index={index} target={target} readonly={readonly} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+const targetCardClassName = classNames(
+  "border border-surface-outline",
+  "rounded-lg",
+  "overflow-hidden",
+  "p-4",
+  "h-full", // Fill the height of the grid cell
+  "flex flex-col justify-between",
+);
+
+function TargetCard({ index, target, readonly }: { index: number; target: GoalCheckIns.Target; readonly: boolean }) {
+  return (
+    <div className={targetCardClassName}>
+      <TargetName target={target} />
+      {readonly ? <TargetValueAndDiff target={target} /> : <TargetInput target={target} index={index} />}
+      <TargetProgressBar target={target} />
+    </div>
+  );
+}
+
+function TargetValueAndDiff({ target }: { target: GoalCheckIns.Target }) {
+  return (
+    <div>
+      <div className="border-t border-surface-outline mt-2 w-12" />
+      <div className="flex items-end justify-between mt-4 mb-2">
+        <div className="text-xl font-bold text-gray-800 mt-2">
+          {target.value} {target.unit}
+        </div>
+        <TargetValueDiff target={target} />
+      </div>
+    </div>
+  );
+}
+
+function TargetInput({ target, index }: { target: Goals.Target; index: number }) {
+  const [_, setValue] = Forms.useFieldValue<number | null>(`targets[${index}].value`);
+  const error = Forms.useFieldError(`targets[${index}].value`);
+
+  const className = classNames("border", {
+    "border-surface-outline": !error,
+    "border-content-error": error,
+  });
+
+  return (
+    <div className="mb-3 mt-4">
+      <div className={className}>
+        <input
+          type="text"
+          pattern="\d*"
+          onChange={(e) => setValue(parseFloat(e.target.value) || null)}
+          value={target.value! || ""}
+          className="border-none ring-0 outline-none p-2 text-sm font-medium w-full text-right"
+        />
+      </div>
+
+      {error && <div className="text-xs text-content-error mt-0.5">{error}</div>}
+    </div>
+  );
+}
+
+function TargetName({ target }: { target: GoalCheckIns.Target }) {
+  return <div className="font-medium leading-tight">{target.name}</div>;
+}
+
+function TargetProgressBar({ target }: { target: GoalCheckIns.Target }) {
+  const progress = Goals.targetProgressPercentage(target);
+
+  return (
+    <div>
+      <ProgressBar
+        percentage={progress}
+        width="w-full"
+        height="h-2"
+        rounded={false}
+        bgColor="var(--color-stroke-base)"
+      />
+
+      <div className="flex items-center justify-between mt-1">
+        <div className="text-xs text-gray-500">
+          {target.from} {target.unit}
+        </div>
+        <div className="text-xs text-gray-500">
+          {target.to} {target.unit}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function TargetValueDiff({ target }: { target: GoalCheckIns.Target }) {
+  if (!isPresent(target.value)) return null;
+  if (!isPresent(target.previousValue)) return null;
+
+  const diff = target.value - target.previousValue;
+  if (diff === 0) return null;
+
+  const diffSign = diff > 0 ? "+" : "-";
+
+  const sentiment = GoalCheckIns.targetChangeSentiment(target);
+  const color = sentiment === "positive" ? "text-green-600" : "text-content-error";
+
+  const percentage = (diff / target.previousValue) * 100;
+  const percentageClassName = `${color} font-semibold`;
+
+  const diffText = `${diffSign}${Math.abs(diff)}`;
+  const percentageText = `${diffSign}${Math.abs(percentage).toFixed(0)}%`;
+
+  return (
+    <div className="text-xs">
+      {diffText} <span className={percentageClassName}>({percentageText})</span>
+    </div>
   );
 }
