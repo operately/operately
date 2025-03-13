@@ -4,7 +4,6 @@ import * as Pages from "@/components/Pages";
 import * as Timeframes from "@/utils/timeframes";
 
 import Avatar from "@/components/Avatar";
-import FormattedTime from "@/components/FormattedTime";
 
 import { useLoadedData } from "./loader";
 import { assertPresent } from "@/utils/assertions";
@@ -22,11 +21,9 @@ export function Header() {
     <div className="flex flex-col items-center">
       <div className="text-center">
         <Title update={update} />
-        <Status update={update} />
       </div>
 
       <Subtitle update={update} />
-      <Timeframe update={update} />
     </div>
   );
 }
@@ -35,7 +32,7 @@ function Title({ update }: { update: Update }) {
   assertPresent(update.insertedAt, "Update insertedAt must be defined");
   assertPresent(update.goal, "Update goal must be defined");
 
-  return <span className="text-content-accent text-3xl font-extrabold">Check-In: {update.goal.name}</span>;
+  return <span className="text-content-accent text-3xl font-extrabold">Check-In for August 2021</span>;
 }
 
 function Subtitle({ update }: { update: Update }) {
@@ -44,8 +41,6 @@ function Subtitle({ update }: { update: Update }) {
   return (
     <div className="flex gap-1.5 items-center mt-1 font-medium">
       <AvatarAndName person={update.author} />
-      <BulletDot />
-      <FormattedTime time={update.insertedAt!} format="relative" />
       <BulletDot />
       <Acknowledgement update={update} />
     </div>

@@ -4,6 +4,7 @@ import * as Goals from "@/models/goals";
 import * as GoalCheckIns from "@/models/goalCheckIns";
 import * as Popover from "@radix-ui/react-popover";
 import * as Timeframes from "@/utils/timeframes";
+import * as Icons from "@tabler/icons-react";
 
 import Forms from "@/components/Forms";
 import RichContent from "@/components/RichContent";
@@ -11,7 +12,7 @@ import { SecondaryButton } from "@/components/Buttons";
 import { Chronometer } from "@/components/Chronometer";
 import { CustomRangePicker } from "@/components/TimeframeSelector/CustomRangePicker";
 import classNames from "classnames";
-import { ProgressBar } from "@/components/charts";
+import { PieChart, ProgressBar } from "@/components/charts";
 import { isPresent } from "@/utils/isPresent";
 
 interface Props {
@@ -25,13 +26,46 @@ export function Form({ form, readonly, goal, children }: Props) {
   return (
     <Forms.Form form={form} preventSubmitOnEnter>
       <div className="space-y-6 mt-6">
+        <div>
+          <Label text="Overview" />
+          <div>Status is On Track. 6 months left to achieve the goal.</div>
+        </div>
         <StatusAndTimeframe goal={goal} readonly={readonly} />
-        <Targets readonly={readonly} />
+        <Targets2 readonly={readonly} />
         <Description goal={goal} readonly={readonly} />
       </div>
 
       {children}
     </Forms.Form>
+  );
+}
+
+function Targets2({ readonly }: { readonly: boolean }) {
+  const [targets] = Forms.useFieldValue<Goals.Target[]>("targets");
+
+  return (
+    <div>
+      <Label text={readonly ? "Targets" : "Update targets"} />
+
+      <div>
+        <div className="py-3 flex items-center gap-2 justify-between border-t border-stroke-base">
+          <div>Achieve 1000+ active users in new countries</div>
+          <div className="flex items-center">
+            <span className="text-accent-1 font-semibold shink-0">700 users</span>{" "}
+            <Icons.IconChevronDown size={14} className="ml-4" />
+          </div>
+        </div>
+
+        <div className="py-3 flex items-center gap-2 justify-between border-y border-stroke-base">
+          <div>Expand to new countries</div>
+
+          <div className="flex items-center gap-4">
+            700 countries
+            <Icons.IconChevronDown size={14} />
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -98,7 +132,7 @@ function DescriptionEdit({ goal }: { goal: Goals.Goal }) {
 }
 
 function Label({ text, className = "" }: { text: string; className?: string }) {
-  return <div className={"text-lg font-bold mb-2 " + className}>{text}</div>;
+  return <div className={"font-bold mb-2 " + className}>{text}</div>;
 }
 
 function TimeframeSelector() {
