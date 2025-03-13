@@ -12,7 +12,7 @@ import { Chronometer } from "@/components/Chronometer";
 import { CustomRangePicker } from "@/components/TimeframeSelector/CustomRangePicker";
 import classNames from "classnames";
 import { ProgressBar } from "@/components/charts";
-import { assertPresent } from "@/utils/assertions";
+import { isPresent } from "@/utils/isPresent";
 
 interface Props {
   form: any;
@@ -163,55 +163,88 @@ function Targets({ readonly }: { readonly: boolean }) {
   );
 }
 
+const targetCardClassName = classNames(
+  "border border-surface-outline",
+  "rounded-lg",
+  "overflow-hidden",
+  "p-4",
+  "h-full", // Fill the height of the grid cell
+  "flex flex-col justify-between",
+);
+
 function TargetCard({ index, target, readonly }: { index: number; target: GoalCheckIns.Target; readonly: boolean }) {
-  const progress = Goals.targetProgressPercentage(target);
+  return (
+    <div className={targetCardClassName}>
+      <TargetName target={target} />
+      {readonly ? <TargetValueAndDiff target={target} /> : <TargetInput target={target} index={index} />}
+      <TargetProgressBar target={target} />
+    </div>
+  );
+}
 
-  const [_, setFieldValue] = Forms.useFieldValue<Goals.Target>(`targets[${index}]`);
+function TargetValueAndDiff({ target }: { target: GoalCheckIns.Target }) {
+  return (
+    <div>
+      <div className="border-t border-surface-outline mt-2 w-12" />
+      <div className="flex items-end justify-between mt-4 mb-2">
+        <div className="text-xl font-bold text-gray-800 mt-2">
+          {target.value} {target.unit}
+        </div>
+        <TargetValueDiff target={target} />
+      </div>
+    </div>
+  );
+}
 
-  const updateValue = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFieldValue({ ...target, value: parseFloat(e.target.value) || null });
-  };
+function TargetInput({ target, index }: { target: Goals.Target; index: number }) {
+  const [_, setValue] = Forms.useFieldValue<number | null>(`targets[${index}].value`);
+  const error = Forms.useFieldError(`targets[${index}].value`);
+
+  const className = classNames("border", {
+    "border-surface-outline": !error,
+    "border-content-error": error,
+  });
 
   return (
-    <div className="border border-surface-outline rounded-lg overflow-hidden h-full p-4 flex flex-col justify-between">
-      <div className="font-medium leading-tight">{target.name}</div>
-
-      <div>
-        {readonly && <div className="border-t border-surface-outline mt-2 w-12" />}
-
-        {readonly ? (
-          <div className="flex items-end justify-between mt-4 mb-2">
-            <div className="text-xl font-bold text-gray-800 mt-2">
-              {target.value} {target.unit}
-            </div>
-            <TargetValueDiff target={target} />
-          </div>
-        ) : (
-          <div className="border border-surface-outline mb-3 mt-4">
-            <input
-              type="text"
-              onChange={updateValue}
-              value={target.value!}
-              className="border-none ring-0 outline-none p-2 text-sm font-medium w-full text-right"
-            />
-          </div>
-        )}
-
-        <ProgressBar
-          percentage={progress}
-          width="w-full"
-          height="h-2"
-          rounded={false}
-          bgColor="var(--color-stroke-base)"
+    <div className="mb-3 mt-4">
+      <div className={className}>
+        <input
+          type="text"
+          pattern="\d*"
+          onChange={(e) => setValue(parseFloat(e.target.value) || null)}
+          value={target.value! || ""}
+          className="border-none ring-0 outline-none p-2 text-sm font-medium w-full text-right"
         />
+      </div>
 
-        <div className="flex items-center justify-between mt-1">
-          <div className="text-xs text-gray-500">
-            {target.from} {target.unit}
-          </div>
-          <div className="text-xs text-gray-500">
-            {target.to} {target.unit}
-          </div>
+      {error && <div className="text-xs text-content-error mt-0.5">{error}</div>}
+    </div>
+  );
+}
+
+function TargetName({ target }: { target: GoalCheckIns.Target }) {
+  return <div className="font-medium leading-tight">{target.name}</div>;
+}
+
+function TargetProgressBar({ target }: { target: GoalCheckIns.Target }) {
+  const progress = Goals.targetProgressPercentage(target);
+
+  return (
+    <div>
+      <ProgressBar
+        percentage={progress}
+        width="w-full"
+        height="h-2"
+        rounded={false}
+        bgColor="var(--color-stroke-base)"
+      />
+
+      <div className="flex items-center justify-between mt-1">
+        <div className="text-xs text-gray-500">
+          {target.from} {target.unit}
+        </div>
+        <div className="text-xs text-gray-500">
+          {target.to} {target.unit}
         </div>
       </div>
     </div>
@@ -219,8 +252,8 @@ function TargetCard({ index, target, readonly }: { index: number; target: GoalCh
 }
 
 function TargetValueDiff({ target }: { target: GoalCheckIns.Target }) {
-  if (!target.value) return null;
-  if (!target.previousValue) return null;
+  if (!isPresent(target.value)) return null;
+  if (!isPresent(target.previousValue)) return null;
 
   const diff = target.value - target.previousValue;
   if (diff === 0) return null;
@@ -234,7 +267,7 @@ function TargetValueDiff({ target }: { target: GoalCheckIns.Target }) {
   const percentageClassName = `${color} font-semibold`;
 
   const diffText = `${diffSign}${Math.abs(diff)}`;
-  const percentageText = `${diffSign}${percentage.toFixed(0)}%`;
+  const percentageText = `${diffSign}${Math.abs(percentage).toFixed(0)}%`;
 
   return (
     <div className="text-xs">

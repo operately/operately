@@ -1,4 +1,5 @@
 import * as api from "@/api";
+import { isPresent } from "@/utils/isPresent";
 
 export type Update = api.GoalProgressUpdate;
 export type Target = api.GoalTargetUpdates;
@@ -14,9 +15,10 @@ export {
 } from "@/api";
 
 export function targetChangeSentiment(target: Target): "positive" | "negative" | "neutral" {
-  if (!target.value) return "neutral";
-  if (!target.previousValue) return "neutral";
-  if (!target.from || !target.to) return "neutral";
+  if (!isPresent(target.value)) return "neutral";
+  if (!isPresent(target.previousValue)) return "neutral";
+  if (!isPresent(target.from)) return "neutral";
+  if (!isPresent(target.to)) return "neutral";
 
   const diff = target.value - target.previousValue;
   if (diff === 0) return "neutral";
