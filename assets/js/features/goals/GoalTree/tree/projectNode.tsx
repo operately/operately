@@ -15,6 +15,9 @@ export class ProjectNode extends Node {
   public retrospective: ProjectRetrospective | null | undefined;
 
   constructor(project: Project) {
+    assertPresent(project.space, "space must be present in project");
+    assertPresent(project.status, "Project status is required");
+
     super();
 
     this.project = project;
@@ -27,10 +30,8 @@ export class ProjectNode extends Node {
     this.champion = project.champion!;
     this.reviewer = project.reviewer!;
 
-    this.spaceId = project.space!.id!;
+    this.spaceId = project.space.id!;
     this.space = project.space as Spaces.Space;
-
-    assertPresent(project.status, "Project status is required");
 
     this.isActive = project.status === "active";
     this.isClosed = project.status === "closed";
@@ -78,8 +79,10 @@ export class ProjectNode extends Node {
   }
 
   private calculateProgress(): number {
-    const completedMilestones = this.project.milestones!.filter((m) => m!.status === "done").length;
-    const totalMilestones = this.project.milestones!.length;
+    assertPresent(this.project.milestones, "milestones must be present in project");
+
+    const completedMilestones = this.project.milestones.filter((m) => m!.status === "done").length;
+    const totalMilestones = this.project.milestones.length;
 
     return (completedMilestones / totalMilestones) * 100;
   }

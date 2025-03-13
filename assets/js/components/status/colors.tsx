@@ -47,10 +47,15 @@ const bgColorMap: Record<string, string> = {
   pending: "bg-gray-200",
 };
 
-export function statusBGColorClass(status: string): string {
+export function statusBGColorClass(status: string, opts?: { customShade?: number }): string {
   const colorClass = bgColorMap[status];
   if (!colorClass) {
     throw new Error(`Unknown status: ${status}`);
   }
+
+  if (opts?.customShade) {
+    return colorClass.replace("200", opts.customShade.toString());
+  }
+
   return colorClass;
 }
