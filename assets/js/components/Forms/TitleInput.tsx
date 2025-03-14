@@ -10,7 +10,11 @@ import { validateTextLength } from "./validations/textLength";
 import { useFieldValue, useFieldError } from "./FormContext";
 import { createTestId } from "@/utils/testid";
 
-interface TitleInputProps {
+interface StyleOptions {
+  fontBold?: boolean;
+}
+
+interface TitleInputProps extends StyleOptions {
   field: string;
   autoFocus?: boolean;
   placeholder?: string;
@@ -38,14 +42,14 @@ export function TitleInput(props: TitleInputProps) {
   return (
     <InputField field={field} error={error}>
       {props.readonly ? (
-        <div className={styles(false)}>{value}</div>
+        <div className={styles(false, { fontBold: props.fontBold })}>{value}</div>
       ) : (
         <input
           name={field}
           autoFocus={props.autoFocus}
           placeholder={placeholder}
           data-test-id={props.testId ?? createTestId(field)}
-          className={styles(!!error)}
+          className={styles(!!error, { fontBold: props.fontBold })}
           type="text"
           value={value}
           onChange={(e) => setValue(e.target.value)}
@@ -55,11 +59,10 @@ export function TitleInput(props: TitleInputProps) {
   );
 }
 
-function styles(error: boolean | undefined) {
+function styles(error: boolean | undefined, opts: StyleOptions) {
   return classNames(
     "bg-surface-base",
     "text-3xl",
-    "font-semibold",
     "border-none",
     "outline-none",
     "focus:outline-none",
@@ -70,9 +73,7 @@ function styles(error: boolean | undefined) {
     "ring-0",
     "placeholder:text-content-subtle",
     "leading-wide",
-    {
-      "border-surface-outline": !error,
-      "border-red-500": error,
-    },
+    error ? "border-red-500" : "border-surface-outline",
+    opts.fontBold ? "font-bold" : "font-semibold",
   );
 }
