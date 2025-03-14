@@ -98,7 +98,7 @@ function ParentGoal({ goal }: { goal: Goals.Goal | null | undefined }) {
   );
 }
 
-function Banner({ goal }) {
+export function Banner({ goal }) {
   if (goal.isClosed) {
     return (
       <Paper.Banner>
