@@ -4,6 +4,7 @@ import * as Goals from "@/models/goals";
 import * as GoalCheckIns from "@/models/goalCheckIns";
 import * as Popover from "@radix-ui/react-popover";
 import * as Timeframes from "@/utils/timeframes";
+import * as Icons from "@tabler/icons-react";
 
 import Forms from "@/components/Forms";
 import RichContent from "@/components/RichContent";
@@ -154,7 +155,7 @@ function Targets({ readonly }: { readonly: boolean }) {
     <div>
       <Label text={readonly ? "Targets" : "Update targets"} />
 
-      <div className="grid grid-cols-2 gap-4">
+      <div>
         {targets.map((target, index) => (
           <TargetCard key={index} index={index} target={target} readonly={readonly} />
         ))}
@@ -163,48 +164,39 @@ function Targets({ readonly }: { readonly: boolean }) {
   );
 }
 
-const targetCardClassName = classNames(
-  "border border-surface-outline",
-  "rounded-lg",
-  "overflow-hidden",
-  "p-4",
-  "h-full", // Fill the height of the grid cell
-  "flex flex-col justify-between",
-);
-
 function TargetCard({ index, target, readonly }: { index: number; target: GoalCheckIns.Target; readonly: boolean }) {
   return (
-    <div className={targetCardClassName}>
-      <TargetName target={target} />
-      {readonly ? <TargetValueAndDiff target={target} /> : <TargetInput target={target} index={index} />}
-      <TargetProgressBar target={target} />
-    </div>
+    <details className="border-t last:border-b border-stroke-base">
+      <summary className="py-2 flex justify-between items-center cursor-pointer">
+        <TargetName target={target} />
+        {readonly ? <TargetValueAndDiff target={target} /> : <TargetInput target={target} index={index} />}
+
+        <Icons.IconChevronDown className="text-gray-500 ml-4" size={20} />
+      </summary>
+
+      <div className="space-y-2">
+        <TargetProgressBar target={target} />
+        <TargetValueDiff target={target} />
+      </div>
+    </details>
   );
 }
 
 function TargetValueAndDiff({ target }: { target: GoalCheckIns.Target }) {
   return (
-    <div>
-      <div className="border-t border-surface-outline mt-2 w-12" />
-      <div className="flex items-end justify-between mt-4 mb-2">
-        <div className="text-xl font-bold text-gray-800 mt-2">
-          {target.value} {target.unit}
-        </div>
-        <TargetValueDiff target={target} />
-      </div>
+    <div className="py-1">
+      <span className="font-extrabold text-accent-1">{target.value}</span>{" "}
+      <span className="text-xs">{target.unit}</span>
     </div>
   );
 }
+
+// <TargetValueDiff target={target} />
 
 function TargetInput({ index }: { target: Goals.Target; index: number }) {
   const [value, setValue] = Forms.useFieldValue<number | null>(`targets[${index}].value`);
   const [tempValue, setTempValue] = React.useState<string>(value?.toString() || "");
   const error = Forms.useFieldError(`targets[${index}].value`);
-
-  const className = classNames("border", {
-    "border-surface-outline": !error,
-    "border-content-error": error,
-  });
 
   const onBlur = () => {
     const parsedValue = parseFloat(tempValue);
@@ -218,14 +210,14 @@ function TargetInput({ index }: { target: Goals.Target; index: number }) {
   };
 
   return (
-    <div className="mb-3 mt-4">
-      <div className={className}>
+    <div className="">
+      <div>
         <input
           type="text"
           onChange={(e) => setTempValue(e.target.value)}
           onBlur={onBlur}
           value={tempValue || ""}
-          className="border-none ring-0 outline-none p-2 text-sm font-medium w-full text-right"
+          className="ring-0 outline-none px-2 py-1.5 text-sm font-medium w-32 text-right border border-stroke-base rounded"
         />
       </div>
 
@@ -235,7 +227,7 @@ function TargetInput({ index }: { target: Goals.Target; index: number }) {
 }
 
 function TargetName({ target }: { target: GoalCheckIns.Target }) {
-  return <div className="font-medium leading-tight">{target.name}</div>;
+  return <div className="font-medium truncate flex-1">{target.name}</div>;
 }
 
 function TargetProgressBar({ target }: { target: GoalCheckIns.Target }) {
