@@ -282,6 +282,7 @@ function useSubmit(fields: Fields, config: FormConfig): [() => Promise<boolean>,
     } else {
       const res = await edit({
         goalId: config.goal!.id,
+        parentGoalId: config.goal!.parentGoalId,
         name: fields.name,
         championId: fields.champion!.id,
         reviewerId: fields.reviewer!.id,

@@ -16,11 +16,12 @@ import { useMe } from "@/contexts/CurrentCompanyContext";
 interface GoalSelectorDropdownProps {
   goals: Goals.Goal[];
   selected: Goals.Goal | null | undefined;
-  onSelect: (goal: Goals.Goal) => void;
+  onSelect: (goal: Goals.Goal | null) => void;
   error?: boolean;
+  allowCompanyWide?: boolean;
 }
 
-export function GoalSelectorDropdown({ goals, onSelect, selected, error }: GoalSelectorDropdownProps) {
+export function GoalSelectorDropdown(props: GoalSelectorDropdownProps) {
   const me = useMe();
 
   const options = {
@@ -35,13 +36,13 @@ export function GoalSelectorDropdown({ goals, onSelect, selected, error }: GoalS
     reviewedBy: "anyone",
   } as TreeOptions;
 
-  const tree = React.useMemo(() => buildTree(me!, goals, [], options), [goals, options]);
+  const tree = React.useMemo(() => buildTree(me!, props.goals, [], options), [props.goals, options]);
 
   const [open, setOpen] = React.useState(false);
 
-  const handleSelect = (goal: Goals.Goal) => {
+  const handleSelect = (goal: Goals.Goal | null) => {
     setOpen(false);
-    onSelect(goal);
+    props.onSelect(goal);
   };
 
   return (
@@ -49,15 +50,15 @@ export function GoalSelectorDropdown({ goals, onSelect, selected, error }: GoalS
       <div className="relative">
         <div
           className={classNames("border px-3 py-1.5 rounded-lg flex items-center justify-between cursor-pointer", {
-            "border-red-500": error,
-            "border-surface-outline": !error,
+            "border-red-500": props.error,
+            "border-surface-outline": !props.error,
           })}
           onClick={() => setOpen(!open)}
           data-test-id="goal-selector"
         >
-          {selected ? (
+          {props.selected ? (
             <div className="truncate flex items-center gap-1.5">
-              <NodeIcon node={{ type: "goal" }} /> {selected.name}
+              <NodeIcon node={{ type: "goal" }} /> {props.selected.name}
             </div>
           ) : (
             <div className="text-content-dimmed">Select a goal &hellip;</div>
@@ -67,6 +68,8 @@ export function GoalSelectorDropdown({ goals, onSelect, selected, error }: GoalS
 
         {open && (
           <div className="absolute mt-1 w-full bg-surface-base border border-surface-outline rounded-lg shadow-lg z-50">
+            {props.allowCompanyWide && <CompanyGoalOption handleSelect={() => handleSelect(null)} />}
+
             {tree.map((root) => (
               <NodeView key={root.id} node={root as GoalNode} onSelect={handleSelect} />
             ))}
@@ -150,4 +153,20 @@ function SubgoalCount({ node }: { node: GoalNode }) {
   if (expanded[node.id]) return null;
 
   return <div className="text-xs text-gray-500">{node.childrenInfoLabel()}</div>;
+}
+
+function CompanyGoalOption({ handleSelect }: { handleSelect: () => void }) {
+  return (
+    <TableRow>
+      <div className="w-full pl-4 pr-2 flex items-center justify-between">
+        <div className="flex items-center gap-1">
+          <Icons.IconBuildingEstate size={16} />
+          <span className="mt-1">Company-wide goal</span>
+        </div>
+        <PrimaryButton onClick={handleSelect} size="xxs" testId="select-company-wide-option">
+          Select
+        </PrimaryButton>
+      </div>
+    </TableRow>
+  );
 }
