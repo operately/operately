@@ -59,7 +59,7 @@ function ReadonlyPerson({ label, person }) {
   return (
     <div>
       <Title title={label} />
-      <div className="flex items-center gap-1.5 -mt-2">
+      <div className="text-sm flex items-center gap-1.5 -mt-2">
         <AvatarLink person={person} size={20} className="mt-2" /> {person.fullName}
       </div>
     </div>

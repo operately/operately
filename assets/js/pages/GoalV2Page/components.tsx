@@ -18,7 +18,7 @@ export function DisableInEditMode({ children }) {
 }
 
 export function Title({ title }: { title: string }) {
-  return <div className="my-2 uppercase text-xs font-semibold tracking-wide">{title}</div>;
+  return <div className="my-2 uppercase text-xs font-bold tracking-wide">{title}</div>;
 }
 
 export function HorizontalRule() {
