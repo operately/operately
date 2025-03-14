@@ -20,9 +20,9 @@ export function Form() {
 
   return (
     <Forms.Form form={form} preventSubmitOnEnter>
-      <div className="flex gap-12">
-        <div className="flex-1">
-          <ParentGoal />
+      <div className="grid grid-cols-[1fr_260px] gap-x-12">
+        <ParentGoal />
+        <div className="col-start-1 row-start-2 flex-1">
           <GoalName />
           <Description />
           <HorizontalRule />
@@ -32,8 +32,7 @@ export function Form() {
           <HorizontalRule />
           <RelatedWork />
         </div>
-
-        <div className="w-[260px] flex flex-col gap-4 sticky top-0 self-start">
+        <div className="col-start-2 row-start-2 flex flex-col gap-4 sticky top-0 self-start">
           <NextCheckIn />
           <Timeframe />
           <Champion />
