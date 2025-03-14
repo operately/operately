@@ -1,14 +1,13 @@
 import React from "react";
 
-import { Goal } from "@/models/goals";
+import { filterPossibleParentGoals } from "@/models/goals";
 import { IconBuildingEstate, IconTarget } from "@tabler/icons-react";
 
-import { GoalSelectorDropdown } from "@/features/goals/GoalTree/GoalSelectorDropdown";
-import { useFieldError, useFieldValue } from "@/components/Forms/FormContext";
+import Forms from "@/components/Forms";
+
 import { GhostLink } from "@/components/Link/GhostList";
 import { useIsViewMode } from "@/components/Pages";
 import { Paths } from "@/routes/paths";
-
 import { useLoadedData } from "./loader";
 
 export function ParentGoal() {
@@ -19,18 +18,14 @@ export function ParentGoal() {
 }
 
 function EditParentGoal() {
-  const { goals } = useLoadedData();
-  const [parentGoal, setParentGoal] = useFieldValue<Goal>("parentGoal");
-  const error = useFieldError("parentGoal");
+  const { goals, goal } = useLoadedData();
+  const options = React.useMemo(() => filterPossibleParentGoals(goals, goal), [goal, goals]);
 
   return (
     <div className="mb-1">
-      <GoalSelectorDropdown
-        selected={parentGoal}
-        goals={goals}
-        onSelect={(goal) => setParentGoal(goal)}
-        error={!!error}
-      />
+      <Forms.FieldGroup>
+        <Forms.SelectGoal field="parentGoal" goals={options} required={false} allowCompanyWide />
+      </Forms.FieldGroup>
     </div>
   );
 }

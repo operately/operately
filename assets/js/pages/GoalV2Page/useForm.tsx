@@ -40,6 +40,7 @@ export function useForm() {
 
       await edit({
         goalId: goal.id,
+        parentGoalId: form.values.parentGoal?.id || null,
         name: form.values.name,
         championId: form.values.champion,
         reviewerId: form.values.reviewer,
