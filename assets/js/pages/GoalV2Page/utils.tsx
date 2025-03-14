@@ -14,18 +14,28 @@ export function parseTargets(targets: Goals.Target[]) {
 }
 
 export function findTimeLeft(timeframe: Goals.Timeframe) {
-  const { months, weeks, days } = Time.getDateDifference(timeframe.startDate!, timeframe.endDate!);
+  const now = new Date();
+  const endDate = Time.parse(timeframe.endDate!);
+
+  if (!endDate) return "";
+
+  const isPast = endDate < now;
+  const { months, weeks, days } = Time.getDateDifference(
+    isPast ? endDate : now,
+    isPast ? now : endDate,
+  );
+  const timeStatus = isPast ? "late" : "left";
 
   if (months > 0) {
-    return months === 1 ? "1 month left" : `${months} months left`;
+    return months === 1 ? `1 month ${timeStatus}` : `${months} months ${timeStatus}`;
   }
   if (weeks > 0) {
-    return weeks === 1 ? "1 week left" : `${weeks} weeks left`;
+    return weeks === 1 ? `1 week ${timeStatus}` : `${weeks} weeks ${timeStatus}`;
   }
   if (days > 0) {
-    return days === 1 ? "1 day left" : `${days} days left`;
+    return days === 1 ? `1 day ${timeStatus}` : `${days} days ${timeStatus}`;
   }
-  return "";
+  return "Due today";
 }
 
 export function serializeTimeframe(newTimeframe, oldTimeframe) {
@@ -37,6 +47,7 @@ export function serializeTimeframe(newTimeframe, oldTimeframe) {
   if (timeframesEqual) {
     return Timeframes.serialize(oldTimeframe);
   } else {
+    // If the timeframe changes, "type" is set to days.
     return Timeframes.serialize({ ...newTimeframe, type: "days" });
   }
 }
