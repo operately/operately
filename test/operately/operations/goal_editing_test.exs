@@ -39,6 +39,7 @@ defmodule Operately.Operations.GoalEditingTest do
       name: "new name",
       champion_id: champion.id,
       reviewer_id: reviewer.id,
+      parent_goal_id: nil,
       timeframe: %{ type: "days", start_date: Date.utc_today(), end_date: Date.add(Date.utc_today(), 2) },
       added_targets: [ %{ name: "new target", from: 30, to: 15, unit: "minutes", index: 1 } ],
       updated_targets: [],

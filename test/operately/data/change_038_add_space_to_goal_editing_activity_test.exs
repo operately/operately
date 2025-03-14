@@ -15,6 +15,7 @@ defmodule Operately.Data.Change038AddSpaceToGoalEditingActivityTest do
   test "migration doesn't delete existing data in activity content", ctx do
     attrs = %{
       name: "Edited name",
+      parent_goal_id: nil,
       description: RichText.rich_text("content", :as_string),
       added_targets: [%{index: 0, name: "Added Target", unit: "New Unit", to: 30, from: 0}],
       updated_targets: [],
