@@ -12,7 +12,7 @@ import { SecondaryButton } from "@/components/Buttons";
 import { Chronometer } from "@/components/Chronometer";
 import { CustomRangePicker } from "@/components/TimeframeSelector/CustomRangePicker";
 import classNames from "classnames";
-import { ProgressBar } from "@/components/charts";
+import { MiniPieChart, PieChart, ProgressBar } from "@/components/charts";
 import { isPresent } from "@/utils/isPresent";
 
 interface Props {
@@ -165,33 +165,55 @@ function Targets({ readonly }: { readonly: boolean }) {
 }
 
 function TargetCard({ index, target, readonly }: { index: number; target: GoalCheckIns.Target; readonly: boolean }) {
-  return (
-    <details className="border-t last:border-b border-stroke-base">
-      <summary className="py-2 flex justify-between items-center cursor-pointer">
-        <TargetName target={target} />
-        {readonly ? <TargetValueAndDiff target={target} /> : <TargetInput target={target} index={index} />}
+  const progress = Goals.targetProgressPercentage(target);
+  const sentiment = GoalCheckIns.targetChangeSentiment(target);
 
-        <Icons.IconChevronDown className="text-gray-500 ml-4" size={20} />
+  return (
+    <details className="border-t last:border-b border-stroke-base py-2 px-px">
+      <summary className="flex justify-between items-center cursor-pointer">
+        <div className="flex items-center gap-2 flex-1">
+          <MiniPieChart completed={progress} total={100} size={16} />
+          <TargetName target={target} />
+        </div>
+        <div className="py-1 w-32 text-right text-sm">
+          <span className="font-extrabold">{target.value}</span>
+          {target.unit === "%" ? "%" : ` ${target.unit}`}
+        </div>
+        <div className="text-xs flex items-center gap-1 ml-4">
+          {sentiment === "positive" && <Icons.IconArrowUp size={14} className="text-green-600" />}
+          {sentiment === "negative" && <Icons.IconArrowDown size={14} className="text-red-600" />}
+          0.3%
+        </div>
+        <Icons.IconChevronDown className="ml-2" size={14} />
       </summary>
 
-      <div className="space-y-2">
-        <TargetProgressBar target={target} />
-        <TargetValueDiff target={target} />
+      <div className="text-sm ml-6 rounded-lg my-2">
+        <div className="flex items-center gap-2">
+          <div className="w-16 text-stone-800">Target</div>
+          <div className="flex items-center gap-2">
+            <div className="flex-1">
+              From <span className="font-semibold">{target.from}</span>{" "}
+              {target.from! > target.to! ? "down to" : "up to"} <span className="font-semibold">{target.to}</span>
+              {target.unit === "%" ? "%" : ` ${target.unit}`}
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 mt-1">
+          <div className="w-16 text-stone-800">Progress</div>
+          <div className="">{progress.toFixed(1)}%</div>
+        </div>
+
+        <div className="flex items-center gap-2 mt-1">
+          <div className="w-16 text-stone-800">Current</div>
+          <div className="">
+            {target.value} {target.unit}
+          </div>
+        </div>
       </div>
     </details>
   );
 }
-
-function TargetValueAndDiff({ target }: { target: GoalCheckIns.Target }) {
-  return (
-    <div className="py-1">
-      <span className="font-extrabold text-accent-1">{target.value}</span>{" "}
-      <span className="text-xs">{target.unit}</span>
-    </div>
-  );
-}
-
-// <TargetValueDiff target={target} />
 
 function TargetInput({ index }: { target: Goals.Target; index: number }) {
   const [value, setValue] = Forms.useFieldValue<number | null>(`targets[${index}].value`);
@@ -242,15 +264,6 @@ function TargetProgressBar({ target }: { target: GoalCheckIns.Target }) {
         rounded={false}
         bgColor="var(--color-stroke-base)"
       />
-
-      <div className="flex items-center justify-between mt-1">
-        <div className="text-xs text-gray-500">
-          {target.from} {target.unit}
-        </div>
-        <div className="text-xs text-gray-500">
-          {target.to} {target.unit}
-        </div>
-      </div>
     </div>
   );
 }
