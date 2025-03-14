@@ -19,7 +19,12 @@ export function Timeframe() {
   return (
     <div>
       <Forms.FieldGroup>
-        <Forms.TimeframeField readonly={isViewMode} field="timeframe" customLabel={<Title title="Timeframe" />} />
+        <Forms.TimeframeField
+          readonly={isViewMode}
+          field="timeframe"
+          customLabel={<Title title="Timeframe" />}
+          completedColor={isViewMode ? "stone" : "indigo"}
+        />
       </Forms.FieldGroup>
       <div className="mt-2 text-xs text-content-dimmed">{timeLeft}</div>
     </div>

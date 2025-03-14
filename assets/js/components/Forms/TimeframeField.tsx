@@ -5,7 +5,7 @@ import * as Popover from "@radix-ui/react-popover";
 import { Timeframe } from "@/utils/timeframes";
 
 import { SecondaryButton } from "@/components/Buttons";
-import { Chronometer } from "@/components/Chronometer";
+import { Chronometer, CompletedColor } from "@/components/Chronometer";
 import { CustomRangePicker } from "@/components/TimeframeSelector/CustomRangePicker";
 
 import { useFieldValue } from "./FormContext";
@@ -16,6 +16,7 @@ interface Props {
   label?: string;
   readonly?: boolean;
   customLabel?: React.ReactNode;
+  completedColor?: CompletedColor;
 }
 
 //
@@ -33,7 +34,7 @@ interface Props {
 // });
 //
 
-export function TimeframeField({ field, label, readonly, customLabel }: Props) {
+export function TimeframeField({ field, label, readonly, customLabel, completedColor }: Props) {
   const [open, setOpen] = React.useState(false);
   const [value] = useFieldValue<Timeframe>(field);
 
@@ -51,7 +52,7 @@ export function TimeframeField({ field, label, readonly, customLabel }: Props) {
             </Popover.Trigger>
           )}
         </div>
-        <Chronometer start={value.startDate!} end={value.endDate!} />
+        <Chronometer start={value.startDate!} end={value.endDate!} completedColor={completedColor} />
       </div>
 
       <PopoverContent field={field} />

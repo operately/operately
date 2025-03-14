@@ -1,17 +1,21 @@
 import React from "react";
 import FormattedTime from "@/components/FormattedTime";
 import classNames from "classnames";
+import { match } from "ts-pattern";
+
+export type CompletedColor = "indigo" | "stone";
 
 interface Props {
   start: Date | string;
   end: Date | string;
   width?: string;
   progress?: number;
+  completedColor?: CompletedColor;
 }
 
 const gridLayout = "px-2 py-2 w-full grid grid-cols-[auto_1fr_auto] items-center gap-2 absolute top-0 left-0 bottom-0";
 
-export function Chronometer({ start, end, width = "w-64", progress }: Props) {
+export function Chronometer({ start, end, width = "w-64", progress, completedColor = "indigo" }: Props) {
   //
   // We are displaying two separate grids, one for the completed part and one for the remaining part.
   // The completed part is clipped to the left, and the remaining part is clipped to the right.
@@ -34,18 +38,18 @@ export function Chronometer({ start, end, width = "w-64", progress }: Props) {
 
   return (
     <ChronometerContainer width={width}>
-      <ChronometerProgress progress={progress} />
+      <ChronometerProgress progress={progress} completedColor={completedColor} />
 
       <div className={gridLayout} style={completedStyle}>
-        <TimeDisplay time={start} isHighlighted={true} />
-        <Dividers width={width} color="border-indigo-300" />
-        <TimeDisplay time={end} isHighlighted={true} />
+        <TimeDisplay time={start} isHighlighted={true} completedColor={completedColor} />
+        <Dividers width={width} completedColor={completedColor} />
+        <TimeDisplay time={end} isHighlighted={true} completedColor={completedColor} />
       </div>
 
       <div className={gridLayout} style={remainingStyle}>
-        <TimeDisplay time={start} />
-        <Dividers width={width} color="border-surface-outline" />
-        <TimeDisplay time={end} />
+        <TimeDisplay time={start} completedColor={completedColor} />
+        <Dividers width={width} completedColor="stone" />
+        <TimeDisplay time={end} completedColor={completedColor} />
       </div>
     </ChronometerContainer>
   );
@@ -61,18 +65,24 @@ function ChronometerContainer({ width, children }: { width: string; children: Re
   );
 }
 
-function ChronometerProgress({ progress }: { progress: number }) {
-  return (
-    <div
-      className="absolute top-0 left-0 bottom-0 transition-all duration-300 bg-indigo-500 z-10"
-      style={{ width: progress + "%" }}
-    />
-  );
+function ChronometerProgress({ progress, completedColor }: { progress: number; completedColor: CompletedColor }) {
+  const className = classNames("absolute top-0 left-0 bottom-0 transition-all duration-300 z-10", {
+    "bg-indigo-500": completedColor === "indigo",
+    "bg-stone-300 opacity-50": completedColor === "stone",
+  });
+
+  return <div className={className} style={{ width: progress + "%" }} />;
 }
 
-function TimeDisplay({ time, isHighlighted = false }: { time: Date | string; isHighlighted?: boolean }) {
+interface TimeDisplayProps {
+  time: Date | string;
+  completedColor: CompletedColor;
+  isHighlighted?: boolean;
+}
+
+function TimeDisplay({ time, isHighlighted = false, completedColor }: TimeDisplayProps) {
   const containerClass = classNames("text-xs z-1 relative whitespace-nowrap", {
-    "text-white-1 font-bold": isHighlighted,
+    "text-white-1 font-bold": isHighlighted && completedColor === "indigo",
   });
 
   if (typeof time === "string") {
@@ -104,9 +114,13 @@ function findProgress(start: Date | string, end: Date | string) {
   return Math.min(100, Math.max(0, (elapsedTime / totalDuration) * 100));
 }
 
-function Dividers({ width, color }: { width: string; color: string }) {
+function Dividers({ width, completedColor }: { width: string; completedColor: CompletedColor }) {
   const ref = React.useRef<HTMLDivElement>(null);
   const [dividers, setDividers] = React.useState<React.ReactNode[]>([]);
+  const color = match(completedColor)
+    .with("indigo", () => "border-indigo-300")
+    .with("stone", () => "border-surface-outline")
+    .exhaustive();
 
   React.useEffect(() => {
     if (ref.current) {
