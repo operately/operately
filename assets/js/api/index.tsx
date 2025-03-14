@@ -2516,10 +2516,11 @@ export interface EditDiscussionResult {
 }
 
 export interface EditGoalInput {
-  goalId?: string | null;
+  goalId?: Id | null;
+  parentGoalId?: Id | null;
   name?: string | null;
-  championId?: string | null;
-  reviewerId?: string | null;
+  championId?: Id | null;
+  reviewerId?: Id | null;
   timeframe?: Timeframe | null;
   addedTargets?: CreateTargetInput[] | null;
   updatedTargets?: UpdateTargetInput[] | null;
