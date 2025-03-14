@@ -20,7 +20,7 @@ function ViewName() {
   return (
     <Forms.FieldGroup>
       <div className="flex items-start gap-2">
-        <Forms.TitleInput field="name" readonly />
+        <Forms.TitleInput field="name" readonly fontBold />
         <GoalStatusBadge status={status} className="mt-3" />
       </div>
     </Forms.FieldGroup>
@@ -30,7 +30,7 @@ function ViewName() {
 function EditName() {
   return (
     <Forms.FieldGroup>
-      <Forms.TitleInput field="name" />
+      <Forms.TitleInput field="name" fontBold />
     </Forms.FieldGroup>
   );
 }
