@@ -9,6 +9,7 @@ import { assertPresent } from "@/utils/assertions";
 import { useForm, Form as CheckInForm } from "@/features/goals/GoalCheckIn";
 
 import Forms from "@/components/Forms";
+import FormattedTime from "@/components/FormattedTime";
 
 interface LoaderResult {
   goal: Goals.Goal;
@@ -35,7 +36,7 @@ export function Page() {
         <Navigation goal={goal} />
 
         <Paper.Body className="lg:px-28">
-          <Header goal={goal} />
+          <Header />
           <Form goal={goal} />
         </Paper.Body>
       </Paper.Root>
@@ -43,10 +44,12 @@ export function Page() {
   );
 }
 
-function Header({ goal }: { goal: Goals.Goal }) {
+function Header() {
   return (
     <div>
-      <h1 className="text-3xl font-extrabold text-center">Check-in: {goal.name}</h1>
+      <h1 className="text-3xl font-extrabold text-center">
+        Check-in for <FormattedTime time={new Date()} format="long-date" />
+      </h1>
       <p className="text-center mt-1">Share the progress with the team</p>
     </div>
   );

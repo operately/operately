@@ -12,7 +12,6 @@ import { assertPresent } from "@/utils/assertions";
 import { Update } from "@/models/goalCheckIns";
 import { BulletDot } from "@/components/TextElements";
 import { Person } from "@/api";
-import { GoalStatusBadge } from "@/features/goals/GoalStatusBadge";
 import { Chronometer } from "@/components/Chronometer";
 
 export function Header() {
@@ -20,11 +19,7 @@ export function Header() {
 
   return (
     <div className="flex flex-col items-center">
-      <div className="text-center">
-        <Title update={update} />
-        <Status update={update} />
-      </div>
-
+      <Title update={update} />
       <Subtitle update={update} />
       <Timeframe update={update} />
     </div>
@@ -33,9 +28,12 @@ export function Header() {
 
 function Title({ update }: { update: Update }) {
   assertPresent(update.insertedAt, "Update insertedAt must be defined");
-  assertPresent(update.goal, "Update goal must be defined");
 
-  return <span className="text-content-accent text-3xl font-extrabold">Check-In: {update.goal.name}</span>;
+  return (
+    <span className="text-content-accent text-3xl font-extrabold text-center">
+      Check-In for <FormattedTime time={update.insertedAt} format="long-date" />
+    </span>
+  );
 }
 
 function Subtitle({ update }: { update: Update }) {
@@ -45,21 +43,9 @@ function Subtitle({ update }: { update: Update }) {
     <div className="flex gap-1.5 items-center mt-1 font-medium">
       <AvatarAndName person={update.author} />
       <BulletDot />
-      <FormattedTime time={update.insertedAt!} format="relative" />
-      <BulletDot />
       <Acknowledgement update={update} />
     </div>
   );
-}
-
-function Status({ update }: { update: Update }) {
-  const mode = Pages.usePageMode();
-
-  if (mode === "view") {
-    return <GoalStatusBadge status={update.status!} className="inline-block ml-2 align-[5px]" />;
-  } else {
-    return null;
-  }
 }
 
 function Timeframe({ update }: { update: Update }) {
