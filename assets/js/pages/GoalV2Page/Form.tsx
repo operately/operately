@@ -4,7 +4,6 @@ import Forms from "@/components/Forms";
 import { useIsViewMode } from "@/components/Pages";
 import { EditBar } from "@/components/Pages/EditBar";
 
-import { useLoadedData } from "./loader";
 import { Messages } from "./Messages";
 import { HorizontalRule, Title } from "./components";
 import { Champion, Contributors, Reviewer } from "./contributors";
@@ -14,6 +13,7 @@ import { RelatedWork } from "./RelatedWork";
 import { GoalName } from "./Name";
 import { ParentGoal } from "./ParentGoal";
 import { useForm } from "./useForm";
+import { Description } from "./Description";
 
 export function Form() {
   const form = useForm();
@@ -44,29 +44,6 @@ export function Form() {
 
       <EditBar save={form.actions.submit} cancel={form.actions.cancel} />
     </Forms.Form>
-  );
-}
-
-function Description() {
-  const { goal } = useLoadedData();
-  const isViewMode = useIsViewMode();
-
-  const mentionSearchScope = { type: "goal", id: goal.id! } as const;
-
-  return (
-    <Forms.FieldGroup>
-      <div className="-ml-2">
-        <Forms.RichTextArea
-          field="description"
-          placeholder="Write here..."
-          mentionSearchScope={mentionSearchScope}
-          readonly={isViewMode}
-          height="3rem"
-          hideBorder
-          hideToolbar
-        />
-      </div>
-    </Forms.FieldGroup>
   );
 }
 
