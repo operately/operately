@@ -22,6 +22,7 @@ defmodule Operately.Operations.GoalEditing do
   defp update_goal(multi, goal, attrs) do
     changeset = Goal.changeset(goal, %{
       name: attrs.name,
+      parent_goal_id: attrs.parent_goal_id,
       champion_id: attrs.champion_id,
       reviewer_id: attrs.reviewer_id,
       timeframe: attrs.timeframe,

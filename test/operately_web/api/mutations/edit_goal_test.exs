@@ -223,6 +223,21 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalTest do
       assert Access.get_binding(context_id: context_id, group_id: company_group_id, access_level: Binding.full_access())
       assert Access.get_binding(context_id: context_id, group_id: space_group_id, access_level: Binding.full_access())
     end
+
+    test "edits goal parent", ctx do
+      goal = create_goal(ctx, name: "Name")
+      parent_goal = create_goal(ctx, name: "Parent Name")
+
+      refute goal.parent_goal_id
+
+      assert {200, _} = request(ctx.conn, goal, parent_goal_id: Paths.goal_id(parent_goal))
+      goal = Repo.reload(goal)
+      assert goal.parent_goal_id == parent_goal.id
+
+      assert {200, _} = request(ctx.conn, goal)
+      goal = Repo.reload(goal)
+      refute goal.parent_goal_id
+    end
   end
 
   #
@@ -235,6 +250,7 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalTest do
     mutation(conn, :edit_goal, %{
       goal_id: Paths.goal_id(goal),
       name: attrs[:name] || goal.name,
+      parent_goal_id: attrs[:parent_goal_id],
       champion_id: person_id(attrs[:champion_id] || goal.champion_id),
       reviewer_id: person_id(attrs[:reviewer_id] || goal.reviewer_id),
       timeframe: format_timeframe(attrs[:timeframe] || goal.timeframe),
