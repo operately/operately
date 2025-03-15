@@ -80,7 +80,7 @@ function ExportMarkdownMenuItem({ document }: Props) {
   const handleExport = () => {
     const content = JSON.parse(document.content!);
     const markdown = exportToMarkdown(content, { removeEmbeds: true });
-    downloadMarkdown(markdown, document.name || 'document');
+    downloadMarkdown(markdown, document.name || "document");
   };
 
   return (
