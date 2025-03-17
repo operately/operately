@@ -30,7 +30,7 @@ export function SubscribersSelector({ state, projectName, spaceName, resourceHub
   return (
     <SubscribersSelectorProvider state={state}>
       <div>
-        <p className="text-lg font-bold mb-2">When I post this, notify:</p>
+        <p className="font-bold mb-1.5">When I post this, notify:</p>
 
         <RadioGroup name="subscriptions-options" onChange={setSubscriptionType} defaultValue={subscriptionType}>
           <SubscriptionOption
