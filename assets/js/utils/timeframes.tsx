@@ -2,6 +2,7 @@ import { match } from "ts-pattern";
 
 import * as api from "@/api";
 import * as Time from "@/utils/time";
+import plurarize from "./plurarize";
 
 //
 // Type definitions
@@ -171,6 +172,15 @@ export function remainingDays(timeframe: Timeframe): number {
   if (!timeframe.endDate) return 0;
 
   return Time.daysBetween(Time.today(), timeframe.endDate);
+}
+
+export function formatRemainingTime(days: number): string {
+  if (days <= 13) {
+    return plurarize(days, "day", "days");
+  }
+
+  const weeks = Math.round(days / 7);
+  return plurarize(weeks, "week", "weeks");
 }
 
 export function overdueDays(timeframe: Timeframe): number {
