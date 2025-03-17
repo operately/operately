@@ -50,11 +50,11 @@ function Targets() {
   const isViewMode = useIsViewMode();
 
   return (
-    <div>
+    <>
       <Title title="Targets" />
       <Forms.FieldGroup>
-        <Forms.GoalTargetsField readonly={isViewMode} field="targets" />
+        <Forms.GoalTargetsField field="targets" readonly={isViewMode} hideBorder dotsBetween />
       </Forms.FieldGroup>
-    </div>
+    </>
   );
 }

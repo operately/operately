@@ -1,159 +1,174 @@
 import React from "react";
 
+import { IconChevronDown } from "@tabler/icons-react";
 import * as Goals from "@/models/goals";
-import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import classNames from "classnames";
+import * as GoalCheckIns from "@/models/goalCheckIns";
 
 import Forms from "@/components/Forms";
-import { GhostButton } from "@/components/Buttons";
-import { ProgressBar } from "@/components/charts";
-import { compareIds } from "@/routes/paths";
+import { MiniPieChart } from "@/components/charts";
+import { isPresent } from "@/utils/isPresent";
 
 import { useFieldValue } from "./FormContext";
 import { InputField } from "./FieldGroup";
+import classNames from "classnames";
 
-interface Props {
+interface StylesOptions {
+  hideBorder?: boolean;
+  dotsBetween?: boolean;
+}
+
+interface Props extends StylesOptions {
   field: string;
   label?: string;
   readonly?: boolean;
 }
 
-export function GoalTargetsField({ field, label, readonly }: Props) {
-  const [targets] = useFieldValue<Goals.Target[]>(field);
-  const [targetOpen, setTargetOpen] = React.useState<string>();
+export function GoalTargetsField(props: Props) {
+  const [targets] = useFieldValue<Goals.Target[]>(props.field);
 
   return (
-    <InputField field={field} label={label}>
-      {targets.map((target) => (
-        <TargetField
-          field={field}
-          target={target}
-          currentOpenTarget={targetOpen}
-          setTargetOpen={setTargetOpen}
-          readonly={readonly}
-          key={target.id}
-        />
+    <InputField field={props.field} label={props.label}>
+      {targets.map((target, index) => (
+        <TargetCard key={index} index={index} target={target} {...props} />
       ))}
     </InputField>
   );
 }
 
-function findPercentage(target: Goals.Target) {
-  const percentage = ((target.value! - target.from!) / (target.to! - target.from!)) * 100;
-  return Math.max(0, Math.min(100, percentage));
-}
-
-interface TargetFieldProps {
-  field: string;
-  target: Goals.Target;
-  currentOpenTarget: string | undefined;
-  setTargetOpen: React.Dispatch<React.SetStateAction<string | undefined>>;
+interface TargetCardProps extends StylesOptions {
+  index: number;
+  target: GoalCheckIns.Target;
   readonly?: boolean;
 }
 
-function TargetField({ field, target, currentOpenTarget, setTargetOpen, readonly }: TargetFieldProps) {
-  const [targets, setTargets] = useFieldValue<Goals.Target[]>(field);
-
-  const targetName = `target-${target.id}`;
-  const isOpen = React.useMemo(() => compareIds(target.id, currentOpenTarget), [target.id, currentOpenTarget]);
-
-  const open = () => {
-    if (readonly) return;
-    setTargetOpen(target.id!);
-  };
-  const close = () => setTargetOpen(undefined);
-
-  const form = Forms.useForm({
-    fields: {
-      [targetName]: target.value,
-    },
-    cancel: close,
-    submit: () => {
-      const currTarget = targets.find((t) => compareIds(t.id, target.id));
-
-      if (currTarget) {
-        currTarget.value = form.values[targetName];
-      }
-
-      setTargets([...targets]);
-      close();
-    },
+function TargetCard(props: TargetCardProps) {
+  const containerClass = classNames("max-w-full py-2 px-px", {
+    "border-t last:border-b border-stroke-base": !props.hideBorder,
   });
 
   return (
-    <DropdownMenu.Root open={isOpen} onOpenChange={open}>
-      <Target readonly={readonly} target={target} isOpen={isOpen} />
-      <PopupContent form={form} targetName={targetName} />
-    </DropdownMenu.Root>
+    <details className={containerClass}>
+      <summary className="grid grid-cols-[1fr_auto_14px] items-center cursor-pointer">
+        <div className="flex items-center gap-2 flex-1 truncate">
+          <TargetPieChart target={props.target} />
+          <TargetName target={props.target} />
+          {props.dotsBetween && <Dots />}
+        </div>
+
+        {props.readonly ? (
+          <TargetValue target={props.target} />
+        ) : (
+          <TargetInput target={props.target} index={props.index} />
+        )}
+        <IconChevronDown className="ml-2" size={14} />
+      </summary>
+
+      <TargetDetails target={props.target} />
+    </details>
   );
 }
 
-function Target({ target, isOpen, readonly }) {
-  const containerClass = classNames("px-2 py-2 -mx-2", {
-    "bg-surface-highlight": isOpen,
-    "cursor-pointer group hover:bg-surface-dimmed": !readonly,
-  });
+function TargetValue({ target }: { target: GoalCheckIns.Target }) {
+  return (
+    <div className="flex items-center">
+      <div className="py-1 text-right text-sm">
+        <span className="font-extrabold">{target.value}</span>
+        {target.unit === "%" ? "%" : ` ${target.unit}`}
+      </div>
+      <TargetValueDiff target={target} />
+    </div>
+  );
+}
+
+function TargetPieChart({ target }: { target: GoalCheckIns.Target }) {
+  const progress = Goals.targetProgressPercentage(target);
+
+  return <MiniPieChart completed={progress} total={100} size={16} />;
+}
+
+function TargetDetails({ target }: { target: GoalCheckIns.Target }) {
+  const progress = Goals.targetProgressPercentage(target);
 
   return (
-    <div className={containerClass}>
-      <div className="flex items-center gap-3">
-        <div className="flex-1">
-          <div className="mb-2 flex items-start justify-between">
-            <div className="font-medium">{target.name}</div>
-
-            <div className="flex items-center gap-2">
-              <div className="tracking-wider text-sm font-medium">
-                {target.value} / {target.to}
-              </div>
-              {!readonly && <PopupTrigger />}
-            </div>
+    <div className="text-sm ml-6 rounded-lg my-2">
+      <div className="flex items-center gap-2">
+        <div className="w-20 font-semibold">Target</div>
+        <div className="flex items-center gap-2">
+          <div className="flex-1">
+            From <span className="font-semibold">{target.from}</span> {target.from! > target.to! ? "down to" : "to"}{" "}
+            <span className="font-semibold">{target.to}</span>
+            {target.unit === "%" ? "%" : ` ${target.unit}`}
           </div>
+        </div>
+      </div>
 
-          <ProgressBar
-            percentage={findPercentage(target)}
-            width="w-full"
-            height="h-1.5"
-            rounded={false}
-            bgColor="var(--color-stroke-base)"
-          />
+      <div className="flex items-center gap-2 mt-1">
+        <div className="w-20 font-semibold">Current</div>
+        <div className="">
+          {target.value} {target.unit} ({progress.toFixed(1)}%)
         </div>
       </div>
     </div>
   );
 }
 
-function PopupTrigger() {
+function TargetInput({ index }: { target: Goals.Target; index: number }) {
+  const [value, setValue] = Forms.useFieldValue<number | null>(`targets[${index}].value`);
+  const [tempValue, setTempValue] = React.useState<string>(value?.toString() || "");
+  const error = Forms.useFieldError(`targets[${index}].value`);
+
+  const onBlur = () => {
+    const parsedValue = parseFloat(tempValue);
+
+    if (isNaN(parsedValue)) {
+      setTempValue(value?.toString() || "");
+    } else {
+      setValue(parsedValue);
+      setTempValue(parsedValue.toString());
+    }
+  };
+
   return (
-    <DropdownMenu.Trigger>
-      <GhostButton size="xxs" spanButton>
-        Edit
-      </GhostButton>
-    </DropdownMenu.Trigger>
+    <div className="">
+      <div>
+        <input
+          type="text"
+          onChange={(e) => setTempValue(e.target.value)}
+          onBlur={onBlur}
+          value={tempValue || ""}
+          className="ring-0 outline-none px-2 py-1.5 text-sm font-medium w-32 text-right border border-stroke-base rounded"
+        />
+      </div>
+
+      {error && <div className="text-xs text-content-error mt-0.5">{error}</div>}
+    </div>
   );
 }
 
-function PopupContent({ form, targetName }) {
-  const menuContentClass = classNames(
-    "relative rounded-md mt-1 z-10 px-1 py-1.5",
-    "shadow-xl ring-1 transition ring-surface-outline",
-    "focus:outline-none",
-    "bg-surface-base",
-    "animateMenuSlideDown",
-  );
+function TargetName({ target }: { target: GoalCheckIns.Target }) {
+  return <div className="font-medium truncate">{target.name}</div>;
+}
+
+function TargetValueDiff({ target }: { target: GoalCheckIns.Target }) {
+  if (!isPresent(target.value)) return null;
+  if (!isPresent(target.previousValue)) return null;
+
+  const diff = target.value - target.previousValue;
+  if (diff === 0) return null;
+
+  const sentiment = GoalCheckIns.targetChangeSentiment(target);
+  const diffText = `${Math.abs(diff)}`;
+  const diffSign = diff > 0 ? "+" : "-";
+  const color = sentiment === "positive" ? "text-green-600" : "text-content-error";
 
   return (
-    <DropdownMenu.Portal>
-      <DropdownMenu.Content className={menuContentClass} align="end" sideOffset={25}>
-        <div className="w-96 p-4">
-          <Forms.Form form={form}>
-            <Forms.FieldGroup>
-              <Forms.NumberInput field={targetName} label="New value" autoFocus />
-            </Forms.FieldGroup>
-
-            <Forms.Submit saveText="Update" cancelText="Dismiss" />
-          </Forms.Form>
-        </div>
-      </DropdownMenu.Content>
-    </DropdownMenu.Portal>
+    <div className={"text-xs ml-2 font-mono font-bold" + " " + color}>
+      {diffSign}
+      {diffText}
+    </div>
   );
+}
+
+function Dots() {
+  return <div className="flex-1 border-t-2 border-dotted border-stroke-base mx-1 mr-3"></div>;
 }
