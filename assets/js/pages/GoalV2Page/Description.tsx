@@ -19,17 +19,17 @@ export function Description() {
 
   return (
     <Forms.FieldGroup>
-      <div className="-ml-2">
-        <Forms.RichTextArea
-          field="description"
-          placeholder="Write here..."
-          mentionSearchScope={mentionSearchScope}
-          readonly={isViewMode}
-          height="3rem"
-          hideBorder
-          hideToolbar
-        />
-      </div>
+      <Forms.RichTextArea
+        field="description"
+        placeholder="Write here..."
+        mentionSearchScope={mentionSearchScope}
+        readonly={isViewMode}
+        height="3rem"
+        horizontalPadding=""
+        verticalPadding=""
+        hideBorder
+        hideToolbar
+      />
     </Forms.FieldGroup>
   );
 }
