@@ -23,7 +23,7 @@ export function Page() {
       <Paper.Root>
         <Navigation />
 
-        <Paper.Body className="lg:px-28">
+        <Paper.Body className="p-4 md:p-8 lg:px-28 lg:py-8" noPadding>
           <Options />
           <Header />
           <Form />

@@ -94,6 +94,7 @@ type ActionProps = TestableElement & {
 };
 
 export function Action(props: ActionProps) {
+  const isBig = Pages.useWindowSizeBiggerOrEqualTo("lg");
   const { close } = React.useContext(Context);
 
   const handleClick = () => {
@@ -101,7 +102,7 @@ export function Action(props: ActionProps) {
     props.onClick();
   };
 
-  if (props.keepOutsideOnBigScreen) {
+  if (isBig && props.keepOutsideOnBigScreen) {
     return <ActionAsOutsideButton {...props} onClick={handleClick} />;
   } else {
     return <ActionAsDropdownElement {...props} onClick={handleClick} />;
