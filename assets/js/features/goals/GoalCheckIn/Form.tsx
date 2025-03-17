@@ -156,15 +156,19 @@ function Targets({ readonly }: { readonly: boolean }) {
       <Label text={readonly ? "Targets" : "Update targets"} />
 
       <div>
-        {targets.map((target, index) => (
-          <TargetCard key={index} index={index} target={target} readonly={readonly} />
-        ))}
+        {targets.map((target, index) =>
+          readonly ? (
+            <TargetCard key={index} index={index} target={target} readonly={readonly} />
+          ) : (
+            <TargetInput key={index} index={index} target={target} />
+          ),
+        )}
       </div>
     </div>
   );
 }
 
-function TargetCard({ index, target, readonly }: { index: number; target: GoalCheckIns.Target; readonly: boolean }) {
+function TargetCard({ target }: { index: number; target: GoalCheckIns.Target; readonly: boolean }) {
   const progress = Goals.targetProgressPercentage(target);
   const sentiment = GoalCheckIns.targetChangeSentiment(target);
 
@@ -175,14 +179,14 @@ function TargetCard({ index, target, readonly }: { index: number; target: GoalCh
           <MiniPieChart completed={progress} total={100} size={16} />
           <TargetName target={target} />
         </div>
+        <div className="text-xs flex items-center gap-1 ml-4 w-12 flex-row-reverse">
+          0.3%
+          {sentiment === "positive" && <Icons.IconArrowUp size={14} className="text-green-600" />}
+          {sentiment === "negative" && <Icons.IconArrowDown size={14} className="text-red-600" />}
+        </div>
         <div className="py-1 w-32 text-right text-sm">
           <span className="font-extrabold">{target.value}</span>
           {target.unit === "%" ? "%" : ` ${target.unit}`}
-        </div>
-        <div className="text-xs flex items-center gap-1 ml-4">
-          {sentiment === "positive" && <Icons.IconArrowUp size={14} className="text-green-600" />}
-          {sentiment === "negative" && <Icons.IconArrowDown size={14} className="text-red-600" />}
-          0.3%
         </div>
         <Icons.IconChevronDown className="ml-2" size={14} />
       </summary>
@@ -215,10 +219,11 @@ function TargetCard({ index, target, readonly }: { index: number; target: GoalCh
   );
 }
 
-function TargetInput({ index }: { target: Goals.Target; index: number }) {
+function TargetInput({ target, index }: { target: Goals.Target; index: number }) {
   const [value, setValue] = Forms.useFieldValue<number | null>(`targets[${index}].value`);
   const [tempValue, setTempValue] = React.useState<string>(value?.toString() || "");
   const error = Forms.useFieldError(`targets[${index}].value`);
+  const progress = Goals.targetProgressPercentage(target);
 
   const onBlur = () => {
     const parsedValue = parseFloat(tempValue);
@@ -232,19 +237,55 @@ function TargetInput({ index }: { target: Goals.Target; index: number }) {
   };
 
   return (
-    <div className="">
-      <div>
-        <input
-          type="text"
-          onChange={(e) => setTempValue(e.target.value)}
-          onBlur={onBlur}
-          value={tempValue || ""}
-          className="ring-0 outline-none px-2 py-1.5 text-sm font-medium w-32 text-right border border-stroke-base rounded"
-        />
-      </div>
+    <details className="border-t last:border-b border-stroke-base py-2 px-px">
+      <summary className="flex justify-between items-center cursor-pointer">
+        <div className="flex items-center gap-2 flex-1">
+          <MiniPieChart completed={progress} total={100} size={16} />
+          <TargetName target={target} />
+        </div>
 
-      {error && <div className="text-xs text-content-error mt-0.5">{error}</div>}
-    </div>
+        <div className="">
+          <div>
+            <input
+              type="text"
+              onChange={(e) => setTempValue(e.target.value)}
+              onBlur={onBlur}
+              value={tempValue || ""}
+              className="ring-0 outline-none px-2 py-1.5 text-sm font-medium w-32 text-right border border-stroke-base rounded"
+            />
+          </div>
+
+          {error && <div className="text-xs text-content-error mt-0.5">{error}</div>}
+        </div>
+
+        <Icons.IconChevronDown className="ml-2" size={14} />
+      </summary>
+
+      <div className="text-sm ml-6 rounded-lg my-2">
+        <div className="flex items-center gap-2">
+          <div className="w-16 text-stone-800">Target</div>
+          <div className="flex items-center gap-2">
+            <div className="flex-1">
+              From <span className="font-semibold">{target.from}</span>{" "}
+              {target.from! > target.to! ? "down to" : "up to"} <span className="font-semibold">{target.to}</span>
+              {target.unit === "%" ? "%" : ` ${target.unit}`}
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 mt-1">
+          <div className="w-16 text-stone-800">Progress</div>
+          <div className="">{progress.toFixed(1)}%</div>
+        </div>
+
+        <div className="flex items-center gap-2 mt-1">
+          <div className="w-16 text-stone-800">Current</div>
+          <div className="">
+            {target.value} {target.unit}
+          </div>
+        </div>
+      </div>
+    </details>
   );
 }
 
