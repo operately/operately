@@ -12,8 +12,6 @@ import { PrimaryButton } from "@/components/Buttons";
 
 import FormattedTime from "@/components/FormattedTime";
 
-import plurarize from "@/utils/plurarize";
-
 interface HeaderProps {
   activeTab: "status" | "subgoals" | "discussions" | "about";
   goal: Goals.Goal;
@@ -194,7 +192,7 @@ function TimeframeState({ goal }) {
       <span>
         &middot;{" "}
         <span className="text-accent-1">
-          Scheduled to start in {plurarize(Timeframes.startsInDays(timeframe), "day", "days")}
+          Scheduled to start in {Timeframes.formatRemainingTime(Timeframes.startsInDays(timeframe))}
         </span>
       </span>
     );
@@ -205,7 +203,7 @@ function TimeframeState({ goal }) {
       <span>
         &middot;{" "}
         <span className="text-content-error">
-          Overdue by {plurarize(Timeframes.overdueDays(timeframe), "day", "days")}
+          Overdue by {Timeframes.formatRemainingTime(Timeframes.overdueDays(timeframe))}
         </span>
       </span>
     );
@@ -213,7 +211,9 @@ function TimeframeState({ goal }) {
     return (
       <span>
         &middot;{" "}
-        <span className="text-accent-1">{plurarize(Timeframes.remainingDays(timeframe), "day", "days")} left</span>
+        <span className="text-accent-1">
+          {Timeframes.formatRemainingTime(Timeframes.remainingDays(timeframe))} left
+        </span>
       </span>
     );
   }
