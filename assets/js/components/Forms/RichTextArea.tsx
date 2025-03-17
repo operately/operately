@@ -51,11 +51,10 @@ export function RichTextArea(props: RichTextAreaProps) {
   );
 }
 
-function ReadonlyContent({ field, hideBorder }: RichTextAreaProps) {
-  const [value] = useFieldValue(field);
-  const className = classNames({
-    "p-2 rounded-lg": true,
-    "border border-stroke-base": !hideBorder,
+function ReadonlyContent(props: RichTextAreaProps) {
+  const [value] = useFieldValue(props.field);
+  const className = classNames(contentClassName(props), {
+    "border rounded-lg border-stroke-base": !props.hideBorder,
   });
 
   return (

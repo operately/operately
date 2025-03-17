@@ -18,7 +18,7 @@ export function NextCheckIn() {
   return (
     <DisableInEditMode>
       <Title title="Next Check-in" />
-      <div className="text-xs mb-2">
+      <div className="text-sm mb-1">
         Scheduled for <FormattedTime time={goal.nextUpdateScheduledAt} format="long-date" />
       </div>
       <div className="text-base mb-1">
