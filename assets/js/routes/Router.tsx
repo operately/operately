@@ -9,6 +9,12 @@ interface NavigationOptions {
   exitPeekWindow?: boolean;
 }
 
+interface LoaderController {
+  abortLoader: () => void;
+  createLoader: () => AbortController;
+  clearLoader: (controller: AbortController) => void;
+}
+
 interface RouterContextValue {
   loadedData: any;
   error: any;
@@ -140,8 +146,6 @@ function initializeState(): RouterState {
 export function Router({ routes }: { routes: Route[] }) {
   const [state, dispatch] = React.useReducer(routerReducer, initializeState());
 
-  const loaderController = useDataLoaderController();
-
   const match = React.useMemo(() => {
     return matchPath(routes, state.pathname);
   }, [routes, state.pathname]);
@@ -160,8 +164,11 @@ export function Router({ routes }: { routes: Route[] }) {
     return peekPath !== null;
   }, [peekPath]);
 
-  useNavigationEvents(dispatch, loaderController.abortMainLoader, loaderController.abortPeekLoader);
-  const navigate = useNavigation(dispatch, loaderController.abortMainLoader, loaderController.abortPeekLoader);
+  const mainLoaderController = useDataLoaderController();
+  const peekLoaderController = useDataLoaderController();
+
+  useNavigationEvents(dispatch, mainLoaderController, peekLoaderController);
+  const navigate = useNavigation(dispatch, mainLoaderController, peekLoaderController);
 
   const loadMainRouteData = useRouteDataLoader(
     match,
@@ -169,10 +176,7 @@ export function Router({ routes }: { routes: Route[] }) {
     state.pathname,
     (data, element) => dispatch({ type: "LOAD_DATA_SUCCESS", data, pathname: state.pathname, element }),
     (error) => dispatch({ type: "LOAD_DATA_ERROR", error, pathname: state.pathname }),
-    {
-      createLoader: loaderController.createMainLoader,
-      clearLoader: loaderController.clearMainLoader,
-    },
+    mainLoaderController,
   );
 
   const loadPeekRouteData = useRouteDataLoader(
@@ -181,10 +185,7 @@ export function Router({ routes }: { routes: Route[] }) {
     peekPath,
     (data, element) => dispatch({ type: "PEEK_LOAD_DATA_SUCCESS", data, pathname: peekPath, element }),
     (error) => dispatch({ type: "PEEK_LOAD_DATA_ERROR", error, pathname: peekPath }),
-    {
-      createLoader: loaderController.createPeekLoader,
-      clearLoader: loaderController.clearPeekLoader,
-    },
+    peekLoaderController,
   );
 
   React.useEffect(() => {
@@ -253,68 +254,38 @@ export function useRouter() {
   return context;
 }
 
-function useDataLoaderController() {
-  const mainLoaderRef = React.useRef<AbortController | null>(null);
-  const peekLoaderRef = React.useRef<AbortController | null>(null);
+function useDataLoaderController(): LoaderController {
+  const loaderRef = React.useRef<AbortController | null>(null);
 
-  const abortMainLoader = React.useCallback(() => {
-    if (mainLoaderRef.current) {
-      mainLoaderRef.current.abort();
-      mainLoaderRef.current = null;
+  const abortLoader = React.useCallback(() => {
+    if (loaderRef.current) {
+      loaderRef.current.abort();
+      loaderRef.current = null;
     }
   }, []);
 
-  const abortPeekLoader = React.useCallback(() => {
-    if (peekLoaderRef.current) {
-      peekLoaderRef.current.abort();
-      peekLoaderRef.current = null;
-    }
-  }, []);
-
-  const createMainLoader = React.useCallback(() => {
-    abortMainLoader();
+  const createLoader = React.useCallback(() => {
+    abortLoader();
 
     const abortController = new AbortController();
-    mainLoaderRef.current = abortController;
+    loaderRef.current = abortController;
 
     return abortController;
-  }, [abortMainLoader]);
+  }, [abortLoader]);
 
-  const createPeekLoader = React.useCallback(() => {
-    abortPeekLoader();
-
-    const abortController = new AbortController();
-    peekLoaderRef.current = abortController;
-
-    return abortController;
-  }, [abortPeekLoader]);
-
-  const clearMainLoader = React.useCallback((controller: AbortController) => {
-    if (mainLoaderRef.current === controller) {
-      mainLoaderRef.current = null;
+  const clearLoader = React.useCallback((controller: AbortController) => {
+    if (loaderRef.current === controller) {
+      loaderRef.current = null;
     }
   }, []);
 
-  const clearPeekLoader = React.useCallback((controller: AbortController) => {
-    if (peekLoaderRef.current === controller) {
-      peekLoaderRef.current = null;
-    }
-  }, []);
-
-  return {
-    abortMainLoader,
-    abortPeekLoader,
-    createMainLoader,
-    createPeekLoader,
-    clearMainLoader,
-    clearPeekLoader,
-  };
+  return { abortLoader, createLoader, clearLoader };
 }
 
 function useNavigation(
   dispatch: React.Dispatch<RouterAction>,
-  abortMainLoader: () => void,
-  abortPeekLoader: () => void,
+  mainLoader: LoaderController,
+  peekLoader: LoaderController,
 ) {
   const navigate = React.useCallback(
     (path: string, opts?: NavigationOptions) => {
@@ -322,7 +293,7 @@ function useNavigation(
       const isPeekWindow = currentUrl.searchParams.has("peek");
 
       if ((opts?.openPeekWindow || isPeekWindow) && !opts?.exitPeekWindow) {
-        abortPeekLoader();
+        peekLoader.abortLoader();
 
         const url = new URL(window.location.href);
         url.searchParams.set("peek", path);
@@ -330,7 +301,7 @@ function useNavigation(
 
         dispatch({ type: "PEEK_NAVIGATE", pathname: path });
       } else {
-        abortMainLoader();
+        mainLoader.abortLoader();
 
         const url = new URL(path, window.location.href);
         window.history.pushState({}, "", url);
@@ -338,7 +309,7 @@ function useNavigation(
         dispatch({ type: "NAVIGATE", pathname: url.pathname });
       }
     },
-    [dispatch, abortMainLoader, abortPeekLoader],
+    [dispatch, mainLoader.abortLoader, peekLoader.abortLoader],
   );
 
   return navigate;
@@ -346,19 +317,19 @@ function useNavigation(
 
 function useNavigationEvents(
   dispatch: React.Dispatch<RouterAction>,
-  abortMainLoader: () => void,
-  abortPeekLoader: () => void,
+  mainLoader: LoaderController,
+  peekLoader: LoaderController,
 ) {
   React.useEffect(() => {
     const handlePopState = () => {
-      abortMainLoader();
+      mainLoader.abortLoader();
       dispatch({ type: "NAVIGATE", pathname: window.location.pathname });
 
       const searchParams = new URLSearchParams(window.location.search);
       const peekPath = searchParams.get("peek");
 
       if (peekPath) {
-        abortPeekLoader();
+        peekLoader.abortLoader();
         dispatch({ type: "PEEK_NAVIGATE", pathname: peekPath });
       } else {
         dispatch({ type: "PEEK_NAVIGATE", pathname: null });
@@ -366,8 +337,8 @@ function useNavigationEvents(
     };
 
     const handleRedirect = (e: CustomEvent) => {
-      abortMainLoader();
-      abortPeekLoader();
+      mainLoader.abortLoader();
+      peekLoader.abortLoader();
       dispatch({ type: "NAVIGATE", pathname: e.detail?.destination });
     };
 
@@ -378,7 +349,7 @@ function useNavigationEvents(
       window.removeEventListener("popstate", handlePopState);
       window.removeEventListener(REDIRECT_EVENT, handleRedirect as EventListener);
     };
-  }, [dispatch, abortMainLoader, abortPeekLoader]);
+  }, [dispatch, mainLoader.abortLoader, peekLoader.abortLoader]);
 }
 
 function useRouteDataLoader(
@@ -387,7 +358,7 @@ function useRouteDataLoader(
   pathname: string | null,
   onSuccess: (data: any, element: React.ReactNode) => void,
   onError: (error: any) => void,
-  loaderController: { createLoader: () => AbortController; clearLoader: (controller: AbortController) => void },
+  loaderController: LoaderController,
 ) {
   const { createLoader, clearLoader } = loaderController;
 
