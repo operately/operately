@@ -4,15 +4,17 @@ import * as Goals from "@/models/goals";
 import * as GoalCheckIns from "@/models/goalCheckIns";
 import * as Popover from "@radix-ui/react-popover";
 import * as Timeframes from "@/utils/timeframes";
+import * as Icons from "@tabler/icons-react";
 
-import Forms from "@/components/Forms";
-import RichContent from "@/components/RichContent";
 import { SecondaryButton } from "@/components/Buttons";
 import { Chronometer } from "@/components/Chronometer";
 import { CustomRangePicker } from "@/components/TimeframeSelector/CustomRangePicker";
-import classNames from "classnames";
-import { ProgressBar } from "@/components/charts";
+import { MiniPieChart } from "@/components/charts";
 import { isPresent } from "@/utils/isPresent";
+
+import Forms from "@/components/Forms";
+import RichContent from "@/components/RichContent";
+import classNames from "classnames";
 
 interface Props {
   form: any;
@@ -154,7 +156,7 @@ function Targets({ readonly }: { readonly: boolean }) {
     <div>
       <Label text={readonly ? "Targets" : "Update targets"} />
 
-      <div className="grid grid-cols-2 gap-4">
+      <div>
         {targets.map((target, index) => (
           <TargetCard key={index} index={index} target={target} readonly={readonly} />
         ))}
@@ -163,34 +165,63 @@ function Targets({ readonly }: { readonly: boolean }) {
   );
 }
 
-const targetCardClassName = classNames(
-  "border border-surface-outline",
-  "rounded-lg",
-  "overflow-hidden",
-  "p-4",
-  "h-full", // Fill the height of the grid cell
-  "flex flex-col justify-between",
-);
-
-function TargetCard({ index, target, readonly }: { index: number; target: GoalCheckIns.Target; readonly: boolean }) {
+function TargetCard({ readonly, target, index }: { index: number; target: GoalCheckIns.Target; readonly: boolean }) {
   return (
-    <div className={targetCardClassName}>
-      <TargetName target={target} />
-      {readonly ? <TargetValueAndDiff target={target} /> : <TargetInput target={target} index={index} />}
-      <TargetProgressBar target={target} />
-    </div>
+    <details className="border-t last:border-b border-stroke-base py-2 px-px">
+      <summary className="flex justify-between items-center cursor-pointer">
+        <div className="flex items-center gap-2 flex-1">
+          <TargetPieChart target={target} />
+          <TargetName target={target} />
+        </div>
+
+        {readonly ? <TargetValue target={target} /> : <TargetInput target={target} index={index} />}
+        <Icons.IconChevronDown className="ml-2" size={14} />
+      </summary>
+
+      <TargetDetails target={target} />
+    </details>
   );
 }
 
-function TargetValueAndDiff({ target }: { target: GoalCheckIns.Target }) {
+function TargetValue({ target }: { target: GoalCheckIns.Target }) {
   return (
-    <div>
-      <div className="border-t border-surface-outline mt-2 w-12" />
-      <div className="flex items-end justify-between mt-4 mb-2">
-        <div className="text-xl font-bold text-gray-800 mt-2">
-          {target.value} {target.unit}
+    <>
+      <div className="py-1 w-32 text-right text-sm">
+        <span className="font-extrabold">{target.value}</span>
+        {target.unit === "%" ? "%" : ` ${target.unit}`}
+      </div>
+      <TargetValueDiff target={target} />
+    </>
+  );
+}
+
+function TargetPieChart({ target }: { target: GoalCheckIns.Target }) {
+  const progress = Goals.targetProgressPercentage(target);
+
+  return <MiniPieChart completed={progress} total={100} size={16} />;
+}
+
+function TargetDetails({ target }: { target: GoalCheckIns.Target }) {
+  const progress = Goals.targetProgressPercentage(target);
+
+  return (
+    <div className="text-sm ml-6 rounded-lg my-2">
+      <div className="flex items-center gap-2">
+        <div className="w-20 font-semibold">Target</div>
+        <div className="flex items-center gap-2">
+          <div className="flex-1">
+            From <span className="font-semibold">{target.from}</span> {target.from! > target.to! ? "down to" : "to"}{" "}
+            <span className="font-semibold">{target.to}</span>
+            {target.unit === "%" ? "%" : ` ${target.unit}`}
+          </div>
         </div>
-        <TargetValueDiff target={target} />
+      </div>
+
+      <div className="flex items-center gap-2 mt-1">
+        <div className="w-20 font-semibold">Current</div>
+        <div className="">
+          {target.value} {target.unit} ({progress.toFixed(1)}%)
+        </div>
       </div>
     </div>
   );
@@ -200,11 +231,6 @@ function TargetInput({ index }: { target: Goals.Target; index: number }) {
   const [value, setValue] = Forms.useFieldValue<number | null>(`targets[${index}].value`);
   const [tempValue, setTempValue] = React.useState<string>(value?.toString() || "");
   const error = Forms.useFieldError(`targets[${index}].value`);
-
-  const className = classNames("border", {
-    "border-surface-outline": !error,
-    "border-content-error": error,
-  });
 
   const onBlur = () => {
     const parsedValue = parseFloat(tempValue);
@@ -218,14 +244,14 @@ function TargetInput({ index }: { target: Goals.Target; index: number }) {
   };
 
   return (
-    <div className="mb-3 mt-4">
-      <div className={className}>
+    <div className="">
+      <div>
         <input
           type="text"
           onChange={(e) => setTempValue(e.target.value)}
           onBlur={onBlur}
           value={tempValue || ""}
-          className="border-none ring-0 outline-none p-2 text-sm font-medium w-full text-right"
+          className="ring-0 outline-none px-2 py-1.5 text-sm font-medium w-32 text-right border border-stroke-base rounded"
         />
       </div>
 
@@ -235,32 +261,7 @@ function TargetInput({ index }: { target: Goals.Target; index: number }) {
 }
 
 function TargetName({ target }: { target: GoalCheckIns.Target }) {
-  return <div className="font-medium leading-tight">{target.name}</div>;
-}
-
-function TargetProgressBar({ target }: { target: GoalCheckIns.Target }) {
-  const progress = Goals.targetProgressPercentage(target);
-
-  return (
-    <div>
-      <ProgressBar
-        percentage={progress}
-        width="w-full"
-        height="h-2"
-        rounded={false}
-        bgColor="var(--color-stroke-base)"
-      />
-
-      <div className="flex items-center justify-between mt-1">
-        <div className="text-xs text-gray-500">
-          {target.from} {target.unit}
-        </div>
-        <div className="text-xs text-gray-500">
-          {target.to} {target.unit}
-        </div>
-      </div>
-    </div>
-  );
+  return <div className="font-medium truncate flex-1">{target.name}</div>;
 }
 
 function TargetValueDiff({ target }: { target: GoalCheckIns.Target }) {
@@ -270,20 +271,15 @@ function TargetValueDiff({ target }: { target: GoalCheckIns.Target }) {
   const diff = target.value - target.previousValue;
   if (diff === 0) return null;
 
-  const diffSign = diff > 0 ? "+" : "-";
-
   const sentiment = GoalCheckIns.targetChangeSentiment(target);
+  const diffText = `${Math.abs(diff)}`;
+  const diffSign = diff > 0 ? "+" : "-";
   const color = sentiment === "positive" ? "text-green-600" : "text-content-error";
 
-  const percentage = (diff / target.previousValue) * 100;
-  const percentageClassName = `${color} font-semibold`;
-
-  const diffText = `${diffSign}${Math.abs(diff)}`;
-  const percentageText = `${diffSign}${Math.abs(percentage).toFixed(0)}%`;
-
   return (
-    <div className="text-xs">
-      {diffText} <span className={percentageClassName}>({percentageText})</span>
+    <div className={"text-xs ml-2 font-mono font-bold" + " " + color}>
+      {diffSign}
+      {diffText}
     </div>
   );
 }
