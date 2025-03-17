@@ -249,8 +249,8 @@ function Targets({ readonly }: { readonly: boolean }) {
 function TargetCard({ readonly, target, index }: { index: number; target: GoalCheckIns.Target; readonly: boolean }) {
   return (
     <details className="border-t last:border-b border-stroke-base py-2 px-px">
-      <summary className="flex justify-between items-center cursor-pointer">
-        <div className="flex items-center gap-2 flex-1">
+      <summary className="flex justify-between gap-2 items-center cursor-pointer">
+        <div className="flex items-center gap-2 flex-1 truncate">
           <TargetPieChart target={target} />
           <TargetName target={target} />
         </div>

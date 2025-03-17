@@ -26,7 +26,7 @@ function Title({ update }: { update: Update }) {
   assertPresent(update.insertedAt, "Update insertedAt must be defined");
 
   return (
-    <span className="text-content-accent text-3xl font-extrabold text-center">
+    <span className="text-content-accent text-xl sm:text-3xl font-extrabold text-center">
       Check-In for <FormattedTime time={update.insertedAt} format="long-date" />
     </span>
   );
@@ -36,7 +36,7 @@ function Subtitle({ update }: { update: Update }) {
   assertPresent(update.author, "Update author must be defined");
 
   return (
-    <div className="flex gap-1.5 items-center mt-1 font-medium">
+    <div className="flex gap-1.5 items-center mt-1 font-medium text-sm sm:text-base">
       <AvatarAndName person={update.author} />
       <BulletDot />
       <Acknowledgement update={update} />
