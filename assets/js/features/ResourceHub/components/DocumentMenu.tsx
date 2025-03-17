@@ -10,6 +10,7 @@ import { useNodesContext } from "@/features/ResourceHub";
 import { MoveResourceMenuItem, MoveResourceModal } from "./MoveResource";
 import { CopyResourceMenuItem } from "./CopyResource";
 import { CopyDocumentModal } from "./CopyDocument";
+import { downloadMarkdown, exportToMarkdown } from "@/utils/markdown";
 
 interface Props {
   document: Hub.ResourceHubDocument;
@@ -37,6 +38,7 @@ export function DocumentMenu({ document }: Props) {
         {permissions.canEditDocument && <EditDocumentMenuItem document={document} />}
         {permissions.canCreateDocument && <CopyResourceMenuItem resource={document} showModal={toggleCopyForm} />}
         {permissions.canEditParentFolder && <MoveResourceMenuItem resource={document} showModal={toggleMoveForm} />}
+        {permissions.canView && <ExportMarkdownMenuItem document={document} />}
         {permissions.canDeleteDocument && <DeleteDocumentMenuItem document={document} />}
       </Menu>
 
@@ -70,6 +72,20 @@ function DeleteDocumentMenuItem({ document }: Props) {
   return (
     <MenuActionItem onClick={handleDelete} testId={deleteId} danger>
       Delete
+    </MenuActionItem>
+  );
+}
+
+function ExportMarkdownMenuItem({ document }: Props) {
+  const handleExport = () => {
+    const content = JSON.parse(document.content!);
+    const markdown = exportToMarkdown(content, { removeEmbeds: true });
+    downloadMarkdown(markdown, document.name || "document");
+  };
+
+  return (
+    <MenuActionItem onClick={handleExport} testId={createTestId("export-markdown", document.id!)}>
+      Export
     </MenuActionItem>
   );
 }
