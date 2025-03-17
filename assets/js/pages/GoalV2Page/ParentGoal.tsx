@@ -44,7 +44,7 @@ function ViewParentGoal() {
     return (
       <div className="flex items-center gap-1">
         <IconBuildingEstate size={14} />
-        <div className="mt-1 font-medium text-sm text-content-dimmed">Company-wide goal</div>
+        <div className="font-medium text-sm text-content-dimmed">Company-wide goal</div>
       </div>
     );
 }
