@@ -1,16 +1,12 @@
 import * as React from "react";
 import * as People from "@/models/people";
 import * as Goals from "@/models/goals";
-import * as GoalCheckIns from "@/models/goalCheckIns";
 import * as Popover from "@radix-ui/react-popover";
 import * as Timeframes from "@/utils/timeframes";
-import * as Icons from "@tabler/icons-react";
 
 import { SecondaryButton } from "@/components/Buttons";
 import { Chronometer } from "@/components/Chronometer";
 import { CustomRangePicker } from "@/components/TimeframeSelector/CustomRangePicker";
-import { MiniPieChart } from "@/components/charts";
-import { isPresent } from "@/utils/isPresent";
 
 import Forms from "@/components/Forms";
 import RichContent from "@/components/RichContent";
@@ -231,136 +227,12 @@ function TimeframeEditButton({ value, setValue }: TimeframeEditButtonProps) {
 }
 
 function Targets({ readonly }: { readonly: boolean }) {
-  const [targets] = Forms.useFieldValue<Goals.Target[]>("targets");
-
   return (
-    <div>
+    <div className="font-bold">
       <Label text={readonly ? "Targets" : "Update targets"} />
-
-      <div>
-        {targets.map((target, index) => (
-          <TargetCard key={index} index={index} target={target} readonly={readonly} />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function TargetCard({ readonly, target, index }: { index: number; target: GoalCheckIns.Target; readonly: boolean }) {
-  return (
-    <details className="border-t last:border-b border-stroke-base py-2 px-px">
-      <summary className="flex justify-between gap-2 items-center cursor-pointer">
-        <div className="flex items-center gap-2 flex-1 truncate">
-          <TargetPieChart target={target} />
-          <TargetName target={target} />
-        </div>
-
-        {readonly ? <TargetValue target={target} /> : <TargetInput target={target} index={index} />}
-        <Icons.IconChevronDown className="ml-2" size={14} />
-      </summary>
-
-      <TargetDetails target={target} />
-    </details>
-  );
-}
-
-function TargetValue({ target }: { target: GoalCheckIns.Target }) {
-  return (
-    <>
-      <div className="py-1 w-32 text-right text-sm">
-        <span className="font-extrabold">{target.value}</span>
-        {target.unit === "%" ? "%" : ` ${target.unit}`}
-      </div>
-      <TargetValueDiff target={target} />
-    </>
-  );
-}
-
-function TargetPieChart({ target }: { target: GoalCheckIns.Target }) {
-  const progress = Goals.targetProgressPercentage(target);
-
-  return <MiniPieChart completed={progress} total={100} size={16} />;
-}
-
-function TargetDetails({ target }: { target: GoalCheckIns.Target }) {
-  const progress = Goals.targetProgressPercentage(target);
-
-  return (
-    <div className="text-sm ml-6 rounded-lg my-2">
-      <div className="flex items-center gap-2">
-        <div className="w-20 font-semibold">Target</div>
-        <div className="flex items-center gap-2">
-          <div className="flex-1">
-            From <span className="font-semibold">{target.from}</span> {target.from! > target.to! ? "down to" : "to"}{" "}
-            <span className="font-semibold">{target.to}</span>
-            {target.unit === "%" ? "%" : ` ${target.unit}`}
-          </div>
-        </div>
-      </div>
-
-      <div className="flex items-center gap-2 mt-1">
-        <div className="w-20 font-semibold">Current</div>
-        <div className="">
-          {target.value} {target.unit} ({progress.toFixed(1)}%)
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function TargetInput({ index }: { target: Goals.Target; index: number }) {
-  const [value, setValue] = Forms.useFieldValue<number | null>(`targets[${index}].value`);
-  const [tempValue, setTempValue] = React.useState<string>(value?.toString() || "");
-  const error = Forms.useFieldError(`targets[${index}].value`);
-
-  const onBlur = () => {
-    const parsedValue = parseFloat(tempValue);
-
-    if (isNaN(parsedValue)) {
-      setTempValue(value?.toString() || "");
-    } else {
-      setValue(parsedValue);
-      setTempValue(parsedValue.toString());
-    }
-  };
-
-  return (
-    <div className="">
-      <div>
-        <input
-          type="text"
-          onChange={(e) => setTempValue(e.target.value)}
-          onBlur={onBlur}
-          value={tempValue || ""}
-          className="ring-0 outline-none px-2 py-1.5 text-sm font-medium w-32 text-right border border-stroke-base rounded"
-        />
-      </div>
-
-      {error && <div className="text-xs text-content-error mt-0.5">{error}</div>}
-    </div>
-  );
-}
-
-function TargetName({ target }: { target: GoalCheckIns.Target }) {
-  return <div className="font-medium truncate flex-1">{target.name}</div>;
-}
-
-function TargetValueDiff({ target }: { target: GoalCheckIns.Target }) {
-  if (!isPresent(target.value)) return null;
-  if (!isPresent(target.previousValue)) return null;
-
-  const diff = target.value - target.previousValue;
-  if (diff === 0) return null;
-
-  const sentiment = GoalCheckIns.targetChangeSentiment(target);
-  const diffText = `${Math.abs(diff)}`;
-  const diffSign = diff > 0 ? "+" : "-";
-  const color = sentiment === "positive" ? "text-green-600" : "text-content-error";
-
-  return (
-    <div className={"text-xs ml-2 font-mono font-bold" + " " + color}>
-      {diffSign}
-      {diffText}
+      <Forms.FieldGroup>
+        <Forms.GoalTargetsField field="targets" readonly={readonly} />
+      </Forms.FieldGroup>
     </div>
   );
 }

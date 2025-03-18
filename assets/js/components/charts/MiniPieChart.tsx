@@ -21,13 +21,16 @@ export function MiniPieChart({ completed, total, size = 14 }) {
   }
 
   return (
-    <div
-      style={{
-        borderRadius: "50%",
-        backgroundImage: background,
-        height: `${size}px`,
-        width: `${size}px`,
-      }}
-    />
+    // The extra div prevents the Chart from being squished
+    <div>
+      <div
+        style={{
+          borderRadius: "50%",
+          backgroundImage: background,
+          height: `${size}px`,
+          width: `${size}px`,
+        }}
+      />
+    </div>
   );
 }
