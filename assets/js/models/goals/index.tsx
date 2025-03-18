@@ -65,8 +65,8 @@ export function targetProgressPercentage(target: Target): number {
 
 export function assertGoalStatusValidity(
   status: string,
-): asserts status is "on_track" | "caution" | "issue" | "pending" {
-  if (!["on_track", "caution", "issue", "pending"].includes(status)) {
+): asserts status is "on_track" | "caution" | "concern" | "issue" | "pending" {
+  if (!["on_track", "caution", "concern", "issue", "pending"].includes(status)) {
     throw new Error(`Invalid status: ${status}`);
   }
 }
