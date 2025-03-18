@@ -57,7 +57,8 @@ function Acknowledgement({ update }) {
     return (
       <span className="flex items-center gap-1">
         <Icons.IconSquareCheckFilled size={16} className="text-accent-1" />
-        Acknowledged by {update.acknowledgingPerson.fullName}
+        <span className="hidden sm:inline">Acknowledged by</span>
+        <span className="truncate">{update.acknowledgingPerson.fullName}</span>
       </span>
     );
   } else {
