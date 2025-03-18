@@ -42,6 +42,21 @@ const schema = new Schema({
       group: "block",
       attrs: { language: { default: null } },
     },
+    mention: {
+      attrs: { label: { default: "" } },
+      group: "inline",
+      inline: true,
+    },
+    blob: {
+      attrs: {
+        alt: { default: "" },
+        src: { default: "" },
+        title: { default: null },
+        filetype: { default: "" },
+      },
+      group: "inline",
+      inline: true,
+    },
   },
   marks: {
     bold: {},
