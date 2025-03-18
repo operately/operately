@@ -4,10 +4,11 @@ import * as GoalCheckIns from "@/models/goalCheckIns";
 
 import Forms from "@/components/Forms";
 import { isPresent } from "@/utils/isPresent";
+import { isCheckInTarget, Target } from "./types";
 
 interface Props {
   readonly: boolean;
-  target: GoalCheckIns.Target;
+  target: Target;
   index: number;
 }
 
@@ -18,7 +19,7 @@ export function TargetValue(props: Props) {
   return <ValueEdit index={props.index} />;
 }
 
-function ValueDisplay({ target }: { target: GoalCheckIns.Target }) {
+function ValueDisplay({ target }: { target: Target }) {
   return (
     <div className="flex items-center">
       <div className="py-1 text-right text-sm">
@@ -30,8 +31,8 @@ function ValueDisplay({ target }: { target: GoalCheckIns.Target }) {
   );
 }
 
-function ValueDifference({ target }: { target: GoalCheckIns.Target }) {
-  if (!isPresent(target.value) || !isPresent(target.previousValue)) {
+function ValueDifference({ target }: { target: Target }) {
+  if (!isPresent(target.value) || !isCheckInTarget(target) || !isPresent(target.previousValue)) {
     return null;
   }
 
