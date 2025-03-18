@@ -1,19 +1,16 @@
 import React from "react";
 
 import { IconChevronDown } from "@tabler/icons-react";
-import * as Goals from "@/models/goals";
-import * as GoalCheckIns from "@/models/goalCheckIns";
-
 import classNames from "classnames";
-import { useFieldValue } from "../FormContext";
-import { InputField } from "../FieldGroup";
-import { useValidation } from "../validations/hook";
-import { validatePresence } from "../validations/presence";
+import { useFieldValue } from "@/components/Forms/FormContext";
+import { useValidation } from "@/components/Forms/validations/hook";
+import { validatePresence } from "@/components/Forms/validations/presence";
 
 import { getReadonlyFlags } from "./utils";
 import { TargetNameSection } from "./TargetNameSection";
 import { TargetDetails } from "./TargetDetails";
 import { TargetValue } from "./TargetValue";
+import { Target } from "./types";
 
 interface StylesOptions {
   hideBorder?: boolean;
@@ -29,10 +26,10 @@ interface Props extends StylesOptions {
 }
 
 export function GoalTargetsField(props: Props) {
-  const [targets] = useFieldValue<Goals.Target[]>(props.field);
+  const [targets] = useFieldValue<Target[]>(props.field);
 
   return (
-    <InputField field={props.field} label={props.label}>
+    <div>
       {targets.map((target, index) => (
         <TargetCard
           key={target.id}
@@ -45,31 +42,42 @@ export function GoalTargetsField(props: Props) {
           editDefinition={props.editDefinition}
         />
       ))}
-    </InputField>
+    </div>
   );
 }
 
 interface TargetCardProps extends StylesOptions {
   index: number;
-  target: GoalCheckIns.Target;
+  target: Target;
   readonly?: boolean;
   editValue?: boolean;
   editDefinition?: boolean;
 }
 
 function TargetCard(props: TargetCardProps) {
+  const [open, setOpen] = React.useState(false);
   const { index, target, readonly, hideBorder, dotsBetween, editValue, editDefinition } = props;
 
   const { readonlyName, readonlyValue } = getReadonlyFlags({ readonly, editDefinition, editValue });
   useValidation(`targets[${index}].name`, validatePresence(true));
 
-  const containerClass = classNames("max-w-full py-2 px-px", {
+  const containerClass = classNames("max-w-full py-2 px-px list-none", {
     "border-t last:border-b border-stroke-base": !hideBorder,
   });
 
+  const handleToggle = () => {
+    if (!readonly) return;
+    setOpen(!open);
+  };
+
+  const handleChevronToggle = () => {
+    if (readonly) return;
+    setOpen(!open);
+  };
+
   return (
-    <details className={containerClass}>
-      <summary className="grid grid-cols-[1fr_auto_14px] gap-2 items-center cursor-pointer">
+    <div className={containerClass}>
+      <div onClick={handleToggle} className="grid grid-cols-[1fr_auto_14px] gap-2 items-center cursor-pointer">
         <TargetNameSection
           target={target}
           index={index}
@@ -77,9 +85,9 @@ function TargetCard(props: TargetCardProps) {
           dotsBetween={dotsBetween && readonlyName}
         />
         <TargetValue readonly={readonlyValue} index={index} target={target} />
-        <IconChevronDown className="ml-2" size={14} />
-      </summary>
-      <TargetDetails target={target} />
-    </details>
+        <IconChevronDown onClick={handleChevronToggle} size={14} />
+      </div>
+      {open && <TargetDetails target={target} />}
+    </div>
   );
 }

@@ -13,6 +13,7 @@ import RichContent from "@/components/RichContent";
 import classNames from "classnames";
 import { match } from "ts-pattern";
 import { durationHumanized } from "@/utils/time";
+import { GoalTargetsField } from "@/features/goals/GoalTargetsV2";
 
 interface Props {
   form: any;
@@ -228,11 +229,9 @@ function TimeframeEditButton({ value, setValue }: TimeframeEditButtonProps) {
 
 function Targets({ readonly }: { readonly: boolean }) {
   return (
-    <div className="font-bold">
+    <div>
       <Label text={readonly ? "Targets" : "Update targets"} />
-      <Forms.FieldGroup>
-        <Forms.GoalTargetsField field="targets" readonly={readonly} />
-      </Forms.FieldGroup>
+      <GoalTargetsField field="targets" readonly={readonly} />
     </div>
   );
 }
