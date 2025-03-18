@@ -14,6 +14,7 @@ import { GoalName } from "./Name";
 import { ParentGoal } from "./ParentGoal";
 import { useForm } from "./useForm";
 import { Description } from "./Description";
+import { GoalTargetsField } from "@/features/goals/GoalTargetsV2";
 
 export function Form() {
   const form = useForm();
@@ -52,16 +53,14 @@ function Targets() {
   return (
     <>
       <Title title="Targets" />
-      <Forms.FieldGroup>
-        <Forms.GoalTargetsField
-          field="targets"
-          readonly={isViewMode}
-          editDefinition={true}
-          editValue={false}
-          hideBorder
-          dotsBetween
-        />
-      </Forms.FieldGroup>
+      <GoalTargetsField
+        field="targets"
+        readonly={isViewMode}
+        editDefinition={true}
+        editValue={false}
+        hideBorder
+        dotsBetween
+      />
     </>
   );
 }

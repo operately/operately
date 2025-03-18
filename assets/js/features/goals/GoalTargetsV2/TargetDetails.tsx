@@ -1,6 +1,6 @@
 import React from "react";
 import * as Goals from "@/models/goals";
-import { Target } from "@/models/goalCheckIns";
+import { Target } from "./types";
 
 interface TargetDetailsProps {
   target: Target;

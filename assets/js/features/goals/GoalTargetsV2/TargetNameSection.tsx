@@ -1,10 +1,10 @@
 import React from "react";
 
 import * as Goals from "@/models/goals";
-import { Target } from "@/models/goalCheckIns";
 import classNames from "classnames";
 import { MiniPieChart } from "@/components/charts";
 import Forms from "@/components/Forms";
+import { Target } from "./types";
 
 interface Props {
   target: Target;
