@@ -68,12 +68,21 @@ function ValueEdit({ index }: { index: number }) {
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleBlur();
+      e.currentTarget.blur();
+    }
+  };
+
   return (
     <div>
       <input
         type="text"
         onChange={(e) => setTempValue(e.target.value)}
         onBlur={handleBlur}
+        onKeyDown={handleKeyDown}
         value={tempValue || ""}
         className="ring-0 bg-surface-base text-content-accent outline-none px-2 py-1.5 text-sm font-medium w-32 text-right border border-stroke-base rounded"
       />

@@ -215,7 +215,7 @@ function TimeframeEditButton({ value, setValue }: TimeframeEditButtonProps) {
   return (
     <Popover.Root open={open} onOpenChange={setOpen}>
       <Popover.Trigger>
-        <SecondaryButton size="xxs">Edit</SecondaryButton>
+        <SecondaryButton size="xxs" spanButton>Edit</SecondaryButton>
       </Popover.Trigger>
 
       <Popover.Portal>
