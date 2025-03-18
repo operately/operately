@@ -35,7 +35,7 @@ function NameEdit({ index }: { index: number }) {
   const error = Forms.useFieldError(`targets[${index}].name`);
 
   const className = classNames(
-    "w-full outline-none ring-0 px-2 py-1 border rounded font-medium",
+    "w-full bg-surface-base text-content-accent outline-none ring-0 px-2 py-1 border rounded font-medium",
     error ? "border-red-500" : "border-stroke-dimmed",
   );
 
