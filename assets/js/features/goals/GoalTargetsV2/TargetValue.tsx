@@ -75,7 +75,7 @@ function ValueEdit({ index }: { index: number }) {
         onChange={(e) => setTempValue(e.target.value)}
         onBlur={handleBlur}
         value={tempValue || ""}
-        className="ring-0 outline-none px-2 py-1.5 text-sm font-medium w-32 text-right border border-stroke-base rounded"
+        className="ring-0 bg-surface-base text-content-accent outline-none px-2 py-1.5 text-sm font-medium w-32 text-right border border-stroke-base rounded"
       />
       {error && <div className="text-xs text-content-error mt-0.5">{error}</div>}
     </div>
