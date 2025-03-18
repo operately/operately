@@ -53,7 +53,14 @@ function Targets() {
     <>
       <Title title="Targets" />
       <Forms.FieldGroup>
-        <Forms.GoalTargetsField field="targets" readonly={isViewMode} hideBorder dotsBetween />
+        <Forms.GoalTargetsField
+          field="targets"
+          readonly={isViewMode}
+          editDefinition={true}
+          editValue={false}
+          hideBorder
+          dotsBetween
+        />
       </Forms.FieldGroup>
     </>
   );
