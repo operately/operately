@@ -3,7 +3,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
   use OperatelyWeb.Api.Helpers
 
   alias OperatelyWeb.Api.Serializer
-  alias Operately.Goals.{Goal, Permissions}
+  alias Operately.Goals.{Goal, Permissions, Target}
   alias Operately.Notifications.UnreadNotificationsLoader
 
   inputs do
@@ -66,7 +66,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
       include_reviewer: :reviewer,
       include_space: :group,
       include_space_members: [group: [:members, :company]],
-      include_targets: :targets,
+      include_targets: [targets: from(t in Target, order_by: t.index)],
       include_potential_subscribers: [:reviewer, :champion, group: :members],
       always_include: :parent_goal,
     ])
