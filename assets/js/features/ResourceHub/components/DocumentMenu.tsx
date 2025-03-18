@@ -85,7 +85,7 @@ function ExportMarkdownMenuItem({ document }: Props) {
 
   return (
     <MenuActionItem onClick={handleExport} testId={createTestId("export-markdown", document.id!)}>
-      Export
+      Export as Markdown
     </MenuActionItem>
   );
 }
