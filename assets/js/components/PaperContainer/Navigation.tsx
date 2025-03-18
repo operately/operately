@@ -1,5 +1,6 @@
 import * as React from "react";
 import * as Icons from "@tabler/icons-react";
+import * as Pages from "@/components/Pages";
 
 import { Space } from "@/models/spaces";
 import { ResourceHub, ResourceHubFolder } from "@/models/resourceHubs";
@@ -15,7 +16,7 @@ export function Navigation({ children, testId }: { children: React.ReactNode; te
     "bg-surface-dimmed",
     "flex items-center flex-wrap",
     "justify-center gap-1",
-    "pt-2 pb-1 mx-0 sm:mx-10",
+    "px-2 pt-2 pb-1 mx-0 sm:mx-10",
     "font-semibold rounded-t",
     "border-b sm:border-b-0 sm:border-t sm:border-x border-surface-outline",
   );
@@ -42,9 +43,12 @@ export function NavItem({ linkTo, children, testId }: NavItemProps) {
 }
 
 export function NavSeparator() {
+  const breakpoint = Pages.useWindowSizeBreakpoints();
+  const iconSize = breakpoint === "xs" ? 12 : 16;
+
   return (
     <div className="shrink-0">
-      <Icons.IconSlash size={16} />
+      <Icons.IconSlash size={iconSize} />
     </div>
   );
 }
