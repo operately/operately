@@ -26,9 +26,9 @@ function Title({ update }: { update: Update }) {
   assertPresent(update.insertedAt, "Update insertedAt must be defined");
 
   return (
-    <span className="text-content-accent text-xl sm:text-3xl font-extrabold text-center">
+    <h1 className="text-content-accent text-xl sm:text-3xl font-extrabold text-center">
       Check-In for <FormattedTime time={update.insertedAt} format="long-date" />
-    </span>
+    </h1>
   );
 }
 
