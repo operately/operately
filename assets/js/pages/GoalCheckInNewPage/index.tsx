@@ -35,7 +35,7 @@ export function Page() {
       <Paper.Root>
         <Navigation goal={goal} />
 
-        <Paper.Body className="lg:px-28">
+        <Paper.Body className="p-4 md:p-8 lg:px-28 lg:py-8" noPadding>
           <Header />
           <Form goal={goal} />
         </Paper.Body>
@@ -47,8 +47,8 @@ export function Page() {
 function Header() {
   return (
     <div>
-      <h1 className="text-3xl font-extrabold text-center">
-        Check-in for <FormattedTime time={new Date()} format="long-date" />
+      <h1 className="text-content-accent text-xl sm:text-3xl font-extrabold text-center">
+        Check-In for <FormattedTime time={new Date()} format="long-date" />
       </h1>
       <p className="text-center mt-1">Share the progress with the team</p>
     </div>
