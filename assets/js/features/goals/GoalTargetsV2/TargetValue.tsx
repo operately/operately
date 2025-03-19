@@ -5,6 +5,7 @@ import * as GoalCheckIns from "@/models/goalCheckIns";
 import Forms from "@/components/Forms";
 import { isPresent } from "@/utils/isPresent";
 import { isCheckInTarget, Target } from "./types";
+import { createTestId } from "@/utils/testid";
 
 interface Props {
   readonly: boolean;
@@ -53,6 +54,7 @@ function ValueDifference({ target }: { target: Target }) {
 }
 
 function ValueEdit({ index }: { index: number }) {
+  const [name] = Forms.useFieldValue<string>(`targets[${index}].name`);
   const [value, setValue] = Forms.useFieldValue<number | null>(`targets[${index}].value`);
   const [tempValue, setTempValue] = React.useState<string>(value?.toString() || "");
   const error = Forms.useFieldError(`targets[${index}].value`);
@@ -80,6 +82,7 @@ function ValueEdit({ index }: { index: number }) {
     <div>
       <input
         type="text"
+        data-test-id={createTestId("target", "input", name)}
         onChange={(e) => setTempValue(e.target.value)}
         onBlur={handleBlur}
         onKeyDown={handleKeyDown}
