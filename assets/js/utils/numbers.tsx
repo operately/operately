@@ -22,3 +22,8 @@ export function findOrdinalNumberSuffix(num: number) {
       return "th";
   }
 }
+
+export function parseToInteger(num: number | string) {
+  if (typeof num === "string") return parseInt(num);
+  return Math.trunc(num);
+}
