@@ -68,7 +68,7 @@ function OverviewStatus({ goal }: { goal: Goals.Goal }) {
 function OverviewPending() {
   return (
     <span>
-      The goal is <span className="bg-stone-300">pending</span>. Work has not started yet.
+      The goal is <span className="bg-stone-300 dark:bg-stone-600">pending</span>. Work has not started yet.
     </span>
   );
 }

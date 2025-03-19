@@ -23,10 +23,10 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
     ctx |> UI.click(testid: "check-in-button")
   end
 
-  step :select_on_track, ctx do
+  step :select_status, ctx, status do
     ctx 
     |> UI.click(testid: "status-dropdown") 
-    |> UI.click(testid: "status-dropdown-on_track")
+    |> UI.click(testid: UI.testid(["status", "option", status]))
   end
 
   step :update_target, ctx, %{target: target, value: value} do
@@ -44,22 +44,22 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
     ctx |> UI.click(testid: "submit")
   end
 
-  step :assert_check_in_submitted, ctx do
+  step :assert_check_in_submitted, ctx, %{status: status, message: message} do
     ctx 
-    |> UI.assert_page(Paths.goal_check_in_path(ctx.company, ctx.goal))
-    |> UI.assert_text("Check-in")
+    |> UI.assert_has(testid: "goal-check-in-page")
+    |> UI.assert_text("Check-In")
+    |> UI.assert_text(String.downcase(status))
+    |> UI.assert_text(message)
   end
 
-  step :assert_check_in_in_feed, ctx do
-    feed_texts = ["Checking-in on my goal", "First response time", "Increase feedback score to 90%", "On Track"]
-
+  step :assert_check_in_feed_item, ctx, %{message: message} do
     ctx
     |> UI.visit(Paths.goal_path(ctx.company, ctx.goal))
-    |> FeedSteps.assert_goal_checked_in(author: ctx.champion, texts: feed_texts)
+    |> FeedSteps.assert_goal_checked_in(author: ctx.champion, texts: [message])
     |> UI.visit(Paths.space_path(ctx.company, ctx.space))
-    |> FeedSteps.assert_goal_checked_in(author: ctx.champion, goal_name: ctx.goal.name, texts: feed_texts)
+    |> FeedSteps.assert_goal_checked_in(author: ctx.champion, goal_name: ctx.goal.name, texts: [message])
     |> UI.visit(Paths.feed_path(ctx.company))
-    |> FeedSteps.assert_goal_checked_in(author: ctx.champion, goal_name: ctx.goal.name, texts: feed_texts)
+    |> FeedSteps.assert_goal_checked_in(author: ctx.champion, goal_name: ctx.goal.name, texts: [message])
   end
 
   step :assert_check_in_in_notifications, ctx do
