@@ -29,11 +29,18 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
     |> UI.click(testid: UI.testid(["status", "option", status]))
   end
 
-  step :update_target, ctx, %{target: target, value: value} do
-    ctx 
-    |> UI.click(testid: target_test_id(target))
-    |> UI.fill(testid: "target-value", with: to_string(value))
-    |> UI.click(testid: "save-target-value")
+  step :update_target, ctx, %{name: name, change: change} do
+    target = find_target_by_name(ctx, name)
+    testid = target_input_test_id(name)
+    value = target.from + change
+
+    # What does \b\b\b\b\b\b do?
+    #
+    # If you leave the input empty, it will default to the target's from value
+    # so the default clear that is executed by the fill function is not working
+    # well here. Instead, we are injecting a backspace sequence to clear the input.
+
+    UI.fill(ctx, testid: testid, with: "\b\b\b\b\b\b#{value}")
   end
 
   step :fill_in_message, ctx, message do
@@ -60,6 +67,14 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
     |> FeedSteps.assert_goal_checked_in(author: ctx.champion, goal_name: ctx.goal.name, texts: [message])
     |> UI.visit(Paths.feed_path(ctx.company))
     |> FeedSteps.assert_goal_checked_in(author: ctx.champion, goal_name: ctx.goal.name, texts: [message])
+  end
+
+  step :assert_target_updated, ctx, %{change: change} do
+    change_text = if change > 0, do: "+#{change}", else: "#{change}"
+
+    ctx 
+    |> UI.assert_has(testid: "goal-check-in-page")
+    |> UI.assert_text(change_text)
   end
 
   step :assert_check_in_in_notifications, ctx do
@@ -194,7 +209,11 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
     })
   end
 
-  defp target_test_id(target) do
-    UI.testid(["target", target.name])
+  defp target_input_test_id(name) do
+    UI.testid(["target", "input", name])
+  end
+
+  defp find_target_by_name(ctx, name) do
+    Repo.preload(ctx.goal, :targets).targets |> Enum.find(&(&1.name == name))
   end
 end

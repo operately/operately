@@ -34,6 +34,26 @@ defmodule Operately.Features.GoalCheckInsTest do
     end
   end
 
+  describe "updating targets during a check-in" do
+    feature "increasing a value", ctx do
+      verify_target_update(ctx, %{name: "First response time", change: 12})
+    end
+
+    feature "decreasing a value", ctx do
+      verify_target_update(ctx, %{name: "First response time", change: -12})
+    end
+
+    defp verify_target_update(ctx, values) do
+      ctx
+      |> Steps.initiate_check_in()
+      |> Steps.select_status("On track")
+      |> Steps.update_target(values)
+      |> Steps.fill_in_message("Everything is going well")
+      |> Steps.submit_check_in()
+      |> Steps.assert_target_updated(values)
+    end
+  end
+
   feature "extending the timeframe during a check-in", ctx do
     ctx
     |> Steps.initiate_check_in()
