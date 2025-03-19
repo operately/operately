@@ -8,6 +8,7 @@ import { InputField } from "./FieldGroup";
 import { useFieldValue, useFieldError } from "./FormContext";
 import { useValidation } from "./validations/hook";
 import { AddErrorFn } from "./useForm/errors";
+import { createTestId } from "@/utils/testid";
 
 type Status = "pending" | "on_track" | "concern" | "issue";
 type LegacyStatus = "caution";
@@ -105,6 +106,7 @@ function SelectDropdown({ value, rawValue, setValue, reviewerFirstName, error }:
     <div>
       {STATUS_OPTIONS.map((status, idx) => (
         <StatusPickerOption
+          testId={createTestId("status-option", STATUS_LABELS[status])}
           key={idx}
           status={STATUS_LABELS[status]}
           color={STATUS_COLORS[status]}
@@ -141,10 +143,14 @@ function OptionsMenu({ trigger, content }) {
   );
 }
 
-function StatusPickerOption({ status, description, color, isSelected, onClick }) {
+function StatusPickerOption({ status, description, color, isSelected, onClick, testId }) {
   return (
     <DropdownMenu.Item asChild>
-      <div className="px-3 py-1.5 hover:bg-surface-highlight cursor-pointer rounded" onClick={onClick}>
+      <div
+        className="px-3 py-1.5 hover:bg-surface-highlight cursor-pointer rounded"
+        onClick={onClick}
+        data-test-id={testId}
+      >
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <Circle size={20} color={color} />
@@ -175,7 +181,7 @@ function StatusValue({ value, readonly, error }: { value: AnyStatus | null; read
   );
 
   return (
-    <div className="w-48">
+    <div className="w-48" data-test-id="status-dropdown">
       <div className={className}>
         {value === null ? (
           <div className="flex items-center gap-2">

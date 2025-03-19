@@ -4,18 +4,34 @@ defmodule Operately.Features.GoalCheckInsTest do
 
   setup ctx, do: Steps.setup(ctx)
 
-  feature "check-in on a goal", ctx do
-    ctx
-    |> Steps.initiate_check_in()
-    |> UI.sleep(1000) # delete this line
-    # |> Steps.select_on_track()
-    # |> Steps.update_target(%{target: ctx.target_1, value: 20})
-    # |> Steps.fill_in_message("Everything is going well")
-    # |> Steps.submit_check_in()
-    # |> Steps.assert_check_in_submitted()
-    # |> Steps.assert_check_in_in_feed()
-    # |> Steps.assert_check_in_in_notifications()
-    # |> Steps.assert_check_in_email_sent()
+  describe "basic check-in flow (status + message)" do
+    feature "with on-track status", ctx do
+      verify_check_in_workflow(ctx, %{status: "On track", message: "Everything is going well"})
+    end
+
+    feature "with needs attention status", ctx do
+      verify_check_in_workflow(ctx, %{status: "Needs attention", message: "I need help with this"})
+    end
+
+    feature "with at risk status", ctx do
+      verify_check_in_workflow(ctx, %{status: "At risk", message: "Blocked by outside factors"})
+    end
+
+    feature "with pending status", ctx do
+      verify_check_in_workflow(ctx, %{status: "Pending", message: "We didn't start yet"})
+    end
+
+    defp verify_check_in_workflow(ctx, values = %{status: status, message: message}) do
+      ctx
+      |> Steps.initiate_check_in()
+      |> Steps.select_status(status)
+      |> Steps.fill_in_message(message)
+      |> Steps.submit_check_in()
+      |> Steps.assert_check_in_submitted(values)
+      |> Steps.assert_check_in_feed_item(values)
+      # |> Steps.assert_check_in_in_notifications(values)
+      # |> Steps.assert_check_in_email_sent(values)
+    end
   end
 
   feature "extending the timeframe during a check-in", ctx do
