@@ -1,13 +1,15 @@
 import * as Goals from "@/models/goals";
 import * as Time from "@/utils/time";
 import * as Timeframes from "@/utils/timeframes";
+import { Target } from "@/features/goals/GoalTargetsV2";
+import { parseToInteger } from "@/utils/numbers";
 
-export function parseTargets(targets: Goals.Target[]) {
+export function parseTargets(targets: Target[]) {
   return targets.map((t, index) => ({
     id: t.id,
     name: t.name,
-    from: t.from,
-    to: t.to,
+    from: parseToInteger(t.from!),
+    to: parseToInteger(t.to!),
     unit: t.unit,
     index: index,
   }));
