@@ -30,16 +30,16 @@ const STATUS_COLORS: Record<AnyStatus, string> = {
 
 const STATUS_LABELS: Record<AnyStatus, string> = {
   pending: "Pending",
-  on_track: "On Track",
-  concern: "Concern",
-  caution: "Caution",
-  issue: "Issue",
+  on_track: "On track",
+  concern: "Needs attention",
+  caution: "Needs attention",
+  issue: "At risk",
 };
 
 const STATUS_DESCRIPTIONS_TEMPLATE = (reviewer: string) => ({
   pending: "Work has not started yet.",
   on_track: "Progressing well. No blockers.",
-  concern: `There are risks. ${reviewer} should be aware.`,
+  concern: `There are emerging risks. ${reviewer} should be aware.`,
   issue: `Blocked or significantly behind. ${reviewer}'s help is needed.`,
 });
 

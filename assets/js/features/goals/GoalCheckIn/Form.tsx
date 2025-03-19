@@ -68,8 +68,7 @@ function OverviewStatus({ goal }: { goal: Goals.Goal }) {
 function OverviewPending() {
   return (
     <span>
-      The goal is <span className="bg-stone-300">Pending</span>. Work has not started yet.
-      <br />
+      The goal is <span className="bg-stone-300">pending</span>. Work has not started yet.
     </span>
   );
 }
@@ -77,7 +76,7 @@ function OverviewPending() {
 function OverviewOnTrack() {
   return (
     <span>
-      The goal is <mark data-highlight="bgGreen">on-track</mark>.
+      The goal is <mark data-highlight="bgGreen">on track</mark> and progressing well with no blockers.
     </span>
   );
 }
@@ -85,9 +84,8 @@ function OverviewOnTrack() {
 function OverviewConcern({ goal }: { goal: Goals.Goal }) {
   return (
     <span>
-      <mark data-highlight="bgYellow">Concern</mark>. There are risks.
-      {goal.reviewer && <span> {People.firstName(goal.reviewer)} should be aware.</span>}
-      <br />
+      The goal <mark data-highlight="bgYellow">needs attention</mark>, due to emerging risks.
+      {goal.reviewer && <span> {People.firstName(goal.reviewer)} should be aware of these concerns.</span>}
     </span>
   );
 }
@@ -95,9 +93,8 @@ function OverviewConcern({ goal }: { goal: Goals.Goal }) {
 function OverviewIssue({ goal }: { goal: Goals.Goal }) {
   return (
     <span>
-      <mark data-highlight="bgRed">Issue</mark>. The goal is blocked or significantly behind.{" "}
+      The goal is <mark data-highlight="bgRed">at risk</mark> due to blockers or significant delays.
       {goal.reviewer && <span> {People.firstName(goal.reviewer)}'s help is needed.</span>}
-      <br />
     </span>
   );
 }
@@ -113,7 +110,7 @@ function OverviewTimeframe() {
       </span>
     );
   } else {
-    return <span>{durationHumanized(new Date(), timeframe.endDate)} left to complete the goal.</span>;
+    return <span>{durationHumanized(new Date(), timeframe.endDate)} remaining until the deadline.</span>;
   }
 }
 
