@@ -3,24 +3,21 @@ import React from "react";
 import * as Goals from "@/models/goals";
 import classNames from "classnames";
 import { MiniPieChart } from "@/components/charts";
-import Forms from "@/components/Forms";
 import { Target } from "./types";
 
 interface Props {
   target: Target;
-  index: number;
-  readonly: boolean;
   dotsBetween?: boolean;
 }
 
-export function TargetNameSection({ target, index, readonly, dotsBetween }: Props) {
+export function TargetNameSection({ target, dotsBetween }: Props) {
   const progress = Goals.targetProgressPercentage(target);
-  const nameClass = classNames("flex items-center gap-2 flex-1", { truncate: readonly });
+  const nameClass = classNames("flex items-center gap-2 flex-1 truncate");
 
   return (
     <div className={nameClass}>
       <MiniPieChart completed={progress} total={100} size={16} />
-      {readonly ? <NameView name={target.name!} /> : <NameEdit index={index} />}
+      <NameView name={target.name!} />
       {dotsBetween && <Dots />}
     </div>
   );
@@ -28,23 +25,6 @@ export function TargetNameSection({ target, index, readonly, dotsBetween }: Prop
 
 function NameView({ name }: { name: string }) {
   return <div className="font-medium truncate">{name}</div>;
-}
-
-function NameEdit({ index }: { index: number }) {
-  const [value, setValue] = Forms.useFieldValue(`targets[${index}].name`);
-  const error = Forms.useFieldError(`targets[${index}].name`);
-
-  const className = classNames(
-    "w-full bg-surface-base text-content-accent outline-none ring-0 px-2 py-1 border rounded font-medium",
-    error ? "border-red-500" : "border-stroke-dimmed",
-  );
-
-  return (
-    <div className="w-full relative">
-      <input type="text" onChange={(e) => setValue(e.target.value)} value={value || ""} className={className} />
-      {error && <div className="absolute text-xs text-content-error -bottom-4">{error}</div>}
-    </div>
-  );
 }
 
 function Dots() {

@@ -10,7 +10,10 @@ import { getReadonlyFlags } from "./utils";
 import { TargetNameSection } from "./TargetNameSection";
 import { TargetDetails } from "./TargetDetails";
 import { TargetValue } from "./TargetValue";
+import { EditTargetCard } from "./EditTargetCard";
 import { Target } from "./types";
+
+export { Target };
 
 interface StylesOptions {
   hideBorder?: boolean;
@@ -58,10 +61,10 @@ function TargetCard(props: TargetCardProps) {
   const [open, setOpen] = React.useState(false);
   const { index, target, readonly, hideBorder, dotsBetween, editValue, editDefinition } = props;
 
-  const { readonlyName, readonlyValue } = getReadonlyFlags({ readonly, editDefinition, editValue });
+  const { readonlyDefinition, readonlyValue } = getReadonlyFlags({ readonly, editDefinition, editValue });
   useValidation(`targets[${index}].name`, validatePresence(true));
 
-  const containerClass = classNames("max-w-full py-2 px-px list-none", {
+  const containerClass = classNames("max-w-full py-2 px-px", {
     "border-t last:border-b border-stroke-base": !hideBorder,
   });
 
@@ -75,15 +78,12 @@ function TargetCard(props: TargetCardProps) {
     setOpen(!open);
   };
 
+  if (!readonlyDefinition) return <EditTargetCard target={target} index={index} />;
+
   return (
     <div className={containerClass}>
       <div onClick={handleToggle} className="grid grid-cols-[1fr_auto_14px] gap-2 items-center cursor-pointer">
-        <TargetNameSection
-          target={target}
-          index={index}
-          readonly={readonlyName}
-          dotsBetween={dotsBetween && readonlyName}
-        />
+        <TargetNameSection target={target} dotsBetween={dotsBetween} />
         <TargetValue readonly={readonlyValue} index={index} target={target} />
         <IconChevronDown onClick={handleChevronToggle} size={14} />
       </div>
