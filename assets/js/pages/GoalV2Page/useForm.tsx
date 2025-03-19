@@ -38,6 +38,8 @@ export function useForm() {
     submit: async () => {
       assertPresent(goal.accessLevels, "accessLevels must be present in goal");
 
+      const { updated, added } = parseTargets(form.values.targets);
+
       await edit({
         goalId: goal.id,
         parentGoalId: form.values.parentGoal?.id || null,
@@ -46,8 +48,8 @@ export function useForm() {
         reviewerId: form.values.reviewer,
         timeframe: serializeTimeframe(form.values.timeframe, currTimeframe),
         description: JSON.stringify(form.values.description),
-        updatedTargets: parseTargets(form.values.targets),
-        addedTargets: [],
+        updatedTargets: updated,
+        addedTargets: added,
         anonymousAccessLevel: goal.accessLevels.public,
         companyAccessLevel: goal.accessLevels.company,
         spaceAccessLevel: goal.accessLevels.space,
