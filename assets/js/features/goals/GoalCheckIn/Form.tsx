@@ -117,7 +117,7 @@ function OverviewTimeframe() {
 function StatusAndTimeframeForm({ goal }: { goal: Goals.Goal }) {
   return (
     <Forms.FieldGroup>
-      <div className="flex items-start gap-8">
+      <div className="flex items-start gap-8 flex-wrap">
         <StatusSelector goal={goal} />
         <TimeframeSelector />
       </div>
@@ -206,7 +206,8 @@ function TimeframeEditButton({ value, setValue }: TimeframeEditButtonProps) {
     "border border-surface-outline",
     "rounded-lg shadow-xl",
     "bg-surface-base",
-    "flex flex-col items-start p-4",
+    "max-w-[100vw]",
+    "p-4",
   );
 
   return (
