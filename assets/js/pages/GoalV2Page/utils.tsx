@@ -4,15 +4,34 @@ import * as Timeframes from "@/utils/timeframes";
 import { Target } from "@/features/goals/GoalTargetsV2";
 import { parseToInteger } from "@/utils/numbers";
 
-export function parseTargets(targets: Target[]) {
-  return targets.map((t, index) => ({
+function parseTarget(t: Target, index: number): Goals.Target {
+  return {
     id: t.id,
     name: t.name,
     from: parseToInteger(t.from!),
     to: parseToInteger(t.to!),
     unit: t.unit,
     index: index,
-  }));
+  };
+}
+
+export function parseTargets(targets: Target[]) {
+  const updated: Goals.Target[] = [];
+  const added: Goals.Target[] = [];
+
+  for (let i = 0; i < targets.length; i++) {
+    const target = targets[i]!;
+    const parsedTarget = parseTarget(target, i);
+
+    if (target.isNew) {
+      delete parsedTarget.id;
+      added.push(parsedTarget);
+    } else {
+      updated.push(parsedTarget);
+    }
+  }
+
+  return { updated, added };
 }
 
 export function findTimeLeft(timeframe: Goals.Timeframe) {

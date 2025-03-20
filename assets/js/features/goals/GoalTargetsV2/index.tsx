@@ -6,11 +6,11 @@ import { useFieldValue } from "@/components/Forms/FormContext";
 import { useValidation } from "@/components/Forms/validations/hook";
 import { validatePresence } from "@/components/Forms/validations/presence";
 
-import { getReadonlyFlags } from "./utils";
 import { TargetNameSection } from "./TargetNameSection";
 import { TargetDetails } from "./TargetDetails";
 import { TargetValue } from "./TargetValue";
 import { EditTargetCard } from "./EditTargetCard";
+import { AddTargetButton } from "./AddTargetButton";
 import { Target } from "./types";
 
 export { Target };
@@ -30,21 +30,40 @@ interface Props extends StylesOptions {
 
 export function GoalTargetsField(props: Props) {
   const [targets] = useFieldValue<Target[]>(props.field);
+  const [targetOpen, setTargetOpen] = React.useState<string>();
+
+  const editDefinition = Boolean(!props.readonly && props.editDefinition);
 
   return (
     <div>
-      {targets.map((target, index) => (
-        <TargetCard
-          key={target.id}
-          index={index}
-          target={target}
-          readonly={props.readonly}
-          hideBorder={props.hideBorder}
-          dotsBetween={props.dotsBetween}
-          editValue={props.editValue ?? true}
-          editDefinition={props.editDefinition}
-        />
-      ))}
+      {targets.map((target, index) =>
+        editDefinition ? (
+          <EditTargetCard
+            key={target.id}
+            field={props.field}
+            target={target}
+            index={index}
+            setTargetOpen={setTargetOpen}
+            targetOpen={targetOpen}
+          />
+        ) : (
+          <TargetCard
+            key={target.id}
+            index={index}
+            target={target}
+            readonly={props.readonly}
+            hideBorder={props.hideBorder}
+            dotsBetween={props.dotsBetween}
+            editValue={props.editValue ?? true}
+          />
+        ),
+      )}
+
+      <AddTargetButton
+        field={props.field}
+        display={Boolean(!props.readonly && props.editDefinition)}
+        setTargetOpen={setTargetOpen}
+      />
     </div>
   );
 }
@@ -54,14 +73,13 @@ interface TargetCardProps extends StylesOptions {
   target: Target;
   readonly?: boolean;
   editValue?: boolean;
-  editDefinition?: boolean;
 }
 
 function TargetCard(props: TargetCardProps) {
   const [open, setOpen] = React.useState(false);
-  const { index, target, readonly, hideBorder, dotsBetween, editValue, editDefinition } = props;
+  const { index, target, readonly, hideBorder, dotsBetween } = props;
 
-  const { readonlyDefinition, readonlyValue } = getReadonlyFlags({ readonly, editDefinition, editValue });
+  const readonlyValue = Boolean(readonly || !props.editValue);
   useValidation(`targets[${index}].name`, validatePresence(true));
 
   const containerClass = classNames("max-w-full py-2 px-px", {
@@ -77,8 +95,6 @@ function TargetCard(props: TargetCardProps) {
     if (readonly) return;
     setOpen(!open);
   };
-
-  if (!readonlyDefinition) return <EditTargetCard target={target} index={index} />;
 
   return (
     <div className={containerClass}>
