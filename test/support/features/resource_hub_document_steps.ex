@@ -331,16 +331,6 @@ defmodule Operately.Support.Features.ResourceHubDocumentSteps do
     })
   end
 
-  step :assert_document_edited_notification_sent, ctx do
-    ctx
-    |> UI.login_as(ctx.other_user)
-    |> NotificationsSteps.visit_notifications_page()
-    |> NotificationsSteps.assert_activity_notification(%{
-      author: ctx.creator,
-      action: "edited the document",
-    })
-  end
-
   step :assert_document_copied_notification_sent, ctx, attrs do
     ctx
     |> UI.login_as(ctx.other_user)
@@ -380,15 +370,6 @@ defmodule Operately.Support.Features.ResourceHubDocumentSteps do
       where: ctx.space.name,
       to: ctx.other_user,
       action: "added a document: #{document_name}",
-      author: ctx.creator,
-    })
-  end
-
-  step :assert_document_edited_email_sent, ctx, document_name do
-    ctx |> EmailSteps.assert_activity_email_sent(%{
-      where: ctx.space.name,
-      to: ctx.other_user,
-      action: "edited a document: #{document_name}",
       author: ctx.creator,
     })
   end
