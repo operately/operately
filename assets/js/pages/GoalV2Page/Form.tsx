@@ -38,11 +38,11 @@ export function Form() {
           <div className="flex">
             <GoalStatusBadge status={form.values.status} className="mt-3" />
           </div>
-          <NextCheckIn />
           <Timeframe />
           <Champion />
           <Reviewer />
           <Contributors />
+          <NextCheckIn />
         </div>
       </div>
 
