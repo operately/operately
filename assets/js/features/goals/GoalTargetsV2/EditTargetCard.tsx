@@ -1,7 +1,7 @@
 import React from "react";
 
 import * as Goals from "@/models/goals";
-import { IconPencil } from "@tabler/icons-react";
+import { IconPencil, IconX } from "@tabler/icons-react";
 
 import Forms from "@/components/Forms";
 import { MiniPieChart } from "@/components/charts";
@@ -9,23 +9,31 @@ import { Target } from "./types";
 import { TargetValue } from "./TargetValue";
 import classNames from "classnames";
 import { PrimaryButton } from "@/components/Buttons";
+import { useFieldValue } from "@/components/Forms/FormContext";
 
 interface Props {
+  field: string;
   target: Target;
   index: number;
   targetOpen: string | undefined;
   setTargetOpen: React.Dispatch<React.SetStateAction<string | undefined>>;
 }
 
-export function EditTargetCard({ target, index, setTargetOpen, targetOpen }: Props) {
+export function EditTargetCard({ field, target, index, setTargetOpen, targetOpen }: Props) {
+  const [targets, setTargets] = useFieldValue<Target[]>(field);
+
   const editing = targetOpen === target.id;
   const containerClass = classNames(
-    "relative py-2 mb-2",
+    "group relative py-2 mb-2",
     editing ? "px-3" : "pl-3 pr-5",
     "grid grid-cols-[1fr_auto] items-center gap-x-3",
     "last:mb-0 border border-surface-outline rounded",
     "bg-surface-base",
   );
+
+  const handleRemove = () => {
+    setTargets(targets.filter((t) => t.id !== target.id));
+  };
 
   return (
     <div className={containerClass}>
@@ -39,6 +47,7 @@ export function EditTargetCard({ target, index, setTargetOpen, targetOpen }: Pro
       )}
 
       <DetailsSection index={index} toggleEditing={() => setTargetOpen(undefined)} editing={editing} />
+      <RemoveButton handleRemove={handleRemove} />
     </div>
   );
 }
@@ -98,4 +107,12 @@ function PieChart({ target }: { target: Target }) {
 
   if (target.isNew) return null;
   return <MiniPieChart completed={progress} total={100} size={16} />;
+}
+
+function RemoveButton({ handleRemove }: { handleRemove: () => void }) {
+  return (
+    <div className="absolute bg-surface-base p-1.5 -right-8 group-hover:opacity-100 opacity-0">
+      <IconX className="text-content-dimmed cursor-pointer" size={16} onClick={handleRemove} />
+    </div>
+  );
 }

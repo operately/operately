@@ -40,6 +40,7 @@ export function GoalTargetsField(props: Props) {
         editDefinition ? (
           <EditTargetCard
             key={target.id}
+            field={props.field}
             target={target}
             index={index}
             setTargetOpen={setTargetOpen}
