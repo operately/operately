@@ -8,7 +8,13 @@ export function GoalName() {
 
   return (
     <Forms.FieldGroup>
-      <Forms.TitleInput field="name" readonly={isViewMode} fontBold />
+      <Forms.TitleInput
+        field="name"
+        placeholder="Goal title..."
+        errorMessage="Please add a title"
+        readonly={isViewMode}
+        fontBold
+      />
     </Forms.FieldGroup>
   );
 }

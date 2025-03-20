@@ -22,6 +22,7 @@ interface TitleInputProps extends StyleOptions {
   maxLength?: number;
   testId?: string;
   readonly?: boolean;
+  errorMessage?: string;
 }
 
 const DEFAULT_VALIDATION_PROPS = {
@@ -36,7 +37,7 @@ export function TitleInput(props: TitleInputProps) {
   const [value, setValue] = useFieldValue(field);
   const error = useFieldError(field);
 
-  useValidation(field, validatePresence(true));
+  useValidation(field, validatePresence(true, props.errorMessage));
   useValidation(field, validateTextLength(minLength, maxLength));
 
   return (
