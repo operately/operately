@@ -3,7 +3,7 @@ import React from "react";
 import { Paths } from "@/routes/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { assertPresent } from "@/utils/assertions";
-import { PrimaryButton } from "@/components/Buttons";
+import { SecondaryButton } from "@/components/Buttons";
 import FormattedTime from "@/components/FormattedTime";
 
 import { DisableInEditMode, Title } from "./components";
@@ -22,9 +22,9 @@ export function NextCheckIn() {
         Scheduled for <FormattedTime time={goal.nextUpdateScheduledAt} format="long-date" />
       </div>
       <div className="text-base mb-1">
-        <PrimaryButton onClick={navigate} size="xs">
+        <SecondaryButton onClick={navigate} size="xs">
           Check-in Now
-        </PrimaryButton>
+        </SecondaryButton>
       </div>
     </DisableInEditMode>
   );
