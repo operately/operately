@@ -21,7 +21,7 @@ defmodule Operately.Operations.ResourceHubDocumentEditingTest do
     content: RichText.rich_text("Content"),
   }
 
-  test "Editing document sends notifications to everyone", ctx do
+  test "Editing document doens't send notifications to anyone", ctx do
     document = create_document(ctx, true, [])
 
     {:ok, _} = Oban.Testing.with_testing_mode(:manual, fn ->
@@ -30,69 +30,9 @@ defmodule Operately.Operations.ResourceHubDocumentEditingTest do
 
     activity = get_activity(document, @action)
 
-    assert 0 == notifications_count(action: @action)
-
-    perform_job(activity.id)
-    notifications = fetch_notifications(activity.id, action: @action)
-
-    assert 3 == notifications_count(action: @action)
-
-    [ctx.mike, ctx.bob, ctx.jane]
-    |> Enum.each(fn p ->
-      assert Enum.find(notifications, &(&1.person_id == p.id))
-    end)
-  end
-
-  test "Editing document sends notifications to selected people", ctx do
-    document = create_document(ctx, false, [ctx.mike.id, ctx.jane.id])
-
-    {:ok, _} = Oban.Testing.with_testing_mode(:manual, fn ->
-      Operately.Operations.ResourceHubDocumentEditing.run(ctx.creator, document, @attrs)
-    end)
-
-    activity = get_activity(document, @action)
-
-    assert 0 == notifications_count(action: @action)
-
-    perform_job(activity.id)
-    notifications = fetch_notifications(activity.id, action: @action)
-
-    assert 2 == notifications_count(action: @action)
-
-    [ctx.mike, ctx.jane]
-    |> Enum.each(fn p ->
-      assert Enum.find(notifications, &(&1.person_id == p.id))
-    end)
-  end
-
-  test "Person without permissions is not notified", ctx do
-    ctx = Factory.add_company_member(ctx, :person)
-    document = create_document(ctx, false, [])
-
-    # Without permissions
-    content = RichText.rich_text(mentioned_people: [ctx.person]) |> Jason.decode!()
-
-    {:ok, _} = Operately.Operations.ResourceHubDocumentEditing.run(ctx.creator, document, %{
-      name: "new name",
-      content: content,
-    })
-
-    activity = get_activity(document, @action)
-
     assert notifications_count(action: @action) == 0
-    assert fetch_notifications(activity.id, action: @action) == []
-
-    # With permissions
-    {:ok, _} = Operately.Groups.add_members(ctx.creator, ctx.space.id, [
-      %{id: ctx.person.id, access_level: Operately.Access.Binding.view_access()}
-    ])
-
-    {:ok, _} = Operately.Operations.ResourceHubDocumentEditing.run(ctx.creator, document, %{
-      name: "new name",
-      content: content,
-    })
-
-    assert notifications_count(action: @action) == 1
+    perform_job(activity.id)
+    assert notifications_count(action: @action) == 0
   end
 
   #
