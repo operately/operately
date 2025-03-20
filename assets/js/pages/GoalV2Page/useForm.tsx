@@ -29,6 +29,7 @@ export function useForm() {
   const form = Forms.useForm({
     fields: {
       name: goal.name!,
+      status: goal.lastCheckIn?.status ?? "on_track",
       description: JSON.parse(goal.description!),
       targets: goal.targets,
       timeframe: currTimeframe,
