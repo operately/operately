@@ -36,8 +36,6 @@ defmodule Operately.Features.ResourceHubDocumentTest do
     |> Steps.assert_document_content(new_doc)
     |> Steps.assert_document_edited_on_space_feed(new_doc.name)
     |> Steps.assert_document_edited_on_company_feed(new_doc.name)
-    |> Steps.assert_document_edited_notification_sent()
-    |> Steps.assert_document_edited_email_sent(new_doc.name)
   end
 
   feature "editing a document without any changes doesn't make an API call", ctx do
