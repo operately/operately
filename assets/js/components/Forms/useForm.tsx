@@ -74,6 +74,7 @@ export function useForm<T extends FieldObject>(props: FormProps<T>): FormState<T
 
           setState("submitting");
           await props.submit(attrs);
+          form.actions.clearErrors();
 
           setState("idle");
         } catch (e) {
