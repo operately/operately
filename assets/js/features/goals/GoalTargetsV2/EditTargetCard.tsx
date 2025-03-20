@@ -1,7 +1,7 @@
 import React from "react";
 
 import * as Goals from "@/models/goals";
-import { IconPencil } from "@tabler/icons-react";
+import { IconPencil, IconX } from "@tabler/icons-react";
 
 import Forms from "@/components/Forms";
 import { MiniPieChart } from "@/components/charts";
@@ -9,44 +9,60 @@ import { Target } from "./types";
 import { TargetValue } from "./TargetValue";
 import classNames from "classnames";
 import { PrimaryButton } from "@/components/Buttons";
+import { useFieldValue } from "@/components/Forms/FormContext";
 
 interface Props {
+  field: string;
   target: Target;
   index: number;
+  targetOpen: string | undefined;
+  setTargetOpen: React.Dispatch<React.SetStateAction<string | undefined>>;
 }
 
-export function EditTargetCard({ target, index }: Props) {
-  const [editing, setEditing] = React.useState(false);
-  const progress = Goals.targetProgressPercentage(target);
+export function EditTargetCard({ field, target, index, setTargetOpen, targetOpen }: Props) {
+  const [targets, setTargets] = useFieldValue<Target[]>(field);
 
-  const toggleEditing = () => setEditing(!editing);
-
+  const editing = targetOpen === target.id;
   const containerClass = classNames(
-    "relative py-2 px-3 mb-2",
+    "group relative py-2 mb-2",
+    editing ? "px-3" : "pl-3 pr-5",
     "grid grid-cols-[1fr_auto] items-center gap-x-3",
     "last:mb-0 border border-surface-outline rounded",
-    editing ? "bg-surface-base" : "bg-surface-accent",
+    "bg-surface-base",
   );
+
+  const handleRemove = () => {
+    setTargets(targets.filter((t) => t.id !== target.id));
+  };
 
   return (
     <div className={containerClass}>
-      <div className="flex items-center gap-2 truncate">
-        <MiniPieChart completed={progress} total={100} size={16} />
-        <NameField target={target} index={index} editing={editing} />
-      </div>
-      <div className="mr-2">
-        <TargetValue readonly index={index} target={target} />
-      </div>
+      <TitleSection target={target} index={index} editing={editing} />
       {!editing && (
         <IconPencil
-          onClick={toggleEditing}
+          onClick={() => setTargetOpen(target.id!)}
           className="absolute right-0.5 top-0.5 rounded-full hover:bg-surface-accent cursor-pointer hover:text-accent-1 transition-colors"
           size={16}
         />
       )}
 
-      <DetailsSection index={index} toggleEditing={toggleEditing} editing={editing} />
+      <DetailsSection index={index} toggleEditing={() => setTargetOpen(undefined)} editing={editing} />
+      <RemoveButton handleRemove={handleRemove} />
     </div>
+  );
+}
+
+function TitleSection({ target, index, editing }) {
+  const className = classNames("flex items-center gap-2 truncate", { "col-span-2": target.isNew });
+
+  return (
+    <>
+      <div className={className}>
+        <PieChart target={target} />
+        <NameField target={target} index={index} editing={editing} />
+      </div>
+      {!target.isNew && <TargetValue readonly index={index} target={target} />}
+    </>
   );
 }
 
@@ -56,9 +72,9 @@ function DetailsSection({ index, editing, toggleEditing }) {
   return (
     <div className="col-span-2 mt-2">
       <Forms.FieldGroup layout="grid" layoutOptions={{ columns: 3 }}>
-        <Forms.NumberInput label="Start" field={`targets[${index}].from`} />
-        <Forms.NumberInput label="Target" field={`targets[${index}].to`} />
-        <Forms.TextInput label="Unit" field={`targets[${index}].unit`} />
+        <Forms.NumberInput placeholder="30" label="Start" field={`targets[${index}].from`} />
+        <Forms.NumberInput placeholder="15" label="Target" field={`targets[${index}].to`} />
+        <Forms.TextInput placeholder="minutes" label="Unit" field={`targets[${index}].unit`} />
       </Forms.FieldGroup>
       <div className="mt-2">
         <PrimaryButton size="sm" onClick={toggleEditing}>
@@ -76,9 +92,27 @@ function NameField({ index, editing, target }: { index: number; target: Target; 
     return (
       <div className="w-full relative">
         <Forms.FieldGroup>
-          <Forms.TextInput field={`targets[${index}].name`} />
+          <Forms.TextInput
+            placeholder="e.g. Average Onboarding Time is twice as fast"
+            field={`targets[${index}].name`}
+          />
         </Forms.FieldGroup>
       </div>
     );
   }
+}
+
+function PieChart({ target }: { target: Target }) {
+  const progress = Goals.targetProgressPercentage(target);
+
+  if (target.isNew) return null;
+  return <MiniPieChart completed={progress} total={100} size={16} />;
+}
+
+function RemoveButton({ handleRemove }: { handleRemove: () => void }) {
+  return (
+    <div className="absolute bg-surface-base p-1.5 -right-8 group-hover:opacity-100 opacity-0">
+      <IconX className="text-content-dimmed cursor-pointer" size={16} onClick={handleRemove} />
+    </div>
+  );
 }
