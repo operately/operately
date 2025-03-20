@@ -4,13 +4,16 @@ import Forms from "@/components/Forms";
 import AvatarList from "@/components/AvatarList";
 import { AvatarLink } from "@/components/Avatar";
 import { useIsViewMode } from "@/components/Pages";
+import plurarize from "@/utils/plurarize";
 
 import { useLoadedData } from "./loader";
 import { DisableInEditMode, Title } from "./components";
 
 export function Contributors() {
   const { contributors } = useLoadedData();
-  const text = contributors.length === 1 ? "1 person" : `${contributors.length} people`;
+  const text = plurarize(contributors.length, "person", "people");
+
+  if (contributors.length < 1) return null;
 
   return (
     <DisableInEditMode>
