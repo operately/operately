@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+
 import * as Goals from "@/models/goals";
 import * as Time from "@/utils/time";
 
@@ -59,6 +61,10 @@ export function useForm() {
       setPageMode("view");
     },
   });
+
+  useEffect(() => {
+    form.actions.setValue("targets", goal.targets);
+  }, [goal.targets]);
 
   return form;
 }
