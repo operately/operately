@@ -14,6 +14,7 @@ interface Props {
 interface LinkProps extends Props {
   to: string;
   underline?: "always" | "hover" | "never";
+  disableColorHoverEffect?: boolean;
 }
 
 interface ButtonLinkProps extends Props {
@@ -23,6 +24,7 @@ interface ButtonLinkProps extends Props {
 interface ActionLinkProps extends Props {
   onClick: () => void;
   underline?: "always" | "hover" | "never";
+  disableColorHoverEffect?: boolean;
 }
 
 interface DivLinkProps extends Props {
@@ -43,23 +45,17 @@ function UnstyledLink(props: LinkProps) {
 }
 
 export function Link(props: LinkProps) {
-  const className = classNames(
-    baseLinkClass,
-    underlineClass(props.underline),
-    "text-link-base hover:text-link-hover",
-    props.className,
-  );
+  const className = classNames(baseLinkClass, underlineClass(props.underline), "text-link-base", props.className, {
+    "hover:text-link-hover": !props.disableColorHoverEffect,
+  });
 
   return <UnstyledLink {...props} className={className} />;
 }
 
 export function BlackLink(props: LinkProps) {
-  const className = classNames(
-    baseLinkClass,
-    underlineClass(props.underline),
-    "text-content-base hover:text-content-dimmed",
-    props.className,
-  );
+  const className = classNames(baseLinkClass, underlineClass(props.underline), "text-content-base", props.className, {
+    "hover:text-content-dimmed": !props.disableColorHoverEffect,
+  });
 
   return <UnstyledLink {...props} className={className} />;
 }
@@ -73,12 +69,9 @@ export function ButtonLink({ onClick, children, testId }: ButtonLinkProps) {
 }
 
 export function ActionLink(props: ActionLinkProps) {
-  const className = classNames(
-    baseLinkClass,
-    underlineClass(props.underline),
-    "text-link-base hover:text-link-hover",
-    props.className,
-  );
+  const className = classNames(baseLinkClass, underlineClass(props.underline), "text-link-base", props.className, {
+    "hover:text-link-hover": !props.disableColorHoverEffect,
+  });
 
   return (
     <span data-test-id={props.testId} className={className} onClick={props.onClick}>
@@ -88,12 +81,9 @@ export function ActionLink(props: ActionLinkProps) {
 }
 
 export function DimmedLink(props: LinkProps) {
-  const className = classnames(
-    baseLinkClass,
-    underlineClass(props.underline),
-    "text-content-dimmed hover:text-content-base",
-    props.className,
-  );
+  const className = classnames(baseLinkClass, underlineClass(props.underline), "text-content-dimmed", props.className, {
+    "hover:text-content-base": !props.disableColorHoverEffect,
+  });
 
   return <UnstyledLink {...props} className={className} />;
 }

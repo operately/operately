@@ -152,13 +152,13 @@ function Author({ author }) {
 }
 
 function Container({ children }) {
-  return <div className="flex items-start gap-3 pb-4">{children}</div>;
+  return <div className="flex items-start gap-3 pb-4 group">{children}</div>;
 }
 
 function MessageTitle({ title, children }: { title: string; children?: React.ReactNode }) {
   return (
     <div className="inline-flex items-center gap-2">
-      <span className="font-bold">{title}</span>
+      <span className="font-bold group-hover:underline underline-offset-2">{title}</span>
       {children}
     </div>
   );
