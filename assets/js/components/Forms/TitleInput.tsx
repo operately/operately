@@ -40,18 +40,37 @@ export function TitleInput(props: TitleInputProps) {
   useValidation(field, validatePresence(true, props.errorMessage));
   useValidation(field, validateTextLength(minLength, maxLength));
 
+  const textareaRef = React.useRef<HTMLTextAreaElement>(null);
+
+  React.useEffect(() => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const resize = () => {
+      // First reset height, then recalculate it based on the scrollHeight
+      textarea.style.height = "auto";
+      textarea.style.height = textarea.scrollHeight + "px";
+    };
+
+    textarea.addEventListener("input", resize);
+    resize();
+
+    return () => textarea.removeEventListener("input", resize);
+  }, [props.readonly]);
+
   return (
     <InputField field={field} error={error}>
       {props.readonly ? (
         <div className={styles(false, { fontBold: props.fontBold })}>{value}</div>
       ) : (
-        <input
+        <textarea
+          ref={textareaRef}
           name={field}
+          rows={1}
           autoFocus={props.autoFocus}
           placeholder={placeholder}
           data-test-id={props.testId ?? createTestId(field)}
           className={styles(!!error, { fontBold: props.fontBold })}
-          type="text"
           value={value}
           onChange={(e) => setValue(e.target.value)}
         />
