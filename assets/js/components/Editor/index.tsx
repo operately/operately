@@ -76,6 +76,7 @@ export interface EditorState {
 const DEFAULT_EDITOR_PROPS: Partial<UseEditorProps> = {
   editable: true,
   autoFocus: false,
+  tabindex: "",
 };
 
 function useEditor(props: UseEditorProps): EditorState {
@@ -100,7 +101,7 @@ function useEditor(props: UseEditorProps): EditorState {
     editorProps: {
       attributes: {
         class: "focus:outline-none" + " " + props.className,
-        tabindex: props.tabindex ?? "",
+        tabindex: props.tabindex!,
       },
     },
     extensions: [

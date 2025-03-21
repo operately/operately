@@ -49,7 +49,6 @@ export function FormTitleInput({ value, onChange, error, testId }: FormTitleInpu
         value={value}
         onChange={(e) => onChange(e.target.value)}
         data-test-id={testId}
-        tabIndex={1}
       ></textarea>
     </>
   );
