@@ -1,5 +1,6 @@
 import * as React from "react";
 
+import * as People from "@/models/people";
 import * as Activities from "@/models/activities";
 import { GoalActivities } from "@/models/goals";
 import ActivityHandler from "@/features/activities";
@@ -92,11 +93,7 @@ function CheckIn({ activity }: Props) {
           <GoalStatusBadge status={content.update.status!} size="xs" />
         </MessageTitle>
 
-        <Content
-          authorName={activity.author.fullName!}
-          date={content.update.insertedAt!}
-          content={content.update.message!}
-        />
+        <Content author={activity.author} date={content.update.insertedAt!} content={content.update.message!} />
       </PageLink>
     </Container>
   );
@@ -117,33 +114,29 @@ function CommentThread({ activity, title }: CommentThreadProps) {
       <PageLink activity={activity}>
         <MessageTitle title={title} />
 
-        <Content
-          authorName={activity.author.fullName!}
-          date={activity.insertedAt!}
-          content={activity.commentThread.message!}
-        />
+        <Content author={activity.author} date={activity.insertedAt!} content={activity.commentThread.message!} />
       </PageLink>
     </Container>
   );
 }
 
 interface ContentProps {
-  authorName: string;
+  author: People.Person;
   date: string;
   content: string;
 }
 
-function Content({ authorName, date, content }: ContentProps) {
+function Content({ author, date, content }: ContentProps) {
   const fullMessage = richContentToString(JSON.parse(content));
   const message = truncateString(fullMessage, 180);
 
   return (
     <div className="text-sm mt-0.5">
       <span className="text-stone-500">
-        <FormattedTime time={date} format="long-date" />
+        <FormattedTime time={date} format="short-date" />
       </span>
       <span className="mx-1 text-stone-500">&bull;</span>
-      <span className="text-stone-500">{authorName}</span>
+      <span className="text-stone-500">{People.shortName(author)}</span>
       <span className="mx-1 text-stone-500">&bull;</span>
       {message}
     </div>
