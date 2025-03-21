@@ -3,6 +3,7 @@ import * as Time from "@/utils/time";
 import * as Timeframes from "@/utils/timeframes";
 import { Target } from "@/features/goals/GoalTargetsV2";
 import { parseToInteger } from "@/utils/numbers";
+import plurarize from "@/utils/plurarize";
 
 function parseTarget(t: Target, index: number): Goals.Target {
   return {
@@ -35,25 +36,26 @@ export function parseTargets(targets: Target[]) {
 }
 
 export function findTimeLeft(timeframe: Goals.Timeframe) {
-  const now = new Date();
-  const endDate = Time.parse(timeframe.endDate!);
+  const today = Time.today();
+  const endDate = Time.parseDate(timeframe.endDate!);
 
   if (!endDate) return "";
+  if (Time.isToday(endDate)) return "Due today";
 
-  const isPast = endDate < now;
-  const { months, weeks, days } = Time.getDateDifference(isPast ? endDate : now, isPast ? now : endDate);
+  const isPast = endDate < today;
+  const { months, weeks, days } = Time.getDateDifference(isPast ? endDate : today, isPast ? today : endDate);
   const timeStatus = isPast ? "late" : "left";
+  let amount: string;
 
   if (months > 0) {
-    return months === 1 ? `1 month ${timeStatus}` : `${months} months ${timeStatus}`;
+    amount = plurarize(months, "month", "months");
+  } else if (weeks > 0) {
+    amount = plurarize(weeks, "week", "weeks");
+  } else {
+    amount = plurarize(days, "day", "days");
   }
-  if (weeks > 0) {
-    return weeks === 1 ? `1 week ${timeStatus}` : `${weeks} weeks ${timeStatus}`;
-  }
-  if (days > 0) {
-    return days === 1 ? `1 day ${timeStatus}` : `${days} days ${timeStatus}`;
-  }
-  return "Due today";
+
+  return amount + " " + timeStatus;
 }
 
 export function serializeTimeframe(newTimeframe, oldTimeframe) {
