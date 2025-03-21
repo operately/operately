@@ -222,8 +222,8 @@ export function endOfCurrentYear() {
 //   returns: {months: 1, weeks: 1, days: 3}
 //
 export function getDateDifference(date1: string | Date, date2: string | Date) {
-  const parsedDate1 = typeof date1 === "string" ? parse(date1) : date1;
-  const parsedDate2 = typeof date2 === "string" ? parse(date2) : date2;
+  const parsedDate1 = typeof date1 === "string" ? parseDate(date1) : date1;
+  const parsedDate2 = typeof date2 === "string" ? parseDate(date2) : date2;
 
   if (!parsedDate1 || !parsedDate2) {
     throw new Error("Invalid date input");
