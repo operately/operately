@@ -79,7 +79,7 @@ function Project({ node }: { node: ProjectNode }) {
       <div>
         <AvatarList people={contributors} size={20} stacked />
       </div>
-      <Progress progress={100} status={node.lastCheckInStatus} />
+      <Progress progress={node.progress} status={node.lastCheckInStatus} />
     </NodeContainer>
   );
 }
@@ -119,14 +119,13 @@ function Progress({ progress, status }) {
   const statusColor = statusTextColorClass(status, { customShade: 700 });
   const statusBGColor = statusBGColorClass(status, { customShade: 100 });
 
-  const outerClass = `rounded-lg px-2 py-0.5 shrink-0 ${statusBGColor}`;
+  const outerClass = `w-11 flex justify-center rounded-lg px-2 py-0.5 shrink-0 ${statusBGColor}`;
   const innerClass = `text-sm font-medium font-mono ${statusColor}`;
-
-  const rounded = Math.round(progress * 100) / 100;
+  progress = isNaN(progress) ? 0 : Math.floor(progress);
 
   return (
     <div className={outerClass}>
-      <div className={innerClass}>{rounded}%</div>
+      <div className={innerClass}>{progress}%</div>
     </div>
   );
 }
