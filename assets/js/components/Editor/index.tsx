@@ -51,6 +51,8 @@ function RootBody({ children, className = "" }): JSX.Element {
 }
 
 interface UseEditorProps {
+  mentionSearchScope: People.SearchScope;
+
   peopleSearch?: SearchFn;
   placeholder?: string;
   content?: any;
@@ -60,7 +62,6 @@ interface UseEditorProps {
   className?: string;
   editable?: boolean;
   autoFocus?: boolean;
-  mentionSearchScope: People.SearchScope;
   tabindex?: string;
 }
 
@@ -72,14 +73,18 @@ export interface EditorState {
   uploading: boolean;
 }
 
+const DEFAULT_EDITOR_PROPS: Partial<UseEditorProps> = {
+  editable: true,
+  autoFocus: false,
+};
+
 function useEditor(props: UseEditorProps): EditorState {
+  props = { ...DEFAULT_EDITOR_PROPS, ...props };
+
   const [submittable, setSubmittable] = React.useState(true);
   const [focused, setFocused] = React.useState(false);
   const [empty, setEmpty] = React.useState(props.content === undefined || props.content === "");
   const [uploading, setUploading] = React.useState(false);
-
-  const editable = props.editable === undefined ? true : props.editable;
-  const autoFocus = props.autoFocus === undefined ? true : props.autoFocus;
 
   const defaultPeopleSearch = People.usePeopleSearch(props.mentionSearchScope);
 
@@ -88,9 +93,9 @@ function useEditor(props: UseEditorProps): EditorState {
   }, []);
 
   const editor = TipTap.useEditor({
-    editable: editable,
+    editable: props.editable,
     content: props.content,
-    autofocus: autoFocus,
+    autofocus: props.autoFocus,
     injectCSS: false,
     editorProps: {
       attributes: {
