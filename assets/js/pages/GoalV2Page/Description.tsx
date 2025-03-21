@@ -47,7 +47,7 @@ function EditDescription() {
     <Forms.FieldGroup>
       <Forms.RichTextArea
         field="description"
-        placeholder="Write here..."
+        placeholder="Add description..."
         mentionSearchScope={mentionSearchScope}
         height="3rem"
         horizontalPadding=""
