@@ -1,21 +1,47 @@
 import React from "react";
 
 import Forms from "@/components/Forms";
-import { useFieldValue } from "@/components/Forms/FormContext";
 import { useIsViewMode } from "@/components/Pages";
-import { richContentToString } from "@/components/RichContent";
+import RichContent, { countCharacters, shortenContent } from "@/components/RichContent";
+import { ActionLink } from "@/components/Link";
 
 import { useLoadedData } from "./loader";
 
+const DESCRIPTION_CHAR_LIMIT = 200;
+
 export function Description() {
-  const { goal } = useLoadedData();
   const isViewMode = useIsViewMode();
-  const [description] = useFieldValue("description");
 
+  if (isViewMode) return <ViewDescription />;
+  return <EditDescription />;
+}
+
+function ViewDescription() {
+  const { goal } = useLoadedData();
+  const [expanded, setExpanded] = React.useState(false);
+
+  const { length, description } = React.useMemo(
+    () => parseDescription(goal.description, expanded),
+    [goal.description, expanded],
+  );
+
+  if (!description) return null;
+
+  return (
+    <div>
+      <RichContent jsonContent={description} />
+      {length > DESCRIPTION_CHAR_LIMIT && (
+        <ActionLink onClick={() => setExpanded(!expanded)} className="text-sm">
+          {expanded ? "Collapse" : "Expand"}
+        </ActionLink>
+      )}
+    </div>
+  );
+}
+
+function EditDescription() {
+  const { goal } = useLoadedData();
   const mentionSearchScope = { type: "goal", id: goal.id! } as const;
-  const strDescription = description ? richContentToString(description).trim() : "";
-
-  if (!strDescription && isViewMode) return null;
 
   return (
     <Forms.FieldGroup>
@@ -23,13 +49,24 @@ export function Description() {
         field="description"
         placeholder="Write here..."
         mentionSearchScope={mentionSearchScope}
-        readonly={isViewMode}
         height="3rem"
         horizontalPadding=""
         verticalPadding=""
+        fontWeight="font-normal"
         hideBorder
         hideToolbar
       />
     </Forms.FieldGroup>
   );
+}
+
+function parseDescription(description, expanded: boolean) {
+  const length = description ? countCharacters(description) : 0;
+
+  if (length === 0) return { length, description: null };
+
+  if (expanded || length <= DESCRIPTION_CHAR_LIMIT) {
+    return { length, description };
+  }
+  return { length, description: shortenContent(description!, DESCRIPTION_CHAR_LIMIT, { suffix: "..." }) };
 }
