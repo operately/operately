@@ -13,7 +13,6 @@ import { RichTextArea } from "./RichTextArea";
 import { PasswordInput } from "./PasswordInput";
 import { CheckboxInput } from "./CheckboxInput";
 import { SelectStatus } from "./SelectStatus";
-import { SelectGoalStatus } from "./SelectGoalStatus";
 import { MultiPeopleSelectField } from "./MultiPeopleSelectField";
 import { TimeframeField } from "./TimeframeField";
 import { NumberInput } from "./NumberInput";
@@ -40,7 +39,6 @@ export default {
   RadioButtons,
   RichTextArea,
   SelectPerson,
-  SelectGoalStatus,
   PasswordInput,
   MultiPeopleSelectField,
   CheckboxInput,
