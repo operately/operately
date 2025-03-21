@@ -9,7 +9,7 @@ import { truncateString } from "@/utils/strings";
 
 import { TreeContextProvider, TreeContextProviderProps, useTreeContext } from "./treeContext";
 import { Node, GoalNode, ProjectNode } from "./tree";
-import { DivLink } from "@/components/Link";
+import { BlackLink } from "@/components/Link";
 
 export function MinimalTree(props: TreeContextProviderProps) {
   return (
@@ -95,9 +95,9 @@ function NodeContainer({ node, children }) {
 function NodeName({ name, link, completed }) {
   name = truncateString(name, 40);
   const nameElement = (
-    <DivLink to={link} className="truncate">
+    <BlackLink underline="hover" to={link} className="truncate" disableColorHoverEffect>
       {name}
-    </DivLink>
+    </BlackLink>
   );
 
   if (!completed) return nameElement;
