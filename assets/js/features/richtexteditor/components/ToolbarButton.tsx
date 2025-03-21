@@ -20,7 +20,14 @@ export function ToolbarButton({ children, onClick, title, disabled = false }): J
   );
 
   return (
-    <button onClick={handleClick} className={className} disabled={disabled} title={title} data-test-id={testId}>
+    <button
+      onClick={handleClick}
+      className={className}
+      disabled={disabled}
+      title={title}
+      data-test-id={testId}
+      tabIndex={-1}
+    >
       {children}
     </button>
   );
