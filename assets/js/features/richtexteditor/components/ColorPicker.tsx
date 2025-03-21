@@ -26,7 +26,7 @@ export function ColorPicker({ editor, iconSize }): React.ReactElement {
 
   return (
     <Popover.Root open={open} onOpenChange={setOpen}>
-      <Popover.Trigger className="cursor-pointer" data-test-id={testId}>
+      <Popover.Trigger className="cursor-pointer" data-test-id={testId} tabIndex={-1}>
         <BucketIcon iconSize={iconSize} editor={editor} />
       </Popover.Trigger>
 

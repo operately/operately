@@ -21,7 +21,7 @@ export function ToolbarToggleButton({ children, isActive, title, onClick }): JSX
   );
 
   return (
-    <button onClick={handleClick} className={className} title={title} data-test-id={testId}>
+    <button onClick={handleClick} className={className} title={title} data-test-id={testId} tabIndex={-1}>
       {children}
     </button>
   );
