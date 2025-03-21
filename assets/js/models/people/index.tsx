@@ -60,6 +60,9 @@ export function firstName(person: Pick<Person, "fullName">): string {
 }
 
 export function shortName(person: Pick<Person, "fullName">): string {
+  const length = person.fullName!.split(" ").length;
+
+  if (length < 2) return firstName(person);
   return firstName(person) + " " + lastNameInitial(person) + ".";
 }
 
