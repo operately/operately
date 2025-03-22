@@ -7,7 +7,8 @@ import { Paths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 
 import { useLoadedData } from "./loader";
-import { IconCopy, IconEdit, IconTrash } from "@tabler/icons-react";
+import { IconCopy, IconEdit, IconTrash, IconFileExport } from "@tabler/icons-react";
+import { downloadMarkdown, exportToMarkdown } from "@/utils/markdown";
 
 export function Options() {
   const { document } = useLoadedData();
@@ -25,6 +26,7 @@ export function Options() {
         />
       )}
       {document.permissions.canCreateDocument && <CopyLink />}
+      {document.permissions.canView && <ExportMarkdownAction />}
       {document.permissions.canDeleteDocument && <DeleteAction />}
     </PageOptions.Root>
   );
@@ -65,4 +67,23 @@ function DeleteAction() {
   };
 
   return <PageOptions.Action icon={IconTrash} title="Delete" onClick={handleDelete} testId="delete-resource-link" />;
+}
+
+function ExportMarkdownAction() {
+  const { document } = useLoadedData();
+
+  const handleExport = () => {
+    const content = JSON.parse(document.content!);
+    const markdown = exportToMarkdown(content, { removeEmbeds: true });
+    downloadMarkdown(markdown, document.name || "document");
+  };
+
+  return (
+    <PageOptions.Action
+      icon={IconFileExport}
+      title="Export as Markdown"
+      onClick={handleExport}
+      testId="export-markdown"
+    />
+  );
 }
