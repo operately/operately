@@ -4,10 +4,9 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import classNames from "classnames";
 import { IconCheck } from "@tabler/icons-react";
 import { Circle } from "@/components/Circle";
-import { InputField } from "./FieldGroup";
-import { useFieldValue, useFieldError } from "./FormContext";
-import { useValidation } from "./validations/hook";
-import { AddErrorFn } from "./useForm/errors";
+import { useFieldValue, useFieldError } from "@/components/Forms/FormContext";
+import { useValidation } from "@/components/Forms/validations/hook";
+import { AddErrorFn } from "@/components/Forms/useForm/errors";
 import { createTestId } from "@/utils/testid";
 
 type Status = "pending" | "on_track" | "concern" | "issue";
@@ -48,11 +47,8 @@ interface SelectGoalStatusProps {
   field: string;
   reviewerFirstName?: string;
 
-  label?: string;
-  hidden?: boolean;
   required?: boolean;
   noReviewer?: boolean;
-  readonly?: boolean;
 }
 
 const DEFAULT_PROPS = {
@@ -60,7 +56,7 @@ const DEFAULT_PROPS = {
   noReviewer: false,
 };
 
-export function SelectGoalStatus(props: SelectGoalStatusProps) {
+export function StatusSelector(props: SelectGoalStatusProps) {
   props = { ...DEFAULT_PROPS, ...props };
 
   const [value, setValue] = useFieldValue(props.field);
@@ -75,19 +71,16 @@ export function SelectGoalStatus(props: SelectGoalStatusProps) {
   useValidation(props.field, validateStatus(props.required));
 
   return (
-    <InputField field={props.field} label={props.label} error={error} hidden={props.hidden}>
-      {props.readonly ? (
-        <StatusValue value={value} readonly />
-      ) : (
-        <SelectDropdown
-          value={normalizedValue}
-          rawValue={value}
-          setValue={setValue}
-          reviewerFirstName={reviewer}
-          error={!!error}
-        />
-      )}
-    </InputField>
+    <div>
+      <SelectDropdown
+        value={normalizedValue}
+        rawValue={value}
+        setValue={setValue}
+        reviewerFirstName={reviewer}
+        error={!!error}
+      />
+      {error && <div className="text-red-500 text-xs">{error}</div>}
+    </div>
   );
 }
 
@@ -100,9 +93,14 @@ type StatusPickerProps = {
 };
 
 function SelectDropdown({ value, rawValue, setValue, reviewerFirstName, error }: StatusPickerProps) {
-  const trigger = <StatusValue value={rawValue} error={error} />;
+  const trigger = <StatusTrigger value={rawValue} error={error} />;
+  const content = <StatusOptions value={value} setValue={setValue} reviewerFirstName={reviewerFirstName} />;
 
-  const content = (
+  return <OptionsMenu trigger={trigger} content={content} />;
+}
+
+function StatusOptions({ value, setValue, reviewerFirstName }) {
+  return (
     <div>
       {STATUS_OPTIONS.map((status, idx) => (
         <StatusPickerOption
@@ -116,30 +114,6 @@ function SelectDropdown({ value, rawValue, setValue, reviewerFirstName, error }:
         />
       ))}
     </div>
-  );
-
-  return <OptionsMenu trigger={trigger} content={content} />;
-}
-
-const menuContentClass = classNames(
-  "relative rounded-md mt-1 z-10 px-1 py-1.5",
-  "shadow-xl ring-1 transition ring-surface-outline",
-  "focus:outline-none",
-  "bg-surface-base",
-  "animateMenuSlideDown",
-);
-
-function OptionsMenu({ trigger, content }) {
-  return (
-    <DropdownMenu.Root>
-      <DropdownMenu.Trigger>{trigger}</DropdownMenu.Trigger>
-
-      <DropdownMenu.Portal>
-        <DropdownMenu.Content className={menuContentClass} align="start">
-          {content}
-        </DropdownMenu.Content>
-      </DropdownMenu.Portal>
-    </DropdownMenu.Root>
   );
 }
 
@@ -170,18 +144,21 @@ function StatusPickerOption({ status, description, color, isSelected, onClick, t
   );
 }
 
-function StatusValue({ value, readonly, error }: { value: AnyStatus | null; readonly?: boolean; error?: boolean }) {
+function StatusTrigger({ value, error }: { value: AnyStatus | null; error?: boolean }) {
   const className = classNames(
-    "border shadow-sm bg-surface-dimmed text-sm rounded-lg px-2 py-1.5 relative overflow-hidden group",
+    "border shadow-sm rounded-lg",
+    "px-2 py-1.5",
+    "bg-surface-dimmed text-sm relative overflow-hidden",
+    "group",
+    "cursor-pointer",
     {
-      "cursor-pointer": !readonly,
       "border-stroke-base": !error,
       "border-red-500": error,
     },
   );
 
   return (
-    <div className="w-48" data-test-id="status-dropdown">
+    <div data-test-id="status-dropdown">
       <div className={className}>
         {value === null ? (
           <div className="flex items-center gap-2">
@@ -251,4 +228,26 @@ function validateStatus(required?: boolean) {
       return addError(field, `Status is required`);
     }
   };
+}
+
+const menuContentClass = classNames(
+  "relative rounded-md mt-1 z-10 px-1 py-1.5",
+  "shadow-xl ring-1 transition ring-surface-outline",
+  "focus:outline-none",
+  "bg-surface-base",
+  "animateMenuSlideDown",
+);
+
+function OptionsMenu({ trigger, content }) {
+  return (
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger className="w-full">{trigger}</DropdownMenu.Trigger>
+
+      <DropdownMenu.Portal>
+        <DropdownMenu.Content className={menuContentClass} align="start">
+          {content}
+        </DropdownMenu.Content>
+      </DropdownMenu.Portal>
+    </DropdownMenu.Root>
+  );
 }
