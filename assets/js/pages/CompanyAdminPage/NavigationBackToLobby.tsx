@@ -3,9 +3,5 @@ import * as Paper from "@/components/PaperContainer";
 import { Paths } from "@/routes/paths";
 
 export function NavigationBackToLobby() {
-  return (
-    <Paper.Navigation>
-      <Paper.NavItem linkTo={Paths.homePath()}>Home</Paper.NavItem>
-    </Paper.Navigation>
-  );
+  return <Paper.Navigation items={[{ to: Paths.homePath(), label: "Home" }]} />;
 }

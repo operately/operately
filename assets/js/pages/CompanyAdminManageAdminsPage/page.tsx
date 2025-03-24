@@ -24,9 +24,7 @@ export function Page() {
   return (
     <Pages.Page title={"Manage admins and owners"} testId="manage-admins-page">
       <Paper.Root>
-        <Paper.Navigation>
-          <Paper.NavItem linkTo={Paths.companyAdminPath()}>Company Administration</Paper.NavItem>
-        </Paper.Navigation>
+        <Paper.Navigation items={[{ to: Paths.companyAdminPath(), label: "Company Administration" }]} />
 
         <Paper.Body>
           <Paper.Header

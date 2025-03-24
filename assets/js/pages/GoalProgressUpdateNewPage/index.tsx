@@ -46,9 +46,5 @@ export function Page() {
 }
 
 function Navigation({ goal }) {
-  return (
-    <Paper.Navigation>
-      <Paper.NavItem linkTo={Paths.goalPath(goal.id)}>{goal.name}</Paper.NavItem>
-    </Paper.Navigation>
-  );
+  return <Paper.Navigation items={[{ to: Paths.goalPath(goal.id), label: goal.name! }]} />;
 }

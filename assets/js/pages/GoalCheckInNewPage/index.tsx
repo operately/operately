@@ -3,6 +3,7 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Goals from "@/models/goals";
 
+import { Paths } from "@/routes/paths";
 import { SubscribersSelector, useSubscriptions } from "@/features/Subscriptions";
 import { Spacer } from "@/components/Spacer";
 import { assertPresent } from "@/utils/assertions";
@@ -59,13 +60,13 @@ function Navigation({ goal }: { goal: Goals.Goal }) {
   assertPresent(goal.space, "space must be present in goal");
 
   return (
-    <Paper.Navigation>
-      <Paper.NavSpaceLink space={goal.space} />
-      <Paper.NavSeparator />
-      <Paper.NavSpaceWorkMapLink space={goal.space} />
-      <Paper.NavSeparator />
-      <Paper.NavGoalLink goal={goal} />
-    </Paper.Navigation>
+    <Paper.Navigation
+      items={[
+        { to: Paths.spacePath(goal.space.id!), label: goal.space.name! },
+        { to: Paths.spaceGoalsPath(goal.space.id!), label: "Goals & Projects" },
+        { to: Paths.goalPath(goal.id!), label: goal.name! },
+      ]}
+    />
   );
 }
 

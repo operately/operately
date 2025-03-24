@@ -13,11 +13,12 @@ export function Page() {
   return (
     <Pages.Page title={"Forms"}>
       <Paper.Root>
-        <Paper.Navigation>
-          <Paper.NavItem linkTo="/">Lobby</Paper.NavItem>
-          <Paper.NavSeparator />
-          <Paper.NavItem linkTo="/__design__">Design System</Paper.NavItem>
-        </Paper.Navigation>
+        <Paper.Navigation
+          items={[
+            { to: "/", label: "Lobby" },
+            { to: "/__design__", label: "Design System" },
+          ]}
+        />
 
         <Paper.Body>
           <Paper.Header title="Forms" />

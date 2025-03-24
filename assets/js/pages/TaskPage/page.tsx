@@ -49,11 +49,12 @@ function Navigation({ task }: { task: Tasks.Task }) {
   const milestonePath = Paths.projectMilestonePath(task.milestone!.id!);
 
   return (
-    <Paper.Navigation>
-      <Paper.NavItem linkTo={projectPath}>{truncateString(task.project!.name!, 40)}</Paper.NavItem>
-      <Paper.NavSeparator />
-      <Paper.NavItem linkTo={milestonePath}>{truncateString(task.milestone!.title!, 40)}</Paper.NavItem>
-    </Paper.Navigation>
+    <Paper.Navigation
+      items={[
+        { to: projectPath, label: truncateString(task.project!.name!, 40) },
+        { to: milestonePath, label: truncateString(task.milestone!.title!, 40) },
+      ]}
+    />
   );
 }
 
