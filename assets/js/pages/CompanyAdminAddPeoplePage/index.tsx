@@ -130,12 +130,11 @@ function InvitedPage({ state, setPageState }: { state: PageStateInvited; setPage
 
 function Navigation() {
   return (
-    <Paper.Navigation>
-      <Paper.NavItem linkTo={Paths.companyAdminPath()}>Company Administration</Paper.NavItem>
-      <Paper.NavSeparator />
-      <Paper.NavItem linkTo={Paths.companyManagePeoplePath()} testId="manage-people-link">
-        Manage People
-      </Paper.NavItem>
-    </Paper.Navigation>
+    <Paper.Navigation
+      items={[
+        { to: Paths.companyAdminPath(), label: "Company Administration" },
+        { to: Paths.companyManagePeoplePath(), label: "Manage People" },
+      ]}
+    />
   );
 }

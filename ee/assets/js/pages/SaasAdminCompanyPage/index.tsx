@@ -20,9 +20,8 @@ export function Page() {
   return (
     <Pages.Page title={"Admininstration"} testId="saas-admin-page">
       <Paper.Root size="large">
-        <Paper.Navigation>
-          <Paper.NavItem linkTo="/admin">All Companies</Paper.NavItem>
-        </Paper.Navigation>
+        <Paper.Navigation items={[{ to: "/admin", label: "All Companies" }]} />
+
         <Paper.Body>
           <div className="text-3xl font-semibold">{company.name}</div>
           <OwnersSection company={company} />

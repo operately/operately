@@ -16,9 +16,7 @@ export function Page() {
   return (
     <Pages.Page title={["Pausing", project.name!]}>
       <Paper.Root size="small">
-        <Paper.Navigation>
-          <Paper.NavItem linkTo={Paths.projectPath(project.id!)}>{project.name}</Paper.NavItem>
-        </Paper.Navigation>
+        <Paper.Navigation items={[{ to: Paths.projectPath(project.id!), label: project.name! }]} />
 
         <Paper.Body minHeight="none">
           <div className="text-content-accent text-3xl font-extrabold">Pause this project?</div>

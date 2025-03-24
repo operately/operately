@@ -25,9 +25,7 @@ export function Page() {
   return (
     <Pages.Page title={"Design System"}>
       <Paper.Root size="tiny">
-        <Paper.Navigation>
-          <Paper.NavItem linkTo="/">Lobby</Paper.NavItem>
-        </Paper.Navigation>
+        <Paper.Navigation items={[{ to: "/", label: "Lobby" }]} />
         <Paper.Body>
           <TitleRow />
           <Links />

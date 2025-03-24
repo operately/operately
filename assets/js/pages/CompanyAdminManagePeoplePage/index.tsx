@@ -59,11 +59,7 @@ export function Page() {
 }
 
 function Navigation() {
-  return (
-    <Paper.Navigation>
-      <Paper.NavItem linkTo={Paths.companyAdminPath()}>Company Administration</Paper.NavItem>
-    </Paper.Navigation>
-  );
+  return <Paper.Navigation items={[{ to: Paths.companyAdminPath(), label: "Company Administration" }]} />;
 }
 
 function AddMemberButton() {

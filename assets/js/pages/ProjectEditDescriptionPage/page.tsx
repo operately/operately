@@ -15,9 +15,7 @@ export function Page() {
   return (
     <Pages.Page title={["Overview Edit", project.name!]}>
       <Paper.Root>
-        <Paper.Navigation>
-          <Paper.NavItem linkTo={Paths.projectPath(project.id!)}>{project.name}</Paper.NavItem>
-        </Paper.Navigation>
+        <Paper.Navigation items={[{ to: Paths.projectPath(project.id!), label: project.name! }]} />
 
         <Paper.Body>
           <div className="text-content-accent text-sm font-medium">PROJECT OVERVIEW</div>

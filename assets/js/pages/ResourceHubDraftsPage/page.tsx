@@ -3,6 +3,7 @@ import React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Hub from "@/features/ResourceHub";
+import { Paths } from "@/routes/paths";
 
 import { useLoadedData } from "./loader";
 import { assertPresent } from "@/utils/assertions";
@@ -30,10 +31,12 @@ function PageNavigation() {
   assertPresent(resourceHub.space, "space must be present in resourceHub");
 
   return (
-    <Paper.Navigation testId="navigation">
-      <Paper.NavSpaceLink space={resourceHub.space} />
-      <Paper.NavSeparator />
-      <Paper.NavResourceHubLink resourceHub={resourceHub} />
-    </Paper.Navigation>
+    <Paper.Navigation
+      testId="navigation"
+      items={[
+        { to: Paths.spacePath(resourceHub.space.id!), label: resourceHub.space.name! },
+        { to: Paths.resourceHubPath(resourceHub.id!), label: resourceHub.name! },
+      ]}
+    />
   );
 }

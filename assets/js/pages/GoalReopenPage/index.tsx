@@ -27,9 +27,7 @@ export function Page() {
   return (
     <Pages.Page title={"Reopen " + goal.name}>
       <Paper.Root>
-        <Paper.Navigation>
-          <Paper.NavItem linkTo={Paths.goalPath(goal.id!)}>{goal.name}</Paper.NavItem>
-        </Paper.Navigation>
+        <Paper.Navigation items={[{ to: Paths.goalPath(goal.id!), label: goal.name! }]} />
 
         <Paper.Body>
           <Title />

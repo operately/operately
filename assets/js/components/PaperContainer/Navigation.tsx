@@ -2,56 +2,9 @@ import * as React from "react";
 import * as Icons from "@tabler/icons-react";
 import * as Pages from "@/components/Pages";
 
-import { Space } from "@/models/spaces";
-import { ResourceHub, ResourceHubFolder } from "@/models/resourceHubs";
-import { Goal } from "@/models/goals";
-
-import { Paths } from "@/routes/paths";
 import { Link } from "@/components/Link";
-import { truncateString } from "@/utils/strings";
 import classNames from "classnames";
-
-export function Navigation({ children, testId }: { children: React.ReactNode; testId?: string }) {
-  const className = classNames(
-    "bg-surface-dimmed",
-    "flex items-center flex-wrap",
-    "justify-center gap-1",
-    "px-2 pt-2 pb-1 mx-0 sm:mx-10",
-    "font-semibold rounded-t",
-    "border-b sm:border-b-0 sm:border-t sm:border-x border-surface-outline",
-  );
-
-  return (
-    <div className={className} data-test-id={testId}>
-      {children}
-    </div>
-  );
-}
-
-interface NavItemProps {
-  linkTo: string;
-  children: React.ReactNode;
-  testId?: string;
-}
-
-export function NavItem({ linkTo, children, testId }: NavItemProps) {
-  return (
-    <Link to={linkTo} testId={testId}>
-      <span className="flex items-center gap-1.5">{children}</span>
-    </Link>
-  );
-}
-
-export function NavSeparator() {
-  const breakpoint = Pages.useWindowSizeBreakpoints();
-  const iconSize = breakpoint === "xs" ? 12 : 16;
-
-  return (
-    <div className="shrink-0">
-      <Icons.IconSlash size={iconSize} />
-    </div>
-  );
-}
+import { createTestId } from "@/utils/testid";
 
 export function NavigateBack({ to, title }) {
   return (
@@ -64,22 +17,52 @@ export function NavigateBack({ to, title }) {
   );
 }
 
-export function NavSpaceLink({ space }: { space: Space }) {
-  return <NavItem linkTo={Paths.spacePath(space.id!)}>{space.name}</NavItem>;
+interface Item {
+  to: string;
+  label: string;
 }
 
-export function NavSpaceWorkMapLink({ space }: { space: Space }) {
-  return <NavItem linkTo={Paths.spaceGoalsPath(space.id!)}>Goals & Projects</NavItem>;
+export function Navigation({ items, testId }: { items: Item[]; testId?: string }) {
+  const className = classNames(
+    "bg-surface-dimmed",
+    "flex items-center flex-wrap",
+    "justify-center gap-1",
+    "px-2 pt-2 pb-1 mx-0 sm:mx-10",
+    "font-semibold rounded-t",
+    "border-b sm:border-b-0 sm:border-t sm:border-x border-surface-outline",
+  );
+
+  return (
+    <div className={className} data-test-id={testId}>
+      {items.map((item, index) => (
+        <>
+          {index > 0 && <NavSeparator key={`separator-${index}`} />}
+          <NavItem item={item} key={item.to} />
+        </>
+      ))}
+    </div>
+  );
 }
 
-export function NavGoalLink({ goal }: { goal: Goal }) {
-  return <NavItem linkTo={Paths.goalPath(goal.id!)}>{goal.name}</NavItem>;
+interface NavItemProps {
+  item: Item;
 }
 
-export function NavResourceHubLink({ resourceHub }: { resourceHub: ResourceHub }) {
-  return <NavItem linkTo={Paths.resourceHubPath(resourceHub.id!)}>{resourceHub.name}</NavItem>;
+function NavItem({ item }: NavItemProps) {
+  return (
+    <Link to={item.to} testId={createTestId("nav-item", item.label)}>
+      {item.label}
+    </Link>
+  );
 }
 
-export function NavFolderLink({ folder }: { folder: ResourceHubFolder }) {
-  return <NavItem linkTo={Paths.resourceHubFolderPath(folder.id!)}>{truncateString(folder.name!, 20)}</NavItem>;
+function NavSeparator() {
+  const breakpoint = Pages.useWindowSizeBreakpoints();
+  const iconSize = breakpoint === "xs" ? 12 : 16;
+
+  return (
+    <div className="shrink-0">
+      <Icons.IconSlash size={iconSize} />
+    </div>
+  );
 }

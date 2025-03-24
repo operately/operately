@@ -114,11 +114,12 @@ function Title() {
 
 function Navigation({ project }) {
   return (
-    <Paper.Navigation>
-      <Paper.NavItem linkTo={Paths.projectPath(project.id)}>{project.name}</Paper.NavItem>
-      <Paper.NavSeparator />
-      <Paper.NavItem linkTo={Paths.projectCheckInsPath(project.id)}>Check-Ins</Paper.NavItem>
-    </Paper.Navigation>
+    <Paper.Navigation
+      items={[
+        { to: Paths.projectPath(project.id), label: project.name! },
+        { to: Paths.projectCheckInsPath(project.id), label: "Check-Ins" },
+      ]}
+    />
   );
 }
 

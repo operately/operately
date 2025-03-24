@@ -33,11 +33,7 @@ export function Page() {
 function Navigation() {
   const { project } = useLoadedData();
 
-  return (
-    <Paper.Navigation>
-      <Paper.NavItem linkTo={Paths.projectPath(project.id!)}>{project.name}</Paper.NavItem>
-    </Paper.Navigation>
-  );
+  return <Paper.Navigation items={[{ to: Paths.projectPath(project.id!), label: project.name! }]} />;
 }
 
 function Header() {
