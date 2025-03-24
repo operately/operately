@@ -78,7 +78,7 @@ function OverviewPending() {
 function OverviewOnTrack() {
   return (
     <span>
-      The goal is <mark data-highlight="bgGreen">on track</mark> and progressing well with no blockers.
+      The goal is <mark data-highlight="bgGreen">on track</mark>.
     </span>
   );
 }
@@ -87,7 +87,7 @@ function OverviewConcern({ goal }: { goal: Goals.Goal }) {
   return (
     <span>
       The goal <mark data-highlight="bgYellow">needs attention</mark>, due to emerging risks.
-      {goal.reviewer && <span> {People.firstName(goal.reviewer)} should be aware of these concerns.</span>}
+      {goal.reviewer && <span> {People.firstName(goal.reviewer)} should be aware.</span>}
     </span>
   );
 }
@@ -112,7 +112,7 @@ function OverviewTimeframe() {
       </span>
     );
   } else {
-    return <span>{durationHumanized(new Date(), timeframe.endDate)} remaining until the deadline.</span>;
+    return <span>{durationHumanized(new Date(), timeframe.endDate)} until the deadline.</span>;
   }
 }
 
