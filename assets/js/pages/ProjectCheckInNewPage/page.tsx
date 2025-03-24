@@ -2,7 +2,6 @@ import React from "react";
 
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
-import * as Icons from "@tabler/icons-react";
 
 import { Paths } from "@/routes/paths";
 import { useLoadedData } from "./loader";
@@ -30,10 +29,7 @@ function Navigation({ project }) {
 
   return (
     <Paper.Navigation>
-      <Paper.NavItem linkTo={projectPath}>
-        <Icons.IconClipboardList size={16} />
-        {project.name}
-      </Paper.NavItem>
+      <Paper.NavItem linkTo={projectPath}>{project.name}</Paper.NavItem>
       <Paper.NavSeparator />
       <Paper.NavItem linkTo={checkInsPath}>Check-Ins</Paper.NavItem>
     </Paper.Navigation>

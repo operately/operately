@@ -9,7 +9,7 @@ export function Navigation({ space }: { space: Spaces.Space }) {
     <Paper.Navigation>
       <Paper.NavItem linkTo={Paths.spacePath(space.id!)}>{space.name}</Paper.NavItem>
       <Paper.NavSeparator />
-      <Paper.NavItem linkTo={Paths.spaceGoalsPath(space.id!)}>Goals & Projects</Paper.NavItem>
+      <Paper.NavItem linkTo={Paths.spaceGoalsPath(space.id!)}>Goals &amp; Projects</Paper.NavItem>
     </Paper.Navigation>
   );
 }

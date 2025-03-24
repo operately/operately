@@ -2,7 +2,6 @@ import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as Projects from "@/models/projects";
-import * as Icons from "@tabler/icons-react";
 
 import { useLoadedData } from "./loader";
 import { useNavigateTo } from "@/routes/useNavigateTo";
@@ -18,10 +17,7 @@ export function Page() {
     <Pages.Page title={["Pausing", project.name!]}>
       <Paper.Root size="small">
         <Paper.Navigation>
-          <Paper.NavItem linkTo={Paths.projectPath(project.id!)}>
-            <Icons.IconClipboardList size={16} />
-            {project.name}
-          </Paper.NavItem>
+          <Paper.NavItem linkTo={Paths.projectPath(project.id!)}>{project.name}</Paper.NavItem>
         </Paper.Navigation>
 
         <Paper.Body minHeight="none">

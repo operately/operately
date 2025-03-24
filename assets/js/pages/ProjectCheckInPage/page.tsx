@@ -115,13 +115,8 @@ function Title() {
 function Navigation({ project }) {
   return (
     <Paper.Navigation>
-      <Paper.NavItem linkTo={Paths.projectPath(project.id)}>
-        <Icons.IconClipboardList size={16} />
-        {project.name}
-      </Paper.NavItem>
-
+      <Paper.NavItem linkTo={Paths.projectPath(project.id)}>{project.name}</Paper.NavItem>
       <Paper.NavSeparator />
-
       <Paper.NavItem linkTo={Paths.projectCheckInsPath(project.id)}>Check-Ins</Paper.NavItem>
     </Paper.Navigation>
   );

@@ -1,6 +1,5 @@
 import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
-import * as Icons from "@tabler/icons-react";
 import * as Pages from "@/components/Pages";
 import * as ProjectCheckIns from "@/models/projectCheckIns";
 
@@ -36,10 +35,7 @@ function Navigation() {
 
   return (
     <Paper.Navigation>
-      <Paper.NavItem linkTo={Paths.projectPath(project.id!)}>
-        <Icons.IconClipboardList size={16} />
-        {project.name}
-      </Paper.NavItem>
+      <Paper.NavItem linkTo={Paths.projectPath(project.id!)}>{project.name}</Paper.NavItem>
     </Paper.Navigation>
   );
 }

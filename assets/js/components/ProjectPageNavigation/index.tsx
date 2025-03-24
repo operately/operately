@@ -8,10 +8,7 @@ import { Paths } from "@/routes/paths";
 export function ProjectPageNavigation({ project }) {
   return (
     <Paper.Navigation>
-      <Paper.NavItem linkTo={Paths.projectPath(project.id)}>
-        <Icons.IconClipboardList size={16} />
-        {project.name}
-      </Paper.NavItem>
+      <Paper.NavItem linkTo={Paths.projectPath(project.id)}>{project.name}</Paper.NavItem>
     </Paper.Navigation>
   );
 }
@@ -22,10 +19,7 @@ export function ProjectMilestonesNavigation({ project }: { project: Projects.Pro
 
   return (
     <Paper.Navigation>
-      <Paper.NavItem linkTo={dashboardPath}>
-        <Icons.IconClipboardList size={16} />
-        {project.name}
-      </Paper.NavItem>
+      <Paper.NavItem linkTo={dashboardPath}>{project.name}</Paper.NavItem>
       <Paper.NavSeparator />
       <Paper.NavItem linkTo={milestonesPath}>Milestones</Paper.NavItem>
     </Paper.Navigation>
@@ -38,10 +32,7 @@ export function ProjectContribsSubpageNavigation({ project }) {
 
   return (
     <Paper.Navigation>
-      <Paper.NavItem linkTo={dashboardPath}>
-        <Icons.IconClipboardList size={16} />
-        <div className="truncate max-w-xs">{project.name}</div>
-      </Paper.NavItem>
+      <Paper.NavItem linkTo={dashboardPath}>{project.name}</Paper.NavItem>
       <Paper.NavSeparator />
       <Paper.NavItem linkTo={teamPath}>Team &amp; Access</Paper.NavItem>
     </Paper.Navigation>

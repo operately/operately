@@ -1,5 +1,4 @@
 import React from "react";
-import * as Icons from "@tabler/icons-react";
 
 import * as Projects from "@/models/projects";
 import * as Paper from "@/components/PaperContainer";
@@ -17,10 +16,7 @@ export function Page() {
     <Pages.Page title={["Edit Project Name", project.name!]}>
       <Paper.Root>
         <Paper.Navigation>
-          <Paper.NavItem linkTo={Paths.projectPath(project.id!)}>
-            <Icons.IconClipboardList size={16} />
-            {project.name}
-          </Paper.NavItem>
+          <Paper.NavItem linkTo={Paths.projectPath(project.id!)}>{project.name}</Paper.NavItem>
         </Paper.Navigation>
 
         <Paper.Body>
