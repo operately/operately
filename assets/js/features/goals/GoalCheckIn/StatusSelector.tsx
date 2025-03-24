@@ -1,4 +1,4 @@
-import React from "react";
+import * as React from "react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 
 import classNames from "classnames";
@@ -231,7 +231,9 @@ function validateStatus(required?: boolean) {
 }
 
 const menuContentClass = classNames(
-  "relative rounded-md mt-1 z-10 px-1 py-1.5",
+  "max-w-[100vw]", // on mobile screens, the dropdown should be full width
+  "relative",
+  "sm:rounded-md mt-1 z-50 px-1 py-1.5",
   "shadow-xl ring-1 transition ring-surface-outline",
   "focus:outline-none",
   "bg-surface-base",
