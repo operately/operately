@@ -15,6 +15,7 @@ import { match } from "ts-pattern";
 import { durationHumanized } from "@/utils/time";
 import { GoalTargetsField } from "@/features/goals/GoalTargetsV2";
 import { StatusSelector } from "./StatusSelector";
+import { useFieldValue } from "@/components/Forms/FormContext";
 
 interface Props {
   form: any;
@@ -229,10 +230,37 @@ function TimeframeEditButton({ value, setValue }: TimeframeEditButtonProps) {
 }
 
 function Targets({ readonly }: { readonly: boolean }) {
+  const targetCount = useTargetCount();
+  const label = targetSectionLabel(targetCount, readonly);
+
+  if (targetCount === 0) {
+    return null;
+  }
+
   return (
     <div>
-      <Label text={readonly ? "Targets" : "Update targets"} />
+      <Label text={label} />
       <GoalTargetsField field="targets" readonly={readonly} />
     </div>
   );
+}
+
+function targetSectionLabel(targetCount: number, readonly: boolean) {
+  if (readonly) {
+    if (targetCount === 1) {
+      return "Target";
+    } else {
+      return "Targets";
+    }
+  } else {
+    if (targetCount === 1) {
+      return "Update Target";
+    } else {
+      return "Update Targets";
+    }
+  }
+}
+
+function useTargetCount(): number {
+  return useFieldValue<any[]>("targets")[0].length;
 }
