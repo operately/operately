@@ -1,7 +1,7 @@
 import React from "react";
 
 import { ErrorMessage } from "../ErrorMessage";
-import { Label } from "../Label";
+import { Label } from "../Elements";
 import { InputFieldProps } from "../FieldGroup";
 
 export interface Options {}
