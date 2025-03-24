@@ -66,11 +66,7 @@ function Title() {
 }
 
 function Navigation({ space }: { space: Space }) {
-  return (
-    <Paper.Navigation>
-      <Paper.NavItem linkTo={Paths.spacePath(space.id!)}>{space.name}</Paper.NavItem>
-    </Paper.Navigation>
-  );
+  return <Paper.Navigation items={[{ to: Paths.spacePath(space.id!), label: space.name! }]} />;
 }
 
 function GeneralAccess() {

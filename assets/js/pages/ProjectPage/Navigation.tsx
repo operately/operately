@@ -6,10 +6,11 @@ import { Paths } from "@/routes/paths";
 
 export function Navigation({ space }: { space: Spaces.Space }) {
   return (
-    <Paper.Navigation>
-      <Paper.NavItem linkTo={Paths.spacePath(space.id!)}>{space.name}</Paper.NavItem>
-      <Paper.NavSeparator />
-      <Paper.NavItem linkTo={Paths.spaceGoalsPath(space.id!)}>Goals & Projects</Paper.NavItem>
-    </Paper.Navigation>
+    <Paper.Navigation
+      items={[
+        { to: Paths.spacePath(space.id!), label: space.name! },
+        { to: Paths.spaceGoalsPath(space.id!), label: "Goals & Projects" },
+      ]}
+    />
   );
 }

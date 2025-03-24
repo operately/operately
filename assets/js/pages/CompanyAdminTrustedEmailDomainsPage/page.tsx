@@ -17,9 +17,7 @@ export function Page() {
   return (
     <Pages.Page title={["Trusted Email Domains", company.name!]}>
       <Paper.Root size="small">
-        <Paper.Navigation>
-          <Paper.NavItem linkTo={Paths.companyAdminPath()}>Company Administration</Paper.NavItem>
-        </Paper.Navigation>
+        <Paper.Navigation items={[{ to: Paths.companyAdminPath(), label: "Company Administration" }]} />
 
         <Paper.Body minHeight="none">
           <div className="text-content-accent text-3xl font-extrabold">Trusted Email Domains</div>

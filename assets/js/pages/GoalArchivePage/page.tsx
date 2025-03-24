@@ -16,9 +16,7 @@ export function Page() {
   return (
     <Pages.Page title={["Archiving ", goal.name!]}>
       <Paper.Root size="small">
-        <Paper.Navigation>
-          <Paper.NavItem linkTo={Paths.goalPath(goal.id!)}>{goal.name}</Paper.NavItem>
-        </Paper.Navigation>
+        <Paper.Navigation items={[{ to: Paths.goalPath(goal.id!), label: goal.name! }]} />
 
         <Paper.Body minHeight="none">
           <div className="text-content-accent text-3xl font-extrabold">Archive this goal?</div>
