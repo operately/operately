@@ -9,7 +9,7 @@ import { Chronometer, CompletedColor } from "@/components/Chronometer";
 import { CustomRangePicker } from "@/components/TimeframeSelector/CustomRangePicker";
 
 import { useFieldValue } from "./FormContext";
-import { Label } from "./Label";
+import { Label } from "./Elements";
 
 interface Props {
   field: string;

@@ -1,26 +1,23 @@
 import React from "react";
 
 import * as Goals from "@/models/goals";
-import { IconPencil, IconX } from "@tabler/icons-react";
+import { IconPencil, IconTrash } from "@tabler/icons-react";
 
-import Forms from "@/components/Forms";
-import { MiniPieChart } from "@/components/charts";
-import { Target } from "./types";
-import { TargetValue } from "./TargetValue";
 import classNames from "classnames";
-import { PrimaryButton } from "@/components/Buttons";
-import { useFieldValue } from "@/components/Forms/FormContext";
+import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
+import { MiniPieChart } from "@/components/charts";
+
+import { Target } from "./types";
+import { TargetNumericField, TargetTextField, TargetValue } from "./components";
+import { useTargetsContext } from "./TargetsContext";
 
 interface Props {
-  field: string;
-  target: Target;
   index: number;
-  targetOpen: string | undefined;
-  setTargetOpen: React.Dispatch<React.SetStateAction<string | undefined>>;
+  target: Target;
 }
 
-export function EditTargetCard({ field, target, index, setTargetOpen, targetOpen }: Props) {
-  const [targets, setTargets] = useFieldValue<Target[]>(field);
+export function EditTargetCard({ target, index }: Props) {
+  const { targetOpen } = useTargetsContext();
 
   const editing = targetOpen === target.id;
   const containerClass = classNames(
@@ -31,72 +28,62 @@ export function EditTargetCard({ field, target, index, setTargetOpen, targetOpen
     "bg-surface-base",
   );
 
-  const handleRemove = () => {
-    setTargets(targets.filter((t) => t.id !== target.id));
-  };
-
   return (
     <div className={containerClass}>
       <TitleSection target={target} index={index} editing={editing} />
-      {!editing && (
-        <IconPencil
-          onClick={() => setTargetOpen(target.id!)}
-          className="absolute right-0.5 top-0.5 rounded-full hover:bg-surface-accent cursor-pointer hover:text-accent-1 transition-colors"
-          size={16}
-        />
-      )}
-
-      <DetailsSection index={index} toggleEditing={() => setTargetOpen(undefined)} editing={editing} />
-      <RemoveButton handleRemove={handleRemove} />
+      <DetailsSection target={target} editing={editing} />
+      <Actions target={target} editing={editing} />
     </div>
   );
 }
 
 function TitleSection({ target, index, editing }) {
+  const { startEdit } = useTargetsContext();
   const className = classNames("flex items-center gap-2 truncate", { "col-span-2": target.isNew });
 
   return (
     <>
       <div className={className}>
         <PieChart target={target} />
-        <NameField target={target} index={index} editing={editing} />
+        <NameField target={target} editing={editing} />
       </div>
       {!target.isNew && <TargetValue readonly index={index} target={target} />}
+
+      {!editing && (
+        <IconPencil
+          onClick={() => startEdit(target.id!)}
+          className="absolute right-0.5 top-0.5 rounded-full hover:bg-surface-accent cursor-pointer hover:text-accent-1 transition-colors"
+          size={16}
+        />
+      )}
     </>
   );
 }
 
-function DetailsSection({ index, editing, toggleEditing }) {
+function DetailsSection({ target, editing }) {
   if (!editing) return null;
 
   return (
-    <div className="col-span-2 mt-2">
-      <Forms.FieldGroup layout="grid" layoutOptions={{ columns: 3 }}>
-        <Forms.NumberInput placeholder="30" label="Start" field={`targets[${index}].from`} />
-        <Forms.NumberInput placeholder="15" label="Target" field={`targets[${index}].to`} />
-        <Forms.TextInput placeholder="minutes" label="Unit" field={`targets[${index}].unit`} />
-      </Forms.FieldGroup>
-      <div className="mt-2">
-        <PrimaryButton size="sm" onClick={toggleEditing}>
-          Done
-        </PrimaryButton>
-      </div>
+    <div className="col-span-2 mt-2 grid grid-cols-3 gap-2">
+      <TargetNumericField label="Start" target={target} field="from" testid="target-input-from" placeholder="30" />
+      <TargetNumericField label="Target" target={target} field="to" testid="target-input-to" placeholder="15" />
+      <TargetTextField label="Unit" target={target} field="unit" testid="target-input-unit" placeholder="minutes" />
     </div>
   );
 }
 
-function NameField({ index, editing, target }: { index: number; target: Target; editing: boolean }) {
+function NameField({ editing, target }: { target: Target; editing: boolean }) {
   if (!editing) {
     return <div className="font-medium truncate">{target.name}</div>;
   } else {
     return (
       <div className="w-full relative">
-        <Forms.FieldGroup>
-          <Forms.TextInput
-            placeholder="e.g. Average Onboarding Time is twice as fast"
-            field={`targets[${index}].name`}
-          />
-        </Forms.FieldGroup>
+        <TargetTextField
+          target={target}
+          field="name"
+          testid="target-input-name"
+          placeholder="e.g. Average Onboarding Time is twice as fast"
+        />
       </div>
     );
   }
@@ -109,10 +96,22 @@ function PieChart({ target }: { target: Target }) {
   return <MiniPieChart completed={progress} total={100} size={16} />;
 }
 
-function RemoveButton({ handleRemove }: { handleRemove: () => void }) {
+function Actions({ editing, target }: { editing: boolean; target: Target }) {
+  const { confirmEdit, targetOpen, deleteTarget, cancelEdit } = useTargetsContext();
+
+  if (!editing) return <></>;
+
   return (
-    <div className="absolute bg-surface-base p-1.5 -right-8 group-hover:opacity-100 opacity-0">
-      <IconX className="text-content-dimmed cursor-pointer" size={16} onClick={handleRemove} />
+    <div className="mt-3 flex items-center gap-2">
+      <PrimaryButton size="sm" onClick={() => confirmEdit(targetOpen)}>
+        Done
+      </PrimaryButton>
+      {!target.isNew && (
+        <SecondaryButton size="sm" onClick={() => cancelEdit(targetOpen)}>
+          Cancel
+        </SecondaryButton>
+      )}
+      <IconTrash className="text-content-dimmed cursor-pointer" size={20} onClick={() => deleteTarget(targetOpen)} />
     </div>
   );
 }

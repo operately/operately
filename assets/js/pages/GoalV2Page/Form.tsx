@@ -7,7 +7,7 @@ import { GoalTargetsField } from "@/features/goals/GoalTargetsV2";
 import { GoalStatusBadge } from "@/features/goals/GoalStatusBadge";
 
 import { Messages } from "./Messages";
-import { HorizontalRule, Title } from "./components";
+import { HorizontalSpacer, Title } from "./components";
 import { Champion, Contributors, Reviewer } from "./contributors";
 import { Timeframe } from "./Timeframe";
 import { NextCheckIn } from "./NextCheckIn";
@@ -27,11 +27,11 @@ export function Form() {
         <div className="col-start-1 row-start-2 flex-1">
           <GoalName />
           <Description />
-          <HorizontalRule />
+          <HorizontalSpacer />
           <Targets />
-          <HorizontalRule />
+          <HorizontalSpacer />
           <Messages />
-          <HorizontalRule />
+          <HorizontalSpacer />
           <RelatedWork />
         </div>
         <div className="col-start-2 row-start-2 flex flex-col gap-4 sticky top-0 self-start">
@@ -57,14 +57,7 @@ function Targets() {
   return (
     <>
       <Title title="Targets" />
-      <GoalTargetsField
-        field="targets"
-        readonly={isViewMode}
-        editDefinition={true}
-        editValue={false}
-        hideBorder
-        dotsBetween
-      />
+      <GoalTargetsField field="targets" readonly={isViewMode} editDefinition={true} editValue={false} />
     </>
   );
 }

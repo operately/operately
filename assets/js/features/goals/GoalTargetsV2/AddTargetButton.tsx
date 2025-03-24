@@ -1,29 +1,17 @@
-import { useFieldValue } from "@/components/Forms/FormContext";
-import { IconPlus } from "@tabler/icons-react";
 import React from "react";
-import { Target } from "./types";
 
-interface Props {
-  field: string;
-  display: boolean;
-  setTargetOpen: React.Dispatch<React.SetStateAction<string | undefined>>;
-}
+import { IconPlus } from "@tabler/icons-react";
+import { useTargetsContext } from "./TargetsContext";
 
-export function AddTargetButton({ field, display, setTargetOpen }: Props) {
-  const [targets, setTargets] = useFieldValue<Target[]>(field);
+export function AddTargetButton({ display }: { display: boolean }) {
+  const { addTarget } = useTargetsContext();
 
   if (!display) return null;
-
-  const handleClick = () => {
-    const target = newEmptyTarget();
-    setTargets([...targets, target]);
-    setTargetOpen(target.id!);
-  };
 
   return (
     <div
       className="py-2 px-3 border border-surface-outline bg-surface-base rounded cursor-pointer hover:bg-surface-dimmed"
-      onClick={handleClick}
+      onClick={addTarget}
       data-test-id="add-target"
     >
       <div className="flex flex-col flex-1">
@@ -34,15 +22,4 @@ export function AddTargetButton({ field, display, setTargetOpen }: Props) {
       </div>
     </div>
   );
-}
-
-function newEmptyTarget(): Target {
-  return {
-    isNew: true,
-    id: Math.random().toString(),
-    name: "",
-    from: 0,
-    to: 0,
-    unit: "",
-  };
 }
