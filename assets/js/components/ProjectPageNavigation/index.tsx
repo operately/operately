@@ -1,65 +1,42 @@
 import * as React from "react";
-import * as Icons from "@tabler/icons-react";
 import * as Paper from "@/components/PaperContainer";
 import * as Projects from "@/models/projects";
 
 import { Paths } from "@/routes/paths";
 
 export function ProjectPageNavigation({ project }) {
-  return (
-    <Paper.Navigation>
-      <Paper.NavItem linkTo={Paths.projectPath(project.id)}>
-        <Icons.IconClipboardList size={16} />
-        {project.name}
-      </Paper.NavItem>
-    </Paper.Navigation>
-  );
+  return <Paper.Navigation items={[{ to: Paths.projectPath(project.id!), label: project.name }]} />;
 }
 
 export function ProjectMilestonesNavigation({ project }: { project: Projects.Project }) {
-  const dashboardPath = Paths.projectPath(project.id!);
-  const milestonesPath = Paths.projectMilestonesPath(project.id!);
-
   return (
-    <Paper.Navigation>
-      <Paper.NavItem linkTo={dashboardPath}>
-        <Icons.IconClipboardList size={16} />
-        {project.name}
-      </Paper.NavItem>
-      <Paper.NavSeparator />
-      <Paper.NavItem linkTo={milestonesPath}>Milestones</Paper.NavItem>
-    </Paper.Navigation>
+    <Paper.Navigation
+      items={[
+        { to: Paths.projectPath(project.id!), label: project.name! },
+        { to: Paths.projectMilestonesPath(project.id!), label: "Milestones" },
+      ]}
+    />
   );
 }
 
 export function ProjectContribsSubpageNavigation({ project }) {
-  const dashboardPath = Paths.projectPath(project.id!);
-  const teamPath = Paths.projectContributorsPath(project.id!);
-
   return (
-    <Paper.Navigation>
-      <Paper.NavItem linkTo={dashboardPath}>
-        <Icons.IconClipboardList size={16} />
-        <div className="truncate max-w-xs">{project.name}</div>
-      </Paper.NavItem>
-      <Paper.NavSeparator />
-      <Paper.NavItem linkTo={teamPath}>Team &amp; Access</Paper.NavItem>
-    </Paper.Navigation>
+    <Paper.Navigation
+      items={[
+        { to: Paths.projectPath(project.id!), label: project.name },
+        { to: Paths.projectContributorsPath(project.id!), label: "Team & Access" },
+      ]}
+    />
   );
 }
 
 export function ProjectRetrospectiveNavigation({ project }) {
-  const dashboardPath = Paths.projectPath(project.id!);
-  const retrospectivePath = Paths.projectRetrospectivePath(project.id!);
-
   return (
-    <Paper.Navigation>
-      <Paper.NavItem linkTo={dashboardPath}>
-        <Icons.IconClipboardList size={16} />
-        {project.name}
-      </Paper.NavItem>
-      <Paper.NavSeparator />
-      <Paper.NavItem linkTo={retrospectivePath}>Retrospective</Paper.NavItem>
-    </Paper.Navigation>
+    <Paper.Navigation
+      items={[
+        { to: Paths.projectPath(project.id!), label: project.name },
+        { to: Paths.projectRetrospectivePath(project.id!), label: "Retrospective" },
+      ]}
+    />
   );
 }

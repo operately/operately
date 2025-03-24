@@ -1,8 +1,8 @@
 import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 
+import { Paths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
-import { NestedFolderNavigation } from "@/features/ResourceHub";
 import { Resource } from "@/models/resourceHubs";
 
 export function ResourcePageNavigation({ resource }: { resource: Resource }) {
@@ -10,14 +10,19 @@ export function ResourcePageNavigation({ resource }: { resource: Resource }) {
   assertPresent(resource.resourceHub.space, "space must be present in document.resourceHub");
   const path = getPathToResource(resource);
 
-  return (
-    <Paper.Navigation testId="navigation">
-      <Paper.NavSpaceLink space={resource.resourceHub.space} />
-      <Paper.NavSeparator />
-      <Paper.NavResourceHubLink resourceHub={resource.resourceHub} />
-      <NestedFolderNavigation folders={path} />
-    </Paper.Navigation>
+  let items = [
+    { to: Paths.spacePath(resource.resourceHub.space.id!), label: resource.resourceHub.space.name! },
+    { to: Paths.resourceHubPath(resource.resourceHub.id!), label: resource.resourceHub.name! },
+  ];
+
+  items = items.concat(
+    path.map((folder) => ({
+      to: Paths.resourceHubFolderPath(folder.id!),
+      label: folder.name!,
+    })),
   );
+
+  return <Paper.Navigation testId="navigation" items={items} />;
 }
 
 function getPathToResource(resource: Resource) {

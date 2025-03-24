@@ -94,10 +94,11 @@ function CancelLink({ form }: { form: FormState }) {
 
 function Navigation({ space }) {
   return (
-    <Paper.Navigation>
-      <Paper.NavItem linkTo={Paths.spacePath(space.id)}>{space.name}</Paper.NavItem>
-      <Paper.NavSeparator />
-      <Paper.NavItem linkTo={Paths.spaceDiscussionsPath(space.id)}>Discussions</Paper.NavItem>
-    </Paper.Navigation>
+    <Paper.Navigation
+      items={[
+        { to: Paths.spacePath(space.id), label: space.name },
+        { to: Paths.spaceDiscussionsPath(space.id), label: "Discussions" },
+      ]}
+    />
   );
 }

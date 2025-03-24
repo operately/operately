@@ -1,6 +1,5 @@
 import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
-import * as Icons from "@tabler/icons-react";
 import * as Pages from "@/components/Pages";
 import * as ProjectCheckIns from "@/models/projectCheckIns";
 
@@ -34,14 +33,7 @@ export function Page() {
 function Navigation() {
   const { project } = useLoadedData();
 
-  return (
-    <Paper.Navigation>
-      <Paper.NavItem linkTo={Paths.projectPath(project.id!)}>
-        <Icons.IconClipboardList size={16} />
-        {project.name}
-      </Paper.NavItem>
-    </Paper.Navigation>
-  );
+  return <Paper.Navigation items={[{ to: Paths.projectPath(project.id!), label: project.name! }]} />;
 }
 
 function Header() {

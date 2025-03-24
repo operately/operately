@@ -129,13 +129,7 @@ function Title({ update }) {
 }
 
 function Navigation({ goal }) {
-  const goalPath = Paths.goalPath(goal.id!);
-
-  return (
-    <Paper.Navigation>
-      <Paper.NavItem linkTo={goalPath}>{goal.name}</Paper.NavItem>
-    </Paper.Navigation>
-  );
+  return <Paper.Navigation items={[{ to: Paths.goalPath(goal.id!), label: goal.name! }]} />;
 }
 
 function Options() {

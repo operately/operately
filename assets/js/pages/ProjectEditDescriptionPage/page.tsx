@@ -2,7 +2,6 @@ import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as TipTapEditor from "@/components/Editor";
-import * as Icons from "@tabler/icons-react";
 import * as Projects from "@/models/projects";
 
 import { useLoadedData } from "./loader";
@@ -16,12 +15,7 @@ export function Page() {
   return (
     <Pages.Page title={["Overview Edit", project.name!]}>
       <Paper.Root>
-        <Paper.Navigation>
-          <Paper.NavItem linkTo={Paths.projectPath(project.id!)}>
-            <Icons.IconClipboardList size={16} />
-            {project.name}
-          </Paper.NavItem>
-        </Paper.Navigation>
+        <Paper.Navigation items={[{ to: Paths.projectPath(project.id!), label: project.name! }]} />
 
         <Paper.Body>
           <div className="text-content-accent text-sm font-medium">PROJECT OVERVIEW</div>

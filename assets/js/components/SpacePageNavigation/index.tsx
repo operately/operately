@@ -6,9 +6,5 @@ import * as Paper from "@/components/PaperContainer";
 import { Paths } from "@/routes/paths";
 
 export function SpacePageNavigation({ space }: { space: Spaces.Space }) {
-  return (
-    <Paper.Navigation>
-      <Paper.NavItem linkTo={Paths.spacePath(space.id!)}>{space.name}</Paper.NavItem>
-    </Paper.Navigation>
-  );
+  return <Paper.Navigation items={[{ to: Paths.spacePath(space.id!), label: space.name! }]} />;
 }
