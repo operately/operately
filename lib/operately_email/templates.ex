@@ -51,12 +51,12 @@ defmodule OperatelyEmail.Templates do
     "textBlue" => "color: #3b82f6; background-color: transparent;",
     "textGreen" => "color: #22c55e; background-color: transparent;",
 
-    "bgYellow" => "background-color: #fef08a;",
-    "bgOrange" => "background-color: #fed7aa;",
-    "bgRed" => "background-color: #fecaca;",
-    "bgPurple" => "background-color: #e9d5ff;",
-    "bgBlue" => "background-color: #bfdbfe;",
-    "bgGreen" => "background-color: #bbf7d0;"
+    "bgYellow" => "background-color: #854d0e; color: white;",
+    "bgOrange" => "background-color: #9a3412; color: white;",
+    "bgRed" => "background-color: #991b1b; color: white;",
+    "bgPurple" => "background-color: #6b21a8; color: white;",
+    "bgBlue" => "background-color: #1e40af; color: white;",
+    "bgGreen" => "background-color: #166534; color: white;",
   }
 
   def rich_text(content) do

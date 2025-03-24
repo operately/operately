@@ -272,25 +272,31 @@
 }
 
 .dark body .ProseMirror mark[data-highlight="bgYellow"] {
-  background-color: var(--color-yellow-500);
+  background-color: var(--color-yellow-800);
+  color: white;
 }
 
 .dark body .ProseMirror mark[data-highlight="bgOrange"] {
-  background-color: var(--color-orange-500);
+  background-color: var(--color-orange-800);
+  color: white;
 }
 
 .dark body .ProseMirror mark[data-highlight="bgRed"] {
-  background-color: var(--color-red-500);
+  background-color: var(--color-red-800);
+  color: white;
 }
 
 .dark body .ProseMirror mark[data-highlight="bgPurple"] {
-  background-color: var(--color-purple-500);
+  background-color: var(--color-purple-800);
+  color: white;
 }
 
 .dark body .ProseMirror mark[data-highlight="bgBlue"] {
-  background-color: var(--color-blue-500);
+  background-color: var(--color-blue-800);
+  color: white;
 }
 
 .dark body .ProseMirror mark[data-highlight="bgGreen"] {
-  background-color: var(--color-green-500);
+  background-color: var(--color-green-800);
+  color: white;
 }
