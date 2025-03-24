@@ -4,11 +4,5 @@ import * as Paper from "@/components/PaperContainer";
 import { Paths } from "@/routes/paths";
 
 export function PageNavigation() {
-  const path = Paths.peoplePath();
-
-  return (
-    <Paper.Navigation>
-      <Paper.NavItem linkTo={path}>People</Paper.NavItem>
-    </Paper.Navigation>
-  );
+  return <Paper.Navigation items={[{ to: Paths.peoplePath(), label: "People" }]} />;
 }

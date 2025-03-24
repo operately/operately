@@ -87,9 +87,5 @@ function DiscardLink({ form }) {
 }
 
 function Navigation({ space }) {
-  return (
-    <Paper.Navigation>
-      <Paper.NavItem linkTo={Paths.spaceDiscussionsPath(space.id)}>{space.name}</Paper.NavItem>
-    </Paper.Navigation>
-  );
+  return <Paper.Navigation items={[{ to: Paths.spaceDiscussionsPath(space.id), label: space.name! }]} />;
 }

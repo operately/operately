@@ -11,14 +11,10 @@ import { GoalSelector } from "@/features/goals/GoalTree/GoalSelector";
 export function Page() {
   const { goal } = useLoadedData();
 
-  const goalPath = Paths.goalPath(goal.id!);
-
   return (
     <Pages.Page title={["Changing Parent", goal.name!]}>
       <Paper.Root>
-        <Paper.Navigation>
-          <Paper.NavItem linkTo={goalPath}>{goal.name!}</Paper.NavItem>
-        </Paper.Navigation>
+        <Paper.Navigation items={[{ to: Paths.goalPath(goal.id!), label: goal.name! }]} />
 
         <Paper.Body>
           <div className="text-content-accent text-2xl font-extrabold mb-8">Choose a new parent for the goal</div>

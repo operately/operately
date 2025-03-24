@@ -43,10 +43,11 @@ export function Page() {
 
 function Navigation({ goal, checkin }) {
   return (
-    <Paper.Navigation>
-      <Paper.NavItem linkTo={Paths.goalPath(goal.id)}>{goal.name}</Paper.NavItem>
-      <Paper.NavSeparator />
-      <Paper.NavItem linkTo={Paths.goalProgressUpdatePath(checkin.id)}>Progress Update</Paper.NavItem>
-    </Paper.Navigation>
+    <Paper.Navigation
+      items={[
+        { to: Paths.goalPath(goal.id), label: goal.name },
+        { to: Paths.goalProgressUpdatePath(checkin.id), label: "Progress Update" },
+      ]}
+    />
   );
 }

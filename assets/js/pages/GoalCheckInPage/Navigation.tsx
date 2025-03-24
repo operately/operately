@@ -8,17 +8,15 @@ import { assertPresent } from "@/utils/assertions";
 export function Navigation() {
   const { goal } = useLoadedData();
 
-  const goalPath = Paths.goalPath(goal.id!);
-
   assertPresent(goal.space, "space must be present in goal");
 
   return (
-    <Paper.Navigation>
-      <Paper.NavSpaceLink space={goal.space} />
-      <Paper.NavSeparator />
-      <Paper.NavSpaceWorkMapLink space={goal.space} />
-      <Paper.NavSeparator />
-      <Paper.NavItem linkTo={goalPath}>{goal.name}</Paper.NavItem>
-    </Paper.Navigation>
+    <Paper.Navigation
+      items={[
+        { to: Paths.spacePath(goal.space.id!), label: goal.space.name! },
+        { to: Paths.spaceGoalsPath(goal.space.id!), label: "Goals & Projects" },
+        { to: Paths.goalPath(goal.id!), label: goal.name! },
+      ]}
+    />
   );
 }

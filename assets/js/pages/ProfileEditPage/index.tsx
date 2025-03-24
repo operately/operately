@@ -45,18 +45,15 @@ function Navigation() {
 
   if (from === "admin-manage-people") {
     return (
-      <Paper.Navigation>
-        <Paper.NavItem linkTo={Paths.companyAdminPath()}>Company Administration</Paper.NavItem>
-        <Paper.NavSeparator />
-        <Paper.NavItem linkTo={Paths.companyManagePeoplePath()}>Manage Team Members</Paper.NavItem>
-      </Paper.Navigation>
+      <Paper.Navigation
+        items={[
+          { label: "Company Administration", to: Paths.companyAdminPath() },
+          { label: "Manage Team Members", to: Paths.companyManagePeoplePath() },
+        ]}
+      />
     );
   } else {
-    return (
-      <Paper.Navigation>
-        <Paper.NavItem linkTo={Paths.accountPath()}>Account</Paper.NavItem>
-      </Paper.Navigation>
-    );
+    return <Paper.Navigation items={[{ label: "Account", to: Paths.accountPath() }]} />;
   }
 }
 
