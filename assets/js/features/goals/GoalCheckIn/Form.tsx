@@ -14,6 +14,7 @@ import classNames from "classnames";
 import { match } from "ts-pattern";
 import { durationHumanized } from "@/utils/time";
 import { GoalTargetsField } from "@/features/goals/GoalTargetsV2";
+import { StatusSelector } from "./StatusSelector";
 
 interface Props {
   form: any;
@@ -117,22 +118,22 @@ function OverviewTimeframe() {
 function StatusAndTimeframeForm({ goal }: { goal: Goals.Goal }) {
   return (
     <Forms.FieldGroup>
-      <div className="flex items-start gap-8 flex-wrap">
-        <StatusSelector goal={goal} />
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:w-3/4">
+        <GoalStatusSelector goal={goal} />
         <TimeframeSelector />
       </div>
     </Forms.FieldGroup>
   );
 }
 
-function StatusSelector({ goal }: { goal: Goals.Goal }) {
+function GoalStatusSelector({ goal }: { goal: Goals.Goal }) {
   const noReviewer = !goal.reviewer;
   const reviewerName = goal.reviewer ? People.firstName(goal.reviewer) : "";
 
   return (
     <div>
       <Label text="Status" />
-      <Forms.SelectGoalStatus field="status" reviewerFirstName={reviewerName} noReviewer={noReviewer} />
+      <StatusSelector field="status" reviewerFirstName={reviewerName} noReviewer={noReviewer} />
     </div>
   );
 }
@@ -188,7 +189,7 @@ function TimeframeSelector() {
         <TimeframeEditButton value={value} setValue={setValue} />
       </div>
 
-      <Chronometer start={value.startDate!} end={value.endDate!} />
+      <Chronometer start={value.startDate!} end={value.endDate!} width="w-full" />
     </div>
   );
 }
