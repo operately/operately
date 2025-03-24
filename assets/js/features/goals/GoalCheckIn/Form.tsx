@@ -189,7 +189,7 @@ function TimeframeSelector() {
         <TimeframeEditButton value={value} setValue={setValue} />
       </div>
 
-      <Chronometer start={value.startDate!} end={value.endDate!} />
+      <Chronometer start={value.startDate!} end={value.endDate!} width="w-full" />
     </div>
   );
 }
