@@ -32,7 +32,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Goals.Goal do
 
       timeframe: OperatelyWeb.Api.Serializer.serialize(goal.timeframe),
       projects: OperatelyWeb.Api.Serializer.serialize(goal.projects, level: :full),
-      last_check_in: OperatelyWeb.Api.Serializer.serialize(goal.last_check_in, level: :full),
+      last_check_in: OperatelyWeb.Api.Serializer.serialize(goal.last_update, level: :full),
       access_levels: OperatelyWeb.Api.Serializer.serialize(goal.access_levels, level: :full),
       potential_subscribers: OperatelyWeb.Api.Serializer.serialize(goal.potential_subscribers),
       notifications: OperatelyWeb.Api.Serializer.serialize(goal.notifications),

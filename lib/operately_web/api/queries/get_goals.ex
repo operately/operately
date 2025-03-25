@@ -42,7 +42,6 @@ defmodule OperatelyWeb.Api.Queries.GetGoals do
     |> include_requested(include_filters)
     |> filter_by_view_access(person.id)
     |> Repo.all()
-    |> Goal.preload_last_check_in()
   end
 
   defp include_requested(query, requested) do
@@ -53,7 +52,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoals do
         :include_space -> from p in q, preload: [:group]
         :include_champion -> from p in q, preload: [:champion]
         :include_reviewer -> from p in q, preload: [:reviewer]
-        :include_last_check_in -> q # this is done after the load
+        :include_last_check_in -> from p in q, preload: [last_update: [:author, [reactions: :person]]]
         _ -> q
       end
     end)

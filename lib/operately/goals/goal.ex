@@ -64,6 +64,7 @@ defmodule Operately.Goals.Goal do
       :closed_at,
       :closed_by_id,
       :success,
+      :last_check_in_id,
     ])
     |> cast_embed(:timeframe)
     |> validate_required([
@@ -92,35 +93,6 @@ defmodule Operately.Goals.Goal do
   #
   # Queries
   #
-
-  def preload_last_check_in(goals) when is_list(goals) do
-    alias Operately.Goals.Update
-
-    latest_updates = from(u in Update,
-      group_by: u.goal_id,
-      select: %{
-        goal_id: u.goal_id,
-        max_inserted_at: max(u.inserted_at)
-      }
-    )
-
-    query = from(u in Update,
-      join: c in subquery(latest_updates),
-      on: u.goal_id == c.goal_id and u.inserted_at == c.max_inserted_at,
-      preload: [:author, [reactions: :person]]
-    )
-
-    updates = Operately.Repo.all(query)
-
-    Enum.map(goals, fn goal ->
-      last_check_in = Enum.find(updates, fn u -> u.goal_id == goal.id end)
-      Map.put(goal, :last_check_in, last_check_in)
-    end)
-  end
-
-  def preload_last_check_in(goal = %__MODULE__{}) do
-    [goal] |> preload_last_check_in() |> hd()
-  end
 
   def set_permissions(%{goal: goal = %__MODULE__{}} = parent) do
     goal = preload_permissions(goal, parent.request_info.access_level)

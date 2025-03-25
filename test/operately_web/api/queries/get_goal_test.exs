@@ -194,6 +194,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
 
       update = goal_update_fixture(ctx.person, goal)
       update = Operately.Repo.preload(update, [:author, [reactions: :author]])
+      goal = Operately.Goals.Goal.changeset(goal, %{last_update_id: update.id}) |> Operately.Repo.update!()
 
       assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal), include_last_check_in: true})
       assert res.goal.last_check_in == Serializer.serialize(update, level: :full)
