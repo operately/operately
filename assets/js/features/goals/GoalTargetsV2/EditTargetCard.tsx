@@ -1,7 +1,7 @@
 import React from "react";
 
 import * as Goals from "@/models/goals";
-import { IconPencil, IconTrash } from "@tabler/icons-react";
+import { IconChevronDown, IconTrash } from "@tabler/icons-react";
 
 import classNames from "classnames";
 import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
@@ -21,11 +21,9 @@ export function EditTargetCard({ target, index }: Props) {
 
   const editing = targetOpen === target.id;
   const containerClass = classNames(
-    "group relative py-2 mb-2",
-    editing ? "px-3" : "pl-3 pr-5",
-    "grid grid-cols-[1fr_auto] items-center gap-x-3",
-    "last:mb-0 border border-surface-outline rounded",
-    "bg-surface-base",
+    "max-w-full py-2 px-px",
+    "grid grid-cols-[1fr_auto_14px] items-center gap-x-3",
+    "border-t last:border-b border-stroke-base",
   );
 
   return (
@@ -38,8 +36,16 @@ export function EditTargetCard({ target, index }: Props) {
 }
 
 function TitleSection({ target, index, editing }) {
-  const { startEdit } = useTargetsContext();
+  const { startEdit, closeEdit } = useTargetsContext();
   const className = classNames("flex items-center gap-2 truncate", { "col-span-2": target.isNew });
+
+  const toggle = () => {
+    if (editing) {
+      closeEdit(target.id);
+    } else {
+      startEdit(target.id);
+    }
+  };
 
   return (
     <>
@@ -52,14 +58,7 @@ function TitleSection({ target, index, editing }) {
           <TargetValue readonly index={index} target={target} />
         </div>
       )}
-
-      {!editing && (
-        <IconPencil
-          onClick={() => startEdit(target.id!)}
-          className="absolute right-0.5 top-0.5 rounded-full hover:bg-surface-accent cursor-pointer hover:text-accent-1 transition-colors"
-          size={16}
-        />
-      )}
+      <IconChevronDown onClick={toggle} className="cursor-pointer" size={14} />
     </>
   );
 }
@@ -68,7 +67,7 @@ function DetailsSection({ target, editing }) {
   if (!editing) return null;
 
   return (
-    <div className="col-span-2 mt-2 grid grid-cols-3 gap-2">
+    <div className="col-span-3 mt-2 grid grid-cols-3 gap-2">
       <TargetNumericField label="Start" target={target} field="from" testid="target-input-from" placeholder="30" />
       <TargetNumericField label="Target" target={target} field="to" testid="target-input-to" placeholder="15" />
       <TargetTextField label="Unit" target={target} field="unit" testid="target-input-unit" placeholder="minutes" />
