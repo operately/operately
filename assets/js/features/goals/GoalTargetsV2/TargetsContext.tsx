@@ -1,15 +1,12 @@
 import React from "react";
-import { REQUIRED_FIELDS, Target, TargetNumericFields, TargetTextFields } from "./types";
+
+import { useFieldValue } from "@/components/Forms/FormContext";
+import { Target, TargetNumericFields, TargetTextFields } from "./types";
+import { useTargetsValidator } from "./targetErrors";
 
 interface Props {
   children: React.ReactNode;
-  targets: Target[];
-  setTargets: (targets: Target[]) => void;
-}
-
-interface Error {
-  id: string;
-  field: TargetNumericFields | TargetTextFields;
+  field: string;
 }
 
 interface TargetsContextValue {
@@ -22,14 +19,14 @@ interface TargetsContextValue {
   resetEdit: (id: string | undefined) => void;
 
   targets: Target[];
-  errors: Error[];
   targetOpen: string | undefined;
 }
 
-export function TargetsContextProvider({ children, targets, setTargets }: Props) {
-  const originalTargets = React.useRef(targets);
+export function TargetsContextProvider({ children, field }: Props) {
+  const [targets, setTargets] = useFieldValue<Target[]>(field);
   const [targetOpen, setTargetOpen] = React.useState<string>();
-  const [errors, setErrors] = React.useState<Error[]>([]);
+  const originalTargets = React.useRef(targets);
+  const validate = useTargetsValidator(targets);
 
   const editTargetValue = (id: string, value: string | number, field: TargetTextFields | TargetNumericFields) => {
     setTargets(
@@ -88,44 +85,26 @@ export function TargetsContextProvider({ children, targets, setTargets }: Props)
         return t;
       }),
     );
-    setErrors([]);
     setTargetOpen(undefined);
   };
 
-  const validate = (id: string | undefined) => {
-    const target = targets.find((t) => t.id === id);
-    const tmpErrors: Error[] = [];
+  const contextValue = React.useMemo(
+    () => ({
+      editNumericValue,
+      editTextValue,
+      addTarget,
+      deleteTarget,
+      startEdit,
+      closeEdit,
+      resetEdit,
 
-    if (!id || !target) return true;
+      targets,
+      targetOpen,
+    }),
+    [targets, targetOpen],
+  );
 
-    for (let field of REQUIRED_FIELDS) {
-      if (!target[field] && target[field] !== 0) {
-        tmpErrors.push({ id, field });
-      }
-    }
-
-    if (tmpErrors.length > 0) {
-      setErrors(tmpErrors);
-      return false;
-    }
-    return true;
-  };
-
-  const data = {
-    editNumericValue,
-    editTextValue,
-    addTarget,
-    deleteTarget,
-    startEdit,
-    closeEdit,
-    resetEdit,
-
-    targets,
-    targetOpen,
-    errors,
-  };
-
-  return <TargetsContext.Provider value={data}>{children}</TargetsContext.Provider>;
+  return <TargetsContext.Provider value={contextValue}>{children}</TargetsContext.Provider>;
 }
 
 const TargetsContext = React.createContext<TargetsContextValue | null>(null);
@@ -141,10 +120,11 @@ export function useTargetsContext() {
 function newEmptyTarget(): Target {
   return {
     isNew: true,
-    id: Math.random().toString(),
+    id: crypto.randomUUID(),
     name: "",
     from: undefined,
     to: undefined,
     unit: "",
+    value: 0,
   };
 }
