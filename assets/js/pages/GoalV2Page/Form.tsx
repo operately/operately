@@ -55,9 +55,9 @@ function Targets() {
   const isViewMode = useIsViewMode();
 
   return (
-    <>
+    <div>
       <Title title="Targets" />
       <GoalTargetsField field="targets" readonly={isViewMode} editDefinition={true} editValue={false} />
-    </>
+    </div>
   );
 }
