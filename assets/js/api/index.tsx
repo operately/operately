@@ -862,6 +862,7 @@ export interface Goal {
   projects?: Project[] | null;
   parentGoal?: Goal | null;
   progressPercentage?: number | null;
+  lastCheckInId?: Id | null;
   lastCheckIn?: GoalProgressUpdate | null;
   permissions?: GoalPermissions | null;
   isArchived?: boolean | null;

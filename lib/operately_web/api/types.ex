@@ -975,6 +975,7 @@ defmodule OperatelyWeb.Api.Types do
     field :projects, list_of(:project)
     field :parent_goal, :goal
     field :progress_percentage, :float
+    field :last_check_in_id, :id
     field :last_check_in, :goal_progress_update
     field :permissions, :goal_permissions
     field :is_archived, :boolean
@@ -1431,7 +1432,6 @@ defmodule OperatelyWeb.Api.Types do
     field :subscription_list, :subscription_list
     field :potential_subscribers, list_of(:subscriber)
     field :notifications, list_of(:notification)
-    field :is_latest, :boolean
   end
 
   object :goal_target_updates do
