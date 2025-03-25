@@ -6,6 +6,7 @@ import * as Time from "@/utils/time";
 import Forms from "@/components/Forms";
 import { useSetPageMode } from "@/components/Pages";
 import { assertPresent } from "@/utils/assertions";
+import { validateTargets } from "@/features/goals/GoalTargetsV2/validateTargets";
 
 import { parseTargets, serializeTimeframe } from "./utils";
 import { useLoadedData, useRefresh } from "./loader";
@@ -38,6 +39,9 @@ export function useForm() {
       parentGoal: goal.parentGoal,
     },
     cancel: () => setPageMode("view"),
+    validate: (addError) => {
+      validateTargets("targets", form.values.targets, addError);
+    },
     submit: async () => {
       assertPresent(goal.accessLevels, "accessLevels must be present in goal");
 
