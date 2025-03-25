@@ -47,7 +47,11 @@ function TitleSection({ target, index, editing }) {
         <PieChart target={target} />
         <NameField target={target} editing={editing} />
       </div>
-      {!target.isNew && <TargetValue readonly index={index} target={target} />}
+      {!target.isNew && (
+        <div className="max-w-[160px] truncate">
+          <TargetValue readonly index={index} target={target} />
+        </div>
+      )}
 
       {!editing && (
         <IconPencil
@@ -108,7 +112,7 @@ function Actions({ editing, target }: { editing: boolean; target: Target }) {
       </PrimaryButton>
       {!target.isNew && (
         <SecondaryButton size="sm" onClick={() => resetEdit(targetOpen)}>
-          Reset
+          Cancel
         </SecondaryButton>
       )}
       <IconTrash className="text-content-dimmed cursor-pointer" size={20} onClick={() => deleteTarget(targetOpen)} />
