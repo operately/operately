@@ -246,6 +246,10 @@ defmodule OperatelyWeb.Paths do
     OperatelyWeb.Api.Helpers.id_with_comments(date, id)
   end
 
+  def goal_update_id(update_id) when is_binary(update_id) do
+    Operately.ShortUuid.encode!(update_id)
+  end
+
   def goal_update_id(update) do
     id = Operately.ShortUuid.encode!(update.id)
     date = update.inserted_at |> NaiveDateTime.to_date() |> Date.to_string()
