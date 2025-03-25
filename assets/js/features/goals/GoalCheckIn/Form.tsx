@@ -16,33 +16,54 @@ import { durationHumanized } from "@/utils/time";
 import { GoalTargetsField } from "@/features/goals/GoalTargetsV2";
 import { StatusSelector } from "./StatusSelector";
 import { useFieldValue } from "@/components/Forms/FormContext";
+import { InfoCallout } from "@/components/Callouts";
 
 interface Props {
   form: any;
-  readonly: boolean;
+  mode: "edit" | "view";
   goal: Goals.Goal;
   children?: React.ReactNode;
+
+  // Full editing is allowed only for the latest check-in,
+  // and allows editing the status, timeframe, and targets.
+  // Otherwise, only the description can be edited.
+  allowFullEdit: boolean;
 }
 
-export function Form({ form, readonly, goal, children }: Props) {
+export function Form(props: Props) {
   return (
-    <Forms.Form form={form} preventSubmitOnEnter>
+    <Forms.Form form={props.form} preventSubmitOnEnter>
       <div className="space-y-8 mt-8">
-        <StatusAndTimeframe goal={goal} readonly={readonly} />
-        <Targets readonly={readonly} />
-        <Description goal={goal} readonly={readonly} />
+        <FullEditDisabledMessage {...props} />
+        <StatusAndTimeframe {...props} />
+        <Targets {...props} />
+        <Description {...props} />
       </div>
 
-      {children}
+      {props.children}
     </Forms.Form>
   );
 }
 
-function StatusAndTimeframe({ goal, readonly }: { goal: Goals.Goal; readonly: boolean }) {
-  if (readonly) {
-    return <TextualOverview goal={goal} />;
+function FullEditDisabledMessage({ mode, allowFullEdit }: Props) {
+  if (mode === "view") return null;
+  if (allowFullEdit) return null;
+
+  return (
+    <InfoCallout
+      message={"Editing locked after 3 days"}
+      description={
+        "You can edit the timeframe, status, and target values for up to 3 days after submitting your check-in. After that, they’re locked in to keep the history clear and decisions accountable. Need to make a changes? Leave a comment or create a new check-in."
+      }
+    />
+  );
+}
+
+function StatusAndTimeframe(props: Props) {
+  if (props.mode === "edit" && props.allowFullEdit) {
+    return <StatusAndTimeframeForm goal={props.goal} />;
   } else {
-    return <StatusAndTimeframeForm goal={goal} />;
+    return <TextualOverview goal={props.goal} />;
   }
 }
 
@@ -139,11 +160,11 @@ function GoalStatusSelector({ goal }: { goal: Goals.Goal }) {
   );
 }
 
-function Description({ goal, readonly }: { goal: Goals.Goal; readonly: boolean }) {
-  if (readonly) {
+function Description(props: Props) {
+  if (props.mode === "view") {
     return <DescriptionView />;
   } else {
-    return <DescriptionEdit goal={goal} />;
+    return <DescriptionEdit {...props} />;
   }
 }
 
@@ -229,13 +250,15 @@ function TimeframeEditButton({ value, setValue }: TimeframeEditButtonProps) {
   );
 }
 
-function Targets({ readonly }: { readonly: boolean }) {
+function Targets(props: Props) {
   const targetCount = useTargetCount();
-  const label = targetSectionLabel(targetCount, readonly);
+  const label = targetSectionLabel(targetCount, props.mode, props.allowFullEdit!);
 
   if (targetCount === 0) {
     return null;
   }
+
+  const readonly = props.mode === "view" || (props.mode === "edit" && !props.allowFullEdit);
 
   return (
     <div>
@@ -245,18 +268,18 @@ function Targets({ readonly }: { readonly: boolean }) {
   );
 }
 
-function targetSectionLabel(targetCount: number, readonly: boolean) {
-  if (readonly) {
-    if (targetCount === 1) {
-      return "Target";
-    } else {
-      return "Targets";
-    }
-  } else {
+function targetSectionLabel(targetCount: number, mode: Props["mode"], allowFullEdit: boolean) {
+  if (mode === "edit" && allowFullEdit) {
     if (targetCount === 1) {
       return "Update Target";
     } else {
       return "Update Targets";
+    }
+  } else {
+    if (targetCount === 1) {
+      return "Target";
+    } else {
+      return "Targets";
     }
   }
 }

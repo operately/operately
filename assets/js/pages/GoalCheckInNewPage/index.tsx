@@ -82,7 +82,7 @@ function Form({ goal }: { goal: Goals.Goal }) {
   const form = useForm({ mode: "create", goal, subscriptionsState });
 
   return (
-    <CheckInForm form={form} goal={goal} readonly={false}>
+    <CheckInForm form={form} goal={goal} mode="edit" allowFullEdit>
       <Spacer size={4} />
       <SubscribersSelector state={subscriptionsState} spaceName={goal.space.name!} />
       <Forms.Submit saveText="Check In" buttonSize="base" />
