@@ -6,11 +6,8 @@ import { REQUIRED_FIELDS, Target, TargetFields } from "./types";
 
 export function validateTargets(targets: Target[], addError: (field: string, message: string) => void) {
   targets.forEach((target) => {
-    REQUIRED_FIELDS.forEach((field) => {
-      if (validField(target, field)) {
-        addError(getErrorKey(target.id!, field), "Can't be empty");
-      }
-    });
+    const errors = collectErrors(target);
+    Object.entries(errors).forEach(([key, message]) => addError(key, message));
   });
 }
 
@@ -20,21 +17,15 @@ export function useTargetsValidator(targets: Target[]) {
 
   const validate = (id: string | undefined) => {
     const target = targets.find((t) => t.id === id);
-    const errors: ErrorMap = {};
 
     if (id && target) {
-      REQUIRED_FIELDS.forEach((field) => {
-        if (validField(target, field)) {
-          errors[getErrorKey(id, field)] = "Can't be empty";
-        }
-      });
-    }
+      const errors = collectErrors(target);
 
-    if (Object.keys(errors).length > 0) {
-      form.actions.addErrors(errors);
-      return false;
+      if (Object.keys(errors).length > 0) {
+        form.actions.addErrors(errors);
+        return false;
+      }
     }
-
     return true;
   };
 
@@ -75,4 +66,14 @@ function getErrorKey(id: string, field: TargetFields) {
 
 function validField(target: Target, field: TargetFields) {
   return !target[field] && target[field] !== 0;
+}
+
+function collectErrors(target: Target): ErrorMap {
+  return REQUIRED_FIELDS.reduce((acc, field) => {
+    if (validField(target, field)) {
+      acc[getErrorKey(target.id!, field)] = "Can't be empty";
+    }
+
+    return acc;
+  }, {});
 }
