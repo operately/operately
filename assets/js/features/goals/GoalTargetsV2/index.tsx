@@ -22,7 +22,14 @@ export function GoalTargetsField(props: Props) {
   const [targets, setTargets] = useFieldValue<Target[]>(props.field);
 
   return (
-    <TargetsContextProvider key={String(props.readonly)} targets={targets} updateTargets={setTargets}>
+    <TargetsContextProvider
+      // When the user clicks "Discard Changes", the targets managed by useForm are reset.
+      // However, these changes aren't visible until the component remounts.
+      // Using a key based on the `readonly` prop forces a remount whenever its value changes.
+      key={String(props.readonly)}
+      targets={targets}
+      setTargets={setTargets}
+    >
       <Targets {...props} />
 
       <AddTargetButton display={Boolean(!props.readonly && props.editDefinition)} />

@@ -97,18 +97,18 @@ function PieChart({ target }: { target: Target }) {
 }
 
 function Actions({ editing, target }: { editing: boolean; target: Target }) {
-  const { confirmEdit, targetOpen, deleteTarget, cancelEdit } = useTargetsContext();
+  const { closeEdit, resetEdit, targetOpen, deleteTarget } = useTargetsContext();
 
   if (!editing) return <></>;
 
   return (
     <div className="mt-3 flex items-center gap-2">
-      <PrimaryButton size="sm" onClick={() => confirmEdit(targetOpen)}>
+      <PrimaryButton size="sm" onClick={() => closeEdit(targetOpen)}>
         Done
       </PrimaryButton>
       {!target.isNew && (
-        <SecondaryButton size="sm" onClick={() => cancelEdit(targetOpen)}>
-          Cancel
+        <SecondaryButton size="sm" onClick={() => resetEdit(targetOpen)}>
+          Reset
         </SecondaryButton>
       )}
       <IconTrash className="text-content-dimmed cursor-pointer" size={20} onClick={() => deleteTarget(targetOpen)} />

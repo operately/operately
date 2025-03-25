@@ -4,7 +4,7 @@ import { REQUIRED_FIELDS, Target, TargetNumericFields, TargetTextFields } from "
 interface Props {
   children: React.ReactNode;
   targets: Target[];
-  updateTargets: (targets: Target[]) => void;
+  setTargets: (targets: Target[]) => void;
 }
 
 interface Error {
@@ -18,22 +18,22 @@ interface TargetsContextValue {
   addTarget: () => void;
   deleteTarget: (id: string | undefined) => void;
   startEdit: (id: string) => void;
-  confirmEdit: (id: string | undefined) => void;
-  cancelEdit: (id: string | undefined) => void;
+  closeEdit: (id: string | undefined) => void;
+  resetEdit: (id: string | undefined) => void;
 
   targets: Target[];
   errors: Error[];
   targetOpen: string | undefined;
 }
 
-export function TargetsContextProvider({ children, targets, updateTargets }: Props) {
-  const [tmpTargets, setTmpTargets] = React.useState(copyTargets(targets));
+export function TargetsContextProvider({ children, targets, setTargets }: Props) {
+  const originalTargets = React.useRef(targets);
   const [targetOpen, setTargetOpen] = React.useState<string>();
   const [errors, setErrors] = React.useState<Error[]>([]);
 
   const editTargetValue = (id: string, value: string | number, field: TargetTextFields | TargetNumericFields) => {
-    setTmpTargets((prev) =>
-      prev.map((t) => {
+    setTargets(
+      targets.map((t) => {
         if (t.id === id) {
           return { ...t, [field]: value };
         }
@@ -55,14 +55,14 @@ export function TargetsContextProvider({ children, targets, updateTargets }: Pro
   const addTarget = () => {
     if (validate(targetOpen)) {
       const target = newEmptyTarget();
-      setTmpTargets((prev) => [...prev, target]);
+      setTargets([...targets, target]);
       setTargetOpen(target.id!);
     }
   };
 
   const deleteTarget = (id: string | undefined) => {
     if (!id) return;
-    setTmpTargets((prev) => prev.filter((t) => t.id !== id));
+    setTargets(targets.filter((t) => t.id !== id));
   };
 
   const startEdit = (id: string) => {
@@ -71,32 +71,19 @@ export function TargetsContextProvider({ children, targets, updateTargets }: Pro
     }
   };
 
-  const confirmEdit = (id: string | undefined) => {
+  const closeEdit = (id: string | undefined) => {
     if (validate(id)) {
-      const target = tmpTargets.find((t) => t.id === id);
-
-      if (!target) return;
-
-      updateTargets(
-        targets.map((t) => {
-          if (t.id === target.id) {
-            return target;
-          }
-          return t;
-        }),
-      );
-
       setTargetOpen(undefined);
     }
   };
 
-  const cancelEdit = (id: string | undefined) => {
-    const target = targets.find((t) => t.id === id);
+  const resetEdit = (id: string | undefined) => {
+    const target = originalTargets.current.find((t) => t.id === id);
 
     if (!id || !target) return;
 
-    setTmpTargets((prev) =>
-      prev.map((t) => {
+    setTargets(
+      targets.map((t) => {
         if (t.id === target.id) return target;
         return t;
       }),
@@ -105,7 +92,7 @@ export function TargetsContextProvider({ children, targets, updateTargets }: Pro
   };
 
   const validate = (id: string | undefined) => {
-    const target = tmpTargets.find((t) => t.id === id);
+    const target = targets.find((t) => t.id === id);
     const tmpErrors: Error[] = [];
 
     if (!id || !target) return true;
@@ -129,10 +116,10 @@ export function TargetsContextProvider({ children, targets, updateTargets }: Pro
     addTarget,
     deleteTarget,
     startEdit,
-    confirmEdit,
-    cancelEdit,
+    closeEdit,
+    resetEdit,
 
-    targets: tmpTargets,
+    targets,
     targetOpen,
     errors,
   };
@@ -148,12 +135,6 @@ export function useTargetsContext() {
   if (!context) throw new Error("useTargetsContext must be within a TargetsContextProvider");
 
   return context;
-}
-
-function copyTargets(targets: Target[]): Target[] {
-  return targets.map((t) => {
-    return { ...t };
-  });
 }
 
 function newEmptyTarget(): Target {

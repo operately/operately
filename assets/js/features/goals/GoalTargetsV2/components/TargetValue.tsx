@@ -2,6 +2,7 @@ import React from "react";
 
 import * as GoalCheckIns from "@/models/goalCheckIns";
 
+import { createTestId } from "@/utils/testid";
 import { isPresent } from "@/utils/isPresent";
 import { isCheckInTarget, Target } from "../types";
 import { TargetNumericField } from "./TargetNumericField";
@@ -20,7 +21,7 @@ export function TargetValue(props: Props) {
     <TargetNumericField
       field="value"
       target={props.target}
-      testid="target-input-value"
+      testid={createTestId("target", "input", props.target.name!)}
       className="ring-0 outline-none px-2 py-1.5 text-sm font-medium w-32 text-right border border-stroke-base rounded"
     />
   );
