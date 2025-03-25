@@ -3,7 +3,7 @@ import { useLayoutOptions } from "./Context";
 import { InputFieldProps } from "../FieldGroup";
 import { match } from "ts-pattern";
 import { ErrorMessage } from "../ErrorMessage";
-import { Label } from "../Label";
+import { Label } from "../Elements";
 
 export interface Options {
   ratio: "1:1" | "1:2" | "1:3" | "1:4" | "1:5" | "2:1" | "3:1" | "4:1" | "5:1";

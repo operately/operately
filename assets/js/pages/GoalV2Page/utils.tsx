@@ -2,15 +2,14 @@ import * as Goals from "@/models/goals";
 import * as Time from "@/utils/time";
 import * as Timeframes from "@/utils/timeframes";
 import { Target } from "@/features/goals/GoalTargetsV2";
-import { parseToInteger } from "@/utils/numbers";
 import plurarize from "@/utils/plurarize";
 
 function parseTarget(t: Target, index: number): Goals.Target {
   return {
     id: t.id,
     name: t.name,
-    from: parseToInteger(t.from!),
-    to: parseToInteger(t.to!),
+    from: typeof t.from === "string" ? parseFloat(t.from) : t.from,
+    to: typeof t.to === "string" ? parseFloat(t.to) : t.to,
     unit: t.unit,
     index: index,
   };
