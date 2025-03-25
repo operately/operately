@@ -1,15 +1,13 @@
 import * as React from "react";
-import * as Icons from "@tabler/icons-react";
 
-import classNames from "classnames";
+import { createTestId } from "@/utils/testid";
+
 import { InputField } from "./FieldGroup";
-
 import { useValidation } from "./validations/hook";
 import { validatePresence } from "./validations/presence";
 import { validateTextLength } from "./validations/textLength";
-
+import { InputElement } from "./Elements";
 import { useFieldValue, useFieldError } from "./FormContext";
-import { createTestId } from "@/utils/testid";
 
 interface TextInputProps {
   field: string;
@@ -32,7 +30,7 @@ const DEFAULT_VALIDATION_PROPS = {
 };
 
 export function TextInput(props: TextInputProps) {
-  const { field, label, hidden, placeholder } = props;
+  const { field, label, hidden } = props;
   const { required, minLength, maxLength } = { ...DEFAULT_VALIDATION_PROPS, ...props };
 
   const [value, setValue] = useFieldValue(field);
@@ -43,49 +41,14 @@ export function TextInput(props: TextInputProps) {
 
   return (
     <InputField field={field} label={label} error={error} hidden={hidden}>
-      <div className="relative">
-        <input
-          name={field}
-          placeholder={placeholder}
-          data-test-id={props.testId ?? createTestId(field)}
-          className={styles(!!error)}
-          type="text"
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && props.onEnter) {
-              props.onEnter(e);
-            }
-          }}
-          //
-          // The standard autoFocus works if the input is rendered outside of a modal.
-          // However, if the input is inside of a modal, the autoFocus prop does not work.
-          //
-          // To handle this edge case, we set the data-autofocus attribute to true, and then
-          // in the component/Modal, we use a onOpen callback to focus the input field
-          // with the data-autofocus attribute.
-          //
-          autoFocus={props.autoFocus}
-          data-autofocus={props.autoFocus}
-        />
-
-        {!error && props.okSign && (
-          <div className="absolute inset-y-0 right-0 flex items-center pr-4 text-accent-1">
-            <Icons.IconCheck size={20} />
-          </div>
-        )}
-      </div>
+      <InputElement
+        testId={props.testId ?? createTestId(field)}
+        error={!!error}
+        type="text"
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        {...props}
+      />
     </InputField>
   );
-}
-
-function styles(error: boolean | undefined) {
-  return classNames({
-    "w-full": true,
-    "bg-surface-base text-content-accent placeholder-content-subtle": true,
-    "border rounded-lg": true,
-    "px-3 py-1.5": true,
-    "border-surface-outline": !error,
-    "border-red-500": error,
-  });
 }

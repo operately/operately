@@ -21,6 +21,6 @@ export function Title({ title }: { title: string }) {
   return <div className="my-2 uppercase text-xs font-bold tracking-wide">{title}</div>;
 }
 
-export function HorizontalRule() {
-  return <div className="my-6 border-t border-stroke-base" />;
+export function HorizontalSpacer() {
+  return <div className="my-8" />;
 }
