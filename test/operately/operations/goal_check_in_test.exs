@@ -30,6 +30,24 @@ defmodule Operately.Operations.GoalCheckInTest do
     Map.merge(ctx, %{company: company, space: space, champion: champion, reviewer: reviewer, goal: goal})
   end
 
+  describe "last update" do
+    test "creating goal update sets last update on the goal", ctx do
+      {:ok, update} =
+        GoalCheckIn.run(ctx.champion, ctx.goal, %{
+          goal_id: ctx.goal.id,
+          status: "on_track",
+          target_values: [],
+          content: RichText.rich_text("Some content"),
+          send_to_everyone: true,
+          subscriber_ids: [],
+          subscription_parent_type: :goal_update
+        })
+
+      goal = Repo.get!(Operately.Goals.Goal, ctx.goal.id)
+      assert goal.last_check_in_id == update.id
+    end
+  end
+
   describe "notifications" do
     test "Creating goal update notifies everyone", ctx do
       members = create_space_members(ctx)

@@ -68,13 +68,13 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
       include_space_members: [group: [:members, :company]],
       include_targets: [targets: from(t in Target, order_by: t.index)],
       include_potential_subscribers: [:reviewer, :champion, group: :members],
+      include_last_check_in: [last_update: [:author, [reactions: :person]]],
       always_include: :parent_goal,
     ])
   end
 
   defp after_load(inputs, me) do
     Inputs.parse_includes(inputs, [
-      include_last_check_in: &Goal.preload_last_check_in/1,
       include_permissions: &Goal.preload_permissions/1,
       include_access_levels: &Goal.preload_access_levels/1,
       include_potential_subscribers: &Goal.set_potential_subscribers/1,
