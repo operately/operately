@@ -88,6 +88,7 @@ export function TargetsContextProvider({ children, targets, setTargets }: Props)
         return t;
       }),
     );
+    setErrors([]);
     setTargetOpen(undefined);
   };
 
