@@ -26,6 +26,8 @@ export function TargetNumericField({ target, field, testid, placeholder, label, 
 
     if (!isNaN(parsedValue)) {
       editNumericValue(target.id!, parsedValue, field);
+    } else {
+      editNumericValue(target.id!, "", field);
     }
   };
 
