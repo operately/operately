@@ -12,6 +12,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Goals.Update  do
   def serialize(update, level: :full) do
     %{
       id: OperatelyWeb.Paths.goal_update_id(update),
+      is_latest: update.goal.last_check_in_id == update.id,
       goal: OperatelyWeb.Api.Serializer.serialize(update.goal),
       status: Atom.to_string(update.status),
       message: Jason.encode!(update.message),

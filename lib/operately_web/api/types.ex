@@ -1431,6 +1431,7 @@ defmodule OperatelyWeb.Api.Types do
     field :subscription_list, :subscription_list
     field :potential_subscribers, list_of(:subscriber)
     field :notifications, list_of(:notification)
+    field :is_latest, :boolean
   end
 
   object :goal_target_updates do
