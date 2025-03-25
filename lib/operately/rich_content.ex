@@ -42,4 +42,27 @@ defmodule Operately.RichContent do
   end
 
   def extract_mentions_from_node(_), do: []
+
+  defmodule Builder do
+    def doc(content) do
+      %{type: "doc", content: content} |> Jason.encode!() |> Jason.decode!()
+    end
+
+    def paragraph(content) do
+      %{type: "paragraph", content: content}
+    end
+
+    def text(text, marks \\ []) do
+      %{type: "text", text: text, marks: marks}
+    end
+
+    def bold(text), do: %{type: "text", text: text, marks: [%{type: "bold"}]}
+    def italic(text), do: %{type: "text", text: text, marks: [%{type: "italic"}]}
+    def code(text), do: %{type: "text", text: text, marks: [%{type: "code"}]}
+
+    def bg_gray(text), do: %{type: "text", text: text, marks: [%{type: "highlight", attrs: %{"highlight" => "bgGray"}}]}
+    def bg_green(text), do: %{type: "text", text: text, marks: [%{type: "highlight", attrs: %{"highlight" => "bgGreen"}}]}
+    def bg_yellow(text), do: %{type: "text", text: text, marks: [%{type: "highlight", attrs: %{"highlight" => "bgYellow"}}]}
+    def bg_red(text), do: %{type: "text", text: text, marks: [%{type: "highlight", attrs: %{"highlight" => "bgRed"}}]}
+  end
 end
