@@ -6,8 +6,9 @@ defmodule Operately.Operations.GoalCheckInEdit do
 
   def run(author, goal, check_in, attrs) do
     Multi.new()
+    |> set_if_full_edit_allowed(goal, check_in)
     |> update_check_in(check_in, attrs)
-    |> update_targets(goal.targets, attrs.new_target_values)
+    |> maybe_update_targets(goal.targets, attrs.new_target_values)
     |> update_subscriptions(attrs.content)
     |> maybe_update_goal(goal, attrs[:timeframe])
     |> record_activity(author, goal)
@@ -15,18 +16,48 @@ defmodule Operately.Operations.GoalCheckInEdit do
     |> Repo.extract_result(:check_in)
   end
 
-  defp update_check_in(multi, check_in, attrs) do
-    encoded_new_target_values = encode_new_target_values(attrs.new_target_values, check_in)
+  #
+  # Edits to the status, timeframe, and targets are allowed within 3 days of the 
+  # check-in being created and only if it is the latest check-in.
+  # Otherwise, only the message can be edited.
+  #
+  defp set_if_full_edit_allowed(multi, goal, check_in) do
+    edit_deadline = DateTime.add(check_in.inserted_at, 3, :day)
 
-    multi
-    |> Multi.update(
-      :check_in,
-      Update.changeset(check_in, %{
-        status: attrs.status,
-        message: attrs.content,
-        targets: encoded_new_target_values
-      })
-    )
+    is_latest = goal.last_check_in_id == check_in.id
+    is_in_edit_deadline = DateTime.compare(DateTime.utc_now(), edit_deadline) == :lt
+
+    Multi.put(multi, :full_edit_allowed, is_latest and is_in_edit_deadline)
+  end
+
+  defp update_check_in(multi, check_in, attrs) do
+    if multi[:full_edit_allowed] do
+      full_update_check_in(multi, check_in, attrs)
+    else
+      partial_update_check_in(multi, check_in, attrs)
+    end
+  end
+
+  defp full_update_check_in(multi, check_in, attrs) do
+    targets = encode_new_target_values(attrs.new_target_values, check_in)
+    
+    Multi.update(multi, :check_in, Update.changeset(check_in, %{
+      status: attrs.status, 
+      message: attrs.content, 
+      targets: targets
+    }))
+  end
+
+  defp partial_update_check_in(multi, check_in, attrs) do
+    Multi.update(multi, :check_in, Update.changeset(check_in, %{message: attrs.content}))
+  end
+
+  defp maybe_update_targets(multi, targets, new_target_values) do
+    if multi[:full_edit_allowed] do
+      update_targets(multi, targets, new_target_values)
+    else
+      multi
+    end
   end
 
   defp update_targets(multi, targets, new_target_values) do
@@ -52,12 +83,12 @@ defmodule Operately.Operations.GoalCheckInEdit do
     |> Operately.Operations.Notifications.Subscription.update_mentioned_people(content)
   end
 
-  defp maybe_update_goal(multi, _, nil), do: multi
-
   defp maybe_update_goal(multi, goal, timeframe) do
-    if timeframe_changed?(goal.timeframe, timeframe) do
-      multi
-      |> Multi.update(:goal, Goal.changeset(goal, %{timeframe: timeframe}))
+    is_time_change = timeframe && timeframe_changed?(goal.timeframe, timeframe)
+    is_editable = multi[:full_edit_allowed]
+
+    if is_time_change and is_editable do
+      Multi.update(multi, :goal, Goal.changeset(goal, %{timeframe: timeframe}))
     else
       multi
     end
