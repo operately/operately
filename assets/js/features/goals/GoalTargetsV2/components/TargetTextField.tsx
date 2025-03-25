@@ -3,6 +3,7 @@ import React from "react";
 import { InputElement, Label } from "@/components/Forms/Elements";
 import { useTargetsContext } from "../TargetsContext";
 import { Target, TargetTextFields } from "../types";
+import { useTargetError } from "../targetErrors";
 
 interface Props {
   target: Target;
@@ -13,12 +14,9 @@ interface Props {
 }
 
 export function TargetTextField({ target, field, testid, placeholder, label }: Props) {
-  const { editTextValue, errors } = useTargetsContext();
+  const { editTextValue } = useTargetsContext();
   const value = React.useMemo(() => target[field]?.toString() || "", [target]);
-  const isError = React.useMemo(
-    () => Boolean(errors.find((err) => err.id === target.id && err.field === field)),
-    [errors],
-  );
+  const isError = useTargetError(target, field);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
@@ -41,7 +39,7 @@ export function TargetTextField({ target, field, testid, placeholder, label }: P
         value={value}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
-        error={isError}
+        error={Boolean(isError)}
       />
     </div>
   );
