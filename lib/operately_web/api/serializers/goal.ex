@@ -10,7 +10,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Goals.Goal do
       reviewer: OperatelyWeb.Api.Serializer.serialize(goal.reviewer),
       timeframe: OperatelyWeb.Api.Serializer.serialize(goal.timeframe),
       success: goal.success == "yes",
-      last_check_in_id: OperatelyWeb.Paths.goal_update_id(goal.last_check_in_id),
+      last_check_in_id: goal.last_check_in_id && OperatelyWeb.Paths.goal_update_id(goal.last_check_in_id),
     }
   end
 

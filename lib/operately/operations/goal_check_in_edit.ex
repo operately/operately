@@ -6,8 +6,9 @@ defmodule Operately.Operations.GoalCheckInEdit do
 
   def run(author, goal, check_in, attrs) do
     Multi.new()
+    |> set_if_full_edit_allowed(goal, check_in)
     |> update_check_in(check_in, attrs)
-    |> update_targets(goal.targets, attrs.new_target_values)
+    |> maybe_update_targets(goal.targets, attrs.new_target_values)
     |> update_subscriptions(attrs.content)
     |> maybe_update_goal(goal, attrs[:timeframe])
     |> record_activity(author, goal)
@@ -15,22 +16,48 @@ defmodule Operately.Operations.GoalCheckInEdit do
     |> Repo.extract_result(:check_in)
   end
 
-  defp update_check_in(multi, check_in, attrs) do
-    encoded_new_target_values = encode_new_target_values(attrs.new_target_values, check_in)
+  #
+  # Edits to the status, timeframe, and targets are allowed within 3 days of the 
+  # check-in being created and only if it is the latest check-in.
+  # Otherwise, only the message can be edited.
+  #
+  defp set_if_full_edit_allowed(multi, goal, check_in) do
+    edit_deadline = NaiveDateTime.add(check_in.inserted_at, 3, :day)
 
-    multi
-    |> Multi.update(
-      :check_in,
-      Update.changeset(check_in, %{
-        status: attrs.status,
-        message: attrs.content,
-        targets: encoded_new_target_values
-      })
-    )
+    is_latest = goal.last_check_in_id == check_in.id
+    is_in_edit_deadline = NaiveDateTime.compare(NaiveDateTime.utc_now(), edit_deadline) == :lt
+
+    Multi.put(multi, :full_edit_allowed, is_latest and is_in_edit_deadline)
   end
 
-  defp update_targets(multi, targets, new_target_values) do
-    Enum.reduce(new_target_values, multi, fn target_value, multi ->
+  defp update_check_in(multi, check_in, attrs) do
+    Multi.update(multi, :check_in, fn changes ->
+      if changes.full_edit_allowed do
+        Update.changeset(check_in, %{
+          status: attrs.status, 
+          message: attrs.content, 
+          targets: encode_new_target_values(attrs.new_target_values, check_in)
+        })
+      else
+        Update.changeset(check_in, %{
+          message: attrs.content, 
+        })
+      end
+    end)
+  end
+
+  defp maybe_update_targets(multi, targets, new_target_values) do
+    Multi.merge(multi, fn changes ->
+      if changes.full_edit_allowed do
+        update_targets(targets, new_target_values)
+      else
+        Multi.new() # no-op
+      end
+    end)
+  end
+
+  defp update_targets(targets, new_target_values) do
+    Enum.reduce(new_target_values, Multi.new(), fn target_value, multi ->
       target = Enum.find(targets, fn target -> target.id == target_value["id"] end)
       changeset = Target.changeset(target, %{value: target_value["value"]})
       id = "target-#{target.id}"
@@ -52,15 +79,16 @@ defmodule Operately.Operations.GoalCheckInEdit do
     |> Operately.Operations.Notifications.Subscription.update_mentioned_people(content)
   end
 
-  defp maybe_update_goal(multi, _, nil), do: multi
-
   defp maybe_update_goal(multi, goal, timeframe) do
-    if timeframe_changed?(goal.timeframe, timeframe) do
-      multi
-      |> Multi.update(:goal, Goal.changeset(goal, %{timeframe: timeframe}))
-    else
-      multi
-    end
+    Multi.update(multi, :goal, fn changes ->
+      has_time_changed = timeframe && timeframe_changed?(goal.timeframe, timeframe)
+
+      if has_time_changed && changes.full_edit_allowed do
+        Goal.changeset(goal, %{timeframe: timeframe})
+      else
+        Goal.changeset(goal, %{})
+      end
+    end)
   end
 
   defp record_activity(multi, author, goal) do
