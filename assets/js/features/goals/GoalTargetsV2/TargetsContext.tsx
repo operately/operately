@@ -1,10 +1,11 @@
 import React from "react";
+
+import { useFieldError, useFieldValue } from "@/components/Forms/FormContext";
 import { REQUIRED_FIELDS, Target, TargetNumericFields, TargetTextFields } from "./types";
 
 interface Props {
   children: React.ReactNode;
-  targets: Target[];
-  setTargets: (targets: Target[]) => void;
+  field: string;
 }
 
 interface Error {
@@ -26,10 +27,21 @@ interface TargetsContextValue {
   targetOpen: string | undefined;
 }
 
-export function TargetsContextProvider({ children, targets, setTargets }: Props) {
-  const originalTargets = React.useRef(targets);
-  const [targetOpen, setTargetOpen] = React.useState<string>();
+export function TargetsContextProvider({ children, field }: Props) {
+  const error = useFieldError(field);
   const [errors, setErrors] = React.useState<Error[]>([]);
+
+  const [targets, setTargets] = useFieldValue<Target[]>(field);
+  const [targetOpen, setTargetOpen] = React.useState<string>();
+  const originalTargets = React.useRef(targets);
+
+  // If there is a targets error when the form is submitted,
+  // validation is triggered
+  React.useEffect(() => {
+    if (error) {
+      targets.forEach((t) => validate(t.id!));
+    }
+  }, [error]);
 
   const editTargetValue = (id: string, value: string | number, field: TargetTextFields | TargetNumericFields) => {
     setTargets(
@@ -57,6 +69,7 @@ export function TargetsContextProvider({ children, targets, setTargets }: Props)
       const target = newEmptyTarget();
       setTargets([...targets, target]);
       setTargetOpen(target.id!);
+      setErrors([]);
     }
   };
 
@@ -67,12 +80,14 @@ export function TargetsContextProvider({ children, targets, setTargets }: Props)
 
   const startEdit = (id: string) => {
     if (!targetOpen || validate(targetOpen)) {
+      setErrors([]);
       setTargetOpen(id);
     }
   };
 
   const closeEdit = (id: string | undefined) => {
     if (validate(id)) {
+      setErrors([]);
       setTargetOpen(undefined);
     }
   };
@@ -96,36 +111,40 @@ export function TargetsContextProvider({ children, targets, setTargets }: Props)
     const target = targets.find((t) => t.id === id);
     const tmpErrors: Error[] = [];
 
-    if (!id || !target) return true;
-
-    for (let field of REQUIRED_FIELDS) {
-      if (!target[field] && target[field] !== 0) {
-        tmpErrors.push({ id, field });
+    if (id && target) {
+      for (let field of REQUIRED_FIELDS) {
+        if (!target[field] && target[field] !== 0) {
+          tmpErrors.push({ id, field });
+        }
       }
     }
 
     if (tmpErrors.length > 0) {
-      setErrors(tmpErrors);
+      setErrors((prev) => [...prev, ...tmpErrors]);
       return false;
     }
+
     return true;
   };
 
-  const data = {
-    editNumericValue,
-    editTextValue,
-    addTarget,
-    deleteTarget,
-    startEdit,
-    closeEdit,
-    resetEdit,
+  const contextValue = React.useMemo(
+    () => ({
+      editNumericValue,
+      editTextValue,
+      addTarget,
+      deleteTarget,
+      startEdit,
+      closeEdit,
+      resetEdit,
 
-    targets,
-    targetOpen,
-    errors,
-  };
+      targets,
+      targetOpen,
+      errors,
+    }),
+    [targets, targetOpen, errors],
+  );
 
-  return <TargetsContext.Provider value={data}>{children}</TargetsContext.Provider>;
+  return <TargetsContext.Provider value={contextValue}>{children}</TargetsContext.Provider>;
 }
 
 const TargetsContext = React.createContext<TargetsContextValue | null>(null);
@@ -141,10 +160,11 @@ export function useTargetsContext() {
 function newEmptyTarget(): Target {
   return {
     isNew: true,
-    id: Math.random().toString(),
+    id: crypto.randomUUID(),
     name: "",
     from: undefined,
     to: undefined,
     unit: "",
+    value: 0,
   };
 }
