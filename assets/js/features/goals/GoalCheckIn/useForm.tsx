@@ -11,6 +11,7 @@ import { Paths } from "@/routes/paths";
 import { emptyContent } from "@/components/RichContent";
 import { assertPresent } from "@/utils/assertions";
 import { Options, SubscriptionsState } from "@/features/Subscriptions";
+import { validateTargets } from "../GoalTargetsV2/targetErrors";
 
 interface EditProps {
   mode: "edit";
@@ -55,11 +56,7 @@ export function useForm(props: EditProps | CreateProps) {
       }
     },
     validate: (addErrors) => {
-      form.values.targets?.forEach((t, i) => {
-        if (t.value === null || t.value === undefined) {
-          addErrors(`targets[${i}].value`, "Can't be empty");
-        }
-      });
+      validateTargets(form.values.targets || [], addErrors);
     },
     submit: async () => {
       const commonAttrs = {

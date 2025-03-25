@@ -3,6 +3,7 @@ import React from "react";
 import { InputElement, Label } from "@/components/Forms/Elements";
 import { useTargetsContext } from "../TargetsContext";
 import { Target, TargetNumericFields } from "../types";
+import { useTargetError } from "../targetErrors";
 
 interface Props {
   target: Target;
@@ -14,12 +15,9 @@ interface Props {
 }
 
 export function TargetNumericField({ target, field, testid, placeholder, label, className }: Props) {
-  const { editNumericValue, errors } = useTargetsContext();
+  const { editNumericValue } = useTargetsContext();
   const value = React.useMemo(() => target[field]?.toString() || "", [target]);
-  const isError = React.useMemo(
-    () => Boolean(errors.find((err) => err.id === target.id && err.field === field)),
-    [errors],
-  );
+  const isError = useTargetError(target, field);
 
   const handleBlur = () => {
     const parsedValue = parseFloat(value);
@@ -54,7 +52,7 @@ export function TargetNumericField({ target, field, testid, placeholder, label, 
         onChange={handleChange}
         onBlur={handleBlur}
         onKeyDown={handleKeyDown}
-        error={isError}
+        error={Boolean(isError)}
         className={className}
       />
     </div>

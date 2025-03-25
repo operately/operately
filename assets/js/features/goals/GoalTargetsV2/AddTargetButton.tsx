@@ -10,7 +10,7 @@ export function AddTargetButton({ display }: { display: boolean }) {
 
   return (
     <div
-      className="py-2 px-px border-t border-surface-outline cursor-pointer"
+      className="py-2 px-px border-t border-stroke-base cursor-pointer"
       onClick={addTarget}
       data-test-id="add-target"
     >

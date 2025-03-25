@@ -5,8 +5,9 @@ export type Target = (GoalCheckIns.Target | Goals.Target) & { isNew?: boolean };
 
 export type TargetNumericFields = "from" | "to" | "value";
 export type TargetTextFields = "name" | "unit";
+export type TargetFields = TargetNumericFields | TargetTextFields;
 
-export const REQUIRED_FIELDS = ["from", "to", "name", "unit"] as const;
+export const REQUIRED_FIELDS = ["from", "to", "value", "name", "unit"] as const;
 
 export function isCheckInTarget(target: Target): target is GoalCheckIns.Target {
   return "previousValue" in target;

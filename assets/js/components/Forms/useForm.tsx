@@ -24,6 +24,8 @@ export interface FormState<T extends FieldObject> {
   hasCancel: boolean;
   actions: {
     clearErrors: () => void;
+    addErrors: (errors: ErrorMap) => void;
+    removeErrors: (keys: string[]) => void;
     submit: (attrs?: any) => void | Promise<void>;
     cancel: () => void | Promise<void>;
     reset: () => void;
@@ -55,6 +57,17 @@ export function useForm<T extends FieldObject>(props: FormProps<T>): FormState<T
     hasCancel,
     actions: {
       clearErrors,
+      addErrors: (errors: ErrorMap) => setErrors((prev) => ({ ...errors, ...prev })),
+      removeErrors: (keys: string[]) => {
+        const updatedErrors = { ...errors };
+        keys.forEach((key) => {
+          if (updatedErrors[key]) {
+            delete updatedErrors[key];
+          }
+        });
+
+        setErrors(updatedErrors);
+      },
       addValidation,
       removeValidation,
       getValue,
