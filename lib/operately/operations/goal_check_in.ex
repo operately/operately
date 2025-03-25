@@ -31,15 +31,13 @@ defmodule Operately.Operations.GoalCheckIn do
   end
 
   defp update_goal(multi, goal, timeframe) do
-    next_check_in =
-      Operately.Time.calculate_next_monthly_check_in(
-        goal.next_update_scheduled_at,
-        DateTime.utc_now()
-      )
+    Multi.update(multi, :goal, fn changes ->
+      update_id = changes.update.id
+      next_check_in = calc_next_check_in_time(goal)
+      changes = build_goal_changes(next_check_in, timeframe, update_id)
 
-    changes = build_goal_changes(next_check_in, timeframe)
-
-    Multi.update(multi, :goal, Goal.changeset(goal, changes))
+      Goal.changeset(goal, changes)
+    end)
   end
 
   defp update_targets(multi, targets, new_target_values) do
@@ -105,14 +103,20 @@ defmodule Operately.Operations.GoalCheckIn do
     new.start_date != old.start_date or new.end_date != old.end_date
   end
 
-  defp build_goal_changes(next_check_in, timeframe) do
+  defp build_goal_changes(next_check_in, timeframe, update_id) do
+    changes = %{
+      next_update_scheduled_at: next_check_in,
+      last_check_in_id: update_id
+    }
+
     if timeframe do
-      %{
-        next_update_scheduled_at: next_check_in,
-        timeframe: timeframe
-      }
+      Map.put(changes, :timeframe, timeframe)
     else
-      %{next_update_scheduled_at: next_check_in}
+      changes
     end
+  end
+
+  defp calc_next_check_in_time(goal) do
+    Operately.Time.calculate_next_monthly_check_in(goal.next_update_scheduled_at, DateTime.utc_now())
   end
 end

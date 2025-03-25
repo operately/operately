@@ -145,10 +145,10 @@ defmodule OperatelyWeb.Api.Queries.GetGoalsTest do
       goal2 = goal_fixture(ctx.person, company_id: ctx.company.id, space_id: ctx.company.company_space_id)
 
       update1 = create_update(ctx.person, goal1)
-      _update2 = create_update(ctx.person, goal1)
-
       update3 = create_update(ctx.person, goal2)
-      _update4 = create_update(ctx.person, goal2)
+
+      goal1 = Operately.Goals.Goal.changeset(goal1, %{last_check_in_id: update1.id}) |> Repo.update!()
+      goal2 = Operately.Goals.Goal.changeset(goal2, %{last_check_in_id: update3.id}) |> Repo.update!()
 
       update1 = Operately.Repo.preload(update1, [:author, [reactions: :author]])
       update3 = Operately.Repo.preload(update3, [:author, [reactions: :author]])

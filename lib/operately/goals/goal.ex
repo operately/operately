@@ -3,6 +3,9 @@ defmodule Operately.Goals.Goal do
   use Operately.Repo.Getter
 
   schema "goals" do
+    field :name, :string
+    field :description, :map
+
     belongs_to :company, Operately.Companies.Company, foreign_key: :company_id
     belongs_to :group, Operately.Groups.Group, foreign_key: :group_id
     belongs_to :parent_goal, Operately.Goals.Goal, foreign_key: :parent_goal_id
@@ -11,16 +14,15 @@ defmodule Operately.Goals.Goal do
     belongs_to :reviewer, Operately.People.Person, foreign_key: :reviewer_id
     belongs_to :creator, Operately.People.Person, foreign_key: :creator_id
 
-    has_many :updates, Operately.Goals.Update
     has_many :targets, Operately.Goals.Target
     has_many :projects, Operately.Projects.Project, foreign_key: :goal_id
 
     has_one :access_context, Operately.Access.Context, foreign_key: :goal_id
 
-    field :name, :string
+    # Check-Ins (they are called updates for historical reasons)
+    has_many :updates, Operately.Goals.Update
+    belongs_to :last_update, Operately.Goals.Update, foreign_key: :last_check_in_id
     field :next_update_scheduled_at, :utc_datetime
-
-    field :description, :map
 
     embeds_one :timeframe, Operately.Goals.Timeframe, on_replace: :update
     field :deprecated_timeframe, :string
@@ -31,7 +33,6 @@ defmodule Operately.Goals.Goal do
 
     # populated with after load hooks
     field :my_role, :string, virtual: true
-    field :last_check_in, :any, virtual: true
     field :permissions, :any, virtual: true
     field :access_levels, :any, virtual: true
     field :potential_subscribers, :any, virtual: true
@@ -63,6 +64,7 @@ defmodule Operately.Goals.Goal do
       :closed_at,
       :closed_by_id,
       :success,
+      :last_check_in_id,
     ])
     |> cast_embed(:timeframe)
     |> validate_required([
@@ -91,35 +93,6 @@ defmodule Operately.Goals.Goal do
   #
   # Queries
   #
-
-  def preload_last_check_in(goals) when is_list(goals) do
-    alias Operately.Goals.Update
-
-    latest_updates = from(u in Update,
-      group_by: u.goal_id,
-      select: %{
-        goal_id: u.goal_id,
-        max_inserted_at: max(u.inserted_at)
-      }
-    )
-
-    query = from(u in Update,
-      join: c in subquery(latest_updates),
-      on: u.goal_id == c.goal_id and u.inserted_at == c.max_inserted_at,
-      preload: [:author, [reactions: :person]]
-    )
-
-    updates = Operately.Repo.all(query)
-
-    Enum.map(goals, fn goal ->
-      last_check_in = Enum.find(updates, fn u -> u.goal_id == goal.id end)
-      Map.put(goal, :last_check_in, last_check_in)
-    end)
-  end
-
-  def preload_last_check_in(goal = %__MODULE__{}) do
-    [goal] |> preload_last_check_in() |> hd()
-  end
 
   def set_permissions(%{goal: goal = %__MODULE__{}} = parent) do
     goal = preload_permissions(goal, parent.request_info.access_level)
