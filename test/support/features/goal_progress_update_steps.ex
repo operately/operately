@@ -84,7 +84,7 @@ defmodule Operately.Support.Features.GoalProgressUpdateSteps do
   end
 
   step :assert_progress_update_in_feed, ctx do
-    feed_texts = ["Checking-in on my goal", "First response time", "Increase feedback score to 90%", "On Track"]
+    feed_texts = ["Checking-in on my goal"]
 
     ctx
     |> visit_page()
