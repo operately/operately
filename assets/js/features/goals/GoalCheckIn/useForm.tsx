@@ -13,19 +13,19 @@ import { assertPresent } from "@/utils/assertions";
 import { Options, SubscriptionsState } from "@/features/Subscriptions";
 import { validateTargets } from "../GoalTargetsV2/targetErrors";
 
+interface NewProps {
+  mode: "new";
+  goal: Goal;
+  subscriptionsState: SubscriptionsState;
+}
+
 interface EditProps {
   mode: "edit";
   update: Update;
   goal: Goal;
 }
 
-interface CreateProps {
-  mode: "create";
-  goal: Goal;
-  subscriptionsState: SubscriptionsState;
-}
-
-export function useForm(props: EditProps | CreateProps) {
+export function useForm(props: EditProps | NewProps) {
   const { mode, goal } = props;
   const [post] = usePostGoalProgressUpdate();
   const [edit] = useEditGoalProgressUpdate();
@@ -49,7 +49,7 @@ export function useForm(props: EditProps | CreateProps) {
       description: mode === "edit" ? JSON.parse(props.update.message!) : emptyContent(),
     },
     cancel: () => {
-      if (mode === "create") {
+      if (mode === "new") {
         navigate(Paths.goalPath(goal.id!));
       } else {
         setPageMode("view");
@@ -65,7 +65,7 @@ export function useForm(props: EditProps | CreateProps) {
         newTargetValues: JSON.stringify(form.values.targets!.map((t) => ({ id: t.id, value: t.value }))),
       };
 
-      if (mode === "create") {
+      if (mode === "new") {
         const { subscriptionsState } = props;
         const payload = {
           ...commonAttrs,

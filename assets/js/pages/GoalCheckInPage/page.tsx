@@ -22,17 +22,29 @@ export function Page() {
     <Pages.Page title={title} testId="goal-check-in-page">
       <Paper.Root>
         <Navigation />
+        <Body />
+      </Paper.Root>
+    </Pages.Page>
+  );
+}
 
-        <Paper.Body className="p-4 md:p-8 lg:px-28 lg:py-8" noPadding>
-          <Options />
-          <Header />
-          <Form />
+function Body() {
+  const mode = Pages.usePageMode();
+
+  return (
+    <Paper.Body className="p-4 md:p-8 lg:px-28 lg:pt-8" noPadding>
+      <Options />
+      <Header />
+      <Form />
+
+      {mode === "view" && (
+        <>
           <AckCTA />
           <CheckInReactions />
           <Comments />
           <Subscriptions />
-        </Paper.Body>
-      </Paper.Root>
-    </Pages.Page>
+        </>
+      )}
+    </Paper.Body>
   );
 }
