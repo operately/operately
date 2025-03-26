@@ -7,6 +7,7 @@ import * as Timeframes from "@/utils/timeframes";
 import { SecondaryButton } from "@/components/Buttons";
 import { Chronometer } from "@/components/Chronometer";
 import { CustomRangePicker } from "@/components/TimeframeSelector/CustomRangePicker";
+import { SubscribersSelector, SubscriptionsState } from "@/features/Subscriptions";
 
 import Forms from "@/components/Forms";
 import RichContent from "@/components/RichContent";
@@ -17,12 +18,14 @@ import { GoalTargetsField } from "@/features/goals/GoalTargetsV2";
 import { StatusSelector } from "./StatusSelector";
 import { useFieldValue } from "@/components/Forms/FormContext";
 import { InfoCallout } from "@/components/Callouts";
+import { assertPresent } from "@/utils/assertions";
 
 interface Props {
   form: any;
-  mode: "edit" | "view";
+  mode: "new" | "view" | "edit";
   goal: Goals.Goal;
   children?: React.ReactNode;
+  subscriptionsState?: SubscriptionsState;
 
   // Full editing is allowed only for the latest check-in,
   // and allows editing the status, timeframe, and targets.
@@ -40,13 +43,25 @@ export function Form(props: Props) {
         <Description {...props} />
       </div>
 
-      {props.children}
+      <Subscribers {...props} />
+      <SubmitSection {...props} />
     </Forms.Form>
   );
 }
 
+function SubmitSection(props: Props) {
+  if (props.mode === "view") return null;
+
+  const text = match(props.mode)
+    .with("new", () => "Check-in")
+    .with("edit", () => "Save")
+    .run();
+
+  return <Forms.Submit saveText={text} buttonSize="base" />;
+}
+
 function FullEditDisabledMessage({ mode, allowFullEdit }: Props) {
-  if (mode === "view") return null;
+  if (mode !== "edit") return null;
   if (allowFullEdit) return null;
 
   return (
@@ -60,7 +75,7 @@ function FullEditDisabledMessage({ mode, allowFullEdit }: Props) {
 }
 
 function StatusAndTimeframe(props: Props) {
-  if (props.mode === "edit" && props.allowFullEdit) {
+  if (props.mode === "new" || (props.mode === "edit" && props.allowFullEdit)) {
     return <StatusAndTimeframeForm goal={props.goal} />;
   } else {
     return <TextualOverview goal={props.goal} />;
@@ -269,7 +284,7 @@ function Targets(props: Props) {
 }
 
 function targetSectionLabel(targetCount: number, mode: Props["mode"], allowFullEdit: boolean) {
-  if (mode === "edit" && allowFullEdit) {
+  if ((mode === "edit" && allowFullEdit) || mode === "new") {
     if (targetCount === 1) {
       return "Update Target";
     } else {
@@ -286,4 +301,16 @@ function targetSectionLabel(targetCount: number, mode: Props["mode"], allowFullE
 
 function useTargetCount(): number {
   return useFieldValue<any[]>("targets")[0].length;
+}
+
+function Subscribers(props: Props) {
+  if (props.mode !== "new") return null;
+
+  assertPresent(props.goal.potentialSubscribers, "potentialSubscribers must be present in goal");
+
+  return (
+    <div className="mt-6">
+      <SubscribersSelector state={props.subscriptionsState!} spaceName={props.goal!.space!.name!} />
+    </div>
+  );
 }
