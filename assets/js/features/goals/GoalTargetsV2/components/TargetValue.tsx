@@ -22,7 +22,7 @@ export function TargetValue(props: Props) {
       field="value"
       target={props.target}
       testid={createTestId("target", "input", props.target.name!)}
-      className="ring-0 outline-none px-2 py-1.5 text-sm font-medium w-32 text-right border border-stroke-base rounded"
+      className="ring-0 outline-none px-1.5 py-1 -my-px text-sm font-medium w-32 text-right border border-stroke-base rounded"
     />
   );
 }

@@ -89,7 +89,7 @@ export function Body({
   className = "",
   noPadding = false,
   backgroundColor = "bg-surface-base",
-  banner = null,
+  banner,
 }: BodyProps) {
   const { size } = React.useContext(Context);
   const padding = noPadding ? "" : bodyPaddings[size];
@@ -107,13 +107,7 @@ export function Body({
     "sm:shadow-xl",
   );
 
-  const innerClass = classNames(
-    padding,
-    {
-      "pt-4": banner,
-    },
-    className,
-  );
+  const innerClass = classNames(padding, { "pt-4": banner }, className);
 
   return (
     <div className={outerClass}>

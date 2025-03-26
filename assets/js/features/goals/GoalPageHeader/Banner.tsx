@@ -6,7 +6,7 @@ import { assertPresent } from "@/utils/assertions";
 
 import FormattedTime from "@/components/FormattedTime";
 
-export function Banner({ goal }: { goal: Goals.Goal }) {
+export function banner(goal: Goals.Goal) {
   assertPresent(goal.isClosed, "isClosed must be present in goal");
   assertPresent(goal.isArchived, "isArchived must be present in goal");
 
