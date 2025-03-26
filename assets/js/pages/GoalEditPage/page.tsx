@@ -23,8 +23,7 @@ export function Page() {
   return (
     <Pages.Page title={["Edit", goal.name!]}>
       <Paper.Root size="medium">
-        <Paper.Body minHeight="300px">
-          <Header form={form} />
+        <Paper.Body minHeight="300px" banner={<Header form={form} />}>
           <ErrorMessage form={form} />
           <Form form={form} />
         </Paper.Body>
@@ -35,7 +34,7 @@ export function Page() {
 
 function Header({ form }: { form: FormState }) {
   return (
-    <Paper.Banner className="justify-between py-4">
+    <Paper.Banner className="justify-between py-4 px-10">
       <h1 className="text-xl font-extrabold">Editing the goal</h1>
 
       <div className="flex items-center gap-2">

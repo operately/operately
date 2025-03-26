@@ -24,8 +24,7 @@ export function Page() {
   return (
     <Pages.Page title={["Edit Project Timeline", project.name!]}>
       <Paper.Root size="medium">
-        <Paper.Body minHeight="300px">
-          <Header form={form} />
+        <Paper.Body minHeight="300px" banner={<Header form={form} />}>
           <Form form={form} />
         </Paper.Body>
       </Paper.Root>
@@ -36,7 +35,7 @@ export function Page() {
 function Header({ form }: { form: FormState }) {
   return (
     <div>
-      <Paper.Banner className="flex justify-between py-6">
+      <Paper.Banner className="flex justify-between py-4 px-12">
         <h1 className="text-xl font-extrabold">Editing the project timeline</h1>
 
         {form.milestoneBeingEdited ? null : (

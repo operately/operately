@@ -4,7 +4,7 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import { Navigation } from "@/features/goals/GoalPageNavigation";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
-import { Banner as ArchivedClosedBanner } from "@/features/goals/GoalPageHeader";
+import { Banner } from "@/features/goals/GoalPageHeader/Banner";
 import { assertPresent } from "@/utils/assertions";
 
 import { useLoadedData } from "./loader";
@@ -25,8 +25,7 @@ export function Page() {
       <Paper.Root size="large">
         <Navigation space={goal.space} />
 
-        <Paper.Body>
-          <ArchivedClosedBanner goal={goal} />
+        <Paper.Body banner={<Banner goal={goal} />}>
           <Options />
           <Form />
           <GoalFeed />
