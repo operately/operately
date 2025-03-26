@@ -32,10 +32,10 @@ export function DefaultTargetCard(props: Props) {
 
   return (
     <div className={containerClass}>
-      <div onClick={handleToggle} className="grid grid-cols-[1fr_auto_14px] gap-2 items-center cursor-pointer">
-        <TargetNameSection target={target} />
+      <div onClick={handleToggle} className="grid grid-cols-[1fr_auto_14px] gap-2 items-start cursor-pointer">
+        <TargetNameSection target={target} truncate={!open} />
         <TargetValue readonly={readonlyValue} index={index} target={target} />
-        <IconChevronDown onClick={handleChevronToggle} size={14} />
+        <IconChevronDown onClick={handleChevronToggle} size={14} className="mt-1.5" />
       </div>
       {open && <TargetDetails target={target} />}
     </div>

@@ -3,7 +3,7 @@ import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as Projects from "@/models/projects";
 
-import { Banner } from "./Banner";
+import { banner } from "./Banner";
 import { Header } from "./Header";
 import { Navigation } from "./Navigation";
 import { ProjectFeed } from "./ProjectFeed";
@@ -52,7 +52,7 @@ export function Page() {
       <Paper.Root size="large">
         <Navigation space={project.space!} />
 
-        <Paper.Body banner={<Banner project={project} />}>
+        <Paper.Body banner={banner(project)}>
           <Header project={project} />
           <ContributorsSection project={project} />
 

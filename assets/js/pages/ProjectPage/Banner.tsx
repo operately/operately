@@ -9,7 +9,7 @@ import { match } from "ts-pattern";
 
 import FormattedTime from "@/components/FormattedTime";
 
-export function Banner({ project }: { project: Projects.Project }) {
+export function banner(project: Projects.Project) {
   return match(project.status)
     .with("closed", () => <ProjectClosedBanner project={project} />)
     .with("paused", () => <ProjectPausedBanner project={project} />)

@@ -12,7 +12,7 @@ import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { assertPresent } from "@/utils/assertions";
 import { redirectIfFeatureEnabled } from "@/routes/redirectIfFeatureEnabled";
 import { Paths } from "@/routes/paths";
-import { Banner } from "@/features/goals/GoalPageHeader/Banner";
+import { banner } from "@/features/goals/GoalPageHeader/Banner";
 
 interface LoaderResult {
   goal: Goals.Goal;
@@ -48,7 +48,7 @@ export function Page() {
       <Paper.Root size="large">
         <Navigation space={goal.space!} />
 
-        <Paper.Body minHeight="none" banner={<Banner goal={goal} />}>
+        <Paper.Body minHeight="none" banner={banner(goal)}>
           <Header goal={goal} activeTab="status" />
 
           <div className="flex flex-col gap-10 mt-8 mb-10">
