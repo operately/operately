@@ -2,7 +2,6 @@ import React from "react";
 
 import * as Pages from "@/components/Pages";
 
-import { EditBar } from "@/components/Pages/EditBar";
 import { useForm, Form as CheckInForm } from "@/features/goals/GoalCheckIn";
 import { useLoadedData } from "./loader";
 import { assertPresent } from "@/utils/assertions";
@@ -15,12 +14,7 @@ export function Form() {
 
   const mode = Pages.useIsViewMode() ? "view" : "edit";
   const allowFullEdit = compareIds(goal.lastCheckInId, update.id);
-
   const form = useForm({ mode: "edit", goal, update });
 
-  return (
-    <CheckInForm form={form} goal={goal} mode={mode} allowFullEdit={allowFullEdit}>
-      <EditBar save={form.actions.submit} cancel={form.actions.cancel} />
-    </CheckInForm>
-  );
+  return <CheckInForm form={form} goal={goal} mode={mode} allowFullEdit={allowFullEdit} />;
 }

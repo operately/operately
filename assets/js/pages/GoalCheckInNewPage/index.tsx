@@ -4,12 +4,10 @@ import * as Paper from "@/components/PaperContainer";
 import * as Goals from "@/models/goals";
 
 import { Paths } from "@/routes/paths";
-import { SubscribersSelector, useSubscriptions } from "@/features/Subscriptions";
-import { Spacer } from "@/components/Spacer";
+import { useSubscriptions } from "@/features/Subscriptions";
 import { assertPresent } from "@/utils/assertions";
 import { useForm, Form as CheckInForm } from "@/features/goals/GoalCheckIn";
 
-import Forms from "@/components/Forms";
 import FormattedTime from "@/components/FormattedTime";
 
 interface LoaderResult {
@@ -79,13 +77,7 @@ function Form({ goal }: { goal: Goals.Goal }) {
     notifyPrioritySubscribers: true,
   });
 
-  const form = useForm({ mode: "create", goal, subscriptionsState });
+  const form = useForm({ mode: "new", goal, subscriptionsState });
 
-  return (
-    <CheckInForm form={form} goal={goal} mode="edit" allowFullEdit>
-      <Spacer size={4} />
-      <SubscribersSelector state={subscriptionsState} spaceName={goal.space.name!} />
-      <Forms.Submit saveText="Check In" buttonSize="base" />
-    </CheckInForm>
-  );
+  return <CheckInForm form={form} goal={goal} mode="new" allowFullEdit subscriptionsState={subscriptionsState} />;
 }
