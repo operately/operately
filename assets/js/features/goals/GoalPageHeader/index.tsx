@@ -2,7 +2,6 @@ import * as React from "react";
 import * as Icons from "@tabler/icons-react";
 import * as Goals from "@/models/goals";
 import * as Tabs from "@/components/Tabs";
-import * as Paper from "@/components/PaperContainer";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import * as Timeframes from "@/utils/timeframes";
 
@@ -21,7 +20,6 @@ export function Header({ goal, activeTab }: HeaderProps) {
   return (
     <div>
       <Options goal={goal} />
-      <Banner goal={goal} />
       <ParentGoal goal={goal.parentGoal} />
       <GoalTitleRow goal={goal} />
       <GoalTabs activeTab={activeTab} goal={goal} />
@@ -94,26 +92,6 @@ function ParentGoal({ goal }: { goal: Goals.Goal | null | undefined }) {
       {content}
     </div>
   );
-}
-
-export function Banner({ goal }) {
-  if (goal.isClosed) {
-    return (
-      <Paper.Banner>
-        This goal was closed on <FormattedTime time={goal.closedAt} format="long-date" />
-      </Paper.Banner>
-    );
-  }
-
-  if (goal.isArchived) {
-    return (
-      <Paper.Banner>
-        This goal was archived on <FormattedTime time={goal.archivedAt} format="long-date" />
-      </Paper.Banner>
-    );
-  }
-
-  return null;
 }
 
 function Options({ goal }) {

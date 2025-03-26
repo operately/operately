@@ -20,7 +20,7 @@ export function Page() {
   return (
     <Pages.Page title={"Projects"}>
       <Paper.Root size="large">
-        <Paper.Body minHeight="500px" backgroundColor="bg-surface-base">
+        <Paper.Body minHeight="500px">
           <Filters />
           <Title />
 

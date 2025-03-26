@@ -7,6 +7,7 @@ import { Paths } from "@/routes/paths";
 import { useSubscriptions } from "@/features/Subscriptions";
 import { assertPresent } from "@/utils/assertions";
 import { useForm, Form as CheckInForm } from "@/features/goals/GoalCheckIn";
+import { Banner } from "@/features/goals/GoalPageHeader/Banner";
 
 import FormattedTime from "@/components/FormattedTime";
 
@@ -34,7 +35,7 @@ export function Page() {
       <Paper.Root>
         <Navigation goal={goal} />
 
-        <Paper.Body className="p-4 md:p-8 lg:px-28 lg:py-8" noPadding>
+        <Paper.Body className="p-4 md:p-8 lg:px-28 lg:py-8" noPadding banner={<Banner goal={goal} />}>
           <Header />
           <Form goal={goal} />
         </Paper.Body>

@@ -13,6 +13,7 @@ import { Comments } from "./Comments";
 import { Form } from "./Form";
 import { CheckInReactions } from "./CheckInReactions";
 import { Subscriptions } from "./Subscriptions";
+import { Banner } from "@/features/goals/GoalPageHeader/Banner";
 
 export function Page() {
   const title = useGoalCheckInPageTitle();
@@ -30,9 +31,10 @@ export function Page() {
 
 function Body() {
   const mode = Pages.usePageMode();
+  const { goal } = Pages.useLoadedData();
 
   return (
-    <Paper.Body className="p-4 md:p-8 lg:px-28 lg:pt-8" noPadding>
+    <Paper.Body className="p-4 md:p-8 lg:px-28 lg:pt-8" noPadding banner={<Banner goal={goal} />}>
       <Options />
       <Header />
       <Form />

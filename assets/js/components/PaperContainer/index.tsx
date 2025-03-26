@@ -74,22 +74,32 @@ const bodyPaddings = {
   xxlarge: "px-16 py-12",
 };
 
+interface BodyProps {
+  children?: React.ReactNode;
+  minHeight?: string;
+  className?: string;
+  noPadding?: boolean;
+  backgroundColor?: string;
+  banner?: React.ReactNode;
+}
+
 export function Body({
   children,
   minHeight = "none",
   className = "",
   noPadding = false,
   backgroundColor = "bg-surface-base",
-}) {
+  banner = null,
+}: BodyProps) {
   const { size } = React.useContext(Context);
   const padding = noPadding ? "" : bodyPaddings[size];
 
-  const bodyClassName = classNames(
+  const outerClass = classNames(
     "relative",
     backgroundColor,
-    padding,
-    className,
-    "min-h-dvh sm:min-h-0", // full height on mobile, no min height on larger screens
+
+    // full height on mobile, no min height on larger screens
+    "min-h-dvh sm:min-h-0",
 
     // apply border shadow and rounded corners on larger screens
     "sm:border sm:border-surface-outline",
@@ -97,9 +107,20 @@ export function Body({
     "sm:shadow-xl",
   );
 
+  const innerClass = classNames(
+    padding,
+    {
+      "pt-4": banner,
+    },
+    className,
+  );
+
   return (
-    <div className={bodyClassName} style={{ minHeight: minHeight }}>
-      {children}
+    <div className={outerClass}>
+      {banner}
+      <div className={innerClass} style={{ minHeight: minHeight }}>
+        {children}
+      </div>
     </div>
   );
 }
