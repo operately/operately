@@ -21,9 +21,11 @@ defmodule Operately.Features.ErrorsTest do
     |> UI.assert_text("Page Not Found")
   end
 
-  feature "error page", ctx do
+  feature "resource not found", ctx do
+    fake_space = %Operately.Groups.Group{id: Ecto.UUID.generate(), name: "Test Space"}
+
     ctx
-    |> UI.visit("/spaces/123")
-    |> UI.assert_text("Oops! Something went wrong.")
+    |> UI.visit(Paths.space_path(ctx.company, fake_space))
+    |> UI.assert_text("Page Not Found")
   end
 end

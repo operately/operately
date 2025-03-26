@@ -1,10 +1,22 @@
-import React from "react";
+import * as React from "react";
+import * as NotFoundPage from "@/pages/NotFoundPage";
+
 import { GhostButton } from "@/components/Buttons";
 import { Paths } from "./paths";
-
 import { useRouteError } from "react-router-dom";
+import { AxiosError } from "axios";
 
 export default function ErrorPage() {
+  const error = useRouteError() as AxiosError | null;
+
+  if (error && error["status"] === 404) {
+    return <NotFoundPage.Page />;
+  } else {
+    return <ServerErrorPage />;
+  }
+}
+
+function ServerErrorPage() {
   return (
     <div className="absolute inset-0 flex justify-center items-center gap-16">
       <div className="flex flex-col text-center -mt-64">
