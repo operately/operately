@@ -7,20 +7,25 @@ import { Target } from "../types";
 
 interface Props {
   target: Target;
+  truncate?: boolean;
 }
 
-export function TargetNameSection({ target }: Props) {
+export function TargetNameSection({ target, truncate }: Props) {
   const progress = Goals.targetProgressPercentage(target);
-  const nameClass = classNames("flex items-center gap-2 flex-1 truncate");
+  const nameClass = classNames("flex gap-2 flex-1", { truncate: truncate });
 
   return (
     <div className={nameClass}>
-      <MiniPieChart completed={progress} total={100} size={16} />
-      <NameView name={target.name!} />
+      <div className="mt-1.5">
+        <MiniPieChart completed={progress} total={100} size={16} />
+      </div>
+      <NameView name={target.name!} truncate={truncate} />
     </div>
   );
 }
 
-function NameView({ name }: { name: string }) {
-  return <div className="font-medium truncate">{name}</div>;
+function NameView({ name, truncate }: { name: string; truncate?: boolean }) {
+  const className = classNames("font-medium mt-0.5", { truncate: truncate });
+
+  return <div className={className}>{name}</div>;
 }
