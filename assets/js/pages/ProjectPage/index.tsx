@@ -52,8 +52,7 @@ export function Page() {
       <Paper.Root size="large">
         <Navigation space={project.space!} />
 
-        <Paper.Body>
-          <Banner project={project} />
+        <Paper.Body banner={<Banner project={project} />}>
           <Header project={project} />
           <ContributorsSection project={project} />
 
