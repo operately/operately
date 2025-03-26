@@ -48,7 +48,7 @@ function ValueDifference({ target }: { target: Target }) {
   if (diff === 0) return null;
 
   const sentiment = GoalCheckIns.targetChangeSentiment(target);
-  const diffText = `${Math.abs(diff)}`;
+  const diffText = formatNumber(Math.abs(diff));
   const diffSign = diff > 0 ? "+" : "-";
   const color = sentiment === "positive" ? "text-green-600" : "text-content-error";
 
@@ -58,4 +58,20 @@ function ValueDifference({ target }: { target: Target }) {
       {diffText}
     </div>
   );
+}
+
+//
+// If the value is an integer, return it as is.
+// If it has decimal places, return it with up to 2 decimal places. Always return trailing zeros.
+//
+function formatNumber(num: number) {
+  if (Number.isInteger(num)) {
+    return num.toString();
+  } else {
+    // Convert to number with up to 2 decimal places
+    const fixed = num.toFixed(2);
+
+    // Parse it back to a number (removes trailing zeros) and convert to string
+    return parseFloat(fixed).toString();
+  }
 }
