@@ -2,6 +2,7 @@ import * as Pages from "@/components/Pages";
 import * as Goals from "@/models/goals";
 import * as Projects from "@/models/projects";
 import * as Activities from "@/models/activities";
+import * as Spaces from "@/models/spaces";
 import { Person } from "@/models/people";
 
 interface LoaderResult {
@@ -10,6 +11,7 @@ interface LoaderResult {
   contributors: Person[];
   goals: Goals.Goal[];
   projects: Projects.Project[];
+  space: Spaces.Space;
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
@@ -46,8 +48,9 @@ export async function loader({ params }): Promise<LoaderResult> {
       includeContributors: true,
     }).then((data) => data.projects ?? []),
   ]);
+  const space = await Spaces.getSpace({ id: goal.space!.id, includeAccessLevels: true });
 
-  return { goal, activities, contributors, goals, projects };
+  return { goal, activities, contributors, goals, projects, space };
 }
 
 export function useLoadedData(): LoaderResult {
