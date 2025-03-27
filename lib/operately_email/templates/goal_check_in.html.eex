@@ -2,6 +2,16 @@
 
 <%= spacer() %>
 
+<%= title("Overview", font_size: "18px") %>
+
+<%= row do %>
+  <%= rich_text(@overview) %>
+<% end %>
+
+<%= spacer() %>
+
+<%= title("Key wins, obstacles and needs", font_size: "18px") %>
+
 <%= row do %>
   <%= rich_text(@update.message) %>
 <% end %>
