@@ -26,7 +26,7 @@ export function TargetsSection({ update }: { update: Update }) {
   );
 }
 
-export function TargetProgress({ value, start, end }) {
+function TargetProgress({ value, start, end }) {
   const total = end - start;
   const progress = (value - start) / total;
   const width = 100 * progress;
@@ -42,7 +42,7 @@ export function TargetProgress({ value, start, end }) {
   );
 }
 
-export function TargetChange({ target }) {
+function TargetChange({ target }) {
   const newProgress = target.value - target.from;
   const oldProgress = target.previousValue - target.from;
   const diff = limitDecimals(Math.abs(newProgress - oldProgress), 2);
