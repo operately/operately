@@ -2,10 +2,9 @@ import * as React from "react";
 import * as Icons from "@tabler/icons-react";
 
 import { PermissionLevels } from "../Permissions";
+import { Option } from "../Permissions/AccessFields";
 
 import Forms from "@/components/Forms";
-
-type Option = { value: PermissionLevels; label: string };
 
 export function AccessSelectors() {
   const [companyMembersOptions] = Forms.useFieldValue<Option[]>("access.companyMembersOptions");

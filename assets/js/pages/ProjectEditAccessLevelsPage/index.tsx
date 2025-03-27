@@ -11,7 +11,7 @@ import { Paths } from "@/routes/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { ProjectContribsSubpageNavigation } from "@/components/ProjectPageNavigation";
 import { AccessSelectors } from "@/features/projects/AccessSelectors";
-import { initialAccessLevels, applyAccessLevelConstraints } from "@/features/projects/AccessFields";
+import { initialAccessLevels, applyAccessLevelConstraints } from "@/features/Permissions/AccessFields";
 
 interface LoaderResult {
   project: Projects.Project;

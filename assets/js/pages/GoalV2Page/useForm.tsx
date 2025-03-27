@@ -7,13 +7,14 @@ import Forms from "@/components/Forms";
 import { useSetPageMode } from "@/components/Pages";
 import { assertPresent } from "@/utils/assertions";
 import { validateTargets } from "@/features/goals/GoalTargetsV2/targetErrors";
+import { applyAccessLevelConstraints, initialAccessLevels } from "@/features/Permissions/AccessFields";
 
 import { parseTargets, serializeTimeframe } from "./utils";
 import { useLoadedData, useRefresh } from "./loader";
 
 export function useForm() {
   const refresh = useRefresh();
-  const { goal } = useLoadedData();
+  const { goal, space } = useLoadedData();
   const [edit] = Goals.useEditGoal();
   const setPageMode = useSetPageMode();
 
@@ -21,11 +22,14 @@ export function useForm() {
   assertPresent(goal.timeframe, "timeframe must be present in goal");
   assertPresent(goal.champion, "champion must be present in goal");
   assertPresent(goal.reviewer, "reviewer must be present in goal");
+  assertPresent(goal.accessLevels, "accessLevels must be present in goal");
+  assertPresent(space.accessLevels, "accessLevels must be present in space");
 
   const currTimeframe = {
     startDate: Time.parseDate(goal.timeframe.startDate),
     endDate: Time.parseDate(goal.timeframe.endDate),
   };
+  const parentAccessLevel = space.accessLevels;
 
   const form = Forms.useForm({
     fields: {
@@ -37,10 +41,16 @@ export function useForm() {
       champion: goal.champion.id,
       reviewer: goal.reviewer.id,
       parentGoal: goal.parentGoal,
+      access: initialAccessLevels(goal.accessLevels, parentAccessLevel),
     },
     cancel: () => setPageMode("view"),
     validate: (addError) => {
       validateTargets(form.values.targets, addError);
+    },
+    onChange: ({ field, newValues }) => {
+      if (field === "access") {
+        newValues.access = applyAccessLevelConstraints(newValues.access, parentAccessLevel);
+      }
     },
     submit: async () => {
       assertPresent(goal.accessLevels, "accessLevels must be present in goal");
@@ -57,9 +67,9 @@ export function useForm() {
         description: JSON.stringify(form.values.description),
         updatedTargets: updated,
         addedTargets: added,
-        anonymousAccessLevel: goal.accessLevels.public,
-        companyAccessLevel: goal.accessLevels.company,
-        spaceAccessLevel: goal.accessLevels.space,
+        anonymousAccessLevel: form.values.access.anonymous,
+        companyAccessLevel: form.values.access.companyMembers,
+        spaceAccessLevel: form.values.access.spaceMembers,
       });
 
       refresh();

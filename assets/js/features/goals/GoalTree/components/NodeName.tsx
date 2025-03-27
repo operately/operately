@@ -20,7 +20,7 @@ export function NodeName({ node, target = "_self" }: NodeNameProps) {
         {node.name}
       </DivLink>
 
-      {node.type === "project" && <PrivacyIndicator project={(node as ProjectNode).project} size={16} />}
+      {node.type === "project" && <PrivacyIndicator resource={(node as ProjectNode).project} type="project" size={16} />}
     </div>
   );
 }

@@ -10,9 +10,17 @@ interface TextTooltipProps extends TestableElement {
   children: React.ReactNode;
   delayDuration?: number;
   className?: string;
+  disabled?: boolean;
 }
 
-export function Tooltip({ content, delayDuration, children, testId, className }: TextTooltipProps): JSX.Element {
+export function Tooltip({
+  content,
+  delayDuration,
+  children,
+  testId,
+  className,
+  disabled,
+}: TextTooltipProps): JSX.Element {
   const mode = useColorMode();
 
   const tooltipClassName = classNames(
@@ -31,6 +39,10 @@ export function Tooltip({ content, delayDuration, children, testId, className }:
   const arrowStyle = {
     fill: mode === "light" ? "var(--color-surface-base)" : "var(--color-stroke-base)",
   };
+
+  if (disabled) {
+    return <>{children}</>;
+  }
 
   return (
     <ReactTooltip.Provider>

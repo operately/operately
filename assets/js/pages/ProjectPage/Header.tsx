@@ -15,7 +15,7 @@ export function Header({ project }: { project: Projects.Project }) {
       <div className="flex items-center text-content-accent truncate mr-12">
         <ProjectIcon />
         <ProjectName project={project} />
-        <PrivacyIndicator project={project} />
+        <PrivacyIndicator resource={project} type="project" />
       </div>
     </div>
   );
