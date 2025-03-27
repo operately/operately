@@ -11,7 +11,7 @@ import { Paths } from "@/routes/paths";
 import { MiniPieChart } from "@/components/charts/MiniPieChart";
 import { MilestoneIcon } from "@/components/MilestoneIcon";
 import { StatusIndicator } from "@/features/ProjectListItem/StatusIndicator";
-import { PrivacyIndicator } from "@/features/projects/PrivacyIndicator";
+import { PrivacyIndicator } from "@/features/Permissions";
 
 interface ProjectListItemProps {
   project: Projects.Project;

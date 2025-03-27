@@ -11,7 +11,7 @@ export function snakeCaseToSpacedWords(str: string, options?: { capitalizeFirst?
   let name = str.replace(/_/g, " ");
 
   if (options?.capitalizeFirst) {
-    name = name.charAt(0).toUpperCase() + name.slice(1);
+    name = capitalize(name);
   }
 
   return name;
@@ -21,7 +21,7 @@ export function camelCaseToSpacedWords(input: string, options?: { capitalizeFirs
   let result = input.replace(/([A-Z])/g, " $1").toLowerCase();
 
   if (options?.capitalizeFirst) {
-    result = result.charAt(0).toUpperCase() + result.slice(1);
+    result = capitalize(result);
   }
 
   return result;
@@ -34,3 +34,7 @@ export function truncateString(str: string, limit: number, suffix: string = "...
 }
 
 export const joinStr = (...args: string[]) => args.join("");
+
+export function capitalize(word: string) {
+  return word.charAt(0).toUpperCase() + word.slice(1);
+}

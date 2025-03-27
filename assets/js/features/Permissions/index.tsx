@@ -1,6 +1,7 @@
 import { match } from "ts-pattern";
 
 export { ResourcePermissionSelector } from "./PermissionSelector";
+export { PrivacyIndicator } from "./PrivacyIndicator";
 
 export const enum PermissionLevels {
   FULL_ACCESS = 100,

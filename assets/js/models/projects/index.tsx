@@ -26,11 +26,6 @@ export {
   useEditProjectRetrospective,
 } from "@/api";
 
-export const PRIVACY_PUBLIC = "public";
-export const PRIVACY_INTERNAL = "internal";
-export const PRIVACY_CONFIDENTIAL = "confidential";
-export const PRIVACY_SECRET = "secret";
-
 export function sortByName(projects: Project[]) {
   return [...projects].sort((a, b) => a.name!.localeCompare(b.name!));
 }

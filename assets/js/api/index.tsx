@@ -872,6 +872,7 @@ export interface Goal {
   space?: Space | null;
   myRole?: string | null;
   accessLevels?: AccessLevels | null;
+  privacy?: string | null;
   potentialSubscribers?: Subscriber[] | null;
   notifications?: Notification[] | null;
   success?: boolean | null;
@@ -1674,6 +1675,7 @@ export interface GetGoalInput {
   includeSpaceMembers?: boolean | null;
   includeTargets?: boolean | null;
   includeAccessLevels?: boolean | null;
+  includePrivacy?: boolean | null;
   includePotentialSubscribers?: boolean | null;
   includeUnreadNotifications?: boolean | null;
 }
