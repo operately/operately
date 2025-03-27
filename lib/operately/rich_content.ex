@@ -43,13 +43,45 @@ defmodule Operately.RichContent do
 
   def extract_mentions_from_node(_), do: []
 
-  defmodule Builder do
-    def doc(content) do
-      %{type: "doc", content: content} |> Jason.encode!() |> Jason.decode!()
+
+  defmodule DSL do
+    defmacro doc(do: block) do
+      content = __collect__(block)
+
+      quote do
+        cleared = Enum.filter(unquote(content), fn x -> x != nil end)
+
+        full = Enum.reduce(cleared, [], fn x, acc -> 
+          if x[:type] == "injected" do
+            acc ++ x[:content]
+          else
+            acc ++ [x]
+          end
+        end)
+
+        doc = %{type: "doc", content: full}
+        doc |> Jason.encode!() |> Jason.decode!()
+      end
     end
 
-    def paragraph(content) do
-      %{type: "paragraph", content: content}
+    defp __collect__({:__block__, _, exprs}), do: Enum.map(exprs, & &1)
+    defp __collect__({:inject, content}), do: content
+    defp __collect__(expr), do: [expr]
+
+    def inject(content) do
+      %{type: "injected", content: content["content"]}
+    end
+
+    def h1(content) when is_binary(content) do
+      %{type: "heading", attrs: %{"level" => 1}, content: [text(content)]}
+    end
+
+    def h2(content) when is_binary(content) do
+      %{type: "heading", attrs: %{"level" => 2}, content: [text(content)]}
+    end
+
+    def paragraph(content) when is_binary(content) do
+      %{type: "paragraph", content: [text(content)]}
     end
 
     def text(text, marks \\ []) do

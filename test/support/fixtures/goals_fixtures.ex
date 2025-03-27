@@ -58,7 +58,7 @@ defmodule Operately.GoalsFixtures do
       goal_id: goal.id,
       status: "on_track",
       target_values: [],
-      content: Operately.Support.RichText.rich_text("content"),
+      content: Operately.Support.RichText.rich_text("Everything is going well"),
       send_to_everyone: false,
       subscription_parent_type: :goal_update,
       subscriber_ids: []

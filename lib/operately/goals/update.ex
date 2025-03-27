@@ -40,6 +40,12 @@ defmodule Operately.Goals.Update do
     |> validate_required([:goal_id, :author_id, :message, :status, :subscription_list_id])
   end
 
+  def normalize_status(:on_track), do: :on_track
+  def normalize_status(:concern), do: :concern
+  def normalize_status(:caution), do: :concern
+  def normalize_status(:issue), do: :issue
+  def normalize_status(:pending), do: :pending
+
   #
   # After load hooks
   #

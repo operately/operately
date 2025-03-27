@@ -163,4 +163,13 @@ defmodule Operately.Time do
     end
   end
 
+  def human_duration(n) when n < 0, do: human_duration(abs(n))
+  def human_duration(n) when n == 0, do: "0 days"
+  def human_duration(n) when n == 1, do: "1 day"
+  def human_duration(n) when n < 7, do: "#{n} days"
+  def human_duration(n) when n == 7, do: "1 week"
+  def human_duration(n) when n < 30, do: "#{div(n, 7)} weeks"
+  def human_duration(n) when n < 60, do: "1 month"
+  def human_duration(n), do: "#{div(n, 30)} months"
+
 end

@@ -3,7 +3,9 @@ defmodule OperatelyEmail.Emails.GoalCheckInEmail do
   alias Operately.{Repo, Goals}
   alias Operately.Goals.Update
   alias OperatelyWeb.Paths
-  alias __MODULE__.OverviewMsg
+  alias Operately.People.Person
+
+  import Operately.RichContent.DSL
 
   def send(person, activity) do
     author = Repo.preload(activity, :author).author
@@ -24,9 +26,10 @@ defmodule OperatelyEmail.Emails.GoalCheckInEmail do
     |> assign(:update, update)
     |> assign(:cta_url, cta_url)
     |> assign(:cta_text, cta_text)
-    |> assign(:overview, OverviewMsg.construct(update, goal, reviewer))
+    |> assign(:overview, construct(update, goal, reviewer))
     |> render("goal_check_in")
   end
+
 
   defp construct_cta_text_and_url(person, company, goal, check_in) do
     url = check_in_url(company, check_in)
@@ -42,62 +45,38 @@ defmodule OperatelyEmail.Emails.GoalCheckInEmail do
     Paths.goal_check_in_path(company, check_in) |> Paths.to_url()
   end
 
-  defmodule OverviewMsg do
-    import Operately.RichContent.Builder
-    alias Operately.People.Person
+  def construct(update, goal, reviewer) do
+    overview = overview_msg(update, goal, reviewer)
 
-    def construct(update, goal, reviewer) do
-      status = normalize_status(update.status)
+    doc do
+      h1("Goal Check-In")
 
-      doc([paragraph(
-        status_msg(status) ++ 
-        reviewer_note(status, reviewer) ++ 
-        due_date(goal.timeframe.end_date)
-      )])
+      h2("Overview")
+      paragraph(overview)
+
+      h2("Key wins, obstacles and needs")
+      inject(update.message)
     end
-
-    defp status_msg(:pending) do
-      [text("The goal is "), bg_gray("pending"), text(". Work has not started yet.")]
-    end
-
-    defp status_msg(:on_track) do
-      [text("The goal is "), bg_green("on-track"), text(".")]
-    end
-
-    defp status_msg(:concern) do
-      [text("The goal "), bg_yellow("needs attention"), text(" due to emerging risks.")]
-    end
-
-    defp status_msg(:issue) do
-      [text("The goal is "), bg_red("at risk"), text(" due to blockers or significant delays.")]
-    end
-
-    def reviewer_note(:pending, _), do: []
-    def reviewer_note(:on_track, _), do: []
-    def reviewer_note(:concern, reviewer), do: [text(" "), text(Person.first_name(reviewer)), text(" should be aware.")]
-    def reviewer_note(:issue, reviewer), do: [text(" "), text(Person.first_name(reviewer) <> "'s"), text(" help is needed.")]
-
-    defp due_date(date) do
-      days = Date.diff(date, Date.utc_today())
-      duration = human_duration(abs(days))
-
-      cond do
-        days < 0 -> [text(" "), text(duration), text(" "), bg_red("overdue.")]
-        days > 0 -> [text(" "), text(duration), text(" "), text("until the deadline.")]
-      end
-    end
-
-    defp human_duration(n) when n == 1, do: "1 day"
-    defp human_duration(n) when n < 7, do: "#{n} days"
-    defp human_duration(n) when n == 7, do: "1 week"
-    defp human_duration(n) when n < 30, do: "#{div(n, 7)} weeks"
-    defp human_duration(n) when n < 60, do: "1 month"
-    defp human_duration(n), do: "#{div(n, 30)} months"
-
-    defp normalize_status(:on_track), do: :on_track
-    defp normalize_status(:concern), do: :concern
-    defp normalize_status(:caution), do: :concern
-    defp normalize_status(:issue), do: :issue
-    defp normalize_status(:pending), do: :pending
   end
+
+  def overview_msg(update, goal, reviewer) do
+    status = Update.normalize_status(update.status)
+    days = Date.diff(goal.timeframe.end_date, Date.utc_today())
+
+    status_msg(status) |> reviewer_note(status, reviewer) |> due_date(days)
+  end
+
+  defp status_msg(:pending), do: "The goal is pending. Work has not started yet."
+  defp status_msg(:on_track), do: "The goal is on track."
+  defp status_msg(:concern), do: "The goal needs attention due to emerging risks."
+  defp status_msg(:issue), do: "The goal is at risk due to blockers or significant delays."
+
+  def reviewer_note(msg, _, nil), do: msg
+  def reviewer_note(msg, :pending, _), do: msg
+  def reviewer_note(msg, :on_track, _), do: msg
+  def reviewer_note(msg, :concern, reviewer), do: msg <> " #{Person.first_name(reviewer)} should be aware."
+  def reviewer_note(msg, :issue, reviewer), do: msg <> " #{Person.first_name(reviewer)}'s help is needed."
+
+  def due_date(msg, days) when days >= 0, do: msg <> " #{Operately.Time.human_duration(days)} until the deadline."
+  def due_date(msg, days), do: msg <> " #{Operately.Time.human_duration(days)} overdue."
 end
