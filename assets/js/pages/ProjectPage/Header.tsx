@@ -5,7 +5,7 @@ import * as Goals from "@/models/goals";
 
 import { DimmedLink, DivLink } from "@/components/Link";
 import { Paths } from "@/routes/paths";
-import { PrivacyIndicator } from "@/features/projects/PrivacyIndicator";
+import { PrivacyIndicator } from "@/features/Permissions";
 
 export function Header({ project }: { project: Projects.Project }) {
   return (
