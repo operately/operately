@@ -16,6 +16,7 @@ import { GoalName } from "./Name";
 import { ParentGoal } from "./ParentGoal";
 import { useForm } from "./useForm";
 import { Description } from "./Description";
+import { Privacy } from "./Privacy";
 
 export function Form() {
   const form = useForm();
@@ -43,6 +44,7 @@ export function Form() {
           <Reviewer />
           <Contributors />
           <NextCheckIn />
+          <Privacy />
         </div>
       </div>
 

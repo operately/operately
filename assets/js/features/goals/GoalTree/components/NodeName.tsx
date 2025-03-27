@@ -4,7 +4,7 @@ import { DivLink } from "@/components/Link";
 import { Node, ProjectNode } from "../tree";
 
 import classNames from "classnames";
-import { PrivacyIndicator } from "@/features/projects/PrivacyIndicator";
+import { PrivacyIndicator } from "@/features/Permissions";
 
 interface NodeNameProps {
   node: Node;

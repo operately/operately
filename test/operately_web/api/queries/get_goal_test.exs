@@ -298,6 +298,39 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
       assert res.goal.access_levels.space == Binding.full_access()
     end
 
+    test "include_privacy", ctx do
+      space = group_fixture(ctx.person)
+      public_goal = goal_fixture(ctx.person, %{
+        anonymous_access_level: Binding.view_access(), company_access_level: Binding.edit_access(), space_access_level: Binding.full_access(), company_id: ctx.company.id, space_id: space.id
+      })
+      internal_goal = goal_fixture(ctx.person, %{
+        anonymous_access_level: Binding.no_access(), company_access_level: Binding.edit_access(), space_access_level: Binding.full_access(), company_id: ctx.company.id, space_id: space.id
+      })
+      confidential_goal = goal_fixture(ctx.person, %{
+        anonymous_access_level: Binding.no_access(), company_access_level: Binding.no_access(), space_access_level: Binding.full_access(), company_id: ctx.company.id, space_id: space.id
+      })
+      secret_goal = goal_fixture(ctx.person, %{
+        anonymous_access_level: Binding.no_access(), company_access_level: Binding.no_access(), space_access_level: Binding.no_access(), company_id: ctx.company.id, space_id: space.id
+      })
+
+      # not requested
+      assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(public_goal)})
+      refute res.goal.privacy
+
+      # requested
+      assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(public_goal), include_privacy: true})
+      assert res.goal.privacy == "public"
+
+      assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(internal_goal), include_privacy: true})
+      assert res.goal.privacy == "internal"
+
+      assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(confidential_goal), include_privacy: true})
+      assert res.goal.privacy == "confidential"
+
+      assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(secret_goal), include_privacy: true})
+      assert res.goal.privacy == "secret"
+    end
+
     test "include_potential_subscribers", ctx do
       ctx =
         ctx

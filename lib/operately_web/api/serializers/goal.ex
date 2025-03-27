@@ -37,6 +37,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Goals.Goal do
       projects: OperatelyWeb.Api.Serializer.serialize(goal.projects, level: :full),
       last_check_in: OperatelyWeb.Api.Serializer.serialize(goal.last_update, level: :full),
       access_levels: OperatelyWeb.Api.Serializer.serialize(goal.access_levels, level: :full),
+      privacy: OperatelyWeb.Api.Serializer.serialize(goal.privacy),
       potential_subscribers: OperatelyWeb.Api.Serializer.serialize(goal.potential_subscribers),
       notifications: OperatelyWeb.Api.Serializer.serialize(goal.notifications),
       next_update_scheduled_at: OperatelyWeb.Api.Serializer.serialize(goal.next_update_scheduled_at),
