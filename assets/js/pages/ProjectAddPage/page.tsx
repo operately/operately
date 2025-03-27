@@ -15,7 +15,7 @@ import { SecondaryButton } from "@/components/Buttons";
 import { AccessLevel } from "@/features/projects/AccessLevel";
 import { PermissionLevels } from "@/features/Permissions";
 import { AccessSelectors } from "@/features/projects/AccessSelectors";
-import { applyAccessLevelConstraints, initialAccessLevels } from "@/features/projects/AccessFields";
+import { applyAccessLevelConstraints, initialAccessLevels } from "@/features/Permissions/AccessFields";
 
 export function Page() {
   return (

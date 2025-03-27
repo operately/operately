@@ -48,7 +48,7 @@ function ProjectNameLine({ project }) {
         {project.name}
       </Link>
 
-      <PrivacyIndicator project={project} size={16} />
+      <PrivacyIndicator resource={project} type="project" size={16} />
     </div>
   );
 }

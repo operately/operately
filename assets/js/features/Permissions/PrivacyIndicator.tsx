@@ -11,33 +11,24 @@ import { Tooltip } from "@/components/Tooltip";
 import { match } from "ts-pattern";
 import { assertPresent } from "@/utils/assertions";
 
-interface ProjectProps {
-  project: Project;
-}
-
-interface GoalProps {
-  goal: Goal;
-}
-
-type Props = (ProjectProps | GoalProps) & {
+interface Props {
+  resource: Project | Goal;
+  type: "goal" | "project";
   size?: number;
-};
+  disabled?: boolean;
+}
 
 const DEFAULT_SIZE = 24;
 
-export function PrivacyIndicator(props: Props) {
-  const resource = "goal" in props ? props.goal : props.project;
-  const type = "goal" in props ? "goal" : "project";
-  const size = props.size ?? DEFAULT_SIZE;
+export function PrivacyIndicator({ resource, type, disabled, size = DEFAULT_SIZE }: Props) {
+  assertPresent(resource.space, `${type} must include space`);
+  const props = { type, disabled, size };
 
   return match(resource.privacy)
-    .with(PermissionOptions.PUBLIC, () => <PrivacyPublic size={size} type={type} />)
-    .with(PermissionOptions.INTERNAL, () => null)
-    .with(PermissionOptions.CONFIDENTIAL, () => {
-      assertPresent(resource.space, `${type} must include space`);
-      return <PrivacyConfidential space={resource.space} size={size} type={type} />;
-    })
-    .with(PermissionOptions.SECRET, () => <PrivacySecret size={size} type={type} />)
+    .with(PermissionOptions.PUBLIC, () => <PrivacyPublic {...props} />)
+    .with(PermissionOptions.INTERNAL, () => (type === "goal" ? <PrivacyInternal {...props} /> : null))
+    .with(PermissionOptions.CONFIDENTIAL, () => <PrivacyConfidential space={resource.space!} {...props} />)
+    .with(PermissionOptions.SECRET, () => <PrivacySecret {...props} />)
     .otherwise(() => {
       throw new Error("Invalid privacy value");
     });
@@ -46,9 +37,10 @@ export function PrivacyIndicator(props: Props) {
 interface PrivacyProps {
   size: number;
   type: "project" | "goal";
+  disabled?: boolean;
 }
 
-function PrivacyPublic({ size, type }: PrivacyProps) {
+function PrivacyPublic({ size, type, disabled }: PrivacyProps) {
   const content = (
     <div>
       <div className="text-content-accent font-bold">Anyone on the internet</div>
@@ -59,13 +51,28 @@ function PrivacyPublic({ size, type }: PrivacyProps) {
   );
 
   return (
-    <Tooltip content={content} testId="public-project-tooltip" delayDuration={100}>
+    <Tooltip content={content} testId="public-project-tooltip" delayDuration={100} disabled={disabled}>
       <Icons.IconWorld size={size} />
     </Tooltip>
   );
 }
 
-function PrivacyConfidential({ space, size, type }: PrivacyProps & { space: Space }) {
+function PrivacyInternal({ size, type, disabled }: PrivacyProps) {
+  const content = (
+    <div>
+      <div className="text-content-accent font-bold">Company members</div>
+      <div className="text-content-dimmed mt-1 w-64">This {type} is visible to all company members.</div>
+    </div>
+  );
+
+  return (
+    <Tooltip content={content} testId="internal-project-tooltip" delayDuration={100} disabled={disabled}>
+      <Icons.IconLockFilled size={size} />
+    </Tooltip>
+  );
+}
+
+function PrivacyConfidential({ space, size, type, disabled }: PrivacyProps & { space: Space }) {
   const content = (
     <div>
       <div className="text-content-accent font-bold">Only {space.name} members</div>
@@ -76,13 +83,13 @@ function PrivacyConfidential({ space, size, type }: PrivacyProps & { space: Spac
   );
 
   return (
-    <Tooltip content={content} testId="confidential-project-tooltip" delayDuration={100}>
+    <Tooltip content={content} testId="confidential-project-tooltip" delayDuration={100} disabled={disabled}>
       <Icons.IconLockFilled size={size} />
     </Tooltip>
   );
 }
 
-function PrivacySecret({ size, type }: PrivacyProps) {
+function PrivacySecret({ size, type, disabled }: PrivacyProps) {
   const content = (
     <div>
       <div className="text-content-accent font-bold">Invite-Only</div>
@@ -91,7 +98,7 @@ function PrivacySecret({ size, type }: PrivacyProps) {
   );
 
   return (
-    <Tooltip content={content} testId="secret-project-tooltip" delayDuration={100}>
+    <Tooltip content={content} testId="secret-project-tooltip" delayDuration={100} disabled={disabled}>
       <Icons.IconLockFilled size={size} className="text-content-error" />
     </Tooltip>
   );
