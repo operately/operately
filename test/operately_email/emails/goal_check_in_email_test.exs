@@ -14,7 +14,7 @@ defmodule OperatelyEmail.Emails.GoalCheckInEmailTest do
   end
 
   test "constructs the email with the correct content", ctx do
-    content = GoalCheckInEmail.construct(ctx.check_in, ctx.goal, ctx.reviewer)
+    content = GoalCheckInEmail.construct(ctx.check_in, ctx.goal, ctx.reviewer, ctx.champion, ctx.company)
     {:safe, html} = OperatelyEmail.Templates.rich_text(content)
 
     IO.inspect(html)

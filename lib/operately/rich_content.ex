@@ -96,5 +96,9 @@ defmodule Operately.RichContent do
     def bg_green(text), do: %{type: "text", text: text, marks: [%{type: "highlight", attrs: %{"highlight" => "bgGreen"}}]}
     def bg_yellow(text), do: %{type: "text", text: text, marks: [%{type: "highlight", attrs: %{"highlight" => "bgYellow"}}]}
     def bg_red(text), do: %{type: "text", text: text, marks: [%{type: "highlight", attrs: %{"highlight" => "bgRed"}}]}
+
+    def link(text, url) do
+      %{type: "text", text: text, marks: [%{type: "link", attrs: %{"href" => url}}]}
+    end
   end
 end

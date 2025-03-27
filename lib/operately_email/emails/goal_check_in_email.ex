@@ -14,7 +14,6 @@ defmodule OperatelyEmail.Emails.GoalCheckInEmail do
     reviewer = Repo.preload(goal, :reviewer).reviewer
 
     {:ok, update} = Update.get(:system, id: activity.content["update_id"])
-    {cta_text, cta_url} = construct_cta_text_and_url(person, company, goal, update)
 
     company
     |> new()
@@ -24,46 +23,32 @@ defmodule OperatelyEmail.Emails.GoalCheckInEmail do
     |> assign(:author, author)
     |> assign(:goal, goal)
     |> assign(:update, update)
-    |> assign(:cta_url, cta_url)
-    |> assign(:cta_text, cta_text)
-    |> assign(:overview, construct(update, goal, reviewer))
+    |> assign(:overview, construct(update, goal, reviewer, person, company))
     |> render("goal_check_in")
   end
 
-
-  defp construct_cta_text_and_url(person, company, goal, check_in) do
-    url = check_in_url(company, check_in)
-
-    if goal.reviewer_id == person.id do
-      {"Acknowledge", url <> "?acknowledge=true"}
-    else
-      {"View Check-In", url}
-    end
-  end
-
-  defp check_in_url(company, check_in) do
-    Paths.goal_check_in_path(company, check_in) |> Paths.to_url()
-  end
-
-  def construct(update, goal, reviewer) do
-    overview = overview_msg(update, goal, reviewer)
-
+  def construct(update, goal, reviewer, person, company) do
     doc do
       h1("Goal Check-In")
 
       h2("Overview")
-      paragraph(overview)
+      overview(update, goal, reviewer)
 
       h2("Key wins, obstacles and needs")
       inject(update.message)
+
+      cta(person, company, goal, update)
     end
   end
 
-  def overview_msg(update, goal, reviewer) do
+  defp overview(update, goal, reviewer) do
     status = Update.normalize_status(update.status)
     days = Date.diff(goal.timeframe.end_date, Date.utc_today())
 
-    status_msg(status) |> reviewer_note(status, reviewer) |> due_date(days)
+    status_msg(status) 
+    |> reviewer_note(status, reviewer) 
+    |> due_date(days)
+    |> paragraph()
   end
 
   defp status_msg(:pending), do: "The goal is pending. Work has not started yet."
@@ -71,12 +56,22 @@ defmodule OperatelyEmail.Emails.GoalCheckInEmail do
   defp status_msg(:concern), do: "The goal needs attention due to emerging risks."
   defp status_msg(:issue), do: "The goal is at risk due to blockers or significant delays."
 
-  def reviewer_note(msg, _, nil), do: msg
-  def reviewer_note(msg, :pending, _), do: msg
-  def reviewer_note(msg, :on_track, _), do: msg
-  def reviewer_note(msg, :concern, reviewer), do: msg <> " #{Person.first_name(reviewer)} should be aware."
-  def reviewer_note(msg, :issue, reviewer), do: msg <> " #{Person.first_name(reviewer)}'s help is needed."
+  defp reviewer_note(msg, _, nil), do: msg
+  defp reviewer_note(msg, :pending, _), do: msg
+  defp reviewer_note(msg, :on_track, _), do: msg
+  defp reviewer_note(msg, :concern, reviewer), do: msg <> " #{Person.first_name(reviewer)} should be aware."
+  defp reviewer_note(msg, :issue, reviewer), do: msg <> " #{Person.first_name(reviewer)}'s help is needed."
 
-  def due_date(msg, days) when days >= 0, do: msg <> " #{Operately.Time.human_duration(days)} until the deadline."
-  def due_date(msg, days), do: msg <> " #{Operately.Time.human_duration(days)} overdue."
+  defp due_date(msg, days) when days >= 0, do: msg <> " #{Operately.Time.human_duration(days)} until the deadline."
+  defp due_date(msg, days), do: msg <> " #{Operately.Time.human_duration(days)} overdue."
+
+  defp cta(person, company, goal, check_in) do
+    if goal.reviewer_id == person.id do
+      link("Acknowledge", check_in_url(company, check_in) <> "?acknowledge=true")
+    else
+      link("View Check-In", check_in_url(company, check_in))
+    end
+  end
+
+  defp check_in_url(company, check_in), do: Paths.goal_check_in_path(company, check_in) |> Paths.to_url()
 end
