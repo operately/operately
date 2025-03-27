@@ -8,7 +8,7 @@ import {
   VIEW_ACCESS,
 } from "@/features/Permissions";
 
-type Option = { value: PermissionLevels; label: string };
+export type Option = { value: PermissionLevels; label: string };
 
 export type AccessLevels = {
   anonymous: PermissionLevels;
