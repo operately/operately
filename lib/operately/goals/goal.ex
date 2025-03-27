@@ -2,6 +2,9 @@ defmodule Operately.Goals.Goal do
   use Operately.Schema
   use Operately.Repo.Getter
 
+  alias Operately.Access.AccessLevels
+  alias Operately.Goals.Permissions
+
   schema "goals" do
     field :name, :string
     field :description, :map
@@ -35,6 +38,7 @@ defmodule Operately.Goals.Goal do
     field :my_role, :string, virtual: true
     field :permissions, :any, virtual: true
     field :access_levels, :any, virtual: true
+    field :privacy, :any, virtual: true
     field :potential_subscribers, :any, virtual: true
     field :notifications, :any, virtual: true, default: []
 
@@ -105,14 +109,19 @@ defmodule Operately.Goals.Goal do
   end
 
   def preload_permissions(goal, access_level) do
-    Map.put(goal, :permissions, Operately.Goals.Permissions.calculate(access_level))
+    Map.put(goal, :permissions, Permissions.calculate(access_level))
   end
 
   def preload_access_levels(goal) do
     context = Operately.Access.get_context!(goal_id: goal.id)
-    access_levels = Operately.Access.AccessLevels.load(context.id, goal.company_id, goal.group_id)
+    access_levels = AccessLevels.load(context.id, goal.company_id, goal.group_id)
 
     Map.put(goal, :access_levels, access_levels)
+  end
+
+  def load_privacy(goal = %__MODULE__{}) do
+    goal = if goal.access_levels, do: goal, else: preload_access_levels(goal)
+    Map.put(goal, :privacy, AccessLevels.calc_privacy(goal.access_levels))
   end
 
   def set_potential_subscribers(goal = %__MODULE__{}) do

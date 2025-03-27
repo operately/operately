@@ -19,6 +19,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
     field :include_space_members, :boolean
     field :include_targets, :boolean
     field :include_access_levels, :boolean
+    field :include_privacy, :boolean
     field :include_potential_subscribers, :boolean
     field :include_unread_notifications, :boolean
   end
@@ -77,6 +78,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
     Inputs.parse_includes(inputs, [
       include_permissions: &Goal.preload_permissions/1,
       include_access_levels: &Goal.preload_access_levels/1,
+      include_privacy: &Goal.load_privacy/1,
       include_potential_subscribers: &Goal.set_potential_subscribers/1,
       include_unread_notifications: UnreadNotificationsLoader.load(me),
     ])
