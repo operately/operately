@@ -6,6 +6,7 @@ import AvatarList from "@/components/AvatarList";
 import { statusBGColorClass, statusTextColorClass } from "@/components/status/colors";
 import { assertPresent } from "@/utils/assertions";
 import { truncateString } from "@/utils/strings";
+import { useIsDarkMode } from "@/contexts/ThemeContext";
 
 import { TreeContextProvider, TreeContextProviderProps, useTreeContext } from "./treeContext";
 import { Node, GoalNode, ProjectNode } from "./tree";
@@ -116,8 +117,9 @@ function Dots() {
 }
 
 function Progress({ progress, status }) {
-  const statusColor = statusTextColorClass(status, { customShade: 700 });
-  const statusBGColor = statusBGColorClass(status, { customShade: 100 });
+  const isDarkMode = useIsDarkMode();
+  const statusColor = statusTextColorClass(status, { customShade: isDarkMode ? 300 : 700 });
+  const statusBGColor = statusBGColorClass(status, { customShade: isDarkMode ? 900 : 100 });
 
   const outerClass = `w-11 flex justify-center rounded-lg px-2 py-0.5 shrink-0 ${statusBGColor}`;
   const innerClass = `text-sm font-medium font-mono ${statusColor}`;
