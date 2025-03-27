@@ -15,15 +15,13 @@ defmodule OperatelyEmail.Emails.GoalCheckInEmail do
 
     {:ok, update} = Update.get(:system, id: activity.content["update_id"])
 
+    content = construct(update, goal, reviewer, person, company)
+
     company
     |> new()
     |> from(author)
     |> to(person)
     |> subject(where: goal.name, who: author, action: "submitted a check-in")
-    |> assign(:author, author)
-    |> assign(:goal, goal)
-    |> assign(:update, update)
-    |> assign(:overview, construct(update, goal, reviewer, person, company))
     |> render("goal_check_in")
   end
 
