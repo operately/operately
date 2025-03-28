@@ -37,7 +37,7 @@ defmodule Operately.Operations.GoalCheckInEdit do
           status: attrs.status, 
           message: attrs.content, 
           targets: encode_new_target_values(attrs.new_target_values, check_in),
-          timeframe: attrs.timeframe
+          timeframe: attrs[:timeframe] || check_in.timeframe
         })
       else
         Update.changeset(check_in, %{

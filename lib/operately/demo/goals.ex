@@ -67,6 +67,7 @@ defmodule Operately.Demo.Goals do
       target_values: target_values,
       subscription_parent_type: :goal_update,
       subscriber_ids: [],
+      timeframe: goal.timeframe
     })
   end
 

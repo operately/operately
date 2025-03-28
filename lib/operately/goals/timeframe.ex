@@ -57,6 +57,18 @@ defmodule Operately.Goals.Timeframe do
     }
   end
 
+  def current_quarter do
+    today = Date.utc_today()
+    year = today.year
+
+    cond do
+      today.month in 1..3 -> quarter(year, "01-01", "03-31")
+      today.month in 4..6 -> quarter(year, "04-01", "06-30")
+      today.month in 7..9 -> quarter(year, "07-01", "09-30")
+      today.month in 10..12 -> quarter(year, "10-01", "12-31")
+    end
+  end
+
   def validate_start_is_before_end(changeset) do
     start_date = get_field(changeset, :start_date)
     end_date = get_field(changeset, :end_date)
@@ -191,5 +203,13 @@ defmodule Operately.Goals.Timeframe do
   defp end_of_year(date) do
     {year, _, _} = Date.to_erl(date)
     Date.from_erl!({year, 12, 31})
+  end
+
+  defp quarter(year, start_date, end_date) do
+    %{
+      start_date: Date.from_iso8601!("#{year}-#{start_date}"),
+      end_date: Date.from_iso8601!("#{year}-#{end_date}"),
+      type: "quarter"
+    }
   end
 end
