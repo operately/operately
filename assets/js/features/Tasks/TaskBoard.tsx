@@ -4,7 +4,7 @@ import * as Tasks from "@/models/tasks";
 import { useIsDarkMode } from "@/contexts/ThemeContext";
 import { DivLink } from "@/components/Link";
 import { insertAt } from "@/utils/array";
-import { DragAndDropProvider, useDraggable, useDropZone, useDragAndDropContext } from "@/features/DragAndDrop";
+import { DragAndDropProvider, useDraggable, useDropZone, useDraggingAnimation } from "@/features/DragAndDrop";
 import { Paths, compareIds } from "@/routes/paths";
 import { match } from "ts-pattern";
 import AvatarList from "@/components/AvatarList";
@@ -106,45 +106,10 @@ interface TaskColumnProps {
 
 function TaskColumn(props: TaskColumnProps) {
   const isDarkMode = useIsDarkMode();
-  const { draggedId } = useDragAndDropContext();
-  const { ref, isOver, isSourceZone, dropIndex, draggedElementHeight } = useDropZone({ id: props.status });
-
-  const [animate, setAnimate] = React.useState(false);
-
-  React.useLayoutEffect(() => {
-    if (draggedId !== null) {
-      setTimeout(() => setAnimate(true), 200);
-    } else {
-      setAnimate(false);
-    }
-  }, [draggedId]);
-
   const columnClassName = "p-2 rounded" + " " + props.color;
-  const style = {
-    paddingBottom: isOver && !isSourceZone ? draggedElementHeight! : 0,
-    transition: animate && !isSourceZone ? "padding 0.2s ease-in-out" : "",
-  };
 
-  const taskStyle = (index: number) => {
-    if (!isOver) return {};
-
-    return {
-      transform: `translateY(${index < dropIndex! ? 0 : draggedElementHeight!}px)`,
-      transition: animate ? "transform 0.2s ease-in-out" : "",
-    };
-  };
-
-  const visibleIndexes = React.useMemo(() => {
-    let res = {};
-
-    if (!isOver) {
-      props.tasks.forEach((t, i) => (res[t.id!] = i));
-    } else {
-      props.tasks.filter((t) => t.id !== draggedId).forEach((t, i) => (res[t.id!] = i));
-    }
-
-    return res;
-  }, [isOver, draggedId, props.tasks.length]);
+  const { ref } = useDropZone({ id: props.status });
+  const { itemStyle, containerStyle } = useDraggingAnimation(props.status, props.tasks);
 
   return (
     <div className={columnClassName}>
@@ -152,13 +117,13 @@ function TaskColumn(props: TaskColumnProps) {
         {props.title} {props.tasks.length > 0 && <span>({props.tasks.length})</span>}
       </div>
 
-      <div className="flex flex-col mt-2" ref={ref} style={style}>
+      <div className="flex flex-col mt-2" ref={ref} style={containerStyle}>
         {props.tasks.map((task, idx) => (
           <TaskItem
             key={task.id}
             task={task}
             zoneId={props.status}
-            style={taskStyle(visibleIndexes[task.id!])}
+            style={itemStyle(task.id!)}
             testId={`${props.status}_${idx}`}
           />
         ))}
