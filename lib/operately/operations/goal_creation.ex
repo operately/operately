@@ -28,7 +28,7 @@ defmodule Operately.Operations.GoalCreation do
       parent_goal_id: attrs[:parent_goal_id],
       description: attrs[:description] && Jason.decode!(attrs[:description]),
       creator_id: creator.id,
-      next_update_scheduled_at: Operately.Time.first_friday_from_today(),
+      next_update_scheduled_at: Operately.Time.first_of_next_month(Date.utc_today()),
     }))
   end
 

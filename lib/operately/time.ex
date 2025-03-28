@@ -106,7 +106,7 @@ defmodule Operately.Time do
     end
   end
 
-  defp first_of_next_month(date) do
+  def first_of_next_month(date) do
     {year, month, _} = Date.to_erl(date)
 
     if month == 12 do
