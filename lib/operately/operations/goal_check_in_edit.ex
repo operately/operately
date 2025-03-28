@@ -10,7 +10,7 @@ defmodule Operately.Operations.GoalCheckInEdit do
     |> update_check_in(check_in, attrs)
     |> maybe_update_targets(goal.targets, attrs.new_target_values)
     |> update_subscriptions(attrs.content)
-    |> maybe_update_goal(goal, attrs[:timeframe])
+    |> maybe_update_goal(goal)
     |> record_activity(author, goal)
     |> Repo.transaction()
     |> Repo.extract_result(:check_in)
@@ -36,7 +36,8 @@ defmodule Operately.Operations.GoalCheckInEdit do
         Update.changeset(check_in, %{
           status: attrs.status, 
           message: attrs.content, 
-          targets: encode_new_target_values(attrs.new_target_values, check_in)
+          targets: encode_new_target_values(attrs.new_target_values, check_in),
+          timeframe: attrs.timeframe
         })
       else
         Update.changeset(check_in, %{
@@ -79,12 +80,10 @@ defmodule Operately.Operations.GoalCheckInEdit do
     |> Operately.Operations.Notifications.Subscription.update_mentioned_people(content)
   end
 
-  defp maybe_update_goal(multi, goal, timeframe) do
+  defp maybe_update_goal(multi, goal) do
     Multi.update(multi, :goal, fn changes ->
-      has_time_changed = timeframe && timeframe_changed?(goal.timeframe, timeframe)
-
-      if has_time_changed && changes.full_edit_allowed do
-        Goal.changeset(goal, %{timeframe: timeframe})
+      if changes.full_edit_allowed do
+        Goal.changeset(goal, %{timeframe: changes.check_in.timeframe})
       else
         Goal.changeset(goal, %{})
       end
@@ -99,7 +98,6 @@ defmodule Operately.Operations.GoalCheckInEdit do
         goal_id: goal.id,
         check_in_id: changes.check_in.id
       }
-      |> maybe_add_timeframes_to_activity(changes[:goal], goal)
     end)
   end
 
@@ -114,22 +112,5 @@ defmodule Operately.Operations.GoalCheckInEdit do
       |> Map.merge(%{value: target_value["value"]})
       |> Map.from_struct()
     end)
-  end
-
-  defp timeframe_changed?(new, old) do
-    new.start_date != old.start_date or new.end_date != old.end_date
-  end
-
-  defp maybe_add_timeframes_to_activity(content, nil, _), do: content
-
-  defp maybe_add_timeframes_to_activity(content, updated_goal, goal) do
-    if timeframe_changed?(updated_goal.timeframe, goal.timeframe) do
-      Map.merge(content, %{
-        new_timeframe: Map.from_struct(updated_goal.timeframe),
-        old_timeframe: Map.from_struct(goal.timeframe)
-      })
-    else
-      content
-    end
   end
 end
