@@ -10,6 +10,7 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdateTest do
   alias Operately.Access.Binding
   alias Operately.Goals.Update
   alias Operately.Notifications.SubscriptionList
+  alias Operately.Goals.Timeframe
 
   describe "security" do
     test "it requires authentication", ctx do
@@ -19,17 +20,17 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdateTest do
 
   describe "permissions" do
     @table [
-      %{company: :no_access,      space: :no_access,      goal: :no_access,      expected: 404},
-      %{company: :no_access,      space: :no_access,      goal: :champion,    expected: 200},
-      %{company: :no_access,      space: :no_access,      goal: :reviewer,    expected: 200},
+      %{company: :no_access,      space: :no_access,      goal: :no_access,  expected: 404},
+      %{company: :no_access,      space: :no_access,      goal: :champion,   expected: 200},
+      %{company: :no_access,      space: :no_access,      goal: :reviewer,   expected: 200},
 
-      %{company: :no_access,      space: :comment_access, goal: :no_access,      expected: 403},
-      %{company: :no_access,      space: :edit_access,    goal: :no_access,      expected: 403},
-      %{company: :no_access,      space: :full_access,    goal: :no_access,      expected: 200},
+      %{company: :no_access,      space: :comment_access, goal: :no_access,  expected: 403},
+      %{company: :no_access,      space: :edit_access,    goal: :no_access,  expected: 403},
+      %{company: :no_access,      space: :full_access,    goal: :no_access,  expected: 200},
 
-      %{company: :comment_access, space: :no_access,      goal: :no_access,      expected: 403},
-      %{company: :edit_access,    space: :no_access,      goal: :no_access,      expected: 403},
-      %{company: :full_access,    space: :no_access,      goal: :no_access,      expected: 200},
+      %{company: :comment_access, space: :no_access,      goal: :no_access,  expected: 403},
+      %{company: :edit_access,    space: :no_access,      goal: :no_access,  expected: 403},
+      %{company: :full_access,    space: :no_access,      goal: :no_access,  expected: 200},
     ]
 
     setup ctx do
@@ -48,6 +49,7 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdateTest do
           status: "on_track",
           content: RichText.rich_text("Content", :as_string),
           new_target_values: new_target_values(goal),
+          timeframe: Serializer.serialize(Timeframe.current_year()),
         })
 
         assert code == @test.expected
@@ -77,6 +79,7 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdateTest do
         status: "caution",
         content: RichText.rich_text("Content", :as_string),
         new_target_values: new_target_values(ctx.goal),
+        timeframe: Serializer.serialize(Timeframe.current_year()),
       })
 
       updates = Goals.list_updates(ctx.goal)
@@ -105,6 +108,7 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdateTest do
         new_target_values: new_target_values(ctx.goal),
         send_notifications_to_everyone: true,
         subscriber_ids: Enum.map(ctx.people, &(Paths.person_id(&1))),
+        timeframe: Serializer.serialize(Timeframe.current_year()),
       })
 
       {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.update.id)
@@ -133,6 +137,7 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdateTest do
         new_target_values: new_target_values(ctx.goal),
         send_notifications_to_everyone: false,
         subscriber_ids: [],
+        timeframe: Serializer.serialize(Timeframe.current_year()),
       })
 
       subscriptions = fetch_subscriptions(res)
@@ -155,6 +160,7 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdateTest do
         new_target_values: new_target_values(ctx.goal),
         send_notifications_to_everyone: true,
         subscriber_ids: Enum.map(people, &(Paths.person_id(&1))),
+        timeframe: Serializer.serialize(Timeframe.current_year()),
       })
 
       subscriptions = fetch_subscriptions(res)

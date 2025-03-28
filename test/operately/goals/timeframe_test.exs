@@ -62,6 +62,16 @@ defmodule Operately.Goals.TimeframeTest do
     assert Timeframe.changeset(%{type: "month", start_date: ~D[2020-01-01], end_date: ~D[2021-01-21]}).valid? == false
   end
 
+  test "can be constructed from a Timeframe struct" do
+    timeframe = %Timeframe{
+      type: "year",
+      start_date: ~D[2020-01-01],
+      end_date: ~D[2020-12-31]
+    }
+
+    assert Timeframe.changeset(timeframe)
+  end
+
   test "convert_old_timeframe" do
     assert Timeframe.convert_old_timeframe("2020") == %{
       start_date: ~D[2020-01-01],

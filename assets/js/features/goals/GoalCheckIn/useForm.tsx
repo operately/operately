@@ -4,7 +4,6 @@ import { Goal } from "@/models/goals";
 
 import * as Timeframes from "@/utils/timeframes";
 import * as Pages from "@/components/Pages";
-import * as Time from "@/utils/time";
 
 import Forms from "@/components/Forms";
 import { Paths } from "@/routes/paths";
@@ -36,15 +35,10 @@ export function useForm(props: EditProps | NewProps) {
   assertPresent(goal?.timeframe, "timeframe must be present in goal");
   assertPresent(goal?.targets, "targets must be present in goal");
 
-  const currTimeframe = {
-    startDate: Time.parseDate(goal.timeframe.startDate),
-    endDate: Time.parseDate(goal.timeframe.endDate),
-  };
-
   const form = Forms.useForm({
     fields: {
       status: mode === "edit" ? props.update.status : null,
-      timeframe: currTimeframe,
+      timeframe: calcTimeframe(props),
       targets: mode === "edit" ? props.update.goalTargetUpdates : goal.targets,
       description: mode === "edit" ? JSON.parse(props.update.message!) : emptyContent(),
     },
@@ -63,6 +57,7 @@ export function useForm(props: EditProps | NewProps) {
         status: form.values.status,
         content: JSON.stringify(form.values.description),
         newTargetValues: JSON.stringify(form.values.targets!.map((t) => ({ id: t.id, value: t.value }))),
+        timeframe: Timeframes.serialize(form.values.timeframe),
       };
 
       if (mode === "new") {
@@ -73,15 +68,12 @@ export function useForm(props: EditProps | NewProps) {
           sendNotificationsToEveryone: subscriptionsState.subscriptionType == Options.ALL,
           subscriberIds: subscriptionsState.currentSubscribersList,
         };
-        maybeIncludeTimeframe(payload, form.values.timeframe, currTimeframe);
 
         const res = await post(payload);
 
         navigate(Paths.goalProgressUpdatePath(res.update!.id));
       } else {
         const payload = { ...commonAttrs, id: props.update.id };
-        maybeIncludeTimeframe(payload, form.values.timeframe, currTimeframe);
-
         await edit(payload);
 
         setPageMode("view");
@@ -92,13 +84,10 @@ export function useForm(props: EditProps | NewProps) {
   return form;
 }
 
-function maybeIncludeTimeframe(payload, newTimeframe, oldTimeframe) {
-  const timeframesEqual = Timeframes.equalDates(
-    newTimeframe as Timeframes.Timeframe,
-    oldTimeframe as Timeframes.Timeframe,
-  );
-
-  if (!timeframesEqual) {
-    payload.timeframe = Timeframes.serialize({ ...newTimeframe, type: "days" });
+function calcTimeframe(props: NewProps | EditProps): any {
+  if (props.mode == "new") {
+    return Timeframes.parse(props.goal.timeframe!);
+  } else {
+    return Timeframes.parse(props.update.timeframe!);
   }
 }

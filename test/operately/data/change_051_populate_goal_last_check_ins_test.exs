@@ -22,7 +22,7 @@ defmodule Operately.Data.Change051PopulateGoalLastCheckInsTest do
     :ok = update_inserted_at(ctx.update3, ~N[2025-03-25 13:00:00])
 
     # make sure that the last_check_in_id is nil for all goals
-    ctx = reload_goals(ctx)
+    ctx = Factory.reload_all(ctx)
 
     assert ctx.goal1.last_check_in_id == nil
     assert ctx.goal2.last_check_in_id == nil
@@ -32,17 +32,10 @@ defmodule Operately.Data.Change051PopulateGoalLastCheckInsTest do
     Operately.Data.Change051PopulateGoalLastCheckIns.run()
 
     # assert that the last_check_in_id is updated correctly
-    ctx = reload_goals(ctx)
+    ctx = Factory.reload_all(ctx)
     assert ctx.goal1.last_check_in_id == ctx.update2.id
     assert ctx.goal2.last_check_in_id == ctx.update3.id
     assert ctx.goal3.last_check_in_id == nil
-  end
-
-  defp reload_goals(ctx) do
-    ctx
-    |> Map.put(:goal1, Repo.reload(ctx.goal1))
-    |> Map.put(:goal2, Repo.reload(ctx.goal2))
-    |> Map.put(:goal3, Repo.reload(ctx.goal3))
   end
 
   defp nullify_last_check_ins do
