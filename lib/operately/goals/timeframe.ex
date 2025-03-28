@@ -22,6 +22,10 @@ defmodule Operately.Goals.Timeframe do
     changeset(%__MODULE__{}, attrs)
   end
 
+  def changeset(timeframe, attrs) when is_struct(attrs, __MODULE__) do
+    changeset(timeframe, Map.from_struct(attrs))
+  end
+
   def changeset(timeframe, attrs) do
     timeframe
     |> cast(attrs, [:type, :start_date, :end_date])
@@ -31,6 +35,38 @@ defmodule Operately.Goals.Timeframe do
     |> validate_year_dates()
     |> validate_quarter_dates()
     |> validate_month_dates()
+  end
+
+  def current_year do
+    date = Date.utc_today()
+
+    %__MODULE__{
+      start_date: beginning_of_year(date),
+      end_date: end_of_year(date),
+      type: "year"
+    }
+  end
+
+  def last_year do
+    date = Date.utc_today() |> Date.add(-365)
+
+    %__MODULE__{
+      start_date: beginning_of_year(date),
+      end_date: end_of_year(date),
+      type: "year"
+    }
+  end
+
+  def current_quarter do
+    today = Date.utc_today()
+    year = today.year
+
+    cond do
+      today.month in 1..3 -> quarter(year, "01-01", "03-31")
+      today.month in 4..6 -> quarter(year, "04-01", "06-30")
+      today.month in 7..9 -> quarter(year, "07-01", "09-30")
+      today.month in 10..12 -> quarter(year, "10-01", "12-31")
+    end
   end
 
   def validate_start_is_before_end(changeset) do
@@ -156,6 +192,24 @@ defmodule Operately.Goals.Timeframe do
       start_date: Date.from_iso8601!(start_date),
       end_date: Date.from_iso8601!(end_date),
       type: type
+    }
+  end
+
+  defp beginning_of_year(date) do
+    {year, _, _} = Date.to_erl(date)
+    Date.from_erl!({year, 1, 1})
+  end
+
+  defp end_of_year(date) do
+    {year, _, _} = Date.to_erl(date)
+    Date.from_erl!({year, 12, 31})
+  end
+
+  defp quarter(year, start_date, end_date) do
+    %{
+      start_date: Date.from_iso8601!("#{year}-#{start_date}"),
+      end_date: Date.from_iso8601!("#{year}-#{end_date}"),
+      type: "quarter"
     }
   end
 end
