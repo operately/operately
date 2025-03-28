@@ -17,6 +17,7 @@ defmodule Operately.Data.Change051PopulateGoalLastCheckInsTest do
   test "updates goals with their latest updates", ctx do
     {:ok, _} = nullify_last_check_ins()
 
+    ctx = Factory.reload_all(ctx)
     assert ctx.update1.timeframe == nil
     assert ctx.update2.timeframe == nil
     assert ctx.update3.timeframe == nil
