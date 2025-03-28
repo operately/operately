@@ -28,6 +28,10 @@ gen.operation:
 js.fmt.fix:
 	./devenv bash -c "npx prettier --write assets/js && npx prettier --write ee/assets/js"
 
+migrate:
+	$(MAKE) dev.db.migrate
+	$(MAKE) test.db.migrate
+
 #
 # Development tasks
 #

@@ -15,6 +15,7 @@ defmodule Operately.Goals.Update do
 
     field :message, :map
     field :status, Ecto.Enum, values: [:on_track, :concern, :caution, :issue, :pending]
+    embeds_one :timeframe, Operately.Goals.Timeframe, on_replace: :delete
 
     field :acknowledged_at, :utc_datetime
     belongs_to :acknowledged_by, Operately.People.Person, foreign_key: :acknowledged_by_id
@@ -37,6 +38,7 @@ defmodule Operately.Goals.Update do
     check_in
     |> cast(attrs, [:goal_id, :author_id, :message, :status, :acknowledged_at, :acknowledged_by_id, :subscription_list_id])
     |> cast_embed(:targets)
+    |> cast_embed(:timeframe)
     |> validate_required([:goal_id, :author_id, :message, :status, :subscription_list_id])
   end
 

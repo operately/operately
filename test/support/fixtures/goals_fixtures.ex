@@ -1,5 +1,6 @@
 defmodule Operately.GoalsFixtures do
   alias Operately.Access.Binding
+  alias Operately.Goals.Timeframe
 
   def goal_fixture(creator, attrs \\ %{}) do
     attrs = Enum.into(attrs, %{
@@ -61,7 +62,8 @@ defmodule Operately.GoalsFixtures do
       content: Operately.Support.RichText.rich_text("content"),
       send_to_everyone: false,
       subscription_parent_type: :goal_update,
-      subscriber_ids: []
+      subscriber_ids: [],
+      timeframe: Timeframe.current_year()
     })
 
     {:ok, update} = Operately.Operations.GoalCheckIn.run(author, goal, attrs)
