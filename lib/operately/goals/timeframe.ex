@@ -40,8 +40,8 @@ defmodule Operately.Goals.Timeframe do
   def current_year do
     date = Date.utc_today()
 
-    %{
-      start_date: begginning_of_year(date),
+    %__MODULE__{
+      start_date: beginning_of_year(date),
       end_date: end_of_year(date),
       type: "year"
     }
@@ -50,8 +50,8 @@ defmodule Operately.Goals.Timeframe do
   def last_year do
     date = Date.utc_today() |> Date.add(-365)
 
-    %{
-      start_date: begginning_of_year(date),
+    %__MODULE__{
+      start_date: beginning_of_year(date),
       end_date: end_of_year(date),
       type: "year"
     }
@@ -183,7 +183,7 @@ defmodule Operately.Goals.Timeframe do
     }
   end
 
-  defp begginning_of_year(date) do
+  defp beginning_of_year(date) do
     {year, _, _} = Date.to_erl(date)
     Date.from_erl!({year, 1, 1})
   end
