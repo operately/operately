@@ -22,6 +22,10 @@ defmodule Operately.Goals.Timeframe do
     changeset(%__MODULE__{}, attrs)
   end
 
+  def changeset(timeframe, attrs) when is_struct(attrs, __MODULE__) do
+    changeset(timeframe, Map.from_struct(attrs))
+  end
+
   def changeset(timeframe, attrs) do
     timeframe
     |> cast(attrs, [:type, :start_date, :end_date])

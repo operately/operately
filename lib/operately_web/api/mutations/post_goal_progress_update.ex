@@ -25,6 +25,7 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdate do
     |> run(:me, fn -> find_me(conn) end)
     |> run(:attrs, fn -> parse_inputs(inputs) end)
     |> run(:goal, fn ctx -> Goals.get_goal_with_access_level(ctx.attrs.goal_id, ctx.me.id) end)
+    |> run(:timeframe, fn ctx -> ctx.attrs.timeframe || Jason.encode!(ctx.goal.timeframe) end)
     |> run(:check_permissions, fn ctx -> Permissions.check(ctx.goal.requester_access_level, :can_check_in) end)
     |> run(:operation, fn ctx -> GoalCheckIn.run(ctx.me, ctx.goal, ctx.attrs) end)
     |> run(:serialized, fn ctx -> {:ok, %{update: Serializer.serialize(ctx.operation, level: :full)}} end)

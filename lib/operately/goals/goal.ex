@@ -27,7 +27,7 @@ defmodule Operately.Goals.Goal do
     belongs_to :last_update, Operately.Goals.Update, foreign_key: :last_check_in_id
     field :next_update_scheduled_at, :utc_datetime
 
-    embeds_one :timeframe, Operately.Goals.Timeframe, on_replace: :update
+    embeds_one :timeframe, Operately.Goals.Timeframe, on_replace: :delete
     field :deprecated_timeframe, :string
 
     field :closed_at, :utc_datetime
