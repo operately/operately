@@ -6,6 +6,7 @@ import { buildTree, GoalNode, Node, TreeOptions } from "./tree";
 
 import { NodeIcon } from "./components/NodeIcon";
 import { TableRow } from "./components/TableRow";
+import { CompanyGoalOption } from "./components/CompanyGoalOption";
 import { PrimaryButton } from "@/components/Buttons";
 import { ExpandableProvider, useExpandable } from "./context/Expandable";
 
@@ -68,7 +69,11 @@ export function GoalSelectorDropdown(props: GoalSelectorDropdownProps) {
 
         {open && (
           <div className="absolute mt-1 w-full bg-surface-base border border-surface-outline rounded-lg shadow-lg z-50">
-            {props.allowCompanyWide && <CompanyGoalOption handleSelect={() => handleSelect(null)} />}
+            {props.allowCompanyWide && (
+              <div className="pl-4 pr-2">
+                <CompanyGoalOption handleSelect={() => handleSelect(null)} />
+              </div>
+            )}
 
             {tree.map((root) => (
               <NodeView key={root.id} node={root as GoalNode} onSelect={handleSelect} />
@@ -153,20 +158,4 @@ function SubgoalCount({ node }: { node: GoalNode }) {
   if (expanded[node.id]) return null;
 
   return <div className="text-xs text-gray-500">{node.childrenInfoLabel()}</div>;
-}
-
-function CompanyGoalOption({ handleSelect }: { handleSelect: () => void }) {
-  return (
-    <TableRow>
-      <div className="w-full pl-4 pr-2 flex items-center justify-between">
-        <div className="flex items-center gap-1">
-          <Icons.IconBuildingEstate size={16} />
-          <span className="mt-1">Company-wide goal</span>
-        </div>
-        <PrimaryButton onClick={handleSelect} size="xxs" testId="select-company-wide-option">
-          Select
-        </PrimaryButton>
-      </div>
-    </TableRow>
-  );
 }
