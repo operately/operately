@@ -6,19 +6,16 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Goals.Update  do
       message: Jason.encode!(update.message),
       inserted_at: OperatelyWeb.Api.Serializer.serialize(update.inserted_at),
       goal_target_updates: parse_targets(update.targets),
+      timeframe: OperatelyWeb.Api.Serializer.serialize(update.timeframe),
+      acknowledged: !!update.acknowledged_at,
+      acknowledged_at: OperatelyWeb.Api.Serializer.serialize(update.acknowledged_at),
     }
   end
 
   def serialize(update, level: :full) do
-    %{
-      id: OperatelyWeb.Paths.goal_update_id(update),
+    serialize(update, level: :essential) |> Map.merge(%{
       goal: OperatelyWeb.Api.Serializer.serialize(update.goal),
-      status: Atom.to_string(update.status),
-      message: Jason.encode!(update.message),
-      inserted_at: OperatelyWeb.Api.Serializer.serialize(update.inserted_at),
       author: OperatelyWeb.Api.Serializer.serialize(update.author),
-      acknowledged: !!update.acknowledged_at,
-      acknowledged_at: OperatelyWeb.Api.Serializer.serialize(update.acknowledged_at),
       acknowledging_person: OperatelyWeb.Api.Serializer.serialize(update.acknowledged_by),
       reactions: OperatelyWeb.Api.Serializer.serialize(update.reactions),
       comments_count: Operately.Updates.count_comments(update.id, :goal_update),
@@ -26,7 +23,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Goals.Update  do
       subscription_list: OperatelyWeb.Api.Serializer.serialize(update.subscription_list),
       potential_subscribers: OperatelyWeb.Api.Serializer.serialize(update.potential_subscribers),
       notifications: OperatelyWeb.Api.Serializer.serialize(update.notifications),
-    }
+    })
   end
 
   defp parse_targets(nil), do: []

@@ -1,5 +1,6 @@
 defmodule Operately.Support.Factory.Goals do
   alias Operately.Access.Binding
+  alias Operately.Goals.Timeframe
 
   def add_goal(ctx, testid, space_name, opts \\ []) do
     name = Keyword.get(opts, :name, "some name")
@@ -17,11 +18,7 @@ defmodule Operately.Support.Factory.Goals do
       reviewer_id: ctx[reviewer].id,
       company_access_level: company_access,
       space_access_level: space_access,
-      timeframe: opts[:timeframe] || %{
-        start_date: current_year_start_date(),
-        end_date: current_year_end_date(),
-        type: "year"
-      }
+      timeframe: opts[:timeframe] || Timeframe.current_year(),
     })
 
     Map.put(ctx, testid, goal)
@@ -44,16 +41,6 @@ defmodule Operately.Support.Factory.Goals do
     |> Operately.Repo.update()
 
     Map.put(ctx, goal_name, goal)
-  end
-
-  defp current_year_start_date do
-    {year, _, _} = Date.utc_today() |> Date.to_erl()
-    Date.from_erl!({year, 1, 1})
-  end
-
-  defp current_year_end_date do
-    {year, _, _} = Date.utc_today() |> Date.to_erl()
-    Date.from_erl!({year, 12, 31})
   end
 
 end
