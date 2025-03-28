@@ -7,6 +7,7 @@ import { buildTree, GoalNode, Node, TreeOptions } from "./tree";
 import { NodeIcon } from "./components/NodeIcon";
 import { NodeName } from "./components/NodeName";
 import { TableRow } from "./components/TableRow";
+import { CompanyGoalOption } from "./components/CompanyGoalOption";
 import { PrimaryButton } from "@/components/Buttons";
 import { ExpandableProvider, useExpandable } from "./context/Expandable";
 
@@ -14,12 +15,13 @@ import classNames from "classnames";
 import { createTestId } from "@/utils/testid";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 
-interface GoalSelectorProps {
+interface Props {
   goals: Goals.Goal[];
-  onSelect: (goal: Goals.Goal) => void;
+  onSelect: (goal: Goals.Goal | null) => void;
+  allowCompanyWide?: boolean;
 }
 
-export function GoalSelector({ goals, onSelect }: GoalSelectorProps) {
+export function GoalSelector({ goals, onSelect, allowCompanyWide }: Props) {
   const me = useMe();
 
   const options = {
@@ -39,6 +41,8 @@ export function GoalSelector({ goals, onSelect }: GoalSelectorProps) {
   return (
     <ExpandableProvider tree={tree}>
       <div>
+        {allowCompanyWide && <CompanyGoalOption handleSelect={() => onSelect(null)} />}
+
         {tree.map((root, index) => (
           <NodeView key={root.id} node={root as GoalNode} onSelect={onSelect} isFirstChild={index === 0} />
         ))}
