@@ -33,6 +33,26 @@ defmodule Operately.Goals.Timeframe do
     |> validate_month_dates()
   end
 
+  def current_year do
+    date = Date.utc_today()
+
+    %{
+      start_date: begginning_of_year(date),
+      end_date: end_of_year(date),
+      type: "year"
+    }
+  end
+
+  def last_year do
+    date = Date.utc_today() |> Date.add(-365)
+
+    %{
+      start_date: begginning_of_year(date),
+      end_date: end_of_year(date),
+      type: "year"
+    }
+  end
+
   def validate_start_is_before_end(changeset) do
     start_date = get_field(changeset, :start_date)
     end_date = get_field(changeset, :end_date)
@@ -157,5 +177,15 @@ defmodule Operately.Goals.Timeframe do
       end_date: Date.from_iso8601!(end_date),
       type: type
     }
+  end
+
+  defp begginning_of_year(date) do
+    {year, _, _} = Date.to_erl(date)
+    Date.from_erl!({year, 1, 1})
+  end
+
+  defp end_of_year(date) do
+    {year, _, _} = Date.to_erl(date)
+    Date.from_erl!({year, 12, 31})
   end
 end
