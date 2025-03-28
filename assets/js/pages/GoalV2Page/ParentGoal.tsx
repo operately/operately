@@ -22,7 +22,6 @@ export function ParentGoal() {
 }
 
 function EditParentGoal() {
-  const isViewMode = useIsViewMode();
   const { goals, goal } = useLoadedData();
   const [isOpen, setIsOpen] = React.useState(false);
   const [_, setParentGoal] = Forms.useFieldValue<Goal | null>("parentGoal");
@@ -39,8 +38,6 @@ function EditParentGoal() {
     setParentGoal(selectedGoal);
     setIsOpen(false);
   };
-
-  if (isViewMode) return null;
 
   return (
     <DropdownMenu.Root open={isOpen} modal={false}>
