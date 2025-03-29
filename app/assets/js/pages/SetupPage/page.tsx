@@ -7,6 +7,8 @@ import * as Forms from "@/components/Form";
 import { Spacer } from "@/components/Spacer";
 import { useForm } from "./useForm";
 
+import { PrimaryButton } from "turboui/src/Button";
+
 export function Page() {
   return (
     <Pages.Page title="Welcome to Operately!">
@@ -16,6 +18,8 @@ export function Page() {
           <div className="text-content-accent">Let&apos;s set up your company.</div>
 
           <Spacer size={6} />
+
+          <PrimaryButton testId="hello">Hello</PrimaryButton>
 
           <Form />
         </Paper.Body>
