@@ -7,7 +7,7 @@ import { calcClassName } from "./calcClassNames";
 export function PrimaryButton(props: BaseButtonProps) {
   const className = calcClassName(props, {
     always: "border border-accent-1",
-    normal: "text-white-1 bg-accent-1 hover:bg-accent-1-light",
+    normal: "text-white-1 bg-green-500 hover:bg-accent-1-light",
     loading: "text-content-subtle bg-accent-1-light",
   });
 

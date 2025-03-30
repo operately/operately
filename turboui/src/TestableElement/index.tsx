@@ -1,5 +1,5 @@
 export interface TestableElement {
-  testId: string;
+  testId?: string;
 }
 
 export function createTestId(...parts: string[]): string {
