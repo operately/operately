@@ -5,10 +5,7 @@
     "dist"
   ],
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
-    }
+    "./src/*": "./src/*"
   },
   "scripts": {
     "build": "tsc"

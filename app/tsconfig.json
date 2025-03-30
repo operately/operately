@@ -32,7 +32,8 @@
     // A series of entries which re-map imports to lookup locations relative to the baseUrl
     "paths": {
       "@/ee/*": ["./ee/assets/js/*"],
-      "@/*": ["./assets/js/*"]
+      "@/*": ["./assets/js/*"],
+      "turboui/*": ["../turboui/src/*"]
     }
   },
 

@@ -7,7 +7,7 @@ import * as Forms from "@/components/Form";
 import { Spacer } from "@/components/Spacer";
 import { useForm } from "./useForm";
 
-import { PrimaryButton } from "turboui/src/Button";
+import { PrimaryButton } from "turboui";
 
 export function Page() {
   return (
