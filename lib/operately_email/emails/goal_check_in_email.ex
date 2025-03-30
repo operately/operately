@@ -24,7 +24,7 @@ defmodule OperatelyEmail.Emails.GoalCheckInEmail do
     |> assign(:update, update)
     |> assign(:cta_url, cta_url)
     |> assign(:cta_text, cta_text)
-    |> assign(:overview, OverviewMsg.construct(update, goal, reviewer))
+    |> assign(:overview, OverviewMsg.construct(update, reviewer))
     |> render("goal_check_in")
   end
 
@@ -46,13 +46,13 @@ defmodule OperatelyEmail.Emails.GoalCheckInEmail do
     import Operately.RichContent.Builder
     alias Operately.People.Person
 
-    def construct(update, goal, reviewer) do
+    def construct(update, reviewer) do
       status = normalize_status(update.status)
 
       doc([paragraph(
         status_msg(status) ++ 
         reviewer_note(status, reviewer) ++ 
-        due_date(goal.timeframe.end_date)
+        due_date(update.timeframe.end_date)
       )])
     end
 

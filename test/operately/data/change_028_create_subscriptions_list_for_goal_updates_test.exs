@@ -7,6 +7,7 @@ defmodule Operately.Data.Change028CreateSubscriptionsListForGoalUpdatesTest do
 
   alias Operately.Notifications
   alias Operately.Notifications.Subscription
+  alias Operately.Goals.Timeframe
 
   setup ctx do
     company = company_fixture(%{})
@@ -44,6 +45,7 @@ defmodule Operately.Data.Change028CreateSubscriptionsListForGoalUpdatesTest do
           subscription_list_id: subscriptions_list.id,
           message: Operately.Support.RichText.rich_text("message"),
           status: "on_track",
+          timeframe: Timeframe.current_quarter()
         }),
         {:ok, _} <- Notifications.update_subscription_list(subscriptions_list, %{parent_id: update.id}) do
       update

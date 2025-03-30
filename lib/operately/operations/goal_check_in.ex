@@ -1,7 +1,7 @@
 defmodule Operately.Operations.GoalCheckIn do
   alias Ecto.Multi
   alias Operately.{Repo, Activities}
-  alias Operately.Goals.{Goal, Update, Target, Timeframe}
+  alias Operately.Goals.{Goal, Update, Target}
   alias Operately.Operations.Notifications.{Subscription, SubscriptionList}
 
   def run(author, goal, attrs) do
@@ -18,11 +18,12 @@ defmodule Operately.Operations.GoalCheckIn do
         status: attrs.status,
         message: attrs.content,
         targets: encoded_new_target_values,
-        subscription_list_id: changes.subscription_list.id
+        subscription_list_id: changes.subscription_list.id,
+        timeframe: attrs.timeframe
       })
     end)
     |> SubscriptionList.update(:update)
-    |> update_goal(goal, attrs[:timeframe])
+    |> update_goal(goal)
     |> update_targets(targets, attrs.target_values)
     |> record_activity(author, goal)
     |> Repo.transaction()
@@ -30,13 +31,13 @@ defmodule Operately.Operations.GoalCheckIn do
     |> handle_result_broadcast()
   end
 
-  defp update_goal(multi, goal, timeframe) do
+  defp update_goal(multi, goal) do
     Multi.update(multi, :goal, fn changes ->
-      update_id = changes.update.id
-      next_check_in = calc_next_check_in_time(goal)
-      changes = build_goal_changes(next_check_in, timeframe, update_id)
-
-      Goal.changeset(goal, changes)
+      Goal.changeset(goal, %{
+        next_update_scheduled_at: calc_next_check_in_time(goal),
+        last_check_in_id: changes.update.id,
+        timeframe: changes.update.timeframe
+      })
     end)
   end
 
@@ -59,7 +60,6 @@ defmodule Operately.Operations.GoalCheckIn do
         goal_id: goal.id,
         update_id: changes.update.id
       }
-      |> maybe_add_timeframes_to_activity(changes.goal.timeframe, goal.timeframe)
     end)
   end
 
@@ -84,36 +84,6 @@ defmodule Operately.Operations.GoalCheckIn do
         previous_value: target.value
       })
     end)
-  end
-
-  defp maybe_add_timeframes_to_activity(content, nil, _), do: content
-
-  defp maybe_add_timeframes_to_activity(content, new = %Timeframe{}, old = %Timeframe{}) do
-    if timeframe_changed?(new, old) do
-      Map.merge(content, %{
-        new_timeframe: Map.from_struct(new),
-        old_timeframe: Map.from_struct(old)
-      })
-    else
-      content
-    end
-  end
-
-  defp timeframe_changed?(new, old) do
-    new.start_date != old.start_date or new.end_date != old.end_date
-  end
-
-  defp build_goal_changes(next_check_in, timeframe, update_id) do
-    changes = %{
-      next_update_scheduled_at: next_check_in,
-      last_check_in_id: update_id
-    }
-
-    if timeframe do
-      Map.put(changes, :timeframe, timeframe)
-    else
-      changes
-    end
   end
 
   defp calc_next_check_in_time(goal) do
