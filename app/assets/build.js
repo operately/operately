@@ -1,4 +1,5 @@
 const esbuild = require("esbuild");
+const path = require("path");
 
 const args = process.argv.slice(2);
 const watch = args.includes('--watch');
@@ -18,43 +19,37 @@ let opts = {
   external: ["*.css", "fonts/*", "images/*"],
   loader: loader,
   plugins: plugins,
+  bundle: true,
   sourcemap: true,
+  alias: {
+    'turboui': path.resolve(__dirname, '../../turboui/dist')
+  }
 };
 
 if (deploy) {
-  opts = {
-    ...opts,
-    minify: true,
-  };
+  opts = {...opts, minify: true};
 }
 
 if (watch) {
-  console.log(esbuild.version);
-
-  opts = {
-    ...opts,
-    sourcemap: "inline",
-    watch: {
-      onRebuild(error, result) {
-        if (error) {
-          console.error("watch build failed:", error);
-        } else {
-          console.log("watch build succeeded:", result);
-        }
-      }
-    }
-  };
-
-  esbuild
-    .build(opts)
-    .then((result) => {
-      console.log("watch build succeeded:", result);
-    })
-    .catch((_error) => {
-      console.error("watch build failed:", _error);
-      process.exit(1);
-    });
-
-} else {
-  esbuild.build(opts);
+  opts = {...opts, sourcemap: "inline"};
 }
+
+
+async function runBuild() {
+  try {
+    if (watch) {
+      const ctx = await esbuild.context(opts);
+      await ctx.watch();
+      
+      console.log("Watching for changes...");
+    } else {
+      await esbuild.build(opts);
+      console.log("Build succeeded");
+    }
+  } catch (error) {
+    console.error("Build failed:", error);
+    process.exit(1);
+  }
+}
+
+runBuild();

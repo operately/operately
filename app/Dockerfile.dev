@@ -35,8 +35,8 @@ RUN mix archive.install hex phx_new 1.7.0-rc.0 --force
 # This is where we will mount the source code from the host machine.
 # The source code will be owned by the 'dev' user inside the container.
 
-ENV APP_HOME /home/dev/app
-RUN mkdir $APP_HOME
+ENV APP_HOME /home/dev/app/app
+RUN mkdir -p $APP_HOME
 WORKDIR $APP_HOME
 
 # Set a simple prompt that shows the current directory.

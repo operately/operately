@@ -33,7 +33,6 @@
     "paths": {
       "@/ee/*": ["./ee/assets/js/*"],
       "@/*": ["./assets/js/*"],
-      "turboui/*": ["../turboui/src/*"]
     }
   },
 
