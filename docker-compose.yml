@@ -2,13 +2,13 @@ services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile.dev
+      dockerfile: app/Dockerfile.dev
       args:
         - USER_ID
         - GROUP_ID
     user: ${USER_ID}:${GROUP_ID}
     volumes:
-      - ../:/home/dev/app
+      - ./:/home/dev/app
       - ./media:/media
       - ./screenshots:/tmp/screenshots
       - ./tmp/certs:/home/dev/certs

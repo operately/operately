@@ -1,0 +1,79 @@
+#!/usr/bin/env bash
+
+#
+# A wrapper around the docker command to make it easier to run commands in 
+# the app container accross Linux and MacOS. On MacOS, the user and group
+# ids are different than on Linux, so we need to pass them in as environment
+# variables to the container. This script will set the USER_ID and GROUP_ID
+# environment variables to the current user and group ids.
+#
+# The USER_ID and GROUP_ID environment variables are used in the docker-compose.yml
+# file to set the user and group ids in the app container that is the same as the
+# current user and group ids on the host machine. This is done to avoid permission
+# issues when creating files in the app container.
+#
+
+#
+# Usage:
+#
+#   devenv build       - Build the app container
+#   devenv up          - Start the app container
+#   devenv stop        - Stop the app container
+#   devenv down        - Stop and remove the app container
+#   devenv shell       - Start a shell in the app container
+#   devenv <command>   - Run a command in the running app container
+#
+
+case "$(uname -s)" in
+  Linux)
+    #
+    # On Linux, we want to pass in the user and group ids as environment variables
+    # to the container so that the user and group ids in the container are the same
+    # as the user and group ids on the host machine. This is done to avoid permission
+    # issues when creating files in the app container.
+    #
+
+    export GROUP_ID=$(id -g) 
+    export USER_ID=$(id -u) 
+    ;;
+  Darwin)
+    #
+    # On MacOS, the user and group ids are different than on Linux and can't be
+    # passed in as environment variables. Instead, we'll set the USER_ID and GROUP_ID
+    # environment variables to 1000, which is the default user and group id in the
+    # app container.
+    #
+    # This will on MacOS because Docker Desktop for Mac uses a file sharing system
+    # that doesn't require the user and group ids to be the same in the container
+    # as on the host machine.
+    
+    export GROUP_ID=1000
+    export USER_ID=1000
+    ;;
+  *)
+    echo "Unsupported OS"
+    exit 1
+    ;;
+esac
+
+FIRST_ARG=$1
+
+if [ "$CI" = "true" ]; then
+  PROFILE="ci"
+else
+  PROFILE="dev"
+fi
+
+if [ "$FIRST_ARG" = "shell" ]; then
+  docker compose exec app bash
+elif [ "$FIRST_ARG" = "up" ]; then
+  docker compose --profile ${PROFILE} up -d --force-recreate --build
+elif [ "$FIRST_ARG" = "stop" ]; then
+  docker compose --profile ${PROFILE} stop
+elif [ "$FIRST_ARG" = "down" ]; then
+  docker compose --profile ${PROFILE} down
+elif [ "$FIRST_ARG" = "restart" ]; then
+  docker compose --profile ${PROFILE} down && docker compose --profile ${PROFILE} up -d --force-recreate
+else
+  docker compose exec app "$@"
+fi
