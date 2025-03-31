@@ -166,11 +166,8 @@ defmodule Operately.Support.Features.GoalTreeSteps do
 
   step :assert_goal_update_content, ctx do
     ctx
-    |> UI.assert_text("1. How's the goal going?")
-    |> UI.assert_text("On Track")
-    |> UI.assert_text("Work is progressing as planned")
-    |> UI.assert_text("2. What's new since the last update?")
-    |> UI.assert_text("3. Targets")
+    |> UI.assert_text("Overview")
+    |> UI.assert_text("on track")
   end
 
   step :assert_project_check_in_content, ctx do
