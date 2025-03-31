@@ -9,7 +9,6 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Goals.Update  do
       timeframe: OperatelyWeb.Api.Serializer.serialize(update.timeframe),
       acknowledged: !!update.acknowledged_at,
       acknowledged_at: OperatelyWeb.Api.Serializer.serialize(update.acknowledged_at),
-      canAcknowledge: Operately.Goals.Update.can_acknowledge?(update, update.request_info.person),
     }
   end
 

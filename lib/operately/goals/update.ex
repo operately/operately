@@ -57,15 +57,6 @@ defmodule Operately.Goals.Update do
     ])
   end
 
-  def can_acknowledge?(check_in, person) do
-    check_in = Repo.preload(check_in, :goal)
-
-    case check_in.status do
-      :on_track -> false
-      _ -> person.id == check_in.goal.champion_id
-    end
-  end
-
   #
   # After load hooks
   #
