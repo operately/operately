@@ -47,6 +47,21 @@ services:
       - dev
       - ci
 
+  design:
+    build:
+      context: .
+      dockerfile: design/Dockerfile.dev
+      args:
+        - USER_ID
+        - GROUP_ID
+    user: ${USER_ID}:${GROUP_ID}
+    volumes:
+      - ./:/home/dev/app
+    ports:
+      - "127.0.0.1:4010:4010"
+    profiles:
+      - dev
+
   screenshots-server:
     image: python:3
     working_dir: "/screenshots"

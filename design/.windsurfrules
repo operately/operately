@@ -1,0 +1,43 @@
+# Windsurf Rules for Operately BPRD
+
+This document outlines the key rules and guidelines for developing the Operately BPRD codebase.
+
+## TypeScript Rules
+
+1. **Always use TypeScript** for new components and features.
+2. **Avoid using `any` type** - use specific types or `unknown` if necessary.
+3. **Define explicit interfaces** for all component props.
+4. **Make optional props nullable** with `?` syntax.
+5. **Use consistent type definitions** in the `src/types` directory.
+6. When working with Astro components, **import TypeScript files with explicit extensions** (e.g., `import Component from './Component.tsx'`).
+
+## Styling Conventions
+
+1. Use **Tailwind CSS** for styling components.
+2. Follow the **color naming conventions** defined in the design system.
+3. Use **semantic color variables** like `text-content-accent` instead of direct color classes.
+
+## Component Guidelines
+
+1. **Use functional components** with hooks for all new components.
+2. Structure larger components into smaller sub-components for maintainability.
+3. Follow the **existing naming conventions** for components and files.
+4. Place new components in the appropriate directories based on their functionality.
+
+## Testing
+
+1. Run the TypeScript compiler (`npx tsc --noEmit`) before submitting changes.
+2. Verify component functionality in the browser after significant changes.
+3. Ensure dark mode and responsive design work correctly for all components.
+
+## Code Organization
+
+1. Keep related functionality together in the same directory.
+2. Organize imports in a logical order (React first, then libraries, then local imports).
+3. Follow the existing project structure when adding new features.
+
+## Documentation
+
+1. Add JSDoc comments to explain complex types or functions.
+2. Document workarounds or non-obvious solutions.
+3. Keep the TypeScript migration guide up-to-date with new patterns or solutions.

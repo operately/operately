@@ -32,13 +32,17 @@ js.fmt.fix:
 # Development tasks
 #
 
+design.server:
+	docker compose exec design bash -c "cd design && npm install"
+	docker compose exec design bash -c "cd design && npx astro dev --port 4010 --host"
+
 dev.build:
 	$(MAKE) dev.seed.env
 	./devenv up
-	./devenv mix local.hex --force --if-missing
-	./devenv mix deps.get
-	./devenv mix compile
-	./devenv npm install
+	./devenv bash -c "cd app && mix local.hex --force --if-missing"
+	./devenv bash -c "cd app && mix deps.get"
+	./devenv bash -c "cd app && mix compile"
+	./devenv bash -c "cd app && npm install"
 	$(MAKE) dev.db.create
 	$(MAKE) test.db.create
 	$(MAKE) dev.db.migrate
@@ -143,10 +147,10 @@ test.watch: test.init
 	./devenv mix test.watch $(FILE)
 
 test.db.create:
-	./devenv bash -c "MIX_ENV=test mix ecto.create"
+	./devenv bash -c "cd app && MIX_ENV=test mix ecto.create"
 
 test.db.reset:
-	./devenv bash -c "MIX_ENV=test mix ecto.reset"
+	./devenv bash -c "cd app && MIX_ENV=test mix ecto.reset"
 
 test.assets.compile:
 	./devenv mix assets.build
