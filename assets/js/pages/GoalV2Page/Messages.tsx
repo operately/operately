@@ -135,8 +135,12 @@ function Content({ author, date, content }: ContentProps) {
       </span>
       <span className="mx-1 text-stone-500">&bull;</span>
       <span className="text-stone-500">{People.shortName(author)}</span>
-      <span className="mx-1 text-stone-500">&bull;</span>
-      {message}
+      {Boolean(message) && (
+        <>
+          <span className="mx-1 text-stone-500">&bull;</span>
+          {message}
+        </>
+      )}
     </div>
   );
 }
