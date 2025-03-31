@@ -1,7 +1,7 @@
 import React from "react";
 
 import * as Goals from "@/models/goals";
-import { IconChevronDown, IconTrash } from "@tabler/icons-react";
+import { IconChevronDown, IconChevronLeft, IconTrash } from "@tabler/icons-react";
 
 import classNames from "classnames";
 import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
@@ -48,6 +48,7 @@ function TitleSection({ target, index, editing }) {
       startEdit(target.id);
     }
   };
+  const ChevronIcon = editing ? IconChevronDown : IconChevronLeft;
 
   return (
     <>
@@ -60,7 +61,7 @@ function TitleSection({ target, index, editing }) {
           <TargetValue readonly index={index} target={target} />
         </div>
       )}
-      <IconChevronDown onClick={toggle} className="cursor-pointer" size={14} />
+      <ChevronIcon onClick={toggle} className="cursor-pointer" size={14} />
     </>
   );
 }

@@ -1,6 +1,6 @@
 import React from "react";
 
-import { IconChevronDown } from "@tabler/icons-react";
+import { IconChevronDown, IconChevronLeft } from "@tabler/icons-react";
 import classNames from "classnames";
 
 import { Target } from "./types";
@@ -29,13 +29,14 @@ export function DefaultTargetCard(props: Props) {
     if (readonly) return;
     setOpen(!open);
   };
+  const ChevronIcon = open ? IconChevronDown : IconChevronLeft;
 
   return (
     <div className={containerClass}>
       <div onClick={handleToggle} className="grid grid-cols-[1fr_auto_14px] gap-2 items-start cursor-pointer">
         <TargetNameSection target={target} truncate={!open} />
         <TargetValue readonly={readonlyValue} index={index} target={target} />
-        <IconChevronDown onClick={handleChevronToggle} size={14} className="mt-1.5" />
+        <ChevronIcon onClick={handleChevronToggle} size={14} className="mt-1.5" />
       </div>
       {open && <TargetDetails target={target} />}
     </div>
