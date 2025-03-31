@@ -3,7 +3,16 @@ import * as React from "react";
 import { useDragAndDropContext } from "./context";
 import type { DragAndDropContextValue } from "./context";
 
-export function useDropZone({ id }: { id: string }) {
+interface Props {
+  id: string,
+  /**
+  * Optional array of dependencies. If any value in this array changes,
+  * the DropZoneElement will be re-instantiated and events rebound.
+  */
+  dependencies?: any[];
+}
+
+export function useDropZone({ id, dependencies = [] }: Props) {
   const context = useDragAndDropContext();
   const ref = React.useRef<HTMLDivElement | null>(null);
 
@@ -14,7 +23,7 @@ export function useDropZone({ id }: { id: string }) {
     handler.bindEvents();
 
     return () => handler.unbindEvents();
-  }, [ref]);
+  }, [ref, ...dependencies]);
 
   return {
     ref,
