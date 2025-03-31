@@ -28,17 +28,17 @@ defmodule OperatelyWeb.Paths do
   end
 
   def goal_check_in_path(company = %Company{}, update) do
-    create_path([company_id(company), "goal-updates", goal_update_id(update)])
+    create_path([company_id(company), "goal-check-ins", goal_update_id(update)])
   end
 
   def goal_check_in_path(company = %Company{}, update, comment = %Comment{}) do
     update_with_comment = goal_update_id(update) <> "#" <> comment_id(comment)
 
-    create_path([company_id(company), "goal-updates", update_with_comment])
+    create_path([company_id(company), "goal-check-ins", update_with_comment])
   end
 
   def goal_check_in_new_path(company = %Company{}, goal = %Goal{}) do
-    create_path([company_id(company), "goals", goal_id(goal), "progress-updates", "new"])
+    create_path([company_id(company), "goals", goal_id(goal), "check-ins", "new"])
   end
 
   def goal_activity_path(company = %Company{}, activity) do

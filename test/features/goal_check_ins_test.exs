@@ -1,108 +1,85 @@
-defmodule Operately.Features.GoalCheckInsTest do
+defmodule Operately.Features.GoalProgressUpdateTest do
   use Operately.FeatureCase
   alias Operately.Support.Features.GoalCheckInsSteps, as: Steps
 
   setup ctx, do: Steps.setup(ctx)
 
-  describe "basic check-in flow (status + message)" do
-    feature "with on-track status", ctx do
-      verify_check_in_workflow(ctx, %{status: "On track", message: "Everything is going well"})
-    end
+  feature "check-in on a goal", ctx do
+    params = %{
+      status: "on_track", 
+      message: "Checking-in on my goal", 
+      targets: %{
+        "First response time" => 20, 
+        "Increase feedback score to 90%" => 80
+      }
+    }
 
-    feature "with needs attention status", ctx do
-      verify_check_in_workflow(ctx, %{status: "Needs attention", message: "I need help with this"})
-    end
-
-    feature "with at risk status", ctx do
-      verify_check_in_workflow(ctx, %{status: "At risk", message: "Blocked by outside factors"})
-    end
-
-    feature "with pending status", ctx do
-      verify_check_in_workflow(ctx, %{status: "Pending", message: "We didn't start yet"})
-    end
-
-    defp verify_check_in_workflow(ctx, values = %{status: status, message: message}) do
-      ctx
-      |> Steps.initiate_check_in()
-      |> Steps.select_status(status)
-      |> Steps.fill_in_message(message)
-      |> Steps.submit_check_in()
-      |> Steps.assert_check_in_submitted(values)
-      |> Steps.assert_check_in_feed_item(values)
-      # |> Steps.assert_check_in_in_notifications(values)
-      # |> Steps.assert_check_in_email_sent(values)
-    end
-  end
-
-  describe "updating targets during a check-in" do
-    feature "increasing a value", ctx do
-      verify_target_update(ctx, %{name: "First response time", change: 12})
-    end
-
-    feature "decreasing a value", ctx do
-      verify_target_update(ctx, %{name: "First response time", change: -12})
-    end
-
-    defp verify_target_update(ctx, values) do
-      ctx
-      |> Steps.initiate_check_in()
-      |> Steps.select_status("On track")
-      |> Steps.update_target(values)
-      |> Steps.fill_in_message("Everything is going well")
-      |> Steps.submit_check_in()
-      |> Steps.assert_target_updated(values)
-    end
-  end
-
-  feature "extending the timeframe during a check-in", ctx do
     ctx
-    |> Steps.initiate_check_in()
-    |> UI.sleep(1000) # delete this line
-    # |> Steps.select_on_track()
-    # |> Steps.fill_in_message("Everything is going well")
-    # |> Steps.extend_timeframe()
-    # |> Steps.submit_check_in()
-    # |> Steps.assert_timeframe_extended_message_visible()
+    |> Steps.check_in(params)
+    |> Steps.assert_check_in_feed_item(params)
+    |> Steps.assert_check_in_notifications()
+    |> Steps.assert_check_in_email_sent()
   end
 
-  feature "acknowledge a progress update in the web app", ctx do
+  feature "acknowledge a check-in in the web app", ctx do
     ctx
-    |> Steps.given_a_check_in_was_submitted_on_a_goal_that_i_review()
+    |> Steps.given_a_check_in_exists()
     |> Steps.acknowledge_check_in()
-    |> Steps.assert_check_in_acknowledged_email_sent_to_champion()
+    |> Steps.assert_acknowledge_email_sent()
     |> Steps.assert_check_in_acknowledged_in_feed()
     |> Steps.assert_check_in_acknowledged_in_notifications()
   end
 
   feature "acknowledge a check-in from the email", ctx do
+    params = %{
+      status: "on_track", 
+      message: "Checking-in on my goal", 
+      targets: %{
+        "First response time" => 20, 
+        "Increase feedback score to 90%" => 80
+      }
+    }
+
     ctx
-    |> Steps.given_a_check_in_was_submitted_on_a_goal_that_i_review()
-    |> UI.sleep(1000) # delete this line
-    # |> Steps.assert_incoming_email()
-    # |> Steps.acknowledge_check_in_from_email()
-    # |> Steps.assert_check_in_acknowledged_email_sent_to_champion()
-    # |> Steps.assert_check_in_acknowledged_in_feed()
-    # |> Steps.assert_check_in_acknowledged_in_notifications()
+    |> Steps.check_in(params)
+    |> Steps.acknowledge_check_in_from_email()
+    |> Steps.assert_acknowledge_email_sent()
+    |> Steps.assert_check_in_acknowledged_in_feed()
+    |> Steps.assert_check_in_acknowledged_in_notifications()
   end
 
-  feature "edit a submitted progress update", ctx do
+  feature "edit a submitted check-in", ctx do
+    params = %{
+      status: "at risk",
+      message: "Checking-in on my goal", 
+      targets: %{
+        "First response time" => 20, 
+        "Increase feedback score to 90%" => 80
+      }
+    }
+
+    edit_params = %{
+      status: "on track", 
+      message: "This is an edited check-in.", 
+      targets: %{
+        "First response time" => 30, 
+        "Increase feedback score to 90%" => 90
+      }
+    }
+
     ctx
-    |> Steps.given_i_submitted_a_check_in()
-    |> UI.sleep(1000) # delete this line
-    # |> Steps.initiate_editing_check_in()
-    # |> Steps.select_caution()
-    # |> Steps.update_target(%{target: ctx.target_2, value: 10})
-    # |> Steps.fill_in_message("Editing the message")
-    # |> Steps.submit_check_in()
-    # |> Steps.assert_check_in_edited()
+    |> Steps.check_in(params)
+    |> Steps.edit_check_in(edit_params)
+    |> Steps.assert_check_in_edited(edit_params)
   end
 
-  feature "commenting on a progress update", ctx do
+  feature "commenting on a check-in", ctx do
     ctx
     |> Steps.given_a_check_in_exists()
-    |> Steps.comment_on_check_in("Great job!")
+    |> Steps.comment_on_check_in_as_reviewer("Great job!")
     |> Steps.assert_check_in_commented_in_feed("Great job!")
     |> Steps.assert_check_in_commented_in_notifications()
-    |> Steps.assert_check_in_commented_email_sent()
+    |> Steps.assert_check_in_commented_notification_redirects_on_click()
+    |> Steps.assert_comment_email_sent()
   end
 end
