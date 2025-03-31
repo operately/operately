@@ -1,7 +1,7 @@
 defmodule Operately.GoalsTest do
   use Operately.DataCase
 
-  alias Operately.Goals
+  alias Operately.{Goals, Projects}
   alias Operately.Goals.Goal
   alias Operately.Access.Binding
 
@@ -76,6 +76,64 @@ defmodule Operately.GoalsTest do
 
     test "change_goal/1 returns a goal changeset", ctx do
       assert %Ecto.Changeset{} = Goals.change_goal(ctx.goal)
+    end
+  end
+
+  describe "goal deletion" do
+    setup ctx do
+      ctx
+      |> Factory.add_company_admin(:creator)
+    end
+
+    test "given goal has child goal, it cannot be deleted", ctx do
+      Factory.add_goal(ctx, :child_goal, :group, parent_goal: :goal)
+
+      assert_raise Ecto.ConstraintError, ~r/goals_parent_goal_id_fkey/, fn ->
+        Goals.delete_goal(ctx.goal)
+      end
+    end
+
+    test "given goal has child project, it cannot be deleted", ctx do
+      Factory.add_project(ctx, :project, :group, goal: :goal)
+
+      assert_raise Ecto.ConstraintError, ~r/projects_goal_id_fkey/, fn ->
+        Goals.delete_goal(ctx.goal)
+      end
+    end
+
+    test "given child goal and project are deleted first, goal can be deleted", ctx do
+      ctx =
+        ctx
+        |> Factory.add_goal(:child_goal, :group, parent_goal: :goal)
+        |> Factory.add_project(:child_project, :group, goal: :goal)
+
+
+      {:ok, _} = Goals.delete_goal(ctx.child_goal)
+      {:ok, _} = Projects.delete_project(ctx.child_project)
+
+      {:ok, _} = Goals.delete_goal(ctx.goal)
+
+      refute Projects.get_project(ctx.child_project.id)
+      refute Goals.get_goal(ctx.child_goal.id)
+      refute Goals.get_goal(ctx.goal.id)
+    end
+
+    test "when goal is deleted, its targets are also deleted", ctx do
+      ctx = Factory.add_goal_target(ctx, :target, :goal)
+
+      assert length(Goals.list_targets(ctx.goal.id)) == 1
+
+      {:ok, _} = Goals.delete_goal(ctx.goal)
+      refute Goals.get_target(ctx.target.id)
+    end
+
+    test "when goal is deleted, its check-ins are also deleted", ctx do
+      ctx =
+        ctx
+        |> Factory.add_goal_update(:check_in1, :goal, :creator)
+        |> Factory.add_goal_update(:check_in2, :goal, :creator)
+
+      {:ok, _} = Goals.delete_goal(ctx.goal)
     end
   end
 end

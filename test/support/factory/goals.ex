@@ -43,4 +43,10 @@ defmodule Operately.Support.Factory.Goals do
     Map.put(ctx, goal_name, goal)
   end
 
+  def add_goal_target(ctx, testid, goal_name, attrs \\ []) do
+    goal = Map.fetch!(ctx, goal_name)
+    target = Operately.GoalsFixtures.goal_target_fixture(goal, attrs)
+
+    Map.put(ctx, testid, target)
+  end
 end

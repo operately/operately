@@ -25,6 +25,7 @@ defmodule Operately.Goals do
     if condition, do: fun.(query), else: query
   end
 
+  def get_goal(id), do: Repo.get(Goal, id, with_deleted: true)
   def get_goal!(id), do: Repo.get_by_id(Goal, id, :with_deleted)
 
   def get_goal_with_access_level(goal_id, person_id) do
@@ -57,9 +58,17 @@ defmodule Operately.Goals do
     end
   end
 
+  def get_target(id), do: Repo.get(Target, id)
+
   def list_targets(goal_id) do
     from(target in Target, where: target.goal_id == ^goal_id, order_by: target.index)
     |> Repo.all()
+  end
+
+  def create_target(attrs) do
+    %Target{}
+    |> Target.changeset(attrs)
+    |> Repo.insert()
   end
 
   def progress_percentage(goal) do
