@@ -8,7 +8,6 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
   step :setup, ctx do
     ctx
     |> Factory.setup()
-    |> Factory.enable_feature("new_goal_check_ins")
     |> Factory.add_space(:space)
     |> Factory.add_space_member(:champion, :space)
     |> Factory.add_space_member(:reviewer, :space)
@@ -19,44 +18,14 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
     end)
   end
 
-  step :initiate_check_in, ctx do
-    ctx |> UI.click(testid: "check-in-button")
-  end
-
-  step :select_status, ctx, status do
+  step :check_in, ctx, %{status: status, targets: targets, message: message} do
     ctx 
-    |> UI.click(testid: "status-dropdown") 
-    |> UI.click(testid: UI.testid(["status", "option", status]))
-  end
-
-  step :update_target, ctx, %{name: name, change: change} do
-    target = find_target_by_name(ctx, name)
-    testid = target_input_test_id(name)
-    value = target.from + change
-
-    # What does \b\b\b\b\b\b do?
-    #
-    # If you leave the input empty, it will default to the target's from value
-    # so the default clear that is executed by the fill function is not working
-    # well here. Instead, we are injecting a backspace sequence to clear the input.
-
-    UI.fill(ctx, testid: testid, with: "\b\b\b\b\b\b#{value}")
-  end
-
-  step :fill_in_message, ctx, message do
-    ctx |> UI.fill_rich_text(message)
-  end
-
-  step :submit_check_in, ctx do
-    ctx |> UI.click(testid: "submit")
-  end
-
-  step :assert_check_in_submitted, ctx, %{status: status, message: message} do
-    ctx 
+    |> UI.click(testid: "check-in-button")
+    |> select_status(status)
+    |> update_targets(targets)
+    |> UI.fill_rich_text(message)
+    |> UI.click(testid: "submit")
     |> UI.assert_has(testid: "goal-check-in-page")
-    |> UI.assert_text("Check-In")
-    |> UI.assert_text(String.downcase(status))
-    |> UI.assert_text(message)
   end
 
   step :assert_check_in_feed_item, ctx, %{message: message} do
@@ -69,16 +38,14 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
     |> FeedSteps.assert_goal_checked_in(author: ctx.champion, goal_name: ctx.goal.name, texts: [message])
   end
 
-  step :assert_target_updated, ctx, %{change: change} do
-    change_text = if change > 0, do: "+#{change}", else: "#{change}"
-
-    ctx 
-    |> UI.assert_has(testid: "goal-check-in-page")
-    |> UI.assert_text(change_text)
-  end
-
-  step :assert_check_in_in_notifications, ctx do
-    ctx |> UI.click(testid: "something")
+  step :assert_check_in_notifications, ctx do
+    ctx
+    |> UI.login_as(ctx.reviewer)
+    |> NotificationsSteps.visit_notifications_page()
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.champion,
+      action: "submitted a check-in"
+    })
   end
 
   step :assert_check_in_email_sent, ctx do
@@ -91,35 +58,11 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
     })
   end
 
-  step :extend_timeframe, ctx do
-    ctx 
-    |> UI.click(testid: "edit-timeframe")
-    # todo
-  end
-
-  step :assert_timeframe_extended_message_visible, ctx do
-    ctx |> UI.assert_text("Extended by 1 month")
-  end
-
-  step :given_a_check_in_was_submitted_on_a_goal_that_i_review, ctx do
-    ctx |> Factory.add_goal_update(:check_in, :goal, :champion)
-  end
-
   step :acknowledge_check_in, ctx do
     ctx 
     |> UI.login_as(ctx.reviewer)
     |> UI.visit(Paths.goal_check_in_path(ctx.company, ctx.check_in))
     |> UI.click(testid: "acknowledge-check-in")
-  end
-
-  step :assert_check_in_acknowledged_email_sent_to_champion, ctx do
-    ctx
-    |> EmailSteps.assert_activity_email_sent(%{
-      where: ctx.goal.name,
-      to: ctx.champion,
-      author: ctx.reviewer,
-      action: "acknowledged your check-in"
-    })
   end
 
   step :assert_check_in_acknowledged_in_feed, ctx do
@@ -144,39 +87,14 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
 
   step :acknowledge_check_in_from_email, ctx do
     ctx = Factory.log_in_person(ctx, :reviewer)
-    email = UI.Emails.last_sent_email()
+    email = UI.Emails.last_sent_email(to: ctx.reviewer.email)
     link = UI.Emails.find_link(email, "Acknowledge")
 
     UI.visit(ctx, link)
   end
 
-  step :given_i_submitted_a_check_in, ctx do
-    ctx |> Factory.add_goal_update(:check_in, :goal, :champion)
-  end
-
-  step :initiate_editing_check_in, ctx do
-    ctx |> UI.click(testid: "something")
-  end
-
-  step :select_caution, ctx do
-    ctx |> UI.click(testid: "status-dropdown") |> UI.click(testid: "status-dropdown-caution")
-  end
-
-  step :assert_check_in_edited, ctx do
-    ctx |> UI.click(testid: "something")
-  end
-
   step :given_a_check_in_exists, ctx do
     ctx |> Factory.add_goal_update(:check_in, :goal, :champion)
-  end
-
-  step :comment_on_check_in, ctx, message do
-    ctx
-    |> UI.login_as(ctx.reviewer)
-    |> UI.visit(Paths.goal_check_in_path(ctx.company, ctx.check_in))
-    |> UI.click(testid: "add-comment")
-    |> UI.fill_rich_text(message)
-    |> UI.click(testid: "post-comment")
   end
 
   step :assert_check_in_commented_in_feed, ctx, message do
@@ -199,7 +117,49 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
     })
   end
 
-  step :assert_check_in_commented_email_sent, ctx do
+  step :assert_acknowledge_email_sent, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.goal.name,
+      to: ctx.champion,
+      author: ctx.reviewer,
+      action: "acknowledged your check-in"
+    })
+  end
+
+  step :edit_check_in, ctx, %{status: status, targets: targets, message: message} do
+    ctx
+    |> UI.click(testid: "edit-check-in")
+    |> select_status(status)
+    |> update_targets(targets)
+    |> UI.fill_rich_text(message)
+    |> UI.click(testid: "submit")
+  end
+
+  step :assert_check_in_edited, ctx, params do
+    ctx
+    |> UI.assert_text(params.status)
+    |> UI.assert_text(params.message)
+  end
+
+  step :comment_on_check_in_as_reviewer, ctx, message do
+    ctx
+    |> UI.login_as(ctx.reviewer)
+    |> UI.visit(Paths.goal_check_in_path(ctx.company, ctx.check_in))
+    |> UI.click(testid: "add-comment")
+    |> UI.fill_rich_text(message)
+    |> UI.click(testid: "post-comment")
+  end
+
+  step :assert_check_in_commented_notification_redirects_on_click, ctx do
+    update = Operately.Goals.list_updates(ctx.goal) |> hd()
+
+    ctx
+    |> UI.click(testid: "notification-item-goal_check_in_commented")
+    |> UI.assert_page(Paths.goal_check_in_path(ctx.company, update))
+  end
+
+  step :assert_comment_email_sent, ctx do
     ctx
     |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.goal.name,
@@ -216,4 +176,31 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
   defp find_target_by_name(ctx, name) do
     Repo.preload(ctx.goal, :targets).targets |> Enum.find(&(&1.name == name))
   end
+
+  defp update_targets(ctx, targets) do
+    Enum.reduce(targets, ctx, fn {name, value}, ctx -> 
+      update_target(ctx, %{name: name, change: value}) 
+    end)
+  end
+
+  defp update_target(ctx, %{name: name, change: change}) do
+    target = find_target_by_name(ctx, name)
+    testid = target_input_test_id(name)
+    value = target.from + change
+
+    # What does \b\b\b\b\b\b do?
+    #
+    # If you leave the input empty, it will default to the target's from value
+    # so the default clear that is executed by the fill function is not working
+    # well here. Instead, we are injecting a backspace sequence to clear the input.
+
+    UI.fill(ctx, testid: testid, with: "\b\b\b\b\b\b#{value}")
+  end
+
+  defp select_status(ctx, status) do
+    ctx
+    |> UI.click(testid: "status-dropdown") 
+    |> UI.click(testid: UI.testid(["status", "option", status]))
+  end
+
 end

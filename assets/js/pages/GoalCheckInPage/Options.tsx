@@ -23,7 +23,7 @@ export function Options() {
           icon={Icons.IconEdit}
           title="Edit"
           onClick={() => setPageMode("edit")}
-          testId="edit-goal-definition"
+          testId="edit-check-in"
           keepOutsideOnBigScreen
         />
       )}

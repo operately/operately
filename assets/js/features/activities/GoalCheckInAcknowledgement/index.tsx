@@ -15,7 +15,7 @@ const GoalCheckInAcknowledgement: ActivityHandler = {
   },
 
   pagePath(activity: Activity): string {
-    return Paths.goalProgressUpdatePath(content(activity).update!.id!);
+    return Paths.goalCheckInPath(content(activity).update!.id!);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -34,7 +34,7 @@ const GoalCheckInAcknowledgement: ActivityHandler = {
     const goal = content(activity).goal!;
     const update = content(activity).update!;
 
-    const path = Paths.goalProgressUpdatePath(update.id!);
+    const path = Paths.goalCheckInPath(update.id!);
     const link = <Link to={path}>Check-In</Link>;
 
     if (page === "goal") {

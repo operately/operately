@@ -15,7 +15,7 @@ import { match } from "ts-pattern";
 
 const GoalCheckIn: ActivityHandler = {
   pagePath(activity: Activity): string {
-    return Paths.goalProgressUpdatePath(content(activity).update!.id!);
+    return Paths.goalCheckInPath(content(activity).update!.id!);
   },
 
   pageHtmlTitle(_activity: Activity): string {
@@ -55,7 +55,7 @@ const GoalCheckIn: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }) {
-    const path = Paths.goalProgressUpdatePath(content(activity).update!.id!);
+    const path = Paths.goalCheckInPath(content(activity).update!.id!);
     const link = <Link to={path}>submitted a check-in</Link>;
 
     if (page === "goal") {

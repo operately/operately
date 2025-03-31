@@ -75,10 +75,10 @@ defmodule Operately.Support.Features.ReviewSteps do
     ctx
     |> UI.click(testid: "assignment-" <> Paths.goal_id(ctx.goal))
     |> UI.click(testid: "status-dropdown")
-    |> UI.click(testid: "status-dropdown-on_track")
+    |> UI.click(testid: "status-option-on-track")
     |> UI.fill_rich_text("Going well")
     |> UI.click(testid: "submit")
-    |> UI.assert_has(testid: "goal-progress-update-page")
+    |> UI.assert_has(testid: "goal-check-in-page")
   end
 
   step :assert_the_updated_goal_is_no_longer_displayed, ctx do

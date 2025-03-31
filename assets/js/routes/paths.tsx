@@ -345,24 +345,12 @@ export class Paths {
     return createCompanyPath(["goals", "new"]) + "?parentGoalId=" + parentGoalId;
   }
 
-  static goalProgressUpdatePath(checkInId: string) {
-    return createCompanyPath(["goal-updates", checkInId]);
-  }
-
-  static goalProgressUpdateNewPath(goalId: string) {
-    return createCompanyPath(["goals", goalId, "progress-updates", "new"]);
-  }
-
   static goalCheckInNewPath(goalId: string) {
     return createCompanyPath(["goals", goalId, "check-ins", "new"]);
   }
 
   static goalCheckInPath(checkInId: string) {
     return createCompanyPath(["goal-check-ins", checkInId]);
-  }
-
-  static goalEditProgressUpdatePath(checkInId: string) {
-    return createCompanyPath(["goal-updates", checkInId, "edit"]);
   }
 
   static newGoalDiscussionPath(goalId: string) {
