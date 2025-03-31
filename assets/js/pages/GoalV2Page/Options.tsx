@@ -1,10 +1,12 @@
 import * as React from "react";
+
 import * as Pages from "@/components/Pages";
 import * as Icons from "@tabler/icons-react";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
+import { assertPresent } from "@/utils/assertions";
+import { Paths } from "@/routes/paths";
 
 import { useLoadedData } from "./loader";
-import { assertPresent } from "@/utils/assertions";
 
 export function Options() {
   const { goal } = useLoadedData();
@@ -24,6 +26,24 @@ export function Options() {
           onClick={() => setPageMode("edit")}
           testId="edit-goal-definition"
           keepOutsideOnBigScreen
+        />
+      )}
+
+      {goal.permissions.canClose && !goal.isClosed && (
+        <PageOptions.Link
+          icon={Icons.IconCircleCheck}
+          title="Close Goal"
+          to={Paths.goalClosePath(goal.id!)}
+          testId="close-goal"
+        />
+      )}
+
+      {goal.permissions.canClose && goal.isClosed && (
+        <PageOptions.Link
+          icon={Icons.IconRotateDot}
+          title="Reopen Goal"
+          to={Paths.goalReopenPath(goal.id!)}
+          testId="reopen-goal"
         />
       )}
     </PageOptions.Root>
