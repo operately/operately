@@ -26,6 +26,7 @@ export function useForm() {
   const currTimeframe = {
     startDate: Time.parseDate(goal.timeframe.startDate),
     endDate: Time.parseDate(goal.timeframe.endDate),
+    type: goal.timeframe.type,
   };
   const parentAccessLevel = space.accessLevels;
 
