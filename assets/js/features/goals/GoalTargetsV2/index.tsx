@@ -46,7 +46,7 @@ function Targets(props: Props) {
   const editDefinition = Boolean(!props.readonly && props.editDefinition);
   const { targets } = useTargetsContext();
 
-  const { ref } = useDropZone({ id: "targets" });
+  const { ref } = useDropZone({ id: "targets", dependencies: [targets] });
   const { itemStyle } = useDraggingAnimation("targets", targets);
 
   if (editDefinition) {
