@@ -66,6 +66,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdate do
       include_space_members: [goal: [group: [:members, :company]]],
       include_subscriptions_list: :subscription_list,
       include_potential_subscribers: [:access_context, goal: [:champion, :reviewer, group: :members]],
+      include_permissions: &load_update_permissions/1,
     ])
   end
 
@@ -73,7 +74,6 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdate do
     Inputs.parse_includes(inputs, [
       include_potential_subscribers: &Update.set_potential_subscribers/1,
       include_unread_notifications: UnreadNotificationsLoader.load(me),
-      include_permissions: &Goal.set_permissions/1,
       always_include: &load_goal_permissions/1,
     ])
   end
@@ -85,5 +85,9 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdate do
     else
       update
     end
+  end
+
+  defp load_update_permissions(update) do
+    Update.preload_permissions(update)
   end
 end

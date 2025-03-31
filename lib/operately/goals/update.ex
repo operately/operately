@@ -37,21 +37,21 @@ defmodule Operately.Goals.Update do
   def changeset(check_in, attrs) do
     check_in
     |> cast(attrs, [
-      :goal_id, 
-      :author_id, 
-      :message, 
-      :status, 
-      :acknowledged_at, 
-      :acknowledged_by_id, 
+      :goal_id,
+      :author_id,
+      :message,
+      :status,
+      :acknowledged_at,
+      :acknowledged_by_id,
       :subscription_list_id,
     ])
     |> cast_embed(:targets)
     |> cast_embed(:timeframe)
     |> validate_required([
-      :goal_id, 
-      :author_id, 
-      :message, 
-      :status, 
+      :goal_id,
+      :author_id,
+      :message,
+      :status,
       :subscription_list_id,
       :timeframe
     ])
@@ -68,5 +68,18 @@ defmodule Operately.Goals.Update do
       |> Notifications.Subscriber.from_goal_update()
 
     %{update | potential_subscribers: subs}
+  end
+
+  def preload_permissions(update) do
+    preload_permissions(update, update.request_info.access_level)
+  end
+
+  def preload_permissions(update, access_level) do
+    # Ensure goal is preloaded
+    update = Repo.preload(update, :goal)
+
+    # Calculate permissions with the goal and user ID
+    permissions = Update.Permissions.calculate(access_level, update.goal, update.request_info.requester.id)
+    Map.put(update, :permissions, permissions)
   end
 end
