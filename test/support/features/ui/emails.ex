@@ -49,6 +49,10 @@ defmodule Operately.Support.Features.UI.Emails do
     list_sent_emails() |> List.last()
   end
 
+  def last_sent_email(to: email) do
+    list_sent_emails() |> Enum.filter(fn s -> hd(s.to) == email end) |> List.last()
+  end
+
   def find_link(email, text) do
     email.html
     |> Floki.find("a[href]") 
