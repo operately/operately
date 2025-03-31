@@ -17,7 +17,7 @@ const GoalUpdateCommented: ActivityHandler = {
   },
 
   pagePath(activity: Activity): string {
-    return Paths.goalProgressUpdatePath(content(activity).update?.id!);
+    return Paths.goalCheckInPath(content(activity).update?.id!);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -39,7 +39,7 @@ const GoalUpdateCommented: ActivityHandler = {
     assertPresent(data.update, "Update must be present in activity content");
     assertPresent(data.update.id, "Update ID must be present in activity content");
 
-    const checkInPath = Paths.goalProgressUpdatePath(data.update.id);
+    const checkInPath = Paths.goalCheckInPath(data.update.id);
     const checkInLink = <Link to={checkInPath}>Check-In</Link>;
 
     if (page === "goal") {

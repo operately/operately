@@ -36,7 +36,7 @@ export function useForm(props: CreateProps | EditProps, subscriptionsState: Subs
       if (mode === "create") {
         navigate(Paths.goalPath(goal.id!));
       } else {
-        navigate(Paths.goalProgressUpdatePath(props.update.id!));
+        navigate(Paths.goalCheckInPath(props.update.id!));
       }
     },
     submit: async () => {
@@ -50,7 +50,7 @@ export function useForm(props: CreateProps | EditProps, subscriptionsState: Subs
           subscriberIds: subscriptionsState.currentSubscribersList,
         });
 
-        navigate(Paths.goalProgressUpdatePath(res.update!.id));
+        navigate(Paths.goalCheckInPath(res.update!.id));
       } else {
         const res = await edit({
           id: props.update.id,
@@ -59,7 +59,7 @@ export function useForm(props: CreateProps | EditProps, subscriptionsState: Subs
           newTargetValues: JSON.stringify(form.values.targets.map((t) => ({ id: t.id, value: parseInt(t.value!) }))),
         });
 
-        navigate(Paths.goalProgressUpdatePath(res.update!.id));
+        navigate(Paths.goalCheckInPath(res.update!.id));
       }
     },
   });

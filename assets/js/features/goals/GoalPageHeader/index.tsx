@@ -201,7 +201,7 @@ function CheckInButton({ goal }) {
   if (!goal.permissions.canCheckIn) return null;
   if (goal.isClosed || goal.isArchived) return null;
 
-  const path = Paths.goalProgressUpdateNewPath(goal.id);
+  const path = Paths.goalCheckInNewPath(goal.id!);
 
   return (
     <div className="mt-1">
