@@ -71,7 +71,7 @@ export function useForm(props: EditProps | NewProps) {
 
         const res = await post(payload);
 
-        navigate(Paths.goalProgressUpdatePath(res.update!.id));
+        navigate(Paths.goalCheckInPath(res.update!.id));
       } else {
         const payload = { ...commonAttrs, id: props.update.id };
         await edit(payload);

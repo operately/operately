@@ -8,7 +8,6 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
   step :setup, ctx do
     ctx
     |> Factory.setup()
-    |> Factory.enable_feature("new_goal_check_ins")
     |> Factory.add_space(:space)
     |> Factory.add_space_member(:champion, :space)
     |> Factory.add_space_member(:reviewer, :space)
