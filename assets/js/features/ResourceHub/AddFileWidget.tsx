@@ -25,6 +25,7 @@ interface FormProps {
 export function AddFileWidget({ resourceHub, folder, refresh }: FormProps) {
   const potentialSubscribers = folder?.potentialSubscribers || resourceHub.potentialSubscribers;
   const { files, setFiles, filesSelected } = useNewFileModalsContext();
+  const [error, setError] = useState<string>();
 
   assertPresent(potentialSubscribers, "potentialSubscribers must be present in folder or resourceHub");
 
@@ -54,7 +55,11 @@ export function AddFileWidget({ resourceHub, folder, refresh }: FormProps) {
         setProgress: setProgress,
       });
 
-      await uploader.upload();
+      try {
+        await uploader.upload();
+      } catch (e) {
+        setError("There was an unexpected error while uploading the file. Please, try again.");
+      }
 
       setFiles(undefined);
       refresh();
@@ -69,17 +74,23 @@ export function AddFileWidget({ resourceHub, folder, refresh }: FormProps) {
     }
   }, [files]);
 
+  if (error) return <ErrorModal error={error} setError={setError} />;
+
   if (form.state === "submitting") return <UploadingModal progress={progress} isOpen={filesSelected} />;
 
-  if (!filesSelected) return <></>;
+  if (filesSelected) return <Form form={form} resourceHub={resourceHub} subscriptionsState={subscriptionsState} />;
 
+  return <></>;
+}
+
+function Form({ form, subscriptionsState, resourceHub }) {
   return (
     <div className="border border-surface-outline shadow-lg p-8 rounded-lg">
       <Forms.Form form={form}>
         <Files field="items" />
 
         <Spacer size={2} />
-        <SubscribersSelector state={subscriptionsState} resourceHubName={resourceHub.name!} />
+        <SubscribersSelector state={subscriptionsState} resourceHubName={resourceHub.name} />
 
         <Forms.Submit cancelText="Cancel" />
       </Forms.Form>
@@ -163,6 +174,14 @@ function UploadingModal({ progress, isOpen }) {
     <Modal isOpen={isOpen}>
       <div className="text-center">{text}</div>
       <LoadingProgressBar progress={progress} barClassName="mt-2" />
+    </Modal>
+  );
+}
+
+function ErrorModal({ error, setError }) {
+  return (
+    <Modal title="Unexpected error" isOpen={Boolean(error)} hideModal={() => setError(undefined)}>
+      <div>{error}</div>
     </Modal>
   );
 }
