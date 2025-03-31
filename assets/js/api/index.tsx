@@ -910,6 +910,7 @@ export interface GoalProgressUpdate {
   potentialSubscribers?: Subscriber[] | null;
   notifications?: Notification[] | null;
   timeframe?: Timeframe | null;
+  canAcknowledge?: boolean | null;
 }
 
 export interface GoalTargetUpdates {

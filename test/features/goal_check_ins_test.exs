@@ -48,6 +48,14 @@ defmodule Operately.Features.GoalProgressUpdateTest do
     |> Steps.assert_check_in_acknowledged_in_notifications()
   end
 
+  # feature "acknowledge as a champion (submitted as a reviewer)", ctx do
+    # ctx
+    # |> Steps.given_the_reviewer_submitted_a_check_in()
+    # |> Steps.acknowledge_check_in_as_champion()
+    # |> Steps.assert_reviewer_got_acknowledged_notification()
+    # |> Steps.assert_reviewer_got_acknowledged_email()
+  # end
+
   feature "edit a submitted check-in", ctx do
     params = %{
       status: "at risk",

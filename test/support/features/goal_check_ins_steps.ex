@@ -65,6 +65,12 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
     |> UI.click(testid: "acknowledge-check-in")
   end
 
+  step :acknowledge_check_in_as_champion, ctx do
+    ctx 
+    |> UI.visit(Paths.goal_check_in_path(ctx.company, ctx.check_in))
+    |> UI.click(testid: "acknowledge-check-in")
+  end
+
   step :assert_check_in_acknowledged_in_feed, ctx do
     ctx
     |> UI.visit(Paths.goal_path(ctx.company, ctx.goal))
@@ -85,6 +91,16 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
     })
   end
 
+  step :assert_reviewer_got_acknowledged_notification, ctx do
+    ctx
+    |> UI.login_as(ctx.reviewer)
+    |> NotificationsSteps.visit_notifications_page()
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.champion,
+      action: "acknowledged your check-in"
+    })
+  end
+
   step :acknowledge_check_in_from_email, ctx do
     ctx = Factory.log_in_person(ctx, :reviewer)
     email = UI.Emails.last_sent_email(to: ctx.reviewer.email)
@@ -95,6 +111,10 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
 
   step :given_a_check_in_exists, ctx do
     ctx |> Factory.add_goal_update(:check_in, :goal, :champion)
+  end
+
+  step :given_the_reviewer_submitted_a_check_in, ctx do
+    ctx |> Factory.add_goal_update(:check_in, :goal, :reviewer)
   end
 
   step :assert_check_in_commented_in_feed, ctx, message do
@@ -123,6 +143,16 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
       where: ctx.goal.name,
       to: ctx.champion,
       author: ctx.reviewer,
+      action: "acknowledged your check-in"
+    })
+  end
+
+  step :assert_reviewer_got_acknowledged_email, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.goal.name,
+      to: ctx.reviewer,
+      author: ctx.champion,
       action: "acknowledged your check-in"
     })
   end
