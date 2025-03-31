@@ -1,7 +1,7 @@
 import React from "react";
 
 import * as Goals from "@/models/goals";
-import { IconChevronDown, IconTrash } from "@tabler/icons-react";
+import { IconTrash } from "@tabler/icons-react";
 
 import classNames from "classnames";
 import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
@@ -9,7 +9,7 @@ import { MiniPieChart } from "@/components/charts";
 import { useDragAndDropContext, useDraggable } from "@/features/DragAndDrop";
 
 import { Target } from "./types";
-import { TargetNumericField, TargetTextField, TargetValue } from "./components";
+import { ExpandIcon, TargetNumericField, TargetTextField, TargetValue } from "./components";
 import { useTargetsContext } from "./TargetsContext";
 
 interface Props {
@@ -60,7 +60,7 @@ function TitleSection({ target, index, editing }) {
           <TargetValue readonly index={index} target={target} />
         </div>
       )}
-      <IconChevronDown onClick={toggle} className="cursor-pointer" size={14} />
+      <ExpandIcon expanded={editing} onClick={toggle} className="cursor-pointer" size={14} />
     </>
   );
 }
