@@ -66,7 +66,7 @@ function useClickHandler(node: Node) {
       if (node.isClosed) {
         return navigate(Paths.goalPath(node.id!));
       } else {
-        return navigate(Paths.goalProgressUpdatePath(node.asGoalNode()!.lastCheckIn!.id!));
+        return navigate(Paths.goalCheckInPath(node.asGoalNode()!.lastCheckIn!.id!));
       }
     }
 

@@ -62,7 +62,7 @@ defmodule Operately.Support.Features.SubscriptionsSteps do
   step :fill_out_goal_update_form, ctx do
     ctx
     |> UI.click(testid: "status-dropdown")
-    |> UI.click(testid: "status-dropdown-on_track")
+    |> UI.click(testid: "status-option-on-track")
     |> UI.fill_rich_text("Some content")
   end
 
