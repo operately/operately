@@ -72,7 +72,5 @@ describe("targetProgressPercentage", () => {
     test("allows values above 100% when unclamped", () => {
       expect(targetProgressPercentage(makeTarget(-50), false)).toBe(150);
     });
-
-
   });
 });
