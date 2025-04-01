@@ -14,13 +14,13 @@ export function CheckInReactions() {
   const entity = Reactions.entity(update.id!, "goal_update");
   const addReactionForm = useReactionsForm(entity, reactions);
 
-  assertPresent(update.goal?.permissions?.canCommentOnUpdate, "permissions must be present in update");
+  assertPresent(update.permissions?.canComment, "permissions must be present in update");
 
   if (isEditMode) return null;
 
   return (
     <div className="mt-8">
-      <ReactionList size={24} form={addReactionForm} canAddReaction={update.goal.permissions.canCommentOnUpdate} />
+      <ReactionList size={24} form={addReactionForm} canAddReaction={update.permissions.canComment} />
     </div>
   );
 }
