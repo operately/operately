@@ -11,7 +11,7 @@ import { SecondaryButton } from "@/components/Buttons";
 import { Link } from "@/components/Link";
 import { Paths } from "@/routes/paths";
 import { SmallStatusIndicator } from "@/components/status";
-import { Summary } from "@/components/RichContent";
+import { richContentToString } from "@/components/RichContent";
 
 export function CheckInSection({ project }: { project: Projects.Project }) {
   return (
@@ -89,7 +89,7 @@ function LastCheckInContent({ project }: { project: Projects.Project }) {
           {avatar} {People.shortName(author)} submitted: <LastCheckInLink project={project} />
         </div>
 
-        <Summary jsonContent={description} characterCount={200} />
+        <span>{richContentToString(JSON.parse(description))}</span>
       </div>
     </div>
   );
