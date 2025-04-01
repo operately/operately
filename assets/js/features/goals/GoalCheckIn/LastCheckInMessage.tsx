@@ -66,7 +66,7 @@ function LastMessageComments({ goal }: { goal: Goals.Goal }) {
 }
 
 function LastMessageReactions({ goal }: { goal: Goals.Goal }) {
-  assertPresent(goal.permissions?.canCommentOnUpdate, "permissions must be present in goal");
+  assertPresent(goal.lastCheckIn?.permissions?.canComment, "permissions must be present in the update");
 
   const update = goal.lastCheckIn!;
   const reactions = update.reactions!.map((r: any) => r!);
@@ -74,5 +74,5 @@ function LastMessageReactions({ goal }: { goal: Goals.Goal }) {
 
   const addReactionForm = useReactionsForm(entity, reactions);
 
-  return <ReactionList size={20} form={addReactionForm} canAddReaction={goal.permissions.canCommentOnUpdate} />;
+  return <ReactionList size={20} form={addReactionForm} canAddReaction={goal.lastCheckIn!.permissions.canComment} />;
 }
