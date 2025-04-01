@@ -295,4 +295,31 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
   defp update_check_in_timestamp(update, timestamp) do
     {:ok, _} = Operately.Repo.update(Ecto.Changeset.change(update, %{inserted_at: timestamp}))
   end
+
+  step :given_multiple_check_ins_exist, ctx do
+    ctx
+    |> Factory.add_goal_update(:check_in, :goal, :champion)
+    |> Factory.add_goal_update(:check_in, :goal, :champion)
+    |> Factory.add_goal_update(:check_in, :goal, :champion)
+  end
+
+  step :assert_latest_check_in_is_editable, ctx do
+    latest_update = find_last_update(ctx)
+
+    ctx
+    |> UI.visit(Paths.goal_check_in_path(ctx.company, latest_update))
+    |> UI.click(testid: "edit-check-in")
+    |> UI.refute_text("Editing locked after 3 days")
+  end
+
+  step :assert_other_check_ins_not_editable, ctx do
+    goal = Factory.reload(ctx, :goal).goal
+    updates = Operately.Repo.preload(goal, :updates).updates
+    [_latest, older | _rest] = Enum.reverse(updates)
+
+    ctx
+    |> UI.visit(Paths.goal_check_in_path(ctx.company, older))
+    |> UI.click(testid: "edit-check-in")
+    |> UI.assert_text("Editing locked after 3 days")
+  end
 end
