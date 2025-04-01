@@ -880,10 +880,16 @@ defmodule OperatelyWeb.Api.Types do
   object :goal_permissions do
     field :can_edit, :boolean
     field :can_check_in, :boolean
-    field :can_acknowledge_check_in, :boolean
     field :can_close, :boolean
     field :can_archive, :boolean
-    field :can_comment_on_update, :boolean
+  end
+
+  object :goal_update_permissions do
+    field :can_view, :boolean
+    field :can_edit, :boolean
+    field :can_delete, :boolean
+    field :can_acknowledge, :boolean
+    field :can_comment, :boolean
   end
 
   object :activity_content_project_contributor_addition do
@@ -1434,6 +1440,7 @@ defmodule OperatelyWeb.Api.Types do
     field :potential_subscribers, list_of(:subscriber)
     field :notifications, list_of(:notification)
     field :timeframe, :timeframe
+    field :permissions, :goal_update_permissions
   end
 
   object :goal_target_updates do

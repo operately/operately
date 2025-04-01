@@ -19,7 +19,7 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
   end
 
   step :check_in, ctx, %{status: status, targets: targets, message: message} do
-    ctx 
+    ctx
     |> UI.click(testid: "check-in-button")
     |> select_status(status)
     |> update_targets(targets)
@@ -59,7 +59,7 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
   end
 
   step :acknowledge_check_in, ctx do
-    ctx 
+    ctx
     |> UI.login_as(ctx.reviewer)
     |> UI.visit(Paths.goal_check_in_path(ctx.company, ctx.check_in))
     |> UI.click(testid: "acknowledge-check-in")
@@ -169,6 +169,49 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
     })
   end
 
+  step :assert_acknowledge_button_visible_to_champion, ctx do
+    ctx
+    |> UI.login_as(ctx.champion)
+    |> UI.visit(Paths.goal_check_in_path(ctx.company, find_last_update(ctx)))
+    |> UI.assert_has(testid: "acknowledge-check-in")
+  end
+
+  step :given_a_reviewer_submitted_check_in, ctx do
+    ctx 
+    |> UI.login_as(ctx.reviewer)
+    |> UI.visit(Paths.goal_path(ctx.company, ctx.goal))
+    |> UI.click(testid: "check-in-button")
+    |> select_status("on_track")
+    |> UI.fill_rich_text("Check-in by reviewer")
+    |> UI.click(testid: "submit")
+    |> UI.assert_has(testid: "goal-check-in-page")
+  end
+
+  step :acknowledge_check_in_from_email_as_champion, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.goal.name,
+      to: ctx.champion,
+      author: ctx.reviewer,
+      action: "submitted a check-in"
+    })
+
+    last_email = UI.Emails.last_sent_email(to: ctx.champion.email)
+    link = UI.Emails.find_link(last_email, "Acknowledge")
+
+    ctx |> UI.visit(link)
+  end
+
+  step :assert_acknowledged_email_sent_to_reviewer, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.goal.name,
+      to: ctx.reviewer,
+      author: ctx.champion,
+      action: "acknowledged your check-in"
+    })
+  end
+
   defp target_input_test_id(name) do
     UI.testid(["target", "input", name])
   end
@@ -178,8 +221,8 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
   end
 
   defp update_targets(ctx, targets) do
-    Enum.reduce(targets, ctx, fn {name, value}, ctx -> 
-      update_target(ctx, %{name: name, change: value}) 
+    Enum.reduce(targets, ctx, fn {name, value}, ctx ->
+      update_target(ctx, %{name: name, change: value})
     end)
   end
 
@@ -199,8 +242,15 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
 
   defp select_status(ctx, status) do
     ctx
-    |> UI.click(testid: "status-dropdown") 
+    |> UI.click(testid: "status-dropdown")
     |> UI.click(testid: UI.testid(["status", "option", status]))
+  end
+
+  defp find_last_update(ctx) do
+    goal = Factory.reload(ctx, :goal).goal
+    goal = Operately.Repo.preload(goal, :last_update) 
+
+    goal.last_update
   end
 
 end

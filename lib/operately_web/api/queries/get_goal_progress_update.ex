@@ -2,7 +2,8 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdate do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
-  alias Operately.Goals.{Goal, Update, Permissions}
+  alias Operately.Goals.Update
+  alias Operately.Goals.Update.Permissions
   alias Operately.Notifications.UnreadNotificationsLoader
 
   inputs do
@@ -31,7 +32,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdate do
     |> Action.run(:me, fn -> find_me(conn) end)
     |> Action.run(:id, fn -> decode_id(inputs.id) end)
     |> Action.run(:update, fn ctx -> load(ctx, inputs) end)
-    |> Action.run(:check_permissions, fn ctx -> Permissions.check(ctx.update.request_info.access_level, :can_view) end)
+    |> Action.run(:check_permissions, fn ctx -> Permissions.check(ctx.update.request_info.access_level, ctx.update, ctx.me.id, :can_view) end)
     |> Action.run(:serialized, fn ctx -> {:ok, %{update: OperatelyWeb.Api.Serializer.serialize(ctx.update, level: :full)}} end)
     |> respond()
   end
@@ -73,17 +74,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdate do
     Inputs.parse_includes(inputs, [
       include_potential_subscribers: &Update.set_potential_subscribers/1,
       include_unread_notifications: UnreadNotificationsLoader.load(me),
-      include_permissions: &Goal.set_permissions/1,
-      always_include: &load_goal_permissions/1,
+      include_permissions: &Update.preload_permissions/1
     ])
-  end
-
-  defp load_goal_permissions(update) do
-    if Ecto.assoc_loaded?(update.goal) do
-      goal = Goal.preload_permissions(update.goal, update.request_info.access_level)
-      %{update | goal: goal}
-    else
-      update
-    end
   end
 end

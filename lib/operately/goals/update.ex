@@ -3,6 +3,7 @@ defmodule Operately.Goals.Update do
   use Operately.Repo.Getter
 
   alias Operately.Notifications
+  alias Operately.Goals.Update.Permissions
 
   schema "goal_updates" do
     belongs_to :goal, Operately.Goals.Goal, foreign_key: :goal_id
@@ -24,6 +25,7 @@ defmodule Operately.Goals.Update do
     # populated with after load hooks
     field :potential_subscribers, :any, virtual: true
     field :notifications, :any, virtual: true, default: []
+    field :permissions, :any, virtual: true
 
     timestamps()
     requester_access_level()
@@ -37,21 +39,21 @@ defmodule Operately.Goals.Update do
   def changeset(check_in, attrs) do
     check_in
     |> cast(attrs, [
-      :goal_id, 
-      :author_id, 
-      :message, 
-      :status, 
-      :acknowledged_at, 
-      :acknowledged_by_id, 
+      :goal_id,
+      :author_id,
+      :message,
+      :status,
+      :acknowledged_at,
+      :acknowledged_by_id,
       :subscription_list_id,
     ])
     |> cast_embed(:targets)
     |> cast_embed(:timeframe)
     |> validate_required([
-      :goal_id, 
-      :author_id, 
-      :message, 
-      :status, 
+      :goal_id,
+      :author_id,
+      :message,
+      :status,
       :subscription_list_id,
       :timeframe
     ])
@@ -68,5 +70,20 @@ defmodule Operately.Goals.Update do
       |> Notifications.Subscriber.from_goal_update()
 
     %{update | potential_subscribers: subs}
+  end
+
+  def preload_permissions(update) do
+    preload_permissions(update, update.request_info.access_level)
+  end
+
+  def preload_permissions(update, access_level) do
+    preload_permissions(update, access_level, update.request_info.requester.id)
+  end
+
+  def preload_permissions(update, access_level, user_id) do
+    update = Repo.preload(update, :goal)
+
+    permissions = Permissions.calculate(access_level, update, user_id)
+    Map.put(update, :permissions, permissions)
   end
 end
