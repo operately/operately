@@ -36,6 +36,14 @@ defmodule Operately.Goals.Update.Permissions do
     end
   end
 
+  def check_can_edit(access_level) do
+    if can_edit(access_level) do
+      {:ok, :allowed}
+    else
+      {:error, :unauthorized}
+    end
+  end
+
   def check(access_level, update, user_id, permission) when is_atom(permission) and is_binary(user_id) do
     permissions = calculate(access_level, update, user_id)
 
