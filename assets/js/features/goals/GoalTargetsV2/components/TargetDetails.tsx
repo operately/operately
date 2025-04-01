@@ -7,7 +7,7 @@ interface TargetDetailsProps {
 }
 
 export function TargetDetails({ target }: TargetDetailsProps) {
-  const progress = Goals.targetProgressPercentage(target);
+  const progress = Goals.targetProgressPercentage(target, false);
   const { from, to, unit, value } = target;
 
   const directionText = from! > to! ? "down to" : "to";
@@ -29,7 +29,7 @@ export function TargetDetails({ target }: TargetDetailsProps) {
       <div className="flex items-center gap-2 mt-1">
         <div className="w-20 font-semibold">Current</div>
         <div>
-          {formatUnit(value)} ({progress.toFixed(1)}%)
+          {formatUnit(value)} <span className={progress < 0 ? "text-red-500" : ""}>({progress.toFixed(1)}%)</span>
         </div>
       </div>
     </div>
