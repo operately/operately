@@ -51,8 +51,7 @@ defmodule Operately.Features.GoalProgressUpdateTest do
   feature "acknowledge a check-in as a champion (reviewer submitted)", ctx do
     ctx
     |> Steps.given_a_reviewer_submitted_check_in()
-    |> Steps.assert_check_in_got_email_to_acknowledge()
-    |> Steps.acknowledge_as_champion()
+    |> Steps.acknowledge_check_in_from_email_as_champion()
     |> Steps.assert_acknowledge_email_sent_to_reviewer()
   end
 
