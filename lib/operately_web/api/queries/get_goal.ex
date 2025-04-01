@@ -81,6 +81,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
       include_privacy: &Goal.load_privacy/1,
       include_potential_subscribers: &Goal.set_potential_subscribers/1,
       include_unread_notifications: UnreadNotificationsLoader.load(me),
+      include_last_check_in: &Goal.load_last_check_in_permissions/1,
     ])
   end
 end

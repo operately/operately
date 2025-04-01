@@ -49,7 +49,7 @@ defmodule OperatelyWeb.Api.Mutations.EditSubscriptionsList do
     case type do
       :project_check_in -> Projects.Permissions.check(access_level, :can_edit_check_in)
       :project_retrospective -> Projects.Permissions.check(access_level, :can_edit_retrospective)
-      :goal_update -> Goals.Permissions.check(access_level, :can_edit_check_in)
+      :goal_update -> Goals.Update.Permissions.check_can_edit(access_level)
       :message -> Groups.Permissions.check(access_level, :can_edit_discussions)
       :resource_hub_document -> ResourceHubs.Permissions.check(access_level, :can_edit_document)
       :resource_hub_file -> ResourceHubs.Permissions.check(access_level, :can_edit_file)
