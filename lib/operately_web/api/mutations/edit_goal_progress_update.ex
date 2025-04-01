@@ -2,7 +2,8 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalProgressUpdate do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
-  alias Operately.Goals.{Permissions, Update}
+  alias Operately.Goals.Update
+  alias Operately.Goals.Update.Permissions
   alias Operately.Operations.GoalCheckInEdit
 
   inputs do
