@@ -28,7 +28,7 @@ defmodule Operately.Operations.GoalDeleting do
 
   defp delete_discussions(multi, goal) do
     Multi.run(multi, :discussions, fn _, _ ->
-      {_count, discussions} = Goals.delete_goal_discussion(goal.id)
+      {_count, discussions} = Goals.delete_goal_discussions(goal.id)
       {:ok, discussions}
     end)
   end

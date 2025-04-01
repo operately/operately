@@ -174,7 +174,7 @@ defmodule Operately.Goals do
     |> Repo.all()
   end
 
-  def delete_goal_discussion(goal_id) do
+  def delete_goal_discussions(goal_id) do
     from(t in Operately.Comments.CommentThread,
       join: a in Operately.Activities.Activity, on: a.comment_thread_id == t.id,
       where: a.action in ^@goal_actions,
