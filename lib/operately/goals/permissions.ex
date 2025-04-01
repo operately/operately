@@ -8,6 +8,8 @@ defmodule Operately.Goals.Permissions do
     :can_close,
     :can_archive,
     :can_reopen,
+    :can_comment_on_update,
+    :can_delete,
   ]
 
   def calculate(access_level) do
@@ -18,6 +20,8 @@ defmodule Operately.Goals.Permissions do
       can_reopen: can_edit(access_level),
       can_archive: can_archive(access_level),
       can_close: can_edit(access_level),
+      can_comment_on_update: can_comment_on_update(access_level),
+      can_delete: can_delete(access_level),
     }
   end
 
@@ -26,6 +30,8 @@ defmodule Operately.Goals.Permissions do
   def can_check_in(access_level), do: access_level >= Binding.full_access()
   def can_edit(access_level), do: access_level >= Binding.edit_access()
   def can_reopen(access_level), do: access_level >= Binding.edit_access()
+  def can_comment_on_update(access_level), do: access_level >= Binding.comment_access()
+  def can_delete(access_level), do: access_level >= Binding.edit_access()
 
   def check(access_level, permission) when is_atom(permission) and is_integer(access_level) do
     permissions = calculate(access_level)
