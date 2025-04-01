@@ -33,8 +33,12 @@ defmodule Operately.Support.Factory do
 
   # goals
   defdelegate add_goal(ctx, testid, space_name, opts \\ []), to: Factory.Goals
-  defdelegate add_goal_update(ctx, testid, goal_name, person_name) , to: Factory.Goals
+  defdelegate add_goal_update(ctx, testid, goal_name, person_name), to: Factory.Goals
   defdelegate set_goal_next_update_date(ctx, goal_name, date), to: Factory.Goals
+  defdelegate add_goal_target(ctx, testid, goal_name, attrs \\ []), to: Factory.Goals
+  defdelegate close_goal(ctx, testid, opts \\ []), to: Factory.Goals
+  defdelegate reopen_goal(ctx, testid, opts \\ []), to: Factory.Goals
+  defdelegate add_goal_discussion(ctx, testid, goal_name, opts \\ []), to: Factory.Goals
 
   # projects
   defdelegate add_project(ctx, testid, space_name, opts \\ []), to: Factory.Projects
@@ -56,6 +60,7 @@ defmodule Operately.Support.Factory do
 
   # comments
   defdelegate add_comment(ctx, testid, parent_name, opts \\ []), to: Factory.Comments
+  defdelegate add_reactions(ctx, testid, parent_name, opts \\ []), to: Factory.Comments
 
   # resource hubs
   defdelegate add_resource_hub(ctx, testid, space_name, creator_name, opts \\ []), to: Factory.ResourceHubs

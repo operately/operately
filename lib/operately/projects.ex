@@ -20,6 +20,8 @@ defmodule Operately.Projects do
     CheckIn
   }
 
+  def get_project(id), do: Repo.get(Project, id, with_deleted: true)
+
   def get_project!(id) do
     query = from p in Project, where: p.id == ^id
 
@@ -87,6 +89,10 @@ defmodule Operately.Projects do
 
   def change_project(%Project{} = project, attrs \\ %{}) do
     Project.changeset(project, attrs)
+  end
+
+  def delete_project(%Project{} = project) do
+    Repo.delete(project)
   end
 
   def get_milestones(ids) do

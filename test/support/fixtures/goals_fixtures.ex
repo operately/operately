@@ -1,4 +1,5 @@
 defmodule Operately.GoalsFixtures do
+  alias Operately.Goals
   alias Operately.Access.Binding
   alias Operately.Goals.Timeframe
 
@@ -29,9 +30,9 @@ defmodule Operately.GoalsFixtures do
       anonymous_access_level: Binding.view_access(),
     })
 
-    {:ok, goal} = Operately.Goals.create_goal(creator, attrs)
+    {:ok, goal} = Goals.create_goal(creator, attrs)
 
-    Operately.Goals.get_goal!(goal.id)
+    Goals.get_goal!(goal.id)
   end
 
   def goal_update_fixture(author, goal, attrs \\ []) do
@@ -48,5 +49,19 @@ defmodule Operately.GoalsFixtures do
 
     {:ok, update} = Operately.Operations.GoalCheckIn.run(author, goal, attrs)
     update
+  end
+
+  def goal_target_fixture(goal, attrs \\ []) do
+    attrs = Enum.into(attrs, %{
+      goal_id: goal.id,
+      name: "Increase total active users",
+      from: 110,
+      to: 900,
+      value: 110,
+      unit: "users",
+      index: 0,
+    })
+    {:ok, target} = Goals.create_target(attrs)
+    target
   end
 end
