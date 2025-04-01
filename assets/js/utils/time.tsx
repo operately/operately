@@ -48,6 +48,13 @@ export function addDays(date: Date, days: number) {
   return datefsn.addDays(date, days);
 }
 
+export function isWithinTimeframe(timestamp: string, hours: number): boolean {
+  const now = new Date();
+  const checkInTime = new Date(timestamp);
+  const diffInHours = (now.getTime() - checkInTime.getTime()) / (1000 * 60 * 60);
+  return diffInHours <= hours;
+}
+
 export function daysFromNow(days: number) {
   return datefsn.addDays(today(), days);
 }

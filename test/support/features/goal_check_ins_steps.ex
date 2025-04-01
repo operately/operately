@@ -33,9 +33,17 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
     |> UI.visit(Paths.goal_path(ctx.company, ctx.goal))
     |> FeedSteps.assert_goal_checked_in(author: ctx.champion, texts: [message])
     |> UI.visit(Paths.space_path(ctx.company, ctx.space))
-    |> FeedSteps.assert_goal_checked_in(author: ctx.champion, goal_name: ctx.goal.name, texts: [message])
+    |> FeedSteps.assert_goal_checked_in(
+      author: ctx.champion,
+      goal_name: ctx.goal.name,
+      texts: [message]
+    )
     |> UI.visit(Paths.feed_path(ctx.company))
-    |> FeedSteps.assert_goal_checked_in(author: ctx.champion, goal_name: ctx.goal.name, texts: [message])
+    |> FeedSteps.assert_goal_checked_in(
+      author: ctx.champion,
+      goal_name: ctx.goal.name,
+      texts: [message]
+    )
   end
 
   step :assert_check_in_notifications, ctx do
@@ -70,9 +78,15 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
     |> UI.visit(Paths.goal_path(ctx.company, ctx.goal))
     |> FeedSteps.assert_goal_check_in_acknowledgement(author: ctx.champion)
     |> UI.visit(Paths.space_path(ctx.company, ctx.space))
-    |> FeedSteps.assert_goal_check_in_acknowledgement(author: ctx.champion, goal_name: ctx.goal.name)
+    |> FeedSteps.assert_goal_check_in_acknowledgement(
+      author: ctx.champion,
+      goal_name: ctx.goal.name
+    )
     |> UI.visit(Paths.feed_path(ctx.company))
-    |> FeedSteps.assert_goal_check_in_acknowledgement(author: ctx.champion, goal_name: ctx.goal.name)
+    |> FeedSteps.assert_goal_check_in_acknowledgement(
+      author: ctx.champion,
+      goal_name: ctx.goal.name
+    )
   end
 
   step :assert_check_in_acknowledged_in_notifications, ctx do
@@ -102,9 +116,17 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
     |> UI.visit(Paths.goal_path(ctx.company, ctx.goal))
     |> FeedSteps.assert_goal_check_in_commented(author: ctx.champion, comment: message)
     |> UI.visit(Paths.space_path(ctx.company, ctx.space))
-    |> FeedSteps.assert_goal_check_in_commented(author: ctx.champion, goal_name: ctx.goal.name, comment: message)
+    |> FeedSteps.assert_goal_check_in_commented(
+      author: ctx.champion,
+      goal_name: ctx.goal.name,
+      comment: message
+    )
     |> UI.visit(Paths.feed_path(ctx.company))
-    |> FeedSteps.assert_goal_check_in_commented(author: ctx.champion, goal_name: ctx.goal.name, comment: message)
+    |> FeedSteps.assert_goal_check_in_commented(
+      author: ctx.champion,
+      goal_name: ctx.goal.name,
+      comment: message
+    )
   end
 
   step :assert_check_in_commented_in_notifications, ctx do
@@ -176,8 +198,21 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
     |> UI.assert_has(testid: "acknowledge-check-in")
   end
 
+  step :given_an_old_check_in_exists, ctx do
+    ctx = ctx |> Factory.add_goal_update(:check_in, :goal, :champion)
+    update_check_in_timestamp(ctx.check_in, four_days_ago())
+    ctx
+  end
+
+  step :assert_check_in_not_editable, ctx do
+    ctx
+    |> UI.visit(Paths.goal_check_in_path(ctx.company, find_last_update(ctx)))
+    |> UI.click(testid: "edit-check-in")
+    |> UI.assert_text("Editing locked after 3 days")
+  end
+
   step :given_a_reviewer_submitted_check_in, ctx do
-    ctx 
+    ctx
     |> UI.login_as(ctx.reviewer)
     |> UI.visit(Paths.goal_path(ctx.company, ctx.goal))
     |> UI.click(testid: "check-in-button")
@@ -248,9 +283,43 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
 
   defp find_last_update(ctx) do
     goal = Factory.reload(ctx, :goal).goal
-    goal = Operately.Repo.preload(goal, :last_update) 
+    goal = Operately.Repo.preload(goal, :last_update)
 
     goal.last_update
   end
 
+  defp four_days_ago() do
+    NaiveDateTime.utc_now() |> NaiveDateTime.add(-4, :day) |> NaiveDateTime.truncate(:second)
+  end
+
+  defp update_check_in_timestamp(update, timestamp) do
+    {:ok, _} = Operately.Repo.update(Ecto.Changeset.change(update, %{inserted_at: timestamp}))
+  end
+
+  step :given_multiple_check_ins_exist, ctx do
+    ctx
+    |> Factory.add_goal_update(:check_in, :goal, :champion)
+    |> Factory.add_goal_update(:check_in, :goal, :champion)
+    |> Factory.add_goal_update(:check_in, :goal, :champion)
+  end
+
+  step :assert_latest_check_in_is_editable, ctx do
+    latest_update = find_last_update(ctx)
+
+    ctx
+    |> UI.visit(Paths.goal_check_in_path(ctx.company, latest_update))
+    |> UI.click(testid: "edit-check-in")
+    |> UI.refute_text("Editing locked after 3 days")
+  end
+
+  step :assert_other_check_ins_not_editable, ctx do
+    goal = Factory.reload(ctx, :goal).goal
+    updates = Operately.Repo.preload(goal, :updates).updates
+    [_latest, older | _rest] = Enum.reverse(updates)
+
+    ctx
+    |> UI.visit(Paths.goal_check_in_path(ctx.company, older))
+    |> UI.click(testid: "edit-check-in")
+    |> UI.assert_text("Editing locked after 3 days")
+  end
 end
