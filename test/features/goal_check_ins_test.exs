@@ -6,10 +6,10 @@ defmodule Operately.Features.GoalProgressUpdateTest do
 
   feature "check-in on a goal", ctx do
     params = %{
-      status: "on_track", 
-      message: "Checking-in on my goal", 
+      status: "on_track",
+      message: "Checking-in on my goal",
       targets: %{
-        "First response time" => 20, 
+        "First response time" => 20,
         "Increase feedback score to 90%" => 80
       }
     }
@@ -32,10 +32,10 @@ defmodule Operately.Features.GoalProgressUpdateTest do
 
   feature "acknowledge a check-in from the email", ctx do
     params = %{
-      status: "on_track", 
-      message: "Checking-in on my goal", 
+      status: "on_track",
+      message: "Checking-in on my goal",
       targets: %{
-        "First response time" => 20, 
+        "First response time" => 20,
         "Increase feedback score to 90%" => 80
       }
     }
@@ -48,21 +48,29 @@ defmodule Operately.Features.GoalProgressUpdateTest do
     |> Steps.assert_check_in_acknowledged_in_notifications()
   end
 
+  feature "acknowledge a check-in as a champion (reviewer submitted)", ctx do
+    ctx
+    |> Steps.given_a_reviewer_submitted_check_in()
+    |> Steps.assert_check_in_got_email_to_acknowledge()
+    |> Steps.acknowledge_as_champion()
+    |> Steps.assert_acknowledge_email_sent_to_reviewer()
+  end
+
   feature "edit a submitted check-in", ctx do
     params = %{
       status: "at risk",
-      message: "Checking-in on my goal", 
+      message: "Checking-in on my goal",
       targets: %{
-        "First response time" => 20, 
+        "First response time" => 20,
         "Increase feedback score to 90%" => 80
       }
     }
 
     edit_params = %{
-      status: "on track", 
-      message: "This is an edited check-in.", 
+      status: "on track",
+      message: "This is an edited check-in.",
       targets: %{
-        "First response time" => 30, 
+        "First response time" => 30,
         "Increase feedback score to 90%" => 90
       }
     }
