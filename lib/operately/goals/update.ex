@@ -25,6 +25,7 @@ defmodule Operately.Goals.Update do
     # populated with after load hooks
     field :potential_subscribers, :any, virtual: true
     field :notifications, :any, virtual: true, default: []
+    field :permissions, :any, virtual: true
 
     timestamps()
     requester_access_level()

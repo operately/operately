@@ -25,10 +25,13 @@ defmodule Operately.Goals.Update.Permissions do
   def can_comment(access_level), do: access_level >= Binding.comment_access()
 
   def can_acknowledge(update, user_id) do
+    update = Operately.Repo.preload(update, :goal)
+    goal = update.goal
+
     cond do
-      update.author_id == update.champion_id && update.goal.reviewer_id == user_id -> true
-      update.author_id == update.reviewer_id && update.goal.champion_id == user_id -> true
-      true -> user_id == update.reviewer_id
+      update.author_id == goal.champion_id && goal.reviewer_id == user_id -> true
+      update.author_id == goal.reviewer_id && goal.champion_id == user_id -> true
+      true -> user_id == goal.reviewer_id
     end
   end
 
