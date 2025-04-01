@@ -6,6 +6,23 @@ defmodule Operately.Goals do
   alias Operately.People.Person
   alias Operately.Access.Fetch
 
+  @goal_actions [
+    "goal_check_in",
+    "goal_check_in_acknowledgement",
+    "goal_check_in_commented",
+    "goal_check_in_edit",
+    "goal_closing",
+    "goal_created",
+    "goal_discussion_creation",
+    "goal_discussion_editing",
+    "goal_editing",
+    "goal_reopening",
+    "goal_timeframe_editing",
+    "goal_reparent",
+  ]
+
+  def goal_actions, do: @goal_actions
+
   def list_goals do
     Repo.all(Goal)
   end
@@ -42,9 +59,7 @@ defmodule Operately.Goals do
     |> Repo.update()
   end
 
-  def delete_goal(%Goal{} = goal) do
-    Repo.delete(goal)
-  end
+  defdelegate delete_goal(goal), to: Operately.Operations.GoalDeleting, as: :run
 
   def change_goal(%Goal{} = goal, attrs \\ %{}) do
     Goal.changeset(goal, attrs)
@@ -147,6 +162,26 @@ defmodule Operately.Goals do
   defp goal_contribs_initial_query(goal_id, requester = %Person{}) do
     from(g in Goal, as: :resource, where: g.id == ^goal_id)
     |> Fetch.join_access_level(requester.id)
+  end
+
+  def list_goal_discussions(goal_id) do
+    from(t in Operately.Comments.CommentThread,
+      join: a in Operately.Activities.Activity, on: a.comment_thread_id == t.id,
+      where: a.action in ^@goal_actions,
+      where: a.content["goal_id"] == ^goal_id,
+      select: t
+    )
+    |> Repo.all()
+  end
+
+  def delete_goal_discussion(goal_id) do
+    from(t in Operately.Comments.CommentThread,
+      join: a in Operately.Activities.Activity, on: a.comment_thread_id == t.id,
+      where: a.action in ^@goal_actions,
+      where: a.content["goal_id"] == ^goal_id,
+      select: t
+    )
+    |> Repo.delete_all()
   end
 
   alias Operately.Goals.Update

@@ -1,7 +1,7 @@
 defmodule Operately.GoalsTest do
   use Operately.DataCase
 
-  alias Operately.{Goals, Projects}
+  alias Operately.{Goals, Projects, Updates}
   alias Operately.Goals.Goal
   alias Operately.Access.Binding
 
@@ -107,7 +107,6 @@ defmodule Operately.GoalsTest do
         |> Factory.add_goal(:child_goal, :group, parent_goal: :goal)
         |> Factory.add_project(:child_project, :group, goal: :goal)
 
-
       {:ok, _} = Goals.delete_goal(ctx.child_goal)
       {:ok, _} = Projects.delete_project(ctx.child_project)
 
@@ -143,11 +142,31 @@ defmodule Operately.GoalsTest do
         |> Factory.close_goal(:goal)
         |> Factory.reopen_goal(:goal)
 
-      assert length(Operately.Comments.list_comment_threads()) == 3
+      assert length(Goals.list_goal_discussions(ctx.goal.id)) == 3
 
       {:ok, _} = Goals.delete_goal(ctx.goal)
 
-      assert length(Operately.Comments.list_comment_threads()) == 0
+      assert length(Goals.list_goal_discussions(ctx.goal.id)) == 0
+    end
+
+    test "when goal is deleted, its discussions and check-ins' comments are also deleted", ctx do
+      ctx =
+        ctx
+        |> Factory.add_goal_discussion(:discussion, :goal)
+        |> Factory.add_goal_update(:check_in, :goal, :creator)
+        |> Factory.preload(:check_in, :goal)
+        |> Factory.add_comment(:comment1, :discussion)
+        |> Factory.add_comment(:comment2, :discussion)
+        |> Factory.add_comment(:comment3, :check_in)
+        |> Factory.add_comment(:comment4, :check_in)
+
+      assert length(Updates.list_comments(ctx.discussion.id, :comment_thread)) == 2
+      assert length(Updates.list_comments(ctx.check_in.id, :goal_update)) == 2
+
+      {:ok, _} = Goals.delete_goal(ctx.goal)
+
+      assert length(Updates.list_comments(ctx.discussion.id, :comment_thread)) == 0
+      assert length(Updates.list_comments(ctx.check_in.id, :goal_update)) == 0
     end
   end
 end

@@ -56,7 +56,8 @@ defmodule Operately.Support.Factory.Goals do
     title = Keyword.get(opts, :title, "some title")
     message = Keyword.get(opts, :message, RichText.rich_text("content", :as_string))
 
-    {:ok, discussion} = Operately.Operations.GoalDiscussionCreation.run(ctx.creator, goal, title, message)
+    {:ok, activity} = Operately.Operations.GoalDiscussionCreation.run(ctx.creator, goal, title, message)
+    discussion = Operately.Repo.preload(activity, :comment_thread).comment_thread
 
     Map.put(ctx, testid, discussion)
   end

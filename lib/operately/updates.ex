@@ -392,6 +392,14 @@ defmodule Operately.Updates do
     |> Fetch.get_resource_with_access_level(person_id, selected_resource: :comment)
   end
 
+  def delete_comments(entity_ids) when is_list(entity_ids) do
+    from(c in Comment,
+      where: c.entity_id in ^entity_ids,
+      select: c
+    )
+    |> Repo.delete_all()
+  end
+
   # old version. TODO: remove
   def create_comment(_update, attrs) do
     changeset = Comment.changeset(attrs)
@@ -474,6 +482,14 @@ defmodule Operately.Updates do
 
   def delete_reaction(%Reaction{} = reaction) do
     Repo.delete(reaction)
+  end
+
+  def delete_reactions(entity_ids) when is_list(entity_ids) do
+    from(r in Reaction,
+      where: r.entity_id in ^entity_ids,
+      select: r
+    )
+    |> Repo.delete_all()
   end
 
   def change_reaction(%Reaction{} = reaction, attrs \\ %{}) do
