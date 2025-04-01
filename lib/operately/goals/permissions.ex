@@ -4,9 +4,7 @@ defmodule Operately.Goals.Permissions do
   defstruct [
     :can_view,
     :can_edit,
-    :can_edit_check_in,
     :can_check_in,
-    :can_acknowledge_check_in,
     :can_close,
     :can_archive,
     :can_reopen,
@@ -16,9 +14,7 @@ defmodule Operately.Goals.Permissions do
   def calculate(access_level) do
     %__MODULE__{
       can_view: can_view(access_level),
-      can_acknowledge_check_in: can_acknowledge_check_in(access_level),
       can_check_in: can_check_in(access_level),
-      can_edit_check_in: can_edit_check_in(access_level),
       can_edit: can_edit(access_level),
       can_reopen: can_edit(access_level),
       can_archive: can_archive(access_level),
@@ -29,8 +25,6 @@ defmodule Operately.Goals.Permissions do
 
   def can_archive(access_level), do: access_level >= Binding.edit_access()
   def can_view(access_level), do: access_level >= Binding.view_access()
-  def can_acknowledge_check_in(access_level), do: access_level >= Binding.full_access()
-  def can_check_in(access_level), do: access_level >= Binding.full_access()
   def can_edit_check_in(access_level), do: access_level >= Binding.full_access()
   def can_edit(access_level), do: access_level >= Binding.edit_access()
   def can_reopen(access_level), do: access_level >= Binding.edit_access()
