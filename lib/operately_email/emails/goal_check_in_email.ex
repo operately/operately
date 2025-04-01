@@ -1,18 +1,24 @@
 defmodule OperatelyEmail.Emails.GoalCheckInEmail do
   import OperatelyEmail.Mailers.ActivityMailer
-  alias Operately.{Repo, Goals}
+
   alias Operately.Goals.Update
+  alias Operately.Goals.Update.Permissions
+
   alias OperatelyWeb.Paths
   alias __MODULE__.OverviewMsg
 
   def send(person, activity) do
-    author = Repo.preload(activity, :author).author
-    company = Repo.preload(author, :company).company
-    goal = Goals.get_goal!(activity.content["goal_id"])
-    reviewer = Repo.preload(goal, :reviewer).reviewer
+    update_id = activity.content["update_id"]
 
-    {:ok, update} = Update.get(:system, id: activity.content["update_id"])
-    {cta_text, cta_url} = construct_cta_text_and_url(person, company, goal, update)
+    {:ok, update} = Update.get(person, id: update_id, opts: [
+      preload: [goal: [:company, :reviewer], author: []]
+    ])
+
+    company = update.goal.company
+    author = update.author
+    goal = update.goal
+    
+    {cta_text, cta_url} = construct_cta_text_and_url(company, update, person)
 
     company
     |> new()
@@ -24,34 +30,30 @@ defmodule OperatelyEmail.Emails.GoalCheckInEmail do
     |> assign(:update, update)
     |> assign(:cta_url, cta_url)
     |> assign(:cta_text, cta_text)
-    |> assign(:overview, OverviewMsg.construct(update, reviewer))
+    |> assign(:overview, OverviewMsg.construct(update))
     |> render("goal_check_in")
   end
 
-  defp construct_cta_text_and_url(person, company, goal, check_in) do
-    url = check_in_url(company, check_in)
+  defp construct_cta_text_and_url(company, update, person) do
+    url = Paths.goal_check_in_path(company, update) |> Paths.to_url()
 
-    if goal.reviewer_id == person.id do
+    if Permissions.can_acknowledge(update, person.id) do
       {"Acknowledge", url <> "?acknowledge=true"}
     else
       {"View Check-In", url}
     end
   end
 
-  defp check_in_url(company, check_in) do
-    Paths.goal_check_in_path(company, check_in) |> Paths.to_url()
-  end
-
   defmodule OverviewMsg do
     import Operately.RichContent.Builder
     alias Operately.People.Person
 
-    def construct(update, reviewer) do
+    def construct(update) do
       status = normalize_status(update.status)
 
       doc([paragraph(
         status_msg(status) ++ 
-        reviewer_note(status, reviewer) ++ 
+        reviewer_note(status, update.goal.reviewer) ++ 
         due_date(update.timeframe.end_date)
       )])
     end

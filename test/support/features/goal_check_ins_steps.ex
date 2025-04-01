@@ -169,13 +169,27 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
     })
   end
 
+  step :assert_acknowledge_button_visible_to_champion, ctx do
+    ctx
+    |> UI.login_as(ctx.champion)
+    |> UI.visit(Paths.goal_check_in_path(ctx.company, find_last_update(ctx)))
+    |> UI.assert_has(testid: "acknowledge-check-in")
+  end
+
   step :given_a_reviewer_submitted_check_in, ctx do
-    ctx |> Factory.add_goal_check_in(:check_in, :goal, :reviewer)
+    ctx 
+    |> UI.login_as(ctx.reviewer)
+    |> UI.visit(Paths.goal_path(ctx.company, ctx.goal))
+    |> UI.click(testid: "check-in-button")
+    |> select_status("on_track")
+    |> UI.fill_rich_text("Check-in by reviewer")
+    |> UI.click(testid: "submit")
+    |> UI.assert_has(testid: "goal-check-in-page")
   end
 
   step :acknowledge_check_in_from_email_as_champion, ctx do
     ctx
-    |> EmailSteps.assert_email_sent(%{
+    |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.goal.name,
       to: ctx.champion,
       author: ctx.reviewer,
@@ -190,7 +204,7 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
 
   step :assert_acknowledged_email_sent_to_reviewer, ctx do
     ctx
-    |> EmailSteps.assert_email_sent(%{
+    |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.goal.name,
       to: ctx.reviewer,
       author: ctx.champion,
@@ -230,6 +244,13 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
     ctx
     |> UI.click(testid: "status-dropdown")
     |> UI.click(testid: UI.testid(["status", "option", status]))
+  end
+
+  defp find_last_update(ctx) do
+    goal = Factory.reload(ctx, :goal).goal
+    goal = Operately.Repo.preload(goal, :last_update) 
+
+    goal.last_update
   end
 
 end
