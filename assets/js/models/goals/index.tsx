@@ -39,28 +39,23 @@ export const GOAL_ACTIVITIES: GoalActivities[] = [
   "goal_discussion_creation",
 ];
 
-export function targetProgressPercentage(target: Target): number {
+export function targetProgressPercentage(target: Target, clamped: boolean = true): number {
   const from = target.from!;
   const to = target.to!;
   const value = target.value!;
 
+  let percentage: number;
   if (from < to) {
-    if (value < from) {
-      return 0;
-    } else if (value > to) {
-      return 100;
-    } else {
-      return ((value - from) / (to - from)) * 100;
-    }
+    percentage = ((value - from) / (to - from)) * 100;
   } else {
-    if (value > from) {
-      return 0;
-    } else if (value < to) {
-      return 100;
-    } else {
-      return ((from - value) / (from - to)) * 100;
-    }
+    percentage = ((from - value) / (from - to)) * 100;
   }
+
+  if (clamped) {
+    return Math.max(0, Math.min(100, percentage));
+  }
+
+  return percentage;
 }
 
 export function assertGoalStatusValidity(
