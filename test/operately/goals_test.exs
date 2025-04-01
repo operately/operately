@@ -149,7 +149,7 @@ defmodule Operately.GoalsTest do
       assert length(Goals.list_goal_discussions(ctx.goal.id)) == 0
     end
 
-    test "when goal is deleted, its discussions and check-ins' comments are also deleted", ctx do
+    test "when goal is deleted, its discussions' and check-ins' comments are also deleted", ctx do
       ctx =
         ctx
         |> Factory.add_goal_discussion(:discussion, :goal)
@@ -167,6 +167,27 @@ defmodule Operately.GoalsTest do
 
       assert length(Updates.list_comments(ctx.discussion.id, :comment_thread)) == 0
       assert length(Updates.list_comments(ctx.check_in.id, :goal_update)) == 0
+    end
+
+    test "when goal is deleted, its discussions', check-ins', comments' and reactions are also deleted", ctx do
+      ctx =
+        ctx
+        |> Factory.add_goal_discussion(:discussion, :goal)
+        |> Factory.add_goal_update(:check_in, :goal, :creator)
+        |> Factory.add_comment(:comment, :discussion)
+        |> Factory.add_reactions(:reaction1, :discussion)
+        |> Factory.add_reactions(:reaction2, :check_in)
+        |> Factory.add_reactions(:reaction3, :comment)
+
+      assert length(Operately.Updates.list_reactions(ctx.discussion.id, :comment_thread)) == 1
+      assert length(Operately.Updates.list_reactions(ctx.check_in.id, :goal_update)) == 1
+      assert length(Operately.Updates.list_reactions(ctx.comment.id, :comment)) == 1
+
+      {:ok, _} = Goals.delete_goal(ctx.goal)
+
+      assert length(Operately.Updates.list_reactions(ctx.discussion.id, :comment_thread)) == 0
+      assert length(Operately.Updates.list_reactions(ctx.check_in.id, :goal_update)) == 0
+      assert length(Operately.Updates.list_reactions(ctx.comment.id, :comment)) == 0
     end
   end
 end

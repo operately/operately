@@ -179,7 +179,7 @@ defmodule Operately.Goals do
       join: a in Operately.Activities.Activity, on: a.comment_thread_id == t.id,
       where: a.action in ^@goal_actions,
       where: a.content["goal_id"] == ^goal_id,
-      select: t
+      select: t.id
     )
     |> Repo.delete_all()
   end

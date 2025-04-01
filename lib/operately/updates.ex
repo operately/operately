@@ -395,7 +395,7 @@ defmodule Operately.Updates do
   def delete_comments(entity_ids) when is_list(entity_ids) do
     from(c in Comment,
       where: c.entity_id in ^entity_ids,
-      select: c
+      select: c.id
     )
     |> Repo.delete_all()
   end
@@ -487,7 +487,7 @@ defmodule Operately.Updates do
   def delete_reactions(entity_ids) when is_list(entity_ids) do
     from(r in Reaction,
       where: r.entity_id in ^entity_ids,
-      select: r
+      select: r.id
     )
     |> Repo.delete_all()
   end

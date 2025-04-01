@@ -60,6 +60,7 @@ defmodule Operately.Support.Factory do
 
   # comments
   defdelegate add_comment(ctx, testid, parent_name, opts \\ []), to: Factory.Comments
+  defdelegate add_reactions(ctx, testid, parent_name, opts \\ []), to: Factory.Comments
 
   # resource hubs
   defdelegate add_resource_hub(ctx, testid, space_name, creator_name, opts \\ []), to: Factory.ResourceHubs
