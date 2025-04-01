@@ -17,11 +17,7 @@ export function Comments() {
   return (
     <>
       <div className="border-t border-stroke-base mt-8" />
-      <CommentSection
-        form={commentsForm}
-        commentParentType="goal_update"
-        canComment={update.permissions.canComment}
-      />
+      <CommentSection form={commentsForm} commentParentType="goal_update" canComment={update.permissions.canComment} />
     </>
   );
 }
