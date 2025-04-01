@@ -59,21 +59,6 @@ defmodule Operately.Activities.ContextAutoAssigner do
     "group_edited",
   ]
 
-  @goal_actions [
-    "goal_check_in",
-    "goal_check_in_acknowledgement",
-    "goal_check_in_commented",
-    "goal_check_in_edit",
-    "goal_closing",
-    "goal_created",
-    "goal_discussion_creation",
-    "goal_discussion_editing",
-    "goal_editing",
-    "goal_reopening",
-    "goal_timeframe_editing",
-    "goal_reparent",
-  ]
-
   @project_actions [
     "project_created",
     "project_archived",
@@ -144,7 +129,7 @@ defmodule Operately.Activities.ContextAutoAssigner do
       activity.action in @deprecated_actions -> :ok
       activity.action in @company_actions -> fetch_company_context(activity.content.company_id)
       activity.action in @space_actions -> fetch_space_context(activity)
-      activity.action in @goal_actions -> fetch_goal_context(activity.content)
+      activity.action in Operately.Goals.goal_actions() -> fetch_goal_context(activity.content)
       activity.action in @project_actions -> fetch_project_context(activity.content.project_id)
       activity.action in @task_actions -> fetch_task_project_context(activity.content.task_id)
       activity.action in @resource_hub_actions-> fetch_resource_hub_context(activity.content.space_id)

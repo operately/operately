@@ -6,6 +6,23 @@ defmodule Operately.Goals do
   alias Operately.People.Person
   alias Operately.Access.Fetch
 
+  @goal_actions [
+    "goal_check_in",
+    "goal_check_in_acknowledgement",
+    "goal_check_in_commented",
+    "goal_check_in_edit",
+    "goal_closing",
+    "goal_created",
+    "goal_discussion_creation",
+    "goal_discussion_editing",
+    "goal_editing",
+    "goal_reopening",
+    "goal_timeframe_editing",
+    "goal_reparent",
+  ]
+
+  def goal_actions, do: @goal_actions
+
   def list_goals do
     Repo.all(Goal)
   end
@@ -25,6 +42,7 @@ defmodule Operately.Goals do
     if condition, do: fun.(query), else: query
   end
 
+  def get_goal(id), do: Repo.get(Goal, id, with_deleted: true)
   def get_goal!(id), do: Repo.get_by_id(Goal, id, :with_deleted)
 
   def get_goal_with_access_level(goal_id, person_id) do
@@ -41,9 +59,7 @@ defmodule Operately.Goals do
     |> Repo.update()
   end
 
-  def delete_goal(%Goal{} = goal) do
-    Repo.delete(goal)
-  end
+  defdelegate delete_goal(goal), to: Operately.Operations.GoalDeleting, as: :run
 
   def change_goal(%Goal{} = goal, attrs \\ %{}) do
     Goal.changeset(goal, attrs)
@@ -57,9 +73,17 @@ defmodule Operately.Goals do
     end
   end
 
+  def get_target(id), do: Repo.get(Target, id)
+
   def list_targets(goal_id) do
     from(target in Target, where: target.goal_id == ^goal_id, order_by: target.index)
     |> Repo.all()
+  end
+
+  def create_target(attrs) do
+    %Target{}
+    |> Target.changeset(attrs)
+    |> Repo.insert()
   end
 
   def progress_percentage(goal) do
@@ -138,6 +162,26 @@ defmodule Operately.Goals do
   defp goal_contribs_initial_query(goal_id, requester = %Person{}) do
     from(g in Goal, as: :resource, where: g.id == ^goal_id)
     |> Fetch.join_access_level(requester.id)
+  end
+
+  def list_goal_discussions(goal_id) do
+    from(t in Operately.Comments.CommentThread,
+      join: a in Operately.Activities.Activity, on: a.comment_thread_id == t.id,
+      where: a.action in ^@goal_actions,
+      where: a.content["goal_id"] == ^goal_id,
+      select: t
+    )
+    |> Repo.all()
+  end
+
+  def delete_goal_discussions(goal_id) do
+    from(t in Operately.Comments.CommentThread,
+      join: a in Operately.Activities.Activity, on: a.comment_thread_id == t.id,
+      where: a.action in ^@goal_actions,
+      where: a.content["goal_id"] == ^goal_id,
+      select: t.id
+    )
+    |> Repo.delete_all()
   end
 
   alias Operately.Goals.Update
