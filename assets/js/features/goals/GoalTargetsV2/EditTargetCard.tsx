@@ -60,7 +60,7 @@ function TitleSection({ target, index, editing }) {
           <TargetValue readonly index={index} target={target} />
         </div>
       )}
-      <ExpandIcon expanded={editing} onClick={toggle} className="cursor-pointer" size={14} />
+      <ExpandIcon expanded={editing} onClick={toggle} className="cursor-pointer" />
     </>
   );
 }
