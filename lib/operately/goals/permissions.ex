@@ -25,7 +25,7 @@ defmodule Operately.Goals.Permissions do
 
   def can_archive(access_level), do: access_level >= Binding.edit_access()
   def can_view(access_level), do: access_level >= Binding.view_access()
-  def can_edit_check_in(access_level), do: access_level >= Binding.full_access()
+  def can_check_in(access_level), do: access_level >= Binding.full_access()
   def can_edit(access_level), do: access_level >= Binding.edit_access()
   def can_reopen(access_level), do: access_level >= Binding.edit_access()
   def can_comment_on_update(access_level), do: access_level >= Binding.comment_access()

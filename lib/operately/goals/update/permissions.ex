@@ -14,7 +14,7 @@ defmodule Operately.Goals.Update.Permissions do
       can_view: can_view(access_level),
       can_edit: can_edit(access_level),
       can_delete: can_delete(access_level),
-      can_acknowledge: can_acknowledge(access_level, update, user_id),
+      can_acknowledge: can_acknowledge(update, user_id),
       can_comment: can_comment(access_level)
     }
   end
@@ -24,20 +24,15 @@ defmodule Operately.Goals.Update.Permissions do
   def can_delete(access_level), do: access_level >= Binding.edit_access()
   def can_comment(access_level), do: access_level >= Binding.comment_access()
 
-  def can_acknowledge(access_level, update, user_id) do
+  def can_acknowledge(update, user_id) do
     cond do
-      update.author_id == update.champion_id && update.goal.reviewer_id == user_id ->
-        true
-
-      update.author_id == update.reviewer_id && update.goal.champion_id == user_id ->
-        true
-
-      true ->
-        user_id == update.reviewer_id
+      update.author_id == update.champion_id && update.goal.reviewer_id == user_id -> true
+      update.author_id == update.reviewer_id && update.goal.champion_id == user_id -> true
+      true -> user_id == update.reviewer_id
     end
   end
 
-  def check(access_level, update, user_id, permission) do
+  def check(access_level, update, user_id, permission) when is_atom(permission) do
     permissions = calculate(access_level, update, user_id)
 
     case Map.get(permissions, permission) do
