@@ -889,7 +889,6 @@ export interface GoalPermissions {
   canCheckIn?: boolean | null;
   canClose?: boolean | null;
   canArchive?: boolean | null;
-  canCommentOnUpdate?: boolean | null;
 }
 
 export interface GoalProgressUpdate {

@@ -2,6 +2,7 @@ defmodule OperatelyWeb.Api.Mutations.AcknowledgeGoalProgressUpdate do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
+  alias Operately.Goals.Update
   alias Operately.Goals.Update.Permissions
   alias Operately.Operations.GoalUpdateAcknowledging
 
