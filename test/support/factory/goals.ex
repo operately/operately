@@ -1,6 +1,7 @@
 defmodule Operately.Support.Factory.Goals do
   alias Operately.Access.Binding
   alias Operately.Goals.Timeframe
+  alias Operately.Support.RichText
 
   def add_goal(ctx, testid, space_name, opts \\ []) do
     name = Keyword.get(opts, :name, "some name")
@@ -48,5 +49,34 @@ defmodule Operately.Support.Factory.Goals do
     target = Operately.GoalsFixtures.goal_target_fixture(goal, attrs)
 
     Map.put(ctx, testid, target)
+  end
+
+  def add_goal_discussion(ctx, testid, goal_name, opts \\ []) do
+    goal = Map.fetch!(ctx, goal_name)
+    title = Keyword.get(opts, :title, "some title")
+    message = Keyword.get(opts, :message, RichText.rich_text("content", :as_string))
+
+    {:ok, discussion} = Operately.Operations.GoalDiscussionCreation.run(ctx.creator, goal, title, message)
+
+    Map.put(ctx, testid, discussion)
+  end
+
+  def close_goal(ctx, testid, opts \\ []) do
+    goal = Map.fetch!(ctx, testid)
+    success = Keyword.get(opts, :success, "success")
+    retrospective = Keyword.get(opts, :retrospective, RichText.rich_text("content", :as_string))
+
+    {:ok, goal} = Operately.Operations.GoalClosing.run(ctx.creator, goal, success, retrospective)
+
+    Map.put(ctx, testid, goal)
+  end
+
+  def reopen_goal(ctx, testid, opts \\ []) do
+    goal = Map.fetch!(ctx, testid)
+    message = Keyword.get(opts, :message, RichText.rich_text("content", :as_string))
+
+    {:ok, goal} = Operately.Operations.GoalReopening.run(ctx.creator, goal, message)
+
+    Map.put(ctx, testid, goal)
   end
 end

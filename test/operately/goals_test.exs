@@ -135,5 +135,19 @@ defmodule Operately.GoalsTest do
 
       {:ok, _} = Goals.delete_goal(ctx.goal)
     end
+
+    test "when goal is deleted, its discussions are also deleted", ctx do
+      ctx =
+        ctx
+        |> Factory.add_goal_discussion(:discussion, :goal)
+        |> Factory.close_goal(:goal)
+        |> Factory.reopen_goal(:goal)
+
+      assert length(Operately.Comments.list_comment_threads()) == 3
+
+      {:ok, _} = Goals.delete_goal(ctx.goal)
+
+      assert length(Operately.Comments.list_comment_threads()) == 0
+    end
   end
 end
