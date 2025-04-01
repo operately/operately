@@ -52,7 +52,7 @@ function showAcknowledgeButton(update: GoalCheckIns.Update, me: People.Person) {
 
   if (!isViewMode) return false;
   if (update.acknowledgedAt) return false;
-  if (!update.goal!.permissions!.canAcknowledgeCheckIn) return false;
+  if (!update.permissions!.canAcknowledge) return false;
 
   const reviewer = update.goal!.reviewer;
   if (!reviewer) return false;
@@ -68,7 +68,7 @@ function useAcknowledgeHandler(update: GoalCheckIns.Update, ackOnLoad: boolean) 
 
   const handleAck = async () => {
     if (update.acknowledgedAt) return;
-    if (!update.goal!.permissions!.canAcknowledgeCheckIn) return;
+    if (!update.permissions!.canAcknowledge) return;
 
     await ack({ id: update.id });
 
