@@ -34,7 +34,7 @@ export function DefaultTargetCard(props: Props) {
       <div onClick={handleToggle} className="grid grid-cols-[1fr_auto_14px] gap-2 items-start cursor-pointer">
         <TargetNameSection target={target} truncate={!open} />
         <TargetValue readonly={readonlyValue} index={index} target={target} />
-        <ExpandIcon expanded={open} onClick={handleChevronToggle} size={14} className="mt-1.5" />
+        <ExpandIcon expanded={open} onClick={handleChevronToggle} />
       </div>
       {open && <TargetDetails target={target} />}
     </div>
