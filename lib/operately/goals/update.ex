@@ -77,9 +77,13 @@ defmodule Operately.Goals.Update do
   end
 
   def preload_permissions(update, access_level) do
+    preload_permissions(update, access_level, update.request_info.requester.id)
+  end
+
+  def preload_permissions(update, access_level, user_id) do
     update = Repo.preload(update, :goal)
 
-    permissions = Permissions.calculate(access_level, update, update.request_info.requester.id)
+    permissions = Permissions.calculate(access_level, update, user_id)
     Map.put(update, :permissions, permissions)
   end
 end

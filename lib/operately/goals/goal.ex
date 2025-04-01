@@ -4,6 +4,7 @@ defmodule Operately.Goals.Goal do
 
   alias Operately.Access.AccessLevels
   alias Operately.Goals.Permissions
+  alias Operately.Goals.Update
 
   schema "goals" do
     field :name, :string
@@ -127,5 +128,16 @@ defmodule Operately.Goals.Goal do
   def set_potential_subscribers(goal = %__MODULE__{}) do
     subscribers = Operately.Notifications.Subscriber.from_goal(goal)
     Map.put(goal, :potential_subscribers, subscribers)
+  end
+
+  def load_last_check_in_permissions(goal = %__MODULE__{}) do
+    goal = Repo.preload(goal, :last_update)
+
+    if goal.last_update do
+      last_update = Update.preload_permissions(goal.last_update, goal.request_info.access_level, goal.request_info.requester.id)
+      Map.put(goal, :last_update, last_update)
+    else
+      goal
+    end
   end
 end
