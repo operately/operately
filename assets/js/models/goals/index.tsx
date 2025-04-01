@@ -20,9 +20,11 @@ export {
   useArchiveGoal,
   useChangeGoalParent,
   useReopenGoal,
+  useDeleteGoal,
 } from "@/api";
 
 export { filterPossibleParentGoals } from "./filterPossibleParentGoals";
+export { findGoalChildren } from "./findGoalChildren";
 
 export type GoalActivities =
   | "goal_timeframe_editing"

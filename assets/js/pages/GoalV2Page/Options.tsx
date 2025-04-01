@@ -8,7 +8,10 @@ import { Paths } from "@/routes/paths";
 
 import { useLoadedData } from "./loader";
 
-export function Options() {
+interface Props {
+  toggleShowDeleteGoal: () => void;
+}
+export function Options({ toggleShowDeleteGoal }: Props) {
   const { goal } = useLoadedData();
 
   assertPresent(goal.permissions, "permissions must be present in goal");
@@ -44,6 +47,15 @@ export function Options() {
           title="Reopen Goal"
           to={Paths.goalReopenPath(goal.id!)}
           testId="reopen-goal"
+        />
+      )}
+
+      {goal.permissions.canDelete && (
+        <PageOptions.Action
+          icon={Icons.IconTrash}
+          title="Delete Goal"
+          onClick={toggleShowDeleteGoal}
+          testId="delete-goal"
         />
       )}
     </PageOptions.Root>
