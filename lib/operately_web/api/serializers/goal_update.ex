@@ -23,6 +23,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Goals.Update  do
       subscription_list: OperatelyWeb.Api.Serializer.serialize(update.subscription_list),
       potential_subscribers: OperatelyWeb.Api.Serializer.serialize(update.potential_subscribers),
       notifications: OperatelyWeb.Api.Serializer.serialize(update.notifications),
+      permissions: update.permissions && OperatelyWeb.Api.Serializer.serialize(update.permissions),
     })
   end
 

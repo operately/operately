@@ -1,13 +1,10 @@
 import * as React from "react";
-import * as People from "@/models/people";
 import * as GoalCheckIns from "@/models/goalCheckIns";
 import * as Pages from "@/components/Pages";
 
 import { PrimaryButton } from "@/components/Buttons";
 
 import { useLoadedData, useRefresh } from "./loader";
-import { useMe } from "@/contexts/CurrentCompanyContext";
-import { compareIds } from "@/routes/paths";
 
 //
 // There are two ways in which the AckCTA component is used:
@@ -29,11 +26,10 @@ import { compareIds } from "@/routes/paths";
 //
 
 export function AckCTA() {
-  const me = useMe();
   const { update } = useLoadedData();
 
   const ackOnLoad = shouldAcknowledgeOnLoad();
-  const showButton = showAcknowledgeButton(update, me!);
+  const showButton = showAcknowledgeButton(update);
   const ackHandler = useAcknowledgeHandler(update, ackOnLoad);
 
   if (ackOnLoad || !showButton) return null;
@@ -47,19 +43,13 @@ export function AckCTA() {
   );
 }
 
-function showAcknowledgeButton(update: GoalCheckIns.Update, me: People.Person) {
+function showAcknowledgeButton(update: GoalCheckIns.Update) {
   const isViewMode = Pages.useIsViewMode();
 
   if (!isViewMode) return false;
   if (update.acknowledgedAt) return false;
-  if (!update.goal!.permissions!.canAcknowledgeCheckIn) return false;
 
-  const reviewer = update.goal!.reviewer;
-  if (!reviewer) return false;
-
-  if (!compareIds(reviewer.id, me.id)) return false;
-
-  return true;
+  return update.permissions!.canAcknowledge;
 }
 
 function useAcknowledgeHandler(update: GoalCheckIns.Update, ackOnLoad: boolean) {
@@ -68,7 +58,7 @@ function useAcknowledgeHandler(update: GoalCheckIns.Update, ackOnLoad: boolean) 
 
   const handleAck = async () => {
     if (update.acknowledgedAt) return;
-    if (!update.goal!.permissions!.canAcknowledgeCheckIn) return;
+    if (!update.permissions!.canAcknowledge) return;
 
     await ack({ id: update.id });
 

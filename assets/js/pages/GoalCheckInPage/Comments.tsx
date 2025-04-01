@@ -10,18 +10,14 @@ export function Comments() {
   const isEditMode = useIsEditMode();
   const commentsForm = useForGoalCheckIn(update);
 
-  assertPresent(update.goal?.permissions?.canCommentOnUpdate, "permissions must be present in update");
+  assertPresent(update.permissions?.canComment, "permissions must be present in update");
 
   if (isEditMode) return null;
 
   return (
     <>
       <div className="border-t border-stroke-base mt-8" />
-      <CommentSection
-        form={commentsForm}
-        commentParentType="goal_update"
-        canComment={update.goal.permissions.canCommentOnUpdate}
-      />
+      <CommentSection form={commentsForm} commentParentType="goal_update" canComment={update.permissions.canComment} />
     </>
   );
 }

@@ -887,10 +887,8 @@ export interface GoalEditingUpdatedTarget {
 export interface GoalPermissions {
   canEdit?: boolean | null;
   canCheckIn?: boolean | null;
-  canAcknowledgeCheckIn?: boolean | null;
   canClose?: boolean | null;
   canArchive?: boolean | null;
-  canCommentOnUpdate?: boolean | null;
 }
 
 export interface GoalProgressUpdate {
@@ -910,6 +908,7 @@ export interface GoalProgressUpdate {
   potentialSubscribers?: Subscriber[] | null;
   notifications?: Notification[] | null;
   timeframe?: Timeframe | null;
+  permissions?: GoalUpdatePermissions | null;
 }
 
 export interface GoalTargetUpdates {
@@ -921,6 +920,14 @@ export interface GoalTargetUpdates {
   unit?: string | null;
   value?: number | null;
   previousValue?: number | null;
+}
+
+export interface GoalUpdatePermissions {
+  canView?: boolean | null;
+  canEdit?: boolean | null;
+  canDelete?: boolean | null;
+  canAcknowledge?: boolean | null;
+  canComment?: boolean | null;
 }
 
 export interface Invitation {
