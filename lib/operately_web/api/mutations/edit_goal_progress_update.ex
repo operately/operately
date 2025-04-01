@@ -24,7 +24,7 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalProgressUpdate do
     |> Action.run(:attrs, fn -> parse_inputs(inputs) end)
     |> Action.run(:me, fn -> find_me(conn) end)
     |> Action.run(:update, fn ctx -> load(ctx) end)
-    |> Action.run(:check_permissions, fn ctx -> Permissions.check(ctx.update.request_info.access_level, :can_edit_check_in) end)
+    |> Action.run(:check_permissions, fn ctx -> Permissions.check(ctx.update.request_info.access_level, ctx.update, ctx.me, :can_edit_check_in) end)
     |> Action.run(:operation, fn ctx -> GoalCheckInEdit.run(ctx.me, ctx.update.goal, ctx.update, ctx.attrs) end)
     |> Action.run(:serialized, fn ctx -> {:ok, %{update: OperatelyWeb.Api.Serializer.serialize(ctx.update, level: :full)}} end)
     |> respond()

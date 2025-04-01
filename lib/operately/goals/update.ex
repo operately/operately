@@ -3,6 +3,7 @@ defmodule Operately.Goals.Update do
   use Operately.Repo.Getter
 
   alias Operately.Notifications
+  alias Operately.Goals.Update.Permissions
 
   schema "goal_updates" do
     belongs_to :goal, Operately.Goals.Goal, foreign_key: :goal_id
@@ -75,11 +76,9 @@ defmodule Operately.Goals.Update do
   end
 
   def preload_permissions(update, access_level) do
-    # Ensure goal is preloaded
     update = Repo.preload(update, :goal)
 
-    # Calculate permissions with the goal and user ID
-    permissions = Update.Permissions.calculate(access_level, update.goal, update.request_info.requester.id)
+    permissions = Permissions.calculate(access_level, update, update.request_info.requester.id)
     Map.put(update, :permissions, permissions)
   end
 end
