@@ -1,5 +1,6 @@
 defmodule Operately.Goals.Update.Permissions do
   alias Operately.Access.Binding
+  alias Operately.Goals.Update
 
   defstruct [
     :can_view,
@@ -9,7 +10,7 @@ defmodule Operately.Goals.Update.Permissions do
     :can_comment,
   ]
 
-  def calculate(access_level, update, user_id) do
+  def calculate(access_level, update, user_id) when is_binary(user_id) do
     %__MODULE__{
       can_view: can_view(access_level),
       can_edit: can_edit(access_level),
@@ -24,7 +25,7 @@ defmodule Operately.Goals.Update.Permissions do
   def can_delete(access_level), do: access_level >= Binding.edit_access()
   def can_comment(access_level), do: access_level >= Binding.comment_access()
 
-  def can_acknowledge(update, user_id) do
+  def can_acknowledge(%Update{} = update, user_id) when is_binary(user_id) do
     update = Operately.Repo.preload(update, :goal)
     goal = update.goal
 
@@ -35,7 +36,7 @@ defmodule Operately.Goals.Update.Permissions do
     end
   end
 
-  def check(access_level, update, user_id, permission) when is_atom(permission) do
+  def check(access_level, update, user_id, permission) when is_atom(permission) and is_binary(user_id) do
     permissions = calculate(access_level, update, user_id)
 
     case Map.get(permissions, permission) do
