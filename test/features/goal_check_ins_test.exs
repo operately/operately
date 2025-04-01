@@ -90,4 +90,10 @@ defmodule Operately.Features.GoalProgressUpdateTest do
     |> Steps.assert_check_in_commented_notification_redirects_on_click()
     |> Steps.assert_comment_email_sent()
   end
+
+  feature "cannot edit check-in after 72 hours", ctx do
+    ctx
+    |> Steps.given_an_old_check_in_exists()
+    |> Steps.assert_check_in_not_editable()
+  end
 end
