@@ -1,6 +1,8 @@
+<%= title("#{short_name(@author)} submitted a check-in") %>
+
 <%= spacer() %>
 
-<%= title("Overview", font_size: "18px") %>
+<%= title("Overview", font_size: "16") %>
 
 <%= row do %>
   <%= rich_text(@overview) %>
@@ -9,7 +11,7 @@
 <%= spacer() %>
 
 <%= if @targets && length(@targets) > 0 do %>
-  <%= title("Targets", font_size: "18px") %>
+  <%= title("Targets", font_size: "16") %>
 
   <%= row do %>
     <ul style="list-style-type: disc; margin: 0; padding-left: 20px;">
@@ -22,11 +24,13 @@
 
 <%= spacer() %>
 
-<%= title("Key wins, obstacles and needs", font_size: "18px") %>
+<%= title("Key wins, obstacles and needs", font_size: "16") %>
 
 <%= row do %>
   <%= rich_text(@update.message) %>
 <% end %>
+
+<%= spacer() %>
 
 <%= row do %>
   <%= cta_button(@cta_url, @cta_text) %>
