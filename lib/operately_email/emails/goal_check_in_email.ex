@@ -10,14 +10,18 @@ defmodule OperatelyEmail.Emails.GoalCheckInEmail do
   def send(person, activity) do
     update_id = activity.content["update_id"]
 
-    {:ok, update} = Update.get(person, id: update_id, opts: [
-      preload: [goal: [:company, :reviewer], author: []]
-    ])
+    {:ok, update} =
+      Update.get(person,
+        id: update_id,
+        opts: [
+          preload: [goal: [:company, :reviewer, :targets], author: []]
+        ]
+      )
 
     company = update.goal.company
     author = update.author
     goal = update.goal
-    
+
     {cta_text, cta_url} = construct_cta_text_and_url(company, update, person)
 
     company
@@ -31,6 +35,7 @@ defmodule OperatelyEmail.Emails.GoalCheckInEmail do
     |> assign(:cta_url, cta_url)
     |> assign(:cta_text, cta_text)
     |> assign(:overview, OverviewMsg.construct(update))
+    |> assign(:targets, update.goal.targets)
     |> render("goal_check_in")
   end
 
@@ -51,11 +56,13 @@ defmodule OperatelyEmail.Emails.GoalCheckInEmail do
     def construct(update) do
       status = normalize_status(update.status)
 
-      doc([paragraph(
-        status_msg(status) ++ 
-        reviewer_note(status, update.goal.reviewer) ++ 
-        due_date(update.timeframe.end_date)
-      )])
+      doc([
+        paragraph(
+          status_msg(status) ++
+            reviewer_note(status, update.goal.reviewer) ++
+            due_date(update.timeframe.end_date)
+        )
+      ])
     end
 
     defp status_msg(:pending) do
@@ -76,8 +83,12 @@ defmodule OperatelyEmail.Emails.GoalCheckInEmail do
 
     def reviewer_note(:pending, _), do: []
     def reviewer_note(:on_track, _), do: []
-    def reviewer_note(:concern, reviewer), do: [text(" "), text(Person.first_name(reviewer)), text(" should be aware.")]
-    def reviewer_note(:issue, reviewer), do: [text(" "), text(Person.first_name(reviewer) <> "'s"), text(" help is needed.")]
+
+    def reviewer_note(:concern, reviewer),
+      do: [text(" "), text(Person.first_name(reviewer)), text(" should be aware.")]
+
+    def reviewer_note(:issue, reviewer),
+      do: [text(" "), text(Person.first_name(reviewer) <> "'s"), text(" help is needed.")]
 
     defp due_date(date) do
       days = Date.diff(date, Date.utc_today())

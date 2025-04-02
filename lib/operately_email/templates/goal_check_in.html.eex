@@ -2,7 +2,7 @@
 
 <%= spacer() %>
 
-<%= title("Overview", font_size: "18px") %>
+<%= title("Overview", font_size: "16") %>
 
 <%= row do %>
   <%= rich_text(@overview) %>
@@ -10,7 +10,21 @@
 
 <%= spacer() %>
 
-<%= title("Key wins, obstacles and needs", font_size: "18px") %>
+<%= if @targets && length(@targets) > 0 do %>
+  <%= title("Targets", font_size: "16") %>
+
+  <%= row do %>
+    <ul style="list-style-type: disc; margin: 0; padding-left: 20px;">
+      <%= for target <- @targets do %>
+        <li style="font-size: 16px; margin-bottom: 8px;"><%= target.name %> - <%= Operately.Goals.Target.format_value(target) %></li>
+      <% end %>
+    </ul>
+  <% end %>
+<% end %>
+
+<%= spacer() %>
+
+<%= title("Key wins, obstacles and needs", font_size: "16") %>
 
 <%= row do %>
   <%= rich_text(@update.message) %>
