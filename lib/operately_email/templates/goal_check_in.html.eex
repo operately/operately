@@ -8,24 +8,24 @@
 
 <%= spacer() %>
 
-<%= title("Key wins, obstacles and needs", font_size: "18px") %>
+<%= if @targets && length(@targets) > 0 do %>
+  <%= title("Targets", font_size: "18px") %>
 
-<%= row do %>
-  <%= rich_text(@update.message) %>
+  <%= row do %>
+    <ul style="list-style-type: disc; margin: 0; padding-left: 20px;">
+      <%= for target <- @targets do %>
+        <li style="font-size: 16px; margin-bottom: 8px;"><%= target.name %> - <%= Operately.Goals.Target.format_value(target) %></li>
+      <% end %>
+    </ul>
+  <% end %>
 <% end %>
 
 <%= spacer() %>
 
-<%= if @targets && length(@targets) > 0 do %>
-  <%= title("Targets", font_size: "18px") %>
+<%= title("Key wins, obstacles and needs", font_size: "18px") %>
 
-  <%= for target <- @targets do %>
-    <%= row do %>
-      <%= title(target.name, font_size: "16px") %>
-      <div style="font-size: 16px;"><%= Operately.Goals.Target.format_value(target) %></div>
-      <%= spacer() %>
-    <% end %>
-  <% end %>
+<%= row do %>
+  <%= rich_text(@update.message) %>
 <% end %>
 
 <%= row do %>
