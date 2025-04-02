@@ -27,6 +27,7 @@ interface ModalProps {
 
   height?: string;
   size?: "xs" | "sm" | "base" | "lg" | "xl";
+  padding?: string;
 }
 
 const SIZES = {
@@ -37,12 +38,12 @@ const SIZES = {
   xl: "1200px",
 };
 
-export default function Modal({ isOpen, hideModal, title, children, height, size }: ModalProps) {
+export default function Modal({ isOpen, hideModal, title, children, height, size, padding }: ModalProps) {
   size = size ?? "base";
   height = height ?? "auto";
 
   const { ref, autoFocusOnOpen } = useAutoFocusOnOpen();
-  const modalStyle = useModalStyle(size, height);
+  const modalStyle = useModalStyle(size, height, padding);
   const showHeader = Boolean(title && hideModal);
 
   return (
@@ -92,7 +93,7 @@ function useAutoFocusOnOpen() {
   return { ref, autoFocusOnOpen };
 }
 
-function useModalStyle(size: string, height: string): ReactModal.Styles {
+function useModalStyle(size: string, height: string, padding?: string): ReactModal.Styles {
   const mode = useColorMode();
 
   return React.useMemo(() => {
@@ -121,7 +122,7 @@ function useModalStyle(size: string, height: string): ReactModal.Styles {
         backgroundColor: "var(--color-surface-base)",
         border: "1px solid var(--color-surface-outline)",
         boxShadow: "0px 0px 10px 0px rgba(0,0,0,0.1)",
-        padding: "32px",
+        padding: padding ?? "32px",
         display: "flex",
         flexDirection: "column",
       },

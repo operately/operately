@@ -889,6 +889,7 @@ export interface GoalPermissions {
   canCheckIn?: boolean | null;
   canClose?: boolean | null;
   canArchive?: boolean | null;
+  canDelete?: boolean | null;
 }
 
 export interface GoalProgressUpdate {
@@ -2456,6 +2457,14 @@ export interface CreateTaskResult {
   task?: Task | null;
 }
 
+export interface DeleteGoalInput {
+  goalId?: Id | null;
+}
+
+export interface DeleteGoalResult {
+  goal?: Goal | null;
+}
+
 export interface DeleteResourceHubDocumentInput {
   documentId?: Id | null;
 }
@@ -3398,6 +3407,10 @@ export class ApiClient {
     return this.post("/create_task", input);
   }
 
+  async deleteGoal(input: DeleteGoalInput): Promise<DeleteGoalResult> {
+    return this.post("/delete_goal", input);
+  }
+
   async deleteResourceHubDocument(input: DeleteResourceHubDocumentInput): Promise<DeleteResourceHubDocumentResult> {
     return this.post("/delete_resource_hub_document", input);
   }
@@ -3929,6 +3942,9 @@ export async function createSpace(input: CreateSpaceInput): Promise<CreateSpaceR
 }
 export async function createTask(input: CreateTaskInput): Promise<CreateTaskResult> {
   return defaultApiClient.createTask(input);
+}
+export async function deleteGoal(input: DeleteGoalInput): Promise<DeleteGoalResult> {
+  return defaultApiClient.deleteGoal(input);
 }
 export async function deleteResourceHubDocument(
   input: DeleteResourceHubDocumentInput,
@@ -4594,6 +4610,10 @@ export function useCreateTask(): UseMutationHookResult<CreateTaskInput, CreateTa
   return useMutation<CreateTaskInput, CreateTaskResult>((input) => defaultApiClient.createTask(input));
 }
 
+export function useDeleteGoal(): UseMutationHookResult<DeleteGoalInput, DeleteGoalResult> {
+  return useMutation<DeleteGoalInput, DeleteGoalResult>((input) => defaultApiClient.deleteGoal(input));
+}
+
 export function useDeleteResourceHubDocument(): UseMutationHookResult<
   DeleteResourceHubDocumentInput,
   DeleteResourceHubDocumentResult
@@ -5193,6 +5213,8 @@ export default {
   useCreateSpace,
   createTask,
   useCreateTask,
+  deleteGoal,
+  useDeleteGoal,
   deleteResourceHubDocument,
   useDeleteResourceHubDocument,
   deleteResourceHubFile,

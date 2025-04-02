@@ -882,6 +882,7 @@ defmodule OperatelyWeb.Api.Types do
     field :can_check_in, :boolean
     field :can_close, :boolean
     field :can_archive, :boolean
+    field :can_delete, :boolean
   end
 
   object :goal_update_permissions do
