@@ -138,4 +138,47 @@ defmodule Operately.Features.GoalTest do
     |> Steps.assert_comment_on_the_timeframe_change_email_sent()
     |> Steps.assert_comment_on_the_timeframe_change_notification_sent()
   end
+
+  describe "deletion" do
+    setup ctx do
+      ctx
+      |> Factory.enable_feature("new_goal_page")
+    end
+
+    feature "given goal has no subgoals and projects, it can be deleted", ctx do
+      ctx
+      |> Steps.visit_goals_page()
+      |> Steps.assert_goal_exists(goal_name: ctx.goal.name)
+      |> Steps.visit_page()
+      |> Steps.delete_goal()
+      |> Steps.assert_goal_deleted(goal_name: ctx.goal.name)
+    end
+
+    feature "given goal has targets, check-ins and discussions, it can be deleted", ctx do
+      ctx
+      |> Steps.given_goal_has_targets()
+      |> Steps.given_goal_has_checkins()
+      |> Steps.given_goal_has_discussions()
+
+      |> Steps.visit_goals_page()
+      |> Steps.assert_goal_exists(goal_name: ctx.goal.name)
+      |> Steps.visit_page()
+      |> Steps.delete_goal()
+      |> Steps.assert_goal_deleted(goal_name: ctx.goal.name)
+    end
+
+    feature "given goal has subgoals, it cannot be deleted", ctx do
+      ctx
+      |> Steps.given_goal_has_subgoals()
+      |> Steps.visit_page()
+      |> Steps.assert_goal_cannot_be_deleted()
+    end
+
+    feature "given goal has projects, it cannot be deleted", ctx do
+      ctx
+      |> Steps.given_goal_has_projects()
+      |> Steps.visit_page()
+      |> Steps.assert_goal_cannot_be_deleted()
+    end
+  end
 end
