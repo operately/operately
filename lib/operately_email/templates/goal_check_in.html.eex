@@ -18,6 +18,18 @@
 
 <%= spacer() %>
 
+<%= if @targets && length(@targets) > 0 do %>
+  <%= title("Targets", font_size: "18px") %>
+
+  <%= for target <- @targets do %>
+    <%= row do %>
+      <%= title(target.name, font_size: "16px") %>
+      <div style="font-size: 16px; color: #333;"><%= target.current_value %> <%= target.unit %></div>
+    <% end %>
+    <%= spacer() %>
+  <% end %>
+<% end %>
+
 <%= row do %>
   <%= cta_button(@cta_url, @cta_text) %>
 <% end %>
