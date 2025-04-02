@@ -33,6 +33,10 @@ defmodule Operately.Comments do
     end
   end
 
+  def list_comment_threads do
+    Repo.all(CommentThread)
+  end
+
   def list_milestone_comments do
     Repo.all(MilestoneComment)
   end
