@@ -52,7 +52,7 @@ function DeleteGoal({ toggleShowDeleteGoal }: { toggleShowDeleteGoal: () => void
       <p className="text-center">Are you sure you want to delete this goal?</p>
       <div className="flex items-center justify-center gap-3">
         <SecondaryButton onClick={handleCancel}>Cancel</SecondaryButton>
-        <PrimaryButton onClick={handleDelete} loading={loading}>
+        <PrimaryButton onClick={handleDelete} loading={loading} testId="confirm-delete-goal">
           Delete
         </PrimaryButton>
       </div>
@@ -84,7 +84,7 @@ function GoalTree({ toggleShowDeleteGoal }: { toggleShowDeleteGoal: () => void }
         </div>
       </div>
 
-      <SecondaryButton size="sm" onClick={toggleShowDeleteGoal}>
+      <SecondaryButton size="sm" onClick={toggleShowDeleteGoal} testId="close-delete-goal-modal">
         Close
       </SecondaryButton>
     </div>
