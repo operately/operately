@@ -62,6 +62,31 @@ defmodule Operately.Support.Features.GoalSteps do
     |> Factory.add_goal(:goal, :product, name: "Goal", champion: :champion, reviewer: :reviewer, parent_goal: :parent1)
   end
 
+  step :given_goal_has_subgoals, ctx do
+    ctx
+    |> Factory.add_goal(:subgoal, :product, name: "Subgoal", parent_goal: :goal)
+  end
+
+  step :given_goal_has_projects, ctx do
+    ctx
+    |> Factory.add_project(:project, :product, name: "Project", goal: :goal)
+  end
+
+  step :given_goal_has_targets, ctx do
+    ctx
+    |> Factory.add_goal_target(:target, :goal)
+  end
+
+  step :given_goal_has_checkins, ctx do
+    ctx
+    |> Factory.add_goal_update(:checkin, :goal, :champion)
+  end
+
+  step :given_goal_has_discussions, ctx do
+    ctx
+    |> Factory.add_goal_discussion(:discussion, :goal)
+  end
+
   step :change_goal_parent, ctx, parent_goal_name do
     ctx
     |> UI.click(testid: "goal-options")
@@ -137,6 +162,40 @@ defmodule Operately.Support.Features.GoalSteps do
 
   step :visit_page, ctx do
     UI.visit(ctx, Paths.goal_path(ctx.company, ctx.goal))
+  end
+
+  step :visit_goals_page, ctx do
+    UI.visit(ctx, Paths.goals_path(ctx.company))
+  end
+
+  step :delete_goal, ctx do
+    ctx
+    |> UI.click(testid: "goal-options")
+    |> UI.click(testid: "delete-goal")
+    |> UI.assert_text("Are you sure you want to delete this goal?")
+    |> UI.click(testid: "confirm-delete-goal")
+    |> UI.assert_page(Paths.goals_path(ctx.company))
+  end
+
+  step :assert_goal_deleted, ctx, goal_name: goal_name do
+    ctx
+    |> UI.refute_text(goal_name)
+  end
+
+  step :assert_goal_exists, ctx, goal_name: goal_name do
+    ctx
+    |> UI.assert_text(goal_name)
+  end
+
+  step :assert_goal_cannot_be_deleted, ctx do
+    ctx
+    |> UI.click(testid: "goal-options")
+    |> UI.click(testid: "delete-goal")
+    |> UI.assert_text("Unable to Delete Goal")
+    |> UI.assert_text("This goal has connected subgoals and projects that need to be addressed first. Please delete or disconnect all of the following resources:")
+    |> UI.refute_has(testid: "confirm-delete-goal")
+    |> UI.click(testid: "close-delete-goal-modal")
+    |> UI.refute_text("Unable to Delete Goal")
   end
 
   step :archive_goal, ctx do
