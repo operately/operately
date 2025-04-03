@@ -47,7 +47,7 @@ blocks:
       epilogue:
         always:
           commands:
-            - '[ -f testreports/junit.xml ] && test-results publish app/testreports/junit.xml'
+            - '[ -f app/testreports/junit.xml ] && test-results publish app/testreports/junit.xml'
             - artifact push workflow screenshots
 
   - name: Docker Build
