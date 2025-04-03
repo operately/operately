@@ -63,6 +63,9 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyMember do
       {:error, [%{field: :full_name, message: message}]} ->
         {:error, :bad_request, "Name " <> message}
 
+      {:error, [%{message: message}]} ->
+        {:error, :bad_request, message}
+
       {:error, e} ->
         Logger.error("Unexpected error: #{inspect(e)}")
         raise "Unexpected error"
