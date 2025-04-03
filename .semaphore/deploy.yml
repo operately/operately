@@ -15,4 +15,4 @@ blocks:
         - name: "Deploy"
           commands:
             - checkout
-            # - ruby scripts/deploy.rb - disable deployment
+            - ruby scripts/deploy.rb
