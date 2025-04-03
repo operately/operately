@@ -1,7 +1,7 @@
 import React from "react";
 
 import classNames from "classnames";
-import { GhostButton } from "@/components/Buttons";
+import { GhostButton } from "turboui";
 
 export function ZeroState() {
   return (

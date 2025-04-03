@@ -10,7 +10,7 @@ import { match } from "ts-pattern";
 
 import FormattedTime from "@/components/FormattedTime";
 import { AvatarLink } from "@/components/Avatar";
-import { SecondaryButton } from "@/components/Buttons";
+import { SecondaryButton } from "turboui";
 import { richContentToString } from "@/components/RichContent";
 import { DivLink } from "@/components/Link";
 import { Paths } from "@/routes/paths";

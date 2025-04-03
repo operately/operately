@@ -5,7 +5,7 @@ import Avatar from "@/components/Avatar";
 import { Subscriber } from "@/models/notifications";
 import { EditSubscriptionsModal } from "./EditSubscriptionsModal";
 import { useCurrentSubscriptionsContext } from "../CurrentSubscriptions";
-import { SecondaryButton } from "@/components/Buttons";
+import { SecondaryButton } from "turboui";
 
 export function ExistingSubscriptionsList() {
   const { potentialSubscribers, name } = useCurrentSubscriptionsContext();
