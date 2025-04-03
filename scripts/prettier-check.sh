@@ -20,7 +20,7 @@ function on_error() {
 }
 
 echo "Checking if JS and TS files are properly formatted"
-cd assets
+cd app/assets
 npx prettier --list-different js | cat # if prettier is piped to a command, it will be less verbose
 
 if [ ${PIPESTATUS[0]} -ne 0 ]; then on_error; fi
