@@ -15,6 +15,7 @@
     "@tiptap/starter-kit": "^2.3.0",
     "@tiptap/suggestion": "^2.3.0",
     "@types/react-datepicker": "^4.19.6",
+    "@vitejs/plugin-react": "^4.3.4",
     "axios": "^1.7.3",
     "classnames": "^2.3.2",
     "date-fns": "^2.30.0",
@@ -36,7 +37,8 @@
     "react-spinners": "^0.13.8",
     "tippy.js": "^6.3.7",
     "ts-pattern": "^5.0.8",
-    "turboui": "file:../turboui"
+    "turboui": "file:../turboui",
+    "vite": "^6.2.5"
   },
   "devDependencies": {
     "@types/jest": "^29.5.12",
@@ -56,6 +58,10 @@
     "trailingComma": "all"
   },
   "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "build:prod": "NODE_ENV=production vite build",
+    "preview": "vite preview",
     "test": "jest",
     "knip": "knip --no-progress",
     "prettier:check": "prettier --check js"
