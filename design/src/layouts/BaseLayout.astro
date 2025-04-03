@@ -1,0 +1,34 @@
+---
+import "../styles/global.css";
+import ThemeToggle from "../components/ThemeToggle.astro";
+import type { LayoutProps } from "../types/astro";
+
+type Props = LayoutProps;
+
+const { title = "Operately BPRD" } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap"
+      rel="stylesheet"
+    />
+    <title>{title}</title>
+    <script is:inline src="/scripts/theme-toggle.js"></script>
+  </head>
+  <body
+    class="antialiased overscroll-none"
+    style="font-family: 'Inter', sans-serif;"
+  >
+    <ThemeToggle />
+    <slot />
+  </body>
+</html>
