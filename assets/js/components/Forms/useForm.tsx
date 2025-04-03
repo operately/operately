@@ -1,4 +1,5 @@
 import * as React from "react";
+import { AxiosError } from "axios";
 
 import { FieldObject } from "./useForm/field";
 import { ErrorMap, AddErrorFn, ValidationFn } from "./useForm/errors";
@@ -14,6 +15,7 @@ interface FormProps<T extends FieldObject> {
   submit: (attrs?: any) => Promise<void> | void;
   cancel?: () => Promise<void> | void;
   onChange?: OnChangeFn<T>;
+  onError?: (e: AxiosError) => void;
 }
 
 export interface FormState<T extends FieldObject> {
@@ -92,6 +94,8 @@ export function useForm<T extends FieldObject>(props: FormProps<T>): FormState<T
           setState("idle");
         } catch (e) {
           console.error(e);
+          if (props.onError) props.onError(e);
+
           setState("idle");
         }
       },
