@@ -69,6 +69,7 @@ defmodule Operately.People.Person do
     ])
     |> validate_required([:full_name, :company_id])
     |> foreign_key_constraint(:avatar_blob_id, name: :people_avatar_blob_id_fkey)
+    |> unique_constraint([:company_id, :account_id], name: :people_company_id_account_id_index, message: "Email has already been taken")
   end
 
   def short_name(person) do

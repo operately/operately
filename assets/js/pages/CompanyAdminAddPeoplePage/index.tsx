@@ -68,6 +68,18 @@ function InviteForm({ setPageState }: { setPageState: SetPageStateFn }) {
 
       setPageState({ state: "invited", url, fullName: form.values.fullName });
     },
+    onError: (e) => {
+      const { data } = (e.response as any) ?? {};
+
+      if ("message" in data && typeof data.message === "string") {
+        if (data.message.toLowerCase().includes("email")) {
+          form.actions.addErrors({ email: data.message });
+        }
+        if (data.message.toLowerCase().includes("name")) {
+          form.actions.addErrors({ fullName: data.message });
+        }
+      }
+    },
     cancel: () => {
       navigate(Paths.companyManagePeoplePath());
     },
