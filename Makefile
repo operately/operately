@@ -159,7 +159,6 @@ test.screenshots.clear:
 	rm -rf $(SCREENSHOTS_DIR)/*
 
 test.license.check:
-	bundle install
 	bash scripts/license-check.sh
 
 test.js.dead.code:
