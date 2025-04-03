@@ -51,6 +51,9 @@ dev.build:
 dev.server:
 	./devenv bash -c "cd app && iex -S mix phx.server"
 
+design.server:
+	./devenv bash -c "cd design && npm install && npm run dev"
+
 dev.shell:
 	./devenv shell
 

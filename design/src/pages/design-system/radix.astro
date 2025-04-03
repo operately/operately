@@ -1,0 +1,96 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import RadixDialogExample from '../../components/RadixExample';
+---
+
+<Layout>
+  <div id="root">
+    <div class="flex flex-col h-dvh">
+      <div class="flex-1 overflow-y-auto">
+        <div>
+          <div class="mx-auto relative sm:my-10 max-w-4xl">
+            <div
+              class="bg-surface-dimmed flex items-center flex-wrap justify-center gap-1 pt-2 pb-1 mx-0 sm:mx-10 font-semibold rounded-t border-b sm:border-b-0 sm:border-t sm:border-x border-surface-outline"
+            >
+              <a
+                class="cursor-pointer transition-colors underline underline-offset-2 text-link-base hover:text-link-hover"
+                href="/"><span class="flex items-center gap-1.5">Lobby</span></a
+              ><div class="shrink-0">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="tabler-icon tabler-icon-slash"
+                  ><path d="M17 5l-10 14"></path></svg
+                >
+              </div><a
+                class="cursor-pointer transition-colors underline underline-offset-2 text-link-base hover:text-link-hover"
+                href="/design-system/"
+                ><span class="flex items-center gap-1.5">Design System</span></a
+              >
+            </div><div
+              class="relative bg-surface-base px-12 py-10 min-h-dvh sm:min-h-0 sm:border sm:border-surface-outline sm:rounded-lg sm:shadow-xl"
+            >
+              <div class="flex items-center justify-between mb-6">
+                <div>
+                  <div
+                    class="text-content-accent text-lg md:text-2xl font-extrabold"
+                  >
+                    Radix UI Components
+                  </div>
+                </div><div></div>
+              </div>
+              <div class="mt-2 mb-10">
+                Radix UI provides unstyled, accessible components for building high-quality design systems. 
+                These components are designed to integrate with Astro and can be styled using Tailwind CSS to match your application's design.
+              </div>
+
+              <h3 class="font-bold mt-8 text-lg text-content-accent">Dialog Component</h3>
+              <p class="text-content-base text-sm mb-4">
+                A modal dialog that interrupts the user with important content and expects a response.
+              </p>
+              <div class="p-4 border border-surface-outline rounded-lg mb-8 bg-surface-dimmed">
+                <RadixDialogExample client:load />
+                <div class="mt-4 p-4 bg-surface-base rounded border border-surface-outline">
+                  <p class="text-sm text-content-dimmed">
+                    This dialog component uses Radix UI's unstyled primitives with Tailwind CSS for styling.
+                    The dialog is accessible and follows WAI-ARIA design patterns.
+                  </p>
+                </div>
+              </div>
+
+              <h3 class="font-bold mt-8 text-lg text-content-accent">Usage Notes</h3>
+              <p class="text-content-base text-sm mb-4">
+                Follow these steps to use Radix UI components in your Astro project.
+              </p>
+              <div class="space-y-2 mt-2 mb-8">
+                <div class="flex gap-2">
+                  <div class="font-bold text-content-accent">1.</div>
+                  <div class="text-content-base">Import the component from the appropriate Radix UI package</div>
+                </div>
+                <div class="flex gap-2">
+                  <div class="font-bold text-content-accent">2.</div>
+                  <div class="text-content-base">Use the component in your JSX/TSX files</div>
+                </div>
+                <div class="flex gap-2">
+                  <div class="font-bold text-content-accent">3.</div>
+                  <div class="text-content-base">When using in Astro files, add the <code class="bg-surface-dimmed px-1 rounded text-content-accent">client:load</code> directive (or other client directives as needed)</div>
+                </div>
+                <div class="flex gap-2">
+                  <div class="font-bold text-content-accent">4.</div>
+                  <div class="text-content-base">Style with Tailwind CSS classes using the design system's semantic color names</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
