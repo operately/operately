@@ -24,13 +24,21 @@ defmodule Operately.Operations.CompanyMemberAdding do
   defp insert_account(multi, attrs) do
     password = :crypto.strong_rand_bytes(64) |> Base.encode64 |> binary_part(0, 64)
 
-    Multi.insert(multi, :account,
-      Operately.People.Account.registration_changeset(%{
-        email: attrs.email,
-        password: password,
-        full_name: attrs.full_name
-      })
-    )
+    Multi.run(multi, :account, fn repo, _changes ->
+      case repo.get_by(Operately.People.Account, email: attrs.email) do
+        nil ->
+          %Operately.People.Account{}
+          |> Operately.People.Account.registration_changeset(%{
+            email: attrs.email,
+            password: password,
+            full_name: attrs.full_name
+          })
+          |> repo.insert()
+
+        existing_account ->
+          {:ok, existing_account}
+      end
+    end)
   end
 
   defp insert_person(multi, admin, attrs) do
