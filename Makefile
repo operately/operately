@@ -132,7 +132,7 @@ test.ee:
 	./devenv bash -c "cd app && mix test ee/test/**/*_test.exs"
 
 test.mix.unit: test.init
-	./devenv bash -c "cd app && mix tests_with_retries $$(find app/test -name \"*_test.exs\" | grep -v \"test/features\")"
+	./devenv bash -c "./scripts/run_unit_tests.js"
 
 test.mix.features: test.init
 	./devenv bash -c "cd app && mix tests_with_retries $$(find app/test -name \"*_test.exs\" | grep \"app/test/features\" | ./scripts/split.rb $(INDEX) $(TOTAL))"
