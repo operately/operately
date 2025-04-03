@@ -25,7 +25,7 @@ defmodule Operately.InvitationsTest do
     end
 
     test "get_invitation_by_token!/1 returns the invitation" do
-      invitation = invitation_fixture()
+      invitation = invitation_fixture() |> Repo.preload([:member])
       token = invitation_token_fixture_unhashed(invitation.id)
 
       queried_invitation = Invitations.get_invitation_by_token(token)

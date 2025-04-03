@@ -1742,6 +1742,7 @@ export interface GetInvitationInput {
 
 export interface GetInvitationResult {
   invitation?: Invitation | null;
+  resetPassword?: boolean | null;
 }
 
 export interface GetKeyResourceInput {

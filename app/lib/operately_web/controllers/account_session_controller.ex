@@ -17,6 +17,18 @@ defmodule OperatelyWeb.AccountSessionController do
     end
   end
 
+  def create_with_invitation_token(conn, params) do
+    token = params["token"]
+
+    account = Operately.People.get_account_by_invitation_token(token)
+
+    if account do
+      AccountAuth.log_in_account(conn, account)
+    else
+      conn |> send_resp(401, "")
+    end
+  end
+
   def delete(conn, _params) do
     conn |> AccountAuth.log_out_account()
   end
