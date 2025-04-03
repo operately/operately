@@ -47,24 +47,24 @@ RUN mix local.hex --force && \
 ENV MIX_ENV="prod"
 
 # install mix dependencies
-COPY mix.exs mix.lock ./
+COPY app/mix.exs app/mix.lock ./
 RUN mix deps.get --only $MIX_ENV
 RUN mkdir config
 
 # copy compile-time config files before we compile dependencies
 # to ensure any relevant config change will trigger the dependencies
 # to be re-compiled.
-COPY config/config.exs config/${MIX_ENV}.exs config/
+COPY app/config/config.exs app/config/${MIX_ENV}.exs config/
 RUN mix deps.compile
 
-COPY priv priv
+COPY app/priv priv
 
-COPY assets assets
-COPY lib lib
-COPY ee ee
+COPY app/assets assets
+COPY app/lib lib
+COPY app/ee ee
 
-COPY package.json package-lock.json ./
-COPY tsconfig.json ./
+COPY app/package.json app/package-lock.json ./
+COPY app/tsconfig.json ./
 
 # compile assets
 RUN npm install
@@ -74,9 +74,9 @@ RUN mix assets.deploy
 RUN mix compile
 
 # Changes to config/runtime.exs don't require recompiling the code
-COPY config/runtime.exs config/
+COPY app/config/runtime.exs config/
 
-COPY rel rel
+COPY app/rel rel
 RUN mix release
 
 # --------------------------------------------------------------------------------------
