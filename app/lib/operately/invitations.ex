@@ -17,8 +17,10 @@ defmodule Operately.Invitations do
     now = DateTime.utc_now()
 
     query = from t in InvitationToken,
+      join: invitation in assoc(t, :invitation),
+      join: member in assoc(invitation, :member),
       where: t.hashed_token == ^hashed_token,
-      preload: [:invitation],
+      preload: [invitation: {invitation, [member: member]}],
       select: t
 
     case Repo.one(query) do

@@ -2,6 +2,8 @@ defmodule OperatelyWeb.Api.Mutations.JoinCompany do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
+  alias Operately.{People, Invitations}
+
   inputs do
     field :token, :string
     field :password, :string
@@ -13,26 +15,34 @@ defmodule OperatelyWeb.Api.Mutations.JoinCompany do
   end
 
   def call(_conn, inputs) do
-    case valid_password_input(inputs) do
-      {:ok, invitation} ->
-        Operately.Operations.PasswordFirstTimeChanging.run(inputs, invitation)
-        {:ok, %{result: "Password successfully changed"}}
-      {:error, reason} ->
-        {:error, :bad_request, reason}
+    with {:ok, invitation} <- find_invitation(inputs[:token]),
+         {:ok, result} <- process_invitation(invitation, inputs) do
+      {:ok, %{result: result}}
     end
   end
 
-  defp valid_password_input(input) do
-    cond do
-      input.password != input.password_confirmation ->
-        {:error, "Passwords don't match"}
-      true ->
-        case Operately.Invitations.get_invitation_by_token(input.token) do
-          nil ->
-            {:error, "Invalid token"}
-          invitation ->
-            {:ok, invitation}
-        end
+  defp find_invitation(token) do
+    case Invitations.get_invitation_by_token(token) do
+      nil -> {:error, :bad_request, "Invalid token"}
+      invitation -> {:ok, invitation}
+    end
+  end
+
+  defp process_invitation(invitation, inputs) do
+    if People.account_has_active_person?(invitation.member.account_id) do
+      {:ok, _} = People.update_person(invitation.member, %{has_open_invitation: false})
+      {:ok, "Successfully joined company"}
+    else
+      process_password_change(inputs, invitation)
+    end
+  end
+
+  defp process_password_change(inputs, invitation) do
+    if inputs.password == inputs.password_confirmation do
+      Operately.Operations.PasswordFirstTimeChanging.run(inputs, invitation)
+      {:ok, "Password successfully changed"}
+    else
+      {:error, :bad_request, "Passwords don't match"}
     end
   end
 end

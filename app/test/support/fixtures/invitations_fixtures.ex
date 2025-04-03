@@ -19,6 +19,7 @@ defmodule Operately.InvitationsFixtures do
     member = person_fixture_with_account(%{
       email: "member@test.com",
       company_id: company.id,
+      has_open_invitation: true,
     })
 
     {:ok, invitation} = Invitations.create_invitation(%{

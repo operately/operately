@@ -96,6 +96,14 @@ defmodule Operately.People do
     Person.changeset(person, attrs)
   end
 
+  def account_has_active_person?(account_id) do
+    from(p in Person,
+      where: p.account_id == ^account_id,
+      where: not p.has_open_invitation
+    )
+    |> Repo.exists?()
+  end
+
   def register_account(attrs) do
     %Account{}
     |> Account.registration_changeset(attrs)
@@ -183,6 +191,18 @@ defmodule Operately.People do
       account
     else
       _ -> nil
+    end
+  end
+
+  def get_account_by_invitation_token(token) when is_binary(token) do
+    case Operately.Invitations.get_invitation_by_token(token) do
+      nil -> nil
+      invitation ->
+        from(a in Account,
+          join: p in assoc(a, :people),
+          where: p.id == ^invitation.member_id
+        )
+        |> Repo.one()
     end
   end
 

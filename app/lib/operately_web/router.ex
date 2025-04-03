@@ -35,6 +35,7 @@ defmodule OperatelyWeb.Router do
     pipe_through [:browser, :redirect_if_account_is_authenticated]
 
     post "/accounts/log_in", AccountSessionController, :create
+    post "/accounts/log_in_with_invitation_token", AccountSessionController, :create_with_invitation_token
 
     #
     # In feature tests, we use the following route to log in as a user

@@ -11,11 +11,7 @@ interface LogInOptions {
   redirectTo: string | null;
 }
 
-export async function logIn(email: string, password: string, options: LogInOptions): Promise<LogInResult> {
-  const data = { email, password };
-
-  const res = await fetch("/accounts/log_in", { method: "POST", headers: autheaders(), body: JSON.stringify(data) });
-
+async function handleLoginResponse(res: Response, options: LogInOptions): Promise<LogInResult> {
   if (res.status === 200) {
     if (options.redirectTo) {
       window.location.href = options.redirectTo;
@@ -29,6 +25,26 @@ export async function logIn(email: string, password: string, options: LogInOptio
   } else {
     return "failure";
   }
+}
+
+export async function logIn(email: string, password: string, options: LogInOptions): Promise<LogInResult> {
+  const res = await fetch("/accounts/log_in", {
+    method: "POST",
+    headers: autheaders(),
+    body: JSON.stringify({ email, password }),
+  });
+
+  return handleLoginResponse(res, options);
+}
+
+export async function logInWithInvitationToken(token: string, options: LogInOptions): Promise<LogInResult> {
+  const res = await fetch("/accounts/log_in_with_invitation_token", {
+    method: "POST",
+    headers: autheaders(),
+    body: JSON.stringify({ token }),
+  });
+
+  return handleLoginResponse(res, options);
 }
 
 function autheaders(): HeadersInit {
