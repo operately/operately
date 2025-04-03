@@ -3,9 +3,9 @@ MAKEFLAGS += -s     # Silent mode
 
 .PHONY: test
 
-REPORTS_DIR ?= $(PWD)/testreports
+REPORTS_DIR ?= $(PWD)/app/testreports
+SCREENSHOTS_DIR ?= $(PWD)/app/screenshots
 MEDIA_DIR ?= $(PWD)/media
-SCREENSHOTS_DIR ?= $(PWD)/screenshots
 CERTS_DIR ?= $(PWD)/tmp/certs
 
 #
