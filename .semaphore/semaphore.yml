@@ -16,10 +16,10 @@ blocks:
       prologue:
         commands:
           - checkout
-          - cache restore operately.tar  # cached docker image
-          - cache restore mix_deps       # cached mix dependencies in deps/
-          - cache restore mix_build      # cached mix build in _build/
-          - cache restore node_modules   # cached node packages in assets/node_modules
+          # - cache restore operately.tar  # cached docker image
+          # - cache restore mix_deps       # cached mix dependencies in deps/
+          # - cache restore mix_build      # cached mix build in _build/
+          # - cache restore node_modules   # cached node packages in assets/node_modules
           - docker load -i operately.tar
           - make test.build
 
