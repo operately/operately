@@ -1,0 +1,37 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+import NavigationBar from "../components/Navigation/NavigationBar.astro";
+import Breadcrumbs from "../components/Navigation/Breadcrumbs.astro";
+import type { FullWidthLayoutProps } from "../types/astro";
+
+type Props = FullWidthLayoutProps;
+
+const {
+  title = "Operately BPRD",
+  showBreadcrumbs = true,
+  breadcrumbItems = [],
+  transitionBackground = true,
+} = Astro.props;
+---
+
+<BaseLayout title={title}>
+  <div class="flex flex-col h-screen">
+    <NavigationBar />
+
+    <div
+      class={`flex-1 overflow-y-auto ${transitionBackground ? "bg-gradient-to-b from-surface-dimmed to-white pt-4" : "bg-white"}`}
+    >
+      {
+        showBreadcrumbs && (
+          <div class="max-w-[95%] mx-auto">
+            <Breadcrumbs items={breadcrumbItems} />
+          </div>
+        )
+      }
+
+      <div class="w-full h-full px-0 sm:px-6 pb-6">
+        <slot />
+      </div>
+    </div>
+  </div>
+</BaseLayout>

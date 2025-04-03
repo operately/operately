@@ -1,0 +1,914 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+
+<Layout>
+  <div id="root" class="flex flex-col h-dvh">
+    <div class="flex-1 overflow-y-auto">
+      <div>
+        <div class="mx-auto relative sm:my-10 max-w-4xl">
+          <div
+            class="bg-surface-dimmed flex items-center flex-wrap justify-center gap-1 pt-2 pb-1 mx-0 sm:mx-10 font-semibold rounded-t border-b sm:border-b-0 sm:border-t sm:border-x border-surface-outline"
+          >
+            <a
+              class="cursor-pointer transition-colors underline underline-offset-2 text-link-base hover:text-link-hover"
+              href="/"><span class="flex items-center gap-1.5">Lobby</span></a
+            ><div class="shrink-0">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="tabler-icon tabler-icon-slash"
+                ><path d="M17 5l-10 14"></path></svg
+              >
+            </div><a
+              class="cursor-pointer transition-colors underline underline-offset-2 text-link-base hover:text-link-hover"
+              href="/design-system/"
+              ><span class="flex items-center gap-1.5">Design System</span></a
+            >
+          </div><div
+            class="relative bg-surface-base px-12 py-10 min-h-dvh sm:min-h-0 sm:border sm:border-surface-outline sm:rounded-lg sm:shadow-xl"
+          >
+            <div class="flex items-center justify-between mb-6">
+              <div>
+                <div
+                  class="text-content-accent text-lg md:text-2xl font-extrabold"
+                >
+                  Colors
+                </div>
+              </div><div></div>
+            </div><div class="mt-2 mb-10">
+              Operately uses semantic color names to define the color palette,
+              which means that the color names are based on their usage rather
+              than their appearance. You should always use these colors in the
+              application so we can maintain a consistent look and feel, and
+              easily make changes in the future.
+            </div><h3 class="font-bold mt-4 text-lg">Background Colors</h3><p
+              class="text-sm mb-6"
+            >
+              Colors used for the background and surface.
+            </p><div class="grid grid-cols-2 gap-8">
+              <div class="flex items-start gap-4">
+                <div
+                  class="w-12 h-12 bg-surface-bg border border-surface-outline rounded"
+                >
+                </div><div>
+                  <div class="text-content-accent font-bold">
+                    surface-bg
+                  </div><div class="text-xs">
+                    Background color of the application
+                  </div>
+                </div>
+              </div><div class="flex items-start gap-4">
+                <div
+                  class="w-12 h-12 bg-surface-highlight border border-surface-outline rounded"
+                >
+                </div><div>
+                  <div class="text-content-accent font-bold">
+                    surface-highlight
+                  </div><div class="text-xs">
+                    Highlight color for the application background
+                  </div>
+                </div>
+              </div><div class="flex items-start gap-4">
+                <div
+                  class="w-12 h-12 bg-surface-base border border-surface-outline rounded"
+                >
+                </div><div>
+                  <div class="text-content-accent font-bold">
+                    surface-base
+                  </div><div class="text-xs">Color of the UI surface</div>
+                </div>
+              </div><div class="flex items-start gap-4">
+                <div
+                  class="w-12 h-12 bg-surface-dimmed border border-surface-outline rounded"
+                >
+                </div><div>
+                  <div class="text-content-accent font-bold">
+                    surface-dimmed
+                  </div><div class="text-xs">
+                    Dimmed version of the UI surface, used for page footers
+                  </div>
+                </div>
+              </div><div class="flex items-start gap-4">
+                <div
+                  class="w-12 h-12 bg-surface-accent border border-surface-outline rounded"
+                >
+                </div><div>
+                  <div class="text-content-accent font-bold">
+                    surface-accent
+                  </div><div class="text-xs">
+                    Accent color of the UI surface, used for subtle highlights
+                  </div>
+                </div>
+              </div><div class="flex items-start gap-4">
+                <div
+                  class="w-12 h-12 bg-surface-outline border border-surface-outline rounded"
+                >
+                </div><div>
+                  <div class="text-content-accent font-bold">
+                    surface-outline
+                  </div><div class="text-xs">
+                    Outline color of the UI surface, used for borders
+                  </div>
+                </div>
+              </div><div class="flex items-start gap-4">
+                <div
+                  class="w-12 h-12 bg-surface-highlight border border-surface-outline rounded"
+                >
+                </div><div>
+                  <div class="text-content-accent font-bold">
+                    surface-highlight
+                  </div><div class="text-xs">
+                    Highlight color of the UI surface, used for hover effects
+                  </div>
+                </div>
+              </div>
+            </div><h3 class="font-bold mt-12 text-lg">
+              Interactive Components
+            </h3><p class="text-sm mb-6">
+              Form background, callouts, etc...
+            </p><div class="grid grid-cols-2 gap-8">
+              <div class="flex items-start gap-4">
+                <div
+                  class="w-12 h-12 bg-callout-info border border-surface-outline rounded"
+                >
+                </div><div>
+                  <div class="text-content-accent font-bold">
+                    callout-info
+                  </div><div class="text-xs">
+                    Information callout background color
+                  </div>
+                </div>
+              </div><div class="flex items-start gap-4">
+                <div
+                  class="w-12 h-12 bg-callout-info-icon border border-surface-outline rounded"
+                >
+                </div><div>
+                  <div class="text-content-accent font-bold">
+                    callout-info-icon
+                  </div><div class="text-xs">
+                    Information callout icon color
+                  </div>
+                </div>
+              </div><div class="flex items-start gap-4">
+                <div
+                  class="w-12 h-12 bg-callout-info-message border border-surface-outline rounded"
+                >
+                </div><div>
+                  <div class="text-content-accent font-bold">
+                    callout-info-message
+                  </div><div class="text-xs">
+                    Information callout message text
+                  </div>
+                </div>
+              </div><div class="flex items-start gap-4">
+                <div
+                  class="w-12 h-12 bg-callout-warning border border-surface-outline rounded"
+                >
+                </div><div>
+                  <div class="text-content-accent font-bold">
+                    callout-warning
+                  </div><div class="text-xs">
+                    Warning callout background color
+                  </div>
+                </div>
+              </div><div class="flex items-start gap-4">
+                <div
+                  class="w-12 h-12 bg-callout-warning-icon border border-surface-outline rounded"
+                >
+                </div><div>
+                  <div class="text-content-accent font-bold">
+                    callout-warning-icon
+                  </div><div class="text-xs">Warning callout icon color</div>
+                </div>
+              </div><div class="flex items-start gap-4">
+                <div
+                  class="w-12 h-12 bg-callout-warning-message border border-surface-outline rounded"
+                >
+                </div><div>
+                  <div class="text-content-accent font-bold">
+                    callout-warning-message
+                  </div><div class="text-xs">Warning callout message text</div>
+                </div>
+              </div><div class="flex items-start gap-4">
+                <div
+                  class="w-12 h-12 bg-callout-error border border-surface-outline rounded"
+                >
+                </div><div>
+                  <div class="text-content-accent font-bold">
+                    callout-error
+                  </div><div class="text-xs">
+                    Error callout background color
+                  </div>
+                </div>
+              </div><div class="flex items-start gap-4">
+                <div
+                  class="w-12 h-12 bg-callout-error-icon border border-surface-outline rounded"
+                >
+                </div><div>
+                  <div class="text-content-accent font-bold">
+                    callout-error-icon
+                  </div><div class="text-xs">Error callout icon color</div>
+                </div>
+              </div><div class="flex items-start gap-4">
+                <div
+                  class="w-12 h-12 bg-callout-error-message border border-surface-outline rounded"
+                >
+                </div><div>
+                  <div class="text-content-accent font-bold">
+                    callout-error-message
+                  </div><div class="text-xs">Error callout message text</div>
+                </div>
+              </div><div class="flex items-start gap-4">
+                <div
+                  class="w-12 h-12 bg-callout-success border border-surface-outline rounded"
+                >
+                </div><div>
+                  <div class="text-content-accent font-bold">
+                    callout-success
+                  </div><div class="text-xs">
+                    Success callout background color
+                  </div>
+                </div>
+              </div><div class="flex items-start gap-4">
+                <div
+                  class="w-12 h-12 bg-callout-success-icon border border-surface-outline rounded"
+                >
+                </div><div>
+                  <div class="text-content-accent font-bold">
+                    callout-success-icon
+                  </div><div class="text-xs">Success callout icon color</div>
+                </div>
+              </div><div class="flex items-start gap-4">
+                <div
+                  class="w-12 h-12 bg-callout-success-message border border-surface-outline rounded"
+                >
+                </div><div>
+                  <div class="text-content-accent font-bold">
+                    callout-success-message
+                  </div><div class="text-xs">Success callout message text</div>
+                </div>
+              </div>
+            </div><h3 class="font-bold mt-12 text-lg">
+              Borders And Separators
+            </h3><p class="text-sm mb-6">
+              Colors used for dividers, borders, and other separators
+            </p><div class="grid grid-cols-2 gap-8">
+              <div class="flex items-start gap-4">
+                <div
+                  class="w-12 h-12 bg-stroke-base border border-surface-outline rounded"
+                >
+                </div><div>
+                  <div class="text-content-accent font-bold">
+                    stroke-base
+                  </div><div class="text-xs">
+                    Color for dividers and subtle borders on a page
+                  </div>
+                </div>
+              </div><div class="flex items-start gap-4">
+                <div
+                  class="w-12 h-12 bg-stroke-dimmed border border-surface-outline rounded"
+                >
+                </div><div>
+                  <div class="text-content-accent font-bold">
+                    stroke-dimmed
+                  </div><div class="text-xs">
+                    Separator for condensed content, like lists
+                  </div>
+                </div>
+              </div>
+            </div><h3 class="font-bold mt-12 text-lg">Solid Colors</h3><p
+              class="text-sm mb-6"
+            >
+              CTA, Buttons, Avatar background, etc...
+            </p><div class="grid grid-cols-2 gap-8">
+              <div class="flex items-start gap-4">
+                <div
+                  class="w-12 h-12 bg-accent-1 border border-surface-outline rounded"
+                >
+                </div><div>
+                  <div class="text-content-accent font-bold">accent-1</div><div
+                    class="text-xs"
+                  >
+                    Color that stands out, used for primary buttons and CTAs
+                  </div>
+                </div>
+              </div><div class="flex items-start gap-4">
+                <div
+                  class="w-12 h-12 bg-accent-1-light border border-surface-outline rounded"
+                >
+                </div><div>
+                  <div class="text-content-accent font-bold">
+                    accent-1-light
+                  </div><div class="text-xs">
+                    A lighter shade of the primary accent color for hover
+                    effects
+                  </div>
+                </div>
+              </div>
+            </div><h3 class="font-bold mt-12 text-lg">Text Colors</h3><p
+              class="text-sm mb-6"
+            >
+              Colors used for text content, icons, warnings, and other content
+            </p><div class="flex flex-col gap-4">
+              <div class="flex items-center gap-16">
+                <div class="w-64">
+                  <div class="text-content-accent font-bold">
+                    text-content-base
+                  </div><div class="text-xs">
+                    Default color of all text content
+                  </div>
+                </div><span class="font-medium text-content-base"
+                  >The quick brown fox jumps over the lazy dog</span
+                ><div class="flex items-center gap-4">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="tabler-icon tabler-icon-trash text-content-base"
+                    ><path d="M4 7l16 0"></path><path d="M10 11l0 6"
+                    ></path><path d="M14 11l0 6"></path><path
+                      d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"
+                    ></path><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"
+                    ></path></svg
+                  ><svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="tabler-icon tabler-icon-users text-content-base"
+                    ><path d="M9 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"
+                    ></path><path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"
+                    ></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path><path
+                      d="M21 21v-2a4 4 0 0 0 -3 -3.85"></path></svg
+                  ><svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="tabler-icon tabler-icon-refresh text-content-base"
+                    ><path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4"
+                    ></path><path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4"
+                    ></path></svg
+                  ><svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="tabler-icon tabler-icon-settings text-content-base"
+                    ><path
+                      d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065z"
+                    ></path><path d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0"
+                    ></path></svg
+                  ><svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="tabler-icon tabler-icon-search text-content-base"
+                    ><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"
+                    ></path><path d="M21 21l-6 -6"></path></svg
+                  ><svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="tabler-icon tabler-icon-x text-content-base"
+                    ><path d="M18 6l-12 12"></path><path d="M6 6l12 12"
+                    ></path></svg
+                  >
+                </div>
+              </div><div class="flex items-center gap-16">
+                <div class="w-64">
+                  <div class="text-content-accent font-bold">
+                    text-content-dimmed
+                  </div><div class="text-xs">
+                    Text content with less emphasis
+                  </div>
+                </div><span class="font-medium text-content-dimmed"
+                  >The quick brown fox jumps over the lazy dog</span
+                ><div class="flex items-center gap-4">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="tabler-icon tabler-icon-trash text-content-dimmed"
+                    ><path d="M4 7l16 0"></path><path d="M10 11l0 6"
+                    ></path><path d="M14 11l0 6"></path><path
+                      d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"
+                    ></path><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"
+                    ></path></svg
+                  ><svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="tabler-icon tabler-icon-users text-content-dimmed"
+                    ><path d="M9 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"
+                    ></path><path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"
+                    ></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path><path
+                      d="M21 21v-2a4 4 0 0 0 -3 -3.85"></path></svg
+                  ><svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="tabler-icon tabler-icon-refresh text-content-dimmed"
+                    ><path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4"
+                    ></path><path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4"
+                    ></path></svg
+                  ><svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="tabler-icon tabler-icon-settings text-content-dimmed"
+                    ><path
+                      d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065z"
+                    ></path><path d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0"
+                    ></path></svg
+                  ><svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="tabler-icon tabler-icon-search text-content-dimmed"
+                    ><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"
+                    ></path><path d="M21 21l-6 -6"></path></svg
+                  ><svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="tabler-icon tabler-icon-x text-content-dimmed"
+                    ><path d="M18 6l-12 12"></path><path d="M6 6l12 12"
+                    ></path></svg
+                  >
+                </div>
+              </div><div class="flex items-center gap-16">
+                <div class="w-64">
+                  <div class="text-content-accent font-bold">
+                    text-content-subtle
+                  </div><div class="text-xs">
+                    Barely visible color for text content
+                  </div>
+                </div><span class="font-medium text-content-subtle"
+                  >The quick brown fox jumps over the lazy dog</span
+                ><div class="flex items-center gap-4">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="tabler-icon tabler-icon-trash text-content-subtle"
+                    ><path d="M4 7l16 0"></path><path d="M10 11l0 6"
+                    ></path><path d="M14 11l0 6"></path><path
+                      d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"
+                    ></path><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"
+                    ></path></svg
+                  ><svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="tabler-icon tabler-icon-users text-content-subtle"
+                    ><path d="M9 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"
+                    ></path><path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"
+                    ></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path><path
+                      d="M21 21v-2a4 4 0 0 0 -3 -3.85"></path></svg
+                  ><svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="tabler-icon tabler-icon-refresh text-content-subtle"
+                    ><path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4"
+                    ></path><path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4"
+                    ></path></svg
+                  ><svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="tabler-icon tabler-icon-settings text-content-subtle"
+                    ><path
+                      d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065z"
+                    ></path><path d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0"
+                    ></path></svg
+                  ><svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="tabler-icon tabler-icon-search text-content-subtle"
+                    ><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"
+                    ></path><path d="M21 21l-6 -6"></path></svg
+                  ><svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="tabler-icon tabler-icon-x text-content-subtle"
+                    ><path d="M18 6l-12 12"></path><path d="M6 6l12 12"
+                    ></path></svg
+                  >
+                </div>
+              </div><div class="flex items-center gap-16">
+                <div class="w-64">
+                  <div class="text-content-accent font-bold">
+                    text-content-error
+                  </div><div class="text-xs">
+                    Form errors, validation messages, etc...
+                  </div>
+                </div><span class="font-medium text-content-error"
+                  >The quick brown fox jumps over the lazy dog</span
+                ><div class="flex items-center gap-4">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="tabler-icon tabler-icon-trash text-content-error"
+                    ><path d="M4 7l16 0"></path><path d="M10 11l0 6"
+                    ></path><path d="M14 11l0 6"></path><path
+                      d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"
+                    ></path><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"
+                    ></path></svg
+                  ><svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="tabler-icon tabler-icon-users text-content-error"
+                    ><path d="M9 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"
+                    ></path><path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"
+                    ></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path><path
+                      d="M21 21v-2a4 4 0 0 0 -3 -3.85"></path></svg
+                  ><svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="tabler-icon tabler-icon-refresh text-content-error"
+                    ><path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4"
+                    ></path><path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4"
+                    ></path></svg
+                  ><svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="tabler-icon tabler-icon-settings text-content-error"
+                    ><path
+                      d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065z"
+                    ></path><path d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0"
+                    ></path></svg
+                  ><svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="tabler-icon tabler-icon-search text-content-error"
+                    ><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"
+                    ></path><path d="M21 21l-6 -6"></path></svg
+                  ><svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="tabler-icon tabler-icon-x text-content-error"
+                    ><path d="M18 6l-12 12"></path><path d="M6 6l12 12"
+                    ></path></svg
+                  >
+                </div>
+              </div><div class="flex items-center gap-16">
+                <div class="w-64">
+                  <div class="text-content-accent font-bold">
+                    text-link-base
+                  </div><div class="text-xs">
+                    Default color of all text links
+                  </div>
+                </div><span class="font-medium text-link-base"
+                  >The quick brown fox jumps over the lazy dog</span
+                ><div class="flex items-center gap-4">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="tabler-icon tabler-icon-trash text-link-base"
+                    ><path d="M4 7l16 0"></path><path d="M10 11l0 6"
+                    ></path><path d="M14 11l0 6"></path><path
+                      d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"
+                    ></path><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"
+                    ></path></svg
+                  ><svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="tabler-icon tabler-icon-users text-link-base"
+                    ><path d="M9 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"
+                    ></path><path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"
+                    ></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path><path
+                      d="M21 21v-2a4 4 0 0 0 -3 -3.85"></path></svg
+                  ><svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="tabler-icon tabler-icon-refresh text-link-base"
+                    ><path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4"
+                    ></path><path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4"
+                    ></path></svg
+                  ><svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="tabler-icon tabler-icon-settings text-link-base"
+                    ><path
+                      d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065z"
+                    ></path><path d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0"
+                    ></path></svg
+                  ><svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="tabler-icon tabler-icon-search text-link-base"
+                    ><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"
+                    ></path><path d="M21 21l-6 -6"></path></svg
+                  ><svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="tabler-icon tabler-icon-x text-link-base"
+                    ><path d="M18 6l-12 12"></path><path d="M6 6l12 12"
+                    ></path></svg
+                  >
+                </div>
+              </div><div class="flex items-center gap-16">
+                <div class="w-64">
+                  <div class="text-content-accent font-bold">
+                    text-link-hover
+                  </div><div class="text-xs">Color of text links on hover</div>
+                </div><span class="font-medium text-link-hover"
+                  >The quick brown fox jumps over the lazy dog</span
+                ><div class="flex items-center gap-4">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="tabler-icon tabler-icon-trash text-link-hover"
+                    ><path d="M4 7l16 0"></path><path d="M10 11l0 6"
+                    ></path><path d="M14 11l0 6"></path><path
+                      d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"
+                    ></path><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"
+                    ></path></svg
+                  ><svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="tabler-icon tabler-icon-users text-link-hover"
+                    ><path d="M9 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"
+                    ></path><path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"
+                    ></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path><path
+                      d="M21 21v-2a4 4 0 0 0 -3 -3.85"></path></svg
+                  ><svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="tabler-icon tabler-icon-refresh text-link-hover"
+                    ><path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4"
+                    ></path><path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4"
+                    ></path></svg
+                  ><svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="tabler-icon tabler-icon-settings text-link-hover"
+                    ><path
+                      d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065z"
+                    ></path><path d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0"
+                    ></path></svg
+                  ><svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="tabler-icon tabler-icon-search text-link-hover"
+                    ><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"
+                    ></path><path d="M21 21l-6 -6"></path></svg
+                  ><svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="tabler-icon tabler-icon-x text-link-hover"
+                    ><path d="M18 6l-12 12"></path><path d="M6 6l12 12"
+                    ></path></svg
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>

@@ -1,0 +1,165 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { MenuExampleBasic, MenuExampleWithSizes, MenuExampleWithCustomTrigger, MenuExampleWithSubmenu } from "../../components/Menu/Example";
+---
+
+<Layout>
+  <div id="root">
+    <div class="flex flex-col h-dvh">
+      <div class="flex-1 overflow-y-auto">
+        <div>
+          <div class="mx-auto relative sm:my-10 max-w-4xl">
+            <div
+              class="bg-surface-dimmed flex items-center flex-wrap justify-center gap-1 pt-2 pb-1 mx-0 sm:mx-10 font-semibold rounded-t border-b sm:border-b-0 sm:border-t sm:border-x border-surface-outline"
+            >
+              <a
+                class="cursor-pointer transition-colors underline underline-offset-2 text-link-base hover:text-link-hover"
+                href="/"><span class="flex items-center gap-1.5">Lobby</span></a
+              ><div class="shrink-0">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="tabler-icon tabler-icon-slash"
+                  ><path d="M17 5l-10 14"></path></svg
+                >
+              </div><a
+                class="cursor-pointer transition-colors underline underline-offset-2 text-link-base hover:text-link-hover"
+                href="/design-system/"
+                ><span class="flex items-center gap-1.5">Design System</span></a
+              >
+            </div><div
+              class="relative bg-surface-base px-12 py-10 min-h-dvh sm:min-h-0 sm:border sm:border-surface-outline sm:rounded-lg sm:shadow-xl"
+            >
+              <div class="flex items-center justify-between mb-6">
+                <div>
+                  <div
+                    class="text-content-accent text-lg md:text-2xl font-extrabold"
+                  >
+                    Menus
+                  </div>
+                </div><div></div>
+              </div><div class="mt-2 mb-10">
+                Menus are used to display a list of options or actions that a user can choose from. 
+                They are typically triggered by a button or icon, and can contain links, actions, or submenu items.
+                Operately's menus are built with Radix UI's DropdownMenu component and are fully accessible, following WAI-ARIA design patterns.
+              </div>
+
+              <h3 class="font-bold mt-8 text-lg text-content-accent">Basic Menu</h3>
+              <p class="text-content-base text-sm mb-4">
+                A basic menu with link and action items. Click the three dots to open.
+              </p>
+              <div class="p-6 border border-surface-outline rounded-lg mb-8 bg-surface-dimmed flex flex-col items-start gap-6">
+                <MenuExampleBasic client:load />
+                <div class="mt-2 p-4 bg-surface-base rounded border border-surface-outline w-full">
+                  <p class="text-sm text-content-dimmed">
+                    The basic menu uses the default trigger (three dots) and includes link items and action items.
+                    Items can include icons and can be styled as dangerous actions with red text on hover.
+                  </p>
+                </div>
+              </div>
+
+              <h3 class="font-bold mt-12 text-lg text-content-accent">Menu Sizes</h3>
+              <p class="text-content-base text-sm mb-4">
+                Menus come in different sizes to accommodate various content needs.
+              </p>
+              <div class="p-6 border border-surface-outline rounded-lg mb-8 bg-surface-dimmed">
+                <MenuExampleWithSizes client:load />
+                <div class="mt-4 p-4 bg-surface-base rounded border border-surface-outline">
+                  <p class="text-sm text-content-dimmed">
+                    Available sizes: small (150px), medium (200px), large (225px), xlarge (250px), xxlarge (275px), and xxxlarge (300px).
+                    The default size is medium.
+                  </p>
+                </div>
+              </div>
+
+              <h3 class="font-bold mt-12 text-lg text-content-accent">Custom Trigger</h3>
+              <p class="text-content-base text-sm mb-4">
+                Menus can be triggered by custom elements instead of the default dots icon.
+              </p>
+              <div class="p-6 border border-surface-outline rounded-lg mb-8 bg-surface-dimmed flex flex-col items-start gap-6">
+                <MenuExampleWithCustomTrigger client:load />
+                <div class="mt-2 p-4 bg-surface-base rounded border border-surface-outline w-full">
+                  <p class="text-sm text-content-dimmed">
+                    Custom triggers can be any React element, including buttons, icons, or text.
+                    This is useful when you want the menu to be triggered by a specific UI element.
+                  </p>
+                </div>
+              </div>
+
+              <h3 class="font-bold mt-12 text-lg text-content-accent">Submenus</h3>
+              <p class="text-content-base text-sm mb-4">
+                Menus can contain submenus for hierarchical navigation.
+              </p>
+              <div class="p-6 border border-surface-outline rounded-lg mb-8 bg-surface-dimmed flex flex-col items-start gap-6">
+                <MenuExampleWithSubmenu client:load />
+                <div class="mt-2 p-4 bg-surface-base rounded border border-surface-outline w-full">
+                  <p class="text-sm text-content-dimmed">
+                    Submenus allow for organizing related options into hierarchical structures.
+                    When hovering over a submenu item, a new menu will appear to the right with additional options.
+                  </p>
+                </div>
+              </div>
+
+              <h3 class="font-bold mt-12 text-lg text-content-accent">Usage Guidelines</h3>
+              <p class="text-content-base text-sm mb-4">
+                Follow these guidelines when using menus in your application.
+              </p>
+              <div class="space-y-3 mt-2 mb-8">
+                <div class="flex gap-2">
+                  <div class="font-bold text-content-accent">•</div>
+                  <div class="text-content-base">Use menus for secondary actions that don't need to be immediately visible</div>
+                </div>
+                <div class="flex gap-2">
+                  <div class="font-bold text-content-accent">•</div>
+                  <div class="text-content-base">Keep menu items short and descriptive</div>
+                </div>
+                <div class="flex gap-2">
+                  <div class="font-bold text-content-accent">•</div>
+                  <div class="text-content-base">Group related items together</div>
+                </div>
+                <div class="flex gap-2">
+                  <div class="font-bold text-content-accent">•</div>
+                  <div class="text-content-base">Use icons to provide visual cues about the action</div>
+                </div>
+                <div class="flex gap-2">
+                  <div class="font-bold text-content-accent">•</div>
+                  <div class="text-content-base">Highlight destructive actions with the danger prop</div>
+                </div>
+                <div class="flex gap-2">
+                  <div class="font-bold text-content-accent">•</div>
+                  <div class="text-content-base">Use submenus sparingly and only for clearly related items</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  /* Animation for menu slide down */
+  .animateMenuSlideDown {
+    animation: menuSlideDown 0.15s ease-out;
+    transform-origin: top center;
+  }
+  
+  @keyframes menuSlideDown {
+    from {
+      opacity: 0;
+      transform: scale(0.95) translateY(-5px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+</style>

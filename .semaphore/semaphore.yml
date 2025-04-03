@@ -10,6 +10,16 @@ auto_cancel:
     when: "branch != 'main'"
 
 blocks:
+  - name: License Check
+    dependencies: []
+    task:
+      jobs:
+        - name: Licence Check
+          commands:
+            - checkout
+            - make test.build
+            - make test.license.check
+
   - name: Tests
     dependencies: []
     task:
@@ -31,7 +41,6 @@ blocks:
             - make test.tsc.lint
             - make test.elixir.warnings
             - make test.pr.name
-            - make test.license.check
 
         - name: Unit Tests
           commands:
