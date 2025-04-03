@@ -18,10 +18,14 @@ function on_error() {
 
 bundle install
 
-echo "CHECKING LICENSES FOR PROJECT ROOT"
+echo "CHECKING LICENSES FOR BACKEND"
 bundle exec license_finder --project-path app/ --decisions-file scripts/license_finder.yml
 if [ $? -ne 0 ]; then on_error; fi
 
-echo "CHECKING LICENSES FOR ASSETS"
+echo "CHECKING LICENSES FOR FRONTEND"
 bundle exec license_finder --project-path app/ --decisions-file scripts/license_finder.yml
+if [ $? -ne 0 ]; then on_error; fi
+
+echo "CHECKING LICENSES FOR DESIGN"
+bundle exec license_finder --project-path design/ --decisions-file scripts/license_finder.yml
 if [ $? -ne 0 ]; then on_error; fi
