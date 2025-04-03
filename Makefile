@@ -99,11 +99,11 @@ test.build:
 	$(MAKE) test.init
 	$(MAKE) test.seed.env
 	./devenv up
-	./devenv bash -c "MIX_ENV=test mix local.hex --force --if-missing"
-	./devenv bash -c "MIX_ENV=test mix deps.get"
-	./devenv bash -c "MIX_ENV=test mix compile"
-	./devenv bash -c "MIX_ENV=test npm install"
-	./devenv bash -c "MIX_ENV=test mix assets.deploy"
+	./devenv bash -c "cd app && MIX_ENV=test mix local.hex --force --if-missing"
+	./devenv bash -c "cd app && MIX_ENV=test mix deps.get"
+	./devenv bash -c "cd app && MIX_ENV=test mix compile"
+	./devenv bash -c "cd app && MIX_ENV=test npm install"
+	./devenv bash -c "cd app && MIX_ENV=test mix assets.deploy"
 	$(MAKE) test.db.create
 	$(MAKE) test.db.migrate
 
