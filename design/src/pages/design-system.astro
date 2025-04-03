@@ -1,0 +1,304 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Logo from "../components/Logo.astro";
+---
+
+<Layout>
+  <div id="root" class="flex flex-col h-dvh">
+    <div class="flex-1 overflow-y-auto">
+      <div>
+        <div class="mx-auto relative sm:my-10 max-w-xl">
+          <div
+            class="bg-surface-dimmed flex items-center flex-wrap justify-center gap-1 pt-2 pb-1 mx-0 sm:mx-10 font-semibold rounded-t border-b sm:border-b-0 sm:border-t sm:border-x border-surface-outline"
+          >
+            <a
+              class="cursor-pointer transition-colors underline underline-offset-2 text-link-base hover:text-link-hover"
+              href="/"
+            >
+              <span class="flex items-center gap-1.5">Lobby</span>
+            </a>
+          </div>
+          <div
+            class="relative bg-surface-base px-8 py-6 sm:px-10 sm:py-8 min-h-dvh sm:min-h-0 sm:border sm:border-surface-outline sm:rounded-lg sm:shadow-xl"
+          >
+            <div class="flex items-center gap-4 mb-8">
+              <Logo width="30px" height="30px" />
+              <div class="text-content-accent text-2xl font-semibold">
+                Operately Design System
+              </div>
+            </div>
+            <div>
+              <a
+                class="p-2 first:border-t border-b border-stroke-base cursor-pointer flex items-center gap-4 hover:bg-surface-highlight"
+                href="/design-system/avatars"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="tabler-icon tabler-icon-user-circle"
+                >
+                  <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"></path>
+                  <path d="M12 10m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"></path>
+                  <path
+                    d="M6.168 18.849a4 4 0 0 1 3.832 -2.849h4a4 4 0 0 1 3.834 2.855"
+                  ></path>
+                </svg>
+                Avatars
+              </a>
+              <a
+                class="p-2 first:border-t border-b border-stroke-base cursor-pointer flex items-center gap-4 hover:bg-surface-highlight"
+                href="/design-system/buttons"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="tabler-icon tabler-icon-hand-click"
+                >
+                  <path d="M8 13v-8.5a1.5 1.5 0 0 1 3 0v7.5"></path>
+                  <path d="M11 11.5v-2a1.5 1.5 0 0 1 3 0v2.5"></path>
+                  <path d="M14 10.5a1.5 1.5 0 0 1 3 0v1.5"></path>
+                  <path
+                    d="M17 11.5a1.5 1.5 0 0 1 3 0v4.5a6 6 0 0 1 -6 6h-2h.208a6 6 0 0 1 -5.012 -2.7l-.196 -.3c-.312 -.479 -1.407 -2.388 -3.286 -5.728a1.5 1.5 0 0 1 .536 -2.022a1.867 1.867 0 0 1 2.28 .28l1.47 1.47"
+                  ></path>
+                  <path d="M5 3l-1 -1"></path>
+                  <path d="M4 7h-1"></path>
+                  <path d="M14 3l1 -1"></path>
+                  <path d="M15 6h1"></path>
+                </svg>
+                Buttons
+              </a>
+              <a
+                class="p-2 first:border-t border-b border-stroke-base cursor-pointer flex items-center gap-4 hover:bg-surface-highlight"
+                href="/design-system/colors"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="tabler-icon tabler-icon-palette"
+                >
+                  <path
+                    d="M12 21a9 9 0 0 1 0 -18c4.97 0 9 3.582 9 8c0 1.06 -.474 2.078 -1.318 2.828c-.844 .75 -1.989 1.172 -3.182 1.172h-2.5a2 2 0 0 0 -1 3.75a1.3 1.3 0 0 1 -1 2.25"
+                  ></path>
+                  <path d="M8.5 10.5m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path>
+                  <path d="M12.5 7.5m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path>
+                  <path d="M16.5 10.5m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path>
+                </svg>
+                Colors
+              </a>
+              <a
+                class="p-2 first:border-t border-b border-stroke-base cursor-pointer flex items-center gap-4 hover:bg-surface-highlight"
+                href="/design-system/links"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="tabler-icon tabler-icon-link"
+                >
+                  <path d="M9 15l6 -6"></path>
+                  <path d="M11 6l.463 -.536a5 5 0 0 1 7.071 7.072l-.534 .464"
+                  ></path>
+                  <path
+                    d="M13 18l-.397 .534a5.068 5.068 0 0 1 -7.127 0a4.972 4.972 0 0 1 0 -7.071l.524 -.463"
+                  ></path>
+                </svg>
+                Links
+              </a>
+              <a
+                class="p-2 first:border-t border-b border-stroke-base cursor-pointer flex items-center gap-4 hover:bg-surface-highlight"
+                href="/design-system/menus"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="tabler-icon tabler-icon-menu-2"
+                >
+                  <path d="M4 6l16 0"></path>
+                  <path d="M4 12l16 0"></path>
+                  <path d="M4 18l16 0"></path>
+                </svg>
+                Menus
+              </a>
+              <a
+                class="p-2 first:border-t border-b border-stroke-base cursor-pointer flex items-center gap-4 hover:bg-surface-highlight"
+                href="/design-system/tooltips"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="tabler-icon tabler-icon-message-circle"
+                >
+                  <path
+                    d="M3 20l1.3 -3.9c-2.324 -3.437 -1.426 -7.872 2.1 -10.374c3.526 -2.501 8.59 -2.296 11.845 .48c3.255 2.777 3.695 7.266 1.029 10.501c-2.666 3.235 -7.615 4.215 -11.574 2.293l-4.7 1"
+                  ></path>
+                </svg>
+                Tooltips
+              </a>
+              <a
+                class="p-2 first:border-t border-b border-stroke-base cursor-pointer flex items-center gap-4 hover:bg-surface-highlight"
+                href="/design-system/callouts"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="tabler-icon tabler-icon-alert-triangle"
+                >
+                  <path d="M12 9v4"></path>
+                  <path
+                    d="M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636 -2.87l-8.106 -13.536a1.914 1.914 0 0 0 -3.274 0z"
+                  ></path>
+                  <path d="M12 16h.01"></path>
+                </svg>
+                Callouts
+              </a>
+              <a
+                class="p-2 first:border-t border-b border-stroke-base cursor-pointer flex items-center gap-4 hover:bg-surface-highlight"
+                href="/design-system/forms"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="tabler-icon tabler-icon-file-text"
+                >
+                  <path d="M14 3v4a1 1 0 0 0 1 1h4"></path>
+                  <path
+                    d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z"
+                  ></path>
+                  <path d="M9 9l1 0"></path>
+                  <path d="M9 13l6 0"></path>
+                  <path d="M9 17l6 0"></path>
+                </svg>
+                Forms
+              </a>
+              <a
+                class="p-2 first:border-t border-b border-stroke-base cursor-pointer flex items-center gap-4 hover:bg-surface-highlight"
+                href="/design-system/progress"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="tabler-icon tabler-icon-chart-pie"
+                >
+                  <path
+                    d="M10 3.2a9 9 0 1 0 10.8 10.8a1 1 0 0 0 -1 -1h-6.8a2 2 0 0 1 -2 -2v-7a.9 .9 0 0 0 -1 -.8"
+                  ></path>
+                  <path d="M15 3.5a9 9 0 0 1 5.5 5.5h-4.5a1 1 0 0 1 -1 -1v-4.5"
+                  ></path>
+                </svg>
+                Progress Bars
+              </a>
+              <a
+                class="p-2 first:border-t border-b border-stroke-base cursor-pointer flex items-center gap-4 hover:bg-surface-highlight"
+                href="/design-system/chronometer"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="tabler-icon tabler-icon-stopwatch"
+                >
+                  <path d="M5 13a7 7 0 1 0 14 0a7 7 0 0 0 -14 0z"></path>
+                  <path d="M14.5 10.5l-2.5 2.5"></path>
+                  <path d="M17 8l1 -1"></path>
+                  <path d="M14 3h-4"></path>
+                </svg>
+                Chronometer
+              </a>
+              <a
+                class="p-2 first:border-t border-b border-stroke-base cursor-pointer flex items-center gap-4 hover:bg-surface-highlight"
+                href="/design-system/radix"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="tabler-icon tabler-icon-components"
+                >
+                  <path d="M3 12l3 3l3 -3l-3 -3z"></path>
+                  <path d="M15 12l3 3l3 -3l-3 -3z"></path>
+                  <path d="M9 6l3 3l3 -3l-3 -3z"></path>
+                  <path d="M9 18l3 3l3 -3l-3 -3z"></path>
+                </svg>
+                Radix UI
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
