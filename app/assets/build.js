@@ -1,5 +1,4 @@
 const esbuild = require("esbuild");
-const path = require("path");
 
 const args = process.argv.slice(2);
 const watch = args.includes('--watch');
@@ -21,9 +20,6 @@ let opts = {
   plugins: plugins,
   bundle: true,
   sourcemap: true,
-  alias: {
-    'turboui': path.resolve(__dirname, '../../turboui/dist')
-  }
 };
 
 if (deploy) {
