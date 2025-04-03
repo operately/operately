@@ -13,20 +13,20 @@ CERTS_DIR ?= $(PWD)/tmp/certs
 #
 
 gen:
-	./devenv bash -c "mix operately.gen.page.index && mix operately.gen.typescript.api"
-	./devenv bash -c "npx prettier --write assets/js/api && npx prettier --write assets/js/pages/index.tsx && npx prettier --write ee/assets/js/admin_api/index.tsx"
+	./devenv bash -c "cd app && mix operately.gen.page.index && mix operately.gen.typescript.api"
+	./devenv bash -c "cd app && npx prettier --write assets/js/api && npx prettier --write assets/js/pages/index.tsx && npx prettier --write ee/assets/js/admin_api/index.tsx"
 
 gen.migration:
-	./devenv mix ecto.gen.migration $(NAME)
+	./devenv bash -c "cd app && mix ecto.gen.migration $(NAME)"
 
 gen.page:
-	./devenv mix operately.gen.page $(NAME) && $(MAKE) gen
+	./devenv bash -c "cd app && mix operately.gen.page $(NAME) && $(MAKE) gen"
 
 gen.operation:
-	./devenv bash -c "ERL_FLAGS=+B mix operately.gen.operation"
+	./devenv bash -c "cd app && ERL_FLAGS=+B mix operately.gen.operation"
 
 js.fmt.fix:
-	./devenv bash -c "npx prettier --write assets/js && npx prettier --write ee/assets/js"
+	./devenv bash -c "cd app && npx prettier --write assets/js && npx prettier --write ee/assets/js"
 
 migrate:
 	$(MAKE) dev.db.migrate
@@ -39,56 +39,56 @@ migrate:
 dev.build:
 	$(MAKE) dev.seed.env
 	./devenv up
-	./devenv mix local.hex --force --if-missing
-	./devenv mix deps.get
-	./devenv mix compile
-	./devenv npm install
+	./devenv bash -c "cd app && mix local.hex --force --if-missing"
+	./devenv bash -c "cd app && mix deps.get"
+	./devenv bash -c "cd app && mix compile"
+	./devenv bash -c "cd app && npm install"
 	$(MAKE) dev.db.create
 	$(MAKE) test.db.create
 	$(MAKE) dev.db.migrate
 	$(MAKE) test.db.migrate
 
 dev.server:
-	./devenv iex -S mix phx.server
+	./devenv bash -c "cd app && iex -S mix phx.server"
 
 dev.shell:
 	./devenv shell
 
 dev.mix.console:
-	./devenv iex -S mix
+	./devenv bash -c "cd app && iex -S mix"
 
 dev.mix.task:
-	./devenv mix $(TASK)
+	./devenv bash -c "cd app && mix $(TASK)"
 
 dev.db.create:
-	./devenv mix ecto.create
+	./devenv bash -c "cd app && mix ecto.create"
 
 dev.db.migrate:
-	./devenv bash -c "MIX_ENV=dev mix ecto.migrate"
+	./devenv bash -c "cd app && MIX_ENV=dev mix ecto.migrate"
 
 dev.db.rollback:
-	./devenv mix ecto.rollback
+	./devenv bash -c "cd app && mix ecto.rollback"
 
 dev.db.reset:
-	./devenv mix ecto.reset
+	./devenv bash -c "cd app && mix ecto.reset"
 
 dev.db.seed:
-	./devenv mix run priv/repo/seeds.exs
+	./devenv bash -c "cd app && mix run priv/repo/seeds.exs"
 
 dev.run.script:
 	cp -f $(FILE) tmp/
-	./devenv mix run tmp/$$(basename $(FILE))
+	./devenv bash -c "cd app && mix run tmp/$$(basename $(FILE))"
 
 dev.seed.env:
 	touch .env
 	grep "OPERATELY_BLOB_TOKEN_SECRET_KEY" .env || echo "OPERATELY_BLOB_TOKEN_SECRET_KEY=$$(openssl rand -base64 32)" >> .env
 
 dev.mix.deps.clean:
-	./devenv mix deps.clean --unlock --unused
+	./devenv bash -c "cd app && mix deps.clean --unlock --unused"
 
 dev.teardown:
-	./devenv bash -c "MIX_ENV=dev mix ecto.drop"
-	./devenv bash -c "MIX_ENV=test mix ecto.drop"
+	./devenv bash -c "cd app && MIX_ENV=dev mix ecto.drop"
+	./devenv bash -c "cd app && MIX_ENV=test mix ecto.drop"
 	./devenv down
 
 #
@@ -111,7 +111,7 @@ test: test.init
 	@if [[ "$(FILE)" == assets/js* ]]; then \
 		$(MAKE) test.npm FILE=$(FILE); \
 	elif [[ "$(FILE)" == test/* ]] || [[ "$(FILE)" == ee/test/* ]]; then \
-		./devenv mix test $(FILE); \
+		./devenv bash -c "cd app && mix test $(FILE)"; \
 	else \
 		$(MAKE) test.all; \
 	fi
@@ -126,34 +126,34 @@ test.all: test.init
 	$(MAKE) test.mix && $(MAKE) test.npm
 
 test.mix: test.init
-	./devenv mix test $(FILE)
+	./devenv bash -c "cd app && mix test $(FILE)"
 
 test.ee:
-	./devenv mix test ee/test/**/*_test.exs
+	./devenv bash -c "cd app && mix test ee/test/**/*_test.exs"
 
 test.mix.unit: test.init
-	./devenv mix tests_with_retries $$(find test -name "*_test.exs" | grep -v "test/features")
+	./devenv bash -c "cd app && mix tests_with_retries $$(find test -name \"*_test.exs\" | grep -v \"test/features\")"
 
 test.mix.features: test.init
-	./devenv mix tests_with_retries $$(find test -name "*_test.exs" | grep "test/features" | ./scripts/split.rb $(INDEX) $(TOTAL))
+	./devenv bash -c "cd app && mix tests_with_retries $$(find test -name \"*_test.exs\" | grep \"test/features\"" | ./scripts/split.rb $(INDEX) $(TOTAL))
 
 test.npm: test.init
-	./devenv npx jest $(shell echo $(FILE) | cut -d':' -f1)
+	./devenv bash -c "cd app && npx jest $(shell echo $(FILE) | cut -d':' -f1)"
 
 test.db.migrate:
-	./devenv bash -c "MIX_ENV=test mix ecto.migrate"
+	./devenv bash -c "cd app && MIX_ENV=test mix ecto.migrate"
 
 test.watch: test.init
-	./devenv mix test.watch $(FILE)
+	./devenv bash -c "cd app && mix test.watch $(FILE)"
 
 test.db.create:
-	./devenv bash -c "MIX_ENV=test mix ecto.create"
+	./devenv bash -c "cd app && MIX_ENV=test mix ecto.create"
 
 test.db.reset:
-	./devenv bash -c "MIX_ENV=test mix ecto.reset"
+	./devenv bash -c "cd app && MIX_ENV=test mix ecto.reset"
 
 test.assets.compile:
-	./devenv mix assets.build
+	./devenv bash -c "cd app && mix assets.build"
 
 test.screenshots.clear:
 	rm -rf $(SCREENSHOTS_DIR)/*
@@ -163,16 +163,16 @@ test.license.check:
 	bash scripts/license-check.sh
 
 test.js.dead.code:
-	./devenv bash -c "npm --no-update-notifier run knip"
+	./devenv bash -c "cd app && npm --no-update-notifier run knip"
 
 test.tsc.lint:
-	./devenv bash -c "npx tsc --noEmit -p ."
+	./devenv bash -c "cd app && npx tsc --noEmit -p ."
 
 test.pr.name:
 	ruby scripts/pr-name-check
 
 test.js.fmt.check:
-	./devenv bash "./scripts/prettier-check.sh"
+	./devenv bash -c "./scripts/prettier-check.sh"
 
 test.seed.env:
 	touch .env
