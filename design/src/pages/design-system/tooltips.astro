@@ -1,0 +1,167 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import {
+  TooltipExamplePublic,
+  TooltipExampleConfidential,
+  TooltipExampleInviteOnly,
+  TooltipExampleTriggers,
+  TooltipExamplePositions,
+} from "../../components/Tooltip/Example";
+---
+
+<Layout>
+  <div id="root">
+    <div class="flex flex-col h-dvh">
+      <div class="flex-1 overflow-y-auto">
+        <div>
+          <div class="mx-auto relative sm:my-10 max-w-4xl">
+            <div
+              class="bg-surface-dimmed flex items-center flex-wrap justify-center gap-1 pt-2 pb-1 mx-0 sm:mx-10 font-semibold rounded-t border-b sm:border-b-0 sm:border-t sm:border-x border-surface-outline"
+            >
+              <a
+                class="cursor-pointer transition-colors underline underline-offset-2 text-link-base hover:text-link-hover"
+                href="/"><span class="flex items-center gap-1.5">Lobby</span></a
+              ><div class="shrink-0">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="tabler-icon tabler-icon-slash"
+                  ><path d="M17 5l-10 14"></path></svg
+                >
+              </div><a
+                class="cursor-pointer transition-colors underline underline-offset-2 text-link-base hover:text-link-hover"
+                href="/design-system/"
+                ><span class="flex items-center gap-1.5">Design System</span></a
+              >
+            </div>
+            <div
+              class="relative bg-surface-base px-12 py-10 min-h-dvh sm:min-h-0 sm:border sm:border-surface-outline sm:rounded-lg sm:shadow-xl"
+            >
+              <div class="flex items-center justify-between mb-6">
+                <div>
+                  <div
+                    class="text-content-accent text-lg md:text-2xl font-extrabold"
+                  >
+                    Tooltips
+                  </div>
+                </div><div></div>
+              </div>
+              <div class="mt-2 mb-10">
+                Operately uses tooltips to provide additional information about
+                an element when the user hovers over it. Tooltips should be used
+                sparingly and only when the information is not immediately clear
+                from the element itself.
+              </div>
+
+              <h3 class="font-bold mt-12 text-lg text-content-accent">
+                Project Visibility Tooltips
+              </h3>
+              <p class="text-content-base text-sm mb-4">
+                Tooltips can provide information about project visibility and
+                access levels.
+              </p>
+              <div
+                class="p-6 border border-surface-outline rounded-lg mb-8 bg-surface-dimmed"
+              >
+                <div class="flex flex-wrap gap-4">
+                  <TooltipExamplePublic client:load />
+                  <TooltipExampleConfidential client:load />
+                  <TooltipExampleInviteOnly client:load />
+                </div>
+                <div
+                  class="mt-6 p-4 bg-surface-base rounded border border-surface-outline"
+                >
+                  <p class="text-sm text-content-dimmed">
+                    Tooltips provide context about project visibility settings,
+                    explaining who can access the project and what that means.
+                  </p>
+                </div>
+              </div>
+
+              <h3 class="font-bold mt-12 text-lg text-content-accent">
+                Basic Tooltips
+              </h3>
+              <p class="text-content-base text-sm mb-4">
+                Tooltips can contain simple text or rich content with multiple
+                elements.
+              </p>
+              <div
+                class="p-6 border border-surface-outline rounded-lg mb-8 bg-surface-dimmed"
+              >
+                <TooltipExampleTriggers client:load />
+                <div
+                  class="mt-6 p-4 bg-surface-base rounded border border-surface-outline"
+                >
+                  <p class="text-sm text-content-dimmed">
+                    Tooltips can be triggered by any element and can contain
+                    simple text or rich content with headings, paragraphs, and
+                    other elements.
+                  </p>
+                </div>
+              </div>
+
+              <div class="mt-12 mb-4">
+                <h3 class="font-bold text-lg text-content-accent">
+                  When to use tooltips
+                </h3>
+                <ul
+                  class="mt-4 list-disc pl-6 text-sm text-content-base space-y-3"
+                >
+                  <li>
+                    <strong>Icon explanations:</strong> When using icons without
+                    labels that might not be immediately clear to all users.
+                  </li>
+                  <li>
+                    <strong>Clarification of terms:</strong> To explain specialized
+                    terminology or concepts.
+                  </li>
+                  <li>
+                    <strong>Contextual help:</strong> To provide additional guidance
+                    for form fields or interactive elements.
+                  </li>
+                  <li>
+                    <strong>Status indicators:</strong> To explain what a status
+                    icon or badge represents.
+                  </li>
+                </ul>
+              </div>
+
+              <div class="mt-12 mb-4">
+                <h3 class="font-bold text-lg text-content-accent">
+                  When NOT to use tooltips
+                </h3>
+                <ul
+                  class="mt-4 list-disc pl-6 text-sm text-content-base space-y-3"
+                >
+                  <li>
+                    <strong>Essential information:</strong> Don't hide critical information
+                    in tooltips.
+                  </li>
+                  <li>
+                    <strong>Long content:</strong> Tooltips shouldn't contain paragraphs
+                    of text.
+                  </li>
+                  <li>
+                    <strong>Interactive elements:</strong> Avoid placing buttons
+                    or links inside tooltips.
+                  </li>
+                  <li>
+                    <strong>Mobile-first designs:</strong> Consider that hover isn't
+                    available on touch devices.
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>

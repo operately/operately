@@ -1,0 +1,41 @@
+---
+import FullWidthLayout from "../layouts/FullWidthLayout.astro";
+import { Tldraw } from "@tldraw/tldraw";
+---
+
+<FullWidthLayout
+  title="Canvas | Operately BPRD"
+  showBreadcrumbs={false}
+  transitionBackground={false}
+>
+  <div class="flex-1 overflow-y-auto bg-base flex flex-col">
+    <div class="mx-auto relative sm:mt-10 w-full lg:max-w-8xl pb-6">
+      <div
+        class="relative bg-surface-base min-h-[calc(100vh-7rem)] border border-surface-outline rounded-lg shadow-xl"
+      >
+        <div class="w-full flex flex-col overflow-hidden">
+          <header
+            class="flex flex-col sm:flex-row sm:items-center sm:justify-between px-4 sm:px-6 py-3 border-b border-surface-outline"
+          >
+            <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+              <h1 class="text-sm sm:text-base font-bold text-content-accent">
+                Product / Docs & Files / New Canvas
+              </h1>
+            </div>
+          </header>
+
+          <div
+            class="tldraw-wrapper"
+            style="height: calc(100vh - 11rem); width: 100%;"
+          >
+            <Tldraw client:only="react" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</FullWidthLayout>
+
+<style is:global>
+  @import "@tldraw/tldraw/tldraw.css";
+</style>
