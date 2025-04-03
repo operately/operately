@@ -20,7 +20,7 @@ function fail(message) {
 }
 
 function parseSplitIndex() {
-  const index = parseInt(process.argv[2], 10);
+  const index = parseInt(process.argv[2], 10) - 1; // Convert to 0-based index
   const total = parseInt(process.argv[3], 10);
 
   if (isNaN(index)) {
@@ -42,30 +42,77 @@ function parseSplitIndex() {
   return { index, total };
 }
 
+class FileGroup {
+  constructor() {
+    this.files = [];
+    this.totalSize = 0;
+  }
+
+  addFile(file) {
+    const fileSize = fs.statSync(file).size;
+    this.files.push(file);
+    this.totalSize += fileSize;
+  }
+
+  getFiles() {
+    return this.files;
+  }
+
+  getTotalSize() {
+    return this.totalSize;
+  }
+}
+
+class FileGroupManager {
+  constructor(count) {
+    this.groups = new Array(count).fill(null).map(() => new FileGroup());
+  }
+
+  addFile(file) {
+    const smallestGroup = this.findSmallestGroup();
+    smallestGroup.addFile(file);
+  }
+
+  findSmallestGroup() {
+    return this.groups.reduce((smallest, group) => {
+      return group.getTotalSize() < smallest.getTotalSize() ? group : smallest;
+    }, this.groups[0]);
+  }
+
+  getFilesFromGroup(index) {
+    if (index < 0 || index >= this.groups.length) {
+      fail("Invalid group index");
+    }
+
+    const group = this.groups[index];
+    const files = group.getFiles();
+
+    if (files.length === 0) {
+      fail("No files found for the specified group");
+    }
+
+    return files;
+  }
+}
+
 function findFeatureTests() {
   const { index, total } = parseSplitIndex();
 
-  const files = fs
-    .readdirSync("app/test", { recursive: true })
-    .map((f) => path.join("test", f))
+  const groupManager = new FileGroupManager(total);
+
+  fs.readdirSync("app/test", { recursive: true })
+    .map((f) => path.join("app/test", f))
     .filter((f) => f.endsWith("_test.exs"))
     .filter((f) => f.includes("test/features"))
-    .sort((a, b) => {
-      const fileSizeA = fs.statSync(path.join("app", a)).size;
-      const fileSizeB = fs.statSync(path.join("app", b)).size;
+    .forEach((file) => groupManager.addFile(file));
 
-      return fileSizeA - fileSizeB;
-    });
-
-  const filesPerGroup = Math.ceil(files.length / total);
-  const start = (index - 1) * filesPerGroup;
-
-  return files.slice(start, start + filesPerGroup);
+  return groupManager.getFilesFromGroup(index);
 }
 
 function runTests(testFiles) {
   try {
-    const command = `cd app && mix tests_with_retries ${testFiles.join(" ")}`;
+    const files = testFiles.map((file) => path.relative("app", file));
+    const command = `cd app && mix tests_with_retries ${files.join(" ")}`;
 
     execSync(command, { stdio: "inherit" });
   } catch (error) {
