@@ -17,6 +17,7 @@ blocks:
         - name: Licence Check
           commands:
             - checkout
+            - make test.build
             - make test.license.check
 
   - name: Tests
