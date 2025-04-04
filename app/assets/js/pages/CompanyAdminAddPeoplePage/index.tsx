@@ -21,9 +21,10 @@ export async function loader({ params }): Promise<LoaderResult> {
   };
 }
 
-type PageState = PageStateForm | PageStateInvited;
+type PageState = PageStateForm | PageStateInvited | PageStateAdded;
 type PageStateForm = { state: "form" };
 type PageStateInvited = { state: "invited"; url: string; fullName: string };
+type PageStateAdded = { state: "added"; fullName: string };
 type SetPageStateFn = (state: PageState) => void;
 
 //
@@ -40,6 +41,7 @@ export function Page() {
       {match(state.state)
         .with("form", () => <InviteForm setPageState={setState} />)
         .with("invited", () => <InvitedPage state={state as PageStateInvited} setPageState={setState} />)
+        .with("added", () => <AddedPage state={state as PageStateAdded} setPageState={setState} />)
         .exhaustive()}
     </Pages.Page>
   );
@@ -64,9 +66,13 @@ function InviteForm({ setPageState }: { setPageState: SetPageStateFn }) {
         email: form.values.email.trim(),
         title: form.values.title.trim(),
       });
-      const url = Companies.createInvitationUrl(res.invitation!.token!);
 
-      setPageState({ state: "invited", url, fullName: form.values.fullName });
+      if (res.newAccount) {
+        const url = Companies.createInvitationUrl(res.invitation!.token!);
+        setPageState({ state: "invited", url, fullName: form.values.fullName });
+      } else {
+        setPageState({ state: "added", fullName: form.values.fullName });
+      }
     },
     onError: (e) => {
       const { data } = (e.response as any) ?? {};
@@ -102,8 +108,9 @@ function InviteForm({ setPageState }: { setPageState: SetPageStateFn }) {
       </Paper.Body>
 
       <div className="my-8 text-center px-20">
-        <span className="font-bold">What happens next?</span> You will get a invitation link to share with the new
-        member which will allow them to join your company. It will be valid for 24 hours.
+        <span className="font-bold">What happens next?</span> If the new member already has an account, they will be
+        added to your company. If they don't have an account, you will get a invitation link to share with them. The link will
+        be valid for 24 hours.
       </div>
     </Paper.Root>
   );
@@ -129,6 +136,25 @@ function InvitedPage({ state, setPageState }: { state: PageStateInvited; setPage
         </div>
 
         <div className="mt-2">This link will expire in 24 hours.</div>
+      </Paper.Body>
+
+      <div className="flex items-center gap-3 mt-8 justify-center">
+        <PrimaryButton onClick={inviteAnother} testId="invite-another-button">
+          Invite Another Member
+        </PrimaryButton>
+      </div>
+    </Paper.Root>
+  );
+}
+
+function AddedPage({ state, setPageState }: { state: PageStateAdded; setPageState: SetPageStateFn }) {
+  const inviteAnother = () => setPageState({ state: "form" });
+
+  return (
+    <Paper.Root size="medium">
+      <Navigation />
+      <Paper.Body minHeight="none">
+        <div className="text-content-accent text-2xl font-extrabold">{state.fullName} has been added 🎉</div>
       </Paper.Body>
 
       <div className="flex items-center gap-3 mt-8 justify-center">
