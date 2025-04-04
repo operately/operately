@@ -1,6 +1,8 @@
 defmodule OperatelyWeb.Api.Mutations.AddCompanyMemberTest do
   use OperatelyWeb.TurboCase
 
+  alias Operately.People
+
   @add_company_member_input %{
     :full_name => "John Doe",
     :email => "john@your-company.com",
@@ -55,8 +57,15 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyMemberTest do
     test "email can be used to create one and only one account per company", ctx do
       other_ctx = register_and_log_in_account(ctx) |> promote_to_owner()
 
-      assert {200, _} = mutation(ctx.conn, :add_company_member, @add_company_member_input)
-      assert {200, _} = mutation(other_ctx.conn, :add_company_member, @add_company_member_input)
+      assert {200, res} = mutation(ctx.conn, :add_company_member, @add_company_member_input)
+      assert res.new_account
+      assert res.invitation
+
+      update_person_has_open_invitation(ctx)
+
+      assert {200, res} = mutation(other_ctx.conn, :add_company_member, @add_company_member_input)
+      refute res.new_account
+      refute res.invitation
 
       assert {400, res} = mutation(ctx.conn, :add_company_member, @add_company_member_input)
       assert res == %{:error => "Bad request", :message => "Email has already been taken"}
@@ -68,5 +77,10 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyMemberTest do
   defp promote_to_owner(ctx) do
     {:ok, _} = Operately.Companies.add_owner(ctx.company_creator, ctx.person.id)
     ctx
+  end
+
+  defp update_person_has_open_invitation(ctx) do
+    person = People.get_person_by_email(ctx.company, @add_company_member_input[:email])
+    {:ok, _} = People.update_person(person, %{has_open_invitation: false})
   end
 end

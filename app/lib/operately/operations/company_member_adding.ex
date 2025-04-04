@@ -2,13 +2,13 @@ defmodule Operately.Operations.CompanyMemberAdding do
   alias Ecto.Multi
   alias Operately.{Access, Repo}
 
-  def run(admin, attrs) do
+  def run(admin, attrs, skip_invitation \\ false) do
     result = Multi.new()
     |> insert_account(attrs)
-    |> insert_person(admin, attrs)
+    |> insert_person(admin, attrs, skip_invitation)
     |> insert_membership_with_company_space_group()
     |> insert_binding_to_company_space()
-    |> insert_invitation(admin)
+    |> insert_invitation(admin, skip_invitation)
     |> insert_activity(admin)
     |> Repo.transaction()
     |> Repo.extract_result(:invitation)
@@ -41,7 +41,7 @@ defmodule Operately.Operations.CompanyMemberAdding do
     end)
   end
 
-  defp insert_person(multi, admin, attrs) do
+  defp insert_person(multi, admin, attrs, skip_invitation) do
     attrs = Map.put(attrs, :company_id, admin.company_id)
 
     multi
@@ -55,7 +55,7 @@ defmodule Operately.Operations.CompanyMemberAdding do
         full_name: attrs.full_name,
         email: attrs.email,
         title: attrs.title,
-        has_open_invitation: true,
+        has_open_invitation: not skip_invitation,
       })
     end)
   end
@@ -86,7 +86,11 @@ defmodule Operately.Operations.CompanyMemberAdding do
     end)
   end
 
-  defp insert_invitation(multi, admin) do
+  defp insert_invitation(multi, _, true) do
+    Multi.put(multi, :invitation, nil)
+  end
+
+  defp insert_invitation(multi, admin, false) do
     Multi.insert(multi, :invitation, fn changes ->
       Operately.Invitations.Invitation.changeset(%{
         member_id: changes[:person].id,
@@ -100,7 +104,7 @@ defmodule Operately.Operations.CompanyMemberAdding do
     Operately.Activities.insert_sync(multi, admin.id, :company_member_added, fn changes ->
       %{
         company_id: admin.company_id,
-        invitatition_id: changes[:invitation].id,
+        invitatition_id: changes[:invitation] && changes[:invitation].id,
         name: changes[:person].full_name,
         email: changes[:person].email,
         title: changes[:person].title,
