@@ -10,4 +10,4 @@ export {
   usePostProjectCheckIn,
 } from "@/api";
 
-export { groupCheckInsByMonth, CheckInGroupByMonth } from "./groupCheckInsByMonth";
+export * from "./groupCheckInsByMonth";
