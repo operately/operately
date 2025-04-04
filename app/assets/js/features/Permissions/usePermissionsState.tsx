@@ -1,7 +1,8 @@
 import React from "react";
 import { Space } from "@/models/spaces";
 import { Company } from "@/models/companies";
-import { PermissionLevels } from ".";
+import { PermissionLevels } from "./index";
+import type { PermissionLevel } from "./index";
 import { AccessLevels } from "@/api";
 
 export enum ReducerActions {
@@ -22,15 +23,15 @@ type ActionOptions =
   | { type: ReducerActions.SET_CONFIDENTIAL }
   | { type: ReducerActions.SET_SECRET }
   | { type: ReducerActions.SET_FOR_COMPANY_SPACE }
-  | { type: ReducerActions.SET_PUBLIC_ACCESS; access_level: PermissionLevels }
-  | { type: ReducerActions.SET_COMPANY_ACCESS; access_level: PermissionLevels }
-  | { type: ReducerActions.SET_SPACE_ACCESS; access_level: PermissionLevels }
+  | { type: ReducerActions.SET_PUBLIC_ACCESS; access_level: PermissionLevel }
+  | { type: ReducerActions.SET_COMPANY_ACCESS; access_level: PermissionLevel }
+  | { type: ReducerActions.SET_SPACE_ACCESS; access_level: PermissionLevel }
   | { type: ReducerActions.SET_ALL; payload: Permissions };
 
 export interface Permissions {
-  public: PermissionLevels;
-  company: PermissionLevels;
-  space: PermissionLevels;
+  public: PermissionLevel;
+  company: PermissionLevel;
+  space: PermissionLevel;
 }
 
 const DEFAULT_PERMISSIONS = {
