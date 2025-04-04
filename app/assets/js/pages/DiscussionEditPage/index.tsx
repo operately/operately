@@ -4,7 +4,7 @@ import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as Discussions from "@/models/discussions";
 
-import { PrimaryButton, GhostButton } from "@/components/Buttons";
+import { PrimaryButton, GhostButton } from "turboui";
 import { Form, FormState, useForm } from "@/features/DiscussionForm";
 import { Paths } from "@/routes/paths";
 import { Link } from "@/components/Link";

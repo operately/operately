@@ -1,10 +1,9 @@
-import * as React from "react";
+import React from "react";
 
-import { Menu } from "@/components/Menu";
-import { DivLink } from "@/components/Link";
-import { TestableElement } from "@/utils/testid";
+import { Menu } from "../Menu";
+import { DivLink } from "../Link";
+import { TestableElement } from "../TestableElement";
 import { IconChevronDown } from "@tabler/icons-react";
-import { assertPresent } from "@/utils/assertions";
 
 interface Linkable {
   linkTo?: string;
@@ -83,7 +82,9 @@ function UnstyledActionButton(props: UnstyledButtonProps) {
 }
 
 function UnstyledMenuButton(props: UnstyledButtonProps) {
-  assertPresent(props.options, "Menu button must have options");
+  if(props.options === undefined) {
+    throw "Menu button must have options";
+  }
 
   const triggerClass = props.className + " " + "inline-flex items-center gap-2";
 

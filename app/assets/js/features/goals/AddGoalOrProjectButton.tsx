@@ -2,7 +2,7 @@ import React from "react";
 
 import * as Icons from "@tabler/icons-react";
 
-import { PrimaryButton } from "@/components/Buttons";
+import { PrimaryButton } from "turboui";
 import { MenuLinkItem } from "@/components/Menu";
 
 export function AddGoalOrProjectButton({ newGoalPath, newProjectPath }) {

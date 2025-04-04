@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as Icons from "@tabler/icons-react";
 
-import { GhostButton } from "@/components/Buttons";
+import { GhostButton } from "turboui";
 import classNames from "classnames";
 
 export function ZeroState() {

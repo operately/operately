@@ -1,5 +1,6 @@
+export type { Task } from "@/api";
+
 export {
-  Task,
   getTask,
   getTasks,
   useGetTasks,

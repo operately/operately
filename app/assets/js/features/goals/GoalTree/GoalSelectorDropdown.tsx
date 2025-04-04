@@ -7,7 +7,7 @@ import { buildTree, GoalNode, Node, TreeOptions } from "./tree";
 import { NodeIcon } from "./components/NodeIcon";
 import { TableRow } from "./components/TableRow";
 import { CompanyGoalOption } from "./components/CompanyGoalOption";
-import { PrimaryButton } from "@/components/Buttons";
+import { PrimaryButton } from "turboui";
 import { ExpandableProvider, useExpandable } from "./context/Expandable";
 
 import classNames from "classnames";

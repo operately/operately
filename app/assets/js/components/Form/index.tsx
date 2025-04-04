@@ -4,7 +4,7 @@ import classname from "classnames";
 
 type Ref = HTMLFormElement;
 
-import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
+import { PrimaryButton, SecondaryButton } from "turboui";
 
 export * from "./radio";
 export * from "./select";

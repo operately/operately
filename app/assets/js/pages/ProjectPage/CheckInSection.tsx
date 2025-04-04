@@ -7,7 +7,7 @@ import FormattedTime from "@/components/FormattedTime";
 import Avatar from "@/components/Avatar";
 
 import { DimmedLabel } from "./Label";
-import { SecondaryButton } from "@/components/Buttons";
+import { SecondaryButton } from "turboui";
 import { Link } from "@/components/Link";
 import { Paths } from "@/routes/paths";
 import { SmallStatusIndicator } from "@/components/status";

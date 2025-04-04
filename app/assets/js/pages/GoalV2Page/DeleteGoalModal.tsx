@@ -5,7 +5,7 @@ import { findGoalChildren, useDeleteGoal } from "@/models/goals";
 
 import Modal from "@/components/Modal";
 import { MinimalTree } from "@/features/goals/GoalTree";
-import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
+import { PrimaryButton, SecondaryButton } from "turboui";
 import { Paths } from "@/routes/paths";
 import { useLoadedData } from "./loader";
 import { WarningCallout } from "@/components/Callouts";

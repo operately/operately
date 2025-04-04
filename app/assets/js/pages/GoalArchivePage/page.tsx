@@ -6,7 +6,7 @@ import * as Goals from "@/models/goals";
 import { useLoadedData } from "./loader";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 
-import { PrimaryButton } from "@/components/Buttons";
+import { PrimaryButton } from "turboui";
 import { DimmedLink } from "@/components/Link";
 import { Paths } from "@/routes/paths";
 

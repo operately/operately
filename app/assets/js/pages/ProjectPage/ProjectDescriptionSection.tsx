@@ -3,7 +3,7 @@ import * as Projects from "@/models/projects";
 
 import { Link } from "@/components/Link";
 import { Paths } from "@/routes/paths";
-import { SecondaryButton } from "@/components/Buttons";
+import { SecondaryButton } from "turboui";
 
 import RichContent, { countCharacters, shortenContent } from "@/components/RichContent";
 

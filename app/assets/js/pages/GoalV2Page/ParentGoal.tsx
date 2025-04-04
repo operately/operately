@@ -11,7 +11,7 @@ import { GhostLink } from "@/components/Link/GhostList";
 import { useIsViewMode } from "@/components/Pages";
 import { Paths } from "@/routes/paths";
 import { useLoadedData } from "./loader";
-import { SecondaryButton } from "@/components/Buttons";
+import { SecondaryButton } from "turboui";
 import { GoalSelector } from "@/features/goals/GoalTree/GoalSelector";
 
 export function ParentGoal() {

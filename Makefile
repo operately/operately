@@ -94,6 +94,9 @@ dev.teardown:
 	./devenv bash -c "cd app && MIX_ENV=test mix ecto.drop"
 	./devenv down
 
+turboui.build:
+	./devenv bash -c "cd turboui && npm install && npm run build"
+
 #
 # Testing tasks
 #

@@ -6,7 +6,7 @@ import * as Forms from "@/components/Form";
 
 import { useLoadedData } from "./loader";
 import { useForm, FormState } from "./useForm";
-import { GhostButton } from "@/components/Buttons";
+import { GhostButton } from "turboui";
 import { createTestId } from "@/utils/testid";
 import { Paths } from "@/routes/paths";
 

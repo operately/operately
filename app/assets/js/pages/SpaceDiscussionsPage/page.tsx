@@ -5,7 +5,7 @@ import * as Paper from "@/components/PaperContainer";
 import { Discussion } from "@/models/discussions";
 import { DivLink, Link } from "@/components/Link";
 import { Summary } from "@/components/RichContent";
-import { PrimaryButton } from "@/components/Buttons";
+import { PrimaryButton } from "turboui";
 import { Paths } from "@/routes/paths";
 import { SpacePageNavigation } from "@/components/SpacePageNavigation";
 

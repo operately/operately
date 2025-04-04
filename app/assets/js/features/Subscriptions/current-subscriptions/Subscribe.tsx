@@ -1,6 +1,6 @@
 import React from "react";
 
-import { SecondaryButton } from "@/components/Buttons";
+import { SecondaryButton } from "turboui";
 import { useSubscribeToNotifications } from "@/models/notifications";
 import { useCurrentSubscriptionsContext } from "../CurrentSubscriptions";
 

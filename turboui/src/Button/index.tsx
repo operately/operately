@@ -1,5 +1,7 @@
 import React from "react";
 
+export type { BaseButtonProps } from "./UnstalyedButton";
+
 import { BaseButtonProps, UnstyledButton } from "./UnstalyedButton";
 import { Spinner } from "./Spinner";
 import { calcClassName } from "./calcClassNames";

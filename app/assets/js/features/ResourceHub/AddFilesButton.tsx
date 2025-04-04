@@ -5,7 +5,7 @@ import * as Pages from "@/components/Pages";
 import { ResourceHubPermissions } from "@/models/resourceHubs";
 
 import { Airtable, Dropbox, Figma, GoogleLogo, Notion } from "@/components/Brands";
-import { PrimaryButton } from "@/components/Buttons";
+import { PrimaryButton } from "turboui";
 import { MenuActionItem, SubMenu } from "@/components/Menu";
 
 import { useNewFileModalsContext } from "./contexts/NewFileModalsContext";

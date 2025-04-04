@@ -8,7 +8,7 @@ import { NodeIcon } from "./components/NodeIcon";
 import { NodeName } from "./components/NodeName";
 import { TableRow } from "./components/TableRow";
 import { CompanyGoalOption } from "./components/CompanyGoalOption";
-import { PrimaryButton } from "@/components/Buttons";
+import { PrimaryButton } from "turboui";
 import { ExpandableProvider, useExpandable } from "./context/Expandable";
 
 import classNames from "classnames";

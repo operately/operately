@@ -3,7 +3,7 @@ import * as React from "react";
 
 import RichContent from "@/components/RichContent";
 
-import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
+import { PrimaryButton, SecondaryButton } from "turboui";
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 
 export function Description({ milestone, form }) {

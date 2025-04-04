@@ -8,7 +8,7 @@ import * as Time from "@/utils/time";
 import { Discussion } from "@/models/discussions";
 import { DivLink } from "@/components/Link";
 import { Paths } from "@/routes/paths";
-import { PrimaryButton } from "@/components/Buttons";
+import { PrimaryButton } from "turboui";
 import { createTestId } from "@/utils/testid";
 import { truncateString } from "@/utils/strings";
 import { assertPresent } from "@/utils/assertions";

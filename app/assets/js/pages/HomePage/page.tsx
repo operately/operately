@@ -10,8 +10,8 @@ import { SpaceCardLink, SpaceCardGrid } from "@/features/spaces/SpaceCards";
 import { useLoadedData } from "./loader";
 import { Feed, useItemsQuery } from "@/features/Feed";
 import { useMe } from "@/contexts/CurrentCompanyContext";
-import { GhostButton } from "@/components/Buttons";
 import { Paths } from "@/routes/paths";
+import { GhostButton } from "turboui";
 
 export function Page() {
   return (

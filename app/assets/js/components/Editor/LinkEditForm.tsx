@@ -1,7 +1,7 @@
 import React from "react";
 
 import { EditorContext, Context } from "./EditorContext";
-import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
+import { PrimaryButton, SecondaryButton } from "turboui";
 import classNames from "classnames";
 
 export function useLinkEditFormClose() {

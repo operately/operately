@@ -9,7 +9,7 @@ import * as Spaces from "@/models/spaces";
 import Forms from "@/components/Forms";
 
 import { Paths } from "@/routes/paths";
-import { SecondaryButton } from "@/components/Buttons";
+import { SecondaryButton } from "turboui";
 import { AccessLevel, AccessSelectors, initialAccessLevels, applyAccessLevelConstraints } from "@/features/spaces";
 
 export const loader = Pages.emptyLoader;

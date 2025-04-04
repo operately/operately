@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as Projects from "@/models/projects";
 
-import { PrimaryButton } from "@/components/Buttons";
+import { PrimaryButton } from "turboui";
 import { Paths } from "@/routes/paths";
 
 export function CheckInButton({ project }: { project: Projects.Project }) {

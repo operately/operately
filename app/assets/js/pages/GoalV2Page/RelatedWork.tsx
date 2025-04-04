@@ -2,7 +2,7 @@ import React from "react";
 
 import { MinimalTree } from "@/features/goals/GoalTree";
 import { Spacer } from "@/components/Spacer";
-import { SecondaryButton } from "@/components/Buttons";
+import { SecondaryButton } from "turboui";
 import { Paths } from "@/routes/paths";
 
 import { DisableInEditMode, Title } from "./components";

@@ -12,7 +12,7 @@ import { BorderedRow } from "@/components/BorderedRow";
 import { PermissionLevels } from "@/features/Permissions";
 import { Menu, MenuActionItem, SubMenu } from "@/components/Menu";
 import { SpaceAccessLevelBadge } from "@/components/Badges/AccessLevelBadges";
-import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
+import { PrimaryButton, SecondaryButton } from "turboui";
 
 import { createTestId } from "@/utils/testid";
 import { useLoadedData } from "./loader";

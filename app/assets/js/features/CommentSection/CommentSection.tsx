@@ -7,7 +7,7 @@ import * as Reactions from "@/models/reactions";
 import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
 import RichContent from "@/components/RichContent";
-import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
+import { PrimaryButton, SecondaryButton } from "turboui";
 import { useClearNotificationOnIntersection } from "@/features/notifications";
 
 import { FormState } from "./form";

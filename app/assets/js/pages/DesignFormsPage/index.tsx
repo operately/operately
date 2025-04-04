@@ -5,7 +5,7 @@ import * as People from "@/models/people";
 import * as Icons from "@tabler/icons-react";
 
 import Forms from "@/components/Forms";
-import { SecondaryButton } from "@/components/Buttons";
+import { SecondaryButton } from "turboui";
 
 export const loader = Pages.emptyLoader;
 

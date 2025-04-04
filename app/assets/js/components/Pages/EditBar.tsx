@@ -1,6 +1,6 @@
 import React from "react";
 
-import { SecondaryButton, PrimaryButton } from "@/components/Buttons";
+import { SecondaryButton, PrimaryButton } from "turboui";
 import { useIsViewMode } from "./Page";
 import { useWindowSizeBreakpoints } from "./useWindowSizeBreakpoint";
 

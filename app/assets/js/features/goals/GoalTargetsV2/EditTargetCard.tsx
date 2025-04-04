@@ -4,7 +4,7 @@ import * as Goals from "@/models/goals";
 import { IconTrash } from "@tabler/icons-react";
 
 import classNames from "classnames";
-import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
+import { PrimaryButton, SecondaryButton } from "turboui";
 import { MiniPieChart } from "@/components/charts";
 import { useDragAndDropContext, useDraggable } from "@/features/DragAndDrop";
 

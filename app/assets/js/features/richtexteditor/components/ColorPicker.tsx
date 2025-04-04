@@ -3,7 +3,7 @@ import * as Popover from "@radix-ui/react-popover";
 
 import { PaintBucket } from "lucide-react";
 import classNames from "classnames";
-import { SecondaryButton } from "@/components/Buttons";
+import { SecondaryButton } from "turboui";
 import { createTestId } from "@/utils/testid";
 
 const DROPDOWN_CLASS = classNames(

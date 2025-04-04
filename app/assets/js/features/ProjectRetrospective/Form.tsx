@@ -2,7 +2,7 @@ import React from "react";
 
 import * as TipTapEditor from "@/components/Editor";
 
-import { PrimaryButton } from "@/components/Buttons";
+import { PrimaryButton } from "turboui";
 import { createTestId } from "@/utils/testid";
 import { FormState } from "./useForm";
 import { SubscribersSelector } from "@/features/Subscriptions";

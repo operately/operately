@@ -2,7 +2,7 @@ import * as React from "react";
 import * as People from "@/models/people";
 import * as ProjectCheckIns from "@/models/projectCheckIns";
 
-import { PrimaryButton } from "@/components/Buttons";
+import { PrimaryButton } from "turboui";
 
 import { useLoadedData, useRefresh } from "./loader";
 import { useMe } from "@/contexts/CurrentCompanyContext";

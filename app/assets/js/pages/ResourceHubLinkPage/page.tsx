@@ -17,7 +17,7 @@ import { useClearNotificationsOnLoad } from "@/features/notifications";
 
 import { Options } from "./Options";
 import { useLoadedData } from "./loader";
-import { PrimaryButton } from "@/components/Buttons";
+import { PrimaryButton } from "turboui";
 import { BulletDot } from "@/components/TextElements";
 import FormattedTime from "@/components/FormattedTime";
 

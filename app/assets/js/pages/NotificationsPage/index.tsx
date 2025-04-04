@@ -12,7 +12,7 @@ import ActivityHandler from "@/features/activities";
 
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { TextSeparator } from "@/components/TextSeparator";
-import { SecondaryButton } from "@/components/Buttons";
+import { SecondaryButton } from "turboui";
 
 interface LoaderResult {
   notifications: Api.Notification[];
