@@ -34,8 +34,20 @@
 
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 
-    <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}>
-    </script>
+    <%= if Application.get_env(:operately, :app_env) == :dev do %>
+      <script type="module">
+        import RefreshRuntime from 'http://localhost:4005/@react-refresh'
+        RefreshRuntime.injectIntoGlobalHook(window)
+        window.$RefreshReg$ = () => {}
+        window.$RefreshSig$ = () => (type) => type
+        window.__vite_plugin_react_preamble_installed__ = true
+      </script>
+
+      <script type="module" src={"http://localhost:4005" <> "/@vite/client"}></script>
+      <script type="module" src={"http://localhost:4005" <> "/assets/js/app.tsx"}></script>
+    <% else %>
+      <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}></script>
+    <% end %>
   </head>
 
   <body class="antialiased overscroll-none" style="">

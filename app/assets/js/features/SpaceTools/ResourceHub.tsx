@@ -1,16 +1,16 @@
-import React from "react";
+import * as React from "react";
+import * as ResourceHubs from "@/models/resourceHubs";
 
 import { assertPresent } from "@/utils/assertions";
 import { createTestId } from "@/utils/testid";
 
-import { ResourceHub } from "@/models/resourceHubs";
 import { Paths } from "@/routes/paths";
 import { Container } from "./components";
 import { ZeroState } from "./ResourceHubs/ZeroState";
 import { RegularState } from "./ResourceHubs/RegularState";
 
 interface Props {
-  resourceHub: ResourceHub;
+  resourceHub: ResourceHubs.ResourceHub;
 }
 
 export function ResourceHub(props: Props) {

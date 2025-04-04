@@ -1,14 +1,13 @@
 import React from "react";
 
-import { DragAndDropProvider, useDraggingAnimation, useDropZone } from "@/features/DragAndDrop";
+import type { Target } from "./types";
+export { Target };
 
+import { DragAndDropProvider, useDraggingAnimation, useDropZone } from "@/features/DragAndDrop";
 import { EditTargetCard } from "./EditTargetCard";
 import { AddTargetButton } from "./AddTargetButton";
 import { TargetsContextProvider, useTargetsContext } from "./TargetsContext";
-import { Target } from "./types";
 import { DefaultTargetCard } from "./DefaultTargetCard";
-
-export { Target };
 
 interface Props {
   field: string;

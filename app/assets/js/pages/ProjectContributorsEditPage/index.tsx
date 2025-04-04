@@ -2,7 +2,8 @@ import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
-export { loader, UrlParams } from "./loader";
+export type { UrlParams } from "./loader";
+export { loader } from "./loader";
 
 import { ProjectContribsSubpageNavigation } from "@/components/ProjectPageNavigation";
 import { match } from "ts-pattern";

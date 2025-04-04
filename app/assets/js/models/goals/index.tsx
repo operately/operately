@@ -2,10 +2,10 @@ import * as api from "@/api";
 
 export type Goal = api.Goal;
 export type Target = api.Target;
+export type Timeframe = api.Timeframe;
+export type CheckIn = api.Update;
 
 export {
-  Timeframe,
-  Update as CheckIn,
   getGoal,
   getGoals,
   listGoalContributors,
