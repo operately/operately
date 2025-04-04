@@ -50,6 +50,14 @@ defmodule Operately.People do
     if Operately.People.Account.valid_password?(account, password), do: account
   end
 
+  def is_new_account?(email) when is_binary(email) do
+    not Repo.exists?(from(a in Account,
+      join: p in assoc(a, :people),
+      where: a.email == ^email,
+      where: not p.has_open_invitation
+    ))
+  end
+
   defdelegate insert_person(multi, callback), to: Operately.People.InsertPersonIntoOperation, as: :insert
 
   def create_person(attrs \\ %{}) do

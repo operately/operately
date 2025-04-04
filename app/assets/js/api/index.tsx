@@ -2123,6 +2123,7 @@ export interface AddCompanyMemberInput {
 
 export interface AddCompanyMemberResult {
   invitation?: Invitation | null;
+  newAccount?: boolean | null;
 }
 
 export interface AddCompanyOwnersInput {

@@ -22,6 +22,21 @@ defmodule Operately.Features.InviteMemberTest do
     |> Steps.assert_member_invited()
   end
 
+  feature "admin account can add members with existing account", ctx do
+    params = %{
+      fullName: "John Doe",
+      email: "john@some-company.com",
+      title: "Developer",
+    }
+
+    ctx
+    |> Steps.given_that_an_account_exists_in_another_company(params)
+    |> Steps.log_in_as_admin()
+    |> Steps.navigate_to_invitation_page()
+    |> Steps.invite_member(params)
+    |> Steps.assert_member_added(params.fullName)
+  end
+
   feature "joining a company and setting a password", ctx do
     ctx
     |> Steps.given_that_I_was_invited_and_have_a_token(%{name: "John Doe", email: "john@john.com"})

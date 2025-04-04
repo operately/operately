@@ -4,6 +4,7 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyMember do
 
   require Logger
   import Operately.Access.Filters, only: [filter_by_edit_access: 2]
+  alias Operately.People
 
   inputs do
     field :full_name, :string
@@ -13,49 +14,49 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyMember do
 
   outputs do
     field :invitation, :invitation
+    field :new_account, :boolean
   end
 
   def call(conn, inputs) do
-    person = me(conn)
+    admin = me(conn)
 
-    if has_permissions?(person) do
-      case create_invitation(person, inputs) do
-        {:ok, invitation} ->
-          {:ok, %{invitation: OperatelyWeb.Api.Serializer.serialize(invitation, level: :full)}}
-        {:error, :bad_request, message} ->
-          {:error, :bad_request, message}
-      end
+    if admin_has_edit_access?(admin) do
+      process_member_creation(admin, inputs)
     else
       {:error, :forbidden}
     end
   end
 
-  defp has_permissions?(person) do
-    from(c in Operately.Companies.Company, where: c.id == ^person.company_id)
-    |> filter_by_edit_access(person.id)
+  defp admin_has_edit_access?(admin) do
+    from(c in Operately.Companies.Company, where: c.id == ^admin.company_id)
+    |> filter_by_edit_access(admin.id)
     |> Repo.exists?()
   end
 
-  defp create_invitation(person, inputs) do
-    case Operately.Operations.CompanyMemberAdding.run(person, inputs) do
+  defp process_member_creation(admin, inputs) do
+    case create_person(admin, inputs) do
+      {:ok, nil} ->
+        {:ok, %{invitation: nil, new_account: false}}
+
       {:ok, invitation} ->
-        value = Operately.Invitations.InvitationToken.build_token()
+        invitation_with_token = create_invitation_token(invitation)
 
-        {:ok, token} = Operately.Invitations.create_invitation_token!(%{
-          token: value,
-          invitation_id: invitation.id,
-        })
+        {:ok, %{
+          invitation: OperatelyWeb.Api.Serializer.serialize(invitation_with_token, level: :full),
+          new_account: true
+        }}
 
-        invitation = Repo.one(
-          from i in Operately.Invitations.Invitation,
-            where: i.id == ^invitation.id,
-            preload: [:member, :invitation_token, :admin]
-        )
+      error ->
+        error
+    end
+  end
 
-        # the token is a virtual field, so we need to update the struct after reaload
-        token = %{token | token: value}
-        invitation = %{invitation | invitation_token: token}
-        {:ok, invitation}
+  defp create_person(admin, inputs) do
+    skip_invitation = not People.is_new_account?(inputs[:email])
+
+    case Operately.Operations.CompanyMemberAdding.run(admin, inputs, skip_invitation) do
+      {:ok, result} ->
+        {:ok, result}
 
       {:error, [%{field: :email, message: message}]} ->
         {:error, :bad_request, "Email " <> message}
@@ -66,9 +67,24 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyMember do
       {:error, [%{message: message}]} ->
         {:error, :bad_request, message}
 
-      {:error, e} ->
-        Logger.error("Unexpected error: #{inspect(e)}")
+      {:error, error} ->
+        Logger.error("Unexpected error: #{inspect(error)}")
         raise "Unexpected error"
     end
+  end
+
+  defp create_invitation_token(invitation) do
+    token_value = Operately.Invitations.InvitationToken.build_token()
+
+    {:ok, token} = Operately.Invitations.create_invitation_token!(%{
+      token: token_value,
+      invitation_id: invitation.id,
+    })
+
+    invitation = Repo.preload(invitation, [:member, :admin])
+
+    # The token is a virtual field, so we need to update the struct after reload
+    updated_token = %{token | token: token_value}
+    %{invitation | invitation_token: updated_token}
   end
 end
