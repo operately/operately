@@ -18,6 +18,12 @@ defmodule Operately.Support.Features.InviteMemberSteps do
     Map.merge(ctx, %{company: company, admin: admin})
   end
 
+  step :given_that_an_account_exists_in_another_company, ctx, attrs do
+    company = company_fixture()
+    person_fixture_with_account(%{company_id: company.id, email: attrs.email, full_name: attrs.fullName})
+    ctx
+  end
+
   step :log_in_as_admin, ctx do
     ctx |> UI.login_as(ctx.admin)
   end
@@ -61,6 +67,10 @@ defmodule Operately.Support.Features.InviteMemberSteps do
 
   step :assert_member_invited, ctx do
     ctx |> UI.assert_text("/join?token=")
+  end
+
+  step :assert_member_added, ctx, name do
+    ctx |> UI.assert_text("#{name} has been added")
   end
 
   step :given_that_I_was_invited_and_have_a_token, ctx, params do
