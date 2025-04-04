@@ -10,5 +10,6 @@
 // }
 //
 
-export { useForm, FormState } from "./useForm";
+export type { FormState } from "./useForm";
+export { useForm } from "./useForm";
 export { Form } from "./Form";
