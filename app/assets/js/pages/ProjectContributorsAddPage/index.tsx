@@ -1,7 +1,8 @@
 import * as React from "react";
 import * as Pages from "@/components/Pages";
 
-export { loader, UrlParams } from "./loader";
+export type { UrlParams } from "./loader";
+export { loader } from "./loader";
 
 import { AddChampion } from "./AddChampion";
 import { AddReviewer } from "./AddReviewer";
