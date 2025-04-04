@@ -7,7 +7,7 @@ import * as Activities from "@/models/activities";
 import { Paths } from "@/routes/paths";
 import { Navigation } from "@/features/goals/GoalPageNavigation";
 import { Header } from "@/features/goals/GoalPageHeader";
-import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
+import { PrimaryButton, SecondaryButton } from "turboui";
 
 import FormattedTime from "@/components/FormattedTime";
 import Avatar from "@/components/Avatar";

@@ -3,7 +3,7 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Icons from "@tabler/icons-react";
 
-import { PrimaryButton, GhostButton, SecondaryButton } from "@/components/Buttons";
+import { PrimaryButton, GhostButton, SecondaryButton } from "turboui";
 import { MenuLinkItem, SubMenu } from "@/components/Menu";
 
 export const loader = Pages.emptyLoader;
