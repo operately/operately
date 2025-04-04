@@ -7,7 +7,7 @@ import * as Timeframes from "@/utils/timeframes";
 
 import { GhostLink } from "@/components/Link/GhostList";
 import { Paths } from "@/routes/paths";
-import { PrimaryButton } from "@/components/Buttons";
+import { PrimaryButton } from "turboui";
 
 import FormattedTime from "@/components/FormattedTime";
 

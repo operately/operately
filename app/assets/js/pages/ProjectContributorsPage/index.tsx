@@ -5,7 +5,7 @@ import * as Pages from "@/components/Pages";
 import * as Projects from "@/models/projects";
 import * as ProjectContributors from "@/models/projectContributors";
 
-import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
+import { PrimaryButton, SecondaryButton } from "turboui";
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
 import { ProjectContributor } from "@/models/projectContributors";
 

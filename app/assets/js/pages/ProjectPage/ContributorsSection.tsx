@@ -3,7 +3,7 @@ import * as Projects from "@/models/projects";
 import * as ProjectContributors from "@/models/projectContributors";
 
 import { Paths } from "@/routes/paths";
-import { SecondaryButton } from "@/components/Buttons";
+import { SecondaryButton } from "turboui";
 import { ContributorAvatar, ReviewerPlaceholder, ChampionPlaceholder } from "@/components/ContributorAvatar";
 import { ProjectContributor } from "@/models/projectContributors";
 
