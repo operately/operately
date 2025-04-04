@@ -3,15 +3,8 @@ import { match } from "ts-pattern";
 export { ResourcePermissionSelector } from "./PermissionSelector";
 export { PrivacyIndicator } from "./PrivacyIndicator";
 
-export const PermissionLevels = {
-  FULL_ACCESS: 100,
-  EDIT_ACCESS: 70,
-  COMMENT_ACCESS: 40,
-  VIEW_ACCESS: 10,
-  NO_ACCESS: 0,
-};
-
-export type PermissionLevel = number;
+import { PermissionLevels } from "./permissionLevels";
+export * from "./permissionLevels";
 
 export enum PermissionOptions {
   PUBLIC = "public",
