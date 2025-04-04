@@ -1,7 +1,7 @@
 import { createElement } from "react";
 
 import { PrimaryButton, GhostButton } from "turboui";
-import { BaseButtonProps } from "turboui/UnstalyedButton";
+import { BaseButtonProps } from "turboui";
 import { useFormContext } from "./FormContext";
 
 interface Props {
