@@ -124,6 +124,7 @@ test.init:
 	@mkdir -p $(REPORTS_DIR)
 	@mkdir -p $(MEDIA_DIR)
 	@mkdir -p $(CERTS_DIR)
+	./devenv bash -c "cd app && npm run build"
 
 test.all: test.init
 	$(MAKE) test.mix && $(MAKE) test.npm
