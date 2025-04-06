@@ -3,7 +3,7 @@ import * as React from "react";
 import Forms from "@/components/Forms";
 import { Subscriber } from "@/models/notifications";
 import { includesId } from "@/routes/paths";
-import { ActionLink } from "@/components/Link";
+import { ActionLink } from "turboui";
 import { useSubscribersSelectorContext } from "../SubscribersSelectorContext";
 
 export function SubscribersSelectorForm({ closeForm, callback }) {

@@ -7,9 +7,9 @@ import { match } from "ts-pattern";
 import { IconX } from "@tabler/icons-react";
 
 import FormattedTime from "@/components/FormattedTime";
-import { ActionLink } from "@/components/Link";
+import { ActionLink } from "turboui";
 import { CopyToClipboard } from "@/components/CopyToClipboard";
-import { GhostButton, PrimaryButton } from "@/components/Buttons";
+import { GhostButton, PrimaryButton } from "turboui";
 
 type Resource = Discussion | ResourceHubDocument;
 type State = "actions" | "link";

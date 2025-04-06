@@ -3,7 +3,7 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Icons from "@tabler/icons-react";
 
-import { Menu, MenuLinkItem, MenuActionItem, SubMenu } from "@/components/Menu";
+import { Menu, MenuLinkItem, MenuActionItem, SubMenu } from "turboui";
 
 export const loader = Pages.emptyLoader;
 

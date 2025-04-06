@@ -2,8 +2,8 @@ import * as React from "react";
 import * as Projects from "@/models/projects";
 
 import { ResourceIcon } from "@/components/KeyResourceIcon";
-import { SecondaryButton } from "@/components/Buttons";
-import { Link } from "@/components/Link";
+import { SecondaryButton } from "turboui";
+import { Link } from "turboui";
 import { Paths } from "@/routes/paths";
 
 export function ResourcesSection({ project }: { project: Projects.Project }) {

@@ -7,7 +7,7 @@ import type { ActivityContentGoalCheckIn } from "@/api";
 
 import { ActivityHandler } from "../interfaces";
 
-import { Link } from "@/components/Link";
+import { Link } from "turboui";
 import { feedTitle, goalLink } from "../feedItemLinks";
 import { richContentToString } from "@/components/RichContent";
 import { truncateString } from "@/utils/strings";

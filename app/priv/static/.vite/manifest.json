@@ -1,15 +1,15 @@
 {
-  "_vendor-CxTIKevW.js": {
-    "file": "assets/vendor-CxTIKevW.js",
+  "_vendor-C358uB8H.js": {
+    "file": "assets/vendor-C358uB8H.js",
     "name": "vendor"
   },
   "assets/js/app.tsx": {
-    "file": "assets/app-Cy0OqHWv.js",
+    "file": "assets/app-CeWmRdIW.js",
     "name": "app",
     "src": "assets/js/app.tsx",
     "isEntry": true,
     "imports": [
-      "_vendor-CxTIKevW.js"
+      "_vendor-C358uB8H.js"
     ]
   }
 }

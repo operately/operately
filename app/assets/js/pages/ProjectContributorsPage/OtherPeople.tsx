@@ -3,7 +3,7 @@ import * as People from "@/models/people";
 
 import { ProjectAccessLevelBadge } from "@/components/Badges/AccessLevelBadges";
 import { PermissionLevels } from "@/features/Permissions";
-import { ActionLink } from "@/components/Link";
+import { ActionLink } from "turboui";
 import { useBindedPeopleList } from "./loader";
 
 import Avatar from "@/components/Avatar";

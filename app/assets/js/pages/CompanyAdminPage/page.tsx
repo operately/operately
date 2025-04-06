@@ -8,7 +8,7 @@ import { CompanyAdmins, CompanyOwners } from "./CompanyAdmins";
 import { useLoadedData } from "./loader";
 import { OptionsMenuItem } from "./OptionsMenu";
 import { Paths, includesId } from "@/routes/paths";
-import { Link } from "@/components/Link";
+import { Link } from "turboui";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 
 export function Page() {

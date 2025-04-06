@@ -6,7 +6,7 @@ import { ReviewAssignment, AssignmentType } from "@/models/assignments";
 import FormattedTime from "@/components/FormattedTime";
 import { parseDate, relativeDay } from "@/utils/time";
 import { match } from "ts-pattern";
-import { DivLink } from "@/components/Link";
+import { DivLink } from "turboui";
 import classNames from "classnames";
 import { assertPresent } from "@/utils/assertions";
 

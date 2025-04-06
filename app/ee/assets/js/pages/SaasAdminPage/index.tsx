@@ -6,7 +6,7 @@ import * as AdminApi from "@/ee/admin_api";
 import classNames from "classnames";
 import AvatarList from "@/components/AvatarList";
 import FormattedTime from "@/components/FormattedTime";
-import { DivLink } from "@/components/Link";
+import { DivLink } from "turboui";
 
 interface LoaderData {
   companies: AdminApi.Company[];

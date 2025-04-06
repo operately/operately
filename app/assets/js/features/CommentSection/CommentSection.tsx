@@ -7,7 +7,7 @@ import * as Reactions from "@/models/reactions";
 import Avatar from "@/components/Avatar";
 import FormattedTime from "@/components/FormattedTime";
 import RichContent from "@/components/RichContent";
-import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
+import { PrimaryButton, SecondaryButton } from "turboui";
 import { useClearNotificationOnIntersection } from "@/features/notifications";
 
 import { FormState } from "./form";
@@ -17,7 +17,7 @@ import { useMe } from "@/contexts/CurrentCompanyContext";
 import { compareIds } from "@/routes/paths";
 import { CommentParentType } from "@/models/comments";
 import { useScrollIntoViewOnLoad } from "./useScrollIntoViewOnLoad";
-import { Menu, MenuActionItem } from "@/components/Menu";
+import { Menu, MenuActionItem } from "turboui";
 
 interface CommentSectionProps {
   form: FormState;

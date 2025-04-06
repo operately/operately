@@ -5,9 +5,9 @@ import * as Tabs from "@/components/Tabs";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import * as Timeframes from "@/utils/timeframes";
 
-import { GhostLink } from "@/components/Link/GhostList";
+import { GhostLink } from "turboui/GhostList";
 import { Paths } from "@/routes/paths";
-import { PrimaryButton } from "@/components/Buttons";
+import { PrimaryButton } from "turboui";
 
 import FormattedTime from "@/components/FormattedTime";
 

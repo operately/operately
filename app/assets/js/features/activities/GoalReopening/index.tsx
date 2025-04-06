@@ -4,7 +4,7 @@ import * as People from "@/models/people";
 import { Activity, ActivityContentGoalClosing } from "@/api";
 import { Paths } from "@/routes/paths";
 import { ActivityHandler } from "../interfaces";
-import { Link } from "@/components/Link";
+import { Link } from "turboui";
 
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 import { goalLink, feedTitle } from "../feedItemLinks";

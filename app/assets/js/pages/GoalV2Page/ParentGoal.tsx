@@ -7,11 +7,11 @@ import classNames from "classnames";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import Forms from "@/components/Forms";
 
-import { GhostLink } from "@/components/Link/GhostList";
+import { GhostLink } from "turboui/GhostList";
 import { useIsViewMode } from "@/components/Pages";
 import { Paths } from "@/routes/paths";
 import { useLoadedData } from "./loader";
-import { SecondaryButton } from "@/components/Buttons";
+import { SecondaryButton } from "turboui";
 import { GoalSelector } from "@/features/goals/GoalTree/GoalSelector";
 
 export function ParentGoal() {
