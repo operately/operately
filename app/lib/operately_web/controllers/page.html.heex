@@ -9,10 +9,13 @@
 
     <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
 
-    <script>
-      // Disable annoying Download the React DevTools for a better
-      // development experience: https://fb.me/react-devtools message
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 
+    <!-- 
+      Disable the React DevTools warning, because they would otherwise
+      show up in the console when the app is running in test mode.
+    -->
+    <script>
       (function() {
         var info = console.info
 
@@ -20,22 +23,44 @@
           if (!/Download the React DevTools/.test(message)) info.apply(console, arguments)
         }
       })()
+    </script>
 
+    <!-- 
+      Inject the app config into the page. This is used by the app to
+      configure itself at runtime. The config is passed to the app
+      as a global variable, so it can be accessed from anywhere in the
+      app.
+    -->
+    <script>
       window.appConfig = <%= Jason.encode!(@app_config) |> Phoenix.HTML.raw() %>
     </script>
 
-    <style>
-      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+    <!-- 
+      Load the app's JavaScript. There are two separate strategies for
+      loading the JavaScript: one for development and one for
+      test and production. 
 
-      body {
-        font-family: 'Inter', sans-serif;
-      }
-    </style>
+      In development, the JavaScript is loaded from the local Vite server,
+      which allows for hot reloading and other development features. In
+      test and production, the JavaScript is loaded from the static
+      assets that are built by Vite.
+    -->
+    <%= if Application.get_env(:operately, :app_env) == :dev do %>
+      <script type="module">
+        import RefreshRuntime from 'http://localhost:4005/@react-refresh'
+        RefreshRuntime.injectIntoGlobalHook(window)
+        window.$RefreshReg$ = () => {}
+        window.$RefreshSig$ = () => (type) => type
+        window.__vite_plugin_react_preamble_installed__ = true
+      </script>
 
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-
-    <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}>
-    </script>
+      <script type="module" src={"http://localhost:4005" <> "/@vite/client"}></script>
+      <script type="module" src={"http://localhost:4005" <> "/assets/js/app.tsx"}></script>
+    <% else %>
+      <%= for asset_path <- js_files() do %>
+        <script type="module" src={asset_path}></script>
+      <% end %>
+    <% end %>
   </head>
 
   <body class="antialiased overscroll-none" style="">
