@@ -3,7 +3,7 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Callouts from "@/components/Callouts";
 
-import { DimmedLink, Link } from "@/components/Link";
+import { DimmedLink, Link } from "turboui";
 
 export const loader = Pages.emptyLoader;
 

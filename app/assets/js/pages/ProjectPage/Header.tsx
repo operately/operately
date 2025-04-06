@@ -3,7 +3,7 @@ import * as Icons from "@tabler/icons-react";
 import * as Projects from "@/models/projects";
 import * as Goals from "@/models/goals";
 
-import { DimmedLink, DivLink } from "@/components/Link";
+import { DimmedLink, DivLink } from "turboui";
 import { Paths } from "@/routes/paths";
 import { PrivacyIndicator } from "@/features/Permissions";
 

@@ -3,7 +3,7 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
 import { OperatelyLogo } from "@/components/OperatelyLogo";
-import { Link } from "@/components/Link";
+import { Link } from "turboui";
 
 import { TosAndPrivacyPolicy } from "@/features/auth/AgreeToTosAndPp";
 import { SignUpWithEmail, SignUpWithGoogleButton } from "@/features/auth/Buttons";

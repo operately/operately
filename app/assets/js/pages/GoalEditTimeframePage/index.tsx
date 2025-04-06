@@ -12,7 +12,7 @@ import { PrimaryButton } from "turboui";
 import { InlinePeopleList } from "@/components/InlinePeopleList";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { Paths } from "@/routes/paths";
-import { DimmedLink } from "@/components/Link";
+import { DimmedLink } from "turboui";
 import { Datepicker } from "@/components/Datepicker";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 

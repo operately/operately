@@ -3,7 +3,7 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
 import { PageNavigation } from "@/features/accounts/PageNavigation";
-import { Link } from "@/components/Link";
+import { Link } from "turboui";
 
 import { Paths } from "@/routes/paths";
 

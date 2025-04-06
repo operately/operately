@@ -8,7 +8,7 @@ import Avatar from "@/components/Avatar";
 
 import { DimmedLabel } from "./Label";
 import { SecondaryButton } from "turboui";
-import { Link } from "@/components/Link";
+import { Link } from "turboui";
 import { Paths } from "@/routes/paths";
 import { SmallStatusIndicator } from "@/components/status";
 import { Summary } from "@/components/RichContent";

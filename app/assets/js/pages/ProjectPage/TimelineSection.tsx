@@ -3,7 +3,7 @@ import * as React from "react";
 import * as Milestones from "@/models/milestones";
 import * as Time from "@/utils/time";
 
-import { Link } from "@/components/Link";
+import { Link } from "turboui";
 import { Paths } from "@/routes/paths";
 import { DimmedLabel } from "./Label";
 import { SecondaryButton } from "turboui";

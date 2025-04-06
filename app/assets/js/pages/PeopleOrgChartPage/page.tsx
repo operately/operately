@@ -3,7 +3,7 @@ import * as Pages from "@/components/Pages";
 
 import { useLoadedData } from "./loader";
 import Avatar from "@/components/Avatar";
-import { Link } from "@/components/Link";
+import { Link } from "turboui";
 import * as Icons from "@tabler/icons-react";
 
 import { useOrgChart, OrgChart, OrgChartNode } from "./useOrgChart";

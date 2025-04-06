@@ -7,7 +7,7 @@ import type { ActivityHandler } from "../interfaces";
 import { Paths } from "@/routes/paths";
 import { Summary } from "@/components/RichContent";
 import React from "react";
-import { Link } from "@/components/Link";
+import { Link } from "turboui";
 import { feedTitle } from "../feedItemLinks";
 
 const DiscussionCommentSubmitted: ActivityHandler = {

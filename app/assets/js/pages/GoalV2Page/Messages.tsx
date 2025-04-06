@@ -12,7 +12,7 @@ import FormattedTime from "@/components/FormattedTime";
 import { AvatarLink } from "@/components/Avatar";
 import { SecondaryButton } from "turboui";
 import { richContentToString } from "@/components/RichContent";
-import { DivLink } from "@/components/Link";
+import { DivLink } from "turboui";
 import { Paths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { truncateString } from "@/utils/strings";

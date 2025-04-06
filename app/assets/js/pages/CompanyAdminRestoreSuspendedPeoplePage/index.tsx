@@ -6,7 +6,7 @@ import * as Companies from "@/models/companies";
 
 import { Paths } from "@/routes/paths";
 import { SecondaryButton } from "turboui";
-import { BlackLink, Link } from "@/components/Link";
+import { BlackLink, Link } from "turboui";
 
 import Avatar from "@/components/Avatar";
 import { createTestId } from "@/utils/testid";

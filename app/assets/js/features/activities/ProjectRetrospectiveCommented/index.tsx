@@ -7,7 +7,7 @@ import type { ActivityHandler } from "../interfaces";
 
 import { feedTitle, projectLink } from "./../feedItemLinks";
 import { Paths } from "@/routes/paths";
-import { Link } from "@/components/Link";
+import { Link } from "turboui";
 import { Summary } from "@/components/RichContent";
 
 const ProjectRetrospectiveCommented: ActivityHandler = {

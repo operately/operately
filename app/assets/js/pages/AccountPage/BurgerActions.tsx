@@ -1,7 +1,7 @@
 import React from "react";
 import classNames from "classnames";
 
-import { DivLink } from "@/components/Link";
+import { DivLink } from "turboui";
 
 export function BurgerActionsGroup({ children }: { children: React.ReactNode }) {
   return <div className={GroupStyle}>{children}</div>;

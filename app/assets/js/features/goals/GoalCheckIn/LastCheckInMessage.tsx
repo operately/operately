@@ -12,7 +12,7 @@ import { Paths } from "@/routes/paths";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 
 import plurarize from "@/utils/plurarize";
-import { DivLink } from "@/components/Link";
+import { DivLink } from "turboui";
 import { assertPresent } from "@/utils/assertions";
 
 export function LastCheckInMessage({ goal }: { goal: Goals.Goal }) {

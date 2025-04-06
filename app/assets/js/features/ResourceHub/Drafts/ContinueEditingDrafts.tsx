@@ -2,7 +2,7 @@ import React from "react";
 
 import { ResourceHubNode } from "@/models/resourceHubs";
 import { Paths } from "@/routes/paths";
-import { Link } from "@/components/Link";
+import { Link } from "turboui";
 
 interface Props {
   resourceHubId: string;

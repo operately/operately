@@ -4,7 +4,7 @@ import * as Pages from "@/components/Pages";
 import { useLoadedData } from "./loader";
 import { Person } from "@/models/people";
 import Avatar from "@/components/Avatar";
-import { Link } from "@/components/Link";
+import { Link } from "turboui";
 import { Paths } from "@/routes/paths";
 
 export function Page() {

@@ -10,7 +10,7 @@ import FormattedTime from "@/components/FormattedTime";
 
 import { useLoadedData } from "./loader";
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
-import { Link } from "@/components/Link";
+import { Link } from "turboui";
 import { MilestoneIcon } from "@/components/MilestoneIcon";
 import { Paths } from "@/routes/paths";
 

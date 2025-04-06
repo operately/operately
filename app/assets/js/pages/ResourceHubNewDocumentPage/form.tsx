@@ -5,7 +5,7 @@ import { ResourceHub, useCreateResourceHubDocument } from "@/models/resourceHubs
 
 import Forms from "@/components/Forms";
 import { useFormContext } from "@/components/Forms/FormContext";
-import { Link } from "@/components/Link";
+import { Link } from "turboui";
 import { DimmedSection } from "@/components/PaperContainer";
 import { Spacer } from "@/components/Spacer";
 import { Options, SubscribersSelector, useSubscriptions } from "@/features/Subscriptions";

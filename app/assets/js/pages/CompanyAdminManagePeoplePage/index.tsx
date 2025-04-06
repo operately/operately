@@ -9,7 +9,7 @@ import * as Time from "@/utils/time";
 
 import { Paths } from "@/routes/paths";
 import { PrimaryButton, SecondaryButton } from "turboui";
-import { BlackLink } from "@/components/Link";
+import { BlackLink } from "turboui";
 import { Menu, MenuLinkItem, MenuActionItem } from "turboui";
 import { CopyToClipboard } from "@/components/CopyToClipboard";
 

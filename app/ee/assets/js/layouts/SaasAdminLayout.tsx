@@ -5,7 +5,7 @@ import { Outlet } from "react-router-dom";
 
 import { DevBar } from "@/features/DevBar";
 import { useScrollToTopOnNavigationChange } from "@/hooks/useScrollToTopOnNavigationChange";
-import { DivLink } from "@/components/Link";
+import { DivLink } from "turboui";
 import { OperatelyLogo } from "@/components/OperatelyLogo";
 import { SecondaryButton } from "turboui";
 

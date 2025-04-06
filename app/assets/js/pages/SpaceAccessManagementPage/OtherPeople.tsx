@@ -3,7 +3,7 @@ import * as People from "@/models/people";
 import * as Paper from "@/components/PaperContainer";
 
 import { PermissionLevels } from "@/features/Permissions";
-import { ActionLink } from "@/components/Link";
+import { ActionLink } from "turboui";
 
 import Avatar from "@/components/Avatar";
 import { match } from "ts-pattern";

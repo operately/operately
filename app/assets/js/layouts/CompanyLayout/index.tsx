@@ -5,7 +5,7 @@ import * as Api from "@/api";
 import { useLoaderData } from "react-router-dom";
 import { logOut } from "@/routes/auth";
 
-import { DivLink } from "@/components/Link";
+import { DivLink } from "turboui";
 import { Outlet } from "react-router-dom";
 import { User } from "./User";
 import { Bell } from "./Bell";

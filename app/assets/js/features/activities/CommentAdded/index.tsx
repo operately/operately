@@ -13,7 +13,7 @@ import type {
 
 import { match } from "ts-pattern";
 import { Paths } from "@/routes/paths";
-import { Link } from "@/components/Link";
+import { Link } from "turboui";
 import { Summary } from "@/components/RichContent";
 import { feedTitle, goalLink } from "../feedItemLinks";
 

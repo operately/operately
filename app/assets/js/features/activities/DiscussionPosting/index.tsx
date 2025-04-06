@@ -6,7 +6,7 @@ import type { ActivityContentDiscussionPosting } from "@/api";
 import type { ActivityHandler } from "../interfaces";
 
 import { Paths } from "@/routes/paths";
-import { Link } from "@/components/Link";
+import { Link } from "turboui";
 import { Summary } from "@/components/RichContent";
 import { feedTitle, spaceLink } from "./../feedItemLinks";
 

@@ -6,7 +6,7 @@ import * as Editor from "@/components/Editor";
 
 import { Paths } from "@/routes/paths";
 import { PrimaryButton } from "turboui";
-import { DimmedLink } from "@/components/Link";
+import { DimmedLink } from "turboui";
 import { useNavigate } from "react-router-dom";
 
 interface LoaderResult {

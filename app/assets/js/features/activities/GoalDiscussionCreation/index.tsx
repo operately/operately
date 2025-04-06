@@ -10,7 +10,7 @@ import RichContent, { Summary } from "@/components/RichContent";
 import { Paths } from "@/routes/paths";
 
 import { ActivityHandler } from "../interfaces";
-import { Link } from "@/components/Link";
+import { Link } from "turboui";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { feedTitle, goalLink } from "./../feedItemLinks";
 

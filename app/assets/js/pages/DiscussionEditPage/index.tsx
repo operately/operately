@@ -7,7 +7,7 @@ import * as Discussions from "@/models/discussions";
 import { PrimaryButton, GhostButton } from "turboui";
 import { Form, FormState, useForm } from "@/features/DiscussionForm";
 import { Paths } from "@/routes/paths";
-import { Link } from "@/components/Link";
+import { Link } from "turboui";
 
 interface LoaderResult {
   discussion: Discussions.Discussion;

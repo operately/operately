@@ -12,7 +12,7 @@ import { PrimaryButton, SecondaryButton } from "turboui";
 import FormattedTime from "@/components/FormattedTime";
 import Avatar from "@/components/Avatar";
 
-import { DivLink } from "@/components/Link";
+import { DivLink } from "turboui";
 
 import ActivityHandler from "@/features/activities";
 

@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as Projects from "@/models/projects";
 
-import { Link } from "@/components/Link";
+import { Link } from "turboui";
 import { Paths } from "@/routes/paths";
 import { SecondaryButton } from "turboui";
 
