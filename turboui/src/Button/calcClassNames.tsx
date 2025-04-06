@@ -2,7 +2,7 @@ import classNames from "classnames";
 
 import { BaseButtonProps } from "./UnstalyedButton";
 
-export function calcClassName(props: BaseButtonProps, { normal, loading, always }): any {
+export function calcClassName(props: BaseButtonProps, { normal, loading, always } : { normal: string, loading: string, always: string }) : string {
   const size = props.size || "base";
 
   return classNames(

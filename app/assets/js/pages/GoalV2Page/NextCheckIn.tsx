@@ -3,7 +3,7 @@ import React from "react";
 import { Paths } from "@/routes/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { assertPresent } from "@/utils/assertions";
-import { SecondaryButton } from "@/components/Buttons";
+import { SecondaryButton } from "turboui";
 import FormattedTime from "@/components/FormattedTime";
 
 import { DisableInEditMode, Title } from "./components";

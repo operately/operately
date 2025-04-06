@@ -2,7 +2,7 @@ import React from "react";
 
 import Modal from "@/components/Modal";
 import Avatar from "@/components/Avatar";
-import { PrimaryButton } from "@/components/Buttons";
+import { PrimaryButton } from "turboui";
 
 import { Person } from "@/models/people";
 import PeopleSearch, { Option } from "@/components/PeopleSearch";
