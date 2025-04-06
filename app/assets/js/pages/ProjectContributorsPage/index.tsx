@@ -10,7 +10,7 @@ import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
 import { ProjectContributor } from "@/models/projectContributors";
 
 import { ContributorAvatar, PlaceholderAvatar } from "@/components/ContributorAvatar";
-import { Menu, MenuActionItem, MenuLinkItem } from "@/components/Menu";
+import { Menu, MenuActionItem, MenuLinkItem } from "turboui";
 import { createTestId } from "@/utils/testid";
 import { Paths } from "@/routes/paths";
 import { ProjectAccessLevelBadge } from "@/components/Badges/AccessLevelBadges";

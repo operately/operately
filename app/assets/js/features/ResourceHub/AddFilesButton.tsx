@@ -6,7 +6,7 @@ import { ResourceHubPermissions } from "@/models/resourceHubs";
 
 import { Airtable, Dropbox, Figma, GoogleLogo, Notion } from "@/components/Brands";
 import { PrimaryButton } from "turboui";
-import { MenuActionItem, SubMenu } from "@/components/Menu";
+import { MenuActionItem, SubMenu } from "turboui";
 
 import { useNewFileModalsContext } from "./contexts/NewFileModalsContext";
 

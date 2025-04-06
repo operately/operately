@@ -4,7 +4,7 @@ import * as Paper from "@/components/PaperContainer";
 import * as Icons from "@tabler/icons-react";
 
 import { PrimaryButton, GhostButton, SecondaryButton } from "turboui";
-import { MenuLinkItem, SubMenu } from "@/components/Menu";
+import { MenuLinkItem, SubMenu } from "turboui";
 
 export const loader = Pages.emptyLoader;
 

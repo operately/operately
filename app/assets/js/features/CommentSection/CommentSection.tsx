@@ -17,7 +17,7 @@ import { useMe } from "@/contexts/CurrentCompanyContext";
 import { compareIds } from "@/routes/paths";
 import { CommentParentType } from "@/models/comments";
 import { useScrollIntoViewOnLoad } from "./useScrollIntoViewOnLoad";
-import { Menu, MenuActionItem } from "@/components/Menu";
+import { Menu, MenuActionItem } from "turboui";
 
 interface CommentSectionProps {
   form: FormState;

@@ -10,7 +10,7 @@ import * as Time from "@/utils/time";
 import { Paths } from "@/routes/paths";
 import { PrimaryButton, SecondaryButton } from "turboui";
 import { BlackLink } from "@/components/Link";
-import { Menu, MenuLinkItem, MenuActionItem } from "@/components/Menu";
+import { Menu, MenuLinkItem, MenuActionItem } from "turboui";
 import { CopyToClipboard } from "@/components/CopyToClipboard";
 
 import Avatar from "@/components/Avatar";

@@ -5,7 +5,7 @@ import * as Hub from "@/models/resourceHubs";
 import { MoveResourceMenuItem, MoveResourceModal } from "./MoveResource";
 
 import { useBoolState } from "@/hooks/useBoolState";
-import { Menu, MenuActionItem, MenuLinkItem } from "@/components/Menu";
+import { Menu, MenuActionItem, MenuLinkItem } from "turboui";
 import { createTestId } from "@/utils/testid";
 import { assertPresent } from "@/utils/assertions";
 import { useDownloadFile } from "@/models/blobs";

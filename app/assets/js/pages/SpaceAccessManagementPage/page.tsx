@@ -10,7 +10,7 @@ import { AccessLevel } from "@/features/spaces";
 import { OtherPeople } from "./OtherPeople";
 import { BorderedRow } from "@/components/BorderedRow";
 import { PermissionLevels } from "@/features/Permissions";
-import { Menu, MenuActionItem, SubMenu } from "@/components/Menu";
+import { Menu, MenuActionItem, SubMenu } from "turboui";
 import { SpaceAccessLevelBadge } from "@/components/Badges/AccessLevelBadges";
 import { PrimaryButton, SecondaryButton } from "turboui";
 
