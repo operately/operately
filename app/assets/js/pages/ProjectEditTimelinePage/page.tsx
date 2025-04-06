@@ -3,7 +3,7 @@ import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
-import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
+import { PrimaryButton, SecondaryButton } from "turboui";
 
 import { useLoadedData } from "./loader";
 import { useForm, FormState } from "./useForm";
