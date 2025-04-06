@@ -11,9 +11,56 @@
 
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 
-    <%= disable_react_devtools() %>
-    <%= inject_app_config(@app_config) %>
-    <%= load_js_application() %>
+    <!-- 
+      Disable the React DevTools warning, because they would otherwise
+      show up in the console when the app is running in test mode.
+    -->
+    <script>
+      (function() {
+        var info = console.info
+
+        console.info = function (message) {
+          if (!/Download the React DevTools/.test(message)) info.apply(console, arguments)
+        }
+      })()
+    </script>
+
+    <!-- 
+      Inject the app config into the page. This is used by the app to
+      configure itself at runtime. The config is passed to the app
+      as a global variable, so it can be accessed from anywhere in the
+      app.
+    -->
+    <script>
+      window.appConfig = <%= Jason.encode!(@app_config) |> Phoenix.HTML.raw() %>
+    </script>
+
+    <!-- 
+      Load the app's JavaScript. There are two separate strategies for
+      loading the JavaScript: one for development and one for
+      test and production. 
+
+      In development, the JavaScript is loaded from the local Vite server,
+      which allows for hot reloading and other development features. In
+      test and production, the JavaScript is loaded from the static
+      assets that are built by Vite.
+    -->
+    <%= if Application.get_env(:operately, :app_env) == :dev do %>
+      <script type="module">
+        import RefreshRuntime from 'http://localhost:4005/@react-refresh'
+        RefreshRuntime.injectIntoGlobalHook(window)
+        window.$RefreshReg$ = () => {}
+        window.$RefreshSig$ = () => (type) => type
+        window.__vite_plugin_react_preamble_installed__ = true
+      </script>
+
+      <script type="module" src={"http://localhost:4005" <> "/@vite/client"}></script>
+      <script type="module" src={"http://localhost:4005" <> "/assets/js/app.tsx"}></script>
+    <% else %>
+      <%= for asset_path <- js_files() do %>
+        <script type="module" src={asset_path}></script>
+      <% end %>
+    <% end %>
   </head>
 
   <body class="antialiased overscroll-none" style="">

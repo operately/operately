@@ -12,7 +12,7 @@ export default defineConfig({
   root: path.resolve(__dirname),
   
   build: {
-    outDir: 'priv/static/assets',
+    outDir: 'priv/static',
     emptyOutDir: true,
     minify: isProd,
     sourcemap: !isProd || 'inline',
