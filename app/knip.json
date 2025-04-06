@@ -15,7 +15,10 @@
     "**/__tests__/**",
     "assets/js/models/companies/hasFeature.tsx",
   ],
-  "ignoreDependencies": ["@types/jest"],
+  "ignoreDependencies": [
+    "@types/jest",
+    "turboui"
+  ],
 
   "rules": {
     "nsTypes": "off"
