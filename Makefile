@@ -108,6 +108,7 @@ test.build:
 	./devenv bash -c "cd app && MIX_ENV=test mix deps.get"
 	./devenv bash -c "cd app && MIX_ENV=test mix compile"
 	./devenv bash -c "cd app && MIX_ENV=test npm install"
+	./devenv bash -c "cd turboui && MIX_ENV=test npm run build"
 	./devenv bash -c "cd app && MIX_ENV=test npm run build"
 	./devenv bash -c "cd app && MIX_ENV=test mix assets.deploy"
 	$(MAKE) test.db.create

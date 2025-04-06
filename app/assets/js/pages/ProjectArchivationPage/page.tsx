@@ -8,7 +8,7 @@ import { useNavigateTo } from "@/routes/useNavigateTo";
 
 import { DimmedLink } from "@/components/Link";
 import { Paths } from "@/routes/paths";
-import { PrimaryButton } from "@/components/Buttons";
+import { PrimaryButton } from "turboui";
 
 export function Page() {
   const { project } = useLoadedData();
