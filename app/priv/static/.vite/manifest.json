@@ -1,0 +1,15 @@
+{
+  "_vendor-CxTIKevW.js": {
+    "file": "assets/vendor-CxTIKevW.js",
+    "name": "vendor"
+  },
+  "assets/js/app.tsx": {
+    "file": "assets/app-Cy0OqHWv.js",
+    "name": "app",
+    "src": "assets/js/app.tsx",
+    "isEntry": true,
+    "imports": [
+      "_vendor-CxTIKevW.js"
+    ]
+  }
+}
