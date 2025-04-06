@@ -7,7 +7,7 @@ import { DevBar } from "@/features/DevBar";
 import { useScrollToTopOnNavigationChange } from "@/hooks/useScrollToTopOnNavigationChange";
 import { DivLink } from "@/components/Link";
 import { OperatelyLogo } from "@/components/OperatelyLogo";
-import { SecondaryButton } from "@/components/Buttons";
+import { SecondaryButton } from "turboui";
 
 export default function SaasAdminLayout() {
   const outletDiv = React.useRef<HTMLDivElement>(null);

@@ -4,7 +4,7 @@ import * as Popover from "@radix-ui/react-popover";
 
 import { Timeframe } from "@/utils/timeframes";
 
-import { SecondaryButton } from "@/components/Buttons";
+import { SecondaryButton } from "turboui";
 import { Chronometer, CompletedColor } from "@/components/Chronometer";
 import { CustomRangePicker } from "@/components/TimeframeSelector/CustomRangePicker";
 
