@@ -10,7 +10,7 @@ import * as Forms from "@/components/Form";
 import * as People from "@/models/people";
 import * as TipTapEditor from "@/components/Editor";
 
-import { SecondaryButton } from "@/components/Buttons";
+import { SecondaryButton } from "turboui";
 import { AddTarget, Target, TargetHeader } from "./Target";
 import { FormState } from "./useForm";
 import { GoalSelectorDropdown } from "@/features/goals/GoalTree/GoalSelectorDropdown";

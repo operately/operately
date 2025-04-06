@@ -2,7 +2,7 @@ import React from "react";
 
 import { useUnsubscribeFromNotifications } from "@/models/notifications";
 import { useCurrentSubscriptionsContext } from "../CurrentSubscriptions";
-import { SecondaryButton } from "@/components/Buttons";
+import { SecondaryButton } from "turboui";
 
 export function Unsubscribe() {
   const { subscriptionList, name, callback } = useCurrentSubscriptionsContext();

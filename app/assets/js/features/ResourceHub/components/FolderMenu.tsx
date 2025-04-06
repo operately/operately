@@ -5,7 +5,7 @@ import * as Hub from "@/models/resourceHubs";
 import Modal from "@/components/Modal";
 import Forms from "@/components/Forms";
 import { useBoolState } from "@/hooks/useBoolState";
-import { Menu, MenuActionItem } from "@/components/Menu";
+import { Menu, MenuActionItem } from "turboui";
 import { createTestId } from "@/utils/testid";
 import { useNodesContext } from "@/features/ResourceHub";
 import { MoveResourceMenuItem, MoveResourceModal } from "./MoveResource";
