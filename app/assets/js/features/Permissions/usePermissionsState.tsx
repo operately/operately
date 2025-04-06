@@ -1,7 +1,7 @@
 import React from "react";
 import { Space } from "@/models/spaces";
 import { Company } from "@/models/companies";
-import { PermissionLevels } from ".";
+import { PermissionLevels } from "./PermissionLevels";
 import { AccessLevels } from "@/api";
 
 export enum ReducerActions {
