@@ -7,7 +7,7 @@ import classNames from "classnames";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import Forms from "@/components/Forms";
 
-import { GhostLink } from "turboui/GhostList";
+import { GhostLink } from "turboui";
 import { useIsViewMode } from "@/components/Pages";
 import { Paths } from "@/routes/paths";
 import { useLoadedData } from "./loader";

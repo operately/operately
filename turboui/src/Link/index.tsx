@@ -3,6 +3,8 @@ import classNames from "classnames";
 
 import * as Router from "react-router-dom";
 
+export { GhostLink } from "./GhostLink";
+
 interface Props {
   children: React.ReactNode;
   target?: string;
