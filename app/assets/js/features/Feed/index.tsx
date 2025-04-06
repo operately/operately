@@ -4,7 +4,7 @@ import * as Activities from "@/models/activities";
 
 import { Activity } from "@/api";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { DivLink } from "@/components/Link";
+import { DivLink } from "turboui";
 import { Paths } from "@/routes/paths";
 
 import Avatar from "@/components/Avatar";

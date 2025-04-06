@@ -7,7 +7,7 @@ import * as People from "@/models/people";
 import FormattedTime from "@/components/FormattedTime";
 
 import { Paths } from "@/routes/paths";
-import { Link } from "@/components/Link";
+import { Link } from "turboui";
 import { feedTitle, projectLink } from "../feedItemLinks";
 
 import type { Activity } from "@/models/activities";

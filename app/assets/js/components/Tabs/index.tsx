@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { DivLink } from "@/components/Link";
+import { DivLink } from "turboui";
 import classNames from "classnames";
 import { usePaperSizeHelpers } from "@/components/PaperContainer";
 

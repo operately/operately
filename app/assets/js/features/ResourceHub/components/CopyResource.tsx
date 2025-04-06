@@ -3,7 +3,7 @@ import * as Hub from "@/models/resourceHubs";
 
 import Modal from "@/components/Modal";
 import Forms, { FormState } from "@/components/Forms";
-import { MenuActionItem } from "@/components/Menu";
+import { MenuActionItem } from "turboui";
 import { createTestId } from "@/utils/testid";
 import { FolderSelectField } from "@/features/ResourceHub/FolderSelectField";
 

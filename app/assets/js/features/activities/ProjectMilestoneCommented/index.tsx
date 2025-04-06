@@ -5,7 +5,7 @@ import type { Activity } from "@/models/activities";
 import type { ActivityContentProjectMilestoneCommented } from "@/api";
 import type { ActivityHandler } from "../interfaces";
 
-import { Link } from "@/components/Link";
+import { Link } from "turboui";
 import { Summary } from "@/components/RichContent";
 import { feedTitle, projectLink } from "../feedItemLinks";
 import { Paths } from "@/routes/paths";

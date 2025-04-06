@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as Icons from "@tabler/icons-react";
 
-import { DivLink } from "@/components/Link";
+import { DivLink } from "turboui";
 import { Paths } from "@/routes/paths";
 
 import * as Notifications from "@/models/notifications";

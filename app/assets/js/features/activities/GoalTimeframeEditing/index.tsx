@@ -6,7 +6,7 @@ import * as Icons from "@tabler/icons-react";
 
 import { goalLink, feedTitle } from "../feedItemLinks";
 import { Paths } from "@/routes/paths";
-import { Link } from "@/components/Link";
+import { Link } from "turboui";
 import { Activity, ActivityContentGoalTimeframeEditing } from "@/api";
 
 import RichContent from "@/components/RichContent";

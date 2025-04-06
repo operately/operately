@@ -3,7 +3,7 @@ import React, { useMemo, useState } from "react";
 import Forms from "@/components/Forms";
 import Modal from "@/components/Modal";
 
-import { SecondaryButton } from "@/components/Buttons";
+import { SecondaryButton } from "turboui";
 
 import { useExpandable } from "../context/Expandable";
 import { useTreeContext } from "../treeContext";

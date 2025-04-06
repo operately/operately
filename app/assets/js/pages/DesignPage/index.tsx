@@ -4,7 +4,7 @@ import * as Paper from "@/components/PaperContainer";
 import * as Icons from "@tabler/icons-react";
 
 import { OperatelyLogo } from "@/components/OperatelyLogo";
-import { DivLink } from "@/components/Link";
+import { DivLink } from "turboui";
 
 export const loader = Pages.emptyLoader;
 

@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { Link } from "@/components/Link";
+import { Link } from "turboui";
 
 export function TosAndPrivacyPolicy() {
   const tos = (

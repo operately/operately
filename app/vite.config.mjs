@@ -22,13 +22,12 @@ export default defineConfig({
     rollupOptions: {
       input: {
         app: path.resolve(__dirname, 'assets/js/app.tsx')
-      },
-      external: [/\.css$/, /fonts\/.*/, /images\/.*/]
+      }
     }
   },
   
   resolve: {
-    dedupe: ['react', 'react-dom'],
+    dedupe: ['react', 'react-dom', 'react-router', 'react-router-dom'],
 
     alias: [
       { find: /^@\/ee\/(.*)$/, replacement: path.resolve(__dirname, 'ee/assets/js/$1')},

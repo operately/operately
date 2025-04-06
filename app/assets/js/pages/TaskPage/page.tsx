@@ -8,7 +8,7 @@ import * as TipTapEditor from "@/components/Editor";
 
 import RichContent from "@/components/RichContent";
 import Avatar from "@/components/Avatar";
-import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
+import { PrimaryButton, SecondaryButton } from "turboui";
 
 import { useLoadedData } from "./loader";
 import { useForm, FormState } from "./useForm";

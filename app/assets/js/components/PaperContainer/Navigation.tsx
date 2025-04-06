@@ -3,7 +3,7 @@ import * as Icons from "@tabler/icons-react";
 import * as Pages from "@/components/Pages";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 
-import { Link } from "@/components/Link";
+import { Link } from "turboui";
 import classNames from "classnames";
 import { createTestId } from "@/utils/testid";
 

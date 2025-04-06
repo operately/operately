@@ -5,7 +5,7 @@ import * as Projects from "@/models/projects";
 import { ProjectContributor } from "@/models/projects";
 import { Tooltip } from "@/components/Tooltip";
 import { Paths } from "@/routes/paths";
-import { DivLink } from "../Link";
+import { DivLink } from "turboui";
 
 import Avatar from "@/components/Avatar";
 import classNames from "classnames";

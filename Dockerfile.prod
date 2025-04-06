@@ -37,7 +37,7 @@ RUN set -uex \
     && apt-get install nodejs -y
 
 # prepare build dir
-WORKDIR /app
+WORKDIR /src
 
 # install hex + rebar
 RUN mix local.hex --force && \
@@ -46,29 +46,46 @@ RUN mix local.hex --force && \
 # set build ENV
 ENV MIX_ENV="prod"
 
+# create directory structure
+RUN mkdir -p app turboui
+
 # install mix dependencies
-COPY app/mix.exs app/mix.lock ./
+COPY app/mix.exs app/mix.lock app/
+WORKDIR /src/app
 RUN ls -l
 RUN mix deps.get --only $MIX_ENV
-RUN mkdir config
+WORKDIR /src
 
 # copy compile-time config files before we compile dependencies
 # to ensure any relevant config change will trigger the dependencies
 # to be re-compiled.
-COPY app/config/config.exs app/config/${MIX_ENV}.exs config/
+COPY app/config/config.exs app/config/${MIX_ENV}.exs app/config/
+
+# copy turboui files
+COPY turboui/package.json turboui/package-lock.json turboui/tsconfig.json turboui/
+COPY turboui/src turboui/src
+
+# build turboui assets
+WORKDIR /src/turboui
+RUN npm install
+RUN npm run build
+WORKDIR /src
+
+# copy app files
+COPY app/priv app/priv
+COPY app/assets app/assets
+COPY app/lib app/lib
+COPY app/ee app/ee
+COPY app/package.json app/package-lock.json app/
+COPY app/tsconfig.json app/
+COPY app/vite.config.mjs app/
+
+WORKDIR /src/app
+
+# compile dependencies
 RUN mix deps.compile
 
-COPY app/priv priv
-
-COPY app/assets assets
-COPY app/lib lib
-COPY app/ee ee
-
-COPY app/package.json app/package-lock.json ./
-COPY app/tsconfig.json ./
-COPY app/vite.config.mjs ./
-
-# compile assets
+# compile app assets
 RUN npm install
 RUN npm run build
 RUN mix assets.deploy
@@ -77,9 +94,9 @@ RUN mix assets.deploy
 RUN mix compile
 
 # Changes to config/runtime.exs don't require recompiling the code
-COPY app/config/runtime.exs config/
+COPY app/config/runtime.exs app/config/
 
-COPY app/rel rel
+COPY app/rel app/rel
 RUN mix release
 
 # --------------------------------------------------------------------------------------
@@ -98,16 +115,16 @@ ENV LANG=en_US.UTF-8
 ENV LANGUAGE=en_US:en
 ENV LC_ALL=en_US.UTF-8
 
-WORKDIR "/app"
-RUN chown nobody /app
+WORKDIR "/opt/operately"
+RUN chown nobody /opt/operately
 RUN chown nobody /media
 
 # set runner ENV
 ENV MIX_ENV="prod"
 
 # Only copy the final release from the build stage
-COPY --from=builder --chown=nobody:root /app/_build/${MIX_ENV}/rel/operately ./
+COPY --from=builder --chown=nobody:root /src/app/_build/${MIX_ENV}/rel/operately ./
 
 USER nobody
 
-CMD ["/app/bin/server"]
+CMD ["/opt/operately/bin/server"]

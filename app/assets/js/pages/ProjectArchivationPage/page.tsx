@@ -6,9 +6,9 @@ import * as Projects from "@/models/projects";
 import { useLoadedData } from "./loader";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 
-import { DimmedLink } from "@/components/Link";
+import { DimmedLink } from "turboui";
 import { Paths } from "@/routes/paths";
-import { PrimaryButton } from "@/components/Buttons";
+import { PrimaryButton } from "turboui";
 
 export function Page() {
   const { project } = useLoadedData();
