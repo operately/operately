@@ -7,7 +7,7 @@ import * as Icons from "@tabler/icons-react";
 import classNames from "classnames";
 import FormattedTime from "@/components/FormattedTime";
 
-import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
+import { PrimaryButton, SecondaryButton } from "turboui";
 import { DateSelector } from "./DateSelector";
 import { Summary } from "@/components/RichContent";
 
