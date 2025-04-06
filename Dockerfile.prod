@@ -19,7 +19,7 @@ ARG RUNNER_IMAGE="debian:${DEBIAN_VERSION}"
 
 # --------------------------------------------------------------------------------------
 
-FROM ${BUILDER_IMAGE} as builder
+FROM ${BUILDER_IMAGE} AS builder
 
 # install build dependencies
 RUN apt-get update -y && apt-get install -y build-essential git curl \
@@ -48,6 +48,7 @@ ENV MIX_ENV="prod"
 
 # install mix dependencies
 COPY app/mix.exs app/mix.lock ./
+RUN ls -l
 RUN mix deps.get --only $MIX_ENV
 RUN mkdir config
 
@@ -65,9 +66,11 @@ COPY app/ee ee
 
 COPY app/package.json app/package-lock.json ./
 COPY app/tsconfig.json ./
+COPY app/vite.config.mjs ./
 
 # compile assets
 RUN npm install
+RUN npm run build
 RUN mix assets.deploy
 
 # Compile the release
@@ -91,9 +94,9 @@ RUN apt-get update -y && apt-get install -y libstdc++6 openssl libncurses5 local
 # Set the locale
 RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && locale-gen
 
-ENV LANG en_US.UTF-8
-ENV LANGUAGE en_US:en
-ENV LC_ALL en_US.UTF-8
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
 
 WORKDIR "/app"
 RUN chown nobody /app
