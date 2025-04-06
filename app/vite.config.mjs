@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite';
+import { splitVendorChunkPlugin } from 'vite'
 
 import react from '@vitejs/plugin-react';
 import path from 'path';
@@ -7,7 +8,7 @@ import path from 'path';
 const isProd = process.env.NODE_ENV === 'production';
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), splitVendorChunkPlugin()],
   root: path.resolve(__dirname),
   
   build: {
