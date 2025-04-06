@@ -1,5 +1,5 @@
 import React from "react";
-import { GhostButton } from "@/components/Buttons";
+import { GhostButton } from "turboui";
 import { Paths } from "@/routes/paths";
 
 export async function loader(): Promise<null> {

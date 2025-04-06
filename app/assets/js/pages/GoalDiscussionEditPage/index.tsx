@@ -7,7 +7,7 @@ import * as Activities from "@/models/activities";
 import * as Api from "@/api";
 
 import { FormTitleInput } from "@/components/FormTitleInput";
-import { PrimaryButton } from "@/components/Buttons";
+import { PrimaryButton } from "turboui";
 import { DimmedLink } from "@/components/Link";
 import { Paths } from "@/routes/paths";
 import { GoalSubpageNavigation } from "@/features/goals/GoalSubpageNavigation";

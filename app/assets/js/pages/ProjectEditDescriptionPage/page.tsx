@@ -6,7 +6,7 @@ import * as Projects from "@/models/projects";
 
 import { useLoadedData } from "./loader";
 import { useNavigateTo } from "@/routes/useNavigateTo";
-import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
+import { PrimaryButton, SecondaryButton } from "turboui";
 import { Paths } from "@/routes/paths";
 
 export function Page() {
