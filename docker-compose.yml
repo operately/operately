@@ -15,6 +15,7 @@ services:
     ports:
       - "127.0.0.1:4000:4000" # development server
       - "127.0.0.1:4002:4002" # test server
+      - "127.0.0.1:4005:4005" # vite server for serving JS files in development
       - "127.0.0.1:4010:4010" # design prototypes server
     depends_on:
       - db

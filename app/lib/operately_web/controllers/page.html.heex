@@ -9,33 +9,12 @@
 
     <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
 
-    <script>
-      // Disable annoying Download the React DevTools for a better
-      // development experience: https://fb.me/react-devtools message
-
-      (function() {
-        var info = console.info
-
-        console.info = function (message) {
-          if (!/Download the React DevTools/.test(message)) info.apply(console, arguments)
-        }
-      })()
-
-      window.appConfig = <%= Jason.encode!(@app_config) |> Phoenix.HTML.raw() %>
-    </script>
-
-    <style>
-      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
-
-      body {
-        font-family: 'Inter', sans-serif;
-      }
-    </style>
+    <%= disable_react_devtools() %>
+    <%= inject_app_config(@app_config) %>
 
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 
-    <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}>
-    </script>
+    <%= load_js_application() %>
   </head>
 
   <body class="antialiased overscroll-none" style="">

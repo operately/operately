@@ -10,4 +10,5 @@ export {
   usePostProjectCheckIn,
 } from "@/api";
 
-export { groupCheckInsByMonth, CheckInGroupByMonth } from "./groupCheckInsByMonth";
+export { groupCheckInsByMonth } from "./groupCheckInsByMonth";
+export type { CheckInGroupByMonth } from "./groupCheckInsByMonth";
