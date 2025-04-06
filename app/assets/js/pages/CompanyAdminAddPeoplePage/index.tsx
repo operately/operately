@@ -6,7 +6,7 @@ import * as Companies from "@/models/companies";
 import { useNavigate } from "react-router-dom";
 import { Paths } from "@/routes/paths";
 import { CopyToClipboard } from "@/components/CopyToClipboard";
-import { PrimaryButton } from "@/components/Buttons";
+import { PrimaryButton } from "turboui";
 
 import Forms from "@/components/Forms";
 import { match } from "ts-pattern";

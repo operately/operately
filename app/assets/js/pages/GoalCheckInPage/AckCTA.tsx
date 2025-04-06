@@ -2,7 +2,7 @@ import * as React from "react";
 import * as GoalCheckIns from "@/models/goalCheckIns";
 import * as Pages from "@/components/Pages";
 
-import { PrimaryButton } from "@/components/Buttons";
+import { PrimaryButton } from "turboui";
 
 import { useLoadedData, useRefresh } from "./loader";
 

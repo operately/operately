@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as NotFoundPage from "@/pages/NotFoundPage";
 
-import { GhostButton } from "@/components/Buttons";
+import { GhostButton } from "turboui";
 import { Paths } from "./paths";
 import { useRouteError } from "react-router-dom";
 import { AxiosError } from "axios";

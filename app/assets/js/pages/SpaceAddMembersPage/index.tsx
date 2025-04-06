@@ -9,7 +9,7 @@ import { PERMISSIONS_LIST, PermissionLevels } from "@/features/Permissions";
 
 import Forms from "@/components/Forms";
 import { Paths, compareIds } from "@/routes/paths";
-import { SecondaryButton } from "@/components/Buttons";
+import { SecondaryButton } from "turboui";
 import { createTestId } from "@/utils/testid";
 import { useNavigate } from "react-router-dom";
 
