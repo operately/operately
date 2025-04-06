@@ -3,7 +3,7 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
 import { useLoadedData, useFilters } from "./loader";
-import { PrimaryButton } from "@/components/Buttons";
+import { PrimaryButton } from "turboui";
 import { ProjectList } from "@/features/ProjectList";
 
 import classNames from "classnames";

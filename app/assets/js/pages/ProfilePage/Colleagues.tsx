@@ -3,7 +3,7 @@ import * as People from "@/models/people";
 
 import { DivLink } from "@/components/Link";
 import { Paths } from "@/routes/paths";
-import { SecondaryButton } from "@/components/Buttons";
+import { SecondaryButton } from "turboui";
 
 import Avatar from "@/components/Avatar";
 import classNames from "classnames";

@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import { useFormContext } from "./FormContext";
-import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
+import { PrimaryButton, SecondaryButton } from "turboui";
 import classNames from "classnames";
 import { BaseButtonProps } from "../Buttons/UnstalyedButton";
 
