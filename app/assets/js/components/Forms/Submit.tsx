@@ -3,7 +3,7 @@ import * as React from "react";
 import { useFormContext } from "./FormContext";
 import { PrimaryButton, SecondaryButton } from "turboui";
 import classNames from "classnames";
-import { BaseButtonProps } from "../Buttons/UnstalyedButton";
+import { BaseButtonProps } from "turboui";
 
 interface SubmitProps {
   saveText?: string;
