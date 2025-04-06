@@ -2,8 +2,8 @@ import React from "react";
 
 import * as Icons from "@tabler/icons-react";
 
-import { PrimaryButton } from "@/components/Buttons";
-import { MenuLinkItem } from "@/components/Menu";
+import { PrimaryButton } from "turboui";
+import { MenuLinkItem } from "turboui";
 
 export function AddGoalOrProjectButton({ newGoalPath, newProjectPath }) {
   const options = [

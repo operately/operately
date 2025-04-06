@@ -5,12 +5,12 @@ import * as Pages from "@/components/Pages";
 import * as Projects from "@/models/projects";
 import * as ProjectContributors from "@/models/projectContributors";
 
-import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
+import { PrimaryButton, SecondaryButton } from "turboui";
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
 import { ProjectContributor } from "@/models/projectContributors";
 
 import { ContributorAvatar, PlaceholderAvatar } from "@/components/ContributorAvatar";
-import { Menu, MenuActionItem, MenuLinkItem } from "@/components/Menu";
+import { Menu, MenuActionItem, MenuLinkItem } from "turboui";
 import { createTestId } from "@/utils/testid";
 import { Paths } from "@/routes/paths";
 import { ProjectAccessLevelBadge } from "@/components/Badges/AccessLevelBadges";
