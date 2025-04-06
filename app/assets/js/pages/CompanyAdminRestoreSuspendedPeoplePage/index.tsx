@@ -5,7 +5,7 @@ import * as People from "@/models/people";
 import * as Companies from "@/models/companies";
 
 import { Paths } from "@/routes/paths";
-import { SecondaryButton } from "@/components/Buttons";
+import { SecondaryButton } from "turboui";
 import { BlackLink, Link } from "@/components/Link";
 
 import Avatar from "@/components/Avatar";

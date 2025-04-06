@@ -4,7 +4,7 @@ import * as Goals from "@/models/goals";
 import * as Popover from "@radix-ui/react-popover";
 import * as Timeframes from "@/utils/timeframes";
 
-import { SecondaryButton } from "@/components/Buttons";
+import { SecondaryButton } from "turboui";
 import { Chronometer } from "@/components/Chronometer";
 import { CustomRangePicker } from "@/components/TimeframeSelector/CustomRangePicker";
 import { SubscribersSelector, SubscriptionsState } from "@/features/Subscriptions";

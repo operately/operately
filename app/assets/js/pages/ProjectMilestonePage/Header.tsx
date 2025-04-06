@@ -2,7 +2,7 @@ import * as Forms from "@/components/Form";
 import * as Milestones from "@/models/milestones";
 import * as React from "react";
 
-import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
+import { PrimaryButton, SecondaryButton } from "turboui";
 import { MilestoneIcon } from "@/components/MilestoneIcon";
 
 import FormattedTime from "@/components/FormattedTime";
