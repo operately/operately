@@ -9,11 +9,10 @@
 
     <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
 
-    <%= disable_react_devtools() %>
-    <%= inject_app_config(@app_config) %>
-
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 
+    <%= disable_react_devtools() %>
+    <%= inject_app_config(@app_config) %>
     <%= load_js_application() %>
   </head>
 

@@ -3,7 +3,7 @@ defmodule OperatelyWeb.PageHTML do
 
   embed_templates "page.html"
 
-  def disable_react_devtools do
+  def disable_react_devtools(assigns \\ %{}) do
     ~H"""
     <script>
       (function() {
@@ -25,15 +25,15 @@ defmodule OperatelyWeb.PageHTML do
     """  
   end
 
-  def load_js_application do
+  def load_js_application(assigns \\ %{}) do
     if Application.get_env(:operately, :app_env) == :dev do
-      dev_script_tags()
+      dev_script_tags(assigns)
     else
-      prod_script_tags()
+      prod_script_tags(assigns)
     end
   end
 
-  defp dev_script_tags do
+  defp dev_script_tags(assigns) do
     ~H"""
     <script type="module">
       import RefreshRuntime from 'http://localhost:4005/@react-refresh'
@@ -48,7 +48,7 @@ defmodule OperatelyWeb.PageHTML do
     """
   end
 
-  defp prod_script_tags do
+  defp prod_script_tags(assigns) do
     manifest = File.read!(Path.join(:code.priv_dir(:operately), "static/.vite/manifest.json")) |> Jason.decode!()
     app_js_path = manifest["assets/js/app.tsx"]["file"]
 
