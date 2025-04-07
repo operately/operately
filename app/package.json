@@ -65,17 +65,5 @@
     "test": "jest",
     "knip": "knip --no-progress",
     "prettier:check": "prettier --check js"
-  },
-  "jest": {
-    "transform": {
-      "^.+\\.(ts|tsx)$": "ts-jest"
-    },
-    "testMatch": [
-      "**/?(*.)+(test).+(ts|tsx|js)"
-    ],
-    "moduleNameMapper": {
-      "^@/ee/(.*)$": "<rootDir>/ee/assets/js/$1",
-      "^@/(.*)$": "<rootDir>/assets/js/$1"
-    }
   }
 }
