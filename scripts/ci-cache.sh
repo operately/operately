@@ -112,7 +112,7 @@ push_file_to_cache() {
 # Push files to cache
 push_to_cache() {
     local source_path=$1
-    local cache_path="${CACHE_BASE_DIR}/${2}"
+    local cache_path="${2}"
 
     if [ ! -e "$source_path" ]; then
         echo "Error: Source path '$source_path' does not exist"
@@ -152,10 +152,10 @@ pull_file_from_cache() {
     local temp_tar="/tmp/cache_archive_$$.tar.gz"
 
     echo "Downloading cached file..."
-    scp ${SCP_OPTIONS} "${CI_CACHE_USER}@${CI_CACHE_SERVER_IP}:${cache_path}.tar.gz" "$temp_tar"
+    scp ${SCP_OPTIONS} "${CI_CACHE_USER}@${CI_CACHE_SERVER_IP}:${cache_path}" "$temp_tar"
 
     echo "Extracting file..."
-    tar -xzf "$temp_tar" -C "$(dirname "$destination_path")"
+    cp "$temp_tar" "$destination_path"
     rm -f "$temp_tar"
 }
 
@@ -164,7 +164,7 @@ pull_from_cache() {
     # Temporarily disable exit on error for this function
     set +e
     
-    local cache_path="${CACHE_BASE_DIR}/${1}"
+    local cache_path="${1}"
     local destination_path=$2
 
     echo "Pulling '$cache_path' from cache to '$destination_path'..."
@@ -205,7 +205,7 @@ pull_from_cache() {
 #   ./ci-cache.sh save-docker-image myapp:latest /cache/myapp.tar.gz    # Cache custom app image
 save_docker_image() {
     local image_name=$1
-    local cache_path="${CACHE_BASE_DIR}/${2}"
+    local cache_path="${2}"
     local temp_file="/tmp/${image_name//\//_}.tar.gz"
 
     echo "Saving Docker image '$image_name' to cache..."
@@ -233,7 +233,7 @@ save_docker_image() {
 #   ./ci-cache.sh load-docker-image /cache/node.tar.gz      # Restore Node.js image
 #   ./ci-cache.sh load-docker-image /cache/myapp.tar.gz     # Restore custom app image
 load_docker_image() {
-    local cache_path="${CACHE_BASE_DIR}/${1}"
+    local cache_path="${1}"
     local temp_file="/tmp/docker_image_$$.tar.gz"
 
     echo "Loading Docker image from cache..."
@@ -241,7 +241,7 @@ load_docker_image() {
     # Pull from cache to temporary file
     if pull_from_cache "$cache_path" "$temp_file"; then
         echo "Loading image into Docker..."
-        gunzip -c "$temp_file" | docker load
+        docker load < "$temp_file"
         rm -f "$temp_file"
         echo "Successfully loaded Docker image"
         return 0
