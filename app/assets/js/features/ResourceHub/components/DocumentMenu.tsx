@@ -3,7 +3,7 @@ import React from "react";
 import * as Hub from "@/models/resourceHubs";
 
 import { useBoolState } from "@/hooks/useBoolState";
-import { Menu, MenuLinkItem, MenuActionItem } from "@/components/Menu";
+import { Menu, MenuLinkItem, MenuActionItem } from "turboui";
 import { Paths } from "@/routes/paths";
 import { createTestId } from "@/utils/testid";
 import { useNodesContext } from "@/features/ResourceHub";

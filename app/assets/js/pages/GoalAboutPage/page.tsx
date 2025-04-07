@@ -11,7 +11,7 @@ import RichContent from "@/components/RichContent";
 import { useLoadedData } from "./loader";
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 import { Paths } from "@/routes/paths";
-import { DivLink } from "@/components/Link";
+import { DivLink } from "turboui";
 
 export function Page() {
   const { goal } = useLoadedData();

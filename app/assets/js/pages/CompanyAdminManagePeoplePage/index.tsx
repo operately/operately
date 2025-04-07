@@ -8,9 +8,9 @@ import * as Invitations from "@/models/invitations";
 import * as Time from "@/utils/time";
 
 import { Paths } from "@/routes/paths";
-import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
-import { BlackLink } from "@/components/Link";
-import { Menu, MenuLinkItem, MenuActionItem } from "@/components/Menu";
+import { PrimaryButton, SecondaryButton } from "turboui";
+import { BlackLink } from "turboui";
+import { Menu, MenuLinkItem, MenuActionItem } from "turboui";
 import { CopyToClipboard } from "@/components/CopyToClipboard";
 
 import Avatar from "@/components/Avatar";

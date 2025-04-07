@@ -1,7 +1,7 @@
 import { createTestId } from "@/utils/testid";
 import classNames from "classnames";
 import * as React from "react";
-import { BlackLink } from "@/components/Link";
+import { BlackLink } from "turboui";
 
 export function OptionsMenuItem({ icon, title, linkTo, disabled }) {
   const testId = createTestId(title);

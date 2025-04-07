@@ -6,8 +6,8 @@ import * as TipTapEditor from "@/components/Editor";
 import * as Api from "@/api";
 
 import { FormTitleInput } from "@/components/FormTitleInput";
-import { PrimaryButton } from "@/components/Buttons";
-import { DimmedLink } from "@/components/Link";
+import { PrimaryButton } from "turboui";
+import { DimmedLink } from "turboui";
 import { Paths } from "@/routes/paths";
 import { GoalSubpageNavigation } from "@/features/goals/GoalSubpageNavigation";
 import { InlinePeopleList } from "@/components/InlinePeopleList";

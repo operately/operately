@@ -5,8 +5,8 @@ import * as Goals from "@/models/goals";
 import * as Editor from "@/components/Editor";
 
 import { Paths } from "@/routes/paths";
-import { PrimaryButton } from "@/components/Buttons";
-import { DimmedLink } from "@/components/Link";
+import { PrimaryButton } from "turboui";
+import { DimmedLink } from "turboui";
 import { useNavigate } from "react-router-dom";
 
 interface LoaderResult {

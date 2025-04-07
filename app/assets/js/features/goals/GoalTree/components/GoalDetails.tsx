@@ -10,8 +10,8 @@ import classNames from "classnames";
 import { match } from "ts-pattern";
 import { Paths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
-import { SecondaryButton } from "@/components/Buttons";
-import { DivLink } from "@/components/Link";
+import { SecondaryButton } from "turboui";
+import { DivLink } from "turboui";
 import { AvatarLink } from "@/components/Avatar";
 import { DescriptionSection, StatusSection, TargetsSection } from "@/features/goals/GoalCheckIn";
 

@@ -7,7 +7,7 @@ import { useLoadedData } from "./loader";
 import { CheckInButton } from "./CheckInButton";
 import { Paths } from "@/routes/paths";
 import { Summary } from "@/components/RichContent";
-import { DivLink } from "@/components/Link";
+import { DivLink } from "turboui";
 
 import FormattedTime from "@/components/FormattedTime";
 import Avatar from "@/components/Avatar";

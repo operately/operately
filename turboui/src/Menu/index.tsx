@@ -3,7 +3,7 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import * as Icons from "@tabler/icons-react";
 
 import classNames from "classnames";
-import { TestableElement, createTestId } from "@/utils/testid";
+import { TestableElement, createTestId } from "../TestableElement";
 import { DivLink } from "../Link";
 
 type Size = "small" | "medium" | "large" | "xlarge" | "xxlarge" | "xxxlarge";
@@ -153,7 +153,7 @@ const menuItemClass = classNames(
   "font-medium",
 );
 
-function MenuItemIconAndTitle({ icon, children }) {
+function MenuItemIconAndTitle({ icon, children } : any) {
   return (
     <>
       {icon && <div className="shrink-0">{React.createElement(icon, { size: 20 })}</div>}

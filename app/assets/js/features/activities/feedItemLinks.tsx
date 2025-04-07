@@ -2,7 +2,7 @@ import * as React from "react";
 import * as People from "@/models/people";
 
 import { Paths } from "@/routes/paths";
-import { Link } from "@/components/Link";
+import { Link } from "turboui";
 
 import * as api from "@/api";
 

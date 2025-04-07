@@ -11,7 +11,7 @@ import { Paths } from "@/routes/paths";
 import { ActivityHandler } from "../interfaces";
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 import { feedTitle, goalLink } from "../feedItemLinks";
-import { Link } from "@/components/Link";
+import { Link } from "turboui";
 
 const GoalClosing: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {

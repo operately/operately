@@ -2,7 +2,7 @@ import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
-import { BlackLink, DimmedLink, Link } from "@/components/Link";
+import { BlackLink, DimmedLink, Link } from "turboui";
 
 export const loader = Pages.emptyLoader;
 

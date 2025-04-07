@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { BlackLink } from "@/components/Link";
+import { BlackLink } from "turboui";
 import { WarningCallout } from "@/components/Callouts";
 import { ActiveSubitem, useLoadedData } from "./loader";
 

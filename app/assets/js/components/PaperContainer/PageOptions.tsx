@@ -2,10 +2,10 @@ import * as React from "react";
 import * as Icons from "@tabler/icons-react";
 import * as Pages from "@/components/Pages";
 
-import { DivLink } from "../Link";
+import { DivLink } from "turboui";
 import classNames from "classnames";
 import { TestableElement } from "@/utils/testid";
-import { SecondaryButton } from "../Buttons";
+import { SecondaryButton } from "turboui";
 
 type RootProps = TestableElement & { children: React.ReactNode };
 

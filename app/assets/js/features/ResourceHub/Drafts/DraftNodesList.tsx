@@ -3,7 +3,7 @@ import React from "react";
 import { ResourceHubNode } from "@/models/resourceHubs";
 
 import classNames from "classnames";
-import { DivLink } from "@/components/Link";
+import { DivLink } from "turboui";
 import { CommentsCountIndicator } from "@/features/Comments";
 import { createTestId } from "@/utils/testid";
 import { findCommentsCount, findPath, NodeType } from "@/features/ResourceHub/utils";

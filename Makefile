@@ -100,18 +100,30 @@ dev.teardown:
 # Testing tasks
 #
 
+
 test.build:
 	$(MAKE) test.init
 	$(MAKE) test.seed.env
+	$(MAKE) test.up
+	$(MAKE) test.turboui.build
+	$(MAKE) test.app.build
+	$(MAKE) test.db.create
+	$(MAKE) test.db.migrate
+
+test.up:
 	./devenv up
+
+test.turboui.build:
+	./devenv bash -c "cd turboui && npm install"
+	./devenv bash -c "cd turboui && MIX_ENV=test npm run build"
+
+test.app.build:
 	./devenv bash -c "cd app && MIX_ENV=test mix local.hex --force --if-missing"
 	./devenv bash -c "cd app && MIX_ENV=test mix deps.get"
 	./devenv bash -c "cd app && MIX_ENV=test mix compile"
 	./devenv bash -c "cd app && MIX_ENV=test npm install"
 	./devenv bash -c "cd app && MIX_ENV=test npm run build"
 	./devenv bash -c "cd app && MIX_ENV=test mix assets.deploy"
-	$(MAKE) test.db.create
-	$(MAKE) test.db.migrate
 
 test: test.init
 	@if [[ "$(FILE)" == assets/js* ]]; then \
