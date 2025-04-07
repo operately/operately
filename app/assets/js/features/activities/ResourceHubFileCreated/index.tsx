@@ -5,7 +5,7 @@ import type { Activity } from "@/models/activities";
 import type { ActivityContentResourceHubFileCreated } from "@/api";
 import type { ActivityHandler } from "../interfaces";
 import { Paths } from "@/routes/paths";
-import { Link } from "@/components/Link";
+import { Link } from "turboui";
 import { feedTitle, fileLink, resourceHubLink, spaceLink } from "../feedItemLinks";
 import { assertPresent } from "@/utils/assertions";
 

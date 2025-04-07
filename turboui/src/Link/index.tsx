@@ -1,8 +1,9 @@
 import React from "react";
-import classnames from "classnames";
+import classNames from "classnames";
 
 import * as Router from "react-router-dom";
-import classNames from "classnames";
+
+export { GhostLink } from "./GhostLink";
 
 interface Props {
   children: React.ReactNode;
@@ -34,7 +35,7 @@ interface DivLinkProps extends Props {
   external?: boolean;
 }
 
-const baseLinkClass = classnames("cursor-pointer", "transition-colors");
+const baseLinkClass = classNames("cursor-pointer", "transition-colors");
 
 function UnstyledLink(props: LinkProps) {
   return (
@@ -81,7 +82,7 @@ export function ActionLink(props: ActionLinkProps) {
 }
 
 export function DimmedLink(props: LinkProps) {
-  const className = classnames(baseLinkClass, underlineClass(props.underline), "text-content-dimmed", props.className, {
+  const className = classNames(baseLinkClass, underlineClass(props.underline), "text-content-dimmed", props.className, {
     "hover:text-content-base": !props.disableColorHoverEffect,
   });
 

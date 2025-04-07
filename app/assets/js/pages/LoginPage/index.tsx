@@ -7,7 +7,7 @@ import { OperatelyLogo } from "@/components/OperatelyLogo";
 
 import classNames from "classnames";
 import { logIn } from "@/routes/auth";
-import { Link, DimmedLink } from "@/components/Link";
+import { Link, DimmedLink } from "turboui";
 import { SignInWithGoogleButton } from "@/features/auth/Buttons";
 import { Paths } from "@/routes/paths";
 

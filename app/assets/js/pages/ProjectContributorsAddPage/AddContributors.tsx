@@ -11,7 +11,7 @@ import Forms from "@/components/Forms";
 import { Paths } from "@/routes/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { LoaderResult } from "./loader";
-import { SecondaryButton } from "@/components/Buttons";
+import { SecondaryButton } from "turboui";
 import { createTestId } from "@/utils/testid";
 
 interface ContributorFields {

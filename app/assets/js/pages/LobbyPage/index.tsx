@@ -5,7 +5,7 @@ import * as Icons from "@tabler/icons-react";
 import * as People from "@/models/people";
 
 import { OperatelyLogo } from "@/components/OperatelyLogo";
-import { DivLink, Link } from "@/components/Link";
+import { DivLink, Link } from "turboui";
 
 import classnames from "classnames";
 import { Paths } from "@/routes/paths";

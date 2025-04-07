@@ -5,7 +5,7 @@ import * as Paper from "@/components/PaperContainer";
 import * as Spaces from "@/models/spaces";
 
 import { Feed, useItemsQuery } from "@/features/Feed";
-import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
+import { PrimaryButton, SecondaryButton } from "turboui";
 
 import { useJoinSpace } from "@/models/spaces";
 import { PrivacyIndicator } from "@/features/spaces/PrivacyIndicator";

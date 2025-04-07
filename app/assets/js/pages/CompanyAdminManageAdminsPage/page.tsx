@@ -11,8 +11,8 @@ import { AddOwnersModal } from "./AddOwnersModal";
 import { AddAdminsModal } from "./AddAdminsModal";
 
 import Avatar from "@/components/Avatar";
-import { BlackLink } from "@/components/Link";
-import { SecondaryButton } from "@/components/Buttons";
+import { BlackLink } from "turboui";
+import { SecondaryButton } from "turboui";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { createTestId } from "@/utils/testid";
 

@@ -7,7 +7,7 @@ import * as Milestones from "@/models/milestones";
 import classnames from "classnames";
 import Modal from "@/components/Modal";
 
-import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
+import { PrimaryButton, SecondaryButton } from "turboui";
 import { MultiPeopleSearch } from "./MultiPeopleSearch";
 
 interface UseFormProps {

@@ -6,7 +6,7 @@ import * as Paper from "@/components/PaperContainer";
 import Forms from "@/components/Forms";
 import classNames from "classnames";
 import { OperatelyLogo } from "@/components/OperatelyLogo";
-import { ActionLink } from "@/components/Link";
+import { ActionLink } from "turboui";
 
 export const loader = Pages.emptyLoader;
 

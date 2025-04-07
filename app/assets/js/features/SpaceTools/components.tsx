@@ -1,7 +1,7 @@
 import React from "react";
 
 import classNames from "classnames";
-import { DivLink } from "@/components/Link";
+import { DivLink } from "turboui";
 
 export function Title({ title }: { title: string }) {
   return <div className="font-bold text-base text-center py-2">{title}</div>;

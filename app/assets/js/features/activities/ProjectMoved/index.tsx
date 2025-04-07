@@ -6,7 +6,7 @@ import type { ActivityContentProjectMoved } from "@/api";
 import type { ActivityHandler } from "../interfaces";
 
 import { feedTitle, projectLink } from "../feedItemLinks";
-import { Link } from "@/components/Link";
+import { Link } from "turboui";
 import { Paths } from "@/routes/paths";
 
 const ProjectMoved: ActivityHandler = {

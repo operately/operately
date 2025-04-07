@@ -2,7 +2,7 @@ import * as React from "react";
 import * as Icons from "@tabler/icons-react";
 import * as Popover from "@radix-ui/react-popover";
 
-import { DivLink } from "@/components/Link";
+import { DivLink } from "turboui";
 
 import classNames from "classnames";
 
