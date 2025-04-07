@@ -152,10 +152,10 @@ pull_file_from_cache() {
     local temp_tar="/tmp/cache_archive_$$.tar.gz"
 
     echo "Downloading cached file..."
-    scp ${SCP_OPTIONS} "${CI_CACHE_USER}@${CI_CACHE_SERVER_IP}:${cache_path}.tar.gz" "$temp_tar"
+    scp ${SCP_OPTIONS} "${CI_CACHE_USER}@${CI_CACHE_SERVER_IP}:${cache_path}" "$temp_tar"
 
     echo "Extracting file..."
-    tar -xzf "$temp_tar" -C "$(dirname "$destination_path")"
+    cp "$temp_tar" "$destination_path"
     rm -f "$temp_tar"
 }
 
@@ -241,7 +241,7 @@ load_docker_image() {
     # Pull from cache to temporary file
     if pull_from_cache "$cache_path" "$temp_file"; then
         echo "Loading image into Docker..."
-        gunzip -c "$temp_file" | docker load
+        docker load < "$temp_file"
         rm -f "$temp_file"
         echo "Successfully loaded Docker image"
         return 0
