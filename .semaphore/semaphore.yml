@@ -34,6 +34,7 @@ blocks:
           - ./scripts/ci-cache pull-dir app-deps.tar.gz app/deps
           - ./scripts/ci-cache pull-dir app-build.tar.gz app/_build
           - ./scripts/ci-cache pull-dir app-node-modules.tar.gz app/node_modules
+          - ./scripts/cache-fix-for-erlang
           - make test.build
 
       jobs:
