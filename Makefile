@@ -40,7 +40,6 @@ build.docker.dev:
 #
 
 dev.build:
-	$(MAKE) build.docker.dev
 	$(MAKE) dev.seed.env
 	./devenv up
 	./devenv bash -c "cd app && mix local.hex --force --if-missing"
@@ -107,7 +106,6 @@ dev.teardown:
 
 
 test.build:
-	$(MAKE) build.docker.dev
 	$(MAKE) test.init
 	$(MAKE) test.seed.env
 	$(MAKE) test.up

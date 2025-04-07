@@ -1,6 +1,6 @@
 services:
   app:
-    image: operately-dev:latest
+    image: operately/operately-dev:latest
     user: ${USER_ID}:${GROUP_ID}
     volumes:
       - ./:/home/dev/app
