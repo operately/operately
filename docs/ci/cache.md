@@ -28,7 +28,7 @@ The cache system supports the following operations:
 
 ```bash
 # Load Docker image cache
-./scripts/ci-cache.sh load-docker-image docker/operately-app.tar.gz
+./scripts/ci-cache.sh pull-image docker/operately-app.tar.gz
 
 # Load directory caches
 ./scripts/ci-cache.sh pull app/deps deps
@@ -40,7 +40,7 @@ The cache system supports the following operations:
 
 ```bash
 # Save Docker image
-./scripts/ci-cache.sh save-docker-image operately/operately:latest docker/operately-app.tar.gz
+./scripts/ci-cache.sh push-image operately/operately:latest docker/operately-app.tar.gz
 
 # Save directories
 ./scripts/ci-cache.sh push app/deps deps
