@@ -32,6 +32,9 @@ migrate:
 	$(MAKE) dev.db.migrate
 	$(MAKE) test.db.migrate
 
+build.docker.dev:
+	bash docker/dev/build.sh
+
 #
 # Development tasks
 #
