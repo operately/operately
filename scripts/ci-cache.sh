@@ -44,7 +44,7 @@ check_required_env() {
 }
 
 # Set up cache directory in user's home
-CACHE_BASE_DIR="~/cache"
+CACHE_BASE_DIR="/home/${CI_CACHE_USER}/cache"
 
 # Common SCP options
 SCP_OPTIONS="-i ${CI_CACHE_SSH_KEY_PATH} -P ${CI_CACHE_SERVER_PORT} -o StrictHostKeyChecking=no"
