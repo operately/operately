@@ -52,7 +52,6 @@ RUN mkdir -p app turboui
 # install mix dependencies
 COPY app/mix.exs app/mix.lock app/
 WORKDIR /src/app
-RUN ls -l
 RUN mix deps.get --only $MIX_ENV
 WORKDIR /src
 
@@ -79,6 +78,8 @@ COPY app/ee app/ee
 COPY app/package.json app/package-lock.json app/
 COPY app/tsconfig.json app/
 COPY app/vite.config.mjs app/
+COPY app/rel app/rel
+COPY app/config/runtime.exs app/config/
 
 WORKDIR /src/app
 
@@ -92,11 +93,6 @@ RUN mix assets.deploy
 
 # Compile the release
 RUN mix compile
-
-# Changes to config/runtime.exs don't require recompiling the code
-COPY app/config/runtime.exs app/config/
-
-COPY app/rel app/rel
 RUN mix release
 
 # --------------------------------------------------------------------------------------
