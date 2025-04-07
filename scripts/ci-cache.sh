@@ -148,6 +148,9 @@ pull_file_from_cache() {
 
 # Pull files from cache
 pull_from_cache() {
+    # Temporarily disable exit on error for this function
+    set +e
+    
     local cache_path="${CACHE_BASE_DIR}/${1}"
     local destination_path=$2
 
@@ -160,14 +163,25 @@ pull_from_cache() {
     if execute_remote_command "test -e \"${cache_path}\""; then
         if execute_remote_command "test -d \"${cache_path}\""; then
             pull_directory_from_cache "$cache_path" "$destination_path"
+            local pull_status=$?
         else
             pull_file_from_cache "$cache_path" "$destination_path"
+            local pull_status=$?
         fi
-        echo "Successfully pulled from cache"
-        return 0
+        
+        if [ $pull_status -eq 0 ]; then
+            echo "Successfully pulled from cache"
+            set -e  # Re-enable exit on error
+            return 0
+        else
+            echo "Error: Failed to pull from cache"
+            set -e  # Re-enable exit on error
+            return 1
+        fi
     else
         echo "Cache miss: Path '${cache_path}' not found in cache"
-        return 1
+        set -e  # Re-enable exit on error
+        return 0  # Return success on cache miss
     fi
 }
 
