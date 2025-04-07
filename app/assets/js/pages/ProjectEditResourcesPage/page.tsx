@@ -7,7 +7,7 @@ import * as KeyResources from "@/models/keyResources";
 
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
 import { ResourceIcon } from "@/components/KeyResourceIcon";
-import { Link, ButtonLink, DivLink } from "@/components/Link";
+import { Link, ButtonLink, DivLink } from "turboui";
 
 import { createTestId } from "@/utils/testid";
 import { useLoadedData } from "./loader";

@@ -4,11 +4,11 @@ import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as Spaces from "@/models/spaces";
 
-import { PrimaryButton, GhostButton } from "@/components/Buttons";
+import { PrimaryButton, GhostButton } from "turboui";
 import { Form, useForm, FormState } from "@/features/DiscussionForm";
 import { Paths } from "@/routes/paths";
 import { SubscribersSelector } from "@/features/Subscriptions";
-import { Link } from "@/components/Link";
+import { Link } from "turboui";
 
 interface LoaderResult {
   space: Spaces.Space;

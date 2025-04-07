@@ -6,7 +6,7 @@ import Avatar from "@/components/Avatar";
 import classNames from "classnames";
 import FormattedTime from "@/components/FormattedTime";
 
-import { Link } from "@/components/Link";
+import { Link } from "turboui";
 import { Paths } from "@/routes/paths";
 import { MiniPieChart } from "@/components/charts/MiniPieChart";
 import { MilestoneIcon } from "@/components/MilestoneIcon";

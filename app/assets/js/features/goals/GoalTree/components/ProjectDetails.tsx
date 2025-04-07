@@ -9,7 +9,7 @@ import { Project, sortContributorsByRole } from "@/models/projects";
 import { StatusSection } from "@/features/projectCheckIns/StatusSection";
 import { DescriptionSection } from "@/features/projectCheckIns/DescriptionSection";
 import { MilestoneIcon } from "@/components/MilestoneIcon";
-import { DivLink } from "@/components/Link";
+import { DivLink } from "turboui";
 import { assertPresent } from "@/utils/assertions";
 import { truncateString } from "@/utils/strings";
 import { Paths } from "@/routes/paths";

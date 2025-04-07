@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { DivLink } from "@/components/Link";
+import { DivLink } from "turboui";
 import { Node, ProjectNode } from "../tree";
 
 import classNames from "classnames";

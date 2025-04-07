@@ -3,7 +3,7 @@ import React from "react";
 import Forms from "@/components/Forms";
 import { useIsViewMode } from "@/components/Pages";
 import RichContent, { countCharacters, shortenContent } from "@/components/RichContent";
-import { ActionLink } from "@/components/Link";
+import { ActionLink } from "turboui";
 
 import { useLoadedData } from "./loader";
 

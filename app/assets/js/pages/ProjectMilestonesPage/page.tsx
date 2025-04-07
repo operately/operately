@@ -5,12 +5,12 @@ import * as Milestones from "@/models/milestones";
 import * as Pages from "@/components/Pages";
 import * as Time from "@/utils/time";
 
-import { GhostButton } from "@/components/Buttons";
+import { GhostButton } from "turboui";
 import FormattedTime from "@/components/FormattedTime";
 
 import { useLoadedData } from "./loader";
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
-import { Link } from "@/components/Link";
+import { Link } from "turboui";
 import { MilestoneIcon } from "@/components/MilestoneIcon";
 import { Paths } from "@/routes/paths";
 

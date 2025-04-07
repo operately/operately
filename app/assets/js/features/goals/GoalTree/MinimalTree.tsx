@@ -10,7 +10,7 @@ import { useIsDarkMode } from "@/contexts/ThemeContext";
 
 import { TreeContextProvider, TreeContextProviderProps, useTreeContext } from "./treeContext";
 import { Node, GoalNode, ProjectNode } from "./tree";
-import { BlackLink } from "@/components/Link";
+import { BlackLink } from "turboui";
 
 export function MinimalTree(props: TreeContextProviderProps) {
   return (
