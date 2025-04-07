@@ -155,13 +155,14 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdateTest do
       id: update_id,
       include_goal_targets: true,
       include_author: true,
+      include_permissions: true,
     })
 
     assert update.id == update_id
     assert update.author
     assert update.goal
-    assert update.goal.permissions
     assert update.goal.targets
+    assert update.permissions
   end
 
   defp forbidden_request(conn, update_id) do
