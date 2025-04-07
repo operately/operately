@@ -4,7 +4,7 @@
 # Required environment variables:
 # - CI_CACHE_SERVER_IP: IP address of the cache server
 # - CI_CACHE_SERVER_PORT: SSH port of the cache server
-# - CI_CACHE_SSH_KEY: Path to the SSH private key for authentication
+# - CI_CACHE_SSH_KEY_PATH: Path to the SSH private key file for authentication
 # - CI_CACHE_USER: Username for SSH connection
 
 set -e
@@ -23,8 +23,13 @@ check_required_env() {
         missing_vars=true
     fi
 
-    if [ -z "${CI_CACHE_SSH_KEY}" ]; then
-        echo "Error: CI_CACHE_SSH_KEY environment variable is not set"
+    if [ -z "${CI_CACHE_SSH_KEY_PATH}" ]; then
+        echo "Error: CI_CACHE_SSH_KEY_PATH environment variable is not set"
+        missing_vars=true
+    fi
+
+    if [ ! -f "${CI_CACHE_SSH_KEY_PATH}" ]; then
+        echo "Error: SSH key file specified by CI_CACHE_SSH_KEY_PATH does not exist"
         missing_vars=true
     fi
 
@@ -42,12 +47,18 @@ check_required_env() {
 CACHE_BASE_DIR="~/cache"
 
 # Common SCP options
-SCP_OPTIONS="-i ${CI_CACHE_SSH_KEY} -P ${CI_CACHE_SERVER_PORT} -o StrictHostKeyChecking=no"
+SCP_OPTIONS="-i ${CI_CACHE_SSH_KEY_PATH} -P ${CI_CACHE_SERVER_PORT} -o StrictHostKeyChecking=no"
+
+# Ensure SSH key has correct permissions
+ensure_ssh_key_permissions() {
+    chmod 600 "${CI_CACHE_SSH_KEY_PATH}"
+}
 
 # Execute command on remote server via SSH
 execute_remote_command() {
     local command=$1
-    ssh -i "${CI_CACHE_SSH_KEY}" -p "${CI_CACHE_SERVER_PORT}" -o StrictHostKeyChecking=no \
+    ensure_ssh_key_permissions
+    ssh -i "${CI_CACHE_SSH_KEY_PATH}" -p "${CI_CACHE_SERVER_PORT}" -o StrictHostKeyChecking=no \
         "${CI_CACHE_USER}@${CI_CACHE_SERVER_IP}" "$command"
 }
 
@@ -118,7 +129,7 @@ pull_directory_from_cache() {
     local temp_tar="/tmp/cache_archive_$$.tar.gz"
 
     echo "Creating remote tar archive..."
-    ssh -i "${CI_CACHE_SSH_KEY}" -p "${CI_CACHE_SERVER_PORT}" -o StrictHostKeyChecking=no \
+    ssh -i "${CI_CACHE_SSH_KEY_PATH}" -p "${CI_CACHE_SERVER_PORT}" -o StrictHostKeyChecking=no \
         "${CI_CACHE_USER}@${CI_CACHE_SERVER_IP}" \
         "cd \"$(dirname ${cache_path})\"; tar -czf - \"$(basename ${cache_path})\"" > "$temp_tar"
     
