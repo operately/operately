@@ -11,6 +11,7 @@ defmodule Operately.Operations.CommentAddingTest do
   alias Operately.Support.{Factory, RichText}
   alias Operately.Access.Binding
   alias Operately.Operations.{GoalCheckIn, ProjectCheckIn, CommentAdding, ProjectClosed, ResourceHubDocumentCreating}
+  alias Operately.Goals.Timeframe
 
   setup ctx do
     ctx
@@ -145,6 +146,7 @@ defmodule Operately.Operations.CommentAddingTest do
         send_to_everyone: true,
         subscriber_ids: [],
         subscription_parent_type: :goal_update,
+        timeframe: Timeframe.current_year()
       })
       update = Repo.preload(update, :goal)
 
@@ -177,6 +179,7 @@ defmodule Operately.Operations.CommentAddingTest do
         send_to_everyone: false,
         subscriber_ids: [ctx.reviewer.id, ctx.champion.id],
         subscription_parent_type: :goal_update,
+        timeframe: Timeframe.current_year()
       })
       update = Repo.preload(update, :goal)
 
@@ -208,6 +211,7 @@ defmodule Operately.Operations.CommentAddingTest do
         send_to_everyone: false,
         subscriber_ids: [],
         subscription_parent_type: :goal_update,
+        timeframe: Timeframe.current_year()
       })
       update = Repo.preload(update, :goal)
 
