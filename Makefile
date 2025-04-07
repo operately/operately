@@ -84,6 +84,7 @@ dev.run.script:
 
 dev.seed.env:
 	touch .env
+	mkdir -p tmp/certs
 	grep "OPERATELY_BLOB_TOKEN_SECRET_KEY" .env || echo "OPERATELY_BLOB_TOKEN_SECRET_KEY=$$(openssl rand -base64 32)" >> .env
 	grep "ALLOW_LOGIN_WITH_EMAIL" .env || printf "\nALLOW_LOGIN_WITH_EMAIL=yes\n" >> .env
 	grep "ALLOW_SIGNUP_WITH_EMAIL" .env || echo "ALLOW_SIGNUP_WITH_EMAIL=yes" >> .env
