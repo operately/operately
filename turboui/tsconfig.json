@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "es2020",
-    "module": "esnext",  // Use ESM format
+    "module": "esnext", // Use ESM format
     "lib": ["dom", "dom.iterable", "esnext"],
     "jsx": "react-jsx",
     "declaration": true,
@@ -12,7 +12,15 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "baseUrl": ".",
+    "paths": {
+      "*": ["../app/node_modules/*"],
+      "react": ["../app/node_modules/react", "../app/node_modules/@types/react"],
+      "react/*": ["../app/node_modules/react/*", "../app/node_modules/@types/react/*"]
+    },
+    "typeRoots": ["../app/node_modules/@types"],
+    "allowSyntheticDefaultImports": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]

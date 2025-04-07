@@ -1,0 +1,18 @@
+{
+  "transform": {
+    "^.+\\.(ts|tsx)$": ["ts-jest", { "tsconfig": "tsconfig.json", "isolatedModules": true }]
+  },
+  "testMatch": [
+    "**/?(*.)+(test).+(ts|tsx|js)"
+  ],
+  "modulePaths": [
+    "<rootDir>/node_modules"
+  ],
+  "moduleNameMapper": {
+    "^react$": "<rootDir>/node_modules/react",
+    "^@types/react$": "<rootDir>/node_modules/@types/react",
+    "^turboui$": "<rootDir>/../turboui/src",
+    "^@/ee/(.*)$": "<rootDir>/ee/assets/js/$1",
+    "^@/(.*)$": "<rootDir>/assets/js/$1"
+  }
+}
