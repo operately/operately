@@ -2,88 +2,59 @@
 
 The CI cache management system provides efficient caching capabilities for CI/CD pipelines through SCP operations. It supports caching files, directories, and Docker images to speed up build times and reduce resource usage.
 
-## Setup Requirements
+## Usage in CI Pipeline
 
-The system requires the following environment variables to be set:
+Our CI pipeline utilizes caching for several key components:
 
-- `CI_CACHE_SERVER_IP`: IP address of the cache server
-- `CI_CACHE_SERVER_PORT`: SSH port of the cache server
-- `CI_CACHE_SSH_KEY`: Path to the SSH private key for authentication
-- `CI_CACHE_USER`: Username for SSH connection
+### Elixir Dependencies
 
-## Basic Usage
+- `app/deps` - Compiled Elixir dependencies
+- `app/_build` - Elixir build artifacts
 
-### Caching Files and Directories
+### Frontend Dependencies
 
-```bash
-# Push local content to cache
-./scripts/ci-cache.sh push <source_path> <cache_path>
+- `app/assets/node_modules` - Node.js modules for the frontend
 
-# Pull content from cache
-./scripts/ci-cache.sh pull <cache_path> <destination_path>
-```
+### Docker Images
 
-### Common Use Cases
+- Docker images are cached using `docker save` and compressed with gzip
+- Cached at `docker/operately-app.tar.gz`
 
-#### Caching Node Modules
+## Cache Operations
 
-```bash
-# Cache node_modules directory
-./scripts/ci-cache.sh push ./node_modules node_modules
-./scripts/ci-cache.sh pull node_modules ./node_modules
+The cache system supports the following operations:
 
-# Cache multiple project dependencies
-./scripts/ci-cache.sh push ./app/node_modules app/node_modules
-./scripts/ci-cache.sh push ./design/node_modules design/node_modules
-```
-
-### Docker Image Caching
+### Loading Cache
 
 ```bash
-# Save Docker image to cache
-./scripts/ci-cache.sh save-docker-image postgres:15.3 /cache/postgres.tar.gz
-./scripts/ci-cache.sh save-docker-image node:18 /cache/node.tar.gz
+# Load Docker image cache
+./scripts/ci-cache.sh load-docker-image docker/operately-app.tar.gz
 
-# Load Docker image from cache
-./scripts/ci-cache.sh load-docker-image /cache/postgres.tar.gz
-./scripts/ci-cache.sh load-docker-image /cache/node.tar.gz
+# Load directory caches
+./scripts/ci-cache.sh pull app/deps deps
+./scripts/ci-cache.sh pull app/_build build
+./scripts/ci-cache.sh pull app/assets/node_modules app/assets/node_modules
 ```
 
-## Best Practices
+### Saving to Cache
 
-1. **Cache Key Strategy**
+```bash
+# Save Docker image
+./scripts/ci-cache.sh save-docker-image operately/operately:latest docker/operately-app.tar.gz
 
-   - Use consistent and meaningful cache paths
-   - Include version information in cache paths when relevant
-   - Consider including hash of lock files for dependency caching
+# Save directories
+./scripts/ci-cache.sh push app/deps deps
+./scripts/ci-cache.sh push app/_build build
+./scripts/ci-cache.sh push app/assets/node_modules app/assets/node_modules
+```
 
-2. **Cache Invalidation**
+## Cache Invalidation
 
-   - Cache paths are overwritten when pushing new content
-   - Consider using different cache paths when dependencies change significantly
+The cache is automatically invalidated when:
 
-3. **Large Files**
-   - Docker images are automatically compressed when cached
-   - For large directories, consider splitting into smaller, logical units
-
-## Troubleshooting
-
-1. **Cache Miss**
-
-   - Verify cache path exists on the server
-   - Check environment variables are correctly set
-   - Ensure SSH key has proper permissions
-
-2. **Permission Issues**
-
-   - Verify SSH key permissions (should be 600)
-   - Check user permissions on cache server
-   - Ensure cache directory exists and is writable
-
-3. **Network Issues**
-   - Verify connectivity to cache server
-   - Check if SSH port is accessible
-   - Ensure firewall rules allow SSH connections
+- Dependencies are updated (package.json, mix.exs changes)
+- Build configuration changes
+- New Docker base images are used
 
 ## Implementation Details
 
@@ -91,3 +62,21 @@ The system requires the following environment variables to be set:
 - Directories are automatically tar-gzipped during transfer
 - Docker images are saved and compressed using `docker save | gzip`
 - All operations are atomic to prevent partial cache updates
+
+## Environment Setup
+
+The cache system requires the following environment variables:
+
+- `CI_CACHE_SERVER_IP` - IP address of the cache server
+- `CI_CACHE_SERVER_PORT` - SSH port of the cache server
+- `CI_CACHE_SSH_KEY_PATH` - Path to the SSH private key file for authentication
+- `CI_CACHE_USER` - Username for SSH connection
+
+Note: Igor maintains the SSH keys on Semaphore. Contact him for any key-related issues or access requests.
+
+## Best Practices
+
+1. Always use relative paths when specifying cache locations
+2. Verify cache hits/misses in CI logs
+3. Keep cache sizes manageable by only caching necessary files
+4. Use appropriate cache keys for different branches/environments

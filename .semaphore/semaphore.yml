@@ -25,14 +25,15 @@ blocks:
       when: "change_in('/app', {default_branch: 'main'}) or change_in('/turboui', {default_branch: 'main'})"
     dependencies: []
     task:
+      secrets:
+        - name: ci-cache-credentials
       prologue:
         commands:
           - checkout
-          # - cache restore operately.tar  # cached docker image
-          # - cache restore mix_deps       # cached mix dependencies in deps/
-          # - cache restore mix_build      # cached mix build in _build/
-          # - cache restore node_modules   # cached node packages in assets/node_modules
-          # - docker load -i operately.tar
+          - ./scripts/ci-cache.sh load-docker-image docker/operately-app.tar.gz
+          - ./scripts/ci-cache.sh pull app/deps deps
+          - ./scripts/ci-cache.sh pull app/_build build
+          - ./scripts/ci-cache.sh pull app/assets/node_modules app/assets/node_modules
           - make test.build
 
       jobs:
@@ -58,7 +59,7 @@ blocks:
       epilogue:
         always:
           commands:
-            - '[ -f app/testreports/junit.xml ] && test-results publish app/testreports/junit.xml'
+            - "[ -f app/testreports/junit.xml ] && test-results publish app/testreports/junit.xml"
             - artifact push workflow screenshots
 
   - name: Docker Build
