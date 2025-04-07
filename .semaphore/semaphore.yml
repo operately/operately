@@ -46,7 +46,7 @@ blocks:
 
         - name: Unit Tests
           commands:
-            - make test.mix.unit || true # temp disable unit tests
+            - make test.mix.unit
             - make test.ee
             - make test.npm || true # temp disable unit tests
 

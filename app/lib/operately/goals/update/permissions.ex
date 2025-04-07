@@ -1,4 +1,5 @@
 defmodule Operately.Goals.Update.Permissions do
+  import Ecto.Query, only: [from: 2]
   alias Operately.Access.Binding
   alias Operately.Goals.Update
 
@@ -25,8 +26,8 @@ defmodule Operately.Goals.Update.Permissions do
   def can_delete(access_level), do: access_level >= Binding.edit_access()
   def can_comment(access_level), do: access_level >= Binding.comment_access()
 
-  def can_acknowledge(%Update{} = update, user_id) when is_binary(user_id) do
-    update = Operately.Repo.preload(update, :goal)
+  def can_acknowledge(update, user_id) when is_binary(user_id) do
+    update = preload_goal_and_update(update)
     goal = update.goal
 
     cond do
@@ -52,5 +53,18 @@ defmodule Operately.Goals.Update.Permissions do
       false -> {:error, :unauthorized}
       nil -> raise "Unknown permission: #{permission}"
     end
+  end
+
+  #
+  # Helpers
+  #
+
+  defp preload_goal_and_update(update = %Update{}) do
+    Operately.Repo.preload(update, :goal)
+  end
+
+  defp preload_goal_and_update(update_id) when is_binary(update_id) do
+    from(u in Update, join: g in assoc(u, :goal), preload: [goal: g], where: u.id == ^update_id)
+    |> Operately.Repo.one()
   end
 end
