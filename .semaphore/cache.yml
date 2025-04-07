@@ -18,4 +18,4 @@ blocks:
             - ./scripts/ci-cache push-dir app/deps app-deps.tar.gz
             - ./scripts/ci-cache push-dir app/_build app-build.tar.gz
             - ./scripts/ci-cache push-dir app/node_modules app-node-modules.tar.gz
-            - ./scripts/ci-cache push-image operately-app:latest docker-operately-app.tar.gz
+            - ./scripts/ci-cache push-image operately-dev:latest docker-operately-dev.tar.gz
