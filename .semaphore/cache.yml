@@ -10,17 +10,12 @@ blocks:
     task:
       secrets:
         - name: ci-cache-credentials
-      prologue:
-        commands:
-          - checkout
-          - chmod 600 /home/semaphore/.ssh/cache_key
       jobs:
         - name: "Populate CI Cache"
           commands:
+            - checkout
             - make test.build
-            # Cache Docker images
-            - ./scripts/ci-cache.sh save-docker-image operately-app:latest docker/operately-app.tar.gz
-            # Cache dependencies
-            - ./scripts/ci-cache.sh push app/deps deps
-            - ./scripts/ci-cache.sh push app/_build build
-            - ./scripts/ci-cache.sh push app/assets/node_modules app/assets/node_modules
+            - ./scripts/ci-cache.sh push cache/app/deps deps
+            - ./scripts/ci-cache.sh push cache/app/_build build
+            - ./scripts/ci-cache.sh push cache/app/node_modules app/node_modules
+            - ./scripts/ci-cache.sh save-docker-image operately-app:latest cache/docker/operately-app.tar.gz
