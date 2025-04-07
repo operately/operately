@@ -48,7 +48,7 @@ blocks:
           commands:
             - make test.mix.unit
             - make test.ee
-            - make test.npm || true # temp disable unit tests
+            - make test.npm
 
         - name: Features
           parallelism: 6
