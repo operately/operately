@@ -1,0 +1,182 @@
+#!/usr/bin/env node
+
+const { execSync } = require("child_process");
+const fs = require("fs");
+const path = require("path");
+
+function exec(command, options = {}) {
+  try {
+    execSync(command, { stdio: "inherit" });
+    return true;
+  } catch (error) {
+    fail(`Error executing command`);
+  }
+}
+
+function fail(message) {
+  console.error(message);
+  process.exit(1);
+}
+
+function checkRequiredEnv() {
+  const requiredVars = [
+    "CI_CACHE_SERVER_IP",
+    "CI_CACHE_SERVER_PORT",
+    "CI_CACHE_SSH_KEY_PATH",
+    "CI_CACHE_USER",
+  ];
+
+  requiredVars.forEach((varName) => {
+    if (!process.env[varName]) {
+      fail(`Error: ${varName} environment variable is not set`);
+    }
+  });
+}
+
+function checkSSHKey() {
+  const sshKeyPath = process.env.CI_CACHE_SSH_KEY_PATH;
+
+  if (!fs.existsSync(sshKeyPath)) {
+    fail(`Error: SSH key file does not exist at ${sshKeyPath}`);
+  }
+
+  exec(`chmod 600 ${sshKeyPath}`);
+}
+
+// 
+// Utils
+//
+function isDir(source) {
+  return fs.existsSync(source) && fs.lstatSync(source).isDirectory();
+}
+
+function deleteFile(filePath) {
+  try {
+    fs.unlinkSync(filePath);
+  } catch (err) {
+    console.error(`Error deleting temporary file: ${err}`);
+  }
+}
+
+//
+// Pushes a file or directory to the cache server
+//
+
+function pushDir(source, destination) {
+  if(!destination.endsWith(".tar.gz")) {
+    fail(`Error: Destination must end with .tar.gz`);
+  }
+
+  try {
+    console.log(`Zipping ${source} into /tmp/${destination}`);
+    exec(`tar -czf /tmp/${destination} ${source}`);
+    pushFile(`/tmp/${destination}`, destination);
+  } finally {
+    deleteFile(`/tmp/${destination}`);
+  }
+}
+
+function pushFile(source, destination) {
+  const sshKeyPath = process.env.CI_CACHE_SSH_KEY_PATH;
+  const serverIp = process.env.CI_CACHE_SERVER_IP;
+  const serverPort = process.env.CI_CACHE_SERVER_PORT;
+  const user = process.env.CI_CACHE_USER;
+
+  console.log(`Pushing file ${source} to ${destination}`);
+  exec(`scp -o StrictHostKeyChecking=no -i ${sshKeyPath} -P ${serverPort} ${source} ${user}@${serverIp}:${destination}`);
+}
+
+//
+// Pulls a file or directory from the cache server
+//
+
+function pullDir(source, destination) {
+  if(!source.endsWith(".tar.gz")) {
+    fail(`Error: Source must end with .tar.gz`);
+  }
+
+  const sshKeyPath = process.env.CI_CACHE_SSH_KEY_PATH;
+  const serverIp = process.env.CI_CACHE_SERVER_IP;
+  const serverPort = process.env.CI_CACHE_SERVER_PORT;
+  const user = process.env.CI_CACHE_USER;
+
+  try {
+    console.log(`Pulling file ${source} to /tmp/${source}`);
+    exec(`scp -o StrictHostKeyChecking=no -i ${sshKeyPath} -P ${serverPort} ${user}@${serverIp}:${source} /tmp/${source}`);
+
+    console.log(`Creating directory ${destination}`);
+    exec(`mkdir -p ${destination}`);
+
+    console.log(`Unzipping /tmp/${source} into ${destination}`);
+    exec(`tar -xzf /tmp/${source} -C ${destination}`);
+  } finally {
+    deleteFile(`/tmp/${source}`);
+  }
+}
+
+function pushImage(image, destination) {
+  const sshKeyPath = process.env.CI_CACHE_SSH_KEY_PATH;
+  const serverIp = process.env.CI_CACHE_SERVER_IP;
+  const serverPort = process.env.CI_CACHE_SERVER_PORT;
+  const user = process.env.CI_CACHE_USER;
+
+  if(!destination.endsWith(".tar.gz")) {
+    fail(`Error: Destination must not end with .tar.gz`);
+  }
+
+  const tmp = path.join("/tmp", image);
+
+  console.log(`Saving image ${image} to ${tmp}.tar`);
+  exec(`docker save -o ${tmp}.tar ${image}`);
+
+  console.log(`Zipping image ${tmp}.tar into /tmp/docker-${image}.tar.gz`);
+  exec(`gzip -f ${tmp}.tar`);
+
+  console.log(`Pushing image ${tmp}.tar.gz to ${destination}`);
+  exec(`scp -o StrictHostKeyChecking=no -i ${sshKeyPath} -P ${serverPort} ${tmp}.tar.gz ${user}@${serverIp}:${destination}`);
+}
+
+function pullImage(source) {
+  const sshKeyPath = process.env.CI_CACHE_SSH_KEY_PATH;
+  const serverIp = process.env.CI_CACHE_SERVER_IP;
+  const serverPort = process.env.CI_CACHE_SERVER_PORT;
+  const user = process.env.CI_CACHE_USER;
+
+  try {
+    const tmpPath = path.join("/tmp", source);
+
+    console.log(`Pulling image from ${source}`);
+    exec(`scp -o StrictHostKeyChecking=no -i ${sshKeyPath} -P ${serverPort} ${user}@${serverIp}:${source} /tmp/${source}`);
+
+    console.log(`Unzipping image from /tmp/${source}`);
+    exec(`gunzip -f /tmp/${source}`);
+
+    console.log(`Loading image from /tmp/${source}.tar`);
+    exec(`docker load -i /tmp/${source.replace(".tar.gz", ".tar")}`);
+  } finally {
+    deleteFile(`/tmp/${source.replace(".tar.gz", ".tar")}`);
+  }
+}
+
+function main() {
+  checkRequiredEnv();
+  checkSSHKey();
+
+  if (process.argv[2] === "push-dir") {
+    return pushDir(process.argv[3], process.argv[4]);
+  }
+
+  if (process.argv[2] === "pull-dir") {
+    return pullDir(process.argv[3], process.argv[4]);
+  }
+
+  if (process.argv[2] === "push-image") {
+    return pushImage(process.argv[3], process.argv[4]);
+  }
+
+  if (process.argv[2] === "pull-image") {
+    return pullImage(process.argv[3], process.argv[4]);
+  }
+}
+
+main();
