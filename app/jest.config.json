@@ -1,0 +1,16 @@
+{
+  "transform": {
+    "^.+\\.(ts|tsx)$": ["ts-jest", { "tsconfig": "tsconfig.json", "isolatedModules": true }]
+  },
+  "testMatch": [
+    "**/?(*.)+(test).+(ts|tsx|js)"
+  ],
+  "modulePaths": [
+    "<rootDir>/node_modules"
+  ],
+  "moduleNameMapper": {
+    "^turboui$": "<rootDir>/../turboui/src",
+    "^@/ee/(.*)$": "<rootDir>/ee/assets/js/$1",
+    "^@/(.*)$": "<rootDir>/assets/js/$1"
+  }
+}
