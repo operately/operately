@@ -15,7 +15,7 @@ blocks:
           commands:
             - checkout
             - make test.build
-            - ./scripts/ci-cache.sh push app/deps app/deps
-            - ./scripts/ci-cache.sh push app/_build app/_build
-            - ./scripts/ci-cache.sh push app/node_modules app/node_modules
-            - ./scripts/ci-cache.sh save-docker-image operately-app:latest docker/operately-app.tar.gz
+            - ./scripts/ci-cache push-dir app/deps app-deps.tar.gz
+            - ./scripts/ci-cache push-dir app/_build app-build.tar.gz
+            - ./scripts/ci-cache push-dir app/node_modules app-node-modules.tar.gz
+            - ./scripts/ci-cache push-image operately-app:latest docker-operately-app.tar.gz
