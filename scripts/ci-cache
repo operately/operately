@@ -33,6 +33,16 @@ function checkRequiredEnv() {
   });
 }
 
+function checkSSHKey() {
+  const sshKeyPath = process.env.CI_CACHE_SSH_KEY_PATH;
+
+  if (!fs.existsSync(sshKeyPath)) {
+    fail(`Error: SSH key file does not exist at ${sshKeyPath}`);
+  }
+
+  exec(`chmod 600 ${sshKeyPath}`);
+}
+
 // 
 // Utils
 //
@@ -150,6 +160,7 @@ function pullImage(source) {
 
 function main() {
   checkRequiredEnv();
+  checkSSHKey();
 
   if (process.argv[2] === "push-dir") {
     return pushDir(process.argv[3], process.argv[4]);
