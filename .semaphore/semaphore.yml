@@ -20,7 +20,9 @@ blocks:
             - make test.build
             - make test.license.check
 
-  - name: Tests
+  - name: App Tests
+    run:
+      when: 'change_in("/app", {default_branch: "main"}) or change_in("/turboui", {default_branch: "main"})'
     dependencies: []
     task:
       prologue:
