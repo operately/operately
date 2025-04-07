@@ -67,7 +67,7 @@ fi
 if [ "$FIRST_ARG" = "shell" ]; then
   docker compose exec app bash
 elif [ "$FIRST_ARG" = "up" ]; then
-  docker compose --profile ${PROFILE} up -d --force-recreate --build
+  docker compose --profile ${PROFILE} up -d --build
 elif [ "$FIRST_ARG" = "stop" ]; then
   docker compose --profile ${PROFILE} stop
 elif [ "$FIRST_ARG" = "down" ]; then
