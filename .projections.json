@@ -1,22 +1,22 @@
 {
-  "test/features/*_test.exs": {
+  "app/test/features/*_test.exs": {
     "type": "test",
-    "alternate": "test/support/features/{}_steps.ex",
-    "template": ["# test/{}_test.exs", "defmodule XXX do", "end"]
+    "alternate": "app/test/support/features/{}_steps.ex",
+    "template": ["# app/test/{}_test.exs", "defmodule XXX do", "end"]
   },
-  "test/support/features/*_steps.ex": {
+  "app/test/support/features/*_steps.ex": {
     "type": "test",
-    "alternate": "test/features/{}_test.exs",
-    "template": ["# test/{}_test.exs", "defmodule XXX do", "end"]
+    "alternate": "app/test/features/{}_test.exs",
+    "template": ["# app/test/{}_test.exs", "defmodule XXX do", "end"]
   },
-  "lib/*.ex": {
+  "app/lib/*.ex": {
     "type": "src",
-    "alternate": "test/{}_test.exs",
-    "template": ["# lib/{}.ex", "defmodule XXX do", "end"]
+    "alternate": "app/test/{}_test.exs",
+    "template": ["# app/lib/{}.ex", "defmodule XXX do", "end"]
   },
-  "test/*_test.exs": {
+  "app/test/*_test.exs": {
     "type": "test",
-    "alternate": "lib/{}.ex",
-    "template": ["# test/{}_test.exs", "defmodule XXX do", "end"]
+    "alternate": "app/lib/{}.ex",
+    "template": ["# app/test/{}_test.exs", "defmodule XXX do", "end"]
   }
 }
