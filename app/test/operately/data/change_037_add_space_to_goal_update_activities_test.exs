@@ -4,6 +4,7 @@ defmodule Operately.Data.Change037AddSpaceToGoalUpdateActivitiesTest do
 
   alias Operately.Repo
   alias Operately.Support.RichText
+  alias Operately.Goals.Timeframe
 
   setup ctx do
     ctx
@@ -29,6 +30,7 @@ defmodule Operately.Data.Change037AddSpaceToGoalUpdateActivitiesTest do
           send_to_everyone: false,
           subscription_parent_type: :goal_update,
           subscriber_ids: [],
+          timeframe: Timeframe.current_year()
         })
         update = Repo.preload(update, :goal)
         {:ok, _} = Operately.Operations.GoalUpdateAcknowledging.run(ctx.creator, update)

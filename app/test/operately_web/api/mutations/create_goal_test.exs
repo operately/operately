@@ -2,7 +2,6 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoalTest do
   use OperatelyWeb.TurboCase
 
   import Operately.GroupsFixtures
-  import Operately.GoalsFixtures, only: [current_quarter: 0]
 
   alias Operately.Access
   alias Operately.Access.Binding

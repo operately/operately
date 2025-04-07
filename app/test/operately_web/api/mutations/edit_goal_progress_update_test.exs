@@ -40,9 +40,9 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalProgressUpdateTest do
       assert res.message == "The requested resource was not found"
     end
 
-    test "member without full access can't edit goal update", ctx do
+    test "member without edit access can't edit goal update", ctx do
       update = create_goal_update(ctx, [
-        company_access_level: Binding.edit_access(),
+        company_access_level: Binding.comment_access(),
         space_access_level: Binding.no_access(),
       ])
 

@@ -35,7 +35,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReaction do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:parent, fn ctx -> fetch_parent(inputs.entity_id, ctx.me, type, parent_type) end)
-    |> run(:check_permissions, fn ctx -> check_permissions(ctx.parent, type, parent_type) end)
+    |> run(:check_permissions, fn ctx -> check_permissions(ctx.parent, type, parent_type, ctx.me) end)
     |> run(:operation, fn ctx -> execute(ctx, inputs) end)
     |> run(:serialized, fn ctx -> {:ok, %{reaction: Serializer.serialize(ctx.operation, level: :essential)}} end)
     |> respond()
@@ -66,26 +66,26 @@ defmodule OperatelyWeb.Api.Mutations.AddReaction do
     end
   end
 
-  defp check_permissions(parent, type, parent_type) do
+  defp check_permissions(parent, type, parent_type, me) do
     case type do
       :project_check_in -> Projects.Permissions.check(parent.requester_access_level, :can_comment_on_check_in)
       :project_retrospective -> Projects.Permissions.check(parent.request_info.access_level, :can_comment_on_retrospective)
       :comment_thread -> Activities.Permissions.check(parent.activity.requester_access_level, :can_comment_on_thread)
       :goal_update -> Goals.Update.Permissions.check(parent.request_info.access_level, parent, parent.request_info.requester.id, :can_comment)
       :message -> Groups.Permissions.check(parent.request_info.access_level, :can_comment_on_discussions)
-      :comment -> check_comment_permissions(parent, parent_type)
+      :comment -> check_comment_permissions(parent, parent_type, me)
       :resource_hub_document -> ResourceHubs.Permissions.check(parent.request_info.access_level, :can_comment_on_document)
       :resource_hub_file -> ResourceHubs.Permissions.check(parent.request_info.access_level, :can_comment_on_file)
       :resource_hub_link -> ResourceHubs.Permissions.check(parent.request_info.access_level, :can_comment_on_link)
     end
   end
 
-  defp check_comment_permissions(parent, type) do
+  defp check_comment_permissions(parent, type, me) do
     case type do
       :project_check_in -> Projects.Permissions.check(parent.requester_access_level, :can_comment_on_check_in)
       :project_retrospective -> Projects.Permissions.check(parent.requester_access_level, :can_comment_on_retrospective)
       :comment_thread -> Activities.Permissions.check(parent.requester_access_level, :can_comment_on_thread)
-      :goal_update -> Goals.Update.Permissions.check(parent.request_info.access_level, parent, parent.request_info.requester.id, :can_comment)
+      :goal_update -> Goals.Update.Permissions.check(parent.requester_access_level, parent.entity_id, me.id, :can_comment)
       :message -> Groups.Permissions.check(parent.requester_access_level, :can_comment_on_discussions)
       :milestone -> Projects.Permissions.check(parent.requester_access_level, :can_comment_on_milestone)
       :resource_hub_document -> ResourceHubs.Permissions.check(parent.requester_access_level, :can_comment_on_document)
