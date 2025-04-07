@@ -33,7 +33,7 @@ blocks:
           - ./scripts/ci-cache pull-image docker-operately-app.tar.gz
           - ./scripts/ci-cache pull-dir app-deps.tar.gz app/deps
           - ./scripts/ci-cache pull-dir app-build.tar.gz app/_build
-          - ./scripts/ci-cache pull-dir app-node-modules.tag.gz app/node_modules
+          - ./scripts/ci-cache pull-dir app-node-modules.tar.gz app/node_modules
           - make test.build
 
       jobs:
