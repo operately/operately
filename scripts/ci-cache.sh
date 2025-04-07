@@ -96,11 +96,17 @@ push_directory_to_cache() {
 push_file_to_cache() {
     local source_path=$1
     local cache_path=$2
-    local temp_file="${cache_path}.tmp.$$"
+    local temp_tar="/tmp/cache_archive_$$.tar.gz"
+    local temp_remote_tar="${cache_path}.tar.gz.tmp.$$"
+
+    echo "Creating tar archive of file..."
+    tar -czf "$temp_tar" -C "$(dirname "$source_path")" "$(basename "$source_path")"
 
     execute_remote_command "mkdir -p \"$(dirname ${cache_path})\""
-    transfer_to_remote "${source_path}" "$temp_file"
-    execute_remote_command "mv \"${temp_file}\" \"${cache_path}\""
+    transfer_to_remote "$temp_tar" "$temp_remote_tar"
+    execute_remote_command "mv \"${temp_remote_tar}\" \"${cache_path}.tar.gz\""
+
+    rm -f "$temp_tar"
 }
 
 # Push files to cache
@@ -143,7 +149,14 @@ pull_directory_from_cache() {
 pull_file_from_cache() {
     local cache_path=$1
     local destination_path=$2
-    scp ${SCP_OPTIONS} "${CI_CACHE_USER}@${CI_CACHE_SERVER_IP}:${cache_path}" "${destination_path}"
+    local temp_tar="/tmp/cache_archive_$$.tar.gz"
+
+    echo "Downloading cached file..."
+    scp ${SCP_OPTIONS} "${CI_CACHE_USER}@${CI_CACHE_SERVER_IP}:${cache_path}.tar.gz" "$temp_tar"
+
+    echo "Extracting file..."
+    tar -xzf "$temp_tar" -C "$(dirname "$destination_path")"
+    rm -f "$temp_tar"
 }
 
 # Pull files from cache
@@ -160,7 +173,7 @@ pull_from_cache() {
     mkdir -p "$(dirname "${destination_path}")"
 
     # Check if remote path exists
-    if execute_remote_command "test -e \"${cache_path}\""; then
+    if execute_remote_command "test -e \"${cache_path}.tar.gz\""; then
         if execute_remote_command "test -d \"${cache_path}\""; then
             pull_directory_from_cache "$cache_path" "$destination_path"
             local pull_status=$?
