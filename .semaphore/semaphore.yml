@@ -13,11 +13,21 @@ blocks:
   - name: License Check
     dependencies: []
     task:
+      secrets:
+        - name: ci-cache-credentials
+      prologue:
+        commands:
+          - checkout
+          - cache restore app-deps
+          - cache restore app-build
+          - cache restore app-node-modules
+          - cache restore turboui-node-modules
+          - cache restore turboui-dist
+          - ./scripts/cache-fix-for-erlang
+          - make test.up
       jobs:
         - name: Licence Check
           commands:
-            - checkout
-            - make test.build
             - make test.license.check
 
   - name: App Tests
@@ -25,14 +35,17 @@ blocks:
       when: "change_in('/app', {default_branch: 'main'}) or change_in('/turboui', {default_branch: 'main'})"
     dependencies: []
     task:
+      secrets:
+        - name: ci-cache-credentials
       prologue:
         commands:
           - checkout
-          # - cache restore operately.tar  # cached docker image
-          # - cache restore mix_deps       # cached mix dependencies in deps/
-          # - cache restore mix_build      # cached mix build in _build/
-          # - cache restore node_modules   # cached node packages in assets/node_modules
-          # - docker load -i operately.tar
+          - cache restore app-deps
+          - cache restore app-build
+          - cache restore app-node-modules
+          - cache restore turboui-node-modules
+          - cache restore turboui-dist
+          - ./scripts/cache-fix-for-erlang
           - make test.build
 
       jobs:
@@ -51,14 +64,14 @@ blocks:
             - make test.npm
 
         - name: Features
-          parallelism: 6
+          parallelism: 8
           commands:
             - make test.mix.features INDEX=$SEMAPHORE_JOB_INDEX TOTAL=$SEMAPHORE_JOB_COUNT
 
       epilogue:
         always:
           commands:
-            - '[ -f app/testreports/junit.xml ] && test-results publish app/testreports/junit.xml'
+            - "[ -f app/testreports/junit.xml ] && test-results publish app/testreports/junit.xml"
             - artifact push workflow screenshots
 
   - name: Docker Build

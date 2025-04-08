@@ -4,16 +4,19 @@ agent:
   machine:
     type: f1-standard-4
     os_image: ubuntu2004
+
 blocks:
   - name: Populate CI Cache
     task:
+      secrets:
+        - name: ci-cache-credentials
       jobs:
         - name: "Populate CI Cache"
           commands:
             - checkout
-            - make dev.build
-            - docker save -o operately.tar operately-app:latest
-            - cache store operately.tar operately.tar
-            - cache store mix_deps deps
-            - cache store mix_build _build
-            - cache store node_modules assets/node_modules
+            - make test.build
+            - cache store app-deps app/deps
+            - cache store app-build app/_build
+            - cache store app-node-modules app/node_modules
+            - cache store turboui-node-modules turboui/node_modules
+            - cache store turboui-dist turboui/dist
