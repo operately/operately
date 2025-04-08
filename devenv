@@ -67,7 +67,11 @@ fi
 if [ "$FIRST_ARG" = "shell" ]; then
   docker compose exec app bash
 elif [ "$FIRST_ARG" = "up" ]; then
-  docker compose --profile ${PROFILE} up -d --force-recreate --build
+  docker compose --profile ${PROFILE} up -d
+  docker-compose exec -u root app sh -c "addgroup -g $GROUP_ID usergroup 2>/dev/null || true"
+  docker-compose exec -u root app sh -c "adduser -D -u $USER_ID -G usergroup -s /bin/bash dev 2>/dev/null || true"
+  docker-compose exec -u dev app sh -c "echo "export PS1='\w $ '" >> /home/dev/.bashrc"
+  docker-compose exec -u dev app sh -c "echo "export PS1='\w $ '" >> /home/dev/.bash_profile"
 elif [ "$FIRST_ARG" = "stop" ]; then
   docker compose --profile ${PROFILE} stop
 elif [ "$FIRST_ARG" = "down" ]; then
