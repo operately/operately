@@ -127,7 +127,7 @@ test.app.build:
 	./devenv bash -c "cd app && MIX_ENV=test mix compile"
 	./devenv bash -c "cd app && MIX_ENV=test npm install"
 	./devenv bash -c "cd app && MIX_ENV=test npm run build"
-	./devenv bash -c "cd app && MIX_ENV=test mix assets.deploy"
+	# ./devenv bash -c "cd app && MIX_ENV=test mix assets.deploy"
 
 test: test.init
 	@if [[ "$(FILE)" == assets/js* ]]; then \
