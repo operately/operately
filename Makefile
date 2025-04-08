@@ -32,6 +32,9 @@ migrate:
 	$(MAKE) dev.db.migrate
 	$(MAKE) test.db.migrate
 
+devimage.build:
+	docker buildx build --platform linux/amd64,linux/arm64 -f docker/dev/Dockerfile.dev -t operately/operately-dev:latest docker/dev --push
+
 #
 # Development tasks
 #
@@ -124,7 +127,7 @@ test.app.build:
 	./devenv bash -c "cd app && MIX_ENV=test mix compile"
 	./devenv bash -c "cd app && MIX_ENV=test npm install"
 	./devenv bash -c "cd app && MIX_ENV=test npm run build"
-	./devenv bash -c "cd app && MIX_ENV=test mix assets.deploy"
+	# ./devenv bash -c "cd app && MIX_ENV=test mix assets.deploy"
 
 test: test.init
 	@if [[ "$(FILE)" == assets/js* ]]; then \
