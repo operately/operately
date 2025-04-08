@@ -32,6 +32,9 @@ migrate:
 	$(MAKE) dev.db.migrate
 	$(MAKE) test.db.migrate
 
+devimage.build:
+	docker buildx build --platform linux/amd64,linux/arm64 -f docker/dev/Dockerfile.dev -t operately/operately-dev:latest docker/dev --push
+
 #
 # Development tasks
 #
