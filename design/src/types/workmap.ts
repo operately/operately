@@ -1,49 +1,42 @@
 /**
  * Types specific to the WorkMap functionality
  */
-import type { BaseComponentProps, WithChildren, WithId } from './common';
+import type { BaseComponentProps, WithChildren, WithId } from "./common";
 
 /**
  * Goal status values
- * 
+ *
  * Progress states:
  * - on_track: Goal is currently in progress and on track
  * - caution/issue: Goal is at risk or needs attention
  * - paused: Goal is temporarily paused
  * - pending: Goal is waiting to start or for approval
- * 
+ *
  * Completion states (per goal completion model):
  * - achieved: Goal was fully accomplished (green)
  * - partial: Goal was partially accomplished (amber/yellow)
  * - missed: Goal was not accomplished (red)
- * 
+ *
  * Legacy/alternative states:
  * - completed: Legacy term for achieved
  * - dropped: Goal was intentionally abandoned
  * - failed: Legacy term for missed (red)
  */
-export type GoalStatus = 
+export type GoalStatus =
   // Progress states
-  | 'on_track' 
-  | 'caution'
-  | 'issue'
-  | 'paused'
-  | 'pending'
+  | "on_track"
+  | "caution"
+  | "issue"
+  | "paused"
+  | "pending"
   // Completion states
-  | 'achieved'   // Goal fully accomplished (green)
-  | 'partial'    // Goal partially accomplished (amber/yellow)
-  | 'missed'     // Goal not accomplished (red)
+  | "achieved" // Goal fully accomplished (green)
+  | "partial" // Goal partially accomplished (amber/yellow)
+  | "missed" // Goal not accomplished (red)
   // Legacy/alternative states
-  | 'completed'  // Legacy term for achieved
-  | 'dropped'    // Goal abandoned
-  | 'failed';    // Legacy term for missed
-
-/**
- * StatusBadge component props
- */
-export interface StatusBadgeProps extends BaseComponentProps {
-  status: GoalStatus | string;
-}
+  | "completed" // Legacy term for achieved
+  | "dropped" // Goal abandoned
+  | "failed"; // Legacy term for missed
 
 /**
  * Owner information structure
@@ -76,7 +69,7 @@ export interface CompletedOn {
  */
 export interface WorkMapItem extends WithId {
   name: string;
-  type: 'goal' | 'project';
+  type: "goal" | "project";
   status: GoalStatus;
   progress: number; // 0-100
   space: string;
@@ -128,6 +121,6 @@ export interface TableRowProps extends BaseComponentProps {
  */
 export interface ProgressBarProps extends BaseComponentProps {
   progress: number;
-  size?: 'sm' | 'md' | 'lg';
+  size?: "sm" | "md" | "lg";
   showLabel?: boolean;
 }
