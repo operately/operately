@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+# Prevent erlang files from recompiling.
+# Read: https://github.com/erlang/rebar3/issues/1824
+
+find app/deps -name "*.erl" | while read source_file; do
+  # Calculate the corresponding beam file path
+  beam_file="${source_file%.erl}.beam"
+  beam_file=$(echo "$beam_file" | sed 's/src/ebin/g')
+  
+  if [ -f "$beam_file" ]; then
+    # Make beam file newer than source file
+    touch -m --reference="$source_file" "$beam_file"
+    touch -m -d "$(date -r "$source_file" '+%Y-%m-%d %H:%M:%S') + 1 minute" "$beam_file"
+  fi
+done
