@@ -1,7 +1,7 @@
 import React from "react";
-import type { StatusBadgeProps } from "../../types/workmap";
+import { StatusBadgeProps } from "./types";
 
-export function StatusBadge({ status }: StatusBadgeProps): React.ReactElement {
+export function StatusBadge({ status, className = "", style }: StatusBadgeProps): React.ReactElement {
   let bgColor: string,
     textColor: string,
     dotColor: string,
@@ -66,6 +66,7 @@ export function StatusBadge({ status }: StatusBadgeProps): React.ReactElement {
       label = "At risk";
       break;
     case "missed":
+    case "failed":
       bgColor = "bg-red-50 dark:bg-red-900/30";
       textColor = "text-red-700 dark:text-red-300";
       dotColor = "bg-red-500 dark:bg-red-400";
@@ -128,6 +129,7 @@ export function StatusBadge({ status }: StatusBadgeProps): React.ReactElement {
           </svg>
         );
       case "missed":
+      case "failed":
       case "dropped":
         return (
           <svg
@@ -173,7 +175,8 @@ export function StatusBadge({ status }: StatusBadgeProps): React.ReactElement {
 
   return (
     <span
-      className={`inline-flex items-center px-2 sm:px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-medium ${bgColor} ${textColor} border ${borderColor} shadow-sm backdrop-blur-[2px]`}
+      className={`inline-flex items-center px-2 sm:px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-medium ${bgColor} ${textColor} border ${borderColor} shadow-sm backdrop-blur-[2px] ${className}`}
+      style={style}
     >
       {getStatusIcon()}
       {label}
