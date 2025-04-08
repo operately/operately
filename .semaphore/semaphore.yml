@@ -24,7 +24,7 @@ blocks:
           - cache restore turboui-node-modules
           - cache restore turboui-dist
           - ./scripts/cache-fix-for-erlang
-          - make test.build
+          - make test.up
       jobs:
         - name: Licence Check
           commands:
@@ -64,7 +64,7 @@ blocks:
             - make test.npm
 
         - name: Features
-          parallelism: 6
+          parallelism: 8
           commands:
             - make test.mix.features INDEX=$SEMAPHORE_JOB_INDEX TOTAL=$SEMAPHORE_JOB_COUNT
 

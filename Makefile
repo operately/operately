@@ -106,8 +106,6 @@ dev.teardown:
 
 
 test.build:
-	$(MAKE) test.init
-	$(MAKE) test.seed.env
 	$(MAKE) test.up
 	$(MAKE) test.turboui.build
 	$(MAKE) test.app.build
@@ -115,6 +113,8 @@ test.build:
 	$(MAKE) test.db.migrate
 
 test.up:
+	$(MAKE) test.init
+	$(MAKE) test.seed.env
 	./devenv up
 
 test.turboui.build:
@@ -127,7 +127,7 @@ test.app.build:
 	./devenv bash -c "cd app && MIX_ENV=test mix compile"
 	./devenv bash -c "cd app && MIX_ENV=test npm install"
 	./devenv bash -c "cd app && MIX_ENV=test npm run build"
-	# ./devenv bash -c "cd app && MIX_ENV=test mix assets.deploy"
+	./devenv bash -c "cd app && MIX_ENV=test mix assets.deploy"
 
 test: test.init
 	@if [[ "$(FILE)" == assets/js* ]]; then \
