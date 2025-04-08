@@ -57,6 +57,9 @@ dev.server:
 design.server:
 	./devenv bash -c "cd design && npm install && npm run dev"
 
+turboui.storybook:
+	./devenv bash -c "cd turboui && npm run storybook"
+
 dev.shell:
 	./devenv shell
 
