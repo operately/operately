@@ -15,6 +15,6 @@ blocks:
           commands:
             - checkout
             - make test.build
-            - ./scripts/ci-cache push-dir app/deps app-deps.tar.gz
-            - ./scripts/ci-cache push-dir app/_build app-build.tar.gz
-            - ./scripts/ci-cache push-dir app/node_modules app-node-modules.tar.gz
+            - cache store app-deps app/deps
+            - cache store app-build app/_build
+            - cache store app-node-modules app/node_modules
