@@ -20,7 +20,7 @@ export function SignInWithGoogleButton() {
   return (
     <SignUpButton
       title="Sign in with Google"
-      link="/accounts/auth/google"
+      link={getGoogleAuthUrl()}
       icon={<GoogleLogo />}
       external
       testId="sign-in-with-google"
@@ -32,7 +32,7 @@ export function SignUpWithGoogleButton() {
   return (
     <SignUpButton
       title="Sign up with Google"
-      link="/accounts/auth/google"
+      link={getGoogleAuthUrl()}
       icon={<GoogleLogo />}
       external
       testId="sign-up-with-google"
@@ -61,4 +61,14 @@ function SignUpButton({ title, link, icon, external, testId }: SignUpButtonProps
       <div className="text-center w-10/12">{title}</div>
     </DivLink>
   );
+}
+
+function getGoogleAuthUrl(): string {
+  const params = new URLSearchParams(window.location.search);
+  const redirectTo = params.get("redirect_to");
+
+  if (redirectTo) {
+    return `/accounts/auth/google?redirect_to=${encodeURIComponent(redirectTo)}`;
+  }
+  return "/accounts/auth/google";
 }
