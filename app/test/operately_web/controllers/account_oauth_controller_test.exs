@@ -3,7 +3,6 @@ defmodule OperatelyWeb.AccountOauthControllerTest do
 
   import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
-  alias OperatelyWeb.AccountAuth
 
   setup do
     conn = build_conn()
@@ -93,17 +92,19 @@ defmodule OperatelyWeb.AccountOauthControllerTest do
       %{ctx | conn: conn}
     end
 
-    test "redirects to stored return path after successful authentication", %{conn: conn} do
-      halted_conn =
-        %{conn | path_info: ["company", "goals"], query_string: ""}
-        |> fetch_flash()
-        |> AccountAuth.require_authenticated_account([])
+    test "stores redirect_to parameter during request phase", %{conn: conn} do
+      conn = get(conn, "/accounts/auth/google?redirect_to=/company/goals")
 
-      assert halted_conn.halted
-      assert get_session(halted_conn, :account_return_to) == "/company/goals"
+      assert get_session(conn, :oauth_redirect_to) == "/company/goals"
+    end
+
+    test "uses redirect_to parameter from session during callback phase", %{conn: conn} do
+      first_conn = get(conn, "/accounts/auth/google?redirect_to=/company/goals")
 
       conn =
-        halted_conn
+        conn
+        |> init_test_session(get_session(first_conn))
+        |> fetch_flash()
         |> Plug.Conn.assign(:ueberauth_auth, %{
           info: %{
             email: "john@example.localhost",
@@ -113,7 +114,32 @@ defmodule OperatelyWeb.AccountOauthControllerTest do
         })
         |> get("/accounts/auth/google/callback", %{"provider" => "google"})
 
-      assert get_session(conn, :account_return_to) == "/company/goals"
+      # Verify that the redirect happened to the correct location
+      assert redirected_to(conn) == "/company/goals"
+
+      # Verify that the session variable was cleared
+      assert get_session(conn, :oauth_redirect_to) == nil
+    end
+
+    test "handles empty redirect_to parameter", %{conn: conn} do
+      first_conn = get(conn, "/accounts/auth/google?redirect_to=")
+
+      assert get_session(first_conn, :oauth_redirect_to) == nil
+
+      conn =
+        conn
+        |> init_test_session(get_session(first_conn))
+        |> fetch_flash()
+        |> Plug.Conn.assign(:ueberauth_auth, %{
+          info: %{
+            email: "john@example.localhost",
+            image: "http://example.com/image.png",
+            name: "John Doe"
+          }
+        })
+        |> get("/accounts/auth/google/callback", %{"provider" => "google"})
+
+      assert redirected_to(conn) == "/"
     end
   end
 end
