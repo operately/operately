@@ -1,16 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
 
-@import "tailwindcss/base";
-@import "tailwindcss/components";
-@import "tailwindcss/utilities";
-
-@import "./nprogress";
-@import "./prosemirror";
-@import "./reactdatepicker.css";
-@import "./reactdatepicker-custom.css";
-
-@import "./animations.css";
-@import "./lineclamp.css";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 .h-full {
   height: 100%;
@@ -24,7 +16,7 @@
   outline: none;
 }
 
-.light body {
+.light {
   --color-surface-bg: rgba(254, 245, 237, 1);
   --color-surface-bg-highlight: rgba(255, 255, 255, 0.9);
   --color-surface-base: rgba(255, 255, 255, 1);
@@ -68,7 +60,7 @@
   --color-callout-success-message: var(--color-green-700);
 }
 
-.dark body {
+.dark {
   --color-surface-bg: rgba(30, 30, 34, 1);
   --color-surface-bg-highlight: rgba(255, 255, 255, 0.1);
   --color-surface-base: rgba(35, 35, 39, 1);

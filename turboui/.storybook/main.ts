@@ -7,12 +7,21 @@ const config: StorybookConfig = {
   ],
   "addons": [
     "@storybook/addon-essentials",
-    "@storybook/addon-onboarding",
-    "@storybook/addon-interactions"
+    "@storybook/addon-interactions",
   ],
   "framework": {
     "name": "@storybook/react-vite",
     "options": {}
+  },
+  "core": {
+    "builder": "@storybook/builder-vite"
+  },
+  viteFinal: async (config) => {
+    config.css = {
+      postcss: true,
+    };
+    return config;
   }
 };
+
 export default config;
