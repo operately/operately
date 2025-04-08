@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { StatusBadge } from "./StatusBadge";
+import { StatusBadge } from "../../../../turboui/src/StatusBadge";
 import { ProgressBar } from "./ProgressBar";
 import {
   IconTargetArrow,
