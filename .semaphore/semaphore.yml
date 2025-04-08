@@ -13,11 +13,21 @@ blocks:
   - name: License Check
     dependencies: []
     task:
+      secrets:
+        - name: ci-cache-credentials
+      prologue:
+        commands:
+          - checkout
+          - cache restore app-deps
+          - cache restore app-build
+          - cache restore app-node-modules
+          - cache restore turboui-node-modules
+          - cache restore turboui-dist
+          - ./scripts/cache-fix-for-erlang
+          - make test.build
       jobs:
         - name: Licence Check
           commands:
-            - checkout
-            - make test.build
             - make test.license.check
 
   - name: App Tests
