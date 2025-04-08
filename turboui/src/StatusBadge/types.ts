@@ -23,6 +23,7 @@ export type BadgeStatus =
  */
 export interface StatusBadgeProps {
   status: BadgeStatus;
+  hideIcon?: boolean; // Option to hide the status icon
   className?: string;
   style?: React.CSSProperties;
 }
