@@ -3,6 +3,7 @@ defmodule OperatelyWeb.AccountOauthControllerTest do
 
   import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
+  alias OperatelyWeb.AccountAuth
 
   setup do
     conn = build_conn()
@@ -79,6 +80,40 @@ defmodule OperatelyWeb.AccountOauthControllerTest do
 
       saved_person = Operately.People.get_person_by_email(ctx.company, person.email)
       assert saved_person.avatar_url == "http://example.com/new-image.png"
+    end
+  end
+
+  describe "OAuth redirect" do
+    setup ctx do
+      conn =
+        ctx.conn
+        |> Map.replace!(:secret_key_base, OperatelyWeb.Endpoint.config(:secret_key_base))
+        |> init_test_session(%{})
+
+      %{ctx | conn: conn}
+    end
+
+    test "redirects to stored return path after successful authentication", %{conn: conn} do
+      halted_conn =
+        %{conn | path_info: ["company", "goals"], query_string: ""}
+        |> fetch_flash()
+        |> AccountAuth.require_authenticated_account([])
+
+      assert halted_conn.halted
+      assert get_session(halted_conn, :account_return_to) == "/company/goals"
+
+      conn =
+        halted_conn
+        |> Plug.Conn.assign(:ueberauth_auth, %{
+          info: %{
+            email: "john@example.localhost",
+            image: "http://example.com/image.png",
+            name: "John Doe"
+          }
+        })
+        |> get("/accounts/auth/google/callback", %{"provider" => "google"})
+
+      assert get_session(conn, :account_return_to) == "/company/goals"
     end
   end
 end
