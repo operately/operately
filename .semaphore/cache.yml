@@ -18,3 +18,5 @@ blocks:
             - cache store app-deps app/deps
             - cache store app-build app/_build
             - cache store app-node-modules app/node_modules
+            - cache store turboui-node-modules turboui/node_modules
+            - cache store turboui-dist turboui/dist

@@ -33,6 +33,8 @@ blocks:
           - cache restore app-deps
           - cache restore app-build
           - cache restore app-node-modules
+          - cache restore turboui-node-modules
+          - cache restore turboui-dist
           - ./scripts/cache-fix-for-erlang
           - make test.build
 
