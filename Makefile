@@ -32,6 +32,9 @@ migrate:
 	$(MAKE) dev.db.migrate
 	$(MAKE) test.db.migrate
 
+devimage.build:
+	docker buildx build --platform linux/amd64,linux/arm64 -f docker/dev/Dockerfile.dev -t operately/operately-dev:latest docker/dev --push
+
 #
 # Development tasks
 #
@@ -103,8 +106,6 @@ dev.teardown:
 
 
 test.build:
-	$(MAKE) test.init
-	$(MAKE) test.seed.env
 	$(MAKE) test.up
 	$(MAKE) test.turboui.build
 	$(MAKE) test.app.build
@@ -112,6 +113,8 @@ test.build:
 	$(MAKE) test.db.migrate
 
 test.up:
+	$(MAKE) test.init
+	$(MAKE) test.seed.env
 	./devenv up
 
 test.turboui.build:
