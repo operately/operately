@@ -1,15 +1,19 @@
 {
-  "_vendor-C358uB8H.js": {
-    "file": "assets/vendor-C358uB8H.js",
-    "name": "vendor"
+  "_vendor-BJdGsRZi.js": {
+    "file": "assets/vendor-BJdGsRZi.js",
+    "name": "vendor",
+    "imports": [
+      "assets/js/app.tsx"
+    ]
   },
   "assets/js/app.tsx": {
-    "file": "assets/app-Cig1pdz1.js",
+    "file": "assets/app-BbualAMr.js",
     "name": "app",
     "src": "assets/js/app.tsx",
     "isEntry": true,
     "imports": [
-      "_vendor-C358uB8H.js"
+      "_vendor-BJdGsRZi.js",
+      "assets/js/app.tsx"
     ]
   }
 }

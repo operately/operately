@@ -1,4 +1,4 @@
-import { defineConfig, splitVendorChunkPlugin } from 'vite';
+import { defineConfig } from 'vite';
 import { fileURLToPath } from 'url';
 import react from '@vitejs/plugin-react';
 import path from 'path';
@@ -9,7 +9,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const isProd = process.env.NODE_ENV === 'production';
 
 export default defineConfig({
-  plugins: [react(), splitVendorChunkPlugin()],
+  plugins: [react()],
   root: __dirname,
   
   build: {
@@ -22,6 +22,15 @@ export default defineConfig({
     rollupOptions: {
       input: {
         app: path.resolve(__dirname, 'assets/js/app.tsx')
+      },
+      output: {
+        manualChunks: (id) => {
+          if (id.includes('node_modules')) {
+            return 'vendor'; // All node_modules code goes to the vendor chunk
+          } else {
+            return 'app'; // Everything else goes to the app chunk
+          }
+        }
       }
     }
   },
