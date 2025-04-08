@@ -2,6 +2,7 @@ services:
   app:
     image: operately/operately-dev:latest
     user: ${USER_ID}:${GROUP_ID}
+    working_dir: /home/dev/app
     volumes:
       - ./:/home/dev/app
       - ./media:/media
