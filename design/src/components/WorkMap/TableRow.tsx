@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { StatusBadge } from "../../../../turboui/src/StatusBadge";
-import { ProgressBar } from "./ProgressBar";
+import { StatusBadge } from "turboui/StatusBadge";
+import { ProgressBar } from "turboui/ProgressBar";
 import {
   IconTargetArrow,
   IconChecklist,
@@ -10,7 +10,6 @@ import {
 import { HoverQuickEntryWidget } from "./HoverQuickEntryWidget.tsx";
 import type {
   WorkMapItem,
-  GoalStatus,
   TableRowProps,
 } from "../../types/workmap";
 
