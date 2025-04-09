@@ -31,8 +31,6 @@ blocks:
             - make test.license.check
 
   - name: App Tests
-    run:
-      when: "change_in('/app', {default_branch: 'main'}) or change_in('/turboui', {default_branch: 'main'})"
     dependencies: []
     task:
       secrets:

@@ -44,3 +44,4 @@ organization with 10x less effort.
 - [Pages, Routes and Data Loading](docs/pages-and-data-loading.md)
 - [Modifying the database schema](docs/database-schema.md)
 - [API](docs/api.md)
+
