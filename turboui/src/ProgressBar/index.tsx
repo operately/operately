@@ -1,57 +1,27 @@
-import React from "react";
+import { match } from "ts-pattern";
 import type { ProgressBarProps } from "./types";
 
 export type { ProgressBarStatus, ProgressBarSize } from "./types";
 
-export function ProgressBar({
-  progress,
-  status,
-  size = "md",
-  showLabel = false,
-}: ProgressBarProps): React.ReactElement {
+export function ProgressBar({ progress, status, size = "md", showLabel = false }: ProgressBarProps) {
   // Convert progress from 0-100 to width percentage
   const progressWidth = `${progress}%`;
 
   // Determine color based on status
-  let progressColor: string;
-  switch (status) {
-    case "on_track":
-    case "completed":
-    case "achieved": // Include achieved status (green) from the goal completion model
-      progressColor = "bg-green-500 dark:bg-green-400";
-      break;
-    case "paused":
-    case "dropped":
-      progressColor = "bg-gray-400 dark:bg-gray-500";
-      break;
-    case "caution":
-    case "partial": // Include partial status (amber) from the goal completion model
-      progressColor = "bg-amber-500 dark:bg-amber-400";
-      break;
-    case "issue":
-    case "missed": // Include missed status (red) from the goal completion model
-      progressColor = "bg-red-500 dark:bg-red-400";
-      break;
-    case "pending":
-      progressColor = "bg-blue-500 dark:bg-blue-400";
-      break;
-    default:
-      progressColor = "bg-gray-400 dark:bg-gray-500";
-  }
+  const progressColor = match(status)
+    .with("on_track", "completed", "achieved", () => "bg-green-500 dark:bg-green-400")
+    .with("paused", "dropped", () => "bg-gray-400 dark:bg-gray-500")
+    .with("caution", "partial", () => "bg-amber-500 dark:bg-amber-400")
+    .with("issue", "missed", () => "bg-red-500 dark:bg-red-400")
+    .with("pending", () => "bg-blue-500 dark:bg-blue-400")
+    .otherwise(() => "bg-gray-400 dark:bg-gray-500");
 
   // Determine height based on size
-  let heightClass: string;
-  switch (size) {
-    case "sm":
-      heightClass = "h-1";
-      break;
-    case "lg":
-      heightClass = "h-3";
-      break;
-    case "md":
-    default:
-      heightClass = "h-2";
-  }
+  const heightClass = match(size)
+    .with("sm", () => "h-1")
+    .with("lg", () => "h-3")
+    .with("md", () => "h-2")
+    .exhaustive()
 
   return (
     <div className="w-full flex items-center gap-2">
