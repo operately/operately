@@ -1,17 +1,9 @@
 /**
  * Types specific to the WorkMap functionality
  */
+import type { AvatarPerson } from "turboui/Avatar";
 import type { BaseComponentProps, WithChildren, WithId } from "./common";
 import type { ProgressBarStatus as GoalStatus } from "turboui/ProgressBar";
-
-/**
- * Owner information structure
- */
-export interface Owner {
-  name: string;
-  initials?: string; // Making initials optional to accommodate existing data
-  avatar?: string;
-}
 
 /**
  * Deadline information
@@ -39,7 +31,7 @@ export interface WorkMapItem extends WithId {
   status: GoalStatus;
   progress: number; // 0-100
   space: string;
-  owner: Owner;
+  owner: AvatarPerson;
   children: WorkMapItem[];
   deadline?: Deadline; // Making optional to accommodate existing data
   nextStep?: string;
