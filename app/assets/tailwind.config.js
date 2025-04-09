@@ -12,7 +12,7 @@ module.exports = {
     "../ee/assets/js/**/*.tsx",
     "../lib/*_web.ex", 
     "../lib/*_web/**/*.*ex",
-    "../../turboui/**/*.{js,ts,jsx,tsx}",
+    "../../turboui/src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {

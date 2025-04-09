@@ -7,7 +7,7 @@ services:
       - ./:/home/dev/app
       - ./media:/media
       - ./screenshots:/tmp/screenshots
-      - ./tmp/certs:/home/dev/certs
+      - ./tmp/certs:/tmp/certs
     ports:
       - "127.0.0.1:4000:4000" # development server
       - "127.0.0.1:4002:4002" # test server
@@ -25,7 +25,7 @@ services:
       - OPERATELY_JS_SENTRY_DSN=not-set
       - OPERATELY_DEMO_BUILDER_ALLOWED=true
       - CERT_DOMAIN=localhost
-      - CERT_DB_DIR=/home/dev/certs
+      - CERT_DB_DIR=/tmp/certs
     env_file:
       - .env
     profiles:
