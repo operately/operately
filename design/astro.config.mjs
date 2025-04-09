@@ -21,7 +21,8 @@ export default defineConfig({
   vite: {
     resolve: {
       alias: {
-        'ts-pattern': path.resolve('./node_modules/ts-pattern')
+        'ts-pattern': path.resolve('./node_modules/ts-pattern'),
+        'react-router-dom': path.resolve('./node_modules/react-router-dom'),
       }
     }
   }

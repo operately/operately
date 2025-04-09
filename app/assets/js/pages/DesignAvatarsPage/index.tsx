@@ -2,8 +2,7 @@ import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
-import Avatar from "@/components/Avatar";
-import AvatarList from "@/components/AvatarList";
+import { Avatar, AvatarList } from "turboui";
 
 export const loader = Pages.emptyLoader;
 
