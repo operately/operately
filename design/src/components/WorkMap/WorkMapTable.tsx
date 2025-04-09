@@ -4,7 +4,7 @@ import { QuickAddRow } from "./QuickAddRow.tsx";
 import { SelectableTableRow } from "./SelectableTableRow.tsx";
 import { HoverQuickEntryWidget } from "./HoverQuickEntryWidget.tsx";
 import { mockData } from "../../mockData.ts";
-import type { WorkMapItem, GoalStatus } from "../../types/workmap";
+import type { WorkMapItem } from "../../types/workmap";
 
 interface WorkMapTableProps {
   filter?: string;

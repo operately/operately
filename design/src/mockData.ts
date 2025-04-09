@@ -1,5 +1,5 @@
 // Mock data for development purposes
-import type { GoalStatus } from "./types/workmap";
+import type { ProgressBarStatus as GoalStatus } from "turboui/ProgressBar";
 
 // Define types for our mock data
 interface User {
