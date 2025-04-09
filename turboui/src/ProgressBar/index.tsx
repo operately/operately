@@ -1,8 +1,14 @@
 import React from "react";
-import type { ProgressBarProps } from "../../types/workmap";
-import type { GoalStatus } from "../../types/workmap";
+import type { ProgressBarProps } from "./types";
 
-export function ProgressBar({ progress, status, size = "md", showLabel = false }: ProgressBarProps & { status?: GoalStatus }): React.ReactElement {
+export type { ProgressBarStatus, ProgressBarSize } from "./types";
+
+export function ProgressBar({
+  progress,
+  status,
+  size = "md",
+  showLabel = false,
+}: ProgressBarProps): React.ReactElement {
   // Convert progress from 0-100 to width percentage
   const progressWidth = `${progress}%`;
 
@@ -49,7 +55,9 @@ export function ProgressBar({ progress, status, size = "md", showLabel = false }
 
   return (
     <div className="w-full flex items-center gap-2">
-      <div className={`w-full ${heightClass} bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden`}>
+      <div
+        className={`w-full ${heightClass} bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden`}
+      >
         <div
           className={`h-full rounded-full ${progressColor} relative overflow-hidden`}
           style={{ width: progressWidth }}
@@ -58,7 +66,7 @@ export function ProgressBar({ progress, status, size = "md", showLabel = false }
           <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 opacity-50 dark:via-white/30"></div>
         </div>
       </div>
-      
+
       {showLabel && (
         <span className="text-xs text-gray-500 dark:text-gray-400 font-medium min-w-[36px] text-right">
           {Math.round(progress)}%

@@ -4,7 +4,9 @@
     "jsx": "react-jsx",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "turboui": ["../turboui/src"],
+      "turboui/*": ["../turboui/src/*"]
     },
     "allowJs": true,
     "checkJs": true,
