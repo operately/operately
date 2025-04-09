@@ -1,7 +1,5 @@
-import * as React from "react";
-
 import { DivLink } from ".";
-import classNames from "classnames";
+import classNames from "../utils/classnames";
 
 interface GhostLinkProps {
   to: string;
