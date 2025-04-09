@@ -25,16 +25,12 @@ defmodule OperatelyWeb.AccountAuth do
     conn
     |> renew_session()
     |> put_token_in_session(token)
-    |> maybe_write_remember_me_cookie(token, params)
+    |> write_remember_me_cookie(token)
     |> redirect(to: path)
   end
 
-  defp maybe_write_remember_me_cookie(conn, token, %{"remember_me" => "true"}) do
+  defp write_remember_me_cookie(conn, token) do
     put_resp_cookie(conn, @remember_me_cookie, token, @remember_me_options)
-  end
-
-  defp maybe_write_remember_me_cookie(conn, _token, _params) do
-    conn
   end
 
   @spec after_login_path(Operately.Account.t) :: String.t
