@@ -3,16 +3,12 @@
 
 const plugin = require("tailwindcss/plugin");
 
+/** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: "class",
   content: [
-    "./js/**/*.js", 
-    "./js/**/*.tsx", 
-    "../ee/assets/js/**/*.js",
-    "../ee/assets/js/**/*.tsx",
-    "../lib/*_web.ex", 
-    "../lib/*_web/**/*.*ex",
-    "../../turboui/src/**/*.{js,ts,jsx,tsx}",
+    "./src/**/*.{js,ts,jsx,tsx}",
+    ".storybook/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {
@@ -88,41 +84,5 @@ module.exports = {
       },
     },
   },
-  plugins: [
-    require("@tailwindcss/forms"),
-    plugin(({ addVariant }) => addVariant("phx-no-feedback", [".phx-no-feedback&", ".phx-no-feedback &"])),
-    plugin(({ addVariant }) => addVariant("phx-click-loading", [".phx-click-loading&", ".phx-click-loading &"])),
-    plugin(({ addVariant }) => addVariant("phx-submit-loading", [".phx-submit-loading&", ".phx-submit-loading &"])),
-    plugin(({ addVariant }) => addVariant("phx-change-loading", [".phx-change-loading&", ".phx-change-loading &"])),
-    function ({ addBase, theme }) {
-      function extractColorVars(colorObj, colorGroup = "") {
-        return Object.keys(colorObj).reduce((vars, colorKey) => {
-          const value = colorObj[colorKey];
-
-          const newVars =
-            typeof value === "string"
-              ? { [`--color${colorGroup}-${colorKey}`]: value }
-              : extractColorVars(value, `-${colorKey}`);
-
-          return { ...vars, ...newVars };
-        }, {});
-      }
-
-      addBase({
-        ":root": extractColorVars(theme("colors")),
-      });
-    },
-    plugin(function ({ addVariant, e }) {
-      addVariant('not-first', ({ modifySelectors, separator }) => {
-        modifySelectors(({ className }) => {
-          return `.${e(`not-first${separator}${className}`)}:not(:first-child)`
-        })
-      })
-    }),
-  ],
-  safelist: [
-    {
-      pattern: /(bg|text)-(green|yellow|red|gray)-(50|100|200|300|400|500|600|700|800|900|950)/,
-    },
-  ],
-};
+  plugins: [],
+}

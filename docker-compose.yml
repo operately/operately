@@ -13,6 +13,7 @@ services:
       - "127.0.0.1:4002:4002" # test server
       - "127.0.0.1:4005:4005" # vite server for serving JS files in development
       - "127.0.0.1:4010:4010" # design prototypes server
+      - "127.0.0.1:4020:4020" # storybook server
     depends_on:
       - db
       - s3mock
