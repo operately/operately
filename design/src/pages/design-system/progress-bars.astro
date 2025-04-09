@@ -73,13 +73,21 @@ const progressValues = [0, 25, 50, 75, 100];
                 </div><div></div>
               </div>
               
-              <section class="mb-10">
-                <h2 class="text-2xl font-semibold mb-4">Status Variations</h2>
-                <p class="text-gray-700 dark:text-gray-300 mb-6">
-                  The progress bar color changes based on status. Below are examples of each status with 50% progress.
-                </p>
+              <div class="mt-2 mb-10">
+                Progress bars are used to visually represent the completion percentage of items like goals, projects, tasks, etc.
+              </div>
 
-                <div class="grid gap-4">
+              <h3 class="font-bold mt-12 text-lg text-content-accent">
+                Status Variations
+              </h3>
+              <p class="text-content-base text-sm mb-4">
+                The progress bar color changes based on status. Below are examples of each status with 50% progress.
+              </p>
+
+              <div
+                class="p-6 border border-surface-outline rounded-lg mb-8 bg-surface-base"
+              >
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {statuses.map((status) => (
                     <div class="p-4 border rounded-lg">
                       <h3 class="text-lg font-medium mb-2">{status.name}</h3>
@@ -87,15 +95,19 @@ const progressValues = [0, 25, 50, 75, 100];
                     </div>
                   ))}
                 </div>
-              </section>
+              </div>
 
-              <section class="mb-10">
-                <h2 class="text-2xl font-semibold mb-4">Size Variations</h2>
-                <p class="text-gray-700 dark:text-gray-300 mb-6">
-                  Progress bars come in three sizes: small, medium (default), and large.
-                </p>
+              <h3 class="font-bold mt-12 text-lg text-content-accent">
+                Size Variations
+              </h3>
+              <p class="text-content-base text-sm mb-4">
+                Progress bars come in three sizes: small, medium (default), and large.
+              </p>
 
-                <div class="grid gap-6">
+              <div
+                class="p-6 border border-surface-outline rounded-lg mb-8 bg-surface-base"
+              >
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {sizes.map((size) => (
                     <div class="p-4 border rounded-lg">
                       <h3 class="text-lg font-medium mb-2">{size.name}</h3>
@@ -103,15 +115,19 @@ const progressValues = [0, 25, 50, 75, 100];
                     </div>
                   ))}
                 </div>
-              </section>
+              </div>
 
-              <section class="mb-10">
-                <h2 class="text-2xl font-semibold mb-4">Progress Values</h2>
-                <p class="text-gray-700 dark:text-gray-300 mb-6">
-                  Examples of different progress percentages with the same status.
-                </p>
+              <h3 class="font-bold mt-12 text-lg text-content-accent">
+                Progress Values
+              </h3>
+              <p class="text-content-base text-sm mb-4">
+                Examples of different progress percentages with the same status.
+              </p>
 
-                <div class="grid gap-4">
+              <div
+                class="p-6 border border-surface-outline rounded-lg mb-8 bg-surface-base"
+              >
+                <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-4">
                   {progressValues.map((value) => (
                     <div class="p-4 border rounded-lg">
                       <h3 class="text-lg font-medium mb-2">{value}% Progress</h3>
@@ -119,15 +135,19 @@ const progressValues = [0, 25, 50, 75, 100];
                     </div>
                   ))}
                 </div>
-              </section>
+              </div>
 
-              <section class="mb-10">
-                <h2 class="text-2xl font-semibold mb-4">With Percentage Label</h2>
-                <p class="text-gray-700 dark:text-gray-300 mb-6">
-                  Progress bars can optionally display the percentage value.
-                </p>
+              <h3 class="font-bold mt-12 text-lg text-content-accent">
+                With Percentage Label
+              </h3>
+              <p class="text-content-base text-sm mb-4">
+                Progress bars can optionally display the percentage value.
+              </p>
 
-                <div class="grid gap-6">
+              <div
+                class="p-6 border border-surface-outline rounded-lg mb-8 bg-surface-base"
+              >
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div class="p-4 border rounded-lg">
                     <h3 class="text-lg font-medium mb-2">Without Label (Default)</h3>
                     <ProgressBar progress={65} status="on_track" />
@@ -137,15 +157,19 @@ const progressValues = [0, 25, 50, 75, 100];
                     <ProgressBar progress={65} status="on_track" showLabel={true} />
                   </div>
                 </div>
-              </section>
+              </div>
 
-              <section class="mb-10">
-                <h2 class="text-2xl font-semibold mb-4">Comprehensive Examples</h2>
-                <p class="text-gray-700 dark:text-gray-300 mb-6">
-                  Examples combining different props for common use cases.
-                </p>
+              <h3 class="font-bold mt-12 text-lg text-content-accent">
+                Comprehensive Examples
+              </h3>
+              <p class="text-content-base text-sm mb-4">
+                Examples combining different props for common use cases.
+              </p>
 
-                <div class="grid gap-6">
+              <div
+                class="p-6 border border-surface-outline rounded-lg mb-8 bg-surface-base"
+              >
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
                   <div class="p-4 border rounded-lg">
                     <h3 class="text-lg font-medium mb-2">On Track - Large with Label</h3>
                     <ProgressBar progress={78} status="on_track" size="lg" showLabel={true} />
@@ -167,7 +191,39 @@ const progressValues = [0, 25, 50, 75, 100];
                     <ProgressBar progress={50} status="paused" showLabel={true} />
                   </div>
                 </div>
-              </section>
+              </div>
+
+              <h3 class="font-bold mt-12 text-lg text-content-accent">
+                Usage
+              </h3>
+              <p class="text-content-base text-sm mb-4">
+                How to use the ProgressBar component in your code.
+              </p>
+              <div
+                class="p-6 border border-surface-outline rounded-lg mb-8 bg-surface-base"
+              >
+                <pre class="text-sm bg-gray-800 text-gray-200 p-4 rounded overflow-x-auto">
+{`// Import the component
+import { ProgressBar } from "turboui";
+
+// Basic usage
+<ProgressBar progress={75} status="on_track" />
+
+// With size variation
+<ProgressBar progress={50} status="caution" size="lg" />
+
+// With percentage label
+<ProgressBar progress={100} status="completed" showLabel={true} />
+
+// All props combined
+<ProgressBar
+  progress={65}
+  status="pending"
+  size="sm"
+  showLabel={true}
+/>`}
+                </pre>
+              </div>
             </div>
           </div>
         </div>
