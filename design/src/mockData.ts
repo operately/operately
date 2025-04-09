@@ -1,13 +1,10 @@
 // Mock data for development purposes
 import type { ProgressBarStatus as GoalStatus } from "turboui/ProgressBar";
+import type { AvatarPerson } from "turboui/Avatar";
 
 // Define types for our mock data
-interface User {
-  id?: string; // Making id optional for mock data users
-  name: string;
+interface User extends AvatarPerson {
   email?: string;
-  avatar?: string;
-  initials?: string;
   role?: string;
 }
 
@@ -40,7 +37,7 @@ interface WorkMapItem {
   status: GoalStatus;
   progress: number;
   space: string;
-  owner: User;
+  owner: AvatarPerson;
   deadline?: Deadline;
   completedOn?: CompletedOn;
   nextStep?: string;
@@ -63,9 +60,9 @@ export const avatarUrl: string = avatarImages[0];
 // Sample user data
 export const currentUser: User = {
   id: "user-1",
-  name: "John Doe",
+  fullName: "John Doe",
   email: "john.doe@example.com",
-  avatar: avatarUrl,
+  avatarUrl: avatarUrl,
   role: "Product Manager",
 };
 
@@ -94,9 +91,9 @@ export const mockData: WorkMapItem[] = [
     progress: 45,
     space: "General",
     owner: {
-      name: "Igor Š.",
-      initials: "IŠ",
-      avatar: avatarImages[0],
+      id: "user-igor",
+      fullName: "Igor Š.",
+      avatarUrl: avatarImages[0],
     },
     deadline: {
       display: "Dec 31 2024",
@@ -112,9 +109,9 @@ export const mockData: WorkMapItem[] = [
         progress: 100,
         space: "Product",
         owner: {
-          name: "Marko A.",
-          initials: "MA",
-          avatar: avatarImages[1],
+          id: "user-marko",
+          fullName: "Marko A.",
+          avatarUrl: avatarImages[1],
         },
         deadline: {
           display: "Mar 31",
@@ -134,9 +131,9 @@ export const mockData: WorkMapItem[] = [
         progress: 30,
         space: "Product",
         owner: {
-          name: "Igor Š.",
-          initials: "IŠ",
-          avatar: avatarImages[0],
+          id: "user-igor",
+          fullName: "Igor Š.",
+          avatarUrl: avatarImages[0],
         },
         deadline: {
           display: "Feb 7",
@@ -153,8 +150,9 @@ export const mockData: WorkMapItem[] = [
         progress: 25,
         space: "R&D",
         owner: {
-          name: "Adriano L.",
-          initials: "AL",
+          id: "user-adriano",
+          fullName: "Adriano L.",
+          avatarUrl: null,
         },
         deadline: {
           display: "Undefined",
@@ -171,9 +169,9 @@ export const mockData: WorkMapItem[] = [
         progress: 75,
         space: "Product",
         owner: {
-          name: "Igor Š.",
-          initials: "IŠ",
-          avatar: avatarImages[0],
+          id: "user-igor",
+          fullName: "Igor Š.",
+          avatarUrl: avatarImages[0],
         },
         deadline: {
           display: "Dec 31 2024",
@@ -192,9 +190,9 @@ export const mockData: WorkMapItem[] = [
     progress: 15,
     space: "Customer Success",
     owner: {
-      name: "Jennifer L.",
-      initials: "JL",
-      avatar: avatarImages[2],
+      id: "user-jennifer",
+      fullName: "Jennifer L.",
+      avatarUrl: avatarImages[2],
     },
     deadline: {
       display: "Dec 31",
@@ -210,9 +208,9 @@ export const mockData: WorkMapItem[] = [
         progress: 30,
         space: "Marketing",
         owner: {
-          name: "Sam A.",
-          initials: "SA",
-          avatar: avatarImages[3],
+          id: "user-sam",
+          fullName: "Sam A.",
+          avatarUrl: avatarImages[3],
         },
         deadline: {
           display: "Feb 28 2025",
@@ -232,9 +230,9 @@ export const mockData: WorkMapItem[] = [
         progress: 75,
         space: "Marketing",
         owner: {
-          name: "Sam A.",
-          initials: "SA",
-          avatar: avatarImages[3],
+          id: "user-sam",
+          fullName: "Sam A.",
+          avatarUrl: avatarImages[3],
         },
         deadline: {
           display: "Mar 15 2025",
@@ -256,9 +254,9 @@ export const mockData: WorkMapItem[] = [
     progress: 35,
     space: "Marketing",
     owner: {
-      name: "Sam A.",
-      initials: "SA",
-      avatar: avatarImages[3],
+      id: "user-sam",
+      fullName: "Sam A.",
+      avatarUrl: avatarImages[3],
     },
     deadline: {
       display: "Dec 12 2024",
@@ -274,8 +272,9 @@ export const mockData: WorkMapItem[] = [
         progress: 45,
         space: "Marketing",
         owner: {
-          name: "Vangipurappu L.",
-          initials: "VL",
+          id: "user-vangipurappu",
+          fullName: "Vangipurappu L.",
+          avatarUrl: null,
         },
         deadline: {
           display: "Jun 30",
@@ -291,9 +290,9 @@ export const mockData: WorkMapItem[] = [
             progress: 15,
             space: "Search Engines and LLMs",
             owner: {
-              name: "Donald M.",
-              initials: "DM",
-              avatar: avatarImages[4],
+              id: "user-donald",
+              fullName: "Donald M.",
+              avatarUrl: avatarImages[4],
             },
             deadline: {
               display: "Mar 31",
@@ -309,9 +308,9 @@ export const mockData: WorkMapItem[] = [
                 progress: 20,
                 space: "Marketing",
                 owner: {
-                  name: "Yuval H.",
-                  initials: "YH",
-                  avatar: avatarImages[5],
+                  id: "user-yuval",
+                  fullName: "Yuval H.",
+                  avatarUrl: avatarImages[5],
                 },
                 deadline: {
                   display: "Mar 8",
@@ -334,9 +333,9 @@ export const mockData: WorkMapItem[] = [
     progress: 100,
     space: "Marketing",
     owner: {
-      name: "Sam A.",
-      initials: "SA",
-      avatar: avatarImages[3],
+      id: "user-sam",
+      fullName: "Sam A.",
+      avatarUrl: avatarImages[3],
     },
     deadline: {
       display: "Mar 1",
@@ -356,9 +355,9 @@ export const mockData: WorkMapItem[] = [
     progress: 100,
     space: "Customer Success",
     owner: {
-      name: "Adriano L.",
-      initials: "AL",
-      avatar: avatarImages[5],
+      id: "user-adriano",
+      fullName: "Adriano L.",
+      avatarUrl: avatarImages[5],
     },
     deadline: {
       display: "Mar 15 2025",
@@ -377,9 +376,9 @@ export const mockData: WorkMapItem[] = [
         progress: 100,
         space: "Customer Support",
         owner: {
-          name: "Jennifer L.",
-          initials: "JL",
-          avatar: avatarImages[2],
+          id: "user-jennifer",
+          fullName: "Jennifer L.",
+          avatarUrl: avatarImages[2],
         },
         deadline: {
           display: "Mar 1 2025",
