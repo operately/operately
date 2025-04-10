@@ -5,7 +5,7 @@ import * as Pages from "@/components/Pages";
 import { Navigation } from "@/features/goals/GoalPageNavigation";
 import { Header } from "@/features/goals/GoalPageHeader";
 
-import Avatar from "@/components/Avatar";
+import { Avatar } from "turboui";
 import RichContent from "@/components/RichContent";
 
 import { useLoadedData } from "./loader";

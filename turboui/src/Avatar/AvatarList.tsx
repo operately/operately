@@ -1,24 +1,6 @@
-import * as React from "react";
-import * as People from "@/models/people";
-
-import { useNavigate } from "react-router-dom";
-import { Paths } from "@/routes/paths";
-
-import Avatar, { AvatarSize } from "@/components/Avatar";
-import classNames from "classnames";
-
-interface Props {
-  people: People.Person[];
-  size: AvatarSize;
-
-  stacked?: boolean;
-  linked?: boolean;
-  maxElements?: number;
-
-  showCutOff?: boolean;
-  wrap?: boolean;
-  stackSpacing?: string;
-}
+import classNames from "../utils/classnames";
+import { AvatarListProps } from "./types";
+import { Avatar } from ".";
 
 const DEFAULT_VALUES = {
   stacked: false,
@@ -28,8 +10,7 @@ const DEFAULT_VALUES = {
   wrap: true,
 };
 
-export default function AvatarList(props: Props) {
-  const navigate = useNavigate();
+export function AvatarList(props: AvatarListProps) {
   props = { ...DEFAULT_VALUES, ...props };
 
   const className = classNames("flex items-center", {
@@ -37,23 +18,15 @@ export default function AvatarList(props: Props) {
     "gap-1": !props.stacked,
     "flex-wrap": props.wrap,
   });
-  const avatarClassName = classNames("border border-surface-base rounded-full flex items-center", {
-    "cursor-pointer": props.linked,
-  });
+  const avatarClassName = classNames("border border-surface-base rounded-full flex items-center");
 
   const isCutOff = props.maxElements && props.people.length > props.maxElements;
   const people = isCutOff ? props.people.slice(0, props.maxElements) : props.people;
 
-  const handleRedirect = (id: string) => {
-    if (!props.linked) return;
-
-    navigate(Paths.profilePath(id));
-  };
-
   return (
     <div className={className}>
       {people!.map((a) => (
-        <div className={avatarClassName} key={a.id} onClick={() => handleRedirect(a.id!)}>
+        <div className={avatarClassName} key={a.id}>
           <Avatar person={a} size={props.size} />
         </div>
       ))}

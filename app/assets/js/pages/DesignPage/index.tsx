@@ -9,7 +9,6 @@ import { DivLink } from "turboui";
 export const loader = Pages.emptyLoader;
 
 const subpages = [
-  { title: "Avatars", path: "/__design__/avatars", icon: Icons.IconUserCircle },
   { title: "Buttons", path: "/__design__/buttons", icon: Icons.IconHandClick },
   { title: "Colors", path: "/__design__/colors", icon: Icons.IconPalette },
   { title: "Links", path: "/__design__/links", icon: Icons.IconLink },

@@ -53,7 +53,6 @@ export function createAppRoutes() {
         pageRoute("/setup", pages.SetupPage, { auth: false }),
         pageRoute("/join", pages.JoinPage, { auth: false }),
         pageRoute("/__design__", pages.DesignPage),
-        pageRoute("/__design__/avatars", pages.DesignAvatarsPage),
         pageRoute("/__design__/buttons", pages.DesignButtonsPage),
         pageRoute("/__design__/colors", pages.DesignColorsPage),
         pageRoute("/__design__/forms", pages.DesignFormsPage),

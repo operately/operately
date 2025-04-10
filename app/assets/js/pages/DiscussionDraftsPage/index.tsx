@@ -14,7 +14,7 @@ import { truncateString } from "@/utils/strings";
 import { assertPresent } from "@/utils/assertions";
 import { richContentToString } from "@/components/RichContent";
 
-import Avatar from "@/components/Avatar";
+import { Avatar } from "turboui";
 import FormattedTime from "@/components/FormattedTime";
 import classNames from "classnames";
 

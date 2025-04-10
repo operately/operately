@@ -4,9 +4,8 @@ import * as Pages from "@/components/Pages";
 import * as AdminApi from "@/ee/admin_api";
 
 import classNames from "classnames";
-import AvatarList from "@/components/AvatarList";
 import FormattedTime from "@/components/FormattedTime";
-import { DivLink } from "turboui";
+import { DivLink, AvatarList } from "turboui";
 
 interface LoaderData {
   companies: AdminApi.Company[];

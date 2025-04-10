@@ -2,7 +2,7 @@ import * as React from "react";
 import * as TipTap from "@tiptap/react";
 import * as People from "@/models/people";
 
-import Avatar from "@/components/Avatar";
+import { Avatar } from "turboui";
 import { usePersonNameAndAvatar } from "@/contexts/CurrentCompanyContext";
 
 //

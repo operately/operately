@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as Icons from "@tabler/icons-react";
 
-import Avatar from "@/components/Avatar";
+import { Avatar } from "turboui";
 import FormattedTime from "@/components/FormattedTime";
 
 import { useLoadedData } from "./loader";

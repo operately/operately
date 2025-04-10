@@ -1,6 +1,6 @@
 import React from "react";
 
-import Avatar from "@/components/Avatar";
+import { Avatar } from "turboui";
 import { Subscriber } from "@/models/notifications";
 import { compareIds, includesId } from "@/routes/paths";
 import { useFieldValue } from "./FormContext";
