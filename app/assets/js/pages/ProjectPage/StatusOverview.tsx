@@ -2,7 +2,7 @@ import * as React from "react";
 import * as Projects from "@/models/projects";
 
 import { StatusIndicator } from "@/features/ProjectListItem/StatusIndicator";
-import { MiniPieChart } from "@/components/charts/MiniPieChart";
+import { PieChart } from "turboui";
 import { DimmedLabel } from "./Label";
 
 export function StatusOverview({ project }) {
@@ -48,7 +48,8 @@ function NoMilestones() {
 function AllCompleted() {
   return (
     <div className="flex items-center gap-2">
-      <MiniPieChart completed={10} total={10} />
+      <PieChart size={16} slices={[{ percentage: 100, color: "var(--color-accent-1)" }]} />
+
       <span className="font-medium">All Milestones Completed</span>
     </div>
   );
@@ -57,7 +58,10 @@ function AllCompleted() {
 function CompletionPieChart({ done, total }) {
   return (
     <div className="flex items-center gap-2">
-      <MiniPieChart completed={done} total={total} size={16} />
+      <PieChart size={16} slices={[
+        { percentage: (done / total) * 100, color: "var(--color-accent-1)" },
+      ]} />
+      
       <span className="font-medium">
         {done}/{total} milestones completed
       </span>

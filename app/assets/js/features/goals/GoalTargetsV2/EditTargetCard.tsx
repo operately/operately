@@ -5,7 +5,7 @@ import { IconTrash } from "@tabler/icons-react";
 
 import classNames from "classnames";
 import { PrimaryButton, SecondaryButton } from "turboui";
-import { MiniPieChart } from "@/components/charts";
+import { PieChart } from "turboui";
 import { useDragAndDropContext, useDraggable } from "@/features/DragAndDrop";
 
 import { Target } from "./types";
@@ -52,7 +52,7 @@ function TitleSection({ target, index, editing }) {
   return (
     <>
       <div className={className}>
-        <PieChart target={target} />
+        <ProgressPieChart target={target} />
         <NameField target={target} editing={editing} />
       </div>
       {!target.isNew && (
@@ -94,11 +94,11 @@ function NameField({ editing, target }: { target: Target; editing: boolean }) {
   }
 }
 
-function PieChart({ target }: { target: Target }) {
+function ProgressPieChart({ target }: { target: Target }) {
   const progress = Goals.targetProgressPercentage(target);
 
   if (target.isNew) return null;
-  return <MiniPieChart completed={progress} total={100} size={16} />;
+  return <PieChart size={16} slices={[{ percentage: progress, color: "var(--color-accent-1)" }]} />;
 }
 
 function Actions({ editing, target }: { editing: boolean; target: Target }) {

@@ -24,6 +24,7 @@
   --color-surface-accent: rgba(251, 251, 251, 1);
   --color-surface-outline: rgba(211, 204, 189, 1);
   --color-surface-highlight: rgba(224, 242, 254, 0.4);
+  --color-surface-subtle: var(--color-zinc-200);
 
   --color-content-base: rgba(0, 0, 0, 0.95);
   --color-content-accent: rgba(0, 0, 0, 1);
@@ -68,6 +69,7 @@
   --color-surface-accent: rgba(255, 255, 255, 0.03);
   --color-surface-outline: rgba(60, 60, 64, 1);
   --color-surface-highlight: rgba(255, 255, 255, 0.03);
+  --color-surface-subtle: var(--color-dark-8);
 
   --color-content-base: rgba(255, 255, 255, 0.9);
   --color-content-accent: rgba(255, 255, 255, 1);
