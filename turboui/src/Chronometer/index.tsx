@@ -1,28 +1,26 @@
 import React from "react";
-import FormattedTime from "@/components/FormattedTime";
+
 import classNames from "classnames";
 import { match } from "ts-pattern";
 
-export type CompletedColor = "indigo" | "stone";
+export type Color = "indigo" | "stone";
 
 interface Props {
-  start: Date | string;
-  end: Date | string;
-  width?: string;
-  progress?: number;
-  completedColor?: CompletedColor;
+  start: Date;
+  end: Date;
+  color?: Color;
 }
 
 const gridLayout = "px-2 py-2 w-full grid grid-cols-[auto_1fr_auto] items-center gap-2 absolute top-0 left-0 bottom-0";
 
-export function Chronometer({ start, end, width = "w-64", progress, completedColor = "indigo" }: Props) {
+export function Chronometer({ start, end, color = "indigo" }: Props) {
   //
   // We are displaying two separate grids, one for the completed part and one for the remaining part.
   // The completed part is clipped to the left, and the remaining part is clipped to the right.
   // This way we can optimize the colors for the completed and remaining parts.
   //
 
-  progress = React.useMemo(() => progress ?? findProgress(start, end), [start, end, progress]);
+  const progress = React.useMemo(() => findProgress(start, end), [start, end]);
 
   const completedStyle = {
     clipPath: `inset(0 ${100 - progress}% 0 0)`,
@@ -37,27 +35,27 @@ export function Chronometer({ start, end, width = "w-64", progress, completedCol
   };
 
   return (
-    <ChronometerContainer width={width}>
-      <ChronometerProgress progress={progress} completedColor={completedColor} />
+    <ChronometerContainer>
+      <ChronometerProgress progress={progress} color={color} />
 
       <div className={gridLayout} style={completedStyle}>
-        <TimeDisplay time={start} isHighlighted={true} completedColor={completedColor} />
-        <Dividers width={width} completedColor={completedColor} />
-        <TimeDisplay time={end} isHighlighted={true} completedColor={completedColor} />
+        <TimeDisplay time={start} isHighlighted={true} color={color} />
+        <Dividers color={color} />
+        <TimeDisplay time={end} isHighlighted={true} color={color} />
       </div>
 
       <div className={gridLayout} style={remainingStyle}>
-        <TimeDisplay time={start} completedColor={completedColor} />
-        <Dividers width={width} completedColor="stone" />
-        <TimeDisplay time={end} completedColor={completedColor} />
+        <TimeDisplay time={start} color={color} />
+        <Dividers color="stone" />
+        <TimeDisplay time={end} color={color} />
       </div>
     </ChronometerContainer>
   );
 }
 
-function ChronometerContainer({ width, children }: { width: string; children: React.ReactNode }) {
+function ChronometerContainer({ children }: { children: React.ReactNode }) {
   return (
-    <div className={width}>
+    <div className="w-full">
       <div className="border border-stroke-base shadow-sm bg-surface-dimmed text-xs rounded-lg py-4 relative overflow-hidden">
         {children}
       </div>
@@ -65,10 +63,10 @@ function ChronometerContainer({ width, children }: { width: string; children: Re
   );
 }
 
-function ChronometerProgress({ progress, completedColor }: { progress: number; completedColor: CompletedColor }) {
+function ChronometerProgress({ progress, color }: { progress: number; color: Color }) {
   const className = classNames("absolute top-0 left-0 bottom-0 transition-all duration-300 z-10", {
-    "bg-indigo-500": completedColor === "indigo",
-    "bg-stone-300 opacity-50": completedColor === "stone",
+    "bg-indigo-500": color === "indigo",
+    "bg-stone-300 opacity-50": color === "stone",
   });
 
   return <div className={className} style={{ width: progress + "%" }} />;
@@ -76,22 +74,36 @@ function ChronometerProgress({ progress, completedColor }: { progress: number; c
 
 interface TimeDisplayProps {
   time: Date | string;
-  completedColor: CompletedColor;
+  color: Color;
   isHighlighted?: boolean;
 }
 
-function TimeDisplay({ time, isHighlighted = false, completedColor }: TimeDisplayProps) {
+function TimeDisplay({ time, isHighlighted = false, color }: TimeDisplayProps) {
   const containerClass = classNames("text-xs z-1 relative whitespace-nowrap", {
-    "text-white-1 font-bold": isHighlighted && completedColor === "indigo",
+    "text-white-1 font-bold": isHighlighted && color === "indigo",
   });
 
   if (typeof time === "string") {
     time = new Date(time);
   }
 
+  const formatDate = (date: Date) => {
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const day = date.getDate();
+    const month = months[date.getMonth()];
+    const year = date.getFullYear();
+    const currentYear = new Date().getFullYear();
+
+    if (year === currentYear) {
+      return `${day} ${month}`;
+    } else {
+      return `${day} ${month} '${String(year).slice(-2)}`;
+    }
+  };
+
   return (
     <span className={containerClass}>
-      <FormattedTime time={time} format="short-date" />
+      {formatDate(time)}
     </span>
   );
 }
@@ -108,16 +120,26 @@ function findProgress(start: Date | string, end: Date | string) {
   const endTime = end.getTime();
   const currentTime = new Date().getTime();
 
-  const totalDuration = endTime - startTime;
-  const elapsedTime = Math.max(0, currentTime - startTime);
+  // If current time is after end date, return 100%
+  if (currentTime >= endTime) {
+    return 100;
+  }
 
-  return Math.min(100, Math.max(0, (elapsedTime / totalDuration) * 100));
+  // If current time is before start date, return 0%
+  if (currentTime <= startTime) {
+    return 0;
+  }
+
+  const totalDuration = endTime - startTime;
+  const elapsedTime = currentTime - startTime;
+
+  return (elapsedTime / totalDuration) * 100;
 }
 
-function Dividers({ width, completedColor }: { width: string; completedColor: CompletedColor }) {
+function Dividers({ color }: { color: Color }) {
   const ref = React.useRef<HTMLDivElement>(null);
   const [dividers, setDividers] = React.useState<React.ReactNode[]>([]);
-  const color = match(completedColor)
+  const dividerColor = match(color)
     .with("indigo", () => "border-indigo-300")
     .with("stone", () => "border-surface-outline")
     .exhaustive();
@@ -125,9 +147,9 @@ function Dividers({ width, completedColor }: { width: string; completedColor: Co
   React.useEffect(() => {
     if (ref.current) {
       const containerWidth = ref.current.offsetWidth;
-      setDividers(generateDividers(containerWidth, color));
+      setDividers(generateDividers(containerWidth, dividerColor));
     }
-  }, [width, color]);
+  }, [dividerColor]);
 
   return (
     <div ref={ref} className="flex-1 flex items-center justify-center overflow-hidden">
