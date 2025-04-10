@@ -39,13 +39,17 @@ devimage.build:
 # Development tasks
 #
 
-dev.build:
+dev.up:
 	$(MAKE) dev.seed.env
 	./devenv up
+
+dev.build:
+	$(MAKE) dev.up
 	./devenv bash -c "cd app && mix local.hex --force --if-missing"
 	./devenv bash -c "cd app && mix deps.get"
 	./devenv bash -c "cd app && mix compile"
 	./devenv bash -c "cd app && npm install"
+	./devenv bash -c "cd turboui && npm install && npm run build"
 	$(MAKE) dev.db.create
 	$(MAKE) test.db.create
 	$(MAKE) dev.db.migrate
