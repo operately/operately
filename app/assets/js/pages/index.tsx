@@ -15,7 +15,6 @@ import * as CompanyAdminRestoreSuspendedPeoplePage from "./CompanyAdminRestoreSu
 import * as CompanyAdminTrustedEmailDomainsPage from "./CompanyAdminTrustedEmailDomainsPage";
 import * as CompanyPermissionsPage from "./CompanyPermissionsPage";
 import * as CompanyRenamePage from "./CompanyRenamePage";
-import * as DesignAvatarsPage from "./DesignAvatarsPage";
 import * as DesignButtonsPage from "./DesignButtonsPage";
 import * as DesignCalloutsPage from "./DesignCalloutsPage";
 import * as DesignColorsPage from "./DesignColorsPage";
@@ -179,11 +178,6 @@ export default {
     name: "CompanyRenamePage",
     loader: CompanyRenamePage.loader,
     Page: CompanyRenamePage.Page,
-  },
-  DesignAvatarsPage: {
-    name: "DesignAvatarsPage",
-    loader: DesignAvatarsPage.loader,
-    Page: DesignAvatarsPage.Page,
   },
   DesignButtonsPage: {
     name: "DesignButtonsPage",
