@@ -2,6 +2,7 @@
 import Logo from "../Logo.astro";
 import { avatarUrl } from "../../mockData.ts";
 import type { NavigationBarProps } from "../../types/astro";
+import { Avatar } from "turboui";
 
 type Props = NavigationBarProps;
 
@@ -210,13 +211,7 @@ const { activeItem } = Astro.props;
         </div>
       </div>
 
-      <div class="w-8 h-8 rounded-full overflow-hidden border border-gray-200">
-        <img
-          src={avatarUrl}
-          alt="User avatar"
-          class="w-full h-full object-cover"
-        />
-      </div>
+      <Avatar person={{ id: "1", fullName: "John Doe", avatarUrl }} size="small" />
     </div>
   </div>
 </nav>

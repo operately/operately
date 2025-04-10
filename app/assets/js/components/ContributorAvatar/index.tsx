@@ -7,7 +7,7 @@ import { Tooltip } from "@/components/Tooltip";
 import { Paths } from "@/routes/paths";
 import { DivLink } from "turboui";
 
-import Avatar from "@/components/Avatar";
+import { Avatar } from "turboui";
 import classNames from "classnames";
 import { TestableElement } from "@/utils/testid";
 import { useColorMode } from "@/contexts/ThemeContext";

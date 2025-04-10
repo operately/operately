@@ -19,7 +19,7 @@ import { useLoadedData } from "./loader";
 import { assertPresent } from "@/utils/assertions";
 import { useEditSpaceMembersPermissions, useRemoveGroupMember } from "@/models/spaces";
 
-import Avatar from "@/components/Avatar";
+import { Avatar } from "turboui";
 
 export function Page() {
   const { space } = useLoadedData();

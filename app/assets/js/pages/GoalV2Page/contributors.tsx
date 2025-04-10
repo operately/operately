@@ -1,10 +1,10 @@
 import React from "react";
 
 import Forms from "@/components/Forms";
-import AvatarList from "@/components/AvatarList";
-import { AvatarLink } from "@/components/Avatar";
+import { AvatarLink } from "@/components/AvatarLink";
 import { useIsViewMode } from "@/components/Pages";
 import plurarize from "@/utils/plurarize";
+import { AvatarList } from "turboui";
 
 import { useLoadedData } from "./loader";
 import { DisableInEditMode, Title } from "./components";

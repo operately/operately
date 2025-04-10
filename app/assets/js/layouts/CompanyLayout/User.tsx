@@ -1,6 +1,6 @@
 import React from "react";
 
-import Avatar from "@/components/Avatar";
+import { Avatar } from "turboui";
 import { Link } from "react-router-dom";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { Paths } from "@/routes/paths";

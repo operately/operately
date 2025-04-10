@@ -2,12 +2,11 @@ import * as React from "react";
 import * as Tasks from "@/models/tasks";
 
 import { useIsDarkMode } from "@/contexts/ThemeContext";
-import { DivLink } from "turboui";
+import { DivLink, AvatarList } from "turboui";
 import { insertAt } from "@/utils/array";
 import { DragAndDropProvider, useDraggable, useDropZone, useDraggingAnimation } from "@/features/DragAndDrop";
 import { Paths, compareIds } from "@/routes/paths";
 import { match } from "ts-pattern";
-import AvatarList from "@/components/AvatarList";
 
 interface TaskBoardState {
   todoTasks: Tasks.Task[];
