@@ -1,6 +1,11 @@
 import React from "react";
 
-import { COLORS } from "./constants";
+export const COLORS = {
+  green: "rgb(22, 163, 74)",
+  yellow: "rgb(250, 204, 21)",
+  red: "rgb(239, 68, 68)",
+  gray: "rgb(107, 114, 128)",
+};
 
 interface Slice {
   size: number;
@@ -14,7 +19,7 @@ interface PieChartProps {
 }
 
 export function PieChart({ size = 20, total, slices }: PieChartProps) {
-  const className = `w-[${size}px] h-[${size}px] rounded-full`;
+  const className = `rounded-full`;
 
   const chartBackground = React.useMemo(() => {
     let start = 0;
@@ -37,6 +42,8 @@ export function PieChart({ size = 20, total, slices }: PieChartProps) {
       className={className}
       style={{
         background: `conic-gradient(${chartBackground})`,
+        width: `${size}px`,
+        height: `${size}px`
       }}
     />
   );
