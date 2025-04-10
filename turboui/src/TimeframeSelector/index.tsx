@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as Popover from "@radix-ui/react-popover";
 import * as Icons from "@tabler/icons-react";
-import * as Timeframes from "@/utils/timeframes";
+import { TimeframeSelectorProps, TimeframeType } from "./types";
 
 import { match } from "ts-pattern";
 
@@ -10,15 +10,17 @@ import { QuarterPicker } from "./QuarterPicker";
 import { YearPicker } from "./YearPicker";
 import { CustomRangePicker } from "./CustomRangePicker";
 import { SegmentedControl } from "./SegmentedControl";
+import { LeftChevron, RightChevron } from "./Chevrons";
 
 import classNames from "classnames";
+import {
+  currentMonth,
+  currentQuarter,
+  currentYear,
+  formatTimeframe,
+} from "./utils";
 
-interface TimeframeSelectorProps {
-  timeframe: Timeframes.Timeframe;
-  setTimeframe: Timeframes.SetTimeframe;
-  size?: "xs" | "base";
-  alignContent?: "start" | "end";
-}
+export { CustomRangePicker, LeftChevron, RightChevron };
 
 const DEFAULTS = {
   size: "base" as const,
@@ -49,7 +51,7 @@ function TimeframeSelectorFormElement(props: TimeframeSelectorProps) {
       "px-3 py-1": props.size === "xs",
       "text-base": props.size === "base",
       "text-sm": props.size === "xs",
-    },
+    }
   );
 
   const iconSize = props.size === "base" ? 18 : 16;
@@ -58,7 +60,7 @@ function TimeframeSelectorFormElement(props: TimeframeSelectorProps) {
     <Popover.Trigger asChild>
       <div className={className}>
         <Icons.IconCalendar size={iconSize} className="shrink-0" />
-        <span className="truncate">{Timeframes.format(props.timeframe)}</span>
+        <span className="truncate">{formatTimeframe(props.timeframe)}</span>
       </div>
     </Popover.Trigger>
   );
@@ -70,12 +72,16 @@ function PopeverContent(props: TimeframeSelectorProps) {
     "border border-surface-outline",
     "rounded-lg shadow-xl",
     "bg-surface-base",
-    "flex flex-col items-start p-6",
+    "flex flex-col items-start p-6"
   );
 
   return (
     <Popover.Portal>
-      <Popover.Content className={className} align={props.alignContent} sideOffset={5}>
+      <Popover.Content
+        className={className}
+        align={props.alignContent}
+        sideOffset={5}
+      >
         <TimeframeSelectorHeader {...props} />
         <TimeframeSelectorContent {...props} />
       </Popover.Content>
@@ -88,7 +94,9 @@ function TimeframeSelectorHeader(props: TimeframeSelectorProps) {
     <div className="flex items-center justify-between gap-10 w-full border-b border-stroke-base pb-3 mb-3">
       <div className="">
         <div className="font-bold shrink-0">Select Timeframe</div>
-        <div className="text-content-dimmed text-xs">{Timeframes.format(props.timeframe)}</div>
+        <div className="text-content-dimmed text-xs">
+          {formatTimeframe(props.timeframe)}
+        </div>
       </div>
 
       <TimeframeSelectorTypeSelector {...props} />
@@ -97,12 +105,14 @@ function TimeframeSelectorHeader(props: TimeframeSelectorProps) {
 }
 
 function TimeframeSelectorTypeSelector(props: TimeframeSelectorProps) {
-  const changeHandler = (value: Timeframes.TimeframeType) => {
-    match(value)
-      .with("year", () => props.setTimeframe(Timeframes.currentYear()))
-      .with("quarter", () => props.setTimeframe(Timeframes.currentQuarter()))
-      .with("month", () => props.setTimeframe(Timeframes.currentMonth()))
-      .with("days", () => props.setTimeframe({ ...props.timeframe, type: "days" }))
+  const changeHandler = (value: string) => {
+    match(value as TimeframeType)
+      .with("year", () => props.setTimeframe(currentYear()))
+      .with("quarter", () => props.setTimeframe(currentQuarter()))
+      .with("month", () => props.setTimeframe(currentMonth()))
+      .with("days", () =>
+        props.setTimeframe({ ...props.timeframe, type: "days" })
+      )
       .exhaustive();
   };
 
@@ -120,11 +130,22 @@ function TimeframeSelectorTypeSelector(props: TimeframeSelectorProps) {
   );
 }
 
-function TimeframeSelectorContent({ timeframe, setTimeframe }: TimeframeSelectorProps) {
+function TimeframeSelectorContent({
+  timeframe,
+  setTimeframe,
+}: TimeframeSelectorProps) {
   return match(timeframe.type)
-    .with("month", () => <MonthPicker timeframe={timeframe} setTimeframe={setTimeframe} />)
-    .with("quarter", () => <QuarterPicker timeframe={timeframe} setTimeframe={setTimeframe} />)
-    .with("year", () => <YearPicker timeframe={timeframe} setTimeframe={setTimeframe} />)
-    .with("days", () => <CustomRangePicker timeframe={timeframe} setTimeframe={setTimeframe} />)
+    .with("month", () => (
+      <MonthPicker timeframe={timeframe} setTimeframe={setTimeframe} />
+    ))
+    .with("quarter", () => (
+      <QuarterPicker timeframe={timeframe} setTimeframe={setTimeframe} />
+    ))
+    .with("year", () => (
+      <YearPicker timeframe={timeframe} setTimeframe={setTimeframe} />
+    ))
+    .with("days", () => (
+      <CustomRangePicker timeframe={timeframe} setTimeframe={setTimeframe} />
+    ))
     .exhaustive();
 }

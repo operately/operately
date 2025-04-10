@@ -40,6 +40,7 @@
     "react-dom": "^18.3.0",
     "react-router-dom": "^6.10.0",
     "react-spinners": "^0.13.8",
+    "react-datepicker": "^4.14.0",
     "ts-pattern": "^5.0.8"
   }
 }
