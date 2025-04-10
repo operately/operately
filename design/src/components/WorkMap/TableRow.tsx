@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { StatusBadge } from "turboui/StatusBadge";
-import { ProgressBar } from "turboui/ProgressBar";
+import { StatusBadge, ProgressBar, Avatar } from "turboui";
 import {
   IconTargetArrow,
   IconChecklist,
@@ -9,7 +8,6 @@ import {
 } from "./Icons";
 import { HoverQuickEntryWidget } from "./HoverQuickEntryWidget.tsx";
 import type { WorkMapItem, TableRowProps } from "../../types/workmap";
-import { Avatar } from "turboui/Avatar";
 
 /**
  * TableRow component for rendering a WorkMap item (goal or project) in a table

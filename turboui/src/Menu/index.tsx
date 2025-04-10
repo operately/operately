@@ -2,9 +2,9 @@ import * as React from "react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import * as Icons from "@tabler/icons-react";
 
-import classNames from "classnames";
 import { TestableElement, createTestId } from "../TestableElement";
 import { DivLink } from "../Link";
+import classNames from "../utils/classnames";
 
 type Size = "small" | "medium" | "large" | "xlarge" | "xxlarge" | "xxxlarge";
 

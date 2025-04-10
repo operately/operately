@@ -1,9 +1,8 @@
 /**
  * Types specific to the WorkMap functionality
  */
-import type { AvatarPerson } from "turboui/Avatar";
 import type { BaseComponentProps, WithChildren, WithId } from "./common";
-import type { ProgressBarStatus as GoalStatus } from "turboui/ProgressBar";
+import type { ProgressBarStatus as GoalStatus, AvatarPerson } from "turboui";
 
 /**
  * Deadline information

@@ -23,6 +23,9 @@ export default defineConfig({
       alias: {
         'ts-pattern': path.resolve('./node_modules/ts-pattern'),
         'react-router-dom': path.resolve('./node_modules/react-router-dom'),
+        '@radix-ui/react-dropdown-menu': path.resolve('./node_modules/@radix-ui/react-dropdown-menu'),
+        '@tabler/icons-react': path.resolve('./node_modules/@tabler/icons-react'),
+        'react-spinners': path.resolve('./node_modules/react-spinners'),
       }
     }
   }
