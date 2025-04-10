@@ -5,7 +5,7 @@ import * as Popover from "@radix-ui/react-popover";
 import * as Timeframes from "@/utils/timeframes";
 
 import { SecondaryButton } from "turboui";
-import { Chronometer } from "@/components/Chronometer";
+import { Chronometer } from "turboui";
 import { CustomRangePicker } from "@/components/TimeframeSelector/CustomRangePicker";
 import { SubscribersSelector, SubscriptionsState } from "@/features/Subscriptions";
 
@@ -226,7 +226,7 @@ function TimeframeSelector() {
         <TimeframeEditButton value={value} setValue={setValue} />
       </div>
 
-      <Chronometer start={value.startDate!} end={value.endDate!} width="w-full" />
+      <Chronometer start={value.startDate!} end={value.endDate!} />
     </div>
   );
 }
