@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { PieChart, COLORS } from './index';
+import { PieChart } from './index';
 
 const meta = {
   title: 'Components/PieChart',
@@ -13,12 +13,12 @@ const meta = {
       description: 'The diameter of the pie chart in pixels',
       control: { type: 'number' }
     },
-    total: {
-      description: 'The total value that represents 100% of the pie chart',
-      control: { type: 'number' }
+    bgcolor: {
+      description: 'The background color of the pie chart',
+      control: { type: 'text' }
     },
     slices: {
-      description: 'Array of slice objects, each containing size (value) and color',
+      description: 'Array of slice objects, each containing percentage and color',
       control: 'object'
     }
   }
@@ -37,66 +37,33 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     size: 100,
-    total: 100,
     slices: [
-      { size: 60, color: 'green' },
-      { size: 30, color: 'yellow' },
-      { size: 10, color: 'red' },
+      { percentage: 60, color: 'var(--color-green-500)' },
     ],
   },
 };
 
-/**
- * Small variant (50px) is ideal for:
- * - Compact layouts
- * - Inline visualizations
- * - Status indicators where space is limited
- */
-export const Small: Story = {
+export const Sizes: Story = {
   args: {
-    size: 50,
-    total: 100,
+    size: 30,
+    bgcolor: "var(--color-zinc-200)",
     slices: [
-      { size: 75, color: 'green' },
-      { size: 25, color: 'red' },
+      { percentage: 30, color: 'green' }
     ],
   },
-};
-
-/**
- * Large variant (200px) is suitable for:
- * - Featured data visualization
- * - Dashboard focal points
- * - When detail and visibility are priorities
- * - Complex data sets with multiple segments
- */
-export const Large: Story = {
-  args: {
-    size: 200,
-    total: 100,
-    slices: [
-      { size: 40, color: 'green' },
-      { size: 30, color: 'yellow' },
-      { size: 20, color: 'red' },
-      { size: 10, color: 'gray' },
-    ],
-  },
-};
-
-/**
- * Single color variant demonstrates:
- * - Complete or 100% scenarios
- * - Simple progress indicators
- * - When only one category or value needs to be shown
- */
-export const SingleColor: Story = {
-  args: {
-    size: 100,
-    total: 100,
-    slices: [
-      { size: 100, color: 'green' },
-    ],
-  },
+  decorators: [
+    () => (
+      <div className="flex items-center space-x-4">
+        <PieChart size={10} slices={[{ percentage: 30, color: 'green' }]} />
+        <PieChart size={15} slices={[{ percentage: 30, color: 'green' }]} />
+        <PieChart size={20} slices={[{ percentage: 30, color: 'green' }]} />
+        <PieChart size={25} slices={[{ percentage: 30, color: 'green' }]} />
+        <PieChart size={30} slices={[{ percentage: 30, color: 'green' }]} />
+        <PieChart size={50} slices={[{ percentage: 30, color: 'green' }]} />
+        <PieChart size={100} slices={[{ percentage: 30, color: 'green' }]} />
+      </div>
+    ),
+  ]
 };
 
 /**
@@ -106,15 +73,25 @@ export const SingleColor: Story = {
  * - Visualizing balanced distributions or fair shares
  * - Demonstrating quarter or equal division patterns
  */
-export const EqualParts: Story = {
+export const MultipleSlices: Story = {
   args: {
     size: 100,
-    total: 100,
     slices: [
-      { size: 25, color: 'green' },
-      { size: 25, color: 'yellow' },
-      { size: 25, color: 'red' },
-      { size: 25, color: 'gray' },
+      { percentage: 20, color: 'green' },
+      { percentage: 20, color: 'red' },
+      { percentage: 20, color: 'blue' },
+      { percentage: 20, color: 'yellow' }
     ],
   },
+  decorators: [
+    () => (
+      <div className="flex items-center space-x-4">
+        <PieChart size={100} slices={[{ percentage: 20, color: 'green' }]} />
+        <PieChart size={100} slices={[{ percentage: 20, color: 'green' }, { percentage: 20, color: 'red' }]} />
+        <PieChart size={100} slices={[{ percentage: 20, color: 'green' }, { percentage: 20, color: 'red' }]} />
+        <PieChart size={100} slices={[{ percentage: 20, color: 'green' }, { percentage: 20, color: 'red' }, {percentage: 20, color: 'blue'}]} />
+        <PieChart size={100} slices={[{ percentage: 20, color: 'green' }, { percentage: 20, color: 'red' }, {percentage: 20, color: 'blue'}, {percentage: 20, color: 'yellow'}]} />
+      </div>
+    ),
+  ]
 };
