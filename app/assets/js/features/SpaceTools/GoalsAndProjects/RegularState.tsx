@@ -6,7 +6,8 @@ import { Space } from "@/models/spaces";
 
 import { splitByStatus } from "@/models/milestones";
 
-import { PieChart, ProgressBar } from "@/components/charts";
+import { PieChart } from "turboui";
+import { ProgressBar } from "@/components/charts";
 import { assertPresent } from "@/utils/assertions";
 
 import { Title } from "../components";
@@ -159,15 +160,20 @@ function Header(props: GoalsHeader | ProjectsHeader) {
     }
   }, []);
 
+  const onTrackPercentage = (status.on_track / status.total) * 100;
+  const cautionPercentage = (status.caution / status.total) * 100;
+  const issuePercentage = (status.issue / status.total) * 100;
+  const pendingPercentage = (status.pending / status.total) * 100;
+
   return (
     <div className="font-bold flex items-center gap-2 text-sm mb-2">
       <PieChart
-        total={status.total}
+        size={16}
         slices={[
-          { size: status.on_track, color: "green" },
-          { size: status.caution, color: "yellow" },
-          { size: status.issue, color: "red" },
-          { size: status.pending, color: "gray" },
+          { percentage: onTrackPercentage, color: "rgb(22, 163, 74)" },
+          { percentage: cautionPercentage, color: "rgb(250, 204, 21)" },
+          { percentage: issuePercentage, color: "rgb(239, 68, 68)" },
+          { percentage: pendingPercentage, color: "rgb(107, 114, 128)" },
         ]}
       />
       {status.on_track}/{status.total} {props.type} on track

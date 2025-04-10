@@ -11,7 +11,7 @@ interface PieChartProps {
   slices: Slice[];
 }
 
-export function PieChart({ size = 20, bgcolor = "var(--color-zinc-200)", slices }: PieChartProps) {
+export function PieChart({ size = 20, bgcolor = "var(--color-surface-subtle)", slices }: PieChartProps) {
   const colors = React.useMemo(() => {
     let start = 0;
     let total = 0;

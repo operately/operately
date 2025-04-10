@@ -8,7 +8,7 @@ import FormattedTime from "@/components/FormattedTime";
 
 import { Link } from "turboui";
 import { Paths } from "@/routes/paths";
-import { MiniPieChart } from "@/components/charts/MiniPieChart";
+import { PieChart } from "turboui";
 import { MilestoneIcon } from "@/components/MilestoneIcon";
 import { StatusIndicator } from "@/features/ProjectListItem/StatusIndicator";
 import { PrivacyIndicator } from "@/features/Permissions";
@@ -53,6 +53,7 @@ function ProjectNameLine({ project }) {
   );
 }
 
+
 function ProjectStatusLine({ project }: { project: Projects.Project }) {
   if (project.status === "closed") {
     return (
@@ -82,9 +83,11 @@ function MilestoneCompletion({ project }) {
 
   if (totalCount === 0) return null;
 
+  const percentage = (done.length / totalCount) * 100;
+
   return (
     <div className="flex items-center gap-2 shrink-0">
-      <MiniPieChart completed={done.length} total={totalCount} size={16} />
+      <PieChart slices={[{percentage: percentage, color: "var(--color-accent-1)" }]} size={16} />
       {done.length}/{totalCount} completed
     </div>
   );
