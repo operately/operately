@@ -30,7 +30,7 @@ export function Timeframe() {
           readonly={isViewMode}
           field="timeframe"
           customLabel={<Title title="Timeframe" />}
-          completedColor={isViewMode ? "stone" : "indigo"}
+          color={isViewMode ? "stone" : "indigo"}
         />
       </Forms.FieldGroup>
       <div className={textClassname}>{timeLeft}</div>
