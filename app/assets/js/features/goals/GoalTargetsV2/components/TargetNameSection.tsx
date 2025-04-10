@@ -2,7 +2,7 @@ import React from "react";
 
 import * as Goals from "@/models/goals";
 import classNames from "classnames";
-import { MiniPieChart } from "@/components/charts";
+import { PieChart } from "turboui";
 import { Target } from "../types";
 
 interface Props {
@@ -17,7 +17,7 @@ export function TargetNameSection({ target, truncate }: Props) {
   return (
     <div className={nameClass}>
       <div className="mt-1.5">
-        <MiniPieChart completed={progress} total={100} size={16} />
+        <PieChart size={16} slices={[{ percentage: progress, color: "var(--color-green-500)" }]} />
       </div>
       <NameView name={target.name!} truncate={truncate} />
     </div>
