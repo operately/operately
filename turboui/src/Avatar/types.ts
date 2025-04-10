@@ -19,11 +19,6 @@ export interface AvatarProps {
   size: AvatarSize;
 }
 
-export interface AvatarLinkProps extends AvatarProps {
-  to: string;
-  className?: string;
-}
-
 export interface AvatarListProps {
   people: AvatarPerson[];
   size: AvatarSize;
