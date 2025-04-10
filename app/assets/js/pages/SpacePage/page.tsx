@@ -5,7 +5,7 @@ import * as Paper from "@/components/PaperContainer";
 import * as Spaces from "@/models/spaces";
 
 import { Feed, useItemsQuery } from "@/features/Feed";
-import { PrimaryButton, SecondaryButton } from "turboui";
+import { AvatarList, PrimaryButton, SecondaryButton } from "turboui";
 
 import { useJoinSpace } from "@/models/spaces";
 import { PrivacyIndicator } from "@/features/spaces/PrivacyIndicator";
@@ -15,7 +15,6 @@ import { ToolsSection } from "@/features/SpaceTools";
 
 import { useLoadedData, useRefresh } from "./loader";
 import { Paths } from "@/routes/paths";
-import AvatarList from "@/components/AvatarList";
 import { match } from "ts-pattern";
 
 export function Page() {

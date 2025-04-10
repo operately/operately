@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { StatusBadge } from "turboui/StatusBadge";
-import { ProgressBar } from "turboui/ProgressBar";
+import { StatusBadge, ProgressBar, Avatar } from "turboui";
 import {
   IconTargetArrow,
   IconChecklist,
@@ -8,10 +7,7 @@ import {
   IconChevronRight,
 } from "./Icons";
 import { HoverQuickEntryWidget } from "./HoverQuickEntryWidget.tsx";
-import type {
-  WorkMapItem,
-  TableRowProps,
-} from "../../types/workmap";
+import type { WorkMapItem, TableRowProps } from "../../types/workmap";
 
 /**
  * TableRow component for rendering a WorkMap item (goal or project) in a table
@@ -317,32 +313,14 @@ export function TableRow({
         {/* Champion */}
         <td className="py-2  px-2 md:px-4 hidden xl:table-cell">
           <div className="flex items-center max-w-[120px] overflow-hidden">
-            {/* Only show avatar/initials if there's an owner name */}
-            {item.owner && item.owner.name && (
-              <>
-                {item.owner.avatar ? (
-                  <div className="w-5 h-5 rounded-full overflow-hidden border border-stroke-base mr-1.5 flex-shrink-0 transform group-hover:scale-110 transition-transform duration-150 shadow-sm">
-                    <img
-                      src={item.owner.avatar}
-                      alt={item.owner.name}
-                      className="h-full w-full object-cover"
-                      referrerPolicy="no-referrer"
-                    />
-                  </div>
-                ) : (
-                  item.owner.initials && (
-                    <div className="w-5 h-5 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mr-1.5 text-xs flex-shrink-0 transform group-hover:scale-110 transition-transform duration-150 shadow-sm">
-                      {item.owner.initials}
-                    </div>
-                  )
-                )}
-              </>
+            {item.owner && item.owner.fullName && (
+              <Avatar person={item.owner} size="tiny" />
             )}
             <a
               href="#"
-              title={item.owner.name}
+              title={item.owner.fullName!}
               className={`
-                text-sm truncate hover:underline transition-colors whitespace-nowrap overflow-hidden text-ellipsis inline-block
+                text-sm truncate hover:underline transition-colors whitespace-nowrap overflow-hidden text-ellipsis inline-block ml-1.5
                 ${
                   isCompleted || isFailed
                     ? "text-content-dimmed"
@@ -352,7 +330,7 @@ export function TableRow({
                 ${isPending ? "text-content-dimmed" : ""}
               `}
             >
-              {item.owner.name}
+              {item.owner.fullName}
             </a>
           </div>
         </td>

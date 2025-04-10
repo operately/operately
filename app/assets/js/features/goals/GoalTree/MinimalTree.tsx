@@ -2,7 +2,6 @@ import React from "react";
 
 import { IconCircleCheckFilled, IconHexagons, IconTarget } from "@tabler/icons-react";
 
-import AvatarList from "@/components/AvatarList";
 import { statusBGColorClass, statusTextColorClass } from "@/components/status/colors";
 import { assertPresent } from "@/utils/assertions";
 import { truncateString } from "@/utils/strings";
@@ -10,7 +9,7 @@ import { useIsDarkMode } from "@/contexts/ThemeContext";
 
 import { TreeContextProvider, TreeContextProviderProps, useTreeContext } from "./treeContext";
 import { Node, GoalNode, ProjectNode } from "./tree";
-import { BlackLink } from "turboui";
+import { BlackLink, AvatarList } from "turboui";
 
 export function MinimalTree(props: TreeContextProviderProps) {
   return (
