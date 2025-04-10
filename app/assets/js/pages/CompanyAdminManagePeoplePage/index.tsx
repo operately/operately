@@ -13,7 +13,7 @@ import { BlackLink } from "turboui";
 import { Menu, MenuLinkItem, MenuActionItem } from "turboui";
 import { CopyToClipboard } from "@/components/CopyToClipboard";
 
-import Avatar from "@/components/Avatar";
+import { Avatar } from "turboui";
 import Modal, { ModalState, useModalState } from "@/components/Modal";
 import { createTestId } from "@/utils/testid";
 import { useMe } from "@/contexts/CurrentCompanyContext";

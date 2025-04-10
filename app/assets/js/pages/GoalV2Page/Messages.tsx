@@ -9,7 +9,7 @@ import * as Timeframes from "@/utils/timeframes";
 import { match } from "ts-pattern";
 
 import FormattedTime from "@/components/FormattedTime";
-import { AvatarLink } from "@/components/Avatar";
+import { AvatarLink } from "@/components/AvatarLink";
 import { SecondaryButton } from "turboui";
 import { richContentToString } from "@/components/RichContent";
 import { DivLink } from "turboui";

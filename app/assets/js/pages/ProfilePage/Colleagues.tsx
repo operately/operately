@@ -5,7 +5,7 @@ import { DivLink } from "turboui";
 import { Paths } from "@/routes/paths";
 import { SecondaryButton } from "turboui";
 
-import Avatar from "@/components/Avatar";
+import { Avatar } from "turboui";
 import classNames from "classnames";
 
 export function Colleagues({ person }: { person: People.Person }) {

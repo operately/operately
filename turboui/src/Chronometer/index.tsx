@@ -1,7 +1,7 @@
 import React from "react";
 
-import classNames from "classnames";
 import { match } from "ts-pattern";
+import classNames from "../utils/classnames";
 
 export type Color = "indigo" | "stone";
 

@@ -6,7 +6,7 @@ import { PermissionLevels } from "@/features/Permissions";
 import { ActionLink } from "turboui";
 import { useBindedPeopleList } from "./loader";
 
-import Avatar from "@/components/Avatar";
+import { Avatar } from "turboui";
 import { match } from "ts-pattern";
 
 export function OtherPeople() {

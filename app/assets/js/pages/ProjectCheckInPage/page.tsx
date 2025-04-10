@@ -5,7 +5,7 @@ import * as Icons from "@tabler/icons-react";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import * as Reactions from "@/models/reactions";
 
-import Avatar from "@/components/Avatar";
+import { Avatar } from "turboui";
 import FormattedTime from "@/components/FormattedTime";
 
 import { TextSeparator } from "@/components/TextSeparator";

@@ -4,7 +4,7 @@ import * as Tabs from "@/components/Tabs";
 import { Person } from "@/models/people";
 import { Paths } from "@/routes/paths";
 
-import Avatar from "@/components/Avatar";
+import { Avatar } from "turboui";
 
 interface PageHeaderProps {
   person: Person;

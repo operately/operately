@@ -1,7 +1,7 @@
 import React from "react";
 
 import Modal from "@/components/Modal";
-import Avatar from "@/components/Avatar";
+import { Avatar } from "turboui";
 import { PrimaryButton } from "turboui";
 
 import { Person } from "@/models/people";

@@ -1,6 +1,6 @@
 import React from "react";
 
-import Avatar from "@/components/Avatar";
+import { Avatar } from "turboui";
 import { Radio } from "@/components/Form";
 import { Subscriber } from "@/models/notifications";
 import { Options } from "@/features/Subscriptions";

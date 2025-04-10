@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { Paths } from "@/routes/paths";
 import { Timezones } from "./timezones";
 
-import Avatar from "@/components/Avatar";
+import { Avatar } from "turboui";
 import Forms from "@/components/Forms";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 
