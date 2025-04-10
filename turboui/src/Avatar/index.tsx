@@ -1,7 +1,9 @@
 import { DivLink } from "../Link";
 import { AvatarLinkProps, AvatarProps, AvatarSize } from "./types";
 
-export type { AvatarPerson } from "./types"
+export type { AvatarPerson } from "./types";
+export { AvatarList } from "./AvatarList";
+export { AvatarWithName } from "./AvatarWithName";
 
 function calculateSize(size: AvatarSize): number {
   if (size.constructor.name === "Number") {

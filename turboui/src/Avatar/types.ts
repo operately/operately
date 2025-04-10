@@ -35,3 +35,10 @@ export interface AvatarListProps {
   wrap?: boolean;
   stackSpacing?: string;
 }
+
+export interface AvatarWithNameProps extends AvatarProps {
+  nameFormat?: NameFormat;
+  className?: string;
+}
+
+export type NameFormat = "first" | "short" | "full";

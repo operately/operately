@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { StatusBadge, ProgressBar, Avatar } from "turboui";
+import { StatusBadge, ProgressBar, AvatarWithName } from "turboui";
 import {
   IconTargetArrow,
   IconChecklist,
@@ -312,15 +312,12 @@ export function TableRow({
 
         {/* Champion */}
         <td className="py-2  px-2 md:px-4 hidden xl:table-cell">
-          <div className="flex items-center max-w-[120px] overflow-hidden">
-            {item.owner && item.owner.fullName && (
-              <Avatar person={item.owner} size="tiny" />
-            )}
-            <a
-              href="#"
-              title={item.owner.fullName!}
+          <div className="max-w-[120px] overflow-hidden">
+            <AvatarWithName
+              person={item.owner}
+              size="tiny"
               className={`
-                text-sm truncate hover:underline transition-colors whitespace-nowrap overflow-hidden text-ellipsis inline-block ml-1.5
+                text-sm truncate hover:underline transition-colors whitespace-nowrap overflow-hidden text-ellipsis inline-block 
                 ${
                   isCompleted || isFailed
                     ? "text-content-dimmed"
@@ -329,9 +326,7 @@ export function TableRow({
                 ${isDropped ? "opacity-70 text-content-dimmed" : ""}
                 ${isPending ? "text-content-dimmed" : ""}
               `}
-            >
-              {item.owner.fullName}
-            </a>
+            />
           </div>
         </td>
 
