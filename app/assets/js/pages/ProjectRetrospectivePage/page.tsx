@@ -9,7 +9,7 @@ import { IconEdit } from "@tabler/icons-react";
 import { CommentSection, useComments } from "@/features/CommentSection";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
-import { AvatarWithName } from "@/components/Avatar/AvatarWithName";
+import { AvatarWithName } from "turboui";
 import { Spacer } from "@/components/Spacer";
 import FormattedTime from "@/components/FormattedTime";
 import { CurrentSubscriptions } from "@/features/Subscriptions";

@@ -1,8 +1,8 @@
 import React from "react";
-import classNames from "classnames";
 
 import * as Router from "react-router-dom";
 
+import classNames from "../utils/classnames";
 export { GhostLink } from "./GhostLink";
 
 interface Props {

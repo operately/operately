@@ -4,7 +4,7 @@ import * as People from "@/models/people";
 import * as Callouts from "@/components/Callouts";
 
 import FormattedTime from "@/components/FormattedTime";
-import Avatar from "@/components/Avatar";
+import { Avatar } from "turboui";
 
 import { DimmedLabel } from "./Label";
 import { SecondaryButton } from "turboui";

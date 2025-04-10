@@ -10,7 +10,7 @@ import { Paths, compareIds } from "@/routes/paths";
 import { AddOwnersModal } from "./AddOwnersModal";
 import { AddAdminsModal } from "./AddAdminsModal";
 
-import Avatar from "@/components/Avatar";
+import { Avatar } from "turboui";
 import { BlackLink } from "turboui";
 import { SecondaryButton } from "turboui";
 import { useMe } from "@/contexts/CurrentCompanyContext";

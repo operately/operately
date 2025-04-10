@@ -1,22 +1,8 @@
-import * as React from "react";
-import * as People from "@/models/people";
-import { DivLink } from "turboui";
-import { Paths } from "@/routes/paths";
+import { AvatarProps, AvatarSize } from "./types";
 
-import classnames from "classnames";
-
-type AvatarSizeString = "tiny" | "small" | "normal" | "large" | "xlarge" | "xxlarge";
-
-export type AvatarSize = AvatarSizeString | number;
-
-interface AvatarProps {
-  person: People.Person | null;
-  size: AvatarSize;
-}
-
-interface AvatarLinkProps extends AvatarProps {
-  className?: string;
-}
+export type { AvatarPerson, AvatarProps } from "./types";
+export { AvatarList } from "./AvatarList";
+export { AvatarWithName } from "./AvatarWithName";
 
 function calculateSize(size: AvatarSize): number {
   if (size.constructor.name === "Number") {
@@ -101,17 +87,10 @@ function initials(fullName: string): string {
 }
 
 function BackupAvatar({ person, size }: AvatarProps): JSX.Element {
-  const around = "rounded-full overflow-hidden shrink-0 border border-stroke-base inline-block";
-
-  const baseClass = classnames(
-    "text-white-1",
-    "bg-gray-500",
-    "h-full",
-    "rounded-full",
-    "shrink-0",
-    "tracking-wider",
-    "font-semibold",
-  );
+  const around =
+    "rounded-full overflow-hidden shrink-0 border border-stroke-base inline-block";
+  const baseClass =
+    "text-white-1 bg-gray-500 h-full rounded-full shrink-0 tracking-wider font-semibold";
 
   const className = baseClass + " " + TextClasses({ size });
 
@@ -119,9 +98,11 @@ function BackupAvatar({ person, size }: AvatarProps): JSX.Element {
   const style = { width: `${sizeNumber}px`, height: `${sizeNumber}px` };
 
   return (
-    <div title={person!.fullName!} className={around} style={style}>
+    <div title={person.fullName!} className={around} style={style}>
       <div className={className}>
-        <div className="flex items-center justify-center h-full">{initials(person!.fullName!)}</div>
+        <div className="flex items-center justify-center h-full">
+          {initials(person.fullName!)}
+        </div>
       </div>
     </div>
   );
@@ -140,7 +121,8 @@ function BackupAvatar({ person, size }: AvatarProps): JSX.Element {
 function ImageAvatar({ person, size }: AvatarProps): JSX.Element {
   if (!person) return <></>;
 
-  const className = "rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block";
+  const className =
+    "rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block";
 
   const sizeNumber = calculateSize(size);
   const style = { width: `${sizeNumber}px`, height: `${sizeNumber}px` };
@@ -151,13 +133,18 @@ function ImageAvatar({ person, size }: AvatarProps): JSX.Element {
         src={person.avatarUrl!}
         alt={person.fullName!}
         referrerPolicy="no-referrer"
-        style={{ height: "100%", width: "100%", display: "block", maxHeight: size + "px" }}
+        style={{
+          height: "100%",
+          width: "100%",
+          display: "block",
+          maxHeight: size + "px",
+        }}
       />
     </div>
   );
 }
 
-export default function Avatar(props: AvatarProps): JSX.Element {
+export function Avatar(props: AvatarProps) {
   if (props.person) {
     if (props.person.avatarUrl) {
       return ImageAvatar(props);
@@ -167,12 +154,4 @@ export default function Avatar(props: AvatarProps): JSX.Element {
   } else {
     return BackupAvatar({ person: { fullName: "?" }, size: props.size });
   }
-}
-
-export function AvatarLink(props: AvatarLinkProps) {
-  return (
-    <DivLink to={Paths.profilePath(props.person!.id!)} className={props.className}>
-      <Avatar {...props} />
-    </DivLink>
-  );
 }

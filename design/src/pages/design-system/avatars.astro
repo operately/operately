@@ -1,1282 +1,309 @@
 ---
 import Layout from "../../layouts/Layout.astro";
+import { Avatar, AvatarList } from "turboui";
+
+function genAvatar(id: string) {
+  return `https://images.unsplash.com/${id}?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80`;
+}
+
+const EXAMPLE_PEOPLE = [
+  {
+    id: "bob_williams",
+    fullName: "Bob Williams",
+    title: "Chief Operating Officer (COO)",
+    avatarUrl: genAvatar("photo-1500648767791-00dcc994a43e"),
+  },
+  {
+    id: "charlie_davis",
+    fullName: "Martin Smith",
+    title: "Chief Financial Officer (CFO)",
+    avatarUrl: genAvatar("photo-1472099645785-5658abf4ff4e"),
+  },
+  {
+    id: "david_brown",
+    fullName: "David Brown",
+    title: "Chief Technology Officer (CTO)",
+    avatarUrl: genAvatar("photo-1491528323818-fdd1faba62cc"),
+  },
+  {
+    id: "emily_davis",
+    fullName: "Emily Davis",
+    title: "Chief Marketing Officer (CMO)",
+    avatarUrl: genAvatar("photo-1438761681033-6461ffad8d80"),
+  },
+  {
+    id: "frank_miller",
+    fullName: "Frank Miller",
+    title: "VP of Product",
+    avatarUrl: genAvatar("photo-1633332755192-727a05c4013d"),
+  },
+  {
+    id: "grace_wilson",
+    fullName: "Grace Wilson",
+    title: "VP of Compliance",
+    avatarUrl: genAvatar("photo-1494790108377-be9c29b29330"),
+  },
+  {
+    id: "henry_taylor",
+    fullName: "Henry Taylor",
+    title: "VP of Engineering",
+    avatarUrl: genAvatar("photo-1492562080023-ab3db95bfbce"),
+  },
+  {
+    id: "ivy_anderson",
+    fullName: "Ivy Anderson",
+    title: "VP of Sales",
+    avatarUrl: genAvatar("photo-1522075469751-3a6694fb2f61"),
+  },
+  {
+    id: "jack_thomas",
+    fullName: "Jack Thomas",
+    title: "VP of Customer Success",
+    avatarUrl: genAvatar("photo-1579038773867-044c48829161"),
+  },
+  {
+    id: "karen_martinez",
+    fullName: "Karen Martinez",
+    title: "VP of Human Resources",
+    avatarUrl: genAvatar("photo-1534528741775-53994a69daeb"),
+  },
+  {
+    id: "liam_harris",
+    fullName: "Liam Harris",
+    title: "VP of Design",
+    avatarUrl: genAvatar("photo-1489980557514-251d61e3eeb6"),
+  },
+  {
+    id: "mia_clark",
+    fullName: "Mia Clark",
+    title: "Director of Engineering",
+    avatarUrl: genAvatar("photo-1541823709867-1b206113eafd"),
+  },
+  {
+    id: "nathan_morris",
+    fullName: "Noah Lewis",
+    title: "Director of Sales",
+    avatarUrl: genAvatar("photo-1568602471122-7832951cc4c5"),
+  },
+  {
+    id: "olivia_hall",
+    fullName: "Olivia Hall",
+    title: "Product Manager",
+    avatarUrl: genAvatar("photo-1531123897727-8f129e1688ce"),
+  },
+  {
+    id: "paul_young",
+    fullName: "Paul Young",
+    title: "Director of Business Development",
+    avatarUrl: genAvatar("photo-1600180758890-6b94519a8ba6"),
+  },
+  {
+    id: "quinn_walker",
+    fullName: "Quinn Walker",
+    title: "Director of Operations",
+    avatarUrl: genAvatar("photo-1584999734482-0361aecad844"),
+  },
+  {
+    id: "rachel_king",
+    fullName: "Rachel King",
+    title: "Director of Marketing",
+    avatarUrl: genAvatar("photo-1502031882019-24c0bccfffc6"),
+  },
+  {
+    id: "tina_scott",
+    fullName: "Tina Scott",
+    title: "Customer Support Representative",
+    avatarUrl: genAvatar("photo-1700248356502-ca48ae3bafd6"),
+  },
+  {
+    id: "walter_baker",
+    fullName: "Walter Baker",
+    title: "Lead Software Engineer",
+    avatarUrl: genAvatar("photo-1521341957697-b93449760f30"),
+  },
+];
 ---
 
 <Layout>
-  <div class="flex-1 overflow-y-auto">
-    <div>
-      <div class="mx-auto relative sm:my-10 max-w-4xl">
-        <div
-          class="bg-surface-dimmed flex items-center flex-wrap justify-center gap-1 pt-2 pb-1 mx-0 sm:mx-10 font-semibold rounded-t border-b sm:border-b-0 sm:border-t sm:border-x border-surface-outline"
-        >
-          <a
-            class="cursor-pointer transition-colors underline underline-offset-2 text-link-base hover:text-link-hover"
-            href="/"><span class="flex items-center gap-1.5">Lobby</span></a
-          ><div class="shrink-0">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              class="tabler-icon tabler-icon-slash"
-              ><path d="M17 5l-10 14"></path></svg
+  <div id="root">
+    <div class="flex flex-col h-dvh">
+      <div class="flex-1 overflow-y-auto">
+        <div>
+          <div class="mx-auto relative sm:my-10 max-w-4xl">
+            <div
+              class="bg-surface-dimmed flex items-center flex-wrap justify-center gap-1 pt-2 pb-1 mx-0 sm:mx-10 font-semibold rounded-t border-b sm:border-b-0 sm:border-t sm:border-x border-surface-outline"
             >
-          </div><a
-            class="cursor-pointer transition-colors underline underline-offset-2 text-link-base hover:text-link-hover"
-            href="/design-system/"
-            ><span class="flex items-center gap-1.5">Design System</span></a
-          >
-        </div><div
-          class="relative bg-surface-base px-12 py-10 min-h-dvh sm:min-h-0 sm:border sm:border-surface-outline sm:rounded-lg sm:shadow-xl"
-        >
-          <div class="flex items-center justify-between mb-6">
-            <div>
-              <div
-                class="text-content-accent text-lg md:text-2xl font-extrabold"
+              <a
+                class="cursor-pointer transition-colors underline underline-offset-2 text-link-base hover:text-link-hover"
+                href="/"><span class="flex items-center gap-1.5">Lobby</span></a
+              ><div class="shrink-0">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="tabler-icon tabler-icon-slash"
+                  ><path d="M17 5l-10 14"></path></svg
+                >
+              </div><a
+                class="cursor-pointer transition-colors underline underline-offset-2 text-link-base hover:text-link-hover"
+                href="/design-system/"
+                ><span class="flex items-center gap-1.5">Design System</span></a
               >
-                Avatars
-              </div>
-            </div><div></div>
-          </div><div class="mb-8">
-            <p class="mt-2">
-              Operately uses full-rounded avatar images for user profiles. The
-              avatar image is used to represent a user. If the user does not
-              have an avatar image, the user's initials are displayed in a
-              circle. The initials are generated from the user's name.
-            </p>
-          </div><h3 class="font-bold mt-8">Avatar sizes</h3><p class="mb-4">
-            There are five sizes of avatars: xxlarge, xlarge, large, small, and
-            tiny.
-          </p><div class="flex items-top space-x-10">
-            <div class="flex flex-col items-center gap-2">
-              <div class="text-sm">XXLarge</div><div
-                class="flex items-center gap-2"
-              >
-                <div
-                  title="Bob Williams"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 96px; height: 96px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Bob Williams"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div><div
-                  title="Martin Smith"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 96px; height: 96px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Martin Smith"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div>
-            </div><div class="flex flex-col items-center gap-2">
-              <div class="text-sm">XLarge</div><div
-                class="flex items-center gap-2"
-              >
-                <div
-                  title="Bob Williams"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 56px; height: 56px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Bob Williams"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div><div
-                  title="Martin Smith"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 56px; height: 56px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Martin Smith"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div>
-            </div><div class="flex flex-col items-center gap-2">
-              <div class="text-sm">Large</div><div
-                class="flex items-center gap-2"
-              >
-                <div
-                  title="Bob Williams"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 40px; height: 40px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Bob Williams"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div><div
-                  title="Martin Smith"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 40px; height: 40px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Martin Smith"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div>
-            </div><div class="flex flex-col items-center gap-2">
-              <div class="text-sm">Small</div><div
-                class="flex items-center gap-2"
-              >
-                <div
-                  title="Bob Williams"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 32px; height: 32px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Bob Williams"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div><div
-                  title="Martin Smith"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 32px; height: 32px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Martin Smith"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div>
-            </div><div class="flex flex-col items-center gap-2">
-              <div class="text-sm">Tiny</div><div
-                class="flex items-center gap-2"
-              >
-                <div
-                  title="Bob Williams"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 20px; height: 20px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Bob Williams"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div><div
-                  title="Martin Smith"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 20px; height: 20px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Martin Smith"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div>
-            </div>
-          </div><h3 class="font-bold mt-8">Avatar lists</h3><p class="mb-4">
-            Avatars can be displayed in a list.
-          </p><div
-            class="flex items-center gap-2 border-t border-stroke-base py-3"
-          >
-            <div class="w-48 font-medium shrink-0">With gaps</div><div
-              class="flex items-center gap-1 flex-wrap"
+            </div><div
+              class="relative bg-surface-base px-12 py-10 min-h-dvh sm:min-h-0 sm:border sm:border-surface-outline sm:rounded-lg sm:shadow-xl"
             >
-              <div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Bob Williams"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 32px; height: 32px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Bob Williams"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Martin Smith"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 32px; height: 32px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Martin Smith"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="David Brown"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 32px; height: 32px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1491528323818-fdd1faba62cc?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="David Brown"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Emily Davis"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 32px; height: 32px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Emily Davis"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Frank Miller"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 32px; height: 32px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Frank Miller"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Grace Wilson"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 32px; height: 32px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Grace Wilson"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Henry Taylor"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 32px; height: 32px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Henry Taylor"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Ivy Anderson"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 32px; height: 32px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Ivy Anderson"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Jack Thomas"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 32px; height: 32px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1579038773867-044c48829161?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Jack Thomas"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Karen Martinez"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 32px; height: 32px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Karen Martinez"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Liam Harris"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 32px; height: 32px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1489980557514-251d61e3eeb6?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Liam Harris"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Mia Clark"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 32px; height: 32px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1541823709867-1b206113eafd?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Mia Clark"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Noah Lewis"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 32px; height: 32px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1568602471122-7832951cc4c5?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Noah Lewis"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Olivia Hall"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 32px; height: 32px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1531123897727-8f129e1688ce?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Olivia Hall"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Paul Young"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 32px; height: 32px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1600180758890-6b94519a8ba6?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Paul Young"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Quinn Walker"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 32px; height: 32px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1584999734482-0361aecad844?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Quinn Walker"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Rachel King"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 32px; height: 32px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1502031882019-24c0bccfffc6?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Rachel King"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Tina Scott"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 32px; height: 32px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1700248356502-ca48ae3bafd6?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Tina Scott"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Walter Baker"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 32px; height: 32px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1521341957697-b93449760f30?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Walter Baker"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
+              <div class="flex items-center justify-between mb-6">
+                <div>
+                  <div
+                    class="text-content-accent text-lg md:text-2xl font-extrabold"
+                  >
+                    Avatars
+                  </div>
+                </div><div></div>
+              </div>
+              <div class="mt-2 mb-10">
+                Operately uses full-rounded avatar images for user profiles. The
+                avatar image is used to represent a user. If the user does not
+                have an avatar image, the user's initials are displayed in a
+                circle. The initials are generated from the user's name.
+              </div>
+
+              <h3 class="font-bold mt-8 text-lg text-content-accent">Avatar sizes</h3>
+              <p class="text-content-base text-sm mb-4">
+                There are five sizes of avatars: xxlarge, xlarge, large, small, and
+                tiny.
+              </p>
+              <div class="p-6 border border-surface-outline rounded-lg mb-8 bg-surface-base">
+                <div class="flex items-top space-x-10">
+                  <div class="flex flex-col items-center gap-2">
+                    <div class="text-sm">XXLarge</div>
+                    <div class="flex items-center gap-2">
+                      <Avatar person={EXAMPLE_PEOPLE[0]} size="xxlarge" />
+                      <Avatar person={EXAMPLE_PEOPLE[1]} size="xxlarge" />
+                    </div>
+                  </div>
+                  <div class="flex flex-col items-center gap-2">
+                    <div class="text-sm">XLarge</div>
+                    <div class="flex items-center gap-2">
+                      <Avatar person={EXAMPLE_PEOPLE[0]} size="xlarge" />
+                      <Avatar person={EXAMPLE_PEOPLE[1]} size="xlarge" />
+                    </div>
+                  </div>
+                  <div class="flex flex-col items-center gap-2">
+                    <div class="text-sm">Large</div>
+                    <div class="flex items-center gap-2">
+                      <Avatar person={EXAMPLE_PEOPLE[0]} size="large" />
+                      <Avatar person={EXAMPLE_PEOPLE[1]} size="large" />
+                    </div>
+                  </div>
+                  <div class="flex flex-col items-center gap-2">
+                    <div class="text-sm">Small</div>
+                    <div class="flex items-center gap-2">
+                      <Avatar person={EXAMPLE_PEOPLE[0]} size="small" />
+                      <Avatar person={EXAMPLE_PEOPLE[1]} size="small" />
+                    </div>
+                  </div>
+                  <div class="flex flex-col items-center gap-2">
+                    <div class="text-sm">Tiny</div>
+                    <div class="flex items-center gap-2">
+                      <Avatar person={EXAMPLE_PEOPLE[0]} size="tiny" />
+                      <Avatar person={EXAMPLE_PEOPLE[1]} size="tiny" />
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div><div
-            class="flex items-center gap-2 border-t border-stroke-base py-3"
-          >
-            <div class="w-48 font-medium shrink-0">Stacked</div><div
-              class="flex items-center -space-x-2 flex-wrap"
-            >
-              <div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Bob Williams"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 32px; height: 32px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Bob Williams"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
+
+              <h3 class="font-bold mt-12 text-lg text-content-accent">Avatar lists</h3>
+              <p class="text-content-base text-sm mb-4">
+                Avatars can be displayed in a list.
+              </p>
+              <div class="p-6 border border-surface-outline rounded-lg mb-8 bg-surface-base">
+                <div class="flex items-center gap-2 border-stroke-base py-3">
+                  <div class="w-48 font-medium shrink-0">With gaps</div>
+                  <AvatarList people={EXAMPLE_PEOPLE} size="small" maxElements={300} />
                 </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Martin Smith"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 32px; height: 32px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Martin Smith"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
+
+                <div class="flex items-center gap-2 border-t border-stroke-base py-3">
+                  <div class="w-48 font-medium shrink-0">Stacked</div>
+                  <AvatarList people={EXAMPLE_PEOPLE} size="small" stacked maxElements={300} />
                 </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="David Brown"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 32px; height: 32px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1491528323818-fdd1faba62cc?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="David Brown"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
+
+                <div class="flex items-center gap-2 border-t border-stroke-base py-3">
+                  <div class="w-48 font-medium shrink-0">Max Elements</div>
+                  <AvatarList people={EXAMPLE_PEOPLE} size="small" maxElements={5} stacked />
                 </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Emily Davis"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 32px; height: 32px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Emily Davis"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
+
+                <div class="flex items-center gap-2 border-t border-stroke-base py-3">
+                  <div class="w-48 font-medium shrink-0">No cut-off indicator</div>
+                  <AvatarList people={EXAMPLE_PEOPLE} size="small" maxElements={5} stacked showCutOff={false} />
                 </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Frank Miller"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 32px; height: 32px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Frank Miller"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
+
+                <div class="flex items-center gap-2 border-t border-stroke-base py-3">
+                  <div class="w-48 font-medium shrink-0">Tiny</div>
+                  <AvatarList people={EXAMPLE_PEOPLE} size="tiny" maxElements={15} stacked />
                 </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Grace Wilson"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 32px; height: 32px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Grace Wilson"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Henry Taylor"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 32px; height: 32px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Henry Taylor"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Ivy Anderson"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 32px; height: 32px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Ivy Anderson"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Jack Thomas"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 32px; height: 32px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1579038773867-044c48829161?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Jack Thomas"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Karen Martinez"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 32px; height: 32px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Karen Martinez"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Liam Harris"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 32px; height: 32px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1489980557514-251d61e3eeb6?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Liam Harris"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Mia Clark"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 32px; height: 32px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1541823709867-1b206113eafd?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Mia Clark"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Noah Lewis"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 32px; height: 32px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1568602471122-7832951cc4c5?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Noah Lewis"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Olivia Hall"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 32px; height: 32px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1531123897727-8f129e1688ce?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Olivia Hall"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Paul Young"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 32px; height: 32px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1600180758890-6b94519a8ba6?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Paul Young"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Quinn Walker"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 32px; height: 32px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1584999734482-0361aecad844?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Quinn Walker"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Rachel King"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 32px; height: 32px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1502031882019-24c0bccfffc6?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Rachel King"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Tina Scott"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 32px; height: 32px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1700248356502-ca48ae3bafd6?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Tina Scott"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Walter Baker"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 32px; height: 32px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1521341957697-b93449760f30?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Walter Baker"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
+
+                <div class="flex items-center gap-2 border-t border-stroke-base py-3">
+                  <div class="w-48 font-medium shrink-0">XLarge</div>
+                  <AvatarList client:load people={EXAMPLE_PEOPLE} size="xlarge" maxElements={5} stacked />
                 </div>
               </div>
-            </div>
-          </div><div
-            class="flex items-center gap-2 border-t border-stroke-base py-3"
-          >
-            <div class="w-48 font-medium shrink-0">Max Elements</div><div
-              class="flex items-center -space-x-2 flex-wrap"
-            >
+
+              <h3 class="font-bold mt-12 text-lg text-content-accent">
+                Usage
+              </h3>
+              <p class="text-content-base text-sm mb-4">
+                How to use the Avatar and AvatarList components in your code.
+              </p>
               <div
-                class="border border-surface-base rounded-full flex items-center"
+                class="p-6 border border-surface-outline rounded-lg mb-8 bg-surface-base"
               >
-                <div
-                  title="Bob Williams"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 32px; height: 32px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Bob Williams"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Martin Smith"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 32px; height: 32px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Martin Smith"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="David Brown"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 32px; height: 32px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1491528323818-fdd1faba62cc?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="David Brown"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Emily Davis"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 32px; height: 32px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Emily Davis"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Frank Miller"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 32px; height: 32px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Frank Miller"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="flex items-center font-bold text-sm text-content-dimmed"
-                style="padding-left: 0.75rem;"
-              >
-                +14
-              </div>
-            </div>
-          </div><div
-            class="flex items-center gap-2 border-t border-stroke-base py-3"
-          >
-            <div class="w-48 font-medium shrink-0">
-              No cut-off indicator
-            </div><div class="flex items-center -space-x-2 flex-wrap">
-              <div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Bob Williams"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 32px; height: 32px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Bob Williams"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Martin Smith"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 32px; height: 32px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Martin Smith"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="David Brown"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 32px; height: 32px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1491528323818-fdd1faba62cc?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="David Brown"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Emily Davis"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 32px; height: 32px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Emily Davis"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Frank Miller"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 32px; height: 32px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Frank Miller"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div>
-            </div>
-          </div><div
-            class="flex items-center gap-2 border-y border-stroke-base py-3"
-          >
-            <div class="w-48 font-medium shrink-0">Tiny</div><div
-              class="flex items-center -space-x-2 flex-wrap"
-            >
-              <div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Bob Williams"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 20px; height: 20px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Bob Williams"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Martin Smith"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 20px; height: 20px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Martin Smith"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="David Brown"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 20px; height: 20px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1491528323818-fdd1faba62cc?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="David Brown"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Emily Davis"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 20px; height: 20px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Emily Davis"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Frank Miller"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 20px; height: 20px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Frank Miller"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Grace Wilson"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 20px; height: 20px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Grace Wilson"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Henry Taylor"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 20px; height: 20px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Henry Taylor"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Ivy Anderson"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 20px; height: 20px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Ivy Anderson"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Jack Thomas"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 20px; height: 20px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1579038773867-044c48829161?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Jack Thomas"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Karen Martinez"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 20px; height: 20px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Karen Martinez"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Liam Harris"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 20px; height: 20px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1489980557514-251d61e3eeb6?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Liam Harris"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Mia Clark"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 20px; height: 20px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1541823709867-1b206113eafd?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Mia Clark"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Noah Lewis"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 20px; height: 20px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1568602471122-7832951cc4c5?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Noah Lewis"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Olivia Hall"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 20px; height: 20px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1531123897727-8f129e1688ce?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Olivia Hall"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Paul Young"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 20px; height: 20px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1600180758890-6b94519a8ba6?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Paul Young"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="flex items-center font-bold text-sm text-content-dimmed"
-                style="padding-left: 0.75rem;"
-              >
-                +4
-              </div>
-            </div>
-          </div><div
-            class="flex items-center gap-2 border-y border-stroke-base py-3"
-          >
-            <div class="w-48 font-medium shrink-0">XLarge</div><div
-              class="flex items-center -space-x-2 flex-wrap"
-            >
-              <div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Bob Williams"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 56px; height: 56px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Bob Williams"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Martin Smith"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 56px; height: 56px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Martin Smith"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="David Brown"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 56px; height: 56px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1491528323818-fdd1faba62cc?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="David Brown"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Emily Davis"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 56px; height: 56px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Emily Davis"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="border border-surface-base rounded-full flex items-center"
-              >
-                <div
-                  title="Frank Miller"
-                  class="rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block"
-                  style="width: 56px; height: 56px;"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Frank Miller"
-                    referrerpolicy="no-referrer"
-                    style="height: 100%; width: 100%; display: block;"
-                  />
-                </div>
-              </div><div
-                class="flex items-center font-bold text-sm text-content-dimmed"
-                style="padding-left: 0.75rem;"
-              >
-                +14
+                <pre class="text-sm bg-gray-800 text-gray-200 p-4 rounded overflow-x-auto">
+{`// Import the components
+import { Avatar, AvatarList } from "turboui";
+
+// Basic Avatar usage
+<Avatar
+  person={{
+    id: "user_id",
+    fullName: "Jane Doe",
+    avatarUrl: "https://example.com/avatar.jpg"
+  }}
+  size="large"
+/>
+
+// Avatar with initials (when no avatarUrl is provided)
+<Avatar
+  person={{
+    id: "user_id",
+    fullName: "Jane Doe"
+  }}
+  size="small"
+/>
+
+// AvatarList usage
+<AvatarList
+  people={peopleArray}
+  size="small"
+  maxElements={5}
+  stacked={true}
+/>
+
+// AvatarList without cutoff indicator
+<AvatarList
+  people={peopleArray}
+  size="small"
+  maxElements={5}
+  stacked={true}
+  showCutOff={false}
+/>`}
+                </pre>
               </div>
             </div>
           </div>

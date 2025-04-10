@@ -2,7 +2,7 @@ import * as React from "react";
 import * as Milestones from "@/models/milestones";
 import * as Projects from "@/models/projects";
 
-import Avatar from "@/components/Avatar";
+import { Avatar } from "turboui";
 import classNames from "classnames";
 import FormattedTime from "@/components/FormattedTime";
 

@@ -6,7 +6,7 @@ import * as api from "@/api";
 
 import classNames from "classnames";
 
-import Avatar from "@/components/Avatar";
+import { Avatar } from "turboui";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 
 interface ReactionsFormState {

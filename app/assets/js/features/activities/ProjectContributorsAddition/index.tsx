@@ -7,7 +7,7 @@ import type { ActivityHandler } from "../interfaces";
 
 import { feedTitle, projectLink } from "./../feedItemLinks";
 import { Paths } from "@/routes/paths";
-import Avatar from "@/components/Avatar";
+import { Avatar } from "turboui";
 
 const ProjectContributorsAddition: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {

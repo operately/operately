@@ -2,7 +2,7 @@ import * as React from "react";
 import * as People from "@/models/people";
 import * as Paper from "@/components/PaperContainer";
 
-import Avatar from "@/components/Avatar";
+import { Avatar } from "turboui";
 
 import { useLoadedData } from "./loader";
 
