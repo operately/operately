@@ -1,6 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { Chronometer } from '.';
 
+/**
+ * The Chronometer component visualizes a time period with a progress indicator.
+ * It displays start and end dates with a visual progress bar showing the current progress through the time period.
+ * The component is responsive and adapts to different container widths while maintaining readability.
+ */
+
 const meta = {
   title: 'Components/Chronometer',
   component: Chronometer,
@@ -17,6 +23,10 @@ const now = new Date();
 const oneMonthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 const oneMonthFromNow = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
 
+/**
+ * Basic usage of the Chronometer component showing a two-month period centered around the current date.
+ * The component displays dates in a readable format and shows progress through the time period.
+ */
 export const Default: Story = {
   args: {
     start: oneMonthAgo,
@@ -31,6 +41,10 @@ export const Default: Story = {
   ],
 };
 
+/**
+ * Demonstrates the component's responsive behavior at different widths.
+ * The component maintains readability and proper layout across various container sizes.
+ */
 export const Responsiveness: Story = {
   args: {
     start: oneMonthAgo,
@@ -53,6 +67,10 @@ export const Responsiveness: Story = {
   ],
 };
 
+/**
+ * Shows how the component appears when displaying a future time period.
+ * The progress bar will be empty (0%) since the period hasn't started.
+ */
 export const NotStartedYet: Story = {
   args: {
     start: oneMonthFromNow,
@@ -67,6 +85,10 @@ export const NotStartedYet: Story = {
   ],
 };
 
+/**
+ * Displays a completed time period in the past.
+ * The progress bar will be full (100%) since the end date has passed.
+ */
 export const Completed: Story = {
   args: {
     start: new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000),
