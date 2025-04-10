@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import type { WorkMapItem, GoalStatus } from "../../types/workmap";
+import type { WorkMapItem } from "../../types/workmap";
 
 interface HoverQuickEntryWidgetProps {
   /**
@@ -59,13 +59,12 @@ export function HoverQuickEntryWidget({
         id: newItemId,
         type: itemType,
         name: inputValue.trim(),
-        status: "pending" as GoalStatus, // Initial status is pending
+        status: "pending", // Initial status is pending
         progress: 0,
         space: "", // Empty space
         owner: {
           // Empty owner
-          name: "",
-          initials: "",
+          fullName: "",
         },
         children: [],
         deadline: { 

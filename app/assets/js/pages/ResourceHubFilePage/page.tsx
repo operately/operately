@@ -11,7 +11,7 @@ import { CurrentSubscriptions } from "@/features/Subscriptions";
 import RichContent, { richContentToString } from "@/components/RichContent";
 import { Spacer } from "@/components/Spacer";
 import { assertPresent } from "@/utils/assertions";
-import Avatar from "@/components/Avatar";
+import { Avatar } from "turboui";
 import FormattedTime from "@/components/FormattedTime";
 import { TextSeparator } from "@/components/TextSeparator";
 import { ResourcePageNavigation } from "@/features/ResourceHub";

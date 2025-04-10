@@ -5,7 +5,7 @@ import classnames from "classnames";
 
 import { Card } from "./Card";
 import { PrivacyIndicator } from "@/features/spaces/PrivacyIndicator";
-import AvatarList from "@/components/AvatarList";
+import { AvatarList } from "turboui";
 
 export interface SpaceCardProps {
   space: Spaces.Space;

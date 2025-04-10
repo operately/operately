@@ -5,7 +5,7 @@ import * as Paper from "@/components/PaperContainer";
 import { PermissionLevels } from "@/features/Permissions";
 import { ActionLink } from "turboui";
 
-import Avatar from "@/components/Avatar";
+import { Avatar } from "turboui";
 import { match } from "ts-pattern";
 import { SpaceAccessLevelBadge } from "@/components/Badges/AccessLevelBadges";
 import { useBindedPeopleList } from "./loader";

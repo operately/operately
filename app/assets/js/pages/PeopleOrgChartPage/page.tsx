@@ -2,7 +2,7 @@ import * as React from "react";
 import * as Pages from "@/components/Pages";
 
 import { useLoadedData } from "./loader";
-import Avatar from "@/components/Avatar";
+import { Avatar } from "turboui";
 import { Link } from "turboui";
 import * as Icons from "@tabler/icons-react";
 

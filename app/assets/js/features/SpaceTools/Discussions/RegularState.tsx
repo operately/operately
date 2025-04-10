@@ -8,7 +8,7 @@ import { CommentsCountIndicator } from "@/features/Comments";
 import { assertPresent } from "@/utils/assertions";
 import { richContentToString } from "@/components/RichContent";
 
-import Avatar from "@/components/Avatar";
+import { Avatar } from "turboui";
 import classNames from "classnames";
 
 interface Props {

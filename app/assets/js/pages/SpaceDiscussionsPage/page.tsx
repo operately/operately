@@ -12,7 +12,7 @@ import { SpacePageNavigation } from "@/components/SpacePageNavigation";
 import { useLoadedData } from "./loader";
 import { assertPresent } from "@/utils/assertions";
 
-import Avatar from "@/components/Avatar";
+import { Avatar } from "turboui";
 import FormattedTime from "@/components/FormattedTime";
 import classNames from "classnames";
 import { CommentsCountIndicator } from "@/features/Comments";

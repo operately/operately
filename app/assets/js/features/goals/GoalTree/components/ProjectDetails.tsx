@@ -9,12 +9,11 @@ import { Project, sortContributorsByRole } from "@/models/projects";
 import { StatusSection } from "@/features/projectCheckIns/StatusSection";
 import { DescriptionSection } from "@/features/projectCheckIns/DescriptionSection";
 import { MilestoneIcon } from "@/components/MilestoneIcon";
-import { DivLink } from "turboui";
+import { DivLink, AvatarList } from "turboui";
 import { assertPresent } from "@/utils/assertions";
 import { truncateString } from "@/utils/strings";
 import { Paths } from "@/routes/paths";
 import { RetrospectiveContent } from "@/features/ProjectRetrospective";
-import AvatarList from "@/components/AvatarList";
 
 import { Status } from "./Status";
 import { ProjectNode } from "../tree";
@@ -108,7 +107,6 @@ function ContributorsList({ project }: { project: Project }) {
     <AvatarList
       people={sortedContributors.map((c) => c.person!)}
       size={16}
-      linked
       stacked
       maxElements={maxElements}
       wrap={false}
