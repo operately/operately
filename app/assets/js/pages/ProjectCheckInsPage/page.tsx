@@ -10,7 +10,7 @@ import { Summary } from "@/components/RichContent";
 import { DivLink } from "turboui";
 
 import FormattedTime from "@/components/FormattedTime";
-import Avatar from "@/components/Avatar";
+import { Avatar } from "turboui";
 import { SmallStatusIndicator } from "@/components/status";
 
 export function Page() {

@@ -1,7 +1,7 @@
 import React from "react";
 
 import Forms from "@/components/Forms";
-import { AvatarLink } from "@/components/Avatar";
+import { AvatarLink } from "@/components/AvatarLink";
 import { useIsViewMode } from "@/components/Pages";
 import plurarize from "@/utils/plurarize";
 import { AvatarList } from "turboui";

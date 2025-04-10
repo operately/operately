@@ -7,7 +7,7 @@ import * as Icons from "@tabler/icons-react";
 import * as TipTapEditor from "@/components/Editor";
 
 import RichContent from "@/components/RichContent";
-import Avatar from "@/components/Avatar";
+import { Avatar } from "turboui";
 import { PrimaryButton, SecondaryButton } from "turboui";
 
 import { useLoadedData } from "./loader";

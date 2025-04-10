@@ -1,7 +1,7 @@
 import React from "react";
 import AsyncSelect from "react-select/async";
 
-import Avatar from "@/components/Avatar";
+import { Avatar } from "turboui";
 import classnames from "classnames";
 
 import { Person } from "@/models/people";

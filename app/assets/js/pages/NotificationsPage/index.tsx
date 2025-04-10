@@ -6,7 +6,7 @@ import * as Notifications from "@/models/notifications";
 import * as Api from "@/api";
 import * as Signals from "@/signals";
 
-import Avatar from "@/components/Avatar";
+import { Avatar } from "turboui";
 import FormattedTime from "@/components/FormattedTime";
 import ActivityHandler from "@/features/activities";
 

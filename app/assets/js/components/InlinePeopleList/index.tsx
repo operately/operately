@@ -3,7 +3,7 @@ import * as People from "@/models/people";
 
 import { Paths } from "@/routes/paths";
 import { DivLink } from "turboui";
-import Avatar from "@/components/Avatar";
+import { Avatar } from "turboui";
 
 interface InlinePeopleListProps {
   people: People.Person[];

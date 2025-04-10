@@ -8,7 +8,7 @@ import { Paths } from "@/routes/paths";
 import { SecondaryButton } from "turboui";
 import { BlackLink, Link } from "turboui";
 
-import Avatar from "@/components/Avatar";
+import { Avatar } from "turboui";
 import { createTestId } from "@/utils/testid";
 import { InfoCallout } from "@/components/Callouts";
 

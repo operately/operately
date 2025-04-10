@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 
 import { match } from "ts-pattern";
-import Avatar from "@/components/Avatar";
+import { Avatar } from "turboui";
 import { Subscriber } from "@/models/notifications";
 import { EditSubscriptionsModal } from "./EditSubscriptionsModal";
 import { useCurrentSubscriptionsContext } from "../CurrentSubscriptions";

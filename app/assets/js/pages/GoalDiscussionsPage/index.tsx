@@ -10,7 +10,7 @@ import { Header } from "@/features/goals/GoalPageHeader";
 import { PrimaryButton, SecondaryButton } from "turboui";
 
 import FormattedTime from "@/components/FormattedTime";
-import Avatar from "@/components/Avatar";
+import { Avatar } from "turboui";
 
 import { DivLink } from "turboui";
 

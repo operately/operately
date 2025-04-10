@@ -1,7 +1,6 @@
-import { DivLink } from "../Link";
-import { AvatarLinkProps, AvatarProps, AvatarSize } from "./types";
+import { AvatarProps, AvatarSize } from "./types";
 
-export type { AvatarPerson } from "./types";
+export type { AvatarPerson, AvatarProps } from "./types";
 export { AvatarList } from "./AvatarList";
 export { AvatarWithName } from "./AvatarWithName";
 
@@ -155,12 +154,4 @@ export function Avatar(props: AvatarProps) {
   } else {
     return BackupAvatar({ person: { fullName: "?" }, size: props.size });
   }
-}
-
-export function AvatarLink({ to, className, ...rest }: AvatarLinkProps) {
-  return (
-    <DivLink to={to} className={className}>
-      <Avatar {...rest} />
-    </DivLink>
-  );
 }

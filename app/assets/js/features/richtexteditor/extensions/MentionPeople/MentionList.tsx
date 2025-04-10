@@ -1,7 +1,7 @@
 import React, { forwardRef, useImperativeHandle, useState, useEffect } from "react";
 
 import * as People from "@/models/people";
-import Avatar from "@/components/Avatar";
+import { Avatar } from "turboui";
 
 /**
  *  This is a custom mention list component for tiptap.

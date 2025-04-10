@@ -3,7 +3,7 @@ import * as Icons from "@tabler/icons-react";
 import * as Goals from "@/models/goals";
 import * as Reactions from "@/models/reactions";
 
-import Avatar from "@/components/Avatar";
+import { Avatar } from "turboui";
 import FormattedTime from "@/components/FormattedTime";
 import RichContent from "@/components/RichContent";
 
