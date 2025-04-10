@@ -8,3 +8,4 @@ export * from "./Chronometer";
 export * from "./PieChart";
 export * from "./ProgressBar";
 export * from "./Avatar";
+export * from "./TimeframeSelector";

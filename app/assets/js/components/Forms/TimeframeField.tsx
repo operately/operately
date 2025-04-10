@@ -6,7 +6,7 @@ import { Timeframe } from "@/utils/timeframes";
 
 import { SecondaryButton } from "turboui";
 import { Chronometer } from "turboui";
-import { CustomRangePicker } from "@/components/TimeframeSelector/CustomRangePicker";
+import { CustomRangePicker } from "turboui";
 
 import { useFieldValue } from "./FormContext";
 import { Label } from "./Elements";
