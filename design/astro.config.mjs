@@ -24,8 +24,10 @@ export default defineConfig({
         'ts-pattern': path.resolve('./node_modules/ts-pattern'),
         'react-router-dom': path.resolve('./node_modules/react-router-dom'),
         '@radix-ui/react-dropdown-menu': path.resolve('./node_modules/@radix-ui/react-dropdown-menu'),
+        '@radix-ui/react-popover': path.resolve('./node_modules/@radix-ui/react-popover'),
         '@tabler/icons-react': path.resolve('./node_modules/@tabler/icons-react'),
         'react-spinners': path.resolve('./node_modules/react-spinners'),
+        'react-datepicker': path.resolve('./node_modules/react-datepicker'),
       }
     }
   }
