@@ -50,7 +50,9 @@ function ItemIcon({ item }: { item: WorkItem }) {
 }
 
 function ItemPeople({ item }: { item: WorkItem }) {
-  return <AvatarList people={item.people} size={20} stacked />
+  return <div className="shrink-0">
+    <AvatarList people={item.people} size={20} stacked />
+  </div>
 }
 
 function ItemName({ item }: { item: WorkItem }) {
@@ -61,7 +63,6 @@ function ItemName({ item }: { item: WorkItem }) {
   );
 
   if (!item.completed) return nameElement;
-
   
   return (
     <>

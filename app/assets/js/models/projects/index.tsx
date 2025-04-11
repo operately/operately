@@ -26,6 +26,36 @@ export {
   useEditProjectRetrospective,
 } from "@/api";
 
+export function getPeople(project: Project) {
+  assertPresent(project.contributors, "project contributors must be present");
+
+  return project.contributors.map((contributor) => {
+    assertPresent(contributor, "project contributor must be present");
+    assertPresent(contributor!.person, "project contributor person must be present");
+
+    return {
+      id: contributor.person.id!,
+      fullName: contributor.person.fullName!,
+      avatarUrl: contributor.person.avatarUrl!,
+    }
+  });
+}
+
+export function isClosed(project: Project) : boolean {
+  assertPresent(project.status, "project status must be present");
+
+  return project.status === "closed";
+}
+
+export function getProgress(project: Project) {
+  assertPresent(project.milestones, "milestones must be present in project");
+
+  const completedMilestones = project.milestones.filter((m) => m!.status === "done").length;
+  const totalMilestones = project.milestones.length;
+
+  return (completedMilestones / totalMilestones) * 100;
+}
+
 export function sortByName(projects: Project[]) {
   return [...projects].sort((a, b) => a.name!.localeCompare(b.name!));
 }
