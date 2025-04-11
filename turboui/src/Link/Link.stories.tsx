@@ -106,6 +106,10 @@ export const DisabledColorHoverEffect: Story = {
  * It provides a clean, unobtrusive look with hover underline effect.
  */
 export const GhostLinkDefault: Story = {
+  args: {
+    to: '#',
+    children: 'Ghost Link',
+  },
   render: () => (
     <GhostLink
       to="#"
@@ -119,6 +123,10 @@ export const GhostLinkDefault: Story = {
  * @prop {boolean} dimmed - Applies a dimmed text color
  */
 export const GhostLinkDimmed: Story = {
+  args: {
+    to: '#',
+    children: 'Ghost Link',
+  },
   render: () => (
     <GhostLink
       to="#"
@@ -133,6 +141,10 @@ export const GhostLinkDimmed: Story = {
  * @prop {"sm"} size - Applies small text size
  */
 export const GhostLinkSmall: Story = {
+  args: {
+    to: '#',
+    children: 'Ghost Link',
+  },
   render: () => (
     <GhostLink
       to="#"
@@ -147,6 +159,10 @@ export const GhostLinkSmall: Story = {
  * @prop {"xs"} size - Applies extra small text size
  */
 export const GhostLinkExtraSmall: Story = {
+  args: {
+    to: '#',
+    children: 'Extra Small Ghost Link',
+  },
   render: () => (
     <GhostLink
       to="#"
