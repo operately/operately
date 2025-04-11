@@ -1,6 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { Link, GhostLink } from '.';
 
+/**
+ * The Link component is a versatile navigation element that provides various styling options and behaviors.
+ * It extends React Router's Link component with additional features like underline styles, hover effects,
+ * and different visual variants.
+ */
 const meta = {
   title: 'Components/Link',
   component: Link,
@@ -13,6 +18,10 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+/**
+ * The default Link variant with standard styling.
+ * Features a permanent underline and color hover effect.
+ */
 export const Default: Story = {
   args: {
     to: '#',
@@ -20,6 +29,10 @@ export const Default: Story = {
   },
 };
 
+/**
+ * Link variant that always shows an underline.
+ * @prop {"always"} underline - Forces the underline to be always visible
+ */
 export const WithUnderlineAlways: Story = {
   args: {
     to: '#',
@@ -28,6 +41,10 @@ export const WithUnderlineAlways: Story = {
   },
 };
 
+/**
+ * Link variant that shows underline only on hover.
+ * @prop {"hover"} underline - Shows underline only when user hovers over the link
+ */
 export const WithUnderlineHover: Story = {
   args: {
     to: '#',
@@ -36,6 +53,10 @@ export const WithUnderlineHover: Story = {
   },
 };
 
+/**
+ * Link variant that never shows an underline.
+ * @prop {"never"} underline - Removes the underline completely
+ */
 export const WithUnderlineNever: Story = {
   args: {
     to: '#',
@@ -44,6 +65,10 @@ export const WithUnderlineNever: Story = {
   },
 };
 
+/**
+ * Link with custom styling applied through className.
+ * @prop {string} className - Custom CSS classes for styling
+ */
 export const WithCustomClass: Story = {
   args: {
     to: '#',
@@ -52,6 +77,10 @@ export const WithCustomClass: Story = {
   },
 };
 
+/**
+ * Link that opens in a new tab/window.
+ * @prop {string} target - Target attribute for the link (_blank opens in new tab)
+ */
 export const WithExternalTarget: Story = {
   args: {
     to: '#',
@@ -60,6 +89,10 @@ export const WithExternalTarget: Story = {
   },
 };
 
+/**
+ * Link without color change on hover.
+ * @prop {boolean} disableColorHoverEffect - When true, disables the color change on hover
+ */
 export const DisabledColorHoverEffect: Story = {
   args: {
     to: '#',
@@ -68,7 +101,10 @@ export const DisabledColorHoverEffect: Story = {
   },
 };
 
-// GhostLink Stories
+/**
+ * GhostLink is a minimal variant of the Link component.
+ * It provides a clean, unobtrusive look with hover underline effect.
+ */
 export const GhostLinkDefault: Story = {
   render: () => (
     <GhostLink
@@ -78,6 +114,10 @@ export const GhostLinkDefault: Story = {
   ),
 };
 
+/**
+ * Dimmed variant of GhostLink with reduced opacity.
+ * @prop {boolean} dimmed - Applies a dimmed text color
+ */
 export const GhostLinkDimmed: Story = {
   render: () => (
     <GhostLink
@@ -88,6 +128,10 @@ export const GhostLinkDimmed: Story = {
   ),
 };
 
+/**
+ * Small-sized variant of GhostLink.
+ * @prop {"sm"} size - Applies small text size
+ */
 export const GhostLinkSmall: Story = {
   render: () => (
     <GhostLink
@@ -98,6 +142,10 @@ export const GhostLinkSmall: Story = {
   ),
 };
 
+/**
+ * Extra small-sized variant of GhostLink.
+ * @prop {"xs"} size - Applies extra small text size
+ */
 export const GhostLinkExtraSmall: Story = {
   render: () => (
     <GhostLink
