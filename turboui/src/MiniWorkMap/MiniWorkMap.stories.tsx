@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { MiniWorkMap } from '.';
+import { genPeople } from './../utils/storybook/genPeople';
 
 const meta = {
   title: 'Components/MiniWorkMap',
@@ -23,7 +24,7 @@ export const Default: Story = {
         link: "#", 
         completed: false, 
         progress: 0,
-        people: [],
+        people: genPeople(3, { random: true }),
         status: "on_track",
         subitems: [
           {
@@ -33,7 +34,7 @@ export const Default: Story = {
             link: "#", 
             completed: false, 
             progress: 10,
-            people: [],
+            people: genPeople(3, { random: true }),
             subitems: [],
             status: "caution"
           },
@@ -44,7 +45,7 @@ export const Default: Story = {
             link: "#", 
             completed: false, 
             progress: 50,
-            people: [],
+            people: genPeople(3, { random: true }),
             subitems: [],
             status: "on_track"
           },
@@ -55,7 +56,7 @@ export const Default: Story = {
             link: "#", 
             completed: true,
             progress: 100,
-            people: [],
+            people: genPeople(3, { random: true }),
             subitems: [],
             status: "issue"
           }
