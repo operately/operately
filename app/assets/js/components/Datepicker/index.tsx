@@ -24,7 +24,7 @@ export function Datepicker(props: DatepickerProps) {
   return (
     <Popover.Root open={open} onOpenChange={setOpen}>
       <DatepickerFormElement {...props} />
-      <PopeverContent date={props.date} setDate={handleDateChange} />
+      <PopoverContent date={props.date} setDate={handleDateChange} />
     </Popover.Root>
   );
 }
@@ -40,7 +40,7 @@ function DatepickerFormElement(props: DatepickerProps) {
   );
 }
 
-function PopeverContent(props: DatepickerProps) {
+function PopoverContent(props: DatepickerProps) {
   const className = classNames(
     "z-[100] overflow-hidden",
     "border border-surface-outline",
