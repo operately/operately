@@ -72,13 +72,13 @@ export function TimeframeSelector(props: TimeframeSelectorProps) {
   }, [isDefaultTimeframe, resetToDefault]);
 
   return (
-    <Popover.Root open={open} onOpenChange={handleOpenChange} modal>
+    <Popover.Root open={open} onOpenChange={handleOpenChange}>
       <TimeframeSelectorTrigger
         {...props}
         isDefaultTimeframe={isDefaultTimeframe}
         onClick={handleTriggerClick}
       />
-      <PopeverContent {...props} />
+      <PopoverContent {...props} />
     </Popover.Root>
   );
 }
@@ -130,7 +130,7 @@ function TimeframeSelectorTrigger(props: TimeframeSelectorTriggerProps) {
   );
 }
 
-function PopeverContent(props: TimeframeSelectorProps & { setTimeframe: (timeframe: Timeframe) => void }) {
+function PopoverContent(props: TimeframeSelectorProps & { setTimeframe: (timeframe: Timeframe) => void }) {
   const className = classNames(
     "z-[100] overflow-hidden",
     "border border-surface-outline",
