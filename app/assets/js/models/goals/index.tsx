@@ -40,6 +40,13 @@ export const GOAL_ACTIVITIES: GoalActivities[] = [
   "goal_discussion_creation",
 ];
 
+export function getPeople(goal: Goal) {
+  const champion = goal.champion;
+  const reviewer = goal.reviewer;
+
+  return [champion, reviewer].filter((person) => person !== null);
+}
+
 export function targetProgressPercentage(target: Target, clamped: boolean = true): number {
   const from = target.from!;
   const to = target.to!;
