@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as Popover from "@radix-ui/react-popover";
 import * as Icons from "@tabler/icons-react";
-import { TimeframeSelectorProps, TimeframeType } from "./types";
+import { TimeframeSelectorProps, TimeframeType, Timeframe } from "./types";
 
 import { match } from "ts-pattern";
 
@@ -12,7 +12,7 @@ import { CustomRangePicker } from "./CustomRangePicker";
 import { SegmentedControl } from "./SegmentedControl";
 import { LeftChevron, RightChevron } from "./Chevrons";
 
-import classNames from "classnames";
+import classNames from "../utils/classnames";
 import {
   currentMonth,
   currentQuarter,
@@ -20,7 +20,16 @@ import {
   formatTimeframe,
 } from "./utils";
 
-export { CustomRangePicker, LeftChevron, RightChevron };
+export type { Timeframe };
+export {
+  CustomRangePicker,
+  LeftChevron,
+  RightChevron,
+  currentMonth,
+  currentQuarter,
+  currentYear,
+  formatTimeframe,
+};
 
 const DEFAULTS = {
   size: "base" as const,
@@ -31,16 +40,62 @@ export function TimeframeSelector(props: TimeframeSelectorProps) {
   props = { ...DEFAULTS, ...props };
 
   const [open, setOpen] = React.useState(false);
+  const defaultTimeframeRef = React.useRef(props.timeframe);
+
+  const isDefaultTimeframe = React.useMemo(() => {
+    const defaultTf = defaultTimeframeRef.current;
+    const currentTf = props.timeframe;
+
+    if (defaultTf.type !== currentTf.type) return false;
+    if (defaultTf.startDate?.getTime() !== currentTf.startDate?.getTime())
+      return false;
+    if (defaultTf.endDate?.getTime() !== currentTf.endDate?.getTime())
+      return false;
+
+    return true;
+  }, [props.timeframe]);
+
+  const resetToDefault = React.useCallback(() => {
+    props.setTimeframe(defaultTimeframeRef.current);
+  }, [props]);
+
+  const handleTriggerClick = React.useCallback(() => {
+    if (!isDefaultTimeframe) {
+      resetToDefault();
+    } else {
+      setOpen(!open);
+    }
+  }, [isDefaultTimeframe, resetToDefault, open]);
+
+  const handleOpenChange = React.useCallback((isOpen: boolean) => {
+    if (isOpen && !isDefaultTimeframe) {
+      resetToDefault();
+    } else {
+      setOpen(isOpen);
+    }
+  }, [isDefaultTimeframe, resetToDefault]);
 
   return (
-    <Popover.Root open={open} onOpenChange={setOpen}>
-      <TimeframeSelectorFormElement {...props} />
+    <Popover.Root open={open} onOpenChange={handleOpenChange} modal>
+      <TimeframeSelectorTrigger
+        {...props}
+        isDefaultTimeframe={isDefaultTimeframe}
+        onClick={handleTriggerClick}
+      />
       <PopeverContent {...props} />
     </Popover.Root>
   );
 }
 
-function TimeframeSelectorFormElement(props: TimeframeSelectorProps) {
+
+interface TimeframeSelectorTriggerProps {
+  timeframe: Timeframe;
+  size?: "xs" | "base";
+  isDefaultTimeframe: boolean;
+  onClick: () => void;
+}
+
+function TimeframeSelectorTrigger(props: TimeframeSelectorTriggerProps) {
   const className = classNames(
     "border border-surface-outline",
     "rounded-lg",
@@ -56,17 +111,30 @@ function TimeframeSelectorFormElement(props: TimeframeSelectorProps) {
 
   const iconSize = props.size === "base" ? 18 : 16;
 
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    props.onClick();
+  };
+
   return (
     <Popover.Trigger asChild>
-      <div className={className}>
+      <button type="button" className={className} onClick={handleClick}>
         <Icons.IconCalendar size={iconSize} className="shrink-0" />
         <span className="truncate">{formatTimeframe(props.timeframe)}</span>
-      </div>
+        {props.isDefaultTimeframe ? (
+          <Icons.IconChevronDown size={iconSize} className="shrink-0 ml-1" />
+        ) : (
+          <Icons.IconX
+            size={iconSize}
+            className="shrink-0 ml-1 cursor-pointer"
+          />
+        )}
+      </button>
     </Popover.Trigger>
   );
 }
 
-function PopeverContent(props: TimeframeSelectorProps) {
+function PopeverContent(props: TimeframeSelectorProps & { setTimeframe: (timeframe: Timeframe) => void }) {
   const className = classNames(
     "z-[100] overflow-hidden",
     "border border-surface-outline",

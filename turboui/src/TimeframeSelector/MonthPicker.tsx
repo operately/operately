@@ -1,4 +1,4 @@
-import DatePicker from "react-datepicker";
+import DatePicker from "./datepicker";
 
 import { LeftChevron, RightChevron } from "./Chevrons";
 import { Timeframe, SetTimeframe } from "./types";
