@@ -38,15 +38,6 @@ export function serialize(timeframe: Timeframe): api.Timeframe {
   };
 }
 
-export function asJson(timeframe: Timeframe): string {
-  return JSON.stringify(serialize(timeframe));
-}
-
-export function fromJson(json: string): Timeframe {
-  const value = JSON.parse(json);
-  return parse(value);
-}
-
 //
 // Formatting the timeframe for display
 //
@@ -233,22 +224,4 @@ export function compareDuration(a: Timeframe, b: Timeframe): number {
   if (aDuration > bDuration) return -1;
 
   return 0;
-}
-
-export function currentYear(): Timeframe {
-  const now = new Date();
-  return {
-    startDate: new Date(now.getFullYear(), 0, 1),
-    endDate: new Date(now.getFullYear(), 11, 31),
-    type: "year",
-  };
-}
-
-export function currentMonth(): Timeframe {
-  const now = new Date();
-  return {
-    startDate: new Date(now.getFullYear(), now.getMonth(), 1),
-    endDate: new Date(now.getFullYear(), now.getMonth() + 1, 0),
-    type: "month",
-  };
 }
