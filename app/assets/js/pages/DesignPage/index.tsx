@@ -11,7 +11,6 @@ export const loader = Pages.emptyLoader;
 const subpages = [
   { title: "Buttons", path: "/__design__/buttons", icon: Icons.IconHandClick },
   { title: "Colors", path: "/__design__/colors", icon: Icons.IconPalette },
-  { title: "Links", path: "/__design__/links", icon: Icons.IconLink },
   { title: "Menus", path: "/__design__/menus", icon: Icons.IconMenu2 },
   { title: "Tooltips", path: "/__design__/tooltips", icon: Icons.IconMessageCircle },
   { title: "Callouts", path: "/__design__/callouts", icon: Icons.IconAlertTriangle },

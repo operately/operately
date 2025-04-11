@@ -56,7 +56,6 @@ export function createAppRoutes() {
         pageRoute("/__design__/buttons", pages.DesignButtonsPage),
         pageRoute("/__design__/colors", pages.DesignColorsPage),
         pageRoute("/__design__/forms", pages.DesignFormsPage),
-        pageRoute("/__design__/links", pages.DesignLinksPage),
         pageRoute("/__design__/menus", pages.DesignMenusPage),
         pageRoute("/__design__/callouts", pages.DesignCalloutsPage),
         pageRoute("/__design__/tooltips", pages.DesignTooltipsPage),

@@ -19,7 +19,6 @@ import * as DesignButtonsPage from "./DesignButtonsPage";
 import * as DesignCalloutsPage from "./DesignCalloutsPage";
 import * as DesignColorsPage from "./DesignColorsPage";
 import * as DesignFormsPage from "./DesignFormsPage";
-import * as DesignLinksPage from "./DesignLinksPage";
 import * as DesignMenusPage from "./DesignMenusPage";
 import * as DesignPage from "./DesignPage";
 import * as DesignProgressPage from "./DesignProgressPage";
@@ -198,11 +197,6 @@ export default {
     name: "DesignFormsPage",
     loader: DesignFormsPage.loader,
     Page: DesignFormsPage.Page,
-  },
-  DesignLinksPage: {
-    name: "DesignLinksPage",
-    loader: DesignLinksPage.loader,
-    Page: DesignLinksPage.Page,
   },
   DesignMenusPage: {
     name: "DesignMenusPage",
