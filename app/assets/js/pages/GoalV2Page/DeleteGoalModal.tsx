@@ -3,7 +3,7 @@ import { MiniWorkMap } from "turboui";
 
 import { useNavigate } from "react-router-dom";
 import { findGoalChildren, useDeleteGoal } from "@/models/goals";
-import { useWorkItems } from "./useWorkItem";
+import { useWorkItems } from "./useWorkItems";
 
 import Modal from "@/components/Modal";
 import { PrimaryButton, SecondaryButton } from "turboui";

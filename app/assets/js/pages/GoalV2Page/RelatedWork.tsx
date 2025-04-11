@@ -9,7 +9,7 @@ import { Paths } from "@/routes/paths";
 import { DisableInEditMode, Title } from "./components";
 import { useLoadedData } from "./loader";
 import { assertPresent } from "@/utils/assertions";
-import { useWorkItems } from "./useWorkItem";
+import { useWorkItems } from "./useWorkItems";
 
 export function RelatedWork() {
   const { goal } = useLoadedData();

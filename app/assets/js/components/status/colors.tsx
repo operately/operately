@@ -62,11 +62,6 @@ function statusColorClass(status: string, opts?: { customShade?: CustomShade }):
   return colorClass;
 }
 
-export function statusTextColorClass(status: string, opts?: { customShade?: CustomShade }): string {
-  const color = statusColorClass(status, opts);
-  return "text-" + color;
-}
-
 export function statusBGColorClass(status: string, opts?: { customShade?: CustomShade }): string {
   const color = statusColorClass(status, opts);
   return "bg-" + color;

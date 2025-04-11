@@ -37,14 +37,12 @@ export function useWorkItems() {
       assertPresent(goal.id, "goal id must be present");
       assertPresent(goal.name, "goal name must be present");
       assertPresent(goal.isClosed, "goal closed status must be present");
-      assertPresent(goal.lastCheckIn, "goal last check-in must be present");
-      assertPresent(goal.lastCheckIn.status, "goal last check-in status must be present");
       assertPresent(goal.progressPercentage, "goal progress percentage must be present");
 
       return {
         id: goal.id,
         type: "goal",
-        status: goal.lastCheckIn.status,
+        status: goal.lastCheckIn?.status || "pending",
         name: goal.name,
         link: Paths.goalPath(goal.id),
         progress: goal.progressPercentage,
