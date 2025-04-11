@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { TableRow } from "./TableRow.tsx";
-import { QuickAddRow } from "./QuickAddRow.tsx";
-import { SelectableTableRow } from "./SelectableTableRow.tsx";
-import { HoverQuickEntryWidget } from "./HoverQuickEntryWidget.tsx";
-import { mockData } from "../../mockData.ts";
+import { TableRow } from "./TableRow";
+import { QuickAddRow } from "./QuickAddRow";
+import { mockData } from "../../mockData";
 import type { WorkMapItem } from "../../types/workmap";
 
 interface WorkMapTableProps {
