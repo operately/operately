@@ -40,6 +40,7 @@ export default defineConfig({
   server: {
     watch: {
       usePolling: false,
+      ignored: ['**/node_modules/**', '!../turboui/src/**']
     },
     hmr: true,
     port: 4005,
