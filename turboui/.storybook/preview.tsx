@@ -1,6 +1,7 @@
 import React from "react";
 import type { Preview } from "@storybook/react";
 import { withThemeByClassName } from '@storybook/addon-themes';
+import { RouterDecorator } from "./router";
 
 import "./global.css";
 
@@ -19,6 +20,7 @@ const preview: Preview = {
     layout: 'fullscreen',
   },
   decorators: [
+    RouterDecorator,
     withThemeByClassName({
       themes: {
         light: 'light antialiased',
