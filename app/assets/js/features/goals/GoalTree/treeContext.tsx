@@ -69,11 +69,6 @@ const defaultTimeframe: Timeframes.Timeframe = {
   type: "year",
 };
 
-const timeframeSerialization = {
-  serialize: Timeframes.asJson,
-  deserialize: Timeframes.fromJson,
-};
-
 export function TreeContextProvider(props: TreeContextProviderPropsWithChildren) {
   const me = useMe();
   const namespace = "goals-and-projects::" + props.settingsNamespace;
@@ -92,12 +87,7 @@ export function TreeContextProvider(props: TreeContextProviderPropsWithChildren)
   const [showGoals, setShowGoals] = useStateWithLocalStorage<boolean>(namespace, "showGoals", true);
   const [showProjects, setShowProjects] = useStateWithLocalStorage<boolean>(namespace, "showProjects", true);
 
-  const [timeframe, setTimeframe] = useStateWithLocalStorage<Timeframes.Timeframe>(
-    namespace,
-    "timeframe",
-    defaultTimeframe,
-    timeframeSerialization,
-  );
+  const [timeframe, setTimeframe] = React.useState(defaultTimeframe);
 
   const treeOptions = {
     ...props.options,
