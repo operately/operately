@@ -1,4 +1,5 @@
 import { BlackLink } from "../Link";
+import { AvatarList } from "../Avatar";
 import { MiniWorkMapProps, WorkItem } from "./types";
 import { IconCircleCheckFilled, IconHexagons, IconTarget } from "@tabler/icons-react";
 
@@ -49,9 +50,7 @@ function ItemIcon({ item }: { item: WorkItem }) {
 }
 
 function ItemPeople({ item }: { item: WorkItem }) {
-  // <AvatarList people={item.people} size={20} stacked />
-  
-  return <></>;
+  return <AvatarList people={item.people} size={20} stacked />
 }
 
 function ItemName({ item }: { item: WorkItem }) {

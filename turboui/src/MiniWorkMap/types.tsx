@@ -1,6 +1,6 @@
 interface WorkItemPerson {
   id: string;
-  name: string;
+  fullName: string;
   avatarUrl: string;
 }
 
