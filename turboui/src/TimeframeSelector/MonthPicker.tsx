@@ -1,8 +1,7 @@
-import React from "react";
-import DatePicker from "react-datepicker";
+import DatePicker from "./datepicker";
 
 import { LeftChevron, RightChevron } from "./Chevrons";
-import { Timeframe, SetTimeframe } from "@/utils/timeframes";
+import { Timeframe, SetTimeframe } from "./types";
 
 export function MonthPicker({ timeframe, setTimeframe }: { timeframe: Timeframe; setTimeframe: SetTimeframe }) {
   return (

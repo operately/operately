@@ -1,8 +1,7 @@
-import * as React from "react";
-import DatePicker from "react-datepicker";
+import DatePicker from "./datepicker";
 
 import { LeftChevron, RightChevron } from "./Chevrons";
-import { Timeframe, SetTimeframe } from "@/utils/timeframes";
+import { SetTimeframe, Timeframe } from "./types";
 
 const YEAR_OPTION_COUNT = 6;
 

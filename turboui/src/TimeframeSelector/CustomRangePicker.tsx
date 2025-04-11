@@ -1,8 +1,7 @@
-import React from "react";
-import DatePicker from "react-datepicker";
+import DatePicker from "./datepicker";
 
 import { LeftChevron, RightChevron } from "./Chevrons";
-import { Timeframe, SetTimeframe } from "@/utils/timeframes";
+import { SetTimeframe, Timeframe } from "./types";
 
 export function CustomRangePicker({ timeframe, setTimeframe }: { timeframe: Timeframe; setTimeframe: SetTimeframe }) {
   return (
@@ -44,7 +43,7 @@ export function CustomRangePicker({ timeframe, setTimeframe }: { timeframe: Time
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-function Header({ date, decreaseMonth, increaseMonth }) {
+function Header({ date, increaseMonth, decreaseMonth }) {
   const month = MONTHS[date.getMonth()];
   const year = date.getFullYear();
 
