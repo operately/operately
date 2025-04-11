@@ -53,7 +53,11 @@ export function getProgress(project: Project) {
   const completedMilestones = project.milestones.filter((m) => m!.status === "done").length;
   const totalMilestones = project.milestones.length;
 
-  return (completedMilestones / totalMilestones) * 100;
+  if (totalMilestones === 0) {
+    return 0;
+  } else {
+    return (completedMilestones / totalMilestones) * 100;
+  }
 }
 
 export function sortByName(projects: Project[]) {

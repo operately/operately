@@ -88,9 +88,17 @@ const PROGRESS_COLORS: Record<string, string> = {
   pending: "bg-gray-100 text-gray-700 dark:bg-gray-900 dark:text-gray-300",
 };
 
-
 function Progress({ item }: { item: WorkItem }) {
+  if(isNaN(item.progress)) {
+    throw new Error(`Progress is NaN for item: ${item.name}`);
+  }
+
   const color = PROGRESS_COLORS[item.status];
+
+  if(!color) {
+    throw new Error(`Unknown status color for item: ${item.name}`);
+  }
+
   const outerClass = `w-11 flex justify-center rounded-lg px-2 py-0.5 shrink-0 ${color}`;
   const innerClass = `text-sm font-medium font-mono`;
   const progress = Math.floor(item.progress);
