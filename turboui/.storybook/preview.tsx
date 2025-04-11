@@ -1,5 +1,6 @@
 import React from "react";
 import type { Preview } from "@storybook/react";
+import { withThemeByClassName } from '@storybook/addon-themes';
 
 import "./global.css";
 
@@ -13,22 +14,20 @@ const preview: Preview = {
       },
     },
     backgrounds: {
-      default: 'light',
-      values: [
-        {
-          name: 'light',
-          value: 'white'
-        },
-      ],
+      default: 'dark'
     },
+    layout: 'fullscreen',
   },
   decorators: [
-    (Story) => (
-      <div className="light antialiased">
-        <Story />
-      </div>
-    ),
-  ],
+    withThemeByClassName({
+      themes: {
+        light: 'light antialiased',
+        dark: 'dark antialiased',
+      },
+      defaultTheme: 'light',
+      parentSelector: 'body',
+    })
+  ]
 };
 
 export default preview;
