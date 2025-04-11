@@ -66,8 +66,10 @@ function TextClasses({ size }: { size: AvatarSize }): string {
   return "";
 }
 
-function initials(fullName: string): string {
+function initials(fullName?: string | null): string {
   try {
+    if (!fullName) return "";
+
     const firstLeters = fullName
       .split(" ")
       .filter((e) => e !== "")
@@ -98,10 +100,10 @@ function BackupAvatar({ person, size }: AvatarProps): JSX.Element {
   const style = { width: `${sizeNumber}px`, height: `${sizeNumber}px` };
 
   return (
-    <div title={person.fullName!} className={around} style={style}>
+    <div title={person.fullName ?? ""} className={around} style={style}>
       <div className={className}>
         <div className="flex items-center justify-center h-full">
-          {initials(person.fullName!)}
+          {initials(person.fullName)}
         </div>
       </div>
     </div>
@@ -128,10 +130,10 @@ function ImageAvatar({ person, size }: AvatarProps): JSX.Element {
   const style = { width: `${sizeNumber}px`, height: `${sizeNumber}px` };
 
   return (
-    <div title={person.fullName!} className={className} style={style}>
+    <div title={person.fullName ?? ""} className={className} style={style}>
       <img
         src={person.avatarUrl!}
-        alt={person.fullName!}
+        alt={person.fullName ?? ""}
         referrerPolicy="no-referrer"
         style={{
           height: "100%",
