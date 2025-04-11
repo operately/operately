@@ -29,10 +29,7 @@ export function useWorkItems() {
       }
     };
 
-    const goalToWorkItem = (goal: Goals.Goal) => {
-      const subgoals = goals.filter(g => compareIds(g.parentGoalId, goal.id));
-      const goalProjects = projects.filter(p => compareIds(p.goalId, goal.id)).map(projectAsWorkItem);
-
+    const goalAsWorkItem = (goal: Goals.Goal) => {
       assertPresent(goal.id, "goal id must be present");
       assertPresent(goal.name, "goal name must be present");
       assertPresent(goal.isClosed, "goal closed status must be present");
@@ -47,14 +44,18 @@ export function useWorkItems() {
         progress: goal.progressPercentage,
         completed: goal.isClosed,
         people: Goals.getPeople(goal),
-        subitems: [
-          ...subgoals.map(goalToWorkItem),
-          ...goalProjects,
-        ],
+        subitems: subItems(goal),
       };
     };
 
-    return [goalToWorkItem(goal)];
+    const subItems = (goal: Goals.Goal) => {
+      const subGoals = goals.filter(g => compareIds(g.parentGoalId, goal.id)).map(g => goalAsWorkItem(g));
+      const goalProjects = projects.filter(p => compareIds(p.goalId, goal.id)).map(p => projectAsWorkItem(p));
+
+      return [...subGoals, ...goalProjects];
+    };
+
+    return subItems(goal);
   }, [goal, goals, projects]);
 
   return items;
