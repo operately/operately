@@ -6,7 +6,7 @@ import ReactDatePicker from "react-datepicker";
 import FormattedTime from "@/components/FormattedTime";
 import classNames from "classnames";
 
-import { LeftChevron, RightChevron } from "turboui";
+import { LeftChevron, RightChevron } from "turboui/TimeframeSelector";
 
 interface DatepickerProps {
   date: Date;

@@ -25,10 +25,6 @@ export {
   CustomRangePicker,
   LeftChevron,
   RightChevron,
-  currentMonth,
-  currentQuarter,
-  currentYear,
-  formatTimeframe,
 };
 
 const DEFAULTS = {

@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { currentQuarter, Timeframe, TimeframeSelector } from "turboui";
+import React from "react";
 
 interface WorkMapTabsProps {
   activeTab: string;
@@ -10,9 +9,7 @@ interface WorkMapTabsProps {
  * Also includes a time period selector for filtering items by quarter/year
  */
 export function WorkMapTabs({ activeTab }: WorkMapTabsProps): React.ReactElement {
-  const [timeframe, setTimeframe] = useState<Timeframe>(currentQuarter());
-
- return (
+  return (
     <div className="border-b border-surface-outline">
       <div className="px-4 sm:px-6">
         <nav
@@ -151,10 +148,6 @@ export function WorkMapTabs({ activeTab }: WorkMapTabsProps): React.ReactElement
               </svg>
               Completed
             </a>
-          </div>
-
-          <div className="flex items-center gap-2 mt-1">
-            <TimeframeSelector timeframe={timeframe} setTimeframe={setTimeframe} size="xs" alignContent="end" />
           </div>
         </nav>
       </div>

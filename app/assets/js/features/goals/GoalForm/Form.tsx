@@ -14,7 +14,7 @@ import { SecondaryButton } from "turboui";
 import { AddTarget, Target, TargetHeader } from "./Target";
 import { FormState } from "./useForm";
 import { GoalSelectorDropdown } from "@/features/goals/GoalTree/GoalSelectorDropdown";
-import { TimeframeSelector } from "turboui";
+import { TimeframeSelector } from "turboui/TimeframeSelector";
 import { ResourcePermissionSelector } from "@/features/Permissions";
 import { assertPresent } from "@/utils/assertions";
 
