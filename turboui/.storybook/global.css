@@ -16,7 +16,7 @@
   outline: none;
 }
 
-.light {
+body.light {
   --color-surface-bg: rgba(254, 245, 237, 1);
   --color-surface-bg-highlight: rgba(255, 255, 255, 0.9);
   --color-surface-base: rgba(255, 255, 255, 1);
@@ -61,7 +61,7 @@
   --color-callout-success-message: var(--color-green-700);
 }
 
-.dark {
+body.dark {
   --color-surface-bg: rgba(30, 30, 34, 1);
   --color-surface-bg-highlight: rgba(255, 255, 255, 0.1);
   --color-surface-base: rgba(35, 35, 39, 1);
@@ -117,4 +117,8 @@ body {
 .break-words {
   word-break: break-word;
   overflow-wrap: break-word;
+}
+
+.sbdocs .docs-story {
+  background-color: var(--color-surface-base);
 }
