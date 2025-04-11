@@ -1,8 +1,7 @@
-import * as React from "react";
 import DatePicker from "react-datepicker";
 
 import { LeftChevron, RightChevron } from "./Chevrons";
-import { Timeframe, SetTimeframe } from "@/utils/timeframes";
+import { SetTimeframe, Timeframe } from "./types";
 
 export function QuarterPicker({ timeframe, setTimeframe }: { timeframe: Timeframe; setTimeframe: SetTimeframe }) {
   return (
@@ -35,7 +34,7 @@ const RANGES = {
   Q4: ["Oct 1", "Dec 31"],
 };
 
-function renderQuarterContent(quarter: string) {
+function renderQuarterContent(quarter) {
   const range = RANGES["Q" + quarter];
 
   return (
