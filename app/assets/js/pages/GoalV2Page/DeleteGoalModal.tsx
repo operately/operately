@@ -1,10 +1,11 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { MiniWorkMap } from "turboui";
 
+import { useNavigate } from "react-router-dom";
 import { findGoalChildren, useDeleteGoal } from "@/models/goals";
+import { useWorkItems } from "./useWorkItem";
 
 import Modal from "@/components/Modal";
-import { MinimalTree } from "@/features/goals/GoalTree";
 import { PrimaryButton, SecondaryButton } from "turboui";
 import { Paths } from "@/routes/paths";
 import { useLoadedData } from "./loader";
@@ -61,7 +62,7 @@ function DeleteGoal({ toggleShowDeleteGoal }: { toggleShowDeleteGoal: () => void
 }
 
 function GoalTree({ toggleShowDeleteGoal }: { toggleShowDeleteGoal: () => void }) {
-  const { goals, projects, goal } = useLoadedData();
+  const items = useWorkItems();
 
   return (
     <div className="max-w-2xl">
@@ -75,12 +76,7 @@ function GoalTree({ toggleShowDeleteGoal }: { toggleShowDeleteGoal: () => void }
           <h4 className="font-medium">Subgoals and Projects</h4>
         </div>
         <div className="p-4 max-h-80 overflow-y-auto">
-          <MinimalTree
-            goals={goals}
-            projects={projects}
-            options={{ goalId: goal.id! }}
-            settingsNamespace={`goal-${goal.id}-subgoals`}
-          />
+          <MiniWorkMap items={items} />
         </div>
       </div>
 
