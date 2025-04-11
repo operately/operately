@@ -15,12 +15,11 @@ export function useWorkItems() {
     const projectAsWorkItem = (project: Projects.Project) => {
       assertPresent(project.id, "project id must be present");
       assertPresent(project.name, "project name must be present");
-      assertPresent(project.status, "project status must be present");
 
       return {
         id: project.id,
         type: "project" as const,
-        status: project.status,
+        status: project.lastCheckIn?.status || "pending",
         name: project.name,
         link: Paths.projectPath(project.id),
         progress: Projects.getProgress(project),
