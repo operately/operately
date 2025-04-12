@@ -7,8 +7,9 @@ import { compareIds, Paths } from "@/routes/paths";
 
 import { useLoadedData } from "./loader";
 import { assertPresent } from "@/utils/assertions";
+import { MiniWorkMap } from "turboui";
 
-export function useWorkItems() {
+export function useWorkItems() : MiniWorkMap.WorkItem[] {
   const { goal, goals, projects } = useLoadedData();
 
   const items = React.useMemo(() => {
