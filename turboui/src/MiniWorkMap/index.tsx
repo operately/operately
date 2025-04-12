@@ -1,9 +1,32 @@
 import { BlackLink } from "../Link";
 import { AvatarList } from "../Avatar";
-import { MiniWorkMapProps, WorkItem } from "./types";
 import { IconCircleCheckFilled, IconHexagons, IconTarget } from "@tabler/icons-react";
 
-export function MiniWorkMap(props: MiniWorkMapProps) {
+export namespace MiniWorkMap {
+  interface Person {
+    id: string;
+    fullName: string;
+    avatarUrl: string;
+  }
+
+  export interface WorkItem {
+    id: string;
+    type: "goal" | "project";
+    status: "on_track" | "caution" | "concern" | "issue" | "paused" | "outdated" | "pending";
+    name: string;
+    link: string;
+    progress: number;
+    subitems: WorkItem[];
+    completed: boolean;
+    people: Person[];
+  }
+
+  export interface Props {
+    items: WorkItem[];
+  }
+}
+
+export function MiniWorkMap(props: MiniWorkMap.Props) {
   return (
     <div className="flex flex-col gap-2">
       {props.items.map((item) => (
@@ -13,7 +36,7 @@ export function MiniWorkMap(props: MiniWorkMapProps) {
   );
 }
 
-function ItemView({ item, depth }: { item: WorkItem, depth: number }) {
+function ItemView({ item, depth }: { item: MiniWorkMap.WorkItem, depth: number }) {
   return (
     <>
       <div className="flex items-center gap-2" style={{ paddingLeft: depth * 20 }}>
@@ -29,7 +52,7 @@ function ItemView({ item, depth }: { item: WorkItem, depth: number }) {
   );
 }
 
-function Subitems({ items, depth }: { items: WorkItem[], depth: number }) {
+function Subitems({ items, depth }: { items: MiniWorkMap.WorkItem[], depth: number }) {
   return <>
     {items.map((subitem) => (
       <ItemView key={subitem.id} item={subitem} depth={depth} />
@@ -37,7 +60,7 @@ function Subitems({ items, depth }: { items: WorkItem[], depth: number }) {
   </>
 }
 
-function ItemIcon({ item }: { item: WorkItem }) {
+function ItemIcon({ item }: { item: MiniWorkMap.WorkItem }) {
   if(item.type === "goal") {
    return <IconTarget size={16} className="text-red-500" />
   }
@@ -49,13 +72,13 @@ function ItemIcon({ item }: { item: WorkItem }) {
   throw new Error(`Unknown item type: ${item.type}`);
 }
 
-function ItemPeople({ item }: { item: WorkItem }) {
+function ItemPeople({ item }: { item: MiniWorkMap.WorkItem }) {
   return <div className="shrink-0">
     <AvatarList people={item.people} size={20} stacked />
   </div>
 }
 
-function ItemName({ item }: { item: WorkItem }) {
+function ItemName({ item }: { item: MiniWorkMap.WorkItem }) {
   const nameElement = (
     <BlackLink underline="hover" to={item.link} className="truncate" disableColorHoverEffect>
       {item.name}
@@ -88,7 +111,7 @@ const PROGRESS_COLORS: Record<string, string> = {
   pending: "bg-gray-100 text-gray-700 dark:bg-gray-900 dark:text-gray-300",
 };
 
-function Progress({ item }: { item: WorkItem }) {
+function Progress({ item }: { item: MiniWorkMap.WorkItem }) {
   if(isNaN(item.progress)) {
     throw new Error(`Progress is NaN for item: ${item.name}`);
   }
