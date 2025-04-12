@@ -19,7 +19,7 @@ import { truncateString } from "@/utils/strings";
 
 import { DisableInEditMode, Title } from "./components";
 import { useLoadedData } from "./loader";
-import { GoalStatusBadge } from "@/features/goals/GoalStatusBadge";
+import { StatusBadge } from "turboui";
 
 interface Props {
   activity: Activities.Activity;
@@ -88,7 +88,7 @@ function CheckIn({ activity }: Props) {
 
       <PageLink activity={activity}>
         <MessageTitle title="Check In">
-          <GoalStatusBadge status={content.update.status!} size="xs" />
+          <StatusBadge status={content.update.status!} hideIcon />
         </MessageTitle>
 
         <Content author={activity.author} date={content.update.insertedAt!} content={content.update.message!} />
