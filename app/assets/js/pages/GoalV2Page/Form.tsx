@@ -4,7 +4,6 @@ import Forms from "@/components/Forms";
 import { useIsViewMode } from "@/components/Pages";
 import { EditBar } from "@/components/Pages/EditBar";
 import { GoalTargetsField } from "@/features/goals/GoalTargetsV2";
-import { GoalStatusBadge } from "@/features/goals/GoalStatusBadge";
 
 import { Messages } from "./Messages";
 import { HorizontalSpacer, Title } from "./components";
@@ -17,6 +16,7 @@ import { ParentGoal } from "./ParentGoal";
 import { useForm } from "./useForm";
 import { Description } from "./Description";
 import { Privacy } from "./Privacy";
+import { StatusBadge } from "turboui";
 
 export function Form() {
   const form = useForm();
@@ -37,7 +37,7 @@ export function Form() {
         </div>
         <div className="col-start-2 row-start-2 flex flex-col gap-4 sticky top-0 self-start">
           <div className="flex">
-            <GoalStatusBadge status={form.values.status} className="mt-3" />
+            <StatusBadge status={form.values.status} hideIcon />
           </div>
           <Timeframe />
           <Champion />
