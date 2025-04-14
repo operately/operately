@@ -1,28 +1,30 @@
 import * as React from "react";
 import classNames from "../utils/classnames";
 
-type SizeType =
-  | "tiny"
-  | "small"
-  | "medium"
-  | "large"
-  | "xlarge"
-  | "xxlarge"
-  | "fullwidth";
+export namespace Page {
+  export type Size =
+    | "tiny"
+    | "small"
+    | "medium"
+    | "large"
+    | "xlarge"
+    | "xxlarge"
+    | "fullwidth";
 
-interface PageOption {
-  icon: React.ReactElement;
-  title: string;
+  export interface Option {
+    icon: React.ReactElement;
+    title: string;
+  }
+
+  export interface Props {
+    title: string | string[];
+    size?: Size;
+    options?: Option[];
+    children?: React.ReactNode;
+  }
 }
 
-interface PageProps {
-  title: string | string[];
-  size?: SizeType;
-  options?: PageOption[];
-  children?: React.ReactNode;
-}
-
-const sizeClasses: Record<SizeType, string> = {
+const sizeClasses: Record<Page.Size, string> = {
   tiny: "max-w-xl",
   small: "max-w-2xl",
   medium: "max-w-4xl",
@@ -32,27 +34,25 @@ const sizeClasses: Record<SizeType, string> = {
   fullwidth: "max-w-full mx-8",
 };
 
-export function Page({
-  title,
-  size = "medium",
-  options = [],
-  children,
-}: PageProps) {
-  useHtmlTitle(title);
-
-  const containerClass = `${sizeClasses[size]}`;
+export function Page(props: Page.Props) {
+  useHtmlTitle(props.title);
+  const containerClass = `${sizeClasses[props.size || "medium"]}`;
 
   return (
     <div className={containerClass}>
       <Paper>
-        <PageOptions options={options} />
-        {children}
+        <PageOptions options={props.options} />
+        {props.children}
       </Paper>
     </div>
   );
 }
 
-function PageOptions({ options }: { options: PageOption[] }) {
+function PageOptions({ options }: { options?: Page.Option[] }) {
+  if (!options) {
+    return null;
+  }
+
   if (options.length === 0) {
     return null;
   }
