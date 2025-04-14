@@ -133,7 +133,6 @@ export function TableRow({
               isFailed={isFailed}
               isDropped={isDropped}
               isPending={isPending}
-              filter={filter}
             />
           </div>
 

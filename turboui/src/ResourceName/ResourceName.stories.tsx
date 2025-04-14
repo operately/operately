@@ -40,14 +40,10 @@ const meta = {
       description: "Whether the resource is pending",
       control: { type: "boolean" },
     },
-    filter: {
-      description: "The current filter applied",
-      control: { type: "text" },
-    },
     size: {
       description: "The size of the resource name",
       options: ["sm", "base", "lg"],
-      control: { type: "select" },
+      control: { type: "radio" },
     },
   },
 } satisfies Meta<typeof ResourceName>;

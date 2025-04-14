@@ -9,6 +9,5 @@ export interface ResourceNameProps {
   isFailed?: boolean;
   isDropped?: boolean;
   isPending?: boolean;
-  filter?: string;
   size?: ResourceNameSize;
 }

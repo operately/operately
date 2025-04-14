@@ -31,7 +31,6 @@ export function ResourceName({
   isFailed,
   isDropped,
   isPending,
-  filter,
   size = "base",
 }: ResourceNameProps) {
   const isGoal = type === "goal";
@@ -51,7 +50,7 @@ export function ResourceName({
     isCompleted || isFailed ? "line-through" : "",
     isDropped ? "line-through opacity-70" : "",
     isPending ? "text-content-dimmed dark:text-gray-400" : "",
-    filter === "completed" && (isCompleted || isFailed || isDropped)
+    (isCompleted || isFailed || isDropped)
       ? "text-content-dimmed dark:text-gray-400"
       : isCompleted || isFailed || isDropped
       ? "text-content-dimmed dark:text-gray-400"
