@@ -105,7 +105,7 @@ export const Default: Story = {
   },
 };
 
-export const ZeroState: Story = {
+export const ZeroStateForChampions: Story = {
   args: {
     spaceLink: "/spaces/1",
     workmapLink: "/spaces/1/workmaps/1",
@@ -114,6 +114,19 @@ export const ZeroState: Story = {
     champion: null,
     reviewer: null,
     relatedWorkItems: [],
+  },
+};
+
+export const ZeroStateReadOnly: Story = {
+  args: {
+    spaceLink: "/spaces/1",
+    workmapLink: "/spaces/1/workmaps/1",
+    goalName: "Launch AI Platform",
+    spaceName: "Product",
+    champion: null,
+    reviewer: null,
+    relatedWorkItems: [],
+    isEditable: false,
   },
 };
 
