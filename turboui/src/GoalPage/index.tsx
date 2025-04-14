@@ -1,4 +1,5 @@
 import { Page } from "../Page";
+import { PageFooter } from "../Page/PageFooter";
 import { MiniWorkMap } from "../MiniWorkMap";
 import { AvatarWithName } from "../Avatar";
 
@@ -33,8 +34,9 @@ export function GoalPage(props: GoalPage.Props) {
       <div className="grid grid-cols-10 gap-8 p-8">
         <RelatedWork {...props} />
         <Sidebar {...props} />
-        <ActivityFooter />
       </div>
+
+      <ActivityFooter />
     </Page>
   );
 }
@@ -97,8 +99,8 @@ function RelatedWork(props: GoalPage.Props) {
 
 function ActivityFooter() {
   return (
-    <div className="col-span-10 mt-8 pt-8 border-t border-gray-200">
+    <PageFooter className="p-8">
       <h3 className="text-xs uppercase font-medium tracking-wider">Activity</h3>
-    </div>
+    </PageFooter>
   );
 }
