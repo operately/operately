@@ -1,6 +1,6 @@
 import React from "react";
 import type { Preview } from "@storybook/react";
-import { withThemeByClassName } from '@storybook/addon-themes';
+import { withThemeByClassName } from "@storybook/addon-themes";
 import { RouterDecorator } from "./router";
 
 import "./global.css";
@@ -15,21 +15,24 @@ const preview: Preview = {
       },
     },
     backgrounds: {
-      default: 'dark'
+      default: "dark",
     },
-    layout: 'fullscreen',
+    layout: "fullscreen",
+    viewport: {
+      defaultViewport: "reset", // reset the viewport to the default when navigating to a new story
+    },
   },
   decorators: [
     RouterDecorator,
     withThemeByClassName({
       themes: {
-        light: 'light antialiased',
-        dark: 'dark antialiased',
+        light: "light antialiased",
+        dark: "dark antialiased",
       },
-      defaultTheme: 'light',
-      parentSelector: 'body',
-    })
-  ]
+      defaultTheme: "light",
+      parentSelector: "body",
+    }),
+  ],
 };
 
 export default preview;
