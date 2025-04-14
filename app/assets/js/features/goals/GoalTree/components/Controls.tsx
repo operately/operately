@@ -7,7 +7,7 @@ import { SecondaryButton } from "turboui";
 
 import { useExpandable } from "../context/Expandable";
 import { useTreeContext } from "../treeContext";
-import { TimeframeSelector } from "@/components/TimeframeSelector";
+import { TimeframeSelector } from "turboui/TimeframeSelector";
 
 export function Controls() {
   const { tree } = useTreeContext();
