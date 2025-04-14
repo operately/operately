@@ -12,7 +12,7 @@ export type Status =
 
 interface Person {
   id: string;
-  name: string;
+  fullName: string;
   avatarUrl?: string;
 }
 

@@ -1,11 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { TableRow } from './TableRow';
+import { TableHeader } from './TableHeader';
 import type { WorkMapItem, Status } from './types';
 
 // Mock data for stories
 const mockOwner = {
   id: "user-1",
-  name: "John Doe",
+  fullName: "John Doe",
   avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
 };
 
@@ -70,9 +71,7 @@ const meta = {
     (Story) => (
       <div className="w-full overflow-x-auto">
         <table className="w-full border-collapse">
-          <tbody>
-            <Story />
-          </tbody>
+          <Story />
         </table>
       </div>
     ),
@@ -114,6 +113,14 @@ type Story = StoryObj<typeof meta>;
  * Default TableRow showing a goal that is on track
  */
 export const Default: Story = {
+  render: (args) => (
+    <>
+      <TableHeader filter={args.filter} />
+      <tbody>
+        <TableRow {...args} />
+      </tbody>
+    </>
+  ),
   args: {
     item: mockGoalOnTrack,
     level: 0,
@@ -127,6 +134,14 @@ export const Default: Story = {
  * A completed goal with 100% progress
  */
 export const CompletedGoal: Story = {
+  render: (args) => (
+    <>
+      <TableHeader filter={args.filter} />
+      <tbody>
+        <TableRow {...args} />
+      </tbody>
+    </>
+  ),
   args: {
     item: mockGoalCompleted,
     level: 0,
@@ -140,6 +155,14 @@ export const CompletedGoal: Story = {
  * An achieved goal (similar to completed but specifically for goals)
  */
 export const AchievedGoal: Story = {
+  render: (args) => (
+    <>
+      <TableHeader filter={args.filter} />
+      <tbody>
+        <TableRow {...args} />
+      </tbody>
+    </>
+  ),
   args: {
     item: mockGoalAchieved,
     level: 0,
@@ -153,6 +176,14 @@ export const AchievedGoal: Story = {
  * A goal that was partially achieved
  */
 export const PartiallyAchievedGoal: Story = {
+  render: (args) => (
+    <>
+      <TableHeader filter={args.filter} />
+      <tbody>
+        <TableRow {...args} />
+      </tbody>
+    </>
+  ),
   args: {
     item: mockGoalPartial,
     level: 0,
@@ -166,6 +197,14 @@ export const PartiallyAchievedGoal: Story = {
  * A goal that missed its target
  */
 export const MissedGoal: Story = {
+  render: (args) => (
+    <>
+      <TableHeader filter={args.filter} />
+      <tbody>
+        <TableRow {...args} />
+      </tbody>
+    </>
+  ),
   args: {
     item: mockGoalMissed,
     level: 0,
@@ -179,6 +218,14 @@ export const MissedGoal: Story = {
  * A paused goal
  */
 export const PausedGoal: Story = {
+  render: (args) => (
+    <>
+      <TableHeader filter={args.filter} />
+      <tbody>
+        <TableRow {...args} />
+      </tbody>
+    </>
+  ),
   args: {
     item: mockGoalPaused,
     level: 0,
@@ -192,6 +239,14 @@ export const PausedGoal: Story = {
  * A goal with caution status
  */
 export const CautionGoal: Story = {
+  render: (args) => (
+    <>
+      <TableHeader filter={args.filter} />
+      <tbody>
+        <TableRow {...args} />
+      </tbody>
+    </>
+  ),
   args: {
     item: mockGoalCaution,
     level: 0,
@@ -205,6 +260,14 @@ export const CautionGoal: Story = {
  * A goal with an issue
  */
 export const IssueGoal: Story = {
+  render: (args) => (
+    <>
+      <TableHeader filter={args.filter} />
+      <tbody>
+        <TableRow {...args} />
+      </tbody>
+    </>
+  ),
   args: {
     item: mockGoalIssue,
     level: 0,
@@ -218,6 +281,14 @@ export const IssueGoal: Story = {
  * A project that is on track
  */
 export const OnTrackProject: Story = {
+  render: (args) => (
+    <>
+      <TableHeader filter={args.filter} />
+      <tbody>
+        <TableRow {...args} />
+      </tbody>
+    </>
+  ),
   args: {
     item: mockProjectOnTrack,
     level: 0,
@@ -231,6 +302,14 @@ export const OnTrackProject: Story = {
  * A completed project
  */
 export const CompletedProject: Story = {
+  render: (args) => (
+    <>
+      <TableHeader filter={args.filter} />
+      <tbody>
+        <TableRow {...args} />
+      </tbody>
+    </>
+  ),
   args: {
     item: mockProjectCompleted,
     level: 0,
@@ -244,6 +323,14 @@ export const CompletedProject: Story = {
  * A selected row
  */
 export const SelectedRow: Story = {
+  render: (args) => (
+    <>
+      <TableHeader filter={args.filter} />
+      <tbody>
+        <TableRow {...args} />
+      </tbody>
+    </>
+  ),
   args: {
     item: mockGoalOnTrack,
     level: 0,
@@ -257,6 +344,14 @@ export const SelectedRow: Story = {
  * An indented row (level 1)
  */
 export const IndentedRow: Story = {
+  render: (args) => (
+    <>
+      <TableHeader filter={args.filter} />
+      <tbody>
+        <TableRow {...args} />
+      </tbody>
+    </>
+  ),
   args: {
     item: mockProjectOnTrack,
     level: 1,
@@ -270,6 +365,14 @@ export const IndentedRow: Story = {
  * A row with the completed filter applied
  */
 export const CompletedFilter: Story = {
+  render: (args) => (
+    <>
+      <TableHeader filter={args.filter} />
+      <tbody>
+        <TableRow {...args} />
+      </tbody>
+    </>
+  ),
   args: {
     item: mockGoalCompleted,
     level: 0,
@@ -283,6 +386,14 @@ export const CompletedFilter: Story = {
  * A row with the goals filter applied
  */
 export const GoalsFilter: Story = {
+  render: (args) => (
+    <>
+      <TableHeader filter={args.filter} />
+      <tbody>
+        <TableRow {...args} />
+      </tbody>
+    </>
+  ),
   args: {
     item: mockGoalOnTrack,
     level: 0,
@@ -296,17 +407,19 @@ export const GoalsFilter: Story = {
  * Multiple rows showing different statuses
  */
 export const MultipleRows: Story = {
-  render: () => (
+  render: (args) => (
     <>
-      <TableRow item={mockGoalOnTrack} level={0} isLast={false} />
-      <TableRow item={mockGoalCompleted} level={0} isLast={false} />
-      <TableRow item={mockGoalCaution} level={0} isLast={false} />
-      <TableRow item={mockGoalIssue} level={0} isLast={false} />
-      <TableRow item={mockProjectOnTrack} level={1} isLast={false} />
-      <TableRow item={mockProjectCompleted} level={1} isLast={true} />
+      <TableHeader filter={args.filter} />
+      <tbody>
+        <TableRow item={mockGoalOnTrack} level={0} isLast={false} filter={args.filter} />
+        <TableRow item={mockProjectOnTrack} level={1} isLast={false} filter={args.filter} />
+        <TableRow item={mockGoalCompleted} level={0} isLast={false} filter={args.filter} />
+        <TableRow item={mockProjectCompleted} level={0} isLast={true} filter={args.filter} />
+      </tbody>
     </>
   ),
   args: {
+    filter: undefined,
     item: mockGoalOnTrack, // These args won't be used directly by the render function
     level: 0,              // but are required by the StoryAnnotations type
     isLast: false
