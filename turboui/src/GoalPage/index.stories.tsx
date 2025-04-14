@@ -104,3 +104,15 @@ export const Default: Story = {
     relatedWorkItems: relatedWorkItems,
   },
 };
+
+export const ZeroState: Story = {
+  args: {
+    spaceLink: "/spaces/1",
+    workmapLink: "/spaces/1/workmaps/1",
+    goalName: "Launch AI Platform",
+    spaceName: "Product",
+    champion: null,
+    reviewer: null,
+    relatedWorkItems: [],
+  },
+};
