@@ -44,7 +44,7 @@ const DemoIcon = () => (
   </svg>
 );
 
-export const Basic: Story = {
+export const Default: Story = {
   args: {
     title: "Simple Page",
     navigation: [
@@ -56,45 +56,93 @@ export const Basic: Story = {
   },
 };
 
-export const PageOptions: Story = {
+export const SizeTiny: Story = {
   args: {
-    title: "Page With Options",
-    options: [
-      { icon: <DemoIcon />, title: "Add Item" },
-      { icon: <DemoIcon />, title: "Settings" },
+    title: "Tiny Size",
+    size: "tiny",
+    navigation: [
+      { label: "Product", to: "#" },
+      { label: "Workmap", to: "#" },
+      { label: "Project Alpha", to: "#" },
     ],
-    children: <Content title="Page Content" />,
+    children: <Content title="Tiny size" />,
   },
 };
 
-export const Sizes: Story = {
+export const SizeSmall: Story = {
   args: {
-    title: "Different Sizes",
+    title: "Small Size",
+    size: "small",
+    navigation: [
+      { label: "Product", to: "#" },
+      { label: "Workmap", to: "#" },
+      { label: "Project Alpha", to: "#" },
+    ],
+    children: <Content title="Small size" />,
   },
-  render: () => (
-    <div className="space-y-4">
-      {[
-        "tiny",
-        "small",
-        "medium",
-        "large",
-        "xlarge",
-        "xxlarge",
-        "fullwidth",
-      ].map((size) => (
-        <Page
-          key={size}
-          title={`${size} size`}
-          size={size as any}
-          navigation={[
-            { label: "Product", to: "#" },
-            { label: "Workmap", to: "#" },
-            { label: "Project Alpha", to: "#" },
-          ]}
-        >
-          <Content title={`${size} size`} />
-        </Page>
-      ))}
-    </div>
-  ),
+};
+
+export const SizeMedium: Story = {
+  args: {
+    title: "Medium Size",
+    size: "medium",
+    navigation: [
+      { label: "Product", to: "#" },
+      { label: "Workmap", to: "#" },
+      { label: "Project Alpha", to: "#" },
+    ],
+    children: <Content title="Medium size" />,
+  },
+};
+
+export const SizeLarge: Story = {
+  args: {
+    title: "Large Size",
+    size: "large",
+    navigation: [
+      { label: "Product", to: "#" },
+      { label: "Workmap", to: "#" },
+      { label: "Project Alpha", to: "#" },
+    ],
+    children: <Content title="Large size" />,
+  },
+};
+
+export const SizeXLarge: Story = {
+  args: {
+    title: "XLarge Size",
+    size: "xlarge",
+    navigation: [
+      { label: "Product", to: "#" },
+      { label: "Workmap", to: "#" },
+      { label: "Project Alpha", to: "#" },
+    ],
+    children: <Content title="XLarge size" />,
+  },
+};
+
+export const SizeXXLarge: Story = {
+  args: {
+    title: "XXLarge Size",
+    size: "xxlarge",
+    navigation: [
+      { label: "Product", to: "#" },
+      { label: "Workmap", to: "#" },
+      { label: "Project Alpha", to: "#" },
+    ],
+    children: <Content title="XXLarge size" />,
+  },
+};
+
+export const SizeFullWidth: Story = {
+  args: {
+    title: "Full Width Size",
+    size: "fullwidth",
+    navigation: [
+      { label: "Product", to: "#" },
+      { label: "Workmap", to: "#" },
+      { label: "Project Alpha", to: "#" },
+    ],
+    children: <Content title="Full width size" />,
+  },
 };

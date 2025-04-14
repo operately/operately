@@ -106,8 +106,7 @@ function NavItem({ item, index }: { item: Navigation.Item; index: number }) {
 }
 
 function NavSeparator() {
-  const breakpoint = "xs"; // Pages.useWindowSizeBreakpoints();
-  const iconSize = breakpoint === "xs" ? 12 : 16;
+  const iconSize = 14;
 
   return (
     <div className="shrink-0">
