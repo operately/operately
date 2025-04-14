@@ -25,13 +25,13 @@ export namespace Page {
 }
 
 const sizeClasses: Record<Page.Size, string> = {
-  tiny: "max-w-xl",
-  small: "max-w-2xl",
-  medium: "max-w-4xl",
-  large: "sm:max-w-[90%] lg:max-w-5xl ",
-  xlarge: "sm:max-w-[90%] lg:max-w-6xl ",
-  xxlarge: "sm:max-w-[90%] lg:max-w-7xl",
-  fullwidth: "max-w-full mx-8",
+  tiny: "max-w-xl mx-auto",
+  small: "max-w-2xl mx-auto",
+  medium: "max-w-4xl mx-auto",
+  large: "sm:max-w-[90%] lg:max-w-5xl mx-auto",
+  xlarge: "sm:max-w-[90%] lg:max-w-6xl mx-auto",
+  xxlarge: "sm:max-w-[90%] lg:max-w-7xl mx-auto",
+  fullwidth: "max-w-full mx-4",
 };
 
 export function Page(props: Page.Props) {
