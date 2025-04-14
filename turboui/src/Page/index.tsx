@@ -33,7 +33,7 @@ const sizeClasses: Record<Page.Size, string> = {
   large: "sm:max-w-[90%] lg:max-w-5xl mx-auto",
   xlarge: "sm:max-w-[90%] lg:max-w-6xl mx-auto",
   xxlarge: "sm:max-w-[90%] lg:max-w-7xl mx-auto",
-  fullwidth: "max-w-full mx-4",
+  fullwidth: "max-w-full",
 };
 
 export function Page(props: Page.Props) {
@@ -90,7 +90,9 @@ function Paper({ children }: { children: React.ReactNode }) {
     "sm:border sm:border-surface-outline",
 
     "sm:rounded-lg",
-    "sm:shadow-xl"
+    "sm:shadow-xl",
+
+    "sm:mx-4"
   );
 
   return <div className={classname}>{children}</div>;
