@@ -117,7 +117,7 @@ export const Default: Story = {
     <>
       <TableHeader filter={args.filter} />
       <tbody>
-        <TableRow {...args} />
+        <TableRow {...args} onDelete={() => {}} />
       </tbody>
     </>
   ),
@@ -126,7 +126,8 @@ export const Default: Story = {
     level: 0,
     isLast: false,
     filter: undefined,
-    isSelected: false
+    isSelected: false,
+    onDelete: () => {}
   },
 };
 
@@ -135,19 +136,20 @@ export const Default: Story = {
  */
 export const CompletedGoal: Story = {
   render: (args) => (
-    <>
+    <div className="pb-12">
       <TableHeader filter={args.filter} />
       <tbody>
-        <TableRow {...args} />
+        <TableRow {...args} onDelete={() => {}} />
       </tbody>
-    </>
+    </div>
   ),
   args: {
     item: mockGoalCompleted,
     level: 0,
     isLast: false,
     filter: undefined,
-    isSelected: false
+    isSelected: false,
+    onDelete: () => {}
   },
 };
 
@@ -156,19 +158,20 @@ export const CompletedGoal: Story = {
  */
 export const AchievedGoal: Story = {
   render: (args) => (
-    <>
+    <div className="pb-12">
       <TableHeader filter={args.filter} />
       <tbody>
-        <TableRow {...args} />
+        <TableRow {...args} onDelete={() => {}} />
       </tbody>
-    </>
+    </div>
   ),
   args: {
     item: mockGoalAchieved,
     level: 0,
     isLast: false,
     filter: undefined,
-    isSelected: false
+    isSelected: false,
+    onDelete: () => {}
   },
 };
 
@@ -177,19 +180,20 @@ export const AchievedGoal: Story = {
  */
 export const PartiallyAchievedGoal: Story = {
   render: (args) => (
-    <>
+    <div className="pb-12">
       <TableHeader filter={args.filter} />
       <tbody>
-        <TableRow {...args} />
+        <TableRow {...args} onDelete={() => {}} />
       </tbody>
-    </>
+    </div>
   ),
   args: {
     item: mockGoalPartial,
     level: 0,
     isLast: false,
     filter: undefined,
-    isSelected: false
+    isSelected: false,
+    onDelete: () => {}
   },
 };
 
@@ -198,19 +202,20 @@ export const PartiallyAchievedGoal: Story = {
  */
 export const MissedGoal: Story = {
   render: (args) => (
-    <>
+    <div className="pb-12">
       <TableHeader filter={args.filter} />
       <tbody>
-        <TableRow {...args} />
+        <TableRow {...args} onDelete={() => {}} />
       </tbody>
-    </>
+    </div>
   ),
   args: {
     item: mockGoalMissed,
     level: 0,
     isLast: false,
     filter: undefined,
-    isSelected: false
+    isSelected: false,
+    onDelete: () => {}
   },
 };
 
@@ -219,19 +224,20 @@ export const MissedGoal: Story = {
  */
 export const PausedGoal: Story = {
   render: (args) => (
-    <>
+    <div className="pb-12">
       <TableHeader filter={args.filter} />
       <tbody>
-        <TableRow {...args} />
+        <TableRow {...args} onDelete={() => {}} />
       </tbody>
-    </>
+    </div>
   ),
   args: {
     item: mockGoalPaused,
     level: 0,
     isLast: false,
     filter: undefined,
-    isSelected: false
+    isSelected: false,
+    onDelete: () => {}
   },
 };
 
@@ -240,19 +246,20 @@ export const PausedGoal: Story = {
  */
 export const CautionGoal: Story = {
   render: (args) => (
-    <>
+    <div className="pb-12">
       <TableHeader filter={args.filter} />
       <tbody>
-        <TableRow {...args} />
+        <TableRow {...args} onDelete={() => {}} />
       </tbody>
-    </>
+    </div>
   ),
   args: {
     item: mockGoalCaution,
     level: 0,
     isLast: false,
     filter: undefined,
-    isSelected: false
+    isSelected: false,
+    onDelete: () => {}
   },
 };
 
@@ -261,19 +268,20 @@ export const CautionGoal: Story = {
  */
 export const IssueGoal: Story = {
   render: (args) => (
-    <>
+    <div className="pb-12">
       <TableHeader filter={args.filter} />
       <tbody>
-        <TableRow {...args} />
+        <TableRow {...args} onDelete={() => {}} />
       </tbody>
-    </>
+    </div>
   ),
   args: {
     item: mockGoalIssue,
     level: 0,
     isLast: false,
     filter: undefined,
-    isSelected: false
+    isSelected: false,
+    onDelete: () => {}
   },
 };
 
@@ -285,7 +293,7 @@ export const OnTrackProject: Story = {
     <>
       <TableHeader filter={args.filter} />
       <tbody>
-        <TableRow {...args} />
+        <TableRow {...args} onDelete={() => {}} />
       </tbody>
     </>
   ),
@@ -294,7 +302,8 @@ export const OnTrackProject: Story = {
     level: 0,
     isLast: false,
     filter: undefined,
-    isSelected: false
+    isSelected: false,
+    onDelete: () => {}
   },
 };
 
@@ -306,7 +315,7 @@ export const CompletedProject: Story = {
     <>
       <TableHeader filter={args.filter} />
       <tbody>
-        <TableRow {...args} />
+        <TableRow {...args} onDelete={() => {}} />
       </tbody>
     </>
   ),
@@ -315,7 +324,8 @@ export const CompletedProject: Story = {
     level: 0,
     isLast: false,
     filter: undefined,
-    isSelected: false
+    isSelected: false,
+    onDelete: () => {}
   },
 };
 
@@ -327,7 +337,7 @@ export const SelectedRow: Story = {
     <>
       <TableHeader filter={args.filter} />
       <tbody>
-        <TableRow {...args} />
+        <TableRow {...args} onDelete={() => {}} />
       </tbody>
     </>
   ),
@@ -336,7 +346,8 @@ export const SelectedRow: Story = {
     level: 0,
     isLast: false,
     filter: undefined,
-    isSelected: true
+    isSelected: true,
+    onDelete: () => {}
   },
 };
 
@@ -348,7 +359,7 @@ export const IndentedRow: Story = {
     <>
       <TableHeader filter={args.filter} />
       <tbody>
-        <TableRow {...args} />
+        <TableRow {...args} onDelete={() => {}} />
       </tbody>
     </>
   ),
@@ -357,7 +368,8 @@ export const IndentedRow: Story = {
     level: 1,
     isLast: false,
     filter: undefined,
-    isSelected: false
+    isSelected: false,
+    onDelete: () => {}
   },
 };
 
@@ -369,7 +381,7 @@ export const CompletedFilter: Story = {
     <>
       <TableHeader filter={args.filter} />
       <tbody>
-        <TableRow {...args} />
+        <TableRow {...args} onDelete={() => {}} />
       </tbody>
     </>
   ),
@@ -378,7 +390,8 @@ export const CompletedFilter: Story = {
     level: 0,
     isLast: false,
     filter: 'completed',
-    isSelected: false
+    isSelected: false,
+    onDelete: () => {}
   },
 };
 
@@ -390,7 +403,7 @@ export const GoalsFilter: Story = {
     <>
       <TableHeader filter={args.filter} />
       <tbody>
-        <TableRow {...args} />
+        <TableRow {...args} onDelete={() => {}} />
       </tbody>
     </>
   ),
@@ -399,7 +412,8 @@ export const GoalsFilter: Story = {
     level: 0,
     isLast: false,
     filter: 'goals',
-    isSelected: false
+    isSelected: false,
+    onDelete: () => {}
   },
 };
 
@@ -411,10 +425,10 @@ export const MultipleRows: Story = {
     <>
       <TableHeader filter={args.filter} />
       <tbody>
-        <TableRow item={mockGoalOnTrack} level={0} isLast={false} filter={args.filter} />
-        <TableRow item={mockProjectOnTrack} level={1} isLast={false} filter={args.filter} />
-        <TableRow item={mockGoalCompleted} level={0} isLast={false} filter={args.filter} />
-        <TableRow item={mockProjectCompleted} level={0} isLast={true} filter={args.filter} />
+        <TableRow item={mockGoalOnTrack} level={0} isLast={false} filter={args.filter} onDelete={() => {}} />
+        <TableRow item={mockProjectOnTrack} level={1} isLast={false} filter={args.filter} onDelete={() => {}} />
+        <TableRow item={mockGoalCompleted} level={0} isLast={false} filter={args.filter} onDelete={() => {}} />
+        <TableRow item={mockProjectCompleted} level={0} isLast={true} filter={args.filter} onDelete={() => {}} />
       </tbody>
     </>
   ),
@@ -422,6 +436,7 @@ export const MultipleRows: Story = {
     filter: undefined,
     item: mockGoalOnTrack, // These args won't be used directly by the render function
     level: 0,              // but are required by the StoryAnnotations type
-    isLast: false
+    isLast: false,
+    onDelete: () => {}
   }
 };
