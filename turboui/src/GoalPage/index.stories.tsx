@@ -10,7 +10,7 @@ const meta: Meta<typeof GoalPage> = {
   },
   decorators: [
     (Story) => (
-      <div className="mt-12">
+      <div className="sm:mt-12">
         <Story />
       </div>
     ),
@@ -114,5 +114,22 @@ export const ZeroState: Story = {
     champion: null,
     reviewer: null,
     relatedWorkItems: [],
+  },
+};
+
+export const Mobile: Story = {
+  args: {
+    spaceLink: "/spaces/1",
+    workmapLink: "/spaces/1/workmaps/1",
+    goalName: "Launch AI Platform",
+    spaceName: "Product",
+    champion: champion,
+    reviewer: reviewer,
+    relatedWorkItems: relatedWorkItems,
+  },
+  parameters: {
+    viewport: {
+      defaultViewport: "mobile2",
+    },
   },
 };
