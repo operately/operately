@@ -31,7 +31,6 @@ interface TableRowContextValue {
   indentPadding: number;
   
   // Event handlers
-  handleAddClick: (e: React.MouseEvent) => void;
   handleDeleteClick: (e: React.MouseEvent) => void;
   handleRowClick: (e: React.MouseEvent<HTMLTableRowElement>) => void;
   
@@ -102,11 +101,6 @@ export function TableRowProvider({
     }
   };
   
-  const handleAddClick = (e: React.MouseEvent): void => {
-    e.stopPropagation();
-    setShowQuickEntryWidget(true);
-  };
-
   const handleDeleteClick = (e: React.MouseEvent): void => {
     e.stopPropagation();
     
@@ -134,7 +128,6 @@ export function TableRowProvider({
     level,
     showIndentation,
     indentPadding,
-    handleAddClick,
     handleDeleteClick,
     handleRowClick,
     selectedItemId,
