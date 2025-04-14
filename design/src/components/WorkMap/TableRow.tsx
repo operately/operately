@@ -6,7 +6,7 @@ import {
   IconChevronDown,
   IconChevronRight,
 } from "./Icons";
-import { HoverQuickEntryWidget } from "./HoverQuickEntryWidget.tsx";
+import { HoverQuickEntryWidget } from "./HoverQuickEntryWidget";
 import type { WorkMapItem, TableRowProps } from "../../types/workmap";
 
 /**
