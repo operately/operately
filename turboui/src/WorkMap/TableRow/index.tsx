@@ -19,6 +19,7 @@ interface Props {
   isSelected?: boolean;
   selectedItemId?: string;
   onRowClick?: (item: WorkMapItem) => void;
+  onDelete: () => void;
 }
 
 /**
@@ -26,7 +27,7 @@ interface Props {
  * Handles recursive rendering of children, styling for different item states,
  * and interactions like hover, selection, and adding new items
  */
-export function TableRow({ item, level, isLast, filter, isSelected = false, onRowClick, selectedItemId }: Props) {
+export function TableRow({ item, level, isLast, filter, isSelected = false, onRowClick, onDelete, selectedItemId }: Props) {
   return (
     <TableRowProvider
       item={item}
@@ -36,6 +37,7 @@ export function TableRow({ item, level, isLast, filter, isSelected = false, onRo
       isSelected={isSelected}
       selectedItemId={selectedItemId}
       onRowClick={onRowClick}
+      onDelete={onDelete}
     >
       <RowContainer>
         <ItemNameCell />

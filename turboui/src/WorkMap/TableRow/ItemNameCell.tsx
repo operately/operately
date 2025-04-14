@@ -11,9 +11,14 @@ export function ItemNameCell() {
     showAddButton,
     isCompletedPage,
     isPending,
-    handleAddClick,
     handleDeleteClick,
+    setShowQuickEntryWidget,
   } = useTableRowContext();
+
+  const showAddForm = (e: React.MouseEvent): void => {
+    e.stopPropagation();
+    setShowQuickEntryWidget(true);
+  }
   
   return (
     <td className="py-2 px-2 md:px-4 relative">
@@ -28,7 +33,7 @@ export function ItemNameCell() {
         <ActionButtons
           display={item.type === "goal"}
           isPending={isPending}
-          onAddClick={handleAddClick}
+          onAddClick={showAddForm}
           onDeleteClick={handleDeleteClick}
         />
       )}

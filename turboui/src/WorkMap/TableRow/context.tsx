@@ -31,7 +31,6 @@ interface TableRowContextValue {
   indentPadding: number;
   
   // Event handlers
-  handleAddClick: (e: React.MouseEvent) => void;
   handleDeleteClick: (e: React.MouseEvent) => void;
   handleRowClick: (e: React.MouseEvent<HTMLTableRowElement>) => void;
   
@@ -55,6 +54,7 @@ interface ProviderProps {
   isSelected?: boolean;
   selectedItemId?: string;
   onRowClick?: (item: WorkMapItem) => void;
+  onDelete: () => void;
 }
 
 export function TableRowProvider({
@@ -65,7 +65,8 @@ export function TableRowProvider({
   filter,
   isSelected,
   selectedItemId,
-  onRowClick
+  onRowClick,
+  onDelete,
 }: ProviderProps) {
   const [expanded, setExpanded] = useState<boolean>(true);
   const [showAddButton, setShowAddButton] = useState<boolean>(false);
@@ -102,18 +103,9 @@ export function TableRowProvider({
     }
   };
   
-  const handleAddClick = (e: React.MouseEvent): void => {
-    e.stopPropagation();
-    setShowQuickEntryWidget(true);
-  };
-
   const handleDeleteClick = (e: React.MouseEvent): void => {
     e.stopPropagation();
-    
-    const event = new CustomEvent("workmap:delete-item", {
-      detail: { itemId: item.id },
-    });
-    document.dispatchEvent(event);
+    onDelete();
   };
 
   const contextValue: TableRowContextValue = {
@@ -134,7 +126,6 @@ export function TableRowProvider({
     level,
     showIndentation,
     indentPadding,
-    handleAddClick,
     handleDeleteClick,
     handleRowClick,
     selectedItemId,
