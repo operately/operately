@@ -1,6 +1,7 @@
 import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { Page } from "./index";
+import { PageFooter } from "./PageFooter";
 
 const meta = {
   title: "Components/Page",
@@ -145,4 +146,23 @@ export const SizeFullWidth: Story = {
     ],
     children: <Content title="Full width size" />,
   },
+};
+
+export const WithPageFooter: Story = {
+  args: {
+    title: "Page with Footer",
+    navigation: [
+      { label: "Product", to: "#" },
+      { label: "Workmap", to: "#" },
+      { label: "Project Alpha", to: "#" },
+    ],
+  },
+  render: ({ title, navigation }) => (
+    <Page title={title} navigation={navigation}>
+      <Content title="Page Content" />
+      <PageFooter className="p-8">
+        Page Footer Content. Usually the activity feed goes here.
+      </PageFooter>
+    </Page>
+  ),
 };
