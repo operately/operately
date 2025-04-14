@@ -20,6 +20,12 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+const Content = ({ title }: { title: string }) => (
+  <div className="p-8 bg-white rounded shadow min-h-96 text-center font-bold text-2xl">
+    {title}
+  </div>
+);
+
 const DemoIcon = () => (
   <svg
     width="24"
@@ -41,29 +47,27 @@ const DemoIcon = () => (
 export const Basic: Story = {
   args: {
     title: "Simple Page",
-    children: <div className="p-4 bg-white rounded shadow">Page Content</div>,
+    navigation: [
+      { label: "Product", to: "#" },
+      { label: "Workmap", to: "#" },
+      { label: "Project Alpha", to: "#" },
+    ],
+    children: <Content title="Page Content" />,
   },
 };
 
-export const WithNavigation: Story = {
-  args: {
-    title: ["Projects", "Project Name", "Settings"],
-    children: <div className="p-4 bg-white rounded shadow">Page Content</div>,
-  },
-};
-
-export const WithOptions: Story = {
+export const PageOptions: Story = {
   args: {
     title: "Page With Options",
     options: [
       { icon: <DemoIcon />, title: "Add Item" },
       { icon: <DemoIcon />, title: "Settings" },
     ],
-    children: <div className="p-4 bg-white rounded shadow">Page Content</div>,
+    children: <Content title="Page Content" />,
   },
 };
 
-export const DifferentSizes: Story = {
+export const Sizes: Story = {
   args: {
     title: "Different Sizes",
   },
@@ -78,10 +82,17 @@ export const DifferentSizes: Story = {
         "xxlarge",
         "fullwidth",
       ].map((size) => (
-        <Page key={size} title={`${size} size`} size={size as any}>
-          <div className="p-4 bg-white rounded shadow w-full">
-            Content with {size} width
-          </div>
+        <Page
+          key={size}
+          title={`${size} size`}
+          size={size as any}
+          navigation={[
+            { label: "Product", to: "#" },
+            { label: "Workmap", to: "#" },
+            { label: "Project Alpha", to: "#" },
+          ]}
+        >
+          <Content title={`${size} size`} />
         </Page>
       ))}
     </div>

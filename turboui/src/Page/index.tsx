@@ -1,5 +1,6 @@
 import * as React from "react";
 import classNames from "../utils/classnames";
+import { Navigation } from "./Navigation";
 
 export namespace Page {
   export type Size =
@@ -21,6 +22,7 @@ export namespace Page {
     size?: Size;
     options?: Option[];
     children?: React.ReactNode;
+    navigation?: Navigation.Item[];
   }
 }
 
@@ -40,6 +42,8 @@ export function Page(props: Page.Props) {
 
   return (
     <div className={containerClass}>
+      {props.navigation && <Navigation items={props.navigation} />}
+
       <Paper>
         <PageOptions options={props.options} />
         {props.children}
