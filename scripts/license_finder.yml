@@ -207,3 +207,171 @@
     :why: "@tldraw/tldraw is free to use if we leave the watermakm on it"
     :versions: []
     :when: 2025-04-03 15:55:05.209938000 Z
+- - :approve
+  - bamboo
+  - :who: Uriel Burso
+    :why: Elixir package licensed under MIT
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - bcrypt_elixir
+  - :who: Uriel Burso
+    :why: Elixir package licensed under BSD
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - custom_base
+  - :who: Uriel Burso
+    :why: Elixir package licensed under MIT
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - ecto_sql
+  - :who: Uriel Burso
+    :why: Elixir package licensed under Apache 2.0
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - ex_aws
+  - :who: Uriel Burso
+    :why: Elixir package licensed under MIT
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - finch
+  - :who: Uriel Burso
+    :why: Elixir package licensed under MIT
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - hackney
+  - :who: Uriel Burso
+    :why: Elixir package licensed under Apache 2.0
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - inflex
+  - :who: Uriel Burso
+    :why: Elixir package licensed under Apache 2.0
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - jason
+  - :who: Uriel Burso
+    :why: Elixir package licensed under Apache 2.0
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - oban
+  - :who: Uriel Burso
+    :why: Elixir package licensed under Apache 2.0
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - phoenix
+  - :who: Uriel Burso
+    :why: Elixir package licensed under MIT
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - phoenix_ecto
+  - :who: Uriel Burso
+    :why: Elixir package licensed under MIT
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - phoenix_html
+  - :who: Uriel Burso
+    :why: Elixir package licensed under MIT
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - phoenix_live_reload
+  - :who: Uriel Burso
+    :why: Elixir package licensed under MIT
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - phoenix_live_view
+  - :who: Uriel Burso
+    :why: Elixir package licensed under MIT
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - phoenix_view
+  - :who: Uriel Burso
+    :why: Elixir package licensed under MIT
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - plug_cowboy
+  - :who: Uriel Burso
+    :why: Elixir package licensed under Apache 2.0
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - postgrex
+  - :who: Uriel Burso
+    :why: Elixir package licensed under Apache 2.0
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - req
+  - :who: Uriel Burso
+    :why: Elixir package licensed under Apache 2.0
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - site_encrypt
+  - :who: Uriel Burso
+    :why: Elixir package licensed under MIT
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - sweet_xml
+  - :who: Uriel Burso
+    :why: Elixir package licensed under MIT
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - swoosh
+  - :who: Uriel Burso
+    :why: Elixir package licensed under MIT
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - tailwind
+  - :who: Uriel Burso
+    :why: Elixir package licensed under MIT
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - telemetry_metrics
+  - :who: Uriel Burso
+    :why: Elixir package licensed under Apache 2.0
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - telemetry_metrics_statsd
+  - :who: Uriel Burso
+    :why: Elixir package licensed under MIT
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - telemetry_poller
+  - :who: Uriel Burso
+    :why: Elixir package licensed under Apache 2.0
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - ueberauth
+  - :who: Uriel Burso
+    :why: Elixir package licensed under MIT
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - ueberauth_google
+  - :who: Uriel Burso
+    :why: Elixir package licensed under MIT
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
