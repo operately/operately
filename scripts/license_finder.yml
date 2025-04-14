@@ -207,3 +207,171 @@
     :why: "@tldraw/tldraw is free to use if we leave the watermakm on it"
     :versions: []
     :when: 2025-04-03 15:55:05.209938000 Z
+- - :approve
+  - bamboo
+  - :who: Adriano Lazzaretti
+    :why: Elixir package licensed under MIT
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - bcrypt_elixir
+  - :who: Adriano Lazzaretti
+    :why: Elixir package licensed under BSD
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - custom_base
+  - :who: Adriano Lazzaretti
+    :why: Elixir package licensed under MIT
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - ecto_sql
+  - :who: Adriano Lazzaretti
+    :why: Elixir package licensed under Apache 2.0
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - ex_aws
+  - :who: Adriano Lazzaretti
+    :why: Elixir package licensed under MIT
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - finch
+  - :who: Adriano Lazzaretti
+    :why: Elixir package licensed under MIT
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - hackney
+  - :who: Adriano Lazzaretti
+    :why: Elixir package licensed under Apache 2.0
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - inflex
+  - :who: Adriano Lazzaretti
+    :why: Elixir package licensed under Apache 2.0
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - jason
+  - :who: Adriano Lazzaretti
+    :why: Elixir package licensed under Apache 2.0
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - oban
+  - :who: Adriano Lazzaretti
+    :why: Elixir package licensed under Apache 2.0
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - phoenix
+  - :who: Adriano Lazzaretti
+    :why: Elixir package licensed under MIT
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - phoenix_ecto
+  - :who: Adriano Lazzaretti
+    :why: Elixir package licensed under MIT
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - phoenix_html
+  - :who: Adriano Lazzaretti
+    :why: Elixir package licensed under MIT
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - phoenix_live_reload
+  - :who: Adriano Lazzaretti
+    :why: Elixir package licensed under MIT
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - phoenix_live_view
+  - :who: Adriano Lazzaretti
+    :why: Elixir package licensed under MIT
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - phoenix_view
+  - :who: Adriano Lazzaretti
+    :why: Elixir package licensed under MIT
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - plug_cowboy
+  - :who: Adriano Lazzaretti
+    :why: Elixir package licensed under Apache 2.0
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - postgrex
+  - :who: Adriano Lazzaretti
+    :why: Elixir package licensed under Apache 2.0
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - req
+  - :who: Adriano Lazzaretti
+    :why: Elixir package licensed under Apache 2.0
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - site_encrypt
+  - :who: Adriano Lazzaretti
+    :why: Elixir package licensed under MIT
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - sweet_xml
+  - :who: Adriano Lazzaretti
+    :why: Elixir package licensed under MIT
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - swoosh
+  - :who: Adriano Lazzaretti
+    :why: Elixir package licensed under MIT
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - tailwind
+  - :who: Adriano Lazzaretti
+    :why: Elixir package licensed under MIT
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - telemetry_metrics
+  - :who: Adriano Lazzaretti
+    :why: Elixir package licensed under Apache 2.0
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - telemetry_metrics_statsd
+  - :who: Adriano Lazzaretti
+    :why: Elixir package licensed under MIT
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - telemetry_poller
+  - :who: Adriano Lazzaretti
+    :why: Elixir package licensed under Apache 2.0
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - ueberauth
+  - :who: Adriano Lazzaretti
+    :why: Elixir package licensed under MIT
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - ueberauth_google
+  - :who: Adriano Lazzaretti
+    :why: Elixir package licensed under MIT
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
