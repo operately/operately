@@ -33,6 +33,7 @@ export function GoalPage(props: GoalPage.Props) {
       <div className="grid grid-cols-10 gap-8 p-8">
         <RelatedWork {...props} />
         <Sidebar {...props} />
+        <ActivityFooter />
       </div>
     </Page>
   );
@@ -90,6 +91,14 @@ function RelatedWork(props: GoalPage.Props) {
         <h2 className="text-lg font-semibold mb-4">Related Work</h2>
         <MiniWorkMap items={props.relatedWorkItems} />
       </div>
+    </div>
+  );
+}
+
+function ActivityFooter() {
+  return (
+    <div className="col-span-10 mt-8 pt-8 border-t border-gray-200">
+      <h3 className="text-xs uppercase font-medium tracking-wider">Activity</h3>
     </div>
   );
 }

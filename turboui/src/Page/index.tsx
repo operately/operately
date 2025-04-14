@@ -1,6 +1,8 @@
 import * as React from "react";
-import classNames from "../utils/classnames";
 import { Navigation } from "./Navigation";
+import { Paper } from "./Paper";
+import { useHtmlTitle } from "./useHtmlTitle";
+import { PageOptions } from "./PageOptions";
 
 export namespace Page {
   export type Size =
@@ -50,70 +52,4 @@ export function Page(props: Page.Props) {
       </Paper>
     </div>
   );
-}
-
-function PageOptions({ options }: { options?: Page.Option[] }) {
-  if (!options) {
-    return null;
-  }
-
-  if (options.length === 0) {
-    return null;
-  }
-
-  return (
-    <div className="flex items-center justify-end mb-6">
-      <div className="flex items-center gap-4">
-        {options.map((option, index) => (
-          <div
-            key={index}
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 cursor-pointer"
-          >
-            {option.icon}
-            <span>{option.title}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function Paper({ children }: { children: React.ReactNode }) {
-  const classname = classNames(
-    "relative",
-    "bg-surface-base",
-
-    // full height on mobile, no min height on larger screens
-    "min-h-dvh sm:min-h-0",
-
-    // apply border shadow and rounded corners on larger screens
-    "sm:border sm:border-surface-outline",
-
-    "sm:rounded-lg",
-    "sm:shadow-xl",
-
-    "sm:mx-4"
-  );
-
-  return <div className={classname}>{children}</div>;
-}
-
-function useHtmlTitle(title: string | string[]) {
-  if (!title) {
-    throw new Error("Page title cannot be null");
-  }
-
-  const titleArray = Array.isArray(title) ? title : [title];
-
-  if (titleArray.length === 0) {
-    throw new Error("Page title cannot be empty");
-  }
-
-  if (titleArray.some((t) => t === null || t === undefined)) {
-    throw new Error("Page title cannot contain null or undefined");
-  }
-
-  React.useEffect(() => {
-    document.title = titleArray.join(" / ");
-  }, [titleArray]);
 }
