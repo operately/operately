@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { GoalPage } from "./index";
+import { genPeople } from "../utils/storybook/genPeople";
 
-const meta = {
+const meta: Meta<typeof GoalPage> = {
   title: "Pages/GoalPage",
   component: GoalPage,
   parameters: {
@@ -16,6 +17,79 @@ const meta = {
   ],
 } satisfies Meta<typeof GoalPage>;
 
+const [champion, reviewer] = genPeople(2);
+const relatedWorkItems = [
+  {
+    id: "1",
+    type: "goal" as const,
+    status: "on_track",
+    name: "Backend Infrastructure",
+    link: "/goals/1",
+    progress: 75,
+    completed: false,
+    subitems: [
+      {
+        id: "3",
+        type: "project" as const,
+        status: "caution",
+        name: "API Development",
+        link: "/projects/3",
+        progress: 60,
+        completed: false,
+        subitems: [],
+        people: genPeople(10, { random: true }),
+      },
+      {
+        id: "4",
+        type: "goal" as const,
+        status: "on_track",
+        name: "Database Optimization",
+        link: "/goals/4",
+        progress: 90,
+        completed: false,
+        subitems: [
+          {
+            id: "5",
+            type: "project" as const,
+            status: "on_track",
+            name: "Query Performance",
+            link: "/projects/5",
+            progress: 100,
+            completed: true,
+            subitems: [],
+            people: genPeople(2, { random: true }),
+          },
+        ],
+        people: genPeople(2, { random: true }),
+      },
+    ],
+    people: genPeople(3, { random: true }),
+  },
+  {
+    id: "2",
+    type: "goal" as const,
+    status: "on_track",
+    name: "UI/UX Design",
+    link: "/goals/2",
+    progress: 100,
+    completed: true,
+    people: genPeople(7, { random: true }),
+    subitems: [
+      {
+        id: "6",
+        type: "project",
+        status: "on_track",
+        name: "Design System",
+        link: "/projects/6",
+        progress: 100,
+        completed: true,
+        subitems: [],
+        people: genPeople(3, { random: true }),
+      },
+    ],
+  },
+];
+
 export default meta;
 type Story = StoryObj<typeof meta>;
 
@@ -25,117 +99,8 @@ export const Default: Story = {
     workmapLink: "/spaces/1/workmaps/1",
     goalName: "Launch AI Platform",
     spaceName: "Product",
-    relatedWorkItems: [
-      {
-        id: "1",
-        type: "goal",
-        status: "on_track",
-        name: "Backend Infrastructure",
-        link: "/goals/1",
-        progress: 75,
-        completed: false,
-        subitems: [
-          {
-            id: "3",
-            type: "project",
-            status: "caution",
-            name: "API Development",
-            link: "/projects/3",
-            progress: 60,
-            completed: false,
-            subitems: [],
-            people: [
-              {
-                id: "1",
-                fullName: "John Doe",
-                avatarUrl: "https://i.pravatar.cc/150?u=1",
-              },
-            ],
-          },
-          {
-            id: "4",
-            type: "goal",
-            status: "on_track",
-            name: "Database Optimization",
-            link: "/goals/4",
-            progress: 90,
-            completed: false,
-            subitems: [
-              {
-                id: "5",
-                type: "project",
-                status: "on_track",
-                name: "Query Performance",
-                link: "/projects/5",
-                progress: 100,
-                completed: true,
-                subitems: [],
-                people: [
-                  {
-                    id: "2",
-                    fullName: "Jane Smith",
-                    avatarUrl: "https://i.pravatar.cc/150?u=2",
-                  },
-                ],
-              },
-            ],
-            people: [
-              {
-                id: "2",
-                fullName: "Jane Smith",
-                avatarUrl: "https://i.pravatar.cc/150?u=2",
-              },
-            ],
-          },
-        ],
-        people: [
-          {
-            id: "1",
-            fullName: "John Doe",
-            avatarUrl: "https://i.pravatar.cc/150?u=1",
-          },
-          {
-            id: "2",
-            fullName: "Jane Smith",
-            avatarUrl: "https://i.pravatar.cc/150?u=2",
-          },
-        ],
-      },
-      {
-        id: "2",
-        type: "goal",
-        status: "on_track",
-        name: "UI/UX Design",
-        link: "/goals/2",
-        progress: 100,
-        completed: true,
-        subitems: [
-          {
-            id: "6",
-            type: "project",
-            status: "on_track",
-            name: "Design System",
-            link: "/projects/6",
-            progress: 100,
-            completed: true,
-            subitems: [],
-            people: [
-              {
-                id: "3",
-                fullName: "Alice Johnson",
-                avatarUrl: "https://i.pravatar.cc/150?u=3",
-              },
-            ],
-          },
-        ],
-        people: [
-          {
-            id: "3",
-            fullName: "Alice Johnson",
-            avatarUrl: "https://i.pravatar.cc/150?u=3",
-          },
-        ],
-      },
-    ],
+    champion: champion,
+    reviewer: reviewer,
+    relatedWorkItems: relatedWorkItems,
   },
 };
