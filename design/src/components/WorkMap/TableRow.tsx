@@ -1,12 +1,10 @@
 import React, { useState } from "react";
-import { StatusBadge, ProgressBar, AvatarWithName } from "turboui";
+import { StatusBadge, ProgressBar, AvatarWithName, ResourceName } from "turboui";
 import {
-  IconTargetArrow,
-  IconChecklist,
   IconChevronDown,
   IconChevronRight,
 } from "./Icons";
-import { HoverQuickEntryWidget } from "./HoverQuickEntryWidget.tsx";
+import { HoverQuickEntryWidget } from "./HoverQuickEntryWidget";
 import type { WorkMapItem, TableRowProps } from "../../types/workmap";
 
 /**
@@ -36,7 +34,6 @@ export function TableRow({
   const showIndentation = !filter || filter === "goals" || filter === "all";
   const indentPadding = showIndentation ? level * 20 : 0;
   const isGoal = item.type === "goal";
-  const isProject = item.type === "project";
 
   // Determine if item should have strikethrough or other special styling
   // Based on the three-state goal completion model: achieved, partial, missed
@@ -128,38 +125,15 @@ export function TableRow({
               </>
             )}
 
-            <div
-              className={`flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center mr-2 ${
-                isGoal
-                  ? "text-red-500 dark:text-red-400 bg-red-50 dark:bg-red-900/30"
-                  : "text-blue-500 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30"
-              }`}
-            >
-              {isGoal && <IconTargetArrow size={12} />}
-              {isProject && <IconChecklist size={12} />}
-            </div>
-
-            <div className="flex items-center">
-              <a
-                href="#"
-                className={`
-                  font-medium text-xs md:text-sm hover:underline transition-colors
-                  ${isCompleted || isFailed ? "line-through" : ""}
-                  ${isDropped ? "line-through opacity-70" : ""}
-                  ${isPending ? "text-content-dimmed dark:text-gray-400" : ""}
-                  ${
-                    filter === "completed" &&
-                    (isCompleted || isFailed || isDropped)
-                      ? "text-content-dimmed dark:text-gray-400"
-                      : isCompleted || isFailed || isDropped
-                      ? "text-content-dimmed dark:text-gray-400"
-                      : "text-content-base dark:text-gray-200 hover:text-link-hover dark:hover:text-white"
-                  }
-                `}
-              >
-                {item.name}
-              </a>
-            </div>
+            <ResourceName
+              type={item.type}
+              name={item.name}
+              href="#"
+              isCompleted={isCompleted}
+              isFailed={isFailed}
+              isDropped={isDropped}
+              isPending={isPending}
+            />
           </div>
 
           {/* Action buttons container - contains both add and delete buttons */}
