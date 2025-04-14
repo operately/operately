@@ -19,7 +19,7 @@ export function GoalPage(props: GoalPage.Props) {
   return (
     <Page title={[props.goalName]} navigation={navigation} size="large">
       <div className="p-8">
-        <h1 className="text-3xl font-bold text-gray-900">{props.goalName}</h1>
+        <h1 className="text-2xl font-bold text-gray-900">{props.goalName}</h1>
       </div>
     </Page>
   );

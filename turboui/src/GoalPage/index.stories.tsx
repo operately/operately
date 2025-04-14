@@ -7,7 +7,13 @@ const meta = {
   parameters: {
     layout: "fullscreen",
   },
-  tags: ["autodocs"],
+  decorators: [
+    (Story) => (
+      <div className="mt-12">
+        <Story />
+      </div>
+    ),
+  ],
 } satisfies Meta<typeof GoalPage>;
 
 export default meta;
@@ -15,8 +21,10 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    goalName: "Improve Customer Experience",
-    space: "Product",
-    workmap: "Q4 2023 Initiatives",
+    spaceLink: "/spaces/1",
+    workmapLink: "/spaces/1/workmaps/1",
+
+    goalName: "Launch AI Platform",
+    spaceName: "Product",
   },
 };
