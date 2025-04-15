@@ -134,6 +134,7 @@ export const Default: Story = {
     relatedWorkItems: relatedWorkItems,
     startDate: genRelativeDate(-15),
     endDate: genRelativeDate(15),
+    contributors: genPeople(18, { random: true }),
   },
 };
 

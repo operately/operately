@@ -1,7 +1,7 @@
 import { Page } from "../Page";
 import { PageFooter } from "../Page/PageFooter";
 import { MiniWorkMap } from "../MiniWorkMap";
-import { AvatarWithName } from "../Avatar";
+import { AvatarWithName, AvatarList } from "../Avatar";
 import { GoalTargetList } from "../GoalTargetList";
 import { Chronometer } from "../Chronometer";
 
@@ -20,6 +20,7 @@ export namespace GoalPage {
     spaceName: string;
     champion?: Person;
     reviewer?: Person;
+    contributors?: Person[];
 
     targets: GoalTargetList.Target[];
     relatedWorkItems: MiniWorkMap.WorkItem[];
@@ -37,7 +38,7 @@ export function GoalPage(props: GoalPage.Props) {
   return (
     <Page title={[props.goalName]} navigation={navigation} size="large">
       <div className="grid grid-cols-10 gap-8 p-8">
-        <RelatedWork {...props} />
+        <MainContent {...props} />
         <Sidebar {...props} />
       </div>
 
@@ -49,9 +50,10 @@ export function GoalPage(props: GoalPage.Props) {
 function Sidebar(props: GoalPage.Props) {
   return (
     <div className="col-span-3 space-y-6">
+      <Timeframe {...props} />
       <Champion {...props} />
       <Reviewer {...props} />
-      <Timeframe {...props} />
+      <Contributors {...props} />
     </div>
   );
 }
@@ -87,7 +89,7 @@ function Reviewer(props: GoalPage.Props) {
   );
 }
 
-function RelatedWork(props: GoalPage.Props) {
+function MainContent(props: GoalPage.Props) {
   return (
     <div className="col-span-7 space-y-8">
       <h1 className="text-2xl font-bold">{props.goalName}</h1>
@@ -100,6 +102,23 @@ function RelatedWork(props: GoalPage.Props) {
       <div>
         <h2 className="text-lg font-semibold mb-4">Related Work</h2>
         <MiniWorkMap items={props.relatedWorkItems} />
+      </div>
+    </div>
+  );
+}
+
+function Contributors(props: GoalPage.Props) {
+  if (!props.contributors || props.contributors.length === 0) return null;
+
+  return (
+    <div>
+      <div className="text-xs uppercase font-medium mb-2 tracking-wider">Contributors</div>
+      <div className="mb-2">
+        <AvatarList people={props.contributors} size={24} maxElements={30} />
+      </div>
+      <div className="text-xs text-gray-600">
+        {props.contributors.length} {props.contributors.length === 1 ? "person" : "people"} contributed by working on
+        related projects and sub-goals
       </div>
     </div>
   );
