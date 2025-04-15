@@ -135,6 +135,14 @@ export const Default: Story = {
     startDate: genRelativeDate(-15),
     endDate: genRelativeDate(15),
     contributors: genPeople(18, { random: true }),
+    lastCheckIn: {
+      submitter: genPeople(1)[0],
+      link: "/check-ins/1",
+      status: "on_track",
+      nextCheckInDate: genRelativeDate(7),
+      message:
+        "The AI platform development is progressing well. We've completed the initial infrastructure setup and are now focusing on implementing core ML capabilities. Team velocity is good and we're on track with our timeline.",
+    },
     description: [
       "Our mission is to develop and launch a cutting-edge AI platform that will revolutionize how businesses ",
       "interact with artificial intelligence. This platform will integrate advanced machine learning capabilities, ",
