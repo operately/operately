@@ -1,4 +1,5 @@
 import { Page } from "../Page";
+import React from "react";
 import { PageFooter } from "../Page/PageFooter";
 import { MiniWorkMap } from "../MiniWorkMap";
 import { AvatarWithName, AvatarList } from "../Avatar";
@@ -17,6 +18,7 @@ export namespace GoalPage {
     workmapLink: string;
 
     goalName: string;
+    description?: string;
     spaceName: string;
     champion?: Person;
     reviewer?: Person;
@@ -90,9 +92,29 @@ function Reviewer(props: GoalPage.Props) {
 }
 
 function MainContent(props: GoalPage.Props) {
+  const [isExpanded, setIsExpanded] = React.useState(false);
+
   return (
     <div className="col-span-7 space-y-8">
-      <h1 className="text-2xl font-bold">{props.goalName}</h1>
+      <div>
+        <h1 className="text-3xl font-bold mb-2">{props.goalName}</h1>
+
+        {props.description && (
+          <div className="">
+            <div className="whitespace-pre-wrap">
+              {isExpanded ? props.description : truncate(props.description, 300)}
+            </div>
+            {props.description.length > 300 && (
+              <button
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="text-content-dimmed hover:underline text-sm mt-1 font-medium"
+              >
+                {isExpanded ? "Collapse" : "Expand"}
+              </button>
+            )}
+          </div>
+        )}
+      </div>
 
       <div>
         <h2 className="text-lg font-semibold mb-4">Targets</h2>
@@ -130,4 +152,9 @@ function ActivityFooter() {
       <h3 className="text-xs uppercase font-medium tracking-wider">Activity</h3>
     </PageFooter>
   );
+}
+
+function truncate(text: string, maxLength: number) {
+  if (text.length <= maxLength) return text;
+  return text.substring(0, maxLength) + "...";
 }

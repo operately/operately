@@ -135,6 +135,22 @@ export const Default: Story = {
     startDate: genRelativeDate(-15),
     endDate: genRelativeDate(15),
     contributors: genPeople(18, { random: true }),
+    description: [
+      "Our mission is to develop and launch a cutting-edge AI platform that will revolutionize how businesses ",
+      "interact with artificial intelligence. This platform will integrate advanced machine learning capabilities, ",
+      "natural language processing, and automated decision-making systems to provide comprehensive AI solutions.",
+      "\n",
+      "\n",
+      "Key features include real-time data processing, scalable infrastructure, and user-friendly interfaces ",
+      "for both technical and non-technical users. The platform will support multiple AI models, custom ",
+      "training pipelines, and enterprise-grade security measures.",
+      "\n",
+      "\n",
+      "We aim to make AI technology more accessible and practical for businesses of all sizes, while ",
+      "maintaining high standards of performance and reliability. This initiative aligns with our company's ",
+      "strategic goal of becoming a leader in the AI solutions market and will serve as a foundation for ",
+      "future AI-driven products and services.`,",
+    ].join(""),
   },
 };
 
