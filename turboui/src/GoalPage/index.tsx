@@ -1,7 +1,8 @@
 import { Page } from "../Page";
+import React from "react";
 import { PageFooter } from "../Page/PageFooter";
 import { MiniWorkMap } from "../MiniWorkMap";
-import { AvatarWithName } from "../Avatar";
+import { AvatarWithName, AvatarList } from "../Avatar";
 import { GoalTargetList } from "../GoalTargetList";
 import { Chronometer } from "../Chronometer";
 
@@ -17,9 +18,11 @@ export namespace GoalPage {
     workmapLink: string;
 
     goalName: string;
+    description?: string;
     spaceName: string;
     champion?: Person;
     reviewer?: Person;
+    contributors?: Person[];
 
     targets: GoalTargetList.Target[];
     relatedWorkItems: MiniWorkMap.WorkItem[];
@@ -37,7 +40,7 @@ export function GoalPage(props: GoalPage.Props) {
   return (
     <Page title={[props.goalName]} navigation={navigation} size="large">
       <div className="grid grid-cols-10 gap-8 p-8">
-        <RelatedWork {...props} />
+        <MainContent {...props} />
         <Sidebar {...props} />
       </div>
 
@@ -49,9 +52,10 @@ export function GoalPage(props: GoalPage.Props) {
 function Sidebar(props: GoalPage.Props) {
   return (
     <div className="col-span-3 space-y-6">
+      <Timeframe {...props} />
       <Champion {...props} />
       <Reviewer {...props} />
-      <Timeframe {...props} />
+      <Contributors {...props} />
     </div>
   );
 }
@@ -87,10 +91,30 @@ function Reviewer(props: GoalPage.Props) {
   );
 }
 
-function RelatedWork(props: GoalPage.Props) {
+function MainContent(props: GoalPage.Props) {
+  const [isExpanded, setIsExpanded] = React.useState(false);
+
   return (
     <div className="col-span-7 space-y-8">
-      <h1 className="text-2xl font-bold">{props.goalName}</h1>
+      <div>
+        <h1 className="text-3xl font-bold mb-2">{props.goalName}</h1>
+
+        {props.description && (
+          <div className="">
+            <div className="whitespace-pre-wrap">
+              {isExpanded ? props.description : truncate(props.description, 300)}
+            </div>
+            {props.description.length > 300 && (
+              <button
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="text-content-dimmed hover:underline text-sm mt-1 font-medium"
+              >
+                {isExpanded ? "Collapse" : "Expand"}
+              </button>
+            )}
+          </div>
+        )}
+      </div>
 
       <div>
         <h2 className="text-lg font-semibold mb-4">Targets</h2>
@@ -105,10 +129,32 @@ function RelatedWork(props: GoalPage.Props) {
   );
 }
 
+function Contributors(props: GoalPage.Props) {
+  if (!props.contributors || props.contributors.length === 0) return null;
+
+  return (
+    <div>
+      <div className="text-xs uppercase font-medium mb-2 tracking-wider">Contributors</div>
+      <div className="mb-2">
+        <AvatarList people={props.contributors} size={24} maxElements={30} />
+      </div>
+      <div className="text-xs text-gray-600">
+        {props.contributors.length} {props.contributors.length === 1 ? "person" : "people"} contributed by working on
+        related projects and sub-goals
+      </div>
+    </div>
+  );
+}
+
 function ActivityFooter() {
   return (
     <PageFooter className="p-8">
       <h3 className="text-xs uppercase font-medium tracking-wider">Activity</h3>
     </PageFooter>
   );
+}
+
+function truncate(text: string, maxLength: number) {
+  if (text.length <= maxLength) return text;
+  return text.substring(0, maxLength) + "...";
 }
