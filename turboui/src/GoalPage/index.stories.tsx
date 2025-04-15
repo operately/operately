@@ -174,6 +174,50 @@ export const Default: Story = {
           "Completed integration with the new data pipeline. Encountered some issues with API rate limits, but workaround is in place.",
       },
     ],
+    messages: [
+      {
+        id: "1",
+        title: "Kick-Off",
+        author: champion,
+        content: "We have officially started the project! The team is aligned and ready to move forward.",
+        link: "/messages/1",
+      },
+      {
+        id: "2",
+        title: "Execution plan for the German team",
+        author: reviewer,
+        content: "Outlined the execution plan for the German team. Please review and provide feedback by Friday.",
+        link: "/messages/2",
+      },
+      {
+        id: "3",
+        title: "Preview of what is coming next week",
+        author: champion,
+        content: "Next week we will focus on integrating the authentication module and preparing the first demo.",
+        link: "/messages/3",
+      },
+      {
+        id: "4",
+        title: "Sprint 1 Retrospective",
+        author: reviewer,
+        content: "Sprint 1 went well overall, but we identified some bottlenecks in the review process.",
+        link: "/messages/4",
+      },
+      {
+        id: "5",
+        title: "Security Review Notes",
+        author: champion,
+        content: "Security review completed. No major issues found, but a few recommendations were made.",
+        link: "/messages/5",
+      },
+      {
+        id: "6",
+        title: "Customer Feedback Roundup",
+        author: reviewer,
+        content: "Collected initial feedback from customers. Most are excited about the new features!",
+        link: "/messages/6",
+      },
+    ],
   },
 };
 
