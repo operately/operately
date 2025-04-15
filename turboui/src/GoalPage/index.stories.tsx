@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { GoalPage } from "./index";
 import { genPeople } from "../utils/storybook/genPeople";
+import { genRelativeDate } from "../utils/storybook/genDates";
 
 const meta: Meta<typeof GoalPage> = {
   title: "Pages/GoalPage",
@@ -131,6 +132,8 @@ export const Default: Story = {
     reviewer: reviewer,
     targets: mockTargets,
     relatedWorkItems: relatedWorkItems,
+    startDate: genRelativeDate(-15),
+    endDate: genRelativeDate(15),
   },
 };
 
@@ -144,6 +147,8 @@ export const ZeroStateForChampions: Story = {
     reviewer: null,
     targets: [],
     relatedWorkItems: [],
+    startDate: genRelativeDate(-15),
+    endDate: genRelativeDate(15),
   },
 };
 
@@ -158,6 +163,8 @@ export const ZeroStateReadOnly: Story = {
     targets: [],
     relatedWorkItems: [],
     isEditable: false,
+    startDate: genRelativeDate(-15),
+    endDate: genRelativeDate(15),
   },
 };
 
@@ -171,6 +178,8 @@ export const Mobile: Story = {
     reviewer: reviewer,
     targets: mockTargets,
     relatedWorkItems: relatedWorkItems,
+    startDate: genRelativeDate(-15),
+    endDate: genRelativeDate(15),
   },
   parameters: {
     viewport: {

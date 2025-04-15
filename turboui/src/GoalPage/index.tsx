@@ -3,6 +3,7 @@ import { PageFooter } from "../Page/PageFooter";
 import { MiniWorkMap } from "../MiniWorkMap";
 import { AvatarWithName } from "../Avatar";
 import { GoalTargetList } from "../GoalTargetList";
+import { Chronometer } from "../Chronometer";
 
 export namespace GoalPage {
   interface Person {
@@ -22,6 +23,8 @@ export namespace GoalPage {
 
     targets: GoalTargetList.Target[];
     relatedWorkItems: MiniWorkMap.WorkItem[];
+    startDate: Date;
+    endDate: Date;
   }
 }
 
@@ -48,6 +51,16 @@ function Sidebar(props: GoalPage.Props) {
     <div className="col-span-3 space-y-6">
       <Champion {...props} />
       <Reviewer {...props} />
+      <Timeframe {...props} />
+    </div>
+  );
+}
+
+function Timeframe(props: GoalPage.Props) {
+  return (
+    <div>
+      <div className="text-xs uppercase font-medium mb-2 tracking-wider">Timeline</div>
+      <Chronometer start={props.startDate} end={props.endDate} color="stone" />
     </div>
   );
 }
