@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState } from "react";
 import { WorkMapFilter, WorkMapItem } from "../types";
-import { useItemStatus } from "./hooks/useItemStatus";
-import { useMemo } from "react";
+import { useItemStatus } from "../hooks/useItemStatus";
+import { useQuickEntryWidgetState } from "../hooks/useQuickEntryWidgetState";
 
 interface TableRowContextValue {
   // Item data
@@ -17,9 +17,9 @@ interface TableRowContextValue {
   isSelected: boolean;
   filter: WorkMapFilter;
   showAddButton: boolean;
-  setShowAddButton: React.Dispatch<React.SetStateAction<boolean>>;
+  setShowAddButton: (show: boolean) => void;
   showQuickEntryWidget: boolean;
-  setShowQuickEntryWidget: React.Dispatch<React.SetStateAction<boolean>>;
+  setShowQuickEntryWidget: (show: boolean) => void;
 
   // Expansion state
   expanded: boolean;
@@ -73,8 +73,16 @@ export function TableRowProvider({
 }: ProviderProps) {
   const [expanded, setExpanded] = useState<boolean>(true);
   const [showAddButton, setShowAddButton] = useState<boolean>(false);
-  const [showQuickEntryWidget, setShowQuickEntryWidget] =
-    useState<boolean>(false);
+
+  // Use our shared hook for managing QuickEntryWidget visibility
+  const { isWidgetOpen: showQuickEntryWidget, setWidgetOpen: setShowQuickEntryWidget, anyWidgetOpen } = useQuickEntryWidgetState(false);
+
+  // Custom add button management that checks if any widget is open
+  const handleSetShowAddButton = (show: boolean) => {
+    // Don't show add buttons if any widget is open
+    if (show && anyWidgetOpen) return;
+    setShowAddButton(show);
+  };
 
   // Get status flags from the hook
   const { isCompleted, isPending, isFailed, isDropped } = useItemStatus(
@@ -124,7 +132,7 @@ export function TableRowProvider({
     isSelected: Boolean(isThisItemSelected),
     filter,
     showAddButton,
-    setShowAddButton,
+    setShowAddButton: handleSetShowAddButton,
     showQuickEntryWidget,
     setShowQuickEntryWidget,
     expanded,

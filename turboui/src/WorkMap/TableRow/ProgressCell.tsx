@@ -1,6 +1,6 @@
 import { ProgressBar, ProgressBarStatus } from "../../";
 import { Status } from "../types";
-import { useItemStatus } from "./hooks/useItemStatus";
+import { useItemStatus } from "../hooks/useItemStatus";
 
 interface ProgressCellProps {
   progress: number;

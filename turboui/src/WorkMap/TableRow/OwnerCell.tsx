@@ -1,6 +1,6 @@
 import { AvatarWithName } from "../../Avatar/AvatarWithName";
 import { Status, WorkMapItem } from "../types";
-import { useItemStatus } from "./hooks/useItemStatus";
+import { useItemStatus } from "../hooks/useItemStatus";
 import classNames from "../../utils/classnames";
 
 interface Props {

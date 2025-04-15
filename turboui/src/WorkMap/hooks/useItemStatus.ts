@@ -1,4 +1,4 @@
-import { Status } from "../../types";
+import { Status } from "../types";
 
 /**
  * Custom hook to calculate status flags for WorkMap items

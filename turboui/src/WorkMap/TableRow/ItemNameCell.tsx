@@ -6,7 +6,7 @@ import {
 } from "@tabler/icons-react";
 import { Link } from "../../Link";
 import classNames from "../../utils/classnames";
-import { useItemStatus } from "./hooks/useItemStatus";
+import { useItemStatus } from "../hooks/useItemStatus";
 import { useTableRowContext } from "./context";
 import { ActionButtons } from "./ActionButtons";
 
