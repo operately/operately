@@ -17,7 +17,6 @@ export namespace GoalTargetList {
 
   export interface Props {
     targets: Target[];
-    field: string;
   }
 }
 
@@ -32,43 +31,38 @@ export function GoalTargetList(props: GoalTargetList.Props) {
 }
 
 function TargetCard({ target }: { target: GoalTargetList.Target }) {
-  const [open, setOpen] = React.useState(false);
+  const [open, toggle] = useToggle();
 
-  const handleToggle = () => setOpen(!open);
+  const outerClass = "max-w-full py-2 px-px border-t last:border-b border-stroke-base";
+  const innerClass = "grid grid-cols-[1fr_auto_14px] gap-2 items-start cursor-pointer";
 
   return (
-    <div className="max-w-full py-2 px-px border-t last:border-b border-stroke-base">
-      <div
-        onClick={handleToggle}
-        className="grid grid-cols-[1fr_auto_14px] gap-2 items-start cursor-pointer"
-      >
+    <div className={outerClass}>
+      <div onClick={toggle} className={innerClass}>
         <TargetNameSection target={target} truncate={!open} />
         <TargetValue target={target} />
-        <ExpandIcon expanded={open} onClick={handleToggle} />
+        <ExpandIcon expanded={open} onClick={toggle} />
       </div>
-
       {open && <TargetDetails target={target} />}
     </div>
   );
 }
 
-function TargetNameSection({
-  target,
-  truncate,
-}: {
-  target: GoalTargetList.Target;
-  truncate?: boolean;
-}) {
-  const progress = 100;
+function useToggle(): [boolean, () => void] {
+  const [open, setOpen] = React.useState(false);
+  const toggle = () => setOpen(!open);
+
+  return [open, toggle];
+}
+
+function TargetNameSection({ target, truncate }: { target: GoalTargetList.Target; truncate?: boolean }) {
+  const progress = calculateProgress(target);
   const nameClass = classNames("flex gap-2 flex-1", { truncate: truncate });
 
   return (
     <div className={nameClass}>
       <div className="mt-1.5">
-        <PieChart
-          size={16}
-          slices={[{ percentage: progress, color: "var(--color-green-500)" }]}
-        />
+        <PieChart size={16} slices={[{ percentage: progress, color: "var(--color-green-500)" }]} />
       </div>
 
       <NameView name={target.name} truncate={truncate} />
@@ -95,7 +89,7 @@ function TargetValue({ target }: { target: GoalTargetList.Target }) {
 
 function TargetDetails({ target }: { target: GoalTargetList.Target }) {
   const { from, to, unit, value } = target;
-  const progress = ((value - from!) / (to! - from!)) * 100; // Calculate progress as a percentage of the range from "from" to "to"
+  const progress = calculateProgress(target, false);
 
   const directionText = from! > to! ? "down to" : "to";
 
@@ -108,8 +102,7 @@ function TargetDetails({ target }: { target: GoalTargetList.Target }) {
       <div className="flex items-center gap-2">
         <div className="w-20 font-semibold">Target</div>
         <div>
-          From <span className="font-semibold">{from}</span> {directionText}{" "}
-          <span className="font-semibold">{to}</span>
+          From <span className="font-semibold">{from}</span> {directionText} <span className="font-semibold">{to}</span>
           {unit === "%" ? "%" : ` ${unit}`}
         </div>
       </div>
@@ -117,12 +110,28 @@ function TargetDetails({ target }: { target: GoalTargetList.Target }) {
       <div className="flex items-center gap-2 mt-1">
         <div className="w-20 font-semibold">Current</div>
         <div>
-          {formatUnit(value)}{" "}
-          <span className={progress < 0 ? "text-red-500" : ""}>
-            ({progress.toFixed(1)}%)
-          </span>
+          {formatUnit(value)} <span className={progress < 0 ? "text-red-500" : ""}>({progress.toFixed(1)}%)</span>
         </div>
       </div>
     </div>
   );
+}
+
+function calculateProgress(target: GoalTargetList.Target, clamped = true): number {
+  const from = target.from!;
+  const to = target.to!;
+  const value = target.value!;
+
+  let percentage: number;
+  if (from < to) {
+    percentage = ((value - from) / (to - from)) * 100;
+  } else {
+    percentage = ((from - value) / (from - to)) * 100;
+  }
+
+  if (clamped) {
+    return Math.max(0, Math.min(100, percentage));
+  }
+
+  return percentage;
 }
