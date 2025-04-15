@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { GoalPage } from "./index";
+import { GoalPage } from ".";
 import { genPeople } from "../utils/storybook/genPeople";
 import { genRelativeDate } from "../utils/storybook/genDates";
 
@@ -151,6 +151,29 @@ export const Default: Story = {
       "strategic goal of becoming a leader in the AI solutions market and will serve as a foundation for ",
       "future AI-driven products and services.`,",
     ].join(""),
+    checkIns: [
+      {
+        id: "1",
+        author: champion,
+        date: new Date(2025, 3, 17), // Apr 17th, 2025
+        content:
+          "Kickoff meeting held. Team is excited and we have outlined the initial roadmap. Next steps: finalize requirements and assign tasks.",
+      },
+      {
+        id: "2",
+        author: reviewer,
+        date: new Date(2025, 3, 24), // Apr 24th, 2025
+        content:
+          "Reviewed the first sprint deliverables. Progress is on track, but we need to improve test coverage and documentation.",
+      },
+      {
+        id: "3",
+        author: champion,
+        date: new Date(2025, 3, 30), // Apr 30th, 2025
+        content:
+          "Completed integration with the new data pipeline. Encountered some issues with API rate limits, but workaround is in place.",
+      },
+    ],
   },
 };
 

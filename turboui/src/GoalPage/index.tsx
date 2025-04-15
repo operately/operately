@@ -1,10 +1,14 @@
-import { Page } from "../Page";
 import React from "react";
+
+import { Page } from "../Page";
+import { Link } from "../Link";
+import { Avatar } from "../Avatar";
 import { PageFooter } from "../Page/PageFooter";
 import { MiniWorkMap } from "../MiniWorkMap";
-import { AvatarWithName, AvatarList } from "../Avatar";
 import { GoalTargetList } from "../GoalTargetList";
-import { Chronometer } from "../Chronometer";
+import { formatDateWithDaySuffix } from "../utils/date";
+import { truncate } from "../utils/strings";
+import { Sidebar } from "./Sidebar";
 
 export namespace GoalPage {
   interface Person {
@@ -28,6 +32,19 @@ export namespace GoalPage {
     relatedWorkItems: MiniWorkMap.WorkItem[];
     startDate: Date;
     endDate: Date;
+    checkIns: CheckIn[];
+  }
+
+  export interface CheckIn {
+    id: string;
+    author: {
+      id: string;
+      fullName: string;
+      avatarUrl: string;
+    };
+    date: Date;
+    content: string;
+    link: string;
   }
 }
 
@@ -49,72 +66,10 @@ export function GoalPage(props: GoalPage.Props) {
   );
 }
 
-function Sidebar(props: GoalPage.Props) {
-  return (
-    <div className="col-span-3 space-y-6">
-      <Timeframe {...props} />
-      <Champion {...props} />
-      <Reviewer {...props} />
-      <Contributors {...props} />
-    </div>
-  );
-}
-
-function Timeframe(props: GoalPage.Props) {
-  return (
-    <div>
-      <div className="text-xs uppercase font-medium mb-2 tracking-wider">Timeline</div>
-      <Chronometer start={props.startDate} end={props.endDate} color="stone" />
-    </div>
-  );
-}
-
-function Champion(props: GoalPage.Props) {
-  if (!props.champion) return null;
-
-  return (
-    <div className="mb-4">
-      <div className="text-xs uppercase font-medium mb-2 tracking-wider">Champion</div>
-      <AvatarWithName person={props.champion} size={24} className="text-sm text-gray-900" />
-    </div>
-  );
-}
-
-function Reviewer(props: GoalPage.Props) {
-  if (!props.reviewer) return null;
-
-  return (
-    <div>
-      <div className="text-xs uppercase font-medium mb-2 tracking-wider">Reviewer</div>
-      <AvatarWithName person={props.reviewer} size={24} className="text-sm text-gray-900" />
-    </div>
-  );
-}
-
 function MainContent(props: GoalPage.Props) {
-  const [isExpanded, setIsExpanded] = React.useState(false);
-
   return (
     <div className="col-span-7 space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold mb-2">{props.goalName}</h1>
-
-        {props.description && (
-          <div className="">
-            <div className="whitespace-pre-wrap">
-              {isExpanded ? props.description : truncate(props.description, 300)}
-            </div>
-            {props.description.length > 300 && (
-              <button
-                onClick={() => setIsExpanded(!isExpanded)}
-                className="text-content-dimmed hover:underline text-sm mt-1 font-medium"
-              >
-                {isExpanded ? "Collapse" : "Expand"}
-              </button>
-            )}
-          </div>
-        )}
-      </div>
+      <TitleAndDescription {...props} />
 
       <div>
         <h2 className="text-lg font-semibold mb-4">Targets</h2>
@@ -122,25 +77,13 @@ function MainContent(props: GoalPage.Props) {
       </div>
 
       <div>
+        <h2 className="text-lg font-semibold mb-4">Check Ins</h2>
+        <CheckIns checkIns={props.checkIns} />
+      </div>
+
+      <div>
         <h2 className="text-lg font-semibold mb-4">Related Work</h2>
         <MiniWorkMap items={props.relatedWorkItems} />
-      </div>
-    </div>
-  );
-}
-
-function Contributors(props: GoalPage.Props) {
-  if (!props.contributors || props.contributors.length === 0) return null;
-
-  return (
-    <div>
-      <div className="text-xs uppercase font-medium mb-2 tracking-wider">Contributors</div>
-      <div className="mb-2">
-        <AvatarList people={props.contributors} size={24} maxElements={30} />
-      </div>
-      <div className="text-xs text-gray-600">
-        {props.contributors.length} {props.contributors.length === 1 ? "person" : "people"} contributed by working on
-        related projects and sub-goals
       </div>
     </div>
   );
@@ -153,8 +96,47 @@ function ActivityFooter() {
     </PageFooter>
   );
 }
+  
+function TitleAndDescription(props: GoalPage.Props) {
+  const [isExpanded, setIsExpanded] = React.useState(false);
 
-function truncate(text: string, maxLength: number) {
-  if (text.length <= maxLength) return text;
-  return text.substring(0, maxLength) + "...";
+  return <div>
+    <h1 className="text-3xl font-bold mb-2">{props.goalName}</h1>
+
+    {props.description && (
+      <div className="">
+        <div className="whitespace-pre-wrap">
+          {isExpanded ? props.description : truncate(props.description, 300)}
+        </div>
+        {props.description.length > 300 && (
+          <button
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="text-content-dimmed hover:underline text-sm mt-1 font-medium"
+          >
+            {isExpanded ? "Collapse" : "Expand"}
+          </button>
+        )}
+      </div>
+    )}
+  </div>
+}
+
+function CheckIns({ checkIns }: { checkIns: GoalPage.CheckIn[]} ) {
+  return (
+    <div className="space-y-4">
+      {checkIns.map((checkIn) => (
+        <div key={checkIn.id} className="flex flex-row items-start gap-3">
+          <Avatar person={checkIn.author} size={36} />
+          <div className="flex-1">
+            <div className="text-sm -mt-px">
+              <Link to={checkIn.link} className="hover:underline font-semibold text-black">
+                {formatDateWithDaySuffix(checkIn.date)}
+              </Link>
+              {" — "}{truncate(checkIn.content, 150)}
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
 }
