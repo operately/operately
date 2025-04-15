@@ -1,4 +1,5 @@
 import { useState, useCallback, useMemo } from "react";
+import { parse } from "date-fns";
 import { WorkMapFilter, WorkMapItem } from "./types";
 
 /**
@@ -23,11 +24,12 @@ export function useWorkMapFilter(rawItems: WorkMapItem[]) {
       // Flat, sorted list of completed items
       const completedItems = extractCompletedItems(rawItems);
       return completedItems.sort((a, b) => {
-        const dateA = parseDate((a as any).completedOn?.display);
-        const dateB = parseDate((b as any).completedOn?.display);
-        return dateB.getTime() - dateA.getTime(); // Most recent first
+        const dateA = parseDate((a as any).closedAt);
+        const dateB = parseDate((b as any).closedAt);
+        return dateB.getTime() - dateA.getTime(); 
       });
     }
+
     // For other filters, recursively filter children
     return rawItems.map((item) => filterChildren(item, filter));
   }, [rawItems, filter]);
@@ -138,30 +140,10 @@ function extractCompletedItems(data: WorkMapItem[]): WorkMapItem[] {
 /**
  * Helper to parse dates in "Month DD YYYY" format
  */
-function parseDate(dateStr?: string): Date {
-  if (!dateStr) return new Date(0);
-  const months: Record<string, number> = {
-    Jan: 0,
-    Feb: 1,
-    Mar: 2,
-    Apr: 3,
-    May: 4,
-    Jun: 5,
-    Jul: 6,
-    Aug: 7,
-    Sep: 8,
-    Oct: 9,
-    Nov: 10,
-    Dec: 11,
-  };
-  const parts = dateStr.split(" ");
-  if (parts.length === 3) {
-    const month = months[parts[0]];
-    const day = parseInt(parts[1], 10);
-    const year = parseInt(parts[2], 10);
-    if (!isNaN(month) && !isNaN(day) && !isNaN(year)) {
-      return new Date(year, month, day);
-    }
-  }
-  return new Date(0);
+function parseDate(dateString?: string) {
+  if (!dateString) return new Date(0);
+
+  const  parsed = parse(dateString, "MMM d yyyy", new Date());
+
+  return isNaN(parsed.getTime()) ? new Date(0) : parsed;
 }
