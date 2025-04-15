@@ -1,13 +1,13 @@
-export type Status = 
-  | "on_track" 
-  | "completed" 
-  | "achieved" 
-  | "partial" 
-  | "missed" 
-  | "paused" 
-  | "caution" 
-  | "issue" 
-  | "dropped" 
+export type Status =
+  | "on_track"
+  | "completed"
+  | "achieved"
+  | "partial"
+  | "missed"
+  | "paused"
+  | "caution"
+  | "issue"
+  | "dropped"
   | "pending";
 
 interface Person {
@@ -36,4 +36,10 @@ export interface WorkMapItem {
   nextStep: string;
   isNew?: boolean;
   children?: WorkMapItem[];
+}
+
+export interface NewItem {
+  parentId: string | null;
+  name: string;
+  type: ItemType;
 }

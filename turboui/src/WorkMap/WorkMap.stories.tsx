@@ -118,9 +118,14 @@ type Story = StoryObj<typeof meta>;
  * Default view of the WorkMap with multiple items and children
  */
 export const Default: Story = {
+  render: (args) => (
+    <div className="px-8 py-8">
+      <WorkMap {...args} />
+    </div>
+  ),
   args: {
     items: mockItems,
-    addItem: (parentId, newItem) => console.log('Add item', { parentId, newItem }),
+    addItem: (newItem) => console.log('Add item', newItem),
     deleteItem: (itemId) => console.log('Delete item', { itemId }),
   },
 };
@@ -129,9 +134,14 @@ export const Default: Story = {
  * WorkMap with a single item (no children)
  */
 export const SingleItem: Story = {
+  render: (args) => (
+    <div className="px-8 py-8">
+      <WorkMap {...args} />
+    </div>
+  ),
   args: {
     items: [mockItems[1]], // Just the second goal with no children
-    addItem: (parentId, newItem) => console.log('Add item', { parentId, newItem }),
+    addItem: (newItem) => console.log('Add item', newItem),
     deleteItem: (itemId) => console.log('Delete item', { itemId }),
   },
 };
@@ -140,9 +150,14 @@ export const SingleItem: Story = {
  * WorkMap with no items (empty state)
  */
 export const Empty: Story = {
+  render: (args) => (
+    <div className="px-8 py-8">
+      <WorkMap {...args} />
+    </div>
+  ),
   args: {
     items: [],
-    addItem: (parentId, newItem) => console.log('Add item', { parentId, newItem }),
+    addItem: (newItem) => console.log('Add item', newItem),
     deleteItem: (itemId) => console.log('Delete item', { itemId }),
   },
 };
@@ -151,6 +166,11 @@ export const Empty: Story = {
  * WorkMap with all items in different statuses to showcase status badges
  */
 export const AllStatuses: Story = {
+  render: (args) => (
+    <div className="px-8 py-8">
+      <WorkMap {...args} />
+    </div>
+  ),
   args: {
     items: [
       // Create an item for each possible status
@@ -178,7 +198,7 @@ export const AllStatuses: Story = {
         children: [],
       })),
     ],
-    addItem: (parentId, newItem) => console.log('Add item', { parentId, newItem }),
+    addItem: (newItem) => console.log('Add item', newItem),
     deleteItem: (itemId) => console.log('Delete item', { itemId }),
   },
 };

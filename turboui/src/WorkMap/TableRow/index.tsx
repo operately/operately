@@ -1,5 +1,5 @@
 import { StatusBadge } from "../../StatusBadge";
-import { Status, WorkMapItem } from "../types";
+import { NewItem, Status, WorkMapItem } from "../types";
 import { ChildRows } from "./ChildRows";
 import { DeadlineCell } from "./DeadlineCell";
 import { ItemNameCell } from "./ItemNameCell";
@@ -7,9 +7,9 @@ import { NextStepCell } from "./NextStepCell";
 import { OwnerCell } from "./OwnerCell";
 import { ProgressCell } from "./ProgressCell";
 import { SpaceCell } from "./SpaceCell";
-import { QuickEntryWidget } from "./QuickEntryWidget";
 import { RowContainer } from "./RowContainer";
-import { TableRowProvider } from "./context";
+import { TableRowProvider, useTableRowContext } from "./context";
+import { QuickEntryWidget } from "../QuickEntryWidget";
 
 interface Props {
   item: WorkMapItem;
@@ -20,6 +20,7 @@ interface Props {
   selectedItemId?: string;
   onRowClick?: (item: WorkMapItem) => void;
   onDelete: () => void;
+  addItem: (newItem: NewItem) => void;
 }
 
 /**
@@ -31,45 +32,48 @@ export function TableRow(props: Props) {
   const { item, filter } = props;
 
   return (
-    <TableRowProvider {...props} >
+    <TableRowProvider {...props}>
       <RowContainer>
         <ItemNameCell />
         <StatusCell status={item.status} />
         {filter !== "completed" && (
-          <ProgressCell 
-            progress={item.progress} 
-            status={item.status} 
-          />
+          <ProgressCell progress={item.progress} status={item.status} />
         )}
-        <DeadlineCell 
+        <DeadlineCell
           filter={filter}
           completedOn={item.completedOn}
           deadline={item.deadline}
           status={item.status}
         />
-        <SpaceCell 
-          space={item.space}
-          status={item.status}
-        />
-        <OwnerCell 
-          owner={item.owner}
-          status={item.status}
-        />
+        <SpaceCell space={item.space} status={item.status} />
+        <OwnerCell owner={item.owner} status={item.status} />
         {filter !== "completed" && (
-          <NextStepCell 
-            nextStep={item.nextStep}
-            status={item.status}
-          />
+          <NextStepCell nextStep={item.nextStep} status={item.status} />
         )}
       </RowContainer>
 
-      <QuickEntryWidget />
+      <QuickEntryWidgetWrapper addItem={props.addItem} />
       <ChildRows {...props} />
     </TableRowProvider>
   );
 }
 
-function StatusCell({ status }: {status: Status}) {
+function QuickEntryWidgetWrapper({ addItem }: { addItem: Props["addItem"] }) {
+  const { indentPadding, item, showQuickEntryWidget, setShowQuickEntryWidget } =
+    useTableRowContext();
+
+  return (
+    <QuickEntryWidget
+      addItem={addItem}
+      indentPadding={indentPadding}
+      item={item}
+      setShowWidget={setShowQuickEntryWidget}
+      showWidget={showQuickEntryWidget}
+    />
+  );
+}
+
+function StatusCell({ status }: { status: Status }) {
   return (
     <td className="py-2 px-2 md:px-4">
       <div className="transform group-hover:scale-105 transition-transform duration-150">

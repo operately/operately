@@ -2,11 +2,11 @@ import React from "react";
 import { Page } from "../Page";
 import { WorkMapNavigation } from "./WorkMapNavigation";
 import { WorkMapTable } from "./WorkMapTable";
-import { WorkMapItem } from "./types";
+import { NewItem, WorkMapItem } from "./types";
 
 export interface WorkMapProps {
   items: WorkMapItem[];
-  addItem: (parentId: string | null, newItem: WorkMapItem) => void;
+  addItem: (newItem: NewItem) => void;
   deleteItem: (itemId: string) => void;
 }
 
@@ -23,7 +23,7 @@ export function WorkMap({ items, addItem, deleteItem }: WorkMapProps) {
         </header>
         <div className="flex-1 overflow-auto">
           <WorkMapNavigation activeTab="all" />
-          <WorkMapTable items={items} deleteItem={deleteItem} />
+          <WorkMapTable items={items} deleteItem={deleteItem} addItem={addItem} />
         </div>
       </div>
     </Page>
