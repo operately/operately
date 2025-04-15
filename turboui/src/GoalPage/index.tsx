@@ -2,6 +2,7 @@ import { Page } from "../Page";
 import { PageFooter } from "../Page/PageFooter";
 import { MiniWorkMap } from "../MiniWorkMap";
 import { AvatarWithName } from "../Avatar";
+import { GoalTargetList } from "../GoalTargetList";
 
 export namespace GoalPage {
   interface Person {
@@ -19,6 +20,7 @@ export namespace GoalPage {
     champion?: Person;
     reviewer?: Person;
 
+    targets: GoalTargetList.Target[];
     relatedWorkItems: MiniWorkMap.WorkItem[];
   }
 }
@@ -55,14 +57,8 @@ function Champion(props: GoalPage.Props) {
 
   return (
     <div className="mb-4">
-      <div className="text-xs uppercase font-medium mb-2 tracking-wider">
-        Champion
-      </div>
-      <AvatarWithName
-        person={props.champion}
-        size={24}
-        className="text-sm text-gray-900"
-      />
+      <div className="text-xs uppercase font-medium mb-2 tracking-wider">Champion</div>
+      <AvatarWithName person={props.champion} size={24} className="text-sm text-gray-900" />
     </div>
   );
 }
@@ -72,14 +68,8 @@ function Reviewer(props: GoalPage.Props) {
 
   return (
     <div>
-      <div className="text-xs uppercase font-medium mb-2 tracking-wider">
-        Reviewer
-      </div>
-      <AvatarWithName
-        person={props.reviewer}
-        size={24}
-        className="text-sm text-gray-900"
-      />
+      <div className="text-xs uppercase font-medium mb-2 tracking-wider">Reviewer</div>
+      <AvatarWithName person={props.reviewer} size={24} className="text-sm text-gray-900" />
     </div>
   );
 }
@@ -88,6 +78,11 @@ function RelatedWork(props: GoalPage.Props) {
   return (
     <div className="col-span-7 space-y-8">
       <h1 className="text-2xl font-bold">{props.goalName}</h1>
+
+      <div>
+        <h2 className="text-lg font-semibold mb-4">Targets</h2>
+        <GoalTargetList targets={props.targets} />
+      </div>
 
       <div>
         <h2 className="text-lg font-semibold mb-4">Related Work</h2>

@@ -18,6 +18,34 @@ const meta: Meta<typeof GoalPage> = {
 } satisfies Meta<typeof GoalPage>;
 
 const [champion, reviewer] = genPeople(2);
+
+const mockTargets = [
+  {
+    id: "1",
+    name: "Increase Monthly Active Users",
+    from: 10000,
+    to: 50000,
+    value: 25000,
+    unit: "users",
+  },
+  {
+    id: "2",
+    name: "Improve Response Time",
+    from: 500,
+    to: 100,
+    value: 250,
+    unit: "ms",
+  },
+  {
+    id: "3",
+    name: "Achieve System Uptime",
+    from: 99.5,
+    to: 99.99,
+    value: 99.8,
+    unit: "%",
+  },
+];
+
 const relatedWorkItems = [
   {
     id: "1",
@@ -101,6 +129,7 @@ export const Default: Story = {
     spaceName: "Product",
     champion: champion,
     reviewer: reviewer,
+    targets: mockTargets,
     relatedWorkItems: relatedWorkItems,
   },
 };
@@ -113,6 +142,7 @@ export const ZeroStateForChampions: Story = {
     spaceName: "Product",
     champion: null,
     reviewer: null,
+    targets: [],
     relatedWorkItems: [],
   },
 };
@@ -125,6 +155,7 @@ export const ZeroStateReadOnly: Story = {
     spaceName: "Product",
     champion: null,
     reviewer: null,
+    targets: [],
     relatedWorkItems: [],
     isEditable: false,
   },
@@ -138,6 +169,7 @@ export const Mobile: Story = {
     spaceName: "Product",
     champion: champion,
     reviewer: reviewer,
+    targets: mockTargets,
     relatedWorkItems: relatedWorkItems,
   },
   parameters: {
