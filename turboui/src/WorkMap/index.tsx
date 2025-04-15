@@ -3,6 +3,7 @@ import { Page } from "../Page";
 import { WorkMapNavigation } from "./WorkMapNavigation";
 import { WorkMapTable } from "./WorkMapTable";
 import { NewItem, WorkMapItem } from "./types";
+import { useWorkMapFilter } from "./useWorkMapFilter";
 
 export interface WorkMapProps {
   items: WorkMapItem[];
@@ -11,6 +12,8 @@ export interface WorkMapProps {
 }
 
 export function WorkMap({ items, addItem, deleteItem }: WorkMapProps) {
+  const { filteredItems, filter, setFilter } = useWorkMapFilter(items);
+
   return (
     <Page title="Company work map" size="fullwidth">
       <div className="flex flex-col w-full">
@@ -22,8 +25,8 @@ export function WorkMap({ items, addItem, deleteItem }: WorkMapProps) {
           </div>
         </header>
         <div className="flex-1 overflow-auto">
-          <WorkMapNavigation activeTab="all" />
-          <WorkMapTable items={items} deleteItem={deleteItem} addItem={addItem} />
+          <WorkMapNavigation activeTab={filter} onTabChange={setFilter} />
+          <WorkMapTable items={filteredItems} filter={filter} deleteItem={deleteItem} addItem={addItem} />
         </div>
       </div>
     </Page>

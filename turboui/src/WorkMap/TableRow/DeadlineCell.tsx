@@ -4,7 +4,7 @@ import classNames from "../../utils/classnames";
 
 interface Props {
   filter?: string;
-  completedOn?: { display: string };
+  completedOn?: string;
   deadline?: { display: string; isPast?: boolean };
   status: Status;
 }
@@ -35,7 +35,7 @@ export function DeadlineCell({ filter, completedOn, deadline, status }: Props) {
     <td className={containerClassName}>
       {filter === "completed" && completedOn ? (
         <span className="text-xs sm:text-sm whitespace-nowrap text-content-base">
-          {completedOn.display}
+          {completedOn}
         </span>
       ) : (
         <span className={textClassName}>{deadline?.display}</span>

@@ -30,7 +30,7 @@ export interface WorkMapItem {
   status: Status;
   progress: number;
   deadline?: DateInfo;
-  completedOn?: DateInfo;
+  closedAt?: string;
   space: string;
   owner: Person;
   nextStep: string;
@@ -43,3 +43,5 @@ export interface NewItem {
   name: string;
   type: ItemType;
 }
+
+export type WorkMapFilter = "all" | "goals" | "projects" | "completed";

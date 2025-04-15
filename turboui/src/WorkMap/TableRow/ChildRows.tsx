@@ -1,4 +1,4 @@
-import { WorkMapItem } from "../types";
+import { NewItem, WorkMapItem } from "../types";
 import { useTableRowContext } from "./context";
 import { TableRow } from "./index";
 
@@ -10,9 +10,10 @@ interface Props {
   selectedItemId?: string;
   onRowClick?: (item: WorkMapItem) => void;
   onDelete: () => void;
+  addItem: (newItem: NewItem) => void;
 }
 
-export function ChildRows({item, level, isLast, filter, selectedItemId, onRowClick, onDelete}: Props) {
+export function ChildRows({ item, level, isLast, filter, selectedItemId, onRowClick, onDelete, addItem }: Props) {
   const { expanded, hasChildren } = useTableRowContext();
 
   if (!expanded || !hasChildren) {
@@ -31,6 +32,7 @@ export function ChildRows({item, level, isLast, filter, selectedItemId, onRowCli
           selectedItemId={selectedItemId}
           onRowClick={onRowClick}
           onDelete={onDelete}
+          addItem={addItem}
         />
       ))}
     </>

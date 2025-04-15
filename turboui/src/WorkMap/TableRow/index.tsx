@@ -41,7 +41,7 @@ export function TableRow(props: Props) {
         )}
         <DeadlineCell
           filter={filter}
-          completedOn={item.completedOn}
+          completedOn={item.closedAt}
           deadline={item.deadline}
           status={item.status}
         />
