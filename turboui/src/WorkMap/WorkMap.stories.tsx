@@ -2,12 +2,29 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { WorkMap } from './index';
 import { WorkMapItem, Status } from './types';
 
-// Mock data for stories
-const avatarImages = [
-  "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-  "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-  "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-];
+// --- Mock Data ---
+function genAvatar(id: string) {
+  return `https://images.unsplash.com/${id}?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80`;
+}
+
+// People used consistently throughout the stories
+const people = {
+  alex: {
+    id: "user-alex",
+    fullName: "Alex R.",
+    avatarUrl: genAvatar("photo-1500648767791-00dcc994a43e"),
+  },
+  sophia: {
+    id: "user-sophia",
+    fullName: "Sophia T.",
+    avatarUrl: genAvatar("photo-1438761681033-6461ffad8d80"),
+  },
+  jennifer: {
+    id: "user-jennifer",
+    fullName: "Jennifer L.",
+    avatarUrl: genAvatar("photo-1494790108377-be9c29b29330"),
+  },
+};
 
 // Sample work map items
 const mockItems: WorkMapItem[] = [
@@ -18,11 +35,7 @@ const mockItems: WorkMapItem[] = [
     status: "on_track",
     progress: 45,
     space: "General",
-    owner: {
-      id: "user-igor",
-      fullName: "Igor Š.",
-      avatarUrl: avatarImages[0],
-    },
+    owner: people.alex,
     deadline: {
       display: "Dec 31 2024",
       isPast: false,
@@ -36,11 +49,7 @@ const mockItems: WorkMapItem[] = [
         status: "completed",
         progress: 100,
         space: "Product",
-        owner: {
-          id: "user-marko",
-          fullName: "Marko A.",
-          avatarUrl: avatarImages[1],
-        },
+        owner: people.sophia,
         deadline: {
           display: "Mar 31",
           isPast: false,
@@ -56,11 +65,7 @@ const mockItems: WorkMapItem[] = [
         status: "paused",
         progress: 30,
         space: "Product",
-        owner: {
-          id: "user-igor",
-          fullName: "Igor Š.",
-          avatarUrl: avatarImages[0],
-        },
+        owner: people.alex,
         deadline: {
           display: "Feb 7",
           isPast: true,
@@ -77,11 +82,7 @@ const mockItems: WorkMapItem[] = [
     status: "caution",
     progress: 25,
     space: "R&D",
-    owner: {
-      id: "user-darko",
-      fullName: "Darko M.",
-      avatarUrl: avatarImages[2],
-    },
+    owner: people.jennifer,
     deadline: {
       display: "Jun 15 2025",
       isPast: false,
@@ -96,7 +97,7 @@ const mockItems: WorkMapItem[] = [
  * hierarchical work items like goals and projects.
  */
 const meta = {
-  title: 'Components/WorkMap',
+  title: 'Components/WorkMap/WorkMap',
   component: WorkMap,
   parameters: {
     layout: 'fullscreen',
@@ -183,7 +184,7 @@ export const AllStatuses: Story = {
         owner: {
           id: `user-${index}`,
           fullName: `User ${index + 1}`,
-          avatarUrl: avatarImages[index % avatarImages.length],
+          avatarUrl: index % 2 === 0 ? people.alex.avatarUrl : people.sophia.avatarUrl,
         },
         deadline: status === 'completed' || status === 'achieved' ? undefined : {
           display: `Jun ${15 + index} 2025`,
