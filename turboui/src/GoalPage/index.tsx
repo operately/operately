@@ -130,44 +130,10 @@ function MainContent(props: GoalPage.Props) {
         <GoalTargetList targets={props.targets} />
       </div>
 
-      {props.lastCheckIn && (
-        <div>
-          <h2 className="text-lg font-semibold mb-4">Last Check-In</h2>
-          <div className="bg-gray-50 rounded-lg p-4">
-            <div className="flex items-center gap-3 mb-3">
-              <AvatarWithName person={props.lastCheckIn.submitter} size={24} className="text-sm" />
-              <a href={props.lastCheckIn.link} className="text-blue-600 hover:underline text-sm">
-                Check-in {new Date(props.lastCheckIn.nextCheckIn).toLocaleDateString()}
-              </a>
-            </div>
-            <div className="flex items-center gap-2 mb-3">
-              <div className="flex items-center gap-2">
-                <div
-                  className={`w-3 h-3 rounded-full ${
-                    props.lastCheckIn.status === "on_track"
-                      ? "bg-green-500"
-                      : props.lastCheckIn.status === "at_risk"
-                      ? "bg-yellow-500"
-                      : "bg-red-500"
-                  }`}
-                />
-                <span className="text-sm font-medium">
-                  {props.lastCheckIn.status === "on_track"
-                    ? "On Track"
-                    : props.lastCheckIn.status === "at_risk"
-                    ? "At Risk"
-                    : "Off Track"}
-                </span>
-              </div>
-              <span className="text-gray-400">•</span>
-              <span className="text-sm text-gray-600">
-                Next check-in scheduled for {new Date(props.lastCheckIn.nextCheckIn).toLocaleDateString()}
-              </span>
-            </div>
-            <p className="text-sm text-gray-700">{props.lastCheckIn.message}</p>
-          </div>
-        </div>
-      )}
+      <div>
+        <h2 className="text-lg font-semibold mb-4">Check-Ins</h2>
+        <LastCheckIn {...props} />
+      </div>
 
       <div>
         <h2 className="text-lg font-semibold mb-4">Related Work</h2>
@@ -205,4 +171,44 @@ function ActivityFooter() {
 function truncate(text: string, maxLength: number) {
   if (text.length <= maxLength) return text;
   return text.substring(0, maxLength) + "...";
+}
+
+function LastCheckIn(props: GoalPage.Props) {
+  if (!props.lastCheckIn) return null;
+
+  return (
+    <div className="bg-gray-50 rounded-lg p-4">
+      <div className="flex items-center gap-3 mb-3">
+        <AvatarWithName person={props.lastCheckIn.submitter} size={24} className="text-sm" />
+        <a href={props.lastCheckIn.link} className="text-blue-600 hover:underline text-sm">
+          Check-in {new Date(props.lastCheckIn.nextCheckIn).toLocaleDateString()}
+        </a>
+      </div>
+      <div className="flex items-center gap-2 mb-3">
+        <div className="flex items-center gap-2">
+          <div
+            className={`w-3 h-3 rounded-full ${
+              props.lastCheckIn.status === "on_track"
+                ? "bg-green-500"
+                : props.lastCheckIn.status === "at_risk"
+                ? "bg-yellow-500"
+                : "bg-red-500"
+            }`}
+          />
+          <span className="text-sm font-medium">
+            {props.lastCheckIn.status === "on_track"
+              ? "On Track"
+              : props.lastCheckIn.status === "at_risk"
+              ? "At Risk"
+              : "Off Track"}
+          </span>
+        </div>
+        <span className="text-gray-400">•</span>
+        <span className="text-sm text-gray-600">
+          Next check-in scheduled for {new Date(props.lastCheckIn.nextCheckIn).toLocaleDateString()}
+        </span>
+      </div>
+      <p className="text-sm text-gray-700">{props.lastCheckIn.message}</p>
+    </div>
+  );
 }
