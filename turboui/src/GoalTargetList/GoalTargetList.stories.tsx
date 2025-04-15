@@ -43,7 +43,7 @@ const mockTargets = [
   },
   {
     id: "3",
-    name: "Improce employee Retention",
+    name: "Improve employee Retention",
     from: 75,
     to: 60,
     value: 65,
