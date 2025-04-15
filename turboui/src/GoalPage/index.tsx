@@ -17,6 +17,14 @@ export namespace GoalPage {
     avatarUrl: string;
   }
 
+  export interface Message {
+    id: string;
+    title: string;
+    author: Person;
+    content: string;
+    link: string;
+  }
+
   export interface Props {
     spaceLink: string;
     workmapLink: string;
@@ -33,6 +41,7 @@ export namespace GoalPage {
     startDate: Date;
     endDate: Date;
     checkIns: CheckIn[];
+    messages: Message[];
   }
 
   export interface CheckIn {
@@ -79,6 +88,11 @@ function MainContent(props: GoalPage.Props) {
       <div>
         <h2 className="text-lg font-semibold mb-4">Check Ins</h2>
         <CheckIns checkIns={props.checkIns} />
+      </div>
+
+      <div>
+        <h2 className="text-lg font-semibold mb-4">Messages</h2>
+        <Messages messages={props.messages} />
       </div>
 
       <div>
@@ -133,6 +147,26 @@ function CheckIns({ checkIns }: { checkIns: GoalPage.CheckIn[]} ) {
                 {formatDateWithDaySuffix(checkIn.date)}
               </Link>
               {" — "}{truncate(checkIn.content, 150)}
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function Messages({ messages }: { messages: GoalPage.Message[] }) {
+  return (
+    <div className="space-y-4">
+      {messages.map((message) => (
+        <div key={message.id} className="flex flex-row items-start gap-3">
+          <Avatar person={message.author} size={36} />
+          <div className="flex-1">
+            <div className="text-sm -mt-px">
+              <Link to={message.link} className="hover:underline font-semibold text-black">
+                {message.title}
+              </Link>
+              {" — "}{truncate(message.content, 150)}
             </div>
           </div>
         </div>
