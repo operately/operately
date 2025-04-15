@@ -27,18 +27,11 @@ interface Props {
  * Handles recursive rendering of children, styling for different item states,
  * and interactions like hover, selection, and adding new items
  */
-export function TableRow({ item, level, isLast, filter, isSelected = false, onRowClick, onDelete, selectedItemId }: Props) {
+export function TableRow(props: Props) {
+  const { item, filter } = props;
+
   return (
-    <TableRowProvider
-      item={item}
-      level={level}
-      isLast={isLast}
-      filter={filter}
-      isSelected={isSelected}
-      selectedItemId={selectedItemId}
-      onRowClick={onRowClick}
-      onDelete={onDelete}
-    >
+    <TableRowProvider {...props} >
       <RowContainer>
         <ItemNameCell />
         <StatusCell status={item.status} />
@@ -71,7 +64,7 @@ export function TableRow({ item, level, isLast, filter, isSelected = false, onRo
       </RowContainer>
 
       <QuickEntryWidget />
-      <ChildRows />
+      <ChildRows {...props} />
     </TableRowProvider>
   );
 }
