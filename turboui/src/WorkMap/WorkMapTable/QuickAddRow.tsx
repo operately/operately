@@ -1,7 +1,9 @@
-import { useState } from "react";
 import { IconPlus } from "@tabler/icons-react";
 import { QuickEntryWidget } from "../QuickEntryWidget";
 import { NewItem, WorkMapFilter } from "../types";
+import { useQuickEntryWidgetState } from "../hooks/useQuickEntryWidgetState";
+import classNames from "../../utils/classnames";
+import { match } from "ts-pattern";
 
 interface Props {
   filter: WorkMapFilter;
@@ -13,12 +15,24 @@ interface Props {
  * When clicked, it shows the QuickEntryWidget for adding new items
  */
 export function QuickAddRow({ filter, addItem }: Props) {
-  const [isAddingItem, setIsAddingItem] = useState(false);
+  // Use our shared hook to manage widget state and visibility
+  const {
+    isWidgetOpen: isAddingItem,
+    setWidgetOpen: setIsAddingItem,
+    anyWidgetOpen,
+  } = useQuickEntryWidgetState(false);
 
-  // Determine button text based on filter
-  let buttonText = "Add new item";
-  if (filter === "projects") buttonText = "Add new project";
-  else if (filter === "goals") buttonText = "Add new goal";
+  const buttonText = match(filter)
+    .with("goals", () => "Add new goal")
+    .with("projects", () => "Add new project")
+    .otherwise(() => "Add new item");
+
+  const buttonClass = classNames(
+    "flex items-center gap-1 text-sm text-content-dimmed hover:text-content-base transition-all py-1.5 px-2 rounded-md hover:bg-surface-highlight",
+    {
+      "opacity-0 pointer-events-none": anyWidgetOpen && !isAddingItem,
+    }
+  );
 
   if (filter === "completed") return null;
 
@@ -28,9 +42,10 @@ export function QuickAddRow({ filter, addItem }: Props) {
         {!isAddingItem ? (
           <button
             onClick={() => setIsAddingItem(true)}
-            className="flex items-center gap-1 text-sm text-content-dimmed hover:text-content-base transition-colors py-1.5 px-2 rounded-md hover:bg-surface-highlight"
+            className={buttonClass}
             aria-label={buttonText}
             type="button"
+            disabled={anyWidgetOpen && !isAddingItem}
           >
             <IconPlus size={18} />
             <span>{buttonText}</span>
