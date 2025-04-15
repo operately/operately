@@ -17,6 +17,10 @@ export namespace GoalPage {
     avatarUrl: string;
   }
 
+  export interface Permissions {
+    canEdit: boolean;
+  }
+
   export interface Message {
     id: string;
     title: string;
@@ -42,6 +46,7 @@ export namespace GoalPage {
     endDate: Date;
     checkIns: CheckIn[];
     messages: Message[];
+    permissions: Permissions;
   }
 
   export interface CheckIn {
@@ -82,22 +87,58 @@ function MainContent(props: GoalPage.Props) {
 
       <div>
         <h2 className="text-lg font-semibold mb-4">Targets</h2>
-        <GoalTargetList targets={props.targets} />
+        {props.targets.length === 0 ? (
+          <ZeroState
+            canEdit={props.permissions.canEdit}
+            message="No targets yet."
+            actionLabel="Add Target"
+            onAction={() => { /* TODO: Implement add target */ }}
+          />
+        ) : (
+          <GoalTargetList targets={props.targets} />
+        )}
       </div>
 
       <div>
         <h2 className="text-lg font-semibold mb-4">Check Ins</h2>
-        <CheckIns checkIns={props.checkIns} />
+        {props.checkIns.length === 0 ? (
+          <ZeroState
+            canEdit={props.permissions.canEdit}
+            message="No check-ins yet."
+            actionLabel="Add Check-In"
+            onAction={() => { /* TODO: Implement add check-in */ }}
+          />
+        ) : (
+          <CheckIns checkIns={props.checkIns} />
+        )}
       </div>
 
       <div>
         <h2 className="text-lg font-semibold mb-4">Messages</h2>
-        <Messages messages={props.messages} />
+        {props.messages.length === 0 ? (
+          <ZeroState
+            canEdit={props.permissions.canEdit}
+            message="No messages yet."
+            actionLabel="Add Message"
+            onAction={() => { /* TODO: Implement add message */ }}
+          />
+        ) : (
+          <Messages messages={props.messages} />
+        )}
       </div>
 
       <div>
         <h2 className="text-lg font-semibold mb-4">Related Work</h2>
-        <MiniWorkMap items={props.relatedWorkItems} />
+        {props.relatedWorkItems.length === 0 ? (
+          <ZeroState
+            canEdit={props.permissions.canEdit}
+            message="No related work yet."
+            actionLabel="Add Related Work"
+            onAction={() => { /* TODO: Implement add related work */ }}
+          />
+        ) : (
+          <MiniWorkMap items={props.relatedWorkItems} />
+        )}
       </div>
     </div>
   );
@@ -171,6 +212,22 @@ function Messages({ messages }: { messages: GoalPage.Message[] }) {
           </div>
         </div>
       ))}
+    </div>
+  );
+}
+
+function ZeroState({ canEdit, message, actionLabel, onAction }: { canEdit: boolean; message: string; actionLabel: string; onAction: () => void }) {
+  return (
+    <div className="py-8 text-center text-content-dimmed">
+      <div className="mb-2">{message}</div>
+      {canEdit && (
+        <button
+          className="inline-block px-4 py-2 bg-primary text-white rounded hover:bg-primary-dark text-sm font-medium"
+          onClick={onAction}
+        >
+          {actionLabel}
+        </button>
+      )}
     </div>
   );
 }
