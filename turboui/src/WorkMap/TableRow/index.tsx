@@ -1,5 +1,5 @@
 import { StatusBadge } from "../../StatusBadge";
-import { NewItem, Status, WorkMapItem } from "../types";
+import { NewItem, Status, WorkMapFilter, WorkMapItem } from "../types";
 import { ChildRows } from "./ChildRows";
 import { DeadlineCell } from "./DeadlineCell";
 import { ItemNameCell } from "./ItemNameCell";
@@ -15,7 +15,7 @@ interface Props {
   item: WorkMapItem;
   level: number;
   isLast: boolean;
-  filter?: string;
+  filter: WorkMapFilter;
   isSelected?: boolean;
   selectedItemId?: string;
   onRowClick?: (item: WorkMapItem) => void;
@@ -59,8 +59,13 @@ export function TableRow(props: Props) {
 }
 
 function QuickEntryWidgetWrapper({ addItem }: { addItem: Props["addItem"] }) {
-  const { indentPadding, item, showQuickEntryWidget, setShowQuickEntryWidget } =
-    useTableRowContext();
+  const {
+    indentPadding,
+    item,
+    showQuickEntryWidget,
+    setShowQuickEntryWidget,
+    filter,
+  } = useTableRowContext();
 
   return (
     <QuickEntryWidget
@@ -69,6 +74,7 @@ function QuickEntryWidgetWrapper({ addItem }: { addItem: Props["addItem"] }) {
       item={item}
       setShowWidget={setShowQuickEntryWidget}
       showWidget={showQuickEntryWidget}
+      filter={filter}
     />
   );
 }

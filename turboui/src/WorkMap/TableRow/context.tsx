@@ -1,56 +1,59 @@
-import React, { createContext, useContext, useState } from 'react';
-import { WorkMapItem } from '../types';
-import { useItemStatus } from './hooks/useItemStatus';
+import React, { createContext, useContext, useState } from "react";
+import { WorkMapFilter, WorkMapItem } from "../types";
+import { useItemStatus } from "./hooks/useItemStatus";
+import { useMemo } from "react";
 
 interface TableRowContextValue {
   // Item data
   item: WorkMapItem;
-  
+
   // Status flags
   isCompleted: boolean;
   isPending: boolean;
   isFailed: boolean;
   isDropped: boolean;
-  
+
   // UI state
   isSelected: boolean;
-  filter?: string;
+  filter: WorkMapFilter;
   showAddButton: boolean;
   setShowAddButton: React.Dispatch<React.SetStateAction<boolean>>;
   showQuickEntryWidget: boolean;
   setShowQuickEntryWidget: React.Dispatch<React.SetStateAction<boolean>>;
-  
+
   // Expansion state
   expanded: boolean;
   setExpanded: React.Dispatch<React.SetStateAction<boolean>>;
   hasChildren: boolean;
-  
+
   // Layout
   level: number;
   showIndentation: boolean;
   indentPadding: number;
-  
+
   // Event handlers
   handleDeleteClick: (e: React.MouseEvent) => void;
   handleRowClick: (e: React.MouseEvent<HTMLTableRowElement>) => void;
-  
+
   // Navigation
   selectedItemId?: string;
   onRowClick?: (item: WorkMapItem) => void;
-  
+
   // Page context
   isCompletedPage: boolean;
   isLastItem: boolean;
 }
 
-const TableRowContext = createContext<TableRowContextValue | undefined>(undefined);
+const TableRowContext = createContext<TableRowContextValue | undefined>(
+  undefined
+);
 
 interface ProviderProps {
   children: React.ReactNode;
   item: WorkMapItem;
   level: number;
   isLast?: boolean;
-  filter?: string;
+  filter: WorkMapFilter;
   isSelected?: boolean;
   selectedItemId?: string;
   onRowClick?: (item: WorkMapItem) => void;
@@ -70,20 +73,24 @@ export function TableRowProvider({
 }: ProviderProps) {
   const [expanded, setExpanded] = useState<boolean>(true);
   const [showAddButton, setShowAddButton] = useState<boolean>(false);
-  const [showQuickEntryWidget, setShowQuickEntryWidget] = useState<boolean>(false);
+  const [showQuickEntryWidget, setShowQuickEntryWidget] =
+    useState<boolean>(false);
 
   // Get status flags from the hook
-  const { isCompleted, isPending, isFailed, isDropped } = useItemStatus(item.status);
-  
+  const { isCompleted, isPending, isFailed, isDropped } = useItemStatus(
+    item.status
+  );
+
   // Derived properties
   const hasChildren = Boolean(item.children && item.children.length > 0);
   const showIndentation = !filter || filter === "goals" || filter === "all";
   const indentPadding = showIndentation ? level * 20 : 0;
   const isCompletedPage = filter === "completed";
-  
+
   // Selection state
-  const isThisItemSelected = isSelected || (selectedItemId && selectedItemId === item.id);
-  
+  const isThisItemSelected =
+    isSelected || (selectedItemId && selectedItemId === item.id);
+
   // Event handlers
   const handleRowClick = (e: React.MouseEvent<HTMLTableRowElement>): void => {
     // Prevent click from bubbling when clicking links or buttons
@@ -102,7 +109,7 @@ export function TableRowProvider({
       onRowClick(item);
     }
   };
-  
+
   const handleDeleteClick = (e: React.MouseEvent): void => {
     e.stopPropagation();
     onDelete();
@@ -131,7 +138,7 @@ export function TableRowProvider({
     selectedItemId,
     onRowClick,
     isCompletedPage,
-    isLastItem: Boolean(isLast)
+    isLastItem: Boolean(isLast),
   };
 
   return (
@@ -143,10 +150,12 @@ export function TableRowProvider({
 
 export function useTableRowContext() {
   const context = useContext(TableRowContext);
-  
+
   if (context === undefined) {
-    throw new Error('useTableRowContext must be used within a TableRowProvider');
+    throw new Error(
+      "useTableRowContext must be used within a TableRowProvider"
+    );
   }
-  
+
   return context;
 }

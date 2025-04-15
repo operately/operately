@@ -1,5 +1,8 @@
-import { useState, useRef } from "react";
-import { ItemType, NewItem, WorkMapItem } from "./types";
+import { useState } from "react";
+import { IconChevronDown } from "@tabler/icons-react";
+import { ItemType, NewItem, WorkMapFilter, WorkMapItem } from "./types";
+import { useEffect } from "react";
+import classNames from "../utils/classnames";
 
 interface Props {
   showWidget: boolean;
@@ -7,16 +10,17 @@ interface Props {
   item?: WorkMapItem;
   indentPadding: number;
   addItem: (newItem: NewItem) => void;
+  filter: WorkMapFilter;
 }
 
-export function QuickEntryWidget({ showWidget, ...rest }: Props) {
+export function QuickEntryWidget({ showWidget, ...props }: Props) {
   if (!showWidget) return null;
 
   return (
     <tr className="bg-transparent">
       <td colSpan={7} className="p-0">
         <div className="relative">
-          <ResponsiveWrapper {...rest} />
+          <ResponsiveWrapper {...props} />
         </div>
       </td>
     </tr>
@@ -28,15 +32,16 @@ interface WrapperProps {
   setShowWidget: (show: boolean) => void;
   item?: WorkMapItem;
   addItem: (newItem: NewItem) => void;
+  filter: WorkMapFilter;
 }
 
-export function ResponsiveWrapper({ indentPadding, ...rest }: WrapperProps) {
+export function ResponsiveWrapper({ indentPadding, ...props }: WrapperProps) {
   return (
     <>
       {/* Mobile view - full width with proper padding */}
       <div className="block sm:hidden w-full px-2 pt-1 pb-2">
         <div className="bg-surface-base dark:bg-surface-dimmed shadow-lg border border-surface-outline rounded-md w-full">
-          <QuickEntryForm {...rest} />
+          <QuickEntryForm {...props} />
         </div>
       </div>
 
@@ -46,7 +51,7 @@ export function ResponsiveWrapper({ indentPadding, ...rest }: WrapperProps) {
         style={{ marginLeft: `${indentPadding + 40}px` }}
       >
         <div className="bg-surface-base dark:bg-surface-dimmed shadow-lg border border-surface-outline rounded-md w-auto min-w-[500px]">
-          <QuickEntryForm {...rest} />
+          <QuickEntryForm {...props} />
         </div>
       </div>
     </>
@@ -57,12 +62,12 @@ interface FormProps {
   setShowWidget: (show: boolean) => void;
   item?: WorkMapItem;
   addItem: (newItem: NewItem) => void;
+  filter: WorkMapFilter;
 }
 
-function QuickEntryForm({ setShowWidget, addItem, item }: FormProps) {
+function QuickEntryForm({ setShowWidget, addItem, item, filter }: FormProps) {
   const [itemType, setItemType] = useState<ItemType>("goal");
   const [inputValue, setInputValue] = useState("");
-  const inputRef = useRef<HTMLInputElement>(null);
 
   const placeholder = item
     ? `New ${itemType} in ${item.name}...`
@@ -97,37 +102,14 @@ function QuickEntryForm({ setShowWidget, addItem, item }: FormProps) {
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-0 w-full max-w-full">
           {/* Type selection dropdown */}
           <div className="flex flex-1 w-full">
-            <div className="relative border border-r-0 border-surface-outline rounded-l-md">
-              <select
-                value={itemType}
-                onChange={(e) =>
-                  setItemType(e.target.value as "goal" | "project")
-                }
-                className="appearance-none h-9 bg-surface-base dark:bg-surface-dimmed text-content-base pl-2 pr-7 py-1 focus:outline-none text-sm"
-              >
-                <option value="goal">Goal</option>
-                <option value="project">Project</option>
-              </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-1 text-content-dimmed">
-                <svg
-                  className="h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </div>
-            </div>
+            <TypeSelector
+              itemType={itemType}
+              setItemType={setItemType}
+              filter={filter}
+            />
 
             {/* Input field */}
             <input
-              ref={inputRef}
               type="text"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
@@ -158,6 +140,62 @@ function QuickEntryForm({ setShowWidget, addItem, item }: FormProps) {
           </div>
         </div>
       </form>
+    </div>
+  );
+}
+
+interface TypeSelectorProps {
+  filter: WorkMapFilter;
+  itemType: ItemType;
+  setItemType: (type: ItemType) => void;
+}
+
+/**
+ * TypeSelector renders the type selection UI for adding a new item.
+ * - If filter is 'projects' or 'goals', shows a static label (no dropdown).
+ * - Otherwise, shows a dropdown to select between Goal and Project.
+ * - Updates itemType to Project or Goal automatically when the filter changes.
+ */
+function TypeSelector({ itemType, setItemType, filter }: TypeSelectorProps) {
+  // Compute select or label class based on filter
+  const className = classNames(
+    "appearance-none text-content-base focus:outline-none text-sm",
+    {
+      "pl-2 py-1.5": filter === "all",
+      "px-2 py-1.5 border border-r-0 border-surface-outline rounded-l-md":
+        filter !== "all",
+    }
+  );
+
+  // When filter changes, force itemType to match if needed
+  useEffect(() => {
+    if (filter === "projects") {
+      setItemType("project");
+    }
+    if (filter === "goals") {
+      setItemType("goal");
+    }
+  }, [setItemType, filter]);
+
+  if (filter === "projects") {
+    return <div className={className}>Project</div>;
+  }
+
+  if (filter === "goals") {
+    return <div className={className}>Goal</div>;
+  }
+
+  return (
+    <div className="flex items-center border border-r-0 border-surface-outline rounded-l-md">
+      <select
+        value={itemType}
+        onChange={(e) => setItemType(e.target.value as ItemType)}
+        className={className}
+      >
+        <option value="goal">Goal</option>
+        <option value="project">Project</option>
+      </select>
+      <IconChevronDown size={16} className="text-content-dimmed" />
     </div>
   );
 }

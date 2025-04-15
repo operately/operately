@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { IconPlus } from "@tabler/icons-react";
 import { QuickEntryWidget } from "../QuickEntryWidget";
-import { NewItem } from "../types";
+import { NewItem, WorkMapFilter } from "../types";
 
 interface Props {
-  filter?: string;
+  filter: WorkMapFilter;
   addItem: (newItem: NewItem) => void;
 }
 
@@ -19,6 +19,8 @@ export function QuickAddRow({ filter, addItem }: Props) {
   let buttonText = "Add new item";
   if (filter === "projects") buttonText = "Add new project";
   else if (filter === "goals") buttonText = "Add new goal";
+
+  if (filter === "completed") return null;
 
   return (
     <tr className="border-t border-surface-outline">
@@ -41,6 +43,7 @@ export function QuickAddRow({ filter, addItem }: Props) {
                 indentPadding={0}
                 showWidget={isAddingItem}
                 setShowWidget={setIsAddingItem}
+                filter={filter}
               />
             </div>
           </div>

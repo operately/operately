@@ -1,4 +1,9 @@
-import { IconTarget, IconChecklist, IconChevronDown, IconChevronRight } from "@tabler/icons-react";
+import {
+  IconTarget,
+  IconChecklist,
+  IconChevronDown,
+  IconChevronRight,
+} from "@tabler/icons-react";
 import { Link } from "../../Link";
 import classNames from "../../utils/classnames";
 import { useItemStatus } from "./hooks/useItemStatus";
@@ -12,14 +17,15 @@ export function ItemNameCell() {
     isCompletedPage,
     isPending,
     handleDeleteClick,
+    showQuickEntryWidget,
     setShowQuickEntryWidget,
   } = useTableRowContext();
 
   const showAddForm = (e: React.MouseEvent): void => {
     e.stopPropagation();
     setShowQuickEntryWidget(true);
-  }
-  
+  };
+
   return (
     <td className="py-2 px-2 md:px-4 relative">
       <div className="flex items-center">
@@ -28,8 +34,8 @@ export function ItemNameCell() {
         <Icon />
         <Name to="#" />
       </div>
-      
-      {showAddButton && !isCompletedPage && (
+
+      {showAddButton && !isCompletedPage && !showQuickEntryWidget && (
         <ActionButtons
           display={item.type === "goal"}
           isPending={isPending}
@@ -43,16 +49,18 @@ export function ItemNameCell() {
 
 function Name({ to }: { to: string }) {
   const { item } = useTableRowContext();
-  const { isCompleted, isFailed, isDropped, isPending } = useItemStatus(item.status);
-  
+  const { isCompleted, isFailed, isDropped, isPending } = useItemStatus(
+    item.status
+  );
+
   const textStyle = classNames(
     "font-medium text-xs md:text-sm hover:underline transition-colors",
     {
       "line-through": isCompleted || isFailed,
       "line-through opacity-70": isDropped,
-      "text-content-dimmed dark:text-gray-400": isPending
+      "text-content-dimmed dark:text-gray-400": isPending,
     },
-    (isCompleted || isFailed || isDropped)
+    isCompleted || isFailed || isDropped
       ? "text-content-dimmed dark:text-gray-400"
       : isCompleted || isFailed || isDropped
       ? "text-content-dimmed dark:text-gray-400"
@@ -92,8 +100,10 @@ function Indentation() {
   const { showIndentation, indentPadding } = useTableRowContext();
 
   if (!showIndentation) return null;
-  
-  return <div style={{ width: `${indentPadding}px` }} className="flex-shrink-0" />;
+
+  return (
+    <div style={{ width: `${indentPadding}px` }} className="flex-shrink-0" />
+  );
 }
 
 function ExpandButton() {
@@ -104,7 +114,7 @@ function ExpandButton() {
     setExpanded(!expanded);
   };
 
-  if (!hasChildren) return <div className="w-[16px] sm:w-[24px]"></div>
+  if (!hasChildren) return <div className="w-[16px] sm:w-[24px]"></div>;
 
   return (
     <button
@@ -124,7 +134,7 @@ function ExpandButton() {
 
 function ChevronIcon({ expanded, size }: { expanded: boolean; size: number }) {
   if (expanded) {
-    return <IconChevronDown size={size} />
+    return <IconChevronDown size={size} />;
   } else {
     return <IconChevronRight size={size} />;
   }
