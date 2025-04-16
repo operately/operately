@@ -10,4 +10,7 @@ export * from "./ProgressBar";
 export * from "./Avatar";
 export * from "./TimeframeSelector";
 
+// Export datepicker styles
+import "./styles/datepicker";
+
 export { MiniWorkMap } from "./MiniWorkMap";
