@@ -47,6 +47,75 @@ const mockTargets = [
   },
 ];
 
+const checkIns = [
+  {
+    id: "1",
+    author: champion,
+    date: new Date(2025, 3, 17), // Apr 17th, 2025
+    content:
+      "Kickoff meeting held. Team is excited and we have outlined the initial roadmap. Next steps: finalize requirements and assign tasks.",
+  },
+  {
+    id: "2",
+    author: reviewer,
+    date: new Date(2025, 3, 24), // Apr 24th, 2025
+    content:
+      "Reviewed the first sprint deliverables. Progress is on track, but we need to improve test coverage and documentation.",
+  },
+  {
+    id: "3",
+    author: champion,
+    date: new Date(2025, 3, 30), // Apr 30th, 2025
+    content:
+      "Completed integration with the new data pipeline. Encountered some issues with API rate limits, but workaround is in place.",
+  },
+];
+
+const messages = [
+  {
+    id: "1",
+    title: "Kick-Off",
+    author: champion,
+    content: "We have officially started the project! The team is aligned and ready to move forward.",
+    link: "/messages/1",
+  },
+  {
+    id: "2",
+    title: "Execution plan for the German team",
+    author: reviewer,
+    content: "Outlined the execution plan for the German team. Please review and provide feedback by Friday.",
+    link: "/messages/2",
+  },
+  {
+    id: "3",
+    title: "Preview of what is coming next week",
+    author: champion,
+    content: "Next week we will focus on integrating the authentication module and preparing the first demo.",
+    link: "/messages/3",
+  },
+  {
+    id: "4",
+    title: "Sprint 1 Retrospective",
+    author: reviewer,
+    content: "Sprint 1 went well overall, but we identified some bottlenecks in the review process.",
+    link: "/messages/4",
+  },
+  {
+    id: "5",
+    title: "Security Review Notes",
+    author: champion,
+    content: "Security review completed. No major issues found, but a few recommendations were made.",
+    link: "/messages/5",
+  },
+  {
+    id: "6",
+    title: "Customer Feedback Roundup",
+    author: reviewer,
+    content: "Collected initial feedback from customers. Most are excited about the new features!",
+    link: "/messages/6",
+  },
+];
+
 const relatedWorkItems = [
   {
     id: "1",
@@ -151,73 +220,8 @@ export const Default: Story = {
       "strategic goal of becoming a leader in the AI solutions market and will serve as a foundation for ",
       "future AI-driven products and services.`,",
     ].join(""),
-    checkIns: [
-      {
-        id: "1",
-        author: champion,
-        date: new Date(2025, 3, 17), // Apr 17th, 2025
-        content:
-          "Kickoff meeting held. Team is excited and we have outlined the initial roadmap. Next steps: finalize requirements and assign tasks.",
-      },
-      {
-        id: "2",
-        author: reviewer,
-        date: new Date(2025, 3, 24), // Apr 24th, 2025
-        content:
-          "Reviewed the first sprint deliverables. Progress is on track, but we need to improve test coverage and documentation.",
-      },
-      {
-        id: "3",
-        author: champion,
-        date: new Date(2025, 3, 30), // Apr 30th, 2025
-        content:
-          "Completed integration with the new data pipeline. Encountered some issues with API rate limits, but workaround is in place.",
-      },
-    ],
-    messages: [
-      {
-        id: "1",
-        title: "Kick-Off",
-        author: champion,
-        content: "We have officially started the project! The team is aligned and ready to move forward.",
-        link: "/messages/1",
-      },
-      {
-        id: "2",
-        title: "Execution plan for the German team",
-        author: reviewer,
-        content: "Outlined the execution plan for the German team. Please review and provide feedback by Friday.",
-        link: "/messages/2",
-      },
-      {
-        id: "3",
-        title: "Preview of what is coming next week",
-        author: champion,
-        content: "Next week we will focus on integrating the authentication module and preparing the first demo.",
-        link: "/messages/3",
-      },
-      {
-        id: "4",
-        title: "Sprint 1 Retrospective",
-        author: reviewer,
-        content: "Sprint 1 went well overall, but we identified some bottlenecks in the review process.",
-        link: "/messages/4",
-      },
-      {
-        id: "5",
-        title: "Security Review Notes",
-        author: champion,
-        content: "Security review completed. No major issues found, but a few recommendations were made.",
-        link: "/messages/5",
-      },
-      {
-        id: "6",
-        title: "Customer Feedback Roundup",
-        author: reviewer,
-        content: "Collected initial feedback from customers. Most are excited about the new features!",
-        link: "/messages/6",
-      },
-    ],
+    checkIns,
+    messages
   },
 };
 
@@ -230,9 +234,12 @@ export const ZeroStateForChampions: Story = {
     champion: null,
     reviewer: null,
     targets: [],
+    checkIns: [],
+    messages: [],
     relatedWorkItems: [],
     startDate: genRelativeDate(-15),
     endDate: genRelativeDate(15),
+    canEdit: true,
   },
 };
 
@@ -245,6 +252,8 @@ export const ZeroStateReadOnly: Story = {
     champion: null,
     reviewer: null,
     targets: [],
+    checkIns: [],
+    messages: [],
     relatedWorkItems: [],
     isEditable: false,
     startDate: genRelativeDate(-15),
