@@ -1,7 +1,7 @@
 import React from "react";
 
 import { Page } from "../Page";
-import { Link } from "../Link";
+import { BlackLink, Link } from "../Link";
 import { Avatar } from "../Avatar";
 import { PageFooter } from "../Page/PageFooter";
 import { MiniWorkMap } from "../MiniWorkMap";
@@ -143,9 +143,9 @@ function CheckIns({ checkIns }: { checkIns: GoalPage.CheckIn[]} ) {
           <Avatar person={checkIn.author} size={36} />
           <div className="flex-1">
             <div className="text-sm -mt-px">
-              <Link to={checkIn.link} className="hover:underline font-semibold text-black">
+              <BlackLink to={checkIn.link} className="hover:underline font-semibold">
                 {formatDateWithDaySuffix(checkIn.date)}
-              </Link>
+              </BlackLink>
               {" — "}{truncate(checkIn.content, 150)}
             </div>
           </div>
@@ -163,9 +163,9 @@ function Messages({ messages }: { messages: GoalPage.Message[] }) {
           <Avatar person={message.author} size={36} />
           <div className="flex-1">
             <div className="text-sm -mt-px">
-              <Link to={message.link} className="hover:underline font-semibold text-black">
+              <BlackLink to={message.link} className="hover:underline font-semibold">
                 {message.title}
-              </Link>
+              </BlackLink>
               {" — "}{truncate(message.content, 150)}
             </div>
           </div>
