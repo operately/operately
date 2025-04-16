@@ -1,40 +1,39 @@
 import { useState, useCallback, useMemo } from "react";
 import { parse } from "date-fns";
-import { WorkMapFilter, WorkMapItem } from "./types";
+import { TimeframeSelector } from "../TimeframeSelector";
+import { WorkMap } from ".";
 
 /**
  * Main filter hook for WorkMap
  */
-export function useWorkMapFilter(rawItems: WorkMapItem[]) {
-  const [filter, setFilter] = useState<WorkMapFilter>("all");
+export function useWorkMapFilter(rawItems: WorkMap.Item[], timeframe: TimeframeSelector.Timeframe) {
+  const [filter, setFilter] = useState<WorkMap.Filter>("all");
 
   const filteredItems = useMemo(() => {
+    const timeframeFilteredItems = filterItemsByTimeframe(rawItems, timeframe);
+
     if (filter === "all") {
-      return rawItems;
+      return timeframeFilteredItems;
     }
     if (filter === "projects") {
-      // Flat list of all projects, excluding completed/dropped
-      const allProjects = extractAllProjects(rawItems);
-      return allProjects.filter(
-        (project) =>
-          project.status !== "completed" && project.status !== "dropped"
-      );
+      const allProjects = extractAllProjects(timeframeFilteredItems);
+
+      return allProjects.filter((project) => project.status !== "completed" && project.status !== "dropped");
     }
     if (filter === "completed") {
-      // Flat, sorted list of completed items
-      const completedItems = extractCompletedItems(rawItems);
+      const completedItems = extractCompletedItems(timeframeFilteredItems);
+
       return completedItems.sort((a, b) => {
         const dateA = parseDate((a as any).closedAt);
         const dateB = parseDate((b as any).closedAt);
-        return dateB.getTime() - dateA.getTime(); 
+        return dateB.getTime() - dateA.getTime();
       });
     }
 
-    // For other filters, recursively filter children
-    return rawItems.map((item) => filterChildren(item, filter));
-  }, [rawItems, filter]);
+    return timeframeFilteredItems.map((item) => filterChildren(item, filter));
+  }, [rawItems, filter, timeframe]);
 
-  const changeFilter = useCallback((newFilter: WorkMapFilter) => {
+  const changeFilter = useCallback((newFilter: WorkMap.Filter) => {
     setFilter(newFilter);
   }, []);
 
@@ -48,9 +47,8 @@ export function useWorkMapFilter(rawItems: WorkMapItem[]) {
 /**
  * Returns a new WorkMapItem with children filtered according to the filter criteria
  */
-function filterChildren(item: WorkMapItem, filter: WorkMapFilter) {
-  if (!item.children || item.children.length === 0)
-    return { ...item, children: [] };
+function filterChildren(item: WorkMap.Item, filter: WorkMap.Filter) {
+  if (!item.children || item.children.length === 0) return { ...item, children: [] };
 
   const filteredChildren = item.children
     .filter((child) => {
@@ -64,14 +62,7 @@ function filterChildren(item: WorkMapItem, filter: WorkMapFilter) {
       if (
         filter === "goals" &&
         isGoal &&
-        [
-          "completed",
-          "failed",
-          "dropped",
-          "achieved",
-          "partial",
-          "missed",
-        ].includes(child.status)
+        ["completed", "failed", "dropped", "achieved", "partial", "missed"].includes(child.status)
       ) {
         return false;
       }
@@ -85,10 +76,10 @@ function filterChildren(item: WorkMapItem, filter: WorkMapFilter) {
 /**
  * Helper to extract all projects from the hierarchy, flattening them
  */
-function extractAllProjects(data: WorkMapItem[]): WorkMapItem[] {
-  let allProjects: WorkMapItem[] = [];
+function extractAllProjects(data: WorkMap.Item[]): WorkMap.Item[] {
+  let allProjects: WorkMap.Item[] = [];
 
-  const extract = (items: WorkMapItem[]): void => {
+  const extract = (items: WorkMap.Item[]): void => {
     items.forEach((item) => {
       if (item.type === "project") {
         allProjects.push({ ...item, children: [] });
@@ -107,10 +98,10 @@ function extractAllProjects(data: WorkMapItem[]): WorkMapItem[] {
  * Helper to extract all completed items (achieved, partial, missed, dropped, etc.)
  * Returns a flat list of all completed items with completedOn dates
  */
-function extractCompletedItems(data: WorkMapItem[]): WorkMapItem[] {
-  let completedItems: WorkMapItem[] = [];
+function extractCompletedItems(data: WorkMap.Item[]): WorkMap.Item[] {
+  let completedItems: WorkMap.Item[] = [];
 
-  const extractItems = (items: WorkMapItem[]): void => {
+  const extractItems = (items: WorkMap.Item[]): void => {
     items.forEach((item) => {
       if (
         item.status === "completed" ||
@@ -123,7 +114,7 @@ function extractCompletedItems(data: WorkMapItem[]): WorkMapItem[] {
           ...item,
           children: [],
           completedOn: item.closedAt,
-        } as WorkMapItem;
+        } as WorkMap.Item;
 
         completedItems.push(enhancedItem);
       }
@@ -143,7 +134,82 @@ function extractCompletedItems(data: WorkMapItem[]): WorkMapItem[] {
 function parseDate(dateString?: string) {
   if (!dateString) return new Date(0);
 
-  const  parsed = parse(dateString, "MMM d yyyy", new Date());
+  const parsed = parse(dateString, "MMM d yyyy", new Date());
 
   return isNaN(parsed.getTime()) ? new Date(0) : parsed;
+}
+
+/**
+ * Filter items based on their timeframe or date properties
+ * For goals: use timeframe.startDate and timeframe.endDate
+ * For projects: use startedAt and closedAt
+ * An item is included if it overlaps with the provided timeframe in any way
+ */
+function filterItemsByTimeframe(items: WorkMap.Item[], timeframe: TimeframeSelector.Timeframe): WorkMap.Item[] {
+  // If timeframe has no dates, return all items
+  if (!timeframe.startDate && !timeframe.endDate) {
+    return items;
+  }
+
+  const filterTimeframeRecursive = (item: WorkMap.Item): WorkMap.Item | null => {
+    const overlaps = itemOverlapsWithTimeframe(item, timeframe);
+
+    if (!overlaps) {
+      return null; // Item doesn't overlap, exclude it
+    }
+
+    // For items with children, recursively filter children
+    if (item.children && item.children.length > 0) {
+      const filteredChildren = item.children
+        .map(filterTimeframeRecursive)
+        .filter((child): child is WorkMap.Item => child !== null);
+
+      return { ...item, children: filteredChildren };
+    }
+
+    // Item overlaps and has no children (or all children filtered out)
+    return { ...item };
+  };
+
+  return items.map(filterTimeframeRecursive).filter((item): item is WorkMap.Item => item !== null);
+}
+
+/**
+ * Check if an item overlaps with the provided timeframe
+ */
+function itemOverlapsWithTimeframe(item: WorkMap.Item, timeframe: TimeframeSelector.Timeframe): boolean {
+  const timeframeStart = timeframe.startDate ? new Date(timeframe.startDate) : null;
+  const timeframeEnd = timeframe.endDate ? new Date(timeframe.endDate) : null;
+
+  if (item.type === "goal") {
+    const goalStart = item.timeframe.startDate ? new Date(item.timeframe.startDate) : null;
+    const goalEnd = item.timeframe.endDate ? new Date(item.timeframe.endDate) : null;
+
+    // If either timeframe is missing dates, include the item
+    if (!timeframeStart || !timeframeEnd || !goalStart || !goalEnd) {
+      return true;
+    }
+
+    // Check for overlap: not (goalEnd < timeframeStart || goalStart > timeframeEnd)
+    return !(goalEnd < timeframeStart || goalStart > timeframeEnd);
+  } else if (item.type === "project") {
+    const projectStart = item.startedAt ? parseDate(item.startedAt) : null;
+    const projectEnd = item.closedAt ? parseDate(item.closedAt) : null;
+
+    // If project has no start date, or timeframe has no dates, include it
+    if (!projectStart || !timeframeStart || !timeframeEnd) {
+      return true;
+    }
+
+    // For ongoing projects (no end date), check if they started before timeframe end
+    if (!projectEnd) {
+      return projectStart <= timeframeEnd;
+    }
+
+    // Check for overlap: not (projectEnd < timeframeStart || projectStart > timeframeEnd)
+    return !(projectEnd < timeframeStart || projectStart > timeframeEnd);
+  }
+
+  // Default to including the item if we can't determine
+  return true;
 }

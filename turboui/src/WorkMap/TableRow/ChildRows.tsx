@@ -1,16 +1,16 @@
-import { NewItem, WorkMapFilter, WorkMapItem } from "../types";
+import { WorkMap } from "..";
 import { useTableRowContext } from "./context";
 import { TableRow } from "./index";
 
 interface Props {
-  item: WorkMapItem;
+  item: WorkMap.Item;
   level: number;
   isLast: boolean;
-  filter: WorkMapFilter;
+  filter: WorkMap.Filter;
   selectedItemId?: string;
-  onRowClick?: (item: WorkMapItem) => void;
+  onRowClick?: (item: WorkMap.Item) => void;
   onDelete: () => void;
-  addItem: (newItem: NewItem) => void;
+  addItem: (newItem: WorkMap.NewItem) => void;
 }
 
 export function ChildRows({ item, level, isLast, ...rest }: Props) {
@@ -22,7 +22,7 @@ export function ChildRows({ item, level, isLast, ...rest }: Props) {
 
   return (
     <>
-      {item.children?.map((child: WorkMapItem, index: number) => (
+      {item.children?.map((child: WorkMap.Item, index: number) => (
         <TableRow
           key={child.id}
           item={child}

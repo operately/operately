@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { WorkMapTable } from "./WorkMapTable";
-import { WorkMapItem } from "./types";
+import { WorkMap } from ".";
+import { currentYear, currentQuarter, currentMonth } from "../TimeframeSelector/utils";
 
 // --- Mock Data ---
 function genAvatar(id: string) {
@@ -49,7 +50,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const defaultGoalsAndProjects: WorkMapItem[] = [
+const defaultGoalsAndProjects: WorkMap.Item[] = [
   {
     id: "goal-1",
     type: "goal",
@@ -61,6 +62,7 @@ const defaultGoalsAndProjects: WorkMapItem[] = [
     deadline: { display: "Dec 31 2025", isPast: false },
     closedAt: undefined,
     nextStep: "Launch referral program",
+    timeframe: currentYear(),
     children: [
       {
         id: "project-1",
@@ -73,6 +75,7 @@ const defaultGoalsAndProjects: WorkMapItem[] = [
         deadline: { display: "Nov 30 2025", isPast: false },
         closedAt: undefined,
         nextStep: "Design rewards",
+        startedAt: "2025-01-15",
         children: [],
       },
       {
@@ -86,6 +89,7 @@ const defaultGoalsAndProjects: WorkMapItem[] = [
         deadline: { display: "Oct 15 2025", isPast: false },
         closedAt: undefined,
         nextStep: "A/B test new landing page",
+        timeframe: currentYear(),
         children: [
           {
             id: "goal-100",
@@ -98,6 +102,7 @@ const defaultGoalsAndProjects: WorkMapItem[] = [
             deadline: { display: "Jun 30 2025", isPast: true },
             closedAt: "Jul 1 2025",
             nextStep: "",
+            timeframe: currentQuarter(),
             children: [],
           },
           {
@@ -111,6 +116,7 @@ const defaultGoalsAndProjects: WorkMapItem[] = [
             deadline: { display: "Mar 31 2025", isPast: true },
             closedAt: "Apr 1 2025",
             nextStep: "",
+            startedAt: "2025-01-01",
             children: [],
           },
         ],
@@ -128,6 +134,7 @@ const defaultGoalsAndProjects: WorkMapItem[] = [
     deadline: { display: "Aug 30 2025", isPast: false },
     closedAt: undefined,
     nextStep: "Ship onboarding checklist",
+    timeframe: currentYear(),
     children: [
       {
         id: "project-2",
@@ -140,6 +147,7 @@ const defaultGoalsAndProjects: WorkMapItem[] = [
         deadline: { display: "Aug 15 2025", isPast: false },
         closedAt: undefined,
         nextStep: "QA checklist",
+        startedAt: "2025-03-15",
         children: [],
       },
     ],
@@ -155,11 +163,12 @@ const defaultGoalsAndProjects: WorkMapItem[] = [
     deadline: { display: "Jul 31 2025", isPast: false },
     closedAt: undefined,
     nextStep: "Finalize homepage",
+    startedAt: "2025-02-01",
     children: [],
   },
 ];
 
-const onlyGoals: WorkMapItem[] = [
+const onlyGoals: WorkMap.Item[] = [
   {
     id: "goal-g1",
     type: "goal",
@@ -171,6 +180,7 @@ const onlyGoals: WorkMapItem[] = [
     deadline: { display: "Sep 30 2025", isPast: false },
     closedAt: undefined,
     nextStep: "Send Q3 survey",
+    timeframe: currentQuarter(),
     children: [
       {
         id: "goal-g1-1",
@@ -183,6 +193,7 @@ const onlyGoals: WorkMapItem[] = [
         deadline: { display: "Aug 15 2025", isPast: false },
         closedAt: undefined,
         nextStep: "Enable feedback widget",
+        timeframe: currentMonth(),
         children: [],
       },
       {
@@ -196,6 +207,7 @@ const onlyGoals: WorkMapItem[] = [
         deadline: { display: "Sep 1 2025", isPast: false },
         closedAt: undefined,
         nextStep: "Analyze churn data",
+        timeframe: currentQuarter(),
         children: [],
       },
     ],
@@ -211,6 +223,7 @@ const onlyGoals: WorkMapItem[] = [
     deadline: { display: "Dec 31 2025", isPast: false },
     closedAt: undefined,
     nextStep: "Research local partners",
+    timeframe: currentYear(),
     children: [
       {
         id: "goal-g2-1",
@@ -219,6 +232,7 @@ const onlyGoals: WorkMapItem[] = [
         status: "pending",
         progress: 40,
         space: "Growth",
+        timeframe: currentQuarter(),
         owner: people.igor,
         deadline: { display: "Nov 15 2025", isPast: false },
         closedAt: undefined,
@@ -236,19 +250,21 @@ const onlyGoals: WorkMapItem[] = [
         deadline: { display: "Dec 1 2025", isPast: false },
         closedAt: undefined,
         nextStep: "Draft campaign assets",
+        timeframe: currentQuarter(),
         children: [],
       },
     ],
   },
 ];
 
-const onlyProjects: WorkMapItem[] = [
+const onlyProjects: WorkMap.Item[] = [
   {
     id: "project-1",
     type: "project",
     name: "Mobile app v2",
     status: "dropped",
     progress: 70,
+    startedAt: "2025-01-10",
     space: "Mobile",
     owner: people.jane,
     deadline: { display: "Sep 30 2025", isPast: false },
@@ -267,6 +283,7 @@ const onlyProjects: WorkMapItem[] = [
     deadline: { display: "Oct 31 2025", isPast: false },
     closedAt: undefined,
     nextStep: "Migrate endpoints",
+    startedAt: "2025-02-15",
     children: [],
   },
   {
@@ -280,11 +297,12 @@ const onlyProjects: WorkMapItem[] = [
     deadline: { display: "Jul 31 2025", isPast: false },
     closedAt: undefined,
     nextStep: "Finalize homepage",
+    startedAt: "2025-03-01",
     children: [],
   },
 ];
 
-const onlyCompleted: WorkMapItem[] = [
+const onlyCompleted: WorkMap.Item[] = [
   {
     id: "goal-10",
     type: "goal",
@@ -293,6 +311,7 @@ const onlyCompleted: WorkMapItem[] = [
     progress: 100,
     space: "Finance",
     owner: people.igor,
+    timeframe: currentYear(),
     deadline: { display: "May 31 2025", isPast: true },
     closedAt: "Jun 1 2025",
     nextStep: "",
@@ -309,6 +328,7 @@ const onlyCompleted: WorkMapItem[] = [
     deadline: { display: "Apr 30 2025", isPast: true },
     closedAt: "May 1 2025",
     nextStep: "",
+    timeframe: currentQuarter(),
     children: [],
   },
   {
@@ -322,6 +342,7 @@ const onlyCompleted: WorkMapItem[] = [
     deadline: { display: "Mar 31 2025", isPast: true },
     closedAt: "Apr 1 2025",
     nextStep: "",
+    startedAt: "2025-01-15",
     children: [],
   },
 ];

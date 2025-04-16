@@ -1,13 +1,13 @@
 import { QuickAddRow } from "./QuickAddRow";
 import { TableHeader } from "./TableHeader";
-import { NewItem, WorkMapFilter, WorkMapItem } from "../types";
+import { WorkMap } from "..";
 import { TableRow } from "../TableRow";
 
 export interface Props {
-  items: WorkMapItem[];
-  filter: WorkMapFilter;
+  items: WorkMap.Item[];
+  filter: WorkMap.Filter;
   deleteItem: (itemId: string) => void;
-  addItem: (newItem: NewItem) => void;
+  addItem: (newItem: WorkMap.NewItem) => void;
 }
 
 export function WorkMapTable({ items, filter, deleteItem, addItem }: Props) {
