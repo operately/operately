@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { TimeframeSelector } from './index';
-import { Timeframe } from './types';
 import { useState } from 'react';
 import { currentMonth, currentQuarter, currentYear } from './utils';
 
@@ -31,7 +30,7 @@ export default meta;
  * It provides an intuitive interface for users to select different timeframes for data filtering, reporting, or scheduling.
  */
 const TimeframeSelectorWrapper = (args: any) => {
-  const [timeframe, setTimeframe] = useState<Timeframe>(currentMonth());
+  const [timeframe, setTimeframe] = useState<TimeframeSelector.Timeframe>(currentMonth());
   
   return (
     <TimeframeSelector
@@ -77,10 +76,10 @@ export const Sizes: StoryObj = {
  */
 export const TimeframeTypes: StoryObj = {
   render: () => {
-    const [monthTimeframe, setMonthTimeframe] = useState<Timeframe>(currentMonth());
-    const [quarterTimeframe, setQuarterTimeframe] = useState<Timeframe>(currentQuarter());
-    const [yearTimeframe, setYearTimeframe] = useState<Timeframe>(currentYear());
-    const [customTimeframe, setCustomTimeframe] = useState<Timeframe>({
+    const [monthTimeframe, setMonthTimeframe] = useState(currentMonth());
+    const [quarterTimeframe, setQuarterTimeframe] = useState(currentQuarter());
+    const [yearTimeframe, setYearTimeframe] = useState(currentYear());
+    const [customTimeframe, setCustomTimeframe] = useState<TimeframeSelector.Timeframe>({
       type: 'days',
       startDate: new Date(new Date().setDate(new Date().getDate() - 7)),
       endDate: new Date(),
