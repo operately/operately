@@ -188,6 +188,26 @@ const relatedWorkItems = [
   },
 ];
 
+const roles = [
+  "AI Backend - Champion",
+  "AI Backend - Software Engineer",
+  "AI Backend - Software Engineer",
+  "AI Backend - Architect",
+  "Landing Page for AI Platform - Champion",
+  "Landing Page for AI Platform - Designer",
+  "Landing Page for AI Platform - Copyeditor",
+  "MCP - Champion",
+  "MCP - API Designer",
+  "MCP - Support Engineer",
+];
+
+const contributors = genPeople(10).map((p, i) => {
+  return {
+    person: p,
+    role: roles[i],
+  };
+});
+
 export default meta;
 type Story = StoryObj<typeof meta>;
 
@@ -203,7 +223,7 @@ export const Default: Story = {
     relatedWorkItems: relatedWorkItems,
     startDate: genRelativeDate(-15),
     endDate: genRelativeDate(15),
-    contributors: genPeople(18, { random: true }),
+    contributors: contributors,
     description: [
       "Our mission is to develop and launch a cutting-edge AI platform that will revolutionize how businesses ",
       "interact with artificial intelligence. This platform will integrate advanced machine learning capabilities, ",
@@ -221,7 +241,7 @@ export const Default: Story = {
       "future AI-driven products and services.`,",
     ].join(""),
     checkIns,
-    messages
+    messages,
   },
 };
 
@@ -231,11 +251,12 @@ export const ZeroStateForChampions: Story = {
     workmapLink: "/spaces/1/workmaps/1",
     goalName: "Launch AI Platform",
     spaceName: "Product",
-    champion: null,
+    champion: champion,
     reviewer: null,
     targets: [],
     checkIns: [],
     messages: [],
+    contributors: [],
     relatedWorkItems: [],
     startDate: genRelativeDate(-15),
     endDate: genRelativeDate(15),
@@ -249,11 +270,12 @@ export const ZeroStateReadOnly: Story = {
     workmapLink: "/spaces/1/workmaps/1",
     goalName: "Launch AI Platform",
     spaceName: "Product",
-    champion: null,
+    champion: champion,
     reviewer: null,
     targets: [],
     checkIns: [],
     messages: [],
+    contributors: [],
     relatedWorkItems: [],
     isEditable: false,
     startDate: genRelativeDate(-15),

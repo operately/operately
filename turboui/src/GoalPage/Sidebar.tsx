@@ -1,61 +1,44 @@
 import { GoalPage } from ".";
-import { AvatarList, AvatarWithName } from "../Avatar";
+import { Avatar, AvatarList, AvatarPerson, AvatarWithName } from "../Avatar";
 import { Chronometer } from "../Chronometer";
 
 export function Sidebar(props: GoalPage.Props) {
   return (
-    <div className="col-span-3 space-y-6">
-      <Timeframe {...props} />
-      <Champion {...props} />
-      <Reviewer {...props} />
-      <Contributors {...props} />
-    </div>
-  );
-}
+    <div className="col-span-3 space-y-6 px-4">
+      <div>
+        <div className="font-bold mb-2">Timeline</div>
 
-export function Timeframe(props: GoalPage.Props) {
-  return (
-    <div>
-      <div className="text-xs uppercase font-medium mb-2 tracking-wider">Timeline</div>
-      <Chronometer start={props.startDate} end={props.endDate} color="stone" />
-    </div>
-  );
-}
-
-export function Champion(props: GoalPage.Props) {
-  if (!props.champion) return null;
-
-  return (
-    <div className="mb-4">
-      <div className="text-xs uppercase font-medium mb-2 tracking-wider">Champion</div>
-      <AvatarWithName person={props.champion} size={24} className="text-sm text-gray-900" />
-    </div>
-  );
-}
-
-export function Reviewer(props: GoalPage.Props) {
-  if (!props.reviewer) return null;
-
-  return (
-    <div>
-      <div className="text-xs uppercase font-medium mb-2 tracking-wider">Reviewer</div>
-      <AvatarWithName person={props.reviewer} size={24} className="text-sm text-gray-900" />
-    </div>
-  );
-}
-
-export function Contributors(props: GoalPage.Props) {
-  if (!props.contributors || props.contributors.length === 0) return null;
-
-  return (
-    <div>
-      <div className="text-xs uppercase font-medium mb-2 tracking-wider">Contributors</div>
-      <div className="mb-2">
-        <AvatarList people={props.contributors} size={24} maxElements={30} />
+        <Chronometer start={props.startDate} end={props.endDate} color="stone" />
       </div>
-      <div className="text-xs text-gray-600">
-        {props.contributors.length} {props.contributors.length === 1 ? "person" : "people"} contributed by working on
-        related projects and sub-goals
+
+      <div className="space-y-3">
+        <div className="font-bold">Team</div>
+
+        {props.champion && <Contributor person={props.champion} description="Champion" />}
+        {props.reviewer && <Contributor person={props.reviewer} description="Reviewer" />}
+      </div>
+
+      {props.contributors.length > 0 && (
+        <div className="space-y-3">
+          <div className="font-bold">Contributors</div>
+
+          {props.contributors!.map((c) => (
+            <Contributor person={c.person} description={c.role} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Contributor({ person, description }: { person: AvatarPerson; description: string }) {
+  return (
+    <div className="flex items-start gap-2 truncate">
+      <Avatar person={person} size={32} />
+
+      <div className="-mt-0.5 truncate">
+        <div className="text-sm font-medium">{person.fullName}</div>
+        <div className="text-xs truncate">{description}</div>
       </div>
     </div>
   );
