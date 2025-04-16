@@ -11,7 +11,6 @@
   "moduleNameMapper": {
     "^turboui$": "<rootDir>/../turboui/src",
     "^@/ee/(.*)$": "<rootDir>/ee/assets/js/$1",
-    "^@/(.*)$": "<rootDir>/assets/js/$1",
-    "\\.(css|less|scss|sass)$": "<rootDir>/assets/js/__mocks__/styleMock.js"
+    "^@/(.*)$": "<rootDir>/assets/js/$1"
   }
 }
