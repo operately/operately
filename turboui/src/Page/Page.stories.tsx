@@ -166,3 +166,21 @@ export const WithPageFooter: Story = {
     </Page>
   ),
 };
+
+export const LongNavigation: Story = {
+  args: {
+    title: "Long navigation",
+    navigation: [
+      { to: "/dashboard", label: "Dashboard" },
+      { to: "/projects", label: "Projects" },
+      { to: "/projects/123", label: "Onboard Peter to the Customer Portal" },
+      { to: "/tasks", label: "Tasks" },
+      { to: "/documents", label: "Documents" },
+      { to: "/analytics", label: "Analytics" },
+      { to: "/settings", label: "Settings" },
+      { to: "/profile", label: "Profile" },
+      { to: "/help", label: "Help" },
+    ],
+    children: <Content title="Long navigation"/>
+  }
+};
