@@ -1,11 +1,11 @@
 import { AvatarWithName } from "../../Avatar/AvatarWithName";
-import { Status, WorkMapItem } from "../types";
+import { WorkMap } from "..";
 import { useItemStatus } from "../hooks/useItemStatus";
 import classNames from "../../utils/classnames";
 
 interface Props {
-  owner: WorkMapItem["owner"];
-  status: Status;
+  owner: WorkMap.Item["owner"];
+  status: WorkMap.Status;
 }
 
 export function OwnerCell({ owner, status }: Props) {

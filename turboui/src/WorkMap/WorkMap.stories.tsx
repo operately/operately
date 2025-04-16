@@ -1,6 +1,7 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { WorkMap } from './index';
-import { WorkMapItem, Status } from './types';
+import type { Meta, StoryObj } from "@storybook/react";
+import WorkMap from ".";
+import { TimeframeSelector } from "../TimeframeSelector";
+import { currentYear, currentQuarter } from "../TimeframeSelector/utils";
 
 // --- Mock Data ---
 function genAvatar(id: string) {
@@ -27,7 +28,7 @@ const people = {
 };
 
 // Sample work map items
-const mockItems: WorkMapItem[] = [
+const mockItems: WorkMap.Item[] = [
   {
     id: "goal-1",
     type: "goal",
@@ -41,6 +42,7 @@ const mockItems: WorkMapItem[] = [
       isPast: false,
     },
     nextStep: "People are signing up for SaaS",
+    timeframe: currentYear(),
     children: [
       {
         id: "project-1",
@@ -56,6 +58,7 @@ const mockItems: WorkMapItem[] = [
         },
         closedAt: "Mar 10 2025",
         nextStep: "",
+        startedAt: "2024-01-15",
         children: [],
       },
       {
@@ -71,6 +74,7 @@ const mockItems: WorkMapItem[] = [
           isPast: true,
         },
         nextStep: "All weekly updates are collected",
+        startedAt: "2024-01-01",
         children: [],
       },
     ],
@@ -88,6 +92,7 @@ const mockItems: WorkMapItem[] = [
       isPast: false,
     },
     nextStep: "Conduct user interviews",
+    timeframe: currentQuarter(),
     children: [],
   },
 ];
@@ -97,16 +102,16 @@ const mockItems: WorkMapItem[] = [
  * hierarchical work items like goals and projects.
  */
 const meta = {
-  title: 'Components/WorkMap/WorkMap',
+  title: "Components/WorkMap",
   component: WorkMap,
   parameters: {
-    layout: 'fullscreen',
+    layout: "fullscreen",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
-    items: { control: 'object' },
-    addItem: { action: 'addItem' },
-    deleteItem: { action: 'deleteItem' },
+    items: { control: "object" },
+    addItem: { action: "addItem" },
+    deleteItem: { action: "deleteItem" },
   },
 } satisfies Meta<typeof WorkMap>;
 
@@ -124,8 +129,8 @@ export const Default: Story = {
   ),
   args: {
     items: mockItems,
-    addItem: (newItem) => console.log('Add item', newItem),
-    deleteItem: (itemId) => console.log('Delete item', { itemId }),
+    addItem: (newItem) => console.log("Add item", newItem),
+    deleteItem: (itemId) => console.log("Delete item", { itemId }),
   },
 };
 
@@ -140,8 +145,8 @@ export const SingleItem: Story = {
   ),
   args: {
     items: [mockItems[1]], // Just the second goal with no children
-    addItem: (newItem) => console.log('Add item', newItem),
-    deleteItem: (itemId) => console.log('Delete item', { itemId }),
+    addItem: (newItem) => console.log("Add item", newItem),
+    deleteItem: (itemId) => console.log("Delete item", { itemId }),
   },
 };
 
@@ -156,8 +161,8 @@ export const Empty: Story = {
   ),
   args: {
     items: [],
-    addItem: (newItem) => console.log('Add item', newItem),
-    deleteItem: (itemId) => console.log('Delete item', { itemId }),
+    addItem: (newItem) => console.log("Add item", newItem),
+    deleteItem: (itemId) => console.log("Delete item", { itemId }),
   },
 };
 
@@ -173,31 +178,64 @@ export const AllStatuses: Story = {
   args: {
     items: [
       // Create an item for each possible status
-      ...(['on_track', 'completed', 'achieved', 'partial', 'missed', 'paused', 
-          'caution', 'issue', 'dropped', 'pending'] as Status[]).map((status, index) => ({
-        id: `status-${index}`,
-        type: index % 2 === 0 ? 'goal' : 'project' as 'goal' | 'project',
-        name: `${status.charAt(0).toUpperCase() + status.slice(1).replace('_', ' ')} item`,
-        status,
-        progress: status === 'completed' || status === 'achieved' ? 100 : Math.floor(Math.random() * 100),
-        space: ['Product', 'Engineering', 'Marketing', 'Sales', 'R&D'][index % 5],
-        owner: {
-          id: `user-${index}`,
-          fullName: `User ${index + 1}`,
-          avatarUrl: index % 2 === 0 ? people.alex.avatarUrl : people.sophia.avatarUrl,
-        },
-        deadline: status === 'completed' || status === 'achieved' ? undefined : {
-          display: `Jun ${15 + index} 2025`,
-          isPast: ['missed', 'partial'].includes(status),
-        },
-        completedOn: status === 'completed' || status === 'achieved' ? {
-          display: `Apr ${index + 1} 2025`,
-        } : undefined,
-        nextStep: status === 'completed' || status === 'achieved' ? '' : 'Next action to take',
-        children: [],
-      })),
+      ...(
+        [
+          "on_track",
+          "completed",
+          "achieved",
+          "partial",
+          "missed",
+          "paused",
+          "caution",
+          "issue",
+          "dropped",
+          "pending",
+        ] as WorkMap.Status[]
+      ).map((status, index) => {
+        const isGoal = index % 2 === 0;
+        const baseItem = {
+          id: `status-${index}`,
+          name: `${status.charAt(0).toUpperCase() + status.slice(1).replace("_", " ")} item`,
+          status,
+          progress: status === "completed" || status === "achieved" ? 100 : Math.floor(Math.random() * 100),
+          space: ["Product", "Engineering", "Marketing", "Sales", "R&D"][index % 5],
+          owner: {
+            id: `user-${index}`,
+            fullName: `User ${index + 1}`,
+            avatarUrl: index % 2 === 0 ? people.alex.avatarUrl : people.sophia.avatarUrl,
+          },
+          deadline:
+            status === "completed" || status === "achieved"
+              ? undefined
+              : {
+                  display: `Jun ${15 + index} 2025`,
+                  isPast: ["missed", "partial"].includes(status),
+                },
+          closedAt: status === "completed" || status === "achieved" ? `Apr ${index + 1} 2025` : undefined,
+          nextStep: status === "completed" || status === "achieved" ? "" : "Next action to take",
+          children: [],
+        };
+
+        if (isGoal) {
+          return {
+            ...baseItem,
+            type: "goal" as const,
+            timeframe: {
+              startDate: new Date(2025, 0, 1),
+              endDate: new Date(2025, 11, 31),
+              type: "year" as TimeframeSelector.TimeframeType,
+            },
+          };
+        } else {
+          return {
+            ...baseItem,
+            type: "project" as const,
+            startedAt: `2025-01-${index + 1}`,
+          };
+        }
+      }),
     ],
-    addItem: (newItem) => console.log('Add item', newItem),
-    deleteItem: (itemId) => console.log('Delete item', { itemId }),
+    addItem: (newItem) => console.log("Add item", newItem),
+    deleteItem: (itemId) => console.log("Delete item", { itemId }),
   },
 };

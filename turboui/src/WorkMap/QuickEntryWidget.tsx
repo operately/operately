@@ -1,16 +1,16 @@
 import { useState } from "react";
 import { IconChevronDown } from "@tabler/icons-react";
-import { ItemType, NewItem, WorkMapFilter, WorkMapItem } from "./types";
+import { WorkMap } from ".";
 import { useEffect } from "react";
 import classNames from "../utils/classnames";
 
 interface Props {
   showWidget: boolean;
   setShowWidget: (show: boolean) => void;
-  item?: WorkMapItem;
+  item?: WorkMap.Item;
   indentPadding: number;
-  addItem: (newItem: NewItem) => void;
-  filter: WorkMapFilter;
+  addItem: (newItem: WorkMap.NewItem) => void;
+  filter: WorkMap.Filter;
 }
 
 export function QuickEntryWidget({ showWidget, ...props }: Props) {
@@ -30,9 +30,9 @@ export function QuickEntryWidget({ showWidget, ...props }: Props) {
 interface WrapperProps {
   indentPadding: number;
   setShowWidget: (show: boolean) => void;
-  item?: WorkMapItem;
-  addItem: (newItem: NewItem) => void;
-  filter: WorkMapFilter;
+  item?: WorkMap.Item;
+  addItem: (newItem: WorkMap.NewItem) => void;
+  filter: WorkMap.Filter;
 }
 
 export function ResponsiveWrapper({ indentPadding, ...props }: WrapperProps) {
@@ -60,13 +60,13 @@ export function ResponsiveWrapper({ indentPadding, ...props }: WrapperProps) {
 
 interface FormProps {
   setShowWidget: (show: boolean) => void;
-  item?: WorkMapItem;
-  addItem: (newItem: NewItem) => void;
-  filter: WorkMapFilter;
+  item?: WorkMap.Item;
+  addItem: (newItem: WorkMap.NewItem) => void;
+  filter: WorkMap.Filter;
 }
 
 function QuickEntryForm({ setShowWidget, addItem, item, filter }: FormProps) {
-  const [itemType, setItemType] = useState<ItemType>("goal");
+  const [itemType, setItemType] = useState<WorkMap.ItemType>("goal");
   const [inputValue, setInputValue] = useState("");
 
   const placeholder = item
@@ -145,9 +145,9 @@ function QuickEntryForm({ setShowWidget, addItem, item, filter }: FormProps) {
 }
 
 interface TypeSelectorProps {
-  filter: WorkMapFilter;
-  itemType: ItemType;
-  setItemType: (type: ItemType) => void;
+  filter: WorkMap.Filter;
+  itemType: WorkMap.ItemType;
+  setItemType: (type: WorkMap.ItemType) => void;
 }
 
 /**
@@ -189,7 +189,7 @@ function TypeSelector({ itemType, setItemType, filter }: TypeSelectorProps) {
     <div className="flex items-center border border-r-0 border-surface-outline rounded-l-md">
       <select
         value={itemType}
-        onChange={(e) => setItemType(e.target.value as ItemType)}
+        onChange={(e) => setItemType(e.target.value as WorkMap.ItemType)}
         className={className}
       >
         <option value="goal">Goal</option>

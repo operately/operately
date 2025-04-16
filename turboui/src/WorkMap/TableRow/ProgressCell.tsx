@@ -1,10 +1,10 @@
 import { ProgressBar, ProgressBarStatus } from "../../";
-import { Status } from "../types";
+import { WorkMap } from "..";
 import { useItemStatus } from "../hooks/useItemStatus";
 
 interface ProgressCellProps {
   progress: number;
-  status: Status;
+  status: WorkMap.Status;
 }
 
 export function ProgressCell({ progress, status }: ProgressCellProps) {

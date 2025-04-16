@@ -1,13 +1,13 @@
 import { IconPlus } from "@tabler/icons-react";
 import { QuickEntryWidget } from "../QuickEntryWidget";
-import { NewItem, WorkMapFilter } from "../types";
+import { WorkMap } from "..";
 import { useQuickEntryWidgetState } from "../hooks/useQuickEntryWidgetState";
 import classNames from "../../utils/classnames";
 import { match } from "ts-pattern";
 
 interface Props {
-  filter: WorkMapFilter;
-  addItem: (newItem: NewItem) => void;
+  filter: WorkMap.Filter;
+  addItem: (newItem: WorkMap.NewItem) => void;
 }
 
 /**

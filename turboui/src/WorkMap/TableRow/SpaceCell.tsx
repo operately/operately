@@ -1,13 +1,13 @@
-import { Status } from "../types";
+import { WorkMap } from "..";
 import { useItemStatus } from "../hooks/useItemStatus";
 import classNames from "../../utils/classnames";
 
-interface Props {
-  space: string;
-  status: Status;
+interface SpaceCellProps {
+  space: WorkMap.Item['space'];
+  status: WorkMap.Status;
 }
 
-export function SpaceCell({ space, status }: Props) {
+export function SpaceCell({ space, status }: SpaceCellProps) {
   const { isCompleted, isFailed, isDropped, isPending } = useItemStatus(status);
 
   const className = classNames(
