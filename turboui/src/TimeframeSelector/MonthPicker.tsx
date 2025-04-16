@@ -1,9 +1,14 @@
 import DatePicker from "react-datepicker";
 
 import { LeftChevron, RightChevron } from "./Chevrons";
-import { Timeframe, SetTimeframe } from "./types";
+import { TimeframeSelector } from "./types";
 
-export function MonthPicker({ timeframe, setTimeframe }: { timeframe: Timeframe; setTimeframe: SetTimeframe }) {
+interface Props {
+  timeframe: TimeframeSelector.Timeframe;
+  setTimeframe: TimeframeSelector.SetTimeframe;
+}
+
+export function MonthPicker({ timeframe, setTimeframe }: Props) {
   return (
     <DatePicker
       inline

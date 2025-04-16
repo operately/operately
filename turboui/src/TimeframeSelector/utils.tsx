@@ -1,11 +1,11 @@
 import { match } from "ts-pattern";
-import { Timeframe } from "./types";
+import { TimeframeSelector } from "./types";
 
 //
 // Parsing and serializing the timeframe
 //
 
-export function formatTimeframe(timeframe: Timeframe) {
+export function formatTimeframe(timeframe: TimeframeSelector.Timeframe) {
   return match(timeframe.type)
     .with("month", () => formatMonth(timeframe))
     .with("quarter", () => formatQuarter(timeframe))
@@ -14,25 +14,25 @@ export function formatTimeframe(timeframe: Timeframe) {
     .exhaustive();
 }
 
-function formatMonth(timeframe: Timeframe) {
+function formatMonth(timeframe: TimeframeSelector.Timeframe) {
   if (!timeframe.startDate) return null;
   if (!timeframe.endDate) return null;
 
   return timeframe.startDate.toLocaleString("default", { month: "long", year: "numeric" });
 }
 
-function formatQuarter(timeframe: Timeframe) {
+function formatQuarter(timeframe: TimeframeSelector.Timeframe) {
   const quarter = Math.floor(timeframe.startDate!.getMonth() / 3) + 1;
   return `Q${quarter} ${timeframe.startDate!.getFullYear()}`;
 }
 
-function formatYear(timeframe: Timeframe) {
+function formatYear(timeframe: TimeframeSelector.Timeframe) {
   if (!timeframe.startDate) return null;
 
   return timeframe.startDate.getFullYear().toString();
 }
 
-function formatDays(timeframe: Timeframe) {
+function formatDays(timeframe: TimeframeSelector.Timeframe) {
   if (!timeframe.startDate) return null;
   if (!timeframe.endDate) return null;
 
@@ -68,7 +68,7 @@ function getCurrentMonth() {
 // Shortcut functions for creating timeframes
 //
 
-export function currentYear(): Timeframe {
+export function currentYear(): TimeframeSelector.Timeframe {
   return {
     startDate: new Date(getCurrentFullYear(), 0, 1),
     endDate: new Date(getCurrentFullYear(), 11, 31),
@@ -76,7 +76,7 @@ export function currentYear(): Timeframe {
   };
 }
 
-export function currentMonth(): Timeframe {
+export function currentMonth(): TimeframeSelector.Timeframe {
   const now = new Date();
   return {
     startDate: new Date(getCurrentFullYear(), getCurrentMonth(), 1),
@@ -85,7 +85,7 @@ export function currentMonth(): Timeframe {
   };
 }
 
-export function currentQuarter(): Timeframe {
+export function currentQuarter(): TimeframeSelector.Timeframe {
   const now = new Date();
   const quarter = Math.floor(now.getMonth() / 3);
 
@@ -100,7 +100,7 @@ export function currentQuarter(): Timeframe {
   }
 }
 
-function firstQuarterOfYear(year: number): Timeframe {
+function firstQuarterOfYear(year: number): TimeframeSelector.Timeframe {
   return {
     startDate: new Date(year, 0, 1),
     endDate: new Date(year, 2, 31),
@@ -108,7 +108,7 @@ function firstQuarterOfYear(year: number): Timeframe {
   };
 }
 
-function secondQuarterOfYear(year: number): Timeframe {
+function secondQuarterOfYear(year: number): TimeframeSelector.Timeframe {
   return {
     startDate: new Date(year, 3, 1),
     endDate: new Date(year, 5, 30),
@@ -116,7 +116,7 @@ function secondQuarterOfYear(year: number): Timeframe {
   };
 }
 
-function thirdQuarterOfYear(year: number): Timeframe {
+function thirdQuarterOfYear(year: number): TimeframeSelector.Timeframe {
   return {
     startDate: new Date(year, 6, 1),
     endDate: new Date(year, 8, 30),
@@ -124,7 +124,7 @@ function thirdQuarterOfYear(year: number): Timeframe {
   };
 }
 
-function fourthQuarterOfYear(year: number): Timeframe {
+function fourthQuarterOfYear(year: number): TimeframeSelector.Timeframe {
   return {
     startDate: new Date(year, 9, 1),
     endDate: new Date(year, 11, 31),
