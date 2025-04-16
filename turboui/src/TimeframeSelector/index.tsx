@@ -1,7 +1,6 @@
 import * as React from "react";
 import * as Popover from "@radix-ui/react-popover";
 import * as Icons from "@tabler/icons-react";
-import { TimeframeSelectorProps, TimeframeType, Timeframe } from "./types";
 
 import { match } from "ts-pattern";
 
@@ -20,7 +19,6 @@ import {
   formatTimeframe,
 } from "./utils";
 
-export type { Timeframe };
 export {
   CustomRangePicker,
   LeftChevron,
@@ -32,7 +30,26 @@ const DEFAULTS = {
   alignContent: "start" as const,
 };
 
-export function TimeframeSelector(props: TimeframeSelectorProps) {
+export namespace TimeframeSelector {
+  export type TimeframeType = "month" | "quarter" | "year" | "days";
+
+  export interface Timeframe {
+    startDate: Date | null;
+    endDate: Date | null;
+    type: TimeframeType;
+  }
+
+  export type SetTimeframe = (timeframe: Timeframe) => void;
+
+  export interface Props {
+      timeframe: Timeframe;
+      setTimeframe: SetTimeframe;
+      size?: "xs" | "base";
+      alignContent?: "start" | "end";
+    }
+}
+
+export function TimeframeSelector(props: TimeframeSelector.Props) {
   props = { ...DEFAULTS, ...props };
 
   const [open, setOpen] = React.useState(false);
@@ -85,7 +102,7 @@ export function TimeframeSelector(props: TimeframeSelectorProps) {
 
 
 interface TimeframeSelectorTriggerProps {
-  timeframe: Timeframe;
+  timeframe: TimeframeSelector.Timeframe;
   size?: "xs" | "base";
   isDefaultTimeframe: boolean;
   onClick: () => void;
@@ -130,7 +147,7 @@ function TimeframeSelectorTrigger(props: TimeframeSelectorTriggerProps) {
   );
 }
 
-function PopoverContent(props: TimeframeSelectorProps & { setTimeframe: (timeframe: Timeframe) => void }) {
+function PopoverContent(props: TimeframeSelector.Props & { setTimeframe: (timeframe: TimeframeSelector.Timeframe) => void }) {
   const className = classNames(
     "z-[100] overflow-hidden",
     "border border-surface-outline",
@@ -153,7 +170,7 @@ function PopoverContent(props: TimeframeSelectorProps & { setTimeframe: (timefra
   );
 }
 
-function TimeframeSelectorHeader(props: TimeframeSelectorProps) {
+function TimeframeSelectorHeader(props: TimeframeSelector.Props) {
   return (
     <div className="flex items-center justify-between gap-10 w-full border-b border-stroke-base pb-3 mb-3">
       <div className="">
@@ -168,9 +185,9 @@ function TimeframeSelectorHeader(props: TimeframeSelectorProps) {
   );
 }
 
-function TimeframeSelectorTypeSelector(props: TimeframeSelectorProps) {
+function TimeframeSelectorTypeSelector(props: TimeframeSelector.Props) {
   const changeHandler = (value: string) => {
-    match(value as TimeframeType)
+    match(value as TimeframeSelector.TimeframeType)
       .with("year", () => props.setTimeframe(currentYear()))
       .with("quarter", () => props.setTimeframe(currentQuarter()))
       .with("month", () => props.setTimeframe(currentMonth()))
@@ -197,7 +214,7 @@ function TimeframeSelectorTypeSelector(props: TimeframeSelectorProps) {
 function TimeframeSelectorContent({
   timeframe,
   setTimeframe,
-}: TimeframeSelectorProps) {
+}: TimeframeSelector.Props) {
   return match(timeframe.type)
     .with("month", () => (
       <MonthPicker timeframe={timeframe} setTimeframe={setTimeframe} />
