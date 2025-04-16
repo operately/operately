@@ -1,11 +1,11 @@
 import React, { createContext, useContext, useState } from "react";
-import { WorkMapFilter, WorkMapItem } from "../types";
+import { WorkMap } from "..";
 import { useItemStatus } from "../hooks/useItemStatus";
 import { useQuickEntryWidgetState } from "../hooks/useQuickEntryWidgetState";
 
 interface TableRowContextValue {
   // Item data
-  item: WorkMapItem;
+  item: WorkMap.Item;
 
   // Status flags
   isCompleted: boolean;
@@ -15,7 +15,7 @@ interface TableRowContextValue {
 
   // UI state
   isSelected: boolean;
-  filter: WorkMapFilter;
+  filter: WorkMap.Filter;
   showAddButton: boolean;
   setShowAddButton: (show: boolean) => void;
   showQuickEntryWidget: boolean;
@@ -37,7 +37,7 @@ interface TableRowContextValue {
 
   // Navigation
   selectedItemId?: string;
-  onRowClick?: (item: WorkMapItem) => void;
+  onRowClick?: (item: WorkMap.Item) => void;
 
   // Page context
   isCompletedPage: boolean;
@@ -50,13 +50,13 @@ const TableRowContext = createContext<TableRowContextValue | undefined>(
 
 interface ProviderProps {
   children: React.ReactNode;
-  item: WorkMapItem;
+  item: WorkMap.Item;
   level: number;
   isLast?: boolean;
-  filter: WorkMapFilter;
+  filter: WorkMap.Filter;
   isSelected?: boolean;
   selectedItemId?: string;
-  onRowClick?: (item: WorkMapItem) => void;
+  onRowClick?: (item: WorkMap.Item) => void;
   onDelete: () => void;
 }
 

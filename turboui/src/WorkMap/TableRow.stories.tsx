@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { TableRow } from "./TableRow";
-import type { WorkMapItem, Status } from "./types";
+import type { WorkMap } from ".";
 import { TableHeader } from "./WorkMapTable/TableHeader";
+import { currentYear } from "../TimeframeSelector/utils";
 
 // Mock data for stories
 const mockOwner = {
@@ -16,42 +17,52 @@ const createMockItem = (
   id: string,
   name: string,
   type: "goal" | "project",
-  status: Status,
+  status: WorkMap.Status,
   progress: number,
-  hasChildren: boolean = false
-): WorkMapItem => ({
-  id,
-  name,
-  type,
-  status,
-  progress,
-  space: "Product",
-  owner: mockOwner,
-  nextStep:
-    status === "completed" || status === "achieved"
-      ? ""
-      : "Next action to take",
-  deadline:
-    status === "completed" || status === "achieved"
-      ? undefined
-      : { display: "Dec 31 2025", isPast: false },
-  closedAt: "Mar 15 2025",
-  children: hasChildren
-    ? [
-        {
-          id: `${id}-child-1`,
-          name: "Child item 1",
-          type: "project",
-          status: "on_track",
-          progress: 50,
-          space: "Product",
-          owner: mockOwner,
-          nextStep: "Child next step",
-          children: [],
-        },
-      ]
-    : [],
-});
+  hasChildren: boolean = false,
+): WorkMap.Item => {
+  const baseItem = {
+    id,
+    name,
+    status,
+    progress,
+    space: "Product",
+    owner: mockOwner,
+    nextStep: status === "completed" || status === "achieved" ? "" : "Next action to take",
+    deadline: status === "completed" || status === "achieved" ? undefined : { display: "Dec 31 2025", isPast: false },
+    closedAt: "Mar 15 2025",
+    children: hasChildren
+      ? [
+          {
+            id: `${id}-child-1`,
+            name: "Child item 1",
+            type: "project" as const,
+            status: "on_track" as WorkMap.Status,
+            progress: 50,
+            space: "Product",
+            owner: mockOwner,
+            nextStep: "Child next step",
+            startedAt: "2025-01-15",
+            children: [],
+          },
+        ]
+      : [],
+  };
+
+  if (type === "goal") {
+    return {
+      ...baseItem,
+      type: "goal" as const,
+      timeframe: currentYear(),
+    };
+  } else {
+    return {
+      ...baseItem,
+      type: "project" as const,
+      startedAt: "2025-01-01",
+    };
+  }
+};
 
 // Create mock items for each status
 const mockGoalOnTrack = createMockItem(
@@ -60,71 +71,17 @@ const mockGoalOnTrack = createMockItem(
   "goal",
   "on_track",
   45,
-  true
+  true,
 );
-const mockGoalCompleted = createMockItem(
-  "goal-2",
-  "Launch new marketing campaign",
-  "goal",
-  "completed",
-  100
-);
-const mockGoalAchieved = createMockItem(
-  "goal-3",
-  "Increase website traffic by 50%",
-  "goal",
-  "achieved",
-  100
-);
-const mockGoalPartial = createMockItem(
-  "goal-4",
-  "Reduce customer support tickets by 30%",
-  "goal",
-  "partial",
-  75
-);
-const mockGoalMissed = createMockItem(
-  "goal-5",
-  "Launch mobile app by Q1",
-  "goal",
-  "missed",
-  60
-);
-const mockGoalPaused = createMockItem(
-  "goal-6",
-  "Expand to international markets",
-  "goal",
-  "paused",
-  20
-);
-const mockGoalCaution = createMockItem(
-  "goal-7",
-  "Implement new CRM system",
-  "goal",
-  "caution",
-  35
-);
-const mockGoalIssue = createMockItem(
-  "goal-8",
-  "Migrate legacy systems",
-  "goal",
-  "issue",
-  15
-);
-const mockProjectOnTrack = createMockItem(
-  "project-1",
-  "Redesign product dashboard",
-  "project",
-  "on_track",
-  55
-);
-const mockProjectCompleted = createMockItem(
-  "project-2",
-  "Update documentation",
-  "project",
-  "completed",
-  100
-);
+const mockGoalCompleted = createMockItem("goal-2", "Launch new marketing campaign", "goal", "completed", 100);
+const mockGoalAchieved = createMockItem("goal-3", "Increase website traffic by 50%", "goal", "achieved", 100);
+const mockGoalPartial = createMockItem("goal-4", "Reduce customer support tickets by 30%", "goal", "partial", 75);
+const mockGoalMissed = createMockItem("goal-5", "Launch mobile app by Q1", "goal", "missed", 60);
+const mockGoalPaused = createMockItem("goal-6", "Expand to international markets", "goal", "paused", 20);
+const mockGoalCaution = createMockItem("goal-7", "Implement new CRM system", "goal", "caution", 35);
+const mockGoalIssue = createMockItem("goal-8", "Migrate legacy systems", "goal", "issue", 15);
+const mockProjectOnTrack = createMockItem("project-1", "Redesign product dashboard", "project", "on_track", 55);
+const mockProjectCompleted = createMockItem("project-2", "Update documentation", "project", "completed", 100);
 
 const meta = {
   title: "Components/WorkMap/TableRow",

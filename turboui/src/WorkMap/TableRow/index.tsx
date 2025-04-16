@@ -1,5 +1,5 @@
 import { StatusBadge } from "../../StatusBadge";
-import { NewItem, Status, WorkMapFilter, WorkMapItem } from "../types";
+import { WorkMap } from "..";
 import { ChildRows } from "./ChildRows";
 import { DeadlineCell } from "./DeadlineCell";
 import { ItemNameCell } from "./ItemNameCell";
@@ -12,15 +12,15 @@ import { TableRowProvider, useTableRowContext } from "./context";
 import { QuickEntryWidget } from "../QuickEntryWidget";
 
 interface Props {
-  item: WorkMapItem;
+  item: WorkMap.Item;
   level: number;
   isLast: boolean;
-  filter: WorkMapFilter;
+  filter: WorkMap.Filter;
   isSelected?: boolean;
   selectedItemId?: string;
-  onRowClick?: (item: WorkMapItem) => void;
+  onRowClick?: (item: WorkMap.Item) => void;
   onDelete: () => void;
-  addItem: (newItem: NewItem) => void;
+  addItem: (newItem: WorkMap.NewItem) => void;
 }
 
 /**
@@ -79,7 +79,7 @@ function QuickEntryWidgetWrapper({ addItem }: { addItem: Props["addItem"] }) {
   );
 }
 
-function StatusCell({ status }: { status: Status }) {
+function StatusCell({ status }: { status: WorkMap.Status }) {
   return (
     <td className="py-2 px-2 md:px-4">
       <div className="transform group-hover:scale-105 transition-transform duration-150">

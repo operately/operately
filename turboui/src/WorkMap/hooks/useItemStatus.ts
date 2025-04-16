@@ -1,9 +1,9 @@
-import { Status } from "../types";
+import { WorkMap } from "..";
 
 /**
  * Custom hook to calculate status flags for WorkMap items
  */
-export function useItemStatus(status: Status) {
+export function useItemStatus(status: WorkMap.Status) {
   const isCompleted =
     status === "completed" ||
     status === "achieved" ||

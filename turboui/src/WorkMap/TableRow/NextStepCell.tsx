@@ -1,10 +1,10 @@
-import { Status } from "../types";
+import { WorkMap } from "..";
 import { useItemStatus } from "../hooks/useItemStatus";
 import classNames from "../../utils/classnames";
 
 interface Props {
-  nextStep: string;
-  status: Status;
+  nextStep: WorkMap.Item['nextStep'];
+  status: WorkMap.Status;
 }
 
 export function NextStepCell({ nextStep, status }: Props) {

@@ -1,12 +1,12 @@
-import { Status } from "../types";
+import { WorkMap } from "..";
 import { useItemStatus } from "../hooks/useItemStatus";
 import classNames from "../../utils/classnames";
 
 interface Props {
-  filter?: string;
+  filter: WorkMap.Filter;
   completedOn?: string;
-  deadline?: { display: string; isPast?: boolean };
-  status: Status;
+  deadline?: WorkMap.Item['deadline'];
+  status: WorkMap.Status;
 }
 
 export function DeadlineCell({ filter, completedOn, deadline, status }: Props) {
