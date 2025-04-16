@@ -11,7 +11,7 @@ interface Props {
 
 export function ActionButtons({ display, isPending, onAddClick, onDeleteClick }: Props) {
   return (
-    <div className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 flex items-center gap-2">
+    <div className="absolute right-2 top-1/2 mt-0.5 transform -translate-y-1/2 z-10 flex items-center gap-2">
       {display && onAddClick && <AddButton onClick={onAddClick} />}
       {isPending && onDeleteClick && <DeleteButton onClick={onDeleteClick} />}
     </div>
@@ -24,7 +24,7 @@ interface ButtonProps {
 
 function AddButton({ onClick }: ButtonProps) {
   return (
-    <div className="rounded-2xl shadow-sm overflow-hidden">
+    <div className="rounded-2xl overflow-hidden">
       <SecondaryButton
         size="xxs"
         onClick={onClick}
