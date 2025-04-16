@@ -4,6 +4,8 @@ import { withThemeByClassName } from "@storybook/addon-themes";
 import { RouterDecorator } from "./router";
 
 import "./global.css";
+import "./reactdatepicker.css";
+import "./reactdatepicker-custom.css";
 
 const preview: Preview = {
   parameters: {
