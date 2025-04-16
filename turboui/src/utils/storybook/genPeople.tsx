@@ -9,8 +9,8 @@ interface Opts {
   random?: boolean;
 }
 
-export function genPeople(count: number, opts? : Opts) : Person[] {
-  const people : Person[] = [];
+export function genPeople(count: number, opts?: Opts): Person[] {
+  const people: Person[] = [];
 
   for (let i = 0; i < count; i++) {
     const person = EXAMPLE_PEOPLE[i % EXAMPLE_PEOPLE.length];

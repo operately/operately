@@ -11,6 +11,7 @@ import { truncate } from "../utils/strings";
 import { Sidebar } from "./Sidebar";
 import { PrimaryButton, SecondaryButton } from "../Button";
 import { IconStar } from "@tabler/icons-react";
+import { IconPencil } from "@tabler/icons-react";
 
 export namespace GoalPage {
   interface Person {
@@ -27,6 +28,11 @@ export namespace GoalPage {
     link: string;
   }
 
+  export interface Contributor {
+    person: Person;
+    role: string;
+  }
+
   export interface Props {
     spaceLink: string;
     workmapLink: string;
@@ -36,7 +42,7 @@ export namespace GoalPage {
     spaceName: string;
     champion?: Person;
     reviewer?: Person;
-    contributors?: Person[];
+    contributors: Contributor[];
 
     targets: GoalTargetList.Target[];
     relatedWorkItems: MiniWorkMap.WorkItem[];
@@ -71,12 +77,14 @@ export function GoalPage(props: GoalPage.Props) {
   ];
 
   return (
-    <Page title={[props.goalName]} navigation={navigation} size="large">
-      <Header {...props} />
+    <Page title={[props.goalName]} navigation={navigation} size="xlarge">
+      <div className="p-4 sm:px-24">
+        <Header {...props} />
 
-      <div className="grid grid-cols-10 gap-8 p-8">
-        <MainContent {...props} />
-        <Sidebar {...props} />
+        <div className="sm:grid sm:grid-cols-10 sm:gap-8 my-8">
+          <MainContent {...props} />
+          <Sidebar {...props} />
+        </div>
       </div>
 
       <ActivityFooter />
@@ -100,7 +108,7 @@ function Messages(props: GoalPage.Props) {
   if (props.messages.length === 0) {
     return (
       <div>
-        <h2 className="text-lg font-semibold mb-1">Messages</h2>
+        <h2 className="font-bold mb-1">Messages</h2>
         <div className="text-content-dimmed text-sm">
           {props.canEdit
             ? "Share announcements, decisions, and important information with your team."
@@ -118,16 +126,16 @@ function Messages(props: GoalPage.Props) {
 
   return (
     <div>
-      <h2 className="text-lg font-semibold mb-4">Messages</h2>
+      <h2 className="font-bold mb-4">Messages</h2>
       <div className="space-y-4">
         {props.messages.map((message) => (
           <div key={message.id} className="flex flex-row items-start gap-3">
             <Avatar person={message.author} size={36} />
             <div className="flex-1">
               <div className="text-sm -mt-px">
-                <BlackLink to={message.link} className="hover:underline font-semibold">
+                <Link to={message.link} className="hover:underline font-semibold">
                   {message.title}
-                </BlackLink>
+                </Link>
                 {" — "}
                 {truncate(message.content, 150)}
               </div>
@@ -140,28 +148,11 @@ function Messages(props: GoalPage.Props) {
 }
 
 function CheckIns(props: GoalPage.Props) {
-  if (props.checkIns.length === 0) {
-    return (
-      <div>
-        <h2 className="text-lg font-semibold mb-1">Check-Ins</h2>
-        <div className="text-content-dimmed text-sm">
-          {props.canEdit
-            ? "Once a month Operately asks you to check-in and share progress."
-            : "Asking the champion to check-in every month and share progress."}
-        </div>
-
-        {props.canEdit && (
-          <div className="mt-2">
-            <SecondaryButton size="xs">Check-In Now</SecondaryButton>
-          </div>
-        )}
-      </div>
-    );
-  }
+  if (props.checkIns.length === 0) return null;
 
   return (
     <div>
-      <h2 className="text-lg font-semibold mb-4">Check-Ins</h2>
+      <h2 className="font-bold mb-4">Check-Ins</h2>
 
       <div className="space-y-4">
         {props.checkIns.map((checkIn) => (
@@ -169,9 +160,9 @@ function CheckIns(props: GoalPage.Props) {
             <Avatar person={checkIn.author} size={36} />
             <div className="flex-1">
               <div className="text-sm -mt-px">
-                <BlackLink to={checkIn.link} className="hover:underline font-semibold">
+                <Link to={checkIn.link} className="hover:underline font-semibold">
                   {formatDateWithDaySuffix(checkIn.date)}
-                </BlackLink>
+                </Link>
                 {" — "}
                 {truncate(checkIn.content, 150)}
               </div>
@@ -187,7 +178,7 @@ function Targets(props: GoalPage.Props) {
   if (props.targets.length === 0) {
     return (
       <div>
-        <h2 className="text-lg font-semibold mb-1">Targets</h2>
+        <h2 className="font-bold mb-1">Targets</h2>
         <div className="text-content-dimmed text-sm">
           {props.canEdit
             ? "Add targets to measure progress and celebrate wins."
@@ -205,7 +196,7 @@ function Targets(props: GoalPage.Props) {
 
   return (
     <div>
-      <h2 className="text-lg font-semibold mb-4">Targets</h2>
+      <h2 className="font-bold mb-4">Targets</h2>
       <GoalTargetList targets={props.targets} />
     </div>
   );
@@ -215,7 +206,7 @@ function RelatedWork(props: GoalPage.Props) {
   if (props.relatedWorkItems.length === 0) {
     return (
       <div>
-        <h2 className="text-lg font-semibold mb-1">Related Work</h2>
+        <h2 className="font-bold mb-1">Related Work</h2>
         <div className="text-content-dimmed text-sm">
           {props.canEdit
             ? "Break down the work on this goal into subgoals and projects."
@@ -234,7 +225,7 @@ function RelatedWork(props: GoalPage.Props) {
 
   return (
     <div>
-      <h2 className="text-lg font-semibold mb-4">Related Work</h2>
+      <h2 className="font-bold mb-4">Related Work</h2>
       <MiniWorkMap items={props.relatedWorkItems} />
     </div>
   );
@@ -250,17 +241,25 @@ function ActivityFooter() {
 
 function Header(props: GoalPage.Props) {
   return (
-    <div className="border-b border-stroke-base mx-8 pt-8 pb-4">
+    <div className="border-b border-stroke-base sm:pt-12 pb-4">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">{props.goalName}</h1>
 
         <div className="flex items-center gap-2">
           <SecondaryButton size="sm">
-            <IconStar size="16" />
+            <div className="flex items-center gap-1.5">
+              <IconStar size="16" /> Follow
+            </div>
           </SecondaryButton>
 
-          <SecondaryButton size="sm">Edit</SecondaryButton>
-          <PrimaryButton size="sm">Check-In</PrimaryButton>
+          {props.canEdit && (
+            <SecondaryButton size="sm">
+              <div className="flex items-center gap-1.5">
+                <IconPencil size="16" /> Edit
+              </div>
+            </SecondaryButton>
+          )}
+          {props.canEdit && <PrimaryButton size="sm">Check-In</PrimaryButton>}
         </div>
       </div>
     </div>
@@ -271,29 +270,31 @@ function Description(props: GoalPage.Props) {
   const [isExpanded, setIsExpanded] = React.useState(false);
 
   if (!props.description) {
-    return (
-      <div>
-        <h2 className="text-lg font-semibold mb-1">Description</h2>
-        <div className="text-content-dimmed text-sm">
-          {props.canEdit ? "Describe the goal to provide context and clarity." : "TODO"}
-        </div>
+    if (props.canEdit) {
+      return (
+        <div>
+          <h2 className="font-bold mb-1">Description</h2>
+          <div className="text-content-dimmed text-sm">Describe the goal to provide context and clarity.</div>
 
-        {props.canEdit && (
-          <div className="mt-2 flex items-center gap-2">
-            <SecondaryButton size="xs">Write overview</SecondaryButton>
-          </div>
-        )}
-      </div>
-    );
+          {props.canEdit && (
+            <div className="mt-2 flex items-center gap-2">
+              <SecondaryButton size="xs">Write overview</SecondaryButton>
+            </div>
+          )}
+        </div>
+      );
+    } else {
+      return null;
+    }
   }
 
   return (
     <div>
-      <h2 className="text-lg font-semibold mb-2">Description</h2>
+      <h2 className="font-bold mb-2">Description</h2>
 
       <div className="">
-        <div className="whitespace-pre-wrap">{isExpanded ? props.description : truncate(props.description, 300)}</div>
-        {props.description.length > 300 && (
+        <div className="whitespace-pre-wrap">{isExpanded ? props.description : truncate(props.description, 200)}</div>
+        {props.description.length > 200 && (
           <button
             onClick={() => setIsExpanded(!isExpanded)}
             className="text-content-dimmed hover:underline text-sm mt-1 font-medium"
