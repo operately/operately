@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as Popover from "@radix-ui/react-popover";
 import * as Icons from "@tabler/icons-react";
-import { TimeframeSelectorProps, TimeframeType, Timeframe } from "./types";
+import { TimeframeSelector as TimeframeSelectorNamespace } from "./types";
 
 import { match } from "ts-pattern";
 
@@ -20,7 +20,7 @@ import {
   formatTimeframe,
 } from "./utils";
 
-export type { Timeframe };
+export type { TimeframeSelectorNamespace };
 export {
   CustomRangePicker,
   LeftChevron,
@@ -31,6 +31,13 @@ const DEFAULTS = {
   size: "base" as const,
   alignContent: "start" as const,
 };
+
+interface TimeframeSelectorProps {
+    timeframe: TimeframeSelectorNamespace.Timeframe;
+    setTimeframe: TimeframeSelectorNamespace.SetTimeframe;
+    size?: "xs" | "base";
+    alignContent?: "start" | "end";
+  }
 
 export function TimeframeSelector(props: TimeframeSelectorProps) {
   props = { ...DEFAULTS, ...props };
@@ -85,7 +92,7 @@ export function TimeframeSelector(props: TimeframeSelectorProps) {
 
 
 interface TimeframeSelectorTriggerProps {
-  timeframe: Timeframe;
+  timeframe: TimeframeSelectorNamespace.Timeframe;
   size?: "xs" | "base";
   isDefaultTimeframe: boolean;
   onClick: () => void;
@@ -130,7 +137,7 @@ function TimeframeSelectorTrigger(props: TimeframeSelectorTriggerProps) {
   );
 }
 
-function PopoverContent(props: TimeframeSelectorProps & { setTimeframe: (timeframe: Timeframe) => void }) {
+function PopoverContent(props: TimeframeSelectorProps & { setTimeframe: (timeframe: TimeframeSelectorNamespace.Timeframe) => void }) {
   const className = classNames(
     "z-[100] overflow-hidden",
     "border border-surface-outline",
@@ -170,7 +177,7 @@ function TimeframeSelectorHeader(props: TimeframeSelectorProps) {
 
 function TimeframeSelectorTypeSelector(props: TimeframeSelectorProps) {
   const changeHandler = (value: string) => {
-    match(value as TimeframeType)
+    match(value as TimeframeSelectorNamespace.TimeframeType)
       .with("year", () => props.setTimeframe(currentYear()))
       .with("quarter", () => props.setTimeframe(currentQuarter()))
       .with("month", () => props.setTimeframe(currentMonth()))
