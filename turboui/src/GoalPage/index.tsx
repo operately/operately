@@ -11,6 +11,7 @@ import { truncate } from "../utils/strings";
 import { Sidebar } from "./Sidebar";
 import { PrimaryButton, SecondaryButton } from "../Button";
 import { IconStar } from "@tabler/icons-react";
+import { IconPencil } from "@tabler/icons-react";
 
 export namespace GoalPage {
   interface Person {
@@ -77,10 +78,10 @@ export function GoalPage(props: GoalPage.Props) {
 
   return (
     <Page title={[props.goalName]} navigation={navigation} size="xlarge">
-      <div className="px-24">
+      <div className="p-4 sm:px-24">
         <Header {...props} />
 
-        <div className="grid grid-cols-10 gap-8 my-8">
+        <div className="sm:grid sm:grid-cols-10 sm:gap-8 my-8">
           <MainContent {...props} />
           <Sidebar {...props} />
         </div>
@@ -240,17 +241,25 @@ function ActivityFooter() {
 
 function Header(props: GoalPage.Props) {
   return (
-    <div className="border-b border-stroke-base pt-12 pb-4">
+    <div className="border-b border-stroke-base sm:pt-12 pb-4">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">{props.goalName}</h1>
 
         <div className="flex items-center gap-2">
           <SecondaryButton size="sm">
-            <IconStar size="16" />
+            <div className="flex items-center gap-1.5">
+              <IconStar size="16" /> Follow
+            </div>
           </SecondaryButton>
 
-          <SecondaryButton size="sm">Edit</SecondaryButton>
-          <PrimaryButton size="sm">Check-In</PrimaryButton>
+          {props.canEdit && (
+            <SecondaryButton size="sm">
+              <div className="flex items-center gap-1.5">
+                <IconPencil size="16" /> Edit
+              </div>
+            </SecondaryButton>
+          )}
+          {props.canEdit && <PrimaryButton size="sm">Check-In</PrimaryButton>}
         </div>
       </div>
     </div>

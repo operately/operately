@@ -208,6 +208,23 @@ const contributors = genPeople(10).map((p, i) => {
   };
 });
 
+const description = [
+  "Our mission is to develop and launch a cutting-edge AI platform that will revolutionize how businesses ",
+  "interact with artificial intelligence. This platform will integrate advanced machine learning capabilities, ",
+  "natural language processing, and automated decision-making systems to provide comprehensive AI solutions.",
+  "\n",
+  "\n",
+  "Key features include real-time data processing, scalable infrastructure, and user-friendly interfaces ",
+  "for both technical and non-technical users. The platform will support multiple AI models, custom ",
+  "training pipelines, and enterprise-grade security measures.",
+  "\n",
+  "\n",
+  "We aim to make AI technology more accessible and practical for businesses of all sizes, while ",
+  "maintaining high standards of performance and reliability. This initiative aligns with our company's ",
+  "strategic goal of becoming a leader in the AI solutions market and will serve as a foundation for ",
+  "future AI-driven products and services.`,",
+].join("");
+
 export default meta;
 type Story = StoryObj<typeof meta>;
 
@@ -224,22 +241,28 @@ export const Default: Story = {
     startDate: genRelativeDate(-15),
     endDate: genRelativeDate(15),
     contributors: contributors,
-    description: [
-      "Our mission is to develop and launch a cutting-edge AI platform that will revolutionize how businesses ",
-      "interact with artificial intelligence. This platform will integrate advanced machine learning capabilities, ",
-      "natural language processing, and automated decision-making systems to provide comprehensive AI solutions.",
-      "\n",
-      "\n",
-      "Key features include real-time data processing, scalable infrastructure, and user-friendly interfaces ",
-      "for both technical and non-technical users. The platform will support multiple AI models, custom ",
-      "training pipelines, and enterprise-grade security measures.",
-      "\n",
-      "\n",
-      "We aim to make AI technology more accessible and practical for businesses of all sizes, while ",
-      "maintaining high standards of performance and reliability. This initiative aligns with our company's ",
-      "strategic goal of becoming a leader in the AI solutions market and will serve as a foundation for ",
-      "future AI-driven products and services.`,",
-    ].join(""),
+    canEdit: true,
+    description,
+    checkIns,
+    messages,
+  },
+};
+
+export const DefaultReadOnly: Story = {
+  args: {
+    spaceLink: "/spaces/1",
+    workmapLink: "/spaces/1/workmaps/1",
+    goalName: "Launch AI Platform",
+    spaceName: "Product",
+    champion: champion,
+    reviewer: reviewer,
+    targets: mockTargets,
+    relatedWorkItems: relatedWorkItems,
+    startDate: genRelativeDate(-15),
+    endDate: genRelativeDate(15),
+    contributors: contributors,
+    canEdit: false,
+    description,
     checkIns,
     messages,
   },
@@ -295,6 +318,11 @@ export const Mobile: Story = {
     relatedWorkItems: relatedWorkItems,
     startDate: genRelativeDate(-15),
     endDate: genRelativeDate(15),
+    contributors: contributors,
+    canEdit: true,
+    description,
+    checkIns,
+    messages,
   },
   parameters: {
     viewport: {

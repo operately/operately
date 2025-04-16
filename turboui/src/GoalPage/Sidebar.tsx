@@ -4,7 +4,7 @@ import { Chronometer } from "../Chronometer";
 
 export function Sidebar(props: GoalPage.Props) {
   return (
-    <div className="col-span-3 space-y-6 px-4">
+    <div className="sm:col-span-3 space-y-6 px-4 hidden sm:block">
       <div>
         <div className="font-bold mb-2">Timeline</div>
 
