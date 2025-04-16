@@ -1,9 +1,14 @@
 import DatePicker from "react-datepicker";
 
 import { LeftChevron, RightChevron } from "./Chevrons";
-import { SetTimeframe, Timeframe } from "./types";
+import { TimeframeSelector } from ".";
 
-export function CustomRangePicker({ timeframe, setTimeframe }: { timeframe: Timeframe; setTimeframe: SetTimeframe }) {
+interface Props {
+  timeframe: TimeframeSelector.Timeframe;
+  setTimeframe: TimeframeSelector.SetTimeframe;
+}
+
+export function CustomRangePicker({ timeframe, setTimeframe }: Props) {
   return (
     <div className="flex flex-col sm:flex-row items-start gap-6">
       <div className="flex flex-col items-start justify-start h-full">
