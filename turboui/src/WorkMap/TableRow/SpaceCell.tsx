@@ -21,7 +21,7 @@ export function SpaceCell({ space, status }: SpaceCellProps) {
 
   return (
     <td className="py-2 px-2 md:px-4 hidden lg:table-cell">
-      <div className="overflow-hidden text-ellipsis whitespace-nowrap">
+      <div className="w-[100px]  overflow-hidden text-ellipsis whitespace-nowrap">
         <a href="#" title={space} className={className}>
           {space}
         </a>
