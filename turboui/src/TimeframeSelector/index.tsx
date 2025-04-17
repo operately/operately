@@ -110,6 +110,7 @@ interface TimeframeSelectorTriggerProps {
 
 function TimeframeSelectorTrigger(props: TimeframeSelectorTriggerProps) {
   const className = classNames(
+    "bg-surface-base hover:bg-surface-highlight dark:hover:bg-surface-dimmed/20",
     "border border-surface-outline",
     "rounded-lg",
     "flex items-center gap-1",
