@@ -15,7 +15,7 @@ export function ProgressCell({ progress, status }: ProgressCellProps) {
   }
   
   return (
-    <td className="py-2 px-2 pr-6 lg:px-4 min-w-[90px] w-[9%]">
+    <td className="py-2 px-2 pr-6 lg:px-4">
       <div className="transform group-hover:scale-[1.02] transition-transform duration-150">
         <ProgressBar progress={progress} status={status as ProgressBarStatus} />
       </div>
