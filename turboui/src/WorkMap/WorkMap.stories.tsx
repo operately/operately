@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import WorkMap from ".";
 import { TimeframeSelector } from "../TimeframeSelector";
 import { currentYear, currentQuarter } from "../TimeframeSelector/utils";
+import { Page } from "../Page";
 
 // --- Mock Data ---
 function genAvatar(id: string) {
@@ -25,6 +26,11 @@ const people = {
     fullName: "Jennifer L.",
     avatarUrl: genAvatar("photo-1494790108377-be9c29b29330"),
   },
+  maximiliano: {
+    id: "user-maximiliano",
+    fullName: "Maximiliano Alessandro Hernández-Rodríguez",
+    avatarUrl: genAvatar("photo-1507003211169-0a1dd7228f2d"),
+  },
 };
 
 // Sample work map items
@@ -36,7 +42,7 @@ const mockItems: WorkMap.Item[] = [
     status: "on_track",
     progress: 45,
     space: "General",
-    owner: people.alex,
+    owner: people.maximiliano,
     deadline: {
       display: "Dec 31 2024",
       isPast: false,
@@ -241,6 +247,22 @@ const mockItems: WorkMap.Item[] = [
             children: [],
           }
         ],
+      },
+      {
+        id: "goal-3-2",
+        type: "goal",
+        name: "Establish comprehensive strategic partnerships with key industry leaders across multiple sectors to drive sustainable long-term growth and market penetration",
+        status: "on_track",
+        progress: 25,
+        space: "Business Development",
+        owner: people.alex,
+        deadline: {
+          display: "Nov 30 2025",
+          isPast: false,
+        },
+        nextStep: "Identify potential partners",
+        timeframe: currentYear(),
+        children: []
       }
     ],
   }
@@ -272,11 +294,14 @@ type Story = StoryObj<typeof meta>;
  */
 export const Default: Story = {
   render: (args) => (
-    <div className="px-8 py-8">
-      <WorkMap {...args} />
+    <div className="py-[4.5rem] px-2">
+      <Page title={args.title} size="fullwidth">
+        <WorkMap {...args} />
+      </Page>
     </div>
   ),
   args: {
+    title: "Company Work Map",
     items: mockItems,
     addItem: (newItem) => console.log("Add item", newItem),
     deleteItem: (itemId) => console.log("Delete item", { itemId }),
@@ -288,11 +313,14 @@ export const Default: Story = {
  */
 export const SingleItem: Story = {
   render: (args) => (
-    <div className="px-8 py-8">
-      <WorkMap {...args} />
+    <div className="py-4">
+      <Page title={args.title} size="fullwidth">
+        <WorkMap {...args} />
+      </Page>
     </div>
   ),
   args: {
+    title: "Company Work Map",
     items: [mockItems[1]], // Just the second goal with no children
     addItem: (newItem) => console.log("Add item", newItem),
     deleteItem: (itemId) => console.log("Delete item", { itemId }),
@@ -304,11 +332,14 @@ export const SingleItem: Story = {
  */
 export const Empty: Story = {
   render: (args) => (
-    <div className="px-8 py-8">
-      <WorkMap {...args} />
+    <div className="py-4">
+      <Page title={args.title} size="fullwidth">
+        <WorkMap {...args} />
+      </Page>
     </div>
   ),
   args: {
+    title: "Company Work Map",
     items: [],
     addItem: (newItem) => console.log("Add item", newItem),
     deleteItem: (itemId) => console.log("Delete item", { itemId }),
@@ -320,11 +351,14 @@ export const Empty: Story = {
  */
 export const AllStatuses: Story = {
   render: (args) => (
-    <div className="px-8 py-8">
-      <WorkMap {...args} />
+    <div className="py-4">
+      <Page title={args.title} size="fullwidth">
+        <WorkMap {...args} />
+      </Page>
     </div>
   ),
   args: {
+    title: "Company Work Map",
     items: [
       // Create an item for each possible status
       ...(
