@@ -77,6 +77,39 @@ const mockItems: WorkMap.Item[] = [
         startedAt: "2024-01-01",
         children: [],
       },
+      {
+        id: "goal-1-1",
+        type: "goal",
+        name: "Increase user engagement by 50%",
+        status: "on_track",
+        progress: 60,
+        space: "Marketing",
+        owner: people.sophia,
+        deadline: {
+          display: "Nov 15 2024",
+          isPast: false,
+        },
+        nextStep: "Launch email campaign",
+        timeframe: currentYear(),
+        children: [
+          {
+            id: "project-3",
+            type: "project",
+            name: "Create onboarding email sequence",
+            status: "on_track",
+            progress: 75,
+            space: "Marketing",
+            owner: people.jennifer,
+            deadline: {
+              display: "Oct 1 2024",
+              isPast: false,
+            },
+            nextStep: "Finalize email templates",
+            startedAt: "2024-06-15",
+            children: [],
+          }
+        ],
+      }
     ],
   },
   {
@@ -93,8 +126,124 @@ const mockItems: WorkMap.Item[] = [
     },
     nextStep: "Conduct user interviews",
     timeframe: currentQuarter(),
-    children: [],
+    children: [
+      {
+        id: "goal-2-1",
+        type: "goal",
+        name: "Reduce onboarding time by 30%",
+        status: "issue",
+        progress: 15,
+        space: "Customer Success",
+        owner: people.alex,
+        deadline: {
+          display: "May 30 2025",
+          isPast: false,
+        },
+        nextStep: "Identify bottlenecks in process",
+        timeframe: currentQuarter(),
+        children: [
+          {
+            id: "goal-2-1-1",
+            type: "goal",
+            name: "Automate user account setup",
+            status: "on_track",
+            progress: 40,
+            space: "Engineering",
+            owner: people.sophia,
+            deadline: {
+              display: "Apr 15 2025",
+              isPast: false,
+            },
+            nextStep: "Complete backend integration",
+            timeframe: currentQuarter(),
+            children: [],
+          },
+          {
+            id: "project-6",
+            type: "project",
+            name: "Implement self-guided tutorial",
+            status: "on_track",
+            progress: 25,
+            space: "Customer Success",
+            owner: people.jennifer,
+            deadline: {
+              display: "Apr 30 2025",
+              isPast: false,
+            },
+            nextStep: "Finalize content outline",
+            startedAt: "2024-03-01",
+            children: [],
+          }
+        ],
+      },
+      {
+        id: "project-4",
+        type: "project",
+        name: "Redesign welcome screen",
+        status: "on_track",
+        progress: 40,
+        space: "Product",
+        owner: people.sophia,
+        deadline: {
+          display: "Apr 20 2025",
+          isPast: false,
+        },
+        nextStep: "Finalize mockups",
+        startedAt: "2025-02-01",
+        children: [],
+      }
+    ],
   },
+  {
+    id: "goal-3",
+    type: "goal",
+    name: "Expand to international markets",
+    status: "on_track",
+    progress: 35,
+    space: "Sales",
+    owner: people.alex,
+    deadline: {
+      display: "Dec 31 2025",
+      isPast: false,
+    },
+    nextStep: "Complete market research",
+    timeframe: currentYear(),
+    children: [
+      {
+        id: "goal-3-1",
+        type: "goal",
+        name: "Launch in European market",
+        status: "on_track",
+        progress: 50,
+        space: "International",
+        owner: people.jennifer,
+        deadline: {
+          display: "Sep 15 2025",
+          isPast: false,
+        },
+        nextStep: "Establish legal entity",
+        timeframe: currentYear(),
+        children: [
+          {
+            id: "project-5",
+            type: "project",
+            name: "GDPR compliance implementation",
+            status: "caution",
+            progress: 30,
+            space: "Legal",
+            owner: people.sophia,
+            deadline: {
+              display: "Aug 1 2025",
+              isPast: false,
+            },
+            nextStep: "Complete data audit",
+            startedAt: "2025-04-01",
+            children: [],
+          }
+        ],
+      }
+    ],
+  }
 ];
 
 /**

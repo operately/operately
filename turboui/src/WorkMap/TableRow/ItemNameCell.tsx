@@ -98,12 +98,15 @@ function Indentation() {
 }
 
 function ExpandButton() {
-  const { expanded, hasChildren, setExpanded } = useTableRowContext();
+  const { expanded, hasChildren, setExpanded, filter } = useTableRowContext();
 
   const handleExpandToggle = (e: React.MouseEvent): void => {
     e.stopPropagation();
     setExpanded(!expanded);
   };
+
+  // Skip indentation on completed and projects views
+  if (filter === "completed" || filter === "projects") return null;
 
   if (!hasChildren) return <div className="w-[16px] sm:w-[24px]"></div>;
 
