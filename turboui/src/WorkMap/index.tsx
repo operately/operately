@@ -1,12 +1,13 @@
 import { useState } from "react";
 
-import { Page } from "../Page";
 import { TimeframeSelector } from "../TimeframeSelector";
 import { currentYear } from "../TimeframeSelector/utils";
 
 import { WorkMapNavigation } from "./WorkMapNavigation";
 import { WorkMapTable } from "./WorkMapTable";
 import { useWorkMapFilter } from "./useWorkMapFilter";
+
+export { parseToWorkMapItems } from "./parse";
 
 export namespace WorkMap {
   export type Status =
@@ -21,13 +22,13 @@ export namespace WorkMap {
     | "dropped"
     | "pending";
 
-  interface Person {
+  export interface Person {
     id: string;
     fullName: string;
     avatarUrl?: string;
   }
 
-  interface DateInfo {
+  export interface DateInfo {
     display: string;
     isPast?: boolean;
   }
@@ -36,6 +37,7 @@ export namespace WorkMap {
 
   interface BaseItem {
     id: string;
+    parentId?: string;
     name: string;
     status: Status;
     progress: number;
@@ -70,6 +72,7 @@ export namespace WorkMap {
   export type Filter = "all" | "goals" | "projects" | "completed";
 
   export interface Props {
+    title: string;
     items: Item[];
     addItem: (newItem: NewItem) => void;
     deleteItem: (itemId: string) => void;
@@ -78,29 +81,27 @@ export namespace WorkMap {
 
 const defaultTimeframe = currentYear();
 
-export function WorkMap({ items, addItem, deleteItem }: WorkMap.Props) {
+export function WorkMap({ title, items, addItem, deleteItem }: WorkMap.Props) {
   const [timeframe, setTimeframe] = useState(defaultTimeframe);
   const { filteredItems, filter, setFilter } = useWorkMapFilter(items, timeframe);
 
   return (
-    <Page title="Company work map" size="fullwidth">
-      <div className="flex flex-col w-full">
-        <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-4 sm:px-6 py-3 border-b border-surface-outline">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-            <h1 className="text-sm sm:text-base font-bold text-content-accent">Company work map</h1>
-          </div>
-        </header>
-        <div className="flex-1 overflow-auto">
-          <WorkMapNavigation
-            activeTab={filter}
-            onTabChange={setFilter}
-            timeframe={timeframe}
-            setTimeframe={setTimeframe}
-          />
-          <WorkMapTable items={filteredItems} filter={filter} deleteItem={deleteItem} addItem={addItem} />
+    <div className="flex flex-col w-full bg-surface-base">
+      <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-4 sm:px-6 py-3 border-b border-surface-outline">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+          <h1 className="text-sm sm:text-base font-bold text-content-accent">{title}</h1>
         </div>
+      </header>
+      <div className="flex-1 overflow-auto">
+        <WorkMapNavigation
+          activeTab={filter}
+          onTabChange={setFilter}
+          timeframe={timeframe}
+          setTimeframe={setTimeframe}
+        />
+        <WorkMapTable items={filteredItems} filter={filter} deleteItem={deleteItem} addItem={addItem} />
       </div>
-    </Page>
+    </div>
   );
 }
 
