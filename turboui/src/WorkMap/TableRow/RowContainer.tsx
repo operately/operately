@@ -18,7 +18,7 @@ export function RowContainer({ children }: Props) {
     Boolean(item.isNew) && "bg-amber-50/70 dark:bg-amber-900/20",
     isSelected
       ? "bg-surface-highlight dark:bg-surface-dimmed/30"
-      : "hover:bg-surface-highlight dark:hover:bg-surface-dimmed/20"
+      : "bg-surface-base hover:bg-surface-highlight dark:hover:bg-surface-dimmed/20"
   )
 
   return (

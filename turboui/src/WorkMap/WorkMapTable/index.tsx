@@ -12,7 +12,7 @@ export interface Props {
 
 export function WorkMapTable({ items, filter, deleteItem, addItem }: Props) {
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto bg-surface-base">
       <table className="min-w-full divide-y divide-surface-outline">
         <TableHeader filter={filter} />
         <tbody>
