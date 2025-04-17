@@ -1,11 +1,10 @@
+import type { MiniWorkMap } from "../MiniWorkMap";
+import type { GoalTargetList } from "../GoalTargetList";
+
 import { Page } from "../Page";
+import { PageHeader } from "./PageHeader";
 import { PageFooter } from "../Page/PageFooter";
-import { MiniWorkMap } from "../MiniWorkMap";
-import { GoalTargetList } from "../GoalTargetList";
 import { Sidebar } from "./Sidebar";
-import { PrimaryButton, SecondaryButton } from "../Button";
-import { IconStar } from "@tabler/icons-react";
-import { IconPencil } from "@tabler/icons-react";
 import { Messages } from "./Messages";
 import { CheckIns } from "./CheckIns";
 import { Targets } from "./Targets";
@@ -93,7 +92,7 @@ export function GoalPage(props: GoalPage.Props) {
 
 function MainContent(props: GoalPage.Props) {
   return (
-    <div className="col-span-7 space-y-8">
+    <div className="col-span-7 space-y-8 pr-4">
       <Description {...props} />
       <Targets {...props} />
       <CheckIns {...props} />
@@ -108,32 +107,5 @@ function ActivityFooter() {
     <PageFooter className="p-8">
       <h3 className="text-xs uppercase font-medium tracking-wider">Activity</h3>
     </PageFooter>
-  );
-}
-
-function PageHeader(props: GoalPage.Props) {
-  return (
-    <div className="border-b border-stroke-base sm:pt-8 pb-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">{props.goalName}</h1>
-
-        <div className="flex items-center gap-2">
-          <SecondaryButton size="sm">
-            <div className="flex items-center gap-1.5">
-              <IconStar size="16" /> Follow
-            </div>
-          </SecondaryButton>
-
-          {props.canEdit && (
-            <SecondaryButton size="sm">
-              <div className="flex items-center gap-1.5">
-                <IconPencil size="16" /> Edit
-              </div>
-            </SecondaryButton>
-          )}
-          {props.canEdit && <PrimaryButton size="sm">Check-In</PrimaryButton>}
-        </div>
-      </div>
-    </div>
   );
 }

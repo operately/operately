@@ -14,7 +14,7 @@ export function RelatedWork(props: GoalPage.Props) {
             <SecondaryButton size="xxs">Add project</SecondaryButton>
           </div>
         }
-        showButtons={props.relatedWorkItems.length > 0}
+        showButtons={props.relatedWorkItems.length > 0 && props.canEdit}
       />
 
       {props.relatedWorkItems.length > 0 ? <RelatedWorkContent {...props} /> : <RelatedWorkZeroState {...props} />}
