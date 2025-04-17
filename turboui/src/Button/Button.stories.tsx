@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { PrimaryButton, SecondaryButton, GhostButton } from './index';
+import { IconHome, IconSearch, IconSettings, IconUser, IconStar } from '@tabler/icons-react';
 
 const meta = {
   title: 'Components/Button',
@@ -109,6 +110,37 @@ export const Sizes: StoryObj = {
         <GhostButton size="sm">Button</GhostButton>
         <GhostButton size="base">Button</GhostButton>
         <GhostButton size="lg">Button</GhostButton>
+      </div>
+    </div>
+  ),
+};
+
+/**
+ * Buttons can be enhanced with icons.
+ */
+export const WithIcons: StoryObj = {
+  render: () => (
+    <div className="flex flex-col gap-4">
+      <div className="flex items-center gap-4">
+        <PrimaryButton size="xxs" icon={IconHome}>Home</PrimaryButton>
+        <PrimaryButton size="xs" icon={IconSearch}>Search</PrimaryButton>
+        <PrimaryButton size="sm" icon={IconSettings}>Settings</PrimaryButton>
+        <PrimaryButton size="base" icon={IconUser}>Profile</PrimaryButton>
+        <PrimaryButton size="lg" icon={IconStar}>Favorites</PrimaryButton>
+      </div>
+      <div className="flex items-center gap-4">
+        <SecondaryButton size="xxs" icon={IconHome}>Home</SecondaryButton>
+        <SecondaryButton size="xs" icon={IconSearch}>Search</SecondaryButton>
+        <SecondaryButton size="sm" icon={IconSettings}>Settings</SecondaryButton>
+        <SecondaryButton size="base" icon={IconUser}>Profile</SecondaryButton>
+        <SecondaryButton size="lg" icon={IconStar}>Favorites</SecondaryButton>
+      </div>
+      <div className="flex items-center gap-4">
+        <GhostButton size="xxs" icon={IconHome}>Home</GhostButton>
+        <GhostButton size="xs" icon={IconSearch}>Search</GhostButton>
+        <GhostButton size="sm" icon={IconSettings}>Settings</GhostButton>
+        <GhostButton size="base" icon={IconUser}>Profile</GhostButton>
+        <GhostButton size="lg" icon={IconStar}>Favorites</GhostButton>
       </div>
     </div>
   ),

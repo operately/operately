@@ -28,11 +28,9 @@ function AddButton({ onClick }: ButtonProps) {
       <SecondaryButton
         size="xxs"
         onClick={onClick}
+        icon={IconPlus}
       >
-        <div className="flex items-center gap-1 px-1">
-          <IconPlus size={14} />
-          <span>Add</span>
-        </div>
+        Add
       </SecondaryButton>
     </div>
   );
