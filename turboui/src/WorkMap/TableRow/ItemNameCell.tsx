@@ -1,11 +1,6 @@
-import {
-  IconTarget,
-  IconChecklist,
-  IconChevronDown,
-  IconChevronRight,
-} from "@tabler/icons-react";
-import { Link } from "../../Link";
-import classNames from "../../utils/classnames";
+import { IconTarget, IconChecklist, IconChevronDown, IconChevronRight } from "@tabler/icons-react";
+import { BlackLink } from "@/Link";
+import classNames from "@/utils/classnames";
 import { useItemStatus } from "../hooks/useItemStatus";
 import { useTableRowContext } from "./context";
 import { ActionButtons } from "./ActionButtons";
@@ -49,9 +44,7 @@ export function ItemNameCell() {
 
 function Name({ to }: { to: string }) {
   const { item } = useTableRowContext();
-  const { isCompleted, isFailed, isDropped, isPending } = useItemStatus(
-    item.status
-  );
+  const { isCompleted, isFailed, isDropped, isPending } = useItemStatus(item.status);
 
   const textStyle = classNames(
     "font-medium text-xs md:text-sm hover:underline transition-colors",
@@ -64,14 +57,14 @@ function Name({ to }: { to: string }) {
       ? "text-content-dimmed dark:text-gray-400"
       : isCompleted || isFailed || isDropped
       ? "text-content-dimmed dark:text-gray-400"
-      : "text-content-base dark:text-gray-200 hover:text-link-hover dark:hover:text-white"
+      : "text-content-base dark:text-gray-200 hover:text-link-hover dark:hover:text-white",
   );
 
   return (
     <div className="flex items-center">
-      <Link to={to} className={textStyle}>
+      <BlackLink to={to} className={textStyle} underline="hover">
         {item.name}
-      </Link>
+      </BlackLink>
     </div>
   );
 }
@@ -85,7 +78,7 @@ function Icon() {
     "flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center mr-2",
     isGoal
       ? "text-red-500 dark:text-red-400 bg-red-50 dark:bg-red-900/30"
-      : "text-blue-500 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30"
+      : "text-blue-500 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30",
   );
 
   return (
@@ -101,9 +94,7 @@ function Indentation() {
 
   if (!showIndentation) return null;
 
-  return (
-    <div style={{ width: `${indentPadding}px` }} className="flex-shrink-0" />
-  );
+  return <div style={{ width: `${indentPadding}px` }} className="flex-shrink-0" />;
 }
 
 function ExpandButton() {

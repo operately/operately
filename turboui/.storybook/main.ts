@@ -23,6 +23,19 @@ const config: StorybookConfig = {
     config.css = {
       postcss: true,
     };
+
+    // Add path alias for @/
+    if (!config.resolve) {
+      config.resolve = {};
+    }
+
+    if (!config.resolve.alias) {
+      config.resolve.alias = {};
+    }
+
+    const path = require('path');
+    config.resolve.alias['@'] = path.resolve(__dirname, '../src');
+
     return config;
   },
 };

@@ -16,6 +16,7 @@
     "moduleResolution": "node",
     "baseUrl": ".",
     "paths": {
+      "@/*": ["src/*"],
       "*": ["../app/node_modules/*"],
       "react": ["../app/node_modules/react", "../app/node_modules/@types/react"],
       "react/*": ["../app/node_modules/react/*", "../app/node_modules/@types/react/*"]
