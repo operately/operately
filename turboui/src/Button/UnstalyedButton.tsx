@@ -4,6 +4,8 @@ import { Menu } from "../Menu";
 import { DivLink } from "../Link";
 import { TestableElement } from "../TestableElement";
 import { IconChevronDown } from "@tabler/icons-react";
+import type { IconProps } from "@tabler/icons-react";
+import { match } from "ts-pattern";
 
 interface Linkable {
   linkTo?: string;
@@ -25,6 +27,8 @@ export interface BaseButtonProps extends MenuOptions, Linkable, Clickable, Testa
   type?: "button" | "submit";
   size?: "xxs" | "xs" | "sm" | "base" | "lg";
   spanButton?: boolean;
+  icon?: React.ComponentType<IconProps>;
+  iconSize?: number;
 }
 
 interface UnstyledButtonProps extends BaseButtonProps {
@@ -72,17 +76,36 @@ function UnstyledActionButton(props: UnstyledButtonProps) {
   };
 
   const type = props.type || "button";
+  const iconSize =
+    props.iconSize ||
+    match(props.size || "base")
+      .with("xxs", () => 12)
+      .with("xs", () => 14)
+      .with("sm", () => 16)
+      .with("base", () => 18)
+      .with("lg", () => 20)
+      .exhaustive();
+
+  let children = props.children;
+  if (props.icon) {
+    children = (
+      <div className="-ml-1 flex items-center gap-1">
+        <props.icon size={iconSize} />
+        {props.children}
+      </div>
+    );
+  }
 
   return (
     <button type={type} className={props.className} onClick={handleClick} data-test-id={props.testId}>
-      {props.children}
+      {children}
       {props.spinner}
     </button>
   );
 }
 
 function UnstyledMenuButton(props: UnstyledButtonProps) {
-  if(props.options === undefined) {
+  if (props.options === undefined) {
     throw "Menu button must have options";
   }
 
