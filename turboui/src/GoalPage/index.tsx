@@ -12,6 +12,7 @@ import { Sidebar } from "./Sidebar";
 import { PrimaryButton, SecondaryButton } from "../Button";
 import { IconStar } from "@tabler/icons-react";
 import { IconPencil } from "@tabler/icons-react";
+import { Messages } from "./Messages";
 
 export namespace GoalPage {
   interface Person {
@@ -100,49 +101,6 @@ function MainContent(props: GoalPage.Props) {
       <CheckIns {...props} />
       <Messages {...props} />
       <RelatedWork {...props} />
-    </div>
-  );
-}
-
-function Messages(props: GoalPage.Props) {
-  if (props.messages.length === 0) {
-    return (
-      <div>
-        <h2 className="font-bold mb-1">Messages</h2>
-        <div className="text-content-dimmed text-sm">
-          {props.canEdit
-            ? "Share announcements, decisions, and important information with your team."
-            : "Announcements, decisions, and important information will be shared here."}
-        </div>
-
-        {props.canEdit && (
-          <div className="mt-2">
-            <SecondaryButton size="xs">Write message</SecondaryButton>
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  return (
-    <div>
-      <h2 className="font-bold mb-4">Messages</h2>
-      <div className="space-y-4">
-        {props.messages.map((message) => (
-          <div key={message.id} className="flex flex-row items-start gap-3">
-            <Avatar person={message.author} size={36} />
-            <div className="flex-1">
-              <div className="text-sm -mt-px">
-                <Link to={message.link} className="hover:underline font-semibold">
-                  {message.title}
-                </Link>
-                {" — "}
-                {truncate(message.content, 150)}
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
     </div>
   );
 }
