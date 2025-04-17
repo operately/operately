@@ -92,7 +92,7 @@ export function GoalPage(props: GoalPage.Props) {
 
 function MainContent(props: GoalPage.Props) {
   return (
-    <div className="col-span-7 space-y-8 pr-4">
+    <div className="space-y-8 sm:col-span-7 sm:pr-4">
       <Description {...props} />
       <Targets {...props} />
       <CheckIns {...props} />

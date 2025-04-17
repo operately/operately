@@ -12,7 +12,7 @@ export function Description(props: GoalPage.Props) {
       <SectionHeader
         title="Description"
         buttons={<SecondaryButton size="xxs">Edit</SecondaryButton>}
-        showButtons={props.canEdit}
+        showButtons={props.canEdit && !!props.description}
       />
 
       {props.description ? (
