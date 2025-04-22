@@ -3,12 +3,13 @@ import React from "react";
 import { ExpandIcon } from "./ExpandIcon";
 import { PieChart } from "../PieChart";
 
-import classNames from "../utils/classnames";
 import { PrimaryButton, SecondaryButton } from "../Button";
-import TextareaAutosize from "react-textarea-autosize";
 import { IconTrash } from "@tabler/icons-react";
 import { DragAndDropProvider, useDraggable, useDraggingAnimation, useDropZone } from "../utils/DragAndDrop";
-import { ta } from "date-fns/locale";
+import { IconGripVertical } from "@tabler/icons-react";
+
+import TextareaAutosize from "react-textarea-autosize";
+import classNames from "../utils/classnames";
 
 export namespace GoalTargetList {
   export type Target = {
@@ -85,7 +86,9 @@ function TargetCard({ target, index, showEditButton, style }: TargetCardProps) {
   }
 
   if (mode === "view") {
-    return <TargetView style={style} target={target} onEditClick={() => setMode("edit")} showEditButton={showEditButton} />;
+    return <TargetView 
+      draggedStyle={{ background: "var(--color-surface-base)" }}
+      undraggedStyle={style} target={target} onEditClick={() => setMode("edit")} showEditButton={showEditButton} />;
   }
 
   throw new Error(`Unknown mode: ${mode}`);
@@ -190,16 +193,32 @@ interface TargetViewProps {
   target: GoalTargetList.Target;
   onEditClick: () => void;
   showEditButton?: boolean;
-  style: React.CSSProperties;
+
+  draggedStyle: React.CSSProperties;
+  undraggedStyle: React.CSSProperties;
 }
 
-function TargetView({ target, onEditClick, showEditButton, style }: TargetViewProps) {
+function TargetView({ target, onEditClick, showEditButton, draggedStyle, undraggedStyle }: TargetViewProps) {
   const [open, toggle] = useToggle();
 
-  const outerClass = "max-w-full py-2 px-px border-t last:border-b border-stroke-base";
+  const { ref, isDragging } = useDraggable({
+    id: target.id!,
+    zoneId: "targets",
+  });
+
+  const outerClass = classNames("max-w-full py-2 px-px border-b border-stroke-base flex-1", {
+    "border-t": target.index === 0 || isDragging,
+  });
+
   const innerClass = classNames("grid gap-2 items-start cursor-pointer", {
     "grid-cols-[1fr_auto_auto_14px]": showEditButton,
     "grid-cols-[1fr_auto_14px]": !showEditButton,
+  });
+
+  const dragGripClass = classNames("opacity-0 group-hover:opacity-100 transition-all", {
+    "cursor-grab": !isDragging,
+    "cursor-grabbing": isDragging,
+    "opacity-100": isDragging,
   });
 
   const handleEdit = (e: React.MouseEvent) => {
@@ -207,20 +226,19 @@ function TargetView({ target, onEditClick, showEditButton, style }: TargetViewPr
     onEditClick();
   };
 
-  const { ref, isDragging } = useDraggable({
-    id: target.id!,
-    zoneId: "targets",
-  });
-
   return (
-    <div className={outerClass} ref={ref} style={isDragging ? {} : style}>
-      <div onClick={toggle} className={innerClass}>
-        <TargetName target={target} truncate={!open} />
-        <TargetValue target={target} />
-        {showEditButton && <EditValueButton onClick={handleEdit} />}
-        <ExpandIcon expanded={open} onClick={toggle} />
+    <div className="group flex items-center w-[calc(100% + 16px)] -ml-[16px]" ref={ref} style={isDragging ? draggedStyle : undraggedStyle}>
+      <IconGripVertical size={16} className={dragGripClass} />
+
+      <div className={outerClass}>
+        <div onClick={toggle} className={innerClass}>
+          <TargetName target={target} truncate={!open} />
+          <TargetValue target={target} />
+          {showEditButton && <EditValueButton onClick={handleEdit} />}
+          <ExpandIcon expanded={open} onClick={toggle} />
+        </div>
+        {open && <TargetDetails target={target} />}
       </div>
-      {open && <TargetDetails target={target} />}
     </div>
   );
 }

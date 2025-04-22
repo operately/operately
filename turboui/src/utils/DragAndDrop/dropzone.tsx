@@ -42,7 +42,7 @@ class DropZoneElement {
 
   // Event handlers binded to this instance.
   private mouseUp: () => void;
-  private mouseMove: () => void;
+  private mouseMove: (e: MouseEvent) => void;
 
   private indexInDropZone: number;
 
