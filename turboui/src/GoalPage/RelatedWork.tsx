@@ -4,6 +4,8 @@ import { GoalPage } from ".";
 import { SectionHeader } from "./SectionHeader";
 
 export function RelatedWork(props: GoalPage.Props) {
+  if (props.relatedWorkItems.length === 0 && !props.canEdit) return null;
+
   return (
     <div>
       <SectionHeader
@@ -21,7 +23,7 @@ export function RelatedWork(props: GoalPage.Props) {
         showButtons={props.canEdit}
       />
 
-      {props.relatedWorkItems.length > 0 ? <RelatedWorkContent {...props} /> : <RelatedWorkZeroState {...props} />}
+      {props.relatedWorkItems.length > 0 ? <RelatedWorkContent {...props} /> : <RelatedWorkZeroState />}
     </div>
   );
 }
@@ -34,14 +36,10 @@ function RelatedWorkContent(props: GoalPage.Props) {
   );
 }
 
-function RelatedWorkZeroState(props: GoalPage.Props) {
+function RelatedWorkZeroState() {
   return (
     <div className="mt-1">
-      <div className="text-content-dimmed text-sm">
-        {props.canEdit
-          ? "Break down the work on this goal into subgoals and projects."
-          : "Connections to supporting projects and subgoals will appear here."}
-      </div>
+      <div className="text-content-dimmed text-sm">Break down the work on this goal into subgoals and projects.</div>
     </div>
   );
 }
