@@ -1,5 +1,7 @@
 import React, { useState } from "react";
-import { StatusBadge, ProgressBar, AvatarWithName } from "turboui";
+import { StatusBadge } from "turboui/StatusBadge";
+import {AvatarWithName } from "turboui/Avatar";
+import { ProgressBar } from "turboui/ProgressBar";
 import {
   IconTargetArrow,
   IconChecklist,

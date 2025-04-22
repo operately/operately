@@ -1,5 +1,6 @@
 // Mock data for development purposes
-import type { ProgressBarStatus as GoalStatus, AvatarPerson } from "turboui";
+import type { ProgressBarStatus as GoalStatus } from "turboui/ProgressBar";
+import type { AvatarPerson } from "turboui/Avatar";
 
 // Define types for our mock data
 interface User extends AvatarPerson {
