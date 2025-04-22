@@ -5,6 +5,8 @@ import { PieChart } from "../PieChart";
 
 import classNames from "../utils/classnames";
 import { SecondaryButton } from "../Button";
+import { th } from "date-fns/locale";
+import { on } from "events";
 
 export namespace GoalTargetList {
   export type Target = {
@@ -15,6 +17,8 @@ export namespace GoalTargetList {
     unit: string;
     name: string;
     showEditValueButton?: boolean;
+    mode: "view" | "edit";
+    setMode: (mode: "view" | "edit") => void;
   };
 
   export interface Props {
@@ -33,6 +37,28 @@ export function GoalTargetList(props: GoalTargetList.Props) {
 }
 
 function TargetCard({ target }: { target: GoalTargetList.Target }) {
+  const [mode, setMode] = React.useState<"view" | "edit">(target.mode);
+
+  if (mode === "edit") {
+    return <TargetEdit target={target} onSaveClick={() => setMode("view")} />;
+  }
+
+  if (mode === "view") {
+    return <TargetView target={target} onEditClick={() => setMode("edit")} />;
+  }
+
+  throw new Error(`Unknown mode: ${mode}`);
+}
+
+function TargetEdit({ target, onSaveClick }: { target: GoalTargetList.Target; onSaveClick: () => void }) {
+  return (
+    <SecondaryButton size="xxs" onClick={onSaveClick}>
+      Save
+    </SecondaryButton>
+  );
+}
+
+function TargetView({ target, onEditClick }: { target: GoalTargetList.Target; onEditClick: () => void }) {
   const [open, toggle] = useToggle();
 
   const outerClass = "max-w-full py-2 px-px border-t last:border-b border-stroke-base";
@@ -43,6 +69,7 @@ function TargetCard({ target }: { target: GoalTargetList.Target }) {
 
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
+    onEditClick();
   };
 
   return (

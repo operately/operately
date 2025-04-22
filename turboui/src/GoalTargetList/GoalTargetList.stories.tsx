@@ -33,6 +33,7 @@ const mockTargets = [
     value: 1500000,
     unit: "USD",
     showEditValueButton: true,
+    mode: "view",
   },
   {
     id: "2",
@@ -42,6 +43,7 @@ const mockTargets = [
     value: 90,
     unit: "%",
     showEditValueButton: true,
+    mode: "view",
   },
   {
     id: "3",
@@ -51,12 +53,19 @@ const mockTargets = [
     value: 65,
     unit: "%",
     showEditValueButton: true,
+    mode: "view",
   },
 ];
 
 export const Default: Story = {
   args: {
     targets: mockTargets,
+  },
+};
+
+export const EditMode: Story = {
+  args: {
+    targets: mockTargets.map((t) => ({ ...t, mode: "edit" })),
   },
 };
 
