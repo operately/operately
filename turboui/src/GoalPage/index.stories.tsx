@@ -28,6 +28,7 @@ const mockTargets = [
     to: 50000,
     value: 25000,
     unit: "users",
+    mode: "view" as const,
   },
   {
     id: "2",
@@ -36,6 +37,7 @@ const mockTargets = [
     to: 100,
     value: 250,
     unit: "ms",
+    mode: "view" as const,
   },
   {
     id: "3",
@@ -44,6 +46,7 @@ const mockTargets = [
     to: 99.99,
     value: 99.8,
     unit: "%",
+    mode: "view" as const,
   },
 ];
 
