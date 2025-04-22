@@ -186,14 +186,16 @@ class DraggableElement {
   }
 
   setMinHeightForDropZones() {
-    document.querySelectorAll("[drop-zone]").forEach((el: HTMLElement) => {
-      el.style.minHeight = el.getBoundingClientRect().height + "px";
+    document.querySelectorAll("[drop-zone]").forEach((e: Element) => {
+      const dropZone = e as HTMLElement;
+      dropZone.style.minHeight = dropZone.getBoundingClientRect().height + "px";
     });
   }
 
   resetMinHeightForDropZones() {
-    document.querySelectorAll("[drop-zone]").forEach((el: HTMLElement) => {
-      el.style.minHeight = "";
+    document.querySelectorAll("[drop-zone]").forEach((el: Element) => {
+      const dropZone = el as HTMLElement;
+      dropZone.style.minHeight = "";
     });
   }
 }
