@@ -4,6 +4,7 @@ import { ExpandIcon } from "./ExpandIcon";
 import { PieChart } from "../PieChart";
 
 import classNames from "../utils/classnames";
+import { SecondaryButton } from "../Button";
 
 export namespace GoalTargetList {
   export type Target = {
@@ -13,6 +14,7 @@ export namespace GoalTargetList {
     value: number;
     unit: string;
     name: string;
+    showEditValueButton?: boolean;
   };
 
   export interface Props {
@@ -34,13 +36,21 @@ function TargetCard({ target }: { target: GoalTargetList.Target }) {
   const [open, toggle] = useToggle();
 
   const outerClass = "max-w-full py-2 px-px border-t last:border-b border-stroke-base";
-  const innerClass = "grid grid-cols-[1fr_auto_14px] gap-2 items-start cursor-pointer";
+  const innerClass = classNames("grid gap-2 items-start cursor-pointer", {
+    "grid-cols-[1fr_auto_auto_14px]": target.showEditValueButton,
+    "grid-cols-[1fr_auto_14px]": !target.showEditValueButton,
+  });
+
+  const handleEdit = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  };
 
   return (
     <div className={outerClass}>
       <div onClick={toggle} className={innerClass}>
         <TargetNameSection target={target} truncate={!open} />
         <TargetValue target={target} />
+        {target.showEditValueButton && <EditValueButton onClick={handleEdit} />}
         <ExpandIcon expanded={open} onClick={toggle} />
       </div>
       {open && <TargetDetails target={target} />}
@@ -134,4 +144,14 @@ function calculateProgress(target: GoalTargetList.Target, clamped = true): numbe
   }
 
   return percentage;
+}
+
+function EditValueButton({ onClick }: { onClick?: (e: React.MouseEvent) => void }) {
+  return (
+    <div className="mt-px">
+      <SecondaryButton size="xxs" onClick={onClick}>
+        Edit
+      </SecondaryButton>
+    </div>
+  );
 }
