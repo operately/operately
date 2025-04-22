@@ -27,6 +27,7 @@ type Story = StoryObj<typeof meta>;
 const mockTargets = [
   {
     id: "1",
+    index: 0,
     name: "Double the Revenue",
     from: 1000000,
     to: 2000000,
@@ -36,6 +37,7 @@ const mockTargets = [
   },
   {
     id: "2",
+    index: 1,
     name: "Increase Customer Satisfaction",
     from: 85,
     to: 95,
@@ -45,6 +47,7 @@ const mockTargets = [
   },
   {
     id: "3",
+    index: 2,
     name: "Improve employee Retention",
     from: 75,
     to: 60,
