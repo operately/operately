@@ -233,110 +233,72 @@ const parentGoal = {
   link: "/goals/1",
 };
 
+const defaultArgs = {
+  spaceLink: "/spaces/1",
+  workmapLink: "/spaces/1/workmaps/1",
+  goalName: "Launch AI Platform",
+  spaceName: "Product",
+  champion: champion,
+  reviewer: reviewer,
+  targets: mockTargets,
+  relatedWorkItems: relatedWorkItems,
+  startDate: genRelativeDate(-15),
+  endDate: genRelativeDate(15),
+  contributors: contributors,
+  canEdit: true,
+  description,
+  checkIns,
+  messages,
+  parentGoal,
+  status: "on_track",
+};
+
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  args: {
-    spaceLink: "/spaces/1",
-    workmapLink: "/spaces/1/workmaps/1",
-    goalName: "Launch AI Platform",
-    spaceName: "Product",
-    champion: champion,
-    reviewer: reviewer,
-    targets: mockTargets,
-    relatedWorkItems: relatedWorkItems,
-    startDate: genRelativeDate(-15),
-    endDate: genRelativeDate(15),
-    contributors: contributors,
-    canEdit: true,
-    description,
-    checkIns,
-    messages,
-    parentGoal,
-  },
+  args: defaultArgs
 };
 
 export const DefaultReadOnly: Story = {
   args: {
-    spaceLink: "/spaces/1",
-    workmapLink: "/spaces/1/workmaps/1",
-    goalName: "Launch AI Platform",
-    spaceName: "Product",
-    champion: champion,
-    reviewer: reviewer,
-    targets: mockTargets,
-    relatedWorkItems: relatedWorkItems,
-    startDate: genRelativeDate(-15),
-    endDate: genRelativeDate(15),
-    contributors: contributors,
+    ...defaultArgs,
     canEdit: false,
-    description,
-    checkIns,
-    messages,
-    parentGoal,
   },
 };
 
 export const ZeroStateForChampions: Story = {
   args: {
-    spaceLink: "/spaces/1",
-    workmapLink: "/spaces/1/workmaps/1",
-    goalName: "Launch AI Platform",
-    spaceName: "Product",
-    champion: champion,
-    reviewer: null,
+    ...defaultArgs,
     targets: [],
     checkIns: [],
     messages: [],
     contributors: [],
     relatedWorkItems: [],
-    startDate: genRelativeDate(-15),
-    endDate: genRelativeDate(15),
     canEdit: true,
-    parentGoal,
+    description: "",
+    reviewer: null,
+    status: "pending",
   },
 };
 
 export const ZeroStateReadOnly: Story = {
   args: {
-    spaceLink: "/spaces/1",
-    workmapLink: "/spaces/1/workmaps/1",
-    goalName: "Launch AI Platform",
-    spaceName: "Product",
-    champion: champion,
-    reviewer: null,
+    ...defaultArgs,
     targets: [],
     checkIns: [],
     messages: [],
     contributors: [],
     relatedWorkItems: [],
-    isEditable: false,
-    startDate: genRelativeDate(-15),
-    endDate: genRelativeDate(15),
-    parentGoal,
+    canEdit: false,
+    description: "",
+    reviewer: null,
+    status: "pending",
   },
 };
 
 export const Mobile: Story = {
-  args: {
-    spaceLink: "/spaces/1",
-    workmapLink: "/spaces/1/workmaps/1",
-    goalName: "Launch AI Platform",
-    spaceName: "Product",
-    champion: champion,
-    reviewer: reviewer,
-    targets: mockTargets,
-    relatedWorkItems: relatedWorkItems,
-    startDate: genRelativeDate(-15),
-    endDate: genRelativeDate(15),
-    contributors: contributors,
-    canEdit: true,
-    description,
-    checkIns,
-    messages,
-    parentGoal,
-  },
+  args: defaultArgs,
   parameters: {
     viewport: {
       defaultViewport: "mobile2",
@@ -346,21 +308,15 @@ export const Mobile: Story = {
 
 export const CompanyWideGoal: Story = {
   args: {
-    spaceLink: "/spaces/1",
-    workmapLink: "/spaces/1/workmaps/1",
-    goalName: "Launch AI Platform",
-    spaceName: "Product",
-    champion: champion,
-    reviewer: reviewer,
-    targets: mockTargets,
-    relatedWorkItems: relatedWorkItems,
-    startDate: genRelativeDate(-15),
-    endDate: genRelativeDate(15),
-    contributors: contributors,
-    canEdit: true,
-    description,
-    checkIns,
-    messages,
+    ...defaultArgs,
     parentGoal: null,
   },
 };
+
+export const LongName: Story = {
+  args: {
+    ...defaultArgs,
+    goalName: "Enchance the AI Platform with Advanced Features and Integrations",
+  },
+};
+
