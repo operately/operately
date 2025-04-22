@@ -7,14 +7,18 @@ export function RelatedWork(props: GoalPage.Props) {
   return (
     <div>
       <SectionHeader
-        title="Related Work"
+        title="Subgoals & Projects"
         buttons={
           <div className="flex items-center gap-2">
-            <SecondaryButton size="xxs">Add subgoal</SecondaryButton>
-            <SecondaryButton size="xxs">Add project</SecondaryButton>
+            <SecondaryButton size="xxs" onClick={() => {}}>
+              Add goal
+            </SecondaryButton>
+            <SecondaryButton size="xxs" onClick={() => {}}>
+              Add project
+            </SecondaryButton>
           </div>
         }
-        showButtons={props.relatedWorkItems.length > 0 && props.canEdit}
+        showButtons={props.canEdit}
       />
 
       {props.relatedWorkItems.length > 0 ? <RelatedWorkContent {...props} /> : <RelatedWorkZeroState {...props} />}
@@ -38,13 +42,6 @@ function RelatedWorkZeroState(props: GoalPage.Props) {
           ? "Break down the work on this goal into subgoals and projects."
           : "Connections to supporting projects and subgoals will appear here."}
       </div>
-
-      {props.canEdit && (
-        <div className="mt-2 flex items-center gap-2">
-          <SecondaryButton size="xs">Add subgoal</SecondaryButton>
-          <SecondaryButton size="xs">Add project</SecondaryButton>
-        </div>
-      )}
     </div>
   );
 }

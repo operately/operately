@@ -11,8 +11,8 @@ export function Description(props: GoalPage.Props) {
     <div>
       <SectionHeader
         title="Description"
-        buttons={<SecondaryButton size="xxs">Edit</SecondaryButton>}
-        showButtons={props.canEdit && !!props.description}
+        buttons={<SecondaryButton size="xxs">{props.description ? "Edit" : "Write"}</SecondaryButton>}
+        showButtons={props.canEdit}
       />
 
       {props.description ? (
@@ -46,12 +46,6 @@ function DescriptionZeroState(props: GoalPage.Props) {
   return (
     <div className="mb-1">
       <div className="text-content-dimmed text-sm">Describe the goal to provide context and clarity.</div>
-
-      {props.canEdit && (
-        <div className="mt-2 flex items-center gap-2">
-          <SecondaryButton size="xs">Write overview</SecondaryButton>
-        </div>
-      )}
     </div>
   );
 }
