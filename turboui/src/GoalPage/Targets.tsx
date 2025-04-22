@@ -9,7 +9,7 @@ export function Targets(props: GoalPage.Props) {
       <SectionHeader
         title="Targets"
         buttons={<SecondaryButton size="xxs">Add</SecondaryButton>}
-        showButtons={props.canEdit && props.targets.length > 0}
+        showButtons={props.canEdit}
       />
 
       {props.targets.length === 0 ? <ZeroState {...props} /> : <TargetsList {...props} />}
@@ -25,12 +25,6 @@ function ZeroState(props: GoalPage.Props) {
           ? "Add targets to measure progress and celebrate wins."
           : "The champion didn't yet set targets for this goal."}
       </div>
-
-      {props.canEdit && (
-        <div className="mt-2">
-          <SecondaryButton size="xs">Add first target</SecondaryButton>
-        </div>
-      )}
     </div>
   );
 }
