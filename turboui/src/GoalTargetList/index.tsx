@@ -4,9 +4,9 @@ import { ExpandIcon } from "./ExpandIcon";
 import { PieChart } from "../PieChart";
 
 import classNames from "../utils/classnames";
-import { SecondaryButton } from "../Button";
-import { th } from "date-fns/locale";
-import { on } from "events";
+import { PrimaryButton, SecondaryButton } from "../Button";
+import TextareaAutosize from "react-textarea-autosize";
+import { IconTrash } from "@tabler/icons-react";
 
 export namespace GoalTargetList {
   export type Target = {
@@ -18,7 +18,6 @@ export namespace GoalTargetList {
     name: string;
     showEditValueButton?: boolean;
     mode: "view" | "edit";
-    setMode: (mode: "view" | "edit") => void;
   };
 
   export interface Props {
@@ -40,7 +39,7 @@ function TargetCard({ target }: { target: GoalTargetList.Target }) {
   const [mode, setMode] = React.useState<"view" | "edit">(target.mode);
 
   if (mode === "edit") {
-    return <TargetEdit target={target} onSaveClick={() => setMode("view")} />;
+    return <TargetEdit target={target} onSaveClick={() => setMode("view")} onCancelClick={() => setMode("view")} />;
   }
 
   if (mode === "view") {
@@ -50,11 +49,89 @@ function TargetCard({ target }: { target: GoalTargetList.Target }) {
   throw new Error(`Unknown mode: ${mode}`);
 }
 
-function TargetEdit({ target, onSaveClick }: { target: GoalTargetList.Target; onSaveClick: () => void }) {
+interface TargetEditProps {
+  target: GoalTargetList.Target;
+  onSaveClick: () => void;
+  onCancelClick: () => void;
+}
+
+function TargetEdit({ target, onSaveClick, onCancelClick }: TargetEditProps) {
+  const [name, setName] = React.useState(target.name);
+  const [from, setFrom] = React.useState(target.from);
+  const [to, setTo] = React.useState(target.to);
+  const [value, setValue] = React.useState(target.value);
+  const [unit, setUnit] = React.useState(target.unit);
+  const progress = calculateProgress({ ...target, from, to, value }, false);
+
   return (
-    <SecondaryButton size="xxs" onClick={onSaveClick}>
-      Save
-    </SecondaryButton>
+    <div className="border-t border-stroke-base">
+      <div className="border border-stroke-base rounded-lg p-4 shadow-lg my-4 sm:-mx-4">
+        <div className="">
+          <div className="font-bold text-sm mb-1">Current Value</div>
+
+          <Textarea
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            className="w-full border border-stroke-base rounded-lg py-2 px-3"
+            autoFocus
+          />
+        </div>
+
+        <div className="mt-2">
+          <div className="font-bold text-sm mb-1">Name</div>
+          <Textarea
+            autoexpand={true}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="w-full border border-stroke-base rounded-lg py-2 px-3"
+          />
+        </div>
+
+        <div className="flex items-center gap-2 mt-2">
+          <div className="flex-1">
+            <div className="font-bold text-sm mb-1">Start</div>
+
+            <Textarea
+              value={from}
+              onChange={(e) => setFrom(e.target.value)}
+              className="w-full border border-stroke-base rounded-lg py-2 px-3"
+            />
+          </div>
+
+          <div className="flex-1">
+            <div className="font-bold text-sm mb-1">Target</div>
+
+            <Textarea
+              value={to}
+              onChange={(e) => setTo(e.target.value)}
+              className="w-full border border-stroke-base rounded-lg py-2 px-3"
+            />
+          </div>
+
+          <div className="flex-1">
+            <div className="font-bold text-sm mb-1">Unit</div>
+
+            <Textarea
+              value={unit}
+              onChange={(e) => setUnit(e.target.value)}
+              className="w-full border border-stroke-base rounded-lg py-2 px-3"
+            />
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 justify-end mt-4">
+          <IconTrash size={16} className="text-red-500 cursor-pointer mr-2" />
+
+          <SecondaryButton size="xs" onClick={onCancelClick}>
+            Cancel
+          </SecondaryButton>
+
+          <PrimaryButton size="xs" onClick={onSaveClick}>
+            Save
+          </PrimaryButton>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -75,7 +152,7 @@ function TargetView({ target, onEditClick }: { target: GoalTargetList.Target; on
   return (
     <div className={outerClass}>
       <div onClick={toggle} className={innerClass}>
-        <TargetNameSection target={target} truncate={!open} />
+        <TargetName target={target} truncate={!open} />
         <TargetValue target={target} />
         {target.showEditValueButton && <EditValueButton onClick={handleEdit} />}
         <ExpandIcon expanded={open} onClick={toggle} />
@@ -92,7 +169,7 @@ function useToggle(): [boolean, () => void] {
   return [open, toggle];
 }
 
-function TargetNameSection({ target, truncate }: { target: GoalTargetList.Target; truncate?: boolean }) {
+function TargetName({ target, truncate }: { target: GoalTargetList.Target; truncate?: boolean }) {
   const progress = calculateProgress(target);
   const nameClass = classNames("flex gap-2 flex-1", { truncate: truncate });
 
@@ -127,12 +204,7 @@ function TargetValue({ target }: { target: GoalTargetList.Target }) {
 function TargetDetails({ target }: { target: GoalTargetList.Target }) {
   const { from, to, unit, value } = target;
   const progress = calculateProgress(target, false);
-
   const directionText = from! > to! ? "down to" : "to";
-
-  const formatUnit = (value) => {
-    return `${value}${unit === "%" ? "%" : ` ${unit}`}`;
-  };
 
   return (
     <div className="text-sm ml-6 rounded-lg my-2">
@@ -147,11 +219,16 @@ function TargetDetails({ target }: { target: GoalTargetList.Target }) {
       <div className="flex items-center gap-2 mt-1">
         <div className="w-20 font-semibold">Current</div>
         <div>
-          {formatUnit(value)} <span className={progress < 0 ? "text-red-500" : ""}>({progress.toFixed(1)}%)</span>
+          {formatValueAndUnit(value, unit)}{" "}
+          <span className={progress < 0 ? "text-red-500" : ""}>({progress.toFixed(1)}%)</span>
         </div>
       </div>
     </div>
   );
+}
+
+function formatValueAndUnit(value: number, unit: string): string {
+  return `${value}${unit === "%" ? "%" : ` ${unit}`}`;
 }
 
 function calculateProgress(target: GoalTargetList.Target, clamped = true): number {
@@ -180,5 +257,28 @@ function EditValueButton({ onClick }: { onClick?: (e: React.MouseEvent) => void 
         Edit
       </SecondaryButton>
     </div>
+  );
+}
+
+interface TextareaProps {
+  autoexpand?: boolean;
+  autoFocus?: boolean;
+  className?: string;
+
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+}
+
+function Textarea(props: TextareaProps) {
+  const className = classNames("bg-transparent", props.className);
+
+  return (
+    <TextareaAutosize
+      value={props.value}
+      onChange={props.onChange}
+      className={className}
+      style={{ resize: "none" }}
+      autoFocus={props.autoFocus}
+    />
   );
 }

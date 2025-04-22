@@ -44,6 +44,7 @@
     "react-spinners": "^0.13.8",
     "react-datepicker": "^4.14.0",
     "date-fns": "^2.30.0",
-    "ts-pattern": "^5.0.8"
+    "ts-pattern": "^5.0.8",
+    "react-textarea-autosize": "^8.5.9"
   }
 }
