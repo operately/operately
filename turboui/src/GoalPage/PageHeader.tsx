@@ -5,34 +5,41 @@ import { GoalPage } from ".";
 import { IconBuilding } from "@tabler/icons-react";
 import { IconTarget } from "@tabler/icons-react";
 import { DimmedLink } from "../Link";
+import { StatusBadge } from "../StatusBadge";
 
 export function PageHeader(props: GoalPage.Props) {
   return (
     <div className="border-b border-stroke-base sm:pt-6 pb-4">
       <ParentGoal {...props} />
 
-      <div className="sm:flex sm:items-center justify-between">
-        <h1 className="text-3xl font-bold">{props.goalName}</h1>
-
-        <div className="flex items-center gap-2 mt-4 sm:mt-0">
-          <SecondaryButton size="sm">
-            <div className="flex items-center gap-1.5">
-              <IconStar size="16" /> Follow
-            </div>
-          </SecondaryButton>
-
-          {props.canEdit && (
-            <SecondaryButton size="sm">
-              <div className="flex items-center gap-1.5">
-                <IconPencil size="16" /> Edit
-              </div>
-            </SecondaryButton>
-          )}
-          {props.canEdit && <PrimaryButton size="sm">Check-In</PrimaryButton>}
+      <div className="sm:flex sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold inline">{props.goalName}</h1>
+          <StatusBadge status={props.status} hideIcon className="inline-block shrink-0 ml-3 align-[4px]" />
         </div>
+        <Buttons {...props} />
       </div>
     </div>
   );
+}
+
+function Buttons(props: GoalPage.Props) {
+  return <div className="flex items-center gap-2 mt-4 sm:mt-0">
+    <SecondaryButton size="sm">
+      <div className="flex items-center gap-1.5">
+        <IconStar size="16" /> Follow
+      </div>
+    </SecondaryButton>
+
+    {props.canEdit && (
+      <SecondaryButton size="sm">
+        <div className="flex items-center gap-1.5">
+          <IconPencil size="16" /> Edit
+        </div>
+      </SecondaryButton>
+    )}
+    {props.canEdit && <PrimaryButton size="sm">Check-In</PrimaryButton>}
+  </div>;
 }
 
 function ParentGoal(props: GoalPage.Props) {

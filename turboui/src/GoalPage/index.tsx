@@ -10,6 +10,7 @@ import { CheckIns } from "./CheckIns";
 import { Targets } from "./Targets";
 import { Description } from "./Description";
 import { RelatedWork } from "./RelatedWork";
+import { BadgeStatus } from "../StatusBadge/types";
 
 export namespace GoalPage {
   interface Person {
@@ -54,6 +55,7 @@ export namespace GoalPage {
     endDate: Date;
     checkIns: CheckIn[];
     messages: Message[];
+    status: BadgeStatus;
 
     /**
      * Whether the current user can edit the goal and its content.
