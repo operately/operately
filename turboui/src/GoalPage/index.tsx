@@ -77,7 +77,7 @@ export namespace GoalPage {
 export function GoalPage(props: GoalPage.Props) {
   const navigation = [
     { to: props.spaceLink, label: props.spaceName },
-    { to: props.workmapLink, label: "Workmap" },
+    { to: props.workmapLink, label: "Goals" },
   ];
 
   return (
