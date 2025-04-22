@@ -6,33 +6,27 @@ import { GoalPage } from ".";
 import { SectionHeader } from "./SectionHeader";
 
 export function Messages(props: GoalPage.Props) {
+  if (props.messages.length === 0 && !props.canEdit) return null;
+
   return (
     <div>
       <SectionHeader
         title="Messages"
-        showButtons={props.canEdit && props.messages.length > 0}
+        showButtons={props.canEdit}
         buttons={<SecondaryButton size="xxs">Write message</SecondaryButton>}
       />
 
-      {props.messages.length === 0 ? <MessagesZeroState {...props} /> : <MessageList {...props} />}
+      {props.messages.length === 0 ? <MessagesZeroState /> : <MessageList {...props} />}
     </div>
   );
 }
 
-function MessagesZeroState(props: GoalPage.Props) {
+function MessagesZeroState() {
   return (
     <div className="mt-1">
       <div className="text-content-dimmed text-sm">
-        {props.canEdit
-          ? "Share announcements, decisions, and important information with your team."
-          : "Announcements, decisions, and important information will be shared here."}
+        Share announcements, decisions, and important information with your team.
       </div>
-
-      {props.canEdit && (
-        <div className="mt-2">
-          <SecondaryButton size="xs">Write message</SecondaryButton>
-        </div>
-      )}
     </div>
   );
 }

@@ -1,5 +1,3 @@
-import React from "react";
-
 export type { BaseButtonProps } from "./UnstalyedButton";
 
 import { BaseButtonProps, UnstyledButton } from "./UnstalyedButton";
