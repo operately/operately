@@ -38,7 +38,7 @@ function ZeroState(props: GoalPage.Props) {
 function TargetsList(props: GoalPage.Props) {
   return (
     <div className="mt-3">
-      <GoalTargetList targets={props.targets} />
+      <GoalTargetList targets={props.targets} showEditButton={props.canEdit} />
     </div>
   );
 }
