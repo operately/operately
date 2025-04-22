@@ -228,6 +228,11 @@ const description = [
   "future AI-driven products and services.`,",
 ].join("");
 
+const parentGoal = {
+  name: "Accelerate product growth",
+  link: "/goals/1",
+};
+
 export default meta;
 type Story = StoryObj<typeof meta>;
 
@@ -248,6 +253,7 @@ export const Default: Story = {
     description,
     checkIns,
     messages,
+    parentGoal,
   },
 };
 
@@ -268,6 +274,7 @@ export const DefaultReadOnly: Story = {
     description,
     checkIns,
     messages,
+    parentGoal,
   },
 };
 
@@ -287,6 +294,7 @@ export const ZeroStateForChampions: Story = {
     startDate: genRelativeDate(-15),
     endDate: genRelativeDate(15),
     canEdit: true,
+    parentGoal,
   },
 };
 
@@ -306,6 +314,7 @@ export const ZeroStateReadOnly: Story = {
     isEditable: false,
     startDate: genRelativeDate(-15),
     endDate: genRelativeDate(15),
+    parentGoal,
   },
 };
 
@@ -326,10 +335,32 @@ export const Mobile: Story = {
     description,
     checkIns,
     messages,
+    parentGoal,
   },
   parameters: {
     viewport: {
       defaultViewport: "mobile2",
     },
+  },
+};
+
+export const CompanyWideGoal: Story = {
+  args: {
+    spaceLink: "/spaces/1",
+    workmapLink: "/spaces/1/workmaps/1",
+    goalName: "Launch AI Platform",
+    spaceName: "Product",
+    champion: champion,
+    reviewer: reviewer,
+    targets: mockTargets,
+    relatedWorkItems: relatedWorkItems,
+    startDate: genRelativeDate(-15),
+    endDate: genRelativeDate(15),
+    contributors: contributors,
+    canEdit: true,
+    description,
+    checkIns,
+    messages,
+    parentGoal: null,
   },
 };

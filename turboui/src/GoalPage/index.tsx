@@ -31,10 +31,16 @@ export namespace GoalPage {
     role: string;
   }
 
+  interface ParentGoal {
+    name: string;
+    link: string;
+  }
+
   export interface Props {
     spaceLink: string;
     workmapLink: string;
 
+    parentGoal: ParentGoal | null;
     goalName: string;
     description?: string;
     spaceName: string;
