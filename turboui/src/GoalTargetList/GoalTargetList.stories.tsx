@@ -71,6 +71,13 @@ export const EditMode: Story = {
   },
 };
 
+export const DeleteMode: Story = {
+  args: {
+    targets: mockTargets.map((t, i) => ({ ...t, mode: i === 1 ? "delete" : "view" })),
+    showEditButton: true,
+  },
+};
+
 export const ReadOnly: Story = {
   args: {
     targets: mockTargets.map((t) => ({ ...t, showEditValueButton: false })),
