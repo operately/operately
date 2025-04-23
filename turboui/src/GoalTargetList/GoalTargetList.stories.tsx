@@ -61,6 +61,7 @@ export const Default: Story = {
   args: {
     targets: mockTargets,
     showEditButton: true,
+    showAddNewDialog: false,
   },
 };
 
@@ -68,6 +69,7 @@ export const EditMode: Story = {
   args: {
     targets: mockTargets.map((t, i) => ({ ...t, mode: i === 1 ? "edit" : "view" })),
     showEditButton: true,
+    showAddNewDialog: false,
   },
 };
 
@@ -75,11 +77,20 @@ export const DeleteMode: Story = {
   args: {
     targets: mockTargets.map((t, i) => ({ ...t, mode: i === 1 ? "delete" : "view" })),
     showEditButton: true,
+    showAddNewDialog: false,
   },
 };
 
 export const ReadOnly: Story = {
   args: {
     targets: mockTargets.map((t) => ({ ...t, showEditValueButton: false })),
+    showAddNewDialog: false,
+  },
+};
+
+export const AddMode: Story = {
+  args: {
+    targets: mockTargets,
+    showAddNewDialog: true,
   },
 };
