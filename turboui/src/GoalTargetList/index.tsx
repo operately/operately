@@ -27,7 +27,9 @@ export namespace GoalTargetList {
   export interface Props {
     targets: Target[];
     showEditButton?: boolean;
-    showAddNewDialog: boolean;
+
+    addActive?: boolean;
+    onAddActiveChange?: (active: boolean) => void;
   }
 }
 
@@ -50,7 +52,7 @@ function TargetList({ state }: { state: State }) {
         <TargetCard key={target.id} state={state} target={target} />
       ))}
 
-      {state.newTargetActive && <TargetAdd state={state} />}
+      {state.addActive && <TargetAdd state={state} />}
     </div>
   );
 }
@@ -75,7 +77,6 @@ function TargetAdd({ state }: { state: State }) {
   const [name, setName] = React.useState("");
   const [from, setFrom] = React.useState<string>("");
   const [to, setTo] = React.useState<string>("");
-  const [value, setValue] = React.useState<string>("");
   const [unit, setUnit] = React.useState("");
 
   return (
@@ -83,6 +84,7 @@ function TargetAdd({ state }: { state: State }) {
       <div className="mt-1">
         <div className="font-bold text-sm mb-0.5">Name</div>
         <Textarea
+          autoFocus
           placeholder="e.g. Montly active users have doubled"
           autoexpand={true}
           value={name}

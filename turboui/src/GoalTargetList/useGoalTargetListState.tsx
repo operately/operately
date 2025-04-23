@@ -8,7 +8,7 @@ export type TargetState = GoalTargetList.Target & {
 };
 
 export interface State {
-  newTargetActive: boolean;
+  addActive: boolean;
   targets: TargetState[];
 
   toggleExpand: (id: string) => void;
@@ -28,8 +28,6 @@ export interface State {
 }
 
 export function useGoalTargetListState(props: GoalTargetList.Props): State {
-  const [newTargetActive, setNewTargetActive] = React.useState(props.showAddNewDialog);
-
   const [targets, { update, remove, reorder, append }] = useListState<TargetState>(() => {
     return props.targets.map((t) => ({
       ...t,
@@ -40,7 +38,7 @@ export function useGoalTargetListState(props: GoalTargetList.Props): State {
 
   const state: State = {
     targets,
-    newTargetActive,
+    addActive: !!props.addActive,
 
     addTarget: (values) => {
       const target: TargetState = {
@@ -53,12 +51,12 @@ export function useGoalTargetListState(props: GoalTargetList.Props): State {
         editButtonVisible: !!props.showEditButton,
       };
 
-      setNewTargetActive(false);
+      props.onAddActiveChange?.(false);
       append(target);
     },
 
     cancelAdd: () => {
-      setNewTargetActive(false);
+      props.onAddActiveChange?.(false);
     },
 
     toggleExpand: (id: string) => {
