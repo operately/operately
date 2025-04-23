@@ -10,6 +10,7 @@ import { IconGripVertical } from "@tabler/icons-react";
 
 import TextareaAutosize from "react-textarea-autosize";
 import classNames from "../utils/classnames";
+import { State, TargetState, useGoalTargetListState } from "./useGoalTargetListState";
 
 export namespace GoalTargetList {
   export type Target = {
@@ -30,78 +31,43 @@ export namespace GoalTargetList {
 }
 
 export function GoalTargetList(props: GoalTargetList.Props) {
-  const [targets, setTargets] = React.useState<GoalTargetList.Target[]>(props.targets);
-
-  const onDrop = (_: any, targetId: string, indexInDropZone: number) => {
-    const draggedTarget = targets.find((t) => t.id === targetId);
-    if (!draggedTarget) return;
-
-    const newTargets = targets.filter((t) => t.id !== targetId);
-    newTargets.splice(indexInDropZone, 0, draggedTarget);
-    newTargets.forEach((t, idx) => (t.index = idx));
-    setTargets(newTargets);
-  };
-
-  React.useEffect(() => {
-    setTargets(props.targets);
-  }, [props.targets]);
+  const state = useGoalTargetListState(props);
 
   return (
-    <DragAndDropProvider onDrop={onDrop}>
-      <TargetList targets={targets} showEditButton={props.showEditButton} />
+    <DragAndDropProvider onDrop={state.reorder}>
+      <TargetList state={state} />
     </DragAndDropProvider>
   );
 }
 
-function TargetList(props: GoalTargetList.Props) {
-  const { ref } = useDropZone({ id: "targets", dependencies: [props.targets] });
-  const { itemStyle } = useDraggingAnimation("targets",props.targets);
+function TargetList({ state }: { state: State }) {
+  const { ref } = useDropZone({ id: "targets", dependencies: [state.targets] });
+  const { itemStyle } = useDraggingAnimation("targets", state.targets);
 
-  return <div ref={ref}>
-    {props.targets.map((target, index) => (
-      <TargetCard key={target.id} target={target} showEditButton={props.showEditButton} index={index} style={itemStyle(target.id!)} />
-    ))}
-  </div>
+  return (
+    <div ref={ref}>
+      {state.targets.map((target, index) => (
+        <TargetCard key={target.id} state={state} target={target} style={itemStyle(target.id!)} />
+      ))}
+    </div>
+  );
 }
 
-interface TargetCardProps {
-  target: GoalTargetList.Target;
-  index: number;
-  showEditButton?: boolean;
-  style: React.CSSProperties;
-}
+function TargetCard({ state, target, style }: { state: State; target: TargetState; style: React.CSSProperties }) {
+  const draggedStyle = { background: "var(--color-surface-base)" };
 
-function TargetCard({ target, index, showEditButton, style }: TargetCardProps) {
-  const [mode, setMode] = React.useState<"view" | "edit">(target.mode);
-
-  if (mode === "edit") {
-    return (
-      <TargetEdit
-        target={target}
-        onSaveClick={() => setMode("view")}
-        onCancelClick={() => setMode("view")}
-        index={index}
-      />
-    );
+  if (target.mode === "edit") {
+    return <TargetEdit state={state} target={target} />;
   }
 
-  if (mode === "view") {
-    return <TargetView 
-      draggedStyle={{ background: "var(--color-surface-base)" }}
-      undraggedStyle={style} target={target} onEditClick={() => setMode("edit")} showEditButton={showEditButton} />;
+  if (target.mode === "view") {
+    return <TargetView state={state} target={target} draggedStyle={draggedStyle} undraggedStyle={style} />;
   }
 
-  throw new Error(`Unknown mode: ${mode}`);
+  throw new Error(`Unknown mode: ${target.mode}`);
 }
 
-interface TargetEditProps {
-  target: GoalTargetList.Target;
-  index: number;
-  onSaveClick: () => void;
-  onCancelClick: () => void;
-}
-
-function TargetEdit({ target, index, onSaveClick, onCancelClick }: TargetEditProps) {
+function TargetEdit({ state, target }: { state: State; target: TargetState }) {
   const [name, setName] = React.useState(target.name);
   const [from, setFrom] = React.useState<string>(target.from.toString());
   const [to, setTo] = React.useState<string>(target.to.toString());
@@ -109,12 +75,12 @@ function TargetEdit({ target, index, onSaveClick, onCancelClick }: TargetEditPro
   const [unit, setUnit] = React.useState(target.unit);
 
   const outerClass = classNames({
-    "border-t border-stroke-base": index !== 0,
+    "border-t border-stroke-base": target.index !== 0,
   });
 
   const innerClass = classNames("border border-surface-outline rounded-lg p-4 shadow-lg", {
-    "mb-4": index === 0,
-    "my-4": index !== 0,
+    "mb-4": target.index === 0,
+    "my-4": target.index !== 0,
   });
 
   return (
@@ -176,11 +142,22 @@ function TargetEdit({ target, index, onSaveClick, onCancelClick }: TargetEditPro
         <div className="flex items-center gap-2 justify-end mt-4">
           <IconTrash size={16} className="text-red-500 cursor-pointer mr-2" />
 
-          <SecondaryButton size="xs" onClick={onCancelClick}>
+          <SecondaryButton size="xs" onClick={() => state.cancelEdit(target.id)}>
             Cancel
           </SecondaryButton>
 
-          <PrimaryButton size="xs" onClick={onSaveClick}>
+          <PrimaryButton
+            size="xs"
+            onClick={() =>
+              state.saveEdit(target.id, {
+                name,
+                from: parseFloat(from),
+                to: parseFloat(to),
+                value: parseFloat(value),
+                unit,
+              })
+            }
+          >
             Save
           </PrimaryButton>
         </div>
@@ -190,17 +167,14 @@ function TargetEdit({ target, index, onSaveClick, onCancelClick }: TargetEditPro
 }
 
 interface TargetViewProps {
-  target: GoalTargetList.Target;
-  onEditClick: () => void;
-  showEditButton?: boolean;
+  state: State;
+  target: TargetState;
 
   draggedStyle: React.CSSProperties;
   undraggedStyle: React.CSSProperties;
 }
 
-function TargetView({ target, onEditClick, showEditButton, draggedStyle, undraggedStyle }: TargetViewProps) {
-  const [open, toggle] = useToggle();
-
+function TargetView({ state, target, draggedStyle, undraggedStyle }: TargetViewProps) {
   const { ref, isDragging } = useDraggable({
     id: target.id!,
     zoneId: "targets",
@@ -211,8 +185,8 @@ function TargetView({ target, onEditClick, showEditButton, draggedStyle, undragg
   });
 
   const innerClass = classNames("grid gap-2 items-start cursor-pointer", {
-    "grid-cols-[1fr_auto_auto_14px]": showEditButton,
-    "grid-cols-[1fr_auto_14px]": !showEditButton,
+    "grid-cols-[1fr_auto_auto_14px]": target.editButtonVisible,
+    "grid-cols-[1fr_auto_14px]": !target.editButtonVisible,
   });
 
   const dragGripClass = classNames("opacity-0 group-hover:opacity-100 transition-all", {
@@ -223,34 +197,38 @@ function TargetView({ target, onEditClick, showEditButton, draggedStyle, undragg
 
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
-    onEditClick();
+
+    state.startEditing(target.id!);
+  };
+
+  const toggleExpand = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    state.toggleExpand(target.id!);
   };
 
   return (
-    <div className="group flex items-center w-[calc(100% + 16px)] -ml-[16px]" ref={ref} style={isDragging ? draggedStyle : undraggedStyle}>
+    <div
+      className="group flex items-center w-[calc(100% + 16px)] -ml-[16px]"
+      ref={ref}
+      style={isDragging ? draggedStyle : undraggedStyle}
+    >
       <IconGripVertical size={16} className={dragGripClass} />
 
       <div className={outerClass}>
-        <div onClick={toggle} className={innerClass}>
-          <TargetName target={target} truncate={!open} />
+        <div onClick={toggleExpand} className={innerClass}>
+          <TargetName target={target} truncate={!target.expanded} />
           <TargetValue target={target} />
-          {showEditButton && <EditValueButton onClick={handleEdit} />}
-          <ExpandIcon expanded={open} onClick={toggle} />
+          {target.editButtonVisible && <EditValueButton onClick={handleEdit} />}
+          <ExpandIcon expanded={target.expanded} onClick={toggleExpand} />
         </div>
-        {open && <TargetDetails target={target} />}
+
+        {target.expanded && <TargetDetails target={target} />}
       </div>
     </div>
   );
 }
 
-function useToggle(): [boolean, () => void] {
-  const [open, setOpen] = React.useState(false);
-  const toggle = () => setOpen(!open);
-
-  return [open, toggle];
-}
-
-function TargetName({ target, truncate }: { target: GoalTargetList.Target; truncate?: boolean }) {
+function TargetName({ target, truncate }: { target: TargetState; truncate?: boolean }) {
   const progress = calculateProgress(target);
   const nameClass = classNames("flex gap-2 flex-1", { truncate: truncate });
 

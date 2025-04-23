@@ -5,7 +5,7 @@ interface Props {
   expanded: boolean;
   className?: string;
 
-  onClick: () => void;
+  onClick: (e: React.MouseEvent) => void;
 }
 
 export function ExpandIcon({ expanded, onClick, className }: Props) {
