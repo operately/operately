@@ -1,3 +1,5 @@
+import * as React from "react";
+
 import type { Meta, StoryObj } from "@storybook/react";
 import { GoalTargetList } from "./index";
 import { Page } from "../Page";
@@ -9,15 +11,19 @@ const meta = {
     layout: "fullscreen",
   },
   decorators: [
-    (Story) => (
-      <div className="mt-12">
-        <Page title="Goal Target List" size="medium">
-          <div className="p-36">
-            <Story />
-          </div>
-        </Page>
-      </div>
-    ),
+    (_, context) => {
+      const [addActive, setAddActive] = React.useState(context.args.addActive);
+
+      return (
+        <div className="mt-12">
+          <Page title="Goal Target List" size="medium">
+            <div className="p-36">
+              <GoalTargetList {...context.args} addActive={addActive} onAddActiveChange={setAddActive} />
+            </div>
+          </Page>
+        </div>
+      );
+    },
   ],
 } satisfies Meta<typeof GoalTargetList>;
 
@@ -61,6 +67,7 @@ export const Default: Story = {
   args: {
     targets: mockTargets,
     showEditButton: true,
+    addActive: false,
   },
 };
 
@@ -81,5 +88,12 @@ export const DeleteMode: Story = {
 export const ReadOnly: Story = {
   args: {
     targets: mockTargets.map((t) => ({ ...t, showEditValueButton: false })),
+  },
+};
+
+export const AddMode: Story = {
+  args: {
+    targets: mockTargets,
+    addActive: true,
   },
 };

@@ -1,3 +1,4 @@
+import * as React from "react";
 import { GoalTargetList } from ".";
 import { useListState } from "../utils/useListState";
 
@@ -7,9 +8,13 @@ export type TargetState = GoalTargetList.Target & {
 };
 
 export interface State {
+  addActive: boolean;
   targets: TargetState[];
 
   toggleExpand: (id: string) => void;
+
+  cancelAdd: () => void;
+  addTarget: (newTarget: { name: string; from: number; to: number; unit: string }) => void;
 
   startEditing: (id: string) => void;
   cancelEdit: (id: string) => void;
@@ -23,7 +28,7 @@ export interface State {
 }
 
 export function useGoalTargetListState(props: GoalTargetList.Props): State {
-  const [targets, { update, remove, reorder }] = useListState<TargetState>(() => {
+  const [targets, { update, remove, reorder, append }] = useListState<TargetState>(() => {
     return props.targets.map((t) => ({
       ...t,
       editButtonVisible: !!props.showEditButton,
@@ -33,6 +38,26 @@ export function useGoalTargetListState(props: GoalTargetList.Props): State {
 
   const state: State = {
     targets,
+    addActive: !!props.addActive,
+
+    addTarget: (values) => {
+      const target: TargetState = {
+        ...values,
+        value: values.from,
+        id: crypto.randomUUID() as string,
+        index: targets.length,
+        mode: "view",
+        expanded: false,
+        editButtonVisible: !!props.showEditButton,
+      };
+
+      props.onAddActiveChange?.(false);
+      append(target);
+    },
+
+    cancelAdd: () => {
+      props.onAddActiveChange?.(false);
+    },
 
     toggleExpand: (id: string) => {
       update(id, (t) => ({ ...t, expanded: !t.expanded }));
