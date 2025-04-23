@@ -1,10 +1,10 @@
 defmodule Operately.WorkMaps.GetWorkMapQueryTest do
   use Operately.DataCase
 
+  alias Operately.Access.Binding
   alias Operately.WorkMaps.GetWorkMapQuery
-  alias Operately.Support.Factory
 
-  describe "execute/1 with only company_id parameter" do
+  describe "functionality - execute/1 with only company_id parameter" do
     setup ctx do
       ctx =
         ctx
@@ -29,7 +29,7 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
     end
 
     test "returns only root goals and projects for the specified company", ctx do
-      {:ok, work_map} = GetWorkMapQuery.execute(%{company_id: ctx.company.id})
+      {:ok, work_map} = GetWorkMapQuery.execute(:system, %{company_id: ctx.company.id})
 
       # Should return 4 items: 2 root goals and 2 root projects
       assert length(work_map) == 4
@@ -52,7 +52,7 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
     end
   end
 
-  describe "execute/1 with company_id and space_id parameters" do
+  describe "functionality - execute/1 with company_id and space_id parameters" do
     setup ctx do
       ctx
       |> Factory.setup()
@@ -80,7 +80,7 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
     end
 
     test "returns only goals and projects for the specified space", %{company: company, space1: space1} do
-      {:ok, work_map} = GetWorkMapQuery.execute(%{company_id: company.id, space_id: space1.id})
+      {:ok, work_map} = GetWorkMapQuery.execute(:system, %{company_id: company.id, space_id: space1.id})
 
       # Should return 2 items: 1 goal and 1 project from space1
       assert length(work_map) == 2
@@ -92,7 +92,7 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
     end
 
     test "returns only goals and projects for space2 with correct hierarchy", %{company: company, space2: space2} = ctx do
-      {:ok, work_map} = GetWorkMapQuery.execute(%{company_id: company.id, space_id: space2.id})
+      {:ok, work_map} = GetWorkMapQuery.execute(:system, %{company_id: company.id, space_id: space2.id})
 
       # Should return 2 items: 1 root goal and 1 root project from space2
       assert length(work_map) == 2
@@ -137,7 +137,7 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
     end
 
     test "returns only projects for space3", %{company: company, space3: space3} = ctx do
-      {:ok, work_map} = GetWorkMapQuery.execute(%{company_id: company.id, space_id: space3.id})
+      {:ok, work_map} = GetWorkMapQuery.execute(:system, %{company_id: company.id, space_id: space3.id})
 
       # Should return 3 projects from space3
       assert length(work_map) == 3
@@ -151,7 +151,7 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
     end
   end
 
-  describe "execute/1 with company_id and parent_goal_id parameters" do
+  describe "functionality - execute/1 with company_id and parent_goal_id parameters" do
     setup ctx do
       ctx
       |> Factory.setup()
@@ -172,7 +172,7 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
     end
 
     test "returns only child goals and projects for the specified parent goal", %{company: company, parent_goal: parent_goal} = ctx do
-      {:ok, work_map} = GetWorkMapQuery.execute(%{company_id: company.id, parent_goal_id: parent_goal.id})
+      {:ok, work_map} = GetWorkMapQuery.execute(:system, %{company_id: company.id, parent_goal_id: parent_goal.id})
 
       # Should return 3 items: 2 child goals and 1 child project
       assert length(work_map) == 3
@@ -222,7 +222,7 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
     end
   end
 
-  describe "execute/1 with company_id and owner_id parameters" do
+  describe "functionality - execute/1 with company_id and owner_id parameters" do
     setup ctx do
       ctx
       |> Factory.setup()
@@ -239,7 +239,7 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
     end
 
     test "returns only goals and projects owned by the specified person", %{company: company, creator: creator} do
-      {:ok, work_map} = GetWorkMapQuery.execute(%{company_id: company.id, owner_id: creator.id})
+      {:ok, work_map} = GetWorkMapQuery.execute(:system, %{company_id: company.id, owner_id: creator.id})
 
       # Should return 2 items: 1 goal and 1 project owned by creator
       assert length(work_map) == 2
@@ -251,7 +251,7 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
     end
   end
 
-  describe "execute/1 with deeply nested structure" do
+  describe "functionality - execute/1 with deeply nested structure" do
     setup ctx do
       ctx
       |> Factory.setup()
@@ -273,7 +273,7 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
     end
 
     test "returns complete hierarchy with all nested children", ctx do
-      {:ok, work_map} = GetWorkMapQuery.execute(%{company_id: ctx.company.id})
+      {:ok, work_map} = GetWorkMapQuery.execute(:system, %{company_id: ctx.company.id})
 
       # Should return only the root goal (other goals are nested as children)
       assert length(work_map) == 1
@@ -305,7 +305,7 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
     end
   end
 
-  describe "execute/1 with all parameters combined" do
+  describe "functionality - execute/1 with all parameters combined" do
     setup ctx do
       ctx
       |> Factory.setup()
@@ -329,7 +329,7 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
 
     test "filters correctly with all parameters", %{company: company, space1: space1, parent_goal1: parent_goal1, creator: creator} do
       # Test with all parameters
-      {:ok, work_map} = GetWorkMapQuery.execute(%{
+      {:ok, work_map} = GetWorkMapQuery.execute(:system, %{
         company_id: company.id,
         space_id: space1.id,
         parent_goal_id: parent_goal1.id,
@@ -348,6 +348,53 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
         assert Enum.member?([:goal, :project], item.type)
         assert item.parent_id == parent_goal1.id
         assert item.owner.id == creator.id
+      end)
+    end
+  end
+
+  describe "permissions - query root projects" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.add_space(:space)
+      |> Factory.add_company_member(:company_member)
+      |> Factory.add_space_member(:space_member, :space)
+      |> Factory.add_space_member(:champion, :space)
+      |> Factory.add_project(:public_project, :space)
+      |> Factory.add_project(:project1, :space, company_access_level: Binding.no_access())
+      |> Factory.add_project(:project2, :space, company_access_level: Binding.no_access())
+      |> Factory.add_project(:secret_project, :space, champion: :champion, company_access_level: Binding.no_access(), space_access_level: Binding.no_access())
+    end
+
+    test "company member can see only public project", ctx do
+      {:ok, [item]} = GetWorkMapQuery.execute(ctx.company_member, %{ company_id: ctx.company.id })
+      assert item.id == ctx.public_project.id
+    end
+
+    test "space member can't see secret_project", ctx do
+      expected_projects = [ctx.public_project.id, ctx.project1.id, ctx.project2.id]
+      {:ok, work_map} = GetWorkMapQuery.execute(ctx.space_member, %{ company_id: ctx.company.id })
+
+      assert length(work_map) == 3
+      Enum.each(work_map, fn item ->
+        assert Enum.member?(expected_projects, item.id)
+      end)
+    end
+
+    test "admin and champion can see all projects", ctx do
+      expected_projects = [ctx.public_project.id, ctx.project1.id, ctx.project2.id, ctx.secret_project.id]
+      {:ok, work_map} = GetWorkMapQuery.execute(ctx.creator, %{ company_id: ctx.company.id })
+
+      assert length(work_map) == 4
+      Enum.each(work_map, fn item ->
+        assert Enum.member?(expected_projects, item.id)
+      end)
+
+      {:ok, work_map} = GetWorkMapQuery.execute(ctx.champion, %{ company_id: ctx.company.id })
+
+      assert length(work_map) == 4
+      Enum.each(work_map, fn item ->
+        assert Enum.member?(expected_projects, item.id)
       end)
     end
   end

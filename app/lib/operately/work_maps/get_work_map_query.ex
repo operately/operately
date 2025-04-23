@@ -4,47 +4,46 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
   alias Operately.Repo
   alias Operately.Goals.Goal
   alias Operately.Projects.Project
-  alias Operately.WorkMaps.WorkMapItem
-  alias Operately.WorkMaps.WorkMap
+  alias Operately.WorkMaps.{WorkMap, WorkMapItem}
+  alias Operately.Access.Filters
 
   @doc """
   Retrieves a work map based on the provided parameters.
 
   Parameters:
-  - company_id (required): The ID of the company
-  - space_id (optional): The ID of the space/group
-  - parent_goal_id (optional): The ID of the parent goal
-  - owner_id (optional): The ID of the owner/champion
+  - person (unused): The current person making the request
+  - args: A map containing the following parameters:
+    - company_id (required): The ID of the company
+    - space_id (optional): The ID of the space/group
+    - parent_goal_id (optional): The ID of the parent goal
+    - owner_id (optional): The ID of the owner/champion
   """
-  def execute(args) do
+  def execute(person, args) do
     company_id = Map.get(args, :company_id)
     space_id = Map.get(args, :space_id)
     parent_goal_id = Map.get(args, :parent_goal_id)
     owner_id = Map.get(args, :owner_id)
 
-    work_map = get_work_map(company_id, space_id, parent_goal_id, owner_id)
+    goals = get_goals_tree(person, company_id, space_id, parent_goal_id, owner_id)
+    root_projects = get_root_projects(person, company_id, space_id, owner_id, parent_goal_id)
+
+    work_map = build_work_map(goals, root_projects)
 
     {:ok, work_map}
   end
 
-  defp get_work_map(company_id, space_id, parent_goal_id, owner_id) do
-    goals = get_goals_tree(company_id, space_id, parent_goal_id, owner_id)
-    root_projects = get_root_projects(company_id, space_id, owner_id, parent_goal_id)
-
-    build_work_map(goals, root_projects)
-  end
-
-  defp get_root_projects(company_id, space_id, owner_id, goal_id) do
+  defp get_root_projects(person, company_id, space_id, owner_id, goal_id) do
     from(Project, as: :projects)
     |> where([p], p.company_id == ^company_id)
     |> filter_by_space(space_id)
     |> filter_by_owner_project(owner_id)
     |> filter_by_goal(goal_id)
     |> join_preload_project_associations()
+    |> filter_by_view_access(person, :projects)
     |> Repo.all()
   end
 
-  defp get_goals_tree(company_id, space_id, parent_goal_id, owner_id) do
+  defp get_goals_tree(_person, company_id, space_id, parent_goal_id, owner_id) do
     initial_query =
       Goal
       |> where([g], g.company_id == ^company_id)
@@ -145,5 +144,10 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
     query
     |> join(:inner, [p], c in Operately.Projects.Contributor, on: c.project_id == p.id and c.role == :champion)
     |> where([_, c], c.person_id == ^owner_id)
+  end
+
+  defp filter_by_view_access(query, :system, _name), do: query
+  defp filter_by_view_access(query, person = %Operately.People.Person{}, name) do
+    Filters.filter_by_view_access(query, person.id, named_binding: name)
   end
 end

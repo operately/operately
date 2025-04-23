@@ -10,14 +10,16 @@ defmodule Operately.Support.Factory.Projects do
     champion = Keyword.get(opts, :champion, nil)
     reviewer = Keyword.get(opts, :reviewer, nil)
     goal = Keyword.get(opts, :goal, nil)
+    company_access_level = Keyword.get(opts, :company_access_level, Binding.edit_access())
+    space_access_level = Keyword.get(opts, :space_access_level, Binding.edit_access())
 
     atts = %{
       name: Keyword.get(opts, :name, Atom.to_string(testid)),
       creator_id: ctx[creator].id,
       company_id: ctx.company.id,
       group_id: ctx[space_name].id,
-      company_access_level: Binding.edit_access(),
-      space_access_level: Binding.edit_access()
+      company_access_level: company_access_level,
+      space_access_level: space_access_level,
     }
 
     project =
