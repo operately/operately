@@ -3,7 +3,6 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
 
   alias Operately.WorkMaps.GetWorkMapQuery
   alias Operately.Support.Factory
-  alias Operately.Repo
 
   describe "execute/1 with only company_id parameter" do
     setup ctx do
@@ -62,7 +61,7 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
       |> Factory.add_space(:space1)
       |> Factory.add_goal(:goal1, :space1)
       |> Factory.add_project(:project1, :space1)
-      
+
       # space 2
       |> Factory.add_space(:space2)
       |> Factory.add_project(:root_project, :space2)
@@ -88,7 +87,7 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
 
       # Verify all items belong to space1
       Enum.each(work_map, fn item ->
-        assert item.item.group_id == space1.id
+        assert item.space.id == space1.id
       end)
     end
 
@@ -99,41 +98,41 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
       assert length(work_map) == 2
 
       # Find the root goal
-      root_goal_item = Enum.find(work_map, fn item -> 
-        item.type == :goal && item.item.parent_goal_id == nil
+      root_goal_item = Enum.find(work_map, fn item ->
+        item.type == :goal && item.parent_id == nil
       end)
       assert root_goal_item
 
       # Find the root project
-      assert Enum.find(work_map, fn item -> 
-        item.type == :project && item.item.goal_id == nil
+      assert Enum.find(work_map, fn item ->
+        item.type == :project && item.parent_id == nil
       end)
 
       # Verify all items belong to space2
       Enum.each(work_map, fn item ->
-        assert item.item.group_id == space2.id
+        assert item.space.id == space2.id
       end)
 
       # Verify the hierarchy
       assert length(root_goal_item.children) == 2
-      
+
       # Find child_goal1 in children
-      child_goal1_item = Enum.find(root_goal_item.children, fn item -> 
-        item.type == :goal && item.item.id == ctx.child_goal1.id
+      child_goal1_item = Enum.find(root_goal_item.children, fn item ->
+        item.type == :goal && item.id == ctx.child_goal1.id
       end)
       assert child_goal1_item
-      
+
       # Verify child_goal1 has grandchild_goal
       assert length(child_goal1_item.children) == 1
       grandchild_goal_item = Enum.at(child_goal1_item.children, 0)
-      assert grandchild_goal_item.item.id == ctx.grandchild_goal.id
-      
+      assert grandchild_goal_item.id == ctx.grandchild_goal.id
+
       # Verify grandchild_goal has 2 projects
       assert length(grandchild_goal_item.children) == 2
 
       Enum.each(grandchild_goal_item.children, fn item ->
         assert item.type == :project
-        assert Enum.member?([ctx.grandchild_project1.id, ctx.grandchild_project2.id], item.item.id)
+        assert Enum.member?([ctx.grandchild_project1.id, ctx.grandchild_project2.id], item.id)
       end)
     end
 
@@ -146,8 +145,8 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
       # Verify all items are projects and belong to space3
       Enum.each(work_map, fn item ->
         assert item.type == :project
-        assert item.item.group_id == space3.id
-        assert Enum.member?([ctx.project_s3_1.id, ctx.project_s3_2.id, ctx.project_s3_3.id], item.item.id)
+        assert item.space.id == space3.id
+        assert Enum.member?([ctx.project_s3_1.id, ctx.project_s3_2.id, ctx.project_s3_3.id], item.id)
       end)
     end
   end
@@ -157,7 +156,7 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
       ctx
       |> Factory.setup()
       |> Factory.add_space(:space)
-      
+
       # parent goal
       |> Factory.add_goal(:parent_goal, :space)
       |> Factory.add_goal(:child_goal1, :space, parent_goal: :parent_goal)
@@ -191,7 +190,7 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
       end)
 
       # Find child_goal1 in the results
-      child_goal1_item = Enum.find(work_map, fn item -> 
+      child_goal1_item = Enum.find(work_map, fn item ->
         item.type == :goal && item.id == ctx.child_goal1.id
       end)
 
@@ -199,25 +198,25 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
       assert length(child_goal1_item.children) == 1
       grandchild_goal_item = Enum.at(child_goal1_item.children, 0)
       assert grandchild_goal_item.id == ctx.grandchild_goal.id
-      
+
       # Verify grandchild_goal has 2 projects
       assert length(grandchild_goal_item.children) == 2
-      
+
       # Verify the projects under grandchild_goal
-      project_ids = Enum.map(grandchild_goal_item.children, fn item -> 
+      project_ids = Enum.map(grandchild_goal_item.children, fn item ->
         assert item.type == :project
         item.id
       end)
       assert Enum.sort(project_ids) == Enum.sort([ctx.grandchild_project1.id, ctx.grandchild_project2.id])
-      
+
       # Verify child_goal2 has no children
-      child_goal2_item = Enum.find(work_map, fn item -> 
+      child_goal2_item = Enum.find(work_map, fn item ->
         item.type == :goal && item.id == ctx.child_goal2.id
       end)
       assert child_goal2_item.children == []
-      
+
       # Verify child_project is in the results
-      assert Enum.find(work_map, fn item -> 
+      assert Enum.find(work_map, fn item ->
         item.type == :project && item.id == ctx.child_project.id
       end)
     end
@@ -229,11 +228,11 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
       |> Factory.setup()
       |> Factory.add_space(:space)
       |> Factory.add_company_member(:member)
-      
+
       # Create goals with different champions
       |> Factory.add_goal(:goal1, :space, champion: :creator)
       |> Factory.add_goal(:goal2, :space, champion: :member)
-      
+
       # Create projects with different champions
       |> Factory.add_project(:project1, :space, champion: :creator)
       |> Factory.add_project(:project2, :space, champion: :member)
@@ -247,12 +246,7 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
 
       # Verify ownership
       Enum.each(work_map, fn item ->
-        case item.type do
-          :goal -> assert item.item.champion_id == creator.id
-          :project -> 
-            champion = Repo.preload(item.item, :champion).champion
-            assert champion.id == creator.id
-        end
+        assert item.owner.id == creator.id
       end)
     end
   end
@@ -262,17 +256,17 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
       ctx
       |> Factory.setup()
       |> Factory.add_space(:space)
-      
+
       # Create a 3-level deep goal hierarchy
       |> Factory.add_goal(:root_goal, :space)
       |> Factory.add_goal(:level1_goal, :space, parent_goal: :root_goal)
       |> Factory.add_goal(:level2_goal, :space, parent_goal: :level1_goal)
-      
+
       # Add projects at each level
       |> Factory.add_project(:root_project, :space, goal: :root_goal)
       |> Factory.add_project(:level1_project, :space, goal: :level1_goal)
       |> Factory.add_project(:level2_project, :space, goal: :level2_goal)
-      
+
       # Add a sibling goal at level 1
       |> Factory.add_goal(:level1_goal2, :space, parent_goal: :root_goal)
       |> Factory.add_project(:level1_project2, :space, goal: :level1_goal2)
@@ -283,29 +277,29 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
 
       # Should return only the root goal (other goals are nested as children)
       assert length(work_map) == 1
-      
+
       # Get the root goal
       root_item = Enum.find(work_map, fn item -> item.type == :goal end)
       assert root_item
-      
+
       # Root goal should have 3 children: 2 level1 goals and 1 project
       assert length(root_item.children) == 3
-      
+
       # Find level1_goal in children
-      level1_item = Enum.find(root_item.children, fn item -> 
-        item.type == :goal && item.item.id == ctx.level1_goal.id
+      level1_item = Enum.find(root_item.children, fn item ->
+        item.type == :goal && item.id == ctx.level1_goal.id
       end)
       assert level1_item
-      
+
       # level1_goal should have 2 children: 1 level2 goal and 1 project
       assert length(level1_item.children) == 2
-      
+
       # Find level2_goal in children
-      level2_item = Enum.find(level1_item.children, fn item -> 
-        item.type == :goal && item.item.id == ctx.level2_goal.id
+      level2_item = Enum.find(level1_item.children, fn item ->
+        item.type == :goal && item.id == ctx.level2_goal.id
       end)
       assert level2_item
-      
+
       # level2_goal should have 1 child: 1 project
       assert length(level2_item.children) == 1
     end
@@ -318,16 +312,16 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
       |> Factory.add_space(:space1)
       |> Factory.add_space(:space2)
       |> Factory.add_company_member(:member)
-      
+
       # Create goals in space1 with different champions
       |> Factory.add_goal(:parent_goal1, :space1, champion: :creator)
       |> Factory.add_goal(:child_goal1, :space1, parent_goal: :parent_goal1, champion: :creator)
       |> Factory.add_goal(:child_goal2, :space1, parent_goal: :parent_goal1, champion: :member)
-      
+
       # Create goals in space2
       |> Factory.add_goal(:parent_goal2, :space2, champion: :creator)
       |> Factory.add_goal(:child_goal3, :space2, parent_goal: :parent_goal2, champion: :creator)
-      
+
       # Create projects
       |> Factory.add_project(:project1, :space1, goal: :parent_goal1, champion: :creator)
       |> Factory.add_project(:project2, :space1, goal: :parent_goal1, champion: :member)
@@ -344,12 +338,12 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
 
       # Should return 2 items: 1 child goal and 1 project owned by creator in space1 under parent_goal1
       assert length(work_map) == 2
-      
+
       # Verify correct filtering
       Enum.each(work_map, fn item ->
         # Check space
         assert item.space.id == space1.id
-        
+
         # Check parent relationship
         assert Enum.member?([:goal, :project], item.type)
         assert item.parent_id == parent_goal1.id
