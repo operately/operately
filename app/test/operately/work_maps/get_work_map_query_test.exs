@@ -353,6 +353,13 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
   end
 
   describe "permissions - query root projects" do
+    @table [
+      %{person: :company_member,  count: 1,   expected_projects: [:public_project]},
+      %{person: :space_member,    count: 3,   expected_projects: [:public_project, :project1, :project2]},
+      %{person: :creator,         count: 4,   expected_projects: [:public_project, :project1, :project2, :secret_project]},
+      %{person: :champion,        count: 4,   expected_projects: [:public_project, :project1, :project2, :secret_project]},
+    ]
+
     setup ctx do
       ctx
       |> Factory.setup()
@@ -366,36 +373,63 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
       |> Factory.add_project(:secret_project, :space, champion: :champion, company_access_level: Binding.no_access(), space_access_level: Binding.no_access())
     end
 
-    test "company member can see only public project", ctx do
-      {:ok, [item]} = GetWorkMapQuery.execute(ctx.company_member, %{ company_id: ctx.company.id })
-      assert item.id == ctx.public_project.id
+    tabletest @table do
+      test "#{@test.person} has access to #{Enum.map_join(@test.expected_projects, ", ", &Atom.to_string/1)}", ctx do
+        expected_projects = Enum.map(@test.expected_projects, &ctx[&1].id)
+        {:ok, work_map} = GetWorkMapQuery.execute(ctx[@test.person], %{ company_id: ctx.company.id })
+
+        assert length(work_map) == @test.count
+        Enum.each(work_map, fn item ->
+          assert Enum.member?(expected_projects, item.id)
+        end)
+      end
+    end
+  end
+
+  describe "permissions - query nested projects" do
+    @table [
+      %{person: :company_member,  count: 1,   expected_projects: [:public_project]},
+      %{person: :space_member,    count: 3,   expected_projects: [:public_project, :project1, :project2]},
+      %{person: :creator,         count: 4,   expected_projects: [:public_project, :project1, :project2, :secret_project]},
+      %{person: :champion,        count: 4,   expected_projects: [:public_project, :project1, :project2, :secret_project]},
+    ]
+
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.add_space(:space)
+      |> Factory.add_company_member(:company_member)
+      |> Factory.add_space_member(:space_member, :space)
+      |> Factory.add_space_member(:champion, :space)
+      |> Factory.add_goal(:parent_goal, :space)
+      |> Factory.add_goal(:child_goal, :space, parent_goal: :parent_goal)
+
+      |> Factory.add_project(:public_project, :space, goal: :child_goal)
+      |> Factory.add_project(:project1, :space, goal: :child_goal, company_access_level: Binding.no_access())
+      |> Factory.add_project(:project2, :space, goal: :child_goal, company_access_level: Binding.no_access())
+      |> Factory.add_project(:secret_project, :space, [
+        goal: :child_goal,
+        champion: :champion,
+        company_access_level: Binding.no_access(),
+        space_access_level: Binding.no_access(),
+      ])
     end
 
-    test "space member can't see secret_project", ctx do
-      expected_projects = [ctx.public_project.id, ctx.project1.id, ctx.project2.id]
-      {:ok, work_map} = GetWorkMapQuery.execute(ctx.space_member, %{ company_id: ctx.company.id })
+    tabletest @table do
+      test "#{@test.person} has access to #{Enum.map_join(@test.expected_projects, ", ", &Atom.to_string/1)}", ctx do
+        {:ok, [parent_goal]} = GetWorkMapQuery.execute(ctx[@test.person], %{ company_id: ctx.company.id })
+        assert parent_goal.id == ctx.parent_goal.id
 
-      assert length(work_map) == 3
-      Enum.each(work_map, fn item ->
-        assert Enum.member?(expected_projects, item.id)
-      end)
-    end
+        [child_goal] = parent_goal.children
+        assert child_goal.id == ctx.child_goal.id
 
-    test "admin and champion can see all projects", ctx do
-      expected_projects = [ctx.public_project.id, ctx.project1.id, ctx.project2.id, ctx.secret_project.id]
-      {:ok, work_map} = GetWorkMapQuery.execute(ctx.creator, %{ company_id: ctx.company.id })
+        expected_projects = Enum.map(@test.expected_projects, &ctx[&1].id)
 
-      assert length(work_map) == 4
-      Enum.each(work_map, fn item ->
-        assert Enum.member?(expected_projects, item.id)
-      end)
-
-      {:ok, work_map} = GetWorkMapQuery.execute(ctx.champion, %{ company_id: ctx.company.id })
-
-      assert length(work_map) == 4
-      Enum.each(work_map, fn item ->
-        assert Enum.member?(expected_projects, item.id)
-      end)
+        Enum.each(child_goal.children, fn item ->
+          assert Enum.member?(expected_projects, item.id)
+        end)
+        assert length(child_goal.children) == @test.count
+      end
     end
   end
 end
