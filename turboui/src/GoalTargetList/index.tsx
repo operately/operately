@@ -27,6 +27,9 @@ export namespace GoalTargetList {
   export interface Props {
     targets: Target[];
     showEditButton?: boolean;
+
+    addActive?: boolean;
+    onAddActiveChange?: (active: boolean) => void;
   }
 }
 
@@ -48,6 +51,8 @@ function TargetList({ state }: { state: State }) {
       {state.targets.map((target, index) => (
         <TargetCard key={target.id} state={state} target={target} />
       ))}
+
+      {state.addActive && <TargetAdd state={state} />}
     </div>
   );
 }
@@ -68,6 +73,77 @@ function TargetCard({ state, target }: { state: State; target: TargetState }) {
   throw new Error(`Unknown mode: ${target.mode}`);
 }
 
+function TargetAdd({ state }: { state: State }) {
+  const [name, setName] = React.useState("");
+  const [from, setFrom] = React.useState<string>("");
+  const [to, setTo] = React.useState<string>("");
+  const [unit, setUnit] = React.useState("");
+
+  return (
+    <InlineModal index={100}>
+      <div className="mt-1">
+        <div className="font-bold text-sm mb-0.5">Name</div>
+        <Textarea
+          autoFocus
+          placeholder="e.g. Montly active users have doubled"
+          autoexpand={true}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="w-full border border-stroke-base rounded-lg py-1.5 px-3"
+        />
+      </div>
+
+      <div className="flex items-center gap-2 mt-1">
+        <div className="flex-0.5">
+          <div className="font-bold text-sm mb-0.5">Start</div>
+
+          <Textarea
+            value={from}
+            placeholder="e.g. 10000"
+            onChange={(e) => setFrom(e.target.value)}
+            className="w-full border border-stroke-base rounded-lg py-1.5 px-3"
+          />
+        </div>
+
+        <div className="flex-1">
+          <div className="font-bold text-sm mb-0.5">Target</div>
+
+          <Textarea
+            value={to}
+            placeholder="e.g. 15000"
+            onChange={(e) => setTo(e.target.value)}
+            className="w-full border border-stroke-base rounded-lg py-1.5 px-3"
+          />
+        </div>
+
+        <div className="flex-1">
+          <div className="font-bold text-sm mb-0.5">Unit</div>
+
+          <Textarea
+            value={unit}
+            placeholder="e.g. users"
+            onChange={(e) => setUnit(e.target.value)}
+            className="w-full border border-stroke-base rounded-lg py-1.5 px-3"
+          />
+        </div>
+      </div>
+
+      <div className="flex items-center gap-2 justify-end mt-4">
+        <SecondaryButton size="xs" onClick={() => state.cancelAdd()}>
+          Cancel
+        </SecondaryButton>
+
+        <PrimaryButton
+          size="xs"
+          onClick={() => state.addTarget({ name, from: parseFloat(from), to: parseFloat(to), unit })}
+        >
+          Add Target
+        </PrimaryButton>
+      </div>
+    </InlineModal>
+  );
+}
+
 function TargetEdit({ state, target }: { state: State; target: TargetState }) {
   const [name, setName] = React.useState(target.name);
   const [from, setFrom] = React.useState<string>(target.from.toString());
@@ -76,7 +152,7 @@ function TargetEdit({ state, target }: { state: State; target: TargetState }) {
   const [unit, setUnit] = React.useState(target.unit);
 
   return (
-    <InlineModal target={target}>
+    <InlineModal index={target.index}>
       <div className="">
         <div className="font-bold text-sm mb-1">Current Value</div>
 
@@ -161,19 +237,18 @@ function DeleteButton({ state, target }: { state: State; target: TargetState }) 
     state.startDeleting(target.id);
   };
 
+  const className = "rounded-full p-1.5 flex items-center justify-center mr-1 hover:bg-surface-dimmed cursor-pointer";
+
   return (
-    <div
-      className="rounded-full p-1.5 flex items-center justify-center mr-1 hover:bg-surface-dimmed cursor-pointer"
-      onClick={clickHandler}
-    >
-      <IconTrash size={16} className="text-red-500 cursor-pointer" onClick={() => state.startDeleting(target.id)} />
+    <div className={className} onClick={clickHandler}>
+      <IconTrash size={16} className="text-red-500" />
     </div>
   );
 }
 
 function TargetDelete({ state, target }: { state: State; target: TargetState }) {
   return (
-    <InlineModal target={target}>
+    <InlineModal index={target.index}>
       <div className="mb-2 font-bold">Delete {target.name} target?</div>
       <p>This will remove your target and all associated progress tracking.</p>
 
@@ -190,12 +265,12 @@ function TargetDelete({ state, target }: { state: State; target: TargetState }) 
   );
 }
 
-function InlineModal({ target, children }: { target: TargetState; children: React.ReactNode }) {
+function InlineModal({ index, children }: { index: number; children: React.ReactNode }) {
   const outerClass = "border-b border-stroke-base";
 
   const innerClass = classNames("border border-surface-outline rounded-lg p-4 shadow-lg", {
-    "mb-4": target.index === 0,
-    "my-4": target.index !== 0,
+    "mb-4": index === 0,
+    "my-4": index !== 0,
   });
 
   return (
@@ -361,6 +436,7 @@ interface TextareaProps {
 
   value: string;
   onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  placeholder?: string;
 }
 
 function Textarea(props: TextareaProps) {
@@ -370,6 +446,7 @@ function Textarea(props: TextareaProps) {
     <TextareaAutosize
       value={props.value}
       onChange={props.onChange}
+      placeholder={props.placeholder}
       className={className}
       style={{ resize: "none" }}
       autoFocus={props.autoFocus}
