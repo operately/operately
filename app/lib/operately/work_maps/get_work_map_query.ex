@@ -25,19 +25,21 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
     owner_id = Map.get(args, :owner_id)
 
     goals = get_goals_tree(person, company_id, space_id, parent_goal_id, owner_id)
-    root_projects = get_root_projects(person, company_id, space_id, owner_id, parent_goal_id)
+    projects = get_projects(person, company_id, space_id, owner_id, parent_goal_id, goals)
 
-    work_map = build_work_map(goals, root_projects)
+    work_map = build_work_map(goals, projects)
 
     {:ok, work_map}
   end
 
-  defp get_root_projects(person, company_id, space_id, owner_id, goal_id) do
+  defp get_projects(person, company_id, space_id, owner_id, goal_id, goals) do
+    goal_ids = Enum.map(goals, &(&1.id))
+
     from(Project, as: :projects)
     |> where([p], p.company_id == ^company_id)
     |> filter_by_space(space_id)
     |> filter_by_owner_project(owner_id)
-    |> filter_by_goal(goal_id)
+    |> filter_by_goal(goal_id, goal_ids)
     |> join_preload_project_associations()
     |> filter_by_view_access(person, :projects)
     |> Repo.all()
@@ -69,9 +71,7 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
   end
 
   defp build_work_map(goals, projects) do
-    Enum.map(goals, fn goal -> [goal, goal.projects] end)
-    |> Enum.concat(projects)
-    |> List.flatten()
+    goals ++ projects
     |> Enum.map(fn item -> WorkMapItem.build_item(item, []) end)
     |> WorkMap.build_hierarchy()
   end
@@ -85,17 +85,10 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
     |> join(:left, [g], c in assoc(g, :champion), as: :champion)
     |> join(:left, [g], gr in assoc(g, :group), as: :group)
     |> join(:left, [g], u in assoc(g, :last_update), as: :last_update)
-    |> join(:left, [g], p in assoc(g, :projects), as: :projects)
-    |> preload([champion: c, group: gr, last_update: u, projects: p],
+    |> preload([champion: c, group: gr, last_update: u],
       champion: c,
       group: gr,
       last_update: u
-    )
-    |> join(:left, [projects: p], pc in assoc(p, :champion), as: :p_champion)
-    |> join(:left, [projects: p], pg in assoc(p, :group), as: :p_group)
-    |> join(:left, [projects: p], pm in assoc(p, :milestones), as: :p_milestones)
-    |> preload([projects: p, p_champion: pc, p_group: pg, p_milestones: pm],
-      projects: {p, [champion: pc, group: pg, milestones: pm]}
     )
   end
 
@@ -122,11 +115,11 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
     where(query, [g], g.parent_goal_id == ^parent_goal_id)
   end
 
-  defp filter_by_goal(query, nil) do
-    where(query, [p], is_nil(p.goal_id))
+  defp filter_by_goal(query, nil, goal_ids) do
+    where(query, [p], is_nil(p.goal_id) or p.goal_id in ^goal_ids)
   end
-  defp filter_by_goal(query, goal_id) do
-    where(query, [p], p.goal_id == ^goal_id)
+  defp filter_by_goal(query, id, goal_ids) do
+    where(query, [p], p.goal_id in ^[id | goal_ids])
   end
 
   defp filter_by_space(query, nil), do: query
