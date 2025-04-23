@@ -3,7 +3,7 @@ import React from "react";
 import { ExpandIcon } from "./ExpandIcon";
 import { PieChart } from "../PieChart";
 
-import { PrimaryButton, SecondaryButton } from "../Button";
+import { DangerButton, PrimaryButton, SecondaryButton } from "../Button";
 import { IconTrash } from "@tabler/icons-react";
 import { DragAndDropProvider, useDraggable, useDraggingAnimation, useDropZone } from "../utils/DragAndDrop";
 import { IconGripVertical } from "@tabler/icons-react";
@@ -21,7 +21,7 @@ export namespace GoalTargetList {
     unit: string;
     name: string;
     index: number;
-    mode: "view" | "edit";
+    mode: "view" | "edit" | "delete";
   };
 
   export interface Props {
@@ -42,26 +42,27 @@ export function GoalTargetList(props: GoalTargetList.Props) {
 
 function TargetList({ state }: { state: State }) {
   const { ref } = useDropZone({ id: "targets", dependencies: [state.targets] });
-  const { itemStyle } = useDraggingAnimation("targets", state.targets);
 
   return (
     <div ref={ref}>
       {state.targets.map((target, index) => (
-        <TargetCard key={target.id} state={state} target={target} style={itemStyle(target.id!)} />
+        <TargetCard key={target.id} state={state} target={target} />
       ))}
     </div>
   );
 }
 
-function TargetCard({ state, target, style }: { state: State; target: TargetState; style: React.CSSProperties }) {
-  const draggedStyle = { background: "var(--color-surface-base)" };
+function TargetCard({ state, target }: { state: State; target: TargetState }) {
+  if (target.mode === "view") {
+    return <TargetView state={state} target={target} />;
+  }
 
   if (target.mode === "edit") {
     return <TargetEdit state={state} target={target} />;
   }
 
-  if (target.mode === "view") {
-    return <TargetView state={state} target={target} draggedStyle={draggedStyle} undraggedStyle={style} />;
+  if (target.mode === "delete") {
+    return <TargetDelete state={state} target={target} />;
   }
 
   throw new Error(`Unknown mode: ${target.mode}`);
@@ -74,9 +75,123 @@ function TargetEdit({ state, target }: { state: State; target: TargetState }) {
   const [value, setValue] = React.useState<string>(target.value.toString());
   const [unit, setUnit] = React.useState(target.unit);
 
-  const outerClass = classNames({
-    "border-t border-stroke-base": target.index !== 0,
-  });
+  return (
+    <InlineModal target={target}>
+      <div className="">
+        <div className="font-bold text-sm mb-1">Current Value</div>
+
+        <Textarea
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          className="w-full border border-stroke-base rounded-lg py-1.5 px-3"
+          autoFocus
+        />
+      </div>
+
+      <div className="mt-1">
+        <div className="font-bold text-sm mb-0.5">Name</div>
+        <Textarea
+          autoexpand={true}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="w-full border border-stroke-base rounded-lg py-1.5 px-3"
+        />
+      </div>
+
+      <div className="flex items-center gap-2 mt-1">
+        <div className="flex-0.5">
+          <div className="font-bold text-sm mb-0.5">Start</div>
+
+          <Textarea
+            value={from}
+            onChange={(e) => setFrom(e.target.value)}
+            className="w-full border border-stroke-base rounded-lg py-1.5 px-3"
+          />
+        </div>
+
+        <div className="flex-1">
+          <div className="font-bold text-sm mb-0.5">Target</div>
+
+          <Textarea
+            value={to}
+            onChange={(e) => setTo(e.target.value)}
+            className="w-full border border-stroke-base rounded-lg py-1.5 px-3"
+          />
+        </div>
+
+        <div className="flex-1">
+          <div className="font-bold text-sm mb-0.5">Unit</div>
+
+          <Textarea
+            value={unit}
+            onChange={(e) => setUnit(e.target.value)}
+            className="w-full border border-stroke-base rounded-lg py-1.5 px-3"
+          />
+        </div>
+      </div>
+
+      <div className="flex items-center gap-2 justify-end mt-4">
+        <DeleteButton state={state} target={target} />
+        <SecondaryButton size="xs" onClick={() => state.cancelEdit(target.id)}>
+          Cancel
+        </SecondaryButton>
+
+        <PrimaryButton
+          size="xs"
+          onClick={() =>
+            state.saveEdit(target.id, {
+              name,
+              from: parseFloat(from),
+              to: parseFloat(to),
+              value: parseFloat(value),
+              unit,
+            })
+          }
+        >
+          Save
+        </PrimaryButton>
+      </div>
+    </InlineModal>
+  );
+}
+
+function DeleteButton({ state, target }: { state: State; target: TargetState }) {
+  const clickHandler = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    state.startDeleting(target.id);
+  };
+
+  return (
+    <div
+      className="rounded-full p-1.5 flex items-center justify-center mr-1 hover:bg-surface-dimmed cursor-pointer"
+      onClick={clickHandler}
+    >
+      <IconTrash size={16} className="text-red-500 cursor-pointer" onClick={() => state.startDeleting(target.id)} />
+    </div>
+  );
+}
+
+function TargetDelete({ state, target }: { state: State; target: TargetState }) {
+  return (
+    <InlineModal target={target}>
+      <div className="mb-2 font-bold">Delete {target.name} target?</div>
+      <p>This will remove your target and all associated progress tracking.</p>
+
+      <div className="flex items-center gap-2 justify-end mt-6">
+        <SecondaryButton size="xs" onClick={() => state.cancelDelete(target.id)}>
+          Cancel
+        </SecondaryButton>
+
+        <DangerButton size="xs" onClick={() => state.deleteTarget(target.id)}>
+          Yes, Delete
+        </DangerButton>
+      </div>
+    </InlineModal>
+  );
+}
+
+function InlineModal({ target, children }: { target: TargetState; children: React.ReactNode }) {
+  const outerClass = "border-b border-stroke-base";
 
   const innerClass = classNames("border border-surface-outline rounded-lg p-4 shadow-lg", {
     "mb-4": target.index === 0,
@@ -85,100 +200,31 @@ function TargetEdit({ state, target }: { state: State; target: TargetState }) {
 
   return (
     <div className={outerClass}>
-      <div className={innerClass}>
-        <div className="">
-          <div className="font-bold text-sm mb-1">Current Value</div>
-
-          <Textarea
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-            className="w-full border border-stroke-base rounded-lg py-1.5 px-3"
-            autoFocus
-          />
-        </div>
-
-        <div className="mt-1">
-          <div className="font-bold text-sm mb-0.5">Name</div>
-          <Textarea
-            autoexpand={true}
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="w-full border border-stroke-base rounded-lg py-1.5 px-3"
-          />
-        </div>
-
-        <div className="flex items-center gap-2 mt-1">
-          <div className="flex-0.5">
-            <div className="font-bold text-sm mb-0.5">Start</div>
-
-            <Textarea
-              value={from}
-              onChange={(e) => setFrom(e.target.value)}
-              className="w-full border border-stroke-base rounded-lg py-1.5 px-3"
-            />
-          </div>
-
-          <div className="flex-1">
-            <div className="font-bold text-sm mb-0.5">Target</div>
-
-            <Textarea
-              value={to}
-              onChange={(e) => setTo(e.target.value)}
-              className="w-full border border-stroke-base rounded-lg py-1.5 px-3"
-            />
-          </div>
-
-          <div className="flex-1">
-            <div className="font-bold text-sm mb-0.5">Unit</div>
-
-            <Textarea
-              value={unit}
-              onChange={(e) => setUnit(e.target.value)}
-              className="w-full border border-stroke-base rounded-lg py-1.5 px-3"
-            />
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2 justify-end mt-4">
-          <IconTrash size={16} className="text-red-500 cursor-pointer mr-2" />
-
-          <SecondaryButton size="xs" onClick={() => state.cancelEdit(target.id)}>
-            Cancel
-          </SecondaryButton>
-
-          <PrimaryButton
-            size="xs"
-            onClick={() =>
-              state.saveEdit(target.id, {
-                name,
-                from: parseFloat(from),
-                to: parseFloat(to),
-                value: parseFloat(value),
-                unit,
-              })
-            }
-          >
-            Save
-          </PrimaryButton>
-        </div>
-      </div>
+      <div className={innerClass}>{children}</div>
     </div>
   );
 }
 
-interface TargetViewProps {
-  state: State;
-  target: TargetState;
+function TargetView({ state, target }: { state: State; target: TargetState }) {
+  const { itemStyle } = useDraggingAnimation("targets", state.targets);
 
-  draggedStyle: React.CSSProperties;
-  undraggedStyle: React.CSSProperties;
-}
-
-function TargetView({ state, target, draggedStyle, undraggedStyle }: TargetViewProps) {
   const { ref, isDragging } = useDraggable({
     id: target.id!,
     zoneId: "targets",
   });
+
+  const handleEdit = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    state.startEditing(target.id!);
+  };
+
+  const toggleExpand = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    state.toggleExpand(target.id!);
+  };
+
+  const undraggedStyle = itemStyle(target.id!);
+  const draggedStyle = { background: "var(--color-surface-base)" };
 
   const outerClass = classNames("max-w-full py-2 px-px border-b border-stroke-base flex-1", {
     "border-t": target.index === 0 || isDragging,
@@ -194,17 +240,6 @@ function TargetView({ state, target, draggedStyle, undraggedStyle }: TargetViewP
     "cursor-grabbing": isDragging,
     "opacity-100": isDragging,
   });
-
-  const handleEdit = (e: React.MouseEvent) => {
-    e.stopPropagation();
-
-    state.startEditing(target.id!);
-  };
-
-  const toggleExpand = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    state.toggleExpand(target.id!);
-  };
 
   return (
     <div

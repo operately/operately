@@ -23,6 +23,7 @@ const [champion, reviewer] = genPeople(2);
 const mockTargets = [
   {
     id: "1",
+    index: 0,
     name: "Increase Monthly Active Users",
     from: 10000,
     to: 50000,
@@ -32,6 +33,7 @@ const mockTargets = [
   },
   {
     id: "2",
+    index: 1,
     name: "Improve Response Time",
     from: 500,
     to: 100,
@@ -41,6 +43,7 @@ const mockTargets = [
   },
   {
     id: "3",
+    index: 2,
     name: "Achieve System Uptime",
     from: 99.5,
     to: 99.99,
@@ -257,7 +260,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  args: defaultArgs
+  args: defaultArgs,
 };
 
 export const DefaultReadOnly: Story = {
@@ -319,4 +322,3 @@ export const LongName: Story = {
     goalName: "Enchance the AI Platform with Advanced Features and Integrations",
   },
 };
-
