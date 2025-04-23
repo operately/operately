@@ -4,5 +4,6 @@
   },
   "[typescript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
-  }
+  },
+  "elixirLS.projectDir": "app"
 }

@@ -1,0 +1,41 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Test Current File",
+      "type": "shell",
+      "command": "cd ${workspaceFolder} && FILEPATH=\"${relativeFile}\" && TESTPATH=\"${FILEPATH#*app/}\" && echo \"Running test for: $TESTPATH\" && make test.mix FILE=\"$TESTPATH\"",
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Test Current Line",
+      "type": "shell",
+      "command": "cd ${workspaceFolder} && FILEPATH=\"${relativeFile}\" && TESTPATH=\"${FILEPATH#*app/}\" && echo \"Running test for: $TESTPATH:${lineNumber}\" && make test.mix FILE=\"$TESTPATH:${lineNumber}\"",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Test All",
+      "type": "shell",
+      "command": "cd ${workspaceFolder} && make test.mix",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    }
+  ]
+}
