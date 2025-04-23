@@ -15,7 +15,10 @@ export interface State {
   cancelEdit: (id: string) => void;
   saveEdit: (id: string, newTarget: Partial<GoalTargetList.Target>) => void;
 
+  startDeleting: (id: string) => void;
   deleteTarget: (id: string) => void;
+  cancelDelete: (id: string) => void;
+
   reorder: (item: any, targetId: string, indexInDropZone: number) => void;
 }
 
@@ -47,8 +50,16 @@ export function useGoalTargetListState(props: GoalTargetList.Props): State {
       update(id, (t) => ({ ...t, ...newTarget, mode: "view" as const }));
     },
 
+    startDeleting: (id: string) => {
+      update(id, (t) => ({ ...t, mode: "delete" as const }));
+    },
+
     deleteTarget: (id: string) => {
       remove(id);
+    },
+
+    cancelDelete: (id: string) => {
+      update(id, (t) => ({ ...t, mode: "view" as const }));
     },
 
     // Implements the interface from utils/DragAndDrop

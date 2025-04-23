@@ -1,22 +1,22 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { PrimaryButton, SecondaryButton, GhostButton } from './index';
-import { IconHome, IconSearch, IconSettings, IconUser, IconStar } from '@tabler/icons-react';
+import type { Meta, StoryObj } from "@storybook/react";
+import { PrimaryButton, SecondaryButton, GhostButton, DangerButton } from "./index";
+import { IconHome, IconSearch, IconSettings, IconUser, IconStar } from "@tabler/icons-react";
 
 const meta = {
-  title: 'Components/Button',
+  title: "Components/Button",
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     size: {
-      description: 'The size of the button',
-      options: ['xxs', 'xs', 'sm', 'base', 'lg'],
-      control: { type: 'select' },
+      description: "The size of the button",
+      options: ["xxs", "xs", "sm", "base", "lg"],
+      control: { type: "select" },
     },
     loading: {
-      description: 'Whether the button is in a loading state',
-      control: { type: 'boolean' },
+      description: "Whether the button is in a loading state",
+      control: { type: "boolean" },
     },
   },
 } satisfies Meta;
@@ -33,7 +33,7 @@ export default meta;
 export const Primary: StoryObj = {
   render: (args) => <PrimaryButton {...args}>Primary Button</PrimaryButton>,
   args: {
-    size: 'base',
+    size: "base",
     loading: false,
   },
 };
@@ -48,7 +48,7 @@ export const Primary: StoryObj = {
 export const Secondary: StoryObj = {
   render: (args) => <SecondaryButton {...args}>Secondary Button</SecondaryButton>,
   args: {
-    size: 'base',
+    size: "base",
     loading: false,
   },
 };
@@ -64,7 +64,21 @@ export const Secondary: StoryObj = {
 export const Ghost: StoryObj = {
   render: (args) => <GhostButton {...args}>Ghost Button</GhostButton>,
   args: {
-    size: 'base',
+    size: "base",
+    loading: false,
+  },
+};
+
+/**
+ * Danger buttons are used for actions that can have negative consequences.
+ *
+ * Use them for:
+ * - Deleting items
+ */
+export const Danger: StoryObj = {
+  render: (args) => <DangerButton {...args}>Danger Button</DangerButton>,
+  args: {
+    size: "base",
     loading: false,
   },
 };
@@ -122,25 +136,55 @@ export const WithIcons: StoryObj = {
   render: () => (
     <div className="flex flex-col gap-4">
       <div className="flex items-center gap-4">
-        <PrimaryButton size="xxs" icon={IconHome}>Home</PrimaryButton>
-        <PrimaryButton size="xs" icon={IconSearch}>Search</PrimaryButton>
-        <PrimaryButton size="sm" icon={IconSettings}>Settings</PrimaryButton>
-        <PrimaryButton size="base" icon={IconUser}>Profile</PrimaryButton>
-        <PrimaryButton size="lg" icon={IconStar}>Favorites</PrimaryButton>
+        <PrimaryButton size="xxs" icon={IconHome}>
+          Home
+        </PrimaryButton>
+        <PrimaryButton size="xs" icon={IconSearch}>
+          Search
+        </PrimaryButton>
+        <PrimaryButton size="sm" icon={IconSettings}>
+          Settings
+        </PrimaryButton>
+        <PrimaryButton size="base" icon={IconUser}>
+          Profile
+        </PrimaryButton>
+        <PrimaryButton size="lg" icon={IconStar}>
+          Favorites
+        </PrimaryButton>
       </div>
       <div className="flex items-center gap-4">
-        <SecondaryButton size="xxs" icon={IconHome}>Home</SecondaryButton>
-        <SecondaryButton size="xs" icon={IconSearch}>Search</SecondaryButton>
-        <SecondaryButton size="sm" icon={IconSettings}>Settings</SecondaryButton>
-        <SecondaryButton size="base" icon={IconUser}>Profile</SecondaryButton>
-        <SecondaryButton size="lg" icon={IconStar}>Favorites</SecondaryButton>
+        <SecondaryButton size="xxs" icon={IconHome}>
+          Home
+        </SecondaryButton>
+        <SecondaryButton size="xs" icon={IconSearch}>
+          Search
+        </SecondaryButton>
+        <SecondaryButton size="sm" icon={IconSettings}>
+          Settings
+        </SecondaryButton>
+        <SecondaryButton size="base" icon={IconUser}>
+          Profile
+        </SecondaryButton>
+        <SecondaryButton size="lg" icon={IconStar}>
+          Favorites
+        </SecondaryButton>
       </div>
       <div className="flex items-center gap-4">
-        <GhostButton size="xxs" icon={IconHome}>Home</GhostButton>
-        <GhostButton size="xs" icon={IconSearch}>Search</GhostButton>
-        <GhostButton size="sm" icon={IconSettings}>Settings</GhostButton>
-        <GhostButton size="base" icon={IconUser}>Profile</GhostButton>
-        <GhostButton size="lg" icon={IconStar}>Favorites</GhostButton>
+        <GhostButton size="xxs" icon={IconHome}>
+          Home
+        </GhostButton>
+        <GhostButton size="xs" icon={IconSearch}>
+          Search
+        </GhostButton>
+        <GhostButton size="sm" icon={IconSettings}>
+          Settings
+        </GhostButton>
+        <GhostButton size="base" icon={IconUser}>
+          Profile
+        </GhostButton>
+        <GhostButton size="lg" icon={IconStar}>
+          Favorites
+        </GhostButton>
       </div>
     </div>
   ),

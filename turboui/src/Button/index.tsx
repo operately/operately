@@ -20,6 +20,22 @@ export function PrimaryButton(props: BaseButtonProps) {
   );
 }
 
+export function DangerButton(props: BaseButtonProps) {
+  const className = calcClassName(props, {
+    always: "border border-red-500",
+    normal: "text-white-1 bg-red-500 hover:bg-red-600 dark:hover:bg-red-400",
+    loading: "text-content-subtle bg-red-400 dark:bg-red-500",
+  });
+
+  return (
+    <UnstyledButton
+      {...props}
+      className={className}
+      spinner={<Spinner loading={props.loading} size={props.size} color="var(--color-white-1)" />}
+    />
+  );
+}
+
 export function GhostButton(props: BaseButtonProps) {
   const className = calcClassName(props, {
     always: "border border-accent-1",
