@@ -6,6 +6,28 @@ defmodule Operately.WorkMaps.WorkMapItem do
   alias Operately.Goals.Goal
   alias Operately.Projects.Project
 
+  @typedoc """
+  Type that represents a work map item (goal or project)
+  """
+  @type t() :: %__MODULE__{
+    id: String.t(),
+    parent_id: String.t() | nil,
+    name: String.t(),
+    status: String.t(),
+    progress: float(),
+    deadline: DateTime.t() | nil,
+    closed_at: DateTime.t() | nil,
+    space: map(),
+    owner: map() | nil,
+    next_step: String.t(),
+    is_new: boolean(),
+    children: list(t()),
+    completed_on: DateTime.t() | nil,
+    type: atom(),
+    timeframe: map() | nil,
+    started_at: DateTime.t() | nil
+  }
+
   defstruct [
     :id,
     :parent_id,
