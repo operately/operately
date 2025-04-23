@@ -161,12 +161,11 @@ function DeleteButton({ state, target }: { state: State; target: TargetState }) 
     state.startDeleting(target.id);
   };
 
+  const className = "rounded-full p-1.5 flex items-center justify-center mr-1 hover:bg-surface-dimmed cursor-pointer";
+
   return (
-    <div
-      className="rounded-full p-1.5 flex items-center justify-center mr-1 hover:bg-surface-dimmed cursor-pointer"
-      onClick={clickHandler}
-    >
-      <IconTrash size={16} className="text-red-500 cursor-pointer" onClick={() => state.startDeleting(target.id)} />
+    <div className={className} onClick={clickHandler}>
+      <IconTrash size={16} className="text-red-500" />
     </div>
   );
 }
