@@ -26,27 +26,29 @@ export namespace WorkMap {
     avatarUrl?: string;
   }
 
-  export interface DateInfo {
-    display: string;
-    isPast?: boolean;
+  interface Space {
+    id: string;
+    name: string;
   }
 
   export type ItemType = "goal" | "project";
 
+  type Optional<T> = T | null | undefined;
+
   interface BaseItem {
-    id: string;
-    parentId?: string;
-    name: string;
+    id: Optional<string>;
+    parentId: Optional<string>;
+    name: Optional<string>;
     status: Status;
-    progress: number;
-    deadline?: DateInfo;
-    closedAt?: string;
-    space: string;
-    owner: Person;
-    nextStep: string;
-    isNew?: boolean;
-    children?: Item[];
-    completedOn?: string;
+    progress: Optional<number>;
+    deadline: Optional<string>;
+    closedAt: Optional<string>;
+    space: Optional<Space>;
+    owner: Optional<Person>;
+    nextStep: Optional<string>;
+    isNew: Optional<boolean>;
+    children: Optional<Item[]>;
+    completedOn: Optional<string>;
   }
 
   interface GoalItem extends BaseItem {
@@ -73,7 +75,7 @@ export namespace WorkMap {
     title: string;
     items: Item[];
     addItem: (newItem: NewItem) => void;
-    deleteItem: (itemId: string) => void;
+    deleteItem: (itemId: WorkMap.Item["id"]) => void;
   }
 }
 
