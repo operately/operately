@@ -71,7 +71,7 @@ defmodule Operately.WorkMaps.WorkMapItem do
       id: project.id,
       parent_id: project.goal_id,
       name: project.name,
-      status: project.status,
+      status: if(project.last_check_in, do: project.last_check_in.status, else: "on_track"),
       progress: Projects.progress_percentage(project),
       deadline: project.deadline,
       closed_at: project.closed_at,
