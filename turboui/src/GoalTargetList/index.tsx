@@ -11,6 +11,7 @@ import { IconGripVertical } from "@tabler/icons-react";
 import TextareaAutosize from "react-textarea-autosize";
 import classNames from "../utils/classnames";
 import { State, TargetState, useGoalTargetListState } from "./useGoalTargetListState";
+import { useForm } from "react-hook-form";
 
 export namespace GoalTargetList {
   export type Target = {
@@ -145,88 +146,101 @@ function TargetAdd({ state }: { state: State }) {
 }
 
 function TargetEdit({ state, target }: { state: State; target: TargetState }) {
-  const [name, setName] = React.useState(target.name);
-  const [from, setFrom] = React.useState<string>(target.from.toString());
-  const [to, setTo] = React.useState<string>(target.to.toString());
-  const [value, setValue] = React.useState<string>(target.value.toString());
-  const [unit, setUnit] = React.useState(target.unit);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      name: target.name,
+      from: target.from.toString(),
+      to: target.to.toString(),
+      value: target.value.toString(),
+      unit: target.unit,
+    },
+  });
+
+  const onSubmit = (data: any) => {
+    state.saveEdit(target.id, {
+      name: data.name,
+      from: parseFloat(data.from),
+      to: parseFloat(data.to),
+      value: parseFloat(data.value),
+      unit: data.unit,
+    });
+  };
 
   return (
     <InlineModal index={target.index}>
-      <div className="">
-        <div className="font-bold text-sm mb-1">Current Value</div>
-
-        <Textarea
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          className="w-full border border-stroke-base rounded-lg py-1.5 px-3"
-          autoFocus
-        />
-      </div>
-
-      <div className="mt-1">
-        <div className="font-bold text-sm mb-0.5">Name</div>
-        <Textarea
-          autoexpand={true}
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="w-full border border-stroke-base rounded-lg py-1.5 px-3"
-        />
-      </div>
-
-      <div className="flex items-center gap-2 mt-1">
-        <div className="flex-0.5">
-          <div className="font-bold text-sm mb-0.5">Start</div>
-
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <div className="">
+          <div className="font-bold text-sm mb-1">Current Value</div>
           <Textarea
-            value={from}
-            onChange={(e) => setFrom(e.target.value)}
+            {...register("value", {
+              required: "Current value is required",
+              validate: (v) => !isNaN(Number(v)) || "Must be a number",
+            })}
             className="w-full border border-stroke-base rounded-lg py-1.5 px-3"
+            autoFocus
           />
+          {errors.value && <div className="text-red-500 text-xs">{errors.value.message as string}</div>}
         </div>
 
-        <div className="flex-1">
-          <div className="font-bold text-sm mb-0.5">Target</div>
-
+        <div className="mt-1">
+          <div className="font-bold text-sm mb-0.5">Name</div>
           <Textarea
-            value={to}
-            onChange={(e) => setTo(e.target.value)}
+            {...register("name", { required: "Name is required" })}
+            autoexpand={true}
             className="w-full border border-stroke-base rounded-lg py-1.5 px-3"
           />
+          {errors.name && <div className="text-red-500 text-xs">{errors.name.message as string}</div>}
         </div>
 
-        <div className="flex-1">
-          <div className="font-bold text-sm mb-0.5">Unit</div>
+        <div className="flex items-center gap-2 mt-1">
+          <div className="flex-0.5">
+            <div className="font-bold text-sm mb-0.5">Start</div>
+            <Textarea
+              {...register("from", {
+                required: "Start is required",
+                validate: (v) => !isNaN(Number(v)) || "Must be a number",
+              })}
+              className="w-full border border-stroke-base rounded-lg py-1.5 px-3"
+            />
+            {errors.from && <div className="text-red-500 text-xs">{errors.from.message as string}</div>}
+          </div>
 
-          <Textarea
-            value={unit}
-            onChange={(e) => setUnit(e.target.value)}
-            className="w-full border border-stroke-base rounded-lg py-1.5 px-3"
-          />
+          <div className="flex-1">
+            <div className="font-bold text-sm mb-0.5">Target</div>
+            <Textarea
+              {...register("to", {
+                required: "Target is required",
+                validate: (v) => !isNaN(Number(v)) || "Must be a number",
+              })}
+              className="w-full border border-stroke-base rounded-lg py-1.5 px-3"
+            />
+            {errors.to && <div className="text-red-500 text-xs mt-1">{errors.to.message as string}</div>}
+          </div>
+
+          <div className="flex-1">
+            <div className="font-bold text-sm mb-0.5">Unit</div>
+            <Textarea
+              {...register("unit", { required: "Unit is required" })}
+              className="w-full border border-stroke-base rounded-lg py-1.5 px-3"
+            />
+            {errors.unit && <div className="text-red-500 text-xs mt-1">{errors.unit.message as string}</div>}
+          </div>
         </div>
-      </div>
 
-      <div className="flex items-center gap-2 justify-end mt-4">
-        <DeleteButton state={state} target={target} />
-        <SecondaryButton size="xs" onClick={() => state.cancelEdit(target.id)}>
-          Cancel
-        </SecondaryButton>
-
-        <PrimaryButton
-          size="xs"
-          onClick={() =>
-            state.saveEdit(target.id, {
-              name,
-              from: parseFloat(from),
-              to: parseFloat(to),
-              value: parseFloat(value),
-              unit,
-            })
-          }
-        >
-          Save
-        </PrimaryButton>
-      </div>
+        <div className="flex items-center gap-2 justify-end mt-4">
+          <DeleteButton state={state} target={target} />
+          <SecondaryButton size="xs" onClick={() => state.cancelEdit(target.id)} type="button">
+            Cancel
+          </SecondaryButton>
+          <PrimaryButton size="xs" type="submit">
+            Save
+          </PrimaryButton>
+        </div>
+      </form>
     </InlineModal>
   );
 }
@@ -429,27 +443,12 @@ function EditValueButton({ onClick }: { onClick?: (e: React.MouseEvent) => void 
   );
 }
 
-interface TextareaProps {
+interface TextareaProps extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, "style"> {
   autoexpand?: boolean;
-  autoFocus?: boolean;
-  className?: string;
-
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
-  placeholder?: string;
 }
 
-function Textarea(props: TextareaProps) {
-  const className = classNames("focus:border-indigo-500 bg-transparent", props.className);
+const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(({ autoexpand, className, ...props }, ref) => {
+  const cn = classNames("focus:border-indigo-500 bg-transparent", className);
 
-  return (
-    <TextareaAutosize
-      value={props.value}
-      onChange={props.onChange}
-      placeholder={props.placeholder}
-      className={className}
-      style={{ resize: "none" }}
-      autoFocus={props.autoFocus}
-    />
-  );
-}
+  return <TextareaAutosize ref={ref} className={cn} style={{ resize: "none" }} {...props} />;
+});
