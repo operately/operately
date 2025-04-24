@@ -31,7 +31,7 @@ export function Page() {
   const title = "Company Work Map";
 
   return (
-    <div className="py-6">
+    <div className="py-6 px-2">
       <PageContainer title={title} size="fullwidth">
         <WorkMap title={title} items={workMap as WorkMap.Item[]} addItem={() => {}} deleteItem={() => {}} />
       </PageContainer>

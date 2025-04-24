@@ -89,10 +89,12 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
     |> join(:left, [g], c in assoc(g, :champion), as: :champion)
     |> join(:left, [g], gr in assoc(g, :group), as: :group)
     |> join(:left, [g], u in assoc(g, :last_update), as: :last_update)
-    |> preload([champion: c, group: gr, last_update: u],
+    |> join(:left, [g], t in assoc(g, :targets), as: :targets)
+    |> preload([champion: c, group: gr, last_update: u, targets: t],
       champion: c,
       group: gr,
-      last_update: u
+      last_update: u,
+      targets: t
     )
   end
 
@@ -101,10 +103,12 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
     |> join(:left, [p], c in assoc(p, :champion), as: :champion)
     |> join(:left, [p], gr in assoc(p, :group), as: :group)
     |> join(:left, [p], m in assoc(p, :milestones), as: :milestones)
-    |> preload([champion: c, group: gr, milestones: m],
+    |> join(:left, [p], lci in assoc(p, :last_check_in), as: :last_check_in)
+    |> preload([champion: c, group: gr, milestones: m, last_check_in: lci],
       champion: c,
       group: gr,
-      milestones: m
+      milestones: m,
+      last_check_in: lci
     )
   end
 
