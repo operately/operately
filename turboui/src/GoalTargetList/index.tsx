@@ -75,72 +75,76 @@ function TargetCard({ state, target }: { state: State; target: TargetState }) {
 }
 
 function TargetAdd({ state }: { state: State }) {
-  const [name, setName] = React.useState("");
-  const [from, setFrom] = React.useState<string>("");
-  const [to, setTo] = React.useState<string>("");
-  const [unit, setUnit] = React.useState("");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({
+    defaultValues: {
+      name: "",
+      from: "",
+      to: "",
+      unit: "",
+    },
+  });
+
+  const onSubmit = (data: any) => {
+    state.addTarget({
+      name: data.name,
+      from: parseFloat(data.from),
+      to: parseFloat(data.to),
+      unit: data.unit,
+    });
+    reset();
+  };
 
   return (
     <InlineModal index={100}>
-      <div className="mt-1">
-        <div className="font-bold text-sm mb-0.5">Name</div>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <Textarea
+          label="Name"
+          placeholder="e.g. Increase monthly signup count"
+          error={errors.name?.message as string}
+          {...register("name", { required: "Can't be empty" })}
           autoFocus
-          placeholder="e.g. Montly active users have doubled"
           autoexpand={true}
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="w-full border border-stroke-base rounded-lg py-1.5 px-3"
         />
-      </div>
-
-      <div className="flex items-center gap-2 mt-1">
-        <div className="flex-0.5">
-          <div className="font-bold text-sm mb-0.5">Start</div>
-
+        <div className="flex items-start gap-2 mt-1">
           <Textarea
-            value={from}
+            label="Start"
+            error={errors.from?.message as string}
+            {...register("from", {
+              required: "Can't be empty",
+              validate: (v) => !isNaN(Number(v)) || "Must be a number",
+            })}
             placeholder="e.g. 10000"
-            onChange={(e) => setFrom(e.target.value)}
-            className="w-full border border-stroke-base rounded-lg py-1.5 px-3"
           />
-        </div>
-
-        <div className="flex-1">
-          <div className="font-bold text-sm mb-0.5">Target</div>
-
           <Textarea
-            value={to}
+            label="Target"
+            error={errors.to?.message as string}
+            {...register("to", {
+              required: "Can't be empty",
+              validate: (v) => !isNaN(Number(v)) || "Must be a number",
+            })}
             placeholder="e.g. 15000"
-            onChange={(e) => setTo(e.target.value)}
-            className="w-full border border-stroke-base rounded-lg py-1.5 px-3"
           />
-        </div>
-
-        <div className="flex-1">
-          <div className="font-bold text-sm mb-0.5">Unit</div>
-
           <Textarea
-            value={unit}
+            label="Unit"
+            error={errors.unit?.message as string}
+            {...register("unit", { required: "Can't be empty" })}
             placeholder="e.g. users"
-            onChange={(e) => setUnit(e.target.value)}
-            className="w-full border border-stroke-base rounded-lg py-1.5 px-3"
           />
         </div>
-      </div>
-
-      <div className="flex items-center gap-2 justify-end mt-4">
-        <SecondaryButton size="xs" onClick={() => state.cancelAdd()}>
-          Cancel
-        </SecondaryButton>
-
-        <PrimaryButton
-          size="xs"
-          onClick={() => state.addTarget({ name, from: parseFloat(from), to: parseFloat(to), unit })}
-        >
-          Add Target
-        </PrimaryButton>
-      </div>
+        <div className="flex items-center gap-2 justify-end mt-4">
+          <SecondaryButton size="xs" onClick={() => state.cancelAdd()} type="button">
+            Cancel
+          </SecondaryButton>
+          <PrimaryButton size="xs" type="submit">
+            Add Target
+          </PrimaryButton>
+        </div>
+      </form>
     </InlineModal>
   );
 }
@@ -178,23 +182,23 @@ function TargetEdit({ state, target }: { state: State; target: TargetState }) {
           label="Current Value"
           error={errors.value?.message as string}
           {...register("value", {
-            required: "Current value is required",
+            required: "Can't be empty",
             validate: (v) => !isNaN(Number(v)) || "Must be a number",
           })}
         />
         <Textarea
           label="Name"
           error={errors.name?.message as string}
-          {...register("name", { required: "Name is required" })}
+          {...register("name", { required: "Can't be empty" })}
           autoexpand={true}
           className="mt-1"
         />
-        <div className="flex items-center gap-2 mt-1">
+        <div className="flex items-start gap-2 mt-1">
           <Textarea
             label="Start"
             error={errors.from?.message as string}
             {...register("from", {
-              required: "Start is required",
+              required: "Can't be empty",
               validate: (v) => !isNaN(Number(v)) || "Must be a number",
             })}
           />
@@ -202,14 +206,14 @@ function TargetEdit({ state, target }: { state: State; target: TargetState }) {
             label="Target"
             error={errors.to?.message as string}
             {...register("to", {
-              required: "Target is required",
+              required: "Can't be empty",
               validate: (v) => !isNaN(Number(v)) || "Must be a number",
             })}
           />
           <Textarea
             label="Unit"
             error={errors.unit?.message as string}
-            {...register("unit", { required: "Unit is required" })}
+            {...register("unit", { required: "Can't be empty" })}
           />
         </div>
         <div className="flex items-center gap-2 justify-end mt-4">
@@ -440,7 +444,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
       <div>
         {label && <label className="font-bold text-sm mb-0.5 block">{label}</label>}
         <TextareaAutosize ref={ref} className={cn} style={{ resize: "none" }} {...props} />
-        {error && <div className="text-red-500 text-xs mt-1">{error}</div>}
+        {error && <div className="text-red-500 text-xs mb-1">{error}</div>}
       </div>
     );
   },
