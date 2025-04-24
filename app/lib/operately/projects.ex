@@ -95,6 +95,22 @@ defmodule Operately.Projects do
     Repo.delete(project)
   end
 
+  def progress_percentage(%Project{} = project) do
+    total_milestones = length(project.milestones)
+
+    if total_milestones > 0 do
+      completed_milestones = Enum.count(project.milestones, fn milestone ->
+        case milestone do
+          %{status: status} when status == :done -> true
+          _ -> false
+        end
+      end)
+      (completed_milestones / total_milestones) * 100
+    else
+      0
+    end
+  end
+
   def get_milestones(ids) do
     Repo.all(from m in Milestone, where: m.id in ^ids)
   end
