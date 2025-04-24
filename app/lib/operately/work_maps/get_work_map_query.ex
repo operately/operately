@@ -11,7 +11,9 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
   Retrieves a work map based on the provided parameters.
 
   Parameters:
-  - person (unused): The current person making the request
+  - person: The person making the request. Only resources to which
+    the person has permissions are returned. If the atom :system is
+    provided, the permissions check is not made
   - args: A map containing the following parameters:
     - company_id (required): The ID of the company
     - space_id (optional): The ID of the space/group
@@ -45,20 +47,22 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
     |> Repo.all()
   end
 
-  defp get_goals_tree(_person, company_id, space_id, parent_goal_id, owner_id) do
+  defp get_goals_tree(person, company_id, space_id, parent_goal_id, owner_id) do
     initial_query =
-      Goal
+      from(Goal, as: :goals)
       |> where([g], g.company_id == ^company_id)
       |> filter_by_space(space_id)
       |> filter_by_owner_goal(owner_id)
       |> filter_by_parent_goal(parent_goal_id)
+      |> filter_by_view_access(person, :goals)
 
     recursive_query =
-      Goal
+      from(Goal, as: :goals)
       |> join(:inner, [g], parent in "goal_tree", on: g.parent_goal_id == parent.id)
       |> where([g], g.company_id == ^company_id)
       |> filter_by_space(space_id)
       |> filter_by_owner_goal(owner_id)
+      |> filter_by_view_access(person, :goals)
 
     goal_tree_query = union_all(initial_query, ^recursive_query)
 

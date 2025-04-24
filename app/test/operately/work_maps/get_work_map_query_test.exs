@@ -367,10 +367,20 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
       |> Factory.add_company_member(:company_member)
       |> Factory.add_space_member(:space_member, :space)
       |> Factory.add_space_member(:champion, :space)
+
+      # Project hierarchy:
+      # ├── public_project  (accessible to everyone)
+      # ├── project1        (accessible to space members only)
+      # ├── project2        (accessible to space members only)
+      # └── secret_project  (accessible to admin and champion only)
       |> Factory.add_project(:public_project, :space)
       |> Factory.add_project(:project1, :space, company_access_level: Binding.no_access())
       |> Factory.add_project(:project2, :space, company_access_level: Binding.no_access())
-      |> Factory.add_project(:secret_project, :space, champion: :champion, company_access_level: Binding.no_access(), space_access_level: Binding.no_access())
+      |> Factory.add_project(:secret_project, :space, [
+        champion: :champion,
+        company_access_level: Binding.no_access(),
+        space_access_level: Binding.no_access(),
+      ])
     end
 
     tabletest @table do
@@ -404,6 +414,13 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
       |> Factory.add_goal(:parent_goal, :space)
       |> Factory.add_goal(:child_goal, :space, parent_goal: :parent_goal)
 
+      # Project hierarchy:
+      # parent_goal
+      # └── child_goal
+      #     ├── public_project  (accessible to everyone)
+      #     ├── project1        (accessible to space members only)
+      #     ├── project2        (accessible to space members only)
+      #     └── secret_project  (accessible to champion only)
       |> Factory.add_project(:public_project, :space, goal: :child_goal)
       |> Factory.add_project(:project1, :space, goal: :child_goal, company_access_level: Binding.no_access())
       |> Factory.add_project(:project2, :space, goal: :child_goal, company_access_level: Binding.no_access())
@@ -429,6 +446,103 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
           assert Enum.member?(expected_projects, item.id)
         end)
         assert length(child_goal.children) == @test.count
+      end
+    end
+  end
+
+  describe "permissions - query goals" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.add_space(:space)
+      |> Factory.add_company_member(:company_member)
+      |> Factory.add_space_member(:space_member, :space)
+      |> Factory.add_space_member(:champion, :space)
+
+      # Goal hierarchy:
+      # public1             (accessible to everyone)
+      # ├── public2         (accessible to everyone)
+      # │   └── internal2   (accessible to space members only)
+      # │       └── secret2 (accessible to admin and champion only)
+      # └── internal1       (accessible to space members only)
+      # secret1             (accessible to admin and champion only)
+      |> Factory.add_goal(:public1, :space)
+      |> Factory.add_goal(:public2, :space, parent_goal: :public1)
+      |> Factory.add_goal(:internal1, :space, parent_goal: :public1, company_access: Binding.no_access())
+      |> Factory.add_goal(:internal2, :space, parent_goal: :public2, company_access: Binding.no_access())
+      |> Factory.add_goal(:secret1, :space, [
+        champion: :champion,
+        company_access: Binding.no_access(),
+        space_access: Binding.no_access(),
+      ])
+      |> Factory.add_goal(:secret2, :space, [
+        parent_goal: :internal2,
+        champion: :champion,
+        company_access: Binding.no_access(),
+        space_access: Binding.no_access(),
+      ])
+    end
+
+    test "company member has access to 2 public goals", ctx do
+      {:ok, [public1]} = GetWorkMapQuery.execute(ctx.company_member, %{ company_id: ctx.company.id })
+      assert public1.id == ctx.public1.id
+
+      [public2] = public1.children
+      assert public2.id == ctx.public2.id
+
+      assert public2.children == []
+    end
+
+    test "space member has access to 4 public and internal goals", ctx do
+      {:ok, [public1]} = GetWorkMapQuery.execute(ctx.space_member, %{ company_id: ctx.company.id })
+
+      assert public1.id == ctx.public1.id
+      assert length(public1.children) == 2
+
+      internal1 = Enum.find(public1.children, fn item -> item.id == ctx.internal1.id end)
+      assert internal1.children == []
+
+      public2 = Enum.find(public1.children, fn item -> item.id == ctx.public2.id end)
+      [internal2] = public2.children
+
+      assert internal2.id == ctx.internal2.id
+      assert internal2.children == []
+    end
+
+    @table [
+      %{person: :creator},
+      %{person: :champion},
+    ]
+
+    tabletest @table do
+      test "#{@test.person} has access to 6 public, internal and secret goals", ctx do
+        {:ok, work_map} = GetWorkMapQuery.execute(ctx[@test.person], %{ company_id: ctx.company.id })
+
+        # Should see both root goals (public1 and secret1)
+        assert length(work_map) == 2
+
+        # Verify secret1 root goal has no children
+        secret1 = Enum.find(work_map, fn item -> item.id == ctx.secret1.id end)
+        assert secret1.children == []
+
+        # Verify public1 has both public2 and internal1 children
+        public1 = Enum.find(work_map, fn item -> item.id == ctx.public1.id end)
+
+        assert length(public1.children) == 2
+        internal1 = Enum.find(public1.children, fn item -> item.id == ctx.internal1.id end)
+        public2 = Enum.find(public1.children, fn item -> item.id == ctx.public2.id end)
+
+        # Verify internal1 has no children
+        assert internal1.children == []
+
+        # Verify internal2 is only child of public2
+        [internal2] = public2.children
+        assert internal2.id == ctx.internal2.id
+
+        # Verify secret2 has no children
+        [secret2] = internal2.children
+        assert secret2.id == ctx.secret2.id
+        assert secret2.children == []
       end
     end
   end
