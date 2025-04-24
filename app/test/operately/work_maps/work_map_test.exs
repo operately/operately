@@ -64,7 +64,9 @@ defmodule Operately.WorkMaps.WorkMapTest do
       |> Factory.add_project(:goal_project, :space, goal: :parent_goal)
       |> Factory.add_project(:root_project, :space)
       |> Factory.preload(:goal_project, :milestones)
+      |> Factory.preload(:goal_project, :last_check_in)
       |> Factory.preload(:root_project, :milestones)
+      |> Factory.preload(:root_project, :last_check_in)
     end
 
     test "builds hierarchy with goals and projects", %{parent_goal: parent_goal, child_goal: child_goal, goal_project: goal_project, root_project: root_project} = ctx do
@@ -108,6 +110,7 @@ defmodule Operately.WorkMaps.WorkMapTest do
       |> Factory.preload(:level3, :last_update)
       |> Factory.add_project(:level3_project, :space, goal: :level3)
       |> Factory.preload(:level3_project, :milestones)
+      |> Factory.preload(:level3_project, :last_check_in)
     end
 
     test "handles deep nesting with multiple levels", %{level1: level1, level2: level2, level3: level3, level3_project: level3_project} = ctx do
@@ -167,7 +170,9 @@ defmodule Operately.WorkMaps.WorkMapTest do
       |> Factory.add_project(:project1, :space)
       |> Factory.add_project(:project2, :space)
       |> Factory.preload(:project1, :milestones)
+      |> Factory.preload(:project1, :last_check_in)
       |> Factory.preload(:project2, :milestones)
+      |> Factory.preload(:project2, :last_check_in)
     end
 
     test "handles multiple root items", %{goal1: goal1, goal2: goal2, project1: project1, project2: project2} = ctx do
