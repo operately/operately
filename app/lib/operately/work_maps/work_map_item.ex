@@ -57,7 +57,7 @@ defmodule Operately.WorkMaps.WorkMapItem do
       closed_at: goal.closed_at,
       space: goal.group,
       owner: goal.champion,
-      next_step: "",
+      next_step: next_target(goal),
       is_new: false,
       children: children,
       completed_on: goal.closed_at,
@@ -67,22 +67,48 @@ defmodule Operately.WorkMaps.WorkMapItem do
   end
 
   def build_item(project = %Project{}, children) do
+    project = Project.set_next_milestone(project)
+
     %__MODULE__{
       id: project.id,
       parent_id: project.goal_id,
       name: project.name,
-      status: project.status,
+      status: if(project.last_check_in, do: project.last_check_in.status, else: "on_track"),
       progress: Projects.progress_percentage(project),
       deadline: project.deadline,
       closed_at: project.closed_at,
       space: project.group,
       owner: project.champion,
-      next_step: "",
+      next_step: if(project.next_milestone, do: project.next_milestone.title, else: ""),
       is_new: false,
       children: children,
       completed_on: project.closed_at,
       started_at: project.started_at,
       type: :project,
     }
+  end
+
+  defp next_target(goal = %Goal{}) do
+    case goal.targets do
+      [] -> ""
+
+      %Ecto.Association.NotLoaded{} -> ""
+
+      targets ->
+        target =
+          targets
+          |> Enum.filter(fn target ->
+            cond do
+              target.from < target.to -> target.value < target.to
+              target.from > target.to -> target.value > target.to
+              true -> false
+            end
+          end)
+          |> Enum.sort_by(fn target -> target.index end)
+          |> List.first()
+
+
+        if target, do: target.name, else: ""
+    end
   end
 end
