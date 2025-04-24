@@ -173,64 +173,45 @@ function TargetEdit({ state, target }: { state: State; target: TargetState }) {
   return (
     <InlineModal index={target.index}>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="">
-          <div className="font-bold text-sm mb-1">Current Value</div>
+        <Textarea
+          autoFocus
+          label="Current Value"
+          error={errors.value?.message as string}
+          {...register("value", {
+            required: "Current value is required",
+            validate: (v) => !isNaN(Number(v)) || "Must be a number",
+          })}
+        />
+        <Textarea
+          label="Name"
+          error={errors.name?.message as string}
+          {...register("name", { required: "Name is required" })}
+          autoexpand={true}
+          className="mt-1"
+        />
+        <div className="flex items-center gap-2 mt-1">
           <Textarea
-            {...register("value", {
-              required: "Current value is required",
+            label="Start"
+            error={errors.from?.message as string}
+            {...register("from", {
+              required: "Start is required",
               validate: (v) => !isNaN(Number(v)) || "Must be a number",
             })}
-            className="w-full border border-stroke-base rounded-lg py-1.5 px-3"
-            autoFocus
           />
-          {errors.value && <div className="text-red-500 text-xs">{errors.value.message as string}</div>}
-        </div>
-
-        <div className="mt-1">
-          <div className="font-bold text-sm mb-0.5">Name</div>
           <Textarea
-            {...register("name", { required: "Name is required" })}
-            autoexpand={true}
-            className="w-full border border-stroke-base rounded-lg py-1.5 px-3"
+            label="Target"
+            error={errors.to?.message as string}
+            {...register("to", {
+              required: "Target is required",
+              validate: (v) => !isNaN(Number(v)) || "Must be a number",
+            })}
           />
-          {errors.name && <div className="text-red-500 text-xs">{errors.name.message as string}</div>}
+          <Textarea
+            label="Unit"
+            error={errors.unit?.message as string}
+            {...register("unit", { required: "Unit is required" })}
+          />
         </div>
-
-        <div className="flex items-center gap-2 mt-1">
-          <div className="flex-0.5">
-            <div className="font-bold text-sm mb-0.5">Start</div>
-            <Textarea
-              {...register("from", {
-                required: "Start is required",
-                validate: (v) => !isNaN(Number(v)) || "Must be a number",
-              })}
-              className="w-full border border-stroke-base rounded-lg py-1.5 px-3"
-            />
-            {errors.from && <div className="text-red-500 text-xs">{errors.from.message as string}</div>}
-          </div>
-
-          <div className="flex-1">
-            <div className="font-bold text-sm mb-0.5">Target</div>
-            <Textarea
-              {...register("to", {
-                required: "Target is required",
-                validate: (v) => !isNaN(Number(v)) || "Must be a number",
-              })}
-              className="w-full border border-stroke-base rounded-lg py-1.5 px-3"
-            />
-            {errors.to && <div className="text-red-500 text-xs mt-1">{errors.to.message as string}</div>}
-          </div>
-
-          <div className="flex-1">
-            <div className="font-bold text-sm mb-0.5">Unit</div>
-            <Textarea
-              {...register("unit", { required: "Unit is required" })}
-              className="w-full border border-stroke-base rounded-lg py-1.5 px-3"
-            />
-            {errors.unit && <div className="text-red-500 text-xs mt-1">{errors.unit.message as string}</div>}
-          </div>
-        </div>
-
         <div className="flex items-center gap-2 justify-end mt-4">
           <DeleteButton state={state} target={target} />
           <SecondaryButton size="xs" onClick={() => state.cancelEdit(target.id)} type="button">
@@ -437,7 +418,7 @@ function EditValueButton({ onClick }: { onClick?: (e: React.MouseEvent) => void 
   return (
     <div className="mt-px">
       <SecondaryButton size="xxs" onClick={onClick}>
-        Edit
+        Update
       </SecondaryButton>
     </div>
   );
@@ -445,10 +426,22 @@ function EditValueButton({ onClick }: { onClick?: (e: React.MouseEvent) => void 
 
 interface TextareaProps extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, "style"> {
   autoexpand?: boolean;
+  label?: string;
+  error?: string;
 }
 
-const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(({ autoexpand, className, ...props }, ref) => {
-  const cn = classNames("focus:border-indigo-500 bg-transparent", className);
-
-  return <TextareaAutosize ref={ref} className={cn} style={{ resize: "none" }} {...props} />;
-});
+const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
+  ({ autoexpand, className, label, error, ...props }, ref) => {
+    const cn = classNames(
+      "focus:border-indigo-500 bg-transparent w-full border border-stroke-base rounded-lg py-1.5 px-3",
+      className,
+    );
+    return (
+      <div>
+        {label && <label className="font-bold text-sm mb-0.5 block">{label}</label>}
+        <TextareaAutosize ref={ref} className={cn} style={{ resize: "none" }} {...props} />
+        {error && <div className="text-red-500 text-xs mt-1">{error}</div>}
+      </div>
+    );
+  },
+);
