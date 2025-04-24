@@ -22,7 +22,7 @@ export async function loader({ params }): Promise<LoaderResult> {
   return { workMap };
 }
 
-export function useLoadedData(): LoaderResult {
+function useLoadedData(): LoaderResult {
   return Pages.useLoadedData() as LoaderResult;
 }
 
