@@ -1485,6 +1485,25 @@ export interface UpdateTargetInput {
   index?: number | null;
 }
 
+export interface WorkMapItem {
+  id?: string | null;
+  parentId?: string | null;
+  name?: string | null;
+  status?: string | null;
+  progress?: number | null;
+  type?: string | null;
+  deadline?: string | null;
+  closedAt?: string | null;
+  space?: Space | null;
+  owner?: Person | null;
+  nextStep?: string | null;
+  isNew?: boolean | null;
+  completedOn?: string | null;
+  startedAt?: string | null;
+  timeframe?: Timeframe | null;
+  children?: WorkMapItem[] | null;
+}
+
 export type ActivityContent =
   | ActivityContentCompanyOwnersAdding
   | ActivityContentCompanyAdminAdded
@@ -2022,6 +2041,16 @@ export interface GetUnreadNotificationCountInput {}
 
 export interface GetUnreadNotificationCountResult {
   unread?: number | null;
+}
+
+export interface GetWorkMapInput {
+  spaceId?: Id | null;
+  parentGoalId?: Id | null;
+  ownerId?: Id | null;
+}
+
+export interface GetWorkMapResult {
+  workMap?: WorkMapItem[] | null;
 }
 
 export interface ListGoalContributorsInput {
@@ -3228,6 +3257,10 @@ export class ApiClient {
     return this.get("/get_unread_notification_count", input);
   }
 
+  async getWorkMap(input: GetWorkMapInput): Promise<GetWorkMapResult> {
+    return this.get("/get_work_map", input);
+  }
+
   async listGoalContributors(input: ListGoalContributorsInput): Promise<ListGoalContributorsResult> {
     return this.get("/list_goal_contributors", input);
   }
@@ -3797,6 +3830,9 @@ export async function getUnreadNotificationCount(
 ): Promise<GetUnreadNotificationCountResult> {
   return defaultApiClient.getUnreadNotificationCount(input);
 }
+export async function getWorkMap(input: GetWorkMapInput): Promise<GetWorkMapResult> {
+  return defaultApiClient.getWorkMap(input);
+}
 export async function listGoalContributors(input: ListGoalContributorsInput): Promise<ListGoalContributorsResult> {
   return defaultApiClient.listGoalContributors(input);
 }
@@ -4347,6 +4383,10 @@ export function useGetUnreadNotificationCount(
   input: GetUnreadNotificationCountInput,
 ): UseQueryHookResult<GetUnreadNotificationCountResult> {
   return useQuery<GetUnreadNotificationCountResult>(() => defaultApiClient.getUnreadNotificationCount(input));
+}
+
+export function useGetWorkMap(input: GetWorkMapInput): UseQueryHookResult<GetWorkMapResult> {
+  return useQuery<GetWorkMapResult>(() => defaultApiClient.getWorkMap(input));
 }
 
 export function useListGoalContributors(
@@ -5128,6 +5168,8 @@ export default {
   useGetTasks,
   getUnreadNotificationCount,
   useGetUnreadNotificationCount,
+  getWorkMap,
+  useGetWorkMap,
   listGoalContributors,
   useListGoalContributors,
   listResourceHubNodes,
