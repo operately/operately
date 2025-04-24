@@ -147,7 +147,7 @@ defmodule Operately.Projects.Project do
     |> set_next_milestone()
   end
 
-  defp set_next_milestone(project = %__MODULE__{}) do
+  def set_next_milestone(project = %__MODULE__{}) do
     case project.milestones do
       [] -> project
       %Ecto.Association.NotLoaded{} -> project
