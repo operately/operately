@@ -6,7 +6,7 @@ import { TableRow } from "../TableRow";
 export interface Props {
   items: WorkMap.Item[];
   filter: WorkMap.Filter;
-  deleteItem: (itemId: string) => void;
+  deleteItem: (itemId: WorkMap.Item["id"]) => void;
   addItem: (newItem: WorkMap.NewItem) => void;
 }
 

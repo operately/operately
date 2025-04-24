@@ -22,7 +22,7 @@ export function NextStepCell({ nextStep, status }: Props) {
   return (
     <td className="py-2 px-2 md:px-4 hidden xl:table-cell">
       <div className="w-full xl:max-w-[200px] 2xl:max-w-[300px] overflow-hidden text-ellipsis whitespace-nowrap">
-        <span title={nextStep} className={className}>
+        <span title={nextStep || ""} className={className}>
           {nextStep}
         </span>
       </div>
