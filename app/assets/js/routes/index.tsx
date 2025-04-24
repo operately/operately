@@ -125,6 +125,8 @@ export function createAppRoutes() {
         pageRoute("discussions/:id", pages.DiscussionPage),
         pageRoute("discussions/:id/edit", pages.DiscussionEditPage),
 
+        pageRoute("work-map", pages.CompanyWorkMapPage),
+
         pageRoute("goals", pages.GoalsAndProjectsPage),
         pageRoute("goals/new", pages.GoalAddPage),
         pageRoute("goals/:id", pages.GoalPage),

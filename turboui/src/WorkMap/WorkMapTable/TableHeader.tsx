@@ -1,7 +1,8 @@
+import WorkMap from "..";
 import classNames from "../../utils/classnames";
 
 interface Props {
-  filter?: string;
+  filter: WorkMap.Filter;
 }
 
 export function TableHeader({ filter }: Props) {

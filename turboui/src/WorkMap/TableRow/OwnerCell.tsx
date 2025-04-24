@@ -20,6 +20,8 @@ export function OwnerCell({ owner, status }: Props) {
     isPending && "text-content-dimmed"
   );
 
+  if (!owner) return null;
+
   return (
     <td className="py-2 px-2 md:px-4 hidden xl:table-cell">
       <div className="max-w-[120px] overflow-hidden">
