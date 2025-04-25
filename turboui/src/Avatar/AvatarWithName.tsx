@@ -1,4 +1,4 @@
-import { DivLink } from "../Link";
+import { BlackLink } from "../Link";
 import { Avatar } from ".";
 import { AvatarWithNameProps, NameFormat } from "./types";
 
@@ -9,9 +9,9 @@ export function AvatarWithName({ person, size, className, nameFormat = "full", l
     <div className="flex items-center gap-1.5">
       <Avatar person={person} size={size} />
       {link ? (
-        <DivLink to={link} className={className}>
+        <BlackLink to={link} className={className} underline="hover">
           {name}
-        </DivLink>
+        </BlackLink>
       ) : (
         <div className={className}>{name}</div>
       )}
