@@ -30,12 +30,15 @@ const createMockItem = (
     status: "on_track",
     progress: 50,
     space: { name: "Product", id: "space-1" },
+    spacePath: "#",
     owner: mockOwner,
+    ownerPath: "#",
     nextStep: "Child next step",
     isNew: false,
     completedOn: null,
     closedAt: null,
     children: [],
+    itemPath: "#",
     timeframe: {
       startDate: "2025-01-15",
       endDate: "2025-06-30",
@@ -50,12 +53,15 @@ const createMockItem = (
     status,
     progress,
     space: { name: "Product", id: "space-1" },
+    spacePath: "#",
     owner: mockOwner,
+    ownerPath: "#",
     nextStep: status === "completed" || status === "achieved" ? "" : "Next action to take",
     closedAt: "Mar 15 2025",
     isNew: false,
     completedOn: status === "completed" || status === "achieved" ? "2025-03-15" : null,
     children: hasChildren ? [childItem] : [],
+    itemPath: "#",
   };
 
   if (type === "goal") {
