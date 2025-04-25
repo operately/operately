@@ -110,11 +110,12 @@ interface TimeframeSelectorTriggerProps {
 
 function TimeframeSelectorTrigger(props: TimeframeSelectorTriggerProps) {
   const className = classNames(
-    "bg-surface-base hover:bg-surface-highlight dark:hover:bg-surface-dimmed/20",
+    props.isDefaultTimeframe ? "bg-surface-base" : "bg-surface-highlight dark:bg-surface-dimmed/20",
+    "hover:bg-surface-highlight dark:hover:bg-surface-dimmed/20",
     "border border-surface-outline",
     "rounded-lg",
     "flex items-center gap-1",
-    "cursor-pointer bg-surface-base truncate",
+    "cursor-pointer truncate",
     {
       "px-3 py-1.5": props.size === "base",
       "px-3 py-1": props.size === "xs",
