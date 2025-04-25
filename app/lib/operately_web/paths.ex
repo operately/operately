@@ -11,6 +11,10 @@ defmodule OperatelyWeb.Paths do
     create_path([company_id(company), "account"])
   end
 
+  def person_path(company = %Company{}, person = %Person{}) do
+    create_path([company_id(company), "people", person_id(person)])
+  end
+
   def home_path(company = %Company{}) do
     create_path([company_id(company)])
   end

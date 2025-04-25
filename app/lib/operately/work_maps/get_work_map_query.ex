@@ -86,11 +86,13 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
 
   defp join_preload_goal_associations(query) do
     query
+    |> join(:left, [g], company in assoc(g, :company), as: :company)
     |> join(:left, [g], c in assoc(g, :champion), as: :champion)
     |> join(:left, [g], gr in assoc(g, :group), as: :group)
     |> join(:left, [g], u in assoc(g, :last_update), as: :last_update)
     |> join(:left, [g], t in assoc(g, :targets), as: :targets)
-    |> preload([champion: c, group: gr, last_update: u, targets: t],
+    |> preload([company: company, champion: c, group: gr, last_update: u, targets: t],
+      company: company,
       champion: c,
       group: gr,
       last_update: u,
@@ -100,11 +102,13 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
 
   defp join_preload_project_associations(query) do
     query
+    |> join(:left, [p], company in assoc(p, :company), as: :company)
     |> join(:left, [p], c in assoc(p, :champion), as: :champion)
     |> join(:left, [p], gr in assoc(p, :group), as: :group)
     |> join(:left, [p], m in assoc(p, :milestones), as: :milestones)
     |> join(:left, [p], lci in assoc(p, :last_check_in), as: :last_check_in)
-    |> preload([champion: c, group: gr, milestones: m, last_check_in: lci],
+    |> preload([company: company, champion: c, group: gr, milestones: m, last_check_in: lci],
+      company: company,
       champion: c,
       group: gr,
       milestones: m,

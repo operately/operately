@@ -1493,13 +1493,16 @@ export interface WorkMapItem {
   progress?: number | null;
   closedAt?: string | null;
   space?: Space | null;
+  spacePath?: string | null;
   owner?: Person | null;
+  ownerPath?: string | null;
   nextStep?: string | null;
   isNew?: boolean | null;
   completedOn?: string | null;
   timeframe?: Timeframe | null;
   children?: WorkMapItem[] | null;
   type?: string | null;
+  itemPath?: string | null;
 }
 
 export type ActivityContent =

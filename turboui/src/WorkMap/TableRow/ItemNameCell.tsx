@@ -27,7 +27,7 @@ export function ItemNameCell() {
         <Indentation />
         <ExpandButton />
         <Icon />
-        <Name to="#" />
+        <Name />
       </div>
 
       {showAddButton && !isCompletedPage && !showQuickEntryWidget && (
@@ -42,7 +42,7 @@ export function ItemNameCell() {
   );
 }
 
-function Name({ to }: { to: string }) {
+function Name() {
   const { item } = useTableRowContext();
   const { isCompleted, isFailed, isDropped, isPending } = useItemStatus(item.status);
 
@@ -62,7 +62,7 @@ function Name({ to }: { to: string }) {
 
   return (
     <div className="flex items-center">
-      <BlackLink to={to} className={textStyle} underline="hover">
+      <BlackLink to={item.itemPath!} className={textStyle} underline="hover">
         {item.name}
       </BlackLink>
     </div>
