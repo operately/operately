@@ -8,7 +8,7 @@ import classNames from "../../utils/classnames";
 interface Props {
   filter: WorkMap.Filter;
   completedOn: WorkMap.Item["completedOn"];
-  deadline: WorkMap.Item["deadline"];
+  timeframe: WorkMap.Item["timeframe"];
   status: WorkMap.Status;
 }
 
@@ -17,12 +17,11 @@ interface DateInfo {
   isPast: boolean;
 }
 
-export function DeadlineCell({ filter, completedOn, deadline, status }: Props) {
+export function DeadlineCell({ filter, status, completedOn, timeframe }: Props) {
   const { isCompleted, isFailed, isDropped, isPending } = useItemStatus(status);
 
   const containerClassName = classNames("py-2 px-2 md:px-4", filter !== "completed" && "hidden lg:table-cell");
-
-  const dateInfo = useMemo(() => parseDeadline(deadline), [deadline]);
+  const dateInfo = useMemo(() => parseDeadline(timeframe?.endDate), [timeframe]);
 
   const textClassName = classNames("text-sm whitespace-nowrap", {
     "text-red-600": dateInfo?.isPast && !isCompleted && !isFailed && !isDropped && !isPending,

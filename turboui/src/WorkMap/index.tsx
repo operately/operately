@@ -35,13 +35,18 @@ export namespace WorkMap {
 
   type Optional<T> = T | null | undefined;
 
-  interface BaseItem {
+  interface Timeframe {
+    startDate: Optional<string>;
+    endDate: Optional<string>;
+    type: Optional<TimeframeSelector.TimeframeType>;
+  }
+
+  export interface Item {
     id: Optional<string>;
     parentId: Optional<string>;
     name: Optional<string>;
     status: Status;
     progress: Optional<number>;
-    deadline: Optional<string>;
     closedAt: Optional<string>;
     space: Optional<Space>;
     owner: Optional<Person>;
@@ -49,19 +54,9 @@ export namespace WorkMap {
     isNew: Optional<boolean>;
     children: Optional<Item[]>;
     completedOn: Optional<string>;
+    timeframe: Optional<Timeframe>;
+    type: "goal" | "project";
   }
-
-  interface GoalItem extends BaseItem {
-    type: "goal";
-    timeframe: TimeframeSelector.Timeframe;
-  }
-
-  interface ProjectItem extends BaseItem {
-    type: "project";
-    startedAt: string;
-  }
-
-  export type Item = GoalItem | ProjectItem;
 
   export interface NewItem {
     parentId: string | null;
