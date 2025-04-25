@@ -136,7 +136,7 @@ function TargetAdd({ state }: { state: State }) {
           error={errors.name?.message as string}
           {...register("name", { required: "Can't be empty" })}
         />
-        <div className="flex items-start gap-2 mt-2">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-2">
           <Textfield
             label="Start"
             error={errors.from?.message as string}
@@ -192,12 +192,15 @@ function TargetUpdate({ state, target }: { state: State; target: TargetState }) 
 
   return (
     <InlineModal index={target.index}>
+      <p className="mb-4">{target.name}</p>
+
       <form onSubmit={handleSubmit(onSubmit)}>
         <Textfield
           autoFocus
           label="New Value"
           error={errors.value?.message as string}
           addonRight={target.unit}
+          textRight
           {...register("value", {
             required: "Can't be empty",
             validate: (v) => !isNaN(Number(v)) || "Must be a number",
@@ -247,7 +250,8 @@ function TargetEdit({ state, target }: { state: State; target: TargetState }) {
           error={errors.name?.message as string}
           {...register("name", { required: "Can't be empty" })}
         />
-        <div className="flex items-start gap-2 mt-2">
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-2">
           <Textfield
             label="Start"
             error={errors.from?.message as string}

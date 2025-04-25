@@ -11,14 +11,18 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>((pr
   const { label, error, className, ...rest } = props;
 
   const cn = classNames(
-    "focus:border-indigo-500 bg-transparent w-full border border-stroke-base rounded-lg py-1.5 px-3",
-    className,
+    "flex items-center gap-1",
+    "has-[:focus]:outline outline-indigo-600 bg-transparent",
+    "w-full border border-stroke-base rounded-lg",
+    "px-3 py-1.5 bg-transparent",
   );
 
   return (
-    <div>
+    <div className={className}>
       {label && <label className="font-bold text-sm mb-1 block">{label}</label>}
-      <TextareaAutosize ref={ref} className={cn} style={{ resize: "none" }} {...rest} />
+      <div className={cn}>
+        <TextareaAutosize ref={ref} className="w-full" style={{ resize: "none" }} {...rest} />
+      </div>
       {error && <div className="text-red-500 text-xs mb-1">{error}</div>}
     </div>
   );
