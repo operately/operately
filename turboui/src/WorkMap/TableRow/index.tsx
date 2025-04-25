@@ -42,7 +42,7 @@ export function TableRow(props: Props) {
         <DeadlineCell
           filter={filter}
           completedOn={item.closedAt}
-          deadline={item.deadline}
+          timeframe={item.timeframe}
           status={item.status}
         />
         <SpaceCell space={item.space} status={item.status} />
