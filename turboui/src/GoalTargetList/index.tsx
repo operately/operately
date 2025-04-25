@@ -7,7 +7,6 @@ import { DangerButton, PrimaryButton, SecondaryButton } from "../Button";
 import { DragAndDropProvider, useDraggable, useDraggingAnimation, useDropZone } from "../utils/DragAndDrop";
 import { IconGripVertical } from "@tabler/icons-react";
 
-import TextareaAutosize from "react-textarea-autosize";
 import classNames from "../utils/classnames";
 import { State, TargetState, useGoalTargetListState } from "./useGoalTargetListState";
 import { useForm } from "react-hook-form";
@@ -15,6 +14,9 @@ import { useForm } from "react-hook-form";
 import { UpdateButton } from "./UpdateButton";
 import { EditButton } from "./EditButton";
 import { DeleteButton } from "./DeleteButton";
+
+import { Textarea } from "./Textarea";
+import { Textfield } from "./Textfield";
 
 export namespace GoalTargetList {
   export type Target = {
@@ -129,14 +131,13 @@ function TargetAdd({ state }: { state: State }) {
       <form onSubmit={handleSubmit(onSubmit)}>
         <Textarea
           label="Name"
+          autoFocus
           placeholder="e.g. Increase monthly signup count"
           error={errors.name?.message as string}
           {...register("name", { required: "Can't be empty" })}
-          autoFocus
-          autoexpand={true}
         />
         <div className="flex items-start gap-2 mt-2">
-          <Textarea
+          <Textfield
             label="Start"
             error={errors.from?.message as string}
             {...register("from", {
@@ -145,7 +146,7 @@ function TargetAdd({ state }: { state: State }) {
             })}
             placeholder="e.g. 10000"
           />
-          <Textarea
+          <Textfield
             label="Target"
             error={errors.to?.message as string}
             {...register("to", {
@@ -154,7 +155,7 @@ function TargetAdd({ state }: { state: State }) {
             })}
             placeholder="e.g. 15000"
           />
-          <Textarea
+          <Textfield
             label="Unit"
             error={errors.unit?.message as string}
             {...register("unit", { required: "Can't be empty" })}
@@ -186,15 +187,13 @@ function TargetUpdate({ state, target }: { state: State; target: TargetState }) 
   });
 
   const onSubmit = (data: any) => {
-    state.saveEdit(target.id, {
-      value: parseFloat(data.value),
-    });
+    state.updateTarget(target.id!, parseFloat(data.value));
   };
 
   return (
     <InlineModal index={target.index}>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <Textarea
+        <Textfield
           autoFocus
           label="New Value"
           error={errors.value?.message as string}
@@ -235,7 +234,6 @@ function TargetEdit({ state, target }: { state: State; target: TargetState }) {
       name: data.name,
       from: parseFloat(data.from),
       to: parseFloat(data.to),
-      value: parseFloat(data.value),
       unit: data.unit,
     });
   };
@@ -247,10 +245,9 @@ function TargetEdit({ state, target }: { state: State; target: TargetState }) {
           label="Name"
           error={errors.name?.message as string}
           {...register("name", { required: "Can't be empty" })}
-          autoexpand={true}
         />
         <div className="flex items-start gap-2 mt-2">
-          <Textarea
+          <Textfield
             label="Start"
             error={errors.from?.message as string}
             {...register("from", {
@@ -258,7 +255,7 @@ function TargetEdit({ state, target }: { state: State; target: TargetState }) {
               validate: (v) => !isNaN(Number(v)) || "Must be a number",
             })}
           />
-          <Textarea
+          <Textfield
             label="Target"
             error={errors.to?.message as string}
             {...register("to", {
@@ -266,7 +263,7 @@ function TargetEdit({ state, target }: { state: State; target: TargetState }) {
               validate: (v) => !isNaN(Number(v)) || "Must be a number",
             })}
           />
-          <Textarea
+          <Textfield
             label="Unit"
             error={errors.unit?.message as string}
             {...register("unit", { required: "Can't be empty" })}
@@ -460,25 +457,3 @@ function calculateProgress(target: GoalTargetList.Target, clamped = true): numbe
 
   return percentage;
 }
-
-interface TextareaProps extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, "style"> {
-  autoexpand?: boolean;
-  label?: string;
-  error?: string;
-}
-
-const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
-  ({ autoexpand, className, label, error, ...props }, ref) => {
-    const cn = classNames(
-      "focus:border-indigo-500 bg-transparent w-full border border-stroke-base rounded-lg py-1.5 px-3",
-      className,
-    );
-    return (
-      <div>
-        {label && <label className="font-bold text-sm mb-1 block">{label}</label>}
-        <TextareaAutosize ref={ref} className={cn} style={{ resize: "none" }} {...props} />
-        {error && <div className="text-red-500 text-xs mb-1">{error}</div>}
-      </div>
-    );
-  },
-);

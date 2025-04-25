@@ -22,7 +22,7 @@ export interface State {
 
   startEditing: (id: string) => void;
   cancelEdit: (id: string) => void;
-  saveEdit: (id: string, newTarget: Partial<GoalTargetList.Target>) => void;
+  saveEdit: (id: string, values: { name: string; from: number; to: number; unit: string }) => void;
 
   startDeleting: (id: string) => void;
   deleteTarget: (id: string) => void;
@@ -88,8 +88,8 @@ export function useGoalTargetListState(props: GoalTargetList.Props): State {
     cancelEdit: (id: string) => {
       update(id, (t) => ({ ...t, mode: "view" as const }));
     },
-    saveEdit: (id: string, newTarget: Partial<GoalTargetList.Target>) => {
-      update(id, (t) => ({ ...t, ...newTarget, mode: "view" as const }));
+    saveEdit: (id: string, values: { name: string; from: number; to: number; unit: string }) => {
+      update(id, (t) => ({ ...t, ...values, mode: "view" as const }));
     },
 
     // Deleting
