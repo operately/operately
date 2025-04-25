@@ -20,7 +20,7 @@ export function useWorkMapFilter(rawItems: WorkMap.Item[], timeframe: TimeframeS
       return sortItemsByClosedDate(completedItems);
     }
 
-    return timeframeFilteredItems.map((item) => filterChildren(item, filter));
+    return extractAllGoals(timeframeFilteredItems);
   }, [rawItems, filter, timeframe]);
 
   const changeFilter = useCallback((newFilter: WorkMap.Filter) => {
@@ -37,28 +37,24 @@ export function useWorkMapFilter(rawItems: WorkMap.Item[], timeframe: TimeframeS
 const CLOSED_STATUSES = ["completed", "dropped", "achieved", "partial", "missed"];
 
 /**
- * Returns a new WorkMapItem with children filtered according to the filter criteria
+ * Helper to extract all goals while maintaining hierarchy
  */
-function filterChildren(item: WorkMap.Item, filter: WorkMap.Filter) {
-  if (!item.children || item.children.length === 0) return { ...item, children: [] };
+function extractAllGoals(items: WorkMap.Item[]): WorkMap.Item[] {
+  const processItem = (item: WorkMap.Item): WorkMap.Item | null => {
+    if (item.type === "project") return null;
+    if (CLOSED_STATUSES.includes(item.status)) return null;
 
-  const filteredChildren = item.children
-    .filter((child) => {
-      const isGoal = child.type === "goal";
-      const isProject = child.type === "project";
+    // Process children recursively
+    let filteredChildren: WorkMap.Item[] = [];
 
-      if (filter === "goals" && !isGoal) return false;
-      if (filter === "projects" && !isProject) return false;
+    if (item.children && item.children.length > 0) {
+      filteredChildren = item.children.map((child) => processItem(child)).filter((child) => child !== null);
+    }
 
-      // On goals page, exclude all completed goals (all closed statuses)
-      if (filter === "goals" && isGoal && CLOSED_STATUSES.includes(child.status)) {
-        return false;
-      }
-      return true;
-    })
-    .map((child) => filterChildren(child, filter));
+    return { ...item, children: filteredChildren };
+  };
 
-  return { ...item, children: filteredChildren };
+  return items.map((item) => processItem(item)).filter((item) => item !== null);
 }
 
 /**
