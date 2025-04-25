@@ -111,7 +111,7 @@ defmodule Operately.ProjectsFixtures do
     {:ok, check_in} =
       attrs
       |> Enum.into(%{
-        status: "on_track",
+        status: attrs[:status] || "on_track",
         description: %{},
         subscription_list_id: subscription_list.id,
       })

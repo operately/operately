@@ -103,16 +103,21 @@ defmodule Operately.Support.Factory.Projects do
     Map.put(ctx, testid, retrospective)
   end
 
-  def add_project_check_in(ctx, testid, project_name, author_name) do
+  def add_project_check_in(ctx, testid, project_name, author_name, opts \\ []) do
     project = Map.fetch!(ctx, project_name)
     author = Map.fetch!(ctx, author_name)
+    status = Keyword.get(opts, :status, "on_track")
 
     check_in = Operately.ProjectsFixtures.check_in_fixture(%{
       project_id: project.id,
       author_id: author.id,
+      status: status,
     })
+    {:ok, project} = Operately.Projects.update_project(project, %{last_check_in_id: check_in.id})
 
-    Map.put(ctx, testid, check_in)
+    ctx
+    |> Map.put(testid, check_in)
+    |> Map.put(project_name, project)
   end
 
   def add_project_milestone(ctx, testid, project_name, opts \\ []) do
@@ -190,7 +195,8 @@ defmodule Operately.Support.Factory.Projects do
         subscriber_ids: []
     })
 
-    ctx
+    project = Repo.reload(project)
+    Map.put(ctx, project_name, project)
   end
 
   #

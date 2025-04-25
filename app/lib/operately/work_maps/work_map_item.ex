@@ -52,7 +52,7 @@ defmodule Operately.WorkMaps.WorkMapItem do
       id: goal.id,
       parent_id: goal.parent_goal_id,
       name: goal.name,
-      status: if(goal.last_update, do: goal.last_update.status, else: "on_track"),
+      status: goal_status(goal),
       progress: Goals.progress_percentage(goal),
       closed_at: goal.closed_at,
       space: goal.group,
@@ -75,7 +75,7 @@ defmodule Operately.WorkMaps.WorkMapItem do
       id: project.id,
       parent_id: project.goal_id,
       name: project.name,
-      status: if(project.last_check_in, do: project.last_check_in.status, else: "on_track"),
+      status: project_status(project),
       progress: Projects.progress_percentage(project),
       closed_at: project.closed_at,
       space: project.group,
@@ -121,5 +121,22 @@ defmodule Operately.WorkMaps.WorkMapItem do
       end_date: project.deadline,
       type: "days",
     }
+  end
+
+  defp project_status(project = %Project{}) do
+    cond do
+      project.closed_at -> "completed"
+      project.last_check_in -> project.last_check_in.status
+      true -> "on_track"
+    end
+  end
+
+  defp goal_status(goal = %Goal{}) do
+    cond do
+      goal.success == "yes" -> "achieved"
+      goal.success == "no" -> "missed"
+      goal.last_update -> goal.last_update.status
+      true -> "on_track"
+    end
   end
 end

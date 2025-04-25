@@ -33,7 +33,7 @@ defmodule Operately.Support.Factory do
 
   # goals
   defdelegate add_goal(ctx, testid, space_name, opts \\ []), to: Factory.Goals
-  defdelegate add_goal_update(ctx, testid, goal_name, person_name), to: Factory.Goals
+  defdelegate add_goal_update(ctx, testid, goal_name, person_name, opts \\ []), to: Factory.Goals
   defdelegate set_goal_next_update_date(ctx, goal_name, date), to: Factory.Goals
   defdelegate add_goal_target(ctx, testid, goal_name, attrs \\ []), to: Factory.Goals
   defdelegate close_goal(ctx, testid, opts \\ []), to: Factory.Goals
@@ -45,7 +45,7 @@ defmodule Operately.Support.Factory do
   defdelegate add_project_reviewer(ctx, testid, project_name, opts \\ []), to: Factory.Projects
   defdelegate add_project_contributor(ctx, testid, project_name, opts \\ []), to: Factory.Projects
   defdelegate add_project_retrospective(ctx, testid, project_name, author_name), to: Factory.Projects
-  defdelegate add_project_check_in(ctx, testid, project_name, author_name), to: Factory.Projects
+  defdelegate add_project_check_in(ctx, testid, project_name, author_name, opts \\ []), to: Factory.Projects
   defdelegate add_project_milestone(ctx, testid, project_name, opts \\ []), to: Factory.Projects
   defdelegate edit_project_company_members_access(ctx, project_name, access_level), to: Factory.Projects
   defdelegate edit_project_space_members_access(ctx, project_name, access_level), to: Factory.Projects
