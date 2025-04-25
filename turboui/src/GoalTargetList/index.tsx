@@ -4,7 +4,6 @@ import { ExpandIcon } from "./ExpandIcon";
 import { PieChart } from "../PieChart";
 
 import { DangerButton, PrimaryButton, SecondaryButton } from "../Button";
-import { IconTrash } from "@tabler/icons-react";
 import { DragAndDropProvider, useDraggable, useDraggingAnimation, useDropZone } from "../utils/DragAndDrop";
 import { IconGripVertical } from "@tabler/icons-react";
 
@@ -12,6 +11,10 @@ import TextareaAutosize from "react-textarea-autosize";
 import classNames from "../utils/classnames";
 import { State, TargetState, useGoalTargetListState } from "./useGoalTargetListState";
 import { useForm } from "react-hook-form";
+
+import { UpdateButton } from "./UpdateButton";
+import { EditButton } from "./EditButton";
+import { DeleteButton } from "./DeleteButton";
 
 export namespace GoalTargetList {
   export type Target = {
@@ -22,12 +25,14 @@ export namespace GoalTargetList {
     unit: string;
     name: string;
     index: number;
-    mode: "view" | "edit" | "delete";
+    mode: "view" | "update" | "edit" | "delete";
   };
 
   export interface Props {
     targets: Target[];
+
     showEditButton?: boolean;
+    showUpdateButton?: boolean;
 
     addActive?: boolean;
     onAddActiveChange?: (active: boolean) => void;
@@ -61,6 +66,10 @@ function TargetList({ state }: { state: State }) {
 function TargetCard({ state, target }: { state: State; target: TargetState }) {
   if (target.mode === "view") {
     return <TargetView state={state} target={target} />;
+  }
+
+  if (target.mode === "update") {
+    return <TargetUpdate state={state} target={target} />;
   }
 
   if (target.mode === "edit") {
@@ -110,7 +119,7 @@ function TargetAdd({ state }: { state: State }) {
           autoFocus
           autoexpand={true}
         />
-        <div className="flex items-start gap-2 mt-1">
+        <div className="flex items-start gap-2 mt-2">
           <Textarea
             label="Start"
             error={errors.from?.message as string}
@@ -149,6 +158,48 @@ function TargetAdd({ state }: { state: State }) {
   );
 }
 
+function TargetUpdate({ state, target }: { state: State; target: TargetState }) {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      value: target.value.toString(),
+    },
+  });
+
+  const onSubmit = (data: any) => {
+    state.saveEdit(target.id, {
+      value: parseFloat(data.value),
+    });
+  };
+
+  return (
+    <InlineModal index={target.index}>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Textarea
+          autoFocus
+          label="New Value"
+          error={errors.value?.message as string}
+          {...register("value", {
+            required: "Can't be empty",
+            validate: (v) => !isNaN(Number(v)) || "Must be a number",
+          })}
+        />
+        <div className="flex items-center gap-2 justify-end mt-4">
+          <SecondaryButton size="xs" onClick={() => state.cancelEdit(target.id)} type="button">
+            Cancel
+          </SecondaryButton>
+          <PrimaryButton size="xs" type="submit">
+            Save
+          </PrimaryButton>
+        </div>
+      </form>
+    </InlineModal>
+  );
+}
+
 function TargetEdit({ state, target }: { state: State; target: TargetState }) {
   const {
     register,
@@ -159,7 +210,6 @@ function TargetEdit({ state, target }: { state: State; target: TargetState }) {
       name: target.name,
       from: target.from.toString(),
       to: target.to.toString(),
-      value: target.value.toString(),
       unit: target.unit,
     },
   });
@@ -178,22 +228,12 @@ function TargetEdit({ state, target }: { state: State; target: TargetState }) {
     <InlineModal index={target.index}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Textarea
-          autoFocus
-          label="Current Value"
-          error={errors.value?.message as string}
-          {...register("value", {
-            required: "Can't be empty",
-            validate: (v) => !isNaN(Number(v)) || "Must be a number",
-          })}
-        />
-        <Textarea
           label="Name"
           error={errors.name?.message as string}
           {...register("name", { required: "Can't be empty" })}
           autoexpand={true}
-          className="mt-1"
         />
-        <div className="flex items-start gap-2 mt-1">
+        <div className="flex items-start gap-2 mt-2">
           <Textarea
             label="Start"
             error={errors.from?.message as string}
@@ -217,7 +257,6 @@ function TargetEdit({ state, target }: { state: State; target: TargetState }) {
           />
         </div>
         <div className="flex items-center gap-2 justify-end mt-4">
-          <DeleteButton state={state} target={target} />
           <SecondaryButton size="xs" onClick={() => state.cancelEdit(target.id)} type="button">
             Cancel
           </SecondaryButton>
@@ -227,21 +266,6 @@ function TargetEdit({ state, target }: { state: State; target: TargetState }) {
         </div>
       </form>
     </InlineModal>
-  );
-}
-
-function DeleteButton({ state, target }: { state: State; target: TargetState }) {
-  const clickHandler = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    state.startDeleting(target.id);
-  };
-
-  const className = "rounded-full p-1.5 flex items-center justify-center mr-1 hover:bg-surface-dimmed cursor-pointer";
-
-  return (
-    <div className={className} onClick={clickHandler}>
-      <IconTrash size={16} className="text-red-500" />
-    </div>
   );
 }
 
@@ -287,11 +311,6 @@ function TargetView({ state, target }: { state: State; target: TargetState }) {
     zoneId: "targets",
   });
 
-  const handleEdit = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    state.startEditing(target.id!);
-  };
-
   const toggleExpand = (e: React.MouseEvent) => {
     e.stopPropagation();
     state.toggleExpand(target.id!);
@@ -305,19 +324,22 @@ function TargetView({ state, target }: { state: State; target: TargetState }) {
   });
 
   const innerClass = classNames("grid gap-2 items-start cursor-pointer", {
-    "grid-cols-[1fr_auto_auto_14px]": target.editButtonVisible,
-    "grid-cols-[1fr_auto_14px]": !target.editButtonVisible,
+    "grid-cols-[1fr_auto_auto_14px]": target.updateButtonVisible,
+    "grid-cols-[1fr_auto_14px]": !target.updateButtonVisible,
   });
 
-  const dragGripClass = classNames("opacity-0 group-hover:opacity-100 transition-all", {
-    "cursor-grab": !isDragging,
-    "cursor-grabbing": isDragging,
-    "opacity-100": isDragging,
-  });
+  const dragGripClass = classNames(
+    "mr-1 mt-[14px] text-content-subtle opacity-0 group-hover:opacity-100 transition-all",
+    {
+      "cursor-grab": !isDragging,
+      "cursor-grabbing": isDragging,
+      "opacity-100": isDragging,
+    },
+  );
 
   return (
     <div
-      className="group flex items-center w-[calc(100% + 16px)] -ml-[16px]"
+      className="group flex items-start w-[calc(100% + 16px)] -ml-[16px]"
       ref={ref}
       style={isDragging ? draggedStyle : undraggedStyle}
     >
@@ -327,11 +349,11 @@ function TargetView({ state, target }: { state: State; target: TargetState }) {
         <div onClick={toggleExpand} className={innerClass}>
           <TargetName target={target} truncate={!target.expanded} />
           <TargetValue target={target} />
-          {target.editButtonVisible && <EditValueButton onClick={handleEdit} />}
+          {target.updateButtonVisible && <UpdateButton state={state} target={target} />}
           <ExpandIcon expanded={target.expanded} onClick={toggleExpand} />
         </div>
 
-        {target.expanded && <TargetDetails target={target} />}
+        {target.expanded && <TargetDetails state={state} target={target} />}
       </div>
     </div>
   );
@@ -369,7 +391,7 @@ function TargetValue({ target }: { target: GoalTargetList.Target }) {
   );
 }
 
-function TargetDetails({ target }: { target: GoalTargetList.Target }) {
+function TargetDetails({ state, target }: { state: State; target: TargetState }) {
   const { from, to, unit, value } = target;
   const progress = calculateProgress(target, false);
   const directionText = from! > to! ? "down to" : "to";
@@ -390,6 +412,11 @@ function TargetDetails({ target }: { target: GoalTargetList.Target }) {
           {formatValueAndUnit(value, unit)}{" "}
           <span className={progress < 0 ? "text-red-500" : ""}>({progress.toFixed(1)}%)</span>
         </div>
+      </div>
+
+      <div className="flex items-center gap-2 mt-4">
+        <EditButton state={state} target={target} />
+        <DeleteButton state={state} target={target} />
       </div>
     </div>
   );
@@ -418,16 +445,6 @@ function calculateProgress(target: GoalTargetList.Target, clamped = true): numbe
   return percentage;
 }
 
-function EditValueButton({ onClick }: { onClick?: (e: React.MouseEvent) => void }) {
-  return (
-    <div className="mt-px">
-      <SecondaryButton size="xxs" onClick={onClick}>
-        Update
-      </SecondaryButton>
-    </div>
-  );
-}
-
 interface TextareaProps extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, "style"> {
   autoexpand?: boolean;
   label?: string;
@@ -442,7 +459,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
     );
     return (
       <div>
-        {label && <label className="font-bold text-sm mb-0.5 block">{label}</label>}
+        {label && <label className="font-bold text-sm mb-1 block">{label}</label>}
         <TextareaAutosize ref={ref} className={cn} style={{ resize: "none" }} {...props} />
         {error && <div className="text-red-500 text-xs mb-1">{error}</div>}
       </div>
