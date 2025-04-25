@@ -197,6 +197,7 @@ function TargetUpdate({ state, target }: { state: State; target: TargetState }) 
           autoFocus
           label="New Value"
           error={errors.value?.message as string}
+          addonRight={target.unit}
           {...register("value", {
             required: "Can't be empty",
             validate: (v) => !isNaN(Number(v)) || "Must be a number",
