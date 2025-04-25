@@ -1482,12 +1482,15 @@ defmodule OperatelyWeb.Api.Types do
     field :progress, :float
     field :closed_at, :date
     field :space, :space
+    field :space_path, :string
     field :owner, :person
+    field :owner_path, :string
     field :next_step, :string
     field :is_new, :boolean
     field :completed_on, :date
     field :timeframe, :timeframe
     field :children, list_of(:work_map_item)
     field :type, :string
+    field :item_path, :string
   end
 end
