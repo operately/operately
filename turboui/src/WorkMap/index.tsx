@@ -49,13 +49,16 @@ export namespace WorkMap {
     progress: Optional<number>;
     closedAt: Optional<string>;
     space: Optional<Space>;
+    spacePath: Optional<string>;
     owner: Optional<Person>;
+    ownerPath: Optional<string>;
     nextStep: Optional<string>;
     isNew: Optional<boolean>;
     children: Optional<Item[]>;
     completedOn: Optional<string>;
     timeframe: Optional<Timeframe>;
     type: "goal" | "project";
+    itemPath: Optional<string>;
   }
 
   export interface NewItem {
