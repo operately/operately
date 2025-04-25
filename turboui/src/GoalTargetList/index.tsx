@@ -54,11 +54,27 @@ function TargetList({ state }: { state: State }) {
 
   return (
     <div ref={ref}>
+      <TargetListHeader />
+
       {state.targets.map((target, index) => (
         <TargetCard key={target.id} state={state} target={target} />
       ))}
 
       {state.addActive && <TargetAdd state={state} />}
+    </div>
+  );
+}
+
+function TargetListHeader() {
+  const className = classNames(
+    "flex items-center px-2 py-2",
+    "border-t border-stroke-base font-semibold text-xs text-content-dimmed uppercase tracking-wider",
+  );
+
+  return (
+    <div className={className}>
+      <div className="flex-1">Name</div>
+      <div className="w-40 mr-4 text-right">Current value</div>
     </div>
   );
 }
