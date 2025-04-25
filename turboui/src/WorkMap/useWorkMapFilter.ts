@@ -3,9 +3,6 @@ import { parse } from "date-fns";
 import { TimeframeSelector } from "../TimeframeSelector";
 import { WorkMap } from ".";
 
-/**
- * Main filter hook for WorkMap
- */
 export function useWorkMapFilter(rawItems: WorkMap.Item[], timeframe: TimeframeSelector.Timeframe) {
   const [filter, setFilter] = useState<WorkMap.Filter>("all");
 
@@ -13,21 +10,14 @@ export function useWorkMapFilter(rawItems: WorkMap.Item[], timeframe: TimeframeS
     const timeframeFilteredItems = filterItemsByTimeframe(rawItems, timeframe);
 
     if (filter === "all") {
-      return timeframeFilteredItems;
+      return extractOngoingItems(timeframeFilteredItems);
     }
     if (filter === "projects") {
-      const allProjects = extractAllProjects(timeframeFilteredItems);
-
-      return allProjects.filter((project) => project.status !== "completed" && project.status !== "dropped");
+      return extractAllProjects(timeframeFilteredItems);
     }
     if (filter === "completed") {
       const completedItems = extractCompletedItems(timeframeFilteredItems);
-
-      return completedItems.sort((a, b) => {
-        const dateA = parseDate((a as any).closedAt);
-        const dateB = parseDate((b as any).closedAt);
-        return dateB.getTime() - dateA.getTime();
-      });
+      return sortItemsByClosedDate(completedItems);
     }
 
     return timeframeFilteredItems.map((item) => filterChildren(item, filter));
@@ -44,6 +34,8 @@ export function useWorkMapFilter(rawItems: WorkMap.Item[], timeframe: TimeframeS
   };
 }
 
+const CLOSED_STATUSES = ["completed", "dropped", "achieved", "partial", "missed"];
+
 /**
  * Returns a new WorkMapItem with children filtered according to the filter criteria
  */
@@ -59,11 +51,7 @@ function filterChildren(item: WorkMap.Item, filter: WorkMap.Filter) {
       if (filter === "projects" && !isProject) return false;
 
       // On goals page, exclude all completed goals (all closed statuses)
-      if (
-        filter === "goals" &&
-        isGoal &&
-        ["completed", "failed", "dropped", "achieved", "partial", "missed"].includes(child.status)
-      ) {
+      if (filter === "goals" && isGoal && CLOSED_STATUSES.includes(child.status)) {
         return false;
       }
       return true;
@@ -91,7 +79,9 @@ function extractAllProjects(data: WorkMap.Item[]): WorkMap.Item[] {
   };
 
   extract(data);
-  return allProjects;
+
+  // Filter out closed projects before returning
+  return allProjects.filter((project) => !CLOSED_STATUSES.includes(project.status));
 }
 
 /**
@@ -103,13 +93,7 @@ function extractCompletedItems(data: WorkMap.Item[]): WorkMap.Item[] {
 
   const extractItems = (items: WorkMap.Item[]): void => {
     items.forEach((item) => {
-      if (
-        item.status === "completed" ||
-        item.status === "dropped" ||
-        item.status === "achieved" ||
-        item.status === "partial" ||
-        item.status === "missed"
-      ) {
+      if (CLOSED_STATUSES.includes(item.status)) {
         const enhancedItem = {
           ...item,
           children: [],
@@ -126,6 +110,39 @@ function extractCompletedItems(data: WorkMap.Item[]): WorkMap.Item[] {
 
   extractItems(data);
   return completedItems;
+}
+
+/**
+ * Helper to extract all ongoing items (not completed, achieved, partial, missed, or dropped)
+ */
+function extractOngoingItems(data: WorkMap.Item[]): WorkMap.Item[] {
+  const filterOngoingItems = (item: WorkMap.Item): WorkMap.Item | null => {
+    const isOngoing = !CLOSED_STATUSES.includes(item.status);
+
+    if (!isOngoing) {
+      return null;
+    }
+
+    let filteredChildren: WorkMap.Item[] = [];
+    if (item.children && item.children.length > 0) {
+      filteredChildren = item.children.map(filterOngoingItems).filter((child) => child !== null);
+    }
+
+    return { ...item, children: filteredChildren };
+  };
+
+  return data.map(filterOngoingItems).filter((item) => item !== null);
+}
+
+/**
+ * Helper function to sort items by their closedAt date in descending order
+ */
+function sortItemsByClosedDate(items: WorkMap.Item[]): WorkMap.Item[] {
+  return [...items].sort((a, b) => {
+    const dateA = parseDate((a as any).closedAt);
+    const dateB = parseDate((b as any).closedAt);
+    return dateB.getTime() - dateA.getTime();
+  });
 }
 
 /**
