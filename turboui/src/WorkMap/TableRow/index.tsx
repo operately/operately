@@ -45,8 +45,8 @@ export function TableRow(props: Props) {
           timeframe={item.timeframe}
           status={item.status}
         />
-        <SpaceCell space={item.space} status={item.status} />
-        <OwnerCell owner={item.owner} status={item.status} />
+        <SpaceCell item={item} />
+        <OwnerCell item={item} />
         {filter !== "completed" && (
           <NextStepCell nextStep={item.nextStep} status={item.status} />
         )}

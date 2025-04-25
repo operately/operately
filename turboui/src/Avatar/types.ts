@@ -34,6 +34,7 @@ export interface AvatarListProps {
 export interface AvatarWithNameProps extends AvatarProps {
   nameFormat?: NameFormat;
   className?: string;
+  link?: string;
 }
 
 export type NameFormat = "first" | "short" | "full";

@@ -1,11 +1,20 @@
+import { BlackLink } from "../Link";
 import { Avatar } from ".";
 import { AvatarWithNameProps, NameFormat } from "./types";
 
-export function AvatarWithName({ person, size, className, nameFormat = "full" }: AvatarWithNameProps) {
+export function AvatarWithName({ person, size, className, nameFormat = "full", link }: AvatarWithNameProps) {
+  const name = formattedName(person.fullName!, nameFormat);
+
   return (
     <div className="flex items-center gap-1.5">
       <Avatar person={person} size={size} />
-      <div className={className}>{formattedName(person.fullName!, nameFormat)}</div>
+      {link ? (
+        <BlackLink to={link} className={className} underline="hover">
+          {name}
+        </BlackLink>
+      ) : (
+        <div className={className}>{name}</div>
+      )}
     </div>
   );
 }

@@ -24,6 +24,8 @@ defmodule Operately.WorkMaps.WorkMapItem do
     completed_on: DateTime.t() | nil,
     timeframe: map() | nil,
     type: atom(),
+    company: map(),
+    resource: map(),
   }
 
   defstruct [
@@ -41,6 +43,8 @@ defmodule Operately.WorkMaps.WorkMapItem do
     :completed_on,
     :timeframe,
     :type,
+    :company,
+    :resource,
   ]
 
   def build_item(goal = %Goal{}, children) do
@@ -59,6 +63,8 @@ defmodule Operately.WorkMaps.WorkMapItem do
       completed_on: goal.closed_at,
       timeframe: goal.timeframe,
       type: :goal,
+      company: goal.company,
+      resource: goal,
     }
   end
 
@@ -80,6 +86,8 @@ defmodule Operately.WorkMaps.WorkMapItem do
       completed_on: project.closed_at,
       timeframe: project_timeframe(project),
       type: :project,
+      company: project.company,
+      resource: project,
     }
   end
 
