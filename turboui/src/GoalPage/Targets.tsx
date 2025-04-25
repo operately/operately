@@ -33,6 +33,7 @@ export function Targets(props: GoalPage.Props) {
           <GoalTargetList
             targets={props.targets}
             showEditButton={props.canEdit}
+            showUpdateButton={props.canEdit}
             addActive={addActive}
             onAddActiveChange={(active) => setAddActive(active)}
           />
