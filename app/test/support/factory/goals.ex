@@ -25,13 +25,17 @@ defmodule Operately.Support.Factory.Goals do
     Map.put(ctx, testid, goal)
   end
 
-  def add_goal_update(ctx, testid, goal_name, person_name) do
+  def add_goal_update(ctx, testid, goal_name, person_name, opts \\ []) do
     goal = Map.fetch!(ctx, goal_name)
     person = Map.fetch!(ctx, person_name)
+    status = Keyword.get(opts, :status, "on_track")
 
-    update = Operately.GoalsFixtures.goal_update_fixture(person, goal)
+    update = Operately.GoalsFixtures.goal_update_fixture(person, goal, status: status)
+    {:ok, goal} = Operately.Goals.update_goal(goal, %{last_check_in_id: update.id})
 
-    Map.put(ctx, testid, update)
+    ctx
+    |> Map.put(testid, update)
+    |> Map.put(goal_name, goal)
   end
 
   def set_goal_next_update_date(ctx, goal_name, date) do
