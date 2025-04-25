@@ -15,7 +15,6 @@ defmodule Operately.WorkMaps.WorkMapItem do
     name: String.t(),
     status: String.t(),
     progress: float(),
-    deadline: DateTime.t() | nil,
     closed_at: DateTime.t() | nil,
     space: map(),
     owner: map() | nil,
@@ -23,9 +22,8 @@ defmodule Operately.WorkMaps.WorkMapItem do
     is_new: boolean(),
     children: list(t()),
     completed_on: DateTime.t() | nil,
-    type: atom(),
     timeframe: map() | nil,
-    started_at: DateTime.t() | nil
+    type: atom(),
   }
 
   defstruct [
@@ -34,7 +32,6 @@ defmodule Operately.WorkMaps.WorkMapItem do
     :name,
     :status,
     :progress,
-    :deadline,
     :closed_at,
     :space,
     :owner,
@@ -42,9 +39,8 @@ defmodule Operately.WorkMaps.WorkMapItem do
     :is_new,
     :children,
     :completed_on,
-    :type,
     :timeframe,
-    :started_at,
+    :type,
   ]
 
   def build_item(goal = %Goal{}, children) do
@@ -61,8 +57,8 @@ defmodule Operately.WorkMaps.WorkMapItem do
       is_new: false,
       children: children,
       completed_on: goal.closed_at,
-      type: :goal,
       timeframe: goal.timeframe,
+      type: :goal,
     }
   end
 
@@ -75,7 +71,6 @@ defmodule Operately.WorkMaps.WorkMapItem do
       name: project.name,
       status: if(project.last_check_in, do: project.last_check_in.status, else: "on_track"),
       progress: Projects.progress_percentage(project),
-      deadline: project.deadline,
       closed_at: project.closed_at,
       space: project.group,
       owner: project.champion,
@@ -83,7 +78,7 @@ defmodule Operately.WorkMaps.WorkMapItem do
       is_new: false,
       children: children,
       completed_on: project.closed_at,
-      started_at: project.started_at,
+      timeframe: project_timeframe(project),
       type: :project,
     }
   end
@@ -110,5 +105,13 @@ defmodule Operately.WorkMaps.WorkMapItem do
 
         if target, do: target.name, else: ""
     end
+  end
+
+  defp project_timeframe(project = %Project{}) do
+    %{
+      start_date: project.started_at,
+      end_date: project.deadline,
+      type: "days",
+    }
   end
 end

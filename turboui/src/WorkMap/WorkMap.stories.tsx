@@ -9,6 +9,14 @@ function genAvatar(id: string) {
   return `https://images.unsplash.com/${id}?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80`;
 }
 
+function getTimeframe(timeframe: TimeframeSelector.Timeframe) {
+  return {
+    ...timeframe,
+    startDate: timeframe.startDate?.toISOString(),
+    endDate: timeframe.endDate?.toISOString(),
+  };
+}
+
 // People used consistently throughout the stories
 const people = {
   alex: {
@@ -47,9 +55,8 @@ const mockItems: WorkMap.Item[] = [
     isNew: false,
     completedOn: null,
     closedAt: null,
-    deadline: "Dec 31 2024",
     nextStep: "People are signing up for SaaS",
-    timeframe: currentYear(),
+    timeframe: getTimeframe(currentYear()),
     children: [
       {
         id: "project-1",
@@ -62,10 +69,13 @@ const mockItems: WorkMap.Item[] = [
         owner: people.sophia,
         isNew: false,
         completedOn: "2025-03-10",
-        deadline: "Mar 31",
         closedAt: "Mar 10 2025",
         nextStep: "",
-        startedAt: "2024-01-15",
+        timeframe: {
+          startDate: "2024-01-15",
+          endDate: "2025-03-31",
+          type: "days",
+        },
         children: [],
       },
       {
@@ -80,9 +90,12 @@ const mockItems: WorkMap.Item[] = [
         isNew: false,
         completedOn: null,
         closedAt: null,
-        deadline: "Feb 7",
         nextStep: "All weekly updates are collected",
-        startedAt: "2024-01-01",
+        timeframe: {
+          startDate: "2024-01-01",
+          endDate: "2025-02-07",
+          type: "days",
+        },
         children: [],
       },
       {
@@ -97,9 +110,8 @@ const mockItems: WorkMap.Item[] = [
         isNew: false,
         completedOn: null,
         closedAt: null,
-        deadline: "Nov 15 2024",
         nextStep: "Launch email campaign",
-        timeframe: currentYear(),
+        timeframe: getTimeframe(currentYear()),
         children: [
           {
             id: "project-3",
@@ -113,9 +125,12 @@ const mockItems: WorkMap.Item[] = [
             isNew: false,
             completedOn: null,
             closedAt: null,
-            deadline: "Oct 1 2024",
             nextStep: "Finalize email templates",
-            startedAt: "2024-06-15",
+            timeframe: {
+              startDate: "2024-06-15",
+              endDate: "2024-10-01",
+              type: "days",
+            },
             children: [],
           }
         ],
@@ -134,9 +149,8 @@ const mockItems: WorkMap.Item[] = [
     isNew: false,
     completedOn: null,
     closedAt: null,
-    deadline: "Jun 15 2025",
     nextStep: "Conduct user interviews",
-    timeframe: currentQuarter(),
+    timeframe: getTimeframe(currentQuarter()),
     children: [
       {
         id: "goal-2-1",
@@ -150,9 +164,8 @@ const mockItems: WorkMap.Item[] = [
         isNew: false,
         completedOn: null,
         closedAt: null,
-        deadline: "May 30 2025",
         nextStep: "Identify bottlenecks in process",
-        timeframe: currentQuarter(),
+        timeframe: getTimeframe(currentQuarter()),
         children: [
           {
             id: "goal-2-1-1",
@@ -166,9 +179,8 @@ const mockItems: WorkMap.Item[] = [
             isNew: false,
             completedOn: null,
             closedAt: null,
-            deadline: "Apr 15 2025",
             nextStep: "Complete backend integration",
-            timeframe: currentQuarter(),
+            timeframe: getTimeframe(currentQuarter()),
             children: [],
           },
           {
@@ -183,9 +195,12 @@ const mockItems: WorkMap.Item[] = [
             isNew: false,
             completedOn: null,
             closedAt: null,
-            deadline: "Apr 30 2025",
             nextStep: "Finalize content outline",
-            startedAt: "2024-03-01",
+            timeframe: {
+              startDate: "2024-03-01",
+              endDate: "2025-04-30",
+              type: "days",
+            },
             children: [],
           }
         ],
@@ -202,9 +217,12 @@ const mockItems: WorkMap.Item[] = [
         isNew: false,
         completedOn: null,
         closedAt: null,
-        deadline: "Apr 20 2025",
         nextStep: "Finalize mockups",
-        startedAt: "2025-02-01",
+        timeframe: {
+          startDate: "2025-02-01",
+          endDate: "2025-04-20",
+          type: "days",
+        },
         children: [],
       }
     ],
@@ -221,9 +239,8 @@ const mockItems: WorkMap.Item[] = [
     isNew: false,
     completedOn: null,
     closedAt: null,
-    deadline: "Dec 31 2025",
     nextStep: "Complete market research",
-    timeframe: currentYear(),
+    timeframe: getTimeframe(currentYear()),
     children: [
       {
         id: "goal-3-1",
@@ -237,9 +254,8 @@ const mockItems: WorkMap.Item[] = [
         isNew: false,
         completedOn: null,
         closedAt: null,
-        deadline: "Sep 15 2025",
         nextStep: "Establish legal entity",
-        timeframe: currentYear(),
+        timeframe: getTimeframe(currentYear()),
         children: [
           {
             id: "project-5",
@@ -253,9 +269,12 @@ const mockItems: WorkMap.Item[] = [
             isNew: false,
             completedOn: null,
             closedAt: null,
-            deadline: "Aug 1 2025",
             nextStep: "Complete data audit",
-            startedAt: "2025-04-01",
+            timeframe: {
+              startDate: "2025-04-01",
+              endDate: "2025-08-01",
+              type: "days",
+            },
             children: [],
           }
         ],
@@ -272,9 +291,8 @@ const mockItems: WorkMap.Item[] = [
         isNew: false,
         completedOn: null,
         closedAt: null,
-        deadline: "Nov 30 2025",
         nextStep: "Identify potential partners",
-        timeframe: currentYear(),
+        timeframe: getTimeframe(currentYear()),
         children: []
       }
     ],
@@ -406,10 +424,7 @@ export const AllStatuses: Story = {
           },
           isNew: false,
           completedOn: status === "completed" || status === "achieved" ? `2025-04-${index + 1}` : null,
-          deadline:
-            status === "completed" || status === "achieved"
-              ? undefined
-              : `Jun ${15 + index} 2025`,
+
           closedAt: status === "completed" || status === "achieved" ? `Apr ${index + 1} 2025` : undefined,
           nextStep: status === "completed" || status === "achieved" ? "" : "Next action to take",
           children: [],
@@ -419,17 +434,21 @@ export const AllStatuses: Story = {
           return {
             ...baseItem,
             type: "goal" as const,
-            timeframe: {
-              startDate: new Date(2025, 0, 1),
-              endDate: new Date(2025, 11, 31),
-              type: "year" as TimeframeSelector.TimeframeType,
-            },
+            timeframe: getTimeframe({
+              startDate: new Date("2025-01-01"),
+              endDate: new Date("2025-12-31"),
+              type: "year",
+            }),
           };
         } else {
           return {
             ...baseItem,
             type: "project" as const,
-            startedAt: `2025-01-${index + 1}`,
+            timeframe: {
+              startDate: `2025-01-${index + 1}`,
+              endDate: "2025-12-31",
+              type: "days" as TimeframeSelector.TimeframeType,
+            },
           };
         }
       }),

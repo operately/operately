@@ -1491,17 +1491,15 @@ export interface WorkMapItem {
   name?: string | null;
   status?: string | null;
   progress?: number | null;
-  type?: string | null;
-  deadline?: string | null;
   closedAt?: string | null;
   space?: Space | null;
   owner?: Person | null;
   nextStep?: string | null;
   isNew?: boolean | null;
   completedOn?: string | null;
-  startedAt?: string | null;
   timeframe?: Timeframe | null;
   children?: WorkMapItem[] | null;
+  type?: string | null;
 }
 
 export type ActivityContent =

@@ -21,6 +21,28 @@ const createMockItem = (
   progress: number,
   hasChildren: boolean = false,
 ): WorkMap.Item => {
+  // Create a properly typed child item
+  const childItem: WorkMap.Item = {
+    id: `${id}-child-1`,
+    name: "Child item 1",
+    parentId: id,
+    type: "project",
+    status: "on_track",
+    progress: 50,
+    space: { name: "Product", id: "space-1" },
+    owner: mockOwner,
+    nextStep: "Child next step",
+    isNew: false,
+    completedOn: null,
+    closedAt: null,
+    children: [],
+    timeframe: {
+      startDate: "2025-01-15",
+      endDate: "2025-06-30",
+      type: "days"
+    }
+  };
+
   const baseItem = {
     id,
     name,
@@ -30,44 +52,32 @@ const createMockItem = (
     space: { name: "Product", id: "space-1" },
     owner: mockOwner,
     nextStep: status === "completed" || status === "achieved" ? "" : "Next action to take",
-    deadline: status === "completed" || status === "achieved" ? undefined : "Dec 31 2025",
     closedAt: "Mar 15 2025",
     isNew: false,
     completedOn: status === "completed" || status === "achieved" ? "2025-03-15" : null,
-    children: hasChildren
-      ? [
-          {
-            id: `${id}-child-1`,
-            name: "Child item 1",
-            parentId: id,
-            type: "project" as const,
-            status: "on_track" as WorkMap.Status,
-            progress: 50,
-            space: { name: "Product", id: "space-1" },
-            owner: mockOwner,
-            nextStep: "Child next step",
-            isNew: false,
-            completedOn: null,
-            startedAt: "2025-01-15",
-            deadline: "Jun 30 2025",
-            closedAt: null,
-            children: [],
-          },
-        ]
-      : [],
+    children: hasChildren ? [childItem] : [],
   };
 
   if (type === "goal") {
+    const year = currentYear();
     return {
       ...baseItem,
       type: "goal" as const,
-      timeframe: currentYear(),
+      timeframe: {
+        ...year,
+        startDate: year.startDate?.toISOString(),
+        endDate: year.endDate?.toISOString(),
+      },
     };
   } else {
     return {
       ...baseItem,
       type: "project" as const,
-      startedAt: "2025-01-01",
+      timeframe: {
+        startDate: "2025-01-01",
+        endDate: "2025-12-31",
+        type: "days"
+      },
     };
   }
 };

@@ -2,10 +2,19 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { WorkMapTable } from "./WorkMapTable";
 import { WorkMap } from ".";
 import { currentYear, currentQuarter, currentMonth } from "../TimeframeSelector/utils";
+import { TimeframeSelector } from "../TimeframeSelector";
 
 // --- Mock Data ---
 function genAvatar(id: string) {
   return `https://images.unsplash.com/${id}?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80`;
+}
+
+function getTimeframe(timeframe: TimeframeSelector.Timeframe) {
+  return {
+    ...timeframe,
+    startDate: timeframe.startDate?.toISOString(),
+    endDate: timeframe.endDate?.toISOString(),
+  };
 }
 
 // People used consistently throughout the stories
@@ -63,9 +72,8 @@ const defaultGoalsAndProjects: WorkMap.Item[] = [
     isNew: false,
     completedOn: null,
     closedAt: null,
-    deadline: "Dec 31 2025",
     nextStep: "Launch referral program",
-    timeframe: currentYear(),
+    timeframe: getTimeframe(currentYear()),
     children: [
       {
         id: "project-1",
@@ -78,10 +86,13 @@ const defaultGoalsAndProjects: WorkMap.Item[] = [
         owner: people.jane,
         isNew: false,
         completedOn: null,
-        deadline: "Nov 30 2025",
         closedAt: undefined,
         nextStep: "Design rewards",
-        startedAt: "2025-01-15",
+        timeframe: {
+          startDate: "2025-01-15",
+          endDate: "2025-11-30",
+          type: "days",
+        },
         children: [],
       },
       {
@@ -96,9 +107,8 @@ const defaultGoalsAndProjects: WorkMap.Item[] = [
         isNew: false,
         completedOn: "2025-10-15",
         closedAt: null,
-        deadline: "Oct 15 2025",
         nextStep: "A/B test new landing page",
-        timeframe: currentYear(),
+        timeframe: getTimeframe(currentYear()),
         children: [
           {
             id: "goal-100",
@@ -113,9 +123,8 @@ const defaultGoalsAndProjects: WorkMap.Item[] = [
             completedOn: "2025-07-01",
             closedAt: "Jul 1 2025",
             nextStep: "",
-            timeframe: currentQuarter(),
+            timeframe: getTimeframe(currentQuarter()),
             children: [],
-            deadline: null,
           },
           {
             id: "project-100",
@@ -130,9 +139,12 @@ const defaultGoalsAndProjects: WorkMap.Item[] = [
             completedOn: "2025-04-01",
             closedAt: "Apr 1 2025",
             nextStep: "",
-            startedAt: "2025-01-01",
+            timeframe: {
+              startDate: "2025-01-01",
+              endDate: null,
+              type: "days",
+            },
             children: [],
-            deadline: null,
           },
         ],
       },
@@ -150,9 +162,8 @@ const defaultGoalsAndProjects: WorkMap.Item[] = [
     isNew: false,
     completedOn: null,
     closedAt: null,
-    deadline: "Aug 30 2025",
     nextStep: "Ship onboarding checklist",
-    timeframe: currentYear(),
+    timeframe: getTimeframe(currentYear()),
     children: [
       {
         id: "project-2",
@@ -166,9 +177,12 @@ const defaultGoalsAndProjects: WorkMap.Item[] = [
         isNew: false,
         completedOn: null,
         closedAt: null,
-        deadline: "Aug 15 2025",
+        timeframe: {
+          startDate: "2025-03-15",
+          endDate: "2025-08-15",
+          type: "days",
+        },
         nextStep: "QA checklist",
-        startedAt: "2025-03-15",
         children: [],
       },
     ],
@@ -185,9 +199,12 @@ const defaultGoalsAndProjects: WorkMap.Item[] = [
     isNew: false,
     completedOn: null,
     closedAt: null,
-    deadline: "Jul 31 2025",
+    timeframe: {
+      startDate: "2025-02-01",
+      endDate: "2025-07-31",
+      type: "days",
+    },
     nextStep: "Finalize homepage",
-    startedAt: "2025-02-01",
     children: [],
   },
 ];
@@ -205,9 +222,8 @@ const onlyGoals: WorkMap.Item[] = [
     isNew: false,
     completedOn: null,
     closedAt: null,
-    deadline: "Sep 30 2025",
     nextStep: "Send Q3 survey",
-    timeframe: currentQuarter(),
+    timeframe: getTimeframe(currentQuarter()),
     children: [
       {
         id: "goal-g1-1",
@@ -221,9 +237,8 @@ const onlyGoals: WorkMap.Item[] = [
         isNew: false,
         completedOn: "2025-08-15",
         closedAt: null,
-        deadline: "Aug 15 2025",
         nextStep: "Enable feedback widget",
-        timeframe: currentMonth(),
+        timeframe: getTimeframe(currentMonth()),
         children: [],
       },
       {
@@ -238,9 +253,8 @@ const onlyGoals: WorkMap.Item[] = [
         isNew: false,
         completedOn: null,
         closedAt: null,
-        deadline: "Sep 1 2025",
         nextStep: "Analyze churn data",
-        timeframe: currentQuarter(),
+        timeframe: getTimeframe(currentQuarter()),
         children: [],
       },
     ],
@@ -257,9 +271,8 @@ const onlyGoals: WorkMap.Item[] = [
     isNew: false,
     completedOn: null,
     closedAt: null,
-    deadline: "Dec 31 2025",
     nextStep: "Research local partners",
-    timeframe: currentYear(),
+    timeframe: getTimeframe(currentYear()),
     children: [
       {
         id: "goal-g2-1",
@@ -269,13 +282,12 @@ const onlyGoals: WorkMap.Item[] = [
         status: "pending",
         progress: 40,
         space: { id: "space-growth", name: "Growth" },
-        timeframe: currentQuarter(),
         owner: people.igor,
         isNew: false,
         completedOn: null,
         closedAt: null,
-        deadline: "Nov 15 2025",
         nextStep: "Hire translators",
+        timeframe: getTimeframe(currentQuarter()),
         children: [],
       },
       {
@@ -290,9 +302,8 @@ const onlyGoals: WorkMap.Item[] = [
         isNew: false,
         completedOn: null,
         closedAt: null,
-        deadline: "Dec 1 2025",
         nextStep: "Draft campaign assets",
-        timeframe: currentQuarter(),
+        timeframe: getTimeframe(currentQuarter()),
         children: [],
       },
     ],
@@ -307,14 +318,17 @@ const onlyProjects: WorkMap.Item[] = [
     name: "Mobile app v2",
     status: "dropped",
     progress: 70,
-    startedAt: "2025-01-10",
     space: { id: "space-mobile", name: "Mobile" },
     owner: people.jane,
     isNew: false,
     completedOn: null,
     closedAt: null,
-    deadline: "Sep 30 2025",
     nextStep: "Start beta testing",
+    timeframe: {
+      startDate: "2025-01-10",
+      endDate: "2025-09-30",
+      type: "days",
+    },
     children: [],
   },
   {
@@ -329,9 +343,12 @@ const onlyProjects: WorkMap.Item[] = [
     isNew: false,
     completedOn: null,
     closedAt: null,
-    deadline: "Oct 31 2025",
     nextStep: "Migrate endpoints",
-    startedAt: "2025-02-15",
+    timeframe: {
+      startDate: "2025-02-15",
+      endDate: "2025-10-31",
+      type: "days",
+    },
     children: [],
   },
   {
@@ -346,9 +363,12 @@ const onlyProjects: WorkMap.Item[] = [
     isNew: false,
     completedOn: "2025-07-31",
     closedAt: null,
-    deadline: "Jul 31 2025",
     nextStep: "Finalize homepage",
-    startedAt: "2025-03-01",
+    timeframe: {
+      startDate: "2025-03-01",
+      endDate: "2025-07-31",
+      type: "days",
+    },
     children: [],
   },
 ];
@@ -365,10 +385,9 @@ const onlyCompleted: WorkMap.Item[] = [
     owner: people.igor,
     isNew: false,
     completedOn: "2025-06-01",
-    timeframe: currentYear(),
-    deadline: "May 31 2025",
     closedAt: "Jun 1 2025",
     nextStep: "",
+    timeframe: getTimeframe(currentYear()),
     children: [],
   },
   {
@@ -383,9 +402,8 @@ const onlyCompleted: WorkMap.Item[] = [
     completedOn: "2025-05-15",
     closedAt: "May 1 2025",
     owner: people.jane,
-    deadline: "Apr 30 2025",
     nextStep: "",
-    timeframe: currentQuarter(),
+    timeframe: getTimeframe(currentQuarter()),
     children: [],
   },
   {
@@ -401,9 +419,12 @@ const onlyCompleted: WorkMap.Item[] = [
     completedOn: "2025-04-01",
     closedAt: "Apr 1 2025",
     nextStep: "",
-    startedAt: "2025-01-15",
+    timeframe: {
+      startDate: "2025-01-15",
+      endDate: "2025-04-01",
+      type: "days",
+    },
     children: [],
-    deadline: null,
   },
 ];
 

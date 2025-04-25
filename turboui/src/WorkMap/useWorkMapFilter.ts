@@ -181,35 +181,14 @@ function itemOverlapsWithTimeframe(item: WorkMap.Item, timeframe: TimeframeSelec
   const timeframeStart = timeframe.startDate ? new Date(timeframe.startDate) : null;
   const timeframeEnd = timeframe.endDate ? new Date(timeframe.endDate) : null;
 
-  if (item.type === "goal") {
-    const goalStart = item.timeframe.startDate ? new Date(item.timeframe.startDate) : null;
-    const goalEnd = item.timeframe.endDate ? new Date(item.timeframe.endDate) : null;
+  const goalStart = item.timeframe?.startDate ? new Date(item.timeframe.startDate) : null;
+  const goalEnd = item.timeframe?.endDate ? new Date(item.timeframe.endDate) : null;
 
-    // If either timeframe is missing dates, include the item
-    if (!timeframeStart || !timeframeEnd || !goalStart || !goalEnd) {
-      return true;
-    }
-
-    // Check for overlap: not (goalEnd < timeframeStart || goalStart > timeframeEnd)
-    return !(goalEnd < timeframeStart || goalStart > timeframeEnd);
-  } else if (item.type === "project") {
-    const projectStart = item.startedAt ? parseDate(item.startedAt) : null;
-    const projectEnd = item.closedAt ? parseDate(item.closedAt) : null;
-
-    // If project has no start date, or timeframe has no dates, include it
-    if (!projectStart || !timeframeStart || !timeframeEnd) {
-      return true;
-    }
-
-    // For ongoing projects (no end date), check if they started before timeframe end
-    if (!projectEnd) {
-      return projectStart <= timeframeEnd;
-    }
-
-    // Check for overlap: not (projectEnd < timeframeStart || projectStart > timeframeEnd)
-    return !(projectEnd < timeframeStart || projectStart > timeframeEnd);
+  // If either timeframe is missing dates, include the item
+  if (!timeframeStart || !timeframeEnd || !goalStart || !goalEnd) {
+    return true;
   }
 
-  // Default to including the item if we can't determine
-  return true;
+  // Check for overlap: not (goalEnd < timeframeStart || goalStart > timeframeEnd)
+  return !(goalEnd < timeframeStart || goalStart > timeframeEnd);
 }
