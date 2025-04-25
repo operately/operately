@@ -1,10 +1,10 @@
-import * as React from "react";
 import { GoalTargetList } from ".";
 import { useListState } from "../utils/useListState";
 
 export type TargetState = GoalTargetList.Target & {
   expanded: boolean;
   editButtonVisible: boolean;
+  updateButtonVisible: boolean;
 };
 
 export interface State {
@@ -15,6 +15,10 @@ export interface State {
 
   cancelAdd: () => void;
   addTarget: (newTarget: { name: string; from: number; to: number; unit: string }) => void;
+
+  startUpdating: (id: string) => void;
+  cancelUpdate: (id: string) => void;
+  updateTarget: (id: string, newValue: number) => void;
 
   startEditing: (id: string) => void;
   cancelEdit: (id: string) => void;
@@ -32,6 +36,7 @@ export function useGoalTargetListState(props: GoalTargetList.Props): State {
     return props.targets.map((t) => ({
       ...t,
       editButtonVisible: !!props.showEditButton,
+      updateButtonVisible: !!props.showUpdateButton,
       expanded: false,
     }));
   });
@@ -49,45 +54,56 @@ export function useGoalTargetListState(props: GoalTargetList.Props): State {
         mode: "view",
         expanded: false,
         editButtonVisible: !!props.showEditButton,
+        updateButtonVisible: !!props.showUpdateButton,
       };
 
       props.onAddActiveChange?.(false);
       append(target);
     },
 
-    cancelAdd: () => {
-      props.onAddActiveChange?.(false);
-    },
-
     toggleExpand: (id: string) => {
       update(id, (t) => ({ ...t, expanded: !t.expanded }));
     },
 
+    // Adding
+    cancelAdd: () => {
+      props.onAddActiveChange?.(false);
+    },
+
+    // Updating
+    startUpdating: (id: string) => {
+      update(id, (t) => ({ ...t, mode: "update" as const }));
+    },
+    cancelUpdate: (id: string) => {
+      update(id, (t) => ({ ...t, mode: "view" as const }));
+    },
+    updateTarget: (id: string, newValue: number) => {
+      update(id, (t) => ({ ...t, value: newValue, mode: "view" as const }));
+    },
+
+    // Editing
     startEditing: (id: string) => {
       update(id, (t) => ({ ...t, mode: "edit" as const }));
     },
-
     cancelEdit: (id: string) => {
       update(id, (t) => ({ ...t, mode: "view" as const }));
     },
-
     saveEdit: (id: string, newTarget: Partial<GoalTargetList.Target>) => {
       update(id, (t) => ({ ...t, ...newTarget, mode: "view" as const }));
     },
 
+    // Deleting
     startDeleting: (id: string) => {
       update(id, (t) => ({ ...t, mode: "delete" as const }));
     },
-
     deleteTarget: (id: string) => {
       remove(id);
     },
-
     cancelDelete: (id: string) => {
       update(id, (t) => ({ ...t, mode: "view" as const }));
     },
 
-    // Implements the interface from utils/DragAndDrop
+    // Drag and drop
     reorder: (_: any, id: string, newIndex: number) => {
       reorder(id, newIndex);
     },

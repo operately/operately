@@ -67,7 +67,16 @@ export const Default: Story = {
   args: {
     targets: mockTargets,
     showEditButton: true,
+    showUpdateButton: true,
     addActive: false,
+  },
+};
+
+export const UpdateMode: Story = {
+  args: {
+    targets: mockTargets.map((t, i) => ({ ...t, mode: i === 1 ? "update" : "view" })),
+    showEditButton: true,
+    showUpdateButton: true,
   },
 };
 
@@ -75,6 +84,7 @@ export const EditMode: Story = {
   args: {
     targets: mockTargets.map((t, i) => ({ ...t, mode: i === 1 ? "edit" : "view" })),
     showEditButton: true,
+    showUpdateButton: true,
   },
 };
 
@@ -82,6 +92,7 @@ export const DeleteMode: Story = {
   args: {
     targets: mockTargets.map((t, i) => ({ ...t, mode: i === 1 ? "delete" : "view" })),
     showEditButton: true,
+    showUpdateButton: true,
   },
 };
 
@@ -95,5 +106,6 @@ export const AddMode: Story = {
   args: {
     targets: mockTargets,
     addActive: true,
+    showUpdateButton: true,
   },
 };
