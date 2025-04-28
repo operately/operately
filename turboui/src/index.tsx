@@ -11,5 +11,6 @@ export * from "./ProgressBar";
 export * from "./Avatar";
 export * from "./TimeframeSelector";
 export * from "./WorkMap";
+export * from "./FormattedTime";
 
 export { MiniWorkMap } from "./MiniWorkMap";
