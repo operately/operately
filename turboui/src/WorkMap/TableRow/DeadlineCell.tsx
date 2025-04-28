@@ -24,7 +24,7 @@ export function DeadlineCell({ filter, status, completedOn, timeframe }: Props) 
   const dateInfo = useMemo(() => parseDeadline(timeframe?.endDate), [timeframe]);
 
   const textClassName = classNames("text-sm whitespace-nowrap", {
-    "text-red-600": dateInfo?.isPast && !isCompleted && !isFailed && !isDropped && !isPending,
+    "text-content-error": dateInfo?.isPast && !isCompleted && !isFailed && !isDropped && !isPending,
     "text-content-base": !(dateInfo?.isPast && !isCompleted && !isFailed && !isDropped && !isPending),
     "line-through text-content-dimmed": isCompleted || isFailed,
     "line-through opacity-70 text-content-dimmed": isDropped,
