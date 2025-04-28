@@ -3,24 +3,8 @@ import { BlackLink } from "../../Link";
 import classNames from "../../utils/classnames";
 import { useItemStatus } from "../hooks/useItemStatus";
 import { useTableRowContext } from "./context";
-import { ActionButtons } from "./ActionButtons";
 
 export function ItemNameCell() {
-  const {
-    item,
-    showAddButton,
-    isCompletedPage,
-    isPending,
-    handleDeleteClick,
-    showQuickEntryWidget,
-    setShowQuickEntryWidget,
-  } = useTableRowContext();
-
-  const showAddForm = (e: React.MouseEvent): void => {
-    e.stopPropagation();
-    setShowQuickEntryWidget(true);
-  };
-
   return (
     <td className="py-2 px-2 md:px-4 relative">
       <div className="flex items-center">
@@ -29,15 +13,6 @@ export function ItemNameCell() {
         <Icon />
         <Name />
       </div>
-
-      {showAddButton && !isCompletedPage && !showQuickEntryWidget && (
-        <ActionButtons
-          display={item.type === "goal"}
-          isPending={isPending}
-          onAddClick={showAddForm}
-          onDeleteClick={handleDeleteClick}
-        />
-      )}
     </td>
   );
 }
