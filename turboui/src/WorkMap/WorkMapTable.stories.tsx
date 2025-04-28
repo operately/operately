@@ -492,8 +492,6 @@ export const Default: Story = {
   args: {
     items: defaultGoalsAndProjects,
     filter: "all",
-    deleteItem: (itemId: WorkMap.Item["id"]) => console.log("Delete", itemId),
-    addItem: (newItem) => console.log("Add", newItem),
   },
 };
 
@@ -501,8 +499,6 @@ export const GoalsOnly: Story = {
   args: {
     items: onlyGoals,
     filter: "goals",
-    deleteItem: (itemId: WorkMap.Item["id"]) => console.log("Delete", itemId),
-    addItem: (newItem) => console.log("Add", newItem),
   },
 };
 
@@ -510,8 +506,6 @@ export const ProjectsOnly: Story = {
   args: {
     items: onlyProjects,
     filter: "projects",
-    deleteItem: (itemId: WorkMap.Item["id"]) => console.log("Delete", itemId),
-    addItem: (newItem) => console.log("Add", newItem),
   },
 };
 
@@ -519,7 +513,5 @@ export const CompletedOnly: Story = {
   args: {
     items: onlyCompleted,
     filter: "completed",
-    deleteItem: (itemId: WorkMap.Item["id"]) => console.log("Delete", itemId),
-    addItem: (newItem) => console.log("Add", newItem),
   },
 };

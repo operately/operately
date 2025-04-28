@@ -147,9 +147,9 @@ const mockItems: WorkMap.Item[] = [
               type: "days",
             },
             children: [],
-          }
+          },
         ],
-      }
+      },
     ],
   },
   {
@@ -229,7 +229,7 @@ const mockItems: WorkMap.Item[] = [
               type: "days",
             },
             children: [],
-          }
+          },
         ],
       },
       {
@@ -254,7 +254,7 @@ const mockItems: WorkMap.Item[] = [
           type: "days",
         },
         children: [],
-      }
+      },
     ],
   },
   {
@@ -315,7 +315,7 @@ const mockItems: WorkMap.Item[] = [
               type: "days",
             },
             children: [],
-          }
+          },
         ],
       },
       {
@@ -332,13 +332,13 @@ const mockItems: WorkMap.Item[] = [
         closedAt: null,
         nextStep: "Identify potential partners",
         timeframe: getTimeframe(currentYear()),
-          ownerPath: "#",
-          spacePath: "#",
-          itemPath: "#",
-        children: []
-      }
+        ownerPath: "#",
+        spacePath: "#",
+        itemPath: "#",
+        children: [],
+      },
     ],
-  }
+  },
 ];
 
 /**
@@ -354,8 +354,6 @@ const meta = {
   tags: ["autodocs"],
   argTypes: {
     items: { control: "object" },
-    addItem: { action: "addItem" },
-    deleteItem: { action: "deleteItem" },
   },
 } satisfies Meta<typeof WorkMap>;
 
@@ -376,8 +374,6 @@ export const Default: Story = {
   args: {
     title: "Company Work Map",
     items: mockItems,
-    addItem: (newItem) => console.log("Add item", newItem),
-    deleteItem: (itemId) => console.log("Delete item", { itemId }),
   },
 };
 
@@ -395,8 +391,6 @@ export const SingleItem: Story = {
   args: {
     title: "Company Work Map",
     items: [mockItems[1]], // Just the second goal with no children
-    addItem: (newItem) => console.log("Add item", newItem),
-    deleteItem: (itemId) => console.log("Delete item", { itemId }),
   },
 };
 
@@ -414,8 +408,6 @@ export const Empty: Story = {
   args: {
     title: "Company Work Map",
     items: [],
-    addItem: (newItem) => console.log("Add item", newItem),
-    deleteItem: (itemId) => console.log("Delete item", { itemId }),
   },
 };
 
@@ -457,7 +449,7 @@ export const AllStatuses: Story = {
           progress: status === "completed" || status === "achieved" ? 100 : Math.floor(Math.random() * 100),
           space: {
             id: `space-${index % 5}`,
-            name: ["Product", "Engineering", "Marketing", "Sales", "R&D"][index % 5]
+            name: ["Product", "Engineering", "Marketing", "Sales", "R&D"][index % 5],
           },
           owner: {
             id: `user-${index}`,
@@ -498,7 +490,5 @@ export const AllStatuses: Story = {
         }
       }),
     ],
-    addItem: (newItem) => console.log("Add item", newItem),
-    deleteItem: (itemId) => console.log("Delete item", { itemId }),
   },
 };
