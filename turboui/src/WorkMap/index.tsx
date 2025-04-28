@@ -84,7 +84,7 @@ export function WorkMap({ title, items, addItem, deleteItem }: WorkMap.Props) {
   const { filteredItems, filter, setFilter } = useWorkMapFilter(items, timeframe);
 
   return (
-    <div className="flex flex-col w-full bg-surface-base">
+    <div className="flex flex-col w-full bg-surface-base rounded-lg">
       <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-4 sm:px-6 py-3 border-b border-surface-outline">
         <div className="flex flex-col sm:flex-row sm:items-center gap-4">
           <h1 className="text-sm sm:text-base font-bold text-content-accent">{title}</h1>
