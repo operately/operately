@@ -11,6 +11,8 @@ import { Targets } from "./Targets";
 import { Description } from "./Description";
 import { RelatedWork } from "./RelatedWork";
 import { BadgeStatus } from "../StatusBadge/types";
+import { PageBanner } from "../PageBanner";
+import { Link } from "../Link";
 
 export namespace GoalPage {
   interface Person {
@@ -57,6 +59,9 @@ export namespace GoalPage {
     messages: Message[];
     status: BadgeStatus;
 
+    closedOn?: Date;
+    retrospectiveLink?: string;
+
     /**
      * Whether the current user can edit the goal and its content.
      */
@@ -84,6 +89,8 @@ export function GoalPage(props: GoalPage.Props) {
 
   return (
     <Page title={[props.goalName]} navigation={navigation} size="xlarge">
+      {props.closedOn && <ClosedBanner {...props} />}
+
       <div className="p-4 sm:px-24">
         <PageHeader {...props} />
 
@@ -115,5 +122,19 @@ function ActivityFooter() {
     <PageFooter className="p-8">
       <h3 className="text-xs uppercase font-medium tracking-wider">Activity</h3>
     </PageFooter>
+  );
+}
+
+function ClosedBanner(props: GoalPage.Props) {
+  return (
+    <PageBanner>
+      This goal was closed on{" "}
+      {props.closedOn?.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "2-digit",
+      })}
+      . <Link to={props.retrospectiveLink!}>View Retrospective</Link>
+    </PageBanner>
   );
 }
