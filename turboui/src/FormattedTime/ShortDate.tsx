@@ -13,9 +13,9 @@ export default function ShortDate({ time, weekday }: { time: Date; weekday: bool
   let prefix = "";
 
   if (weekday) {
-    if (isToday(time)) {
+    if (Time.isToday(time)) {
       prefix = "Today, ";
-    } else if (isYesterday(time)) {
+    } else if (Time.isYesterday(time)) {
       prefix = "Yesterday, ";
     } else {
       options.weekday = "long";
@@ -23,22 +23,4 @@ export default function ShortDate({ time, weekday }: { time: Date; weekday: bool
   }
 
   return <>{prefix + time.toLocaleDateString("en-US", options)}</>;
-}
-
-function isSameDay(date: Date, other: Date) {
-  return (
-    date.getDate() === other.getDate() &&
-    date.getMonth() === other.getMonth() &&
-    date.getFullYear() === other.getFullYear()
-  );
-}
-
-function isToday(date: Date) {
-  const today = new Date();
-  return isSameDay(date, today);
-}
-
-function isYesterday(date: Date) {
-  const yesterday = new Date(+new Date() - 86400000);
-  return isSameDay(date, yesterday);
 }

@@ -45,7 +45,7 @@ export default function FormattedTime(props: FormattedTimeProps): JSX.Element {
     .with("relative-time-or-date", () => Time.parse(props.time))
     .otherwise(() => Time.parseDate(props.time));
 
-  if (!parsedTime) throw "Invalid date " + props.time;
+  if (!parsedTime) throw new Error("Invalid date " + props.time);
 
   const time = applyTimezone(parsedTime, timezone);
 
@@ -65,7 +65,7 @@ export default function FormattedTime(props: FormattedTimeProps): JSX.Element {
     case "long-date":
       return <LongDate time={time} />;
     default:
-      throw "Unknown format " + props.format;
+      throw new Error(`Unknown format ${props.format}`);
   }
 }
 
