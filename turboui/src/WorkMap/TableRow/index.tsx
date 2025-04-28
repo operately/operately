@@ -8,8 +8,7 @@ import { OwnerCell } from "./OwnerCell";
 import { ProgressCell } from "./ProgressCell";
 import { SpaceCell } from "./SpaceCell";
 import { RowContainer } from "./RowContainer";
-import { TableRowProvider, useTableRowContext } from "./context";
-import { QuickEntryWidget } from "../QuickEntryWidget";
+import { TableRowProvider } from "./context";
 
 interface Props {
   item: WorkMap.Item;
@@ -19,8 +18,6 @@ interface Props {
   isSelected?: boolean;
   selectedItemId?: string;
   onRowClick?: (item: WorkMap.Item) => void;
-  onDelete: () => void;
-  addItem: (newItem: WorkMap.NewItem) => void;
 }
 
 /**
@@ -36,46 +33,15 @@ export function TableRow(props: Props) {
       <RowContainer>
         <ItemNameCell />
         <StatusCell status={item.status} />
-        {filter !== "completed" && (
-          <ProgressCell progress={item.progress} status={item.status} />
-        )}
-        <DeadlineCell
-          filter={filter}
-          completedOn={item.closedAt}
-          timeframe={item.timeframe}
-          status={item.status}
-        />
+        {filter !== "completed" && <ProgressCell progress={item.progress} status={item.status} />}
+        <DeadlineCell filter={filter} completedOn={item.closedAt} timeframe={item.timeframe} status={item.status} />
         <SpaceCell item={item} />
         <OwnerCell item={item} />
-        {filter !== "completed" && (
-          <NextStepCell nextStep={item.nextStep} status={item.status} />
-        )}
+        {filter !== "completed" && <NextStepCell nextStep={item.nextStep} status={item.status} />}
       </RowContainer>
 
-      <QuickEntryWidgetWrapper addItem={props.addItem} />
       <ChildRows {...props} />
     </TableRowProvider>
-  );
-}
-
-function QuickEntryWidgetWrapper({ addItem }: { addItem: Props["addItem"] }) {
-  const {
-    indentPadding,
-    item,
-    showQuickEntryWidget,
-    setShowQuickEntryWidget,
-    filter,
-  } = useTableRowContext();
-
-  return (
-    <QuickEntryWidget
-      addItem={addItem}
-      indentPadding={indentPadding}
-      item={item}
-      setShowWidget={setShowQuickEntryWidget}
-      showWidget={showQuickEntryWidget}
-      filter={filter}
-    />
   );
 }
 

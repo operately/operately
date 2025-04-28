@@ -72,14 +72,12 @@ export namespace WorkMap {
   export interface Props {
     title: string;
     items: Item[];
-    addItem: (newItem: NewItem) => void;
-    deleteItem: (itemId: WorkMap.Item["id"]) => void;
   }
 }
 
 const defaultTimeframe = currentYear();
 
-export function WorkMap({ title, items, addItem, deleteItem }: WorkMap.Props) {
+export function WorkMap({ title, items }: WorkMap.Props) {
   const [timeframe, setTimeframe] = useState(defaultTimeframe);
   const { filteredItems, filter, setFilter } = useWorkMapFilter(items, timeframe);
 
@@ -97,7 +95,7 @@ export function WorkMap({ title, items, addItem, deleteItem }: WorkMap.Props) {
           timeframe={timeframe}
           setTimeframe={setTimeframe}
         />
-        <WorkMapTable items={filteredItems} filter={filter} deleteItem={deleteItem} addItem={addItem} />
+        <WorkMapTable items={filteredItems} filter={filter} />
       </div>
     </div>
   );
