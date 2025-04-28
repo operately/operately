@@ -6,29 +6,17 @@ import { TableRow } from "../TableRow";
 export interface Props {
   items: WorkMap.Item[];
   filter: WorkMap.Filter;
-  deleteItem: (itemId: WorkMap.Item["id"]) => void;
-  addItem: (newItem: WorkMap.NewItem) => void;
 }
 
-export function WorkMapTable({ items, filter, deleteItem, addItem }: Props) {
+export function WorkMapTable({ items, filter }: Props) {
   return (
     <div className="overflow-x-auto bg-surface-base rounded-b-lg">
       <table className="min-w-full divide-y divide-surface-outline">
         <TableHeader filter={filter} />
         <tbody>
           {items.map((item, idx) => (
-            <TableRow
-              key={item.id}
-              item={item}
-              level={0}
-              isLast={idx === items.length - 1}
-              filter={filter}
-              onDelete={() => deleteItem(item.id)}
-              addItem={addItem}
-            />
+            <TableRow key={item.id} item={item} level={0} isLast={idx === items.length - 1} filter={filter} />
           ))}
-
-          <QuickAddRow filter={filter} addItem={addItem} />
         </tbody>
       </table>
     </div>
