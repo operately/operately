@@ -256,6 +256,7 @@ const defaultArgs = {
   status: "on_track",
   closedOn: null,
   retrospectiveLink: null,
+  privacyLevel: "internal" as const,
 };
 
 export default meta;
@@ -331,5 +332,12 @@ export const ClosedGoal: Story = {
     status: "achieved",
     closedOn: new Date(2025, 3, 30), // Apr 30th, 2025
     retrospectiveLink: "/retrospective/1",
+  },
+};
+
+export const PrivateGoal: Story = {
+  args: {
+    ...defaultArgs,
+    privacyLevel: "confidential",
   },
 };
