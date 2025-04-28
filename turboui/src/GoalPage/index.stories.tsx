@@ -254,6 +254,8 @@ const defaultArgs = {
   messages,
   parentGoal,
   status: "on_track",
+  closedOn: null,
+  retrospectiveLink: null,
 };
 
 export default meta;
@@ -320,5 +322,14 @@ export const LongName: Story = {
   args: {
     ...defaultArgs,
     goalName: "Enchance the AI Platform with Advanced Features and Integrations",
+  },
+};
+
+export const ClosedGoal: Story = {
+  args: {
+    ...defaultArgs,
+    status: "achieved",
+    closedOn: new Date(2025, 3, 30), // Apr 30th, 2025
+    retrospectiveLink: "/retrospective/1",
   },
 };

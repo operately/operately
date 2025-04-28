@@ -17,5 +17,9 @@ export function PageBanner(props: Props) {
     props.className,
   );
 
-  return <div className={className}>{props.children}</div>;
+  return (
+    <div className={className}>
+      <p>{props.children}</p>
+    </div>
+  );
 }
