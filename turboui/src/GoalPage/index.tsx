@@ -62,10 +62,8 @@ export namespace GoalPage {
     closedOn?: Date;
     retrospectiveLink?: string;
 
-    /**
-     * Whether the current user can edit the goal and its content.
-     */
     canEdit: boolean;
+    privacyLevel: "public" | "internal" | "confidential" | "secret";
   }
 
   export interface CheckIn {
