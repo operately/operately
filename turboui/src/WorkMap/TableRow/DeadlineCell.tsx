@@ -1,9 +1,10 @@
 import { useMemo } from "react";
-import { isPast, parseISO, parse, format } from "date-fns";
+import { isPast, parse } from "../../utils/time";
 
 import { WorkMap } from "..";
 import { useItemStatus } from "../hooks/useItemStatus";
 import classNames from "../../utils/classnames";
+import FormattedTime from "../../FormattedTime";
 
 interface Props {
   filter: WorkMap.Filter;
@@ -12,20 +13,15 @@ interface Props {
   status: WorkMap.Status;
 }
 
-interface DateInfo {
-  display: string;
-  isPast: boolean;
-}
-
 export function DeadlineCell({ filter, status, completedOn, timeframe }: Props) {
   const { isCompleted, isFailed, isDropped, isPending } = useItemStatus(status);
 
   const containerClassName = classNames("py-2 px-2 md:px-4", filter !== "completed" && "hidden lg:table-cell");
-  const dateInfo = useMemo(() => parseDeadline(timeframe?.endDate), [timeframe]);
+  const isPastDeadline = useMemo(() => isDeadlinePast(timeframe?.endDate), [timeframe]);
 
   const textClassName = classNames("text-sm whitespace-nowrap", {
-    "text-content-error": dateInfo?.isPast && !isCompleted && !isFailed && !isDropped && !isPending,
-    "text-content-base": !(dateInfo?.isPast && !isCompleted && !isFailed && !isDropped && !isPending),
+    "text-content-error": isPastDeadline && !isCompleted && !isFailed && !isDropped && !isPending,
+    "text-content-base": !(isPastDeadline && !isCompleted && !isFailed && !isDropped && !isPending),
     "line-through text-content-dimmed": isCompleted || isFailed,
     "line-through opacity-70 text-content-dimmed": isDropped,
     "text-content-dimmed": isPending,
@@ -34,46 +30,28 @@ export function DeadlineCell({ filter, status, completedOn, timeframe }: Props) 
   return (
     <td className={containerClassName}>
       {filter === "completed" && completedOn ? (
-        <span className="text-xs sm:text-sm whitespace-nowrap text-content-base">{completedOn}</span>
+        <span className="text-xs sm:text-sm whitespace-nowrap text-content-base">
+          <FormattedTime time={completedOn} format="short-date" />
+        </span>
       ) : (
-        <span className={textClassName}>{dateInfo?.display}</span>
+        <span className={textClassName}>
+          {timeframe?.endDate && <FormattedTime time={timeframe.endDate} format="short-date" />}
+        </span>
       )}
     </td>
   );
 }
 
-function parseDeadline(deadline: string | null | undefined): DateInfo | null {
-  if (!deadline) return null;
+function isDeadlinePast(deadline: string | null | undefined): boolean {
+  if (!deadline) return false;
 
   try {
-    let date;
-    let display = deadline; // Default to the original string
+    const date = parse(deadline);
+    if (!date) return false;
 
-    // Try parsing as ISO first
-    try {
-      date = parseISO(deadline);
-      if (!isNaN(date.getTime())) {
-        display = format(date, "MMM d yyyy");
-      }
-    } catch {
-      if (deadline.includes(" ") && deadline.length > 7) {
-        // Already in display format: "Dec 31 2025"
-        date = parse(deadline, "MMM d yyyy", new Date());
-      } else {
-        // Already in display format: "Mar 31"
-        date = parse(deadline, "MMM d", new Date());
-      }
-    }
-
-    return {
-      display,
-      isPast: isPast(date),
-    };
+    return isPast(date);
   } catch (error) {
-    console.error("Error parsing deadline date:", error);
-    return {
-      display: deadline,
-      isPast: false,
-    };
+    console.error("Error checking if deadline is past:", error);
+    return false;
   }
 }

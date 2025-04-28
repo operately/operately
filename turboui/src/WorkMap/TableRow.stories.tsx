@@ -40,8 +40,8 @@ const createMockItem = (
     children: [],
     itemPath: "#",
     timeframe: {
-      startDate: "2025-01-15",
-      endDate: "2025-06-30",
+      startDate: "2025-01-15T00:00:00.000Z",
+      endDate: "2025-06-30T00:00:00.000Z",
       type: "days",
     },
   };
@@ -57,9 +57,9 @@ const createMockItem = (
     owner: mockOwner,
     ownerPath: "#",
     nextStep: status === "completed" || status === "achieved" ? "" : "Next action to take",
-    closedAt: "Mar 15 2025",
+    closedAt: "2025-03-15T00:00:00.000Z",
     isNew: false,
-    completedOn: status === "completed" || status === "achieved" ? "2025-03-15" : null,
+    completedOn: status === "completed" || status === "achieved" ? "2025-03-15T00:00:00.000Z" : null,
     children: hasChildren ? [childItem] : [],
     itemPath: "#",
   };
@@ -80,8 +80,8 @@ const createMockItem = (
       ...baseItem,
       type: "project" as const,
       timeframe: {
-        startDate: "2025-01-01",
-        endDate: "2025-12-31",
+        startDate: "2025-01-01T00:00:00.000Z",
+        endDate: "2025-12-31T00:00:00.000Z",
         type: "days",
       },
     };
