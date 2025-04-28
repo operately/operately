@@ -9,8 +9,6 @@ interface Props {
   filter: WorkMap.Filter;
   selectedItemId?: string;
   onRowClick?: (item: WorkMap.Item) => void;
-  onDelete: () => void;
-  addItem: (newItem: WorkMap.NewItem) => void;
 }
 
 export function ChildRows({ item, level, isLast, ...rest }: Props) {

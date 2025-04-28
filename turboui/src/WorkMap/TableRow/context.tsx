@@ -32,7 +32,6 @@ interface TableRowContextValue {
   indentPadding: number;
 
   // Event handlers
-  handleDeleteClick: (e: React.MouseEvent) => void;
   handleRowClick: (e: React.MouseEvent<HTMLTableRowElement>) => void;
 
   // Navigation
@@ -44,9 +43,7 @@ interface TableRowContextValue {
   isLastItem: boolean;
 }
 
-const TableRowContext = createContext<TableRowContextValue | undefined>(
-  undefined
-);
+const TableRowContext = createContext<TableRowContextValue | undefined>(undefined);
 
 interface ProviderProps {
   children: React.ReactNode;
@@ -57,7 +54,6 @@ interface ProviderProps {
   isSelected?: boolean;
   selectedItemId?: string;
   onRowClick?: (item: WorkMap.Item) => void;
-  onDelete: () => void;
 }
 
 export function TableRowProvider({
@@ -69,13 +65,16 @@ export function TableRowProvider({
   isSelected,
   selectedItemId,
   onRowClick,
-  onDelete,
 }: ProviderProps) {
   const [expanded, setExpanded] = useState<boolean>(true);
   const [showAddButton, setShowAddButton] = useState<boolean>(false);
 
   // Use our shared hook for managing QuickEntryWidget visibility
-  const { isWidgetOpen: showQuickEntryWidget, setWidgetOpen: setShowQuickEntryWidget, anyWidgetOpen } = useQuickEntryWidgetState(false);
+  const {
+    isWidgetOpen: showQuickEntryWidget,
+    setWidgetOpen: setShowQuickEntryWidget,
+    anyWidgetOpen,
+  } = useQuickEntryWidgetState(false);
 
   // Custom add button management that checks if any widget is open
   const handleSetShowAddButton = (show: boolean) => {
@@ -85,9 +84,7 @@ export function TableRowProvider({
   };
 
   // Get status flags from the hook
-  const { isCompleted, isPending, isFailed, isDropped } = useItemStatus(
-    item.status
-  );
+  const { isCompleted, isPending, isFailed, isDropped } = useItemStatus(item.status);
 
   // Derived properties
   const hasChildren = Boolean(item.children && item.children.length > 0);
@@ -96,8 +93,7 @@ export function TableRowProvider({
   const isCompletedPage = filter === "completed";
 
   // Selection state
-  const isThisItemSelected =
-    isSelected || (selectedItemId && selectedItemId === item.id);
+  const isThisItemSelected = isSelected || (selectedItemId && selectedItemId === item.id);
 
   // Event handlers
   const handleRowClick = (e: React.MouseEvent<HTMLTableRowElement>): void => {
@@ -118,11 +114,6 @@ export function TableRowProvider({
     }
   };
 
-  const handleDeleteClick = (e: React.MouseEvent): void => {
-    e.stopPropagation();
-    onDelete();
-  };
-
   const contextValue: TableRowContextValue = {
     item,
     isCompleted,
@@ -141,7 +132,6 @@ export function TableRowProvider({
     level,
     showIndentation,
     indentPadding,
-    handleDeleteClick,
     handleRowClick,
     selectedItemId,
     onRowClick,
@@ -149,20 +139,14 @@ export function TableRowProvider({
     isLastItem: Boolean(isLast),
   };
 
-  return (
-    <TableRowContext.Provider value={contextValue}>
-      {children}
-    </TableRowContext.Provider>
-  );
+  return <TableRowContext.Provider value={contextValue}>{children}</TableRowContext.Provider>;
 }
 
 export function useTableRowContext() {
   const context = useContext(TableRowContext);
 
   if (context === undefined) {
-    throw new Error(
-      "useTableRowContext must be used within a TableRowProvider"
-    );
+    throw new Error("useTableRowContext must be used within a TableRowProvider");
   }
 
   return context;
