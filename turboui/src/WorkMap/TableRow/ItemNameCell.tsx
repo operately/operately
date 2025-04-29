@@ -122,7 +122,7 @@ function PrivacyIndicatorWrapper() {
         resourceType="project"
         spaceName={item.space?.name || ""}
         iconSize={16}
-        className="ml-1"
+        className="ml-2"
       />
   );
 }

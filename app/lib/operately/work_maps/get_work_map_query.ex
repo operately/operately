@@ -72,6 +72,7 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
     |> with_cte("goal_tree", as: ^goal_tree_query)
     |> select([g], g)
     |> join_preload_goal_associations()
+    |> load_access_levels()
     |> Repo.all()
   end
 

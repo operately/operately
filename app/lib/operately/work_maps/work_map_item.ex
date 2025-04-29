@@ -67,6 +67,7 @@ defmodule Operately.WorkMaps.WorkMapItem do
       type: :goal,
       company: goal.company,
       resource: goal,
+      privacy: find_privacy(goal),
     }
   end
 
