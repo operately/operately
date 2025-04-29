@@ -35,7 +35,7 @@ export function DeadlineCell({ filter, status, completedOn, timeframe }: Props) 
         </span>
       ) : (
         <span className={textClassName}>
-          {timeframe?.endDate && <FormattedTime time={timeframe.endDate} format="short-date" />}
+          {timeframe?.endDate ? <FormattedTime time={timeframe.endDate} format="short-date" /> : "N/A"}
         </span>
       )}
     </td>
