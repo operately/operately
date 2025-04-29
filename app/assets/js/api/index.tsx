@@ -1503,6 +1503,7 @@ export interface WorkMapItem {
   children?: WorkMapItem[] | null;
   type?: string | null;
   itemPath?: string | null;
+  privacy?: string | null;
 }
 
 export type ActivityContent =
