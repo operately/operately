@@ -129,7 +129,9 @@ defmodule Operately.WorkMaps.WorkMapItem do
 
   defp project_status(project = %Project{}) do
     cond do
-      project.closed_at -> "completed"
+      project.status == "closed" -> "completed"
+      project.status == "paused" -> "paused"
+      Projects.outdated?(project) -> "outdated"
       project.last_check_in -> project.last_check_in.status
       true -> "on_track"
     end
@@ -139,6 +141,7 @@ defmodule Operately.WorkMaps.WorkMapItem do
     cond do
       goal.success == "yes" -> "achieved"
       goal.success == "no" -> "missed"
+      Goals.outdated?(goal) -> "outdated"
       goal.last_update -> goal.last_update.status
       true -> "on_track"
     end

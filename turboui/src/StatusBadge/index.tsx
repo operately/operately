@@ -51,6 +51,13 @@ export function StatusBadge({ status, hideIcon = false, className = "", style }:
       borderColor = "border-gray-200 dark:border-gray-600";
       label = "Dropped";
       break;
+    case "outdated":
+      bgColor = "bg-gray-100 dark:bg-gray-700";
+      textColor = "text-gray-700 dark:text-gray-300";
+      dotColor = "bg-gray-400 dark:bg-gray-400";
+      borderColor = "border-gray-200 dark:border-gray-600";
+      label = "Outdated";
+      break;
     case "caution":
       bgColor = "bg-amber-50 dark:bg-amber-900/30";
       textColor = "text-amber-800 dark:text-amber-300";
