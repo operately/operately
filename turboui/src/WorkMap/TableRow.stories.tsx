@@ -3,6 +3,7 @@ import { TableRow } from "./TableRow";
 import type { WorkMap } from ".";
 import { TableHeader } from "./WorkMapTable/TableHeader";
 import { currentYear } from "../TimeframeSelector/utils";
+import { PrivacyIndicator } from "../PrivacyIndicator";
 
 // Mock data for stories
 const mockOwner = {
@@ -39,6 +40,7 @@ const createMockItem = (
     closedAt: null,
     children: [],
     itemPath: "#",
+    privacy: "internal" as PrivacyIndicator.PrivacyLevels,
     timeframe: {
       startDate: "2025-01-15T00:00:00.000Z",
       endDate: "2025-06-30T00:00:00.000Z",
@@ -62,6 +64,7 @@ const createMockItem = (
     completedOn: status === "completed" || status === "achieved" ? "2025-03-15T00:00:00.000Z" : null,
     children: hasChildren ? [childItem] : [],
     itemPath: "#",
+    privacy: "internal" as PrivacyIndicator.PrivacyLevels,
   };
 
   if (type === "goal") {
@@ -470,5 +473,80 @@ export const MultipleRows: Story = {
     item: mockGoalOnTrack, // These args won't be used directly by the render function
     level: 0, // but are required by the StoryAnnotations type
     isLast: false,
+  },
+};
+
+/**
+ * Shows different privacy levels for WorkMap items
+ */
+export const PrivacyLevels: Story = {
+  render: (args) => {
+    // Create items with different privacy levels
+    const publicItem = {
+      ...createMockItem("item-public", "Public item example", "goal", "on_track", 60),
+      privacy: "public" as PrivacyIndicator.PrivacyLevels,
+    };
+
+    const internalItem = {
+      ...createMockItem("item-internal", "Internal item example", "goal", "on_track", 65),
+      privacy: "internal" as PrivacyIndicator.PrivacyLevels,
+    };
+
+    const confidentialItem = {
+      ...createMockItem("item-confidential", "Confidential item example", "project", "on_track", 70),
+      privacy: "confidential" as PrivacyIndicator.PrivacyLevels,
+    };
+
+    const secretItem = {
+      ...createMockItem("item-secret", "Secret item example", "project", "caution", 25),
+      privacy: "secret" as PrivacyIndicator.PrivacyLevels,
+    };
+
+    return (
+      <div className="pb-4">
+        <h3 className="text-lg font-medium mb-4">Privacy Indicator Variants</h3>
+        <table className="w-full border-collapse">
+          <TableHeader filter={args.filter} />
+          <tbody>
+            <TableRow {...args} item={publicItem} isLast={false} />
+            <TableRow {...args} item={internalItem} isLast={false} />
+            <TableRow {...args} item={confidentialItem} isLast={false} />
+            <TableRow {...args} item={secretItem} isLast={true} />
+          </tbody>
+        </table>
+        <div className="mt-6 p-4 bg-surface-raised rounded-md">
+          <p className="text-sm font-medium mb-2">Privacy Levels:</p>
+          <ul className="text-sm">
+            <li>
+              <span className="font-semibold">Public</span> - Visible to anyone on the internet
+            </li>
+            <li>
+              <span className="font-semibold">Internal</span> - Default mode, no special indicator shown
+            </li>
+            <li>
+              <span className="font-semibold">Confidential</span> - Space members only, shown with a lock icon
+            </li>
+            <li>
+              <span className="font-semibold">Secret</span> - Only visible to specific members, shown with a red lock
+              icon
+            </li>
+          </ul>
+        </div>
+      </div>
+    );
+  },
+  args: {
+    level: 0,
+    filter: "all",
+    isSelected: false,
+    item: mockGoalOnTrack, // This is required by the Story type, but our render function overrides it
+    isLast: false, // Also required by the Story type
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: "Showcases the different privacy levels available for WorkMap items.",
+      },
+    },
   },
 };
