@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 import { TimeframeSelector } from "../TimeframeSelector";
-import { currentYear } from "../TimeframeSelector/utils";
+import { currentYear } from "../utils/timeframes";
 import { PrivacyIndicator } from "../PrivacyIndicator";
 
 import { WorkMapNavigation } from "./WorkMapNavigation";
