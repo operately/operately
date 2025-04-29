@@ -44,6 +44,7 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
     |> filter_by_goal(goal_id, goal_ids)
     |> join_preload_project_associations()
     |> filter_by_view_access(person, :projects)
+    |> load_access_levels()
     |> Repo.all()
   end
 
@@ -113,6 +114,19 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
       group: gr,
       milestones: m,
       last_check_in: lci
+    )
+  end
+
+  defp load_access_levels(query) do
+    # The `context` association is established in filter_by_view_access/3
+    # which adds the "context" named binding to the query.
+    # Therefore, load_access_levels/1 must be called after filter_by_view_access/3
+    # to properly join and preload the access bindings and groups.
+    query
+    |> join(:left, [context: c], b in assoc(c, :bindings), as: :bindings)
+    |> join(:left, [bindings: b], g in assoc(b, :group), as: :access_group)
+    |> preload([bindings: b, context: c, access_group: g],
+      access_context: {c, [bindings: {b, group: g}]}
     )
   end
 
