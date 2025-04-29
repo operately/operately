@@ -15,6 +15,7 @@ import { Description } from "./Description";
 import { RelatedWork } from "./RelatedWork";
 import { BadgeStatus } from "../StatusBadge/types";
 import { Contributors } from "./Contributors";
+import { WarningCallout } from "../Callouts";
 
 export namespace GoalPage {
   interface Person {
@@ -72,6 +73,8 @@ export namespace GoalPage {
 
     canEdit: boolean;
     privacyLevel: "public" | "internal" | "confidential" | "secret";
+
+    neglectedGoal?: boolean;
   }
 
   export interface CheckIn {
@@ -114,6 +117,7 @@ export function GoalPage(props: GoalPage.Props) {
 function MainContent(props: GoalPage.Props) {
   return (
     <div className="space-y-8 sm:col-span-7 sm:pr-4">
+      <NeglectedGoalWarning {...props} />
       <Description {...props} />
       <Targets {...props} />
       <CheckIns {...props} />
@@ -144,4 +148,29 @@ function ClosedBanner(props: GoalPage.Props) {
       . <Link to={props.retrospectiveLink!}>View Retrospective</Link>
     </PageBanner>
   );
+}
+
+function NeglectedGoalWarning(props: GoalPage.Props) {
+  if (!props.neglectedGoal) return null;
+
+  if (props.canEdit) {
+    return (
+      <WarningCallout
+        message="Outdated goal"
+        description={<div>The last check-in was more than a month ago. Please check-in or close the goal.</div>}
+      />
+    );
+  } else {
+    return (
+      <WarningCallout
+        message="Outdated goal"
+        description={
+          <div>
+            The last check-in was more than a month ago. The information may be outdated. Please ping the champion
+            check-in or close the goal.
+          </div>
+        }
+      />
+    );
+  }
 }

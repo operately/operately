@@ -353,3 +353,18 @@ export const PrivateGoal: Story = {
     privacyLevel: "confidential",
   },
 };
+
+export const NeglectedGoal: Story = {
+  args: {
+    ...defaultArgs,
+    neglectedGoal: true,
+  },
+};
+
+export const NeglectedGoalReadOnly: Story = {
+  args: {
+    ...defaultArgs,
+    neglectedGoal: true,
+    canEdit: false,
+  },
+};
