@@ -1,6 +1,6 @@
 import React from "react";
 import TextareaAutosize from "react-textarea-autosize";
-import classNames from "../utils/classnames";
+import classNames from "../../utils/classnames";
 
 interface TextareaProps extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, "style"> {
   label?: string;
