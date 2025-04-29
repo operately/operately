@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { GoalPage } from ".";
 import { genPeople } from "../utils/storybook/genPeople";
 import { genRelativeDate } from "../utils/storybook/genDates";
+import { ro } from "date-fns/locale";
 
 const meta: Meta<typeof GoalPage> = {
   title: "Pages/GoalPage",
@@ -194,25 +195,36 @@ const relatedWorkItems = [
   },
 ];
 
-const roles = [
-  "AI Backend - Champion",
-  "AI Backend - Software Engineer",
-  "AI Backend - Software Engineer",
-  "AI Backend - Architect",
-  "Landing Page for AI Platform - Champion",
-  "Landing Page for AI Platform - Designer",
-  "Landing Page for AI Platform - Copyeditor",
-  "MCP - Champion",
-  "MCP - API Designer",
-  "MCP - Support Engineer",
+const contributions = [
+  [
+    { role: "Marketing Lead", link: "/goals/1", location: "Website Redesign" },
+    { role: "Reviewer", link: "/projects/3", location: "Backend Infrastructure" },
+    { role: "Reviewer", link: "/projects/5", location: "API Development" },
+    { role: "Software Engineer", link: "/projects/6", location: "Database Optimization" },
+    { role: "Designer", link: "/projects/2", location: "UI/UX Design" },
+    { role: "Project Manager", link: "/projects/4", location: "Design System" },
+  ],
+  [
+    { role: "Champion", link: "/goals/1", location: "Backend Infrastructure" },
+    { role: "Software Engineer", link: "/projects/3", location: "API Development" },
+    { role: "Reviewer", link: "/goals/4", location: "Database Optimization" },
+  ],
+  [
+    { role: "Designer", link: "/goals/2", location: "UI/UX Design" },
+    { role: "Project Manager", link: "/projects/6", location: "Design System" },
+  ],
+  [{ role: "Software Engineer", link: "/goals/1", location: "Backend Infrastructure" }],
 ];
 
 const contributors = genPeople(10).map((p, i) => {
   return {
     person: p,
-    role: roles[i],
+    personLink: `/people/${p.id}`,
+    contributions: i < contributions.length ? contributions[i] : contributions[contributions.length - 1],
   };
 });
+
+contributors.sort((a, b) => b.contributions.length - a.contributions.length);
 
 const description = [
   "Our mission is to develop and launch a cutting-edge AI platform that will revolutionize how businesses ",

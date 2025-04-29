@@ -1,9 +1,12 @@
 import type { MiniWorkMap } from "../MiniWorkMap";
 import type { GoalTargetList } from "../GoalTargetList";
 
+import { Link } from "../Link";
 import { Page } from "../Page";
-import { PageHeader } from "./PageHeader";
 import { PageFooter } from "../Page/PageFooter";
+
+import { PageBanner } from "../PageBanner";
+import { PageHeader } from "./PageHeader";
 import { Sidebar } from "./Sidebar";
 import { Messages } from "./Messages";
 import { CheckIns } from "./CheckIns";
@@ -11,8 +14,7 @@ import { Targets } from "./Targets";
 import { Description } from "./Description";
 import { RelatedWork } from "./RelatedWork";
 import { BadgeStatus } from "../StatusBadge/types";
-import { PageBanner } from "../PageBanner";
-import { Link } from "../Link";
+import { Contributors } from "./Contributors";
 
 export namespace GoalPage {
   interface Person {
@@ -31,7 +33,13 @@ export namespace GoalPage {
 
   export interface Contributor {
     person: Person;
-    role: string;
+    personLink: string;
+
+    contributions: {
+      role: string;
+      location: string;
+      link: string;
+    }[];
   }
 
   interface ParentGoal {
@@ -111,6 +119,7 @@ function MainContent(props: GoalPage.Props) {
       <CheckIns {...props} />
       <Messages {...props} />
       <RelatedWork {...props} />
+      <Contributors {...props} />
     </div>
   );
 }
