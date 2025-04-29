@@ -15,8 +15,8 @@ import { UpdateButton } from "./UpdateButton";
 import { EditButton } from "./EditButton";
 import { DeleteButton } from "./DeleteButton";
 
-import { Textarea } from "./Textarea";
-import { Textfield } from "./Textfield";
+import { Textarea } from "../forms/Textarea";
+import { Textfield } from "../forms/Textfield";
 
 export namespace GoalTargetList {
   export type Target = {
