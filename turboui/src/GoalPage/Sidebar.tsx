@@ -1,7 +1,7 @@
-import { IconQuestionMark } from "@tabler/icons-react";
 import { GoalPage } from ".";
-import { Avatar, AvatarPerson } from "../Avatar";
 import { Chronometer } from "../Chronometer";
+import { IconQuestionMark } from "@tabler/icons-react";
+import { Avatar, AvatarPerson } from "../Avatar";
 
 export function Sidebar(props: GoalPage.Props) {
   return (
@@ -18,25 +18,13 @@ export function Sidebar(props: GoalPage.Props) {
         <Champion {...props} />
         <Reviewer {...props} />
       </div>
-
-      {props.contributors.length > 0 && (
-        <div className="space-y-3">
-          <div className="font-bold">Contributors</div>
-
-          {props.contributors!.map((c) => (
-            <Contributor person={c.person} description={c.role} />
-          ))}
-        </div>
-      )}
     </div>
   );
 }
 
 function Champion(props: GoalPage.Props) {
   if (!props.champion) {
-    const message = props.canEdit ?
-      "Assign a champion to get started" :
-      "No champion assigned";
+    const message = props.canEdit ? "Assign a champion to get started" : "No champion assigned";
 
     return <MissingContributor role="No Champion" description={message} />;
   } else {
@@ -54,20 +42,19 @@ function Reviewer(props: GoalPage.Props) {
   }
 }
 
-function MissingContributor({ role, description }: { role: string, description: string }) {
-  return <div className="flex items-start gap-2 truncate">
-    <div className="bg-yellow-500/10 rounded-full h-[32px] w-[32px] flex items-center justify-center">
-      <IconQuestionMark
-        className="text-yellow-800"
-        size={20}
-      />
-    </div>
+function MissingContributor({ role, description }: { role: string; description: string }) {
+  return (
+    <div className="flex items-start gap-2 truncate">
+      <div className="bg-yellow-500/10 rounded-full h-[32px] w-[32px] flex items-center justify-center">
+        <IconQuestionMark className="text-yellow-800" size={20} />
+      </div>
 
-    <div className="-mt-0.5 truncate">
-      <div className="text-sm font-medium">{role}</div>
-      <div className="text-xs truncate">{description}</div>
+      <div className="-mt-0.5 truncate">
+        <div className="text-sm font-medium">{role}</div>
+        <div className="text-xs truncate">{description}</div>
+      </div>
     </div>
-  </div>
+  );
 }
 
 function Contributor({ person, description }: { person: AvatarPerson; description: string }) {
