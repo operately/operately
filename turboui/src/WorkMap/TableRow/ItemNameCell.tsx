@@ -3,6 +3,7 @@ import { BlackLink } from "../../Link";
 import classNames from "../../utils/classnames";
 import { useItemStatus } from "../hooks/useItemStatus";
 import { useTableRowContext } from "./context";
+import { PrivacyIndicator } from "../../PrivacyIndicator";
 
 export function ItemNameCell() {
   return (
@@ -12,6 +13,7 @@ export function ItemNameCell() {
         <ExpandButton />
         <Icon />
         <Name />
+        <PrivacyIndicatorWrapper />
       </div>
     </td>
   );
@@ -107,4 +109,20 @@ function ChevronIcon({ expanded, size }: { expanded: boolean; size: number }) {
   } else {
     return <IconChevronRight size={size} />;
   }
+}
+
+function PrivacyIndicatorWrapper() {
+  const { item } = useTableRowContext();
+
+  if (!item.privacy) return null;
+
+  return (
+      <PrivacyIndicator
+        privacyLevel={item.privacy}
+        resourceType="project"
+        spaceName={item.space?.name || ""}
+        iconSize={16}
+        className="ml-1"
+      />
+  );
 }
