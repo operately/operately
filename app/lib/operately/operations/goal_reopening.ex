@@ -8,7 +8,7 @@ defmodule Operately.Operations.GoalReopening do
   @action :goal_reopening
 
   def run(author, goal, message) do
-    changeset = Goals.Goal.changeset(goal, %{closed_at: nil, closed_by_id: nil})
+    changeset = Goals.Goal.changeset(goal, %{closed_at: nil, closed_by_id: nil, success: nil})
 
     Multi.new()
     |> Multi.update(:goal, changeset)
