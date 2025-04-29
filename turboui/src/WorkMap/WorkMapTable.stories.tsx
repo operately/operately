@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { WorkMapTable } from "./WorkMapTable";
 import { WorkMap } from ".";
-import { currentYear, currentQuarter, currentMonth } from "../TimeframeSelector/utils";
+import { currentYear, currentQuarter, currentMonth } from "../utils/timeframes";
 import { TimeframeSelector } from "../TimeframeSelector";
 import { PrivacyIndicator } from "../PrivacyIndicator";
 
