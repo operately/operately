@@ -1,4 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "@storybook/test";
+
 import { GoalEditPage } from ".";
 
 const meta: Meta<typeof GoalEditPage> = {
@@ -21,16 +23,13 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    initialName: "Launch AI Platform",
-    onSave: (name: string) => alert(`Saved: ${name}`),
-    onCancel: () => alert("Cancelled"),
-  },
-};
+    goalName: "Launch AI Platform",
+    spaceName: "Marketing",
+    spaceLink: "/spaces/ai-research",
+    workmapLink: "/spaces/ai-research/workmap",
+    goalLink: "/spaces/ai-research/workmap/goals/launch-ai-platform",
 
-export const EmptyInitial: Story = {
-  args: {
-    initialName: "",
-    onSave: (name: string) => alert(`Saved: ${name}`),
-    onCancel: () => alert("Cancelled"),
+    onSave: (_name: string) => fn(),
+    onCancel: () => fn(),
   },
 };
