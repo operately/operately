@@ -2,16 +2,12 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { TableRow } from "./TableRow";
 import type { WorkMap } from ".";
 import { TableHeader } from "./WorkMapTable/TableHeader";
-import { currentYear } from "../TimeframeSelector/utils";
+import { currentYear } from "../utils/timeframes";
 import { PrivacyIndicator } from "../PrivacyIndicator";
+import { genPeople } from "../utils/storybook/genPeople";
 
 // Mock data for stories
-const mockOwner = {
-  id: "user-1",
-  fullName: "John Doe",
-  avatarUrl:
-    "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-};
+const mockOwner = genPeople(1)[0];
 
 // Create mock items with different statuses
 const createMockItem = (
