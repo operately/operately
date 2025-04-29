@@ -149,24 +149,21 @@ defmodule Operately.WorkMaps.WorkMapItem do
   end
 
   defp build_access_levels_from_context(access_context, company_id, space_id) do
-    if is_nil(access_context) or access_context == %Ecto.Association.NotLoaded{} do
-      %Operately.Access.AccessLevels{
-        public: nil,
-        company: nil,
-        space: nil
-      }
-    else
-      bindings = access_context.bindings
+    case access_context do
+      nil -> %Operately.Access.AccessLevels{ public: nil, company: nil, space: nil }
 
-      public = find_binding_by_criteria(bindings, {:company_id, company_id}, :anonymous)
-      company = find_binding_by_criteria(bindings, {:company_id, company_id}, :standard)
-      space = find_binding_by_criteria(bindings, {:group_id, space_id}, :standard)
+      %Ecto.Association.NotLoaded{} -> %Operately.Access.AccessLevels{ public: nil, company: nil, space: nil }
 
-      %Operately.Access.AccessLevels{
-        public: access_level_or_no_access(public),
-        company: access_level_or_no_access(company),
-        space: access_level_or_no_access(space)
-      }
+      %{bindings: bindings} ->
+        public = find_binding_by_criteria(bindings, {:company_id, company_id}, :anonymous)
+        company = find_binding_by_criteria(bindings, {:company_id, company_id}, :standard)
+        space = find_binding_by_criteria(bindings, {:group_id, space_id}, :standard)
+
+        %Operately.Access.AccessLevels{
+          public: access_level_or_no_access(public),
+          company: access_level_or_no_access(company),
+          space: access_level_or_no_access(space)
+        }
     end
   end
 

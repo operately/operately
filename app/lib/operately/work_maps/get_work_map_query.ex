@@ -118,17 +118,19 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
   end
 
   defp load_access_levels(query) do
-    # The `context` association is established in filter_by_view_access/3
-    # which adds the "context" named binding to the query.
-    # Therefore, load_access_levels/1 must be called after filter_by_view_access/3
-    # to properly join and preload the access bindings and groups.
+    # If the `context` association is not established by filter_by_view_access/3,
+    # it will be established by maybe_join_context/1.
     query
+    |> maybe_join_context()
     |> join(:left, [context: c], b in assoc(c, :bindings), as: :bindings)
     |> join(:left, [bindings: b], g in assoc(b, :group), as: :access_group)
     |> preload([bindings: b, context: c, access_group: g],
       access_context: {c, [bindings: {b, group: g}]}
     )
   end
+
+  defp maybe_join_context(q) when is_named_binding(q, :context), do: q
+  defp maybe_join_context(q), do: join(q, :left, [r], c in assoc(r, :access_context), as: :context)
 
   #
   # Filters
