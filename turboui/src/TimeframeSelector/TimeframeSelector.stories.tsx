@@ -1,24 +1,24 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { TimeframeSelector } from './index';
-import { useState } from 'react';
-import { currentMonth, currentQuarter, currentYear } from './utils';
+import type { Meta, StoryObj } from "@storybook/react";
+import { TimeframeSelector } from "./index";
+import { useState } from "react";
+import { currentMonth, currentQuarter, currentYear, Timeframe } from "../utils/timeframes";
 
 const meta = {
-  title: 'Components/TimeframeSelector',
+  title: "Components/TimeframeSelector",
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     size: {
-      description: 'The size of the timeframe selector',
-      options: ['xs', 'base'],
-      control: { type: 'select' },
+      description: "The size of the timeframe selector",
+      options: ["xs", "base"],
+      control: { type: "select" },
     },
     alignContent: {
-      description: 'Alignment of the popover content',
-      options: ['start', 'end'],
-      control: { type: 'select' },
+      description: "Alignment of the popover content",
+      options: ["start", "end"],
+      control: { type: "select" },
     },
   },
 } satisfies Meta;
@@ -30,28 +30,22 @@ export default meta;
  * It provides an intuitive interface for users to select different timeframes for data filtering, reporting, or scheduling.
  */
 const TimeframeSelectorWrapper = (args: any) => {
-  const [timeframe, setTimeframe] = useState<TimeframeSelector.Timeframe>(currentMonth());
-  
-  return (
-    <TimeframeSelector
-      {...args}
-      timeframe={timeframe}
-      setTimeframe={setTimeframe}
-    />
-  );
+  const [timeframe, setTimeframe] = useState<Timeframe>(currentMonth());
+
+  return <TimeframeSelector {...args} timeframe={timeframe} setTimeframe={setTimeframe} />;
 };
 
 export const Default: StoryObj = {
   render: (args) => <TimeframeSelectorWrapper {...args} />,
   args: {
-    size: 'base',
-    alignContent: 'start',
+    size: "base",
+    alignContent: "start",
   },
 };
 
 /**
  * The TimeframeSelector supports different sizes to fit various UI contexts.
- * 
+ *
  * - **base**: Default size, suitable for most use cases
  * - **xs**: Extra small size, for compact interfaces
  */
@@ -68,7 +62,7 @@ export const Sizes: StoryObj = {
 
 /**
  * The TimeframeSelector supports different timeframe types:
- * 
+ *
  * - **Month**: For selecting a specific month
  * - **Quarter**: For selecting a specific quarter
  * - **Year**: For selecting a specific year
@@ -80,7 +74,7 @@ export const TimeframeTypes: StoryObj = {
     const [quarterTimeframe, setQuarterTimeframe] = useState(currentQuarter());
     const [yearTimeframe, setYearTimeframe] = useState(currentYear());
     const [customTimeframe, setCustomTimeframe] = useState<TimeframeSelector.Timeframe>({
-      type: 'days',
+      type: "days",
       startDate: new Date(new Date().setDate(new Date().getDate() - 7)),
       endDate: new Date(),
     });
@@ -90,40 +84,28 @@ export const TimeframeTypes: StoryObj = {
         <div className="flex flex-col gap-2">
           <div className="text-sm font-medium">Month Timeframe</div>
           <div>
-            <TimeframeSelector 
-              timeframe={monthTimeframe}
-              setTimeframe={setMonthTimeframe}
-            />
+            <TimeframeSelector timeframe={monthTimeframe} setTimeframe={setMonthTimeframe} />
           </div>
         </div>
-        
+
         <div className="flex flex-col gap-2">
           <div className="text-sm font-medium">Quarter Timeframe</div>
           <div>
-            <TimeframeSelector 
-              timeframe={quarterTimeframe}
-              setTimeframe={setQuarterTimeframe}
-            />
+            <TimeframeSelector timeframe={quarterTimeframe} setTimeframe={setQuarterTimeframe} />
           </div>
         </div>
-        
+
         <div className="flex flex-col gap-2">
           <div className="text-sm font-medium">Year Timeframe</div>
           <div>
-            <TimeframeSelector 
-              timeframe={yearTimeframe}
-              setTimeframe={setYearTimeframe}
-            />
+            <TimeframeSelector timeframe={yearTimeframe} setTimeframe={setYearTimeframe} />
           </div>
         </div>
-        
+
         <div className="flex flex-col gap-2">
           <div className="text-sm font-medium">Custom Range Timeframe</div>
           <div>
-            <TimeframeSelector 
-              timeframe={customTimeframe}
-              setTimeframe={setCustomTimeframe}
-            />
+            <TimeframeSelector timeframe={customTimeframe} setTimeframe={setCustomTimeframe} />
           </div>
         </div>
       </div>
@@ -133,7 +115,7 @@ export const TimeframeTypes: StoryObj = {
 
 /**
  * The TimeframeSelector can be aligned differently based on UI requirements.
- * 
+ *
  * - **start**: Aligns the popover to the start of the trigger element (default)
  * - **end**: Aligns the popover to the end of the trigger element
  */
@@ -146,7 +128,7 @@ export const Alignment: StoryObj = {
           <TimeframeSelectorWrapper alignContent="start" />
         </div>
       </div>
-      
+
       <div className="flex flex-col gap-2">
         <div className="text-sm font-medium">End Alignment</div>
         <div>
@@ -163,12 +145,12 @@ export const Alignment: StoryObj = {
 export const Usage: StoryObj = {
   render: () => {
     return (
-      <div className="p-6 border rounded-lg" style={{ width: '600px' }}>
+      <div className="p-6 border rounded-lg" style={{ width: "600px" }}>
         <h3 className="text-lg font-medium mb-4">How to use TimeframeSelector</h3>
-        
+
         <div className="bg-gray-50 p-4 rounded-lg mb-4">
           <pre className="text-sm overflow-auto">
-{`// Import the component
+            {`// Import the component
 import { TimeframeSelector } from 'turboui/src/TimeframeSelector';
 import { Timeframe } from 'turboui/src/TimeframeSelector/types';
 import { useState } from 'react';
@@ -189,14 +171,24 @@ function MyComponent() {
 }`}
           </pre>
         </div>
-        
+
         <div className="text-sm">
-          <p className="mb-2"><strong>Available helper functions:</strong></p>
+          <p className="mb-2">
+            <strong>Available helper functions:</strong>
+          </p>
           <ul className="list-disc pl-5 space-y-1">
-            <li><code>currentMonth()</code> - Returns a timeframe for the current month</li>
-            <li><code>currentQuarter()</code> - Returns a timeframe for the current quarter</li>
-            <li><code>currentYear()</code> - Returns a timeframe for the current year</li>
-            <li><code>formatTimeframe(timeframe)</code> - Formats a timeframe as a readable string</li>
+            <li>
+              <code>currentMonth()</code> - Returns a timeframe for the current month
+            </li>
+            <li>
+              <code>currentQuarter()</code> - Returns a timeframe for the current quarter
+            </li>
+            <li>
+              <code>currentYear()</code> - Returns a timeframe for the current year
+            </li>
+            <li>
+              <code>formatTimeframe(timeframe)</code> - Formats a timeframe as a readable string
+            </li>
           </ul>
         </div>
       </div>
