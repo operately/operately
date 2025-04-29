@@ -91,6 +91,7 @@ function ExpandButton() {
     <button
       onClick={handleExpandToggle}
       className="mr-2 text-content-dimmed hover:text-content-base dark:text-gray-400 dark:hover:text-gray-300"
+      data-testid="chevron-icon"
     >
       {/* Use responsive size for chevron icons - smaller on mobile */}
       <div className="hidden sm:block">

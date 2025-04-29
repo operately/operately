@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { expect, within, userEvent } from "@storybook/test";
 import { WorkMapTable } from "./WorkMapTable";
 import { WorkMap } from ".";
 import { currentYear, currentQuarter, currentMonth } from "../utils/timeframes";
@@ -534,5 +535,103 @@ export const CompletedOnly: Story = {
   args: {
     items: onlyCompleted,
     filter: "completed",
+  },
+};
+
+// Test story for collapsing the "Increase signups by 20%" goal
+export const CollapseGoal: Story = {
+  args: {
+    items: defaultGoalsAndProjects,
+    filter: "all",
+  },
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+
+    await step("Check initial visibility of goal and children", async () => {
+      const goalRow = canvas.getByText("Increase signups by 20%");
+      expect(goalRow).toBeInTheDocument();
+
+      const childProject1 = canvas.getByText("Finish Q2 OKRs");
+      const childProject2 = canvas.getByText("Migrate to Vite");
+
+      expect(childProject1).toBeInTheDocument();
+      expect(childProject2).toBeInTheDocument();
+    });
+
+    await step("Click expand button to collapse children", async () => {
+      const goalRowElement = canvas.getByText("Increase signups by 20%");
+      const goalRow = goalRowElement.closest("tr");
+
+      expect(goalRow).not.toBeNull();
+
+      const expandButton = within(goalRow as HTMLElement).getByTestId("chevron-icon");
+      await userEvent.click(expandButton);
+    });
+
+    await step("Verify children are now hidden", async () => {
+      const goalRow = canvas.getByText("Increase signups by 20%");
+      expect(goalRow).toBeInTheDocument();
+
+      const childProject1 = canvas.queryByText("Finish Q2 OKRs");
+      const childProject2 = canvas.queryByText("Migrate to Vite");
+
+      expect(childProject1).not.toBeInTheDocument();
+      expect(childProject2).not.toBeInTheDocument();
+    });
+  },
+};
+
+// Test story for toggling the "Improve onboarding" goal
+export const ToggleGoal: Story = {
+  args: {
+    items: defaultGoalsAndProjects,
+    filter: "all",
+  },
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+
+    await step("Check initial visibility of goal and children", async () => {
+      const goalRow = canvas.getByText("Improve onboarding");
+      expect(goalRow).toBeInTheDocument();
+
+      const childProject = canvas.getByText("Onboarding checklist");
+      expect(childProject).toBeInTheDocument();
+    });
+
+    await step("Click expand button to collapse children", async () => {
+      const goalRowElement = canvas.getByText("Improve onboarding");
+      const goalRow = goalRowElement.closest("tr");
+
+      expect(goalRow).not.toBeNull();
+
+      const expandButton = within(goalRow as HTMLElement).getByTestId("chevron-icon");
+      await userEvent.click(expandButton);
+    });
+
+    await step("Verify children are now hidden", async () => {
+      const goalRow = canvas.getByText("Improve onboarding");
+      expect(goalRow).toBeInTheDocument();
+
+      const childProject = canvas.queryByText("Onboarding checklist");
+      expect(childProject).not.toBeInTheDocument();
+    });
+
+    await step("Click expand button again to show children", async () => {
+      const goalRowElement = canvas.getByText("Improve onboarding");
+      const goalRow = goalRowElement.closest("tr");
+
+      expect(goalRow).not.toBeNull();
+
+      const expandButton = within(goalRow as HTMLElement).getByTestId("chevron-icon");
+      await userEvent.click(expandButton);
+    });
+
+    await step("Verify children are visible again", async () => {
+      const goalRow = canvas.getByText("Improve onboarding");
+      expect(goalRow).toBeInTheDocument();
+
+      const childProject = canvas.getByText("Onboarding checklist");
+      expect(childProject).toBeInTheDocument();
+    });
   },
 };
