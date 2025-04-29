@@ -119,7 +119,7 @@ function PrivacyIndicatorWrapper() {
   return (
       <PrivacyIndicator
         privacyLevel={item.privacy}
-        resourceType="project"
+        resourceType={item.type}
         spaceName={item.space?.name || ""}
         iconSize={16}
         className="ml-2"
