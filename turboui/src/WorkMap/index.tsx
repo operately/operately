@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import { TimeframeSelector } from "../TimeframeSelector";
 import { currentYear } from "../TimeframeSelector/utils";
+import { PrivacyIndicator } from "../PrivacyIndicator";
 
 import { WorkMapNavigation } from "./WorkMapNavigation";
 import { WorkMapTable } from "./WorkMapTable";
@@ -59,6 +60,7 @@ export namespace WorkMap {
     timeframe: Optional<Timeframe>;
     type: "goal" | "project";
     itemPath: Optional<string>;
+    privacy: Optional<PrivacyIndicator.PrivacyLevels>;
   }
 
   export interface NewItem {
