@@ -3,6 +3,7 @@ import WorkMap from ".";
 import { TimeframeSelector } from "../TimeframeSelector";
 import { currentYear, currentQuarter } from "../TimeframeSelector/utils";
 import { Page } from "../Page";
+import { PrivacyIndicator } from "../PrivacyIndicator";
 
 // --- Mock Data ---
 function genAvatar(id: string) {
@@ -59,6 +60,7 @@ const mockItems: WorkMap.Item[] = [
     completedOn: null,
     closedAt: null,
     nextStep: "People are signing up for SaaS",
+    privacy: "internal" as PrivacyIndicator.PrivacyLevels,
     timeframe: getTimeframe(currentYear()),
     children: [
       {
@@ -77,6 +79,7 @@ const mockItems: WorkMap.Item[] = [
         completedOn: "2025-03-10T00:00:00.000Z",
         closedAt: "2025-03-10T00:00:00.000Z",
         nextStep: "",
+        privacy: "internal" as PrivacyIndicator.PrivacyLevels,
         timeframe: {
           startDate: "2024-01-15T00:00:00.000Z",
           endDate: "2025-03-31T00:00:00.000Z",
@@ -100,6 +103,7 @@ const mockItems: WorkMap.Item[] = [
         completedOn: null,
         closedAt: null,
         nextStep: "All weekly updates are collected",
+        privacy: "internal" as PrivacyIndicator.PrivacyLevels,
         timeframe: {
           startDate: "2024-01-01T00:00:00.000Z",
           endDate: "2025-02-07T00:00:00.000Z",
@@ -123,6 +127,7 @@ const mockItems: WorkMap.Item[] = [
         completedOn: null,
         closedAt: null,
         nextStep: "Launch email campaign",
+        privacy: "internal" as PrivacyIndicator.PrivacyLevels,
         timeframe: getTimeframe(currentYear()),
         children: [
           {
@@ -141,6 +146,7 @@ const mockItems: WorkMap.Item[] = [
             completedOn: null,
             closedAt: null,
             nextStep: "Finalize email templates",
+            privacy: "internal" as PrivacyIndicator.PrivacyLevels,
             timeframe: {
               startDate: "2024-06-15T00:00:00.000Z",
               endDate: "2024-10-01T00:00:00.000Z",
@@ -168,6 +174,7 @@ const mockItems: WorkMap.Item[] = [
     completedOn: null,
     closedAt: null,
     nextStep: "Conduct user interviews",
+    privacy: "internal" as PrivacyIndicator.PrivacyLevels,
     timeframe: getTimeframe(currentQuarter()),
     children: [
       {
@@ -186,6 +193,7 @@ const mockItems: WorkMap.Item[] = [
         completedOn: null,
         closedAt: null,
         nextStep: "Identify bottlenecks in process",
+        privacy: "internal" as PrivacyIndicator.PrivacyLevels,
         timeframe: getTimeframe(currentQuarter()),
         children: [
           {
@@ -206,6 +214,7 @@ const mockItems: WorkMap.Item[] = [
             nextStep: "Complete backend integration",
             timeframe: getTimeframe(currentQuarter()),
             children: [],
+            privacy: "secret" as PrivacyIndicator.PrivacyLevels,
           },
           {
             id: "project-6",
@@ -228,6 +237,7 @@ const mockItems: WorkMap.Item[] = [
               endDate: "2025-04-30T00:00:00.000Z",
               type: "days",
             },
+            privacy: "confidential" as PrivacyIndicator.PrivacyLevels,
             children: [],
           },
         ],
@@ -248,6 +258,7 @@ const mockItems: WorkMap.Item[] = [
         completedOn: null,
         closedAt: null,
         nextStep: "Finalize mockups",
+        privacy: "internal" as PrivacyIndicator.PrivacyLevels,
         timeframe: {
           startDate: "2025-02-01T00:00:00.000Z",
           endDate: "2025-04-20T00:00:00.000Z",
@@ -273,6 +284,7 @@ const mockItems: WorkMap.Item[] = [
     completedOn: null,
     closedAt: null,
     nextStep: "Complete market research",
+    privacy: "internal" as PrivacyIndicator.PrivacyLevels,
     timeframe: getTimeframe(currentYear()),
     children: [
       {
@@ -291,6 +303,7 @@ const mockItems: WorkMap.Item[] = [
         completedOn: null,
         closedAt: null,
         nextStep: "Establish legal entity",
+        privacy: "internal" as PrivacyIndicator.PrivacyLevels,
         timeframe: getTimeframe(currentYear()),
         children: [
           {
@@ -309,6 +322,7 @@ const mockItems: WorkMap.Item[] = [
             completedOn: null,
             closedAt: null,
             nextStep: "Complete data audit",
+            privacy: "internal" as PrivacyIndicator.PrivacyLevels,
             timeframe: {
               startDate: "2025-04-01T00:00:00.000Z",
               endDate: "2025-08-01T00:00:00.000Z",
@@ -331,6 +345,7 @@ const mockItems: WorkMap.Item[] = [
         completedOn: null,
         closedAt: null,
         nextStep: "Identify potential partners",
+        privacy: "internal" as PrivacyIndicator.PrivacyLevels,
         timeframe: getTimeframe(currentYear()),
         ownerPath: "#",
         spacePath: "#",
@@ -465,6 +480,7 @@ export const AllStatuses: Story = {
           closedAt: status === "completed" || status === "achieved" ? `Apr ${index + 1} 2025` : undefined,
           nextStep: status === "completed" || status === "achieved" ? "" : "Next action to take",
           children: [],
+          privacy: "internal" as PrivacyIndicator.PrivacyLevels,
         };
 
         if (isGoal) {

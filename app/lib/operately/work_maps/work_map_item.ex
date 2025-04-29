@@ -26,6 +26,7 @@ defmodule Operately.WorkMaps.WorkMapItem do
     type: atom(),
     company: map(),
     resource: map(),
+    privacy: :public | :internal | :confidential | :secret,
   }
 
   defstruct [
@@ -45,6 +46,7 @@ defmodule Operately.WorkMaps.WorkMapItem do
     :type,
     :company,
     :resource,
+    :privacy,
   ]
 
   def build_item(goal = %Goal{}, children) do
@@ -65,6 +67,7 @@ defmodule Operately.WorkMaps.WorkMapItem do
       type: :goal,
       company: goal.company,
       resource: goal,
+      privacy: find_privacy(goal),
     }
   end
 
@@ -88,6 +91,7 @@ defmodule Operately.WorkMaps.WorkMapItem do
       type: :project,
       company: project.company,
       resource: project,
+      privacy: find_privacy(project),
     }
   end
 
@@ -139,4 +143,39 @@ defmodule Operately.WorkMaps.WorkMapItem do
       true -> "on_track"
     end
   end
+
+  defp find_privacy(item) do
+    build_access_levels_from_context(item.access_context, item.company_id, item.group_id)
+    |> Operately.Access.AccessLevels.calc_privacy()
+  end
+
+  defp build_access_levels_from_context(access_context, company_id, space_id) do
+    case access_context do
+      nil -> %Operately.Access.AccessLevels{ public: nil, company: nil, space: nil }
+
+      %Ecto.Association.NotLoaded{} -> %Operately.Access.AccessLevels{ public: nil, company: nil, space: nil }
+
+      %{bindings: bindings} ->
+        public = find_binding_by_criteria(bindings, {:company_id, company_id}, :anonymous)
+        company = find_binding_by_criteria(bindings, {:company_id, company_id}, :standard)
+        space = find_binding_by_criteria(bindings, {:group_id, space_id}, :standard)
+
+        %Operately.Access.AccessLevels{
+          public: access_level_or_no_access(public),
+          company: access_level_or_no_access(company),
+          space: access_level_or_no_access(space)
+        }
+    end
+  end
+
+  defp find_binding_by_criteria(bindings, {group_field, id}, tag) do
+    Enum.find(bindings, fn binding ->
+      group = binding.group
+      group_value = Map.get(group, group_field)
+      group_value == id && group.tag == tag
+    end)
+  end
+
+  defp access_level_or_no_access(nil), do: Operately.Access.Binding.no_access()
+  defp access_level_or_no_access(binding), do: binding.access_level
 end

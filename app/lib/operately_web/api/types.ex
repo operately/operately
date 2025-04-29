@@ -1492,5 +1492,6 @@ defmodule OperatelyWeb.Api.Types do
     field :children, list_of(:work_map_item)
     field :type, :string
     field :item_path, :string
+    field :privacy, :string
   end
 end

@@ -3,6 +3,7 @@ import { WorkMapTable } from "./WorkMapTable";
 import { WorkMap } from ".";
 import { currentYear, currentQuarter, currentMonth } from "../TimeframeSelector/utils";
 import { TimeframeSelector } from "../TimeframeSelector";
+import { PrivacyIndicator } from "../PrivacyIndicator";
 
 // --- Mock Data ---
 function genAvatar(id: string) {
@@ -76,6 +77,7 @@ const defaultGoalsAndProjects: WorkMap.Item[] = [
     completedOn: null,
     closedAt: null,
     nextStep: "Launch referral program",
+    privacy: "internal" as PrivacyIndicator.PrivacyLevels,
     timeframe: getTimeframe(currentYear()),
     children: [
       {
@@ -94,6 +96,7 @@ const defaultGoalsAndProjects: WorkMap.Item[] = [
         completedOn: null,
         closedAt: undefined,
         nextStep: "Design rewards",
+        privacy: "secret" as PrivacyIndicator.PrivacyLevels,
         timeframe: {
           startDate: "2025-01-15T00:00:00.000Z",
           endDate: "2025-11-30T00:00:00.000Z",
@@ -117,6 +120,7 @@ const defaultGoalsAndProjects: WorkMap.Item[] = [
         completedOn: "2025-10-15T00:00:00.000Z",
         closedAt: null,
         nextStep: "A/B test new landing page",
+        privacy: "internal" as PrivacyIndicator.PrivacyLevels,
         timeframe: getTimeframe(currentYear()),
         children: [
           {
@@ -135,6 +139,7 @@ const defaultGoalsAndProjects: WorkMap.Item[] = [
             completedOn: "2025-07-01T00:00:00.000Z",
             closedAt: "2025-07-01T00:00:00.000Z",
             nextStep: "",
+            privacy: "internal" as PrivacyIndicator.PrivacyLevels,
             timeframe: getTimeframe(currentQuarter()),
             children: [],
           },
@@ -154,6 +159,7 @@ const defaultGoalsAndProjects: WorkMap.Item[] = [
             completedOn: "2025-04-01T00:00:00.000Z",
             closedAt: "2025-04-01T00:00:00.000Z",
             nextStep: "",
+            privacy: "internal" as PrivacyIndicator.PrivacyLevels,
             timeframe: {
               startDate: "2025-01-01T00:00:00.000Z",
               endDate: null,
@@ -181,6 +187,7 @@ const defaultGoalsAndProjects: WorkMap.Item[] = [
     completedOn: null,
     closedAt: null,
     nextStep: "Ship onboarding checklist",
+    privacy: "internal" as PrivacyIndicator.PrivacyLevels,
     timeframe: getTimeframe(currentYear()),
     children: [
       {
@@ -204,6 +211,7 @@ const defaultGoalsAndProjects: WorkMap.Item[] = [
           type: "days",
         },
         nextStep: "QA checklist",
+        privacy: "confidential" as PrivacyIndicator.PrivacyLevels,
         children: [],
       },
     ],
@@ -229,6 +237,7 @@ const defaultGoalsAndProjects: WorkMap.Item[] = [
       type: "days",
     },
     nextStep: "Finalize homepage",
+    privacy: "internal" as PrivacyIndicator.PrivacyLevels,
     children: [],
   },
 ];
@@ -250,6 +259,7 @@ const onlyGoals: WorkMap.Item[] = [
     completedOn: null,
     closedAt: null,
     nextStep: "Send Q3 survey",
+    privacy: "internal" as PrivacyIndicator.PrivacyLevels,
     timeframe: getTimeframe(currentQuarter()),
     children: [
       {
@@ -268,6 +278,7 @@ const onlyGoals: WorkMap.Item[] = [
         completedOn: "2025-08-15T00:00:00.000Z",
         closedAt: null,
         nextStep: "Enable feedback widget",
+        privacy: "internal" as PrivacyIndicator.PrivacyLevels,
         timeframe: getTimeframe(currentMonth()),
         children: [],
       },
@@ -287,6 +298,7 @@ const onlyGoals: WorkMap.Item[] = [
         completedOn: null,
         closedAt: null,
         nextStep: "Analyze churn data",
+        privacy: "internal" as PrivacyIndicator.PrivacyLevels,
         timeframe: getTimeframe(currentQuarter()),
         children: [],
       },
@@ -308,6 +320,7 @@ const onlyGoals: WorkMap.Item[] = [
     completedOn: null,
     closedAt: null,
     nextStep: "Research local partners",
+    privacy: "secret" as PrivacyIndicator.PrivacyLevels,
     timeframe: getTimeframe(currentYear()),
     children: [
       {
@@ -326,6 +339,7 @@ const onlyGoals: WorkMap.Item[] = [
         completedOn: null,
         closedAt: null,
         nextStep: "Hire translators",
+        privacy: "internal" as PrivacyIndicator.PrivacyLevels,
         timeframe: getTimeframe(currentQuarter()),
         children: [],
       },
@@ -345,6 +359,7 @@ const onlyGoals: WorkMap.Item[] = [
         completedOn: null,
         closedAt: null,
         nextStep: "Draft campaign assets",
+        privacy: "internal" as PrivacyIndicator.PrivacyLevels,
         timeframe: getTimeframe(currentQuarter()),
         children: [],
       },
@@ -369,6 +384,7 @@ const onlyProjects: WorkMap.Item[] = [
     completedOn: null,
     closedAt: null,
     nextStep: "Start beta testing",
+    privacy: "internal" as PrivacyIndicator.PrivacyLevels,
     timeframe: {
       startDate: "2025-01-10T00:00:00.000Z",
       endDate: "2025-09-30T00:00:00.000Z",
@@ -392,6 +408,7 @@ const onlyProjects: WorkMap.Item[] = [
     completedOn: null,
     closedAt: null,
     nextStep: "Migrate endpoints",
+    privacy: "confidential" as PrivacyIndicator.PrivacyLevels,
     timeframe: {
       startDate: "2025-02-15T00:00:00.000Z",
       endDate: "2025-10-31T00:00:00.000Z",
@@ -415,6 +432,7 @@ const onlyProjects: WorkMap.Item[] = [
     completedOn: "2025-07-31T00:00:00.000Z",
     closedAt: null,
     nextStep: "Finalize homepage",
+    privacy: "internal" as PrivacyIndicator.PrivacyLevels,
     timeframe: {
       startDate: "2025-03-01T00:00:00.000Z",
       endDate: "2025-07-31T00:00:00.000Z",
@@ -441,6 +459,7 @@ const onlyCompleted: WorkMap.Item[] = [
     completedOn: "2025-06-01T00:00:00.000Z",
     closedAt: "2025-06-01T00:00:00.000Z",
     nextStep: "",
+    privacy: "internal" as PrivacyIndicator.PrivacyLevels,
     timeframe: getTimeframe(currentYear()),
     children: [],
   },
@@ -460,6 +479,7 @@ const onlyCompleted: WorkMap.Item[] = [
     ownerPath: "#",
     itemPath: "#",
     nextStep: "",
+    privacy: "internal" as PrivacyIndicator.PrivacyLevels,
     timeframe: getTimeframe(currentQuarter()),
     children: [],
   },
@@ -479,6 +499,7 @@ const onlyCompleted: WorkMap.Item[] = [
     completedOn: "2025-04-01T00:00:00.000Z",
     closedAt: "2025-04-01T00:00:00.000Z",
     nextStep: "",
+    privacy: "secret" as PrivacyIndicator.PrivacyLevels,
     timeframe: {
       startDate: "2025-01-15T00:00:00.000Z",
       endDate: "2025-04-01T00:00:00.000Z",
