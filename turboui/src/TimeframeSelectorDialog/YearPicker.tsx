@@ -1,11 +1,11 @@
 import DatePicker from "react-datepicker";
 
 import { LeftChevron, RightChevron } from "./Chevrons";
-import { TimeframeSelector } from ".";
+import { Timeframe } from "../utils/timeframes";
 
 interface Props {
-  timeframe: TimeframeSelector.Timeframe;
-  setTimeframe: TimeframeSelector.SetTimeframe;
+  timeframe: Timeframe;
+  setTimeframe: (timeframe: Timeframe) => void;
 }
 
 const YEAR_OPTION_COUNT = 6;
