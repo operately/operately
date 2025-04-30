@@ -517,48 +517,6 @@ export const Default: Story = {
 
       expect(tableRows.length).toEqual(15);
     });
-
-    await step("Verify indentation of items at different levels", async () => {
-      // Level 0 item (no indentation)
-      const topLevelItem = canvas.getByText("Acquire the first users of Operately outside Semaphore");
-      const topLevelRow = topLevelItem.closest("tr") as HTMLElement;
-
-      const topLevelIndentation = within(topLevelRow).queryByTestId("indentation");
-      expect(topLevelIndentation?.style.width).toBe("0px");
-
-      // Level 1 items (20px indentation)
-      const level1Goal = canvas.getByText("Reduce onboarding time by 30%");
-      const level1GoalRow = level1Goal.closest("tr") as HTMLElement;
-
-      const level1GoalIndentation = within(level1GoalRow).getByTestId("indentation");
-      expect(level1GoalIndentation.style.width).toBe("20px");
-
-      const level1Project = canvas.getByText("Release 0.4");
-      const level1ProjectRow = level1Project.closest("tr") as HTMLElement;
-
-      const level1ProjectIndentation = within(level1ProjectRow).getByTestId("indentation");
-      expect(level1ProjectIndentation.style.width).toBe("20px");
-
-      // Level 2 items (40px indentation)
-      const level2Goal = canvas.getByText("Automate user account setup");
-      const level2GoalRow = level2Goal.closest("tr") as HTMLElement;
-
-      const level2GoalIndentation = within(level2GoalRow).getByTestId("indentation");
-      expect(level2GoalIndentation.style.width).toBe("40px");
-
-      const level2Project = canvas.getByText("GDPR compliance implementation");
-      const level2ProjectRow = level2Project.closest("tr") as HTMLElement;
-
-      const level2ProjectIndentation = within(level2ProjectRow).getByTestId("indentation");
-      expect(level2ProjectIndentation.style.width).toBe("40px");
-
-      // Level 3 item (60px indentation)
-      const level3Project = canvas.getByText("Implement secure authentication service");
-      const level3ProjectRow = level3Project.closest("tr") as HTMLElement;
-
-      const level3ProjectIndentation = within(level3ProjectRow).getByTestId("indentation");
-      expect(level3ProjectIndentation.style.width).toBe("60px");
-    });
   },
 };
 

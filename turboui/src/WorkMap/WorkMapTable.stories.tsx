@@ -192,6 +192,120 @@ const defaultGoalsAndProjects: WorkMap.Item[] = [
     timeframe: getTimeframe(currentYear()),
     children: [
       {
+        id: "goal-2-1",
+        parentId: "goal-2",
+        type: "goal",
+        name: "Reduce onboarding time by 30%",
+        status: "issue",
+        progress: 15,
+        space: { id: "space-cs", name: "Customer Success" },
+        spacePath: "#",
+        owner: people.jennifer,
+        ownerPath: "#",
+        itemPath: "#",
+        isNew: false,
+        completedOn: null,
+        closedAt: null,
+        nextStep: "Identify bottlenecks in process",
+        privacy: "internal" as PrivacyIndicator.PrivacyLevels,
+        timeframe: getTimeframe(currentQuarter()),
+        children: [
+          {
+            id: "goal-2-1-1",
+            parentId: "goal-2-1",
+            type: "goal",
+            name: "Automate user account setup",
+            status: "on_track",
+            progress: 40,
+            space: { id: "space-eng", name: "Engineering" },
+            spacePath: "#",
+            owner: people.jane,
+            ownerPath: "#",
+            itemPath: "#",
+            isNew: false,
+            completedOn: null,
+            closedAt: null,
+            nextStep: "Complete backend integration",
+            timeframe: getTimeframe(currentQuarter()),
+            privacy: "secret" as PrivacyIndicator.PrivacyLevels,
+            children: [
+              {
+                id: "project-8",
+                parentId: "goal-2-1-1",
+                type: "project",
+                name: "Implement secure authentication service",
+                status: "on_track",
+                progress: 35,
+                space: { id: "space-eng", name: "Engineering" },
+                spacePath: "#",
+                owner: people.igor,
+                ownerPath: "#",
+                itemPath: "#",
+                isNew: false,
+                completedOn: null,
+                closedAt: null,
+                nextStep: "Complete OAuth2 integration",
+                privacy: "secret" as PrivacyIndicator.PrivacyLevels,
+                timeframe: {
+                  startDate: "2025-04-15T00:00:00.000Z",
+                  endDate: "2025-07-30T00:00:00.000Z",
+                  type: "days",
+                },
+                children: [],
+              },
+            ],
+          },
+          {
+            id: "project-6",
+            parentId: "goal-2-1",
+            type: "project",
+            name: "Implement self-guided tutorial",
+            status: "on_track",
+            progress: 25,
+            space: { id: "space-cs", name: "Customer Success" },
+            spacePath: "#",
+            owner: people.jennifer,
+            ownerPath: "#",
+            itemPath: "#",
+            isNew: false,
+            completedOn: null,
+            closedAt: null,
+            nextStep: "Finalize content outline",
+            timeframe: {
+              startDate: "2024-03-01T00:00:00.000Z",
+              endDate: "2025-04-30T00:00:00.000Z",
+              type: "days",
+            },
+            privacy: "confidential" as PrivacyIndicator.PrivacyLevels,
+            children: [],
+          },
+        ],
+      },
+      {
+        id: "project-4",
+        parentId: "goal-2",
+        type: "project",
+        name: "Redesign welcome screen",
+        status: "on_track",
+        progress: 40,
+        space: { id: "space-product", name: "Product" },
+        spacePath: "#",
+        owner: people.jennifer,
+        ownerPath: "#",
+        itemPath: "#",
+        isNew: false,
+        completedOn: null,
+        closedAt: null,
+        nextStep: "Finalize mockups",
+        privacy: "internal" as PrivacyIndicator.PrivacyLevels,
+        timeframe: {
+          startDate: "2025-02-01T00:00:00.000Z",
+          endDate: "2025-04-20T00:00:00.000Z",
+          type: "days",
+        },
+        children: [],
+      },
+      {
         id: "project-2",
         parentId: "goal-2",
         type: "project",
@@ -632,6 +746,60 @@ export const ToggleGoal: Story = {
 
       const childProject = canvas.getByText("Onboarding checklist");
       expect(childProject).toBeInTheDocument();
+    });
+  },
+};
+
+export const Indentation: Story = {
+  args: {
+    items: defaultGoalsAndProjects,
+    filter: "all",
+  },
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+
+    await step("Verify indentation of level 0 items is 0px", async () => {
+      const topLevelItem = canvas.getByText("Grow user base");
+      const topLevelRow = topLevelItem.closest("tr") as HTMLElement;
+
+      const topLevelIndentation = within(topLevelRow).queryByTestId("indentation");
+      expect(topLevelIndentation?.style.width).toBe("0px");
+    });
+
+    await step("Verify indentation of level 1 items is 20px", async () => {
+      const level1Goal = canvas.getByText("Increase signups by 20%");
+      const level1GoalRow = level1Goal.closest("tr") as HTMLElement;
+
+      const level1GoalIndentation = within(level1GoalRow).getByTestId("indentation");
+      expect(level1GoalIndentation.style.width).toBe("20px");
+
+      const level1Project = canvas.getByText("Redesign welcome screen");
+      const level1ProjectRow = level1Project.closest("tr") as HTMLElement;
+
+      const level1ProjectIndentation = within(level1ProjectRow).getByTestId("indentation");
+      expect(level1ProjectIndentation.style.width).toBe("20px");
+    });
+
+    await step("Verify indentation of level 2 items is 40px", async () => {
+      const level2Goal = canvas.getByText("Automate user account setup");
+      const level2GoalRow = level2Goal.closest("tr") as HTMLElement;
+
+      const level2GoalIndentation = within(level2GoalRow).getByTestId("indentation");
+      expect(level2GoalIndentation.style.width).toBe("40px");
+
+      const level2Project = canvas.getByText("Migrate to Vite");
+      const level2ProjectRow = level2Project.closest("tr") as HTMLElement;
+
+      const level2ProjectIndentation = within(level2ProjectRow).getByTestId("indentation");
+      expect(level2ProjectIndentation.style.width).toBe("40px");
+    });
+
+    await step("Verify indentation of level 3 items is 60px", async () => {
+      const level3Project = canvas.getByText("Implement secure authentication service");
+      const level3ProjectRow = level3Project.closest("tr") as HTMLElement;
+
+      const level3ProjectIndentation = within(level3ProjectRow).getByTestId("indentation");
+      expect(level3ProjectIndentation.style.width).toBe("60px");
     });
   },
 };
