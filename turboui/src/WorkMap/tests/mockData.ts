@@ -1,24 +1,12 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import WorkMap from ".";
-import { TimeframeSelector } from "../TimeframeSelector";
-import { currentYear, currentQuarter } from "../utils/timeframes";
-import { Page } from "../Page";
-import { PrivacyIndicator } from "../PrivacyIndicator";
+import WorkMap from "../components";
+import { TimeframeSelector } from "../../TimeframeSelector";
+import { PrivacyIndicator } from "../../PrivacyIndicator";
+import { currentQuarter, currentYear } from "../../utils/timeframes";
 
-// --- Mock Data ---
 function genAvatar(id: string) {
   return `https://images.unsplash.com/${id}?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80`;
 }
 
-function getTimeframe(timeframe: TimeframeSelector.Timeframe) {
-  return {
-    ...timeframe,
-    startDate: timeframe.startDate?.toISOString(),
-    endDate: timeframe.endDate?.toISOString(),
-  };
-}
-
-// People used consistently throughout the stories
 const people = {
   alex: {
     id: "user-alex",
@@ -42,8 +30,36 @@ const people = {
   },
 };
 
-// Sample work map items
-const mockItems: WorkMap.Item[] = [
+function getTimeframe(timeframe: TimeframeSelector.Timeframe) {
+  return {
+    ...timeframe,
+    startDate: timeframe.startDate?.toISOString(),
+    endDate: timeframe.endDate?.toISOString(),
+  };
+}
+
+export const mockSingleItem: WorkMap.Item = {
+  id: "goal-standalone",
+  parentId: null,
+  type: "goal",
+  name: "Single standalone goal with no children",
+  status: "on_track",
+  progress: 50,
+  space: { id: "space-general", name: "General" },
+  spacePath: "#",
+  owner: people.alex,
+  ownerPath: "#",
+  itemPath: "#",
+  isNew: false,
+  completedOn: null,
+  closedAt: null,
+  nextStep: "Working on this standalone goal",
+  privacy: "internal" as PrivacyIndicator.PrivacyLevels,
+  timeframe: getTimeframe(currentQuarter()),
+  children: [],
+};
+
+export const mockItems: WorkMap.Item[] = [
   {
     id: "goal-1",
     parentId: null,
@@ -213,8 +229,33 @@ const mockItems: WorkMap.Item[] = [
             closedAt: null,
             nextStep: "Complete backend integration",
             timeframe: getTimeframe(currentQuarter()),
-            children: [],
             privacy: "secret" as PrivacyIndicator.PrivacyLevels,
+            children: [
+              {
+                id: "project-8",
+                parentId: "goal-2-1-1",
+                type: "project",
+                name: "Implement secure authentication service",
+                status: "on_track",
+                progress: 35,
+                space: { id: "space-eng", name: "Engineering" },
+                spacePath: "#",
+                owner: people.alex,
+                ownerPath: "#",
+                itemPath: "#",
+                isNew: false,
+                completedOn: null,
+                closedAt: null,
+                nextStep: "Complete OAuth2 integration",
+                privacy: "secret" as PrivacyIndicator.PrivacyLevels,
+                timeframe: {
+                  startDate: "2025-04-15T00:00:00.000Z",
+                  endDate: "2025-07-30T00:00:00.000Z",
+                  type: "days",
+                },
+                children: [],
+              },
+            ],
           },
           {
             id: "project-6",
@@ -354,157 +395,78 @@ const mockItems: WorkMap.Item[] = [
       },
     ],
   },
-];
-
-/**
- * WorkMap is a comprehensive component for displaying and interacting with
- * hierarchical work items like goals and projects.
- */
-const meta = {
-  title: "Components/WorkMap",
-  component: WorkMap,
-  parameters: {
-    layout: "fullscreen",
+  {
+    id: "goal-4",
+    parentId: null,
+    type: "goal",
+    name: "Legacy system migration to cloud infrastructure",
+    status: "completed",
+    progress: 100,
+    space: { id: "space-eng", name: "Engineering" },
+    spacePath: "#",
+    owner: people.alex,
+    ownerPath: "#",
+    itemPath: "#",
+    isNew: false,
+    completedOn: "2023-12-15T00:00:00.000Z",
+    closedAt: "2023-12-15T00:00:00.000Z",
+    nextStep: "",
+    privacy: "internal" as PrivacyIndicator.PrivacyLevels,
+    timeframe: {
+      startDate: "2023-02-01T00:00:00.000Z",
+      endDate: "2023-12-31T00:00:00.000Z",
+      type: "days",
+    },
+    children: [],
   },
-  tags: ["autodocs"],
-  argTypes: {
-    items: { control: "object" },
-  },
-} satisfies Meta<typeof WorkMap>;
-
-export default meta;
-type Story = StoryObj<typeof meta>;
-
-/**
- * Default view of the WorkMap with multiple items and children
- */
-export const Default: Story = {
-  render: (args) => (
-    <div className="py-[4.5rem] px-2">
-      <Page title={args.title} size="fullwidth">
-        <WorkMap {...args} />
-      </Page>
-    </div>
-  ),
-  args: {
-    title: "Company Work Map",
-    items: mockItems,
-  },
-};
-
-/**
- * WorkMap with a single item (no children)
- */
-export const SingleItem: Story = {
-  render: (args) => (
-    <div className="py-4">
-      <Page title={args.title} size="fullwidth">
-        <WorkMap {...args} />
-      </Page>
-    </div>
-  ),
-  args: {
-    title: "Company Work Map",
-    items: [mockItems[1]], // Just the second goal with no children
-  },
-};
-
-/**
- * WorkMap with no items (empty state)
- */
-export const Empty: Story = {
-  render: (args) => (
-    <div className="py-4">
-      <Page title={args.title} size="fullwidth">
-        <WorkMap {...args} />
-      </Page>
-    </div>
-  ),
-  args: {
-    title: "Company Work Map",
-    items: [],
-  },
-};
-
-/**
- * WorkMap with all items in different statuses to showcase status badges
- */
-export const AllStatuses: Story = {
-  render: (args) => (
-    <div className="py-4">
-      <Page title={args.title} size="fullwidth">
-        <WorkMap {...args} />
-      </Page>
-    </div>
-  ),
-  args: {
-    title: "Company Work Map",
-    items: [
-      // Create an item for each possible status
-      ...(
-        [
-          "on_track",
-          "completed",
-          "achieved",
-          "partial",
-          "missed",
-          "paused",
-          "caution",
-          "issue",
-          "dropped",
-          "pending",
-        ] as WorkMap.Status[]
-      ).map((status, index) => {
-        const isGoal = index % 2 === 0;
-        const baseItem = {
-          id: `status-${index}`,
-          name: `${status.charAt(0).toUpperCase() + status.slice(1).replace("_", " ")} item`,
-          parentId: null,
-          status,
-          progress: status === "completed" || status === "achieved" ? 100 : Math.floor(Math.random() * 100),
-          space: {
-            id: `space-${index % 5}`,
-            name: ["Product", "Engineering", "Marketing", "Sales", "R&D"][index % 5],
-          },
-          owner: {
-            id: `user-${index}`,
-            fullName: `User ${index + 1}`,
-            avatarUrl: index % 2 === 0 ? people.alex.avatarUrl : people.sophia.avatarUrl,
-          },
-          ownerPath: "#",
-          spacePath: "#",
-          itemPath: "#",
-          isNew: false,
-          completedOn: status === "completed" || status === "achieved" ? `2025-04-${index + 1}` : null,
-
-          closedAt: status === "completed" || status === "achieved" ? `Apr ${index + 1} 2025` : undefined,
-          nextStep: status === "completed" || status === "achieved" ? "" : "Next action to take",
-          children: [],
-          privacy: "internal" as PrivacyIndicator.PrivacyLevels,
-        };
-
-        if (isGoal) {
-          return {
-            ...baseItem,
-            type: "goal" as const,
-            timeframe: getTimeframe({
-              startDate: new Date("2025-01-01"),
-              endDate: new Date("2025-12-31"),
-              type: "year",
-            }),
-          };
-        } else {
-          return {
-            ...baseItem,
-            type: "project" as const,
-            timeframe: {
-              startDate: `2025-01-${index + 1}`,
-              endDate: "2025-12-31",
-              type: "days" as TimeframeSelector.TimeframeType,
-            },
-          };
-        }
-      }),
+  {
+    id: "goal-5",
+    parentId: null,
+    type: "goal",
+    name: "Develop sustainable AI-powered analytics platform",
+    status: "on_track",
+    progress: 15,
+    space: { id: "space-rd", name: "R&D" },
+    spacePath: "#",
+    owner: people.sophia,
+    ownerPath: "#",
+    itemPath: "#",
+    isNew: false,
+    completedOn: null,
+    closedAt: null,
+    nextStep: "Complete initial research phase",
+    privacy: "confidential" as PrivacyIndicator.PrivacyLevels,
+    timeframe: {
+      startDate: "2024-03-01T00:00:00.000Z",
+      endDate: "2028-12-31T00:00:00.000Z",
+      type: "days",
+    },
+    children: [
+      {
+        id: "project-7",
+        parentId: "goal-5",
+        type: "project",
+        name: "Research phase: ML model selection",
+        status: "on_track",
+        progress: 40,
+        space: { id: "space-rd", name: "R&D" },
+        spacePath: "#",
+        owner: people.jennifer,
+        ownerPath: "#",
+        itemPath: "#",
+        isNew: false,
+        completedOn: null,
+        closedAt: null,
+        nextStep: "Evaluate model performance metrics",
+        privacy: "confidential" as PrivacyIndicator.PrivacyLevels,
+        timeframe: {
+          startDate: "2024-03-01T00:00:00.000Z",
+          endDate: "2025-06-30T00:00:00.000Z",
+          type: "days",
+        },
+        children: [],
+      },
     ],
   },
-};
+];
+

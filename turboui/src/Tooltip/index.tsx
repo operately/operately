@@ -35,7 +35,7 @@ export function Tooltip(props: Tooltip.Props) {
   return (
     <ReactTooltip.Provider>
       <ReactTooltip.Root delayDuration={props.delayDuration}>
-        <ReactTooltip.Trigger data-test-id={props.testId} className={props.contentClassName}>
+        <ReactTooltip.Trigger data-testid={props.testId} className={props.contentClassName}>
           {props.children}
         </ReactTooltip.Trigger>
 

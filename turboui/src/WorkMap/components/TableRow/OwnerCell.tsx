@@ -1,7 +1,7 @@
-import { AvatarWithName } from "../../Avatar/AvatarWithName";
+import { AvatarWithName } from "../../../Avatar/AvatarWithName";
 import { WorkMap } from "..";
-import { useItemStatus } from "../hooks/useItemStatus";
-import classNames from "../../utils/classnames";
+import { useItemStatus } from "../../hooks/useItemStatus";
+import classNames from "../../../utils/classnames";
 
 interface Props {
   item: WorkMap.Item;

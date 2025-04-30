@@ -1,6 +1,6 @@
-import { ProgressBar, ProgressBarStatus } from "../../";
+import { ProgressBar, ProgressBarStatus } from "../../..";
 import { WorkMap } from "..";
-import { useItemStatus } from "../hooks/useItemStatus";
+import { useItemStatus } from "../../hooks/useItemStatus";
 
 interface ProgressCellProps {
   progress: WorkMap.Item["progress"];

@@ -1,9 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { WorkMapTable } from "./WorkMapTable";
-import { WorkMap } from ".";
-import { currentYear, currentQuarter, currentMonth } from "../utils/timeframes";
-import { TimeframeSelector } from "../TimeframeSelector";
-import { PrivacyIndicator } from "../PrivacyIndicator";
+import { expect, within, userEvent } from "@storybook/test";
+import { WorkMapTable } from "../components/WorkMapTable";
+import { WorkMap } from "../components";
+import { currentYear, currentQuarter, currentMonth } from "../../utils/timeframes";
+import { TimeframeSelector } from "../../TimeframeSelector";
+import { PrivacyIndicator } from "../../PrivacyIndicator";
 
 // --- Mock Data ---
 function genAvatar(id: string) {
@@ -190,6 +191,120 @@ const defaultGoalsAndProjects: WorkMap.Item[] = [
     privacy: "internal" as PrivacyIndicator.PrivacyLevels,
     timeframe: getTimeframe(currentYear()),
     children: [
+      {
+        id: "goal-2-1",
+        parentId: "goal-2",
+        type: "goal",
+        name: "Reduce onboarding time by 30%",
+        status: "issue",
+        progress: 15,
+        space: { id: "space-cs", name: "Customer Success" },
+        spacePath: "#",
+        owner: people.jennifer,
+        ownerPath: "#",
+        itemPath: "#",
+        isNew: false,
+        completedOn: null,
+        closedAt: null,
+        nextStep: "Identify bottlenecks in process",
+        privacy: "internal" as PrivacyIndicator.PrivacyLevels,
+        timeframe: getTimeframe(currentQuarter()),
+        children: [
+          {
+            id: "goal-2-1-1",
+            parentId: "goal-2-1",
+            type: "goal",
+            name: "Automate user account setup",
+            status: "on_track",
+            progress: 40,
+            space: { id: "space-eng", name: "Engineering" },
+            spacePath: "#",
+            owner: people.jane,
+            ownerPath: "#",
+            itemPath: "#",
+            isNew: false,
+            completedOn: null,
+            closedAt: null,
+            nextStep: "Complete backend integration",
+            timeframe: getTimeframe(currentQuarter()),
+            privacy: "secret" as PrivacyIndicator.PrivacyLevels,
+            children: [
+              {
+                id: "project-8",
+                parentId: "goal-2-1-1",
+                type: "project",
+                name: "Implement secure authentication service",
+                status: "on_track",
+                progress: 35,
+                space: { id: "space-eng", name: "Engineering" },
+                spacePath: "#",
+                owner: people.igor,
+                ownerPath: "#",
+                itemPath: "#",
+                isNew: false,
+                completedOn: null,
+                closedAt: null,
+                nextStep: "Complete OAuth2 integration",
+                privacy: "secret" as PrivacyIndicator.PrivacyLevels,
+                timeframe: {
+                  startDate: "2025-04-15T00:00:00.000Z",
+                  endDate: "2025-07-30T00:00:00.000Z",
+                  type: "days",
+                },
+                children: [],
+              },
+            ],
+          },
+          {
+            id: "project-6",
+            parentId: "goal-2-1",
+            type: "project",
+            name: "Implement self-guided tutorial",
+            status: "on_track",
+            progress: 25,
+            space: { id: "space-cs", name: "Customer Success" },
+            spacePath: "#",
+            owner: people.jennifer,
+            ownerPath: "#",
+            itemPath: "#",
+            isNew: false,
+            completedOn: null,
+            closedAt: null,
+            nextStep: "Finalize content outline",
+            timeframe: {
+              startDate: "2024-03-01T00:00:00.000Z",
+              endDate: "2025-04-30T00:00:00.000Z",
+              type: "days",
+            },
+            privacy: "confidential" as PrivacyIndicator.PrivacyLevels,
+            children: [],
+          },
+        ],
+      },
+      {
+        id: "project-4",
+        parentId: "goal-2",
+        type: "project",
+        name: "Redesign welcome screen",
+        status: "on_track",
+        progress: 40,
+        space: { id: "space-product", name: "Product" },
+        spacePath: "#",
+        owner: people.jennifer,
+        ownerPath: "#",
+        itemPath: "#",
+        isNew: false,
+        completedOn: null,
+        closedAt: null,
+        nextStep: "Finalize mockups",
+        privacy: "internal" as PrivacyIndicator.PrivacyLevels,
+        timeframe: {
+          startDate: "2025-02-01T00:00:00.000Z",
+          endDate: "2025-04-20T00:00:00.000Z",
+          type: "days",
+        },
+        children: [],
+      },
       {
         id: "project-2",
         parentId: "goal-2",
@@ -534,5 +649,157 @@ export const CompletedOnly: Story = {
   args: {
     items: onlyCompleted,
     filter: "completed",
+  },
+};
+
+// Test story for collapsing the "Increase signups by 20%" goal
+export const CollapseGoal: Story = {
+  args: {
+    items: defaultGoalsAndProjects,
+    filter: "all",
+  },
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+
+    await step("Check initial visibility of goal and children", async () => {
+      const goalRow = canvas.getByText("Increase signups by 20%");
+      expect(goalRow).toBeInTheDocument();
+
+      const childProject1 = canvas.getByText("Finish Q2 OKRs");
+      const childProject2 = canvas.getByText("Migrate to Vite");
+
+      expect(childProject1).toBeInTheDocument();
+      expect(childProject2).toBeInTheDocument();
+    });
+
+    await step("Click expand button to collapse children", async () => {
+      const goalRowElement = canvas.getByText("Increase signups by 20%");
+      const goalRow = goalRowElement.closest("tr");
+
+      expect(goalRow).not.toBeNull();
+
+      const expandButton = within(goalRow as HTMLElement).getByTestId("chevron-icon");
+      await userEvent.click(expandButton);
+    });
+
+    await step("Verify children are now hidden", async () => {
+      const goalRow = canvas.getByText("Increase signups by 20%");
+      expect(goalRow).toBeInTheDocument();
+
+      const childProject1 = canvas.queryByText("Finish Q2 OKRs");
+      const childProject2 = canvas.queryByText("Migrate to Vite");
+
+      expect(childProject1).not.toBeInTheDocument();
+      expect(childProject2).not.toBeInTheDocument();
+    });
+  },
+};
+
+// Test story for toggling the "Improve onboarding" goal
+export const ToggleGoal: Story = {
+  args: {
+    items: defaultGoalsAndProjects,
+    filter: "all",
+  },
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+
+    await step("Check initial visibility of goal and children", async () => {
+      const goalRow = canvas.getByText("Improve onboarding");
+      expect(goalRow).toBeInTheDocument();
+
+      const childProject = canvas.getByText("Onboarding checklist");
+      expect(childProject).toBeInTheDocument();
+    });
+
+    await step("Click expand button to collapse children", async () => {
+      const goalRowElement = canvas.getByText("Improve onboarding");
+      const goalRow = goalRowElement.closest("tr");
+
+      expect(goalRow).not.toBeNull();
+
+      const expandButton = within(goalRow as HTMLElement).getByTestId("chevron-icon");
+      await userEvent.click(expandButton);
+    });
+
+    await step("Verify children are now hidden", async () => {
+      const goalRow = canvas.getByText("Improve onboarding");
+      expect(goalRow).toBeInTheDocument();
+
+      const childProject = canvas.queryByText("Onboarding checklist");
+      expect(childProject).not.toBeInTheDocument();
+    });
+
+    await step("Click expand button again to show children", async () => {
+      const goalRowElement = canvas.getByText("Improve onboarding");
+      const goalRow = goalRowElement.closest("tr");
+
+      expect(goalRow).not.toBeNull();
+
+      const expandButton = within(goalRow as HTMLElement).getByTestId("chevron-icon");
+      await userEvent.click(expandButton);
+    });
+
+    await step("Verify children are visible again", async () => {
+      const goalRow = canvas.getByText("Improve onboarding");
+      expect(goalRow).toBeInTheDocument();
+
+      const childProject = canvas.getByText("Onboarding checklist");
+      expect(childProject).toBeInTheDocument();
+    });
+  },
+};
+
+export const Indentation: Story = {
+  args: {
+    items: defaultGoalsAndProjects,
+    filter: "all",
+  },
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+
+    await step("Verify indentation of level 0 items is 0px", async () => {
+      const topLevelItem = canvas.getByText("Grow user base");
+      const topLevelRow = topLevelItem.closest("tr") as HTMLElement;
+
+      const topLevelIndentation = within(topLevelRow).queryByTestId("indentation");
+      expect(topLevelIndentation?.style.width).toBe("0px");
+    });
+
+    await step("Verify indentation of level 1 items is 20px", async () => {
+      const level1Goal = canvas.getByText("Increase signups by 20%");
+      const level1GoalRow = level1Goal.closest("tr") as HTMLElement;
+
+      const level1GoalIndentation = within(level1GoalRow).getByTestId("indentation");
+      expect(level1GoalIndentation.style.width).toBe("20px");
+
+      const level1Project = canvas.getByText("Redesign welcome screen");
+      const level1ProjectRow = level1Project.closest("tr") as HTMLElement;
+
+      const level1ProjectIndentation = within(level1ProjectRow).getByTestId("indentation");
+      expect(level1ProjectIndentation.style.width).toBe("20px");
+    });
+
+    await step("Verify indentation of level 2 items is 40px", async () => {
+      const level2Goal = canvas.getByText("Automate user account setup");
+      const level2GoalRow = level2Goal.closest("tr") as HTMLElement;
+
+      const level2GoalIndentation = within(level2GoalRow).getByTestId("indentation");
+      expect(level2GoalIndentation.style.width).toBe("40px");
+
+      const level2Project = canvas.getByText("Migrate to Vite");
+      const level2ProjectRow = level2Project.closest("tr") as HTMLElement;
+
+      const level2ProjectIndentation = within(level2ProjectRow).getByTestId("indentation");
+      expect(level2ProjectIndentation.style.width).toBe("40px");
+    });
+
+    await step("Verify indentation of level 3 items is 60px", async () => {
+      const level3Project = canvas.getByText("Implement secure authentication service");
+      const level3ProjectRow = level3Project.closest("tr") as HTMLElement;
+
+      const level3ProjectIndentation = within(level3ProjectRow).getByTestId("indentation");
+      expect(level3ProjectIndentation.style.width).toBe("60px");
+    });
   },
 };
