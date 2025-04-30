@@ -12,6 +12,7 @@ export namespace PrivacyIndicator {
 
     iconSize?: number;
     className?: string;
+    testId?: string;
   }
 }
 
@@ -38,7 +39,7 @@ export function PrivacyIndicator(props: PrivacyIndicator.Props) {
     .exhaustive();
 
   return (
-    <Tooltip content={tooltipContent} delayDuration={100} contentClassName={props.className}>
+    <Tooltip content={tooltipContent} delayDuration={100} contentClassName={props.className} testId={props.testId}>
       {icon}
     </Tooltip>
   );

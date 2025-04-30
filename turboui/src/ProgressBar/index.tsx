@@ -24,13 +24,14 @@ export function ProgressBar({ progress, status, size = "md", showLabel = false }
     .exhaustive()
 
   return (
-    <div className="w-full flex items-center gap-2">
+    <div role="progress-bar" className="w-full flex items-center gap-2">
       <div
         className={`w-full ${heightClass} bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden`}
       >
         <div
           className={`h-full rounded-full ${progressColor} relative overflow-hidden`}
           style={{ width: progressWidth }}
+          data-testid="progress-percentage-bar"
         >
           {/* Add subtle shine effect */}
           <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 opacity-50 dark:via-white/30"></div>
