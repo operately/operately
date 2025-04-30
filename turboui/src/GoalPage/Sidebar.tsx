@@ -1,16 +1,17 @@
+import React from "react";
 import { GoalPage } from ".";
 import { Chronometer } from "../Chronometer";
 import { IconQuestionMark } from "@tabler/icons-react";
 import { Avatar, AvatarPerson } from "../Avatar";
+import { SectionHeader } from "./SectionHeader";
+import { TimeframeSelectorDialog } from "../TimeframeSelectorDialog";
+import { SecondaryButton } from "../Button";
+import { Timeframe } from "../utils/timeframes";
 
 export function Sidebar(props: GoalPage.Props) {
   return (
     <div className="sm:col-span-3 space-y-6 hidden sm:block">
-      <div>
-        <div className="font-bold mb-2">Timeline</div>
-
-        <Chronometer start={props.startDate} end={props.endDate} color="stone" />
-      </div>
+      <TimeframeSection {...props} />
 
       <div className="space-y-3">
         <div className="font-bold">Team</div>
@@ -20,6 +21,29 @@ export function Sidebar(props: GoalPage.Props) {
       </div>
     </div>
   );
+}
+
+function TimeframeSection(props: GoalPage.Props) {
+  const [open, setOpen] = React.useState(false);
+  const [timeframe, setTimeframe] = React.useState<Timeframe>(props.timeframe);
+
+  const handleTimeframeChange = (newTimeframe) => {
+    setTimeframe(newTimeframe);
+    props.saveNewTimeframe(timeframe);
+  };
+
+  const editButton = <TimeframeSelectorDialog
+    open={open}
+    onOpenChange={setOpen}
+    timeframe={timeframe}
+    setTimeframe={handleTimeframeChange}
+    trigger={<SecondaryButton size="xxs">Edit</SecondaryButton>}
+  />
+
+  return <div>
+    <SectionHeader title="Timeframe" showButtons={props.canEdit} buttons={editButton} />
+    <Chronometer start={props.timeframe.startDate!} end={props.timeframe.endDate!} color="stone" />
+  </div>
 }
 
 function Champion(props: GoalPage.Props) {
