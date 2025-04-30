@@ -124,6 +124,7 @@ function PrivacyIndicatorWrapper() {
         spaceName={item.space?.name || ""}
         iconSize={16}
         className="ml-2"
+        testId="privacy-indicator"
       />
   );
 }

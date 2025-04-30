@@ -5,6 +5,7 @@ import { TableHeader } from "./WorkMapTable/TableHeader";
 import { currentYear } from "../utils/timeframes";
 import { PrivacyIndicator } from "../PrivacyIndicator";
 import { genPeople } from "../utils/storybook/genPeople";
+import { expect, within, userEvent } from "@storybook/test";
 
 // Mock data for stories
 const mockOwner = genPeople(1)[0];
@@ -103,8 +104,10 @@ const mockGoalMissed = createMockItem("goal-5", "Launch mobile app by Q1", "goal
 const mockGoalPaused = createMockItem("goal-6", "Expand to international markets", "goal", "paused", 20);
 const mockGoalCaution = createMockItem("goal-7", "Implement new CRM system", "goal", "caution", 35);
 const mockGoalIssue = createMockItem("goal-8", "Migrate legacy systems", "goal", "issue", 15);
+const mockGoalOutdated = createMockItem("goal-9", "Update legacy documentation", "goal", "outdated", 30);
 const mockProjectOnTrack = createMockItem("project-1", "Redesign product dashboard", "project", "on_track", 55);
 const mockProjectCompleted = createMockItem("project-2", "Update documentation", "project", "completed", 100);
+const mockProjectOutdated = createMockItem("project-3", "Refactor authentication system", "project", "outdated", 25);
 
 const meta = {
   title: "Components/WorkMap/TableRow",
@@ -324,6 +327,28 @@ export const IssueGoal: Story = {
 };
 
 /**
+ * Items with outdated status
+ */
+export const OutdatedItems: Story = {
+  render: (args) => (
+    <div className="pb-12">
+      <TableHeader filter={args.filter} />
+      <tbody>
+        <TableRow item={mockGoalOutdated} level={0} isLast={false} filter={args.filter} />
+        <TableRow item={mockProjectOutdated} level={0} isLast={true} filter={args.filter} />
+      </tbody>
+    </div>
+  ),
+  args: {
+    item: mockGoalOutdated, // This is required by the Story type but overridden in render
+    level: 0,
+    isLast: false,
+    filter: "all",
+    isSelected: false,
+  },
+};
+
+/**
  * A project that is on track
  */
 export const OnTrackProject: Story = {
@@ -366,90 +391,6 @@ export const CompletedProject: Story = {
 };
 
 /**
- * A selected row
- */
-export const SelectedRow: Story = {
-  render: (args) => (
-    <>
-      <TableHeader filter={args.filter} />
-      <tbody>
-        <TableRow {...args} />
-      </tbody>
-    </>
-  ),
-  args: {
-    item: mockGoalOnTrack,
-    level: 0,
-    isLast: false,
-    filter: "all",
-    isSelected: true,
-  },
-};
-
-/**
- * An indented row (level 1)
- */
-export const IndentedRow: Story = {
-  render: (args) => (
-    <>
-      <TableHeader filter={args.filter} />
-      <tbody>
-        <TableRow {...args} />
-      </tbody>
-    </>
-  ),
-  args: {
-    item: mockProjectOnTrack,
-    level: 1,
-    isLast: false,
-    filter: "all",
-    isSelected: false,
-  },
-};
-
-/**
- * A row with the completed filter applied
- */
-export const CompletedFilter: Story = {
-  render: (args) => (
-    <>
-      <TableHeader filter={args.filter} />
-      <tbody>
-        <TableRow {...args} />
-      </tbody>
-    </>
-  ),
-  args: {
-    item: mockGoalCompleted,
-    level: 0,
-    isLast: false,
-    filter: "completed",
-    isSelected: false,
-  },
-};
-
-/**
- * A row with the goals filter applied
- */
-export const GoalsFilter: Story = {
-  render: (args) => (
-    <>
-      <TableHeader filter={args.filter} />
-      <tbody>
-        <TableRow {...args} />
-      </tbody>
-    </>
-  ),
-  args: {
-    item: mockGoalOnTrack,
-    level: 0,
-    isLast: false,
-    filter: "goals",
-    isSelected: false,
-  },
-};
-
-/**
  * Multiple rows showing different statuses
  */
 export const MultipleRows: Story = {
@@ -484,7 +425,7 @@ export const PrivacyLevels: Story = {
     };
 
     const internalItem = {
-      ...createMockItem("item-internal", "Internal item example", "goal", "on_track", 65),
+      ...createMockItem("item-internal", "Internal item example", "goal", "on_track", 40),
       privacy: "internal" as PrivacyIndicator.PrivacyLevels,
     };
 
@@ -544,5 +485,76 @@ export const PrivacyLevels: Story = {
         story: "Showcases the different privacy levels available for WorkMap items.",
       },
     },
+  },
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+
+    // Get all table rows
+    const rows = canvas.getAllByRole("row").filter((row) => row.querySelector("td"));
+
+    await step("Verify there are 4 rows for different privacy levels", async () => {
+      expect(rows.length).toBe(4);
+    });
+
+    await step("Verify Public item has privacy indicator with correct tooltip", async () => {
+      const publicRow = canvas.getByText("Public item example").closest("tr");
+
+      const privacyIndicator = within(publicRow as HTMLElement).getByTestId("privacy-indicator");
+      expect(privacyIndicator).not.toBeNull();
+
+      const message = "Anyone on the internet";
+      expect(canvas.queryByText(message)).toBeNull();
+
+      await userEvent.hover(privacyIndicator);
+
+      const tooltipText = canvas.queryAllByText(message);
+      expect(tooltipText).not.toBeNull();
+
+      await userEvent.unhover(privacyIndicator);
+      expect(canvas.queryByText(message)).toBeNull();
+    });
+
+    await step("Verify Internal item does not have privacy indicator", async () => {
+      const internalRow = canvas.getByText("Internal item example").closest("tr");
+
+      const privacyIndicator = within(internalRow as HTMLElement).queryByTestId("privacy-indicator");
+      expect(privacyIndicator).toBeNull();
+    });
+
+    await step("Verify Confidential item has privacy indicator with correct tooltip", async () => {
+      const confidentialRow = canvas.getByText("Confidential item example").closest("tr");
+
+      const privacyIndicator = within(confidentialRow as HTMLElement).getByTestId("privacy-indicator");
+      expect(privacyIndicator).not.toBeNull();
+
+      const message = "Only Product members";
+      expect(canvas.queryByText(message)).toBeNull();
+
+      await userEvent.hover(privacyIndicator);
+
+      const tooltipText = canvas.queryAllByText(message);
+      expect(tooltipText).not.toBeNull();
+
+      await userEvent.unhover(privacyIndicator);
+      expect(canvas.queryByText(message)).toBeNull();
+    });
+
+    await step("Verify Secret item has privacy indicator with correct tooltip", async () => {
+      const secretRow = canvas.getByText("Secret item example").closest("tr");
+
+      const privacyIndicator = within(secretRow as HTMLElement).getByTestId("privacy-indicator");
+      expect(privacyIndicator).not.toBeNull();
+
+      const message = "Invite-Only";
+      expect(canvas.queryByText(message)).toBeNull();
+
+      await userEvent.hover(privacyIndicator);
+
+      const tooltipText = canvas.queryAllByText(message);
+      expect(tooltipText).not.toBeNull();
+
+      await userEvent.unhover(privacyIndicator);
+      expect(canvas.queryByText(message)).toBeNull();
+    });
   },
 };

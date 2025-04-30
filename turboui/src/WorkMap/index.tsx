@@ -19,7 +19,8 @@ export namespace WorkMap {
     | "caution"
     | "issue"
     | "dropped"
-    | "pending";
+    | "pending"
+    | "outdated";
 
   export interface Person {
     id: string;
