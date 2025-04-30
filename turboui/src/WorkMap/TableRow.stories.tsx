@@ -180,23 +180,44 @@ export const Default: Story = {
 };
 
 /**
- * A completed goal with 100% progress
+ * A completed goal
  */
 export const CompletedGoal: Story = {
   render: (args) => (
-    <div className="pb-12">
+    <>
       <TableHeader filter={args.filter} />
       <tbody>
         <TableRow {...args} />
       </tbody>
-    </div>
+    </>
   ),
   args: {
     item: mockGoalCompleted,
     level: 0,
     isLast: false,
-    filter: "all",
+    filter: "completed",
     isSelected: false,
+  },
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+
+    await step("Verify completed goal has line-through style", async () => {
+      const goalName = canvas.getByText("Launch new marketing campaign");
+      expect(goalName.className).toContain("line-through");
+    });
+
+    await step("Verify status badge has correct styles", async () => {
+      // Verify the badge has the correct styles (StatusBadge/index.tsx):
+      // bgColor = "bg-green-50 dark:bg-green-900/30";
+      // textColor = "text-green-700 dark:text-green-300";
+      // borderColor = "border-green-200 dark:border-green-800";
+
+      const statusBadge = canvas.getByText("Completed");
+
+      expect(statusBadge.className).toContain("bg-green-50");
+      expect(statusBadge.className).toContain("text-green-700");
+      expect(statusBadge?.className).toContain("border-green-200");
+    });
   },
 };
 
@@ -205,19 +226,40 @@ export const CompletedGoal: Story = {
  */
 export const AchievedGoal: Story = {
   render: (args) => (
-    <div className="pb-12">
+    <>
       <TableHeader filter={args.filter} />
       <tbody>
         <TableRow {...args} />
       </tbody>
-    </div>
+    </>
   ),
   args: {
     item: mockGoalAchieved,
     level: 0,
     isLast: false,
-    filter: "all",
+    filter: "completed",
     isSelected: false,
+  },
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+
+    await step("Verify achieved goal has line-through style", async () => {
+      const goalName = canvas.getByText("Increase website traffic by 50%");
+      expect(goalName.className).toContain("line-through");
+    });
+
+    await step("Verify status badge has correct styles", async () => {
+      // Verify the badge has the correct styles (StatusBadge/index.tsx):
+      // bgColor = "bg-green-50 dark:bg-green-900/30";
+      // textColor = "text-green-700 dark:text-green-300";
+      // borderColor = "border-green-200 dark:border-green-800";
+
+      const statusBadge = canvas.getByText("Achieved");
+
+      expect(statusBadge.className).toContain("bg-green-50");
+      expect(statusBadge.className).toContain("text-green-700");
+      expect(statusBadge?.className).toContain("border-green-200");
+    });
   },
 };
 
@@ -226,19 +268,41 @@ export const AchievedGoal: Story = {
  */
 export const PartiallyAchievedGoal: Story = {
   render: (args) => (
-    <div className="pb-12">
+    <>
       <TableHeader filter={args.filter} />
       <tbody>
         <TableRow {...args} />
       </tbody>
-    </div>
+    </>
   ),
   args: {
     item: mockGoalPartial,
     level: 0,
     isLast: false,
-    filter: "all",
+    filter: "completed",
     isSelected: false,
+  },
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+
+    await step("Verify achieved goal has line-through style", async () => {
+      const goalName = canvas.getByText("Reduce customer support tickets by 30%");
+      expect(goalName.className).toContain("line-through");
+    });
+
+    await step("Verify status badge has correct styles", async () => {
+      // Verify the badge has the correct styles (StatusBadge/index.tsx):
+      // bgColor = "bg-amber-50 dark:bg-amber-900/30";
+      // textColor = "text-amber-800 dark:text-amber-300";
+      // dotColor = "bg-amber-500 dark:bg-amber-400";
+      // borderColor = "border-amber-200 dark:border-amber-800";
+
+      const statusBadge = canvas.getByText("Partial");
+
+      expect(statusBadge.className).toContain("bg-amber-50");
+      expect(statusBadge.className).toContain("text-amber-800");
+      expect(statusBadge?.className).toContain("border-amber-200");
+    });
   },
 };
 
@@ -247,19 +311,41 @@ export const PartiallyAchievedGoal: Story = {
  */
 export const MissedGoal: Story = {
   render: (args) => (
-    <div className="pb-12">
+    <>
       <TableHeader filter={args.filter} />
       <tbody>
         <TableRow {...args} />
       </tbody>
-    </div>
+    </>
   ),
   args: {
     item: mockGoalMissed,
     level: 0,
     isLast: false,
-    filter: "all",
+    filter: "completed",
     isSelected: false,
+  },
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+
+    await step("Verify missed goal has line-through style", async () => {
+      const goalName = canvas.getByText("Launch mobile app by Q1");
+      expect(goalName.className).toContain("line-through");
+    });
+
+    await step("Verify status badge has correct styles", async () => {
+      // Verify the badge has the correct styles (StatusBadge/index.tsx):
+      // bgColor = "bg-red-50 dark:bg-red-900/30";
+      // textColor = "text-red-700 dark:text-red-300";
+      // dotColor = "bg-red-500 dark:bg-red-400";
+      // borderColor = "border-red-200 dark:border-red-800";
+
+      const statusBadge = canvas.getByText("Missed");
+
+      expect(statusBadge.className).toContain("bg-red-50");
+      expect(statusBadge.className).toContain("text-red-700");
+      expect(statusBadge?.className).toContain("border-red-200");
+    });
   },
 };
 
@@ -268,12 +354,12 @@ export const MissedGoal: Story = {
  */
 export const PausedGoal: Story = {
   render: (args) => (
-    <div className="pb-12">
+    <>
       <TableHeader filter={args.filter} />
       <tbody>
         <TableRow {...args} />
       </tbody>
-    </div>
+    </>
   ),
   args: {
     item: mockGoalPaused,
@@ -282,6 +368,42 @@ export const PausedGoal: Story = {
     filter: "all",
     isSelected: false,
   },
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+
+    await step("Verify paused goal does not have line-through style", async () => {
+      const goalName = canvas.getByText("Expand to international markets");
+      expect(goalName.className).not.toContain("line-through");
+    });
+
+    await step("Verify status badge has correct styles", async () => {
+      // Verify the badge has the correct styles (StatusBadge/index.tsx):
+      // bgColor = "bg-gray-100 dark:bg-gray-700";
+      // textColor = "text-gray-700 dark:text-gray-300";
+      // dotColor = "bg-gray-400 dark:bg-gray-400";
+      // borderColor = "border-gray-200 dark:border-gray-600";
+
+      const statusBadge = canvas.getByText("Paused");
+
+      expect(statusBadge.className).toContain("bg-gray-100");
+      expect(statusBadge.className).toContain("text-gray-700");
+      expect(statusBadge?.className).toContain("border-gray-200");
+    });
+
+    await step("Verify progress bar shows correct progress", async () => {
+      const progressBar = canvas.getByRole("progress-bar");
+
+      const innerBar = within(progressBar).getByTestId("progress-percentage-bar");
+
+      const innerBarWidth = innerBar?.getBoundingClientRect().width || 0;
+      const outerBarWidth = progressBar.getBoundingClientRect().width;
+
+      const percentage = Math.round((innerBarWidth / outerBarWidth) * 100);
+
+      expect(percentage).toEqual(20);
+      expect(innerBar?.className).toContain("bg-gray-400");
+    });
+  },
 };
 
 /**
@@ -289,12 +411,12 @@ export const PausedGoal: Story = {
  */
 export const CautionGoal: Story = {
   render: (args) => (
-    <div className="pb-12">
+    <>
       <TableHeader filter={args.filter} />
       <tbody>
         <TableRow {...args} />
       </tbody>
-    </div>
+    </>
   ),
   args: {
     item: mockGoalCaution,
@@ -303,6 +425,43 @@ export const CautionGoal: Story = {
     filter: "all",
     isSelected: false,
   },
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+
+    await step("Verify caution goal does not have line-through style", async () => {
+      const goalName = canvas.getByText("Implement new CRM system");
+      expect(goalName.className).not.toContain("line-through");
+    });
+
+    await step("Verify status badge has correct styles", async () => {
+      // Verify the badge has the correct styles (StatusBadge/index.tsx):
+      // bgColor = "bg-amber-50 dark:bg-amber-900/30";
+      // textColor = "text-amber-800 dark:text-amber-300";
+      // dotColor = "bg-amber-500 dark:bg-amber-400";
+      // borderColor = "border-amber-200 dark:border-amber-800";
+      // label = "Attention";
+
+      const statusBadge = canvas.getByText("Attention");
+
+      expect(statusBadge.className).toContain("bg-amber-50");
+      expect(statusBadge.className).toContain("text-amber-800");
+      expect(statusBadge?.className).toContain("border-amber-200");
+    });
+
+    await step("Verify progress bar shows correct progress", async () => {
+      const progressBar = canvas.getByRole("progress-bar");
+
+      const innerBar = within(progressBar).getByTestId("progress-percentage-bar");
+
+      const innerBarWidth = innerBar?.getBoundingClientRect().width || 0;
+      const outerBarWidth = progressBar.getBoundingClientRect().width;
+
+      const percentage = Math.round((innerBarWidth / outerBarWidth) * 100);
+
+      expect(percentage).toEqual(35);
+      expect(innerBar?.className).toContain("bg-amber-400");
+    });
+  },
 };
 
 /**
@@ -310,12 +469,12 @@ export const CautionGoal: Story = {
  */
 export const IssueGoal: Story = {
   render: (args) => (
-    <div className="pb-12">
+    <>
       <TableHeader filter={args.filter} />
       <tbody>
         <TableRow {...args} />
       </tbody>
-    </div>
+    </>
   ),
   args: {
     item: mockGoalIssue,
@@ -324,6 +483,43 @@ export const IssueGoal: Story = {
     filter: "all",
     isSelected: false,
   },
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+
+    await step("Verify issue goal does not have line-through style", async () => {
+      const goalName = canvas.getByText("Migrate legacy systems");
+      expect(goalName.className).not.toContain("line-through");
+    });
+
+    await step("Verify status badge has correct styles", async () => {
+      // Verify the badge has the correct styles (StatusBadge/index.tsx):
+      // bgColor = "bg-red-50 dark:bg-red-900/30";
+      // textColor = "text-red-700 dark:text-red-300";
+      // dotColor = "bg-red-500 dark:bg-red-400";
+      // borderColor = "border-red-200 dark:border-red-800";
+      // label = "At risk";
+
+      const statusBadge = canvas.getByText("At risk");
+
+      expect(statusBadge.className).toContain("bg-red-50");
+      expect(statusBadge.className).toContain("text-red-700");
+      expect(statusBadge?.className).toContain("border-red-200");
+    });
+
+    await step("Verify progress bar shows correct progress", async () => {
+      const progressBar = canvas.getByRole("progress-bar");
+
+      const innerBar = within(progressBar).getByTestId("progress-percentage-bar");
+
+      const innerBarWidth = innerBar?.getBoundingClientRect().width || 0;
+      const outerBarWidth = progressBar.getBoundingClientRect().width;
+
+      const percentage = Math.round((innerBarWidth / outerBarWidth) * 100);
+
+      expect(percentage).toEqual(15);
+      expect(innerBar?.className).toContain("bg-red-400");
+    });
+  },
 };
 
 /**
@@ -331,13 +527,13 @@ export const IssueGoal: Story = {
  */
 export const OutdatedItems: Story = {
   render: (args) => (
-    <div className="pb-12">
+    <>
       <TableHeader filter={args.filter} />
       <tbody>
         <TableRow item={mockGoalOutdated} level={0} isLast={false} filter={args.filter} />
         <TableRow item={mockProjectOutdated} level={0} isLast={true} filter={args.filter} />
       </tbody>
-    </div>
+    </>
   ),
   args: {
     item: mockGoalOutdated, // This is required by the Story type but overridden in render
@@ -345,6 +541,58 @@ export const OutdatedItems: Story = {
     isLast: false,
     filter: "all",
     isSelected: false,
+  },
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+
+    await step("Verify outdated items have correct badge styles", async () => {
+      const outdatedBadges = canvas.getAllByText("Outdated");
+      expect(outdatedBadges.length).toEqual(2); // Should be two outdated items
+
+      // Verify the badge has the correct styles (StatusBadge/index.tsx):
+      // bgColor = "bg-gray-100 dark:bg-gray-700";
+      // textColor = "text-gray-700 dark:text-gray-300";
+      // borderColor = "border-gray-200 dark:border-gray-600";
+
+      outdatedBadges.forEach((badge) => {
+        expect(badge.className).toContain("bg-gray-100");
+        expect(badge.className).toContain("text-gray-700");
+        expect(badge?.className).toContain("border-gray-200");
+      });
+    });
+
+    await step("Verify outdated goal progress bar", async () => {
+      const goalName = canvas.getByText("Update legacy documentation");
+      const goalRow = goalName.closest("tr");
+
+      const progressBar = within(goalRow as HTMLElement).getByRole("progress-bar");
+      const innerBar = within(progressBar).getByTestId("progress-percentage-bar");
+
+      const innerBarWidth = innerBar?.getBoundingClientRect().width || 0;
+      const outerBarWidth = progressBar.getBoundingClientRect().width;
+
+      const percentage = Math.round((innerBarWidth / outerBarWidth) * 100);
+
+      expect(percentage).toEqual(30);
+      expect(innerBar?.className).toContain("bg-gray-400");
+    });
+
+    await step("Verify outdated project progress bar", async () => {
+      const projectName = canvas.getByText("Refactor authentication system");
+      const projectRow = projectName.closest("tr");
+
+      // Find the progress bar in this row
+      const progressBar = within(projectRow as HTMLElement).getByRole("progress-bar");
+      const innerBar = within(progressBar).getByTestId("progress-percentage-bar");
+
+      const innerBarWidth = innerBar?.getBoundingClientRect().width || 0;
+      const outerBarWidth = progressBar.getBoundingClientRect().width;
+
+      const percentage = Math.round((innerBarWidth / outerBarWidth) * 100);
+
+      expect(percentage).toEqual(25);
+      expect(innerBar?.className).toContain("bg-gray-400");
+    });
   },
 };
 
@@ -367,6 +615,43 @@ export const OnTrackProject: Story = {
     filter: "all",
     isSelected: false,
   },
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+
+    await step("Verify on-track project does not have line-through style", async () => {
+      const projectName = canvas.getByText("Redesign product dashboard");
+      expect(projectName.className).not.toContain("line-through");
+    });
+
+    await step("Verify status badge has correct styles", async () => {
+      // Verify the badge has the correct styles (StatusBadge/index.tsx):
+      // bgColor = "bg-green-50 dark:bg-green-900/30";
+      // textColor = "text-green-700 dark:text-green-300";
+      // dotColor = "bg-green-500 dark:bg-green-400";
+      // borderColor = "border-green-200 dark:border-green-800";
+      // label = "On track";
+
+      const statusBadge = canvas.getByText("On track");
+
+      expect(statusBadge.className).toContain("bg-green-50");
+      expect(statusBadge.className).toContain("text-green-700");
+      expect(statusBadge?.className).toContain("border-green-200");
+    });
+
+    await step("Verify progress bar shows correct progress", async () => {
+      const progressBar = canvas.getByRole("progress-bar");
+
+      const innerBar = within(progressBar).getByTestId("progress-percentage-bar");
+
+      const innerBarWidth = innerBar?.getBoundingClientRect().width || 0;
+      const outerBarWidth = progressBar.getBoundingClientRect().width;
+
+      const percentage = Math.round((innerBarWidth / outerBarWidth) * 100);
+
+      expect(percentage).toEqual(55);
+      expect(innerBar?.className).toContain("bg-green-400");
+    });
+  },
 };
 
 /**
@@ -385,8 +670,29 @@ export const CompletedProject: Story = {
     item: mockProjectCompleted,
     level: 0,
     isLast: false,
-    filter: "all",
+    filter: "completed",
     isSelected: false,
+  },
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+
+    await step("Verify completed project has line-through style", async () => {
+      const projectName = canvas.getByText("Update documentation");
+      expect(projectName.className).toContain("line-through");
+    });
+
+    await step("Verify status badge has correct styles", async () => {
+      // Verify the badge has the correct styles (StatusBadge/index.tsx):
+      // bgColor = "bg-green-50 dark:bg-green-900/30";
+      // textColor = "text-green-700 dark:text-green-300";
+      // borderColor = "border-green-200 dark:border-green-800";
+
+      const statusBadge = canvas.getByText("Completed");
+
+      expect(statusBadge.className).toContain("bg-green-50");
+      expect(statusBadge.className).toContain("text-green-700");
+      expect(statusBadge?.className).toContain("border-green-200");
+    });
   },
 };
 
