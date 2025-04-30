@@ -1,10 +1,10 @@
 import { useMemo } from "react";
-import { isPast, parse } from "../../utils/time";
+import { isPast, parse } from "../../../utils/time";
 
 import { WorkMap } from "..";
-import { useItemStatus } from "../hooks/useItemStatus";
-import classNames from "../../utils/classnames";
-import FormattedTime from "../../FormattedTime";
+import { useItemStatus } from "../../hooks/useItemStatus";
+import classNames from "../../../utils/classnames";
+import FormattedTime from "../../../FormattedTime";
 
 interface Props {
   filter: WorkMap.Filter;

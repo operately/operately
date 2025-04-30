@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState } from "react";
 import { WorkMap } from "..";
-import { useItemStatus } from "../hooks/useItemStatus";
-import { useQuickEntryWidgetState } from "../hooks/useQuickEntryWidgetState";
+import { useItemStatus } from "../../hooks/useItemStatus";
+import { useQuickEntryWidgetState } from "../../hooks/useQuickEntryWidgetState";
 
 interface TableRowContextValue {
   // Item data
