@@ -71,7 +71,7 @@ function Indentation() {
 
   if (!showIndentation) return null;
 
-  return <div style={{ width: `${indentPadding}px` }} className="flex-shrink-0" />;
+  return <div style={{ width: `${indentPadding}px` }} className="flex-shrink-0" data-testid="indentation" />;
 }
 
 function ExpandButton() {
