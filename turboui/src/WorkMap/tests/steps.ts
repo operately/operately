@@ -1,4 +1,4 @@
-import { expect, within } from "@storybook/test";
+import { expect, within, userEvent } from "@storybook/test";
 
 export const selectTab = async (canvasElement, step, tab) => {
   const canvas = within(canvasElement);
@@ -104,5 +104,60 @@ export const closeTimeframeSelector = async (canvasElement, step) => {
 
     const popoverExists = within(document.body).queryByText("Select Timeframe");
     expect(popoverExists).not.toBeInTheDocument();
+  });
+};
+
+export const toggleItem = async (canvasElement, step, name) => {
+  const canvas = within(canvasElement);
+
+  await step(`Toggle "${name}"`, async () => {
+    const goalRowElement = canvas.getByText(name);
+    const goalRow = goalRowElement.closest("tr") as HTMLElement;
+
+    const expandButton = within(goalRow).getByTestId("chevron-icon");
+    await userEvent.click(expandButton);
+  });
+};
+
+export const assertIndentation = async (canvasElement, step, name, level, indentation) => {
+  const canvas = within(canvasElement);
+
+  await step(`Verify indentation of level ${level} items is ${indentation}`, async () => {
+    const level1Project = canvas.getByText(name);
+    const level1ProjectRow = level1Project.closest("tr") as HTMLElement;
+
+    const level1ProjectIndentation = within(level1ProjectRow).getByTestId("indentation");
+    expect(level1ProjectIndentation.style.width).toBe(indentation);
+  });
+};
+
+export const assertItemVisible = async (canvasElement, step, name) => {
+  const canvas = within(canvasElement);
+
+  await step(`Assert that "${name}" is visible`, async () => {
+    const item = canvas.getByText(name);
+    expect(item).toBeInTheDocument();
+  });
+};
+
+export const assertChildrenVisible = async (canvasElement, step, names) => {
+  const canvas = within(canvasElement);
+
+  await step(`Assert that children are visible`, async () => {
+    names.forEach((name) => {
+      const item = canvas.queryByText(name);
+      expect(item).toBeInTheDocument();
+    });
+  });
+};
+
+export const assertChildrenHidden = async (canvasElement, step, names) => {
+  const canvas = within(canvasElement);
+
+  await step(`Assert that children are hidden`, async () => {
+    names.forEach((name) => {
+      const item = canvas.queryByText(name);
+      expect(item).not.toBeInTheDocument();
+    });
   });
 };
