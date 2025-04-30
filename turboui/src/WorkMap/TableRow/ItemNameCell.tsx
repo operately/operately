@@ -71,7 +71,7 @@ function Indentation() {
 
   if (!showIndentation) return null;
 
-  return <div style={{ width: `${indentPadding}px` }} className="flex-shrink-0" />;
+  return <div style={{ width: `${indentPadding}px` }} className="flex-shrink-0" data-testid="indentation" />;
 }
 
 function ExpandButton() {
@@ -91,6 +91,7 @@ function ExpandButton() {
     <button
       onClick={handleExpandToggle}
       className="mr-2 text-content-dimmed hover:text-content-base dark:text-gray-400 dark:hover:text-gray-300"
+      data-testid="chevron-icon"
     >
       {/* Use responsive size for chevron icons - smaller on mobile */}
       <div className="hidden sm:block">
@@ -123,6 +124,7 @@ function PrivacyIndicatorWrapper() {
         spaceName={item.space?.name || ""}
         iconSize={16}
         className="ml-2"
+        testId="privacy-indicator"
       />
   );
 }

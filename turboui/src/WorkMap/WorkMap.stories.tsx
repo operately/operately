@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { expect, within } from "@storybook/test";
 import WorkMap from ".";
 import { TimeframeSelector } from "../TimeframeSelector";
 import { currentYear, currentQuarter } from "../utils/timeframes";
@@ -18,7 +19,6 @@ function getTimeframe(timeframe: TimeframeSelector.Timeframe) {
   };
 }
 
-// People used consistently throughout the stories
 const people = {
   alex: {
     id: "user-alex",
@@ -42,7 +42,27 @@ const people = {
   },
 };
 
-// Sample work map items
+const mockSingleItem: WorkMap.Item = {
+  id: "goal-standalone",
+  parentId: null,
+  type: "goal",
+  name: "Single standalone goal with no children",
+  status: "on_track",
+  progress: 50,
+  space: { id: "space-general", name: "General" },
+  spacePath: "#",
+  owner: people.alex,
+  ownerPath: "#",
+  itemPath: "#",
+  isNew: false,
+  completedOn: null,
+  closedAt: null,
+  nextStep: "Working on this standalone goal",
+  privacy: "internal" as PrivacyIndicator.PrivacyLevels,
+  timeframe: getTimeframe(currentQuarter()),
+  children: [],
+};
+
 const mockItems: WorkMap.Item[] = [
   {
     id: "goal-1",
@@ -213,8 +233,33 @@ const mockItems: WorkMap.Item[] = [
             closedAt: null,
             nextStep: "Complete backend integration",
             timeframe: getTimeframe(currentQuarter()),
-            children: [],
             privacy: "secret" as PrivacyIndicator.PrivacyLevels,
+            children: [
+              {
+                id: "project-8",
+                parentId: "goal-2-1-1",
+                type: "project",
+                name: "Implement secure authentication service",
+                status: "on_track",
+                progress: 35,
+                space: { id: "space-eng", name: "Engineering" },
+                spacePath: "#",
+                owner: people.alex,
+                ownerPath: "#",
+                itemPath: "#",
+                isNew: false,
+                completedOn: null,
+                closedAt: null,
+                nextStep: "Complete OAuth2 integration",
+                privacy: "secret" as PrivacyIndicator.PrivacyLevels,
+                timeframe: {
+                  startDate: "2025-04-15T00:00:00.000Z",
+                  endDate: "2025-07-30T00:00:00.000Z",
+                  type: "days",
+                },
+                children: [],
+              },
+            ],
           },
           {
             id: "project-6",
@@ -354,6 +399,79 @@ const mockItems: WorkMap.Item[] = [
       },
     ],
   },
+  {
+    id: "goal-4",
+    parentId: null,
+    type: "goal",
+    name: "Legacy system migration to cloud infrastructure",
+    status: "completed",
+    progress: 100,
+    space: { id: "space-eng", name: "Engineering" },
+    spacePath: "#",
+    owner: people.alex,
+    ownerPath: "#",
+    itemPath: "#",
+    isNew: false,
+    completedOn: "2023-12-15T00:00:00.000Z",
+    closedAt: "2023-12-15T00:00:00.000Z",
+    nextStep: "",
+    privacy: "internal" as PrivacyIndicator.PrivacyLevels,
+    timeframe: {
+      startDate: "2023-02-01T00:00:00.000Z",
+      endDate: "2023-12-31T00:00:00.000Z",
+      type: "days",
+    },
+    children: [],
+  },
+  {
+    id: "goal-5",
+    parentId: null,
+    type: "goal",
+    name: "Develop sustainable AI-powered analytics platform",
+    status: "on_track",
+    progress: 15,
+    space: { id: "space-rd", name: "R&D" },
+    spacePath: "#",
+    owner: people.sophia,
+    ownerPath: "#",
+    itemPath: "#",
+    isNew: false,
+    completedOn: null,
+    closedAt: null,
+    nextStep: "Complete initial research phase",
+    privacy: "confidential" as PrivacyIndicator.PrivacyLevels,
+    timeframe: {
+      startDate: "2024-03-01T00:00:00.000Z",
+      endDate: "2028-12-31T00:00:00.000Z",
+      type: "days",
+    },
+    children: [
+      {
+        id: "project-7",
+        parentId: "goal-5",
+        type: "project",
+        name: "Research phase: ML model selection",
+        status: "on_track",
+        progress: 40,
+        space: { id: "space-rd", name: "R&D" },
+        spacePath: "#",
+        owner: people.jennifer,
+        ownerPath: "#",
+        itemPath: "#",
+        isNew: false,
+        completedOn: null,
+        closedAt: null,
+        nextStep: "Evaluate model performance metrics",
+        privacy: "confidential" as PrivacyIndicator.PrivacyLevels,
+        timeframe: {
+          startDate: "2024-03-01T00:00:00.000Z",
+          endDate: "2025-06-30T00:00:00.000Z",
+          type: "days",
+        },
+        children: [],
+      },
+    ],
+  },
 ];
 
 /**
@@ -366,7 +484,6 @@ const meta = {
   parameters: {
     layout: "fullscreen",
   },
-  tags: ["autodocs"],
   argTypes: {
     items: { control: "object" },
   },
@@ -379,6 +496,7 @@ type Story = StoryObj<typeof meta>;
  * Default view of the WorkMap with multiple items and children
  */
 export const Default: Story = {
+  tags: ["autodocs"],
   render: (args) => (
     <div className="py-[4.5rem] px-2">
       <Page title={args.title} size="fullwidth">
@@ -390,12 +508,16 @@ export const Default: Story = {
     title: "Company Work Map",
     items: mockItems,
   },
+  play: async ({ canvasElement, step }) => {
+    await assertRowsNumber(canvasElement, step, 15);
+  },
 };
 
 /**
  * WorkMap with a single item (no children)
  */
 export const SingleItem: Story = {
+  tags: ["autodocs"],
   render: (args) => (
     <div className="py-4">
       <Page title={args.title} size="fullwidth">
@@ -405,7 +527,12 @@ export const SingleItem: Story = {
   ),
   args: {
     title: "Company Work Map",
-    items: [mockItems[1]], // Just the second goal with no children
+    items: [mockSingleItem],
+  },
+  play: async ({ canvasElement, step }) => {
+    await assertRowsNumber(canvasElement, step, 1);
+
+    await assertItemName(canvasElement, step, "Single standalone goal with no children");
   },
 };
 
@@ -413,6 +540,7 @@ export const SingleItem: Story = {
  * WorkMap with no items (empty state)
  */
 export const Empty: Story = {
+  tags: ["autodocs"],
   render: (args) => (
     <div className="py-4">
       <Page title={args.title} size="fullwidth">
@@ -424,12 +552,15 @@ export const Empty: Story = {
     title: "Company Work Map",
     items: [],
   },
+  play: async ({ canvasElement, step }) => {
+    await assertRowsNumber(canvasElement, step, 0);
+  },
 };
 
 /**
- * WorkMap with all items in different statuses to showcase status badges
+ * Goals tab selected
  */
-export const AllStatuses: Story = {
+export const GoalsTab: Story = {
   render: (args) => (
     <div className="py-4">
       <Page title={args.title} size="fullwidth">
@@ -439,72 +570,308 @@ export const AllStatuses: Story = {
   ),
   args: {
     title: "Company Work Map",
-    items: [
-      // Create an item for each possible status
-      ...(
-        [
-          "on_track",
-          "completed",
-          "achieved",
-          "partial",
-          "missed",
-          "paused",
-          "caution",
-          "issue",
-          "dropped",
-          "pending",
-        ] as WorkMap.Status[]
-      ).map((status, index) => {
-        const isGoal = index % 2 === 0;
-        const baseItem = {
-          id: `status-${index}`,
-          name: `${status.charAt(0).toUpperCase() + status.slice(1).replace("_", " ")} item`,
-          parentId: null,
-          status,
-          progress: status === "completed" || status === "achieved" ? 100 : Math.floor(Math.random() * 100),
-          space: {
-            id: `space-${index % 5}`,
-            name: ["Product", "Engineering", "Marketing", "Sales", "R&D"][index % 5],
-          },
-          owner: {
-            id: `user-${index}`,
-            fullName: `User ${index + 1}`,
-            avatarUrl: index % 2 === 0 ? people.alex.avatarUrl : people.sophia.avatarUrl,
-          },
-          ownerPath: "#",
-          spacePath: "#",
-          itemPath: "#",
-          isNew: false,
-          completedOn: status === "completed" || status === "achieved" ? `2025-04-${index + 1}` : null,
-
-          closedAt: status === "completed" || status === "achieved" ? `Apr ${index + 1} 2025` : undefined,
-          nextStep: status === "completed" || status === "achieved" ? "" : "Next action to take",
-          children: [],
-          privacy: "internal" as PrivacyIndicator.PrivacyLevels,
-        };
-
-        if (isGoal) {
-          return {
-            ...baseItem,
-            type: "goal" as const,
-            timeframe: getTimeframe({
-              startDate: new Date("2025-01-01"),
-              endDate: new Date("2025-12-31"),
-              type: "year",
-            }),
-          };
-        } else {
-          return {
-            ...baseItem,
-            type: "project" as const,
-            timeframe: {
-              startDate: `2025-01-${index + 1}`,
-              endDate: "2025-12-31",
-              type: "days" as TimeframeSelector.TimeframeType,
-            },
-          };
-        }
-      }),
-    ],
+    items: mockItems,
   },
+  play: async ({ canvasElement, step }) => {
+    await assertRowsNumber(canvasElement, step, 15);
+
+    await selectTab(canvasElement, step, "goals");
+
+    await assertRowsNumber(canvasElement, step, 9);
+
+    await assertItemName(canvasElement, step, "Acquire the first users of Operately outside Semaphore");
+    await assertItemName(canvasElement, step, "Launch in European market");
+  },
+};
+
+/**
+ * Projects tab selected
+ */
+export const ProjectsTab: Story = {
+  render: (args) => (
+    <div className="py-4">
+      <Page title={args.title} size="fullwidth">
+        <WorkMap {...args} />
+      </Page>
+    </div>
+  ),
+  args: {
+    title: "Company Work Map",
+    items: mockItems,
+  },
+  play: async ({ canvasElement, step }) => {
+    await assertRowsNumber(canvasElement, step, 15);
+
+    await selectTab(canvasElement, step, "projects");
+
+    await assertRowsNumber(canvasElement, step, 6);
+
+    await assertItemName(canvasElement, step, "Release 0.4");
+    await assertItemName(canvasElement, step, "Research phase: ML model selection");
+  },
+};
+
+/**
+ * Completed tab selected
+ */
+export const CompletedTab: Story = {
+  render: (args) => (
+    <div className="py-4">
+      <Page title={args.title} size="fullwidth">
+        <WorkMap {...args} />
+      </Page>
+    </div>
+  ),
+  args: {
+    title: "Company Work Map",
+    items: mockItems,
+  },
+  play: async ({ canvasElement, step }) => {
+    await assertRowsNumber(canvasElement, step, 15);
+
+    await selectTab(canvasElement, step, "completed");
+
+    await assertRowsNumber(canvasElement, step, 1);
+
+    await assertItemName(canvasElement, step, "Document features in Help Center");
+  },
+};
+
+/**
+ * Year 2023 selected
+ */
+export const Year2023Selected: Story = {
+  render: (args) => (
+    <div className="py-4">
+      <Page title={args.title} size="fullwidth">
+        <WorkMap {...args} />
+      </Page>
+    </div>
+  ),
+  args: {
+    title: "Company Work Map",
+    items: mockItems,
+  },
+  play: async ({ canvasElement, step }) => {
+    await assertRowsNumber(canvasElement, step, 15);
+
+    await openTimeframeSelector(canvasElement, step);
+
+    await selectYear(canvasElement, step, "2023");
+
+    await closeTimeframeSelector(canvasElement, step);
+
+    await assertRowsNumber(canvasElement, step, 0);
+
+    await selectTab(canvasElement, step, "completed");
+
+    await assertRowsNumber(canvasElement, step, 1);
+
+    await assertItemName(canvasElement, step, "Legacy system migration to cloud infrastructure");
+  },
+};
+
+/**
+ * Year 2028 selected
+ */
+export const Year2028Selected: Story = {
+  render: (args) => (
+    <div className="py-4">
+      <Page title={args.title} size="fullwidth">
+        <WorkMap {...args} />
+      </Page>
+    </div>
+  ),
+  args: {
+    title: "Company Work Map",
+    items: mockItems,
+  },
+  play: async ({ canvasElement, step }) => {
+    await assertRowsNumber(canvasElement, step, 15);
+
+    await openTimeframeSelector(canvasElement, step);
+
+    await selectYear(canvasElement, step, "2028");
+
+    await closeTimeframeSelector(canvasElement, step);
+
+    await assertRowsNumber(canvasElement, step, 1);
+
+    await assertItemName(canvasElement, step, "Develop sustainable AI-powered analytics platform");
+  },
+};
+
+/**
+ * Q3 quarter selected
+ */
+export const Q3Selected: Story = {
+  name: "Q3 selected",
+  render: (args) => (
+    <div className="py-4">
+      <Page title={args.title} size="fullwidth">
+        <WorkMap {...args} />
+      </Page>
+    </div>
+  ),
+  args: {
+    title: "Company Work Map",
+    items: mockItems,
+  },
+  play: async ({ canvasElement, step }) => {
+    await assertRowsNumber(canvasElement, step, 15);
+
+    await openTimeframeSelector(canvasElement, step);
+
+    await selectQuarter(canvasElement, step, "Q3");
+
+    await closeTimeframeSelector(canvasElement, step);
+
+    await assertRowsNumber(canvasElement, step, 7);
+
+    await assertItemName(canvasElement, step, "Acquire the first users of Operately outside Semaphore");
+    await assertItemName(canvasElement, step, "GDPR compliance implementation");
+  },
+};
+
+/**
+ * November month selected
+ */
+export const NovemberSelected: Story = {
+  name: "November selected",
+  render: (args) => (
+    <div className="py-4">
+      <Page title={args.title} size="fullwidth">
+        <WorkMap {...args} />
+      </Page>
+    </div>
+  ),
+  args: {
+    title: "Company Work Map",
+    items: mockItems,
+  },
+  play: async ({ canvasElement, step }) => {
+    await assertRowsNumber(canvasElement, step, 15);
+
+    await openTimeframeSelector(canvasElement, step);
+
+    await selectMonth(canvasElement, step, "November");
+
+    await closeTimeframeSelector(canvasElement, step);
+
+    await assertRowsNumber(canvasElement, step, 6);
+
+    await assertItemName(canvasElement, step, "Increase user engagement by 50%");
+    await assertItemName(canvasElement, step, "Expand to international markets");
+  },
+};
+
+//
+// Steps
+//
+
+const selectTab = async (canvasElement, step, tab) => {
+  const canvas = within(canvasElement);
+
+  await step("Select the " + tab + " tab", async () => {
+    const tabElement = canvas.getByTestId("work-map-tab-" + tab);
+    await tabElement.click();
+  });
+};
+
+const assertRowsNumber = async (canvasElement, step, count) => {
+  const canvas = within(canvasElement);
+
+  await step(`Verify there are ${count} rows`, async () => {
+    const tableBody = canvas.getAllByRole("rowgroup")[1]; // Second rowgroup is tbody
+    const tableRows = within(tableBody).queryAllByRole("row");
+
+    expect(tableRows.length).toEqual(count);
+  });
+};
+
+const assertItemName = async (canvasElement, step, name) => {
+  const canvas = within(canvasElement);
+
+  await step("Verify the item name", async () => {
+    const itemName = canvas.getByText(name);
+    expect(itemName).toBeInTheDocument();
+  });
+};
+
+const openTimeframeSelector = async (canvasElement, step) => {
+  const canvas = within(canvasElement);
+
+  await step("Open the timeframe selector", async () => {
+    const timeframeButton = canvas.getByRole("button", { name: /202[0-9]/ });
+    await timeframeButton.click();
+  });
+};
+
+const selectYear = async (canvasElement, step, year) => {
+  const canvas = within(canvasElement);
+
+  await step("Navigate to and select the year " + year, async () => {
+    const popoverContent = within(document.body)
+      .getByText("Select Timeframe")
+      .closest("[role='dialog']") as HTMLElement;
+    expect(popoverContent).toBeInTheDocument();
+
+    const year2023 = within(popoverContent).getByText(year);
+    await year2023.click();
+
+    // Verify the timeframe selector now shows the selected year
+    const updatedTimeframeButton = canvas.getByRole("button", { name: year });
+    expect(updatedTimeframeButton).toBeInTheDocument();
+  });
+};
+
+const selectQuarter = async (canvasElement, step, quarter) => {
+  const canvas = within(canvasElement);
+
+  await step("Select the Quarter tab and then " + quarter, async () => {
+    const popoverContent = within(document.body)
+      .getByText("Select Timeframe")
+      .closest("[role='dialog']") as HTMLElement;
+    expect(popoverContent).toBeInTheDocument();
+
+    const quarterTab = within(popoverContent).getByText("Quarter");
+    await quarterTab.click();
+
+    const q3Option = within(popoverContent).getByText(quarter);
+    await q3Option.click();
+
+    const updatedTimeframeButton = canvas.getByRole("button", { name: `${quarter} 2025` });
+    expect(updatedTimeframeButton).toBeInTheDocument();
+  });
+};
+
+const selectMonth = async (canvasElement, step, month) => {
+  const canvas = within(canvasElement);
+
+  await step("Select the Month tab and then " + month, async () => {
+    const popoverContent = within(document.body)
+      .getByText("Select Timeframe")
+      .closest("[role='dialog']") as HTMLElement;
+    expect(popoverContent).toBeInTheDocument();
+
+    const monthTab = within(popoverContent).getByText("Month");
+    await monthTab.click();
+
+    const juneOption = within(popoverContent).getByText(month);
+    await juneOption.click();
+
+    const updatedTimeframeButton = canvas.getByRole("button", { name: `${month} 2025` });
+    expect(updatedTimeframeButton).toBeInTheDocument();
+  });
+};
+
+const closeTimeframeSelector = async (canvasElement, step) => {
+  const canvas = within(canvasElement);
+
+  await step("Close the timeframe selector", async () => {
+    await document.body.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+
+    const popoverExists = within(document.body).queryByText("Select Timeframe");
+    expect(popoverExists).not.toBeInTheDocument();
+  });
 };

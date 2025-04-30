@@ -25,24 +25,28 @@ export function WorkMapNavigation({ activeTab, onTabChange, timeframe, setTimefr
                 isActive={activeTab === "all"}
                 onClick={() => onTabChange("all")}
                 icon={<IconLayoutGrid size={16} />}
+                testId="work-map-tab-all"
               />
               <WorkMapTab
                 label="Goals"
                 isActive={activeTab === "goals"}
                 onClick={() => onTabChange("goals")}
                 icon={<IconTarget size={16} />}
+                testId="work-map-tab-goals"
               />
               <WorkMapTab
                 label="Projects"
                 isActive={activeTab === "projects"}
                 onClick={() => onTabChange("projects")}
                 icon={<IconChecklist size={16} />}
+                testId="work-map-tab-projects"
               />
               <WorkMapTab
                 label="Completed"
                 isActive={activeTab === "completed"}
                 onClick={() => onTabChange("completed")}
                 icon={<IconCircleCheck size={16} />}
+                testId="work-map-tab-completed"
               />
             </div>
 
