@@ -484,7 +484,6 @@ const meta = {
   parameters: {
     layout: "fullscreen",
   },
-  tags: ["autodocs"],
   argTypes: {
     items: { control: "object" },
   },
@@ -497,6 +496,7 @@ type Story = StoryObj<typeof meta>;
  * Default view of the WorkMap with multiple items and children
  */
 export const Default: Story = {
+  tags: ["autodocs"],
   render: (args) => (
     <div className="py-[4.5rem] px-2">
       <Page title={args.title} size="fullwidth">
@@ -509,14 +509,7 @@ export const Default: Story = {
     items: mockItems,
   },
   play: async ({ canvasElement, step }) => {
-    const canvas = within(canvasElement);
-
-    await step("Verify the total number of items", async () => {
-      const tableBody = canvas.getAllByRole("rowgroup")[1]; // Second rowgroup is tbody
-      const tableRows = within(tableBody).getAllByRole("row");
-
-      expect(tableRows.length).toEqual(15);
-    });
+    await assertRowsNumber(canvasElement, step, 15);
   },
 };
 
@@ -524,6 +517,7 @@ export const Default: Story = {
  * WorkMap with a single item (no children)
  */
 export const SingleItem: Story = {
+  tags: ["autodocs"],
   render: (args) => (
     <div className="py-4">
       <Page title={args.title} size="fullwidth">
@@ -536,17 +530,9 @@ export const SingleItem: Story = {
     items: [mockSingleItem],
   },
   play: async ({ canvasElement, step }) => {
-    const canvas = within(canvasElement);
+    await assertRowsNumber(canvasElement, step, 1);
 
-    await step("Verify only a single item is rendered", async () => {
-      const tableRows = canvas.getAllByRole("row");
-
-      // There should be exactly 2 rows: header row + 1 data row
-      expect(tableRows.length).toBe(2);
-
-      const itemName = canvas.getByText("Single standalone goal with no children");
-      expect(itemName).toBeInTheDocument();
-    });
+    await assertItemName(canvasElement, step, "Single standalone goal with no children");
   },
 };
 
@@ -554,6 +540,7 @@ export const SingleItem: Story = {
  * WorkMap with no items (empty state)
  */
 export const Empty: Story = {
+  tags: ["autodocs"],
   render: (args) => (
     <div className="py-4">
       <Page title={args.title} size="fullwidth">
@@ -566,13 +553,325 @@ export const Empty: Story = {
     items: [],
   },
   play: async ({ canvasElement, step }) => {
-    const canvas = within(canvasElement);
-
-    await step("Verify no items are displayed", async () => {
-      const tableRows = canvas.getAllByRole("row");
-
-      // There should be exactly 1 row (just the header)
-      expect(tableRows.length).toBe(1);
-    });
+    await assertRowsNumber(canvasElement, step, 0);
   },
+};
+
+/**
+ * Goals tab selected
+ */
+export const GoalsTab: Story = {
+  render: (args) => (
+    <div className="py-4">
+      <Page title={args.title} size="fullwidth">
+        <WorkMap {...args} />
+      </Page>
+    </div>
+  ),
+  args: {
+    title: "Company Work Map",
+    items: mockItems,
+  },
+  play: async ({ canvasElement, step }) => {
+    await assertRowsNumber(canvasElement, step, 15);
+
+    await selectTab(canvasElement, step, "goals");
+
+    await assertRowsNumber(canvasElement, step, 9);
+
+    await assertItemName(canvasElement, step, "Acquire the first users of Operately outside Semaphore");
+    await assertItemName(canvasElement, step, "Launch in European market");
+  },
+};
+
+/**
+ * Projects tab selected
+ */
+export const ProjectsTab: Story = {
+  render: (args) => (
+    <div className="py-4">
+      <Page title={args.title} size="fullwidth">
+        <WorkMap {...args} />
+      </Page>
+    </div>
+  ),
+  args: {
+    title: "Company Work Map",
+    items: mockItems,
+  },
+  play: async ({ canvasElement, step }) => {
+    await assertRowsNumber(canvasElement, step, 15);
+
+    await selectTab(canvasElement, step, "projects");
+
+    await assertRowsNumber(canvasElement, step, 6);
+
+    await assertItemName(canvasElement, step, "Release 0.4");
+    await assertItemName(canvasElement, step, "Research phase: ML model selection");
+  },
+};
+
+/**
+ * Completed tab selected
+ */
+export const CompletedTab: Story = {
+  render: (args) => (
+    <div className="py-4">
+      <Page title={args.title} size="fullwidth">
+        <WorkMap {...args} />
+      </Page>
+    </div>
+  ),
+  args: {
+    title: "Company Work Map",
+    items: mockItems,
+  },
+  play: async ({ canvasElement, step }) => {
+    await assertRowsNumber(canvasElement, step, 15);
+
+    await selectTab(canvasElement, step, "completed");
+
+    await assertRowsNumber(canvasElement, step, 1);
+
+    await assertItemName(canvasElement, step, "Document features in Help Center");
+  },
+};
+
+/**
+ * Year 2023 selected
+ */
+export const Year2023Selected: Story = {
+  render: (args) => (
+    <div className="py-4">
+      <Page title={args.title} size="fullwidth">
+        <WorkMap {...args} />
+      </Page>
+    </div>
+  ),
+  args: {
+    title: "Company Work Map",
+    items: mockItems,
+  },
+  play: async ({ canvasElement, step }) => {
+    await assertRowsNumber(canvasElement, step, 15);
+
+    await openTimeframeSelector(canvasElement, step);
+
+    await selectYear(canvasElement, step, "2023");
+
+    await closeTimeframeSelector(canvasElement, step);
+
+    await assertRowsNumber(canvasElement, step, 0);
+
+    await selectTab(canvasElement, step, "completed");
+
+    await assertRowsNumber(canvasElement, step, 1);
+
+    await assertItemName(canvasElement, step, "Legacy system migration to cloud infrastructure");
+  },
+};
+
+/**
+ * Year 2028 selected
+ */
+export const Year2028Selected: Story = {
+  render: (args) => (
+    <div className="py-4">
+      <Page title={args.title} size="fullwidth">
+        <WorkMap {...args} />
+      </Page>
+    </div>
+  ),
+  args: {
+    title: "Company Work Map",
+    items: mockItems,
+  },
+  play: async ({ canvasElement, step }) => {
+    await assertRowsNumber(canvasElement, step, 15);
+
+    await openTimeframeSelector(canvasElement, step);
+
+    await selectYear(canvasElement, step, "2028");
+
+    await closeTimeframeSelector(canvasElement, step);
+
+    await assertRowsNumber(canvasElement, step, 1);
+
+    await assertItemName(canvasElement, step, "Develop sustainable AI-powered analytics platform");
+  },
+};
+
+/**
+ * Q3 quarter selected
+ */
+export const Q3Selected: Story = {
+  name: "Q3 selected",
+  render: (args) => (
+    <div className="py-4">
+      <Page title={args.title} size="fullwidth">
+        <WorkMap {...args} />
+      </Page>
+    </div>
+  ),
+  args: {
+    title: "Company Work Map",
+    items: mockItems,
+  },
+  play: async ({ canvasElement, step }) => {
+    await assertRowsNumber(canvasElement, step, 15);
+
+    await openTimeframeSelector(canvasElement, step);
+
+    await selectQuarter(canvasElement, step, "Q3");
+
+    await closeTimeframeSelector(canvasElement, step);
+
+    await assertRowsNumber(canvasElement, step, 7);
+
+    await assertItemName(canvasElement, step, "Acquire the first users of Operately outside Semaphore");
+    await assertItemName(canvasElement, step, "GDPR compliance implementation");
+  },
+};
+
+/**
+ * November month selected
+ */
+export const NovemberSelected: Story = {
+  name: "November selected",
+  render: (args) => (
+    <div className="py-4">
+      <Page title={args.title} size="fullwidth">
+        <WorkMap {...args} />
+      </Page>
+    </div>
+  ),
+  args: {
+    title: "Company Work Map",
+    items: mockItems,
+  },
+  play: async ({ canvasElement, step }) => {
+    await assertRowsNumber(canvasElement, step, 15);
+
+    await openTimeframeSelector(canvasElement, step);
+
+    await selectMonth(canvasElement, step, "November");
+
+    await closeTimeframeSelector(canvasElement, step);
+
+    await assertRowsNumber(canvasElement, step, 6);
+
+    await assertItemName(canvasElement, step, "Increase user engagement by 50%");
+    await assertItemName(canvasElement, step, "Expand to international markets");
+  },
+};
+
+//
+// Steps
+//
+
+const selectTab = async (canvasElement, step, tab) => {
+  const canvas = within(canvasElement);
+
+  await step("Select the " + tab + " tab", async () => {
+    const tabElement = canvas.getByTestId("work-map-tab-" + tab);
+    await tabElement.click();
+  });
+};
+
+const assertRowsNumber = async (canvasElement, step, count) => {
+  const canvas = within(canvasElement);
+
+  await step(`Verify there are ${count} rows`, async () => {
+    const tableBody = canvas.getAllByRole("rowgroup")[1]; // Second rowgroup is tbody
+    const tableRows = within(tableBody).queryAllByRole("row");
+
+    expect(tableRows.length).toEqual(count);
+  });
+};
+
+const assertItemName = async (canvasElement, step, name) => {
+  const canvas = within(canvasElement);
+
+  await step("Verify the item name", async () => {
+    const itemName = canvas.getByText(name);
+    expect(itemName).toBeInTheDocument();
+  });
+};
+
+const openTimeframeSelector = async (canvasElement, step) => {
+  const canvas = within(canvasElement);
+
+  await step("Open the timeframe selector", async () => {
+    const timeframeButton = canvas.getByRole("button", { name: /202[0-9]/ });
+    await timeframeButton.click();
+  });
+};
+
+const selectYear = async (canvasElement, step, year) => {
+  const canvas = within(canvasElement);
+
+  await step("Navigate to and select the year " + year, async () => {
+    const popoverContent = within(document.body)
+      .getByText("Select Timeframe")
+      .closest("[role='dialog']") as HTMLElement;
+    expect(popoverContent).toBeInTheDocument();
+
+    const year2023 = within(popoverContent).getByText(year);
+    await year2023.click();
+
+    // Verify the timeframe selector now shows the selected year
+    const updatedTimeframeButton = canvas.getByRole("button", { name: year });
+    expect(updatedTimeframeButton).toBeInTheDocument();
+  });
+};
+
+const selectQuarter = async (canvasElement, step, quarter) => {
+  const canvas = within(canvasElement);
+
+  await step("Select the Quarter tab and then " + quarter, async () => {
+    const popoverContent = within(document.body)
+      .getByText("Select Timeframe")
+      .closest("[role='dialog']") as HTMLElement;
+    expect(popoverContent).toBeInTheDocument();
+
+    const quarterTab = within(popoverContent).getByText("Quarter");
+    await quarterTab.click();
+
+    const q3Option = within(popoverContent).getByText(quarter);
+    await q3Option.click();
+
+    const updatedTimeframeButton = canvas.getByRole("button", { name: `${quarter} 2025` });
+    expect(updatedTimeframeButton).toBeInTheDocument();
+  });
+};
+
+const selectMonth = async (canvasElement, step, month) => {
+  const canvas = within(canvasElement);
+
+  await step("Select the Month tab and then " + month, async () => {
+    const popoverContent = within(document.body)
+      .getByText("Select Timeframe")
+      .closest("[role='dialog']") as HTMLElement;
+    expect(popoverContent).toBeInTheDocument();
+
+    const monthTab = within(popoverContent).getByText("Month");
+    await monthTab.click();
+
+    const juneOption = within(popoverContent).getByText(month);
+    await juneOption.click();
+
+    const updatedTimeframeButton = canvas.getByRole("button", { name: `${month} 2025` });
+    expect(updatedTimeframeButton).toBeInTheDocument();
+  });
+};
+
+const closeTimeframeSelector = async (canvasElement, step) => {
+  const canvas = within(canvasElement);
+
+  await step("Close the timeframe selector", async () => {
+    await document.body.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+
+    const popoverExists = within(document.body).queryByText("Select Timeframe");
+    expect(popoverExists).not.toBeInTheDocument();
+  });
 };
