@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { TableRow } from "./TableRow";
-import type { WorkMap } from ".";
-import { TableHeader } from "./WorkMapTable/TableHeader";
-import { currentYear } from "../utils/timeframes";
-import { PrivacyIndicator } from "../PrivacyIndicator";
-import { genPeople } from "../utils/storybook/genPeople";
+import { TableRow } from "../components/TableRow";
+import type { WorkMap } from "../components";
+import { TableHeader } from "../components/WorkMapTable/TableHeader";
+import { currentYear } from "../../utils/timeframes";
+import { PrivacyIndicator } from "../../PrivacyIndicator";
+import { genPeople } from "../../utils/storybook/genPeople";
 import { expect, within, userEvent } from "@storybook/test";
 
 // Mock data for stories

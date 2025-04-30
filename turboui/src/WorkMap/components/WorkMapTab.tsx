@@ -1,7 +1,7 @@
 import React from "react";
-import { Link } from "../Link";
-import classNames from "../utils/classnames";
-import { TestableElement } from "../TestableElement";
+import { Link } from "../../Link";
+import classNames from "../../utils/classnames";
+import { TestableElement } from "../../TestableElement";
 
 interface Props extends TestableElement {
   label: string;

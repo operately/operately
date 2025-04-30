@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, within } from "@storybook/test";
-import WorkMap from ".";
-import { TimeframeSelector } from "../TimeframeSelector";
-import { currentYear, currentQuarter } from "../utils/timeframes";
-import { Page } from "../Page";
-import { PrivacyIndicator } from "../PrivacyIndicator";
+import WorkMap from "../components";
+import { TimeframeSelector } from "../../TimeframeSelector";
+import { currentYear, currentQuarter } from "../../utils/timeframes";
+import { Page } from "../../Page";
+import { PrivacyIndicator } from "../../PrivacyIndicator";
 
 // --- Mock Data ---
 function genAvatar(id: string) {

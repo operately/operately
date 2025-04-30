@@ -1,7 +1,7 @@
 import { WorkMapTab } from "./WorkMapTab";
 import { IconLayoutGrid, IconTarget, IconChecklist, IconCircleCheck } from "@tabler/icons-react";
 import { WorkMap } from ".";
-import { TimeframeSelector } from "../TimeframeSelector";
+import { TimeframeSelector } from "../../TimeframeSelector";
 
 export interface Props {
   activeTab: WorkMap.Filter;

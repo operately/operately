@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo } from "react";
 import { parse } from "date-fns";
-import { TimeframeSelector } from "../TimeframeSelector";
-import { WorkMap } from ".";
+import { TimeframeSelector } from "../../TimeframeSelector";
+import { WorkMap } from "../components";
 
 export function useWorkMapFilter(rawItems: WorkMap.Item[], timeframe: TimeframeSelector.Timeframe) {
   const [filter, setFilter] = useState<WorkMap.Filter>("all");

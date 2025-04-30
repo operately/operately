@@ -1,9 +1,9 @@
 import { IconTarget, IconChecklist, IconChevronDown, IconChevronRight } from "@tabler/icons-react";
-import { BlackLink } from "../../Link";
-import classNames from "../../utils/classnames";
-import { useItemStatus } from "../hooks/useItemStatus";
+import { BlackLink } from "../../../Link";
+import classNames from "../../../utils/classnames";
+import { useItemStatus } from "../../hooks/useItemStatus";
 import { useTableRowContext } from "./context";
-import { PrivacyIndicator } from "../../PrivacyIndicator";
+import { PrivacyIndicator } from "../../../PrivacyIndicator";
 
 export function ItemNameCell() {
   return (
