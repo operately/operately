@@ -159,6 +159,42 @@ defmodule Operately.Support.Features.ResourceHubDocumentSteps do
     |> UI.click(testid: "submit")
   end
 
+  step :copy_document_from_document_page, ctx, new_name do
+    ctx
+    |> UI.click(testid: "options-button")
+    |> UI.click(testid: "copy-document-link")
+    |> UI.fill(testid: "name", with: new_name)
+    |> UI.click(testid: "submit")
+  end
+
+  step :copy_document_from_document_page_into_folder, ctx, new_name do
+    ctx
+    |> UI.click(testid: "options-button")
+    |> UI.click(testid: "copy-document-link")
+    |> UI.fill(testid: "name", with: new_name)
+    |> UI.find(UI.query(testid: "copy-resource-modal"), fn el ->
+      el
+      |> UI.assert_text(new_name)
+      |> UI.click(testid: "one-0")
+      |> UI.assert_text("one")
+      |> UI.click(testid: "submit")
+    end)
+  end
+
+  step :copy_document_from_document_page_into_hub_root, ctx, new_name do
+    ctx
+    |> UI.click(testid: "options-button")
+    |> UI.click(testid: "copy-document-link")
+    |> UI.fill(testid: "name", with: new_name)
+    |> UI.find(UI.query(testid: "copy-resource-modal"), fn el ->
+      el
+      |> UI.assert_text(new_name)
+      |> UI.click(testid: "go-back-icon")
+      |> UI.assert_text("Resource hub")
+      |> UI.click(testid: "submit")
+    end)
+  end
+
   step :copy_document_into_folder, ctx, document_name do
     ctx
     |> UI.click(testid: UI.testid("menu-#{Paths.document_id(ctx.document)}"))
