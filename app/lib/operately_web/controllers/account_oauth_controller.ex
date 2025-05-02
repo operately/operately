@@ -39,7 +39,8 @@ defmodule OperatelyWeb.AccountOauthController do
 
     case People.find_or_create_account(account_attrs) do
       {:ok, account} ->
-        AccountAuth.log_in_account(conn, account, redirect_params)
+        params = Map.put(redirect_params, "remember_me", "true")
+        AccountAuth.log_in_account(conn, account, params)
 
       e ->
         Logger.error("Failed to fetch or create account: #{inspect(e)}")
