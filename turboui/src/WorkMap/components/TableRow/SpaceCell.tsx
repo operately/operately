@@ -19,7 +19,7 @@ export function SpaceCell({ item }: SpaceCellProps) {
 
   return (
     <td className="py-2 px-2 md:px-4 hidden lg:table-cell">
-      <div className="w-[100px]  overflow-hidden text-ellipsis whitespace-nowrap">
+      <div className="max-w-[100px] min-w-[70px] w-fit overflow-hidden text-ellipsis whitespace-nowrap">
         <BlackLink to={item.spacePath!} className={className} underline="hover">
           {item.space?.name}
         </BlackLink>
