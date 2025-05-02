@@ -7,7 +7,7 @@ defmodule OperatelyWeb.AccountSessionController do
     email = params["email"]
     password = params["password"]
 
-    account_params = %{email: email, password: password}
+    account_params = %{:email => email, :password => password, "remember_me" => "true"}
     account = Operately.People.get_account_by_email_and_password(email, password)
 
     if account do
