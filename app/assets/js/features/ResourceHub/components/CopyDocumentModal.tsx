@@ -1,8 +1,7 @@
 import React from "react";
 
-import { ResourceHubDocument, useCreateResourceHubDocument } from "@/models/resourceHubs";
+import * as Hub from "@/models/resourceHubs";
 import Forms from "@/components/Forms";
-import { useNodesContext } from "../contexts/NodesContext";
 import { useNavigate } from "react-router-dom";
 import { assertPresent } from "@/utils/assertions";
 import { useSubscriptions } from "@/features/Subscriptions";
@@ -10,16 +9,16 @@ import { Paths } from "@/routes/paths";
 import { CopyResourceModal } from "./CopyResource";
 
 interface FormProps {
-  resource: ResourceHubDocument;
+  resource: Hub.ResourceHubDocument;
   isOpen: boolean;
   hideModal: () => void;
+  parent: Hub.ResourceHub | Hub.ResourceHubFolder;
 }
 
 export function CopyDocumentModal(props: FormProps) {
-  const { resource, hideModal } = props;
-  const { parent } = useNodesContext();
+  const { parent, resource, hideModal } = props;
 
-  const [post] = useCreateResourceHubDocument();
+  const [post] = Hub.useCreateResourceHubDocument();
   const navigate = useNavigate();
 
   assertPresent(parent?.potentialSubscribers, "potentialSubscribers must be present in resourceHub or folder");
