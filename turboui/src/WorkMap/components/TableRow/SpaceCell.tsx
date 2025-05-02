@@ -1,7 +1,7 @@
 import { WorkMap } from "..";
-import { useItemStatus } from "../hooks/useItemStatus";
-import { BlackLink } from "../../Link";
-import classNames from "../../utils/classnames";
+import { useItemStatus } from "../../hooks/useItemStatus";
+import { BlackLink } from "../../../Link";
+import classNames from "../../../utils/classnames";
 
 interface SpaceCellProps {
   item: WorkMap.Item;

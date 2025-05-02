@@ -2,7 +2,7 @@ import { useState } from "react";
 import { IconChevronDown } from "@tabler/icons-react";
 import { WorkMap } from ".";
 import { useEffect } from "react";
-import classNames from "../utils/classnames";
+import classNames from "../../utils/classnames";
 
 interface Props {
   showWidget: boolean;
