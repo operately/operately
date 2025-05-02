@@ -736,3 +736,93 @@ export const onlyCompleted: WorkMap.Item[] = [
     children: [],
   },
 ];
+
+export const createMockItem = (
+  id: string,
+  name: string,
+  type: "goal" | "project",
+  status: WorkMap.Status,
+  progress: number,
+  hasChildren: boolean = false,
+): WorkMap.Item => {
+  const childItem: WorkMap.Item = {
+    id: `${id}-child-1`,
+    name: "Child item 1",
+    parentId: id,
+    type: "project",
+    status: "on_track",
+    progress: 50,
+    space: { name: "Product", id: "space-1" },
+    spacePath: "#",
+    owner: people.jennifer,
+    ownerPath: "#",
+    nextStep: "Child next step",
+    isNew: false,
+    completedOn: null,
+    closedAt: null,
+    children: [],
+    itemPath: "#",
+    privacy: "internal" as PrivacyIndicator.PrivacyLevels,
+    timeframe: {
+      startDate: "2025-01-15T00:00:00.000Z",
+      endDate: "2025-06-30T00:00:00.000Z",
+      type: "days",
+    },
+  };
+
+  const baseItem = {
+    id,
+    name,
+    parentId: null,
+    status,
+    progress,
+    space: { name: "Product", id: "space-1" },
+    spacePath: "#",
+    owner: people.alex,
+    ownerPath: "#",
+    nextStep: status === "completed" || status === "achieved" ? "" : "Next action to take",
+    closedAt: "2025-03-15T00:00:00.000Z",
+    isNew: false,
+    completedOn: status === "completed" || status === "achieved" ? "2025-03-15T00:00:00.000Z" : null,
+    children: hasChildren ? [childItem] : [],
+    itemPath: "#",
+    privacy: "internal" as PrivacyIndicator.PrivacyLevels,
+  };
+
+  if (type === "goal") {
+    const year = currentYear();
+    return {
+      ...baseItem,
+      type: "goal" as const,
+      timeframe: {
+        ...year,
+        startDate: year.startDate?.toISOString(),
+        endDate: year.endDate?.toISOString(),
+      },
+    };
+  } else {
+    return {
+      ...baseItem,
+      type: "project" as const,
+      timeframe: {
+        startDate: "2025-01-01T00:00:00.000Z",
+        endDate: "2025-12-31T00:00:00.000Z",
+        type: "days",
+      },
+    };
+  }
+};
+
+// Create mock items for each status
+export const mockGoalOnTrack = createMockItem("goal-1", "Improve customer experience", "goal", "on_track", 45, true);
+export const mockGoalCompleted = createMockItem("goal-2", "Launch new marketing campaign", "goal", "completed", 100);
+export const mockGoalAchieved = createMockItem("goal-3", "Increase website traffic by 50%", "goal", "achieved", 100);
+export const mockGoalPartial = createMockItem("goal-4", "Reduce support tickets by 30%", "goal", "partial", 75);
+export const mockGoalMissed = createMockItem("goal-5", "Launch mobile app by Q1", "goal", "missed", 60);
+export const mockGoalPaused = createMockItem("goal-6", "Expand to international markets", "goal", "paused", 20);
+export const mockGoalCaution = createMockItem("goal-7", "Implement new CRM system", "goal", "caution", 35);
+export const mockGoalIssue = createMockItem("goal-8", "Migrate legacy systems", "goal", "issue", 15);
+export const mockGoalOutdated = createMockItem("goal-9", "Update legacy documentation", "goal", "outdated", 30);
+export const mockProjectOnTrack = createMockItem("project-1", "Redesign product dashboard", "project", "on_track", 55);
+export const mockProjectCompleted = createMockItem("project-2", "Update documentation", "project", "completed", 100);
+export const mockProjectOutdated = createMockItem("project-3", "Refactor authentication", "project", "outdated", 25);

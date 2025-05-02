@@ -161,3 +161,118 @@ export const assertChildrenHidden = async (canvasElement, step, names) => {
     });
   });
 };
+
+export const assertItemHasLineThrough = async (canvasElement, step, name) => {
+  const canvas = within(canvasElement);
+
+  await step(`Assert that "${name}" has line-through style`, async () => {
+    const item = canvas.getByText(name);
+    expect(item.className).toContain("line-through");
+  });
+};
+
+export const refuteItemHasLineThrough = async (canvasElement, step, name) => {
+  const canvas = within(canvasElement);
+
+  await step(`Assert that "${name}" does not have line-through style`, async () => {
+    const item = canvas.getByText(name);
+    expect(item.className).not.toContain("line-through");
+  });
+};
+
+type LabelColor = "green" | "amber" | "red" | "gray";
+
+export const assertStatusBadge = async (canvasElement, step, label, color: LabelColor) => {
+  const canvas = within(canvasElement);
+
+  await step("Verify status badge has correct styles", async () => {
+    const statusBadge = canvas.getByText(label);
+
+    switch (color) {
+      case "green":
+        expect(statusBadge.className).toContain("bg-green-50");
+        expect(statusBadge.className).toContain("text-green-700");
+        expect(statusBadge?.className).toContain("border-green-200");
+        break;
+      case "amber":
+        expect(statusBadge.className).toContain("bg-amber-50");
+        expect(statusBadge.className).toContain("text-amber-800");
+        expect(statusBadge?.className).toContain("border-amber-200");
+        break;
+      case "red":
+        expect(statusBadge.className).toContain("bg-red-50");
+        expect(statusBadge.className).toContain("text-red-700");
+        expect(statusBadge?.className).toContain("border-red-200");
+        break;
+      case "gray":
+        expect(statusBadge.className).toContain("bg-gray-100");
+        expect(statusBadge.className).toContain("text-gray-700");
+        expect(statusBadge?.className).toContain("border-gray-200");
+        break;
+    }
+  });
+};
+
+export const assertProgressBar = async (canvasElement, step, progress, color: LabelColor) => {
+  const canvas = within(canvasElement);
+
+  await step("Verify progress bar shows correct progress", async () => {
+    const progressBar = canvas.getByRole("progress-bar");
+
+    const innerBar = within(progressBar).getByTestId("progress-percentage-bar");
+
+    const innerBarWidth = innerBar?.getBoundingClientRect().width || 0;
+    const outerBarWidth = progressBar.getBoundingClientRect().width;
+
+    const percentage = Math.round((innerBarWidth / outerBarWidth) * 100);
+
+    expect(percentage).toEqual(progress);
+
+    switch (color) {
+      case "gray":
+        expect(innerBar?.className).toContain("bg-gray-400");
+        break;
+      case "amber":
+        expect(innerBar?.className).toContain("bg-amber-400");
+        break;
+      case "red":
+        expect(innerBar?.className).toContain("bg-red-400");
+        break;
+      case "green":
+        expect(innerBar?.className).toContain("bg-green-400");
+        break;
+    }
+  });
+};
+
+export const assertPrivacyIndicator = async (canvasElement, step, name, message) => {
+  const canvas = within(canvasElement);
+
+  await step("Assert privacy indicator", async () => {
+    const row = canvas.getByText(name).closest("tr");
+
+    const privacyIndicator = within(row as HTMLElement).getByTestId("privacy-indicator");
+    expect(privacyIndicator).not.toBeNull();
+
+    expect(canvas.queryByText(message)).toBeNull();
+
+    await userEvent.hover(privacyIndicator);
+
+    const tooltipText = canvas.queryAllByText(message);
+    expect(tooltipText).not.toBeNull();
+
+    await userEvent.unhover(privacyIndicator);
+    expect(canvas.queryByText(message)).toBeNull();
+  });
+};
+
+export const refutePrivacyIndicator = async (canvasElement, step, name) => {
+  const canvas = within(canvasElement);
+
+  await step("Refute privacy indicator", async () => {
+    const row = canvas.getByText(name).closest("tr");
+
+    const privacyIndicator = within(row as HTMLElement).queryByTestId("privacy-indicator");
+    expect(privacyIndicator).toBeNull();
+  });
+};
