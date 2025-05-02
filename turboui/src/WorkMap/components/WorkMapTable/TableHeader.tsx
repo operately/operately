@@ -18,10 +18,10 @@ export function TableHeader({ filter }: Props) {
         <HeaderCell hidden={isCompletedPage} className="w-[75px] md:w-[90px] pr-6 lg:px-4">
           Progress
         </HeaderCell>
-        <HeaderCell className={isCompletedPage ? "w-[100px] md:w-[120px] md:px-4" : "hidden lg:table-cell w-[120px] md:px-4"}>
+        <HeaderCell className={isCompletedPage ? "w-[100px] md:w-[120px] md:px-4" : "hidden lg:table-cell max-w-[120px] md:px-4"}>
           {isCompletedPage ? "Completed On" : "Deadline"}
         </HeaderCell>
-        <HeaderCell className="hidden lg:table-cell w-[100px] md:px-4">Space</HeaderCell>
+        <HeaderCell className="hidden lg:table-cell max-w-[100px] w-auto px-1 md:px-2">Space</HeaderCell>
         <HeaderCell className="hidden xl:table-cell w-[120px] md:px-4">Champion</HeaderCell>
         <HeaderCell hidden={isCompletedPage} className="hidden xl:table-cell xl:w-[200px] 2xl:w-[300px] md:px-4">
           Next step
