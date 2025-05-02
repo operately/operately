@@ -129,6 +129,28 @@ defmodule Operately.Support.Features.ResourceHubDocumentSteps do
     |> UI.refute_has(testid: "submit")
   end
 
+  step :cancel_document_editing, ctx do
+    {:ok, node} = Node.get(:system, type: :document, opts: [preload: :document])
+
+    ctx
+    |> UI.click(testid: "edit-document-link")
+    |> UI.assert_page(Paths.edit_document_path(ctx.company, node.document))
+    |> UI.sleep(200)
+    |> UI.click(testid: "cancel")
+    |> UI.sleep(200)
+    |> UI.assert_page(Paths.document_path(ctx.company, node.document))
+  end
+
+  step :cancel_draft_document_editing, ctx do
+    ctx
+    |> UI.click(testid: "continue-editing")
+    |> UI.assert_page(Paths.edit_document_path(ctx.company, ctx.document))
+    |> UI.sleep(200)
+    |> UI.click(testid: "cancel")
+    |> UI.sleep(200)
+    |> UI.assert_page(Paths.document_path(ctx.company, ctx.document))
+  end
+
   step :copy_document, ctx, new_name do
     ctx
     |> UI.click(testid: UI.testid("menu-#{Paths.document_id(ctx.document)}"))
