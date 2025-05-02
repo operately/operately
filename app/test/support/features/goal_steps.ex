@@ -450,6 +450,28 @@ defmodule Operately.Support.Features.GoalSteps do
     |> UI.assert_page(Paths.goal_path(ctx.company, ctx.goal))
   end
 
+  step :attempt_to_close_goal_with_empty_retrospective, ctx, params do
+    ctx
+    |> UI.click(testid: "goal-options")
+    |> UI.click(testid: "close-goal")
+    |> UI.assert_text("Close Goal")
+    |> UI.click(testid: "success-#{params.success}")
+    # Do not fill in the retrospective field
+    |> UI.click(testid: "submit")
+  end
+
+  step :assert_retrospective_error_shown, ctx do
+    ctx
+    |> UI.assert_text("Can't be empty")
+  end
+
+  step :fill_retrospective_and_submit, ctx, retrospective do
+    ctx
+    |> UI.fill_rich_text(retrospective)
+    |> UI.click(testid: "submit")
+    |> UI.assert_page(Paths.goal_path(ctx.company, ctx.goal))
+  end
+
   step :reopen_goal, ctx, params do
     ctx
     |> UI.click(testid: "goal-options")
