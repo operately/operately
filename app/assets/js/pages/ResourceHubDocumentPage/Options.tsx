@@ -10,7 +10,11 @@ import { useLoadedData } from "./loader";
 import { IconCopy, IconEdit, IconTrash, IconFileExport } from "@tabler/icons-react";
 import { downloadMarkdown, exportToMarkdown } from "@/utils/markdown";
 
-export function Options() {
+interface Props {
+  showCopyModal: () => void;
+}
+
+export function Options({ showCopyModal }: Props) {
   const { document } = useLoadedData();
   assertPresent(document.permissions, "permissions must be present in document");
 
@@ -25,26 +29,15 @@ export function Options() {
           keepOutsideOnBigScreen
         />
       )}
-      {document.permissions.canCreateDocument && <CopyLink />}
+      {document.permissions.canCreateDocument && <CopyLink showCopyModal={showCopyModal} />}
       {document.permissions.canView && <ExportMarkdownAction />}
       {document.permissions.canDeleteDocument && <DeleteAction />}
     </PageOptions.Root>
   );
 }
 
-function CopyLink() {
-  const { document } = useLoadedData();
-  const parentId = document.parentFolderId || document.resourceHubId!;
-  const parentType = document.parentFolderId ? "folder" : "resource_hub";
-
-  return (
-    <PageOptions.Link
-      icon={IconCopy}
-      title="Copy"
-      to={Paths.resourceHubCopyDocumentPath(document.id!, parentId, parentType)}
-      testId="copy-document-link"
-    />
-  );
+function CopyLink({ showCopyModal }) {
+  return <PageOptions.Action icon={IconCopy} title="Copy" onClick={showCopyModal} testId="copy-document-link" />;
 }
 
 function DeleteAction() {

@@ -159,6 +159,27 @@ defmodule Operately.Support.Features.ResourceHubDocumentSteps do
     |> UI.click(testid: "submit")
   end
 
+  step :copy_document_from_document_page, ctx, new_name do
+    ctx
+    |> UI.click(testid: "options-button")
+    |> UI.click(testid: "copy-document-link")
+    |> UI.fill(testid: "name", with: new_name)
+    |> UI.click(testid: "submit")
+  end
+
+  step :copy_document_from_document_page_to_folder, ctx, params do
+    ctx
+    |> UI.click(testid: "options-button")
+    |> UI.click(testid: "copy-document-link")
+    |> UI.fill(testid: "name", with: params.new_name)
+    |> UI.find(UI.query(testid: "copy-resource-modal"), fn el ->
+      el
+      |> UI.click(testid: "location")
+      |> UI.click(testid: "folder-#{params.folder_id}")
+      |> UI.click(testid: "submit")
+    end)
+  end
+
   step :copy_document_into_folder, ctx, document_name do
     ctx
     |> UI.click(testid: UI.testid("menu-#{Paths.document_id(ctx.document)}"))
