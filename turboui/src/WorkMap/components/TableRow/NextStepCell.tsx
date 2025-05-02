@@ -1,6 +1,6 @@
 import { WorkMap } from "..";
-import { useItemStatus } from "../hooks/useItemStatus";
-import classNames from "../../utils/classnames";
+import { useItemStatus } from "../../hooks/useItemStatus";
+import classNames from "../../../utils/classnames";
 
 interface Props {
   nextStep: WorkMap.Item['nextStep'];

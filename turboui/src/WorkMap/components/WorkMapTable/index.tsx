@@ -1,4 +1,3 @@
-import { QuickAddRow } from "./QuickAddRow";
 import { TableHeader } from "./TableHeader";
 import { WorkMap } from "..";
 import { TableRow } from "../TableRow";

@@ -1,8 +1,8 @@
 import { IconPlus } from "@tabler/icons-react";
 import { QuickEntryWidget } from "../QuickEntryWidget";
 import { WorkMap } from "..";
-import { useQuickEntryWidgetState } from "../hooks/useQuickEntryWidgetState";
-import classNames from "../../utils/classnames";
+import { useQuickEntryWidgetState } from "../../hooks/useQuickEntryWidgetState";
+import classNames from "../../../utils/classnames";
 import { match } from "ts-pattern";
 
 interface Props {

@@ -1,6 +1,6 @@
 import React from "react";
 import { IconPlus, IconTrash } from "@tabler/icons-react";
-import { SecondaryButton } from "../../Button";
+import { SecondaryButton } from "../../../Button";
 
 interface Props {
   display: boolean;

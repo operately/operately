@@ -1,110 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { TableRow } from "./TableRow";
-import type { WorkMap } from ".";
-import { TableHeader } from "./WorkMapTable/TableHeader";
-import { currentYear } from "../utils/timeframes";
-import { PrivacyIndicator } from "../PrivacyIndicator";
-import { genPeople } from "../utils/storybook/genPeople";
+import { TableRow } from "../components/TableRow";
+import type { WorkMap } from "../components";
+import { TableHeader } from "../components/WorkMapTable/TableHeader";
+import { PrivacyIndicator } from "../../PrivacyIndicator";
 
-// Mock data for stories
-const mockOwner = genPeople(1)[0];
-
-// Create mock items with different statuses
-const createMockItem = (
-  id: string,
-  name: string,
-  type: "goal" | "project",
-  status: WorkMap.Status,
-  progress: number,
-  hasChildren: boolean = false,
-): WorkMap.Item => {
-  // Create a properly typed child item
-  const childItem: WorkMap.Item = {
-    id: `${id}-child-1`,
-    name: "Child item 1",
-    parentId: id,
-    type: "project",
-    status: "on_track",
-    progress: 50,
-    space: { name: "Product", id: "space-1" },
-    spacePath: "#",
-    owner: mockOwner,
-    ownerPath: "#",
-    nextStep: "Child next step",
-    isNew: false,
-    completedOn: null,
-    closedAt: null,
-    children: [],
-    itemPath: "#",
-    privacy: "internal" as PrivacyIndicator.PrivacyLevels,
-    timeframe: {
-      startDate: "2025-01-15T00:00:00.000Z",
-      endDate: "2025-06-30T00:00:00.000Z",
-      type: "days",
-    },
-  };
-
-  const baseItem = {
-    id,
-    name,
-    parentId: null,
-    status,
-    progress,
-    space: { name: "Product", id: "space-1" },
-    spacePath: "#",
-    owner: mockOwner,
-    ownerPath: "#",
-    nextStep: status === "completed" || status === "achieved" ? "" : "Next action to take",
-    closedAt: "2025-03-15T00:00:00.000Z",
-    isNew: false,
-    completedOn: status === "completed" || status === "achieved" ? "2025-03-15T00:00:00.000Z" : null,
-    children: hasChildren ? [childItem] : [],
-    itemPath: "#",
-    privacy: "internal" as PrivacyIndicator.PrivacyLevels,
-  };
-
-  if (type === "goal") {
-    const year = currentYear();
-    return {
-      ...baseItem,
-      type: "goal" as const,
-      timeframe: {
-        ...year,
-        startDate: year.startDate?.toISOString(),
-        endDate: year.endDate?.toISOString(),
-      },
-    };
-  } else {
-    return {
-      ...baseItem,
-      type: "project" as const,
-      timeframe: {
-        startDate: "2025-01-01T00:00:00.000Z",
-        endDate: "2025-12-31T00:00:00.000Z",
-        type: "days",
-      },
-    };
-  }
-};
-
-// Create mock items for each status
-const mockGoalOnTrack = createMockItem(
-  "goal-1",
-  "Improve customer onboarding experience",
-  "goal",
-  "on_track",
-  45,
-  true,
-);
-const mockGoalCompleted = createMockItem("goal-2", "Launch new marketing campaign", "goal", "completed", 100);
-const mockGoalAchieved = createMockItem("goal-3", "Increase website traffic by 50%", "goal", "achieved", 100);
-const mockGoalPartial = createMockItem("goal-4", "Reduce customer support tickets by 30%", "goal", "partial", 75);
-const mockGoalMissed = createMockItem("goal-5", "Launch mobile app by Q1", "goal", "missed", 60);
-const mockGoalPaused = createMockItem("goal-6", "Expand to international markets", "goal", "paused", 20);
-const mockGoalCaution = createMockItem("goal-7", "Implement new CRM system", "goal", "caution", 35);
-const mockGoalIssue = createMockItem("goal-8", "Migrate legacy systems", "goal", "issue", 15);
-const mockProjectOnTrack = createMockItem("project-1", "Redesign product dashboard", "project", "on_track", 55);
-const mockProjectCompleted = createMockItem("project-2", "Update documentation", "project", "completed", 100);
+import * as Steps from "../tests/steps";
+import * as data from "../tests/mockData";
 
 const meta = {
   title: "Components/WorkMap/TableRow",
@@ -168,7 +69,7 @@ export const Default: Story = {
     </>
   ),
   args: {
-    item: mockGoalOnTrack,
+    item: data.mockGoalOnTrack,
     level: 0,
     isLast: false,
     filter: "all",
@@ -177,23 +78,28 @@ export const Default: Story = {
 };
 
 /**
- * A completed goal with 100% progress
+ * A completed goal
  */
 export const CompletedGoal: Story = {
   render: (args) => (
-    <div className="pb-12">
+    <>
       <TableHeader filter={args.filter} />
       <tbody>
         <TableRow {...args} />
       </tbody>
-    </div>
+    </>
   ),
   args: {
-    item: mockGoalCompleted,
+    item: data.mockGoalCompleted,
     level: 0,
     isLast: false,
-    filter: "all",
+    filter: "completed",
     isSelected: false,
+  },
+  play: async ({ canvasElement, step }) => {
+    await Steps.assertItemHasLineThrough(canvasElement, step, "Launch new marketing campaign");
+
+    await Steps.assertStatusBadge(canvasElement, step, "Completed", "green");
   },
 };
 
@@ -202,19 +108,24 @@ export const CompletedGoal: Story = {
  */
 export const AchievedGoal: Story = {
   render: (args) => (
-    <div className="pb-12">
+    <>
       <TableHeader filter={args.filter} />
       <tbody>
         <TableRow {...args} />
       </tbody>
-    </div>
+    </>
   ),
   args: {
-    item: mockGoalAchieved,
+    item: data.mockGoalAchieved,
     level: 0,
     isLast: false,
-    filter: "all",
+    filter: "completed",
     isSelected: false,
+  },
+  play: async ({ canvasElement, step }) => {
+    await Steps.assertItemHasLineThrough(canvasElement, step, "Increase website traffic by 50%");
+
+    await Steps.assertStatusBadge(canvasElement, step, "Achieved", "green");
   },
 };
 
@@ -223,19 +134,24 @@ export const AchievedGoal: Story = {
  */
 export const PartiallyAchievedGoal: Story = {
   render: (args) => (
-    <div className="pb-12">
+    <>
       <TableHeader filter={args.filter} />
       <tbody>
         <TableRow {...args} />
       </tbody>
-    </div>
+    </>
   ),
   args: {
-    item: mockGoalPartial,
+    item: data.mockGoalPartial,
     level: 0,
     isLast: false,
-    filter: "all",
+    filter: "completed",
     isSelected: false,
+  },
+  play: async ({ canvasElement, step }) => {
+    await Steps.assertItemHasLineThrough(canvasElement, step, "Reduce support tickets by 30%");
+
+    await Steps.assertStatusBadge(canvasElement, step, "Partial", "amber");
   },
 };
 
@@ -244,19 +160,24 @@ export const PartiallyAchievedGoal: Story = {
  */
 export const MissedGoal: Story = {
   render: (args) => (
-    <div className="pb-12">
+    <>
       <TableHeader filter={args.filter} />
       <tbody>
         <TableRow {...args} />
       </tbody>
-    </div>
+    </>
   ),
   args: {
-    item: mockGoalMissed,
+    item: data.mockGoalMissed,
     level: 0,
     isLast: false,
-    filter: "all",
+    filter: "completed",
     isSelected: false,
+  },
+  play: async ({ canvasElement, step }) => {
+    await Steps.assertItemHasLineThrough(canvasElement, step, "Launch mobile app by Q1");
+
+    await Steps.assertStatusBadge(canvasElement, step, "Missed", "red");
   },
 };
 
@@ -265,19 +186,26 @@ export const MissedGoal: Story = {
  */
 export const PausedGoal: Story = {
   render: (args) => (
-    <div className="pb-12">
+    <>
       <TableHeader filter={args.filter} />
       <tbody>
         <TableRow {...args} />
       </tbody>
-    </div>
+    </>
   ),
   args: {
-    item: mockGoalPaused,
+    item: data.mockGoalPaused,
     level: 0,
     isLast: false,
     filter: "all",
     isSelected: false,
+  },
+  play: async ({ canvasElement, step }) => {
+    await Steps.refuteItemHasLineThrough(canvasElement, step, "Expand to international markets");
+
+    await Steps.assertStatusBadge(canvasElement, step, "Paused", "gray");
+
+    await Steps.assertProgressBar(canvasElement, step, 20, "gray");
   },
 };
 
@@ -286,19 +214,26 @@ export const PausedGoal: Story = {
  */
 export const CautionGoal: Story = {
   render: (args) => (
-    <div className="pb-12">
+    <>
       <TableHeader filter={args.filter} />
       <tbody>
         <TableRow {...args} />
       </tbody>
-    </div>
+    </>
   ),
   args: {
-    item: mockGoalCaution,
+    item: data.mockGoalCaution,
     level: 0,
     isLast: false,
     filter: "all",
     isSelected: false,
+  },
+  play: async ({ canvasElement, step }) => {
+    await Steps.refuteItemHasLineThrough(canvasElement, step, "Implement new CRM system");
+
+    await Steps.assertStatusBadge(canvasElement, step, "Attention", "amber");
+
+    await Steps.assertProgressBar(canvasElement, step, 35, "amber");
   },
 };
 
@@ -307,19 +242,54 @@ export const CautionGoal: Story = {
  */
 export const IssueGoal: Story = {
   render: (args) => (
-    <div className="pb-12">
+    <>
       <TableHeader filter={args.filter} />
       <tbody>
         <TableRow {...args} />
       </tbody>
-    </div>
+    </>
   ),
   args: {
-    item: mockGoalIssue,
+    item: data.mockGoalIssue,
     level: 0,
     isLast: false,
     filter: "all",
     isSelected: false,
+  },
+  play: async ({ canvasElement, step }) => {
+    await Steps.refuteItemHasLineThrough(canvasElement, step, "Migrate legacy systems");
+
+    await Steps.assertStatusBadge(canvasElement, step, "At risk", "red");
+
+    await Steps.assertProgressBar(canvasElement, step, 15, "red");
+  },
+};
+
+/**
+ * A goal with outdated status
+ */
+export const OutdatedGoal: Story = {
+  render: (args) => (
+    <>
+      <TableHeader filter={args.filter} />
+      <tbody>
+        <TableRow item={data.mockGoalOutdated} level={0} isLast={false} filter={args.filter} />
+      </tbody>
+    </>
+  ),
+  args: {
+    item: data.mockGoalOutdated, // This is required by the Story type but overridden in render
+    level: 0,
+    isLast: false,
+    filter: "all",
+    isSelected: false,
+  },
+  play: async ({ canvasElement, step }) => {
+    await Steps.refuteItemHasLineThrough(canvasElement, step, "Update legacy documentation");
+
+    await Steps.assertStatusBadge(canvasElement, step, "Outdated", "gray");
+
+    await Steps.assertProgressBar(canvasElement, step, 30, "gray");
   },
 };
 
@@ -336,11 +306,18 @@ export const OnTrackProject: Story = {
     </>
   ),
   args: {
-    item: mockProjectOnTrack,
+    item: data.mockProjectOnTrack,
     level: 0,
     isLast: false,
     filter: "all",
     isSelected: false,
+  },
+  play: async ({ canvasElement, step }) => {
+    await Steps.refuteItemHasLineThrough(canvasElement, step, "Redesign product dashboard");
+
+    await Steps.assertStatusBadge(canvasElement, step, "On track", "green");
+
+    await Steps.assertProgressBar(canvasElement, step, 55, "green");
   },
 };
 
@@ -357,95 +334,16 @@ export const CompletedProject: Story = {
     </>
   ),
   args: {
-    item: mockProjectCompleted,
-    level: 0,
-    isLast: false,
-    filter: "all",
-    isSelected: false,
-  },
-};
-
-/**
- * A selected row
- */
-export const SelectedRow: Story = {
-  render: (args) => (
-    <>
-      <TableHeader filter={args.filter} />
-      <tbody>
-        <TableRow {...args} />
-      </tbody>
-    </>
-  ),
-  args: {
-    item: mockGoalOnTrack,
-    level: 0,
-    isLast: false,
-    filter: "all",
-    isSelected: true,
-  },
-};
-
-/**
- * An indented row (level 1)
- */
-export const IndentedRow: Story = {
-  render: (args) => (
-    <>
-      <TableHeader filter={args.filter} />
-      <tbody>
-        <TableRow {...args} />
-      </tbody>
-    </>
-  ),
-  args: {
-    item: mockProjectOnTrack,
-    level: 1,
-    isLast: false,
-    filter: "all",
-    isSelected: false,
-  },
-};
-
-/**
- * A row with the completed filter applied
- */
-export const CompletedFilter: Story = {
-  render: (args) => (
-    <>
-      <TableHeader filter={args.filter} />
-      <tbody>
-        <TableRow {...args} />
-      </tbody>
-    </>
-  ),
-  args: {
-    item: mockGoalCompleted,
+    item: data.mockProjectCompleted,
     level: 0,
     isLast: false,
     filter: "completed",
     isSelected: false,
   },
-};
+  play: async ({ canvasElement, step }) => {
+    await Steps.assertItemHasLineThrough(canvasElement, step, "Update documentation");
 
-/**
- * A row with the goals filter applied
- */
-export const GoalsFilter: Story = {
-  render: (args) => (
-    <>
-      <TableHeader filter={args.filter} />
-      <tbody>
-        <TableRow {...args} />
-      </tbody>
-    </>
-  ),
-  args: {
-    item: mockGoalOnTrack,
-    level: 0,
-    isLast: false,
-    filter: "goals",
-    isSelected: false,
+    await Steps.assertStatusBadge(canvasElement, step, "Completed", "green");
   },
 };
 
@@ -457,16 +355,16 @@ export const MultipleRows: Story = {
     <>
       <TableHeader filter={args.filter} />
       <tbody>
-        <TableRow item={mockGoalOnTrack} level={0} isLast={false} filter={args.filter} />
-        <TableRow item={mockProjectOnTrack} level={1} isLast={false} filter={args.filter} />
-        <TableRow item={mockGoalCompleted} level={0} isLast={false} filter={args.filter} />
-        <TableRow item={mockProjectCompleted} level={0} isLast={true} filter={args.filter} />
+        <TableRow item={data.mockGoalOnTrack} level={0} isLast={false} filter={args.filter} />
+        <TableRow item={data.mockProjectOnTrack} level={1} isLast={false} filter={args.filter} />
+        <TableRow item={data.mockGoalCompleted} level={0} isLast={false} filter={args.filter} />
+        <TableRow item={data.mockProjectCompleted} level={0} isLast={true} filter={args.filter} />
       </tbody>
     </>
   ),
   args: {
     filter: "all",
-    item: mockGoalOnTrack, // These args won't be used directly by the render function
+    item: data.mockGoalOnTrack, // These args won't be used directly by the render function
     level: 0, // but are required by the StoryAnnotations type
     isLast: false,
   },
@@ -479,22 +377,22 @@ export const PrivacyLevels: Story = {
   render: (args) => {
     // Create items with different privacy levels
     const publicItem = {
-      ...createMockItem("item-public", "Public item example", "goal", "on_track", 60),
+      ...data.createMockItem("item-public", "Public item example", "goal", "on_track", 60),
       privacy: "public" as PrivacyIndicator.PrivacyLevels,
     };
 
     const internalItem = {
-      ...createMockItem("item-internal", "Internal item example", "goal", "on_track", 65),
+      ...data.createMockItem("item-internal", "Internal item example", "goal", "on_track", 40),
       privacy: "internal" as PrivacyIndicator.PrivacyLevels,
     };
 
     const confidentialItem = {
-      ...createMockItem("item-confidential", "Confidential item example", "project", "on_track", 70),
+      ...data.createMockItem("item-confidential", "Confidential item example", "project", "on_track", 70),
       privacy: "confidential" as PrivacyIndicator.PrivacyLevels,
     };
 
     const secretItem = {
-      ...createMockItem("item-secret", "Secret item example", "project", "caution", 25),
+      ...data.createMockItem("item-secret", "Secret item example", "project", "caution", 25),
       privacy: "secret" as PrivacyIndicator.PrivacyLevels,
     };
 
@@ -535,7 +433,7 @@ export const PrivacyLevels: Story = {
     level: 0,
     filter: "all",
     isSelected: false,
-    item: mockGoalOnTrack, // This is required by the Story type, but our render function overrides it
+    item: data.mockGoalOnTrack, // This is required by the Story type, but our render function overrides it
     isLast: false, // Also required by the Story type
   },
   parameters: {
@@ -544,5 +442,16 @@ export const PrivacyLevels: Story = {
         story: "Showcases the different privacy levels available for WorkMap items.",
       },
     },
+  },
+  play: async ({ canvasElement, step }) => {
+    await Steps.assertRowsNumber(canvasElement, step, 4);
+
+    await Steps.assertPrivacyIndicator(canvasElement, step, "Public item example", "Anyone on the internet");
+
+    await Steps.refutePrivacyIndicator(canvasElement, step, "Internal item example");
+
+    await Steps.assertPrivacyIndicator(canvasElement, step, "Confidential item example", "Only Product members");
+
+    await Steps.assertPrivacyIndicator(canvasElement, step, "Secret item example", "Invite-Only");
   },
 };

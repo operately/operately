@@ -1,4 +1,4 @@
-import { StatusBadge } from "../../StatusBadge";
+import { StatusBadge } from "../../../StatusBadge";
 import { WorkMap } from "..";
 import { ChildRows } from "./ChildRows";
 import { DeadlineCell } from "./DeadlineCell";
