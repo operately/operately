@@ -266,13 +266,11 @@ defmodule Operately.Features.ResourceHubDocumentTest do
     feature "Copy document from resource hub root to folder", ctx do
       new_name = "Document - Copy to Folder"
 
-      ctx =
-        Steps.given_nested_folders_exist(ctx)
-        |> Steps.given_document_within_resource_hub_root_exists(:hub)
-
       ctx
+      |> Steps.given_nested_folders_exist()
+      |> Steps.given_document_within_resource_hub_root_exists(:hub)
       |> Steps.visit_document_page()
-      |> Steps.copy_document_from_document_page_to_folder(%{new_name: new_name, folder_id: ctx.one.id})
+      |> Steps.copy_document_from_document_page_into_folder(new_name)
       |> Steps.visit_folder_page(:one)
       |> Steps.assert_document_present_in_files_list(new_name)
     end
@@ -280,11 +278,10 @@ defmodule Operately.Features.ResourceHubDocumentTest do
     feature "Copy document from folder to resource hub root", ctx do
       new_name = "Document - Copy to Root"
 
-      ctx = Steps.given_document_within_folder_exists(ctx)
-
       ctx
+      |> Steps.given_document_within_folder_exists()
       |> Steps.visit_document_page()
-      |> Steps.copy_document_from_document_page_to_folder(%{new_name: new_name, folder_id: ctx.hub.id})
+      |> Steps.copy_document_from_document_page_into_hub_root(new_name)
       |> Steps.visit_resource_hub_page()
       |> Steps.assert_document_present_in_files_list(new_name)
     end
