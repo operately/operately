@@ -4,6 +4,7 @@ import * as Pages from "@/components/Pages";
 import * as Goals from "@/models/goals";
 
 import Forms from "@/components/Forms";
+import { emptyContent } from "@/components/RichContent";
 
 import { Paths } from "@/routes/paths";
 import { ActiveSubitemsWarning } from "./ActiveSubitemsWarning";
@@ -38,7 +39,7 @@ function Form() {
   const form = Forms.useForm({
     fields: {
       success: "yes",
-      retrospective: "",
+      retrospective: emptyContent(),
     },
     submit: async () => {
       await close({

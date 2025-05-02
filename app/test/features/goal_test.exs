@@ -88,6 +88,19 @@ defmodule Operately.Features.GoalTest do
     |> Steps.assert_goal_closed_notification_sent()
   end
 
+  feature "attempting to close a goal without a retrospective shows an error", ctx do
+    ctx
+    |> Steps.visit_page()
+    |> Steps.attempt_to_close_goal_with_empty_retrospective(%{success: "yes"})
+    |> Steps.assert_retrospective_error_shown()
+    |> Steps.fill_retrospective_and_submit("Added retrospective after error")
+    |> Steps.assert_goal_closed_as_accomplished()
+    |> Steps.assert_goal_is_not_editable()
+    |> Steps.assert_goal_closed_email_sent()
+    |> Steps.assert_goal_closed_feed_posted()
+    |> Steps.assert_goal_closed_notification_sent()
+  end
+
   feature "commenting on goal closing", ctx do
     ctx
     |> Steps.visit_page()
