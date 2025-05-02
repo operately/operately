@@ -48,6 +48,15 @@ defmodule Operately.Features.ResourceHubDocumentTest do
     |> Steps.refute_document_edited_on_company_feed(@document.name)
   end
 
+  feature "cancel document editing returns to document page", ctx do
+    ctx
+    |> Steps.visit_resource_hub_page()
+    |> Steps.create_document(@document)
+    |> Steps.assert_document_content(@document)
+    |> Steps.cancel_document_editing()
+    |> Steps.assert_page_is_document_page()
+  end
+
   feature "copy document in the same folder", ctx do
     new_name = "Document - Copy"
 
@@ -117,6 +126,15 @@ defmodule Operately.Features.ResourceHubDocumentTest do
       |> Steps.assert_draft_document_not_visible_and_state_is_zero()
       |> Steps.click_on_continue_writing_draft_link()
       |> Steps.assert_page_is_document_editing()
+    end
+
+    feature "Cancel draft document editing returns to document page", ctx do
+      ctx
+      |> Steps.given_a_single_draft_document_exists()
+      |> Steps.visit_document_page()
+      |> Steps.assert_document_is_draft()
+      |> Steps.cancel_draft_document_editing()
+      |> Steps.assert_page_is_document_page()
     end
 
     feature "Link to continue editing several drafts is displayed", ctx do

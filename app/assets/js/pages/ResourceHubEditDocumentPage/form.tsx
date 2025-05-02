@@ -26,6 +26,7 @@ export function Form({ document }: { document: ResourceHubDocument }) {
         addError("content", "Content is required");
       }
     },
+    cancel: () => navigate(Paths.resourceHubDocumentPath(document.id!)),
     submit: async (type: "save" | "publish-draft") => {
       const { title, content } = form.values;
 
@@ -88,6 +89,7 @@ function FormActions({ document }: { document: ResourceHubDocument }) {
           onClick={() => form.actions.submit("publish-draft")}
         />
       )}
+      <Forms.SubmitButton name="cancel" text="Cancel" buttonSize="base" onClick={() => form.actions.cancel()} />
     </div>
   );
 }
