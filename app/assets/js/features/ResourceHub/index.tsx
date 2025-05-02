@@ -9,6 +9,7 @@ export { AddFileWidget } from "./AddFileWidget";
 export { FileDragAndDropArea } from "./FileDragAndDropArea";
 export { FolderSelectField } from "./FolderSelectField";
 export { LinkIcon } from "./LinkIcon";
+export { CopyDocumentModal } from "./components/CopyDocumentModal";
 export * from "./Drafts";
 export * from "./Navigation";
 export * from "./utils";
