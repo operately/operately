@@ -13,18 +13,22 @@ import { CommentSection, useComments } from "@/features/CommentSection";
 import { CurrentSubscriptions } from "@/features/Subscriptions";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { DocumentTitle } from "@/features/documents/DocumentTitle";
-import { ResourcePageNavigation } from "@/features/ResourceHub";
+import { ResourcePageNavigation, CopyDocumentModal } from "@/features/ResourceHub";
 import { OngoingDraftActions } from "@/features/drafts";
 import { Paths } from "@/routes/paths";
+import { useBoolState } from "@/hooks/useBoolState";
 
 import { useLoadedData } from "./loader";
 import { Options } from "./Options";
 
 export function Page() {
-  const { document } = useLoadedData();
+  const { document, folder, resourceHub } = useLoadedData();
+  const [isCopyFormOpen, _, openCopyForm, closeCopyForm] = useBoolState(false);
 
   assertPresent(document.notifications, "notifications must be present in document");
   useClearNotificationsOnLoad(document.notifications);
+
+  React.useEffect(closeCopyForm, [document.id]);
 
   return (
     <Pages.Page title={document.name!}>
@@ -32,7 +36,7 @@ export function Page() {
         <ResourcePageNavigation resource={document} />
 
         <Paper.Body minHeight="600px" className="lg:px-28">
-          <Options />
+          <Options showCopyModal={openCopyForm} />
 
           <ContinueEditingDraft />
 
@@ -41,6 +45,8 @@ export function Page() {
           <DocumentReactions />
           <DocumentComments />
           <DocumentSubscriptions />
+
+          <CopyDocumentModal parent={folder ?? resourceHub} resource={document} isOpen={isCopyFormOpen} hideModal={closeCopyForm} />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
