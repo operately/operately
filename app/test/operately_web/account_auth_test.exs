@@ -29,8 +29,8 @@ defmodule OperatelyWeb.AccountAuthTest do
       refute get_session(conn, :to_be_removed)
     end
 
-    test "writes a cookie if remember_me is configured", %{conn: conn, account: account} do
-      conn = conn |> fetch_cookies() |> AccountAuth.log_in_account(account, %{"remember_me" => "true"})
+    test "writes remember_me cookie", %{conn: conn, account: account} do
+      conn = conn |> fetch_cookies() |> AccountAuth.log_in_account(account)
       assert get_session(conn, :account_token) == conn.cookies[@remember_me_cookie]
 
       assert %{value: signed_token, max_age: max_age} = conn.resp_cookies[@remember_me_cookie]
@@ -72,9 +72,9 @@ defmodule OperatelyWeb.AccountAuthTest do
       assert conn.assigns.current_account.id == account.id
     end
 
-    test "authenticates account from cookies", %{conn: conn, account: account} do
+    test "authenticates account from remember_me cookie", %{conn: conn, account: account} do
       logged_in_conn =
-        conn |> fetch_cookies() |> AccountAuth.log_in_account(account, %{"remember_me" => "true"})
+        conn |> fetch_cookies() |> AccountAuth.log_in_account(account)
 
       account_token = logged_in_conn.cookies[@remember_me_cookie]
       %{value: signed_token} = logged_in_conn.resp_cookies[@remember_me_cookie]
