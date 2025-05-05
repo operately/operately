@@ -17,8 +17,6 @@ import { BadgeStatus } from "../StatusBadge/types";
 import { Contributors } from "./Contributors";
 import { WarningCallout } from "../Callouts";
 import { isOverdue, Timeframe } from "../utils/timeframes";
-import { overdueDays } from "../utils/time";
-import { Overdue } from "../Chronometer/Chronometer.stories";
 
 export namespace GoalPage {
   interface Person {
