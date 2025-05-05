@@ -17,11 +17,11 @@ export function Contributors(props: GoalPage.Props) {
       <div className="mt-4">
         {props.contributors!.map((c) => (
           <div
-            className="border-t last:border-b border-stroke-base py-3 text-sm flex items-start gap-2"
+            className="border-t last:border-b border-stroke-base py-1.5 text-sm flex items-start gap-2"
             key={c.person.id}
           >
             <div className="flex items-start gap-2 w-40 shrink-0">
-              <Avatar person={c.person} size={24} />
+              <Avatar person={c.person} size={20} />
               <BlackLink className="font-medium shrink-0 mt-0.5" to={c.personLink} underline="hover">
                 {c.person.fullName}
               </BlackLink>
