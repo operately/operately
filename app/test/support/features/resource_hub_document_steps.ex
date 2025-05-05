@@ -174,11 +174,11 @@ defmodule Operately.Support.Features.ResourceHubDocumentSteps do
     |> UI.fill(testid: "name", with: new_name)
     |> UI.find(UI.query(testid: "copy-resource-modal"), fn el ->
       el
-      |> UI.assert_text(new_name)
       |> UI.click(testid: "one-0")
       |> UI.assert_text("one")
       |> UI.click(testid: "submit")
     end)
+    |> UI.refute_has(testid: "copy-resource-modal")
   end
 
   step :copy_document_from_document_page_into_hub_root, ctx, new_name do
@@ -188,11 +188,11 @@ defmodule Operately.Support.Features.ResourceHubDocumentSteps do
     |> UI.fill(testid: "name", with: new_name)
     |> UI.find(UI.query(testid: "copy-resource-modal"), fn el ->
       el
-      |> UI.assert_text(new_name)
       |> UI.click(testid: "go-back-icon")
       |> UI.assert_text("Resource hub")
       |> UI.click(testid: "submit")
     end)
+    |> UI.refute_has(testid: "copy-resource-modal")
   end
 
   step :copy_document_into_folder, ctx, document_name do
