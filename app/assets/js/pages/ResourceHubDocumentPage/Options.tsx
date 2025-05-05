@@ -41,16 +41,15 @@ function CopyLink({ showCopyModal }) {
 }
 
 function DeleteAction() {
-  const { document } = useLoadedData();
+  const { document, folder, resourceHub } = useLoadedData();
   const [remove] = useDeleteResourceHubDocument();
   const navigate = useNavigate();
 
   const redirect = () => {
-    if (document.parentFolder) {
-      navigate(Paths.resourceHubFolderPath(document.parentFolder.id!));
+    if (folder) {
+      navigate(Paths.resourceHubFolderPath(folder.id!));
     } else {
-      assertPresent(document.resourceHub, "resourceHub must be present in document");
-      navigate(Paths.resourceHubPath(document.resourceHub.id!));
+      navigate(Paths.resourceHubPath(resourceHub.id!));
     }
   };
 
