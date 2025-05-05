@@ -3,6 +3,8 @@ import { GoalPage } from ".";
 import { genPeople } from "../utils/storybook/genPeople";
 import { genRelativeDate } from "../utils/storybook/genDates";
 import { ro } from "date-fns/locale";
+import { currentQuarter } from "../utils/timeframes";
+import { fn } from "@storybook/test";
 
 const meta: Meta<typeof GoalPage> = {
   title: "Pages/GoalPage",
@@ -257,8 +259,7 @@ const defaultArgs = {
   reviewer: reviewer,
   targets: mockTargets,
   relatedWorkItems: relatedWorkItems,
-  startDate: genRelativeDate(-15),
-  endDate: genRelativeDate(15),
+  timeframe: currentQuarter(),
   contributors: contributors,
   canEdit: true,
   description,
@@ -269,6 +270,8 @@ const defaultArgs = {
   closedOn: null,
   retrospectiveLink: null,
   privacyLevel: "internal" as const,
+
+  updateTimeframe: fn(),
 };
 
 export default meta;

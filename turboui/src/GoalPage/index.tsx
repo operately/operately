@@ -16,6 +16,7 @@ import { RelatedWork } from "./RelatedWork";
 import { BadgeStatus } from "../StatusBadge/types";
 import { Contributors } from "./Contributors";
 import { WarningCallout } from "../Callouts";
+import { Timeframe } from "../utils/timeframes";
 
 export namespace GoalPage {
   interface Person {
@@ -60,10 +61,9 @@ export namespace GoalPage {
     reviewer?: Person;
     contributors: Contributor[];
 
+    timeframe: Timeframe;
     targets: GoalTargetList.Target[];
     relatedWorkItems: MiniWorkMap.WorkItem[];
-    startDate: Date;
-    endDate: Date;
     checkIns: CheckIn[];
     messages: Message[];
     status: BadgeStatus;
@@ -75,6 +75,8 @@ export namespace GoalPage {
     privacyLevel: "public" | "internal" | "confidential" | "secret";
 
     neglectedGoal?: boolean;
+
+    updateTimeframe: (timeframe: Timeframe) => Promise<void>;
   }
 
   export interface CheckIn {
