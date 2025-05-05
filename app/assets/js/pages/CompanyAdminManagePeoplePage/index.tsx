@@ -17,6 +17,7 @@ import { Avatar } from "turboui";
 import Modal, { ModalState, useModalState } from "@/components/Modal";
 import { createTestId } from "@/utils/testid";
 import { useMe } from "@/contexts/CurrentCompanyContext";
+import plurarize from "@/utils/plurarize";
 
 interface LoaderResult {
   company: Companies.Company;
@@ -224,7 +225,7 @@ function PersonOptionRemove({ person, onClick }: { person: People.Person; onClic
 
   return (
     <MenuActionItem icon={Icons.IconUserX} onClick={onClick} danger testId={createTestId("remove-person", person.id!)}>
-      Deactivate Account
+      {person.hasOpenInvitation ? "Revoke Invitation" : "Deactivate Account"}
     </MenuActionItem>
   );
 }
@@ -232,21 +233,28 @@ function PersonOptionRemove({ person, onClick }: { person: People.Person; onClic
 function RemovePersonModal({ person, state }: { person: People.Person; state: ModalState }) {
   const refresh = Pages.useRefresh();
   const [remove, { loading }] = Companies.useRemoveCompanyMember();
+  const firstName = People.firstName(person);
+  const isInvitation = person.hasOpenInvitation;
 
   const handleRemoveMember = async () => {
     await remove({ personId: person.id });
     refresh();
   };
 
+  const title = isInvitation ? `Revoke invitation for ${firstName}?` : `Remove ${firstName} from the company?`;
+
+  const message = isInvitation
+    ? `This will revoke ${firstName}'s invitation. You can create a new invitation later if needed.`
+    : `This will deactivate ${firstName}'s account, restricting access to company resources. You can restore access later if needed.`;
+
+  const buttonText = isInvitation ? "Revoke" : "Deactivate";
+
   return (
-    <Modal title={`Remove ${People.firstName(person)} from the company?`} isOpen={state.isOpen} hideModal={state.hide}>
-      <div>
-        This will deactivate {People.firstName(person)}'s account, restricting access to company resources. You can
-        restore access later if needed.
-      </div>
+    <Modal title={title} isOpen={state.isOpen} hideModal={state.hide}>
+      <div>{message}</div>
       <div className="mt-8 flex gap-2">
         <PrimaryButton onClick={handleRemoveMember} loading={loading} testId="confirm-remove-member" size="sm">
-          Deactivate
+          {buttonText}
         </PrimaryButton>
         <SecondaryButton onClick={state.hide} testId="cancel-remove-member" size="sm">
           Cancel
@@ -342,16 +350,15 @@ function ExpiresIn({ invitation }: { invitation: Invitations.Invitation }) {
 
   if (diff < 60 * 1000) {
     humanDuration = "less than a minute";
-  }
-
-  if (diff < 60 * 60 * 1000) {
+  } else if (diff < 60 * 60 * 1000) {
     let value = Math.ceil(diff / (60 * 1000));
-    humanDuration = value === 1 ? "1 minute" : value + " minutes";
-  }
-
-  if (diff < 24 * 60 * 60 * 1000) {
+    humanDuration = plurarize(value, "minute", "minutes");
+  } else if (diff < 24 * 60 * 60 * 1000) {
     let value = Math.ceil(diff / (60 * 60 * 1000));
-    humanDuration = value === 1 ? "1 hour" : value + " hours";
+    humanDuration = plurarize(value, "hour", "hours");
+  } else {
+    let value = Math.ceil(diff / (24 * 60 * 60 * 1000));
+    humanDuration = plurarize(value, "day", "days");
   }
 
   return <div>Expires in {humanDuration}</div>;
