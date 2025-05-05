@@ -42,8 +42,13 @@ export function Timeline(props: GoalPage.Props) {
       {isZeroState ? (
         <ZeroState {...props} />
       ) : (
-        <div className="mt-2">
-          <Chronometer start={timeframe.startDate!} end={timeframe.endDate!} color="stone" />
+        <div className="mt-1">
+          <Chronometer
+            start={timeframe.startDate!}
+            end={timeframe.endDate!}
+            color="stone"
+            showOverdueWarning={!props.closedOn}
+          />
         </div>
       )}
     </div>

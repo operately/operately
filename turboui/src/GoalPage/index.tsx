@@ -16,7 +16,9 @@ import { RelatedWork } from "./RelatedWork";
 import { BadgeStatus } from "../StatusBadge/types";
 import { Contributors } from "./Contributors";
 import { WarningCallout } from "../Callouts";
-import { Timeframe } from "../utils/timeframes";
+import { isOverdue, Timeframe } from "../utils/timeframes";
+import { overdueDays } from "../utils/time";
+import { Overdue } from "../Chronometer/Chronometer.stories";
 
 export namespace GoalPage {
   interface Person {
@@ -119,7 +121,7 @@ export function GoalPage(props: GoalPage.Props) {
 function MainContent(props: GoalPage.Props) {
   return (
     <div className="space-y-8 sm:col-span-7 sm:pr-4">
-      <NeglectedGoalWarning {...props} />
+      <Warnings {...props} />
       <Description {...props} />
       <Targets {...props} />
       <CheckIns {...props} />
@@ -152,9 +154,19 @@ function ClosedBanner(props: GoalPage.Props) {
   );
 }
 
-function NeglectedGoalWarning(props: GoalPage.Props) {
-  if (!props.neglectedGoal) return null;
+function Warnings(props: GoalPage.Props) {
+  if (isOverdue(props.timeframe)) {
+    return <OverdueWarning {...props} />;
+  }
 
+  if (props.neglectedGoal) {
+    return <NeglectedGoalWarning {...props} />;
+  }
+
+  return null;
+}
+
+function NeglectedGoalWarning(props: GoalPage.Props) {
   if (props.canEdit) {
     return (
       <WarningCallout
@@ -170,6 +182,29 @@ function NeglectedGoalWarning(props: GoalPage.Props) {
           <div>
             The last check-in was more than a month ago. The information may be outdated. Please ping the champion
             check-in or close the goal.
+          </div>
+        }
+      />
+    );
+  }
+}
+
+function OverdueWarning(props: GoalPage.Props) {
+  if (props.canEdit) {
+    return (
+      <WarningCallout
+        message="Overdue goal"
+        description={<div>This goal is overdue. Close it or update the timeline.</div>}
+      />
+    );
+  } else {
+    return (
+      <WarningCallout
+        message="Overdue goal"
+        description={
+          <div>
+            This goal is overdue. The information may be outdated. Please ping the champion to check-in or update the
+            timeline.
           </div>
         }
       />
