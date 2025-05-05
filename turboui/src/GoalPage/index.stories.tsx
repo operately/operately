@@ -300,6 +300,10 @@ export const ZeroStateForChampions: Story = {
     description: "",
     reviewer: null,
     status: "pending",
+    timeframe: {
+      startDate: new Date(2025, 3, 1), // Apr 1st, 2025
+      endDate: null,
+    },
   },
 };
 
@@ -315,6 +319,10 @@ export const ZeroStateReadOnly: Story = {
     description: "",
     reviewer: null,
     status: "pending",
+    timeframe: {
+      startDate: new Date(2025, 3, 1), // Apr 1st, 2025
+      endDate: null,
+    },
   },
 };
 
