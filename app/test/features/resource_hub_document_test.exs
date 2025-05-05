@@ -282,7 +282,7 @@ defmodule Operately.Features.ResourceHubDocumentTest do
       |> Steps.given_document_within_folder_exists()
       |> Steps.visit_document_page()
       |> Steps.copy_document_from_document_page_into_hub_root(new_name)
-      |> Steps.visit_resource_hub_page()
+      |> Steps.visit_resource_hub_page("Resource hub")
       |> Steps.assert_document_present_in_files_list(new_name)
     end
   end
