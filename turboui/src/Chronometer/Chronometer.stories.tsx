@@ -1,5 +1,6 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { Chronometer } from '.';
+import type { Meta, StoryObj } from "@storybook/react";
+import { Chronometer } from ".";
+import { on } from "events";
 
 /**
  * The Chronometer component visualizes a time period with a progress indicator.
@@ -8,21 +9,21 @@ import { Chronometer } from '.';
  */
 
 const meta = {
-  title: 'Components/Chronometer',
+  title: "Components/Chronometer",
   component: Chronometer,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
 } satisfies Meta<typeof Chronometer>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 const now = new Date();
+const twoMonthsAgo = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000);
 const oneMonthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 const oneMonthFromNow = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
-
 /**
  * Basic usage of the Chronometer component showing a two-month period centered around the current date.
  * The component displays dates in a readable format and shows progress through the time period.
@@ -80,6 +81,31 @@ export const NotStartedYet: Story = {
     (Story) => (
       <div className="w-64">
         <Story />
+      </div>
+    ),
+  ],
+};
+
+/**
+ * Shows how the component appears when displaying an expired time period.
+ * The progress bar will be full (100%) since the end date has passed,
+ * and the end date will be highlighted with a red color.
+ */
+export const Overdue: Story = {
+  args: {
+    start: twoMonthsAgo,
+    end: oneMonthAgo,
+  },
+  decorators: [
+    (Story) => (
+      <div>
+        <div className="w-64">
+          <Story />
+        </div>
+
+        <div className="w-64 mt-4">
+          <Chronometer start={twoMonthsAgo} end={oneMonthAgo} color="stone" />
+        </div>
       </div>
     ),
   ],

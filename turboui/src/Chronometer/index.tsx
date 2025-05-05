@@ -2,6 +2,8 @@ import React from "react";
 
 import { match } from "ts-pattern";
 import classNames from "../utils/classnames";
+import { IconAlertTriangleFilled } from "@tabler/icons-react";
+import { Tooltip } from "../Tooltip";
 
 export type Color = "indigo" | "stone";
 
@@ -11,7 +13,8 @@ interface Props {
   color?: Color;
 }
 
-const gridLayout = "px-2 py-2 w-full grid grid-cols-[auto_1fr_auto] items-center gap-2 absolute top-0 left-0 bottom-0";
+const gridLayout =
+  "px-2 py-2 w-full grid grid-cols-[auto_1fr_auto_auto] items-center gap-2 absolute top-0 left-0 bottom-0";
 
 export function Chronometer({ start, end, color = "indigo" }: Props) {
   //
@@ -34,29 +37,45 @@ export function Chronometer({ start, end, color = "indigo" }: Props) {
     zIndex: 10,
   };
 
+  const overdue = new Date(end).getTime() < new Date().getTime();
+
   return (
     <ChronometerContainer>
       <ChronometerProgress progress={progress} color={color} />
 
       <div className={gridLayout} style={completedStyle}>
-        <TimeDisplay time={start} isHighlighted={true} color={color} />
+        <TimeDisplay time={start} isHighlighted={true} bgColor={color} />
         <Dividers color={color} />
-        <TimeDisplay time={end} isHighlighted={true} color={color} />
+        <TimeDisplay time={end} isHighlighted={true} bgColor={color} />
+        {overdue && <OverdueWarning bgColor={color} isHighlighted={true} />}
       </div>
 
       <div className={gridLayout} style={remainingStyle}>
-        <TimeDisplay time={start} color={color} />
+        <TimeDisplay time={start} bgColor={color} />
         <Dividers color="stone" />
-        <TimeDisplay time={end} color={color} />
+        <TimeDisplay time={end} bgColor={color} />
       </div>
     </ChronometerContainer>
+  );
+}
+
+function OverdueWarning({ bgColor }: { bgColor: Color }) {
+  const className = classNames("shrink-0", {
+    "text-callout-error-message": bgColor === "stone",
+    "text-white-1": bgColor === "indigo",
+  });
+
+  return (
+    <Tooltip content="This goal is overdue" className={className}>
+      <IconAlertTriangleFilled size={16} className={className} />
+    </Tooltip>
   );
 }
 
 function ChronometerContainer({ children }: { children: React.ReactNode }) {
   return (
     <div className="w-full">
-      <div className="border border-stroke-base shadow-sm bg-surface-dimmed text-xs rounded-lg py-4 relative overflow-hidden">
+      <div className="border border-stroke-base shadow-sm bg-surface-dimmed text-xs rounded-lg py-4 relative">
         {children}
       </div>
     </div>
@@ -74,13 +93,13 @@ function ChronometerProgress({ progress, color }: { progress: number; color: Col
 
 interface TimeDisplayProps {
   time: Date | string;
-  color: Color;
+  bgColor: Color;
   isHighlighted?: boolean;
 }
 
-function TimeDisplay({ time, isHighlighted = false, color }: TimeDisplayProps) {
+function TimeDisplay({ time, bgColor, isHighlighted = false }: TimeDisplayProps) {
   const containerClass = classNames("text-xs z-1 relative whitespace-nowrap", {
-    "text-white-1 font-bold": isHighlighted && color === "indigo",
+    "text-white-1 font-bold": isHighlighted && bgColor === "indigo",
   });
 
   if (typeof time === "string") {
@@ -101,11 +120,7 @@ function TimeDisplay({ time, isHighlighted = false, color }: TimeDisplayProps) {
     }
   };
 
-  return (
-    <span className={containerClass}>
-      {formatDate(time)}
-    </span>
-  );
+  return <span className={containerClass}>{formatDate(time)}</span>;
 }
 
 function findProgress(start: Date | string, end: Date | string) {
