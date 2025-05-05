@@ -9,7 +9,7 @@ import { createTestId } from "@/utils/testid";
 import { useNodesContext } from "@/features/ResourceHub";
 import { MoveResourceMenuItem, MoveResourceModal } from "./MoveResource";
 import { CopyResourceMenuItem } from "./CopyResource";
-import { CopyDocumentModal } from "./CopyDocument";
+import { CopyDocumentModal } from "./CopyDocumentModal";
 import { downloadMarkdown, exportToMarkdown } from "@/utils/markdown";
 
 interface Props {
@@ -17,7 +17,7 @@ interface Props {
 }
 
 export function DocumentMenu({ document }: Props) {
-  const { permissions } = useNodesContext();
+  const { permissions, parent } = useNodesContext();
 
   const [showMoveForm, toggleMoveForm] = useBoolState(false);
   const [showCopyForm, toggleCopyForm] = useBoolState(false);
@@ -43,7 +43,7 @@ export function DocumentMenu({ document }: Props) {
       </Menu>
 
       <MoveResourceModal resource={document} resourceType="document" isOpen={showMoveForm} hideModal={toggleMoveForm} />
-      <CopyDocumentModal resource={document} isOpen={showCopyForm} hideModal={toggleCopyForm} />
+      <CopyDocumentModal parent={parent} resource={document} isOpen={showCopyForm} hideModal={toggleCopyForm} />
     </>
   );
 }
