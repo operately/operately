@@ -77,8 +77,8 @@ export function Chronometer({ start, end, color = "indigo", showOverdueWarning =
 }
 
 function OverdueWarning({ bgColor, end }: { bgColor: Color; end: Date }) {
-  const className = classNames("shrink-0 text-callout-error-message", {
-    "text-callout-error-icon dark:text-white-1": bgColor === "stone",
+  const className = classNames("shrink-0", {
+    "text-callout-error-message dark:text-white-1": bgColor === "stone",
     "text-white-1": bgColor === "indigo",
   });
 
