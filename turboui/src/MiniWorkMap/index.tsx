@@ -1,6 +1,9 @@
 import { BlackLink } from "../Link";
 import { AvatarList } from "../Avatar";
 import { IconCircleCheckFilled, IconHexagons, IconTarget } from "@tabler/icons-react";
+import { StatusBadge } from "../StatusBadge";
+import { match } from "ts-pattern";
+import { IconGoal, IconProject } from "../icons";
 
 export namespace MiniWorkMap {
   interface Person {
@@ -28,7 +31,7 @@ export namespace MiniWorkMap {
 
 export function MiniWorkMap(props: MiniWorkMap.Props) {
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col">
       {props.items.map((item) => (
         <ItemView key={item.id} item={item} depth={0} />
       ))}
@@ -36,15 +39,18 @@ export function MiniWorkMap(props: MiniWorkMap.Props) {
   );
 }
 
-function ItemView({ item, depth }: { item: MiniWorkMap.WorkItem, depth: number }) {
+function ItemView({ item, depth }: { item: MiniWorkMap.WorkItem; depth: number }) {
   return (
     <>
-      <div className="flex items-center gap-2" style={{ paddingLeft: depth * 20 }}>
+      <div
+        className="flex items-center gap-2 border-t last:border-b border-stroke-base py-1.5"
+        style={{ paddingLeft: depth * 20 }}
+      >
         <ItemIcon item={item} />
         <ItemName item={item} />
-        <Dots />
         <ItemPeople item={item} />
-        <Progress item={item} />
+        <div className="flex-1" />
+        <StatusBadge status={item.status} />
       </div>
 
       <Subitems items={item.subitems} depth={depth + 1} />
@@ -52,30 +58,31 @@ function ItemView({ item, depth }: { item: MiniWorkMap.WorkItem, depth: number }
   );
 }
 
-function Subitems({ items, depth }: { items: MiniWorkMap.WorkItem[], depth: number }) {
-  return <>
-    {items.map((subitem) => (
-      <ItemView key={subitem.id} item={subitem} depth={depth} />
-    ))}
-  </>
+function Subitems({ items, depth }: { items: MiniWorkMap.WorkItem[]; depth: number }) {
+  return (
+    <>
+      {items.map((subitem) => (
+        <ItemView key={subitem.id} item={subitem} depth={depth} />
+      ))}
+    </>
+  );
 }
 
 function ItemIcon({ item }: { item: MiniWorkMap.WorkItem }) {
-  if(item.type === "goal") {
-   return <IconTarget size={16} className="text-red-500" />
-  }
-
-  if(item.type === "project") {
-    return <IconHexagons size={16} className="text-indigo-500" />
-  }
-
-  throw new Error(`Unknown item type: ${item.type}`);
+  return match(item.type)
+    .with("goal", () => <IconGoal size={20} />)
+    .with("project", () => <IconProject size={20} />)
+    .otherwise(() => {
+      throw new Error(`Unknown item type: ${item.type}`);
+    });
 }
 
 function ItemPeople({ item }: { item: MiniWorkMap.WorkItem }) {
-  return <div className="shrink-0">
-    <AvatarList people={item.people} size={20} stacked />
-  </div>
+  return (
+    <div className="shrink-0">
+      <AvatarList people={item.people} size={18} stacked />
+    </div>
+  );
 }
 
 function ItemName({ item }: { item: MiniWorkMap.WorkItem }) {
@@ -86,19 +93,8 @@ function ItemName({ item }: { item: MiniWorkMap.WorkItem }) {
   );
 
   if (!item.completed) return nameElement;
-  
-  return (
-    <>
-      <s>{nameElement}</s>
-      <IconCircleCheckFilled size={16} className="text-green-700" />
-      <div className="text-sm text-green-700 font-medium">Done</div>
-    </>
-  );
-}
 
-
-function Dots() {
-  return <div className="border-t-2 border-dotted border-stroke-base flex-1 mx-1" />;
+  return <s>{nameElement}</s>;
 }
 
 const PROGRESS_COLORS: Record<string, string> = {
@@ -112,13 +108,13 @@ const PROGRESS_COLORS: Record<string, string> = {
 };
 
 function Progress({ item }: { item: MiniWorkMap.WorkItem }) {
-  if(isNaN(item.progress)) {
+  if (isNaN(item.progress)) {
     throw new Error(`Progress is NaN for item: ${item.name}`);
   }
 
   const color = PROGRESS_COLORS[item.status];
 
-  if(!color) {
+  if (!color) {
     throw new Error(`Unknown status color for item: ${item.name}`);
   }
 

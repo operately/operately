@@ -1,9 +1,11 @@
-import { IconTarget, IconChecklist, IconChevronDown, IconChevronRight } from "@tabler/icons-react";
+import { IconChevronDown, IconChevronRight } from "@tabler/icons-react";
 import { BlackLink } from "../../../Link";
 import classNames from "../../../utils/classnames";
 import { useItemStatus } from "../../hooks/useItemStatus";
 import { useTableRowContext } from "./context";
+import { IconGoal, IconProject } from "../../../icons";
 import { PrivacyIndicator } from "../../../PrivacyIndicator";
+import { match } from "ts-pattern";
 
 export function ItemNameCell() {
   return (
@@ -48,22 +50,11 @@ function Name() {
 
 function Icon() {
   const { item } = useTableRowContext();
-  const isGoal = item.type === "goal";
-  const isProject = item.type === "project";
 
-  const className = classNames(
-    "flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center mr-2",
-    isGoal
-      ? "text-red-500 dark:text-red-400 bg-red-50 dark:bg-red-900/30"
-      : "text-blue-500 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30",
-  );
-
-  return (
-    <div className={className}>
-      {isGoal && <IconTarget size={12} />}
-      {isProject && <IconChecklist size={12} />}
-    </div>
-  );
+  return match(item.type)
+    .with("goal", () => <IconGoal size={20} className="mr-2" />)
+    .with("project", () => <IconProject size={20} className="mr-2" />)
+    .run();
 }
 
 function Indentation() {
@@ -118,13 +109,13 @@ function PrivacyIndicatorWrapper() {
   if (!item.privacy) return null;
 
   return (
-      <PrivacyIndicator
-        privacyLevel={item.privacy}
-        resourceType={item.type}
-        spaceName={item.space?.name || ""}
-        iconSize={16}
-        className="ml-2"
-        testId="privacy-indicator"
-      />
+    <PrivacyIndicator
+      privacyLevel={item.privacy}
+      resourceType={item.type}
+      spaceName={item.space?.name || ""}
+      iconSize={16}
+      className="ml-2"
+      testId="privacy-indicator"
+    />
   );
 }
