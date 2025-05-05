@@ -216,3 +216,18 @@ export function endOfCurrentYear() {
   const now = new Date();
   return new Date(now.getFullYear(), 11, 31);
 }
+
+export function overdueDays(date: Date): number | null {
+  const now = +new Date();
+  const d = date.getTime();
+
+  if (now < d) return null;
+
+  const days = Math.floor((now - d) / (1000 * 60 * 60 * 24));
+
+  if (days < 1) {
+    return null;
+  }
+
+  return days;
+}

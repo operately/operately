@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Chronometer } from ".";
-import { on } from "events";
 
 /**
  * The Chronometer component visualizes a time period with a progress indicator.
@@ -95,6 +94,7 @@ export const Overdue: Story = {
   args: {
     start: twoMonthsAgo,
     end: oneMonthAgo,
+    showOverdueWarning: true,
   },
   decorators: [
     (Story) => (
@@ -104,7 +104,7 @@ export const Overdue: Story = {
         </div>
 
         <div className="w-64 mt-4">
-          <Chronometer start={twoMonthsAgo} end={oneMonthAgo} color="stone" />
+          <Chronometer start={twoMonthsAgo} end={oneMonthAgo} color="stone" showOverdueWarning={true} />
         </div>
       </div>
     ),

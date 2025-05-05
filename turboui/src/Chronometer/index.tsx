@@ -4,6 +4,7 @@ import { match } from "ts-pattern";
 import classNames from "../utils/classnames";
 import { IconAlertTriangleFilled } from "@tabler/icons-react";
 import { Tooltip } from "../Tooltip";
+import { durationHumanized, overdueDays } from "../utils/time";
 
 export type Color = "indigo" | "stone";
 
@@ -11,12 +12,16 @@ interface Props {
   start: Date;
   end: Date;
   color?: Color;
+
+  showOverdueWarning?: boolean;
 }
 
-const gridLayout =
-  "px-2 py-2 w-full grid grid-cols-[auto_1fr_auto_auto] items-center gap-2 absolute top-0 left-0 bottom-0";
+const gridLayout = classNames(
+  "px-2 py-2 w-full absolute top-0 left-0 bottom-0",
+  "grid grid-cols-[auto_1fr_auto] items-center gap-2",
+);
 
-export function Chronometer({ start, end, color = "indigo" }: Props) {
+export function Chronometer({ start, end, color = "indigo", showOverdueWarning = false }: Props) {
   //
   // We are displaying two separate grids, one for the completed part and one for the remaining part.
   // The completed part is clipped to the left, and the remaining part is clipped to the right.
@@ -24,11 +29,14 @@ export function Chronometer({ start, end, color = "indigo" }: Props) {
   //
 
   const progress = React.useMemo(() => findProgress(start, end), [start, end]);
+  const overdueDaysCount = overdueDays(end);
+  const overdue = showOverdueWarning && overdueDaysCount && overdueDaysCount > 0;
 
   const completedStyle = {
     clipPath: `inset(0 ${100 - progress}% 0 0)`,
     WebkitClipPath: `inset(0 ${100 - progress}% 0 0)`,
     zIndex: 20,
+    right: overdue ? 16 : 0,
   };
 
   const remainingStyle = {
@@ -37,38 +45,51 @@ export function Chronometer({ start, end, color = "indigo" }: Props) {
     zIndex: 10,
   };
 
-  const overdue = new Date(end).getTime() < new Date().getTime();
-
   return (
     <ChronometerContainer>
       <ChronometerProgress progress={progress} color={color} />
 
-      <div className={gridLayout} style={completedStyle}>
-        <TimeDisplay time={start} isHighlighted={true} bgColor={color} />
-        <Dividers color={color} />
-        <TimeDisplay time={end} isHighlighted={true} bgColor={color} />
-        {overdue && <OverdueWarning bgColor={color} isHighlighted={true} />}
+      <div className="absolute inset-0 z-20">
+        <div className="absolute inset-0" style={{ right: overdue ? 20 : 0 }}>
+          <div className={gridLayout} style={completedStyle}>
+            <TimeDisplay time={start} isHighlighted={true} bgColor={color} />
+            <Dividers color={color} />
+            <TimeDisplay time={end} isHighlighted={true} bgColor={color} />
+          </div>
+        </div>
+
+        {overdue && <OverdueWarning bgColor={color} end={end} />}
       </div>
 
-      <div className={gridLayout} style={remainingStyle}>
-        <TimeDisplay time={start} bgColor={color} />
-        <Dividers color="stone" />
-        <TimeDisplay time={end} bgColor={color} />
+      <div className="absolute inset-0 z-10">
+        <div className="absolute inset-0" style={{ right: overdue ? 20 : 0 }}>
+          <div className={gridLayout} style={remainingStyle}>
+            <TimeDisplay time={start} bgColor={color} />
+            <Dividers color="stone" />
+            <TimeDisplay time={end} bgColor={color} />
+          </div>
+        </div>
+
+        {overdue && <OverdueWarning bgColor={color} end={end} />}
       </div>
     </ChronometerContainer>
   );
 }
 
-function OverdueWarning({ bgColor }: { bgColor: Color }) {
-  const className = classNames("shrink-0", {
-    "text-callout-error-message": bgColor === "stone",
+function OverdueWarning({ bgColor, end }: { bgColor: Color; end: Date }) {
+  const className = classNames("shrink-0 text-callout-error-message", {
+    "text-callout-error-icon dark:text-white-1": bgColor === "stone",
     "text-white-1": bgColor === "indigo",
   });
 
+  const content = "Overdue by " + durationHumanized(end, new Date());
+
   return (
-    <Tooltip content="This goal is overdue" className={className}>
-      <IconAlertTriangleFilled size={16} className={className} />
-    </Tooltip>
+    <div className="absolute top-2 right-[8px] z-30">
+      <Tooltip content={content} className="text-sm shrink-0">
+        <IconAlertTriangleFilled size={16} className={className} />
+      </Tooltip>
+    </div>
   );
 }
 
@@ -83,12 +104,18 @@ function ChronometerContainer({ children }: { children: React.ReactNode }) {
 }
 
 function ChronometerProgress({ progress, color }: { progress: number; color: Color }) {
-  const className = classNames("absolute top-0 left-0 bottom-0 transition-all duration-300 z-10", {
+  const outer = classNames("absolute top-0 left-0 bottom-0 w-full rounded-lg overflow-hidden");
+
+  const inner = classNames("absolute top-0 left-0 bottom-0 transition-all duration-300 z-10", {
     "bg-indigo-500": color === "indigo",
     "bg-stone-300 opacity-50": color === "stone",
   });
 
-  return <div className={className} style={{ width: progress + "%" }} />;
+  return (
+    <div className={outer}>
+      <div className={inner} style={{ width: progress + "%" }} />
+    </div>
+  );
 }
 
 interface TimeDisplayProps {
