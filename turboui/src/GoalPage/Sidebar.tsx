@@ -2,21 +2,60 @@ import { GoalPage } from ".";
 import { Chronometer } from "../Chronometer";
 import { IconQuestionMark } from "@tabler/icons-react";
 import { Avatar, AvatarPerson } from "../Avatar";
+import { SectionHeader } from "./SectionHeader";
+import { SecondaryButton } from "../Button";
+import { TimeframeSelectorDialog } from "../TimeframeSelectorDialog";
+import { useState } from "react";
+import { Timeframe } from "../utils/timeframes";
+import { Trigger } from "@radix-ui/react-popover";
+import { set } from "date-fns";
 
 export function Sidebar(props: GoalPage.Props) {
   return (
     <div className="sm:col-span-3 space-y-6 hidden sm:block">
-      <div>
-        <div className="font-bold mb-2">Timeline</div>
-
-        <Chronometer start={props.startDate} end={props.endDate} color="stone" />
-      </div>
+      <Timeline {...props} />
 
       <div className="space-y-3">
         <div className="font-bold">Team</div>
 
         <Champion {...props} />
         <Reviewer {...props} />
+      </div>
+    </div>
+  );
+}
+
+function Timeline(props: GoalPage.Props) {
+  const [open, setOpen] = useState(false);
+  const [timeframe, setTimeframe] = useState<Timeframe>(props.timeframe);
+
+  const handleTimeframeChange = (timeframe: Timeframe) => {
+    setTimeframe(timeframe);
+    props.updateTimeframe(timeframe);
+  };
+
+  const edit = (
+    <TimeframeSelectorDialog
+      open={open}
+      onOpenChange={setOpen}
+      timeframe={timeframe}
+      setTimeframe={handleTimeframeChange}
+      alignContent="center"
+      trigger={
+        <Trigger>
+          <SecondaryButton size="xxs" onClick={() => setOpen(true)}>
+            Edit
+          </SecondaryButton>
+        </Trigger>
+      }
+    />
+  );
+
+  return (
+    <div>
+      <SectionHeader title="Timeline" buttons={edit} showButtons={props.canEdit} />
+      <div className="mt-2">
+        <Chronometer start={timeframe.startDate!} end={timeframe.endDate!} color="stone" />
       </div>
     </div>
   );

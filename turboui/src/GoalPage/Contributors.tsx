@@ -12,7 +12,7 @@ export function Contributors(props: GoalPage.Props) {
 
   return (
     <div>
-      <SectionHeader title="Contributors" buttons={[<Info />]} showButtons={true} />
+      <SectionHeader title="Contributors" buttons={<Info />} showButtons={true} />
 
       <div className="mt-4">
         {props.contributors!.map((c) => (

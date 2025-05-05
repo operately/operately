@@ -33,7 +33,7 @@ export namespace TimeframeSelectorDialog {
     trigger?: React.ReactNode;
     timeframe: Timeframe;
     setTimeframe: SetTimeframe;
-    alignContent?: "start" | "end";
+    alignContent?: "start" | "center" | "end";
 
     open: boolean;
     onOpenChange: (open: boolean) => void;
