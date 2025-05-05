@@ -1,4 +1,5 @@
 import { match } from "ts-pattern";
+import { overdueDays } from "./time";
 
 export type TimeframeType = "month" | "quarter" | "year" | "days";
 
@@ -83,6 +84,14 @@ export function currentYear(): Timeframe {
   };
 }
 
+export function lastYear(): Timeframe {
+  return {
+    startDate: new Date(getCurrentFullYear() - 1, 0, 1),
+    endDate: new Date(getCurrentFullYear() - 1, 11, 31),
+    type: "year",
+  };
+}
+
 export function currentMonth(): Timeframe {
   const now = new Date();
   return {
@@ -137,4 +146,12 @@ function fourthQuarterOfYear(year: number): Timeframe {
     endDate: new Date(year, 11, 31),
     type: "quarter",
   };
+}
+
+export function isOverdue(timeframe: Timeframe) {
+  if (!timeframe.startDate) return false;
+  if (!timeframe.endDate) return false;
+
+  const days = overdueDays(timeframe.endDate);
+  return days && days >= 1;
 }

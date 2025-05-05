@@ -1,9 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { GoalPage } from ".";
 import { genPeople } from "../utils/storybook/genPeople";
-import { genRelativeDate } from "../utils/storybook/genDates";
-import { ro } from "date-fns/locale";
-import { currentQuarter } from "../utils/timeframes";
+import { currentQuarter, lastYear } from "../utils/timeframes";
 import { fn } from "@storybook/test";
 
 const meta: Meta<typeof GoalPage> = {
@@ -355,6 +353,7 @@ export const ClosedGoal: Story = {
     status: "achieved",
     closedOn: new Date(2025, 3, 30), // Apr 30th, 2025
     retrospectiveLink: "/retrospective/1",
+    timeframe: lastYear(),
   },
 };
 
@@ -377,5 +376,12 @@ export const NeglectedGoalReadOnly: Story = {
     ...defaultArgs,
     neglectedGoal: true,
     canEdit: false,
+  },
+};
+
+export const OverdueGoal: Story = {
+  args: {
+    ...defaultArgs,
+    timeframe: lastYear(),
   },
 };
