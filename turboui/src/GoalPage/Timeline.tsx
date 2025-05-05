@@ -33,12 +33,35 @@ export function Timeline(props: GoalPage.Props) {
     />
   );
 
+  const isZeroState = !props.timeframe.startDate || !props.timeframe.endDate;
+
   return (
     <div>
       <SectionHeader title="Timeline" buttons={edit} showButtons={props.canEdit} />
-      <div className="mt-2">
-        <Chronometer start={timeframe.startDate!} end={timeframe.endDate!} color="stone" />
-      </div>
+
+      {isZeroState ? (
+        <ZeroState {...props} />
+      ) : (
+        <div className="mt-2">
+          <Chronometer start={timeframe.startDate!} end={timeframe.endDate!} color="stone" />
+        </div>
+      )}
     </div>
   );
+}
+
+function ZeroState(props: GoalPage.Props) {
+  if (props.canEdit) {
+    return (
+      <div className="mt-1">
+        <div className="text-content-dimmed text-sm">Set the timeline to track progress and stay on target.</div>
+      </div>
+    );
+  } else {
+    return (
+      <div className="mt-1">
+        <div className="text-content-dimmed text-sm">The champion didn't yet set a timeline for this goal.</div>
+      </div>
+    );
+  }
 }
