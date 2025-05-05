@@ -10,7 +10,11 @@ import { useLoadedData } from "./loader";
 import { IconCopy, IconEdit, IconTrash, IconFileExport } from "@tabler/icons-react";
 import { downloadMarkdown, exportToMarkdown } from "@/utils/markdown";
 
-export function Options() {
+interface Props {
+  showCopyModal: () => void;
+}
+
+export function Options({ showCopyModal }: Props) {
   const { document } = useLoadedData();
   assertPresent(document.permissions, "permissions must be present in document");
 
@@ -25,39 +29,27 @@ export function Options() {
           keepOutsideOnBigScreen
         />
       )}
-      {document.permissions.canCreateDocument && <CopyLink />}
+      {document.permissions.canCreateDocument && <CopyLink showCopyModal={showCopyModal} />}
       {document.permissions.canView && <ExportMarkdownAction />}
       {document.permissions.canDeleteDocument && <DeleteAction />}
     </PageOptions.Root>
   );
 }
 
-function CopyLink() {
-  const { document } = useLoadedData();
-  const parentId = document.parentFolderId || document.resourceHubId!;
-  const parentType = document.parentFolderId ? "folder" : "resource_hub";
-
-  return (
-    <PageOptions.Link
-      icon={IconCopy}
-      title="Copy"
-      to={Paths.resourceHubCopyDocumentPath(document.id!, parentId, parentType)}
-      testId="copy-document-link"
-    />
-  );
+function CopyLink({ showCopyModal }) {
+  return <PageOptions.Action icon={IconCopy} title="Copy" onClick={showCopyModal} testId="copy-document-link" />;
 }
 
 function DeleteAction() {
-  const { document } = useLoadedData();
+  const { document, folder, resourceHub } = useLoadedData();
   const [remove] = useDeleteResourceHubDocument();
   const navigate = useNavigate();
 
   const redirect = () => {
-    if (document.parentFolder) {
-      navigate(Paths.resourceHubFolderPath(document.parentFolder.id!));
+    if (folder) {
+      navigate(Paths.resourceHubFolderPath(folder.id!));
     } else {
-      assertPresent(document.resourceHub, "resourceHub must be present in document");
-      navigate(Paths.resourceHubPath(document.resourceHub.id!));
+      navigate(Paths.resourceHubPath(resourceHub.id!));
     }
   };
 

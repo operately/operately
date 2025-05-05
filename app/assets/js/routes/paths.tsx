@@ -234,10 +234,6 @@ export class Paths {
     return createCompanyPath(["documents", documentId, "edit"]);
   }
 
-  static resourceHubCopyDocumentPath(documentId: string, parentId: string, parentType: "folder" | "resource_hub") {
-    return createCompanyPath(["documents", documentId, "copy"]) + `?${parentType}=${parentId}`;
-  }
-
   static resourceHubNewDocumentPath(resourceHubId: string, folderId?: string) {
     if (folderId) {
       return createCompanyPath(["resource-hubs", resourceHubId, "new-document"]) + "?folderId=" + folderId;
