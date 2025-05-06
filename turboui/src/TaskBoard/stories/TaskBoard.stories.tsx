@@ -16,6 +16,15 @@ const meta = {
     tasks: { control: "object" },
     viewMode: { control: "select", options: ["table", "kanban", "timeline"] },
   },
+  decorators: [
+    (Story, context) => (
+      <div className="h-[800px] py-[4.5rem] px-2">
+        <Page title={context.args.title} size="fullwidth">
+          <Story />
+        </Page>
+      </div>
+    ),
+  ],
 } satisfies Meta<typeof TaskBoard>;
 
 export default meta;
@@ -26,13 +35,6 @@ type Story = StoryObj<typeof meta>;
  */
 export const Default: Story = {
   tags: ["autodocs"],
-  render: (args) => (
-    <div className="h-[800px] py-[4.5rem] px-2">
-      <Page title={args.title} size="fullwidth">
-        <TaskBoard {...args} />
-      </Page>
-    </div>
-  ),
   args: {
     title: "Task Board",
     tasks: mockTasks,
@@ -43,15 +45,8 @@ export const Default: Story = {
 /**
  * Empty TaskBoard with no tasks
  */
-export const Empty: Story = {
+export const EmptyState: Story = {
   tags: ["autodocs"],
-  render: (args) => (
-    <div className="h-[800px] py-4">
-      <Page title={args.title} size="fullwidth">
-        <TaskBoard {...args} />
-      </Page>
-    </div>
-  ),
   args: {
     title: "Project Tasks",
     tasks: mockEmptyTasks,
