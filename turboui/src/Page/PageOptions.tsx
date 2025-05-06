@@ -13,7 +13,13 @@ export function PageOptions({ options }: { options?: Page.Option[] }) {
   const [open, setOpen] = React.useState(false);
   const close = () => setOpen(false);
 
-  if (!options || options.length === 0) {
+  if (!options) {
+    return null;
+  }
+
+  const visibleOptions = options.filter((option) => !option.hidden);
+
+  if (visibleOptions.length === 0) {
     return null;
   }
 
@@ -22,7 +28,7 @@ export function PageOptions({ options }: { options?: Page.Option[] }) {
       <div className="absolute right-2.5 top-2.5 flex items-center gap-2">
         <DropdownMenu.Root open={open} onOpenChange={setOpen}>
           <Trigger />
-          <Content close={close} options={options} />
+          <Content close={close} options={visibleOptions} />
         </DropdownMenu.Root>
       </div>
     </div>
