@@ -17,6 +17,7 @@ import { BadgeStatus } from "../StatusBadge/types";
 import { Contributors } from "./Contributors";
 import { WarningCallout } from "../Callouts";
 import { isOverdue, Timeframe } from "../utils/timeframes";
+import { IconTrash, IconCircleCheck } from "@tabler/icons-react";
 
 export namespace GoalPage {
   interface Person {
@@ -52,6 +53,7 @@ export namespace GoalPage {
   export interface Props {
     spaceLink: string;
     workmapLink: string;
+    deleteLink: string;
 
     parentGoal: ParentGoal | null;
     goalName: string;
@@ -98,8 +100,25 @@ export function GoalPage(props: GoalPage.Props) {
     { to: props.workmapLink, label: "Goals" },
   ];
 
+  const options = [
+    {
+      type: "link" as const,
+      label: "Close",
+      link: props.workmapLink,
+      icon: IconCircleCheck,
+      hidden: !!props.closedOn || !props.canEdit,
+    },
+    {
+      type: "link" as const,
+      label: "Delete",
+      link: props.deleteLink,
+      icon: IconTrash,
+      hidden: !props.canEdit,
+    },
+  ];
+
   return (
-    <Page title={[props.goalName]} navigation={navigation} size="xlarge">
+    <Page title={[props.goalName]} navigation={navigation} options={options} size="xlarge">
       {props.closedOn && <ClosedBanner {...props} />}
 
       <div className="p-4 sm:px-24">
