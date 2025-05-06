@@ -210,7 +210,11 @@ function itemOverlapsWithTimeframe(item: WorkMap.Item, timeframe: TimeframeSelec
  */
 function useWorkMapUrlFilter(): [WorkMap.Filter, (newFilter: WorkMap.Filter) => void] {
   const [searchParams, setSearchParams] = useSearchParams();
-  const tab = searchParams.get("tab") || "all";
+
+  const rawTab = searchParams.get("tab") as WorkMap.Filter;
+  const allowedTabs: WorkMap.Filter[] = ["all", "goals", "projects", "completed"];
+
+  const tab = rawTab && allowedTabs.includes(rawTab) ? rawTab : "all";
 
   const setTab = useCallback(
     (newTab: WorkMap.Filter) => {
