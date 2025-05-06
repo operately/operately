@@ -25,6 +25,7 @@ export function pageRoute(path: string, pageModule: any, options: Options = {}) 
     path: path,
     loader: pageLoader(path, pageModule.name, loader, options),
     element: <Element />,
+    shouldRevalidate: pageModule.shouldRevalidate,
   };
 }
 
