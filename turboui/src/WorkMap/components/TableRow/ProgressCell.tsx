@@ -5,10 +5,13 @@ import { useItemStatus } from "../../hooks/useItemStatus";
 interface ProgressCellProps {
   progress: WorkMap.Item["progress"];
   status: WorkMap.Status;
+  hide: boolean;
 }
 
-export function ProgressCell({ progress, status }: ProgressCellProps) {
+export function ProgressCell({ progress, status, hide }: ProgressCellProps) {
   const { isCompleted } = useItemStatus(status);
+
+  if (hide) return null;
   
   if (isCompleted) {
     return <td className="py-2 px-2 pr-4 md:px-4"></td>;

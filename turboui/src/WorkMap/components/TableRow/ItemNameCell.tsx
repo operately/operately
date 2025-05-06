@@ -2,27 +2,34 @@ import { IconChevronDown, IconChevronRight } from "@tabler/icons-react";
 import { BlackLink } from "../../../Link";
 import classNames from "../../../utils/classnames";
 import { useItemStatus } from "../../hooks/useItemStatus";
-import { useTableRowContext } from "./context";
 import { IconGoal, IconProject } from "../../../icons";
 import { PrivacyIndicator } from "../../../PrivacyIndicator";
 import { match } from "ts-pattern";
+import WorkMap from "..";
 
-export function ItemNameCell() {
+interface Props {
+  item: WorkMap.Item;
+  filter: WorkMap.Filter;
+  level: number;
+  expanded: boolean;
+  setExpanded: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+export function ItemNameCell({ item, filter, level, expanded, setExpanded }: Props) {
   return (
     <td className="py-2 px-2 md:px-4 relative">
       <div className="flex items-center">
-        <Indentation />
-        <ExpandButton />
-        <Icon />
-        <Name />
-        <PrivacyIndicatorWrapper />
+        <Indentation filter={filter} level={level} />
+        <ExpandButton item={item} expanded={expanded} setExpanded={setExpanded} filter={filter} />
+        <Icon item={item} />
+        <Name item={item} />
+        <PrivacyIndicatorWrapper item={item} />
       </div>
     </td>
   );
 }
 
-function Name() {
-  const { item } = useTableRowContext();
+function Name({ item }: { item: WorkMap.Item }) {
   const { isCompleted, isFailed, isDropped, isPending } = useItemStatus(item.status);
 
   const textStyle = classNames(
@@ -48,25 +55,24 @@ function Name() {
   );
 }
 
-function Icon() {
-  const { item } = useTableRowContext();
-
+function Icon({ item }: { item: WorkMap.Item }) {
   return match(item.type)
     .with("goal", () => <IconGoal size={20} className="mr-2" />)
     .with("project", () => <IconProject size={20} className="mr-2" />)
     .run();
 }
 
-function Indentation() {
-  const { showIndentation, indentPadding } = useTableRowContext();
+function Indentation({ filter, level }: { filter: WorkMap.Filter; level: number }) {
+  const showIndentation = !filter || filter === "goals" || filter === "all";
+  const indentPadding = showIndentation ? level * 20 : 0;
 
   if (!showIndentation) return null;
 
   return <div style={{ width: `${indentPadding}px` }} className="flex-shrink-0" data-testid="indentation" />;
 }
 
-function ExpandButton() {
-  const { expanded, hasChildren, setExpanded, filter } = useTableRowContext();
+function ExpandButton({ item, expanded, setExpanded, filter }) {
+  const hasChildren = Boolean(item.children && item.children.length > 0);
 
   const handleExpandToggle = (e: React.MouseEvent): void => {
     e.stopPropagation();
@@ -103,9 +109,7 @@ function ChevronIcon({ expanded, size }: { expanded: boolean; size: number }) {
   }
 }
 
-function PrivacyIndicatorWrapper() {
-  const { item } = useTableRowContext();
-
+function PrivacyIndicatorWrapper({ item }: { item: WorkMap.Item }) {
   if (!item.privacy) return null;
 
   return (
