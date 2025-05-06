@@ -1,5 +1,8 @@
+import { useState } from "react";
+
 import { StatusBadge } from "../../../StatusBadge";
 import { WorkMap } from "..";
+
 import { ChildRows } from "./ChildRows";
 import { DeadlineCell } from "./DeadlineCell";
 import { ItemNameCell } from "./ItemNameCell";
@@ -8,40 +11,32 @@ import { OwnerCell } from "./OwnerCell";
 import { ProgressCell } from "./ProgressCell";
 import { SpaceCell } from "./SpaceCell";
 import { RowContainer } from "./RowContainer";
-import { TableRowProvider } from "./context";
 
 interface Props {
   item: WorkMap.Item;
   level: number;
   isLast: boolean;
   filter: WorkMap.Filter;
-  isSelected?: boolean;
-  selectedItemId?: string;
-  onRowClick?: (item: WorkMap.Item) => void;
 }
 
-/**
- * TableRow component for rendering a WorkMap item (goal or project) in a table
- * Handles recursive rendering of children, styling for different item states,
- * and interactions like hover, selection, and adding new items
- */
 export function TableRow(props: Props) {
-  const { item, filter } = props;
+  const { item, filter, level } = props;
+  const [expanded, setExpanded] = useState<boolean>(true);
 
   return (
-    <TableRowProvider {...props}>
-      <RowContainer>
-        <ItemNameCell />
+    <>
+      <RowContainer item={item}>
+        <ItemNameCell item={item} filter={filter} level={level} expanded={expanded} setExpanded={setExpanded} />
         <StatusCell status={item.status} />
-        {filter !== "completed" && <ProgressCell progress={item.progress} status={item.status} />}
+        <ProgressCell progress={item.progress} status={item.status} hide={filter === "completed"} />
         <DeadlineCell filter={filter} completedOn={item.closedAt} timeframe={item.timeframe} status={item.status} />
         <SpaceCell item={item} />
         <OwnerCell item={item} />
-        {filter !== "completed" && <NextStepCell nextStep={item.nextStep} status={item.status} />}
+        <NextStepCell nextStep={item.nextStep} status={item.status} hide={filter === "completed"} />
       </RowContainer>
 
-      <ChildRows {...props} />
-    </TableRowProvider>
+      <ChildRows {...props} expanded={expanded} />
+    </>
   );
 }
 

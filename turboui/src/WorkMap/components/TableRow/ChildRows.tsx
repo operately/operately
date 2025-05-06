@@ -1,5 +1,4 @@
 import { WorkMap } from "..";
-import { useTableRowContext } from "./context";
 import { TableRow } from "./index";
 
 interface Props {
@@ -9,10 +8,11 @@ interface Props {
   filter: WorkMap.Filter;
   selectedItemId?: string;
   onRowClick?: (item: WorkMap.Item) => void;
+  expanded: boolean;
 }
 
-export function ChildRows({ item, level, isLast, ...rest }: Props) {
-  const { expanded, hasChildren } = useTableRowContext();
+export function ChildRows({ item, level, isLast, expanded, ...rest }: Props) {
+  const hasChildren = Boolean(item.children && item.children.length > 0);
 
   if (!expanded || !hasChildren) {
     return null;
