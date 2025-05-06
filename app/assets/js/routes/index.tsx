@@ -73,7 +73,7 @@ export function createAppRoutes() {
         pageRoute("feed", pages.FeedPage),
         pageRoute("review", pages.ReviewPage),
         pageRoute("notifications", pages.NotificationsPage),
-        pageRoute("radar", pages.RadarPage),
+        pageRoute("ai", pages.AiPlaygroundPage),
 
         pageRoute("admin", pages.CompanyAdminPage),
         pageRoute("admin/manage-admins", pages.CompanyAdminManageAdminsPage),

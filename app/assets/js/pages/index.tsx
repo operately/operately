@@ -7,6 +7,7 @@ import * as AccountAppearancePage from "./AccountAppearancePage";
 import * as AccountChangePasswordPage from "./AccountChangePasswordPage";
 import * as AccountPage from "./AccountPage";
 import * as AccountSecurityPage from "./AccountSecurityPage";
+import * as AiPlaygroundPage from "./AiPlaygroundPage";
 import * as CompanyAdminAddPeoplePage from "./CompanyAdminAddPeoplePage";
 import * as CompanyAdminManageAdminsPage from "./CompanyAdminManageAdminsPage";
 import * as CompanyAdminManagePeoplePage from "./CompanyAdminManagePeoplePage";
@@ -87,7 +88,6 @@ import * as ProjectResumePage from "./ProjectResumePage";
 import * as ProjectRetrospectiveEditPage from "./ProjectRetrospectiveEditPage";
 import * as ProjectRetrospectivePage from "./ProjectRetrospectivePage";
 import * as ProjectsPage from "./ProjectsPage";
-import * as RadarPage from "./RadarPage";
 import * as ResetPasswordPage from "./ResetPasswordPage";
 import * as ResourceHubDocumentPage from "./ResourceHubDocumentPage";
 import * as ResourceHubDraftsPage from "./ResourceHubDraftsPage";
@@ -138,6 +138,11 @@ export default {
     name: "AccountSecurityPage",
     loader: AccountSecurityPage.loader,
     Page: AccountSecurityPage.Page,
+  },
+  AiPlaygroundPage: {
+    name: "AiPlaygroundPage",
+    loader: AiPlaygroundPage.loader,
+    Page: AiPlaygroundPage.Page,
   },
   CompanyAdminAddPeoplePage: {
     name: "CompanyAdminAddPeoplePage",
@@ -538,11 +543,6 @@ export default {
     name: "ProjectsPage",
     loader: ProjectsPage.loader,
     Page: ProjectsPage.Page,
-  },
-  RadarPage: {
-    name: "RadarPage",
-    loader: RadarPage.loader,
-    Page: RadarPage.Page,
   },
   ResetPasswordPage: {
     name: "ResetPasswordPage",
