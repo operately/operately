@@ -20,6 +20,10 @@ defmodule Mix.Tasks.Operately.Gen.Page.Index do
       export default {
         #{indent(Enum.join(exports(pages), ",\n"), 2)}
       };
+
+      function getShouldRevalidate(pageModule: any) {
+        return 'shouldRevalidate' in pageModule ? pageModule.shouldRevalidate : undefined;
+      }
       """
     end)
   end
@@ -45,7 +49,8 @@ defmodule Mix.Tasks.Operately.Gen.Page.Index do
     #{page}: {
       name: "#{page}",
       loader: #{page}.loader,
-      Page: #{page}.Page
+      Page: #{page}.Page,
+      shouldRevalidate: getShouldRevalidate(#{page})
     }
     """
     |> String.trim()
