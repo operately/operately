@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { TableRow } from "../components/TableRow";
 import type { WorkMap } from "../components";
-import { TableHeader } from "../components/WorkMapTable/TableHeader";
+import { TableHeader } from "../components/WorkMapTable";
 import { PrivacyIndicator } from "../../PrivacyIndicator";
 
 import * as Steps from "../tests/steps";
