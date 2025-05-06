@@ -1,4 +1,5 @@
 import { TaskBoard } from "../components";
+import { genPeople } from "../../utils/storybook/genPeople";
 
 // Mock labels
 export const mockLabels = {
@@ -10,27 +11,30 @@ export const mockLabels = {
   documentation: { id: "6", name: "Documentation", color: "#6366F1" },
 };
 
-// Mock people
-export const mockPeople = {
-  john: { 
-    id: "1", 
-    fullName: "John Doe", 
-    avatarUrl: "https://i.pravatar.cc/100?u=johndoe@example.com" 
+// Generate a consistent set of people for our mock data
+const generatedPeople = genPeople(4);
+
+// Mock people - mapped into an object for easy reference with proper TaskBoard.Person typing
+export const mockPeople: Record<string, TaskBoard.Person> = {
+  john: {
+    id: generatedPeople[0].id,
+    fullName: generatedPeople[0].fullName,
+    avatarUrl: generatedPeople[0].avatarUrl
   },
-  jane: { 
-    id: "2", 
-    fullName: "Jane Smith", 
-    avatarUrl: "https://i.pravatar.cc/100?u=janesmith@example.com" 
+  jane: {
+    id: generatedPeople[1].id,
+    fullName: generatedPeople[1].fullName,
+    avatarUrl: generatedPeople[1].avatarUrl
   },
-  bob: { 
-    id: "3", 
-    fullName: "Bob Johnson", 
-    avatarUrl: "https://i.pravatar.cc/100?u=bobjohnson@example.com" 
+  bob: {
+    id: generatedPeople[2].id,
+    fullName: generatedPeople[2].fullName,
+    avatarUrl: generatedPeople[2].avatarUrl
   },
-  alice: { 
-    id: "4", 
-    fullName: "Alice Williams", 
-    avatarUrl: "https://i.pravatar.cc/100?u=alicewilliams@example.com" 
+  alice: {
+    id: generatedPeople[3].id,
+    fullName: generatedPeople[3].fullName,
+    avatarUrl: generatedPeople[3].avatarUrl
   },
 };
 
