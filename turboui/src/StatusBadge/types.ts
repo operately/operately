@@ -26,4 +26,5 @@ export interface StatusBadgeProps {
   hideIcon?: boolean; // Option to hide the status icon
   className?: string;
   style?: React.CSSProperties;
+  customLabel?: string; // Optional custom label to override default
 }
