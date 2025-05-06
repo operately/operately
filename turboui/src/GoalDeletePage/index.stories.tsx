@@ -23,13 +23,14 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
+    goalId: "goal-1",
     goalName: "Launch AI Platform",
     spaceName: "Marketing",
     spaceLink: "/spaces/ai-research",
     workmapLink: "/spaces/ai-research/workmap",
     goalLink: "/spaces/ai-research/workmap/goals/launch-ai-platform",
 
-    onSubmit: (_name: string) => fn(),
+    onSubmit: (_id: string) => fn(),
     onCancel: () => fn(),
   },
 };
