@@ -3,6 +3,7 @@ import * as ProjectContributorsAddPage from "@/pages/ProjectContributorsAddPage"
 import * as ProjectContributorsEditPage from "@/pages/ProjectContributorsEditPage";
 import * as ProjectAddPage from "@/pages/ProjectAddPage";
 import { LinkOptions } from "@/features/ResourceHub";
+import { WorkMap } from "turboui";
 
 export class Paths {
   static lobbyPath() {
@@ -294,6 +295,10 @@ export class Paths {
 
   static spaceAddMembersPath(spaceId: string) {
     return createCompanyPath(["spaces", spaceId, "add-members"]);
+  }
+
+  static workMapPath(tab?: WorkMap.Filter) {
+    return createCompanyPath(["work-map"]) + (tab ? `?tab=${tab}` : "");
   }
 
   static goalClosePath(goalId: string) {
