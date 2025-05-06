@@ -1,10 +1,11 @@
-import { useState, useCallback, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { parse } from "date-fns";
 import { TimeframeSelector } from "../../TimeframeSelector";
 import { WorkMap } from "../components";
+import { useSearchParams } from "react-router-dom";
 
 export function useWorkMapFilter(rawItems: WorkMap.Item[], timeframe: TimeframeSelector.Timeframe) {
-  const [filter, setFilter] = useState<WorkMap.Filter>("all");
+  const [filter, setFilter] = useWorkMapUrlFilter();
 
   const filteredItems = useMemo(() => {
     const timeframeFilteredItems = filterItemsByTimeframe(rawItems, timeframe);
@@ -23,14 +24,10 @@ export function useWorkMapFilter(rawItems: WorkMap.Item[], timeframe: TimeframeS
     return extractAllGoals(timeframeFilteredItems);
   }, [rawItems, filter, timeframe]);
 
-  const changeFilter = useCallback((newFilter: WorkMap.Filter) => {
-    setFilter(newFilter);
-  }, []);
-
   return {
     filteredItems,
     filter,
-    setFilter: changeFilter,
+    setFilter,
   };
 }
 
@@ -204,4 +201,31 @@ function itemOverlapsWithTimeframe(item: WorkMap.Item, timeframe: TimeframeSelec
 
   // Check for overlap: not (goalEnd < timeframeStart || goalStart > timeframeEnd)
   return !(goalEnd < timeframeStart || goalStart > timeframeEnd);
+}
+
+/**
+ * Hook to manage the filter in URL search params
+ * Returns the current filter value and a function to update it
+ * Defaults to "all" if no tab parameter is present
+ */
+function useWorkMapUrlFilter(): [WorkMap.Filter, (newFilter: WorkMap.Filter) => void] {
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const rawTab = searchParams.get("tab") as WorkMap.Filter;
+  const allowedTabs: WorkMap.Filter[] = ["all", "goals", "projects", "completed"];
+
+  const tab = rawTab && allowedTabs.includes(rawTab) ? rawTab : "all";
+
+  const setTab = useCallback(
+    (newTab: WorkMap.Filter) => {
+      setSearchParams((params) => {
+        const newParams = new URLSearchParams(params);
+        newParams.set("tab", newTab);
+        return newParams;
+      });
+    },
+    [setSearchParams],
+  );
+
+  return [tab as WorkMap.Filter, setTab];
 }
