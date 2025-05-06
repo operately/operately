@@ -188,6 +188,7 @@ export default {
     name: "CompanyWorkMapPage",
     loader: CompanyWorkMapPage.loader,
     Page: CompanyWorkMapPage.Page,
+    shouldRevalidate: CompanyWorkMapPage.shouldRevalidate,
   },
   DesignButtonsPage: {
     name: "DesignButtonsPage",
