@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "@storybook/test";
 
-import { GoalEditPage } from ".";
+import { GoalClosePage } from ".";
 
-const meta: Meta<typeof GoalEditPage> = {
-  title: "Pages/GoalEditPage",
-  component: GoalEditPage,
+const meta: Meta<typeof GoalClosePage> = {
+  title: "Pages/GoalClosePage",
+  component: GoalClosePage,
   parameters: {
     layout: "fullscreen",
   },
@@ -16,7 +16,7 @@ const meta: Meta<typeof GoalEditPage> = {
       </div>
     ),
   ],
-} satisfies Meta<typeof GoalEditPage>;
+} satisfies Meta<typeof GoalClosePage>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

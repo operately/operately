@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "@storybook/test";
 
-import { GoalEditPage } from ".";
+import { GoalDeletePage } from ".";
 
-const meta: Meta<typeof GoalEditPage> = {
-  title: "Pages/GoalEditPage",
-  component: GoalEditPage,
+const meta: Meta<typeof GoalDeletePage> = {
+  title: "Pages/GoalDeletePage",
+  component: GoalDeletePage,
   parameters: {
     layout: "fullscreen",
   },
@@ -16,7 +16,7 @@ const meta: Meta<typeof GoalEditPage> = {
       </div>
     ),
   ],
-} satisfies Meta<typeof GoalEditPage>;
+} satisfies Meta<typeof GoalDeletePage>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -29,7 +29,7 @@ export const Default: Story = {
     workmapLink: "/spaces/ai-research/workmap",
     goalLink: "/spaces/ai-research/workmap/goals/launch-ai-platform",
 
-    onSave: (_name: string) => fn(),
+    onSubmit: (_name: string) => fn(),
     onCancel: () => fn(),
   },
 };
