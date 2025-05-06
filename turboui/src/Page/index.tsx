@@ -5,18 +5,13 @@ import { useHtmlTitle } from "./useHtmlTitle";
 import { PageOptions } from "./PageOptions";
 
 export namespace Page {
-  export type Size =
-    | "tiny"
-    | "small"
-    | "medium"
-    | "large"
-    | "xlarge"
-    | "xxlarge"
-    | "fullwidth";
+  export type Size = "tiny" | "small" | "medium" | "large" | "xlarge" | "xxlarge" | "fullwidth";
 
   export interface Option {
-    icon: React.ReactElement;
-    title: string;
+    icon: React.ElementType;
+    label: string;
+    link?: string;
+    onClick?: () => void;
   }
 
   export interface Props {

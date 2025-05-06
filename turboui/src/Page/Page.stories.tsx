@@ -1,7 +1,7 @@
-import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { Page } from "./index";
 import { PageFooter } from "./PageFooter";
+import { IconPencil } from "@tabler/icons-react";
 
 const meta = {
   title: "Components/Page",
@@ -22,27 +22,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 const Content = ({ title }: { title: string }) => (
-  <div className="p-8 bg-white rounded shadow min-h-96 text-center font-bold text-2xl">
-    {title}
-  </div>
-);
-
-const DemoIcon = () => (
-  <svg
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path
-      d="M12 5V19M5 12H19"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
+  <div className="p-8 bg-white rounded shadow min-h-96 text-center font-bold text-2xl">{title}</div>
 );
 
 export const Default: Story = {
@@ -160,9 +140,7 @@ export const WithPageFooter: Story = {
   render: ({ title, navigation }) => (
     <Page title={title} navigation={navigation}>
       <Content title="Page Content" />
-      <PageFooter className="p-8">
-        Page Footer Content. Usually the activity feed goes here.
-      </PageFooter>
+      <PageFooter className="p-8">Page Footer Content. Usually the activity feed goes here.</PageFooter>
     </Page>
   ),
 };
@@ -181,6 +159,22 @@ export const LongNavigation: Story = {
       { to: "/profile", label: "Profile" },
       { to: "/help", label: "Help" },
     ],
-    children: <Content title="Long navigation"/>
-  }
+    children: <Content title="Long navigation" />,
+  },
+};
+
+export const PageOptions: Story = {
+  args: {
+    title: "Page with options",
+    navigation: [
+      { label: "Product", to: "#" },
+      { label: "Workmap", to: "#" },
+      { label: "Project Alpha", to: "#" },
+    ],
+    options: [
+      { label: "Edit", onClick: () => alert("Edit clicked"), icon: IconPencil },
+      { label: "Delete", link: "#", icon: IconPencil },
+    ],
+    children: <Content title="Page with options" />,
+  },
 };
