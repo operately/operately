@@ -1,146 +1,103 @@
 import * as React from "react";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+
+import { Page } from ".";
+import { match } from "ts-pattern";
+import { DivLink } from "../Link";
+import { IconX, IconDots } from "@tabler/icons-react";
+import { createTestId } from "../TestableElement";
 
 import classNames from "classnames";
-import { DivLink } from "../Link";
-import { TestableElement } from "../TestableElement";
-import { SecondaryButton } from "../Button";
-import { createElement } from "react";
-import { Page } from ".";
-import { IconDots } from "@tabler/icons-react";
 
 export function PageOptions({ options }: { options?: Page.Option[] }) {
   const [open, setOpen] = React.useState(false);
+  const close = () => setOpen(false);
 
-  if (!options) {
+  if (!options || options.length === 0) {
     return null;
   }
-
-  if (options.length === 0) {
-    return null;
-  }
-
-  const [outside, inside] = [[], options];
 
   return (
     <div className="absolute right-0 top-0">
       <div className="absolute right-2.5 top-2.5 flex items-center gap-2">
-        <OutsideButtons outsideButtons={outside} />
-        {inside.length > 0 && <Trigger open={() => setOpen(!open)} />}
+        <DropdownMenu.Root open={open} onOpenChange={setOpen}>
+          <Trigger />
+          <Content close={close} options={options} />
+        </DropdownMenu.Root>
       </div>
-
-      {inside.length > 0 && <Dropdown children={inside} />}
     </div>
   );
 }
 
-function Trigger({ open }: { open: () => void }) {
+function Trigger() {
   const className = classNames({
     "rounded-full border border-surface-outline cursor-pointer": true,
     "p-1 hover:bg-surface-dimmed": true,
   });
 
   return (
-    <div className={className} onClick={open} data-test-id="page-options-trigger">
+    <DropdownMenu.Trigger className={className} data-test-id="page-options-trigger">
       <IconDots size={20} />
-    </div>
+    </DropdownMenu.Trigger>
   );
 }
 
-function OutsideButtons({ outsideButtons }) {
-  return <div>{outsideButtons}</div>;
-}
-
-type LinkProps = TestableElement & {
-  icon: React.ElementType;
-  title: string;
-  to: string;
-  keepOutsideOnBigScreen?: boolean;
-};
-
-export function Link(props: LinkProps) {
-  const isBig = Pages.useWindowSizeBiggerOrEqualTo("lg");
-
-  if (isBig && props.keepOutsideOnBigScreen) {
-    return <LinkAsOutsideButton {...props} />;
-  } else {
-    return <LinkAsDropdownElement {...props} />;
-  }
-}
-
-function LinkAsOutsideButton(props: LinkProps) {
+function Content({ close, options }: { close: () => void; options: Page.Option[] }) {
   return (
-    <SecondaryButton size="xs" linkTo={props.to} testId={props.testId}>
-      {props.title}
-    </SecondaryButton>
+    <DropdownMenu.Portal>
+      <DropdownMenu.Content
+        className="z-50 shadow-lg bg-accent-1 w-[300px] text-white-1 font-medium flex flex-col"
+        align="end"
+        alignOffset={-10}
+        sideOffset={-40}
+      >
+        <Close onClick={close} />
+        <Items options={options} close={close} />
+      </DropdownMenu.Content>
+    </DropdownMenu.Portal>
   );
 }
 
-function LinkAsDropdownElement(props: LinkProps) {
+function Items({ options, close }: { options: Page.Option[]; close: () => void }): React.ReactElement[] {
+  return options.map((option, index) =>
+    match(option.type)
+      .with("link", () => <Link {...option} key={index} />)
+      .with("action", () => <Action {...option} key={index} close={close} />)
+      .exhaustive(),
+  );
+}
+
+function Link(props: Page.Option) {
   return (
-    <DivLink
-      to={props.to}
-      className="flex items-center gap-2 py-2 px-4 hover:bg-shade-1 cursor-pointer"
-      testId={props.testId}
-    >
-      {React.createElement(props.icon, { size: 20 })}
-      {props.title}
-    </DivLink>
+    <DropdownMenu.Item>
+      <DivLink
+        to={props.link!}
+        className="flex items-center gap-2 py-2 px-4 hover:bg-shade-1 cursor-pointer"
+        testId={"page-option-" + createTestId(props.label)}
+      >
+        {React.createElement(props.icon, { size: 20 })}
+        {props.label}
+      </DivLink>
+    </DropdownMenu.Item>
   );
 }
 
-type ActionProps = TestableElement & {
-  icon: React.ElementType;
-  title: string;
-  onClick: () => void;
-  keepOutsideOnBigScreen?: boolean;
-};
-
-export function Action(props: ActionProps) {
-  const isBig = Pages.useWindowSizeBiggerOrEqualTo("lg");
-  const { close } = React.useContext(Context);
-
+function Action(props: Page.Option & { close: () => void }) {
   const handleClick = () => {
-    close();
-    props.onClick();
+    props.onClick?.();
+    props.close();
   };
 
-  if (isBig && props.keepOutsideOnBigScreen) {
-    return <ActionAsOutsideButton {...props} onClick={handleClick} />;
-  } else {
-    return <ActionAsDropdownElement {...props} onClick={handleClick} />;
-  }
-}
-
-function ActionAsOutsideButton(props: ActionProps) {
   return (
-    <SecondaryButton size="xs" onClick={props.onClick} testId={props.testId}>
-      {props.title}
-    </SecondaryButton>
-  );
-}
-
-function ActionAsDropdownElement(props: ActionProps) {
-  return (
-    <div
-      onClick={props.onClick}
-      className="flex items-center gap-2 py-2 px-4 hover:bg-shade-1 cursor-pointer"
-      data-test-id={props.testId}
-    >
-      {React.createElement(props.icon, { size: 20 })}
-      {props.title}
-    </div>
-  );
-}
-
-function Dropdown({ children }) {
-  const { isOpen, close } = React.useContext(Context);
-  if (!isOpen) return null;
-
-  return (
-    <div className="absolute right-0 top-0 z-50 shadow-lg bg-accent-1 w-[300px] text-white-1 font-medium flex flex-col">
-      <Close onClick={close} />
-      {children}
-    </div>
+    <DropdownMenu.Item onSelect={handleClick}>
+      <div
+        className="flex items-center gap-2 py-2 px-4 hover:bg-shade-1 cursor-pointer"
+        data-test-id={"page-option-" + createTestId(props.label)}
+      >
+        {React.createElement(props.icon, { size: 20 })}
+        {props.label}
+      </div>
+    </DropdownMenu.Item>
   );
 }
 
@@ -152,33 +109,8 @@ function Close({ onClick }) {
         onClick={onClick}
         data-test-id="project-options-button"
       >
-        <Icons.IconX size={20} />
+        <IconX size={20} />
       </div>
     </div>
   );
-}
-
-//
-// Split children into two arrays: outside and inside.
-//
-// Outside children are shown as buttons outside of the dropdown, but only on big screens.
-// Inside children are shown inside the dropdown.
-//
-function splitChildrenToOutsideAndInside(isScreenBig: boolean, children: React.ReactNode) {
-  let outsideElements: React.ReactNode[] = [];
-  let insideElements: React.ReactNode[] = [];
-
-  React.Children.toArray(children).forEach((child) => {
-    if (!React.isValidElement(child)) {
-      throw new Error("PageOptions.Root can only have React elements as children");
-    } else if (!isScreenBig) {
-      insideElements.push(child);
-    } else if (!child.props["keepOutsideOnBigScreen"]) {
-      insideElements.push(child);
-    } else {
-      outsideElements.push(child);
-    }
-  });
-
-  return [outsideElements, insideElements];
 }

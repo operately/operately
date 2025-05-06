@@ -8,6 +8,7 @@ export namespace Page {
   export type Size = "tiny" | "small" | "medium" | "large" | "xlarge" | "xxlarge" | "fullwidth";
 
   export interface Option {
+    type: "link" | "action";
     icon: React.ElementType;
     label: string;
     link?: string;

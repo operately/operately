@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Page } from "./index";
 import { PageFooter } from "./PageFooter";
 import { IconPencil } from "@tabler/icons-react";
+import { IconTrash } from "@tabler/icons-react";
 
 const meta = {
   title: "Components/Page",
@@ -172,8 +173,8 @@ export const PageOptions: Story = {
       { label: "Project Alpha", to: "#" },
     ],
     options: [
-      { label: "Edit", onClick: () => alert("Edit clicked"), icon: IconPencil },
-      { label: "Delete", link: "#", icon: IconPencil },
+      { type: "action", label: "Edit", onClick: () => alert("Edit clicked"), icon: IconPencil },
+      { type: "link", label: "Delete", link: "/delete", icon: IconTrash },
     ],
     children: <Content title="Page with options" />,
   },
