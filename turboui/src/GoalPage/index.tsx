@@ -17,9 +17,7 @@ import { BadgeStatus } from "../StatusBadge/types";
 import { Contributors } from "./Contributors";
 import { WarningCallout } from "../Callouts";
 import { isOverdue, Timeframe } from "../utils/timeframes";
-import { IconTrash } from "@tabler/icons-react";
-import { IconCircleCheck } from "@tabler/icons-react";
-import { IconSwitchVertical } from "@tabler/icons-react";
+import { IconTrash, IconCircleCheck } from "@tabler/icons-react";
 
 export namespace GoalPage {
   interface Person {
@@ -108,14 +106,14 @@ export function GoalPage(props: GoalPage.Props) {
       label: "Close",
       link: props.workmapLink,
       icon: IconCircleCheck,
-      hidden: props.closedOn || !props.canEdit,
+      hidden: !!props.closedOn || !props.canEdit,
     },
     {
       type: "link" as const,
       label: "Delete",
       link: props.deleteLink,
       icon: IconTrash,
-      hidden: props.closedOn || !props.canEdit,
+      hidden: !props.canEdit,
     },
   ];
 
