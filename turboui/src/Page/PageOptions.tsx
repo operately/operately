@@ -13,7 +13,13 @@ export function PageOptions({ options }: { options?: Page.Option[] }) {
   const [open, setOpen] = React.useState(false);
   const close = () => setOpen(false);
 
-  if (!options || options.length === 0) {
+  if (!options) {
+    return null;
+  }
+
+  const visibleOptions = options.filter((option) => !option.hidden);
+
+  if (visibleOptions.length === 0) {
     return null;
   }
 
