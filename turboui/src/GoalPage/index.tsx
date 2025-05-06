@@ -53,6 +53,7 @@ export namespace GoalPage {
   export interface Props {
     spaceLink: string;
     workmapLink: string;
+    closeLink: string;
     deleteLink: string;
 
     parentGoal: ParentGoal | null;
@@ -104,7 +105,7 @@ export function GoalPage(props: GoalPage.Props) {
     {
       type: "link" as const,
       label: "Close",
-      link: props.workmapLink,
+      link: props.closeLink,
       icon: IconCircleCheck,
       hidden: !!props.closedOn || !props.canEdit,
     },

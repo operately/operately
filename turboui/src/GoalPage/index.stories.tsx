@@ -3,6 +3,7 @@ import { GoalPage } from ".";
 import { genPeople } from "../utils/storybook/genPeople";
 import { currentQuarter, lastYear } from "../utils/timeframes";
 import { fn } from "@storybook/test";
+import { storyPath } from "../utils/storybook/storypath";
 
 const meta: Meta<typeof GoalPage> = {
   title: "Pages/GoalPage",
@@ -251,6 +252,9 @@ const parentGoal = {
 const defaultArgs = {
   spaceLink: "/spaces/1",
   workmapLink: "/spaces/1/workmaps/1",
+  closeLink: storyPath("Pages/GoalClosePage", "Default"),
+  deleteLink: storyPath("Pages/GoalDeletePage", "Default"),
+
   goalName: "Launch AI Platform",
   spaceName: "Product",
   champion: champion,
