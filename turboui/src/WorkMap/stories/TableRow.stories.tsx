@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { TableRow } from "../components/TableRow";
 import type { WorkMap } from "../components";
-import { TableHeader } from "../components/WorkMapTable/TableHeader";
+import { TableHeader } from "../components/WorkMapTable";
 import { PrivacyIndicator } from "../../PrivacyIndicator";
 
 import * as Steps from "../tests/steps";
@@ -41,15 +41,6 @@ const meta = {
       options: [undefined, "all", "goals", "completed"],
       control: { type: "select" },
     },
-    isSelected: {
-      description: "Whether the item is selected",
-      control: "boolean",
-    },
-    selectedItemId: {
-      description: "ID of the currently selected item",
-      control: "text",
-    },
-    onRowClick: { action: "clicked" },
   },
 } satisfies Meta<typeof TableRow>;
 
@@ -73,7 +64,6 @@ export const Default: Story = {
     level: 0,
     isLast: false,
     filter: "all",
-    isSelected: false,
   },
 };
 
@@ -94,7 +84,6 @@ export const CompletedGoal: Story = {
     level: 0,
     isLast: false,
     filter: "completed",
-    isSelected: false,
   },
   play: async ({ canvasElement, step }) => {
     await Steps.assertItemHasLineThrough(canvasElement, step, "Launch new marketing campaign");
@@ -120,7 +109,6 @@ export const AchievedGoal: Story = {
     level: 0,
     isLast: false,
     filter: "completed",
-    isSelected: false,
   },
   play: async ({ canvasElement, step }) => {
     await Steps.assertItemHasLineThrough(canvasElement, step, "Increase website traffic by 50%");
@@ -146,7 +134,6 @@ export const PartiallyAchievedGoal: Story = {
     level: 0,
     isLast: false,
     filter: "completed",
-    isSelected: false,
   },
   play: async ({ canvasElement, step }) => {
     await Steps.assertItemHasLineThrough(canvasElement, step, "Reduce support tickets by 30%");
@@ -172,7 +159,6 @@ export const MissedGoal: Story = {
     level: 0,
     isLast: false,
     filter: "completed",
-    isSelected: false,
   },
   play: async ({ canvasElement, step }) => {
     await Steps.assertItemHasLineThrough(canvasElement, step, "Launch mobile app by Q1");
@@ -198,7 +184,6 @@ export const PausedGoal: Story = {
     level: 0,
     isLast: false,
     filter: "all",
-    isSelected: false,
   },
   play: async ({ canvasElement, step }) => {
     await Steps.refuteItemHasLineThrough(canvasElement, step, "Expand to international markets");
@@ -226,7 +211,6 @@ export const CautionGoal: Story = {
     level: 0,
     isLast: false,
     filter: "all",
-    isSelected: false,
   },
   play: async ({ canvasElement, step }) => {
     await Steps.refuteItemHasLineThrough(canvasElement, step, "Implement new CRM system");
@@ -254,7 +238,6 @@ export const IssueGoal: Story = {
     level: 0,
     isLast: false,
     filter: "all",
-    isSelected: false,
   },
   play: async ({ canvasElement, step }) => {
     await Steps.refuteItemHasLineThrough(canvasElement, step, "Migrate legacy systems");
@@ -282,7 +265,6 @@ export const OutdatedGoal: Story = {
     level: 0,
     isLast: false,
     filter: "all",
-    isSelected: false,
   },
   play: async ({ canvasElement, step }) => {
     await Steps.refuteItemHasLineThrough(canvasElement, step, "Update legacy documentation");
@@ -310,7 +292,6 @@ export const OnTrackProject: Story = {
     level: 0,
     isLast: false,
     filter: "all",
-    isSelected: false,
   },
   play: async ({ canvasElement, step }) => {
     await Steps.refuteItemHasLineThrough(canvasElement, step, "Redesign product dashboard");
@@ -338,7 +319,6 @@ export const CompletedProject: Story = {
     level: 0,
     isLast: false,
     filter: "completed",
-    isSelected: false,
   },
   play: async ({ canvasElement, step }) => {
     await Steps.assertItemHasLineThrough(canvasElement, step, "Update documentation");
@@ -432,7 +412,6 @@ export const PrivacyLevels: Story = {
   args: {
     level: 0,
     filter: "all",
-    isSelected: false,
     item: data.mockGoalOnTrack, // This is required by the Story type, but our render function overrides it
     isLast: false, // Also required by the Story type
   },

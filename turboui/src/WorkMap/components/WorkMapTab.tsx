@@ -11,9 +11,6 @@ interface Props extends TestableElement {
   icon?: React.ReactNode;
 }
 
-/**
- * A tab component for the WorkMap navigation
- */
 export function WorkMapTab({ label, to, onClick, isActive, icon, testId }: Props) {
   const className = classNames(
     "border-b-2 px-1 pt-2.5 pb-1 text-xs sm:text-sm font-medium flex items-center gap-1 sm:gap-1.5 whitespace-nowrap cursor-pointer",

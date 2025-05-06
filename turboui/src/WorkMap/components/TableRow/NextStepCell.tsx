@@ -5,9 +5,10 @@ import classNames from "../../../utils/classnames";
 interface Props {
   nextStep: WorkMap.Item['nextStep'];
   status: WorkMap.Status;
+  hide: boolean;
 }
 
-export function NextStepCell({ nextStep, status }: Props) {
+export function NextStepCell({ nextStep, status, hide }: Props) {
   const { isCompleted, isFailed, isDropped, isPending } = useItemStatus(status);
 
   const className = classNames(
@@ -18,6 +19,8 @@ export function NextStepCell({ nextStep, status }: Props) {
     isDropped && "line-through opacity-70 text-content-dimmed",
     isPending && "text-content-dimmed"
   );
+
+  if (hide) return null;
 
   return (
     <td className="py-2 px-2 md:px-4 hidden xl:table-cell">

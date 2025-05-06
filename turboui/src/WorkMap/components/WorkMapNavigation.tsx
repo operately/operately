@@ -10,9 +10,6 @@ export interface Props {
   setTimeframe: TimeframeSelector.SetTimeframe;
 }
 
-/**
- * Navigation component for switching between different WorkMap views
- */
 export function WorkMapNavigation({ activeTab, onTabChange, timeframe, setTimeframe }: Props) {
   return (
     <div className="overflow-x-auto">
