@@ -13,6 +13,7 @@ export namespace Page {
     label: string;
     link?: string;
     onClick?: () => void;
+    hidden?: boolean;
   }
 
   export interface Props {
