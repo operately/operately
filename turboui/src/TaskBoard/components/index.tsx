@@ -3,6 +3,7 @@ import { StatusBadge } from "../../StatusBadge";
 import { SecondaryButton } from "../../Button";
 import { BlackLink } from "../../Link";
 import { AvatarWithName } from "../../Avatar/AvatarWithName";
+import { IconFileText, IconMessageCircle, IconClock } from "@tabler/icons-react";
 
 export namespace TaskBoard {
   export type Status = "pending" | "in_progress" | "done";
@@ -16,7 +17,7 @@ export namespace TaskBoard {
   export interface Milestone {
     id: string;
     name: string;
-    dueDate?: string;
+    dueDate?: Date;
   }
 
   export interface Label {
@@ -34,7 +35,7 @@ export namespace TaskBoard {
     labels?: Label[];
     milestone?: Milestone;
     points?: number;
-    dueDate?: string;
+    dueDate?: Date;
     hasComments?: boolean;
     hasDescription?: boolean;
     commentCount?: number;
@@ -90,13 +91,12 @@ const getStatusDisplayName = (status: TaskBoard.Status): string => {
 };
 
 // Helper component to display due date with appropriate formatting
-function DueDateDisplay({ dueDate }: { dueDate: string }) {
+function DueDateDisplay({ dueDate }: { dueDate: Date }) {
   // Check if the due date is in the past
-  const isOverdue = new Date(dueDate) < new Date();
+  const isOverdue = dueDate < new Date();
 
-  // Format the date (YYYY-MM-DD to more readable format)
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
+  // Format the date to a readable format
+  const formatDate = (date: Date) => {
     return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
   };
 
@@ -106,19 +106,10 @@ function DueDateDisplay({ dueDate }: { dueDate: string }) {
       title={isOverdue ? "Overdue" : ""}
     >
       {isOverdue && (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="w-3.5 h-3.5 mr-1 text-red-500"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <circle cx="12" cy="12" r="10" />
-          <polyline points="12 6 12 12 16 14" />
-        </svg>
+        <IconClock 
+          size={14} 
+          className="mr-1 text-red-500" 
+        />
       )}
       {formatDate(dueDate)}
     </span>
@@ -201,40 +192,12 @@ export function TaskBoard({ title, tasks, viewMode = "table" }: TaskBoard.Props)
                         </BlackLink>
                         {task.hasDescription && (
                           <span className="ml-2 text-content-subtle">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            >
-                              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                              <polyline points="14 2 14 8 20 8" />
-                              <line x1="16" y1="13" x2="8" y2="13" />
-                              <line x1="16" y1="17" x2="8" y2="17" />
-                              <polyline points="10 9 9 9 8 9" />
-                            </svg>
+                            <IconFileText size={16} />
                           </span>
                         )}
                         {task.hasComments && (
                           <span className="ml-2 text-content-subtle flex items-center">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            >
-                              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                            </svg>
+                            <IconMessageCircle size={16} />
                             {task.commentCount && (
                               <span className="ml-1 text-xs text-content-subtle">{task.commentCount}</span>
                             )}

@@ -36,9 +36,9 @@ export const mockPeople = {
 
 // Mock milestones
 export const mockMilestones = {
-  q2Release: { id: "1", name: "Q2 Release", dueDate: "2025-06-30" },
-  productLaunch: { id: "2", name: "Product Launch", dueDate: "2025-08-15" },
-  marketExpansion: { id: "3", name: "Market Expansion", dueDate: "2025-09-30" },
+  q2Release: { id: "1", name: "Q2 Release", dueDate: new Date("2025-06-30") },
+  productLaunch: { id: "2", name: "Product Launch", dueDate: new Date("2025-08-15") },
+  marketExpansion: { id: "3", name: "Market Expansion", dueDate: new Date("2025-09-30") },
 };
 
 // Mock tasks
@@ -51,7 +51,7 @@ export const mockTasks: TaskBoard.Task[] = [
     assignees: [mockPeople.john, mockPeople.jane],
     labels: [mockLabels.feature, mockLabels.highPriority],
     milestone: mockMilestones.q2Release,
-    dueDate: "2025-05-10", // Future date
+    dueDate: new Date("2025-05-10"), // Future date
     points: 8,
     hasDescription: true,
     hasComments: true,
@@ -64,7 +64,7 @@ export const mockTasks: TaskBoard.Task[] = [
     assignees: [mockPeople.bob],
     labels: [mockLabels.bug, mockLabels.highPriority],
     milestone: mockMilestones.q2Release,
-    dueDate: "2025-05-01", // Past due
+    dueDate: new Date("2025-05-01"), // Past due
     points: 3,
     hasDescription: true,
     hasComments: false,
@@ -98,7 +98,7 @@ export const mockTasks: TaskBoard.Task[] = [
     status: "pending",
     labels: [mockLabels.lowPriority],
     milestone: mockMilestones.marketExpansion,
-    dueDate: "2025-06-15", // Future date
+    dueDate: new Date("2025-06-15"), // Future date
     points: 3,
     hasDescription: false,
     hasComments: false,
@@ -119,7 +119,7 @@ export const mockTasks: TaskBoard.Task[] = [
     status: "in_progress",
     assignees: [mockPeople.john],
     labels: [mockLabels.bug, mockLabels.highPriority],
-    dueDate: "2025-04-30", // Past due
+    dueDate: new Date("2025-04-30"), // Past due
     points: 5,
     hasDescription: true,
     hasComments: true,
