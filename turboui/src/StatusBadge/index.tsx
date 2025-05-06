@@ -1,7 +1,7 @@
 import React from "react";
 import { StatusBadgeProps } from "./types";
 
-export function StatusBadge({ status, hideIcon = false, className = "", style }: StatusBadgeProps): React.ReactElement {
+export function StatusBadge({ status, hideIcon = false, className = "", style, customLabel }: StatusBadgeProps): React.ReactElement {
   let bgColor: string,
     textColor: string,
     dotColor: string,
@@ -186,7 +186,7 @@ export function StatusBadge({ status, hideIcon = false, className = "", style }:
       style={style}
     >
       {!hideIcon && getStatusIcon()}
-      {label}
+      {customLabel || label}
     </span>
   );
 }
