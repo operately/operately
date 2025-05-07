@@ -21,7 +21,7 @@ export function OwnerCell({ item }: Props) {
 
   return (
     <td className="py-2 px-2 md:px-4 hidden xl:table-cell">
-      <div className="max-w-[120px] overflow-hidden">
+      <div className="max-w-[120px] overflow-hidden" data-exclude-row-click>
         <AvatarWithName
           person={item.owner}
           size="tiny"
