@@ -52,7 +52,9 @@ function CantDeleteHasSubitems(props: GoalDeletePage.Props) {
       <MiniWorkMap items={props.subitems} />
 
       <div className="flex items-center gap-2 mt-8">
-        <DangerButton size="sm">Delete Forever</DangerButton>
+        <DangerButton size="sm" disabled>
+          Delete Forever
+        </DangerButton>
         <SecondaryButton size="sm" onClick={props.onCancel}>
           Cancel
         </SecondaryButton>
