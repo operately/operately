@@ -10,7 +10,7 @@ export function StatusBadge({ status, hideIcon = false, className = "", style, c
     if (hideIcon) return null;
 
     return getStatusIcon(status, textColor, dotColor);
-  }, [status, textColor, dotColor]);
+  }, [status, hideIcon, textColor, dotColor]);
 
   return (
     <span
