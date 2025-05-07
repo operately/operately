@@ -62,6 +62,14 @@ defmodule Operately.WorkMaps.WorkMap do
       items_by_parent
       |> Map.get(item.id, [])
       |> Enum.map(fn child -> add_children(child, items_by_parent) end)
+      |> Enum.sort_by(fn child ->
+        # Show projects before subgoals
+        case child.type do
+          :project -> 0
+          :goal -> 1
+          _ -> 2
+        end
+      end)
 
     %{item | children: children}
   end
