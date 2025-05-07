@@ -205,6 +205,7 @@ test.js.fmt.check:
 test.seed.env:
 	touch .env
 	echo 'OPERATELY_BLOB_TOKEN_SECRET_KEY="lPEuB9ITpbHP1GTf98TPWcHb/CrdeNLzqLcm0zF5mfo="' >> .env
+	echo 'CI=$(CI)' >> .env
 
 test.elixir.warnings:
 	./devenv bash -c "cd app && MIX_ENV=test mix compile --warnings-as-errors --all-warnings"

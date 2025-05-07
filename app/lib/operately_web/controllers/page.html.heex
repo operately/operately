@@ -37,15 +37,16 @@
 
     <!-- 
       Load the app's JavaScript. There are two separate strategies for
-      loading the JavaScript: one for development and one for
-      test and production. 
+      loading the JavaScript:
 
-      In development, the JavaScript is loaded from the local Vite server,
-      which allows for hot reloading and other development features. In
-      test and production, the JavaScript is loaded from the static
-      assets that are built by Vite.
+      1. Development strategy: Used in development mode or in local test mode (non-CI).
+         JavaScript is loaded from the local Vite server, which allows for hot reloading
+         and other development features.
+
+      2. Production strategy: Used in production or in CI test environments.
+         JavaScript is loaded from the static assets that are built by Vite.
     -->
-    <%= if Application.get_env(:operately, :app_env) == :dev do %>
+    <%= if OperatelyWeb.PageController.development_mode?() do %>
       <script type="module">
         import RefreshRuntime from 'http://localhost:4005/@react-refresh'
         RefreshRuntime.injectIntoGlobalHook(window)
