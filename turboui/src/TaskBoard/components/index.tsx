@@ -110,6 +110,61 @@ function StatusSelector({
   task: TaskBoard.Task;
   onStatusChange?: (newStatus: TaskBoard.Status) => void;
 }) {
+  const [searchTerm, setSearchTerm] = React.useState("");
+  const inputRef = React.useRef<HTMLInputElement>(null);
+  
+  // Filter status options based on search term
+  const filteredStatusOptions = Object.entries(taskStatusConfig).filter(
+    ([_, config]) => 
+      config.label.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Handle menu open/close events
+  const handleMenuOpenChange = (open: boolean) => {
+    if (open) {
+      // Focus input when menu opens
+      setTimeout(() => {
+        if (inputRef.current) {
+          inputRef.current.focus();
+        }
+      }, 50);
+    } else {
+      // Reset search term when menu closes
+      setSearchTerm("");
+    }
+  };
+
+  // Handle enter key in search input
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && filteredStatusOptions.length > 0) {
+      const [firstMatchStatus] = filteredStatusOptions[0];
+      onStatusChange && onStatusChange(firstMatchStatus as TaskBoard.Status);
+    }
+  };
+
+  // Custom search input for the menu header
+  const searchInput = (
+    <div className="relative">
+      <input
+        ref={inputRef}
+        type="text"
+        placeholder="Change status..."
+        className="w-full bg-surface-base text-content-base text-sm py-1 px-2 border border-surface-outline rounded-md focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        onKeyDown={(e) => {
+          // Prevent menu from closing when typing
+          e.stopPropagation();
+          handleKeyDown(e);
+        }}
+        onClick={(e) => e.stopPropagation()} // Prevent menu from closing when clicking in the input
+      />
+      <span className="absolute right-2 top-1.5 text-content-subtle">
+        <div className="text-[10px] font-mono">⏎</div>
+      </span>
+    </div>
+  );
+  
   return (
     <Menu
       customTrigger={
@@ -121,16 +176,26 @@ function StatusSelector({
         </div>
       }
       size="small"
+      headerContent={searchInput}
+      onOpenChange={handleMenuOpenChange}
     >
-      {Object.entries(taskStatusConfig).map(([status, config]) => (
-        <MenuActionItem
-          key={status}
-          icon={config.icon}
-          onClick={() => onStatusChange && onStatusChange(status as TaskBoard.Status)}
-        >
-          {config.label}
-        </MenuActionItem>
-      ))}
+      {filteredStatusOptions.map(([status, config]) => {
+        const isCurrentStatus = status === task.status;
+        return (
+          <MenuActionItem
+            key={status}
+            icon={config.icon}
+            onClick={() => onStatusChange && onStatusChange(status as TaskBoard.Status)}
+          >
+            <div className="flex items-center justify-between w-full">
+              {config.label}
+              {isCurrentStatus && (
+                <IconCheck size={14} className="text-primary-500 ml-2" />
+              )}
+            </div>
+          </MenuActionItem>
+        );
+      })}
     </Menu>
   );
 }
