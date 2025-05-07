@@ -20,6 +20,8 @@ if System.get_env("PHX_SERVER") do
   config :operately, OperatelyWeb.Endpoint, server: true
 end
 
+config :langchain, :anthropic_key, System.fetch_env!("ANTHROPIC_API_KEY")
+
 config :operately, :demo_builder_allowed, System.get_env("OPERATELY_DEMO_BUILDER_ALLOWED") == "true"
 config :operately, :blob_token_secret_key, System.get_env("OPERATELY_BLOB_TOKEN_SECRET_KEY")
 config :operately, :js_sentry_enabled, System.get_env("OPERATELY_JS_SENTRY_ENABLED") == "true"
@@ -88,7 +90,7 @@ if config_env() == :prod do
       port: port
     ],
     https: [
-      port: 4001,
+      port: 4001
     ],
     secret_key_base: secret_key_base
 

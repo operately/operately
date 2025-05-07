@@ -51,7 +51,6 @@ defmodule Operately.MixProject do
       {:inflex, "~> 2.0.0"},
       {:ex_aws, "~> 2.5"},
       {:custom_base, "~> 0.2"},
-
       {:oban, "~> 2.14"},
       {:bamboo, "~> 2.3.0"},
       {:site_encrypt, "~> 0.6.0"},
@@ -59,6 +58,9 @@ defmodule Operately.MixProject do
       {:sweet_xml, "~> 0.7"},
       {:req, "~> 0.5.0"},
       {:telemetry_metrics_statsd, "~> 0.7.0"},
+
+      # llm
+      {:langchain, "0.4.0-rc.0"},
 
       # only in dev
       {:phoenix_live_reload, "~> 1.5", only: :dev},
