@@ -178,28 +178,31 @@ export const Sizes: StoryObj<{}> = {
 
 /**
  * The AvatarWithName component combines an Avatar with the person's name.
- * It supports different name formats:
+ * It supports different name formats and sizes.
  * - full: Shows the full name (default)
  * - first: Shows only the first name
  * - short: Shows the first name and last name initial
  */
-export const WithName: StoryObj<{}> = {
-  render: () => (
+export const WithName: StoryObj<{ size: AvatarProps["size"] }> = {
+  render: (args) => (
     <div className="flex flex-col gap-4">
       <div className="mb-2">
         <h3 className="text-sm font-medium mb-1">Full name format</h3>
-        <AvatarWithName person={EXAMPLE_PEOPLE[0]} size="normal" nameFormat="full" />
+        <AvatarWithName person={EXAMPLE_PEOPLE[0]} size={args.size} nameFormat="full" />
       </div>
       <div className="mb-2">
         <h3 className="text-sm font-medium mb-1">First name format</h3>
-        <AvatarWithName person={EXAMPLE_PEOPLE[1]} size="normal" nameFormat="first" />
+        <AvatarWithName person={EXAMPLE_PEOPLE[1]} size={args.size} nameFormat="first" />
       </div>
       <div>
         <h3 className="text-sm font-medium mb-1">Short name format</h3>
-        <AvatarWithName person={EXAMPLE_PEOPLE[2]} size="normal" nameFormat="short" />
+        <AvatarWithName person={EXAMPLE_PEOPLE[2]} size={args.size} nameFormat="short" />
       </div>
     </div>
   ),
+  args: {
+    size: "normal"
+  },
 };
 
 /**
