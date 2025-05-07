@@ -1,15 +1,7 @@
 import { TaskBoard } from "../components";
 import { genPeople } from "../../utils/storybook/genPeople";
 
-// Mock labels
-export const mockLabels = {
-  highPriority: { id: "1", name: "High Priority", color: "#EF4444" },
-  mediumPriority: { id: "2", name: "Medium Priority", color: "#F59E0B" },
-  lowPriority: { id: "3", name: "Low Priority", color: "#10B981" },
-  bug: { id: "4", name: "Bug", color: "#8B5CF6" },
-  feature: { id: "5", name: "Feature", color: "#3B82F6" },
-  documentation: { id: "6", name: "Documentation", color: "#6366F1" },
-};
+// Labels removed in current iteration
 
 // Generate a consistent set of people for our mock data
 const generatedPeople = genPeople(4);
@@ -53,7 +45,6 @@ export const mockTasks: TaskBoard.Task[] = [
     status: "pending",
     description: "Create login/signup flows with OAuth integration",
     assignees: [mockPeople.john, mockPeople.jane],
-    labels: [mockLabels.feature, mockLabels.highPriority],
     milestone: mockMilestones.q2Release,
     dueDate: new Date("2025-05-10"), // Future date
     points: 8,
@@ -66,7 +57,6 @@ export const mockTasks: TaskBoard.Task[] = [
     title: "Fix navigation bug on mobile",
     status: "in_progress",
     assignees: [mockPeople.bob],
-    labels: [mockLabels.bug, mockLabels.highPriority],
     milestone: mockMilestones.q2Release,
     dueDate: new Date("2025-05-01"), // Past due
     points: 3,
@@ -78,7 +68,6 @@ export const mockTasks: TaskBoard.Task[] = [
     title: "Update documentation for API v2",
     status: "in_progress",
     assignees: [mockPeople.alice],
-    labels: [mockLabels.documentation, mockLabels.mediumPriority],
     milestone: mockMilestones.q2Release,
     points: 5,
     hasDescription: true,
@@ -89,7 +78,6 @@ export const mockTasks: TaskBoard.Task[] = [
     title: "Design marketing landing page",
     status: "done",
     assignees: [mockPeople.jane],
-    labels: [mockLabels.feature, mockLabels.mediumPriority],
     milestone: mockMilestones.productLaunch,
     points: 5,
     hasDescription: false,
@@ -100,7 +88,6 @@ export const mockTasks: TaskBoard.Task[] = [
     id: "task-5",
     title: "Research competitor pricing strategies",
     status: "pending",
-    labels: [mockLabels.lowPriority],
     milestone: mockMilestones.marketExpansion,
     dueDate: new Date("2025-06-15"), // Future date
     points: 3,
@@ -112,7 +99,6 @@ export const mockTasks: TaskBoard.Task[] = [
     title: "Implement dark mode toggle",
     status: "pending",
     assignees: [mockPeople.bob, mockPeople.alice],
-    labels: [mockLabels.feature, mockLabels.lowPriority],
     points: 3,
     hasDescription: true,
     hasComments: false,
@@ -122,7 +108,6 @@ export const mockTasks: TaskBoard.Task[] = [
     title: "Optimize database queries",
     status: "in_progress",
     assignees: [mockPeople.john],
-    labels: [mockLabels.bug, mockLabels.highPriority],
     dueDate: new Date("2025-04-30"), // Past due
     points: 5,
     hasDescription: true,
@@ -133,8 +118,7 @@ export const mockTasks: TaskBoard.Task[] = [
     id: "task-8",
     title: "Set up CI/CD pipeline",
     status: "done",
-    assignees: [mockPeople.bob],
-    labels: [mockLabels.feature, mockLabels.highPriority],
+    assignees: [mockPeople.alice, mockPeople.jane],
     milestone: mockMilestones.q2Release,
     points: 8,
     hasDescription: true,

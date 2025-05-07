@@ -11,7 +11,9 @@ type Size = "small" | "medium" | "large" | "xlarge" | "xxlarge" | "xxxlarge";
 interface MenuProps extends TestableElement {
   children: React.ReactNode;
   customTrigger?: React.ReactNode;
+  headerContent?: React.ReactNode;
   size?: Size;
+  onOpenChange?: (open: boolean) => void;
 }
 
 interface MenuItemProps extends TestableElement {
@@ -38,11 +40,16 @@ interface SubMenuProps {
 
 export function Menu(props: MenuProps) {
   return (
-    <DropdownMenu.Root>
+    <DropdownMenu.Root onOpenChange={props.onOpenChange}>
       <Trigger {...props} />
 
       <DropdownMenu.Portal>
         <DropdownMenu.Content className={menuContentClass} style={menuContentStyle(props.size)}>
+          {props.headerContent && (
+            <div className="px-3 py-2 border-b border-surface-outline">
+              {props.headerContent}
+            </div>
+          )}
           {props.children}
         </DropdownMenu.Content>
       </DropdownMenu.Portal>
@@ -115,21 +122,17 @@ export function MenuActionItem(props: MenuActionItemProps) {
 // Helpers
 //
 
-const SizeToWidth: Record<Size, number> = {
-  small: 150,
-  medium: 200,
-  large: 225,
-  xlarge: 250,
-  xxlarge: 275,
-  xxxlarge: 300,
-};
-
 function menuContentStyle(size?: Size) {
-  const width = size ? SizeToWidth[size] : SizeToWidth.medium;
+  let width = "16rem";
 
-  return {
-    width: `${width}px`,
-  };
+  if (size === "small") width = "16rem";
+  if (size === "medium") width = "20rem";
+  if (size === "large") width = "24rem";
+  if (size === "xlarge") width = "28rem";
+  if (size === "xxlarge") width = "32rem";
+  if (size === "xxxlarge") width = "40rem";
+
+  return { minWidth: width };
 }
 
 const menuContentClass = classNames(
@@ -153,7 +156,7 @@ const menuItemClass = classNames(
   "font-medium",
 );
 
-function MenuItemIconAndTitle({ icon, children } : any) {
+function MenuItemIconAndTitle({ icon, children }: any) {
   return (
     <>
       {icon && <div className="shrink-0">{React.createElement(icon, { size: 20 })}</div>}
