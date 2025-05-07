@@ -19,7 +19,7 @@ const meta = {
   decorators: [
     (Story, context) => (
       <div className="h-[800px] py-[4.5rem] px-2">
-        <Page title={context.args.title} size="fullwidth">
+        <Page title={context.args.title || "Tasks"} size="fullwidth">
           <Story />
         </Page>
       </div>
@@ -38,7 +38,22 @@ export const Default: Story = {
   args: {
     title: "Task Board",
     tasks: mockTasks,
+    viewMode: "table"
+  },
+};
+
+/**
+ * TaskBoard with interactive status selection
+ */
+export const InteractiveStatus: Story = {
+  args: {
+    title: "Interactive Task Board",
+    tasks: mockTasks,
     viewMode: "table",
+    onStatusChange: (taskId, newStatus) => {
+      console.log(`Task ${taskId} status changed to ${newStatus}`);
+      // In a real application, this would update the task status in the database
+    }
   },
 };
 
@@ -46,11 +61,10 @@ export const Default: Story = {
  * Empty TaskBoard with no tasks
  */
 export const EmptyState: Story = {
-  tags: ["autodocs"],
   args: {
     title: "Project Tasks",
     tasks: mockEmptyTasks,
-    viewMode: "table",
+    viewMode: "table"
   },
 };
 
@@ -58,18 +72,10 @@ export const EmptyState: Story = {
  * Kanban view of the TaskBoard
  */
 export const KanbanView: Story = {
-  tags: ["autodocs"],
-  render: (args) => (
-    <div className="h-[800px] py-4">
-      <Page title={args.title} size="fullwidth">
-        <TaskBoard {...args} />
-      </Page>
-    </div>
-  ),
   args: {
     title: "Project Tasks",
     tasks: mockTasks,
-    viewMode: "kanban",
+    viewMode: "kanban"
   },
 };
 
@@ -77,17 +83,9 @@ export const KanbanView: Story = {
  * Timeline view of the TaskBoard
  */
 export const TimelineView: Story = {
-  tags: ["autodocs"],
-  render: (args) => (
-    <div className="h-[800px] py-4">
-      <Page title={args.title} size="fullwidth">
-        <TaskBoard {...args} />
-      </Page>
-    </div>
-  ),
   args: {
     title: "Project Tasks",
     tasks: mockTasks,
-    viewMode: "timeline",
+    viewMode: "timeline"
   },
 };

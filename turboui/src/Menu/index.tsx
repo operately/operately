@@ -153,7 +153,7 @@ const menuItemClass = classNames(
   "font-medium",
 );
 
-function MenuItemIconAndTitle({ icon, children } : any) {
+function MenuItemIconAndTitle({ icon, children }: any) {
   return (
     <>
       {icon && <div className="shrink-0">{React.createElement(icon, { size: 20 })}</div>}

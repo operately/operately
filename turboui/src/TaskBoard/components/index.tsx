@@ -3,10 +3,19 @@ import { StatusBadge } from "../../StatusBadge";
 import { SecondaryButton } from "../../Button";
 import { BlackLink } from "../../Link";
 import { AvatarWithName } from "../../Avatar/AvatarWithName";
-import { IconFileText, IconMessageCircle, IconClock } from "@tabler/icons-react";
+import {
+  IconFileText,
+  IconMessageCircle,
+  IconClock,
+  IconCheck,
+  IconCircleDashed,
+  IconPointFilled,
+  IconX,
+} from "@tabler/icons-react";
+import { Menu, MenuActionItem } from "../../Menu";
 
 export namespace TaskBoard {
-  export type Status = "pending" | "in_progress" | "done";
+  export type Status = "pending" | "in_progress" | "done" | "canceled";
 
   export interface Person {
     id: string;
@@ -39,10 +48,16 @@ export namespace TaskBoard {
 
   export type TaskViewMode = "table" | "kanban" | "timeline";
 
+  // Callback for when a task status changes
+  export interface TaskBoardCallbacks {
+    onStatusChange?: (taskId: string, newStatus: Status) => void;
+  }
+
   export interface Props {
     title: string;
     tasks: Task[];
     viewMode?: TaskViewMode;
+    onStatusChange?: (taskId: string, newStatus: Status) => void;
   }
 }
 
@@ -65,11 +80,12 @@ const groupTasksByStatus = (tasks: TaskBoard.Task[]) => {
   return grouped;
 };
 
-// Map task status to badge status and labels
-const taskStatusConfig: Record<TaskBoard.Status, { status: string; label: string }> = {
-  pending: { status: "paused", label: "Not started" },
-  in_progress: { status: "pending", label: "In progress" },
-  done: { status: "completed", label: "Done" },
+// Map task status to badge status, labels and icons
+const taskStatusConfig: Record<TaskBoard.Status, { status: string; label: string; icon: any }> = {
+  pending: { status: "not_started", label: "Not started", icon: IconCircleDashed },
+  in_progress: { status: "in_progress", label: "In progress", icon: IconPointFilled },
+  done: { status: "completed", label: "Done", icon: IconCheck },
+  canceled: { status: "canceled", label: "Canceled", icon: IconX },
 };
 
 // Helper to get the display name for a status
@@ -86,6 +102,39 @@ const getStatusDisplayName = (status: TaskBoard.Status): string => {
   }
 };
 
+// Status selector component with dropdown menu
+function StatusSelector({
+  task,
+  onStatusChange,
+}: {
+  task: TaskBoard.Task;
+  onStatusChange?: (newStatus: TaskBoard.Status) => void;
+}) {
+  return (
+    <Menu
+      customTrigger={
+        <div className="cursor-pointer">
+          <StatusBadge
+            status={taskStatusConfig[task.status].status}
+            customLabel={taskStatusConfig[task.status].label}
+          />
+        </div>
+      }
+      size="small"
+    >
+      {Object.entries(taskStatusConfig).map(([status, config]) => (
+        <MenuActionItem
+          key={status}
+          icon={config.icon}
+          onClick={() => onStatusChange && onStatusChange(status as TaskBoard.Status)}
+        >
+          {config.label}
+        </MenuActionItem>
+      ))}
+    </Menu>
+  );
+}
+
 // Helper component to display due date with appropriate formatting
 function DueDateDisplay({ dueDate }: { dueDate: Date }) {
   // Check if the due date is in the past
@@ -101,19 +150,37 @@ function DueDateDisplay({ dueDate }: { dueDate: Date }) {
       className={`text-sm flex items-center ${isOverdue ? "text-red-600 font-medium" : "text-content-base"}`}
       title={isOverdue ? "Overdue" : ""}
     >
-      {isOverdue && (
-        <IconClock 
-          size={14} 
-          className="mr-1 text-red-500" 
-        />
-      )}
+      {isOverdue && <IconClock size={14} className="mr-1 text-red-500" />}
       {formatDate(dueDate)}
     </span>
   );
 }
 
-export function TaskBoard({ title, tasks, viewMode = "table" }: TaskBoard.Props) {
+export function TaskBoard({
+  tasks: initialTasks,
+  title = "Tasks",
+  viewMode = "table",
+  onStatusChange,
+}: {
+  tasks: TaskBoard.Task[];
+  title?: string;
+  viewMode?: TaskBoard.TaskViewMode;
+  onStatusChange?: (taskId: string, newStatus: TaskBoard.Status) => void;
+}) {
   const [currentViewMode, setCurrentViewMode] = useState<TaskBoard.TaskViewMode>(viewMode);
+  const [tasks, setTasks] = useState<TaskBoard.Task[]>(initialTasks);
+
+  // Handle status change
+  const handleStatusChange = (taskId: string, newStatus: TaskBoard.Status) => {
+    // Update local state
+    const updatedTasks = tasks.map((task) => (task.id === taskId ? { ...task, status: newStatus } : task));
+    setTasks(updatedTasks);
+
+    // Notify parent component if callback is provided
+    if (onStatusChange) {
+      onStatusChange(taskId, newStatus);
+    }
+  };
 
   return (
     <div className="flex flex-col w-full h-full bg-surface-base rounded-lg">
@@ -201,9 +268,9 @@ export function TaskBoard({ title, tasks, viewMode = "table" }: TaskBoard.Props)
                       </div>
                     </td>
                     <td className="py-1 px-4">
-                      <StatusBadge
-                        status={taskStatusConfig[task.status].status}
-                        customLabel={taskStatusConfig[task.status].label}
+                      <StatusSelector
+                        task={task}
+                        onStatusChange={(newStatus) => handleStatusChange(task.id, newStatus)}
                       />
                     </td>
                     <td className="py-1 px-4">
