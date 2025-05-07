@@ -20,11 +20,7 @@ export namespace TaskBoard {
     dueDate?: Date;
   }
 
-  export interface Label {
-    id: string;
-    name: string;
-    color: string;
-  }
+  // Label interface removed in current iteration
 
   export interface Task {
     id: string;
@@ -32,7 +28,7 @@ export namespace TaskBoard {
     status: Status;
     description?: string;
     assignees?: Person[];
-    labels?: Label[];
+    // labels removed in current iteration
     milestone?: Milestone;
     points?: number;
     dueDate?: Date;
@@ -172,7 +168,6 @@ export function TaskBoard({ title, tasks, viewMode = "table" }: TaskBoard.Props)
                   <th className="text-left py-1.5 px-4 font-semibold">Assignee</th>
                   <th className="text-left py-1.5 px-4 font-semibold">Due</th>
                   <th className="text-left py-1.5 px-4 font-semibold">Milestone</th>
-                  <th className="text-left py-1.5 px-4 font-semibold">Labels</th>
                 </tr>
               </thead>
               <tbody>
@@ -232,29 +227,12 @@ export function TaskBoard({ title, tasks, viewMode = "table" }: TaskBoard.Props)
                         <span className="text-sm text-content-subtle">—</span>
                       )}
                     </td>
-                    <td className="py-1 px-4">
-                      {task.labels && task.labels.length > 0 ? (
-                        <div className="flex flex-wrap gap-1">
-                          {task.labels.map((label) => (
-                            <span
-                              key={label.id}
-                              className="px-2 py-0.5 text-xs rounded-full"
-                              style={{ backgroundColor: `${label.color}20`, color: label.color }}
-                            >
-                              {label.name}
-                            </span>
-                          ))}
-                        </div>
-                      ) : (
-                        <span className="text-sm text-content-subtle">—</span>
-                      )}
-                    </td>
                   </tr>
                 ))}
                 {tasks.length === 0 && (
                   <tr>
-                    <td colSpan={6} className="py-4 text-center text-content-subtle">
-                      No tasks available
+                    <td colSpan={5} className="py-4 text-center text-content-subtle">
+                      No tasks found
                     </td>
                   </tr>
                 )}
