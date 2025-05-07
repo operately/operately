@@ -26,6 +26,7 @@ export function DangerButton(props: BaseButtonProps) {
     always: "border border-red-500",
     normal: "text-white-1 bg-red-500 hover:bg-red-600 dark:hover:bg-red-400",
     loading: "text-content-subtle bg-red-400 dark:bg-red-500",
+    disabled: "text-content-subtle bg-red-400 dark:bg-red-500",
   });
 
   return (
@@ -42,6 +43,7 @@ export function GhostButton(props: BaseButtonProps) {
     always: "border border-accent-1",
     loading: "text-content-subtle bg-accent-1-light",
     normal: "text-accent-1 hover:text-white-1 hover:bg-accent-1",
+    disabled: "text-content-subtle border-accent-1-light",
   });
 
   return (
@@ -58,6 +60,7 @@ export function SecondaryButton(props: BaseButtonProps) {
     always: "border border-surface-outline bg-surface-base",
     normal: "text-content-dimmed hover:text-content-base hover:bg-surface-accent",
     loading: "text-content-subtle",
+    disabled: "text-content-subtle bg-surface-accent",
   });
 
   return (

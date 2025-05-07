@@ -1,7 +1,10 @@
 import classNames from "../utils/classnames";
 import { BaseButtonProps } from "./UnstalyedButton";
 
-export function calcClassName(props: BaseButtonProps, { normal, loading, always } : { normal: string, loading: string, always: string }) : string {
+export function calcClassName(
+  props: BaseButtonProps,
+  { normal, loading, always, disabled }: { normal: string; loading: string; always: string; disabled: string },
+) {
   const size = props.size || "base";
 
   return classNames(
@@ -22,8 +25,12 @@ export function calcClassName(props: BaseButtonProps, { normal, loading, always 
       "px-4 py-2.5 rounded-full": size === "lg",
     },
     {
-      [normal]: !props.loading,
+      [normal]: !props.loading && !props.disabled,
       [loading]: props.loading,
+    },
+    {
+      "cursor-not-allowed": props.disabled,
+      [disabled]: props.disabled,
     },
   );
 }
