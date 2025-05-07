@@ -64,7 +64,6 @@ const getStatusProperties = (status: BadgeStatus) => {
         label: "Paused",
       };
     case "not_started":
-    case "not_started":
       return {
         bgColor: "bg-gray-100 dark:bg-gray-700",
         textColor: "text-gray-700 dark:text-gray-300",
