@@ -7,6 +7,10 @@ defmodule OperatelyWeb.PageController do
     conn |> assign(:app_config, config) |> render(:page)
   end
 
+  def development_mode? do
+    Application.get_env(:operately, :app_env) == :dev or (Application.get_env(:operately, :app_env) == :test and System.get_env("CI") != "true")
+  end
+
   defp app_config(conn) do
     config = %{
       environment: Application.get_env(:operately, :app_env),
