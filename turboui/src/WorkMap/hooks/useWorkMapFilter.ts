@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from "react";
-import { parse } from "date-fns";
+import { parse } from "../../utils/time";
 import { TimeframeSelector } from "../../TimeframeSelector";
 import { WorkMap } from "../components";
 import { useSearchParams } from "react-router-dom";
@@ -132,75 +132,77 @@ function extractOngoingItems(data: WorkMap.Item[]): WorkMap.Item[] {
  */
 function sortItemsByClosedDate(items: WorkMap.Item[]): WorkMap.Item[] {
   return [...items].sort((a, b) => {
-    const dateA = parseDate((a as any).closedAt);
-    const dateB = parseDate((b as any).closedAt);
+    const dateA = parse((a as any).closedAt);
+    const dateB = parse((b as any).closedAt);
+
+    if (!dateA && !dateB) return 0;
+    if (!dateA) return 1; // If A is null, B comes first
+    if (!dateB) return -1; // If B is null, A comes first
+
     return dateB.getTime() - dateA.getTime();
   });
 }
 
 /**
- * Helper to parse dates in "Month DD YYYY" format
- */
-function parseDate(dateString?: string) {
-  if (!dateString) return new Date(0);
-
-  const parsed = parse(dateString, "MMM d yyyy", new Date());
-
-  return isNaN(parsed.getTime()) ? new Date(0) : parsed;
-}
-
-/**
- * Filter items based on their timeframe or date properties
- * For goals: use timeframe.startDate and timeframe.endDate
- * For projects: use startedAt and closedAt
+ * Filter items based on their timeframe
  * An item is included if it overlaps with the provided timeframe in any way
  */
 function filterItemsByTimeframe(items: WorkMap.Item[], timeframe: TimeframeSelector.Timeframe): WorkMap.Item[] {
-  // If timeframe has no dates, return all items
-  if (!timeframe.startDate && !timeframe.endDate) {
-    return items;
-  }
+  const processItemAndChildren = (item: WorkMap.Item): WorkMap.Item[] => {
+    const result: WorkMap.Item[] = [];
+    const itemOverlaps = itemOverlapsWithTimeframe(item, timeframe);
 
-  const filterTimeframeRecursive = (item: WorkMap.Item): WorkMap.Item | null => {
-    const overlaps = itemOverlapsWithTimeframe(item, timeframe);
+    let matchingChildren: WorkMap.Item[] = [];
 
-    if (!overlaps) {
-      return null; // Item doesn't overlap, exclude it
-    }
-
-    // For items with children, recursively filter children
     if (item.children && item.children.length > 0) {
-      const filteredChildren = item.children
-        .map(filterTimeframeRecursive)
-        .filter((child): child is WorkMap.Item => child !== null);
-
-      return { ...item, children: filteredChildren };
+      item.children.forEach((child) => {
+        const childResults = processItemAndChildren(child);
+        matchingChildren.push(...childResults);
+      });
     }
 
-    // Item overlaps and has no children (or all children filtered out)
-    return { ...item };
+    // If the item itself overlaps with the timeframe, include it with its matching children
+    if (itemOverlaps) {
+      result.push({ ...item, children: matchingChildren });
+    } else if (matchingChildren.length > 0) {
+      // If the item doesn't overlap but has matching children, add those children directly to result
+      // This moves the children up one level in the hierarchy
+      result.push(...matchingChildren);
+    }
+
+    return result;
   };
 
-  return items.map(filterTimeframeRecursive).filter((item): item is WorkMap.Item => item !== null);
+  const allResults: WorkMap.Item[] = [];
+
+  items.forEach((item) => {
+    const results = processItemAndChildren(item);
+    allResults.push(...results);
+  });
+
+  return allResults;
 }
 
-/**
- * Check if an item overlaps with the provided timeframe
- */
-function itemOverlapsWithTimeframe(item: WorkMap.Item, timeframe: TimeframeSelector.Timeframe): boolean {
-  const timeframeStart = timeframe.startDate ? new Date(timeframe.startDate) : null;
-  const timeframeEnd = timeframe.endDate ? new Date(timeframe.endDate) : null;
+function itemOverlapsWithTimeframe(item: WorkMap.Item, timeframe: TimeframeSelector.Timeframe) {
+  const timeframeStart = parse(timeframe.startDate);
+  const timeframeEnd = parse(timeframe.endDate);
+  const itemStart = parse(item.timeframe?.startDate);
+  const itemEnd = parse(item.timeframe?.endDate);
 
-  const goalStart = item.timeframe?.startDate ? new Date(item.timeframe.startDate) : null;
-  const goalEnd = item.timeframe?.endDate ? new Date(item.timeframe.endDate) : null;
+  // Item doesn't have a start date, we can't determine if it's in the timeframe
+  if (!itemStart) {
+    return false;
+  }
 
-  // If either timeframe is missing dates, include the item
-  if (!timeframeStart || !timeframeEnd || !goalStart || !goalEnd) {
+  if (!timeframeStart || !timeframeEnd) {
     return true;
   }
 
-  // Check for overlap: not (goalEnd < timeframeStart || goalStart > timeframeEnd)
-  return !(goalEnd < timeframeStart || goalStart > timeframeEnd);
+  if (itemEnd) {
+    return !(itemEnd < timeframeStart || itemStart > timeframeEnd);
+  }
+
+  return itemStart <= timeframeEnd;
 }
 
 /**

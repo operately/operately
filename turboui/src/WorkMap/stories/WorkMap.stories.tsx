@@ -256,7 +256,7 @@ export const Q3Selected: Story = {
 
     await Steps.closeTimeframeSelector(canvasElement, step);
 
-    await Steps.assertRowsNumber(canvasElement, step, 7);
+    await Steps.assertRowsNumber(canvasElement, step, 8);
 
     await Steps.assertItemName(canvasElement, step, "Acquire the first users of Operately outside Semaphore");
     await Steps.assertItemName(canvasElement, step, "GDPR compliance implementation");
