@@ -43,7 +43,9 @@ export function TableRow(props: Props) {
 function StatusCell({ status }: { status: WorkMap.Status }) {
   return (
     <td className="py-2 px-2 md:px-4">
-      <StatusBadge status={status} />
+      <div className="transform group-hover:scale-105 transition-transform duration-150">
+        <StatusBadge status={status} />
+      </div>
     </td>
   );
 }
