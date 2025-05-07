@@ -33,6 +33,7 @@ function Name({ item }: { item: WorkMap.Item }) {
   const { isCompleted, isFailed, isDropped, isPending } = useItemStatus(item.status);
 
   const textStyle = classNames(
+    "flex items-center",
     "font-medium text-xs md:text-sm hover:underline transition-colors",
     {
       "line-through": isCompleted || isFailed,
@@ -41,18 +42,10 @@ function Name({ item }: { item: WorkMap.Item }) {
     },
     isCompleted || isFailed || isDropped
       ? "text-content-dimmed dark:text-gray-400"
-      : isCompleted || isFailed || isDropped
-      ? "text-content-dimmed dark:text-gray-400"
-      : "text-content-base dark:text-gray-200 hover:text-link-hover dark:hover:text-white",
+      : "text-content-base hover:text-content-dimmed",
   );
 
-  return (
-    <div className="flex items-center">
-      <BlackLink to={item.itemPath!} className={textStyle} underline="hover">
-        {item.name}
-      </BlackLink>
-    </div>
-  );
+  return <div className={textStyle}>{item.name}</div>;
 }
 
 function Icon({ item }: { item: WorkMap.Item }) {
