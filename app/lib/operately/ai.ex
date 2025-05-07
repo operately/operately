@@ -2,7 +2,7 @@ defmodule Operately.AI do
   alias LangChain.Function
   alias LangChain.Message
   alias LangChain.Chains.LLMChain
-  alias LangChain.ChatModels.ChatOpenAI
+  alias LangChain.ChatModels.ChatAnthropic
   alias LangChain.Utils.ChainResult
 
   def run do
@@ -34,7 +34,7 @@ defmodule Operately.AI do
 
     {:ok, updated_chain} =
       LLMChain.new!(%{
-        llm: ChatOpenAI.new!(),
+        llm: ChatAnthropic.new!(),
         custom_context: custom_context,
         verbose: true
       })
