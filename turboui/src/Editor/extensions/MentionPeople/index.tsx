@@ -1,13 +1,18 @@
 import * as TipTap from "@tiptap/react";
-import * as People from "@/models/people";
 
+import { mergeAttributes } from "@tiptap/core";
 import { MentionPopup } from "./MentionPopup";
 import { NodeView } from "./NodeView";
-import { mergeAttributes } from "@tiptap/core";
 
 import Mention from "@tiptap/extension-mention";
 
-export type SearchFn = ({ query }: { query: string }) => Promise<People.Person[]>;
+interface MentionablePerson {
+  id: string;
+  fullName: string;
+  avatarUrl: string;
+}
+
+export type SearchFn = ({ query }: { query: string }) => Promise<MentionablePerson[]>;
 
 export default {
   configure(searchFn: SearchFn) {

@@ -1,7 +1,5 @@
-import React from "react";
-
-import * as People from "@/models/people";
 import * as TipTap from "@tiptap/react";
+import React from "react";
 
 import Link from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
@@ -20,80 +18,63 @@ export type Editor = TipTap.Editor;
 export { EditorContext } from "./EditorContext";
 export { LinkEditForm } from "./LinkEditForm";
 
-interface OnSaveData {
-  json: any;
-  html: string;
+// new
+
+namespace Editor {
+  export interface EditorState {
+    peopleSearch: SearchFn;
+
+    tiptapInstance: TipTap.Editor | null;
+    focused: boolean;
+    empty: boolean;
+    uploading: boolean;
+
+    setTipTapInstance: (instance: TipTap.Editor | null) => void;
+    setFocused: (focused: boolean) => void;
+    setEmpty: (empty: boolean) => void;
+    setUploading: (uploading: boolean) => void;
+  }
+
+  export interface Props {
+    editor: EditorState;
+
+    editable?: boolean;
+    content?: any;
+    autoFocus?: boolean;
+    tabindex?: string;
+    className?: string;
+
+    placeholder?: string;
+  }
 }
 
-interface OnBlurData {
-  json: any;
-  html: string;
-}
-
-export function Root({ editor, children, className = "" }): JSX.Element {
-  const [linkEditActive, setLinkEditActive] = React.useState(false);
-
-  return (
-    <EditorContext.Provider value={{ editor, linkEditActive, setLinkEditActive }}>
-      <RootBody children={children} className={className}></RootBody>
-    </EditorContext.Provider>
-  );
-}
-
-function RootBody({ children, className = "" }): JSX.Element {
-  const handleClick = useLinkEditFormClose();
-
-  return (
-    <div onClick={handleClick} className={className}>
-      {children}
-    </div>
-  );
-}
-
-interface UseEditorProps {
-  mentionSearchScope: People.SearchScope;
-
-  peopleSearch?: SearchFn;
-  placeholder?: string;
-  content?: any;
-  onSave?: (data: OnSaveData) => void;
-  onBlur?: (data: OnBlurData) => void;
-  onUploadStatusChange?: (uploading: boolean) => void;
-  className?: string;
-  editable?: boolean;
-  autoFocus?: boolean;
-  tabindex?: string;
-}
-
-export interface EditorState {
-  editor: any;
-  submittable: boolean;
-  focused: boolean;
-  empty: boolean;
-  uploading: boolean;
-}
-
-const DEFAULT_EDITOR_PROPS: Partial<UseEditorProps> = {
-  editable: true,
-  autoFocus: false,
-  tabindex: "",
-};
-
-function useEditor(props: UseEditorProps): EditorState {
-  props = { ...DEFAULT_EDITOR_PROPS, ...props };
-
-  const [submittable, setSubmittable] = React.useState(true);
+export function useEditor({peopleSearch} :{peopleSearch: SearchFn}): Editor.EditorState {
+  const [tiptapInstance, setTipTapInstance] = React.useState<TipTap.Editor | null>(null);
   const [focused, setFocused] = React.useState(false);
-  const [empty, setEmpty] = React.useState(props.content === undefined || props.content === "");
+  const [empty, setEmpty] = React.useState(true);
   const [uploading, setUploading] = React.useState(false);
 
-  const defaultPeopleSearch = People.usePeopleSearch(props.mentionSearchScope);
+  return {
+    peopleSearch,
 
+    tiptapInstance,
+    focused,
+    empty,
+    uploading,
+
+    setTipTapInstance,
+    setFocused,
+    setEmpty,
+    setUploading,
+  };
+}
+
+export function Editor(props: Editor.Props) {
   const mentionPeople = React.useMemo(() => {
-    return MentionPeople.configure(props.peopleSearch || defaultPeopleSearch);
+    return MentionPeople.configure(props.editor.peopleSearch);
   }, []);
 
-  const editor = TipTap.useEditor({
+  const tiptapInstance = TipTap.useEditor({
     editable: props.editable,
     content: props.content,
     autofocus: props.autoFocus,
@@ -152,21 +133,61 @@ function useEditor(props: UseEditorProps): EditorState {
     },
   });
 
-  return { editor: editor, submittable: submittable, focused: focused, empty: empty, uploading: uploading };
+  React.useEffect(() => {
+    props.editor.setTipTapInstance(tiptapInstance);
+  }, [tiptapInstance]);
+
+  return <Root editor={props.editor}>
+    <Toolbar editor={props.editor} noTopBorder />
+
+    <div className="text-content-accent relative px-2 rounded-t">
+      {props.editor.tiptapInstance && <TipTap.EditorContent editor={props.editor.tiptapInstance} />}
+    </div>
+  </Root>
 }
 
-const EditorContent = TipTap.EditorContent;
+// old
 
-export { EditorContent, Toolbar, useEditor };
+interface OnSaveData {
+  json: any;
+  html: string;
+}
 
-export function StandardEditorForm({ editor }: { editor: Editor }): JSX.Element {
+interface OnBlurData {
+  json: any;
+  html: string;
+}
+
+export function Root({ editor, children, className = "" }): JSX.Element {
+  const [linkEditActive, setLinkEditActive] = React.useState(false);
+
   return (
-    <Root editor={editor}>
-      <Toolbar editor={editor} noTopBorder />
-
-      <div className="text-content-accent relative px-2 rounded-t">
-        <EditorContent editor={editor} />
-      </div>
-    </Root>
+    <EditorContext.Provider value={{ editor, linkEditActive, setLinkEditActive }}>
+      <RootBody children={children} className={className}></RootBody>
+    </EditorContext.Provider>
   );
 }
+
+function RootBody({ children, className = "" }): JSX.Element {
+  const handleClick = useLinkEditFormClose();
+
+  return (
+    <div onClick={handleClick} className={className}>
+      {children}
+    </div>
+  );
+}
+
+// export interface EditorState {
+//   editor: any;
+//   submittable: boolean;
+//   focused: boolean;
+//   empty: boolean;
+//   uploading: boolean;
+// }
+
+// const DEFAULT_EDITOR_PROPS: Partial<UseEditorProps> = {
+//   editable: true,
+//   autoFocus: false,
+//   tabindex: "",
+// };

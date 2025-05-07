@@ -1,15 +1,15 @@
 import React from "react";
 
-import * as TipTap from "@tiptap/react";
 import * as People from "@/models/people";
+import * as TipTap from "@tiptap/react";
 
-import Link from "@tiptap/extension-link";
-import StarterKit from "@tiptap/starter-kit";
-import Placeholder from "@tiptap/extension-placeholder";
-import MentionPeople, { SearchFn } from "@/features/richtexteditor/extensions/MentionPeople";
-import Highlight from "@/features/richtexteditor/extensions/Highlight";
-import FakeTextSelection from "@/features/richtexteditor/extensions/FakeTextSelection";
 import { Toolbar } from "@/features/richtexteditor/components/Toolbar";
+import FakeTextSelection from "@/features/richtexteditor/extensions/FakeTextSelection";
+import Highlight from "@/features/richtexteditor/extensions/Highlight";
+import MentionPeople, { SearchFn } from "@/features/richtexteditor/extensions/MentionPeople";
+import Link from "@tiptap/extension-link";
+import Placeholder from "@tiptap/extension-placeholder";
+import StarterKit from "@tiptap/starter-kit";
 
 import Blob, { isUploadInProgress } from "./Blob";
 
@@ -17,8 +17,11 @@ import { EditorContext } from "./EditorContext";
 import { useLinkEditFormClose } from "./LinkEditForm";
 
 export type Editor = TipTap.Editor;
-export { LinkEditForm } from "./LinkEditForm";
 export { EditorContext } from "./EditorContext";
+export { LinkEditForm } from "./LinkEditForm";
+export { EditorContent, Toolbar, useEditor };
+
+const EditorContent = TipTap.EditorContent;
 
 interface OnSaveData {
   json: any;
@@ -154,10 +157,6 @@ function useEditor(props: UseEditorProps): EditorState {
 
   return { editor: editor, submittable: submittable, focused: focused, empty: empty, uploading: uploading };
 }
-
-const EditorContent = TipTap.EditorContent;
-
-export { useEditor, EditorContent, Toolbar };
 
 export function StandardEditorForm({ editor }: { editor: Editor }): JSX.Element {
   return (
