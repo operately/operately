@@ -1,7 +1,7 @@
 export type { BaseButtonProps } from "./UnstalyedButton";
 
-import { BaseButtonProps, UnstyledButton } from "./UnstalyedButton";
 import { Spinner } from "./Spinner";
+import { BaseButtonProps, UnstyledButton } from "./UnstalyedButton";
 import { calcClassName } from "./calcClassNames";
 
 export function PrimaryButton(props: BaseButtonProps) {
@@ -9,6 +9,7 @@ export function PrimaryButton(props: BaseButtonProps) {
     always: "border border-accent-1",
     normal: "text-white-1 bg-accent-1 hover:bg-accent-1-light",
     loading: "text-content-subtle bg-accent-1-light",
+    disabled: "text-content-subtle bg-accent-1-light",
   });
 
   return (

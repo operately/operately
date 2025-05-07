@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { PrimaryButton, SecondaryButton, GhostButton, DangerButton } from "./index";
-import { IconHome, IconSearch, IconSettings, IconUser, IconStar } from "@tabler/icons-react";
+import { IconHome, IconSearch, IconSettings, IconStar, IconUser } from "@tabler/icons-react";
+import { DangerButton, GhostButton, PrimaryButton, SecondaryButton } from "./index";
 
 const meta = {
   title: "Components/Button",
@@ -185,6 +185,30 @@ export const WithIcons: StoryObj = {
         <GhostButton size="lg" icon={IconStar}>
           Favorites
         </GhostButton>
+      </div>
+    </div>
+  ),
+};
+
+export const Disabled = {
+  render: () => (
+    <div className="flex flex-col gap-4">
+      <div className="flex items-center gap-4">
+        <PrimaryButton size="base" disabled>
+          Button
+        </PrimaryButton>
+
+        <SecondaryButton size="base" disabled>
+          Button
+        </SecondaryButton>
+
+        <GhostButton size="base" disabled>
+          Button
+        </GhostButton>
+
+        <DangerButton size="base" disabled>
+          Button
+        </DangerButton>
       </div>
     </div>
   ),

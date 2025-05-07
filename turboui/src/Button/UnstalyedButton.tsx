@@ -1,11 +1,11 @@
 import React from "react";
 
-import { Menu } from "../Menu";
-import { DivLink } from "../Link";
-import { TestableElement } from "../TestableElement";
-import { IconChevronDown } from "@tabler/icons-react";
 import type { IconProps } from "@tabler/icons-react";
+import { IconChevronDown } from "@tabler/icons-react";
 import { match } from "ts-pattern";
+import { DivLink } from "../Link";
+import { Menu } from "../Menu";
+import { TestableElement } from "../TestableElement";
 
 interface Linkable {
   linkTo?: string;
@@ -29,6 +29,7 @@ export interface BaseButtonProps extends MenuOptions, Linkable, Clickable, Testa
   spanButton?: boolean;
   icon?: React.ComponentType<IconProps>;
   iconSize?: number;
+  disabled?: boolean;
 }
 
 interface UnstyledButtonProps extends BaseButtonProps {
