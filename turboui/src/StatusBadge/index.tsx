@@ -2,15 +2,8 @@ import React from "react";
 import { BadgeStatus, StatusBadgeProps } from "./types";
 
 export function StatusBadge({ status, hideIcon = false, className = "", style, customLabel }: StatusBadgeProps) {
-  const { bgColor, textColor, dotColor, borderColor, label } = React.useMemo(
-    () => getStatusProperties(status),
-    [status],
-  );
-  const icon = React.useMemo(() => {
-    if (hideIcon) return null;
-
-    return getStatusIcon(status, textColor, dotColor);
-  }, [status, textColor, dotColor]);
+  const { bgColor, textColor, dotColor, borderColor, label } = getStatusProperties(status);
+  const icon = hideIcon ? null : getStatusIcon(status, textColor, dotColor);
 
   return (
     <span
