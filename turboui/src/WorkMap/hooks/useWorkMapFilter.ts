@@ -187,7 +187,7 @@ function itemOverlapsWithTimeframe(item: WorkMap.Item, timeframe: TimeframeSelec
   const timeframeStart = parse(timeframe.startDate);
   const timeframeEnd = parse(timeframe.endDate);
   const itemStart = parse(item.timeframe?.startDate);
-  const itemEnd = parse(item.timeframe?.endDate);
+  const itemEnd = parse(item.timeframe?.endDate || item.completedOn);
 
   // Item doesn't have a start date, we can't determine if it's in the timeframe
   if (!itemStart) {
