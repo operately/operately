@@ -3,7 +3,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.WorkMaps.WorkMapItem do
 
   def serialize(item, level: :essential) do
     %{
-      id: item.id,
+      id: item_id(item),
       parent_id: item.parent_id,
       name: item.name,
       status: item.status,
@@ -28,6 +28,13 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.WorkMaps.WorkMapItem do
       children: OperatelyWeb.Api.Serializer.serialize(item.children, level: :full),
       privacy: OperatelyWeb.Api.Serializer.serialize(item.privacy),
     })
+  end
+
+  defp item_id(item) do
+    case item.type do
+      :goal -> Paths.goal_id(item.resource)
+      :project -> Paths.project_id(item.resource)
+    end
   end
 
   defp item_path(item) do
