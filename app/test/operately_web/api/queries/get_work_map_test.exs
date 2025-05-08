@@ -44,7 +44,7 @@ defmodule OperatelyWeb.Api.Queries.GetWorkMapTest do
     tabletest @table do
       test "#{@test.person} has access to #{Enum.map_join(@test.expected_items, ", ", &Atom.to_string/1)}", ctx do
         ctx = Factory.log_in_person(ctx, @test.person)
-        expected_items = Enum.map(@test.expected_items, &ctx[&1].id)
+        expected_items = Enum.map(@test.expected_items, &Paths.goal_id(ctx[&1]))
 
         assert {200, res} = query(ctx.conn, :get_work_map, %{})
 
@@ -95,15 +95,15 @@ defmodule OperatelyWeb.Api.Queries.GetWorkMapTest do
     tabletest @table do
       test "#{@test.person} has access to #{Enum.map_join(@test.expected_items, ", ", &Atom.to_string/1)}", ctx do
         ctx = Factory.log_in_person(ctx, @test.person)
-        expected_items = Enum.map(@test.expected_items, &ctx[&1].id)
+        expected_items = Enum.map(@test.expected_items, &Paths.goal_id(ctx[&1]))
 
         assert {200, res} = query(ctx.conn, :get_work_map, %{})
 
         # Find the parent goal in the result
-        parent_item = Enum.find(res.work_map, &(&1.id == ctx.parent_goal.id))
+        parent_item = Enum.find(res.work_map, &(&1.id == Paths.goal_id(ctx.parent_goal)))
 
         # Find the child goal in the parent's children
-        child_item = Enum.find(parent_item.children, &(&1.id == ctx.child_goal.id))
+        child_item = Enum.find(parent_item.children, &(&1.id == Paths.goal_id(ctx.child_goal)))
 
         # Verify the projects under the child goal
         assert length(child_item.children) == @test.count
@@ -154,11 +154,11 @@ defmodule OperatelyWeb.Api.Queries.GetWorkMapTest do
 
       # Should see only public1 at the root level
       assert length(res.work_map) == 1
-      public1 = Enum.find(res.work_map, &(&1.id == ctx.public1.id))
+      public1 = Enum.find(res.work_map, &(&1.id == Paths.goal_id(ctx.public1)))
 
       # Should see only public2 as a child of public1
       assert length(public1.children) == 1
-      public2 = Enum.find(public1.children, &(&1.id == ctx.public2.id))
+      public2 = Enum.find(public1.children, &(&1.id == Paths.goal_id(ctx.public2)))
 
       # public2 should have no visible children
       assert public2.children == []
@@ -171,19 +171,19 @@ defmodule OperatelyWeb.Api.Queries.GetWorkMapTest do
 
       # Should see only public1 at the root level
       assert length(res.work_map) == 1
-      public1 = Enum.find(res.work_map, &(&1.id == ctx.public1.id))
+      public1 = Enum.find(res.work_map, &(&1.id == Paths.goal_id(ctx.public1)))
 
       # Should see both public2 and internal1 as children of public1
       assert length(public1.children) == 2
-      public2 = Enum.find(public1.children, &(&1.id == ctx.public2.id))
-      internal1 = Enum.find(public1.children, &(&1.id == ctx.internal1.id))
+      public2 = Enum.find(public1.children, &(&1.id == Paths.goal_id(ctx.public2)))
+      internal1 = Enum.find(public1.children, &(&1.id == Paths.goal_id(ctx.internal1)))
 
       # internal1 should have no children
       assert internal1.children == []
 
       # public2 should have internal2 as a child
       assert length(public2.children) == 1
-      internal2 = Enum.find(public2.children, &(&1.id == ctx.internal2.id))
+      internal2 = Enum.find(public2.children, &(&1.id == Paths.goal_id(ctx.internal2)))
 
       # internal2 should have no visible children
       assert internal2.children == []
@@ -204,27 +204,27 @@ defmodule OperatelyWeb.Api.Queries.GetWorkMapTest do
         assert length(res.work_map) == 2
 
         # Verify secret1 is visible and has no children
-        secret1 = Enum.find(res.work_map, &(&1.id == ctx.secret1.id))
+        secret1 = Enum.find(res.work_map, &(&1.id == Paths.goal_id(ctx.secret1)))
         assert secret1.children == []
 
         # Verify public1 is visible with both children
-        public1 = Enum.find(res.work_map, &(&1.id == ctx.public1.id))
+        public1 = Enum.find(res.work_map, &(&1.id == Paths.goal_id(ctx.public1)))
         assert length(public1.children) == 2
 
         # Verify both public2 and internal1 are children of public1
-        public2 = Enum.find(public1.children, &(&1.id == ctx.public2.id))
-        internal1 = Enum.find(public1.children, &(&1.id == ctx.internal1.id))
+        public2 = Enum.find(public1.children, &(&1.id == Paths.goal_id(ctx.public2)))
+        internal1 = Enum.find(public1.children, &(&1.id == Paths.goal_id(ctx.internal1)))
 
         # internal1 should have no children
         assert internal1.children == []
 
         # public2 should have internal2 as a child
         assert length(public2.children) == 1
-        internal2 = Enum.find(public2.children, &(&1.id == ctx.internal2.id))
+        internal2 = Enum.find(public2.children, &(&1.id == Paths.goal_id(ctx.internal2)))
 
         # internal2 should have secret2 as a child
         assert length(internal2.children) == 1
-        secret2 = Enum.find(internal2.children, &(&1.id == ctx.secret2.id))
+        secret2 = Enum.find(internal2.children, &(&1.id == Paths.goal_id(ctx.secret2)))
         assert secret2.children == []
       end
     end
@@ -259,16 +259,16 @@ defmodule OperatelyWeb.Api.Queries.GetWorkMapTest do
 
       # Should return 3 items from space1
       assert length(res.work_map) == 3
-      assert Enum.any?(res.work_map, &(&1.id == ctx.goal1.id))
-      assert Enum.any?(res.work_map, &(&1.id == ctx.goal2.id))
-      assert Enum.any?(res.work_map, &(&1.id == ctx.project1.id))
+      assert Enum.any?(res.work_map, &(&1.id == Paths.goal_id(ctx.goal1)))
+      assert Enum.any?(res.work_map, &(&1.id == Paths.goal_id(ctx.goal2)))
+      assert Enum.any?(res.work_map, &(&1.id == Paths.project_id(ctx.project1)))
 
       # Query for space2
       assert {200, res} = query(ctx.conn, :get_work_map, %{space_id: Paths.space_id(ctx.space2)})
 
       # Should return 1 item from space2
       assert length(res.work_map) == 1
-      assert Enum.any?(res.work_map, &(&1.id == ctx.project2.id))
+      assert Enum.any?(res.work_map, &(&1.id == Paths.project_id(ctx.project2)))
     end
 
     test "filters by parent_goal_id", ctx do
@@ -282,7 +282,7 @@ defmodule OperatelyWeb.Api.Queries.GetWorkMapTest do
 
       # Should return only the child goal
       assert length(res.work_map) == 1
-      assert Enum.any?(res.work_map, &(&1.id == ctx.child_goal.id))
+      assert Enum.any?(res.work_map, &(&1.id == Paths.goal_id(ctx.child_goal)))
     end
 
     test "filters by owner_id", ctx do
@@ -297,7 +297,7 @@ defmodule OperatelyWeb.Api.Queries.GetWorkMapTest do
 
       # Should return only the owned goal
       assert length(res.work_map) == 1
-      assert Enum.any?(res.work_map, &(&1.id == ctx.owned_goal.id))
+      assert Enum.any?(res.work_map, &(&1.id == Paths.goal_id(ctx.owned_goal)))
     end
 
     test "returns hierarchical structure", ctx do
@@ -311,13 +311,13 @@ defmodule OperatelyWeb.Api.Queries.GetWorkMapTest do
       assert {200, res} = query(ctx.conn, :get_work_map, %{})
 
       # Find the parent goal in the result
-      parent_item = Enum.find(res.work_map, &(&1.id == ctx.parent_goal.id))
+      parent_item = Enum.find(res.work_map, &(&1.id == Paths.goal_id(ctx.parent_goal)))
 
       # Verify that the parent goal has the child goal as a child
-      child_item = Enum.find(parent_item.children, &(&1.id == ctx.child_goal.id))
+      child_item = Enum.find(parent_item.children, &(&1.id == Paths.goal_id(ctx.child_goal)))
 
       # Verify that the child goal has the project as a child
-      assert Enum.find(child_item.children, &(&1.id == ctx.child_project.id))
+      assert Enum.find(child_item.children, &(&1.id == Paths.project_id(ctx.child_project)))
     end
 
     test "successfully returns item without owner", ctx do
