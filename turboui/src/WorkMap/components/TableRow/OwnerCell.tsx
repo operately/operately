@@ -17,7 +17,7 @@ export function OwnerCell({ item }: Props) {
     isPending && "text-content-dimmed",
   );
 
-  if (!item.owner) return null;
+  if (!item.owner) return <td />;
 
   return (
     <td className="py-2 px-2 md:px-4 hidden xl:table-cell">
