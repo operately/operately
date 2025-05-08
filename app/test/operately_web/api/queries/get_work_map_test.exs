@@ -319,5 +319,28 @@ defmodule OperatelyWeb.Api.Queries.GetWorkMapTest do
       # Verify that the child goal has the project as a child
       assert Enum.find(child_item.children, &(&1.id == ctx.child_project.id))
     end
+
+    test "successfully returns item without owner", ctx do
+      ctx =
+        ctx
+        |> Factory.log_in_person(:creator)
+        |> Factory.add_company_member(:champion)
+        |> Factory.add_space(:space4)
+        |> Factory.add_project(:project3, :space4, champion: :champion)
+
+      assert {200, %{ work_map: _ = [item] }} = query(ctx.conn, :get_work_map, %{space_id: Paths.space_id(ctx.space4)})
+
+      assert item.id == Paths.project_id(ctx.project3)
+      assert item.owner.id == Paths.person_id(ctx.champion)
+      assert item.owner_path == Paths.person_path(ctx.company, ctx.champion)
+
+      Factory.suspend_company_member(ctx, :champion)
+
+      assert {200, %{ work_map: _ = [item] }} = query(ctx.conn, :get_work_map, %{space_id: Paths.space_id(ctx.space4)})
+
+      assert item.id == Paths.project_id(ctx.project3)
+      refute item.owner
+      refute item.owner_path
+    end
   end
 end
