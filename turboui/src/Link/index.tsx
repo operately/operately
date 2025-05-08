@@ -10,6 +10,9 @@ interface Props {
   target?: string;
   testId?: string;
   className?: string;
+  style?: React.CSSProperties;
+  onMouseOver?: (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => void;
+  onMouseOut?: (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => void;
 }
 
 interface LinkProps extends Props {
@@ -37,10 +40,10 @@ interface DivLinkProps extends Props {
 
 const baseLinkClass = classNames("cursor-pointer", "transition-colors");
 
-function UnstyledLink(props: LinkProps) {
+function UnstyledLink({ children, testId, ...rest }: LinkProps) {
   return (
-    <Router.Link to={props.to} className={props.className} data-test-id={props.testId} target={props.target}>
-      {props.children}
+    <Router.Link data-test-id={testId} {...rest}>
+      {children}
     </Router.Link>
   );
 }
