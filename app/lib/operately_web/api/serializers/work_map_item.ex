@@ -20,7 +20,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.WorkMaps.WorkMapItem do
       space: OperatelyWeb.Api.Serializer.serialize(item.space),
       space_path: Paths.space_path(item.company, item.space),
       owner: OperatelyWeb.Api.Serializer.serialize(item.owner),
-      owner_path: Paths.person_path(item.company, item.owner),
+      owner_path: item.owner && Paths.person_path(item.company, item.owner),
       next_step: item.next_step,
       is_new: item.is_new,
       completed_on: OperatelyWeb.Api.Serializer.serialize(item.completed_on),
