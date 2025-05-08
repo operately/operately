@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { parse } from "../../utils/time";
 import { TimeframeSelector } from "../../TimeframeSelector";
 import { WorkMap } from "../components";
@@ -211,6 +211,10 @@ function itemOverlapsWithTimeframe(item: WorkMap.Item, timeframe: TimeframeSelec
  * Defaults to "all" if no tab parameter is present
  */
 function useWorkMapUrlFilter(): [WorkMap.Filter, (newFilter: WorkMap.Filter) => void] {
+  if (isStorybook()) {
+    return useLocalFilter();
+  }
+
   const [searchParams, setSearchParams] = useSearchParams();
 
   const rawTab = searchParams.get("tab") as WorkMap.Filter;
@@ -231,3 +235,16 @@ function useWorkMapUrlFilter(): [WorkMap.Filter, (newFilter: WorkMap.Filter) => 
 
   return [tab as WorkMap.Filter, setTab];
 }
+
+/**
+ * Hook that maintains the filter state locally without touching URL params
+ * (used in Storybook)
+ */
+function useLocalFilter(): [WorkMap.Filter, (newFilter: WorkMap.Filter) => void] {
+  const [filter, setFilter] = useState<WorkMap.Filter>("all");
+  return [filter, setFilter];
+}
+
+const isStorybook = () => {
+  return window.STORYBOOK_ENV === true;
+};
