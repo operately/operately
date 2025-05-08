@@ -95,6 +95,7 @@ const getStatusProperties = (status: BadgeStatus) => {
         borderColor: "border-gray-200 dark:border-gray-600",
         label: "Outdated",
       };
+    case "concern":
     case "caution":
       return {
         bgColor: "bg-amber-50 dark:bg-amber-900/30",
