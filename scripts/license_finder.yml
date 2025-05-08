@@ -375,3 +375,9 @@
     :why: Elixir package licensed under MIT
     :versions: []
     :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
+  - langchain
+  - :who: Igor Sarcevic
+    :why: Apache 2.0 stated in the docs
+    :versions: []
+    :when: 2025-05-07 15:48:00.150178000 Z
