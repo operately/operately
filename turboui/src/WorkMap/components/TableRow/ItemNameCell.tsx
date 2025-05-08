@@ -31,21 +31,27 @@ export function ItemNameCell({ item, filter, level, expanded, setExpanded }: Pro
 
 function Name({ item }: { item: WorkMap.Item }) {
   const { isCompleted, isFailed, isDropped, isPending } = useItemStatus(item.status);
+  const isClosed = isCompleted || isFailed || isDropped;
 
   const textStyle = classNames(
-    "flex items-center",
-    "font-medium text-xs md:text-sm hover:underline transition-colors",
+    "font-medium text-xs md:text-sm transition-colors",
     {
       "line-through": isCompleted || isFailed,
       "line-through opacity-70": isDropped,
       "text-content-dimmed dark:text-gray-400": isPending,
     },
-    isCompleted || isFailed || isDropped
+    isClosed
       ? "text-content-dimmed dark:text-gray-400"
-      : "text-content-base hover:text-content-dimmed",
+      : "text-content-base dark:text-gray-200 hover:text-link-hover dark:hover:text-white",
   );
 
-  return <div className={textStyle}>{item.name}</div>;
+  return (
+    <div className="flex items-center">
+      <BlackLink to={item.itemPath!} className={textStyle} underline={isClosed ? "never" : "hover"}>
+        {item.name}
+      </BlackLink>
+    </div>
+  );
 }
 
 function Icon({ item }: { item: WorkMap.Item }) {
