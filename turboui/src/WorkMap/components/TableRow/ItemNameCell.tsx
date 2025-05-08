@@ -31,21 +31,45 @@ export function ItemNameCell({ item, filter, level, expanded, setExpanded }: Pro
 
 function Name({ item }: { item: WorkMap.Item }) {
   const { isCompleted, isFailed, isDropped, isPending } = useItemStatus(item.status);
+  const isClosed = isCompleted || isFailed || isDropped;
 
   const textStyle = classNames(
-    "flex items-center",
-    "font-medium text-xs md:text-sm hover:underline transition-colors",
+    "font-medium text-xs md:text-sm transition-colors",
     {
-      "line-through": isCompleted || isFailed,
-      "line-through opacity-70": isDropped,
       "text-content-dimmed dark:text-gray-400": isPending,
     },
-    isCompleted || isFailed || isDropped
-      ? "text-content-dimmed dark:text-gray-400"
-      : "text-content-base hover:text-content-dimmed",
+    isClosed ? "text-content-dimmed dark:text-gray-400" : "text-content-base hover:text-link-hover",
   );
 
-  return <div className={textStyle}>{item.name}</div>;
+  // Determine the base text decoration style
+  const textDecoration = isClosed ? "line-through" : "none";
+
+  return (
+    <div className="flex items-center">
+      <BlackLink
+        to={item.itemPath || ""}
+        className={textStyle}
+        style={{
+          textDecoration,
+          textDecorationThickness: ".5px",
+        }}
+        onMouseOver={(e) => {
+          // On hover, add underline while keeping line-through
+          if (isClosed) {
+            e.currentTarget.style.textDecoration = "underline line-through";
+          } else {
+            e.currentTarget.style.textDecoration = "underline";
+          }
+        }}
+        onMouseOut={(e) => {
+          // On mouse out, restore original decoration
+          e.currentTarget.style.textDecoration = textDecoration;
+        }}
+      >
+        {item.name}
+      </BlackLink>
+    </div>
+  );
 }
 
 function Icon({ item }: { item: WorkMap.Item }) {
