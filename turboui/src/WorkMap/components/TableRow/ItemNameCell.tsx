@@ -36,18 +36,36 @@ function Name({ item }: { item: WorkMap.Item }) {
   const textStyle = classNames(
     "font-medium text-xs md:text-sm transition-colors",
     {
-      "line-through": isCompleted || isFailed,
-      "line-through opacity-70": isDropped,
       "text-content-dimmed dark:text-gray-400": isPending,
     },
-    isClosed
-      ? "text-content-dimmed dark:text-gray-400"
-      : "text-content-base dark:text-gray-200 hover:text-link-hover dark:hover:text-white",
+    isClosed ? "text-content-dimmed dark:text-gray-400" : "text-content-base hover:text-link-hover",
   );
+
+  // Determine the base text decoration style
+  const textDecoration = isClosed ? "line-through" : "none";
 
   return (
     <div className="flex items-center">
-      <BlackLink to={item.itemPath!} className={textStyle} underline={isClosed ? "never" : "hover"}>
+      <BlackLink
+        to={item.itemPath || ""}
+        className={textStyle}
+        style={{
+          textDecoration,
+          textDecorationThickness: ".5px",
+        }}
+        onMouseOver={(e) => {
+          // On hover, add underline while keeping line-through
+          if (isClosed) {
+            e.currentTarget.style.textDecoration = "underline line-through";
+          } else {
+            e.currentTarget.style.textDecoration = "underline";
+          }
+        }}
+        onMouseOut={(e) => {
+          // On mouse out, restore original decoration
+          e.currentTarget.style.textDecoration = textDecoration;
+        }}
+      >
         {item.name}
       </BlackLink>
     </div>
