@@ -246,12 +246,5 @@ function useLocalFilter(): [WorkMap.Filter, (newFilter: WorkMap.Filter) => void]
 }
 
 const isStorybook = () => {
-  return (
-    typeof window !== "undefined" &&
-    // Look for specific Storybook patterns in iframe
-    (window.location.href.includes("iframe.html") ||
-      window.location.href.includes("viewMode=story") ||
-      window.location.href.includes("id=components-workmap") ||
-      (window as any).__STORYBOOK_CLIENT_API__ !== undefined)
-  );
+  return window.STORYBOOK_ENV === true;
 };
