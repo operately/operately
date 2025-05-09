@@ -319,15 +319,18 @@ export const ClosedParentWithOngoingChildren: Story = {
     await Steps.assertItemName(canvasElement, step, "Enhance product platform architecture");
 
     await Steps.selectTab(canvasElement, step, "projects");
-    await Steps.assertRowsNumber(canvasElement, step, 1);
+    await Steps.assertRowsNumber(canvasElement, step, 2);
     await Steps.assertItemName(canvasElement, step, "Set up CI/CD pipeline");
+    await Steps.assertItemName(canvasElement, step, "Implement Consul integration");
 
     await Steps.selectTab(canvasElement, step, "completed");
-    await Steps.assertRowsNumber(canvasElement, step, 1);
+    await Steps.assertRowsNumber(canvasElement, step, 2);
     await Steps.assertItemName(canvasElement, step, "Enhance product platform architecture");
+    await Steps.assertItemName(canvasElement, step, "Implement service discovery");
 
     await Steps.selectTab(canvasElement, step, "all");
-    await Steps.assertRowsNumber(canvasElement, step, 4); // Parent + 3 children
+    await Steps.assertRowsNumber(canvasElement, step, 6); // Parent + 5 children
     await Steps.assertItemName(canvasElement, step, "Enhance product platform architecture");
+    await Steps.assertItemName(canvasElement, step, "Implement service discovery");
   },
 };
