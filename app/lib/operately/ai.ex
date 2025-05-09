@@ -22,7 +22,9 @@ defmodule Operately.AI do
       description: "Returns all goals and projects for a given person.",
       function: fn _, _ ->
         {:ok, workmap} = GetWorkMapQuery.execute(person, %{company_id: person.company_id})
-        {:ok, inspect(workmap)}
+        api_serialized = OperatelyWeb.Api.Serializer.serialize(workmap, level: :full)
+
+        Jason.encode(api_serialized)
       end
     })
   end
