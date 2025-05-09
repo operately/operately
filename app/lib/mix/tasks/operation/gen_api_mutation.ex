@@ -1,5 +1,4 @@
 defmodule Mix.Tasks.Operation.GenApiMutation do
-
   def gen(ctx) do
     gen_router_snippet(ctx)
     gen_mutation_file(ctx)
@@ -15,8 +14,8 @@ defmodule Mix.Tasks.Operation.GenApiMutation do
   end
 
   defp gen_mutation_file(ctx) do
-    fields = 
-      ctx.activity_fields 
+    fields =
+      ctx.activity_fields
       |> Enum.map(fn {name, type} -> "field :#{name}, :#{type}" end)
       |> Enum.join("\n")
 
@@ -98,7 +97,6 @@ defmodule Mix.Tasks.Operation.GenApiMutation do
     file_path
     |> File.read!()
     |> String.split("\n")
-    |> Enum.find_index(fn line -> String.contains?(line, "mutation :") end)
+    |> Enum.find_index(fn line -> String.contains?(line, "mutation(:") end)
   end
-
 end
