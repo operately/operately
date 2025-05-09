@@ -39,15 +39,21 @@ const CLOSED_STATUSES = ["completed", "dropped", "achieved", "partial", "missed"
 function extractAllGoals(items: WorkMap.Item[]): WorkMap.Item[] {
   const processItem = (item: WorkMap.Item): WorkMap.Item | null => {
     if (item.type === "project") return null;
-    if (CLOSED_STATUSES.includes(item.status)) return null;
 
-    // Process children recursively
     let filteredChildren: WorkMap.Item[] = [];
 
     if (item.children && item.children.length > 0) {
       filteredChildren = item.children.map((child) => processItem(child)).filter((child) => child !== null);
     }
 
+    // Include if item is ongoing or has ongoing children
+    const isItemClosed = CLOSED_STATUSES.includes(item.status);
+
+    if (isItemClosed && filteredChildren.length === 0) {
+      return null;
+    }
+
+    // Include the item with its filtered children
     return { ...item, children: filteredChildren };
   };
 
@@ -110,15 +116,17 @@ function extractCompletedItems(data: WorkMap.Item[]): WorkMap.Item[] {
  */
 function extractOngoingItems(data: WorkMap.Item[]): WorkMap.Item[] {
   const filterOngoingItems = (item: WorkMap.Item): WorkMap.Item | null => {
-    const isOngoing = !CLOSED_STATUSES.includes(item.status);
-
-    if (!isOngoing) {
-      return null;
-    }
-
     let filteredChildren: WorkMap.Item[] = [];
+
     if (item.children && item.children.length > 0) {
       filteredChildren = item.children.map(filterOngoingItems).filter((child) => child !== null);
+    }
+
+    const isOngoing = !CLOSED_STATUSES.includes(item.status);
+
+    // Include if item is ongoing or has ongoing children
+    if (!isOngoing && filteredChildren.length === 0) {
+      return null;
     }
 
     return { ...item, children: filteredChildren };

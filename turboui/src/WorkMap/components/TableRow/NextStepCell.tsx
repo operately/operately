@@ -3,24 +3,22 @@ import { useItemStatus } from "../../hooks/useItemStatus";
 import classNames from "../../../utils/classnames";
 
 interface Props {
-  nextStep: WorkMap.Item['nextStep'];
+  nextStep: WorkMap.Item["nextStep"];
   status: WorkMap.Status;
   hide: boolean;
 }
 
 export function NextStepCell({ nextStep, status, hide }: Props) {
   const { isCompleted, isFailed, isDropped, isPending } = useItemStatus(status);
+  const isClosed = isCompleted || isFailed || isDropped;
 
   const className = classNames(
     "text-sm transition-colors duration-150",
-    isCompleted || isFailed
-      ? "line-through text-content-dimmed"
-      : "text-content-base group-hover:text-content-intense",
-    isDropped && "line-through opacity-70 text-content-dimmed",
-    isPending && "text-content-dimmed"
+    "text-content-base group-hover:text-content-intense",
+    isPending && "text-content-dimmed",
   );
 
-  if (hide) return null;
+  if (hide || isClosed) return <td />;
 
   return (
     <td className="py-2 px-2 md:px-4 hidden xl:table-cell">
