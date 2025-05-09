@@ -12,8 +12,11 @@ import {
   IconCircleDot,
   IconCircleCheckFilled,
   IconX,
+  IconPlus,
+  IconCalendar,
 } from "@tabler/icons-react";
 import { Menu, MenuActionItem } from "../../Menu";
+import { PieChart } from "../../PieChart";
 
 export namespace TaskBoard {
   export type Status = "pending" | "in_progress" | "done" | "canceled";
@@ -83,7 +86,9 @@ const groupTasksByStatus = (tasks: TaskBoard.Task[]) => {
 
 // Create colored icon components for each status
 const ColoredIconCircleDot = (props: any) => <IconCircleDot {...props} className="text-brand-1" />;
-const ColoredIconCircleCheckFilled = (props: any) => <IconCircleCheckFilled {...props} className="text-callout-success-icon" />;
+const ColoredIconCircleCheckFilled = (props: any) => (
+  <IconCircleCheckFilled {...props} className="text-callout-success-icon" />
+);
 
 // Map task status to badge status, labels and icons
 const taskStatusConfig: Record<TaskBoard.Status, { status: string; label: string; icon: any; color?: string }> = {
@@ -215,21 +220,22 @@ function StatusSelector({
 
 // Helper component to display due date with appropriate formatting
 function DueDateDisplay({ dueDate }: { dueDate: Date }) {
-  // Check if the due date is in the past
   const isOverdue = dueDate < new Date();
+  const formattedDate = dueDate.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 
-  // Format the date to a readable format
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-  };
+  if (isOverdue) {
+    return (
+      <span className="text-content-error flex items-center gap-1 text-xs">
+        <IconCalendar size={12} />
+        {formattedDate}
+      </span>
+    );
+  }
 
   return (
-    <span
-      className={`text-sm flex items-center ${isOverdue ? "text-red-600 font-medium" : "text-content-base"}`}
-      title={isOverdue ? "Overdue" : ""}
-    >
-      {isOverdue && <IconClock size={14} className="mr-1 text-red-500" />}
-      {formatDate(dueDate)}
+    <span className="text-content-dimmed flex items-center gap-1 text-xs">
+      <IconCalendar size={12} />
+      {formattedDate}
     </span>
   );
 }
@@ -248,6 +254,81 @@ export function TaskBoard({
   const [currentViewMode, setCurrentViewMode] = useState<TaskBoard.TaskViewMode>(viewMode);
   const [tasks, setTasks] = useState<TaskBoard.Task[]>(initialTasks);
 
+  // Group tasks by milestone
+  const groupTasksByMilestone = (tasks: TaskBoard.Task[]) => {
+    const grouped: Record<string, TaskBoard.Task[]> = {};
+
+    // Group with no milestone
+    grouped["no_milestone"] = [];
+
+    // First create all milestone groups
+    tasks.forEach((task) => {
+      if (task.milestone) {
+        const milestoneId = task.milestone.id;
+        if (!grouped[milestoneId]) {
+          grouped[milestoneId] = [];
+        }
+      }
+    });
+
+    // Then add tasks to appropriate groups
+    tasks.forEach((task) => {
+      if (task.milestone) {
+        const milestoneId = task.milestone.id;
+        grouped[milestoneId].push(task);
+      } else {
+        grouped["no_milestone"].push(task);
+      }
+    });
+
+    return grouped;
+  };
+
+  // Get all unique milestones from tasks with completion statistics
+  const getMilestones = () => {
+    const milestoneMap = new Map<
+      string,
+      {
+        milestone: TaskBoard.Milestone;
+        stats: { pending: number; inProgress: number; done: number; canceled: number; total: number };
+      }
+    >();
+
+    tasks.forEach((task) => {
+      if (task.milestone) {
+        const milestoneId = task.milestone.id;
+
+        if (!milestoneMap.has(milestoneId)) {
+          milestoneMap.set(milestoneId, {
+            milestone: task.milestone,
+            stats: { pending: 0, inProgress: 0, done: 0, canceled: 0, total: 0 },
+          });
+        }
+
+        // Update statistics
+        const stats = milestoneMap.get(milestoneId)!.stats;
+        stats.total++;
+
+        switch (task.status) {
+          case "pending":
+            stats.pending++;
+            break;
+          case "in_progress":
+            stats.inProgress++;
+            break;
+          case "done":
+            stats.done++;
+            break;
+          case "canceled":
+            stats.canceled++;
+            break;
+        }
+      }
+    });
+
+    return Array.from(milestoneMap.values());
+  };
+
   // Handle status change
   const handleStatusChange = (taskId: string, newStatus: TaskBoard.Status) => {
     // Update local state
@@ -259,6 +340,10 @@ export function TaskBoard({
       onStatusChange(taskId, newStatus);
     }
   };
+
+  // Group tasks by milestone
+  const groupedTasks = groupTasksByMilestone(tasks);
+  const milestones = getMilestones();
 
   return (
     <div className="flex flex-col w-full h-full bg-surface-base rounded-lg">
@@ -305,83 +390,188 @@ export function TaskBoard({
       <div className="flex-1 overflow-auto">
         {currentViewMode === "table" && (
           <div className="overflow-x-auto bg-surface-base">
-            <table className="min-w-full">
-              <thead>
-                <tr className="border-b border-surface-outline bg-surface-dimmed text-content-base text-xs sm:text-sm sticky top-0">
-                  <th className="text-left py-1.5 px-4 font-semibold">Task</th>
-                  <th className="text-left py-1.5 px-4 font-semibold">Assignee</th>
-                  <th className="text-left py-1.5 px-4 font-semibold">Due</th>
-                  <th className="text-left py-1.5 px-4 font-semibold">Milestone</th>
-                </tr>
-              </thead>
-              <tbody>
-                {tasks.map((task) => (
-                  <tr
-                    key={task.id}
-                    className="group border-b border-stroke-base bg-surface-base hover:bg-surface-highlight"
-                  >
-                    <td className="py-1 px-4">
-                      <div className="flex items-center">
-                        <div className="flex-shrink-0 mr-2 flex items-center">
-                          <StatusSelector
-                            task={task}
-                            onStatusChange={(newStatus) => handleStatusChange(task.id, newStatus)}
-                          />
+            <ul className="w-full">
+              {/* If no tasks at all */}
+              {tasks.length === 0 && <li className="py-4 text-center text-content-subtle">No tasks found</li>}
+
+              {/* Tasks with milestones */}
+              {milestones.map((milestoneData) => (
+                <li key={milestoneData.milestone.id}>
+                  {/* Milestone header */}
+                  <div className="flex items-center justify-between px-4 py-3 bg-surface-dimmed border-b border-surface-outline">
+                    <div className="flex items-center gap-2">
+                      {/* Progress pie chart */}
+                      <PieChart
+                        size={16}
+                        slices={[
+                          {
+                            percentage: (milestoneData.stats.done / milestoneData.stats.total) * 100,
+                            color: "var(--color-callout-success-icon)",
+                          },
+                        ]}
+                      />
+                      <span className="text-sm font-semibold text-content-base">{milestoneData.milestone.name}</span>
+                      <span className="text-xs text-content-subtle">
+                        {milestoneData.stats.done}/{milestoneData.stats.total} completed
+                      </span>
+                    </div>
+                    <button className="text-content-subtle hover:text-content-base">
+                      <IconPlus size={16} />
+                    </button>
+                  </div>
+
+                  {/* Tasks in this milestone */}
+                  <ul>
+                    {groupedTasks[milestoneData.milestone.id].map((task) => (
+                      <li
+                        key={task.id}
+                        className="group flex border-b border-stroke-base bg-surface-base hover:bg-surface-highlight px-4 py-2.5"
+                      >
+                        <div className="flex-1 flex items-center gap-2">
+                          {/* Status icon */}
+                          <div className="flex-shrink-0 flex items-center">
+                            <StatusSelector
+                              task={task}
+                              onStatusChange={(newStatus) => handleStatusChange(task.id, newStatus)}
+                            />
+                          </div>
+
+                          {/* Task title */}
+                          <BlackLink
+                            to={`/tasks/${task.id}`}
+                            className="text-sm text-content-base hover:text-link-hover transition-colors"
+                            underline="hover"
+                          >
+                            {task.title}
+                          </BlackLink>
+
+                          {/* Description indicator - now first */}
+                          {task.hasDescription && (
+                            <span className="-ml-1 text-content-subtle">
+                              <IconFileText size={14} />
+                            </span>
+                          )}
+
+                          {/* Comments indicator - now second */}
+                          {task.hasComments && (
+                            <span className="-ml-1 text-content-subtle flex items-center">
+                              <IconMessageCircle size={14} />
+                              {task.commentCount && (
+                                <span className="ml-0.5 text-xs text-content-subtle">{task.commentCount}</span>
+                              )}
+                            </span>
+                          )}
+
+                          {/* Due date - now third */}
+                          {task.dueDate && (
+                            <span className="ml-2">
+                              <DueDateDisplay dueDate={task.dueDate} />
+                            </span>
+                          )}
+
+                          {/* Assignee - now fourth */}
+                          {task.assignees && task.assignees.length > 0 && (
+                            <span className="ml-2">
+                              <AvatarWithName
+                                person={task.assignees[0]}
+                                size="tiny"
+                                nameFormat="short"
+                                className="text-xs"
+                              />
+                            </span>
+                          )}
                         </div>
-                        <BlackLink
-                          to={`/tasks/${task.id}`}
-                          className="text-sm text-content-base hover:text-link-hover transition-colors"
-                          underline="hover"
-                        >
-                          {task.title}
-                        </BlackLink>
-                        {task.hasDescription && (
-                          <span className="ml-2 text-content-subtle">
-                            <IconFileText size={16} />
-                          </span>
-                        )}
-                        {task.hasComments && (
-                          <span className="ml-2 text-content-subtle flex items-center">
-                            <IconMessageCircle size={16} />
-                            {task.commentCount && (
-                              <span className="ml-1 text-xs text-content-subtle">{task.commentCount}</span>
-                            )}
-                          </span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="py-1 px-4">
-                      {task.assignees && task.assignees.length > 0 ? (
-                        <AvatarWithName person={task.assignees[0]} size="tiny" nameFormat="short" className="text-sm" />
-                      ) : (
-                        <span className="text-sm text-content-subtle">—</span>
-                      )}
-                    </td>
-                    <td className="py-1 px-4">
-                      {task.dueDate ? (
-                        <DueDateDisplay dueDate={task.dueDate} />
-                      ) : (
-                        <span className="text-sm text-content-subtle">—</span>
-                      )}
-                    </td>
-                    <td className="py-1 px-4">
-                      {task.milestone ? (
-                        <span className="text-sm text-content-base">{task.milestone.name}</span>
-                      ) : (
-                        <span className="text-sm text-content-subtle">—</span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-                {tasks.length === 0 && (
-                  <tr>
-                    <td colSpan={4} className="py-4 text-center text-content-subtle">
-                      No tasks found
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                      </li>
+                    ))}
+
+                    {groupedTasks[milestoneData.milestone.id].length === 0 && (
+                      <li className="py-2 px-4 text-xs text-content-subtle">No tasks in this milestone</li>
+                    )}
+                  </ul>
+                </li>
+              ))}
+
+              {/* Tasks with no milestone */}
+              {groupedTasks["no_milestone"].length > 0 && (
+                <li>
+                  {/* No milestone header */}
+                  <div className="flex items-center justify-between px-4 py-2.5 bg-surface-dimmed border-b border-surface-outline">
+                    <div className="flex items-center gap-2">
+                      {/* No progress pie chart for tasks without milestone */}
+                      <span className="text-sm font-semibold text-content-base">No milestone</span>
+                    </div>
+                    <button className="text-content-subtle hover:text-content-base">
+                      <IconPlus size={16} />
+                    </button>
+                  </div>
+
+                  {/* Tasks with no milestone */}
+                  <ul>
+                    {groupedTasks["no_milestone"].map((task) => (
+                      <li
+                        key={task.id}
+                        className="group flex border-b border-stroke-base bg-surface-base hover:bg-surface-highlight px-4 py-1.5"
+                      >
+                        <div className="flex-1 flex items-center gap-2">
+                          {/* Status icon */}
+                          <div className="flex-shrink-0 flex items-center">
+                            <StatusSelector
+                              task={task}
+                              onStatusChange={(newStatus) => handleStatusChange(task.id, newStatus)}
+                            />
+                          </div>
+
+                          {/* Task title */}
+                          <BlackLink
+                            to={`/tasks/${task.id}`}
+                            className="text-sm text-content-base hover:text-link-hover transition-colors"
+                            underline="hover"
+                          >
+                            {task.title}
+                          </BlackLink>
+
+                          {/* Description indicator - now first */}
+                          {task.hasDescription && (
+                            <span className="ml-2 text-content-subtle">
+                              <IconFileText size={14} />
+                            </span>
+                          )}
+
+                          {/* Comments indicator - now second */}
+                          {task.hasComments && (
+                            <span className="ml-2 text-content-subtle flex items-center">
+                              <IconMessageCircle size={14} />
+                              {task.commentCount && (
+                                <span className="ml-1 text-xs text-content-subtle">{task.commentCount}</span>
+                              )}
+                            </span>
+                          )}
+
+                          {/* Due date - now third */}
+                          {task.dueDate && (
+                            <span className="ml-2">
+                              <DueDateDisplay dueDate={task.dueDate} />
+                            </span>
+                          )}
+
+                          {/* Assignee - now fourth */}
+                          {task.assignees && task.assignees.length > 0 && (
+                            <span className="ml-2">
+                              <AvatarWithName
+                                person={task.assignees[0]}
+                                size="tiny"
+                                nameFormat="short"
+                                className="text-xs"
+                              />
+                            </span>
+                          )}
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </li>
+              )}
+            </ul>
           </div>
         )}
         {currentViewMode === "kanban" && (
