@@ -26,7 +26,7 @@ defmodule Operately.Assignments.Loader do
 
     [
       mine: Assignment.build(person_assignments, company),
-      reports: Assignment.build(late_assignments, company, reports),
+      reports: Assignment.build(late_assignments, company, reports)
     ]
   end
 
@@ -37,7 +37,7 @@ defmodule Operately.Assignments.Loader do
       Task.async(fn -> load_projects(person.id, person_ids) end),
       Task.async(fn -> load_goals(person.id, person_ids) end),
       Task.async(fn -> load_late_project_check_ins(person_ids) end),
-      Task.async(fn -> load_late_goal_updates(person_ids) end),
+      Task.async(fn -> load_late_goal_updates(person_ids) end)
     ]
     |> Task.await_many()
     |> List.flatten()
@@ -56,10 +56,13 @@ defmodule Operately.Assignments.Loader do
   end
 
   defp load_goals(person_id, all_person_ids) do
+    current_date = Date.utc_today()
+
     from(g in Goal,
       where: g.next_update_scheduled_at <= ^DateTime.utc_now(),
       where: is_nil(g.closed_at),
-      where: g.reviewer_id in ^all_person_ids or g.champion_id == ^person_id
+      where: g.reviewer_id in ^all_person_ids or g.champion_id == ^person_id,
+      where: fragment("(g0.timeframe->>'start_date' <= ? OR g0.timeframe->>'start_date' IS NULL)", ^to_string(current_date))
     )
     |> Repo.all()
   end
@@ -87,7 +90,6 @@ defmodule Operately.Assignments.Loader do
     )
     |> Repo.all()
   end
-
 
   @doc """
   Fetches the complete hierarchical tree of employees under the given person,
@@ -177,7 +179,7 @@ defmodule Operately.Assignments.Loader do
       manager_id: Ecto.UUID.cast!(manager_id),
       full_name: full_name,
       title: title,
-      avatar_url: avatar_url,
+      avatar_url: avatar_url
     }
 
     {person, depth}

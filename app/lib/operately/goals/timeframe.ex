@@ -69,6 +69,18 @@ defmodule Operately.Goals.Timeframe do
     end
   end
 
+  def next_quarter do
+    today = Date.utc_today()
+    year = today.year
+
+    cond do
+      today.month in 1..3 -> quarter(year, "04-01", "06-30")
+      today.month in 4..6 -> quarter(year, "07-01", "09-30")
+      today.month in 7..9 -> quarter(year, "10-01", "12-31")
+      today.month in 10..12 -> quarter(year + 1, "01-01", "03-31")
+    end
+  end
+
   def validate_start_is_before_end(changeset) do
     start_date = get_field(changeset, :start_date)
     end_date = get_field(changeset, :end_date)
@@ -96,7 +108,8 @@ defmodule Operately.Goals.Timeframe do
         end_date.year - start_date.year != 0 ->
           add_error(changeset, :end_date, "Start and end date must be in the same year")
 
-        true -> changeset
+        true ->
+          changeset
       end
     else
       changeset
@@ -122,7 +135,8 @@ defmodule Operately.Goals.Timeframe do
         end_date.month - start_date.month != 2 ->
           add_error(changeset, :end_date, "Start and end date must be in the same quarter")
 
-        true -> changeset
+        true ->
+          changeset
       end
     else
       changeset
@@ -145,7 +159,8 @@ defmodule Operately.Goals.Timeframe do
         end_date.day != Date.days_in_month(end_date) ->
           add_error(changeset, :end_date, "End date must be the last day of the month")
 
-        true -> changeset
+        true ->
+          changeset
       end
     else
       changeset
@@ -166,12 +181,13 @@ defmodule Operately.Goals.Timeframe do
     else
       [quarter, year] = parts
 
-      [start_date, end_date] = case quarter do
-        "Q1" -> ["01-01", "03-31"]
-        "Q2" -> ["04-01", "06-30"]
-        "Q3" -> ["07-01", "09-30"]
-        "Q4" -> ["10-01", "12-31"]
-      end
+      [start_date, end_date] =
+        case quarter do
+          "Q1" -> ["01-01", "03-31"]
+          "Q2" -> ["04-01", "06-30"]
+          "Q3" -> ["07-01", "09-30"]
+          "Q4" -> ["10-01", "12-31"]
+        end
 
       %{
         start_date: Date.from_iso8601!("#{year}-#{start_date}"),
