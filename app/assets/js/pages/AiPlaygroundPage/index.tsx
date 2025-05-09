@@ -1,3 +1,4 @@
+import { runAiPrompt } from "@/api";
 import * as Companies from "@/models/companies";
 import * as React from "react";
 import * as Turboui from "turboui";
@@ -31,6 +32,20 @@ const initialPrompt = [
 
 export function Page() {
   const [prompt, setPrompt] = React.useState<string>(initialPrompt);
+  const [response, setResponse] = React.useState<string>("");
+  const [working, setWorking] = React.useState(false);
+
+  const handleRunPrompt = async () => {
+    try {
+      setWorking(true);
+      const result = await runAiPrompt({ prompt });
+      setResponse(result.result!);
+    } catch (error) {
+      alert("Error running prompt: " + error.message);
+    } finally {
+      setWorking(false);
+    }
+  };
 
   return (
     <div className="mt-10">
@@ -49,9 +64,16 @@ export function Page() {
             className="mt-1 mb-4 w-full h-64 border border-surface-outline rounded-lg p-2"
           ></textarea>
 
-          <Turboui.PrimaryButton size="sm" onClick={() => alert("TODO: Call AI API")}>
+          <Turboui.PrimaryButton size="sm" onClick={handleRunPrompt} loading={working}>
             Run
           </Turboui.PrimaryButton>
+
+          {response && (
+            <div className="mt-4">
+              <div className="font-bold">Response</div>
+              <pre>{response}</pre>
+            </div>
+          )}
         </div>
       </Turboui.Page>
     </div>
