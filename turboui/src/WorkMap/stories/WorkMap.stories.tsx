@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import WorkMap from "../components";
 import { Page } from "../../Page";
 import * as Steps from "../tests/steps";
-import { mockItems, mockSingleItem } from "../tests/mockData";
+import { mockItems, mockSingleItem, closedParentWithOngoingChildren } from "../tests/mockData";
 
 /**
  * WorkMap is a comprehensive component for displaying and interacting with
@@ -292,5 +292,45 @@ export const NovemberSelected: Story = {
 
     await Steps.assertItemName(canvasElement, step, "Increase user engagement by 50%");
     await Steps.assertItemName(canvasElement, step, "Expand to international markets");
+  },
+};
+
+/**
+ * Work Map with a closed parent which has ongoing children.
+ * This showcases the behavior where a closed parent is included in the filtered results
+ * because it has ongoing children, even though the parent itself is closed.
+ */
+export const ClosedParentWithOngoingChildren: Story = {
+  tags: ["autodocs"],
+  render: (args) => (
+    <div className="py-4">
+      <Page title={args.title} size="fullwidth">
+        <WorkMap {...args} />
+      </Page>
+    </div>
+  ),
+  args: {
+    title: "Closed Parent with Ongoing Children",
+    items: closedParentWithOngoingChildren,
+  },
+  play: async ({ canvasElement, step }) => {
+    await Steps.selectTab(canvasElement, step, "goals");
+    await Steps.assertRowsNumber(canvasElement, step, 3); // Parent + 2 goal children
+    await Steps.assertItemName(canvasElement, step, "Enhance product platform architecture");
+
+    await Steps.selectTab(canvasElement, step, "projects");
+    await Steps.assertRowsNumber(canvasElement, step, 2);
+    await Steps.assertItemName(canvasElement, step, "Set up CI/CD pipeline");
+    await Steps.assertItemName(canvasElement, step, "Implement Consul integration");
+
+    await Steps.selectTab(canvasElement, step, "completed");
+    await Steps.assertRowsNumber(canvasElement, step, 2);
+    await Steps.assertItemName(canvasElement, step, "Enhance product platform architecture");
+    await Steps.assertItemName(canvasElement, step, "Implement service discovery");
+
+    await Steps.selectTab(canvasElement, step, "all");
+    await Steps.assertRowsNumber(canvasElement, step, 6); // Parent + 5 children
+    await Steps.assertItemName(canvasElement, step, "Enhance product platform architecture");
+    await Steps.assertItemName(canvasElement, step, "Implement service discovery");
   },
 };
