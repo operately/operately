@@ -9,7 +9,8 @@ import {
   IconClock,
   IconCheck,
   IconCircleDashed,
-  IconPointFilled,
+  IconCircleDot,
+  IconCircleCheckFilled,
   IconX,
 } from "@tabler/icons-react";
 import { Menu, MenuActionItem } from "../../Menu";
@@ -80,11 +81,15 @@ const groupTasksByStatus = (tasks: TaskBoard.Task[]) => {
   return grouped;
 };
 
+// Create colored icon components for each status
+const ColoredIconCircleDot = (props: any) => <IconCircleDot {...props} className="text-brand-1" />;
+const ColoredIconCircleCheckFilled = (props: any) => <IconCircleCheckFilled {...props} className="text-callout-success-icon" />;
+
 // Map task status to badge status, labels and icons
-const taskStatusConfig: Record<TaskBoard.Status, { status: string; label: string; icon: any }> = {
+const taskStatusConfig: Record<TaskBoard.Status, { status: string; label: string; icon: any; color?: string }> = {
   pending: { status: "not_started", label: "Not started", icon: IconCircleDashed },
-  in_progress: { status: "in_progress", label: "In progress", icon: IconPointFilled },
-  done: { status: "completed", label: "Done", icon: IconCheck },
+  in_progress: { status: "in_progress", label: "In progress", icon: ColoredIconCircleDot, color: "text-brand-1" },
+  done: { status: "completed", label: "Done", icon: ColoredIconCircleCheckFilled, color: "text-callout-success-icon" },
   canceled: { status: "canceled", label: "Canceled", icon: IconX },
 };
 
@@ -106,17 +111,18 @@ const getStatusDisplayName = (status: TaskBoard.Status): string => {
 function StatusSelector({
   task,
   onStatusChange,
+  showFullBadge = false,
 }: {
   task: TaskBoard.Task;
   onStatusChange?: (newStatus: TaskBoard.Status) => void;
+  showFullBadge?: boolean;
 }) {
   const [searchTerm, setSearchTerm] = React.useState("");
   const inputRef = React.useRef<HTMLInputElement>(null);
-  
+
   // Filter status options based on search term
-  const filteredStatusOptions = Object.entries(taskStatusConfig).filter(
-    ([_, config]) => 
-      config.label.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredStatusOptions = Object.entries(taskStatusConfig).filter(([_, config]) =>
+    config.label.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   // Handle menu open/close events
@@ -164,15 +170,24 @@ function StatusSelector({
       </span>
     </div>
   );
-  
+
   return (
     <Menu
       customTrigger={
-        <div className="cursor-pointer">
-          <StatusBadge
-            status={taskStatusConfig[task.status].status}
-            customLabel={taskStatusConfig[task.status].label}
-          />
+        <div className="cursor-pointer inline-flex items-center">
+          {showFullBadge ? (
+            <StatusBadge
+              status={taskStatusConfig[task.status].status}
+              customLabel={taskStatusConfig[task.status].label}
+            />
+          ) : (
+            <div className="inline-flex items-center justify-center w-4 h-4">
+              {React.createElement(taskStatusConfig[task.status].icon, {
+                size: 16,
+                className: `align-middle ${taskStatusConfig[task.status].color || ""}`,
+              })}
+            </div>
+          )}
         </div>
       }
       size="small"
@@ -189,9 +204,7 @@ function StatusSelector({
           >
             <div className="flex items-center justify-between w-full">
               {config.label}
-              {isCurrentStatus && (
-                <IconCheck size={14} className="text-primary-500 ml-2" />
-              )}
+              {isCurrentStatus && <IconCheck size={14} className="text-primary-500 ml-2" />}
             </div>
           </MenuActionItem>
         );
@@ -296,7 +309,6 @@ export function TaskBoard({
               <thead>
                 <tr className="border-b border-surface-outline bg-surface-dimmed text-content-base text-xs sm:text-sm sticky top-0">
                   <th className="text-left py-1.5 px-4 font-semibold">Task</th>
-                  <th className="text-left py-1.5 px-4 font-semibold">Status</th>
                   <th className="text-left py-1.5 px-4 font-semibold">Assignee</th>
                   <th className="text-left py-1.5 px-4 font-semibold">Due</th>
                   <th className="text-left py-1.5 px-4 font-semibold">Milestone</th>
@@ -310,6 +322,12 @@ export function TaskBoard({
                   >
                     <td className="py-1 px-4">
                       <div className="flex items-center">
+                        <div className="flex-shrink-0 mr-2 flex items-center">
+                          <StatusSelector
+                            task={task}
+                            onStatusChange={(newStatus) => handleStatusChange(task.id, newStatus)}
+                          />
+                        </div>
                         <BlackLink
                           to={`/tasks/${task.id}`}
                           className="text-sm text-content-base hover:text-link-hover transition-colors"
@@ -331,12 +349,6 @@ export function TaskBoard({
                           </span>
                         )}
                       </div>
-                    </td>
-                    <td className="py-1 px-4">
-                      <StatusSelector
-                        task={task}
-                        onStatusChange={(newStatus) => handleStatusChange(task.id, newStatus)}
-                      />
                     </td>
                     <td className="py-1 px-4">
                       {task.assignees && task.assignees.length > 0 ? (
@@ -363,7 +375,7 @@ export function TaskBoard({
                 ))}
                 {tasks.length === 0 && (
                   <tr>
-                    <td colSpan={5} className="py-4 text-center text-content-subtle">
+                    <td colSpan={4} className="py-4 text-center text-content-subtle">
                       No tasks found
                     </td>
                   </tr>
