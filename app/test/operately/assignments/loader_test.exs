@@ -68,6 +68,13 @@ defmodule Operately.Assignments.LoaderTest do
       |> Factory.add_goal(:late_goal2, :space, champion: :champion, reviewer: :reviewer)
       |> Factory.add_goal(:goal1, :space, champion: :champion, reviewer: :reviewer)
       |> Factory.add_goal(:goal2, :space, champion: :champion, reviewer: :reviewer)
+      |> Factory.add_goal(:not_started_goal, :space,
+        champion: :champion,
+        reviewer: :reviewer,
+        opts: [
+          timeframe: Operately.Goals.Timeframe.next_quarter()
+        ]
+      )
       |> set_late_goals()
     end
 
@@ -82,6 +89,14 @@ defmodule Operately.Assignments.LoaderTest do
 
     test "doesn't return late goals to non-champions", ctx do
       [mine: [], reports: []] = Loader.load(ctx.reviewer, ctx.company)
+    end
+
+    test "doesn't return goals not yet started", ctx do
+      [mine: mine, reports: []] = Loader.load(ctx.champion, ctx.company)
+
+      assert length(mine) == 2
+      assert Enum.find(mine, &(&1.resource_id == Paths.goal_id(ctx.late_goal1)))
+      assert Enum.find(mine, &(&1.resource_id == Paths.goal_id(ctx.late_goal2)))
     end
   end
 
@@ -452,12 +467,13 @@ defmodule Operately.Assignments.LoaderTest do
 
   defp past_date(num \\ 2) do
     day_of_week = Date.utc_today() |> Date.day_of_week()
-    
-    extra_days = cond do
-      day_of_week == 6 -> 1
-      day_of_week == 7 -> 2
-      true -> 0
-    end
+
+    extra_days =
+      cond do
+        day_of_week == 6 -> 1
+        day_of_week == 7 -> 2
+        true -> 0
+      end
 
     Date.utc_today()
     |> subtract_days(num + extra_days)
