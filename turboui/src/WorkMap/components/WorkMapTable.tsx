@@ -61,5 +61,5 @@ interface HeaderCellProps {
 function HeaderCell({ className, hidden, children }: HeaderCellProps) {
   if (hidden) return null;
 
-  return <th className={classNames("text-left py-2 md:py-3.5 px-2 font-semibold", className)}>{children}</th>;
+  return <th className={classNames("text-left py-2 md:py-3.5 px-2 font-semibold whitespace-nowrap", className)}>{children}</th>;
 }
