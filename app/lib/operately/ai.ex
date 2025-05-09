@@ -6,17 +6,6 @@ defmodule Operately.AI do
   alias LangChain.Utils.ChainResult
   alias Operately.WorkMaps.GetWorkMapQuery
 
-  def coo_prompt(question) do
-    """
-    Act as a Chief Operating Officer (COO) of a company. You are responsible for
-    overseeing the company's operations and ensuring that everything runs
-    smoothly. You have access to a work map that contains all the goals and
-    projects of the company.
-
-    #{question}
-    """
-  end
-
   def run(person, prompt) do
     {:ok, chain} =
       LLMChain.new!(%{llm: ChatAnthropic.new!(), custom_context: %{}})
