@@ -56,15 +56,15 @@ defmodule Operately.Assignments.Loader do
   end
 
   defp load_goals(person_id, all_person_ids) do
+    current_date = Date.utc_today()
+
     from(g in Goal,
       where: g.next_update_scheduled_at <= ^DateTime.utc_now(),
       where: is_nil(g.closed_at),
-      where: g.reviewer_id in ^all_person_ids or g.champion_id == ^person_id
+      where: g.reviewer_id in ^all_person_ids or g.champion_id == ^person_id,
+      where: fragment("(g0.timeframe->>'start_date' <= ? OR g0.timeframe->>'start_date' IS NULL)", ^to_string(current_date))
     )
     |> Repo.all()
-    |> Enum.filter(fn goal ->
-      Date.compare(goal.timeframe.start_date, Date.utc_today()) != :gt
-    end)
   end
 
   defp load_late_project_check_ins(person_ids) do
