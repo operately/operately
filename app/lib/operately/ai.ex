@@ -4,44 +4,33 @@ defmodule Operately.AI do
   alias LangChain.Chains.LLMChain
   alias LangChain.ChatModels.ChatAnthropic
   alias LangChain.Utils.ChainResult
+  alias Operately.WorkMaps.GetWorkMapQuery
 
-  def run do
-    custom_context = %{
-      "user_id" => 123,
-      "hairbrush" => "drawer",
-      "dog" => "backyard",
-      "sandwich" => "kitchen"
-    }
+  def run(person) do
+    prompt = """
+    You are a COO of a company. You are responsible for overseeing the company's
+    operations and ensuring that everything runs smoothly. You have access to a
+    work map that contains all the goals and projects of the company.
 
-    custom_fn =
-      Function.new!(%{
-        name: "custom",
-        description: "Returns the location of the requested element or item.",
-        parameters_schema: %{
-          type: "object",
-          properties: %{
-            thing: %{
-              type: "string",
-              description: "The thing whose location is being requested."
-            }
-          },
-          required: ["thing"]
-        },
-        function: fn %{"thing" => thing} = _arguments, context ->
-          {:ok, context[thing]}
-        end
-      })
+    How many active projects do we have in the company?
+    """
 
     {:ok, updated_chain} =
-      LLMChain.new!(%{
-        llm: ChatAnthropic.new!(),
-        custom_context: custom_context,
-        verbose: true
-      })
-      |> LLMChain.add_tools(custom_fn)
-      |> LLMChain.add_message(Message.new_user!("Where is the hairbrush located?"))
+      LLMChain.new!(%{llm: ChatAnthropic.new!(), verbose: true})
+      |> LLMChain.add_tools(work_map_fn(person))
+      |> LLMChain.add_message(Message.new_user!(prompt))
       |> LLMChain.run(mode: :while_needs_response)
 
     IO.puts(ChainResult.to_string!(updated_chain))
+  end
+
+  defp work_map_fn(person) do
+    Function.new!(%{
+      name: "get_work_map",
+      description: "Returns all goals and projects for a given person.",
+      function: fn _ ->
+        {:ok, GetWorkMapQuery.execute(person, %{company_id: person.company_id})}
+      end
+    })
   end
 end
