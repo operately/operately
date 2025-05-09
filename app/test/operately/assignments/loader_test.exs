@@ -68,7 +68,14 @@ defmodule Operately.Assignments.LoaderTest do
       |> Factory.add_goal(:late_goal2, :space, champion: :champion, reviewer: :reviewer)
       |> Factory.add_goal(:goal1, :space, champion: :champion, reviewer: :reviewer)
       |> Factory.add_goal(:goal2, :space, champion: :champion, reviewer: :reviewer)
-      |> set_late_goals()
+      |> Factory.add_goal(:not_started_goal, :space,
+        champion: :champion,
+        reviewer: :reviewer,
+        timeframe: Operately.Goals.Timeframe.next_quarter()
+      )
+      |> set_update_schedule(:late_goal1, past_date())
+      |> set_update_schedule(:late_goal2, past_date())
+      |> set_update_schedule(:not_started_goal, past_date(2))
     end
 
     test "returns all late goals", ctx do
@@ -82,6 +89,14 @@ defmodule Operately.Assignments.LoaderTest do
 
     test "doesn't return late goals to non-champions", ctx do
       [mine: [], reports: []] = Loader.load(ctx.reviewer, ctx.company)
+    end
+
+    test "doesn't return goals not yet started", ctx do
+      [mine: mine, reports: []] = Loader.load(ctx.champion, ctx.company)
+
+      assert length(mine) == 2
+      assert Enum.find(mine, &(&1.resource_id == Paths.goal_id(ctx.late_goal1)))
+      assert Enum.find(mine, &(&1.resource_id == Paths.goal_id(ctx.late_goal2)))
     end
   end
 
@@ -401,15 +416,14 @@ defmodule Operately.Assignments.LoaderTest do
     end)
   end
 
-  defp set_late_goals(ctx) do
-    Enum.reduce([:late_goal1, :late_goal2], ctx, fn key, ctx ->
-      {:ok, late_goal} =
-        ctx[key]
-        |> Operately.Goals.Goal.changeset(%{next_update_scheduled_at: past_date()})
-        |> Repo.update()
+  defp set_update_schedule(ctx, goal_key, date) do
+    {:ok, goal} =
+      Operately.Goals.Goal.changeset(ctx[goal_key], %{
+        next_update_scheduled_at: date
+      })
+      |> Repo.update()
 
-      Map.put(ctx, key, late_goal)
-    end)
+    Map.put(ctx, goal_key, goal)
   end
 
   defp acknowledge_updates(ctx) do
@@ -452,12 +466,13 @@ defmodule Operately.Assignments.LoaderTest do
 
   defp past_date(num \\ 2) do
     day_of_week = Date.utc_today() |> Date.day_of_week()
-    
-    extra_days = cond do
-      day_of_week == 6 -> 1
-      day_of_week == 7 -> 2
-      true -> 0
-    end
+
+    extra_days =
+      cond do
+        day_of_week == 6 -> 1
+        day_of_week == 7 -> 2
+        true -> 0
+      end
 
     Date.utc_today()
     |> subtract_days(num + extra_days)
