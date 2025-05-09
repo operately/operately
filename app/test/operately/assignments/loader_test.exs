@@ -71,11 +71,11 @@ defmodule Operately.Assignments.LoaderTest do
       |> Factory.add_goal(:not_started_goal, :space,
         champion: :champion,
         reviewer: :reviewer,
-        opts: [
-          timeframe: Operately.Goals.Timeframe.next_quarter()
-        ]
+        timeframe: Operately.Goals.Timeframe.next_quarter()
       )
-      |> set_late_goals()
+      |> set_update_schedule(:late_goal1, past_date())
+      |> set_update_schedule(:late_goal2, past_date())
+      |> set_update_schedule(:not_started_goal, past_date(2))
     end
 
     test "returns all late goals", ctx do
@@ -416,15 +416,14 @@ defmodule Operately.Assignments.LoaderTest do
     end)
   end
 
-  defp set_late_goals(ctx) do
-    Enum.reduce([:late_goal1, :late_goal2], ctx, fn key, ctx ->
-      {:ok, late_goal} =
-        ctx[key]
-        |> Operately.Goals.Goal.changeset(%{next_update_scheduled_at: past_date()})
-        |> Repo.update()
+  defp set_update_schedule(ctx, goal_key, date) do
+    {:ok, goal} =
+      Operately.Goals.Goal.changeset(ctx[goal_key], %{
+        next_update_scheduled_at: date
+      })
+      |> Repo.update()
 
-      Map.put(ctx, key, late_goal)
-    end)
+    Map.put(ctx, goal_key, goal)
   end
 
   defp acknowledge_updates(ctx) do
