@@ -2083,6 +2083,14 @@ export interface ListSpaceToolsResult {
   tools?: SpaceTools | null;
 }
 
+export interface RunAiPromptInput {
+  prompt?: string | null;
+}
+
+export interface RunAiPromptResult {
+  result?: string | null;
+}
+
 export interface SearchPeopleInput {
   query?: string | null;
   ignoredIds?: string[] | null;
@@ -3275,6 +3283,10 @@ export class ApiClient {
     return this.get("/list_space_tools", input);
   }
 
+  async runAiPrompt(input: RunAiPromptInput): Promise<RunAiPromptResult> {
+    return this.get("/run_ai_prompt", input);
+  }
+
   async searchPeople(input: SearchPeopleInput): Promise<SearchPeopleResult> {
     return this.get("/search_people", input);
   }
@@ -3844,6 +3856,9 @@ export async function listResourceHubNodes(input: ListResourceHubNodesInput): Pr
 export async function listSpaceTools(input: ListSpaceToolsInput): Promise<ListSpaceToolsResult> {
   return defaultApiClient.listSpaceTools(input);
 }
+export async function runAiPrompt(input: RunAiPromptInput): Promise<RunAiPromptResult> {
+  return defaultApiClient.runAiPrompt(input);
+}
 export async function searchPeople(input: SearchPeopleInput): Promise<SearchPeopleResult> {
   return defaultApiClient.searchPeople(input);
 }
@@ -4405,6 +4420,10 @@ export function useListResourceHubNodes(
 
 export function useListSpaceTools(input: ListSpaceToolsInput): UseQueryHookResult<ListSpaceToolsResult> {
   return useQuery<ListSpaceToolsResult>(() => defaultApiClient.listSpaceTools(input));
+}
+
+export function useRunAiPrompt(input: RunAiPromptInput): UseQueryHookResult<RunAiPromptResult> {
+  return useQuery<RunAiPromptResult>(() => defaultApiClient.runAiPrompt(input));
 }
 
 export function useSearchPeople(input: SearchPeopleInput): UseQueryHookResult<SearchPeopleResult> {
@@ -5178,6 +5197,8 @@ export default {
   useListResourceHubNodes,
   listSpaceTools,
   useListSpaceTools,
+  runAiPrompt,
+  useRunAiPrompt,
   searchPeople,
   useSearchPeople,
   searchPotentialSpaceMembers,
