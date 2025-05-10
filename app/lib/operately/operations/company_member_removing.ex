@@ -3,19 +3,42 @@ defmodule Operately.Operations.CompanyMemberRemoving do
   alias Operately.Repo
   alias Operately.People
 
+  @doc """
+  Removes a company member from the system.
+
+  For members with open invitations, they are deleted entirely.
+  For existing members, they are marked as suspended.
+
+  Returns the updated or deleted person record.
+
+  ## Parameters
+    - admin: The admin performing the removal
+    - person_id: ID of the person to remove
+  """
   def run(admin, person_id) do
+    person = People.get_person!(person_id)
+
     Multi.new()
-    |> suspend_person(person_id)
+    |> suspend_or_delete_person(person)
     |> insert_activity(admin)
     |> Repo.transaction()
     |> Repo.extract_result(:person)
   end
 
-  defp suspend_person(multi, person_id) do
-    changeset = People.get_person!(person_id)
-    |> People.Person.changeset(%{suspended: true, suspended_at: DateTime.utc_now()})
+  defp suspend_or_delete_person(multi, person) do
+    case person.has_open_invitation do
+      # For users with open invitations, delete them entirely
+      true ->
+        Multi.delete(multi, :person, person)
 
-    Multi.update(multi, :person, changeset)
+      # For existing members, mark them as suspended
+      false ->
+        changeset = People.Person.changeset(person, %{
+          suspended: true,
+          suspended_at: DateTime.utc_now()
+        })
+        Multi.update(multi, :person, changeset)
+    end
   end
 
   defp insert_activity(multi, admin) do
