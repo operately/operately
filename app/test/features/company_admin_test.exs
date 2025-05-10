@@ -3,7 +3,7 @@ defmodule Operately.Features.CompanyAdminTest do
   alias Operately.Support.Features.CompanyAdminSteps, as: Steps
 
   setup ctx do
-    ctx 
+    ctx
     |> Steps.given_a_company_exists()
     |> Steps.given_i_am_logged_in(as: ctx[:role])
   end
@@ -103,6 +103,23 @@ defmodule Operately.Features.CompanyAdminTest do
     |> Steps.assert_company_member_is_listed()
     |> Steps.remove_company_member()
     |> Steps.assert_member_removed()
+  end
+
+  @tag role: :admin
+  feature "revoke a member's invitation", ctx do
+    params = %{
+      full_name: "Invited Person",
+      email: "invited.person@example.com",
+      title: "Potential Employee"
+    }
+
+    ctx
+    |> Steps.open_company_team_page()
+    |> Steps.invite_company_member(params)
+    |> Steps.open_company_team_page()
+    |> Steps.assert_new_company_member_is_listed(params.full_name)
+    |> Steps.revoke_member_invitation(params.full_name)
+    |> Steps.assert_invitation_revoked(params)
   end
 
   @tag role: :admin

@@ -12,43 +12,43 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
   step :given_i_am_logged_in, ctx, [as: role] do
     cond do
       role == :admin ->
-        ctx 
+        ctx
         |> Factory.add_company_admin(:admin, [name: "Admin Adminson"])
         |> Factory.log_in_person(:admin)
 
       role == :owner ->
-        ctx 
+        ctx
         |> Factory.add_company_owner(:owner, [name: "Owner Ownerson"])
         |> Factory.log_in_person(:owner)
 
       role == :member ->
-        ctx 
+        ctx
         |> Factory.add_company_member(:member, [name: "Member Memberson"])
         |> Factory.log_in_person(:member)
     end
   end
 
   step :open_company_team_page, ctx do
-    ctx 
+    ctx
     |> UI.visit(Paths.company_admin_path(ctx.company))
     |> UI.click(testid: "manage-team-members")
   end
 
   step :open_company_admins_page, ctx do
-    ctx 
+    ctx
     |> UI.visit(Paths.company_admin_path(ctx.company))
     |> UI.assert_has(testid: "company-admin-page")
   end
 
   step :open_manage_admins_page, ctx do
-    ctx 
+    ctx
     |> UI.visit(Paths.company_admin_path(ctx.company))
     |> UI.click(testid: "manage-administrators-and-owners")
     |> UI.assert_has(testid: "manage-admins-page")
   end
-  
+
   step :open_company_trusted_email_domains_page, ctx do
-    ctx 
+    ctx
     |> UI.visit(Paths.company_admin_path(ctx.company))
     |> UI.click(testid: "manage-trusted-email-domains")
   end
@@ -234,14 +234,14 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
   end
 
   step :fill_in_new_company_name_and_submit, ctx do
-    ctx 
+    ctx
     |> UI.fill(testid: "name", with: "Dunder")
     |> UI.click(testid: "submit")
     |> UI.assert_has(testid: "company-admin-page")
   end
 
   step :assert_company_name_is_changed_in_navbar, ctx do
-    UI.find(ctx, UI.query(testid: "company-dropdown"), fn el -> 
+    UI.find(ctx, UI.query(testid: "company-dropdown"), fn el ->
       UI.assert_text(el, "Dunder")
     end)
   end
@@ -255,7 +255,7 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
   end
 
   step :assert_company_feed_shows_the_company_name_change, ctx do
-    ctx 
+    ctx
     |> UI.visit(Paths.feed_path(ctx.company))
     |> UI.assert_feed_item(ctx.admin, "renamed the company to Dunder")
   end
@@ -297,7 +297,7 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
   end
 
   step :assert_notification_and_email_sent_to_removed_owner, ctx do
-    ctx 
+    ctx
     |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.company.name,
       to: ctx.other_owner,
@@ -312,7 +312,7 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
   end
 
   step :assert_notification_and_email_sent_to_new_owner, ctx do
-    ctx 
+    ctx
     |> Factory.log_in_person(:member)
     |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.company.name,
@@ -329,7 +329,7 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
   step :assert_feed_item_for_removed_owner, ctx do
     name = Person.first_name(ctx.other_owner)
 
-    ctx 
+    ctx
     |> UI.visit(Paths.feed_path(ctx.company))
     |> UI.assert_feed_item(ctx.owner, "removed #{name} as an account owner")
   end
@@ -337,7 +337,7 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
   step :assert_feed_item_for_new_owner, ctx do
     name = Person.short_name(ctx.member)
 
-    ctx 
+    ctx
     |> UI.visit(Paths.feed_path(ctx.company))
     |> UI.assert_feed_item(ctx.owner, "promoted #{name} to account owner")
   end
@@ -349,7 +349,7 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
   end
 
   step :open_restore_people_page, ctx do
-    ctx 
+    ctx
     |> UI.visit(Paths.company_admin_path(ctx.company))
     |> UI.click(testid: "restore-access-for-previously-deactivated-team-members")
     |> UI.assert_has(testid: "restore-suspended-people-page")
@@ -392,4 +392,22 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
     ctx |> UI.assert_text("No deactivated team members")
   end
 
+  step :revoke_member_invitation, ctx, name do
+    person = Operately.People.get_person_by_name!(ctx.company, name)
+
+    ctx
+    |> UI.click(testid: UI.testid(["person-options", Paths.person_id(person)]))
+    |> UI.click(testid: UI.testid(["remove-person", Paths.person_id(person)]))
+    |> UI.assert_text("This will revoke #{Person.first_name(person)}'s invitation. You can create a new invitation later if needed.")
+    |> UI.click(testid: UI.testid("confirm-remove-member"))
+  end
+
+  step :assert_invitation_revoked, ctx, params do
+    ctx |> UI.refute_text(params.name)
+
+    # Verify the person was completely deleted
+    refute Operately.People.get_person_by_email(ctx.company, params.email)
+
+    ctx
+  end
 end
