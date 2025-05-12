@@ -4,7 +4,7 @@ import * as Timeframes from "../../utils/timeframes";
 
 import { useLoadedData } from "@/components/Pages";
 import { Goal, getGoal } from "@/models/goals";
-import { GoalPage } from "turboui";
+import { GoalPage, MiniWorkMap } from "turboui";
 import { Timeframe } from "turboui/src/utils/timeframes";
 import { getWorkMap } from "../../models/workMap";
 import { Paths } from "../../routes/paths";
@@ -28,13 +28,14 @@ export async function loader({ params }): Promise<LoaderResult> {
     includePrivacy: true,
   }).then((data) => data.goal!);
 
-  const relatedWorkItems = (await getWorkMap({}).then((data) => data.workMap || [])).map((item) => ({
-    ...item,
-    id: item.id!,
-    name: item.name!,
-    type: item.type!,
-    link: item.type === "goal" ? Paths.goalPath(item.id!) : Paths.projectPath(item.id!),
-  }));
+  const relatedWorkItems = await getWorkMap({})
+    .then((data) => data.workMap || [])
+    .then((data) => data.map((item) => ({ ...item, people: [], link: "", subitems: [], completed: false })))
+    .then((data) => MiniWorkMap.WorkItemsSchema.array().parse(data))
+    .catch((error) => {
+      console.error("Error fetching work items:", error);
+      throw new Error("Failed to fetch work items");
+    });
 
   return { goal, relatedWorkItems };
 }

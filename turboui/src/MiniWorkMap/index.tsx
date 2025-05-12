@@ -5,32 +5,7 @@ import { IconGoal, IconProject } from "../icons";
 import { BlackLink } from "../Link";
 import { StatusBadge } from "../StatusBadge";
 
-const PersonSchema = z.object({
-  id: z.string(),
-  fullName: z.string(),
-  avatarUrl: z.string(),
-});
-
-const WorkItemsSchema = z.object({
-  id: z.string(),
-  type: z.enum(["goal", "project"]),
-  status: z.enum(["on_track", "caution", "concern", "issue", "paused", "outdated", "pending"]),
-  name: z.string(),
-  link: z.string(),
-  progress: z.number(),
-  subitems: z.array(z.lazy(() => WorkItemsSchema)),
-  completed: z.boolean(),
-  people: z.array(PersonSchema),
-});
-
-const PropsSchema = z.object({
-  items: z.array(WorkItemsSchema),
-});
-
-type WorkItem = z.infer<typeof WorkItemsSchema>;
-type Props = z.infer<typeof PropsSchema>;
-
-export function MiniWorkMap(props: Props) {
+export function MiniWorkMap(props: MiniWorkMap.Props) {
   return (
     <div className="flex flex-col">
       {props.items.map((item) => (
@@ -40,7 +15,34 @@ export function MiniWorkMap(props: Props) {
   );
 }
 
-function ItemView({ item, depth }: { item: WorkItem; depth: number }) {
+export namespace MiniWorkMap {
+  const PersonSchema = z.object({
+    id: z.string(),
+    fullName: z.string(),
+    avatarUrl: z.string(),
+  });
+
+  export const WorkItemsSchema = z.object({
+    id: z.string(),
+    type: z.enum(["goal", "project"]),
+    status: z.enum(["on_track", "caution", "concern", "issue", "paused", "outdated", "pending"]),
+    name: z.string(),
+    link: z.string(),
+    progress: z.number(),
+    subitems: z.array(z.lazy(() => WorkItemsSchema)),
+    completed: z.boolean(),
+    people: z.array(PersonSchema),
+  });
+
+  export const PropsSchema = z.object({
+    items: z.array(WorkItemsSchema),
+  });
+
+  export type WorkItem = z.infer<typeof WorkItemsSchema>;
+  export type Props = z.infer<typeof PropsSchema>;
+}
+
+function ItemView({ item, depth }: { item: MiniWorkMap.WorkItem; depth: number }) {
   return (
     <>
       <div
@@ -59,7 +61,7 @@ function ItemView({ item, depth }: { item: WorkItem; depth: number }) {
   );
 }
 
-function Subitems({ items, depth }: { items: WorkItem[]; depth: number }) {
+function Subitems({ items, depth }: { items: MiniWorkMap.WorkItem[]; depth: number }) {
   return (
     <>
       {items.map((subitem) => (
@@ -69,7 +71,7 @@ function Subitems({ items, depth }: { items: WorkItem[]; depth: number }) {
   );
 }
 
-function ItemIcon({ item }: { item: WorkItem }) {
+function ItemIcon({ item }: { item: MiniWorkMap.WorkItem }) {
   return match(item.type)
     .with("goal", () => <IconGoal size={20} />)
     .with("project", () => <IconProject size={20} />)
@@ -78,7 +80,7 @@ function ItemIcon({ item }: { item: WorkItem }) {
     });
 }
 
-function ItemPeople({ item }: { item: WorkItem }) {
+function ItemPeople({ item }: { item: MiniWorkMap.WorkItem }) {
   return (
     <div className="shrink-0">
       <AvatarList people={item.people} size={18} stacked />
@@ -86,7 +88,7 @@ function ItemPeople({ item }: { item: WorkItem }) {
   );
 }
 
-function ItemName({ item }: { item: WorkItem }) {
+function ItemName({ item }: { item: MiniWorkMap.WorkItem }) {
   const nameElement = (
     <BlackLink underline="hover" to={item.link} className="truncate" disableColorHoverEffect>
       {item.name}
