@@ -410,11 +410,11 @@ export function TaskBoard({
                         ]}
                       />
                       <span className="text-sm font-semibold text-content-base">{milestoneData.milestone.name}</span>
-                      <span className="text-xs text-content-subtle">
+                      <span className="text-xs text-content-dimmed">
                         {milestoneData.stats.done}/{milestoneData.stats.total} completed
                       </span>
                     </div>
-                    <button className="text-content-subtle hover:text-content-base">
+                    <button className="text-content-dimmed hover:text-content-base">
                       <IconPlus size={16} />
                     </button>
                   </div>
@@ -535,10 +535,10 @@ export function TaskBoard({
 
                           {/* Comments indicator - now second */}
                           {task.hasComments && (
-                            <span className="ml-2 text-content-subtle flex items-center">
+                            <span className="ml-2 text-content-dimmed flex items-center">
                               <IconMessageCircle size={14} />
                               {task.commentCount && (
-                                <span className="ml-1 text-xs text-content-subtle">{task.commentCount}</span>
+                                <span className="ml-1 text-xs text-content-dimmed">{task.commentCount}</span>
                               )}
                             </span>
                           )}
