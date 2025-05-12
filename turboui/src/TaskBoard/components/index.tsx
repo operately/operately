@@ -441,14 +441,14 @@ export function TaskBoard({
                             {task.title}
                           </BlackLink>
 
-                          {/* Description indicator - now first */}
+                          {/* Description indicator */}
                           {task.hasDescription && (
                             <span className="-ml-1 text-content-subtle">
                               <IconFileText size={14} />
                             </span>
                           )}
 
-                          {/* Comments indicator - now second */}
+                          {/* Comments indicator */}
                           {task.hasComments && (
                             <span className="-ml-1 text-content-subtle flex items-center">
                               <IconMessageCircle size={14} />
@@ -458,21 +458,21 @@ export function TaskBoard({
                             </span>
                           )}
 
-                          {/* Due date - now third */}
+                          {/* Due date */}
                           {task.dueDate && (
                             <span className="ml-2">
                               <DueDateDisplay dueDate={task.dueDate} />
                             </span>
                           )}
 
-                          {/* Assignee - now fourth */}
+                          {/* Assignee */}
                           {task.assignees && task.assignees.length > 0 && (
                             <span className="ml-2">
                               <AvatarWithName
                                 person={task.assignees[0]}
                                 size="tiny"
                                 nameFormat="short"
-                                className="text-xs"
+                                className="text-xs text-content-dimmed"
                               />
                             </span>
                           )}
