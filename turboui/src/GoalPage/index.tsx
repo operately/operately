@@ -1,26 +1,26 @@
-import type { MiniWorkMap } from "../MiniWorkMap";
 import type { GoalTargetList } from "../GoalTargetList";
+import type { MiniWorkMap } from "../MiniWorkMap";
 
 import { Link } from "../Link";
 import { Page } from "../Page";
 import { PageFooter } from "../Page/PageFooter";
 
-import { PageBanner } from "../PageBanner";
-import { PageHeader } from "./PageHeader";
-import { Sidebar } from "./Sidebar";
-import { Messages } from "./Messages";
-import { CheckIns } from "./CheckIns";
-import { Targets } from "./Targets";
-import { Description } from "./Description";
-import { RelatedWork } from "./RelatedWork";
-import { BadgeStatus } from "../StatusBadge/types";
-import { Contributors } from "./Contributors";
+import { IconCircleCheck, IconTrash } from "@tabler/icons-react";
 import { WarningCallout } from "../Callouts";
+import { PageBanner } from "../PageBanner";
+import { BadgeStatus } from "../StatusBadge/types";
 import { isOverdue, Timeframe } from "../utils/timeframes";
-import { IconTrash, IconCircleCheck } from "@tabler/icons-react";
+import { CheckIns } from "./CheckIns";
+import { Contributors } from "./Contributors";
+import { Description } from "./Description";
+import { Messages } from "./Messages";
+import { PageHeader } from "./PageHeader";
+import { RelatedWork } from "./RelatedWork";
+import { Sidebar } from "./Sidebar";
+import { Targets } from "./Targets";
 
 export namespace GoalPage {
-  interface Person {
+  export interface Person {
     id: string;
     fullName: string;
     avatarUrl: string;

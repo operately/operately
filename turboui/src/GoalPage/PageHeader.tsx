@@ -1,12 +1,9 @@
-import { PrimaryButton, SecondaryButton } from "../Button";
-import { IconStar } from "@tabler/icons-react";
-import { IconPencil } from "@tabler/icons-react";
+import { IconBuilding, IconPencil, IconTarget } from "@tabler/icons-react";
 import { GoalPage } from ".";
-import { IconBuilding } from "@tabler/icons-react";
-import { IconTarget } from "@tabler/icons-react";
+import { PrimaryButton, SecondaryButton } from "../Button";
 import { DimmedLink } from "../Link";
-import { StatusBadge } from "../StatusBadge";
 import { PrivacyIndicator } from "../PrivacyIndicator";
+import { StatusBadge } from "../StatusBadge";
 
 export function PageHeader(props: GoalPage.Props) {
   return (
@@ -36,12 +33,6 @@ export function PageHeader(props: GoalPage.Props) {
 function Buttons(props: GoalPage.Props) {
   return (
     <div className="flex items-center gap-2 mt-4 sm:mt-0">
-      <SecondaryButton size="sm">
-        <div className="flex items-center gap-1.5">
-          <IconStar size="16" /> Follow
-        </div>
-      </SecondaryButton>
-
       {props.canEdit && (
         <SecondaryButton size="sm">
           <div className="flex items-center gap-1.5">
