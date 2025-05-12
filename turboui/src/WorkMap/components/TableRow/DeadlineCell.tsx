@@ -11,10 +11,13 @@ interface Props {
   completedOn: WorkMap.Item["completedOn"];
   timeframe: WorkMap.Item["timeframe"];
   status: WorkMap.Status;
+  hide?: boolean;
 }
 
-export function DeadlineCell({ filter, status, completedOn, timeframe }: Props) {
+export function DeadlineCell({ filter, status, completedOn, timeframe, hide }: Props) {
   const { isCompleted, isFailed, isDropped, isPending } = useItemStatus(status);
+
+  if (hide) return null;
 
   const containerClassName = classNames("py-2 px-2 md:px-4", filter !== "completed" && "hidden lg:table-cell");
   const isPastDeadline = useMemo(() => isDeadlinePast(timeframe?.endDate), [timeframe]);

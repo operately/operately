@@ -5,7 +5,7 @@ import classNames from "../../../utils/classnames";
 interface Props {
   nextStep: WorkMap.Item["nextStep"];
   status: WorkMap.Status;
-  hide: boolean;
+  hide?: boolean;
 }
 
 export function NextStepCell({ nextStep, status, hide }: Props) {
@@ -18,7 +18,9 @@ export function NextStepCell({ nextStep, status, hide }: Props) {
     isPending && "text-content-dimmed",
   );
 
-  if (hide || isClosed) return <td />;
+  if (hide) return null;
+
+  if (isClosed) return <td />;
 
   return (
     <td className="py-2 px-2 md:px-4 hidden xl:table-cell">

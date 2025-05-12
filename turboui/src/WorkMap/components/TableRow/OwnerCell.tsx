@@ -5,9 +5,10 @@ import classNames from "../../../utils/classnames";
 
 interface Props {
   item: WorkMap.Item;
+  hide?: boolean;
 }
 
-export function OwnerCell({ item }: Props) {
+export function OwnerCell({ item, hide }: Props) {
   const { isCompleted, isFailed, isDropped, isPending } = useItemStatus(item.status);
 
   const className = classNames(
@@ -16,6 +17,8 @@ export function OwnerCell({ item }: Props) {
     isDropped && "opacity-70 text-content-dimmed",
     isPending && "text-content-dimmed",
   );
+
+  if (hide) return null;
 
   if (!item.owner) return <td />;
 
