@@ -113,6 +113,7 @@ import * as SpaceEditGeneralAccessPage from "./SpaceEditGeneralAccessPage";
 import * as SpaceEditPage from "./SpaceEditPage";
 import * as SpaceGoalsPage from "./SpaceGoalsPage";
 import * as SpacePage from "./SpacePage";
+import * as SpaceWorkMapPage from "./SpaceWorkMapPage";
 import * as TaskPage from "./TaskPage";
 
 //
@@ -779,6 +780,12 @@ export default {
     loader: SpacePage.loader,
     Page: SpacePage.Page,
     shouldRevalidate: getShouldRevalidate(SpacePage),
+  },
+  SpaceWorkMapPage: {
+    name: "SpaceWorkMapPage",
+    loader: SpaceWorkMapPage.loader,
+    Page: SpaceWorkMapPage.Page,
+    shouldRevalidate: getShouldRevalidate(SpaceWorkMapPage),
   },
   TaskPage: {
     name: "TaskPage",
