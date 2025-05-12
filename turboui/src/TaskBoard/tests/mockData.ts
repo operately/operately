@@ -32,9 +32,29 @@ export const mockPeople: Record<string, TaskBoard.Person> = {
 
 // Mock milestones
 export const mockMilestones = {
-  q2Release: { id: "1", name: "Q2 Release", dueDate: new Date("2025-06-30") },
-  productLaunch: { id: "2", name: "Product Launch", dueDate: new Date("2025-08-15") },
-  marketExpansion: { id: "3", name: "Market Expansion", dueDate: new Date("2025-09-30") },
+  q2Release: { 
+    id: "1", 
+    name: "Q2 Release", 
+    dueDate: new Date("2025-06-30"),
+    hasDescription: true,
+    hasComments: true,
+    commentCount: 5
+  },
+  productLaunch: { 
+    id: "2", 
+    name: "Product Launch", 
+    dueDate: new Date("2025-08-15"),
+    hasDescription: true,
+    hasComments: true,
+    commentCount: 3
+  },
+  marketExpansion: { 
+    id: "3", 
+    name: "Market Expansion", 
+    dueDate: new Date("2025-09-30"),
+    hasDescription: false,
+    hasComments: false
+  },
 };
 
 // Mock tasks
@@ -77,12 +97,10 @@ export const mockTasks: TaskBoard.Task[] = [
     id: "task-4",
     title: "Design marketing landing page",
     status: "done",
-    assignees: [mockPeople.jane],
     milestone: mockMilestones.productLaunch,
     points: 5,
     hasDescription: false,
-    hasComments: true,
-    commentCount: 2,
+    hasComments: false,
   },
   {
     id: "task-5",
@@ -128,13 +146,10 @@ export const mockTasks: TaskBoard.Task[] = [
     id: "task-9",
     title: "Add analytics dashboard",
     status: "pending",
-    assignees: [mockPeople.john],
     milestone: mockMilestones.productLaunch,
-    dueDate: new Date("2025-07-15"),
     points: 13,
-    hasDescription: true,
-    hasComments: true,
-    commentCount: 4,
+    hasDescription: false,
+    hasComments: false,
   },
   {
     id: "task-10",
@@ -164,12 +179,10 @@ export const mockTasks: TaskBoard.Task[] = [
     id: "task-12",
     title: "Create A/B testing framework",
     status: "canceled",
-    assignees: [mockPeople.alice],
     milestone: mockMilestones.productLaunch,
     points: 13,
-    hasDescription: true,
-    hasComments: true,
-    commentCount: 3,
+    hasDescription: false,
+    hasComments: false,
   },
   {
     id: "task-13",
