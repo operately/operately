@@ -4,8 +4,16 @@ import { TimeframeSelector } from "../../TimeframeSelector";
 import { WorkMap } from "../components";
 import { useSearchParams } from "react-router-dom";
 
-export function useWorkMapFilter(rawItems: WorkMap.Item[], timeframe: TimeframeSelector.Timeframe) {
-  const [filter, setFilter] = useWorkMapUrlFilter();
+export interface WorkMapFilterOptions {
+  tabOptions?: WorkMap.TabOptions;
+}
+
+export function useWorkMapFilter(
+  rawItems: WorkMap.Item[],
+  timeframe: TimeframeSelector.Timeframe,
+  options: WorkMapFilterOptions = {},
+) {
+  const [filter, setFilter] = useWorkMapUrlFilter(options.tabOptions);
 
   const filteredItems = useMemo(() => {
     const timeframeFilteredItems = filterItemsByTimeframe(rawItems, timeframe);
@@ -218,17 +226,18 @@ function itemOverlapsWithTimeframe(item: WorkMap.Item, timeframe: TimeframeSelec
  * Returns the current filter value and a function to update it
  * Defaults to "all" if no tab parameter is present
  */
-function useWorkMapUrlFilter(): [WorkMap.Filter, (newFilter: WorkMap.Filter) => void] {
+function useWorkMapUrlFilter(tabOptions?: WorkMap.TabOptions): [WorkMap.Filter, (newFilter: WorkMap.Filter) => void] {
   if (isStorybook()) {
-    return useLocalFilter();
+    return useLocalFilter(tabOptions);
   }
 
   const [searchParams, setSearchParams] = useSearchParams();
 
   const rawTab = searchParams.get("tab") as WorkMap.Filter;
-  const allowedTabs: WorkMap.Filter[] = ["all", "goals", "projects", "completed"];
+  const allowedTabs = getAllowedTabs(tabOptions);
+  const defaultTab = getDefaultTab(allowedTabs, tabOptions);
 
-  const tab = rawTab && allowedTabs.includes(rawTab) ? rawTab : "all";
+  const tab = rawTab && allowedTabs.includes(rawTab) ? rawTab : defaultTab;
 
   const setTab = useCallback(
     (newTab: WorkMap.Filter) => {
@@ -248,9 +257,37 @@ function useWorkMapUrlFilter(): [WorkMap.Filter, (newFilter: WorkMap.Filter) => 
  * Hook that maintains the filter state locally without touching URL params
  * (used in Storybook)
  */
-function useLocalFilter(): [WorkMap.Filter, (newFilter: WorkMap.Filter) => void] {
-  const [filter, setFilter] = useState<WorkMap.Filter>("all");
-  return [filter, setFilter];
+function useLocalFilter(tabOptions?: WorkMap.TabOptions): [WorkMap.Filter, (newFilter: WorkMap.Filter) => void] {
+  const allowedTabs = getAllowedTabs(tabOptions);
+  const defaultTab = getDefaultTab(allowedTabs, tabOptions);
+
+  return useState<WorkMap.Filter>(defaultTab);
+}
+
+function getAllowedTabs(tabOptions?: WorkMap.TabOptions): WorkMap.Filter[] {
+  let allowedTabs: WorkMap.Filter[] = ["all", "goals", "projects", "completed"];
+
+  if (tabOptions?.hideAll) {
+    allowedTabs = allowedTabs.filter((tab) => tab !== "all");
+  }
+
+  if (tabOptions?.hideGoals) {
+    allowedTabs = allowedTabs.filter((tab) => tab !== "goals");
+  }
+
+  if (tabOptions?.hideProjects) {
+    allowedTabs = allowedTabs.filter((tab) => tab !== "projects");
+  }
+
+  if (tabOptions?.hideCompleted) {
+    allowedTabs = allowedTabs.filter((tab) => tab !== "completed");
+  }
+
+  return allowedTabs;
+}
+
+function getDefaultTab(allowedTabs: WorkMap.Filter[], tabOptions?: WorkMap.TabOptions): WorkMap.Filter {
+  return (tabOptions?.hideAll || !allowedTabs.includes("all")) && allowedTabs.length > 0 ? allowedTabs[0] : "all";
 }
 
 const isStorybook = () => {
