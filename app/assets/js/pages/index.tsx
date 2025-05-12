@@ -48,6 +48,7 @@ import * as GoalPage from "./GoalPage";
 import * as GoalReopenPage from "./GoalReopenPage";
 import * as GoalSubgoalsPage from "./GoalSubgoalsPage";
 import * as GoalV2Page from "./GoalV2Page";
+import * as GoalV3Page from "./GoalV3Page";
 import * as GoalsAndProjectsPage from "./GoalsAndProjectsPage";
 import * as HomePage from "./HomePage";
 import * as JoinPage from "./JoinPage";
@@ -388,6 +389,12 @@ export default {
     loader: GoalV2Page.loader,
     Page: GoalV2Page.Page,
     shouldRevalidate: getShouldRevalidate(GoalV2Page),
+  },
+  GoalV3Page: {
+    name: "GoalV3Page",
+    loader: GoalV3Page.loader,
+    Page: GoalV3Page.Page,
+    shouldRevalidate: getShouldRevalidate(GoalV3Page),
   },
   GoalsAndProjectsPage: {
     name: "GoalsAndProjectsPage",

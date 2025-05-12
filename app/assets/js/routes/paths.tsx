@@ -1,8 +1,8 @@
+import { LinkOptions } from "@/features/ResourceHub";
 import * as ProfileEditPage from "@/pages/ProfileEditPage";
+import * as ProjectAddPage from "@/pages/ProjectAddPage";
 import * as ProjectContributorsAddPage from "@/pages/ProjectContributorsAddPage";
 import * as ProjectContributorsEditPage from "@/pages/ProjectContributorsEditPage";
-import * as ProjectAddPage from "@/pages/ProjectAddPage";
-import { LinkOptions } from "@/features/ResourceHub";
 import { WorkMap } from "turboui";
 
 export class Paths {
@@ -312,6 +312,9 @@ export class Paths {
   // Temporary path
   static goalV2Path(goalId: string) {
     return createCompanyPath(["goals", goalId, "v2"]);
+  }
+  static goalV3Path(goalId: string) {
+    return createCompanyPath(["goals", goalId, "v3"]);
   }
 
   static newGoalPath(params?: { companyWide: boolean }) {
