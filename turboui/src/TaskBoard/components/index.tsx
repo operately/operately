@@ -19,6 +19,7 @@ import {
 } from "@tabler/icons-react";
 import { Menu, MenuActionItem } from "../../Menu";
 import { PieChart } from "../../PieChart";
+import TaskCreationModal from "./TaskCreationModal";
 
 export namespace TaskBoard {
   export type Status = "pending" | "in_progress" | "done" | "canceled";
@@ -74,6 +75,7 @@ export namespace TaskBoard {
     tasks: Task[];
     viewMode?: ViewMode;
     onStatusChange?: (taskId: string, newStatus: Status) => void;
+    onTaskCreate?: (task: Omit<Task, "id">) => void;
   }
 }
 
@@ -355,18 +357,27 @@ function TaskItem({
 }
 
 export function TaskBoard({
-  tasks: initialTasks,
+  tasks: externalTasks,
   title = "Tasks",
   viewMode = "table",
   onStatusChange,
+  onTaskCreate,
 }: {
   tasks: TaskBoard.Task[];
   title?: string;
   viewMode?: TaskBoard.ViewMode;
   onStatusChange?: (taskId: string, newStatus: TaskBoard.Status) => void;
+  onTaskCreate?: (task: Omit<TaskBoard.Task, "id">) => void;
 }) {
   const [currentViewMode, setCurrentViewMode] = useState<TaskBoard.ViewMode>(viewMode);
-  const [tasks, setTasks] = useState<TaskBoard.Task[]>(initialTasks);
+  const [internalTasks, setInternalTasks] = useState<TaskBoard.Task[]>(externalTasks);
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+  const [activeTaskMilestoneId, setActiveTaskMilestoneId] = useState<string | undefined>();
+  
+  // Keep internal tasks in sync with external tasks
+  useEffect(() => {
+    setInternalTasks(externalTasks);
+  }, [externalTasks]);
 
   // Group tasks by milestone
   const groupTasksByMilestone = (tasks: TaskBoard.Task[]) => {
@@ -408,7 +419,7 @@ export function TaskBoard({
       }
     >();
 
-    tasks.forEach((task) => {
+    internalTasks.forEach((task) => {
       if (task.milestone) {
         const milestoneId = task.milestone.id;
 
@@ -446,8 +457,8 @@ export function TaskBoard({
   // Handle status change
   const handleStatusChange = (taskId: string, newStatus: TaskBoard.Status) => {
     // Update local state
-    const updatedTasks = tasks.map((task) => (task.id === taskId ? { ...task, status: newStatus } : task));
-    setTasks(updatedTasks);
+    const updatedTasks = internalTasks.map((task) => (task.id === taskId ? { ...task, status: newStatus } : task));
+    setInternalTasks(updatedTasks);
 
     // Notify parent component if callback is provided
     if (onStatusChange) {
@@ -468,9 +479,20 @@ export function TaskBoard({
       document.removeEventListener("statusChange", handleStatusChangeEvent);
     };
   }, [handleStatusChange]);
+  
+  // Handle creating a new task
+  const handleCreateTask = (newTaskData: Omit<TaskBoard.Task, "id">) => {
+    if (onTaskCreate) {
+      // Log to confirm task creation event is being triggered
+      console.log("TaskBoard: Creating new task", newTaskData);
+      onTaskCreate(newTaskData);
+    } else {
+      console.warn("TaskBoard: onTaskCreate handler is not provided");
+    }
+  };
 
   // Group tasks by milestone and get milestone stats
-  const groupedTasks = groupTasksByMilestone(tasks);
+  const groupedTasks = groupTasksByMilestone(internalTasks);
   const milestones = getMilestones();
 
   // Handle task reordering via drag and drop
@@ -480,11 +502,11 @@ export function TaskBoard({
       const targetMilestoneId = dropZoneId.replace("milestone-", "");
 
       // Find the task being dragged
-      const draggedTask = tasks.find((task) => task.id === draggedId);
+      const draggedTask = internalTasks.find((task) => task.id === draggedId);
       if (!draggedTask) return;
 
       // Create a new array of tasks with the dragged task moved to the new position
-      const updatedTasks = [...tasks];
+      const updatedTasks = [...internalTasks];
 
       // First remove the task from its current position
       const taskIndex = updatedTasks.findIndex((task) => task.id === draggedId);
@@ -550,19 +572,36 @@ export function TaskBoard({
       }
 
       // Update state with the reordered tasks
-      setTasks(updatedTasks);
+      setInternalTasks(updatedTasks);
 
       console.log(`Reordered: Task ${draggedId} moved to ${targetMilestoneId} at position ${indexInDropZone}`);
     },
-    [tasks, milestones],
+    [internalTasks, milestones, setInternalTasks],
   );
 
   return (
     <div className="flex flex-col w-full h-full bg-surface-base rounded-lg">
+      {/* Task Creation Modal */}
+      <TaskCreationModal 
+        isOpen={isTaskModalOpen} 
+        onClose={() => setIsTaskModalOpen(false)}
+        onCreateTask={handleCreateTask}
+        milestones={milestones.map(m => m.milestone)}
+        currentMilestoneId={activeTaskMilestoneId}
+        people={internalTasks
+          .flatMap(task => task.assignees || [])
+          .filter((person, index, self) => 
+            index === self.findIndex(p => p.id === person.id)
+          )}
+      />
+      
       <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-4 sm:px-6 py-2 border-b border-surface-outline">
         <div className="flex flex-row items-center gap-4">
           <h1 className="text-sm sm:text-base font-bold text-content-accent">{title}</h1>
-          <SecondaryButton size="xs">+ Add Task</SecondaryButton>
+          <SecondaryButton size="xs" onClick={() => {
+            setActiveTaskMilestoneId(undefined);
+            setIsTaskModalOpen(true);
+          }}>+ Add Task</SecondaryButton>
         </div>
         <div className="flex mt-2 sm:mt-0">
           <div className="flex space-x-2">
@@ -605,7 +644,7 @@ export function TaskBoard({
             <div className="overflow-x-auto bg-surface-base">
               <ul className="w-full">
                 {/* If no tasks at all */}
-                {tasks.length === 0 && <li className="py-4 text-center text-content-subtle">No tasks found</li>}
+                {internalTasks.length === 0 && <li className="py-4 text-center text-content-subtle">No tasks found</li>}
 
                 {/* Tasks with milestones */}
                 {milestones.map((milestoneData) => (
@@ -663,7 +702,13 @@ export function TaskBoard({
                           )}
                         </div>
                       </div>
-                      <button className="text-content-dimmed hover:text-content-base">
+                      <button 
+                        className="text-content-dimmed hover:text-content-base"
+                        onClick={() => {
+                          setActiveTaskMilestoneId(milestoneData.milestone.id);
+                          setIsTaskModalOpen(true);
+                        }}
+                      >
                         <IconPlus size={16} />
                       </button>
                     </div>
@@ -686,7 +731,13 @@ export function TaskBoard({
                         <span className="text-sm font-semibold text-content-base">No milestone</span>
                         {/* No indicators for 'No milestone' header */}
                       </div>
-                      <button className="text-content-subtle hover:text-content-base">
+                      <button 
+                        className="text-content-subtle hover:text-content-base"
+                        onClick={() => {
+                          setActiveTaskMilestoneId("no-milestone");
+                          setIsTaskModalOpen(true);
+                        }}
+                      >
                         <IconPlus size={16} />
                       </button>
                     </div>
