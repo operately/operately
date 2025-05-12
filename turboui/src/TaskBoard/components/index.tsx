@@ -1,12 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useMemo, useCallback, useEffect } from "react";
 import { StatusBadge } from "../../StatusBadge";
 import { SecondaryButton } from "../../Button";
 import { BlackLink } from "../../Link";
+import { DragAndDropProvider, useDraggable, useDraggingAnimation, useDropZone } from "../../utils/DragAndDrop";
+import classNames from "../../utils/classnames";
 import { AvatarWithName } from "../../Avatar/AvatarWithName";
 import {
   IconFileText,
   IconMessageCircle,
-  IconClock,
   IconCheck,
   IconCircleDashed,
   IconCircleDot,
@@ -14,6 +15,7 @@ import {
   IconX,
   IconPlus,
   IconCalendar,
+  IconGripVertical,
 } from "@tabler/icons-react";
 import { Menu, MenuActionItem } from "../../Menu";
 import { PieChart } from "../../PieChart";
@@ -27,10 +29,15 @@ export namespace TaskBoard {
     avatarUrl?: string;
   }
 
+  // Interface for tasks with drag-and-drop position index
+
   export interface Milestone {
     id: string;
     name: string;
     dueDate?: Date;
+    hasDescription?: boolean;
+    hasComments?: boolean;
+    commentCount?: number;
   }
 
   // Label interface removed in current iteration
@@ -45,12 +52,17 @@ export namespace TaskBoard {
     milestone?: Milestone;
     points?: number;
     dueDate?: Date;
-    hasComments?: boolean;
     hasDescription?: boolean;
+    hasComments?: boolean;
     commentCount?: number;
+    comments?: any[];
   }
 
-  export type TaskViewMode = "table" | "kanban" | "timeline";
+  export interface TaskWithIndex extends Task {
+    index: number;
+  }
+
+  export type ViewMode = "table" | "kanban" | "timeline";
 
   // Callback for when a task status changes
   export interface TaskBoardCallbacks {
@@ -60,7 +72,7 @@ export namespace TaskBoard {
   export interface Props {
     title: string;
     tasks: Task[];
-    viewMode?: TaskViewMode;
+    viewMode?: ViewMode;
     onStatusChange?: (taskId: string, newStatus: Status) => void;
   }
 }
@@ -223,20 +235,122 @@ function DueDateDisplay({ dueDate }: { dueDate: Date }) {
   const isOverdue = dueDate < new Date();
   const formattedDate = dueDate.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 
-  if (isOverdue) {
-    return (
-      <span className="text-content-error flex items-center gap-1 text-xs">
-        <IconCalendar size={12} />
-        {formattedDate}
-      </span>
-    );
-  }
+  return (
+    <span className={`text-xs flex items-center gap-1 ${isOverdue ? "text-red-500" : "text-content-dimmed"}`}>
+      <IconCalendar size={14} />
+      <span>{formattedDate}</span>
+    </span>
+  );
+}
+
+// TaskList component with drag and drop functionality
+function TaskList({ tasks, milestoneId }: { tasks: TaskBoard.Task[]; milestoneId: string }) {
+  // Add drag and drop index to each task
+  const tasksWithIndex = useMemo(() => {
+    return tasks.map((task, index) => ({ ...task, index }));
+  }, [tasks]);
+
+  // Set up drop zone for this list of tasks
+  const { ref } = useDropZone({ id: `milestone-${milestoneId}`, dependencies: [tasksWithIndex] });
+  const { containerStyle, itemStyle } = useDraggingAnimation(`milestone-${milestoneId}`, tasksWithIndex);
 
   return (
-    <span className="text-content-dimmed flex items-center gap-1 text-xs">
-      <IconCalendar size={12} />
-      {formattedDate}
-    </span>
+    <ul ref={ref as React.RefObject<HTMLUListElement>} style={containerStyle}>
+      {tasksWithIndex.map((task) => (
+        <TaskItem
+          key={task.id}
+          task={task as TaskBoard.TaskWithIndex}
+          milestoneId={milestoneId}
+          itemStyle={itemStyle}
+        />
+      ))}
+    </ul>
+  );
+}
+
+// Individual task item component that can be dragged
+function TaskItem({
+  task,
+  milestoneId,
+  itemStyle,
+}: {
+  task: TaskBoard.TaskWithIndex;
+  milestoneId: string;
+  itemStyle: (id: string) => React.CSSProperties;
+}) {
+  // Set up draggable behavior
+  const { ref, isDragging } = useDraggable({ id: task.id, zoneId: `milestone-${milestoneId}` });
+
+  const itemClasses = classNames(isDragging ? "opacity-50 bg-surface-accent" : "");
+
+  return (
+    <li ref={ref as React.RefObject<HTMLLIElement>} style={itemStyle(task.id)} className={itemClasses}>
+      <div className="flex items-center px-4 py-2.5 group bg-surface-base hover:bg-surface-highlight">
+        <div className="flex-1 flex items-center gap-2">
+          {/* Status icon */}
+          <div className="flex-shrink-0 flex items-center">
+            <StatusSelector
+              task={task}
+              onStatusChange={(newStatus) => {
+                // This will bubble up to the main component's handleStatusChange
+                if (task.id) {
+                  // We need to pass both task ID and the new status up to the parent
+                  const changeEvent = new CustomEvent("statusChange", {
+                    detail: { taskId: task.id, newStatus },
+                  });
+                  document.dispatchEvent(changeEvent);
+                }
+              }}
+            />
+          </div>
+
+          {/* Task title with all meta indicators */}
+          <div className="md:truncate flex-1 flex items-center gap-2">
+            <BlackLink
+              to={`/tasks/${task.id}`}
+              className="text-sm hover:text-link-hover transition-colors"
+              underline="hover"
+            >
+              {task.title}
+            </BlackLink>
+
+            {/* Description indicator */}
+            {task.hasDescription && (
+              <span className="text-content-subtle flex-shrink-0">
+                <IconFileText size={14} />
+              </span>
+            )}
+
+            {/* Comments indicator */}
+            {task.hasComments && (
+              <span className="text-content-subtle flex items-center flex-shrink-0">
+                <IconMessageCircle size={14} />
+                {task.commentCount && <span className="ml-0.5 text-xs text-content-subtle">{task.commentCount}</span>}
+              </span>
+            )}
+
+            {/* Due date */}
+            {task.dueDate && (
+              <span className="text-xs text-content-subtle flex items-center flex-shrink-0">
+                <DueDateDisplay dueDate={task.dueDate} />
+              </span>
+            )}
+
+            {/* Assignee */}
+            {task.assignees && task.assignees.length > 0 && (
+              <span className="flex-shrink-0">
+                <AvatarWithName
+                  person={task.assignees[0]}
+                  size="tiny"
+                  nameFormat="short"
+                  className="text-xs text-content-dimmed"
+                />
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+    </li>
   );
 }
 
@@ -248,10 +362,10 @@ export function TaskBoard({
 }: {
   tasks: TaskBoard.Task[];
   title?: string;
-  viewMode?: TaskBoard.TaskViewMode;
+  viewMode?: TaskBoard.ViewMode;
   onStatusChange?: (taskId: string, newStatus: TaskBoard.Status) => void;
 }) {
-  const [currentViewMode, setCurrentViewMode] = useState<TaskBoard.TaskViewMode>(viewMode);
+  const [currentViewMode, setCurrentViewMode] = useState<TaskBoard.ViewMode>(viewMode);
   const [tasks, setTasks] = useState<TaskBoard.Task[]>(initialTasks);
 
   // Group tasks by milestone
@@ -341,9 +455,107 @@ export function TaskBoard({
     }
   };
 
-  // Group tasks by milestone
+  // Set up event listener for status changes from TaskItems
+  useEffect(() => {
+    const handleStatusChangeEvent = (e: Event) => {
+      const { taskId, newStatus } = (e as CustomEvent).detail;
+      handleStatusChange(taskId, newStatus);
+    };
+
+    document.addEventListener("statusChange", handleStatusChangeEvent);
+
+    return () => {
+      document.removeEventListener("statusChange", handleStatusChangeEvent);
+    };
+  }, [handleStatusChange]);
+
+  // Group tasks by milestone and get milestone stats
   const groupedTasks = groupTasksByMilestone(tasks);
   const milestones = getMilestones();
+
+  // Handle task reordering via drag and drop
+  const handleTaskReorder = useCallback(
+    (dropZoneId: string, draggedId: string, indexInDropZone: number) => {
+      // Extract milestone ID from the dropZoneId (format: milestone-{id})
+      const targetMilestoneId = dropZoneId.replace("milestone-", "");
+
+      // Find the task being dragged
+      const draggedTask = tasks.find((task) => task.id === draggedId);
+      if (!draggedTask) return;
+
+      // Create a new array of tasks with the dragged task moved to the new position
+      const updatedTasks = [...tasks];
+
+      // First remove the task from its current position
+      const taskIndex = updatedTasks.findIndex((task) => task.id === draggedId);
+      if (taskIndex > -1) {
+        updatedTasks.splice(taskIndex, 1);
+      }
+
+      // Group tasks by milestone to find the insertion point
+      const tasksByMilestone = groupTasksByMilestone(updatedTasks);
+
+      // Determine the real target array and index
+      const targetArray =
+        targetMilestoneId === "no-milestone"
+          ? tasksByMilestone["no_milestone"]
+          : tasksByMilestone[targetMilestoneId] || [];
+
+      // If the task's milestone has changed, update it
+      if (targetMilestoneId === "no-milestone") {
+        draggedTask.milestone = undefined;
+      } else if (targetMilestoneId !== draggedTask.milestone?.id) {
+        // Find the milestone object from an existing task with this milestone ID
+        const targetMilestone = milestones.find((m) => m.milestone.id === targetMilestoneId)?.milestone;
+        if (targetMilestone) {
+          draggedTask.milestone = targetMilestone;
+        }
+      }
+
+      // Insert the task at the new position
+      // Ensure the index is valid
+      const insertIndex = Math.min(indexInDropZone, targetArray.length);
+
+      // If the target is the no_milestone group, insert directly into the updatedTasks array
+      if (targetMilestoneId === "no-milestone") {
+        // Count how many tasks are before this in the overall array
+        let globalIndex = 0;
+
+        // Count tasks from other milestones that come before this one in the list
+        for (const milestoneId in tasksByMilestone) {
+          if (milestoneId === "no_milestone") break;
+          globalIndex += tasksByMilestone[milestoneId].length;
+        }
+
+        // Add the insertion index within the no_milestone group
+        globalIndex += insertIndex;
+
+        // Insert the task at the calculated global index
+        updatedTasks.splice(globalIndex, 0, draggedTask);
+      } else {
+        // Find where in the overall tasks array this milestone's tasks start
+        let globalIndex = 0;
+
+        // Count tasks from milestones that come before this one
+        for (const milestoneId in tasksByMilestone) {
+          if (milestoneId === targetMilestoneId) break;
+          globalIndex += tasksByMilestone[milestoneId].length;
+        }
+
+        // Add the insertion index within the milestone
+        globalIndex += insertIndex;
+
+        // Insert the task at the calculated global index
+        updatedTasks.splice(globalIndex, 0, draggedTask);
+      }
+
+      // Update state with the reordered tasks
+      setTasks(updatedTasks);
+
+      console.log(`Reordered: Task ${draggedId} moved to ${targetMilestoneId} at position ${indexInDropZone}`);
+    },
+    [tasks, milestones],
+  );
 
   return (
     <div className="flex flex-col w-full h-full bg-surface-base rounded-lg">
@@ -389,190 +601,103 @@ export function TaskBoard({
       </header>
       <div className="flex-1 overflow-auto">
         {currentViewMode === "table" && (
-          <div className="overflow-x-auto bg-surface-base">
-            <ul className="w-full">
-              {/* If no tasks at all */}
-              {tasks.length === 0 && <li className="py-4 text-center text-content-subtle">No tasks found</li>}
+          <DragAndDropProvider onDrop={handleTaskReorder}>
+            <div className="overflow-x-auto bg-surface-base">
+              <ul className="w-full">
+                {/* If no tasks at all */}
+                {tasks.length === 0 && <li className="py-4 text-center text-content-subtle">No tasks found</li>}
 
-              {/* Tasks with milestones */}
-              {milestones.map((milestoneData) => (
-                <li key={milestoneData.milestone.id}>
-                  {/* Milestone header */}
-                  <div className="flex items-center justify-between px-4 py-3 bg-surface-dimmed border-b border-surface-outline">
-                    <div className="flex items-center gap-2">
-                      {/* Progress pie chart */}
-                      <PieChart
-                        size={16}
-                        slices={[
-                          {
-                            percentage: (milestoneData.stats.done / milestoneData.stats.total) * 100,
-                            color: "var(--color-callout-success-icon)",
-                          },
-                        ]}
-                      />
-                      <span className="text-sm font-semibold text-content-base">{milestoneData.milestone.name}</span>
-                      <span className="text-xs text-content-subtle">
+                {/* Tasks with milestones */}
+                {milestones.map((milestoneData) => (
+                  <li key={milestoneData.milestone.id}>
+                    {/* Milestone header */}
+                    <div className="flex items-center justify-between px-4 py-3 bg-surface-dimmed border-b border-surface-outline first:border-t-0">
+                      <div className="flex items-center gap-2">
+                        {/* Progress pie chart */}
+                        <PieChart
+                          size={16}
+                          slices={[
+                            {
+                              percentage: (milestoneData.stats.done / milestoneData.stats.total) * 100,
+                              color: "var(--color-callout-success-icon)",
+                            },
+                          ]}
+                        />
+                        <BlackLink
+                          to={`/milestones/${milestoneData.milestone.id}`}
+                          className="text-sm font-semibold text-content-base hover:text-link-hover transition-colors"
+                          underline="hover"
+                        >
+                          {milestoneData.milestone.name}
+                        </BlackLink>
+                        {/* <span className="text-xs text-content-dimmed">
                         {milestoneData.stats.done}/{milestoneData.stats.total} completed
-                      </span>
-                    </div>
-                    <button className="text-content-subtle hover:text-content-base">
-                      <IconPlus size={16} />
-                    </button>
-                  </div>
+                      </span> */}
 
-                  {/* Tasks in this milestone */}
-                  <ul>
-                    {groupedTasks[milestoneData.milestone.id].map((task) => (
-                      <li
-                        key={task.id}
-                        className="group flex border-b border-stroke-base bg-surface-base hover:bg-surface-highlight px-4 py-2.5"
-                      >
-                        <div className="flex-1 flex items-center gap-2">
-                          {/* Status icon */}
-                          <div className="flex-shrink-0 flex items-center">
-                            <StatusSelector
-                              task={task}
-                              onStatusChange={(newStatus) => handleStatusChange(task.id, newStatus)}
-                            />
-                          </div>
-
-                          {/* Task title */}
-                          <BlackLink
-                            to={`/tasks/${task.id}`}
-                            className="text-sm text-content-base hover:text-link-hover transition-colors"
-                            underline="hover"
-                          >
-                            {task.title}
-                          </BlackLink>
-
-                          {/* Description indicator - now first */}
-                          {task.hasDescription && (
-                            <span className="-ml-1 text-content-subtle">
-                              <IconFileText size={14} />
+                        {/* Milestone indicators */}
+                        <div className="flex items-center gap-1 ml-1">
+                          {/* Description indicator */}
+                          {milestoneData.milestone.hasDescription && (
+                            <span className="text-content-dimmed">
+                              <IconFileText size={12} />
                             </span>
                           )}
 
-                          {/* Comments indicator - now second */}
-                          {task.hasComments && (
-                            <span className="-ml-1 text-content-subtle flex items-center">
-                              <IconMessageCircle size={14} />
-                              {task.commentCount && (
-                                <span className="ml-0.5 text-xs text-content-subtle">{task.commentCount}</span>
+                          {/* Comments indicator */}
+                          {milestoneData.milestone.hasComments && (
+                            <span className="text-content-dimmed flex items-center">
+                              <IconMessageCircle size={12} />
+                              {milestoneData.milestone.commentCount && (
+                                <span className="ml-0.5 text-xs text-content-dimmed">
+                                  {milestoneData.milestone.commentCount}
+                                </span>
                               )}
                             </span>
                           )}
 
-                          {/* Due date - now third */}
-                          {task.dueDate && (
-                            <span className="ml-2">
-                              <DueDateDisplay dueDate={task.dueDate} />
-                            </span>
-                          )}
-
-                          {/* Assignee - now fourth */}
-                          {task.assignees && task.assignees.length > 0 && (
-                            <span className="ml-2">
-                              <AvatarWithName
-                                person={task.assignees[0]}
-                                size="tiny"
-                                nameFormat="short"
-                                className="text-xs"
-                              />
+                          {/* Due date indicator */}
+                          {milestoneData.milestone.dueDate && (
+                            <span className="ml-1">
+                              <DueDateDisplay dueDate={milestoneData.milestone.dueDate} />
                             </span>
                           )}
                         </div>
-                      </li>
-                    ))}
-
-                    {groupedTasks[milestoneData.milestone.id].length === 0 && (
-                      <li className="py-2 px-4 text-xs text-content-subtle">No tasks in this milestone</li>
-                    )}
-                  </ul>
-                </li>
-              ))}
-
-              {/* Tasks with no milestone */}
-              {groupedTasks["no_milestone"].length > 0 && (
-                <li>
-                  {/* No milestone header */}
-                  <div className="flex items-center justify-between px-4 py-2.5 bg-surface-dimmed border-b border-surface-outline">
-                    <div className="flex items-center gap-2">
-                      {/* No progress pie chart for tasks without milestone */}
-                      <span className="text-sm font-semibold text-content-base">No milestone</span>
+                      </div>
+                      <button className="text-content-dimmed hover:text-content-base">
+                        <IconPlus size={16} />
+                      </button>
                     </div>
-                    <button className="text-content-subtle hover:text-content-base">
-                      <IconPlus size={16} />
-                    </button>
-                  </div>
 
-                  {/* Tasks with no milestone */}
-                  <ul>
-                    {groupedTasks["no_milestone"].map((task) => (
-                      <li
-                        key={task.id}
-                        className="group flex border-b border-stroke-base bg-surface-base hover:bg-surface-highlight px-4 py-1.5"
-                      >
-                        <div className="flex-1 flex items-center gap-2">
-                          {/* Status icon */}
-                          <div className="flex-shrink-0 flex items-center">
-                            <StatusSelector
-                              task={task}
-                              onStatusChange={(newStatus) => handleStatusChange(task.id, newStatus)}
-                            />
-                          </div>
+                    {/* Tasks in this milestone */}
+                    <TaskList
+                      tasks={groupedTasks[milestoneData.milestone.id]}
+                      milestoneId={milestoneData.milestone.id}
+                    />
+                  </li>
+                ))}
 
-                          {/* Task title */}
-                          <BlackLink
-                            to={`/tasks/${task.id}`}
-                            className="text-sm text-content-base hover:text-link-hover transition-colors"
-                            underline="hover"
-                          >
-                            {task.title}
-                          </BlackLink>
+                {/* Tasks with no milestone */}
+                {groupedTasks["no_milestone"].length > 0 && (
+                  <li>
+                    {/* No milestone header */}
+                    <div className="flex items-center justify-between px-4 py-3 bg-surface-dimmed border-b border-surface-outline">
+                      <div className="flex items-center gap-2">
+                        {/* No progress pie chart for tasks without milestone */}
+                        <span className="text-sm font-semibold text-content-base">No milestone</span>
+                        {/* No indicators for 'No milestone' header */}
+                      </div>
+                      <button className="text-content-subtle hover:text-content-base">
+                        <IconPlus size={16} />
+                      </button>
+                    </div>
 
-                          {/* Description indicator - now first */}
-                          {task.hasDescription && (
-                            <span className="ml-2 text-content-subtle">
-                              <IconFileText size={14} />
-                            </span>
-                          )}
-
-                          {/* Comments indicator - now second */}
-                          {task.hasComments && (
-                            <span className="ml-2 text-content-subtle flex items-center">
-                              <IconMessageCircle size={14} />
-                              {task.commentCount && (
-                                <span className="ml-1 text-xs text-content-subtle">{task.commentCount}</span>
-                              )}
-                            </span>
-                          )}
-
-                          {/* Due date - now third */}
-                          {task.dueDate && (
-                            <span className="ml-2">
-                              <DueDateDisplay dueDate={task.dueDate} />
-                            </span>
-                          )}
-
-                          {/* Assignee - now fourth */}
-                          {task.assignees && task.assignees.length > 0 && (
-                            <span className="ml-2">
-                              <AvatarWithName
-                                person={task.assignees[0]}
-                                size="tiny"
-                                nameFormat="short"
-                                className="text-xs"
-                              />
-                            </span>
-                          )}
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                </li>
-              )}
-            </ul>
-          </div>
+                    {/* Tasks with no milestone */}
+                    <TaskList tasks={groupedTasks["no_milestone"]} milestoneId="no-milestone" />
+                  </li>
+                )}
+              </ul>
+            </div>
+          </DragAndDropProvider>
         )}
         {currentViewMode === "kanban" && (
           <div className="flex h-full text-center text-content-subtle">
