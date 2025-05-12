@@ -20,7 +20,7 @@ const samplePeople = [
  * TaskCreationModal is a modal dialog for creating new tasks in the TaskBoard.
  * It allows users to enter task details and optionally create multiple tasks in succession.
  */
-const meta = {
+const meta: Meta<typeof TaskCreationModal> = {
   title: "Components/TaskBoard/TaskCreationModal",
   component: TaskCreationModal,
   parameters: {
@@ -30,16 +30,21 @@ const meta = {
     isOpen: { control: "boolean" },
     currentMilestoneId: { control: "text" },
   },
-} satisfies Meta<typeof TaskCreationModal>;
+};
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<typeof TaskCreationModal>;
 
 /**
  * Interactive story that demonstrates the TaskCreationModal
  */
 export const Default: Story = {
-  args: {}, // Required empty args object to satisfy TypeScript
+  tags: ["autodocs"],
+  args: {
+    isOpen: false,
+    onClose: () => {},
+    onCreateTask: () => {},
+  },
   render: () => {
     const [isOpen, setIsOpen] = useState(false);
     const [taskCount, setTaskCount] = useState(0);
