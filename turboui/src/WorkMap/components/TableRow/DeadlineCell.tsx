@@ -10,7 +10,7 @@ interface Props {
   filter: WorkMap.Filter;
   completedOn: WorkMap.Item["completedOn"];
   timeframe: WorkMap.Item["timeframe"];
-  status: WorkMap.Status;
+  status: WorkMap.Item["status"];
   hide?: boolean;
 }
 

@@ -37,7 +37,7 @@ export function TableRow(props: Props) {
         />
         <DeadlineCell
           filter={filter}
-          completedOn={item.closedAt}
+          completedOn={item.completedOn}
           timeframe={item.timeframe}
           status={item.status}
           hide={columnOptions?.hideDeadline}

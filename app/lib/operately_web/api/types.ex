@@ -1480,7 +1480,6 @@ defmodule OperatelyWeb.Api.Types do
     field :name, :string
     field :status, :string
     field :progress, :float
-    field :closed_at, :date
     field :space, :space
     field :space_path, :string
     field :owner, :person

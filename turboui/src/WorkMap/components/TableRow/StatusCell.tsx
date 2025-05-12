@@ -2,7 +2,7 @@ import { StatusBadge } from "../../../StatusBadge";
 import { WorkMap } from "..";
 
 interface Props {
-  status: WorkMap.Status;
+  status: WorkMap.Item["status"];
   hide?: boolean;
 }
 

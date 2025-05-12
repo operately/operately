@@ -16,7 +16,6 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.WorkMaps.WorkMapItem do
 
   def serialize(item, level: :full) do
     serialize(item, level: :essential) |> Map.merge(%{
-      closed_at: OperatelyWeb.Api.Serializer.serialize(item.closed_at),
       space: OperatelyWeb.Api.Serializer.serialize(item.space),
       space_path: Paths.space_work_map_path(item.company, item.space),
       owner: OperatelyWeb.Api.Serializer.serialize(item.owner),
