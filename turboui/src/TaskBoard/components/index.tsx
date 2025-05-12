@@ -30,6 +30,9 @@ export namespace TaskBoard {
     id: string;
     name: string;
     dueDate?: Date;
+    hasDescription?: boolean;
+    hasComments?: boolean;
+    commentCount?: number;
   }
 
   // Label interface removed in current iteration
@@ -409,10 +412,45 @@ export function TaskBoard({
                           },
                         ]}
                       />
-                      <span className="text-sm font-semibold text-content-base">{milestoneData.milestone.name}</span>
-                      <span className="text-xs text-content-dimmed">
+                      <BlackLink
+                        to={`/milestones/${milestoneData.milestone.id}`}
+                        className="text-sm font-semibold text-content-base hover:text-link-hover transition-colors"
+                        underline="hover"
+                      >
+                        {milestoneData.milestone.name}
+                      </BlackLink>
+                      {/* <span className="text-xs text-content-dimmed">
                         {milestoneData.stats.done}/{milestoneData.stats.total} completed
-                      </span>
+                      </span> */}
+
+                      {/* Milestone indicators */}
+                      <div className="flex items-center gap-1 ml-1">
+                        {/* Description indicator */}
+                        {milestoneData.milestone.hasDescription && (
+                          <span className="text-content-subtle">
+                            <IconFileText size={12} />
+                          </span>
+                        )}
+
+                        {/* Comments indicator */}
+                        {milestoneData.milestone.hasComments && (
+                          <span className="text-content-subtle flex items-center">
+                            <IconMessageCircle size={12} />
+                            {milestoneData.milestone.commentCount && (
+                              <span className="ml-0.5 text-xs text-content-subtle">
+                                {milestoneData.milestone.commentCount}
+                              </span>
+                            )}
+                          </span>
+                        )}
+
+                        {/* Due date indicator */}
+                        {milestoneData.milestone.dueDate && (
+                          <span className="ml-1">
+                            <DueDateDisplay dueDate={milestoneData.milestone.dueDate} />
+                          </span>
+                        )}
+                      </div>
                     </div>
                     <button className="text-content-dimmed hover:text-content-base">
                       <IconPlus size={16} />
@@ -495,6 +533,7 @@ export function TaskBoard({
                     <div className="flex items-center gap-2">
                       {/* No progress pie chart for tasks without milestone */}
                       <span className="text-sm font-semibold text-content-base">No milestone</span>
+                      {/* No indicators for 'No milestone' header */}
                     </div>
                     <button className="text-content-subtle hover:text-content-base">
                       <IconPlus size={16} />
@@ -526,14 +565,14 @@ export function TaskBoard({
                             {task.title}
                           </BlackLink>
 
-                          {/* Description indicator - now first */}
+                          {/* Description indicator */}
                           {task.hasDescription && (
-                            <span className="ml-2 text-content-subtle">
+                            <span className="ml-2 text-content-dimmed">
                               <IconFileText size={14} />
                             </span>
                           )}
 
-                          {/* Comments indicator - now second */}
+                          {/* Comments indicator */}
                           {task.hasComments && (
                             <span className="ml-2 text-content-dimmed flex items-center">
                               <IconMessageCircle size={14} />
@@ -543,14 +582,14 @@ export function TaskBoard({
                             </span>
                           )}
 
-                          {/* Due date - now third */}
+                          {/* Due date */}
                           {task.dueDate && (
                             <span className="ml-2">
                               <DueDateDisplay dueDate={task.dueDate} />
                             </span>
                           )}
 
-                          {/* Assignee - now fourth */}
+                          {/* Assignee */}
                           {task.assignees && task.assignees.length > 0 && (
                             <span className="ml-2">
                               <AvatarWithName

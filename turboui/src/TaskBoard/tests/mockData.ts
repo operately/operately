@@ -32,9 +32,29 @@ export const mockPeople: Record<string, TaskBoard.Person> = {
 
 // Mock milestones
 export const mockMilestones = {
-  q2Release: { id: "1", name: "Q2 Release", dueDate: new Date("2025-06-30") },
-  productLaunch: { id: "2", name: "Product Launch", dueDate: new Date("2025-08-15") },
-  marketExpansion: { id: "3", name: "Market Expansion", dueDate: new Date("2025-09-30") },
+  q2Release: { 
+    id: "1", 
+    name: "Q2 Release", 
+    dueDate: new Date("2025-06-30"),
+    hasDescription: true,
+    hasComments: true,
+    commentCount: 5
+  },
+  productLaunch: { 
+    id: "2", 
+    name: "Product Launch", 
+    dueDate: new Date("2025-08-15"),
+    hasDescription: true,
+    hasComments: true,
+    commentCount: 3
+  },
+  marketExpansion: { 
+    id: "3", 
+    name: "Market Expansion", 
+    dueDate: new Date("2025-09-30"),
+    hasDescription: false,
+    hasComments: false
+  },
 };
 
 // Mock tasks
