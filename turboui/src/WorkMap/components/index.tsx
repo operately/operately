@@ -79,16 +79,26 @@ export namespace WorkMap {
     hideCompleted?: boolean;
   }
 
+  export interface ColumnOptions {
+    hideSpace?: boolean;
+    hideStatus?: boolean;
+    hideProgress?: boolean;
+    hideDeadline?: boolean;
+    hideOwner?: boolean;
+    hideNextStep?: boolean;
+  }
+
   export interface Props {
     title: string;
     items: Item[];
+    columnOptions?: ColumnOptions;
     tabOptions?: TabOptions;
   }
 }
 
 const defaultTimeframe = currentYear();
 
-export function WorkMap({ title, items, tabOptions = {} }: WorkMap.Props) {
+export function WorkMap({ title, items, columnOptions = {}, tabOptions = {} }: WorkMap.Props) {
   const [timeframe, setTimeframe] = useState(defaultTimeframe);
   const { filteredItems, filter, setFilter } = useWorkMapFilter(items, timeframe, { tabOptions });
 
@@ -107,7 +117,7 @@ export function WorkMap({ title, items, tabOptions = {} }: WorkMap.Props) {
           setTimeframe={setTimeframe}
           tabOptions={tabOptions}
         />
-        <WorkMapTable items={filteredItems} filter={filter} />
+        <WorkMapTable items={filteredItems} filter={filter} columnOptions={columnOptions} />
       </div>
     </div>
   );
