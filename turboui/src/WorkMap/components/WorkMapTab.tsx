@@ -9,24 +9,22 @@ interface Props extends TestableElement {
   onClick?: () => void;
   isActive: boolean;
   icon?: React.ReactNode;
+  hide?: boolean;
 }
 
-export function WorkMapTab({ label, to, onClick, isActive, icon, testId }: Props) {
+export function WorkMapTab({ label, to, onClick, isActive, icon, hide, testId }: Props) {
   const className = classNames(
     "border-b-2 px-1 pt-2.5 pb-1 text-xs sm:text-sm font-medium flex items-center gap-1 sm:gap-1.5 whitespace-nowrap cursor-pointer",
     isActive
       ? "border-blue-500 text-content-base"
-      : "border-transparent text-content-dimmed hover:text-content-base hover:border-surface-accent"
+      : "border-transparent text-content-dimmed hover:text-content-base hover:border-surface-accent",
   );
+
+  if (hide) return null;
 
   if (to) {
     return (
-      <Link
-        to={to}
-        className={className}
-        aria-current={isActive ? "page" : undefined}
-        testId={testId}
-      >
+      <Link to={to} className={className} aria-current={isActive ? "page" : undefined} testId={testId}>
         {icon && <span className="h-4 w-4 hidden sm:inline">{icon}</span>}
         {label}
       </Link>

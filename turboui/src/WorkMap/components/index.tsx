@@ -72,17 +72,25 @@ export namespace WorkMap {
 
   export type Filter = "all" | "goals" | "projects" | "completed";
 
+  export interface TabOptions {
+    hideAll?: boolean;
+    hideGoals?: boolean;
+    hideProjects?: boolean;
+    hideCompleted?: boolean;
+  }
+
   export interface Props {
     title: string;
     items: Item[];
+    tabOptions?: TabOptions;
   }
 }
 
 const defaultTimeframe = currentYear();
 
-export function WorkMap({ title, items }: WorkMap.Props) {
+export function WorkMap({ title, items, tabOptions = {} }: WorkMap.Props) {
   const [timeframe, setTimeframe] = useState(defaultTimeframe);
-  const { filteredItems, filter, setFilter } = useWorkMapFilter(items, timeframe);
+  const { filteredItems, filter, setFilter } = useWorkMapFilter(items, timeframe, { tabOptions });
 
   return (
     <div className="flex flex-col w-full bg-surface-base rounded-lg">
@@ -97,6 +105,7 @@ export function WorkMap({ title, items }: WorkMap.Props) {
           onTabChange={setFilter}
           timeframe={timeframe}
           setTimeframe={setTimeframe}
+          tabOptions={tabOptions}
         />
         <WorkMapTable items={filteredItems} filter={filter} />
       </div>
