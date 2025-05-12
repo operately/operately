@@ -1,12 +1,7 @@
 {
   "$schema": "https://unpkg.com/knip@2/schema.json",
   "entry": ["assets/js/app.tsx", "assets/build.js", "assets/codegen.ts"],
-  "project": [
-    "assets/js/**/*.ts", 
-    "assets/js/**/*.tsx", 
-    "ee/assets/js/**/*.ts", 
-    "ee/assets/js/**/*.tsx"
-  ],
+  "project": ["assets/js/**/*.ts", "assets/js/**/*.tsx", "ee/assets/js/**/*.ts", "ee/assets/js/**/*.tsx"],
   "ignore": [
     "vite.config.mjs",
 
@@ -14,12 +9,10 @@
     "ee/assets/js/admin_api/index.tsx",
     "**/__tests__/**",
     "assets/js/models/companies/hasFeature.tsx",
-    "assets/js/pages/CompanyWorkMapPage/index.tsx"
+    "assets/js/pages/CompanyWorkMapPage/index.tsx",
+    "assets/js/pages/SpaceWorkMapPage/index.tsx"
   ],
-  "ignoreDependencies": [
-    "@types/jest",
-    "turboui"
-  ],
+  "ignoreDependencies": ["@types/jest", "turboui"],
 
   "rules": {
     "nsTypes": "off"
