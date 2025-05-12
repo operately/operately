@@ -3,6 +3,7 @@ import * as React from "react";
 import * as Timeframes from "../../utils/timeframes";
 
 import { useLoadedData } from "@/components/Pages";
+import { Feed, useItemsQuery } from "@/features/Feed";
 import { Goal, getGoal } from "@/models/goals";
 import { GoalPage } from "turboui";
 import { Timeframe } from "turboui/src/utils/timeframes";
@@ -58,10 +59,12 @@ export function Page() {
       console.log("updateTimeframe", timeframe);
       throw new Error("Function not implemented.");
     },
+
+    activityFeed: <GoalFeedItems />,
   };
 
   return (
-    <div className="sm:mt-8">
+    <div className="sm:my-8">
       <GoalPage {...props} />
     </div>
   );
@@ -81,4 +84,15 @@ function toTurbouiPerson(p: People.Person): GoalPage.Person {
     fullName: p.fullName!,
     avatarUrl: p.avatarUrl!,
   };
+}
+
+function GoalFeedItems() {
+  const { goal } = useLoadedData();
+  const { data, loading, error } = useItemsQuery("goal", goal.id!);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
+  if (!data) return null;
+
+  return <Feed items={data!.activities!} page="goal" testId="goal-feed" />;
 }
