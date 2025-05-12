@@ -301,6 +301,10 @@ export class Paths {
     return createCompanyPath(["work-map"]) + (tab ? `?tab=${tab}` : "");
   }
 
+  static spaceWorkMapPath(spaceId: string, tab?: WorkMap.Filter) {
+    return createCompanyPath(["spaces", spaceId, "work-map"]) + (tab ? `?tab=${tab}` : "");
+  }
+
   static goalClosePath(goalId: string) {
     return createCompanyPath(["goals", goalId, "complete"]);
   }
