@@ -1,33 +1,9 @@
-import { BlackLink } from "../Link";
-import { AvatarList } from "../Avatar";
-import { IconCircleCheckFilled, IconHexagons, IconTarget } from "@tabler/icons-react";
-import { StatusBadge } from "../StatusBadge";
 import { match } from "ts-pattern";
+import { z } from "zod";
+import { AvatarList } from "../Avatar";
 import { IconGoal, IconProject } from "../icons";
-
-export namespace MiniWorkMap {
-  interface Person {
-    id: string;
-    fullName: string;
-    avatarUrl: string;
-  }
-
-  export interface WorkItem {
-    id: string;
-    type: "goal" | "project";
-    status: "on_track" | "caution" | "concern" | "issue" | "paused" | "outdated" | "pending";
-    name: string;
-    link: string;
-    progress: number;
-    subitems: WorkItem[];
-    completed: boolean;
-    people: Person[];
-  }
-
-  export interface Props {
-    items: WorkItem[];
-  }
-}
+import { BlackLink } from "../Link";
+import { StatusBadge } from "../StatusBadge";
 
 export function MiniWorkMap(props: MiniWorkMap.Props) {
   return (
@@ -37,6 +13,33 @@ export function MiniWorkMap(props: MiniWorkMap.Props) {
       ))}
     </div>
   );
+}
+
+export namespace MiniWorkMap {
+  const PersonSchema = z.object({
+    id: z.string(),
+    fullName: z.string(),
+    avatarUrl: z.string(),
+  });
+
+  export const WorkItemsSchema = z.object({
+    id: z.string(),
+    type: z.enum(["goal", "project"]),
+    status: z.enum(["on_track", "caution", "concern", "issue", "paused", "outdated", "pending"]),
+    name: z.string(),
+    link: z.string(),
+    progress: z.number(),
+    subitems: z.array(z.lazy(() => WorkItemsSchema)),
+    completed: z.boolean(),
+    people: z.array(PersonSchema),
+  });
+
+  export const PropsSchema = z.object({
+    items: z.array(WorkItemsSchema),
+  });
+
+  export type WorkItem = z.infer<typeof WorkItemsSchema>;
+  export type Props = z.infer<typeof PropsSchema>;
 }
 
 function ItemView({ item, depth }: { item: MiniWorkMap.WorkItem; depth: number }) {
@@ -95,36 +98,4 @@ function ItemName({ item }: { item: MiniWorkMap.WorkItem }) {
   if (!item.completed) return nameElement;
 
   return <s>{nameElement}</s>;
-}
-
-const PROGRESS_COLORS: Record<string, string> = {
-  on_track: "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300",
-  caution: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300",
-  concern: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300",
-  issue: "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300",
-  paused: "bg-gray-100 text-gray-700 dark:bg-gray-900 dark:text-gray-300",
-  outdated: "bg-gray-100 text-gray-700 dark:bg-gray-900 dark:text-gray-300",
-  pending: "bg-gray-100 text-gray-700 dark:bg-gray-900 dark:text-gray-300",
-};
-
-function Progress({ item }: { item: MiniWorkMap.WorkItem }) {
-  if (isNaN(item.progress)) {
-    throw new Error(`Progress is NaN for item: ${item.name}`);
-  }
-
-  const color = PROGRESS_COLORS[item.status];
-
-  if (!color) {
-    throw new Error(`Unknown status color for item: ${item.name}`);
-  }
-
-  const outerClass = `w-11 flex justify-center rounded-lg px-2 py-0.5 shrink-0 ${color}`;
-  const innerClass = `text-sm font-medium font-mono`;
-  const progress = Math.floor(item.progress);
-
-  return (
-    <div className={outerClass}>
-      <div className={innerClass}>{progress}%</div>
-    </div>
-  );
 }
