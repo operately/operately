@@ -1,24 +1,29 @@
-import * as React from "react";
-import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
+import * as Paper from "@/components/PaperContainer";
 import * as Goals from "@/models/goals";
+import * as React from "react";
 
 import { Feed, useItemsQuery } from "@/features/Feed";
-import { Navigation } from "@/features/goals/GoalPageNavigation";
-import { Header } from "@/features/goals/GoalPageHeader";
-import { GoalTargets } from "@/features/goals/GoalTargets";
 import { LastCheckInMessage } from "@/features/goals/GoalCheckIn";
-import { useClearNotificationsOnLoad } from "@/features/notifications";
-import { assertPresent } from "@/utils/assertions";
-import { redirectIfFeatureEnabled } from "@/routes/redirectIfFeatureEnabled";
-import { Paths } from "@/routes/paths";
+import { Header } from "@/features/goals/GoalPageHeader";
 import { banner } from "@/features/goals/GoalPageHeader/Banner";
+import { Navigation } from "@/features/goals/GoalPageNavigation";
+import { GoalTargets } from "@/features/goals/GoalTargets";
+import { useClearNotificationsOnLoad } from "@/features/notifications";
+import { Paths } from "@/routes/paths";
+import { redirectIfFeatureEnabled } from "@/routes/redirectIfFeatureEnabled";
+import { assertPresent } from "@/utils/assertions";
 
 interface LoaderResult {
   goal: Goals.Goal;
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
+  await redirectIfFeatureEnabled(params, {
+    feature: "goal_page_v3",
+    path: Paths.goalV3Path(params.id),
+  });
+
   await redirectIfFeatureEnabled(params, {
     feature: "new_goal_page",
     path: Paths.goalV2Path(params.id),

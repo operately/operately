@@ -8,12 +8,12 @@ import { companyLoader } from "./companyLoader";
 import { pageRoute } from "./pageRoute";
 
 import { CurrentCompanyProvider } from "@/contexts/CurrentCompanyContext";
-import { TimezoneProvider } from "@/contexts/TimezoneContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import { TimezoneProvider } from "@/contexts/TimezoneContext";
 
+import { saasAdminRoutes } from "@/ee/routes";
 import CompanyLayout from "@/layouts/CompanyLayout";
 import NonCompanyLayout from "@/layouts/NonCompanyLayout";
-import { saasAdminRoutes } from "@/ee/routes";
 
 function NonCompanyRoutes() {
   return (
@@ -131,6 +131,7 @@ export function createAppRoutes() {
         pageRoute("goals/new", pages.GoalAddPage),
         pageRoute("goals/:id", pages.GoalPage),
         pageRoute("goals/:id/v2", pages.GoalV2Page),
+        pageRoute("goals/:id/v3", pages.GoalV3Page),
         pageRoute("goals/:id/subgoals", pages.GoalSubgoalsPage),
         pageRoute("goals/:id/about", pages.GoalAboutPage),
         pageRoute("goals/:goalId/edit", pages.GoalEditPage),

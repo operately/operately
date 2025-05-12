@@ -1,13 +1,11 @@
-import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
+import * as React from "react";
 
-interface LoaderResult {
-  // TODO: Define what is loaded when you visit this page
-}
+interface LoaderResult {}
 
-export async function loader({params}) : Promise<LoaderResult> {
-  return {} // TODO: Load data here
+export async function loader({}): Promise<LoaderResult> {
+  return {}; // TODO: Load data here
 }
 
 export function Page() {
