@@ -5,9 +5,10 @@ import classNames from "../../../utils/classnames";
 
 interface SpaceCellProps {
   item: WorkMap.Item;
+  hide?: boolean;
 }
 
-export function SpaceCell({ item }: SpaceCellProps) {
+export function SpaceCell({ item, hide }: SpaceCellProps) {
   const { isCompleted, isFailed, isDropped, isPending } = useItemStatus(item.status);
 
   const className = classNames(
@@ -16,6 +17,8 @@ export function SpaceCell({ item }: SpaceCellProps) {
     isDropped && "opacity-70 text-content-dimmed",
     isPending && "text-content-dimmed",
   );
+
+  if (hide) return null;
 
   return (
     <td className="py-2 px-2 md:px-4 hidden lg:table-cell">
