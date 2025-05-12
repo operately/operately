@@ -6,10 +6,12 @@ import { useLoadedData } from "@/components/Pages";
 import { Goal, getGoal } from "@/models/goals";
 import { GoalPage } from "turboui";
 import { Timeframe } from "turboui/src/utils/timeframes";
+import { getWorkMap } from "../../models/workMap";
 import { Paths } from "../../routes/paths";
 
 interface LoaderResult {
   goal: Goal;
+  relatedWorkItems: GoalPage.Props["relatedWorkItems"];
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
@@ -26,11 +28,19 @@ export async function loader({ params }): Promise<LoaderResult> {
     includePrivacy: true,
   }).then((data) => data.goal!);
 
-  return { goal };
+  const relatedWorkItems = (await getWorkMap({}).then((data) => data.workMap || [])).map((item) => ({
+    ...item,
+    id: item.id!,
+    name: item.name!,
+    type: item.type!,
+    link: item.type === "goal" ? Paths.goalPath(item.id!) : Paths.projectPath(item.id!),
+  }));
+
+  return { goal, relatedWorkItems };
 }
 
 export function Page() {
-  const { goal } = useLoadedData<LoaderResult>();
+  const { goal, relatedWorkItems } = useLoadedData<LoaderResult>();
 
   const props: GoalPage.Props = {
     goalName: goal.name!,
@@ -51,7 +61,7 @@ export function Page() {
     checkIns: [],
     messages: [],
     contributors: [],
-    relatedWorkItems: [],
+    relatedWorkItems,
 
     deleteLink: "",
     updateTimeframe: function (timeframe: Timeframe): Promise<void> {
