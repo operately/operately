@@ -101,13 +101,7 @@ function extractCompletedItems(data: WorkMap.Item[]): WorkMap.Item[] {
   const extractItems = (items: WorkMap.Item[]): void => {
     items.forEach((item) => {
       if (CLOSED_STATUSES.includes(item.status)) {
-        const enhancedItem = {
-          ...item,
-          children: [],
-          completedOn: item.closedAt,
-        } as WorkMap.Item;
-
-        completedItems.push(enhancedItem);
+        completedItems.push({ ...item, children: [] });
       }
       if (item.children && item.children.length > 0) {
         extractItems(item.children);
@@ -144,12 +138,12 @@ function extractOngoingItems(data: WorkMap.Item[]): WorkMap.Item[] {
 }
 
 /**
- * Helper function to sort items by their closedAt date in descending order
+ * Helper function to sort items by their completedOn date in descending order
  */
 function sortItemsByClosedDate(items: WorkMap.Item[]): WorkMap.Item[] {
   return [...items].sort((a, b) => {
-    const dateA = parse((a as any).closedAt);
-    const dateB = parse((b as any).closedAt);
+    const dateA = parse((a as any).completedOn);
+    const dateB = parse((b as any).completedOn);
 
     if (!dateA && !dateB) return 0;
     if (!dateA) return 1; // If A is null, B comes first
