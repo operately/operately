@@ -20,7 +20,8 @@ gen.migration:
 	./devenv bash -c "cd app && mix ecto.gen.migration $(NAME)"
 
 gen.page:
-	./devenv bash -c "cd app && mix operately.gen.page $(NAME) && $(MAKE) gen"
+	./devenv bash -c "cd app && mix operately.gen.page $(NAME)"
+	$(MAKE) gen
 
 gen.operation:
 	./devenv bash -c "cd app && ERL_FLAGS=+B mix operately.gen.operation"
