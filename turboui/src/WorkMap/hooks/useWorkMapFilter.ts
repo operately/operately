@@ -261,8 +261,7 @@ function useLocalFilter(tabOptions?: WorkMap.TabOptions): [WorkMap.Filter, (newF
   const allowedTabs = getAllowedTabs(tabOptions);
   const defaultTab = getDefaultTab(allowedTabs, tabOptions);
 
-  const [filter, setFilter] = useState<WorkMap.Filter>(defaultTab);
-  return [filter, setFilter];
+  return useState<WorkMap.Filter>(defaultTab);
 }
 
 function getAllowedTabs(tabOptions?: WorkMap.TabOptions): WorkMap.Filter[] {
