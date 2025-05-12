@@ -1,35 +1,36 @@
-import { BlackLink } from "../Link";
-import { AvatarList } from "../Avatar";
-import { IconCircleCheckFilled, IconHexagons, IconTarget } from "@tabler/icons-react";
-import { StatusBadge } from "../StatusBadge";
 import { match } from "ts-pattern";
+import { z } from "zod";
+import { AvatarList } from "../Avatar";
 import { IconGoal, IconProject } from "../icons";
+import { BlackLink } from "../Link";
+import { StatusBadge } from "../StatusBadge";
 
-export namespace MiniWorkMap {
-  interface Person {
-    id: string;
-    fullName: string;
-    avatarUrl: string;
-  }
+const PersonSchema = z.object({
+  id: z.string(),
+  fullName: z.string(),
+  avatarUrl: z.string(),
+});
 
-  export interface WorkItem {
-    id: string;
-    type: "goal" | "project";
-    status: "on_track" | "caution" | "concern" | "issue" | "paused" | "outdated" | "pending";
-    name: string;
-    link: string;
-    progress: number;
-    subitems: WorkItem[];
-    completed: boolean;
-    people: Person[];
-  }
+const WorkItemsSchema = z.object({
+  id: z.string(),
+  type: z.enum(["goal", "project"]),
+  status: z.enum(["on_track", "caution", "concern", "issue", "paused", "outdated", "pending"]),
+  name: z.string(),
+  link: z.string(),
+  progress: z.number(),
+  subitems: z.array(z.lazy(() => WorkItemsSchema)),
+  completed: z.boolean(),
+  people: z.array(PersonSchema),
+});
 
-  export interface Props {
-    items: WorkItem[];
-  }
-}
+const PropsSchema = z.object({
+  items: z.array(WorkItemsSchema),
+});
 
-export function MiniWorkMap(props: MiniWorkMap.Props) {
+type WorkItem = z.infer<typeof WorkItemsSchema>;
+type Props = z.infer<typeof PropsSchema>;
+
+export function MiniWorkMap(props: Props) {
   return (
     <div className="flex flex-col">
       {props.items.map((item) => (
@@ -39,7 +40,7 @@ export function MiniWorkMap(props: MiniWorkMap.Props) {
   );
 }
 
-function ItemView({ item, depth }: { item: MiniWorkMap.WorkItem; depth: number }) {
+function ItemView({ item, depth }: { item: WorkItem; depth: number }) {
   return (
     <>
       <div
@@ -58,7 +59,7 @@ function ItemView({ item, depth }: { item: MiniWorkMap.WorkItem; depth: number }
   );
 }
 
-function Subitems({ items, depth }: { items: MiniWorkMap.WorkItem[]; depth: number }) {
+function Subitems({ items, depth }: { items: WorkItem[]; depth: number }) {
   return (
     <>
       {items.map((subitem) => (
@@ -68,7 +69,7 @@ function Subitems({ items, depth }: { items: MiniWorkMap.WorkItem[]; depth: numb
   );
 }
 
-function ItemIcon({ item }: { item: MiniWorkMap.WorkItem }) {
+function ItemIcon({ item }: { item: WorkItem }) {
   return match(item.type)
     .with("goal", () => <IconGoal size={20} />)
     .with("project", () => <IconProject size={20} />)
@@ -77,7 +78,7 @@ function ItemIcon({ item }: { item: MiniWorkMap.WorkItem }) {
     });
 }
 
-function ItemPeople({ item }: { item: MiniWorkMap.WorkItem }) {
+function ItemPeople({ item }: { item: WorkItem }) {
   return (
     <div className="shrink-0">
       <AvatarList people={item.people} size={18} stacked />
@@ -85,7 +86,7 @@ function ItemPeople({ item }: { item: MiniWorkMap.WorkItem }) {
   );
 }
 
-function ItemName({ item }: { item: MiniWorkMap.WorkItem }) {
+function ItemName({ item }: { item: WorkItem }) {
   const nameElement = (
     <BlackLink underline="hover" to={item.link} className="truncate" disableColorHoverEffect>
       {item.name}
@@ -95,36 +96,4 @@ function ItemName({ item }: { item: MiniWorkMap.WorkItem }) {
   if (!item.completed) return nameElement;
 
   return <s>{nameElement}</s>;
-}
-
-const PROGRESS_COLORS: Record<string, string> = {
-  on_track: "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300",
-  caution: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300",
-  concern: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300",
-  issue: "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300",
-  paused: "bg-gray-100 text-gray-700 dark:bg-gray-900 dark:text-gray-300",
-  outdated: "bg-gray-100 text-gray-700 dark:bg-gray-900 dark:text-gray-300",
-  pending: "bg-gray-100 text-gray-700 dark:bg-gray-900 dark:text-gray-300",
-};
-
-function Progress({ item }: { item: MiniWorkMap.WorkItem }) {
-  if (isNaN(item.progress)) {
-    throw new Error(`Progress is NaN for item: ${item.name}`);
-  }
-
-  const color = PROGRESS_COLORS[item.status];
-
-  if (!color) {
-    throw new Error(`Unknown status color for item: ${item.name}`);
-  }
-
-  const outerClass = `w-11 flex justify-center rounded-lg px-2 py-0.5 shrink-0 ${color}`;
-  const innerClass = `text-sm font-medium font-mono`;
-  const progress = Math.floor(item.progress);
-
-  return (
-    <div className={outerClass}>
-      <div className={innerClass}>{progress}%</div>
-    </div>
-  );
 }
