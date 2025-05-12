@@ -80,6 +80,8 @@ export namespace GoalPage {
     neglectedGoal?: boolean;
 
     updateTimeframe: (timeframe: Timeframe) => Promise<void>;
+
+    activityFeed: React.ReactNode;
   }
 
   export interface CheckIn {
@@ -131,7 +133,7 @@ export function GoalPage(props: GoalPage.Props) {
         </div>
       </div>
 
-      <ActivityFooter />
+      <ActivityFooter {...props} />
     </Page>
   );
 }
@@ -150,10 +152,11 @@ function MainContent(props: GoalPage.Props) {
   );
 }
 
-function ActivityFooter() {
+function ActivityFooter({ activityFeed }: { activityFeed: React.ReactNode }) {
   return (
-    <PageFooter className="p-8">
-      <h3 className="text-xs uppercase font-medium tracking-wider">Activity</h3>
+    <PageFooter className="p-4 sm:px-24 sm:p-8">
+      <h3 className="text-xs uppercase font-medium tracking-wider mb-2">Activity</h3>
+      {activityFeed}
     </PageFooter>
   );
 }

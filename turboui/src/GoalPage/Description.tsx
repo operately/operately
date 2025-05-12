@@ -1,7 +1,7 @@
 import * as React from "react";
+import { GoalPage } from ".";
 import { SecondaryButton } from "../Button";
 import { truncate } from "../utils/strings";
-import { GoalPage } from ".";
 import { SectionHeader } from "./SectionHeader";
 
 export function Description(props: GoalPage.Props) {
@@ -10,7 +10,7 @@ export function Description(props: GoalPage.Props) {
   return (
     <div>
       <SectionHeader
-        title="Description"
+        title="Goal Description"
         buttons={<SecondaryButton size="xxs">{props.description ? "Edit" : "Write"}</SecondaryButton>}
         showButtons={props.canEdit}
       />
