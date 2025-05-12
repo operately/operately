@@ -8,9 +8,10 @@ export interface Props {
   onTabChange: (filter: WorkMap.Filter) => void;
   timeframe: TimeframeSelector.Timeframe;
   setTimeframe: TimeframeSelector.SetTimeframe;
+  tabOptions?: WorkMap.TabOptions;
 }
 
-export function WorkMapNavigation({ activeTab, onTabChange, timeframe, setTimeframe }: Props) {
+export function WorkMapNavigation({ activeTab, onTabChange, timeframe, setTimeframe, tabOptions = {} }: Props) {
   return (
     <div className="overflow-x-auto">
       <div className="border-b border-surface-outline">
@@ -23,6 +24,7 @@ export function WorkMapNavigation({ activeTab, onTabChange, timeframe, setTimefr
                 onClick={() => onTabChange("all")}
                 icon={<IconLayoutGrid size={16} />}
                 testId="work-map-tab-all"
+                hide={tabOptions.hideAll}
               />
               <WorkMapTab
                 label="Goals"
@@ -30,6 +32,7 @@ export function WorkMapNavigation({ activeTab, onTabChange, timeframe, setTimefr
                 onClick={() => onTabChange("goals")}
                 icon={<IconTarget size={16} />}
                 testId="work-map-tab-goals"
+                hide={tabOptions.hideGoals}
               />
               <WorkMapTab
                 label="Projects"
@@ -37,6 +40,7 @@ export function WorkMapNavigation({ activeTab, onTabChange, timeframe, setTimefr
                 onClick={() => onTabChange("projects")}
                 icon={<IconChecklist size={16} />}
                 testId="work-map-tab-projects"
+                hide={tabOptions.hideProjects}
               />
               <WorkMapTab
                 label="Completed"
@@ -44,6 +48,7 @@ export function WorkMapNavigation({ activeTab, onTabChange, timeframe, setTimefr
                 onClick={() => onTabChange("completed")}
                 icon={<IconCircleCheck size={16} />}
                 testId="work-map-tab-completed"
+                hide={tabOptions.hideCompleted}
               />
             </div>
 
