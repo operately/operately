@@ -1491,7 +1491,6 @@ export interface WorkMapItem {
   name?: string | null;
   status?: string | null;
   progress?: number | null;
-  closedAt?: string | null;
   space?: Space | null;
   spacePath?: string | null;
   owner?: Person | null;

@@ -4,7 +4,7 @@ import { useItemStatus } from "../../hooks/useItemStatus";
 
 interface ProgressCellProps {
   progress: WorkMap.Item["progress"];
-  status: WorkMap.Status;
+  status: WorkMap.Item["status"];
   hide?: boolean;
 }
 

@@ -3,7 +3,7 @@ import { WorkMap } from "..";
 /**
  * Custom hook to calculate status flags for WorkMap items
  */
-export function useItemStatus(status: WorkMap.Status) {
+export function useItemStatus(status: WorkMap.Item["status"]) {
   const isCompleted =
     status === "completed" ||
     status === "achieved" ||

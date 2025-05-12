@@ -4,7 +4,7 @@ import classNames from "../../../utils/classnames";
 
 interface Props {
   nextStep: WorkMap.Item["nextStep"];
-  status: WorkMap.Status;
+  status: WorkMap.Item["status"];
   hide?: boolean;
 }
 
