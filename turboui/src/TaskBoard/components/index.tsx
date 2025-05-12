@@ -6,7 +6,6 @@ import { AvatarWithName } from "../../Avatar/AvatarWithName";
 import {
   IconFileText,
   IconMessageCircle,
-  IconClock,
   IconCheck,
   IconCircleDashed,
   IconCircleDot,
@@ -423,10 +422,7 @@ export function TaskBoard({
                   {/* Tasks in this milestone */}
                   <ul>
                     {groupedTasks[milestoneData.milestone.id].map((task) => (
-                      <li
-                        key={task.id}
-                        className="group flex border-b border-stroke-base bg-surface-base hover:bg-surface-highlight px-4 py-2.5"
-                      >
+                      <li key={task.id} className="group flex bg-surface-base hover:bg-surface-highlight px-4 py-2.5">
                         <div className="flex-1 flex items-center gap-2">
                           {/* Status icon */}
                           <div className="flex-shrink-0 flex items-center">
