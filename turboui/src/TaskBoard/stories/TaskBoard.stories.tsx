@@ -1,12 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import React, { useState } from "react";
 import { TaskBoard } from "../components";
-import { Page } from "../../Page";
+import TaskCreationModal from "../components/TaskCreationModal";
 import { mockTasks, mockEmptyTasks } from "../tests/mockData";
+import { Page } from "../../Page";
 
 /**
  * TaskBoard is a comprehensive task management component designed for teams.
  */
-const meta = {
+const meta: Meta<typeof TaskBoard> = {
   title: "Components/TaskBoard",
   component: TaskBoard,
   parameters: {
@@ -30,62 +32,70 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+// Mock people data for the assignee selection
+const mockPeople = [
+  { id: "user-1", fullName: "Alice Johnson", avatarUrl: "https://i.pravatar.cc/150?u=alice" },
+  { id: "user-2", fullName: "Bob Smith", avatarUrl: "https://i.pravatar.cc/150?u=bob" },
+  { id: "user-3", fullName: "Carol Williams", avatarUrl: "https://i.pravatar.cc/150?u=carol" },
+];
+
+// Extract milestones from mock tasks
+const extractMilestones = (tasks) => {
+  const milestoneMap = new Map();
+
+  tasks.forEach((task) => {
+    if (task.milestone && !milestoneMap.has(task.milestone.id)) {
+      milestoneMap.set(task.milestone.id, task.milestone);
+    }
+  });
+
+  return Array.from(milestoneMap.values());
+};
+
 /**
- * Default table view of the TaskBoard with multiple tasks in different statuses
+ * Default table view of the TaskBoard with working task creation
  */
 export const Default: Story = {
   tags: ["autodocs"],
-  args: {
-    title: "Task Board",
-    tasks: mockTasks,
-    viewMode: "table"
-  },
-};
+  render: () => {
+    // Create state for tasks and task creation
+    const [tasks, setTasks] = useState([...mockTasks]);
 
-/**
- * TaskBoard with interactive status selection
- */
-export const InteractiveStatus: Story = {
-  args: {
-    title: "Interactive Task Board",
-    tasks: mockTasks,
-    viewMode: "table",
-    onStatusChange: (taskId, newStatus) => {
+    const handleStatusChange = (taskId, newStatus) => {
       console.log(`Task ${taskId} status changed to ${newStatus}`);
-      // In a real application, this would update the task status in the database
-    }
-  },
-};
 
-/**
- * Empty TaskBoard with no tasks
- */
-export const EmptyState: Story = {
-  args: {
-    title: "Project Tasks",
-    tasks: mockEmptyTasks,
-    viewMode: "table"
-  },
-};
+      // Update the task status locally
+      const updatedTasks = tasks.map((task) => (task.id === taskId ? { ...task, status: newStatus } : task));
+      setTasks(updatedTasks);
+    };
 
-/**
- * Kanban view of the TaskBoard
- */
-export const KanbanView: Story = {
-  args: {
-    title: "Project Tasks",
-    tasks: mockTasks,
-    viewMode: "kanban"
-  },
-};
+    const handleTaskCreate = (newTaskData) => {
+      // Generate a fake UUID for the new task
+      const taskId = `task-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
-/**
- * Timeline view of the TaskBoard
- */
-export const TimelineView: Story = {
-  args: {
-    title: "Project Tasks",
-    tasks: mockTasks,
-    viewMode: "timeline"
+      // Create the new task object
+      const newTask = {
+        id: taskId,
+        ...newTaskData,
+      };
+
+      console.log("=== Created new task ===\n", JSON.stringify(newTask, null, 2));
+      console.log("Current tasks count:", tasks.length);
+
+      // Add the new task to the list
+      const updatedTasks = [...tasks, newTask];
+      setTasks(updatedTasks);
+      console.log("New tasks count:", updatedTasks.length);
+    };
+
+    return (
+      <TaskBoard
+        title="Task Board Demo"
+        tasks={tasks}
+        viewMode="table"
+        onStatusChange={handleStatusChange}
+        onTaskCreate={handleTaskCreate}
+      />
+    );
   },
 };
