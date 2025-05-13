@@ -20,7 +20,6 @@ import {
 import { Menu, MenuActionItem } from "../../Menu";
 import { PieChart } from "../../PieChart";
 import TaskCreationModal from "./TaskCreationModal";
-import MilestoneCreationModal from "./MilestoneCreationModal";
 
 export namespace TaskBoard {
   export type Status = "pending" | "in_progress" | "done" | "canceled";
@@ -58,8 +57,6 @@ export namespace TaskBoard {
     hasComments?: boolean;
     commentCount?: number;
     comments?: any[];
-    // Special flag to hide helper tasks used for empty milestones
-    _isHelperTask?: boolean;
   }
 
   export interface TaskWithIndex extends Task {
@@ -79,7 +76,6 @@ export namespace TaskBoard {
     viewMode?: ViewMode;
     onStatusChange?: (taskId: string, newStatus: Status) => void;
     onTaskCreate?: (task: Omit<Task, "id">) => void;
-    onMilestoneCreate?: (milestone: Omit<Milestone, "id">) => void;
   }
 }
 
@@ -274,21 +270,6 @@ function TaskList({ tasks, milestoneId }: { tasks: TaskBoard.Task[]; milestoneId
   );
 }
 
-// Empty milestone drop zone component that allows dropping tasks into empty milestones
-function EmptyMilestoneDropZone({ milestoneId }: { milestoneId: string }) {
-  // Set up drop zone with the same ID pattern as TaskList
-  const { ref } = useDropZone({ id: `milestone-${milestoneId}`, dependencies: [] });
-  
-  return (
-    <div 
-      ref={ref as React.RefObject<HTMLDivElement>}
-      className="py-3 px-4 text-center text-content-subtle text-sm min-h-[40px]"
-    >
-      No tasks in this milestone. Click + to add a task or drag a task here.
-    </div>
-  );
-}
-
 // Individual task item component that can be dragged
 function TaskItem({
   task,
@@ -381,27 +362,24 @@ export function TaskBoard({
   viewMode = "table",
   onStatusChange,
   onTaskCreate,
-  onMilestoneCreate,
 }: {
   tasks: TaskBoard.Task[];
   title?: string;
   viewMode?: TaskBoard.ViewMode;
   onStatusChange?: (taskId: string, newStatus: TaskBoard.Status) => void;
   onTaskCreate?: (task: Omit<TaskBoard.Task, "id">) => void;
-  onMilestoneCreate?: (milestone: Omit<TaskBoard.Milestone, "id">) => void;
 }) {
   const [currentViewMode, setCurrentViewMode] = useState<TaskBoard.ViewMode>(viewMode);
   const [internalTasks, setInternalTasks] = useState<TaskBoard.Task[]>(externalTasks);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
-  const [isMilestoneModalOpen, setIsMilestoneModalOpen] = useState(false);
   const [activeTaskMilestoneId, setActiveTaskMilestoneId] = useState<string | undefined>();
-
+  
   // Keep internal tasks in sync with external tasks
   useEffect(() => {
     setInternalTasks(externalTasks);
   }, [externalTasks]);
 
-  // Group tasks by milestone, filtering out helper tasks
+  // Group tasks by milestone
   const groupTasksByMilestone = (tasks: TaskBoard.Task[]) => {
     const grouped: Record<string, TaskBoard.Task[]> = {};
 
@@ -418,13 +396,8 @@ export function TaskBoard({
       }
     });
 
-    // Then add tasks to appropriate groups, filtering out helper tasks
+    // Then add tasks to appropriate groups
     tasks.forEach((task) => {
-      // Skip helper tasks used for empty milestones
-      if (task._isHelperTask) {
-        return;
-      }
-
       if (task.milestone) {
         const milestoneId = task.milestone.id;
         grouped[milestoneId].push(task);
@@ -443,11 +416,9 @@ export function TaskBoard({
       {
         milestone: TaskBoard.Milestone;
         stats: { pending: number; inProgress: number; done: number; canceled: number; total: number };
-        hasTasks: boolean;
       }
     >();
 
-    // Build the map of all milestones from tasks
     internalTasks.forEach((task) => {
       if (task.milestone) {
         const milestoneId = task.milestone.id;
@@ -456,40 +427,31 @@ export function TaskBoard({
           milestoneMap.set(milestoneId, {
             milestone: task.milestone,
             stats: { pending: 0, inProgress: 0, done: 0, canceled: 0, total: 0 },
-            hasTasks: false, // Initialize as false, we'll set to true only if non-helper tasks exist
           });
         }
 
-        // Don't count helper tasks toward milestone statistics
-        if (!task._isHelperTask) {
-          // Only set hasTasks to true if there's at least one real (non-helper) task
-          milestoneMap.get(milestoneId)!.hasTasks = true;
+        // Update statistics
+        const stats = milestoneMap.get(milestoneId)!.stats;
+        stats.total++;
 
-          // Update statistics
-          const stats = milestoneMap.get(milestoneId)!.stats;
-          stats.total++;
-
-          switch (task.status) {
-            case "pending":
-              stats.pending++;
-              break;
-            case "in_progress":
-              stats.inProgress++;
-              break;
-            case "done":
-              stats.done++;
-              break;
-            case "canceled":
-              stats.canceled++;
-              break;
-          }
+        switch (task.status) {
+          case "pending":
+            stats.pending++;
+            break;
+          case "in_progress":
+            stats.inProgress++;
+            break;
+          case "done":
+            stats.done++;
+            break;
+          case "canceled":
+            stats.canceled++;
+            break;
         }
       }
     });
 
-    // Return milestones sorted by ID to maintain consistent ordering
-    return Array.from(milestoneMap.values())
-      .sort((a, b) => a.milestone.id.localeCompare(b.milestone.id));
+    return Array.from(milestoneMap.values());
   };
 
   // Handle status change
@@ -517,7 +479,7 @@ export function TaskBoard({
       document.removeEventListener("statusChange", handleStatusChangeEvent);
     };
   }, [handleStatusChange]);
-
+  
   // Handle creating a new task
   const handleCreateTask = (newTaskData: Omit<TaskBoard.Task, "id">) => {
     if (onTaskCreate) {
@@ -526,17 +488,6 @@ export function TaskBoard({
       onTaskCreate(newTaskData);
     } else {
       console.warn("TaskBoard: onTaskCreate handler is not provided");
-    }
-  };
-
-  // Handle creating a new milestone
-  const handleCreateMilestone = (newMilestoneData: Omit<TaskBoard.Milestone, "id">) => {
-    if (onMilestoneCreate) {
-      // Log to confirm milestone creation event is being triggered
-      console.log("TaskBoard: Creating new milestone", newMilestoneData);
-      onMilestoneCreate(newMilestoneData);
-    } else {
-      console.warn("TaskBoard: onMilestoneCreate handler is not provided");
     }
   };
 
@@ -553,9 +504,6 @@ export function TaskBoard({
       // Find the task being dragged
       const draggedTask = internalTasks.find((task) => task.id === draggedId);
       if (!draggedTask) return;
-
-      // Remember the original milestone ID before drag (for later checking if it's now empty)
-      const originalMilestoneId = draggedTask.milestone?.id;
 
       // Create a new array of tasks with the dragged task moved to the new position
       const updatedTasks = [...internalTasks];
@@ -623,37 +571,6 @@ export function TaskBoard({
         updatedTasks.splice(globalIndex, 0, draggedTask);
       }
 
-      // Check if the original milestone is now empty and needs a helper task
-      if (originalMilestoneId && originalMilestoneId !== targetMilestoneId) {
-        // Check if there are any non-helper tasks remaining in the milestone
-        const hasRealTasks = updatedTasks.some(
-          (task) => !task._isHelperTask && task.milestone?.id === originalMilestoneId,
-        );
-
-        // If no real tasks remain and this milestone doesn't already have a helper task
-        if (
-          !hasRealTasks &&
-          !updatedTasks.some((task) => task._isHelperTask && task.milestone?.id === originalMilestoneId)
-        ) {
-          // Find the original milestone object
-          const originalMilestone = milestones.find((m) => m.milestone.id === originalMilestoneId)?.milestone;
-
-          if (originalMilestone) {
-            // Create a helper task to keep the empty milestone visible
-            const helperTask: TaskBoard.Task = {
-              id: `task-helper-${originalMilestoneId}-${Date.now()}`,
-              title: `Helper task for ${originalMilestone.name}`,
-              status: "pending",
-              milestone: originalMilestone,
-              _isHelperTask: true,
-            };
-
-            // Add the helper task to the updated tasks
-            updatedTasks.push(helperTask);
-          }
-        }
-      }
-
       // Update state with the reordered tasks
       setInternalTasks(updatedTasks);
 
@@ -665,44 +582,26 @@ export function TaskBoard({
   return (
     <div className="flex flex-col w-full h-full bg-surface-base rounded-lg">
       {/* Task Creation Modal */}
-      <TaskCreationModal
-        isOpen={isTaskModalOpen}
+      <TaskCreationModal 
+        isOpen={isTaskModalOpen} 
         onClose={() => setIsTaskModalOpen(false)}
         onCreateTask={handleCreateTask}
-        milestones={milestones.map((m) => m.milestone)}
+        milestones={milestones.map(m => m.milestone)}
         currentMilestoneId={activeTaskMilestoneId}
         people={internalTasks
-          .flatMap((task) => task.assignees || [])
-          .filter((person, index, self) => index === self.findIndex((p) => p.id === person.id))}
+          .flatMap(task => task.assignees || [])
+          .filter((person, index, self) => 
+            index === self.findIndex(p => p.id === person.id)
+          )}
       />
-
-      {/* Milestone Creation Modal */}
-      <MilestoneCreationModal
-        isOpen={isMilestoneModalOpen}
-        onClose={() => setIsMilestoneModalOpen(false)}
-        onCreateMilestone={handleCreateMilestone}
-      />
-
+      
       <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-4 sm:px-6 py-2 border-b border-surface-outline">
         <div className="flex flex-row items-center gap-4">
           <h1 className="text-sm sm:text-base font-bold text-content-accent">{title}</h1>
-          <SecondaryButton
-            size="xxs"
-            onClick={() => {
-              setActiveTaskMilestoneId(undefined);
-              setIsTaskModalOpen(true);
-            }}
-          >
-            + Add Task
-          </SecondaryButton>
-          <SecondaryButton
-            size="xxs"
-            onClick={() => {
-              setIsMilestoneModalOpen(true);
-            }}
-          >
-            + Add Milestone
-          </SecondaryButton>
+          <SecondaryButton size="xs" onClick={() => {
+            setActiveTaskMilestoneId(undefined);
+            setIsTaskModalOpen(true);
+          }}>+ Add Task</SecondaryButton>
         </div>
         <div className="flex mt-2 sm:mt-0">
           <div className="flex space-x-2">
@@ -753,15 +652,12 @@ export function TaskBoard({
                     {/* Milestone header */}
                     <div className="flex items-center justify-between px-4 py-3 bg-surface-dimmed border-b border-surface-outline first:border-t-0">
                       <div className="flex items-center gap-2">
-                        {/* Progress pie chart - handle empty milestone case */}
+                        {/* Progress pie chart */}
                         <PieChart
                           size={16}
                           slices={[
                             {
-                              percentage:
-                                milestoneData.stats.total > 0
-                                  ? (milestoneData.stats.done / milestoneData.stats.total) * 100
-                                  : 0,
+                              percentage: (milestoneData.stats.done / milestoneData.stats.total) * 100,
                               color: "var(--color-callout-success-icon)",
                             },
                           ]}
@@ -806,7 +702,7 @@ export function TaskBoard({
                           )}
                         </div>
                       </div>
-                      <button
+                      <button 
                         className="text-content-dimmed hover:text-content-base"
                         onClick={() => {
                           setActiveTaskMilestoneId(milestoneData.milestone.id);
@@ -817,15 +713,11 @@ export function TaskBoard({
                       </button>
                     </div>
 
-                    {/* Tasks in this milestone - show empty state when no tasks */}
-                    {groupedTasks[milestoneData.milestone.id] && groupedTasks[milestoneData.milestone.id].length > 0 ? (
-                      <TaskList
-                        tasks={groupedTasks[milestoneData.milestone.id]}
-                        milestoneId={milestoneData.milestone.id}
-                      />
-                    ) : (
-                      <EmptyMilestoneDropZone milestoneId={milestoneData.milestone.id} />
-                    )}
+                    {/* Tasks in this milestone */}
+                    <TaskList
+                      tasks={groupedTasks[milestoneData.milestone.id]}
+                      milestoneId={milestoneData.milestone.id}
+                    />
                   </li>
                 ))}
 
@@ -839,7 +731,7 @@ export function TaskBoard({
                         <span className="text-sm font-semibold text-content-base">No milestone</span>
                         {/* No indicators for 'No milestone' header */}
                       </div>
-                      <button
+                      <button 
                         className="text-content-subtle hover:text-content-base"
                         onClick={() => {
                           setActiveTaskMilestoneId("no-milestone");

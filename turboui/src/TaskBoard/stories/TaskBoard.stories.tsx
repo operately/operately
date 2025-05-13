@@ -1,9 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { TaskBoard } from "../components";
 import TaskCreationModal from "../components/TaskCreationModal";
-import MilestoneCreationModal from "../components/MilestoneCreationModal";
-import { mockTasks, mockEmptyTasks, mockMilestones } from "../tests/mockData";
+import { mockTasks, mockEmptyTasks } from "../tests/mockData";
 import { Page } from "../../Page";
 
 /**
@@ -53,47 +52,14 @@ const extractMilestones = (tasks) => {
   return Array.from(milestoneMap.values());
 };
 
-// Create a minimal milestone for testing different UI states
-const standaloneTestMilestone: TaskBoard.Milestone = {
-  id: "milestone-minimal",
-  name: "Minimal Milestone",
-  dueDate: undefined, // Using undefined instead of null to match the type definition
-  hasDescription: false,
-  hasComments: false,
-};
-
 /**
- * Default table view of the TaskBoard with working task creation and milestone creation
+ * Default table view of the TaskBoard with working task creation
  */
 export const Default: Story = {
   tags: ["autodocs"],
   render: () => {
     // Create state for tasks and task creation
     const [tasks, setTasks] = useState([...mockTasks]);
-
-    // Add the standalone milestone task and empty milestone to our tasks
-    useEffect(() => {
-      // Add a task with the standalone milestone
-      const taskWithStandaloneMilestone = {
-        id: "task-minimal-milestone",
-        title: "This task demonstrates a minimal milestone",
-        status: "pending" as TaskBoard.Status,
-        milestone: standaloneTestMilestone,
-      };
-
-      // Create a helper task with the Empty Milestone from mockMilestones
-      // This will make the empty milestone appear in the component
-      const emptyMilestoneHelperTask = {
-        id: "task-empty-milestone-helper",
-        title: "Hidden helper task for Empty Milestone",
-        status: "pending" as TaskBoard.Status,
-        milestone: mockMilestones.emptyMilestone,
-        _isHelperTask: true, // This flag tells the TaskBoard to hide this task
-      };
-
-      // Update tasks array with both our new tasks
-      setTasks((prev) => [...prev, taskWithStandaloneMilestone, emptyMilestoneHelperTask]);
-    }, []);
 
     const handleStatusChange = (taskId, newStatus) => {
       console.log(`Task ${taskId} status changed to ${newStatus}`);
@@ -122,46 +88,13 @@ export const Default: Story = {
       console.log("New tasks count:", updatedTasks.length);
     };
 
-    const handleMilestoneCreate = (newMilestoneData) => {
-      // Generate a fake UUID for the new milestone
-      const milestoneId = `milestone-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-
-      // Create the new milestone object
-      const newMilestone = {
-        id: milestoneId,
-        ...newMilestoneData,
-      };
-
-      console.log("=== Created new milestone ===\n", JSON.stringify(newMilestone, null, 2));
-
-      // For our Storybook demonstration, we need a way to make the new
-      // milestone appear in the TaskBoard without automatically creating a task for it.
-      // To do this, we'll create a special task that will make the milestone visible in the UI
-      // but will be filtered out from display using the _isHelperTask flag
-
-      // In a real application, this could be done by adding empty milestones to a separate
-      // milestones array, but for now we'll use a hidden helper task to make it appear
-      const helperTask = {
-        id: `task-helper-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
-        title: `Hidden helper task for ${newMilestone.name}`,
-        status: "pending" as TaskBoard.Status,
-        milestone: newMilestone,
-        _isHelperTask: true, // This flag tells the TaskBoard to not display this task
-      };
-
-      // Add the helper task to the tasks array so the milestone appears
-      const updatedTasks = [...tasks, helperTask];
-      setTasks(updatedTasks);
-    };
-
     return (
       <TaskBoard
-        title="Tasks"
+        title="Task Board Demo"
         tasks={tasks}
         viewMode="table"
         onStatusChange={handleStatusChange}
         onTaskCreate={handleTaskCreate}
-        onMilestoneCreate={handleMilestoneCreate}
       />
     );
   },
