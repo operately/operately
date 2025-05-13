@@ -28,13 +28,16 @@ defmodule TurboConnect.TsGen do
   end
 
   def generate_types(api_module) do
-    Enum.join([
-      convert_primitives(api_module.__types__().primitives),
-      convert_objects(api_module.__types__().objects),
-      convert_unions(api_module.__types__().unions),
-      Queries.generate_types(api_module.__queries__()),
-      Mutations.generate_types(api_module.__mutations__())
-    ], "\n")
+    Enum.join(
+      [
+        convert_primitives(api_module.__types__().primitives),
+        convert_objects(api_module.__types__().objects),
+        convert_unions(api_module.__types__().unions),
+        Queries.generate_types(api_module.__queries__()),
+        Mutations.generate_types(api_module.__mutations__())
+      ],
+      "\n"
+    )
   end
 
   def generate_api_client_class(api_module) do
@@ -64,7 +67,7 @@ defmodule TurboConnect.TsGen do
       private async post(path: string, data: any) {
         const response = await axios.post(this.getBasePath() + path, toSnake(data), { headers: this.getHeaders() });
         return toCamel(response.data);
-      } 
+      }
 
       // @ts-ignore
       private async get(path: string, params: any) {
@@ -93,7 +96,7 @@ defmodule TurboConnect.TsGen do
   def convert_primitives(primitives) do
     primitives
     |> Enum.sort_by(&elem(&1, 0))
-    |> Enum.map_join("\n", fn {name, opts} -> 
+    |> Enum.map_join("\n", fn {name, opts} ->
       encoded_type = Keyword.get(opts, :encoded_type)
       ts_type_alias(name, encoded_type)
     end)
@@ -176,5 +179,4 @@ defmodule TurboConnect.TsGen do
     };
     """
   end
-
 end
