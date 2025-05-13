@@ -18,5 +18,15 @@
     "type": "test",
     "alternate": "app/lib/{}.ex",
     "template": ["# app/test/{}_test.exs", "defmodule XXX do", "end"]
+  },
+  "app/ee/lib/*.ex": {
+    "type": "src",
+    "alternate": "app/ee/test/lib/{}_test.exs",
+    "template": ["# app/ee/lib/{}.ex", "defmodule OperatelyEE.XXX do", "end"]
+  },
+  "app/ee/test/lib/*_test.exs": {
+    "type": "test",
+    "alternate": "app/ee/lib/{}.ex",
+    "template": ["# app/ee/test/lib/{}_test.exs", "defmodule OperatelyEE.XXXTest do", "  use Operately.DataCase", "", "  # tests go here", "end"]
   }
 }
