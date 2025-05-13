@@ -3,12 +3,12 @@ defmodule TurboConnect.TsGenTest do
 
   defmodule ExampleTypes do
     use TurboConnect.Types
-    
-    primitive :id, encoded_type: :integer, decode_with: &String.to_integer/1
+
+    primitive(:id, encoded_type: :integer, decode_with: &String.to_integer/1)
 
     object :user do
-      field :full_name, :string
-      field :address, :address
+      field :full_name, :string, optional: false, nullable: false
+      field :address, :address, optional: false
       field :posts, list_of(:post)
     end
 
@@ -27,12 +27,12 @@ defmodule TurboConnect.TsGenTest do
       field :content, :event_content
     end
 
-    union :event_content, types: [:user_added_event, :user_removed_event]
+    union(:event_content, types: [:user_added_event, :user_removed_event])
 
     object :user_added_event do
       field :user_id, :integer
     end
-  
+
     object :user_removed_event do
       field :user_id, :integer
     end
@@ -92,10 +92,10 @@ defmodule TurboConnect.TsGenTest do
   defmodule ExampleApi do
     use TurboConnect.Api
 
-    use_types ExampleTypes
+    use_types(ExampleTypes)
 
-    query :get_user, GetUserQuery
-    mutation :create_user, CreateUserMutation
+    query(:get_user, GetUserQuery)
+    mutation(:create_user, CreateUserMutation)
   end
 
   @ts_imports """
@@ -122,8 +122,8 @@ defmodule TurboConnect.TsGenTest do
   }
 
   export interface User {
-    fullName?: string | null;
-    address?: Address | null;
+    fullName: string;
+    address: Address | null;
     posts?: Post[] | null;
   }
 
@@ -181,7 +181,7 @@ defmodule TurboConnect.TsGenTest do
     private async post(path: string, data: any) {
       const response = await axios.post(this.getBasePath() + path, toSnake(data), { headers: this.getHeaders() });
       return toCamel(response.data);
-    } 
+    }
 
     // @ts-ignore
     private async get(path: string, params: any) {
@@ -229,21 +229,45 @@ defmodule TurboConnect.TsGenTest do
   """
 
   test "generating TypeScript code" do
-    assert TurboConnect.TsGen.generate_imports() === @ts_imports
-    assert TurboConnect.TsGen.generate_types(ExampleApi) === @ts_types
-    assert TurboConnect.TsGen.generate_api_client_class(ExampleApi) === @ts_api_client
-    assert TurboConnect.TsGen.generate_default_exports(ExampleApi) === @ts_default
+    assert_same(TurboConnect.TsGen.generate_imports(), @ts_imports)
+    assert_same(TurboConnect.TsGen.generate_types(ExampleApi), @ts_types)
+    assert_same(TurboConnect.TsGen.generate_api_client_class(ExampleApi), @ts_api_client)
+    assert_same(TurboConnect.TsGen.generate_default_exports(ExampleApi), @ts_default)
 
-    assert TurboConnect.TsGen.generate(ExampleApi) === """
-    #{@ts_imports}
-    #{TurboConnect.TsGen.to_camel_case()}
-    #{TurboConnect.TsGen.to_snake_case()}
-    #{TurboConnect.TsGen.Queries.define_generic_use_query_hook()}
-    #{TurboConnect.TsGen.Mutations.define_generic_use_mutation_hook()}
-    #{@ts_types}
-    #{@ts_api_client}
-    #{@ts_default}
-    """
+    assert_same(
+      TurboConnect.TsGen.generate(ExampleApi),
+      """
+      #{@ts_imports}
+      #{TurboConnect.TsGen.to_camel_case()}
+      #{TurboConnect.TsGen.to_snake_case()}
+      #{TurboConnect.TsGen.Queries.define_generic_use_query_hook()}
+      #{TurboConnect.TsGen.Mutations.define_generic_use_mutation_hook()}
+      #{@ts_types}
+      #{@ts_api_client}
+      #{@ts_default}
+      """
+    )
   end
 
+  defp assert_same(result, expected) do
+    if result == expected do
+      :ok
+    else
+      result_lines = String.split(result, "\n")
+      expected_lines = String.split(expected, "\n")
+
+      result_lines
+      |> Enum.with_index()
+      |> Enum.each(fn {line, index} ->
+        if line != Enum.at(expected_lines, index) do
+          IO.puts("Found a difference")
+          IO.puts("Line #{index + 1}:")
+          IO.puts("Expected: #{inspect(Enum.at(expected_lines, index))}")
+          IO.puts("Got:      #{inspect(line)}")
+        end
+      end)
+
+      flunk("Expected to be the same, but got different values")
+    end
+  end
 end
