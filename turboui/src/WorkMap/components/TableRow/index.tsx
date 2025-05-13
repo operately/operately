@@ -17,26 +17,26 @@ interface Props {
   item: WorkMap.Item;
   level: number;
   isLast: boolean;
-  filter: WorkMap.Filter;
+  tab: WorkMap.Filter;
   columnOptions?: WorkMap.ColumnOptions;
 }
 
 export function TableRow(props: Props) {
-  const { item, filter, level, columnOptions } = props;
+  const { item, tab, level, columnOptions } = props;
   const [expanded, setExpanded] = useState<boolean>(true);
 
   return (
     <>
       <RowContainer item={item}>
-        <ItemNameCell item={item} filter={filter} level={level} expanded={expanded} setExpanded={setExpanded} />
+        <ItemNameCell item={item} tab={tab} level={level} expanded={expanded} setExpanded={setExpanded} />
         <StatusCell status={item.status} hide={columnOptions?.hideStatus} />
         <ProgressCell
           progress={item.progress}
           status={item.status}
-          hide={filter === "completed" || columnOptions?.hideProgress}
+          hide={tab === "completed" || columnOptions?.hideProgress}
         />
         <DeadlineCell
-          filter={filter}
+          tab={tab}
           completedOn={item.completedOn}
           timeframe={item.timeframe}
           status={item.status}
@@ -47,7 +47,7 @@ export function TableRow(props: Props) {
         <NextStepCell
           nextStep={item.nextStep}
           status={item.status}
-          hide={filter === "completed" || columnOptions?.hideNextStep}
+          hide={tab === "completed" || columnOptions?.hideNextStep}
         />
       </RowContainer>
 
