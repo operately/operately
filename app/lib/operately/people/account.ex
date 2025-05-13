@@ -115,6 +115,10 @@ defmodule Operately.People.Account do
     |> Operately.Repo.update()
   end
 
+  def is_site_admin?(account) do
+    account.site_admin
+  end
+
   @doc """
   Verifies the password.
 

@@ -1,21 +1,21 @@
 import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
+import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import * as Pages from "@/components/Pages";
 import * as AdminApi from "@/ee/admin_api";
+import { EnableFeatureModal } from "./EnableFeatureModal";
 
 import { Avatar } from "turboui";
 import FormattedTime from "@/components/FormattedTime";
+import { IconFlare } from "@tabler/icons-react";
 
-interface LoaderData {
-  company: AdminApi.Company;
-}
+import { useLoadedData } from "./loader";
+import { useBoolState } from "@/hooks/useBoolState";
 
-export async function loader({ params }): Promise<LoaderData> {
-  return { company: await AdminApi.getCompany({ id: params.companyId }).then((res) => res.company!) };
-}
+export { loader } from "./loader";
 
 export function Page() {
-  const { company } = Pages.useLoadedData() as LoaderData;
+  const { company } = useLoadedData();
 
   return (
     <Pages.Page title={"Admininstration"} testId="saas-admin-page">
@@ -23,6 +23,8 @@ export function Page() {
         <Paper.Navigation items={[{ to: "/admin", label: "All Companies" }]} />
 
         <Paper.Body>
+          <Options />
+
           <div className="text-3xl font-semibold">{company.name}</div>
           <OwnersSection company={company} />
           <StatsSection company={company} />
@@ -95,5 +97,24 @@ function ActivitySection({ company }: { company: AdminApi.Company }) {
         </div>
       ))}
     </div>
+  );
+}
+
+function Options() {
+  const [showEnableFeatureModal, toggleEnableFeatureModal] = useBoolState(false);
+
+  return (
+    <>
+      <PageOptions.Root testId="options-button">
+        <PageOptions.Action
+          icon={IconFlare}
+          title="Enable Feature"
+          onClick={toggleEnableFeatureModal}
+          testId="enable-feature"
+        />
+      </PageOptions.Root>
+
+      <EnableFeatureModal isOpen={showEnableFeatureModal} onClose={toggleEnableFeatureModal} />
+    </>
   );
 }
