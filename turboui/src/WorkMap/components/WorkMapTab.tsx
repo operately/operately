@@ -3,6 +3,7 @@ import { DivLink } from "../../Link";
 import classNames from "../../utils/classnames";
 import { TestableElement } from "../../TestableElement";
 import WorkMap from ".";
+import { isStorybook } from "../../utils/storybook/isStorybook";
 
 interface Props extends TestableElement {
   label: string;
@@ -31,7 +32,12 @@ export function WorkMapTab({ label, tab, isActive, icon, hide, testId, setTab }:
 
   if (isStorybook()) {
     return (
-      <div onClick={() => setTab(tab)} className={className} data-testid={testId}>
+      <div
+        onClick={() => setTab(tab)}
+        className={className}
+        data-testid={testId}
+        aria-current={isActive ? "page" : undefined}
+      >
         {icon && <span className="h-4 w-4 hidden sm:inline">{icon}</span>}
         {label}
       </div>
@@ -39,21 +45,16 @@ export function WorkMapTab({ label, tab, isActive, icon, hide, testId, setTab }:
   }
 
   return (
-    <DivLink to={url} className={className} testId={testId}>
+    <DivLink to={url} className={className} testId={testId} aria-current={isActive ? "page" : undefined}>
       {icon && <span className="h-4 w-4 hidden sm:inline">{icon}</span>}
       {label}
     </DivLink>
   );
 }
 
-const isStorybook = () => {
-  return typeof window !== "undefined" && window.STORYBOOK_ENV === true;
-};
-
 const getTabUrl = (tab: WorkMap.Filter) => {
-  if (isStorybook()) {
-    return "#";
-  }
+  if (isStorybook()) return "#";
+  if (typeof window === "undefined") return "#";
 
   const searchParams = new URLSearchParams(window.location.search);
   searchParams.set("tab", tab);
