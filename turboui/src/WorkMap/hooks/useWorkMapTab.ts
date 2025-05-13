@@ -3,39 +3,40 @@ import { parse } from "../../utils/time";
 import { TimeframeSelector } from "../../TimeframeSelector";
 import { WorkMap } from "../components";
 import { useSearchParams } from "react-router-dom";
+import { isStorybook } from "../../utils/storybook/isStorybook";
 
 export interface WorkMapFilterOptions {
   tabOptions?: WorkMap.TabOptions;
 }
 
-export function useWorkMapFilter(
+export function useWorkMapTab(
   rawItems: WorkMap.Item[],
   timeframe: TimeframeSelector.Timeframe,
   options: WorkMapFilterOptions = {},
 ) {
-  const [filter, setFilter] = useWorkMapUrlFilter(options.tabOptions);
+  const [tab, setTab] = useWorkMapUrlTab(options.tabOptions);
 
   const filteredItems = useMemo(() => {
     const timeframeFilteredItems = filterItemsByTimeframe(rawItems, timeframe);
 
-    if (filter === "all") {
+    if (tab === "all") {
       return extractOngoingItems(timeframeFilteredItems);
     }
-    if (filter === "projects") {
+    if (tab === "projects") {
       return extractAllProjects(timeframeFilteredItems);
     }
-    if (filter === "completed") {
+    if (tab === "completed") {
       const completedItems = extractCompletedItems(timeframeFilteredItems);
       return sortItemsByClosedDate(completedItems);
     }
 
     return extractAllGoals(timeframeFilteredItems);
-  }, [rawItems, filter, timeframe]);
+  }, [rawItems, tab, timeframe]);
 
   return {
     filteredItems,
-    filter,
-    setFilter,
+    tab,
+    setTab,
   };
 }
 
@@ -216,16 +217,15 @@ function itemOverlapsWithTimeframe(item: WorkMap.Item, timeframe: TimeframeSelec
 }
 
 /**
- * Hook to manage the filter in URL search params
- * Returns the current filter value and a function to update it
- * Defaults to "all" if no tab parameter is present
+ * Reads the filter from URL search params
+ * Falls back to Storybook-compatible state in non-browser environments
  */
-function useWorkMapUrlFilter(tabOptions?: WorkMap.TabOptions): [WorkMap.Filter, (newFilter: WorkMap.Filter) => void] {
+function useWorkMapUrlTab(tabOptions?: WorkMap.TabOptions) {
   if (isStorybook()) {
     return useLocalFilter(tabOptions);
   }
 
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams, _] = useSearchParams();
 
   const rawTab = searchParams.get("tab") as WorkMap.Filter;
   const allowedTabs = getAllowedTabs(tabOptions);
@@ -233,18 +233,7 @@ function useWorkMapUrlFilter(tabOptions?: WorkMap.TabOptions): [WorkMap.Filter, 
 
   const tab = rawTab && allowedTabs.includes(rawTab) ? rawTab : defaultTab;
 
-  const setTab = useCallback(
-    (newTab: WorkMap.Filter) => {
-      setSearchParams((params) => {
-        const newParams = new URLSearchParams(params);
-        newParams.set("tab", newTab);
-        return newParams;
-      });
-    },
-    [setSearchParams],
-  );
-
-  return [tab as WorkMap.Filter, setTab];
+  return [tab as WorkMap.Filter, _] as const;
 }
 
 /**
@@ -283,7 +272,3 @@ function getAllowedTabs(tabOptions?: WorkMap.TabOptions): WorkMap.Filter[] {
 function getDefaultTab(allowedTabs: WorkMap.Filter[], tabOptions?: WorkMap.TabOptions): WorkMap.Filter {
   return (tabOptions?.hideAll || !allowedTabs.includes("all")) && allowedTabs.length > 0 ? allowedTabs[0] : "all";
 }
-
-const isStorybook = () => {
-  return window.STORYBOOK_ENV === true;
-};
