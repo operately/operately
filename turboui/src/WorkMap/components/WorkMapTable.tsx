@@ -4,18 +4,18 @@ import classNames from "../../utils/classnames";
 
 interface Props {
   items: WorkMap.Item[];
-  filter: WorkMap.Filter;
+  tab: WorkMap.Filter;
   columnOptions?: WorkMap.ColumnOptions;
 }
 
-export function WorkMapTable({ items, filter, columnOptions = {} }: Props) {
+export function WorkMapTable({ items, tab, columnOptions = {} }: Props) {
   return (
     <div className="overflow-x-auto bg-surface-base rounded-b-lg">
       <table className="min-w-full divide-y divide-surface-outline">
-        <TableHeader filter={filter} columnOptions={columnOptions} />
+        <TableHeader tab={tab} columnOptions={columnOptions} />
         <tbody>
           {items.map((item, idx) => (
-            <TableRow key={item.id} item={item} level={0} isLast={idx === items.length - 1} filter={filter} columnOptions={columnOptions} />
+            <TableRow key={item.id} item={item} level={0} isLast={idx === items.length - 1} tab={tab} columnOptions={columnOptions} />
           ))}
         </tbody>
       </table>
@@ -24,12 +24,12 @@ export function WorkMapTable({ items, filter, columnOptions = {} }: Props) {
 }
 
 interface HeaderProps {
-  filter: WorkMap.Filter;
+  tab: WorkMap.Filter;
   columnOptions?: WorkMap.ColumnOptions;
 }
 
-export function TableHeader({ filter, columnOptions = {} }: HeaderProps) {
-  const isCompletedPage = filter === "completed";
+export function TableHeader({ tab, columnOptions = {} }: HeaderProps) {
+  const isCompletedPage = tab === "completed";
 
   return (
     <thead>
