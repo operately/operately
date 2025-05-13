@@ -1,18 +1,26 @@
 import React from "react";
-import { Link } from "../../Link";
+import { DivLink } from "../../Link";
 import classNames from "../../utils/classnames";
 import { TestableElement } from "../../TestableElement";
+import WorkMap from ".";
+import { isStorybook } from "../../utils/storybook/isStorybook";
 
 interface Props extends TestableElement {
   label: string;
-  to?: string;
-  onClick?: () => void;
+  tab: WorkMap.Filter;
   isActive: boolean;
   icon?: React.ReactNode;
   hide?: boolean;
+  setTab: (tab: WorkMap.Filter) => void;
 }
 
-export function WorkMapTab({ label, to, onClick, isActive, icon, hide, testId }: Props) {
+/**
+ * Navigation tab for WorkMap that renders differently based on environment:
+ * - In standard app: Uses DivLink for URL-based navigation with tab parameters
+ * - In Storybook: Uses div with onClick handler for state-based navigation
+ */
+export function WorkMapTab({ label, tab, isActive, icon, hide, testId, setTab }: Props) {
+  const url = getTabUrl(tab);
   const className = classNames(
     "border-b-2 px-1 pt-2.5 pb-1 text-xs sm:text-sm font-medium flex items-center gap-1 sm:gap-1.5 whitespace-nowrap cursor-pointer",
     isActive
@@ -22,29 +30,34 @@ export function WorkMapTab({ label, to, onClick, isActive, icon, hide, testId }:
 
   if (hide) return null;
 
-  if (to) {
+  if (isStorybook()) {
     return (
-      <Link to={to} className={className} aria-current={isActive ? "page" : undefined} testId={testId}>
+      <div
+        onClick={() => setTab(tab)}
+        className={className}
+        data-testid={testId}
+        aria-current={isActive ? "page" : undefined}
+      >
         {icon && <span className="h-4 w-4 hidden sm:inline">{icon}</span>}
         {label}
-      </Link>
+      </div>
     );
   }
 
   return (
-    <div
-      role="tab"
-      tabIndex={0}
-      className={className}
-      aria-current={isActive ? "page" : undefined}
-      onClick={onClick}
-      data-testid={testId}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") onClick?.();
-      }}
-    >
+    <DivLink to={url} className={className} testId={testId} aria-current={isActive ? "page" : undefined}>
       {icon && <span className="h-4 w-4 hidden sm:inline">{icon}</span>}
       {label}
-    </div>
+    </DivLink>
   );
 }
+
+const getTabUrl = (tab: WorkMap.Filter) => {
+  if (isStorybook()) return "#";
+  if (typeof window === "undefined") return "#";
+
+  const searchParams = new URLSearchParams(window.location.search);
+  searchParams.set("tab", tab);
+
+  return `?${searchParams.toString()}`;
+};

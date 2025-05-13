@@ -36,8 +36,8 @@ const meta = {
       description: "Whether this is the last item in the list",
       control: "boolean",
     },
-    filter: {
-      description: "Current filter applied to the WorkMap",
+    tab: {
+      description: "Current tab applied to the WorkMap",
       options: [undefined, "all", "goals", "completed"],
       control: { type: "select" },
     },
@@ -53,7 +53,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   render: (args) => (
     <>
-      <TableHeader filter={args.filter} />
+      <TableHeader tab={args.tab} />
       <tbody>
         <TableRow {...args} />
       </tbody>
@@ -63,7 +63,7 @@ export const Default: Story = {
     item: data.mockGoalOnTrack,
     level: 0,
     isLast: false,
-    filter: "all",
+    tab: "all",
   },
 };
 
@@ -73,7 +73,7 @@ export const Default: Story = {
 export const CompletedGoal: Story = {
   render: (args) => (
     <>
-      <TableHeader filter={args.filter} />
+      <TableHeader tab={args.tab} />
       <tbody>
         <TableRow {...args} />
       </tbody>
@@ -83,7 +83,7 @@ export const CompletedGoal: Story = {
     item: data.mockGoalCompleted,
     level: 0,
     isLast: false,
-    filter: "completed",
+    tab: "completed",
   },
   play: async ({ canvasElement, step }) => {
     await Steps.assertItemHasLineThrough(canvasElement, step, "Launch new marketing campaign");
@@ -98,7 +98,7 @@ export const CompletedGoal: Story = {
 export const AchievedGoal: Story = {
   render: (args) => (
     <>
-      <TableHeader filter={args.filter} />
+      <TableHeader tab={args.tab} />
       <tbody>
         <TableRow {...args} />
       </tbody>
@@ -108,7 +108,7 @@ export const AchievedGoal: Story = {
     item: data.mockGoalAchieved,
     level: 0,
     isLast: false,
-    filter: "completed",
+    tab: "completed",
   },
   play: async ({ canvasElement, step }) => {
     await Steps.assertItemHasLineThrough(canvasElement, step, "Increase website traffic by 50%");
@@ -123,7 +123,7 @@ export const AchievedGoal: Story = {
 export const PartiallyAchievedGoal: Story = {
   render: (args) => (
     <>
-      <TableHeader filter={args.filter} />
+      <TableHeader tab={args.tab} />
       <tbody>
         <TableRow {...args} />
       </tbody>
@@ -133,7 +133,7 @@ export const PartiallyAchievedGoal: Story = {
     item: data.mockGoalPartial,
     level: 0,
     isLast: false,
-    filter: "completed",
+    tab: "completed",
   },
   play: async ({ canvasElement, step }) => {
     await Steps.assertItemHasLineThrough(canvasElement, step, "Reduce support tickets by 30%");
@@ -148,7 +148,7 @@ export const PartiallyAchievedGoal: Story = {
 export const MissedGoal: Story = {
   render: (args) => (
     <>
-      <TableHeader filter={args.filter} />
+      <TableHeader tab={args.tab} />
       <tbody>
         <TableRow {...args} />
       </tbody>
@@ -158,7 +158,7 @@ export const MissedGoal: Story = {
     item: data.mockGoalMissed,
     level: 0,
     isLast: false,
-    filter: "completed",
+    tab: "completed",
   },
   play: async ({ canvasElement, step }) => {
     await Steps.assertItemHasLineThrough(canvasElement, step, "Launch mobile app by Q1");
@@ -173,7 +173,7 @@ export const MissedGoal: Story = {
 export const PausedGoal: Story = {
   render: (args) => (
     <>
-      <TableHeader filter={args.filter} />
+      <TableHeader tab={args.tab} />
       <tbody>
         <TableRow {...args} />
       </tbody>
@@ -183,7 +183,7 @@ export const PausedGoal: Story = {
     item: data.mockGoalPaused,
     level: 0,
     isLast: false,
-    filter: "all",
+    tab: "all",
   },
   play: async ({ canvasElement, step }) => {
     await Steps.refuteItemHasLineThrough(canvasElement, step, "Expand to international markets");
@@ -200,7 +200,7 @@ export const PausedGoal: Story = {
 export const CautionGoal: Story = {
   render: (args) => (
     <>
-      <TableHeader filter={args.filter} />
+      <TableHeader tab={args.tab} />
       <tbody>
         <TableRow {...args} />
       </tbody>
@@ -210,7 +210,7 @@ export const CautionGoal: Story = {
     item: data.mockGoalCaution,
     level: 0,
     isLast: false,
-    filter: "all",
+    tab: "all",
   },
   play: async ({ canvasElement, step }) => {
     await Steps.refuteItemHasLineThrough(canvasElement, step, "Implement new CRM system");
@@ -227,7 +227,7 @@ export const CautionGoal: Story = {
 export const IssueGoal: Story = {
   render: (args) => (
     <>
-      <TableHeader filter={args.filter} />
+      <TableHeader tab={args.tab} />
       <tbody>
         <TableRow {...args} />
       </tbody>
@@ -237,7 +237,7 @@ export const IssueGoal: Story = {
     item: data.mockGoalIssue,
     level: 0,
     isLast: false,
-    filter: "all",
+    tab: "all",
   },
   play: async ({ canvasElement, step }) => {
     await Steps.refuteItemHasLineThrough(canvasElement, step, "Migrate legacy systems");
@@ -254,9 +254,9 @@ export const IssueGoal: Story = {
 export const OutdatedGoal: Story = {
   render: (args) => (
     <>
-      <TableHeader filter={args.filter} />
+      <TableHeader tab={args.tab} />
       <tbody>
-        <TableRow item={data.mockGoalOutdated} level={0} isLast={false} filter={args.filter} />
+        <TableRow item={data.mockGoalOutdated} level={0} isLast={false} tab={args.tab} />
       </tbody>
     </>
   ),
@@ -264,7 +264,7 @@ export const OutdatedGoal: Story = {
     item: data.mockGoalOutdated, // This is required by the Story type but overridden in render
     level: 0,
     isLast: false,
-    filter: "all",
+    tab: "all",
   },
   play: async ({ canvasElement, step }) => {
     await Steps.refuteItemHasLineThrough(canvasElement, step, "Update legacy documentation");
@@ -281,7 +281,7 @@ export const OutdatedGoal: Story = {
 export const OnTrackProject: Story = {
   render: (args) => (
     <>
-      <TableHeader filter={args.filter} />
+      <TableHeader tab={args.tab} />
       <tbody>
         <TableRow {...args} />
       </tbody>
@@ -291,7 +291,7 @@ export const OnTrackProject: Story = {
     item: data.mockProjectOnTrack,
     level: 0,
     isLast: false,
-    filter: "all",
+    tab: "all",
   },
   play: async ({ canvasElement, step }) => {
     await Steps.refuteItemHasLineThrough(canvasElement, step, "Redesign product dashboard");
@@ -308,7 +308,7 @@ export const OnTrackProject: Story = {
 export const CompletedProject: Story = {
   render: (args) => (
     <>
-      <TableHeader filter={args.filter} />
+      <TableHeader tab={args.tab} />
       <tbody>
         <TableRow {...args} />
       </tbody>
@@ -318,7 +318,7 @@ export const CompletedProject: Story = {
     item: data.mockProjectCompleted,
     level: 0,
     isLast: false,
-    filter: "completed",
+    tab: "completed",
   },
   play: async ({ canvasElement, step }) => {
     await Steps.assertItemHasLineThrough(canvasElement, step, "Update documentation");
@@ -333,17 +333,17 @@ export const CompletedProject: Story = {
 export const MultipleRows: Story = {
   render: (args) => (
     <>
-      <TableHeader filter={args.filter} />
+      <TableHeader tab={args.tab} />
       <tbody>
-        <TableRow item={data.mockGoalOnTrack} level={0} isLast={false} filter={args.filter} />
-        <TableRow item={data.mockProjectOnTrack} level={1} isLast={false} filter={args.filter} />
-        <TableRow item={data.mockGoalCompleted} level={0} isLast={false} filter={args.filter} />
-        <TableRow item={data.mockProjectCompleted} level={0} isLast={true} filter={args.filter} />
+        <TableRow item={data.mockGoalOnTrack} level={0} isLast={false} tab={args.tab} />
+        <TableRow item={data.mockProjectOnTrack} level={1} isLast={false} tab={args.tab} />
+        <TableRow item={data.mockGoalCompleted} level={0} isLast={false} tab={args.tab} />
+        <TableRow item={data.mockProjectCompleted} level={0} isLast={true} tab={args.tab} />
       </tbody>
     </>
   ),
   args: {
-    filter: "all",
+    tab: "all",
     item: data.mockGoalOnTrack, // These args won't be used directly by the render function
     level: 0, // but are required by the StoryAnnotations type
     isLast: false,
@@ -380,7 +380,7 @@ export const PrivacyLevels: Story = {
       <div className="pb-4">
         <h3 className="text-lg font-medium mb-4">Privacy Indicator Variants</h3>
         <table className="w-full border-collapse">
-          <TableHeader filter={args.filter} />
+          <TableHeader tab={args.tab} />
           <tbody>
             <TableRow {...args} item={publicItem} isLast={false} />
             <TableRow {...args} item={internalItem} isLast={false} />
@@ -411,7 +411,7 @@ export const PrivacyLevels: Story = {
   },
   args: {
     level: 0,
-    filter: "all",
+    tab: "all",
     item: data.mockGoalOnTrack, // This is required by the Story type, but our render function overrides it
     isLast: false, // Also required by the Story type
   },

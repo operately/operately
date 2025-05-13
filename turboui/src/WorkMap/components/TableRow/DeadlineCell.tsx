@@ -7,19 +7,19 @@ import classNames from "../../../utils/classnames";
 import FormattedTime from "../../../FormattedTime";
 
 interface Props {
-  filter: WorkMap.Filter;
+  tab: WorkMap.Filter;
   completedOn: WorkMap.Item["completedOn"];
   timeframe: WorkMap.Item["timeframe"];
   status: WorkMap.Item["status"];
   hide?: boolean;
 }
 
-export function DeadlineCell({ filter, status, completedOn, timeframe, hide }: Props) {
+export function DeadlineCell({ tab, status, completedOn, timeframe, hide }: Props) {
   const { isCompleted, isFailed, isDropped, isPending } = useItemStatus(status);
 
   if (hide) return null;
 
-  const containerClassName = classNames("py-2 px-2 md:px-4", filter !== "completed" && "hidden lg:table-cell");
+  const containerClassName = classNames("py-2 px-2 md:px-4", tab !== "completed" && "hidden lg:table-cell");
   const isPastDeadline = useMemo(() => isDeadlinePast(timeframe?.endDate), [timeframe]);
 
   const textClassName = classNames("text-sm whitespace-nowrap", {
@@ -32,7 +32,7 @@ export function DeadlineCell({ filter, status, completedOn, timeframe, hide }: P
 
   return (
     <td className={containerClassName}>
-      {filter === "completed" && completedOn ? (
+      {tab === "completed" && completedOn ? (
         <span className="text-xs sm:text-sm whitespace-nowrap text-content-base">
           <FormattedTime time={completedOn} format="short-date" />
         </span>
