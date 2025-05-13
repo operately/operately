@@ -1,5 +1,4 @@
 import { match } from "ts-pattern";
-import { z } from "zod";
 import { AvatarList } from "../Avatar";
 import { IconGoal, IconProject } from "../icons";
 import { BlackLink } from "../Link";
@@ -16,30 +15,38 @@ export function MiniWorkMap(props: MiniWorkMap.Props) {
 }
 
 export namespace MiniWorkMap {
-  const PersonSchema = z.object({
-    id: z.string(),
-    fullName: z.string(),
-    avatarUrl: z.string(),
-  });
+  interface Person {
+    id: string;
+    fullName: string;
+    avatarUrl: string | null;
+  }
 
-  export const WorkItemsSchema = z.object({
-    id: z.string(),
-    type: z.enum(["goal", "project"]),
-    status: z.enum(["on_track", "caution", "concern", "issue", "paused", "outdated", "pending"]),
-    name: z.string(),
-    link: z.string(),
-    progress: z.number(),
-    subitems: z.array(z.lazy(() => WorkItemsSchema)),
-    completed: z.boolean(),
-    people: z.array(PersonSchema),
-  });
+  export interface WorkItem {
+    id: string;
+    type: "goal" | "project";
+    status:
+      | "on_track"
+      | "completed"
+      | "achieved"
+      | "partial"
+      | "missed"
+      | "paused"
+      | "caution"
+      | "issue"
+      | "dropped"
+      | "pending"
+      | "outdated";
+    name: string;
+    itemPath: string;
+    progress: number;
+    children?: WorkItem[];
+    completed: boolean;
+    people: Person[];
+  }
 
-  export const PropsSchema = z.object({
-    items: z.array(WorkItemsSchema),
-  });
-
-  export type WorkItem = z.infer<typeof WorkItemsSchema>;
-  export type Props = z.infer<typeof PropsSchema>;
+  export interface Props {
+    items: WorkItem[];
+  }
 }
 
 function ItemView({ item, depth }: { item: MiniWorkMap.WorkItem; depth: number }) {
@@ -56,7 +63,7 @@ function ItemView({ item, depth }: { item: MiniWorkMap.WorkItem; depth: number }
         <StatusBadge status={item.status} />
       </div>
 
-      <Subitems items={item.subitems} depth={depth + 1} />
+      {item.children && <Subitems items={item.children} depth={depth + 1} />}
     </>
   );
 }
@@ -90,7 +97,7 @@ function ItemPeople({ item }: { item: MiniWorkMap.WorkItem }) {
 
 function ItemName({ item }: { item: MiniWorkMap.WorkItem }) {
   const nameElement = (
-    <BlackLink underline="hover" to={item.link} className="truncate" disableColorHoverEffect>
+    <BlackLink underline="hover" to={item.itemPath} className="truncate" disableColorHoverEffect>
       {item.name}
     </BlackLink>
   );
