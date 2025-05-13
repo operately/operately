@@ -1486,7 +1486,7 @@ export interface UpdateTargetInput {
 }
 
 export interface WorkMapItem {
-  id?: string | null;
+  id: string;
   parentId?: string | null;
   name?: string | null;
   status?: string | null;
