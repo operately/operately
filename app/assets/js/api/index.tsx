@@ -846,8 +846,8 @@ export interface EditProjectTimelineNewMilestoneInput {
 }
 
 export interface Goal {
-  id?: string | null;
-  name?: string | null;
+  id: string;
+  name: string;
   insertedAt?: string | null;
   updatedAt?: string | null;
   nextUpdateScheduledAt?: string | null;
@@ -872,7 +872,7 @@ export interface Goal {
   space?: Space | null;
   myRole?: string | null;
   accessLevels?: AccessLevels | null;
-  privacy?: string | null;
+  privacy?: GoalPrivacyValues | null;
   potentialSubscribers?: Subscriber[] | null;
   notifications?: Notification[] | null;
   success?: boolean | null;
@@ -985,10 +985,10 @@ export interface Panel {
 }
 
 export interface Person {
-  id?: string | null;
-  fullName?: string | null;
-  title?: string | null;
-  avatarUrl?: string | null;
+  id: string;
+  fullName: string;
+  title: string;
+  avatarUrl: string | null;
   timezone?: string | null;
   email?: string | null;
   sendDailySummary?: boolean | null;
@@ -1289,8 +1289,8 @@ export interface ReviewAssignment {
 }
 
 export interface Space {
-  id?: string | null;
-  name?: string | null;
+  id: string;
+  name: string;
   mission?: string | null;
   isMember?: boolean | null;
   isCompanySpace?: boolean | null;
@@ -1487,22 +1487,22 @@ export interface UpdateTargetInput {
 
 export interface WorkMapItem {
   id: string;
-  parentId?: string | null;
-  name?: string | null;
+  parentId: string | null;
+  name: string;
   status: WorkMapItemStatus;
-  progress?: number | null;
-  space?: Space | null;
-  spacePath?: string | null;
-  owner?: Person | null;
-  ownerPath?: string | null;
-  nextStep?: string | null;
-  isNew?: boolean | null;
-  completedOn?: string | null;
-  timeframe?: Timeframe | null;
-  children?: WorkMapItem[] | null;
+  progress: number;
+  space: Space;
+  spacePath: string;
+  owner: Person;
+  ownerPath: string;
+  nextStep: string;
+  isNew: boolean;
+  completedOn: string | null;
+  timeframe: Timeframe | null;
+  children: WorkMapItem[];
   type: WorkMapItemType;
-  itemPath?: string | null;
-  privacy?: string | null;
+  itemPath: string;
+  privacy: string;
 }
 
 export type ActivityContent =
@@ -1587,6 +1587,8 @@ export type UpdateContent =
   | UpdateContentReview
   | UpdateContentProjectDiscussion
   | UpdateContentMessage;
+
+export type GoalPrivacyValues = "public" | "internal" | "confidential" | "secret";
 
 export type WorkMapItemStatus =
   | "on_track"

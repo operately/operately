@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { MiniWorkMap } from ".";
-import { genPeople } from "./../utils/storybook/genPeople";
 import { Page } from "../Page";
+import { genPeople } from "./../utils/storybook/genPeople";
 
 const meta = {
   title: "Components/MiniWorkMap",
@@ -33,43 +33,43 @@ export const Default: Story = {
         id: "goal-a",
         name: "Goal A",
         type: "goal",
-        link: "#",
+        itemPath: "#",
         completed: false,
         progress: 0,
         people: genPeople(3, { random: true }),
         status: "on_track",
-        subitems: [
+        children: [
           {
             id: "goal-b",
             name: "Goal B",
             type: "goal",
-            link: "#",
+            itemPath: "#",
             completed: false,
             progress: 10,
             people: genPeople(3, { random: true }),
-            subitems: [],
+            children: [],
             status: "caution",
           },
           {
             id: "project-a",
             name: "Project A",
             type: "project",
-            link: "#",
+            itemPath: "#",
             completed: false,
             progress: 50,
             people: genPeople(3, { random: true }),
-            subitems: [],
+            children: [],
             status: "on_track",
           },
           {
             id: "project-b",
             name: "Project B",
             type: "project",
-            link: "#",
+            itemPath: "#",
             completed: true,
             progress: 100,
             people: genPeople(3, { random: true }),
-            subitems: [],
+            children: [],
             status: "issue",
           },
         ],

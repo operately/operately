@@ -23,7 +23,7 @@ export namespace GoalPage {
   export interface Person {
     id: string;
     fullName: string;
-    avatarUrl: string;
+    avatarUrl: string | null;
   }
 
   export interface Message {
@@ -60,8 +60,8 @@ export namespace GoalPage {
     goalName: string;
     description?: string;
     spaceName: string;
-    champion?: Person;
-    reviewer?: Person;
+    champion: Person | null;
+    reviewer: Person | null;
     contributors: Contributor[];
 
     timeframe: Timeframe;
@@ -89,7 +89,7 @@ export namespace GoalPage {
     author: {
       id: string;
       fullName: string;
-      avatarUrl: string;
+      avatarUrl: string | null;
     };
     date: Date;
     content: string;
