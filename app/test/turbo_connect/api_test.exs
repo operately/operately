@@ -5,7 +5,7 @@ defmodule TurboConnect.ApiTest do
   defmodule ExampleTypes do
     use TurboConnect.Types
 
-    primitive :id, encoded_type: :string, decode_with: &String.to_integer/1
+    primitive(:id, encoded_type: :string, decode_with: &String.to_integer/1)
 
     object :user do
       field :full_name, :string
@@ -17,7 +17,7 @@ defmodule TurboConnect.ApiTest do
       field :city, :string
     end
 
-    union :resource, types: [:user, :address]
+    union(:resource, types: [:user, :address])
   end
 
   defmodule ExampleQuery do
@@ -34,14 +34,14 @@ defmodule TurboConnect.ApiTest do
     def call(_, _) do
       res = %{
         user: %{
-          full_name: "John Doe", 
+          full_name: "John Doe",
           address: %{
-            street: "123 Main St", 
+            street: "123 Main St",
             city: "Anytown"
           }
         }
       }
-      
+
       {:ok, res}
     end
   end
@@ -66,72 +66,73 @@ defmodule TurboConnect.ApiTest do
   defmodule ExampleApi do
     use TurboConnect.Api
 
-    use_types ExampleTypes
+    use_types(ExampleTypes)
 
-    query :get_user, ExampleQuery
-    mutation :create_user, ExampleMutation
+    query(:get_user, ExampleQuery)
+    mutation(:create_user, ExampleMutation)
   end
 
   test "__types__ returns the types defined in the module" do
     assert ExampleApi.__types__() == %{
-      primitives: %{
-        id: [encoded_type: :string, decode_with: &String.to_integer/1]
-      },
-      objects: %{
-        address: %{
-          fields: [
-            {:street, :string, []},
-            {:city, :string, []}
-          ]
-        },
-        user: %{
-          fields: [
-            {:full_name, :string, []},
-            {:address, :address, []}
-          ]
-        }
-      },
-      unions: %{
-        resource: [:user, :address]
-      }
-    }
+             primitives: %{
+               id: [encoded_type: :string, decode_with: &String.to_integer/1]
+             },
+             objects: %{
+               address: %{
+                 fields: [
+                   {:street, :string, []},
+                   {:city, :string, []}
+                 ]
+               },
+               user: %{
+                 fields: [
+                   {:full_name, :string, []},
+                   {:address, :address, []}
+                 ]
+               }
+             },
+             unions: %{
+               resource: [:user, :address]
+             },
+             enums: %{}
+           }
   end
 
   test "__queries__ returns the queries defined in the module" do
     assert ExampleApi.__queries__() == %{
-      get_user: %{
-        handler: ExampleQuery,
-        inputs: %{
-          fields: [
-            {:id, :id, []}
-          ]
-        },
-        outputs: %{
-          fields: [
-            {:user, :user, []}
-          ]
-        }
-      }
-    }
+             get_user: %{
+               handler: ExampleQuery,
+               inputs: %{
+                 fields: [
+                   {:id, :id, []}
+                 ]
+               },
+               outputs: %{
+                 fields: [
+                   {:user, :user, []}
+                 ]
+               }
+             }
+           }
   end
 
   test "__mutations__ returns the mutations defined in the module" do
     assert ExampleApi.__mutations__() == %{
-      create_user: %{
-        handler: ExampleMutation,
-        inputs: %{
-          fields: [
-            {:name, :string, []},
-            {:email, :string, []}
-          ]
-        },
-        outputs: %{
-          fields: [
-            {:user, :user, []}
-          ]
-        }
-      }
-    }
+             create_user: %{
+               handler: ExampleMutation,
+               inputs: %{
+                 fields: [
+                   {:name, :string, []},
+                   {:email, :string, []}
+                 ]
+               },
+               outputs: %{
+                 fields: [
+                   {:user, :user, []}
+                 ]
+               }
+             }
+           }
   end
 
   describe "routing queries" do
@@ -179,5 +180,4 @@ defmodule TurboConnect.ApiTest do
       assert conn.status == 400
     end
   end
-
 end

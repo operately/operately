@@ -1489,7 +1489,7 @@ export interface WorkMapItem {
   id: string;
   parentId?: string | null;
   name?: string | null;
-  status?: string | null;
+  status: WorkMapItemStatus;
   progress?: number | null;
   space?: Space | null;
   spacePath?: string | null;
@@ -1500,7 +1500,7 @@ export interface WorkMapItem {
   completedOn?: string | null;
   timeframe?: Timeframe | null;
   children?: WorkMapItem[] | null;
-  type?: string | null;
+  type: WorkMapItemType;
   itemPath?: string | null;
   privacy?: string | null;
 }
@@ -1587,6 +1587,21 @@ export type UpdateContent =
   | UpdateContentReview
   | UpdateContentProjectDiscussion
   | UpdateContentMessage;
+
+export type WorkMapItemStatus =
+  | "on_track"
+  | "completed"
+  | "achieved"
+  | "partial"
+  | "missed"
+  | "paused"
+  | "caution"
+  | "issue"
+  | "dropped"
+  | "pending"
+  | "outdated";
+
+export type WorkMapItemType = "project" | "goal";
 
 export interface GetAccountInput {}
 

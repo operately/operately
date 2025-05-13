@@ -1,5 +1,4 @@
 defmodule TurboConnect.Api do
-
   defmacro __using__(_) do
     quote do
       import TurboConnect.Api
@@ -49,16 +48,18 @@ defmodule TurboConnect.Api do
       plug TurboConnect.Plugs.Dispatch
 
       def __types__() do
-        Enum.reduce(@typemodules, %{primitives: %{}, objects: %{}, unions: %{}}, fn module, acc ->
+        Enum.reduce(@typemodules, %{primitives: %{}, objects: %{}, unions: %{}, enums: %{}}, fn module, acc ->
           primitives = apply(module, :__primitives__, [])
           objects = apply(module, :__objects__, [])
           unions = apply(module, :__unions__, [])
+          enums = apply(module, :__enums__, [])
 
           primitives = Map.merge(acc.primitives, primitives)
           objects = Map.merge(acc.objects, objects)
           unions = Map.merge(acc.unions, unions)
+          enums = Map.merge(acc.enums, enums)
 
-          %{objects: objects, unions: unions, primitives: primitives}
+          %{objects: objects, unions: unions, primitives: primitives, enums: enums}
         end)
       end
 
@@ -82,5 +83,4 @@ defmodule TurboConnect.Api do
       end
     end
   end
-
 end
