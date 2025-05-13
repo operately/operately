@@ -1,61 +1,64 @@
-import * as People from "@/models/people";
 import * as React from "react";
 import * as Timeframes from "../../utils/timeframes";
 
 import { useLoadedData } from "@/components/Pages";
 import { Feed, useItemsQuery } from "@/features/Feed";
-import { Goal, getGoal } from "@/models/goals";
-import { GoalPage, MiniWorkMap } from "turboui";
+import { getGoal, Goal } from "@/models/goals";
+import { GoalPage } from "turboui";
 import { Timeframe } from "turboui/src/utils/timeframes";
-import { getWorkMap } from "../../models/workMap";
+import { getWorkMap, WorkMapItem } from "../../models/workMap";
 import { Paths } from "../../routes/paths";
+import { assertDefined, assertPresent } from "../../utils/assertions";
 
-interface LoaderResult {
+interface LoadedData {
   goal: Goal;
-  relatedWorkItems: GoalPage.Props["relatedWorkItems"];
+  workMap: WorkMapItem[];
 }
 
-export async function loader({ params }): Promise<LoaderResult> {
-  const goal = await getGoal({
-    id: params.id,
-    includeSpace: true,
-    includeChampion: true,
-    includeReviewer: true,
-    includeTargets: true,
-    includePermissions: true,
-    includeUnreadNotifications: true,
-    includeLastCheckIn: true,
-    includeAccessLevels: true,
-    includePrivacy: true,
-  }).then((data) => data.goal!);
+export async function loader({ params }): Promise<LoadedData> {
+  const [goal, workMap] = await Promise.all([
+    getGoal({
+      id: params.id,
+      includeSpace: true,
+      includeChampion: true,
+      includeReviewer: true,
+      includeTargets: true,
+      includePermissions: true,
+      includeUnreadNotifications: true,
+      includeLastCheckIn: true,
+      includeAccessLevels: true,
+      includePrivacy: true,
+    }).then((d) => d.goal!),
+    getWorkMap({
+      parentGoalId: params.id,
+    }).then((d) => d.workMap!),
+  ]);
 
-  const relatedWorkItems = await getWorkMap({})
-    .then((data) => data.workMap || [])
-    .then((data) => data.map((item) => ({ ...item, people: [], link: "", subitems: [], completed: false })))
-    .then((data) => MiniWorkMap.WorkItemsSchema.array().parse(data))
-    .catch((error) => {
-      console.error("Error fetching work items:", error);
-      throw new Error("Failed to fetch work items");
-    });
-
-  return { goal, relatedWorkItems };
+  return { goal, workMap };
 }
 
 export function Page() {
-  const { goal, relatedWorkItems } = useLoadedData<LoaderResult>();
+  const { goal, workMap } = useLoadedData<LoadedData>();
+
+  assertPresent(goal.space);
+  assertPresent(goal.privacy);
+  assertPresent(goal.permissions?.canEdit);
+  assertDefined(goal.champion);
+  assertDefined(goal.reviewer);
+  assertPresent(goal.timeframe);
 
   const props: GoalPage.Props = {
-    goalName: goal.name!,
-    spaceName: goal.space!.name!,
-    workmapLink: Paths.spaceGoalsPath(goal.space!.id!),
-    spaceLink: Paths.spacePath(goal.space!.id!),
-    closeLink: Paths.goalClosePath(goal.id!),
-    privacyLevel: goal.privacy! as GoalPage.Props["privacyLevel"],
-    timeframe: Timeframes.parse(goal.timeframe!),
-    parentGoal: toParentGoal(goal.parentGoal),
-    canEdit: goal.permissions!.canEdit!,
-    champion: toTurbouiPerson(goal.champion!),
-    reviewer: toTurbouiPerson(goal.reviewer!),
+    goalName: goal.name,
+    spaceName: goal.space.name,
+    workmapLink: Paths.spaceGoalsPath(goal.space.id),
+    spaceLink: Paths.spacePath(goal.space.id),
+    closeLink: Paths.goalClosePath(goal.id),
+    privacyLevel: goal.privacy,
+    timeframe: Timeframes.parse(goal.timeframe),
+    parentGoal: prepareParentGoal(goal.parentGoal),
+    canEdit: goal.permissions.canEdit,
+    champion: goal.champion,
+    reviewer: goal.reviewer,
 
     description: "",
     status: "pending",
@@ -63,7 +66,7 @@ export function Page() {
     checkIns: [],
     messages: [],
     contributors: [],
-    relatedWorkItems,
+    relatedWorkItems: prepareWorkMapData(workMap),
 
     deleteLink: "",
     updateTimeframe: function (timeframe: Timeframe): Promise<void> {
@@ -81,7 +84,7 @@ export function Page() {
   );
 }
 
-function toParentGoal(g: Goal | null | undefined): GoalPage.Props["parentGoal"] {
+function prepareParentGoal(g: Goal | null | undefined): GoalPage.Props["parentGoal"] {
   if (!g) {
     return null;
   } else {
@@ -89,12 +92,13 @@ function toParentGoal(g: Goal | null | undefined): GoalPage.Props["parentGoal"] 
   }
 }
 
-function toTurbouiPerson(p: People.Person): GoalPage.Person {
-  return {
-    id: p.id!,
-    fullName: p.fullName!,
-    avatarUrl: p.avatarUrl!,
-  };
+function prepareWorkMapData(items: WorkMapItem[]): GoalPage.Props["relatedWorkItems"] {
+  return items.map((item) => ({
+    ...item,
+    children: prepareWorkMapData(item.children),
+    people: [],
+    completed: false,
+  }));
 }
 
 function GoalFeedItems() {
