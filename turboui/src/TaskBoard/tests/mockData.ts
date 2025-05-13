@@ -58,7 +58,7 @@ export const mockMilestones = {
   emptyMilestone: {
     id: "4",
     name: "Empty Milestone",
-    dueDate: null,
+    dueDate: undefined,
     hasDescription: false,
     hasComments: false,
   },
