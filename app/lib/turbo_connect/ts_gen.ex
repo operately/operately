@@ -3,7 +3,7 @@ defmodule TurboConnect.TsGen do
   This module generates TypeScript code from the specs defined with TurboConnect.Specs.
   """
 
-  import TurboConnect.TsGen.Typescript, only: [ts_interface: 2, ts_sum_type: 2, ts_type_alias: 2]
+  import TurboConnect.TsGen.Typescript, only: [ts_interface: 2, ts_sum_type: 2, ts_type_alias: 2, ts_enum: 2]
   alias TurboConnect.TsGen.{Queries, Mutations}
 
   @spec generate(module) :: String.t()
@@ -33,6 +33,7 @@ defmodule TurboConnect.TsGen do
         convert_primitives(api_module.__types__().primitives),
         convert_objects(api_module.__types__().objects),
         convert_unions(api_module.__types__().unions),
+        convert_enums(api_module.__types__().enums),
         Queries.generate_types(api_module.__queries__()),
         Mutations.generate_types(api_module.__mutations__())
       ],
@@ -91,6 +92,12 @@ defmodule TurboConnect.TsGen do
     unions
     |> Enum.sort_by(&elem(&1, 0))
     |> Enum.map_join("\n", fn {name, types} -> ts_sum_type(name, types) end)
+  end
+
+  def convert_enums(enums) do
+    enums
+    |> Enum.sort_by(&elem(&1, 0))
+    |> Enum.map_join("\n", fn {name, types} -> ts_enum(name, types) end)
   end
 
   def convert_primitives(primitives) do

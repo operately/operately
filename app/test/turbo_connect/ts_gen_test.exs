@@ -17,9 +17,12 @@ defmodule TurboConnect.TsGenTest do
       field :city, :string
     end
 
+    enum(:post_status, values: [:draft, :published])
+
     object :post do
       field :title, :string
       field :content, :string
+      field :status, :post_status
     end
 
     object :event do
@@ -119,6 +122,7 @@ defmodule TurboConnect.TsGenTest do
   export interface Post {
     title?: string | null;
     content?: string | null;
+    status?: PostStatus | null;
   }
 
   export interface User {
@@ -136,6 +140,8 @@ defmodule TurboConnect.TsGenTest do
   }
 
   export type EventContent = UserAddedEvent | UserRemovedEvent;
+
+  export type PostStatus = "draft" | "published";
 
   export interface GetUserInput {
     userId?: number | null;
@@ -260,8 +266,6 @@ defmodule TurboConnect.TsGenTest do
       |> Enum.with_index()
       |> Enum.each(fn {line, index} ->
         if line != Enum.at(expected_lines, index) do
-          IO.puts("Found a difference")
-          IO.puts("Line #{index + 1}:")
           IO.puts("Expected: #{inspect(Enum.at(expected_lines, index))}")
           IO.puts("Got:      #{inspect(line)}")
         end
