@@ -165,6 +165,15 @@ export interface GetCompanyResult {
   company?: Company | null;
 }
 
+export interface EnableFeatureInput {
+  companyId?: CompanyId | null;
+  feature?: string | null;
+}
+
+export interface EnableFeatureResult {
+  success?: boolean | null;
+}
+
 export class ApiClient {
   private basePath: string;
   private headers: any;
@@ -212,6 +221,10 @@ export class ApiClient {
   async getCompany(input: GetCompanyInput): Promise<GetCompanyResult> {
     return this.get("/get_company", input);
   }
+
+  async enableFeature(input: EnableFeatureInput): Promise<EnableFeatureResult> {
+    return this.post("/enable_feature", input);
+  }
 }
 
 const defaultApiClient = new ApiClient();
@@ -224,6 +237,9 @@ export async function getCompanies(input: GetCompaniesInput): Promise<GetCompani
 }
 export async function getCompany(input: GetCompanyInput): Promise<GetCompanyResult> {
   return defaultApiClient.getCompany(input);
+}
+export async function enableFeature(input: EnableFeatureInput): Promise<EnableFeatureResult> {
+  return defaultApiClient.enableFeature(input);
 }
 
 export function useGetActivities(input: GetActivitiesInput): UseQueryHookResult<GetActivitiesResult> {
@@ -238,6 +254,10 @@ export function useGetCompany(input: GetCompanyInput): UseQueryHookResult<GetCom
   return useQuery<GetCompanyResult>(() => defaultApiClient.getCompany(input));
 }
 
+export function useEnableFeature(): UseMutationHookResult<EnableFeatureInput, EnableFeatureResult> {
+  return useMutation<EnableFeatureInput, EnableFeatureResult>((input) => defaultApiClient.enableFeature(input));
+}
+
 export default {
   default: defaultApiClient,
 
@@ -247,4 +267,6 @@ export default {
   useGetCompanies,
   getCompany,
   useGetCompany,
+  enableFeature,
+  useEnableFeature,
 };

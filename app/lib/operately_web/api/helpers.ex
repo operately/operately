@@ -37,6 +37,14 @@ defmodule OperatelyWeb.Api.Helpers do
     end
   end
 
+  def find_account(conn) do
+    if conn.assigns.current_account do
+      {:ok, conn.assigns.current_account}
+    else
+      {:error, :not_found}
+    end
+  end
+
   def extend_query(query, nil, _), do: query
   def extend_query(query, false, _), do: query
   def extend_query(query, _, fun), do: fun.(query)
