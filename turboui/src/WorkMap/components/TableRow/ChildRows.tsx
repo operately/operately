@@ -5,7 +5,7 @@ interface Props {
   item: WorkMap.Item;
   level: number;
   isLast: boolean;
-  filter: WorkMap.Filter;
+  tab: WorkMap.Filter;
   selectedItemId?: string;
   onRowClick?: (item: WorkMap.Item) => void;
   expanded: boolean;

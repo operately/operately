@@ -5,13 +5,13 @@ import { TimeframeSelector } from "../../TimeframeSelector";
 
 export interface Props {
   activeTab: WorkMap.Filter;
-  onTabChange: (filter: WorkMap.Filter) => void;
+  setTab: (tab: WorkMap.Filter) => void;
   timeframe: TimeframeSelector.Timeframe;
   setTimeframe: TimeframeSelector.SetTimeframe;
   tabOptions?: WorkMap.TabOptions;
 }
 
-export function WorkMapNavigation({ activeTab, onTabChange, timeframe, setTimeframe, tabOptions = {} }: Props) {
+export function WorkMapNavigation({ activeTab, setTab, timeframe, setTimeframe, tabOptions = {} }: Props) {
   return (
     <div className="overflow-x-auto">
       <div className="border-b border-surface-outline">
@@ -20,35 +20,39 @@ export function WorkMapNavigation({ activeTab, onTabChange, timeframe, setTimefr
             <div className="flex space-x-4">
               <WorkMapTab
                 label="All work"
+                tab="all"
                 isActive={activeTab === "all"}
-                onClick={() => onTabChange("all")}
                 icon={<IconLayoutGrid size={16} />}
                 testId="work-map-tab-all"
                 hide={tabOptions.hideAll}
+                setTab={setTab}
               />
               <WorkMapTab
                 label="Goals"
+                tab="goals"
                 isActive={activeTab === "goals"}
-                onClick={() => onTabChange("goals")}
                 icon={<IconTarget size={16} />}
                 testId="work-map-tab-goals"
                 hide={tabOptions.hideGoals}
+                setTab={setTab}
               />
               <WorkMapTab
                 label="Projects"
+                tab="projects"
                 isActive={activeTab === "projects"}
-                onClick={() => onTabChange("projects")}
                 icon={<IconChecklist size={16} />}
                 testId="work-map-tab-projects"
                 hide={tabOptions.hideProjects}
+                setTab={setTab}
               />
               <WorkMapTab
                 label="Completed"
+                tab="completed"
                 isActive={activeTab === "completed"}
-                onClick={() => onTabChange("completed")}
                 icon={<IconCircleCheck size={16} />}
                 testId="work-map-tab-completed"
                 hide={tabOptions.hideCompleted}
+                setTab={setTab}
               />
             </div>
 
