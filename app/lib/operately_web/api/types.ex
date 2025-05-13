@@ -1,15 +1,17 @@
 defmodule OperatelyWeb.Api.Types do
   use TurboConnect.Types
 
-  primitive :id,
+  primitive(:id,
     encoded_type: :string,
     decoded_type: :string,
     decode_with: &OperatelyWeb.Api.Ids.decode_id/1
+  )
 
-  primitive :company_id,
+  primitive(:company_id,
     encoded_type: :string,
     decoded_type: :number,
     decode_with: &OperatelyWeb.Api.Ids.decode_company_id/1
+  )
 
   object :account do
     field :full_name, :string
@@ -101,21 +103,23 @@ defmodule OperatelyWeb.Api.Types do
     field :path, :string
   end
 
-  union :update_content, types: [
-    :update_content_project_created,
-    :update_content_project_start_time_changed,
-    :update_content_project_end_time_changed,
-    :update_content_project_contributor_added,
-    :update_content_project_contributor_removed,
-    :update_content_project_milestone_created,
-    :update_content_project_milestone_completed,
-    :update_content_project_milestone_deadline_changed,
-    :update_content_project_milestone_deleted,
-    :update_content_status_update,
-    :update_content_review,
-    :update_content_project_discussion,
-    :update_content_message
-  ]
+  union(:update_content,
+    types: [
+      :update_content_project_created,
+      :update_content_project_start_time_changed,
+      :update_content_project_end_time_changed,
+      :update_content_project_contributor_added,
+      :update_content_project_contributor_removed,
+      :update_content_project_milestone_created,
+      :update_content_project_milestone_completed,
+      :update_content_project_milestone_deadline_changed,
+      :update_content_project_milestone_deleted,
+      :update_content_status_update,
+      :update_content_review,
+      :update_content_project_discussion,
+      :update_content_message
+    ]
+  )
 
   object :activity_content_project_goal_connection do
     field :project, :project
@@ -364,63 +368,65 @@ defmodule OperatelyWeb.Api.Types do
     field :message, :string
   end
 
-  union :activity_content, types: [
-    :activity_content_company_owners_adding,
-    :activity_content_company_admin_added,
-    :activity_content_company_editing,
-    :activity_content_comment_added,
-    :activity_content_discussion_comment_submitted,
-    :activity_content_discussion_editing,
-    :activity_content_discussion_posting,
-    :activity_content_goal_archived,
-    :activity_content_goal_check_in,
-    :activity_content_goal_check_in_acknowledgement,
-    :activity_content_goal_check_in_edit,
-    :activity_content_goal_closing,
-    :activity_content_goal_created,
-    :activity_content_goal_discussion_creation,
-    :activity_content_goal_discussion_editing,
-    :activity_content_goal_editing,
-    :activity_content_goal_reopening,
-    :activity_content_goal_reparent,
-    :activity_content_goal_timeframe_editing,
-    :activity_content_group_edited,
-    :activity_content_project_archived,
-    :activity_content_project_check_in_acknowledged,
-    :activity_content_project_check_in_commented,
-    :activity_content_project_check_in_edit,
-    :activity_content_project_check_in_submitted,
-    :activity_content_project_closed,
-    :activity_content_project_contributor_addition,
-    :activity_content_project_contributors_addition,
-    :activity_content_project_contributor_edited,
-    :activity_content_project_contributor_removed,
-    :activity_content_project_created,
-    :activity_content_project_discussion_submitted,
-    :activity_content_project_goal_connection,
-    :activity_content_project_goal_disconnection,
-    :activity_content_project_milestone_commented,
-    :activity_content_project_moved,
-    :activity_content_project_pausing,
-    :activity_content_project_renamed,
-    :activity_content_project_resuming,
-    :activity_content_project_review_acknowledged,
-    :activity_content_project_review_commented,
-    :activity_content_project_review_request_submitted,
-    :activity_content_project_review_submitted,
-    :activity_content_project_timeline_edited,
-    :activity_content_space_joining,
-    :activity_content_task_adding,
-    :activity_content_task_assignee_assignment,
-    :activity_content_task_closing,
-    :activity_content_task_description_change,
-    :activity_content_task_name_editing,
-    :activity_content_task_priority_change,
-    :activity_content_task_reopening,
-    :activity_content_task_size_change,
-    :activity_content_task_status_change,
-    :activity_content_task_update
-  ]
+  union(:activity_content,
+    types: [
+      :activity_content_company_owners_adding,
+      :activity_content_company_admin_added,
+      :activity_content_company_editing,
+      :activity_content_comment_added,
+      :activity_content_discussion_comment_submitted,
+      :activity_content_discussion_editing,
+      :activity_content_discussion_posting,
+      :activity_content_goal_archived,
+      :activity_content_goal_check_in,
+      :activity_content_goal_check_in_acknowledgement,
+      :activity_content_goal_check_in_edit,
+      :activity_content_goal_closing,
+      :activity_content_goal_created,
+      :activity_content_goal_discussion_creation,
+      :activity_content_goal_discussion_editing,
+      :activity_content_goal_editing,
+      :activity_content_goal_reopening,
+      :activity_content_goal_reparent,
+      :activity_content_goal_timeframe_editing,
+      :activity_content_group_edited,
+      :activity_content_project_archived,
+      :activity_content_project_check_in_acknowledged,
+      :activity_content_project_check_in_commented,
+      :activity_content_project_check_in_edit,
+      :activity_content_project_check_in_submitted,
+      :activity_content_project_closed,
+      :activity_content_project_contributor_addition,
+      :activity_content_project_contributors_addition,
+      :activity_content_project_contributor_edited,
+      :activity_content_project_contributor_removed,
+      :activity_content_project_created,
+      :activity_content_project_discussion_submitted,
+      :activity_content_project_goal_connection,
+      :activity_content_project_goal_disconnection,
+      :activity_content_project_milestone_commented,
+      :activity_content_project_moved,
+      :activity_content_project_pausing,
+      :activity_content_project_renamed,
+      :activity_content_project_resuming,
+      :activity_content_project_review_acknowledged,
+      :activity_content_project_review_commented,
+      :activity_content_project_review_request_submitted,
+      :activity_content_project_review_submitted,
+      :activity_content_project_timeline_edited,
+      :activity_content_space_joining,
+      :activity_content_task_adding,
+      :activity_content_task_assignee_assignment,
+      :activity_content_task_closing,
+      :activity_content_task_description_change,
+      :activity_content_task_name_editing,
+      :activity_content_task_priority_change,
+      :activity_content_task_reopening,
+      :activity_content_task_size_change,
+      :activity_content_task_status_change,
+      :activity_content_task_update
+    ]
+  )
 
   object :activity_content_resource_hub_folder_copied do
     field :space, :space
@@ -634,7 +640,8 @@ defmodule OperatelyWeb.Api.Types do
     field :id, :string
     field :url, :string
     field :signed_upload_url, :string
-    field :upload_strategy, :string # "direct", "multipart"
+    # "direct", "multipart"
+    field :upload_strategy, :string
   end
 
   object :blob do
@@ -814,11 +821,13 @@ defmodule OperatelyWeb.Api.Types do
     field :can_add_members, :boolean
   end
 
-  union :activity_data_union, types: [
-    :activity_event_data_project_create,
-    :activity_event_data_milestone_create,
-    :activity_event_data_comment_post
-  ]
+  union(:activity_data_union,
+    types: [
+      :activity_event_data_project_create,
+      :activity_event_data_milestone_create,
+      :activity_event_data_comment_post
+    ]
+  )
 
   object :notification do
     field :id, :string
@@ -856,9 +865,11 @@ defmodule OperatelyWeb.Api.Types do
     field :discussion_id, :string
   end
 
-  union :panel_linked_resource, types: [
-    :project
-  ]
+  union(:panel_linked_resource,
+    types: [
+      :project
+    ]
+  )
 
   object :activity_content_group_edited do
     field :example_field, :string
@@ -1152,12 +1163,14 @@ defmodule OperatelyWeb.Api.Types do
     field :milestone, :milestone
   end
 
-  union :activity_resource_union, types: [
-    :project,
-    :update,
-    :milestone,
-    :comment
-  ]
+  union(:activity_resource_union,
+    types: [
+      :project,
+      :update,
+      :milestone,
+      :comment
+    ]
+  )
 
   object :activity_content_goal_discussion_creation do
     field :company_id, :string
@@ -1266,10 +1279,12 @@ defmodule OperatelyWeb.Api.Types do
     field :notification, :notification
   end
 
-  union :assignment_resource, types: [
-    :project,
-    :milestone
-  ]
+  union(:assignment_resource,
+    types: [
+      :project,
+      :milestone
+    ]
+  )
 
   object :activity_content_comment_added do
     field :comment, :comment
@@ -1475,7 +1490,7 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :work_map_item do
-    field :id, :string
+    field :id, :string, optional: false, nullable: false
     field :parent_id, :string
     field :name, :string
     field :status, :string
