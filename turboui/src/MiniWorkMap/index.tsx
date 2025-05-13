@@ -1,5 +1,4 @@
 import { match } from "ts-pattern";
-import { z } from "zod";
 import { AvatarList } from "../Avatar";
 import { IconGoal, IconProject } from "../icons";
 import { BlackLink } from "../Link";
@@ -16,55 +15,45 @@ export function MiniWorkMap(props: MiniWorkMap.Props) {
 }
 
 export namespace MiniWorkMap {
-  const PersonSchema = z.object({
-    id: z.string(),
-    fullName: z.string(),
-    avatarUrl: z.string(),
-  });
+  interface Person {
+    id: string;
+    fullName: string;
+    avatarUrl: string;
+  }
 
-  //
-  // zod <-> typescript has problems with recursive types
-  // so we need to do it like this:
-  //
-  // 1. define the base schema
-  // 2. Explicitly define the typescript type of the recursive schema
-  // 3. Create the full schema by extending the base schema with the recursive type
-  //
-  const BaseWorkItemsSchema = z.object({
-    id: z.string(),
-    type: z.enum(["goal", "project"]),
-    status: z.enum([
-      "on_track",
-      "caution",
-      "concern",
-      "issue",
-      "paused",
-      "outdated",
-      "pending",
-      "missed",
-      "completed",
-      "archived",
-    ]),
-    name: z.string(),
-    itemPath: z.string(),
-    progress: z.number(),
-    completed: z.boolean().optional().default(false),
-    people: z.array(PersonSchema).optional().default([]),
-  });
+  export const WorkItemTypes = ["goal", "project"] as const;
 
-  export type WorkItem = z.infer<typeof BaseWorkItemsSchema> & {
+  export const WorkItemStatuses = [
+    "on_track",
+    "caution",
+    "concern",
+    "issue",
+    "paused",
+    "outdated",
+    "pending",
+    "missed",
+    "completed",
+    "archived",
+  ] as const;
+
+  export type WorkItemType = (typeof WorkItemTypes)[number];
+  export type WorkItemStatus = (typeof WorkItemStatuses)[number];
+
+  export interface WorkItem {
+    id: string;
+    type: WorkItemType;
+    status: WorkItemStatus;
+    name: string;
+    itemPath: string;
+    progress: number;
+    completed: boolean;
+    people: Person[];
     children: WorkItem[];
-  };
+  }
 
-  export const WorkItemsSchema = BaseWorkItemsSchema.extend({
-    children: z.array(z.lazy(() => WorkItemsSchema)),
-  });
-
-  export const PropsSchema = z.object({
-    items: z.array(WorkItemsSchema),
-  });
-
-  export type Props = z.infer<typeof PropsSchema>;
+  export interface Props {
+    items: WorkItem[];
+  }
 }
 
 function ItemView({ item, depth }: { item: MiniWorkMap.WorkItem; depth: number }) {

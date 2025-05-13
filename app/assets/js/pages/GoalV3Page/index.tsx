@@ -9,6 +9,7 @@ import { GoalPage, MiniWorkMap } from "turboui";
 import { Timeframe } from "turboui/src/utils/timeframes";
 import { getWorkMap } from "../../models/workMap";
 import { Paths } from "../../routes/paths";
+import { assertEnum, assertPresent } from "../../utils/assertions";
 
 interface LoaderResult {
   goal: Goal;
@@ -31,12 +32,19 @@ export async function loader({ params }): Promise<LoaderResult> {
 
   const relatedWorkItems = await getWorkMap({ parentGoalId: goal.id! })
     .then((data) => data.workMap || [])
-    .then((data) => data.map((item) => ({ ...item, people: [], completed: false })))
-    .then((data) => MiniWorkMap.WorkItemsSchema.array().parse(data))
-    .catch((error) => {
-      console.error("Error fetching work items:", error);
-      throw new Error("Failed to fetch work items");
-    });
+    .then((data) =>
+      data.map((item) => ({
+        id: assertPresent(item.id),
+        type: assertEnum(item.type, MiniWorkMap.WorkItemTypes),
+        status: assertEnum(item.status, MiniWorkMap.WorkItemStatuses),
+        name: assertPresent(item.name),
+        itemPath: assertPresent(item.itemPath),
+        progress: assertPresent(item.progress),
+        completed: false,
+        people: [],
+        children: [],
+      })),
+    );
 
   return { goal, relatedWorkItems };
 }
@@ -45,12 +53,12 @@ export function Page() {
   const { goal, relatedWorkItems } = useLoadedData<LoaderResult>();
 
   const props: GoalPage.Props = {
-    goalName: goal.name!,
-    spaceName: goal.space!.name!,
+    goalName: assertPresent(goal.name),
+    spaceName: assertPresent(goal.space?.name),
     workmapLink: Paths.spaceGoalsPath(goal.space!.id!),
     spaceLink: Paths.spacePath(goal.space!.id!),
     closeLink: Paths.goalClosePath(goal.id!),
-    privacyLevel: goal.privacy! as GoalPage.Props["privacyLevel"],
+    privacyLevel: assertEnum(goal.privacy, GoalPage.PrivacyLevels),
     timeframe: Timeframes.parse(goal.timeframe!),
     parentGoal: toParentGoal(goal.parentGoal),
     canEdit: goal.permissions!.canEdit!,

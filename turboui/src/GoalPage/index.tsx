@@ -19,84 +19,6 @@ import { RelatedWork } from "./RelatedWork";
 import { Sidebar } from "./Sidebar";
 import { Targets } from "./Targets";
 
-export namespace GoalPage {
-  export interface Person {
-    id: string;
-    fullName: string;
-    avatarUrl: string;
-  }
-
-  export interface Message {
-    id: string;
-    title: string;
-    author: Person;
-    content: string;
-    link: string;
-  }
-
-  export interface Contributor {
-    person: Person;
-    personLink: string;
-
-    contributions: {
-      role: string;
-      location: string;
-      link: string;
-    }[];
-  }
-
-  interface ParentGoal {
-    name: string;
-    link: string;
-  }
-
-  export interface Props {
-    spaceLink: string;
-    workmapLink: string;
-    closeLink: string;
-    deleteLink: string;
-
-    parentGoal: ParentGoal | null;
-    goalName: string;
-    description?: string;
-    spaceName: string;
-    champion?: Person;
-    reviewer?: Person;
-    contributors: Contributor[];
-
-    timeframe: Timeframe;
-    targets: GoalTargetList.Target[];
-    relatedWorkItems: MiniWorkMap.WorkItem[];
-    checkIns: CheckIn[];
-    messages: Message[];
-    status: BadgeStatus;
-
-    closedOn?: Date;
-    retrospectiveLink?: string;
-
-    canEdit: boolean;
-    privacyLevel: "public" | "internal" | "confidential" | "secret";
-
-    neglectedGoal?: boolean;
-
-    updateTimeframe: (timeframe: Timeframe) => Promise<void>;
-
-    activityFeed: React.ReactNode;
-  }
-
-  export interface CheckIn {
-    id: string;
-    author: {
-      id: string;
-      fullName: string;
-      avatarUrl: string;
-    };
-    date: Date;
-    content: string;
-    link: string;
-  }
-}
-
 export function GoalPage(props: GoalPage.Props) {
   const navigation = [
     { to: props.spaceLink, label: props.spaceName },
@@ -136,6 +58,87 @@ export function GoalPage(props: GoalPage.Props) {
       <ActivityFooter {...props} />
     </Page>
   );
+}
+
+export namespace GoalPage {
+  export interface Person {
+    id: string;
+    fullName: string;
+    avatarUrl: string;
+  }
+
+  export interface Message {
+    id: string;
+    title: string;
+    author: Person;
+    content: string;
+    link: string;
+  }
+
+  export interface Contributor {
+    person: Person;
+    personLink: string;
+
+    contributions: {
+      role: string;
+      location: string;
+      link: string;
+    }[];
+  }
+
+  interface ParentGoal {
+    name: string;
+    link: string;
+  }
+
+  export const PrivacyLevels = ["public", "internal", "confidential", "secret"] as const;
+  export type PrivacyLevel = (typeof PrivacyLevels)[number];
+
+  export interface Props {
+    spaceLink: string;
+    workmapLink: string;
+    closeLink: string;
+    deleteLink: string;
+
+    parentGoal: ParentGoal | null;
+    goalName: string;
+    description?: string;
+    spaceName: string;
+    champion?: Person;
+    reviewer?: Person;
+    contributors: Contributor[];
+
+    timeframe: Timeframe;
+    targets: GoalTargetList.Target[];
+    relatedWorkItems: MiniWorkMap.WorkItem[];
+    checkIns: CheckIn[];
+    messages: Message[];
+    status: BadgeStatus;
+
+    closedOn?: Date;
+    retrospectiveLink?: string;
+
+    canEdit: boolean;
+    privacyLevel: PrivacyLevel;
+
+    neglectedGoal?: boolean;
+
+    updateTimeframe: (timeframe: Timeframe) => Promise<void>;
+
+    activityFeed: React.ReactNode;
+  }
+
+  export interface CheckIn {
+    id: string;
+    author: {
+      id: string;
+      fullName: string;
+      avatarUrl: string;
+    };
+    date: Date;
+    content: string;
+    link: string;
+  }
 }
 
 function MainContent(props: GoalPage.Props) {

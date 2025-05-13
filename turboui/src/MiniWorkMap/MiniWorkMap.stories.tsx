@@ -47,7 +47,7 @@ export const Default: Story = {
             completed: false,
             progress: 10,
             people: genPeople(3, { random: true }),
-            subitems: [],
+            children: [],
             status: "caution",
           },
           {
@@ -65,7 +65,7 @@ export const Default: Story = {
             id: "project-b",
             name: "Project B",
             type: "project",
-            link: "#",
+            itemPath: "/project-b",
             completed: true,
             progress: 100,
             people: genPeople(3, { random: true }),
