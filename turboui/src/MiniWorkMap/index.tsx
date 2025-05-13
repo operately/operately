@@ -1,5 +1,4 @@
 import { match } from "ts-pattern";
-import { z } from "zod";
 import { AvatarList } from "../Avatar";
 import { IconGoal, IconProject } from "../icons";
 import { BlackLink } from "../Link";
@@ -16,30 +15,45 @@ export function MiniWorkMap(props: MiniWorkMap.Props) {
 }
 
 export namespace MiniWorkMap {
-  const PersonSchema = z.object({
-    id: z.string(),
-    fullName: z.string(),
-    avatarUrl: z.string(),
-  });
+  interface Person {
+    id: string;
+    fullName: string;
+    avatarUrl: string;
+  }
 
-  export const WorkItemsSchema = z.object({
-    id: z.string(),
-    type: z.enum(["goal", "project"]),
-    status: z.enum(["on_track", "caution", "concern", "issue", "paused", "outdated", "pending"]),
-    name: z.string(),
-    link: z.string(),
-    progress: z.number(),
-    subitems: z.array(z.lazy(() => WorkItemsSchema)),
-    completed: z.boolean(),
-    people: z.array(PersonSchema),
-  });
+  export const WorkItemTypes = ["goal", "project"] as const;
 
-  export const PropsSchema = z.object({
-    items: z.array(WorkItemsSchema),
-  });
+  export const WorkItemStatuses = [
+    "on_track",
+    "caution",
+    "concern",
+    "issue",
+    "paused",
+    "outdated",
+    "pending",
+    "missed",
+    "completed",
+    "archived",
+  ] as const;
 
-  export type WorkItem = z.infer<typeof WorkItemsSchema>;
-  export type Props = z.infer<typeof PropsSchema>;
+  export type WorkItemType = (typeof WorkItemTypes)[number];
+  export type WorkItemStatus = (typeof WorkItemStatuses)[number];
+
+  export interface WorkItem {
+    id: string;
+    type: WorkItemType;
+    status: WorkItemStatus;
+    name: string;
+    itemPath: string;
+    progress: number;
+    completed: boolean;
+    people: Person[];
+    children: WorkItem[];
+  }
+
+  export interface Props {
+    items: WorkItem[];
+  }
 }
 
 function ItemView({ item, depth }: { item: MiniWorkMap.WorkItem; depth: number }) {
@@ -56,7 +70,7 @@ function ItemView({ item, depth }: { item: MiniWorkMap.WorkItem; depth: number }
         <StatusBadge status={item.status} />
       </div>
 
-      <Subitems items={item.subitems} depth={depth + 1} />
+      <Subitems items={item.children} depth={depth + 1} />
     </>
   );
 }
@@ -90,7 +104,7 @@ function ItemPeople({ item }: { item: MiniWorkMap.WorkItem }) {
 
 function ItemName({ item }: { item: MiniWorkMap.WorkItem }) {
   const nameElement = (
-    <BlackLink underline="hover" to={item.link} className="truncate" disableColorHoverEffect>
+    <BlackLink underline="hover" to={item.itemPath} className="truncate" disableColorHoverEffect>
       {item.name}
     </BlackLink>
   );
