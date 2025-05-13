@@ -1489,11 +1489,29 @@ defmodule OperatelyWeb.Api.Types do
     field :access_level, :integer
   end
 
+  enum(:work_map_item_type, values: [:project, :goal])
+
+  enum(:work_map_item_status,
+    values: [
+      :on_track,
+      :completed,
+      :achieved,
+      :partial,
+      :missed,
+      :paused,
+      :caution,
+      :issue,
+      :dropped,
+      :pending,
+      :outdated
+    ]
+  )
+
   object :work_map_item do
     field :id, :string, optional: false, nullable: false
     field :parent_id, :string
     field :name, :string
-    field :status, :string
+    field :status, :work_map_item_status, optional: false, nullable: false
     field :progress, :float
     field :space, :space
     field :space_path, :string
@@ -1504,7 +1522,7 @@ defmodule OperatelyWeb.Api.Types do
     field :completed_on, :date
     field :timeframe, :timeframe
     field :children, list_of(:work_map_item)
-    field :type, :string
+    field :type, :work_map_item_type, optional: false, nullable: false
     field :item_path, :string
     field :privacy, :string
   end
