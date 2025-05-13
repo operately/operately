@@ -22,23 +22,48 @@ export namespace MiniWorkMap {
     avatarUrl: z.string(),
   });
 
-  export const WorkItemsSchema = z.object({
+  //
+  // zod <-> typescript has problems with recursive types
+  // so we need to do it like this:
+  //
+  // 1. define the base schema
+  // 2. Explicitly define the typescript type of the recursive schema
+  // 3. Create the full schema by extending the base schema with the recursive type
+  //
+  const BaseWorkItemsSchema = z.object({
     id: z.string(),
     type: z.enum(["goal", "project"]),
-    status: z.enum(["on_track", "caution", "concern", "issue", "paused", "outdated", "pending"]),
+    status: z.enum([
+      "on_track",
+      "caution",
+      "concern",
+      "issue",
+      "paused",
+      "outdated",
+      "pending",
+      "missed",
+      "completed",
+      "archived",
+    ]),
     name: z.string(),
-    link: z.string(),
+    itemPath: z.string(),
     progress: z.number(),
-    subitems: z.array(z.lazy(() => WorkItemsSchema)),
-    completed: z.boolean(),
-    people: z.array(PersonSchema),
+    completed: z.boolean().optional().default(false),
+    people: z.array(PersonSchema).optional().default([]),
+  });
+
+  export type WorkItem = z.infer<typeof BaseWorkItemsSchema> & {
+    children: WorkItem[];
+  };
+
+  export const WorkItemsSchema = BaseWorkItemsSchema.extend({
+    children: z.array(z.lazy(() => WorkItemsSchema)),
   });
 
   export const PropsSchema = z.object({
     items: z.array(WorkItemsSchema),
   });
 
-  export type WorkItem = z.infer<typeof WorkItemsSchema>;
   export type Props = z.infer<typeof PropsSchema>;
 }
 
@@ -56,7 +81,7 @@ function ItemView({ item, depth }: { item: MiniWorkMap.WorkItem; depth: number }
         <StatusBadge status={item.status} />
       </div>
 
-      <Subitems items={item.subitems} depth={depth + 1} />
+      <Subitems items={item.children} depth={depth + 1} />
     </>
   );
 }
@@ -90,7 +115,7 @@ function ItemPeople({ item }: { item: MiniWorkMap.WorkItem }) {
 
 function ItemName({ item }: { item: MiniWorkMap.WorkItem }) {
   const nameElement = (
-    <BlackLink underline="hover" to={item.link} className="truncate" disableColorHoverEffect>
+    <BlackLink underline="hover" to={item.itemPath} className="truncate" disableColorHoverEffect>
       {item.name}
     </BlackLink>
   );
