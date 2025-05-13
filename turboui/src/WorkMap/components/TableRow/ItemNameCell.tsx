@@ -9,18 +9,18 @@ import WorkMap from "..";
 
 interface Props {
   item: WorkMap.Item;
-  filter: WorkMap.Filter;
+  tab: WorkMap.Filter;
   level: number;
   expanded: boolean;
   setExpanded: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export function ItemNameCell({ item, filter, level, expanded, setExpanded }: Props) {
+export function ItemNameCell({ item, tab, level, expanded, setExpanded }: Props) {
   return (
     <td className="py-2 px-2 md:px-4 relative">
       <div className="flex items-center">
-        <Indentation filter={filter} level={level} />
-        <ExpandButton item={item} expanded={expanded} setExpanded={setExpanded} filter={filter} />
+        <Indentation tab={tab} level={level} />
+        <ExpandButton item={item} expanded={expanded} setExpanded={setExpanded} tab={tab} />
         <Icon item={item} />
         <Name item={item} />
         <PrivacyIndicatorWrapper item={item} />
@@ -79,8 +79,8 @@ function Icon({ item }: { item: WorkMap.Item }) {
     .run();
 }
 
-function Indentation({ filter, level }: { filter: WorkMap.Filter; level: number }) {
-  const showIndentation = !filter || filter === "goals" || filter === "all";
+function Indentation({ tab, level }: { tab: WorkMap.Filter; level: number }) {
+  const showIndentation = !tab || tab === "goals" || tab === "all";
   const indentPadding = showIndentation ? level * 20 : 0;
 
   if (!showIndentation) return null;
@@ -88,7 +88,7 @@ function Indentation({ filter, level }: { filter: WorkMap.Filter; level: number 
   return <div style={{ width: `${indentPadding}px` }} className="flex-shrink-0" data-testid="indentation" />;
 }
 
-function ExpandButton({ item, expanded, setExpanded, filter }) {
+function ExpandButton({ item, expanded, setExpanded, tab }) {
   const hasChildren = Boolean(item.children && item.children.length > 0);
 
   const handleExpandToggle = (e: React.MouseEvent): void => {
@@ -97,7 +97,7 @@ function ExpandButton({ item, expanded, setExpanded, filter }) {
   };
 
   // Skip indentation on completed and projects views
-  if (filter === "completed" || filter === "projects") return null;
+  if (tab === "completed" || tab === "projects") return null;
 
   if (!hasChildren) return <div className="w-[16px] sm:w-[24px]"></div>;
 

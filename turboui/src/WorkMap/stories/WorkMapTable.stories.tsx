@@ -11,8 +11,8 @@ const meta = {
   },
   tags: ["autodocs"],
   argTypes: {
-    filter: {
-      description: "Current filter applied to the WorkMapTable",
+    tab: {
+      description: "Current tab applied to the WorkMapTable",
       options: [undefined, "all", "goals", "projects", "completed"],
       control: { type: "select" },
     },
@@ -30,28 +30,28 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     items: mockItems,
-    filter: "all",
+    tab: "all",
   },
 };
 
 export const GoalsOnly: Story = {
   args: {
     items: onlyGoals,
-    filter: "goals",
+    tab: "goals",
   },
 };
 
 export const ProjectsOnly: Story = {
   args: {
     items: onlyProjects,
-    filter: "projects",
+    tab: "projects",
   },
 };
 
 export const CompletedOnly: Story = {
   args: {
     items: onlyCompleted,
-    filter: "completed",
+    tab: "completed",
   },
 };
 
@@ -59,7 +59,7 @@ export const CompletedOnly: Story = {
 export const CollapseGoal: Story = {
   args: {
     items: mockItems,
-    filter: "all",
+    tab: "all",
   },
   play: async ({ canvasElement, step }) => {
     const parentGoal = "Reduce onboarding time by 30%";
@@ -82,7 +82,7 @@ export const CollapseGoal: Story = {
 export const ToggleGoal: Story = {
   args: {
     items: mockItems,
-    filter: "all",
+    tab: "all",
   },
   play: async ({ canvasElement, step }) => {
     const parentGoal = "Acquire the first users of Operately outside Semaphore";
@@ -110,7 +110,7 @@ export const ToggleGoal: Story = {
 export const Indentation: Story = {
   args: {
     items: mockItems,
-    filter: "all",
+    tab: "all",
   },
   play: async ({ canvasElement, step }) => {
     await Steps.assertIndentation(canvasElement, step, "Improve customer onboarding experience", 0, "0px");

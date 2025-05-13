@@ -7,13 +7,13 @@ import { PrivacyIndicator } from "../../PrivacyIndicator";
 
 import { WorkMapNavigation } from "./WorkMapNavigation";
 import { WorkMapTable } from "./WorkMapTable";
-import { useWorkMapFilter } from "../hooks/useWorkMapFilter";
+import { useWorkMapTab } from "../hooks/useWorkMapTab";
 
 const defaultTimeframe = currentYear();
 
 export function WorkMap({ title, items, columnOptions = {}, tabOptions = {} }: WorkMap.Props) {
   const [timeframe, setTimeframe] = useState(defaultTimeframe);
-  const { filteredItems, filter, setFilter } = useWorkMapFilter(items, timeframe, { tabOptions });
+  const { filteredItems, tab, setTab } = useWorkMapTab(items, timeframe, { tabOptions });
 
   return (
     <div className="flex flex-col w-full bg-surface-base rounded-lg">
@@ -24,13 +24,13 @@ export function WorkMap({ title, items, columnOptions = {}, tabOptions = {} }: W
       </header>
       <div className="flex-1 overflow-auto">
         <WorkMapNavigation
-          activeTab={filter}
-          onTabChange={setFilter}
+          activeTab={tab}
+          setTab={setTab}
           timeframe={timeframe}
           setTimeframe={setTimeframe}
           tabOptions={tabOptions}
         />
-        <WorkMapTable items={filteredItems} filter={filter} columnOptions={columnOptions} />
+        <WorkMapTable items={filteredItems} tab={tab} columnOptions={columnOptions} />
       </div>
     </div>
   );
