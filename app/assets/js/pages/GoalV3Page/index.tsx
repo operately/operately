@@ -29,9 +29,9 @@ export async function loader({ params }): Promise<LoaderResult> {
     includePrivacy: true,
   }).then((data) => data.goal!);
 
-  const relatedWorkItems = await getWorkMap({})
+  const relatedWorkItems = await getWorkMap({ parentGoalId: goal.id! })
     .then((data) => data.workMap || [])
-    .then((data) => data.map((item) => ({ ...item, people: [], link: "", subitems: [], completed: false })))
+    .then((data) => data.map((item) => ({ ...item, people: [], completed: false })))
     .then((data) => MiniWorkMap.WorkItemsSchema.array().parse(data))
     .catch((error) => {
       console.error("Error fetching work items:", error);
@@ -56,7 +56,6 @@ export function Page() {
     canEdit: goal.permissions!.canEdit!,
     champion: toTurbouiPerson(goal.champion!),
     reviewer: toTurbouiPerson(goal.reviewer!),
-
     description: "",
     status: "pending",
     targets: [],
