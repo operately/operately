@@ -11,49 +11,56 @@ export const mockPeople: Record<string, TaskBoard.Person> = {
   john: {
     id: generatedPeople[0].id,
     fullName: generatedPeople[0].fullName,
-    avatarUrl: generatedPeople[0].avatarUrl
+    avatarUrl: generatedPeople[0].avatarUrl,
   },
   jane: {
     id: generatedPeople[1].id,
     fullName: generatedPeople[1].fullName,
-    avatarUrl: generatedPeople[1].avatarUrl
+    avatarUrl: generatedPeople[1].avatarUrl,
   },
   bob: {
     id: generatedPeople[2].id,
     fullName: generatedPeople[2].fullName,
-    avatarUrl: generatedPeople[2].avatarUrl
+    avatarUrl: generatedPeople[2].avatarUrl,
   },
   alice: {
     id: generatedPeople[3].id,
     fullName: generatedPeople[3].fullName,
-    avatarUrl: generatedPeople[3].avatarUrl
+    avatarUrl: generatedPeople[3].avatarUrl,
   },
 };
 
 // Mock milestones
 export const mockMilestones = {
-  q2Release: { 
-    id: "1", 
-    name: "Q2 Release", 
+  q2Release: {
+    id: "1",
+    name: "Q2 Release",
     dueDate: new Date("2025-06-30"),
     hasDescription: true,
     hasComments: true,
-    commentCount: 5
+    commentCount: 5,
   },
-  productLaunch: { 
-    id: "2", 
-    name: "Product Launch", 
+  productLaunch: {
+    id: "2",
+    name: "Product Launch",
     dueDate: new Date("2025-08-15"),
     hasDescription: true,
     hasComments: true,
-    commentCount: 3
+    commentCount: 3,
   },
-  marketExpansion: { 
-    id: "3", 
-    name: "Market Expansion", 
+  marketExpansion: {
+    id: "3",
+    name: "Market Expansion",
     dueDate: new Date("2025-09-30"),
     hasDescription: false,
-    hasComments: false
+    hasComments: false,
+  },
+  emptyMilestone: {
+    id: "4",
+    name: "Empty Milestone",
+    dueDate: null,
+    hasDescription: false,
+    hasComments: false,
   },
 };
 
