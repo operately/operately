@@ -100,6 +100,16 @@ defmodule Operately.Features.ProjectCreationTest do
   end
 
   @tag login_as: :champion
+  feature "creating a project without space is not allowed", ctx do
+    params = %{name: "Website Redesign", creator: ctx.champion, champion: ctx.champion}
+
+    ctx
+    |> Steps.start_adding_project_from_lobby()
+    |> Steps.submit_project_form(params)
+    |> Steps.assert_validation_error("Space is required")
+  end
+
+  @tag login_as: :champion
   feature "creating a project with no reviewer", ctx do
     params = %{name: "Website Redesign", creator: ctx.champion, champion: ctx.champion}
 
