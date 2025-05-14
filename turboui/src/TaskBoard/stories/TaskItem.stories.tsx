@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React, { useState } from "react";
 import { TaskItem } from "../components/TaskItem";
-import { TaskBoard } from "../components/StatusSelector";
+import * as Types from "../types";
 import { DragAndDropProvider } from "../../utils/DragAndDrop";
 
 /**
@@ -44,7 +44,7 @@ const sharedProps = {
 };
 
 // Event handler for status changes
-const handleStatusChange = (taskId: string, newStatus: TaskBoard.Status) => {
+const handleStatusChange = (taskId: string, newStatus: Types.Status) => {
   console.log(`Status changed for task ${taskId} to ${newStatus}`);
 };
 
@@ -56,27 +56,43 @@ export const BasicTask: Story = {
     task: {
       id: "task-1",
       title: "Implement login functionality",
-      status: "pending" as TaskBoard.Status,
+      status: "pending" as Types.Status,
       index: 0,
     },
     ...sharedProps,
   },
   render: (args) => {
+    // Set up state to track task updates
+    const [task, setTask] = React.useState(args.task);
+    
+    // Update task when args change
+    React.useEffect(() => {
+      setTask(args.task);
+    }, [args.task]);
+    
     // Set up status change listener
     React.useEffect(() => {
       const handleStatusChangeEvent = (event: CustomEvent) => {
         const { taskId, newStatus } = event.detail;
-        handleStatusChange(taskId, newStatus);
+        if (taskId === task.id) {
+          console.log(`TaskItem: Status changed for task ${taskId} to ${newStatus}`);
+          
+          // Update the task state
+          setTask({...task, status: newStatus});
+          
+          // Also call the handler for debugging
+          handleStatusChange(taskId, newStatus);
+        }
       };
       document.addEventListener("statusChange" as any, handleStatusChangeEvent as any);
       return () => {
         document.removeEventListener("statusChange" as any, handleStatusChangeEvent as any);
       };
-    }, []);
+    }, [task]);
 
     // Make sure all required props are passed
     return <TaskItem 
-      task={args.task} 
+      task={task} // Use the state-managed task instead of args.task
       milestoneId={args.milestoneId} 
       itemStyle={args.itemStyle} 
     />;
@@ -91,7 +107,7 @@ export const TaskWithAssignee: Story = {
     task: {
       id: "task-2",
       title: "Design user profile page",
-      status: "in_progress" as TaskBoard.Status,
+      status: "in_progress" as Types.Status,
       assignees: [
         { id: "user-1", fullName: "Alice Johnson", avatarUrl: "https://i.pravatar.cc/150?u=alice" },
       ],
@@ -110,7 +126,7 @@ export const TaskWithComments: Story = {
     task: {
       id: "task-3",
       title: "Fix navigation bug in sidebar",
-      status: "in_progress" as TaskBoard.Status,
+      status: "in_progress" as Types.Status,
       hasComments: true,
       commentCount: 3,
       index: 0,
@@ -128,7 +144,7 @@ export const TaskWithDescription: Story = {
     task: {
       id: "task-4",
       title: "Optimize database queries",
-      status: "pending" as TaskBoard.Status,
+      status: "pending" as Types.Status,
       hasDescription: true,
       index: 0,
     },
@@ -145,7 +161,7 @@ export const TaskWithDueDate: Story = {
     task: {
       id: "task-5",
       title: "Submit quarterly report",
-      status: "pending" as TaskBoard.Status,
+      status: "pending" as Types.Status,
       dueDate: new Date(new Date().setDate(new Date().getDate() + 3)), // Due in 3 days
       index: 0,
     },
@@ -162,7 +178,7 @@ export const OverdueTask: Story = {
     task: {
       id: "task-6",
       title: "Send client proposal",
-      status: "pending" as TaskBoard.Status,
+      status: "pending" as Types.Status,
       dueDate: new Date(new Date().setDate(new Date().getDate() - 2)), // 2 days ago
       index: 0,
     },
@@ -179,7 +195,7 @@ export const CompletedTask: Story = {
     task: {
       id: "task-7",
       title: "Setup development environment",
-      status: "done" as TaskBoard.Status,
+      status: "done" as Types.Status,
       index: 0,
     },
     ...sharedProps,
@@ -195,7 +211,7 @@ export const FullFeaturedTask: Story = {
     task: {
       id: "task-8",
       title: "Complete user authentication system",
-      status: "in_progress" as TaskBoard.Status,
+      status: "in_progress" as Types.Status,
       hasDescription: true,
       hasComments: true,
       commentCount: 5,

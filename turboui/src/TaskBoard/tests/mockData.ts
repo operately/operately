@@ -1,4 +1,4 @@
-import { TaskBoard } from "../components";
+import * as Types from "../types";
 import { genPeople } from "../../utils/storybook/genPeople";
 
 // Labels removed in current iteration
@@ -6,8 +6,8 @@ import { genPeople } from "../../utils/storybook/genPeople";
 // Generate a consistent set of people for our mock data
 const generatedPeople = genPeople(4);
 
-// Mock people - mapped into an object for easy reference with proper TaskBoard.Person typing
-export const mockPeople: Record<string, TaskBoard.Person> = {
+// Mock people - mapped into an object for easy reference with proper Types.Person typing
+export const mockPeople: Record<string, Types.Person> = {
   john: {
     id: generatedPeople[0].id,
     fullName: generatedPeople[0].fullName,
@@ -65,7 +65,7 @@ export const mockMilestones = {
 };
 
 // Mock tasks
-export const mockTasks: TaskBoard.Task[] = [
+export const mockTasks: Types.Task[] = [
   {
     id: "task-1",
     title: "Implement user authentication",
@@ -240,4 +240,4 @@ export const mockTasks: TaskBoard.Task[] = [
 ];
 
 // Mock empty tasks array
-export const mockEmptyTasks: TaskBoard.Task[] = [];
+export const mockEmptyTasks: Types.Task[] = [];

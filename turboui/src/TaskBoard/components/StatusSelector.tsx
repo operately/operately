@@ -9,40 +9,8 @@ import {
   IconCheck
 } from "@tabler/icons-react";
 
-export namespace TaskBoard {
-  export type Status = "pending" | "in_progress" | "done" | "canceled";
-
-  export interface Task {
-    id: string;
-    title: string;
-    status: Status;
-    description?: string;
-    assignees?: Person[];
-    milestone?: Milestone;
-    points?: number;
-    dueDate?: Date;
-    hasDescription?: boolean;
-    hasComments?: boolean;
-    commentCount?: number;
-    comments?: any[];
-    _isHelperTask?: boolean;
-  }
-
-  export interface Person {
-    id: string;
-    fullName: string;
-    avatarUrl?: string;
-  }
-
-  export interface Milestone {
-    id: string;
-    name: string;
-    dueDate?: Date;
-    hasDescription?: boolean;
-    hasComments?: boolean;
-    commentCount?: number;
-  }
-}
+// Import types from the shared types module
+import * as Types from "../types";
 
 // Create colored icon components for each status
 const ColoredIconCircleDot = (props: any) => <IconCircleDot {...props} className="text-brand-1" />;
@@ -51,7 +19,7 @@ const ColoredIconCircleCheckFilled = (props: any) => (
 );
 
 // Map task status to badge status, labels and icons
-const taskStatusConfig: Record<TaskBoard.Status, { status: string; label: string; icon: any; color?: string }> = {
+const taskStatusConfig: Record<Types.Status, { status: string; label: string; icon: any; color?: string }> = {
   pending: { status: "not_started", label: "Not started", icon: IconCircleDashed },
   in_progress: { status: "in_progress", label: "In progress", icon: ColoredIconCircleDot, color: "text-brand-1" },
   done: { status: "completed", label: "Done", icon: ColoredIconCircleCheckFilled, color: "text-callout-success-icon" },
@@ -59,8 +27,8 @@ const taskStatusConfig: Record<TaskBoard.Status, { status: string; label: string
 };
 
 interface StatusSelectorProps {
-  task: TaskBoard.Task;
-  onStatusChange?: (newStatus: TaskBoard.Status) => void;
+  task: Types.Task;
+  onStatusChange?: (newStatus: Types.Status) => void;
   showFullBadge?: boolean;
 }
 
@@ -96,7 +64,7 @@ export function StatusSelector({
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && filteredStatusOptions.length > 0) {
       const [firstMatchStatus] = filteredStatusOptions[0];
-      onStatusChange && onStatusChange(firstMatchStatus as TaskBoard.Status);
+      onStatusChange && onStatusChange(firstMatchStatus as Types.Status);
     }
   };
 
@@ -152,7 +120,7 @@ export function StatusSelector({
           <MenuActionItem
             key={status}
             icon={config.icon}
-            onClick={() => onStatusChange && onStatusChange(status as TaskBoard.Status)}
+            onClick={() => onStatusChange && onStatusChange(status as Types.Status)}
           >
             <div className="flex items-center justify-between w-full">
               {config.label}
