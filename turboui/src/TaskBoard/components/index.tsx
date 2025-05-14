@@ -1,7 +1,9 @@
 import React, { useState, useMemo, useCallback, useEffect } from "react";
 import { SecondaryButton } from "../../Button";
 import { BlackLink } from "../../Link";
-import { DragAndDropProvider, useDraggable, useDraggingAnimation, useDropZone } from "../../utils/DragAndDrop";
+import { DragAndDropProvider } from "../../utils/DragAndDrop";
+import { reorderTasks } from "../utils/taskReorderingUtils";
+import * as Types from "../types";
 import {
   IconFileText,
   IconMessageCircle,
@@ -15,83 +17,27 @@ import { PieChart } from "../../PieChart";
 import TaskCreationModal from "./TaskCreationModal";
 import MilestoneCreationModal from "./MilestoneCreationModal";
 import { DueDateDisplay } from "./DueDateDisplay";
-import { TaskItem } from "./TaskItem";
-
-export namespace TaskBoard {
-  export type Status = "pending" | "in_progress" | "done" | "canceled";
-
-  export interface Person {
-    id: string;
-    fullName: string;
-    avatarUrl?: string;
-  }
-
-  // Interface for tasks with drag-and-drop position index
-
-  export interface Milestone {
-    id: string;
-    name: string;
-    dueDate?: Date;
-    hasDescription?: boolean;
-    hasComments?: boolean;
-    commentCount?: number;
-  }
-
-  // Label interface removed in current iteration
-
-  export interface Task {
-    id: string;
-    title: string;
-    status: Status;
-    description?: string;
-    assignees?: Person[];
-    // labels removed in current iteration
-    milestone?: Milestone;
-    points?: number;
-    dueDate?: Date;
-    hasDescription?: boolean;
-    hasComments?: boolean;
-    commentCount?: number;
-    comments?: any[];
-    // Special flag to hide helper tasks used for empty milestones
-    _isHelperTask?: boolean;
-  }
-
-  export interface TaskWithIndex extends Task {
-    index: number;
-  }
-
-  export type ViewMode = "table" | "kanban" | "timeline";
-
-  // Callback for when a task status changes
-  export interface TaskBoardCallbacks {
-    onStatusChange?: (taskId: string, newStatus: Status) => void;
-  }
-
-  export interface Props {
-    title: string;
-    tasks: Task[];
-    viewMode?: ViewMode;
-    onStatusChange?: (taskId: string, newStatus: Status) => void;
-    onTaskCreate?: (task: Omit<Task, "id">) => void;
-    onMilestoneCreate?: (milestone: Omit<Milestone, "id">) => void;
-  }
-}
+import { TaskList } from "./TaskList";
+import { EmptyMilestoneDropZone } from "./EmptyMilestoneDropZone";
+import { MilestoneCard } from "./MilestoneCard";
 
 // Helper to group tasks by status
-const groupTasksByStatus = (tasks: TaskBoard.Task[]) => {
-  const grouped: Record<string, TaskBoard.Task[]> = {
+const groupTasksByStatus = (tasks: Types.Task[]) => {
+  const grouped: Record<string, Types.Task[]> = {
     pending: [],
     in_progress: [],
     done: [],
+    canceled: [],
   };
 
   tasks.forEach((task) => {
-    if (grouped[task.status]) {
-      grouped[task.status].push(task);
-    } else {
-      grouped.pending.push(task);
+    // Skip helper tasks used for showing empty milestones
+    if (task._isHelperTask) return;
+
+    if (!grouped[task.status]) {
+      grouped[task.status] = [];
     }
+    grouped[task.status].push(task);
   });
 
   return grouped;
@@ -104,7 +50,7 @@ const ColoredIconCircleCheckFilled = (props: any) => (
 );
 
 // Map task status to badge status, labels and icons
-const taskStatusConfig: Record<TaskBoard.Status, { status: string; label: string; icon: any; color?: string }> = {
+const taskStatusConfig: Record<Types.Status, { status: string; label: string; icon: any; color?: string }> = {
   pending: { status: "not_started", label: "Not started", icon: IconCircleDashed },
   in_progress: { status: "in_progress", label: "In progress", icon: ColoredIconCircleDot, color: "text-brand-1" },
   done: { status: "completed", label: "Done", icon: ColoredIconCircleCheckFilled, color: "text-callout-success-icon" },
@@ -112,7 +58,7 @@ const taskStatusConfig: Record<TaskBoard.Status, { status: string; label: string
 };
 
 // Helper to get the display name for a status
-const getStatusDisplayName = (status: TaskBoard.Status): string => {
+const getStatusDisplayName = (status: Types.Status): string => {
   switch (status) {
     case "pending":
       return "Not started";
@@ -125,46 +71,6 @@ const getStatusDisplayName = (status: TaskBoard.Status): string => {
   }
 };
 
-// TaskList component with drag and drop functionality
-function TaskList({ tasks, milestoneId }: { tasks: TaskBoard.Task[]; milestoneId: string }) {
-  // Add drag and drop index to each task
-  const tasksWithIndex = useMemo(() => {
-    return tasks.map((task, index) => ({ ...task, index }));
-  }, [tasks]);
-
-  // Set up drop zone for this list of tasks
-  const { ref } = useDropZone({ id: `milestone-${milestoneId}`, dependencies: [tasksWithIndex] });
-  const { containerStyle, itemStyle } = useDraggingAnimation(`milestone-${milestoneId}`, tasksWithIndex);
-
-  return (
-    <ul ref={ref as React.RefObject<HTMLUListElement>} style={containerStyle}>
-      {tasksWithIndex.map((task) => (
-        <TaskItem
-          key={task.id}
-          task={task as TaskBoard.TaskWithIndex}
-          milestoneId={milestoneId}
-          itemStyle={itemStyle}
-        />
-      ))}
-    </ul>
-  );
-}
-
-// Empty milestone drop zone component that allows dropping tasks into empty milestones
-function EmptyMilestoneDropZone({ milestoneId }: { milestoneId: string }) {
-  // Set up drop zone with the same ID pattern as TaskList
-  const { ref } = useDropZone({ id: `milestone-${milestoneId}`, dependencies: [] });
-
-  return (
-    <div
-      ref={ref as React.RefObject<HTMLDivElement>}
-      className="py-3 px-4 text-center text-content-subtle text-sm min-h-[40px]"
-    >
-      No tasks in this milestone. Click + to add a task or drag a task here.
-    </div>
-  );
-}
-
 export function TaskBoard({
   tasks: externalTasks,
   title = "Tasks",
@@ -173,15 +79,15 @@ export function TaskBoard({
   onTaskCreate,
   onMilestoneCreate,
 }: {
-  tasks: TaskBoard.Task[];
+  tasks: Types.Task[];
   title?: string;
-  viewMode?: TaskBoard.ViewMode;
-  onStatusChange?: (taskId: string, newStatus: TaskBoard.Status) => void;
-  onTaskCreate?: (task: Omit<TaskBoard.Task, "id">) => void;
-  onMilestoneCreate?: (milestone: Omit<TaskBoard.Milestone, "id">) => void;
+  viewMode?: Types.ViewMode;
+  onStatusChange?: (taskId: string, newStatus: Types.Status) => void;
+  onTaskCreate?: (task: Omit<Types.Task, "id">) => void;
+  onMilestoneCreate?: (milestone: Omit<Types.Milestone, "id">) => void;
 }) {
-  const [currentViewMode, setCurrentViewMode] = useState<TaskBoard.ViewMode>(viewMode);
-  const [internalTasks, setInternalTasks] = useState<TaskBoard.Task[]>(externalTasks);
+  const [currentViewMode, setCurrentViewMode] = useState<Types.ViewMode>(viewMode);
+  const [internalTasks, setInternalTasks] = useState<Types.Task[]>(externalTasks);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [isMilestoneModalOpen, setIsMilestoneModalOpen] = useState(false);
   const [activeTaskMilestoneId, setActiveTaskMilestoneId] = useState<string | undefined>();
@@ -192,8 +98,8 @@ export function TaskBoard({
   }, [externalTasks]);
 
   // Group tasks by milestone, filtering out helper tasks
-  const groupTasksByMilestone = (tasks: TaskBoard.Task[]) => {
-    const grouped: Record<string, TaskBoard.Task[]> = {};
+  const groupTasksByMilestone = (tasks: Types.Task[]) => {
+    const grouped: Record<string, Types.Task[]> = {};
 
     // Group with no milestone
     grouped["no_milestone"] = [];
@@ -228,11 +134,14 @@ export function TaskBoard({
 
   // Get all unique milestones from tasks with completion statistics
   const getMilestones = () => {
+    type MilestoneStats = Types.MilestoneStats;
+    type MilestoneWithStats = Types.MilestoneWithStats;
+
     const milestoneMap = new Map<
       string,
       {
-        milestone: TaskBoard.Milestone;
-        stats: { pending: number; inProgress: number; done: number; canceled: number; total: number };
+        milestone: Types.Milestone;
+        stats: MilestoneStats;
         hasTasks: boolean;
       }
     >();
@@ -282,7 +191,7 @@ export function TaskBoard({
   };
 
   // Handle status change
-  const handleStatusChange = (taskId: string, newStatus: TaskBoard.Status) => {
+  const handleStatusChange = (taskId: string, newStatus: Types.Status) => {
     // Update local state
     const updatedTasks = internalTasks.map((task) => (task.id === taskId ? { ...task, status: newStatus } : task));
     setInternalTasks(updatedTasks);
@@ -308,7 +217,7 @@ export function TaskBoard({
   }, [handleStatusChange]);
 
   // Handle creating a new task
-  const handleCreateTask = (newTaskData: Omit<TaskBoard.Task, "id">) => {
+  const handleCreateTask = (newTaskData: Omit<Types.Task, "id">) => {
     if (onTaskCreate) {
       // Log to confirm task creation event is being triggered
       console.log("TaskBoard: Creating new task", newTaskData);
@@ -319,7 +228,7 @@ export function TaskBoard({
   };
 
   // Handle creating a new milestone
-  const handleCreateMilestone = (newMilestoneData: Omit<TaskBoard.Milestone, "id">) => {
+  const handleCreateMilestone = (newMilestoneData: Omit<Types.Milestone, "id">) => {
     if (onMilestoneCreate) {
       // Log to confirm milestone creation event is being triggered
       console.log("TaskBoard: Creating new milestone", newMilestoneData);
@@ -336,117 +245,25 @@ export function TaskBoard({
   // Handle task reordering via drag and drop
   const handleTaskReorder = useCallback(
     (dropZoneId: string, draggedId: string, indexInDropZone: number) => {
-      // Extract milestone ID from the dropZoneId (format: milestone-{id})
-      const targetMilestoneId = dropZoneId.replace("milestone-", "");
+      console.log(`Handling reorder: ${draggedId} to ${dropZoneId} at index ${indexInDropZone}`);
 
-      // Find the task being dragged
-      const draggedTask = internalTasks.find((task) => task.id === draggedId);
-      if (!draggedTask) return;
-
-      // Remember the original milestone ID before drag (for later checking if it's now empty)
-      const originalMilestoneId = draggedTask.milestone?.id;
-
-      // Create a new array of tasks with the dragged task moved to the new position
-      const updatedTasks = [...internalTasks];
-
-      // First remove the task from its current position
-      const taskIndex = updatedTasks.findIndex((task) => task.id === draggedId);
-      if (taskIndex > -1) {
-        updatedTasks.splice(taskIndex, 1);
-      }
-
-      // Group tasks by milestone to find the insertion point
-      const tasksByMilestone = groupTasksByMilestone(updatedTasks);
-
-      // Determine the real target array and index
-      const targetArray =
-        targetMilestoneId === "no-milestone"
-          ? tasksByMilestone["no_milestone"]
-          : tasksByMilestone[targetMilestoneId] || [];
-
-      // If the task's milestone has changed, update it
-      if (targetMilestoneId === "no-milestone") {
-        draggedTask.milestone = undefined;
-      } else if (targetMilestoneId !== draggedTask.milestone?.id) {
-        // Find the milestone object from an existing task with this milestone ID
-        const targetMilestone = milestones.find((m) => m.milestone.id === targetMilestoneId)?.milestone;
-        if (targetMilestone) {
-          draggedTask.milestone = targetMilestone;
-        }
-      }
-
-      // Insert the task at the new position
-      // Ensure the index is valid
-      const insertIndex = Math.min(indexInDropZone, targetArray.length);
-
-      // If the target is the no_milestone group, insert directly into the updatedTasks array
-      if (targetMilestoneId === "no-milestone") {
-        // Count how many tasks are before this in the overall array
-        let globalIndex = 0;
-
-        // Count tasks from other milestones that come before this one in the list
-        for (const milestoneId in tasksByMilestone) {
-          if (milestoneId === "no_milestone") break;
-          globalIndex += tasksByMilestone[milestoneId].length;
-        }
-
-        // Add the insertion index within the no_milestone group
-        globalIndex += insertIndex;
-
-        // Insert the task at the calculated global index
-        updatedTasks.splice(globalIndex, 0, draggedTask);
-      } else {
-        // Find where in the overall tasks array this milestone's tasks start
-        let globalIndex = 0;
-
-        // Count tasks from milestones that come before this one
-        for (const milestoneId in tasksByMilestone) {
-          if (milestoneId === targetMilestoneId) break;
-          globalIndex += tasksByMilestone[milestoneId].length;
-        }
-
-        // Add the insertion index within the milestone
-        globalIndex += insertIndex;
-
-        // Insert the task at the calculated global index
-        updatedTasks.splice(globalIndex, 0, draggedTask);
-      }
-
-      // Check if the original milestone is now empty and needs a helper task
-      if (originalMilestoneId && originalMilestoneId !== targetMilestoneId) {
-        // Check if there are any non-helper tasks remaining in the milestone
-        const hasRealTasks = updatedTasks.some(
-          (task) => !task._isHelperTask && task.milestone?.id === originalMilestoneId,
-        );
-
-        // If no real tasks remain and this milestone doesn't already have a helper task
-        if (
-          !hasRealTasks &&
-          !updatedTasks.some((task) => task._isHelperTask && task.milestone?.id === originalMilestoneId)
-        ) {
-          // Find the original milestone object
-          const originalMilestone = milestones.find((m) => m.milestone.id === originalMilestoneId)?.milestone;
-
-          if (originalMilestone) {
-            // Create a helper task to keep the empty milestone visible
-            const helperTask: TaskBoard.Task = {
-              id: `task-helper-${originalMilestoneId}-${Date.now()}`,
-              title: `Helper task for ${originalMilestone.name}`,
-              status: "pending",
-              milestone: originalMilestone,
-              _isHelperTask: true,
-            };
-
-            // Add the helper task to the updated tasks
-            updatedTasks.push(helperTask);
-          }
-        }
-      }
+      // Get all milestone objects for the utility function
+      const allMilestones = milestones.map(m => m.milestone);
+      
+      // Use the utility function to handle reordering
+      const updatedTasks = reorderTasks(
+        internalTasks,
+        dropZoneId,
+        draggedId,
+        indexInDropZone,
+        { addHelperTasks: true },
+        allMilestones
+      );
 
       // Update state with the reordered tasks
       setInternalTasks(updatedTasks);
 
-      console.log(`Reordered: Task ${draggedId} moved to ${targetMilestoneId} at position ${indexInDropZone}`);
+      console.log(`Reordered: Task ${draggedId} moved to ${dropZoneId} at position ${indexInDropZone}`);
     },
     [internalTasks, milestones, setInternalTasks],
   );
@@ -526,86 +343,19 @@ export function TaskBoard({
                 {/* If no tasks at all */}
                 {internalTasks.length === 0 && <li className="py-4 text-center text-content-subtle">No tasks found</li>}
 
-                {/* Tasks with milestones */}
+                {/* Milestones */}
                 {milestones.map((milestoneData) => (
-                  <li key={milestoneData.milestone.id}>
-                    {/* Milestone header */}
-                    <div className="flex items-center justify-between px-4 py-3 bg-surface-dimmed border-b border-surface-outline first:border-t-0">
-                      <div className="flex items-center gap-2">
-                        {/* Progress pie chart - handle empty milestone case */}
-                        <PieChart
-                          size={16}
-                          slices={[
-                            {
-                              percentage:
-                                milestoneData.stats.total > 0
-                                  ? (milestoneData.stats.done / milestoneData.stats.total) * 100
-                                  : 0,
-                              color: "var(--color-callout-success-icon)",
-                            },
-                          ]}
-                        />
-                        <BlackLink
-                          to={`/milestones/${milestoneData.milestone.id}`}
-                          className="text-sm font-semibold text-content-base hover:text-link-hover transition-colors"
-                          underline="hover"
-                        >
-                          {milestoneData.milestone.name}
-                        </BlackLink>
-                        {/* <span className="text-xs text-content-dimmed">
-                        {milestoneData.stats.done}/{milestoneData.stats.total} completed
-                      </span> */}
-
-                        {/* Milestone indicators */}
-                        <div className="flex items-center gap-1 ml-1">
-                          {/* Description indicator */}
-                          {milestoneData.milestone.hasDescription && (
-                            <span className="text-content-dimmed">
-                              <IconFileText size={12} />
-                            </span>
-                          )}
-
-                          {/* Comments indicator */}
-                          {milestoneData.milestone.hasComments && (
-                            <span className="text-content-dimmed flex items-center">
-                              <IconMessageCircle size={12} />
-                              {milestoneData.milestone.commentCount && (
-                                <span className="ml-0.5 text-xs text-content-dimmed">
-                                  {milestoneData.milestone.commentCount}
-                                </span>
-                              )}
-                            </span>
-                          )}
-
-                          {/* Due date indicator */}
-                          {milestoneData.milestone.dueDate && (
-                            <span className="ml-1">
-                              <DueDateDisplay dueDate={milestoneData.milestone.dueDate} />
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                      <button
-                        className="text-content-dimmed hover:text-content-base"
-                        onClick={() => {
-                          setActiveTaskMilestoneId(milestoneData.milestone.id);
-                          setIsTaskModalOpen(true);
-                        }}
-                      >
-                        <IconPlus size={16} />
-                      </button>
-                    </div>
-
-                    {/* Tasks in this milestone - show empty state when no tasks */}
-                    {groupedTasks[milestoneData.milestone.id] && groupedTasks[milestoneData.milestone.id].length > 0 ? (
-                      <TaskList
-                        tasks={groupedTasks[milestoneData.milestone.id]}
-                        milestoneId={milestoneData.milestone.id}
-                      />
-                    ) : (
-                      <EmptyMilestoneDropZone milestoneId={milestoneData.milestone.id} />
-                    )}
-                  </li>
+                  <MilestoneCard
+                    key={milestoneData.milestone.id}
+                    milestone={milestoneData.milestone}
+                    tasks={groupedTasks[milestoneData.milestone.id] || []}
+                    stats={milestoneData.stats}
+                    onTaskCreate={onTaskCreate ? (newTask) => onTaskCreate(newTask) : undefined}
+                    availableMilestones={milestones.map(m => m.milestone)}
+                    availablePeople={internalTasks
+                      .flatMap((task) => task.assignees || [])
+                      .filter((person, index, self) => index === self.findIndex((p) => p.id === person.id))}
+                  />
                 ))}
 
                 {/* Tasks with no milestone */}

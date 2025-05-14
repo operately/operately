@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React, { useState, useEffect } from "react";
+import * as Types from "../types";
 import { TaskBoard } from "../components";
 import TaskCreationModal from "../components/TaskCreationModal";
 import MilestoneCreationModal from "../components/MilestoneCreationModal";
@@ -54,7 +55,7 @@ const extractMilestones = (tasks) => {
 };
 
 // Create a minimal milestone for testing different UI states
-const standaloneTestMilestone: TaskBoard.Milestone = {
+const standaloneTestMilestone: Types.Milestone = {
   id: "milestone-minimal",
   name: "Minimal Milestone",
   dueDate: undefined, // Using undefined instead of null to match the type definition
@@ -77,7 +78,7 @@ export const Default: Story = {
       const taskWithStandaloneMilestone = {
         id: "task-minimal-milestone",
         title: "This task demonstrates a minimal milestone",
-        status: "pending" as TaskBoard.Status,
+        status: "pending" as Types.Status,
         milestone: standaloneTestMilestone,
       };
 
@@ -86,7 +87,7 @@ export const Default: Story = {
       const emptyMilestoneHelperTask = {
         id: "task-empty-milestone-helper",
         title: "Hidden helper task for Empty Milestone",
-        status: "pending" as TaskBoard.Status,
+        status: "pending" as Types.Status,
         milestone: mockMilestones.emptyMilestone,
         _isHelperTask: true, // This flag tells the TaskBoard to hide this task
       };
@@ -144,7 +145,7 @@ export const Default: Story = {
       const helperTask = {
         id: `task-helper-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
         title: `Hidden helper task for ${newMilestone.name}`,
-        status: "pending" as TaskBoard.Status,
+        status: "pending" as Types.Status,
         milestone: newMilestone,
         _isHelperTask: true, // This flag tells the TaskBoard to not display this task
       };

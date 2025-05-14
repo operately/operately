@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import { PrimaryButton, SecondaryButton } from "../../Button";
-import { TaskBoard } from "./index";
+import * as Types from "../types";
 import Modal from "../../Modal";
 import { IconCalendar } from "@tabler/icons-react";
 
 interface MilestoneCreationModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onCreateMilestone: (milestone: Omit<TaskBoard.Milestone, "id">) => void;
+  onCreateMilestone: (milestone: Omit<Types.Milestone, "id">) => void;
 }
 
 export function MilestoneCreationModal({
@@ -50,7 +50,7 @@ export function MilestoneCreationModal({
     if (!name.trim()) return;
     
     // Create new milestone object
-    const newMilestone: Omit<TaskBoard.Milestone, "id"> = {
+    const newMilestone: Omit<Types.Milestone, "id"> = {
       name: name.trim(),
       hasDescription: false,
       hasComments: false,

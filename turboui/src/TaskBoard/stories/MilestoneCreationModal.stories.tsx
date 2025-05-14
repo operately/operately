@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React, { useState } from "react";
 import { MilestoneCreationModal } from "../components/MilestoneCreationModal";
-import { TaskBoard } from "../components";
+import * as Types from "../types";
 import { PrimaryButton } from "../../Button";
 
 /**
@@ -25,14 +25,14 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   render: () => {
     const [isOpen, setIsOpen] = useState(false);
-    const [createdMilestones, setCreatedMilestones] = useState<TaskBoard.Milestone[]>([]);
+    const [createdMilestones, setCreatedMilestones] = useState<Types.Milestone[]>([]);
 
-    const handleCreateMilestone = (newMilestoneData: Omit<TaskBoard.Milestone, "id">) => {
+    const handleCreateMilestone = (newMilestoneData: Omit<Types.Milestone, "id">) => {
       // Generate a fake UUID for the new milestone
       const milestoneId = `milestone-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
       // Create the new milestone object
-      const newMilestone: TaskBoard.Milestone = {
+      const newMilestone: Types.Milestone = {
         id: milestoneId,
         ...newMilestoneData,
       };
@@ -83,7 +83,7 @@ export const OpenByDefault: Story = {
   render: () => {
     const [isOpen, setIsOpen] = useState(true);
 
-    const handleCreateMilestone = (newMilestoneData: Omit<TaskBoard.Milestone, "id">) => {
+    const handleCreateMilestone = (newMilestoneData: Omit<Types.Milestone, "id">) => {
       console.log("Milestone created:", newMilestoneData);
       // Close modal after creation in this example
       setIsOpen(false);

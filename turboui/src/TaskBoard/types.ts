@@ -1,0 +1,115 @@
+/**
+ * TaskBoard component types
+ * 
+ * This file contains all the shared types and interfaces for the TaskBoard component.
+ * Moving these to a dedicated file helps prevent circular dependencies and improves code organization.
+ */
+
+/**
+ * Task status types
+ * Using 'done' for backward compatibility with existing code
+ */
+export type Status = "pending" | "in_progress" | "done" | "canceled";
+
+/**
+ * Person interface for task assignees
+ */
+export interface Person {
+  id: string;
+  fullName: string;
+  avatarUrl?: string;
+}
+
+/**
+ * Milestone interface for task grouping
+ */
+export interface Milestone {
+  id: string;
+  name: string;
+  dueDate?: Date;
+  hasDescription?: boolean;
+  hasComments?: boolean;
+  commentCount?: number;
+}
+
+/**
+ * Task interface 
+ */
+export interface Task {
+  id: string;
+  title: string;
+  status: Status;
+  description?: string;
+  assignees?: Person[];
+  milestone?: Milestone;
+  points?: number;
+  dueDate?: Date;
+  hasDescription?: boolean;
+  hasComments?: boolean;
+  commentCount?: number;
+  comments?: any[];
+  _isHelperTask?: boolean;
+}
+
+/**
+ * Task with index for drag-and-drop positioning
+ */
+export interface TaskWithIndex extends Task {
+  index: number;
+}
+
+/**
+ * View mode options
+ */
+export type ViewMode = "table" | "kanban" | "timeline";
+
+/**
+ * Milestone stats for tracking completion
+ */
+export interface MilestoneStats {
+  total: number;
+  pending: number;
+  inProgress: number;
+  done: number;
+  canceled: number;
+}
+
+/**
+ * Milestone with stats for display
+ */
+export interface MilestoneWithStats {
+  milestone: Milestone;
+  stats: MilestoneStats;
+}
+
+/**
+ * Callback interfaces for TaskBoard operations
+ */
+export interface TaskBoardCallbacks {
+  /**
+   * Callback for when a task status changes
+   */
+  onStatusChange?: (taskId: string, newStatus: Status) => void;
+  
+  /**
+   * Callback for when a task is created
+   */
+  onTaskCreate?: (task: Omit<Task, "id">) => void;
+  
+  /**
+   * Callback for when a milestone is created
+   */
+  onMilestoneCreate?: (milestone: Omit<Milestone, "id">) => void;
+}
+
+/**
+ * Props for the TaskBoard component
+ */
+export interface TaskBoardProps {
+  title?: string;
+  tasks: Task[];
+  viewMode?: ViewMode;
+  onStatusChange?: (taskId: string, newStatus: Status) => void;
+  onTaskCreate?: (task: Omit<Task, "id">) => void;
+  onMilestoneCreate?: (milestone: Omit<Milestone, "id">) => void;
+}
