@@ -7,7 +7,7 @@ import { Paths } from "@/routes/paths";
 import { redirect } from "react-router-dom";
 import { PageModule } from "@/routes/types";
 
-export default { name: "AccountSecurityPage", loader, Page } as PageModule;
+export default { name: "AiPlaygroundPage", loader, Page } as PageModule;
 
 interface LoaderResult {}
 

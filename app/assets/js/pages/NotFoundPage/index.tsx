@@ -1,13 +1,10 @@
 import React from "react";
+import * as Pages from "@/components/Pages";
 import { GhostButton } from "turboui";
 import { Paths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 
-export default { name: "NotFoundPage", loader, Page } as PageModule;
-
-async function loader(): Promise<null> {
-  return null;
-}
+export default { name: "NotFoundPage", loader: Pages.emptyLoader, Page } as PageModule;
 
 function Page() {
   return (
