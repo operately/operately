@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { TaskList } from "../components/TaskList";
 import { TaskBoard } from "../components/StatusSelector";
 import { DragAndDropProvider } from "../../utils/DragAndDrop";
@@ -15,18 +15,56 @@ const meta: Meta<typeof TaskList> = {
     layout: "padded",
   },
   decorators: [
-    (Story) => {
-      // Define a simple onDrop handler for the DragAndDropProvider
-      const handleDrop = (draggedId: string, targetId: string) => {
-        console.log(`Dragged item ${draggedId} was dropped onto ${targetId}`);
-        return true; // Return true to indicate successful drop
+    (Story, context) => {
+      // Create a wrapper component with state for the story
+      const TaskListWithReordering = ({ initialTasks }: { initialTasks: TaskBoard.Task[] }) => {
+        const [tasks, setTasks] = useState<TaskBoard.Task[]>([]);
+        
+        // Store the tasks from props when component mounts
+        useEffect(() => {
+          setTasks([...initialTasks]);
+        }, [initialTasks]);
+        
+        // Define a proper onDrop handler for the DragAndDropProvider
+        const handleDrop = (dropZoneId: string, draggedId: string, indexInDropZone: number) => {
+          console.log(`Dragged item ${draggedId} was dropped onto ${dropZoneId} at index ${indexInDropZone}`);
+          
+          // Create a copy of the current tasks
+          const updatedTasks = [...tasks];
+          
+          // Find the task being dragged
+          const draggedTaskIndex = updatedTasks.findIndex(task => task.id === draggedId);
+          
+          if (draggedTaskIndex !== -1) {
+            // Remove task from its current position
+            const [draggedTask] = updatedTasks.splice(draggedTaskIndex, 1);
+            
+            // Insert at the new position
+            updatedTasks.splice(indexInDropZone, 0, draggedTask);
+            
+            // Update state
+            setTasks(updatedTasks);
+          }
+          
+          return true; // Indicate successful drop
+        };
+        
+        return (
+          <DragAndDropProvider onDrop={handleDrop}>
+            <TaskList 
+              tasks={tasks} 
+              milestoneId="milestone-1" 
+            />
+          </DragAndDropProvider>
+        );
       };
+      
+      // Access args from context
+      const { args } = context;
       
       return (
         <div className="m-4 w-[500px]">
-          <DragAndDropProvider onDrop={handleDrop}>
-            <Story />
-          </DragAndDropProvider>
+          <TaskListWithReordering initialTasks={args.tasks || []} />
         </div>
       );
     },

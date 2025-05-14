@@ -11,12 +11,13 @@ interface TaskWithIndex extends TaskBoard.Task {
 export interface TaskListProps {
   tasks: TaskBoard.Task[];
   milestoneId: string;
-  onTaskReorder?: (taskId: string, newMilestoneId: string, newIndex: number) => void;
+  // The onTaskReorder callback is handled by the DragAndDropProvider in the parent component
 }
 
 /**
  * TaskList component with drag and drop functionality
- * Displays a list of tasks for a specific milestone and handles drag & drop reordering
+ * Displays a list of tasks for a specific milestone
+ * Drag and drop is handled by the DragAndDropProvider in the parent component
  */
 export function TaskList({ tasks, milestoneId }: TaskListProps) {
   // Add drag and drop index to each task
@@ -25,7 +26,12 @@ export function TaskList({ tasks, milestoneId }: TaskListProps) {
   }, [tasks]);
 
   // Set up drop zone for this list of tasks
-  const { ref } = useDropZone({ id: `milestone-${milestoneId}`, dependencies: [tasksWithIndex] });
+  const { ref } = useDropZone({
+    id: `milestone-${milestoneId}`,
+    dependencies: [tasksWithIndex]
+  });
+  
+  // Get the animation styles for the container and items
   const { containerStyle, itemStyle } = useDraggingAnimation(`milestone-${milestoneId}`, tasksWithIndex);
 
   return (
