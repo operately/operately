@@ -1,12 +1,15 @@
 import React from "react";
 import { GhostButton } from "turboui";
 import { Paths } from "@/routes/paths";
+import { PageModule } from "@/routes/types";
 
-export async function loader(): Promise<null> {
+export default { name: "NotFoundPage", loader, Page } as PageModule;
+
+async function loader(): Promise<null> {
   return null;
 }
 
-export function Page() {
+function Page() {
   return (
     <div className="absolute inset-0 flex justify-center items-center gap-16">
       <div className="flex flex-col text-center -mt-64">

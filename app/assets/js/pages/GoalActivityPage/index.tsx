@@ -14,12 +14,15 @@ import FormattedTime from "@/components/FormattedTime";
 import ActivityHandler from "@/features/activities";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { assertPresent } from "@/utils/assertions";
+import { PageModule } from "@/routes/types";
+
+export default { name: "GoalActivityPage", loader, Page } as PageModule;
 
 interface LoaderResult {
   activity: Activities.Activity;
 }
 
-export async function loader({ params }): Promise<LoaderResult> {
+async function loader({ params }): Promise<LoaderResult> {
   return {
     activity: await Activities.getActivity({
       id: params.id,
@@ -29,7 +32,7 @@ export async function loader({ params }): Promise<LoaderResult> {
   };
 }
 
-export function Page() {
+function Page() {
   const { activity } = Pages.useLoadedData<LoaderResult>();
   const goal = Activities.getGoal(activity);
 

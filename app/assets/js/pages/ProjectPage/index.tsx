@@ -16,12 +16,15 @@ import { ContributorsSection } from "./ContributorsSection";
 import { ProjectDescriptionSection } from "./ProjectDescriptionSection";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { assertPresent } from "@/utils/assertions";
+import { PageModule } from "@/routes/types";
+
+export default { name: "ProjectPage", loader, Page } as PageModule;
 
 interface LoaderResult {
   project: Projects.Project;
 }
 
-export async function loader({ params }): Promise<LoaderResult> {
+async function loader({ params }): Promise<LoaderResult> {
   return {
     project: await Projects.getProject({
       id: params.id,
@@ -41,7 +44,7 @@ export async function loader({ params }): Promise<LoaderResult> {
   };
 }
 
-export function Page() {
+function Page() {
   const { project } = Pages.useLoadedData() as LoaderResult;
 
   assertPresent(project.notifications, "Project notifications must be defined");

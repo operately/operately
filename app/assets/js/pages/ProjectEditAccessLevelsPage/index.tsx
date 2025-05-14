@@ -12,13 +12,16 @@ import { useNavigateTo } from "@/routes/useNavigateTo";
 import { ProjectContribsSubpageNavigation } from "@/components/ProjectPageNavigation";
 import { AccessSelectors } from "@/features/projects/AccessSelectors";
 import { initialAccessLevels, applyAccessLevelConstraints } from "@/features/Permissions/AccessFields";
+import { PageModule } from "@/routes/types";
+
+export default { name: "ProjectEditAccessLevelsPage", loader, Page } as PageModule;
 
 interface LoaderResult {
   project: Projects.Project;
   space: Spaces.Space;
 }
 
-export async function loader({ params }): Promise<LoaderResult> {
+async function loader({ params }): Promise<LoaderResult> {
   const project = await Projects.getProject({
     id: params.projectID,
     includeSpace: true,
@@ -30,7 +33,7 @@ export async function loader({ params }): Promise<LoaderResult> {
   return { project: project, space: space };
 }
 
-export function Page() {
+function Page() {
   const { project } = Pages.useLoadedData();
 
   return (

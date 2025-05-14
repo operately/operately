@@ -1,5 +1,6 @@
 import * as React from "react";
 import * as Timeframes from "../../utils/timeframes";
+import { PageModule } from "@/routes/types";
 
 import { useLoadedData } from "@/components/Pages";
 import { Feed, useItemsQuery } from "@/features/Feed";
@@ -10,12 +11,14 @@ import { getWorkMap, WorkMapItem } from "../../models/workMap";
 import { Paths } from "../../routes/paths";
 import { assertDefined, assertPresent } from "../../utils/assertions";
 
+export default { name: "GoalV3Page", loader, Page } as PageModule;
+
 interface LoadedData {
   goal: Goal;
   workMap: WorkMapItem[];
 }
 
-export async function loader({ params }): Promise<LoadedData> {
+async function loader({ params }): Promise<LoadedData> {
   const [goal, workMap] = await Promise.all([
     getGoal({
       id: params.id,
@@ -37,7 +40,7 @@ export async function loader({ params }): Promise<LoadedData> {
   return { goal, workMap };
 }
 
-export function Page() {
+function Page() {
   const { goal, workMap } = useLoadedData<LoadedData>();
 
   assertPresent(goal.space);

@@ -12,10 +12,11 @@ import { Paths } from "@/routes/paths";
 import { useNavigate } from "react-router-dom";
 import { useTheme, useSetTheme } from "@/contexts/ThemeContext";
 import { PageNavigation } from "@/features/accounts/PageNavigation";
+import { PageModule } from "@/routes/types";
 
-export const loader = Pages.emptyLoader;
+export default { name: "AccountAppearancePage", loader: Pages.emptyLoader, Page } as PageModule;
 
-export function Page() {
+function Page() {
   return (
     <Pages.Page title={["Apperance", "Account"]}>
       <Paper.Root size="small">

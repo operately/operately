@@ -14,8 +14,9 @@ import { validatePassword } from "@/features/auth/validatePassword";
 import { match } from "ts-pattern";
 import { useFieldValue } from "@/components/Forms/FormContext";
 import { logIn } from "@/routes/auth";
+import { PageModule } from "@/routes/types";
 
-export const loader = Pages.emptyLoader;
+export default { name: "SignUpWithEmailPage", loader: Pages.emptyLoader, Page } as PageModule;
 
 type PageState = "form" | "code-verification";
 
@@ -31,7 +32,7 @@ type PageState = "form" | "code-verification";
 // and the user is logged in.
 //
 
-export function Page() {
+function Page() {
   const [pageState, setPageState] = React.useState<PageState>("form");
 
   const form = Forms.useForm({
