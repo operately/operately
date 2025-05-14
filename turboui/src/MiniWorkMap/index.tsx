@@ -41,7 +41,7 @@ export namespace MiniWorkMap {
     progress: number;
     children?: WorkItem[];
     completed: boolean;
-    people: Person[];
+    assignees: Person[];
   }
 
   export interface Props {
@@ -90,7 +90,7 @@ function ItemIcon({ item }: { item: MiniWorkMap.WorkItem }) {
 function ItemPeople({ item }: { item: MiniWorkMap.WorkItem }) {
   return (
     <div className="shrink-0">
-      <AvatarList people={item.people} size={18} stacked />
+      <AvatarList people={item.assignees} size={18} stacked />
     </div>
   );
 }
