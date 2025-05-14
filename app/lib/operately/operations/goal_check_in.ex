@@ -36,6 +36,7 @@ defmodule Operately.Operations.GoalCheckIn do
       Goal.changeset(goal, %{
         next_update_scheduled_at: calc_next_check_in_time(goal),
         last_check_in_id: changes.update.id,
+        last_update_status: changes.update.status,
         timeframe: changes.update.timeframe
       })
     end)

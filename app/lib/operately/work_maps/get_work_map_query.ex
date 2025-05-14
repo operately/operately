@@ -35,7 +35,7 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
   end
 
   defp get_projects(person, company_id, space_id, owner_id, goal_id, goals) do
-    goal_ids = Enum.map(goals, &(&1.id))
+    goal_ids = Enum.map(goals, & &1.id)
 
     from(Project, as: :projects)
     |> where([p], p.company_id == ^company_id)
@@ -77,7 +77,7 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
   end
 
   defp build_work_map(goals, projects) do
-    goals ++ projects
+    (goals ++ projects)
     |> Enum.map(fn item -> WorkMapItem.build_item(item, []) end)
     |> WorkMap.build_hierarchy()
   end
@@ -91,13 +91,11 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
     |> join(:left, [g], company in assoc(g, :company), as: :company)
     |> join(:left, [g], c in assoc(g, :champion), as: :champion)
     |> join(:left, [g], gr in assoc(g, :group), as: :group)
-    |> join(:left, [g], u in assoc(g, :last_update), as: :last_update)
     |> join(:left, [g], t in assoc(g, :targets), as: :targets)
-    |> preload([company: company, champion: c, group: gr, last_update: u, targets: t],
+    |> preload([company: company, champion: c, group: gr, targets: t],
       company: company,
       champion: c,
       group: gr,
-      last_update: u,
       targets: t
     )
   end
@@ -140,6 +138,7 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
   defp filter_by_parent_goal(query, nil) do
     where(query, [g], is_nil(g.parent_goal_id))
   end
+
   defp filter_by_parent_goal(query, parent_goal_id) do
     where(query, [g], g.parent_goal_id == ^parent_goal_id)
   end
@@ -147,21 +146,25 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
   defp filter_by_goal(query, nil, goal_ids) do
     where(query, [p], is_nil(p.goal_id) or p.goal_id in ^goal_ids)
   end
+
   defp filter_by_goal(query, id, goal_ids) do
     where(query, [p], p.goal_id in ^[id | goal_ids])
   end
 
   defp filter_by_space(query, nil), do: query
+
   defp filter_by_space(query, space_id) do
     where(query, [item], item.group_id == ^space_id)
   end
 
   defp filter_by_owner_goal(query, nil), do: query
+
   defp filter_by_owner_goal(query, owner_id) do
     where(query, [g], g.champion_id == ^owner_id)
   end
 
   defp filter_by_owner_project(query, nil), do: query
+
   defp filter_by_owner_project(query, owner_id) do
     query
     |> join(:inner, [p], c in Operately.Projects.Contributor, on: c.project_id == p.id and c.role == :champion)
@@ -169,6 +172,7 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
   end
 
   defp filter_by_view_access(query, :system, _name), do: query
+
   defp filter_by_view_access(query, person = %Operately.People.Person{}, name) do
     Filters.filter_by_view_access(query, person.id, named_binding: name)
   end

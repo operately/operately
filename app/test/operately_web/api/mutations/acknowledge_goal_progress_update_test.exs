@@ -102,18 +102,25 @@ defmodule OperatelyWeb.Api.Mutations.AcknowledgeGoalProgressUpdateTest do
   #
 
   defp create_update(ctx, opts) do
-    goal = goal_fixture(ctx.creator, Enum.into(opts, %{
-      space_id: ctx[:space_id] || ctx.company.company_space_id,
-      company_access_level: Keyword.get(opts, :company_access_level, Binding.no_access()),
-      space_access_level: Keyword.get(opts, :space_access_level, Binding.no_access()),
-    }))
+    goal =
+      goal_fixture(
+        ctx.creator,
+        Enum.into(opts, %{
+          space_id: ctx[:space_id] || ctx.company.company_space_id,
+          company_access_level: Keyword.get(opts, :company_access_level, Binding.no_access()),
+          space_access_level: Keyword.get(opts, :space_access_level, Binding.no_access())
+        })
+      )
+
     goal_update_fixture(ctx.creator, goal)
   end
 
   defp add_person_to_space(ctx) do
-    Operately.Groups.add_members(ctx.person, ctx.space_id, [%{
-      id: ctx.person.id,
-      access_level: Binding.edit_access(),
-    }])
+    Operately.Groups.add_members(ctx.person, ctx.space_id, [
+      %{
+        id: ctx.person.id,
+        access_level: Binding.edit_access()
+      }
+    ])
   end
 end
