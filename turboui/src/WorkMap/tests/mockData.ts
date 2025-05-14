@@ -419,7 +419,6 @@ export const mockItems: WorkMap.Item[] = [
         privacy: "internal" as PrivacyIndicator.PrivacyLevels,
         timeframe: {
           startDate: "2024-03-01T00:00:00.000Z",
-          endDate: null,
           type: "days",
         },
         children: [],

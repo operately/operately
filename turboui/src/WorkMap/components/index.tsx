@@ -63,7 +63,7 @@ export namespace WorkMap {
     progress: number;
     space: Space;
     spacePath: string;
-    owner: Person;
+    owner: Person | null;
     ownerPath: string;
     nextStep: string;
     isNew: boolean;
