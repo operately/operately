@@ -66,6 +66,13 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
     |> UI.click(testid: "add-project")
   end
 
+  step :start_adding_project_from_lobby, ctx do
+    ctx
+    |> UI.visit(Paths.home_path(ctx.company))
+    |> UI.click(testid: "new-dropdown")
+    |> UI.click(testid: "new-dropdown-new-project")
+  end
+
   step :submit_project_form, ctx, fields do
     ctx
     |> UI.fill(testid: "name", with: fields.name)
@@ -262,14 +269,14 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
   end
 
   step :start_adding_project_from_goal_map, ctx do
-    ctx 
+    ctx
     |> UI.visit(Paths.goals_path(ctx.company))
     |> UI.hover(testid: UI.testid(["goal", ctx.goal.name]))
     |> UI.click(testid: "add-project")
   end
 
   step :assert_project_form_prefilled_with_goal_and_its_space, ctx do
-    ctx 
+    ctx
     |> UI.assert_text("Start a new project")
     |> UI.assert_text(ctx.goal.name)
     |> UI.assert_text(ctx.group.name)
