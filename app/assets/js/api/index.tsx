@@ -1504,6 +1504,7 @@ export interface WorkMapItem {
   type: WorkMapItemType;
   itemPath: string;
   privacy: string;
+  assignees?: Person[] | null;
 }
 
 export type ActivityContent =
