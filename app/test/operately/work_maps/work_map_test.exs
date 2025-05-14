@@ -149,12 +149,13 @@ defmodule Operately.WorkMaps.WorkMapTest do
 
     test "handles orphaned items (parent not in list)", %{child_goal: child_goal, parent_goal: parent_goal} do
       # Only include the child goal, not the parent
-      items = [WorkMapItem.build_item(child_goal, [])]
+      items = [WorkMapItem.build_item(child_goal, [], false)]
       [result] = WorkMap.build_hierarchy(items)
 
       # Child should be treated as a root item since parent is not in list
       assert result.id == child_goal.id
-      assert result.parent_id == parent_goal.id # Still has parent_id
+      # Still has parent_id
+      assert result.parent_id == parent_goal.id
       assert result.children == []
     end
   end
@@ -202,32 +203,34 @@ defmodule Operately.WorkMaps.WorkMapTest do
 
   defp to_work_map_items(ctx) do
     # Get all goals from context
-    goals = ctx
-            |> Map.keys()
-            |> Enum.filter(fn key ->
-              is_atom(key) &&
-              is_map(ctx[key]) &&
-              Map.has_key?(ctx[key], :__struct__) &&
-              ctx[key].__struct__ == Operately.Goals.Goal
-            end)
-            |> Enum.map(fn key -> ctx[key] end)
+    goals =
+      ctx
+      |> Map.keys()
+      |> Enum.filter(fn key ->
+        is_atom(key) &&
+          is_map(ctx[key]) &&
+          Map.has_key?(ctx[key], :__struct__) &&
+          ctx[key].__struct__ == Operately.Goals.Goal
+      end)
+      |> Enum.map(fn key -> ctx[key] end)
 
     # Get all projects from context
-    projects = ctx
-              |> Map.keys()
-              |> Enum.filter(fn key ->
-                is_atom(key) &&
-                is_map(ctx[key]) &&
-                Map.has_key?(ctx[key], :__struct__) &&
-                ctx[key].__struct__ == Operately.Projects.Project
-              end)
-              |> Enum.map(fn key -> ctx[key] end)
+    projects =
+      ctx
+      |> Map.keys()
+      |> Enum.filter(fn key ->
+        is_atom(key) &&
+          is_map(ctx[key]) &&
+          Map.has_key?(ctx[key], :__struct__) &&
+          ctx[key].__struct__ == Operately.Projects.Project
+      end)
+      |> Enum.map(fn key -> ctx[key] end)
 
     # First convert goals to WorkMapItems (without children)
-    goal_items = Enum.map(goals, fn goal -> WorkMapItem.build_item(goal, []) end)
+    goal_items = Enum.map(goals, fn goal -> WorkMapItem.build_item(goal, [], false) end)
 
     # Then convert projects to WorkMapItems
-    project_items = Enum.map(projects, fn project -> WorkMapItem.build_item(project, []) end)
+    project_items = Enum.map(projects, fn project -> WorkMapItem.build_item(project, [], false) end)
 
     # Return all items
     goal_items ++ project_items

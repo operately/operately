@@ -15,7 +15,8 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.WorkMaps.WorkMapItem do
   end
 
   def serialize(item, level: :full) do
-    serialize(item, level: :essential) |> Map.merge(%{
+    serialize(item, level: :essential)
+    |> Map.merge(%{
       space: OperatelyWeb.Api.Serializer.serialize(item.space),
       space_path: Paths.space_work_map_path(item.company, item.space),
       owner: OperatelyWeb.Api.Serializer.serialize(item.owner),
@@ -26,6 +27,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.WorkMaps.WorkMapItem do
       timeframe: OperatelyWeb.Api.Serializers.Timeframe.serialize(item.timeframe),
       children: OperatelyWeb.Api.Serializer.serialize(item.children, level: :full),
       privacy: OperatelyWeb.Api.Serializer.serialize(item.privacy),
+      assignees: OperatelyWeb.Api.Serializer.serialize(item.assignees)
     })
   end
 
