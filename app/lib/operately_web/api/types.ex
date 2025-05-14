@@ -985,6 +985,22 @@ defmodule OperatelyWeb.Api.Types do
     ]
   )
 
+  enum(:goal_status,
+    values: [
+      :on_track,
+      :completed,
+      :achieved,
+      :partial,
+      :missed,
+      :paused,
+      :caution,
+      :issue,
+      :dropped,
+      :pending,
+      :outdated
+    ]
+  )
+
   object :goal do
     field :id, :string, optional: false, nullable: false
     field :name, :string, optional: false, nullable: false
@@ -992,6 +1008,7 @@ defmodule OperatelyWeb.Api.Types do
     field :updated_at, :date
     field :next_update_scheduled_at, :date
     field :parent_goal_id, :string
+    field :status, :goal_status, optional: false, nullable: false
     field :closed_at, :date
     field :timeframe, :timeframe
     field :description, :string

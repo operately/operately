@@ -18,19 +18,21 @@ defmodule Operately.Operations.GoalCheckInTest do
   end
 
   test "creating goal update sets last update on the goal", ctx do
-    {:ok, update} = GoalCheckIn.run(ctx.champion, ctx.goal, %{
-      goal_id: ctx.goal.id,
-      status: "on_track",
-      target_values: [],
-      content: RichText.rich_text("Some content"),
-      send_to_everyone: true,
-      subscriber_ids: [],
-      subscription_parent_type: :goal_update,
-      timeframe: Timeframe.current_year()
-    })
+    {:ok, update} =
+      GoalCheckIn.run(ctx.champion, ctx.goal, %{
+        goal_id: ctx.goal.id,
+        status: "on_track",
+        target_values: [],
+        content: RichText.rich_text("Some content"),
+        send_to_everyone: true,
+        subscriber_ids: [],
+        subscription_parent_type: :goal_update,
+        timeframe: Timeframe.current_year()
+      })
 
     ctx = Factory.reload(ctx, :goal)
     assert ctx.goal.last_check_in_id == update.id
+    assert ctx.goal.last_update_status == update.status
   end
 
   describe "notifications" do
@@ -58,7 +60,8 @@ defmodule Operately.Operations.GoalCheckInTest do
       notifications = fetch_notifications(activity.id, action: action)
       notified_people_ids = Enum.map(notifications, & &1.person_id)
 
-      assert notifications_count(action: action) == 4 # 2 members + reviewer + space creator
+      # 2 members + reviewer + space creator
+      assert notifications_count(action: action) == 4
 
       assert ctx.member1.id in notified_people_ids
       assert ctx.member2.id in notified_people_ids
@@ -89,7 +92,8 @@ defmodule Operately.Operations.GoalCheckInTest do
       notifications = fetch_notifications(activity.id, action: action)
       notified_people_ids = Enum.map(notifications, & &1.person_id)
 
-      assert notifications_count(action: action) == 1 # reviewer
+      # reviewer
+      assert notifications_count(action: action) == 1
       assert ctx.reviewer.id in notified_people_ids
     end
 
