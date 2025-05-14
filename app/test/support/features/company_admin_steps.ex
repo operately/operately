@@ -9,21 +9,21 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
     ctx |> Factory.setup()
   end
 
-  step :given_i_am_logged_in, ctx, [as: role] do
+  step :given_i_am_logged_in, ctx, as: role do
     cond do
       role == :admin ->
         ctx
-        |> Factory.add_company_admin(:admin, [name: "Admin Adminson"])
+        |> Factory.add_company_admin(:admin, name: "Admin Adminson")
         |> Factory.log_in_person(:admin)
 
       role == :owner ->
         ctx
-        |> Factory.add_company_owner(:owner, [name: "Owner Ownerson"])
+        |> Factory.add_company_owner(:owner, name: "Owner Ownerson")
         |> Factory.log_in_person(:owner)
 
       role == :member ->
         ctx
-        |> Factory.add_company_member(:member, [name: "Member Memberson"])
+        |> Factory.add_company_member(:member, name: "Member Memberson")
         |> Factory.log_in_person(:member)
     end
   end
@@ -151,15 +151,15 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
   end
 
   step :given_a_company_member_exists, ctx do
-    Factory.add_company_member(ctx, :member, [name: "Member Memberson"])
+    Factory.add_company_member(ctx, :member, name: "Member Memberson")
   end
 
   step :given_a_company_admin_exists, ctx do
-    Factory.add_company_admin(ctx, :admin, [name: "Admin Adminson"])
+    Factory.add_company_admin(ctx, :admin, name: "Admin Adminson")
   end
 
   step :given_a_company_owner_exists, ctx do
-    Factory.add_company_owner(ctx, :other_owner, [name: "Other Ownerson"])
+    Factory.add_company_owner(ctx, :other_owner, name: "Other Ownerson")
   end
 
   step :click_on_add_remove_people, ctx do
@@ -344,14 +344,14 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
 
   step :given_a_removed_company_member_exists, ctx do
     ctx
-    |> Factory.add_company_member(:suspended, [name: "Suspended Memberson"])
+    |> Factory.add_company_member(:suspended, name: "Suspended Memberson")
     |> Factory.suspend_company_member(:suspended)
   end
 
   step :open_restore_people_page, ctx do
     ctx
     |> UI.visit(Paths.company_admin_path(ctx.company))
-    |> UI.click(testid: "restore-access-for-previously-deactivated-team-members")
+    |> UI.click(testid: "restore-access-for-deactivated-team-members")
     |> UI.assert_has(testid: "restore-suspended-people-page")
   end
 
