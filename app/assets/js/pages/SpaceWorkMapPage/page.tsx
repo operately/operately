@@ -12,7 +12,7 @@ export function Page() {
       <PageContainer title={title} size="fullwidth">
         <WorkMap
           title={title}
-          items={workMap as WorkMap.Item[]}
+          items={workMap}
           tabOptions={{ hideAll: true }}
           columnOptions={{ hideSpace: true }}
         />

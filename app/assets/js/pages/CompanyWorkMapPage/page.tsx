@@ -10,7 +10,7 @@ export function Page() {
   return (
     <div className="py-6 px-2">
       <PageContainer title={title} size="fullwidth">
-        <WorkMap title={title} items={workMap as WorkMap.Item[]} />
+        <WorkMap title={title} items={workMap} />
       </PageContainer>
     </div>
   );
