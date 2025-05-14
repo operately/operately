@@ -31,6 +31,7 @@ export async function loader({ params }): Promise<LoadedData> {
     }).then((d) => d.goal!),
     getWorkMap({
       parentGoalId: params.id,
+      includeAssignees: true,
     }).then((d) => d.workMap!),
   ]);
 
@@ -93,12 +94,10 @@ function prepareParentGoal(g: Goal | null | undefined): GoalPage.Props["parentGo
 }
 
 function prepareWorkMapData(items: WorkMapItem[]): GoalPage.Props["relatedWorkItems"] {
-  return items.map((item) => ({
-    ...item,
-    children: prepareWorkMapData(item.children),
-    assignees: assertPresent(item.assignees),
-    completed: false,
-  }));
+  return items.map((item) => {
+    assertPresent(item.assignees);
+    return { ...item, children: prepareWorkMapData(item.children), assignees: item.assignees, completed: false };
+  });
 }
 
 function GoalFeedItems() {
