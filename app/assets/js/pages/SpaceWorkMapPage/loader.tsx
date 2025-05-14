@@ -4,10 +4,9 @@ import { getWorkMap, convertToWorkMapItem } from "@/models/workMap";
 import { Space, getSpace } from "@/models/spaces";
 import { Paths } from "@/routes/paths";
 import { redirectIfFeatureNotEnabled } from "@/routes/redirectIfFeatureEnabled";
-import { WorkMap } from "turboui";
 
 interface LoaderResult {
-  workMap: WorkMap.Item[];
+  workMap: ReturnType<typeof convertToWorkMapItem>[];
   space: Space;
 }
 
