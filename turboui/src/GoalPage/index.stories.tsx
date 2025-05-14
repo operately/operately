@@ -1,9 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { GoalPage } from ".";
-import { genPeople } from "../utils/storybook/genPeople";
-import { currentQuarter, lastYear } from "../utils/timeframes";
 import { fn } from "@storybook/test";
+import { GoalPage } from ".";
+import { MiniWorkMap } from "../MiniWorkMap";
+import { genPeople } from "../utils/storybook/genPeople";
 import { storyPath } from "../utils/storybook/storypath";
+import { currentQuarter, lastYear } from "../utils/timeframes";
 
 const meta: Meta<typeof GoalPage> = {
   title: "Pages/GoalPage",
@@ -57,6 +58,7 @@ const mockTargets = [
 
 const checkIns = [
   {
+    link: "/checkins/1",
     id: "1",
     author: champion,
     date: new Date(2025, 3, 17), // Apr 17th, 2025
@@ -64,6 +66,7 @@ const checkIns = [
       "Kickoff meeting held. Team is excited and we have outlined the initial roadmap. Next steps: finalize requirements and assign tasks.",
   },
   {
+    link: "/checkins/1",
     id: "2",
     author: reviewer,
     date: new Date(2025, 3, 24), // Apr 24th, 2025
@@ -71,6 +74,7 @@ const checkIns = [
       "Reviewed the first sprint deliverables. Progress is on track, but we need to improve test coverage and documentation.",
   },
   {
+    link: "/checkins/1",
     id: "3",
     author: champion,
     date: new Date(2025, 3, 30), // Apr 30th, 2025
@@ -124,73 +128,73 @@ const messages = [
   },
 ];
 
-const relatedWorkItems = [
+const relatedWorkItems: MiniWorkMap.WorkItem[] = [
   {
     id: "1",
     type: "goal" as const,
     status: "on_track",
     name: "Backend Infrastructure",
-    link: "/goals/1",
+    itemPath: "/goals/1",
     progress: 75,
     completed: false,
-    subitems: [
+    children: [
       {
         id: "3",
         type: "project" as const,
         status: "caution",
         name: "API Development",
-        link: "/projects/3",
+        itemPath: "/projects/3",
         progress: 60,
         completed: false,
-        subitems: [],
-        people: genPeople(10, { random: true }),
+        children: [],
+        assignees: genPeople(10, { random: true }),
       },
       {
         id: "4",
         type: "goal" as const,
         status: "on_track",
         name: "Database Optimization",
-        link: "/goals/4",
+        itemPath: "/goals/4",
         progress: 90,
         completed: false,
-        subitems: [
+        children: [
           {
             id: "5",
             type: "project" as const,
             status: "on_track",
             name: "Query Performance",
-            link: "/projects/5",
+            itemPath: "/projects/5",
             progress: 100,
             completed: true,
-            subitems: [],
-            people: genPeople(2, { random: true }),
+            children: [],
+            assignees: genPeople(2, { random: true }),
           },
         ],
-        people: genPeople(2, { random: true }),
+        assignees: genPeople(2, { random: true }),
       },
     ],
-    people: genPeople(3, { random: true }),
+    assignees: genPeople(3, { random: true }),
   },
   {
     id: "2",
     type: "goal" as const,
     status: "on_track",
     name: "UI/UX Design",
-    link: "/goals/2",
+    itemPath: "/goals/2",
     progress: 100,
     completed: true,
-    people: genPeople(7, { random: true }),
-    subitems: [
+    assignees: genPeople(7, { random: true }),
+    children: [
       {
         id: "6",
         type: "project",
         status: "on_track",
         name: "Design System",
-        link: "/projects/6",
+        itemPath: "/projects/6",
         progress: 100,
         completed: true,
-        subitems: [],
-        people: genPeople(3, { random: true }),
+        children: [],
+        assignees: genPeople(3, { random: true }),
       },
     ],
   },
@@ -249,7 +253,7 @@ const parentGoal = {
   link: "/goals/1",
 };
 
-const defaultArgs = {
+const defaultArgs: GoalPage.Props = {
   spaceLink: "/spaces/1",
   workmapLink: "/spaces/1/workmaps/1",
   closeLink: storyPath("Pages/GoalClosePage", "Default"),
@@ -269,11 +273,10 @@ const defaultArgs = {
   messages,
   parentGoal,
   status: "on_track",
-  closedOn: null,
-  retrospectiveLink: null,
   privacyLevel: "internal" as const,
-
   updateTimeframe: fn(),
+
+  activityFeed: <div></div>,
 };
 
 export default meta;
