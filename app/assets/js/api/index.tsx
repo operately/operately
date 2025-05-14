@@ -852,6 +852,7 @@ export interface Goal {
   updatedAt?: string | null;
   nextUpdateScheduledAt?: string | null;
   parentGoalId?: string | null;
+  status: GoalStatus;
   closedAt?: string | null;
   timeframe?: Timeframe | null;
   description?: string | null;
@@ -1589,6 +1590,19 @@ export type UpdateContent =
   | UpdateContentMessage;
 
 export type GoalPrivacyValues = "public" | "internal" | "confidential" | "secret";
+
+export type GoalStatus =
+  | "on_track"
+  | "completed"
+  | "achieved"
+  | "partial"
+  | "missed"
+  | "paused"
+  | "caution"
+  | "issue"
+  | "dropped"
+  | "pending"
+  | "outdated";
 
 export type WorkMapItemStatus =
   | "on_track"
