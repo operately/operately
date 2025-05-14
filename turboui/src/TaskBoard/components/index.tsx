@@ -2,6 +2,7 @@ import React, { useState, useMemo, useCallback, useEffect } from "react";
 import { SecondaryButton } from "../../Button";
 import { BlackLink } from "../../Link";
 import { DragAndDropProvider } from "../../utils/DragAndDrop";
+import { reorderTasks } from "../utils/taskReorderingUtils";
 import {
   IconFileText,
   IconMessageCircle,
@@ -298,117 +299,25 @@ export function TaskBoard({
   // Handle task reordering via drag and drop
   const handleTaskReorder = useCallback(
     (dropZoneId: string, draggedId: string, indexInDropZone: number) => {
-      // Extract milestone ID from the dropZoneId (format: milestone-{id})
-      const targetMilestoneId = dropZoneId.replace("milestone-", "");
+      console.log(`Handling reorder: ${draggedId} to ${dropZoneId} at index ${indexInDropZone}`);
 
-      // Find the task being dragged
-      const draggedTask = internalTasks.find((task) => task.id === draggedId);
-      if (!draggedTask) return;
-
-      // Remember the original milestone ID before drag (for later checking if it's now empty)
-      const originalMilestoneId = draggedTask.milestone?.id;
-
-      // Create a new array of tasks with the dragged task moved to the new position
-      const updatedTasks = [...internalTasks];
-
-      // First remove the task from its current position
-      const taskIndex = updatedTasks.findIndex((task) => task.id === draggedId);
-      if (taskIndex > -1) {
-        updatedTasks.splice(taskIndex, 1);
-      }
-
-      // Group tasks by milestone to find the insertion point
-      const tasksByMilestone = groupTasksByMilestone(updatedTasks);
-
-      // Determine the real target array and index
-      const targetArray =
-        targetMilestoneId === "no-milestone"
-          ? tasksByMilestone["no_milestone"]
-          : tasksByMilestone[targetMilestoneId] || [];
-
-      // If the task's milestone has changed, update it
-      if (targetMilestoneId === "no-milestone") {
-        draggedTask.milestone = undefined;
-      } else if (targetMilestoneId !== draggedTask.milestone?.id) {
-        // Find the milestone object from an existing task with this milestone ID
-        const targetMilestone = milestones.find((m) => m.milestone.id === targetMilestoneId)?.milestone;
-        if (targetMilestone) {
-          draggedTask.milestone = targetMilestone;
-        }
-      }
-
-      // Insert the task at the new position
-      // Ensure the index is valid
-      const insertIndex = Math.min(indexInDropZone, targetArray.length);
-
-      // If the target is the no_milestone group, insert directly into the updatedTasks array
-      if (targetMilestoneId === "no-milestone") {
-        // Count how many tasks are before this in the overall array
-        let globalIndex = 0;
-
-        // Count tasks from other milestones that come before this one in the list
-        for (const milestoneId in tasksByMilestone) {
-          if (milestoneId === "no_milestone") break;
-          globalIndex += tasksByMilestone[milestoneId].length;
-        }
-
-        // Add the insertion index within the no_milestone group
-        globalIndex += insertIndex;
-
-        // Insert the task at the calculated global index
-        updatedTasks.splice(globalIndex, 0, draggedTask);
-      } else {
-        // Find where in the overall tasks array this milestone's tasks start
-        let globalIndex = 0;
-
-        // Count tasks from milestones that come before this one
-        for (const milestoneId in tasksByMilestone) {
-          if (milestoneId === targetMilestoneId) break;
-          globalIndex += tasksByMilestone[milestoneId].length;
-        }
-
-        // Add the insertion index within the milestone
-        globalIndex += insertIndex;
-
-        // Insert the task at the calculated global index
-        updatedTasks.splice(globalIndex, 0, draggedTask);
-      }
-
-      // Check if the original milestone is now empty and needs a helper task
-      if (originalMilestoneId && originalMilestoneId !== targetMilestoneId) {
-        // Check if there are any non-helper tasks remaining in the milestone
-        const hasRealTasks = updatedTasks.some(
-          (task) => !task._isHelperTask && task.milestone?.id === originalMilestoneId,
-        );
-
-        // If no real tasks remain and this milestone doesn't already have a helper task
-        if (
-          !hasRealTasks &&
-          !updatedTasks.some((task) => task._isHelperTask && task.milestone?.id === originalMilestoneId)
-        ) {
-          // Find the original milestone object
-          const originalMilestone = milestones.find((m) => m.milestone.id === originalMilestoneId)?.milestone;
-
-          if (originalMilestone) {
-            // Create a helper task to keep the empty milestone visible
-            const helperTask: TaskBoard.Task = {
-              id: `task-helper-${originalMilestoneId}-${Date.now()}`,
-              title: `Helper task for ${originalMilestone.name}`,
-              status: "pending",
-              milestone: originalMilestone,
-              _isHelperTask: true,
-            };
-
-            // Add the helper task to the updated tasks
-            updatedTasks.push(helperTask);
-          }
-        }
-      }
+      // Get all milestone objects for the utility function
+      const allMilestones = milestones.map(m => m.milestone);
+      
+      // Use the utility function to handle reordering
+      const updatedTasks = reorderTasks(
+        internalTasks,
+        dropZoneId,
+        draggedId,
+        indexInDropZone,
+        { addHelperTasks: true },
+        allMilestones
+      );
 
       // Update state with the reordered tasks
       setInternalTasks(updatedTasks);
 
-      console.log(`Reordered: Task ${draggedId} moved to ${targetMilestoneId} at position ${indexInDropZone}`);
+      console.log(`Reordered: Task ${draggedId} moved to ${dropZoneId} at position ${indexInDropZone}`);
     },
     [internalTasks, milestones, setInternalTasks],
   );

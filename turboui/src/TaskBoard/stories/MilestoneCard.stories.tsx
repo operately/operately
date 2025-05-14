@@ -3,6 +3,7 @@ import React from "react";
 import { MilestoneCard } from "../components/MilestoneCard";
 import { TaskBoard } from "../components/StatusSelector";
 import { DragAndDropProvider } from "../../utils/DragAndDrop";
+import { reorderTasksInList } from "../utils/taskReorderingUtils";
 
 /**
  * MilestoneCard displays a milestone with its tasks, combining a header with progress
@@ -66,22 +67,15 @@ const meta: Meta<typeof MilestoneCard> = {
           // Skip if not a milestone drop zone
           if (!dropZoneId.startsWith('milestone-')) return true;
           
-          // Get actual tasks array
-          const updatedTasks = [...tasks];
+          // Use the utility function to reorder tasks
+          const updatedTasks = reorderTasksInList(
+            tasks,
+            draggedId,
+            indexInDropZone
+          );
           
-          // Find the task being dragged
-          const draggedTaskIndex = updatedTasks.findIndex(task => task.id === draggedId);
-          
-          if (draggedTaskIndex !== -1) {
-            // Remove the task from its current position
-            const [draggedTask] = updatedTasks.splice(draggedTaskIndex, 1);
-            
-            // Insert at the new position
-            updatedTasks.splice(indexInDropZone, 0, draggedTask);
-            
-            // Update state
-            setTasks(updatedTasks);
-          }
+          // Update state
+          setTasks(updatedTasks);
           
           return true;
         };

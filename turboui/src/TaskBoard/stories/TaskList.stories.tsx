@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { TaskList } from "../components/TaskList";
 import { TaskBoard } from "../components/StatusSelector";
 import { DragAndDropProvider } from "../../utils/DragAndDrop";
+import { reorderTasksInList } from "../utils/taskReorderingUtils";
 
 /**
  * TaskList displays a group of draggable tasks for a specific milestone
@@ -55,22 +56,15 @@ const meta: Meta<typeof TaskList> = {
         const handleDrop = (dropZoneId: string, draggedId: string, indexInDropZone: number) => {
           console.log(`Dragged item ${draggedId} was dropped onto ${dropZoneId} at index ${indexInDropZone}`);
           
-          // Create a copy of the current tasks
-          const updatedTasks = [...tasks];
+          // Use the utility function to reorder tasks within a list
+          const updatedTasks = reorderTasksInList(
+            tasks,
+            draggedId,
+            indexInDropZone
+          );
           
-          // Find the task being dragged
-          const draggedTaskIndex = updatedTasks.findIndex(task => task.id === draggedId);
-          
-          if (draggedTaskIndex !== -1) {
-            // Remove task from its current position
-            const [draggedTask] = updatedTasks.splice(draggedTaskIndex, 1);
-            
-            // Insert at the new position
-            updatedTasks.splice(indexInDropZone, 0, draggedTask);
-            
-            // Update state
-            setTasks(updatedTasks);
-          }
+          // Update state
+          setTasks(updatedTasks);
           
           return true; // Indicate successful drop
         };
