@@ -1,16 +1,16 @@
 import React, { useState, useEffect, useRef } from "react";
 import { PrimaryButton, SecondaryButton } from "../../Button";
-import { TaskBoard } from "./index";
+import * as Types from "../types";
 import Modal from "../../Modal";
 import { IconCalendar, IconUser } from "@tabler/icons-react";
 
 interface TaskCreationModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onCreateTask: (task: Omit<TaskBoard.Task, "id">) => void;
-  milestones?: TaskBoard.Milestone[];
+  onCreateTask: (task: Omit<Types.Task, "id">) => void;
+  milestones?: Types.Milestone[];
   currentMilestoneId?: string;
-  people?: TaskBoard.Person[];
+  people?: Types.Person[];
 }
 
 export function TaskCreationModal({
@@ -75,7 +75,7 @@ export function TaskCreationModal({
     if (!title.trim()) return;
     
     // Create new task object
-    const newTask: Omit<TaskBoard.Task, "id"> = {
+    const newTask: Omit<Types.Task, "id"> = {
       title: title.trim(),
       status: "pending",
     };
