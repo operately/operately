@@ -21,7 +21,7 @@ export function convertToWorkMapItem(item: WorkMapItem): WorkMap.Item {
     id: item.id,
     parentId: item.parentId,
     name: item.name,
-    status: item.status as WorkMap.Item["status"],
+    status: item.status,
     progress: item.progress,
     space: {
       id: item.space.id,
@@ -40,7 +40,7 @@ export function convertToWorkMapItem(item: WorkMapItem): WorkMap.Item {
     timeframe: convertTimeframe(item.timeframe),
     type: item.type,
     itemPath: item.itemPath,
-    privacy: item.privacy as WorkMap.Item["privacy"],
+    privacy: item.privacy,
     children: item.children.map(convertToWorkMapItem),
   };
 }
