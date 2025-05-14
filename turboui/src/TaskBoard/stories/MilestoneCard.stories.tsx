@@ -58,12 +58,31 @@ const meta: Meta<typeof MilestoneCard> = {
           return true;
         };
         
+        // Handle task creation
+        const handleTaskCreate = (newTask: Omit<TaskBoard.Task, "id">) => {
+          console.log(`Creating new task for ${milestone.name}:`, newTask);
+          
+          // Create a new task with an ID
+          const taskWithId: TaskBoard.Task = {
+            id: `task-${Date.now()}`, // Generate a unique ID
+            ...newTask
+          };
+          
+          // Add the task to the list
+          setTasks([...tasks, taskWithId]);
+        };
+        
         return (
           <DragAndDropProvider onDrop={handleDrop}>
             <MilestoneCard
               milestone={milestone} 
               tasks={tasks}
-              onTaskCreate={() => console.log(`Create task for ${milestone.name}`)}
+              onTaskCreate={handleTaskCreate}
+              availableMilestones={[milestone]}
+              availablePeople={[
+                { id: "user-1", fullName: "Alice Johnson", avatarUrl: "https://i.pravatar.cc/150?u=alice" },
+                { id: "user-2", fullName: "Bob Smith", avatarUrl: "https://i.pravatar.cc/150?u=bob" }
+              ]}
             />
           </DragAndDropProvider>
         );

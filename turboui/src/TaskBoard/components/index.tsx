@@ -495,10 +495,11 @@ export function TaskBoard({
                     milestone={milestoneData.milestone}
                     tasks={groupedTasks[milestoneData.milestone.id] || []}
                     stats={milestoneData.stats}
-                    onTaskCreate={() => {
-                      setActiveTaskMilestoneId(milestoneData.milestone.id);
-                      setIsTaskModalOpen(true);
-                    }}
+                    onTaskCreate={onTaskCreate ? (newTask) => onTaskCreate(newTask) : undefined}
+                    availableMilestones={milestones.map(m => m.milestone)}
+                    availablePeople={internalTasks
+                      .flatMap((task) => task.assignees || [])
+                      .filter((person, index, self) => index === self.findIndex((p) => p.id === person.id))}
                   />
                 ))}
 
