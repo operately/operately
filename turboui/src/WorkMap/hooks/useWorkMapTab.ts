@@ -125,7 +125,7 @@ function extractOngoingItems(data: WorkMap.Item[]): WorkMap.Item[] {
       filteredChildren = item.children.map(filterOngoingItems).filter((child) => child !== null);
     }
 
-    const isOngoing = !CLOSED_STATUSES.includes(item.status);
+    const isOngoing = !CLOSED_STATUSES.includes(item.status) && item.status !== "paused";
 
     // Include if item is ongoing or has ongoing children
     if (!isOngoing && filteredChildren.length === 0) {
