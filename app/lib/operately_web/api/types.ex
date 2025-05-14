@@ -1551,5 +1551,6 @@ defmodule OperatelyWeb.Api.Types do
     field :type, :work_map_item_type, optional: false, nullable: false
     field :item_path, :string, optional: false, nullable: false
     field :privacy, :string, optional: false, nullable: false
+    field :assignees, list_of(:person)
   end
 end
