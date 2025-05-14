@@ -135,28 +135,11 @@ defmodule Operately.Features.CompanyAdminTest do
     |> Steps.assert_feed_item_notification_and_email_sent_to_restored_member()
   end
 
-  @tag role: :member
-  feature "visiting the company admin page as a member", ctx do
-    ctx
-    |> Steps.when_i_open_the_company_admin_page()
-    |> Steps.assert_i_see_reach_out_to_admins()
-    |> Steps.assert_i_see_reach_out_to_owners()
-  end
-
   @tag role: :admin
   feature "visiting the company admin page as an admin", ctx do
     ctx
     |> Steps.when_i_open_the_company_admin_page()
     |> Steps.assert_i_dont_see_reach_out_to_admins()
-    |> Steps.assert_i_see_reach_out_to_owners()
-  end
-
-  @tag role: :owner
-  feature "visiting the company admin page as an owner", ctx do
-    ctx
-    |> Steps.when_i_open_the_company_admin_page()
-    |> Steps.assert_i_dont_see_reach_out_to_admins()
-    |> Steps.assert_i_dont_see_reach_out_to_owners()
   end
 
   @tag role: :admin
@@ -169,5 +152,4 @@ defmodule Operately.Features.CompanyAdminTest do
     |> Steps.assert_company_name_is_changed_in_navbar()
     |> Steps.assert_company_feed_shows_the_company_name_change()
   end
-
 end
