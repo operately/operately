@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useCallback, useEffect } from "react";
 import { SecondaryButton } from "../../Button";
 import { BlackLink } from "../../Link";
-import { DragAndDropProvider, useDraggable, useDraggingAnimation, useDropZone } from "../../utils/DragAndDrop";
+import { DragAndDropProvider, useDropZone } from "../../utils/DragAndDrop";
 import {
   IconFileText,
   IconMessageCircle,
@@ -15,7 +15,7 @@ import { PieChart } from "../../PieChart";
 import TaskCreationModal from "./TaskCreationModal";
 import MilestoneCreationModal from "./MilestoneCreationModal";
 import { DueDateDisplay } from "./DueDateDisplay";
-import { TaskItem } from "./TaskItem";
+import { TaskList } from "./TaskList";
 
 export namespace TaskBoard {
   export type Status = "pending" | "in_progress" | "done" | "canceled";
@@ -124,31 +124,6 @@ const getStatusDisplayName = (status: TaskBoard.Status): string => {
       return status;
   }
 };
-
-// TaskList component with drag and drop functionality
-function TaskList({ tasks, milestoneId }: { tasks: TaskBoard.Task[]; milestoneId: string }) {
-  // Add drag and drop index to each task
-  const tasksWithIndex = useMemo(() => {
-    return tasks.map((task, index) => ({ ...task, index }));
-  }, [tasks]);
-
-  // Set up drop zone for this list of tasks
-  const { ref } = useDropZone({ id: `milestone-${milestoneId}`, dependencies: [tasksWithIndex] });
-  const { containerStyle, itemStyle } = useDraggingAnimation(`milestone-${milestoneId}`, tasksWithIndex);
-
-  return (
-    <ul ref={ref as React.RefObject<HTMLUListElement>} style={containerStyle}>
-      {tasksWithIndex.map((task) => (
-        <TaskItem
-          key={task.id}
-          task={task as TaskBoard.TaskWithIndex}
-          milestoneId={milestoneId}
-          itemStyle={itemStyle}
-        />
-      ))}
-    </ul>
-  );
-}
 
 // Empty milestone drop zone component that allows dropping tasks into empty milestones
 function EmptyMilestoneDropZone({ milestoneId }: { milestoneId: string }) {

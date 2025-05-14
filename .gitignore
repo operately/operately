@@ -52,3 +52,5 @@ testreports
 
 locals3root/
 *.DS_Store
+
+REFACTORING_PLAN.md
