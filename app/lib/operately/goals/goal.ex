@@ -70,7 +70,8 @@ defmodule Operately.Goals.Goal do
       :closed_at,
       :closed_by_id,
       :success,
-      :last_check_in_id
+      :last_check_in_id,
+      :last_update_status
     ])
     |> cast_embed(:timeframe)
     |> validate_required([
