@@ -81,11 +81,7 @@ function Page() {
     activityFeed: <GoalFeedItems />,
   };
 
-  return (
-    <div className="sm:my-8">
-      <GoalPage {...props} />
-    </div>
-  );
+  return <GoalPage {...props} />;
 }
 
 function prepareParentGoal(g: Goal | null | undefined): GoalPage.Props["parentGoal"] {

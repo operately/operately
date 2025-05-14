@@ -3,12 +3,21 @@ import { useState } from "react";
 import { TimeframeSelector } from "../../TimeframeSelector";
 import { currentYear } from "../../utils/timeframes";
 import { PrivacyIndicator } from "../../PrivacyIndicator";
+import { Page } from "../../Page";
 
 import { WorkMapNavigation } from "./WorkMapNavigation";
 import { WorkMapTable } from "./WorkMapTable";
 import { useWorkMapTab } from "../hooks/useWorkMapTab";
 
 const defaultTimeframe = currentYear();
+
+export function WorkMapPage(props: WorkMap.Props) {
+  return (
+    <Page title={props.title} size="fullwidth">
+      <WorkMap {...props} />
+    </Page>
+  );
+}
 
 export function WorkMap({ title, items, columnOptions = {}, tabOptions = {} }: WorkMap.Props) {
   const [timeframe, setTimeframe] = useState(defaultTimeframe);
