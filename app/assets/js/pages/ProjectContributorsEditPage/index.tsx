@@ -1,9 +1,10 @@
 import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
+import { PageModule } from "@/routes/types";
 
 export type { UrlParams } from "./loader";
-export { loader } from "./loader";
+import { loader } from "./loader";
 
 import { ProjectContribsSubpageNavigation } from "@/components/ProjectPageNavigation";
 import { match } from "ts-pattern";
@@ -13,7 +14,7 @@ import { EditContributor } from "./EditContributor";
 import { ChangeReviewer } from "./ChangeReviewer";
 import { ChangeChampion } from "./ChangeChampion";
 
-export function Page() {
+function Page() {
   const { contributor, action } = Pages.useLoadedData();
 
   return (
@@ -31,3 +32,5 @@ export function Page() {
     </Pages.Page>
   );
 }
+
+export default { name: "ProjectContributorsEditPage", loader, Page } as PageModule;

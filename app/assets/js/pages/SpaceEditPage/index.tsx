@@ -4,21 +4,24 @@ import * as Pages from "@/components/Pages";
 import * as Spaces from "@/models/spaces";
 
 import { useNavigate } from "react-router-dom";
+import { PageModule } from "@/routes/types";
 import { Paths } from "@/routes/paths";
 
 import Forms from "@/components/Forms";
+
+export default { name: "SpaceEditPage", loader, Page } as PageModule;
 
 interface LoaderResult {
   space: Spaces.Space;
 }
 
-export async function loader({ params }): Promise<LoaderResult> {
+async function loader({ params }): Promise<LoaderResult> {
   return {
     space: await Spaces.getSpace({ id: params.id }),
   };
 }
 
-export function Page() {
+function Page() {
   const navigate = useNavigate();
   const { space } = Pages.useLoadedData<LoaderResult>();
 

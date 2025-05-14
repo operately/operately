@@ -1,2 +1,5 @@
-export { Page } from "./page";
-export { loader } from "./loader";
+import { PageModule } from "@/routes/types";
+import { loader } from "./loader";
+import { Page } from "./page";
+
+export default { name: "ResourceHubEditFilePage", loader, Page } as PageModule;

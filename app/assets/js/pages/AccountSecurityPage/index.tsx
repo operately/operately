@@ -6,10 +6,11 @@ import { PageNavigation } from "@/features/accounts/PageNavigation";
 import { Link } from "turboui";
 
 import { Paths } from "@/routes/paths";
+import { PageModule } from "@/routes/types";
 
-export const loader = Pages.emptyLoader;
+export default { name: "AccountSecurityPage", loader: Pages.emptyLoader, Page } as PageModule;
 
-export function Page() {
+function Page() {
   return (
     <Pages.Page title={"Password & Security"} testId="account-security-page">
       <Paper.Root size="small">

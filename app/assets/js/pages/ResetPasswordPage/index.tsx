@@ -11,10 +11,11 @@ import { useNavigate } from "react-router-dom";
 import { validateEmail } from "@/features/auth/validateEmail";
 import { validatePassword } from "@/features/auth/validatePassword";
 import { PasswordStrength } from "@/features/auth/PasswordStrength";
+import { PageModule } from "@/routes/types";
 
-export const loader = Pages.emptyLoader;
+export default { name: "ResetPasswordPage", loader: Pages.emptyLoader, Page } as PageModule;
 
-export function Page() {
+function Page() {
   const [reset] = Api.useResetPassword();
   const token = new URLSearchParams(window.location.search).get("token");
   const navigate = useNavigate();

@@ -10,10 +10,11 @@ import { logIn } from "@/routes/auth";
 import { Link, DimmedLink } from "turboui";
 import { SignInWithGoogleButton } from "@/features/auth/Buttons";
 import { Paths } from "@/routes/paths";
+import { PageModule } from "@/routes/types";
 
-export const loader = Pages.emptyLoader;
+export default { name: "LoginPage", loader: Pages.emptyLoader, Page } as PageModule;
 
-export function Page() {
+function Page() {
   const [error, setError] = React.useState<string | null>(null);
 
   const form = Forms.useForm({

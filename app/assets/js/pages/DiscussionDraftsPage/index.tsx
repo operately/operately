@@ -4,6 +4,7 @@ import * as Paper from "@/components/PaperContainer";
 import * as Spaces from "@/models/spaces";
 import * as Discussions from "@/models/discussions";
 import * as Time from "@/utils/time";
+import { PageModule } from "@/routes/types";
 
 import { Discussion } from "@/models/discussions";
 import { DivLink } from "turboui";
@@ -18,12 +19,14 @@ import { Avatar } from "turboui";
 import FormattedTime from "@/components/FormattedTime";
 import classNames from "classnames";
 
+export default { name: "DiscussionDraftsPage", loader, Page } as PageModule;
+
 interface LoadedData {
   space: Spaces.Space;
   myDrafts: Discussions.Discussion[];
 }
 
-export async function loader({ params }): Promise<LoadedData> {
+async function loader({ params }): Promise<LoadedData> {
   const [space, [myDrafts]] = await Promise.all([
     Spaces.getSpace({ id: params.id, includePermissions: true }),
     Discussions.getDiscussions({ spaceId: params.id, includeAuthor: true, includeMyDrafts: true }).then((data) => [
@@ -37,7 +40,7 @@ export async function loader({ params }): Promise<LoadedData> {
   };
 }
 
-export function Page() {
+function Page() {
   const { space, myDrafts } = Pages.useLoadedData<LoadedData>();
 
   return (

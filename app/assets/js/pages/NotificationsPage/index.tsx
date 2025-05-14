@@ -13,12 +13,15 @@ import ActivityHandler from "@/features/activities";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { TextSeparator } from "@/components/TextSeparator";
 import { SecondaryButton } from "turboui";
+import { PageModule } from "@/routes/types";
+
+export default { name: "NotificationsPage", loader, Page } as PageModule;
 
 interface LoaderResult {
   notifications: Api.Notification[];
 }
 
-export async function loader(): Promise<LoaderResult> {
+async function loader(): Promise<LoaderResult> {
   const data = await Api.getNotifications({
     page: 1,
     perPage: 100,
@@ -29,7 +32,7 @@ export async function loader(): Promise<LoaderResult> {
   };
 }
 
-export function Page() {
+function Page() {
   const onLoad = () => Signals.publish(Signals.LocalSignal.RefreshNotificationCount);
 
   return (

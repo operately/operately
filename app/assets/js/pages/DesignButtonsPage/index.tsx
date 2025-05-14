@@ -5,10 +5,11 @@ import * as Icons from "@tabler/icons-react";
 
 import { PrimaryButton, GhostButton, SecondaryButton } from "turboui";
 import { MenuLinkItem, SubMenu } from "turboui";
+import { PageModule } from "@/routes/types";
 
-export const loader = Pages.emptyLoader;
+export default { name: "DesignButtonsPage", loader: Pages.emptyLoader, Page } as PageModule;
 
-export function Page() {
+function Page() {
   return (
     <Pages.Page title={"Buttons"}>
       <Paper.Root>

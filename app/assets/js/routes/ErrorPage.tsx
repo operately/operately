@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as NotFoundPage from "@/pages/NotFoundPage";
+import NotFoundPage from "@/pages/NotFoundPage";
 
 import { GhostButton } from "turboui";
 import { Paths } from "./paths";

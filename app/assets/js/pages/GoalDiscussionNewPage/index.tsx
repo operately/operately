@@ -4,6 +4,7 @@ import * as Paper from "@/components/PaperContainer";
 import * as Goals from "@/models/goals";
 import * as TipTapEditor from "@/components/Editor";
 import * as Api from "@/api";
+import { PageModule } from "@/routes/types";
 
 import { FormTitleInput } from "@/components/FormTitleInput";
 import { PrimaryButton } from "turboui";
@@ -17,11 +18,13 @@ import { useFormState, formValidator } from "@/components/Form/useFormState";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { useNavigate } from "react-router-dom";
 
+export default { name: "GoalDiscussionNewPage", loader, Page } as PageModule;
+
 interface LoaderResult {
   goal: Goals.Goal;
 }
 
-export async function loader({ params }): Promise<LoaderResult> {
+async function loader({ params }): Promise<LoaderResult> {
   return {
     goal: await Goals.getGoal({
       id: params.goalId,
@@ -31,7 +34,7 @@ export async function loader({ params }): Promise<LoaderResult> {
   };
 }
 
-export function Page() {
+function Page() {
   const { goal } = Pages.useLoadedData<LoaderResult>();
   const form = useForm({ goal });
 

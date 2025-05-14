@@ -6,18 +6,21 @@ import * as Companies from "@/models/companies";
 import { Paths } from "@/routes/paths";
 import Forms from "@/components/Forms";
 import { useNavigate, useRevalidator } from "react-router-dom";
+import { PageModule } from "@/routes/types";
+
+export default { name: "CompanyRenamePage", loader, Page } as PageModule;
 
 interface LoaderResult {
   company: Companies.Company;
 }
 
-export async function loader({ params }): Promise<LoaderResult> {
+async function loader({ params }): Promise<LoaderResult> {
   return {
     company: await Companies.getCompany({ id: params.companyId }).then((d) => d.company!),
   };
 }
 
-export function Page() {
+function Page() {
   const navigate = useNavigate();
   const { revalidate } = useRevalidator();
   const { company } = Pages.useLoadedData<LoaderResult>();

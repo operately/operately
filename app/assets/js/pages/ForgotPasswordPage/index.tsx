@@ -8,9 +8,11 @@ import classNames from "classnames";
 import { OperatelyLogo } from "@/components/OperatelyLogo";
 import { ActionLink } from "turboui";
 
-export const loader = Pages.emptyLoader;
+import { PageModule } from "@/routes/types";
 
-export function Page() {
+export default { name: "ForgotPasswordPage", loader: Pages.emptyLoader, Page } as PageModule;
+
+function Page() {
   const [req] = Api.useRequestPasswordReset();
   const [showEmailSent, setShowEmailSent] = React.useState(false);
 

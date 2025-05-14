@@ -3,6 +3,7 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Accounts from "@/models/accounts";
 import * as Invitations from "@/models/invitations";
+import { PageModule } from "@/routes/types";
 
 import { OperatelyLogo } from "@/components/OperatelyLogo";
 import { logIn } from "@/routes/auth";
@@ -10,12 +11,14 @@ import { redirect } from "react-router-dom";
 
 import Forms from "@/components/Forms";
 
+export default { name: "JoinPage", loader, Page } as PageModule;
+
 interface LoaderResult {
   invitation: Invitations.Invitation;
   token: string;
 }
 
-export async function loader({ request }): Promise<any> {
+async function loader({ request }): Promise<any> {
   const token = Pages.getSearchParam(request, "token");
   if (!token) return redirect("/");
 
@@ -25,7 +28,7 @@ export async function loader({ request }): Promise<any> {
   return { invitation, token };
 }
 
-export function Page() {
+function Page() {
   return (
     <Pages.Page title="Welcome to Operately!">
       <Paper.Root size="small">
