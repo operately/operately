@@ -1,12 +1,13 @@
 import * as Pages from "@/components/Pages";
 
-import { WorkMapItem, getWorkMap } from "@/models/workMap";
+import { getWorkMap, convertToWorkMapItem } from "@/models/workMap";
 import { Space, getSpace } from "@/models/spaces";
 import { Paths } from "@/routes/paths";
 import { redirectIfFeatureNotEnabled } from "@/routes/redirectIfFeatureEnabled";
+import { WorkMap } from "turboui";
 
 interface LoaderResult {
-  workMap: WorkMapItem[];
+  workMap: WorkMap.Item[];
   space: Space;
 }
 
@@ -17,7 +18,7 @@ export async function loader({ params }): Promise<LoaderResult> {
   });
 
   const [workMap, space] = await Promise.all([
-    getWorkMap({ spaceId: params.id }).then((data) => data.workMap || []),
+    getWorkMap({ spaceId: params.id }).then((data) => (data.workMap ? data.workMap.map(convertToWorkMapItem) : [])),
     getSpace({ id: params.id }),
   ]);
 

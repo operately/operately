@@ -1503,7 +1503,7 @@ export interface WorkMapItem {
   children: WorkMapItem[];
   type: WorkMapItemType;
   itemPath: string;
-  privacy: string;
+  privacy: WorkMapItemPrivacy;
   assignees?: Person[] | null;
 }
 
@@ -1604,6 +1604,8 @@ export type GoalStatus =
   | "dropped"
   | "pending"
   | "outdated";
+
+export type WorkMapItemPrivacy = "public" | "internal" | "confidential" | "secret";
 
 export type WorkMapItemStatus =
   | "on_track"

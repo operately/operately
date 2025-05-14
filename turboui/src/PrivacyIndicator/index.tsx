@@ -2,20 +2,6 @@ import * as Icons from "@tabler/icons-react";
 import { match } from "ts-pattern";
 import { Tooltip } from "../Tooltip";
 
-export namespace PrivacyIndicator {
-  export type PrivacyLevels = "public" | "internal" | "confidential" | "secret";
-
-  export interface Props {
-    privacyLevel: PrivacyLevels;
-    resourceType: "goal" | "project";
-    spaceName: string;
-
-    iconSize?: number;
-    className?: string;
-    testId?: string;
-  }
-}
-
 const DEFAULT_SIZE = 24;
 
 export function PrivacyIndicator(props: PrivacyIndicator.Props) {
@@ -66,4 +52,19 @@ function description(props: PrivacyIndicator.Props) {
     .with("confidential", () => `This ${t} is visible only to members of the ${s} space.`)
     .with("secret", () => `Only people explicitly invited to this ${t} can view it.`)
     .exhaustive();
+}
+
+export namespace PrivacyIndicator {
+  export const PRIVACY_LEVELS = ["public", "internal", "confidential", "secret"] as const;
+  export type PrivacyLevels = (typeof PRIVACY_LEVELS)[number];
+
+  export interface Props {
+    privacyLevel: PrivacyLevels;
+    resourceType: "goal" | "project";
+    spaceName: string;
+
+    iconSize?: number;
+    className?: string;
+    testId?: string;
+  }
 }

@@ -1533,6 +1533,8 @@ defmodule OperatelyWeb.Api.Types do
     ]
   )
 
+  enum(:work_map_item_privacy, values: [:public, :internal, :confidential, :secret])
+
   object :work_map_item do
     field :id, :string, optional: false, nullable: false
     field :parent_id, :string, optional: false, nullable: true
@@ -1550,7 +1552,7 @@ defmodule OperatelyWeb.Api.Types do
     field :children, list_of(:work_map_item), optional: false, nullable: false
     field :type, :work_map_item_type, optional: false, nullable: false
     field :item_path, :string, optional: false, nullable: false
-    field :privacy, :string, optional: false, nullable: false
+    field :privacy, :work_map_item_privacy, optional: false, nullable: false
     field :assignees, list_of(:person)
   end
 end
