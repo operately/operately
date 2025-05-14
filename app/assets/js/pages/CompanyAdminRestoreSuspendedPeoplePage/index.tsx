@@ -11,13 +11,16 @@ import { BlackLink, Link } from "turboui";
 import { Avatar } from "turboui";
 import { createTestId } from "@/utils/testid";
 import { InfoCallout } from "@/components/Callouts";
+import { PageModule } from "@/routes/types";
+
+export default { name: "CompanyAdminRestoreSuspendedPeoplePage", loader, Page } as PageModule;
 
 interface LoaderResult {
   company: Companies.Company;
   suspendedPeople: People.Person[];
 }
 
-export async function loader({ params }): Promise<LoaderResult> {
+async function loader({ params }): Promise<LoaderResult> {
   const company = await Companies.getCompany({ id: params.companyId }).then((res) => res.company!);
   const people = await People.getPeople({ onlySuspended: true }).then((res) => res.people!);
 
@@ -27,7 +30,7 @@ export async function loader({ params }): Promise<LoaderResult> {
   };
 }
 
-export function Page() {
+function Page() {
   const { company, suspendedPeople } = Pages.useLoadedData() as LoaderResult;
 
   return (

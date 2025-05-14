@@ -15,12 +15,15 @@ import { Paths } from "@/routes/paths";
 import { DimmedLink } from "turboui";
 import { Datepicker } from "@/components/Datepicker";
 import { useMe } from "@/contexts/CurrentCompanyContext";
+import { PageModule } from "@/routes/types";
+
+export default { name: "GoalEditTimeframePage", loader, Page } as PageModule;
 
 interface LoaderResult {
   goal: Goals.Goal;
 }
 
-export async function loader({ params }): Promise<LoaderResult> {
+async function loader({ params }): Promise<LoaderResult> {
   return {
     goal: await Goals.getGoal({
       id: params.goalId,
@@ -30,7 +33,7 @@ export async function loader({ params }): Promise<LoaderResult> {
   };
 }
 
-export function Page() {
+function Page() {
   const me = useMe()!;
   const { goal } = Pages.useLoadedData<LoaderResult>();
   const form = useForm({ goal });

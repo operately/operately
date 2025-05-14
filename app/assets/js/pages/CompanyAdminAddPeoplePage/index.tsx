@@ -7,15 +7,18 @@ import { useNavigate } from "react-router-dom";
 import { Paths } from "@/routes/paths";
 import { CopyToClipboard } from "@/components/CopyToClipboard";
 import { PrimaryButton } from "turboui";
+import { PageModule } from "@/routes/types";
 
 import Forms from "@/components/Forms";
 import { match } from "ts-pattern";
+
+export default { name: "CompanyAdminAddPeoplePage", loader, Page } as PageModule;
 
 interface LoaderResult {
   company: Companies.Company;
 }
 
-export async function loader({ params }): Promise<LoaderResult> {
+async function loader({ params }): Promise<LoaderResult> {
   return {
     company: await Companies.getCompany({ id: params.companyId }).then((d) => d.company!),
   };
@@ -32,7 +35,7 @@ type SetPageStateFn = (state: PageState) => void;
 // When in "form" state, the user can fill out the form to invite a new member.
 // When in "invited" state, the user is shown the invitation link to share with the new member.
 //
-export function Page() {
+function Page() {
   const { company } = Pages.useLoadedData<LoaderResult>();
   const [state, setState] = React.useState<PageState>({ state: "form" });
 

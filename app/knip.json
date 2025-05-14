@@ -8,9 +8,7 @@
     "assets/js/api/index.tsx",
     "ee/assets/js/admin_api/index.tsx",
     "**/__tests__/**",
-    "assets/js/models/companies/hasFeature.tsx",
-    "assets/js/pages/CompanyWorkMapPage/index.tsx",
-    "assets/js/pages/SpaceWorkMapPage/index.tsx"
+    "assets/js/models/companies/hasFeature.tsx"
   ],
   "ignoreDependencies": ["@types/jest", "turboui"],
 

@@ -8,14 +8,17 @@ import { useSubscriptions } from "@/features/Subscriptions";
 import { assertPresent } from "@/utils/assertions";
 import { useForm, Form as CheckInForm } from "@/features/goals/GoalCheckIn";
 import { banner } from "@/features/goals/GoalPageHeader/Banner";
+import { PageModule } from "@/routes/types";
 
 import FormattedTime from "@/components/FormattedTime";
+
+export default { name: "GoalCheckInNewPage", loader, Page } as PageModule;
 
 interface LoaderResult {
   goal: Goals.Goal;
 }
 
-export async function loader({ params }): Promise<LoaderResult> {
+async function loader({ params }): Promise<LoaderResult> {
   return {
     goal: await Goals.getGoal({
       id: params.goalId,
@@ -27,7 +30,7 @@ export async function loader({ params }): Promise<LoaderResult> {
   };
 }
 
-export function Page() {
+function Page() {
   const { goal } = Pages.useLoadedData<LoaderResult>();
 
   return (

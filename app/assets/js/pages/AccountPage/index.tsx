@@ -8,10 +8,11 @@ import { logOut } from "@/routes/auth";
 import { Paths } from "@/routes/paths";
 import { BurgerActionsGroup, BurgerLink, BurgerButton } from "./BurgerActions";
 import { useMe } from "@/contexts/CurrentCompanyContext";
+import { PageModule } from "@/routes/types";
 
-export const loader = Pages.emptyLoader;
+export default { name: "AccountPage", loader: Pages.emptyLoader, Page } as PageModule;
 
-export function Page() {
+function Page() {
   return (
     <Pages.Page title="My Account" testId="my-account-page">
       <Paper.Root size="small">

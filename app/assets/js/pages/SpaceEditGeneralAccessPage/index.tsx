@@ -8,18 +8,21 @@ import Forms from "@/components/Forms";
 import { Paths } from "@/routes/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { initialAccessLevels, applyAccessLevelConstraints, AccessSelectors } from "@/features/spaces";
+import { PageModule } from "@/routes/types";
+
+export default { name: "SpaceEditGeneralAccessPage", loader, Page } as PageModule;
 
 interface LoaderResult {
   space: Spaces.Space;
 }
 
-export async function loader({ params }): Promise<LoaderResult> {
+async function loader({ params }): Promise<LoaderResult> {
   const space = await Spaces.getSpace({ id: params.id, includeAccessLevels: true });
 
   return { space: space };
 }
 
-export function Page() {
+function Page() {
   const { space } = Pages.useLoadedData<LoaderResult>();
 
   return (

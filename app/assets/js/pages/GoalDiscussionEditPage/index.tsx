@@ -5,6 +5,7 @@ import * as Goals from "@/models/goals";
 import * as TipTapEditor from "@/components/Editor";
 import * as Activities from "@/models/activities";
 import * as Api from "@/api";
+import { PageModule } from "@/routes/types";
 
 import { FormTitleInput } from "@/components/FormTitleInput";
 import { PrimaryButton } from "turboui";
@@ -16,17 +17,19 @@ import { Validators } from "@/utils/validators";
 import { useFormState, formValidator, useFormMutationAction } from "@/components/Form/useFormState";
 import { match } from "ts-pattern";
 
+export default { name: "GoalDiscussionEditPage", loader, Page } as PageModule;
+
 interface LoaderResult {
   activity: Activities.Activity;
 }
 
-export async function loader({ params }): Promise<LoaderResult> {
+async function loader({ params }): Promise<LoaderResult> {
   return {
     activity: await Activities.getActivity({ id: params.id }),
   };
 }
 
-export function Page() {
+function Page() {
   const { activity } = Pages.useLoadedData<LoaderResult>();
   const form = useForm({ activity: activity });
   const goal = Activities.getGoal(activity);
