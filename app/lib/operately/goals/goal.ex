@@ -26,6 +26,7 @@ defmodule Operately.Goals.Goal do
     # Check-Ins (they are called updates for historical reasons)
     has_many :updates, Operately.Goals.Update
     belongs_to :last_update, Operately.Goals.Update, foreign_key: :last_check_in_id
+    field :last_update_status, :string
     field :next_update_scheduled_at, :utc_datetime
 
     embeds_one :timeframe, Operately.Goals.Timeframe, on_replace: :delete
@@ -69,15 +70,27 @@ defmodule Operately.Goals.Goal do
       :closed_at,
       :closed_by_id,
       :success,
-      :last_check_in_id,
+      :last_check_in_id
     ])
     |> cast_embed(:timeframe)
     |> validate_required([
       :name,
       :company_id,
       :group_id,
-      :creator_id,
+      :creator_id
     ])
+  end
+
+  def status(goal = %__MODULE__{}) do
+    goal = Repo.preload(goal, :last_update)
+
+    cond do
+      goal.success == "yes" -> "achieved"
+      goal.success == "no" -> "missed"
+      Operately.Goals.outdated?(goal) -> "outdated"
+      goal.last_update -> goal.last_update.status
+      true -> "on_track"
+    end
   end
 
   #
@@ -87,6 +100,7 @@ defmodule Operately.Goals.Goal do
   import Ecto.Query, only: [from: 2]
 
   def scope_space(query, nil), do: query
+
   def scope_space(query, space_id) do
     from g in query, where: g.group_id == ^space_id
   end
