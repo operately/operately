@@ -93,12 +93,10 @@ function prepareParentGoal(g: Goal | null | undefined): GoalPage.Props["parentGo
 }
 
 function prepareWorkMapData(items: WorkMapItem[]): GoalPage.Props["relatedWorkItems"] {
-  return items.map((item) => ({
-    ...item,
-    children: prepareWorkMapData(item.children),
-    people: [],
-    completed: false,
-  }));
+  return items.map((item) => {
+    assertPresent(item.assignees);
+    return { ...item, children: prepareWorkMapData(item.children), assignees: item.assignees, completed: false };
+  });
 }
 
 function GoalFeedItems() {

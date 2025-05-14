@@ -13,6 +13,7 @@ defmodule Operately.Projects.Project do
     belongs_to :goal, Operately.Goals.Goal, foreign_key: :goal_id
 
     has_many :contributors, Operately.Projects.Contributor, foreign_key: :project_id
+    has_many :contributing_people, through: [:contributors, :person]
     has_many :key_resources, Operately.Projects.KeyResource, foreign_key: :project_id
     has_many :milestones, Operately.Projects.Milestone, foreign_key: :project_id
     has_many :check_ins, Operately.Projects.CheckIn, foreign_key: :project_id
@@ -36,7 +37,8 @@ defmodule Operately.Projects.Project do
     field :next_check_in_scheduled_at, :utc_datetime
 
     field :health, Ecto.Enum, values: [:on_track, :at_risk, :off_track, :paused, :unknown], default: :on_track
-    field :next_update_scheduled_at, :utc_datetime # Deprecated, use next_check_in_scheduled_at instead
+    # Deprecated, use next_check_in_scheduled_at instead
+    field :next_update_scheduled_at, :utc_datetime
 
     has_one :retrospective, Operately.Projects.Retrospective, foreign_key: :project_id
     field :status, :string, default: "active"
@@ -79,13 +81,13 @@ defmodule Operately.Projects.Project do
       :closed_at,
       :last_check_in_id,
       :last_check_in_status,
-      :next_update_scheduled_at,
+      :next_update_scheduled_at
     ])
     |> validate_required([
       :name,
       :company_id,
       :group_id,
-      :creator_id,
+      :creator_id
     ])
   end
 
@@ -100,30 +102,34 @@ defmodule Operately.Projects.Project do
   def scope_visibility(query, person_id) do
     alias Operately.Projects.Contributor
 
-    sub = from c in Contributor,
-       where: c.project_id == parent_as(:project).id,
-       where: c.person_id == ^person_id
+    sub =
+      from c in Contributor,
+        where: c.project_id == parent_as(:project).id,
+        where: c.person_id == ^person_id
 
-    from p in query, where: not(p.private) or exists(sub)
+    from p in query, where: not p.private or exists(sub)
   end
 
   def scope_role(query, person_id, roles) do
     alias Operately.Projects.Contributor
 
-    sub = from c in Contributor,
-      where: c.project_id == parent_as(:project).id,
-      where: c.person_id == ^person_id,
-      where: c.role in ^roles
+    sub =
+      from c in Contributor,
+        where: c.project_id == parent_as(:project).id,
+        where: c.person_id == ^person_id,
+        where: c.role in ^roles
 
     from p in query, where: exists(sub)
   end
 
   def scope_space(query, nil), do: query
+
   def scope_space(query, space_id) do
     from p in query, where: p.group_id == ^space_id
   end
 
   def scope_goal(query, nil), do: query
+
   def scope_goal(query, goal_id) do
     from p in query, where: p.goal_id == ^goal_id
   end
@@ -134,7 +140,6 @@ defmodule Operately.Projects.Project do
     from p in query, order_by: [asc: p.name]
   end
 
-
   # After load hooks
 
   def after_load_hooks(projects) when is_list(projects) do
@@ -142,6 +147,7 @@ defmodule Operately.Projects.Project do
   end
 
   def after_load_hooks(nil), do: nil
+
   def after_load_hooks(project = %__MODULE__{}) do
     project
     |> set_next_milestone()
@@ -149,8 +155,11 @@ defmodule Operately.Projects.Project do
 
   def set_next_milestone(project = %__MODULE__{}) do
     case project.milestones do
-      [] -> project
-      %Ecto.Association.NotLoaded{} -> project
+      [] ->
+        project
+
+      %Ecto.Association.NotLoaded{} ->
+        project
 
       milestones ->
         next =
@@ -205,9 +214,10 @@ defmodule Operately.Projects.Project do
   end
 
   def load_milestones(p = %__MODULE__{}) do
-    milestones = for milestone <- Repo.preload(p, :milestones).milestones do
-      %{milestone | project: p}
-    end
+    milestones =
+      for milestone <- Repo.preload(p, :milestones).milestones do
+        %{milestone | project: p}
+      end
 
     Map.put(p, :milestones, milestones)
   end
