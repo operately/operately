@@ -1,15 +1,13 @@
 import React, { useMemo } from "react";
 import { useDraggingAnimation, useDropZone } from "../../utils/DragAndDrop";
 import { TaskItem } from "./TaskItem";
-import { TaskBoard } from "./StatusSelector";
+import * as Types from "../types";
 
-// Re-defining TaskWithIndex here to match the one from main TaskBoard
-interface TaskWithIndex extends TaskBoard.Task {
-  index: number;
-}
+// Using TaskWithIndex from our shared types
+import { TaskWithIndex } from "../types";
 
 export interface TaskListProps {
-  tasks: TaskBoard.Task[];
+  tasks: Types.Task[];
   milestoneId: string;
   // The onTaskReorder callback is handled by the DragAndDropProvider in the parent component
 }

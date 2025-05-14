@@ -9,45 +9,39 @@ import { PieChart } from "../../PieChart";
 import { DueDateDisplay } from "./DueDateDisplay";
 import { TaskList } from "./TaskList";
 import { EmptyMilestoneDropZone } from "./EmptyMilestoneDropZone";
-import { TaskBoard } from "./StatusSelector";
+import * as Types from "../types";
 import TaskCreationModal from "./TaskCreationModal";
 
 export interface MilestoneCardProps {
   /**
    * The milestone to display
    */
-  milestone: TaskBoard.Milestone;
+  milestone: Types.Milestone;
 
   /**
-   * Tasks that belong to this milestone
+   * The tasks associated with this milestone
    */
-  tasks: TaskBoard.Task[];
+  tasks: Types.Task[];
 
   /**
    * Called when a new task is created for this milestone
    */
-  onTaskCreate?: (task: Omit<TaskBoard.Task, "id">) => void;
+  onTaskCreate?: (task: Omit<Types.Task, "id">) => void;
   
   /**
-   * Available milestones for task creation modal (including this one)
+   * Available milestones for task reassignment
    */
-  availableMilestones?: TaskBoard.Milestone[];
+  availableMilestones?: Types.Milestone[];
   
   /**
-   * Available people for task assignee selection
+   * Available people for task assignment
    */
-  availablePeople?: TaskBoard.Person[];
+  availablePeople?: Types.Person[];
 
   /**
-   * Task statistics for this milestone
+   * Milestone statistics - if not provided, will be calculated from tasks
    */
-  stats?: {
-    pending: number;
-    inProgress: number;
-    done: number;
-    canceled: number;
-    total: number;
-  };
+  stats?: Types.MilestoneStats;
 }
 
 /**
@@ -69,7 +63,7 @@ export function MilestoneCard({
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   
   // Handle task creation
-  const handleCreateTask = (newTask: Omit<TaskBoard.Task, "id">) => {
+  const handleCreateTask = (newTask: Omit<Types.Task, "id">) => {
     if (onTaskCreate) {
       onTaskCreate(newTask);
     }
@@ -168,7 +162,7 @@ export function MilestoneCard({
 /**
  * Calculate statistics for a milestone based on its tasks
  */
-function calculateMilestoneStats(tasks: TaskBoard.Task[]) {
+export const calculateMilestoneStats = (tasks: Types.Task[]) => {
   const stats = {
     pending: 0,
     inProgress: 0,

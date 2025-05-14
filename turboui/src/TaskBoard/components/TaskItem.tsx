@@ -7,13 +7,9 @@ import classNames from "../../utils/classnames";
 import { StatusSelector } from "./StatusSelector";
 import { DueDateDisplay } from "./DueDateDisplay";
 
-// Importing TaskBoard namespace from StatusSelector to maintain type consistency
-import { TaskBoard } from "./StatusSelector";
-
-// Extended Task interface to include position index
-interface TaskWithIndex extends TaskBoard.Task {
-  index: number;
-}
+// Using shared types
+import * as Types from "../types";
+import { TaskWithIndex } from "../types";
 
 interface TaskItemProps {
   task: TaskWithIndex;

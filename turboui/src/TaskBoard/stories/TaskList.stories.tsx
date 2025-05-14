@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React, { useState, useEffect } from "react";
 import { TaskList } from "../components/TaskList";
-import { TaskBoard } from "../components/StatusSelector";
+import * as Types from "../types";
 import { DragAndDropProvider } from "../../utils/DragAndDrop";
 import { reorderTasksInList } from "../utils/taskReorderingUtils";
 
@@ -18,8 +18,8 @@ const meta: Meta<typeof TaskList> = {
   decorators: [
     (Story, context) => {
       // Create a wrapper component with state for the story
-      const TaskListWithReordering = ({ initialTasks }: { initialTasks: TaskBoard.Task[] }) => {
-        const [tasks, setTasks] = useState<TaskBoard.Task[]>([]);
+      const TaskListWithReordering = ({ initialTasks }: { initialTasks: Types.Task[] }) => {
+        const [tasks, setTasks] = useState<Types.Task[]>([]);
         
         // Store the tasks from props when component mounts
         useEffect(() => {
@@ -98,7 +98,7 @@ type Story = StoryObj<typeof meta>;
 const milestoneId = "milestone-1";
 
 // Event handler for status changes
-const handleStatusChange = (taskId: string, newStatus: TaskBoard.Status) => {
+const handleStatusChange = (taskId: string, newStatus: Types.Status) => {
   console.log(`Status changed for task ${taskId} to ${newStatus}`);
 };
 
@@ -111,12 +111,12 @@ export const MultipleTasksList: Story = {
       {
         id: "task-1",
         title: "Implement login functionality",
-        status: "pending" as TaskBoard.Status,
+        status: "pending" as Types.Status,
       },
       {
         id: "task-2",
         title: "Design user profile page",
-        status: "in_progress" as TaskBoard.Status,
+        status: "in_progress" as Types.Status,
         assignees: [
           { id: "user-1", fullName: "Alice Johnson", avatarUrl: "https://i.pravatar.cc/150?u=alice" },
         ],
@@ -124,14 +124,14 @@ export const MultipleTasksList: Story = {
       {
         id: "task-3",
         title: "Fix navigation bug in sidebar",
-        status: "in_progress" as TaskBoard.Status,
+        status: "in_progress" as Types.Status,
         hasComments: true,
         commentCount: 3,
       },
       {
         id: "task-4",
         title: "Optimize database queries",
-        status: "done" as TaskBoard.Status,
+        status: "done" as Types.Status,
         hasDescription: true,
       },
     ],
@@ -166,7 +166,7 @@ export const SingleTaskList: Story = {
       {
         id: "task-5",
         title: "Submit quarterly report",
-        status: "pending" as TaskBoard.Status,
+        status: "pending" as Types.Status,
         dueDate: new Date(new Date().setDate(new Date().getDate() + 3)), // Due in 3 days
         hasDescription: true,
         hasComments: true,
@@ -198,18 +198,18 @@ export const MixedStatusTaskList: Story = {
       {
         id: "task-6",
         title: "Send client proposal",
-        status: "pending" as TaskBoard.Status,
+        status: "pending" as Types.Status,
         dueDate: new Date(new Date().setDate(new Date().getDate() - 2)), // 2 days ago (overdue)
       },
       {
         id: "task-7",
         title: "Setup development environment",
-        status: "done" as TaskBoard.Status,
+        status: "done" as Types.Status,
       },
       {
         id: "task-8",
         title: "Complete user authentication system",
-        status: "in_progress" as TaskBoard.Status,
+        status: "in_progress" as Types.Status,
         hasDescription: true,
         hasComments: true,
         commentCount: 5,

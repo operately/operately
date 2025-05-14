@@ -1,10 +1,10 @@
-import { TaskBoard } from "../components/StatusSelector";
+import * as Types from "../types";
 
 /**
  * Helper function to group tasks by milestone ID
  */
-export const groupTasksByMilestone = (tasks: TaskBoard.Task[]): Record<string, TaskBoard.Task[]> => {
-  const groupedTasks: Record<string, TaskBoard.Task[]> = {
+export const groupTasksByMilestone = (tasks: Types.Task[]): Record<string, Types.Task[]> => {
+  const groupedTasks: Record<string, Types.Task[]> = {
     no_milestone: [],
   };
 
@@ -35,10 +35,10 @@ export interface ReorderTasksOptions {
  * Function to handle task reordering within a single list (same milestone)
  */
 export const reorderTasksInList = (
-  tasks: TaskBoard.Task[],
+  tasks: Types.Task[],
   draggedTaskId: string,
   newIndex: number
-): TaskBoard.Task[] => {
+): Types.Task[] => {
   // Create a copy of the tasks
   const updatedTasks = [...tasks];
   
@@ -64,13 +64,13 @@ export const reorderTasksInList = (
  * Function to handle task reordering across different milestones
  */
 export const reorderTasksAcrossMilestones = (
-  tasks: TaskBoard.Task[],
+  tasks: Types.Task[],
   draggedTaskId: string,
   targetMilestoneId: string,
   indexInTargetMilestone: number,
   options: ReorderTasksOptions = {},
-  milestones?: TaskBoard.Milestone[]
-): TaskBoard.Task[] => {
+  milestones?: Types.Milestone[]
+): Types.Task[] => {
   // Create a copy of the tasks
   const updatedTasks = [...tasks];
   
@@ -149,7 +149,7 @@ export const reorderTasksAcrossMilestones = (
       
       if (originalMilestone) {
         // Create a helper task to keep the empty milestone visible
-        const helperTask: TaskBoard.Task = {
+        const helperTask: Types.Task = {
           id: `task-helper-${originalMilestoneId}-${Date.now()}`,
           title: `Helper task for ${originalMilestone.name}`,
           status: "pending",
@@ -170,13 +170,13 @@ export const reorderTasksAcrossMilestones = (
  * Main function to handle task reordering, works for both single-list and cross-milestone cases
  */
 export const reorderTasks = (
-  tasks: TaskBoard.Task[],
+  tasks: Types.Task[],
   dropZoneId: string,
   draggedTaskId: string,
   indexInDropZone: number,
   options: ReorderTasksOptions = {},
-  milestones?: TaskBoard.Milestone[]
-): TaskBoard.Task[] => {
+  milestones?: Types.Milestone[]
+): Types.Task[] => {
   // Extract milestone ID from dropZoneId (format: milestone-{id})
   let targetMilestoneId = dropZoneId;
   

@@ -3,6 +3,7 @@ import { SecondaryButton } from "../../Button";
 import { BlackLink } from "../../Link";
 import { DragAndDropProvider } from "../../utils/DragAndDrop";
 import { reorderTasks } from "../utils/taskReorderingUtils";
+import * as Types from "../types";
 import {
   IconFileText,
   IconMessageCircle,
@@ -20,81 +21,23 @@ import { TaskList } from "./TaskList";
 import { EmptyMilestoneDropZone } from "./EmptyMilestoneDropZone";
 import { MilestoneCard } from "./MilestoneCard";
 
-export namespace TaskBoard {
-  export type Status = "pending" | "in_progress" | "done" | "canceled";
-
-  export interface Person {
-    id: string;
-    fullName: string;
-    avatarUrl?: string;
-  }
-
-  // Interface for tasks with drag-and-drop position index
-
-  export interface Milestone {
-    id: string;
-    name: string;
-    dueDate?: Date;
-    hasDescription?: boolean;
-    hasComments?: boolean;
-    commentCount?: number;
-  }
-
-  // Label interface removed in current iteration
-
-  export interface Task {
-    id: string;
-    title: string;
-    status: Status;
-    description?: string;
-    assignees?: Person[];
-    // labels removed in current iteration
-    milestone?: Milestone;
-    points?: number;
-    dueDate?: Date;
-    hasDescription?: boolean;
-    hasComments?: boolean;
-    commentCount?: number;
-    comments?: any[];
-    // Special flag to hide helper tasks used for empty milestones
-    _isHelperTask?: boolean;
-  }
-
-  export interface TaskWithIndex extends Task {
-    index: number;
-  }
-
-  export type ViewMode = "table" | "kanban" | "timeline";
-
-  // Callback for when a task status changes
-  export interface TaskBoardCallbacks {
-    onStatusChange?: (taskId: string, newStatus: Status) => void;
-  }
-
-  export interface Props {
-    title: string;
-    tasks: Task[];
-    viewMode?: ViewMode;
-    onStatusChange?: (taskId: string, newStatus: Status) => void;
-    onTaskCreate?: (task: Omit<Task, "id">) => void;
-    onMilestoneCreate?: (milestone: Omit<Milestone, "id">) => void;
-  }
-}
-
 // Helper to group tasks by status
-const groupTasksByStatus = (tasks: TaskBoard.Task[]) => {
-  const grouped: Record<string, TaskBoard.Task[]> = {
+const groupTasksByStatus = (tasks: Types.Task[]) => {
+  const grouped: Record<string, Types.Task[]> = {
     pending: [],
     in_progress: [],
     done: [],
+    canceled: [],
   };
 
   tasks.forEach((task) => {
-    if (grouped[task.status]) {
-      grouped[task.status].push(task);
-    } else {
-      grouped.pending.push(task);
+    // Skip helper tasks used for showing empty milestones
+    if (task._isHelperTask) return;
+
+    if (!grouped[task.status]) {
+      grouped[task.status] = [];
     }
+    grouped[task.status].push(task);
   });
 
   return grouped;
@@ -107,7 +50,7 @@ const ColoredIconCircleCheckFilled = (props: any) => (
 );
 
 // Map task status to badge status, labels and icons
-const taskStatusConfig: Record<TaskBoard.Status, { status: string; label: string; icon: any; color?: string }> = {
+const taskStatusConfig: Record<Types.Status, { status: string; label: string; icon: any; color?: string }> = {
   pending: { status: "not_started", label: "Not started", icon: IconCircleDashed },
   in_progress: { status: "in_progress", label: "In progress", icon: ColoredIconCircleDot, color: "text-brand-1" },
   done: { status: "completed", label: "Done", icon: ColoredIconCircleCheckFilled, color: "text-callout-success-icon" },
@@ -115,7 +58,7 @@ const taskStatusConfig: Record<TaskBoard.Status, { status: string; label: string
 };
 
 // Helper to get the display name for a status
-const getStatusDisplayName = (status: TaskBoard.Status): string => {
+const getStatusDisplayName = (status: Types.Status): string => {
   switch (status) {
     case "pending":
       return "Not started";
@@ -136,15 +79,15 @@ export function TaskBoard({
   onTaskCreate,
   onMilestoneCreate,
 }: {
-  tasks: TaskBoard.Task[];
+  tasks: Types.Task[];
   title?: string;
-  viewMode?: TaskBoard.ViewMode;
-  onStatusChange?: (taskId: string, newStatus: TaskBoard.Status) => void;
-  onTaskCreate?: (task: Omit<TaskBoard.Task, "id">) => void;
-  onMilestoneCreate?: (milestone: Omit<TaskBoard.Milestone, "id">) => void;
+  viewMode?: Types.ViewMode;
+  onStatusChange?: (taskId: string, newStatus: Types.Status) => void;
+  onTaskCreate?: (task: Omit<Types.Task, "id">) => void;
+  onMilestoneCreate?: (milestone: Omit<Types.Milestone, "id">) => void;
 }) {
-  const [currentViewMode, setCurrentViewMode] = useState<TaskBoard.ViewMode>(viewMode);
-  const [internalTasks, setInternalTasks] = useState<TaskBoard.Task[]>(externalTasks);
+  const [currentViewMode, setCurrentViewMode] = useState<Types.ViewMode>(viewMode);
+  const [internalTasks, setInternalTasks] = useState<Types.Task[]>(externalTasks);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [isMilestoneModalOpen, setIsMilestoneModalOpen] = useState(false);
   const [activeTaskMilestoneId, setActiveTaskMilestoneId] = useState<string | undefined>();
@@ -155,8 +98,8 @@ export function TaskBoard({
   }, [externalTasks]);
 
   // Group tasks by milestone, filtering out helper tasks
-  const groupTasksByMilestone = (tasks: TaskBoard.Task[]) => {
-    const grouped: Record<string, TaskBoard.Task[]> = {};
+  const groupTasksByMilestone = (tasks: Types.Task[]) => {
+    const grouped: Record<string, Types.Task[]> = {};
 
     // Group with no milestone
     grouped["no_milestone"] = [];
@@ -191,11 +134,14 @@ export function TaskBoard({
 
   // Get all unique milestones from tasks with completion statistics
   const getMilestones = () => {
+    type MilestoneStats = Types.MilestoneStats;
+    type MilestoneWithStats = Types.MilestoneWithStats;
+
     const milestoneMap = new Map<
       string,
       {
-        milestone: TaskBoard.Milestone;
-        stats: { pending: number; inProgress: number; done: number; canceled: number; total: number };
+        milestone: Types.Milestone;
+        stats: MilestoneStats;
         hasTasks: boolean;
       }
     >();
@@ -245,7 +191,7 @@ export function TaskBoard({
   };
 
   // Handle status change
-  const handleStatusChange = (taskId: string, newStatus: TaskBoard.Status) => {
+  const handleStatusChange = (taskId: string, newStatus: Types.Status) => {
     // Update local state
     const updatedTasks = internalTasks.map((task) => (task.id === taskId ? { ...task, status: newStatus } : task));
     setInternalTasks(updatedTasks);
@@ -271,7 +217,7 @@ export function TaskBoard({
   }, [handleStatusChange]);
 
   // Handle creating a new task
-  const handleCreateTask = (newTaskData: Omit<TaskBoard.Task, "id">) => {
+  const handleCreateTask = (newTaskData: Omit<Types.Task, "id">) => {
     if (onTaskCreate) {
       // Log to confirm task creation event is being triggered
       console.log("TaskBoard: Creating new task", newTaskData);
@@ -282,7 +228,7 @@ export function TaskBoard({
   };
 
   // Handle creating a new milestone
-  const handleCreateMilestone = (newMilestoneData: Omit<TaskBoard.Milestone, "id">) => {
+  const handleCreateMilestone = (newMilestoneData: Omit<Types.Milestone, "id">) => {
     if (onMilestoneCreate) {
       // Log to confirm milestone creation event is being triggered
       console.log("TaskBoard: Creating new milestone", newMilestoneData);

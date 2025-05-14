@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 import { MilestoneCard } from "../components/MilestoneCard";
-import { TaskBoard } from "../components/StatusSelector";
+import * as Types from "../types";
 import { DragAndDropProvider } from "../../utils/DragAndDrop";
 import { reorderTasksInList } from "../utils/taskReorderingUtils";
 
@@ -19,8 +19,8 @@ const meta: Meta<typeof MilestoneCard> = {
     (Story, context) => {
       // Create a wrapper with state management for proper drag-and-drop
       const MilestoneCardWithDragAndDrop = () => {
-        const [tasks, setTasks] = React.useState<TaskBoard.Task[]>([]);
-        const [milestone, setMilestone] = React.useState<TaskBoard.Milestone | null>(null);
+        const [tasks, setTasks] = React.useState<Types.Task[]>([]);
+        const [milestone, setMilestone] = React.useState<Types.Milestone>(context.args.milestone);
         
         // Initialize state from story args
         React.useEffect(() => {
@@ -81,14 +81,14 @@ const meta: Meta<typeof MilestoneCard> = {
         };
         
         // Handle task creation
-        const handleTaskCreate = (newTask: Omit<TaskBoard.Task, "id">) => {
+        const handleTaskCreate = (newTask: Omit<Types.Task, "id">) => {
           // Skip if milestone is not loaded
           if (!milestone) return;
           
           console.log(`Creating new task for ${milestone.name}:`, newTask);
           
           // Create a new task with an ID
-          const taskWithId: TaskBoard.Task = {
+          const taskWithId: Types.Task = {
             id: `task-${Date.now()}`, // Generate a unique ID
             ...newTask
           };
@@ -133,7 +133,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 // Sample milestone data
-const sampleMilestone: TaskBoard.Milestone = {
+const sampleMilestone: Types.Milestone = {
   id: "milestone-1",
   name: "Q2 Release",
   dueDate: new Date(new Date().setDate(new Date().getDate() + 10)),
@@ -143,17 +143,17 @@ const sampleMilestone: TaskBoard.Milestone = {
 };
 
 // Sample tasks for this milestone
-const sampleTasks: TaskBoard.Task[] = [
+const sampleTasks: Types.Task[] = [
   {
     id: "task-1",
     title: "Implement login functionality",
-    status: "pending" as TaskBoard.Status,
+    status: "pending" as Types.Status,
     milestone: sampleMilestone,
   },
   {
     id: "task-2",
     title: "Design user profile page",
-    status: "in_progress" as TaskBoard.Status,
+    status: "in_progress" as Types.Status,
     assignees: [
       { id: "user-1", fullName: "Alice Johnson", avatarUrl: "https://i.pravatar.cc/150?u=alice" },
     ],
@@ -163,7 +163,7 @@ const sampleTasks: TaskBoard.Task[] = [
   {
     id: "task-3",
     title: "Fix navigation bug in sidebar",
-    status: "done" as TaskBoard.Status,
+    status: "done" as Types.Status,
     hasComments: true,
     commentCount: 2,
     milestone: sampleMilestone,
@@ -195,13 +195,13 @@ export const MilestoneWithProgress: Story = {
       {
         id: "task-4",
         title: "Write documentation",
-        status: "done" as TaskBoard.Status,
+        status: "done" as Types.Status,
         milestone: sampleMilestone,
       },
       {
         id: "task-5",
         title: "Deploy to production",
-        status: "done" as TaskBoard.Status,
+        status: "done" as Types.Status,
         milestone: sampleMilestone,
       },
     ],
