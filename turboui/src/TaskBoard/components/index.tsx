@@ -17,6 +17,7 @@ import MilestoneCreationModal from "./MilestoneCreationModal";
 import { DueDateDisplay } from "./DueDateDisplay";
 import { TaskList } from "./TaskList";
 import { EmptyMilestoneDropZone } from "./EmptyMilestoneDropZone";
+import { MilestoneCard } from "./MilestoneCard";
 
 export namespace TaskBoard {
   export type Status = "pending" | "in_progress" | "done" | "canceled";
@@ -487,86 +488,18 @@ export function TaskBoard({
                 {/* If no tasks at all */}
                 {internalTasks.length === 0 && <li className="py-4 text-center text-content-subtle">No tasks found</li>}
 
-                {/* Tasks with milestones */}
+                {/* Milestones */}
                 {milestones.map((milestoneData) => (
-                  <li key={milestoneData.milestone.id}>
-                    {/* Milestone header */}
-                    <div className="flex items-center justify-between px-4 py-3 bg-surface-dimmed border-b border-surface-outline first:border-t-0">
-                      <div className="flex items-center gap-2">
-                        {/* Progress pie chart - handle empty milestone case */}
-                        <PieChart
-                          size={16}
-                          slices={[
-                            {
-                              percentage:
-                                milestoneData.stats.total > 0
-                                  ? (milestoneData.stats.done / milestoneData.stats.total) * 100
-                                  : 0,
-                              color: "var(--color-callout-success-icon)",
-                            },
-                          ]}
-                        />
-                        <BlackLink
-                          to={`/milestones/${milestoneData.milestone.id}`}
-                          className="text-sm font-semibold text-content-base hover:text-link-hover transition-colors"
-                          underline="hover"
-                        >
-                          {milestoneData.milestone.name}
-                        </BlackLink>
-                        {/* <span className="text-xs text-content-dimmed">
-                        {milestoneData.stats.done}/{milestoneData.stats.total} completed
-                      </span> */}
-
-                        {/* Milestone indicators */}
-                        <div className="flex items-center gap-1 ml-1">
-                          {/* Description indicator */}
-                          {milestoneData.milestone.hasDescription && (
-                            <span className="text-content-dimmed">
-                              <IconFileText size={12} />
-                            </span>
-                          )}
-
-                          {/* Comments indicator */}
-                          {milestoneData.milestone.hasComments && (
-                            <span className="text-content-dimmed flex items-center">
-                              <IconMessageCircle size={12} />
-                              {milestoneData.milestone.commentCount && (
-                                <span className="ml-0.5 text-xs text-content-dimmed">
-                                  {milestoneData.milestone.commentCount}
-                                </span>
-                              )}
-                            </span>
-                          )}
-
-                          {/* Due date indicator */}
-                          {milestoneData.milestone.dueDate && (
-                            <span className="ml-1">
-                              <DueDateDisplay dueDate={milestoneData.milestone.dueDate} />
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                      <button
-                        className="text-content-dimmed hover:text-content-base"
-                        onClick={() => {
-                          setActiveTaskMilestoneId(milestoneData.milestone.id);
-                          setIsTaskModalOpen(true);
-                        }}
-                      >
-                        <IconPlus size={16} />
-                      </button>
-                    </div>
-
-                    {/* Tasks in this milestone - show empty state when no tasks */}
-                    {groupedTasks[milestoneData.milestone.id] && groupedTasks[milestoneData.milestone.id].length > 0 ? (
-                      <TaskList
-                        tasks={groupedTasks[milestoneData.milestone.id]}
-                        milestoneId={milestoneData.milestone.id}
-                      />
-                    ) : (
-                      <EmptyMilestoneDropZone milestoneId={milestoneData.milestone.id} />
-                    )}
-                  </li>
+                  <MilestoneCard
+                    key={milestoneData.milestone.id}
+                    milestone={milestoneData.milestone}
+                    tasks={groupedTasks[milestoneData.milestone.id] || []}
+                    stats={milestoneData.stats}
+                    onTaskCreate={() => {
+                      setActiveTaskMilestoneId(milestoneData.milestone.id);
+                      setIsTaskModalOpen(true);
+                    }}
+                  />
                 ))}
 
                 {/* Tasks with no milestone */}

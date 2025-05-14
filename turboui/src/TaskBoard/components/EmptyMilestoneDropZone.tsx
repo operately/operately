@@ -24,7 +24,7 @@ export function EmptyMilestoneDropZone({ milestoneId, onTaskCreation }: EmptyMil
   return (
     <div
       ref={ref as React.RefObject<HTMLDivElement>}
-      className="py-3 px-4 text-center text-content-subtle text-sm min-h-[40px]"
+      className="py-3 px-4 text-center text-content-subtle text-sm min-h-[40px] bg-surface-base"
       onClick={onTaskCreation}
     >
       No tasks in this milestone. Click + to add a task or drag a task here.
