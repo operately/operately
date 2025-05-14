@@ -1,6 +1,6 @@
-import React from "react";
 import { TestableElement, createTestId } from "@/utils/testid";
 import classNames from "classnames";
+import React from "react";
 
 interface Props extends TestableElement {
   title: string;
@@ -36,7 +36,7 @@ function SectionTitle({ title, subtitle, actions }: SectionTitleProps) {
   return (
     <div className={className}>
       <div>
-        <h2 className="font-bold text-lg">{title}</h2>
+        <h2 className="font-bold">{title}</h2>
         {subtitle && <p className="text-sm max-w-xl">{subtitle}</p>}
       </div>
 
