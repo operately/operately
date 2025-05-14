@@ -62,21 +62,37 @@ export const BasicTask: Story = {
     ...sharedProps,
   },
   render: (args) => {
+    // Set up state to track task updates
+    const [task, setTask] = React.useState(args.task);
+    
+    // Update task when args change
+    React.useEffect(() => {
+      setTask(args.task);
+    }, [args.task]);
+    
     // Set up status change listener
     React.useEffect(() => {
       const handleStatusChangeEvent = (event: CustomEvent) => {
         const { taskId, newStatus } = event.detail;
-        handleStatusChange(taskId, newStatus);
+        if (taskId === task.id) {
+          console.log(`TaskItem: Status changed for task ${taskId} to ${newStatus}`);
+          
+          // Update the task state
+          setTask({...task, status: newStatus});
+          
+          // Also call the handler for debugging
+          handleStatusChange(taskId, newStatus);
+        }
       };
       document.addEventListener("statusChange" as any, handleStatusChangeEvent as any);
       return () => {
         document.removeEventListener("statusChange" as any, handleStatusChangeEvent as any);
       };
-    }, []);
+    }, [task]);
 
     // Make sure all required props are passed
     return <TaskItem 
-      task={args.task} 
+      task={task} // Use the state-managed task instead of args.task
       milestoneId={args.milestoneId} 
       itemStyle={args.itemStyle} 
     />;

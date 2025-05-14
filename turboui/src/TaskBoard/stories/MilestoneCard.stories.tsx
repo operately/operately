@@ -28,8 +28,36 @@ const meta: Meta<typeof MilestoneCard> = {
           if (args.milestone) setMilestone({...args.milestone});
         }, [context.args]);
         
-        // Return early if milestone is not yet loaded
-        if (!milestone) return null;
+        // Listen for status change events
+        React.useEffect(() => {
+          // Skip if milestone not loaded yet
+          if (!milestone) return;
+          const handleStatusChange = (event: CustomEvent) => {
+            const { taskId, newStatus } = event.detail;
+            // Only proceed if milestone exists
+            if (!milestone) return;
+            
+            console.log(`Status changed for task ${taskId} to ${newStatus}`);
+            
+            // Update task status in our state
+            const updatedTasks = tasks.map(task => {
+              if (task.id === taskId) {
+                return { ...task, status: newStatus };
+              }
+              return task;
+            });
+            
+            setTasks(updatedTasks);
+          };
+          
+          // Add event listener
+          document.addEventListener("statusChange", handleStatusChange as EventListener);
+          
+          // Clean up
+          return () => {
+            document.removeEventListener("statusChange", handleStatusChange as EventListener);
+          };
+        }, [tasks, setTasks]);
         
         // Handle drop events to update task order
         const handleDrop = (dropZoneId: string, draggedId: string, indexInDropZone: number) => {
@@ -60,6 +88,9 @@ const meta: Meta<typeof MilestoneCard> = {
         
         // Handle task creation
         const handleTaskCreate = (newTask: Omit<TaskBoard.Task, "id">) => {
+          // Skip if milestone is not loaded
+          if (!milestone) return;
+          
           console.log(`Creating new task for ${milestone.name}:`, newTask);
           
           // Create a new task with an ID
@@ -71,6 +102,11 @@ const meta: Meta<typeof MilestoneCard> = {
           // Add the task to the list
           setTasks([...tasks, taskWithId]);
         };
+        
+        // Return early with loading state if milestone is not yet loaded
+        if (!milestone) {
+          return <div>Loading milestone...</div>;
+        }
         
         return (
           <DragAndDropProvider onDrop={handleDrop}>

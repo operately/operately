@@ -25,6 +25,32 @@ const meta: Meta<typeof TaskList> = {
           setTasks([...initialTasks]);
         }, [initialTasks]);
         
+        // Listen for status change events
+        useEffect(() => {
+          const handleStatusChange = (event: CustomEvent) => {
+            const { taskId, newStatus } = event.detail;
+            console.log(`Status changed for task ${taskId} to ${newStatus}`);
+            
+            // Update task status in our state
+            const updatedTasks = tasks.map(task => {
+              if (task.id === taskId) {
+                return { ...task, status: newStatus };
+              }
+              return task;
+            });
+            
+            setTasks(updatedTasks);
+          };
+          
+          // Add event listener
+          document.addEventListener("statusChange", handleStatusChange as EventListener);
+          
+          // Clean up
+          return () => {
+            document.removeEventListener("statusChange", handleStatusChange as EventListener);
+          };
+        }, [tasks]);
+        
         // Define a proper onDrop handler for the DragAndDropProvider
         const handleDrop = (dropZoneId: string, draggedId: string, indexInDropZone: number) => {
           console.log(`Dragged item ${draggedId} was dropped onto ${dropZoneId} at index ${indexInDropZone}`);
