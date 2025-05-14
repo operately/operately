@@ -2,12 +2,13 @@ import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Callouts from "@/components/Callouts";
+import { PageModule } from "@/routes/types";
 
 import { DimmedLink, Link } from "turboui";
 
-export const loader = Pages.emptyLoader;
+export default { name: "DesignCalloutsPage", loader: Pages.emptyLoader, Page } as PageModule;
 
-export function Page() {
+function Page() {
   return (
     <Pages.Page title={"Tooltips"}>
       <Paper.Root>

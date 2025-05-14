@@ -7,10 +7,11 @@ import { Link } from "turboui";
 
 import { TosAndPrivacyPolicy } from "@/features/auth/AgreeToTosAndPp";
 import { SignUpWithEmail, SignUpWithGoogleButton } from "@/features/auth/Buttons";
+import { PageModule } from "@/routes/types";
 
-export const loader = Pages.emptyLoader;
+export default { name: "SignUpPage", loader: Pages.emptyLoader, Page } as PageModule;
 
-export function Page() {
+function Page() {
   return (
     <Pages.Page title={["Sign Up"]} testId="sign-up-page">
       <Paper.Root size="tiny">

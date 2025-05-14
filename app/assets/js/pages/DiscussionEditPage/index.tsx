@@ -8,12 +8,15 @@ import { PrimaryButton, GhostButton } from "turboui";
 import { Form, FormState, useForm } from "@/features/DiscussionForm";
 import { Paths } from "@/routes/paths";
 import { Link } from "turboui";
+import { PageModule } from "@/routes/types";
+
+export default { name: "DiscussionEditPage", loader, Page } as PageModule;
 
 interface LoaderResult {
   discussion: Discussions.Discussion;
 }
 
-export async function loader({ params }): Promise<LoaderResult> {
+async function loader({ params }): Promise<LoaderResult> {
   return {
     discussion: await Discussions.getDiscussion({
       id: params.id,
@@ -22,7 +25,7 @@ export async function loader({ params }): Promise<LoaderResult> {
   };
 }
 
-export function Page() {
+function Page() {
   const { discussion } = Pages.useLoadedData<LoaderResult>();
 
   const form = useForm({

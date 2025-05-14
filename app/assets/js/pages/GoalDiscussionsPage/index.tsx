@@ -3,6 +3,7 @@ import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as Goals from "@/models/goals";
 import * as Activities from "@/models/activities";
+import { PageModule } from "@/routes/types";
 
 import { Paths } from "@/routes/paths";
 import { Navigation } from "@/features/goals/GoalPageNavigation";
@@ -11,17 +12,17 @@ import { PrimaryButton, SecondaryButton } from "turboui";
 
 import FormattedTime from "@/components/FormattedTime";
 import { Avatar } from "turboui";
-
 import { DivLink } from "turboui";
-
 import ActivityHandler from "@/features/activities";
+
+export default { name: "GoalDiscussionsPage", loader, Page } as PageModule;
 
 interface LoaderResult {
   goal: Goals.Goal;
   activities: Activities.Activity[];
 }
 
-export const loader = async function ({ params }): Promise<LoaderResult> {
+async function loader({ params }): Promise<LoaderResult> {
   const goalPromise = Goals.getGoal({
     id: params.goalId,
     includeSpace: true,
@@ -40,7 +41,7 @@ export const loader = async function ({ params }): Promise<LoaderResult> {
   };
 };
 
-export const Page = function () {
+function Page() {
   const { goal } = Pages.useLoadedData<LoaderResult>();
 
   return (

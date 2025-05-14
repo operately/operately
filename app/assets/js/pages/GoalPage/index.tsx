@@ -13,12 +13,15 @@ import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { Paths } from "@/routes/paths";
 import { redirectIfFeatureEnabled } from "@/routes/redirectIfFeatureEnabled";
 import { assertPresent } from "@/utils/assertions";
+import { PageModule } from "@/routes/types";
+
+export default { name: "GoalPage", loader, Page } as PageModule;
 
 interface LoaderResult {
   goal: Goals.Goal;
 }
 
-export async function loader({ params }): Promise<LoaderResult> {
+async function loader({ params }): Promise<LoaderResult> {
   await redirectIfFeatureEnabled(params, {
     feature: "goal_page_v3",
     path: Paths.goalV3Path(params.id),
@@ -42,7 +45,7 @@ export async function loader({ params }): Promise<LoaderResult> {
   };
 }
 
-export function Page() {
+function Page() {
   const { goal } = Pages.useLoadedData<LoaderResult>();
 
   assertPresent(goal.notifications, "Goal notifications must be defined");

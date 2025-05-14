@@ -1,3 +1,5 @@
+import { PageModule } from "@/routes/types";
+
 import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
@@ -19,13 +21,15 @@ import { createTestId } from "@/utils/testid";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import plurarize from "@/utils/plurarize";
 
+export default { name: "CompanyAdminManagePeoplePage", loader, Page } as PageModule;
+
 interface LoaderResult {
   company: Companies.Company;
   invitedPeople: People.Person[];
   currentMembers: People.Person[];
 }
 
-export async function loader({ params }): Promise<LoaderResult> {
+async function loader({ params }): Promise<LoaderResult> {
   const company = await Companies.getCompany({ id: params.companyId }).then((res) => res.company!);
   const people = await People.getPeople({ includeManager: true, includeInvitations: true }).then((res) => res.people!);
 
@@ -36,7 +40,7 @@ export async function loader({ params }): Promise<LoaderResult> {
   };
 }
 
-export function Page() {
+function Page() {
   const { company } = Pages.useLoadedData() as LoaderResult;
 
   return (

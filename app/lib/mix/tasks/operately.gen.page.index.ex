@@ -21,16 +21,13 @@ defmodule Mix.Tasks.Operately.Gen.Page.Index do
         #{indent(Enum.join(exports(pages), ",\n"), 2)}
       };
 
-      function getShouldRevalidate(pageModule: any) {
-        return 'shouldRevalidate' in pageModule ? pageModule.shouldRevalidate : undefined;
-      }
       """
     end)
   end
 
   def import_statements(pages) do
     pages
-    |> Enum.map(fn page -> "import * as #{page} from \"./#{page}\";" end)
+    |> Enum.map(fn page -> "import #{page} from \"./#{page}\";" end)
     |> Enum.join("\n")
   end
 
@@ -46,12 +43,7 @@ defmodule Mix.Tasks.Operately.Gen.Page.Index do
 
   def export_page(page) do
     """
-    #{page}: {
-      name: "#{page}",
-      loader: #{page}.loader,
-      Page: #{page}.Page,
-      shouldRevalidate: getShouldRevalidate(#{page})
-    }
+    #{page}
     """
     |> String.trim()
   end

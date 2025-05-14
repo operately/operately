@@ -3,23 +3,26 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Goals from "@/models/goals";
 import * as Editor from "@/components/Editor";
+import { PageModule } from "@/routes/types";
 
 import { Paths } from "@/routes/paths";
 import { PrimaryButton } from "turboui";
 import { DimmedLink } from "turboui";
 import { useNavigate } from "react-router-dom";
 
+export default { name: "GoalReopenPage", loader, Page } as PageModule;
+
 interface LoaderResult {
   goal: Goals.Goal;
 }
 
-export async function loader({ params }): Promise<LoaderResult> {
+async function loader({ params }): Promise<LoaderResult> {
   return {
     goal: await Goals.getGoal({ id: params.goalId }).then((data) => data.goal!),
   };
 }
 
-export function Page() {
+function Page() {
   const { goal } = Pages.useLoadedData<LoaderResult>();
 
   const form = useForm(goal);

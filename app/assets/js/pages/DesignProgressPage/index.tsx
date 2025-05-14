@@ -1,12 +1,13 @@
 import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
+import { PageModule } from "@/routes/types";
 
 import { ProgressBar } from "@/components/charts";
 
-export const loader = Pages.emptyLoader;
+export default { name: "DesignProgressPage", loader: Pages.emptyLoader, Page } as PageModule;
 
-export function Page() {
+function Page() {
   const [[value1, value2, value3, value4], setValues] = React.useState([0, 20, 60, 100]);
 
   React.useEffect(() => {

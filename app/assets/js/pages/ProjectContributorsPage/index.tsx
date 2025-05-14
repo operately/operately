@@ -4,6 +4,7 @@ import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as Projects from "@/models/projects";
 import * as ProjectContributors from "@/models/projectContributors";
+import { PageModule } from "@/routes/types";
 
 import { PrimaryButton, SecondaryButton } from "turboui";
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
@@ -18,11 +19,12 @@ import { AccessLevel } from "@/features/projects/AccessLevel";
 import { match } from "ts-pattern";
 
 import { OtherPeople } from "./OtherPeople";
-import { useLoadedData } from "./loader";
+import { useLoadedData, loader } from "./loader";
 import { BorderedRow } from "@/components/BorderedRow";
-export { loader } from "./loader";
 
-export function Page() {
+export default { name: "ProjectContributorsPage", loader, Page } as PageModule;
+
+function Page() {
   const { project } = useLoadedData();
 
   return (

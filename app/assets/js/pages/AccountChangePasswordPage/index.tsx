@@ -6,10 +6,11 @@ import * as Accounts from "@/models/accounts";
 import Forms from "@/components/Forms";
 import { Paths } from "@/routes/paths";
 import { useNavigate } from "react-router-dom";
+import { PageModule } from "@/routes/types";
 
-export const loader = Pages.emptyLoader;
+export default { name: "AccountChangePasswordPage", loader: Pages.emptyLoader, Page } as PageModule;
 
-export function Page() {
+function Page() {
   const navigate = useNavigate();
 
   const form = Forms.useForm({
