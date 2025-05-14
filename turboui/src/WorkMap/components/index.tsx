@@ -38,6 +38,24 @@ export function WorkMap({ title, items, columnOptions = {}, tabOptions = {} }: W
 export default WorkMap;
 
 export namespace WorkMap {
+  export const ALLOWED_STATUSES = [
+    "on_track",
+    "completed",
+    "achieved",
+    "partial",
+    "missed",
+    "paused",
+    "caution",
+    "issue",
+    "dropped",
+    "pending",
+    "outdated",
+  ] as const;
+  const ALLOWED_TYPES = ["goal", "project"] as const;
+
+  type ItemStatus = (typeof ALLOWED_STATUSES)[number];
+  type ItemType = (typeof ALLOWED_TYPES)[number];
+
   interface Person {
     id: string;
     fullName: string;
@@ -59,7 +77,7 @@ export namespace WorkMap {
     id: string;
     parentId: string | null;
     name: string;
-    status: "on_track" | "completed" | "achieved" | "partial" | "missed" | "paused" | "caution" | "issue" | "dropped" | "pending" | "outdated";
+    status: ItemStatus;
     progress: number;
     space: Space;
     spacePath: string;
@@ -70,7 +88,7 @@ export namespace WorkMap {
     children: Item[];
     completedOn: string | null;
     timeframe: Timeframe | null;
-    type: "goal" | "project";
+    type: ItemType;
     itemPath: string;
     privacy: PrivacyIndicator.PrivacyLevels;
   }
