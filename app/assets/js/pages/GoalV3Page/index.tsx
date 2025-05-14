@@ -61,7 +61,7 @@ export function Page() {
     reviewer: goal.reviewer,
 
     description: "",
-    status: "pending",
+    status: goal.status,
     targets: [],
     checkIns: [],
     messages: [],
