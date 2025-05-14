@@ -77,6 +77,9 @@ function Form() {
       if (compareIds(form.values.champion, form.values.reviewer)) {
         addError("reviewer", "Can't be the same as the champion");
       }
+      if (!form.values.space) {
+        addError("space", "Space is required");
+      }
     },
     submit: async () => {
       const res = await add({
