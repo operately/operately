@@ -5,29 +5,29 @@ import * as Projects from "@/models/projects";
 
 import { compareIds, Paths } from "@/routes/paths";
 
-import { useLoadedData } from "./loader";
 import { assertPresent } from "@/utils/assertions";
 import { MiniWorkMap } from "turboui";
+import { useLoadedData } from "./loader";
 
-export function useWorkItems() : MiniWorkMap.WorkItem[] {
+export function useWorkItems(): MiniWorkMap.WorkItem[] {
   const { goal, goals, projects } = useLoadedData();
 
-  const items = React.useMemo(() => {
+  const items: MiniWorkMap.WorkItem[] = React.useMemo(() => {
     const projectAsWorkItem = (project: Projects.Project) => {
       assertPresent(project.id, "project id must be present");
       assertPresent(project.name, "project name must be present");
 
       return {
-        id: project.id,
+        id: project.id!,
         type: "project" as const,
         status: project.lastCheckIn?.status || "pending",
         name: project.name,
-        link: Paths.projectPath(project.id),
+        itemPath: Paths.projectPath(project.id),
         progress: Projects.getProgress(project),
         completed: Projects.isClosed(project),
-        people: Projects.getPeople(project),
-        subitems: [],
-      }
+        assignees: Projects.getPeople(project),
+        children: [],
+      } as MiniWorkMap.WorkItem;
     };
 
     const goalAsWorkItem = (goal: Goals.Goal) => {
@@ -41,17 +41,17 @@ export function useWorkItems() : MiniWorkMap.WorkItem[] {
         type: "goal",
         status: goal.lastCheckIn?.status || "pending",
         name: goal.name,
-        link: Paths.goalPath(goal.id),
+        itemPath: Paths.goalPath(goal.id),
         progress: goal.progressPercentage,
         completed: goal.isClosed,
-        people: Goals.getPeople(goal),
-        subitems: subItems(goal),
-      };
+        assignees: Goals.getPeople(goal),
+        children: subItems(goal),
+      } as MiniWorkMap.WorkItem;
     };
 
     const subItems = (goal: Goals.Goal) => {
-      const subGoals = goals.filter(g => compareIds(g.parentGoalId, goal.id)).map(g => goalAsWorkItem(g));
-      const goalProjects = projects.filter(p => compareIds(p.goalId, goal.id)).map(p => projectAsWorkItem(p));
+      const subGoals = goals.filter((g) => compareIds(g.parentGoalId, goal.id)).map((g) => goalAsWorkItem(g));
+      const goalProjects = projects.filter((p) => compareIds(p.goalId, goal.id)).map((p) => projectAsWorkItem(p));
 
       return [...subGoals, ...goalProjects];
     };
