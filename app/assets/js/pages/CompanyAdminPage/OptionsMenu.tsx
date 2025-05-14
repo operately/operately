@@ -3,7 +3,7 @@ import classNames from "classnames";
 import * as React from "react";
 import { BlackLink } from "turboui";
 
-export function OptionsMenuItem({ icon, title, linkTo, disabled }) {
+export function OptionsMenuItem({ icon, title, linkTo }) {
   const testId = createTestId(title);
 
   const className = classNames(
@@ -16,13 +16,9 @@ export function OptionsMenuItem({ icon, title, linkTo, disabled }) {
     <div className={className}>
       {React.createElement(icon, { size: 18 })}
 
-      {disabled ? (
-        <span>{title}</span>
-      ) : (
-        <BlackLink to={linkTo} testId={testId} underline="hover" className="font-semibold">
-          {title}
-        </BlackLink>
-      )}
+      <BlackLink to={linkTo} testId={testId} underline="hover" className="font-semibold">
+        {title}
+      </BlackLink>
     </div>
   );
 }

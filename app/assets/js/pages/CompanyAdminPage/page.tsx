@@ -1,15 +1,15 @@
-import * as React from "react";
-import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
+import * as Paper from "@/components/PaperContainer";
 import * as Icons from "@tabler/icons-react";
+import * as React from "react";
 
-import { NavigationBackToLobby } from "./NavigationBackToLobby";
-import { CompanyAdmins, CompanyOwners } from "./CompanyAdmins";
-import { useLoadedData } from "./loader";
-import { OptionsMenuItem } from "./OptionsMenu";
+import { useMe } from "@/contexts/CurrentCompanyContext";
 import { Paths, includesId } from "@/routes/paths";
 import { Link } from "turboui";
-import { useMe } from "@/contexts/CurrentCompanyContext";
+import { CompanyAdmins, CompanyOwners } from "./CompanyAdmins";
+import { useLoadedData } from "./loader";
+import { NavigationBackToLobby } from "./NavigationBackToLobby";
+import { OptionsMenuItem } from "./OptionsMenu";
 
 export function Page() {
   const { company } = useLoadedData();
@@ -53,46 +53,29 @@ function AdminsMenu() {
   const amIAdmin = includesId(adminIds, me!.id);
   const amIOwner = includesId(ownerIds, me!.id);
 
+  // Don't show the menu at all if user is not an admin or owner
+  if (!(amIAdmin || amIOwner)) {
+    return null;
+  }
+
   const managePeople = Paths.companyManagePeoplePath();
   const renameCompanyPath = Paths.companyRenamePath();
   const restorePath = Paths.companyAdminRestoreSuspendedPeoplePath();
 
-  let message = "";
-
-  if (amIOwner) {
-    message = "As an admin or owner, you can:";
-  } else if (amIAdmin) {
-    message = "As an admin, you can:";
-  } else {
-    message = "Reach out to an admin if you need to:";
-  }
-
   return (
-    <div className="mt-12">
+    <Paper.Section title="As an admin or owner, you can:">
       <div>
-        <p className="mt-12 mb-2 font-bold">{message}</p>
-        <OptionsMenuItem
-          disabled={!(amIAdmin || amIOwner)}
-          linkTo={managePeople}
-          icon={Icons.IconUsers}
-          title="Manage team members"
-        />
+        <OptionsMenuItem linkTo={managePeople} icon={Icons.IconUsers} title="Manage team members" />
 
         <OptionsMenuItem
-          disabled={!(amIAdmin || amIOwner)}
           linkTo={restorePath}
           icon={Icons.IconUser}
-          title="Restore access for previously deactivated team members"
+          title="Restore access for deactivated team members"
         />
 
-        <OptionsMenuItem
-          disabled={!(amIAdmin || amIOwner)}
-          linkTo={renameCompanyPath}
-          icon={Icons.IconLetterCase}
-          title="Rename the company"
-        />
+        <OptionsMenuItem linkTo={renameCompanyPath} icon={Icons.IconLetterCase} title="Rename the company" />
       </div>
-    </div>
+    </Paper.Section>
   );
 }
 
@@ -102,36 +85,20 @@ function OwnersMenu() {
   const me = useMe();
   const amIOwner = includesId(ownerIds, me!.id);
 
-  let message = "";
-
-  if (amIOwner) {
-    message = "As an owner, you can:";
-  } else {
-    message = "Reach out to an account owner if you need to:";
+  // Don't show the menu at all if user is not an owner
+  if (!amIOwner) {
+    return null;
   }
 
   const manageTrustedDomains = Paths.companyAdminManageTrustedDomainsPath();
   const manageAdmins = Paths.companyManageAdminsPath();
 
   return (
-    <div className="mt-12">
+    <Paper.Section title="As an owner, you can:">
       <div>
-        <p className="mt-12 mb-2 font-bold">{message}</p>
-
-        <OptionsMenuItem
-          disabled={!amIOwner}
-          linkTo={manageAdmins}
-          icon={Icons.IconShieldLock}
-          title="Manage administrators and owners"
-        />
-
-        <OptionsMenuItem
-          disabled={!amIOwner}
-          linkTo={manageTrustedDomains}
-          icon={Icons.IconLock}
-          title="Manage trusted email domains"
-        />
+        <OptionsMenuItem linkTo={manageAdmins} icon={Icons.IconShieldLock} title="Manage administrators and owners" />
+        <OptionsMenuItem linkTo={manageTrustedDomains} icon={Icons.IconLock} title="Manage trusted email domains" />
       </div>
-    </div>
+    </Paper.Section>
   );
 }
