@@ -1,25 +1,19 @@
 import React, { useState, useMemo, useCallback, useEffect } from "react";
-import { StatusBadge } from "../../StatusBadge";
 import { SecondaryButton } from "../../Button";
 import { BlackLink } from "../../Link";
 import { DragAndDropProvider, useDraggable, useDraggingAnimation, useDropZone } from "../../utils/DragAndDrop";
-import classNames from "../../utils/classnames";
 import {
   IconFileText,
   IconMessageCircle,
-  IconCheck,
   IconCircleDashed,
   IconCircleDot,
   IconCircleCheckFilled,
   IconX,
   IconPlus,
-  IconGripVertical,
 } from "@tabler/icons-react";
-import { Menu, MenuActionItem } from "../../Menu";
 import { PieChart } from "../../PieChart";
 import TaskCreationModal from "./TaskCreationModal";
 import MilestoneCreationModal from "./MilestoneCreationModal";
-import { StatusSelector } from "./StatusSelector";
 import { DueDateDisplay } from "./DueDateDisplay";
 import { TaskItem } from "./TaskItem";
 
@@ -131,10 +125,6 @@ const getStatusDisplayName = (status: TaskBoard.Status): string => {
   }
 };
 
-// Status selector component moved to separate file: ./StatusSelector.tsx
-
-// DueDateDisplay component moved to separate file: ./DueDateDisplay.tsx
-
 // TaskList component with drag and drop functionality
 function TaskList({ tasks, milestoneId }: { tasks: TaskBoard.Task[]; milestoneId: string }) {
   // Add drag and drop index to each task
@@ -164,9 +154,9 @@ function TaskList({ tasks, milestoneId }: { tasks: TaskBoard.Task[]; milestoneId
 function EmptyMilestoneDropZone({ milestoneId }: { milestoneId: string }) {
   // Set up drop zone with the same ID pattern as TaskList
   const { ref } = useDropZone({ id: `milestone-${milestoneId}`, dependencies: [] });
-  
+
   return (
-    <div 
+    <div
       ref={ref as React.RefObject<HTMLDivElement>}
       className="py-3 px-4 text-center text-content-subtle text-sm min-h-[40px]"
     >
@@ -174,8 +164,6 @@ function EmptyMilestoneDropZone({ milestoneId }: { milestoneId: string }) {
     </div>
   );
 }
-
-// TaskItem component moved to separate file: ./TaskItem.tsx
 
 export function TaskBoard({
   tasks: externalTasks,
@@ -290,8 +278,7 @@ export function TaskBoard({
     });
 
     // Return milestones sorted by ID to maintain consistent ordering
-    return Array.from(milestoneMap.values())
-      .sort((a, b) => a.milestone.id.localeCompare(b.milestone.id));
+    return Array.from(milestoneMap.values()).sort((a, b) => a.milestone.id.localeCompare(b.milestone.id));
   };
 
   // Handle status change
@@ -516,7 +503,7 @@ export function TaskBoard({
                   : "bg-surface-accent text-content-base hover:bg-surface-accent-hover"
               }`}
             >
-              Table
+              List
             </button>
             <button
               onClick={() => setCurrentViewMode("kanban")}
@@ -527,16 +514,6 @@ export function TaskBoard({
               }`}
             >
               Kanban
-            </button>
-            <button
-              onClick={() => setCurrentViewMode("timeline")}
-              className={`px-3 py-1 text-xs rounded-md ${
-                currentViewMode === "timeline"
-                  ? "bg-primary-base text-white"
-                  : "bg-surface-accent text-content-base hover:bg-surface-accent-hover"
-              }`}
-            >
-              Timeline
             </button>
           </div>
         </div>
