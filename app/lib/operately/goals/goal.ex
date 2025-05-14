@@ -83,13 +83,11 @@ defmodule Operately.Goals.Goal do
   end
 
   def status(goal = %__MODULE__{}) do
-    goal = Repo.preload(goal, :last_update)
-
     cond do
       goal.success == "yes" -> "achieved"
       goal.success == "no" -> "missed"
       Operately.Goals.outdated?(goal) -> "outdated"
-      goal.last_update -> goal.last_update.status
+      goal.last_update_status -> Atom.to_string(goal.last_update_status)
       true -> "on_track"
     end
   end
