@@ -10,20 +10,23 @@ import { Timezones } from "./timezones";
 import { Avatar } from "turboui";
 import Forms from "@/components/Forms";
 import { useMe } from "@/contexts/CurrentCompanyContext";
+import { PageModule } from "@/routes/types";
+
+export default { name: "ProfileEditPage", loader, Page } as PageModule;
 
 interface LoaderResult {
   person: People.Person;
   from: FromLocation;
 }
 
-export async function loader({ request, params }): Promise<LoaderResult> {
+async function loader({ request, params }): Promise<LoaderResult> {
   return {
     person: await People.getPerson({ id: params.id, includeManager: true }).then((d) => d.person!),
     from: Pages.getSearchParam(request, "from") as FromLocation,
   };
 }
 
-export function Page() {
+function Page() {
   const { person } = Pages.useLoadedData() as LoaderResult;
 
   return (

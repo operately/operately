@@ -2,11 +2,12 @@ import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Icons from "@tabler/icons-react";
+import { PageModule } from "@/routes/types";
 
 import { OperatelyLogo } from "@/components/OperatelyLogo";
 import { DivLink } from "turboui";
 
-export const loader = Pages.emptyLoader;
+export default { name: "DesignPage", loader: Pages.emptyLoader, Page } as PageModule;
 
 const subpages = [
   { title: "Buttons", path: "/__design__/buttons", icon: Icons.IconHandClick },
@@ -18,7 +19,7 @@ const subpages = [
   { title: "Progress Bars", path: "/__design__/progress", icon: Icons.IconChartPie },
 ];
 
-export function Page() {
+function Page() {
   return (
     <Pages.Page title={"Design System"}>
       <Paper.Root size="tiny">

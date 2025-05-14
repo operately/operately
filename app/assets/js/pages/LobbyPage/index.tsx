@@ -10,13 +10,16 @@ import { DivLink, Link } from "turboui";
 import classnames from "classnames";
 import { Paths } from "@/routes/paths";
 import plurarize from "@/utils/plurarize";
+import { PageModule } from "@/routes/types";
+
+export default { name: "LobbyPage", loader, Page } as PageModule;
 
 interface LoaderResult {
   account: Api.Account;
   companies: Api.Company[];
 }
 
-export async function loader(): Promise<LoaderResult> {
+async function loader(): Promise<LoaderResult> {
   return {
     account: await Api.getAccount({}).then((res) => res.account!),
     companies: await Api.getCompanies({
@@ -25,7 +28,7 @@ export async function loader(): Promise<LoaderResult> {
   };
 }
 
-export function Page() {
+function Page() {
   const { account, companies } = Pages.useLoadedData<LoaderResult>();
 
   const firstName = People.firstName(account);

@@ -12,12 +12,15 @@ import { Paths, compareIds } from "@/routes/paths";
 import { SecondaryButton } from "turboui";
 import { createTestId } from "@/utils/testid";
 import { useNavigate } from "react-router-dom";
+import { PageModule } from "@/routes/types";
+
+export default { name: "SpaceAddMembersPage", loader, Page } as PageModule;
 
 interface LoaderResult {
   space: Spaces.Space;
 }
 
-export async function loader({ params }): Promise<LoaderResult> {
+async function loader({ params }): Promise<LoaderResult> {
   const space = await Spaces.getSpace({ id: params.id });
   return { space: space };
 }
@@ -36,7 +39,7 @@ function newMember() {
   };
 }
 
-export function Page() {
+function Page() {
   const { space } = Pages.useLoadedData() as LoaderResult;
   const backPath = Paths.spaceAccessManagementPath(space.id!);
   const navigate = useNavigate();

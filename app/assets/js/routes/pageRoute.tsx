@@ -4,8 +4,7 @@ import { AxiosError } from "axios";
 import nprogress from "nprogress";
 import { setDevData } from "@/features/DevBar/useDevBarData";
 import { redirect } from "react-router-dom";
-
-type Loader = ({ params }: { params: any }) => Promise<any>;
+import { Loader, PageModule } from "./types";
 
 interface Options {
   auth?: boolean;
@@ -15,7 +14,7 @@ const defaultOptions: Options = {
   auth: true,
 };
 
-export function pageRoute(path: string, pageModule: any, options: Options = {}) {
+export function pageRoute(path: string, pageModule: PageModule, options: Options = {}) {
   options = { ...defaultOptions, ...options };
 
   const Element = pageModule.Page;

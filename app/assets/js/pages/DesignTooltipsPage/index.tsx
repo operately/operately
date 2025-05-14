@@ -2,12 +2,13 @@ import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Icons from "@tabler/icons-react";
+import { PageModule } from "@/routes/types";
 
 import { Tooltip } from "@/components/Tooltip";
 
-export const loader = Pages.emptyLoader;
+export default { name: "DesignTooltipsPage", loader: Pages.emptyLoader, Page } as PageModule;
 
-export function Page() {
+function Page() {
   return (
     <Pages.Page title={"Tooltips"}>
       <Paper.Root>

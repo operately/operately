@@ -5,10 +5,13 @@ import * as Turboui from "turboui";
 
 import { Paths } from "@/routes/paths";
 import { redirect } from "react-router-dom";
+import { PageModule } from "@/routes/types";
+
+export default { name: "AccountSecurityPage", loader, Page } as PageModule;
 
 interface LoaderResult {}
 
-export async function loader({ params }): Promise<LoaderResult> {
+async function loader({ params }): Promise<LoaderResult> {
   const company = await Companies.getCompany({
     id: params.companyId,
     includePermissions: true,
@@ -30,7 +33,7 @@ const initialPrompt = [
   "How many projects are currently in progress?",
 ].join("");
 
-export function Page() {
+function Page() {
   const [prompt, setPrompt] = React.useState<string>(initialPrompt);
   const [response, setResponse] = React.useState<string>("");
   const [working, setWorking] = React.useState(false);

@@ -1,8 +1,9 @@
 import * as React from "react";
 import * as Pages from "@/components/Pages";
+import { PageModule } from "@/routes/types";
 
 export type { UrlParams } from "./loader";
-export { loader } from "./loader";
+import { loader } from "./loader";
 
 import { AddChampion } from "./AddChampion";
 import { AddReviewer } from "./AddReviewer";
@@ -11,7 +12,7 @@ import { LoaderResult } from "./loader";
 
 import { match } from "ts-pattern";
 
-export function Page() {
+function Page() {
   const { contribType } = Pages.useLoadedData() as LoaderResult;
 
   return match(contribType)
@@ -20,3 +21,5 @@ export function Page() {
     .with("champion", () => <AddChampion />)
     .exhaustive();
 }
+
+export default { name: "ProjectContributorsAddPage", loader, Page } as PageModule;

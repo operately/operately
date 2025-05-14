@@ -9,12 +9,15 @@ import { Form, useForm, FormState } from "@/features/DiscussionForm";
 import { Paths } from "@/routes/paths";
 import { SubscribersSelector } from "@/features/Subscriptions";
 import { Link } from "turboui";
+import { PageModule } from "@/routes/types";
+
+export default { name: "DiscussionNewPage", loader, Page } as PageModule;
 
 interface LoaderResult {
   space: Spaces.Space;
 }
 
-export async function loader({ params }): Promise<LoaderResult> {
+async function loader({ params }): Promise<LoaderResult> {
   return {
     space: await Spaces.getSpace({
       id: params.id,
@@ -23,7 +26,7 @@ export async function loader({ params }): Promise<LoaderResult> {
   };
 }
 
-export function Page() {
+function Page() {
   const { space } = Pages.useLoadedData<LoaderResult>();
   const form = useForm({ space: space, mode: "create", potentialSubscribers: space.potentialSubscribers! });
 
