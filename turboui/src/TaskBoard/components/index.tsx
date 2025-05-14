@@ -4,7 +4,6 @@ import { SecondaryButton } from "../../Button";
 import { BlackLink } from "../../Link";
 import { DragAndDropProvider, useDraggable, useDraggingAnimation, useDropZone } from "../../utils/DragAndDrop";
 import classNames from "../../utils/classnames";
-import { AvatarWithName } from "../../Avatar/AvatarWithName";
 import {
   IconFileText,
   IconMessageCircle,
@@ -14,13 +13,15 @@ import {
   IconCircleCheckFilled,
   IconX,
   IconPlus,
-  IconCalendar,
   IconGripVertical,
 } from "@tabler/icons-react";
 import { Menu, MenuActionItem } from "../../Menu";
 import { PieChart } from "../../PieChart";
 import TaskCreationModal from "./TaskCreationModal";
 import MilestoneCreationModal from "./MilestoneCreationModal";
+import { StatusSelector } from "./StatusSelector";
+import { DueDateDisplay } from "./DueDateDisplay";
+import { TaskItem } from "./TaskItem";
 
 export namespace TaskBoard {
   export type Status = "pending" | "in_progress" | "done" | "canceled";
@@ -130,124 +131,9 @@ const getStatusDisplayName = (status: TaskBoard.Status): string => {
   }
 };
 
-// Status selector component with dropdown menu
-function StatusSelector({
-  task,
-  onStatusChange,
-  showFullBadge = false,
-}: {
-  task: TaskBoard.Task;
-  onStatusChange?: (newStatus: TaskBoard.Status) => void;
-  showFullBadge?: boolean;
-}) {
-  const [searchTerm, setSearchTerm] = React.useState("");
-  const inputRef = React.useRef<HTMLInputElement>(null);
+// Status selector component moved to separate file: ./StatusSelector.tsx
 
-  // Filter status options based on search term
-  const filteredStatusOptions = Object.entries(taskStatusConfig).filter(([_, config]) =>
-    config.label.toLowerCase().includes(searchTerm.toLowerCase()),
-  );
-
-  // Handle menu open/close events
-  const handleMenuOpenChange = (open: boolean) => {
-    if (open) {
-      // Focus input when menu opens
-      setTimeout(() => {
-        if (inputRef.current) {
-          inputRef.current.focus();
-        }
-      }, 50);
-    } else {
-      // Reset search term when menu closes
-      setSearchTerm("");
-    }
-  };
-
-  // Handle enter key in search input
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && filteredStatusOptions.length > 0) {
-      const [firstMatchStatus] = filteredStatusOptions[0];
-      onStatusChange && onStatusChange(firstMatchStatus as TaskBoard.Status);
-    }
-  };
-
-  // Custom search input for the menu header
-  const searchInput = (
-    <div className="relative">
-      <input
-        ref={inputRef}
-        type="text"
-        placeholder="Change status..."
-        className="w-full bg-surface-base text-content-base text-sm py-1 px-2 border border-surface-outline rounded-md focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        onKeyDown={(e) => {
-          // Prevent menu from closing when typing
-          e.stopPropagation();
-          handleKeyDown(e);
-        }}
-        onClick={(e) => e.stopPropagation()} // Prevent menu from closing when clicking in the input
-      />
-      <span className="absolute right-2 top-1.5 text-content-subtle">
-        <div className="text-[10px] font-mono">⏎</div>
-      </span>
-    </div>
-  );
-
-  return (
-    <Menu
-      customTrigger={
-        <div className="cursor-pointer inline-flex items-center">
-          {showFullBadge ? (
-            <StatusBadge
-              status={taskStatusConfig[task.status].status}
-              customLabel={taskStatusConfig[task.status].label}
-            />
-          ) : (
-            <div className="inline-flex items-center justify-center w-4 h-4">
-              {React.createElement(taskStatusConfig[task.status].icon, {
-                size: 16,
-                className: `align-middle ${taskStatusConfig[task.status].color || ""}`,
-              })}
-            </div>
-          )}
-        </div>
-      }
-      size="small"
-      headerContent={searchInput}
-      onOpenChange={handleMenuOpenChange}
-    >
-      {filteredStatusOptions.map(([status, config]) => {
-        const isCurrentStatus = status === task.status;
-        return (
-          <MenuActionItem
-            key={status}
-            icon={config.icon}
-            onClick={() => onStatusChange && onStatusChange(status as TaskBoard.Status)}
-          >
-            <div className="flex items-center justify-between w-full">
-              {config.label}
-              {isCurrentStatus && <IconCheck size={14} className="text-primary-500 ml-2" />}
-            </div>
-          </MenuActionItem>
-        );
-      })}
-    </Menu>
-  );
-}
-
-// Helper component to display due date with appropriate formatting
-function DueDateDisplay({ dueDate }: { dueDate: Date }) {
-  const isOverdue = dueDate < new Date();
-  const formattedDate = dueDate.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-
-  return (
-    <span className={`text-xs flex items-center gap-1 ${isOverdue ? "text-red-500" : "text-content-dimmed"}`}>
-      <IconCalendar size={14} />
-      <span>{formattedDate}</span>
-    </span>
-  );
-}
+// DueDateDisplay component moved to separate file: ./DueDateDisplay.tsx
 
 // TaskList component with drag and drop functionality
 function TaskList({ tasks, milestoneId }: { tasks: TaskBoard.Task[]; milestoneId: string }) {
@@ -289,91 +175,7 @@ function EmptyMilestoneDropZone({ milestoneId }: { milestoneId: string }) {
   );
 }
 
-// Individual task item component that can be dragged
-function TaskItem({
-  task,
-  milestoneId,
-  itemStyle,
-}: {
-  task: TaskBoard.TaskWithIndex;
-  milestoneId: string;
-  itemStyle: (id: string) => React.CSSProperties;
-}) {
-  // Set up draggable behavior
-  const { ref, isDragging } = useDraggable({ id: task.id, zoneId: `milestone-${milestoneId}` });
-
-  const itemClasses = classNames(isDragging ? "opacity-50 bg-surface-accent" : "");
-
-  return (
-    <li ref={ref as React.RefObject<HTMLLIElement>} style={itemStyle(task.id)} className={itemClasses}>
-      <div className="flex items-center px-4 py-2.5 group bg-surface-base hover:bg-surface-highlight">
-        <div className="flex-1 flex items-center gap-2">
-          {/* Status icon */}
-          <div className="flex-shrink-0 flex items-center">
-            <StatusSelector
-              task={task}
-              onStatusChange={(newStatus) => {
-                // This will bubble up to the main component's handleStatusChange
-                if (task.id) {
-                  // We need to pass both task ID and the new status up to the parent
-                  const changeEvent = new CustomEvent("statusChange", {
-                    detail: { taskId: task.id, newStatus },
-                  });
-                  document.dispatchEvent(changeEvent);
-                }
-              }}
-            />
-          </div>
-
-          {/* Task title with all meta indicators */}
-          <div className="md:truncate flex-1 flex items-center gap-2">
-            <BlackLink
-              to={`/tasks/${task.id}`}
-              className="text-sm hover:text-link-hover transition-colors"
-              underline="hover"
-            >
-              {task.title}
-            </BlackLink>
-
-            {/* Description indicator */}
-            {task.hasDescription && (
-              <span className="text-content-subtle flex-shrink-0">
-                <IconFileText size={14} />
-              </span>
-            )}
-
-            {/* Comments indicator */}
-            {task.hasComments && (
-              <span className="text-content-subtle flex items-center flex-shrink-0">
-                <IconMessageCircle size={14} />
-                {task.commentCount && <span className="ml-0.5 text-xs text-content-subtle">{task.commentCount}</span>}
-              </span>
-            )}
-
-            {/* Due date */}
-            {task.dueDate && (
-              <span className="text-xs text-content-subtle flex items-center flex-shrink-0">
-                <DueDateDisplay dueDate={task.dueDate} />
-              </span>
-            )}
-
-            {/* Assignee */}
-            {task.assignees && task.assignees.length > 0 && (
-              <span className="flex-shrink-0">
-                <AvatarWithName
-                  person={task.assignees[0]}
-                  size="tiny"
-                  nameFormat="short"
-                  className="text-xs text-content-dimmed"
-                />
-              </span>
-            )}
-          </div>
-        </div>
-      </div>
-    </li>
-  );
-}
+// TaskItem component moved to separate file: ./TaskItem.tsx
 
 export function TaskBoard({
   tasks: externalTasks,
