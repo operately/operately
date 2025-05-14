@@ -1,11 +1,11 @@
 import * as Pages from "@/components/Pages";
 
-import { WorkMapItem, getWorkMap } from "@/models/workMap";
+import { convertToWorkMapItem, getWorkMap } from "@/models/workMap";
 import { Paths } from "@/routes/paths";
 import { redirectIfFeatureNotEnabled } from "@/routes/redirectIfFeatureEnabled";
 
 interface LoaderResult {
-  workMap: WorkMapItem[];
+  workMap: ReturnType<typeof convertToWorkMapItem>[];
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
@@ -14,7 +14,7 @@ export async function loader({ params }): Promise<LoaderResult> {
     path: Paths.homePath(),
   });
 
-  const workMap = await getWorkMap({}).then((data) => data.workMap || []);
+  const workMap = await getWorkMap({}).then((data) => data.workMap ? data.workMap.map(convertToWorkMapItem) : []);
 
   return { workMap };
 }
