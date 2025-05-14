@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import WorkMap from "../components";
-import { Page } from "../../Page";
+import { WorkMapPage } from "../components";
 import { singleSpaceWorkMap, mockSingleItem, closedParentWithOngoingChildren } from "../tests/mockData";
 
 /**
@@ -9,7 +8,7 @@ import { singleSpaceWorkMap, mockSingleItem, closedParentWithOngoingChildren } f
  */
 const meta = {
   title: "Pages/WorkMapSpacePage",
-  component: WorkMap,
+  component: WorkMapPage,
   parameters: {
     layout: "fullscreen",
   },
@@ -23,7 +22,7 @@ const meta = {
   argTypes: {
     items: { control: "object" },
   },
-} satisfies Meta<typeof WorkMap>;
+} satisfies Meta<typeof WorkMapPage>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -32,11 +31,7 @@ type Story = StoryObj<typeof meta>;
  * Default view of the WorkMap with multiple items in a single space
  */
 export const Default: Story = {
-  render: (args) => (
-    <Page title={args.title} size="fullwidth">
-      <WorkMap {...args} tabOptions={{ hideAll: true }} columnOptions={{ hideSpace: true }} />
-    </Page>
-  ),
+  render: (args) => <WorkMapPage {...args} tabOptions={{ hideAll: true }} columnOptions={{ hideSpace: true }} />,
   args: {
     title: "Product Space Work Map",
     items: singleSpaceWorkMap,
@@ -47,11 +42,7 @@ export const Default: Story = {
  * WorkMap with a single item (no children)
  */
 export const SingleItem: Story = {
-  render: (args) => (
-    <Page title={args.title} size="fullwidth">
-      <WorkMap {...args} tabOptions={{ hideAll: true }} columnOptions={{ hideSpace: true }} />
-    </Page>
-  ),
+  render: (args) => <WorkMapPage {...args} tabOptions={{ hideAll: true }} columnOptions={{ hideSpace: true }} />,
   args: {
     title: "Space Work Map",
     items: [mockSingleItem],
@@ -62,11 +53,7 @@ export const SingleItem: Story = {
  * WorkMap with no items (empty state)
  */
 export const Empty: Story = {
-  render: (args) => (
-    <Page title={args.title} size="fullwidth">
-      <WorkMap {...args} tabOptions={{ hideAll: true }} columnOptions={{ hideSpace: true }} />
-    </Page>
-  ),
+  render: (args) => <WorkMapPage {...args} tabOptions={{ hideAll: true }} columnOptions={{ hideSpace: true }} />,
   args: {
     title: "Empty Space Work Map",
     items: [],
@@ -79,11 +66,7 @@ export const Empty: Story = {
  * because it has ongoing children, even though the parent itself is closed.
  */
 export const ClosedParentWithOngoingChildren: Story = {
-  render: (args) => (
-    <Page title={args.title} size="fullwidth">
-      <WorkMap {...args} tabOptions={{ hideAll: true }} columnOptions={{ hideSpace: true }} />
-    </Page>
-  ),
+  render: (args) => <WorkMapPage {...args} tabOptions={{ hideAll: true }} columnOptions={{ hideSpace: true }} />,
   args: {
     title: "Closed Parent with Ongoing Children",
     items: closedParentWithOngoingChildren,

@@ -3,6 +3,7 @@ import { Navigation } from "./Navigation";
 import { Paper } from "./Paper";
 import { useHtmlTitle } from "./useHtmlTitle";
 import { PageOptions } from "./PageOptions";
+import classNames from "../utils/classnames";
 
 export namespace Page {
   export type Size = "tiny" | "small" | "medium" | "large" | "xlarge" | "xxlarge" | "fullwidth";
@@ -37,7 +38,7 @@ const sizeClasses: Record<Page.Size, string> = {
 
 export function Page(props: Page.Props) {
   useHtmlTitle(props.title);
-  const containerClass = `${sizeClasses[props.size || "medium"]}`;
+  const containerClass = classNames("sm:my-8", sizeClasses[props.size || "medium"]);
 
   return (
     <div className={containerClass}>
