@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { z } from "zod";
 
 import { TimeframeSelector } from "../../TimeframeSelector";
 import { currentYear } from "../../utils/timeframes";
@@ -39,56 +38,60 @@ export function WorkMap({ title, items, columnOptions = {}, tabOptions = {} }: W
 export default WorkMap;
 
 export namespace WorkMap {
-  const PersonSchema = z.object({
-    id: z.string(),
-    fullName: z.string(),
-    avatarUrl: z.string().optional(),
-  });
+  export const ALLOWED_STATUSES = [
+    "on_track",
+    "completed",
+    "achieved",
+    "partial",
+    "missed",
+    "paused",
+    "caution",
+    "issue",
+    "dropped",
+    "pending",
+    "outdated",
+  ] as const;
+  const ALLOWED_TYPES = ["goal", "project"] as const;
 
-  const SpaceSchema = z.object({
-    id: z.string(),
-    name: z.string(),
-  });
+  type ItemStatus = (typeof ALLOWED_STATUSES)[number];
+  type ItemType = (typeof ALLOWED_TYPES)[number];
 
-  const TimeframeSchema = z.object({
-    startDate: z.string().optional(),
-    endDate: z.string().optional(),
-    type: z.custom<TimeframeSelector.TimeframeType>().optional(),
-  });
+  interface Person {
+    id: string;
+    fullName: string;
+    avatarUrl: string | null;
+  }
 
-  const ItemSchema = z.object({
-    id: z.string(),
-    parentId: z.string().nullable(),
-    name: z.string(),
-    status: z.enum([
-      "on_track",
-      "completed",
-      "achieved",
-      "partial",
-      "missed",
-      "paused",
-      "caution",
-      "issue",
-      "dropped",
-      "pending",
-      "outdated",
-    ]),
-    progress: z.number(),
-    space: SpaceSchema,
-    spacePath: z.string(),
-    owner: PersonSchema,
-    ownerPath: z.string(),
-    nextStep: z.string(),
-    isNew: z.boolean(),
-    children: z.array(z.lazy(() => ItemSchema)),
-    completedOn: z.string().nullable(),
-    timeframe: TimeframeSchema,
-    type: z.enum(["goal", "project"]),
-    itemPath: z.string(),
-    privacy: z.custom<PrivacyIndicator.PrivacyLevels>(),
-  });
+  interface Space {
+    id: string;
+    name: string;
+  }
 
-  export type Item = z.infer<typeof ItemSchema>;
+  interface Timeframe {
+    startDate?: string;
+    endDate?: string;
+    type?: TimeframeSelector.TimeframeType;
+  }
+
+  export interface Item {
+    id: string;
+    parentId: string | null;
+    name: string;
+    status: ItemStatus;
+    progress: number;
+    space: Space;
+    spacePath: string;
+    owner: Person | null;
+    ownerPath: string;
+    nextStep: string;
+    isNew: boolean;
+    children: Item[];
+    completedOn: string | null;
+    timeframe: Timeframe | null;
+    type: ItemType;
+    itemPath: string;
+    privacy: PrivacyIndicator.PrivacyLevels;
+  }
 
   export type Filter = "all" | "goals" | "projects" | "completed";
 
