@@ -24,7 +24,6 @@ defmodule Operately.Goals.GoalTest do
         ctx
         |> Factory.add_goal(:goal, :space)
         |> Factory.close_goal(:goal, success: "no")
-        |> Factory.preload(:goal, :last_update)
 
       assert Goal.status(ctx.goal) == "missed"
     end
@@ -37,9 +36,9 @@ defmodule Operately.Goals.GoalTest do
           ctx
           |> Factory.add_goal(:goal, :space)
           |> Factory.add_goal_update(:update, :goal, :creator, status: @test)
-          |> Factory.preload(:goal, :last_update)
+          |> Factory.reload(:goal)
 
-        assert Goal.status(ctx.goal) == @test
+        assert Goal.status(ctx.goal) == Atom.to_string(@test)
       end
     end
 
