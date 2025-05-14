@@ -1504,6 +1504,7 @@ export interface WorkMapItem {
   type: WorkMapItemType;
   itemPath: string;
   privacy: string;
+  assignees?: Person[] | null;
 }
 
 export type ActivityContent =
@@ -2079,6 +2080,7 @@ export interface GetWorkMapInput {
   spaceId?: Id | null;
   parentGoalId?: Id | null;
   ownerId?: Id | null;
+  includeAssignees?: boolean | null;
 }
 
 export interface GetWorkMapResult {
